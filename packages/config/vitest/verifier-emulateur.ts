@@ -16,4 +16,3 @@ export function verifierEmulateur(env: Record<string, string | undefined>): void
     );
   }
 }
-

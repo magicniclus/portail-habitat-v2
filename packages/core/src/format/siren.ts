@@ -1,7 +1,7 @@
 const SIREN_LA_POSTE = '356000000';
 
 export function normaliserSiren(saisie: string): string {
-  return saisie.replace(/[\s. ]/g, '');
+  return saisie.replace(/[\s.\u00a0]/g, '');
 }
 
 function luhn(chiffres: string): boolean {

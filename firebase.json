@@ -13,7 +13,14 @@
       "source": "apps/functions",
       "codebase": "default",
       "runtime": "nodejs22",
-      "ignore": ["node_modules", "src", "*.test.ts", "tsconfig.json", "vitest.config.ts", "build.mjs"]
+      "ignore": [
+        "node_modules",
+        "src",
+        "*.test.ts",
+        "tsconfig.json",
+        "vitest.config.ts",
+        "build.mjs"
+      ]
     }
   ],
   "emulators": {

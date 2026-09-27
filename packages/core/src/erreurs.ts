@@ -8,7 +8,11 @@ export const CODES_ERREUR = {
     http: 400,
     callable: 'invalid-argument',
   },
-  NON_AUTHENTIFIE: { message: 'Connectez-vous pour continuer.', http: 401, callable: 'unauthenticated' },
+  NON_AUTHENTIFIE: {
+    message: 'Connectez-vous pour continuer.',
+    http: 401,
+    callable: 'unauthenticated',
+  },
   APP_CHECK_INVALIDE: {
     message: 'Votre navigateur n’a pas pu être vérifié. Rechargez la page.',
     http: 401,

@@ -1,0 +1,28 @@
+{
+  "name": "@ph/functions",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sentry/node": "^11.0.0",
+    "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.4.0"
+  },
+  "devDependencies": {
+    "@ph/config": "workspace:*",
+    "@ph/core": "workspace:*",
+    "esbuild": "^0.28.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import type { z } from '../zod';
 import { estErreurMetier } from '../erreurs';
 import { echec, succes, type Resultat } from '../resultat';
 
@@ -62,7 +62,10 @@ function champsErreur(erreur: z.ZodError): Record<string, string[]> {
   return champs;
 }
 
-function verifierConfiguration(options: OptionsEnveloppe<z.ZodType>, deps: Dependances<never>): void {
+function verifierConfiguration(
+  options: OptionsEnveloppe<z.ZodType>,
+  deps: Dependances<never>,
+): void {
   const manque = (dep: string) => {
     throw new Error(`Enveloppe mal configurée : l'option demandée exige la dépendance « ${dep} ».`);
   };
@@ -92,13 +95,20 @@ export function creerEnveloppe<C extends ContexteBase>(deps: Dependances<C>) {
       if (appCheck && !ctx.appCheckVerifie) return echec('APP_CHECK_INVALIDE');
 
       const analyse = schema.safeParse(brut);
-      if (!analyse.success) return echec('ENTREE_INVALIDE', { champs: champsErreur(analyse.error) });
+      if (!analyse.success)
+        return echec('ENTREE_INVALIDE', { champs: champsErreur(analyse.error) });
       const entree = analyse.data;
 
-      if (options.permission && !(await deps.verifierPermission!(ctx, options.permission, entree))) {
+      if (
+        options.permission &&
+        !(await deps.verifierPermission!(ctx, options.permission, entree))
+      ) {
         return echec('PERMISSION_REFUSEE');
       }
-      if (options.rateLimit && !(await deps.limiterDebit!(options.rateLimit, ctx.identifiantClient))) {
+      if (
+        options.rateLimit &&
+        !(await deps.limiterDebit!(options.rateLimit, ctx.identifiantClient))
+      ) {
         return echec('TROP_DE_REQUETES');
       }
 
@@ -106,7 +116,9 @@ export function creerEnveloppe<C extends ContexteBase>(deps: Dependances<C>) {
       if (options.idempotence) {
         const cle = (entree as { cleIdempotence?: unknown }).cleIdempotence;
         if (typeof cle !== 'string' || !cle) {
-          return echec('ENTREE_INVALIDE', { champs: { cleIdempotence: ['Clé d’idempotence requise.'] } });
+          return echec('ENTREE_INVALIDE', {
+            champs: { cleIdempotence: ['Clé d’idempotence requise.'] },
+          });
         }
         cleIdem = `${nom}:${ctx.uid ?? ctx.identifiantClient}:${cle}`;
         const deja = await deps.idempotence!.lire(cleIdem);
@@ -127,7 +139,10 @@ export function creerEnveloppe<C extends ContexteBase>(deps: Dependances<C>) {
 
       if (cleIdem && resultat.ok) await deps.idempotence!.ecrire(cleIdem, resultat);
       if (options.audit) {
-        await deps.auditer!(ctx, resultat.ok ? { action: nom, ok: true } : { action: nom, ok: false, code: resultat.code });
+        await deps.auditer!(
+          ctx,
+          resultat.ok ? { action: nom, ok: true } : { action: nom, ok: false, code: resultat.code },
+        );
       }
       return resultat;
     };

@@ -13,7 +13,12 @@
     },
     "test": {
       "outputs": ["coverage/**"],
-      "env": ["FIRESTORE_EMULATOR_HOST", "FIREBASE_AUTH_EMULATOR_HOST", "FIREBASE_STORAGE_EMULATOR_HOST", "GCLOUD_PROJECT"]
+      "env": [
+        "FIRESTORE_EMULATOR_HOST",
+        "FIREBASE_AUTH_EMULATOR_HOST",
+        "FIREBASE_STORAGE_EMULATOR_HOST",
+        "GCLOUD_PROJECT"
+      ]
     },
     "e2e": {
       "dependsOn": ["build"],

@@ -12,7 +12,12 @@ const formateurs: Record<Exclude<StyleDate, 'dateHeure'> | 'heure', Intl.DateTim
 const relatif = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
 
 function versDate(entree: DateEntree): Date {
-  const d = entree instanceof Date ? entree : typeof entree === 'object' ? entree.toDate() : new Date(entree);
+  const d =
+    entree instanceof Date
+      ? entree
+      : typeof entree === 'object'
+        ? entree.toDate()
+        : new Date(entree);
   if (Number.isNaN(d.getTime())) throw new RangeError(`Date invalide : ${String(entree)}`);
   return d;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { z } from 'zod';
+import { z } from '../zod';
 import { ErreurMetier, messageErreur } from '../erreurs';
 import { creerEnveloppe, type ContexteBase, type Dependances } from './enveloppe';
 
@@ -56,18 +56,26 @@ describe('creerEnveloppe', () => {
     expect(await env({ schema }, async () => 1)(entree, sansAppCheck)).toMatchObject({
       code: 'APP_CHECK_INVALIDE',
     });
-    expect(await env({ schema, appCheck: false }, async () => 1)(entree, sansAppCheck)).toMatchObject({
+    expect(
+      await env({ schema, appCheck: false }, async () => 1)(entree, sansAppCheck),
+    ).toMatchObject({
       ok: true,
     });
   });
 
   it('vérifie la permission', async () => {
-    const verifierPermission = vi.fn(async (_c: ContexteBase, p: string) => p === 'membres.inviter');
+    const verifierPermission = vi.fn(
+      async (_c: ContexteBase, p: string) => p === 'membres.inviter',
+    );
     const env = creerEnveloppe({ verifierPermission });
-    expect(await env({ schema, permission: 'membres.inviter' }, async () => 1)(entree, ctx())).toMatchObject({
+    expect(
+      await env({ schema, permission: 'membres.inviter' }, async () => 1)(entree, ctx()),
+    ).toMatchObject({
       ok: true,
     });
-    expect(await env({ schema, permission: 'leads.prix' }, async () => 1)(entree, ctx())).toMatchObject({
+    expect(
+      await env({ schema, permission: 'leads.prix' }, async () => 1)(entree, ctx()),
+    ).toMatchObject({
       code: 'PERMISSION_REFUSEE',
     });
     expect(verifierPermission).toHaveBeenLastCalledWith(ctx(), 'leads.prix', entree);
@@ -92,7 +100,11 @@ describe('creerEnveloppe', () => {
       throw new ErreurMetier('CONFLIT');
     })(entree, ctx());
     expect(auditer).toHaveBeenNthCalledWith(1, ctx(), { action: 'test.ok', ok: true });
-    expect(auditer).toHaveBeenNthCalledWith(2, ctx(), { action: 'test.ko', ok: false, code: 'CONFLIT' });
+    expect(auditer).toHaveBeenNthCalledWith(2, ctx(), {
+      action: 'test.ko',
+      ok: false,
+      code: 'CONFLIT',
+    });
   });
 
   it('rejoue le résultat d’une requête idempotente déjà traitée', async () => {
@@ -103,7 +115,10 @@ describe('creerEnveloppe', () => {
     };
     const handler = vi.fn(async () => 'fait');
     const schemaIdem = schema.extend({ cleIdempotence: z.string().min(8) });
-    const exec = creerEnveloppe({ idempotence })({ schema: schemaIdem, idempotence: true, nom: 'x' }, handler);
+    const exec = creerEnveloppe({ idempotence })(
+      { schema: schemaIdem, idempotence: true, nom: 'x' },
+      handler,
+    );
     const e = { ...entree, cleIdempotence: 'cle-12345' };
     expect(await exec(e, ctx())).toEqual({ ok: true, data: 'fait' });
     expect(await exec(e, ctx())).toEqual({ ok: true, data: 'fait' });
@@ -112,26 +127,42 @@ describe('creerEnveloppe', () => {
   });
 
   it('n’enregistre pas les échecs dans l’idempotence (on peut réessayer)', async () => {
-    const idempotence = { lire: vi.fn(async () => undefined), ecrire: vi.fn(async () => undefined) };
+    const idempotence = {
+      lire: vi.fn(async () => undefined),
+      ecrire: vi.fn(async () => undefined),
+    };
     const schemaIdem = schema.extend({ cleIdempotence: z.string() });
-    const exec = creerEnveloppe({ idempotence })({ schema: schemaIdem, idempotence: true, nom: 'x' }, async () => {
-      throw new ErreurMetier('INDISPONIBLE');
-    });
+    const exec = creerEnveloppe({ idempotence })(
+      { schema: schemaIdem, idempotence: true, nom: 'x' },
+      async () => {
+        throw new ErreurMetier('INDISPONIBLE');
+      },
+    );
     await exec({ ...entree, cleIdempotence: 'k' }, ctx());
     expect(idempotence.ecrire).not.toHaveBeenCalled();
   });
 
   it('exige une cleIdempotence quand l’idempotence est demandée', async () => {
     const idempotence = { lire: vi.fn(), ecrire: vi.fn() };
-    const exec = creerEnveloppe({ idempotence })({ schema, idempotence: true, nom: 'x' }, async () => 1);
-    expect(await exec(entree, ctx())).toMatchObject({ code: 'ENTREE_INVALIDE', champs: { cleIdempotence: expect.any(Array) } });
+    const exec = creerEnveloppe({ idempotence })(
+      { schema, idempotence: true, nom: 'x' },
+      async () => 1,
+    );
+    expect(await exec(entree, ctx())).toMatchObject({
+      code: 'ENTREE_INVALIDE',
+      champs: { cleIdempotence: expect.any(Array) },
+    });
   });
 
   it('transforme une ErreurMetier en échec lisible', async () => {
     const exec = creerEnveloppe({})({ schema }, async () => {
       throw new ErreurMetier('PRECONDITION', 'Offre déjà active.');
     });
-    expect(await exec(entree, ctx())).toEqual({ ok: false, code: 'PRECONDITION', message: 'Offre déjà active.' });
+    expect(await exec(entree, ctx())).toEqual({
+      ok: false,
+      code: 'PRECONDITION',
+      message: 'Offre déjà active.',
+    });
   });
 
   it('masque les erreurs inattendues et les signale', async () => {
@@ -140,7 +171,11 @@ describe('creerEnveloppe', () => {
     const exec = creerEnveloppe({ signalerErreur })({ schema }, async () => {
       throw bug;
     });
-    expect(await exec(entree, ctx())).toEqual({ ok: false, code: 'INTERNE', message: messageErreur('INTERNE') });
+    expect(await exec(entree, ctx())).toEqual({
+      ok: false,
+      code: 'INTERNE',
+      message: messageErreur('INTERNE'),
+    });
     expect(signalerErreur).toHaveBeenCalledWith(bug);
   });
 
@@ -148,13 +183,18 @@ describe('creerEnveloppe', () => {
     const env = creerEnveloppe({});
     const h = async () => 1;
     expect(() => env({ schema, permission: 'x' }, h)).toThrow(/verifierPermission/);
-    expect(() => env({ schema, rateLimit: { cle: 'a', max: 1, fenetre: '1h' } }, h)).toThrow(/limiterDebit/);
+    expect(() => env({ schema, rateLimit: { cle: 'a', max: 1, fenetre: '1h' } }, h)).toThrow(
+      /limiterDebit/,
+    );
     expect(() => env({ schema, audit: true, nom: 'a' }, h)).toThrow(/auditer/);
     expect(() => env({ schema, idempotence: true, nom: 'a' }, h)).toThrow(/idempotence/);
   });
 
   it('exige un nom pour l’audit et l’idempotence', () => {
-    const deps: Dependances = { auditer: async () => undefined, idempotence: { lire: async () => undefined, ecrire: async () => undefined } };
+    const deps: Dependances = {
+      auditer: async () => undefined,
+      idempotence: { lire: async () => undefined, ecrire: async () => undefined },
+    };
     const env = creerEnveloppe(deps);
     expect(() => env({ schema, audit: true }, async () => 1)).toThrow(/nom/);
     expect(() => env({ schema, idempotence: true }, async () => 1)).toThrow(/nom/);

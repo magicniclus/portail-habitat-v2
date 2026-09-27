@@ -15,12 +15,17 @@ describe('normaliserTel', () => {
   ])('« %s » → %s', (saisie, attendu) => {
     expect(normaliserTel(saisie)).toBe(attendu);
   });
-  it.each(['', '06 12', '00 12 34 56 78', '+33 0 12 34 56 78', 'abc', '+0123456789', '061234567890'])(
-    'refuse « %s »',
-    (saisie) => {
-      expect(normaliserTel(saisie)).toBeNull();
-    },
-  );
+  it.each([
+    '',
+    '06 12',
+    '00 12 34 56 78',
+    '+33 0 12 34 56 78',
+    'abc',
+    '+0123456789',
+    '061234567890',
+  ])('refuse « %s »', (saisie) => {
+    expect(normaliserTel(saisie)).toBeNull();
+  });
 });
 
 describe('formatTel', () => {
