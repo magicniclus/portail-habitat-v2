@@ -51,9 +51,9 @@ export async function rechercherEntreprise(
   }
   if (!trouvees) {
     const url = `${URL_RECHERCHE_ENTREPRISES}?q=${encodeURIComponent(q)}&per_page=5`;
-    const reponse = await (s.fetch ?? fetch)(url, { headers: { accept: 'application/json' } }).catch(
-      () => null,
-    );
+    const reponse = await (s.fetch ?? fetch)(url, {
+      headers: { accept: 'application/json' },
+    }).catch(() => null);
     if (!reponse?.ok) throw new ErreurMetier('INDISPONIBLE');
     const corps = reponseRechercheEntreprises.safeParse(await reponse.json().catch(() => null));
     if (!corps.success) throw new ErreurMetier('INDISPONIBLE');
