@@ -16,12 +16,13 @@
     "./admin": "./src/admin/permissions.ts",
     "./flags": "./src/flags.ts",
     "./schemas": "./src/schemas/index.ts",
-    "./simulateur": "./src/simulateur/index.ts"
+    "./simulateur": "./src/simulateur/index.ts",
+    "./diagnostic": "./src/diagnostic/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --coverage",
-    "cas": "node scripts/generer-cas-simulateur.mjs"
+    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs"
   },
   "dependencies": {
     "zod": "^4.6.5"
