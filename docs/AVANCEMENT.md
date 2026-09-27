@@ -10,7 +10,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | Lot | Contenu | Statut | Terminé le | Tests | Notes |
 |---|---|---|---|---|---|
 | 0 | Cadrage | ✅ | 27/09/2026 | — | incohérences tranchées, documents corrigés (§2) |
-| 1a | Socle technique : monorepo, outillage, CI, émulateurs | ⬜ | | typecheck, lint, test | |
+| 1a | Socle technique : monorepo, outillage, CI, émulateurs | ✅ | 27/09/2026 | format, lint, types, Knip, 102 tests (dont règles sur émulateur), build, e2e | CI GitHub à confirmer au premier passage (§6) |
 | 1b | Design system, composants, Storybook | ⬜ | | axe, cibles, MOB-01 à 03 | |
 | 2 | Données et sécurité | ⬜ | | règles | |
 | 3 | Logique métier pure | ⬜ | | unitaires | |
@@ -30,10 +30,30 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 1a (plan proposé, en attente de validation)
-- Fait : —
-- Reste : tout le lot
-- Dernier commit : voir `git log`
+- Lot : 1b (design system), à démarrer par un plan
+- Dernier lot terminé : 1a, le 27/09/2026 (détail §6)
+
+## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
+
+**Fait**
+- Monorepo pnpm 10 + Turborepo 2, Node 22 : `apps/web` (Next.js 16), `apps/functions` (Functions v2, `europe-west1`), `packages/core`, `packages/firebase`, `packages/config`. `packages/ui` arrive au lot 1b, `packages/emails` au lot 5.
+- `@ph/core` : `format` (euros en centimes, dates Europe/Paris, relatif, téléphone E.164, SIREN/SIRET avec l'exception La Poste), `erreurs` (codes centralisés : message FR, statut HTTP, code callable), `resultat`, `enveloppe` (connexion → App Check → Zod → permission → débit → idempotence → traitement → audit ; une option dont la dépendance manque fait échouer le démarrage), `zod` (Zod configuré en français). 92 tests, couverture 100 % lignes, 99 % branches (seuil 95 %).
+- `action()` (site, `apps/web/server/action.ts`) et `callable()` (Functions) branchés sur l'enveloppe ; Function `ping` vérifiée sur émulateur (succès et erreur de validation en français).
+- `@ph/firebase/admin` : `appAdmin()` (émulateur, compte de service ou identifiants Google Cloud), `verifierJetonAppCheck()`.
+- Firebase : `firebase.json`, `.firebaserc` (projet d'émulation `demo-portail-habitat`, alias dev/staging/prod), règles Firestore et Storage « tout refusé » avec leur test sur émulateur ; garde-fou qui refuse tout test Firebase hors émulateur local `demo-*`.
+- ESLint 9 : boundaries (dépendances entre paquets), dépendances externes interdites par paquet, pas de couleur hexadécimale ni de `collection()` hors de leur paquet, pas d'import direct de `zod`. Vérifié avec des violations volontaires. Prettier, Knip.
+- Sentry (site et Functions), inactif sans DSN. `/api/health`. `.env.example` complet.
+- Playwright : projets iPhone 13, iPhone SE, Pixel 7, ordinateur ; test de fumée (sonde, langue, pas de défilement horizontal).
+- CI GitHub Actions : format, lint, types, Knip, tests sous émulateurs, build ; e2e Chromium + WebKit.
+
+**Vérifié dans cette session** : `pnpm format:check`, `lint`, `typecheck`, `knip`, `test` (sous émulateurs), `build` ; e2e sur Pixel 7 et ordinateur (seul Chromium est installé ici ; les projets iPhone tournent sur WebKit dans la CI).
+
+**Reste / dettes connues**
+- `pnpm dev` : le site et les Functions démarrent ; ici, l'interface web des émulateurs n'a pas pu être téléchargée (réseau du conteneur). À vérifier sur un poste : `pnpm dev`, puis http://localhost:4000.
+- Premier passage de la CI GitHub à observer (téléchargement de WebKit, cache des émulateurs).
+- Lot 2 : brancher `verifierPermission` (`peut()`), `limiterDebit`, `auditer` et `idempotence` sur Firestore ; lot 4 : `uid` depuis le cookie de session dans `action()`.
+- Déploiement des Functions : `lib/index.js` est autonome (esbuild) ; le déploiement réel sera validé au lot 14.
+- Lighthouse CI et build Storybook : lot 1b.
 
 ## 2. Incohérences et zones floues
 
@@ -124,8 +144,10 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
+- 27/09/2026 — D44 versions du socle (Next.js 16, TypeScript 6, ESLint 9, Zod 4 en français) — DECISIONS, CLAUDE.md, README, PROMPT_CLAUDE_CODE. EXPLOITATION §5 : DEPLOIEMENT.md au lot 14.
 - 27/09/2026 — D40 routes, D41 aiguillage des demandes, D42 emplacement du code et Tailwind 4, D43 suivi et découpage du lot 1 — DECISIONS, PLAN_DEV, README, ACCEPTANCE, INTEGRATIONS, CONVERSION, ADMIN, MATCHING, DATABASE, EMAILS, IA_ADMIN, COMPTES, ARCHITECTURE, PROMPT_CLAUDE_CODE, CLAUDE.md.
 
 ## Journal
 - 27/09/2026 — Rangement du dépôt (`docs/`, `CLAUDE.md` et `.claude/` à la racine). Lot 0 : cadrage produit.
 - 27/09/2026 — Réponses reçues, documents corrigés, lot 0 clos.
+- 27/09/2026 — Lot 1a terminé (socle technique). Décision D44 : Next.js 16, TypeScript 6.

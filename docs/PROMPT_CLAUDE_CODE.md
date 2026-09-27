@@ -36,7 +36,7 @@ Plan d'abord, puis :
 - monorepo pnpm + Turborepo selon ARCHITECTURE.md §2 (apps/web, apps/functions, packages/core, ui, emails, firebase, config), Node 22 ;
 - TypeScript strict, ESLint + eslint-plugin-boundaries (§3) + règles maison (pas de hex hors tokens, pas de collection() hors packages/firebase), Prettier, Knip, Vitest, Playwright (projets iPhone 13, iPhone SE, Pixel 7 et ordinateur) ;
 - packages/core/format (euros en centimes, dates, téléphone, SIREN) testé ; enveloppes action() et callable() (§7) avec App Check, Zod, codes d'erreur centralisés ;
-- apps/web : Next.js 15 minimal (page d'accueil provisoire), /api/health ;
+- apps/web : Next.js 16 minimal (page d'accueil provisoire), /api/health ;
 - Firebase : émulateurs, apps/functions branché sur packages/core ; garde-fou qui fait échouer les tests hors émulateur ;
 - Sentry (site + Functions) ; CI GitHub Actions (typecheck, lint, boundaries, knip, test, build).
 Terminé quand pnpm dev démarre site + émulateurs et que typecheck, lint, knip et test passent en CI. Mets à jour AVANCEMENT.md.

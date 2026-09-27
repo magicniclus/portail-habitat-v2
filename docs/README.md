@@ -59,7 +59,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 
 ## Stack cible
 
-- **Next.js 15** (App Router, Server Components, Server Actions, Route Handlers), TypeScript strict
+- **Next.js 16** (App Router, Server Components, Server Actions, Route Handlers), TypeScript strict
 - **Firebase** : Auth (email/mot de passe, lien magique, téléphone pour les artisans), Firestore, Storage, Cloud Functions (v2), App Check
 - **Stripe** : Billing (abonnements), Checkout, Customer Portal, Stripe Tax (TVA FR 20 %), codes promo
 - **Emails** : Resend et React Email ; SMS par Brevo. Modèles en React, envoi depuis les Cloud Functions ou les Route Handlers

@@ -80,6 +80,7 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D41 | Aiguillage des demandes du site | Demande garantie Premium si un Premium a du quota, sinon appel d'offres automatique (MATCHING) | ✅ |
 | D42 | Emplacement du code | `packages/core/*` (ARCHITECTURE fait foi ; les anciennes mentions `lib/…` y renvoient) ; Tailwind 4 configuré en CSS (`@theme` généré depuis les tokens, pas de `tailwind.config.js`) | ✅ |
 | D43 | Suivi | `docs/AVANCEMENT.md` seul (PROGRESSION.md fusionné) ; lot 1 découpé en 1a (socle) et 1b (design system) | ✅ |
+| D44 | Versions du socle | **Next.js 16** (la 15 n'est plus qu'en maintenance), React 19, **TypeScript 6** (la 7 n'est pas encore prise en charge par typescript-eslint), ESLint 9, Vitest 5, Zod 4 (`@ph/core/zod`, messages en français), Sentry 11, Functions esbuild → `lib/` | ✅ |
 | D39 | Navigateurs supportés | 2 dernières versions de Chrome, Safari, Firefox, Edge ; Safari iOS 16.4+ (requis pour les notifications push web) ; Android Chrome | ✅ |
 
 ---

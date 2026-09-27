@@ -3,12 +3,12 @@
 > À copier à la racine du dépôt. Claude Code relit ce fichier à chaque session : il doit rester court.
 
 ## Stack
-Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · React Hook Form · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
+Next.js 16 (App Router, TypeScript 6 strict) · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · React Hook Form · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
 
 ## Commandes
-- `pnpm dev` : Next.js + émulateurs Firebase
-- `pnpm test` : Vitest (logique + règles Firestore sur émulateur)
-- `pnpm typecheck`, `pnpm lint`
+- `pnpm dev` : Next.js + émulateurs Firebase (Java requis)
+- `pnpm test` : Vitest sous émulateurs (logique + règles Firestore) · `pnpm test:unit` : sans émulateur
+- `pnpm typecheck`, `pnpm lint`, `pnpm knip`, `pnpm format`
 - `pnpm seed` : jeu de données de test (refuse de tourner hors émulateur ou staging)
 - `pnpm e2e` : Playwright
 
@@ -54,7 +54,7 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 
 ## Règles non négociables
 1. Montants en **centimes entiers**. Jamais de `float` pour de l'argent.
-2. Toute entrée passe par un **schéma Zod** de `packages/core/schemas`, côté client **et** côté serveur.
+2. Toute entrée passe par un **schéma Zod** de `packages/core/schemas`, côté client **et** côté serveur. `z` s'importe de `@ph/core/zod` (messages en français), jamais de `zod`.
 3. Les prix (simulateur, leads, diagnostic) sont **recalculés côté serveur** ; la valeur du client est ignorée.
 4. `plan`, `optionVisibilite`, `siegesMax` : écrits **uniquement** par le webhook Stripe.
 5. Écritures sensibles (demandes, avis, crédits, membres, prix) : **Function ou Server Action uniquement**, en transaction, avec vérification `peut()` et `auditLog` si admin.
