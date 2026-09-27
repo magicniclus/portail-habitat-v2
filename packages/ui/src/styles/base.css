@@ -1,0 +1,86 @@
+/* Base commune à tous les espaces (MOBILE.md, ARCHITECTURE §4). */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-fond);
+    color: var(--color-texte);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    text-wrap: pretty;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+  a {
+    color: var(--accent-700);
+  }
+  a:hover {
+    color: var(--accent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent-300);
+    outline-offset: 1px;
+  }
+  button,
+  [role='button'],
+  a,
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+  }
+  ::selection {
+    background: var(--accent-200);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Mot mis en avant des titres : Source Serif 4 italique 600, dans l'accent. */
+@utility accent-editorial {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+@utility px-page {
+  padding-inline: var(--spacing-page);
+}
+
+/* Barres fixes en bas : marge de sécurité de l'iPhone (encoche, barre d'accueil). */
+@utility pb-sure {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+@keyframes fondu {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes monter {
+  from {
+    transform: translateY(100%);
+  }
+}

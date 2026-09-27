@@ -90,7 +90,7 @@ export default tseslint.config(
   // Règles maison, partout sauf là où elles sont la source
   {
     files: ['**/*.{ts,tsx,mjs,js}'],
-    ignores: ['packages/ui/tokens/**', 'packages/firebase/**', ...TESTS],
+    ignores: ['packages/ui/src/tokens/**', 'packages/firebase/**', ...TESTS],
     rules: { 'no-restricted-syntax': ['error', ...interditHex, ...interditCollection] },
   },
   {
