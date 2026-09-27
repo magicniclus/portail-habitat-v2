@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig/bibliotheque.json",
+  "include": ["vitest"]
+}

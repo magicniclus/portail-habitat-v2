@@ -1,0 +1,10 @@
+rules_version = '2';
+
+// Lot 1a : tout est refusé par défaut. Les règles réelles arrivent au lot 2 (docs/DATABASE.md §13).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

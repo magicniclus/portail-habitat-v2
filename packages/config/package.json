@@ -1,0 +1,18 @@
+{
+  "name": "@ph/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig/*": "./tsconfig/*",
+    "./vitest/garde-emulateur": "./vitest/garde-emulateur.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}
