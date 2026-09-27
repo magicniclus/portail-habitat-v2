@@ -13,7 +13,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 1a | Socle technique : monorepo, outillage, CI, émulateurs | ✅ | 27/09/2026 | format, lint, types, Knip, 102 tests (dont règles sur émulateur), build, e2e | CI GitHub à confirmer au premier passage (§6) |
 | 1b | Design system, composants, Storybook | ✅ | 27/09/2026 | 34 tests composants, catalogue 29 stories, e2e 44 (dont ERR-01/02, MOB-01 à 03), Lighthouse | D45 et D46 à valider (§7) |
 | 2 | Données et sécurité | ✅ | 27/09/2026 | 172 tests core, 1 890 cas de règles Firestore, 272 cas Storage, 11 tests serveur (émulateur) | écarts de sécurité à relire (§8) |
-| 3 | Logique métier pure | ⬜ | | unitaires | |
+| 3 | Logique métier pure | ✅ | 27/09/2026 | 3 324 tests core, couverture 100 % des lignes (99,8 % des instructions), pertinence 96,4 % au 1er rang | D47 et D48 à valider (§9) |
 | 4 | Comptes, équipes, seed | ⬜ | | CON, EQU, INV | |
 | 5 | Emails, SMS, notifications | ⬜ | | MAIL | |
 | 6 | Pages publiques, SEO, cookies | ⬜ | | ACC, DIA-05 | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 3 (logique métier pure)
-- Dernier lot terminé : 2, le 27/09/2026 (détail §8)
+- Lot : 4 (comptes, équipes, seed)
+- Dernier lot terminé : 3, le 27/09/2026 (détail §9)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -114,6 +114,33 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - `syncClaims` (claims `roles`, `ent`, `staff`) : lot 4.
 - Migrations (`scripts/migrations`, curseur dans `migrations/{id}`) : dès la première évolution de schéma.
 - Remote Config pour les valeurs globales des flags : branché avec le premier flag utilisé (lot 12).
+
+## 9. Lot 3 — Logique métier pure (terminé le 27/09/2026)
+
+**Méthode** : les cas attendus sont calculés **en exécutant le code des maquettes** dans un bac à sable Node (`packages/core/scripts/maquette.mjs`), puis le portage TypeScript doit les reproduire. Quand aucune maquette ne calcule le résultat (prix des appels d'offres, matching), les cas viennent d'une **implémentation de référence écrite séparément** à partir de la formule du document. `pnpm --filter @ph/core cas` régénère tous les fichiers `__tests__/*.cases.json`.
+
+| Module (`@ph/core/…`) | Source | Cas |
+|---|---|---|
+| `simulateur` | `calculer()`, `coefRegion` de la maquette ; 9 formules + moteur générique des 103 prestations du catalogue ; prix passés en paramètre (`docs/data/prestations-prix-detaillees.json`) | 560 |
+| `diagnostic` | Parcours Diagnostic (obligatoires, conseillés, validités, remise pack ; année de référence en paramètre, `docs/data/diagnostics-regles.json`) | 300 |
+| `recherche` | `recherche-projets.js` porté à l'identique ; 411 requêtes étiquetées : **96,4 %** au 1er rang, 100 % dans le top 3, 17 exemples obligatoires | 554 + 411 |
+| `parcours` | `migrer`, `valeursParDefaut`, `lisible`, champs des 112 prestations (`champsDuTarif`) ; brouillon strict, étape de reprise, arrivée avec paramètres | 260 |
+| `stats` | `PH_DEMANDES.estimer` (Bordeaux ≈ 800, plombier 104, couvreur 28, Lozère 5) ; bascule vers le réel à 3 mois ; paramètres dans `docs/data/stats-demandes.json` | 204 |
+| `leads` | DATABASE §5 : barème, Premium, crédits, promo ; barème initial `docs/data/bareme-appels-offres.json` | 120 |
+| `annuaire` | `filtrer()` et `trier()` de la maquette, Premium en tête | 150 |
+| `matching` | MATCHING §3 : filtres durs (raison consignée), score, sélection équitable, aiguillage D41, qualité de la demande ; config `docs/data/matching-config.json` | 600 + 40 populations |
+| `referentiel` | `pnpm verifier:referentiel` : 112 prestations, 15 familles, 60 métiers, 137 intentions cohérents | — |
+
+**Écarts assumés par rapport aux maquettes**
+1. Recherche : bonus de correspondance exacte (libellé +8, mot-clé +4), mots vides « qui, que, quoi », mots-clés ajoutés (pompe à chaleur, fuite de toiture) pour passer de 93,9 % à 96,4 % au 1er rang (RECHERCHE.md mis à jour).
+2. Reprise de parcours : la maquette enregistre la fourchette de prix dans le brouillon et l'affiche dans l'encart ; REPRISE_PARCOURS §3 l'interdit (aucun montant avant l'envoi des coordonnées). Le brouillon n'a donc pas de fourchette, et un brouillon contenant une clé inconnue (email, nom…) est rejeté.
+3. Étape de reprise : la maquette reprend à l'étape enregistrée ; le code reprend à la première étape dont une réponse a disparu ou changé de bornes (SIM-06e), ou à l'étape 4 si le code postal est incomplet.
+
+**Vérifications** : `typecheck`, `lint`, `knip`, `format`, 3 324 tests core (lignes 100 %, branches 97,4 %), tests de mutation sur la migration des réponses et la sélection du matching. Le test de pertinence calcule ses classements une seule fois (il dépassait 5 s en CI à côté des émulateurs).
+
+**À valider** : D47 (compléments au barème des appels d'offres) et D48 (points non précisés du matching), appliqués en attendant.
+
+**Reste** : branchement Firestore des moteurs (lots 4, 8, 9, 12) ; domaine RGE par prestation (lot 12b).
 
 ## 2. Incohérences et zones floues
 
@@ -204,6 +231,7 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
+- 27/09/2026 — D47 barème des appels d'offres, D48 matching (propositions ⏳) — DECISIONS, docs/data ; STATS_DEMANDES §4 (emplacement des paramètres).
 - 27/09/2026 — D44 versions du socle (Next.js 16, TypeScript 6, ESLint 9, Zod 4 en français) — DECISIONS, CLAUDE.md, README, PROMPT_CLAUDE_CODE. EXPLOITATION §5 : DEPLOIEMENT.md au lot 14.
 - 27/09/2026 — D40 routes, D41 aiguillage des demandes, D42 emplacement du code et Tailwind 4, D43 suivi et découpage du lot 1 — DECISIONS, PLAN_DEV, README, ACCEPTANCE, INTEGRATIONS, CONVERSION, ADMIN, MATCHING, DATABASE, EMAILS, IA_ADMIN, COMPTES, ARCHITECTURE, PROMPT_CLAUDE_CODE, CLAUDE.md.
 
@@ -213,3 +241,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Lot 1a terminé (socle technique). Décision D44 : Next.js 16, TypeScript 6.
 - 27/09/2026 — Lot 1b terminé (design system). Décisions D45 (contraste) et D46 (budget JS) proposées, à valider.
 - 27/09/2026 — Lot 2 terminé (données et sécurité). Dix corrections de sécurité par rapport à DATABASE §12 (§8).
+- 27/09/2026 — Lot 3 terminé (logique métier pure, 9 modules). Décisions D47 (barème) et D48 (matching) proposées, à valider.
