@@ -1,0 +1,324 @@
+{
+  "_source": "designs/Parcours Diagnostic.dc.html",
+  "_note": "Seed de referentiel/diagnostics/items. Les '$formule' (req) sont à porter dans packages/core/diagnostic.",
+  "diagnostics": [
+    {
+      "id": "dpe",
+      "nom": "DPE (performance énergétique)",
+      "prix": [
+        110,
+        190
+      ],
+      "val": 10,
+      "req": {
+        "$formule": "(c) => c.motif !== \"travaux\""
+      },
+      "quand": "Obligatoire pour toute vente et toute mise en location",
+      "validite": "10 ans",
+      "note": "Un DPE établi avant le 1er juillet 2021 n'est plus valable."
+    },
+    {
+      "id": "audit",
+      "nom": "Audit énergétique réglementaire",
+      "prix": [
+        500,
+        950
+      ],
+      "val": 5,
+      "req": {
+        "$formule": "(c) => c.motif === \"vente\" && c.type !== \"appartement\" && (c.classe === \"FG\" || c.classe === \"E\")"
+      },
+      "quand": "Vente d'une maison ou d'un immeuble en monopropriété classé E, F ou G",
+      "validite": "5 ans",
+      "note": "Obligatoire depuis avril 2023 pour F et G, depuis janvier 2025 pour la classe E."
+    },
+    {
+      "id": "amiante",
+      "nom": "État d'amiante",
+      "prix": [
+        90,
+        160
+      ],
+      "val": 99,
+      "req": {
+        "$formule": "(c) => c.motif === \"vente\" && [\"av1949\", \"1949-1976\", \"1977-1996\"].indexOf(c.periode) > -1"
+      },
+      "quand": "Permis de construire délivré avant le 1er juillet 1997",
+      "validite": "illimitée si le rapport est postérieur à 2013",
+      "note": "Un rapport antérieur à 2013 doit être refait."
+    },
+    {
+      "id": "plomb",
+      "nom": "CREP (risque d'exposition au plomb)",
+      "prix": [
+        110,
+        190
+      ],
+      "val": 1,
+      "req": {
+        "$formule": "(c) => c.periode === \"av1949\" && c.motif !== \"travaux\""
+      },
+      "quand": "Logement construit avant le 1er janvier 1949",
+      "validite": "1 an à la vente si présence de plomb, 6 ans en location",
+      "note": ""
+    },
+    {
+      "id": "termites",
+      "nom": "État relatif à la présence de termites",
+      "prix": [
+        90,
+        150
+      ],
+      "val": 0.5,
+      "req": {
+        "$formule": "(c) => c.motif === \"vente\""
+      },
+      "quand": "Toute vente en Gironde (arrêté préfectoral du 12 février 2001)",
+      "validite": "6 mois",
+      "note": "Tout le département est en zone de surveillance et de lutte."
+    },
+    {
+      "id": "gaz",
+      "nom": "État de l'installation intérieure de gaz",
+      "prix": [
+        95,
+        145
+      ],
+      "val": 3,
+      "req": {
+        "$formule": "(c) => c.motif !== \"travaux\" && c.gaz === \"oui\""
+      },
+      "quand": "Installation de gaz de plus de 15 ans",
+      "validite": "3 ans à la vente, 6 ans en location",
+      "note": ""
+    },
+    {
+      "id": "elec",
+      "nom": "État de l'installation intérieure d'électricité",
+      "prix": [
+        95,
+        155
+      ],
+      "val": 3,
+      "req": {
+        "$formule": "(c) => c.motif !== \"travaux\" && c.elec === \"ancienne\""
+      },
+      "quand": "Installation électrique de plus de 15 ans",
+      "validite": "3 ans à la vente, 6 ans en location",
+      "note": ""
+    },
+    {
+      "id": "erp",
+      "nom": "État des risques et pollutions (ERP)",
+      "prix": [
+        25,
+        55
+      ],
+      "val": 0.5,
+      "req": {
+        "$formule": "(c) => c.motif !== \"travaux\""
+      },
+      "quand": "Vente et location : inondation, argiles, termites, radon",
+      "validite": "6 mois",
+      "note": ""
+    },
+    {
+      "id": "carrez",
+      "nom": "Mesurage loi Carrez",
+      "prix": [
+        70,
+        140
+      ],
+      "val": 99,
+      "req": {
+        "$formule": "(c) => c.motif === \"vente\" && c.type === \"appartement\""
+      },
+      "quand": "Vente d'un lot en copropriété",
+      "validite": "illimitée sauf travaux",
+      "note": ""
+    },
+    {
+      "id": "boutin",
+      "nom": "Mesurage loi Boutin (surface habitable)",
+      "prix": [
+        70,
+        130
+      ],
+      "val": 99,
+      "req": {
+        "$formule": "(c) => c.motif === \"location\""
+      },
+      "quand": "Toute mise en location d'un logement vide",
+      "validite": "illimitée sauf travaux",
+      "note": ""
+    },
+    {
+      "id": "assainissement",
+      "nom": "Contrôle d'assainissement non collectif",
+      "prix": [
+        130,
+        230
+      ],
+      "val": 3,
+      "req": {
+        "$formule": "(c) => c.motif === \"vente\" && c.assainissement === \"individuel\""
+      },
+      "quand": "Vente d'un bien non raccordé au tout-à-l'égout",
+      "validite": "3 ans",
+      "note": ""
+    }
+  ],
+  "conseilles": [
+    {
+      "id": "merule",
+      "nom": "Diagnostic mérule (conseillé)",
+      "prix": [
+        120,
+        220
+      ],
+      "req": {
+        "$formule": "(c) => c.periode === \"av1949\" || c.presquile"
+      },
+      "raison": "Aucun arrêté mérule n'existe en Gironde, mais le bâti ancien humide de la rive droite et de la Presqu'île justifie un contrôle."
+    },
+    {
+      "id": "dtg",
+      "nom": "Diagnostic technique global (conseillé)",
+      "prix": [
+        900,
+        2500
+      ],
+      "req": {
+        "$formule": "(c) => c.type === \"immeuble\""
+      },
+      "raison": "Recommandé avant la vente d'un immeuble entier : il sécurise le prix et anticipe les travaux."
+    }
+  ],
+  "periodes": [
+    {
+      "v": "av1949",
+      "label": "Avant 1949",
+      "desc": "Plomb + amiante"
+    },
+    {
+      "v": "1949-1976",
+      "label": "1949 – 1976",
+      "desc": "Amiante"
+    },
+    {
+      "v": "1977-1996",
+      "label": "1977 – 1996",
+      "desc": "Amiante"
+    },
+    {
+      "v": "1997-2010",
+      "label": "1997 – 2010",
+      "desc": "Ni plomb ni amiante"
+    },
+    {
+      "v": "ap2011",
+      "label": "2011 et après",
+      "desc": "Dossier allégé"
+    }
+  ],
+  "types": [
+    {
+      "v": "appartement",
+      "label": "Appartement",
+      "desc": "Copropriété · loi Carrez",
+      "icone": "M5 21V6.5l7-3.5 7 3.5V21M9 11h2M13 11h2M9 15h2M13 15h2M4 21h16"
+    },
+    {
+      "v": "maison",
+      "label": "Maison",
+      "desc": "Individuelle",
+      "icone": "M4 11 12 4.5 20 11M6.5 12.5V20h11v-7.5M11 20v-4h2v4"
+    },
+    {
+      "v": "immeuble",
+      "label": "Immeuble entier",
+      "desc": "Monopropriété",
+      "icone": "M4 21V4h9v17M13 10h7v11M7 8h3M7 12h3M7 16h3M16 14h1.5M16 18h1.5"
+    }
+  ],
+  "communes": [
+    {
+      "id": "cenon",
+      "nom": "Cenon",
+      "cp": "33150",
+      "presquile": false
+    },
+    {
+      "id": "lormont",
+      "nom": "Lormont",
+      "cp": "33310",
+      "presquile": false
+    },
+    {
+      "id": "floirac",
+      "nom": "Floirac",
+      "cp": "33270",
+      "presquile": false
+    },
+    {
+      "id": "ambares",
+      "nom": "Ambarès-et-Lagrave",
+      "cp": "33440",
+      "presquile": true
+    },
+    {
+      "id": "artigues",
+      "nom": "Artigues-près-Bordeaux",
+      "cp": "33370",
+      "presquile": false
+    },
+    {
+      "id": "bassens",
+      "nom": "Bassens",
+      "cp": "33530",
+      "presquile": true
+    },
+    {
+      "id": "carbon-blanc",
+      "nom": "Carbon-Blanc",
+      "cp": "33560",
+      "presquile": false
+    },
+    {
+      "id": "bouliac",
+      "nom": "Bouliac",
+      "cp": "33270",
+      "presquile": false
+    },
+    {
+      "id": "ambes",
+      "nom": "Ambès",
+      "cp": "33810",
+      "presquile": true
+    },
+    {
+      "id": "saint-louis",
+      "nom": "Saint-Louis-de-Montferrand",
+      "cp": "33440",
+      "presquile": true
+    },
+    {
+      "id": "saint-vincent",
+      "nom": "Saint-Vincent-de-Paul",
+      "cp": "33440",
+      "presquile": true
+    },
+    {
+      "id": "bordeaux",
+      "nom": "Bordeaux (La Bastide)",
+      "cp": "33100",
+      "presquile": false
+    },
+    {
+      "id": "autre",
+      "nom": "Autre commune de Gironde",
+      "cp": "33",
+      "presquile": false
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+{
+  "_source": "designs/Annuaire Artisans.dc.html",
+  "_note": "Seed de démonstration (artisans fictifs) et référentiels de filtres.",
+  "metiers": [
+    "Plomberie",
+    "Électricité",
+    "Peinture",
+    "Carrelage",
+    "Menuiserie",
+    "Chauffage",
+    "Couverture",
+    "Maçonnerie"
+  ],
+  "notes": [
+    {
+      "v": 0,
+      "label": "Toutes"
+    },
+    {
+      "v": 4,
+      "label": "4 et +"
+    },
+    {
+      "v": 4.5,
+      "label": "4,5 et +"
+    },
+    {
+      "v": 4.8,
+      "label": "4,8 et +"
+    }
+  ],
+  "dispos": [
+    {
+      "v": "tous",
+      "label": "Peu importe"
+    },
+    {
+      "v": "semaine",
+      "label": "Cette semaine"
+    },
+    {
+      "v": "quinze",
+      "label": "Sous 15 jours"
+    }
+  ],
+  "budgets": [
+    {
+      "v": "tous",
+      "label": "Tous"
+    },
+    {
+      "v": "petit",
+      "label": "Moins de 5 000 €"
+    },
+    {
+      "v": "moyen",
+      "label": "5 000 – 30 000 €"
+    },
+    {
+      "v": "grand",
+      "label": "Plus de 30 000 €"
+    }
+  ],
+  "artisans": [
+    {
+      "id": "a1",
+      "nom": "Bertrand Rénovation",
+      "metier": "Plomberie",
+      "metiers": [
+        "Plomberie",
+        "Carrelage"
+      ],
+      "ville": "Bordeaux",
+      "km": 4,
+      "note": 4.9,
+      "avis": 37,
+      "premium": true,
+      "argument": "Répond en moyenne en 2 h",
+      "delaiJ": 5,
+      "dispo": "Disponible sous 5 jours",
+      "anciennete": "12 ans d'activité",
+      "budget": "3 000 – 25 000 €",
+      "budgetCle": "moyen",
+      "labels": [
+        "decennale",
+        "qualibat",
+        "rapide",
+        "photos"
+      ],
+      "tel": "05 56 XX XX 12",
+      "pitch": "Rénovation complète de salles de bain et douches à l'italienne, clés en main. Une équipe de 4 compagnons, chantiers tenus en 5 à 10 jours.",
+      "tags": [
+        "douche italienne",
+        "salle de bain",
+        "carrelage",
+        "sanitaires"
+      ]
+    },
+    {
+      "id": "a2",
+      "nom": "Atelier Lumière",
+      "metier": "Électricité",
+      "metiers": [
+        "Électricité"
+      ],
+      "ville": "Mérignac",
+      "km": 9,
+      "note": 4.8,
+      "avis": 52,
+      "premium": true,
+      "argument": "Devis détaillé sous 48 h",
+      "delaiJ": 8,
+      "dispo": "Disponible sous 8 jours",
+      "anciennete": "8 ans d'activité",
+      "budget": "400 – 12 000 €",
+      "budgetCle": "petit",
+      "labels": [
+        "decennale",
+        "rge",
+        "devis48",
+        "recommande"
+      ],
+      "tel": "05 56 XX XX 45",
+      "pitch": "Mise aux normes de tableaux, éclairage encastré, bornes de recharge et domotique. Attestation Consuel fournie systématiquement.",
+      "tags": [
+        "tableau électrique",
+        "consuel",
+        "borne de recharge",
+        "domotique"
+      ]
+    },
+    {
+      "id": "a3",
+      "nom": "Toitures Girondines",
+      "metier": "Couverture",
+      "metiers": [
+        "Couverture",
+        "Maçonnerie"
+      ],
+      "ville": "Pessac",
+      "km": 12,
+      "note": 4.7,
+      "avis": 41,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 21,
+      "dispo": "Disponible sous 3 semaines",
+      "anciennete": "15 ans d'activité",
+      "budget": "5 000 – 60 000 €",
+      "budgetCle": "grand",
+      "labels": [
+        "decennale",
+        "qualibat"
+      ],
+      "tel": "05 56 XX XX 77",
+      "pitch": "Réfection de toitures en tuiles et ardoises, zinguerie et traitement de charpente sur toute la Gironde.",
+      "tags": [
+        "toiture",
+        "zinguerie",
+        "charpente",
+        "démoussage"
+      ]
+    },
+    {
+      "id": "a4",
+      "nom": "Peintures Delmas",
+      "metier": "Peinture",
+      "metiers": [
+        "Peinture"
+      ],
+      "ville": "Cenon",
+      "km": 3,
+      "note": 4.6,
+      "avis": 28,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 4,
+      "dispo": "Disponible cette semaine",
+      "anciennete": "6 ans d'activité",
+      "budget": "800 – 9 000 €",
+      "budgetCle": "petit",
+      "labels": [
+        "decennale",
+        "local"
+      ],
+      "tel": "05 56 XX XX 31",
+      "pitch": "Peinture intérieure et décoration, enduits de rattrapage et pose de papier peint. Interventions rapides sur la rive droite.",
+      "tags": [
+        "peinture",
+        "enduit",
+        "papier peint",
+        "plafond"
+      ]
+    },
+    {
+      "id": "a5",
+      "nom": "Carrelage Aquitaine",
+      "metier": "Carrelage",
+      "metiers": [
+        "Carrelage"
+      ],
+      "ville": "Lormont",
+      "km": 5,
+      "note": 4.5,
+      "avis": 34,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 10,
+      "dispo": "Disponible sous 10 jours",
+      "anciennete": "9 ans d'activité",
+      "budget": "1 500 – 18 000 €",
+      "budgetCle": "moyen",
+      "labels": [
+        "decennale",
+        "photos"
+      ],
+      "tel": "05 56 XX XX 58",
+      "pitch": "Pose de grands formats, mosaïque et plancher chauffant. Étanchéité de pièces humides selon la norme.",
+      "tags": [
+        "carrelage",
+        "grand format",
+        "plancher chauffant",
+        "faïence"
+      ]
+    },
+    {
+      "id": "a6",
+      "nom": "Menuiserie Latour",
+      "metier": "Menuiserie",
+      "metiers": [
+        "Menuiserie"
+      ],
+      "ville": "Floirac",
+      "km": 6,
+      "note": 4.9,
+      "avis": 19,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 14,
+      "dispo": "Disponible sous 2 semaines",
+      "anciennete": "22 ans d'activité",
+      "budget": "1 200 – 30 000 €",
+      "budgetCle": "moyen",
+      "labels": [
+        "decennale",
+        "rge",
+        "local"
+      ],
+      "tel": "05 56 XX XX 04",
+      "pitch": "Fenêtres bois et aluminium sur mesure, portes d'entrée, volets roulants et escaliers d'intérieur.",
+      "tags": [
+        "fenêtre",
+        "menuiserie",
+        "volets",
+        "porte d'entrée"
+      ]
+    },
+    {
+      "id": "a7",
+      "nom": "Confort Thermique 33",
+      "metier": "Chauffage",
+      "metiers": [
+        "Chauffage",
+        "Plomberie"
+      ],
+      "ville": "Bègles",
+      "km": 8,
+      "note": 4.7,
+      "avis": 46,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 7,
+      "dispo": "Disponible sous 7 jours",
+      "anciennete": "11 ans d'activité",
+      "budget": "2 500 – 22 000 €",
+      "budgetCle": "moyen",
+      "labels": [
+        "decennale",
+        "rge",
+        "recommande"
+      ],
+      "tel": "05 56 XX XX 66",
+      "pitch": "Pompes à chaleur, chaudières à condensation et plancher chauffant. Accompagnement complet sur les aides MaPrimeRénov'.",
+      "tags": [
+        "pompe à chaleur",
+        "chaudière",
+        "chauffage",
+        "MaPrimeRénov"
+      ]
+    },
+    {
+      "id": "a8",
+      "nom": "Bâti Pierre & Chaux",
+      "metier": "Maçonnerie",
+      "metiers": [
+        "Maçonnerie"
+      ],
+      "ville": "Bouliac",
+      "km": 11,
+      "note": 4.4,
+      "avis": 23,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 28,
+      "dispo": "Disponible sous 1 mois",
+      "anciennete": "18 ans d'activité",
+      "budget": "4 000 – 80 000 €",
+      "budgetCle": "grand",
+      "labels": [
+        "decennale",
+        "qualibat"
+      ],
+      "tel": "05 56 XX XX 89",
+      "pitch": "Maçonnerie traditionnelle, reprise de pierre, ouverture de murs porteurs et extensions.",
+      "tags": [
+        "maçonnerie",
+        "pierre",
+        "mur porteur",
+        "extension"
+      ]
+    },
+    {
+      "id": "a9",
+      "nom": "Elec Habitat Rive Droite",
+      "metier": "Électricité",
+      "metiers": [
+        "Électricité"
+      ],
+      "ville": "Bassens",
+      "km": 7,
+      "note": 4.3,
+      "avis": 15,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 3,
+      "dispo": "Disponible cette semaine",
+      "anciennete": "4 ans d'activité",
+      "budget": "300 – 8 000 €",
+      "budgetCle": "petit",
+      "labels": [
+        "decennale",
+        "local"
+      ],
+      "tel": "05 56 XX XX 23",
+      "pitch": "Dépannage, remplacement de tableau et création de prises. Intervention rapide sur la rive droite.",
+      "tags": [
+        "dépannage",
+        "prises",
+        "tableau",
+        "électricité"
+      ]
+    },
+    {
+      "id": "a10",
+      "nom": "Aqua Services Gironde",
+      "metier": "Plomberie",
+      "metiers": [
+        "Plomberie"
+      ],
+      "ville": "Ambarès-et-Lagrave",
+      "km": 14,
+      "note": 4.2,
+      "avis": 31,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 2,
+      "dispo": "Disponible sous 48 h",
+      "anciennete": "7 ans d'activité",
+      "budget": "150 – 6 000 €",
+      "budgetCle": "petit",
+      "labels": [
+        "decennale"
+      ],
+      "tel": "05 56 XX XX 90",
+      "pitch": "Dépannage de fuites, remplacement de chauffe-eau et création de réseaux. Urgences traitées sous 24 h.",
+      "tags": [
+        "fuite",
+        "chauffe-eau",
+        "dépannage",
+        "plomberie"
+      ]
+    }
+  ]
+}

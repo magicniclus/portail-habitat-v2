@@ -1,0 +1,1085 @@
+{
+  "_source": "designs/Simulateur de Devis.dc.html (constante PRESTATIONS)",
+  "_note": "Seed de referentiel/prestations/items. Les '$formule' sont la référence de la logique à porter dans packages/core/simulateur ; les nombres vont dans 'parametres'.",
+  "prestations": [
+    {
+      "id": "peinture",
+      "nom": "Peinture",
+      "pitch": "Murs, plafonds, boiseries",
+      "repere": "dès 25 €/m²",
+      "icone": "M4 4h11v5H4zM9.5 9v3.5h5a2 2 0 0 1 2 2v.5M15 15h3v6h-3z",
+      "champs": [
+        {
+          "id": "surface",
+          "kind": "slider",
+          "label": "Surface à peindre",
+          "aide": "Additionnez les murs concernés, sans les ouvertures.",
+          "min": 10,
+          "max": 250,
+          "pas": 5,
+          "def": 45,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "pieces",
+          "kind": "stepper",
+          "label": "Nombre de pièces",
+          "aide": "Chaque pièce ajoute de la préparation et des découpes.",
+          "min": 1,
+          "max": 12,
+          "def": 2,
+          "unite": "pièce(s)",
+          "e": 2
+        },
+        {
+          "id": "hauteur",
+          "kind": "options",
+          "label": "Hauteur sous plafond",
+          "aide": "Au-delà de 2,60 m il faut un échafaudage roulant.",
+          "options": [
+            {
+              "v": "std",
+              "label": "Jusqu'à 2,60 m",
+              "desc": "Standard"
+            },
+            {
+              "v": "haut",
+              "label": "2,60 à 3 m",
+              "desc": "+8 %"
+            },
+            {
+              "v": "tres",
+              "label": "Plus de 3 m",
+              "desc": "+18 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "etat",
+          "kind": "options",
+          "label": "État des murs",
+          "aide": "La préparation représente souvent un tiers du chantier.",
+          "options": [
+            {
+              "v": "bon",
+              "label": "Bon état",
+              "desc": "Un simple lessivage"
+            },
+            {
+              "v": "moyen",
+              "label": "À préparer",
+              "desc": "Rebouchage léger · +15 %"
+            },
+            {
+              "v": "abime",
+              "label": "Abîmé",
+              "desc": "Enduit complet · +35 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "extras",
+          "kind": "chips",
+          "label": "À peindre aussi",
+          "aide": "Sélectionnez tout ce qui est concerné.",
+          "options": [
+            {
+              "v": "plafonds",
+              "label": "Plafonds"
+            },
+            {
+              "v": "boiseries",
+              "label": "Portes et boiseries"
+            },
+            {
+              "v": "fissures",
+              "label": "Reprise de fissures"
+            },
+            {
+              "v": "radiateurs",
+              "label": "Dépose des radiateurs"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "gamme",
+          "kind": "options",
+          "label": "Qualité de peinture",
+          "aide": "Rendu, lessivabilité et nombre de couches.",
+          "options": [
+            {
+              "v": "eco",
+              "label": "Économique",
+              "desc": "Mate, 2 couches"
+            },
+            {
+              "v": "std",
+              "label": "Standard",
+              "desc": "Satinée lessivable"
+            },
+            {
+              "v": "premium",
+              "label": "Haut de gamme",
+              "desc": "Écolabel, velours"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "sdb",
+      "nom": "Salle de bain",
+      "pitch": "Rénovation complète ou partielle",
+      "repere": "dès 4 500 €",
+      "icone": "M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 12V5.5a2 2 0 0 1 4 0",
+      "champs": [
+        {
+          "id": "surface",
+          "kind": "slider",
+          "label": "Surface de la pièce",
+          "aide": "Sol au sol, murs compris dans le calcul.",
+          "min": 2,
+          "max": 20,
+          "pas": 1,
+          "def": 6,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "ampleur",
+          "kind": "options",
+          "label": "Ampleur des travaux",
+          "aide": "Du simple rafraîchissement à la création de pièce.",
+          "options": [
+            {
+              "v": "raf",
+              "label": "Rafraîchissement",
+              "desc": "On garde l'implantation"
+            },
+            {
+              "v": "reno",
+              "label": "Rénovation complète",
+              "desc": "Dépose totale"
+            },
+            {
+              "v": "crea",
+              "label": "Création",
+              "desc": "Nouvelle pièce d'eau"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "reseaux",
+          "kind": "options",
+          "label": "Déplacement des arrivées d'eau",
+          "aide": "Bouger douche ou WC implique de reprendre les réseaux.",
+          "options": [
+            {
+              "v": "non",
+              "label": "Non, on garde",
+              "desc": "Économie notable"
+            },
+            {
+              "v": "partiel",
+              "label": "Un élément",
+              "desc": "+ 600 à 1 100 €"
+            },
+            {
+              "v": "total",
+              "label": "Nouvelle implantation",
+              "desc": "+ 1 400 à 2 400 €"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "equipements",
+          "kind": "chips",
+          "label": "Équipements souhaités",
+          "aide": "Chaque élément est chiffré fourniture et pose.",
+          "options": [
+            {
+              "v": "italienne",
+              "label": "Douche à l'italienne"
+            },
+            {
+              "v": "baignoire",
+              "label": "Baignoire"
+            },
+            {
+              "v": "doubleVasque",
+              "label": "Double vasque"
+            },
+            {
+              "v": "wc",
+              "label": "WC suspendu"
+            },
+            {
+              "v": "seche",
+              "label": "Sèche-serviettes"
+            },
+            {
+              "v": "meuble",
+              "label": "Meuble et miroir"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "gamme",
+          "kind": "options",
+          "label": "Gamme d'équipement",
+          "aide": "Robinetterie, faïence et sanitaires.",
+          "options": [
+            {
+              "v": "eco",
+              "label": "Essentiel",
+              "desc": "Grandes surfaces"
+            },
+            {
+              "v": "std",
+              "label": "Standard",
+              "desc": "Marques courantes"
+            },
+            {
+              "v": "premium",
+              "label": "Premium",
+              "desc": "Sur mesure, grès cérame"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "pmr",
+          "kind": "chips",
+          "label": "Contraintes particulières",
+          "aide": "",
+          "options": [
+            {
+              "v": "pmr",
+              "label": "Accessibilité PMR"
+            },
+            {
+              "v": "vmc",
+              "label": "VMC à remplacer"
+            },
+            {
+              "v": "fenetre",
+              "label": "Fenêtre à changer"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "cuisine",
+      "nom": "Cuisine",
+      "pitch": "Meubles, plan de travail, réseaux",
+      "repere": "dès 6 000 €",
+      "icone": "M5 3h14v18H5zM5 10h14M8.5 6v1M8.5 14v3",
+      "champs": [
+        {
+          "id": "lineaire",
+          "kind": "slider",
+          "label": "Linéaire de meubles",
+          "aide": "Longueur totale de meubles bas.",
+          "min": 1.5,
+          "max": 10,
+          "pas": 0.5,
+          "def": 4,
+          "unite": "mètres",
+          "e": 2
+        },
+        {
+          "id": "forme",
+          "kind": "options",
+          "label": "Implantation",
+          "aide": "La forme change la découpe et la pose.",
+          "options": [
+            {
+              "v": "lin",
+              "label": "Linéaire",
+              "desc": "Un seul mur"
+            },
+            {
+              "v": "l",
+              "label": "En L",
+              "desc": "+10 %"
+            },
+            {
+              "v": "u",
+              "label": "En U",
+              "desc": "+18 %"
+            },
+            {
+              "v": "ilot",
+              "label": "Avec îlot",
+              "desc": "+25 % et réseaux"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "reseaux",
+          "kind": "options",
+          "label": "Plomberie et électricité",
+          "aide": "Déplacer l'évier ou les prises est le poste caché.",
+          "options": [
+            {
+              "v": "existant",
+              "label": "On garde tout",
+              "desc": "Aucune reprise"
+            },
+            {
+              "v": "ajust",
+              "label": "Ajustements",
+              "desc": "Quelques prises"
+            },
+            {
+              "v": "refonte",
+              "label": "Refonte complète",
+              "desc": "Nouvelle implantation"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "elements",
+          "kind": "chips",
+          "label": "À inclure dans le devis",
+          "aide": "",
+          "options": [
+            {
+              "v": "plan",
+              "label": "Plan de travail"
+            },
+            {
+              "v": "credence",
+              "label": "Crédence"
+            },
+            {
+              "v": "electro",
+              "label": "Électroménager"
+            },
+            {
+              "v": "eclairage",
+              "label": "Éclairage intégré"
+            },
+            {
+              "v": "sol",
+              "label": "Sol à refaire"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "gamme",
+          "kind": "options",
+          "label": "Gamme des meubles",
+          "aide": "",
+          "options": [
+            {
+              "v": "eco",
+              "label": "Kit à monter",
+              "desc": "Mélaminé"
+            },
+            {
+              "v": "std",
+              "label": "Standard",
+              "desc": "Façades stratifiées"
+            },
+            {
+              "v": "premium",
+              "label": "Sur mesure",
+              "desc": "Menuisier, quartz"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "elec",
+      "nom": "Électricité",
+      "pitch": "Tableau, prises, mise aux normes",
+      "repere": "dès 400 €",
+      "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+      "champs": [
+        {
+          "id": "surface",
+          "kind": "slider",
+          "label": "Surface du logement",
+          "aide": "Sert à estimer le passage des gaines.",
+          "min": 15,
+          "max": 250,
+          "pas": 5,
+          "def": 70,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "prises",
+          "kind": "stepper",
+          "label": "Prises à poser ou déplacer",
+          "aide": "Compter aussi les prises de la cuisine.",
+          "min": 0,
+          "max": 80,
+          "def": 12,
+          "unite": "prise(s)",
+          "e": 2
+        },
+        {
+          "id": "interrupteurs",
+          "kind": "stepper",
+          "label": "Points d'éclairage et interrupteurs",
+          "aide": "",
+          "min": 0,
+          "max": 50,
+          "def": 8,
+          "unite": "point(s)",
+          "e": 2
+        },
+        {
+          "id": "tableau",
+          "kind": "options",
+          "label": "Tableau électrique",
+          "aide": "Poste déterminant pour la conformité NF C 15-100.",
+          "options": [
+            {
+              "v": "garde",
+              "label": "Conservé",
+              "desc": "Déjà aux normes"
+            },
+            {
+              "v": "remplace",
+              "label": "À remplacer",
+              "desc": "900 à 1 500 €"
+            },
+            {
+              "v": "normes",
+              "label": "Mise aux normes complète",
+              "desc": "Avec mise à la terre"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "encastre",
+          "kind": "options",
+          "label": "Type de pose",
+          "aide": "Encastrer implique saignées et rebouchage.",
+          "options": [
+            {
+              "v": "apparent",
+              "label": "Apparent / moulures",
+              "desc": "Le plus rapide"
+            },
+            {
+              "v": "encastre",
+              "label": "Encastré",
+              "desc": "+35 %, murs à reprendre"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "options",
+          "kind": "chips",
+          "label": "Options",
+          "aide": "",
+          "options": [
+            {
+              "v": "rj45",
+              "label": "Réseau RJ45"
+            },
+            {
+              "v": "spots",
+              "label": "Spots encastrés"
+            },
+            {
+              "v": "borne",
+              "label": "Borne de recharge"
+            },
+            {
+              "v": "domotique",
+              "label": "Domotique"
+            },
+            {
+              "v": "consuel",
+              "label": "Attestation Consuel"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "plomberie",
+      "nom": "Plomberie",
+      "pitch": "Réseaux, sanitaires, chauffe-eau",
+      "repere": "dès 350 €",
+      "icone": "M6 20h12M9.5 20v-6.5a3 3 0 0 1 3-3H16M12.5 10.5V6.5M9.5 6.5h6",
+      "champs": [
+        {
+          "id": "points",
+          "kind": "stepper",
+          "label": "Points d'eau concernés",
+          "aide": "Évier, lavabo, douche, WC, machine…",
+          "min": 1,
+          "max": 20,
+          "def": 3,
+          "unite": "point(s)",
+          "e": 2
+        },
+        {
+          "id": "nature",
+          "kind": "options",
+          "label": "Nature de l'intervention",
+          "aide": "",
+          "options": [
+            {
+              "v": "depannage",
+              "label": "Dépannage",
+              "desc": "Fuite, débouchage"
+            },
+            {
+              "v": "remplacement",
+              "label": "Remplacement",
+              "desc": "Sanitaires existants"
+            },
+            {
+              "v": "creation",
+              "label": "Création de réseau",
+              "desc": "Neuf ou extension"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "pose",
+          "kind": "options",
+          "label": "Passage des canalisations",
+          "aide": "",
+          "options": [
+            {
+              "v": "apparent",
+              "label": "Apparent",
+              "desc": "Le plus économique"
+            },
+            {
+              "v": "encastre",
+              "label": "Encastré",
+              "desc": "+35 % (saignées)"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "equipements",
+          "kind": "chips",
+          "label": "Équipements à prévoir",
+          "aide": "",
+          "options": [
+            {
+              "v": "chauffeEau",
+              "label": "Chauffe-eau"
+            },
+            {
+              "v": "adoucisseur",
+              "label": "Adoucisseur"
+            },
+            {
+              "v": "evacuation",
+              "label": "Reprise d'évacuation"
+            },
+            {
+              "v": "colonne",
+              "label": "Colonne de douche"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "urgence",
+          "kind": "options",
+          "label": "Délai",
+          "aide": "Une intervention en urgence est majorée.",
+          "options": [
+            {
+              "v": "planifie",
+              "label": "Planifié",
+              "desc": "Sous quelques semaines"
+            },
+            {
+              "v": "rapide",
+              "label": "Rapide",
+              "desc": "Sous 72 h · +15 %"
+            },
+            {
+              "v": "urgence",
+              "label": "Urgence",
+              "desc": "Sous 24 h · +35 %"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "carrelage",
+      "nom": "Carrelage",
+      "pitch": "Sol et murs, dépose comprise",
+      "repere": "dès 45 €/m²",
+      "icone": "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+      "champs": [
+        {
+          "id": "sol",
+          "kind": "slider",
+          "label": "Surface au sol",
+          "aide": "0 si vous ne faites que les murs.",
+          "min": 0,
+          "max": 150,
+          "pas": 1,
+          "def": 20,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "murs",
+          "kind": "slider",
+          "label": "Surface murale",
+          "aide": "Faïence de cuisine ou de salle de bain.",
+          "min": 0,
+          "max": 80,
+          "pas": 1,
+          "def": 8,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "format",
+          "kind": "options",
+          "label": "Format des carreaux",
+          "aide": "Les grands formats et la mosaïque demandent plus de temps.",
+          "options": [
+            {
+              "v": "std",
+              "label": "Standard",
+              "desc": "30×30 à 60×60"
+            },
+            {
+              "v": "grand",
+              "label": "Grand format",
+              "desc": "+30 %"
+            },
+            {
+              "v": "mosaique",
+              "label": "Mosaïque / chevrons",
+              "desc": "+50 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "preparation",
+          "kind": "chips",
+          "label": "Préparation nécessaire",
+          "aide": "",
+          "options": [
+            {
+              "v": "depose",
+              "label": "Dépose de l'ancien"
+            },
+            {
+              "v": "ragreage",
+              "label": "Ragréage du sol"
+            },
+            {
+              "v": "etancheite",
+              "label": "Étanchéité (pièce humide)"
+            },
+            {
+              "v": "chauffant",
+              "label": "Plancher chauffant"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "gamme",
+          "kind": "options",
+          "label": "Gamme du carreau",
+          "aide": "Fourniture comprise dans l'estimation.",
+          "options": [
+            {
+              "v": "eco",
+              "label": "Entrée de gamme",
+              "desc": "15 à 25 €/m²"
+            },
+            {
+              "v": "std",
+              "label": "Standard",
+              "desc": "30 à 50 €/m²"
+            },
+            {
+              "v": "premium",
+              "label": "Grès cérame haut de gamme",
+              "desc": "60 à 110 €/m²"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "isolation",
+      "nom": "Isolation",
+      "pitch": "Combles, murs, ITE",
+      "repere": "dès 25 €/m²",
+      "icone": "M4 8c4-3 12 3 16 0M4 13c4-3 12 3 16 0M4 18c4-3 12 3 16 0",
+      "champs": [
+        {
+          "id": "surface",
+          "kind": "slider",
+          "label": "Surface à isoler",
+          "aide": "",
+          "min": 10,
+          "max": 400,
+          "pas": 5,
+          "def": 80,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "zone",
+          "kind": "options",
+          "label": "Zone concernée",
+          "aide": "Le coût au m² varie du simple au quintuple.",
+          "options": [
+            {
+              "v": "combles",
+              "label": "Combles perdus",
+              "desc": "Soufflage · 25-45 €/m²"
+            },
+            {
+              "v": "rampants",
+              "label": "Rampants",
+              "desc": "45-75 €/m²"
+            },
+            {
+              "v": "murs",
+              "label": "Murs par l'intérieur",
+              "desc": "50-90 €/m²"
+            },
+            {
+              "v": "ite",
+              "label": "Isolation extérieure",
+              "desc": "120-190 €/m²"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "materiau",
+          "kind": "options",
+          "label": "Matériau",
+          "aide": "",
+          "options": [
+            {
+              "v": "minerale",
+              "label": "Laine minérale",
+              "desc": "Le plus courant"
+            },
+            {
+              "v": "biosource",
+              "label": "Biosourcé",
+              "desc": "Ouate, fibre de bois · +25 %"
+            },
+            {
+              "v": "pu",
+              "label": "Polyuréthane",
+              "desc": "Fin et performant · +35 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "options",
+          "kind": "chips",
+          "label": "À prévoir en plus",
+          "aide": "",
+          "options": [
+            {
+              "v": "depose",
+              "label": "Dépose de l'ancien isolant"
+            },
+            {
+              "v": "parevapeur",
+              "label": "Pare-vapeur"
+            },
+            {
+              "v": "placo",
+              "label": "Doublage placo et finition"
+            },
+            {
+              "v": "echafaudage",
+              "label": "Échafaudage"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "aides",
+          "kind": "options",
+          "label": "Aides financières",
+          "aide": "MaPrimeRénov' et CEE, selon vos revenus.",
+          "options": [
+            {
+              "v": "non",
+              "label": "Ne pas déduire",
+              "desc": "Montant brut"
+            },
+            {
+              "v": "oui",
+              "label": "Estimer mes aides",
+              "desc": "Affiche le reste à charge"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "toiture",
+      "nom": "Toiture",
+      "pitch": "Nettoyage, réfection, zinguerie",
+      "repere": "dès 90 €/m²",
+      "icone": "M3 11 12 4l9 7M6 11v9h12v-9",
+      "champs": [
+        {
+          "id": "surface",
+          "kind": "slider",
+          "label": "Surface de toiture",
+          "aide": "Surface développée, pente comprise.",
+          "min": 20,
+          "max": 400,
+          "pas": 5,
+          "def": 90,
+          "unite": "m²",
+          "e": 2
+        },
+        {
+          "id": "travaux",
+          "kind": "options",
+          "label": "Nature des travaux",
+          "aide": "",
+          "options": [
+            {
+              "v": "nettoyage",
+              "label": "Nettoyage / démoussage",
+              "desc": "15-30 €/m²"
+            },
+            {
+              "v": "partielle",
+              "label": "Réfection partielle",
+              "desc": "70-120 €/m²"
+            },
+            {
+              "v": "complete",
+              "label": "Réfection complète",
+              "desc": "120-220 €/m²"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "materiau",
+          "kind": "options",
+          "label": "Couverture",
+          "aide": "",
+          "options": [
+            {
+              "v": "tuile",
+              "label": "Tuiles",
+              "desc": "Référence"
+            },
+            {
+              "v": "ardoise",
+              "label": "Ardoise",
+              "desc": "+35 %"
+            },
+            {
+              "v": "zinc",
+              "label": "Zinc",
+              "desc": "+50 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "pente",
+          "kind": "options",
+          "label": "Accès et pente",
+          "aide": "",
+          "options": [
+            {
+              "v": "simple",
+              "label": "Toit simple",
+              "desc": "Deux pans"
+            },
+            {
+              "v": "complexe",
+              "label": "Toit complexe",
+              "desc": "Lucarnes, noues · +20 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "options",
+          "kind": "chips",
+          "label": "Travaux associés",
+          "aide": "",
+          "options": [
+            {
+              "v": "zinguerie",
+              "label": "Gouttières et zinguerie"
+            },
+            {
+              "v": "isolation",
+              "label": "Isolation sous toiture"
+            },
+            {
+              "v": "velux",
+              "label": "Fenêtre de toit"
+            },
+            {
+              "v": "charpente",
+              "label": "Traitement de charpente"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    },
+    {
+      "id": "menuiserie",
+      "nom": "Menuiseries",
+      "pitch": "Fenêtres, portes, volets",
+      "repere": "dès 600 €",
+      "icone": "M4 3h16v18H4zM12 3v18M4 12h16",
+      "champs": [
+        {
+          "id": "fenetres",
+          "kind": "stepper",
+          "label": "Nombre de fenêtres",
+          "aide": "Compter les baies comme deux fenêtres.",
+          "min": 0,
+          "max": 30,
+          "def": 4,
+          "unite": "fenêtre(s)",
+          "e": 2
+        },
+        {
+          "id": "materiau",
+          "kind": "options",
+          "label": "Matériau",
+          "aide": "",
+          "options": [
+            {
+              "v": "pvc",
+              "label": "PVC",
+              "desc": "Le plus économique"
+            },
+            {
+              "v": "alu",
+              "label": "Aluminium",
+              "desc": "+35 %"
+            },
+            {
+              "v": "bois",
+              "label": "Bois",
+              "desc": "+50 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "vitrage",
+          "kind": "options",
+          "label": "Vitrage",
+          "aide": "",
+          "options": [
+            {
+              "v": "double",
+              "label": "Double vitrage",
+              "desc": "Standard"
+            },
+            {
+              "v": "doubleRenf",
+              "label": "Double renforcé",
+              "desc": "Phonique · +12 %"
+            },
+            {
+              "v": "triple",
+              "label": "Triple vitrage",
+              "desc": "+25 %"
+            }
+          ],
+          "e": 2
+        },
+        {
+          "id": "depose",
+          "kind": "options",
+          "label": "Pose",
+          "aide": "",
+          "options": [
+            {
+              "v": "renovation",
+              "label": "Pose en rénovation",
+              "desc": "On garde le dormant"
+            },
+            {
+              "v": "depose",
+              "label": "Dépose totale",
+              "desc": "+30 %, finitions comprises"
+            }
+          ],
+          "e": 3
+        },
+        {
+          "id": "options",
+          "kind": "chips",
+          "label": "À ajouter",
+          "aide": "",
+          "options": [
+            {
+              "v": "volets",
+              "label": "Volets roulants"
+            },
+            {
+              "v": "porte",
+              "label": "Porte d'entrée"
+            },
+            {
+              "v": "baie",
+              "label": "Baie coulissante"
+            },
+            {
+              "v": "moustiquaire",
+              "label": "Moustiquaires"
+            }
+          ],
+          "e": 3
+        }
+      ]
+    }
+  ]
+}

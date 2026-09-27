@@ -1,0 +1,8740 @@
+{
+ "_source": "prestations-catalogue.js",
+ "_note": "Catalogue déclaratif : 103 prestations estimables en ligne + 9 prestations détaillées (prestations.json). Seed referentiel/prestations/items (champs, libellés) et referentiel/prestations/prix (unitaire, base, k, extras : serveur uniquement). Calcul générique : quantité × unitaire × produit des coefficients k + base + extras (× quantité si 5e valeur définie) + évacuation.",
+ "familles": [
+  {
+   "id": "sdb-cuisine",
+   "nom": "Salle de bain et cuisine"
+  },
+  {
+   "id": "deco",
+   "nom": "Peinture et décoration"
+  },
+  {
+   "id": "sols",
+   "nom": "Sols"
+  },
+  {
+   "id": "interieur",
+   "nom": "Aménagement intérieur"
+  },
+  {
+   "id": "gros-oeuvre",
+   "nom": "Gros œuvre et extension"
+  },
+  {
+   "id": "plomberie",
+   "nom": "Plomberie et eau"
+  },
+  {
+   "id": "chauffage",
+   "nom": "Chauffage et climatisation"
+  },
+  {
+   "id": "electricite",
+   "nom": "Électricité et énergie"
+  },
+  {
+   "id": "isolation",
+   "nom": "Isolation et rénovation énergétique"
+  },
+  {
+   "id": "menuiseries",
+   "nom": "Menuiseries et fermetures"
+  },
+  {
+   "id": "toiture",
+   "nom": "Toiture et façade"
+  },
+  {
+   "id": "exterieur",
+   "nom": "Extérieur et jardin"
+  },
+  {
+   "id": "securite",
+   "nom": "Sécurité et accessibilité"
+  },
+  {
+   "id": "traitements",
+   "nom": "Diagnostics et traitements"
+  },
+  {
+   "id": "depannage",
+   "nom": "Dépannage et petits travaux"
+  }
+ ],
+ "familleDesPrestationsDetaillees": {
+  "peinture": "deco",
+  "sdb": "sdb-cuisine",
+  "cuisine": "sdb-cuisine",
+  "elec": "electricite",
+  "plomberie": "plomberie",
+  "carrelage": "sols",
+  "isolation": "isolation",
+  "toiture": "toiture",
+  "menuiserie": "menuiseries"
+ },
+ "prestations": [
+  {
+   "id": "sdb-douche",
+   "nom": "Douche à l'italienne",
+   "famille": "sdb-cuisine",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Remplacement de baignoire, receveur extra-plat",
+   "repere": "dès 3 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de douches",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "douche(s)"
+    },
+    "unitaire": [
+     2200,
+     3800
+    ],
+    "lib": "Douche complète (dépose, receveur, paroi, faïence)",
+    "base": [
+     350,
+     700
+    ],
+    "choix": [
+     [
+      "type",
+      "Type de sol",
+      "",
+      [
+       [
+        "receveur",
+        "Receveur extra-plat",
+        "Le plus courant",
+        1
+       ],
+       [
+        "carrele",
+        "Carrelée au sol",
+        "Siphon de sol, +25 %",
+        1.25
+       ],
+       [
+        "pmr",
+        "Accès PMR",
+        "Barres, siège, +15 %",
+        1.15
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "baignoire",
+      "Dépose de baignoire",
+      250,
+      550
+     ],
+     [
+      "paroi",
+      "Paroi sur mesure",
+      400,
+      1100
+     ],
+     [
+      "colonne",
+      "Colonne thermostatique",
+      250,
+      700
+     ],
+     [
+      "niche",
+      "Niche murale",
+      180,
+      400
+     ]
+    ],
+    "evac": [
+     150,
+     350
+    ]
+   }
+  },
+  {
+   "id": "wc",
+   "nom": "WC et toilettes",
+   "famille": "sdb-cuisine",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "WC suspendu, sanibroyeur, lave-mains",
+   "repere": "dès 450 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de WC",
+     "aide": "",
+     "min": 1,
+     "max": 4,
+     "pas": 1,
+     "def": 1,
+     "unite": "WC"
+    },
+    "unitaire": [
+     380,
+     780
+    ],
+    "lib": "Fourniture et pose des WC",
+    "base": [
+     120,
+     250
+    ],
+    "choix": [
+     [
+      "type",
+      "Type de WC",
+      "",
+      [
+       [
+        "poser",
+        "À poser",
+        "",
+        0.85
+       ],
+       [
+        "suspendu",
+        "Suspendu (bâti-support)",
+        "+45 %",
+        1.45
+       ],
+       [
+        "broyeur",
+        "Sanibroyeur",
+        "",
+        1.1
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "lavemains",
+      "Lave-mains",
+      250,
+      600
+     ],
+     [
+      "deplacement",
+      "Déplacement des évacuations",
+      350,
+      900
+     ],
+     [
+      "coffrage",
+      "Coffrage et faïence",
+      300,
+      800
+     ]
+    ],
+    "evac": [
+     60,
+     150
+    ]
+   }
+  },
+  {
+   "id": "sdb-pmr",
+   "nom": "Adaptation PMR de salle de bain",
+   "famille": "sdb-cuisine",
+   "icone": "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z",
+   "pitch": "Seniors, mobilité réduite, MaPrimeAdapt'",
+   "repere": "dès 2 800 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de la pièce",
+     "aide": "",
+     "min": 3,
+     "max": 15,
+     "pas": 1,
+     "def": 5,
+     "unite": "m²"
+    },
+    "unitaire": [
+     520,
+     900
+    ],
+    "lib": "Adaptation (douche de plain-pied, sol antidérapant)",
+    "base": [
+     900,
+     1800
+    ],
+    "choix": [
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "barres",
+      "Barres d'appui",
+      150,
+      400
+     ],
+     [
+      "siege",
+      "Siège de douche",
+      150,
+      450
+     ],
+     [
+      "porte",
+      "Élargissement de porte",
+      600,
+      1400
+     ],
+     [
+      "wcreh",
+      "WC rehaussé",
+      350,
+      800
+     ]
+    ],
+    "evac": [
+     200,
+     450
+    ]
+   }
+  },
+  {
+   "id": "cuisine-pose",
+   "nom": "Pose de cuisine en kit",
+   "famille": "sdb-cuisine",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Montage des meubles achetés en magasin",
+   "repere": "dès 900 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de cuisine",
+     "aide": "",
+     "min": 2,
+     "max": 12,
+     "pas": 0.5,
+     "def": 4,
+     "unite": "ml"
+    },
+    "unitaire": [
+     260,
+     480
+    ],
+    "lib": "Montage et pose des meubles",
+    "base": [
+     200,
+     450
+    ],
+    "choix": [
+     [
+      "forme",
+      "Configuration",
+      "",
+      [
+       [
+        "droite",
+        "Droite",
+        "",
+        1
+       ],
+       [
+        "l",
+        "En L",
+        "+10 %",
+        1.1
+       ],
+       [
+        "u",
+        "En U ou avec îlot",
+        "+25 %",
+        1.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "plan",
+      "Découpe du plan de travail",
+      150,
+      400
+     ],
+     [
+      "electro",
+      "Branchement électroménager",
+      150,
+      400
+     ],
+     [
+      "plomb",
+      "Raccordement évier",
+      150,
+      350
+     ],
+     [
+      "credence",
+      "Pose de crédence",
+      200,
+      600
+     ]
+    ],
+    "evac": [
+     90,
+     200
+    ]
+   }
+  },
+  {
+   "id": "cuisine-plan",
+   "nom": "Plan de travail et crédence",
+   "famille": "sdb-cuisine",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Stratifié, bois, quartz, céramique",
+   "repere": "dès 600 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de plan",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 0.5,
+     "def": 3,
+     "unite": "ml"
+    },
+    "unitaire": [
+     180,
+     420
+    ],
+    "lib": "Fourniture et pose du plan",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "strat",
+        "Stratifié",
+        "",
+        0.6
+       ],
+       [
+        "bois",
+        "Bois massif",
+        "",
+        1
+       ],
+       [
+        "quartz",
+        "Quartz",
+        "+60 %",
+        1.6
+       ],
+       [
+        "ceramique",
+        "Céramique / Dekton",
+        "+100 %",
+        2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "credence",
+      "Crédence assortie",
+      250,
+      800
+     ],
+     [
+      "evier",
+      "Découpe évier sous-plan",
+      150,
+      350
+     ],
+     [
+      "plaque",
+      "Découpe plaque affleurante",
+      150,
+      350
+     ]
+    ],
+    "evac": [
+     60,
+     150
+    ]
+   }
+  },
+  {
+   "id": "cuisine-relooking",
+   "nom": "Relooking de cuisine",
+   "famille": "sdb-cuisine",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Façades, peinture, poignées, crédence",
+   "repere": "dès 1 200 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de cuisine",
+     "aide": "",
+     "min": 2,
+     "max": 12,
+     "pas": 0.5,
+     "def": 4,
+     "unite": "ml"
+    },
+    "unitaire": [
+     220,
+     520
+    ],
+    "lib": "Façades ou peinture des meubles",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "methode",
+      "Méthode",
+      "",
+      [
+       [
+        "peinture",
+        "Peinture des façades",
+        "",
+        0.7
+       ],
+       [
+        "adhesif",
+        "Covering adhésif",
+        "",
+        0.6
+       ],
+       [
+        "facades",
+        "Nouvelles façades",
+        "",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "poignees",
+      "Nouvelles poignées",
+      100,
+      350
+     ],
+     [
+      "credence",
+      "Crédence",
+      250,
+      800
+     ],
+     [
+      "eclairage",
+      "Éclairage LED sous meubles",
+      150,
+      450
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "papier-peint",
+   "nom": "Papier peint et revêtements muraux",
+   "famille": "deco",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Papier peint, intissé, toile de verre, panoramique",
+   "repere": "dès 18 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface murale",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 30,
+     "unite": "m²"
+    },
+    "unitaire": [
+     18,
+     38
+    ],
+    "lib": "Pose du revêtement",
+    "base": [
+     120,
+     250
+    ],
+    "choix": [
+     [
+      "type",
+      "Revêtement",
+      "",
+      [
+       [
+        "intisse",
+        "Intissé",
+        "",
+        1
+       ],
+       [
+        "toile",
+        "Toile de verre + peinture",
+        "",
+        1.25
+       ],
+       [
+        "panoramique",
+        "Panoramique / raccords",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "depose",
+      "Décollage de l'ancien",
+      6,
+      12,
+      true
+     ],
+     [
+      "fourniture",
+      "Fourniture du papier",
+      8,
+      30,
+      true
+     ]
+    ],
+    "evac": [
+     60,
+     150
+    ]
+   }
+  },
+  {
+   "id": "enduit-deco",
+   "nom": "Enduits décoratifs et béton ciré mural",
+   "famille": "deco",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Tadelakt, chaux, stuc, béton ciré",
+   "repere": "dès 55 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 2,
+     "max": 100,
+     "pas": 1,
+     "def": 12,
+     "unite": "m²"
+    },
+    "unitaire": [
+     55,
+     120
+    ],
+    "lib": "Application de l'enduit",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Finition",
+      "",
+      [
+       [
+        "chaux",
+        "Chaux",
+        "",
+        0.9
+       ],
+       [
+        "beton",
+        "Béton ciré",
+        "",
+        1
+       ],
+       [
+        "tadelakt",
+        "Tadelakt",
+        "+40 %",
+        1.4
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "protection",
+      "Vernis de protection",
+      8,
+      18,
+      true
+     ]
+    ],
+    "evac": [
+     50,
+     120
+    ]
+   }
+  },
+  {
+   "id": "peinture-ext",
+   "nom": "Peinture extérieure et volets",
+   "famille": "deco",
+   "icone": "M4 4h16v16H4zM12 4v16M4 12h16",
+   "pitch": "Volets, portail, boiseries, dessous de toit",
+   "repere": "dès 60 € le volet",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'éléments (volets, portes…)",
+     "aide": "",
+     "min": 1,
+     "max": 40,
+     "pas": 1,
+     "def": 8,
+     "unite": "élément(s)"
+    },
+    "unitaire": [
+     60,
+     140
+    ],
+    "lib": "Préparation et peinture",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "support",
+      "Support",
+      "",
+      [
+       [
+        "bois",
+        "Bois",
+        "",
+        1
+       ],
+       [
+        "metal",
+        "Métal / fer forgé",
+        "+20 %",
+        1.2
+       ],
+       [
+        "pvc",
+        "PVC",
+        "",
+        0.85
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "sousface",
+      "Dessous de toit (par ml)",
+      25,
+      45,
+      false
+     ],
+     [
+      "portail",
+      "Portail",
+      250,
+      600
+     ],
+     [
+      "nacelle",
+      "Nacelle ou échafaudage",
+      300,
+      900
+     ]
+    ],
+    "evac": [
+     50,
+     120
+    ]
+   }
+  },
+  {
+   "id": "parquet",
+   "nom": "Pose de parquet",
+   "famille": "sols",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Flottant, contrecollé, massif, point de Hongrie",
+   "repere": "dès 25 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 30,
+     "unite": "m²"
+    },
+    "unitaire": [
+     25,
+     55
+    ],
+    "lib": "Pose",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Type de parquet",
+      "",
+      [
+       [
+        "flottant",
+        "Flottant",
+        "",
+        0.8
+       ],
+       [
+        "colle",
+        "Contrecollé collé",
+        "",
+        1
+       ],
+       [
+        "massif",
+        "Massif cloué",
+        "+30 %",
+        1.3
+       ],
+       [
+        "hongrie",
+        "Point de Hongrie / chevron",
+        "+70 %",
+        1.7
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "fourniture",
+      "Fourniture du parquet",
+      25,
+      90,
+      true
+     ],
+     [
+      "depose",
+      "Dépose de l'ancien sol",
+      8,
+      18,
+      true
+     ],
+     [
+      "ragreage",
+      "Ragréage",
+      15,
+      30,
+      true
+     ],
+     [
+      "plinthes",
+      "Plinthes",
+      6,
+      14,
+      true
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "parquet-renov",
+   "nom": "Ponçage et vitrification de parquet",
+   "famille": "sols",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Ponçage, vitrification, huile",
+   "repere": "dès 22 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 30,
+     "unite": "m²"
+    },
+    "unitaire": [
+     22,
+     40
+    ],
+    "lib": "Ponçage et finition",
+    "base": [
+     120,
+     250
+    ],
+    "choix": [
+     [
+      "finition",
+      "Finition",
+      "",
+      [
+       [
+        "vitrif",
+        "Vitrification",
+        "",
+        1
+       ],
+       [
+        "huile",
+        "Huile",
+        "",
+        1.05
+       ],
+       [
+        "teinte",
+        "Teinte + vitrification",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "lames",
+      "Remplacement de lames",
+      150,
+      450
+     ],
+     [
+      "escalier",
+      "Escalier (par marche)",
+      35,
+      70,
+      false
+     ]
+    ],
+    "evac": [
+     50,
+     120
+    ]
+   }
+  },
+  {
+   "id": "sol-souple",
+   "nom": "Sol stratifié, vinyle ou moquette",
+   "famille": "sols",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Stratifié, LVT, lino, moquette",
+   "repere": "dès 15 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 30,
+     "unite": "m²"
+    },
+    "unitaire": [
+     15,
+     32
+    ],
+    "lib": "Pose",
+    "base": [
+     100,
+     220
+    ],
+    "choix": [
+     [
+      "type",
+      "Revêtement",
+      "",
+      [
+       [
+        "strat",
+        "Stratifié",
+        "",
+        1
+       ],
+       [
+        "lvt",
+        "Vinyle LVT clipsable",
+        "",
+        1.1
+       ],
+       [
+        "lvtcolle",
+        "Vinyle collé",
+        "",
+        1.2
+       ],
+       [
+        "moquette",
+        "Moquette",
+        "",
+        0.9
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "fourniture",
+      "Fourniture du revêtement",
+      12,
+      45,
+      true
+     ],
+     [
+      "depose",
+      "Dépose de l'ancien sol",
+      6,
+      14,
+      true
+     ],
+     [
+      "ragreage",
+      "Ragréage",
+      15,
+      30,
+      true
+     ]
+    ],
+    "evac": [
+     60,
+     150
+    ]
+   }
+  },
+  {
+   "id": "chape",
+   "nom": "Chape et ragréage",
+   "famille": "sols",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Mise à niveau avant revêtement",
+   "repere": "dès 20 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 250,
+     "pas": 5,
+     "def": 40,
+     "unite": "m²"
+    },
+    "unitaire": [
+     20,
+     42
+    ],
+    "lib": "Chape ou ragréage",
+    "base": [
+     200,
+     450
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "ragreage",
+        "Ragréage autolissant",
+        "",
+        0.8
+       ],
+       [
+        "chape",
+        "Chape ciment",
+        "",
+        1
+       ],
+       [
+        "liquide",
+        "Chape liquide anhydrite",
+        "+15 %",
+        1.15
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "isolant",
+      "Isolant sous chape",
+      15,
+      30,
+      true
+     ],
+     [
+      "depose",
+      "Dépose du sol existant",
+      10,
+      22,
+      true
+     ]
+    ],
+    "evac": [
+     100,
+     300
+    ]
+   }
+  },
+  {
+   "id": "beton-cire-sol",
+   "nom": "Béton ciré et résine de sol",
+   "famille": "sols",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Microciment, résine époxy, sol coulé",
+   "repere": "dès 80 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 150,
+     "pas": 5,
+     "def": 25,
+     "unite": "m²"
+    },
+    "unitaire": [
+     80,
+     150
+    ],
+    "lib": "Application",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "beton",
+        "Béton ciré",
+        "",
+        1
+       ],
+       [
+        "micro",
+        "Microciment",
+        "",
+        1.1
+       ],
+       [
+        "epoxy",
+        "Résine époxy",
+        "",
+        0.9
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "ragreage",
+      "Ragréage préalable",
+      15,
+      30,
+      true
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "terrasse",
+   "nom": "Terrasse bois, composite ou dalles",
+   "famille": "exterieur",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Terrasse sur plots, lambourdes, dalles, carrelage",
+   "repere": "dès 90 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 150,
+     "pas": 5,
+     "def": 25,
+     "unite": "m²"
+    },
+    "unitaire": [
+     90,
+     160
+    ],
+    "lib": "Terrasse posée",
+    "base": [
+     300,
+     700
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "pin",
+        "Pin traité",
+        "",
+        0.8
+       ],
+       [
+        "composite",
+        "Composite",
+        "",
+        1.1
+       ],
+       [
+        "exotique",
+        "Bois exotique",
+        "+35 %",
+        1.35
+       ],
+       [
+        "dalles",
+        "Dalles / carrelage",
+        "",
+        1
+       ]
+      ]
+     ],
+     [
+      "support",
+      "Support",
+      "",
+      [
+       [
+        "plots",
+        "Sur plots",
+        "",
+        1
+       ],
+       [
+        "dalle",
+        "Dalle béton à créer",
+        "+40 %",
+        1.4
+       ],
+       [
+        "suspendue",
+        "Terrasse suspendue",
+        "+80 %",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "gardecorps",
+      "Garde-corps",
+      180,
+      350,
+      false
+     ],
+     [
+      "eclairage",
+      "Spots encastrés",
+      300,
+      900
+     ],
+     [
+      "escalier",
+      "Marches",
+      400,
+      1200
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "cloison",
+   "nom": "Création ou suppression de cloison",
+   "famille": "interieur",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Placo, cloison vitrée, abattage de cloison",
+   "repere": "dès 45 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de cloison",
+     "aide": "",
+     "min": 2,
+     "max": 80,
+     "pas": 1,
+     "def": 10,
+     "unite": "m²"
+    },
+    "unitaire": [
+     45,
+     85
+    ],
+    "lib": "Cloison (ossature, plaques, bandes)",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "action",
+      "Travaux",
+      "",
+      [
+       [
+        "creer",
+        "Créer une cloison",
+        "",
+        1
+       ],
+       [
+        "abattre",
+        "Supprimer une cloison",
+        "",
+        0.7
+       ],
+       [
+        "phonique",
+        "Cloison phonique",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "porte",
+      "Bloc-porte",
+      350,
+      800
+     ],
+     [
+      "elec",
+      "Prises et interrupteurs",
+      150,
+      400
+     ],
+     [
+      "peinture",
+      "Peinture",
+      20,
+      35,
+      true
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "verriere",
+   "nom": "Verrière d'intérieur",
+   "famille": "interieur",
+   "icone": "M4 4h16v16H4zM12 4v16M4 12h16",
+   "pitch": "Style atelier, acier ou alu",
+   "repere": "dès 1 200 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Largeur",
+     "aide": "",
+     "min": 1,
+     "max": 8,
+     "pas": 0.5,
+     "def": 2,
+     "unite": "ml"
+    },
+    "unitaire": [
+     650,
+     1300
+    ],
+    "lib": "Verrière sur mesure posée",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "alu",
+        "Aluminium",
+        "",
+        0.85
+       ],
+       [
+        "acier",
+        "Acier",
+        "",
+        1
+       ],
+       [
+        "bois",
+        "Bois",
+        "",
+        0.9
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "porte",
+      "Porte vitrée intégrée",
+      800,
+      1800
+     ],
+     [
+      "allege",
+      "Allège maçonnée",
+      300,
+      700
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "faux-plafond",
+   "nom": "Faux plafond",
+   "famille": "interieur",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Placo, dalles, plafond tendu, acoustique",
+   "repere": "dès 40 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 3,
+     "max": 150,
+     "pas": 1,
+     "def": 20,
+     "unite": "m²"
+    },
+    "unitaire": [
+     40,
+     75
+    ],
+    "lib": "Faux plafond posé",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "placo",
+        "Placo",
+        "",
+        1
+       ],
+       [
+        "dalles",
+        "Dalles minérales",
+        "",
+        0.85
+       ],
+       [
+        "tendu",
+        "Plafond tendu",
+        "+20 %",
+        1.2
+       ],
+       [
+        "acoustique",
+        "Acoustique",
+        "+25 %",
+        1.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "spots",
+      "Spots encastrés (par spot)",
+      60,
+      120,
+      false
+     ],
+     [
+      "isolant",
+      "Isolant",
+      12,
+      25,
+      true
+     ],
+     [
+      "peinture",
+      "Peinture",
+      15,
+      25,
+      true
+     ]
+    ],
+    "evac": [
+     100,
+     250
+    ]
+   }
+  },
+  {
+   "id": "mur-porteur",
+   "nom": "Ouverture de mur porteur",
+   "famille": "interieur",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "IPN, linteau, étude de structure",
+   "repere": "dès 3 000 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Largeur de l'ouverture",
+     "aide": "",
+     "min": 1,
+     "max": 8,
+     "pas": 0.5,
+     "def": 2.5,
+     "unite": "m"
+    },
+    "unitaire": [
+     900,
+     1600
+    ],
+    "lib": "Ouverture et pose de la poutre",
+    "base": [
+     1500,
+     2800
+    ],
+    "choix": [
+     [
+      "mur",
+      "Nature du mur",
+      "",
+      [
+       [
+        "parpaing",
+        "Parpaing / brique",
+        "",
+        1
+       ],
+       [
+        "pierre",
+        "Pierre",
+        "+30 %",
+        1.3
+       ],
+       [
+        "beton",
+        "Béton",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "bet",
+      "Étude de structure (BET)",
+      500,
+      1200
+     ],
+     [
+      "etai",
+      "Étaiement renforcé",
+      300,
+      900
+     ],
+     [
+      "finitions",
+      "Reprise des finitions",
+      400,
+      1200
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "dressing",
+   "nom": "Dressing et placards sur mesure",
+   "famille": "interieur",
+   "icone": "M6 21V3h12v18M10 12h.01",
+   "pitch": "Dressing, placard, rangements sur mesure",
+   "repere": "dès 1 500 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 0.5,
+     "def": 2.5,
+     "unite": "ml"
+    },
+    "unitaire": [
+     650,
+     1400
+    ],
+    "lib": "Agencement sur mesure",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "portes",
+      "Façade",
+      "",
+      [
+       [
+        "ouvert",
+        "Ouvert",
+        "",
+        0.75
+       ],
+       [
+        "battantes",
+        "Portes battantes",
+        "",
+        1
+       ],
+       [
+        "coulissantes",
+        "Portes coulissantes",
+        "",
+        1.1
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "eclairage",
+      "Éclairage intégré",
+      200,
+      600
+     ],
+     [
+      "miroir",
+      "Portes miroir",
+      300,
+      900
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "escalier",
+   "nom": "Escalier : création ou rénovation",
+   "famille": "interieur",
+   "icone": "M4 20h4v-4h4v-4h4V8h4",
+   "pitch": "Escalier bois, métal, rénovation des marches",
+   "repere": "dès 2 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de marches",
+     "aide": "",
+     "min": 3,
+     "max": 20,
+     "pas": 1,
+     "def": 14,
+     "unite": "marche(s)"
+    },
+    "unitaire": [
+     180,
+     380
+    ],
+    "lib": "Escalier fourni posé",
+    "base": [
+     600,
+     1200
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "renov",
+        "Rénovation / habillage",
+        "",
+        0.45
+       ],
+       [
+        "bois",
+        "Escalier bois neuf",
+        "",
+        1
+       ],
+       [
+        "metal",
+        "Métal ou mixte",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "forme",
+      "Forme",
+      "",
+      [
+       [
+        "droit",
+        "Droit",
+        "",
+        1
+       ],
+       [
+        "quart",
+        "Quart tournant",
+        "+15 %",
+        1.15
+       ],
+       [
+        "helico",
+        "Hélicoïdal",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "gardecorps",
+      "Garde-corps",
+      600,
+      1800
+     ],
+     [
+      "tremie",
+      "Création de trémie",
+      1200,
+      3000
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "combles-amenagement",
+   "nom": "Aménagement des combles",
+   "famille": "interieur",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Chambre, bureau, velux, plancher",
+   "repere": "dès 900 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface à aménager",
+     "aide": "",
+     "min": 8,
+     "max": 80,
+     "pas": 1,
+     "def": 25,
+     "unite": "m²"
+    },
+    "unitaire": [
+     900,
+     1500
+    ],
+    "lib": "Aménagement complet (isolation, plancher, placo)",
+    "base": [
+     1500,
+     3500
+    ],
+    "choix": [
+     [
+      "hauteur",
+      "Hauteur disponible",
+      "",
+      [
+       [
+        "ok",
+        "Plus de 1,80 m au faîtage",
+        "",
+        1
+       ],
+       [
+        "juste",
+        "Juste suffisante",
+        "+10 %",
+        1.1
+       ],
+       [
+        "rehausse",
+        "Rehausse nécessaire",
+        "+60 %",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "velux",
+      "Fenêtre de toit",
+      900,
+      1800
+     ],
+     [
+      "escalier",
+      "Escalier d'accès",
+      2500,
+      6000
+     ],
+     [
+      "sdb",
+      "Salle d'eau",
+      5000,
+      9000
+     ],
+     [
+      "elec",
+      "Électricité",
+      1200,
+      2500
+     ]
+    ],
+    "evac": [
+     300,
+     700
+    ]
+   }
+  },
+  {
+   "id": "garage-transformation",
+   "nom": "Transformation de garage en pièce",
+   "famille": "interieur",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Chambre, bureau, studio",
+   "repere": "dès 700 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 8,
+     "max": 50,
+     "pas": 1,
+     "def": 18,
+     "unite": "m²"
+    },
+    "unitaire": [
+     700,
+     1200
+    ],
+    "lib": "Aménagement (isolation, sol, placo, électricité)",
+    "base": [
+     1200,
+     2500
+    ],
+    "choix": [
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "fenetre",
+      "Remplacement de la porte par une baie",
+      2000,
+      4500
+     ],
+     [
+      "sdb",
+      "Salle d'eau",
+      4500,
+      8500
+     ],
+     [
+      "declaration",
+      "Déclaration préalable",
+      300,
+      800
+     ]
+    ],
+    "evac": [
+     200,
+     500
+    ]
+   }
+  },
+  {
+   "id": "renovation-complete",
+   "nom": "Rénovation complète",
+   "famille": "interieur",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Maison ou appartement, tous corps d'état",
+   "repere": "dès 600 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface habitable",
+     "aide": "",
+     "min": 20,
+     "max": 300,
+     "pas": 5,
+     "def": 80,
+     "unite": "m²"
+    },
+    "unitaire": [
+     600,
+     1100
+    ],
+    "lib": "Rénovation tous corps d'état",
+    "base": [
+     2000,
+     5000
+    ],
+    "choix": [
+     [
+      "niveau",
+      "Niveau de rénovation",
+      "",
+      [
+       [
+        "rafraichir",
+        "Rafraîchissement",
+        "Peinture, sols",
+        0.4
+       ],
+       [
+        "moyenne",
+        "Rénovation moyenne",
+        "Cuisine, sdb, sols",
+        1
+       ],
+       [
+        "lourde",
+        "Rénovation lourde",
+        "Réseaux, cloisons, +45 %",
+        1.45
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "moe",
+      "Maîtrise d'œuvre (suivi de chantier)",
+      3000,
+      9000
+     ],
+     [
+      "energie",
+      "Volet rénovation énergétique",
+      8000,
+      25000
+     ]
+    ],
+    "evac": [
+     800,
+     2500
+    ]
+   }
+  },
+  {
+   "id": "extension",
+   "nom": "Extension de maison",
+   "famille": "gros-oeuvre",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Parpaing, ossature bois, surélévation",
+   "repere": "dès 1 600 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de l'extension",
+     "aide": "",
+     "min": 8,
+     "max": 80,
+     "pas": 1,
+     "def": 25,
+     "unite": "m²"
+    },
+    "unitaire": [
+     1600,
+     2600
+    ],
+    "lib": "Extension clos-couvert et finitions",
+    "base": [
+     3000,
+     6000
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "parpaing",
+        "Maçonnée",
+        "",
+        1
+       ],
+       [
+        "bois",
+        "Ossature bois",
+        "",
+        1.05
+       ],
+       [
+        "surelevation",
+        "Surélévation",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "permis",
+      "Plans et permis",
+      1500,
+      4000
+     ],
+     [
+      "baie",
+      "Grande baie vitrée",
+      2500,
+      6000
+     ],
+     [
+      "toitterrasse",
+      "Toit-terrasse",
+      3000,
+      8000
+     ]
+    ],
+    "evac": [
+     500,
+     1500
+    ]
+   }
+  },
+  {
+   "id": "veranda",
+   "nom": "Véranda et pergola",
+   "famille": "gros-oeuvre",
+   "icone": "M4 4h16v16H4zM12 4v16M4 12h16",
+   "pitch": "Véranda alu, pergola bioclimatique, carport",
+   "repere": "dès 8 000 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 6,
+     "max": 50,
+     "pas": 1,
+     "def": 16,
+     "unite": "m²"
+    },
+    "unitaire": [
+     900,
+     1800
+    ],
+    "lib": "Structure fournie posée",
+    "base": [
+     1500,
+     3000
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "pergola",
+        "Pergola bioclimatique",
+        "",
+        0.6
+       ],
+       [
+        "veranda",
+        "Véranda alu",
+        "",
+        1
+       ],
+       [
+        "bois",
+        "Véranda bois",
+        "+15 %",
+        1.15
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "dalle",
+      "Dalle béton",
+      80,
+      140,
+      true
+     ],
+     [
+      "chauffage",
+      "Chauffage",
+      800,
+      2500
+     ],
+     [
+      "stores",
+      "Stores intégrés",
+      800,
+      2500
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "maison-neuve",
+   "nom": "Construction de maison",
+   "famille": "gros-oeuvre",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Maison individuelle, gros œuvre et finitions",
+   "repere": "dès 1 700 €/m²",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface habitable",
+     "aide": "",
+     "min": 60,
+     "max": 250,
+     "pas": 5,
+     "def": 110,
+     "unite": "m²"
+    },
+    "unitaire": [
+     1700,
+     2600
+    ],
+    "lib": "Construction (hors terrain)",
+    "base": [
+     8000,
+     15000
+    ],
+    "choix": [
+     [
+      "niveaux",
+      "Niveaux",
+      "",
+      [
+       [
+        "plainpied",
+        "Plain-pied",
+        "",
+        1
+       ],
+       [
+        "etage",
+        "À étage",
+        "",
+        0.95
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "garage",
+      "Garage",
+      12000,
+      25000
+     ],
+     [
+      "etude",
+      "Étude de sol G2",
+      1500,
+      3500
+     ],
+     [
+      "viabilisation",
+      "Viabilisation",
+      5000,
+      15000
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "architecte",
+   "nom": "Architecte ou maître d'œuvre",
+   "famille": "gros-oeuvre",
+   "icone": "M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16",
+   "pitch": "Plans, permis, suivi de chantier",
+   "repere": "dès 1 500 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Montant estimé des travaux (k€)",
+     "aide": "",
+     "min": 10,
+     "max": 500,
+     "pas": 5,
+     "def": 60,
+     "unite": "k€"
+    },
+    "unitaire": [
+     70,
+     130
+    ],
+    "lib": "Honoraires (conception et suivi)",
+    "base": [
+     800,
+     1500
+    ],
+    "choix": [
+     [
+      "mission",
+      "Mission",
+      "",
+      [
+       [
+        "plans",
+        "Plans et permis seuls",
+        "",
+        0.4
+       ],
+       [
+        "complete",
+        "Mission complète",
+        "",
+        1
+       ],
+       [
+        "interieur",
+        "Architecte d'intérieur",
+        "",
+        0.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "3d",
+      "Visuels 3D",
+      400,
+      1200
+     ],
+     [
+      "releve",
+      "Relevé de l'existant",
+      400,
+      1000
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "maconnerie",
+   "nom": "Travaux de maçonnerie",
+   "famille": "gros-oeuvre",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Mur, muret, dalle, ouverture",
+   "repere": "dès 90 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface (mur ou dalle)",
+     "aide": "",
+     "min": 2,
+     "max": 150,
+     "pas": 1,
+     "def": 15,
+     "unite": "m²"
+    },
+    "unitaire": [
+     90,
+     180
+    ],
+    "lib": "Maçonnerie",
+    "base": [
+     400,
+     900
+    ],
+    "choix": [
+     [
+      "ouvrage",
+      "Ouvrage",
+      "",
+      [
+       [
+        "muret",
+        "Muret / mur",
+        "",
+        1
+       ],
+       [
+        "dalle",
+        "Dalle béton",
+        "",
+        0.8
+       ],
+       [
+        "pierre",
+        "Pierre",
+        "+50 %",
+        1.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "fondations",
+      "Fondations",
+      120,
+      250,
+      true
+     ],
+     [
+      "enduit",
+      "Enduit de finition",
+      30,
+      60,
+      true
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "fissures",
+   "nom": "Fissures et reprise de structure",
+   "famille": "gros-oeuvre",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Agrafage, micropieux, reprise en sous-œuvre",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de fissures",
+     "aide": "",
+     "min": 1,
+     "max": 40,
+     "pas": 1,
+     "def": 6,
+     "unite": "ml"
+    },
+    "unitaire": [
+     120,
+     260
+    ],
+    "lib": "Traitement des fissures (agrafage)",
+    "base": [
+     800,
+     1500
+    ],
+    "choix": [
+     [
+      "gravite",
+      "Gravité",
+      "",
+      [
+       [
+        "legere",
+        "Fissures fines",
+        "",
+        0.6
+       ],
+       [
+        "moyenne",
+        "Fissures ouvertes",
+        "",
+        1
+       ],
+       [
+        "structure",
+        "Désordre structurel",
+        "Micropieux, ×4",
+        4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "expertise",
+      "Expertise / étude de sol",
+      900,
+      2500
+     ],
+     [
+      "enduit",
+      "Reprise d'enduit",
+      400,
+      1500
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "demolition",
+   "nom": "Démolition et évacuation",
+   "famille": "gros-oeuvre",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Curage, démolition, benne, débarras",
+   "repere": "dès 35 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface concernée",
+     "aide": "",
+     "min": 5,
+     "max": 300,
+     "pas": 5,
+     "def": 40,
+     "unite": "m²"
+    },
+    "unitaire": [
+     35,
+     75
+    ],
+    "lib": "Démolition / curage",
+    "base": [
+     300,
+     700
+    ],
+    "choix": [
+     [
+      "type",
+      "Travaux",
+      "",
+      [
+       [
+        "debarras",
+        "Débarras",
+        "",
+        0.4
+       ],
+       [
+        "curage",
+        "Curage intérieur",
+        "",
+        1
+       ],
+       [
+        "demolition",
+        "Démolition de bâtiment",
+        "+60 %",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "benne",
+      "Benne supplémentaire",
+      350,
+      650
+     ],
+     [
+      "tri",
+      "Tri et recyclage",
+      200,
+      600
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "desamiantage",
+   "nom": "Désamiantage",
+   "famille": "traitements",
+   "icone": "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z",
+   "pitch": "Plaques fibrociment, dalles, toiture",
+   "repere": "dès 40 €/m²",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 300,
+     "pas": 5,
+     "def": 40,
+     "unite": "m²"
+    },
+    "unitaire": [
+     40,
+     90
+    ],
+    "lib": "Retrait par entreprise certifiée",
+    "base": [
+     1500,
+     3000
+    ],
+    "choix": [
+     [
+      "element",
+      "Élément",
+      "",
+      [
+       [
+        "toiture",
+        "Toiture fibrociment",
+        "",
+        1
+       ],
+       [
+        "dalles",
+        "Dalles de sol",
+        "",
+        1.2
+       ],
+       [
+        "flocage",
+        "Flocage / calorifuge",
+        "×2,5",
+        2.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "reperage",
+      "Repérage avant travaux",
+      400,
+      900
+     ],
+     [
+      "mesures",
+      "Mesures d'empoussièrement",
+      500,
+      1200
+     ]
+    ],
+    "evac": [
+     300,
+     900
+    ]
+   }
+  },
+  {
+   "id": "humidite",
+   "nom": "Traitement de l'humidité",
+   "famille": "traitements",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Remontées capillaires, salpêtre, moisissures",
+   "repere": "dès 1 200 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de murs touchés",
+     "aide": "",
+     "min": 2,
+     "max": 60,
+     "pas": 1,
+     "def": 10,
+     "unite": "ml"
+    },
+    "unitaire": [
+     120,
+     240
+    ],
+    "lib": "Traitement (injection, enduit assainissant)",
+    "base": [
+     500,
+     1000
+    ],
+    "choix": [
+     [
+      "cause",
+      "Origine",
+      "",
+      [
+       [
+        "capillaire",
+        "Remontées capillaires",
+        "",
+        1
+       ],
+       [
+        "condensation",
+        "Condensation",
+        "",
+        0.6
+       ],
+       [
+        "infiltration",
+        "Infiltrations",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "diagnostic",
+      "Diagnostic humidité",
+      150,
+      400
+     ],
+     [
+      "vmi",
+      "Ventilation par insufflation",
+      1200,
+      2500
+     ],
+     [
+      "drainage",
+      "Drainage périphérique",
+      80,
+      150,
+      true
+     ]
+    ],
+    "evac": [
+     100,
+     300
+    ]
+   }
+  },
+  {
+   "id": "drainage",
+   "nom": "Drainage et cuvelage",
+   "famille": "exterieur",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Drain périphérique, pompe de relevage",
+   "repere": "dès 80 €/ml",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur",
+     "aide": "",
+     "min": 5,
+     "max": 80,
+     "pas": 1,
+     "def": 20,
+     "unite": "ml"
+    },
+    "unitaire": [
+     80,
+     160
+    ],
+    "lib": "Drainage",
+    "base": [
+     600,
+     1200
+    ],
+    "choix": [
+     [
+      "type",
+      "Travaux",
+      "",
+      [
+       [
+        "drain",
+        "Drain périphérique",
+        "",
+        1
+       ],
+       [
+        "cuvelage",
+        "Cuvelage de cave",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "pompe",
+      "Pompe de relevage",
+      600,
+      1500
+     ],
+     [
+      "regard",
+      "Regard de visite",
+      150,
+      350
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "assainissement",
+   "nom": "Assainissement et fosse septique",
+   "famille": "exterieur",
+   "icone": "M5 6h14v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zM5 10h14",
+   "pitch": "Micro-station, fosse, tout-à-l'égout",
+   "repere": "dès 1 800 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'équivalents habitants",
+     "aide": "",
+     "min": 3,
+     "max": 10,
+     "pas": 1,
+     "def": 5,
+     "unite": "EH"
+    },
+    "unitaire": [
+     900,
+     1800
+    ],
+    "lib": "Installation",
+    "base": [
+     1500,
+     3000
+    ],
+    "choix": [
+     [
+      "type",
+      "Travaux",
+      "",
+      [
+       [
+        "raccord",
+        "Raccordement tout-à-l'égout",
+        "",
+        0.5
+       ],
+       [
+        "fosse",
+        "Fosse + épandage",
+        "",
+        1
+       ],
+       [
+        "microstation",
+        "Micro-station",
+        "+15 %",
+        1.15
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "etude",
+      "Étude de sol SPANC",
+      400,
+      800
+     ],
+     [
+      "vidange",
+      "Vidange de l'ancienne fosse",
+      200,
+      400
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "fuite",
+   "nom": "Recherche et réparation de fuite",
+   "famille": "plomberie",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Fuite, dégât des eaux, canalisation percée",
+   "repere": "dès 150 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de fuites",
+     "aide": "",
+     "min": 1,
+     "max": 5,
+     "pas": 1,
+     "def": 1,
+     "unite": "fuite(s)"
+    },
+    "unitaire": [
+     120,
+     280
+    ],
+    "lib": "Réparation",
+    "base": [
+     90,
+     150
+    ],
+    "choix": [
+     [
+      "type",
+      "Recherche",
+      "",
+      [
+       [
+        "visible",
+        "Fuite visible",
+        "",
+        1
+       ],
+       [
+        "encastree",
+        "Fuite encastrée",
+        "+60 %",
+        1.6
+       ],
+       [
+        "nondestructive",
+        "Recherche non destructive",
+        "×2,5",
+        2.5
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "rapport",
+      "Rapport pour l'assurance",
+      100,
+      250
+     ],
+     [
+      "reprise",
+      "Reprise de carrelage ou placo",
+      200,
+      700
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "debouchage",
+   "nom": "Débouchage de canalisation",
+   "famille": "plomberie",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Évier, WC, douche, colonne, hydrocurage",
+   "repere": "dès 120 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Évacuations bouchées",
+     "aide": "",
+     "min": 1,
+     "max": 5,
+     "pas": 1,
+     "def": 1,
+     "unite": "évacuation(s)"
+    },
+    "unitaire": [
+     90,
+     200
+    ],
+    "lib": "Débouchage",
+    "base": [
+     60,
+     120
+    ],
+    "choix": [
+     [
+      "methode",
+      "Méthode",
+      "",
+      [
+       [
+        "manuel",
+        "Furet / pompe",
+        "",
+        1
+       ],
+       [
+        "hydro",
+        "Hydrocurage",
+        "×2",
+        2
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "camera",
+      "Inspection caméra",
+      150,
+      350
+     ],
+     [
+      "rapport",
+      "Rapport pour l'assurance",
+      80,
+      200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "chauffe-eau",
+   "nom": "Chauffe-eau et ballon d'eau chaude",
+   "famille": "plomberie",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Électrique, thermodynamique, solaire, gaz",
+   "repere": "dès 700 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de ballons",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "ballon(s)"
+    },
+    "unitaire": [
+     650,
+     1300
+    ],
+    "lib": "Fourniture et pose",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "elec",
+        "Électrique",
+        "",
+        1
+       ],
+       [
+        "thermo",
+        "Thermodynamique",
+        "×2,4",
+        2.4
+       ],
+       [
+        "solaire",
+        "Solaire (CESI)",
+        "×4",
+        4
+       ],
+       [
+        "gaz",
+        "Gaz",
+        "",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "capacite",
+      "Capacité",
+      "",
+      [
+       [
+        "100",
+        "100 L",
+        "1 à 2 personnes",
+        0.8
+       ],
+       [
+        "200",
+        "200 L",
+        "3 à 4 personnes",
+        1
+       ],
+       [
+        "300",
+        "300 L",
+        "5 personnes et plus",
+        1.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "groupe",
+      "Groupe de sécurité",
+      60,
+      150
+     ],
+     [
+      "evacuation",
+      "Évacuation de l'ancien",
+      50,
+      120
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "adoucisseur",
+   "nom": "Adoucisseur et traitement de l'eau",
+   "famille": "plomberie",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Adoucisseur, osmoseur, filtres",
+   "repere": "dès 900 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'appareils",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "appareil(s)"
+    },
+    "unitaire": [
+     800,
+     1800
+    ],
+    "lib": "Fourniture et pose",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "adoucisseur",
+        "Adoucisseur",
+        "",
+        1
+       ],
+       [
+        "osmoseur",
+        "Osmoseur sous évier",
+        "",
+        0.5
+       ],
+       [
+        "filtre",
+        "Filtre anti-calcaire",
+        "",
+        0.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "bypass",
+      "By-pass et raccords",
+      80,
+      200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "robinetterie",
+   "nom": "Robinetterie et mitigeurs",
+   "famille": "plomberie",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Mitigeur, colonne de douche, robinet",
+   "repere": "dès 120 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de robinets",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 1,
+     "def": 2,
+     "unite": "robinet(s)"
+    },
+    "unitaire": [
+     90,
+     220
+    ],
+    "lib": "Fourniture et pose",
+    "base": [
+     60,
+     120
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "mitigeur",
+        "Mitigeur",
+        "",
+        1
+       ],
+       [
+        "thermo",
+        "Thermostatique",
+        "+40 %",
+        1.4
+       ],
+       [
+        "colonne",
+        "Colonne de douche",
+        "×2",
+        2
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "flexibles",
+      "Remplacement des flexibles",
+      30,
+      60,
+      false
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "recuperation-eau",
+   "nom": "Récupération d'eau de pluie",
+   "famille": "plomberie",
+   "icone": "M5 6h14v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zM5 10h14",
+   "pitch": "Cuve aérienne ou enterrée",
+   "repere": "dès 600 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Capacité (m³)",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 1,
+     "def": 3,
+     "unite": "m³"
+    },
+    "unitaire": [
+     350,
+     900
+    ],
+    "lib": "Cuve et raccordement",
+    "base": [
+     300,
+     700
+    ],
+    "choix": [
+     [
+      "pose",
+      "Pose",
+      "",
+      [
+       [
+        "aerienne",
+        "Aérienne",
+        "",
+        0.6
+       ],
+       [
+        "enterree",
+        "Enterrée",
+        "",
+        1
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "pompe",
+      "Pompe et filtration",
+      400,
+      900
+     ],
+     [
+      "maison",
+      "Raccordement WC / lave-linge",
+      600,
+      1500
+     ]
+    ],
+    "evac": [
+     100,
+     300
+    ]
+   }
+  },
+  {
+   "id": "pac-air-eau",
+   "nom": "Pompe à chaleur air-eau",
+   "famille": "chauffage",
+   "icone": "M12 2v20M4 7l16 10M20 7 4 17",
+   "pitch": "Remplacement de chaudière, MaPrimeRénov'",
+   "repere": "dès 9 000 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface chauffée",
+     "aide": "",
+     "min": 40,
+     "max": 250,
+     "pas": 5,
+     "def": 110,
+     "unite": "m²"
+    },
+    "unitaire": [
+     80,
+     125
+    ],
+    "lib": "PAC fournie posée (puissance adaptée)",
+    "base": [
+     3500,
+     6000
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "basse",
+        "Basse température",
+        "Radiateurs récents",
+        0.9
+       ],
+       [
+        "haute",
+        "Haute température",
+        "Radiateurs anciens, +15 %",
+        1.15
+       ],
+       [
+        "hybride",
+        "Hybride (PAC + chaudière)",
+        "",
+        1.05
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "ecs",
+      "Production d'eau chaude intégrée",
+      1200,
+      2200
+     ],
+     [
+      "depose",
+      "Dépose de l'ancienne chaudière / cuve",
+      400,
+      1200
+     ],
+     [
+      "desembouage",
+      "Désembouage du circuit",
+      350,
+      700
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "climatisation",
+   "nom": "Climatisation et PAC air-air",
+   "famille": "chauffage",
+   "icone": "M12 2v20M4 7l16 10M20 7 4 17",
+   "pitch": "Split, multisplit, gainable, réversible",
+   "repere": "dès 1 800 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de pièces à climatiser",
+     "aide": "",
+     "min": 1,
+     "max": 8,
+     "pas": 1,
+     "def": 2,
+     "unite": "pièce(s)"
+    },
+    "unitaire": [
+     1100,
+     1900
+    ],
+    "lib": "Unités intérieures posées",
+    "base": [
+     700,
+     1300
+    ],
+    "choix": [
+     [
+      "type",
+      "Système",
+      "",
+      [
+       [
+        "mono",
+        "Mono / multisplit",
+        "",
+        1
+       ],
+       [
+        "gainable",
+        "Gainable",
+        "+45 %",
+        1.45
+       ],
+       [
+        "console",
+        "Console au sol",
+        "",
+        1.05
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "goulottes",
+      "Goulottes décoratives",
+      100,
+      300
+     ],
+     [
+      "support",
+      "Support mural ou toiture",
+      150,
+      450
+     ],
+     [
+      "wifi",
+      "Pilotage Wi-Fi",
+      100,
+      250
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "chaudiere",
+   "nom": "Chaudière : installation ou remplacement",
+   "famille": "chauffage",
+   "icone": "M12 3c3 4 6 6 6 10a6 6 0 0 1-12 0c0-3 2-4 3-7 1 2 2 3 3 3 0-2 0-4 0-6z",
+   "pitch": "Gaz condensation, granulés, fioul",
+   "repere": "dès 3 500 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de chaudières",
+     "aide": "",
+     "min": 1,
+     "max": 2,
+     "pas": 1,
+     "def": 1,
+     "unite": "chaudière(s)"
+    },
+    "unitaire": [
+     2800,
+     5200
+    ],
+    "lib": "Chaudière fournie posée",
+    "base": [
+     600,
+     1200
+    ],
+    "choix": [
+     [
+      "type",
+      "Énergie",
+      "",
+      [
+       [
+        "gaz",
+        "Gaz à condensation",
+        "",
+        1
+       ],
+       [
+        "granules",
+        "Granulés",
+        "×2,8",
+        2.8
+       ],
+       [
+        "fioul",
+        "Fioul condensation",
+        "",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "conduit",
+      "Tubage / ventouse",
+      500,
+      1500
+     ],
+     [
+      "thermostat",
+      "Thermostat connecté",
+      150,
+      400
+     ],
+     [
+      "desembouage",
+      "Désembouage",
+      350,
+      700
+     ],
+     [
+      "depose",
+      "Dépose de l'ancienne",
+      200,
+      500
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "entretien-chauffage",
+   "nom": "Entretien de chaudière, PAC ou clim",
+   "famille": "chauffage",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Entretien annuel obligatoire, attestation",
+   "repere": "dès 110 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'appareils",
+     "aide": "",
+     "min": 1,
+     "max": 4,
+     "pas": 1,
+     "def": 1,
+     "unite": "appareil(s)"
+    },
+    "unitaire": [
+     100,
+     180
+    ],
+    "lib": "Entretien et attestation",
+    "base": [
+     0,
+     30
+    ],
+    "choix": [
+     [
+      "appareil",
+      "Appareil",
+      "",
+      [
+       [
+        "gaz",
+        "Chaudière gaz",
+        "",
+        1
+       ],
+       [
+        "fioul",
+        "Chaudière fioul",
+        "",
+        1.4
+       ],
+       [
+        "pac",
+        "Pompe à chaleur",
+        "+50 %",
+        1.5
+       ],
+       [
+        "clim",
+        "Climatisation",
+        "",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "contrat",
+      "Contrat annuel avec dépannage",
+      60,
+      150
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "poele",
+   "nom": "Poêle à bois ou à granulés",
+   "famille": "chauffage",
+   "icone": "M12 3c3 4 6 6 6 10a6 6 0 0 1-12 0c0-3 2-4 3-7 1 2 2 3 3 3 0-2 0-4 0-6z",
+   "pitch": "Poêle, conduit, tubage",
+   "repere": "dès 3 000 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de poêles",
+     "aide": "",
+     "min": 1,
+     "max": 2,
+     "pas": 1,
+     "def": 1,
+     "unite": "poêle(s)"
+    },
+    "unitaire": [
+     1800,
+     4200
+    ],
+    "lib": "Poêle fourni",
+    "base": [
+     900,
+     1800
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "bois",
+        "Bûches",
+        "",
+        1
+       ],
+       [
+        "granules",
+        "Granulés",
+        "+25 %",
+        1.25
+       ],
+       [
+        "masse",
+        "Poêle de masse",
+        "×2,5",
+        2.5
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "conduit",
+      "Création de conduit",
+      1200,
+      2800
+     ],
+     [
+      "tubage",
+      "Tubage de conduit existant",
+      600,
+      1400
+     ],
+     [
+      "plaque",
+      "Plaque de sol",
+      80,
+      250
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "cheminee",
+   "nom": "Cheminée et insert",
+   "famille": "chauffage",
+   "icone": "M12 3c3 4 6 6 6 10a6 6 0 0 1-12 0c0-3 2-4 3-7 1 2 2 3 3 3 0-2 0-4 0-6z",
+   "pitch": "Insert, foyer fermé, habillage",
+   "repere": "dès 2 500 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de foyers",
+     "aide": "",
+     "min": 1,
+     "max": 2,
+     "pas": 1,
+     "def": 1,
+     "unite": "foyer(s)"
+    },
+    "unitaire": [
+     1600,
+     3800
+    ],
+    "lib": "Insert ou foyer fourni posé",
+    "base": [
+     600,
+     1400
+    ],
+    "choix": [
+     [
+      "type",
+      "Travaux",
+      "",
+      [
+       [
+        "insert",
+        "Insert dans cheminée existante",
+        "",
+        1
+       ],
+       [
+        "foyer",
+        "Cheminée complète",
+        "×2",
+        2
+       ],
+       [
+        "ethanol",
+        "Cheminée éthanol",
+        "",
+        0.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "habillage",
+      "Habillage",
+      800,
+      2500
+     ],
+     [
+      "tubage",
+      "Tubage",
+      600,
+      1400
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "ramonage",
+   "nom": "Ramonage",
+   "famille": "chauffage",
+   "icone": "M12 3c3 4 6 6 6 10a6 6 0 0 1-12 0c0-3 2-4 3-7 1 2 2 3 3 3 0-2 0-4 0-6z",
+   "pitch": "Conduit de cheminée, poêle, chaudière",
+   "repere": "dès 60 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de conduits",
+     "aide": "",
+     "min": 1,
+     "max": 4,
+     "pas": 1,
+     "def": 1,
+     "unite": "conduit(s)"
+    },
+    "unitaire": [
+     55,
+     110
+    ],
+    "lib": "Ramonage et certificat",
+    "base": [
+     0,
+     20
+    ],
+    "choix": [
+     [
+      "type",
+      "Appareil",
+      "",
+      [
+       [
+        "cheminee",
+        "Cheminée / insert",
+        "",
+        1
+       ],
+       [
+        "poele",
+        "Poêle à granulés",
+        "",
+        1.2
+       ],
+       [
+        "chaudiere",
+        "Chaudière",
+        "",
+        0.9
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "debistrage",
+      "Débistrage",
+      150,
+      400
+     ],
+     [
+      "camera",
+      "Inspection caméra",
+      100,
+      250
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "chauffage-electrique",
+   "nom": "Radiateurs électriques",
+   "famille": "chauffage",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Inertie, sèche-serviettes, thermostat",
+   "repere": "dès 450 € par radiateur",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de radiateurs",
+     "aide": "",
+     "min": 1,
+     "max": 15,
+     "pas": 1,
+     "def": 5,
+     "unite": "radiateur(s)"
+    },
+    "unitaire": [
+     380,
+     850
+    ],
+    "lib": "Radiateur fourni posé",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "inertie",
+        "Inertie sèche",
+        "",
+        1
+       ],
+       [
+        "fluide",
+        "Inertie fluide",
+        "",
+        0.9
+       ],
+       [
+        "rayonnant",
+        "Rayonnant",
+        "",
+        0.6
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "seche",
+      "Sèche-serviettes",
+      350,
+      800
+     ],
+     [
+      "filpilote",
+      "Fil pilote et programmation",
+      200,
+      600
+     ],
+     [
+      "depose",
+      "Dépose des anciens",
+      20,
+      40,
+      false
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "plancher-chauffant",
+   "nom": "Plancher chauffant",
+   "famille": "chauffage",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Hydraulique ou électrique",
+   "repere": "dès 60 €/m²",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 10,
+     "max": 200,
+     "pas": 5,
+     "def": 60,
+     "unite": "m²"
+    },
+    "unitaire": [
+     55,
+     110
+    ],
+    "lib": "Plancher chauffant posé",
+    "base": [
+     800,
+     1800
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "hydro",
+        "Hydraulique",
+        "",
+        1
+       ],
+       [
+        "elec",
+        "Électrique",
+        "",
+        0.75
+       ]
+      ]
+     ],
+     [
+      "chantier",
+      "Chantier",
+      "",
+      [
+       [
+        "neuf",
+        "Neuf / chape à couler",
+        "",
+        1
+       ],
+       [
+        "renov",
+        "Rénovation (plancher mince)",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "chape",
+      "Chape",
+      20,
+      40,
+      true
+     ],
+     [
+      "regulation",
+      "Régulation par pièce",
+      400,
+      1200
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "desembouage",
+   "nom": "Désembouage et chauffage central",
+   "famille": "chauffage",
+   "icone": "M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z",
+   "pitch": "Désembouage, équilibrage, vase d'expansion",
+   "repere": "dès 350 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de radiateurs",
+     "aide": "",
+     "min": 2,
+     "max": 20,
+     "pas": 1,
+     "def": 8,
+     "unite": "radiateur(s)"
+    },
+    "unitaire": [
+     35,
+     70
+    ],
+    "lib": "Désembouage",
+    "base": [
+     250,
+     450
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "desembouage",
+        "Désembouage",
+        "",
+        1
+       ],
+       [
+        "equilibrage",
+        "Équilibrage seul",
+        "",
+        0.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "robinets",
+      "Robinets thermostatiques",
+      60,
+      120,
+      true
+     ],
+     [
+      "vase",
+      "Vase d'expansion",
+      200,
+      450
+     ],
+     [
+      "circulateur",
+      "Circulateur",
+      300,
+      700
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "geothermie",
+   "nom": "Géothermie",
+   "famille": "chauffage",
+   "icone": "M12 2v20M4 7l16 10M20 7 4 17",
+   "pitch": "PAC géothermique, forage, capteurs",
+   "repere": "dès 18 000 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface chauffée",
+     "aide": "",
+     "min": 60,
+     "max": 300,
+     "pas": 5,
+     "def": 130,
+     "unite": "m²"
+    },
+    "unitaire": [
+     110,
+     170
+    ],
+    "lib": "PAC géothermique",
+    "base": [
+     6000,
+     10000
+    ],
+    "choix": [
+     [
+      "captage",
+      "Captage",
+      "",
+      [
+       [
+        "horizontal",
+        "Horizontal",
+        "",
+        0.85
+       ],
+       [
+        "vertical",
+        "Vertical (forage)",
+        "+25 %",
+        1.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "ecs",
+      "Eau chaude intégrée",
+      1200,
+      2500
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "vmc",
+   "nom": "VMC et ventilation",
+   "famille": "chauffage",
+   "icone": "M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 10c0-4 4-6 6-4M14 12c4 0 6 4 4 6M12 14c0 4-4 6-6 4M10 12c-4 0-6-4-4-6",
+   "pitch": "Simple flux, double flux, hygroréglable",
+   "repere": "dès 600 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Pièces humides (cuisine, sdb, WC)",
+     "aide": "",
+     "min": 1,
+     "max": 8,
+     "pas": 1,
+     "def": 3,
+     "unite": "pièce(s)"
+    },
+    "unitaire": [
+     150,
+     320
+    ],
+    "lib": "Bouches et gaines",
+    "base": [
+     450,
+     900
+    ],
+    "choix": [
+     [
+      "type",
+      "Système",
+      "",
+      [
+       [
+        "simple",
+        "Simple flux",
+        "",
+        1
+       ],
+       [
+        "hygro",
+        "Hygroréglable",
+        "+20 %",
+        1.2
+       ],
+       [
+        "double",
+        "Double flux",
+        "×2,5",
+        2.5
+       ],
+       [
+        "vmi",
+        "Insufflation (VMI)",
+        "+60 %",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "depose",
+      "Dépose de l'ancienne",
+      80,
+      200
+     ],
+     [
+      "entretien",
+      "Entretien annuel",
+      90,
+      180
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "tableau-electrique",
+   "nom": "Tableau électrique",
+   "famille": "electricite",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Remplacement, mise en sécurité, disjoncteurs",
+   "repere": "dès 900 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de rangées",
+     "aide": "",
+     "min": 1,
+     "max": 5,
+     "pas": 1,
+     "def": 2,
+     "unite": "rangée(s)"
+    },
+    "unitaire": [
+     450,
+     800
+    ],
+    "lib": "Tableau équipé posé",
+    "base": [
+     300,
+     600
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "remplacement",
+        "Remplacement",
+        "",
+        1
+       ],
+       [
+        "securite",
+        "Mise en sécurité",
+        "",
+        0.7
+       ],
+       [
+        "triphase",
+        "Passage en triphasé",
+        "+40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "terre",
+      "Mise à la terre",
+      250,
+      600
+     ],
+     [
+      "parafoudre",
+      "Parafoudre",
+      120,
+      300
+     ],
+     [
+      "consuel",
+      "Attestation Consuel",
+      150,
+      250
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "prises-eclairage",
+   "nom": "Prises, interrupteurs, éclairage",
+   "famille": "electricite",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Ajout, déplacement, spots, luminaires",
+   "repere": "dès 80 € le point",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de points",
+     "aide": "",
+     "min": 1,
+     "max": 40,
+     "pas": 1,
+     "def": 6,
+     "unite": "point(s)"
+    },
+    "unitaire": [
+     70,
+     150
+    ],
+    "lib": "Création des points",
+    "base": [
+     90,
+     180
+    ],
+    "choix": [
+     [
+      "pose",
+      "Passage des câbles",
+      "",
+      [
+       [
+        "apparent",
+        "Apparent",
+        "",
+        1
+       ],
+       [
+        "encastre",
+        "Encastré",
+        "+40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "spots",
+      "Spots LED (par spot)",
+      55,
+      110,
+      false
+     ],
+     [
+      "luminaire",
+      "Pose de luminaires",
+      50,
+      120,
+      false
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "depannage-elec",
+   "nom": "Dépannage électrique",
+   "famille": "electricite",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Panne, court-circuit, disjoncteur qui saute",
+   "repere": "dès 120 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de pannes",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "panne(s)"
+    },
+    "unitaire": [
+     90,
+     220
+    ],
+    "lib": "Diagnostic et réparation",
+    "base": [
+     80,
+     140
+    ],
+    "choix": [
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "remplacement",
+      "Remplacement d'appareillage",
+      60,
+      200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "borne-recharge",
+   "nom": "Borne de recharge véhicule électrique",
+   "famille": "electricite",
+   "icone": "M5 16h14M6 16l1.5-5h9L18 16M7 19v-3M17 19v-3",
+   "pitch": "Wallbox, prise renforcée, copropriété",
+   "repere": "dès 1 200 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de bornes",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "borne(s)"
+    },
+    "unitaire": [
+     900,
+     1600
+    ],
+    "lib": "Borne fournie posée (installateur IRVE)",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "puissance",
+      "Puissance",
+      "",
+      [
+       [
+        "prise",
+        "Prise renforcée 3,7 kW",
+        "",
+        0.45
+       ],
+       [
+        "7",
+        "Wallbox 7,4 kW",
+        "",
+        1
+       ],
+       [
+        "22",
+        "Wallbox 22 kW (triphasé)",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "cable",
+      "Câble au-delà de 15 m (par m)",
+      25,
+      45,
+      false
+     ],
+     [
+      "tranchee",
+      "Tranchée",
+      300,
+      900
+     ],
+     [
+      "pilotage",
+      "Pilotage énergétique",
+      250,
+      600
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "panneaux-solaires",
+   "nom": "Panneaux solaires photovoltaïques",
+   "famille": "electricite",
+   "icone": "M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2",
+   "pitch": "Autoconsommation, revente, batterie",
+   "repere": "dès 6 000 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Puissance souhaitée",
+     "aide": "",
+     "min": 1,
+     "max": 12,
+     "pas": 1,
+     "def": 3,
+     "unite": "kWc"
+    },
+    "unitaire": [
+     1800,
+     2800
+    ],
+    "lib": "Installation (panneaux, onduleur, pose)",
+    "base": [
+     1000,
+     2000
+    ],
+    "choix": [
+     [
+      "pose",
+      "Pose",
+      "",
+      [
+       [
+        "surimposition",
+        "Surimposition toiture",
+        "",
+        1
+       ],
+       [
+        "sol",
+        "Au sol",
+        "",
+        0.95
+       ],
+       [
+        "integre",
+        "Intégré au bâti",
+        "+15 %",
+        1.15
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "batterie",
+      "Batterie de stockage",
+      4000,
+      8000
+     ],
+     [
+      "suivi",
+      "Monitoring",
+      150,
+      400
+     ],
+     [
+      "raccordement",
+      "Raccordement Enedis",
+      400,
+      1200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "domotique",
+   "nom": "Domotique et maison connectée",
+   "famille": "electricite",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Volets, chauffage, éclairage pilotés",
+   "repere": "dès 800 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'équipements pilotés",
+     "aide": "",
+     "min": 2,
+     "max": 40,
+     "pas": 1,
+     "def": 10,
+     "unite": "équipement(s)"
+    },
+    "unitaire": [
+     80,
+     180
+    ],
+    "lib": "Modules et programmation",
+    "base": [
+     300,
+     700
+    ],
+    "choix": [
+     [
+      "protocole",
+      "Système",
+      "",
+      [
+       [
+        "sansfil",
+        "Sans fil (Zigbee, Wi-Fi)",
+        "",
+        1
+       ],
+       [
+        "filaire",
+        "Filaire KNX",
+        "×2",
+        2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "box",
+      "Box domotique",
+      150,
+      500
+     ],
+     [
+      "ecran",
+      "Écran mural",
+      300,
+      900
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "eclairage-ext",
+   "nom": "Éclairage extérieur",
+   "famille": "electricite",
+   "icone": "M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2",
+   "pitch": "Jardin, allée, terrasse, détecteurs",
+   "repere": "dès 400 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de points lumineux",
+     "aide": "",
+     "min": 1,
+     "max": 30,
+     "pas": 1,
+     "def": 6,
+     "unite": "point(s)"
+    },
+    "unitaire": [
+     90,
+     200
+    ],
+    "lib": "Points posés",
+    "base": [
+     150,
+     350
+    ],
+    "choix": [
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "tranchee",
+      "Tranchée (par ml)",
+      25,
+      50,
+      false
+     ],
+     [
+      "detecteur",
+      "Détecteurs de présence",
+      80,
+      200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "antenne-reseau",
+   "nom": "Antenne TV et réseau",
+   "famille": "electricite",
+   "icone": "M13 2 4 14h7l-1 8 9-12h-7z",
+   "pitch": "Antenne, parabole, RJ45, fibre",
+   "repere": "dès 180 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de prises",
+     "aide": "",
+     "min": 1,
+     "max": 15,
+     "pas": 1,
+     "def": 3,
+     "unite": "prise(s)"
+    },
+    "unitaire": [
+     60,
+     140
+    ],
+    "lib": "Prises TV ou RJ45",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "antenne",
+        "Antenne / parabole",
+        "",
+        1
+       ],
+       [
+        "rj45",
+        "Réseau RJ45",
+        "",
+        1.1
+       ],
+       [
+        "fibre",
+        "Passage fibre",
+        "",
+        0.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "baie",
+      "Baie de brassage",
+      250,
+      700
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "isolation-ite",
+   "nom": "Isolation thermique par l'extérieur",
+   "famille": "isolation",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "ITE sous enduit ou bardage",
+   "repere": "dès 130 €/m²",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de façade",
+     "aide": "",
+     "min": 30,
+     "max": 400,
+     "pas": 5,
+     "def": 120,
+     "unite": "m²"
+    },
+    "unitaire": [
+     130,
+     210
+    ],
+    "lib": "ITE posée",
+    "base": [
+     1500,
+     3000
+    ],
+    "choix": [
+     [
+      "finition",
+      "Finition",
+      "",
+      [
+       [
+        "enduit",
+        "Sous enduit",
+        "",
+        1
+       ],
+       [
+        "bardage",
+        "Bardage",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "echafaudage",
+      "Échafaudage",
+      8,
+      15,
+      true
+     ],
+     [
+      "appuis",
+      "Appuis de fenêtre",
+      80,
+      160,
+      false
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "isolation-sol",
+   "nom": "Isolation du sol et du vide sanitaire",
+   "famille": "isolation",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Plancher bas, garage, sous-sol, cave",
+   "repere": "dès 30 €/m²",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 10,
+     "max": 200,
+     "pas": 5,
+     "def": 60,
+     "unite": "m²"
+    },
+    "unitaire": [
+     30,
+     60
+    ],
+    "lib": "Isolation posée",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "technique",
+      "Technique",
+      "",
+      [
+       [
+        "panneaux",
+        "Panneaux sous plafond",
+        "",
+        1
+       ],
+       [
+        "flocage",
+        "Flocage",
+        "",
+        0.9
+       ],
+       [
+        "vide",
+        "Vide sanitaire (rampant)",
+        "+25 %",
+        1.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [],
+    "evac": [
+     100,
+     250
+    ]
+   }
+  },
+  {
+   "id": "audit-energetique",
+   "nom": "Audit énergétique",
+   "famille": "isolation",
+   "icone": "M11 4.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM16 16l4.5 4.5",
+   "pitch": "Audit réglementaire, scénarios de travaux",
+   "repere": "dès 600 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface habitable",
+     "aide": "",
+     "min": 30,
+     "max": 300,
+     "pas": 5,
+     "def": 110,
+     "unite": "m²"
+    },
+    "unitaire": [
+     4,
+     7
+    ],
+    "lib": "Audit (visite, rapport, scénarios)",
+    "base": [
+     350,
+     600
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "reglementaire",
+        "Réglementaire (vente)",
+        "",
+        1
+       ],
+       [
+        "accompagnement",
+        "Mon Accompagnateur Rénov'",
+        "×2,5",
+        2.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "thermographie",
+      "Thermographie",
+      200,
+      450
+     ],
+     [
+      "infiltro",
+      "Test d'étanchéité à l'air",
+      350,
+      700
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "porte-entree",
+   "nom": "Porte d'entrée",
+   "famille": "menuiseries",
+   "icone": "M6 21V3h12v18M10 12h.01",
+   "pitch": "PVC, alu, bois, blindée",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de portes",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "porte(s)"
+    },
+    "unitaire": [
+     1100,
+     2600
+    ],
+    "lib": "Porte fournie",
+    "base": [
+     400,
+     800
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "pvc",
+        "PVC",
+        "",
+        0.8
+       ],
+       [
+        "alu",
+        "Aluminium",
+        "",
+        1.2
+       ],
+       [
+        "bois",
+        "Bois",
+        "",
+        1.1
+       ],
+       [
+        "blindee",
+        "Blindée",
+        "×1,6",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "serrure",
+      "Serrure connectée",
+      300,
+      800
+     ],
+     [
+      "tierce",
+      "Partie vitrée latérale",
+      600,
+      1500
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "portes-interieures",
+   "nom": "Portes intérieures",
+   "famille": "menuiseries",
+   "icone": "M6 21V3h12v18M10 12h.01",
+   "pitch": "Bloc-porte, coulissante, galandage",
+   "repere": "dès 350 € par porte",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de portes",
+     "aide": "",
+     "min": 1,
+     "max": 15,
+     "pas": 1,
+     "def": 4,
+     "unite": "porte(s)"
+    },
+    "unitaire": [
+     280,
+     650
+    ],
+    "lib": "Porte fournie posée",
+    "base": [
+     100,
+     200
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "battante",
+        "Battante",
+        "",
+        1
+       ],
+       [
+        "coulissante",
+        "Coulissante en applique",
+        "",
+        1.2
+       ],
+       [
+        "galandage",
+        "À galandage",
+        "×2",
+        2
+       ],
+       [
+        "vitree",
+        "Vitrée atelier",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "peinture",
+      "Peinture des portes",
+      90,
+      170,
+      false
+     ]
+    ],
+    "evac": [
+     40,
+     100
+    ]
+   }
+  },
+  {
+   "id": "volets",
+   "nom": "Volets roulants et battants",
+   "famille": "menuiseries",
+   "icone": "M4 4h16v16H4zM12 4v16M4 12h16",
+   "pitch": "Pose, motorisation, remplacement",
+   "repere": "dès 450 € par volet",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de volets",
+     "aide": "",
+     "min": 1,
+     "max": 20,
+     "pas": 1,
+     "def": 5,
+     "unite": "volet(s)"
+    },
+    "unitaire": [
+     380,
+     850
+    ],
+    "lib": "Volet fourni posé",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "roulant",
+        "Roulant électrique",
+        "",
+        1
+       ],
+       [
+        "solaire",
+        "Roulant solaire",
+        "+20 %",
+        1.2
+       ],
+       [
+        "battant",
+        "Battant",
+        "",
+        0.9
+       ],
+       [
+        "motorisation",
+        "Motorisation seule",
+        "",
+        0.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "centralise",
+      "Commande centralisée",
+      150,
+      450
+     ],
+     [
+      "depose",
+      "Dépose des anciens",
+      40,
+      80,
+      false
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "store",
+   "nom": "Store banne et protection solaire",
+   "famille": "menuiseries",
+   "icone": "M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2",
+   "pitch": "Store banne, BSO, moustiquaires",
+   "repere": "dès 1 200 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Largeur",
+     "aide": "",
+     "min": 2,
+     "max": 7,
+     "pas": 0.5,
+     "def": 4,
+     "unite": "m"
+    },
+    "unitaire": [
+     450,
+     900
+    ],
+    "lib": "Store fourni posé",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "banne",
+        "Store banne coffre",
+        "",
+        1
+       ],
+       [
+        "bso",
+        "Brise-soleil orientable",
+        "+40 %",
+        1.4
+       ],
+       [
+        "vertical",
+        "Store vertical",
+        "",
+        0.7
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "motor",
+      "Motorisation",
+      300,
+      700
+     ],
+     [
+      "capteur",
+      "Capteur vent / soleil",
+      150,
+      350
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "fenetre-toit",
+   "nom": "Fenêtre de toit (Velux)",
+   "famille": "menuiseries",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Création ou remplacement",
+   "repere": "dès 1 100 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de fenêtres",
+     "aide": "",
+     "min": 1,
+     "max": 6,
+     "pas": 1,
+     "def": 1,
+     "unite": "fenêtre(s)"
+    },
+    "unitaire": [
+     900,
+     1800
+    ],
+    "lib": "Fenêtre fournie posée",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "remplacement",
+        "Remplacement",
+        "",
+        0.8
+       ],
+       [
+        "creation",
+        "Création",
+        "",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "volet",
+      "Volet solaire",
+      450,
+      900
+     ],
+     [
+      "store",
+      "Store occultant",
+      120,
+      300
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "vitrerie",
+   "nom": "Vitrerie et remplacement de vitre",
+   "famille": "menuiseries",
+   "icone": "M4 4h16v16H4zM12 4v16M4 12h16",
+   "pitch": "Vitre cassée, double vitrage, miroir",
+   "repere": "dès 150 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface vitrée",
+     "aide": "",
+     "min": 0.3,
+     "max": 10,
+     "pas": 0.1,
+     "def": 1,
+     "unite": "m²"
+    },
+    "unitaire": [
+     150,
+     320
+    ],
+    "lib": "Vitrage fourni posé",
+    "base": [
+     90,
+     150
+    ],
+    "choix": [
+     [
+      "type",
+      "Vitrage",
+      "",
+      [
+       [
+        "simple",
+        "Simple",
+        "",
+        0.6
+       ],
+       [
+        "double",
+        "Double vitrage",
+        "",
+        1
+       ],
+       [
+        "securit",
+        "Sécurit / feuilleté",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "film",
+      "Film solaire",
+      40,
+      80,
+      true
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "serrurerie",
+   "nom": "Serrurerie et ouverture de porte",
+   "famille": "menuiseries",
+   "icone": "M15 7a4 4 0 1 1-3.5 6L4 20.5 2.5 19l1.5-1.5L2.5 16 4 14.5l7.5-7.5A4 4 0 0 1 15 7z",
+   "pitch": "Porte claquée, serrure, blindage",
+   "repere": "dès 120 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de serrures",
+     "aide": "",
+     "min": 1,
+     "max": 4,
+     "pas": 1,
+     "def": 1,
+     "unite": "serrure(s)"
+    },
+    "unitaire": [
+     120,
+     380
+    ],
+    "lib": "Intervention",
+    "base": [
+     60,
+     120
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "ouverture",
+        "Ouverture de porte",
+        "",
+        0.8
+       ],
+       [
+        "cylindre",
+        "Changement de cylindre",
+        "",
+        1
+       ],
+       [
+        "multipoints",
+        "Serrure 3 points",
+        "×2",
+        2
+       ],
+       [
+        "blindage",
+        "Blindage de porte",
+        "×4",
+        4
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "garde-corps",
+   "nom": "Garde-corps et ferronnerie",
+   "famille": "menuiseries",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Garde-corps verre, inox, fer forgé",
+   "repere": "dès 250 €/ml",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur",
+     "aide": "",
+     "min": 1,
+     "max": 30,
+     "pas": 0.5,
+     "def": 5,
+     "unite": "ml"
+    },
+    "unitaire": [
+     250,
+     550
+    ],
+    "lib": "Garde-corps fourni posé",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "alu",
+        "Aluminium",
+        "",
+        0.9
+       ],
+       [
+        "inox",
+        "Inox câbles",
+        "",
+        1
+       ],
+       [
+        "verre",
+        "Verre",
+        "+30 %",
+        1.3
+       ],
+       [
+        "fer",
+        "Fer forgé sur mesure",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "toiture-reparation",
+   "nom": "Réparation de toiture et fuite",
+   "famille": "toiture",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Tuiles cassées, infiltration, tempête",
+   "repere": "dès 350 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface à reprendre",
+     "aide": "",
+     "min": 1,
+     "max": 40,
+     "pas": 1,
+     "def": 5,
+     "unite": "m²"
+    },
+    "unitaire": [
+     60,
+     140
+    ],
+    "lib": "Remplacement des éléments abîmés",
+    "base": [
+     300,
+     600
+    ],
+    "choix": [
+     [
+      "couverture",
+      "Couverture",
+      "",
+      [
+       [
+        "tuile",
+        "Tuiles",
+        "",
+        1
+       ],
+       [
+        "ardoise",
+        "Ardoise",
+        "+30 %",
+        1.3
+       ],
+       [
+        "zinc",
+        "Zinc / bac acier",
+        "",
+        1.1
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "nacelle",
+      "Nacelle",
+      300,
+      700
+     ],
+     [
+      "bache",
+      "Bâchage provisoire",
+      200,
+      500
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "demoussage",
+   "nom": "Démoussage et traitement de toiture",
+   "famille": "toiture",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Nettoyage, anti-mousse, hydrofuge",
+   "repere": "dès 15 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de toiture",
+     "aide": "",
+     "min": 30,
+     "max": 300,
+     "pas": 5,
+     "def": 100,
+     "unite": "m²"
+    },
+    "unitaire": [
+     15,
+     30
+    ],
+    "lib": "Nettoyage et traitement",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "traitement",
+      "Traitement",
+      "",
+      [
+       [
+        "demoussage",
+        "Démoussage + anti-mousse",
+        "",
+        1
+       ],
+       [
+        "hydrofuge",
+        "+ Hydrofuge",
+        "+40 %",
+        1.4
+       ],
+       [
+        "peinture",
+        "Peinture de toiture",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "gouttieres",
+      "Nettoyage des gouttières",
+      150,
+      350
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "gouttieres",
+   "nom": "Gouttières et zinguerie",
+   "famille": "toiture",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Gouttières, descentes, bandeaux",
+   "repere": "dès 40 €/ml",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur",
+     "aide": "",
+     "min": 5,
+     "max": 100,
+     "pas": 1,
+     "def": 25,
+     "unite": "ml"
+    },
+    "unitaire": [
+     40,
+     90
+    ],
+    "lib": "Gouttières posées",
+    "base": [
+     200,
+     400
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "pvc",
+        "PVC",
+        "",
+        0.7
+       ],
+       [
+        "alu",
+        "Alu sans soudure",
+        "",
+        1
+       ],
+       [
+        "zinc",
+        "Zinc",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "descentes",
+      "Descentes (par unité)",
+      90,
+      180,
+      false
+     ],
+     [
+      "bandeau",
+      "Habillage bandeaux (par ml)",
+      35,
+      70,
+      false
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "charpente",
+   "nom": "Charpente",
+   "famille": "toiture",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Réparation, renforcement, traitement, création",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de toiture",
+     "aide": "",
+     "min": 10,
+     "max": 250,
+     "pas": 5,
+     "def": 80,
+     "unite": "m²"
+    },
+    "unitaire": [
+     45,
+     120
+    ],
+    "lib": "Travaux de charpente",
+    "base": [
+     800,
+     1500
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "traitement",
+        "Traitement",
+        "",
+        0.3
+       ],
+       [
+        "renfort",
+        "Renforcement / réparation",
+        "",
+        1
+       ],
+       [
+        "neuve",
+        "Charpente neuve",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "expertise",
+      "Diagnostic charpente",
+      250,
+      600
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "etancheite",
+   "nom": "Étanchéité de toit-terrasse",
+   "famille": "toiture",
+   "icone": "M2 12 12 4l10 8M5 10v10h14V10",
+   "pitch": "Membrane, résine, balcon, végétalisation",
+   "repere": "dès 70 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 40,
+     "unite": "m²"
+    },
+    "unitaire": [
+     70,
+     140
+    ],
+    "lib": "Étanchéité",
+    "base": [
+     400,
+     900
+    ],
+    "choix": [
+     [
+      "systeme",
+      "Système",
+      "",
+      [
+       [
+        "bitume",
+        "Bitume bicouche",
+        "",
+        1
+       ],
+       [
+        "epdm",
+        "Membrane EPDM",
+        "",
+        1.05
+       ],
+       [
+        "resine",
+        "Résine liquide",
+        "",
+        1.1
+       ],
+       [
+        "vegetal",
+        "Végétalisée",
+        "+50 %",
+        1.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "isolant",
+      "Isolation",
+      35,
+      70,
+      true
+     ],
+     [
+      "releves",
+      "Relevés et évacuations",
+      300,
+      900
+     ]
+    ],
+    "evac": [
+     200,
+     500
+    ]
+   }
+  },
+  {
+   "id": "ravalement",
+   "nom": "Ravalement de façade",
+   "famille": "toiture",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Nettoyage, enduit, peinture, fissures",
+   "repere": "dès 40 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface de façade",
+     "aide": "",
+     "min": 30,
+     "max": 500,
+     "pas": 5,
+     "def": 120,
+     "unite": "m²"
+    },
+    "unitaire": [
+     40,
+     95
+    ],
+    "lib": "Ravalement",
+    "base": [
+     800,
+     1600
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "nettoyage",
+        "Nettoyage + hydrofuge",
+        "",
+        0.5
+       ],
+       [
+        "peinture",
+        "Peinture de façade",
+        "",
+        1
+       ],
+       [
+        "enduit",
+        "Nouvel enduit",
+        "+40 %",
+        1.4
+       ],
+       [
+        "pierre",
+        "Pierre de taille",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ],
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "echafaudage",
+      "Échafaudage",
+      8,
+      15,
+      true
+     ],
+     [
+      "fissures",
+      "Traitement des fissures",
+      300,
+      1200
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "allee",
+   "nom": "Allée, cour et pavage",
+   "famille": "exterieur",
+   "icone": "M3 17h18M3 17l4-10h10l4 10M9 7l-2 10M15 7l2 10",
+   "pitch": "Pavés, enrobé, béton désactivé, gravier",
+   "repere": "dès 45 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 10,
+     "max": 400,
+     "pas": 5,
+     "def": 50,
+     "unite": "m²"
+    },
+    "unitaire": [
+     45,
+     110
+    ],
+    "lib": "Revêtement posé",
+    "base": [
+     500,
+     1000
+    ],
+    "choix": [
+     [
+      "materiau",
+      "Revêtement",
+      "",
+      [
+       [
+        "gravier",
+        "Gravier stabilisé",
+        "",
+        0.5
+       ],
+       [
+        "enrobe",
+        "Enrobé",
+        "",
+        0.8
+       ],
+       [
+        "desactive",
+        "Béton désactivé",
+        "",
+        1
+       ],
+       [
+        "paves",
+        "Pavés",
+        "+20 %",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "bordures",
+      "Bordures (par ml)",
+      25,
+      50,
+      false
+     ],
+     [
+      "evacuation",
+      "Caniveau et évacuation",
+      300,
+      900
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "cloture",
+   "nom": "Clôture et portillon",
+   "famille": "exterieur",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Grillage, panneaux, bois, brise-vue",
+   "repere": "dès 45 €/ml",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur",
+     "aide": "",
+     "min": 5,
+     "max": 150,
+     "pas": 1,
+     "def": 30,
+     "unite": "ml"
+    },
+    "unitaire": [
+     45,
+     140
+    ],
+    "lib": "Clôture posée",
+    "base": [
+     200,
+     450
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "grillage",
+        "Grillage souple",
+        "",
+        0.4
+       ],
+       [
+        "rigide",
+        "Panneaux rigides",
+        "",
+        0.8
+       ],
+       [
+        "bois",
+        "Bois / composite",
+        "",
+        1.2
+       ],
+       [
+        "alu",
+        "Aluminium",
+        "+60 %",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "portillon",
+      "Portillon",
+      400,
+      1100
+     ],
+     [
+      "muret",
+      "Muret de soubassement (par ml)",
+      90,
+      180,
+      false
+     ]
+    ],
+    "evac": [
+     100,
+     300
+    ]
+   }
+  },
+  {
+   "id": "portail",
+   "nom": "Portail et motorisation",
+   "famille": "exterieur",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Battant, coulissant, motorisé, interphone",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de portails",
+     "aide": "",
+     "min": 1,
+     "max": 2,
+     "pas": 1,
+     "def": 1,
+     "unite": "portail(s)"
+    },
+    "unitaire": [
+     1200,
+     3200
+    ],
+    "lib": "Portail fourni posé",
+    "base": [
+     400,
+     900
+    ],
+    "choix": [
+     [
+      "type",
+      "Ouverture",
+      "",
+      [
+       [
+        "battant",
+        "Battant",
+        "",
+        1
+       ],
+       [
+        "coulissant",
+        "Coulissant",
+        "+15 %",
+        1.15
+       ]
+      ]
+     ],
+     [
+      "materiau",
+      "Matériau",
+      "",
+      [
+       [
+        "pvc",
+        "PVC",
+        "",
+        0.7
+       ],
+       [
+        "alu",
+        "Aluminium",
+        "",
+        1
+       ],
+       [
+        "fer",
+        "Fer / acier",
+        "",
+        1.1
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "motor",
+      "Motorisation",
+      600,
+      1500
+     ],
+     [
+      "visiophone",
+      "Visiophone",
+      300,
+      800
+     ],
+     [
+      "piliers",
+      "Piliers maçonnés",
+      600,
+      1500
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "porte-garage",
+   "nom": "Porte de garage",
+   "famille": "exterieur",
+   "icone": "M6 21V3h12v18M10 12h.01",
+   "pitch": "Sectionnelle, basculante, enroulable",
+   "repere": "dès 1 400 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de portes",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "porte(s)"
+    },
+    "unitaire": [
+     1100,
+     2600
+    ],
+    "lib": "Porte fournie posée",
+    "base": [
+     300,
+     600
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "basculante",
+        "Basculante",
+        "",
+        0.75
+       ],
+       [
+        "sectionnelle",
+        "Sectionnelle",
+        "",
+        1
+       ],
+       [
+        "enroulable",
+        "Enroulable",
+        "",
+        1.05
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "motor",
+      "Motorisation",
+      400,
+      900
+     ],
+     [
+      "isolee",
+      "Panneaux isolés",
+      300,
+      700
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "jardin",
+   "nom": "Aménagement de jardin",
+   "famille": "exterieur",
+   "icone": "M12 22v-7M7 15h10l-5-11z",
+   "pitch": "Création, gazon, massifs, arrosage",
+   "repere": "dès 25 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 20,
+     "max": 2000,
+     "pas": 10,
+     "def": 200,
+     "unite": "m²"
+    },
+    "unitaire": [
+     25,
+     60
+    ],
+    "lib": "Aménagement paysager",
+    "base": [
+     500,
+     1200
+    ],
+    "choix": [
+     [
+      "projet",
+      "Projet",
+      "",
+      [
+       [
+        "gazon",
+        "Gazon",
+        "",
+        0.5
+       ],
+       [
+        "creation",
+        "Création complète",
+        "",
+        1
+       ],
+       [
+        "synthetique",
+        "Gazon synthétique",
+        "×1,6",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "arrosage",
+      "Arrosage automatique",
+      8,
+      16,
+      true
+     ],
+     [
+      "plantes",
+      "Haie (par ml)",
+      25,
+      60,
+      false
+     ],
+     [
+      "entretien",
+      "Entretien annuel",
+      600,
+      1800
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "elagage",
+   "nom": "Élagage et abattage",
+   "famille": "exterieur",
+   "icone": "M12 22v-7M7 15h10l-5-11z",
+   "pitch": "Taille, abattage, dessouchage",
+   "repere": "dès 250 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'arbres",
+     "aide": "",
+     "min": 1,
+     "max": 20,
+     "pas": 1,
+     "def": 2,
+     "unite": "arbre(s)"
+    },
+    "unitaire": [
+     200,
+     650
+    ],
+    "lib": "Élagage ou abattage",
+    "base": [
+     100,
+     250
+    ],
+    "choix": [
+     [
+      "hauteur",
+      "Hauteur",
+      "",
+      [
+       [
+        "petit",
+        "Moins de 10 m",
+        "",
+        0.7
+       ],
+       [
+        "moyen",
+        "10 à 20 m",
+        "",
+        1
+       ],
+       [
+        "grand",
+        "Plus de 20 m",
+        "+80 %",
+        1.8
+       ]
+      ]
+     ],
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "elagage",
+        "Élagage",
+        "",
+        1
+       ],
+       [
+        "abattage",
+        "Abattage",
+        "+40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "dessouchage",
+      "Dessouchage (par souche)",
+      150,
+      450,
+      false
+     ],
+     [
+      "evacuation",
+      "Évacuation des végétaux",
+      150,
+      400
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "piscine",
+   "nom": "Piscine",
+   "famille": "exterieur",
+   "icone": "M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0",
+   "pitch": "Coque, béton, liner, rénovation",
+   "repere": "dès 20 000 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface du bassin",
+     "aide": "",
+     "min": 10,
+     "max": 60,
+     "pas": 1,
+     "def": 32,
+     "unite": "m²"
+    },
+    "unitaire": [
+     700,
+     1300
+    ],
+    "lib": "Bassin (terrassement, structure, filtration)",
+    "base": [
+     4000,
+     7000
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "coque",
+        "Coque polyester",
+        "",
+        0.9
+       ],
+       [
+        "beton",
+        "Béton",
+        "",
+        1.15
+       ],
+       [
+        "renov",
+        "Rénovation (liner, filtration)",
+        "",
+        0.25
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "abri",
+      "Abri de piscine",
+      6000,
+      18000
+     ],
+     [
+      "volet",
+      "Volet roulant",
+      4000,
+      9000
+     ],
+     [
+      "chauffage",
+      "Pompe à chaleur piscine",
+      2000,
+      4500
+     ],
+     [
+      "plage",
+      "Plage (par m²)",
+      90,
+      180,
+      false
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "terrassement",
+   "nom": "Terrassement et viabilisation",
+   "famille": "exterieur",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Décaissement, nivellement, tranchées",
+   "repere": "dès 30 €/m³",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Volume de terre",
+     "aide": "",
+     "min": 5,
+     "max": 500,
+     "pas": 5,
+     "def": 40,
+     "unite": "m³"
+    },
+    "unitaire": [
+     30,
+     70
+    ],
+    "lib": "Terrassement",
+    "base": [
+     500,
+     1000
+    ],
+    "choix": [
+     [
+      "sol",
+      "Nature du sol",
+      "",
+      [
+       [
+        "meuble",
+        "Terre meuble",
+        "",
+        1
+       ],
+       [
+        "argile",
+        "Argile",
+        "+20 %",
+        1.2
+       ],
+       [
+        "roche",
+        "Roche",
+        "×1,8",
+        1.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "evacuation",
+      "Évacuation des terres (par m³)",
+      20,
+      40,
+      false
+     ],
+     [
+      "reseaux",
+      "Tranchée réseaux (par ml)",
+      30,
+      70,
+      false
+     ]
+    ],
+    "evac": [
+     300,
+     800
+    ]
+   }
+  },
+  {
+   "id": "abri-jardin",
+   "nom": "Abri de jardin, carport, garage bois",
+   "famille": "exterieur",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Abri, carport, studio de jardin",
+   "repere": "dès 1 500 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 4,
+     "max": 40,
+     "pas": 1,
+     "def": 12,
+     "unite": "m²"
+    },
+    "unitaire": [
+     200,
+     650
+    ],
+    "lib": "Structure fournie posée",
+    "base": [
+     500,
+     1200
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "abri",
+        "Abri de jardin",
+        "",
+        0.6
+       ],
+       [
+        "carport",
+        "Carport",
+        "",
+        0.8
+       ],
+       [
+        "studio",
+        "Studio / bureau isolé",
+        "×2,2",
+        2.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "dalle",
+      "Dalle béton (par m²)",
+      70,
+      130,
+      false
+     ],
+     [
+      "elec",
+      "Électricité",
+      400,
+      1200
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "alarme",
+   "nom": "Alarme et vidéosurveillance",
+   "famille": "securite",
+   "icone": "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z",
+   "pitch": "Alarme, caméras, télésurveillance",
+   "repere": "dès 700 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de détecteurs ou caméras",
+     "aide": "",
+     "min": 2,
+     "max": 20,
+     "pas": 1,
+     "def": 6,
+     "unite": "élément(s)"
+    },
+    "unitaire": [
+     90,
+     220
+    ],
+    "lib": "Équipements posés",
+    "base": [
+     350,
+     700
+    ],
+    "choix": [
+     [
+      "type",
+      "Système",
+      "",
+      [
+       [
+        "alarme",
+        "Alarme sans fil",
+        "",
+        1
+       ],
+       [
+        "camera",
+        "Caméras",
+        "+30 %",
+        1.3
+       ],
+       [
+        "mixte",
+        "Alarme + caméras",
+        "+50 %",
+        1.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "telesurveillance",
+      "Télésurveillance (1re année)",
+      250,
+      450
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "monte-escalier",
+   "nom": "Monte-escalier et accessibilité",
+   "famille": "securite",
+   "icone": "M4 20h4v-4h4v-4h4V8h4",
+   "pitch": "Siège, plateforme, rampe, MaPrimeAdapt'",
+   "repere": "dès 3 500 €",
+   "tva": 5.5,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'étages",
+     "aide": "",
+     "min": 1,
+     "max": 3,
+     "pas": 1,
+     "def": 1,
+     "unite": "étage(s)"
+    },
+    "unitaire": [
+     3000,
+     6500
+    ],
+    "lib": "Équipement posé",
+    "base": [
+     400,
+     800
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "droit",
+        "Siège escalier droit",
+        "",
+        1
+       ],
+       [
+        "tournant",
+        "Escalier tournant",
+        "×2",
+        2
+       ],
+       [
+        "plateforme",
+        "Plateforme / élévateur",
+        "×3",
+        3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "rampe",
+      "Rampe d'accès extérieure",
+      800,
+      2500
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "detecteurs",
+   "nom": "Détecteurs de fumée et CO",
+   "famille": "securite",
+   "icone": "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z",
+   "pitch": "DAAF, monoxyde de carbone",
+   "repere": "dès 60 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de détecteurs",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 1,
+     "def": 2,
+     "unite": "détecteur(s)"
+    },
+    "unitaire": [
+     30,
+     80
+    ],
+    "lib": "Détecteurs posés",
+    "base": [
+     40,
+     80
+    ],
+    "choix": [
+     [
+      "type",
+      "Type",
+      "",
+      [
+       [
+        "daaf",
+        "Fumée (DAAF)",
+        "",
+        1
+       ],
+       [
+        "co",
+        "Monoxyde de carbone",
+        "",
+        1.4
+       ],
+       [
+        "relies",
+        "Interconnectés",
+        "+60 %",
+        1.6
+       ]
+      ]
+     ]
+    ],
+    "extras": [],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "diagnostic",
+   "nom": "Diagnostics immobiliers",
+   "famille": "traitements",
+   "icone": "M11 4.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM16 16l4.5 4.5",
+   "pitch": "Vente, location : DPE, amiante, plomb…",
+   "repere": "Estimation dédiée",
+   "tva": 20,
+   "parcours": "Parcours Diagnostic.dc.html",
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de diagnostics",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 1,
+     "def": 5,
+     "unite": "diagnostic(s)"
+    },
+    "unitaire": [
+     60,
+     150
+    ],
+    "lib": "Diagnostics",
+    "base": [
+     0,
+     0
+    ],
+    "choix": [],
+    "extras": [],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "traitement-bois",
+   "nom": "Termites et insectes du bois",
+   "famille": "traitements",
+   "icone": "M12 8a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 14v6M6 10l3 2M18 10l-3 2M6 17l3-2M18 17l-3-2",
+   "pitch": "Termites, capricornes, mérule",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface traitée",
+     "aide": "",
+     "min": 10,
+     "max": 250,
+     "pas": 5,
+     "def": 80,
+     "unite": "m²"
+    },
+    "unitaire": [
+     18,
+     45
+    ],
+    "lib": "Traitement curatif",
+    "base": [
+     500,
+     1000
+    ],
+    "choix": [
+     [
+      "nuisible",
+      "Problème",
+      "",
+      [
+       [
+        "xylophages",
+        "Capricornes, vrillettes",
+        "",
+        0.8
+       ],
+       [
+        "termites",
+        "Termites",
+        "",
+        1
+       ],
+       [
+        "merule",
+        "Mérule",
+        "×2,5",
+        2.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "preventif",
+      "Barrière préventive (par ml)",
+      60,
+      120,
+      false
+     ],
+     [
+      "diagnostic",
+      "Diagnostic",
+      150,
+      400
+     ]
+    ],
+    "evac": [
+     100,
+     300
+    ]
+   }
+  },
+  {
+   "id": "nuisibles",
+   "nom": "Nuisibles",
+   "famille": "traitements",
+   "icone": "M12 8a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 14v6M6 10l3 2M18 10l-3 2M6 17l3-2M18 17l-3-2",
+   "pitch": "Rats, frelons, punaises, cafards",
+   "repere": "dès 120 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de passages",
+     "aide": "",
+     "min": 1,
+     "max": 4,
+     "pas": 1,
+     "def": 1,
+     "unite": "passage(s)"
+    },
+    "unitaire": [
+     100,
+     220
+    ],
+    "lib": "Intervention",
+    "base": [
+     40,
+     90
+    ],
+    "choix": [
+     [
+      "nuisible",
+      "Nuisible",
+      "",
+      [
+       [
+        "frelons",
+        "Nid de frelons / guêpes",
+        "",
+        1
+       ],
+       [
+        "rongeurs",
+        "Rats, souris",
+        "",
+        1.1
+       ],
+       [
+        "punaises",
+        "Punaises de lit",
+        "×2,5",
+        2.5
+       ],
+       [
+        "cafards",
+        "Cafards",
+        "",
+        1.3
+       ]
+      ]
+     ],
+     [
+      "delai",
+      "Délai",
+      "Une intervention en urgence est majorée.",
+      [
+       [
+        "planifie",
+        "Planifié",
+        "Sous quelques semaines",
+        1
+       ],
+       [
+        "rapide",
+        "Sous 48 h",
+        "+15 %",
+        1.15
+       ],
+       [
+        "urgence",
+        "Urgence",
+        "Jour même · +40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "prevention",
+      "Contrat de prévention",
+      150,
+      400
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "petits-travaux",
+   "nom": "Petits travaux et bricolage",
+   "famille": "depannage",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Montage, fixations, petites réparations",
+   "repere": "dès 45 €/h",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Durée estimée",
+     "aide": "",
+     "min": 1,
+     "max": 16,
+     "pas": 1,
+     "def": 3,
+     "unite": "heure(s)"
+    },
+    "unitaire": [
+     45,
+     65
+    ],
+    "lib": "Main-d'œuvre",
+    "base": [
+     30,
+     60
+    ],
+    "choix": [
+     [
+      "nature",
+      "Nature",
+      "",
+      [
+       [
+        "montage",
+        "Montage de meubles",
+        "",
+        1
+       ],
+       [
+        "fixation",
+        "Fixations, étagères, TV",
+        "",
+        1
+       ],
+       [
+        "reparation",
+        "Petites réparations",
+        "",
+        1.1
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "fournitures",
+      "Petites fournitures",
+      20,
+      80
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "nettoyage-chantier",
+   "nom": "Nettoyage de fin de chantier",
+   "famille": "depannage",
+   "icone": "M14 7l3-3 3 3-3 3M4 20l9-9M13 11l-2-2",
+   "pitch": "Après travaux, avant emménagement",
+   "repere": "dès 6 €/m²",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 20,
+     "max": 300,
+     "pas": 5,
+     "def": 80,
+     "unite": "m²"
+    },
+    "unitaire": [
+     6,
+     12
+    ],
+    "lib": "Nettoyage",
+    "base": [
+     80,
+     150
+    ],
+    "choix": [
+     [
+      "niveau",
+      "Niveau",
+      "",
+      [
+       [
+        "leger",
+        "Léger",
+        "",
+        0.8
+       ],
+       [
+        "complet",
+        "Complet (vitres comprises)",
+        "",
+        1
+       ],
+       [
+        "gros",
+        "Gros chantier",
+        "+50 %",
+        1.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "remise-en-etat",
+   "nom": "Remise en état après sinistre",
+   "famille": "depannage",
+   "icone": "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+   "pitch": "Dégât des eaux, incendie, inondation",
+   "repere": "dès 1 500 €",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface touchée",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 25,
+     "unite": "m²"
+    },
+    "unitaire": [
+     80,
+     220
+    ],
+    "lib": "Remise en état (séchage, reprises, peinture)",
+    "base": [
+     500,
+     1200
+    ],
+    "choix": [
+     [
+      "sinistre",
+      "Sinistre",
+      "",
+      [
+       [
+        "eau",
+        "Dégât des eaux",
+        "",
+        1
+       ],
+       [
+        "incendie",
+        "Incendie / fumée",
+        "+60 %",
+        1.6
+       ],
+       [
+        "inondation",
+        "Inondation",
+        "+30 %",
+        1.3
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "assechement",
+      "Assèchement",
+      300,
+      900
+     ],
+     [
+      "rapport",
+      "Devis pour l'assurance",
+      0,
+      0
+     ]
+    ],
+    "evac": [
+     200,
+     600
+    ]
+   }
+  },
+  {
+   "id": "pierre-marbre",
+   "nom": "Pierre de taille, marbre et granit",
+   "famille": "gros-oeuvre",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Restauration de pierre, plans et escaliers en marbre",
+   "repere": "dès 150 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface ou longueur",
+     "aide": "",
+     "min": 1,
+     "max": 100,
+     "pas": 1,
+     "def": 8,
+     "unite": "m²"
+    },
+    "unitaire": [
+     150,
+     380
+    ],
+    "lib": "Taille, pose ou restauration",
+    "base": [
+     400,
+     900
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "restauration",
+        "Restauration / rejointoiement",
+        "",
+        0.6
+       ],
+       [
+        "pose",
+        "Pose de pierre ou marbre",
+        "",
+        1
+       ],
+       [
+        "sculpture",
+        "Taille sur mesure",
+        "×2",
+        2
+       ]
+      ]
+     ],
+     [
+      "gamme",
+      "Gamme",
+      "Matériaux et équipements.",
+      [
+       [
+        "eco",
+        "Économique",
+        "Entrée de gamme",
+        0.82
+       ],
+       [
+        "std",
+        "Standard",
+        "Le plus choisi",
+        1
+       ],
+       [
+        "premium",
+        "Haut de gamme",
+        "Finitions soignées",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "traitement",
+      "Traitement hydrofuge",
+      12,
+      25,
+      true
+     ]
+    ],
+    "evac": [
+     150,
+     400
+    ]
+   }
+  },
+  {
+   "id": "staff",
+   "nom": "Moulures, corniches et staff",
+   "famille": "interieur",
+   "icone": "M4 4v16M9 4v16M14 4v16M19 4v16M2 8h20M2 16h20",
+   "pitch": "Création ou restauration de moulures",
+   "repere": "dès 60 €/ml",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Longueur de moulures",
+     "aide": "",
+     "min": 2,
+     "max": 80,
+     "pas": 1,
+     "def": 15,
+     "unite": "ml"
+    },
+    "unitaire": [
+     60,
+     140
+    ],
+    "lib": "Moulures posées ou restaurées",
+    "base": [
+     300,
+     600
+    ],
+    "choix": [
+     [
+      "travaux",
+      "Travaux",
+      "",
+      [
+       [
+        "pose",
+        "Pose de moulures neuves",
+        "",
+        1
+       ],
+       [
+        "restauration",
+        "Restauration à l'identique",
+        "+50 %",
+        1.5
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "rosace",
+      "Rosace",
+      250,
+      800
+     ],
+     [
+      "peinture",
+      "Mise en peinture",
+      12,
+      25,
+      true
+     ]
+    ],
+    "evac": [
+     80,
+     200
+    ]
+   }
+  },
+  {
+   "id": "platrerie",
+   "nom": "Plâtrerie traditionnelle",
+   "famille": "interieur",
+   "icone": "M3 6h18v12H3zM3 12h18M9 6v6M15 12v6",
+   "pitch": "Enduit plâtre, reprise de murs et plafonds",
+   "repere": "dès 35 €/m²",
+   "tva": 10,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Surface",
+     "aide": "",
+     "min": 5,
+     "max": 200,
+     "pas": 5,
+     "def": 30,
+     "unite": "m²"
+    },
+    "unitaire": [
+     35,
+     70
+    ],
+    "lib": "Enduit plâtre",
+    "base": [
+     250,
+     500
+    ],
+    "choix": [
+     [
+      "etat",
+      "État de l'existant",
+      "La préparation pèse sur le prix.",
+      [
+       [
+        "bon",
+        "Bon état",
+        "",
+        1
+       ],
+       [
+        "moyen",
+        "À reprendre",
+        "+15 %",
+        1.15
+       ],
+       [
+        "mauvais",
+        "Dégradé",
+        "+35 %",
+        1.35
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "plafond",
+      "Plafonds",
+      8,
+      18,
+      true
+     ]
+    ],
+    "evac": [
+     100,
+     250
+    ]
+   }
+  },
+  {
+   "id": "bornage",
+   "nom": "Bornage et relevé de géomètre",
+   "famille": "gros-oeuvre",
+   "icone": "M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16",
+   "pitch": "Bornage, division, plan topographique",
+   "repere": "dès 900 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre de limites ou lots",
+     "aide": "",
+     "min": 1,
+     "max": 6,
+     "pas": 1,
+     "def": 2,
+     "unite": "limite(s)"
+    },
+    "unitaire": [
+     350,
+     700
+    ],
+    "lib": "Prestation du géomètre-expert",
+    "base": [
+     500,
+     900
+    ],
+    "choix": [
+     [
+      "mission",
+      "Mission",
+      "",
+      [
+       [
+        "bornage",
+        "Bornage",
+        "",
+        1
+       ],
+       [
+        "division",
+        "Division parcellaire",
+        "+60 %",
+        1.6
+       ],
+       [
+        "topo",
+        "Plan topographique",
+        "",
+        0.8
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "pv",
+      "Procès-verbal et publication",
+      150,
+      400
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "etude-structure",
+   "nom": "Étude de structure ou de sol",
+   "famille": "gros-oeuvre",
+   "icone": "M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16",
+   "pitch": "Note de calcul, étude G2, bureau d'études",
+   "repere": "dès 500 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Nombre d'ouvrages étudiés",
+     "aide": "",
+     "min": 1,
+     "max": 5,
+     "pas": 1,
+     "def": 1,
+     "unite": "ouvrage(s)"
+    },
+    "unitaire": [
+     400,
+     900
+    ],
+    "lib": "Étude et note de calcul",
+    "base": [
+     150,
+     300
+    ],
+    "choix": [
+     [
+      "type",
+      "Étude",
+      "",
+      [
+       [
+        "structure",
+        "Structure (poutre, mur porteur)",
+        "",
+        1
+       ],
+       [
+        "sol",
+        "Étude de sol G2",
+        "×2,5",
+        2.5
+       ],
+       [
+        "thermique",
+        "Étude thermique RE2020",
+        "",
+        1.2
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "visite",
+      "Visite sur place",
+      150,
+      350
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "travaux-hauteur",
+   "nom": "Travaux en hauteur et accès difficile",
+   "famille": "toiture",
+   "icone": "M4 20h4v-4h4v-4h4V8h4",
+   "pitch": "Cordistes, nacelle, échafaudage",
+   "repere": "dès 450 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "n",
+     "label": "Durée estimée",
+     "aide": "",
+     "min": 1,
+     "max": 10,
+     "pas": 1,
+     "def": 1,
+     "unite": "jour(s)"
+    },
+    "unitaire": [
+     450,
+     850
+    ],
+    "lib": "Équipe et matériel",
+    "base": [
+     200,
+     450
+    ],
+    "choix": [
+     [
+      "moyen",
+      "Moyen d'accès",
+      "",
+      [
+       [
+        "corde",
+        "Cordistes",
+        "",
+        1
+       ],
+       [
+        "nacelle",
+        "Nacelle",
+        "",
+        1.1
+       ],
+       [
+        "echafaudage",
+        "Échafaudage",
+        "",
+        0.9
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "autorisation",
+      "Autorisation de voirie",
+      80,
+      250
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "forage",
+   "nom": "Forage et puits",
+   "famille": "exterieur",
+   "icone": "M5 6h14v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zM5 10h14",
+   "pitch": "Forage domestique, pompe immergée",
+   "repere": "dès 3 000 €",
+   "tva": 20,
+   "parcours": null,
+   "tarif": {
+    "q": {
+     "kind": "s",
+     "label": "Profondeur",
+     "aide": "",
+     "min": 10,
+     "max": 150,
+     "pas": 5,
+     "def": 40,
+     "unite": "m"
+    },
+    "unitaire": [
+     60,
+     120
+    ],
+    "lib": "Forage",
+    "base": [
+     900,
+     1800
+    ],
+    "choix": [
+     [
+      "sol",
+      "Terrain",
+      "",
+      [
+       [
+        "meuble",
+        "Sédimentaire",
+        "",
+        1
+       ],
+       [
+        "roche",
+        "Roche",
+        "+40 %",
+        1.4
+       ]
+      ]
+     ]
+    ],
+    "extras": [
+     [
+      "pompe",
+      "Pompe immergée",
+      800,
+      2000
+     ],
+     [
+      "declaration",
+      "Déclaration en mairie",
+      0,
+      50
+     ]
+    ],
+    "evac": [
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}

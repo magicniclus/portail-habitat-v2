@@ -1,0 +1,305 @@
+{
+  "_source": "designs/Diagnostic Immobilier Rive Droite.dc.html (VILLES, ORDRE)",
+  "_note": "Seed de communes/{slug}. Population légale Insee 2023.",
+  "ordre": [
+    "cenon",
+    "lormont",
+    "floirac",
+    "ambares",
+    "artigues",
+    "bassens",
+    "carbon-blanc",
+    "bouliac",
+    "ambes",
+    "saint-louis",
+    "saint-vincent"
+  ],
+  "communes": {
+    "cenon": {
+      "nom": "Cenon",
+      "cp": "33150",
+      "insee": "33119",
+      "pop": "26 834",
+      "superficie": "5,52 km²",
+      "prix": "2 888 €/m² en appartement et 3 434 €/m² en maison (janvier 2026)",
+      "intro": "Commune la plus dense de la rive droite, Cenon superpose trois âges de bâti : les échoppes et maisons de pierre du bas de la ville, les grands ensembles des années 1960-1970 des coteaux, et les pavillons du Haut-Cenon. Autant dire que le dossier de diagnostics n'a presque jamais la même composition d'une rue à l'autre.",
+      "bati": "Dans le bas de Cenon, le bâti d'avant 1949 est fréquent : plomb et amiante s'ajoutent alors systématiquement au dossier de vente. Sur les coteaux, les résidences construites entre 1960 et 1975 relèvent toutes de l'amiante, avec des colonnes gaz et des tableaux électriques souvent d'origine. Les pavillons des années 1980-1990 s'en sortent avec DPE, ERP, termites et les deux états gaz et électricité.",
+      "secteurs": "Bas-Cenon, Haut-Cenon, La Morlette, Palmer, Le Cypressat, quartier de la Buttinière, Les Gravières, abords du tramway A.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite. Le coteau cenonnais compte aussi d'anciennes carrières souterraines de pierre : leur présence est signalée dans l'état des risques lorsqu'elle concerne la parcelle.",
+      "frequents": [
+        {
+          "titre": "Échoppes du bas de Cenon",
+          "texte": "Construction souvent antérieure à 1949 : CREP plomb obligatoire, et amiante sur les rénovations d'après-guerre (colles de carrelage, conduits, fibrociment)."
+        },
+        {
+          "titre": "Résidences des coteaux, 1960-1975",
+          "texte": "Amiante systématique, installations gaz et électricité de plus de 15 ans, mesurage Carrez pour la copropriété."
+        },
+        {
+          "titre": "Vente avec DPE ancien",
+          "texte": "Un DPE réalisé avant juillet 2021 n'est plus valable. Sur ce parc énergivore, une étiquette E, F ou G déclenche l'audit énergétique pour une maison."
+        }
+      ]
+    },
+    "lormont": {
+      "nom": "Lormont",
+      "cp": "33310",
+      "insee": "33249",
+      "pop": "25 769",
+      "superficie": "7,36 km²",
+      "prix": "environ 2 520 €/m² tous biens confondus (février 2026)",
+      "intro": "Entre le vieux bourg au bord de la Garonne et les grands quartiers de Génicart et Carriet, Lormont concentre un parc largement antérieur à 1997 : l'amiante y est presque systématique, et le plomb fréquent dans le bâti ancien du bord de fleuve.",
+      "bati": "Le Vieux Lormont aligne des maisons de pierre et des échoppes souvent antérieures à 1949 : plomb obligatoire, amiante sur les reprises d'après-guerre. Génicart, Carriet et Bois Fleuri datent des grandes opérations des années 1960-1970 : amiante, gaz et électricité de plus de 15 ans, mesurage Carrez en copropriété. Les lotissements plus récents des hauteurs allègent nettement le dossier.",
+      "secteurs": "Vieux Lormont, Génicart, Carriet, Bois Fleuri, Lissandre, Les Iris, abords du pont d'Aquitaine et de la Buttinière.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite. La pente lormontaise et les anciennes carrières du coteau peuvent également figurer au dossier.",
+      "frequents": [
+        {
+          "titre": "Vieux bourg au bord de la Garonne",
+          "texte": "Bâti d'avant 1949 : CREP plomb, amiante, et diagnostic mérule conseillé compte tenu de l'humidité de proximité du fleuve."
+        },
+        {
+          "titre": "Génicart et Carriet",
+          "texte": "Grands ensembles 1960-1975 : amiante obligatoire, états gaz et électricité, Carrez pour les lots de copropriété."
+        },
+        {
+          "titre": "Mise en location",
+          "texte": "DPE, ERP, surface habitable loi Boutin et plomb si le logement est antérieur à 1949 : validité 6 ans pour le CREP en location."
+        }
+      ]
+    },
+    "floirac": {
+      "nom": "Floirac",
+      "cp": "33270",
+      "insee": "33167",
+      "pop": "18 300",
+      "superficie": "8,59 km²",
+      "prix": "environ 3 150 €/m² tous biens confondus (février 2026)",
+      "intro": "Floirac mêle un bourg ancien, le plateau de Dravemont construit dans les années 1960-1970, et les programmes neufs des quais autour de l'Arena. Trois parcs, trois dossiers de diagnostics très différents.",
+      "bati": "Le bourg et les rues anciennes comptent du bâti d'avant 1949, donc du plomb. Dravemont et les collectifs du plateau relèvent de l'amiante et cumulent souvent gaz et électricité anciens. À l'inverse, les logements livrés depuis 2011 sur les quais se limitent au DPE, à l'ERP et au mesurage Carrez, avec le termites pour la vente.",
+      "secteurs": "Bourg de Floirac, Dravemont, quartier de la Libération, Jean Jaurès, coteau de La Burthe, quais et secteur de l'Arena.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite. Les secteurs bas, proches de la Garonne, relèvent en plus du risque d'inondation : il est mentionné dans l'état des risques.",
+      "frequents": [
+        {
+          "titre": "Collectifs de Dravemont",
+          "texte": "Amiante obligatoire, installations de plus de 15 ans, mesurage Carrez : le dossier de vente type dépasse souvent 450 €."
+        },
+        {
+          "titre": "Maisons du bourg",
+          "texte": "Plomb si construction avant 1949, amiante avant juillet 1997, termites comme partout en Gironde."
+        },
+        {
+          "titre": "Programmes neufs des quais",
+          "texte": "Dossier réduit : DPE, ERP, Carrez et termites. Aucun amiante ni plomb à prévoir."
+        }
+      ]
+    },
+    "ambares": {
+      "nom": "Ambarès-et-Lagrave",
+      "cp": "33440",
+      "insee": "33003",
+      "pop": "17 644",
+      "superficie": "24,76 km²",
+      "prix": "",
+      "intro": "Commune la plus étendue de la rive droite, Ambarès-et-Lagrave est majoritairement pavillonnaire, avec un bourg ancien et de larges secteurs de palus en zone inondable. Assainissement individuel et risque d'inondation y pèsent souvent plus que l'amiante.",
+      "bati": "Les lotissements des années 1970 à 2000 dominent : amiante pour tout ce qui précède juillet 1997, états gaz et électricité pour les installations de plus de 15 ans. Le bourg et les maisons de palus plus anciennes ajoutent le plomb. Sur les secteurs non raccordés au réseau collectif, le contrôle d'assainissement non collectif devient obligatoire à la vente.",
+      "secteurs": "Bourg d'Ambarès, Lagrave, La Gorp, Sabatey, secteurs de palus de la Presqu'île, abords de la gare.",
+      "risques": "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite.",
+      "frequents": [
+        {
+          "titre": "Maison non raccordée au tout-à-l'égout",
+          "texte": "Contrôle d'assainissement non collectif obligatoire à la vente, valable 3 ans : comptez 130 à 230 €."
+        },
+        {
+          "titre": "Pavillon 1975-1996",
+          "texte": "Amiante obligatoire (fibrociment, conduits, colles), plus les états gaz et électricité."
+        },
+        {
+          "titre": "Zone inondable",
+          "texte": "L'état des risques mentionne le plan de prévention du risque inondation de la Presqu'île : à remettre dès la première visite."
+        }
+      ]
+    },
+    "artigues": {
+      "nom": "Artigues-près-Bordeaux",
+      "cp": "33370",
+      "insee": "33013",
+      "pop": "8 687",
+      "superficie": "7,36 km²",
+      "prix": "",
+      "intro": "Commune résidentielle des coteaux, Artigues-près-Bordeaux est très majoritairement pavillonnaire, avec un parc construit pour l'essentiel entre 1970 et 2000. Le dossier de diagnostics y est souvent plus léger qu'à Cenon ou Lormont.",
+      "bati": "Pour les maisons des années 1970 à 1996, l'amiante reste obligatoire à la vente, accompagné des états gaz et électricité. Le bâti postérieur à 1997 évite amiante et plomb : DPE, ERP, termites et les deux états d'installations suffisent. Le bourg ancien conserve quelques maisons d'avant 1949 soumises au CREP plomb.",
+      "secteurs": "Bourg d'Artigues, Feydeau, Le Loret, Mondésir, abords du parc et du lac.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite.",
+      "frequents": [
+        {
+          "titre": "Maison 1970-1996",
+          "texte": "Amiante, gaz, électricité, DPE, ERP et termites : dossier complet entre 430 et 700 €."
+        },
+        {
+          "titre": "Maison postérieure à 1997",
+          "texte": "Ni amiante ni plomb : DPE, ERP, termites, gaz et électricité si les installations ont plus de 15 ans."
+        },
+        {
+          "titre": "Maison classée E, F ou G",
+          "texte": "Vente d'une maison individuelle : l'audit énergétique s'ajoute au DPE, de 500 à 950 €."
+        }
+      ]
+    },
+    "bassens": {
+      "nom": "Bassens",
+      "cp": "33530",
+      "insee": "33032",
+      "pop": "8 435",
+      "superficie": "10,27 km²",
+      "prix": "",
+      "intro": "Commune portuaire et industrielle, Bassens conserve un important parc de logements ouvriers et de cités construites entre les années 1920 et 1970, sur les hauteurs comme dans le bas de la ville. Amiante et plomb y sont très fréquents.",
+      "bati": "Les cités et maisons de l'entre-deux-guerres relèvent du plomb (construction avant 1949) et fréquemment de l'amiante pour les rénovations d'après-guerre. Les collectifs des années 1950-1970 cumulent amiante, gaz et électricité anciens. Le bas de Bassens, proche du port et de la Garonne, relève en plus du risque d'inondation.",
+      "secteurs": "Le Bousquet, Séguinaud, Meignan, Beauval, bas de Bassens et abords du port.",
+      "risques": "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite. Les activités industrielles du port peuvent aussi faire apparaître des sites et sols pollués dans l'état des risques.",
+      "frequents": [
+        {
+          "titre": "Logement d'avant 1949",
+          "texte": "CREP plomb obligatoire à la vente comme en location, et diagnostic mérule conseillé dans le bas de la commune."
+        },
+        {
+          "titre": "Collectif 1950-1975",
+          "texte": "Amiante obligatoire, gaz et électricité de plus de 15 ans, mesurage Carrez en copropriété."
+        },
+        {
+          "titre": "Proximité du port",
+          "texte": "L'état des risques peut mentionner inondation, sols pollués et risques technologiques : il est remis dès la première visite."
+        }
+      ]
+    },
+    "carbon-blanc": {
+      "nom": "Carbon-Blanc",
+      "cp": "33560",
+      "insee": "33096",
+      "pop": "8 331",
+      "superficie": "3,86 km²",
+      "prix": "",
+      "intro": "Petite commune très compacte, Carbon-Blanc associe un centre-bourg ancien et des lotissements pavillonnaires des années 1960 à 1990. La population y est plutôt âgée, et les installations gaz et électricité souvent d'origine.",
+      "bati": "Le centre-bourg compte des maisons d'avant 1949 soumises au CREP plomb. Les pavillons construits entre 1960 et 1996 relèvent de l'amiante, avec des tableaux électriques et des chaudières gaz fréquemment antérieurs à 15 ans d'âge — donc les deux états d'installations. Les maisons postérieures à 1997 allègent le dossier.",
+      "secteurs": "Centre-bourg, Le Faisan, Bel Air, lotissements pavillonnaires, abords de la voie ferrée.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite.",
+      "frequents": [
+        {
+          "titre": "Pavillon des années 1960-1980",
+          "texte": "Amiante obligatoire, gaz et électricité à contrôler : dossier de vente de 430 à 700 €."
+        },
+        {
+          "titre": "Maison de bourg ancienne",
+          "texte": "Plomb, amiante et termites : prévoyez la visite au plus près de la signature, le termites n'étant valable que 6 mois."
+        },
+        {
+          "titre": "Succession",
+          "texte": "Les diagnostics sont exigés au nom de la succession comme pour toute vente : DPE, ERP, termites et le reste selon l'âge du bien."
+        }
+      ]
+    },
+    "bouliac": {
+      "nom": "Bouliac",
+      "cp": "33270",
+      "insee": "33065",
+      "pop": "3 804",
+      "superficie": "7,48 km²",
+      "prix": "",
+      "intro": "Perchée sur le coteau au sud de la rive droite, Bouliac est une commune résidentielle de maisons individuelles, souvent sur grande parcelle. Assainissement individuel et retrait-gonflement des argiles y sont les deux sujets récurrents.",
+      "bati": "Le parc est dominé par des maisons individuelles, des demeures anciennes du coteau aux villas contemporaines. Avant 1949 : plomb. Avant juillet 1997 : amiante. Sur les parcelles non raccordées au réseau collectif, le contrôle d'assainissement non collectif s'ajoute obligatoirement à la vente.",
+      "secteurs": "Centre-bourg, coteau et belvédère, secteurs pavillonnaires, abords de la route de Latresne.",
+      "risques": "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite. Les mouvements de terrain liés à la pente du coteau peuvent également être mentionnés.",
+      "frequents": [
+        {
+          "titre": "Maison avec fosse",
+          "texte": "Contrôle d'assainissement non collectif obligatoire à la vente, valable 3 ans, 130 à 230 €."
+        },
+        {
+          "titre": "Demeure ancienne du coteau",
+          "texte": "Plomb et amiante, surface souvent supérieure à 150 m² : la visite dure plus longtemps et le pack se situe en haut de fourchette."
+        },
+        {
+          "titre": "Villa contemporaine",
+          "texte": "DPE, ERP et termites suffisent, avec les états gaz et électricité si les installations dépassent 15 ans."
+        }
+      ]
+    },
+    "ambes": {
+      "nom": "Ambès",
+      "cp": "33810",
+      "insee": "33004",
+      "pop": "3 313",
+      "superficie": "28,85 km²",
+      "prix": "",
+      "intro": "À la pointe de la Presqu'île, entre Garonne et Dordogne, Ambès est une commune de palus marquée par le risque d'inondation et la présence de sites industriels. L'état des risques y est le document le plus sensible du dossier.",
+      "bati": "Maisons de palus anciennes, bâti d'avant 1949 dans le bourg, pavillons plus récents en périphérie. Le plomb concerne le parc ancien, l'amiante tout ce qui précède juillet 1997. Beaucoup de parcelles ne sont pas raccordées au réseau collectif : le contrôle d'assainissement devient alors obligatoire.",
+      "secteurs": "Bourg d'Ambès, secteurs de palus, pointe de la Presqu'île, abords des sites industriels.",
+      "risques": "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite. La proximité de sites industriels classés fait apparaître des risques technologiques dans l'état des risques.",
+      "frequents": [
+        {
+          "titre": "Maison de palus",
+          "texte": "Plomb si antérieure à 1949, diagnostic mérule conseillé compte tenu de l'humidité, et assainissement non collectif à contrôler."
+        },
+        {
+          "titre": "Zone inondable",
+          "texte": "Le plan de prévention du risque inondation de la Presqu'île est mentionné dans l'état des risques, valable 6 mois."
+        },
+        {
+          "titre": "Vente d'un bien classé F ou G",
+          "texte": "Audit énergétique obligatoire en plus du DPE pour une maison individuelle : 500 à 950 €."
+        }
+      ]
+    },
+    "saint-louis": {
+      "nom": "Saint-Louis-de-Montferrand",
+      "cp": "33440",
+      "insee": "33434",
+      "pop": "2 051",
+      "superficie": "10,8 km²",
+      "prix": "",
+      "intro": "Commune contrainte de la Presqu'île, Saint-Louis-de-Montferrand est entièrement située en zone basse, entre digues et palus. Petit parc de logements, très majoritairement individuel et ancien.",
+      "bati": "Le bâti ancien du bourg et des palus relève souvent du plomb (avant 1949) et de l'amiante (avant juillet 1997). Les installations gaz et électricité y sont fréquemment d'origine. L'assainissement non collectif concerne une partie des parcelles.",
+      "secteurs": "Centre-bourg, secteurs de palus, abords de la Garonne et des digues.",
+      "risques": "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite.",
+      "frequents": [
+        {
+          "titre": "Bâti ancien en zone basse",
+          "texte": "Plomb, amiante, mérule conseillé : l'humidité du secteur justifie un contrôle parasitaire complémentaire."
+        },
+        {
+          "titre": "Assainissement individuel",
+          "texte": "Contrôle obligatoire à la vente si le bien n'est pas raccordé, valable 3 ans."
+        },
+        {
+          "titre": "État des risques",
+          "texte": "Inondation de la Garonne, sols argileux et zone termites départementale : document valable 6 mois."
+        }
+      ]
+    },
+    "saint-vincent": {
+      "nom": "Saint-Vincent-de-Paul",
+      "cp": "33440",
+      "insee": "33487",
+      "pop": "1 067",
+      "superficie": "13,88 km²",
+      "prix": "",
+      "intro": "Plus petite commune de la rive droite avec un millier d'habitants, Saint-Vincent-de-Paul est un village de la Presqu'île en cours de renouvellement de son centre-bourg. Parc quasi exclusivement individuel.",
+      "bati": "Maisons de bourg et de palus anciennes, pavillons récents liés au projet de centre-bourg. Le plomb concerne le bâti d'avant 1949, l'amiante tout ce qui précède juillet 1997. Les constructions neuves du centre-bourg se limitent au DPE, à l'ERP et au termites pour la vente.",
+      "secteurs": "Centre-bourg, secteurs de palus, abords de la Dordogne.",
+      "risques": "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite.",
+      "frequents": [
+        {
+          "titre": "Maison ancienne du bourg",
+          "texte": "Plomb, amiante, termites et états gaz et électricité : dossier complet de 430 à 780 €."
+        },
+        {
+          "titre": "Construction récente",
+          "texte": "DPE, ERP et termites : de 230 à 380 € selon la surface."
+        },
+        {
+          "titre": "Assainissement non collectif",
+          "texte": "Fréquent sur la commune : contrôle obligatoire à la vente, valable 3 ans."
+        }
+      ]
+    }
+  }
+}

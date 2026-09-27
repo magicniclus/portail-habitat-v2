@@ -1,0 +1,97 @@
+{
+  "_source": "designs/Mes Demandes.dc.html",
+  "_note": "Demandes fictives pour le seed et les tests de l’espace pro.",
+  "demandes": [
+    {
+      "key": 1,
+      "nom": "Pauline Roussel",
+      "type": "Devis",
+      "statut": "Converti",
+      "sujet": "Pose de carrelage au sol, 45 m²",
+      "message": "Carrelage grand format dans le séjour, ancien sol déjà déposé.",
+      "email": "pauline.roussel@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "10/12/2026",
+      "ville": "Bordeaux",
+      "origine": "fiche"
+    },
+    {
+      "key": 2,
+      "nom": "Laïdy Mercier",
+      "type": "Devis",
+      "statut": "Converti",
+      "sujet": "Pose de cuisine complète",
+      "message": "Cuisine livrée en kit, besoin d'une pose complète avec raccordements.",
+      "email": "laidy.mercier@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "10/12/2026",
+      "ville": "Bordeaux",
+      "origine": "fiche"
+    },
+    {
+      "key": 3,
+      "nom": "John Deneuve",
+      "type": "Devis",
+      "statut": "Contacté",
+      "sujet": "Projet non précisé",
+      "message": "Aucune description fournie — à rappeler pour qualifier le besoin.",
+      "email": "j.deneuve@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "04/12/2026",
+      "ville": "Mérignac",
+      "origine": "fiche"
+    },
+    {
+      "key": 4,
+      "nom": "Nicolas Castera",
+      "type": "Message",
+      "statut": "Nouveau",
+      "sujet": "Question sur les délais",
+      "message": "Souhaite savoir sous quel délai vous intervenez sur le bassin.",
+      "email": "n.castera@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "04/12/2026",
+      "ville": "Pessac",
+      "origine": "fiche"
+    },
+    {
+      "key": 5,
+      "nom": "Hélène Marty",
+      "type": "Devis",
+      "statut": "Nouveau",
+      "sujet": "Rénovation de toiture",
+      "message": "Toiture de 90 m² à reprendre entièrement, charpente saine.",
+      "email": "h.marty@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "03/12/2026",
+      "ville": "Floirac",
+      "origine": "fiche"
+    },
+    {
+      "key": 6,
+      "nom": "Karim Belhadj",
+      "type": "Appel d'offres",
+      "statut": "Contacté",
+      "sujet": "Isolation des combles, 120 m²",
+      "message": "Appel d'offres remporté par 3 artisans, dossier MaPrimeRénov' en cours.",
+      "email": "k.belhadj@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "01/12/2026",
+      "ville": "Mérignac",
+      "origine": "offres"
+    },
+    {
+      "key": 7,
+      "nom": "Sophie Vidal",
+      "type": "Appel d'offres",
+      "statut": "Perdu",
+      "sujet": "Bardage bois façade arrière",
+      "message": "Le client a retenu un autre artisan — devis jugé trop élevé.",
+      "email": "s.vidal@email.fr",
+      "tel": "06 31 42 00 45",
+      "date": "28/11/2026",
+      "ville": "Bordeaux",
+      "origine": "offres"
+    }
+  ]
+}
