@@ -64,6 +64,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/next-env.d.ts',
       '**/playwright-report/**',
+      '**/storybook-static/**',
       '**/test-results/**',
       'docs/**',
       '.claude/**',

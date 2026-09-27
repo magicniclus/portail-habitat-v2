@@ -7,6 +7,9 @@
     },
     "apps/functions": {
       "entry": ["src/index.ts"]
+    },
+    "packages/ui": {
+      "ignoreDependencies": ["serve"]
     }
   }
 }

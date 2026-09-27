@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 import { cn } from '../cn';
 
-export const badge = cva(
+const badge = cva(
   'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 text-[13px] font-semibold whitespace-nowrap',
   {
     variants: {

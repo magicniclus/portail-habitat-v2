@@ -21,3 +21,4 @@ next-env.d.ts
 # Journaux des émulateurs Firebase
 *-debug.log
 firebase-debug.log
+storybook-static/

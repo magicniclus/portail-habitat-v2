@@ -27,6 +27,7 @@ export function Logo({
   return (
     <span
       data-theme={variant}
+      data-logo
       className={cn(
         'inline-flex items-center gap-2.5',
         inverse ? 'text-blanc' : 'text-texte',
