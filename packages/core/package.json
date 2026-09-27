@@ -12,7 +12,7 @@
     "./resultat": "./src/resultat.ts",
     "./enveloppe": "./src/enveloppe/index.ts",
     "./zod": "./src/zod.ts",
-    "./equipe": "./src/equipe/permissions.ts",
+    "./equipe": "./src/equipe/index.ts",
     "./admin": "./src/admin/permissions.ts",
     "./flags": "./src/flags.ts",
     "./schemas": "./src/schemas/index.ts",
