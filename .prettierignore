@@ -3,7 +3,7 @@ docs/
 CLAUDE.md
 pnpm-lock.yaml
 .next/
-lib/
+apps/functions/lib/
 coverage/
 packages/ui/src/styles/theme.css
 packages/ui/src/styles/themes.css

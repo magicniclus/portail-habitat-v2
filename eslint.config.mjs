@@ -60,7 +60,7 @@ export default tseslint.config(
     ignores: [
       '**/node_modules/**',
       '**/.next/**',
-      '**/lib/**',
+      'apps/functions/lib/**',
       '**/coverage/**',
       '**/next-env.d.ts',
       '**/playwright-report/**',

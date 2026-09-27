@@ -2,7 +2,7 @@ node_modules/
 .turbo/
 .next/
 out/
-lib/
+apps/functions/lib/
 coverage/
 dist/
 storybook-static/
