@@ -16,6 +16,7 @@ import {
   modifierMembre,
   quitterEntreprise,
   rattacherOuCreerParticulier,
+  rechercherEntreprise,
   renvoyerInvitation,
   repondreDemandeAcces,
   retirerMembre,
@@ -592,5 +593,75 @@ describe('demande sans compte (COMPTES §2)', () => {
       origine: 'demande',
       emailVerifie: false,
     });
+  });
+});
+
+describe('rechercherEntreprise (COMPTES §3.1)', () => {
+  const resultat = {
+    siren: '552100554',
+    nom_raison_sociale: 'BERTRAND RENOVATION',
+    activite_principale: '43.22A',
+    date_creation: '2012-05-01',
+    etat_administratif: 'A',
+    siege: {
+      siret: '55210055400013',
+      adresse: '12 RUE SAINTE-CATHERINE',
+      code_postal: '33000',
+      libelle_commune: 'BORDEAUX',
+    },
+  };
+  function faux(reponse: unknown, ok = true) {
+    const appels: string[] = [];
+    const f = (async (url: string) => {
+      appels.push(url);
+      return { ok, json: async () => reponse } as Response;
+    }) as unknown as typeof fetch;
+    return { appels, f };
+  }
+
+  it('SIREN : API puis cache 24 h ; entreprise déjà revendiquée signalée', async () => {
+    const { appels, f } = faux({ results: [resultat, { siren: 'invalide' }] });
+    const r1 = await rechercherEntreprise({ ...s, fetch: f }, '552 100 554');
+    expect(r1).toHaveLength(1);
+    expect(r1[0]!.analyse).toEqual({
+      refusee: false,
+      horsBatiment: false,
+      recente: false,
+      inscription: 'libre',
+    });
+    expect(appels[0]).toContain('q=552%20100%20554');
+
+    const { artisanId } = await finaliserOnboarding(s, await compte('p@test.local'), onboarding());
+    const r2 = await rechercherEntreprise({ ...s, fetch: f }, '552100554');
+    expect(appels).toHaveLength(1);
+    expect(r2[0]).toMatchObject({ artisanId, analyse: { inscription: 'revendiquee' } });
+
+    await db.doc(chemins.artisan(artisanId)).update({ revendiquee: false });
+    expect(
+      (await rechercherEntreprise({ ...s, fetch: f }, '552100554'))[0]!.analyse.inscription,
+    ).toBe('non_revendiquee');
+  });
+
+  it('recherche par nom : pas de cache, entreprise fermée refusée', async () => {
+    const { appels, f } = faux({ results: [{ ...resultat, etat_administratif: 'C' }] });
+    await rechercherEntreprise({ ...s, fetch: f }, 'bertrand');
+    const r = await rechercherEntreprise({ ...s, fetch: f }, 'bertrand');
+    expect(appels).toHaveLength(2);
+    expect(r[0]!.analyse.refusee).toBe(true);
+  });
+
+  it('API indisponible ou réponse inattendue : INDISPONIBLE', async () => {
+    expect(
+      (await erreur(rechercherEntreprise({ ...s, fetch: faux({}, false).f }, 'x y'))).code,
+    ).toBe('INDISPONIBLE');
+    expect(
+      (await erreur(rechercherEntreprise({ ...s, fetch: faux({ autre: 1 }).f }, 'x y'))).code,
+    ).toBe('INDISPONIBLE');
+    const panne = (async () => {
+      throw new Error('réseau');
+    }) as unknown as typeof fetch;
+    expect((await erreur(rechercherEntreprise({ ...s, fetch: panne }, 'x y'))).code).toBe(
+      'INDISPONIBLE',
+    );
   });
 });

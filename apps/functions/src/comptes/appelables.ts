@@ -9,6 +9,7 @@ import {
   entreeInviterMembre,
   entreeMembre,
   entreeModifierMembre,
+  entreeRechercherEntreprise,
   entreeRepondreDemandeAcces,
   entreeSupprimerMonCompte,
 } from '@ph/core/schemas';
@@ -18,6 +19,17 @@ import { services } from './services';
 // COMPTES §7 : App Check, Zod, peut() (relu dans la transaction), audit des actions sur les membres
 // et la propriété, idempotence des actions déclenchées par un clic.
 const limite = (cle: string, max: number) => ({ cle, max, fenetre: '1h' as const });
+
+/** Formulaire de la page d'acquisition, avant toute création de compte : ouvert, limité par IP. */
+export const rechercherEntreprise = callable(
+  {
+    schema: entreeRechercherEntreprise,
+    nom: 'rechercherEntreprise',
+    authentification: 'facultative',
+    rateLimit: limite('recherche-entreprise', 60),
+  },
+  (e) => comptes.rechercherEntreprise(services(), e.q),
+);
 
 export const finaliserOnboarding = callable(
   {

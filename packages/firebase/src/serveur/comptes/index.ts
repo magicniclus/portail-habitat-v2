@@ -14,6 +14,7 @@ export {
   retirerMembre,
   transfererPropriete,
 } from './membres';
+export { rechercherEntreprise, type EntrepriseProposee } from './entreprises';
 export { finaliserOnboarding } from './onboarding';
 export { rattacherOuCreerParticulier } from './particuliers';
 export {
