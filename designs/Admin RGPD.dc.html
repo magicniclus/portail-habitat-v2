@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">RGPD</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Demandes d'accès, de rectification et d'effacement. Délai légal : 1 mois. Chaque étape produit une preuve de traitement.</p></header>
+  <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+    <sc-for list="{{ demandes }}" as="d" hint-placeholder-count="3">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-bottom:1px solid #ecebe7">
+        <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef0f3;color:#2a323c">{{ d.type }}</span><strong style="font-size:15px">{{ d.qui }}</strong></div>
+          <span style="font-size:14px;color:#3d3a37">Reçue le {{ d.recue }} · échéance {{ d.echeance }} · {{ d.etat }}</span>
+          <span style="font-size:12.5px;color:{{ d.col }};font-weight:600">{{ d.reste }}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button onClick="{{ d.action }}" disabled="{{ d.off }}" title="{{ rgpdTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ d.btn }}</button>
+          <button onClick="{{ d.preuve }}" disabled="{{ noRgpd }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Preuve PDF</button>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+  <p style="margin:0;font-size:13px;color:#6b6763">L'effacement anonymise les données personnelles et conserve les factures 10 ans (obligation comptable). Les avis sont conservés sous « Utilisateur supprimé ».</p>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DEM = [['Accès (export)', 'Pierre Lefèvre · particulier', '14/09', '14/10', 18, ['Générer l’export', 'Export envoyé']], ['Effacement', 'Marc Laurent · particulier', '20/09', '20/10', 24, ['Exécuter l’anonymisation', 'Anonymisé']], ['Rectification', 'Atelier Garnier · artisan', '03/09', '03/10', 7, ['Marquer rectifié', 'Rectifié']]];
+class Component extends DCLogic {
+  state = { fait: {}, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#rgpd'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, noRgpd = lect || !(P['rgpd.traiter'] ?? true);
+    return {
+      demandes: DEM.map(([type, qui, recue, echeance, j, [btn, fini]], i) => { const done = !!s.fait[i]; return { type, qui: lect ? '•••' : qui, recue, echeance, etat: done ? fini : 'à traiter', reste: done ? 'Traité le 26/09 · preuve archivée' : 'Reste ' + j + ' jours', col: done ? '#085340' : j < 10 ? '#8f1d14' : '#7a5206', btn: done ? fini : btn, off: noRgpd || done,
+        action: () => { this.setState({ fait: { ...s.fait, [i]: true } }); this.flash(type + ' traité · personne prévenue · auditLog'); }, preuve: () => this.flash('Preuve de traitement téléchargée') }; }),
+      noRgpd, rgpdTitle: noRgpd ? 'Permission requise : rgpd.traiter' : '',
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

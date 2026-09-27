@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mon dossier de diagnostics immobiliers — estimation en 3 étapes | Portail Habitat Diag</title>
+<meta name="description" content="Estimez en 3 étapes les diagnostics immobiliers obligatoires pour votre bien en Gironde : DPE, amiante, plomb, termites, gaz, électricité, ERP. Réutilisez vos rapports valides et recevez 3 devis de diagnostiqueurs certifiés.">
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<style>
+:root {
+  --color-accent: #14508a;
+  --color-accent-100: #eef4fa;
+  --color-accent-200: #d2e2f1;
+  --color-accent-300: #a4c5e3;
+  --color-accent-400: #5b96cc;
+  --color-accent-500: #1b64ad;
+  --color-accent-600: #10467a;
+  --color-accent-700: #0d3a65;
+  --color-accent-800: #0a2e50;
+  --color-accent-900: #081f37;
+  --diag-ambre: #a9700a;
+  --diag-ambre-100: #fdf4e3;
+  --diag-vert: #0d7a5f;
+  --diag-vert-100: #eef7f3;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:visited { color: #fff; }
+.input, select.input, textarea.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+input[type="range"] { accent-color: var(--color-accent); height: 26px; }
+html, body, #dc-root { background: #fff; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent-500); }
+button { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;width:100%;max-width:1180px;margin:0 auto;padding:13px clamp(18px,4vw,44px)">
+      <a href="Diagnostic Immobilier.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="42" height="42" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 18.8 20 6.5l15 12.3" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M8.5 21V33h23V21" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle cx="19" cy="23.2" r="4.2" fill="#fff" stroke="var(--color-accent)" stroke-width="2.6"></circle>
+          <path d="m22.2 26.4 3.2 3.2" stroke="var(--color-accent)" stroke-width="2.6" stroke-linecap="round"></path>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail Habitat</span>
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--color-accent)">Diag</span>
+        </span>
+      </a>
+      <span style="font-size:14.5px;color:var(--color-neutral-800)">Mon dossier de diagnostics</span>
+      <span style="display:flex;align-items:center;gap:14px;margin-left:auto;font-size:14px">
+        <span style="display:flex;align-items:center;gap:7px;color:var(--color-neutral-800)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2Z"></path><path d="m9.2 12 2 2 3.6-3.8"></path></svg>
+          Diagnostiqueurs certifiés
+        </span>
+        <a href="Contact.dc.html?sujet=diagnostic" style="text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent-500)">Aide</a>
+      </span>
+    </span>
+  </nav>
+
+  <div style="background:#fff;border-bottom:1px solid var(--color-divider);position:sticky;top:0;z-index:40">
+    <div style="max-width:1180px;margin:0 auto;padding:12px clamp(18px,4vw,44px);display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap">
+      <sc-for list="{{ jalons }}" as="j" hint-placeholder-count="3">
+        <button type="button" onClick="{{ j.aller }}" style="display:flex;align-items:center;gap:9px;background:none;border:0;padding:4px 0;cursor:{{ j.curseur }};font-size:14px">
+          <span style="width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;background:{{ j.bg }};color:{{ j.fg }}">{{ j.puce }}</span>
+          <span style="font-weight:600;color:{{ j.couleur }};white-space:nowrap">{{ j.titre }}</span>
+        </button>
+      </sc-for>
+      <span style="margin-left:auto;font-size:13.5px;color:var(--color-neutral-700)">{{ progression }}</span>
+    </div>
+    <div style="height:3px;background:var(--color-accent-200)"><span style="display:block;height:100%;background:var(--color-accent);width:{{ largeurBarre }};transition:width .25s ease"></span></div>
+  </div>
+
+  <main style="flex:1;background:var(--color-accent-100);padding:clamp(24px,3.5vw,44px) clamp(18px,4vw,44px) clamp(40px,5vw,68px)">
+    <div style="max-width:1180px;margin:0 auto">
+
+      <sc-if value="{{ etape1 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,0.9fr);gap:22px clamp(22px,3vw,40px);align-items:start">
+          <form onSubmit="{{ vers2 }}" style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px);display:grid;gap:22px">
+            <div>
+              <h1 style="font-size:clamp(24px,2.8vw,32px);line-height:1.12;margin:0 0 8px">Votre bien</h1>
+              <p style="margin:0;font-size:15.5px;line-height:24px;color:var(--color-neutral-800);max-width:56ch">L'adresse et l'année de construction suffisent à déterminer la quasi-totalité du dossier réglementaire.</p>
+            </div>
+
+            <div class="field" style="margin:0">
+              <label for="dg-adresse" style="font-size:15.5px;font-weight:600">Adresse du bien</label>
+              <input class="input" id="dg-adresse" type="text" placeholder="12 rue Camille Pelletan" value="{{ adresse }}" onChange="{{ majAdresse }}" onInput="{{ majAdresse }}" required="required" style="min-height:50px;font-size:16px">
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+              <div class="field" style="margin:0">
+                <label for="dg-commune" style="font-size:15.5px;font-weight:600">Commune</label>
+                <select class="input" id="dg-commune" value="{{ commune }}" onChange="{{ majCommune }}" style="min-height:50px;font-size:16px">
+                  <sc-for list="{{ communes }}" as="c" hint-placeholder-count="13">
+                    <option value="{{ c.id }}">{{ c.nom }}</option>
+                  </sc-for>
+                </select>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="dg-motif" style="font-size:15.5px;font-weight:600">Motif</label>
+                <select class="input" id="dg-motif" value="{{ motif }}" onChange="{{ majMotif }}" style="min-height:50px;font-size:16px">
+                  <option value="vente">Vente</option>
+                  <option value="location">Mise en location</option>
+                  <option value="travaux">Travaux / rénovation</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 3px;font-size:16.5px;font-weight:700">Type de bien</p>
+              <p style="margin:0 0 12px;font-size:14px;color:var(--color-neutral-800)">Le mesurage exigé n'est pas le même.</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+                <sc-for list="{{ typesBien }}" as="t" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ t.choisir }}" aria-pressed="{{ t.actif }}" style="cursor:pointer;text-align:left;border-radius:12px;padding:14px;min-height:56px;background:{{ t.bg }};border:1.5px solid {{ t.bd }};color:{{ t.fg }};display:flex;gap:11px;align-items:flex-start">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px"><path d="{{ t.icone }}"></path></svg>
+                    <span>
+                      <span style="display:block;font-size:15px;font-weight:600">{{ t.label }}</span>
+                      <span style="display:block;font-size:12.5px;line-height:18px;margin-top:2px;opacity:0.85">{{ t.desc }}</span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 3px;font-size:16.5px;font-weight:700">Année de construction</p>
+              <p style="margin:0 0 12px;font-size:14px;color:var(--color-neutral-800)">C'est elle qui déclenche l'amiante (avant juillet 1997) et le plomb (avant 1949).</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:10px">
+                <sc-for list="{{ periodes }}" as="p" hint-placeholder-count="5">
+                  <button type="button" onClick="{{ p.choisir }}" aria-pressed="{{ p.actif }}" style="cursor:pointer;text-align:left;border-radius:12px;padding:13px 15px;min-height:52px;background:{{ p.bg }};border:1.5px solid {{ p.bd }};color:{{ p.fg }}">
+                    <span style="display:block;font-size:15px;font-weight:600">{{ p.label }}</span>
+                    <span style="display:block;font-size:12.5px;margin-top:2px;opacity:0.85">{{ p.desc }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+                <p style="margin:0;font-size:16.5px;font-weight:700">Surface</p>
+                <span style="font-size:24px;font-weight:700;color:var(--color-accent-700);margin-left:auto">{{ surface }} m²</span>
+              </div>
+              <input type="range" min="15" max="300" step="5" value="{{ surface }}" onChange="{{ majSurface }}" onInput="{{ majSurface }}" aria-label="Surface du bien" style="width:100%">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--color-neutral-700)"><span>15 m²</span><span>300 m²</span></div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+              <button type="submit" class="btn btn-primary" style="min-height:52px;font-size:16.5px;padding-inline:24px">Continuer</button>
+              <a href="Diagnostic Immobilier.dc.html" class="btn btn-ghost" style="min-height:52px;font-size:15.5px">Annuler</a>
+              <span style="margin-left:auto;font-size:13.5px;color:var(--color-neutral-700)">Aucune coordonnée demandée avant l'étape 3.</span>
+            </div>
+          </form>
+
+          <aside style="display:grid;gap:14px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <p style="margin:0 0 14px;font-size:15.5px;font-weight:700">Ce que vous obtenez</p>
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:14px;font-size:14.5px;line-height:22px">
+                <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M6 3.5h9l4 4v13H6z"></path><path d="M9.5 12h6M9.5 16h4"></path></svg><span>La liste exacte des diagnostics obligatoires pour votre motif.</span></li>
+                <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v4.8l3 2"></path></svg><span>Ce qui reste valable dans vos anciens rapports.</span></li>
+                <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M4 19V9M9.3 19V5M14.7 19v-7M20 19v-4"></path></svg><span>Un budget pack, visite unique sur place.</span></li>
+              </ul>
+            </div>
+            <div style="background:var(--color-accent-900);color:var(--color-accent-200);border-radius:16px;padding:22px;font-size:14px;line-height:22px">
+              <p style="margin:0 0 8px;font-size:15.5px;font-weight:700;color:#fff">Zone termites Gironde</p>
+              L'arrêté préfectoral du 12 février 2001 couvre tout le département : l'état termites est exigé pour toute vente, et il n'est valable que 6 mois.
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,0.9fr);gap:22px clamp(22px,3vw,40px);align-items:start">
+          <form onSubmit="{{ vers3 }}" style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px);display:grid;gap:24px">
+            <div>
+              <button type="button" onClick="{{ precedent }}" style="background:none;border:0;padding:0;color:var(--color-accent-700);font-size:14.5px;font-weight:600;cursor:pointer;margin-bottom:12px">← Retour</button>
+              <h1 style="font-size:clamp(24px,2.8vw,32px);line-height:1.12;margin:0 0 8px">Équipements et rapports existants</h1>
+              <p style="margin:0;font-size:15.5px;line-height:24px;color:var(--color-neutral-800);max-width:56ch">On ne refait que ce qui est obligatoire et périmé. Renseignez ce que vous avez déjà : chaque rapport encore valable est déduit du devis.</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+              <div class="field" style="margin:0">
+                <label for="dg-gaz" style="font-size:14.5px;font-weight:600">Installation de gaz</label>
+                <select class="input" id="dg-gaz" value="{{ gaz }}" onChange="{{ majGaz }}" style="min-height:46px">
+                  <option value="oui">Oui, chaudière ou cuisinière gaz</option>
+                  <option value="non">Pas de gaz</option>
+                </select>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="dg-elec" style="font-size:14.5px;font-weight:600">Installation électrique</label>
+                <select class="input" id="dg-elec" value="{{ elec }}" onChange="{{ majElec }}" style="min-height:46px">
+                  <option value="ancienne">Plus de 15 ans</option>
+                  <option value="recente">Refaite il y a moins de 15 ans</option>
+                </select>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="dg-assainissement" style="font-size:14.5px;font-weight:600">Assainissement</label>
+                <select class="input" id="dg-assainissement" value="{{ assainissement }}" onChange="{{ majAssainissement }}" style="min-height:46px">
+                  <option value="collectif">Raccordé au tout-à-l'égout</option>
+                  <option value="individuel">Fosse / assainissement individuel</option>
+                  <option value="inconnu">Je ne sais pas</option>
+                </select>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="dg-dpe" style="font-size:14.5px;font-weight:600">Classe DPE connue</label>
+                <select class="input" id="dg-dpe" value="{{ classeDpe }}" onChange="{{ majClasse }}" style="min-height:46px">
+                  <option value="inconnu">Je ne sais pas</option>
+                  <option value="AB">A ou B</option>
+                  <option value="CD">C ou D</option>
+                  <option value="E">E</option>
+                  <option value="FG">F ou G</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 3px;font-size:16.5px;font-weight:700">Diagnostics déjà en votre possession</p>
+              <p style="margin:0 0 13px;font-size:14px;color:var(--color-neutral-800)">Cochez, puis indiquez l'année du rapport.</p>
+              <div style="display:grid;gap:9px">
+                <sc-for list="{{ dejaFaits }}" as="d" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:{{ d.bg }};border:1px solid {{ d.bd }};border-radius:11px;padding:11px 14px">
+                    <button type="button" onClick="{{ d.basculer }}" aria-pressed="{{ d.actif }}" style="flex:1 1 200px;text-align:left;background:none;border:0;padding:0;cursor:pointer;font-size:15px;font-weight:600;color:{{ d.fg }};min-height:28px;display:flex;align-items:center;gap:11px">
+                      <span style="width:20px;height:20px;border-radius:5px;border:1.5px solid {{ d.caseBd }};background:{{ d.caseBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none">{{ d.coche }}</span>
+                      {{ d.nom }}
+                    </button>
+                    <sc-if value="{{ d.actif }}" hint-placeholder-val="{{ false }}">
+                      <span style="display:flex;align-items:center;gap:8px;font-size:13.5px">
+                        <span style="color:var(--color-neutral-800)">réalisé en</span>
+                        <select class="input" value="{{ d.annee }}" onChange="{{ d.majAnnee }}" aria-label="Année de réalisation" style="min-height:38px;padding:4px 8px;font-size:14px">
+                          <sc-for list="{{ annees }}" as="a" hint-placeholder-count="14">
+                            <option value="{{ a }}">{{ a }}</option>
+                          </sc-for>
+                        </select>
+                      </span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+              <button type="submit" class="btn btn-primary" style="min-height:52px;font-size:16.5px;padding-inline:24px">Voir mon dossier</button>
+              <button type="button" class="btn btn-ghost" onClick="{{ precedent }}" style="min-height:52px;font-size:15.5px">Retour</button>
+            </div>
+          </form>
+
+          <aside style="display:grid;gap:14px;position:sticky;top:80px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <p style="margin:0 0 12px;font-size:15.5px;font-weight:700">Votre bien</p>
+              <div style="display:grid;gap:9px;font-size:13.5px;line-height:20px">
+                <sc-for list="{{ recapBien }}" as="r" hint-placeholder-count="5">
+                  <span style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--color-neutral-700)">{{ r.label }}</span><strong style="text-align:right">{{ r.valeur }}</strong></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--diag-ambre-100);border-radius:16px;padding:20px;font-size:14px;line-height:22px">
+              <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:var(--diag-ambre)">Attention aux dates</p>
+              Un DPE établi avant le 1<sup>er</sup> juillet 2021 n'est plus valable, et un rapport amiante antérieur à 2013 doit être refait.
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape3 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px clamp(22px,3vw,40px);align-items:start">
+          <div style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px)">
+            <button type="button" onClick="{{ precedent }}" style="background:none;border:0;padding:0;color:var(--color-accent-700);font-size:14.5px;font-weight:600;cursor:pointer;margin-bottom:12px">← Modifier mes réponses</button>
+            <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Votre dossier · {{ resumeBien }}</p>
+            <h1 style="font-size:clamp(28px,3.6vw,42px);line-height:1.08;margin:0 0 10px">{{ titreDossier }}</h1>
+            <p style="margin:0 0 24px;font-size:15.5px;line-height:24px;color:var(--color-neutral-800);max-width:54ch">Voici ce que la loi impose pour votre bien. Indiquez où envoyer le dossier : le budget détaillé s'affiche aussitôt et vous le recevez par email.</p>
+
+            <div style="display:grid;gap:10px;margin-bottom:26px">
+              <sc-for list="{{ resultats }}" as="r" hint-placeholder-count="7">
+                <div style="border:1px solid {{ r.bd }};background:{{ r.bg }};border-radius:12px;padding:14px 16px;display:flex;gap:13px;align-items:flex-start">
+                  <span style="width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ r.fg }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ r.icone }}"></path></svg>
+                  </span>
+                  <span style="flex:1">
+                    <span style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+                      <strong style="font-size:15.5px">{{ r.nom }}</strong>
+                      <span style="font-size:11.5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:{{ r.fg }}">{{ r.statut }}</span>
+                    </span>
+                    <span style="display:block;margin-top:5px;font-size:13.5px;line-height:20px;color:var(--color-neutral-800)">{{ r.raison }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+
+            <form onSubmit="{{ envoyer }}" style="display:grid;gap:15px;border-top:1px solid var(--color-divider);padding-top:24px">
+              <div>
+                <h2 style="font-size:20px;margin:0 0 6px">Où envoyer votre dossier ?</h2>
+                <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">Vous recevez la liste par email. Vos coordonnées ne partent qu'aux diagnostiqueurs certifiés de votre secteur.</p>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px">
+                <div class="field" style="margin:0"><label for="dg-nom">Nom et prénom</label><input class="input" id="dg-nom" type="text" placeholder="Camille Martin" required="required" style="min-height:47px"></div>
+                <div class="field" style="margin:0"><label for="dg-email">Email</label><input class="input" id="dg-email" type="email" placeholder="camille@email.fr" required="required" style="min-height:47px"></div>
+                <div class="field" style="margin:0"><label for="dg-tel">Téléphone</label><input class="input" id="dg-tel" type="tel" placeholder="06 12 34 56 78" required="required" style="min-height:47px"></div>
+                <div class="field" style="margin:0"><label for="dg-quand">Visite souhaitée</label>
+                  <select class="input" id="dg-quand" style="min-height:47px">
+                    <option>Cette semaine</option>
+                    <option>Sous 15 jours</option>
+                    <option>Dans le mois</option>
+                    <option>Je me renseigne</option>
+                  </select>
+                </div>
+              </div>
+              <label style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:21px;cursor:pointer;color:var(--color-neutral-800)">
+                <input type="checkbox" required="required" style="width:17px;height:17px;margin-top:2px;accent-color:var(--color-accent);flex:none">
+                <span>J'accepte d'être contacté par des diagnostiqueurs certifiés et la <a href="Pages Legales.dc.html?public=part&amp;doc=confidentialite">politique de confidentialité</a>.</span>
+              </label>
+              <button type="submit" class="btn btn-primary btn-block" style="min-height:54px;font-size:17px">Voir mon budget</button>
+            </form>
+          </div>
+
+          <aside style="display:grid;gap:14px;position:sticky;top:80px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <p style="margin:0 0 12px;font-size:15.5px;font-weight:700">Récapitulatif</p>
+              <div style="display:grid;gap:9px;font-size:13.5px;line-height:20px">
+                <sc-for list="{{ recapBien }}" as="r" hint-placeholder-count="6">
+                  <span style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--color-neutral-700)">{{ r.label }}</span><strong style="text-align:right">{{ r.valeur }}</strong></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--color-accent-900);color:var(--color-accent-200);border-radius:16px;padding:22px">
+              <p style="margin:0 0 13px;font-size:15.5px;font-weight:700;color:#fff">Comment ça se passe ensuite</p>
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:11px;font-size:14px;line-height:21px">
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">1</span><span>Trois diagnostiqueurs certifiés vous rappellent sous 48 h.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">2</span><span>Une seule visite sur place, 1 à 3 h selon la surface.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">3</span><span>Rapports PDF sous 24 à 48 h, prêts pour le compromis.</span></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape4 }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:720px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(24px,4vw,44px)">
+          <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Votre budget diagnostics · {{ resumeBien }}</p>
+          <h1 style="font-size:clamp(32px,4.4vw,50px);line-height:1.05;margin:0 0 10px">{{ fourchette }}</h1>
+          <p style="margin:0 0 22px;font-size:15.5px;line-height:24px;color:var(--color-neutral-800);max-width:56ch">{{ resumeDossier }}</p>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow:hidden;margin-bottom:24px">
+            <sc-for list="{{ lignesPrix }}" as="l" hint-placeholder-count="6">
+              <span style="display:flex;justify-content:space-between;gap:16px;padding:12px 18px;font-size:15px;line-height:22px;border-top:{{ l.bt }}">
+                <span>{{ l.nom }}</span><strong style="white-space:nowrap;color:{{ l.fg }}">{{ l.prix }}</strong>
+              </span>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:12px;border:1px solid var(--color-accent-300);margin-bottom:24px">
+            <span style="flex:none;width:28px;height:28px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700">✓</span>
+            <p style="margin:0;font-size:15.5px;line-height:24px">Le dossier part sur <strong>{{ clientEmail }}</strong>. Trois diagnostiqueurs certifiés intervenant à {{ communeNom }} peuvent vous rappeler sous 48 h.</p>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow:hidden;margin-bottom:24px">
+            <p style="margin:0;padding:13px 18px;background:var(--color-accent-100);font-size:14px;font-weight:700;color:var(--color-accent-800)">Données transmises · dossier n° {{ reference }}</p>
+            <sc-for list="{{ donneesEnvoyees }}" as="d" hint-placeholder-count="9">
+              <span style="display:flex;justify-content:space-between;gap:16px;padding:11px 18px;font-size:14px;line-height:21px;border-top:1px solid var(--color-divider)">
+                <span style="color:var(--color-neutral-700)">{{ d.label }}</span><strong style="text-align:right">{{ d.valeur }}</strong>
+              </span>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a href="Mes Demandes.dc.html" class="btn btn-primary" style="min-height:50px;font-size:16px;padding-inline:22px">Suivre mon dossier</a>
+            <button type="button" class="btn btn-secondary" onClick="{{ recommencer }}" style="min-height:50px;font-size:16px;background:#fff">Nouveau bien</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1180px;margin:0 auto;padding:20px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat Diag · Prix indicatifs</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Diagnostic Immobilier.dc.html" style="color:var(--color-accent-200)">Accueil diagnostics</a>
+        <a href="Contact.dc.html?sujet=diagnostic" style="color:var(--color-accent-200)">Aide</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const COMMUNES = [
+  { id: "cenon", nom: "Cenon", cp: "33150", presquile: false },
+  { id: "lormont", nom: "Lormont", cp: "33310", presquile: false },
+  { id: "floirac", nom: "Floirac", cp: "33270", presquile: false },
+  { id: "ambares", nom: "Ambarès-et-Lagrave", cp: "33440", presquile: true },
+  { id: "artigues", nom: "Artigues-près-Bordeaux", cp: "33370", presquile: false },
+  { id: "bassens", nom: "Bassens", cp: "33530", presquile: true },
+  { id: "carbon-blanc", nom: "Carbon-Blanc", cp: "33560", presquile: false },
+  { id: "bouliac", nom: "Bouliac", cp: "33270", presquile: false },
+  { id: "ambes", nom: "Ambès", cp: "33810", presquile: true },
+  { id: "saint-louis", nom: "Saint-Louis-de-Montferrand", cp: "33440", presquile: true },
+  { id: "saint-vincent", nom: "Saint-Vincent-de-Paul", cp: "33440", presquile: true },
+  { id: "bordeaux", nom: "Bordeaux (La Bastide)", cp: "33100", presquile: false },
+  { id: "autre", nom: "Autre commune de Gironde", cp: "33", presquile: false },
+];
+const PERIODES = [
+  { v: "av1949", label: "Avant 1949", desc: "Plomb + amiante" },
+  { v: "1949-1976", label: "1949 – 1976", desc: "Amiante" },
+  { v: "1977-1996", label: "1977 – 1996", desc: "Amiante" },
+  { v: "1997-2010", label: "1997 – 2010", desc: "Ni plomb ni amiante" },
+  { v: "ap2011", label: "2011 et après", desc: "Dossier allégé" },
+];
+const TYPES = [
+  { v: "appartement", label: "Appartement", desc: "Copropriété · loi Carrez", icone: "M5 21V6.5l7-3.5 7 3.5V21M9 11h2M13 11h2M9 15h2M13 15h2M4 21h16" },
+  { v: "maison", label: "Maison", desc: "Individuelle", icone: "M4 11 12 4.5 20 11M6.5 12.5V20h11v-7.5M11 20v-4h2v4" },
+  { v: "immeuble", label: "Immeuble entier", desc: "Monopropriété", icone: "M4 21V4h9v17M13 10h7v11M7 8h3M7 12h3M7 16h3M16 14h1.5M16 18h1.5" },
+];
+const IC = {
+  dpe: "M12 3.5c3.5 3 5.5 5.5 5.5 8.5A5.5 5.5 0 0 1 12 17.5 5.5 5.5 0 0 1 6.5 12c0-3 2-5.5 5.5-8.5ZM12 20.5v-3",
+  audit: "M4 19V9M9.3 19V5M14.7 19v-7M20 19v-4",
+  amiante: "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
+  plomb: "M12 3.5c3 3.4 5 6 5 8.5a5 5 0 0 1-10 0c0-2.5 2-5.1 5-8.5Z",
+  termites: "M12 5v14M8 8.5 5 6.5M8 12H4.5M8 15.5 5 17.5M16 8.5l3-2M16 12h3.5M16 15.5l3 2M12 5a2 2 0 1 1 0-.01",
+  gaz: "M13 3c.5 3-2.5 4.5-2.5 7.5A3.5 3.5 0 0 0 14 14c0-1.2-.5-2-.5-2 2 1 3 2.8 3 5A5.5 5.5 0 0 1 11 22a5.5 5.5 0 0 1-5.5-5.5C5.5 10.5 13 9 13 3Z",
+  elec: "M13 2 4 14h7l-1 8 9-12h-7z",
+  erp: "M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21ZM12 12.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z",
+  carrez: "M3 8.5h18v7H3zM7 8.5v3M11 8.5v3M15 8.5v3M19 8.5v3",
+  boutin: "M3 8.5h18v7H3zM7 8.5v3M11 8.5v3M15 8.5v3M19 8.5v3",
+  assainissement: "M5 10.5h14l-1.5 9h-11zM8 10.5V6a4 4 0 0 1 8 0v1",
+  merule: "M6 20c2-5 4-7 6-7s4 2 6 7M12 13V4M9 6.5 12 4l3 2.5",
+  dtg: "M6 3.5h9l4 4v13H6zM9.5 11h6M9.5 15h4",
+};
+const DIAGS = [
+  { id: "dpe", nom: "DPE (performance énergétique)", prix: [110, 190], val: 10, req: (c) => c.motif !== "travaux",
+    quand: "Obligatoire pour toute vente et toute mise en location", validite: "10 ans", note: "Un DPE établi avant le 1er juillet 2021 n'est plus valable." },
+  { id: "audit", nom: "Audit énergétique réglementaire", prix: [500, 950], val: 5,
+    req: (c) => c.motif === "vente" && c.type !== "appartement" && (c.classe === "FG" || c.classe === "E"),
+    quand: "Vente d'une maison ou d'un immeuble en monopropriété classé E, F ou G", validite: "5 ans", note: "Obligatoire depuis avril 2023 pour F et G, depuis janvier 2025 pour la classe E." },
+  { id: "amiante", nom: "État d'amiante", prix: [90, 160], val: 99,
+    req: (c) => c.motif === "vente" && ["av1949", "1949-1976", "1977-1996"].indexOf(c.periode) > -1,
+    quand: "Permis de construire délivré avant le 1er juillet 1997", validite: "illimitée si le rapport est postérieur à 2013", note: "Un rapport antérieur à 2013 doit être refait." },
+  { id: "plomb", nom: "CREP (risque d'exposition au plomb)", prix: [110, 190], val: 1,
+    req: (c) => c.periode === "av1949" && c.motif !== "travaux",
+    quand: "Logement construit avant le 1er janvier 1949", validite: "1 an à la vente si présence de plomb, 6 ans en location", note: "" },
+  { id: "termites", nom: "État relatif à la présence de termites", prix: [90, 150], val: 0.5,
+    req: (c) => c.motif === "vente",
+    quand: "Toute vente en Gironde (arrêté préfectoral du 12 février 2001)", validite: "6 mois", note: "Tout le département est en zone de surveillance et de lutte." },
+  { id: "gaz", nom: "État de l'installation intérieure de gaz", prix: [95, 145], val: 3,
+    req: (c) => c.motif !== "travaux" && c.gaz === "oui",
+    quand: "Installation de gaz de plus de 15 ans", validite: "3 ans à la vente, 6 ans en location", note: "" },
+  { id: "elec", nom: "État de l'installation intérieure d'électricité", prix: [95, 155], val: 3,
+    req: (c) => c.motif !== "travaux" && c.elec === "ancienne",
+    quand: "Installation électrique de plus de 15 ans", validite: "3 ans à la vente, 6 ans en location", note: "" },
+  { id: "erp", nom: "État des risques et pollutions (ERP)", prix: [25, 55], val: 0.5,
+    req: (c) => c.motif !== "travaux",
+    quand: "Vente et location : inondation, argiles, termites, radon", validite: "6 mois", note: "" },
+  { id: "carrez", nom: "Mesurage loi Carrez", prix: [70, 140], val: 99,
+    req: (c) => c.motif === "vente" && c.type === "appartement",
+    quand: "Vente d'un lot en copropriété", validite: "illimitée sauf travaux", note: "" },
+  { id: "boutin", nom: "Mesurage loi Boutin (surface habitable)", prix: [70, 130], val: 99,
+    req: (c) => c.motif === "location",
+    quand: "Toute mise en location d'un logement vide", validite: "illimitée sauf travaux", note: "" },
+  { id: "assainissement", nom: "Contrôle d'assainissement non collectif", prix: [130, 230], val: 3,
+    req: (c) => c.motif === "vente" && c.assainissement === "individuel",
+    quand: "Vente d'un bien non raccordé au tout-à-l'égout", validite: "3 ans", note: "" },
+];
+const CONSEILLES = [
+  { id: "merule", nom: "Diagnostic mérule (conseillé)", prix: [120, 220],
+    req: (c) => c.periode === "av1949" || c.presquile,
+    raison: "Aucun arrêté mérule n'existe en Gironde, mais le bâti ancien humide de la rive droite et de la Presqu'île justifie un contrôle." },
+  { id: "dtg", nom: "Diagnostic technique global (conseillé)", prix: [900, 2500],
+    req: (c) => c.type === "immeuble",
+    raison: "Recommandé avant la vente d'un immeuble entier : il sécurise le prix et anticipe les travaux." },
+];
+const ANNEE = 2026;
+
+class Component extends DCLogic {
+  state = {
+    etape: 1, adresse: "", commune: "cenon", motif: "vente", type: "appartement", periode: "1949-1976",
+    surface: 65, gaz: "oui", elec: "ancienne", assainissement: "collectif", classe: "inconnu",
+    faits: {}, client: null, ref: "",
+  };
+
+  componentDidMount() {
+    const q = new URLSearchParams(location.search);
+    const p = {};
+    const ville = q.get("ville"); if (ville && COMMUNES.some((c) => c.id === ville)) p.commune = ville;
+    const motif = q.get("motif"); if (["vente", "location", "travaux"].indexOf(motif) > -1) p.motif = motif;
+    const per = q.get("periode"); if (PERIODES.some((x) => x.v === per)) p.periode = per;
+    const type = q.get("type"); if (TYPES.some((x) => x.v === type)) p.type = type;
+    const adr = q.get("adresse"); if (adr) p.adresse = adr;
+    if (Object.keys(p).length) this.setState(p);
+  }
+
+  ctx() {
+    const s = this.state;
+    const com = COMMUNES.filter((c) => c.id === s.commune)[0] || COMMUNES[0];
+    return { motif: s.motif, type: s.type, periode: s.periode, gaz: s.gaz, elec: s.elec,
+      assainissement: s.assainissement, classe: s.classe, presquile: com.presquile, com };
+  }
+
+  analyse() {
+    const s = this.state, c = this.ctx(), out = [];
+    DIAGS.forEach((d) => {
+      if (!d.req(c)) return;
+      const f = s.faits[d.id];
+      let statut = "à réaliser", valide = false;
+      if (f && f.actif) {
+        const an = parseInt(f.annee, 10), age = ANNEE - an;
+        valide = age <= d.val && !(d.id === "dpe" && an < 2021) && !(d.id === "amiante" && an < 2013);
+        statut = valide ? "déjà valide" : "à refaire";
+      }
+      out.push({ d, statut, valide });
+    });
+    CONSEILLES.forEach((x) => { if (x.req(c)) out.push({ d: x, statut: "conseillé", valide: false, conseil: true }); });
+    return out;
+  }
+
+  renderVals() {
+    const s = this.state, et = s.etape, c = this.ctx();
+    const analyse = this.analyse();
+    const aFaire = analyse.filter((x) => !x.valide && !x.conseil);
+    const reutilises = analyse.filter((x) => x.valide);
+    let min = 0, max = 0;
+    aFaire.forEach((x) => { min += x.d.prix[0]; max += x.d.prix[1]; });
+    if (aFaire.length >= 4) { min *= 0.88; max *= 0.92; }
+    const fmt = (n) => (Math.round(n / 5) * 5).toLocaleString("fr-FR") + " €";
+    const fourchette = aFaire.length ? fmt(min) + " – " + fmt(max) : "Aucun diagnostic à réaliser";
+    const per = PERIODES.filter((p) => p.v === s.periode)[0] || PERIODES[0];
+    const typ = TYPES.filter((t) => t.v === s.type)[0] || TYPES[0];
+    const cl = s.client || {};
+    const motifLabel = s.motif === "vente" ? "Vente" : s.motif === "location" ? "Mise en location" : "Travaux";
+
+    const couleurs = {
+      "à réaliser": ["var(--color-accent-100)", "var(--color-accent-300)", "var(--color-accent-700)"],
+      "à refaire": ["var(--diag-ambre-100)", "#ecd9ac", "var(--diag-ambre)"],
+      "déjà valide": ["var(--diag-vert-100)", "#bfe0d2", "var(--diag-vert)"],
+      "conseillé": ["var(--color-neutral-100)", "var(--color-divider)", "var(--color-neutral-800)"],
+    };
+    const opt = (liste, champ) => liste.map((o) => {
+      const actif = s[champ] === o.v;
+      return { label: o.label, desc: o.desc, icone: o.icone, actif,
+        bg: actif ? "var(--color-accent-100)" : "#fff", bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+        fg: actif ? "var(--color-accent-800)" : "var(--color-text)",
+        choisir: () => this.setState({ [champ]: o.v }) };
+    });
+    const annees = [];
+    for (let a = ANNEE; a >= 2012; a--) annees.push(String(a));
+
+    return {
+      jalons: [1, 2, 3].map((n) => ({
+        puce: et > n || et === 4 ? "✓" : String(n),
+        titre: ["Le bien", "Existants", "Mon dossier"][n - 1],
+        bg: et >= n || et === 4 ? "var(--color-accent)" : "var(--color-accent-200)",
+        fg: et >= n || et === 4 ? "#fff" : "var(--color-accent-700)",
+        couleur: et >= n ? "var(--color-accent-800)" : "var(--color-neutral-700)",
+        curseur: et > n && et !== 4 ? "pointer" : "default",
+        aller: () => { if (et > n && et !== 4) this.setState({ etape: n }); },
+      })),
+      progression: et === 4 ? "Terminé" : "Étape " + et + " sur 3",
+      largeurBarre: Math.round((Math.min(et, 4) / 4) * 100) + "%",
+      etape1: et === 1, etape2: et === 2, etape3: et === 3, etape4: et === 4,
+
+      adresse: s.adresse, majAdresse: (e) => this.setState({ adresse: e.target.value }),
+      communes: COMMUNES, commune: s.commune, majCommune: (e) => this.setState({ commune: e.target.value }),
+      communeNom: c.com.nom,
+      motif: s.motif, majMotif: (e) => this.setState({ motif: e.target.value }),
+      surface: s.surface, majSurface: (e) => this.setState({ surface: parseInt(e.target.value, 10) }),
+      typesBien: opt(TYPES, "type"), periodes: opt(PERIODES, "periode"),
+      gaz: s.gaz, majGaz: (e) => this.setState({ gaz: e.target.value }),
+      elec: s.elec, majElec: (e) => this.setState({ elec: e.target.value }),
+      assainissement: s.assainissement, majAssainissement: (e) => this.setState({ assainissement: e.target.value }),
+      classeDpe: s.classe, majClasse: (e) => this.setState({ classe: e.target.value }),
+      annees,
+
+      dejaFaits: DIAGS.filter((d) => d.req(c)).map((d) => {
+        const f = s.faits[d.id] || { actif: false, annee: "2024" };
+        return { nom: d.nom, actif: f.actif, annee: f.annee, coche: f.actif ? "✓" : "",
+          bg: f.actif ? "var(--color-accent-100)" : "#fff", bd: f.actif ? "var(--color-accent-300)" : "var(--color-neutral-400)",
+          fg: f.actif ? "var(--color-accent-800)" : "var(--color-text)",
+          caseBg: f.actif ? "var(--color-accent)" : "#fff", caseBd: f.actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+          basculer: () => this.setState({ faits: Object.assign({}, s.faits, { [d.id]: { actif: !f.actif, annee: f.annee } }) }),
+          majAnnee: (e) => this.setState({ faits: Object.assign({}, s.faits, { [d.id]: { actif: true, annee: e.target.value } }) }) };
+      }),
+
+      resultats: analyse.map((x) => {
+        const col = couleurs[x.statut];
+        const f = s.faits[x.d.id];
+        return { nom: x.d.nom, statut: x.statut, bg: col[0], bd: col[1], fg: col[2], icone: IC[x.d.id] || IC.dtg,
+          raison: x.conseil ? x.d.raison
+            : x.statut === "déjà valide" ? "Votre rapport de " + f.annee + " reste valable : inutile de le refaire."
+            : x.statut === "à refaire" ? "Rapport de " + f.annee + " hors délai. " + x.d.quand + ". " + x.d.note
+            : x.d.quand + ". Validité : " + x.d.validite + ".",
+          prix: x.statut === "déjà valide" ? "0 € — rapport réutilisé" : x.d.prix[0] + " – " + x.d.prix[1] + " €" };
+      }),
+      resumeBien: typ.label + " · " + per.label + " · " + s.surface + " m² · " + c.com.nom,
+      resumeDossier: aFaire.length
+        ? aFaire.length + " diagnostic" + (aFaire.length > 1 ? "s" : "") + " à réaliser"
+          + (reutilises.length ? ", " + reutilises.length + " rapport" + (reutilises.length > 1 ? "s" : "") + " réutilisé" + (reutilises.length > 1 ? "s" : "") : "")
+          + (aFaire.length >= 4 ? ". Tarif pack appliqué, une seule visite sur place." : ". Une seule visite sur place.")
+        : "Vos rapports couvrent déjà les obligations pour ce motif.",
+      fourchette,
+      titreDossier: aFaire.length ? aFaire.length + " diagnostic" + (aFaire.length > 1 ? "s" : "") + " à réaliser" : "Aucun diagnostic à refaire",
+      lignesPrix: analyse.map((x, n) => ({ nom: x.d.nom, bt: n ? "1px solid var(--color-divider)" : "0",
+        prix: x.statut === "déjà valide" ? "Rapport réutilisé" : x.d.prix[0] + " – " + x.d.prix[1] + " €",
+        fg: x.statut === "déjà valide" ? "var(--color-neutral-700)" : "var(--color-text)" })),
+      recapBien: [
+        { label: "Adresse", valeur: s.adresse || "—" },
+        { label: "Commune", valeur: c.com.nom },
+        { label: "Type", valeur: typ.label },
+        { label: "Construction", valeur: per.label },
+        { label: "Surface", valeur: s.surface + " m²" },
+        { label: "Motif", valeur: motifLabel },
+      ],
+
+      precedent: () => { this.setState({ etape: Math.max(1, et - 1) }); window.scrollTo(0, 0); },
+      vers2: (e) => { e.preventDefault(); this.setState({ etape: 2 }); window.scrollTo(0, 0); },
+      vers3: (e) => { e.preventDefault(); this.setState({ etape: 3 }); window.scrollTo(0, 0); },
+      envoyer: (e) => {
+        e.preventDefault();
+        const f = e.target, g = (id) => ((f.querySelector("#" + id) || {}).value || "").trim();
+        const payload = {
+          reference: "PHD-" + Date.now().toString().slice(-6),
+          bien: { adresse: s.adresse, commune: c.com.nom, codePostal: c.com.cp, type: typ.label, periode: per.label,
+            surface: s.surface, motif: s.motif, gaz: s.gaz, electricite: s.elec, assainissement: s.assainissement, classeDpe: s.classe },
+          diagnostics: analyse.map((x) => ({ nom: x.d.nom, statut: x.statut })),
+          estimation: { min: Math.round(min), max: Math.round(max), aRealiser: aFaire.length, reutilises: reutilises.length },
+          contact: { nom: g("dg-nom"), email: g("dg-email"), telephone: g("dg-tel"), visite: g("dg-quand") },
+          envoyeLe: new Date().toISOString(),
+        };
+        console.log("[Portail Habitat Diag] demande de diagnostic", payload);
+        this.setState({ client: payload.contact, ref: payload.reference, etape: 4 });
+        window.scrollTo(0, 0);
+      },
+      clientEmail: cl.email || "", reference: s.ref,
+      donneesEnvoyees: [
+        { label: "Adresse", valeur: s.adresse || "—" },
+        { label: "Commune", valeur: c.com.nom + " (" + c.com.cp + ")" },
+        { label: "Bien", valeur: typ.label + " · " + s.surface + " m²" },
+        { label: "Construction", valeur: per.label },
+        { label: "Motif", valeur: motifLabel },
+        { label: "Diagnostics à réaliser", valeur: String(aFaire.length) },
+        { label: "Rapports réutilisés", valeur: String(reutilises.length) },
+        { label: "Budget estimé", valeur: fourchette },
+        { label: "Contact", valeur: cl.nom || "" },
+        { label: "Téléphone", valeur: cl.telephone || "" },
+      ],
+      recommencer: () => this.setState({ etape: 1, faits: {}, client: null, ref: "", adresse: "" }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:16px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <div><h1 style="margin:0;font-size:30px;line-height:1.15">Comportement des visiteurs</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Clics, trajets du curseur, arrêts, défilement, frictions et sorties, page par page. Visiteurs ayant accepté la mesure détaillée uniquement.</p></div>
+    <div role="tablist" style="display:flex;gap:4px;background:#eceae6;padding:3px;border-radius:10px">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="border:0;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;white-space:nowrap;height:auto;line-height:1.3;background:{{ t.bg }};color:#201e1d">{{ t.nom }}</button></sc-for>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <select onChange="{{ setPage }}" value="{{ pageIdx }}" style="font:inherit;font-size:14.5px;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;min-width:260px"><sc-for list="{{ pages }}" as="p" hint-placeholder-count="6"><option value="{{ p.i }}">{{ p.nom }}</option></sc-for></select>
+    <sc-for list="{{ apps }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ a.bg }};color:{{ a.fg }}">{{ a.nom }}</button></sc-for>
+    <sc-for list="{{ periodes }}" as="a" hint-placeholder-count="3"><button onClick="{{ a.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ a.bg }};color:{{ a.fg }}">{{ a.nom }}</button></sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:16px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <sc-if value="{{ isCartes }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+          <sc-for list="{{ calques }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 11px;border-radius:8px;white-space:nowrap;height:auto;line-height:1.3;background:{{ c.bg }};color:{{ c.fg }}">{{ c.nom }}</button></sc-for>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#57534f;margin-left:auto">Opacité<input type="range" min="0.2" max="1" step="0.05" value="{{ opacite }}" onChange="{{ setOpacite }}" style="accent-color:#3f4a57;width:90px"></label>
+        </div>
+        <div style="font-size:13px;color:#6b6763">{{ legende }}</div>
+      </sc-if>
+      <sc-if value="{{ isReplays }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <button onClick="{{ playPause }}" disabled="{{ noReplay }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ playLabel }}</button>
+          <button onClick="{{ restart }}" disabled="{{ noReplay }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Recommencer</button>
+          <sc-for list="{{ vitesses }}" as="v" hint-placeholder-count="3"><button onClick="{{ v.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ v.bg }};color:{{ v.fg }}">{{ v.nom }}</button></sc-for>
+          <div style="flex:1 1 160px;height:6px;border-radius:99px;background:#e2e0dc;overflow:hidden;min-width:120px"><div style="height:100%;background:#3f4a57;width:{{ progres }}"></div></div>
+          <span style="font-size:13px;color:#57534f;white-space:nowrap">{{ tempsReplay }}</span>
+        </div>
+      </sc-if>
+
+      <div ref="{{ scrollerRef }}" style="height:74vh;min-height:420px;overflow:auto;border:1px solid #e2e0dc;border-radius:12px;background:#e9e8e5">
+        <div ref="{{ wrapRef }}" style="width:100%">
+          <div style="position:relative;margin:0 auto;overflow:hidden;background:#fff;width:{{ boxW }};height:{{ boxH }}">
+            <iframe ref="{{ ifrRef }}" src="{{ src }}" onLoad="{{ onLoad }}" title="Aperçu de la page" tabindex="-1" style="position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none;background:#fff;width:{{ refWpx }};height:{{ Hpx }};transform:scale({{ scale }})"></iframe>
+            <canvas ref="{{ cvRef }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:{{ opacite }}"></canvas>
+            <svg viewBox="{{ viewBox }}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" aria-hidden="true">
+              <sc-for list="{{ trajets }}" as="p" hint-placeholder-count="0"><polyline points="{{ p.pts }}" fill="none" stroke="{{ p.c }}" stroke-width="{{ p.sw }}" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline></sc-for>
+              <sc-for list="{{ lignes }}" as="l" hint-placeholder-count="0"><line x1="0" x2="{{ refW }}" y1="{{ l.y }}" y2="{{ l.y }}" stroke="#201e1d" stroke-width="1.5" stroke-dasharray="6 5" vector-effect="non-scaling-stroke"></line></sc-for>
+              <sc-for list="{{ boites }}" as="b" hint-placeholder-count="0"><rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" rx="6" fill="{{ b.fill }}" stroke="{{ b.c }}" stroke-width="2.5" vector-effect="non-scaling-stroke"></rect></sc-for>
+              <sc-for list="{{ ripples }}" as="r" hint-placeholder-count="0"><circle cx="{{ r.x }}" cy="{{ r.y }}" r="{{ r.r }}" fill="rgba(224,90,16,.25)" stroke="#e05a10" stroke-width="2" vector-effect="non-scaling-stroke"></circle></sc-for>
+              <sc-if value="{{ curseur.on }}" hint-placeholder-val="{{ false }}"><path d="{{ curseur.d }}" fill="#201e1d" stroke="#fff" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></sc-if>
+            </svg>
+            <sc-for list="{{ etiquettes }}" as="e" hint-placeholder-count="0"><span style="position:absolute;transform:translateY(-50%);font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.2);left:{{ e.x }};top:{{ e.y }};background:{{ e.bg }};color:{{ e.fg }}">{{ e.t }}</span></sc-for>
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-top:120px;background:rgba(246,246,244,.85);font-size:15px;color:#57534f">Chargement de la page et calcul des calques…</div></sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12.5px;color:#6b6763">{{ k.l }}</span><span style="font-size:21px;font-weight:700;line-height:1.15">{{ k.v }}</span></div></sc-for>
+      </section>
+
+      <sc-if value="{{ isCartes }}" hint-placeholder-val="{{ true }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px">
+          <h2 style="margin:0 0 6px;font-size:16px">Alertes détectées</h2>
+          <sc-for list="{{ alertes }}" as="a" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:3px;padding:9px 0;border-top:1px solid #ecebe7">
+              <div style="display:flex;gap:6px;align-items:center"><span style="font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;background:{{ a.bg }};color:{{ a.fg }}">{{ a.type }}</span><strong style="font-size:14px">{{ a.t }}</strong></div>
+              <span style="font-size:13px;color:#57534f;text-wrap:pretty">{{ a.d }}</span>
+              <button onClick="{{ a.ia }}" disabled="{{ noIa }}" style="align-self:flex-start;border:0;background:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:#2a323c;text-decoration:underline;padding:0;height:auto">Demander à l'IA</button>
+            </div>
+          </sc-for>
+        </section>
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:14px;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 6px;font-size:16px">Éléments cliquables</h2>
+          <sc-for list="{{ elements }}" as="e" hint-placeholder-count="6">
+            <div onMouseEnter="{{ e.on }}" onMouseLeave="{{ unhover }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 6px;border-top:1px solid #ecebe7;border-radius:6px;cursor:default;background:{{ e.bg }}">
+              <span style="font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.nom }}</span><span style="font-size:13.5px;font-weight:700;text-align:right">{{ e.taux }}</span>
+              <span style="font-size:12px;color:#6b6763">vu par {{ e.vus }} · {{ e.clics }} clics</span><span style="font-size:12px;color:{{ e.hc }};text-align:right">{{ e.hes }}</span>
+            </div>
+          </sc-for>
+        </section>
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:14px;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 6px;font-size:16px">Sections</h2>
+          <sc-for list="{{ sections }}" as="s" hint-placeholder-count="5">
+            <div onMouseEnter="{{ s.on }}" onMouseLeave="{{ unhover }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 6px;border-top:1px solid #ecebe7;border-radius:6px;cursor:default;background:{{ s.bg }}">
+              <span style="font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.nom }}</span><span style="font-size:13px;font-weight:700;text-align:right;color:{{ s.sc }}">{{ s.sorties }} des sorties</span>
+              <span style="font-size:12px;color:#6b6763">atteinte {{ s.vue }} · lecture {{ s.temps }}</span><span></span>
+            </div>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isReplays }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:14px;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 6px;font-size:16px">Sessions enregistrées</h2>
+          <sc-for list="{{ sessionsRep }}" as="r" hint-placeholder-count="6">
+            <button onClick="{{ r.go }}" disabled="{{ noReplay }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;text-align:left;border:0;border-top:1px solid #ecebe7;cursor:pointer;font:inherit;padding:9px 6px;height:auto;border-radius:6px;background:{{ r.bg }}">
+              <span style="font-size:13.5px;font-weight:600">{{ r.titre }}</span><span style="font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap;background:{{ r.tbg }};color:{{ r.tfg }}">{{ r.res }}</span>
+              <span style="font-size:12px;color:#6b6763">{{ r.meta }}</span><span></span>
+            </button>
+          </sc-for>
+          <p style="margin:8px 0 0;font-size:12.5px;color:#6b6763">Conservés 30 jours. Aucune saisie ni donnée personnelle enregistrée. Chaque lecture est journalisée ({{ permReplay }}).</p>
+        </section>
+      </sc-if>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PAGES = [['Acquisition Artisans v2', 'Landing pro · acquisition artisans', 3200], ['Accueil Particuliers', 'Accueil particuliers', 5400], ['Simulateur de Devis', 'Simulateur de devis', 2600], ['Diagnostic Immobilier', 'Landing diagnostic immobilier', 1900], ['Diagnostic Immobilier Rive Droite', 'Diagnostic · rive droite', 900], ['Annuaire Artisans', 'Annuaire des artisans', 4100]];
+const CALQUES = [['clics', 'Clics', 'Densité des clics. Rouge = zone la plus cliquée.'], ['mouvements', 'Trajets du curseur', 'Trajets de 20 sessions et densité des mouvements (ordinateur).'], ['attention', 'Attention', 'Durée cumulée des arrêts du curseur (≥ 600 ms). Indique ce qui est lu.'], ['defilement', 'Défilement', 'Part des visiteurs qui atteignent chaque hauteur. Lignes : 75 %, 50 %, 25 %.'], ['frictions', 'Clics morts et rage', 'Clics sur des éléments non cliquables (orange) et clics répétés de frustration (rouge).'], ['sorties', 'Sorties', 'Dernière section vue avant de quitter la page, hors conversions.']];
+const rng = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+const hash = (s) => [...s].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261);
+const gauss = (r) => { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+const pct = (x) => Math.round(x * 100) + ' %';
+const fmtN = (n) => Math.round(n).toLocaleString('fr-FR');
+const CTA = /inscri|commenc|activer|premium|devis|diagnostic|passer|recevoir|essayer|démarrer|créer|estimer|voir les|trouver|découvrir|choisir/i;
+
+function mesurerDoc(doc) {
+  const sy = doc.defaultView ? doc.defaultView.scrollY : 0;
+  const box = (el) => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top + sy, w: r.width, h: r.height }; };
+  const vis = (b) => b.w > 16 && b.h > 10;
+  const lab = (el) => ((el.innerText || el.getAttribute('aria-label') || el.getAttribute('alt') || '').trim().replace(/\s+/g, ' ')).slice(0, 42);
+  const click = [...doc.querySelectorAll('a,button,[role=button],summary,input[type=submit]')].map((el) => ({ ...box(el), label: lab(el) })).filter((b) => vis(b) && b.label);
+  const non = [...doc.querySelectorAll('h1,h2,h3,img,picture,svg')].filter((el) => !el.closest('a,button')).map((el) => ({ ...box(el), label: lab(el) || (el.tagName === 'IMG' ? 'Image' : el.tagName.toLowerCase()), tag: el.tagName })).filter((b) => b.w > 40 && b.h > 18);
+  let secs = [...doc.querySelectorAll('section,header,footer')].filter((el) => !el.parentElement.closest('section')).map((el) => { const h = el.querySelector('h1,h2,h3'); return { ...box(el), label: (h ? lab(h) : el.tagName === 'HEADER' ? 'En-tête' : el.tagName === 'FOOTER' ? 'Pied de page' : 'Section') }; }).filter((b) => b.h > 120).sort((a, b) => a.y - b.y);
+  return { click, non, secs };
+}
+
+function generer(m, H, W, key, sessionsBase, mobile) {
+  const r = rng(hash(key));
+  const k = mobile ? 0.42 : 0.62;
+  const reach = (y) => Math.max(0.03, Math.min(1, Math.exp(-Math.max(0, y - (mobile ? 500 : 750)) / (H * k))));
+  const sessions = Math.round(sessionsBase * (mobile ? 0.58 : 0.42));
+  const pts = (b, n, spread) => Array.from({ length: n }, () => [Math.min(W, Math.max(0, b.x + b.w / 2 + gauss(r) * b.w * spread)), Math.min(H, Math.max(0, b.y + b.h / 2 + gauss(r) * b.h * spread * 1.2))]);
+  const click = m.click.map((b) => ({ ...b, cta: CTA.test(b.label), nav: b.y < 90 }));
+  click.forEach((b) => { b.poids = (b.cta ? 7 : b.nav ? 0.6 : 1) * Math.sqrt(b.w * b.h) / 60 * reach(b.y + b.h / 2) * (0.6 + r() * 0.8); });
+  const tot = click.reduce((a, b) => a + b.poids, 0) || 1;
+  const clics = [];
+  click.forEach((b) => { b.vues = sessions * reach(b.y + b.h / 2); b.clics = (b.poids / tot) * sessions * 0.95; b.hes = b.cta ? 0.05 + r() * 0.22 : 0; clics.push(...pts(b, Math.round((b.poids / tot) * 1400), 0.28)); });
+  const non = [...m.non].sort((a, b) => reach(b.y) * Math.sqrt(b.w * b.h) - reach(a.y) * Math.sqrt(a.w * a.h));
+  const morts = non.slice(0, 3).map((b) => ({ ...b, taux: 0.012 + r() * 0.05 }));
+  const rageEl = (click.filter((b) => !b.cta && !b.nav)[Math.floor(r() * 3)] || non[3] || null);
+  const rage = rageEl ? { ...rageEl, taux: 0.004 + r() * 0.01 } : null;
+  const mortsPts = [...morts.flatMap((b) => pts(b, 70, 0.3))];
+  const ragePts = rage ? pts(rage, 40, 0.12) : [];
+  const att = [];
+  [...m.non, ...click].forEach((b) => { const w = Math.pow(reach(b.y), 1.4) * (b.tag === 'H1' ? 6 : b.tag === 'H2' ? 3 : b.cta ? 2.5 : 1); att.push(...pts({ ...b, w: Math.min(b.w, 700) }, Math.round(w * 40), 0.3)); });
+  const targets = [...click, ...m.non].sort((a, b) => a.y - b.y);
+  const chemin = (n) => { const out = []; let y0 = 0; const lim = H * (0.25 + r() * 0.75); for (let i = 0; i < n; i++) { const cand = targets.filter((t) => t.y >= y0 - 200 && t.y <= lim); if (!cand.length) break; const t = cand[Math.floor(r() * Math.min(cand.length, 6))]; out.push([t.x + t.w / 2 + gauss(r) * 30, t.y + t.h / 2 + gauss(r) * 12, t]); y0 = t.y; } return out; };
+  const trajets = Array.from({ length: 20 }, () => chemin(6 + Math.floor(r() * 6))).filter((p) => p.length > 1);
+  const mouv = trajets.flatMap((p) => p.flatMap(([x, y], i) => { if (!i) return []; const [x0, y0] = p[i - 1]; return Array.from({ length: 12 }, (_, s) => [x0 + ((x - x0) * s) / 12 + gauss(r) * 6, y0 + ((y - y0) * s) / 12 + gauss(r) * 6]); }));
+  const secs = (m.secs.length ? m.secs : Array.from({ length: Math.ceil(H / 800) }, (_, i) => ({ x: 0, y: i * 800, w: W, h: 800, label: 'Zone ' + (i + 1) })));
+  const fuite = Math.floor(r() * Math.max(1, secs.length - 2)) + 1;
+  let sortRaw = secs.map((s, i) => Math.max(0.001, reach(s.y) - reach(s.y + s.h)) * (i === fuite ? 2.2 : 1));
+  const st = sortRaw.reduce((a, b) => a + b, 0);
+  const sections = secs.map((s, i) => ({ ...s, vue: reach(s.y), temps: Math.round((s.h / 55) * (0.5 + r()) * reach(s.y) + 2), sorties: sortRaw[i] / st, fuite: i === fuite }));
+  const depth = (() => { for (let y = 0; y < H; y += 20) if (reach(y) < 0.5) return y / H; return 1; })();
+  const conv = Math.min(0.14, click.filter((b) => b.cta).reduce((a, b) => a + b.clics, 0) / sessions * 0.09);
+  return { sessions, reach, clics, morts, rage, mortsPts, ragePts, att, trajets, mouv, sections, click, depth, conv, dur: mobile ? 48 + r() * 30 : 62 + r() * 50, targets };
+}
+
+let SPRITE = null, PALETTE = null;
+function sprite() { if (SPRITE) return SPRITE; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return (SPRITE = c); }
+function palette() { if (PALETTE) return PALETTE; const c = document.createElement('canvas'); c.width = 256; c.height = 1; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 256, 0); [[0, '#2b59c3'], [0.3, '#1fb5c9'], [0.5, '#3ccf4e'], [0.7, '#f5d33b'], [0.85, '#f28c28'], [1, '#d7191c']].forEach(([o, col]) => gr.addColorStop(o, col)); g.fillStyle = gr; g.fillRect(0, 0, 256, 1); return (PALETTE = g.getImageData(0, 0, 256, 1).data); }
+
+class Component extends DCLogic {
+  scrollerRef = React.createRef(); wrapRef = React.createRef(); ifrRef = React.createRef(); cvRef = React.createRef();
+  state = { page: 0, app: 'ordinateur', periode: '30 j', calque: 'clics', opacite: 0.8, tab: 'cartes', w: 900, H: 900, data: null, loading: true, hover: null, rep: null, playing: false, t: 0, speed: 2 };
+
+  componentDidMount() {
+    this.ro = new ResizeObserver((e) => { const w = Math.round(e[0].contentRect.width); if (Math.abs(w - this.state.w) > 4) this.setState({ w }); });
+    if (this.wrapRef.current) this.ro.observe(this.wrapRef.current);
+    try { const p = JSON.parse(localStorage.getItem('ph-comportement') || '{}'); if (p.calque) this.setState({ calque: p.calque }); } catch (e) {}
+  }
+  componentWillUnmount() { this.ro && this.ro.disconnect(); cancelAnimationFrame(this.raf); clearTimeout(this.t1); clearTimeout(this.t2); }
+
+  refW() { return this.state.app === 'mobile' ? 390 : 1280; }
+  onLoad() { this.setState({ loading: true }); clearTimeout(this.t1); this.essais = 0; this.t1 = setTimeout(() => this.preparer(), 1500); }
+  preparer() {
+    const f = this.ifrRef.current; let doc = null;
+    try { doc = f && f.contentDocument; } catch (e) {}
+    if (!doc || !doc.body || doc.body.children.length === 0) { if (this.essais++ < 6) this.t1 = setTimeout(() => this.preparer(), 800); return; }
+    const win = doc.defaultView;
+    doc.querySelectorAll('[style*="vh"]').forEach((el) => { const st = el.getAttribute('style') || '', cs = win.getComputedStyle(el);
+      if (/min-height:\s*[\d.]+d?vh/.test(st)) el.style.minHeight = cs.minHeight;
+      if (/(^|;)\s*height:\s*[\d.]+d?vh/.test(st)) el.style.height = cs.height;
+      if (/max-height:\s*[\d.]+d?vh/.test(st)) el.style.maxHeight = cs.maxHeight; });
+    const H = Math.min(12000, Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight, 900));
+    this.setState({ H });
+    clearTimeout(this.t2);
+    this.t2 = setTimeout(() => { try { this.m = mesurerDoc(doc); this.gen(); } catch (e) { this.setState({ loading: false }); } }, 450);
+  }
+  gen() {
+    const s = this.state, f = { '7 j': 0.25, '30 j': 1, '90 j': 2.8 }[s.periode];
+    const mobile = s.app === 'mobile';
+    const data = generer(this.m, s.H, this.refW(), PAGES[s.page][0] + s.app + s.periode, PAGES[s.page][2] * f, mobile);
+    const r = rng(hash('rep' + s.page + s.app));
+    const RES = [['Inscription commencée', '#eef7f3', '#085340'], ['Sortie', '#f1f0ed', '#57534f'], ['Clic de rage', '#fdecea', '#8f1d14'], ['Sortie', '#f1f0ed', '#57534f'], ['Demande envoyée', '#eef7f3', '#085340'], ['Abandon formulaire', '#fdf4e3', '#7a5206'], ['Sortie', '#f1f0ed', '#57534f']];
+    const SRC = ['Google', 'Direct', 'Facebook', 'Email', 'Google Ads', 'LinkedIn'];
+    this.reps = RES.map(([res, tbg, tfg], i) => {
+      const n = 5 + Math.floor(r() * 7), pts = []; let y0 = 0;
+      for (let k = 0; k < n; k++) { const cand = data.targets.filter((t) => t.y >= y0 - 150 && t.y <= s.H * (res === 'Sortie' ? 0.45 : 0.95)); if (!cand.length) break; const t = cand[Math.floor(r() * Math.min(6, cand.length))]; y0 = t.y; pts.push({ x: t.x + t.w / 2 + gauss(r) * 20, y: t.y + t.h / 2 + gauss(r) * 8, click: !!t.label && (CTA.test(t.label) || r() < 0.25) && k > 1 }); }
+      if (res === 'Clic de rage' && pts.length) { const p = pts[Math.floor(pts.length / 2)]; p.rage = true; p.click = true; }
+      pts.forEach((p, k) => { p.t = pts.length > 1 ? k / (pts.length - 1) : 0; });
+      const dur = 30 + Math.floor(r() * 150);
+      return { id: i, res, tbg, tfg, pts, titre: 'Session ' + (1840 + i * 37), meta: (mobile ? 'Mobile' : 'Ordinateur') + ' · ' + Math.floor(dur / 60) + ' min ' + String(dur % 60).padStart(2, '0') + ' · ' + SRC[i % SRC.length] };
+    });
+    this.setState({ data, loading: false, rep: null, playing: false, t: 0 });
+  }
+  heat(ctx, pts, rad, sc, cw, ch, alpha) {
+    const sp = sprite(); ctx.globalAlpha = alpha; const d = rad * 2 * sc;
+    pts.forEach(([x, y]) => ctx.drawImage(sp, x * sc - rad * sc, y * sc - rad * sc, d, d));
+    ctx.globalAlpha = 1;
+    const img = ctx.getImageData(0, 0, cw, ch), px = img.data, pal = palette();
+    let max = 0; for (let i = 3; i < px.length; i += 4) if (px[i] > max) max = px[i];
+    max = max || 1;
+    for (let i = 0; i < px.length; i += 4) { const a = px[i + 3]; if (!a) continue; const v = Math.min(255, Math.round((a / max) * 255)); px[i] = pal[v * 4]; px[i + 1] = pal[v * 4 + 1]; px[i + 2] = pal[v * 4 + 2]; px[i + 3] = Math.min(235, 40 + v * 0.8); }
+    ctx.putImageData(img, 0, 0);
+  }
+  draw() {
+    const cv = this.cvRef.current; if (!cv) return;
+    const s = this.state, d = s.data, W = this.refW(), H = s.H, sc = 0.5;
+    const cw = Math.round(W * sc), ch = Math.round(H * sc);
+    cv.width = cw; cv.height = ch;
+    const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cw, ch);
+    if (!d || s.tab !== 'cartes') return;
+    if (s.calque === 'clics') this.heat(ctx, d.clics, 26, sc, cw, ch, 0.09);
+    if (s.calque === 'mouvements') this.heat(ctx, d.mouv, 20, sc, cw, ch, 0.05);
+    if (s.calque === 'attention') this.heat(ctx, d.att, 36, sc, cw, ch, 0.05);
+    if (s.calque === 'frictions') this.heat(ctx, [...d.mortsPts, ...d.ragePts], 24, sc, cw, ch, 0.12);
+    if (s.calque === 'defilement') { for (let y = 0; y < H; y += 10) { const v = d.reach(y); ctx.fillStyle = 'hsla(' + Math.round((1 - v) * 230) + ',85%,50%,0.45)'; ctx.fillRect(0, y * sc, cw, 10 * sc + 1); } }
+    if (s.calque === 'sorties') d.sections.forEach((x) => { ctx.fillStyle = 'rgba(179,38,30,' + Math.min(0.5, x.sorties * 1.4).toFixed(2) + ')'; ctx.fillRect(0, x.y * sc, cw, x.h * sc); });
+  }
+  tick() {
+    const now = performance.now(), dt = now - (this.last || now); this.last = now;
+    const t = Math.min(1, this.state.t + (dt / 24000) * this.state.speed);
+    this.setState({ t, playing: t < 1 });
+    const rep = this.reps && this.reps[this.state.rep];
+    if (rep && this.scrollerRef.current) { const p = this.pos(rep, t); const sc = this.scale(); this.scrollerRef.current.scrollTop = p.y * sc - 260; }
+    if (t < 1) this.raf = requestAnimationFrame(() => this.tick());
+  }
+  pos(rep, t) { const P = rep.pts; if (!P.length) return { x: 0, y: 0 }; let i = 0; while (i < P.length - 1 && P[i + 1].t < t) i++; const a = P[i], b = P[Math.min(i + 1, P.length - 1)]; const u = b.t > a.t ? (t - a.t) / (b.t - a.t) : 0; const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; return { x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e }; }
+  scale() { const w = this.state.w; return this.state.app === 'mobile' ? Math.min(1, (w - 16) / 390) : w / 1280; }
+  play() { cancelAnimationFrame(this.raf); this.last = performance.now(); this.setState({ playing: true, t: this.state.t >= 1 ? 0 : this.state.t }); this.raf = requestAnimationFrame(() => this.tick()); }
+  pause() { cancelAnimationFrame(this.raf); this.setState({ playing: false }); }
+
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#comportement'); } catch (e) {} }, 0); }
+    const s = this.state, d = s.data, P = this.props.perms || {}, can = (p) => P[p] ?? true;
+    const W = this.refW(), H = s.H, sc = this.scale();
+    const dk = [d && d.sessions, d && d.clics.length, s.calque, s.w, s.tab, H, s.periode, s.page, s.app].join('|');
+    if (dk !== this._dk) { this._dk = dk; clearTimeout(this._dr); this._dr = setTimeout(() => this.draw(), 40); }
+    const pill = (on) => ({ bg: on ? '#2a323c' : '#fff', fg: on ? '#fff' : '#201e1d' });
+    const setP = (patch) => { cancelAnimationFrame(this.raf); this.m = null; this.setState({ ...patch, data: null, loading: true, H: 900, rep: null, playing: false, t: 0 }); };
+    const cart = s.tab === 'cartes';
+    let trajets = [], lignes = [], etiq = [], boites = [], ripples = [], curseur = { on: false, d: '' };
+    const lab = (x, y, t, bg, fg) => ({ x: x * sc + 'px', y: y * sc + 'px', t, bg, fg });
+    if (d && cart) {
+      if (s.calque === 'mouvements') trajets = d.trajets.map((p) => ({ pts: p.map(([x, y]) => Math.round(x) + ',' + Math.round(y)).join(' '), c: 'rgba(20,80,138,.6)', sw: 1.8 }));
+      if (s.calque === 'defilement') [0.75, 0.5, 0.25].forEach((v) => { let y = 0; while (y < H && d.reach(y) > v) y += 10; if (y < H) { lignes.push({ y }); etiq.push(lab(8, y, Math.round(v * 100) + ' % des visiteurs arrivent ici', '#201e1d', '#fff')); } });
+      if (s.calque === 'sorties') d.sections.forEach((x) => etiq.push(lab(8, x.y + Math.min(x.h - 20, 28), pct(x.sorties) + ' des sorties · ' + x.label.slice(0, 28), x.fuite ? '#b3261e' : '#2a323c', '#fff')));
+      if (s.calque === 'frictions') { d.morts.forEach((b) => { boites.push({ x: b.x - 4, y: b.y - 4, w: b.w + 8, h: b.h + 8, c: '#f28c28', fill: 'rgba(242,140,40,.08)' }); etiq.push(lab(b.x, b.y - 4, 'Clic mort · ' + (b.taux * 100).toFixed(1).replace('.', ',') + ' %', '#f28c28', '#fff')); }); if (d.rage) { const b = d.rage; boites.push({ x: b.x - 4, y: b.y - 4, w: b.w + 8, h: b.h + 8, c: '#d7191c', fill: 'rgba(215,25,28,.08)' }); etiq.push(lab(b.x, b.y - 4, 'Clics de rage', '#d7191c', '#fff')); } }
+      if (s.hover) { const b = s.hover; boites.push({ x: b.x - 4, y: b.y - 4, w: b.w + 8, h: b.h + 8, c: '#201e1d', fill: 'rgba(32,30,29,.06)' }); }
+    }
+    const rep = !cart && this.reps && s.rep != null ? this.reps[s.rep] : null;
+    if (rep) {
+      const p = this.pos(rep, s.t), z = 22 / sc;
+      curseur = { on: true, d: 'M' + p.x + ' ' + p.y + ' l0 ' + z + ' l' + z * 0.3 + ' ' + -z * 0.28 + ' l' + z * 0.22 + ' ' + z * 0.42 + ' l' + z * 0.14 + ' ' + -z * 0.07 + ' l' + -z * 0.22 + ' ' + -z * 0.41 + ' l' + z * 0.4 + ' 0z' };
+      trajets = [{ pts: rep.pts.filter((q) => q.t <= s.t).map((q) => Math.round(q.x) + ',' + Math.round(q.y)).concat([Math.round(p.x) + ',' + Math.round(p.y)]).join(' '), c: 'rgba(224,90,16,.55)', sw: 2 }];
+      rep.pts.filter((q) => q.click && q.t <= s.t).forEach((q) => { const age = Math.min(1, (s.t - q.t) / 0.05); ripples.push({ x: q.x, y: q.y, r: (8 + age * 14) / sc }); if (q.rage) [1, 2].forEach((k) => ripples.push({ x: q.x + k * 4, y: q.y - k * 3, r: (6 + age * 10) / sc })); });
+    }
+    const sess = d ? d.sessions : 0;
+    const alertes = [];
+    if (d) {
+      const ctas = d.click.filter((b) => b.cta);
+      if (d.morts[0]) alertes.push(['Clic mort', '#fdf4e3', '#7a5206', '« ' + d.morts[0].label.slice(0, 34) + ' »', (d.morts[0].taux * 100).toFixed(1).replace('.', ',') + ' % des visiteurs qui le voient cliquent dessus alors qu’il n’est pas cliquable.']);
+      const f = d.sections.find((x) => x.fuite); if (f) alertes.push(['Sortie', '#fdecea', '#8f1d14', f.label.slice(0, 40), pct(f.sorties) + ' des sorties se font ici, alors que ' + pct(f.vue) + ' des visiteurs l’atteignent.']);
+      const inv = ctas.filter((b) => b.vues / sess < 0.35).sort((a, b) => b.poids - a.poids)[0]; if (inv) alertes.push(['Visibilité', '#eef4fa', '#0d3a65', '« ' + inv.label.slice(0, 34) + ' »', 'Bouton d’action vu par seulement ' + pct(inv.vues / sess) + ' des visiteurs.']);
+      const hes = ctas.filter((b) => b.hes > 0.17).sort((a, b) => b.hes - a.hes)[0]; if (hes) alertes.push(['Hésitation', '#fdf4e3', '#7a5206', '« ' + hes.label.slice(0, 34) + ' »', pct(hes.hes) + ' des visiteurs s’arrêtent plus de 2 s dessus sans cliquer.']);
+      if (d.rage) alertes.push(['Rage', '#fdecea', '#8f1d14', '« ' + d.rage.label.slice(0, 34) + ' »', 'Clics répétés de frustration pour ' + (d.rage.taux * 100).toFixed(1).replace('.', ',') + ' % des sessions.']);
+    }
+    const iaGo = (a) => () => { try { localStorage.setItem('ph-ia-preset', JSON.stringify({ perimetre: 'landings', question: 'Page « ' + PAGES[s.page][1] + ' » (' + s.app + ', ' + s.periode + ') — ' + a[0] + ' : ' + a[3] + '. ' + a[4] + ' Que recommandes-tu ?' })); } catch (e) {} this.props.go && this.props.go('ia'); };
+    const noReplay = !can('comportement.replays');
+    return {
+      tabs: [['cartes', 'Cartes et frictions'], ['replays', 'Replays']].map(([id, nom]) => ({ nom, bg: s.tab === id ? '#fff' : 'transparent', go: () => { this.pause(); this.setState({ tab: id }); } })),
+      isCartes: cart, isReplays: !cart,
+      pages: PAGES.map((p, i) => ({ i, nom: p[1] })), pageIdx: s.page, setPage: (e) => setP({ page: +e.target.value }),
+      apps: [['ordinateur', 'Ordinateur'], ['mobile', 'Mobile']].map(([id, nom]) => ({ nom, ...pill(s.app === id), go: () => s.app !== id && setP({ app: id }) })),
+      periodes: ['7 j', '30 j', '90 j'].map((p) => ({ nom: p, ...pill(s.periode === p), go: () => this.setState({ periode: p }, () => this.m && this.gen()) })),
+      calques: CALQUES.map(([id, nom]) => ({ nom, ...pill(s.calque === id), go: () => { this.setState({ calque: id }); try { localStorage.setItem('ph-comportement', JSON.stringify({ calque: id })); } catch (e) {} } })),
+      legende: (CALQUES.find((c) => c[0] === s.calque) || [])[2] || '', opacite: s.opacite, setOpacite: (e) => this.setState({ opacite: +e.target.value }),
+      src: PAGES[s.page][0] + '.dc.html?app=' + s.app, onLoad: () => this.onLoad(),
+      scrollerRef: this.scrollerRef, wrapRef: this.wrapRef, ifrRef: this.ifrRef, cvRef: this.cvRef,
+      refW: W, refWpx: W + 'px', Hpx: H + 'px', scale: sc, boxW: Math.round(W * sc) + 'px', boxH: Math.round(H * sc) + 'px', viewBox: '0 0 ' + W + ' ' + H,
+      loading: s.loading, trajets, lignes, etiquettes: etiq, boites, ripples, curseur,
+      kpis: d ? [['Sessions', fmtN(sess)], ['Conversion', (d.conv * 100).toFixed(1).replace('.', ',') + ' %'], ['Temps médian', Math.floor(d.dur / 60) + ' min ' + String(Math.round(d.dur % 60)).padStart(2, '0')], ['Profondeur médiane', pct(d.depth)]].map(([l, v]) => ({ l, v })) : [['Sessions', '…'], ['Conversion', '…'], ['Temps médian', '…'], ['Profondeur médiane', '…']].map(([l, v]) => ({ l, v })),
+      alertes: alertes.map((a) => ({ type: a[0], bg: a[1], fg: a[2], t: a[3], d: a[4], ia: iaGo(a) })), noIa: !can('ia.utiliser'),
+      elements: d ? [...d.click].filter((b) => !b.nav || d.click.length < 8).sort((a, b) => b.clics - a.clics).slice(0, 8).map((b) => ({ nom: b.label, taux: pct(b.clics / Math.max(1, b.vues)), vus: pct(b.vues / sess), clics: fmtN(b.clics), hes: b.cta ? 'hésitation ' + pct(b.hes) : '', hc: b.hes > 0.17 ? '#a33f05' : '#6b6763', bg: s.hover === b ? '#f4f5f7' : 'transparent', on: () => this.setState({ hover: b }) })) : [],
+      sections: d ? d.sections.map((x) => ({ nom: x.label, vue: pct(x.vue), temps: x.temps + ' s', sorties: pct(x.sorties), sc: x.fuite ? '#8f1d14' : '#201e1d', bg: s.hover === x ? '#f4f5f7' : 'transparent', on: () => this.setState({ hover: x }) })) : [],
+      unhover: () => this.setState({ hover: null }),
+      sessionsRep: (this.reps && d ? this.reps : []).map((r) => ({ ...r, bg: s.rep === r.id ? '#f4f5f7' : 'transparent', go: () => { this.setState({ rep: r.id, t: 0 }, () => this.play()); } })),
+      noReplay: noReplay || s.rep == null && false, permReplay: 'comportement.replays',
+      playLabel: s.playing ? 'Pause' : 'Lire', playPause: () => (s.rep == null ? null : s.playing ? this.pause() : this.play()), restart: () => { this.setState({ t: 0 }, () => this.play()); },
+      vitesses: [1, 2, 4].map((v) => ({ nom: '×' + v, ...pill(s.speed === v), go: () => this.setState({ speed: v }) })),
+      progres: Math.round(s.t * 100) + '%', tempsReplay: rep ? Math.round(s.t * 100) + ' %' : 'Choisissez une session',
+    };
+  }
+}
+</script>
+</body>
+</html>

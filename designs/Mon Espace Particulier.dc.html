@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+:root {
+  --color-accent: #0d7a5f; --color-accent-100: #eef7f3; --color-accent-200: #d2ebe1; --color-accent-300: #a5d7c4; --color-accent-400: #5cbb9c; --color-accent-500: #12997a; --color-accent-600: #0a6650; --color-accent-700: #085340; --color-accent-800: #06402f; --color-accent-900: #0a2a21;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif; --color-bg: #ffffff;
+}
+body, h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#fff;color:var(--color-text);display:flex;flex-direction:column">
+  <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider)">
+    <div style="max-width:1280px;margin:0 auto;padding:12px clamp(18px,4vw,44px);display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text)">
+        <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;white-space:nowrap">PORTAIL HABITAT</span>
+      </a>
+      <nav style="display:flex;gap:4px;flex-wrap:wrap">
+        <a href="Accueil Particuliers.dc.html" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:var(--color-neutral-800)">Métiers</a>
+        <a href="Annuaire Artisans.dc.html" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:var(--color-neutral-800)">Artisans</a>
+        <a href="Laisser un Avis.dc.html" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:var(--color-neutral-800)">Avis</a>
+      </nav>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:42px;font-size:15px;text-decoration:none">Nouveau projet</a>
+        <span style="width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">CM</span>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1280px;width:100%;margin:0 auto;padding:clamp(20px,3vw,36px) clamp(18px,4vw,44px) 64px;box-sizing:border-box;display:grid;gap:22px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div>
+        <h1 style="font-size:clamp(28px,3.4vw,38px);line-height:1.08;margin:0 0 6px">Bonjour Camille</h1>
+        <p style="margin:0;font-size:16.5px;line-height:1.5;color:var(--color-neutral-800)">Suivez vos projets, comparez les devis et échangez avec les artisans.</p>
+      </div>
+      <div style="display:flex;gap:4px;border:1px solid var(--color-divider);border-radius:12px;padding:4px">
+        <sc-for list="{{ onglets }}" as="o" hint-placeholder-count="3">
+          <button type="button" onClick="{{ o.select }}" style="border:0;cursor:pointer;font:inherit;font-size:15px;font-weight:600;padding:8px 14px;border-radius:9px;white-space:nowrap;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ vueDemandes }}" hint-placeholder-val="{{ true }}">
+      <sc-if value="{{ vide }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px dashed var(--color-neutral-400);border-radius:16px;padding:clamp(28px,5vw,56px);display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:640px">
+          <h2 style="margin:0;font-size:24px">Aucun projet pour l'instant</h2>
+          <p style="margin:0;font-size:16px;line-height:1.6;color:var(--color-neutral-800)">Estimez votre projet en 2 minutes et recevez jusqu'à 3 devis d'artisans vérifiés près de chez vous. Gratuit et sans engagement.</p>
+          <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:46px;font-size:16px;text-decoration:none">Simuler mon devis</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ nonVide }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ demandes }}" as="d" hint-placeholder-count="3">
+              <button type="button" onClick="{{ d.select }}" style="text-align:left;cursor:pointer;font:inherit;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;border:{{ d.bd }};background:{{ d.bg }}" style-hover="box-shadow:var(--shadow-md)">
+                <span style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                  <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:{{ d.tagBg }};color:{{ d.tagFg }}">{{ d.statut }}</span>
+                  <span style="font-size:13px;color:var(--color-neutral-600)">{{ d.ref }}</span>
+                </span>
+                <span style="font-size:16.5px;font-weight:700;line-height:1.3">{{ d.titre }}</span>
+                <span style="font-size:14px;color:var(--color-neutral-700)">{{ d.ville }} · {{ d.date }}</span>
+                <span style="font-size:14px;font-weight:600;color:var(--color-accent-700)">{{ d.resume }}</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="border:1px solid var(--color-divider);border-radius:16px;padding:clamp(18px,2.5vw,28px);display:grid;gap:24px;min-width:0">
+            <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start">
+              <div>
+                <p style="margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700)">{{ sel.ref }}</p>
+                <h2 style="margin:0;font-size:clamp(22px,2.6vw,28px);line-height:1.15">{{ sel.titre }}</h2>
+                <p style="margin:6px 0 0;font-size:15px;color:var(--color-neutral-700)">{{ sel.ville }} · envoyée le {{ sel.date }} · estimation {{ sel.estimation }}</p>
+              </div>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Voir le récapitulatif</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+              <sc-for list="{{ etapes }}" as="et" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <span style="height:6px;border-radius:99px;background:{{ et.bar }}"></span>
+                  <span style="font-size:13.5px;font-weight:{{ et.fw }};color:{{ et.fg }}">{{ et.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <section style="display:grid;gap:12px">
+              <h3 style="margin:0;font-size:18px">Artisans sur votre projet</h3>
+              <sc-for list="{{ artisans }}" as="a" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--color-divider);border-radius:14px">
+                  <span style="width:52px;height:52px;border-radius:12px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700">{{ a.ini }}</span>
+                  <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                    <span style="font-size:16px;font-weight:700">{{ a.nom }}</span>
+                    <span style="font-size:14px;color:var(--color-neutral-700)"><span style="color:#e8a33d">★</span> {{ a.meta }}</span>
+                    <span style="font-size:14px;font-weight:600;color:{{ a.etatFg }}">{{ a.etat }}</span>
+                  </span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                    <sc-if value="{{ a.aDevis }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:19px;font-weight:700">{{ a.devis }}</span>
+                    </sc-if>
+                    <button type="button" class="btn {{ a.btnClass }}" onClick="{{ a.ouvrir }}" style="min-height:38px;font-size:14px">{{ a.btn }}</button>
+                  </span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ comparer }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 16px;border-radius:10px;background:var(--color-accent-100);color:var(--color-accent-800);font-size:15px;line-height:1.5;font-weight:600">2 devis reçus, tous deux dans la fourchette de votre estimation. Prenez le temps de comparer avant de signer.</div>
+              </sc-if>
+            </section>
+
+            <section style="display:grid;gap:12px">
+              <h3 style="margin:0;font-size:18px">Messages avec {{ fil.nom }}</h3>
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:var(--color-neutral-100);max-height:340px;overflow:auto">
+                <sc-for list="{{ fil.messages }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;align-items:{{ m.align }};gap:3px">
+                    <div style="max-width:78%;padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.5;background:{{ m.bg }};color:{{ m.fg }}">{{ m.t }}</div>
+                    <span style="font-size:12.5px;color:var(--color-neutral-600)">{{ m.meta }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-end">
+                <label style="flex:1;display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Votre message
+                  <textarea class="input" rows="2" value="{{ brouillon }}" onInput="{{ majBrouillon }}" placeholder="Écrire à l'artisan…" style="padding:11px 13px;font-size:15px;resize:vertical"></textarea>
+                </label>
+                <button type="button" class="btn btn-primary" onClick="{{ envoyer }}" style="min-height:46px">Envoyer</button>
+              </div>
+              <sc-if value="{{ masque }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:13.5px;color:#7a5206;font-weight:600">Les numéros de téléphone et emails sont masqués tant que l'artisan n'a pas accepté votre demande.</p>
+              </sc-if>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ vueAvis }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:12px;max-width:760px">
+        <div style="display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;flex-wrap:wrap">
+          <span style="display:flex;flex-direction:column;flex:1 1 260px"><span style="font-size:16px;font-weight:700">Vos travaux avec Bertrand Rénovation sont terminés ?</span><span style="font-size:14.5px;color:var(--color-neutral-800)">Salle de bain · fin de chantier en août 2026</span></span>
+          <a href="Laisser un Avis.dc.html" class="btn btn-primary" style="min-height:42px;text-decoration:none">Laisser un avis</a>
+        </div>
+        <div style="padding:16px;border:1px solid var(--color-divider);border-radius:14px;display:flex;flex-direction:column;gap:6px">
+          <span style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font-size:16px;font-weight:700">Atelier Peinture Garonne</span><span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef7f3;color:#085340">Publié</span></span>
+          <span style="color:#e8a33d;font-size:17px;letter-spacing:2px">★★★★★</span>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--color-neutral-800)">« Travail soigné, chantier propre et délais tenus. Je recommande. »</p>
+          <span style="font-size:13.5px;color:var(--color-neutral-600)">Publié le 12 mars 2026 · l'artisan a répondu</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ vueCompte }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:14px;max-width:760px">
+        <div style="border:1px solid var(--color-divider);border-radius:14px;padding:4px 18px">
+          <sc-for list="{{ compte }}" as="c" hint-placeholder-count="5">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0;border-top:{{ c.bt }}">
+              <span style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15.5px;font-weight:600;color:{{ c.fg }}">{{ c.label }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ c.valeur }}</span></span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px;color:{{ c.fg }}">{{ c.action }}</button>
+            </div>
+          </sc-for>
+        </div>
+        <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">Même structure que <a href="Mon Compte.dc.html">Mon compte</a> côté pro (profil, connexion, notifications, données), dans la charte verte.</p>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;etatVide&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scénario&quot;}}">
+const TAG = { 'Devis reçus': ['#eef7f3', '#085340'], 'En attente': ['#fdf4e3', '#7a5206'], 'Terminé': ['#f1f0ed', '#57534f'] };
+const DEMANDES = [
+  { ref: 'PH-4K82Q9', titre: 'Rénovation de salle de bain', ville: 'Bordeaux', date: '22 sept. 2026', statut: 'Devis reçus', resume: '2 devis · 1 artisan en attente', estimation: '7 800 – 10 400 € TTC', etape: 3,
+    artisans: [
+      { ini: 'BR', nom: 'Bertrand Rénovation', meta: '4,9 · 87 avis · 6 km', etat: 'Devis envoyé le 24 sept.', etatFg: '#085340', devis: '9 240 € TTC' },
+      { ini: 'AC', nom: 'Aqua Confort 33', meta: '4,7 · 41 avis · 11 km', etat: 'Devis envoyé le 25 sept.', etatFg: '#085340', devis: '8 610 € TTC' },
+      { ini: 'SM', nom: 'SM Carrelage', meta: '4,8 · 23 avis · 9 km', etat: 'A accepté · visite prévue jeudi', etatFg: '#57534f', devis: '' },
+    ],
+    messages: [
+      ['a', 'Bonjour Camille, j’ai bien lu votre projet. Je peux passer mardi ou jeudi en fin de journée pour prendre les mesures.', 'Bertrand Rénovation · 23 sept. 18 h 04'],
+      ['m', 'Jeudi 18 h me convient très bien. Le parking est facile devant la maison.', 'Vous · 23 sept. 20 h 11'],
+      ['a', 'Parfait, à jeudi. Je vous ai envoyé le devis suite à la visite : n’hésitez pas si vous avez des questions.', 'Bertrand Rénovation · 24 sept. 17 h 40'],
+    ] },
+  { ref: 'PH-9M31T2', titre: 'Peinture du séjour et couloir', ville: 'Bordeaux', date: '19 sept. 2026', statut: 'En attente', resume: 'Artisans en cours de sélection', estimation: '1 900 – 2 600 € TTC', etape: 1,
+    artisans: [{ ini: 'PG', nom: 'Atelier Peinture Garonne', meta: '4,9 · 112 avis · 4 km', etat: 'Demande vue, réponse attendue', etatFg: '#7a5206', devis: '' }],
+    messages: [] },
+  { ref: 'PH-2B77L5', titre: 'Remplacement du chauffe-eau', ville: 'Bordeaux', date: '3 mars 2026', statut: 'Terminé', resume: 'Devis signé avec Aqua Confort 33', estimation: '1 400 – 2 100 € TTC', etape: 4,
+    artisans: [{ ini: 'AC', nom: 'Aqua Confort 33', meta: '4,7 · 41 avis · 11 km', etat: 'Devis accepté · travaux terminés', etatFg: '#085340', devis: '1 780 € TTC' }],
+    messages: [['a', 'Installation terminée, merci pour votre accueil !', 'Aqua Confort 33 · 10 mars 9 h 12']] },
+];
+const ETAPES = ['Envoyée', 'Artisans trouvés', 'Devis reçus', 'Travaux'];
+class Component extends DCLogic {
+  state = { onglet: 'demandes', i: 0, a: 0, extra: [], brouillon: '' };
+  renderVals() {
+    const s = this.state;
+    const vide = this.props.etatVide ?? false;
+    const d = DEMANDES[s.i];
+    const fa = d.artisans[Math.min(s.a, d.artisans.length - 1)];
+    const msgs = s.i === 0 && s.a === 0 ? d.messages.concat(s.extra) : (s.a === 0 ? d.messages : []);
+    const brouillonMasque = /(\d[\s.]?){8,}|@/.test(s.brouillon);
+    return {
+      onglets: [['demandes', 'Mes projets'], ['avis', 'Mes avis'], ['compte', 'Mon compte']].map(([k, label]) => ({ label, bg: k === s.onglet ? 'var(--color-accent)' : 'transparent', fg: k === s.onglet ? '#fff' : 'var(--color-text)', select: () => this.setState({ onglet: k }) })),
+      vueDemandes: s.onglet === 'demandes', vueAvis: s.onglet === 'avis', vueCompte: s.onglet === 'compte',
+      vide, nonVide: !vide,
+      demandes: DEMANDES.map((x, k) => ({ ...x, bd: k === s.i ? '2px solid var(--color-accent)' : '1px solid var(--color-divider)', bg: k === s.i ? 'var(--color-accent-100)' : '#fff', tagBg: TAG[x.statut][0], tagFg: TAG[x.statut][1], select: () => this.setState({ i: k, a: 0 }) })),
+      sel: d,
+      etapes: ETAPES.map((label, k) => ({ label, bar: k < d.etape ? 'var(--color-accent)' : 'var(--color-neutral-200)', fw: k === d.etape - 1 ? 700 : 500, fg: k < d.etape ? 'var(--color-text)' : 'var(--color-neutral-600)' })),
+      artisans: d.artisans.map((x, k) => ({ ...x, aDevis: !!x.devis, btn: x.devis ? 'Voir le devis' : 'Écrire', btnClass: x.devis ? 'btn-primary' : 'btn-secondary', ouvrir: () => this.setState({ a: k }) })),
+      comparer: d.artisans.filter(x => x.devis).length >= 2 && d.etape < 4,
+      fil: { nom: fa.nom, messages: msgs.length ? msgs.map(([w, t, meta]) => ({ t, meta, align: w === 'm' ? 'flex-end' : 'flex-start', bg: w === 'm' ? 'var(--color-accent)' : '#fff', fg: w === 'm' ? '#fff' : 'var(--color-text)' })) : [{ t: 'Aucun message pour l’instant. L’artisan vous écrira dès qu’il aura étudié votre projet.', meta: '', align: 'center', bg: 'transparent', fg: 'var(--color-neutral-700)' }] },
+      brouillon: s.brouillon,
+      majBrouillon: (e) => this.setState({ brouillon: e.target.value }),
+      masque: brouillonMasque,
+      envoyer: () => { if (!s.brouillon.trim()) return; this.setState({ extra: s.extra.concat([['m', s.brouillon, 'Vous · à l’instant']]), brouillon: '' }); },
+      compte: [
+        ['Email', 'camille.m@gmail.com · connexion par lien magique', 'Modifier'],
+        ['Téléphone', '06 •• •• •• 21', 'Modifier'],
+        ['Notifications', 'Réponses des artisans et messages : email', 'Gérer'],
+        ['Exporter mes données', 'Archive envoyée par email sous 24 h', 'Demander'],
+        ['Supprimer mon compte', 'Vos demandes en cours seront annulées', 'Supprimer', '#b42318'],
+      ].map(([label, valeur, action, fg], n) => ({ label, valeur, action, fg: fg || 'var(--color-text)', bt: n ? '1px solid var(--color-divider)' : '0' })),
+    };
+  }
+}
+</script>
+</body>
+</html>

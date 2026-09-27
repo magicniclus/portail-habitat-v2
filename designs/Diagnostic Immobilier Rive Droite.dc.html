@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Diagnostic immobilier rive droite de Bordeaux — Cenon, Lormont, Floirac, Bassens | Portail Habitat Diag</title>
+<meta name="description" content="Diagnostic immobilier sur la rive droite de Bordeaux : DPE, amiante, plomb, termites, gaz, électricité, ERP. Bâti local, risques et prix commune par commune — Cenon, Lormont, Floirac, Bassens, Ambarès-et-Lagrave, Artigues, Carbon-Blanc, Bouliac, Ambès.">
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<style>
+:root {
+  --color-accent: #14508a;
+  --color-accent-100: #eef4fa;
+  --color-accent-200: #d2e2f1;
+  --color-accent-300: #a4c5e3;
+  --color-accent-400: #5b96cc;
+  --color-accent-500: #1b64ad;
+  --color-accent-600: #10467a;
+  --color-accent-700: #0d3a65;
+  --color-accent-800: #0a2e50;
+  --color-accent-900: #081f37;
+  --diag-ambre: #a9700a;
+  --diag-ambre-100: #fdf4e3;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6, th, td { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:visited { color: #fff; }
+.tag { border-radius: 999px; }
+.table th, .table td { font-size: 14.5px; }
+html, body, #dc-root { background: #fff; }
+html { scroll-behavior: smooth; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent-500); }
+button { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="width:100%">
+
+  <nav class="nav" style="position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;width:100%;max-width:1180px;margin:0 auto;padding:13px clamp(18px,4vw,44px)">
+      <a href="Diagnostic Immobilier.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="42" height="42" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 18.8 20 6.5l15 12.3" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M8.5 21V33h23V21" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle cx="19" cy="23.2" r="4.2" fill="#fff" stroke="var(--color-accent)" stroke-width="2.6"></circle>
+          <path d="m22.2 26.4 3.2 3.2" stroke="var(--color-accent)" stroke-width="2.6" stroke-linecap="round"></path>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail Habitat</span>
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--color-accent)">Diag</span>
+        </span>
+      </a>
+      <span style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-left:auto">
+        <a href="Diagnostic Immobilier.dc.html#diagnostics" style="font-size:14px;text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent-500)">Les diagnostics</a>
+        <a href="{{ lienParcours }}" class="btn btn-primary" style="min-height:42px;font-size:15px;padding-inline:18px">Mon devis en 2 min</a>
+      </span>
+    </span>
+  </nav>
+
+  <section style="background:var(--color-accent-100);padding:clamp(24px,3.5vw,48px) clamp(18px,4vw,44px) clamp(32px,4vw,56px)">
+    <div style="max-width:1180px;margin:0 auto">
+      <p style="margin:0 0 16px;font-size:13.5px;color:var(--color-neutral-700)">
+        <a href="Diagnostic Immobilier.dc.html" style="color:var(--color-neutral-800)">Diagnostic immobilier</a>
+        <span style="color:var(--color-neutral-400)"> › </span>Rive droite de Bordeaux<span style="color:var(--color-neutral-400)"> › </span><strong style="color:var(--color-accent-800)">{{ nom }}</strong>
+      </p>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:28px clamp(24px,3.5vw,52px);align-items:start">
+        <div>
+          <h1 style="font-size:clamp(28px,3.8vw,44px);line-height:1.07;margin:0 0 16px">Diagnostic immobilier à {{ nom }} <span style="color:var(--color-neutral-700);font-weight:400">({{ cp }})</span></h1>
+          <p style="font-size:17.5px;line-height:28px;margin:0 0 22px;max-width:56ch;color:var(--color-neutral-800)">{{ intro }}</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+            <a href="{{ lienParcours }}" class="btn btn-primary" style="min-height:50px;font-size:16px;padding-inline:22px">Mes diagnostics à {{ nom }}</a>
+            <a href="#communes" class="btn btn-ghost" style="min-height:50px;font-size:15.5px">Autre commune</a>
+          </div>
+          <p style="margin:0;font-size:13.5px;line-height:21px;color:var(--color-neutral-700)">Population {{ pop }} habitants (Insee, population légale 2023) · superficie {{ superficie }} · code Insee {{ insee }}{{ prixSource }}</p>
+        </div>
+
+        <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+          <p style="margin:0 0 14px;font-size:15px;font-weight:700">Obligatoire à {{ nom }}, quoi qu'il arrive</p>
+          <ul style="list-style:none;padding:0;margin:0;display:grid;gap:13px;font-size:14.5px;line-height:22px">
+            <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 5v14M8 8.5 5 6.5M8 12H4.5M8 15.5 5 17.5M16 8.5l3-2M16 12h3.5M16 15.5l3 2"></path></svg><span><strong>Termites</strong> — tout le département est en zone de surveillance et de lutte (arrêté du 12 février 2001). Valable 6 mois.</span></li>
+            <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 3.5c3.5 3 5.5 5.5 5.5 8.5A5.5 5.5 0 0 1 12 17.5 5.5 5.5 0 0 1 6.5 12c0-3 2-5.5 5.5-8.5ZM12 20.5v-3"></path></svg><span><strong>DPE</strong> — vente et location. Les DPE d'avant juillet 2021 sont à refaire.</span></li>
+            <li style="display:flex;gap:11px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21ZM12 12.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"></path></svg><span><strong>ERP</strong> — {{ risquesCourt }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(36px,4.5vw,64px) clamp(18px,4vw,44px) 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px">
+      <sc-for list="{{ chiffres }}" as="c" hint-placeholder-count="4">
+        <div style="border:1px solid var(--color-divider);border-radius:13px;padding:18px">
+          <p style="margin:0 0 4px;font-size:clamp(20px,2.2vw,25px);font-weight:700;line-height:1.1;color:var(--color-accent-700)">{{ c.valeur }}</p>
+          <p style="margin:0;font-size:13.5px;line-height:20px;color:var(--color-neutral-800)">{{ c.label }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(36px,4.5vw,64px) clamp(18px,4vw,44px) 0">
+    <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:28px clamp(24px,3.5vw,52px);align-items:start">
+      <div>
+        <h2 style="font-size:clamp(23px,2.8vw,32px);line-height:1.12;margin:0 0 14px">Le bâti de {{ nom }} et ce qu'il implique</h2>
+        <p style="font-size:16.5px;line-height:27px;margin:0 0 20px;color:var(--color-neutral-800)">{{ bati }}</p>
+        <div style="display:grid;gap:11px">
+          <sc-for list="{{ frequents }}" as="f" hint-placeholder-count="3">
+            <div style="background:var(--color-accent-100);border-radius:12px;padding:15px 17px">
+              <p style="margin:0 0 4px;font-size:15.5px;font-weight:700">{{ f.titre }}</p>
+              <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">{{ f.texte }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:14px">
+        <div style="border:1px solid var(--color-divider);border-radius:14px;padding:20px">
+          <p style="margin:0 0 10px;font-size:15.5px;font-weight:700">Secteurs couverts</p>
+          <p style="margin:0;font-size:14.5px;line-height:24px;color:var(--color-neutral-800)">{{ secteurs }}</p>
+        </div>
+        <div style="background:var(--diag-ambre-100);border-radius:14px;padding:20px">
+          <p style="margin:0 0 8px;font-size:15.5px;font-weight:700;color:var(--diag-ambre)">Risques à déclarer dans l'ERP</p>
+          <p style="margin:0;font-size:14.5px;line-height:23px;color:var(--color-neutral-800)">{{ risques }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(36px,4.5vw,64px) clamp(18px,4vw,44px) 0">
+    <h2 style="font-size:clamp(23px,2.8vw,32px);line-height:1.12;margin:0 0 12px">Prix des diagnostics à {{ nom }}</h2>
+    <p style="font-size:16.5px;line-height:26px;margin:0 0 22px;max-width:56ch;color:var(--color-neutral-800)">Fourchettes constatées auprès des diagnostiqueurs certifiés intervenant sur la commune, déplacement compris.</p>
+    <div style="overflow-x:auto">
+      <table class="table" style="width:100%;min-width:600px">
+        <thead><tr><th style="text-align:left">Cas de figure</th><th style="text-align:left">Diagnostics inclus</th><th style="text-align:left">Budget</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ packs }}" as="p" hint-placeholder-count="4">
+            <tr><td><strong>{{ p.cas }}</strong></td><td>{{ p.inclus }}</td><td style="white-space:nowrap">{{ p.prix }}</td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <a href="{{ lienParcours }}" class="btn btn-primary" style="min-height:50px;font-size:16px;padding-inline:22px">Estimer mon cas précis</a>
+      <span style="font-size:13.5px;color:var(--color-neutral-700)">Vos rapports encore valables sont déduits automatiquement.</span>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(36px,4.5vw,64px) clamp(18px,4vw,44px) 0">
+    <h2 style="font-size:clamp(23px,2.8vw,32px);line-height:1.12;margin:0 0 20px">Questions fréquentes à {{ nom }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 clamp(24px,3.5vw,52px)">
+      <div>
+        <sc-for list="{{ faq }}" as="f" hint-placeholder-count="4">
+          <details style="padding:15px 0;border-bottom:1px solid var(--color-divider)">
+            <summary style="font-weight:600;font-size:16.5px;cursor:pointer">{{ f.q }}</summary>
+            <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:11px 0 0">{{ f.r }}</p>
+          </details>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="communes" style="max-width:1180px;margin:0 auto;padding:clamp(36px,4.5vw,64px) clamp(18px,4vw,44px) clamp(40px,5vw,68px);scroll-margin-top:72px">
+    <h2 style="font-size:clamp(21px,2.4vw,27px);line-height:1.14;margin:0 0 8px">Les autres communes de la rive droite</h2>
+    <p style="font-size:15.5px;line-height:25px;margin:0 0 20px;max-width:56ch;color:var(--color-neutral-800)">Onze communes de Bordeaux Métropole, chacune avec son bâti et ses risques.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px">
+      <sc-for list="{{ autres }}" as="v" hint-placeholder-count="10">
+        <a href="{{ v.lien }}" style="text-decoration:none;color:var(--color-text);border:1px solid var(--color-divider);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:3px" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">
+          <span style="font-size:15.5px;font-weight:600">{{ v.nom }}</span>
+          <span style="font-size:13px;color:var(--color-neutral-700)">{{ v.cp }} · {{ v.pop }} hab.</span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1180px;margin:0 auto;padding:22px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat Diag · Données Insee 2023, prix indicatifs</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Diagnostic Immobilier.dc.html" style="color:var(--color-accent-200)">Accueil diagnostics</a>
+        <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Trouver un artisan</a>
+        <a href="Contact.dc.html?sujet=diagnostic" style="color:var(--color-accent-200)">Aide</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const COTEAUX = "Retrait-gonflement des argiles sur les coteaux, zone termites départementale, potentiel radon faible (catégorie 1 en Gironde) : ces éléments figurent dans l'état des risques remis dès la première visite.";
+const PALUS = "Risque d'inondation de la Garonne et de la Dordogne (plan de prévention de la Presqu'île), sols de palus argileux, zone termites départementale : l'état des risques doit être remis dès la première visite.";
+
+const VILLES = {
+  cenon: {
+    nom: "Cenon", cp: "33150", insee: "33119", pop: "26 834", superficie: "5,52 km²",
+    prix: "2 888 €/m² en appartement et 3 434 €/m² en maison (janvier 2026)",
+    intro: "Commune la plus dense de la rive droite, Cenon superpose trois âges de bâti : les échoppes et maisons de pierre du bas de la ville, les grands ensembles des années 1960-1970 des coteaux, et les pavillons du Haut-Cenon. Autant dire que le dossier de diagnostics n'a presque jamais la même composition d'une rue à l'autre.",
+    bati: "Dans le bas de Cenon, le bâti d'avant 1949 est fréquent : plomb et amiante s'ajoutent alors systématiquement au dossier de vente. Sur les coteaux, les résidences construites entre 1960 et 1975 relèvent toutes de l'amiante, avec des colonnes gaz et des tableaux électriques souvent d'origine. Les pavillons des années 1980-1990 s'en sortent avec DPE, ERP, termites et les deux états gaz et électricité.",
+    secteurs: "Bas-Cenon, Haut-Cenon, La Morlette, Palmer, Le Cypressat, quartier de la Buttinière, Les Gravières, abords du tramway A.",
+    risques: COTEAUX + " Le coteau cenonnais compte aussi d'anciennes carrières souterraines de pierre : leur présence est signalée dans l'état des risques lorsqu'elle concerne la parcelle.",
+    frequents: [
+      { titre: "Échoppes du bas de Cenon", texte: "Construction souvent antérieure à 1949 : CREP plomb obligatoire, et amiante sur les rénovations d'après-guerre (colles de carrelage, conduits, fibrociment)." },
+      { titre: "Résidences des coteaux, 1960-1975", texte: "Amiante systématique, installations gaz et électricité de plus de 15 ans, mesurage Carrez pour la copropriété." },
+      { titre: "Vente avec DPE ancien", texte: "Un DPE réalisé avant juillet 2021 n'est plus valable. Sur ce parc énergivore, une étiquette E, F ou G déclenche l'audit énergétique pour une maison." },
+    ],
+  },
+  lormont: {
+    nom: "Lormont", cp: "33310", insee: "33249", pop: "25 769", superficie: "7,36 km²",
+    prix: "environ 2 520 €/m² tous biens confondus (février 2026)",
+    intro: "Entre le vieux bourg au bord de la Garonne et les grands quartiers de Génicart et Carriet, Lormont concentre un parc largement antérieur à 1997 : l'amiante y est presque systématique, et le plomb fréquent dans le bâti ancien du bord de fleuve.",
+    bati: "Le Vieux Lormont aligne des maisons de pierre et des échoppes souvent antérieures à 1949 : plomb obligatoire, amiante sur les reprises d'après-guerre. Génicart, Carriet et Bois Fleuri datent des grandes opérations des années 1960-1970 : amiante, gaz et électricité de plus de 15 ans, mesurage Carrez en copropriété. Les lotissements plus récents des hauteurs allègent nettement le dossier.",
+    secteurs: "Vieux Lormont, Génicart, Carriet, Bois Fleuri, Lissandre, Les Iris, abords du pont d'Aquitaine et de la Buttinière.",
+    risques: COTEAUX + " La pente lormontaise et les anciennes carrières du coteau peuvent également figurer au dossier.",
+    frequents: [
+      { titre: "Vieux bourg au bord de la Garonne", texte: "Bâti d'avant 1949 : CREP plomb, amiante, et diagnostic mérule conseillé compte tenu de l'humidité de proximité du fleuve." },
+      { titre: "Génicart et Carriet", texte: "Grands ensembles 1960-1975 : amiante obligatoire, états gaz et électricité, Carrez pour les lots de copropriété." },
+      { titre: "Mise en location", texte: "DPE, ERP, surface habitable loi Boutin et plomb si le logement est antérieur à 1949 : validité 6 ans pour le CREP en location." },
+    ],
+  },
+  floirac: {
+    nom: "Floirac", cp: "33270", insee: "33167", pop: "18 300", superficie: "8,59 km²",
+    prix: "environ 3 150 €/m² tous biens confondus (février 2026)",
+    intro: "Floirac mêle un bourg ancien, le plateau de Dravemont construit dans les années 1960-1970, et les programmes neufs des quais autour de l'Arena. Trois parcs, trois dossiers de diagnostics très différents.",
+    bati: "Le bourg et les rues anciennes comptent du bâti d'avant 1949, donc du plomb. Dravemont et les collectifs du plateau relèvent de l'amiante et cumulent souvent gaz et électricité anciens. À l'inverse, les logements livrés depuis 2011 sur les quais se limitent au DPE, à l'ERP et au mesurage Carrez, avec le termites pour la vente.",
+    secteurs: "Bourg de Floirac, Dravemont, quartier de la Libération, Jean Jaurès, coteau de La Burthe, quais et secteur de l'Arena.",
+    risques: COTEAUX + " Les secteurs bas, proches de la Garonne, relèvent en plus du risque d'inondation : il est mentionné dans l'état des risques.",
+    frequents: [
+      { titre: "Collectifs de Dravemont", texte: "Amiante obligatoire, installations de plus de 15 ans, mesurage Carrez : le dossier de vente type dépasse souvent 450 €." },
+      { titre: "Maisons du bourg", texte: "Plomb si construction avant 1949, amiante avant juillet 1997, termites comme partout en Gironde." },
+      { titre: "Programmes neufs des quais", texte: "Dossier réduit : DPE, ERP, Carrez et termites. Aucun amiante ni plomb à prévoir." },
+    ],
+  },
+  ambares: {
+    nom: "Ambarès-et-Lagrave", cp: "33440", insee: "33003", pop: "17 644", superficie: "24,76 km²",
+    prix: "",
+    intro: "Commune la plus étendue de la rive droite, Ambarès-et-Lagrave est majoritairement pavillonnaire, avec un bourg ancien et de larges secteurs de palus en zone inondable. Assainissement individuel et risque d'inondation y pèsent souvent plus que l'amiante.",
+    bati: "Les lotissements des années 1970 à 2000 dominent : amiante pour tout ce qui précède juillet 1997, états gaz et électricité pour les installations de plus de 15 ans. Le bourg et les maisons de palus plus anciennes ajoutent le plomb. Sur les secteurs non raccordés au réseau collectif, le contrôle d'assainissement non collectif devient obligatoire à la vente.",
+    secteurs: "Bourg d'Ambarès, Lagrave, La Gorp, Sabatey, secteurs de palus de la Presqu'île, abords de la gare.",
+    risques: PALUS,
+    frequents: [
+      { titre: "Maison non raccordée au tout-à-l'égout", texte: "Contrôle d'assainissement non collectif obligatoire à la vente, valable 3 ans : comptez 130 à 230 €." },
+      { titre: "Pavillon 1975-1996", texte: "Amiante obligatoire (fibrociment, conduits, colles), plus les états gaz et électricité." },
+      { titre: "Zone inondable", texte: "L'état des risques mentionne le plan de prévention du risque inondation de la Presqu'île : à remettre dès la première visite." },
+    ],
+  },
+  artigues: {
+    nom: "Artigues-près-Bordeaux", cp: "33370", insee: "33013", pop: "8 687", superficie: "7,36 km²",
+    prix: "",
+    intro: "Commune résidentielle des coteaux, Artigues-près-Bordeaux est très majoritairement pavillonnaire, avec un parc construit pour l'essentiel entre 1970 et 2000. Le dossier de diagnostics y est souvent plus léger qu'à Cenon ou Lormont.",
+    bati: "Pour les maisons des années 1970 à 1996, l'amiante reste obligatoire à la vente, accompagné des états gaz et électricité. Le bâti postérieur à 1997 évite amiante et plomb : DPE, ERP, termites et les deux états d'installations suffisent. Le bourg ancien conserve quelques maisons d'avant 1949 soumises au CREP plomb.",
+    secteurs: "Bourg d'Artigues, Feydeau, Le Loret, Mondésir, abords du parc et du lac.",
+    risques: COTEAUX,
+    frequents: [
+      { titre: "Maison 1970-1996", texte: "Amiante, gaz, électricité, DPE, ERP et termites : dossier complet entre 430 et 700 €." },
+      { titre: "Maison postérieure à 1997", texte: "Ni amiante ni plomb : DPE, ERP, termites, gaz et électricité si les installations ont plus de 15 ans." },
+      { titre: "Maison classée E, F ou G", texte: "Vente d'une maison individuelle : l'audit énergétique s'ajoute au DPE, de 500 à 950 €." },
+    ],
+  },
+  bassens: {
+    nom: "Bassens", cp: "33530", insee: "33032", pop: "8 435", superficie: "10,27 km²",
+    prix: "",
+    intro: "Commune portuaire et industrielle, Bassens conserve un important parc de logements ouvriers et de cités construites entre les années 1920 et 1970, sur les hauteurs comme dans le bas de la ville. Amiante et plomb y sont très fréquents.",
+    bati: "Les cités et maisons de l'entre-deux-guerres relèvent du plomb (construction avant 1949) et fréquemment de l'amiante pour les rénovations d'après-guerre. Les collectifs des années 1950-1970 cumulent amiante, gaz et électricité anciens. Le bas de Bassens, proche du port et de la Garonne, relève en plus du risque d'inondation.",
+    secteurs: "Le Bousquet, Séguinaud, Meignan, Beauval, bas de Bassens et abords du port.",
+    risques: PALUS + " Les activités industrielles du port peuvent aussi faire apparaître des sites et sols pollués dans l'état des risques.",
+    frequents: [
+      { titre: "Logement d'avant 1949", texte: "CREP plomb obligatoire à la vente comme en location, et diagnostic mérule conseillé dans le bas de la commune." },
+      { titre: "Collectif 1950-1975", texte: "Amiante obligatoire, gaz et électricité de plus de 15 ans, mesurage Carrez en copropriété." },
+      { titre: "Proximité du port", texte: "L'état des risques peut mentionner inondation, sols pollués et risques technologiques : il est remis dès la première visite." },
+    ],
+  },
+  "carbon-blanc": {
+    nom: "Carbon-Blanc", cp: "33560", insee: "33096", pop: "8 331", superficie: "3,86 km²",
+    prix: "",
+    intro: "Petite commune très compacte, Carbon-Blanc associe un centre-bourg ancien et des lotissements pavillonnaires des années 1960 à 1990. La population y est plutôt âgée, et les installations gaz et électricité souvent d'origine.",
+    bati: "Le centre-bourg compte des maisons d'avant 1949 soumises au CREP plomb. Les pavillons construits entre 1960 et 1996 relèvent de l'amiante, avec des tableaux électriques et des chaudières gaz fréquemment antérieurs à 15 ans d'âge — donc les deux états d'installations. Les maisons postérieures à 1997 allègent le dossier.",
+    secteurs: "Centre-bourg, Le Faisan, Bel Air, lotissements pavillonnaires, abords de la voie ferrée.",
+    risques: COTEAUX,
+    frequents: [
+      { titre: "Pavillon des années 1960-1980", texte: "Amiante obligatoire, gaz et électricité à contrôler : dossier de vente de 430 à 700 €." },
+      { titre: "Maison de bourg ancienne", texte: "Plomb, amiante et termites : prévoyez la visite au plus près de la signature, le termites n'étant valable que 6 mois." },
+      { titre: "Succession", texte: "Les diagnostics sont exigés au nom de la succession comme pour toute vente : DPE, ERP, termites et le reste selon l'âge du bien." },
+    ],
+  },
+  bouliac: {
+    nom: "Bouliac", cp: "33270", insee: "33065", pop: "3 804", superficie: "7,48 km²",
+    prix: "",
+    intro: "Perchée sur le coteau au sud de la rive droite, Bouliac est une commune résidentielle de maisons individuelles, souvent sur grande parcelle. Assainissement individuel et retrait-gonflement des argiles y sont les deux sujets récurrents.",
+    bati: "Le parc est dominé par des maisons individuelles, des demeures anciennes du coteau aux villas contemporaines. Avant 1949 : plomb. Avant juillet 1997 : amiante. Sur les parcelles non raccordées au réseau collectif, le contrôle d'assainissement non collectif s'ajoute obligatoirement à la vente.",
+    secteurs: "Centre-bourg, coteau et belvédère, secteurs pavillonnaires, abords de la route de Latresne.",
+    risques: COTEAUX + " Les mouvements de terrain liés à la pente du coteau peuvent également être mentionnés.",
+    frequents: [
+      { titre: "Maison avec fosse", texte: "Contrôle d'assainissement non collectif obligatoire à la vente, valable 3 ans, 130 à 230 €." },
+      { titre: "Demeure ancienne du coteau", texte: "Plomb et amiante, surface souvent supérieure à 150 m² : la visite dure plus longtemps et le pack se situe en haut de fourchette." },
+      { titre: "Villa contemporaine", texte: "DPE, ERP et termites suffisent, avec les états gaz et électricité si les installations dépassent 15 ans." },
+    ],
+  },
+  ambes: {
+    nom: "Ambès", cp: "33810", insee: "33004", pop: "3 313", superficie: "28,85 km²",
+    prix: "",
+    intro: "À la pointe de la Presqu'île, entre Garonne et Dordogne, Ambès est une commune de palus marquée par le risque d'inondation et la présence de sites industriels. L'état des risques y est le document le plus sensible du dossier.",
+    bati: "Maisons de palus anciennes, bâti d'avant 1949 dans le bourg, pavillons plus récents en périphérie. Le plomb concerne le parc ancien, l'amiante tout ce qui précède juillet 1997. Beaucoup de parcelles ne sont pas raccordées au réseau collectif : le contrôle d'assainissement devient alors obligatoire.",
+    secteurs: "Bourg d'Ambès, secteurs de palus, pointe de la Presqu'île, abords des sites industriels.",
+    risques: PALUS + " La proximité de sites industriels classés fait apparaître des risques technologiques dans l'état des risques.",
+    frequents: [
+      { titre: "Maison de palus", texte: "Plomb si antérieure à 1949, diagnostic mérule conseillé compte tenu de l'humidité, et assainissement non collectif à contrôler." },
+      { titre: "Zone inondable", texte: "Le plan de prévention du risque inondation de la Presqu'île est mentionné dans l'état des risques, valable 6 mois." },
+      { titre: "Vente d'un bien classé F ou G", texte: "Audit énergétique obligatoire en plus du DPE pour une maison individuelle : 500 à 950 €." },
+    ],
+  },
+  "saint-louis": {
+    nom: "Saint-Louis-de-Montferrand", cp: "33440", insee: "33434", pop: "2 051", superficie: "10,8 km²",
+    prix: "",
+    intro: "Commune contrainte de la Presqu'île, Saint-Louis-de-Montferrand est entièrement située en zone basse, entre digues et palus. Petit parc de logements, très majoritairement individuel et ancien.",
+    bati: "Le bâti ancien du bourg et des palus relève souvent du plomb (avant 1949) et de l'amiante (avant juillet 1997). Les installations gaz et électricité y sont fréquemment d'origine. L'assainissement non collectif concerne une partie des parcelles.",
+    secteurs: "Centre-bourg, secteurs de palus, abords de la Garonne et des digues.",
+    risques: PALUS,
+    frequents: [
+      { titre: "Bâti ancien en zone basse", texte: "Plomb, amiante, mérule conseillé : l'humidité du secteur justifie un contrôle parasitaire complémentaire." },
+      { titre: "Assainissement individuel", texte: "Contrôle obligatoire à la vente si le bien n'est pas raccordé, valable 3 ans." },
+      { titre: "État des risques", texte: "Inondation de la Garonne, sols argileux et zone termites départementale : document valable 6 mois." },
+    ],
+  },
+  "saint-vincent": {
+    nom: "Saint-Vincent-de-Paul", cp: "33440", insee: "33487", pop: "1 067", superficie: "13,88 km²",
+    prix: "",
+    intro: "Plus petite commune de la rive droite avec un millier d'habitants, Saint-Vincent-de-Paul est un village de la Presqu'île en cours de renouvellement de son centre-bourg. Parc quasi exclusivement individuel.",
+    bati: "Maisons de bourg et de palus anciennes, pavillons récents liés au projet de centre-bourg. Le plomb concerne le bâti d'avant 1949, l'amiante tout ce qui précède juillet 1997. Les constructions neuves du centre-bourg se limitent au DPE, à l'ERP et au termites pour la vente.",
+    secteurs: "Centre-bourg, secteurs de palus, abords de la Dordogne.",
+    risques: PALUS,
+    frequents: [
+      { titre: "Maison ancienne du bourg", texte: "Plomb, amiante, termites et états gaz et électricité : dossier complet de 430 à 780 €." },
+      { titre: "Construction récente", texte: "DPE, ERP et termites : de 230 à 380 € selon la surface." },
+      { titre: "Assainissement non collectif", texte: "Fréquent sur la commune : contrôle obligatoire à la vente, valable 3 ans." },
+    ],
+  },
+};
+
+const ORDRE = ["cenon", "lormont", "floirac", "ambares", "artigues", "bassens", "carbon-blanc", "bouliac", "ambes", "saint-louis", "saint-vincent"];
+
+class Component extends DCLogic {
+  state = { id: "cenon" };
+
+  componentDidMount() {
+    const q = new URLSearchParams(location.search).get("ville");
+    if (q && VILLES[q]) this.setState({ id: q });
+  }
+
+  renderVals() {
+    const id = VILLES[this.state.id] ? this.state.id : "cenon";
+    const v = VILLES[id];
+    const presquile = ["ambares", "ambes", "saint-louis", "saint-vincent", "bassens"].indexOf(id) > -1;
+
+    return {
+      nom: v.nom, cp: v.cp, insee: v.insee, pop: v.pop, superficie: v.superficie,
+      intro: v.intro, bati: v.bati, secteurs: v.secteurs, risques: v.risques, frequents: v.frequents,
+      prixSource: v.prix ? " · prix immobilier constaté : " + v.prix : "",
+      risquesCourt: presquile
+        ? "inondation de la Presqu'île, sols argileux, termites : remis dès la première visite."
+        : "retrait-gonflement des argiles, termites, radon : remis dès la première visite.",
+      lienParcours: "Parcours Diagnostic.dc.html?ville=" + id,
+      chiffres: [
+        { valeur: v.pop, label: "habitants (Insee, population légale 2023)" },
+        { valeur: v.superficie, label: "de superficie communale" },
+        { valeur: "100 %", label: "du territoire en zone termites (arrêté du 12 février 2001)" },
+        { valeur: "48 h", label: "pour recevoir jusqu'à 3 devis de diagnostiqueurs certifiés" },
+      ],
+      packs: [
+        { cas: "Appartement postérieur à 1997", inclus: "DPE, ERP, Carrez, termites", prix: "280 – 430 €" },
+        { cas: "Appartement 1950-1996", inclus: "DPE, ERP, Carrez, termites, amiante, gaz, électricité", prix: "430 – 680 €" },
+        { cas: "Maison antérieure à 1949", inclus: "DPE, ERP, termites, amiante, plomb, gaz, électricité", prix: "520 – 810 €" },
+        { cas: "Mise en location", inclus: "DPE, ERP, loi Boutin, gaz, électricité, plomb si avant 1949", prix: "220 – 380 €" },
+      ],
+      faq: [
+        { q: "Le diagnostic termites est-il obligatoire à " + v.nom + " ?", r: "Oui. L'arrêté préfectoral du 12 février 2001 a institué une zone de surveillance et de lutte contre les termites sur l'ensemble du département de la Gironde : " + v.nom + " est concernée comme toutes les communes girondines. Le rapport est valable 6 mois, il se réalise donc au plus près de la signature." },
+        { q: "Mon bien est-il concerné par l'amiante ?", r: "Si le permis de construire a été délivré avant le 1er juillet 1997, oui, pour toute vente. C'est le cas de la majorité du parc de " + v.nom + " construit avant les années 1990. Un rapport antérieur à 2013 doit être refait." },
+        { q: "Combien coûte le dossier complet ?", r: "Entre 280 et 810 € selon l'âge, le type de bien et la surface — voir le tableau ci-dessus. Une seule visite couvre tous les diagnostics, et vos rapports encore valables sont déduits du devis." },
+        { q: "Quel est le délai d'intervention ?", r: "Vous recevez jusqu'à 3 devis sous 48 h de diagnostiqueurs certifiés intervenant à " + v.nom + ". La visite dure de 1 à 3 h et les rapports PDF arrivent sous 24 à 48 h." },
+      ],
+      autres: ORDRE.filter((x) => x !== id).map((x) => ({
+        nom: VILLES[x].nom, cp: VILLES[x].cp, pop: VILLES[x].pop,
+        lien: "Diagnostic Immobilier Rive Droite.dc.html?ville=" + x })),
+    };
+  }
+}
+</script>
+</body>
+</html>

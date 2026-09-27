@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, input:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Référentiels</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Paramètres du simulateur, métiers, communes et configuration générale. Chaque enregistrement est versionné.</p></header>
+  <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid #e2e0dc;flex-wrap:wrap">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:15px;padding:10px 14px;white-space:nowrap;height:auto;margin-bottom:-1px;font-weight:{{ t.fw }};color:{{ t.fg }};border-bottom:3px solid {{ t.bd }}">{{ t.nom }}</button></sc-for>
+  </div>
+
+  <sc-if value="{{ isPrest }}" hint-placeholder-val="{{ true }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px;overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(180px,1fr) 110px 110px 90px;gap:10px;min-width:560px;padding:10px 0;font-size:12.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#6b6763"><span>Prestation</span><span>Prix bas</span><span>Prix haut</span><span>Unité</span></div>
+      <sc-for list="{{ prest }}" as="p" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:minmax(180px,1fr) 110px 110px 90px;gap:10px;min-width:560px;padding:8px 0;border-top:1px solid #ecebe7;align-items:center;font-size:14.5px">
+          <span style="font-weight:600">{{ p.nom }}</span>
+          <input type="number" value="{{ p.bas }}" onChange="{{ p.setBas }}" disabled="{{ noRef }}" style="font:inherit;padding:6px 8px;border:1px solid #d9d6d1;border-radius:8px;text-align:right">
+          <input type="number" value="{{ p.haut }}" onChange="{{ p.setHaut }}" disabled="{{ noRef }}" style="font:inherit;padding:6px 8px;border:1px solid #d9d6d1;border-radius:8px;text-align:right">
+          <span style="color:#6b6763">{{ p.unite }}</span>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isMetiers }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ metiers }}" as="m" hint-placeholder-count="10"><span style="display:inline-flex;align-items:center;gap:6px;font-size:14px;padding:6px 10px;border-radius:999px;background:#eef0f3;color:#2a323c;white-space:nowrap">{{ m.nom }}<button onClick="{{ m.retirer }}" disabled="{{ noRef }}" aria-label="Retirer" style="border:0;background:none;cursor:pointer;padding:0;font:inherit;color:#8f1d14;height:auto">✕</button></span></sc-for>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><input value="{{ nvMetier }}" onChange="{{ setNvMetier }}" disabled="{{ noRef }}" placeholder="Nouveau métier" style="font:inherit;font-size:14.5px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px"><button onClick="{{ ajouterMetier }}" disabled="{{ noRef }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Ajouter</button></div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isCommunes }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+      <sc-for list="{{ communes }}" as="c" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #ecebe7;flex-wrap:wrap"><span style="display:flex;flex-direction:column;gap:1px"><strong style="font-size:15px">{{ c.nom }}</strong><span style="font-size:13px;color:#6b6763">{{ c.detail }}</span></span><button onClick="{{ c.edit }}" disabled="{{ noCom }}" title="{{ comTitle }}" class="btn btn-secondary" style="font:inherit;font-size:13.5px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Modifier le contenu SEO</button></div></sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:10px 16px;align-items:center;font-size:14.5px;max-width:640px">
+      <sc-for list="{{ config }}" as="c" hint-placeholder-count="6"><label>{{ c.l }}</label><input value="{{ c.v }}" onChange="{{ c.set }}" disabled="{{ noRef }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px"></sc-for>
+    </section>
+  </sc-if>
+
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <button onClick="{{ enregistrer }}" disabled="{{ noSave }}" title="{{ refTitle }}" class="btn btn-primary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Enregistrer une nouvelle version</button>
+    <span style="font-size:13.5px;color:#6b6763">{{ etat }}</span>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'prest', dirty: false, v: 14, prest: [['Salle de bain complète', 1100, 1650, '€ / m²'], ['Isolation combles perdus', 28, 45, '€ / m²'], ['Peinture intérieure', 25, 38, '€ / m²'], ['Tableau électrique', 1200, 2100, 'forfait'], ['Pompe à chaleur air-eau', 9000, 15000, 'forfait'], ['Réfection de toiture', 110, 180, '€ / m²']],
+    metiers: ['Plombier-chauffagiste', 'Électricien', 'Couvreur', 'Menuisier', 'Carreleur', 'Peintre', 'Maçon', 'Isolation', 'Chauffagiste PAC', 'Diagnostiqueur'], nvMetier: '',
+    config: [['Artisans max. par demande', '3'], ['Demandes exclusives Premium / mois', '4'], ['Expiration d’une attribution (h)', '24'], ['Quota gratuit (demandes / mois)', '3'], ['Crédit (€ HT)', '10'], ['TVA simulateur', '10 %']], toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#referentiels'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const noRef = lect || !can('referentiels.modifier');
+    const mod = (patch) => this.setState({ ...patch, dirty: true });
+    return {
+      tabs: [['prest', 'Prestations du simulateur'], ['metiers', 'Métiers'], ['communes', 'Communes'], ['config', 'Configuration']].map(([id, nom]) => ({ nom, fw: s.tab === id ? 700 : 500, fg: s.tab === id ? '#201e1d' : '#6b6763', bd: s.tab === id ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
+      isPrest: s.tab === 'prest', isMetiers: s.tab === 'metiers', isCommunes: s.tab === 'communes', isConfig: s.tab === 'config',
+      noRef, noCom: lect || !can('communes.modifier'), comTitle: can('communes.modifier') ? '' : 'Permission requise : communes.modifier',
+      prest: s.prest.map(([nom, bas, haut, unite], i) => ({ nom, bas, haut, unite, setBas: (e) => mod({ prest: s.prest.map((p, k) => (k === i ? [p[0], +e.target.value, p[2], p[3]] : p)) }), setHaut: (e) => mod({ prest: s.prest.map((p, k) => (k === i ? [p[0], p[1], +e.target.value, p[3]] : p)) }) })),
+      metiers: s.metiers.map((nom) => ({ nom, retirer: () => mod({ metiers: s.metiers.filter((m) => m !== nom) }) })),
+      nvMetier: s.nvMetier, setNvMetier: (e) => this.setState({ nvMetier: e.target.value }),
+      ajouterMetier: () => s.nvMetier.trim() && mod({ metiers: [...s.metiers, s.nvMetier.trim()], nvMetier: '' }),
+      communes: [['Bordeaux', '38 artisans · page SEO à jour'], ['Lormont', '6 artisans · page diagnostic rive droite'], ['Cenon', '5 artisans · page diagnostic rive droite'], ['Mérignac', '21 artisans'], ['Pessac', '17 artisans']].map(([nom, detail]) => ({ nom, detail, edit: () => this.flash('Éditeur de contenu de ' + nom + ' ouvert') })),
+      config: s.config.map(([l, v], i) => ({ l, v, set: (e) => mod({ config: s.config.map((c, k) => (k === i ? [c[0], e.target.value] : c)) }) })),
+      noSave: noRef || !s.dirty, refTitle: can('referentiels.modifier') ? '' : 'Permission requise : referentiels.modifier',
+      etat: s.dirty ? 'Modifications non enregistrées' : 'Version ' + s.v + ' en production',
+      enregistrer: () => { this.setState({ dirty: false, v: s.v + 1 }); this.flash('Version ' + (s.v + 1) + ' publiée · auditLog (avant / après)'); },
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

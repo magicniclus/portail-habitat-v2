@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, textarea:disabled, select:disabled, input:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:16px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <div><h1 style="margin:0;font-size:30px;line-height:1.15">Assistant IA</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f;max-width:70ch">Un seul objectif : <strong>augmenter le taux de conversion</strong>. L'assistant analyse tout ou partie des données du site et vous dit quoi changer, avec les preuves et le gain attendu. Rien n'est appliqué sans votre validation.</p></div>
+    <span style="font-size:13px;color:#6b6763">{{ quota }}</span>
+  </header>
+
+  <div style="display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:16px;align-items:start">
+    <aside style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <strong style="font-size:15px">Type d'analyse</strong>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ modes }}" as="m" hint-placeholder-count="2"><button onClick="{{ m.go }}" style="display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid {{ m.bd }};cursor:pointer;font:inherit;padding:10px 12px;border-radius:10px;height:auto;background:{{ m.bg }}"><span style="font-size:14.5px;font-weight:700">{{ m.nom }}</span><span style="font-size:12.5px;color:#57534f;line-height:1.4">{{ m.desc }}</span></button></sc-for>
+        </div>
+        <strong style="font-size:15px">Données à analyser</strong>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ perimetres }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 11px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ p.bg }};color:{{ p.fg }}">{{ p.nom }}</button></sc-for>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Question ou objectif (facultatif)<textarea value="{{ question }}" onChange="{{ setQuestion }}" disabled="{{ noUse }}" rows="4" placeholder="ex. Pourquoi les artisans mobiles s'inscrivent moins ?" style="font:inherit;font-size:14.5px;font-weight:400;padding:9px 10px;border:1px solid #d9d6d1;border-radius:8px;resize:vertical;color:#201e1d"></textarea></label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4"><input type="checkbox" checked="{{ approfondie }}" onChange="{{ setApprofondie }}" disabled="{{ noUse }}" style="width:17px;height:17px;margin-top:1px">Analyse approfondie (modèle plus puissant, ~3 fois plus cher)</label>
+        <button onClick="{{ lancer }}" disabled="{{ noLancer }}" title="{{ useTitle }}" class="btn btn-primary" style="font:inherit;font-size:15px;font-weight:600;padding:10px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ lancerLabel }}</button>
+        <span style="font-size:12.5px;color:#6b6763;line-height:1.45">Données transmises : agrégats et contenus publics uniquement, jamais de données personnelles. Chaque analyse est journalisée.</span>
+      </section>
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px;display:flex;flex-direction:column">
+        <strong style="font-size:15px;margin-bottom:6px">Historique</strong>
+        <sc-for list="{{ historique }}" as="h" hint-placeholder-count="3">
+          <button onClick="{{ h.go }}" style="display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;border-top:1px solid #ecebe7;background:{{ h.bg }};cursor:pointer;font:inherit;padding:9px 6px;height:auto;border-radius:6px">
+            <span style="font-size:14px;font-weight:600">{{ h.titre }}</span><span style="font-size:12.5px;color:#6b6763">{{ h.meta }}</span>
+          </button>
+        </sc-for>
+      </section>
+      <sc-if value="{{ canConf }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;font-size:13.5px;align-items:center">
+          <strong style="grid-column:1 / -1;font-size:15px">Réglages (ia.configurer)</strong>
+          <span>Modèle par défaut</span><strong>Claude Haiku</strong>
+          <span>Analyse approfondie</span><strong>Claude Sonnet</strong>
+          <span>Budget du mois</span><strong>1,85 € / 10 €</strong>
+          <span>Cache des réponses</span><strong>24 h</strong>
+          <span>Synthèse du lundi 7 h</span><strong>Activée</strong>
+          <span>Consignes apprises</span><strong>{{ nbConsignes }}</strong>
+        </section>
+      </sc-if>
+    </aside>
+
+    <main style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <sc-if value="{{ enCours }}" hint-placeholder-val="{{ false }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px">
+          <strong style="font-size:16px">Analyse en cours…</strong>
+          <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="4"><span style="font-size:14px;color:{{ e.c }}">{{ e.t }}</span></sc-for>
+        </section>
+      </sc-if>
+      <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:10px;background:#fdf4e3;color:#7a5206;font-size:14px;font-weight:600">{{ err }}</div></sc-if>
+
+      <sc-if value="{{ hasRes }}" hint-placeholder-val="{{ true }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><h2 style="margin:0;font-size:19px">{{ res.titre }}</h2><span style="font-size:12.5px;color:#6b6763">{{ res.meta }}</span></div>
+          <p style="margin:0;font-size:15.5px;line-height:1.6;color:#3d3a37;text-wrap:pretty">{{ res.resume }}</p>
+          <sc-if value="{{ res.hasGain }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 14px;border-radius:10px;background:#eef7f3;color:#085340;font-size:14.5px;font-weight:600">Gain total estimé si tout est appliqué : {{ res.gain }}</div></sc-if>
+        </section>
+        <sc-if value="{{ hasEtapes }}" hint-placeholder-val="{{ false }}">
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:4px">
+            <h2 style="margin:0 0 8px;font-size:17px">Audit de l'entonnoir de conversion</h2>
+            <sc-for list="{{ etapesAudit }}" as="e" hint-placeholder-count="7">
+              <div style="display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 46px;gap:4px 14px;align-items:center;padding:9px 0;border-top:1px solid #ecebe7">
+                <span style="font-size:14.5px;font-weight:600">{{ e.etape }}</span>
+                <span style="display:flex;flex-direction:column;gap:5px;min-width:0"><span style="height:8px;border-radius:99px;background:#eceae6;overflow:hidden"><span style="display:block;height:100%;border-radius:99px;width:{{ e.w }};background:{{ e.c }}"></span></span><span style="font-size:13px;color:#57534f;text-wrap:pretty">{{ e.constat }}</span></span>
+                <strong style="font-size:15px;text-align:right;color:{{ e.c }}">{{ e.score }}</strong>
+              </div>
+            </sc-for>
+          </section>
+        </sc-if>
+        <sc-for list="{{ recos }}" as="r" hint-placeholder-count="3">
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;opacity:{{ r.op }}">
+            <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap">
+              <div style="display:flex;gap:10px;align-items:flex-start;min-width:0;flex:1 1 300px">
+                <span style="flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:{{ r.pbg }};color:{{ r.pfg }}">P{{ r.priorite }}</span>
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><strong style="font-size:16px;line-height:1.3">{{ r.titre }}</strong><span style="font-size:12.5px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ r.perimetre }}</span></div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef7f3;color:#085340">{{ r.gain }}</span>
+                <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef0f3;color:#2a323c">{{ r.etape }}</span>
+                <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#f1f0ed;color:#57534f">Effort {{ r.effort }}</span>
+                <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef4fa;color:#0d3a65">Confiance {{ r.conf }}</span>
+              </div>
+            </div>
+            <p style="margin:0;font-size:15px;line-height:1.55;color:#3d3a37;text-wrap:pretty">{{ r.constat }}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <sc-for list="{{ r.preuves }}" as="p" hint-placeholder-count="2"><span style="font-size:12.5px;padding:4px 9px;border-radius:6px;background:#f4f5f7;color:#2a323c"><strong>{{ p.valeur }}</strong> · {{ p.ref }}</span></sc-for>
+            </div>
+            <sc-if value="{{ r.hasTexte }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:10px;background:#faf9f7;border:1px dashed #d9d6d1;font-size:14.5px;line-height:1.5"><span style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#8a8580">Proposition</span><br>{{ r.texte }}</div></sc-if>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <sc-if value="{{ r.ouverte }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ r.principal }}" disabled="{{ noUse }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ r.actionLabel }}</button>
+                <button onClick="{{ r.tache }}" disabled="{{ noUse }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Créer une tâche</button>
+                <button onClick="{{ r.faite }}" disabled="{{ noUse }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Marquer faite</button>
+                <button onClick="{{ r.ignorer }}" disabled="{{ noUse }}" style="border:0;background:none;cursor:pointer;font:inherit;font-size:14px;font-weight:600;color:#8f1d14;padding:0 4px;height:auto">Ignorer</button>
+              </sc-if>
+              <span style="font-size:13.5px;font-weight:700;color:#57534f">{{ r.statut }}</span>
+            </div>
+          </section>
+        </sc-for>
+        <sc-for list="{{ ouvertes }}" as="q" hint-placeholder-count="0"><div style="font-size:13.5px;color:#7a5206;padding:8px 12px;border-radius:8px;background:#fdf4e3">{{ q.t }}</div></sc-for>
+      </sc-if>
+
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+        <strong style="font-size:15px">Poser une question sur cette analyse</strong>
+        <sc-for list="{{ chat }}" as="m" hint-placeholder-count="0">
+          <div style="display:flex;justify-content:{{ m.align }}"><div style="max-width:85%;padding:10px 13px;border-radius:12px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;text-wrap:pretty;background:{{ m.bg }};color:{{ m.fg }}">{{ m.t }}</div></div>
+        </sc-for>
+        <div style="display:flex;gap:8px">
+          <input value="{{ msg }}" onChange="{{ setMsg }}" onKeyDown="{{ keyMsg }}" disabled="{{ noUse }}" placeholder="ex. Rédige 3 variantes du titre de la landing pro" style="flex:1;min-width:0;font:inherit;font-size:14.5px;padding:9px 11px;border:1px solid #d9d6d1;border-radius:8px">
+          <button onClick="{{ envoyer }}" disabled="{{ noEnvoyer }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ envoyerLabel }}</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PERIM = [['tout', 'Toutes les données'], ['landings', 'Landings et comportement'], ['parcours', 'Parcours et formulaires'], ['emails', 'Emails et séquences'], ['offres', 'Offres et prix'], ['artisans', 'Fiches artisans']];
+const ETAPES_ENT = ['Acquisition (trafic)', 'Landing → intérêt', 'Inscription / demande', 'Activation (fiche en ligne)', '1er paiement', 'Montée en gamme', 'Rétention'];
+const MODES = [['rapide', 'Points d’amélioration', '3 à 6 actions rapides à fort impact, classées par gain.'], ['audit', 'Audit complet', 'Chaque étape de l’entonnoir notée, puis tout ce qu’il faut changer, dans l’ordre.']];
+const CONTEXTE = {
+  plateforme: 'Portail Habitat : place de marché de l’habitat en Gironde. Particuliers (simulateur de devis, diagnostic immobilier) et artisans (Gratuit, Visibilité 79,90 € HT/an ou 12,90 €/mois, Premium 79,90 € HT/mois à l’année ou 99,90 €/mois, 4 demandes exclusives garanties). Vocabulaire : jamais « lead », dire demande, mise en relation, appel d’offres.',
+  landings: {
+    'acquisition-artisans': { sessions30j: 1344, conversionInscription: '9,8 %', mobile: { part: '58 %', conversion: '6,1 %', profondeurMediane: '41 %' }, ordinateur: { conversion: '13,9 %', profondeurMediane: '62 %' }, sectionFuite: 'FAQ « Les questions qu’on nous pose » : 31 % des sorties pour 44 % d’atteinte', clicMort: 'titre « Recevez les demandes de travaux de votre secteur » : 1,2 %', hesitationCtaPremium: '21 %', offresVuesMobile: '38 %', testAB: { hero: { A: '9,1 %', B: '10,6 %', probaB: '88 %', sessions: 1344 } } },
+    'accueil-particuliers': { sessions30j: 5400, conversionDemande: '7,4 %', clicMort: 'illustrations des prestations : 3,8 %', abandonSimulateurEtape2: '34 %' },
+    'diagnostic-immobilier': { sessions30j: 1900, conversion: '11,2 %', sortieSectionPrix: '27 %' },
+  },
+  emails: { S4: { conversion: '11,6 %', vis_offre_lancement: { ouverture: '52 %', clic: '14 %' }, vis_position: { ouverture: '58 %', clic: '12 %' } }, S6: { conversion: '9,1 %', prem_demandes_manquees: { ouverture: '68 %', clic: '16 %', revenu: '2 140 €' } }, S1: { conversion: '24,8 %', prospect_temoignage: { ouverture: '39 %', clic: '6 %' } }, desabonnementsOffresPro: '0,4 %', blocagesPression30j: 212 },
+  offres: { abonnesPremium: 61, partAnnuelPremium: '63 %', abonnesVisibilite: 148, partAnnuelVisibilite: '71 %', resiliationMensuelle: '2,1 %', motifsResiliation: { 'pas assez de demandes': '46 %', 'trop cher': '31 %', 'saisonnalité': '23 %' }, visibiliteVersPremium90j: '9,1 %', tauxDeblocageAO: '64 %', prixMoyenAO: '19 € HT' },
+  artisans: { enLigne: 412, completudeMoyenne: '71 %', sansPhoto: '38 %', delaiReponseMedian: '2 h 10', noteMoyenne: 4.6, fichesSansPhotoConvertissent: '2,3 fois moins de demandes' },
+  parcours: { simulateur: { abandonEtape2: '34 %', champLePlusAbandonne: 'surface (m²)' }, onboardingArtisan: { abandonEtapeSiren: '18 %', abandonEtapeCompte: '26 %' }, diagnostic: { abandonEtape3: '22 %' } },
+};
+const SYSTEM = 'Tu es l’auditeur conversion de Portail Habitat. TON SEUL OBJECTIF : AUGMENTER LE TAUX DE CONVERSION (visiteur → inscription ou demande, inscrit → fiche en ligne, gratuit → payant, Visibilité → Premium, mensuel → annuel, et réduire les résiliations). Ignore tout ce qui n’a pas d’effet mesurable sur la conversion (esthétique, image de marque, SEO pur). Règles : 1) n’invente aucun chiffre, cite uniquement ceux du contexte ; 2) jamais le mot « lead » ; 3) chaque recommandation indique l’étape de l’entonnoir visée parmi : ' + ETAPES_ENT.join(', ') + ', et un gain estimé prudent en points de conversion de cette étape (fourchette) ; 4) trie par gain attendu / effort ; 5) en mode « rapide » : 3 à 6 recommandations ; en mode « audit » : note chaque étape de l’entonnoir de 0 à 100 avec un constat, puis 6 à 12 recommandations couvrant les étapes les plus faibles d’abord ; 4) réponds UNIQUEMENT par un objet JSON valide, sans texte autour, au format : {"resume": string (3 phrases max), "recommandations": [{"titre": string, "perimetre": string, "priorite": 1|2|3, "impact": "élevé"|"moyen"|"faible", "effort": "faible"|"moyen"|"élevé", "confiance": number 0-1, "constat": string, "preuves": [{"ref": string, "valeur": string}], "etape": string, "gainEstime": string, "action": {"type": "ab_test"|"tache"|"texte"|"sequence"|"prix"}, "propositionTexte": string ou ""}], "etapes": [{"etape": string, "score": number, "constat": string}] (mode audit uniquement, sinon []), "gainTotal": string, "questionsOuvertes": [string]}. En français, vouvoiement, phrases courtes.';
+const DEMO = { gainTotal: '+2 à +3,5 points de conversion inscription, et −0,5 point de résiliation mensuelle', etapes: [['Acquisition (trafic)', 64, 'Trafic correct mais 58 % mobile, où tout convertit deux fois moins.'], ['Landing → intérêt', 52, 'Sur mobile, 38 % seulement voient les offres ; la FAQ concentre 31 % des sorties.'], ['Inscription / demande', 58, '26 % d’abandon à l’étape compte de l’inscription artisan ; 34 % à l’étape 2 du simulateur.'], ['Activation (fiche en ligne)', 61, '38 % des fiches sans photo, qui reçoivent 2,3 fois moins de demandes.'], ['1er paiement', 70, 'Séquence S4 à 11,6 %, au-dessus de la cible.'], ['Montée en gamme', 55, 'Visibilité → Premium à 9,1 % à 90 j, sous la cible de 10 %.'], ['Rétention', 66, '46 % des résiliations pour manque de demandes.']].map(([etape, score, constat]) => ({ etape, score, constat })), resume: 'La landing pro convertit deux fois moins sur mobile que sur ordinateur, surtout parce que les offres sont trop bas. Côté emails, « demandes exclusives manquées » est le levier le plus rentable. La première cause de résiliation est le manque de demandes : c’est là que la garantie Premium doit être mise en avant.',
+  recommandations: [
+    { titre: 'Remonter le comparatif des offres sur mobile, juste après le premier écran', perimetre: 'landing:acquisition-artisans', etape: 'Landing → intérêt', gainEstime: '+1 à +2 pts sur mobile', priorite: 1, impact: 'élevé', effort: 'faible', confiance: 0.74, constat: 'Seuls 38 % des visiteurs mobiles voient les offres, et la conversion mobile est de 6,1 % contre 13,9 % sur ordinateur.', preuves: [{ ref: 'offres vues sur mobile', valeur: '38 %' }, { ref: 'conversion mobile / ordinateur', valeur: '6,1 % / 13,9 %' }], action: { type: 'ab_test' }, propositionTexte: '' },
+    { titre: 'Basculer le titre du hero sur la variante B', perimetre: 'landing:acquisition-artisans', etape: 'Landing → intérêt', gainEstime: '+0,5 à +1,5 pt', priorite: 1, impact: 'moyen', effort: 'faible', confiance: 0.62, constat: 'La variante B convertit à 10,6 % contre 9,1 %, avec 88 % de probabilité d’être meilleure : prolongez le test jusqu’à 95 % avant de basculer.', preuves: [{ ref: 'test hero A/B', valeur: '9,1 % → 10,6 %' }, { ref: 'probabilité B meilleure', valeur: '88 %' }], action: { type: 'ab_test' }, propositionTexte: '' },
+    { titre: 'Rendre cliquable le titre « Recevez les demandes de travaux de votre secteur »', perimetre: 'landing:acquisition-artisans', etape: 'Landing → intérêt', gainEstime: '+0,1 à +0,3 pt', priorite: 2, impact: 'faible', effort: 'faible', confiance: 0.8, constat: '1,2 % des visiteurs cliquent sur ce titre alors qu’il ne mène nulle part.', preuves: [{ ref: 'clic mort', valeur: '1,2 %' }], action: { type: 'tache' }, propositionTexte: '' },
+    { titre: 'Mettre la garantie Premium au cœur de l’écran de résiliation', perimetre: 'offres:resiliation', etape: 'Rétention', gainEstime: '−0,3 à −0,6 pt de résiliation', priorite: 2, impact: 'élevé', effort: 'moyen', confiance: 0.58, constat: '46 % des résiliations invoquent le manque de demandes, alors que Premium garantit 4 demandes exclusives par mois.', preuves: [{ ref: 'motif « pas assez de demandes »', valeur: '46 %' }], action: { type: 'texte' }, propositionTexte: 'Vous manquez de demandes ? Avec Premium, nous vous en garantissons 4 exclusives par mois, sinon le 2e mois est offert.' },
+    { titre: 'Réécrire l’email témoignage de la séquence prospects', perimetre: 'sequence:S1', etape: 'Inscription / demande', gainEstime: '+1 à +2 pts sur S1', priorite: 3, impact: 'moyen', effort: 'faible', confiance: 0.55, constat: 'prospect-temoignage est l’étape la plus faible de S1 (39 % d’ouverture, 6 % de clic).', preuves: [{ ref: 'prospect-temoignage', valeur: '39 % / 6 %' }], action: { type: 'sequence' }, propositionTexte: 'Objet : « 4 chantiers en 3 semaines : comment Julien a démarré à Bordeaux »' },
+    { titre: 'Supprimer le mot de passe à l’inscription artisan (lien magique)', perimetre: 'parcours:onboarding', etape: 'Inscription / demande', gainEstime: '+2 à +4 pts sur l’étape compte', priorite: 1, impact: 'élevé', effort: 'moyen', confiance: 0.6, constat: '26 % des artisans abandonnent à l’étape de création du compte, la plus forte perte du parcours.', preuves: [{ ref: 'abandon étape compte', valeur: '26 %' }], action: { type: 'ab_test' }, propositionTexte: '' },
+    { titre: 'Demander 3 photos dès l’activation, avec un rappel chiffré', perimetre: 'artisans:fiches', etape: 'Activation (fiche en ligne)', gainEstime: '+10 à +15 % de demandes reçues', priorite: 2, impact: 'moyen', effort: 'faible', confiance: 0.66, constat: '38 % des fiches n’ont aucune photo et reçoivent 2,3 fois moins de demandes.', preuves: [{ ref: 'fiches sans photo', valeur: '38 %' }, { ref: 'écart de demandes', valeur: '× 2,3' }], action: { type: 'sequence' }, propositionTexte: '' },
+  ],
+  questionsOuvertes: ['Pas de données de comportement mobile sur la page diagnostic rive droite (moins de 200 sessions).'] };
+const ACTION_LABEL = { ab_test: 'Préparer un test A/B', tache: 'Créer la tâche', texte: 'Utiliser ce texte', sequence: 'Ouvrir la séquence', prix: 'Ouvrir les prix' };
+const extraireJSON = (t) => { const a = t.indexOf('{'), b = t.lastIndexOf('}'); if (a < 0 || b < a) throw new Error('pas de JSON'); return JSON.parse(t.slice(a, b + 1)); };
+
+class Component extends DCLogic {
+  state = { mode: 'rapide', perims: ['tout'], approfondie: false, perim: 'tout', question: '', enCours: false, etape: 0, err: '', hist: [{ id: 0, titre: 'Audit complet hebdomadaire', meta: 'lun. 21/09 · 7 h · automatique', perim: 'tout', perims: ['tout'], mode: 'audit', res: DEMO, demo: true }], sel: 0, statuts: {}, chat: [], msg: '', chatEnCours: false, consignes: 3, used: 4, toast: '' };
+  componentDidMount() {
+    try { const p = JSON.parse(localStorage.getItem('ph-ia-preset') || 'null'); if (p) { localStorage.removeItem('ph-ia-preset'); this.setState({ perims: [p.perimetre || 'tout'], question: p.question || '', mode: 'rapide' }); } } catch (e) {}
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this._t); }
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  ctx(perims) { const L = Array.isArray(perims) ? perims : [perims]; if (L.includes('tout')) return CONTEXTE; const o = { plateforme: CONTEXTE.plateforme }; L.forEach((p) => { o[p] = CONTEXTE[p]; }); return o; }
+  async lancer() {
+    const { question, approfondie, mode } = this.state; const perim = this.state.perims.join('+');
+    const dejaFait = this.state.hist.find((h) => !h.demo && h.perim === perim && h.mode === mode && h.question === question && Date.now() - h.id < 86400000 && h.approfondie === approfondie);
+    if (dejaFait) { this.setState({ sel: dejaFait.id }); this.flash('Même analyse il y a moins de 24 h : résultat en cache, aucun coût'); return; }
+    this.setState({ enCours: true, etape: 0, err: '' });
+    clearInterval(this.iv); this.iv = setInterval(() => this.setState((s) => ({ etape: Math.min(3, s.etape + 1) })), 1400);
+    let res, demo = false;
+    try {
+      const txt = await window.claude.complete({ model: approfondie ? 'claude-sonnet-4-5' : 'claude-haiku-4-5', max_tokens: 2500, system: SYSTEM, messages: [{ role: 'user', content: 'Mode : ' + mode + '\nDonnées : ' + perim + '\nQuestion : ' + (question || (mode === 'audit' ? 'Audit complet : que faut-il changer pour augmenter la conversion ?' : 'Quelles actions augmentent le plus la conversion, tout de suite ?')) + '\n\nContexte (agrégats, aucune donnée personnelle) :\n' + JSON.stringify(this.ctx(this.state.perims)) }] });
+      res = extraireJSON(txt);
+      if (!Array.isArray(res.recommandations)) throw new Error('format');
+    } catch (e) { res = DEMO; demo = true; }
+    if (demo && mode !== 'audit') res = { ...DEMO, etapes: [], recommandations: DEMO.recommandations.slice(0, 5) };
+    clearInterval(this.iv);
+    const id = Date.now();
+    const titre = question ? question.slice(0, 60) + (question.length > 60 ? '…' : '') : (mode === 'audit' ? 'Audit complet · ' : 'Points d’amélioration · ') + this.state.perims.map((p) => PERIM.find((x) => x[0] === p)[1]).join(', ');
+    this.setState((s) => ({ enCours: false, hist: [{ id, titre, meta: 'à l’instant · ' + (demo ? 'mode démo' : approfondie ? 'Claude Sonnet' : 'Claude Haiku'), perim, perims: this.state.perims, mode, question, approfondie, res, demo }, ...s.hist], sel: id, used: s.used + 1, err: demo ? 'Le modèle n’a pas pu être joint depuis cette maquette : exemple de résultat affiché.' : '', chat: [] }));
+  }
+  async envoyer() {
+    const s = this.state, q = s.msg.trim(); if (!q) return;
+    const cur = s.hist.find((h) => h.id === s.sel);
+    const chat = [...s.chat, { role: 'user', content: q }];
+    this.setState({ chat, msg: '', chatEnCours: true });
+    let rep;
+    try {
+      rep = await window.claude.complete({ model: 'claude-haiku-4-5', max_tokens: 900, system: 'Tu es l’assistant d’analyse de l’admin de Portail Habitat. Réponds en français, vouvoiement, concis, sans inventer de chiffres (utilise uniquement le contexte). Jamais le mot « lead ». Texte simple, pas de markdown.',
+        messages: [{ role: 'user', content: 'Objectif unique : augmenter la conversion.\nContexte :\n' + JSON.stringify(this.ctx(cur && cur.perims ? cur.perims : ['tout'])) + '\n\nAnalyse en cours :\n' + JSON.stringify(cur ? cur.res : {}) }, { role: 'assistant', content: 'Compris, j’ai le contexte et l’analyse.' }, ...chat] });
+    } catch (e) { rep = 'Je ne peux pas joindre le modèle depuis cette maquette. En production, la question part vers la Function iaQuestion avec le même contexte.'; }
+    this.setState((st) => ({ chat: [...st.chat, { role: 'assistant', content: rep }], chatEnCours: false }));
+  }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#ia'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const noUse = lect || !can('ia.utiliser');
+    const cur = s.hist.find((h) => h.id === s.sel);
+    const PR = { 1: ['#fdecea', '#8f1d14'], 2: ['#fdf4e3', '#7a5206'], 3: ['#f1f0ed', '#57534f'] };
+    const setSt = (k, st, msg) => { this.setState({ statuts: { ...s.statuts, [k]: st } }); this.flash(msg); };
+    const ETAPES = ['Lecture des données sélectionnées', 'Reconstitution de l’entonnoir de conversion', 'Repérage des plus fortes pertes', s.mode === 'audit' ? 'Notation des étapes et rédaction de l’audit' : 'Rédaction des points d’amélioration'];
+    return {
+      quota: s.used + ' / 30 analyses aujourd’hui · budget du mois 1,85 € / 10 €', approfondie: s.approfondie, setApprofondie: (e) => this.setState({ approfondie: e.target.checked }),
+      perimetres: PERIM.map(([id, nom]) => { const on = s.perims.includes(id); return { nom, bg: on ? '#2a323c' : '#fff', fg: on ? '#fff' : '#201e1d', go: () => this.setState((st) => { if (id === 'tout') return { perims: ['tout'] }; let L = st.perims.filter((x) => x !== 'tout'); L = L.includes(id) ? L.filter((x) => x !== id) : [...L, id]; return { perims: L.length ? L : ['tout'] }; }) }; }),
+      modes: MODES.map(([id, nom, desc]) => ({ nom, desc, bg: s.mode === id ? '#f4f5f7' : '#fff', bd: s.mode === id ? '#3f4a57' : '#e2e0dc', go: () => this.setState({ mode: id }) })),
+      hasEtapes: !!cur && !s.enCours && (cur.res.etapes || []).length > 0,
+      etapesAudit: cur ? (cur.res.etapes || []).map((e) => { const sc = Math.max(0, Math.min(100, +e.score || 0)); return { etape: e.etape, constat: e.constat, score: String(sc), w: sc + '%', c: sc < 55 ? '#b3261e' : sc < 65 ? '#b7791f' : '#0a6650' }; }) : [],
+      question: s.question, setQuestion: (e) => this.setState({ question: e.target.value }),
+      noUse, noLancer: noUse || s.enCours, useTitle: can('ia.utiliser') ? '' : 'Permission requise : ia.utiliser',
+      lancerLabel: s.enCours ? 'Analyse en cours…' : s.mode === 'audit' ? 'Lancer l’audit complet' : 'Trouver les points d’amélioration', lancer: () => this.lancer(),
+      enCours: s.enCours, etapes: ETAPES.map((t, i) => ({ t: (i < s.etape ? '✓ ' : i === s.etape ? '… ' : '· ') + t, c: i <= s.etape ? '#201e1d' : '#8a8580' })),
+      err: s.err, hasErr: !!s.err,
+      historique: s.hist.map((h) => ({ titre: h.titre, meta: h.meta, bg: h.id === s.sel ? '#f4f5f7' : 'transparent', go: () => this.setState({ sel: h.id, chat: [] }) })),
+      hasRes: !!cur && !s.enCours,
+      res: cur ? { titre: cur.titre, meta: cur.meta + ' · ' + (cur.res.recommandations || []).length + ' recommandations', resume: cur.res.resume, gain: cur.res.gainTotal || '', hasGain: !!cur.res.gainTotal } : {},
+      recos: cur ? (cur.res.recommandations || []).map((r, i) => { const k = cur.id + '_' + i, st = s.statuts[k]; const t = (r.action && r.action.type) || 'tache';
+        return { gain: r.gainEstime ? 'Gain ' + r.gainEstime : 'Impact ' + (r.impact || ''), etape: r.etape || 'Entonnoir', titre: r.titre, perimetre: r.perimetre, priorite: r.priorite || 2, pbg: (PR[r.priorite] || PR[2])[0], pfg: (PR[r.priorite] || PR[2])[1], impact: r.impact, effort: r.effort, conf: Math.round((r.confiance || 0.5) * 100) + ' %', constat: r.constat,
+          preuves: (r.preuves || []).map((p) => ({ ref: p.ref || p.source || '', valeur: p.valeur || '' })), hasTexte: !!r.propositionTexte, texte: r.propositionTexte || '',
+          ouverte: !st, statut: st || '', op: st === 'Ignorée' ? 0.55 : 1, actionLabel: ACTION_LABEL[t] || 'Créer la tâche',
+          principal: () => setSt(k, t === 'ab_test' ? 'Test A/B en brouillon' : t === 'texte' || t === 'sequence' ? 'Ouvert dans l’éditeur' : 'Tâche créée', t === 'ab_test' ? 'Brouillon abTests créé avec l’hypothèse' : t === 'tache' ? 'Tâche recommandation_ia créée dans la file' : 'Proposition ouverte dans l’éditeur (non enregistrée)'),
+          tache: () => setSt(k, 'Tâche créée', 'Tâche recommandation_ia créée dans la file de travail'),
+          faite: () => setSt(k, 'Faite · effet mesuré dans 30 jours', 'Marquée faite : l’effet sera mesuré dans 30 jours'),
+          ignorer: () => { this.setState({ consignes: s.consignes + 1 }); setSt(k, 'Ignorée', 'Ignorée : ajoutée aux consignes de l’assistant'); } }; }) : [],
+      ouvertes: cur ? (cur.res.questionsOuvertes || []).map((t) => ({ t })) : [],
+      chat: s.chat.map((m) => ({ t: m.content, align: m.role === 'user' ? 'flex-end' : 'flex-start', bg: m.role === 'user' ? '#2a323c' : '#f4f5f7', fg: m.role === 'user' ? '#fff' : '#201e1d' })),
+      msg: s.msg, setMsg: (e) => this.setState({ msg: e.target.value }), keyMsg: (e) => { if (e.key === 'Enter') this.envoyer(); },
+      noEnvoyer: noUse || s.chatEnCours || !s.msg.trim(), envoyerLabel: s.chatEnCours ? '…' : 'Envoyer', envoyer: () => this.envoyer(),
+      canConf: can('ia.configurer'), nbConsignes: String(s.consignes),
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

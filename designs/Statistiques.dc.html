@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10;
+  --color-accent-100: #fff2ea;
+  --color-accent-200: #ffe0cd;
+  --color-accent-300: #ffc19c;
+  --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f;
+  --color-accent-600: #c94f0a;
+  --color-accent-700: #a33f05;
+  --color-accent-800: #7a2f04;
+  --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+
+  <aside style="{{ styleAside }}">
+    <a href="Acquisition Artisans v2.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 18px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}">
+        <span style="{{ styleLibelles }}" data-libelle="1">
+          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        </span>
+      </sc-if>
+    </a>
+
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="9">
+      <a href="{{ item.href }}" title="{{ item.label }}" style="{{ item.style }}">
+        <sc-if value="{{ item.estTitre }}" hint-placeholder-val="{{ false }}">
+          <span>{{ item.label }}</span>
+        </sc-if>
+        <sc-if value="{{ item.estLien }}" hint-placeholder-val="{{ true }}">
+          <span style="display:flex;align-items:center;gap:12px;width:100%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+            <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="{{ styleLibelles }}">{{ item.label }}</span></sc-if>
+            <sc-if value="{{ item.badgeVisible }}" hint-placeholder-val="{{ false }}">
+              <span style="margin-left:auto;background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px">{{ item.badge }}</span>
+            </sc-if>
+          </span>
+        </sc-if>
+      </a>
+    </sc-for>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px">
+      <button type="button" onClick="{{ basculerMenu }}" aria-label="Replier le menu" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--color-divider);background:#fff;border-radius:8px;cursor:pointer;color:var(--color-neutral-800);flex:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="{{ styleBouton }}"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="m14 9 3 3-3 3"></path></svg>
+      </button>
+      <p style="margin:0;font-size:17px;font-weight:700">Statistiques</p>
+      <span style="margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">{{ initiales }}</span>
+    </header>
+
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Statistiques de votre fiche</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Qui consulte votre fiche, et ce que ces visites vous rapportent.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ periodes }}" as="p" hint-placeholder-count="3">
+            <button type="button" onClick="{{ p.choisir }}" style="{{ p.style }}">{{ p.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+        <sc-for list="{{ resume }}" as="r" hint-placeholder-count="4">
+          <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;padding:16px 18px;display:grid;gap:4px;text-align:center">
+            <span style="font-size:14px;font-weight:700;color:var(--color-accent-800)">{{ r.label }}</span>
+            <span style="font-size:30px;line-height:1.1;font-weight:700">{{ r.valeur }}</span>
+            <span style="font-size:13px;color:var(--color-neutral-800)">{{ r.note }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        <sc-for list="{{ details }}" as="d" hint-placeholder-count="3">
+          <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:14px;align-content:start">
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <span style="width:40px;height:40px;border-radius:11px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;flex:none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ d.icone }}"></path></svg>
+              </span>
+              <span>
+                <span style="display:block;font-size:17px;font-weight:700">{{ d.titre }}</span>
+                <span style="display:block;font-size:14px;line-height:21px;color:var(--color-neutral-800)">{{ d.sous }}</span>
+              </span>
+            </div>
+            <sc-for list="{{ d.lignes }}" as="l" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--color-divider);padding-top:10px;font-size:14.5px">
+                <span style="color:var(--color-neutral-800)">{{ l.label }}</span>
+                <span style="{{ l.styleValeur }}">{{ l.valeur }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:18px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:34px;height:34px;border-radius:9px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;flex:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16 10 10l3.5 3.5L20 7"></path><path d="M20 12V7h-5"></path></svg>
+          </span>
+          <h2 style="font-size:20px;margin:0">Performance de conversion</h2>
+        </div>
+        <sc-for list="{{ conversions }}" as="c" hint-placeholder-count="3">
+          <div style="display:grid;gap:7px">
+            <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600">
+              <span>{{ c.label }}</span><span style="color:var(--color-accent-700)">{{ c.taux }}</span>
+            </div>
+            <span style="height:9px;border-radius:999px;background:var(--color-neutral-200);overflow:hidden;display:block"><span style="{{ c.styleBarre }}"></span></span>
+            <span style="font-size:13px;color:var(--color-neutral-700)">{{ c.detail }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:14px">
+        <div>
+          <h2 style="font-size:20px;margin:0 0 2px">Vues par semaine</h2>
+          <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Consultations de votre fiche sur les 8 dernières semaines</p>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:12px;height:170px">
+          <sc-for list="{{ semaines }}" as="s" hint-placeholder-count="8">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+              <span style="font-size:13px;font-weight:600">{{ s.valeur }}</span>
+              <span style="{{ s.styleBarre }}"></span>
+              <span style="font-size:12px;color:var(--color-neutral-700)">{{ s.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:16px;padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <h2 style="font-size:19px;margin:0 0 4px">Vos vues progressent, pas vos appels ?</h2>
+          <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">Les fiches avec photos de chantier et numéro visible convertissent 3 fois mieux.</p>
+        </div>
+        <a href="Ma Fiche.dc.html" class="btn btn-primary" style="min-height:44px;font-size:15px">Compléter ma fiche</a>
+      </div>
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const ICONES = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+  fiche: "M4 5h16v14H4zM8 9h8M8 13h5",
+  demandes: "M4 6h16v10H9l-5 3V6z",
+  avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
+  stats: "M5 20V10M12 20V4M19 20v-7",
+  support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01",
+  oeil: "M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z",
+  tel: "M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 5.1 5.1l1.4-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z",
+  envoi: "m4 11 16-7-7 16-2.5-6.5z",
+};
+
+class Component extends DCLogic {
+  state = { ouvert: true, periode: "30 jours", p: {} };
+
+  componentDidMount() {
+    let p = {};
+    try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    this.setState({ p });
+  }
+
+  renderVals() {
+    const p = this.state.p || {};
+    const nom = p.nom || "Julien Bertrand";
+    const ouvert = this.state.ouvert;
+    const periode = this.state.periode;
+
+    const lienStyle = (actif) => ({
+      display: "flex", alignItems: "center", padding: ouvert ? "10px 12px" : "10px", borderRadius: "10px",
+      textDecoration: "none", fontSize: "15px", fontWeight: actif ? 700 : 500,
+      color: actif ? "var(--color-accent-800)" : "var(--color-neutral-800)",
+      background: actif ? "var(--color-accent-100)" : "transparent",
+      border: actif ? "1px solid var(--color-accent-300)" : "1px solid transparent",
+    });
+    const titre = (label) => ({
+      key: label, label, estTitre: true, estLien: false, href: "#", d: "",
+      style: { display: ouvert ? "block" : "none", padding: "18px 12px 6px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-600)", textDecoration: "none", fontWeight: 600 },
+    });
+    const lien = (label, d, actif, badge, href) => ({
+      key: label, label, d, estTitre: false, estLien: true, href: href || "#" + label, style: lienStyle(actif),
+      badge: badge || "", badgeVisible: !!badge && ouvert,
+    });
+
+    const pill = { fontSize: "13px", fontWeight: 700, borderRadius: "999px", padding: "3px 9px", background: "var(--color-accent-100)", color: "var(--color-accent-800)", whiteSpace: "nowrap" };
+    const fort = { fontWeight: 700 };
+
+    const vues = [64, 78, 71, 92, 85, 103, 96, 113];
+    const maxi = Math.max.apply(null, vues);
+
+    return {
+      initiales: nom.split(" ").map((m) => m[0]).join("").slice(0, 2).toUpperCase(),
+      periodes: ["7 jours", "30 jours", "12 mois"].map((l) => ({
+        key: l, label: l,
+        choisir: () => this.setState({ periode: l }),
+        style: {
+          font: "inherit", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: "8px 14px",
+          borderRadius: "999px", whiteSpace: "nowrap",
+          border: "1px solid " + (periode === l ? "var(--color-accent)" : "var(--color-divider)"),
+          background: periode === l ? "var(--color-accent)" : "#fff",
+          color: periode === l ? "#fff" : "var(--color-neutral-800)",
+        },
+      })),
+      resume: [
+        { key: 1, label: "Vues totales", valeur: "113", note: "ce mois-ci" },
+        { key: 2, label: "Appels", valeur: "6", note: "ce mois-ci" },
+        { key: 3, label: "Messages", valeur: "2", note: "ce mois-ci" },
+        { key: 4, label: "Taux d'engagement", valeur: "7,1 %", note: "vues → actions" },
+      ],
+      details: [
+        { key: 1, titre: "Vues de votre fiche", sous: "Nombre de visiteurs ayant consulté votre profil", icone: ICONES.oeil, lignes: [
+          { key: "a", label: "Total", valeur: "113", styleValeur: fort },
+          { key: "b", label: "Ce mois", valeur: "113", styleValeur: fort },
+          { key: "c", label: "Dernière vue", valeur: "1er juillet 2026", styleValeur: fort },
+        ] },
+        { key: 2, titre: "Appels téléphoniques", sous: "Clics sur votre numéro de téléphone", icone: ICONES.tel, lignes: [
+          { key: "a", label: "Total", valeur: "6", styleValeur: fort },
+          { key: "b", label: "Ce mois", valeur: "6", styleValeur: fort },
+          { key: "c", label: "Taux de conversion", valeur: "5,3 %", styleValeur: pill },
+        ] },
+        { key: 3, titre: "Messages reçus", sous: "Formulaires de contact envoyés", icone: ICONES.envoi, lignes: [
+          { key: "a", label: "Total", valeur: "2", styleValeur: fort },
+          { key: "b", label: "Ce mois", valeur: "2", styleValeur: fort },
+          { key: "c", label: "Taux de conversion", valeur: "1,8 %", styleValeur: pill },
+        ] },
+      ],
+      conversions: [
+        { key: 1, label: "Vues → Appels téléphoniques", taux: "5,3 %", detail: "6 appels sur 113 vues", styleBarre: { display: "block", height: "100%", width: "5.3%", minWidth: "8px", background: "var(--color-accent)" } },
+        { key: 2, label: "Vues → Messages de contact", taux: "1,8 %", detail: "2 messages sur 113 vues", styleBarre: { display: "block", height: "100%", width: "1.8%", minWidth: "8px", background: "var(--color-accent-400)" } },
+        { key: 3, label: "Engagement total (appels + messages)", taux: "7,1 %", detail: "8 actions sur 113 vues", styleBarre: { display: "block", height: "100%", width: "7.1%", minWidth: "8px", background: "var(--color-accent-700)" } },
+      ],
+      semaines: vues.map((v, i) => ({
+        key: i, valeur: v, label: "S" + (i + 1),
+        styleBarre: { display: "block", width: "100%", height: Math.round((v / maxi) * 110) + "px", borderRadius: "6px 6px 0 0", background: i === vues.length - 1 ? "var(--color-accent)" : "var(--color-accent-200)" },
+      })),
+      menuOuvert: ouvert,
+      basculerMenu: () => this.setState((s) => ({ ouvert: !s.ouvert })),
+      styleAside: {
+        width: ouvert ? "252px" : "76px", transition: "width .18s ease", borderRight: "1px solid var(--color-divider)",
+        padding: "18px 14px", display: "flex", flexDirection: "column", gap: "2px", position: "sticky", top: 0,
+        height: "100vh", overflowY: "auto", background: "#fff",
+      },
+      styleLibelles: { whiteSpace: "nowrap" },
+      styleBouton: { transform: ouvert ? "none" : "scaleX(-1)" },
+      menu: [
+        titre("Vue d'ensemble"),
+        lien("Tableau de bord", ICONES.dashboard, false, "", "Espace Artisan Dashboard.dc.html"),
+        lien("Ma fiche", ICONES.fiche, false, "", "Ma Fiche.dc.html"),
+        lien("Mes demandes", ICONES.demandes, false, "3", "Mes Demandes.dc.html"),
+        titre("Gestion"),
+        lien("Appels d'offres", ICONES.zone, false, "12", "Appels d Offres.dc.html"),
+        lien("Mes avis", ICONES.avis, false, "", "Mes Avis.dc.html"),
+        lien("Statistiques", ICONES.stats, true, "", "Statistiques.dc.html"),
+        lien("Aide & contact", ICONES.support, false, "", "Aide et Contact.dc.html"),
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

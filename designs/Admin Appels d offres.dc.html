@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, input:disabled, select:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Appels d'offres et prix</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">3 réponses maximum par appel d'offres. Prix automatique selon le budget et l'ancienneté, modifiable ici.</p></header>
+  <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid #e2e0dc">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:15px;padding:10px 14px;white-space:nowrap;height:auto;margin-bottom:-1px;font-weight:{{ t.fw }};color:{{ t.fg }};border-bottom:3px solid {{ t.bd }}">{{ t.nom }}</button></sc-for>
+  </div>
+
+  <sc-if value="{{ isListe }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:16px;align-items:start">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;overflow:hidden">
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+          <button onClick="{{ r.go }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #ecebe7;cursor:pointer;font:inherit;padding:12px 16px;height:auto;background:{{ r.sel }}" style-hover="background:#f4f5f7">
+            <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ r.ref }} · ouvert il y a {{ r.age }}</span><span style="font-size:15px;font-weight:600">{{ r.projet }}</span><span style="font-size:13px;color:#6b6763">{{ r.lieu }} · qualité {{ r.q }}</span></span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span style="font-size:15px;font-weight:700;white-space:nowrap">{{ r.prix }}</span><span style="font-size:12px;color:#6b6763;white-space:nowrap">{{ r.mode }} · {{ r.deb }}/3</span></span>
+          </button>
+        </sc-for>
+      </section>
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div><div style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ l.ref }}</div><h2 style="margin:2px 0 0;font-size:21px">{{ l.projet }}</h2><div style="font-size:14px;color:#6b6763">{{ l.lieu }} · budget {{ l.budget }} · {{ l.deb }}/3 déblocages</div></div>
+        <h3 style="margin:0;font-size:16px">Éditeur de prix</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.go }}" disabled="{{ noPrix }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ m.bg }};color:{{ m.fg }}">{{ m.nom }}</button></sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:10px 16px;align-items:center;font-size:14.5px">
+          <span>Prix auto calculé</span><strong style="text-align:right">{{ l.auto }}</strong>
+          <label>Prix manuel (€ HT)</label><input type="number" value="{{ prixManuel }}" onChange="{{ setPrix }}" disabled="{{ noManuel }}" style="font:inherit;font-size:15px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;text-align:right">
+        </div>
+        <sc-if value="{{ plafondMsg }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 14px;border-radius:10px;background:#fdf4e3;color:#7a5206;font-size:14px;font-weight:600">{{ plafondMsg }}</div></sc-if>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onClick="{{ enregistrer }}" disabled="{{ noEnreg }}" title="{{ prixTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Appliquer le prix</button>
+          <button onClick="{{ offrir }}" disabled="{{ noOffrir }}" title="{{ offrirTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Offrir à un artisan</button>
+        </div>
+        <p style="margin:0;font-size:13px;color:#6b6763">Historique des prix conservé dans <code>appelsOffres/{id}/historiquePrix</code>. Plafond commercial : {{ plafond }} € HT (au-delà : permission <code>leads.prix_illimite</code>).</p>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isContest }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+      <sc-for list="{{ contests }}" as="c" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-bottom:1px solid #ecebe7">
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0"><strong style="font-size:15px">{{ c.ao }} · {{ c.art }}</strong><span style="font-size:14px;color:#3d3a37">Motif : {{ c.motif }} · {{ c.montant }}</span><span style="font-size:12.5px;color:#6b6763">{{ c.info }}</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+            <sc-if value="{{ c.ouvert }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ c.credits }}" disabled="{{ noRemb }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Rembourser en crédits</button>
+              <button onClick="{{ c.carte }}" disabled="{{ noCarte }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Sur la carte</button>
+              <button onClick="{{ c.refuser }}" disabled="{{ noRemb }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;color:#8f1d14">Refuser</button>
+            </sc-if>
+            <span style="font-size:13px;font-weight:700;color:#57534f">{{ c.decision }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+  <sc-if value="{{ isFb }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;align-items:start">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><h2 style="margin:0;font-size:18px">Publication du jour · groupe « Trouver chantier »</h2><span style="font-size:13px;color:#6b6763">7 000 membres</span></div>
+        <textarea readonly="readonly" value="{{ fbTexte }}" rows="16" style="font:inherit;font-size:14.5px;line-height:1.5;padding:12px;border:1px solid #d9d6d1;border-radius:10px;resize:vertical;background:#faf9f7"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button onClick="{{ copierFb }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Copier le texte</button><button onClick="{{ marquerFb }}" disabled="{{ noPublier }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Marquer comme publiée</button></div>
+        <p style="margin:0;font-size:13px;color:#6b6763">Demandes anonymisées (commune, budget, délai), aucune donnée personnelle. Collez-la dans le groupe : Facebook ne permet plus la publication automatique dans les groupes. Le lien suit les inscriptions venant du groupe.</p>
+      </section>
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0 0 6px;font-size:18px">Résultats du groupe (30 j)</h2>
+        <sc-for list="{{ fbStats }}" as="k" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #ecebe7;font-size:14.5px"><span>{{ k.l }}</span><strong>{{ k.v }}</strong></div></sc-for>
+        <h2 style="margin:12px 0 6px;font-size:18px">Demandes invendues offertes</h2>
+        <sc-for list="{{ offertes }}" as="o" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #ecebe7;font-size:14px;flex-wrap:wrap"><span><strong>{{ o.projet }}</strong> · {{ o.lieu }}</span><span style="color:#57534f">{{ o.etat }}</span></div></sc-for>
+        <p style="margin:6px 0 0;font-size:13px;color:#6b6763">Règle : sans déblocage après 24 h, offerte à 5 artisans gratuits du secteur ; les 3 premiers qui activent Visibilité la reçoivent (CONVERSION §3 bis).</p>
+      </section>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LEADS = [
+  { ref: 'AO-2301', projet: 'Isolation de combles perdus 80 m²', lieu: 'Pessac', budget: '3 100 – 4 200 €', age: '6 h', q: 'A', auto: 24, mode: 'auto', deb: 1 },
+  { ref: 'AO-2298', projet: 'Tableau électrique + mise aux normes', lieu: 'Lormont', budget: '2 400 – 3 200 €', age: '2 j', q: 'B', auto: 16, mode: 'auto', deb: 0 },
+  { ref: 'AO-2295', projet: 'Pompe à chaleur air-eau', lieu: 'Mérignac', budget: '11 000 – 15 500 €', age: '1 j', q: 'A', auto: 45, mode: 'manuel', manuel: 39, deb: 2 },
+  { ref: 'AO-2291', projet: 'Réfection de toiture 110 m²', lieu: 'Cenon', budget: '14 000 – 19 000 €', age: '4 j', q: 'C', auto: 12, mode: 'gratuit', deb: 3 },
+];
+const CONTESTS = [['AO-2291', 'Toitures Rive Droite', 'Numéro invalide', '2 crédits', 'Appel test : numéro non attribué · 1re contestation de cet artisan'], ['AO-2288', 'Atelier Garnier', 'Projet inexistant', '18 € HT (carte)', 'Particulier injoignable 3 fois · 4 contestations ce trimestre'], ['AO-2279', 'Isolation Gironde', 'Doublon', '3 crédits', 'Même particulier que AO-2264']];
+class Component extends DCLogic {
+  state = { tab: 'liste', sel: 'AO-2301', over: {}, dec: {}, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#leads'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const leads = LEADS.map((l) => ({ ...l, ...(s.over[l.ref] || {}) }));
+    const l = leads.find((x) => x.ref === s.sel) || leads[0];
+    const plafond = 30, illim = can('leads.prix_illimite');
+    const prix = (x) => (x.mode === 'gratuit' ? 'Gratuit' : (x.mode === 'manuel' ? x.manuel : x.auto) + ' € HT');
+    const upd = (patch) => this.setState({ over: { ...s.over, [l.ref]: { ...(s.over[l.ref] || {}), ...patch } } });
+    const noPrix = lect || !can('leads.prix');
+    const trop = l.mode === 'manuel' && !illim && (l.manuel || 0) > plafond;
+    const decide = (i, txt) => { this.setState({ dec: { ...s.dec, [i]: txt } }); this.flash(txt + ' · adminTraiterRemboursementLead · auditLog'); };
+    return {
+      tabs: [['liste', 'Appels d’offres'], ['contest', 'Contestations (' + CONTESTS.filter((_, i) => !s.dec[i]).length + ')'], ['fb', 'Facebook et invendues']].map(([id, nom]) => ({ nom, fw: s.tab === id ? 700 : 500, fg: s.tab === id ? '#201e1d' : '#6b6763', bd: s.tab === id ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
+      isListe: s.tab === 'liste', isContest: s.tab === 'contest', isFb: s.tab === 'fb',
+      fbTexte: "🔨 Demandes de travaux du jour – Gironde (samedi 26/09)\n\n• Pompe à chaleur air-eau · Talence · 7 200 à 9 600 € · sous 1 mois\n• Réfection de toiture 110 m² · Cenon · 14 000 à 19 000 € · sous 2 mois\n• Tableau électrique + mise aux normes · Lormont · 2 400 à 3 200 € · sous 15 jours\n• Salle de bain complète · Mérignac · 8 000 à 11 000 € · sous 1 mois\n• Isolation des combles 80 m² · Pessac · 3 100 à 4 200 € · dès que possible\n\n👉 Inscription gratuite, votre 1re demande offerte en passant en Visibilité :\nhttps://www.portailhabitat.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier\n\nArtisans vérifiés (SIREN + décennale), demandes jusqu’à 100 km de chez vous.",
+      copierFb: () => { try { navigator.clipboard.writeText((document.querySelector('textarea[readonly]') || {}).value || ''); } catch (e) {} this.flash('Texte copié : collez-le dans le groupe Trouver chantier'); },
+      noPublier: lect, marquerFb: () => this.flash('Publication du 26/09 marquée comme faite · les inscriptions du jour lui seront attribuées'),
+      fbStats: [['Clics depuis le groupe', '2 140'], ['Inscriptions commencées', '318'], ['Fiches en ligne', '241'], ['Passages en Visibilité', '57'], ['Dont grâce à une demande offerte', '34']].map(([l, v]) => ({ l, v })),
+      offertes: [['Pompe à chaleur', 'Talence', '2 / 3 attribuées · 2 Visibilité activées'], ['Tableau électrique', 'Lormont', 'offerte à 5 artisans · en attente'], ['Peinture 3 pièces', 'Bègles', '3 / 3 attribuées · 3 Visibilité activées']].map(([projet, lieu, etat]) => ({ projet, lieu, etat })),
+      rows: leads.map((x) => ({ ...x, prix: prix(x), sel: x.ref === l.ref ? '#f4f5f7' : '#fff', go: () => this.setState({ sel: x.ref }) })),
+      l: { ...l, auto: l.auto + ' € HT' },
+      modes: [['auto', 'Automatique'], ['manuel', 'Manuel'], ['gratuit', 'Gratuit']].map(([id, nom]) => ({ nom, bg: l.mode === id ? '#2a323c' : '#fff', fg: l.mode === id ? '#fff' : '#201e1d', go: () => upd({ mode: id, manuel: l.manuel || l.auto }) })),
+      noPrix, noManuel: noPrix || l.mode !== 'manuel', prixManuel: l.manuel || l.auto,
+      setPrix: (e) => upd({ manuel: +e.target.value || 0 }), plafond,
+      plafondMsg: trop ? 'Au-delà de votre plafond de ' + plafond + ' € HT : un admin doit valider ce prix.' : '',
+      noEnreg: noPrix || trop, prixTitle: can('leads.prix') ? '' : 'Permission requise : leads.prix',
+      enregistrer: () => this.flash('Prix de ' + l.ref + ' : ' + prix(l) + ' · adminFixerPrixLead · auditLog'),
+      noOffrir: lect || !can('leads.offrir'), offrirTitle: can('leads.offrir') ? '' : 'Permission requise : leads.offrir', offrir: () => this.flash('Choisissez l’artisan bénéficiaire (adminOffrirLead)'),
+      noRemb: lect || !can('leads.rembourser'), noCarte: lect || !can('finances.rembourser_carte'),
+      contests: CONTESTS.map(([ao, art, motif, montant, info], i) => ({ ao, art, motif, montant, info, ouvert: !s.dec[i], decision: s.dec[i] || '', credits: () => decide(i, 'Remboursé en crédits'), carte: () => decide(i, 'Remboursé sur la carte'), refuser: () => decide(i, 'Refusé') })),
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

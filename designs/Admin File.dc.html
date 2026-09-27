@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <div><h1 style="margin:0;font-size:30px;line-height:1.15">File de travail</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Tout ce qui attend une action humaine, trié par priorité puis ancienneté. Seuls les types autorisés pour votre rôle apparaissent.</p></div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:14.5px"><input type="checkbox" checked="{{ mesTaches }}" onChange="{{ toggleMes }}" style="width:17px;height:17px">Seulement mes tâches</label>
+  </header>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <sc-for list="{{ filtres }}" as="f" hint-placeholder-count="6"><button onClick="{{ f.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:5px 11px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ f.bg }};color:{{ f.fg }}">{{ f.nom }} <span style="opacity:.7">{{ f.n }}</span></button></sc-for>
+  </div>
+  <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="8">
+      <div style="display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:14px 0;border-bottom:1px solid #ecebe7;opacity:{{ it.op }}">
+        <span style="width:8px;align-self:stretch;border-radius:4px;background:{{ it.sla }}"></span>
+        <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef0f3;color:#2a323c">{{ it.type }}</span><strong style="font-size:15px">{{ it.titre }}</strong><span style="font-size:12.5px;font-weight:700;color:#8a8580">P{{ it.prio }}</span></div>
+          <span style="font-size:14px;color:#3d3a37;text-wrap:pretty">{{ it.detail }}</span>
+          <span style="font-size:12.5px;color:{{ it.slaTxt }}">{{ it.age }} · SLA {{ it.slaLabel }} · {{ it.qui }}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button onClick="{{ it.assigner }}" disabled="{{ it.noPerm }}" title="{{ it.permTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">{{ it.assignLabel }}</button>
+          <button onClick="{{ it.ouvrir }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Traiter</button>
+        </div>
+      </div>
+    </sc-for>
+    <sc-if value="{{ vide }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:20px 0;color:#6b6763">Rien à traiter pour ce filtre.</p></sc-if>
+  </section>
+  <p style="margin:0;font-size:13px;color:#6b6763">Source : <code>filesModeration</code> (temps réel). SLA : vert &lt; 50 % du délai, orange &lt; 100 %, rouge dépassé. L'assignation écrit <code>assigneA</code> et une entrée <code>auditLog</code>.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ITEMS = [
+  ['document', 'Document', 'Attestation décennale · Carrelage Nguyen', 'Dépôt du 23/09 · assureur AXA · fin de validité lisible', 5, '3 j', 'red', null, 'documents.valider', 'artisans'],
+  ['fraude', 'Fraude suspectée', 'Compte « Rénov Express 33 »', 'SIREN radié en 2024 · 3 demandes acceptées en 10 min', 5, '2 h', 'amber', null, 'artisans.suspendre', 'artisans'],
+  ['document', 'Document', 'Kbis · Isolation Gironde', 'Kbis de plus de 3 mois', 4, '50 h', 'red', 'Karim B.', 'documents.valider', 'artisans'],
+  ['avis', 'Avis', 'Avis 1★ sur Bertrand Rénovation', 'Score de risque 72 : compte créé hier, même IP qu’un autre avis', 4, '20 h', 'amber', null, 'avis.moderer', 'avis'],
+  ['remboursement', 'Contestation', 'Appel d’offres AO-2291 · Toitures Rive Droite', 'Motif : numéro invalide · 2 crédits', 3, '30 h', 'grey', null, 'leads.rembourser', 'leads'],
+  ['litige', 'Litige', 'Chantier non terminé · Salle de bain Mérignac', 'Particulier : C. M. · artisan : Atelier Garnier · en attente artisan', 3, '5 j', 'amber', 'Julie M.', 'litiges.traiter', 'litiges'],
+  ['contact', 'Contact', 'Question sur la facturation annuelle', 'Plomberie Da Silva · via le formulaire d’aide', 2, '6 h', 'grey', null, 'contacts.traiter', 'dashboard'],
+  ['commercial', 'Appel commercial', 'Couvreur Lambert · score 74', 'Créée par le moteur de conversion', 2, '5 h', 'grey', 'Julie M.', 'conversion.piloter', 'conversion'],
+  ['artisan_nouveau', 'Nouvel artisan', 'Menuiserie Roux · Lormont', 'Inscription terminée, vérification SIREN OK', 1, '1 h', 'grey', null, 'artisans.verifier', 'artisans'],
+];
+const SLA = { red: ['#c0392b', '#8f1d14', 'dépassé'], amber: ['#d99a1e', '#7a5206', 'bientôt'], grey: ['#0d7a5f', '#6b6763', 'dans les délais'] };
+class Component extends DCLogic {
+  state = { f: 'Tous', mes: false, assign: {} };
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#file'); } catch (e) {} }, 0); }
+    const P = this.props.perms || {};
+    const can = (p) => P[p] ?? true;
+    const vis = ITEMS.map((x, i) => ({ x, i })).filter(({ x }) => can(x[8]));
+    const types = ['Tous', ...Array.from(new Set(vis.map(({ x }) => x[1])))];
+    const qui = (i, x) => this.state.assign[i] || x[7];
+    const list = vis.filter(({ x, i }) => (this.state.f === 'Tous' || x[1] === this.state.f) && (!this.state.mes || qui(i, x) === 'Julie M.'));
+    return {
+      mesTaches: this.state.mes, toggleMes: (e) => this.setState({ mes: e.target.checked }),
+      filtres: types.map((t) => ({ nom: t, n: t === 'Tous' ? vis.length : vis.filter(({ x }) => x[1] === t).length, bg: t === this.state.f ? '#2a323c' : '#fff', fg: t === this.state.f ? '#fff' : '#201e1d', go: () => this.setState({ f: t }) })),
+      items: list.map(({ x, i }) => { const q = qui(i, x); const s = SLA[x[6]]; const lect = !!this.props.pii; return {
+        type: x[1], titre: x[2], detail: lect ? x[3].replace(/C\. M\./, '•••') : x[3], prio: x[4], age: 'Créée il y a ' + x[5], sla: s[0], slaTxt: s[1], slaLabel: s[2], qui: q ? 'assignée à ' + q : 'non assignée', op: 1,
+        assignLabel: q === 'Julie M.' ? 'Me désassigner' : 'M’assigner', noPerm: lect, permTitle: lect ? 'Lecture seule' : '',
+        assigner: () => this.setState((st) => ({ assign: { ...st.assign, [i]: q === 'Julie M.' ? '' : 'Julie M.' } })),
+        ouvrir: () => this.props.go && this.props.go(x[9]) }; }),
+      vide: list.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

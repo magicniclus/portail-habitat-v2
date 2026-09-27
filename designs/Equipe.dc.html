@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857; --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif; --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+  <aside style="width:252px;border-right:1px solid var(--color-divider);padding:18px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;box-sizing:border-box">
+    <a href="Espace Artisan Dashboard.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 14px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <span>
+        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+      </span>
+    </a>
+
+    <div style="position:relative;margin-bottom:8px">
+      <button type="button" onClick="{{ toggleSwitch }}" aria-expanded="{{ switchOpen }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--color-divider);border-radius:10px;background:#fff;cursor:pointer;font:inherit;text-align:left" style-hover="background:var(--color-neutral-100)">
+        <span style="width:32px;height:32px;border-radius:8px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">{{ active.ini }}</span>
+        <span style="display:flex;flex-direction:column;min-width:0;flex:1">
+          <span style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ active.nom }}</span>
+          <span style="font-size:12.5px;color:var(--color-neutral-700)">{{ active.role }}</span>
+        </span>
+        <span style="width:8px;height:8px;border-radius:99px;background:var(--color-accent);flex:none" title="Nouvelles demandes dans une autre entreprise"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+      </button>
+      <sc-if value="{{ switchOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--color-divider);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;z-index:40;display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-600);padding:6px 8px">Mes entreprises</span>
+          <sc-for list="{{ entreprises }}" as="en" hint-placeholder-count="2">
+            <button type="button" onClick="{{ en.select }}" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:8px;background:{{ en.bg }};cursor:pointer;font:inherit;text-align:left" style-hover="background:var(--color-neutral-100)">
+              <span style="width:28px;height:28px;border-radius:7px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">{{ en.ini }}</span>
+              <span style="display:flex;flex-direction:column;flex:1;min-width:0">
+                <span style="font-size:14px;font-weight:600">{{ en.nom }}</span>
+                <span style="font-size:12.5px;color:var(--color-neutral-700)">{{ en.role }}</span>
+              </span>
+              <sc-if value="{{ en.badge }}" hint-placeholder-val="{{ false }}">
+                <span style="background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 7px">{{ en.badge }}</span>
+              </sc-if>
+            </button>
+          </sc-for>
+          <a href="#" style="font-size:14px;font-weight:600;padding:8px;text-decoration:none">+ Ajouter une entreprise</a>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="10">
+      <sc-if value="{{ item.titre }}" hint-placeholder-val="{{ false }}">
+        <span style="display:block;padding:16px 12px 6px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-600)">{{ item.label }}</span>
+      </sc-if>
+      <sc-if value="{{ item.lien }}" hint-placeholder-val="{{ true }}">
+        <a href="{{ item.href }}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:{{ item.fw }};color:{{ item.fg }};background:{{ item.bg }};border:1px solid {{ item.bd }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+          <span>{{ item.label }}</span>
+        </a>
+      </sc-if>
+    </sc-for>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px;min-height:38px">
+      <p style="margin:0;font-size:17px;font-weight:700">Équipe</p>
+      <span style="margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+    </header>
+
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px;max-width:1120px;width:100%;box-sizing:border-box">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Équipe</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Les personnes qui gèrent les demandes et la fiche de {{ active.nom }}.</p>
+        </div>
+        <sc-if value="{{ peutInviter }}" hint-placeholder-val="{{ true }}">
+          <button type="button" class="btn btn-primary" onClick="{{ ouvrirInvit }}" disabled="{{ siegesPleins }}" style="min-height:44px;font-size:15px;gap:8px">+ Inviter un membre</button>
+        </sc-if>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+        <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;font-weight:700">Sièges utilisés</span><span style="font-size:13px;color:var(--color-neutral-700)">Offre Premium</span></div>
+          <p style="margin:0;font-size:32px;line-height:1;font-weight:700">{{ utilises }} <span style="font-size:18px;color:var(--color-neutral-600);font-weight:600">/ {{ siegesMax }}</span></p>
+          <div style="height:8px;border-radius:99px;background:var(--color-neutral-200);overflow:hidden"><div style="height:100%;width:{{ siegesPct }};background:var(--color-accent);border-radius:99px"></div></div>
+          <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">{{ utilisesNote }}</p>
+        </div>
+        <sc-if value="{{ siegesPleins }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:15px;font-weight:700;color:var(--color-accent-800)">Tous vos sièges sont utilisés</span>
+            <p style="margin:0;font-size:14.5px;line-height:1.5;color:var(--color-accent-900)">Ajoutez un siège pour 9 € HT/mois, facturé au prorata sur votre abonnement.</p>
+            <button type="button" class="btn btn-secondary" style="min-height:40px;align-self:flex-start">Ajouter un siège</button>
+          </div>
+        </sc-if>
+        <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:14px;font-weight:700">Mon rôle</span>
+          <div style="display:flex;background:var(--color-neutral-100);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap">
+            <sc-for list="{{ rolesVue }}" as="rv" hint-placeholder-count="4">
+              <button type="button" onClick="{{ rv.select }}" style="border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 10px;border-radius:8px;background:{{ rv.bg }};color:var(--color-text)">{{ rv.label }}</button>
+            </sc-for>
+          </div>
+          <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--color-neutral-700)">Aperçu de la page selon votre rôle dans l'entreprise.</p>
+        </div>
+      </div>
+
+      <section style="display:grid;gap:12px">
+        <h2 style="font-size:19px;margin:0">Membres</h2>
+        <div style="border:1px solid var(--color-divider);border-radius:14px;overflow:hidden">
+          <sc-for list="{{ membres }}" as="m" hint-placeholder-count="4">
+            <div style="display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;padding:14px 18px;border-top:{{ m.bt }};opacity:{{ m.op }}">
+              <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:2 1 220px">
+                <span style="width:40px;height:40px;border-radius:50%;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none">{{ m.ini }}</span>
+                <span style="display:flex;flex-direction:column;min-width:0">
+                  <span style="font-size:15.5px;font-weight:700">{{ m.nom }} <span style="font-weight:500;color:var(--color-neutral-600)">{{ m.vous }}</span></span>
+                  <span style="font-size:13.5px;color:var(--color-neutral-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.email }}</span>
+                </span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;flex:1 1 130px">
+                <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ m.roleBg }};color:{{ m.roleFg }}">{{ m.role }}</span>
+                <span style="font-size:12.5px;color:var(--color-neutral-700)">{{ m.metiers }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--color-neutral-700);flex:1 1 110px">
+                <span>{{ m.activite }}</span>
+                <span style="color:{{ m.mfaFg }};font-weight:600">{{ m.mfa }}</span>
+              </div>
+              <div style="display:flex;gap:6px;justify-content:flex-end;margin-left:auto">
+                <sc-if value="{{ m.actions }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" class="btn btn-ghost" style="min-height:36px;font-size:14px">Modifier</button>
+                  <button type="button" class="btn btn-ghost" onClick="{{ m.retirer }}" style="min-height:36px;font-size:14px;color:#b42318">Retirer</button>
+                </sc-if>
+                <sc-if value="{{ m.quitter }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" class="btn btn-ghost" disabled="{{ m.quitterOff }}" title="{{ m.quitterTitle }}" style="min-height:36px;font-size:14px">Quitter</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <sc-if value="{{ aInvitations }}" hint-placeholder-val="{{ true }}">
+        <section style="display:grid;gap:12px">
+          <h2 style="font-size:19px;margin:0">Invitations en attente</h2>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow:hidden">
+            <sc-for list="{{ invitations }}" as="iv" hint-placeholder-count="2">
+              <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:14px 18px;border-top:{{ iv.bt }}">
+                <span style="width:40px;height:40px;border-radius:50%;border:2px dashed var(--color-neutral-400);display:flex;align-items:center;justify-content:center;color:var(--color-neutral-600);flex:none">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>
+                </span>
+                <span style="display:flex;flex-direction:column;flex:1 1 200px;min-width:0">
+                  <span style="font-size:15.5px;font-weight:600">{{ iv.email }}</span>
+                  <span style="font-size:13.5px;color:var(--color-neutral-700)">{{ iv.role }} · invité par {{ iv.par }} · {{ iv.etat }}</span>
+                </span>
+                <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ iv.bg }};color:{{ iv.fg }}">{{ iv.tag }}</span>
+                <sc-if value="{{ peutInviter }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:flex;gap:6px">
+                    <button type="button" class="btn btn-ghost" style="min-height:36px;font-size:14px">Renvoyer</button>
+                    <button type="button" class="btn btn-ghost" style="min-height:36px;font-size:14px;color:#b42318">Révoquer</button>
+                  </span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ peutInviter }}" hint-placeholder-val="{{ true }}">
+        <section style="display:grid;gap:12px">
+          <h2 style="font-size:19px;margin:0">Demandes d'accès</h2>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center">
+            <span style="width:40px;height:40px;border-radius:50%;background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none">TG</span>
+            <span style="display:flex;flex-direction:column;flex:1 1 240px;min-width:0">
+              <span style="font-size:15.5px;font-weight:600">Thomas Garcia <span style="font-weight:500;color:var(--color-neutral-700)">souhaite rejoindre l'entreprise</span></span>
+              <span style="font-size:14px;color:var(--color-neutral-800);font-style:italic">« Je suis le nouveau chef d'équipe plomberie depuis septembre. »</span>
+              <span style="font-size:13px;color:var(--color-neutral-600)">Il y a 2 jours · expire dans 12 jours</span>
+            </span>
+            <span style="display:flex;gap:8px">
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Refuser</button>
+              <button type="button" class="btn btn-primary" style="min-height:40px;font-size:14px">Accepter</button>
+            </span>
+          </div>
+        </section>
+      </sc-if>
+
+      <section style="display:grid;gap:12px">
+        <h2 style="font-size:19px;margin:0">Qui peut faire quoi</h2>
+        <div style="border:1px solid var(--color-divider);border-radius:14px;overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px">
+            <thead>
+              <tr style="background:var(--color-neutral-100)">
+                <th style="text-align:left;padding:11px 16px;font-weight:700">Action</th>
+                <th style="padding:11px 10px;font-weight:700">Propriétaire</th>
+                <th style="padding:11px 10px;font-weight:700">Gérant</th>
+                <th style="padding:11px 10px;font-weight:700">Collaborateur</th>
+                <th style="padding:11px 10px;font-weight:700">Comptable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ matrice }}" as="row" hint-placeholder-count="6">
+                <tr style="border-top:1px solid var(--color-divider)">
+                  <td style="padding:10px 16px">{{ row.a }}</td>
+                  <sc-for list="{{ row.c }}" as="cell" hint-placeholder-count="4">
+                    <td style="padding:10px;text-align:center;color:{{ cell.fg }};font-weight:700">{{ cell.t }}</td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <sc-if value="{{ invitOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60" onClick="{{ fermerInvit }}">
+      <div role="dialog" aria-modal="true" aria-labelledby="inv-t" onClick="{{ stop }}" style="background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);width:100%;max-width:520px;padding:26px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div>
+            <h2 id="inv-t" style="margin:0 0 4px;font-size:22px">Inviter un membre</h2>
+            <p style="margin:0;font-size:14.5px;color:var(--color-neutral-700)">Il recevra un email pour rejoindre {{ active.nom }}. Lien valable 7 jours.</p>
+          </div>
+          <button type="button" onClick="{{ fermerInvit }}" aria-label="Fermer" style="width:36px;height:36px;border:0;background:transparent;cursor:pointer;font-size:20px;border-radius:8px;flex:none">×</button>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14.5px;font-weight:600">Adresse email
+          <input class="input" type="email" placeholder="prenom.nom@exemple.fr" style="padding:11px 13px;font-size:15px" />
+        </label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:14.5px;font-weight:600">Rôle</span>
+          <sc-for list="{{ rolesInvit }}" as="ri" hint-placeholder-count="3">
+            <button type="button" onClick="{{ ri.select }}" style="display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:10px;border:{{ ri.bd }};background:{{ ri.bg }};cursor:pointer;font:inherit">
+              <span style="width:18px;height:18px;border-radius:99px;border:2px solid {{ ri.dot }};display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px;box-sizing:border-box"><span style="width:8px;height:8px;border-radius:99px;background:{{ ri.fill }}"></span></span>
+              <span style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:15px;font-weight:700">{{ ri.label }}</span>
+                <span style="font-size:13.5px;line-height:1.45;color:var(--color-neutral-700)">{{ ri.desc }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ roleCollab }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:10px;background:var(--color-neutral-100)">
+            <span style="font-size:14.5px;font-weight:600">Métiers suivis <span style="font-weight:500;color:var(--color-neutral-700)">(demandes notifiées)</span></span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ metiers }}" as="mt" hint-placeholder-count="4">
+                <button type="button" onClick="{{ mt.toggle }}" style="border-radius:999px;padding:7px 13px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid {{ mt.bd }};background:{{ mt.bg }};color:{{ mt.fg }}">{{ mt.label }}</button>
+              </sc-for>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:14.5px;font-weight:600">Plafond de crédits par mois
+              <select class="input" style="padding:10px 12px;font-size:15px">
+                <option>Aucun déblocage autorisé</option>
+                <option>5 crédits</option>
+                <option>10 crédits</option>
+                <option>Sans plafond</option>
+              </select>
+            </label>
+          </div>
+        </sc-if>
+        <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">Après cette invitation : {{ apresInvit }} sièges utilisés sur {{ siegesMax }}.</p>
+        <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-secondary" onClick="{{ fermerInvit }}" style="min-height:44px">Annuler</button>
+          <button type="button" class="btn btn-primary" onClick="{{ envoyerInvit }}" style="min-height:44px">Envoyer l'invitation</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ retraitNom }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60">
+      <div role="dialog" aria-modal="true" style="background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);width:100%;max-width:460px;padding:26px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+        <h2 style="margin:0;font-size:21px">Retirer {{ retraitNom }} ?</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--color-neutral-800)">L'accès est coupé immédiatement. Ses demandes en cours repassent en « non assignées » et ses messages restent visibles. Un email l'informe du retrait.</p>
+        <div style="display:flex;justify-content:flex-end;gap:10px">
+          <button type="button" class="btn btn-secondary" onClick="{{ annulerRetrait }}" style="min-height:44px">Annuler</button>
+          <button type="button" class="btn btn-primary" onClick="{{ annulerRetrait }}" style="min-height:44px;background:#b42318;border-color:#b42318">Retirer de l'équipe</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;siegesMax&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 5, &quot;min&quot;: 3, &quot;max&quot;: 10, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scénario&quot;}, &quot;roleApercu&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Propriétaire&quot;, &quot;Gérant&quot;, &quot;Collaborateur&quot;, &quot;Comptable&quot;], &quot;default&quot;: &quot;Propriétaire&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scénario&quot;}}">
+const IC = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5", fiche: "M4 5h16v14H4zM8 9h8M8 13h5", demandes: "M4 6h16v10H9l-5 3V6z",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01", avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
+  stats: "M5 20V10M12 20V4M19 20v-7", equipe: "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7.5M22 21v-1a6 6 0 0 0-4-5.6",
+  compte: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0", support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+};
+const ENTS = [
+  { nom: 'Bertrand Rénovation', ini: 'BR', role: 'Propriétaire', badge: '' },
+  { nom: 'JB Plomberie Services', ini: 'JP', role: 'Gérant', badge: '2' },
+];
+const ROLE_TAG = { 'Propriétaire': ['#fff2ea', '#7a2f04'], 'Gérant': ['#fff2ea', '#a33f05'], 'Collaborateur': ['#eef0f3', '#2a323c'], 'Comptable': ['#eef4fa', '#0d3a65'] };
+const MEMBRES = [
+  { nom: 'Julien Bertrand', ini: 'JB', email: 'julien@bertrand-renovation.fr', role: 'Propriétaire', metiers: 'Tous les métiers', activite: 'Actif maintenant', mfa: '2FA activée', ok: true, moi: true },
+  { nom: 'Claire Bertrand', ini: 'CB', email: 'claire@bertrand-renovation.fr', role: 'Gérant', metiers: 'Tous les métiers', activite: 'Il y a 2 h', mfa: '2FA activée', ok: true },
+  { nom: 'Léa Durand', ini: 'LD', email: 'lea.durand@gmail.com', role: 'Collaborateur', metiers: 'Salle de bain, carrelage', activite: 'Hier', mfa: 'Sans 2FA', ok: false },
+  { nom: 'Cabinet Fidal Compta', ini: 'FC', email: 'compta@cabinet-fidal.fr', role: 'Comptable', metiers: 'Factures et exports', activite: 'Il y a 12 jours', mfa: '2FA activée', ok: true },
+];
+const INVITS = [
+  { email: 'marc.lopez@gmail.com', role: 'Collaborateur', par: 'Julien', etat: 'envoyée il y a 2 jours, expire dans 5 jours', tag: 'En attente', tone: ['#fdf4e3', '#7a5206'] },
+  { email: 'apprenti.bertrand@gmail.com', role: 'Collaborateur', par: 'Claire', etat: 'expirée le 18 septembre', tag: 'Expirée', tone: ['#f1f0ed', '#57534f'] },
+];
+const ROLES_INVIT = [
+  { k: 'gerant', label: 'Gérant', desc: 'Tout gérer sauf la propriété : demandes, fiche, avis, abonnement, équipe.' },
+  { k: 'collab', label: 'Collaborateur', desc: 'Répond aux demandes de ses métiers, envoie des devis, ajoute des réalisations.' },
+  { k: 'compta', label: 'Comptable', desc: 'Accès en lecture aux factures et aux exports. Aucune demande.' },
+];
+const MAT = [
+  ['Répondre aux demandes, envoyer un devis', [1, 1, 'Ses métiers', 0]],
+  ['Débloquer un appel d’offres', [1, 1, 'Si autorisé', 0]],
+  ['Modifier la fiche publique', [1, 1, 'Réalisations', 0]],
+  ['Répondre aux avis', [1, 1, 0, 0]],
+  ['Abonnement, paiement, crédits', [1, 1, 0, 0]],
+  ['Factures et exports', [1, 1, 0, 1]],
+  ['Inviter et retirer des membres', [1, 'Sauf gérants', 0, 0]],
+  ['Transférer la propriété, fermer', [1, 0, 0, 0]],
+];
+const METIERS = ['Salle de bain', 'Carrelage', 'Plomberie', 'Chauffage', 'Peinture'];
+
+class Component extends DCLogic {
+  state = { switchOpen: false, ent: 0, vue: this.props.roleApercu ?? 'Propriétaire', invitOpen: false, roleInvit: 'collab', met: { 'Plomberie': true, 'Chauffage': true }, retrait: '' };
+  renderVals() {
+    const s = this.state;
+    const siegesMax = this.props.siegesMax ?? 5;
+    const vue = s.vue;
+    const peutInviter = vue === 'Propriétaire' || vue === 'Gérant';
+    const moiRole = vue;
+    const utilises = MEMBRES.length + INVITS.filter(i => i.tag === 'En attente').length;
+    const pleins = utilises >= siegesMax;
+    const menuDef = [
+      ['t', "Vue d'ensemble"], ['l', 'Tableau de bord', IC.dashboard, 'Espace Artisan Dashboard.dc.html'], ['l', 'Ma fiche', IC.fiche, 'Ma Fiche.dc.html'], ['l', 'Mes demandes', IC.demandes, 'Mes Demandes.dc.html'],
+      ['t', 'Gestion'], ["l", "Appels d'offres", IC.zone, 'Appels d Offres.dc.html'], ['l', 'Mes avis', IC.avis, 'Mes Avis.dc.html'], ['l', 'Statistiques', IC.stats, 'Statistiques.dc.html'],
+      ['t', 'Entreprise'], ['l', 'Équipe', IC.equipe, 'Equipe.dc.html', true], ['l', 'Mon compte', IC.compte, 'Mon Compte.dc.html'], ['l', 'Aide & contact', IC.support, 'Aide et Contact.dc.html'],
+    ];
+    const menu = menuDef.map(([k, label, d, href, act]) => k === 't'
+      ? { titre: true, lien: false, label }
+      : { titre: false, lien: true, label, d, href, fw: act ? 700 : 500, fg: act ? 'var(--color-accent-800)' : 'var(--color-neutral-800)', bg: act ? 'var(--color-accent-100)' : 'transparent', bd: act ? 'var(--color-accent-300)' : 'transparent' });
+    const proprios = MEMBRES.filter(m => m.role === 'Propriétaire').length;
+    const membres = MEMBRES.map((m, n) => {
+      const moi = m.moi;
+      const [rb, rf] = ROLE_TAG[moi ? moiRole : m.role];
+      const cibleGerant = m.role === 'Gérant' || m.role === 'Propriétaire';
+      const actions = !moi && (vue === 'Propriétaire' || (vue === 'Gérant' && !cibleGerant));
+      const dernierProprio = moi && moiRole === 'Propriétaire' && proprios <= 1;
+      return {
+        ...m, role: moi ? moiRole : m.role, roleBg: rb, roleFg: rf, vous: moi ? '(vous)' : '', bt: n ? '1px solid var(--color-divider)' : '0', op: 1,
+        mfaFg: m.ok ? 'var(--color-neutral-700)' : '#a9700a', actions, quitter: !!moi, quitterOff: dernierProprio,
+        quitterTitle: dernierProprio ? 'Transférez d’abord la propriété à un autre membre' : '',
+        retirer: () => this.setState({ retrait: m.nom }),
+      };
+    });
+    return {
+      active: ENTS[s.ent],
+      switchOpen: s.switchOpen,
+      toggleSwitch: () => this.setState({ switchOpen: !s.switchOpen }),
+      entreprises: ENTS.map((e, i) => ({ ...e, bg: i === s.ent ? 'var(--color-neutral-100)' : 'transparent', select: () => this.setState({ ent: i, switchOpen: false }) })),
+      menu, membres, peutInviter,
+      invitations: INVITS.map((iv, n) => ({ ...iv, bt: n ? '1px solid var(--color-divider)' : '0', bg: iv.tone[0], fg: iv.tone[1] })),
+      aInvitations: vue !== 'Comptable',
+      utilises, siegesMax, siegesPct: Math.min(100, Math.round(utilises / siegesMax * 100)) + '%',
+      siegesPleins: pleins,
+      utilisesNote: pleins ? 'Aucun siège libre (invitations en attente comprises).' : `${siegesMax - utilises} siège${siegesMax - utilises > 1 ? 's' : ''} libre${siegesMax - utilises > 1 ? 's' : ''} · 3 inclus + ${siegesMax - 3} supplémentaires`,
+      apresInvit: utilises + 1,
+      rolesVue: ['Propriétaire', 'Gérant', 'Collaborateur', 'Comptable'].map(r => ({ label: r, bg: r === vue ? '#fff' : 'transparent', select: () => this.setState({ vue: r }) })),
+      matrice: MAT.map(([a, c]) => ({ a, c: c.map(v => v === 1 ? { t: '✓', fg: '#0a6650' } : v === 0 ? { t: '—', fg: 'var(--color-neutral-500)' } : { t: v, fg: 'var(--color-neutral-800)' }) })),
+      invitOpen: s.invitOpen,
+      ouvrirInvit: () => this.setState({ invitOpen: true }),
+      fermerInvit: () => this.setState({ invitOpen: false }),
+      envoyerInvit: () => this.setState({ invitOpen: false }),
+      stop: (e) => e.stopPropagation(),
+      rolesInvit: ROLES_INVIT.map(r => { const on = r.k === s.roleInvit; return { ...r, bd: on ? '2px solid var(--color-accent)' : '1px solid var(--color-divider)', bg: on ? 'var(--color-accent-100)' : '#fff', dot: on ? 'var(--color-accent)' : 'var(--color-neutral-400)', fill: on ? 'var(--color-accent)' : 'transparent', select: () => this.setState({ roleInvit: r.k }) }; }),
+      roleCollab: s.roleInvit === 'collab',
+      metiers: METIERS.map(m => { const on = !!s.met[m]; return { label: m, bd: on ? 'var(--color-accent)' : 'var(--color-neutral-400)', bg: on ? 'var(--color-accent-100)' : '#fff', fg: on ? 'var(--color-accent-800)' : 'var(--color-text)', toggle: () => this.setState({ met: { ...s.met, [m]: !on } }) }; }),
+      retraitNom: s.retrait,
+      annulerRetrait: () => this.setState({ retrait: '' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Aide et contact | Portail Habitat</title>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<style>
+:root {
+  --color-accent: #0d7a5f; --color-accent-100: #eef7f3; --color-accent-200: #d2ebe1; --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c; --color-accent-500: #12997a; --color-accent-600: #0a6650; --color-accent-700: #085340;
+  --color-accent-800: #06402f; --color-accent-900: #0a2a21;
+  --pro-700: #a33f05;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+}
+body, h1, h2, h3, input, select, textarea, button { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); font-size: 16px; }
+html, body, #dc-root { background: #fff; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+</style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column;color:var(--color-text)">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;width:100%;max-width:1220px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="font-size:15px;color:var(--color-neutral-800)">Aide et contact</span>
+      <span style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:14.5px">
+        <a href="Accueil Particuliers.dc.html" style="text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Espace particuliers</a>
+        <a href="Acquisition Artisans v2.dc.html" style="text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--pro-700)">Espace artisans</a>
+      </span>
+    </span>
+  </nav>
+
+  <main style="flex:1;max-width:1220px;margin:0 auto;width:100%;box-sizing:border-box;padding:clamp(26px,4vw,52px) clamp(18px,4vw,44px) clamp(40px,5vw,68px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:40px clamp(28px,5vw,64px);align-items:start">
+
+    <section>
+      <h1 style="font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:0 0 12px">Une question ? Écrivez-nous.</h1>
+      <p style="margin:0 0 28px;font-size:17px;line-height:27px;color:var(--color-neutral-800);max-width:48ch">Notre équipe répond sous 24 h ouvrées, du lundi au vendredi, 9 h – 18 h.</p>
+
+      <sc-if value="{{ envoye }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--color-accent-100);border-radius:14px;padding:24px;display:grid;gap:10px;max-width:560px">
+          <h2 style="font-size:22px;margin:0">Message envoyé</h2>
+          <p style="margin:0;font-size:15.5px;line-height:25px;color:var(--color-neutral-800)">Merci {{ prenomAffiche }}. Nous vous répondons à {{ emailAffiche }} sous 24 h ouvrées. Référence : {{ reference }}.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+            <a href="Accueil Particuliers.dc.html" class="btn btn-primary" style="min-height:46px">Retour à l'accueil</a>
+            <button type="button" class="btn btn-ghost" onClick="{{ nouveau }}" style="min-height:46px">Écrire un autre message</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ formulaire }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ envoyer }}" style="display:grid;gap:18px;max-width:560px">
+          <div style="display:grid;gap:8px">
+            <label for="sujet" style="font-size:15px;font-weight:600">Votre demande concerne</label>
+            <select id="sujet" class="input" value="{{ sujet }}" onChange="{{ changerSujet }}" style="min-height:48px;padding:0 12px">
+              <sc-for list="{{ sujets }}" as="s" hint-placeholder-count="6">
+                <option value="{{ s.id }}">{{ s.label }}</option>
+              </sc-for>
+            </select>
+            <span style="font-size:14px;line-height:21px;color:var(--color-neutral-700)">{{ aideSujet }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px">
+            <div style="display:grid;gap:8px">
+              <label for="prenom" style="font-size:15px;font-weight:600">Prénom et nom</label>
+              <input id="prenom" class="input" autocomplete="name" required="required" value="{{ nom }}" onChange="{{ changerNom }}" style="min-height:48px;padding:0 12px">
+            </div>
+            <div style="display:grid;gap:8px">
+              <label for="email" style="font-size:15px;font-weight:600">Email</label>
+              <input id="email" type="email" class="input" autocomplete="email" required="required" value="{{ email }}" onChange="{{ changerEmail }}" style="min-height:48px;padding:0 12px">
+            </div>
+          </div>
+          <sc-if value="{{ aReference }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;gap:8px">
+              <label for="ref" style="font-size:15px;font-weight:600">{{ labelReference }} <span style="font-weight:400;color:var(--color-neutral-700)">(facultatif)</span></label>
+              <input id="ref" class="input" value="{{ refDossier }}" onChange="{{ changerRef }}" style="min-height:48px;padding:0 12px">
+            </div>
+          </sc-if>
+          <div style="display:grid;gap:8px">
+            <label for="message" style="font-size:15px;font-weight:600">Votre message</label>
+            <textarea id="message" class="input" required="required" rows="6" value="{{ message }}" onChange="{{ changerMessage }}" style="padding:12px;resize:vertical;line-height:24px"></textarea>
+          </div>
+          <p style="margin:0;font-size:13.5px;line-height:21px;color:var(--color-neutral-700)">Vos informations servent uniquement à traiter votre demande. <a href="Pages Legales.dc.html?public=part&amp;doc=confidentialite">Politique de confidentialité</a></p>
+          <div><button type="submit" class="btn btn-primary" style="min-height:48px;font-size:16px;padding:0 26px">Envoyer mon message</button></div>
+        </form>
+      </sc-if>
+    </section>
+
+    <aside style="display:grid;gap:32px">
+      <div style="display:grid;gap:6px">
+        <h2 style="font-size:19px;margin:0">Autres moyens</h2>
+        <p style="margin:0;font-size:15.5px;line-height:25px;color:var(--color-neutral-800)">Email : <a href="mailto:contact@portail-habitat.fr">contact@portail-habitat.fr</a><br>Téléphone : 05 56 00 00 00, du lundi au vendredi</p>
+      </div>
+
+      <div style="display:grid;gap:10px">
+        <h2 style="font-size:19px;margin:0">Questions fréquentes</h2>
+        <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
+          <div style="border-bottom:1px solid var(--color-divider)">
+            <button type="button" onClick="{{ q.basculer }}" aria-expanded="{{ q.ouverte }}" style="font:inherit;font-size:15.5px;font-weight:600;text-align:left;cursor:pointer;width:100%;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border:0;background:transparent;color:var(--color-text)">
+              <span>{{ q.question }}</span>
+              <span style="{{ q.styleChevron }}">⌄</span>
+            </button>
+            <sc-if value="{{ q.ouverte }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;padding:0 0 16px;font-size:15px;line-height:24px;color:var(--color-neutral-800)">{{ q.reponse }}</p>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <p style="margin:0;font-size:15px;line-height:24px;color:var(--color-neutral-800)">Vous êtes artisan ? <a href="Acquisition Artisans v2.dc.html" style="color:var(--pro-700)">Découvrir l'espace pro</a>. Déjà inscrit : l'aide se trouve dans votre espace.</p>
+    </aside>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1220px;margin:0 auto;padding:24px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat · Plateforme de mise en relation</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Particuliers</a>
+        <a href="Acquisition Artisans v2.dc.html" style="color:var(--color-accent-200)">Artisans</a>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=mentions" style="color:var(--color-accent-200)">Mentions légales</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1220}}">
+const SUJETS = [
+  { id: "question", label: "Une question sur un projet de travaux", aide: "Prix, démarches, choix d'un artisan : décrivez votre projet en quelques lignes." },
+  { id: "diagnostic", label: "Un diagnostic immobilier", aide: "Précisez le type de bien, la commune et s'il s'agit d'une vente ou d'une location." },
+  { id: "demande", label: "Le suivi de ma demande", aide: "Indiquez la référence reçue par email si vous l'avez.", ref: "Référence de la demande" },
+  { id: "mediation", label: "Un litige avec un artisan (médiation)", aide: "Décrivez ce qui s'est passé. Notre équipe contacte l'artisan avant toute autre démarche.", ref: "Nom de l'entreprise" },
+  { id: "ajout-artisan", label: "Ajouter une entreprise introuvable", aide: "Donnez le nom, la commune et si possible le SIRET de l'entreprise.", ref: "Nom de l'entreprise" },
+  { id: "signalement", label: "Signaler un contenu ou un avis", aide: "Indiquez l'adresse de la page et le motif du signalement.", ref: "Adresse de la page" },
+  { id: "donnees", label: "Mes données personnelles (RGPD)", aide: "Accès, rectification, suppression : répondez depuis l'email lié à votre compte." },
+  { id: "juridique", label: "Une question juridique ou une réclamation", aide: "Précisez le document concerné (CGU, mentions légales…)." },
+];
+const FAQ = [
+  { q: "Le service est-il gratuit ?", r: "Oui. Le simulateur, le diagnostic et la mise en relation sont gratuits pour les particuliers, sans engagement." },
+  { q: "Combien d'artisans vont me contacter ?", r: "Trois professionnels au plus, choisis près de chez vous selon votre projet." },
+  { q: "Les prix du simulateur sont-ils fiables ?", r: "Ce sont des fourchettes indicatives. Seul le devis de l'artisan, après visite, fait foi." },
+  { q: "Comment modifier ou annuler ma demande ?", r: "Depuis le lien reçu par email, ou en nous écrivant avec la référence de la demande." },
+  { q: "Un artisan ne m'a jamais rappelé", r: "Choisissez « Le suivi de ma demande » ci-contre : nous relançons l'artisan ou en proposons un autre." },
+];
+
+class Component extends DCLogic {
+  state = { sujet: "question", nom: "", email: "", refDossier: "", message: "", envoye: false, ouverte: -1, reference: "" };
+
+  componentDidMount() {
+    try {
+      const s = new URLSearchParams(location.search).get("sujet");
+      if (s && SUJETS.some((x) => x.id === s)) this.setState({ sujet: s });
+    } catch (e) {}
+  }
+
+  renderVals() {
+    const st = this.state;
+    const sujet = SUJETS.find((x) => x.id === st.sujet) || SUJETS[0];
+    const champ = (k) => (e) => this.setState({ [k]: e.target.value });
+    return {
+      sujets: SUJETS.map((s) => ({ key: s.id, id: s.id, label: s.label })),
+      sujet: st.sujet, aideSujet: sujet.aide,
+      aReference: !!sujet.ref, labelReference: sujet.ref || "",
+      nom: st.nom, email: st.email, refDossier: st.refDossier, message: st.message,
+      changerSujet: champ("sujet"), changerNom: champ("nom"), changerEmail: champ("email"),
+      changerRef: champ("refDossier"), changerMessage: champ("message"),
+      envoye: st.envoye, formulaire: !st.envoye,
+      prenomAffiche: (st.nom || "").split(" ")[0], emailAffiche: st.email, reference: st.reference,
+      envoyer: (e) => {
+        e.preventDefault();
+        this.setState({ envoye: true, reference: "CT-" + Math.random().toString(36).slice(2, 8).toUpperCase() });
+      },
+      nouveau: () => this.setState({ envoye: false, message: "", refDossier: "" }),
+      faq: FAQ.map((f, i) => ({
+        key: i, question: f.q, reponse: f.r, ouverte: st.ouverte === i,
+        basculer: () => this.setState((s) => ({ ouverte: s.ouverte === i ? -1 : i })),
+        styleChevron: { fontSize: "18px", lineHeight: 1, color: "var(--color-neutral-700)", transform: st.ouverte === i ? "rotate(180deg)" : "none", transition: "transform .18s ease" },
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

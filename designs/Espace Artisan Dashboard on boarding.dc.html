@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<script src="image-slot.js"></script>
+<style>
+:root {
+  --color-accent: #e05a10;
+  --color-accent-100: #fff2ea;
+  --color-accent-200: #ffe0cd;
+  --color-accent-300: #ffc19c;
+  --color-accent-400: #ff9857;
+  --color-accent-700: #a33f05;
+  --color-accent-800: #7a2f04;
+  --color-bg: #ffffff;
+}
+body, h1, h2, h3, label { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+html, body, #dc-root { margin: 0; background: #fff; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input, select.input, textarea.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+.input:focus, textarea.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#fff;color:var(--color-text);display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+
+  <div style="display:flex;flex-direction:column;padding:clamp(20px,3vw,32px) clamp(20px,4vw,56px) 36px;min-width:0">
+
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <a href="Espace Artisan Dashboard.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text)">
+        <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        </span>
+      </a>
+      <sc-if value="{{ peutAvancer }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ ouvrirModale }}" style="margin-left:auto;font:inherit;font-size:14px;font-weight:600;background:transparent;border:0;cursor:pointer;color:var(--color-neutral-700)">Reprendre plus tard</button>
+      </sc-if>
+    </div>
+
+    <div style="flex:1;width:100%;max-width:440px;margin:36px auto;display:flex;flex-direction:column;justify-content:center;gap:20px">
+
+      <sc-if value="{{ peutAvancer }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:14px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="3">
+              <span style="{{ e.styleBarre }}"></span>
+            </sc-for>
+          </div>
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--color-neutral-700)">Étape {{ numeroEtape }} sur 3 · {{ titreEtape }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape1 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:16px">
+          <div>
+            <h1 style="font-size:clamp(24px,2.8vw,30px);line-height:1.14;margin:0 0 6px">Présentez votre <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">entreprise</span></h1>
+            <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Logo et description : <strong>+ 23 % de mises en relation</strong>.</p>
+          </div>
+
+          <div class="field">
+            <label>Logo de l'entreprise</label>
+            <span style="width:84px;height:84px;display:block;margin-top:6px;border:1px dashed var(--color-neutral-400);border-radius:10px;overflow:hidden;background:#fff">
+              <image-slot id="ob-logo" shape="rounded" radius="10" fit="contain" placeholder="Logo"></image-slot>
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="nom-entreprise">Nom de l'entreprise <span style="font-weight:400;color:var(--color-neutral-700)">(le nom sous lequel les clients vous connaissent)</span></label>
+            <input class="input" id="nom-entreprise" type="text" placeholder="Bertrand Rénovation" value="{{ entrepriseSaisie }}" onInput="{{ majEntreprise }}" style="width:100%">
+          </div>
+
+          <div class="field">
+            <label for="description">Présentation de votre entreprise <span style="font-weight:400;color:var(--color-neutral-700)">(votre histoire, ce qui compte pour vos clients)</span></label>
+            <textarea class="input" id="description" rows="3" placeholder="Couvreur depuis 12 ans à Bordeaux : toiture, zinguerie, isolation. Devis sous 48 h." value="{{ description }}" onInput="{{ majDescription }}" style="width:100%;padding:10px 12px;line-height:22px"></textarea>
+            <p style="margin:6px 0 0;font-size:12.5px;color:var(--color-neutral-700)">{{ nbCaracteres }} / 400</p>
+          </div>
+
+          <div class="field">
+            <label>Vos prestations <span style="font-weight:400;color:var(--color-neutral-700)">(cochez tout ce que vous réalisez)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">
+              <sc-for list="{{ prestations }}" as="p" hint-placeholder-count="10">
+                <button type="button" onClick="{{ p.basculer }}" style="{{ p.style }}">{{ p.nom }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:16px">
+          <div>
+            <h1 style="font-size:clamp(24px,2.8vw,30px);line-height:1.14;margin:0 0 6px">Vos <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">photos</span></h1>
+            <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Trois photos de chantier suffisent pour <strong>+ 31 % de demandes de devis</strong>.</p>
+          </div>
+
+          <div class="field">
+            <label>Image de bannière <span style="font-weight:400;color:var(--color-neutral-700)">(une photo large de chantier terminé)</span></label>
+            <div style="height:130px;border:1px dashed var(--color-neutral-400);border-radius:10px;overflow:hidden;background:#fff">
+              <image-slot id="ob-banniere" shape="rect" radius="0" placeholder="Photo large (1600 × 500 px)"></image-slot>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Photos de chantier <span style="font-weight:400;color:var(--color-neutral-700)">(4 réalisations, avant/après si possible)</span></label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px">
+              <span style="aspect-ratio:1;display:block;border:1px dashed var(--color-neutral-400);border-radius:8px;overflow:hidden;background:#fff"><image-slot id="ob-chantier1" shape="rect" radius="0" placeholder="1"></image-slot></span>
+              <span style="aspect-ratio:1;display:block;border:1px dashed var(--color-neutral-400);border-radius:8px;overflow:hidden;background:#fff"><image-slot id="ob-chantier2" shape="rect" radius="0" placeholder="2"></image-slot></span>
+              <span style="aspect-ratio:1;display:block;border:1px dashed var(--color-neutral-400);border-radius:8px;overflow:hidden;background:#fff"><image-slot id="ob-chantier3" shape="rect" radius="0" placeholder="3"></image-slot></span>
+              <span style="aspect-ratio:1;display:block;border:1px dashed var(--color-neutral-400);border-radius:8px;overflow:hidden;background:#fff"><image-slot id="ob-chantier4" shape="rect" radius="0" placeholder="4"></image-slot></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Vidéo de présentation <span style="font-weight:400;color:var(--color-neutral-700)">(facultatif, 50 Mo max)</span></label>
+            <div style="margin-top:6px;border:1px dashed var(--color-neutral-400);border-radius:10px;padding:18px;display:grid;gap:8px;justify-items:center;text-align:center;background:#fff">
+              <span style="width:40px;height:40px;border-radius:50%;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 7.5v9l7.5-4.5z"></path></svg>
+              </span>
+              <span style="font-size:14px;line-height:21px;color:var(--color-neutral-800)">Présentez votre entreprise en vidéo — MP4, WebM ou OGG</span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px;background:#fff">Ajouter une vidéo</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Vos réalisations <span style="font-weight:400;color:var(--color-neutral-700)">(photo, intitulé et commune du chantier)</span></label>
+            <div style="display:grid;gap:10px;margin-top:6px">
+              <sc-for list="{{ projets }}" as="pr" hint-placeholder-count="2">
+                <div style="display:flex;gap:10px;align-items:center;border:1px solid var(--color-divider);border-radius:10px;padding:10px">
+                  <span style="width:60px;height:60px;flex:none;display:block;border:1px dashed var(--color-neutral-400);border-radius:8px;overflow:hidden;background:#fff"><image-slot id="{{ pr.slot }}" shape="rect" radius="0" placeholder="Photo"></image-slot></span>
+                  <span style="flex:1;min-width:0;display:grid;gap:8px">
+                    <input class="input" type="text" placeholder="Ex. Réfection de toiture" value="{{ pr.titre }}" onInput="{{ pr.majTitre }}" style="width:100%;padding:8px 10px;font-size:14px">
+                    <input class="input" type="text" placeholder="Commune du chantier" value="{{ pr.ville }}" onInput="{{ pr.majVille }}" style="width:100%;padding:8px 10px;font-size:14px">
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape3 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:16px">
+          <div>
+            <h1 style="font-size:clamp(24px,2.8vw,30px);line-height:1.14;margin:0 0 6px">Vos <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">informations</span></h1>
+            <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Adresse, budget type, labels et coordonnées : tout ce qui rassure un particulier.</p>
+          </div>
+
+          <div class="field">
+            <label for="adresse">Adresse de l'entreprise <span style="font-weight:400;color:var(--color-neutral-700)">(affichée sur votre fiche)</span></label>
+            <input class="input" id="adresse" type="text" placeholder="33 rue de Libourne, Bordeaux" value="{{ adresse }}" onInput="{{ majAdresse }}" style="width:100%">
+          </div>
+
+          <div class="field">
+            <label>Devis moyen <span style="font-weight:400;color:var(--color-neutral-700)">(la fourchette de vos chantiers)</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+              <input class="input" type="text" inputmode="numeric" placeholder="1 000 €" value="{{ devisMin }}" onInput="{{ majDevisMin }}" style="width:100%">
+              <input class="input" type="text" inputmode="numeric" placeholder="20 000 €" value="{{ devisMax }}" onInput="{{ majDevisMax }}" style="width:100%">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Certifications &amp; labels <span style="font-weight:400;color:var(--color-neutral-700)">(cochez ceux que vous détenez)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:6px">
+              <sc-for list="{{ certifications }}" as="c" hint-placeholder-count="5">
+                <button type="button" onClick="{{ c.basculer }}" style="{{ c.style }}">{{ c.nom }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email-affiche">Email affiché <span style="font-weight:400;color:var(--color-neutral-700)">(celui que vous consultez tous les jours)</span></label>
+            <input class="input" id="email-affiche" type="email" placeholder="contact@bertrand-renovation.fr" value="{{ email }}" onInput="{{ majEmail }}" style="width:100%">
+          </div>
+
+          <div class="field">
+            <label for="tel-affiche">Téléphone affiché <span style="font-weight:400;color:var(--color-neutral-700)">(le numéro sur lequel on peut vous joindre)</span></label>
+            <input class="input" id="tel-affiche" type="tel" placeholder="06 12 34 56 78" value="{{ tel }}" onInput="{{ majTel }}" style="width:100%">
+          </div>
+
+          <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:21px;color:var(--color-neutral-800)">
+            <input type="checkbox" checked="{{ masquer }}" onChange="{{ majMasquer }}" style="margin-top:3px;accent-color:var(--color-accent);width:18px;height:18px">
+            <span>Masquer mes coordonnées tant que je n'ai pas accepté la demande.</span>
+          </label>
+
+          <p style="margin:0;padding:11px 13px;border-left:3px solid var(--color-accent);background:var(--color-accent-100);border-radius:0 10px 10px 0;font-size:14px;line-height:21px">Les artisans qui affichent leurs coordonnées sont contactés <strong>3 fois plus vite</strong>.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape4 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:16px">
+          <div>
+            <span style="display:inline-flex;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--color-accent);border-radius:999px;padding:4px 11px">Fiche prête</span>
+            <h1 style="font-size:clamp(23px,2.6vw,29px);line-height:1.14;margin:12px 0 6px">Passez devant les autres artisans de votre secteur</h1>
+            <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Fiche complète à {{ completion }} %. Les artisans en tête de liste reçoivent <strong>+ 76 % de demandes</strong>.</p>
+          </div>
+
+          <div style="border:1px solid var(--color-accent);border-radius:12px;padding:18px;display:grid;gap:14px">
+            <p style="margin:0;font-size:14px"><span style="font-size:30px;font-weight:700;white-space:nowrap">79,90 €</span> <span style="font-size:13px;color:var(--color-neutral-700)">HT / an payé en une fois · 12,90 € / mois sans engagement</span></p>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px;font-size:14.5px;line-height:22px">
+              <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span><strong>Priorité d'affichage</strong> dans votre secteur</span></li>
+              <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span><strong>Téléphone et email visibles</strong> directement sur votre fiche</span></li>
+              <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Badge Pro vérifié et bannière mise en avant</span></li>
+            </ul>
+            <a href="Paiement Option Visibilite.dc.html" class="btn btn-primary" style="min-height:48px;font-size:16px;width:100%">Activer l'option</a>
+            <a href="Espace Artisan Dashboard.dc.html" style="text-align:center;font-size:13.5px;text-decoration:none;color:var(--color-neutral-700)">Continuer sans l'option</a>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ peutAvancer }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <sc-if value="{{ peutReculer }}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="btn btn-secondary" onClick="{{ precedent }}" style="min-height:46px;background:#fff">Retour</button>
+          </sc-if>
+          <button type="button" class="btn btn-primary" onClick="{{ suivant }}" style="min-height:46px;flex:1;font-size:16px">{{ libelleSuivant }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="background:var(--color-accent-100);padding:clamp(28px,4vw,56px);display:flex;flex-direction:column;justify-content:center;gap:20px;min-width:0;position:relative;overflow:hidden">
+    <svg viewBox="0 0 600 420" aria-hidden="true" preserveAspectRatio="xMidYMid meet" style="position:absolute;right:-60px;bottom:-40px;width:min(70%,520px);opacity:0.1;pointer-events:none">
+      <path d="M430 60h48v86l-48-38z" fill="var(--color-accent)"></path>
+      <path d="M30 230 300 30l270 200v190H30z" fill="var(--color-accent)"></path>
+      <path d="M300 30 570 230v190H300z" fill="var(--color-text)" opacity="0.3"></path>
+    </svg>
+
+    <div style="position:relative;max-width:420px;width:100%;display:grid;gap:18px">
+      <div>
+        <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-accent-700)">Aperçu de votre fiche</p>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-md)">
+          <div style="height:90px;background:var(--color-accent-200);position:relative">
+            <span style="position:absolute;left:14px;bottom:-22px;width:52px;height:52px;border-radius:12px;background:#fff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--color-accent-700)">{{ initiales }}</span>
+          </div>
+          <div style="padding:28px 16px 16px;display:grid;gap:6px">
+            <strong style="font-size:16px">{{ entreprise }}</strong>
+            <span style="font-size:13px;color:var(--color-neutral-700)">{{ metier }} · {{ zone }}</span>
+            <sc-if value="{{ descriptionVisible }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13.5px;line-height:20px;color:var(--color-neutral-800)">{{ description }}</span>
+            </sc-if>
+            <span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+              <sc-for list="{{ prestationsChoisies }}" as="p" hint-placeholder-count="0">
+                <span style="font-size:12px;font-weight:600;background:var(--color-accent-100);color:var(--color-accent-800);border-radius:999px;padding:3px 9px">{{ p }}</span>
+              </sc-for>
+            </span>
+            <sc-if value="{{ certifsVisibles }}" hint-placeholder-val="{{ true }}">
+              <span style="display: none; gap: 6px; flex-wrap: wrap">
+                <sc-for list="{{ certifsChoisis }}" as="c" hint-placeholder-count="1" style="display: none">
+                  <span style="font-size:12px;font-weight:600;border:1px solid var(--color-divider);border-radius:999px;padding:3px 9px;color:var(--color-neutral-800)">{{ c }}</span>
+                </sc-for>
+              </span>
+            </sc-if>
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px">
+              <span aria-hidden="true" style="color:#e8a33d;letter-spacing:1px">★★★★★</span><strong>5/5</strong><span style="color:var(--color-neutral-700)">· 10 avis</span>
+            </span>
+
+            <span style="display:grid;gap:5px;border-top:1px solid var(--color-divider);padding-top:10px;margin-top:4px">
+              <span style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;color:var(--color-neutral-600)">Informations</span>
+              <sc-if value="{{ adresseVisible }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px;color:var(--color-neutral-800)">{{ adresse }}</span>
+              </sc-if>
+              <sc-if value="{{ devisVisible }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px;color:var(--color-neutral-700)">Devis moyen · {{ devisLabel }}</span>
+              </sc-if>
+              <span style="font-size:13px;color:var(--color-neutral-700)">Zone d'intervention · {{ zone }}</span>
+            </span>
+
+            <span style="display:grid;gap:6px;border-top:1px solid var(--color-divider);padding-top:10px;margin-top:4px">
+              <span style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;color:var(--color-neutral-600)">Réalisations</span>
+              <span style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                <span style="aspect-ratio:4/3;display:block;border-radius:8px;background:var(--color-neutral-200)"></span>
+                <span style="aspect-ratio:4/3;display:block;border-radius:8px;background:var(--color-neutral-200)"></span>
+                <span style="aspect-ratio:4/3;display:block;border-radius:8px;background:var(--color-neutral-200)"></span>
+              </span>
+            </span>
+
+            <span style="display:flex;align-items:center;justify-content:center;background:var(--color-accent);color:#fff;border-radius:8px;padding:10px;font-size:14px;font-weight:600;margin-top:6px">Demander un devis</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="height:8px;border-radius:999px;background:#fff;overflow:hidden">
+          <span style="{{ styleCompletion }}"></span>
+        </div>
+        <p style="margin:8px 0 0;font-size:13.5px;color:var(--color-accent-800)"><strong>{{ completion }} % complétée</strong> — les fiches complètes reçoivent + 76 % de demandes.</p>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ modaleOuverte }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;background:rgba(32,30,29,0.5);display:flex;align-items:center;justify-content:center;padding:20px">
+      <div role="dialog" aria-modal="true" style="background:#fff;border-radius:16px;max-width:440px;width:100%;padding:24px;box-shadow:var(--shadow-lg);display:grid;gap:16px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;flex:none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+          </span>
+          <div>
+            <h2 style="font-size:19px;margin:0 0 6px">Vous êtes sûr de vouloir arrêter ?</h2>
+            <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Votre fiche n'est complète qu'à <strong>{{ completion }} %</strong>. Tant qu'elle est incomplète, elle passe derrière les fiches complètes de votre secteur — et vous passez à côté de demandes.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" onClick="{{ fermerModale }}" class="btn btn-primary" style="min-height:46px;flex:1;font-size:15px">Je continue ma fiche</button>
+          <a href="Espace Artisan Dashboard.dc.html" class="btn btn-secondary" style="min-height:46px;background:#fff;font-size:15px">Quitter quand même</a>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const PRESTATIONS = [
+  "Réfection de toiture", "Zinguerie", "Isolation des combles", "Charpente",
+  "Bardage / façade", "Velux", "Gouttières", "Démoussage",
+  "Étanchéité", "Petite maçonnerie", "Rénovation globale", "Dépannage urgent",
+];
+
+const CERTIFS = ["RGE", "Garantie décennale", "Qualibat", "Qualifelec", "Artisan d'art"];
+
+class Component extends DCLogic {
+  state = {
+    etape: 1, entreprise: "", description: "", choisies: [],
+    email: "", tel: "", masquer: true, modale: false, p: {},
+    adresse: "", devisMin: "", devisMax: "", certifs: ["RGE"],
+    projets: [{ slot: "ob-projet-1", titre: "", ville: "" }, { slot: "ob-projet-2", titre: "", ville: "" }],
+  };
+
+  componentDidMount() {
+    let p = {};
+    try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    this.setState({ p, tel: p.tel || "" });
+  }
+
+  renderVals() {
+    const s = this.state, p = s.p || {};
+    const nom = p.nom || "Julien Bertrand";
+    const desc = s.description;
+    const choisies = s.choisies;
+
+    const faits = [!!s.entreprise, desc.length > 60, choisies.length > 0, !!s.adresse, s.certifs.length > 0, !!s.email, !!s.tel];
+    const completion = 40 + Math.round((faits.filter(Boolean).length / faits.length) * 60);
+
+    const titres = { 1: "Entreprise", 2: "Photos et réalisations", 3: "Informations", 4: "Visibilité" };
+    const etapes = [1, 2, 3].map((n) => ({
+      key: n,
+      styleBarre: {
+        flex: 1, height: "5px", borderRadius: "999px",
+        background: s.etape >= n ? "var(--color-accent)" : "var(--color-neutral-300)",
+        transition: "background .25s ease",
+      },
+    }));
+
+    const prestations = PRESTATIONS.map((nomP) => {
+      const actif = choisies.includes(nomP);
+      return {
+        key: nomP, nom: nomP,
+        basculer: () => this.setState((st) => ({
+          choisies: st.choisies.includes(nomP) ? st.choisies.filter((x) => x !== nomP) : st.choisies.concat(nomP),
+        })),
+        style: {
+          font: "inherit", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: "7px 12px",
+          borderRadius: "999px", whiteSpace: "nowrap",
+          border: "1px solid " + (actif ? "var(--color-accent)" : "var(--color-divider)"),
+          background: actif ? "var(--color-accent)" : "#fff",
+          color: actif ? "#fff" : "var(--color-neutral-800)",
+        },
+      };
+    });
+
+    const certifications = CERTIFS.map((c) => {
+      const actif = s.certifs.includes(c);
+      return {
+        key: c, nom: c,
+        basculer: () => this.setState((st) => ({
+          certifs: st.certifs.includes(c) ? st.certifs.filter((x) => x !== c) : st.certifs.concat(c),
+        })),
+        style: {
+          font: "inherit", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: "7px 12px",
+          borderRadius: "999px", whiteSpace: "nowrap",
+          border: "1px solid " + (actif ? "var(--color-accent)" : "var(--color-divider)"),
+          background: actif ? "var(--color-accent)" : "#fff",
+          color: actif ? "#fff" : "var(--color-neutral-800)",
+        },
+      };
+    });
+
+    const projets = s.projets.map((pr, i) => ({
+      key: pr.slot, slot: pr.slot, titre: pr.titre, ville: pr.ville,
+      majTitre: (e) => { const v = e.target.value; this.setState((st) => ({ projets: st.projets.map((x, j) => (j === i ? Object.assign({}, x, { titre: v }) : x)) })); },
+      majVille: (e) => { const v = e.target.value; this.setState((st) => ({ projets: st.projets.map((x, j) => (j === i ? Object.assign({}, x, { ville: v }) : x)) })); },
+    }));
+
+    const libelles = { 1: "Continuer vers les photos", 2: "Continuer vers mes informations", 3: "Publier ma fiche" };
+
+    return {
+      numeroEtape: s.etape,
+      titreEtape: titres[s.etape],
+      etapes,
+      etape1: s.etape === 1, etape2: s.etape === 2, etape3: s.etape === 3, etape4: s.etape === 4,
+      entreprise: s.entreprise || "Votre entreprise",
+      entrepriseSaisie: s.entreprise,
+      initiales: nom.split(" ").map((m) => m[0]).join("").slice(0, 2).toUpperCase(),
+      metier: p.metier || "Couvreur",
+      zone: (p.ville || "Bordeaux") + " · " + (p.rayon || 30) + " km",
+      description: desc,
+      descriptionVisible: desc.length > 0,
+      nbCaracteres: desc.length,
+      majEntreprise: (e) => this.setState({ entreprise: e.target.value }),
+      majDescription: (e) => this.setState({ description: e.target.value.slice(0, 400) }),
+      prestations,
+      prestationsChoisies: choisies.slice(0, 4),
+      completion,
+      styleCompletion: { display: "block", height: "100%", width: completion + "%", background: "var(--color-accent)", transition: "width .3s ease" },
+      certifications, projets,
+      certifsChoisis: s.certifs, certifsVisibles: s.certifs.length > 0,
+      devisVisible: !!(s.devisMin && s.devisMax), devisLabel: s.devisMin + " – " + s.devisMax,
+      adresse: s.adresse, adresseVisible: !!s.adresse, devisMin: s.devisMin, devisMax: s.devisMax,
+      majAdresse: (e) => this.setState({ adresse: e.target.value }),
+      majDevisMin: (e) => this.setState({ devisMin: e.target.value }),
+      majDevisMax: (e) => this.setState({ devisMax: e.target.value }),
+      email: s.email, tel: s.tel, masquer: s.masquer,
+      majEmail: (e) => this.setState({ email: e.target.value }),
+      majTel: (e) => this.setState({ tel: e.target.value }),
+      majMasquer: (e) => this.setState({ masquer: e.target.checked }),
+      modaleOuverte: s.modale,
+      ouvrirModale: () => this.setState({ modale: true }),
+      fermerModale: () => this.setState({ modale: false }),
+      peutReculer: s.etape > 1 && s.etape < 4,
+      peutAvancer: s.etape < 4,
+      libelleSuivant: libelles[s.etape] || "",
+      suivant: () => this.setState((st) => ({ etape: Math.min(4, st.etape + 1) })),
+      precedent: () => this.setState((st) => ({ etape: Math.max(1, st.etape - 1) })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <div><h1 style="margin:0;font-size:30px;line-height:1.15">Artisans</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">{{ total }} entreprises · 412 en ligne · 9 en attente de vérification</p></div>
+    <button disabled="{{ noCreer }}" title="{{ creerTitle }}" class="btn btn-primary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">+ Créer une entreprise non revendiquée</button>
+  </header>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <input value="{{ q }}" onChange="{{ setQ }}" placeholder="Nom, SIREN, ville…" style="font:inherit;font-size:14.5px;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;min-width:240px">
+    <sc-for list="{{ filtres }}" as="f" hint-placeholder-count="5"><button onClick="{{ f.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 11px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ f.bg }};color:{{ f.fg }}">{{ f.nom }}</button></sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;overflow:hidden">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+        <button onClick="{{ r.go }}" style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #ecebe7;cursor:pointer;font:inherit;padding:12px 16px;height:auto;background:{{ r.sel }}" style-hover="background:#f4f5f7">
+          <span style="width:40px;height:40px;border-radius:10px;background:#eef0f3;color:#2a323c;font-weight:700;display:flex;align-items:center;justify-content:center">{{ r.ini }}</span>
+          <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:15px;font-weight:600">{{ r.nom }}</span><span style="font-size:13px;color:#6b6763">{{ r.metier }} · {{ r.ville }} · ★ {{ r.note }}</span></span>
+          <span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:{{ r.sbg }};color:{{ r.sfg }}">{{ r.statut }}</span><span style="font-size:12px;color:#6b6763;white-space:nowrap">{{ r.plan }}</span></span>
+        </button>
+      </sc-for>
+    </section>
+
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+        <div><h2 style="margin:0;font-size:21px">{{ a.nom }}</h2><div style="font-size:14px;color:#6b6763">SIREN {{ a.siren }} · {{ a.metier }} · {{ a.ville }}</div></div>
+        <span style="font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ a.sbg }};color:{{ a.sfg }}">{{ a.statut }}</span>
+      </div>
+      <div role="tablist" style="display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid #e2e0dc">
+        <sc-for list="{{ onglets }}" as="o" hint-placeholder-count="6"><button onClick="{{ o.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:14px;padding:8px 10px;white-space:nowrap;height:auto;margin-bottom:-1px;font-weight:{{ o.fw }};color:{{ o.fg }};border-bottom:3px solid {{ o.bd }}">{{ o.nom }}</button></sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;font-size:14.5px">
+        <sc-for list="{{ champs }}" as="c" hint-placeholder-count="6"><span style="color:#6b6763">{{ c.k }}</span><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">{{ c.v }}<sc-if value="{{ c.tag }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:{{ c.tbg }};color:{{ c.tfg }}">{{ c.tag }}</span></sc-if></span></sc-for>
+      </div>
+      <sc-if value="{{ piiMasque }}" hint-placeholder-val="{{ false }}"><button onClick="{{ afficherPii }}" disabled="{{ lecture }}" style="align-self:flex-start;border:0;background:none;padding:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:#2a323c;text-decoration:underline;height:auto">Afficher les coordonnées (consultation journalisée)</button></sc-if>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:6px;border-top:1px solid #ecebe7">
+        <sc-for list="{{ actions }}" as="x" hint-placeholder-count="6"><button onClick="{{ x.go }}" disabled="{{ x.off }}" title="{{ x.title }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;color:{{ x.c }}">{{ x.nom }}</button></sc-for>
+      </div>
+    </section>
+  </div>
+
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50">
+      <div role="dialog" aria-modal="true" style="background:#fff;border-radius:14px;padding:24px;max-width:460px;width:100%;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+        <h2 style="margin:0;font-size:20px">{{ m.titre }}</h2>
+        <p style="margin:0;font-size:14.5px;line-height:1.5;color:#57534f">{{ m.texte }}</p>
+        <sc-if value="{{ m.montant }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Nombre de crédits (max {{ m.max }})<input type="number" min="1" max="{{ m.max }}" value="{{ m.n }}" onChange="{{ setN }}" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px"></label></sc-if>
+        <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Motif (obligatoire, visible dans l'audit)<textarea value="{{ m.motif }}" onChange="{{ setMotif }}" rows="2" style="font:inherit;font-size:14.5px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;resize:vertical"></textarea></label>
+        <sc-if value="{{ m.double }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Tapez SUPPRIMER pour confirmer<input value="{{ m.saisie }}" onChange="{{ setSaisie }}" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px"></label></sc-if>
+        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+          <button onClick="{{ fermer }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Annuler</button>
+          <button onClick="{{ confirmer }}" disabled="{{ bloque }}" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;border:0;color:#fff;background:{{ m.btnBg }}">{{ m.btn }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const T = { green: ['#eef7f3', '#085340'], amber: ['#fdf4e3', '#7a5206'], red: ['#fdecea', '#8f1d14'], grey: ['#f1f0ed', '#57534f'] };
+const ART = [
+  { id: 'BR', nom: 'Bertrand Rénovation', siren: '812 345 678', metier: 'Plombier-chauffagiste', ville: 'Bordeaux', note: '4,9', statut: 'En ligne', tone: 'green', plan: 'Premium annuel', email: 'contact@bertrand-renovation.fr', tel: '06 12 34 56 78', dec: 'MAAF Pro · jusqu’au 02/10/2026', credits: 6, taux: '96 %', delai: '1 h 40' },
+  { id: 'CN', nom: 'Carrelage Nguyen', siren: '901 223 114', metier: 'Carreleur', ville: 'Mérignac', note: '—', statut: 'À vérifier', tone: 'amber', plan: 'Gratuit', email: 'nguyen.carrelage@gmail.com', tel: '07 81 22 90 14', dec: 'Document en attente', credits: 0, taux: '—', delai: '—' },
+  { id: 'TR', nom: 'Toitures Rive Droite', siren: '753 118 402', metier: 'Couvreur', ville: 'Lormont', note: '4,6', statut: 'En ligne', tone: 'green', plan: 'Visibilité annuel', email: 'contact@toitures-rd.fr', tel: '05 56 32 11 40', dec: 'AXA · jusqu’au 31/12/2026', credits: 2, taux: '88 %', delai: '3 h 05' },
+  { id: 'RE', nom: 'Rénov Express 33', siren: '480 552 901', metier: 'Tous corps d’état', ville: 'Cenon', note: '—', statut: 'Suspendu', tone: 'red', plan: 'Gratuit', email: 'renovexpress33@yahoo.fr', tel: '06 00 11 22 33', dec: 'Non fournie', credits: 0, taux: '—', delai: '—' },
+  { id: 'AG', nom: 'Atelier Garnier', siren: '834 670 225', metier: 'Menuisier', ville: 'Talence', note: '4,4', statut: 'En ligne', tone: 'green', plan: 'Gratuit', email: 'atelier.garnier@orange.fr', tel: '06 45 78 12 03', dec: 'SMABTP · jusqu’au 30/06/2027', credits: 0, taux: '71 %', delai: '9 h 20' },
+  { id: 'IG', nom: 'Isolation Gironde', siren: '812 900 331', metier: 'Isolation', ville: 'Pessac', note: '4,8', statut: 'En ligne', tone: 'green', plan: 'Premium mensuel', email: 'contact@isolation-gironde.fr', tel: '05 57 26 80 11', dec: 'Allianz · jusqu’au 15/03/2027', credits: 11, taux: '98 %', delai: '38 min' },
+];
+const FILTRES = { Tous: () => true, 'En ligne': (a) => a.statut === 'En ligne', 'À vérifier': (a) => a.statut === 'À vérifier', Suspendus: (a) => a.statut === 'Suspendu', Payants: (a) => a.plan !== 'Gratuit' };
+const ONGLETS = ['Identité', 'Documents', 'Abonnement', 'Activité', 'Sanctions', 'Notes'];
+const mask = (s) => s.replace(/^(.).*(@.*)$/, '$1•••$2').replace(/^(\d\d) .* (\d\d)$/, '$1 •• •• •• $2');
+
+class Component extends DCLogic {
+  state = { q: '', f: 'Tous', sel: 'BR', tab: 'Identité', pii: false, m: null, over: {}, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#artisans'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const arts = ART.map((a) => ({ ...a, ...(s.over[a.id] || {}) }));
+    const list = arts.filter(FILTRES[s.f]).filter((a) => !s.q || (a.nom + a.siren + a.ville).toLowerCase().includes(s.q.toLowerCase()));
+    const a = arts.find((x) => x.id === s.sel) || arts[0];
+    const show = s.pii && !lect;
+    const champs = {
+      Identité: [['Raison sociale', a.nom], ['SIREN', a.siren, 'INSEE ✓', 'green'], ['Email', show ? a.email : mask(a.email)], ['Téléphone', show ? a.tel : mask(a.tel), 'vérifié', 'green'], ['Métier principal', a.metier], ['Zone', a.ville + ' + 25 km']],
+      Documents: [['Décennale', a.dec, a.dec.includes('attente') || a.dec.includes('Non') ? 'à traiter' : 'valide', a.dec.includes('attente') || a.dec.includes('Non') ? 'amber' : 'green'], ['Kbis', 'Déposé le 12/09/2026', 'valide', 'green'], ['RGE', a.id === 'IG' ? 'Qualibat RGE · 2027' : 'Non renseigné']],
+      Abonnement: [['Formule', a.plan], ['Crédits', a.credits + ' crédits'], ['Stripe', 'cus_' + a.id.toLowerCase() + '8Kq2'], ['Conversion', 'Voir la fiche cycle']],
+      Activité: [['Taux de réponse', a.taux], ['Délai moyen', a.delai], ['Demandes 30 j', a.id === 'BR' ? '6' : '2'], ['Avis', a.note === '—' ? 'Aucun' : a.note + ' ★']],
+      Sanctions: [['Historique', a.statut === 'Suspendu' ? 'Suspension le 26/09 · SIREN radié' : 'Aucune sanction']],
+      Notes: [['Julie M. · 12/09', 'Appel : intéressé par Premium après la saison.'], ['Karim B. · 03/09', 'Kbis relancé par email.']],
+    }[s.tab].map(([k, v, tag, tone]) => ({ k, v, tag: tag || '', tbg: tag ? T[tone][0] : '', tfg: tag ? T[tone][1] : '' }));
+    const maxCred = can('credits.crediter_illimite') ? 100 : 5;
+    const act = (nom, perm, go, c) => ({ nom, off: lect || !can(perm), title: can(perm) ? '' : 'Permission requise : ' + perm, go, c: c || '#201e1d' });
+    const suspendu = a.statut === 'Suspendu';
+    const m = s.m;
+    return {
+      total: '1 204', q: s.q, setQ: (e) => this.setState({ q: e.target.value }),
+      filtres: Object.keys(FILTRES).map((f) => ({ nom: f, bg: f === s.f ? '#2a323c' : '#fff', fg: f === s.f ? '#fff' : '#201e1d', go: () => this.setState({ f }) })),
+      rows: list.map((x) => ({ ...x, ini: x.id, sel: x.id === a.id ? '#f4f5f7' : '#fff', sbg: T[x.tone][0], sfg: T[x.tone][1], go: () => this.setState({ sel: x.id, pii: false }) })),
+      a: { ...a, sbg: T[a.tone][0], sfg: T[a.tone][1] },
+      onglets: ONGLETS.map((o) => ({ nom: o, fw: o === s.tab ? 700 : 500, fg: o === s.tab ? '#201e1d' : '#6b6763', bd: o === s.tab ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: o }) })),
+      champs, piiMasque: s.tab === 'Identité' && !show, lecture: lect, afficherPii: () => { this.setState({ pii: true }); this.flash('Consultation des coordonnées journalisée (auditLog)'); },
+      noCreer: lect || !can('artisans.creer'), creerTitle: can('artisans.creer') ? '' : 'Permission requise : artisans.creer',
+      actions: [
+        act('Vérifier', 'artisans.verifier', () => { this.setState({ over: { ...s.over, [a.id]: { statut: 'En ligne', tone: 'green' } } }); this.flash(a.nom + ' vérifié · adminVerifierArtisan'); }),
+        act(suspendu ? 'Lever la suspension' : 'Suspendre', 'artisans.suspendre', () => this.setState({ m: { type: suspendu ? 'lever' : 'suspendre', titre: (suspendu ? 'Lever la suspension de ' : 'Suspendre ') + a.nom, texte: suspendu ? 'La fiche redevient visible si les documents sont valides.' : 'La fiche est retirée de l’annuaire et ne reçoit plus de demandes. L’artisan est prévenu par email.', motif: '', btn: suspendu ? 'Lever' : 'Suspendre', btnBg: '#b3261e' } }), '#8f1d14'),
+        act('Créditer', 'credits.crediter', () => this.setState({ m: { type: 'crediter', titre: 'Créditer ' + a.nom, texte: 'Geste commercial en crédits d’appels d’offres.', montant: true, max: maxCred, n: 1, motif: '', btn: 'Créditer', btnBg: '#3f4a57' } })),
+        act('Se connecter en tant que (lecture)', 'artisans.modifier', () => this.flash('Session d’impersonation en lecture seule ouverte · journalisée')),
+        act('Supprimer', 'artisans.supprimer', () => this.setState({ m: { type: 'supprimer', titre: 'Supprimer définitivement ' + a.nom, texte: 'Action irréversible. Les factures sont conservées 10 ans (obligation légale), le reste est anonymisé.', double: true, saisie: '', motif: '', btn: 'Supprimer', btnBg: '#b3261e' } }), '#8f1d14'),
+      ],
+      modal: !!m, m: m || {},
+      setMotif: (e) => this.setState({ m: { ...m, motif: e.target.value } }), setSaisie: (e) => this.setState({ m: { ...m, saisie: e.target.value } }), setN: (e) => this.setState({ m: { ...m, n: Math.min(maxCred, Math.max(1, +e.target.value || 1)) } }),
+      bloque: !m || m.motif.trim().length < 5 || (m.double && m.saisie !== 'SUPPRIMER'),
+      fermer: () => this.setState({ m: null }),
+      confirmer: () => {
+        const o = { ...s.over };
+        if (m.type === 'suspendre') o[a.id] = { statut: 'Suspendu', tone: 'red' };
+        if (m.type === 'lever') o[a.id] = { statut: 'En ligne', tone: 'green' };
+        if (m.type === 'crediter') o[a.id] = { ...(o[a.id] || {}), credits: a.credits + m.n };
+        this.setState({ over: o, m: null });
+        this.flash({ suspendre: 'Suspension enregistrée · adminSanctionner', lever: 'Suspension levée', crediter: m.n + ' crédit(s) ajouté(s) · adminCrediter', supprimer: 'Suppression programmée (J+7, annulable)' }[m.type] + ' · auditLog écrit');
+      },
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

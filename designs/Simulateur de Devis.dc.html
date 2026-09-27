@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<style>
+:root {
+  --color-accent: #0d7a5f;
+  --color-accent-100: #eef7f3;
+  --color-accent-200: #d2ebe1;
+  --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c;
+  --color-accent-500: #12997a;
+  --color-accent-600: #0a6650;
+  --color-accent-700: #085340;
+  --color-accent-800: #06402f;
+  --color-accent-900: #0a2a21;
+  --color-accent-2: #e05a10;
+  --color-accent-2-100: #fff2ea;
+  --color-accent-2-700: #a33f05;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6, .card-title { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:visited { color: #fff; }
+.input, select.input, textarea.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+input[type="range"] { accent-color: var(--color-accent); height: 26px; }
+html, body, #dc-root { background: #fff; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+button { font-family: inherit; }
+</style>
+<script src="prestations-catalogue.js"></script>
+<script src="recherche-projets.js"></script>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:16px 28px;flex-wrap:wrap;width:100%;max-width:1280px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="font-size:15px;color:var(--color-neutral-800)">Simulateur de devis</span>
+      <span style="display:flex;align-items:center;gap:14px;margin-left:auto">
+        <span style="font-size:14px;color:var(--color-neutral-800);display:flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:var(--color-accent);display:block"></span>Gratuit · sans engagement</span>
+        <a href="Contact.dc.html" style="font-size:14.5px;text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Besoin d'aide ?</a>
+      </span>
+    </span>
+  </nav>
+
+  <div style="background:#fff;border-bottom:1px solid var(--color-divider);position:sticky;top:0;z-index:40">
+    <div style="max-width:1180px;margin:0 auto;padding:12px clamp(18px,4vw,44px);display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap">
+      <sc-for list="{{ jalons }}" as="j" hint-placeholder-count="5">
+        <button type="button" onClick="{{ j.aller }}" style="display:flex;align-items:center;gap:9px;background:none;border:0;padding:4px 0;cursor:{{ j.curseur }};font-size:14px">
+          <span style="width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;background:{{ j.bg }};color:{{ j.fg }}">{{ j.puce }}</span>
+          <span style="font-weight:600;color:{{ j.couleur }};white-space:nowrap">{{ j.titre }}</span>
+        </button>
+      </sc-for>
+      <span style="margin-left:auto;font-size:13.5px;color:var(--color-neutral-700)">{{ progression }}</span>
+    </div>
+    <div style="height:3px;background:var(--color-accent-200)"><span style="display:block;height:100%;background:var(--color-accent);width:{{ largeurBarre }};transition:width .25s ease"></span></div>
+  </div>
+
+  <main style="flex:1;background:var(--color-accent-100);padding:clamp(24px,3.5vw,48px) clamp(18px,4vw,44px) clamp(40px,5vw,72px)">
+    <div style="max-width:1180px;margin:0 auto">
+
+      <sc-if value="{{ showReprise }}" hint-placeholder-val="{{ false }}">
+        <section role="region" aria-live="polite" aria-label="Reprendre votre estimation" style="background:#fff;border:2px solid var(--color-accent-300);border-radius:16px;box-shadow:var(--shadow-sm);padding:clamp(16px,2.4vw,22px) clamp(18px,2.6vw,26px);margin-bottom:28px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px">
+          <span style="width:48px;height:48px;border-radius:12px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center;flex:none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ reprise.icone }}"></path></svg>
+          </span>
+          <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:3px">
+            <p style="margin:0;font-size:18px;font-weight:700">Reprendre votre estimation ?</p>
+            <p style="margin:0;font-size:15.5px;line-height:23px;color:var(--color-text)">{{ reprise.resume }}</p>
+            <p style="margin:0;font-size:14px;line-height:21px;color:var(--color-neutral-700)">{{ reprise.meta }}</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap">
+            <button type="button" class="btn btn-primary" onClick="{{ reprendre }}" style="min-height:48px;font-size:16px">{{ reprise.cta }}</button>
+            <button type="button" onClick="{{ recommencerBrouillon }}" style="background:none;border:0;padding:8px 4px;font:inherit;font-size:15px;font-weight:600;color:var(--color-accent-700);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Recommencer</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ showAnnul }}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:80;background:var(--color-accent-900);color:#fff;border-radius:12px;box-shadow:var(--shadow-lg);padding:12px 12px 12px 18px;display:flex;align-items:center;gap:16px;font-size:15px;max-width:calc(100vw - 32px);box-sizing:border-box">
+          <span>{{ annulTexte }}</span>
+          <button type="button" onClick="{{ annulerRecommencer }}" style="background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;padding:7px 12px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;white-space:nowrap">Annuler</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRepris }}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:14.5px;font-weight:600;color:var(--color-accent-800)">
+          <span style="width:22px;height:22px;border-radius:99px;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none">✓</span>
+          <span>Estimation reprise. {{ noteRepris }}</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape1 }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <h1 style="font-size:clamp(28px,3.6vw,42px);line-height:1.08;margin:0 0 12px;max-width:22ch">Quel type de travaux voulez-vous <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">estimer</span> ?</h1>
+          <p style="font-size:17.5px;line-height:28px;margin:0 0 30px;max-width:56ch;color:var(--color-neutral-800)">Les questions s'adaptent ensuite au métier choisi : surfaces, nombre de prises, gamme d'équipement… Comptez deux minutes.</p>
+          <div style="display:flex;flex-direction:column;gap:14px;margin:-8px 0 24px">
+            <div class="field" style="margin:0;max-width:560px">
+              <label for="sim-cherche" style="font-size:14px">Rechercher un type de travaux ou un métier</label>
+              <input class="input" id="sim-cherche" type="search" autocomplete="off" placeholder="Ex. douche italienne, couvreur, pompe à chaleur…" value="{{ cherche }}" onInput="{{ majCherche }}" style="min-height:48px;font-size:16px;background:#fff">
+            </div>
+            <div role="tablist" aria-label="Familles de travaux" style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ familles }}" as="fa" hint-placeholder-count="8">
+                <button type="button" role="tab" aria-selected="{{ fa.sel }}" onClick="{{ fa.choisir }}" style="border-radius:999px;padding:8px 14px;min-height:38px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid {{ fa.bd }};background:{{ fa.bg }};color:{{ fa.fg }}">{{ fa.nom }} <span style="opacity:.7;font-weight:500">{{ fa.n }}</span></button>
+              </sc-for>
+            </div>
+            <p style="margin:0;font-size:14px;color:var(--color-neutral-700)">{{ compteur }}</p>
+          </div>
+          <sc-if value="{{ aucunePresta }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border-radius:14px;padding:22px;box-shadow:var(--shadow-sm);max-width:640px;margin-bottom:16px">
+              <p style="margin:0 0 6px;font-size:17px;font-weight:700">Aucun type de travaux ne correspond à « {{ cherche }} »</p>
+              <p style="margin:0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Essayez un mot plus court ou le nom du métier (plombier, couvreur, électricien…). Vous pouvez aussi <a href="Accueil Particuliers.dc.html">décrire votre projet librement</a>.</p>
+            </div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:16px">
+            <sc-for list="{{ prestations }}" as="p" hint-placeholder-count="9">
+              <button type="button" onClick="{{ p.choisir }}" style="text-align:left;background:#fff;border:2px solid {{ p.bordure }};border-radius:14px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm);transition:transform .16s ease, box-shadow .16s ease" style-hover="transform:translateY(-3px);box-shadow:var(--shadow-md)">
+                <span style="width:46px;height:46px;border-radius:12px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ p.icone }}"></path></svg>
+                </span>
+                <span>
+                  <span style="display:block;font-size:18px;font-weight:700;margin-bottom:4px">{{ p.nom }}</span>
+                  <span style="display:block;font-size:14px;line-height:21px;color:var(--color-neutral-800)">{{ p.pitch }}</span>
+                </span>
+                <span style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:auto;font-size:13px"><span style="font-weight:600;color:var(--color-accent-700)">{{ p.repere }}</span><span style="color:var(--color-neutral-700)">{{ p.famille }}</span></span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etapeQuestions }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,0.85fr);gap:24px clamp(22px,3vw,40px);align-items:start">
+          <div style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px)">
+            <button type="button" onClick="{{ precedent }}" style="background:none;border:0;padding:0;color:var(--color-accent-700);font-size:14.5px;font-weight:600;cursor:pointer;margin-bottom:14px">← Retour</button>
+            <h1 style="font-size:clamp(23px,2.7vw,31px);line-height:1.14;margin:0 0 8px">{{ titreEtape }}</h1>
+            <p style="font-size:15.5px;line-height:25px;margin:0 0 26px;color:var(--color-neutral-800);max-width:56ch">{{ sousTitreEtape }}</p>
+
+            <div style="display:grid;gap:26px">
+              <sc-for list="{{ champs }}" as="c" hint-placeholder-count="4">
+                <div>
+                  <p style="margin:0 0 3px;font-size:16.5px;font-weight:700">{{ c.label }}</p>
+                  <p style="margin:0 0 13px;font-size:14px;line-height:21px;color:var(--color-neutral-800)">{{ c.aide }}</p>
+
+                  <sc-if value="{{ c.estSlider }}" hint-placeholder-val="{{ false }}">
+                    <div>
+                      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+                        <span style="font-size:27px;font-weight:700;color:var(--color-accent-700)">{{ c.valeurAffichee }}</span>
+                        <span style="font-size:15px;color:var(--color-neutral-800)">{{ c.unite }}</span>
+                      </div>
+                      <input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.pas }}" value="{{ c.valeur }}" onChange="{{ c.majSlider }}" onInput="{{ c.majSlider }}" aria-label="{{ c.label }}" style="width:100%">
+                      <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--color-neutral-700)"><span>{{ c.minLabel }}</span><span>{{ c.maxLabel }}</span></div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ c.estStepper }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:14px">
+                      <button type="button" onClick="{{ c.moins }}" aria-label="Diminuer" style="width:46px;height:46px;border-radius:12px;border:1px solid var(--color-neutral-400);background:#fff;font-size:22px;line-height:1;cursor:pointer;color:var(--color-accent-700)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">−</button>
+                      <span style="min-width:74px;text-align:center;font-size:25px;font-weight:700">{{ c.valeur }}</span>
+                      <button type="button" onClick="{{ c.plus }}" aria-label="Augmenter" style="width:46px;height:46px;border-radius:12px;border:1px solid var(--color-neutral-400);background:#fff;font-size:22px;line-height:1;cursor:pointer;color:var(--color-accent-700)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">+</button>
+                      <span style="font-size:15px;color:var(--color-neutral-800)">{{ c.unite }}</span>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ c.estOptions }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px">
+                      <sc-for list="{{ c.options }}" as="o" hint-placeholder-count="3">
+                        <button type="button" onClick="{{ o.choisir }}" aria-pressed="{{ o.actif }}" style="text-align:left;cursor:pointer;border-radius:11px;padding:13px 15px;min-height:52px;background:{{ o.bg }};border:1.5px solid {{ o.bd }};color:{{ o.fg }}">
+                          <span style="display:block;font-size:15px;font-weight:600">{{ o.label }}</span>
+                          <span style="display:block;font-size:13px;line-height:19px;margin-top:2px;opacity:0.85">{{ o.desc }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ c.estChips }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-wrap:wrap;gap:9px">
+                      <sc-for list="{{ c.options }}" as="o" hint-placeholder-count="4">
+                        <button type="button" onClick="{{ o.choisir }}" aria-pressed="{{ o.actif }}" style="cursor:pointer;border-radius:999px;padding:10px 16px;min-height:42px;font-size:14.5px;font-weight:600;background:{{ o.bg }};border:1.5px solid {{ o.bd }};color:{{ o.fg }}">{{ o.label }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+
+              <sc-if value="{{ etape4 }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid;gap:20px">
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+                    <div class="field" style="margin:0">
+                      <label for="sim-cp" style="font-size:15px">Code postal du chantier</label>
+                      <input class="input" id="sim-cp" type="text" inputmode="numeric" maxLength="5" placeholder="33000" value="{{ cp }}" onInput="{{ majCp }}" style="min-height:48px;font-size:16px">
+                    </div>
+                    <div class="field" style="margin:0">
+                      <label for="sim-etage" style="font-size:15px">Accès au logement</label>
+                      <select class="input" id="sim-etage" value="{{ acces }}" onChange="{{ majAcces }}" style="min-height:48px;font-size:16px">
+                        <option value="facile">Rez-de-chaussée ou ascenseur</option>
+                        <option value="etage">Étage sans ascenseur</option>
+                        <option value="difficile">Accès difficile / rue étroite</option>
+                      </select>
+                    </div>
+                  </div>
+                  <p style="margin:0;font-size:13.5px;line-height:21px;color:var(--color-accent-700);background:var(--color-accent-100);border-radius:10px;padding:12px 14px">{{ noteRegion }}</p>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:22px;border-top:1px solid var(--color-divider)">
+              <button type="button" class="btn btn-primary" onClick="{{ suivant }}" disabled="{{ bloque }}" style="min-height:52px;font-size:16.5px;padding-inline:26px;opacity:{{ opaciteSuivant }}">{{ labelSuivant }}</button>
+              <button type="button" class="btn btn-ghost" onClick="{{ precedent }}" style="min-height:52px;font-size:15.5px">Retour</button>
+              <span style="margin-left:auto;align-self:center;font-size:13.5px;color:var(--color-neutral-700)">{{ aideBas }}</span>
+            </div>
+          </div>
+
+          <aside style="position:sticky;top:78px;display:grid;gap:14px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <div style="display:flex;align-items:center;gap:13px;margin-bottom:18px">
+                <span style="flex:none;width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ prestaIcone }}"></path></svg>
+                </span>
+                <span>
+                  <strong style="display:block;font-size:17px">{{ prestaNom }}</strong>
+                  <button type="button" onClick="{{ changerPresta }}" style="background:none;border:0;padding:0;font-size:13.5px;color:var(--color-accent-700);cursor:pointer;font-weight:600">Changer</button>
+                </span>
+              </div>
+              <p style="margin:0 0 5px;font-size:12.5px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Votre estimation</p>
+              <p style="margin:0 0 10px;font-size:19px;font-weight:700;line-height:1.25">{{ resteTexte }}</p>
+              <div style="height:6px;border-radius:3px;background:var(--color-accent-200);margin-bottom:10px"><span style="display:block;height:100%;border-radius:3px;background:var(--color-accent);width:{{ progression }}"></span></div>
+              <p style="margin:0;font-size:13.5px;line-height:21px;color:var(--color-neutral-800)">Chiffrée poste par poste avec les prix constatés dans votre département, puis envoyée par email.</p>
+            </div>
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:20px">
+              <p style="margin:0 0 12px;font-size:14.5px;font-weight:700">Vos réponses</p>
+              <div style="display:grid;gap:9px;font-size:13.5px;line-height:20px">
+                <sc-for list="{{ recap }}" as="r" hint-placeholder-count="4">
+                  <span style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--color-neutral-700)">{{ r.label }}</span><strong style="text-align:right">{{ r.valeur }}</strong></span>
+                </sc-for>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etape5 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px clamp(22px,3vw,40px);align-items:start">
+          <div style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px)">
+            <button type="button" onClick="{{ precedent }}" style="background:none;border:0;padding:0;color:var(--color-accent-700);font-size:14.5px;font-weight:600;cursor:pointer;margin-bottom:14px">← Modifier mes réponses</button>
+            <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Dernière étape · {{ prestaNom }}</p>
+            <h1 style="font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:0 0 10px">Votre estimation est prête</h1>
+            <p style="font-size:15.5px;line-height:24px;margin:0 0 20px;color:var(--color-neutral-800);max-width:54ch">Indiquez où vous l'envoyer : elle s'affiche aussitôt à l'écran et vous la recevez par email. Gratuit et sans engagement.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:26px">
+              <sc-for list="{{ contenuEstimation }}" as="c" hint-placeholder-count="4">
+                <span style="display:flex;gap:10px;align-items:flex-start;background:var(--color-accent-100);border-radius:12px;padding:13px 14px;font-size:14.5px;line-height:21px">
+                  <span style="color:var(--color-accent);font-weight:700">✓</span><span>{{ c }}</span>
+                </span>
+              </sc-for>
+            </div>
+
+            <form onSubmit="{{ envoyer }}" style="display:grid;gap:16px;border-top:1px solid var(--color-divider);padding-top:24px">
+              <div>
+                <h2 style="font-size:21px;margin:0 0 6px">Où envoyer votre estimation ?</h2>
+                <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">Vous recevez le détail par email. Les artisans ne voient vos coordonnées que si vous validez l'envoi.</p>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+                <div class="field" style="margin:0"><label for="sim-prenom">Prénom</label><input class="input" id="sim-prenom" type="text" placeholder="Camille" required="required" style="min-height:48px"></div>
+                <div class="field" style="margin:0"><label for="sim-nom">Nom</label><input class="input" id="sim-nom" type="text" placeholder="Martin" required="required" style="min-height:48px"></div>
+                <div class="field" style="margin:0"><label for="sim-email">Email</label><input class="input" id="sim-email" type="email" placeholder="camille@email.fr" required="required" style="min-height:48px"></div>
+                <div class="field" style="margin:0"><label for="sim-tel">Téléphone</label><input class="input" id="sim-tel" type="tel" placeholder="06 12 34 56 78" required="required" style="min-height:48px"></div>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="sim-precisions">Précisions pour les artisans <span style="font-weight:400;color:var(--color-neutral-700)">(facultatif)</span></label>
+                <textarea class="input" id="sim-precisions" rows="3" placeholder="Contraintes d'accès, matériaux souhaités, photos disponibles…" style="font-size:15.5px;line-height:25px;resize:vertical"></textarea>
+              </div>
+              <label style="display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:22px;cursor:pointer;background:var(--color-accent-100);border-radius:10px;padding:14px">
+                <input type="checkbox" checked="{{ vraiDefaut }}" style="width:17px;height:17px;margin-top:2px;accent-color:var(--color-accent);flex:none">
+                <span>Je souhaite être mis en relation avec jusqu'à 3 artisans vérifiés de mon secteur. Sans cette case, vous recevez uniquement l'estimation par email.</span>
+              </label>
+              <label style="display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:22px;cursor:pointer;color:var(--color-text)">
+                <input type="checkbox" checked="{{ lienReprise }}" onChange="{{ toggleLienReprise }}" style="width:17px;height:17px;margin-top:2px;accent-color:var(--color-accent);flex:none">
+                <span>Pas le temps de finir ? M'envoyer un lien pour reprendre plus tard, sur n'importe quel appareil (valable 30 jours).</span>
+              </label>
+              <label style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:21px;cursor:pointer;color:var(--color-neutral-800)">
+                <input type="checkbox" required="required" style="width:17px;height:17px;margin-top:2px;accent-color:var(--color-accent);flex:none">
+                <span>J'accepte que mes données soient utilisées pour traiter ma demande, conformément à la <a href="Pages Legales.dc.html?public=part&amp;doc=confidentialite">politique de confidentialité</a>.</span>
+              </label>
+              <button type="submit" class="btn btn-primary btn-block" style="min-height:54px;font-size:17px">Voir mon estimation</button>
+            </form>
+          </div>
+
+          <aside style="display:grid;gap:14px;position:sticky;top:78px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <p style="margin:0 0 14px;font-size:15px;font-weight:700">Récapitulatif du projet</p>
+              <div style="display:grid;gap:10px;font-size:13.5px;line-height:20px">
+                <sc-for list="{{ recap }}" as="r" hint-placeholder-count="6">
+                  <span style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--color-neutral-700)">{{ r.label }}</span><strong style="text-align:right">{{ r.valeur }}</strong></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--color-accent-900);color:var(--color-accent-200);border-radius:16px;padding:22px">
+              <p style="margin:0 0 14px;font-size:16px;font-weight:700;color:#fff">Comment l'estimation est calculée</p>
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:11px;font-size:14px;line-height:22px">
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>Prix constatés sur {{ nbChantiers }} chantiers comparables de votre département.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>Mis à jour chaque mois avec les devis signés sur la plateforme.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>Indicatif : seule la visite de l'artisan fait foi.</span></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ etapeFin }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:760px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(24px,4vw,44px)">
+          <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Votre estimation · {{ prestaNom }}</p>
+          <h1 style="font-size:clamp(32px,4.4vw,50px);line-height:1.05;margin:0 0 10px">{{ fourchette }}</h1>
+          <p style="font-size:15.5px;line-height:24px;margin:0 0 24px;color:var(--color-neutral-800);max-width:56ch">{{ noteFourchette }} Fourniture et main-d'œuvre comprises, TVA {{ tva }}.</p>
+          <div style="display:grid;gap:11px;margin-bottom:24px">
+              <sc-for list="{{ postes }}" as="p" hint-placeholder-count="5">
+                <div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;font-size:15px;margin-bottom:5px">
+                    <span style="color:{{ p.couleur }}">{{ p.label }}</span>
+                    <strong style="white-space:nowrap;color:{{ p.couleur }}">{{ p.montant }}</strong>
+                  </div>
+                  <div style="height:6px;border-radius:3px;background:var(--color-accent-200)"><span style="display:block;height:100%;border-radius:3px;background:{{ p.barre }};width:{{ p.largeur }}"></span></div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:var(--color-accent-100);border-radius:12px;padding:16px 18px;margin-bottom:26px">
+              <p style="margin:0 0 8px;font-size:14.5px;font-weight:700">Ce qui fait varier le prix chez vous</p>
+              <ul style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px;line-height:22px;color:var(--color-neutral-800)">
+                <sc-for list="{{ facteurs }}" as="f" hint-placeholder-count="3">
+                  <li>{{ f }}</li>
+                </sc-for>
+              </ul>
+            </div>
+
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:12px;border:1px solid var(--color-accent-300);margin-bottom:24px">
+            <span style="flex:none;width:28px;height:28px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700">✓</span>
+            <p style="margin:0;font-size:15.5px;line-height:24px">Merci {{ clientPrenom }}. Le détail part à l'instant sur <strong>{{ clientEmail }}</strong>. {{ suiteTexte }}</p>
+          </div>
+
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow:hidden;margin-bottom:24px">
+            <p style="margin:0;padding:13px 18px;background:var(--color-accent-100);font-size:14px;font-weight:700;color:var(--color-accent-800)">Données transmises · demande n° {{ reference }}</p>
+            <div style="display:grid">
+              <sc-for list="{{ donneesEnvoyees }}" as="d" hint-placeholder-count="8">
+                <span style="display:flex;justify-content:space-between;gap:16px;padding:11px 18px;font-size:14px;line-height:21px;border-top:1px solid var(--color-divider)">
+                  <span style="color:var(--color-neutral-700)">{{ d.label }}</span>
+                  <strong style="text-align:right">{{ d.valeur }}</strong>
+                </span>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a href="Mes Demandes.dc.html" class="btn btn-primary" style="min-height:50px;font-size:16px;padding-inline:22px">Suivre ma demande</a>
+            <button type="button" class="btn btn-secondary" onClick="{{ recommencer }}" style="min-height:50px;font-size:16px;background:#fff">Simuler un autre projet</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1280px;margin:0 auto;padding:22px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat · Estimations indicatives</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Accueil</a>
+        <a href="Laisser un Avis.dc.html" style="color:var(--color-accent-200)">Laisser un avis</a>
+        <a href="Contact.dc.html" style="color:var(--color-accent-200)">Aide</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280}, &quot;simulerBrouillon&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Reprise&quot;}}">
+const S = (id, label, aide, min, max, pas, def, unite, e) => ({ id, kind: "slider", label, aide, min, max, pas, def, unite, e });
+const N = (id, label, aide, min, max, def, unite, e) => ({ id, kind: "stepper", label, aide, min, max, def, unite, e });
+const O = (id, label, aide, options, e) => ({ id, kind: "options", label, aide, options, e });
+const C = (id, label, aide, options, e) => ({ id, kind: "chips", label, aide, options, e });
+const C_ = C;
+
+const PRESTATIONS = [
+  {
+    id: "peinture", nom: "Peinture", pitch: "Murs, plafonds, boiseries", repere: "dès 25 €/m²",
+    icone: "M4 4h11v5H4zM9.5 9v3.5h5a2 2 0 0 1 2 2v.5M15 15h3v6h-3z",
+    champs: [
+      S("surface", "Surface à peindre", "Additionnez les murs concernés, sans les ouvertures.", 10, 250, 5, 45, "m²", 2),
+      N("pieces", "Nombre de pièces", "Chaque pièce ajoute de la préparation et des découpes.", 1, 12, 2, "pièce(s)", 2),
+      O("hauteur", "Hauteur sous plafond", "Au-delà de 2,60 m il faut un échafaudage roulant.", [
+        { v: "std", label: "Jusqu'à 2,60 m", desc: "Standard" },
+        { v: "haut", label: "2,60 à 3 m", desc: "+8 %" },
+        { v: "tres", label: "Plus de 3 m", desc: "+18 %" }], 2),
+      O("etat", "État des murs", "La préparation représente souvent un tiers du chantier.", [
+        { v: "bon", label: "Bon état", desc: "Un simple lessivage" },
+        { v: "moyen", label: "À préparer", desc: "Rebouchage léger · +15 %" },
+        { v: "abime", label: "Abîmé", desc: "Enduit complet · +35 %" }], 2),
+      C("extras", "À peindre aussi", "Sélectionnez tout ce qui est concerné.", [
+        { v: "plafonds", label: "Plafonds" }, { v: "boiseries", label: "Portes et boiseries" },
+        { v: "fissures", label: "Reprise de fissures" }, { v: "radiateurs", label: "Dépose des radiateurs" }], 3),
+      O("gamme", "Qualité de peinture", "Rendu, lessivabilité et nombre de couches.", [
+        { v: "eco", label: "Économique", desc: "Mate, 2 couches" },
+        { v: "std", label: "Standard", desc: "Satinée lessivable" },
+        { v: "premium", label: "Haut de gamme", desc: "Écolabel, velours" }], 3),
+    ],
+  },
+  {
+    id: "sdb", nom: "Salle de bain", pitch: "Rénovation complète ou partielle", repere: "dès 4 500 €",
+    icone: "M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 12V5.5a2 2 0 0 1 4 0",
+    champs: [
+      S("surface", "Surface de la pièce", "Sol au sol, murs compris dans le calcul.", 2, 20, 1, 6, "m²", 2),
+      O("ampleur", "Ampleur des travaux", "Du simple rafraîchissement à la création de pièce.", [
+        { v: "raf", label: "Rafraîchissement", desc: "On garde l'implantation" },
+        { v: "reno", label: "Rénovation complète", desc: "Dépose totale" },
+        { v: "crea", label: "Création", desc: "Nouvelle pièce d'eau" }], 2),
+      O("reseaux", "Déplacement des arrivées d'eau", "Bouger douche ou WC implique de reprendre les réseaux.", [
+        { v: "non", label: "Non, on garde", desc: "Économie notable" },
+        { v: "partiel", label: "Un élément", desc: "+ 600 à 1 100 €" },
+        { v: "total", label: "Nouvelle implantation", desc: "+ 1 400 à 2 400 €" }], 2),
+      C("equipements", "Équipements souhaités", "Chaque élément est chiffré fourniture et pose.", [
+        { v: "italienne", label: "Douche à l'italienne" }, { v: "baignoire", label: "Baignoire" },
+        { v: "doubleVasque", label: "Double vasque" }, { v: "wc", label: "WC suspendu" },
+        { v: "seche", label: "Sèche-serviettes" }, { v: "meuble", label: "Meuble et miroir" }], 3),
+      O("gamme", "Gamme d'équipement", "Robinetterie, faïence et sanitaires.", [
+        { v: "eco", label: "Essentiel", desc: "Grandes surfaces" },
+        { v: "std", label: "Standard", desc: "Marques courantes" },
+        { v: "premium", label: "Premium", desc: "Sur mesure, grès cérame" }], 3),
+      C("pmr", "Contraintes particulières", "", [
+        { v: "pmr", label: "Accessibilité PMR" }, { v: "vmc", label: "VMC à remplacer" },
+        { v: "fenetre", label: "Fenêtre à changer" }], 3),
+    ],
+  },
+  {
+    id: "cuisine", nom: "Cuisine", pitch: "Meubles, plan de travail, réseaux", repere: "dès 6 000 €",
+    icone: "M5 3h14v18H5zM5 10h14M8.5 6v1M8.5 14v3",
+    champs: [
+      S("lineaire", "Linéaire de meubles", "Longueur totale de meubles bas.", 1.5, 10, 0.5, 4, "mètres", 2),
+      O("forme", "Implantation", "La forme change la découpe et la pose.", [
+        { v: "lin", label: "Linéaire", desc: "Un seul mur" },
+        { v: "l", label: "En L", desc: "+10 %" },
+        { v: "u", label: "En U", desc: "+18 %" },
+        { v: "ilot", label: "Avec îlot", desc: "+25 % et réseaux" }], 2),
+      O("reseaux", "Plomberie et électricité", "Déplacer l'évier ou les prises est le poste caché.", [
+        { v: "existant", label: "On garde tout", desc: "Aucune reprise" },
+        { v: "ajust", label: "Ajustements", desc: "Quelques prises" },
+        { v: "refonte", label: "Refonte complète", desc: "Nouvelle implantation" }], 2),
+      C("elements", "À inclure dans le devis", "", [
+        { v: "plan", label: "Plan de travail" }, { v: "credence", label: "Crédence" },
+        { v: "electro", label: "Électroménager" }, { v: "eclairage", label: "Éclairage intégré" },
+        { v: "sol", label: "Sol à refaire" }], 3),
+      O("gamme", "Gamme des meubles", "", [
+        { v: "eco", label: "Kit à monter", desc: "Mélaminé" },
+        { v: "std", label: "Standard", desc: "Façades stratifiées" },
+        { v: "premium", label: "Sur mesure", desc: "Menuisier, quartz" }], 3),
+    ],
+  },
+  {
+    id: "elec", nom: "Électricité", pitch: "Tableau, prises, mise aux normes", repere: "dès 400 €",
+    icone: "M13 2 4 14h7l-1 8 9-12h-7z",
+    champs: [
+      S("surface", "Surface du logement", "Sert à estimer le passage des gaines.", 15, 250, 5, 70, "m²", 2),
+      N("prises", "Prises à poser ou déplacer", "Compter aussi les prises de la cuisine.", 0, 80, 12, "prise(s)", 2),
+      N("interrupteurs", "Points d'éclairage et interrupteurs", "", 0, 50, 8, "point(s)", 2),
+      O("tableau", "Tableau électrique", "Poste déterminant pour la conformité NF C 15-100.", [
+        { v: "garde", label: "Conservé", desc: "Déjà aux normes" },
+        { v: "remplace", label: "À remplacer", desc: "900 à 1 500 €" },
+        { v: "normes", label: "Mise aux normes complète", desc: "Avec mise à la terre" }], 2),
+      O("encastre", "Type de pose", "Encastrer implique saignées et rebouchage.", [
+        { v: "apparent", label: "Apparent / moulures", desc: "Le plus rapide" },
+        { v: "encastre", label: "Encastré", desc: "+35 %, murs à reprendre" }], 3),
+      C("options", "Options", "", [
+        { v: "rj45", label: "Réseau RJ45" }, { v: "spots", label: "Spots encastrés" },
+        { v: "borne", label: "Borne de recharge" }, { v: "domotique", label: "Domotique" },
+        { v: "consuel", label: "Attestation Consuel" }], 3),
+    ],
+  },
+  {
+    id: "plomberie", nom: "Plomberie", pitch: "Réseaux, sanitaires, chauffe-eau", repere: "dès 350 €",
+    icone: "M6 20h12M9.5 20v-6.5a3 3 0 0 1 3-3H16M12.5 10.5V6.5M9.5 6.5h6",
+    champs: [
+      N("points", "Points d'eau concernés", "Évier, lavabo, douche, WC, machine…", 1, 20, 3, "point(s)", 2),
+      O("nature", "Nature de l'intervention", "", [
+        { v: "depannage", label: "Dépannage", desc: "Fuite, débouchage" },
+        { v: "remplacement", label: "Remplacement", desc: "Sanitaires existants" },
+        { v: "creation", label: "Création de réseau", desc: "Neuf ou extension" }], 2),
+      O("pose", "Passage des canalisations", "", [
+        { v: "apparent", label: "Apparent", desc: "Le plus économique" },
+        { v: "encastre", label: "Encastré", desc: "+35 % (saignées)" }], 2),
+      C("equipements", "Équipements à prévoir", "", [
+        { v: "chauffeEau", label: "Chauffe-eau" }, { v: "adoucisseur", label: "Adoucisseur" },
+        { v: "evacuation", label: "Reprise d'évacuation" }, { v: "colonne", label: "Colonne de douche" }], 3),
+      O("urgence", "Délai", "Une intervention en urgence est majorée.", [
+        { v: "planifie", label: "Planifié", desc: "Sous quelques semaines" },
+        { v: "rapide", label: "Rapide", desc: "Sous 72 h · +15 %" },
+        { v: "urgence", label: "Urgence", desc: "Sous 24 h · +35 %" }], 3),
+    ],
+  },
+  {
+    id: "carrelage", nom: "Carrelage", pitch: "Sol et murs, dépose comprise", repere: "dès 45 €/m²",
+    icone: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+    champs: [
+      S("sol", "Surface au sol", "0 si vous ne faites que les murs.", 0, 150, 1, 20, "m²", 2),
+      S("murs", "Surface murale", "Faïence de cuisine ou de salle de bain.", 0, 80, 1, 8, "m²", 2),
+      O("format", "Format des carreaux", "Les grands formats et la mosaïque demandent plus de temps.", [
+        { v: "std", label: "Standard", desc: "30×30 à 60×60" },
+        { v: "grand", label: "Grand format", desc: "+30 %" },
+        { v: "mosaique", label: "Mosaïque / chevrons", desc: "+50 %" }], 2),
+      C("preparation", "Préparation nécessaire", "", [
+        { v: "depose", label: "Dépose de l'ancien" }, { v: "ragreage", label: "Ragréage du sol" },
+        { v: "etancheite", label: "Étanchéité (pièce humide)" }, { v: "chauffant", label: "Plancher chauffant" }], 3),
+      O("gamme", "Gamme du carreau", "Fourniture comprise dans l'estimation.", [
+        { v: "eco", label: "Entrée de gamme", desc: "15 à 25 €/m²" },
+        { v: "std", label: "Standard", desc: "30 à 50 €/m²" },
+        { v: "premium", label: "Grès cérame haut de gamme", desc: "60 à 110 €/m²" }], 3),
+    ],
+  },
+  {
+    id: "isolation", nom: "Isolation", pitch: "Combles, murs, ITE", repere: "dès 25 €/m²",
+    icone: "M4 8c4-3 12 3 16 0M4 13c4-3 12 3 16 0M4 18c4-3 12 3 16 0",
+    champs: [
+      S("surface", "Surface à isoler", "", 10, 400, 5, 80, "m²", 2),
+      O("zone", "Zone concernée", "Le coût au m² varie du simple au quintuple.", [
+        { v: "combles", label: "Combles perdus", desc: "Soufflage · 25-45 €/m²" },
+        { v: "rampants", label: "Rampants", desc: "45-75 €/m²" },
+        { v: "murs", label: "Murs par l'intérieur", desc: "50-90 €/m²" },
+        { v: "ite", label: "Isolation extérieure", desc: "120-190 €/m²" }], 2),
+      O("materiau", "Matériau", "", [
+        { v: "minerale", label: "Laine minérale", desc: "Le plus courant" },
+        { v: "biosource", label: "Biosourcé", desc: "Ouate, fibre de bois · +25 %" },
+        { v: "pu", label: "Polyuréthane", desc: "Fin et performant · +35 %" }], 2),
+      C("options", "À prévoir en plus", "", [
+        { v: "depose", label: "Dépose de l'ancien isolant" }, { v: "parevapeur", label: "Pare-vapeur" },
+        { v: "placo", label: "Doublage placo et finition" }, { v: "echafaudage", label: "Échafaudage" }], 3),
+      O("aides", "Aides financières", "MaPrimeRénov' et CEE, selon vos revenus.", [
+        { v: "non", label: "Ne pas déduire", desc: "Montant brut" },
+        { v: "oui", label: "Estimer mes aides", desc: "Affiche le reste à charge" }], 3),
+    ],
+  },
+  {
+    id: "toiture", nom: "Toiture", pitch: "Nettoyage, réfection, zinguerie", repere: "dès 90 €/m²",
+    icone: "M3 11 12 4l9 7M6 11v9h12v-9",
+    champs: [
+      S("surface", "Surface de toiture", "Surface développée, pente comprise.", 20, 400, 5, 90, "m²", 2),
+      O("travaux", "Nature des travaux", "", [
+        { v: "nettoyage", label: "Nettoyage / démoussage", desc: "15-30 €/m²" },
+        { v: "partielle", label: "Réfection partielle", desc: "70-120 €/m²" },
+        { v: "complete", label: "Réfection complète", desc: "120-220 €/m²" }], 2),
+      O("materiau", "Couverture", "", [
+        { v: "tuile", label: "Tuiles", desc: "Référence" },
+        { v: "ardoise", label: "Ardoise", desc: "+35 %" },
+        { v: "zinc", label: "Zinc", desc: "+50 %" }], 2),
+      O("pente", "Accès et pente", "", [
+        { v: "simple", label: "Toit simple", desc: "Deux pans" },
+        { v: "complexe", label: "Toit complexe", desc: "Lucarnes, noues · +20 %" }], 2),
+      C("options", "Travaux associés", "", [
+        { v: "zinguerie", label: "Gouttières et zinguerie" }, { v: "isolation", label: "Isolation sous toiture" },
+        { v: "velux", label: "Fenêtre de toit" }, { v: "charpente", label: "Traitement de charpente" }], 3),
+    ],
+  },
+  {
+    id: "menuiserie", nom: "Menuiseries", pitch: "Fenêtres, portes, volets", repere: "dès 600 €",
+    icone: "M4 3h16v18H4zM12 3v18M4 12h16",
+    champs: [
+      N("fenetres", "Nombre de fenêtres", "Compter les baies comme deux fenêtres.", 0, 30, 4, "fenêtre(s)", 2),
+      O("materiau", "Matériau", "", [
+        { v: "pvc", label: "PVC", desc: "Le plus économique" },
+        { v: "alu", label: "Aluminium", desc: "+35 %" },
+        { v: "bois", label: "Bois", desc: "+50 %" }], 2),
+      O("vitrage", "Vitrage", "", [
+        { v: "double", label: "Double vitrage", desc: "Standard" },
+        { v: "doubleRenf", label: "Double renforcé", desc: "Phonique · +12 %" },
+        { v: "triple", label: "Triple vitrage", desc: "+25 %" }], 2),
+      O("depose", "Pose", "", [
+        { v: "renovation", label: "Pose en rénovation", desc: "On garde le dormant" },
+        { v: "depose", label: "Dépose totale", desc: "+30 %, finitions comprises" }], 3),
+      C("options", "À ajouter", "", [
+        { v: "volets", label: "Volets roulants" }, { v: "porte", label: "Porte d'entrée" },
+        { v: "baie", label: "Baie coulissante" }, { v: "moustiquaire", label: "Moustiquaires" }], 3),
+    ],
+  },
+];
+
+const TITRES = { 2: "Votre projet en détail", 3: "Options et finitions", 4: "Localisation du chantier" };
+const CLE_BROUILLON = "ph:parcours:simulateur";
+const VERSION_REFERENTIEL = "2026-09";
+const SOUS = {
+  2: "Ces éléments pèsent le plus lourd dans le prix. Ajustez-les au plus juste, vous pourrez les modifier ensuite.",
+  3: "Tout est facultatif : chaque option est chiffrée séparément dans l'estimation.",
+  4: "Les prix de la main-d'œuvre varient fortement d'un département à l'autre.",
+};
+
+function coefRegion(cp) {
+  const d = (cp || "").slice(0, 2);
+  if (["75", "92", "93", "94", "78", "91", "95", "77"].indexOf(d) > -1) return { c: 1.16, n: "Île-de-France : main-d'œuvre majorée d'environ 16 % par rapport à la moyenne nationale." };
+  if (["06", "13", "69", "74", "83"].indexOf(d) > -1) return { c: 1.09, n: "Zone tendue : les tarifs relevés sont environ 9 % au-dessus de la moyenne nationale." };
+  if (["33", "31", "34", "44", "35", "59", "67"].indexOf(d) > -1) return { c: 1.03, n: "Grande métropole régionale : tarifs légèrement au-dessus de la moyenne." };
+  if (cp.length === 5) return { c: 0.96, n: "Hors zone tendue : les tarifs relevés sont environ 4 % sous la moyenne nationale." };
+  return { c: 1, n: "Renseignez votre code postal pour ajuster l'estimation aux tarifs de votre département." };
+}
+const eur = (n) => Math.round(n / 10) * 10 === 0 ? "0 €" : Math.round(n / 10) * 10 + " €";
+const fr = (n) => eur(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
+const has = (a, v) => (a || []).indexOf(v) > -1;
+const G = { eco: 0.82, std: 1, premium: 1.45 };
+
+const FAMILLE_NOM = {};
+function chargerCatalogue() {
+  const C = window.PH_CATALOGUE;
+  if (!C || PRESTATIONS._catalogue) return !!PRESTATIONS._catalogue;
+  C.FAMILLES.forEach((f) => { FAMILLE_NOM[f.id] = f.nom; });
+  PRESTATIONS.forEach((x) => { x.famille = C.FAMILLE_EXISTANTES[x.id] || "interieur"; });
+  C.PRESTATIONS.forEach((d) => {
+    const t = d.tarif, q = t.q;
+    const champs = [q.kind === "s" ? S("q", q.label, q.aide, q.min, q.max, q.pas, q.def, q.unite, 2) : N("q", q.label, q.aide, q.min, q.max, q.def, q.unite, 2)];
+    t.choix.forEach((c, i) => champs.push(O(c[0], c[1], c[2], c[3].map((o) => ({ v: o[0], label: o[1], desc: o[2], k: o[3] })), t.extras.length || i === 0 ? 2 : 3)));
+    if (t.extras.length) champs.push(C_("extras", "Options", "Sélectionnez ce qui vous concerne.", t.extras.map((e) => ({ v: e[0], label: e[1] })), 3));
+    PRESTATIONS.push({ id: d.id, nom: d.nom, pitch: d.pitch, repere: d.repere, icone: d.icone, famille: d.famille, tva: d.tva, parcours: d.parcours, tarif: t, champs });
+  });
+  PRESTATIONS._catalogue = true;
+  return true;
+}
+function calculer(p, v) {
+  const L = [];
+  const add = (label, min, max) => { if (max > 0) L.push({ label, min, max }); };
+  if (p.tarif) {
+    const t = p.tarif, q = Number(v.q) || 0;
+    let k = 1;
+    t.choix.forEach((c) => { const o = c[3].filter((x) => x[0] === v[c[0]])[0]; if (o) k *= o[3]; });
+    add(t.lib, q * t.unitaire[0] * k, q * t.unitaire[1] * k);
+    add("Déplacement, préparation et mise en service", t.base[0], t.base[1]);
+    t.extras.forEach((e) => { if (has(v.extras, e[0])) add(e[1], e[4] !== undefined ? e[2] * q : e[2], e[4] !== undefined ? e[3] * q : e[3]); });
+    add("Évacuation et nettoyage", t.evac[0], t.evac[1]);
+    return L;
+  }
+  if (p.id === "peinture") {
+    const h = { std: 1, haut: 1.08, tres: 1.18 }[v.hauteur], e = { bon: 1, moyen: 1.15, abime: 1.35 }[v.etat], g = G[v.gamme], s = v.surface;
+    add("Protection et préparation des supports", s * 4 * e * h, s * 7.5 * e * h);
+    add("Peinture des murs (2 couches)", s * 15 * g * h, s * 23 * g * h);
+    if (has(v.extras, "plafonds")) add("Plafonds", s * 0.45 * 13 * g, s * 0.45 * 19 * g);
+    if (has(v.extras, "boiseries")) add("Portes et boiseries", v.pieces * 95, v.pieces * 175);
+    if (has(v.extras, "fissures")) add("Reprise de fissures et enduit", s * 4, s * 8);
+    if (has(v.extras, "radiateurs")) add("Dépose et repose des radiateurs", v.pieces * 55, v.pieces * 95);
+    add("Nettoyage et évacuation", 90 + v.pieces * 25, 160 + v.pieces * 45);
+  }
+  if (p.id === "sdb") {
+    const g = G[v.gamme], s = v.surface, cplt = v.ampleur !== "raf";
+    if (cplt) add("Dépose et évacuation", 350 + s * 25, 650 + s * 45);
+    add("Plomberie", 850 + s * 40, 1400 + s * 70);
+    if (v.reseaux === "partiel") add("Déplacement d'un réseau", 600, 1100);
+    if (v.reseaux === "total") add("Nouvelle implantation des réseaux", 1400, 2400);
+    add("Électricité et ventilation", 380, 780);
+    add("Carrelage sol et faïence", s * 85 * g, s * 145 * g);
+    const eq = { italienne: [1200, 2400], baignoire: [700, 1600], doubleVasque: [650, 1500], wc: [550, 1100], seche: [280, 700], meuble: [400, 1100] };
+    let a = 0, b = 0;
+    (v.equipements || []).forEach((k) => { if (eq[k]) { a += eq[k][0] * g; b += eq[k][1] * g; } });
+    add("Équipements et robinetterie", a, b);
+    if (has(v.pmr, "pmr")) add("Adaptation PMR", 700, 1800);
+    if (has(v.pmr, "vmc")) add("VMC", 350, 750);
+    if (has(v.pmr, "fenetre")) add("Fenêtre", 550, 1200);
+    add("Peinture et finitions", 250, 520);
+    if (v.ampleur === "crea") { L.forEach((x) => { x.min *= 1.15; x.max *= 1.2; }); }
+  }
+  if (p.id === "cuisine") {
+    const g = G[v.gamme], f = { lin: 1, l: 1.1, u: 1.18, ilot: 1.25 }[v.forme], m = v.lineaire;
+    add("Meubles et façades", m * 850 * g * f, m * 1600 * g * f);
+    add("Pose et ajustage", m * 180 * f, m * 280 * f);
+    if (has(v.elements, "plan")) add("Plan de travail", m * 220 * g, m * 550 * g);
+    if (has(v.elements, "credence")) add("Crédence", 220, 700);
+    if (has(v.elements, "electro")) add("Électroménager", 1800 * g, 4200 * g);
+    if (has(v.elements, "eclairage")) add("Éclairage intégré", 180, 520);
+    if (has(v.elements, "sol")) add("Sol", m * 120, m * 240);
+    const r = { existant: [150, 350], ajust: [550, 1100], refonte: [1300, 2600] }[v.reseaux];
+    add("Plomberie et électricité", r[0], r[1]);
+    if (v.forme === "ilot") add("Alimentation de l'îlot", 450, 1100);
+  }
+  if (p.id === "elec") {
+    const enc = v.encastre === "encastre" ? 1.35 : 1;
+    const t = { garde: [0, 0], remplace: [900, 1500], normes: [1500, 2900] }[v.tableau];
+    add("Tableau électrique", t[0], t[1]);
+    add("Prises de courant", v.prises * 70 * enc, v.prises * 120 * enc);
+    add("Points d'éclairage et interrupteurs", v.interrupteurs * 65 * enc, v.interrupteurs * 115 * enc);
+    add("Passage des gaines et câblage", v.surface * 14 * enc, v.surface * 26 * enc);
+    if (v.encastre === "encastre") add("Saignées et rebouchage", v.surface * 6, v.surface * 12);
+    if (has(v.options, "rj45")) add("Réseau RJ45", 400, 950);
+    if (has(v.options, "spots")) add("Spots encastrés", 550, 1400);
+    if (has(v.options, "borne")) add("Borne de recharge", 1200, 2100);
+    if (has(v.options, "domotique")) add("Domotique", 1500, 4200);
+    if (has(v.options, "consuel")) add("Attestation Consuel", 180, 260);
+  }
+  if (p.id === "plomberie") {
+    const enc = v.pose === "encastre" ? 1.35 : 1;
+    const base = { depannage: [140, 320], remplacement: [280, 600], creation: [650, 1300] }[v.nature];
+    add("Déplacement et intervention", base[0], base[1]);
+    const pt = { depannage: [90, 200], remplacement: [280, 620], creation: [420, 900] }[v.nature];
+    add("Points d'eau", v.points * pt[0] * enc, v.points * pt[1] * enc);
+    if (has(v.equipements, "chauffeEau")) add("Chauffe-eau", 750, 1900);
+    if (has(v.equipements, "adoucisseur")) add("Adoucisseur", 900, 2200);
+    if (has(v.equipements, "evacuation")) add("Reprise d'évacuation", 350, 900);
+    if (has(v.equipements, "colonne")) add("Colonne de douche", 280, 850);
+    const u = { planifie: 1, rapide: 1.15, urgence: 1.35 }[v.urgence];
+    if (u > 1) L.forEach((x) => { x.min *= u; x.max *= u; });
+  }
+  if (p.id === "carrelage") {
+    const f = { std: 1, grand: 1.3, mosaique: 1.5 }[v.format];
+    const four = { eco: [15, 25], std: [30, 50], premium: [60, 110] }[v.gamme];
+    const tot = v.sol + v.murs;
+    add("Fourniture des carreaux", tot * four[0], tot * four[1]);
+    add("Pose au sol", v.sol * 42 * f, v.sol * 68 * f);
+    add("Pose murale", v.murs * 52 * f, v.murs * 85 * f);
+    if (has(v.preparation, "depose")) add("Dépose de l'ancien revêtement", tot * 14, tot * 26);
+    if (has(v.preparation, "ragreage")) add("Ragréage", v.sol * 12, v.sol * 24);
+    if (has(v.preparation, "etancheite")) add("Étanchéité sous carrelage", tot * 18, tot * 32);
+    if (has(v.preparation, "chauffant")) add("Plancher chauffant", v.sol * 70, v.sol * 115);
+    add("Joints et finitions", tot * 8, tot * 14);
+  }
+  if (p.id === "isolation") {
+    const z = { combles: [25, 45], rampants: [45, 75], murs: [50, 90], ite: [120, 190] }[v.zone];
+    const m = { minerale: 1, biosource: 1.25, pu: 1.35 }[v.materiau];
+    add("Fourniture et pose de l'isolant", v.surface * z[0] * m, v.surface * z[1] * m);
+    if (has(v.options, "depose")) add("Dépose de l'ancien isolant", v.surface * 8, v.surface * 16);
+    if (has(v.options, "parevapeur")) add("Pare-vapeur", v.surface * 6, v.surface * 12);
+    if (has(v.options, "placo")) add("Doublage et finition", v.surface * 35, v.surface * 60);
+    if (has(v.options, "echafaudage")) add("Échafaudage", 900, 2400);
+    add("Étude thermique et diagnostic", 180, 450);
+  }
+  if (p.id === "toiture") {
+    const t = { nettoyage: [15, 30], partielle: [70, 120], complete: [120, 220] }[v.travaux];
+    const m = { tuile: 1, ardoise: 1.35, zinc: 1.5 }[v.materiau];
+    const c = v.pente === "complexe" ? 1.2 : 1;
+    add("Couverture", v.surface * t[0] * m * c, v.surface * t[1] * m * c);
+    add("Échafaudage et sécurité", 900 + v.surface * 4, 2200 + v.surface * 8);
+    if (has(v.options, "zinguerie")) add("Gouttières et zinguerie", 900, 2400);
+    if (has(v.options, "isolation")) add("Isolation sous toiture", v.surface * 38, v.surface * 70);
+    if (has(v.options, "velux")) add("Fenêtre de toit", 900, 1900);
+    if (has(v.options, "charpente")) add("Traitement de charpente", v.surface * 18, v.surface * 34);
+    add("Évacuation des déchets", 250, 700);
+  }
+  if (p.id === "menuiserie") {
+    const m = { pvc: 1, alu: 1.35, bois: 1.5 }[v.materiau];
+    const vi = { double: 1, doubleRenf: 1.12, triple: 1.25 }[v.vitrage];
+    const d = v.depose === "depose" ? 1.3 : 1;
+    add("Fourniture des fenêtres", v.fenetres * 420 * m * vi, v.fenetres * 880 * m * vi);
+    add("Pose et finitions", v.fenetres * 240 * d, v.fenetres * 420 * d);
+    if (has(v.options, "volets")) add("Volets roulants", v.fenetres * 420, v.fenetres * 780);
+    if (has(v.options, "porte")) add("Porte d'entrée", 1200 * m, 3000 * m);
+    if (has(v.options, "baie")) add("Baie coulissante", 1800 * m, 4200 * m);
+    if (has(v.options, "moustiquaire")) add("Moustiquaires", v.fenetres * 90, v.fenetres * 190);
+    add("Évacuation des anciennes menuiseries", 150, 400);
+  }
+  return L;
+}
+
+class Component extends DCLogic {
+  state = { etape: 1, presta: null, v: {}, cp: "", acces: "facile", client: null, ref: "", brouillon: null, annul: null, repris: "", lienReprise: false, famille: "toutes", cherche: "", cat: chargerCatalogue() };
+
+  // ---- Reprise de parcours (REPRISE_PARCOURS.md) : localStorage, sans aucune donnée de contact ----
+  lireBrouillon() {
+    try {
+      const b = JSON.parse(localStorage.getItem(CLE_BROUILLON) || "null");
+      if (!b || b.v !== 1 || b.parcours !== "simulateur" || typeof b.etape !== "number" || typeof b.reponses !== "object") throw 0;
+      if (Date.now() - b.majLe > 30 * 864e5) throw 0;
+      if (!PRESTATIONS.some((x) => x.id === b.prestationId) || b.etape < 2) throw 0;
+      return b;
+    } catch (e) { try { localStorage.removeItem(CLE_BROUILLON); } catch (_) {} return null; }
+  }
+  ecrireBrouillon() {
+    const s = this.state;
+    if (!s.presta || s.etape < 2 || s.etape > 5 || s.brouillon) return;
+    const prev = this.lireBrouillonBrut();
+    const b = { v: 1, parcours: "simulateur", versionReferentiel: VERSION_REFERENTIEL, prestationId: s.presta.id, etape: s.etape,
+      reponses: s.v, chantier: { codePostal: s.cp, acces: s.acces }, fourchette: this._fourchette || "", creeLe: prev && prev.prestationId === s.presta.id ? prev.creeLe : Date.now(), majLe: Date.now() };
+    try { localStorage.setItem(CLE_BROUILLON, JSON.stringify(b)); } catch (e) {}
+  }
+  lireBrouillonBrut() { try { return JSON.parse(localStorage.getItem(CLE_BROUILLON) || "null"); } catch (e) { return null; } }
+  effacerBrouillon() { try { localStorage.removeItem(CLE_BROUILLON); } catch (e) {} }
+  valeursParDefaut(x) {
+    const v = {};
+    x.champs.forEach((c) => { v[c.id] = c.kind === "chips" ? [] : c.kind === "options" ? c.options[0].v : c.def; });
+    return v;
+  }
+  // garde uniquement les réponses encore valides dans le référentiel actuel
+  migrer(x, rep) {
+    const v = this.valeursParDefaut(x); let retirees = 0;
+    x.champs.forEach((c) => {
+      const r = rep[c.id];
+      if (r === undefined) return;
+      const ok = (c.kind === "slider" || c.kind === "stepper") ? (typeof r === "number" && r >= c.min && r <= c.max)
+        : c.kind === "options" ? c.options.some((o) => o.v === r)
+        : Array.isArray(r) && r.every((k) => c.options.some((o) => o.v === k));
+      if (ok) v[c.id] = r; else retirees++;
+    });
+    return { v, retirees };
+  }
+  lisible(c, val) {
+    if (c.kind === "slider" || c.kind === "stepper") return String(val).replace(".", ",") + " " + c.unite;
+    if (c.kind === "options") { const o = c.options.filter((y) => y.v === val)[0]; return o ? o.label : ""; }
+    return (val || []).map((k) => (c.options.filter((y) => y.v === k)[0] || {}).label).filter(Boolean).join(", ");
+  }
+  depuis(t) {
+    const m = Math.round((Date.now() - t) / 60000);
+    if (m < 2) return "à l'instant"; if (m < 60) return "il y a " + m + " min";
+    const h = Math.round(m / 60); if (h < 24) return "il y a " + h + " h";
+    const j = Math.round(h / 24); return j === 1 ? "hier" : "il y a " + j + " jours";
+  }
+  componentDidMount() {
+    if (!this.state.cat) {
+      this._cat = setInterval(() => { if (chargerCatalogue()) { clearInterval(this._cat); this.setState({ cat: true }); this.initDepuisUrl(); } }, 60);
+      return;
+    }
+    this.initDepuisUrl();
+  }
+  initDepuisUrl() {
+    try {
+      const u = new URLSearchParams(location.search), pid = u.get("prestation");
+      const x = pid && PRESTATIONS.filter((y) => y.id === pid)[0];
+      if (x) { const cp = (u.get("cp") || "").replace(/\D/g, "").slice(0, 5); this.setState({ presta: x, v: this.valeursParDefaut(x), etape: 2, cp }); return; }
+    } catch (e) {}
+    let b = this.lireBrouillon();
+    if (!b && this.props.simulerBrouillon) {
+      const x = PRESTATIONS[1] || PRESTATIONS[0];
+      b = { v: 1, parcours: "simulateur", versionReferentiel: VERSION_REFERENTIEL, prestationId: x.id, etape: 3, reponses: this.valeursParDefaut(x),
+        chantier: { codePostal: "33000", acces: "facile" }, fourchette: "", creeLe: Date.now() - 2 * 864e5, majLe: Date.now() - 2 * 864e5 };
+    }
+    if (b) this.setState({ brouillon: b });
+    this._onStorage = (e) => { if (e.key === CLE_BROUILLON && !this.state.brouillon && this.state.etape === 1) { const nb = this.lireBrouillon(); if (nb) this.setState({ brouillon: nb }); } };
+    window.addEventListener("storage", this._onStorage);
+  }
+  componentWillUnmount() { clearInterval(this._cat); clearTimeout(this._t); clearTimeout(this._ta); window.removeEventListener("storage", this._onStorage); }
+
+  champsEtape(n) {
+    const p = this.state.presta;
+    return p ? p.champs.filter((c) => c.e === n) : [];
+  }
+  set(id, val) { this.setState({ v: Object.assign({}, this.state.v, { [id]: val }) }); }
+
+  valeurLisible(c) {
+    const v = this.state.v[c.id];
+    if (c.kind === "slider" || c.kind === "stepper") return v + " " + c.unite;
+    if (c.kind === "options") { const o = c.options.filter((x) => x.v === v)[0]; return o ? o.label : "—"; }
+    const l = (v || []).map((k) => (c.options.filter((x) => x.v === k)[0] || {}).label).filter(Boolean);
+    return l.length ? l.join(", ") : "Aucune";
+  }
+
+  renderVals() {
+    const s = this.state, p = s.presta, et = s.etape;
+    const reg = coefRegion(s.cp);
+    const postesBruts = p ? calculer(p, s.v) : [];
+    // étape 1 : familles et recherche
+    const RS = window.PH_RECHERCHE, nq = RS ? RS.norm(s.cherche) : s.cherche.toLowerCase();
+    let trouves = null;
+    if (nq.length >= 2) {
+      const ids = [];
+      if (RS) RS.rechercher(s.cherche, { max: 30 }).resultats.forEach((r) => { if (r.prestation && ids.indexOf(r.prestation) < 0) ids.push(r.prestation); });
+      PRESTATIONS.forEach((x) => { const t = RS ? RS.norm(x.nom + " " + x.pitch) : (x.nom + " " + x.pitch).toLowerCase(); if (t.indexOf(nq) > -1 && ids.indexOf(x.id) < 0) ids.push(x.id); });
+      trouves = ids.map((id) => PRESTATIONS.filter((x) => x.id === id)[0]).filter(Boolean);
+    }
+    const base = trouves || PRESTATIONS;
+    const listePrestations = base.filter((x) => s.famille === "toutes" || x.famille === s.famille);
+    const famillesDispo = Object.keys(FAMILLE_NOM).filter((id) => base.some((x) => x.famille === id));
+    const accesC = { facile: 1, etage: 1.06, difficile: 1.12 }[s.acces] || 1;
+    const coef = reg.c * (et >= 4 ? accesC : 1);
+    let min = 0, max = 0;
+    postesBruts.forEach((x) => { min += x.min * coef; max += x.max * coef; });
+    const aides = p && p.id === "isolation" && s.v.aides === "oui" ? Math.min(max * 0.4, s.v.surface * 22) : 0;
+    const maxPoste = postesBruts.reduce((a, x) => Math.max(a, x.max), 1);
+
+    const postes = postesBruts.map((x) => ({
+      label: x.label,
+      montant: fr(x.min * coef) + " – " + fr(x.max * coef),
+      largeur: Math.max(6, Math.round((x.max / maxPoste) * 100)) + "%",
+      couleur: "var(--color-text)", barre: "var(--color-accent)",
+    }));
+    if (aides > 0) postes.push({ label: "Aides estimées (MaPrimeRénov' + CEE)", montant: "− " + fr(aides), largeur: Math.round((aides / (max || 1)) * 100) + "%", couleur: "var(--color-accent-2-700)", barre: "var(--color-accent-2)" });
+
+    const totalMin = Math.max(0, min - aides), totalMax = Math.max(0, max - aides);
+    const fourchette = p && totalMax > 0 ? fr(totalMin) + " – " + fr(totalMax) : "À compléter";
+    if (p && totalMax > 0) this._fourchette = fourchette;
+    const sig = JSON.stringify([p && p.id, s.v, et, s.cp, s.acces]);
+    if (p && et >= 2 && et <= 5 && !s.brouillon && sig !== this._sigEcrite) {
+      this._sigEcrite = sig;
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.ecrireBrouillon(), 400);
+    }
+
+    // encart de reprise
+    const b = s.brouillon;
+    let reprise = { icone: "", resume: "", meta: "", fourchette: "", cta: "" };
+    if (b) {
+      const x = PRESTATIONS.filter((y) => y.id === b.prestationId)[0];
+      const mig = this.migrer(x, b.reponses);
+      const cles = x.champs.filter((c) => c.e === 2).slice(0, 2).map((c) => this.lisible(c, mig.v[c.id])).filter(Boolean);
+      const etapeReprise = Math.min(b.etape, 5);
+      let fb = b.fourchette;
+      if (!fb) {
+        const pb = calculer(x, mig.v), rc = coefRegion((b.chantier || {}).codePostal || "").c;
+        let a = 0, z = 0; pb.forEach((q) => { a += q.min * rc; z += q.max * rc; });
+        fb = z > 0 ? fr(a) + " – " + fr(z) : "à compléter";
+      }
+      reprise = { icone: x.icone, resume: [x.nom].concat(cles).join(" · "), meta: "Étape " + etapeReprise + " sur 5 · commencée " + this.depuis(b.creeLe), fourchette: fb, cta: "Reprendre à l'étape " + etapeReprise };
+    }
+
+    const num = (n) => String(n).replace(".", ",");
+    const champs = this.champsEtape(et).map((c) => {
+      const val = s.v[c.id];
+      const base = { label: c.label, aide: c.aide, unite: c.unite || "", valeur: val, valeurAffichee: num(val),
+        estSlider: c.kind === "slider", estStepper: c.kind === "stepper", estOptions: c.kind === "options", estChips: c.kind === "chips" };
+      if (c.kind === "slider") return Object.assign(base, {
+        min: c.min, max: c.max, pas: c.pas, minLabel: num(c.min) + " " + c.unite, maxLabel: num(c.max) + " " + c.unite,
+        majSlider: (e) => this.set(c.id, parseFloat(e.target.value)), options: [] });
+      if (c.kind === "stepper") return Object.assign(base, {
+        moins: () => this.set(c.id, Math.max(c.min, val - 1)), plus: () => this.set(c.id, Math.min(c.max, val + 1)), options: [] });
+      if (c.kind === "options") return Object.assign(base, {
+        options: c.options.map((o) => {
+          const actif = val === o.v;
+          return { label: o.label, desc: o.desc || "", actif,
+            bg: actif ? "var(--color-accent-100)" : "#fff", bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+            fg: actif ? "var(--color-accent-800)" : "var(--color-text)", choisir: () => this.set(c.id, o.v) };
+        }) });
+      return Object.assign(base, {
+        options: c.options.map((o) => {
+          const arr = val || [], actif = arr.indexOf(o.v) > -1;
+          return { label: o.label, actif,
+            bg: actif ? "var(--color-accent)" : "#fff", bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+            fg: actif ? "#fff" : "var(--color-neutral-800)",
+            choisir: () => this.set(c.id, actif ? arr.filter((x) => x !== o.v) : arr.concat(o.v)) };
+        }) });
+    });
+
+    const recap = p ? p.champs.filter((c) => c.e < et || et >= 5).map((c) => ({ label: c.label, valeur: this.valeurLisible(c) })) : [];
+    if (p && et >= 5) recap.push({ label: "Code postal", valeur: s.cp || "—" }, { label: "Accès", valeur: { facile: "Plain-pied / ascenseur", etage: "Étage sans ascenseur", difficile: "Accès difficile" }[s.acces] });
+
+    const cpOk = /^\d{5}$/.test(s.cp);
+    const bloque = et === 4 && !cpOk;
+    const cl = s.client || {};
+
+    return {
+      jalons: [1, 2, 3, 4, 5].map((n) => ({
+        puce: et > n || et === 6 ? "✓" : String(n),
+        titre: ["Prestation", "Projet", "Options", "Chantier", "Coordonnées"][n - 1],
+        bg: et >= n || et === 6 ? "var(--color-accent)" : "var(--color-accent-200)",
+        fg: et >= n || et === 6 ? "#fff" : "var(--color-accent-700)",
+        couleur: et >= n ? "var(--color-accent-800)" : "var(--color-neutral-700)",
+        curseur: et > n ? "pointer" : "default",
+        aller: () => { if (et > n && et !== 6) this.setState({ etape: n }); },
+      })),
+      progression: "Étape " + Math.min(et, 5) + " sur 5",
+      largeurBarre: Math.round((Math.min(et, 5) / 5) * 100) + "%",
+
+      cherche: s.cherche, majCherche: (e) => this.setState({ cherche: e.target.value, famille: "toutes" }),
+      familles: [{ id: "toutes", nom: "Toutes" }].concat(famillesDispo.map((id) => ({ id, nom: FAMILLE_NOM[id] }))).map((fa) => {
+        const on = s.famille === fa.id;
+        return { nom: fa.nom, n: String(fa.id === "toutes" ? base.length : base.filter((x) => x.famille === fa.id).length), sel: String(on),
+          bd: on ? "var(--color-accent)" : "var(--color-accent-200)", bg: on ? "var(--color-accent)" : "#fff", fg: on ? "#fff" : "var(--color-accent-800)",
+          choisir: () => this.setState({ famille: fa.id }) };
+      }),
+      compteur: listePrestations.length + " type" + (listePrestations.length > 1 ? "s" : "") + " de travaux estimable" + (listePrestations.length > 1 ? "s" : "") + " en ligne",
+      aucunePresta: !!trouves && !listePrestations.length,
+      etape1: et === 1, etapeQuestions: et >= 2 && et <= 4, etape4: et === 4, etape5: et === 5, etapeFin: et === 6,
+      prestations: listePrestations.map((x) => ({
+        nom: x.nom, pitch: x.pitch, repere: x.repere, icone: x.icone, famille: FAMILLE_NOM[x.famille] || "",
+        bordure: p && p.id === x.id ? "var(--color-accent)" : "transparent",
+        choisir: () => {
+          if (x.parcours) { location.href = x.parcours; return; }
+          const v = this.valeursParDefaut(x);
+          if (s.brouillon) {
+            const ancien = PRESTATIONS.filter((y) => y.id === s.brouillon.prestationId)[0];
+            clearTimeout(this._ta);
+            this._ta = setTimeout(() => this.setState({ annul: null }), 8000);
+            this.setState({ presta: x, v, etape: 2, repris: "", brouillon: null, annul: { b: s.brouillon, texte: "Estimation " + ancien.nom.toLowerCase() + " effacée" } });
+          } else this.setState({ presta: x, v, etape: 2, repris: "" });
+          window.scrollTo(0, 0);
+        },
+      })),
+
+      titreEtape: TITRES[et] || "", sousTitreEtape: SOUS[et] || "",
+      champs, recap,
+      prestaNom: p ? p.nom : "", prestaIcone: p ? p.icone : "",
+      changerPresta: () => this.setState({ etape: 1 }),
+      fourchette, postes,
+      resteTexte: et >= 2 && et <= 4 ? (5 - et === 1 ? "Plus qu'une étape" : "Plus que " + (5 - et) + " étapes") : "",
+      progression: Math.round(((et - 1) / 4) * 100) + "%",
+      contenuEstimation: ["Fourchette de prix TTC pour votre projet", "Détail poste par poste", "Ce qui fait varier le prix chez vous", p && p.id === "isolation" ? "Aides déduites (MaPrimeRénov', CEE)" : "Taux de TVA applicable"],
+      suiteTexte: "Si vous avez demandé la mise en relation, jusqu'à 3 artisans vérifiés vous répondent sous 48 h.",
+      noteFourchette: p ? "Fourchette indicative pour " + p.nom.toLowerCase() + (cpOk ? " dans le " + s.cp.slice(0, 2) + "." : ", avant ajustement régional.") : "",
+      noteRegion: reg.n,
+      tva: p && (p.tva === 5.5 || ["isolation", "toiture", "menuiserie"].indexOf(p.id) > -1) ? "5,5 % (rénovation énergétique)" : p && p.tva === 20 ? "20 %" : "10 % (logement de plus de 2 ans)",
+      facteurs: p ? [
+        "L'état réel découvert à la dépose peut faire varier le devis de 10 à 15 %.",
+        cpOk ? reg.n : "Le département n'est pas encore renseigné : l'écart régional atteint 20 %.",
+        "La disponibilité des artisans en haute saison (printemps, automne) tend les prix.",
+      ] : [],
+      nbChantiers: p ? String(180 + p.nom.length * 27) : "",
+
+      cp: s.cp, majCp: (e) => this.setState({ cp: e.target.value.replace(/\D/g, "").slice(0, 5) }),
+      acces: s.acces, majAcces: (e) => this.setState({ acces: e.target.value }),
+      vraiDefaut: true,
+
+      bloque, opaciteSuivant: bloque ? 0.5 : 1,
+      labelSuivant: et === 4 ? "Dernière étape" : "Continuer",
+      aideBas: et === 4 && !cpOk ? "Renseignez un code postal à 5 chiffres." : "Vos réponses sont modifiables à tout moment.",
+      suivant: () => { if (!bloque) { let n = et + 1; if (n === 3 && p && !p.champs.some((c) => c.e === 3)) n = 4; this.setState({ etape: n }); window.scrollTo(0, 0); } },
+      precedent: () => { let n = Math.max(1, et - 1); if (n === 3 && p && !p.champs.some((c) => c.e === 3)) n = 2; this.setState({ etape: n }); window.scrollTo(0, 0); },
+
+      envoyer: (e) => {
+        e.preventDefault();
+        const f = e.target, g = (id) => ((f.querySelector("#" + id) || {}).value || "").trim();
+        const payload = {
+          reference: "PH-" + Date.now().toString().slice(-6),
+          prestation: p.nom,
+          reponses: p.champs.map((c) => ({ question: c.label, reponse: this.valeurLisible(c) })),
+          codePostal: s.cp, acces: s.acces,
+          estimation: { min: Math.round(totalMin), max: Math.round(totalMax), postes: postesBruts.length },
+          contact: { prenom: g("sim-prenom"), nom: g("sim-nom"), email: g("sim-email"), telephone: g("sim-tel"), precisions: g("sim-precisions") },
+          envoyeLe: new Date().toISOString(),
+        };
+        console.log("[Portail Habitat] demande de devis", payload);
+        this.effacerBrouillon();
+        this.setState({ client: payload.contact, ref: payload.reference, etape: 6, repris: "" });
+        window.scrollTo(0, 0);
+      },
+
+      clientPrenom: cl.prenom || "", clientEmail: cl.email || "", reference: s.ref,
+      departement: cpOk ? s.cp.slice(0, 2) : "secteur",
+      donneesEnvoyees: p ? [{ label: "Prestation", valeur: p.nom }]
+        .concat(p.champs.map((c) => ({ label: c.label, valeur: this.valeurLisible(c) })))
+        .concat([
+          { label: "Code postal", valeur: s.cp },
+          { label: "Estimation transmise", valeur: fourchette },
+          { label: "Contact", valeur: (cl.prenom || "") + " " + (cl.nom || "") },
+          { label: "Email", valeur: cl.email || "" },
+          { label: "Téléphone", valeur: cl.telephone || "" },
+        ]) : [],
+      recommencer: () => { this.effacerBrouillon(); this.setState({ etape: 1, presta: null, v: {}, cp: "", acces: "facile", client: null, ref: "", repris: "" }); },
+
+      showReprise: !!b && et === 1, reprise,
+      reprendre: () => {
+        const x = PRESTATIONS.filter((y) => y.id === b.prestationId)[0];
+        const mig = this.migrer(x, b.reponses);
+        const ch = b.chantier || {};
+        const cpValide = /^\d{5}$/.test(ch.codePostal || "");
+        let etape = Math.min(b.etape, 5);
+        if (etape === 5 && !cpValide) etape = 4;
+        const note = mig.retirees ? "Certaines réponses ont été retirées car le simulateur a évolué : vérifiez-les." : "Vos réponses sont restaurées.";
+        this.setState({ presta: x, v: mig.v, cp: ch.codePostal || "", acces: ch.acces || "facile", etape, brouillon: null, repris: note });
+        window.scrollTo(0, 0);
+      },
+      recommencerBrouillon: () => {
+        this.effacerBrouillon();
+        clearTimeout(this._ta);
+        this._ta = setTimeout(() => this.setState({ annul: null }), 8000);
+        this.setState({ annul: { b, texte: "Estimation effacée" }, brouillon: null });
+      },
+      showAnnul: !!s.annul, annulTexte: s.annul ? s.annul.texte : "",
+      annulerRecommencer: () => {
+        clearTimeout(this._ta);
+        const ab = s.annul.b;
+        try { localStorage.setItem(CLE_BROUILLON, JSON.stringify(ab)); } catch (e) {}
+        this.setState({ annul: null, brouillon: ab, etape: 1, presta: null, v: {}, repris: "" });
+        window.scrollTo(0, 0);
+      },
+      showRepris: !!s.repris && et >= 2 && et <= 5, noteRepris: s.repris,
+      lienReprise: s.lienReprise,
+      toggleLienReprise: (e) => this.setState({ lienReprise: e.target.checked }),
+    };
+  }
+}
+</script>
+</body>
+</html>

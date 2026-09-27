@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, textarea:disabled, select:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Litiges et médiation</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Fil d'échanges particulier, artisan et médiateur. Chaque décision est motivée et journalisée.</p></header>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;align-items:start">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;overflow:hidden">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3">
+        <button onClick="{{ r.go }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #ecebe7;cursor:pointer;font:inherit;padding:12px 16px;height:auto;background:{{ r.sel }}" style-hover="background:#f4f5f7">
+          <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ r.ref }} · ouvert il y a {{ r.age }}</span><span style="font-size:15px;font-weight:600">{{ r.titre }}</span><span style="font-size:13px;color:#6b6763">{{ r.parties }}</span></span>
+          <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:{{ r.bg }};color:{{ r.fg }}">{{ r.statut }}</span>
+        </button>
+      </sc-for>
+    </section>
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div><div style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ l.ref }}</div><h2 style="margin:2px 0 0;font-size:20px">{{ l.titre }}</h2><div style="font-size:14px;color:#6b6763">{{ l.parties }}</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ fil }}" as="m" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:10px;background:{{ m.bg }}"><span style="font-size:12.5px;font-weight:700;color:#57534f">{{ m.qui }} · {{ m.quand }}</span><span style="font-size:14.5px;line-height:1.5;color:#3d3a37">{{ m.t }}</span></div>
+        </sc-for>
+      </div>
+      <textarea value="{{ msg }}" onChange="{{ setMsg }}" disabled="{{ noTraiter }}" rows="3" placeholder="Message aux deux parties…" style="font:inherit;font-size:14.5px;padding:9px 10px;border:1px solid #d9d6d1;border-radius:8px;resize:vertical"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button onClick="{{ envoyer }}" disabled="{{ noEnvoyer }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Envoyer</button>
+        <select onChange="{{ decider }}" disabled="{{ noTraiter }}" value="" style="font:inherit;font-size:14px;padding:8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff"><option value="">Clôturer avec une décision…</option><option>Résolu à l'amiable</option><option>Avertissement à l'artisan</option><option>Suspension de l'artisan</option><option>Avis suspendu</option><option>Sans suite</option></select>
+      </div>
+    </section>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LIT = [
+  { ref: 'LIT-0042', titre: 'Chantier non terminé · salle de bain', parties: 'C. Martin ↔ Atelier Garnier', age: '5 j', statut: 'En attente artisan', tone: ['#fdf4e3', '#7a5206'],
+    fil: [['Camille M. (particulier)', '21/09', 'Les travaux sont arrêtés depuis 3 semaines, il reste la faïence et le meuble.', '#eef7f3'], ['Julie M. (médiatrice)', '22/09', 'Monsieur Garnier, merci d’indiquer une date de reprise sous 5 jours ouvrés.', '#eef0f3']] },
+  { ref: 'LIT-0041', titre: 'Devis dépassé de 30 %', parties: 'N. Roche ↔ Isolation Gironde', age: '9 j', statut: 'En médiation', tone: ['#eef4fa', '#0d3a65'],
+    fil: [['Nadia R. (particulier)', '17/09', 'Facture finale de 5 400 € pour un devis de 4 150 €.', '#eef7f3'], ['Isolation Gironde', '18/09', 'Surface réelle de 104 m² au lieu de 80 m², avenant signé.', '#fff2ea']] },
+];
+class Component extends DCLogic {
+  state = { sel: 'LIT-0042', msg: '', ajouts: {}, clos: {}, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#litiges'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, noT = lect || !(P['litiges.traiter'] ?? true);
+    const l = LIT.find((x) => x.ref === s.sel);
+    const anon = (t) => (lect ? t.replace(/[A-Z]\. [A-Z][a-z]+|Camille M\.|Nadia R\./g, '•••') : t);
+    return {
+      rows: LIT.map((x) => { const c = s.clos[x.ref]; return { ...x, parties: anon(x.parties), statut: c ? 'Clos' : x.statut, bg: c ? '#f1f0ed' : x.tone[0], fg: c ? '#57534f' : x.tone[1], sel: x.ref === s.sel ? '#f4f5f7' : '#fff', go: () => this.setState({ sel: x.ref, msg: '' }) }; }),
+      l: { ...l, parties: anon(l.parties) },
+      fil: [...l.fil, ...(s.ajouts[l.ref] || [])].map(([qui, quand, t, bg]) => ({ qui: anon(qui), quand, t, bg })),
+      msg: s.msg, setMsg: (e) => this.setState({ msg: e.target.value }), noTraiter: noT, noEnvoyer: noT || !s.msg.trim(),
+      envoyer: () => { this.setState({ ajouts: { ...s.ajouts, [l.ref]: [...(s.ajouts[l.ref] || []), ['Julie M. (médiatrice)', 'à l’instant', s.msg, '#eef0f3']] }, msg: '' }); this.flash('Message envoyé aux deux parties'); },
+      decider: (e) => { if (!e.target.value) return; this.setState({ clos: { ...s.clos, [l.ref]: true }, ajouts: { ...s.ajouts, [l.ref]: [...(s.ajouts[l.ref] || []), ['Décision', 'à l’instant', e.target.value, '#fdf4e3']] } }); this.flash('Litige clos : ' + e.target.value + ' · auditLog'); },
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

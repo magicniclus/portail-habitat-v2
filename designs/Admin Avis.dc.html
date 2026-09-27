@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, select:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Avis</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Publication sous 48 h. Le score de risque combine IP, ancienneté du compte, texte dupliqué et lien avec l'artisan.</p></header>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <sc-for list="{{ filtres }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 11px;border-radius:999px;white-space:nowrap;height:auto;line-height:1.3;background:{{ f.bg }};color:{{ f.fg }}">{{ f.nom }}</button></sc-for>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{ avis }}" as="a" hint-placeholder-count="4">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">{{ a.art }} <span style="color:#e8a33d">{{ a.etoiles }}</span></span><span style="font-size:13px;color:#6b6763">par {{ a.auteur }} · {{ a.date }} · demande {{ a.dem }}</span></div>
+          <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:{{ a.rbg }};color:{{ a.rfg }}">Risque {{ a.risque }}</span>
+        </div>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:#3d3a37;text-wrap:pretty">{{ a.texte }}</p>
+        <span style="font-size:13px;color:#6b6763">{{ a.signaux }}</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <sc-if value="{{ a.enAttente }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ a.publier }}" disabled="{{ noMod }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Publier</button>
+            <select onChange="{{ a.refuser }}" disabled="{{ noMod }}" value="" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff"><option value="">Refuser avec motif…</option><option>Sans lien avec une prestation</option><option>Propos injurieux ou diffamatoires</option><option>Conflit d'intérêts</option><option>Doublon</option></select>
+            <button onClick="{{ a.preuve }}" disabled="{{ noMod }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Demander une preuve</button>
+          </sc-if>
+          <span style="font-size:13.5px;font-weight:700;color:#57534f">{{ a.decision }}</span>
+          <button onClick="{{ a.supprimer }}" disabled="{{ noSuppr }}" title="{{ supprTitle }}" style="margin-left:auto;border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:#8f1d14;padding:0;height:auto">Supprimer</button>
+        </div>
+      </section>
+    </sc-for>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const AVIS = [
+  ['Bertrand Rénovation', 1, 'Paul G.', '25/09', 'PH-4K12', 'Arnaque, ne venez pas. Il a pris un acompte et n’est jamais revenu.', 72, 'Compte créé hier · même IP qu’un avis 1★ sur un concurrent · aucun devis accepté', 'en_attente'],
+  ['Toitures Rive Droite', 5, 'Sophie V.', '25/09', 'PH-4J98', 'Équipe ponctuelle, chantier propre, devis respecté au centime près. Je recommande.', 8, 'Devis accepté le 02/08 · chantier daté du 10/09', 'en_attente'],
+  ['Isolation Gironde', 4, 'Hervé L.', '24/09', 'PH-4J80', 'Bon travail sur les combles, un peu de retard au démarrage mais bien prévenu.', 12, 'Devis accepté · chantier daté du 15/09', 'en_attente'],
+  ['Atelier Garnier', 5, 'Martine G.', '24/09', 'PH-4J77', 'Parfait ! Très professionnel, je recommande vivement ce menuisier.', 64, 'Même nom de famille que le gérant · texte proche d’un autre avis', 'en_attente'],
+  ['Bertrand Rénovation', 5, 'Camille M.', '20/09', 'PH-4H02', 'Salle de bain magnifique, délais tenus.', 5, 'Publié le 21/09 par Karim B.', 'publie'],
+];
+class Component extends DCLogic {
+  state = { f: 'En attente', dec: {}, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#avis'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const statut = (i, a) => (s.dec[i] ? s.dec[i].st : a[8]);
+    const fil = { 'En attente': (st) => st === 'en_attente', 'Risque élevé': (st, a) => st === 'en_attente' && a[6] >= 50, Publiés: (st) => st === 'publie', Tous: () => true };
+    const decide = (i, st, txt) => { this.setState({ dec: { ...s.dec, [i]: { st, txt } } }); this.flash(txt + ' · adminModererAvis · auteur prévenu'); };
+    return {
+      filtres: Object.keys(fil).map((f) => ({ nom: f, bg: f === s.f ? '#2a323c' : '#fff', fg: f === s.f ? '#fff' : '#201e1d', go: () => this.setState({ f }) })),
+      avis: AVIS.map((a, i) => ({ a, i })).filter(({ a, i }) => fil[s.f](statut(i, a), a)).map(({ a, i }) => {
+        const r = a[6] >= 50 ? ['#fdecea', '#8f1d14'] : a[6] >= 25 ? ['#fdf4e3', '#7a5206'] : ['#eef7f3', '#085340'];
+        return { art: a[0], etoiles: '★'.repeat(a[1]) + '☆'.repeat(5 - a[1]), auteur: lect ? '•••' : a[2], date: a[3], dem: a[4], texte: a[5], risque: a[6], signaux: a[7], rbg: r[0], rfg: r[1],
+          enAttente: statut(i, a) === 'en_attente', decision: s.dec[i] ? s.dec[i].txt : a[8] === 'publie' ? 'Publié' : '',
+          publier: () => decide(i, 'publie', 'Publié'), refuser: (e) => e.target.value && decide(i, 'refuse', 'Refusé : ' + e.target.value), preuve: () => decide(i, 'en_attente', 'Preuve demandée à l’auteur'),
+          supprimer: () => decide(i, 'supprime', 'Supprimé définitivement') };
+      }),
+      noMod: lect || !can('avis.moderer'), noSuppr: lect || !can('avis.supprimer'), supprTitle: can('avis.supprimer') ? '' : 'Permission requise : avis.supprimer',
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

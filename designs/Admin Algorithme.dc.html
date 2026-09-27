@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, input:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Algorithme de mise en relation</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Édition de <code>matchingConfig/actif</code>. Testez dans le bac à sable avant de publier.</p></header>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;align-items:start">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:18px">Poids du score</h2>
+      <sc-for list="{{ poids }}" as="p" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:4px 12px;align-items:center">
+          <label style="font-size:14.5px">{{ p.l }}</label><strong style="text-align:right;font-size:14.5px">{{ p.v }}</strong>
+          <input type="range" min="0" max="40" value="{{ p.v }}" onChange="{{ p.set }}" disabled="{{ noConf }}" style="grid-column:1 / -1;accent-color:#3f4a57">
+        </div>
+      </sc-for>
+      <div style="font-size:13.5px;color:{{ totalColor }};font-weight:600">Total : {{ total }} / 100</div>
+      <h2 style="margin:6px 0 0;font-size:18px">Seuils</h2>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px 16px;align-items:center;font-size:14.5px">
+        <label>Score minimal</label><input value="0,60" disabled="{{ noConf }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+        <label>Rayon par défaut (km)</label><input value="25" disabled="{{ noConf }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+        <label>Bonus nouveaux inscrits (14 j)</label><input value="+0,08" disabled="{{ noConf }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+      </div>
+    </section>
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:18px">Bac à sable</h2>
+      <p style="margin:0;font-size:14.5px;color:#57534f">Rejoue la demande <strong>PH-4K82Q9</strong> (salle de bain, Caudéran) avec la configuration en cours d'édition.</p>
+      <button onClick="{{ rejouer }}" class="btn btn-secondary" style="align-self:flex-start;font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Rejouer</button>
+      <sc-if value="{{ joue }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ classement }}" as="c" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 70px 70px;gap:10px;padding:9px 0;border-top:1px solid #ecebe7;font-size:14.5px"><span>{{ c.nom }}</span><span style="text-align:right;color:#6b6763">{{ c.avant }}</span><strong style="text-align:right;color:{{ c.col }}">{{ c.apres }}</strong></div></sc-for>
+        </div>
+      </sc-if>
+      <h2 style="margin:10px 0 0;font-size:18px">Versions</h2>
+      <sc-for list="{{ versions }}" as="v" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #ecebe7;font-size:14px;flex-wrap:wrap"><span><strong>v{{ v.n }}</strong> · {{ v.note }}</span><span style="color:#6b6763">{{ v.par }}</span></div></sc-for>
+    </section>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button onClick="{{ publier }}" disabled="{{ noPublier }}" title="{{ confTitle }}" class="btn btn-primary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Publier la configuration</button>
+  </div>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { poids: [['Distance', 25], ['Réactivité (temps de réponse)', 20], ['Note et avis', 20], ['Taux d’acceptation', 15], ['Formule (Premium, Visibilité)', 10], ['Complétude de la fiche', 10]], joue: false, versions: [[7, 'Poids réactivité 15 → 20', 'Julie M. · 12/09'], [6, 'Bonus nouveaux inscrits', 'Julie M. · 28/08'], [5, 'Rayon 20 → 25 km', 'Karim B. · 02/08']], toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#algorithme'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, can = (p) => P[p] ?? true;
+    const noConf = lect || !can('matching.config');
+    const total = s.poids.reduce((a, p) => a + p[1], 0);
+    const w = s.poids[1][1] / 20;
+    return {
+      poids: s.poids.map(([l, v], i) => ({ l, v, set: (e) => this.setState({ poids: s.poids.map((p, k) => (k === i ? [p[0], +e.target.value] : p)), joue: false }) })),
+      total, totalColor: total === 100 ? '#0a6650' : '#8f1d14', noConf,
+      rejouer: () => this.setState({ joue: true }), joue: s.joue,
+      classement: [['Bertrand Rénovation', 0.91, 0.91 + (w - 1) * 0.04], ['Isolation Gironde', 0.78, 0.78 + (w - 1) * 0.06], ['Toitures Rive Droite', 0.71, 0.71 - (w - 1) * 0.03], ['Atelier Garnier', 0.52, 0.52 - (w - 1) * 0.05]].map(([nom, a, b]) => ({ nom, avant: a.toFixed(2).replace('.', ','), apres: b.toFixed(2).replace('.', ','), col: b > a + 0.001 ? '#0a6650' : b < a - 0.001 ? '#8f1d14' : '#201e1d' })),
+      versions: s.versions.map(([n, note, par]) => ({ n, note, par })),
+      noPublier: noConf || total !== 100, confTitle: can('matching.config') ? (total !== 100 ? 'Le total des poids doit faire 100' : '') : 'Permission requise : matching.config',
+      publier: () => { const n = s.versions[0][0] + 1; this.setState({ versions: [[n, 'Nouveaux poids', 'Julie M. · à l’instant'], ...s.versions] }); this.flash('Configuration v' + n + ' publiée · auditLog'); },
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+:root {
+  --color-accent: #0d7a5f;
+  --color-accent-100: #eef7f3;
+  --color-accent-200: #d2ebe1;
+  --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c;
+  --color-accent-500: #12997a;
+  --color-accent-600: #0a6650;
+  --color-accent-700: #085340;
+  --color-accent-800: #06402f;
+  --color-accent-900: #0a2a21;
+  --color-accent-2: #e05a10;
+  --color-accent-2-100: #fff2ea;
+  --or: #b8862b;
+  --or-100: #fdf6e7;
+  --etoile: #e8a33d;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:visited { color: #fff; }
+.input, select.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+input[type="range"] { accent-color: var(--color-accent); height: 26px; }
+html, body, #dc-root { background: #fff; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+button { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:16px 26px;flex-wrap:wrap;width:100%;max-width:1320px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="display:flex;align-items:center;gap:6px 22px;flex-wrap:wrap;font-size:15px">
+        <a href="Accueil Particuliers.dc.html#metiers" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Métiers</a>
+        <a href="Accueil Particuliers.dc.html#villes" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Villes</a>
+        <a href="#resultats" style="text-decoration:none;color:var(--color-accent);font-weight:600">Artisans</a>
+        <a href="Laisser un Avis.dc.html" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Avis</a>
+      </span>
+      <span style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-left:auto">
+        <a href="Connexion.dc.html" style="font-size:14.5px;text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Mon espace</a>
+        <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:42px;font-size:15px;padding-inline:18px">Simuler mon devis</a>
+      </span>
+    </span>
+  </nav>
+
+  <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-200);padding:clamp(20px,2.6vw,32px) clamp(18px,4vw,44px)">
+    <div style="max-width:1320px;margin:0 auto">
+      <h1 style="font-size:clamp(24px,3vw,34px);line-height:1.1;margin:0 0 8px">Trouver un artisan vérifié près de chez vous</h1>
+      <p style="margin:0 0 18px;font-size:16.5px;line-height:25px;color:var(--color-neutral-800);max-width:58ch">{{ nbTotal }} artisans référencés en Gironde. SIRET, assurance décennale et avis contrôlés avant publication de la fiche.</p>
+      <form onSubmit="{{ rechercher }}" style="background:#fff;border-radius:14px;box-shadow:var(--shadow-md);padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <label style="flex:1 1 260px;display:flex;align-items:center;gap:10px;border:1px solid var(--color-neutral-400);border-radius:10px;padding:0 13px;min-height:52px;background:#fff">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.4 15.4 4.1 4.1"></path></svg>
+          <input type="search" placeholder="Métier, entreprise ou prestation — ex. « douche italienne »" value="{{ q }}" onInput="{{ majQ }}" aria-label="Recherche" style="flex:1;border:0;outline:none;font-family:inherit;font-size:16px;min-width:0;background:transparent">
+        </label>
+        <label style="flex:0 1 190px;display:flex;align-items:center;gap:10px;border:1px solid var(--color-neutral-400);border-radius:10px;padding:0 13px;min-height:52px;background:#fff">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+          <input type="text" placeholder="Ville ou code postal" value="{{ lieu }}" onInput="{{ majLieu }}" aria-label="Lieu" style="flex:1;border:0;outline:none;font-family:inherit;font-size:16px;min-width:0;background:transparent">
+        </label>
+        <button type="submit" class="btn btn-primary" style="min-height:52px;font-size:16px;padding-inline:24px">Rechercher</button>
+      </form>
+      <div style="display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:13px">
+        <span style="font-size:13.5px;color:var(--color-neutral-800)">Recherches fréquentes :</span>
+        <sc-for list="{{ raccourcis }}" as="r" hint-placeholder-count="5">
+          <button type="button" onClick="{{ r.appliquer }}" style="background:#fff;border:1px solid var(--color-accent-200);border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--color-accent-700);cursor:pointer;min-height:36px" style-hover="background:var(--color-accent-200);border-color:var(--color-accent)">{{ r.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <main style="flex:1;max-width:1320px;margin:0 auto;width:100%;padding:clamp(20px,2.6vw,32px) clamp(18px,4vw,44px) clamp(40px,5vw,64px)">
+    <div style="display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:24px clamp(22px,3vw,38px);align-items:start">
+
+      <aside style="position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 36px);min-height:0">
+        <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;flex:none">
+            <span style="display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>
+              Filtres
+            </span>
+            <button type="button" onClick="{{ reinitialiser }}" style="background:none;border:0;padding:0;font-size:13.5px;font-weight:600;color:var(--color-accent-700);cursor:pointer">Tout effacer</button>
+          </div>
+
+          <div style="display:grid;gap:20px;overflow-y:auto;min-height:0;padding-right:6px;margin-right:-6px">
+            <div>
+              <p style="margin:0 0 9px;font-size:14px;font-weight:700">Métier</p>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <sc-for list="{{ metiers }}" as="m" hint-placeholder-count="8">
+                  <button type="button" onClick="{{ m.basculer }}" aria-pressed="{{ m.actif }}" style="cursor:pointer;border-radius:999px;padding:7px 13px;min-height:36px;font-size:13.5px;font-weight:600;background:{{ m.bg }};border:1px solid {{ m.bd }};color:{{ m.fg }}">{{ m.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+                <p style="margin:0;font-size:14px;font-weight:700">Rayon d'intervention</p>
+                <span style="font-size:14px;font-weight:700;color:var(--color-accent-700)">{{ rayon }} km</span>
+              </div>
+              <input type="range" min="5" max="60" step="5" value="{{ rayon }}" onChange="{{ majRayon }}" onInput="{{ majRayon }}" aria-label="Rayon" style="width:100%">
+            </div>
+
+            <div>
+              <p style="margin:0 0 9px;font-size:14px;font-weight:700">Note minimum</p>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <sc-for list="{{ notesMin }}" as="n" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ n.choisir }}" aria-pressed="{{ n.actif }}" style="cursor:pointer;border-radius:9px;padding:7px 11px;min-height:36px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:5px;background:{{ n.bg }};border:1px solid {{ n.bd }};color:{{ n.fg }}"><span aria-hidden="true" style="color:var(--etoile)">★</span>{{ n.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 9px;font-size:14px;font-weight:700">Garanties et labels</p>
+              <div style="display:grid;gap:8px">
+                <sc-for list="{{ labels }}" as="l" hint-placeholder-count="5">
+                  <button type="button" onClick="{{ l.basculer }}" aria-pressed="{{ l.actif }}" style="cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;background:{{ l.bg }};border:1px solid {{ l.bd }};border-radius:10px;padding:9px 11px;min-height:40px;font-size:13.5px;font-weight:600;color:{{ l.fg }}">
+                    <span style="width:19px;height:19px;border-radius:5px;border:1.5px solid {{ l.caseBd }};background:{{ l.caseBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none">{{ l.coche }}</span>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ l.icone }}"></path></svg>
+                    {{ l.label }}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 9px;font-size:14px;font-weight:700">Disponibilité</p>
+              <div style="display:grid;gap:7px">
+                <sc-for list="{{ dispos }}" as="d" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ d.choisir }}" aria-pressed="{{ d.actif }}" style="cursor:pointer;text-align:left;display:flex;align-items:center;gap:9px;border-radius:10px;padding:9px 11px;min-height:40px;font-size:13.5px;font-weight:600;background:{{ d.bg }};border:1px solid {{ d.bd }};color:{{ d.fg }}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v4.8l3 2"></path></svg>
+                    {{ d.label }}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 9px;font-size:14px;font-weight:700">Budget de chantier</p>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <sc-for list="{{ budgets }}" as="b" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ b.choisir }}" aria-pressed="{{ b.actif }}" style="cursor:pointer;border-radius:9px;padding:7px 12px;min-height:36px;font-size:13.5px;font-weight:600;background:{{ b.bg }};border:1px solid {{ b.bd }};color:{{ b.fg }}">{{ b.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--color-accent-2-100);border-radius:14px;padding:18px;flex:none">
+          <p style="margin:0 0 7px;font-size:15px;font-weight:700">Vous ne trouvez pas ?</p>
+          <p style="margin:0 0 13px;font-size:13.5px;line-height:21px;color:var(--color-neutral-800)">Décrivez votre projet : les artisans disponibles de votre secteur viennent à vous.</p>
+          <a href="Simulateur de Devis.dc.html" class="btn" style="min-height:42px;font-size:14.5px;background:var(--color-accent-2);color:#fff">Déposer mon projet</a>
+        </div>
+      </aside>
+
+      <div id="resultats" style="scroll-margin-top:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+          <p style="margin:0;font-size:15px"><strong>{{ nbResultats }}</strong> <span style="color:var(--color-neutral-800)">{{ libelleResultats }}</span></p>
+          <label style="display:flex;align-items:center;gap:9px;font-size:14px">
+            <span style="color:var(--color-neutral-800)">Trier par</span>
+            <select class="input" value="{{ tri }}" onChange="{{ majTri }}" aria-label="Tri" style="min-height:42px;font-size:14.5px;padding-inline:10px">
+              <option value="pertinence">Pertinence</option>
+              <option value="note">Meilleures notes</option>
+              <option value="proximite">Plus proches</option>
+              <option value="delai">Disponibilité</option>
+              <option value="avis">Nombre d'avis</option>
+            </select>
+          </label>
+        </div>
+
+        <sc-if value="{{ aDesFiltres }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+            <sc-for list="{{ filtresActifs }}" as="f" hint-placeholder-count="2">
+              <button type="button" onClick="{{ f.retirer }}" style="cursor:pointer;display:flex;align-items:center;gap:7px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);border-radius:999px;padding:7px 13px;min-height:34px;font-size:13.5px;font-weight:600;color:var(--color-accent-800)">{{ f.label }} <span style="font-size:15px">×</span></button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ aDesPremium }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:22px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--or)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 17l-5.3 2.7 1.1-5.9L3.5 9.7l5.9-.8L12 3.5Z"></path></svg>
+              <p style="margin:0;font-size:15px;font-weight:700">Artisans à la une</p>
+              <span style="font-size:13px;color:var(--color-neutral-700)">— profils Premium, vérifiés et engagés à répondre sous 24 h</span>
+            </div>
+            <div style="display:grid;gap:14px">
+              <sc-for list="{{ premium }}" as="a" hint-placeholder-count="2">
+                <article style="background:#fff;border:1.5px solid var(--or);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md)">
+                  <div style="display:flex;align-items:center;gap:8px;background:var(--or-100);padding:8px 16px;font-size:12.5px;font-weight:700;color:var(--or);letter-spacing:0.04em;text-transform:uppercase">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 17l-5.3 2.7 1.1-5.9L3.5 9.7l5.9-.8L12 3.5Z"></path></svg>
+                    Premium · {{ a.argument }}
+                  </div>
+                  <div style="padding:18px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+                    <span style="flex:none;width:76px;height:76px;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--color-divider);position:relative">
+                      <image-slot id="{{ a.photo1 }}" shape="rect" radius="0" placeholder="Logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+                    </span>
+                    <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:9px">
+                      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start">
+                        <div>
+                          <h2 style="font-size:20px;margin:0 0 4px">{{ a.nom }}</h2>
+                          <p style="margin:0;font-size:14.5px;color:var(--color-neutral-800)">{{ a.metier }} · {{ a.ville }} · {{ a.distance }}</p>
+                        </div>
+                        <span style="display:flex;align-items:center;gap:6px;font-size:14.5px;white-space:nowrap"><span aria-hidden="true" style="color:var(--etoile)">★</span><strong>{{ a.note }}</strong><span style="color:var(--color-neutral-700)">({{ a.avis }} avis)</span></span>
+                      </div>
+                      <p style="margin:0;font-size:14.5px;line-height:23px;color:var(--color-neutral-800)">{{ a.pitch }}</p>
+                      <div style="display:flex;gap:10px 16px;flex-wrap:wrap;font-size:13.5px;color:var(--color-neutral-800)">
+                        <span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v4.8l3 2"></path></svg>{{ a.dispo }}</span>
+                        <span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="flex:none"><path d="M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4"></path></svg>{{ a.labelsCourt }}</span>
+                      </div>
+                      <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:2px">
+                        <a href="Ma Fiche.dc.html" class="btn btn-primary" style="min-height:44px;font-size:14.5px">Voir le profil</a>
+                        <a href="Simulateur de Devis.dc.html" class="btn btn-secondary" style="min-height:44px;font-size:14.5px;background:#fff">Demander un devis</a>
+                        <button type="button" onClick="{{ a.appeler }}" class="btn btn-ghost" style="min-height:44px;font-size:14.5px;gap:8px">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4h3l1.5 4-2 1.5a10 10 0 0 0 5.5 5.5l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.7 1.5C10.9 18.2 5.8 13.1 4 6.2A1.5 1.5 0 0 1 5.5 4Z"></path></svg>
+                          {{ a.tel }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:grid;gap:12px">
+          <sc-for list="{{ standards }}" as="a" hint-placeholder-count="6">
+            <article style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:16px;display:grid;grid-template-columns:minmax(0,104px) minmax(0,1fr);gap:16px" style-hover="border-color:var(--color-accent-300)">
+              <div style="border-radius:10px;overflow:hidden;aspect-ratio:1/1;position:relative;background:#fff;border:1px solid var(--color-divider)">
+                <image-slot id="{{ a.photo1 }}" shape="rect" radius="0" placeholder="Logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start">
+                  <div>
+                    <h2 style="font-size:17.5px;margin:0 0 3px">{{ a.nom }}</h2>
+                    <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">{{ a.metier }} · {{ a.ville }} · {{ a.distance }}</p>
+                  </div>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:14px;white-space:nowrap"><span aria-hidden="true" style="color:var(--etoile)">★</span><strong>{{ a.note }}</strong><span style="color:var(--color-neutral-700)">({{ a.avis }})</span></span>
+                </div>
+                <p style="margin:0;font-size:14px;line-height:22px;color:var(--color-neutral-800)">{{ a.pitch }}</p>
+                <div style="display:flex;gap:7px;flex-wrap:wrap">
+                  <sc-for list="{{ a.badges }}" as="b" hint-placeholder-count="2">
+                    <span style="display:flex;align-items:center;gap:6px;background:var(--color-neutral-100);color:var(--color-neutral-800);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:600">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ b.icone }}"></path></svg>
+                      {{ b.label }}
+                    </span>
+                  </sc-for>
+                </div>
+                <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+                  <span style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--color-neutral-800)">
+                    <span style="display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v4.8l3 2"></path></svg>{{ a.dispo }}</span>
+                    <span style="display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M16 7.5H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H7M12 4.5v15"></path></svg>{{ a.budget }}</span>
+                  </span>
+                  <span style="display:flex;gap:9px;flex-wrap:wrap">
+                    <a href="Ma Fiche.dc.html" class="btn btn-secondary" style="min-height:40px;font-size:14px;background:#fff">Voir le profil</a>
+                    <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:40px;font-size:14px">Devis</a>
+                  </span>
+                </div>
+              </div>
+            </article>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ aucunResultat }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px dashed var(--color-neutral-400);border-radius:14px;padding:30px;text-align:center">
+            <p style="margin:0 0 8px;font-size:17px;font-weight:700">Aucun artisan ne correspond à ces critères</p>
+            <p style="margin:0 0 16px;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Élargissez le rayon ou retirez un filtre — ou laissez les artisans venir à vous.</p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button type="button" class="btn btn-secondary" onClick="{{ reinitialiser }}" style="min-height:44px;background:#fff">Effacer les filtres</button>
+              <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:44px">Déposer mon projet</a>
+            </div>
+          </div>
+        </sc-if>
+
+        <p style="margin:22px 0 0;font-size:13px;line-height:20px;color:var(--color-neutral-700)">Les profils Premium apparaissent en tête de liste, signalés comme tels. Le classement des autres résultats dépend du tri choisi, de la distance et des avis vérifiés. Aucune position n'est vendue dans la liste standard.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1320px;margin:0 auto;padding:22px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat · Artisans vérifiés en Gironde</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Accueil</a>
+        <a href="Laisser un Avis.dc.html" style="color:var(--color-accent-200)">Laisser un avis</a>
+        <a href="Acquisition Artisans v2.dc.html" style="color:var(--color-accent-200)">Devenir partenaire</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320}}">
+const IC = {
+  bouclier: "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
+  feuille: "M20 4c0 8-4.5 12-10 12H5c0-7 5-12 15-12ZM5 20c1.5-4 4-6.5 8-8",
+  medaille: "M12 3.5 9 9h6l-3-5.5ZM12 21a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z",
+  pouce: "M7 20h8.5a2 2 0 0 0 2-1.6l1.2-6A1.6 1.6 0 0 0 17.1 10H13l.8-3.6A2 2 0 0 0 11.9 4L7 12.5V20ZM4.5 12.5h2.5V20H4.5z",
+  eclair: "M13 2 4 14h7l-1 8 9-12h-7z",
+  maison: "M4 11 12 4.5 20 11M6.5 12.5V20h11v-7.5",
+  horloge: "M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17ZM12 7.5v4.8l3 2",
+  photo: "M4 6.5h16v12H4zM8.5 11a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4ZM6 17l4-4.5 3 3 2.5-2.5 3 4",
+  devis: "M6 3.5h9l4 4v13H6zM9.5 12h6M9.5 16h4",
+};
+const B = {
+  decennale: { label: "Décennale vérifiée", icone: IC.bouclier },
+  rge: { label: "Certifié RGE", icone: IC.feuille },
+  qualibat: { label: "Qualibat", icone: IC.medaille },
+  local: { label: "Artisan local", icone: IC.maison },
+  rapide: { label: "Répond sous 24 h", icone: IC.eclair },
+  recommande: { label: "95 % de recommandation", icone: IC.pouce },
+  photos: { label: "Réalisations photos", icone: IC.photo },
+  devis48: { label: "Devis sous 48 h", icone: IC.devis },
+};
+
+const METIERS = ["Plomberie", "Électricité", "Peinture", "Carrelage", "Menuiserie", "Chauffage", "Couverture", "Maçonnerie"];
+
+const ARTISANS = [
+  { id: "a1", nom: "Bertrand Rénovation", metier: "Plomberie", metiers: ["Plomberie", "Carrelage"], ville: "Bordeaux", km: 4, note: 4.9, avis: 37, premium: true,
+    argument: "Répond en moyenne en 2 h", delaiJ: 5, dispo: "Disponible sous 5 jours", anciennete: "12 ans d'activité", budget: "3 000 – 25 000 €", budgetCle: "moyen",
+    labels: ["decennale", "qualibat", "rapide", "photos"], tel: "05 56 XX XX 12",
+    pitch: "Rénovation complète de salles de bain et douches à l'italienne, clés en main. Une équipe de 4 compagnons, chantiers tenus en 5 à 10 jours.",
+    tags: ["douche italienne", "salle de bain", "carrelage", "sanitaires"] },
+  { id: "a2", nom: "Atelier Lumière", metier: "Électricité", metiers: ["Électricité"], ville: "Mérignac", km: 9, note: 4.8, avis: 52, premium: true,
+    argument: "Devis détaillé sous 48 h", delaiJ: 8, dispo: "Disponible sous 8 jours", anciennete: "8 ans d'activité", budget: "400 – 12 000 €", budgetCle: "petit",
+    labels: ["decennale", "rge", "devis48", "recommande"], tel: "05 56 XX XX 45",
+    pitch: "Mise aux normes de tableaux, éclairage encastré, bornes de recharge et domotique. Attestation Consuel fournie systématiquement.",
+    tags: ["tableau électrique", "consuel", "borne de recharge", "domotique"] },
+  { id: "a3", nom: "Toitures Girondines", metier: "Couverture", metiers: ["Couverture", "Maçonnerie"], ville: "Pessac", km: 12, note: 4.7, avis: 41, premium: false,
+    argument: "", delaiJ: 21, dispo: "Disponible sous 3 semaines", anciennete: "15 ans d'activité", budget: "5 000 – 60 000 €", budgetCle: "grand",
+    labels: ["decennale", "qualibat"], tel: "05 56 XX XX 77",
+    pitch: "Réfection de toitures en tuiles et ardoises, zinguerie et traitement de charpente sur toute la Gironde.",
+    tags: ["toiture", "zinguerie", "charpente", "démoussage"] },
+  { id: "a4", nom: "Peintures Delmas", metier: "Peinture", metiers: ["Peinture"], ville: "Cenon", km: 3, note: 4.6, avis: 28, premium: false,
+    argument: "", delaiJ: 4, dispo: "Disponible cette semaine", anciennete: "6 ans d'activité", budget: "800 – 9 000 €", budgetCle: "petit",
+    labels: ["decennale", "local"], tel: "05 56 XX XX 31",
+    pitch: "Peinture intérieure et décoration, enduits de rattrapage et pose de papier peint. Interventions rapides sur la rive droite.",
+    tags: ["peinture", "enduit", "papier peint", "plafond"] },
+  { id: "a5", nom: "Carrelage Aquitaine", metier: "Carrelage", metiers: ["Carrelage"], ville: "Lormont", km: 5, note: 4.5, avis: 34, premium: false,
+    argument: "", delaiJ: 10, dispo: "Disponible sous 10 jours", anciennete: "9 ans d'activité", budget: "1 500 – 18 000 €", budgetCle: "moyen",
+    labels: ["decennale", "photos"], tel: "05 56 XX XX 58",
+    pitch: "Pose de grands formats, mosaïque et plancher chauffant. Étanchéité de pièces humides selon la norme.",
+    tags: ["carrelage", "grand format", "plancher chauffant", "faïence"] },
+  { id: "a6", nom: "Menuiserie Latour", metier: "Menuiserie", metiers: ["Menuiserie"], ville: "Floirac", km: 6, note: 4.9, avis: 19, premium: false,
+    argument: "", delaiJ: 14, dispo: "Disponible sous 2 semaines", anciennete: "22 ans d'activité", budget: "1 200 – 30 000 €", budgetCle: "moyen",
+    labels: ["decennale", "rge", "local"], tel: "05 56 XX XX 04",
+    pitch: "Fenêtres bois et aluminium sur mesure, portes d'entrée, volets roulants et escaliers d'intérieur.",
+    tags: ["fenêtre", "menuiserie", "volets", "porte d'entrée"] },
+  { id: "a7", nom: "Confort Thermique 33", metier: "Chauffage", metiers: ["Chauffage", "Plomberie"], ville: "Bègles", km: 8, note: 4.7, avis: 46, premium: false,
+    argument: "", delaiJ: 7, dispo: "Disponible sous 7 jours", anciennete: "11 ans d'activité", budget: "2 500 – 22 000 €", budgetCle: "moyen",
+    labels: ["decennale", "rge", "recommande"], tel: "05 56 XX XX 66",
+    pitch: "Pompes à chaleur, chaudières à condensation et plancher chauffant. Accompagnement complet sur les aides MaPrimeRénov'.",
+    tags: ["pompe à chaleur", "chaudière", "chauffage", "MaPrimeRénov"] },
+  { id: "a8", nom: "Bâti Pierre & Chaux", metier: "Maçonnerie", metiers: ["Maçonnerie"], ville: "Bouliac", km: 11, note: 4.4, avis: 23, premium: false,
+    argument: "", delaiJ: 28, dispo: "Disponible sous 1 mois", anciennete: "18 ans d'activité", budget: "4 000 – 80 000 €", budgetCle: "grand",
+    labels: ["decennale", "qualibat"], tel: "05 56 XX XX 89",
+    pitch: "Maçonnerie traditionnelle, reprise de pierre, ouverture de murs porteurs et extensions.",
+    tags: ["maçonnerie", "pierre", "mur porteur", "extension"] },
+  { id: "a9", nom: "Elec Habitat Rive Droite", metier: "Électricité", metiers: ["Électricité"], ville: "Bassens", km: 7, note: 4.3, avis: 15, premium: false,
+    argument: "", delaiJ: 3, dispo: "Disponible cette semaine", anciennete: "4 ans d'activité", budget: "300 – 8 000 €", budgetCle: "petit",
+    labels: ["decennale", "local"], tel: "05 56 XX XX 23",
+    pitch: "Dépannage, remplacement de tableau et création de prises. Intervention rapide sur la rive droite.",
+    tags: ["dépannage", "prises", "tableau", "électricité"] },
+  { id: "a10", nom: "Aqua Services Gironde", metier: "Plomberie", metiers: ["Plomberie"], ville: "Ambarès-et-Lagrave", km: 14, note: 4.2, avis: 31, premium: false,
+    argument: "", delaiJ: 2, dispo: "Disponible sous 48 h", anciennete: "7 ans d'activité", budget: "150 – 6 000 €", budgetCle: "petit",
+    labels: ["decennale"], tel: "05 56 XX XX 90",
+    pitch: "Dépannage de fuites, remplacement de chauffe-eau et création de réseaux. Urgences traitées sous 24 h.",
+    tags: ["fuite", "chauffe-eau", "dépannage", "plomberie"] },
+];
+
+const NOTES = [{ v: 0, label: "Toutes" }, { v: 4, label: "4 et +" }, { v: 4.5, label: "4,5 et +" }, { v: 4.8, label: "4,8 et +" }];
+const DISPOS = [{ v: "tous", label: "Peu importe" }, { v: "semaine", label: "Cette semaine" }, { v: "quinze", label: "Sous 15 jours" }];
+const BUDGETS = [{ v: "tous", label: "Tous" }, { v: "petit", label: "Moins de 5 000 €" }, { v: "moyen", label: "5 000 – 30 000 €" }, { v: "grand", label: "Plus de 30 000 €" }];
+
+class Component extends DCLogic {
+  state = { q: "", lieu: "Bordeaux", metiers: [], rayon: 20, note: 0, labels: [], dispo: "tous", budget: "tous", tri: "pertinence" };
+
+  filtrer() {
+    const s = this.state, q = s.q.trim().toLowerCase();
+    return ARTISANS.filter((a) => {
+      if (q && (a.nom + " " + a.metiers.join(" ") + " " + a.pitch + " " + a.tags.join(" ")).toLowerCase().indexOf(q) === -1) return false;
+      if (s.metiers.length && !a.metiers.some((m) => s.metiers.indexOf(m) > -1)) return false;
+      if (a.km > s.rayon) return false;
+      if (a.note < s.note) return false;
+      if (s.labels.length && !s.labels.every((l) => a.labels.indexOf(l) > -1)) return false;
+      if (s.dispo === "semaine" && a.delaiJ > 7) return false;
+      if (s.dispo === "quinze" && a.delaiJ > 15) return false;
+      if (s.budget !== "tous" && a.budgetCle !== s.budget) return false;
+      return true;
+    });
+  }
+
+  trier(liste) {
+    const t = this.state.tri;
+    const cmp = {
+      note: (a, b) => b.note - a.note,
+      proximite: (a, b) => a.km - b.km,
+      delai: (a, b) => a.delaiJ - b.delaiJ,
+      avis: (a, b) => b.avis - a.avis,
+      pertinence: (a, b) => (b.note * 12 + b.avis * 0.4 - b.km * 0.6) - (a.note * 12 + a.avis * 0.4 - a.km * 0.6),
+    }[t];
+    return liste.slice().sort(cmp);
+  }
+
+  carte(a) {
+    return {
+      nom: a.nom, metier: a.metiers.join(" · "), ville: a.ville, distance: a.km + " km", note: String(a.note).replace(".", ","),
+      avis: a.avis, pitch: a.pitch, dispo: a.dispo, anciennete: a.anciennete, budget: a.budget, tel: a.tel,
+      argument: a.argument, photo1: "an-" + a.id + "-1", photo2: "an-" + a.id + "-2",
+      photoTexte: "Réalisation " + a.metier.toLowerCase(),
+      badges: a.labels.map((l) => B[l]).filter(Boolean),
+      labelsCourt: a.labels.slice(0, 2).map((l) => B[l].label).join(" · "),
+      appeler: () => {},
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const resultats = this.trier(this.filtrer());
+    const premium = resultats.filter((a) => a.premium);
+    const standards = resultats.filter((a) => !a.premium);
+
+    const chips = (liste, champ) => liste.map((o) => {
+      const actif = s[champ] === o.v;
+      return { label: o.label, actif,
+        bg: actif ? "var(--color-accent)" : "#fff", bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+        fg: actif ? "#fff" : "var(--color-neutral-800)",
+        choisir: () => this.setState({ [champ]: o.v }) };
+    });
+
+    const filtresActifs = [];
+    s.metiers.forEach((m) => filtresActifs.push({ label: m, retirer: () => this.setState({ metiers: s.metiers.filter((x) => x !== m) }) }));
+    s.labels.forEach((l) => filtresActifs.push({ label: B[l].label, retirer: () => this.setState({ labels: s.labels.filter((x) => x !== l) }) }));
+    if (s.note > 0) filtresActifs.push({ label: "Note " + String(s.note).replace(".", ",") + " et +", retirer: () => this.setState({ note: 0 }) });
+    if (s.dispo !== "tous") filtresActifs.push({ label: DISPOS.filter((d) => d.v === s.dispo)[0].label, retirer: () => this.setState({ dispo: "tous" }) });
+    if (s.budget !== "tous") filtresActifs.push({ label: BUDGETS.filter((b) => b.v === s.budget)[0].label, retirer: () => this.setState({ budget: "tous" }) });
+    if (s.rayon !== 20) filtresActifs.push({ label: "Rayon " + s.rayon + " km", retirer: () => this.setState({ rayon: 20 }) });
+
+    return {
+      nbTotal: "3 200",
+      q: s.q, majQ: (e) => this.setState({ q: e.target.value }),
+      lieu: s.lieu, majLieu: (e) => this.setState({ lieu: e.target.value }),
+      rechercher: (e) => e.preventDefault(),
+      raccourcis: ["Salle de bain", "Tableau électrique", "Peinture intérieure", "Pompe à chaleur", "Toiture"].map((label) => ({
+        label, appliquer: () => this.setState({ q: label }) })),
+
+      metiers: METIERS.map((m) => {
+        const actif = s.metiers.indexOf(m) > -1;
+        return { label: m, actif,
+          bg: actif ? "var(--color-accent)" : "#fff", bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+          fg: actif ? "#fff" : "var(--color-neutral-800)",
+          basculer: () => this.setState({ metiers: actif ? s.metiers.filter((x) => x !== m) : s.metiers.concat(m) }) };
+      }),
+      rayon: s.rayon, majRayon: (e) => this.setState({ rayon: parseInt(e.target.value, 10) }),
+      notesMin: chips(NOTES, "note"),
+      dispos: chips(DISPOS, "dispo"),
+      budgets: chips(BUDGETS, "budget"),
+      labels: Object.keys(B).map((k) => {
+        const actif = s.labels.indexOf(k) > -1;
+        return { label: B[k].label, icone: B[k].icone, actif, coche: actif ? "✓" : "",
+          bg: actif ? "var(--color-accent-100)" : "#fff", bd: actif ? "var(--color-accent-300)" : "var(--color-neutral-400)",
+          fg: actif ? "var(--color-accent-800)" : "var(--color-neutral-800)",
+          caseBg: actif ? "var(--color-accent)" : "#fff", caseBd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+          basculer: () => this.setState({ labels: actif ? s.labels.filter((x) => x !== k) : s.labels.concat(k) }) };
+      }),
+
+      tri: s.tri, majTri: (e) => this.setState({ tri: e.target.value }),
+      nbResultats: resultats.length,
+      libelleResultats: (resultats.length > 1 ? "artisans correspondent" : "artisan correspond") + " à votre recherche" + (s.lieu ? " autour de " + s.lieu : ""),
+      aDesFiltres: filtresActifs.length > 0, filtresActifs,
+      aDesPremium: premium.length > 0,
+      premium: premium.map((a) => this.carte(a)),
+      standards: standards.map((a) => this.carte(a)),
+      aucunResultat: resultats.length === 0,
+      reinitialiser: () => this.setState({ q: "", metiers: [], rayon: 20, note: 0, labels: [], dispo: "tous", budget: "tous", tri: "pertinence" }),
+    };
+  }
+}
+</script>
+</body>
+</html>

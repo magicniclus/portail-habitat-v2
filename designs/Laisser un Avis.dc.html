@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+:root {
+  --color-accent: #0d7a5f;
+  --color-accent-100: #eef7f3;
+  --color-accent-200: #d2ebe1;
+  --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c;
+  --color-accent-500: #12997a;
+  --color-accent-600: #0a6650;
+  --color-accent-700: #085340;
+  --color-accent-800: #06402f;
+  --color-accent-900: #0a2a21;
+  --color-accent-2: #e05a10;
+  --color-accent-2-100: #fff2ea;
+  --etoile: #e8a33d;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6, .card-title, blockquote { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:active, .nav a.btn-primary:visited { color: #fff; }
+.input, select.input, textarea.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus, textarea.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+html, body, #dc-root { background: #fff; }
+html { scroll-behavior: smooth; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+button { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:20px 28px;flex-wrap:wrap;width:100%;max-width:1280px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="display:flex;align-items:center;gap:6px 22px;flex-wrap:wrap;font-size:15px">
+        <a href="Accueil Particuliers.dc.html#metiers" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Métiers</a>
+        <a href="Accueil Particuliers.dc.html#villes" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Villes</a>
+        <a href="Accueil Particuliers.dc.html#inspirations" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Inspirations</a>
+        <a href="Accueil Particuliers.dc.html#artisans" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Artisans</a>
+        <a href="#avis" style="text-decoration:none;color:var(--color-accent);font-weight:600">Avis</a>
+      </span>
+      <span style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-left:auto">
+        <a href="Connexion.dc.html" style="font-size:14.5px;text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Mon espace</a>
+        <a href="Accueil Particuliers.dc.html#simulateur" class="btn btn-primary" style="min-height:42px;font-size:15px;padding-inline:18px">Simuler mon devis</a>
+      </span>
+    </span>
+  </nav>
+
+  <main id="avis" style="flex:1;background:var(--color-accent-100);padding:clamp(26px,3.5vw,52px) clamp(18px,4vw,44px) clamp(44px,5vw,72px)">
+    <div style="max-width:1080px;margin:0 auto">
+
+      <nav aria-label="Étapes" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 26px;font-size:14px">
+        <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="3">
+          <span style="display:flex;align-items:center;gap:9px">
+            <span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ e.bg }};color:{{ e.fg }}">{{ e.puce }}</span>
+            <span style="font-weight:600;color:{{ e.label }}">{{ e.titre }}</span>
+            <span style="width:22px;height:1px;background:var(--color-accent-300);display:block"></span>
+          </span>
+        </sc-for>
+      </nav>
+
+      <sc-if value="{{ vueRecherche }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <h1 style="font-size:clamp(30px,3.8vw,44px);line-height:1.08;margin:0 0 12px;max-width:24ch">Votre avis aide le prochain <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">particulier</span> à bien choisir</h1>
+          <p style="font-size:17.5px;line-height:28px;margin:0 0 28px;max-width:58ch;color:var(--color-neutral-800)">Retrouvez l'artisan qui a réalisé vos travaux. Deux minutes suffisent : une note, quelques détails, et votre avis est vérifié avant publication.</p>
+
+          <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,30px);margin-bottom:22px">
+            <div class="field" style="margin:0">
+              <label for="av-q" style="font-size:15px">Nom de l'entreprise, de l'artisan, ville ou téléphone</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <input class="input" id="av-q" type="search" placeholder="Ex. Terabois, Bertrand Rénovation, 33000…" value="{{ q }}" onInput="{{ majQ }}" style="flex:1 1 260px;min-height:52px;font-size:16.5px">
+                <button type="button" class="btn btn-primary" onClick="{{ rien }}" style="min-height:52px;font-size:16px;padding-inline:22px">Rechercher</button>
+              </div>
+            </div>
+            <p style="margin:14px 0 0;font-size:14px;color:var(--color-neutral-800)">Vous ne trouvez pas l'entreprise ? <a href="Contact.dc.html?sujet=ajout-artisan">Signalez-la nous</a> et nous créons la fiche.</p>
+          </div>
+
+          <p style="font-size:14.5px;font-weight:600;color:var(--color-neutral-800);margin:0 0 14px">{{ nbResultats }}</p>
+          <div style="display:grid;gap:14px">
+            <sc-for list="{{ resultats }}" as="a" hint-placeholder-count="3">
+              <article style="background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+                <span style="flex:none;width:58px;height:58px;border-radius:14px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700">{{ a.initiales }}</span>
+                <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:4px">
+                  <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <strong style="font-size:18.5px">{{ a.nom }}</strong>
+                    <span class="tag tag-accent" style="font-size:11.5px">Vérifié</span>
+                  </span>
+                  <span style="font-size:14.5px;color:var(--color-neutral-800)">{{ a.gerant }} · {{ a.metier }}</span>
+                  <span style="font-size:14px;color:var(--color-neutral-700);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span>{{ a.ville }}</span>
+                    <span>·</span>
+                    <span style="color:var(--etoile)">★</span>
+                    <span>{{ a.note }} ({{ a.avis }})</span>
+                  </span>
+                </span>
+                <button type="button" class="btn btn-primary" onClick="{{ a.choisir }}" style="min-height:46px;font-size:15px;padding-inline:20px">Laisser un avis</button>
+              </article>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ aucunResultat }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border-radius:14px;padding:26px;text-align:center">
+              <p style="margin:0 0 8px;font-size:17px;font-weight:600">Aucune entreprise ne correspond à « {{ q }} »</p>
+              <p style="margin:0 0 16px;font-size:15px;color:var(--color-neutral-800)">Essayez le nom exact de l'entreprise, la ville ou le numéro de téléphone figurant sur votre devis.</p>
+              <a href="Contact.dc.html?sujet=ajout-artisan" class="btn btn-secondary" style="min-height:44px;background:#fff">Demander l'ajout d'un artisan</a>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vueFormulaire }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,0.85fr);gap:24px clamp(22px,3vw,40px);align-items:start">
+
+          <form style="background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(20px,3vw,32px);display:grid;gap:26px" onSubmit="{{ publier }}">
+            <div>
+              <button type="button" onClick="{{ retour }}" style="background:none;border:0;padding:0;color:var(--color-accent-700);font-size:14.5px;font-weight:600;cursor:pointer;margin-bottom:14px">← Changer d'artisan</button>
+              <h1 style="font-size:clamp(24px,2.8vw,32px);line-height:1.14;margin:0 0 8px">Votre avis sur {{ artisanNom }}</h1>
+              <p style="margin:0;font-size:15.5px;line-height:24px;color:var(--color-neutral-800)">{{ artisanMetier }} · {{ artisanVille }}</p>
+            </div>
+
+            <div>
+              <p style="margin:0 0 4px;font-size:17px;font-weight:700">Quelle note donneriez-vous ?</p>
+              <p style="margin:0 0 14px;font-size:14px;color:var(--color-neutral-800)">Votre impression générale sur le chantier.</p>
+              <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap" onMouseLeave="{{ quitterEtoiles }}">
+                <span style="display:flex;gap:6px">
+                  <sc-for list="{{ etoiles }}" as="s" hint-placeholder-count="5">
+                    <button type="button" onClick="{{ s.noter }}" onMouseEnter="{{ s.survoler }}" onFocus="{{ s.survoler }}" aria-label="{{ s.aria }}" style="background:none;border:0;padding:4px;cursor:pointer;line-height:1;font-size:40px;color:{{ s.couleur }};transition:transform .12s ease" style-hover="transform:scale(1.12)">★</button>
+                  </sc-for>
+                </span>
+                <span style="font-size:19px;font-weight:700;color:var(--color-accent-700);min-height:26px">{{ noteLabel }}</span>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 4px;font-size:17px;font-weight:700">Notez le détail <span style="font-weight:400;font-size:14px;color:var(--color-neutral-700)">(facultatif)</span></p>
+              <p style="margin:0 0 14px;font-size:14px;color:var(--color-neutral-800)">C'est ce que les autres particuliers lisent en premier.</p>
+              <div style="display:grid;gap:12px">
+                <sc-for list="{{ criteres }}" as="c" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--color-accent-100);border-radius:10px;padding:11px 14px">
+                    <span style="font-size:15px;font-weight:600">{{ c.nom }}</span>
+                    <span style="display:flex;gap:3px">
+                      <sc-for list="{{ c.etoiles }}" as="e" hint-placeholder-count="5">
+                        <button type="button" onClick="{{ e.noter }}" aria-label="{{ e.aria }}" style="background:none;border:0;padding:3px;cursor:pointer;line-height:1;font-size:22px;color:{{ e.couleur }}">★</button>
+                      </sc-for>
+                    </span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin:0 0 12px;font-size:17px;font-weight:700">Qu'est-ce qui s'est bien passé ?</p>
+              <div style="display:flex;flex-wrap:wrap;gap:9px">
+                <sc-for list="{{ points }}" as="p" hint-placeholder-count="8">
+                  <button type="button" onClick="{{ p.basculer }}" aria-pressed="{{ p.actif }}" style="border-radius:999px;padding:9px 15px;font-size:14px;font-weight:600;cursor:pointer;min-height:40px;background:{{ p.bg }};border:1px solid {{ p.bd }};color:{{ p.fg }}">{{ p.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div class="field" style="margin:0">
+              <label for="av-texte" style="font-size:17px;font-weight:700">Votre commentaire</label>
+              <p style="margin:0 0 10px;font-size:14px;color:var(--color-neutral-800)">Le chantier réalisé, le déroulé, ce que vous diriez à un voisin.</p>
+              <textarea class="input" id="av-texte" rows="5" maxLength="1200" placeholder="Ex. Remplacement de la douche et du carrelage dans une salle de bain de 6 m². Devis clair, chantier tenu en 5 jours…" value="{{ texte }}" onInput="{{ majTexte }}" style="font-size:16px;line-height:26px;resize:vertical"></textarea>
+              <p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700);text-align:right">{{ compteur }}</p>
+            </div>
+
+            <div>
+              <p style="margin:0 0 4px;font-size:17px;font-weight:700">Photos du chantier <span style="font-weight:400;font-size:14px;color:var(--color-neutral-700)">(facultatif)</span></p>
+              <p style="margin:0 0 12px;font-size:14px;color:var(--color-neutral-800)">Un avis avec photos est lu 3 fois plus souvent.</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+                <div style="aspect-ratio:1/1"><image-slot id="av-photo-1" shape="rounded" radius="12" placeholder="Avant"></image-slot></div>
+                <div style="aspect-ratio:1/1"><image-slot id="av-photo-2" shape="rounded" radius="12" placeholder="Après"></image-slot></div>
+                <div style="aspect-ratio:1/1"><image-slot id="av-photo-3" shape="rounded" radius="12" placeholder="Détail"></image-slot></div>
+              </div>
+            </div>
+
+            <div style="display:grid;gap:14px">
+              <p style="margin:0;font-size:17px;font-weight:700">Vous et votre chantier</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+                <div class="field" style="margin:0"><label for="av-nom">Nom affiché</label><input class="input" id="av-nom" type="text" placeholder="Camille M." required="required" style="min-height:46px"></div>
+                <div class="field" style="margin:0"><label for="av-email">Email (non publié)</label><input class="input" id="av-email" type="email" placeholder="camille@email.fr" required="required" style="min-height:46px"></div>
+                <div class="field" style="margin:0"><label for="av-type">Type de travaux</label>
+                  <select class="input" id="av-type" required="required" style="min-height:46px">
+                    <option value="">Sélectionner…</option>
+                    <option>Salle de bain</option>
+                    <option>Cuisine</option>
+                    <option>Peinture / décoration</option>
+                    <option>Électricité</option>
+                    <option>Plomberie</option>
+                    <option>Toiture / couverture</option>
+                    <option>Isolation</option>
+                    <option>Rénovation globale</option>
+                    <option>Autre</option>
+                  </select>
+                </div>
+                <div class="field" style="margin:0"><label for="av-date">Fin du chantier</label><input class="input" id="av-date" type="month" required="required" style="min-height:46px"></div>
+              </div>
+              <label style="display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:22px;cursor:pointer;background:var(--color-accent-100);border-radius:10px;padding:14px">
+                <input type="checkbox" required="required" style="width:17px;height:17px;margin-top:2px;accent-color:var(--color-accent);flex:none">
+                <span>Je certifie avoir fait réaliser ces travaux par cet artisan, n'avoir aucun lien personnel ou concurrentiel avec lui, et respecter la <a href="Pages Legales.dc.html?public=part&amp;doc=avis">politique d'avis de Portail Habitat</a>.</span>
+              </label>
+            </div>
+
+            <div>
+              <button type="submit" class="btn btn-primary btn-block" disabled="{{ bloque }}" style="min-height:54px;font-size:17px;opacity:{{ opaciteCta }}">Publier mon avis</button>
+              <p style="margin:10px 0 0;font-size:13.5px;line-height:21px;color:var(--color-neutral-800);text-align:center">{{ aideCta }}</p>
+            </div>
+          </form>
+
+          <aside style="display:grid;gap:16px;position:sticky;top:20px">
+            <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);padding:22px">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <span style="flex:none;width:52px;height:52px;border-radius:14px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">{{ artisanInitiales }}</span>
+                <span>
+                  <strong style="display:block;font-size:17px">{{ artisanNom }}</strong>
+                  <span style="font-size:14px;color:var(--color-neutral-800)">{{ artisanMetier }}</span>
+                </span>
+              </div>
+              <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700)">Votre note</p>
+              <p style="margin:0 0 4px;font-size:32px;font-weight:700;line-height:1">{{ noteChiffre }}<span style="font-size:0.45em;font-weight:600;color:var(--color-neutral-700)">/5</span></p>
+              <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Note actuelle de l'entreprise : {{ artisanNote }} sur {{ artisanAvis }}.</p>
+            </div>
+
+            <div style="background:var(--color-accent-900);color:var(--color-accent-200);border-radius:16px;padding:22px">
+              <p style="margin:0 0 14px;font-size:16px;font-weight:700;color:#fff">Comment on protège les avis</p>
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:12px;font-size:14px;line-height:22px">
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>Chaque avis est relu sous 48 h avant publication.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>L'artisan peut répondre publiquement, sans jamais modifier ni supprimer votre avis.</span></li>
+                <li style="display:flex;gap:10px"><span style="color:var(--color-accent-400);font-weight:700">✓</span><span>Votre email reste privé ; seul le nom affiché est visible.</span></li>
+              </ul>
+            </div>
+
+            <div style="background:var(--color-accent-2-100);border-radius:16px;padding:20px">
+              <p style="margin:0 0 8px;font-size:15.5px;font-weight:700">Un litige plutôt qu'un avis ?</p>
+              <p style="margin:0 0 14px;font-size:14px;line-height:22px;color:var(--color-neutral-800)">Si le chantier s'est mal terminé, notre équipe peut intervenir en médiation avant que vous publiiez.</p>
+              <a href="Contact.dc.html?sujet=mediation" style="font-size:14.5px;font-weight:600;color:var(--color-accent-2-700)">Demander une médiation →</a>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vueConfirme }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:620px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:var(--shadow-md);padding:clamp(26px,4vw,44px);text-align:center">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:var(--color-accent-100);margin-bottom:20px">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"></path></svg>
+          </span>
+          <h1 style="font-size:clamp(25px,3vw,33px);line-height:1.14;margin:0 0 12px">Merci, votre avis est envoyé</h1>
+          <p style="font-size:16.5px;line-height:27px;margin:0 0 22px;color:var(--color-neutral-800)">Vous avez attribué <strong>{{ noteChiffre }}/5</strong> à {{ artisanNom }}. Notre équipe le relit sous 48 h, puis il apparaît sur sa fiche et vous recevez un email de confirmation.</p>
+          <div style="background:var(--color-accent-100);border-radius:12px;padding:18px;text-align:left;margin:0 0 24px">
+            <p style="margin:0 0 10px;font-size:14px;font-weight:700">Et ensuite ?</p>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:9px;font-size:14.5px;line-height:23px;color:var(--color-neutral-800)">
+              <li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700">1</span><span>L'artisan est informé et peut vous répondre publiquement.</span></li>
+              <li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700">2</span><span>Vous pouvez modifier ou retirer votre avis depuis votre espace.</span></li>
+            </ul>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="Accueil Particuliers.dc.html" class="btn btn-primary" style="min-height:48px;font-size:16px;padding-inline:22px">Retour à l'accueil</a>
+            <button type="button" class="btn btn-secondary" onClick="{{ recommencer }}" style="min-height:48px;font-size:16px;background:#fff">Noter un autre artisan</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1280px;margin:0 auto;padding:22px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Pages Legales.dc.html?public=part&amp;doc=avis" style="color:var(--color-accent-200)">Politique d'avis</a>
+        <a href="Contact.dc.html" style="color:var(--color-accent-200)">Aide</a>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=confidentialite" style="color:var(--color-accent-200)">Confidentialité</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280}}">
+const ARTISANS = [
+  { id: "a1", nom: "Terabois", initiales: "TB", gerant: "Franck C.", metier: "Diagnostiqueur · Menuiserie", ville: "Bordeaux, Gironde", note: "4,8", avis: "24 avis" },
+  { id: "a2", nom: "Bertrand Rénovation", initiales: "BR", gerant: "Julien B.", metier: "Plomberie · Salle de bain", ville: "Mérignac, Gironde", note: "4,9", avis: "37 avis" },
+  { id: "a3", nom: "Atelier Lumière", initiales: "AL", gerant: "Sophie M.", metier: "Électricité · Domotique", ville: "Bordeaux, Gironde", note: "4,7", avis: "52 avis" },
+  { id: "a4", nom: "Toitures Girondines", initiales: "TG", gerant: "Marc D.", metier: "Couverture · Charpente", ville: "Pessac, Gironde", note: "4,6", avis: "41 avis" },
+];
+const LABELS = ["", "Très décevant", "Décevant", "Correct", "Bien", "Excellent"];
+const CRITERES = ["Qualité du travail", "Respect des délais", "Propreté du chantier", "Rapport qualité / prix"];
+const POINTS = ["Devis clair", "Ponctuel", "Chantier propre", "Bon conseil", "Délais tenus", "Prix respecté", "Travail soigné", "Bonne communication"];
+
+class Component extends DCLogic {
+  state = { vue: "recherche", q: "", artisan: null, note: 0, survol: 0, detail: {}, choisis: [], texte: "" };
+
+  renderVals() {
+    const s = this.state;
+    const a = s.artisan || {};
+    const affichee = s.survol || s.note;
+    const etape = s.vue === "recherche" ? 1 : s.vue === "formulaire" ? 2 : 3;
+    const prete = s.note > 0;
+    const q = s.q.trim().toLowerCase();
+    const resultats = q.length < 2 ? ARTISANS : ARTISANS.filter((x) =>
+      (x.nom + " " + x.gerant + " " + x.metier + " " + x.ville).toLowerCase().includes(q));
+
+    return {
+      etapes: [1, 2, 3].map((n) => ({
+        puce: etape > n ? "✓" : String(n),
+        titre: ["Choisir l'artisan", "Votre avis", "Publication"][n - 1],
+        bg: etape >= n ? "var(--color-accent)" : "var(--color-accent-200)",
+        fg: etape >= n ? "#fff" : "var(--color-accent-700)",
+        label: etape >= n ? "var(--color-accent-800)" : "var(--color-neutral-700)",
+      })),
+      vueRecherche: s.vue === "recherche",
+      vueFormulaire: s.vue === "formulaire",
+      vueConfirme: s.vue === "confirme",
+      q: s.q,
+      majQ: (e) => this.setState({ q: e.target.value }),
+      rien: () => {},
+      nbResultats: resultats.length + (resultats.length > 1 ? " artisans trouvés" : " artisan trouvé"),
+      aucunResultat: resultats.length === 0,
+      resultats: resultats.map((x) => ({
+        ...x,
+        choisir: () => this.setState({ vue: "formulaire", artisan: x, note: 0, survol: 0, detail: {}, choisis: [], texte: "" }),
+      })),
+
+      artisanNom: a.nom || "",
+      artisanMetier: a.metier || "",
+      artisanVille: a.ville || "",
+      artisanInitiales: a.initiales || "",
+      artisanNote: a.note || "",
+      artisanAvis: a.avis || "",
+
+      etoiles: [1, 2, 3, 4, 5].map((n) => ({
+        couleur: n <= affichee ? "var(--etoile)" : "var(--color-neutral-400)",
+        aria: n + " étoile" + (n > 1 ? "s" : ""),
+        noter: () => this.setState({ note: n }),
+        survoler: () => this.setState({ survol: n }),
+      })),
+      quitterEtoiles: () => this.setState({ survol: 0 }),
+      noteLabel: affichee ? LABELS[affichee] : "",
+      noteChiffre: s.note || "—",
+
+      criteres: CRITERES.map((nom) => ({
+        nom,
+        etoiles: [1, 2, 3, 4, 5].map((n) => ({
+          couleur: n <= (s.detail[nom] || 0) ? "var(--etoile)" : "var(--color-accent-300)",
+          aria: nom + " : " + n + " sur 5",
+          noter: () => this.setState({ detail: Object.assign({}, s.detail, { [nom]: n }) }),
+        })),
+      })),
+
+      points: POINTS.map((label) => {
+        const actif = s.choisis.indexOf(label) > -1;
+        return {
+          label, actif,
+          bg: actif ? "var(--color-accent)" : "#fff",
+          bd: actif ? "var(--color-accent)" : "var(--color-neutral-400)",
+          fg: actif ? "#fff" : "var(--color-neutral-800)",
+          basculer: () => this.setState({
+            choisis: actif ? s.choisis.filter((c) => c !== label) : s.choisis.concat(label),
+          }),
+        };
+      }),
+
+      texte: s.texte,
+      majTexte: (e) => this.setState({ texte: e.target.value }),
+      compteur: s.texte.length + " / 1200 caractères" + (s.texte.length > 0 && s.texte.length < 60 ? " — quelques lignes de plus aident beaucoup" : ""),
+
+      bloque: !prete,
+      opaciteCta: prete ? 1 : 0.5,
+      aideCta: prete ? "Publication sous 48 h après vérification. Modifiable depuis votre espace." : "Attribuez d'abord une note globale pour publier votre avis.",
+      publier: (e) => { e.preventDefault(); this.setState({ vue: "confirme" }); window.scrollTo(0, 0); },
+      retour: () => this.setState({ vue: "recherche" }),
+      recommencer: () => this.setState({ vue: "recherche", q: "", artisan: null, note: 0, detail: {}, choisis: [], texte: "" }),
+    };
+  }
+}
+</script>
+</body>
+</html>

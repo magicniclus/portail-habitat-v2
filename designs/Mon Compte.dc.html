@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857; --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif; --color-bg: #ffffff;
+}
+body, h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+  <aside style="width:252px;border-right:1px solid var(--color-divider);padding:18px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;box-sizing:border-box">
+    <a href="Espace Artisan Dashboard.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 14px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <span>
+        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+      </span>
+    </a>
+    <a href="Equipe.dc.html" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--color-divider);border-radius:10px;margin-bottom:8px;text-decoration:none;color:var(--color-text)">
+      <span style="width:32px;height:32px;border-radius:8px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">BR</span>
+      <span style="display:flex;flex-direction:column;min-width:0;flex:1">
+        <span style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Bertrand Rénovation</span>
+        <span style="font-size:12.5px;color:var(--color-neutral-700)">Propriétaire</span>
+      </span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+    </a>
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="10">
+      <sc-if value="{{ item.titre }}" hint-placeholder-val="{{ false }}">
+        <span style="display:block;padding:16px 12px 6px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-600)">{{ item.label }}</span>
+      </sc-if>
+      <sc-if value="{{ item.lien }}" hint-placeholder-val="{{ true }}">
+        <a href="{{ item.href }}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:{{ item.fw }};color:{{ item.fg }};background:{{ item.bg }};border:1px solid {{ item.bd }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+          <span>{{ item.label }}</span>
+        </a>
+      </sc-if>
+    </sc-for>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px;min-height:38px">
+      <p style="margin:0;font-size:17px;font-weight:700">Mon compte</p>
+      <span style="margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+    </header>
+
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 64px;display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:clamp(20px,3vw,40px);max-width:1120px;width:100%;box-sizing:border-box;align-items:start">
+      <nav aria-label="Sections du compte" style="position:sticky;top:84px;display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="5">
+          <a href="{{ sec.href }}" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:var(--color-neutral-800)" style-hover="background:var(--color-neutral-100)">{{ sec.label }}</a>
+        </sc-for>
+      </nav>
+
+      <div style="display:grid;gap:36px;min-width:0">
+        <div>
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Mon compte</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Vos informations personnelles, la sécurité de votre connexion et vos notifications. Ces réglages vous concernent vous, pas l'entreprise.</p>
+        </div>
+
+        <section id="profil" style="display:grid;gap:14px">
+          <h2 style="font-size:20px;margin:0">Profil</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:14.5px;font-weight:600">Prénom<input class="input" value="Julien" style="padding:11px 13px;font-size:15px" /></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:14.5px;font-weight:600">Nom<input class="input" value="Bertrand" style="padding:11px 13px;font-size:15px" /></label>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:4px 18px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0">
+              <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;color:var(--color-neutral-700)">Email de connexion</span><span style="font-size:15.5px;font-weight:600">julien@bertrand-renovation.fr <span style="font-size:13px;color:#0a6650;font-weight:700">· vérifié</span></span></span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Changer d'email</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0;border-top:1px solid var(--color-divider)">
+              <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;color:var(--color-neutral-700)">Mobile</span><span style="font-size:15.5px;font-weight:600">06 12 •• •• 48 <span style="font-size:13px;color:#0a6650;font-weight:700">· vérifié par SMS</span></span></span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Modifier</button>
+            </div>
+          </div>
+          <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">Changer d'email envoie un lien de confirmation à la nouvelle adresse et une alerte à l'ancienne.</p>
+        </section>
+
+        <section id="securite" style="display:grid;gap:14px">
+          <h2 style="font-size:20px;margin:0">Connexion et sécurité</h2>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:4px 18px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0">
+              <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15.5px;font-weight:600">Mot de passe</span><span style="font-size:14px;color:var(--color-neutral-700)">Modifié il y a 4 mois</span></span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Modifier</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0;border-top:1px solid var(--color-divider)">
+              <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15.5px;font-weight:600">Google</span><span style="font-size:14px;color:var(--color-neutral-700)">Lié à julien.bertrand@gmail.com</span></span>
+              <button type="button" class="btn btn-ghost" style="min-height:40px;font-size:14px">Délier</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0;border-top:1px solid var(--color-divider)">
+              <span style="flex:1 1 220px;display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:15.5px;font-weight:600">Double authentification</span>
+                <span style="font-size:14px;color:var(--color-neutral-700)">{{ mfaTexte }}</span>
+              </span>
+              <sc-if value="{{ mfaOn }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:#eef7f3;color:#085340">Activée</span>
+              </sc-if>
+              <button type="button" class="btn {{ mfaBtnClass }}" onClick="{{ toggleMfa }}" style="min-height:40px;font-size:14px">{{ mfaBtn }}</button>
+            </div>
+          </div>
+          <sc-if value="{{ mfaOff }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px 16px;border-radius:10px;background:#fdf4e3;color:#7a5206;font-size:15px;line-height:1.5;font-weight:600">Obligatoire pour les propriétaires et gérants d'une entreprise Premium : sans elle, l'accès à la facturation et à l'équipe est bloqué.</div>
+          </sc-if>
+        </section>
+
+        <section id="appareils" style="display:grid;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+            <h2 style="font-size:20px;margin:0">Appareils connectés</h2>
+            <button type="button" class="btn btn-ghost" style="min-height:36px;font-size:14px;color:#b42318">Déconnecter tous les autres</button>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:4px 18px">
+            <sc-for list="{{ appareils }}" as="ap" hint-placeholder-count="3">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:13px 0;border-top:{{ ap.bt }}">
+                <span style="width:36px;height:36px;border-radius:9px;background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;flex:none">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ ap.icon }}"></path></svg>
+                </span>
+                <span style="flex:1 1 200px;display:flex;flex-direction:column;gap:1px"><span style="font-size:15px;font-weight:600">{{ ap.nom }} <span style="font-size:13px;color:#0a6650;font-weight:700">{{ ap.actuel }}</span></span><span style="font-size:13.5px;color:var(--color-neutral-700)">{{ ap.lieu }}</span></span>
+                <sc-if value="{{ ap.peutDeco }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" class="btn btn-ghost" style="min-height:36px;font-size:14px">Déconnecter</button>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section id="notifications" style="display:grid;gap:14px">
+          <div>
+            <h2 style="font-size:20px;margin:0 0 4px">Notifications</h2>
+            <p style="margin:0;font-size:14.5px;color:var(--color-neutral-700)">Pour Bertrand Rénovation. Les emails de sécurité et les reçus sont toujours envoyés.</p>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:15px;min-width:520px">
+              <thead><tr style="background:var(--color-neutral-100)"><th style="text-align:left;padding:11px 16px;font-weight:700">Type</th><th style="padding:11px;font-weight:700;width:80px">Email</th><th style="padding:11px;font-weight:700;width:80px">SMS</th><th style="padding:11px;font-weight:700;width:90px">Dans l'app</th></tr></thead>
+              <tbody>
+                <sc-for list="{{ notifs }}" as="nf" hint-placeholder-count="6">
+                  <tr style="border-top:1px solid var(--color-divider)">
+                    <td style="padding:11px 16px"><span style="display:block;font-weight:600">{{ nf.label }}</span><span style="display:block;font-size:13.5px;color:var(--color-neutral-700)">{{ nf.desc }}</span></td>
+                    <sc-for list="{{ nf.canaux }}" as="cn" hint-placeholder-count="3">
+                      <td style="padding:11px;text-align:center">
+                        <button type="button" role="switch" aria-checked="{{ cn.on }}" aria-label="{{ cn.aria }}" onClick="{{ cn.toggle }}" disabled="{{ cn.lock }}" style="width:40px;height:24px;border-radius:99px;border:0;padding:2px;cursor:pointer;background:{{ cn.bg }};display:inline-flex;justify-content:{{ cn.jc }};opacity:{{ cn.op }};visibility:{{ cn.vis }}">
+                          <span style="width:20px;height:20px;border-radius:99px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span>
+                        </button>
+                      </td>
+                    </sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">Aucun SMS n'est envoyé entre 21 h et 8 h, sauf les codes de connexion.</p>
+        </section>
+
+        <section id="donnees" style="display:grid;gap:14px">
+          <h2 style="font-size:20px;margin:0">Mes données</h2>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:4px 18px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0">
+              <span style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15.5px;font-weight:600">Exporter mes données</span><span style="font-size:14px;color:var(--color-neutral-700)">Archive ZIP envoyée par email sous 24 h (droit à la portabilité)</span></span>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Demander l'export</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:14px 0;border-top:1px solid var(--color-divider)">
+              <span style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15.5px;font-weight:600;color:#b42318">Supprimer mon compte</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ supprTexte }}</span></span>
+              <button type="button" class="btn btn-secondary" disabled="{{ dernierProprio }}" style="min-height:40px;font-size:14px;color:#b42318">Supprimer</button>
+            </div>
+          </div>
+          <sc-if value="{{ dernierProprio }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:14px 16px;border-radius:10px;background:var(--color-neutral-100);font-size:14.5px;line-height:1.55">Vous êtes le seul propriétaire de Bertrand Rénovation. <a href="Equipe.dc.html">Transférez la propriété</a> à un autre membre ou <a href="#">fermez l'entreprise</a> avant de supprimer votre compte.</div>
+          </sc-if>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mfaActive&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scénario&quot;}, &quot;dernierProprietaire&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scénario&quot;}}">
+const IC = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5", fiche: "M4 5h16v14H4zM8 9h8M8 13h5", demandes: "M4 6h16v10H9l-5 3V6z",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01", avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
+  stats: "M5 20V10M12 20V4M19 20v-7", equipe: "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7.5M22 21v-1a6 6 0 0 0-4-5.6",
+  compte: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0", support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+  laptop: "M4 5h16v11H4zM2 19h20", phone: "M8 3h8v18H8zM11 18h2",
+};
+const NOTIFS = [
+  { k: 'demandes', label: 'Nouvelles demandes', desc: 'Dès qu’une demande vous est proposée', v: [1, 1, 1] },
+  { k: 'messages', label: 'Messages des clients', desc: 'Regroupés toutes les 15 minutes', v: [1, 0, 1] },
+  { k: 'offres', label: 'Appels d’offres de la zone', desc: 'Résumé chaque matin à 7 h', v: [1, 0, 1] },
+  { k: 'avis', label: 'Nouveaux avis', desc: 'Pour y répondre rapidement', v: [1, 0, 1] },
+  { k: 'rapport', label: 'Rapport hebdomadaire', desc: 'Chaque lundi à 8 h', v: [1, null, null] },
+  { k: 'actus', label: 'Actualités et offres', desc: 'Nouveautés de Portail Habitat Pro', v: [0, null, null] },
+  { k: 'securite', label: 'Sécurité et facturation', desc: 'Connexions, reçus, assurance : toujours envoyés', v: ['lock', 'lock', 'lock'] },
+];
+class Component extends DCLogic {
+  state = { mfa: this.props.mfaActive ?? true, n: {} };
+  renderVals() {
+    const s = this.state;
+    const menuDef = [
+      ['t', "Vue d'ensemble"], ['l', 'Tableau de bord', IC.dashboard, 'Espace Artisan Dashboard.dc.html'], ['l', 'Ma fiche', IC.fiche, 'Ma Fiche.dc.html'], ['l', 'Mes demandes', IC.demandes, 'Mes Demandes.dc.html'],
+      ['t', 'Gestion'], ["l", "Appels d'offres", IC.zone, 'Appels d Offres.dc.html'], ['l', 'Mes avis', IC.avis, 'Mes Avis.dc.html'], ['l', 'Statistiques', IC.stats, 'Statistiques.dc.html'],
+      ['t', 'Entreprise'], ['l', 'Équipe', IC.equipe, 'Equipe.dc.html'], ['l', 'Mon compte', IC.compte, 'Mon Compte.dc.html', true], ['l', 'Aide & contact', IC.support, 'Aide et Contact.dc.html'],
+    ];
+    const menu = menuDef.map(([k, label, d, href, act]) => k === 't'
+      ? { titre: true, lien: false, label }
+      : { titre: false, lien: true, label, d, href, fw: act ? 700 : 500, fg: act ? 'var(--color-accent-800)' : 'var(--color-neutral-800)', bg: act ? 'var(--color-accent-100)' : 'transparent', bd: act ? 'var(--color-accent-300)' : 'transparent' });
+    const canalNom = ['email', 'SMS', 'application'];
+    const notifs = NOTIFS.map(nf => ({
+      label: nf.label, desc: nf.desc,
+      canaux: nf.v.map((def, i) => {
+        const key = nf.k + i;
+        const lock = def === 'lock';
+        const na = def === null;
+        const on = lock ? true : (s.n[key] ?? !!def);
+        return { on: String(on), aria: nf.label + ' par ' + canalNom[i], lock: lock || na, bg: on ? (lock ? 'var(--color-neutral-500)' : 'var(--color-accent)') : 'var(--color-neutral-400)', jc: on ? 'flex-end' : 'flex-start', op: lock ? 0.6 : 1, vis: na ? 'hidden' : 'visible', toggle: () => this.setState({ n: { ...s.n, [key]: !on } }) };
+      }),
+    }));
+    const dernier = this.props.dernierProprietaire ?? true;
+    return {
+      menu,
+      sections: [['Profil', '#profil'], ['Sécurité', '#securite'], ['Appareils', '#appareils'], ['Notifications', '#notifications'], ['Mes données', '#donnees']].map(([label, href]) => ({ label, href })),
+      mfaOn: s.mfa, mfaOff: !s.mfa,
+      mfaTexte: s.mfa ? 'Application d’authentification (TOTP) · SMS de secours au 06 •• •• •• 48' : 'Un code en plus du mot de passe à chaque nouvelle connexion',
+      mfaBtn: s.mfa ? 'Gérer' : 'Activer', mfaBtnClass: s.mfa ? 'btn-secondary' : 'btn-primary',
+      toggleMfa: () => this.setState({ mfa: !s.mfa }),
+      appareils: [
+        { nom: 'Chrome sur Mac', actuel: '· cet appareil', lieu: 'Bordeaux · actif maintenant', icon: IC.laptop, peutDeco: false },
+        { nom: 'Safari sur iPhone', actuel: '', lieu: 'Mérignac · il y a 3 h', icon: IC.phone, peutDeco: true },
+        { nom: 'Edge sur Windows', actuel: '', lieu: 'Pessac · il y a 6 jours', icon: IC.laptop, peutDeco: true },
+      ].map((a, n) => ({ ...a, bt: n ? '1px solid var(--color-divider)' : '0' })),
+      notifs,
+      dernierProprio: dernier,
+      supprTexte: dernier ? 'Impossible tant que vous êtes le seul propriétaire d’une entreprise active.' : 'Vous serez retiré de toutes les équipes. Les factures restent conservées 10 ans.',
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+body { margin: 0; background: #ecebe8; font-family: "Source Sans 3", Helvetica, Arial, sans-serif; }
+h1, h2, h3 { font-family: "Source Sans 3", Helvetica, Arial, sans-serif; }
+a { color: #085340; }
+a:hover { color: #0d7a5f; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;font-family:'Source Sans 3',Helvetica,Arial,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;justify-content:space-between;padding:14px clamp(16px,3vw,28px);background:#fff;border-bottom:1px solid #e2e0dc;position:sticky;top:0;z-index:5">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <div style="font-size:19px;font-weight:700;letter-spacing:-0.01em">Modèles d'emails</div>
+      <div style="font-size:14px;color:#6b6763">{{ count }} modèles de référence · React Email, 600 px · ← → pour naviguer</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;background:#f1f0ed;border-radius:10px;padding:3px;gap:2px">
+        <button onClick="{{ setDesktop }}" style="border:0;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;background:{{ deskBg }};color:#201e1d">Ordinateur</button>
+        <button onClick="{{ setMobile }}" style="border:0;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;background:{{ mobBg }};color:#201e1d">Mobile</button>
+      </div>
+      <button onClick="{{ prev }}" style="border:1px solid #d9d6d1;background:#fff;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px" style-hover="background:#f6f5f3">← Précédent</button>
+      <button onClick="{{ next }}" style="border:1px solid #d9d6d1;background:#fff;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px" style-hover="background:#f6f5f3">Suivant →</button>
+    </div>
+  </header>
+
+  <div style="flex:1;display:grid;grid-template-columns:minmax(210px,270px) minmax(0,1fr)">
+    <aside style="background:#fff;border-right:1px solid #e2e0dc;padding:14px 10px 40px;position:sticky;top:61px;height:calc(100vh - 61px);overflow:auto;box-sizing:border-box">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
+        <div style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8580;padding:6px 10px">
+            <span style="width:8px;height:8px;border-radius:99px;background:{{ g.dot }}"></span>{{ g.nom }}
+          </div>
+          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.select }}" style="display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:0;cursor:pointer;font:inherit;padding:7px 10px 7px 26px;border-radius:8px;background:{{ it.bg }}" style-hover="background:#f4f3f0">
+              <span style="font-size:14.5px;font-weight:{{ it.fw }};color:#201e1d;line-height:1.3">{{ it.titre }}</span>
+              <span style="font-size:12px;color:#8a8580;font-family:ui-monospace,Menlo,monospace">{{ it.id }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </aside>
+
+    <main style="padding:clamp(16px,3vw,32px);display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0">
+      <div style="width:100%;max-width:{{ outerW }};display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px;color:#57534f">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;background:#fff;border:1px solid #e2e0dc;padding:3px 8px;border-radius:6px;color:#201e1d">{{ e.id }}</span>
+        <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ cat.bg }};color:{{ cat.fg }}">{{ cat.label }}</span>
+        <span style="text-wrap:pretty">{{ e.quand }}</span>
+      </div>
+
+      <div style="width:100%;max-width:{{ outerW }};background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 28px rgba(0,0,0,.07);overflow:hidden">
+        <sc-if value="{{ enTete }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:14px 20px;border-bottom:1px solid #eceae6;display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 8px;font-size:14px;color:#57534f">
+            <span style="color:#8a8580">De</span><span style="color:#201e1d;font-weight:600">{{ t.from }}</span>
+            <span style="color:#8a8580">À</span><span>{{ e.to }}</span>
+            <span style="color:#8a8580">Objet</span><span style="color:#201e1d;font-weight:700;font-size:16px">{{ e.sujet }}</span>
+            <span style="color:#8a8580">Aperçu</span><span style="font-style:italic">{{ e.pre }}</span>
+          </div>
+        </sc-if>
+
+        <div style="background:#f4f3f1;padding:{{ outerPad }}">
+          <div style="max-width:600px;margin:0 auto">
+            <div style="display:flex;align-items:center;gap:9px;padding:4px 4px 16px">
+              <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+                <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="{{ t.accent }}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9 21.5V33h22V21.5" fill="none" stroke="#201e1d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <rect x="17" y="25" width="6" height="8" rx="1" fill="{{ doorFill }}"></rect>
+                <circle cx="20" cy="25.6" r="4.8" fill="none" stroke="{{ loupe }}" stroke-width="2.6"></circle>
+                <path d="m23.5 29.1 2.6 2.6" stroke="{{ loupe }}" stroke-width="2.6" stroke-linecap="round"></path>
+              </svg>
+              <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;color:#201e1d">PORTAIL HABITAT</span>
+              <span style="font-size:15px;font-weight:700;letter-spacing:0.18em;color:{{ t.accent }}">{{ t.suffix }}</span>
+            </div>
+
+            <div style="background:#fff;border-radius:14px;border-top:4px solid {{ t.accent }};padding:{{ pad }};display:flex;flex-direction:column;gap:18px">
+              <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4">
+                <sc-if value="{{ b.isKicker }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:{{ t.dark }};margin-bottom:-8px">{{ b.t }}</div>
+                </sc-if>
+                <sc-if value="{{ b.isH }}" hint-placeholder-val="{{ false }}">
+                  <h1 style="margin:0;font-size:{{ hSize }};line-height:1.2;font-weight:700;letter-spacing:-0.015em;color:#1d1b1a;text-wrap:pretty">{{ b.t }}</h1>
+                </sc-if>
+                <sc-if value="{{ b.isH3 }}" hint-placeholder-val="{{ false }}">
+                  <h2 style="margin:6px 0 -6px;font-size:17px;line-height:1.3;font-weight:700;color:#1d1b1a">{{ b.t }}</h2>
+                </sc-if>
+                <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:16px;line-height:1.6;color:#3d3a37;text-wrap:pretty">{{ b.t }}</p>
+                </sc-if>
+                <sc-if value="{{ b.isCit }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:16px;line-height:1.6;color:#3d3a37;font-style:italic;padding:12px 16px;border-radius:10px;background:#faf9f7">{{ b.t }}</p>
+                </sc-if>
+                <sc-if value="{{ b.isBtn }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;padding:2px 0">
+                    <a href="#" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:10px;background:{{ t.accent }};color:#fff;text-decoration:none;font-size:16px;font-weight:700;width:{{ btnW }};box-sizing:border-box;text-align:center">{{ b.t }}</a>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isLink }}" hint-placeholder-val="{{ false }}">
+                  <a href="#" style="font-size:15px;font-weight:600;color:{{ t.dark }};margin-top:-6px">{{ b.t }}</a>
+                </sc-if>
+                <sc-if value="{{ b.isCode }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;font-size:34px;font-weight:700;letter-spacing:0.3em;padding:18px 0 18px 0.3em;border-radius:12px;background:{{ t.light }};color:{{ t.dark }}">{{ b.t }}</div>
+                </sc-if>
+                <sc-if value="{{ b.isRecap }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid #e7e5e1;border-radius:12px;background:#faf9f7;padding:2px 18px">
+                    <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="3">
+                      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 16px;padding:11px 0;border-top:{{ r.bt }};font-size:15px">
+                        <span style="color:#6b6763">{{ r.k }}</span>
+                        <span style="color:#1d1b1a;font-weight:{{ r.fw }};text-align:right">{{ r.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isAlert }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:14px 16px;border-radius:10px;background:{{ b.bg }};color:{{ b.fg }};font-size:15.5px;line-height:1.5;font-weight:600;text-wrap:pretty">{{ b.t }}</div>
+                </sc-if>
+                <sc-if value="{{ b.isSteps }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <sc-for list="{{ b.items }}" as="s" hint-placeholder-count="3">
+                      <div style="display:flex;gap:12px;align-items:flex-start">
+                        <span style="width:24px;height:24px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ s.bg }};color:{{ s.fg }};border:{{ s.bd }};box-sizing:border-box">{{ s.mark }}</span>
+                        <span style="font-size:15.5px;line-height:1.45;color:{{ s.tc }};padding-top:1px;text-decoration:{{ s.td }}">{{ s.t }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isProg }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;font-size:14px;color:#57534f"><span>{{ b.t }}</span><span style="font-weight:700;color:#1d1b1a">{{ b.w }}</span></div>
+                    <div style="height:8px;border-radius:99px;background:#ecebe7;overflow:hidden"><div style="height:100%;width:{{ b.w }};background:{{ t.accent }};border-radius:99px"></div></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
+                    <sc-for list="{{ b.items }}" as="s" hint-placeholder-count="3">
+                      <div style="padding:14px;border-radius:12px;background:{{ t.light }};display:flex;flex-direction:column;gap:3px">
+                        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:28px;font-weight:700;color:{{ t.dark }};line-height:1.1">{{ s.n }}</span><span style="font-size:13px;font-weight:700;color:#0a6650">{{ s.d }}</span></div>
+                        <span style="font-size:14px;line-height:1.35;color:#3d3a37">{{ s.l }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isArt }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid #e7e5e1;border-radius:12px">
+                    <div style="width:56px;height:56px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;background:{{ t.light }};color:{{ t.dark }}">{{ b.ini }}</div>
+                    <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                      <span style="font-size:16.5px;font-weight:700;color:#1d1b1a">{{ b.nom }}</span>
+                      <span style="font-size:14px;color:#57534f"><span style="color:#e8a33d">★</span> {{ b.meta }}</span>
+                      <span style="font-size:13px;font-weight:600;color:{{ t.dark }}">{{ b.labels }}</span>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isRate }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px;border-radius:12px;background:#faf9f7;border:1px solid #e7e5e1">
+                    <div style="display:flex;gap:8px;font-size:36px;line-height:1;color:#e8a33d"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></div>
+                    <span style="font-size:14px;color:#6b6763">Touchez une étoile pour commencer votre avis</span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid #e7e5e1;border-radius:12px;padding:2px 16px">
+                    <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="4">
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:11px 0;border-top:{{ r.bt }}">
+                        <span style="flex:1 1 150px;font-size:15px;font-weight:600;color:#1d1b1a">{{ r.nom }}</span>
+                        <span style="font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ r.bg }};color:{{ r.fg }}">{{ r.tag }}</span>
+                        <span style="font-size:14px;color:#57534f;min-width:84px;text-align:right">{{ r.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ b.isNote }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:13.5px;line-height:1.55;color:#6b6763;text-wrap:pretty">{{ b.t }}</p>
+                </sc-if>
+              </sc-for>
+              <div style="font-size:15px;color:#3d3a37;line-height:1.5">{{ t.signature }}</div>
+            </div>
+
+            <div style="padding:20px 8px 6px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.55;color:#6b6763;text-align:center">
+              <span style="text-wrap:pretty">{{ raison }}</span>
+              <div style="display:flex;justify-content:center;gap:6px 14px;flex-wrap:wrap">
+                <a href="#" style="color:#57534f">Mes préférences</a>
+                <sc-if value="{{ desabo }}" hint-placeholder-val="{{ false }}">
+                  <a href="#" style="color:#57534f">Se désabonner de ces emails</a>
+                </sc-if>
+                <a href="#" style="color:#57534f">Aide</a>
+              </div>
+              <span>Portail Habitat · [Raison sociale] · [Adresse postale de l'éditeur]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ showSms }}" hint-placeholder-val="{{ false }}">
+        <div style="width:100%;max-width:{{ outerW }};display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8580">Aussi envoyé par SMS · expéditeur PortailHab</div>
+          <div style="background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
+            <div style="max-width:330px;background:#e9e9eb;border-radius:18px 18px 18px 4px;padding:11px 14px;font-size:15px;line-height:1.45;color:#1d1b1a;font-family:-apple-system,system-ui,sans-serif">{{ e.sms }}</div>
+            <div style="font-size:12.5px;color:#8a8580;margin-top:8px">{{ smsLen }} caractères · 1 SMS · jamais entre 21 h et 8 h</div>
+          </div>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;afficherEnTete&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Aperçu&quot;}, &quot;afficherSms&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Aperçu&quot;}}">
+const TH = {
+  particulier: { accent: '#0d7a5f', light: '#eef7f3', light2: '#a5d7c4', dark: '#085340', suffix: '', from: 'Portail Habitat <notifications@portailhabitat.fr>', signature: "L'équipe Portail Habitat" },
+  pro: { accent: '#e05a10', light: '#fff2ea', light2: '#ffc19c', dark: '#a33f05', suffix: 'PRO', from: 'Portail Habitat Pro <pro@notifications.portailhabitat.fr>', signature: "L'équipe Portail Habitat Pro" },
+  diag: { accent: '#14508a', light: '#eef4fa', light2: '#a4c5e3', dark: '#0d3a65', suffix: 'DIAG', from: 'Portail Habitat Diag <notifications@portailhabitat.fr>', signature: "L'équipe Portail Habitat Diag" },
+  admin: { accent: '#3f4a57', light: '#eef0f3', light2: '#c3c9d1', dark: '#2a323c', suffix: 'ADMIN', from: 'Portail Habitat Admin <admin@notifications.portailhabitat.fr>', signature: 'Back-office Portail Habitat · envoi automatique' },
+};
+const CAT = {
+  securite: { label: 'Sécurité · non désactivable', bg: '#fdecea', fg: '#8f1d14', desabo: false, raison: "Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé." },
+  transactionnel: { label: 'Transactionnel', bg: '#eef0f3', fg: '#2a323c', desabo: false, raison: 'Vous recevez cet email suite à une action sur Portail Habitat.' },
+  activite: { label: 'Activité', bg: '#eef4fa', fg: '#0d3a65', desabo: true, raison: "Vous recevez cet email car les notifications d'activité sont activées." },
+  relance: { label: 'Relance', bg: '#fdf4e3', fg: '#7a5206', desabo: true, raison: 'Vous recevez cet email car votre inscription n’est pas terminée. 3 relances maximum.' },
+  offres_pro: { label: 'Offres pro · désabonnable', bg: '#fff2ea', fg: '#a33f05', desabo: true, raison: 'Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.' },
+  marketing: { label: 'Marketing · consentement requis', bg: '#fdf6e7', fg: '#7a5a1c', desabo: true, raison: 'Vous recevez cet email car vous avez accepté les actualités de Portail Habitat.' },
+};
+const TONE = { warn: ['#fdf4e3', '#7a5206'], danger: ['#fdecea', '#8f1d14'], ok: ['#eef7f3', '#085340'], info: ['#eef4fa', '#0d3a65'] };
+const TAG = { amber: ['#fdf4e3', '#7a5206'], red: ['#fdecea', '#8f1d14'], green: ['#eef7f3', '#085340'], blue: ['#eef4fa', '#0d3a65'], grey: ['#f1f0ed', '#57534f'] };
+
+const EMAILS = [
+  { g: 'Sécurité et connexion', id: 'lien-connexion', titre: 'Lien de connexion', th: 'particulier', cat: 'securite', to: 'camille.m@gmail.com', quand: 'Demande de lien magique. Valable 1 h, usage unique.',
+    sujet: 'Votre lien de connexion à Portail Habitat', pre: 'Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.',
+    b: [['h', 'Connectez-vous en un clic'], ['p', 'Bonjour Camille, voici votre lien pour accéder à votre espace. Aucun mot de passe n’est nécessaire.'], ['btn', 'Me connecter'], ['note', 'Ce lien est valable 1 heure et ne fonctionne qu’une seule fois. Demandé le 25 septembre 2026 à 14 h 32 depuis Chrome sur Mac, près de Bordeaux.'], ['alert', 'Vous n’êtes pas à l’origine de cette demande ? Ignorez simplement cet email : personne ne peut se connecter sans ce lien.', 'info']] },
+  { g: 'Sécurité et connexion', id: 'verifier-email', titre: 'Vérifier l’adresse email', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Création d’un compte avec mot de passe. Lien valable 24 h.',
+    sujet: 'Confirmez votre adresse email', pre: 'Une dernière étape pour activer votre compte Portail Habitat Pro.',
+    b: [['h', 'Confirmez votre adresse email'], ['p', 'Bonjour Julien, cliquez sur le bouton ci-dessous pour confirmer que cette adresse vous appartient. Elle servira à recevoir vos demandes de devis.'], ['btn', 'Confirmer mon adresse'], ['note', 'Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur : https://portailhabitat.fr/v/8Kq2…  · Valable 24 heures.']] },
+  { g: 'Sécurité et connexion', id: 'mot-de-passe-oublie', titre: 'Mot de passe oublié', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Demande de réinitialisation. Même message à l’écran que l’email existe ou non.',
+    sujet: 'Réinitialisation de votre mot de passe', pre: 'Choisissez un nouveau mot de passe. Lien valable 1 heure.',
+    b: [['h', 'Choisissez un nouveau mot de passe'], ['p', 'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Habitat Pro.'], ['btn', 'Choisir un nouveau mot de passe'], ['note', 'Lien valable 1 heure, utilisable une seule fois. Votre mot de passe actuel reste valable tant que vous n’en choisissez pas un nouveau.'], ['alert', 'Ce n’était pas vous ? Aucune action n’est nécessaire, mais nous vous conseillons d’activer la double authentification.', 'info']] },
+  { g: 'Sécurité et connexion', id: 'nouvel-appareil', titre: 'Nouvel appareil', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Connexion depuis un appareil ou un pays inconnu.',
+    sujet: 'Nouvelle connexion à votre compte', pre: 'iPhone · Mérignac · aujourd’hui à 08 h 12. C’était vous ?',
+    b: [['h', 'Nouvelle connexion détectée'], ['p', 'Votre compte Portail Habitat Pro vient d’être utilisé depuis un appareil que nous ne connaissions pas.'], ['recap', [['Appareil', 'Safari sur iPhone'], ['Lieu approximatif', 'Mérignac, France'], ['Date', '25 septembre 2026 à 08 h 12']]], ['p', 'C’était vous ? Vous n’avez rien à faire.'], ['btn', 'Ce n’était pas moi : sécuriser mon compte'], ['note', 'Sécuriser votre compte déconnecte tous les appareils et vous demande un nouveau mot de passe.']] },
+
+  { g: 'Particuliers', id: 'demande-confirmee', titre: 'Demande confirmée', th: 'particulier', cat: 'transactionnel', to: 'camille.m@gmail.com', quand: 'Envoi d’une demande depuis le simulateur. Contient le lien de connexion si le compte vient d’être créé.',
+    sujet: 'Votre demande PH-4K82Q9 est bien envoyée', pre: 'Salle de bain · Bordeaux · estimation 7 800 à 10 400 € TTC. Jusqu’à 3 artisans vont vous répondre.',
+    b: [['k', 'Demande PH-4K82Q9'], ['h', 'Votre projet est entre de bonnes mains'], ['p', 'Merci Camille. Nous transmettons votre demande à 3 artisans vérifiés proches de chez vous. Ils vous répondent en général sous 24 h.'], ['recap', [['Projet', 'Rénovation de salle de bain'], ['Lieu', 'Bordeaux (33000)'], ['Surface', '6 m² · douche à l’italienne'], ['Délai souhaité', 'Sous 1 mois'], ['Estimation', '7 800 – 10 400 € TTC', 1]]], ['btn', 'Suivre ma demande'], ['h3', 'Et maintenant ?'], ['steps', [['Les artisans étudient votre projet', 'done'], ['Ils vous contactent pour préciser le besoin', 'todo'], ['Vous recevez jusqu’à 3 devis à comparer', 'todo']]], ['note', 'Estimation indicative calculée selon les prix constatés en Gironde, TVA 10 % incluse. Seul le devis de l’artisan fait foi. Le service est gratuit et sans engagement.']] },
+  { g: 'Particuliers', id: 'artisan-a-repondu', titre: 'Un artisan a répondu', th: 'particulier', cat: 'activite', to: 'camille.m@gmail.com', quand: 'Attribution passée en « acceptée ». Aussi en notification in-app.',
+    sujet: 'Bertrand Rénovation s’intéresse à votre projet', pre: 'Il vous propose un rendez-vous pour préparer votre devis.',
+    b: [['h', 'Un artisan souhaite réaliser votre projet'], ['art', 'BR', 'Bertrand Rénovation', '4,9 · 87 avis · à 6 km', 'Vérifié · Décennale · RGE'], ['cit', '« Bonjour Camille, j’ai bien lu votre projet. Je peux passer mardi ou jeudi en fin de journée pour prendre les mesures. »'], ['btn', 'Répondre à Bertrand Rénovation'], ['note', 'Vos coordonnées complètes ne sont partagées qu’avec les artisans qui ont accepté votre demande.']] },
+  { g: 'Particuliers', id: 'devis-recu', titre: 'Devis reçu', th: 'particulier', cat: 'activite', to: 'camille.m@gmail.com', quand: 'Attribution passée en « devis envoyé ».',
+    sujet: 'Nouveau devis : 9 240 € TTC pour votre salle de bain', pre: 'Bertrand Rénovation vous a envoyé son devis. Comparez-le à votre estimation.',
+    b: [['h', 'Vous avez reçu un devis'], ['recap', [['Artisan', 'Bertrand Rénovation'], ['Montant', '9 240 € TTC', 1], ['Votre estimation', '7 800 – 10 400 € TTC'], ['Durée des travaux', '8 jours'], ['Valable jusqu’au', '25 octobre 2026']]], ['alert', 'Ce devis se situe dans la fourchette de votre estimation.', 'ok'], ['btn', 'Voir le devis'], ['note', '2 autres artisans étudient encore votre demande. Prenez le temps de comparer avant de signer.']] },
+  { g: 'Particuliers', id: 'demande-avis', titre: 'Demander un avis', th: 'particulier', cat: 'relance', to: 'camille.m@gmail.com', quand: 'J+30 après la date de chantier si la demande est signée. Rappel unique à J+45.',
+    sujet: 'Comment se sont passés vos travaux avec Bertrand Rénovation ?', pre: 'Votre avis aide les autres particuliers à choisir. 2 minutes suffisent.',
+    b: [['h', 'Votre avis compte'], ['p', 'Vos travaux de salle de bain avec Bertrand Rénovation sont terminés. Partagez votre expérience : elle aide d’autres particuliers et l’artisan lui-même.'], ['rate'], ['btn', 'Laisser mon avis'], ['note', 'Les avis sont vérifiés et publiés sous 48 h, conformément à notre politique d’avis. Vous pouvez rester anonyme (« Camille M. »).']] },
+  { g: 'Particuliers', id: 'dossier-diag-confirme', titre: 'Dossier diagnostic', th: 'diag', cat: 'transactionnel', to: 'p.lefevre@orange.fr', quand: 'Création d’un dossier diagnostic immobilier.',
+    sujet: 'Votre dossier diagnostic PHD-7R21 · vente à Cenon', pre: '5 diagnostics à réaliser · estimation 420 à 560 € TTC. Un diagnostiqueur vous contacte sous 24 h.',
+    b: [['k', 'Dossier PHD-7R21'], ['h', 'Voici les diagnostics nécessaires pour votre vente'], ['p', 'Maison de 1968 à Cenon, 112 m². D’après vos réponses :'], ['rows', [['DPE', 'À refaire', 'red', '120 – 160 €'], ['Amiante', 'À réaliser', 'amber', '90 – 130 €'], ['Plomb (CREP)', 'À réaliser', 'amber', '100 – 140 €'], ['Électricité', 'À réaliser', 'amber', '80 – 110 €'], ['ERP', 'À réaliser', 'amber', 'Offert'], ['Gaz', 'Déjà valide', 'green', '—']]], ['recap', [['Estimation du pack', '420 – 560 € TTC', 1], ['Remise pack appliquée', 'Oui (4 diagnostics ou plus)']]], ['btn', 'Voir mon dossier'], ['note', 'Estimation indicative selon les tarifs constatés en Gironde. Le devis du diagnostiqueur certifié fait foi.']] },
+
+  { g: 'Inscription artisan', id: 'relance-onboarding-1', titre: 'Relance inscription (J+1)', th: 'pro', cat: 'relance', to: 'contact@bertrand-renovation.fr', quand: 'J+1 si l’inscription n’est pas terminée. Annulée si elle l’est entre-temps. Puis J+3 et J+10.',
+    sujet: 'Il vous reste 2 minutes pour recevoir vos premières demandes', pre: 'Votre inscription Bertrand Rénovation est enregistrée à 66 %.',
+    b: [['h', 'Votre inscription est presque terminée'], ['p', 'Bonjour Julien, vous avez commencé à inscrire Bertrand Rénovation hier. Vos informations sont enregistrées : reprenez exactement où vous en étiez.'], ['prog', 'Inscription', '66%'], ['steps', [['Entreprise (SIREN 812 345 678)', 'done'], ['Zone et métiers', 'done'], ['Création du compte', 'todo']]], ['btn', 'Terminer mon inscription'], ['alert', 'Ce mois-ci, 38 particuliers ont cherché un plombier-chauffagiste autour de Bordeaux.', 'info']] },
+  { g: 'Inscription artisan', id: 'bienvenue-pro', titre: 'Bienvenue', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Fin de l’onboarding (finaliserOnboarding). Les relances sont annulées.',
+    sujet: 'Bienvenue sur Portail Habitat Pro, Julien', pre: '3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.',
+    b: [['h', 'Bienvenue, Bertrand Rénovation'], ['p', 'Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.'], ['steps', [['Créer votre compte', 'done'], ['Vérifier votre numéro de mobile', 'todo'], ['Déposer votre attestation décennale', 'todo'], ['Compléter votre fiche à 60 % (logo, photos, description)', 'todo']]], ['btn', 'Accéder à mon espace'], ['note', 'Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.']] },
+  { g: 'Inscription artisan', id: 'document-refuse', titre: 'Document refusé', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Décision d’un modérateur sur un document (motif obligatoire).',
+    sujet: 'Votre attestation décennale n’a pas pu être validée', pre: 'Motif : attestation expirée. Déposez une attestation en cours de validité.',
+    b: [['h', 'Nous n’avons pas pu valider votre document'], ['recap', [['Document', 'Attestation décennale'], ['Déposé le', '24 septembre 2026'], ['Motif', 'Attestation expirée le 31/12/2025', 1]]], ['p', 'Votre fiche reste hors ligne tant qu’une attestation décennale valide n’est pas déposée. Demandez l’attestation 2026 à votre assureur : elle est en général disponible dans votre espace client.'], ['btn', 'Déposer une nouvelle attestation'], ['note', 'Vérification sous 48 h ouvrées après le dépôt.']] },
+  { g: 'Inscription artisan', id: 'fiche-en-ligne', titre: 'Fiche en ligne', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Le champ enLigne passe à true.',
+    sujet: 'Votre fiche est en ligne 🎉', pre: 'Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Habitat.',
+    b: [['h', 'Votre fiche est en ligne'], ['p', 'Félicitations Julien : Bertrand Rénovation est visible par les particuliers de votre zone et peut recevoir des demandes.'], ['art', 'BR', 'Bertrand Rénovation', 'Nouveau · Bordeaux et 25 km', 'Vérifié · Décennale'], ['btn', 'Voir ma fiche publique'], ['h3', 'Pour recevoir plus de demandes'], ['steps', [['Ajoutez 3 photos de réalisations', 'todo'], ['Répondez aux demandes en moins de 2 h pour obtenir le label « Réponse rapide »', 'todo']]]] },
+
+  { g: 'Équipe', id: 'invitation-membre', titre: 'Invitation d’un collaborateur', th: 'pro', cat: 'transactionnel', to: 'lea.durand@gmail.com', quand: 'inviterMembre. Lien valable 7 jours, relance à J+3.',
+    sujet: 'Julien vous invite à rejoindre Bertrand Rénovation', pre: 'Rôle : collaborateur. Invitation valable 7 jours.',
+    b: [['h', 'Rejoignez l’équipe Bertrand Rénovation'], ['p', 'Julien Bertrand vous invite à gérer les demandes de devis de l’entreprise sur Portail Habitat Pro.'], ['recap', [['Entreprise', 'Bertrand Rénovation · Bordeaux'], ['Votre rôle', 'Collaborateur', 1], ['Vous pourrez', 'Répondre aux demandes, envoyer des devis, ajouter des réalisations']]], ['btn', 'Accepter l’invitation'], ['note', 'Invitation valable jusqu’au 2 octobre 2026, destinée à l.•••@gmail.com. Vous ne connaissez pas Julien Bertrand ? Ignorez cet email.']] },
+
+  { g: 'Activité artisan', id: 'nouvelle-demande', titre: 'Nouvelle demande', th: 'pro', cat: 'activite', to: 'contact@bertrand-renovation.fr', quand: 'Attribution « proposée ». Relance à 4 h et 20 h si non vue. Aussi par SMS si activé.',
+    sujet: 'Nouvelle demande : salle de bain à Bordeaux · 7 800 à 10 400 €', pre: 'Particulier · délai sous 1 mois. Répondez vite : vous êtes 1 artisan sur 3.',
+    sms: 'Portail Habitat : nouvelle demande Salle de bain, Bordeaux, 7 800-10 400 €. Répondez sous 24 h : portailhabitat.fr/d/4K82 STOP 36xxx',
+    b: [['k', 'Nouvelle demande'], ['h', 'Rénovation de salle de bain à Bordeaux'], ['recap', [['Budget estimé', '7 800 – 10 400 € TTC', 1], ['Surface', '6 m²'], ['Travaux', 'Douche à l’italienne, meuble double vasque, faïence'], ['Délai souhaité', 'Sous 1 mois'], ['Distance', '6 km de votre siège']]], ['alert', 'Vous êtes l’un des 3 artisans sélectionnés. Cette demande expire dans 24 h sans réponse.', 'warn'], ['btn', 'Voir et répondre'], ['note', 'Les coordonnées du particulier s’affichent dès que vous acceptez la demande.']] },
+  { g: 'Activité artisan', id: 'lead-debloque', titre: 'Appel d’offres débloqué', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Déblocage réussi (carte ou crédits).',
+    sujet: 'Appel d’offres débloqué : isolation de combles à Pessac', pre: 'Coordonnées du client et reçu. 2 crédits utilisés.',
+    b: [['h', 'Vous pouvez contacter le client'], ['recap', [['Projet', 'Isolation de combles perdus, 80 m²'], ['Client', 'Marc D. · 06 12 •• •• 48'], ['Adresse', 'Pessac (33600)'], ['Payé', '2 crédits (valeur 20 € HT)', 1], ['Crédits restants', '6']]], ['btn', 'Contacter le client'], ['note', 'Faux numéro, projet inexistant ou doublon ? Vous pouvez contester sous 7 jours depuis votre espace.']] },
+  { g: 'Activité artisan', id: 'assurance-expire', titre: 'Assurance qui expire', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'J-30, J-7 et J0 avant la fin de la décennale. Suspension automatique à J0. SMS à J-7 et J0.',
+    sujet: 'Votre décennale expire dans 7 jours', pre: 'Sans nouvelle attestation, votre fiche sera suspendue le 2 octobre.',
+    sms: 'Portail Habitat : votre décennale expire le 02/10. Déposez la nouvelle attestation pour éviter la suspension de votre fiche : portailhabitat.fr/pro/docs',
+    b: [['h', 'Votre attestation décennale expire dans 7 jours'], ['alert', 'Le 2 octobre 2026, votre fiche sera automatiquement retirée de l’annuaire et vous ne recevrez plus de demandes.', 'danger'], ['recap', [['Assureur', 'MAAF Pro'], ['Police', 'N° 4521 •••• 88'], ['Fin de validité', '2 octobre 2026', 1]]], ['btn', 'Déposer ma nouvelle attestation'], ['note', 'La vérification prend moins de 48 h. Votre fiche est remise en ligne dès la validation.']] },
+  { g: 'Activité artisan', id: 'rapport-hebdo', titre: 'Rapport hebdomadaire', th: 'pro', cat: 'activite', to: 'contact@bertrand-renovation.fr', quand: 'Chaque lundi à 8 h (Premium).',
+    sujet: 'Votre semaine : 214 vues, 6 demandes', pre: '+18 % de vues par rapport à la semaine précédente.',
+    b: [['k', 'Semaine du 15 au 21 septembre'], ['h', 'Votre semaine sur Portail Habitat'], ['stats', [['214', '+18 %', 'Vues de votre fiche'], ['23', '+4', 'Clics sur votre téléphone'], ['6', '+2', 'Demandes reçues']]], ['p', 'Temps de réponse moyen : 1 h 40. Vous gardez le label « Réponse rapide ».'], ['btn', 'Voir mes statistiques']] },
+
+  { g: 'Facturation', id: 'recu', titre: 'Reçu de paiement', th: 'pro', cat: 'transactionnel', to: 'compta@bertrand-renovation.fr', quand: 'Webhook invoice.paid.',
+    sujet: 'Reçu : Premium annuel · 1 150,56 € TTC', pre: 'Facture F-2026-00412 disponible en PDF.',
+    b: [['h', 'Merci, votre paiement est confirmé'], ['recap', [['Facture', 'F-2026-00412'], ['Offre', 'Premium · annuel'], ['Période', '25/09/2026 – 24/09/2027'], ['Montant HT', '958,80 €'], ['TVA 20 %', '191,76 €'], ['Total TTC', '1 150,56 €', 1], ['Moyen de paiement', 'Visa •••• 4242']]], ['btn', 'Télécharger la facture (PDF)'], ['note', 'Renouvellement automatique le 25 septembre 2027. Vous serez prévenu 7 jours avant. Gérez votre abonnement depuis votre espace.']] },
+  { g: 'Facturation', id: 'paiement-echoue', titre: 'Paiement échoué', th: 'pro', cat: 'transactionnel', to: 'compta@bertrand-renovation.fr', quand: 'Webhook invoice.payment_failed, puis J+3 et J+6. Passage en gratuit à J+7.',
+    sujet: 'Action requise : votre paiement n’est pas passé', pre: 'Mettez à jour votre carte avant le 2 octobre pour garder Premium.',
+    b: [['h', 'Votre paiement n’a pas abouti'], ['p', 'Nous n’avons pas pu prélever 118,80 € TTC pour votre abonnement Premium mensuel. Cela arrive souvent quand une carte expire.'], ['alert', 'Sans mise à jour avant le 2 octobre 2026, votre compte repassera en offre gratuite : position en tête de l’annuaire, crédits et statistiques seront suspendus.', 'warn'], ['btn', 'Mettre à jour mon moyen de paiement'], ['note', 'Paiement sécurisé par Stripe. Nous ne voyons jamais votre numéro de carte.']] },
+
+  { g: 'Conversion · prospects', id: 'prospect-estimation', titre: 'Estimation de demandes', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', quand: 'Immédiat : email saisi sur la landing pro pour recevoir l’estimation (sans inscription). Démarre la séquence S1.',
+    sujet: 'Électricien à Lormont : 27 demandes ce mois-ci', pre: 'Votre estimation détaillée, et comment recevoir ces demandes gratuitement.',
+    b: [['k', 'Votre estimation'], ['h', '27 particuliers cherchent un électricien autour de Lormont'], ['stats', [['27', '30 jours', 'Demandes dans votre métier'], ['6 400 €', '', 'Budget moyen par projet'], ['4', '', 'Électriciens inscrits à 20 km']]], ['p', 'Ces demandes sont aujourd’hui partagées entre seulement 4 électriciens. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.'], ['btn', 'Recevoir mes premières demandes'], ['note', 'Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Habitat en Gironde.']] },
+  { g: 'Conversion · prospects', id: 'prospect-demande-zone', titre: 'Demande dans sa zone', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', quand: 'Signal : une demande réelle de son métier arrive à moins de 15 km (J+1 à J+30, 1 par semaine max). Remplace l’email calendrier du jour.',
+    sujet: 'Hier : tableau électrique à Lormont, 2 400 à 3 200 €', pre: 'Cette demande est partie chez un autre électricien. Recevez les suivantes.',
+    b: [['k', 'Demande reçue hier'], ['h', 'Un particulier de Lormont cherchait un électricien'], ['recap', [['Travaux', 'Remplacement du tableau et mise aux normes'], ['Budget estimé', '2 400 – 3 200 € TTC', 1], ['Distance', '3 km de votre siège'], ['Délai souhaité', 'Sous 2 semaines']]], ['alert', 'Faute d’électricien inscrit à Lormont, elle a été transmise à une entreprise de Cenon.', 'warn'], ['p', 'Inscrivez-vous gratuitement : les prochaines demandes de ce type vous arriveront par email et par SMS.'], ['btn', 'M’inscrire gratuitement'], ['note', 'Aucune donnée personnelle du particulier n’est communiquée dans cet email.']] },
+  { g: 'Conversion · prospects', id: 'prospect-derniere', titre: 'Dernier email (humain)', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', from: 'Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>', sig: 'Julie Martin · Responsable des artisans en Gironde · répondez directement à cet email', quand: 'J+12, fin de la séquence S1. Texte simple, un seul lien, réponses lues (une réponse met la séquence en pause et crée une tâche). Ensuite : résumé mensuel de la zone uniquement.',
+    sujet: 'Je clôture votre dossier ?', pre: 'Une question avant de ne plus vous écrire, Marc.',
+    b: [['p', 'Bonjour Marc,'], ['p', 'Je vous ai envoyé il y a 12 jours l’estimation des demandes d’électricité autour de Lormont. Depuis, 9 nouvelles demandes sont arrivées dans votre secteur.'], ['p', 'Je ne veux pas vous encombrer : si ce n’est pas le moment, je clôture votre dossier et vous ne recevrez plus qu’un résumé mensuel de votre zone.'], ['p', 'Une question sur le fonctionnement, les prix ou l’engagement ? Répondez simplement à cet email, c’est moi qui lis les réponses.'], ['link', 'Créer ma fiche gratuite en 3 minutes →']] },
+
+  { g: 'Conversion · Gratuit → Visibilité', id: 'vis-position', titre: 'Position dans le secteur (J+3)', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'J+3 après la mise en ligne, offre cible Visibilité. Variante Premium si le score est ≥ 50. Non envoyé si les chiffres sont vides.',
+    sujet: 'Vous êtes 14e sur 22 plombiers à Bordeaux', pre: 'Votre fiche a été vue 31 fois. Les fiches mises en avant, 10 fois plus.',
+    b: [['k', 'Votre première semaine'], ['h', 'Votre fiche est en ligne, mais en page 2'], ['stats', [['31', '', 'Vues de votre fiche'], ['14e', 'sur 22', 'Votre position à Bordeaux'], ['312', '', 'Vues moyennes d’une fiche mise en avant']]], ['p', 'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Visibilité, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et un badge.'], ['recap', [['Visibilité à l’année', '6,67 € HT / mois', 1], ['Payé en une fois', '79,90 € HT pour 12 mois'], ['Sans engagement', '12,90 € HT / mois']]], ['btn', 'Passer en tête de mon secteur'], ['note', 'Activation immédiate, résiliable depuis votre espace.']] },
+  { g: 'Conversion · Gratuit → Visibilité', id: 'vis-demande-offerte', titre: 'Demande offerte contre Visibilité', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Appel d’offres sans déblocage après 24 h, demande de moins de 72 h. 5 artisans gratuits du secteur, les 3 premiers qui activent Visibilité la reçoivent. 1 fois par entreprise.',
+    sujet: 'Cette demande de 8 400 € est à vous : activez Visibilité', pre: 'Pompe à chaleur à Talence, 9 km. Offerte si vous passez en Visibilité aujourd’hui.',
+    b: [['k', 'Demande offerte'], ['h', 'Une demande vous attend, gratuitement'], ['recap', [['Travaux', 'Chaudière gaz → pompe à chaleur air-eau'], ['Budget estimé', '7 200 – 9 600 € TTC', 1], ['Commune', 'Talence · 9 km de votre siège'], ['Délai souhaité', 'Sous 1 mois']]], ['alert', 'Activez Visibilité aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.', 'info'], ['recap', [['Visibilité à l’année', '6,67 € HT / mois', 1], ['Soit', '79,90 € HT pour 12 mois'], ['Inclus', 'Tête de liste, téléphone affiché, badge']]], ['btn', 'Activer Visibilité et recevoir la demande'], ['note', 'Offre valable une seule fois par entreprise. Les coordonnées du particulier s’affichent après l’activation.']] },
+  { g: 'Conversion · Gratuit → Visibilité', id: 'vis-concurrents', titre: 'Un concurrent passe devant', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Signal : un artisan du même métier et du même secteur active Visibilité ou Premium. Anonymisé, 1 toutes les 3 semaines max.',
+    sujet: 'Un 3e plombier est maintenant affiché avant vous', pre: 'Votre fiche passe à la 17e place à Bordeaux.',
+    b: [['h', 'Votre fiche recule dans votre secteur'], ['rows', [['Fiches mises en avant', '+1 cette semaine', 'amber', '3'], ['Votre position', '−3 places', 'red', '17e / 23'], ['Recherches « plombier Bordeaux »', '30 derniers jours', 'grey', '146']]], ['p', 'Les fiches Visibilité et Premium passent devant les fiches gratuites. Reprenez votre place pour 6,67 € HT par mois.'], ['btn', 'Remonter en tête'], ['note', 'Nous ne communiquons jamais le nom des autres artisans.']] },
+  { g: 'Conversion · Gratuit → Visibilité', id: 'vis-offre-lancement', titre: 'Offre de bienvenue −30 % (J+14)', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'J+14 si toujours en Gratuit. Code Stripe personnel, 1 utilisation, expire 72 h après l’envoi, appliqué par le bouton. Rappel à J+17 8 h uniquement si ouvert ou cliqué. 1 remise / 90 jours.',
+    sujet: 'Julien, −30 % sur votre Visibilité jusqu’à jeudi', pre: 'Code personnel valable 72 h : 55,93 € HT pour toute l’année.',
+    b: [['k', 'Offre de bienvenue'], ['h', '−30 % sur votre première année de Visibilité'], ['recap', [['Prix normal', '79,90 € HT / an'], ['Avec votre code', '55,93 € HT / an', 1], ['Soit', '4,66 € HT / mois']]], ['code', 'JULIEN30'], ['alert', 'Valable jusqu’au jeudi 1er octobre à 23 h 59. Le code est déjà appliqué via le bouton.', 'info'], ['btn', 'Activer ma Visibilité à −30 %'], ['note', 'Remise appliquée à la première année. Renouvellement au tarif normal, avec un rappel 7 jours avant.']] },
+
+  { g: 'Conversion · Visibilité → Premium', id: 'prem-bilan-visibilite', titre: 'Bilan du 1er mois', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'J+30 après l’activation de Visibilité. Visibilité restante déduite au prorata (Stripe proration).',
+    sujet: 'Votre 1er mois en Visibilité : 4 fois plus de vues', pre: '287 vues, 19 appels. Voici l’étape suivante.',
+    b: [['k', 'Bilan du mois'], ['h', 'Visibilité fonctionne : voici vos chiffres'], ['stats', [['287', '×4,1', 'Vues de votre fiche'], ['19', '+15', 'Appels depuis votre fiche'], ['3', '', 'Demandes reçues']]], ['h3', 'L’étape suivante : des demandes garanties'], ['p', 'Avec Premium, nous vous transmettons 4 demandes exclusives par mois : vous êtes le seul artisan contacté.'], ['recap', [['Demandes exclusives', '4 par mois', 1], ['Garantie', 'Sinon le 2e mois est offert'], ['Crédits appels d’offres', '5 par mois inclus (50 € HT)'], ['Appels d’offres', 'Vous les voyez en premier']]], ['alert', 'Vos 11 mois de Visibilité restants (73,24 € HT) sont déduits de votre abonnement Premium.', 'ok'], ['btn', 'Découvrir Premium'], ['note', 'Premium : 79,90 € HT / mois payé à l’année, ou 99,90 € HT / mois sans engagement.']] },
+  { g: 'Conversion · Visibilité → Premium', id: 'prem-demandes-manquees', titre: 'Demandes exclusives manquées', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Lundi 8 h si au moins 2 demandes de son métier et de son secteur ont été confiées en exclusivité à un Premium la semaine passée. Le levier le plus fort.',
+    sujet: '3 chantiers (21 500 €) sont partis en exclusivité', pre: 'Ils ont été confiés à un seul artisan Premium de votre secteur.',
+    b: [['k', 'Semaine du 21 au 27 septembre'], ['h', '3 demandes exclusives que vous n’avez pas reçues'], ['rows', [['Salle de bain · Caudéran', 'Exclusive', 'amber', '9 800 €'], ['Chaudière vers PAC · Talence', 'Exclusive', 'amber', '8 400 €'], ['Ballon d’eau chaude · Bègles', 'Exclusive', 'amber', '3 300 €']]], ['p', 'Ces demandes n’ont été transmises qu’à un seul artisan, abonné Premium : aucun concurrent face à lui.'], ['alert', 'Un seul de ces chantiers aurait payé une année entière de Premium.', 'info'], ['btn', 'Recevoir mes 4 demandes exclusives'], ['note', 'Budgets estimés TTC. Aucune donnée du particulier n’est communiquée.']] },
+  { g: 'Conversion · Visibilité → Premium', id: 'prem-credits', titre: 'Crédits dépensés', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Signal : crédits achetés sur 30 jours > 40 € HT, sans Premium. 1 fois par 30 jours.',
+    sujet: 'Vous avez payé 60 € d’appels d’offres ce mois-ci', pre: 'Avec Premium, 5 crédits par mois sont inclus.',
+    b: [['h', 'Premium serait déjà rentable pour vous'], ['recap', [['Crédits achetés sur 30 jours', '6 crédits · 60 € HT'], ['Inclus chaque mois en Premium', '5 crédits · 50 € HT', 1], ['En plus', '4 demandes exclusives garanties']]], ['p', 'Vous répondez souvent aux appels d’offres. En Premium, vous les voyez avant le résumé du matin envoyé aux autres artisans, et 5 crédits sont inclus chaque mois.'], ['btn', 'Passer Premium'], ['note', 'Crédits inclus non reportables. Vos crédits déjà achetés restent valables.']] },
+
+  { g: 'Fidélisation', id: 'passage-annuel', titre: 'Passage à l’année', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Après la 3e échéance mensuelle payée. Rappel en encart dans les reçus des mois 6 et 9. Mois en cours déduit au prorata.',
+    sujet: 'Économisez 240 € en passant Premium à l’année', pre: '79,90 € HT / mois au lieu de 99,90 €. Le mois en cours est déduit.',
+    b: [['h', 'Premium depuis 3 mois : passez à l’année'], ['recap', [['Aujourd’hui (mensuel)', '99,90 € HT / mois'], ['À l’année', '79,90 € HT / mois', 1], ['Payé en une fois', '958,80 € HT'], ['Économie', '240 € HT par an', 1]]], ['p', 'Mêmes avantages, même garantie de 4 demandes exclusives par mois. Le mois en cours est déduit au prorata.'], ['btn', 'Passer à l’année'], ['note', 'En Visibilité : 79,90 € HT par an au lieu de 154,80 €, soit 74,90 € d’économie.']] },
+  { g: 'Fidélisation', id: 'resiliation-alternative', titre: 'Alternative à la résiliation', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'Résiliation confirmée, avant la date de fin. Les mêmes options sont proposées à l’écran avant confirmation. 1 offre de rétention par 12 mois.',
+    sujet: 'Avant le 24 octobre : gardez l’essentiel pour moins cher', pre: 'Passez en Visibilité ou suspendez 2 mois au lieu de tout perdre.',
+    b: [['h', 'Votre Premium s’arrête le 24 octobre'], ['p', 'Votre résiliation est bien enregistrée. D’ici là, trois options s’offrent à vous :'], ['rows', [['Passer en Visibilité', 'Rester en tête de liste', 'green', '6,67 € / mois'], ['Suspendre 2 mois', 'Reprise automatique', 'blue', '0 €'], ['Rester en Premium', '−50 % pendant 2 mois', 'amber', '49,95 € / mois']]], ['alert', 'Le 24 octobre, votre fiche repassera en gratuit : position standard, plus de demandes exclusives. Vos 87 avis sont conservés.', 'warn'], ['btn', 'Choisir une option'], ['note', 'Vous n’avez rien à faire pour confirmer la résiliation.']] },
+  { g: 'Fidélisation', id: 'reconquete-1', titre: 'Reconquête (J+30)', th: 'pro', cat: 'offres_pro', to: 'contact@bertrand-renovation.fr', quand: 'J+30 après la fin de l’abonnement. Code −30 % personnel valable 7 jours. Puis reconquete-2 à J+90, signé Julie, dernier email.',
+    sujet: 'Julien, 11 demandes exclusives sont parties depuis', pre: 'Revenez en Premium avec −30 % sur votre premier mois.',
+    b: [['h', 'Votre secteur a continué sans vous'], ['stats', [['11', '', 'Demandes exclusives confiées à d’autres'], ['164', '', 'Recherches « plombier Bordeaux »'], ['18e', '', 'Position de votre fiche (2e avant)']]], ['p', 'Vos 87 avis sont toujours là. Reprenez Premium et retrouvez votre place et vos demandes garanties dès aujourd’hui.'], ['code', 'RETOUR30'], ['btn', 'Reprendre Premium à −30 %'], ['note', 'Code personnel valable jusqu’au 3 octobre 2026, appliqué au premier mois.']] },
+
+  { g: 'Interne', id: 'resume-file', titre: 'Résumé de la file', th: 'admin', cat: 'transactionnel', to: 'moderation@portailhabitat.fr', quand: 'Chaque jour à 9 h et 14 h, aux membres de l’équipe concernés.',
+    sujet: 'File de travail : 17 éléments, 3 hors délai', pre: '5 documents, 4 avis, 3 remboursements de leads, 2 litiges…',
+    b: [['h', '17 éléments à traiter'], ['rows', [['Documents à vérifier', '3 hors délai', 'red', '5'], ['Avis en attente', 'Dans les délais', 'grey', '4'], ['Contestations de leads', 'Dans les délais', 'grey', '3'], ['Litiges ouverts', '', 'grey', '2'], ['Nouveaux artisans', '', 'grey', '2'], ['Suspicion de fraude', 'Priorité 5', 'red', '1']]], ['btn', 'Ouvrir la file de travail'], ['note', 'Délai cible : documents 48 h, avis 48 h, contestations 72 h.']] },
+];
+
+class Component extends DCLogic {
+  state = { i: 0, mobile: false };
+  componentDidMount() {
+    this.onKey = (ev) => {
+      if (ev.target && /INPUT|TEXTAREA/.test(ev.target.tagName)) return;
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') { ev.preventDefault(); this.go(1); }
+      if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') { ev.preventDefault(); this.go(-1); }
+    };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); }
+  go(d) { this.setState(s => ({ i: (s.i + d + EMAILS.length) % EMAILS.length })); window.scrollTo({ top: 0 }); }
+
+  renderVals() {
+    const { i, mobile } = this.state;
+    const e = EMAILS[i];
+    const t = { ...TH[e.th], ...(e.from ? { from: e.from } : {}), ...(e.sig ? { signature: e.sig } : {}) };
+    const cat = CAT[e.cat];
+    const groupsMap = {};
+    EMAILS.forEach((m, k) => {
+      (groupsMap[m.g] = groupsMap[m.g] || { nom: m.g, dot: TH[m.th].accent, items: [] }).items.push({
+        id: m.id, titre: m.titre, bg: k === i ? '#f1f0ed' : 'transparent', fw: k === i ? 700 : 500,
+        select: () => { this.setState({ i: k }); window.scrollTo({ top: 0 }); },
+      });
+    });
+    const F = { isKicker: false, isH: false, isH3: false, isP: false, isCit: false, isBtn: false, isLink: false, isCode: false, isRecap: false, isAlert: false, isSteps: false, isProg: false, isStats: false, isArt: false, isRate: false, isRows: false, isNote: false };
+    const blocks = e.b.map(([type, a, c, d, x]) => {
+      const o = { ...F };
+      switch (type) {
+        case 'k': return { ...o, isKicker: true, t: a };
+        case 'h': return { ...o, isH: true, t: a };
+        case 'h3': return { ...o, isH3: true, t: a };
+        case 'p': return { ...o, isP: true, t: a };
+        case 'cit': return { ...o, isCit: true, t: a };
+        case 'btn': return { ...o, isBtn: true, t: a };
+        case 'link': return { ...o, isLink: true, t: a };
+        case 'code': return { ...o, isCode: true, t: a };
+        case 'note': return { ...o, isNote: true, t: a };
+        case 'rate': return { ...o, isRate: true };
+        case 'prog': return { ...o, isProg: true, t: a, w: c };
+        case 'alert': { const [bg, fg] = TONE[c]; return { ...o, isAlert: true, t: a, bg, fg }; }
+        case 'recap': return { ...o, isRecap: true, rows: a.map(([k, v, bold], n) => ({ k, v, fw: bold ? 700 : 500, bt: n ? '1px solid #ecebe7' : '0' })) };
+        case 'steps': return { ...o, isSteps: true, items: a.map(([st, s], n) => s === 'done'
+          ? { t: st, mark: '✓', bg: t.accent, fg: '#fff', bd: '0', tc: '#6b6763', td: 'line-through' }
+          : { t: st, mark: String(n + 1), bg: '#fff', fg: t.dark, bd: '2px solid ' + t.light2, tc: '#1d1b1a', td: 'none' }) };
+        case 'stats': return { ...o, isStats: true, items: a.map(([n, dd, l]) => ({ n, d: dd, l })) };
+        case 'art': return { ...o, isArt: true, ini: a, nom: c, meta: d, labels: x };
+        case 'rows': return { ...o, isRows: true, rows: a.map(([nom, tag, tone, v], n) => { const [bg, fg] = TAG[tone]; return { nom, tag, v, bg: tag ? bg : 'transparent', fg, bt: n ? '1px solid #ecebe7' : '0' }; }) };
+        default: return o;
+      }
+    });
+    const isDiag = e.th === 'diag';
+    return {
+      count: EMAILS.length,
+      groups: Object.values(groupsMap),
+      e: { ...e, sms: e.sms || '' },
+      t, cat, blocks,
+      raison: cat.raison,
+      desabo: cat.desabo,
+      doorFill: isDiag ? 'transparent' : t.accent,
+      loupe: isDiag ? t.accent : 'transparent',
+      enTete: this.props.afficherEnTete ?? true,
+      showSms: !!e.sms && (this.props.afficherSms ?? true),
+      smsLen: (e.sms || '').length,
+      outerW: mobile ? '414px' : '760px',
+      outerPad: mobile ? '14px 10px 20px' : '32px 24px 28px',
+      pad: mobile ? '24px 20px' : '36px 40px',
+      hSize: mobile ? '24px' : '28px',
+      btnW: mobile ? '100%' : 'auto',
+      deskBg: mobile ? 'transparent' : '#fff',
+      mobBg: mobile ? '#fff' : 'transparent',
+      setDesktop: () => this.setState({ mobile: false }),
+      setMobile: () => this.setState({ mobile: true }),
+      prev: () => this.go(-1),
+      next: () => this.go(1),
+    };
+  }
+}
+</script>
+</body>
+</html>

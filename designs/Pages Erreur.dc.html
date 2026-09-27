@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<style>
+body, h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+a { color: #085340; }
+a:hover { color: #0d7a5f; }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;background:#fff;color:var(--color-text);--color-accent:{{ t.accent }};--color-accent-600:{{ t.dark }}">
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-divider)">
+    <div style="display:flex;background:#fff;border-radius:10px;padding:3px;gap:2px;box-shadow:var(--shadow-sm);flex-wrap:wrap">
+      <sc-for list="{{ pages }}" as="p" hint-placeholder-count="3">
+        <button type="button" onClick="{{ p.select }}" style="border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:8px;background:{{ p.bg }};color:{{ p.fg }}">{{ p.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;background:#fff;border-radius:10px;padding:3px;gap:2px;box-shadow:var(--shadow-sm);flex-wrap:wrap">
+      <sc-for list="{{ espaces }}" as="e" hint-placeholder-count="3">
+        <button type="button" onClick="{{ e.select }}" style="border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:8px;background:{{ e.bg }};color:{{ e.fg }}">{{ e.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <header style="padding:16px clamp(18px,4vw,44px);border-bottom:1px solid var(--color-divider)">
+    <a href="#" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text)">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="{{ t.accent }}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="{{ t.door }}"></rect>
+        <circle cx="20" cy="25.6" r="4.8" fill="none" stroke="{{ t.loupe }}" stroke-width="2.6"></circle>
+        <path d="m23.5 29.1 2.6 2.6" stroke="{{ t.loupe }}" stroke-width="2.6" stroke-linecap="round"></path>
+      </svg>
+      <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em">PORTAIL HABITAT <span style="color:{{ t.accent }};letter-spacing:{{ t.ls }}">{{ t.suffix }}</span></span>
+    </a>
+  </header>
+
+  <main style="flex:1;display:flex;align-items:center;padding:clamp(32px,7vw,96px) clamp(18px,4vw,44px)">
+    <div style="max-width:1180px;width:100%;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.8fr);gap:clamp(24px,5vw,72px);align-items:center">
+      <div style="display:flex;flex-direction:column;gap:18px;max-width:600px">
+        <span style="font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:{{ t.dark }}">{{ page.kicker }}</span>
+        <h1 style="margin:0;font-size:clamp(32px,4.5vw,54px);line-height:1.06">{{ page.titre }} <span style="font-family:'Source Serif 4',serif;font-style:italic;font-weight:600;color:{{ t.accent }}">{{ page.mot }}</span></h1>
+        <p style="margin:0;font-size:18px;line-height:1.6;color:var(--color-neutral-800);text-wrap:pretty">{{ page.texte }}</p>
+
+        <sc-if value="{{ is404 }}" hint-placeholder-val="{{ true }}">
+          <form style="display:flex;gap:10px;flex-wrap:wrap" onSubmit="{{ noSubmit }}">
+            <label style="flex:1 1 260px;display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Rechercher un artisan ou un métier
+              <input class="input" type="search" placeholder="Ex. plombier Bordeaux" style="padding:12px 14px;font-size:16px" />
+            </label>
+            <button type="submit" class="btn btn-primary" style="min-height:48px;align-self:flex-end;background:{{ t.accent }};border-color:{{ t.accent }}">Rechercher</button>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{ is500 }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:12px;background:var(--color-neutral-100)">
+            <span style="font-size:14px;color:var(--color-neutral-700)">Identifiant de l'incident, à communiquer au support</span>
+            <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><code style="font-size:16px;font-weight:700;font-family:ui-monospace,Menlo,monospace">PH-ERR-7f3a9c21</code><button type="button" class="btn btn-ghost" style="min-height:34px;font-size:14px">Copier</button></span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isMaint }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:12px;background:var(--color-neutral-100)">
+            <span style="font-size:15px;font-weight:700">Retour prévu vers 6 h 30</span>
+            <span style="font-size:14.5px;color:var(--color-neutral-800)">Vos demandes, messages et devis sont conservés. Aucune action n'est nécessaire de votre part.</span>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <sc-for list="{{ page.actions }}" as="a" hint-placeholder-count="2">
+            <a href="#" class="btn {{ a.cls }}" style="min-height:48px;font-size:16px;text-decoration:none;background:{{ a.bg }};border-color:{{ a.bc }}">{{ a.label }}</a>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ is404 }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--color-neutral-700)">Pages souvent recherchées</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ liens }}" as="l" hint-placeholder-count="4">
+                <a href="#" style="padding:8px 14px;border-radius:999px;border:1px solid var(--color-neutral-300);font-size:14.5px;font-weight:600;text-decoration:none;color:var(--color-text)">{{ l }}</a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="aspect-ratio:4/5;border-radius:18px;background:{{ t.light }};display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
+        <span style="font-size:clamp(96px,14vw,200px);font-weight:700;letter-spacing:-0.04em;color:{{ t.mid }};line-height:1">{{ page.gros }}</span>
+      </div>
+    </div>
+  </main>
+
+  <footer style="padding:18px clamp(18px,4vw,44px);border-top:1px solid var(--color-divider);display:flex;gap:8px 20px;flex-wrap:wrap;font-size:14px;color:var(--color-neutral-700)">
+    <span>© 2026 Portail Habitat</span>
+    <a href="Contact.dc.html">Aide et contact</a>
+    <a href="Pages Legales.dc.html">Mentions légales</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;page&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;404&quot;, &quot;500&quot;, &quot;maintenance&quot;], &quot;default&quot;: &quot;404&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scénario&quot;}, &quot;espace&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;particulier&quot;, &quot;pro&quot;, &quot;diag&quot;], &quot;default&quot;: &quot;particulier&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scénario&quot;}}">
+const TH = {
+  particulier: { label: 'Particuliers', accent: '#0d7a5f', dark: '#085340', light: '#eef7f3', mid: '#a5d7c4', suffix: '', ls: '0', door: '#0d7a5f', loupe: 'transparent' },
+  pro: { label: 'Pro', accent: '#e05a10', dark: '#a33f05', light: '#fff2ea', mid: '#ffc19c', suffix: 'PRO', ls: '0.04em', door: '#e05a10', loupe: 'transparent' },
+  diag: { label: 'Diag', accent: '#14508a', dark: '#0d3a65', light: '#eef4fa', mid: '#a4c5e3', suffix: 'DIAG', ls: '0.22em', door: 'transparent', loupe: '#14508a' },
+};
+const PAGES = {
+  '404': { label: '404', kicker: 'Erreur 404', titre: 'Cette page a été', mot: 'déplacée.', gros: '404',
+    texte: 'Le lien est peut-être ancien, ou la page n’existe plus. Retrouvez un artisan ou reprenez votre projet depuis l’accueil.',
+    actions: [['Retour à l’accueil', 'btn-primary', 1], ['Simuler mon devis', 'btn-secondary', 0]] },
+  '500': { label: '500', kicker: 'Erreur 500', titre: 'Un souci technique de', mot: 'notre côté.', gros: '500',
+    texte: 'Ce n’est pas de votre faute. Notre équipe a été prévenue automatiquement. Réessayez dans quelques instants ; si le problème continue, contactez-nous avec l’identifiant ci-dessous.',
+    actions: [['Réessayer', 'btn-primary', 1], ['Contacter le support', 'btn-secondary', 0]] },
+  maintenance: { label: 'Maintenance', kicker: 'Maintenance', titre: 'Nous améliorons', mot: 'Portail Habitat.', gros: '···',
+    texte: 'Le site est en maintenance pour quelques minutes. Merci de votre patience.',
+    actions: [['Suivre l’état du service', 'btn-secondary', 0]] },
+};
+class Component extends DCLogic {
+  state = { page: this.props.page ?? '404', esp: this.props.espace ?? 'particulier' };
+  renderVals() {
+    const s = this.state, t = TH[s.esp], p = PAGES[s.page];
+    const liens = s.esp === 'pro' ? ['Mon tableau de bord', 'Mes demandes', 'Appels d’offres', 'Aide'] : s.esp === 'diag' ? ['Estimer mes diagnostics', 'Diagnostic à Cenon', 'Diagnostic à Lormont', 'Aide'] : ['Trouver un artisan', 'Simulateur de devis', 'Laisser un avis', 'Aide'];
+    return {
+      t,
+      page: { ...p, actions: p.actions.map(([label, cls, prim]) => ({ label, cls, bg: prim ? t.accent : '#fff', bc: prim ? t.accent : 'var(--color-neutral-400)' })) },
+      pages: Object.entries(PAGES).map(([k, v]) => ({ label: v.label, bg: k === s.page ? '#201e1d' : 'transparent', fg: k === s.page ? '#fff' : '#201e1d', select: () => this.setState({ page: k }) })),
+      espaces: Object.entries(TH).map(([k, v]) => ({ label: v.label, bg: k === s.esp ? v.accent : 'transparent', fg: k === s.esp ? '#fff' : '#201e1d', select: () => this.setState({ esp: k }) })),
+      is404: s.page === '404', is500: s.page === '500', isMaint: s.page === 'maintenance',
+      liens,
+      noSubmit: (e) => e.preventDefault(),
+    };
+  }
+}
+</script>
+</body>
+</html>

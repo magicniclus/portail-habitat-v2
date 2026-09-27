@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+body { margin: 0; background: #f6f6f4; font-family: "Source Sans 3", system-ui, sans-serif; color: #201e1d; }
+h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; }
+a { color: #2a323c; }
+a:hover { color: #3f4a57; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #3f4a57; outline-offset: 2px; }
+</style>
+</helmet>
+
+<div style="display:flex;flex-direction:column;gap:20px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif">
+    <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px">
+      <div>
+        <div style="font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b6763">Finances › Conversion</div>
+        <h1 style="margin:4px 0 0;font-size:30px;line-height:1.15">Conversion et montée en gamme</h1>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+        <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;background:{{ interBg }};color:{{ interFg }}"><span style="width:8px;height:8px;border-radius:99px;background:{{ interDot }}"></span>{{ interLabel }}</span>
+        <span style="font-size:14px;color:#6b6763">Dernier calcul : aujourd'hui 05:07 · prochain envoi 18:30</span>
+      </div>
+    </header>
+
+    <div role="tablist" style="display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid #e2e0dc">
+      <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="6">
+        <button role="tab" onClick="{{ tb.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:15px;font-weight:{{ tb.fw }};color:{{ tb.fg }};padding:10px 14px;white-space:nowrap;height:auto;border-bottom:3px solid {{ tb.bd }};margin-bottom:-1px" style-hover="color:#201e1d">{{ tb.nom }}<span style="margin-left:6px;font-size:12px;font-weight:700;color:#8a8580">{{ tb.badge }}</span></button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ isApercu }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <sc-for list="{{ periodes }}" as="p" hint-placeholder-count="3">
+            <button onClick="{{ p.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;white-space:nowrap;flex:none;height:auto;line-height:1.3;background:{{ p.bg }};color:{{ p.fg }}">{{ p.nom }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+            <div style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:13.5px;color:#6b6763">{{ k.l }}</span>
+              <span style="font-size:28px;font-weight:700;line-height:1.1">{{ k.v }}</span>
+              <span style="font-size:13px;font-weight:600;color:{{ k.c }}">{{ k.s }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px">
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><h2 style="margin:0;font-size:18px">Entonnoir artisans</h2><span style="font-size:13px;color:#6b6763">cohortes inscrites sur la période</span></div>
+            <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center">
+                <span style="font-size:14.5px">{{ f.l }}</span>
+                <span style="font-size:14.5px;font-weight:700;text-align:right">{{ f.n }} <span style="font-weight:600;color:#6b6763;font-size:13px">{{ f.pct }}</span></span>
+                <div style="grid-column:1 / -1;height:8px;border-radius:99px;background:#eef0f3;overflow:hidden"><div style="height:100%;width:{{ f.w }};background:#3f4a57;border-radius:99px"></div></div>
+              </div>
+            </sc-for>
+          </section>
+
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><h2 style="margin:0;font-size:18px">Meilleurs emails</h2><span style="font-size:13px;color:#6b6763">revenu attribué (dernier clic ≤ 7 j)</span></div>
+            <sc-for list="{{ topEmails }}" as="m" hint-placeholder-count="5">
+              <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;padding:9px 0;border-top:{{ m.bt }}">
+                <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:14.5px;font-weight:600">{{ m.t }}</span><span style="font-size:12.5px;color:#8a8580;font-family:ui-monospace,Menlo,monospace">{{ m.id }}</span></span>
+                <span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px"><span style="font-size:15px;font-weight:700">{{ m.ca }}</span><span style="font-size:12.5px;color:#6b6763">{{ m.conv }}</span></span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between">
+          <div style="display:flex;flex-direction:column;gap:3px;max-width:62ch">
+            <h2 style="margin:0;font-size:17px">Groupe témoin (10 %)</h2>
+            <p style="margin:0;font-size:14.5px;line-height:1.5;color:#57534f">Conversion gratuit → payant à J+30 : <strong>14,2 %</strong> avec les emails contre <strong>10,1 %</strong> sans. Les séquences apportent <strong>+41 %</strong> de conversions, soit environ 1 420 € HT sur la période.</p>
+          </div>
+          <button onClick="{{ goJournal }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Voir le journal</button>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSequences }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;align-items:start">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #ecebe7"><strong style="font-size:15px">Séquences</strong><button onClick="{{ nouvelle }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">+ Nouvelle séquence</button></div>
+          <sc-for list="{{ seqs }}" as="q" hint-placeholder-count="9">
+            <button onClick="{{ q.go }}" style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #ecebe7;cursor:pointer;font:inherit;padding:12px 16px;background:{{ q.sel }}" style-hover="background:#f4f5f7">
+              <span style="font-size:13px;font-weight:700;color:#3f4a57;font-family:ui-monospace,Menlo,monospace">{{ q.id }}</span>
+              <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:15px;font-weight:600">{{ q.nom }}</span><span style="font-size:13px;color:#6b6763">{{ q.enCours }} en cours · conv. {{ q.conv }} · {{ q.ca }}</span></span>
+              <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ q.sbg }};color:{{ q.sfg }}">{{ q.statut }}</span>
+            </button>
+          </sc-for>
+        </section>
+
+        <sc-if value="{{ hasSeq }}" hint-placeholder-val="{{ true }}">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:flex-start">
+            <div><div style="font-size:13px;font-weight:700;color:#3f4a57;font-family:ui-monospace,Menlo,monospace">{{ seq.id }} · étape {{ seq.etape }}</div><h2 style="margin:2px 0 0;font-size:21px">{{ seq.nom }}</h2><div style="font-size:14px;color:#6b6763;margin-top:2px">Objectif : {{ seq.obj }} · sortie automatique dès qu'il est atteint</div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Tester l'envoi</button><button onClick="{{ basculer }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">{{ basculerLabel }}</button><button onClick="{{ editer }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Modifier</button><button onClick="{{ dupliquer }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Dupliquer</button><button onClick="{{ demanderSuppr }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;color:#8f1d14">Supprimer</button></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px">
+            <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Envois 30 j</div><div style="font-size:22px;font-weight:700">{{ seq.envois }}</div></div>
+            <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Ouverture</div><div style="font-size:22px;font-weight:700">{{ seq.ouv }}</div></div>
+            <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Clic</div><div style="font-size:22px;font-weight:700">{{ seq.clic }}</div></div>
+            <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Conversion</div><div style="font-size:22px;font-weight:700">{{ seq.conv }}</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ seq.pas }}" as="p" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:12px 0;border-top:1px solid #ecebe7">
+                <span style="width:26px;height:26px;border-radius:99px;background:#eef0f3;color:#2a323c;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ p.n }}</span>
+                <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <span style="font-size:14.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace">{{ p.m }}</span>
+                  <span style="font-size:13.5px;color:#57534f">{{ p.q }}</span>
+                </span>
+                <span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:13px;color:#57534f;text-align:right">
+                  <span><strong style="color:#201e1d">{{ p.env }}</strong> envois · ouv. {{ p.ouv }}</span>
+                  <span>{{ p.res }}</span>
+                  <sc-if value="{{ p.ab }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:#eef4fa;color:#0d3a65">Test A/B en cours</span></sc-if>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:0;font-size:13px;line-height:1.5;color:#6b6763">Séquence stockée dans <code>sequences/{{ seq.id }}</code> et versionnée à chaque modification. Conversion attribuée au dernier email cliqué dans les 7 jours.</p>
+        </section>
+        </sc-if>
+        <sc-if value="{{ noSeq }}" hint-placeholder-val="{{ false }}"><section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:24px;color:#6b6763">Aucune séquence. Créez-en une avec « Nouvelle séquence ».</section></sc-if>
+        <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+          <section style="background:#fff;border:2px solid #3f4a57;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <h2 style="margin:0;font-size:20px">{{ d.titre }}</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Nom<input value="{{ d.nom }}" onChange="{{ dNom }}" placeholder="ex. Artisans RGE → Premium" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;color:#201e1d"></label>
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Étape d'entrée<select value="{{ d.etape }}" onChange="{{ dEtape }}" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;color:#201e1d"><sc-for list="{{ etapes }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.v }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Objectif (sortie automatique)<select value="{{ d.obj }}" onChange="{{ dObj }}" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;color:#201e1d"><sc-for list="{{ objectifs }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.v }}</option></sc-for></select></label>
+            </div>
+            <label style="display:flex;gap:8px;align-items:center;font-size:14.5px"><input type="checkbox" checked="{{ d.actif }}" onChange="{{ dActif }}" style="width:18px;height:18px">Activer dès l'enregistrement (sinon enregistrée en pause)</label>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <strong style="font-size:15px">Étapes</strong>
+              <sc-for list="{{ dPas }}" as="p" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:28px minmax(160px,1.4fr) minmax(110px,.8fr) minmax(140px,1.2fr) auto;gap:8px;align-items:center;padding:10px;border:1px solid #e7e5e1;border-radius:10px;background:#faf9f7">
+                  <span style="width:26px;height:26px;border-radius:99px;background:#eef0f3;color:#2a323c;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ p.n }}</span>
+                  <select value="{{ p.modele }}" onChange="{{ p.setModele }}" aria-label="Modèle" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;min-width:0"><sc-for list="{{ modeles }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.v }}</option></sc-for></select>
+                  <select value="{{ p.type }}" onChange="{{ p.setType }}" aria-label="Déclencheur" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;min-width:0"><sc-for list="{{ decls }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.v }}</option></sc-for></select>
+                  <input value="{{ p.valeur }}" onChange="{{ p.setVal }}" disabled="{{ p.noVal }}" placeholder="{{ p.ph }}" aria-label="Valeur du déclencheur" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;min-width:0">
+                  <div style="display:flex;gap:4px;align-items:center;flex-wrap:nowrap">
+                    <label style="display:flex;gap:4px;align-items:center;font-size:13px;white-space:nowrap"><input type="checkbox" checked="{{ p.ab }}" onChange="{{ p.setAb }}">A/B</label>
+                    <button onClick="{{ p.up }}" aria-label="Monter" style="border:1px solid #d9d6d1;background:#fff;border-radius:6px;cursor:pointer;padding:4px 7px;font:inherit;height:auto">↑</button>
+                    <button onClick="{{ p.down }}" aria-label="Descendre" style="border:1px solid #d9d6d1;background:#fff;border-radius:6px;cursor:pointer;padding:4px 7px;font:inherit;height:auto">↓</button>
+                    <button onClick="{{ p.remove }}" aria-label="Retirer" style="border:1px solid #f0c9c4;background:#fff;color:#8f1d14;border-radius:6px;cursor:pointer;padding:4px 7px;font:inherit;height:auto">✕</button>
+                  </div>
+                </div>
+              </sc-for>
+              <button onClick="{{ ajouterPas }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;align-self:flex-start">+ Ajouter une étape</button>
+            </div>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:#6b6763">Les règles globales s'appliquent toujours : pression, préférences, groupe témoin, mise en veille, <code>encoreValable()</code> du modèle. Chaque enregistrement crée une version et une entrée <code>auditLog</code>. Les entreprises en cours passent aux nouvelles étapes à leur prochain envoi.</p>
+            <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 14px;border-radius:10px;background:#fdecea;color:#8f1d14;font-size:14px;font-weight:600">{{ err }}</div></sc-if>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onClick="{{ enregistrer }}" class="btn btn-primary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Enregistrer</button>
+              <button onClick="{{ annuler }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Annuler</button>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ delOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50">
+            <div role="dialog" aria-modal="true" style="background:#fff;border-radius:14px;padding:24px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+              <h2 style="margin:0;font-size:20px">Supprimer {{ del.id }} · {{ del.nom }} ?</h2>
+              <p style="margin:0;font-size:14.5px;line-height:1.5;color:#57534f">{{ del.enCours }} entreprises sont en cours dans cette séquence. Les traces et les statistiques passées sont conservées.</p>
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Entreprises en cours<select value="{{ del.devenir }}" onChange="{{ delDevenir }}" style="font:inherit;font-size:14.5px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;color:#201e1d"><option value="stop">Arrêter leurs envois</option><sc-for list="{{ delAutres }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">Basculer vers {{ o.l }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Motif (obligatoire)<textarea value="{{ del.motif }}" onChange="{{ delMotif }}" rows="2" style="font:inherit;font-size:14.5px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;color:#201e1d;resize:vertical"></textarea></label>
+              <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f">Tapez {{ del.id }} pour confirmer<input value="{{ del.saisie }}" onChange="{{ delSaisie }}" style="font:inherit;font-size:14.5px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;color:#201e1d"></label>
+              <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+                <button onClick="{{ delAnnuler }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Annuler</button>
+                <button onClick="{{ delConfirmer }}" disabled="{{ delBloque }}" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;border:0;background:#b3261e;color:#fff">Supprimer définitivement</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px">{{ toast }}</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isJournal }}" hint-placeholder-val="{{ false }}">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center">
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ filtres }}" as="f" hint-placeholder-count="6">
+              <button onClick="{{ f.go }}" style="border:1px solid #d9d6d1;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;padding:5px 11px;border-radius:999px;white-space:nowrap;flex:none;height:auto;line-height:1.3;background:{{ f.bg }};color:{{ f.fg }}">{{ f.nom }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <input class="input" placeholder="Entreprise, modèle, traceId…" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;min-width:220px">
+            <button class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Exporter CSV</button>
+          </div>
+        </div>
+        <div style="font-size:13px;color:#6b6763">Chaque décision est tracée dans <code>cycleTraces</code>, y compris les emails non envoyés et leur raison. Temps réel (onSnapshot).</div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ traces }}" as="t" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:118px 104px minmax(0,1fr);gap:4px 14px;align-items:start;padding:11px 0;border-top:{{ t.bt }}">
+              <span style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace;padding-top:2px">{{ t.d }}</span>
+              <span><span style="display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="font-size:14.5px"><strong>{{ t.e }}</strong> <span style="color:#6b6763;font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ t.m }}</span></span>
+                <span style="font-size:14px;color:#3d3a37;text-wrap:pretty">{{ t.det }}</span>
+                <span style="font-size:12px;color:#8a8580;font-family:ui-monospace,Menlo,monospace">{{ t.fn }}</span>
+              </span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ tracesVides }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:16px 0;color:#6b6763">Aucune trace pour ce filtre.</p></sc-if>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isArtisan }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <input class="input" value="Bertrand Rénovation · SIREN 812 345 678" style="font:inherit;font-size:15px;padding:9px 12px;border:1px solid #d9d6d1;border-radius:8px;max-width:460px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;align-items:start">
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+              <div><h2 style="margin:0;font-size:20px">Bertrand Rénovation</h2><div style="font-size:14px;color:#6b6763">Plombier-chauffagiste · Bordeaux + 25 km · 3 salariés</div></div>
+              <span style="font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap;background:#eef7f3;color:#085340">Premium annuel</span>
+            </div>
+            <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;font-size:14.5px">
+              <span style="color:#6b6763">Étape</span><span><strong>premium</strong> depuis aujourd'hui 16:02 (avant : visibilite, 34 j)</span>
+              <span style="color:#6b6763">Séquence</span><span>{{ artStatut }}</span>
+              <span style="color:#6b6763">Offre cible</span><span>premium (score 62)</span>
+              <span style="color:#6b6763">Groupe témoin</span><span>Non</span>
+              <span style="color:#6b6763">Préférences</span><span>offres_pro activées · 0 email non ouvert d'affilée</span>
+              <span style="color:#6b6763">Dernière remise</span><span>aucune · offre de rétention disponible</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onClick="{{ toggleArtPause }}" disabled="{{ noPil }}" title="{{ pilTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">{{ artPauseLabel }}</button>
+              <button class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Forcer une étape</button>
+              <button class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Exclure des emails commerciaux</button>
+            </div>
+            <h3 style="margin:6px 0 0;font-size:16px">Détail du score</h3>
+            <div style="display:flex;flex-direction:column;font-size:14px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7"><span>Effectif ≥ 3 salariés</span><strong>+20</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7"><span>Temps de réponse moyen 1 h 40</span><strong>+15</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7"><span>6 demandes reçues en 30 j</span><strong>+15</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7"><span>Connexions 4 jours sur 7</span><strong>+10</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7;color:#6b6763"><span>Appels d'offres débloqués : 1 (seuil 2)</span><span>0</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #ecebe7"><span>Fiche complète à 88 %</span><strong>+2 (prorata)</strong></div>
+            </div>
+          </section>
+
+          <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+            <h2 style="margin:0;font-size:18px">Signaux (calcul de 05:07)</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
+              <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Vues 7 j</div><div style="font-size:21px;font-weight:700">74</div></div>
+              <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Position secteur</div><div style="font-size:21px;font-weight:700">3e / 23</div></div>
+              <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Exclusives manquées 7 j</div><div style="font-size:21px;font-weight:700">3 · 21 500 €</div></div>
+              <div style="background:#f4f5f7;border-radius:10px;padding:12px"><div style="font-size:12.5px;color:#6b6763">Crédits achetés 30 j</div><div style="font-size:21px;font-weight:700">20 € HT</div></div>
+            </div>
+            <h3 style="margin:6px 0 0;font-size:16px">Historique</h3>
+            <sc-for list="{{ artTraces }}" as="t" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:2px 12px;padding:9px 0;border-top:1px solid #ecebe7">
+                <span style="font-size:12.5px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ t.d }}</span>
+                <span style="display:flex;flex-direction:column;gap:3px;min-width:0"><span><span style="display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</span> <span style="font-size:12.5px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ t.m }}</span></span><span style="font-size:14px;color:#3d3a37">{{ t.det }}</span></span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTaches }}" hint-placeholder-val="{{ false }}">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:6px 20px">
+        <sc-for list="{{ taches }}" as="t" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-bottom:1px solid #ecebe7;opacity:{{ t.op }}">
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.type }}</span><strong style="font-size:15.5px;white-space:nowrap;height:auto;flex:none;display:inline">{{ t.e }}</strong><span style="font-size:13px;color:#6b6763">{{ t.score }}</span></div>
+              <span style="font-size:14.5px;color:#3d3a37;text-wrap:pretty">{{ t.raison }}</span>
+              <span style="font-size:12.5px;color:#8a8580">Créée {{ t.quand }} · assignée : {{ t.qui }}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+              <button class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Ouvrir la fiche</button>
+              <button onClick="{{ t.go }}" disabled="{{ noPil }}" title="{{ pilTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">{{ t.btn }}</button>
+            </div>
+          </div>
+        </sc-for>
+        <p style="margin:0;padding:12px 0;font-size:13px;color:#6b6763">Tâches créées automatiquement dans <code>filesModeration</code> (types <code>appel_commercial</code>, <code>reponse_commerciale</code>, <code>risque_resiliation</code>, <code>appel_activation</code>). Pendant une tâche ouverte, la séquence de l'entreprise est en pause.</p>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isReglages }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;align-items:start">
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <h2 style="margin:0;font-size:18px">Interrupteur général</h2>
+          <p style="margin:0;font-size:14.5px;line-height:1.5;color:#57534f">Coupe immédiatement tous les emails <code>offres_pro</code>. Les emails transactionnels, de sécurité et d'activité continuent, et les traces aussi.</p>
+          <button onClick="{{ toggleInter }}" disabled="{{ noConf }}" title="{{ confTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;align-self:flex-start">{{ interBtn }}</button>
+          <h2 style="margin:10px 0 0;font-size:18px">Pression commerciale</h2>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px 16px;align-items:center;font-size:14.5px">
+            <label>Emails offres_pro max. par semaine</label><input class="input" value="2" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Emails non transactionnels max. par jour</label><input class="input" value="1" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Mise en veille après N non ouverts</label><input class="input" value="5" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Créneaux d'envoi</label><input class="input" value="07:15, 18:30" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Week-end</label><input class="input" value="Jamais" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+          </div>
+        </section>
+        <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <h2 style="margin:0;font-size:18px">Remises et score</h2>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px 16px;align-items:center;font-size:14.5px">
+            <label>Remise de bienvenue</label><input class="input" value="−30 %" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Validité du code de bienvenue</label><input class="input" value="72 h" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Délai minimal entre deux remises</label><input class="input" value="90 j" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Rétention (Premium, 2 mois)</label><input class="input" value="−50 %" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Score → offre cible Premium</label><input class="input" value="≥ 50" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Score → tâche d'appel commercial</label><input class="input" value="≥ 70" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Demande invendue offerte après</label><input class="input" value="24 h" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Artisans gratuits sollicités</label><input class="input" value="5" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+            <label>Taille du groupe témoin</label><input class="input" value="10 %" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+          </div>
+          <p style="margin:0;font-size:13px;color:#6b6763">Stocké dans <code>config/cycle</code>. Chaque modification passe par <code>adminSequenceModifier</code> et est journalisée dans <code>auditLog</code> (permission <code>conversion.configurer</code>).</p>
+          <button class="btn btn-primary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;align-self:flex-start;background:#3f4a57;border-color:#3f4a57;color:#fff">Enregistrer</button>
+        </section>
+      </div>
+    </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TONE = { green: ['#eef7f3', '#085340'], amber: ['#fdf4e3', '#7a5206'], red: ['#fdecea', '#8f1d14'], blue: ['#eef4fa', '#0d3a65'], grey: ['#f1f0ed', '#57534f'], orange: ['#fff2ea', '#a33f05'], slate: ['#eef0f3', '#2a323c'] };
+const tg = (t) => ({ bg: TONE[t][0], fg: TONE[t][1] });
+const NAV = [['Tableau de bord'], ['File de travail', '17'], ['Artisans'], ['Demandes'], ['Appels d’offres'], ['Avis', '4'], ['Litiges', '2'], ['Finances'], ['Conversion', '', 1], ['Référentiels'], ['Algorithme'], ['Équipe et audit']];
+const TABS = [['apercu', 'Vue d’ensemble'], ['sequences', 'Séquences'], ['journal', 'Journal'], ['artisan', 'Fiche cycle'], ['taches', 'Tâches', '6'], ['reglages', 'Réglages']];
+const PERIODES = { '7 jours': 0.25, '30 jours': 1, '90 jours': 2.9 };
+const FUNNEL = [['Prospects (email connu)', 412], ['Inscription commencée', 138], ['Inscription terminée', 104], ['Fiche en ligne en 7 jours', 81], ['1er paiement à J+30', 17], ['Premium à J+90', 6]];
+
+const SEQS = [
+  { id: 'S1', nom: 'Prospect → inscription', etape: 'prospect', actif: true, enCours: 211, envois: 734, ouv: '48 %', clic: '9,4 %', conv: '24,8 %', ca: '—', obj: 'Inscription commencée',
+    pas: [['prospect-estimation', 'Immédiat', 'A', 412, '61 %', '18 %'], ['prospect-demande-zone', 'Signal · demande à < 15 km', 'A/B', 96, '72 %', '21 %'], ['prospect-temoignage', 'J+5', 'A', 188, '39 %', '6 %'], ['prospect-derniere', 'J+12 · signé Julie', 'A', 142, '44 %', '8 % · 11 réponses']] },
+  { id: 'S2', nom: 'Inscription commencée → terminée', etape: 'inscription', actif: true, enCours: 34, envois: 162, ouv: '63 %', clic: '22 %', conv: '75 %', ca: '—', obj: 'Compte créé',
+    pas: [['reprise-onboarding', 'Immédiat', 'A', 138, '71 %', '34 %'], ['relance-onboarding-1', 'J+1', 'A', 52, '58 %', '21 %'], ['SMS relance', 'J+2 · 10 h–18 h', 'A', 29, '—', '17 %'], ['relance-onboarding-2', 'J+3', 'A', 31, '49 %', '12 %'], ['relance-onboarding-3', 'J+10', 'A', 22, '41 %', '9 %']] },
+  { id: 'S3', nom: 'Compte créé → fiche en ligne', etape: 'hors_ligne', actif: true, enCours: 23, envois: 118, ouv: '66 %', clic: '27 %', conv: '78 %', ca: '—', obj: 'Fiche en ligne',
+    pas: [['bienvenue-pro', 'Compte créé', 'A', 104, '82 %', '46 %'], ['fiche-incomplete', 'J+2 et J+7 si < 60 %', 'A', 61, '57 %', '19 %'], ['Tâche d’appel', 'J+10 si score ≥ 40', '—', 7, '—', '4 activées']] },
+  { id: 'S4', nom: 'Gratuit → Visibilité', etape: 'gratuit', actif: true, enCours: 148, envois: 486, ouv: '46 %', clic: '8,1 %', conv: '11,6 %', ca: '1 820 €', obj: 'Abonnement payant',
+    pas: [['vis-position', 'J+3', 'A/B', 81, '58 %', '12 %'], ['vis-concurrents', 'Signal · concurrent passé devant', 'A', 44, '69 %', '17 %'], ['vis-recherches-manquees', 'Signal · ≥ 10 recherches / 7 j', 'A', 38, '54 %', '9 %'], ['vis-offre-lancement', 'J+14 · code −30 % 72 h', 'A/B', 72, '52 %', '14 %'], ['vis-offre-rappel', 'J+17 · si ouvert', 'A', 29, '61 %', '19 %']] },
+  { id: 'S5', nom: 'Gratuit → Premium direct', etape: 'gratuit (score ≥ 50)', actif: true, enCours: 19, envois: 64, ouv: '57 %', clic: '12 %', conv: '15,8 %', ca: '1 598 €', obj: 'Premium',
+    pas: [['vis-position (variante Premium)', 'J+3', 'A', 19, '63 %', '15 %'], ['prem-demandes-manquees', 'Lundi · ≥ 2 exclusives manquées', 'A', 26, '71 %', '19 %'], ['prem-credits', 'Signal · > 40 € de crédits', 'A', 9, '78 %', '33 %'], ['Tâche d’appel commercial', 'J+7 si score ≥ 70', '—', 4, '—', '2 ventes']] },
+  { id: 'S6', nom: 'Visibilité → Premium', etape: 'visibilite', actif: true, enCours: 57, envois: 142, ouv: '55 %', clic: '10,2 %', conv: '9,1 %', ca: '1 040 €', obj: 'Premium',
+    pas: [['prem-bilan-visibilite', 'J+30', 'A', 41, '62 %', '14 %'], ['prem-demandes-manquees', 'Lundi · ≥ 2 exclusives manquées', 'A/B', 63, '68 %', '16 %'], ['prem-credits', 'Signal · > 40 € de crédits', 'A', 12, '75 %', '25 %'], ['prem-appel-offres-complet', 'Signal · complet avant 7 h', 'A', 18, '59 %', '11 %'], ['prem-renouvellement', 'J-30 renouvellement', 'A', 8, '—', '—']] },
+  { id: 'S7', nom: 'Mensuel → annuel', etape: 'abonné mensuel', actif: true, enCours: 31, envois: 27, ouv: '64 %', clic: '15 %', conv: '22 %', ca: '410 €', obj: 'Passage à l’année',
+    pas: [['passage-annuel', 'Après la 3e échéance', 'A', 27, '64 %', '15 %'], ['Encart dans le reçu', 'Mois 6 et 9', '—', 14, '—', '2 passages']] },
+  { id: 'S8', nom: 'Rétention', etape: 'resiliation', actif: true, enCours: 3, envois: 9, ouv: '89 %', clic: '44 %', conv: '33 %', ca: '—', obj: 'Résiliation annulée ou descente',
+    pas: [['Écran de résiliation', 'Avant confirmation', '—', 14, '—', '5 retenus'], ['resiliation-alternative', 'Résiliation confirmée', 'A', 9, '89 %', '44 %']] },
+  { id: 'S9', nom: 'Reconquête', etape: 'ancien_client', actif: false, enCours: 0, envois: 0, ouv: '—', clic: '—', conv: '—', ca: '—', obj: 'Reprise d’abonnement',
+    pas: [['reconquete-1', 'J+30 · code −30 % 7 j', 'A', 0, '—', '—'], ['reconquete-2', 'J+90 · signé Julie', 'A', 0, '—', '—']] },
+];
+
+const TT = {
+  signal_detecte: ['Signal', 'blue'], etape_changee: ['Étape', 'slate'], score_calcule: ['Score', 'slate'], email_planifie: ['Planifié', 'grey'],
+  email_envoye: ['Envoyé', 'blue'], email_annule: ['Annulé', 'grey'], email_bloque: ['Bloqué', 'amber'], ouvert: ['Ouvert', 'grey'], clic: ['Clic', 'green'],
+  code_cree: ['Code', 'orange'], code_utilise: ['Code utilisé', 'orange'], conversion: ['Conversion', 'green'], tache_creee: ['Tâche', 'orange'], action_admin: ['Admin', 'red'],
+};
+const TRACES = [
+  ['26/09 18:30:02', 'Dupuy Électricité', 'email_envoye', 'prospect-demande-zone', 'S1 · variante B · Resend re_8f2…', 'cyclePlanifier'],
+  ['26/09 18:15:40', 'Dupuy Électricité', 'signal_detecte', '—', 'Demande « tableau électrique » à 3 km (dem_4K91)', 'cycleOnDemandeProspect'],
+  ['26/09 16:02:11', 'Bertrand Rénovation', 'conversion', 'prem-demandes-manquees', 'Visibilité → Premium annuel · 958,80 € HT · prorata −73,24 €', 'cycleOnAbonnement'],
+  ['26/09 15:58:47', 'Bertrand Rénovation', 'clic', 'prem-demandes-manquees', 'Bouton « Recevoir mes 4 demandes exclusives »', 'cycleOnResendEvent'],
+  ['26/09 14:20:05', 'Atelier Garnier', 'email_bloque', 'vis-concurrents', 'Raison : pression (2 emails offres_pro cette semaine) · reporté au 29/09', 'cyclePlanifier'],
+  ['26/09 12:41:33', 'SARL Mendes', 'tache_creee', '—', 'Réponse à prospect-derniere : « Quel engagement pour Premium ? »', 'cycleOnReponseEmail'],
+  ['26/09 11:05:12', 'Julie Martin', 'action_admin', '—', 'Pause de la séquence S4 pour Couvreur Lambert (appel en cours)', 'adminCyclePause'],
+  ['26/09 07:15:08', 'Toitures Rive Droite', 'email_annule', 'vis-offre-rappel', 'Raison : plus_valable (Visibilité activée à 06:52)', 'cyclePlanifier'],
+  ['26/09 07:15:03', 'Plomberie Da Silva', 'code_cree', 'vis-offre-lancement', 'Code DASILVA30 · −30 % · expire le 29/09 07:15', 'cyclePlanifier'],
+  ['26/09 07:15:01', 'Menuiserie Roux', 'email_bloque', 'vis-position', 'Raison : temoin (groupe témoin)', 'cyclePlanifier'],
+  ['26/09 05:07:44', 'Bertrand Rénovation', 'score_calcule', '—', 'Score 54 → 62 · offre cible : premium', 'cycleCalculer'],
+  ['26/09 05:07:44', 'Bertrand Rénovation', 'etape_changee', '—', 'Séquence S6 → S6 (offre cible confirmée)', 'cycleCalculer'],
+  ['25/09 18:30:05', 'Électricité Morel', 'email_bloque', 'prem-credits', 'Raison : veille (5 emails non ouverts d’affilée)', 'cyclePlanifier'],
+  ['25/09 07:15:10', 'Chauffage Petit', 'email_bloque', 'passage-annuel', 'Raison : preferences (offres_pro désactivées le 12/09)', 'cyclePlanifier'],
+];
+const FILTRES = { Tous: null, Envois: ['email_envoye', 'email_planifie', 'ouvert', 'clic'], 'Non-envois': ['email_bloque', 'email_annule'], Signaux: ['signal_detecte', 'score_calcule', 'etape_changee'], Conversions: ['conversion', 'code_cree', 'code_utilise'], Admin: ['action_admin', 'tache_creee'] };
+
+const TACHES = [
+  ['Réponse commerciale', 'orange', 'SARL Mendes', 'A répondu à « Je clôture votre dossier ? » : « Quel engagement pour Premium ? »', 58, 'il y a 2 h', 'Julie M.'],
+  ['Appel commercial', 'blue', 'Couvreur Lambert', 'Score 74 · 3 salariés · 4 appels d’offres débloqués en 30 j', 74, 'il y a 5 h', 'Julie M.'],
+  ['Appel commercial', 'blue', 'Isolation Gironde', 'Score 71 · temps de réponse 38 min · 7 demandes en 30 j', 71, 'hier', '—'],
+  ['Risque de résiliation', 'red', 'Peinture Hamon', 'Premium · aucune connexion depuis 16 j · 3 demandes expirées', 48, 'hier', '—'],
+  ['Activation', 'amber', 'Carrelage Nguyen', 'Compte créé il y a 10 j · fiche à 35 % · décennale manquante', 44, 'il y a 2 j', '—'],
+  ['Garantie non tenue', 'red', 'Chauffage Petit', '2 demandes exclusives sur 4 ce mois-ci · 2e mois offert appliqué automatiquement', 0, 'il y a 3 j', 'Auto'],
+];
+
+const MODELES = ['prospect-estimation', 'prospect-demande-zone', 'prospect-temoignage', 'prospect-derniere', 'resume-zone-mensuel', 'reprise-onboarding', 'relance-onboarding-1', 'relance-onboarding-2', 'relance-onboarding-3', 'bienvenue-pro', 'fiche-incomplete', 'vis-position', 'vis-concurrents', 'vis-recherches-manquees', 'vis-offre-lancement', 'vis-offre-rappel', 'vis-offre-relance', 'prem-bilan-visibilite', 'prem-demandes-manquees', 'prem-credits', 'prem-appel-offres-complet', 'prem-renouvellement', 'passage-annuel', 'garantie-tenue', 'resiliation-alternative', 'reconquete-1', 'reconquete-2', 'SMS relance', 'Tâche d’appel'];
+const ETAPES = ['prospect', 'inscription', 'hors_ligne', 'gratuit', 'gratuit (score ≥ 50)', 'visibilite', 'premium', 'abonné mensuel', 'resiliation', 'ancien_client'];
+const DECL = ['Immédiat', 'Délai', 'Signal', 'Planifié'];
+const toEdit = (p) => ({ modele: p[0], type: /^Signal/.test(p[1]) ? 'Signal' : /^Imm/.test(p[1]) ? 'Immédiat' : /^(Lundi|Mois|Chaque)/.test(p[1]) ? 'Planifié' : 'Délai', valeur: p[1], ab: p[2] === 'A/B' });
+
+class Component extends DCLogic {
+  state = { tab: 'apercu', periode: '30 jours', seq: 'S6', filtre: 'Tous', inter: true, pauses: {}, tachesFaites: {}, seqList: SEQS.map((x) => ({ ...x, pas: x.pas.map((p) => [...p]) })), draft: null, err: '', del: null, toast: '' };
+
+  flash(m) { this.setState({ toast: m }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  nouvelle() { const n = this.state.seqList.length + 1; this.setState({ draft: { isNew: true, id: 'S' + (Math.max(...this.state.seqList.map((x) => +x.id.slice(1))) + 1), nom: '', etape: 'gratuit', obj: 'Abonnement payant', actif: false, pas: [{ modele: 'vis-position', type: 'Délai', valeur: 'J+3', ab: false }] }, err: '' }); }
+  editer(q) { this.setState({ draft: { isNew: false, id: q.id, nom: q.nom, etape: q.etape, obj: q.obj, actif: q.actif, pas: q.pas.map(toEdit) }, err: '' }); }
+  majDraft(patch) { this.setState((s) => ({ draft: { ...s.draft, ...patch } })); }
+  majPas(i, patch) { this.setState((s) => ({ draft: { ...s.draft, pas: s.draft.pas.map((p, k) => (k === i ? { ...p, ...patch } : p)) } })); }
+  enregistrer() {
+    const d = this.state.draft;
+    if (!d.nom.trim()) return this.setState({ err: 'Donnez un nom à la séquence.' });
+    if (!d.pas.length) return this.setState({ err: 'Ajoutez au moins une étape.' });
+    if (d.pas.some((p) => p.type !== 'Immédiat' && !p.valeur.trim())) return this.setState({ err: 'Chaque étape différée ou déclenchée a besoin d’un déclencheur.' });
+    const pas = d.pas.map((p) => [p.modele, p.type === 'Immédiat' ? 'Immédiat' : p.valeur, p.ab ? 'A/B' : 'A', 0, '—', '—']);
+    this.setState((s) => {
+      const old = s.seqList.find((x) => x.id === d.id);
+      const rec = old ? { ...old, nom: d.nom, etape: d.etape, obj: d.obj, actif: d.actif, pas: pas.map((p, i) => (old.pas[i] && old.pas[i][0] === p[0] ? [p[0], p[1], p[2], old.pas[i][3], old.pas[i][4], old.pas[i][5]] : p)) }
+        : { id: d.id, nom: d.nom, etape: d.etape, obj: d.obj, actif: d.actif, enCours: 0, envois: 0, ouv: '—', clic: '—', conv: '—', ca: '—', pas };
+      return { seqList: old ? s.seqList.map((x) => (x.id === d.id ? rec : x)) : [...s.seqList, rec], seq: d.id, draft: null, err: '' };
+    });
+    this.flash(d.isNew ? 'Séquence ' + d.id + ' créée (version 1) · auditLog écrit' : 'Séquence ' + d.id + ' enregistrée (nouvelle version) · auditLog écrit');
+  }
+  dupliquer(q) { const id = 'S' + (Math.max(...this.state.seqList.map((x) => +x.id.slice(1))) + 1); this.setState((s) => ({ seqList: [...s.seqList, { ...q, id, nom: q.nom + ' (copie)', actif: false, enCours: 0, envois: 0, ouv: '—', clic: '—', conv: '—', ca: '—', pas: q.pas.map((p) => [p[0], p[1], p[2], 0, '—', '—']) }], seq: id })); this.flash('Copie ' + id + ' créée, en pause'); }
+  basculer(q) { this.setState((s) => ({ seqList: s.seqList.map((x) => (x.id === q.id ? { ...x, actif: !x.actif } : x)) })); this.flash(q.actif ? q.id + ' mise en pause : plus aucun envoi, les entreprises restent à leur étape' : q.id + ' réactivée'); }
+  supprimer() {
+    const { del } = this.state;
+    this.setState((s) => { const list = s.seqList.filter((x) => x.id !== del.id); return { seqList: list, seq: list[0] ? list[0].id : null, del: null }; });
+    this.flash('Séquence ' + del.id + ' supprimée · ' + (del.devenir === 'stop' ? 'envois arrêtés' : 'entreprises basculées vers ' + del.devenir) + ' · motif journalisé');
+  }
+
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#conversion'); } catch (e) {} }, 0); }
+    const s = this.state;
+    const k = PERIODES[s.periode];
+    const n = (x) => Math.round(x * k).toLocaleString('fr-FR');
+    const is = (t) => s.tab === t;
+    const f0 = FUNNEL[0][1];
+    const seq = s.seqList.find((x) => x.id === s.seq);
+    const P = this.props.perms || {};
+    const canConf = P['conversion.configurer'] ?? true, canPil = P['conversion.piloter'] ?? true;
+    const trFiltre = FILTRES[s.filtre];
+    return {
+      nav: NAV.map(([nom, badge, on]) => ({ nom, badge: badge || '', fw: on ? 700 : 500, fg: on ? '#fff' : '#c9cfd6', bg: on ? '#3f4a57' : 'transparent' })),
+      tabs: TABS.map(([id, nom, badge]) => ({ nom, badge: id === 'taches' ? String(TACHES.length - Object.keys(s.tachesFaites).length) : (badge || ''), fw: is(id) ? 700 : 500, fg: is(id) ? '#201e1d' : '#6b6763', bd: is(id) ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
+      isApercu: is('apercu'), isSequences: is('sequences'), isJournal: is('journal'), isArtisan: is('artisan'), isTaches: is('taches'), isReglages: is('reglages'),
+      interLabel: s.inter ? 'Automatisation active' : 'Automatisation coupée', interBg: s.inter ? '#eef7f3' : '#fdecea', interFg: s.inter ? '#085340' : '#8f1d14', interDot: s.inter ? '#0d7a5f' : '#c0392b',
+      toggleInter: () => this.setState({ inter: !s.inter }), interBtn: s.inter ? 'Couper tous les emails commerciaux' : 'Réactiver l’automatisation',
+      periodes: Object.keys(PERIODES).map((p) => ({ nom: p, bg: p === s.periode ? '#2a323c' : '#fff', fg: p === s.periode ? '#fff' : '#201e1d', go: () => this.setState({ periode: p }) })),
+      kpis: [
+        { l: 'Revenu attribué aux emails', v: n(4870) + ' € HT', s: '+23 % vs période précédente', c: '#0a6650' },
+        { l: 'Gratuit → payant à J+30', v: '14,2 %', s: 'cible 12 %', c: '#0a6650' },
+        { l: 'Visibilité → Premium à 90 j', v: '9,1 %', s: 'cible 10 %', c: '#7a5206' },
+        { l: 'Part d’annuel', v: '63 %', s: 'cible 60 %', c: '#0a6650' },
+        { l: 'Emails commerciaux envoyés', v: n(1742), s: 'plaintes 0,02 % · rebonds 0,6 %', c: '#57534f' },
+      ],
+      funnel: FUNNEL.map(([l, v], i) => ({ l, n: n(v), pct: i ? Math.round((v / FUNNEL[i - 1][1]) * 100) + ' %' : '', w: Math.max(2, (v / f0) * 100) + '%' })),
+      topEmails: [['Demandes exclusives manquées', 'prem-demandes-manquees', 2140, 9], ['Offre de bienvenue −30 %', 'vis-offre-lancement', 1120, 14], ['Crédits dépensés', 'prem-credits', 890, 4], ['Un concurrent passe devant', 'vis-concurrents', 560, 7], ['Passage à l’année', 'passage-annuel', 410, 6]]
+        .map(([t, id, ca, c], i) => ({ t, id, ca: n(ca) + ' € HT', conv: Math.max(1, Math.round(c * k)) + ' conversions', bt: i ? '1px solid #ecebe7' : '0' })),
+      goJournal: () => this.setState({ tab: 'journal' }),
+
+      seqs: s.seqList.map((x) => { const off = !x.actif; return { ...x, sel: x.id === s.seq ? '#f4f5f7' : '#fff', statut: off ? 'En pause' : 'Active', sbg: off ? '#f1f0ed' : '#eef7f3', sfg: off ? '#57534f' : '#085340', go: () => this.setState({ seq: x.id, draft: null }) }; }),
+      seq: seq ? { ...seq, pas: seq.pas.map(([m, q, v, env, ouv, res], i) => ({ n: i + 1, m, q, v, env, ouv, res, ab: v === 'A/B' })) } : { pas: [] },
+      hasSeq: !!seq && !s.draft, noSeq: !seq && !s.draft,
+      noConf: !canConf, noPil: !canPil, confTitle: canConf ? '' : 'Permission requise : conversion.configurer', pilTitle: canPil ? '' : 'Permission requise : conversion.piloter',
+      nouvelle: () => this.nouvelle(),
+      editer: () => this.editer(seq), dupliquer: () => this.dupliquer(seq), basculer: () => this.basculer(seq),
+      basculerLabel: seq && seq.actif ? 'Mettre en pause' : 'Activer',
+      demanderSuppr: () => this.setState({ del: { id: seq.id, nom: seq.nom, enCours: seq.enCours, motif: '', saisie: '', devenir: 'stop' } }),
+      toast: s.toast, hasToast: !!s.toast,
+      editing: !!s.draft,
+      d: s.draft ? { ...s.draft, titre: s.draft.isNew ? 'Nouvelle séquence' : 'Modifier ' + s.draft.id } : { pas: [] },
+      etapes: ETAPES.map((e) => ({ v: e })), modeles: MODELES.map((m) => ({ v: m })), decls: DECL.map((x) => ({ v: x })),
+      objectifs: ['Inscription commencée', 'Compte créé', 'Fiche en ligne', 'Abonnement payant', 'Premium', 'Passage à l’année', 'Résiliation annulée ou descente', 'Reprise d’abonnement'].map((v) => ({ v })),
+      dNom: (e) => this.majDraft({ nom: e.target.value }), dEtape: (e) => this.majDraft({ etape: e.target.value }), dObj: (e) => this.majDraft({ obj: e.target.value }), dActif: (e) => this.majDraft({ actif: e.target.checked }),
+      dPas: s.draft ? s.draft.pas.map((p, i, arr) => ({ ...p, n: i + 1, noVal: p.type === 'Immédiat', ph: p.type === 'Signal' ? 'ex. crédits achetés 30 j > 40 €' : p.type === 'Planifié' ? 'ex. lundi 8 h' : 'ex. J+3',
+        setModele: (e) => this.majPas(i, { modele: e.target.value }), setType: (e) => this.majPas(i, { type: e.target.value }), setVal: (e) => this.majPas(i, { valeur: e.target.value }), setAb: (e) => this.majPas(i, { ab: e.target.checked }),
+        up: () => this.setState((st) => { if (!i) return null; const pas = [...st.draft.pas]; [pas[i - 1], pas[i]] = [pas[i], pas[i - 1]]; return { draft: { ...st.draft, pas } }; }),
+        down: () => this.setState((st) => { if (i === arr.length - 1) return null; const pas = [...st.draft.pas]; [pas[i + 1], pas[i]] = [pas[i], pas[i + 1]]; return { draft: { ...st.draft, pas } }; }),
+        remove: () => this.setState((st) => ({ draft: { ...st.draft, pas: st.draft.pas.filter((_, k) => k !== i) } })) })) : [],
+      ajouterPas: () => this.majDraft({ pas: [...s.draft.pas, { modele: 'vis-position', type: 'Délai', valeur: '', ab: false }] }),
+      enregistrer: () => this.enregistrer(), annuler: () => this.setState({ draft: null, err: '' }), err: s.err, hasErr: !!s.err,
+      delOpen: !!s.del, del: s.del || {}, delAutres: s.del ? s.seqList.filter((x) => x.id !== s.del.id).map((x) => ({ v: x.id, l: x.id + ' · ' + x.nom })) : [],
+      delMotif: (e) => this.setState({ del: { ...s.del, motif: e.target.value } }), delSaisie: (e) => this.setState({ del: { ...s.del, saisie: e.target.value } }), delDevenir: (e) => this.setState({ del: { ...s.del, devenir: e.target.value } }),
+      delBloque: !s.del || s.del.motif.trim().length < 5 || s.del.saisie !== s.del.id, delConfirmer: () => this.supprimer(), delAnnuler: () => this.setState({ del: null }),
+
+      filtres: Object.keys(FILTRES).map((f) => ({ nom: f, bg: f === s.filtre ? '#2a323c' : '#fff', fg: f === s.filtre ? '#fff' : '#201e1d', go: () => this.setState({ filtre: f }) })),
+      traces: TRACES.filter((t) => !trFiltre || trFiltre.includes(t[2])).map(([d, e, type, m, det, fn], i) => ({ d, e, m, det, fn, ...tg(TT[type][1]), label: TT[type][0], bt: i ? '1px solid #ecebe7' : '0' })),
+      tracesVides: TRACES.filter((t) => !trFiltre || trFiltre.includes(t[2])).length === 0,
+
+      artTraces: TRACES.filter((t) => t[1] === 'Bertrand Rénovation').map(([d, e, type, m, det], i) => ({ d, m, det, ...tg(TT[type][1]), label: TT[type][0] })),
+      artPause: !!s.pauses.BR, artPauseLabel: s.pauses.BR ? 'Reprendre la séquence' : 'Mettre en pause',
+      toggleArtPause: () => this.setState({ pauses: { ...s.pauses, BR: !s.pauses.BR } }),
+      artStatut: s.pauses.BR ? 'En pause (Julie M., à l’instant)' : 'Converti · S7 démarre après la 3e échéance',
+
+      taches: TACHES.map(([type, tone, e, raison, score, quand, qui], i) => { const done = !!s.tachesFaites[i]; return { type, e, raison, score: score ? 'Score ' + score : '', quand, qui, ...tg(tone), op: done ? 0.45 : 1, btn: done ? 'Traitée' : 'Marquer traitée', go: () => this.setState({ tachesFaites: { ...s.tachesFaites, [i]: !done } }) }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10;
+  --color-accent-100: #fff2ea;
+  --color-accent-200: #ffe0cd;
+  --color-accent-300: #ffc19c;
+  --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f;
+  --color-accent-600: #c94f0a;
+  --color-accent-700: #a33f05;
+  --color-accent-800: #7a2f04;
+  --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+
+  <aside style="{{ styleAside }}">
+    <a href="Acquisition Artisans v2.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 18px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}">
+        <span style="{{ styleLibelles }}" data-libelle="1">
+          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        </span>
+      </sc-if>
+    </a>
+
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="9">
+      <a href="{{ item.href }}" title="{{ item.label }}" style="{{ item.style }}">
+        <sc-if value="{{ item.estTitre }}" hint-placeholder-val="{{ false }}">
+          <span>{{ item.label }}</span>
+        </sc-if>
+        <sc-if value="{{ item.estLien }}" hint-placeholder-val="{{ true }}">
+          <span style="display:flex;align-items:center;gap:12px;width:100%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+            <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="{{ styleLibelles }}">{{ item.label }}</span></sc-if>
+            <sc-if value="{{ item.badgeVisible }}" hint-placeholder-val="{{ false }}">
+              <span style="margin-left:auto;background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px">{{ item.badge }}</span>
+            </sc-if>
+          </span>
+        </sc-if>
+      </a>
+    </sc-for>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px">
+      <button type="button" onClick="{{ basculerMenu }}" aria-label="Replier le menu" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--color-divider);background:#fff;border-radius:8px;cursor:pointer;color:var(--color-neutral-800);flex:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="{{ styleBouton }}"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="m14 9 3 3-3 3"></path></svg>
+      </button>
+      <p style="margin:0;font-size:17px;font-weight:700">Appels d'offres</p>
+      <span style="margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">{{ initiales }}</span>
+    </header>
+
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Appels d'offres</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">{{ nbOffres }} chantiers ouverts autour de {{ zone }}. Vous choisissez ceux auxquels vous répondez.</p>
+        </div>
+        <a href="Onboarding Etape 2.dc.html" class="btn btn-secondary" style="min-height:44px;font-size:15px;background:#fff">Modifier ma zone</a>
+      </div>
+
+      <sc-if value="{{ gratuit }}" hint-placeholder-val="{{ true }}">
+        <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:16px;padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1;min-width:260px">
+            <p style="margin:0 0 4px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-accent-700)">Compte gratuit</p>
+            <h2 style="font-size:19px;margin:0 0 4px">Les artisans Premium voient ces chantiers 24 h avant vous</h2>
+            <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">Sur les {{ nbOffres }} appels d'offres de votre zone, {{ nbVerrouilles }} sont encore réservés aux comptes Premium.</p>
+          </div>
+          <a href="Paiement Offre Premium.dc.html" class="btn btn-primary" style="min-height:44px;font-size:15px">Passer Premium</a>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <sc-for list="{{ filtres }}" as="f" hint-placeholder-count="4">
+          <button type="button" onClick="{{ f.choisir }}" style="{{ f.style }}">{{ f.label }}</button>
+        </sc-for>
+        <span style="margin-left:auto;font-size:14px;color:var(--color-neutral-700)">{{ nbAffiches }} chantiers affichés</span>
+      </div>
+
+      <div style="display:grid;gap:16px">
+        <sc-for list="{{ offres }}" as="o" hint-placeholder-count="5">
+          <div style="{{ o.styleCarte }}">
+            <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+              <span style="width:44px;height:44px;border-radius:11px;background:var(--color-accent-100);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;flex:none">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ o.icone }}"></path></svg>
+              </span>
+              <div style="flex:1;min-width:220px">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+                  <strong style="font-size:17px">{{ o.titre }}</strong>
+                  <span style="{{ o.styleBadge }}">{{ o.badge }}</span>
+                </div>
+                <p style="margin:0;font-size:14px;color:var(--color-neutral-700)">{{ o.ville }} · à {{ o.distance }} · publié {{ o.publie }}</p>
+              </div>
+              <div style="text-align:right;min-width:150px">
+                <p style="margin:0;font-size:19px;font-weight:700;white-space:nowrap">{{ o.budget }}</p>
+                <p style="margin:2px 0 0;font-size:13px;color:var(--color-neutral-700)">budget annoncé</p>
+              </div>
+            </div>
+
+            <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800);max-width:85ch">{{ o.description }}</p>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ o.tags }}" as="t" hint-placeholder-count="3">
+                <span style="display:inline-flex;align-items:center;white-space:nowrap;font-size:12.5px;font-weight:600;border:1px solid var(--color-divider);border-radius:999px;padding:5px 11px;color:var(--color-neutral-800)">{{ t }}</span>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--color-divider);padding-top:14px">
+              <span style="display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13.5px;color:var(--color-neutral-700)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4.5l3 1.5"></path></svg>{{ o.delai }}
+              </span>
+              <span style="display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13.5px;color:var(--color-neutral-700)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><circle cx="9" cy="9" r="3.2"></circle><path d="M3.5 19a5.5 5.5 0 0 1 11 0"></path><path d="M16 6.5a3 3 0 0 1 0 5.6"></path></svg>{{ o.reponses }}
+              </span>
+              <sc-if value="{{ o.verrouille }}" hint-placeholder-val="{{ false }}">
+                <span style="margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                  <span style="display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13.5px;font-weight:600;color:var(--color-accent-700)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><rect x="5" y="10.5" width="14" height="9" rx="2"></rect><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"></path></svg>{{ o.attente }}
+                  </span>
+                  <a href="Paiement Offre Premium.dc.html" class="btn btn-primary" style="min-height:42px;font-size:14px">Débloquer avec Premium</a>
+                </span>
+              </sc-if>
+              <sc-if value="{{ o.ouvert }}" hint-placeholder-val="{{ true }}">
+                <span style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap">
+                  <button type="button" class="btn btn-secondary" style="min-height:42px;font-size:14px;background:#fff">Voir le détail</button>
+                  <button type="button" class="btn btn-primary" style="min-height:42px;font-size:14px">Répondre à cet appel d'offres</button>
+                </span>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <h2 style="font-size:19px;margin:0 0 4px">Rien qui vous corresponde cette semaine ?</h2>
+          <p style="margin:0;font-size:14.5px;line-height:22px;color:var(--color-neutral-800)">Élargissez votre rayon d'intervention ou ajoutez des prestations à votre fiche pour recevoir plus d'appels d'offres.</p>
+        </div>
+        <a href="Ma Fiche.dc.html" class="btn btn-secondary" style="min-height:44px;font-size:15px;background:#fff">Modifier mes prestations</a>
+      </div>
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const ICONES = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+  fiche: "M4 5h16v14H4zM8 9h8M8 13h5",
+  demandes: "M4 6h16v10H9l-5 3V6z",
+  avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
+  stats: "M5 20V10M12 20V4M19 20v-7",
+  support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01",
+  toit: "M3 12 12 4l9 8M6 12v8h12v-8",
+  isolation: "M4 5h16v14H4zM4 10h16M4 15h16",
+  maison: "M4 20V9l8-5 8 5v11H4zM10 20v-6h4v6",
+};
+
+const OFFRES = [
+  { key: 1, titre: "Réfection complète de toiture, 90 m²", ville: "Pessac (33600)", distance: "8 km", publie: "il y a 40 min", budget: "9 000 – 14 000 €", categorie: "Toiture", icone: ICONES.toit,
+    description: "Tuiles canal à remplacer intégralement, charpente saine selon le dernier diagnostic. Accès facile par le jardin, maison inhabitée pendant les travaux.",
+    tags: ["Toiture", "Zinguerie", "Maison individuelle"], delai: "Démarrage sous 1 mois", reponses: "2 artisans ont répondu", verrouille: false, urgent: true },
+  { key: 2, titre: "Isolation des combles perdus, 120 m²", ville: "Mérignac (33700)", distance: "12 km", publie: "il y a 2 h", budget: "4 000 – 7 000 €", categorie: "Isolation", icone: ICONES.isolation,
+    description: "Soufflage de laine de roche, dossier MaPrimeRénov' en cours. Le client cherche un artisan RGE pouvant intervenir avant l'hiver.",
+    tags: ["Isolation", "RGE requis", "Aides mobilisées"], delai: "Avant fin novembre", reponses: "1 artisan a répondu", verrouille: false, urgent: false },
+  { key: 3, titre: "Bardage bois sur façade arrière", ville: "Bordeaux (33000)", distance: "5 km", publie: "il y a 5 h", budget: "6 500 – 9 000 €", categorie: "Façade", icone: ICONES.maison,
+    description: "Pose de bardage douglas sur 45 m² de façade, échafaudage à prévoir. Le client a déjà les plans réalisés par un architecte.",
+    tags: ["Bardage / façade", "Échafaudage", "Plans fournis"], delai: "Démarrage sous 2 mois", reponses: "4 artisans ont répondu", verrouille: false, urgent: false },
+  { key: 4, titre: "Remplacement de gouttières et descentes", ville: "Floirac (33270)", distance: "9 km", publie: "il y a 30 min", budget: "1 500 – 3 000 €", categorie: "Zinguerie", icone: ICONES.toit,
+    description: "Gouttières zinc à remplacer sur deux pans, longueur totale 28 m. Intervention rapide souhaitée avant les pluies.",
+    tags: ["Zinguerie", "Intervention rapide"], delai: "Sous 3 semaines", reponses: "Aucune réponse pour l'instant", verrouille: true, urgent: true },
+  { key: 5, titre: "Rénovation globale d'une maison de 110 m²", ville: "Arcachon (33120)", distance: "48 km", publie: "il y a 1 h", budget: "60 000 – 90 000 €", categorie: "Rénovation", icone: ICONES.maison,
+    description: "Rénovation complète après achat : toiture, isolation, menuiseries et reprise des sols. Le client cherche un artisan capable de coordonner plusieurs corps de métier.",
+    tags: ["Rénovation globale", "Chantier long", "Coordination"], delai: "Démarrage au printemps", reponses: "3 artisans ont répondu", verrouille: true, urgent: false },
+];
+
+class Component extends DCLogic {
+  state = { ouvert: true, filtre: "Tous", p: {} };
+
+  componentDidMount() {
+    let p = {};
+    try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    this.setState({ p });
+  }
+
+  renderVals() {
+    const p = this.state.p || {};
+    const nom = p.nom || "Julien Bertrand";
+    const ouvert = this.state.ouvert;
+    const filtre = this.state.filtre;
+    const gratuit = p.offre !== "premium";
+
+    const lienStyle = (actif) => ({
+      display: "flex", alignItems: "center", padding: ouvert ? "10px 12px" : "10px", borderRadius: "10px",
+      textDecoration: "none", fontSize: "15px", fontWeight: actif ? 700 : 500,
+      color: actif ? "var(--color-accent-800)" : "var(--color-neutral-800)",
+      background: actif ? "var(--color-accent-100)" : "transparent",
+      border: actif ? "1px solid var(--color-accent-300)" : "1px solid transparent",
+    });
+    const titre = (label) => ({
+      key: label, label, estTitre: true, estLien: false, href: "#", d: "",
+      style: { display: ouvert ? "block" : "none", padding: "18px 12px 6px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-600)", textDecoration: "none", fontWeight: 600 },
+    });
+    const lien = (label, d, actif, badge, href) => ({
+      key: label, label, d, estTitre: false, estLien: true, href: href || "#" + label, style: lienStyle(actif),
+      badge: badge || "", badgeVisible: !!badge && ouvert,
+    });
+
+    const categories = ["Tous", "Toiture", "Isolation", "Façade", "Zinguerie", "Rénovation"];
+    const liste = OFFRES.filter((o) => filtre === "Tous" || o.categorie === filtre);
+
+    const badgeStyle = (type) => ({
+      fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "3px 10px", whiteSpace: "nowrap",
+      background: type === "urgent" ? "var(--color-accent)" : type === "premium" ? "var(--color-neutral-200)" : "var(--color-accent-100)",
+      color: type === "urgent" ? "#fff" : type === "premium" ? "var(--color-neutral-800)" : "var(--color-accent-800)",
+      border: "1px solid " + (type === "premium" ? "var(--color-neutral-400)" : "transparent"),
+    });
+
+    return {
+      initiales: nom.split(" ").map((m) => m[0]).join("").slice(0, 2).toUpperCase(),
+      zone: (p.ville || "Bordeaux") + " · " + (p.rayon || 30) + " km",
+      gratuit,
+      nbOffres: OFFRES.length + 7,
+      nbVerrouilles: OFFRES.filter((o) => o.verrouille).length + 3,
+      nbAffiches: liste.length,
+      filtres: categories.map((c) => ({
+        key: c, label: c,
+        choisir: () => this.setState({ filtre: c }),
+        style: {
+          font: "inherit", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: "8px 14px",
+          borderRadius: "999px", whiteSpace: "nowrap",
+          border: "1px solid " + (filtre === c ? "var(--color-accent)" : "var(--color-divider)"),
+          background: filtre === c ? "var(--color-accent)" : "#fff",
+          color: filtre === c ? "#fff" : "var(--color-neutral-800)",
+        },
+      })),
+      offres: liste.map((o) => {
+        const verrouille = o.verrouille && gratuit;
+        return {
+          key: o.key, titre: o.titre, ville: o.ville, distance: o.distance, publie: o.publie,
+          budget: o.budget, description: o.description, tags: o.tags, delai: o.delai, reponses: o.reponses,
+          icone: o.icone,
+          badge: verrouille ? "Premium · 24 h d'avance" : o.urgent ? "Urgent" : o.categorie,
+          styleBadge: badgeStyle(verrouille ? "premium" : o.urgent ? "urgent" : "normal"),
+          verrouille, ouvert: !verrouille,
+          attente: "Disponible pour vous dans 18 h",
+          styleCarte: {
+            border: "1px solid " + (verrouille ? "var(--color-neutral-400)" : "var(--color-divider)"),
+            borderRadius: "16px", padding: "20px", display: "grid", gap: "14px",
+            background: verrouille ? "var(--color-neutral-100)" : "#fff",
+          },
+        };
+      }),
+      menuOuvert: ouvert,
+      basculerMenu: () => this.setState((s) => ({ ouvert: !s.ouvert })),
+      styleAside: {
+        width: ouvert ? "252px" : "76px", transition: "width .18s ease", borderRight: "1px solid var(--color-divider)",
+        padding: "18px 14px", display: "flex", flexDirection: "column", gap: "2px", position: "sticky", top: 0,
+        height: "100vh", overflowY: "auto", background: "#fff",
+      },
+      styleLibelles: { whiteSpace: "nowrap" },
+      styleBouton: { transform: ouvert ? "none" : "scaleX(-1)" },
+      menu: [
+        titre("Vue d'ensemble"),
+        lien("Tableau de bord", ICONES.dashboard, false, "", "Espace Artisan Dashboard.dc.html"),
+        lien("Ma fiche", ICONES.fiche, false, "", "Ma Fiche.dc.html"),
+        lien("Mes demandes", ICONES.demandes, false, "3", "Mes Demandes.dc.html"),
+        titre("Gestion"),
+        lien("Appels d'offres", ICONES.zone, true, "12", "Appels d Offres.dc.html"),
+        lien("Mes avis", ICONES.avis, false, "", "Mes Avis.dc.html"),
+        lien("Statistiques", ICONES.stats, false, "", "Statistiques.dc.html"),
+        lien("Aide & contact", ICONES.support, false, "", "Aide et Contact.dc.html"),
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, input:disabled, select:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header><h1 style="margin:0;font-size:30px;line-height:1.15">Équipe, rôles et audit</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Permissions vérifiées côté serveur (<code>assertPermission</code>) dans chaque action admin. MFA obligatoire pour tous.</p></header>
+  <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid #e2e0dc;flex-wrap:wrap">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:15px;padding:10px 14px;white-space:nowrap;height:auto;margin-bottom:-1px;font-weight:{{ t.fw }};color:{{ t.fg }};border-bottom:3px solid {{ t.bd }}">{{ t.nom }}</button></sc-for>
+  </div>
+
+  <sc-if value="{{ isMembres }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;align-items:start">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;overflow:hidden">
+        <sc-for list="{{ membres }}" as="m" hint-placeholder-count="6">
+          <button onClick="{{ m.go }}" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #ecebe7;cursor:pointer;font:inherit;padding:12px 16px;height:auto;background:{{ m.sel }};opacity:{{ m.op }}" style-hover="background:#f4f5f7">
+            <span style="width:36px;height:36px;border-radius:99px;background:#eef0f3;color:#2a323c;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">{{ m.ini }}</span>
+            <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:15px;font-weight:600">{{ m.nom }}</span><span style="font-size:13px;color:#6b6763">{{ m.email }} · {{ m.acces }}</span></span>
+            <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#eef0f3;color:#2a323c">{{ m.roleNom }}</span>
+          </button>
+        </sc-for>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:#faf9f7">
+          <strong style="font-size:14.5px">Inviter un membre</strong>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input value="{{ inv.email }}" onChange="{{ setInvEmail }}" disabled="{{ noEquipe }}" placeholder="prenom@portailhabitat.fr" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;flex:1 1 180px">
+            <select value="{{ inv.role }}" onChange="{{ setInvRole }}" disabled="{{ noEquipe }}" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff"><sc-for list="{{ roleOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.nom }}</option></sc-for></select>
+            <button onClick="{{ inviter }}" disabled="{{ noInviter }}" title="{{ equipeTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Inviter</button>
+          </div>
+          <span style="font-size:12.5px;color:#6b6763">Domaine @portailhabitat.fr uniquement · lien valable 48 h · MFA à configurer à la première connexion.</span>
+        </div>
+      </section>
+
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start"><div><h2 style="margin:0;font-size:20px">{{ sel.nom }}</h2><div style="font-size:14px;color:#6b6763">{{ sel.email }} · MFA {{ sel.mfa }} · {{ sel.acces }}</div></div><span style="font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap;background:{{ sel.sbg }};color:{{ sel.sfg }}">{{ sel.statut }}</span></div>
+        <label style="display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600;color:#57534f;max-width:320px">Rôle<select value="{{ sel.role }}" onChange="{{ setRole }}" disabled="{{ noEditSel }}" style="font:inherit;font-size:15px;font-weight:400;padding:8px 10px;border:1px solid #d9d6d1;border-radius:8px;background:#fff;color:#201e1d"><sc-for list="{{ roleOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.nom }}</option></sc-for></select></label>
+        <div style="display:flex;flex-direction:column;gap:4px"><strong style="font-size:15px">Permissions ({{ sel.nb }})</strong><span style="font-size:13px;color:#6b6763">Cochées par le rôle. Vous pouvez ajouter ou retirer une permission pour ce membre uniquement (surcharge marquée en orange).</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ groupes }}" as="g" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8580">{{ g.nom }}</span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px 14px">
+                <sc-for list="{{ g.perms }}" as="p" hint-placeholder-count="4"><label style="display:flex;gap:6px;align-items:center;font-size:13.5px;font-family:ui-monospace,Menlo,monospace;color:{{ p.col }}"><input type="checkbox" checked="{{ p.on }}" onChange="{{ p.toggle }}" disabled="{{ noEditSel }}">{{ p.id }}</label></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid #ecebe7">
+          <button onClick="{{ enregistrer }}" disabled="{{ noEditSel }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Enregistrer les droits</button>
+          <button onClick="{{ toggleActif }}" disabled="{{ noEditSel }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;color:#8f1d14">{{ actifLabel }}</button>
+          <button onClick="{{ resetMfa }}" disabled="{{ noEditSel }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Réinitialiser le MFA</button>
+        </div>
+        <sc-if value="{{ selSoi }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#7a5206">Vous ne pouvez pas modifier vos propres droits ni vous désactiver.</span></sc-if>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRoles }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px 20px;overflow-x:auto;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><strong style="font-size:15px">Matrice des rôles</strong>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><input value="{{ nvRole }}" onChange="{{ setNvRole }}" disabled="{{ noEquipe }}" placeholder="Nom du rôle personnalisé" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px"><button onClick="{{ creerRole }}" disabled="{{ noCreerRole }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">+ Créer un rôle</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(200px,1.5fr) repeat({{ nbRoles }},minmax(84px,1fr));min-width:760px;font-size:13px">
+        <span style="padding:8px 6px;font-weight:700;color:#6b6763">Permission</span>
+        <sc-for list="{{ rolesCols }}" as="r" hint-placeholder-count="6"><span style="padding:8px 6px;font-weight:700;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px">{{ r.nom }}<sc-if value="{{ r.custom }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.suppr }}" disabled="{{ noEquipe }}" style="border:0;background:none;cursor:pointer;font:inherit;font-size:11.5px;color:#8f1d14;padding:0;height:auto">supprimer</button></sc-if></span></sc-for>
+        <sc-for list="{{ matrice }}" as="l" hint-placeholder-count="10">
+          <span style="padding:6px;border-top:1px solid #ecebe7;font-family:ui-monospace,Menlo,monospace">{{ l.id }}</span>
+          <sc-for list="{{ l.cells }}" as="c" hint-placeholder-count="6"><span style="padding:6px;border-top:1px solid #ecebe7;text-align:center"><input type="checkbox" checked="{{ c.on }}" onChange="{{ c.toggle }}" disabled="{{ c.off }}" aria-label="{{ c.label }}"></span></sc-for>
+        </sc-for>
+      </div>
+      <span style="font-size:13px;color:#6b6763">Les rôles système (Superadmin à Lecture seule) ne sont pas modifiables. Les rôles personnalisés le sont ; tout changement est journalisé et s'applique à la prochaine requête (claims rafraîchis par <code>syncClaims</code>).</span>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isAudit }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between"><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Filtrer par acteur, cible, action…" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;min-width:260px"><button onClick="{{ exporterAudit }}" class="btn btn-secondary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Exporter</button></div>
+      <sc-for list="{{ audit }}" as="a" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:2px 14px;padding:10px 0;border-top:1px solid #ecebe7">
+          <span style="font-size:13px;color:#6b6763;font-family:ui-monospace,Menlo,monospace">{{ a.d }}</span>
+          <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14.5px"><strong>{{ a.qui }}</strong> · <code style="font-size:13px">{{ a.action }}</code> · {{ a.cible }}</span><span style="font-size:13.5px;color:#57534f">{{ a.detail }}</span></span>
+        </div>
+      </sc-for>
+      <span style="font-size:13px;color:#6b6763">Collection <code>auditLog</code> en ajout seul (règles Firestore : aucune modification ni suppression), avant / après stockés, conservation 5 ans.</span>
+    </section>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const GROUPES = {
+  Artisans: ['artisans.lire', 'artisans.creer', 'artisans.modifier', 'artisans.verifier', 'artisans.suspendre', 'artisans.supprimer', 'documents.valider'],
+  'Avis et litiges': ['avis.lire', 'avis.moderer', 'avis.supprimer', 'litiges.lire', 'litiges.traiter', 'contacts.traiter'],
+  'Demandes et appels d’offres': ['demandes.lire', 'demandes.reattribuer', 'demandes.annuler', 'leads.lire', 'leads.publier', 'leads.prix', 'leads.prix_illimite', 'leads.offrir', 'leads.rembourser'],
+  'Finances et conversion': ['credits.crediter', 'credits.crediter_illimite', 'finances.lire', 'finances.exporter', 'finances.rembourser_carte', 'promos.gerer', 'conversion.lire', 'conversion.piloter', 'conversion.configurer'],
+  Plateforme: ['referentiels.lire', 'referentiels.modifier', 'communes.modifier', 'matching.lire', 'matching.config', 'matching.forcer', 'annonces.gerer'],
+  'Comportement et IA': ['comportement.lire', 'comportement.replays', 'comportement.configurer', 'ia.utiliser', 'ia.configurer'],
+  Administration: ['equipe.gerer', 'audit.lire', 'rgpd.traiter'],
+};
+const ALL = Object.values(GROUPES).flat();
+const SYS = {
+  superadmin: ['Superadmin', ALL], admin: ['Admin', ALL.filter((p) => !['equipe.gerer', 'artisans.supprimer', 'avis.supprimer'].includes(p))],
+  moderateur: ['Modérateur', ['artisans.lire', 'artisans.verifier', 'documents.valider', 'avis.lire', 'avis.moderer', 'demandes.lire', 'leads.lire', 'leads.rembourser', 'litiges.lire', 'litiges.traiter', 'contacts.traiter']],
+  commercial: ['Commercial', ['artisans.lire', 'demandes.lire', 'leads.lire', 'leads.prix', 'leads.offrir', 'credits.crediter', 'promos.gerer', 'conversion.lire', 'conversion.piloter', 'finances.lire', 'comportement.lire', 'comportement.replays', 'ia.utiliser']],
+  finance: ['Finance', ['artisans.lire', 'leads.lire', 'finances.lire', 'finances.exporter', 'finances.rembourser_carte', 'conversion.lire']],
+  lecture: ['Lecture seule', ALL.filter((p) => p.endsWith('.lire') && p !== 'audit.lire')],
+};
+const AUDIT = [
+  ['26/09 16:10', 'Julie M.', 'adminSequenceModifier', 'sequences/S6', 'Version 4 → 5 : ajout de l’étape prem-appel-offres-complet'],
+  ['26/09 14:02', 'Karim B.', 'adminModererAvis', 'avis/av_8821', 'Refusé : conflit d’intérêts'],
+  ['26/09 11:05', 'Julie M.', 'adminCyclePause', 'entreprises/couvreur-lambert', 'Pause de la séquence S4 (appel en cours)'],
+  ['26/09 10:44', 'Marc T.', 'finances.exporter', 'exports/2026-09', 'Export comptable de septembre'],
+  ['26/09 09:30', 'Karim B.', 'consultationPII', 'artisans/carrelage-nguyen', 'Affichage des coordonnées'],
+  ['25/09 18:12', 'Julie M.', 'equipe.modifierRole', 'admins/lea', 'Rôle : lecture → commercial'],
+  ['25/09 15:40', 'Sarah D.', 'adminSanctionner', 'artisans/renov-express-33', 'Suspension · SIREN radié'],
+];
+class Component extends DCLogic {
+  state = { tab: 'membres', sel: 'lea', q: '', nvRole: '', custom: {}, inv: { email: '', role: 'moderateur' }, toast: '',
+    membres: [
+      { id: 'julie', nom: 'Julie Martin', email: 'julie@portailhabitat.fr', role: 'superadmin', mfa: 'TOTP', acces: 'en ligne', actif: true, plus: [], moins: [] },
+      { id: 'karim', nom: 'Karim Benali', email: 'karim@portailhabitat.fr', role: 'moderateur', mfa: 'TOTP', acces: 'il y a 2 h', actif: true, plus: [], moins: [] },
+      { id: 'sarah', nom: 'Sarah Dubois', email: 'sarah@portailhabitat.fr', role: 'admin', mfa: 'SMS', acces: 'hier', actif: true, plus: [], moins: [] },
+      { id: 'lea', nom: 'Léa Durand', email: 'lea@portailhabitat.fr', role: 'commercial', mfa: 'TOTP', acces: 'il y a 20 min', actif: true, plus: ['credits.crediter_illimite'], moins: ['finances.lire'] },
+      { id: 'marc', nom: 'Marc Thomas', email: 'marc@portailhabitat.fr', role: 'finance', mfa: 'TOTP', acces: 'il y a 3 j', actif: true, plus: [], moins: [] },
+      { id: 'tom', nom: 'Tom Leroy (stagiaire)', email: 'tom@portailhabitat.fr', role: 'lecture', mfa: 'TOTP', acces: 'il y a 12 j', actif: false, plus: [], moins: [] },
+    ] };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#equipe'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const ROLES = { ...SYS, ...s.custom };
+    const noEquipe = lect || !can('equipe.gerer');
+    const m = s.membres.find((x) => x.id === s.sel);
+    const base = ROLES[m.role] ? ROLES[m.role][1] : [];
+    const eff = (x) => { const b = ROLES[x.role] ? ROLES[x.role][1] : []; return [...b.filter((p) => !x.moins.includes(p)), ...x.plus.filter((p) => !b.includes(p))]; };
+    const updM = (patch) => this.setState({ membres: s.membres.map((x) => (x.id === m.id ? { ...x, ...patch } : x)) });
+    const soi = m.id === 'julie';
+    const noEditSel = noEquipe || soi;
+    const tabs = [['membres', 'Membres', 'equipe.gerer'], ['roles', 'Rôles et permissions', 'equipe.gerer'], ['audit', 'Journal d’audit', 'audit.lire']].filter((t) => can(t[2]));
+    const tab = tabs.find((t) => t[0] === s.tab) ? s.tab : (tabs[0] || ['audit'])[0];
+    const custIds = Object.keys(s.custom);
+    return {
+      tabs: tabs.map(([id, nom]) => ({ nom, fw: tab === id ? 700 : 500, fg: tab === id ? '#201e1d' : '#6b6763', bd: tab === id ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
+      isMembres: tab === 'membres', isRoles: tab === 'roles', isAudit: tab === 'audit',
+      membres: s.membres.map((x) => ({ ...x, ini: x.nom.split(' ').map((w) => w[0]).slice(0, 2).join(''), email: lect ? x.email.replace(/^(.).*@/, '$1•••@') : x.email, roleNom: ROLES[x.role] ? ROLES[x.role][0] : x.role, sel: x.id === s.sel ? '#f4f5f7' : '#fff', op: x.actif ? 1 : 0.55, go: () => this.setState({ sel: x.id }) })),
+      roleOpts: Object.entries(ROLES).map(([id, r]) => ({ id, nom: r[0] })),
+      sel: { ...m, email: lect ? m.email.replace(/^(.).*@/, '$1•••@') : m.email, nb: eff(m).length, statut: m.actif ? 'Actif' : 'Désactivé', sbg: m.actif ? '#eef7f3' : '#f1f0ed', sfg: m.actif ? '#085340' : '#57534f' },
+      groupes: Object.entries(GROUPES).map(([nom, perms]) => ({ nom, perms: perms.map((id) => { const on = eff(m).includes(id); const over = on !== base.includes(id); return { id, on, col: over ? '#a33f05' : '#201e1d',
+        toggle: () => { if (base.includes(id)) updM({ moins: on ? [...m.moins, id] : m.moins.filter((p) => p !== id) }); else updM({ plus: on ? m.plus.filter((p) => p !== id) : [...m.plus, id] }); } }; }) })),
+      setRole: (e) => updM({ role: e.target.value, plus: [], moins: [] }), noEquipe, noEditSel, selSoi: soi,
+      enregistrer: () => this.flash('Droits de ' + m.nom + ' enregistrés · claims rafraîchis · auditLog'),
+      actifLabel: m.actif ? 'Désactiver le compte' : 'Réactiver le compte', toggleActif: () => { updM({ actif: !m.actif }); this.flash(m.nom + (m.actif ? ' désactivé : sessions révoquées' : ' réactivé')); },
+      resetMfa: () => this.flash('MFA de ' + m.nom + ' réinitialisé : nouvelle configuration à la prochaine connexion'),
+      inv: s.inv, setInvEmail: (e) => this.setState({ inv: { ...s.inv, email: e.target.value } }), setInvRole: (e) => this.setState({ inv: { ...s.inv, role: e.target.value } }),
+      noInviter: noEquipe || !/^[^@\s]+@portailhabitat\.fr$/.test(s.inv.email), equipeTitle: can('equipe.gerer') ? 'Adresse @portailhabitat.fr requise' : 'Permission requise : equipe.gerer',
+      inviter: () => { const id = s.inv.email.split('@')[0]; this.setState({ membres: [...s.membres, { id, nom: id.charAt(0).toUpperCase() + id.slice(1) + ' (invité)', email: s.inv.email, role: s.inv.role, mfa: 'à configurer', acces: 'invitation envoyée', actif: true, plus: [], moins: [] }], inv: { email: '', role: 'moderateur' }, sel: id }); this.flash('Invitation envoyée à ' + s.inv.email); },
+      nbRoles: Object.keys(ROLES).length,
+      rolesCols: Object.entries(ROLES).map(([id, r]) => ({ nom: r[0], custom: custIds.includes(id), suppr: () => { const c = { ...s.custom }; delete c[id]; const utilise = s.membres.some((x) => x.role === id); if (utilise) return this.flash('Rôle utilisé par au moins un membre : réaffectez-le d’abord'); this.setState({ custom: c }); this.flash('Rôle ' + r[0] + ' supprimé'); } })),
+      matrice: ALL.map((id) => ({ id, cells: Object.entries(ROLES).map(([rid, r]) => ({ on: r[1].includes(id), off: noEquipe || !custIds.includes(rid), label: r[0] + ' : ' + id,
+        toggle: () => this.setState({ custom: { ...s.custom, [rid]: [r[0], r[1].includes(id) ? r[1].filter((p) => p !== id) : [...r[1], id]] } }) })) })),
+      nvRole: s.nvRole, setNvRole: (e) => this.setState({ nvRole: e.target.value }), noCreerRole: noEquipe || s.nvRole.trim().length < 3,
+      creerRole: () => { const id = 'custom_' + Date.now(); this.setState({ custom: { ...s.custom, [id]: [s.nvRole.trim(), ['artisans.lire']] }, nvRole: '' }); this.flash('Rôle « ' + s.nvRole.trim() + ' » créé : cochez ses permissions'); },
+      q: s.q, setQ: (e) => this.setState({ q: e.target.value }),
+      audit: AUDIT.filter((a) => !s.q || a.join(' ').toLowerCase().includes(s.q.toLowerCase())).map(([d, qui, action, cible, detail]) => ({ d, qui, action, cible, detail })),
+      exporterAudit: () => this.flash('Export du journal généré · l’export lui-même est journalisé'),
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

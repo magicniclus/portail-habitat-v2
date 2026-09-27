@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+/* Identité PARTICULIERS : vert habitat (la partie artisan garde l'orange) */
+:root {
+  --color-accent: #0d7a5f;
+  --color-accent-100: #eef7f3;
+  --color-accent-200: #d2ebe1;
+  --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c;
+  --color-accent-500: #12997a;
+  --color-accent-600: #0a6650;
+  --color-accent-700: #085340;
+  --color-accent-800: #06402f;
+  --color-accent-900: #0a2a21;
+  /* Orange conservé comme second spot : il signale toujours "côté artisan" */
+  --color-accent-2: #e05a10;
+  --color-accent-2-100: #fff2ea;
+  --color-accent-2-700: #a33f05;
+  --pro-sand: #f6c975;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6, .card-title, .dialog-title, blockquote { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active, .nav a.btn-primary, .nav a.btn-primary:hover { color: #fff; }
+.input, select.input, textarea.input { border-radius: 10px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+html, body, #dc-root { background: #fff; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+</style>
+<script src="recherche-projets.js"></script>
+</helmet>
+
+<div style="width:100%">
+
+  <div style="background:var(--color-accent-900);color:#fff;font-size:13.5px;line-height:20px;text-align:center;padding:9px 20px">Devis gratuits et sans engagement · Artisans vérifiés près de chez vous</div>
+
+  <nav class="nav" style="position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:20px 28px;flex-wrap:wrap;width:100%;max-width:1280px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="#accueil" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="display:flex;align-items:center;gap:6px 22px;flex-wrap:wrap;font-size:15px">
+        <a href="#metiers" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Métiers</a>
+        <a href="Annuaire Artisans.dc.html" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Artisans</a>
+        <a href="Laisser un Avis.dc.html" style="text-decoration:none;color:var(--color-text)" style-hover="color:var(--color-accent)">Avis</a>
+      </span>
+      <span style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-left:auto">
+        <a href="Connexion.dc.html" style="font-size:14.5px;text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Mon espace</a>
+        <a href="Simulateur de Devis.dc.html" class="btn btn-primary" style="min-height:42px;font-size:15px;padding-inline:18px">Simuler mon devis</a>
+      </span>
+    </span>
+  </nav>
+
+  <section id="accueil" style="background:var(--color-accent-100);padding:clamp(32px,4.5vw,64px) 0 clamp(36px,5vw,72px);scroll-margin-top:80px">
+    <div style="max-width:1280px;margin:0 auto;padding:0 clamp(18px,4vw,44px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr);gap:36px clamp(28px,4vw,60px);align-items:center">
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--color-accent-700);margin-bottom:20px">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--color-accent);display:block"></span>{{ nbDemandesLabel }} projets déposés ce mois-ci
+        </span>
+        <h1 style="font-size:clamp(34px,4.5vw,54px);line-height:1.07;margin:0 0 18px;max-width:22ch">Trouvez le bon artisan pour <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">vos travaux</span></h1>
+        <p style="font-size:18px;line-height:29px;margin:0 0 26px;max-width:52ch;color:var(--color-neutral-800)">Décrivez votre projet en une phrase : vous obtenez une estimation de budget immédiate et jusqu'à 3 artisans vérifiés de votre commune vous rappellent. Gratuit, sans engagement.</p>
+
+        <form style="background:#fff;border-radius:16px;padding:20px;box-shadow:var(--shadow-md);display:grid;gap:12px" onSubmit="{{ soumettre }}">
+          <div class="field" style="margin:0;position:relative">
+            <label for="pa-projet" style="font-size:14px">Quel est votre projet ?</label>
+            <input class="input" id="pa-projet" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="pa-suggest" aria-expanded="{{ ouvertAria }}" aria-activedescendant="{{ actifId }}" placeholder="Ex. Rénovation salle de bain, douche italienne, pompe à chaleur…" value="{{ projet }}" onInput="{{ majProjet }}" onKeyDown="{{ clavier }}" onFocus="{{ focusProjet }}" onBlur="{{ blurProjet }}" style="min-height:48px;font-size:16px">
+            <sc-if value="{{ ouvert }}" hint-placeholder-val="{{ false }}">
+              <div id="pa-suggest" role="listbox" aria-label="Suggestions de projets" style="position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:#fff;border:1px solid var(--color-accent-200);border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;max-height:min(460px,70vh);overflow:auto">
+                <sc-if value="{{ aCorrection }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;padding:8px 12px 6px;font-size:13.5px;color:var(--color-neutral-700)">Résultats pour <strong style="color:var(--color-text)">{{ correction }}</strong></p>
+                </sc-if>
+                <sc-if value="{{ aUrgence }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0 0 4px;padding:9px 12px;border-radius:10px;background:#fdf4e3;color:#7a5206;font-size:14px;font-weight:600">Urgence ? Indiquez « Dès que possible » : les artisans disponibles sous 24 h sont prioritaires.</p>
+                </sc-if>
+                <sc-if value="{{ enTetePop }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;padding:8px 12px 4px;font-size:12.5px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-neutral-700)">Projets les plus demandés</p>
+                </sc-if>
+                <sc-for list="{{ propositions }}" as="r" hint-placeholder-count="5">
+                  <div id="{{ r.domId }}" role="option" aria-selected="{{ r.actif }}" onMouseDown="{{ r.choisir }}" onMouseEnter="{{ r.survol }}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;background:{{ r.bg }}">
+                    <span style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+                    </span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+                      <span style="font-size:15.5px;line-height:21px;color:var(--color-text)"><sc-for list="{{ r.segments }}" as="g" hint-placeholder-count="1"><span style="font-weight:{{ g.fw }}">{{ g.t }}</span></sc-for></span>
+                      <span style="font-size:13px;color:var(--color-neutral-700)">{{ r.metier }}</span>
+                    </span>
+                    <sc-if value="{{ r.simulable }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--color-accent-100);color:var(--color-accent-800);white-space:nowrap">Estimation en ligne</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ aucun }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:12px;display:grid;gap:6px">
+                    <p style="margin:0;font-size:15px;font-weight:700">Nous n'avons pas trouvé « {{ projet }} »</p>
+                    <p style="margin:0;font-size:14px;line-height:21px;color:var(--color-neutral-800)">Décrivez-le avec vos mots et continuez : un conseiller oriente votre demande vers le bon artisan. Essayez aussi un métier (plombier, électricien…) ou un mot plus court.</p>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ aMetiers }}" hint-placeholder-val="{{ false }}">
+                  <div style="border-top:1px solid var(--color-divider);margin-top:6px;padding:10px 12px 6px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px">
+                    <span style="font-size:13px;color:var(--color-neutral-700)">Métiers :</span>
+                    <sc-for list="{{ metiersTrouves }}" as="mt" hint-placeholder-count="3">
+                      <a href="{{ mt.href }}" onMouseDown="{{ mt.aller }}" style="font-size:13.5px;font-weight:600;color:var(--color-accent-700);text-decoration:none;padding:4px 10px;border-radius:999px;border:1px solid var(--color-accent-200)">{{ mt.nom }}</a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ aChoix }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:-2px;font-size:14px">
+              <span style="font-weight:700;color:var(--color-accent-800)">✓ {{ choixLibelle }}</span>
+              <span style="color:var(--color-neutral-700)">· {{ choixMetier }}</span>
+            </div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px">
+            <div class="field" style="margin:0">
+              <label for="pa-cp" style="font-size:14px">Code postal</label>
+              <input class="input" id="pa-cp" type="text" inputmode="numeric" placeholder="33000" style="min-height:48px;font-size:16px">
+            </div>
+            <div class="field" style="margin:0">
+              <label for="pa-delai" style="font-size:14px">Démarrage souhaité</label>
+              <select class="input" id="pa-delai" style="min-height:48px;font-size:16px">
+                <option>Dès que possible</option>
+                <option>Sous 1 mois</option>
+                <option>Sous 3 mois</option>
+                <option>Je me renseigne</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" style="min-height:52px;font-size:17px">Lancer mon estimation gratuite</button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-top:18px">
+          <span style="font-size:14px;color:var(--color-neutral-800)">{{ titreChips }}</span>
+          <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="4">
+            <button type="button" onClick="{{ s.choisir }}" style="background:#fff;border:1px solid var(--color-accent-200);border-radius:999px;padding:8px 15px;font-family:inherit;font-size:14px;font-weight:600;color:var(--color-accent-700);cursor:pointer;min-height:38px" style-hover="background:var(--color-accent-200);border-color:var(--color-accent)">{{ s.label }}</button>
+          </sc-for>
+        </div>
+
+        <ul style="list-style:none;padding:0;margin:22px 0 0;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px;color:var(--color-neutral-800)">
+          <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--color-accent);font-weight:700">✓</span>{{ nbArtisansLabel }} artisans vérifiés</li>
+          <li style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="color:#e8a33d;letter-spacing:1px">★★★★★</span><strong>4,8/5</strong> sur 2 000+ avis</li>
+          <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--color-accent);font-weight:700">✓</span>Devis 100 % gratuits</li>
+        </ul>
+      </div>
+
+      <figure style="margin:0;position:relative">
+        <div style="aspect-ratio:4/5;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)">
+          <image-slot id="pa-hero" shape="rect" radius="0" placeholder="Photo : intérieur rénové ou particulier avec son artisan"></image-slot>
+        </div>
+        <div style="position:absolute;left:-10px;bottom:24px;background:#fff;border-radius:14px;box-shadow:var(--shadow-md);padding:14px 16px;display:flex;align-items:center;gap:12px;max-width:min(88%,290px)">
+          <span style="flex:none;width:42px;height:42px;border-radius:12px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center;color:var(--color-accent-700);font-size:17px;font-weight:700">3</span>
+          <span style="font-size:14px;line-height:20px">Jusqu'à <strong>3 devis comparables</strong> pour le même projet, sous 48 h.</span>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="metiers" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 28px">
+      <div>
+        <h2 style="font-size:clamp(26px,3.2vw,36px);line-height:1.12;margin:0 0 8px">Par où commencer ?</h2>
+        <p style="font-size:17px;line-height:26px;margin:0;color:var(--color-neutral-800);max-width:54ch">Choisissez le métier dont vous avez besoin : vous voyez les artisans disponibles dans votre commune et les budgets constatés.</p>
+      </div>
+      <a href="Simulateur de Devis.dc.html" style="font-size:15px;font-weight:600">Voir tous les métiers →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px">
+      <sc-for list="{{ metiers }}" as="m" hint-placeholder-count="8">
+        <a href="#devis" style="text-decoration:none;color:var(--color-text);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm);display:block;transition:transform .18s ease, box-shadow .18s ease" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md)">
+          <span style="display:block;aspect-ratio:4/3"><image-slot id="{{ m.id }}" shape="rect" radius="0" placeholder="{{ m.photo }}"></image-slot></span>
+          <span style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px">
+            <span style="font-size:16px;font-weight:600">{{ m.nom }}</span>
+            <span style="font-size:13px;color:var(--color-neutral-700)">{{ m.budget }}</span>
+          </span>
+        </a>
+      </sc-for>
+      <a href="Simulateur de Devis.dc.html" style="text-decoration:none;border-radius:14px;background:var(--color-accent);color:#fff;padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:180px;box-shadow:var(--shadow-sm)" style-hover="background:var(--color-accent-600)">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"></rect><path d="M7.5 7h9M8 11.5h1.5M11.5 11.5H13M15 11.5h1.5M8 15.5h1.5M11.5 15.5H13M15 15.5h1.5M8 19h5"></path></svg>
+        <span>
+          <span style="display:block;font-size:19px;font-weight:700;margin-bottom:6px">Simuler mon devis</span>
+          <span style="display:block;font-size:14.5px;line-height:21px;opacity:0.92">Estimation détaillée poste par poste, en 2 minutes.</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section id="devis" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <h2 style="font-size:clamp(26px,3.2vw,36px);line-height:1.12;margin:0 0 28px">Comment ça marche</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px">
+      <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="3">
+        <div style="background:var(--color-accent-100);border-radius:14px;padding:24px 22px">
+          <span style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:var(--color-accent);color:#fff;font-size:18px;font-weight:700;margin-bottom:16px">{{ e.n }}</span>
+          <h3 style="font-size:20px;margin:0 0 8px">{{ e.titre }}</h3>
+          <p style="font-size:15.5px;line-height:25px;margin:0 0 10px;color:var(--color-neutral-800)">{{ e.texte }}</p>
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--color-accent-700)">{{ e.delai }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="simulateur" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:36px clamp(28px,4vw,60px);align-items:center">
+      <div>
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:12px">Simulateur de devis</span>
+        <h2 style="font-size:clamp(26px,3.2vw,36px);line-height:1.12;margin:0 0 16px">Connaissez le prix avant d'appeler un artisan</h2>
+        <p style="font-size:17px;line-height:27px;margin:0 0 24px;max-width:50ch;color:var(--color-neutral-800)">Vous renseignez votre projet, la surface et vos finitions : le simulateur calcule une fourchette réaliste, poste par poste, à partir des chantiers réellement réalisés près de chez vous.</p>
+        <ul style="list-style:none;padding:0;margin:0 0 26px;display:grid;gap:18px">
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v4.8l3 2"></path></svg></span>
+            <span><strong style="font-size:16px">Résultat immédiat</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Une fourchette de budget en quelques secondes, sans créer de compte.</span></span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19V9M9.3 19V5M14.7 19v-7M20 19v-4"></path></svg></span>
+            <span><strong style="font-size:16px">Détail poste par poste</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Fournitures, main-d'œuvre, options : vous savez ce que vous payez.</span></span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"></path></svg></span>
+            <span><strong style="font-size:16px">Gratuit et sans engagement</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Vous contactez les artisans seulement si l'estimation vous convient.</span></span>
+          </li>
+        </ul>
+        <a href="#accueil" class="btn btn-primary" style="min-height:48px;font-size:16.5px;padding-inline:22px">Essayer le simulateur</a>
+      </div>
+
+      <figure style="margin:0">
+        <div style="background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--color-divider)">
+          <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--color-divider);background:var(--color-surface)">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="margin-left:10px;font-size:12px;color:var(--color-neutral-700)">portailhabitat.fr/simulateur</span>
+          </div>
+          <div style="padding:20px;display:grid;gap:14px;background:#fff">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <strong style="font-size:17px">Rénovation salle de bain · 6 m²</strong>
+              <span class="tag tag-accent" style="font-size:12px">Bordeaux (33000)</span>
+            </div>
+            <div style="background:var(--color-accent-100);border-radius:12px;padding:16px 18px">
+              <p style="margin:0 0 4px;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-accent-700)">Budget estimé</p>
+              <p style="margin:0;font-size:30px;font-weight:700;line-height:1.1">6 400 € – 8 900 €</p>
+              <p style="margin:6px 0 0;font-size:13.5px;color:var(--color-neutral-800)">Fourchette basée sur 340 chantiers comparables en Gironde.</p>
+            </div>
+            <div style="display:grid;gap:9px;font-size:14px">
+              <div style="display:flex;justify-content:space-between;gap:12px"><span>Plomberie &amp; évacuations</span><strong>1 450 €</strong></div>
+              <div style="height:6px;border-radius:3px;background:var(--color-accent-200)"><span style="display:block;width:38%;height:100%;border-radius:3px;background:var(--color-accent)"></span></div>
+              <div style="display:flex;justify-content:space-between;gap:12px"><span>Carrelage sol et murs</span><strong>2 300 €</strong></div>
+              <div style="height:6px;border-radius:3px;background:var(--color-accent-200)"><span style="display:block;width:62%;height:100%;border-radius:3px;background:var(--color-accent)"></span></div>
+              <div style="display:flex;justify-content:space-between;gap:12px"><span>Sanitaires &amp; douche</span><strong>1 900 €</strong></div>
+              <div style="height:6px;border-radius:3px;background:var(--color-accent-200)"><span style="display:block;width:52%;height:100%;border-radius:3px;background:var(--color-accent)"></span></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <span style="font-size:13.5px;font-weight:600;background:var(--color-accent);color:#fff;border-radius:10px;padding:10px 16px">Recevoir 3 devis</span>
+              <span style="font-size:13.5px;font-weight:600;border:1px solid var(--color-divider);border-radius:10px;padding:10px 16px">Télécharger l'estimation</span>
+            </div>
+          </div>
+        </div>
+        <figcaption style="margin-top:10px;font-size:13px;color:var(--color-neutral-800)">Exemple d'estimation générée en 2 minutes, sans création de compte.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="artisans" style="background:var(--color-neutral-100);margin-top:clamp(44px,5.5vw,80px);padding:clamp(44px,5.5vw,80px) 0;scroll-margin-top:80px">
+    <div style="max-width:1280px;margin:0 auto;padding:0 clamp(18px,4vw,44px)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 28px">
+        <div>
+          <h2 style="font-size:clamp(26px,3.2vw,36px);line-height:1.12;margin:0 0 8px">Des artisans vérifiés, notés par leurs clients</h2>
+          <p style="font-size:17px;line-height:26px;margin:0;color:var(--color-neutral-800);max-width:56ch">Assurance décennale, SIRET et avis contrôlés avant publication de la fiche.</p>
+        </div>
+        <a href="Annuaire Artisans.dc.html" style="font-size:15px;font-weight:600">Parcourir les artisans →</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        <sc-for list="{{ artisans }}" as="a" hint-placeholder-count="3">
+          <article style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column">
+            <div style="aspect-ratio:16/10"><image-slot id="{{ a.id }}" shape="rect" radius="0" placeholder="{{ a.photo }}"></image-slot></div>
+            <div style="padding:18px;display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                <h3 style="font-size:19px;margin:0">{{ a.nom }}</h3>
+                <span style="display:flex;align-items:center;gap:5px;font-size:14px;white-space:nowrap"><span aria-hidden="true" style="color:#e8a33d">★</span><strong>{{ a.note }}</strong><span style="color:var(--color-neutral-700)">({{ a.avis }})</span></span>
+              </div>
+              <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">{{ a.metier }} · {{ a.ville }}</p>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <span class="tag tag-accent" style="font-size:12px">Décennale vérifiée</span>
+                <span class="tag tag-neutral" style="font-size:12px">{{ a.anciennete }}</span>
+              </div>
+              <p style="margin:0;font-size:14.5px;line-height:23px;color:var(--color-neutral-800)">{{ a.pitch }}</p>
+              <div style="display:flex;gap:10px;margin-top:auto;padding-top:6px;flex-wrap:wrap">
+                <a href="Ma Fiche.dc.html" class="btn btn-primary" style="min-height:42px;font-size:14.5px">Voir le profil</a>
+                <a href="#appeler" class="btn btn-secondary" style="min-height:42px;font-size:14.5px;background:#fff">Appeler</a>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="avis" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;align-items:start">
+      <div>
+        <p style="font-size:clamp(40px,5vw,60px);line-height:1;margin:0 0 8px;font-weight:700">4,8<span style="font-size:0.42em;font-weight:600;color:var(--color-neutral-700)">/5</span></p>
+        <p style="margin:0 0 8px;color:#e8a33d;letter-spacing:2px;font-size:18px">★★★★★</p>
+        <p style="margin:0 0 16px;font-size:15px;line-height:24px;color:var(--color-neutral-800)">Moyenne sur <strong>2 140 avis clients</strong> vérifiés après chantier.</p>
+        <a href="Laisser un Avis.dc.html" class="btn btn-secondary" style="min-height:44px;font-size:15px;background:#fff">Laisser un avis</a>
+      </div>
+      <sc-for list="{{ temoignages }}" as="t" hint-placeholder-count="3">
+        <figure style="margin:0;background:var(--color-accent-100);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px;height:100%">
+          <blockquote style="margin:0;font-size:15.5px;line-height:25px">{{ t.texte }}</blockquote>
+          <figcaption style="display:flex;align-items:center;gap:12px;font-size:14px;margin-top:auto">
+            <span style="width:42px;height:42px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">{{ t.initiales }}</span>
+            <span><strong>{{ t.nom }}</strong><br><span style="color:var(--color-neutral-700)">{{ t.projet }}</span></span>
+          </figcaption>
+        </figure>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="inspirations" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 24px">
+      <div>
+        <h2 style="font-size:clamp(26px,3.2vw,36px);line-height:1.12;margin:0 0 8px">Inspirations du moment</h2>
+        <p style="font-size:17px;line-height:26px;margin:0;color:var(--color-neutral-800);max-width:52ch">Des réalisations récentes, avec le budget réel et l'artisan qui les a signées.</p>
+      </div>
+      <a href="#blog" style="font-size:15px;font-weight:600">Toutes les inspirations →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px">
+      <sc-for list="{{ inspirations }}" as="i" hint-placeholder-count="4">
+        <a href="#blog" style="text-decoration:none;color:var(--color-text);border-radius:14px;overflow:hidden;display:block;background:#fff;box-shadow:var(--shadow-sm);transition:transform .18s ease, box-shadow .18s ease" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md)">
+          <span style="display:block;aspect-ratio:4/3"><image-slot id="{{ i.id }}" shape="rect" radius="0" placeholder="{{ i.photo }}"></image-slot></span>
+          <span style="display:block;padding:14px 16px">
+            <span style="display:block;font-size:16.5px;font-weight:600;margin-bottom:3px">{{ i.titre }}</span>
+            <span style="display:block;font-size:13.5px;color:var(--color-neutral-700)">{{ i.detail }}</span>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="application" style="background:var(--color-accent-900);color:#fff;margin-top:clamp(44px,5.5vw,80px);padding:clamp(44px,5.5vw,80px) 0;scroll-margin-top:80px">
+    <div style="max-width:1280px;margin:0 auto;padding:0 clamp(18px,4vw,44px);display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,330px);gap:40px clamp(28px,4vw,60px);align-items:center">
+      <div>
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-300);margin-bottom:12px">Application mobile</span>
+        <h2 style="font-size:clamp(27px,3.4vw,38px);line-height:1.12;margin:0 0 16px;max-width:24ch">Suivez vos devis et vos chantiers depuis votre téléphone</h2>
+        <p style="font-size:17px;line-height:27px;margin:0 0 26px;max-width:48ch;color:var(--color-accent-200)">Les réponses des artisans, les devis à comparer, les rendez-vous de visite et les messages : tout arrive au même endroit.</p>
+        <ul style="list-style:none;padding:0;margin:0 0 28px;display:grid;gap:16px">
+          <li style="display:flex;gap:13px;align-items:flex-start"><span style="color:var(--color-accent-300);font-weight:700">✓</span><span><strong style="font-size:16px">Comparez les devis côte à côte</strong><br><span style="font-size:15px;line-height:23px;color:var(--color-accent-200)">Même projet, mêmes postes : les écarts de prix sautent aux yeux.</span></span></li>
+          <li style="display:flex;gap:13px;align-items:flex-start"><span style="color:var(--color-accent-300);font-weight:700">✓</span><span><strong style="font-size:16px">Messagerie directe</strong><br><span style="font-size:15px;line-height:23px;color:var(--color-accent-200)">Posez vos questions à l'artisan, envoyez photos et plans.</span></span></li>
+          <li style="display:flex;gap:13px;align-items:flex-start"><span style="color:var(--color-accent-300);font-weight:700">✓</span><span><strong style="font-size:16px">Suivi de chantier</strong><br><span style="font-size:15px;line-height:23px;color:var(--color-accent-200)">Étapes, rendez-vous et documents conservés après les travaux.</span></span></li>
+        </ul>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="#ios" class="btn" style="min-height:48px;gap:10px;background:#fff;color:var(--color-accent-900);padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.3 12.8c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.1-.8-2.1-3.6zM14.2 5.8c.6-.7 1-1.7.9-2.8-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.2z"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.8">Télécharger dans l'</span><span style="font-size:15px">App Store</span></span>
+          </a>
+          <a href="#android" class="btn" style="min-height:48px;gap:10px;background:#fff;color:var(--color-accent-900);padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.6 2.3z" fill="#34c3eb"></path><path d="M16.1 15.6l-3.1-3.1v-.2l3.1-3.1.1.1 3.7 2.1c1.1.6 1.1 1.6 0 2.2l-3.7 2.1-.1-.1z" fill="#fbcd00"></path><path d="M16.2 15.5L13 12.3 3.6 21.7c.4.4 1 .4 1.7.1l10.9-6.3" fill="#ec4b4b"></path><path d="M16.2 9.1L5.3 2.9c-.7-.4-1.3-.3-1.7.1L13 12.3l3.2-3.2z" fill="#42c76a"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.8">Disponible sur</span><span style="font-size:15px">Google Play</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div style="justify-self:center;width:100%;max-width:310px;background:#08201a;border-radius:42px;padding:9px;box-shadow:var(--shadow-lg)">
+        <div style="background:#fff;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;color:var(--color-text)">
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:12px 22px 6px;font-size:13px;font-weight:600">
+            <span>9:41</span>
+            <span style="position:absolute;left:50%;transform:translateX(-50%);top:8px;width:92px;height:21px;background:#08201a;border-radius:12px"></span>
+            <span style="width:16px;height:9px;border:1px solid var(--color-neutral-700);border-radius:2px;display:block"></span>
+          </div>
+          <div style="padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div>
+              <p style="margin:0;font-size:12px;color:var(--color-neutral-700)">Bonjour Camille</p>
+              <p style="margin:0;font-size:17px;font-weight:700">Mes devis</p>
+            </div>
+            <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">CM</span>
+          </div>
+          <div style="margin:4px 14px 0;padding:14px;border-radius:14px;background:var(--color-accent);color:#fff">
+            <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.9">Nouveau devis · il y a 12 min</p>
+            <p style="margin:0 0 2px;font-size:16px;font-weight:700">Salle de bain · 7 200 €</p>
+            <p style="margin:0;font-size:13px;opacity:0.95">Bertrand Rénovation · 4,9 ★</p>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span style="flex:1;text-align:center;background:#fff;color:var(--color-accent-700);border-radius:9px;padding:8px 0;font-size:13px;font-weight:600">Comparer</span>
+              <span style="flex:1;text-align:center;border:1px solid rgba(255,255,255,0.7);border-radius:9px;padding:8px 0;font-size:13px;font-weight:600">Message</span>
+            </div>
+          </div>
+          <div style="padding:14px 14px 4px;display:grid;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px"><span>Peinture séjour · 2 devis</span><span style="color:var(--color-accent-700);font-weight:600">À comparer</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px"><span>Isolation combles</span><span style="color:var(--color-neutral-700)">Visite mardi</span></div>
+          </div>
+          <div style="margin-top:14px;padding:10px 22px 12px;display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider)">
+            <span style="color:var(--color-accent-700);font-weight:600">Mes devis</span><span>Artisans</span><span>Messages</span><span>Profil</span>
+          </div>
+          <div style="display:flex;justify-content:center;padding-bottom:8px"><span style="width:105px;height:4px;border-radius:2px;background:var(--color-neutral-400)"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="villes" style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px) 0;scroll-margin-top:80px">
+    <h2 style="font-size:clamp(24px,2.8vw,32px);line-height:1.14;margin:0 0 10px">Trouvez un artisan dans votre ville</h2>
+    <p style="font-size:16.5px;line-height:26px;margin:0 0 22px;color:var(--color-neutral-800);max-width:56ch">Nous couvrons {{ nbVilles }} communes. Sélectionnez la vôtre pour voir les artisans disponibles et les budgets pratiqués.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <sc-for list="{{ villes }}" as="v" hint-placeholder-count="12">
+        <a href="#devis" style="text-decoration:none;font-size:14.5px;font-weight:600;color:var(--color-accent-700);background:var(--color-accent-100);border-radius:999px;padding:10px 16px;min-height:40px;display:flex;align-items:center" style-hover="background:var(--color-accent-200)">{{ v }}</a>
+      </sc-for>
+    </div>
+  </section>
+
+  <sc-if value="{{ bandeauArtisan }}" hint-placeholder-val="{{ true }}">
+    <section style="max-width:1280px;margin:clamp(44px,5.5vw,80px) auto 0;padding:0 clamp(18px,4vw,44px)">
+      <div style="background:var(--color-accent-2-100);border-radius:16px;padding:clamp(24px,3vw,36px);display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+          <span style="flex:none;width:52px;height:52px;border-radius:14px;background:var(--color-accent-2);display:flex;align-items:center;justify-content:center">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5 17 4l3 3-2.5 2.5"></path><path d="M12.8 8.2 5 16v3h3l7.8-7.8"></path></svg>
+          </span>
+          <div>
+            <h2 style="font-size:clamp(20px,2.2vw,25px);line-height:1.2;margin:0 0 6px">Vous êtes artisan ?</h2>
+            <p style="margin:0;font-size:15.5px;line-height:24px;color:var(--color-neutral-800);max-width:52ch">Recevez les demandes des particuliers de votre secteur. Inscription gratuite, 0 % de commission.</p>
+          </div>
+        </div>
+        <a href="Acquisition Artisans v2.dc.html" class="btn" style="min-height:48px;font-size:16px;padding-inline:22px;background:var(--color-accent-2);color:#fff">Devenir partenaire</a>
+      </div>
+    </section>
+  </sc-if>
+
+  <section style="max-width:1280px;margin:0 auto;padding:clamp(44px,5.5vw,80px) clamp(18px,4vw,44px)">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:32px clamp(28px,4vw,60px);align-items:start">
+      <div>
+        <h2 style="font-size:clamp(25px,3vw,34px);line-height:1.14;margin:0 0 14px">Vos questions avant de lancer un projet</h2>
+        <p style="font-size:16.5px;line-height:26px;margin:0 0 20px;color:var(--color-neutral-800);max-width:44ch">Une question sur votre projet ? Notre équipe répond du lundi au vendredi, 9 h – 18 h.</p>
+        <a href="Contact.dc.html" class="btn btn-secondary" style="min-height:46px;font-size:15.5px;background:#fff">Nous contacter</a>
+      </div>
+      <div>
+        <sc-for list="{{ faq }}" as="f" hint-placeholder-count="5">
+          <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+            <summary style="font-weight:600;font-size:17px;cursor:pointer">{{ f.q }}</summary>
+            <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">{{ f.r }}</p>
+          </details>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--color-accent-100);padding:clamp(44px,5.5vw,80px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 clamp(18px,4vw,44px)">
+      <h2 style="font-size:clamp(28px,3.8vw,44px);line-height:1.1;margin:0 0 14px;max-width:22ch">Votre projet mérite le bon artisan.</h2>
+      <p style="font-size:17px;line-height:27px;margin:0 0 26px;max-width:50ch;color:var(--color-neutral-800)">Estimation immédiate, jusqu'à 3 devis comparables, artisans vérifiés. Gratuit et sans engagement.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="#accueil" class="btn btn-primary" style="min-height:52px;font-size:17px;padding-inline:26px">Décrire mon projet</a>
+        <a href="Annuaire Artisans.dc.html" class="btn btn-ghost" style="min-height:52px;font-size:16px">Parcourir les artisans</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200)">
+    <div style="max-width:1280px;margin:0 auto;padding:48px clamp(18px,4vw,44px) 40px;font-size:14px;line-height:25px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px 48px">
+      <div>
+        <span style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+          <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+            <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent-400)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M9 21.5V33h22V21.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent-400)"></rect>
+          </svg>
+          <span style="display:flex;flex-direction:column;line-height:1.02;color:#fff">
+            <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+            <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+          </span>
+        </span>
+        La plateforme de référence pour vos projets habitat.
+      </div>
+      <div>
+        <p style="margin:0 0 8px;color:#fff;font-weight:600">Particuliers</p>
+        <a href="#accueil" style="color:var(--color-accent-200)">Décrire mon projet</a><br>
+        <a href="Simulateur de Devis.dc.html" style="color:var(--color-accent-200)">Simulateur de devis</a><br>
+        <a href="Laisser un Avis.dc.html" style="color:var(--color-accent-200)">Laisser un avis</a><br>
+        <a href="Connexion.dc.html" style="color:var(--color-accent-200)">Mon espace</a><br>
+        <a href="#inspirations" style="color:var(--color-accent-200)">Inspirations</a>
+      </div>
+      <div>
+        <p style="margin:0 0 8px;color:#fff;font-weight:600">Professionnels</p>
+        <a href="Acquisition Artisans v2.dc.html" style="color:var(--color-accent-200)">Devenir partenaire</a><br>
+        <a href="Connexion.dc.html" style="color:var(--color-accent-200)">Connexion Pro</a><br>
+        <a href="Acquisition Artisans v2.dc.html#offres" style="color:var(--color-accent-200)">Tarifs</a>
+      </div>
+      <div>
+        <p style="margin:0 0 8px;color:#fff;font-weight:600">Aide &amp; légal</p>
+        <a href="Contact.dc.html" style="color:var(--color-accent-200)">Aide et contact</a><br>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=cgu" style="color:var(--color-accent-200)">CGU</a><br>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=mentions" style="color:var(--color-accent-200)">Mentions légales</a><br>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=confidentialite" style="color:var(--color-accent-200)">Confidentialité</a><br>
+        <a href="Pages Legales.dc.html?public=part&amp;doc=securite" style="color:var(--color-accent-200)">Sécurité</a>
+      </div>
+    </div>
+    <p style="margin:0;border-top:1px solid rgba(255,255,255,0.12);padding:18px clamp(18px,4vw,44px);text-align:center;font-size:13px">© 2026 Portail Habitat. Tous droits réservés.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;nbDemandesMois&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2400,&quot;min&quot;:100,&quot;max&quot;:20000,&quot;step&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale&quot;},&quot;nbArtisans&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3200,&quot;min&quot;:100,&quot;max&quot;:50000,&quot;step&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale&quot;},&quot;nbVilles&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:420,&quot;min&quot;:10,&quot;max&quot;:5000,&quot;step&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale&quot;},&quot;bandeauArtisan&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;}}">
+class Component extends DCLogic {
+  state = { projet: "", focus: false, actif: -1, choix: null, pret: !!window.PH_RECHERCHE };
+  componentDidMount() {
+    if (!window.PH_RECHERCHE) { const t = setInterval(() => { if (window.PH_RECHERCHE) { clearInterval(t); this.setState({ pret: true }); } }, 60); this._t = t; }
+  }
+  componentWillUnmount() { clearInterval(this._t); clearTimeout(this._b); }
+  choisir(r) { this.setState({ projet: r.libelle, choix: r, focus: false, actif: -1 }); }
+  renderVals() {
+    const set = (v) => this.setState({ projet: v, choix: null, actif: -1, focus: true });
+    const RS = window.PH_RECHERCHE;
+    const q = this.state.projet;
+    const res = RS && q.trim().length >= 2 ? RS.rechercher(q, { max: 7 }) : null;
+    const liste = res ? res.resultats : (RS ? RS.populaires().slice(0, 6).map((p) => ({ ...p, segments: [{ t: p.libelle, b: false }] })) : []);
+    const ouvert = this.state.focus && RS && !this.state.choix && (liste.length > 0 || (res && q.trim().length >= 3));
+    const actif = this.state.actif;
+    const propositions = liste.map((r, i) => ({
+      domId: "pa-opt-" + i, actif: String(i === actif), bg: i === actif ? "var(--color-accent-100)" : "transparent",
+      segments: r.segments.map((g) => ({ t: g.t, fw: g.b ? 700 : 400 })), metier: r.metier, simulable: !!r.prestation,
+      choisir: (e) => { e.preventDefault(); this.choisir(r); },
+      survol: () => this.setState({ actif: i }),
+    }));
+    const assoc = res && res.associees && res.associees.length ? res.associees : null;
+    const chips = assoc || ["Cuisine", "Salle de bain", "Peinture", "Électricité", "Isolation"].map((l) => ({ libelle: l }));
+    const mk = (id, nom, budget, photo) => ({ id, nom, budget, photo });
+    return {
+      projet: this.state.projet,
+      majProjet: (e) => set(e.target.value),
+      ouvert: !!ouvert, ouvertAria: String(!!ouvert), actifId: ouvert && actif >= 0 ? "pa-opt-" + actif : "",
+      propositions, enTetePop: !res,
+      aCorrection: !!(res && res.correction), correction: res ? res.correction : "",
+      aUrgence: !!(res && res.urgence), aucun: !!(res && !res.resultats.length),
+      aMetiers: !!(res && res.metiers.length), metiersTrouves: res ? res.metiers.map((m) => ({ nom: m.nom, href: "Annuaire Artisans.dc.html?metier=" + m.id, aller: () => {} })) : [],
+      aChoix: !!this.state.choix, choixLibelle: this.state.choix ? this.state.choix.libelle : "", choixMetier: this.state.choix ? this.state.choix.metier : "",
+      titreChips: assoc ? "Projets associés :" : "Projets populaires :",
+      focusProjet: () => { clearTimeout(this._b); this.setState({ focus: true }); },
+      blurProjet: () => { this._b = setTimeout(() => this.setState({ focus: false, actif: -1 }), 120); },
+      clavier: (e) => {
+        if (!ouvert && e.key === "ArrowDown") { this.setState({ focus: true, choix: null }); return; }
+        if (!ouvert) return;
+        if (e.key === "ArrowDown") { e.preventDefault(); this.setState({ actif: (actif + 1) % liste.length }); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); this.setState({ actif: actif <= 0 ? liste.length - 1 : actif - 1 }); }
+        else if (e.key === "Enter" && actif >= 0) { e.preventDefault(); this.choisir(liste[actif]); }
+        else if (e.key === "Escape") { this.setState({ focus: false, actif: -1 }); }
+      },
+      nbDemandesLabel: (this.props.nbDemandesMois ?? 2400).toLocaleString("fr-FR"),
+      nbArtisansLabel: (this.props.nbArtisans ?? 3200).toLocaleString("fr-FR"),
+      nbVilles: (this.props.nbVilles ?? 420).toLocaleString("fr-FR"),
+      bandeauArtisan: this.props.bandeauArtisan ?? true,
+      suggestions: chips.map((c) => ({ label: c.libelle, choisir: () => { if (c.id) this.choisir({ ...c, metier: RS ? RS.metierNom((RS.INTENTIONS.filter((x) => x.id === c.id)[0] || {}).m) : "" }); else set(c.libelle); } })),
+      soumettre: (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const val = (id) => (f.querySelector("#" + id) || {}).value || "";
+        let choix = this.state.choix;
+        if (!choix && RS) { const r = RS.rechercher(val("pa-projet"), { max: 1 }).resultats[0]; if (r && r.score >= 8) choix = r; }
+        const p = { projet: val("pa-projet"), cp: val("pa-cp"), delai: val("pa-delai") };
+        if (choix) { p.intention = choix.id; if (choix.prestation) p.prestation = choix.prestation; }
+        const cible = choix && choix.prestation === "diagnostic" ? "Parcours Diagnostic.dc.html?" : choix && choix.prestation ? "Simulateur de Devis.dc.html?" : "Mes Demandes.dc.html?";
+        location.href = cible + new URLSearchParams(p).toString();
+      },
+      metiers: [
+        mk("pa-m1", "Plomberie", "dès 350 €", "Photo plombier au travail"),
+        mk("pa-m2", "Électricité", "dès 400 €", "Photo électricien tableau"),
+        mk("pa-m3", "Peinture", "dès 25 €/m²", "Photo pièce repeinte"),
+        mk("pa-m4", "Carrelage", "dès 45 €/m²", "Photo pose de carrelage"),
+        mk("pa-m5", "Chauffage", "dès 2 500 €", "Photo radiateur / pompe à chaleur"),
+        mk("pa-m6", "Menuiserie", "dès 600 €", "Photo menuisier atelier"),
+        mk("pa-m7", "Couverture", "dès 90 €/m²", "Photo toiture en tuiles"),
+      ],
+      etapes: [
+        { n: 1, titre: "Vous décrivez votre projet", texte: "Une phrase, un code postal, un délai. Le simulateur vous donne une fourchette de budget tout de suite.", delai: "≈ 2 minutes" },
+        { n: 2, titre: "Vous recevez jusqu'à 3 devis", texte: "Des artisans vérifiés de votre commune vous répondent avec un devis détaillé, poste par poste.", delai: "Sous 48 h" },
+        { n: 3, titre: "Vous choisissez en confiance", texte: "Avis clients, assurances, réalisations : vous comparez, puis vous suivez le chantier dans votre espace.", delai: "Sans engagement" },
+      ],
+      artisans: [
+        { id: "pa-a1", nom: "Bertrand Rénovation", metier: "Plomberie · Salle de bain", ville: "Bordeaux", note: "4,9", avis: "37 avis", anciennete: "12 ans d'activité", pitch: "Rénovation complète de salles de bain et remplacement de sanitaires, clés en main.", photo: "Photo réalisation salle de bain" },
+        { id: "pa-a2", nom: "Atelier Lumière", metier: "Électricité · Domotique", ville: "Mérignac", note: "4,8", avis: "52 avis", anciennete: "8 ans d'activité", pitch: "Mise aux normes de tableaux, éclairage et installation de bornes de recharge.", photo: "Photo tableau électrique neuf" },
+        { id: "pa-a3", nom: "Toitures Girondines", metier: "Couverture · Charpente", ville: "Pessac", note: "4,7", avis: "41 avis", anciennete: "15 ans d'activité", pitch: "Réfection de toitures, zinguerie et traitement de charpente sur toute la Gironde.", photo: "Photo chantier de toiture" },
+      ],
+      temoignages: [
+        { texte: "« J'ai eu une fourchette de prix en deux minutes, puis trois devis très proches. J'ai signé avec l'artisan qui est venu visiter le lendemain. »", initiales: "CM", nom: "Camille M.", projet: "Salle de bain · Bordeaux" },
+        { texte: "« Les avis étaient détaillés et vérifiés. Ça change des annuaires où on ne sait pas sur qui on tombe. »", initiales: "TL", nom: "Thomas L.", projet: "Peinture séjour · Talence" },
+        { texte: "« Le suivi dans l'appli m'a évité dix appels : devis, dates de visite, photos du chantier, tout était dedans. »", initiales: "SD", nom: "Sonia D.", projet: "Isolation combles · Pessac" },
+      ],
+      inspirations: [
+        { id: "pa-i1", titre: "Cuisine moderne", detail: "Bordeaux · 14 500 €", photo: "Photo cuisine bois et noir" },
+        { id: "pa-i2", titre: "Salle de bain zen", detail: "Mérignac · 8 200 €", photo: "Photo salle de bain claire" },
+        { id: "pa-i3", titre: "Salon cosy", detail: "Talence · 6 900 €", photo: "Photo salon chaleureux" },
+        { id: "pa-i4", titre: "Chambre parentale", detail: "Pessac · 5 400 €", photo: "Photo chambre parentale" },
+      ],
+      villes: ["Bordeaux", "Paris", "Lyon", "Marseille", "Toulouse", "Nantes", "Lille", "Rennes", "Montpellier", "Nice", "Strasbourg", "Mérignac"],
+      faq: [
+        { q: "Le service est-il vraiment gratuit ?", r: "Oui. L'estimation, la mise en relation et le suivi de vos devis sont gratuits pour les particuliers : ce sont les artisans qui s'abonnent à la plateforme." },
+        { q: "Combien de devis vais-je recevoir ?", r: "Jusqu'à 3 devis pour un même projet, afin de comparer sans être submergé d'appels." },
+        { q: "Comment les artisans sont-ils vérifiés ?", r: "SIRET, assurance décennale et qualifications sont contrôlés avant publication de la fiche, et les avis sont déposés après chantier uniquement." },
+        { q: "Suis-je obligé d'accepter un devis ?", r: "Non. Vous pouvez refuser tous les devis reçus, sans frais ni justification." },
+        { q: "Mes coordonnées sont-elles diffusées ?", r: "Elles ne sont transmises qu'aux artisans que vous sollicitez pour votre projet, jamais revendues." },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

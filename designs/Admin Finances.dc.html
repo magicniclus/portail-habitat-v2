@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>body { margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; } h1, h2, h3 { font-family: "Source Sans 3", system-ui, sans-serif; letter-spacing: -0.015em; } a { color: #2a323c; } a:hover { color: #3f4a57; } button:disabled, input:disabled, select:disabled { opacity: .45; cursor: not-allowed !important; }</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:18px;min-width:0;font-family:'Source Sans 3',system-ui,sans-serif;color:#201e1d">
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <div><h1 style="margin:0;font-size:30px;line-height:1.15">Finances</h1><p style="margin:4px 0 0;font-size:15px;color:#57534f">Source de vérité : Stripe. Montants HT sauf mention.</p></div>
+    <button onClick="{{ exporter }}" disabled="{{ noExport }}" title="{{ exportTitle }}" class="btn btn-secondary" style="font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">Export comptable CSV · septembre</button>
+  </header>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5"><div style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13.5px;color:#6b6763">{{ k.l }}</span><span style="font-size:26px;font-weight:700;line-height:1.1">{{ k.v }}</span><span style="font-size:13px;color:#57534f">{{ k.s }}</span></div></sc-for>
+  </div>
+  <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid #e2e0dc;flex-wrap:wrap">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:15px;padding:10px 14px;white-space:nowrap;height:auto;margin-bottom:-1px;font-weight:{{ t.fw }};color:{{ t.fg }};border-bottom:3px solid {{ t.bd }}">{{ t.nom }}</button></sc-for>
+  </div>
+
+  <sc-if value="{{ isFact }}" hint-placeholder-val="{{ true }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px;overflow-x:auto">
+      <div style="display:grid;grid-template-columns:110px minmax(160px,1fr) minmax(140px,1fr) 90px 90px 110px;gap:10px;min-width:720px;padding:10px 0;font-size:12.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#6b6763"><span>N°</span><span>Client</span><span>Objet</span><span style="text-align:right">HT</span><span style="text-align:right">TTC</span><span>Statut</span></div>
+      <sc-for list="{{ factures }}" as="f" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:110px minmax(160px,1fr) minmax(140px,1fr) 90px 90px 110px;gap:10px;min-width:720px;padding:11px 0;border-top:1px solid #ecebe7;font-size:14.5px;align-items:center"><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ f.n }}</span><span>{{ f.client }}</span><span style="color:#57534f">{{ f.objet }}</span><span style="text-align:right">{{ f.ht }}</span><span style="text-align:right;font-weight:600">{{ f.ttc }}</span><span><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:{{ f.bg }};color:{{ f.fg }}">{{ f.st }}</span></span></div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isPromo }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;align-items:start">
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+        <sc-for list="{{ promos }}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #ecebe7;flex-wrap:wrap">
+            <span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:15px;font-weight:700;font-family:ui-monospace,Menlo,monospace">{{ p.code }}</span><span style="font-size:13px;color:#6b6763">{{ p.detail }}</span></span>
+            <span style="display:flex;gap:8px;align-items:center"><span style="font-size:13px;color:#57534f">{{ p.usage }}</span><button onClick="{{ p.toggle }}" disabled="{{ noPromo }}" class="btn btn-secondary" style="font:inherit;font-size:13.5px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3">{{ p.btn }}</button></span>
+          </div>
+        </sc-for>
+        <p style="margin:0;padding:12px 0;font-size:13px;color:#6b6763">Les codes personnels du moteur de conversion (ex. JULIEN30) sont créés automatiquement et visibles dans Conversion › Journal.</p>
+      </section>
+      <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:18px">Nouveau code</h2>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px 16px;align-items:center;font-size:14.5px">
+          <label>Code</label><input value="{{ nv.code }}" onChange="{{ setCode }}" disabled="{{ noPromo }}" placeholder="SALON2026" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;text-transform:uppercase">
+          <label>Remise (%)</label><input type="number" value="{{ nv.pct }}" onChange="{{ setPct }}" disabled="{{ noPromo }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+          <label>Offre</label><select value="{{ nv.offre }}" onChange="{{ setOffre }}" disabled="{{ noPromo }}" style="font:inherit;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff"><option>Visibilité</option><option>Premium</option><option>Toutes</option></select>
+          <label>Utilisations max.</label><input type="number" value="{{ nv.max }}" onChange="{{ setMax }}" disabled="{{ noPromo }}" style="font:inherit;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px">
+        </div>
+        <sc-if value="{{ promoErr }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 14px;border-radius:10px;background:#fdecea;color:#8f1d14;font-size:14px;font-weight:600">{{ promoErr }}</div></sc-if>
+        <button onClick="{{ creerPromo }}" disabled="{{ noPromo }}" title="{{ promoTitle }}" class="btn btn-primary" style="align-self:flex-start;font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Créer dans Stripe</button>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRemb }}" hint-placeholder-val="{{ false }}">
+    <section style="background:#fff;border:1px solid #e7e5e1;border-radius:12px;padding:4px 20px">
+      <sc-for list="{{ rembs }}" as="r" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #ecebe7;flex-wrap:wrap;font-size:14.5px"><span><strong>{{ r.client }}</strong> · {{ r.objet }}</span><span style="color:#57534f">{{ r.montant }} · {{ r.date }} · {{ r.par }}</span></div></sc-for>
+    </section>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;right:20px;z-index:60;background:#2a323c;color:#fff;padding:12px 16px;border-radius:10px;font-size:14.5px;max-width:420px">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const FACT = [['F-2026-00412', 'Bertrand Rénovation', 'Premium annuel', '958,80 €', '1 150,56 €', 'Payée', 'g'], ['F-2026-00411', 'Toitures Rive Droite', 'Visibilité annuel', '79,90 €', '95,88 €', 'Payée', 'g'], ['F-2026-00410', 'Isolation Gironde', 'Premium mensuel', '99,90 €', '119,88 €', 'Payée', 'g'], ['F-2026-00409', 'Isolation Gironde', 'Pack 10 crédits', '90,00 €', '108,00 €', 'Payée', 'g'], ['F-2026-00408', 'Peinture Hamon', 'Premium mensuel', '99,90 €', '119,88 €', 'Échouée', 'r'], ['F-2026-00407', 'Plomberie Da Silva', 'Visibilité mensuel', '12,90 €', '15,48 €', 'Remboursée', 'a']];
+const TN = { g: ['#eef7f3', '#085340'], r: ['#fdecea', '#8f1d14'], a: ['#fdf4e3', '#7a5206'] };
+class Component extends DCLogic {
+  state = { tab: 'fact', promos: [['LANCEMENT33', 30, 'Toutes', 200, 41, true], ['SALON-BTP', 20, 'Premium', 50, 7, true], ['ETE2026', 15, 'Visibilité', 100, 100, false]], nv: { code: '', pct: 20, offre: 'Visibilité', max: 50 }, err: '', toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
+  renderVals() {
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#finances'); } catch (e) {} }, 0); }
+    const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
+    const noPromo = lect || !can('promos.gerer');
+    const nv = s.nv, setNv = (patch) => this.setState({ nv: { ...nv, ...patch }, err: '' });
+    return {
+      kpis: [['MRR', '11 280 €', '+8,4 % sur 30 j'], ['Abonnés Premium', '61', '63 % en annuel'], ['Abonnés Visibilité', '148', '71 % en annuel'], ['Appels d’offres (30 j)', '4 110 €', '312 déblocages'], ['Résiliation mensuelle', '2,1 %', 'objectif < 3 %']].map(([l, v, sub]) => ({ l, v, s: sub })),
+      tabs: [['fact', 'Factures'], ['promo', 'Codes promo'], ['remb', 'Remboursements']].map(([id, nom]) => ({ nom, fw: s.tab === id ? 700 : 500, fg: s.tab === id ? '#201e1d' : '#6b6763', bd: s.tab === id ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
+      isFact: s.tab === 'fact', isPromo: s.tab === 'promo', isRemb: s.tab === 'remb',
+      factures: FACT.map(([n, client, objet, ht, ttc, st, t]) => ({ n, client, objet, ht, ttc, st, bg: TN[t][0], fg: TN[t][1] })),
+      promos: s.promos.map(([code, pct, offre, max, used, actif], i) => ({ code, detail: '−' + pct + ' % · ' + offre + (actif ? '' : ' · désactivé'), usage: used + ' / ' + max, btn: actif ? 'Désactiver' : 'Réactiver', toggle: () => { this.setState({ promos: s.promos.map((p, k) => (k === i ? [...p.slice(0, 5), !actif] : p)) }); this.flash(code + (actif ? ' désactivé' : ' réactivé') + ' dans Stripe'); } })),
+      nv, noPromo, promoTitle: can('promos.gerer') ? '' : 'Permission requise : promos.gerer', promoErr: s.err,
+      setCode: (e) => setNv({ code: e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '') }), setPct: (e) => setNv({ pct: +e.target.value }), setOffre: (e) => setNv({ offre: e.target.value }), setMax: (e) => setNv({ max: +e.target.value }),
+      creerPromo: () => {
+        if (nv.code.length < 4) return this.setState({ err: 'Code de 4 caractères minimum.' });
+        if (nv.pct < 1 || nv.pct > 50) return this.setState({ err: 'Remise entre 1 et 50 %.' });
+        if (s.promos.some((p) => p[0] === nv.code)) return this.setState({ err: 'Ce code existe déjà.' });
+        this.setState({ promos: [[nv.code, nv.pct, nv.offre, nv.max, 0, true], ...s.promos], nv: { code: '', pct: 20, offre: 'Visibilité', max: 50 } }); this.flash(nv.code + ' créé dans Stripe · auditLog');
+      },
+      rembs: [['Plomberie Da Silva', 'Visibilité mensuel (erreur de formule)', '15,48 € TTC', '20/09', 'Marc T. (finance)'], ['Atelier Garnier', 'Déblocage AO-2254', '18,00 € TTC', '14/09', 'Karim B.']].map(([client, objet, montant, date, par]) => ({ client, objet, montant, date, par })),
+      noExport: !can('finances.exporter'), exportTitle: can('finances.exporter') ? '' : 'Permission requise : finances.exporter', exporter: () => this.flash('Export CSV généré (date, pièce, client, HT, TVA, TTC, moyen de paiement) · journalisé'),
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

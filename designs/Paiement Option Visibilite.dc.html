@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root {
+  --color-accent: #e05a10;
+  --color-accent-100: #fff2ea;
+  --color-accent-200: #ffe0cd;
+  --color-accent-300: #ffc19c;
+  --color-accent-700: #a33f05;
+  --color-accent-800: #7a2f04;
+  --color-bg: #ffffff;
+}
+body, h1, h2, h3, label { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+body { margin: 0; background: #fff; color: var(--color-text); }
+.pay-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--color-neutral-800); }
+.pay-input {
+  width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 11px 12px;
+  border: 1px solid var(--color-neutral-400); border-radius: 8px; background: #fff; color: var(--color-text);
+  box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+.pay-input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-200); }
+.pay-group { border: 1px solid var(--color-neutral-400); border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.04); }
+.pay-group input { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 11px 12px; border: 0; outline: none; background: transparent; }
+.pay-group .row { display: grid; grid-template-columns: 1fr 1fr; }
+.pay-group .row input + input { border-left: 1px solid var(--color-neutral-300); }
+.pay-group .sep { border-top: 1px solid var(--color-neutral-300); }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))">
+
+  <section style="background:var(--color-accent-100);border-right:1px solid var(--color-divider);padding:clamp(24px,4vw,48px) clamp(20px,4vw,40px);display:flex;justify-content:flex-end">
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:26px">
+      <a href="Espace Artisan Dashboard.dc.html" style="display:inline-flex;align-self:flex-start;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);background:#fff;border:1px solid var(--color-accent-300);border-radius:12px;padding:8px 14px 8px 10px;box-shadow:var(--shadow-sm)">
+        <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        </span>
+      </a>
+
+      <div>
+        <p style="margin:0 0 6px;font-size:15px;color:var(--color-neutral-800)">Option Visibilité</p>
+        <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-size:40px;font-weight:700;line-height:1;white-space:nowrap">{{ prixMois }}</span>
+          <span style="font-size:15px;color:var(--color-neutral-800)">{{ unite }}</span>
+        </p>
+        <p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700)">{{ libelleFormule }}</p>
+      </div>
+
+      <div role="radiogroup" aria-label="Facturation" style="display:grid;gap:8px">
+        <button type="button" role="radio" aria-checked="{{ annuelAria }}" onClick="{{ choisirAnnuel }}" style="{{ styleAnnuel }}">
+          <span style="display:grid;gap:2px;text-align:left">
+            <span style="font-size:14px;font-weight:700">Annuel · 79,90 € HT / an</span>
+            <span style="font-size:12.5px;font-weight:400;color:var(--color-neutral-700)">Payé en une fois pour 12 mois, au lieu de 154,80 € HT</span>
+          </span>
+          <span style="margin-left:auto;font-size:11px;font-weight:700;color:#fff;background:var(--color-accent);border-radius:999px;padding:3px 8px;white-space:nowrap">− 74,90 €/an</span>
+        </button>
+        <button type="button" role="radio" aria-checked="{{ mensuelAria }}" onClick="{{ choisirMensuel }}" style="{{ styleMensuel }}">
+          <span style="display:grid;gap:2px;text-align:left">
+            <span style="font-size:14px;font-weight:700">Mensuel · 12,90 € HT / mois</span>
+            <span style="font-size:12.5px;font-weight:400;color:var(--color-neutral-700)">Prélevé chaque mois, sans engagement</span>
+          </span>
+        </button>
+      </div>
+
+      <div style="display:grid;gap:9px;font-size:14px;border-top:1px solid var(--color-accent-300);padding-top:18px">
+        <div style="display:flex;justify-content:space-between;gap:12px"><span>Visibilité · {{ libelleLigne }} · {{ zone }}</span><span style="white-space:nowrap">{{ prixHt }}</span></div>
+        <sc-if value="{{ remiseVisible }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;justify-content:space-between;gap:12px;color:var(--color-accent-700);font-weight:600"><span>Code {{ promoActif }}</span><span style="white-space:nowrap">− {{ remise }}</span></div>
+        </sc-if>
+        <div style="display:flex;justify-content:space-between;gap:12px;color:var(--color-neutral-700)"><span>TVA 20 %</span><span style="white-space:nowrap">{{ tva }}</span></div>
+        <div style="display:flex;justify-content:space-between;gap:12px;font-weight:700;font-size:16px;border-top:1px solid var(--color-accent-300);padding-top:10px"><span>Total TTC dû aujourd'hui</span><span style="white-space:nowrap">{{ prixTtc }}</span></div>
+        <p style="margin:0;font-size:12.5px;line-height:18px;color:var(--color-neutral-700)">{{ mentionRenouv }}</p>
+      </div>
+
+      <ul style="list-style:none;padding:0;margin:0;display:grid;gap:9px;font-size:14px;line-height:21px;color:var(--color-neutral-800)">
+        <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Mise en avant dans l'annuaire de votre secteur</span></li>
+        <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Téléphone affiché sur votre fiche</span></li>
+        <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Badge Visibilité et statistiques de votre fiche</span></li>
+        <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>0 % de commission</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="padding:clamp(24px,4vw,48px) clamp(20px,4vw,40px);display:flex;justify-content:flex-start">
+    <div style="width:100%;max-width:400px">
+
+      <sc-if value="{{ paye }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:14px;padding-top:20px">
+          <span style="width:52px;height:52px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700">✓</span>
+          <h1 style="font-size:26px;margin:0">Paiement confirmé</h1>
+          <p style="margin:0;font-size:15px;line-height:24px;color:var(--color-neutral-800)">Votre fiche passe en priorité sur {{ zone }} et vos coordonnées sont visibles par les particuliers. Un reçu vient de partir par email.</p>
+          <a href="Espace Artisan Dashboard.dc.html" style="display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:8px;background:var(--color-accent);color:#fff;font-weight:600;text-decoration:none">Retour à mon espace</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ aPayer }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ soumettre }}" style="display:grid;gap:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <h1 style="font-size:19px;margin:0">Payer par carte</h1>
+            <span style="display:flex;gap:6px;align-items:center">
+              <svg width="34" height="22" viewBox="0 0 38 24" role="img" aria-label="Visa"><rect width="38" height="24" rx="4" fill="#fff" stroke="#dcdcdc"></rect><path d="M15.4 16.3h-2.1l1.3-8h2.1zM23 8.5c-.4-.2-1.1-.3-1.9-.3-2.1 0-3.5 1.1-3.5 2.6 0 1.2 1.1 1.8 1.9 2.2.8.4 1.1.6 1.1 1 0 .5-.7.8-1.3.8-.9 0-1.4-.1-2.1-.4l-.3-.1-.3 1.8c.5.2 1.5.4 2.5.4 2.2 0 3.6-1.1 3.7-2.7 0-.9-.6-1.6-1.8-2.2-.8-.4-1.2-.6-1.2-1 0-.4.4-.7 1.2-.7.7 0 1.2.1 1.6.3l.2.1zM28.4 8.3h-1.6c-.5 0-.9.2-1.1.7l-3.1 7.3h2.2l.4-1.2h2.7l.3 1.2h1.9zm-2.6 5.2.8-2.2.5 2.2zM11.9 8.3l-2 5.5-.3-1.1-.7-3.4c-.1-.5-.5-.7-1-.7H4.4l-.1.2c.8.2 1.6.5 2.2.9l1.9 6.6h2.2l3.3-8z" fill="#1a1f71"></path></svg>
+              <svg width="34" height="22" viewBox="0 0 38 24" role="img" aria-label="Mastercard"><rect width="38" height="24" rx="4" fill="#fff" stroke="#dcdcdc"></rect><circle cx="15.5" cy="12" r="6.2" fill="#eb001b"></circle><circle cx="22.5" cy="12" r="6.2" fill="#f79e1b"></circle><path d="M19 7.2a6.2 6.2 0 0 0 0 9.6 6.2 6.2 0 0 0 0-9.6z" fill="#ff5f00"></path></svg>
+              <svg width="34" height="22" viewBox="0 0 38 24" role="img" aria-label="Carte Bleue"><rect width="38" height="24" rx="4" fill="#fff" stroke="#dcdcdc"></rect><path d="M6 7h9.5c2 0 3.2 1 3.2 2.4 0 1-.6 1.8-1.6 2.1 1.2.3 1.9 1.1 1.9 2.2 0 1.6-1.3 2.6-3.5 2.6H6z" fill="#0b4ea2"></path><path d="M20.5 7H29c2.3 0 3.6 1 3.6 2.5 0 1-.6 1.7-1.6 2.1 1.2.3 1.9 1.1 1.9 2.2 0 1.6-1.4 2.5-3.7 2.5h-8.7z" fill="#e30613"></path></svg>
+            </span>
+          </div>
+
+          <div>
+            <label class="pay-label" for="email">Email</label>
+            <input class="pay-input" id="email" type="email" placeholder="contact@entreprise.fr" autoComplete="email" />
+          </div>
+
+          <div>
+            <label class="pay-label" for="numero">Informations de carte</label>
+            <div class="pay-group">
+              <input id="numero" type="text" inputmode="numeric" placeholder="1234 1234 1234 1234" autoComplete="cc-number" value="{{ numero }}" onInput="{{ majNumero }}" />
+              <div class="row sep">
+                <input id="exp" type="text" inputmode="numeric" placeholder="MM / AA" autoComplete="cc-exp" />
+                <input id="cvc" type="text" inputmode="numeric" placeholder="CVC" autoComplete="cc-csc" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="pay-label" for="titulaire">Nom du titulaire</label>
+            <input class="pay-input" id="titulaire" type="text" placeholder="{{ nom }}" autoComplete="cc-name" />
+          </div>
+
+          <div>
+            <label class="pay-label" for="promo">Code promo</label>
+            <div style="display:flex;gap:8px">
+              <input class="pay-input" id="promo" type="text" placeholder="Facultatif" value="{{ promo }}" onInput="{{ majPromo }}" style="flex:1" />
+              <button type="button" onClick="{{ appliquerPromo }}" style="font:inherit;font-size:14px;font-weight:600;padding:0 16px;border:1px solid var(--color-neutral-400);border-radius:8px;background:#fff;cursor:pointer;white-space:nowrap">Appliquer</button>
+            </div>
+            <sc-if value="{{ messagePromoVisible }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:7px 0 0;font-size:13px;font-weight:600;color:var(--color-accent-700)">{{ messagePromo }}</p>
+            </sc-if>
+          </div>
+
+          <button type="submit" style="font:inherit;font-size:16px;font-weight:700;min-height:48px;border:0;border-radius:8px;background:var(--color-accent);color:#fff;cursor:pointer;width:100%">Payer {{ prixTtc }}</button>
+
+          <p style="margin:0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;color:var(--color-neutral-700);text-align:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+            Paiement chiffré, 3D Secure · PCI-DSS · résiliable en un clic
+          </p>
+        </form>
+      </sc-if>
+    </div>
+  </section>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const PRIX_ANNUEL = 79.9; // total pour 12 mois
+const PRIX_MENSUEL = 12.9;
+
+class Component extends DCLogic {
+  state = { formule: "annuel", numero: "", promo: "", promoActif: "", paye: false, p: {} };
+
+  componentDidMount() {
+    let p = {};
+    try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    this.setState({ p, formule: p.facturation === "mensuel" ? "mensuel" : "annuel" });
+  }
+
+  renderVals() {
+    const s = this.state, p = s.p || {};
+    const eur = (n) => n.toFixed(2).replace(".", ",") + " €";
+
+    const annuel = s.formule === "annuel";
+    const base = annuel ? PRIX_ANNUEL : PRIX_MENSUEL;
+        const remiseHt = s.promoActif ? base * 0.3 : 0;
+    const totalHt = base - remiseHt;
+    const formule = (actif) => ({
+      display: "flex", alignItems: "center", gap: "10px", width: "100%", font: "inherit", cursor: "pointer",
+      padding: "12px 14px", borderRadius: "10px", textAlign: "left",
+      border: "1px solid " + (actif ? "var(--color-accent)" : "var(--color-accent-300)"),
+      background: actif ? "#fff" : "transparent",
+      boxShadow: actif ? "0 0 0 2px var(--color-accent-200)" : "none",
+    });
+
+    return {
+      nom: p.nom || "Julien Bertrand",
+      zone: (p.ville || "Bordeaux") + " · " + (p.rayon || 30) + " km",
+      annuel, annuelAria: String(annuel), mensuelAria: String(!annuel),
+      libelleFormule: annuel ? "payé en une fois pour 12 mois" : "sans engagement, prélevé chaque mois",
+      libelleLigne: annuel ? "12 mois" : "1 mois",
+      styleAnnuel: formule(annuel), styleMensuel: formule(!annuel),
+      choisirAnnuel: () => this.setState({ formule: "annuel" }), choisirMensuel: () => this.setState({ formule: "mensuel" }),
+      prixMois: eur(base), unite: annuel ? "HT / an" : "HT / mois", prixHt: eur(base), prixTtc: eur(totalHt * 1.2), tva: eur(totalHt * 0.2), remise: eur(remiseHt),
+      mentionRenouv: annuel ? "Renouvelé chaque année au même tarif, résiliable jusqu'à la date anniversaire." : "Résiliable en un clic, effet à la fin du mois en cours.",
+      remiseVisible: !!s.promoActif,
+      promoActif: s.promoActif,
+      numero: s.numero,
+      majNumero: (e) => this.setState({ numero: e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim() }),
+      promo: s.promo,
+      majPromo: (e) => this.setState({ promo: e.target.value.toUpperCase() }),
+      appliquerPromo: () => this.setState((st) => ({ promoActif: st.promo.trim() })),
+      messagePromo: s.promoActif ? "Code " + s.promoActif + " appliqué : − 30 % sur la première échéance." : "",
+      messagePromoVisible: !!s.promoActif,
+      paye: s.paye,
+      aPayer: !s.paye,
+      soumettre: (e) => { e.preventDefault(); this.setState({ paye: true }); },
+    };
+  }
+}
+
+</script>
+</body>
+</html>

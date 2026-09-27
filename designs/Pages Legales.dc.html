@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Mentions légales, CGU, CGV et confidentialité | Portail Habitat</title>
+<meta name="description" content="Mentions légales, conditions générales d'utilisation particuliers, conditions générales de vente professionnels, politique de confidentialité RGPD, politique d'avis, cookies et sécurité de la plateforme Portail Habitat.">
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<style>
+:root {
+  --color-accent: #0d7a5f;
+  --color-accent-100: #eef7f3;
+  --color-accent-200: #d2ebe1;
+  --color-accent-300: #a5d7c4;
+  --color-accent-400: #5cbb9c;
+  --color-accent-500: #12997a;
+  --color-accent-600: #0a6650;
+  --color-accent-700: #085340;
+  --color-accent-800: #06402f;
+  --color-accent-900: #0a2a21;
+  --color-accent-2: #e05a10;
+  --color-accent-2-100: #fff2ea;
+  --color-accent-2-700: #a33f05;
+  --pro: #e05a10;
+  --pro-100: #fff2ea;
+  --pro-700: #a33f05;
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+body, h1, h2, h3, h4, h5, h6, th, td { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.018em; }
+.btn { border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover, .nav a.btn-primary:visited { color: #fff; }
+.tag { border-radius: 999px; }
+.table th, .table td { font-size: 14.5px; }
+html, body, #dc-root { background: #fff; }
+html { scroll-behavior: smooth; }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+button { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;display:flex;flex-direction:column">
+
+  <nav class="nav" style="background:#fff;border-bottom:1px solid var(--color-divider);padding:0">
+    <span style="display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;width:100%;max-width:1220px;margin:0 auto;padding:14px clamp(18px,4vw,44px)">
+      <a href="Accueil Particuliers.dc.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--color-text)">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02">
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase">Habitat</span>
+        </span>
+      </a>
+      <span style="font-size:15px;color:var(--color-neutral-800)">Informations légales</span>
+      <span style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:14.5px">
+        <a href="Accueil Particuliers.dc.html" style="text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--color-accent)">Espace particuliers</a>
+        <a href="Acquisition Artisans v2.dc.html" style="text-decoration:none;color:var(--color-neutral-800)" style-hover="color:var(--pro-700)">Espace artisans</a>
+      </span>
+    </span>
+  </nav>
+
+  <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-200);padding:clamp(22px,3vw,40px) clamp(18px,4vw,44px)">
+    <div style="max-width:1220px;margin:0 auto">
+      <h1 style="font-size:clamp(25px,3.2vw,36px);line-height:1.1;margin:0 0 10px">Informations légales et sécurité</h1>
+      <p style="margin:0 0 18px;font-size:16.5px;line-height:26px;color:var(--color-neutral-800);max-width:64ch">Portail Habitat est une plateforme de mise en relation. Ces documents précisent le rôle exact de l'éditeur, les responsabilités de chacun, le traitement de vos données et les mesures de sécurité en place. Version en vigueur au {{ dateVersion }}.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <sc-for list="{{ publics }}" as="p" hint-placeholder-count="2">
+          <button type="button" onClick="{{ p.choisir }}" aria-pressed="{{ p.actif }}" style="cursor:pointer;border-radius:10px;padding:10px 18px;min-height:44px;font-size:15px;font-weight:600;white-space:nowrap;background:{{ p.bg }};border:1.5px solid {{ p.bd }};color:{{ p.fg }}">{{ p.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <main style="flex:1;max-width:1220px;margin:0 auto;width:100%;padding:clamp(22px,3vw,36px) clamp(18px,4vw,44px) clamp(40px,5vw,68px)">
+    <div style="display:grid;grid-template-columns:minmax(0,268px) minmax(0,1fr);gap:26px clamp(24px,3.5vw,48px);align-items:start">
+
+      <aside style="position:sticky;top:18px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 36px);min-height:0">
+        <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:16px;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+          <p style="margin:0 0 12px;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-neutral-700);font-weight:700;flex:none">{{ titreSommaire }}</p>
+          <div style="display:grid;gap:6px;overflow-y:auto;min-height:0;padding-right:6px;margin-right:-6px">
+            <sc-for list="{{ sommaire }}" as="d" hint-placeholder-count="6">
+              <button type="button" onClick="{{ d.choisir }}" aria-pressed="{{ d.actif }}" style="cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;border-radius:10px;padding:10px 12px;min-height:44px;font-size:14.5px;font-weight:600;background:{{ d.bg }};border:1px solid {{ d.bd }};color:{{ d.fg }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ d.icone }}"></path></svg>
+                {{ d.titre }}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:{{ encartBg }};border-radius:14px;padding:16px;flex:none">
+          <p style="margin:0 0 6px;font-size:14.5px;font-weight:700">Une question juridique ?</p>
+          <p style="margin:0 0 12px;font-size:13.5px;line-height:21px;color:var(--color-neutral-800)">Réclamation, exercice de vos droits, signalement d'un contenu : une seule adresse.</p>
+          <a href="Contact.dc.html?sujet=juridique" class="btn btn-secondary" style="min-height:42px;font-size:14px;background:#fff">Nous écrire</a>
+        </div>
+      </aside>
+
+      <article style="min-width:0">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="tag" style="font-size:12px;background:{{ badgeBg }};color:{{ badgeFg }};padding:5px 12px;font-weight:700">{{ badgeTexte }}</span>
+          <span style="font-size:13.5px;color:var(--color-neutral-700)">Dernière mise à jour : {{ dateVersion }}</span>
+        </div>
+        <h2 style="font-size:clamp(24px,3vw,33px);line-height:1.12;margin:0 0 12px">{{ docTitre }}</h2>
+        <p style="font-size:16.5px;line-height:27px;margin:0 0 28px;color:var(--color-neutral-800);max-width:66ch">{{ docChapeau }}</p>
+
+        <sc-if value="{{ aEncadre }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--color-accent-2-100);border-radius:12px;padding:18px 20px;margin:0 0 28px;display:flex;gap:14px;align-items:flex-start">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-2-700)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 3.5 21 19.5H3L12 3.5ZM12 9.5v4.5M12 16.8v.01"></path></svg>
+            <p style="margin:0;font-size:14.5px;line-height:23px;color:var(--color-neutral-800)"><strong>{{ encadreTitre }}</strong> {{ encadreTexte }}</p>
+          </div>
+        </sc-if>
+
+        <div style="display:grid;gap:30px;max-width:72ch">
+          <sc-for list="{{ sections }}" as="s" hint-placeholder-count="8">
+            <section>
+              <h3 style="font-size:19.5px;line-height:1.2;margin:0 0 12px">{{ s.titre }}</h3>
+              <sc-for list="{{ s.paragraphes }}" as="p" hint-placeholder-count="2">
+                <p style="margin:0 0 12px;font-size:15.5px;line-height:26px;color:var(--color-neutral-800)">{{ p }}</p>
+              </sc-for>
+              <sc-if value="{{ s.aListe }}" hint-placeholder-val="{{ false }}">
+                <ul style="margin:4px 0 0;padding-left:20px;display:grid;gap:8px">
+                  <sc-for list="{{ s.liste }}" as="l" hint-placeholder-count="3">
+                    <li style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800)">{{ l }}</li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <sc-if value="{{ s.aTableau }}" hint-placeholder-val="{{ false }}">
+                <div style="overflow-x:auto;margin-top:6px">
+                  <table class="table" style="width:100%;min-width:480px">
+                    <thead><tr>
+                      <sc-for list="{{ s.entetes }}" as="e" hint-placeholder-count="3">
+                        <th style="text-align:left">{{ e }}</th>
+                      </sc-for>
+                    </tr></thead>
+                    <tbody>
+                      <sc-for list="{{ s.lignes }}" as="r" hint-placeholder-count="4">
+                        <tr>
+                          <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="3">
+                            <td>{{ c }}</td>
+                          </sc-for>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </sc-if>
+            </section>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:36px;padding-top:24px;border-top:1px solid var(--color-divider);display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <sc-if value="{{ aPrecedent }}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="btn btn-ghost" onClick="{{ precedent }}" style="min-height:46px;font-size:15px">← {{ labelPrecedent }}</button>
+          </sc-if>
+          <sc-if value="{{ aSuivant }}" hint-placeholder-val="{{ true }}">
+            <button type="button" class="btn btn-secondary" onClick="{{ suivant }}" style="min-height:46px;font-size:15px;background:#fff;margin-left:auto">{{ labelSuivant }} →</button>
+          </sc-if>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
+    <div style="max-width:1220px;margin:0 auto;padding:24px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
+      <span>© 2026 Portail Habitat · Plateforme de mise en relation</span>
+      <span style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Particuliers</a>
+        <a href="Acquisition Artisans v2.dc.html" style="color:var(--color-accent-200)">Artisans</a>
+        <a href="Contact.dc.html" style="color:var(--color-accent-200)">Aide et contact</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1220}}">
+const IC = {
+  doc: "M6 3.5h9l4 4v13H6zM9.5 12h6M9.5 16h4",
+  balance: "M12 4v16M6 8h12M8.5 8 6 14h5L8.5 8ZM15.5 8 13 14h5l-2.5-6ZM8 20h8",
+  cadenas: "M6.5 10.5h11v9h-11zM9 10.5V8a3 3 0 0 1 6 0v2.5M12 14v2.5",
+  bouclier: "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
+  etoile: "m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 17l-5.3 2.7 1.1-5.9L3.5 9.7l5.9-.8L12 3.5Z",
+  cookie: "M12 3.5a8.5 8.5 0 1 0 8.5 8.5A4 4 0 0 1 16 8a3.5 3.5 0 0 1-4-4.5ZM9 10v.01M13.5 13v.01M9.5 15v.01",
+  carte: "M3.5 7h17v10h-17zM3.5 10.5h17M7 14h3",
+  serveur: "M4 5h16v5H4zM4 14h16v5H4zM7.5 7.5v.01M7.5 16.5v.01",
+};
+
+const COMMUN = {
+  mentions: {
+    titre: "Mentions légales",
+    icone: IC.doc,
+    chapeau: "Informations relatives à l'éditeur du site, à son hébergeur et aux conditions de publication, conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique.",
+    encadre: ["Champs à compléter.", "Les mentions ci-dessous contiennent des emplacements entre crochets à renseigner avec vos informations réelles avant mise en ligne. Une mention légale incomplète ou inexacte engage la responsabilité de l'éditeur."],
+    sections: [
+      { titre: "1. Éditeur du site", paragraphes: ["Le site Portail Habitat, accessible à l'adresse [www.portailhabitat.fr], est édité par [Dénomination sociale], [forme juridique] au capital de [montant] euros, immatriculée au registre du commerce et des sociétés de [ville] sous le numéro [SIREN], dont le siège social est situé [adresse complète].", "Numéro de TVA intracommunautaire : [FR00000000000]. Directeur de la publication : [nom et prénom]. Contact : [email] — [téléphone]."] },
+      { titre: "2. Hébergement", paragraphes: ["Le site est hébergé par [dénomination de l'hébergeur], [adresse complète], [téléphone]. L'hébergeur assure la conservation des données de connexion dans les conditions prévues par la loi."] },
+      { titre: "3. Nature du service", paragraphes: ["Portail Habitat est une plateforme de mise en relation entre des particuliers porteurs de projets de travaux ou de diagnostics immobiliers et des professionnels indépendants. L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni diagnostiqueur, ni courtier en travaux : il n'exécute aucune prestation et n'est pas partie aux contrats conclus entre utilisateurs et professionnels.", "L'éditeur n'est pas un service de paiement et n'intervient pas dans le règlement des prestations, sauf indication contraire expresse dans les conditions applicables à un service spécifique."] },
+      { titre: "4. Propriété intellectuelle", paragraphes: ["La structure du site, son arborescence, ses interfaces, ses textes, sa charte graphique, ses logos, ses marques et ses bases de données sont la propriété exclusive de l'éditeur ou font l'objet d'une licence à son profit. Ils sont protégés par le code de la propriété intellectuelle.", "Toute reproduction, représentation, adaptation, extraction ou réutilisation, totale ou partielle, par quelque procédé que ce soit, sans autorisation écrite préalable de l'éditeur, est interdite et constitue une contrefaçon. L'extraction automatisée de données, notamment par aspiration, moissonnage ou entraînement de modèles, est expressément prohibée."] },
+      { titre: "5. Signalement de contenu", paragraphes: ["Tout contenu manifestement illicite peut être signalé à [email de signalement], avec la description du contenu, son adresse précise et les motifs du signalement. L'éditeur, en sa qualité d'hébergeur des contenus publiés par les utilisateurs au sens de l'article 6 de la loi du 21 juin 2004, retire promptement tout contenu manifestement illicite dont il a connaissance."] },
+      { titre: "6. Médiation et droit applicable", paragraphes: ["Conformément aux articles L. 611-1 et suivants du code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation : [nom et coordonnées du médiateur]. La plateforme européenne de règlement en ligne des litiges est également accessible.", "Le présent site et les documents qui le régissent sont soumis au droit français. Les tribunaux français sont seuls compétents, sous réserve des règles impératives de compétence applicables aux consommateurs."] },
+    ],
+  },
+  confidentialite: {
+    titre: "Politique de confidentialité",
+    icone: IC.cadenas,
+    chapeau: "Traitement de vos données personnelles au sens du règlement (UE) 2016/679 (RGPD) et de la loi n° 78-17 du 6 janvier 1978 modifiée. Cette politique s'applique aux particuliers comme aux professionnels.",
+    sections: [
+      { titre: "1. Responsable de traitement", paragraphes: ["[Dénomination sociale], dont le siège est [adresse], est responsable des traitements décrits ci-dessous. Délégué à la protection des données ou point de contact : [email DPO]."] },
+      { titre: "2. Données collectées", paragraphes: ["Nous collectons uniquement les données nécessaires aux finalités poursuivies (principe de minimisation) :"], liste: [
+        "Données d'identification : nom, prénom, adresse email, numéro de téléphone, adresse postale du chantier ou du bien.",
+        "Données de projet : nature des travaux, surfaces, équipements, année de construction, diagnostics existants, budget estimé, photos que vous transmettez volontairement.",
+        "Données professionnelles (artisans) : raison sociale, SIREN/SIRET, qualifications, attestations d'assurance, coordonnées bancaires pour l'abonnement, historique de facturation.",
+        "Données d'usage : journaux de connexion, adresse IP, type d'appareil, pages consultées, données de mesure d'audience.",
+      ] },
+      { titre: "3. Finalités et bases légales", paragraphes: ["Chaque traitement repose sur une base légale déterminée :"], tableau: {
+        entetes: ["Finalité", "Base légale", "Conservation"],
+        lignes: [
+          ["Mise en relation avec des professionnels", "Exécution du contrat", "3 ans à compter du dernier contact"],
+          ["Gestion du compte et de l'abonnement professionnel", "Exécution du contrat", "Durée du contrat + 5 ans"],
+          ["Facturation et comptabilité", "Obligation légale", "10 ans (code de commerce)"],
+          ["Modération des avis et prévention de la fraude", "Intérêt légitime", "3 ans"],
+          ["Prospection commerciale par email", "Consentement ou intérêt légitime (clients)", "3 ans après le dernier contact"],
+          ["Mesure d'audience et amélioration du service", "Consentement (cookies non essentiels)", "13 mois maximum"],
+        ],
+      } },
+      { titre: "4. Destinataires", paragraphes: ["Vos données de projet sont transmises aux professionnels que vous sollicitez ou qui correspondent à votre demande, dans la limite de trois professionnels par demande. Elles ne sont jamais cédées ni louées à des tiers à des fins publicitaires.", "Nos sous-traitants (hébergement, envoi d'emails transactionnels, paiement, support, mesure d'audience) agissent sur instruction documentée, dans le cadre d'accords conformes à l'article 28 du RGPD. La liste est communiquée sur simple demande."] },
+      { titre: "5. Transferts hors Union européenne", paragraphes: ["Nos serveurs et nos principaux sous-traitants sont situés dans l'Union européenne. Si un transfert vers un pays tiers s'avérait nécessaire, il serait encadré par une décision d'adéquation ou par les clauses contractuelles types de la Commission européenne, assorties de mesures techniques complémentaires."] },
+      { titre: "6. Vos droits", paragraphes: ["Vous disposez des droits d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité, ainsi que du droit de retirer votre consentement à tout moment et de définir le sort de vos données après votre décès.", "Exercez-les à [email DPO] ou par courrier à l'adresse du siège, en justifiant de votre identité. Nous répondons sous un mois, délai prorogeable d'un mois en cas de demande complexe. Vous pouvez introduire une réclamation auprès de la CNIL, 3 place de Fontenoy, 75334 Paris Cedex 07."] },
+      { titre: "7. Sécurité", paragraphes: ["Les mesures techniques et organisationnelles mises en œuvre sont décrites dans la rubrique « Sécurité de la plateforme ». En cas de violation de données susceptible d'engendrer un risque élevé pour vos droits, vous serez informé dans les meilleurs délais et la CNIL notifiée sous 72 heures."] },
+    ],
+  },
+  cookies: {
+    titre: "Politique de cookies",
+    icone: IC.cookie,
+    chapeau: "Information sur les traceurs déposés lors de votre navigation, conformément à l'article 82 de la loi du 6 janvier 1978 modifiée et aux recommandations de la CNIL.",
+    sections: [
+      { titre: "1. Cookies strictement nécessaires", paragraphes: ["Ils permettent le fonctionnement du site : maintien de session, sécurisation de l'authentification, mémorisation de votre choix en matière de cookies, répartition de charge. Ils ne requièrent pas votre consentement et ne peuvent pas être désactivés sans dégrader le service."] },
+      { titre: "2. Cookies de mesure d'audience", paragraphes: ["Ils nous permettent de comprendre l'usage du site et d'améliorer les parcours. Lorsqu'ils sont configurés de manière à ne pas permettre le suivi individuel et à produire des statistiques anonymes, ils peuvent être exemptés de consentement ; dans le cas contraire, ils ne sont déposés qu'après votre accord."] },
+      { titre: "3. Cookies publicitaires et réseaux sociaux", paragraphes: ["Ces traceurs ne sont déposés qu'avec votre consentement explicite, recueilli par le bandeau affiché lors de votre première visite. Le refus est aussi simple que l'acceptation et n'empêche pas l'accès au service."] },
+      { titre: "4. Durée et retrait du consentement", paragraphes: ["La durée de vie des traceurs n'excède pas treize mois et votre choix est conservé six mois au maximum avant nouvelle sollicitation. Vous pouvez modifier votre choix à tout moment via le lien « Gérer mes cookies » en pied de page, ou configurer votre navigateur pour bloquer ou supprimer les cookies."] },
+    ],
+  },
+  securite: {
+    titre: "Sécurité de la plateforme",
+    icone: IC.bouclier,
+    chapeau: "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Habitat, et engagements attendus des utilisateurs.",
+    sections: [
+      { titre: "1. Protection des échanges et des données", paragraphes: ["L'ensemble des échanges entre votre navigateur et nos serveurs est chiffré en transit (TLS 1.2 minimum, HSTS activé). Les données sensibles sont chiffrées au repos et les mots de passe ne sont jamais stockés en clair : ils sont dérivés au moyen d'une fonction de hachage lente et salée.", "Les documents que vous déposez (devis, attestations d'assurance, rapports de diagnostic, photos de chantier) sont stockés sur un espace à accès restreint et servis par des liens temporaires signés."] },
+      { titre: "2. Contrôle d'accès", paragraphes: ["L'accès aux données est cloisonné selon le principe du moindre privilège : un professionnel n'accède qu'aux demandes qui lui sont attribuées, un particulier qu'à son propre dossier. Les accès des équipes internes sont nominatifs, journalisés et soumis à une authentification renforcée.", "La double authentification est disponible sur tous les comptes et fortement recommandée pour les comptes professionnels disposant d'un moyen de paiement enregistré."] },
+      { titre: "3. Paiements", paragraphes: ["Les paiements d'abonnement sont traités par un prestataire de services de paiement agréé, conforme à la norme PCI-DSS. Nous ne collectons, ne voyons ni ne conservons vos numéros de carte : seuls un identifiant de transaction et les quatre derniers chiffres sont enregistrés à des fins de preuve."] },
+      { titre: "4. Sauvegardes, journalisation et continuité", paragraphes: ["Les données sont sauvegardées de manière chiffrée et redondée, avec test de restauration périodique. Les événements de sécurité sont journalisés et conservés pour permettre la détection d'anomalies et l'investigation d'incidents."] },
+      { titre: "5. Gestion des incidents", paragraphes: ["Nous maintenons une procédure de gestion des violations de données : qualification, confinement, notification à la CNIL sous 72 heures lorsque les critères sont réunis, et information des personnes concernées en cas de risque élevé. Les vulnérabilités peuvent être signalées de bonne foi à [email sécurité] ; nous nous engageons à ne pas poursuivre les chercheurs qui respectent ce cadre et n'exfiltrent aucune donnée."] },
+      { titre: "6. Vos obligations", paragraphes: ["La sécurité est partagée. Vous vous engagez à :"], liste: [
+        "Utiliser un mot de passe unique et robuste, et activer la double authentification.",
+        "Ne pas partager vos identifiants, ni laisser un tiers utiliser votre compte.",
+        "Nous signaler sans délai toute utilisation non autorisée de votre compte.",
+        "Ne pas tenter d'accéder à des données qui ne vous sont pas destinées, ni de contourner les mesures de sécurité, ni d'extraire massivement le contenu de la plateforme.",
+      ] },
+      { titre: "7. Vigilance contre la fraude", paragraphes: ["Nous ne vous demanderons jamais votre mot de passe par téléphone ou par email, ni un virement vers un compte personnel. Toute demande de paiement en dehors des canaux officiels doit être signalée. Les coordonnées bancaires d'un professionnel figurant sur un devis relèvent de sa seule responsabilité : vérifiez-les auprès de lui par un canal que vous avez vous-même initié."] },
+    ],
+  },
+};
+
+const PARTICULIERS = {
+  cgu: {
+    titre: "Conditions générales d'utilisation",
+    icone: IC.doc,
+    chapeau: "Règles d'accès et d'usage du service par les particuliers : dépôt d'un projet, estimations, mise en relation, avis. Leur acceptation est un préalable à l'utilisation de la plateforme.",
+    encadre: ["Portail Habitat n'exécute aucun travaux.", "La plateforme met en relation ; le contrat de travaux ou de diagnostic est conclu directement entre vous et le professionnel, qui en assume seul l'exécution, les garanties et les assurances."],
+    sections: [
+      { titre: "1. Objet et acceptation", paragraphes: ["Les présentes conditions régissent l'accès au site et l'utilisation des services destinés aux particuliers : recherche de professionnels, simulateurs d'estimation, dépôt de demandes de devis, dossier de diagnostics, messagerie et dépôt d'avis.", "La création d'un compte ou le dépôt d'une demande vaut acceptation sans réserve des présentes conditions, dans leur version en vigueur à la date d'utilisation."] },
+      { titre: "2. Accès au service", paragraphes: ["Le service est réservé aux personnes physiques majeures et capables, agissant à des fins non professionnelles, résidant dans la zone géographique couverte. Il est gratuit pour les particuliers ; seuls les frais de connexion restent à votre charge.", "Vous vous engagez à fournir des informations exactes et à les tenir à jour. Une demande manifestement fantaisiste, un projet inexistant ou une utilisation à des fins de prospection peuvent entraîner la suspension du compte."] },
+      { titre: "3. Nature et portée des estimations", paragraphes: ["Les fourchettes de prix affichées par les simulateurs sont des ordres de grandeur indicatifs, calculés automatiquement à partir de moyennes observées et des seules informations que vous déclarez. Elles ne constituent ni un devis, ni une offre, ni un engagement de prix de l'éditeur ou d'un professionnel.", "Seul le devis signé avec un professionnel, après visite sur place, a valeur contractuelle. L'éditeur ne garantit aucun écart maximal entre l'estimation et le prix final et ne saurait être tenu responsable d'une décision prise sur la seule base d'une estimation."] },
+      { titre: "4. Informations réglementaires", paragraphes: ["Les informations relatives aux obligations légales (diagnostics obligatoires, validités, seuils, aides) sont fournies à titre d'information générale, à jour à la date indiquée sur la page. Elles ne constituent pas un conseil juridique personnalisé et ne dispensent pas de vérifier votre situation auprès d'un professionnel qualifié ou de l'administration compétente."] },
+      { titre: "5. Mise en relation", paragraphes: ["En déposant une demande, vous autorisez la transmission des informations de votre projet et de vos coordonnées à un nombre limité de professionnels référencés, afin qu'ils vous contactent. Vous restez libre de refuser tout devis, sans frais ni justification.", "L'éditeur vérifie, lors du référencement, l'existence de l'immatriculation et la production d'une attestation d'assurance décennale. Cette vérification est déclarative et ponctuelle : elle ne constitue ni une garantie de compétence, ni une caution, ni une recommandation, et n'engage pas la responsabilité de l'éditeur quant à la qualité des prestations réalisées."] },
+      { titre: "6. Responsabilité de l'éditeur", paragraphes: ["L'éditeur est tenu à une obligation de moyens quant à la mise à disposition de la plateforme. Il ne peut être tenu responsable :"], liste: [
+        "de l'exécution, des retards, des malfaçons, des dommages ou de l'abandon de chantier imputables à un professionnel ;",
+        "des informations déclarées par les utilisateurs et les professionnels, dont ils sont seuls responsables ;",
+        "de l'écart entre une estimation automatique et le prix réellement pratiqué ;",
+        "des interruptions du service liées à la maintenance, à un incident technique ou à un cas de force majeure ;",
+        "des dommages indirects, tels que perte de chance, préjudice commercial ou perte de données, dans la limite permise par la loi.",
+      ] },
+      { titre: "7. Vos obligations", paragraphes: ["Vous vous engagez à utiliser le service de bonne foi, à ne pas usurper d'identité, à ne pas publier de contenu illicite, diffamatoire, discriminatoire ou portant atteinte à la vie privée d'un tiers, à ne pas extraire les données des professionnels référencés et à ne pas contourner les mesures techniques de protection."] },
+      { titre: "8. Suspension et résiliation", paragraphes: ["Vous pouvez supprimer votre compte à tout moment depuis votre espace ou sur simple demande. L'éditeur peut suspendre ou fermer un compte, après information préalable sauf urgence ou manquement grave, en cas de violation des présentes conditions, de fraude ou d'usage abusif du service."] },
+      { titre: "9. Modification des conditions", paragraphes: ["Les présentes conditions peuvent être modifiées pour tenir compte d'évolutions légales, techniques ou de l'offre de services. Toute modification substantielle vous est notifiée au moins quinze jours avant son entrée en vigueur ; la poursuite de l'utilisation du service vaut acceptation."] },
+      { titre: "10. Litiges", paragraphes: ["En cas de difficulté, adressez d'abord une réclamation à [email de réclamation]. À défaut de solution, vous pouvez saisir gratuitement le médiateur de la consommation mentionné dans les mentions légales, puis la juridiction compétente. Le droit français est applicable."] },
+    ],
+  },
+  avis: {
+    titre: "Politique d'avis",
+    icone: IC.etoile,
+    chapeau: "Modalités de collecte, de modération et de publication des avis, conformément aux articles L. 111-7-2 et D. 111-16 et suivants du code de la consommation.",
+    sections: [
+      { titre: "1. Qui peut déposer un avis", paragraphes: ["Seule une personne ayant fait réaliser une prestation par le professionnel concerné peut déposer un avis. Le déposant certifie l'absence de lien personnel, familial, capitalistique ou concurrentiel avec ce professionnel. Aucune contrepartie n'est offerte en échange d'un avis."] },
+      { titre: "2. Contrôle avant publication", paragraphes: ["Chaque avis est relu sous 48 heures ouvrées. Un avis peut être refusé s'il est injurieux, discriminatoire, hors sujet, s'il contient des données personnelles de tiers, s'il relate un litige en cours de procédure judiciaire, ou si les éléments de preuve de la prestation ne peuvent être établis. Le motif du refus est communiqué à l'auteur.", "L'éditeur peut demander un justificatif de prestation (devis, facture) et conserve les avis refusés pendant la durée nécessaire au traitement des réclamations."] },
+      { titre: "3. Publication, tri et réponse", paragraphes: ["Les avis sont publiés avec leur date de dépôt et, le cas échéant, la date de la prestation. Le critère de tri par défaut est la date, du plus récent au plus ancien ; les autres critères disponibles sont indiqués à l'utilisateur.", "Le professionnel dispose d'un droit de réponse public. Il ne peut ni modifier, ni supprimer, ni conditionner un avis, ni obtenir son retrait par l'achat d'un service. Aucune option payante ne permet de masquer un avis négatif."] },
+      { titre: "4. Modification, retrait et conservation", paragraphes: ["L'auteur peut modifier ou demander le retrait de son avis à tout moment depuis son espace. Les avis sont conservés et affichés pendant trois ans maximum, puis archivés. Les avis antérieurs à cette durée ne sont plus pris en compte dans la note moyenne."] },
+      { titre: "5. Signalement", paragraphes: ["Tout avis peut être signalé, par le professionnel comme par un tiers, à [email de signalement]. Le signalement est traité sous cinq jours ouvrés ; l'avis peut être suspendu pendant l'examen s'il présente un caractère manifestement illicite."] },
+    ],
+  },
+};
+
+const ARTISANS = {
+  cgv: {
+    titre: "Conditions générales de vente professionnels",
+    icone: IC.balance,
+    chapeau: "Conditions applicables aux professionnels souscrivant un abonnement ou une option de visibilité sur Portail Habitat. Elles complètent les conditions d'utilisation et prévalent en cas de contradiction pour tout ce qui concerne l'abonnement.",
+    encadre: ["Contrat entre professionnels.", "Le souscripteur agit dans le cadre de son activité professionnelle : les dispositions protectrices du code de la consommation relatives au droit de rétractation ne s'appliquent pas, sauf professionnel de moins de six salariés souscrivant hors de son champ d'activité principale."],
+    sections: [
+      { titre: "1. Objet", paragraphes: ["L'éditeur fournit au professionnel un service d'accès à des demandes de particuliers, une fiche de présentation publiée sur la plateforme et, selon l'offre souscrite, des options de visibilité, des outils de gestion de devis et des statistiques.", "L'éditeur n'est pas mandataire, agent commercial, courtier ni apporteur d'affaires exclusif du professionnel. Il ne garantit aucun volume de demandes, aucun taux de conversion, aucun chiffre d'affaires."] },
+      { titre: "1 bis. Zone de transmission des demandes", paragraphes: ["Le professionnel choisit dans son espace un rayon d'intervention autour de son lieu d'exercice, compris entre 10 et 100 kilomètres. Les demandes, demandes exclusives et appels d'offres qui lui sont transmis ou proposés peuvent concerner tout chantier situé dans ce rayon, mesuré à vol d'oiseau entre l'adresse de son établissement et la commune du chantier.", "En choisissant son rayon, le professionnel reconnaît être en mesure d'intervenir sur l'ensemble de cette zone. Une demande située dans le rayon choisi ne peut donner lieu ni à remboursement, ni à contestation au motif de la distance. Le professionnel peut réduire son rayon à tout moment ; la modification s'applique aux demandes transmises après son enregistrement.", "Les demandes exclusives garanties par l'offre Premium sont comptées dans ce même rayon."] },
+      { titre: "1 ter. Nature des demandes transmises", paragraphes: ["Une demande est l'expression d'un projet par un particulier qui a accepté d'être mis en relation avec des professionnels. Elle constitue une opportunité commerciale et non un engagement de commande : l'éditeur ne garantit ni la conclusion d'un contrat de travaux, ni le montant des travaux, ni la réponse du particulier.", "Certaines demandes proviennent de sites partenaires, notamment de simulateurs d'aides à la rénovation. Le particulier y a consenti expressément à la transmission de ses coordonnées ; la preuve de ce consentement est conservée par l'éditeur. Les montants d'aides éventuellement indiqués sont des estimations indicatives, à confirmer par le particulier auprès des organismes compétents.", "Seuls les motifs prévus à l'article relatif aux contestations (coordonnées erronées, projet inexistant, doublon, demande hors du rayon choisi) ouvrent droit à remboursement ou à crédit."] },
+      { titre: "2. Conditions de référencement", paragraphes: ["Le professionnel garantit disposer, pendant toute la durée du contrat :"], liste: [
+        "d'une immatriculation en cours de validité (SIREN/SIRET, répertoire des métiers le cas échéant) ;",
+        "d'une assurance de responsabilité civile professionnelle et, pour les travaux relevant de l'article 1792 du code civil, d'une assurance décennale couvrant les activités déclarées ;",
+        "des qualifications, certifications ou habilitations exigées par la réglementation pour les prestations proposées (notamment RGE pour les travaux ouvrant droit aux aides, certification pour les diagnostics immobiliers) ;",
+        "d'une situation régulière au regard de ses obligations sociales et fiscales.",
+      ] },
+      { titre: "3. Déclarations et mise à jour", paragraphes: ["Le professionnel s'engage à transmettre les justificatifs à première demande et à signaler sans délai toute modification (perte d'assurance, radiation, retrait de certification, procédure collective). Toute déclaration inexacte ou périmée constitue un manquement grave autorisant la suspension immédiate du référencement, sans indemnité ni remboursement au prorata.", "Les vérifications opérées par l'éditeur sont documentaires et ne transfèrent aucune responsabilité : le professionnel demeure seul responsable de sa conformité réglementaire."] },
+      { titre: "4. Offres, prix et facturation", paragraphes: ["Les offres, leurs contenus et leurs tarifs sont ceux affichés sur la page d'abonnement au jour de la souscription. Les prix sont indiqués hors taxes ; la TVA au taux en vigueur s'y ajoute.", "L'abonnement est payable d'avance, par prélèvement ou carte bancaire, selon la périodicité choisie. La facture est mise à disposition dans l'espace professionnel."] },
+      { titre: "5. Durée, reconduction et résiliation", paragraphes: ["L'abonnement est conclu pour la durée choisie et se reconduit tacitement par périodes de même durée, sauf résiliation notifiée depuis l'espace professionnel ou par écrit au moins trente jours avant l'échéance.", "L'éditeur peut résilier le contrat, de plein droit et sans indemnité, après mise en demeure restée sans effet pendant quinze jours, en cas de non-paiement, de manquement aux conditions de référencement, de fraude, de manœuvre visant à manipuler les avis ou de comportement portant atteinte à l'image de la plateforme ou à la sécurité des utilisateurs."] },
+      { titre: "6. Retard de paiement", paragraphes: ["Tout retard de paiement entraîne de plein droit, sans mise en demeure, des intérêts au taux directeur de la Banque centrale européenne majoré de dix points, ainsi qu'une indemnité forfaitaire de quarante euros pour frais de recouvrement (articles L. 441-10 et D. 441-5 du code de commerce), sans préjudice de la suspension de l'accès au service."] },
+      { titre: "7. Classement et visibilité", paragraphes: ["Les critères de classement des professionnels dans les résultats de recherche sont rendus publics conformément à l'article L. 111-7 du code de la consommation : pertinence de la recherche, distance, avis vérifiés, réactivité, complétude de la fiche, et souscription d'une option de visibilité.", "Les emplacements issus d'une option payante sont systématiquement identifiés comme tels. Aucune option ne permet d'influencer le contenu ou l'affichage des avis, ni de masquer un avis défavorable."] },
+      { titre: "8. Avis et réputation", paragraphes: ["Le professionnel accepte la publication d'avis de clients dans les conditions de la politique d'avis. Il dispose d'un droit de réponse public et d'un droit de signalement. Il s'interdit toute pratique visant à obtenir, rédiger, acheter ou faire rédiger des avis de complaisance, ainsi que toute pression sur un client pour obtenir le retrait d'un avis : de telles pratiques sont susceptibles de constituer une pratique commerciale trompeuse."] },
+      { titre: "9. Contenus publiés par le professionnel", paragraphes: ["Le professionnel garantit détenir les droits sur les textes, logos et photographies qu'il publie, et avoir obtenu les autorisations nécessaires, notamment celles des propriétaires des chantiers photographiés et des personnes identifiables. Il concède à l'éditeur une licence non exclusive, gratuite, pour la durée du contrat, aux seules fins d'affichage et de promotion de sa fiche sur la plateforme et ses supports.", "Il garantit l'éditeur contre toute réclamation d'un tiers relative à ces contenus."] },
+      { titre: "10. Données des particuliers", paragraphes: ["Les coordonnées et informations de projet transmises au professionnel ne peuvent être utilisées que pour répondre à la demande concernée. Toute réutilisation à d'autres fins, toute cession, revente ou constitution de fichier de prospection est interdite et constitue un manquement grave, sans préjudice des sanctions prévues par le RGPD.", "Le professionnel agit en qualité de responsable de traitement distinct pour les données qu'il reçoit et assume les obligations correspondantes."] },
+      { titre: "11. Limitation de responsabilité", paragraphes: ["L'éditeur est tenu à une obligation de moyens. Sa responsabilité éventuelle, toutes causes confondues, est limitée au montant des sommes effectivement versées par le professionnel au titre des douze mois précédant le fait générateur. Sont exclus les dommages indirects, notamment perte de chiffre d'affaires, perte de clientèle, perte de chance ou atteinte à l'image.", "Ces limitations ne s'appliquent pas en cas de dol, de faute lourde ou de dommage corporel."] },
+      { titre: "12. Force majeure, sous-traitance et cession", paragraphes: ["Aucune partie n'est responsable d'un manquement causé par un cas de force majeure au sens de l'article 1218 du code civil. L'éditeur peut recourir à des sous-traitants techniques et céder le contrat dans le cadre d'une opération de restructuration, le professionnel en étant informé."] },
+      { titre: "13. Confidentialité et droit applicable", paragraphes: ["Chaque partie s'engage à préserver la confidentialité des informations non publiques reçues de l'autre. Le contrat est soumis au droit français ; à défaut d'accord amiable dans un délai de trente jours, tout litige relève de la compétence exclusive du tribunal de commerce de [ville du siège], y compris en cas de pluralité de défendeurs ou d'appel en garantie."] },
+    ],
+  },
+  charte: {
+    titre: "Charte de bonne conduite des professionnels",
+    icone: IC.bouclier,
+    chapeau: "Engagements de qualité et de loyauté attendus des professionnels référencés. Leur non-respect peut entraîner un avertissement, une suspension ou un déréférencement.",
+    sections: [
+      { titre: "1. Transparence", paragraphes: ["Décrire son activité et ses qualifications sans exagération, n'afficher que des labels réellement détenus et des réalisations dont on est l'auteur, remettre un devis écrit détaillé, daté, mentionnant les assurances, les délais et les conditions de paiement avant tout commencement d'exécution."] },
+      { titre: "2. Réactivité", paragraphes: ["Répondre aux demandes reçues dans le délai annoncé, ou les décliner explicitement afin que le particulier puisse se tourner vers un autre professionnel. Ne pas accepter une demande que l'on n'a ni l'intention ni la capacité de traiter."] },
+      { titre: "3. Loyauté des prix", paragraphes: ["Ne pas pratiquer de prix d'appel, annoncer toute révision avant exécution, ne réclamer aucun acompte disproportionné, ne demander aucun paiement en espèces sans facture ni virement vers un compte personnel non identifié."] },
+      { titre: "4. Respect des personnes et des lieux", paragraphes: ["Respecter les horaires convenus, la propreté du chantier, la sécurité des occupants et la tranquillité du voisinage. Aucune sollicitation commerciale abusive, aucune pression pour signer, aucune démarche discriminatoire."] },
+      { titre: "5. Intégrité des avis", paragraphes: ["S'interdire tout avis de complaisance, toute contrepartie contre avis positif et toute pression pour obtenir la suppression d'un avis. Répondre publiquement et sereinement, y compris à un avis défavorable."] },
+      { titre: "6. Sanctions graduées", paragraphes: ["Un premier manquement donne lieu à un rappel écrit. La réitération ou un manquement grave (défaut d'assurance, fraude, mise en danger, manipulation d'avis, revente de données) entraîne la suspension immédiate du référencement, puis le déréférencement, sans remboursement de l'abonnement en cours."] },
+    ],
+  },
+  securitePro: {
+    titre: "Sécurité du compte professionnel",
+    icone: IC.serveur,
+    chapeau: "Mesures spécifiques aux comptes professionnels : accès aux demandes, documents d'entreprise, moyens de paiement et prévention de la fraude.",
+    sections: [
+      { titre: "1. Accès et authentification", paragraphes: ["Chaque collaborateur doit disposer de son propre identifiant ; les comptes partagés sont interdits. La double authentification est obligatoire pour toute action sensible : modification des coordonnées bancaires, changement d'adresse email, export de données.", "Les sessions inactives expirent automatiquement et les connexions depuis un nouvel appareil déclenchent une notification."] },
+      { titre: "2. Documents d'entreprise", paragraphes: ["Les attestations d'assurance, certifications et pièces d'identité transmises lors de la vérification sont stockées chiffrées, dans un espace distinct, accessibles uniquement aux personnes habilitées à la vérification, et supprimées à l'expiration de leur durée de conservation."] },
+      { titre: "3. Moyens de paiement", paragraphes: ["Les coordonnées bancaires sont collectées et conservées par un prestataire de paiement agréé conforme PCI-DSS. Aucun salarié de l'éditeur n'y a accès. Toute demande de modification est confirmée par un second canal."] },
+      { titre: "4. Prévention de la fraude et de l'usurpation", paragraphes: ["L'éditeur surveille les comportements anormaux : volume inhabituel de consultations de demandes, tentatives d'extraction de coordonnées, création de fiches multiples pour une même entreprise. Ces pratiques entraînent le blocage du compte.", "L'éditeur ne demande jamais de mot de passe ni de virement par téléphone ou email. Toute sollicitation de ce type doit être signalée à [email sécurité]."] },
+      { titre: "5. Obligations du professionnel", paragraphes: ["Le professionnel est responsable de la confidentialité de ses identifiants et des actes accomplis depuis son compte. Il s'engage à retirer sans délai les accès des collaborateurs quittant l'entreprise, à protéger les données des particuliers reçues et à notifier l'éditeur de tout incident de sécurité affectant ces données dans les 24 heures."] },
+    ],
+  },
+};
+
+const ORDRE_PART = ["cgu", "avis", "mentions", "confidentialite", "cookies", "securite"];
+const ORDRE_PRO = ["cgv", "charte", "mentions", "confidentialite", "securitePro", "cookies"];
+const DOCS = Object.assign({}, COMMUN, PARTICULIERS, ARTISANS);
+
+class Component extends DCLogic {
+  state = { public: "part", doc: "cgu" };
+
+  componentDidMount() {
+    const q = new URLSearchParams(location.search);
+    const pub = q.get("public") === "pro" ? "pro" : q.get("public") === "part" ? "part" : null;
+    const alias = { cgu: "cgu", cgv: "cgv", avis: "avis", mentions: "mentions", confidentialite: "confidentialite",
+      cookies: "cookies", securite: "securite", charte: "charte", "securite-pro": "securitePro", securitePro: "securitePro" };
+    const doc = alias[q.get("doc")] || null;
+    const p = {};
+    if (pub) p.public = pub;
+    if (doc) {
+      p.doc = doc;
+      if (!pub) p.public = ORDRE_PRO.indexOf(doc) > -1 && ORDRE_PART.indexOf(doc) === -1 ? "pro" : "part";
+    }
+    if (Object.keys(p).length) this.setState(p);
+  }
+
+  ordre() { return this.state.public === "part" ? ORDRE_PART : ORDRE_PRO; }
+
+  renderVals() {
+    const s = this.state;
+    const ordre = this.ordre();
+    const id = ordre.indexOf(s.doc) > -1 ? s.doc : ordre[0];
+    const doc = DOCS[id];
+    const i = ordre.indexOf(id);
+    const pro = s.public === "pro";
+    const teinte = pro ? "var(--pro)" : "var(--color-accent)";
+    const teinte100 = pro ? "var(--pro-100)" : "var(--color-accent-100)";
+    const teinte700 = pro ? "var(--pro-700)" : "var(--color-accent-800)";
+
+    const aller = (x) => { this.setState({ doc: x }); window.scrollTo(0, 0); };
+
+    return {
+      dateVersion: "22 septembre 2026",
+      publics: [{ v: "part", label: "Particuliers" }, { v: "pro", label: "Artisans et professionnels" }].map((p) => {
+        const actif = s.public === p.v;
+        const t = p.v === "pro" ? "var(--pro)" : "var(--color-accent)";
+        return { label: p.label, actif,
+          bg: actif ? t : "#fff", bd: actif ? t : "var(--color-neutral-400)", fg: actif ? "#fff" : "var(--color-neutral-800)",
+          choisir: () => this.setState({ public: p.v, doc: (p.v === "part" ? ORDRE_PART : ORDRE_PRO)[0] }) };
+      }),
+      titreSommaire: pro ? "Documents professionnels" : "Documents particuliers",
+      encartBg: teinte100,
+      badgeTexte: pro ? "Professionnels" : "Particuliers",
+      badgeBg: teinte100, badgeFg: teinte700,
+
+      sommaire: ordre.map((x) => {
+        const actif = x === id;
+        return { titre: DOCS[x].titre, icone: DOCS[x].icone, actif,
+          bg: actif ? teinte100 : "#fff", bd: actif ? teinte : "var(--color-divider)",
+          fg: actif ? teinte700 : "var(--color-neutral-800)",
+          choisir: () => aller(x) };
+      }),
+
+      docTitre: doc.titre, docChapeau: doc.chapeau,
+      aEncadre: !!doc.encadre,
+      encadreTitre: doc.encadre ? doc.encadre[0] : "",
+      encadreTexte: doc.encadre ? doc.encadre[1] : "",
+      sections: doc.sections.map((sec) => ({
+        titre: sec.titre, paragraphes: sec.paragraphes,
+        aListe: !!sec.liste, liste: sec.liste || [],
+        aTableau: !!sec.tableau,
+        entetes: sec.tableau ? sec.tableau.entetes : [],
+        lignes: sec.tableau ? sec.tableau.lignes.map((r) => ({ cells: r })) : [],
+      })),
+
+      aPrecedent: i > 0, labelPrecedent: i > 0 ? DOCS[ordre[i - 1]].titre : "",
+      precedent: () => aller(ordre[i - 1]),
+      aSuivant: i < ordre.length - 1, labelSuivant: i < ordre.length - 1 ? DOCS[ordre[i + 1]].titre : "",
+      suivant: () => aller(ordre[i + 1]),
+    };
+  }
+}
+</script>
+</body>
+</html>

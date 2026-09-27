@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+/* Accent réglé sur l'orange de la marque Portail Habitat (remplace le cyan du système) */
+:root {
+  --color-accent: #e05a10;
+  --color-accent-100: #fff2ea;
+  --color-accent-200: #ffe0cd;
+  --color-accent-300: #ffc19c;
+  --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f;
+  --color-accent-600: #c94f0a;
+  --color-accent-700: #a33f05;
+  --color-accent-800: #7a2f04;
+  --color-accent-900: #2a1a12;
+  /* Typo : sans-serif lisible et professionnelle plutôt que le serif du système */
+  --font-heading: "Source Sans 3", system-ui, sans-serif;
+  --font-heading-weight: 700;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+body, h1, h2, h3, h4, h5, h6, .card-title, .dialog-title, blockquote {
+  font-family: "Source Sans 3", system-ui, sans-serif;
+}
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active,
+.nav a.btn-primary, .nav a.btn-primary:hover { color: #fff; }
+.input, select.input, textarea.input {
+  border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400);
+}
+.input:focus, select.input:focus, textarea.input:focus {
+  border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px;
+}
+.tag { border-radius: 999px; }
+html, body, #dc-root { background: #fff; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; text-wrap: pretty; background: var(--color-bg); }
+a { color: var(--color-accent); }
+a:hover { color: var(--color-accent-700); }
+</style>
+<script src="recherche-projets.js"></script>
+<script src="estimation-demandes.js"></script>
+</helmet>
+
+<div style="width:100%">
+
+  <div style="position:sticky;top:0;z-index:50;background:var(--color-accent);color:#fff;font-size:14px;text-align:center;padding:10px 20px">Des particuliers vous contactent gratuitement dans votre zone · Inscription gratuite · 0 % de commission</div>
+
+  <nav class="nav" style="max-width:1240px;margin:0 auto;padding:14px clamp(16px,4vw,48px);gap:clamp(10px,2vw,24px);flex-wrap:nowrap;background:#fff;align-items:center">
+    <span class="nav-brand" style="letter-spacing:-0.01em;display:flex;align-items:center;gap:12px">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <span style="display:flex;flex-direction:column;line-height:1.02">
+        <span style="font-size:16px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+        <span style="font-size:16px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+      </span>
+    </span>
+    <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+    <span style="flex:1"></span>
+    <a href="Accueil Particuliers.dc.html" style="font-size:15px">Je suis un particulier</a>
+    <a href="Connexion.dc.html" class="btn btn-secondary" style="min-height:40px;background:#fff;display:inline-flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"></path></svg>Espace pro</a>
+    <a href="#inscription" class="btn btn-primary" style="min-height:40px">Inscription gratuite</a>
+    </sc-if>
+    <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+    <span style="flex:1"></span>
+    <a href="#inscription" class="btn btn-primary" style="min-height:44px;font-size:15px;padding:0 14px">S'inscrire</a>
+    <button type="button" onClick="{{ ouvrirMenu }}" aria-label="Ouvrir le menu" aria-expanded="{{ menuAria }}" aria-controls="menu-mobile" style="width:44px;height:44px;border-radius:6px;border:0;background:var(--color-neutral-100);color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+    </sc-if>
+  </nav>
+  <div onClick="{{ fermerMenu }}" aria-hidden="true" style="position:fixed;inset:0;z-index:90;background:rgba(32,30,29,.42);opacity:{{ voileOp }};pointer-events:{{ voilePe }};transition:opacity .25s ease"></div>
+  <aside id="menu-mobile" aria-label="Menu" aria-hidden="{{ menuCache }}" style="position:fixed;top:0;right:0;bottom:0;z-index:100;width:min(86vw,360px);background:#fff;box-shadow:var(--shadow-lg);transform:translateX({{ menuX }});visibility:{{ menuVis }};transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility .3s;display:flex;flex-direction:column;padding:18px 20px 24px;gap:6px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 14px">
+      <span style="font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+      <button type="button" onClick="{{ fermerMenu }}" aria-label="Fermer le menu" style="width:44px;height:44px;border-radius:6px;border:0;background:var(--color-neutral-100);color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+    </div>
+    <sc-for list="{{ menuLiens }}" as="l" hint-placeholder-count="5">
+      <a href="{{ l.href }}" onClick="{{ fermerMenu }}" style="display:flex;align-items:center;min-height:52px;font-size:19px;font-weight:600;color:var(--color-text);text-decoration:none">{{ l.label }}</a>
+    </sc-for>
+    <span style="flex:1"></span>
+    <a href="#inscription" onClick="{{ fermerMenu }}" class="btn btn-primary btn-block" style="min-height:52px;font-size:17px">Inscription gratuite</a>
+    <a href="Connexion.dc.html" class="btn btn-secondary btn-block" style="min-height:52px;font-size:17px;background:#fff">Espace pro · Se connecter</a>
+  </aside>
+
+  <section style="max-width:1240px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(20px,4vw,48px) clamp(48px,6vw,80px);display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:40px clamp(28px,4vw,64px);align-items:start">
+    <div>
+      <sc-if value="{{ aMetierCible }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0 0 12px;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-accent-700)">{{ metierCible }} · mise en relation avec des particuliers</p>
+      </sc-if>
+      <h1 style="font-size:clamp(34px,4.6vw,56px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 20px">Recevez les <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">demandes</span> de travaux de <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">votre secteur</span>. Inscription <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">gratuite</span>.</h1>
+      <p style="font-size:18px;line-height:29px;max-width:56ch;margin:0 0 24px">Des particuliers déposent chaque jour leur projet près de chez vous. Créez votre fiche, choisissez vos métiers et vos communes, et répondez aux demandes qui vous intéressent. Pas de commission, pas d'engagement.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 12px;margin:0 0 24px">
+        <span class="tag tag-accent" style="font-size:13px;padding:6px 12px;border:1px solid var(--color-accent-300)">0 € à l'inscription</span>
+        <span class="tag tag-accent" style="font-size:13px;padding:6px 12px;border:1px solid var(--color-accent-300)">0 % de commission</span>
+        <span class="tag tag-accent" style="font-size:13px;padding:6px 12px;border:1px solid var(--color-accent-300)">Sans engagement</span>
+        <span class="tag tag-accent" style="font-size:13px;padding:6px 12px;border:1px solid var(--color-accent-300)">Visible en 3 minutes</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="display:flex">
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;border:2px solid var(--color-bg)">JB</span>
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;margin-left:-10px;border:2px solid var(--color-bg)">SM</span>
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;margin-left:-10px;border:2px solid var(--color-bg)">MD</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <span style="display:flex;align-items:center;gap:8px;font-size:15px;line-height:22px">
+            <span aria-hidden="true" style="color:#e8a33d;letter-spacing:1px;font-size:15px">★★★★★</span>
+            <strong>4,8/5</strong>
+            <span style="color:var(--color-neutral-700)">sur 2 000+ avis</span>
+          </span>
+          <span style="font-size:15px;line-height:22px;color:var(--color-neutral-800)"><strong>3 200 artisans</strong> développent déjà leur activité avec nous</span>
+        </div>
+      </div>
+      <div style="position:relative;aspect-ratio:21/9;margin-top:36px">
+        <image-slot id="v2-hero" shape="rounded" radius="16" src="https://commons.wikimedia.org/wiki/Special:FilePath/FEMA_-_44633_-_Roofer_working_on_a_home_in_Oklahoma.jpg?width=1600" placeholder="Photo d'artisan sur chantier (plombier, couvreur, électricien)"></image-slot>
+      </div>
+    </div>
+
+    <div id="inscription" style="scroll-margin-top:70px;background:#fff;border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:clamp(20px,3vw,28px);box-shadow:var(--shadow-md);position:sticky;top:64px">
+      <sc-if value="{{ envoye }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 0">
+          <h2 style="font-size:24px;margin:0 0 12px">C'est fait, votre compte est créé.</h2>
+          <p style="font-size:15px;line-height:24px;margin:0 0 20px">Vous recevez un lien d'activation par email. Envoyez votre Kbis et votre attestation décennale depuis votre espace : votre fiche est en ligne dès la première connexion et les demandes de votre zone arrivent aussitôt.</p>
+          <button type="button" class="btn btn-secondary" onClick="{{ recommencer }}">Inscrire une autre entreprise</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ formulaireVisible }}" hint-placeholder-val="{{ true }}">
+        <form style="display:grid;gap:14px" onSubmit="{{ soumettre }}">
+          <div>
+            <h2 style="font-size:23px;margin:0 0 6px">Créer mon compte gratuit</h2>
+            <p style="font-size: 14px; line-height: 21px; color: var(--color-neutral-800); margin: 0 0 12px; display: none">4 champs, 1 minute. Sans carte bancaire.</p>
+            <p style="display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--color-accent-100); font-size: 14px; line-height: 20px; color: var(--color-accent-800); margin-top: 10px; margin-bottom: 0px">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent);display:block;flex:none"></span>
+              <span><strong>{{ nbDemandes }} demandes</strong> {{ libelleSource }} {{ zoneLabel }} ce mois-ci</span>
+            </p>
+          </div>
+          <div class="field"><label for="v2-nom">Nom et prénom</label><input class="input" id="v2-nom" type="text" placeholder="Julien Bertrand" required="required"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="field"><label for="v2-tel">Téléphone</label><input class="input" id="v2-tel" type="tel" placeholder="06 12 34 56 78" required="required"></div>
+            <div class="field"><label for="v2-cp">Code postal</label><input class="input" id="v2-cp" type="text" inputmode="numeric" placeholder="33000" required="required" onInput="{{ majCp }}"></div>
+          </div>
+          <div class="field"><label for="v2-metier">Métier principal</label>
+            <select class="input" id="v2-metier" required="required" value="{{ mId }}" onChange="{{ choisirPrincipal }}" aria-invalid="{{ mErreurAria }}">
+              <option value="">Choisissez votre métier</option>
+              <sc-for list="{{ groupesMetiers }}" as="g" hint-placeholder-count="0">
+                <optgroup label="{{ g.nom }}">
+                  <sc-for list="{{ g.metiers }}" as="m" hint-placeholder-count="0">
+                    <option value="{{ m.id }}">{{ m.nom }}</option>
+                  </sc-for>
+                </optgroup>
+              </sc-for>
+            </select>
+            <sc-if value="{{ mErreur }}" hint-placeholder-val="{{ false }}">
+              <span role="alert" style="font-size:13px;color:#b42318;font-weight:600;margin-top:4px">Choisissez votre métier dans la liste.</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ mChoisi }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:12px;background:var(--color-accent-100)">
+              <div class="field" style="margin:0"><label for="v2-autre">Autres métiers <span style="font-weight:400;color:var(--color-neutral-700)">(facultatif, jusqu'à 4)</span></label>
+                <sc-if value="{{ peutAjouter }}" hint-placeholder-val="{{ true }}">
+                  <select class="input" id="v2-autre" value="" onChange="{{ ajouterMetier }}" style="background:#fff">
+                    <option value="">Ajouter un métier…</option>
+                    <sc-for list="{{ groupesAutres }}" as="g" hint-placeholder-count="0">
+                      <optgroup label="{{ g.nom }}">
+                        <sc-for list="{{ g.metiers }}" as="m" hint-placeholder-count="0">
+                          <option value="{{ m.id }}">{{ m.nom }}</option>
+                        </sc-for>
+                      </optgroup>
+                    </sc-for>
+                  </select>
+                </sc-if>
+              </div>
+              <sc-if value="{{ aAutres }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <sc-for list="{{ autresChoisis }}" as="mc" hint-placeholder-count="1">
+                    <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 11px;border-radius:999px;background:var(--color-accent);color:#fff;font-size:13.5px;font-weight:600">{{ mc.nom }}
+                      <button type="button" onClick="{{ mc.retirer }}" aria-label="{{ mc.aria }}" style="width:22px;height:22px;border-radius:99px;border:0;background:rgba(255,255,255,.25);color:#fff;cursor:pointer;font-size:13px;line-height:1">×</button>
+                    </span>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-size:14px;font-weight:700">Chantiers que vous acceptez <span style="font-weight:500;color:var(--color-neutral-700)">({{ nbActives }} sur {{ nbTotal }})</span></span>
+                <span style="font-size:13px;line-height:19px;color:var(--color-neutral-800);margin-top:-4px">Décochez ce que vous ne faites pas : vous ne recevrez que ces demandes.</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <sc-for list="{{ chantiers }}" as="pm" hint-placeholder-count="6">
+                    <button type="button" role="switch" aria-checked="{{ pm.on }}" onClick="{{ pm.toggle }}" style="border-radius:999px;padding:6px 11px;min-height:34px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid {{ pm.bd }};background:{{ pm.bg }};color:{{ pm.fg }}">{{ pm.mark }} {{ pm.libelle }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:20px;cursor:pointer">
+            <input type="checkbox" required="required" style="width:16px;height:16px;margin-top:2px;accent-color:var(--color-accent)">
+            <span>J'accepte les <a href="Pages Legales.dc.html?public=pro&amp;doc=cgv">conditions générales de vente</a>, la <a href="Pages Legales.dc.html?public=pro&amp;doc=charte">charte de bonne conduite</a> et la <a href="Pages Legales.dc.html?public=pro&amp;doc=confidentialite">politique de confidentialité</a>.</span>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block" style="min-height:46px;font-size:16px">{{ libelleCta }}</button>
+          <p style="margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:19px;color:var(--color-neutral-800)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6zM9 12l2 2 4-4"></path></svg><span>Réservé aux entreprises immatriculées et assurées : SIREN et attestation décennale vérifiés pour chaque fiche.</span></p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;font-size:13px;color:var(--color-neutral-800)">
+            <li style="display:flex;align-items:center;gap:6px"><span style="color:var(--color-accent);font-weight:700">✓</span>0 € à l'inscription</li>
+            <li style="display:flex;align-items:center;gap:6px"><span style="color:var(--color-accent);font-weight:700">✓</span>Sans engagement</li>
+            <li style="display:flex;align-items:center;gap:6px"><span style="color:var(--color-accent);font-weight:700">✓</span>0 % de commission</li>
+          </ul>
+        </form>
+      </sc-if>
+    </div>
+  </section>
+
+  <section id="demandes" style="background:var(--color-neutral-100);padding:clamp(48px,6vw,80px) 0;scroll-margin-top:24px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
+      <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0 0 12px">Voilà le type de demandes que vous recevrez</h2>
+      <p style="font-size:17px;line-height:27px;max-width:60ch;margin:0 0 32px;color:var(--color-neutral-800)">Chaque demande indique le chantier, la ville, le budget annoncé et le délai. Vous répondez à celles qui vous vont, vous ignorez les autres.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px">
+        <article class="card elev-sm" style="background:var(--color-bg);padding:0;overflow:hidden">
+          <div style="aspect-ratio:4/3"><image-slot id="v2-d1" shape="rect" radius="0" placeholder="Photo salle de bain"></image-slot></div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px">
+            <span class="tag tag-accent-2" style="align-self:flex-start">Nouveau · il y a 2 h</span>
+            <h3 style="font-size:19px;margin:0">Rénovation complète salle de bain</h3>
+            <p style="margin:0;font-size:14px;line-height:22px;color:var(--color-neutral-800)">Bordeaux (33200) · Budget 6 000 – 8 000 € · Démarrage sous 1 mois</p>
+          </div>
+        </article>
+        <article class="card elev-sm" style="background:var(--color-bg);padding:0;overflow:hidden">
+          <div style="aspect-ratio:4/3"><image-slot id="v2-d2" shape="rect" radius="0" placeholder="Photo combles / isolation"></image-slot></div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px">
+            <span class="tag tag-neutral" style="align-self:flex-start">Il y a 6 h</span>
+            <h3 style="font-size:19px;margin:0">Isolation des combles perdus</h3>
+            <p style="margin:0;font-size:14px;line-height:22px;color:var(--color-neutral-800)">Mérignac (33700) · Budget 4 000 – 6 500 € · Sous 2 mois</p>
+          </div>
+        </article>
+        <article class="card elev-sm" style="background:var(--color-bg);padding:0;overflow:hidden">
+          <div style="aspect-ratio:4/3"><image-slot id="v2-d3" shape="rect" radius="0" placeholder="Photo toiture"></image-slot></div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px">
+            <span class="tag tag-accent-2" style="align-self:flex-start">Urgent</span>
+            <h3 style="font-size:19px;margin:0">Réfection de toiture après fuite</h3>
+            <p style="margin:0;font-size:14px;line-height:22px;color:var(--color-neutral-800)">Pessac (33600) · Budget 9 000 – 14 000 € · Dès que possible</p>
+          </div>
+        </article>
+        <article class="card elev-sm" style="background:var(--color-bg);padding:0;overflow:hidden">
+          <div style="aspect-ratio:4/3"><image-slot id="v2-d4" shape="rect" radius="0" placeholder="Photo cuisine"></image-slot></div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px">
+            <span class="tag tag-neutral" style="align-self:flex-start">Hier</span>
+            <h3 style="font-size:19px;margin:0">Pose d'une cuisine complète</h3>
+            <p style="margin:0;font-size:14px;line-height:22px;color:var(--color-neutral-800)">Talence (33400) · Budget 7 000 – 10 000 € · 1 à 3 mois</p>
+          </div>
+        </article>
+      </div>
+      <p style="font-size:14px;color:var(--color-neutral-800);margin:20px 0 0">Exemples de projets déposés récemment sur Portail Habitat.</p>
+    </div>
+  </section>
+
+    <section style="background:var(--color-neutral-100);padding:0 0 clamp(48px,6vw,80px)">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:0 0 36px">
+      <div>
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px">En 3 minutes chrono</span>
+        <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0">Comment ça marche</h2>
+      </div>
+      <a href="#inscription" class="btn btn-primary" style="min-height:44px;font-size:16px">Je commence maintenant</a>
+    </div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px">
+      <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:26px 24px;transition:transform .18s ease, box-shadow .18s ease" data-hov="1" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700">1</span>
+        </div>
+        <h3 style="font-size:21px;margin:0 0 8px">Vous créez votre fiche</h3>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:0 0 12px">Métiers, communes, photos de réalisations, certifications. Gratuit, sans carte bancaire.</p>
+        <p style="margin:0;font-size:13px;font-weight:600;color:var(--color-accent-700)">≈ 3 minutes</p>
+      </div>
+      <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:26px 24px;transition:transform .18s ease, box-shadow .18s ease" data-hov="1" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700">2</span>
+        </div>
+        <h3 style="font-size:21px;margin:0 0 8px">Vous recevez les demandes</h3>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:0 0 12px">Les particuliers vous contactent depuis votre fiche, et les projets de votre zone arrivent dans votre espace.</p>
+        <p style="margin:0;font-size:13px;font-weight:600;color:var(--color-accent-700)">Dès le premier jour</p>
+      </div>
+      <div style="background:#fff;border:1px solid var(--color-divider);border-radius:14px;padding:26px 24px;transition:transform .18s ease, box-shadow .18s ease" data-hov="1" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700">3</span>
+        </div>
+        <h3 style="font-size:21px;margin:0 0 8px">Vous répondez et vous signez</h3>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:0 0 12px">Notification sur l'appli, un appel ou un message, et le devis part — depuis le chantier s'il le faut.</p>
+        <p style="margin:0;font-size:13px;font-weight:600;color:var(--color-accent-700)">Mise en relation directe</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="espace" style="padding:clamp(48px,6vw,80px) 0;scroll-margin-top:24px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px clamp(28px,4vw,64px);align-items:center">
+      <div>
+        <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0 0 16px">Votre espace artisan : tout est au même endroit</h2>
+        <p style="font-size:17px;line-height:27px;color:var(--color-neutral-800);margin:0 0 24px;max-width:50ch">Pas besoin d'un logiciel de plus. Vos demandes, vos relances, vos devis et vos avis clients sont dans le même espace, accessible depuis l'ordinateur ou le téléphone.</p>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:18px">
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:10px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+            </span>
+            <span><strong style="font-size:16px">Un CRM simple</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Chaque demande devient une fiche à suivre : à rappeler, devis envoyé, chantier signé.</span></span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:10px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>
+            </span>
+            <span><strong style="font-size:16px">Vos secteurs et vos métiers</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Vous ne recevez que ce qui correspond à vos communes et à vos spécialités.</span></span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:10px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6l-6 4H4z"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path><path d="M19.5 7a7.5 7.5 0 0 1 0 10"></path></svg>
+            </span>
+            <span><strong style="font-size:16px">Les appels d'offres</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Répondez aux projets déposés par les particuliers directement depuis votre espace.</span></span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start">
+            <span style="flex:none;width:40px;height:40px;border-radius:10px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8L12 3.8z"></path></svg>
+            </span>
+            <span><strong style="font-size:16px">Vos avis clients</strong><br><span style="font-size:15px;line-height:24px;color:var(--color-neutral-800)">Demandez un avis en fin de chantier, répondez publiquement, affichez votre note.</span></span>
+          </li>
+        </ul>
+      </div>
+      <figure style="margin:0">
+        <div style="background:var(--color-bg);border:1px solid var(--color-divider);border-radius:14px;box-shadow:var(--shadow-lg);overflow:hidden">
+          <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--color-divider);background:var(--color-surface)">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--color-neutral-400)"></span>
+            <span style="margin-left:10px;font-size:12px;color:var(--color-neutral-700)">portailhabitat.fr/pro/appels-offres</span>
+          </div>
+          <div style="padding:18px 18px 20px;display:grid;gap:14px;background:#fff">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <strong style="font-size:17px">Appels d'offres · Gironde</strong>
+              <span class="tag tag-accent" style="font-size:12px">Premium : 24 h d'avance</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px">
+              <span style="padding:5px 10px;border-radius:999px;background:var(--color-accent);color:#fff">Tous (12)</span>
+              <span style="padding:5px 10px;border-radius:999px;background:var(--color-surface);color:var(--color-neutral-800)">Couverture</span>
+              <span style="padding:5px 10px;border-radius:999px;background:var(--color-surface);color:var(--color-neutral-800)">Isolation</span>
+              <span style="padding:5px 10px;border-radius:999px;background:var(--color-surface);color:var(--color-neutral-800)">Moins de 30 km</span>
+            </div>
+            <div style="display:grid;gap:10px">
+              <div style="border:1px solid var(--color-accent);background:var(--color-accent-100);border-radius:12px;padding:12px 14px;display:grid;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong style="font-size:15px">Réfection toiture 90 m² · Pessac</strong><span style="font-size:12px;font-weight:600;color:var(--color-accent-700);white-space:nowrap">Visible 24 h avant</span></div>
+                <div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--color-neutral-800)"><span>9 000 – 14 000 € · démarrage urgent</span><span>3 réponses max</span></div>
+                <div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:12px;font-weight:600;background:var(--color-accent);color:#fff;border-radius:8px;padding:6px 12px;white-space:nowrap">Répondre</span><span style="font-size:12px;font-weight:600;border:1px solid var(--color-divider);border-radius:8px;padding:6px 12px;white-space:nowrap">Voir le détail</span></div>
+              </div>
+              <div style="border:1px solid var(--color-divider);border-radius:12px;padding:12px 14px;display:grid;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong style="font-size:15px">Isolation combles perdus · Mérignac</strong><span style="font-size:12px;color:var(--color-neutral-700);white-space:nowrap">Ouvre dans 6 h</span></div>
+                <div style="font-size:13px;color:var(--color-neutral-800)">4 000 – 6 500 € · sous 2 mois</div>
+              </div>
+              <div style="border:1px solid var(--color-divider);border-radius:12px;padding:12px 14px;display:grid;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong style="font-size:15px">Bardage bois maison · Talence</strong><span style="font-size:12px;color:var(--color-neutral-700);white-space:nowrap">Ouvre demain</span></div>
+                <div style="font-size:13px;color:var(--color-neutral-800)">7 000 – 10 000 € · 1 à 3 mois</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption style="margin-top:10px;font-size:13px">L'espace appels d'offres : les projets de votre zone, ouverts 24 h avant pour les comptes Premium.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,80px) clamp(20px,4vw,48px);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px clamp(28px,4vw,64px);align-items:center">
+    <figure style="margin:0">
+      <div style="aspect-ratio:4/3"><image-slot id="v2-fiche" shape="rounded" radius="16" placeholder="Capture d'une fiche artisan avec réalisations et avis"></image-slot></div>
+    </figure>
+    <div>
+      <h2 style="font-size:clamp(26px,3vw,34px);line-height:1.14;margin:0 0 16px">Votre fiche travaille pendant que vous êtes sur le chantier</h2>
+      <p style="font-size:16px;line-height:27px;color:var(--color-neutral-800);margin:0 0 20px;max-width:48ch">Photos de vos réalisations, description de votre savoir-faire, zone d'intervention, garanties et avis clients. Un particulier qui a vu votre travail appelle avec un projet sérieux.</p>
+      <a href="#inscription" class="btn btn-primary" style="min-height:44px;font-size:16px">Créer ma fiche gratuitement</a>
+    </div>
+  </section>
+
+  <section style="background:var(--color-accent-100);padding:clamp(48px,6vw,80px) 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:40px clamp(28px,4vw,64px);align-items:center">
+      <div>
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">Application mobile</span>
+        <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0 0 16px">Une notification dès qu'une demande tombe près de vous</h2>
+        <p style="font-size:17px;line-height:27px;margin:0 0 24px;max-width:48ch;color:var(--color-neutral-800)">Vous voyez la demande, vous appelez le client, vous envoyez le devis — sans redescendre de l'échafaudage. L'appli est incluse, gratuite comme le reste.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="#ios" class="btn" style="min-height:48px;gap:10px;background:#1b1b1d;color:#fff;padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.3 12.8c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.1-.8-2.1-3.6zM14.2 5.8c.6-.7 1-1.7.9-2.8-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.2z"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.85">Télécharger dans l'</span><span style="font-size:15px">App Store</span></span>
+          </a>
+          <a href="#android" class="btn" style="min-height:48px;gap:10px;background:#1b1b1d;color:#fff;padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.6 2.3z" fill="#34c3eb"></path><path d="M16.1 15.6l-3.1-3.1v-.2l3.1-3.1.1.1 3.7 2.1c1.1.6 1.1 1.6 0 2.2l-3.7 2.1-.1-.1z" fill="#fbcd00"></path><path d="M16.2 15.5L13 12.3 3.6 21.7c.4.4 1 .4 1.7.1l10.9-6.3" fill="#ec4b4b"></path><path d="M16.2 9.1L5.3 2.9c-.7-.4-1.3-.3-1.7.1L13 12.3l3.2-3.2z" fill="#42c76a"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.85">Disponible sur</span><span style="font-size:15px">Google Play</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div style="justify-self:center;width:100%;max-width:320px;background:#1b1b1d;border-radius:44px;padding:10px;box-shadow:var(--shadow-lg)">
+        <div style="background:#fff;border-radius:36px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:12px 22px 6px;font-size:13px;font-weight:600">
+            <span>9:41</span>
+            <span style="position:absolute;left:50%;transform:translateX(-50%);top:8px;width:96px;height:22px;background:#1b1b1d;border-radius:12px"></span>
+            <span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid var(--color-neutral-700);border-radius:2px;display:block"></span></span>
+          </div>
+
+          <div style="padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div>
+              <p style="margin:0;font-size:12px;color:var(--color-neutral-700)">Bonjour Julien</p>
+              <p style="margin:0;font-size:17px;font-weight:700">Mes demandes</p>
+            </div>
+            <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+          </div>
+
+          <div style="margin:4px 14px 0;padding:14px;border-radius:14px;background:var(--color-accent);color:#fff">
+            <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.9">Nouvelle demande · il y a 4 min</p>
+            <p style="margin:0 0 2px;font-size:16px;font-weight:700">Réfection toiture, 90 m²</p>
+            <p style="margin:0;font-size:13px;opacity:0.95">Pessac (33600) · 9 000 – 14 000 € · Urgent</p>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span style="flex:1;text-align:center;background:#fff;color:var(--color-accent-700);border-radius:8px;padding:8px 0;font-size:13px;font-weight:600">Répondre</span>
+              <span style="flex:1;text-align:center;border:1px solid rgba(255,255,255,0.7);border-radius:8px;padding:8px 0;font-size:13px;font-weight:600">Ignorer</span>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;padding:14px 14px 4px">
+            <div style="flex:1;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:10px 12px">
+              <p style="margin:0;font-size:20px;font-weight:700">12</p>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-700)">Demandes ce mois</p>
+            </div>
+            <div style="flex:1;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:10px 12px">
+              <p style="margin:0;font-size:20px;font-weight:700">4</p>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-700)">Devis en attente</p>
+            </div>
+          </div>
+
+          <div style="padding:10px 14px 0;display:grid;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px">
+              <span>Isolation combles · Mérignac</span><span style="color:var(--color-accent-700);font-weight:600">À rappeler</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px">
+              <span>Salle de bain · Bordeaux</span><span style="color:var(--color-neutral-700)">Devis envoyé</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:10px 24px 12px;display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider)">
+            <span style="color:var(--color-accent-700);font-weight:600">Demandes</span><span>Planning</span><span>Messages</span><span>Ma fiche</span>
+          </div>
+          <div style="display:flex;justify-content:center;padding-bottom:8px"><span style="width:110px;height:4px;border-radius:2px;background:var(--color-neutral-400)"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="offres" style="background:var(--color-neutral-100);padding:clamp(56px,7vw,96px) 0;scroll-margin-top:24px">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;margin:0 0 40px">
+      <div style="max-width:620px">
+        <p style="margin:0 0 10px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-accent-700)">Tarifs</p>
+        <h2 style="font-size:clamp(30px,3.6vw,44px);line-height:1.08;margin:0 0 14px;text-wrap:balance">Commencez gratuitement, <span style="font-style:italic;color:var(--color-accent)">accélérez</span> quand vous voulez.</h2>
+        <p style="font-size:17px;line-height:27px;margin:0;color:var(--color-neutral-800)">0 % de commission dans toutes les formules. Vous changez de formule en un clic depuis votre espace.</p>
+      </div>
+      <div role="radiogroup" aria-label="Facturation" style="position:relative;display:flex;gap:4px;padding:4px;background:#fff;border-radius:999px;box-shadow:var(--shadow-sm)">
+        <span aria-hidden="true" style="position:absolute;top:4px;bottom:4px;left:0;border-radius:999px;background:var(--color-accent);box-shadow:var(--shadow-sm);width:{{ pillW }}px;transform:translateX({{ pillX }}px);transition:transform .35s cubic-bezier(.3,1.3,.5,1),width .35s cubic-bezier(.3,1.3,.5,1)"></span>
+        <button type="button" ref="{{ refAnnuel }}" role="radio" aria-checked="{{ annuelAria }}" onClick="{{ choisirAnnuel }}" style="position:relative;z-index:1;transition:color .25s ease;border:0;border-radius:999px;padding:10px 18px;min-height:44px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;background:transparent;color:{{ fgAnnuel }};display:flex;align-items:center;gap:8px">Annuel <span style="flex:none;white-space:nowrap;transition:background .25s ease;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:{{ bgBadge }};color:{{ fgBadge }}">jusqu'à −48 %</span></button>
+        <button type="button" ref="{{ refMensuel }}" role="radio" aria-checked="{{ mensuelAria }}" onClick="{{ choisirMensuel }}" style="position:relative;z-index:1;transition:color .25s ease;border:0;border-radius:999px;padding:10px 18px;min-height:44px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;background:transparent;color:{{ fgMensuel }}">Mensuel</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:24px;align-items:stretch">
+      <div style="background:#fff;border-radius:6px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;padding:28px 24px 24px;position:relative">
+        
+        <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-neutral-700)">Pour démarrer</p>
+        <h3 style="font-size:28px;line-height:1.1;margin:0 0 8px">Gratuit</h3>
+        <p style="margin:0 0 20px;font-size:15.5px;line-height:23px;color:var(--color-neutral-800);text-wrap:pretty">Votre fiche en ligne et les demandes de votre zone, sans rien payer.</p>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:44px;line-height:1;font-weight:700;letter-spacing:-0.02em">0 €</span><span style="font-size:15px;color:var(--color-neutral-800)">HT / mois</span></div>
+        <p style="margin:8px 0 22px;font-size:14px;line-height:20px;color:var(--color-neutral-800);min-height:40px">Pour toujours. Sans carte bancaire, sans engagement.</p>
+        <a href="#inscription" class="btn btn-secondary btn-block" style="min-height:50px;font-size:16px;margin:0 0 24px;background:#fff">Créer mon compte gratuit</a>
+        <p style="margin:0 0 12px;font-size:14px;font-weight:700">Inclus :</p>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:12px;font-size:15px;line-height:22px"><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Fiche artisan</strong> en ligne dans votre zone</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Demandes illimitées</strong> reçues depuis votre fiche</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span>CRM, avis clients et application mobile</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Appels d'offres</strong> à l'unité</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>0 % de commission</strong></span></li></ul>
+      </div>
+      <div style="background:#fff;border-radius:6px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;padding:28px 24px 24px;position:relative">
+        
+        <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-neutral-700)">Pour être vu en premier</p>
+        <h3 style="font-size:28px;line-height:1.1;margin:0 0 8px">Visibilité</h3>
+        <p style="margin:0 0 20px;font-size:15.5px;line-height:23px;color:var(--color-neutral-800);text-wrap:pretty">Votre fiche mise en avant auprès des particuliers de votre secteur géographique.</p>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><sc-if value="{{ annuelOn }}" hint-placeholder-val="{{ true }}"><span style="font-size:22px;line-height:1;font-weight:600;color:var(--color-neutral-600);text-decoration:line-through;text-decoration-thickness:2px" aria-label="au lieu de {{ barreVis }}">{{ barreVis }}</span></sc-if><span style="font-size:44px;line-height:1;font-weight:700;letter-spacing:-0.02em">{{ prixVis }}</span><span style="font-size:15px;color:var(--color-neutral-800)">{{ uniteVis }}</span></div>
+        <p style="margin:8px 0 22px;font-size:14px;line-height:20px;color:var(--color-neutral-800);min-height:40px">{{ detailVis }}</p>
+        <a href="{{ lienVis }}" class="btn btn-secondary btn-block" style="min-height:50px;font-size:16px;margin:0 0 24px;background:#fff">Activer la Visibilité</a>
+        <p style="margin:0 0 12px;font-size:14px;font-weight:700">Tout le Gratuit, plus :</p>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:12px;font-size:15px;line-height:22px"><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Mise en avant</strong> dans l'annuaire de votre secteur</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Téléphone affiché</strong> sur votre fiche</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Badge Visibilité</strong> dans les résultats</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Statistiques</strong> : vues, clics, appels</span></li></ul>
+      </div>
+      <div style="background:#fff;border-radius:6px;box-shadow:var(--shadow-md);outline:2px solid var(--color-accent);display:flex;flex-direction:column;padding:28px 24px 24px;position:relative">
+        <span class="tag tag-accent" style="position:absolute;top:-13px;left:24px;background:var(--color-accent);color:#fff;font-weight:700">Le plus choisi</span>
+        <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--color-accent-700)">Pour remplir votre planning</p>
+        <h3 style="font-size:28px;line-height:1.1;margin:0 0 8px">Premium</h3>
+        <p style="margin:0 0 20px;font-size:15.5px;line-height:23px;color:var(--color-neutral-800);text-wrap:pretty">Des clients rien que pour vous chaque mois, et la priorité sur les appels d'offres.</p>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><sc-if value="{{ annuelOn }}" hint-placeholder-val="{{ true }}"><span style="font-size:22px;line-height:1;font-weight:600;color:var(--color-neutral-600);text-decoration:line-through;text-decoration-thickness:2px" aria-label="au lieu de {{ barrePrem }}">{{ barrePrem }}</span></sc-if><span style="font-size:44px;line-height:1;font-weight:700;letter-spacing:-0.02em">{{ prixPrem }}</span><span style="font-size:15px;color:var(--color-neutral-800)">{{ uniteVis }}</span></div>
+        <p style="margin:8px 0 22px;font-size:14px;line-height:20px;color:var(--color-neutral-800);min-height:40px">{{ detailPrem }}</p>
+        <a href="{{ lienPrem }}" class="btn btn-primary btn-block" style="min-height:50px;font-size:16px;margin:0 0 24px;">Passer Premium</a>
+        <p style="margin:0 0 12px;font-size:14px;font-weight:700">Toute la Visibilité, plus :</p>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:12px;font-size:15px;line-height:22px"><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>{{ garanties }} mises en relation exclusives</strong> par mois : vous êtes le seul artisan contacté, sinon votre 2e mois est offert</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Appels d'offres 24 h avant</strong> les autres formules</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Position prioritaire</strong> dans votre ville</span></li><li style="display:flex;gap:10px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span><strong>Badge Pro vérifié</strong> et statistiques complètes</span></li></ul>
+      </div>
+    </div>
+    <p style="margin:28px 0 0;font-size:15px;line-height:23px;color:var(--color-neutral-800)">Sans carte bancaire pour le Gratuit · Changement de formule en un clic · Paiement sécurisé</p>
+    </div>
+  </section>
+
+  <section style="padding:clamp(48px,6vw,80px) 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
+      <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0 0 32px">Ce qu'en disent les artisans inscrits</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px">
+        <figure class="card" style="background:var(--color-bg);padding:24px;margin:0;gap:16px">
+          <blockquote style="margin:0;font-size:16px;line-height:26px">« Je ne fais plus de prospection. Je choisis les chantiers que je prends, et l'appli me prévient avant que je sois redescendu de la toiture. »</blockquote>
+          <figcaption style="display:flex;align-items:center;gap:12px;font-size:14px">
+            <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;border:2px solid var(--color-bg)">JB</span>
+            <span><strong>Karim B.</strong><br>Couvreur · Mérignac</span>
+          </figcaption>
+        </figure>
+        <figure class="card" style="background:var(--color-bg);padding:24px;margin:0;gap:16px">
+          <blockquote style="margin:0;font-size:16px;line-height:26px">« Trois chantiers signés le premier mois, sans rien payer. J'ai pris le Premium ensuite pour avoir du volume régulier. »</blockquote>
+          <figcaption style="display:flex;align-items:center;gap:12px;font-size:14px">
+            <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;border:2px solid var(--color-bg)">SM</span>
+            <span><strong>Sophie M.</strong><br>Électricienne · Paris</span>
+          </figcaption>
+        </figure>
+        <figure class="card" style="background:var(--color-bg);padding:24px;margin:0;gap:16px">
+          <blockquote style="margin:0;font-size:16px;line-height:26px">« Les demandes sont dans ma zone et le budget est annoncé. Je perds beaucoup moins de temps en visites inutiles. »</blockquote>
+          <figcaption style="display:flex;align-items:center;gap:12px;font-size:14px">
+            <span style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none;border:2px solid var(--color-bg)">MD</span>
+            <span><strong>Marc D.</strong><br>Plombier · Lyon</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,80px) clamp(20px,4vw,48px)">
+    <h2 style="font-size:clamp(26px,3vw,34px);line-height:1.14;margin:0 0 24px">Les questions qu'on nous pose avant de s'inscrire</h2>
+    <div style="max-width:74ch">
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">L'inscription est-elle vraiment gratuite ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Oui. Créer votre fiche, apparaître dans votre zone et recevoir les demandes des particuliers ne coûte rien, sans carte bancaire et sans durée minimum.</p>
+      </details>
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">Prenez-vous une commission sur mes chantiers ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Aucune. Vous traitez directement avec le client et vous facturez comme d'habitude.</p>
+      </details>
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">Vais-je recevoir des demandes hors de mon secteur ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Non. Vous choisissez vos communes et vos métiers à l'inscription, et vous pouvez les modifier à tout moment.</p>
+      </details>
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">Est-ce que je partage le client avec d'autres artisans ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Cela dépend du type de demande. Les demandes garanties de l'offre Premium sont transmises à vous seul. Les appels d'offres, accessibles à toutes les formules, sont ouverts à 3 artisans maximum.</p>
+      </details>
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">Pourquoi vérifiez-vous mon SIREN et mon assurance ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Pour que les particuliers ne croisent que des entreprises immatriculées et assurées. Vous n'êtes pas en concurrence avec des travailleurs non déclarés, et les clients vous font confiance plus vite.</p>
+      </details>
+      <details style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:600;font-size:17px;cursor:pointer">Combien de temps pour être visible ?</summary>
+        <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">Dès votre première connexion, si vous avez envoyé votre Kbis et votre attestation décennale. Les demandes de votre zone apparaissent aussitôt dans votre espace ; nous vérifions vos documents dans les 48 h ouvrées.</p>
+      </details>
+    </div>
+  </section>
+
+  <section style="background:var(--color-surface);padding:clamp(48px,6vw,80px) 0;position:relative;overflow:hidden">
+    <svg viewBox="0 0 600 420" aria-hidden="true" preserveAspectRatio="xMidYMid meet" style="position:absolute;right:clamp(-20px,2vw,40px);bottom:0;width:min(42%,460px);opacity:0.13;pointer-events:none">
+      <path d="M430 60h48v86l-48-38z" fill="var(--color-accent)"></path>
+      <path d="M30 230 300 30l270 200v190H30z" fill="var(--color-accent)"></path>
+      <path d="M300 30 570 230v190H300z" fill="var(--color-text)" opacity="0.3"></path>
+    </svg>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);">
+      <div style="max-width:min(100%,640px)">
+        <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.1;margin:0 0 14px;max-width:20ch">Votre prochain client cherche un artisan aujourd'hui.</h2>
+        <p style="font-size:17px;line-height:27px;max-width:52ch;margin:0 0 26px;color:var(--color-neutral-800)">3 minutes pour créer votre fiche. 0 €, sans engagement, et votre fiche en ligne dès la première connexion.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+          <a href="#inscription" class="btn btn-primary" style="min-height:50px;font-size:17px;padding-inline:26px">Créer mon compte gratuit</a>
+          <a href="#offres" class="btn btn-ghost" style="min-height:50px;font-size:16px">Voir les tarifs Premium</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="max-width:1240px;margin:0 auto;padding:40px clamp(20px,4vw,48px) 56px;font-size:13.5px;line-height:25px;color:var(--color-neutral-800)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px 48px">
+      <div><span style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+          <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+        </svg>
+        <span style="display:flex;flex-direction:column;line-height:1.02;color:var(--color-text)">
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        </span>
+      </span>La plateforme des artisans du bâtiment et de leurs clients.</div>
+      <div><a href="#inscription">Inscription gratuite</a><br><a href="#offres">Tarifs</a><br><a href="#espace">Votre espace</a></div>
+      <div><a href="#connexion">Connexion Pro</a><br><a href="#ios">Application mobile</a><br><a href="#aide">Aide</a></div>
+      <div><a href="Pages Legales.dc.html?public=pro&amp;doc=cgv">CGV professionnels</a><br><a href="Pages Legales.dc.html?public=pro&amp;doc=charte">Charte de bonne conduite</a><br><a href="Pages Legales.dc.html?public=pro&amp;doc=mentions">Mentions légales</a><br><a href="Pages Legales.dc.html?public=pro&amp;doc=confidentialite">Confidentialité</a><br><a href="Pages Legales.dc.html?public=pro&amp;doc=securite-pro">Sécurité du compte</a></div>
+    </div>
+    <p style="margin:28px 0 0">© 2026 Portail Habitat. Tous droits réservés.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;libelleCta&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Voir les demandes de ma zone&quot;,&quot;Recevoir mes premières demandes&quot;,&quot;Créer ma fiche gratuite&quot;],&quot;default&quot;:&quot;Voir les demandes de ma zone&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Formulaire&quot;},&quot;demandesGaranties&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:4,&quot;min&quot;:1,&quot;max&quot;:12,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Offre Premium&quot;},&quot;prixPremium&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;79 €&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Offre Premium&quot;},&quot;prixPremiumMensuel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;99 €&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Offre Premium&quot;}}">
+class Component extends DCLogic {
+  state = { envoye: false, cp: "", mId: "", autres: [], off: {}, mErreur: false };
+  componentDidMount() {
+    this._mq = window.matchMedia("(max-width: 760px)");
+    this._mqf = () => this.setState({ mobileNav: this._mq.matches, menu: this._mq.matches ? this.state.menu : false });
+    this._mqf(); this._mq.addEventListener("change", this._mqf);
+    this._rs = () => this.placerPill(); window.addEventListener("resize", this._rs);
+    setTimeout(() => this.placerPill(), 50); if (document.fonts) document.fonts.ready.then(() => this.placerPill());
+    this._esc = (e) => { if (e.key === "Escape") this.setState({ menu: false }); };
+    window.addEventListener("keydown", this._esc);
+    try { const id = new URLSearchParams(location.search).get("metier"); const go = () => { const RS = window.PH_RECHERCHE; if (id && RS && RS.METIERS[id]) this.setState({ mId: id, cible: RS.METIERS[id].nom }); }; if (window.PH_RECHERCHE) go(); else setTimeout(go, 400); } catch (e) {}
+    if (!window.PH_RECHERCHE) this._w = setInterval(() => { if (window.PH_RECHERCHE) { clearInterval(this._w); this.forceUpdate(); } }, 80); }
+  componentWillUnmount() { if (this._mq) this._mq.removeEventListener("change", this._mqf); window.removeEventListener("keydown", this._esc); window.removeEventListener("resize", this._rs); document.body.style.overflow = ""; clearInterval(this._w); }
+  mVals() {
+    const RS = window.PH_RECHERCHE, s = this.state;
+    const FAM = [["sdb-cuisine","Salle de bain et cuisine"],["deco","Peinture et décoration"],["sols","Sols"],["interieur","Aménagement intérieur"],["gros-oeuvre","Gros œuvre et extension"],["plomberie","Plomberie et eau"],["chauffage","Chauffage et climatisation"],["electricite","Électricité et énergie"],["isolation","Isolation"],["menuiseries","Menuiseries et fermetures"],["toiture","Toiture et façade"],["exterieur","Extérieur et jardin"],["securite","Sécurité et accessibilité"],["traitements","Diagnostics et traitements"],["depannage","Dépannage et petits travaux"]];
+    const tous = RS ? Object.values(RS.METIERS) : [];
+    const grouper = (exclure) => FAM.map(([id, nom]) => ({ nom, metiers: tous.filter((m) => m.famille === id && exclure.indexOf(m.id) < 0).sort((x, y) => x.nom.localeCompare(y.nom, "fr")).map((m) => ({ id: m.id, nom: m.nom })) })).filter((g) => g.metiers.length);
+    const mets = s.mId ? [s.mId].concat(s.autres) : [];
+    const vus = {}, prest = [];
+    mets.forEach((id) => RS && RS.intentionsDuMetier(id).forEach((it) => { if (!vus[it.id]) { vus[it.id] = 1; prest.push(it); } }));
+    const actives = prest.filter((it) => !s.off[it.id]);
+    this._selection = { metiers: mets, intentions: actives.map((it) => it.id) };
+    return {
+      mId: s.mId, mChoisi: !!s.mId, mErreur: !!s.mErreur, mErreurAria: String(!!s.mErreur),
+      groupesMetiers: grouper([]), groupesAutres: grouper(mets),
+      choisirPrincipal: (e) => this.setState({ mId: e.target.value, autres: s.autres.filter((x) => x !== e.target.value), mErreur: false }),
+      ajouterMetier: (e) => { const v = e.target.value; if (v && s.autres.length < 4 && mets.indexOf(v) < 0) this.setState({ autres: s.autres.concat([v]) }); e.target.value = ""; },
+      peutAjouter: s.autres.length < 4, aAutres: s.autres.length > 0,
+      autresChoisis: s.autres.map((id) => ({ nom: RS ? RS.metierNom(id) : id, aria: "Retirer " + (RS ? RS.metierNom(id) : id), retirer: () => this.setState({ autres: s.autres.filter((x) => x !== id) }) })),
+      chantiers: prest.map((it) => { const on = !s.off[it.id]; return { libelle: it.libelle, on: String(on), mark: on ? "✓" : "+",
+        bd: on ? "var(--color-accent)" : "var(--color-neutral-400)", bg: on ? "#fff" : "transparent", fg: on ? "var(--color-accent-800)" : "var(--color-neutral-700)",
+        toggle: () => this.setState({ off: { ...s.off, [it.id]: on } }) }; }),
+      nbActives: String(actives.length), nbTotal: String(prest.length),
+    };
+  }
+  placerPill() {
+    const el = (this.state.fact || "annuel") === "annuel" ? this._rA : this._rM;
+    if (!el) return;
+    const x = el.offsetLeft, w = el.offsetWidth;
+    if (x !== this.state.pillX || w !== this.state.pillW) this.setState({ pillX: x, pillW: w });
+  }
+  componentDidUpdate() { this.placerPill(); }
+  tarifs() {
+    const an = (this.state.fact || "annuel") === "annuel";
+    const eur = (n) => n.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+,)/g, "\u202f") + " €";
+    const V = [79.9, 12.9], P = [79.9, 99.9];
+    const on = { bg: "var(--color-accent)", fg: "#fff" }, off = { bg: "transparent", fg: "var(--color-text)" };
+    return {
+      pillX: this.state.pillX || 4, pillW: this.state.pillW || 0,
+      refAnnuel: (n) => { this._rA = n; }, refMensuel: (n) => { this._rM = n; },
+      annuelAria: String(an), mensuelAria: String(!an),
+      bgAnnuel: an ? on.bg : off.bg, fgAnnuel: an ? on.fg : off.fg, bgMensuel: an ? off.bg : on.bg, fgMensuel: an ? off.fg : on.fg,
+      bgBadge: an ? "#fff" : "var(--color-accent-100)", fgBadge: "var(--color-accent-800)",
+      choisirAnnuel: () => this.setState({ fact: "annuel" }), choisirMensuel: () => this.setState({ fact: "mensuel" }),
+      prixVis: eur(an ? 6.67 : V[1]), prixPrem: eur(an ? P[0] : P[1]),
+      annuelOn: an, barreVis: eur(V[1]), uniteVis: "HT / mois", barrePrem: eur(P[1]),
+      detailVis: an ? "Payé en une fois : " + eur(V[0]) + " HT pour 12 mois, soit " + eur(V[1] * 12 - V[0]) + " d'économie." : "Sans engagement, résiliable à tout moment. " + eur(6.67) + " HT/mois en payant l'année en une fois.",
+      detailPrem: an ? "Payé en une fois : " + eur(P[0] * 12) + " HT pour 12 mois, soit " + eur((P[1] - P[0]) * 12) + " d'économie." : "Sans engagement, résiliable à tout moment. " + eur(P[0]) + " HT/mois en payant l'année en une fois.",
+      lienVis: "Paiement Option Visibilite.dc.html?facturation=" + (an ? "annuel" : "mensuel"),
+      lienPrem: "Paiement Offre Premium.dc.html?facturation=" + (an ? "annuel" : "mensuel"),
+    };
+  }
+  navVals() {
+    const m = !!this.state.mobileNav, o = !!this.state.menu && m;
+    const set = (v) => { document.body.style.overflow = v ? "hidden" : ""; this.setState({ menu: v }); };
+    return { mobile: m, desktop: !m, menuAria: String(o), menuCache: String(!o), menuX: o ? "0" : "104%", menuVis: o ? "visible" : "hidden",
+      voileOp: o ? 1 : 0, voilePe: o ? "auto" : "none", ouvrirMenu: () => set(true), fermerMenu: () => set(false),
+      menuLiens: [{ href: "#offres", label: "Tarifs" }, { href: "#faq", label: "Questions fréquentes" }, { href: "Accueil Particuliers.dc.html", label: "Je suis un particulier" }] };
+  }
+  renderVals() {
+    const cp = (this.state.cp || "").replace(/\D/g, "");
+    const valide = cp.length === 5;
+    const E = window.PH_DEMANDES, RS = window.PH_RECHERCHE;
+    const est = E && valide ? E.estimer({ cp, metiers: this.state.mId ? [this.state.mId] : [], rayon: 30 }) : null;
+    const nom = this.state.mId && RS ? RS.metierNom(this.state.mId).toLowerCase() : "";
+    return {
+      ...this.mVals(),
+      nbDemandes: (est && est.total ? est.total : 2400).toLocaleString("fr-FR"),
+      libelleSource: est && est.source === "reel" ? "déposées" : "estimées",
+      zoneLabel: (nom ? "pour un " + nom + " " : "") + (valide ? "à 30 km autour du " + cp : "en France"),
+      aMetierCible: !!this.state.cible, metierCible: this.state.cible || "",
+      majCp: (e) => this.setState({ cp: e.target.value }),
+      libelleCta: this.props.libelleCta ?? "Voir les demandes de ma zone",
+      envoye: this.state.envoye,
+      formulaireVisible: !this.state.envoye,
+      garanties: this.props.demandesGaranties ?? 4,
+      ...this.navVals(),
+      ...this.tarifs(),
+      soumettre: (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const val = (id) => (f.querySelector("#" + id) || {}).value || "";
+        if (!this.state.mId) { this.setState({ mErreur: true }); const el = f.querySelector("#v2-metier"); if (el) el.focus(); return; }
+        const RS = window.PH_RECHERCHE, sel = this._selection || { metiers: [], intentions: [] };
+        const q = new URLSearchParams({ nom: val("v2-nom"), metier: RS ? RS.metierNom(this.state.mId) : "", metierId: this.state.mId, metiers: sel.metiers.join(","), intentions: sel.intentions.join(","), cp: val("v2-cp"), tel: val("v2-tel") });
+        location.href = "Onboarding Etape 2.dc.html?" + q.toString();
+      },
+      recommencer: () => this.setState({ envoye: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>
