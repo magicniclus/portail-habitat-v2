@@ -119,7 +119,8 @@ export default tseslint.config(
   // Dépendances externes par paquet (ARCHITECTURE §3)
   {
     files: ['packages/core/**/*.ts'],
-    ignores: [...TESTS, 'packages/core/src/zod.ts'],
+    // Les scripts de développement (cas de test, vérifications) lisent des fichiers.
+    ignores: [...TESTS, 'packages/core/src/zod.ts', 'packages/core/scripts/**'],
     rules: {
       'no-restricted-imports': restreindre(
         [interdits.react, interdits.next, interdits.firebase, ['node:*']],

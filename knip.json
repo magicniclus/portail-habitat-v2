@@ -12,7 +12,7 @@
       "ignoreDependencies": ["serve"]
     },
     "packages/core": {
-      "entry": ["scripts/*.mjs"]
+      "entry": ["scripts/*.mjs", "scripts/*.ts"]
     }
   }
 }
