@@ -8,12 +8,15 @@ import {
   type Traitement,
 } from '@ph/core/enveloppe';
 import type { Resultat } from '@ph/core/resultat';
-import { verifierJetonAppCheck } from '@ph/firebase/admin';
+import { appAdmin, verifierJetonAppCheck } from '@ph/firebase/admin';
+import { dependancesEnveloppe } from '@ph/firebase/serveur';
+import { getFirestore } from 'firebase-admin/firestore';
 import { headers } from 'next/headers';
 import type { z } from '@ph/core/zod';
 
-// Lot 2 : verifierPermission (peut()), limiterDebit, auditer et idempotence, branchés sur Firestore.
+// Permission (peut() / admins), limite de débit, audit et idempotence : Firestore via l'Admin SDK.
 const envelopper = creerEnveloppe<ContexteBase>({
+  ...dependancesEnveloppe(() => getFirestore(appAdmin())),
   signalerErreur: (erreur) => Sentry.captureException(erreur),
 });
 

@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./admin": "./src/admin.ts"
+    "./admin": "./src/admin.ts",
+    "./chemins": "./src/chemins.ts",
+    "./conversion": "./src/conversion.ts",
+    "./serveur": "./src/serveur/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

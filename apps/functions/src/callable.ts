@@ -6,6 +6,9 @@ import {
   type Traitement,
 } from '@ph/core/enveloppe';
 import type { Resultat } from '@ph/core/resultat';
+import { appAdmin } from '@ph/firebase/admin';
+import { dependancesEnveloppe } from '@ph/firebase/serveur';
+import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, type CallableRequest } from 'firebase-functions/v2/https';
 import type { z } from '@ph/core/zod';
 import { signalerErreur } from './sentry';
@@ -14,8 +17,11 @@ export const REGION = 'europe-west1';
 
 const estEmulateur = process.env.FUNCTIONS_EMULATOR === 'true';
 
-// Lot 2 : verifierPermission (peut()), limiterDebit, auditer et idempotence, branchés sur Firestore.
-const envelopper = creerEnveloppe<ContexteBase>({ signalerErreur });
+// Permission (peut() / admins), limite de débit, audit et idempotence : Firestore via l'Admin SDK.
+const envelopper = creerEnveloppe<ContexteBase>({
+  ...dependancesEnveloppe(() => getFirestore(appAdmin())),
+  signalerErreur,
+});
 
 export function contexteDepuis(
   requete: Pick<CallableRequest, 'auth' | 'app' | 'rawRequest'>,
