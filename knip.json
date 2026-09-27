@@ -10,6 +10,9 @@
     },
     "packages/ui": {
       "ignoreDependencies": ["serve"]
+    },
+    "packages/core": {
+      "entry": ["scripts/*.mjs"]
     }
   }
 }

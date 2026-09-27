@@ -5,7 +5,14 @@ import boundaries from 'eslint-plugin-boundaries';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-const TESTS = ['**/*.test.ts', '**/*.test.tsx', '**/tests/**', '**/e2e/**', '**/vitest/**'];
+const TESTS = [
+  '**/*.test.ts',
+  '**/*.test.tsx',
+  '**/tests/**',
+  '**/__tests__/**',
+  '**/e2e/**',
+  '**/vitest/**',
+];
 
 /** Règles maison : aucune couleur hexadécimale hors des tokens, aucune collection nommée hors de @ph/firebase. */
 const HEX = '/#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\\b/';

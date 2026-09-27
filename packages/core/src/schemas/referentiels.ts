@@ -18,7 +18,7 @@ export const prestationItem = z.object({
   icone: z.string().optional(),
   ordre: z.number().int(),
   actif: z.boolean(),
-  tva: z.union([z.literal(0.055), z.literal(0.1)]),
+  tva: z.union([z.literal(0.055), z.literal(0.1), z.literal(0.2)]),
   champs: z.array(
     z.object({
       id: z.string(),
