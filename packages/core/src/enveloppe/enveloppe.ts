@@ -8,6 +8,12 @@ export interface ContexteBase {
   /** uid, ou empreinte de l'IP pour un visiteur : jamais de donnée personnelle en clair. */
   identifiantClient: string;
   appCheckVerifie: boolean;
+  /** Admin en « voir en tant que » (claim `imp`) : lecture seule. */
+  impersonation?: boolean;
+  /** Dernière authentification réelle (claim `auth_time`), en ms. */
+  authentifieLe?: number;
+  /** Connexion validée par un second facteur (SMS ou TOTP). */
+  secondFacteur?: boolean;
 }
 
 export interface RegleDebit {
@@ -33,6 +39,7 @@ export interface Dependances<C extends ContexteBase = ContexteBase> {
     ecrire: (cle: string, resultat: Resultat<unknown>) => Promise<void>;
   };
   signalerErreur?: (erreur: unknown) => void;
+  horloge?: () => number;
 }
 
 export interface OptionsEnveloppe<S extends z.ZodType> {
@@ -48,6 +55,12 @@ export interface OptionsEnveloppe<S extends z.ZodType> {
   audit?: boolean;
   /** L'entrée doit alors contenir `cleIdempotence`. */
   idempotence?: boolean;
+  /** Autorisée pendant une impersonation (aucune écriture). Sinon, refusée. */
+  lectureSeule?: boolean;
+  /** Mot de passe ressaisi depuis moins de N minutes (transfert de propriété, fermeture). */
+  authRecenteMin?: number;
+  /** Connexion avec un second facteur exigée. */
+  secondFacteur?: boolean;
 }
 
 export type Traitement<S extends z.ZodType, C, R> = (entree: z.output<S>, ctx: C) => Promise<R>;
@@ -93,6 +106,22 @@ export function creerEnveloppe<C extends ContexteBase>(deps: Dependances<C>) {
     const executer = async (brut: unknown, ctx: C): Promise<Resultat<R>> => {
       if (authentification === 'requise' && !ctx.uid) return echec('NON_AUTHENTIFIE');
       if (appCheck && !ctx.appCheckVerifie) return echec('APP_CHECK_INVALIDE');
+      if (ctx.impersonation && !options.lectureSeule)
+        return echec('PERMISSION_REFUSEE', {
+          message: 'Mode « voir en tant que » : aucune modification possible.',
+        });
+      if (
+        options.authRecenteMin !== undefined &&
+        (ctx.authentifieLe === undefined ||
+          (deps.horloge ?? Date.now)() - ctx.authentifieLe > options.authRecenteMin * 60_000)
+      )
+        return echec('PRECONDITION', {
+          message: 'Pour votre sécurité, saisissez à nouveau votre mot de passe.',
+        });
+      if (options.secondFacteur && !ctx.secondFacteur)
+        return echec('PRECONDITION', {
+          message: 'Cette action exige la double authentification.',
+        });
 
       const analyse = schema.safeParse(brut);
       if (!analyse.success)

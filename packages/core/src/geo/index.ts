@@ -1,0 +1,1 @@
+export { encoderGeohash } from './geohash';

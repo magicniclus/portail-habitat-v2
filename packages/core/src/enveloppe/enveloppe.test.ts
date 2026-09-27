@@ -14,6 +14,43 @@ const schema = z.object({ email: z.email(), nb: z.number().int().min(1) });
 const entree = { email: 'a@b.fr', nb: 2 };
 
 describe('creerEnveloppe', () => {
+  it('impersonation : écriture refusée, lecture seule autorisée (COMPTES §6.2)', async () => {
+    const env = creerEnveloppe({});
+    const imp = ctx({ impersonation: true });
+    const r = await env({ schema }, async () => 1)(entree, imp);
+    expect(r).toMatchObject({ ok: false, code: 'PERMISSION_REFUSEE' });
+    expect(r.ok === false && r.message).toMatch(/voir en tant que/);
+    expect(await env({ schema, lectureSeule: true }, async () => 1)(entree, imp)).toEqual({
+      ok: true,
+      data: 1,
+    });
+  });
+
+  it('authentification récente exigée (mot de passe ressaisi)', async () => {
+    const maintenant = 1_000_000_000;
+    const env = creerEnveloppe({ horloge: () => maintenant });
+    const exec = env({ schema, authRecenteMin: 5 }, async () => 1);
+    expect(await exec(entree, ctx())).toMatchObject({ ok: false, code: 'PRECONDITION' });
+    expect(await exec(entree, ctx({ authentifieLe: maintenant - 6 * 60_000 }))).toMatchObject({
+      code: 'PRECONDITION',
+    });
+    expect(await exec(entree, ctx({ authentifieLe: maintenant - 5 * 60_000 }))).toEqual({
+      ok: true,
+      data: 1,
+    });
+  });
+
+  it('horloge par défaut : Date.now', async () => {
+    const exec = creerEnveloppe({})({ schema, authRecenteMin: 5 }, async () => 1);
+    expect(await exec(entree, ctx({ authentifieLe: Date.now() }))).toEqual({ ok: true, data: 1 });
+  });
+
+  it('second facteur exigé', async () => {
+    const exec = creerEnveloppe({})({ schema, secondFacteur: true }, async () => 1);
+    expect(await exec(entree, ctx())).toMatchObject({ ok: false, code: 'PRECONDITION' });
+    expect(await exec(entree, ctx({ secondFacteur: true }))).toEqual({ ok: true, data: 1 });
+  });
+
   it('valide, exécute et renvoie un succès', async () => {
     const handler = vi.fn(async (e: z.infer<typeof schema>) => e.nb * 2);
     const exec = creerEnveloppe({})({ schema }, handler);

@@ -19,6 +19,7 @@
     "./simulateur": "./src/simulateur/index.ts",
     "./diagnostic": "./src/diagnostic/index.ts",
     "./recherche": "./src/recherche/index.ts",
+    "./geo": "./src/geo/index.ts",
     "./parcours": "./src/parcours/index.ts",
     "./stats": "./src/stats/index.ts",
     "./leads": "./src/leads/index.ts",

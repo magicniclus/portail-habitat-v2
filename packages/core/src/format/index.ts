@@ -9,3 +9,4 @@ export {
   normaliserSiren,
   sirenDeSiret,
 } from './siren';
+export { slugifier } from './slug';

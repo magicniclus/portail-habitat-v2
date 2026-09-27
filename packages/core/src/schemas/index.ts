@@ -26,6 +26,7 @@ export * from './parcours';
 export * from './partenaires';
 export * from './referentiels';
 export * from './support';
+export * from './entreesComptes';
 
 /**
  * Schéma de chaque collection (motif du chemin → schéma), liste de contrôle de DATABASE §16.
