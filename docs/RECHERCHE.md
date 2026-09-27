@@ -35,7 +35,7 @@ Nom affiché, alias de recherche (« couvreur zingueur », « frigoriste »…),
 ## 2. Traitement d'une requête
 
 1. **Normalisation** : minuscules, accents retirés, `œ → oe`, apostrophes et tirets → espace, ponctuation retirée
-2. **Mots vides** retirés (`de, la, mon, pour, faire, prix, devis, combien, urgent…`), sauf si la requête n'en contient pas d'autres
+2. **Mots vides** retirés (ceux de la maquette, plus « qui, que, quoi » depuis le lot 3) (`de, la, mon, pour, faire, prix, devis, combien, urgent…`), sauf si la requête n'en contient pas d'autres
 3. **Racinisation légère** : pluriels (`fenetres → fenetre`, `travaux → traval`), sans lemmatiseur lourd
 4. **Synonymes** : chaque mot devient un groupe {mot + synonymes} ; un groupe est satisfait si l'un de ses membres correspond (le synonyme ne compte pas comme mot manquant)
 5. **Correction orthographique** : distance de Damerau-Levenshtein ≤ 1 (4 à 7 lettres) ou ≤ 2 (8 lettres et plus), contre le vocabulaire des intentions. Le **dernier mot** est traité en préfixe (l'utilisateur est en train de taper)
@@ -45,6 +45,7 @@ Nom affiché, alias de recherche (« couvreur zingueur », « frigoriste »…),
    - bonus d'expression : libellé qui commence par la requête +5, mot-clé identique +4,5, contient +2 à +3,5
    - pénalité de couverture (mots importants non trouvés) ; une intention qui couvre moins de 55 % du poids de la requête est écartée
    - + popularité × 0,6
+6 bis. **Correspondance exacte** (ajout du lot 3) : requête identique au libellé d'une intention +8, à l'un de ses mots-clés +4. Sans ce bonus, un libellé tapé mot pour mot (« Audit énergétique », « Porte de garage ») passait derrière une intention voisine plus populaire (93,9 % au 1er rang → 96,4 %).
 7. **Seuil relatif** : on n'affiche que les résultats ≥ 34 % du meilleur score (pas de suggestions hors sujet)
 8. Détection d'**urgence** (« urgent », « fuite », « ce soir »…) → message dédié et délai « Dès que possible » présélectionné
 

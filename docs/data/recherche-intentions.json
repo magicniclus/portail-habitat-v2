@@ -1878,7 +1878,10 @@
     "mitsubishi",
     "aide pompe a chaleur",
     "maprimerenov pompe a chaleur",
-    "coup de pouce chauffage"
+    "coup de pouce chauffage",
+    "remplacer chaudiere fioul par pompe a chaleur",
+    "remplacer chaudiere fioul",
+    "chaudiere fioul par pompe a chaleur"
    ]
   },
   {
@@ -2637,8 +2640,7 @@
     "toiture maison",
     "charpente toiture",
     "remaniage",
-    "tuiles cassees",
-    "toit qui fuit"
+    "tuiles cassees"
    ]
   },
   {
@@ -2657,7 +2659,9 @@
     "tempete",
     "degat tempete",
     "bache toit",
-    "urgence couvreur"
+    "urgence couvreur",
+    "toit fuit",
+    "fuite du toit"
    ]
   },
   {

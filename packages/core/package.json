@@ -17,12 +17,13 @@
     "./flags": "./src/flags.ts",
     "./schemas": "./src/schemas/index.ts",
     "./simulateur": "./src/simulateur/index.ts",
-    "./diagnostic": "./src/diagnostic/index.ts"
+    "./diagnostic": "./src/diagnostic/index.ts",
+    "./recherche": "./src/recherche/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --coverage",
-    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs"
+    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs"
   },
   "dependencies": {
     "zod": "^4.6.5"
