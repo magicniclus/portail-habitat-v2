@@ -11,7 +11,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 |---|---|---|---|---|---|
 | 0 | Cadrage | ✅ | 27/09/2026 | — | incohérences tranchées, documents corrigés (§2) |
 | 1a | Socle technique : monorepo, outillage, CI, émulateurs | ✅ | 27/09/2026 | format, lint, types, Knip, 102 tests (dont règles sur émulateur), build, e2e | CI GitHub à confirmer au premier passage (§6) |
-| 1b | Design system, composants, Storybook | ⬜ | | axe, cibles, MOB-01 à 03 | |
+| 1b | Design system, composants, Storybook | ✅ | 27/09/2026 | 34 tests composants, catalogue 29 stories, e2e 44 (dont ERR-01/02, MOB-01 à 03), Lighthouse | D45 et D46 à valider (§7) |
 | 2 | Données et sécurité | ⬜ | | règles | |
 | 3 | Logique métier pure | ⬜ | | unitaires | |
 | 4 | Comptes, équipes, seed | ⬜ | | CON, EQU, INV | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 1b (design system), à démarrer par un plan
-- Dernier lot terminé : 1a, le 27/09/2026 (détail §6)
+- Lot : 2 (données et sécurité), à démarrer
+- Dernier lot terminé : 1b, le 27/09/2026 (détail §7)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -54,6 +54,29 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - Lot 2 : brancher `verifierPermission` (`peut()`), `limiterDebit`, `auditer` et `idempotence` sur Firestore ; lot 4 : `uid` depuis le cookie de session dans `action()`.
 - Déploiement des Functions : `lib/index.js` est autonome (esbuild) ; le déploiement réel sera validé au lot 14.
 - Lighthouse CI et build Storybook : lot 1b.
+
+## 7. Lot 1b — Design system et composants (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/ui/tokens` : source unique des 4 thèmes (rampes 100 → 900 des maquettes ; ardoise admin complétée en 800/900), neutres et ombres Broadsheet, statuts, Premium, rayons, polices, points de rupture. Génération de `themes.css` (`[data-theme]`) et du thème Tailwind 4 (`@theme`, palette par défaut désactivée) ; un test vérifie la synchronisation et les contrastes AA.
+- Primitives : Logo (3 espaces + admin, version inversée), Button (`asChild`), IconButton, Chip, ChipGroup, Badge, StatusBadge, Field (libellé, aide, erreur reliés), Input (préréglages MOBILE §5 : tel, email, code postal, SIREN, code SMS…), Textarea, Select natif (`optgroup`), Checkbox, RadioCard, Skeleton.
+- Patterns : Card composable, Stepper (barre de progression sous 640 px), Modal (feuille du bas sous 640 px, balayage pour fermer) et Sheet, ConfirmDialog (motif obligatoire), EmptyState, Banner, Combobox (ARIA 1.2), Toast (Radix), BottomNav, StickyActionBar (zones sûres iOS), PageErreur.
+- Storybook 10 : les 4 thèmes côte à côte ou un seul, tailles 320 / 390 / 768 / 1280, extension a11y. Test « catalogue » Playwright sur le Storybook compilé : chaque story à 320 px, sans défilement horizontal, cibles ≥ 44 px, champs ≥ 16 px, axe avec contraste.
+- Site : thème par espace (`(particuliers)`, `/pro`, `/diagnostic-immobilier`, `/admin`, ce dernier en `noindex`), posé aussi sur `<html>` pour les fenêtres ; `theme-color` et `viewport-fit=cover` par espace ; polices Source Sans 3 et Source Serif 4 italique (next/font).
+- Pages d'erreur d'après la maquette : 404 par espace avec recherche et liens (ERR-01, code 404), 500 avec identifiant d'incident envoyé à Sentry en étiquette `incident` (ERR-02), page de maintenance et bascule `MAINTENANCE=1` dans `proxy.ts` (réécriture en 503, sauf `/admin` et `/api`).
+- Tests : MOB-01 à 03 sur 5 pages, 4 appareils ; ERR-01 et ERR-02. `PW_CHROMIUM_SEUL=1` permet de lancer les projets iPhone sans WebKit.
+- Performance : Sentry navigateur et pages d'erreur chargés à la demande (JavaScript initial de l'accueil passé de 226 à 154 Ko). Lighthouse CI mobile : performance ≥ 0,95, LCP ≤ 2 s, CLS ≤ 0,05, TBT ≤ 150 ms, accessibilité ≥ 0,95.
+- CI : jobs « catalogue » (Storybook + Playwright) et « Lighthouse ».
+
+**Écarts et décisions à valider**
+- **D45** : les boutons principaux pro utilisent `#c94f0a` au lieu de `#e05a10` (contraste AA) ; ambre et or plus foncés pour le texte.
+- **D46** : budget JavaScript initial irréaliste avec Next.js 16 (voir DECISIONS) ; seuil provisoire de 160 Ko en CI.
+- Chips : 44 px de haut partout (MOB-02), au lieu d'environ 37 px dans les maquettes.
+- ERR-03 : la maintenance se pilote par variable d'environnement ; le branchement sur `config/app.maintenance` se fera avec les feature flags (lot 2).
+
+**Reste / dettes connues**
+- Comparaison visuelle automatique aux maquettes (`/maquette`) : les `.dc.html` ne s'affichent pas en `file://` ; à outiller au lot 6 (serveur statique sur `docs/designs`).
+- Layouts complets (PublicLayout, ProLayout avec sidebar, AdminLayout) : ils arrivent avec leurs écrans (lots 6, 10, 13), en réutilisant BottomNav, Sheet et Logo.
 
 ## 2. Incohérences et zones floues
 
@@ -151,3 +174,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Rangement du dépôt (`docs/`, `CLAUDE.md` et `.claude/` à la racine). Lot 0 : cadrage produit.
 - 27/09/2026 — Réponses reçues, documents corrigés, lot 0 clos.
 - 27/09/2026 — Lot 1a terminé (socle technique). Décision D44 : Next.js 16, TypeScript 6.
+- 27/09/2026 — Lot 1b terminé (design system). Décisions D45 (contraste) et D46 (budget JS) proposées, à valider.

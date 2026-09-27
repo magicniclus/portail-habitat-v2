@@ -62,3 +62,40 @@ jobs:
           name: rapport-playwright
           path: apps/web/playwright-report
           retention-days: 7
+
+  catalogue:
+    name: Storybook et catalogue (4 thèmes, 320 px, cibles, axe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ph/ui exec playwright install --with-deps chromium
+      - run: pnpm --filter @ph/ui build-storybook
+      - run: pnpm --filter @ph/ui catalogue
+
+  lighthouse:
+    name: Lighthouse mobile (budget EXPLOITATION §1)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@ph/web
+      - run: pnpm --filter @ph/web lighthouse
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-lighthouse
+          path: apps/web/.lighthouseci/rapports
+          retention-days: 7

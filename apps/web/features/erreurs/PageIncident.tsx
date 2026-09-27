@@ -1,7 +1,6 @@
 'use client';
 
 import { Button, PageErreur } from '@ph/ui';
-import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { EnteteErreur, PiedErreur } from './Cadre';
@@ -20,7 +19,10 @@ export function PageIncident({ erreur, reessayer, espace = 'particulier' }: Prop
   const [copie, setCopie] = useState(false);
 
   useEffect(() => {
-    Sentry.captureException(erreur, { tags: { incident, digest: erreur.digest } });
+    // Chargé seulement quand une erreur survient (poids du JavaScript initial).
+    void import('@sentry/nextjs').then((Sentry) =>
+      Sentry.captureException(erreur, { tags: { incident, digest: erreur.digest } }),
+    );
   }, [erreur, incident]);
 
   return (

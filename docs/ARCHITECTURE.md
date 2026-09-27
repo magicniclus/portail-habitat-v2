@@ -109,7 +109,7 @@ Une page (`app/.../page.tsx`) **ne contient pas de mise en page détaillée** : 
   });
   ```
 - `asChild` (Radix Slot) pour qu'un `Button` puisse être un `Link` sans dupliquer le style
-- `forwardRef`, `...rest` transmis à l'élément, `className` fusionné avec `cn()` (clsx + tailwind-merge)
+- `ref` passé en prop (React 19 : `forwardRef` n'est plus nécessaire), `...rest` transmis à l'élément, `className` fusionné avec `cn()` (clsx + tailwind-merge)
 - **Composition plutôt que props booléennes en cascade** : `<Card><Card.Header/><Card.Body/></Card>` au lieu de `<Card showHeader headerIcon titleSize…>`
 - Accessibilité intégrée une fois pour toutes : **Radix UI** pour Dialog, Tabs, Select, Popover, Tooltip, Toast (clavier, focus, ARIA)
 - Tout texte visible est une prop ou un enfant ; aucun texte métier en dur dans `ui`

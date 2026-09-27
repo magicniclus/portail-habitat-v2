@@ -8,3 +8,4 @@ coverage/
 packages/ui/src/styles/theme.css
 packages/ui/src/styles/themes.css
 storybook-static/
+.lighthouseci/

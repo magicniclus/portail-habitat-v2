@@ -81,6 +81,8 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D42 | Emplacement du code | `packages/core/*` (ARCHITECTURE fait foi ; les anciennes mentions `lib/…` y renvoient) ; Tailwind 4 configuré en CSS (`@theme` généré depuis les tokens, pas de `tailwind.config.js`) | ✅ |
 | D43 | Suivi | `docs/AVANCEMENT.md` seul (PROGRESSION.md fusionné) ; lot 1 découpé en 1a (socle) et 1b (design system) | ✅ |
 | D44 | Versions du socle | **Next.js 16** (la 15 n'est plus qu'en maintenance), React 19, **TypeScript 6** (la 7 n'est pas encore prise en charge par typescript-eslint), ESLint 9, Vitest 5, Zod 4 (`@ph/core/zod`, messages en français), Sentry 11, Functions esbuild → `lib/` | ✅ |
+| D45 | Contraste des boutons | L'orange pro de marque `#e05a10` n'atteint que 3,7 : 1 avec du texte blanc (AA exige 4,5). **Proposition** : les boutons principaux pro prennent `#c94f0a` (palier 600 de la maquette, 4,6 : 1) ; le texte ambre passe à `#7a5206` et le texte or Premium à `#8a6420`. L'orange reste la couleur de marque (logo, bordures, grands titres). Token `actions` dans `packages/ui/tokens` | ⏳ |
+| D46 | Budget JavaScript initial | EXPLOITATION §1 fixe 90 Ko (accueil) ; le socle Next.js 16 + React 19 pèse déjà ~140 Ko compressés sur une page vide. **Proposition** : accueil, landings, communes ≤ 160 Ko ; annuaire, fiche ≤ 210 Ko ; simulateur, diagnostic ≤ 230 Ko ; espace pro, admin ≤ 320 Ko. Les autres critères (performance ≥ 95, LCP ≤ 2 s, CLS ≤ 0,05) sont inchangés et respectés. Appliqué en CI en attendant | ⏳ |
 | D39 | Navigateurs supportés | 2 dernières versions de Chrome, Safari, Firefox, Edge ; Safari iOS 16.4+ (requis pour les notifications push web) ; Android Chrome | ✅ |
 
 ---

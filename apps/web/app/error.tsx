@@ -1,8 +1,13 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import { PageIncident } from '@/features/erreurs/PageIncident';
 import type { EspacePublic } from '@/features/erreurs/espaces';
+
+// Chargée seulement quand une erreur survient : rien dans le JavaScript initial des pages.
+const PageIncident = dynamic(() =>
+  import('@/features/erreurs/PageIncident').then((m) => m.PageIncident),
+);
 
 function espaceDe(chemin: string): EspacePublic {
   if (chemin.startsWith('/pro')) return 'pro';
