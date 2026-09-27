@@ -19,12 +19,13 @@
     "./simulateur": "./src/simulateur/index.ts",
     "./diagnostic": "./src/diagnostic/index.ts",
     "./recherche": "./src/recherche/index.ts",
-    "./parcours": "./src/parcours/index.ts"
+    "./parcours": "./src/parcours/index.ts",
+    "./stats": "./src/stats/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --coverage",
-    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs && node scripts/generer-cas-parcours.mjs"
+    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs && node scripts/generer-cas-parcours.mjs && node scripts/generer-cas-stats.mjs"
   },
   "dependencies": {
     "zod": "^4.6.5"

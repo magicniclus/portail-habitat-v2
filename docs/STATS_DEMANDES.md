@@ -25,7 +25,7 @@ demandes/mois = population du département
 Document `stats/modeleDemandes` (Admin SDK, écran admin Finances → Prévisions) : `tauxHabitantAn`, `couverture`, `familles`, `saison`, `minimum`. **Calage mensuel** : une tâche planifiée compare le modèle au réel des départements qui ont un historique et propose un nouveau `tauxHabitantAn` (validation manuelle, audit).
 
 ## 4. Implémentation
-- `packages/core/stats/estimerDemandes.ts` (fonction pure, testée) + `population` par département (Insee, fichier versionné)
+- `packages/core/src/stats/estimerDemandes.ts` (fonction pure, testée) ; paramètres initiaux et `population` par département (Insee) dans `docs/data/stats-demandes.json`
 - Route `/api/stats/demandes?cp=&metiers=&rayon=` : renvoie `{ total, parMetier, source: 'reel' | 'modele' }`, cache 6 h, aucune donnée personnelle
 - Le **réel** est lu dans `statsZones/{departement}_{metier}_{AAAAMM}` (compteurs incrémentés par le trigger de création de demande)
 
