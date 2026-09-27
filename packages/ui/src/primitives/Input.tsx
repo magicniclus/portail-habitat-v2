@@ -7,7 +7,7 @@ import { useChamp } from './Field';
 
 /** 16 px minimum : en dessous, Safari iOS zoome à la saisie (MOB-03). */
 export const classesControle = cn(
-  'w-full min-h-11 rounded-control border border-neutre-400 bg-blanc px-3.5 py-2.5 text-base text-texte',
+  'w-full min-h-11 rounded-control border border-neutre-400 bg-blanc px-3.5 py-2.5 text-base font-normal text-texte',
   'placeholder:text-neutre-700 hover:border-neutre-600',
   'focus:border-accent focus:outline-2 focus:outline-offset-1 focus:outline-accent-300',
   'aria-invalid:border-danger disabled:cursor-not-allowed disabled:bg-neutre-100 disabled:opacity-70',

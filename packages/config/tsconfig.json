@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig/bibliotheque.json",
-  "include": ["vitest"]
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"]
+  },
+  "include": ["vitest", "playwright"]
 }

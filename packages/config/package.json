@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     "./tsconfig/*": "./tsconfig/*",
-    "./vitest/garde-emulateur": "./vitest/garde-emulateur.ts"
+    "./vitest/garde-emulateur": "./vitest/garde-emulateur.ts",
+    "./playwright/mesures": "./playwright/mesures.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "vite": "^8.3.1",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.2",
+    "@playwright/test": "1.56.1"
   }
 }

@@ -1,7 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { champsTropPetits, ciblesTropPetites, defileHorizontalement } from './mesures';
+import {
+  champsTropPetits,
+  ciblesTropPetites,
+  defileHorizontalement,
+} from '@ph/config/playwright/mesures';
 
 interface Entree {
   id: string;
