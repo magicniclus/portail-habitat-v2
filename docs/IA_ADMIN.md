@@ -41,7 +41,7 @@ Maquette : `designs/Admin IA.dc.html`.
 ```
 Admin (onglet IA) ──callable iaAnalyser({ mode: 'rapide'|'audit', perimetres: string[] (ou ['tout']), question?, approfondie? })──► Function (europe-west1)
    1. assertPermission('ia.utiliser') · quota par membre (30 analyses / jour) · journal
-   2. construireContexte(perimetre) : lectures Firestore + BigQuery (agrégats), anonymisation, découpage < 60 k tokens
+   2. construireContexte(perimetre) : lectures des agrégats Firestore (cumuls 7/30/90 j ; BigQuery seulement après le seuil de bascule de COMPORTEMENT §3), anonymisation, découpage < 60 k tokens
    3. Appel API Claude (Anthropic) : system prompt versionné + outils en lecture seule
    4. Validation Zod de la sortie JSON (schéma §4), rejet ou nouvelle tentative si invalide
    5. écrit iaAnalyses/{id} + iaRecommandations/{id} ; renvoie le résultat

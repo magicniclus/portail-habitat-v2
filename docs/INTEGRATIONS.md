@@ -10,16 +10,16 @@
 | Option Visibilité | `price_visibilite_mensuel` | 12,90 € HT | mois (sans engagement) |
 | Option Visibilité | `price_visibilite_annuel` | 79,90 € HT | an, **payé en une fois** |
 
-Le tarif Premium « par mois » affiché en annuel (79,90 €) et le forfait Visibilité annuel (79,90 €/an) ne sont valables que pour un **paiement unique de 12 mois**. Paramètre `?facturation=annuel|mensuel` transmis de la landing aux pages de paiement. Code promo : −30 % sur le premier mois.
-| Pack de crédits | `price_pack_5`, `price_pack_10`, `price_pack_25` | définis dans `packsCredits` | paiement unique |
+Le tarif Premium « par mois » affiché en annuel (79,90 €) et le forfait Visibilité annuel (79,90 €/an) ne sont valables que pour un **paiement unique de 12 mois**. Paramètre `?facturation=annuel|mensuel` transmis de la landing aux pages de paiement. Codes promo : voir la ligne « Codes promo » ci-dessous et CONVERSION.md (codes personnels, D32c).
+| Pack de crédits | `price_pack_10`, `price_pack_25`, `price_pack_50` (D29) | définis dans `packsCredits` | paiement unique |
 | Déblocage d'un appel d'offres | **prix dynamique** (`price_data` à la volée) | `tarification` de l'appel d'offres | paiement unique |
 
 - **Stripe Tax** activé (TVA FR 20 %, prix HT, `tax_behavior: exclusive`). Collecte du numéro de TVA intracommunautaire (`tax_id_collection`)
-- Codes promo : coupons Stripe (ex. −30 % le premier mois, `duration: once`) et `allow_promotion_codes: true` dans Checkout
+- Codes promo : coupons Stripe (−30 % max sur la **première facture**, mensuelle ou annuelle, `duration: once` ; codes personnels selon DECISIONS D32c) et `allow_promotion_codes: true` dans Checkout
 - Facturation : factures Stripe avec numérotation séquentielle, mentions légales B2B dans le pied de facture (pénalités de retard, indemnité de 40 €, voir CGV §6)
 
 ### Parcours
-1. `/pro/abonnement/premium` → Server Action `creerCheckoutPremium(periode)` → `stripe.checkout.sessions.create({ mode:'subscription', customer, line_items, success_url, cancel_url, subscription_data:{ metadata:{ artisanId } }, client_reference_id: artisanId })` → redirection
+1. `/pro/abonnement/premium?facturation=annuel|mensuel&code=` → Server Action `creerCheckoutPremium(periode)` → `stripe.checkout.sessions.create({ mode:'subscription', customer, line_items, success_url, cancel_url, subscription_data:{ metadata:{ artisanId } }, client_reference_id: artisanId })` → redirection
 2. `success_url` → page « Paiement confirmé » de la maquette, qui **attend le webhook** (écoute de `artisans/{id}.plan`) au lieu de faire confiance au paramètre d'URL
 3. « Gérer mon abonnement » → `stripe.billingPortal.sessions.create` (changement de carte, factures, résiliation à la fin de période)
 4. Le `customer` Stripe est créé au premier Checkout et enregistré dans `artisans/{id}/prive/facturation`
@@ -138,11 +138,14 @@ STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_PRICE_PREMIUM_MENSUEL=
 STRIPE_PRICE_PREMIUM_ANNUEL=
-STRIPE_PRICE_VISIBILITE=
+STRIPE_PRICE_VISIBILITE_MENSUEL=
+STRIPE_PRICE_VISIBILITE_ANNUEL=
+STRIPE_PRICE_SIEGE=
+STRIPE_PRICE_PACK_10= / STRIPE_PRICE_PACK_25= / STRIPE_PRICE_PACK_50=
 RESEND_API_KEY=
 EMAIL_FROM="Portail Habitat <notifications@portailhabitat.fr>"
 TYPESENSE_HOST= / TYPESENSE_ADMIN_KEY= / NEXT_PUBLIC_TYPESENSE_SEARCH_KEY=
-SENTRY_DSN= / NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_DSN= / NEXT_PUBLIC_SENTRY_DSN= / SENTRY_AUTH_TOKEN=   # sourcemaps en CI
 PARTENAIRE_API_KEYS=               # Secret Manager, une clé par source (IMPORT_LEADS.md)
 INSEE_API_KEY=
 ANTHROPIC_API_KEY=                 # Secret Manager, assistant IA (IA_ADMIN.md)
@@ -158,5 +161,5 @@ NEXT_PUBLIC_SITE_URL=https://www.portailhabitat.fr
 
 - 3 projets Firebase : `dev`, `staging`, `prod`. Émulateurs Firebase en local (Auth, Firestore, Functions, Storage)
 - Stripe en mode test pour `dev` et `staging` ; webhooks en local via `stripe listen`
-- CI : lint, typecheck, tests unitaires (`lib/simulateur`, `lib/diagnostic`, tri et classement), tests des règles Firestore, tests Playwright des parcours (simulateur, diagnostic, avis, checkout)
+- CI : lint, typecheck, tests unitaires (`packages/core/simulateur`, `packages/core/diagnostic`, tri et classement), tests des règles Firestore, tests Playwright des parcours (simulateur, diagnostic, avis, checkout)
 - Données de démonstration (`scripts/seed.ts`) : reprendre les artisans, communes, prestations et diagnostics des maquettes

@@ -36,7 +36,7 @@
 | `REPRISE_PARCOURS.md` | brouillons et reprise des parcours | les parcours |
 | `STATS_DEMANDES.md` | chiffres de demandes affichés aux artisans | la landing pro |
 | `EXPLOITATION.md` | performance, migrations, supervision, feature flags | la production |
-| `PROGRESSION.md` | état d'avancement, reprise après interruption | ce qui est fait |
+| `AVANCEMENT.md` | état d'avancement, incohérences tranchées, reprise après interruption | ce qui est fait |
 | `MISE_EN_PROD.md` | comptes, clés, déploiement, lancement | le jour J |
 | `ACCEPTANCE.md` | **critères de fin** (un test Playwright par identifiant) | la recette |
 | `PROMPT_CLAUDE_CODE.md` | prompts prêts à coller, lot par lot | l'ordre |
@@ -48,7 +48,8 @@
 | Lot | Contenu | Docs | Critères |
 |---|---|---|---|
 | 0 | Cadrage, plan, questions | README, DECISIONS | — |
-| 1 | Socle technique, design system, composants | ARCHITECTURE, MOBILE, EXPLOITATION §1 | — |
+| 1a | Socle technique : monorepo, outillage, CI, émulateurs, `core/format`, enveloppes `action()`/`callable()`, Sentry | ARCHITECTURE, EXPLOITATION §1 | — |
+| 1b | Design system : tokens 4 thèmes, primitives et patterns, Storybook, layouts, pages d'erreur, MOB-01 à 03 | ARCHITECTURE §4-5, MOBILE, README (tokens) | MOB-01 à 03 |
 | 2 | Données et sécurité : **toutes les collections de DATABASE §16**, schémas Zod, règles, index, TTL | DATABASE, COMPTES §1 | tests de règles |
 | 3 | Logique métier pure : simulateur, diagnostic, matching, prix, score de conversion | data/, MATCHING, CONVERSION §4 | tests unitaires |
 | 4 | Comptes, entreprises, équipes, seed | COMPTES | CON-*, EQU-*, INV-* |
@@ -74,14 +75,14 @@
 |---|---|
 | Accueil Particuliers | `/` |
 | Simulateur de Devis | `/simulateur` (`?prestation=`) |
-| Parcours Diagnostic, Diagnostic Immobilier, Diagnostic Immobilier Rive Droite | `/diagnostic`, `/diagnostic/[commune]` |
+| Diagnostic Immobilier · Parcours Diagnostic · Diagnostic Immobilier Rive Droite | `/diagnostic-immobilier` · `/diagnostic-immobilier/estimation` · `/diagnostic-immobilier/[commune]` |
 | Annuaire Artisans · Ma Fiche (publique) | `/artisans` · `/artisans/[slug]` |
-| Laisser un Avis · Mon Espace Particulier | `/avis/[jeton]` · `/mon-espace` |
+| Laisser un Avis · Mon Espace Particulier | `/avis` (`?jeton=` facultatif, lien reçu par email) · `/mon-espace` |
 | Acquisition Artisans v2 | `/pro` (+ variante `?utm_source=facebook`) |
 | Onboarding Etape 2 et 3 · Espace Artisan Dashboard (on boarding) | `/pro/inscription/*` · `/pro` connecté |
 | Mes Demandes · Appels d Offres · Mes Avis · Statistiques · Ma Fiche (édition + assistant IA) · Equipe · Mon Compte · Invitation | `/pro/*` |
-| Paiement Option Visibilite · Paiement Offre Premium | `/pro/paiement?offre=&facturation=&code=` |
-| Connexion · Contact (public) · Pages Legales · Pages Erreur | `/connexion` · `/aide` (`?sujet=`) · `/legal/*` · 404 / 500 |
+| Paiement Option Visibilite · Paiement Offre Premium | `/pro/abonnement/premium` · `/pro/abonnement/visibilite` (`?facturation=&code=`) |
+| Connexion · Contact (public) · Pages Legales · Pages Erreur | `/connexion` (tous publics ; `/pro/connexion` redirige vers `/connexion?espace=pro`) · `/aide` (`?sujet=`) · `/legal/*` · 404 / 500 |
 | Aide et Contact (espace artisan) | `/pro/aide` |
 | Modeles Emails | `packages/emails` (React Email) |
 | Admin Portail Habitat + 16 sections `Admin *` | `/admin#<section>` → `/admin/<section>` |

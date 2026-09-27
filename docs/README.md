@@ -16,7 +16,7 @@ Le modèle économique repose sur les artisans : **abonnement Premium** (79,90 �
 
 Les fichiers `.dc.html` de `designs/` sont des **références de design en HTML** : des prototypes qui montrent l'apparence et le comportement attendus. **Ce n'est pas du code de production à copier.** Il faut **recréer ces écrans en Next.js** (App Router, TypeScript) avec des composants React propres, en reprenant fidèlement la mise en page, les couleurs, la typographie, les textes et la logique.
 
-Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et `</x-dc>`) et d'une classe JS `Component` avec `renderVals()`, qui contient **toute la logique métier** : calculs, règles, filtres et tri. Cette logique est du JavaScript pur. Il faut l'**extraire telle quelle dans des modules `lib/`** et la couvrir de tests unitaires.
+Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et `</x-dc>`) et d'une classe JS `Component` avec `renderVals()`, qui contient **toute la logique métier** : calculs, règles, filtres et tri. Cette logique est du JavaScript pur. Il faut l'**extraire telle quelle dans `packages/core/`** et la couvrir de tests unitaires.
 
 ## Fidélité
 
@@ -34,13 +34,13 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `ADMIN.md` | **Back-office** : rôles, permissions, écrans, Functions admin, prix des appels d'offres |
 | `EMAILS.md` | **Emails, SMS, notifications** : architecture d'envoi, préférences, catalogue complet des modèles, parcours d'inscription, anti-abus, tests |
 | `CONVERSION.md` | **Conversion et montée en gamme** : cycle de vie artisan, séquences d'emails, score et offre cible, remises, rétention, mesure |
-| `COMPORTEMENT.md` | **Analyse comportementale** : traceur (curseur, arrêts, clics, clics morts, rage, défilement, sorties), chaîne BigQuery, algorithmes des cartes et de détection, tests A/B, RGPD |
+| `COMPORTEMENT.md` | **Analyse comportementale** : traceur (curseur, arrêts, clics, clics morts, rage, défilement, sorties), agrégation Firestore (BigQuery seulement au-delà du seuil de bascule), algorithmes des cartes et de détection, tests A/B, RGPD |
 | `IA_ADMIN.md` | **Assistant IA de l'admin** : périmètres, architecture (Function + API Claude + outils en lecture), contrat JSON, actions, garde-fous |
 | `COUTS.md` | **Coûts** : estimation mensuelle et règles d'économie (agrégation navigateur, échantillonnage, TTL, IA Haiku + cache, alertes budget) |
 | `MOBILE.md` | **Règles mobile** : mobile d'abord, points de rupture, cibles tactiles, formulaires (inputmode, autocomplete), navigation, motifs par écran, PWA et notifications, tests sur appareils |
 | `STATS_DEMANDES.md` | **Nombre de demandes affiché aux artisans** : modèle (population, rayon, saison, part du métier), bascule vers le réel |
 | `MISE_EN_PROD.md` | **Mise en production pas à pas** : comptes, clés, domaine, déploiement, lancement, retour arrière |
-| `PROGRESSION.md` | **Suivi des lots** : ce qui est fait, ce qui reste, comment reprendre après une interruption |
+| `AVANCEMENT.md` | **Suivi des lots** : ce qui est fait, ce qui reste, incohérences tranchées, comment reprendre après une interruption |
 | `IMPORT_LEADS.md` | **Contrat d'envoi des demandes partenaires** (à transmettre au partenaire) |
 | `RECHERCHE.md` | **Recherche de projet** : intentions, synonymes, fautes, score, suggestions, Typesense, amélioration continue, tests de pertinence |
 | `REPRISE_PARCOURS.md` | **Reprise d'un parcours interrompu** (simulateur, diagnostic, avis, onboarding) : local, compte, lien par email, écran « Reprendre / Recommencer », cas limites, critères |
@@ -52,7 +52,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `data/` | Données extraites des maquettes en JSON (prestations, diagnostics, communes, démo) |
 | `claude/` | Configuration Claude Code à copier en `.claude/` : réglages, commandes, sous-agents |
 | `CLAUDE.md` | Règles du projet pour Claude Code, **à copier à la racine du dépôt** |
-| `PROMPT_CLAUDE_CODE.md` | Les 13 prompts à coller dans l'ordre (un par session), plus les prompts de reprise, de correction et de relecture |
+| `PROMPT_CLAUDE_CODE.md` | Les prompts des 19 lots (0, 1a, 1b, 2 à 12, 12b, 13, 13b, 13c, 14) à coller dans l'ordre (un par session), plus les prompts de reprise, de correction et de relecture |
 | `designs/` | Toutes les maquettes `.dc.html` |
 
 ---
@@ -62,7 +62,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - **Next.js 15** (App Router, Server Components, Server Actions, Route Handlers), TypeScript strict
 - **Firebase** : Auth (email/mot de passe, lien magique, téléphone pour les artisans), Firestore, Storage, Cloud Functions (v2), App Check
 - **Stripe** : Billing (abonnements), Checkout, Customer Portal, Stripe Tax (TVA FR 20 %), codes promo
-- **Emails** : Resend et React Email (ou Brevo). Modèles en React, envoi depuis les Cloud Functions ou les Route Handlers
+- **Emails** : Resend et React Email ; SMS par Brevo. Modèles en React, envoi depuis les Cloud Functions ou les Route Handlers
 - **Validation** : Zod, avec des schémas partagés entre client et serveur
 - **Formulaires** : React Hook Form
 - **Hébergement** : Vercel (front) et Firebase (backend), région `europe-west1` / `eur3` obligatoire (RGPD)
@@ -79,7 +79,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/artisans` | `Annuaire Artisans.dc.html` | SSR (filtres en query string) |
 | `/artisans/[slug]` | `Ma Fiche.dc.html` (vue publique) | ISR |
 | `/simulateur` | `Simulateur de Devis.dc.html` | Client, étapes en state + `?etape=` |
-| `/avis` | `Laisser un Avis.dc.html` | Client |
+| `/avis` | `Laisser un Avis.dc.html` | Client ; `?jeton=` (lien reçu par email) préremplit l'artisan |
 | `/mon-espace` | `Mon Espace Particulier.dc.html` (projets, devis, messages, avis, compte ; tweak `etatVide`) | Auth particulier |
 
 ### Diagnostic (bleu)
@@ -95,7 +95,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/pro` | `Acquisition Artisans v2.dc.html` | SSG |
 | `/pro/inscription/zone` | `Onboarding Etape 2.dc.html` | Client |
 | `/pro/inscription/compte` | `Onboarding Etape 3.dc.html` | Client |
-| `/pro/connexion` | `Connexion.dc.html` | Client |
+| `/connexion` | `Connexion.dc.html` | Client, tous publics ; `?espace=pro` applique la charte orange ; `/pro/connexion` redirige ici |
 | `/pro/tableau-de-bord` | `Espace Artisan Dashboard.dc.html` (+ variante `… on boarding`) | Auth artisan |
 | `/pro/demandes` | `Mes Demandes.dc.html` | Auth artisan |
 | `/pro/appels-d-offres` | `Appels d Offres.dc.html` | Auth artisan |
@@ -105,8 +105,8 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/pro/invitation`, `/pro/rejoindre` | `Invitation.dc.html` (états : valide, autre email, expirée, demander à rejoindre) | Public |
 | `/pro/compte` | `Mon Compte.dc.html` (profil, 2FA, appareils, notifications, données) | Auth artisan |
 | `/pro/statistiques` | `Statistiques.dc.html` | Auth artisan, **Premium uniquement** |
-| `/pro/abonnement/premium` | `Paiement Offre Premium.dc.html` | Redirection vers **Stripe Checkout** |
-| `/pro/abonnement/visibilite` | `Paiement Option Visibilite.dc.html` | Redirection vers **Stripe Checkout** |
+| `/pro/abonnement/premium` | `Paiement Offre Premium.dc.html` | `?facturation=annuel\|mensuel&code=`, puis **Stripe Checkout** |
+| `/pro/abonnement/visibilite` | `Paiement Option Visibilite.dc.html` | `?facturation=annuel\|mensuel&code=`, puis **Stripe Checkout** |
 
 ### Communes
 | Route | Maquette |
@@ -130,7 +130,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - Sections dans l'ordre : Métiers (grille auto-fit 210px + carte CTA simulateur), Comment ça marche (3 étapes), Simulateur (mock d'estimation), Artisans vérifiés (3 cartes), Avis (4,8/5 + 3 témoignages + CTA « Laisser un avis »), Inspirations, App mobile (fond foncé, mock téléphone), Villes, bandeau « Vous êtes artisan ? » en orange, FAQ, CTA final, footer
 - Tweaks (props) : `nbDemandesMois`, `nbArtisans`, `nbVilles`, `bandeauArtisan`. En production, ces chiffres viennent du document `stats/public`
 
-### Simulateur de devis (`/simulateur`), à extraire dans `lib/simulateur/`
+### Simulateur de devis (`/simulateur`), à extraire dans `packages/core/simulateur/`
 - 5 étapes : Prestation → Projet → Options → Chantier → Estimation, puis confirmation
 - **9 prestations** (peinture, salle de bain, cuisine, électricité, plomberie, carrelage, isolation, toiture, menuiseries). Chacune a ses champs et sa formule `calculer(p, v)` ; voir la constante `PRESTATIONS` et la fonction `calculer` dans la maquette
 - Types de champs : `slider` (min/max/pas), `stepper` (+/−), `options` (choix unique), `chips` (choix multiple)
@@ -142,7 +142,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - **Les grilles de prix doivent être stockées dans Firestore** (`referentiel/prestations/items`) et non codées en dur, pour être ajustables depuis l'admin
 - À l'envoi : création d'un document `demandes` (voir DATABASE.md), email au client, notification aux artisans ciblés
 
-### Parcours diagnostic (`/diagnostic-immobilier/estimation`), à extraire dans `lib/diagnostic/`
+### Parcours diagnostic (`/diagnostic-immobilier/estimation`), à extraire dans `packages/core/diagnostic/`
 - 3 étapes puis confirmation : **Le bien** (adresse, commune, motif, type, période, surface) → **Existants** (gaz, électricité, assainissement, classe DPE, diagnostics déjà faits avec leur année) → **Dossier** (liste statuée + formulaire de contact)
 - Moteur de règles `DIAGS[].req(ctx)` avec les statuts `à réaliser`, `à refaire`, `déjà valide`, `conseillé`
 - Validités : DPE 10 ans mais invalide si antérieur à 2021 ; amiante illimité mais invalide si antérieur à 2013 ; termites 6 mois ; ERP 6 mois ; gaz et électricité 3 ans ; plomb 1 an ; assainissement 3 ans ; audit 5 ans

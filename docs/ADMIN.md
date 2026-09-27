@@ -79,16 +79,16 @@ Liste unifiée `filesModeration`, triée par priorité puis ancienneté, avec as
 - Liste et détail : réponses, estimation, **trace de l'algorithme** (`matching/{demandeId}` : candidats, scores, raisons d'exclusion)
 - Actions : **réattribuer** (ajouter ou retirer un artisan manuellement), relancer l'algorithme, convertir en appel d'offres, marquer comme spam, annuler
 
-### 2.5 Appels d'offres et prix `/admin/leads`
+### 2.5 Appels d'offres et prix `/admin/appels-d-offres`
 - Liste : prix courant, mode (`auto`, `manuel`, `gratuit`), nombre de déblocages sur le maximum, temps écoulé depuis l'ouverture, qualité du lead
 - **Éditeur de prix** sur chaque appel d'offres :
   - affichage du détail du calcul automatique (base × coefficients)
   - passage en **prix manuel** (HT, prix Premium, crédits), dans les bornes plancher et plafond ; au-delà, permission `leads.prix_illimite` requise
   - **promo** (pourcentage et date de fin), **gratuit**, modification du nombre maximal de déblocages, changement de l'accès (tous, Premium seul, Premium prioritaire)
   - motif obligatoire, historique affiché
-- **Barèmes** `/admin/leads/baremes` : édition de `grillesTarifaires` (prix de base par métier, coefficients, remise Premium, valeur du crédit), **simulateur** qui montre l'effet d'une modification sur les 50 derniers leads avant publication, versionnement
-- **Packs de crédits** `/admin/leads/packs` : création et modification (synchronisées avec les prix Stripe)
-- **Remboursements** `/admin/leads/remboursements` : file des contestations ; accepter (en crédits ou sur la carte) ou refuser avec motif. Au-delà de 3 contestations acceptées sur un même particulier, le lead est automatiquement marqué comme douteux
+- **Barèmes** `/admin/appels-d-offres/baremes` : édition de `grillesTarifaires` (prix de base par métier, coefficients, remise Premium, valeur du crédit), **simulateur** qui montre l'effet d'une modification sur les 50 derniers leads avant publication, versionnement
+- **Packs de crédits** `/admin/appels-d-offres/packs` : création et modification (synchronisées avec les prix Stripe)
+- **Remboursements** `/admin/appels-d-offres/remboursements` : file des contestations ; accepter (en crédits ou sur la carte) ou refuser avec motif. Au-delà de 3 contestations acceptées sur un même particulier, le lead est automatiquement marqué comme douteux
 
 ### 2.6 Avis `/admin/avis`
 File `en_attente`, avec un score de risque (même IP, compte récent, texte dupliqué, auteur lié à l'artisan). Actions : publier, refuser (motif prédéfini, envoyé à l'auteur), demander une preuve, suspendre. Signalements. Aucune modification du texte n'est possible (politique d'avis), seulement un masquage partiel de données personnelles, journalisé.

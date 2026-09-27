@@ -1,30 +1,43 @@
 # Avancement — Portail Habitat
 
-Produit au lot 0 (cadrage, 27/09/2026). Mis à jour à la fin de chaque lot.
-Légende : ⬜ à faire · 🟡 en cours · ✅ terminé · ⏸ bloqué
+Produit au lot 0 (cadrage, 27/09/2026). Mis à jour à la fin de chaque lot, puis commité.
+Légende : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE verts) · ⏸ bloqué (raison dans Notes)
 
 ## 1. Lots
 
-- [ ] **Lot 0** — Cadrage : ce document. 🟡 En attente de vos réponses (§2 à §4).
-- [ ] **Lot 1** — Socle technique, système de composants (monorepo, tokens 4 thèmes, primitives, Storybook, CI, émulateurs)
-- [ ] **Lot 2** — Modèle de données et sécurité (schémas Zod de DATABASE §16, règles, index, TTL, `peut()`, flags)
-- [ ] **Lot 3** — Logique métier pure (simulateur 9 + 103 prestations, diagnostic, recherche, parcours, stats, prix, annuaire, matching)
-- [ ] **Lot 4** — Comptes, entreprises, équipes, jeu de données (seed)
-- [ ] **Lot 5** — Emails, SMS, notifications (`notifier()`, React Email, Mailpit)
-- [ ] **Lot 6** — Pages publiques, SEO, bandeau cookies
-- [ ] **Lot 7** — Recherche de projet (Typesense + repli local)
-- [ ] **Lot 8** — Parcours particuliers et espace particulier
-- [ ] **Lot 9** — Annuaire et fiche publique
-- [ ] **Lot 10** — Espace artisan, équipes, PWA
-- [ ] **Lot 11** — Stripe (Visibilité, Premium, sièges, packs, webhooks)
-- [ ] **Lot 12** — Matching et appels d'offres
-- [ ] **Lot 12b** — Import des demandes partenaires
-- [ ] **Lot 13** — Back-office (16 sections, permissions)
-- [ ] **Lot 13b** — Moteur de conversion et séquences d'emails
-- [ ] **Lot 13c** — Comportement des visiteurs, audit IA, assistant de rédaction
-- [ ] **Lot 14** — Qualité, exploitation, préparation de la mise en production
+Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interruption, c'est ici qu'on regarde où on en est (prompt « Reprise » de PROMPT_CLAUDE_CODE.md).
 
-## 2. Incohérences et zones floues (avec proposition)
+| Lot | Contenu | Statut | Terminé le | Tests | Notes |
+|---|---|---|---|---|---|
+| 0 | Cadrage | ✅ | 27/09/2026 | — | incohérences tranchées, documents corrigés (§2) |
+| 1a | Socle technique : monorepo, outillage, CI, émulateurs | ⬜ | | typecheck, lint, test | |
+| 1b | Design system, composants, Storybook | ⬜ | | axe, cibles, MOB-01 à 03 | |
+| 2 | Données et sécurité | ⬜ | | règles | |
+| 3 | Logique métier pure | ⬜ | | unitaires | |
+| 4 | Comptes, équipes, seed | ⬜ | | CON, EQU, INV | |
+| 5 | Emails, SMS, notifications | ⬜ | | MAIL | |
+| 6 | Pages publiques, SEO, cookies | ⬜ | | ACC, DIA-05 | |
+| 7 | Recherche | ⬜ | | pertinence, RCH | |
+| 8 | Parcours particuliers | ⬜ | | SIM, ESP, DIA, AVI | |
+| 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
+| 10 | Espace artisan, équipes, PWA | ⬜ | | ACQ, ONB, PRO | |
+| 11 | Stripe | ⬜ | | PAY | |
+| 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
+| 12b | Demandes partenaires | ⬜ | | IMP | |
+| 13 | Back-office | ⬜ | | ADM | |
+| 13b | Conversion, séquences | ⬜ | | CONV | |
+| 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
+| 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
+
+### Lot en cours
+- Lot : 1a (plan proposé, en attente de validation)
+- Fait : —
+- Reste : tout le lot
+- Dernier commit : voir `git log`
+
+## 2. Incohérences et zones floues
+
+**Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
 
 1. **Deux fichiers de suivi.** CLAUDE.md, PLAN_DEV §2 et README citent `PROGRESSION.md` ; CLAUDE.md (« Où trouver quoi »), ARCHITECTURE §13 et les commandes `/nouveau-lot`, `/fin-lot`, `/reprise` citent `AVANCEMENT.md`.
    → *Proposition* : `AVANCEMENT.md` = suivi détaillé (ce fichier), `PROGRESSION.md` = tableau de statut court ; les deux mis à jour par `/fin-lot`. Ou fusionner dans `AVANCEMENT.md` et supprimer `PROGRESSION.md` (plus simple).
@@ -101,14 +114,18 @@ Non bloquants avant le lot 5 : D2, D3, D4 (lot 7), D7, D19, D21, D23, D29, D32, 
 
 Les clés passent uniquement par `.env.local` (non commité) et les secrets Vercel / Firebase, jamais par le chat.
 
-## 5. Questions pour vous
+## 5. Réponses du cadrage (27/09/2026)
+1. Suivi : fusion dans `AVANCEMENT.md` (D43).
+2. Routes : proposition validée (D40).
+3. Une demande du site hors quota Premium garanti devient automatiquement un appel d'offres (D41, MATCHING, DATABASE §4).
+4. Lot 1 découpé en 1a et 1b (D43, PROMPT_CLAUDE_CODE, PLAN_DEV §3).
+5. D5, D6, D8, D15, D17 : propositions par défaut retenues.
+6. Corrections documentaires appliquées (§2 n° 3 à 11). N° 13 (rayon de l'annuaire) : proposition retenue, à reporter dans MATCHING §4 au lot 9. N° 12 : libellé de la case corrigé dans DATABASE.
 
-1. Suivi : fusionner `PROGRESSION.md` dans `AVANCEMENT.md` (§2 n° 1) ?
-2. Routes : validez-vous la proposition du §2 n° 2 ?
-3. Une demande du site hors demande garantie Premium devient-elle un appel d'offres (§2 n° 12) ?
-4. Découper le lot 1 en 1a / 1b (§2 n° 15) ?
-5. Les propositions par défaut de D5, D6, D8, D15, D17 vous conviennent-elles pour démarrer le lot 1 ?
-6. Dois-je appliquer les corrections documentaires du §2 (n° 3 à 11) dans `docs/` avant le lot 1 ?
+## Décisions prises en cours de route
+(date, décision, document mis à jour)
+- 27/09/2026 — D40 routes, D41 aiguillage des demandes, D42 emplacement du code et Tailwind 4, D43 suivi et découpage du lot 1 — DECISIONS, PLAN_DEV, README, ACCEPTANCE, INTEGRATIONS, CONVERSION, ADMIN, MATCHING, DATABASE, EMAILS, IA_ADMIN, COMPTES, ARCHITECTURE, PROMPT_CLAUDE_CODE, CLAUDE.md.
 
 ## Journal
-- 27/09/2026 — Rangement du dépôt (`docs/`, `CLAUDE.md` et `.claude/` à la racine). Lot 0 : cadrage produit, en attente des réponses.
+- 27/09/2026 — Rangement du dépôt (`docs/`, `CLAUDE.md` et `.claude/` à la racine). Lot 0 : cadrage produit.
+- 27/09/2026 — Réponses reçues, documents corrigés, lot 0 clos.

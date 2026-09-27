@@ -176,7 +176,7 @@ cycleEtat/{artisanId} {      ← document séparé d'artisans/{id} : ne redécle
   emailsNonOuvertsConsecutifs, enVeille, pause? { par, depuis, motif }, exclu }
 codesPromo/{code}     (collection existante, DATABASE.md §8) + source 'conversion', artisanId, modele
 ```
-- Les codes sont créés côté Stripe (`promotion_codes` : `max_redemptions: 1`, `expires_at`, `customer`) et appliqués **automatiquement** via le lien du bouton (`/pro/paiement?code=…`). L'artisan n'a rien à saisir.
+- Les codes sont créés côté Stripe (`promotion_codes` : `max_redemptions: 1`, `expires_at`, `customer`) et appliqués **automatiquement** via le lien du bouton (`/pro/abonnement/[offre]?facturation=…&code=…`). L'artisan n'a rien à saisir.
 - Montée en gamme en cours de période : `proration_behavior: 'create_prorations'` (Visibilité restante déduite).
 - La position est calculée à partir du classement réel de l'annuaire sur la requête « métier + commune du siège ».
 

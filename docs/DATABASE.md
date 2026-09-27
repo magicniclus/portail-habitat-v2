@@ -237,7 +237,7 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 | `precisions` | string? | |
 | `photos` | `[{ storagePath }]` | |
 | `estimation` | `{ minCentimes, maxCentimes, coefRegion, coefAcces, aidesCentimes, postes: [{ label, min, max }], versionReferentiel }` | **figée au moment de l'envoi** |
-| `miseEnRelation` | bool | case « jusqu'à 3 artisans » |
+| `miseEnRelation` | bool | case « Être mis en relation avec des artisans » : demande garantie Premium (1 artisan) si un Premium a du quota, sinon appel d'offres (3 réponses max), voir MATCHING |
 | `artisanCibleId` | string? | si la demande part d'une fiche |
 | `statut` | `'nouvelle' \| 'en_attribution' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
 | `nbAttributions` | number (≤ 3) | |
@@ -343,7 +343,7 @@ Un appel d'offres est une demande **anonymisée** publiée pour les artisans de 
 | `arrondi` | 100 (arrondi à l'euro) |
 | `version`, `modifiePar`, `updatedAt` | |
 
-**Formule** (`lib/leads/prix.ts`, testée) :
+**Formule** (`packages/core/leads/prix.ts`, testée) :
 ```
 prix = arrondi( clamp( prixBaseParMetier[metier]
         × coefBudget[tranche] × coefUrgence[urgence]
@@ -446,7 +446,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 
 ### `referentiel/prestations/items/{id}`
 `nom`, `pitch`, `repere`, `icone`, `ordre`, `actif`, `tva` (0,055 ou 0,10), `champs: [{ id, kind, label, aide, min?, max?, pas?, def?, unite?, etape, options?: [{ v, label, desc, coef? }] }]`, `formule` (identifiant de la fonction dans le code, `calcPeinture` par exemple), `parametres` (tous les prix unitaires sous forme de JSON, modifiables dans l'admin), `version`, `updatedAt`.
-> La **formule** vit dans le code (`lib/simulateur/formules.ts`) ; les **nombres** vivent dans Firestore. Chaque demande garde la `versionReferentiel` utilisée.
+> La **formule** vit dans le code (`packages/core/simulateur/formules.ts`) ; les **nombres** vivent dans Firestore. Chaque demande garde la `versionReferentiel` utilisée.
 
 ### `referentiel/diagnostics/items/{id}`
 `nom`, `prixMin`, `prixMax`, `validiteAns`, `invalideAvantAnnee?`, `quand`, `validiteTexte`, `note`, `regle` (identifiant de la fonction), `icone`, `conseille: bool`, `version`.

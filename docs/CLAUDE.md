@@ -33,8 +33,8 @@ Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, 
 - Back-office : `docs/ADMIN.md` · Algorithme : `docs/MATCHING.md` · Demandes partenaires : `docs/IMPORT_LEADS.md` (contrat du webhook) + `docs/DATABASE.md` §4 bis
 - Conversion et séquences d'emails : `docs/CONVERSION.md` · Comportement des visiteurs : `docs/COMPORTEMENT.md` · Assistant IA : `docs/IA_ADMIN.md`
 - **Coûts** : `docs/COUTS.md` (règles d'économie à respecter dans tout le code)
-- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `lib/`)
-- Avancement et décisions : `docs/AVANCEMENT.md` (à mettre à jour à la fin de chaque lot)
+- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `packages/core/`)
+- Avancement, reprise et décisions : `docs/AVANCEMENT.md` (seul fichier de suivi, à mettre à jour à la fin de chaque lot)
 
 ## Architecture (détail : `docs/ARCHITECTURE.md`, à suivre strictement)
 ```
@@ -54,7 +54,7 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 
 ## Règles non négociables
 1. Montants en **centimes entiers**. Jamais de `float` pour de l'argent.
-2. Toute entrée passe par un **schéma Zod** de `lib/schemas`, côté client **et** côté serveur.
+2. Toute entrée passe par un **schéma Zod** de `packages/core/schemas`, côté client **et** côté serveur.
 3. Les prix (simulateur, leads, diagnostic) sont **recalculés côté serveur** ; la valeur du client est ignorée.
 4. `plan`, `optionVisibilite`, `siegesMax` : écrits **uniquement** par le webhook Stripe.
 5. Écritures sensibles (demandes, avis, crédits, membres, prix) : **Function ou Server Action uniquement**, en transaction, avec vérification `peut()` et `auditLog` si admin.
@@ -68,11 +68,11 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - Commence chaque lot par un **plan** ; n'écris pas de code avant validation.
 - Logique métier : **tests d'abord**, puis implémentation.
 - Ne pas ajouter de dépendance, changer le modèle de données ou une règle de sécurité **sans le signaler** dans le plan.
-- Un lot = une branche `lot-XX-nom` = des commits atomiques en français (`feat(simulateur): …`).
+- Un lot = une branche `lot-XX-nom` (en session web : la branche imposée par la session) = des commits atomiques en français (`feat(simulateur): …`).
 - Un lot est terminé quand `pnpm typecheck && pnpm lint && pnpm test` passent et que les écrans correspondent aux maquettes.
 - En cas de doute sur une règle métier : **demander**, ne pas inventer.
 
 ## Suivi et reprise
-- À la fin de chaque lot (et avant toute pause longue) : mets à jour `docs/PROGRESSION.md` (statut, date, tests passés, ce qui reste), puis commite.
+- À la fin de chaque lot (et avant toute pause longue) : mets à jour `docs/AVANCEMENT.md` (statut, date, tests passés, ce qui reste), puis commite.
 - Commits petits et fréquents : une fonctionnalité qui passe ses tests = un commit. Une session interrompue ne doit jamais perdre plus d'une heure de travail.
 - Ne déploie jamais en production sans le « go » explicite du propriétaire.

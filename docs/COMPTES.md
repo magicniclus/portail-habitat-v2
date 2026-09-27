@@ -152,7 +152,7 @@ Autorisé (un gérant peut avoir deux sociétés). Limite : 10 entreprises par p
 | Inviter, modifier ou retirer des membres | ✓ | ✓ (sauf propriétaire et gérants) | — | — |
 | Transférer la propriété, fermer l'entreprise | ✓ | — | — | — |
 
-Constantes dans `lib/equipe/permissions.ts` : `PERMISSIONS_PAR_ROLE` + surcharge par `membres.permissions`. Une seule fonction `peut(membre, action)` utilisée par l'UI **et** par chaque Server Action / Function.
+Constantes dans `packages/core/equipe/permissions.ts` : `PERMISSIONS_PAR_ROLE` + surcharge par `membres.permissions`. Une seule fonction `peut(membre, action)` utilisée par l'UI **et** par chaque Server Action / Function.
 
 ### 4.2 Invitation (`invitations/{id}`)
 `artisanId`, `email` (minuscules), `role`, `permissions?`, `metiers?`, `invitePar`, `jetonHash` (SHA-256 du jeton envoyé par email ; le jeton n'est jamais stocké en clair), `statut` (`envoyee`, `acceptee`, `revoquee`, `expiree`), `expireLe` (+7 j), `acceptePar?`, `createdAt`.
@@ -216,7 +216,7 @@ Le portefeuille est **celui de l'entreprise**. Chaque `mouvements/{id}` porte `p
 
 ## 6. Simulation
 
-### 6.1 Simulateur de devis (`/simulateur`, `lib/simulateur/`)
+### 6.1 Simulateur de devis (`/simulateur`, `packages/core/simulateur/`)
 La logique vit dans `Simulateur de Devis.dc.html` (`PRESTATIONS`, `calculer`, `coefRegion`). À extraire telle quelle.
 
 **Pipeline** :

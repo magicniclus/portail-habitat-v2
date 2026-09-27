@@ -14,7 +14,7 @@ Ordre pensé pour que **chaque lot s'appuie sur des fondations déjà testées**
 > Tous les 2 ou 3 lots : `/duplication`. Avant chaque fusion : `/relecture`.
 
 > **Interruption (crédits, coupure, session fermée)** : rien n'est perdu si vous avez commité. Ouvrez une nouvelle session et collez le prompt « Reprise » en bas de ce fichier.
-> **Après chaque lot** : Claude Code met à jour `docs/PROGRESSION.md` et commite. C'est ce fichier qui permet de reprendre.
+> **Après chaque lot** : Claude Code met à jour `docs/AVANCEMENT.md` et commite. C'est ce fichier qui permet de reprendre.
 
 ---
 
@@ -29,21 +29,30 @@ Ne code rien. Produis docs/AVANCEMENT.md avec :
 Puis attends mes réponses.
 ```
 
-## Lot 1 — Socle technique et système de composants
+## Lot 1a — Socle technique
 ```
-Lot 1 : socle. Lis CLAUDE.md, docs/ARCHITECTURE.md en entier, docs/MOBILE.md en entier, docs/EXPLOITATION.md §1 et docs/README.md (Stack cible, Design tokens, Logos).
+Lot 1a : socle. Lis CLAUDE.md, docs/ARCHITECTURE.md en entier, docs/EXPLOITATION.md §1 et §5, docs/DECISIONS.md §5.
 Plan d'abord, puis :
-- monorepo pnpm + Turborepo selon ARCHITECTURE.md §2 (apps/web, apps/functions, packages/core, ui, emails, firebase, config) ;
-- TypeScript strict, ESLint + eslint-plugin-boundaries (§3) + règles maison (pas de hex hors tokens, pas de collection() hors packages/firebase), Prettier, Knip, Vitest, Playwright ;
-- packages/ui/tokens : source unique des 4 thèmes (vert, orange, bleu, ardoise) → themes.css + preset Tailwind ;
-- primitives et patterns de ARCHITECTURE §5.3 (Logo, Button, Chip, Field, Input, Select, RadioCard, Badge, StatusBadge, Card, Stepper, Modal, ConfirmDialog, EmptyState, Skeleton, Banner, Combobox, Toast) avec cva, Radix, forwardRef, asChild ;
-- mobile d'abord (MOBILE.md) : points de rupture et --space-page dans le preset, composants Sheet (feuille du bas), BottomNav, StickyActionBar, Field avec inputmode/autocomplete par type, Select natif avec optgroup ; Modal → Sheet sous 640 px ;
-- Storybook avec sélecteur de thème ET de taille d'écran (320, 390, 768, 1280) ; chaque composant : story dans les 4 thèmes + test jest-axe + test de cible tactile ≥ 44 px ;
+- monorepo pnpm + Turborepo selon ARCHITECTURE.md §2 (apps/web, apps/functions, packages/core, ui, emails, firebase, config), Node 22 ;
+- TypeScript strict, ESLint + eslint-plugin-boundaries (§3) + règles maison (pas de hex hors tokens, pas de collection() hors packages/firebase), Prettier, Knip, Vitest, Playwright (projets iPhone 13, iPhone SE, Pixel 7 et ordinateur) ;
 - packages/core/format (euros en centimes, dates, téléphone, SIREN) testé ; enveloppes action() et callable() (§7) avec App Check, Zod, codes d'erreur centralisés ;
-- apps/web : layouts des 4 segments avec data-theme, next/font ; pages not-found, error et maintenance d'après docs/designs/Pages Erreur.dc.html ;
+- apps/web : Next.js 15 minimal (page d'accueil provisoire), /api/health ;
 - Firebase : émulateurs, apps/functions branché sur packages/core ; garde-fou qui fait échouer les tests hors émulateur ;
-- Sentry (site + Functions), /api/health ; CI GitHub Actions (typecheck, lint, boundaries, knip, test, build Storybook, Lighthouse CI mobile avec le budget EXPLOITATION §1) ; projets Playwright iPhone 13, iPhone SE, Pixel 7 et ordinateur, avec les tests automatiques MOB-01 à 03.
-Terminé quand pnpm dev démarre site + émulateurs, Storybook affiche tous les composants dans les 4 thèmes, la CI est verte. Mets à jour AVANCEMENT.md.
+- Sentry (site + Functions) ; CI GitHub Actions (typecheck, lint, boundaries, knip, test, build).
+Terminé quand pnpm dev démarre site + émulateurs et que typecheck, lint, knip et test passent en CI. Mets à jour AVANCEMENT.md.
+```
+
+## Lot 1b — Design system et composants
+```
+Lot 1b : composants. Lis CLAUDE.md, docs/ARCHITECTURE.md §4-5, docs/MOBILE.md en entier et docs/README.md (Design tokens, Logos). Ouvre docs/designs/_ds/ et docs/designs/Pages Erreur.dc.html.
+Plan d'abord, puis :
+- packages/ui/tokens : source unique des 4 thèmes (vert, orange, bleu, ardoise) → themes.css + thème Tailwind 4 (@theme) ;
+- primitives et patterns de ARCHITECTURE §5.3 (Logo, Button, Chip, Field, Input, Select, RadioCard, Badge, StatusBadge, Card, Stepper, Modal, ConfirmDialog, EmptyState, Skeleton, Banner, Combobox, Toast) avec cva, Radix, forwardRef, asChild ;
+- mobile d'abord (MOBILE.md) : points de rupture et --space-page, composants Sheet (feuille du bas), BottomNav, StickyActionBar, Field avec inputmode/autocomplete par type, Select natif avec optgroup ; Modal → Sheet sous 640 px ;
+- Storybook avec sélecteur de thème ET de taille d'écran (320, 390, 768, 1280) ; chaque composant : story dans les 4 thèmes + test jest-axe + test de cible tactile ≥ 44 px ;
+- apps/web : layouts des 4 segments avec data-theme, next/font ; pages not-found, error et maintenance d'après Pages Erreur.dc.html ;
+- CI : build Storybook, Lighthouse CI mobile (budget EXPLOITATION §1), tests automatiques MOB-01 à 03.
+Terminé quand Storybook affiche tous les composants dans les 4 thèmes et que la CI est verte. Mets à jour AVANCEMENT.md.
 ```
 
 ## Lot 2 — Modèle de données et sécurité
@@ -89,7 +98,7 @@ Pas d'écran, sauf /dev/comptes minimale pour tester à la main. Mets à jour AV
 ```
 Lot 5 : envois. Lis docs/EMAILS.md en entier. Maquette : docs/designs/Modeles Emails.dc.html.
 Plan d'abord, puis :
-- lib/notifications/notifier.ts : seule porte d'entrée, canaux, préférences, catégories, idempotence (emails/), liste de blocage (suppressions/) ;
+- apps/functions/src/notifications/notifier.ts : seule porte d'entrée, canaux, préférences, catégories, idempotence (emails/), liste de blocage (suppressions/) ;
 - Cloud Tasks : envoi, nouvelles tentatives, envois différés avec encoreValable(), regroupement 15 min, heures calmes SMS ;
 - packages/emails : les 14 blocs réutilisables (EMAILS §3), les 4 layouts, TOUS les modèles §4.1 à 4.3 + reprise-simulateur ; les autres en squelette (sujet + données exemple), complétés dans les lots concernés ;
 - emails Auth personnalisés envoyés par notifier() ; webhook Resend ; désabonnement en un clic ; page /preferences ;
@@ -221,7 +230,7 @@ Ne déploie rien en production : prépare seulement. Mets à jour AVANCEMENT.md.
 
 **Reprise après une interruption**
 ```
-Reprise. Lis CLAUDE.md, docs/PROGRESSION.md et `git log --oneline -20`, puis `git status`.
+Reprise. Lis CLAUDE.md, docs/AVANCEMENT.md et `git log --oneline -20`, puis `git status`.
 1. Dis-moi quel lot était en cours, ce qui est commité, et ce qui est modifié mais pas commité.
 2. Lance les tests (pnpm test, pnpm test:rules, pnpm e2e --grep du lot) et dis-moi ce qui passe.
 3. Propose un plan pour terminer le lot en cours, sans refaire ce qui est déjà fait.

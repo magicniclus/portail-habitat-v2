@@ -11,10 +11,10 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D2 | SMS | **Brevo SMS** (société française, données UE) | ⏳ |
 | D3 | Newsletters et marketing | **Brevo** (même compte que les SMS) | ⏳ |
 | D4 | Recherche plein texte de l'annuaire | **Typesense Cloud** (région UE, moins cher qu'Algolia à ce volume) | ⏳ |
-| D5 | Hébergement du site | **Vercel**, région `cdg1` (Paris) pour les fonctions | ⏳ |
-| D6 | Suivi des erreurs | **Sentry** (région UE) | ⏳ |
+| D5 | Hébergement du site | **Vercel**, région `cdg1` (Paris) pour les fonctions | ✅ |
+| D6 | Suivi des erreurs | **Sentry** (région UE) | ✅ |
 | D7 | Analytics | **Plausible** ou Matomo auto-hébergé (sans cookie, pas de consentement requis) | ⏳ |
-| D8 | Feature flags | **Firebase Remote Config** + surcharge par artisan dans Firestore (voir EXPLOITATION.md §4) | ⏳ |
+| D8 | Feature flags | **Firebase Remote Config** + surcharge par artisan dans Firestore (voir EXPLOITATION.md §4) | ✅ |
 | D9 | Antivirus des documents | extension Firebase « Scan files » (ClamAV sur Cloud Run) | ⏳ |
 | D10 | Vérification SIREN | API Recherche d'entreprises (gratuite) + API Sirene INSEE (clé gratuite) | ✅ |
 | D11 | Paiement | Stripe Checkout + Billing + Tax | ✅ |
@@ -25,9 +25,9 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 |---|---|---|---|
 | D13 | Nom de domaine principal | `portailhabitat.fr` (à vérifier et réserver, avec `.com` en redirection) | 🔒 |
 | D14 | Sous-domaines | `pro.` non : tout sur le même domaine (`/pro`), meilleur pour le SEO. Emails : `notifications.portailhabitat.fr` | ⏳ |
-| D15 | Projets Firebase | `portail-habitat-dev`, `-staging`, `-prod` (plan Blaze, alertes de budget à 50 €, 200 €, 500 €) | ⏳ |
+| D15 | Projets Firebase | `portail-habitat-dev`, `-staging`, `-prod` (plan Blaze, alertes de budget à 50 €, 200 €, 500 €) | ✅ |
 | D16 | Compte Stripe | un compte, mode test pour dev et staging | ✅ |
-| D17 | Dépôt Git | GitHub privé, branche `main` protégée (PR + CI verte obligatoires) | ⏳ |
+| D17 | Dépôt Git | GitHub privé, branche `main` protégée (PR + CI verte obligatoires) | ✅ |
 
 ## 3. Fiscal et légal
 | # | Question | Proposition | Statut |
@@ -74,8 +74,12 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 |---|---|---|---|
 | D35 | Gestionnaire de paquets | pnpm + Turborepo | ✅ |
 | D36 | Node | 22 LTS partout (site, Functions, CI) | ✅ |
-| D37 | Style | Tailwind 4 + preset généré depuis les tokens | ✅ |
+| D37 | Style | Tailwind 4, thème `@theme` (CSS) généré depuis les tokens | ✅ |
 | D38 | Requêtes côté client | TanStack Query | ✅ |
+| D40 | Routes | Diagnostic sous `/diagnostic-immobilier/…` ; `/connexion` unique (`/pro/connexion` redirige) ; `/avis?jeton=` ; paiement `/pro/abonnement/[offre]?facturation=&code=` ; admin `/admin/appels-d-offres` | ✅ |
+| D41 | Aiguillage des demandes du site | Demande garantie Premium si un Premium a du quota, sinon appel d'offres automatique (MATCHING) | ✅ |
+| D42 | Emplacement du code | `packages/core/*` (ARCHITECTURE fait foi ; les anciennes mentions `lib/…` y renvoient) ; Tailwind 4 configuré en CSS (`@theme` généré depuis les tokens, pas de `tailwind.config.js`) | ✅ |
+| D43 | Suivi | `docs/AVANCEMENT.md` seul (PROGRESSION.md fusionné) ; lot 1 découpé en 1a (socle) et 1b (design system) | ✅ |
 | D39 | Navigateurs supportés | 2 dernières versions de Chrome, Safari, Firefox, Edge ; Safari iOS 16.4+ (requis pour les notifications push web) ; Android Chrome | ✅ |
 
 ---

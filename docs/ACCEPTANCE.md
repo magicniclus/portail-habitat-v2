@@ -86,7 +86,7 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **ACQ-02** : le lien « Espace pro » de l'en-tête mène à la connexion ; aucun texte ne contient le mot « lead »
 - **ONB-06** : à la fin, je suis propriétaire, la fiche est hors ligne et la liste « 3 étapes pour être en ligne » s'affiche
 
-### Connexion `/pro/connexion`
+### Connexion `/connexion` (`?espace=pro`)
 - **CON-01** : identifiants faux : message générique (sans dire si l'email existe)
 - **CON-02** : propriétaire Premium sans 2FA : activation demandée avant l'accès à la facturation
 - **CON-03** : après 5 échecs, délai d'attente affiché

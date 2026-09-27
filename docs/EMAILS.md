@@ -8,7 +8,7 @@ Document de référence pour **tout ce qui part vers un utilisateur** : emails, 
 
 ```
 Événement (Function, Server Action, webhook Stripe, tâche planifiée)
-   └─ notifier(evenement, destinataires, donnees)          lib/notifications/notifier.ts
+   └─ notifier(evenement, destinataires, donnees)          apps/functions/src/notifications/notifier.ts
         ├─ résout les canaux (email / SMS / in-app) selon le modèle + préférences
         ├─ écrit emails/{id} (statut 'en_file') avec cleIdempotence unique
         └─ Cloud Task "envoyerEmail" (file dédiée, 10 envois/s)
@@ -26,7 +26,7 @@ Webhook Resend (/api/resend/webhook) → 'delivre' | 'ouvert' | 'clic' | 'rebond
 | Canal | Fournisseur | Notes |
 |---|---|---|
 | Email | **Resend** (région UE) + **React Email** | domaine `notifications.portailhabitat.fr`, SPF, DKIM, DMARC `p=quarantine` |
-| SMS | **Brevo SMS** ou Twilio (expéditeur alphanumérique `PortailHab`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
+| SMS | **Brevo SMS**, derrière une interface `EnvoiSms` remplaçable (expéditeur alphanumérique `PortailHab`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
 | In-app | `users/{uid}/notifications` | cloche dans les espaces particulier et pro |
 | Codes d'authentification | Firebase Auth (SMS 2FA) | les emails Auth sont **personnalisés** (§4) : Firebase ne les envoie pas lui-même |
 
@@ -265,7 +265,7 @@ EMAIL_FROM_PRO="Portail Habitat Pro <pro@notifications.portailhabitat.fr>"
 EMAIL_FROM_HUMAIN="Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>"
 EMAIL_REPLY_TO_COMMERCIAL=julie@portailhabitat.fr
 EMAIL_REPLY_TO=support@portailhabitat.fr
-SMS_API_KEY=
+BREVO_API_KEY=                   # SMS (et plus tard newsletters, D3)
 SMS_SENDER=PortailHab
 EMAIL_CAPTURE=mailpit            # local et staging : aucun envoi réel
 EMAIL_WHITELIST=@portailhabitat.fr

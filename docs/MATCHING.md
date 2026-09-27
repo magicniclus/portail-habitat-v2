@@ -2,6 +2,8 @@
 
 > **Deux canaux** : (1) les **demandes garanties** de l'offre Premium (4 par mois) sont attribuées à **un seul artisan**, exclusif (un projet multi-métiers peut avoir un artisan par métier) ; (2) les **appels d'offres**, ouverts à toutes les formules, acceptent **3 réponses maximum**, avec 24 h d'avance pour Premium. Ceci remplace toute mention de « 3 artisans par demande » ailleurs dans ce document.
 >
+> **Aiguillage d'une demande du site** (D41) : si au moins un Premium compatible a encore du quota de demandes garanties ce mois-ci, la demande devient une demande garantie (1 artisan) ; sinon, ou si elle n'est pas acceptée dans le délai, elle devient **automatiquement un appel d'offres** (3 réponses max, 24 h d'avance Premium).
+>
 > **Filtre métier** : la demande porte `intention` et `prestation` (référentiel `referentiel/recherche`). Un artisan est éligible si `artisans.intentions` contient l'intention de la demande ; sinon, repli sur `artisans.metiers` contenant le métier de l'intention. Voir COMPTES.md §3.1 bis.
 
 Objectif : pour chaque projet (demande de travaux ou dossier de diagnostic), proposer **les bons artisans**, c'est-à-dire compétents, disponibles, proches, fiables et réactifs. Il faut aussi **avantager le Premium sans exclure les autres** et **ne pas saturer** un même artisan.
