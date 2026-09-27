@@ -7,7 +7,7 @@ const DESIGNS = new URL('../../../docs/designs/', import.meta.url);
 
 export function chargerMaquette(
   fichier,
-  { avant = [], jusqua = 'class Component', exporter = [] } = {},
+  { avant = [], jusqua = 'class Component', exporter = [], globaux = {} } = {},
 ) {
   const html = readFileSync(new URL(fichier, DESIGNS), 'utf8');
   const debut = html.indexOf('>', html.indexOf('<script type="text/x-dc" data-dc-script')) + 1;
@@ -21,6 +21,7 @@ export function chargerMaquette(
     Date,
     URLSearchParams,
     localStorage: { getItem: () => null },
+    ...globaux,
   };
   vm.createContext(bac);
   for (const f of avant) vm.runInContext(readFileSync(new URL(f, DESIGNS), 'utf8'), bac);

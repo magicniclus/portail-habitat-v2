@@ -10,3 +10,12 @@ export {
 } from './estimer';
 export { tarifEnCentimes } from './generique';
 export type { Acces, Coefficients, Paire, Poste, Reponse, Reponses, TarifGenerique } from './types';
+export {
+  champsDuTarif,
+  type Champ,
+  type ChampChips,
+  type ChampNumerique,
+  type ChampOptions,
+  type OptionChamp,
+  type TarifChamps,
+} from './champs';
