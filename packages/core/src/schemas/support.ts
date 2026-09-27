@@ -84,6 +84,8 @@ export const evenement = z.object({
   sessionId: z.string(),
   meta: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
   createdAt: horodatage,
+  /** createdAt + 13 mois : champ TTL (un TTL sur createdAt supprimerait tout de suite). */
+  expireLe: horodatage,
 });
 
 /** `auditLog/{id}` : création seule, jamais modifié. */

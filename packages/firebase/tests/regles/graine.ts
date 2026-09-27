@@ -1,0 +1,166 @@
+import type { RulesTestEnvironment } from '@firebase/rules-unit-testing';
+import { Timestamp, doc, setDoc, type Firestore } from 'firebase/firestore';
+import { PROFILS } from './profils';
+
+const t = Timestamp.fromDate(new Date('2026-09-01T10:00:00Z'));
+const v = { schemaVersion: 1, createdAt: t };
+
+/** Jeu de données minimal couvrant chaque règle (écrit sans règles). */
+const DOCUMENTS: Record<string, Record<string, unknown>> = {
+  'users/part1': {
+    ...v,
+    roles: ['particulier'],
+    email: 'part1@exemple.fr',
+    prenom: 'Camille',
+    telephone: '+33612345678',
+    entreprises: [],
+  },
+  'users/prop': {
+    ...v,
+    roles: ['artisan'],
+    email: 'prop@exemple.fr',
+    entreprises: ['a1'],
+    entrepriseActive: 'a1',
+  },
+  'users/part1/consentements/c1': {
+    ...v,
+    type: 'cgu',
+    valeur: true,
+    version: '2026-09',
+    source: '/',
+  },
+  'users/part1/notifications/n1': { ...v, type: 'info', titre: 'Bienvenue', corps: '…', lu: false },
+  'artisansPublic/a1': { ...v, slug: 'dupont', nomCommercial: 'Dupont', enLigne: true },
+  'artisans/a1': {
+    ...v,
+    nomCommercial: 'Dupont Rénovation',
+    pitch: 'Plombier',
+    plan: 'gratuit',
+    zoneIntervention: { rayonKm: 30, rayonAccepteLe: t, communes: [] },
+  },
+  'artisans/a2': {
+    ...v,
+    nomCommercial: 'Autre',
+    plan: 'gratuit',
+    zoneIntervention: { rayonKm: 30, rayonAccepteLe: t },
+  },
+  'artisans/a1/membres/prop': { ...v, role: 'proprietaire', statut: 'actif' },
+  'artisans/a1/membres/ger': { ...v, role: 'gerant', statut: 'actif' },
+  'artisans/a1/membres/collab': { ...v, role: 'collaborateur', statut: 'actif' },
+  'artisans/a1/membres/compta': { ...v, role: 'comptable', statut: 'actif' },
+  'artisans/a1/membres/susp': { ...v, role: 'collaborateur', statut: 'suspendu' },
+  'artisans/a2/membres/autre': { ...v, role: 'proprietaire', statut: 'actif' },
+  'artisans/a1/documents/d1': {
+    ...v,
+    type: 'kbis',
+    statut: 'valide',
+    storagePath: 'artisans/a1/documents/d1/kbis.pdf',
+  },
+  'artisans/a1/realisations/publiee': {
+    ...v,
+    titre: 'SdB',
+    publie: true,
+    autorisationProprietaire: true,
+  },
+  'artisans/a1/realisations/brouillon': {
+    ...v,
+    titre: 'Cuisine',
+    publie: false,
+    autorisationProprietaire: false,
+  },
+  'artisans/a1/statsJour/2026-09-01': { ...v, vuesFiche: 3 },
+  'artisans/a1/prive/facturation': { ...v, stripeCustomerId: 'cus_1' },
+  'artisanScores/a1': { ...v, qualite: 80 },
+  'demandes/dem1': {
+    ...v,
+    particulierUid: 'part1',
+    statut: 'attribuee',
+    contact: { email: 'part1@exemple.fr' },
+  },
+  'demandes/dem1/attributions/a1': { ...v, artisanId: 'a1', statut: 'proposee' },
+  'demandes/dem1/attributions/a2': { ...v, artisanId: 'a2', statut: 'proposee' },
+  'demandes/dem1/messages/m1': { ...v, artisanId: 'a1', texte: 'Bonjour', auteurUid: 'part1' },
+  'dossiersDiag/diag1': { ...v, particulierUid: 'part1' },
+  'dossiersDiag/diag1/attributions/a1': { ...v, artisanId: 'a1' },
+  'matching/dem1': { ...v, resultat: 'attribuee' },
+  'matchingConfig/actif': { ...v, version: 1 },
+  'appelsOffres/ao1': { ...v, statut: 'ouvert', titre: 'Salle de bain' },
+  'appelsOffres/ao1/reponses/a1': { ...v, message: 'Disponible' },
+  'appelsOffres/ao1/deblocages/a1': { ...v, moyen: 'credits' },
+  'appelsOffres/ao1/historiquePrix/h1': { ...v, prixHtCentimes: 1900 },
+  'achatsLeads/al1': { ...v, artisanId: 'a1', prixHtCentimes: 1900 },
+  'portefeuilles/a1': { ...v, soldeCredits: 5 },
+  'portefeuilles/a1/mouvements/mv1': { ...v, credits: 5 },
+  'packsCredits/p10': { ...v, nom: 'Pack 10' },
+  'remboursementsLeads/r1': { ...v, artisanId: 'a1', statut: 'ouvert' },
+  'grillesTarifaires/g1': { ...v, nom: 'Gironde' },
+  'invitations/i1': { ...v, artisanId: 'a1', email: 'x@exemple.fr' },
+  'revendications/rv1': { ...v, artisanId: 'a2', demandeurUid: 'part1' },
+  'demandesAcces/da1': { ...v, artisanId: 'a1', demandeurUid: 'part1' },
+  'admins/modo': { ...v, role: 'moderateur' },
+  'rolesAdmin/r1': { ...v, nom: 'Support' },
+  'filesModeration/f1': { ...v, statut: 'a_traiter' },
+  'sanctions/s1': { ...v, artisanId: 'a1', type: 'rappel' },
+  'notesInternes/n1': { ...v, cible: 'artisans/a1', texte: 'Appeler' },
+  'annonces/an1': { ...v, titre: 'Nouveau' },
+  'auditLog/l1': { ...v, action: 'test' },
+  'rgpdDemandes/g1': { ...v, type: 'acces' },
+  'cycleEtat/a1': { ...v, etape: 'gratuit_actif' },
+  'cycleTraces/t1': { ...v, type: 'envoi' },
+  'cycleStats/2026-09-01': { ...v },
+  'sequences/s1': { ...v, nom: 'S4' },
+  'prospects/pr1': { ...v, email: 'pro@exemple.fr' },
+  'config/cycle': { ...v, actif: true },
+  'sourcesDemandes/src1': { ...v, nom: 'Simulateur aides' },
+  'importsDemandes/imp1': { ...v, statut: 'creee' },
+  'preuvesConsentement/pc1': { ...v, coche: true },
+  'pagesSuivies/accueil': { ...v, nom: 'Accueil' },
+  'comportementAgregats/accueil_2026-09-01_particulier': { ...v, sessions: 10 },
+  'comportementAlertes/al1': { ...v, statut: 'ouverte' },
+  'abTests/ab1': { ...v, nom: 'Titre' },
+  'iaAnalyses/ia1': { ...v, mode: 'rapide' },
+  'iaRecommandations/rec1': { ...v, titre: 'Raccourcir le formulaire' },
+  'config/comportement': { ...v, actif: true },
+  'config/ia': { ...v, actif: true },
+  'avis/publie': { ...v, artisanId: 'a2', statut: 'publie', note: 5 },
+  'avis/attente': { ...v, artisanId: 'a1', statut: 'en_attente', note: 4 },
+  'avis/publie/prive/auteur': { ...v, auteurEmail: 'auteur@exemple.fr' },
+  'avis/publie/signalements/sg1': { ...v, motif: 'faux' },
+  'abonnements/sub1': { ...v, artisanId: 'a1', statut: 'active' },
+  'factures/f1': { ...v, artisanId: 'a1', numero: 'F-1' },
+  'paiements/pi1': { ...v, artisanId: 'a1' },
+  'codesPromo/BIENVENUE': { ...v, pourcentage: 30 },
+  'referentiel/prestations/items/peinture': { ...v, nom: 'Peinture' },
+  'referentiel/prestations/prix/peinture': { ...v, parametres: { prixM2: 2500 } },
+  'referentiel/recherche/intentions/sdb': { ...v, libelle: 'Rénover une salle de bain' },
+  'referentiel/recherche/synonymes/global': { ...v, developpements: { sdb: 'salle de bain' } },
+  'communes/cenon': { ...v, nom: 'Cenon' },
+  'stats/public': { ...v, nbArtisans: 60 },
+  'config/app': { ...v, maintenance: false },
+  'config/flags': { ...v, valeurs: {} },
+  'brouillons/b1': { ...v, parcours: 'simulateur' },
+  'emails/e1': { ...v, modele: 'bienvenue' },
+  'suppressions/h1': { ...v, motif: 'rebond' },
+  'rateLimits/x': { ...v, compteur: 1 },
+  'idempotence/x': { ...v, resultat: {} },
+  'sirenIndex/732829320': { ...v, artisanId: 'a1' },
+  'contacts/ct1': { ...v, email: 'c@exemple.fr' },
+  'litiges/li1': { ...v, artisanId: 'a1' },
+  'stripeEvents/evt1': { ...v, ok: true },
+  'comportementSessions/cs1': { ...v, page: 'accueil' },
+  'iaContexte/global': { ...v, json: '{}' },
+};
+
+// Une réalisation à supprimer par profil (les suppressions réussies ne gênent pas les autres cas).
+for (const p of PROFILS)
+  DOCUMENTS[`artisans/a1/realisations/a-supprimer-${p}`] = { ...v, titre: 'x', publie: false };
+
+export async function semer(env: RulesTestEnvironment): Promise<void> {
+  await env.clearFirestore();
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore() as unknown as Firestore;
+    await Promise.all(
+      Object.entries(DOCUMENTS).map(([chemin, donnees]) => setDoc(doc(db, chemin), donnees)),
+    );
+  });
+}
