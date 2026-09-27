@@ -12,7 +12,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 0 | Cadrage | ✅ | 27/09/2026 | — | incohérences tranchées, documents corrigés (§2) |
 | 1a | Socle technique : monorepo, outillage, CI, émulateurs | ✅ | 27/09/2026 | format, lint, types, Knip, 102 tests (dont règles sur émulateur), build, e2e | CI GitHub à confirmer au premier passage (§6) |
 | 1b | Design system, composants, Storybook | ✅ | 27/09/2026 | 34 tests composants, catalogue 29 stories, e2e 44 (dont ERR-01/02, MOB-01 à 03), Lighthouse | D45 et D46 à valider (§7) |
-| 2 | Données et sécurité | ⬜ | | règles | |
+| 2 | Données et sécurité | ✅ | 27/09/2026 | 172 tests core, 1 890 cas de règles Firestore, 272 cas Storage, 11 tests serveur (émulateur) | écarts de sécurité à relire (§8) |
 | 3 | Logique métier pure | ⬜ | | unitaires | |
 | 4 | Comptes, équipes, seed | ⬜ | | CON, EQU, INV | |
 | 5 | Emails, SMS, notifications | ⬜ | | MAIL | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 2 (données et sécurité), à démarrer
-- Dernier lot terminé : 1b, le 27/09/2026 (détail §7)
+- Lot : 3 (logique métier pure)
+- Dernier lot terminé : 2, le 27/09/2026 (détail §8)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -77,6 +77,43 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 **Reste / dettes connues**
 - Comparaison visuelle automatique aux maquettes (`/maquette`) : les `.dc.html` ne s'affichent pas en `file://` ; à outiller au lot 6 (serveur statique sur `docs/designs`).
 - Layouts complets (PublicLayout, ProLayout avec sidebar, AdminLayout) : ils arrivent avec leurs écrans (lots 6, 10, 13), en réutilisant BottomNav, Sheet et Logo.
+
+## 8. Lot 2 — Données et sécurité (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/core/schemas` : un schéma Zod par collection et sous-collection de DATABASE §16 (registre `SCHEMAS`, test de couverture), `schemaVersion` partout, dates en `Date`, montants en centimes entiers, `artisansPublic`, `avis` et `iaRedactions` stricts (un champ privé en trop fait échouer l'écriture).
+- `@ph/core/equipe` : `peut(membre, action, contexte)` (matrice COMPTES §4.1, collaborateur limité à ses métiers ou à ses demandes assignées, gérant sans pouvoir sur le propriétaire ni les gérants, surcharges jamais sur les actions du propriétaire). `@ph/core/admin` : permissions effectives (rôle + plus − moins, rôles personnalisés), codes de section des claims. `@ph/core/flags` : `flag(nom, sources)` avec surcharge par artisan.
+- `firestore.rules` complet, `storage.rules`, 36 index composites, 14 TTL sur `expireLe`.
+- Tests de règles : matrice de 118 cas Firestore et 17 cas Storage, chacun vérifié pour 16 profils (anonyme, particulier, propriétaire, gérant, collaborateur, comptable, membre suspendu, autre artisan, 6 rôles staff, impersonation) ; test dédié : les prix du référentiel sont illisibles côté client. Test de mutation fait : une règle affaiblie fait échouer la matrice.
+- `@ph/firebase` : `chemins` (seul endroit qui nomme les collections), conversion Timestamp/GeoPoint, convertisseur et dépôt validés par Zod, `dependancesEnveloppe` (permission via `membres` ou `admins`, limite de débit en transaction, audit, idempotence 24 h), branchés dans `action()` et `callable()`.
+
+**Écarts de sécurité par rapport à DATABASE §12 (appliqués, à relire)**
+1. **Avis** : un avis publié est lisible par tous et les règles ne masquent aucun champ. L'email, l'uid et l'empreinte IP de l'auteur passent donc dans `avis/{id}/prive/auteur` (modération avec droit aux données personnelles).
+2. Lecture par l'équipe interne **par section** (`lit('dem')`, `lit('art')`, `lit('ao')`…) au lieu de « tout staff ».
+3. Profils `users` et consentements : lisibles par le staff seulement avec le droit aux données personnelles (`staff.pii`, absent pour le rôle `lecture`).
+4. Téléphone retiré des champs modifiables par l'utilisateur (changement par Function avec vérification par code, comme l'email).
+5. Réalisations non publiées : visibles de l'équipe seulement ; publication impossible sans l'autorisation du propriétaire du chantier.
+6. Rayon d'intervention contrôlé (10 à 100 km) et date d'acceptation non falsifiable.
+7. Consentements : horodatage serveur obligatoire, champs et types contrôlés.
+8. Documents : chemin de stockage imposé, 10 Mo maximum. Écritures Storage vérifiées aussi sur le document `membres` (révocation immédiate).
+9. Correction de `notesInternes` (`staff().r`) et ouverture en lecture de `referentiel/recherche/*` (intentions, métiers, synonymes).
+10. Zone Storage `televersements/{uid}/` pour les photos d'avis et de demande (écrites par leur auteur, déplacées par Function).
+
+**Écarts de modèle de données (DATABASE.md mis à jour)**
+- Nouvelle collection `idempotence/{cle}` (TTL 24 h) pour l'enveloppe des actions.
+- TTL toujours sur `expireLe` : un TTL sur `createdAt` ou `fenetreDebut`, comme le prévoyait §11, supprimerait les documents immédiatement.
+- `demandes` et `dossiersDiag` sans TTL (anonymisation planifiée, §14).
+- `referentiel/recherche/synonymes/global` (un document ne peut pas se trouver au chemin `referentiel/recherche/synonymes`).
+- Points géographiques stockés en `GeoPoint`, manipulés en `{ latitude, longitude }`.
+
+**Vérifications**
+- Ici : `typecheck`, `lint`, `knip`, 172 tests core, 1 890 cas Firestore, 11 tests serveur sur émulateur, ping de bout en bout.
+- Storage : 247 cas sur 255 passent ici. Les 8 restants (écritures qui relisent `membres` depuis Storage) échouent seulement dans ce conteneur, parce que `firebase-tools` y passe par le proxy réseau pour interroger Firestore. La CI GitHub les valide.
+
+**Reste**
+- `syncClaims` (claims `roles`, `ent`, `staff`) : lot 4.
+- Migrations (`scripts/migrations`, curseur dans `migrations/{id}`) : dès la première évolution de schéma.
+- Remote Config pour les valeurs globales des flags : branché avec le premier flag utilisé (lot 12).
 
 ## 2. Incohérences et zones floues
 
@@ -175,3 +212,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Réponses reçues, documents corrigés, lot 0 clos.
 - 27/09/2026 — Lot 1a terminé (socle technique). Décision D44 : Next.js 16, TypeScript 6.
 - 27/09/2026 — Lot 1b terminé (design system). Décisions D45 (contraste) et D46 (budget JS) proposées, à valider.
+- 27/09/2026 — Lot 2 terminé (données et sécurité). Dix corrections de sécurité par rapport à DATABASE §12 (§8).

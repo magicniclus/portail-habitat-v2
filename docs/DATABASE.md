@@ -396,7 +396,7 @@ Même structure que pour les demandes (réservé aux artisans ayant le métier `
 |---|---|---|
 | `artisanId` | string | |
 | `auteurUid` | string? | |
-| `auteurEmail` | string | **privé**, jamais exposé en public |
+| `auteurEmail` | string | **privé** : stocké dans `avis/{id}/prive/auteur` (avec `auteurUid`, `ipHash`, `userAgent`), car un avis publié est lisible par tous et les règles ne masquent pas de champ |
 | `nomAffiche` | string | |
 | `note` | 1..5 | obligatoire |
 | `criteres` | `{ qualite?, delais?, proprete?, rapportQP? }` | 1..5 |
@@ -470,10 +470,11 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 - `contacts/{id}` : `nom`, `email`, `role`, `sujet`, `message`, `pieces`, `statut` (`ouvert`, `en_cours`, `resolu`), `assigneA`, `historique: [{ le, par, action }]`, `createdAt`.
 - `litiges/{id}` : `demandeId?`, `avisId?`, `particulierUid`, `artisanId`, `description`, `statut` (`ouvert`, `mediation`, `resolu`, `clos`), `pieces`, `echanges`, `createdAt`.
 - `emails/{id}` : schéma complet dans EMAILS.md §1 (`categorie`, `variante`, `envoyerLe`, `sequenceId?`, statuts `en_file` … `annule`, `bloque_preferences`).
-- `evenements/{id}` : `type` (`vue_fiche`, `clic_tel`, `clic_devis`, `recherche`), `artisanId?`, `sessionId`, `meta`, `createdAt`. **TTL 13 mois** (politique Firestore).
+- `evenements/{id}` : `type` (`vue_fiche`, `clic_tel`, `clic_devis`, `recherche`), `artisanId?`, `sessionId`, `meta`, `createdAt`, `expireLe` (+13 mois, champ TTL).
 - `auditLog/{id}` : `acteurUid`, `action`, `cible`, `avant`, `apres`, `motif?`, `ip`, `createdAt`. **Création seule, jamais modifié.** Inclut les consultations de données personnelles (`consultationPII`) et les exports.
 - `rgpdDemandes/{id}` : `type` (`acces`, `rectification`, `effacement`), `demandeurUid?`, `email`, `recueLe`, `echeance` (+1 mois), `statut` (`a_traiter`, `traite`), `traitePar`, `preuveStoragePath`.
-- `rateLimits/{hashIp_route}` : `compteur`, `fenetreDebut`. TTL 1 h.
+- `rateLimits/{hash(cle:client)}` : `compteur`, `fenetreDebut`, `expireLe` (fin de fenêtre + 1 h, champ TTL).
+- `idempotence/{hash(cle)}` : résultat sérialisé d'une action déjà traitée (enveloppe `action()` / `callable()`), `expireLe` (+24 h, champ TTL).
 
 ### Back-office et conversion (écriture par Functions uniquement)
 - `admins/{uid}` : `nom`, `email`, `role` (système ou `rolesAdmin`), `permissionsPlus[]`, `permissionsMoins[]`, `permissionsEffectives[]` (calculé), `mfaObligatoire: true`, `ipAutorisees?`, `actif`, `dernierAcces`, `createdAt`.
@@ -536,7 +537,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 
 | `contacts` | `statut ==`, `createdAt` asc |
 
-Champs TTL : `brouillons.expireLe` (+30 j), `evenements.createdAt` (+13 mois), `rateLimits.fenetreDebut` (+1 h), `demandes.expireLe`, `dossiersDiag.expireLe`.
+Champs TTL (tous sur `expireLe`, jamais sur `createdAt`, qui déclencherait une suppression immédiate) : `brouillons`, `brouillonsOnboarding`, `evenements`, `rateLimits`, `idempotence`, `importsDemandes`, `comportementSessions`, `cycleTraces`, `iaQuotas`, `iaRedactions`, `emails`, `simulations`, `cacheSirene`, `prospects`. `demandes` et `dossiersDiag` ne sont **pas** supprimés par TTL : une Function planifiée les anonymise (§14). Fichier : `firestore.indexes.json`.
 
 ---
 
@@ -551,6 +552,8 @@ staff:  { r: 'superadmin' | 'admin' | … | 'custom_xxx', s: ['art','dem','ao','
 imp:    { par, cible } | absent              // impersonation en lecture seule
 ```
 Les permissions fines de l'équipe interne (`admins/{uid}.permissions`) sont vérifiées **dans les Functions**, pas dans les règles. Les règles ne font que de la lecture par rôle.
+
+> **Les règles en vigueur sont dans `firestore.rules` et `storage.rules`** (lot 2), testées pour 16 profils. Elles corrigent le brouillon ci-dessous : lecture staff par section (`lit('dem')`, `lit('art')`…) au lieu de `isStaff()`, profils et consentements lisibles par le staff seulement avec `pii`, téléphone non modifiable par le client, réalisations non publiées privées, rayon 10–100 km vérifié, auteur des avis dans `avis/{id}/prive/auteur`, consentements horodatés par le serveur, `notesInternes` corrigée (`staff().r`), `referentiel/recherche/*` en lecture publique. Détail : AVANCEMENT.md §8.
 
 ```js
 rules_version = '2';
@@ -728,6 +731,7 @@ artisans/{artisanId}/documents/{docId}/{fichier} PRIVÉ (membres + admin), ≤ 1
 demandes/{demandeId}/photos/{fichier}            privé (particulier + artisans acceptés via URL signée)
 demandes/{demandeId}/devis/{artisanId}/{fichier} privé
 avis/{avisId}/photos/{fichier}                   public après publication (copie par Function)
+televersements/{uid}/{fichier}                   dépôt temporaire (photos d'avis, de demande), écrit et relu par son auteur, déplacé par Function
 ```
 - Vérification du type MIME côté règles (`request.resource.contentType.matches('image/.*')`) et de la taille
 - Suppression des métadonnées EXIF (géolocalisation) par une Function au moment de l'upload

@@ -22,7 +22,7 @@ Données : **`data/recherche-intentions.json`** — 137 intentions de projet (**
 | `actif` | masquer sans supprimer |
 | `saison?` | ex. `ete` pour climatisation, `automne` pour ramonage : léger bonus en saison |
 
-### `referentiel/recherche/synonymes` (un document)
+### `referentiel/recherche/synonymes/global` (un document)
 Abréviations et équivalences appliquées **avant** la recherche : `sdb → salle de bain`, `pac → pompe à chaleur`, `clim`, `wc`, `ite`, `vmc`, `appart`, `reno`, `carlage → carrelage`… Deux types :
 - **équivalence** (dans les deux sens) : `toilettes ⇄ wc`
 - **développement** (un sens) : `sdb → salle de bain`
