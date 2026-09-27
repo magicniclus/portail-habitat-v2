@@ -239,7 +239,7 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 | `estimation` | `{ minCentimes, maxCentimes, coefRegion, coefAcces, aidesCentimes, postes: [{ label, min, max }], versionReferentiel }` | **figée au moment de l'envoi** |
 | `miseEnRelation` | bool | case « Être mis en relation avec des artisans » : demande garantie Premium (1 artisan) si un Premium a du quota, sinon appel d'offres (3 réponses max), voir MATCHING |
 | `artisanCibleId` | string? | si la demande part d'une fiche |
-| `statut` | `'nouvelle' \| 'en_attribution' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
+| `statut` | `'nouvelle' \| 'en_attribution' \| 'appel_offres' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
 | `nbAttributions` | number (≤ 3) | |
 | `consentementId` | string | lien vers le journal ; pour les demandes partenaires, pointe vers `preuvesConsentement` |
 | `ipHash`, `userAgent` | string | anti-fraude |

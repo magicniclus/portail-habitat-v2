@@ -25,6 +25,8 @@ const contact = z.object({
 export const STATUTS_DEMANDE = [
   'nouvelle',
   'en_attribution',
+  /** Aucun Premium disponible ou pas d'acceptation à temps : appel d'offres (MATCHING [7], D41). */
+  'appel_offres',
   'attribuee',
   'devis_recus',
   'signee',

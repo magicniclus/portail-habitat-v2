@@ -81,7 +81,7 @@ export async function fermerEntreprise(
     tx.update(refArtisan, {
       statut: 'supprime',
       enLigne: false,
-      nbMembres: 1,
+      nbMembres: 0,
       deletedAt: maintenant,
       updatedAt: maintenant,
     });

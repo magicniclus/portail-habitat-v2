@@ -130,9 +130,10 @@ export const artisan = z
       etape: z.number().int().min(1).max(3),
       termineLe: horodatage.optional(),
     }),
-    nbMembres: z.number().int().min(1),
+    /** 0 pour une fiche créée par l'admin et non revendiquée (COMPTES §3.5). */
+    nbMembres: z.number().int().min(0),
     siegesMax: z.number().int().min(1),
-    proprietaireUid: id,
+    proprietaireUid: id.optional(),
     origine: z.enum(['onboarding', 'admin', 'import']),
     revendiquee: z.boolean().default(false),
   })
@@ -143,6 +144,10 @@ export const artisan = z
       path: ['budgetMin'],
     },
   )
+  .refine((a) => !a.revendiquee || a.proprietaireUid !== undefined, {
+    message: 'Une entreprise revendiquée a un propriétaire',
+    path: ['proprietaireUid'],
+  })
   .refine((a) => a.optionVisibilite || a.plan === 'gratuit', {
     message: 'Visibilité incluse dans Visibilité et Premium',
     path: ['optionVisibilite'],

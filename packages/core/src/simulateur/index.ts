@@ -19,3 +19,5 @@ export {
   type OptionChamp,
   type TarifChamps,
 } from './champs';
+export { referentielDepuisFichiers } from './referentiel';
+export { tarifDepuisDocument, tarifVersDocument, type TarifDocument } from './stockage';
