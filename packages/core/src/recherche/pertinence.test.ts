@@ -11,23 +11,29 @@ const { cas } = lire('__tests__/pertinence.cases.json') as {
 };
 
 const premier = (q: string) => moteur.rechercher(q).resultats[0]?.id ?? null;
-const top3 = (q: string) =>
-  moteur
-    .rechercher(q)
-    .resultats.slice(0, 3)
-    .map((r) => r.id);
+
+// Classements calculés une seule fois, hors du délai de chaque test (CI partagée avec les émulateurs).
+const classements = new Map(
+  cas.map((c) => [
+    c.q,
+    moteur
+      .rechercher(c.q)
+      .resultats.slice(0, 3)
+      .map((r) => r.id),
+  ]),
+);
 
 describe('pertinence (RECHERCHE.md §6)', () => {
   it('au moins 200 requêtes étiquetées', () => {
     expect(cas.length).toBeGreaterThanOrEqual(200);
   });
   it('≥ 95 % au 1er rang', () => {
-    const ok = cas.filter((c) => premier(c.q) === c.attendu).length;
+    const ok = cas.filter((c) => (classements.get(c.q)![0] ?? null) === c.attendu).length;
     expect(ok / cas.length).toBeGreaterThanOrEqual(0.95);
   });
   it('100 % dans le top 3', () => {
     const rates = cas
-      .filter((c) => c.attendu !== null && !top3(c.q).includes(c.attendu))
+      .filter((c) => c.attendu !== null && !classements.get(c.q)!.includes(c.attendu))
       .map((c) => c.q);
     expect(rates).toEqual([]);
   });
