@@ -37,7 +37,9 @@ service firebase.storage {
     // Documents (assurances, Kbis…) : PRIVÉS, jamais remplacés ni supprimés par le client.
     match /artisans/{aid}/documents/{docId}/{fichier} {
       allow read: if isOperationnel(aid) || isModo() || lit('art');
-      allow create: if noImp() && isOperationnel(aid) && pieceJustificative() && membreActif(aid, ['proprietaire', 'gerant', 'collaborateur']);
+      // `resource == null` : jamais d'écrasement d'une pièce existante, même traité comme une création.
+      allow create: if resource == null && noImp() && isOperationnel(aid) && pieceJustificative()
+        && membreActif(aid, ['proprietaire', 'gerant', 'collaborateur']);
       allow update, delete: if false;
     }
     // Photos d'avis publiés : copiées par Function après modération.
@@ -49,7 +51,7 @@ service firebase.storage {
     // une Function les déplace vers leur emplacement définitif.
     match /televersements/{uid}/{fichier} {
       allow read: if signedIn() && request.auth.uid == uid;
-      allow create: if signedIn() && request.auth.uid == uid && noImp() && image(8);
+      allow create: if resource == null && signedIn() && request.auth.uid == uid && noImp() && image(8);
       allow update, delete: if false;
     }
     // Tout le reste (photos et devis des demandes, replays) : Admin SDK et URL signées uniquement.

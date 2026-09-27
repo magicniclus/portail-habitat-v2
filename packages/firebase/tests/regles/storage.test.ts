@@ -101,6 +101,11 @@ const CAS: Cas[] = [
     autorises: PROFILS.filter((p) => p !== 'anonyme' && p !== 'impersonation'),
   },
   {
+    nom: 'écraser un fichier déjà téléversé',
+    op: { ecrire: 'televersements/part1/existant.jpg', type: 'image/jpeg', taille: 1000 },
+    autorises: [],
+  },
+  {
     nom: 'téléverser dans l’espace d’un autre',
     op: { ecrire: 'televersements/part1/{p}-intrus.jpg', type: 'image/jpeg', taille: 1000 },
     autorises: ['particulier'],
@@ -124,6 +129,7 @@ const FICHIERS = [
   'avis/av1/photos/photo.jpg',
   'demandes/dem1/photos/photo.jpg',
   'demandes/dem1/devis/a1/devis.pdf',
+  'televersements/part1/existant.jpg',
 ];
 
 let env: RulesTestEnvironment;
