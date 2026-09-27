@@ -6,7 +6,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 | Lot | Contenu | Statut | Terminé le | Tests | Notes |
 |---|---|---|---|---|---|
-| 0 | Cadrage | ⬜ | | — | |
+| 0 | Cadrage | 🟡 | | — | docs/AVANCEMENT.md produit, en attente des réponses |
 | 1 | Socle technique, composants | ⬜ | | build, lint | |
 | 2 | Données et sécurité | ⬜ | | règles | |
 | 3 | Logique métier pure | ⬜ | | unitaires | |
