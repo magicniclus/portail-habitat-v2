@@ -17,6 +17,27 @@ describe('contexteDepuis', () => {
     const ctx = contexteDepuis(requete({ auth: { uid: 'u1' }, app: { appId: 'x' } }), false);
     expect(ctx).toEqual({ uid: 'u1', identifiantClient: 'u1', appCheckVerifie: true });
   });
+  it('jeton : impersonation, date de connexion et second facteur', () => {
+    const token = {
+      uid: 'u1',
+      auth_time: 1_700_000_000,
+      firebase: { sign_in_second_factor: 'totp' },
+      imp: { par: 'sa' },
+    };
+    expect(contexteDepuis(requete({ auth: { uid: 'u1', token }, app: {} }), false)).toEqual({
+      uid: 'u1',
+      identifiantClient: 'u1',
+      appCheckVerifie: true,
+      impersonation: true,
+      authentifieLe: 1_700_000_000_000,
+      secondFacteur: true,
+    });
+    const simple = { uid: 'u1', auth_time: 1, firebase: {} };
+    expect(contexteDepuis(requete({ auth: { uid: 'u1', token: simple } }), false)).toMatchObject({
+      impersonation: false,
+      secondFacteur: false,
+    });
+  });
   it('émulateur : App Check considéré comme vérifié', () => {
     expect(contexteDepuis(requete(), true).appCheckVerifie).toBe(true);
   });

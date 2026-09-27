@@ -7,7 +7,7 @@ import {
 } from '@ph/core/enveloppe';
 import type { Resultat } from '@ph/core/resultat';
 import { appAdmin } from '@ph/firebase/admin';
-import { dependancesEnveloppe } from '@ph/firebase/serveur';
+import { contexteDepuisJeton, dependancesEnveloppe } from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, type CallableRequest } from 'firebase-functions/v2/https';
 import type { z } from '@ph/core/zod';
@@ -30,6 +30,7 @@ export function contexteDepuis(
   const uid = requete.auth?.uid ?? null;
   const ip = requete.rawRequest.ip ?? 'inconnue';
   return {
+    ...(requete.auth?.token ? contexteDepuisJeton(requete.auth.token) : {}),
     uid,
     identifiantClient: uid ?? `ip:${createHash('sha256').update(ip).digest('hex').slice(0, 16)}`,
     // App Check n'a pas d'émulateur : en local, il est considéré comme vérifié.

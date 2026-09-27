@@ -9,9 +9,14 @@ import {
 } from '@ph/core/enveloppe';
 import type { Resultat } from '@ph/core/resultat';
 import { appAdmin, verifierJetonAppCheck } from '@ph/firebase/admin';
-import { dependancesEnveloppe } from '@ph/firebase/serveur';
+import {
+  COOKIE_SESSION,
+  contexteDepuisJeton,
+  dependancesEnveloppe,
+  lireSession,
+} from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import type { z } from '@ph/core/zod';
 
 // Permission (peut() / admins), limite de débit, audit et idempotence : Firestore via l'Admin SDK.
@@ -32,9 +37,12 @@ function appCheckDesactive(): boolean {
 async function contexteRequete(): Promise<ContexteBase> {
   const h = await headers();
   const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'inconnue';
+  // Cookie vérifié avec les révocations : un membre retiré perd l'accès immédiatement.
+  const session = await lireSession((await cookies()).get(COOKIE_SESSION)?.value);
   return {
-    uid: null, // Lot 4 : lu depuis le cookie de session.
-    identifiantClient: `ip:${createHash('sha256').update(ip).digest('hex').slice(0, 16)}`,
+    ...(session ? contexteDepuisJeton(session) : { uid: null }),
+    identifiantClient:
+      session?.uid ?? `ip:${createHash('sha256').update(ip).digest('hex').slice(0, 16)}`,
     appCheckVerifie:
       appCheckDesactive() || (await verifierJetonAppCheck(h.get('x-firebase-appcheck'))),
   };
