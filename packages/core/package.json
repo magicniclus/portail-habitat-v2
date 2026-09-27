@@ -22,12 +22,13 @@
     "./parcours": "./src/parcours/index.ts",
     "./stats": "./src/stats/index.ts",
     "./leads": "./src/leads/index.ts",
-    "./annuaire": "./src/annuaire/index.ts"
+    "./annuaire": "./src/annuaire/index.ts",
+    "./matching": "./src/matching/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --coverage",
-    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs && node scripts/generer-cas-parcours.mjs && node scripts/generer-cas-stats.mjs && node scripts/generer-cas-leads.mjs && node scripts/generer-cas-annuaire.mjs"
+    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs && node scripts/generer-cas-parcours.mjs && node scripts/generer-cas-stats.mjs && node scripts/generer-cas-leads.mjs && node scripts/generer-cas-annuaire.mjs && node scripts/generer-cas-matching.mjs"
   },
   "dependencies": {
     "zod": "^4.6.5"
