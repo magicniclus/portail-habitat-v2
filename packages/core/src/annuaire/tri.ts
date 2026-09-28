@@ -1,3 +1,5 @@
+import { normaliser } from '../recherche/texte';
+
 /**
  * Filtres et tri de l'annuaire (README « Annuaire artisans »), portage de filtrer() et trier()
  * de la maquette Annuaire Artisans. En production le plein texte passe par Typesense (D4) ;
@@ -18,6 +20,8 @@ export interface FicheAnnuaire {
   /** Délai de disponibilité en jours. */
   delaiJ: number;
   budgetCle: 'petit' | 'moyen' | 'grand';
+  /** `scoreClassement` précalculé (MATCHING §4) ; absent : formule de la maquette. */
+  score?: number;
 }
 
 export const TRIS = ['pertinence', 'note', 'proximite', 'delai', 'avis'] as const;
@@ -34,9 +38,12 @@ export interface FiltresAnnuaire {
   budget?: 'tous' | FicheAnnuaire['budgetCle'];
 }
 
-/** Score de pertinence : note × 12 + avis × 0,4 − km × 0,6. */
-export const pertinence = (a: Pick<FicheAnnuaire, 'note' | 'avis' | 'km'>) =>
-  a.note * 12 + a.avis * 0.4 - a.km * 0.6;
+/**
+ * Pertinence (MATCHING §4) : `scoreClassement − 0,6 × km`. Sans score précalculé (démo, repli),
+ * formule de la maquette : note × 12 + avis × 0,4 − km × 0,6.
+ */
+export const pertinence = (a: Pick<FicheAnnuaire, 'note' | 'avis' | 'km' | 'score'>) =>
+  (a.score ?? a.note * 12 + a.avis * 0.4) - a.km * 0.6;
 
 const COMPARATEURS: Record<Tri, (a: FicheAnnuaire, b: FicheAnnuaire) => number> = {
   note: (a, b) => b.note - a.note,
@@ -50,15 +57,17 @@ export function filtrerAnnuaire<T extends FicheAnnuaire>(
   liste: readonly T[],
   f: FiltresAnnuaire,
 ): T[] {
-  const q = (f.q ?? '').trim().toLowerCase();
+  // Chaque mot doit apparaître (accents et casse ignorés) : « douche italienne » (ANN-04).
+  const mots = normaliser(f.q ?? '')
+    .split(' ')
+    .filter((m) => m.length > 1);
   const metiers = f.metiers ?? [];
   const labels = f.labels ?? [];
   return liste.filter((a) => {
-    if (
-      q &&
-      !`${a.nom} ${a.metiers.join(' ')} ${a.pitch} ${a.tags.join(' ')}`.toLowerCase().includes(q)
-    )
-      return false;
+    if (mots.length) {
+      const texte = normaliser(`${a.nom} ${a.metiers.join(' ')} ${a.pitch} ${a.tags.join(' ')}`);
+      if (!mots.every((m) => texte.includes(m))) return false;
+    }
     if (metiers.length && !a.metiers.some((m) => metiers.includes(m))) return false;
     if (a.km > f.rayonKm) return false;
     if (a.note < (f.noteMin ?? 0)) return false;

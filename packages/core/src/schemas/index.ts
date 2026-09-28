@@ -152,3 +152,4 @@ export type MotifCollection = keyof typeof SCHEMAS;
 export * from './entreesSupport';
 export * from './entreesAvis';
 export * from './entreesEspace';
+export * from './entreesAnnuaire';
