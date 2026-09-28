@@ -2,7 +2,7 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { collections } from '../src/chemins';
-import { creerContact } from '../src/serveur/support';
+import { creerContact, journaliserRecherche } from '../src/serveur/support';
 
 let db: Firestore;
 beforeAll(() => {
@@ -46,5 +46,29 @@ describe('creerContact', () => {
     const b = await creerContact(s, entree, { role: 'autre' });
     expect(a.reference).toBe('CT-222222');
     expect(b.reference).not.toBe(a.reference);
+  });
+});
+
+describe('journaliserRecherche', () => {
+  it('événement « recherche » avec TTL de 13 mois, sans donnée personnelle', async () => {
+    const t = Date.UTC(2026, 8, 28);
+    await journaliserRecherche(
+      { db, horloge: () => t },
+      {
+        nature: 'choix',
+        q: 'douche italienne',
+        intention: 'sdb-italienne',
+        rang: 1,
+        session: 'ab12cd34',
+      },
+    );
+    const docs = (await db.collection(collections.evenements).get()).docs.map((d) => d.data());
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toMatchObject({
+      type: 'recherche',
+      sessionId: 'ab12cd34',
+      meta: { nature: 'choix', q: 'douche italienne', intention: 'sdb-italienne', rang: 1 },
+    });
+    expect(docs[0]!.expireLe.toMillis() - t).toBe(395 * 86_400_000);
   });
 });
