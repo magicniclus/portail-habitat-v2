@@ -283,7 +283,11 @@ export default function SuggestionsProjet({
               role="option"
               aria-selected={i === actif}
               onClick={() => choisir(s, i + 1)}
-              onMouseEnter={() => setActif(i)}
+              // Mouvement réel de souris seulement : la liste qui apparaît sous un pointeur immobile (écran
+              // tactile, plein écran mobile) ne doit pas changer l'option active.
+              onPointerMove={(e) => {
+                if (e.pointerType === 'mouse' && actif !== i) setActif(i);
+              }}
               className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 ${i === actif ? 'bg-accent-100' : ''}`}
             >
               <Loupe />

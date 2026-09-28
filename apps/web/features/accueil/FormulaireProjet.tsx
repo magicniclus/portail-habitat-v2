@@ -54,7 +54,9 @@ export function FormulaireProjet({ cible }: { cible: string }) {
     if (!pont.current) return;
     e.preventDefault();
     const cp = String(new FormData(e.currentTarget).get('cp') ?? '');
-    pont.current.valider({ projet, cp, delai, choix: choix ?? undefined });
+    // Valeur lue dans le champ : une saisie faite avant l'hydratation n'est pas dans l'état React.
+    const texte = champ.current?.value ?? projet;
+    pont.current.valider({ projet: texte, cp, delai, choix: choix ?? undefined });
   };
 
   const associees = etat.associees.length > 0;
