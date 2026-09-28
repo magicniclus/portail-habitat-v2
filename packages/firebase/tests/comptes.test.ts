@@ -87,7 +87,7 @@ async function erreur(p: Promise<unknown>): Promise<ErreurMetier> {
 
 const claims = async (uid: string) => (await auth.getUser(uid)).customClaims ?? {};
 const jetonDe = (n: Notification | undefined) =>
-  String(n?.donnees.lien).replace('/pro/invitation?t=', '');
+  String(n?.secrets?.lien).replace('/pro/invitation?t=', '');
 
 /** Entreprise avec son propriétaire, et `siegesMax` posé comme le ferait le webhook Stripe. */
 async function entreprise(siegesMax = 3) {
@@ -144,7 +144,7 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
       'artisan_nouveau',
     );
     expect(await claims(uid)).toEqual({ roles: ['artisan'], ent: { [artisanId]: 'p' } });
-    expect(envois.map((e) => e.modele)).toEqual(['bienvenue-artisan']);
+    expect(envois.map((e) => e.modele)).toEqual(['bienvenue-pro']);
   });
 
   it('deux personnes, même SIREN, même seconde : une seule réussit (sirenIndex)', async () => {
@@ -197,6 +197,12 @@ describe('invitations (COMPTES §4.2)', () => {
     const jeton = jetonDe(envois.at(-1));
     expect(inv.jetonHash).toMatch(/^[0-9a-f]{64}$/);
     expect(JSON.stringify(inv)).not.toContain(jeton);
+    // Le jeton ne voyage que dans les secrets de l'envoi, jamais dans ses données.
+    expect(JSON.stringify(envois.at(-1)!.donnees)).not.toContain(jeton);
+    expect(envois.at(-1)!.donnees).toMatchObject({
+      emailMasque: 'c•••@t•••.local',
+      role: 'collaborateur',
+    });
 
     await accepterInvitation(s, collab, { jeton });
     expect((await db.doc(chemins.membre(artisanId, collab)).get()).data()).toMatchObject({
@@ -541,7 +547,10 @@ describe('demandes d’accès (COMPTES §4.4)', () => {
     expect(JSON.stringify(envois.at(-1))).not.toContain('proprio@');
     expect((await erreur(demanderAcces(s, d, { artisanId }))).code).toBe('CONFLIT');
     await repondreDemandeAcces(s, prop, { artisanId, demandeId, accepter: false });
-    expect(envois.at(-1)!.modele).toBe('demande-acces-refusee');
+    expect(envois.at(-1)).toMatchObject({
+      modele: 'demande-acces-reponse',
+      donnees: { acceptee: false },
+    });
     expect((await db.doc(chemins.membre(artisanId, d)).get()).exists).toBe(false);
   });
 });

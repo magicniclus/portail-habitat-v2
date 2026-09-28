@@ -6,7 +6,8 @@
       "entry": ["server/**/*.ts"]
     },
     "apps/functions": {
-      "entry": ["src/index.ts"]
+      "entry": ["src/index.ts"],
+      "ignoreDependencies": ["react", "react-dom", "@react-email/components", "@react-email/render"]
     },
     "packages/ui": {
       "ignoreDependencies": ["serve"]

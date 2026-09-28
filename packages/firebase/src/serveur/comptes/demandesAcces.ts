@@ -21,8 +21,11 @@ export async function demanderAcces(
 ): Promise<{ demandeId: string }> {
   const maintenant = new Date(s.horloge());
   const ref = s.db.collection(collections.demandesAcces).doc();
-  await s.db.runTransaction(async (tx) => {
-    await lireEntreprise(s, tx, e.artisanId);
+  const demandeur =
+    ((await s.db.doc(chemins.user(uid)).get()).get('nomAffiche') as string | undefined) ??
+    'Une personne';
+  const { nomCommercial } = await s.db.runTransaction(async (tx) => {
+    const entreprise = await lireEntreprise(s, tx, e.artisanId);
     if ((await tx.get(s.db.doc(chemins.membre(e.artisanId, uid)))).exists)
       throw new ErreurMetier('CONFLIT', 'Vous faites déjà partie de cette équipe.');
     const ouvertes = await tx.get(
@@ -42,6 +45,7 @@ export async function demanderAcces(
       statut: 'ouverte',
       expireLe: Timestamp.fromMillis(maintenant.getTime() + DUREE_DEMANDE_ACCES_MS),
     });
+    return entreprise;
   });
   const responsables = await s.db
     .collection(chemins.membres(e.artisanId))
@@ -53,8 +57,14 @@ export async function demanderAcces(
       s.notifier({
         modele: 'demande-acces',
         destinataire: { uid: d.id, artisanId: e.artisanId },
-        donnees: { demandeId: ref.id },
-        cleIdempotence: `demande-acces:${ref.id}:${d.id}`,
+        refObjet: `demandesAcces/${ref.id}`,
+        donnees: {
+          nomCommercial,
+          demandeur,
+          ...(e.message ? { message: e.message } : {}),
+          lien: '/pro/equipe',
+        },
+        titreInApp: 'Demande pour rejoindre votre équipe',
       }),
     ),
   );
@@ -68,15 +78,15 @@ export async function repondreDemandeAcces(
 ): Promise<void> {
   const maintenant = new Date(s.horloge());
   const ref = s.db.collection(collections.demandesAcces).doc(e.demandeId);
-  const demandeur = await s.db.runTransaction(async (tx) => {
+  const { demandeur, nomCommercial } = await s.db.runTransaction(async (tx) => {
     const d = (await tx.get(ref)).data();
     if (!d || d.artisanId !== e.artisanId || d.statut !== 'ouverte')
       throw new ErreurMetier('INTROUVABLE');
     if ((d.expireLe as Timestamp).toMillis() <= maintenant.getTime())
       throw new ErreurMetier('INTROUVABLE', 'Cette demande a expiré.');
     await exigerPermission(s, tx, e.artisanId, uid, 'membres.gerer', e.role);
+    const entreprise = await lireEntreprise(s, tx, e.artisanId);
     if (e.accepter) {
-      const entreprise = await lireEntreprise(s, tx, e.artisanId);
       if (entreprise.nbMembres >= entreprise.siegesMax)
         throw new ErreurMetier('PRECONDITION', 'Tous les sièges de votre formule sont occupés.');
       tx.set(
@@ -93,13 +103,18 @@ export async function repondreDemandeAcces(
       traitePar: uid,
       updatedAt: maintenant,
     });
-    return d.demandeurUid as string;
+    return { demandeur: d.demandeurUid as string, nomCommercial: entreprise.nomCommercial };
   });
   if (e.accepter) await synchroniserClaims(s, demandeur, e.artisanId);
   await s.notifier({
-    modele: e.accepter ? 'demande-acces-acceptee' : 'demande-acces-refusee',
+    modele: 'demande-acces-reponse',
     destinataire: { uid: demandeur, artisanId: e.artisanId },
-    donnees: {},
-    cleIdempotence: `reponse-acces:${e.demandeId}`,
+    refObjet: `demandesAcces/${e.demandeId}`,
+    donnees: {
+      nomCommercial,
+      acceptee: e.accepter,
+      ...(e.role ? { role: e.role } : {}),
+      lien: '/pro',
+    },
   });
 }

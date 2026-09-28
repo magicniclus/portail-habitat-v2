@@ -4,7 +4,7 @@ import type { entreeMembre, entreeModifierMembre } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
 import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
-import { exigerPermission } from './acces';
+import { exigerPermission, lireEntreprise } from './acces';
 import { synchroniserClaims } from './claims';
 import type { ServicesComptes } from './services';
 
@@ -75,22 +75,25 @@ export async function retirerMembre(
 ): Promise<void> {
   if (e.uid === uid) throw new ErreurMetier('PRECONDITION', 'Utilisez « Quitter l’entreprise ».');
   const maintenant = new Date(s.horloge());
-  await s.db.runTransaction(async (tx) => {
+  const nomCommercial = await s.db.runTransaction(async (tx) => {
     const cible = await lireMembre(s, tx, e.artisanId, e.uid);
     await exigerPermission(s, tx, e.artisanId, uid, 'membres.gerer', cible.role);
     if (cible.role === 'proprietaire') throw new ErreurMetier('PERMISSION_REFUSEE');
+    const { nomCommercial } = await lireEntreprise(s, tx, e.artisanId);
     tx.delete(s.db.doc(chemins.membre(e.artisanId, e.uid)));
     tx.update(s.db.doc(chemins.artisan(e.artisanId)), {
       nbMembres: FieldValue.increment(-1),
       updatedAt: maintenant,
     });
+    return nomCommercial;
   });
   await sortir(s, e.artisanId, e.uid, maintenant);
   await s.notifier({
     modele: 'membre-retire',
     destinataire: { uid: e.uid, artisanId: e.artisanId },
-    donnees: {},
-    cleIdempotence: `membre-retire:${e.artisanId}:${e.uid}:${maintenant.getTime()}`,
+    refObjet: `artisans/${e.artisanId}/membres/${e.uid}`,
+    variante: String(maintenant.getTime()),
+    donnees: { nomCommercial, lien: '/' },
   });
 }
 

@@ -2,14 +2,11 @@ import { createHash, randomBytes } from 'node:crypto';
 import type { Auth } from 'firebase-admin/auth';
 import type { Firestore } from 'firebase-admin/firestore';
 
-/** Message à envoyer : branché sur `notifier()` (EMAILS.md) ; les tests le remplacent par un espion. */
-export interface Notification {
-  modele: string;
-  destinataire: { email?: string; uid?: string; artisanId?: string };
-  donnees: Record<string, unknown>;
-  cleIdempotence: string;
-}
-export type Notifier = (n: Notification) => Promise<void>;
+import type { Envoi } from '../notifications/notifier';
+
+/** Envoi via `notifier()` (EMAILS.md) ; les tests le remplacent par un espion. */
+export type Notification = Envoi;
+export type Notifier = (n: Notification) => Promise<unknown>;
 
 /** Services injectés dans chaque opération de compte (testables sur émulateur). */
 export interface ServicesComptes {

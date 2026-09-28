@@ -70,7 +70,7 @@ export async function fermerEntreprise(
   e: z.output<typeof entreeFermerEntreprise>,
 ): Promise<void> {
   const maintenant = new Date(s.horloge());
-  const membres = await s.db.runTransaction(async (tx) => {
+  const { membres, nomCommercial } = await s.db.runTransaction(async (tx) => {
     await exigerPermission(s, tx, e.artisanId, uid, 'entreprise.fermer');
     const refArtisan = s.db.doc(chemins.artisan(e.artisanId));
     const a = (await tx.get(refArtisan)).data();
@@ -87,7 +87,7 @@ export async function fermerEntreprise(
     });
     tx.delete(s.db.doc(chemins.artisanPublic(e.artisanId)));
     docs.docs.forEach((d) => tx.delete(d.ref));
-    return docs.docs.map((d) => d.id);
+    return { membres: docs.docs.map((d) => d.id), nomCommercial: a.nomCommercial as string };
   });
   for (const m of membres) {
     await s.auth.revokeRefreshTokens(m).catch(() => undefined);
@@ -95,8 +95,8 @@ export async function fermerEntreprise(
     await s.notifier({
       modele: 'entreprise-fermee',
       destinataire: { uid: m, artisanId: e.artisanId },
-      donnees: {},
-      cleIdempotence: `entreprise-fermee:${e.artisanId}:${m}`,
+      refObjet: `artisans/${e.artisanId}`,
+      donnees: { nomCommercial, lien: '/' },
     });
   }
 }

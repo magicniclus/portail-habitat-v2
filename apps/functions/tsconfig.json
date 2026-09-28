@@ -1,4 +1,5 @@
 {
   "extends": "@ph/config/tsconfig/bibliotheque.json",
+  "compilerOptions": { "jsx": "react-jsx" },
   "include": ["src"]
 }

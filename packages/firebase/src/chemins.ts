@@ -72,6 +72,7 @@ export type NomCollection = keyof typeof collections;
 /** Chemins complets des documents et sous-collections. */
 export const chemins = {
   user: (uid: string) => `users/${uid}`,
+  brouillonOnboarding: (id: string) => `brouillonsOnboarding/${id}`,
   consentements: (uid: string) => `users/${uid}/consentements`,
   notifications: (uid: string) => `users/${uid}/notifications`,
   admin: (uid: string) => `admins/${uid}`,

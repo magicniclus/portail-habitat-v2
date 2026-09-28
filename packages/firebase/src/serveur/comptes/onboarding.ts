@@ -160,10 +160,14 @@ export async function finaliserOnboarding(
   if (e.brouillonId)
     await s.db.collection(collections.brouillonsOnboarding).doc(e.brouillonId).delete();
   await s.notifier({
-    modele: 'bienvenue-artisan',
+    modele: 'bienvenue-pro',
     destinataire: { uid, email: compte.email, artisanId },
-    donnees: { nomCommercial: e.entreprise.nomCommercial },
-    cleIdempotence: `bienvenue-artisan:${artisanId}`,
+    refObjet: `artisans/${artisanId}`,
+    donnees: {
+      nomCommercial: e.entreprise.nomCommercial,
+      ...(compte.displayName ? { prenom: compte.displayName.split(' ')[0] } : {}),
+      lien: '/pro',
+    },
   });
   return { artisanId, slug };
 }

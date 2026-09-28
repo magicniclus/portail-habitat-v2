@@ -36,6 +36,32 @@ function lienInvitation(jeton: string) {
   return `/pro/invitation?t=${jeton}`;
 }
 
+const dateFr = (d: Date) =>
+  new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Europe/Paris',
+  }).format(d);
+
+/** Données du modèle `invitation-membre` : jamais l'email du destinataire en clair (masqué). */
+function donneesInvitation(
+  entreprise: { nomCommercial: string; adresseSiege?: { ville?: string } },
+  invitant: string | undefined,
+  role: string,
+  email: string,
+  maintenant: Date,
+) {
+  return {
+    nomCommercial: entreprise.nomCommercial,
+    ville: entreprise.adresseSiege?.ville ?? '',
+    invitant: invitant ?? 'Un membre de l’équipe',
+    role,
+    emailMasque: masquerEmail(email),
+    expireLe: dateFr(new Date(maintenant.getTime() + DUREE_INVITATION_MS)),
+  };
+}
+
 export async function inviterMembre(
   s: ServicesComptes,
   uid: string,
@@ -46,7 +72,9 @@ export async function inviterMembre(
   const existant = await s.auth.getUserByEmail(e.email).catch(() => null);
   const ref = refInvitations(s.db).doc();
 
-  const nomCommercial = await s.db.runTransaction(async (tx) => {
+  const invitant = (await s.db.doc(chemins.user(uid)).get()).get('nomAffiche') as
+    string | undefined;
+  const entrepriseLue = await s.db.runTransaction(async (tx) => {
     await exigerPermission(s, tx, e.artisanId, uid, 'membres.gerer', e.role);
     const entreprise = await lireEntreprise(s, tx, e.artisanId);
     if (existant && (await tx.get(s.db.doc(chemins.membre(e.artisanId, existant.uid)))).exists)
@@ -79,14 +107,16 @@ export async function inviterMembre(
       statut: 'envoyee',
       expireLe: new Date(maintenant.getTime() + DUREE_INVITATION_MS),
     });
-    return entreprise.nomCommercial;
+    return entreprise;
   });
 
   await s.notifier({
-    modele: 'invitation-equipe',
+    modele: 'invitation-membre',
     destinataire: { email: e.email, artisanId: e.artisanId },
-    donnees: { nomCommercial, role: e.role, lien: lienInvitation(jeton) },
-    cleIdempotence: `invitation:${ref.id}:${empreinteJeton(jeton).slice(0, 12)}`,
+    refObjet: `invitations/${ref.id}`,
+    variante: empreinteJeton(jeton).slice(0, 12),
+    donnees: donneesInvitation(entrepriseLue, invitant, e.role, e.email, maintenant),
+    secrets: { lien: lienInvitation(jeton) },
   });
   return { invitationId: ref.id };
 }
@@ -100,7 +130,9 @@ export async function renvoyerInvitation(
   const maintenant = new Date(s.horloge());
   const jeton = (s.jeton ?? nouveauJeton)();
   const ref = s.db.collection(collections.invitations).doc(e.invitationId);
-  const { email, nomCommercial, role } = await s.db.runTransaction(async (tx) => {
+  const invitant = (await s.db.doc(chemins.user(uid)).get()).get('nomAffiche') as
+    string | undefined;
+  const { email, entreprise, role } = await s.db.runTransaction(async (tx) => {
     const inv = (await tx.get(ref)).data();
     if (!inv || inv.artisanId !== e.artisanId || !['envoyee', 'expiree'].includes(inv.statut))
       throw new ErreurMetier('INTROUVABLE');
@@ -112,17 +144,15 @@ export async function renvoyerInvitation(
       expireLe: Timestamp.fromMillis(maintenant.getTime() + DUREE_INVITATION_MS),
       updatedAt: maintenant,
     });
-    return {
-      email: inv.email as string,
-      role: inv.role as string,
-      nomCommercial: entreprise.nomCommercial,
-    };
+    return { email: inv.email as string, role: inv.role as string, entreprise };
   });
   await s.notifier({
-    modele: 'invitation-equipe',
+    modele: 'invitation-membre',
     destinataire: { email, artisanId: e.artisanId },
-    donnees: { nomCommercial, role, lien: lienInvitation(jeton) },
-    cleIdempotence: `invitation:${e.invitationId}:${empreinteJeton(jeton).slice(0, 12)}`,
+    refObjet: `invitations/${e.invitationId}`,
+    variante: empreinteJeton(jeton).slice(0, 12),
+    donnees: donneesInvitation(entreprise, invitant, role, email, maintenant),
+    secrets: { lien: lienInvitation(jeton) },
   });
 }
 
@@ -160,7 +190,7 @@ export async function accepterInvitation(
   if (!doc) throw new ErreurMetier('INTROUVABLE', 'Ce lien d’invitation n’est plus valable.');
   const compte = await s.auth.getUser(uid);
 
-  const inv = await s.db.runTransaction(async (tx) => {
+  const { inv, nomCommercial } = await s.db.runTransaction(async (tx) => {
     const inv = (await tx.get(doc.ref)).data();
     const expiree = !inv || (inv.expireLe as Timestamp).toMillis() <= maintenant.getTime();
     if (!inv || inv.statut !== 'envoyee' || expiree)
@@ -195,7 +225,7 @@ export async function accepterInvitation(
       updatedAt: maintenant,
     });
     tx.update(doc.ref, { statut: 'acceptee', acceptePar: uid, updatedAt: maintenant });
-    return inv;
+    return { inv, nomCommercial: entreprise.nomCommercial };
   });
 
   await rattacherProfil(s, uid, compte.email!, maintenant);
@@ -203,8 +233,14 @@ export async function accepterInvitation(
   await s.notifier({
     modele: 'invitation-acceptee',
     destinataire: { uid: inv.invitePar as string, artisanId: inv.artisanId as string },
-    donnees: { role: inv.role },
-    cleIdempotence: `invitation-acceptee:${doc.id}`,
+    refObjet: `invitations/${doc.id}`,
+    donnees: {
+      nomCommercial,
+      membre: compte.displayName ?? masquerEmail(compte.email!),
+      role: inv.role,
+      lien: '/pro/equipe',
+    },
+    titreInApp: 'Un membre a rejoint votre équipe',
   });
   return { artisanId: inv.artisanId as string };
 }

@@ -6,6 +6,7 @@ import type { ServicesComptes } from './services';
 
 export interface EntrepriseLue {
   nomCommercial: string;
+  adresseSiege?: { ville?: string };
   siegesMax: number;
   nbMembres: number;
   proprietaireUid: string;
