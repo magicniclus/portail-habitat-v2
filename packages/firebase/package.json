@@ -9,7 +9,8 @@
     "./conversion": "./src/conversion.ts",
     "./serveur": "./src/serveur/index.ts",
     "./comptes": "./src/serveur/comptes/index.ts",
-    "./seed": "./src/seed/index.ts"
+    "./seed": "./src/seed/index.ts",
+    "./notifications": "./src/serveur/notifications/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
