@@ -1,5 +1,6 @@
 import 'server-only';
-import { artisanPublic, avis as schemaAvis, statsPublic } from '@ph/core/schemas';
+import { PRIX_AFFICHES, type PrixAffiches } from '@ph/core/facturation';
+import { artisanPublic, avis as schemaAvis, configApp, statsPublic } from '@ph/core/schemas';
 import { appAdmin, estEmulateur } from '@ph/firebase/admin';
 import { chemins, collections } from '@ph/firebase/chemins';
 import { depot } from '@ph/firebase/serveur';
@@ -95,4 +96,14 @@ export const lireAvisRecents = cache((): Promise<AvisVitrine[] | null> =>
       };
     });
   }),
+);
+
+/** Prix affichés (`config/app.prix`), sinon ceux des décisions D24 et D25. Stripe fait foi au paiement. */
+export const lirePrixAffiches = cache(
+  async (): Promise<PrixAffiches> =>
+    (await lire('config/app', async () => {
+      const brut = (await db().doc(chemins.configApp()).get()).get('prix');
+      const r = configApp.shape.prix.safeParse(brut);
+      return r.success ? r.data : null;
+    })) ?? PRIX_AFFICHES,
 );

@@ -10,6 +10,7 @@ const PAGES = [
   '/',
   '/page-inconnue',
   '/pro/page-inconnue',
+  '/pro',
   '/diagnostic-immobilier/page-inconnue',
   '/diagnostic-immobilier',
   '/diagnostic-immobilier/cenon',
