@@ -148,3 +148,4 @@ export const SCHEMAS = {
 } as const;
 
 export type MotifCollection = keyof typeof SCHEMAS;
+export * from './entreesSupport';

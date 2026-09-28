@@ -467,7 +467,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 
 ## 10. Support, litiges, journaux
 
-- `contacts/{id}` : `nom`, `email`, `role`, `sujet`, `message`, `pieces`, `statut` (`ouvert`, `en_cours`, `resolu`), `assigneA`, `historique: [{ le, par, action }]`, `createdAt`.
+- `contacts/{id}` (identifiant = référence donnée à l’usager, `CT-XXXXXX`) : `nom`, `email`, `role`, `sujet` (`SUJETS_CONTACT` de `@ph/core/support`), `referenceDossier?`, `message`, `pieces`, `statut` (`ouvert`, `en_cours`, `resolu`), `assigneA`, `historique: [{ le, par, action }]`, `createdAt`.
 - `litiges/{id}` : `demandeId?`, `avisId?`, `particulierUid`, `artisanId`, `description`, `statut` (`ouvert`, `mediation`, `resolu`, `clos`), `pieces`, `echanges`, `createdAt`.
 - `emails/{id}` : schéma complet dans EMAILS.md §1 (`categorie`, `variante`, `envoyerLe`, `sequenceId?`, statuts `en_file` … `annule`, `bloque_preferences`).
 - `evenements/{id}` : `type` (`vue_fiche`, `clic_tel`, `clic_devis`, `recherche`), `artisanId?`, `sessionId`, `meta`, `createdAt`, `expireLe` (+13 mois, champ TTL).

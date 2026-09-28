@@ -7,6 +7,8 @@ export const contact = z.object({
   email,
   role: z.enum(['particulier', 'artisan', 'autre']),
   sujet: z.string().max(80),
+  /** Précision facultative selon le sujet (référence de demande, entreprise, adresse de page). */
+  referenceDossier: z.string().max(120).optional(),
   message: z.string().min(10).max(5000),
   pieces: z.array(z.string()).max(3).default([]),
   statut: z.enum(['ouvert', 'en_cours', 'resolu']),
