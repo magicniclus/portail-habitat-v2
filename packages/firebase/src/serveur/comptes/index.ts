@@ -1,3 +1,8 @@
+export {
+  envoyerLienConnexion,
+  envoyerReinitialisation,
+  envoyerVerificationEmail,
+} from './authEmails';
 export { synchroniserClaims } from './claims';
 export { demanderAcces, repondreDemandeAcces } from './demandesAcces';
 export {

@@ -1,25 +1,12 @@
 import { appAdmin } from '@ph/firebase/admin';
 import {
   notifier as notifierFirestore,
+  planifierCloudTask,
   type Envoi,
-  type PlanifierEnvoi,
 } from '@ph/firebase/notifications';
 import { getFirestore } from 'firebase-admin/firestore';
-import { getFunctions } from 'firebase-admin/functions';
-import { REGION } from '../callable';
 import type { ConfigEnvoi } from './envoyer';
 import { brevoSms, mailpit, resend, smsCapture } from './fournisseurs';
-
-const FILE_ENVOIS = 'envoyerEnvoi';
-
-/** Planifie la tâche d'envoi (Cloud Tasks, file dédiée) ; `scheduleTime` pour les envois différés. */
-const planifierCloudTask: PlanifierEnvoi = async ({ envoiId, envoyerLe, secrets }) => {
-  const file = getFunctions(appAdmin()).taskQueue(`locations/${REGION}/functions/${FILE_ENVOIS}`);
-  await file.enqueue(
-    { envoiId, secrets },
-    envoyerLe.getTime() > Date.now() + 1000 ? { scheduleTime: envoyerLe } : {},
-  );
-};
 
 /** Seule porte d'entrée des envois pour les Functions (EMAILS §1). */
 export const notifier = (e: Envoi) =>

@@ -2,6 +2,7 @@ import * as comptes from '@ph/firebase/comptes';
 import {
   entreeAccepterInvitation,
   entreeDemanderAcces,
+  entreeEmailAuth,
   entreeEntreprise,
   entreeFermerEntreprise,
   entreeFinaliserOnboarding,
@@ -13,6 +14,7 @@ import {
   entreeRepondreDemandeAcces,
   entreeSupprimerMonCompte,
 } from '@ph/core/schemas';
+import { z } from '@ph/core/zod';
 import { callable } from '../callable';
 import { services } from './services';
 
@@ -132,4 +134,41 @@ export const fermerEntreprise = callable(
 export const supprimerMonCompte = callable(
   { schema: entreeSupprimerMonCompte, nom: 'supprimerMonCompte', audit: true, authRecenteMin: 5 },
   async (_e, ctx) => comptes.supprimerMonCompte(services(), ctx.uid!),
+);
+
+// Emails d'authentification (EMAILS §4.1, §6) : même réponse que l'adresse existe ou non.
+export const demanderLienConnexion = callable(
+  {
+    schema: entreeEmailAuth,
+    nom: 'demanderLienConnexion',
+    authentification: 'facultative',
+    rateLimit: limite('lien-connexion', 20),
+  },
+  async (e) => {
+    await comptes.envoyerLienConnexion(services(), e.email, e.espace);
+    return { envoye: true as const };
+  },
+);
+export const demanderReinitialisation = callable(
+  {
+    schema: entreeEmailAuth,
+    nom: 'demanderReinitialisation',
+    authentification: 'facultative',
+    rateLimit: limite('mdp-oublie', 20),
+  },
+  async (e) => {
+    await comptes.envoyerReinitialisation(services(), e.email);
+    return { envoye: true as const };
+  },
+);
+export const renvoyerVerificationEmail = callable(
+  {
+    schema: z.object({}),
+    nom: 'renvoyerVerificationEmail',
+    rateLimit: { cle: 'verifier-email', max: 5, fenetre: '1j' },
+  },
+  async (_e, ctx) => {
+    await comptes.envoyerVerificationEmail(services(), ctx.uid!);
+    return { envoye: true as const };
+  },
 );

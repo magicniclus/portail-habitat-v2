@@ -1,3 +1,4 @@
+export { planifierCloudTask } from './cloudTasks';
 export { signerJeton, verifierJeton, type ContenuJeton } from './jetons';
 export {
   empreinteEmail,

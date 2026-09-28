@@ -5,7 +5,8 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { notifier } from '../notifications/configuration';
 
 /** Services réels des opérations de compte (Admin SDK). */
-export const services = (): ServicesComptes => ({
+export const services = (): ServicesComptes & { urlSite: string } => ({
+  urlSite: (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
   db: getFirestore(appAdmin()),
   auth: getAuth(appAdmin()),
   notifier,

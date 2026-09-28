@@ -99,3 +99,9 @@ export const entreeSupprimerMonCompte = z.object({ confirmation: z.literal('SUPP
 export const entreeRechercherEntreprise = z.object({
   q: z.string().trim().min(2).max(120),
 });
+
+/** Lien magique et mot de passe oublié : même réponse que l'adresse existe ou non (EMAILS §4.1). */
+export const entreeEmailAuth = z.object({
+  email,
+  espace: z.enum(['particulier', 'pro']).default('particulier'),
+});

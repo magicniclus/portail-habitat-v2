@@ -9,6 +9,9 @@ import {
   accepterInvitation,
   appliquerSieges,
   demanderAcces,
+  envoyerLienConnexion,
+  envoyerReinitialisation,
+  envoyerVerificationEmail,
   expirerInvitations,
   fermerEntreprise,
   finaliserOnboarding,
@@ -672,5 +675,46 @@ describe('rechercherEntreprise (COMPTES §3.1)', () => {
     expect((await erreur(rechercherEntreprise({ ...s, fetch: panne }, 'x y'))).code).toBe(
       'INDISPONIBLE',
     );
+  });
+});
+
+describe('emails d’authentification personnalisés (EMAILS §4.1)', () => {
+  const sa = () => ({ ...s, urlSite: 'http://localhost:3000' });
+  it('lien magique : lien Firebase en secret, jamais dans les données', async () => {
+    const uid = await compte('camille@test.local');
+    await envoyerLienConnexion(sa(), 'camille@test.local', 'particulier');
+    const e = envois.at(-1)!;
+    expect(e).toMatchObject({
+      modele: 'lien-connexion',
+      destinataire: { uid, email: 'camille@test.local' },
+    });
+    expect(e.secrets!.lien).toMatch(/oobCode=/);
+    expect(JSON.stringify(e.donnees)).not.toMatch(/oobCode/);
+  });
+  it('mot de passe oublié : rien pour une adresse inconnue, sans erreur', async () => {
+    await expect(envoyerReinitialisation(sa(), 'inconnu@test.local')).resolves.toBeUndefined();
+    expect(envois).toHaveLength(0);
+    await compte('connu@test.local');
+    await envoyerReinitialisation(sa(), 'connu@test.local');
+    expect(envois.at(-1)!.modele).toBe('mot-de-passe-oublie');
+  });
+  it('vérification : seulement si l’adresse n’est pas encore vérifiée', async () => {
+    const verifie = await compte('ok@test.local', true);
+    await envoyerVerificationEmail(sa(), verifie);
+    expect(envois).toHaveLength(0);
+    const nonVerifie = await compte('nv@test.local', false);
+    await envoyerVerificationEmail(sa(), nonVerifie);
+    expect(envois.at(-1)!.modele).toBe('verifier-email');
+  });
+  it('au plus 5 envois par heure et par adresse', async () => {
+    await compte('camille@test.local');
+    for (let i = 0; i < 5; i++)
+      await db.collection(collections.emails).add({
+        modele: 'lien-connexion',
+        destinataire: 'camille@test.local',
+        createdAt: Timestamp.now(),
+      });
+    await envoyerLienConnexion(sa(), 'camille@test.local', 'pro');
+    expect(envois).toHaveLength(0);
   });
 });
