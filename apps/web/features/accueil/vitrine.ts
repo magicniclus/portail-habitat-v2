@@ -18,6 +18,7 @@ export interface StatsVitrine {
   nbVilles: number;
   noteMoyenneGlobale: number;
   nbAvisTotal: number;
+  nbDossiersDiag: number;
 }
 
 const TEXTE_MIN = 40;
@@ -70,5 +71,6 @@ export function chiffresVitrine(s: StatsVitrine | null) {
     note: noteFiable ? formatNombre(s.noteMoyenneGlobale, 1) : null,
     avis: nombreArrondi(s.nbAvisTotal),
     avisExact: formatNombre(s.nbAvisTotal),
+    dossiers: s.nbDossiersDiag ? formatNombre(s.nbDossiersDiag) : null,
   };
 }

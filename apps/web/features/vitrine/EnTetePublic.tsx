@@ -1,4 +1,4 @@
-import { bouton, Logo } from '@ph/ui';
+import { bouton, cn, Logo } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { MenuPublic } from './MenuPublic';
@@ -38,7 +38,13 @@ export function EnTetePublic({
       <Logo
         variant={variantLogo}
         taille={32}
-        className="max-[389px]:[&>span:last-child]:sr-only sm:[&_svg]:size-9"
+        className={cn(
+          // Texte du logo masqué (lu par les lecteurs d'écran) quand l'en-tête manque de place.
+          variantLogo === 'particulier'
+            ? 'max-[389px]:[&>span:last-child]:sr-only'
+            : 'max-[479px]:[&>span:last-child]:sr-only',
+          'sm:[&_svg]:size-9',
+        )}
       />
     </Link>
   );

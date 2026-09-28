@@ -60,6 +60,7 @@ describe('chiffres (ACC-01)', () => {
         nbVilles: 420,
         noteMoyenneGlobale: 4.8,
         nbAvisTotal: 2140,
+        nbDossiersDiag: 1240,
       }),
     ).toEqual({
       demandes: '2 400',
@@ -68,6 +69,7 @@ describe('chiffres (ACC-01)', () => {
       note: '4,8',
       avis: '2 000+',
       avisExact: '2 140',
+      dossiers: '1\u202f240',
     });
     expect(chiffresVitrine(null)).toBeNull();
   });
@@ -79,6 +81,7 @@ describe('chiffres (ACC-01)', () => {
         nbVilles: 1,
         noteMoyenneGlobale: 5,
         nbAvisTotal: 9,
+        nbDossiersDiag: 0,
       })!.note,
     ).toBeNull();
   });

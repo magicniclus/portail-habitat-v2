@@ -12,8 +12,11 @@ export function PiedPublic({
   accroche,
   colonnes,
   variantLogo = 'particulier',
+  mention,
 }: {
   accroche: string;
+  /** Complément de la ligne de copyright (« Prix indicatifs… »). */
+  mention?: string;
   colonnes: ColonnePied[];
   variantLogo?: 'particulier' | 'pro' | 'diag';
 }) {
@@ -43,7 +46,8 @@ export function PiedPublic({
         ))}
       </div>
       <p className="m-0 border-t border-blanc/12 px-[clamp(18px,4vw,44px)] py-[18px] text-center text-[13px]">
-        © {new Date().getFullYear()} Portail Habitat. Tous droits réservés.
+        © {new Date().getFullYear()} Portail Habitat{variantLogo === 'diag' ? ' Diag' : ''}.{' '}
+        {mention ?? 'Tous droits réservés.'}
       </p>
     </footer>
   );

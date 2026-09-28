@@ -18,6 +18,7 @@ export const routes = {
   simulateur: r('/simulateur'),
   avis: r('/avis'),
   aide: r('/aide'),
+  aideSujet: (sujet: string) => r(`/aide?sujet=${sujet}`),
   legal: (public_: 'particuliers' | 'pro', doc: string) => r(`/legal/${public_}/${doc}`),
   mentionsParticuliers: r('/legal/particuliers/mentions'),
   mentionsPro: r('/legal/pro/mentions'),
@@ -30,6 +31,8 @@ export const routes = {
   proAide: r('/pro/aide'),
   diagnostic: r('/diagnostic-immobilier'),
   diagnosticEstimation: r('/diagnostic-immobilier/estimation'),
+  diagnosticEstimationCommune: (slug: string) =>
+    r(`/diagnostic-immobilier/estimation?ville=${slug}`),
   diagnosticCommune: (slug: string) => r(`/diagnostic-immobilier/${slug}`),
   etatDuService: r('/aide?sujet=etat-du-service'),
 } as const;
