@@ -32,7 +32,8 @@
     "./consentement": "./src/consentement/index.ts",
     "./support": "./src/support/index.ts",
     "./demandes": "./src/demandes/index.ts",
-    "./avis": "./src/avis/index.ts"
+    "./avis": "./src/avis/index.ts",
+    "./espace": "./src/espace/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
