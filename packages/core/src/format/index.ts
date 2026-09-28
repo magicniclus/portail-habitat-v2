@@ -1,4 +1,4 @@
-export { formatEuros, parseEuros, type OptionsEuros } from './euros';
+export { formatEuros, formatFourchette, parseEuros, type OptionsEuros } from './euros';
 export { formatDate, formatRelatif, type DateEntree, type StyleDate } from './dates';
 export { estMobileFr, formatTel, normaliserTel } from './telephone';
 export {

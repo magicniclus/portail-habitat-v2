@@ -39,3 +39,12 @@ export function parseEuros(saisie: string): number | null {
   const centimes = Number(entiers) * 100 + Number(decimales.padEnd(2, '0'));
   return signe ? -centimes : centimes;
 }
+
+/** Fourchette de prix « 110 – 190 € » (centimes entiers, sans décimales). */
+export function formatFourchette(min: number, max: number): string {
+  if (max < min) throw new RangeError(`Fourchette inversée : ${min} > ${max}`);
+  const haut = formatEuros(max, { decimales: 'jamais' });
+  if (min === max) return haut;
+  const bas = formatEuros(min, { decimales: 'jamais' }).replace(/\s*€$/, '');
+  return `${bas} – ${haut}`;
+}

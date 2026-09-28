@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatEuros, parseEuros } from './euros';
+import { formatEuros, formatFourchette, parseEuros } from './euros';
 
 // fr-FR : espace fine insécable (U+202F) pour les milliers, insécable (U+00A0) avant €.
 const m = ' ';
@@ -55,5 +55,19 @@ describe('parseEuros', () => {
   it('ne passe jamais par un flottant (0,29 × 100)', () => {
     expect(parseEuros('0,29')).toBe(29);
     expect(parseEuros('1,15')).toBe(115);
+  });
+});
+
+describe('formatFourchette', () => {
+  it('« 110 – 190 € », un seul symbole', () => {
+    expect(formatFourchette(11_000, 19_000)).toBe('110 – 190 €');
+    expect(formatFourchette(51_500, 81_000)).toBe('515 – 810 €');
+  });
+  it('montants égaux : un seul nombre', () => {
+    expect(formatFourchette(5_000, 5_000)).toBe('50 €');
+  });
+  it('refuse les montants non entiers ou inversés', () => {
+    expect(() => formatFourchette(1.5, 3)).toThrow(RangeError);
+    expect(() => formatFourchette(300, 100)).toThrow(RangeError);
   });
 });
