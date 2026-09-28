@@ -17,7 +17,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 4 | Comptes, équipes, seed | ✅ | 27/09/2026 | 58 tests sur émulateur (COMPTES §10), 3 480 tests core, CI verte | notificateur provisoire jusqu'au lot 5 (§10) |
 | 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
 | 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
-| 7 | Recherche | ⬜ | | pertinence, RCH | |
+| 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
 | 8 | Parcours particuliers | ⬜ | | SIM, ESP, DIA, AVI | |
 | 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
 | 10 | Espace artisan, équipes, PWA | ⬜ | | ACQ, ONB, PRO | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 7 (recherche de projet)
-- Dernier lot terminé : 6, le 28/09/2026 (détail §12)
+- Lot : 8 (parcours particuliers et espace particulier)
+- Dernier lot terminé : 7, le 28/09/2026 (détail §13)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -213,6 +213,20 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 5. Enregistrement du choix cookies dans `consentements` pour les utilisateurs connectés : avec la connexion (lot 8).
 6. Numéro de téléphone de la maquette Contact (fictif) non repris.
 
+## 13. Lot 7 — Recherche de projet (terminé le 28/09/2026)
+
+**Fait**
+- **Champ « Quel est votre projet ? »** de l'accueil : suggestions dès 2 caractères, 7 au plus, mots reconnus en gras, métier, badge « Estimation en ligne », « Résultats pour … » (correction), message d'urgence (délai « Dès que possible » présélectionné), métiers vers l'annuaire, « Projets associés » à la place des chips, champ vide → « Projets les plus demandés ». Clavier (↓ ↑ Entrée Échap), ARIA combobox + listbox + `aria-activedescendant`, nombre de suggestions annoncé. Sur mobile, recherche en plein écran avec « Annuler » (MOBILE §7).
+- **Poids** : l'accueil n'embarque qu'un champ ; moteur, index (≈ 16 Ko compressés) et liste sont chargés au premier focus. La liste suit la frappe sans délai (moteur local instantané ; un délai laissait une liste périmée que la touche Entrée pouvait choisir). Sans JavaScript ou avant le chargement, l'envoi GET natif reste possible.
+- **Routage à la validation** (`cibleRecherche`, core) : prestation → `/simulateur?prestation&intention&cp&delai` ; `diagnostic` → parcours diagnostic ; rien de choisi → meilleur résultat s'il est net (score ≥ 8), sinon demande libre (`?projet=&metier=`).
+- **Journal** `evenements` (type `recherche`) : `saisie`, `choix` (intention, rang), `zero` (après 800 ms sans frappe), `abandon` ; requête normalisée sans email ni suite de chiffres (téléphone, code postal), identifiant d'onglet aléatoire ; `POST /api/recherche/evenement` (même origine, 120 / h, sans App Check car envoyé par `sendBeacon`).
+- **`GET /api/recherche?q=`** : cache CDN 1 h, 30 requêtes / min / IP (par instance, meilleur effort), Typesense si configuré sinon moteur local ; surlignage, correction, urgence, métiers et projets associés viennent toujours du moteur local.
+- **Typesense** (D4 ⏳) : formats dans `@ph/core/recherche` (collection, documents, synonymes, mots vides, paramètres de RECHERCHE §4) ; Functions `syncIntentionTypesense` et `syncSynonymesTypesense` déclenchées à chaque modification du référentiel, **inactives sans configuration**.
+
+**Variables à fournir si D4 est validé** : `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE` (site, clé de recherche seule), `TYPESENSE_CLE_ADMIN` (Functions, Secret Manager). Première indexation : réécrire les intentions (le seed le fait) ou lancer une synchronisation complète à ajouter au lot 13 (écran admin Recherche).
+
+**Non fait (lots suivants)** : annuaire `/artisans?q=` (lot 9) ; écran admin Recherche, banc d'essai et popularité mensuelle (lot 13) ; saisonnalité (`saison`) non utilisée par le moteur.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -316,3 +330,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Lot 4 terminé (comptes, équipes, session, seed). Nouveau statut de demande `appel_offres`, dépendance `tsx`.
 - 28/09/2026 — Lot 5 terminé (emails, SMS, notifications). Parcours Playwright + Mailpit reportés aux lots 8 et 10.
 - 28/09/2026 — Lot 6 terminé (pages publiques, SEO, cookies). Décision D49 proposée ; textes légaux et visuels à fournir.
+- 28/09/2026 — Lot 7 terminé (recherche de projet). Typesense prêt mais inactif (D4 à valider, clés à fournir).
