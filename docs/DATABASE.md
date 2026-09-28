@@ -461,7 +461,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 `nbArtisans`, `nbDemandesMois`, `nbVilles`, `noteMoyenneGlobale`, `nbAvisTotal`, `nbDossiersDiag`. Recalculé chaque nuit.
 
 ### `config/app`
-`prix: { premiumMensuelHt: 9900, premiumAnnuelHtMois: 7900, visibiliteAnnuelHt: 7990, visibiliteMensuelHt: 1290 }` (affichage seulement, Stripe fait foi), `versionsLegales: { cgu, cgv, confidentialite, avis, charte }`, `maintenance: bool`, `quotas: { gratuit, premium }`, `maxAttributions: 3`.
+`prix: { premiumMensuelHt: 9990, premiumAnnuelHtMois: 7990, visibiliteAnnuelHt: 7990, visibiliteMensuelHt: 1290 }` (DECISIONS D24, D25 ; affichage seulement, Stripe fait foi ; valeurs par défaut `PRIX_AFFICHES` de `@ph/core/facturation`), `versionsLegales: { cgu, cgv, confidentialite, avis, charte }`, `maintenance: bool`, `quotas: { gratuit, premium }`, `maxAttributions: 3`.
 
 ---
 
