@@ -59,6 +59,22 @@ export interface TarifChamps {
   extras: readonly (readonly [string, string, ...unknown[]])[];
 }
 
+const MONTANT = /\d\s*(?:k)?€/;
+
+/**
+ * Champ publiable (COMPTES §6.1, SIM-01b) : les descriptions d'options qui citent un montant en euros
+ * (« 15 à 25 €/m² ») sont retirées, aucun prix ne doit apparaître avant l'envoi.
+ */
+export function champSansMontant(c: Champ): Champ {
+  if (c.kind !== 'options' && c.kind !== 'chips') return c;
+  return {
+    ...c,
+    options: c.options.map(({ desc, ...o }) =>
+      desc === undefined || MONTANT.test(desc) ? o : { ...o, desc },
+    ),
+  };
+}
+
 /** Champs d'une prestation du catalogue, déduits de son tarif (portage de chargerCatalogue). */
 export function champsDuTarif(t: TarifChamps): Champ[] {
   const q = t.q;

@@ -17,6 +17,23 @@ export function referenceDemande(alea: () => number): string {
   return `PH-${r}`;
 }
 
+/** Réponse de `creerDemande` : l'écran de résultat affiche cette estimation, jamais celle du navigateur. */
+export interface DemandeCreee {
+  demandeId: string;
+  reference: string;
+  prestation: { id: string; nom: string };
+  estimation: {
+    minCentimes: number;
+    maxCentimes: number;
+    aidesCentimes: number;
+    tvaPourcent: number;
+    noteRegion: string;
+    postes: { label: string; minCentimes: number; maxCentimes: number }[];
+  };
+  reponsesLisibles: { question: string; reponse: string }[];
+  ville: string;
+}
+
 /** Conservation : 3 ans, puis anonymisation par Function planifiée (DATABASE §15). */
 export const expirationDemande = (maintenant: number) => new Date(maintenant + 3 * 365 * JOUR_MS);
 

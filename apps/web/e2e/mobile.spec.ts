@@ -16,6 +16,11 @@ const PAGES = [
   '/diagnostic-immobilier/cenon',
   '/maintenance',
   '/aide',
+  '/simulateur',
+  '/simulateur?prestation=peinture&etape=2',
+  '/simulateur?prestation=peinture&etape=3',
+  '/simulateur?prestation=peinture&etape=4',
+  '/simulateur?prestation=peinture&etape=5',
   '/legal/particuliers/confidentialite',
   '/legal/pro/cgv',
 ];

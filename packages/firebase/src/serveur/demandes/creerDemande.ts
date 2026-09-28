@@ -5,6 +5,7 @@ import {
   referentielDepuisDocuments,
   verifierReponses,
   type ChampDocument,
+  type DemandeCreee,
 } from '@ph/core/demandes';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
@@ -29,23 +30,6 @@ export interface ContexteDemande {
   uid?: string | null;
   ipHash?: string;
   userAgent?: string;
-}
-
-/** Ce que l'écran de résultat affiche : l'estimation calculée ici, jamais celle du navigateur. */
-export interface DemandeCreee {
-  demandeId: string;
-  reference: string;
-  prestation: { id: string; nom: string };
-  estimation: {
-    minCentimes: number;
-    maxCentimes: number;
-    aidesCentimes: number;
-    tvaPourcent: number;
-    noteRegion: string;
-    postes: { label: string; minCentimes: number; maxCentimes: number }[];
-  };
-  reponsesLisibles: { question: string; reponse: string }[];
-  ville: string;
 }
 
 async function lireReferentiel(s: ServicesDemandes, prestationId: string) {

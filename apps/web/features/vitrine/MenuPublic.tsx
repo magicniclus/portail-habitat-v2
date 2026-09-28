@@ -1,6 +1,5 @@
 'use client';
 
-import { IconButton } from '@ph/ui';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import type { LienNav } from './EnTetePublic';
@@ -43,18 +42,21 @@ export function MenuPublic({
   const bouton = useRef<HTMLButtonElement>(null);
   return (
     <>
-      <IconButton
+      {/* Bouton natif : IconButton fusionne ses classes (tailwind-merge), inutile ici (D46). */}
+      <button
+        type="button"
         ref={bouton}
         aria-label="Menu principal"
         aria-expanded={ouvert}
         aria-haspopup="dialog"
-        icone={<IconeMenu />}
-        className="lg:hidden"
+        className="inline-flex size-11 cursor-pointer items-center justify-center rounded-control border border-transparent bg-transparent p-0 text-texte transition-colors hover:bg-accent-100 active:bg-accent-200 lg:hidden"
         onClick={() => {
           setCharge(true);
           setOuvert(true);
         }}
-      />
+      >
+        <IconeMenu />
+      </button>
       {charge ? (
         <PanneauMenu
           liens={liens}

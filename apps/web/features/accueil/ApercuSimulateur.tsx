@@ -79,6 +79,7 @@ export function ApercuSimulateur() {
         </ul>
         <Link
           href={routes.simulateur}
+          prefetch={false}
           className={bouton({ className: 'min-h-12 px-[22px] text-[16.5px]' })}
         >
           Essayer le simulateur

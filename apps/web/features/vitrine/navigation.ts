@@ -12,7 +12,7 @@ export const enTeteParticuliers: EnTetePublicProps = {
     { libelle: 'Avis', href: routes.avis },
   ],
   secondaire: { libelle: 'Mon espace', href: routes.connexion },
-  principal: { libelle: 'Simuler mon devis', href: routes.simulateur },
+  principal: { libelle: 'Simuler mon devis', href: routes.simulateur, prefetch: false },
   principalCourt: 'Simuler',
 };
 
@@ -24,7 +24,7 @@ export const piedParticuliers: { accroche: string; colonnes: ColonnePied[] } = {
       titre: 'Particuliers',
       liens: [
         { libelle: 'Décrire mon projet', href: routes.accueil },
-        { libelle: 'Simulateur de devis', href: routes.simulateur },
+        { libelle: 'Simulateur de devis', href: routes.simulateur, prefetch: false },
         { libelle: 'Diagnostic immobilier', href: routes.diagnostic },
         { libelle: 'Laisser un avis', href: routes.avis },
         { libelle: 'Mon espace', href: routes.connexion },

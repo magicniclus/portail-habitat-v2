@@ -12,6 +12,7 @@ export { tarifEnCentimes } from './generique';
 export type { Acces, Coefficients, Paire, Poste, Reponse, Reponses, TarifGenerique } from './types';
 export {
   champsDuTarif,
+  champSansMontant,
   type Champ,
   type ChampChips,
   type ChampNumerique,
@@ -20,4 +21,11 @@ export {
   type TarifChamps,
 } from './champs';
 export { referentielDepuisFichiers } from './referentiel';
+export {
+  etapeDepuisUrl,
+  etapePrecedente,
+  etapeSuivante,
+  filtrerPrestations,
+  JALONS_SIMULATEUR,
+} from './navigation';
 export { tarifDepuisDocument, tarifVersDocument, type TarifDocument } from './stockage';

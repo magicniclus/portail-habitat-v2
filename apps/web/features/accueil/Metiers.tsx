@@ -37,6 +37,7 @@ export function Metiers() {
         <li className="col-span-2 sm:col-span-1">
           <Link
             href={routes.simulateur}
+            prefetch={false}
             className="flex h-full min-h-[140px] flex-col justify-between sm:min-h-[180px] gap-[18px] rounded-card bg-accent-action px-5 py-[22px] text-blanc no-underline shadow-sm hover:bg-accent-700 hover:text-blanc"
           >
             <svg

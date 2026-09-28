@@ -23,6 +23,7 @@
     "./entreprises": "./src/entreprises/index.ts",
     "./notifications": "./src/notifications/index.ts",
     "./parcours": "./src/parcours/index.ts",
+    "./parcours/reponses": "./src/parcours/reprise.ts",
     "./stats": "./src/stats/index.ts",
     "./leads": "./src/leads/index.ts",
     "./annuaire": "./src/annuaire/index.ts",

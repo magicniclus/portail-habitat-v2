@@ -36,6 +36,7 @@ export function PiedPublic({
                 <li key={l.libelle}>
                   <Link
                     href={l.href}
+                    prefetch={l.prefetch}
                     className="inline-flex min-h-11 min-w-11 items-center text-accent-200 hover:text-blanc"
                   >
                     {l.libelle}

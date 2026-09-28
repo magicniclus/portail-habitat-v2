@@ -34,6 +34,7 @@ export default function PanneauMenu({
         <Link
           key={l.libelle}
           href={l.href}
+          prefetch={l.prefetch}
           onClick={fermer}
           className="flex min-h-14 items-center border-b border-trait text-lg font-semibold text-texte no-underline"
         >
@@ -42,6 +43,7 @@ export default function PanneauMenu({
       ))}
       <Link
         href={principal.href}
+        prefetch={principal.prefetch}
         onClick={fermer}
         className={bouton({ taille: 'lg', pleineLargeur: true, className: 'mt-4' })}
       >

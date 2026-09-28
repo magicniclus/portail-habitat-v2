@@ -15,6 +15,7 @@ export const routes = {
   connexion: r('/connexion'),
   connexionPro: r('/connexion?espace=pro'),
   monEspace: r('/mon-espace'),
+  demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   simulateur: r('/simulateur'),
   avis: r('/avis'),
   aide: r('/aide'),

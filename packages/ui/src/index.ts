@@ -18,7 +18,7 @@ export {
   type Tone,
 } from './primitives/Badge';
 export { Skeleton } from './primitives/Skeleton';
-export { ATTRIBUTS_CHAMP, type TypeChamp } from './primitives/champs';
+export { ATTRIBUTS_CHAMP, CLASSES_CHAMP, type TypeChamp } from './primitives/champs';
 export { Field, useChamp, type FieldProps } from './primitives/Field';
 export { Input, Select, Textarea, type InputProps } from './primitives/Input';
 export { Checkbox, type CheckboxProps } from './primitives/Checkbox';

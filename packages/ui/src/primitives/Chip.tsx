@@ -1,11 +1,11 @@
 import type { ComponentProps } from 'react';
 import { cn } from '../cn';
 
-export const classesChip = cn(
+export const classesChip = [
   'inline-flex min-h-11 items-center gap-1.5 rounded-pill border border-neutre-300 bg-blanc px-3.5',
   'text-[14.5px] font-semibold text-texte no-underline transition-colors hover:border-accent hover:text-texte',
   'aria-pressed:border-accent aria-pressed:bg-accent-100 aria-pressed:text-accent-800',
-);
+].join(' ');
 
 export interface ChipProps extends ComponentProps<'button'> {
   /** Chip à bascule (filtre) : expose `aria-pressed`. Sans valeur, simple bouton. */

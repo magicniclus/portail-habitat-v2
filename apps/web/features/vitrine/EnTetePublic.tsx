@@ -6,6 +6,8 @@ import { MenuPublic } from './MenuPublic';
 export interface LienNav {
   libelle: string;
   href: Route;
+  /** `false` pour une page lourde (simulateur) : pas de préchargement depuis la vitrine (budget D46). */
+  prefetch?: false;
 }
 
 export interface EnTetePublicProps {
@@ -66,6 +68,7 @@ export function EnTetePublic({
               <Link
                 key={l.libelle}
                 href={l.href}
+                prefetch={l.prefetch}
                 className="inline-flex min-h-11 min-w-11 items-center justify-center text-texte no-underline hover:text-accent"
               >
                 {l.libelle}
@@ -76,6 +79,7 @@ export function EnTetePublic({
             {secondaire ? (
               <Link
                 href={secondaire.href}
+                prefetch={secondaire.prefetch}
                 className="hidden min-h-11 items-center text-[14.5px] text-neutre-800 no-underline hover:text-accent lg:inline-flex"
               >
                 {secondaire.libelle}
@@ -83,6 +87,7 @@ export function EnTetePublic({
             ) : null}
             <Link
               href={principal.href}
+              prefetch={principal.prefetch}
               className={bouton({ className: 'min-h-11 px-3.5 text-[15px] sm:px-[18px]' })}
             >
               {principalCourt ? (

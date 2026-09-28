@@ -1,6 +1,6 @@
 'use client';
 
-import { bouton, Field, Input, Select } from '@ph/ui';
+import { ATTRIBUTS_CHAMP, bouton, CLASSES_CHAMP } from '@ph/ui';
 import dynamic from 'next/dynamic';
 import { useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { DELAIS, PROJETS_POPULAIRES, type Retenue } from './choix';
@@ -19,6 +19,11 @@ const ETAT_INITIAL: EtatSuggestions = {
 
 // Mobile : recherche en plein écran, champ en haut, suggestions dessous (MOBILE §7). Chaîne fixe :
 // pas de fusion de classes à l'exécution (coût au chargement, D46).
+// Champs natifs à classes fixes : Field/Input fusionnent leurs classes (tailwind-merge, ≈ 9 Ko) et
+// l'accueil n'a aucune marge sur le budget JavaScript (D46).
+const CHAMP = `${CLASSES_CHAMP} min-h-12`;
+const ETIQUETTE = 'text-[15px] font-semibold text-texte';
+
 const PLEIN_ECRAN =
   'max-sm:fixed max-sm:inset-0 max-sm:z-50 max-sm:overflow-y-auto max-sm:bg-fond max-sm:px-4 max-sm:pt-[max(16px,env(safe-area-inset-top))]';
 
@@ -27,7 +32,8 @@ const PLEIN_ECRAN =
  * GET vers le simulateur reste possible (`cible`).
  */
 export function FormulaireProjet({ cible }: { cible: string }) {
-  const idListe = `${useId()}-suggestions`;
+  const id = useId();
+  const idListe = `${id}-suggestions`;
   const [projet, setProjet] = useState('');
   const [choix, setChoix] = useState<Retenue | null>(null);
   const [delai, setDelai] = useState('asap');
@@ -70,8 +76,12 @@ export function FormulaireProjet({ cible }: { cible: string }) {
         ) : null}
         <div className={focus ? `relative ${PLEIN_ECRAN}` : 'relative'}>
           <div className="flex items-end gap-2">
-            <Field label="Quel est votre projet ?" className="flex-1">
-              <Input
+            <div className="flex flex-1 flex-col gap-1.5">
+              <label htmlFor={`${id}-projet`} className={ETIQUETTE}>
+                Quel est votre projet ?
+              </label>
+              <input
+                id={`${id}-projet`}
                 ref={champ}
                 name={choix ? undefined : 'projet'}
                 role="combobox"
@@ -96,9 +106,9 @@ export function FormulaireProjet({ cible }: { cible: string }) {
                 onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                   if (pont.current?.clavier(e.key)) e.preventDefault();
                 }}
-                className="min-h-12"
+                className={CHAMP}
               />
-            </Field>
+            </div>
             {focus ? (
               <button
                 type="button"
@@ -131,29 +141,37 @@ export function FormulaireProjet({ cible }: { cible: string }) {
           <p className="m-0 -mt-0.5 text-sm font-bold text-accent-800">✓ {choix.libelle}</p>
         ) : null}
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-3">
-          <Field label="Code postal">
-            <Input
-              champ="codePostal"
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={`${id}-cp`} className={ETIQUETTE}>
+              Code postal
+            </label>
+            <input
+              id={`${id}-cp`}
+              {...ATTRIBUTS_CHAMP.codePostal}
               name="cp"
               placeholder="33000"
               enterKeyHint="next"
-              className="min-h-12"
+              className={CHAMP}
             />
-          </Field>
-          <Field label="Démarrage souhaité">
-            <Select
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={`${id}-delai`} className={ETIQUETTE}>
+              Démarrage souhaité
+            </label>
+            <select
+              id={`${id}-delai`}
               name="delai"
               value={delai}
               onChange={(e) => setDelai(e.target.value)}
-              className="min-h-12"
+              className={`${CHAMP} cursor-pointer pr-9`}
             >
               {DELAIS.map((d) => (
                 <option key={d.valeur} value={d.valeur}>
                   {d.libelle}
                 </option>
               ))}
-            </Select>
-          </Field>
+            </select>
+          </div>
         </div>
         {/* Bouton natif : le composant Button embarque Radix Slot, inutile ici (budget D46). */}
         <button
