@@ -603,6 +603,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "avis",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "publieLe",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
