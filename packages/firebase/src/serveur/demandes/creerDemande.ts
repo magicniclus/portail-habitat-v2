@@ -9,12 +9,12 @@ import {
 } from '@ph/core/demandes';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
-import { consentement, demande, type EntreeDemande } from '@ph/core/schemas';
+import { demande, type EntreeDemande } from '@ph/core/schemas';
 import { estimer } from '@ph/core/simulateur';
 import { collections, chemins } from '../../chemins';
-import { rattacherOuCreerParticulier } from '../comptes/particuliers';
 import type { ServicesComptes } from '../comptes/services';
 import { depot } from '../depot';
+import { ecrireConsentements, lienDeSuivi, particulierDeLEnvoi, referenceUnique } from './commun';
 import type { Geocodeur } from './geocodage';
 
 export interface ServicesDemandes extends ServicesComptes {
@@ -82,19 +82,9 @@ export async function creerDemande(
   const lieu = await s.geocoder(e.codePostal);
   if (!lieu) throw new ErreurMetier('ENTREE_INVALIDE', 'Ce code postal est inconnu.');
 
-  // Particulier connecté : rattachement direct. Un compte pro connecté passe par le flux par email.
-  const connecte = ctx.uid
-    ? ((await s.db.doc(chemins.user(ctx.uid)).get()).get('roles') as string[] | undefined)
-    : undefined;
-  const uid =
-    ctx.uid && connecte?.includes('particulier')
-      ? ctx.uid
-      : (await rattacherOuCreerParticulier(s, e.contact.email)).uid;
+  const uid = await particulierDeLEnvoi(s, ctx.uid, e.contact.email);
   const demandes = depot(s.db, collections.demandes, demande);
-  const consentements = depot(s.db, chemins.consentements(uid), consentement);
   const ref = demandes.reference.doc();
-  const idConsentement = consentements.reference.doc().id;
-  const idConfidentialite = consentements.reference.doc().id;
   const alea = s.alea ?? Math.random;
   const trace = {
     ...(ctx.ipHash ? { ipHash: ctx.ipHash } : {}),
@@ -103,31 +93,16 @@ export async function creerDemande(
 
   let reference = '';
   await s.db.runTransaction(async (t) => {
-    // Référence unique : nouvel essai en cas de collision (32⁶ possibilités).
-    for (let essai = 0; ; essai++) {
-      reference = referenceDemande(alea);
-      const pris = await t.get(demandes.reference.where('reference', '==', reference).limit(1));
-      if (pris.empty) break;
-      if (essai >= 4) throw new Error('Référence de demande introuvable après 5 essais.');
-    }
-    const source = e.source === 'fiche_artisan' ? 'fiche_artisan' : 'simulateur';
-    t.create(consentements.ref(idConfidentialite), {
-      schemaVersion: 1,
-      type: 'confidentialite',
-      valeur: true,
+    reference = await referenceUnique(t, s.db.collection(collections.demandes), () =>
+      referenceDemande(alea),
+    );
+    const idConsentement = ecrireConsentements(s, t, {
+      uid,
       version: s.versionLegale,
-      source,
-      createdAt: maintenant,
-      ...trace,
-    });
-    t.create(consentements.ref(idConsentement), {
-      schemaVersion: 1,
-      type: 'mise_en_relation',
-      valeur: e.miseEnRelation,
-      version: s.versionLegale,
-      source,
-      createdAt: maintenant,
-      ...trace,
+      source: e.source === 'fiche_artisan' ? 'fiche_artisan' : 'simulateur',
+      miseEnRelation: e.miseEnRelation,
+      maintenant,
+      trace,
     });
     // Brouillon serveur du lien de reprise : supprimé avec l'envoi (REPRISE_PARCOURS §4).
     if (e.brouillonId) t.delete(s.db.collection(collections.brouillons).doc(e.brouillonId));
@@ -177,16 +152,12 @@ export async function creerDemande(
     });
   });
 
-  // Nouveau compte : lien magique vers la demande. Compte existant : page de connexion, jamais de
-  // session ouverte à partir d'un simple email (COMPTES §2).
-  const suite = `/mon-espace/demandes/${ref.id}`;
-  const compte = await s.auth.getUser(uid);
-  const lien = compte.emailVerified
-    ? `${s.urlSite}/connexion?suite=${encodeURIComponent(suite)}`
-    : await s.auth.generateSignInWithEmailLink(e.contact.email, {
-        url: `${s.urlSite}/connexion/lien?suite=${encodeURIComponent(suite)}`,
-        handleCodeInApp: true,
-      });
+  const { lien, nouveauCompte } = await lienDeSuivi(
+    s,
+    uid,
+    e.contact.email,
+    `/mon-espace/demandes/${ref.id}`,
+  );
   await s.notifier({
     modele: 'demande-confirmee',
     destinataire: { uid, email: e.contact.email },
@@ -199,7 +170,7 @@ export async function creerDemande(
       minCentimes: estimation.minCentimes,
       maxCentimes: estimation.maxCentimes,
       miseEnRelation: e.miseEnRelation,
-      nouveauCompte: !compte.emailVerified,
+      nouveauCompte,
     },
     secrets: { lien },
   });

@@ -8,3 +8,11 @@ export {
   type TarifDiagnostic,
 } from './analyser';
 export { REGLES_CONSEILLEES, REGLES_OBLIGATOIRES, type ContexteBien } from './regles';
+export {
+  lignesPubliques,
+  referenceDossier,
+  referentielSansPrix,
+  resumeDossier,
+  type LignePublique,
+  type TexteDiagnostic,
+} from './dossier';

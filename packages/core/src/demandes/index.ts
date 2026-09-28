@@ -1,21 +1,17 @@
+import { referenceLisible } from '../references';
 import { reponseLisible, reponseValide } from '../parcours/reprise';
 import type { Champ, OptionChamp } from '../simulateur/champs';
 import type { Referentiel } from '../simulateur/estimer';
 import { tarifDepuisDocument, type TarifDocument } from '../simulateur/stockage';
 import type { Coefficients, Reponse } from '../simulateur/types';
 
-const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const JOUR_MS = 86_400_000;
 
 /** COMPTES §2 et SIM-10 : 5 demandes par heure et par client (IP hachée, ou compte connecté). */
 export const LIMITE_DEMANDES = { cle: 'demande', max: 5, fenetre: '1h' } as const;
 
 /** Référence donnée au particulier (« PH-7K2Q9M ») ; `alea` fournit des réels dans [0, 1[. */
-export function referenceDemande(alea: () => number): string {
-  let r = '';
-  for (let i = 0; i < 6; i++) r += ALPHABET[Math.floor(alea() * 32) % 32];
-  return `PH-${r}`;
-}
+export const referenceDemande = (alea: () => number) => referenceLisible('PH', alea);
 
 /** Réponse de `creerDemande` : l'écran de résultat affiche cette estimation, jamais celle du navigateur. */
 export interface DemandeCreee {

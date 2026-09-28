@@ -58,3 +58,38 @@ export const entreeLienReprise = z.strictObject({ brouillon: brouillonParcours, 
 
 /** Ouverture d'un lien de reprise (`/simulateur?reprise=…`). */
 export const entreeReprise = z.strictObject({ jeton: z.string().min(20).max(128) });
+
+/**
+ * Envoi du parcours diagnostic (`creerDossierDiag`, DIA-06) : objet strict, aucun montant ; le
+ * dossier et le budget sont recalculés par le serveur avec les prix privés.
+ */
+export const entreeDossierDiag = z.strictObject({
+  cleIdempotence: z.string().min(8).max(64),
+  bien: z.strictObject({
+    adresse: z.string().trim().min(3).max(200),
+    communeSlug: slug,
+    codePostal,
+    type: z.enum(['appartement', 'maison', 'immeuble']),
+    periode: z.enum(['av1949', '1949-1976', '1977-1996', '1997-2010', 'ap2011']),
+    surface: z.number().int().min(10).max(2000),
+    motif: z.enum(['vente', 'location', 'travaux']),
+    gaz: z.enum(['oui', 'non']),
+    elec: z.enum(['ancienne', 'recente']),
+    assainissement: z.enum(['collectif', 'individuel', 'inconnu']),
+    classe: z.enum(['inconnu', 'AB', 'CD', 'E', 'FG']),
+  }),
+  existants: z
+    .array(z.strictObject({ diagId: slug, annee: z.number().int().min(1990).max(2100) }))
+    .max(20),
+  contact: z.strictObject({
+    nom: z.string().trim().min(2).max(120),
+    email,
+    telephone: telephoneSaisi,
+  }),
+  visiteSouhaitee: z.enum(['semaine', '15jours', 'mois', 'renseignement']),
+  accepteContact: z.literal(true, 'Acceptez d’être contacté et la politique de confidentialité'),
+  /** Piège à robots : doit rester vide. */
+  site: z.string().max(0).optional(),
+});
+
+export type EntreeDossierDiag = z.output<typeof entreeDossierDiag>;

@@ -1,3 +1,5 @@
+import { referenceLisible } from '../references';
+
 /** Sujets du formulaire Aide et contact (maquette Contact). `ref` : libellé du champ de précision facultatif. */
 export const SUJETS_CONTACT = [
   {
@@ -63,10 +65,5 @@ export const IDS_SUJETS = SUJETS_CONTACT.map((s) => s.id) as [SujetContact, ...S
 export const sujetContact = (id: string | null | undefined) =>
   SUJETS_CONTACT.find((s) => s.id === id) ?? SUJETS_CONTACT[0];
 
-/** Référence lisible donnée à l'usager (« CT-7K2Q9M ») ; `alea` fournit 6 entiers de 0 à 31. */
-export function referenceContact(alea: () => number): string {
-  const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-  let r = '';
-  for (let i = 0; i < 6; i++) r += ALPHABET[Math.floor(alea() * 32) % 32];
-  return `CT-${r}`;
-}
+/** Référence lisible donnée à l'usager (« CT-7K2Q9M »). */
+export const referenceContact = (alea: () => number) => referenceLisible('CT', alea);
