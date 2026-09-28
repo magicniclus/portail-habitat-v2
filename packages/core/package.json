@@ -34,7 +34,8 @@
     "./demandes": "./src/demandes/index.ts",
     "./avis": "./src/avis/index.ts",
     "./espace": "./src/espace/index.ts",
-    "./connexion": "./src/connexion/index.ts"
+    "./connexion": "./src/connexion/index.ts",
+    "./onboarding": "./src/onboarding/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

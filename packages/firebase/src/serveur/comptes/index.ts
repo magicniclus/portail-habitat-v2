@@ -21,6 +21,13 @@ export {
 } from './membres';
 export { rechercherEntreprise, type EntrepriseProposee } from './entreprises';
 export { finaliserOnboarding } from './onboarding';
+export {
+  enregistrerEtape1,
+  enregistrerZone,
+  lireBrouillonInscription,
+  reprendreInscription,
+  type BrouillonInscription,
+} from './inscription';
 export { rattacherOuCreerParticulier } from './particuliers';
 export {
   empreinteJeton,

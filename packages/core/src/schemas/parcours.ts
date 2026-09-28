@@ -20,6 +20,8 @@ export const brouillonOnboarding = z.object({
   etape: z.number().int().min(1).max(3),
   donnees: z.record(z.string(), z.unknown()),
   emailHash: empreinte.optional(),
+  /** Empreinte du jeton du lien de reprise envoyé par email (ONB-04) ; le jeton n'est jamais stocké. */
+  jetonHash: empreinte.optional(),
   majLe: horodatage,
   expireLe: horodatage,
   createdAt: horodatage,
