@@ -27,7 +27,9 @@ export default function Maintenance() {
       }
       actions={
         <Button asChild taille="lg" variant="secondaire">
-          <Link href={routes.etatDuService}>Suivre l’état du service</Link>
+          <Link prefetch={false} href={routes.etatDuService}>
+            Suivre l’état du service
+          </Link>
         </Button>
       }
     />

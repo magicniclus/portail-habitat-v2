@@ -1,51 +1,39 @@
 'use client';
 
 import { Button, Field, Input, Select } from '@ph/ui';
-import type { Route } from 'next';
-import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
-import { cibleProjet } from './cible';
-import { DELAIS, PROJETS_POPULAIRES } from './contenu';
+import { useState } from 'react';
+import { DELAIS, PROJETS_POPULAIRES } from './choix';
 
 /**
- * Formulaire du hero (maquette Accueil). La recherche avec suggestions arrive au lot 7 (ACC-02b) ;
- * ici, les chips « Projets populaires » remplissent le champ (ACC-02) et fixent la prestation (ACC-03).
+ * Formulaire du hero (maquette Accueil) : envoi GET natif vers le simulateur (ACC-03), sans JavaScript
+ * à l'envoi. Les chips « Projets populaires » remplissent le champ et fixent la prestation (ACC-02).
+ * `cible` vient du serveur : le module des routes reste hors du JavaScript du navigateur (D46).
+ * La recherche avec suggestions arrive au lot 7 ; un texte libre part en `?projet=` au simulateur (lot 8).
  */
-export function FormulaireProjet() {
-  const router = useRouter();
+export function FormulaireProjet({ cible }: { cible: string }) {
   const [projet, setProjet] = useState('');
-  const [prestation, setPrestation] = useState<string | undefined>();
-
-  const envoyer = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    router.push(
-      cibleProjet({
-        projet,
-        prestation,
-        cp: String(f.get('cp') ?? ''),
-        delai: String(f.get('delai') ?? ''),
-      }) as Route,
-    );
-  };
+  const [prestation, setPrestation] = useState('');
 
   return (
     <>
       <form
-        onSubmit={envoyer}
+        action={cible}
+        method="get"
         className="grid gap-3 rounded-[16px] bg-blanc p-4 shadow-md sm:p-5"
         aria-label="Décrire mon projet"
       >
+        {prestation ? <input type="hidden" name="prestation" value={prestation} /> : null}
         <Field label="Quel est votre projet ?">
           <Input
-            name="projet"
+            name={prestation ? undefined : 'projet'}
             autoComplete="off"
             enterKeyHint="next"
+            maxLength={120}
             placeholder="Ex. Rénovation salle de bain, douche italienne, pompe à chaleur…"
             value={projet}
             onChange={(e) => {
               setProjet(e.target.value);
-              setPrestation(undefined);
+              setPrestation('');
             }}
             className="min-h-12"
           />

@@ -203,6 +203,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 
 **Décision proposée** : **D49** (contenus de la maquette sans source réelle : artisans, témoignages, inspirations tirés des vraies données et masqués sinon ; pas de badge App Store / Google Play tant que l'application est une PWA ; témoignages d'artisans de la landing pro masqués). Appliquée en attendant.
 
+**Performance (Lighthouse mobile, budget D46)** : la CI a échoué après l'accueil puis le bandeau cookies (JS 272 Ko, LCP 3,1 s sur `/maintenance`). Corrections : bandeau rendu côté serveur et masqué avant l'affichage par un script en tête quand un choix existe (il devenait l'élément LCP), lecture du cookie sans Zod, détail des catégories et panneau du menu chargés à la première ouverture (`PanneauPleinEcran` sans déclencheur dans `@ph/ui`), classes `bouton` isolées de Radix, liens des pages d'erreur et du bandeau sans préchargement, sections sous la ligne de flottaison en `content-visibility: auto`, formulaire du hero en GET natif (plus de JavaScript à l'envoi ; le texte libre part en `?projet=`), police serif non préchargée, routes passées en propriétés aux composants client. Mesure locale : `/maintenance` conforme ; accueil LCP conforme, JS ≈ 164 Ko pour 160 Ko (socle Next + React ≈ 150 Ko).
+
 **Non fait ou à fournir**
 1. **Textes légaux** : emplacements entre crochets (raison sociale, SIREN, hébergeur, directeur de publication…) à compléter et à faire relire avant la mise en production ; `EDITEUR_MENTION` idem (lot 5).
 2. **Visuels** : aucun visuel définitif (README « Visuels ») ; des aplats teintés occupent la place, au bon ratio.

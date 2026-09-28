@@ -1,6 +1,7 @@
 import { conteneur } from '@/features/vitrine/Section';
 import { Etoiles } from '@/features/vitrine/Etoiles';
 import { Visuel } from '@/features/vitrine/Visuel';
+import { routes } from '@/lib/routes';
 import { FormulaireProjet } from './FormulaireProjet';
 import type { ChiffresVitrine } from './vitrine';
 
@@ -29,7 +30,7 @@ export function Hero({ chiffres }: { chiffres: ChiffresVitrine }) {
             jusqu&apos;à 3 artisans vérifiés de votre commune vous rappellent. Gratuit, sans
             engagement.
           </p>
-          <FormulaireProjet />
+          <FormulaireProjet cible={routes.simulateur} />
           <ul className="m-0 mt-[22px] flex list-none flex-wrap gap-x-6 gap-y-2 p-0 text-[15px] text-neutre-800">
             {chiffres ? (
               <li className="flex items-center gap-2">

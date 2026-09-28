@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { BandeauCookies } from '@/features/cookies/BandeauCookies';
+import { BandeauCookies, SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/BandeauCookies';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
+import { routes } from '@/lib/routes';
 import './globals.css';
 
 // Sous-ensemble latin, display: swap (MOBILE.md §10). Source Sans 3 en police variable : un seul fichier
@@ -19,6 +20,8 @@ const serif = Source_Serif_4({
   style: 'italic',
   variable: '--police-serif',
   display: 'swap',
+  // Deux mots en italique par page : pas de préchargement, la bande passante va au texte principal.
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -31,10 +34,13 @@ export const viewport: Viewport = viewportEspace('particulier');
 
 export default function RacineLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_BANDEAU_COOKIES }} />
+      </head>
       <body>
         {children}
-        <BandeauCookies />
+        <BandeauCookies politique={routes.legal('particuliers', 'cookies')} />
       </body>
     </html>
   );

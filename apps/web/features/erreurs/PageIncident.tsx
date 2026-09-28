@@ -62,7 +62,9 @@ export function PageIncident({ erreur, reessayer, espace = 'particulier' }: Prop
             Réessayer
           </Button>
           <Button asChild taille="lg" variant="secondaire">
-            <Link href={ESPACES_ERREUR[espace].aide}>Contacter le support</Link>
+            <Link prefetch={false} href={ESPACES_ERREUR[espace].aide}>
+              Contacter le support
+            </Link>
           </Button>
         </>
       }

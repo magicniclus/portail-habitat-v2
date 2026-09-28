@@ -1,9 +1,10 @@
 'use client';
 
-import { Button, Checkbox, Feuille } from '@ph/ui';
+import { bouton } from '@ph/ui';
+import type { Route } from 'next';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { routes } from '@/lib/routes';
 import {
   consentementActuel,
   enregistrerConsentement,
@@ -11,28 +12,41 @@ import {
   EVENEMENT_OUVRIR,
 } from './consentement';
 
+const PreferencesCookies = dynamic(() => import('./PreferencesCookies'), { ssr: false });
+
 const abonner = (rappel: () => void) => {
   window.addEventListener(EVENEMENT_CONSENTEMENT, rappel);
   return () => window.removeEventListener(EVENEMENT_CONSENTEMENT, rappel);
 };
-/** Instantané stable : présence d'un choix valable (le serveur ne sait pas : pas de bandeau au rendu). */
 const aChoisi = () => consentementActuel() !== null;
-const auServeur = () => true;
+/** Au rendu serveur, le bandeau est dans le HTML ; `SCRIPT_BANDEAU_COOKIES` le masque avant l'affichage si un choix existe. */
+const auServeur = () => false;
+
+/**
+ * À placer dans `<head>` : masque le bandeau avant le premier affichage quand un choix est enregistré
+ * (sinon le bandeau apparaîtrait après l'hydratation et deviendrait l'élément LCP). La validité exacte
+ * (6 mois) est vérifiée ensuite par le composant.
+ */
+export const SCRIPT_BANDEAU_COOKIES =
+  "try{if(/(^|; )ph_consentement=/.test(document.cookie))document.documentElement.setAttribute('data-cookies-choisis','')}catch(e){}";
+
+const classeBouton = bouton({ variant: 'secondaire', className: 'flex-1' });
 
 /**
  * Bandeau cookies conforme CNIL (INTEGRATIONS §7) : « Tout refuser » au même niveau que « Tout accepter »,
  * catégorie « Mesure d'audience détaillée » décochée par défaut, aucun traceur avant le choix.
  */
-export function BandeauCookies() {
+export function BandeauCookies({ politique }: { politique: Route }) {
   const choisi = useSyncExternalStore(abonner, aChoisi, auServeur);
   const [details, setDetails] = useState(false);
-  const [audience, setAudience] = useState(false);
 
   useEffect(() => {
-    const ouvrir = () => {
-      setAudience(consentementActuel()?.audienceDetaillee ?? false);
-      setDetails(true);
-    };
+    // Cookie présent mais expiré ou illisible : le bandeau doit réapparaître.
+    if (!choisi) document.documentElement.removeAttribute('data-cookies-choisis');
+  }, [choisi]);
+
+  useEffect(() => {
+    const ouvrir = () => setDetails(true);
     window.addEventListener(EVENEMENT_OUVRIR, ouvrir);
     return () => window.removeEventListener(EVENEMENT_OUVRIR, ouvrir);
   }, []);
@@ -46,8 +60,9 @@ export function BandeauCookies() {
     <>
       {!choisi ? (
         <section
+          data-bandeau-cookies
           aria-labelledby="cookies-titre"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-lg"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-lg [[data-cookies-choisis]_&]:hidden"
         >
           <div className="mx-auto flex max-w-contenu flex-wrap items-center gap-x-6 gap-y-3">
             <div className="min-w-0 flex-[1_1_420px]">
@@ -58,53 +73,32 @@ export function BandeauCookies() {
                 Nous utilisons des cookies indispensables au fonctionnement du site. Avec votre
                 accord, nous mesurons aussi la façon dont les pages sont utilisées pour les
                 améliorer.{' '}
-                <Link href={routes.legal('particuliers', 'cookies')}>En savoir plus</Link>
+                <Link href={politique} prefetch={false}>
+                  En savoir plus
+                </Link>
               </p>
             </div>
             <div className="flex flex-[1_1_320px] flex-wrap gap-2 sm:flex-none">
-              <Button variant="secondaire" className="flex-1" onClick={() => choisir(false)}>
+              <button type="button" className={classeBouton} onClick={() => choisir(false)}>
                 Tout refuser
-              </Button>
-              <Button variant="secondaire" className="flex-1" onClick={() => setDetails(true)}>
+              </button>
+              <button type="button" className={classeBouton} onClick={() => setDetails(true)}>
                 Personnaliser
-              </Button>
-              <Button variant="secondaire" className="flex-1" onClick={() => choisir(true)}>
+              </button>
+              <button type="button" className={classeBouton} onClick={() => choisir(true)}>
                 Tout accepter
-              </Button>
+              </button>
             </div>
           </div>
         </section>
       ) : null}
-      <Feuille
-        open={details}
-        onOpenChange={setDetails}
-        titre="Gérer les cookies"
-        description="Vous pouvez changer d'avis à tout moment depuis le lien « Gérer les cookies » en bas de page."
-        actions={
-          <Button pleineLargeur onClick={() => choisir(audience)}>
-            Enregistrer mes choix
-          </Button>
-        }
-      >
-        <div className="grid gap-4">
-          <div>
-            <p className="m-0 font-semibold">Indispensables</p>
-            <p className="m-0 text-sm text-neutre-800">
-              Connexion, sécurité, mémorisation de ce choix. Toujours actifs, ils ne servent à aucun
-              suivi.
-            </p>
-          </div>
-          <Checkbox checked={audience} onChange={(e) => setAudience(e.target.checked)}>
-            <span className="grid gap-0.5">
-              <span className="font-semibold">Mesure d&apos;audience détaillée</span>
-              <span className="text-sm text-neutre-800">
-                Parcours de navigation anonymisés pour améliorer les pages, hébergés en Union
-                européenne.
-              </span>
-            </span>
-          </Checkbox>
-        </div>
-      </Feuille>
+      {details ? (
+        <PreferencesCookies
+          audienceInitiale={consentementActuel()?.audienceDetaillee ?? false}
+          enregistrer={choisir}
+          fermer={() => setDetails(false)}
+        />
+      ) : null}
     </>
   );
 }

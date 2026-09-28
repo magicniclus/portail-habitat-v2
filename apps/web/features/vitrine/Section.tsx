@@ -3,6 +3,12 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+/**
+ * Sections sous la ligne de flottaison : mise en page différée tant qu'elles ne sont pas visibles
+ * (`content-visibility`), ce qui raccourcit le premier affichage (LCP, D46).
+ */
+const differee = '[content-visibility:auto] [contain-intrinsic-size:auto_900px]';
+
 /** Largeur et marges des sections des maquettes publiques (1280 px, gouttière fluide). */
 export const conteneur = 'mx-auto w-full max-w-[1280px] px-[clamp(18px,4vw,44px)]';
 const espaceSection = 'py-[clamp(44px,5.5vw,80px)]';
@@ -27,7 +33,11 @@ export function Section({
     <section
       id={id}
       aria-label={etiquette}
-      className={cn('scroll-mt-20', fond ? cn(fond, espaceSection) : 'pt-[clamp(44px,5.5vw,80px)]')}
+      className={cn(
+        'scroll-mt-20',
+        differee,
+        fond ? cn(fond, espaceSection) : 'pt-[clamp(44px,5.5vw,80px)]',
+      )}
     >
       {interieur}
     </section>

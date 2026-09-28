@@ -19,7 +19,7 @@ test.describe('Accueil particuliers', () => {
     await page.getByRole('button', { name: 'Peinture' }).click();
     await page.getByLabel('Code postal').fill('33000');
     await page.getByRole('button', { name: 'Lancer mon estimation gratuite' }).click();
-    await expect(page).toHaveURL(/\/simulateur\?prestation=peinture&cp=33000/);
+    await expect(page).toHaveURL(/\/simulateur\?prestation=peinture&cp=33000&delai=asap$/);
   });
 
   test('ACC-04 : sur mobile, la navigation passe dans un menu accessible', async ({
@@ -46,6 +46,14 @@ test.describe('Accueil particuliers', () => {
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Navigation principale' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Menu principal' })).toBeHidden();
+  });
+
+  test('ACC-03 : texte libre transmis au simulateur', async ({ page }) => {
+    await page.goto('/');
+    await page.getByLabel('Quel est votre projet ?').fill('Abri de jardin');
+    await page.getByLabel('Code postal').fill('33000');
+    await page.getByRole('button', { name: 'Lancer mon estimation gratuite' }).click();
+    await expect(page).toHaveURL(/\/simulateur\?projet=Abri\+de\+jardin&cp=33000&delai=asap$/);
   });
 
   test('pas de défilement horizontal ; JSON-LD FAQPage présent', async ({ page }) => {
