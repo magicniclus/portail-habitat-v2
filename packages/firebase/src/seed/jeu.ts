@@ -1,8 +1,9 @@
 import { claimsUtilisateur, type ClaimsUtilisateur } from '@ph/core/equipe';
 import type { Bareme } from '@ph/core/leads';
 import { SCHEMAS } from '@ph/core/schemas';
+import { calculerStatsPublic } from '@ph/core/stats';
 import type { z } from '@ph/core/zod';
-import { chemins } from '../chemins';
+import { chemins, collections } from '../chemins';
 import { genererAppelsOffres, genererAvis, genererDemandes } from './activite';
 import {
   genererAdmin,
@@ -50,7 +51,32 @@ export function genererJeu(
   genererAppelsOffres(c, sources, f.bareme.bareme);
   const notes = genererAvis(c, entreprises);
   publierFiches(c, entreprises, notes);
+  publierStats(c);
   return { documents: c.docs, comptes: c.comptes, claims: calculerClaims(c) };
+}
+
+/** `stats/public` tel que le recalcul nocturne le produira (INTEGRATIONS §3). */
+function publierStats(c: ContexteSeed) {
+  const de = (collection: string) =>
+    [...c.docs].filter(([p]) => p.split('/').length === 2 && p.startsWith(`${collection}/`));
+  const valeurs = (collection: string) => de(collection).map(([, d]) => d);
+  c.docs.set(chemins.statsPublic(), {
+    schemaVersion: 1,
+    ...calculerStatsPublic({
+      maintenant: c.maintenant,
+      artisans: valeurs(collections.artisansPublic).map((d) => ({
+        enLigne: d.enLigne as boolean,
+        ville: d.ville as string,
+      })),
+      demandes: valeurs(collections.demandes).map((d) => ({ createdAt: d.createdAt as Date })),
+      avis: valeurs(collections.avis).map((d) => ({
+        statut: d.statut as string,
+        note: d.note as number,
+      })),
+      nbDossiersDiag: de(collections.dossiersDiag).length,
+    }),
+    updatedAt: c.maintenant,
+  });
 }
 
 /** Notes recalculées sur les avis publiés, fiche publique pour chaque entreprise en ligne. */

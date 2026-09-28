@@ -106,6 +106,14 @@ describe('jeu de données (COMPTES §6.4)', () => {
     expect(new Set(emails).size).toBe(emails.length);
     expect(jeu.claims.get('seed-admin')?.staff?.r).toBe('superadmin');
   });
+  it('stats/public cohérent avec les fiches et les avis publiés (ACC-01)', () => {
+    const stats = jeu.documents.get('stats/public')!;
+    const fiches = [...jeu.documents.keys()].filter((p) => p.startsWith('artisansPublic/'));
+    expect(stats.nbArtisans).toBe(fiches.length);
+    expect(stats.nbVilles).toBeGreaterThan(5);
+    expect(stats.nbAvisTotal).toBeGreaterThan(100);
+    expect(stats.noteMoyenneGlobale).toBeGreaterThan(3);
+  });
   it('fiches publiques sans donnée privée', () => {
     const publics = dans(/^artisansPublic\//);
     expect(publics.length).toBeGreaterThan(40);
