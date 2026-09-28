@@ -11,3 +11,16 @@ export const entreeContact = z.object({
   message: z.string().trim().min(10).max(5000),
   site: z.string().max(0).optional(),
 });
+
+/** Événement de recherche (RECHERCHE §5) : requête déjà nettoyée par `requeteJournal`, aucune donnée personnelle. */
+export const entreeEvenementRecherche = z.object({
+  nature: z.enum(['saisie', 'choix', 'zero', 'abandon']),
+  q: z.string().max(80),
+  intention: z
+    .string()
+    .regex(/^[a-z0-9-]{2,60}$/)
+    .optional(),
+  rang: z.number().int().min(1).max(7).optional(),
+  /** Identifiant aléatoire d'onglet, sans lien avec une personne. */
+  session: z.string().regex(/^[a-z0-9]{8,32}$/),
+});

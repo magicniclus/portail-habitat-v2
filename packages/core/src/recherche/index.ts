@@ -9,3 +9,4 @@ export {
   type Suggestion,
 } from './moteur';
 export { distance, normaliser, raciner, surligner } from './texte';
+export { cibleRecherche, requeteJournal, SCORE_NET, type Validation } from './routage';

@@ -28,3 +28,22 @@ describe('Aide et contact', () => {
     expect(entreeContact.safeParse({ ...ok, message: 'court' }).success).toBe(false);
   });
 });
+
+describe('événement de recherche', () => {
+  it('refuse une requête longue ou une session douteuse', async () => {
+    const { entreeEvenementRecherche } = await import('../schemas/entreesSupport');
+    const ok = {
+      nature: 'choix',
+      q: 'douche italienne',
+      intention: 'sdb-italienne',
+      rang: 1,
+      session: 'ab12cd34',
+    };
+    expect(entreeEvenementRecherche.safeParse(ok).success).toBe(true);
+    expect(entreeEvenementRecherche.safeParse({ ...ok, q: 'x'.repeat(81) }).success).toBe(false);
+    expect(entreeEvenementRecherche.safeParse({ ...ok, session: 'camille@mail.fr' }).success).toBe(
+      false,
+    );
+    expect(entreeEvenementRecherche.safeParse({ ...ok, rang: 9 }).success).toBe(false);
+  });
+});
