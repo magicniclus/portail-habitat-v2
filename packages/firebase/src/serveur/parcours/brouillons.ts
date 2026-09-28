@@ -1,4 +1,6 @@
 import { ErreurMetier } from '@ph/core/erreurs';
+import type { entreeBrouillonCompte } from '@ph/core/schemas';
+import type { z } from '@ph/core/zod';
 import { brouillonParcours, DUREE_BROUILLON_MS, type BrouillonParcours } from '@ph/core/parcours';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { collections } from '../../chemins';
@@ -87,4 +89,38 @@ export async function reprendreParLien(
 /** Demande envoyée : le brouillon serveur est supprimé (REPRISE_PARCOURS §4), sans erreur s'il n'existe plus. */
 export async function supprimerBrouillon(s: Pick<ServicesBrouillons, 'db'>, id: string) {
   await s.db.collection(collections.brouillons).doc(id).delete();
+}
+
+/**
+ * Brouillon d'une personne connectée (REPRISE_PARCOURS §5, niveau 2) : un seul document par
+ * parcours et par personne, `brouillons/{uid}_{parcours}`, sans coordonnées, expiré après 30 jours.
+ */
+export async function brouillonCompte(
+  s: { db: Firestore; horloge: () => number },
+  uid: string,
+  e: z.output<typeof entreeBrouillonCompte>,
+): Promise<BrouillonParcours | null> {
+  const parcours = e.action === 'sauver' ? e.brouillon.parcours : e.parcours;
+  const ref = s.db.collection(collections.brouillons).doc(`${uid}_${parcours}`);
+  const maintenant = s.horloge();
+  if (e.action === 'effacer') {
+    await ref.delete();
+    return null;
+  }
+  if (e.action === 'sauver') {
+    await ref.set({
+      schemaVersion: 1,
+      parcours,
+      uid,
+      donnees: e.brouillon,
+      majLe: Timestamp.fromMillis(maintenant),
+      expireLe: Timestamp.fromMillis(maintenant + DUREE_BROUILLON_MS),
+      createdAt: Timestamp.fromMillis(e.brouillon.creeLe),
+    });
+    return null;
+  }
+  const d = await ref.get();
+  if (!d.exists || (d.get('expireLe') as Timestamp).toMillis() < maintenant) return null;
+  const b = brouillonParcours.safeParse(d.get('donnees'));
+  return b.success ? b.data : null;
 }

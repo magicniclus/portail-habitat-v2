@@ -18,7 +18,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
 | 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
-| 8 | Parcours particuliers | 🟡 | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06 ; e2e sur 4 appareils, tests émulateur | Reste : avis (AVI), connexion et Mon espace (ESP), reprise « compte » (§14) |
+| 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
 | 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
 | 10 | Espace artisan, équipes, PWA | ⬜ | | ACQ, ONB, PRO | |
 | 11 | Stripe | ⬜ | | PAY | |
@@ -227,7 +227,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 
 **Non fait (lots suivants)** : annuaire `/artisans?q=` (lot 9) ; écran admin Recherche, banc d'essai et popularité mensuelle (lot 13) ; saisonnalité (`saison`) non utilisée par le moteur.
 
-## 14. Lot 8 — Parcours particuliers (en cours, 28/09/2026)
+## 14. Lot 8 — Parcours particuliers (terminé, 28/09/2026)
 
 **Fait**
 - **Création d'une demande** (`creerDemande`, `POST /api/demandes`) : réponses revérifiées, estimation **recalculée avec les prix privés** (lecture d'une seule prestation), géocodage du code postal (API Découpage administratif, gratuite), compte particulier créé ou rattaché **sans ouvrir de session** (SIM-09), consentements (confidentialité, mise en relation), référence `PH-XXXXXX`, email `demande-confirmee` (lien magique si le compte vient d'être créé, sinon page de connexion), 5 envois / h (SIM-10), idempotence. Aucun montant accepté dans la requête (SIM-08).
@@ -235,6 +235,9 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **Reprise** (REPRISE_PARCOURS) : `useParcours` + `<RepriseParcours />` (réutilisable), brouillon local sans coordonnées, Reprendre / Recommencer (Annuler 8 s), autre onglet, arrivée avec une autre prestation (SIM-06j), stockage bloqué sans erreur ; **lien de reprise par email** (case non cochée par défaut, jeton à usage unique 30 jours, empreintes seules, 3 liens / adresse / jour), brouillon serveur supprimé à l'envoi.
 - **Parcours diagnostic** `/diagnostic-immobilier/estimation` : préremplissage `?motif&type&periode&ville` (DIA-01), liste des diagnostics obligatoires gratuite **sans prix** (le navigateur reçoit un référentiel aux prix nuls), `creerDossierDiag` (`POST /api/diagnostics`) recalcule dossier et budget pack côté serveur (`PHD-XXXXXX`, email `dossier-diag-confirme`).
 - **Laisser un avis** `/avis` : choix de l'artisan (fiches en ligne, liste régénérée toutes les heures), formulaire (note globale, 4 critères, points forts, commentaire limité à 1 200 caractères), publication bloquée sans note ni certification (AVI-01, AVI-02) ; `deposerAvis` (`POST /api/avis`) crée l'avis `en_attente` (AVI-03), refuse un deuxième avis même email + même artisan + même mois de chantier (AVI-04), 5 avis / jour, email `avis-recu`.
+- **Connexion des particuliers** `/connexion` → `/connexion/lien` : lien magique (même réponse que le compte existe ou non), adresse reconfirmée au retour (mémorisée sur l'appareil qui a demandé le lien), code échangé **côté serveur** contre la session (API d'identité REST : aucun SDK Firebase dans le navigateur), profil particulier créé au premier clic, adresse vérifiée, retour vers la page demandée (chemins internes seulement).
+- **Mon espace** `/mon-espace` : mes projets (statut, nombre d'artisans et de devis, ESP-01), détail d'une demande (suivi en 4 étapes, artisans, montant des devis, messages), demande d'un autre = « introuvable » (ESP-02), messages avec coordonnées masquées **avant enregistrement** tant que l'artisan n'a pas accepté (ESP-03), export JSON de mes données et suppression du compte en deux temps (fenêtre + « SUPPRIMER » tapé ; demandes en cours annulées) (ESP-04).
+- **Reprise « compte »** (REPRISE_PARCOURS §5, niveau 2) : personne connectée → brouillon `brouillons/{uid}_simulateur` écrit à chaque changement d'étape (et au départ de la page), le plus récent de l'appareil et du compte est proposé ; supprimé à l'envoi de la demande. Aucun appel réseau sans session.
 - **Budget JavaScript** (D46) : l'accueil ne précharge plus le simulateur ; `tailwind-merge` n'est plus chargé au démarrage des pages (−11 Ko : `optimizePackageImports`, page 404 et formulaire de l'accueil en éléments natifs).
 
 **À signaler**
@@ -246,7 +249,12 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 6. **Modèle de données** : `avis/{id}/prive/auteur` gagne `cleUnicite` (empreinte SHA-256 de « email + artisan + mois de chantier ») et un index de groupe de collections `prive.cleUnicite`, pour refuser les doublons (AVI-04) sans stocker l'email en clair ailleurs.
 7. **Photos d'avis** non envoyées : l'emplacement de la maquette n'est pas encore branché (Storage + analyse antivirus D9). Lien `?jeton=` d'invitation à noter (D40) : au lot 10 avec les chantiers terminés.
 
-**Reste pour clore le lot** : connexion particulier et Mon espace (ESP), reprise pour une personne connectée (niveau « compte »).
+8. **Connexion sans SDK Firebase dans le navigateur** (choix de coût et de poids JS, D46) : le lien magique est validé par le serveur. Google et mot de passe pour les particuliers (COMPTES §5) ne sont pas proposés : ils demanderaient ce SDK (+~60 Ko). À trancher si vous les voulez.
+9. **Cookie `ph_connecte=1`** (lisible par le navigateur, sans donnée personnelle) posé avec la session : il évite tout appel de synchronisation pour les visiteurs non connectés. Durée = celle de la session. À ajouter à la liste des cookies strictement nécessaires (page cookies).
+10. **Export des données** : téléchargement immédiat d'un fichier JSON (profil, demandes, messages, dossiers de diagnostic), au lieu de « archive envoyée par email sous 24 h » (maquette). Les avis déposés n'y sont pas encore (ils ne sont reliés au compte que par l'email).
+11. **Mes avis** : l'onglet propose de laisser un avis ; la liste des avis déposés viendra avec leur modération (lot 13). « Voir le devis » (fichier) et la notification de l'artisan à chaque message viendront avec l'espace pro (lot 10).
+12. **Index ajouté** : `demandes` (`particulierUid`, `createdAt` décroissant) pour « Mes projets ».
+13. L'accès à `/mon-espace` sans cookie renvoie à la connexion ; la validité de la session est vérifiée par chaque route `/api/mon-espace/*`.
 
 ## 2. Incohérences et zones floues
 
@@ -352,3 +360,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 28/09/2026 — Lot 5 terminé (emails, SMS, notifications). Parcours Playwright + Mailpit reportés aux lots 8 et 10.
 - 28/09/2026 — Lot 6 terminé (pages publiques, SEO, cookies). Décision D49 proposée ; textes légaux et visuels à fournir.
 - 28/09/2026 — Lot 7 terminé (recherche de projet). Typesense prêt mais inactif (D4 à valider, clés à fournir).
+- 28/09/2026 — Lot 8 terminé (simulateur, reprise, diagnostic, avis, connexion particulier, Mon espace). Points à trancher : §14.

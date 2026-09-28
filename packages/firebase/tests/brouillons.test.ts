@@ -1,9 +1,11 @@
+import { brouillonParcours } from '@ph/core/parcours';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
 import {
+  brouillonCompte,
   demanderLienReprise,
   reprendreParLien,
   type ServicesBrouillons,
@@ -101,5 +103,48 @@ describe('lien de reprise par email (REPRISE_PARCOURS §5)', () => {
     for (let i = 0; i < 5; i++)
       await demanderLienReprise(s, { brouillon, email: 'a@test.local', resume: 'Peinture' });
     expect(envois).toHaveLength(3);
+  });
+});
+
+describe('brouillon d’une personne connectée (REPRISE_PARCOURS §5, niveau 2)', () => {
+  const T0 = Date.UTC(2026, 8, 28, 10);
+  const b = (etape: number, majLe: number) =>
+    brouillonParcours.parse({
+      v: 1,
+      id: 'brouillon000001',
+      parcours: 'simulateur',
+      versionReferentiel: 'v1',
+      prestationId: 'sdb',
+      etape,
+      reponses: {},
+      creeLe: T0 - 60_000,
+      majLe,
+    });
+
+  it('enregistré puis relu sur un autre appareil ; effacé à la demande', async () => {
+    const s = { db, horloge: () => T0 };
+    expect(await brouillonCompte(s, 'u1', { action: 'lire', parcours: 'simulateur' })).toBeNull();
+    await brouillonCompte(s, 'u1', { action: 'sauver', brouillon: b(3, T0) });
+    const doc = await db.doc('brouillons/u1_simulateur').get();
+    expect(doc.get('uid')).toBe('u1');
+    expect(
+      await brouillonCompte(s, 'u1', { action: 'lire', parcours: 'simulateur' }),
+    ).toMatchObject({
+      etape: 3,
+    });
+    expect(await brouillonCompte(s, 'u2', { action: 'lire', parcours: 'simulateur' })).toBeNull();
+    await brouillonCompte(s, 'u1', { action: 'effacer', parcours: 'simulateur' });
+    expect(await brouillonCompte(s, 'u1', { action: 'lire', parcours: 'simulateur' })).toBeNull();
+  });
+
+  it('expiré après 30 jours', async () => {
+    await brouillonCompte({ db, horloge: () => T0 }, 'u1', {
+      action: 'sauver',
+      brouillon: b(2, T0),
+    });
+    const plusTard = { db, horloge: () => T0 + 31 * JOUR };
+    expect(
+      await brouillonCompte(plusTard, 'u1', { action: 'lire', parcours: 'simulateur' }),
+    ).toBeNull();
   });
 });

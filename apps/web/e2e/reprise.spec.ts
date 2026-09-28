@@ -282,3 +282,53 @@ test.describe('Reprise du simulateur', () => {
     ).toBeVisible();
   });
 });
+
+test.describe('Reprise pour une personne connectée (REPRISE_PARCOURS §5, niveau 2)', () => {
+  const connecter = (page: Page) =>
+    page
+      .context()
+      .addCookies([{ name: 'ph_connecte', value: '1', domain: 'localhost', path: '/' }]);
+
+  test('le projet commencé sur un autre appareil est proposé', async ({ page }) => {
+    await connecter(page);
+    await page.route('**/api/parcours/compte', (r) => {
+      const corps = r.request().postDataJSON() as { action: string };
+      return r.fulfill({
+        json: {
+          ok: true,
+          data: corps.action === 'lire' ? brouillon({ reponses: { surface: 70 } }) : null,
+        },
+      });
+    });
+    await page.goto('/simulateur');
+    await expect(encart(page)).toContainText('Peinture · 70 m²');
+  });
+
+  test('chaque changement d’étape est enregistré sur le compte', async ({ page }) => {
+    await connecter(page);
+    const envois: { action: string; brouillon?: { etape: number } }[] = [];
+    await page.route('**/api/parcours/compte', (r) => {
+      envois.push(r.request().postDataJSON() as (typeof envois)[number]);
+      return r.fulfill({ json: { ok: true, data: null } });
+    });
+    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await page.getByLabel('Surface à peindre').focus();
+    await page.keyboard.press('ArrowRight');
+    await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect
+      .poll(() => envois.filter((e) => e.action === 'sauver').map((e) => e.brouillon?.etape))
+      .toContain(3);
+  });
+
+  test('sans session : aucun appel au serveur', async ({ page }) => {
+    let appels = 0;
+    await page.route('**/api/parcours/compte', (r) => {
+      appels++;
+      return r.fulfill({ json: { ok: true, data: null } });
+    });
+    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=3/);
+    expect(appels).toBe(0);
+  });
+});

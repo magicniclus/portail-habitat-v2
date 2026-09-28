@@ -19,6 +19,7 @@ const PAGES = [
   '/aide',
   '/simulateur',
   '/avis',
+  '/connexion',
   '/simulateur?prestation=peinture&etape=2',
   '/simulateur?prestation=peinture&etape=3',
   '/simulateur?prestation=peinture&etape=4',

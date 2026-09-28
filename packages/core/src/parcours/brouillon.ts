@@ -5,6 +5,9 @@ export const PARCOURS = ['simulateur', 'diagnostic', 'avis', 'onboarding'] as co
 export type Parcours = (typeof PARCOURS)[number];
 
 /** Durée de vie d'un brouillon après sa dernière modification (§2). */
+/** Indicateur « une session est ouverte » lisible par le navigateur (valeur « 1 », sans donnée personnelle). */
+export const COOKIE_CONNECTE = 'ph_connecte';
+
 export const DUREE_BROUILLON_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Clé localStorage d'un parcours : un seul brouillon par parcours, le plus récent l'emporte. */

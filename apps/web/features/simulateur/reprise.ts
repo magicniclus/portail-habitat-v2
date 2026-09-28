@@ -1,8 +1,9 @@
 'use client';
 
 import { formatRelatif } from '@ph/core/format';
-import { arrivee, repriseSimulateur, type BrouillonParcours } from '@ph/core/parcours';
+import { arrivee, plusRecent, repriseSimulateur, type BrouillonParcours } from '@ph/core/parcours';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useBrouillonCompte } from '@/features/parcours/useBrouillonCompte';
 import { useParcours } from '@/features/parcours/useParcours';
 import { ouvrirLienReprise } from './envoi';
 import type { CatalogueSimulateur, PrestationSimulateur } from './types';
@@ -54,19 +55,30 @@ export function useRepriseSimulateur(
     [catalogue],
   );
   const prestationExiste = useCallback((id: string) => actives.has(id), [actives]);
-  const brouillon = useParcours('simulateur', { prestationExiste, etapeMinimale: 2 });
+  const compte = useBrouillonCompte('simulateur', { prestationExiste, etapeMinimale: 2 });
+  const brouillon = useParcours('simulateur', {
+    prestationExiste,
+    etapeMinimale: 2,
+    surEcriture: compte.surEcriture,
+    surEffacement: compte.surEffacement,
+  });
   const { prestationId, codePostal } = url;
+  // Personne connectée : le plus récent de l'appareil et du compte l'emporte (§5).
+  const trouve = useMemo(
+    () => plusRecent(brouillon.trouve, compte.trouve),
+    [brouillon.trouve, compte.trouve],
+  );
 
   const encart = useMemo((): EncartReprise | null => {
-    const a = arrivee(brouillon.trouve, { prestationId, codePostal });
+    const a = arrivee(trouve, { prestationId, codePostal });
     if (a.mode === 'aucun') return null;
     const r = preparer(a.brouillon, actives);
     return r ? { ...r, mode: a.mode } : null;
-  }, [brouillon.trouve, prestationId, codePostal, actives]);
+  }, [trouve, prestationId, codePostal, actives]);
 
   const preparerBrouillon = useCallback((b: BrouillonParcours) => preparer(b, actives), [actives]);
 
-  return { ...brouillon, encart, preparerBrouillon };
+  return { ...brouillon, trouve, encart, preparerBrouillon };
 }
 
 // Le jeton est à usage unique : un second appel (effet rejoué en développement) réutilise la réponse.

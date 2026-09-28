@@ -106,6 +106,8 @@ export async function creerDemande(
     });
     // Brouillon serveur du lien de reprise : supprimé avec l'envoi (REPRISE_PARCOURS §4).
     if (e.brouillonId) t.delete(s.db.collection(collections.brouillons).doc(e.brouillonId));
+    // Personne connectée : son brouillon « compte » disparaît aussi (§5, niveau 2).
+    if (ctx.uid) t.delete(s.db.collection(collections.brouillons).doc(`${ctx.uid}_simulateur`));
     t.create(ref, {
       schemaVersion: 1,
       createdAt: maintenant,

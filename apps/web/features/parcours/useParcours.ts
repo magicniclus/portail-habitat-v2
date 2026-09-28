@@ -53,7 +53,11 @@ const sAbonner = () => () => {};
  */
 export function useParcours(
   parcours: Parcours,
-  options: Omit<OptionsLecture, 'parcours' | 'maintenant'>,
+  options: Omit<OptionsLecture, 'parcours' | 'maintenant'> & {
+    /** Après chaque écriture locale (synchronisation « compte », `useBrouillonCompte`). */
+    surEcriture?: (b: BrouillonParcours) => void;
+    surEffacement?: () => void;
+  },
 ) {
   const cle = cleBrouillon(parcours);
   // Brut lu une seule fois au premier rendu client (null côté serveur et pendant l'hydratation).
@@ -63,6 +67,10 @@ export function useParcours(
     () => null,
   );
   const { prestationExiste, etapeMinimale } = options;
+  const rappels = useRef(options);
+  useEffect(() => {
+    rappels.current = options;
+  });
   const trouve = useMemo(() => {
     if (brutArrivee === null || brutArrivee.brut === null) return null;
     let brut: unknown = null;
@@ -120,6 +128,7 @@ export function useParcours(
           const b = brouillonAJour(precedent.current, { ...d, parcours }, Date.now(), nouvelId);
           precedent.current = b;
           stockage.ecrire(cle, JSON.stringify(b));
+          rappels.current.surEcriture?.(b);
         } catch {
           // Donnée hors format : on n'enregistre rien plutôt que de bloquer le parcours.
         }
@@ -134,6 +143,7 @@ export function useParcours(
     enAttente.current = null;
     precedent.current = null;
     stockage.effacer(cle);
+    rappels.current.surEffacement?.();
   }, [cle]);
 
   /** Remet un brouillon effacé (« Annuler » après « Recommencer », §3). */
@@ -141,6 +151,7 @@ export function useParcours(
     (b: BrouillonParcours) => {
       precedent.current = b;
       stockage.ecrire(cle, JSON.stringify(b));
+      rappels.current.surEcriture?.(b);
     },
     [cle],
   );

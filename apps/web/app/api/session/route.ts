@@ -1,8 +1,8 @@
 import { messageErreur } from '@ph/core/erreurs';
 import { entreeSession } from '@ph/core/schemas';
-import { COOKIE_SESSION, creerCookieSession } from '@ph/firebase/serveur';
-import { cookies } from 'next/headers';
+import { creerCookieSession } from '@ph/firebase/serveur';
 import { memeOrigine } from '@/server/origine';
+import { fermerSession, ouvrirSession } from '@/server/sessionCookies';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,19 +18,13 @@ export async function POST(requete: Request) {
   if (!entree.success) return refus(400, 'ENTREE_INVALIDE');
   const session = await creerCookieSession(entree.data.jetonId, entree.data.espace);
   if (!session) return refus(401, 'NON_AUTHENTIFIE');
-  (await cookies()).set(COOKIE_SESSION, session.cookie, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: Math.floor(session.dureeMs / 1000),
-  });
+  await ouvrirSession(session);
   return Response.json({ ok: true, data: null });
 }
 
 /** Déconnexion : le cookie est effacé (les jetons sont révoqués par les Functions en cas de retrait). */
 export async function DELETE(requete: Request) {
   if (!memeOrigine(requete)) return refus(403, 'PERMISSION_REFUSEE');
-  (await cookies()).delete(COOKIE_SESSION);
+  await fermerSession();
   return Response.json({ ok: true, data: null });
 }

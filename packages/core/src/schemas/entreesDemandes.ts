@@ -1,5 +1,5 @@
 import { normaliserTel } from '../format/telephone';
-import { brouillonParcours } from '../parcours/brouillon';
+import { brouillonParcours, PARCOURS } from '../parcours/brouillon';
 import { z } from '../zod';
 import { codePostal, email, id } from './commun';
 
@@ -55,6 +55,13 @@ export type EntreeDemande = z.output<typeof entreeDemande>;
 
 /** « M'envoyer un lien pour reprendre plus tard » : brouillon sans coordonnées + adresse d'envoi. */
 export const entreeLienReprise = z.strictObject({ brouillon: brouillonParcours, email });
+
+/** Brouillon d'une personne connectée (REPRISE_PARCOURS §5, niveau 2) : lu, enregistré ou effacé. */
+export const entreeBrouillonCompte = z.discriminatedUnion('action', [
+  z.strictObject({ action: z.literal('lire'), parcours: z.enum(PARCOURS) }),
+  z.strictObject({ action: z.literal('sauver'), brouillon: brouillonParcours }),
+  z.strictObject({ action: z.literal('effacer'), parcours: z.enum(PARCOURS) }),
+]);
 
 /** Ouverture d'un lien de reprise (`/simulateur?reprise=…`). */
 export const entreeReprise = z.strictObject({ jeton: z.string().min(20).max(128) });

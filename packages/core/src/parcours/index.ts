@@ -2,6 +2,7 @@ export {
   brouillonAJour,
   brouillonParcours,
   cleBrouillon,
+  COOKIE_CONNECTE,
   DUREE_BROUILLON_MS,
   lireBrouillon,
   PARCOURS,

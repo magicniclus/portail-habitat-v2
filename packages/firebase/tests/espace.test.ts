@@ -118,7 +118,9 @@ describe('messages (ESP-03)', () => {
       artisanId,
       texte,
     });
-  const s = () => ({ db, horloge: () => T });
+  let tic = 0;
+  // Une heure différente par message : l'ordre du fil ne dépend pas d'une égalité.
+  const s = () => ({ db, horloge: () => T + ++tic * 1000 });
 
   it('numéro masqué tant que l’artisan n’a pas accepté ; en clair ensuite', async () => {
     await demande('d1', 'u1');
