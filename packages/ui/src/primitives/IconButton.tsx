@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../cn';
-import { bouton } from './Button';
+import { bouton } from './bouton';
 
 export interface IconButtonProps extends Omit<ComponentProps<'button'>, 'children'> {
   /** Obligatoire : l'icône seule n'est pas lisible par un lecteur d'écran. */

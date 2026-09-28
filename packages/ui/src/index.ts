@@ -1,6 +1,7 @@
 export { cn } from './cn';
 export { Logo, type LogoProps } from './primitives/Logo';
-export { Button, bouton, type ButtonProps } from './primitives/Button';
+export { Button, type ButtonProps } from './primitives/Button';
+export { bouton } from './primitives/bouton';
 export { IconButton, type IconButtonProps } from './primitives/IconButton';
 export {
   Chip,
@@ -39,3 +40,4 @@ export { Combobox, type ComboboxProps, type OptionCombobox } from './patterns/Co
 export { ToastProvider, useToast } from './patterns/Toast';
 export { PageErreur, type PageErreurProps } from './patterns/PageErreur';
 export { MenuPleinEcran, type MenuPleinEcranProps } from './patterns/MenuPleinEcran';
+export { PanneauPleinEcran, type PanneauPleinEcranProps } from './patterns/PanneauPleinEcran';
