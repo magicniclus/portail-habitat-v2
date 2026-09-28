@@ -14,6 +14,7 @@ const PAGES = [
   '/diagnostic-immobilier/page-inconnue',
   '/diagnostic-immobilier',
   '/diagnostic-immobilier/cenon',
+  '/diagnostic-immobilier/estimation',
   '/maintenance',
   '/aide',
   '/simulateur',

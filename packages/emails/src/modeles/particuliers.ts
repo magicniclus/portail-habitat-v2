@@ -3,6 +3,19 @@ import { formatFourchette } from '@ph/core/format';
 import { bouton, note, para, recap, titre } from '../blocs';
 import { bonjour, modele } from '../modele';
 
+interface DossierDiagConfirme {
+  prenom?: string;
+  reference: string;
+  commune: string;
+  aRealiser: number;
+  reutilises: number;
+  minCentimes: number;
+  maxCentimes: number;
+  remisePack: boolean;
+  nouveauCompte: boolean;
+  lien: string;
+}
+
 interface DemandeConfirmee {
   prenom?: string;
   reference: string;
@@ -83,6 +96,52 @@ export const modelesParticuliers = {
       minCentimes: 812_000,
       maxCentimes: 1_164_000,
       miseEnRelation: true,
+      nouveauCompte: true,
+      lien: 'https://portailhabitat.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
+    },
+  }),
+
+  /** EMAILS §4.4 : dossier de diagnostics (liste, budget pack, référence, lien de suivi). */
+  'dossier-diag-confirme': modele<DossierDiagConfirme>({
+    sujet: (d) => `Votre dossier de diagnostics ${d.reference}`,
+    preheader: (d) =>
+      d.aRealiser
+        ? `${d.aRealiser} diagnostic${d.aRealiser > 1 ? 's' : ''} à réaliser à ${d.commune}.`
+        : `Vos rapports couvrent déjà les obligations.`,
+    blocs: (d) => [
+      titre(`Votre dossier ${d.reference}`),
+      para(
+        `${bonjour(d.prenom)}voici le dossier réglementaire de votre bien. Trois diagnostiqueurs certifiés intervenant à ${d.commune} peuvent vous rappeler sous 48 h.`,
+      ),
+      recap([
+        ['Diagnostics à réaliser', String(d.aRealiser), true],
+        ['Rapports réutilisés', String(d.reutilises)],
+        [
+          'Budget estimé',
+          d.aRealiser
+            ? formatFourchette(arrondiAffichage(d.minCentimes), arrondiAffichage(d.maxCentimes))
+            : '—',
+          true,
+        ],
+        ['Référence', d.reference],
+      ]),
+      ...(d.remisePack ? [note('Tarif pack appliqué : une seule visite sur place.')] : []),
+      bouton('Suivre mon dossier', d.lien),
+      note(
+        d.nouveauCompte
+          ? 'Ce bouton vous connecte à votre espace, sans mot de passe. Il est personnel : ne le transférez pas.'
+          : 'Connectez-vous avec l’adresse de ce message pour retrouver votre dossier.',
+      ),
+    ],
+    exemple: {
+      prenom: 'Camille',
+      reference: 'PHD-7K2Q9M',
+      commune: 'Cenon',
+      aRealiser: 5,
+      reutilises: 1,
+      minCentimes: 36_080,
+      maxCentimes: 65_320,
+      remisePack: true,
       nouveauCompte: true,
       lien: 'https://portailhabitat.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
     },

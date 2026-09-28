@@ -27,8 +27,11 @@ export interface ServicesDiagnostic extends ServicesComptes {
   /** Référentiel AVEC les prix : lu côté serveur uniquement (règle n° 3, DIA-06). */
   referentiel: ReferentielDiagnostic;
   textes: Readonly<Record<string, TexteDiagnostic>>;
-  /** Commune du parcours : nom et appartenance à la Presqu'île (mérule conseillée). */
-  commune: (slug: string) => { nom: string; presquile: boolean } | null;
+  /**
+   * Commune du parcours : nom, appartenance à la Presqu'île (mérule conseillée) et code postal, qui
+   * remplace celui du navigateur ; « autre commune » n'en a pas (code postal saisi).
+   */
+  commune: (slug: string) => { nom: string; presquile: boolean; codePostal?: string } | null;
   alea?: () => number;
 }
 
@@ -116,7 +119,7 @@ export async function creerDossierDiag(
       bien: {
         adresse: b.adresse,
         communeSlug: b.communeSlug,
-        codePostal: b.codePostal,
+        codePostal: commune.codePostal ?? b.codePostal,
         type: b.type,
         periode: b.periode,
         surface: b.surface,
