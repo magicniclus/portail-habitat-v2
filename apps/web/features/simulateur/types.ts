@@ -13,6 +13,8 @@ export interface PrestationSimulateur {
 }
 
 export interface CatalogueSimulateur {
+  /** Version du référentiel, enregistrée dans les brouillons (REPRISE_PARCOURS §2). */
+  version: string;
   familles: { id: string; nom: string }[];
   prestations: PrestationSimulateur[];
 }

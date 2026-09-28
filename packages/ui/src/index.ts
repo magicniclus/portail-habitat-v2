@@ -41,3 +41,4 @@ export { ToastProvider, useToast } from './patterns/Toast';
 export { PageErreur, type PageErreurProps } from './patterns/PageErreur';
 export { MenuPleinEcran, type MenuPleinEcranProps } from './patterns/MenuPleinEcran';
 export { PanneauPleinEcran, type PanneauPleinEcranProps } from './patterns/PanneauPleinEcran';
+export { RepriseParcours, type RepriseParcoursProps } from './patterns/RepriseParcours';

@@ -5,6 +5,7 @@ import type { CatalogueSimulateur } from '@/features/simulateur/types';
 import { routes } from '@/lib/routes';
 import catalogue from '../../../docs/data/prestations-catalogue.json';
 import detaillees from '../../../docs/data/prestations.json';
+import { version } from '../../../docs/data/prestations-prix-detaillees.json';
 
 interface PrestationCatalogue {
   id: string;
@@ -31,6 +32,7 @@ export const lireCatalogueSimulateur = cache((): CatalogueSimulateur => {
     prestations: { id: string; nom: string; pitch: string; icone: string; champs: Champ[] }[];
   };
   return {
+    version,
     familles: c.familles.map((f) => ({ id: f.id, nom: f.nom })),
     prestations: [
       ...d.prestations.map((p) => ({

@@ -12,10 +12,12 @@ import { Stepper } from '@ph/ui';
 import type { Route } from 'next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AffichageReprise } from './AffichageReprise';
 import type { Contact } from './EtapeCoordonnees';
 import { EtapePrestation } from './EtapePrestation';
 import { EtapeQuestions } from './EtapeQuestions';
+import { useRepriseSimulateur } from './reprise';
 import type { CatalogueSimulateur, Chantier, PrestationSimulateur, Reponses } from './types';
 
 // Validation (Zod) et résultat chargés à la demande : la page, préchargée depuis l'accueil, reste
@@ -26,6 +28,7 @@ const EtapeCoordonnees = dynamic(() =>
 const Resultat = dynamic(() => import('./Resultat').then((m) => m.Resultat));
 
 const DELAIS = new Set(['asap', '1mois', '3mois', 'renseignement']);
+const DUREE_ANNULATION_MS = 8000;
 
 /**
  * Simulateur (COMPTES §6.1) : l'étape et la prestation sont dans l'URL (`?prestation=&etape=`,
@@ -45,6 +48,8 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
     projet: params.get('projet') ?? '',
     source:
       params.get('intention') || params.get('projet') ? ('hero' as const) : ('simulateur' as const),
+    prestationId: params.get('prestation') ?? undefined,
+    codePostal: params.get('cp') ?? undefined,
   }));
   const [intention, setIntention] = useState(arrivee.intention);
   const [reponses, setReponses] = useState<Record<string, Reponses>>({});
@@ -57,6 +62,22 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
     contact: Contact;
     miseEnRelation: boolean;
   } | null>(null);
+
+  // Reprise (REPRISE_PARCOURS) : l'encart disparaît dès que la personne agit ; rien n'est écrit tant
+  // qu'elle n'a pas répondu (un simple passage ne doit pas écraser un brouillon existant).
+  const reprise = useRepriseSimulateur(catalogue, {
+    prestationId: arrivee.prestationId,
+    codePostal: arrivee.codePostal,
+  });
+  const [decide, setDecide] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [annulation, setAnnulation] = useState<string | null>(null);
+  const minuterieAnnulation = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const actif = useRef(false);
+  const agir = () => {
+    actif.current = true;
+    setDecide(true);
+  };
 
   const aller = (p: PrestationSimulateur | null, n: number) => {
     const q = new URLSearchParams(params.toString());
@@ -75,8 +96,79 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
     }
     // Changer de prestation : l'intention d'arrivée ne s'applique plus.
     if (p.id !== params.get('prestation')) setIntention(undefined);
+    // Choisir une prestation alors qu'une estimation attendait vaut « Recommencer » (§3).
+    if (encartVisible && reprise.encart?.prestation.id !== p.id) recommencer();
+    agir();
     aller(p, 2);
   };
+
+  const encartVisible = !decide && !envoi && reprise.encart !== null;
+
+  const reprendre = () => {
+    const e = reprise.encart;
+    if (!e) return;
+    const b = e.brouillon;
+    setReponses((r) => ({ ...r, [e.prestation.id]: e.reponses }));
+    setChantier({
+      codePostal: b.chantier?.codePostal ?? '',
+      acces: b.chantier?.acces ?? 'facile',
+    });
+    setNote(
+      e.retirees.length
+        ? 'Certaines réponses ont été retirées car le simulateur a évolué : vérifiez-les.'
+        : 'Vos réponses sont restaurées.',
+    );
+    agir();
+    aller(e.prestation, e.etape);
+  };
+
+  const recommencer = () => {
+    const e = reprise.encart;
+    reprise.effacer();
+    setDecide(true);
+    clearTimeout(minuterieAnnulation.current);
+    if (!e) return;
+    setAnnulation(`Estimation ${e.prestation.nom.toLowerCase()} effacée`);
+    minuterieAnnulation.current = setTimeout(() => setAnnulation(null), DUREE_ANNULATION_MS);
+  };
+
+  const annulerRecommencer = () => {
+    const e = reprise.encart;
+    clearTimeout(minuterieAnnulation.current);
+    setAnnulation(null);
+    if (!e) return;
+    reprise.restaurer(e.brouillon);
+    actif.current = false;
+    setDecide(false);
+    aller(null, 1);
+  };
+
+  // Brouillon local à chaque changement, sans aucune coordonnée (§2).
+  const { ecrire } = reprise;
+  const reponsesPrestation = prestation ? reponses[prestation.id] : undefined;
+  useEffect(() => {
+    if (!actif.current || !prestation || envoi || etape < 2) return;
+    ecrire({
+      versionReferentiel: catalogue.version,
+      prestationId: prestation.id,
+      etape,
+      reponses: { ...valeursParDefaut(prestation.champs), ...reponsesPrestation },
+      chantier: {
+        codePostal: chantier.codePostal,
+        acces: chantier.acces,
+        ...(arrivee.delai ? { delai: arrivee.delai } : {}),
+      },
+    });
+  }, [
+    ecrire,
+    catalogue.version,
+    prestation,
+    etape,
+    reponsesPrestation,
+    chantier,
+    envoi,
+    arrivee.delai,
+  ]);
 
   if (envoi && prestation)
     return (
@@ -99,6 +191,15 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
 
   return (
     <>
+      <AffichageReprise
+        encart={encartVisible ? reprise.encart : null}
+        note={prestation ? note : null}
+        annulation={annulation}
+        autreOnglet={reprise.autreOnglet}
+        onReprendre={reprendre}
+        onRecommencer={recommencer}
+        onAnnuler={annulerRecommencer}
+      />
       <Stepper etapes={JALONS_SIMULATEUR} courante={etape - 1} className="mb-6" />
       {!prestation ? (
         <EtapePrestation
@@ -114,6 +215,8 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
           chantier={chantier}
           contexte={{ ...arrivee, intention }}
           onEnvoye={(demande, contact, miseEnRelation) => {
+            // Demande envoyée : brouillon supprimé, plus d'encart au retour (SIM-06f).
+            reprise.effacer();
             setEnvoi({ demande, contact, miseEnRelation });
             window.scrollTo(0, 0);
           }}
@@ -126,11 +229,18 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
           prestation={prestation}
           reponses={courantes}
           chantier={chantier}
-          onReponse={(id, v) =>
-            setReponses((r) => ({ ...r, [prestation.id]: { ...courantes, [id]: v } }))
-          }
-          onChantier={setChantier}
-          onSuivant={() => aller(prestation, etapeSuivante(etape, prestation.champs))}
+          onReponse={(id, v) => {
+            agir();
+            setReponses((r) => ({ ...r, [prestation.id]: { ...courantes, [id]: v } }));
+          }}
+          onChantier={(c) => {
+            agir();
+            setChantier(c);
+          }}
+          onSuivant={() => {
+            agir();
+            aller(prestation, etapeSuivante(etape, prestation.champs));
+          }}
           onPrecedent={() =>
             etape === 2
               ? aller(null, 1)
