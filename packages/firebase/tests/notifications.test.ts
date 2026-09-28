@@ -1,4 +1,4 @@
-import type { Timestamp} from 'firebase-admin/firestore';
+import type { Timestamp } from 'firebase-admin/firestore';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
