@@ -3,7 +3,7 @@ import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { FAQ_PRO } from '@/features/pro/contenu';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';
-import { groupesMetiers } from '@/features/pro/metiers';
+import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { enTetePro, piedPro } from '@/features/pro/navigation';
 import {
   AccrochePro,
@@ -47,7 +47,11 @@ export default async function AcquisitionArtisans() {
           className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,60px)] gap-y-8 py-[clamp(24px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]`}
         >
           <AccrochePro chiffres={chiffres} bandeau={<BandeauMetier groupes={groupes} />} />
-          <FormulaireInscription groupes={groupes} demandesMois={chiffres?.demandes ?? null} />
+          <FormulaireInscription
+            groupes={groupes}
+            chantiers={chantiersParMetier()}
+            demandesMois={chiffres?.demandes ?? null}
+          />
         </section>
         <ExemplesDemandes />
         <EtapesPro />

@@ -20,6 +20,12 @@ export const routes = {
   connexionProSuite: (suite: string) =>
     r(`/connexion?espace=pro&suite=${encodeURIComponent(suite)}`),
   proFacturation: r('/pro/facturation'),
+  /** Demander à rejoindre une entreprise déjà inscrite (COMPTES §4.4, ONB-03). */
+  proRejoindre: (artisanId: string) =>
+    r(`/pro/rejoindre?entreprise=${encodeURIComponent(artisanId)}`),
+  /** Revendiquer une fiche créée sans propriétaire (COMPTES §3.4). */
+  proRevendiquer: (artisanId: string) =>
+    r(`/pro/rejoindre?revendiquer=${encodeURIComponent(artisanId)}`),
   proCompte: r('/pro/compte'),
   monEspace: r('/mon-espace'),
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),

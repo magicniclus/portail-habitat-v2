@@ -16,6 +16,7 @@ import {
   verifierJeton,
   type ServicesNotifications,
 } from '../src/serveur/notifications';
+import { captureEmulateur, planifierCloudTask } from '../src/serveur/notifications/cloudTasks';
 import { nouvelUtilisateur } from '../src/serveur/comptes/utilisateurs';
 
 let db: Firestore;
@@ -323,5 +324,21 @@ describe('désabonnement en un clic et jetons signés', () => {
     });
     const d = (await db.collection(collections.emails).doc(id!).get()).data()!;
     expect((d.expireLe as Timestamp).toMillis() - LUNDI_14H).toBe(395 * 86_400_000);
+  });
+});
+
+describe('capture sous émulateur (e2e)', () => {
+  it("n'est active que sous émulateur, sans émulateur Cloud Tasks", () => {
+    expect(captureEmulateur({})).toBe(false);
+    expect(captureEmulateur({ FIRESTORE_EMULATOR_HOST: 'localhost:8080' })).toBe(true);
+    expect(captureEmulateur({ FIRESTORE_EMULATOR_HOST: 'x', CLOUD_TASKS_EMULATOR_HOST: 'y' })).toBe(
+      false,
+    );
+  });
+
+  it('écrit la tâche (secrets compris) dans capturesEmulateur', async () => {
+    await planifierCloudTask({ envoiId: 'e2e-1', envoyerLe: new Date(0), secrets: { lien: 'x' } });
+    const d = await db.collection(collections.capturesEmulateur).doc('e2e-1').get();
+    expect(d.get('secrets')).toEqual({ lien: 'x' });
   });
 });

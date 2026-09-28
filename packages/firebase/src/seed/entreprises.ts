@@ -42,6 +42,13 @@ interface Appartenance {
 }
 
 /** Comptes de test fixes (COMPTES §6.4) ; mot de passe commun en variable d'environnement. */
+/** SIREN du jeu de test, en cache (`cacheSirene`) : tests de l'inscription sans appel réseau. */
+const SIRENS_TEST = {
+  libre: '552100554',
+  fermee: '443061841',
+  inscrite: '404833048',
+} as const;
+
 export const COMPTES_FIXES = {
   particulier: {
     uid: 'seed-particulier',
@@ -168,7 +175,9 @@ export function genererEntreprises(c: ContexteSeed): EntrepriseSeed[] {
     // 57 : fiche importée portant le SIREN de la n° 0 (doublon) ; 59 : fiche créée par l'admin, non revendiquée.
     const doublon = i === 57;
     const nonRevendiquee = doublon || i === 59;
-    const siren = doublon ? sirens[0]! : h.siren();
+    const tire = doublon ? sirens[0]! : h.siren();
+    // n° 0 : SIREN fixe, pour les tests de l'inscription (« déjà inscrite », ONB-03).
+    const siren = i === 0 ? SIRENS_TEST.inscrite : tire;
     sirens.push(siren);
     const membres = nonRevendiquee
       ? []
@@ -301,8 +310,51 @@ function genererPersonnesDesEquipes(c: ContexteSeed) {
   }
 }
 
+/** Entreprises en cache (API Recherche d'entreprises) pour les tests ONB-01 à 03. */
+function cacheEntreprises(c: ContexteSeed) {
+  const inscrite = c.docs.get(chemins.artisan('seed-a-00'))!;
+  const adresse = inscrite.adresseSiege as { ligne1: string; codePostal: string; ville: string };
+  const entrees = [
+    {
+      siren: SIRENS_TEST.libre,
+      siret: `${SIRENS_TEST.libre}00013`,
+      raisonSociale: 'COUVERTURE DU BASSIN',
+      nomCommercial: 'Couverture du Bassin',
+      codeNaf: '43.91B',
+      dateCreation: '2016-03-01',
+      fermee: false,
+      adresse: { ligne1: '8 avenue de la Libération', codePostal: '33700', ville: 'Mérignac' },
+    },
+    {
+      siren: SIRENS_TEST.fermee,
+      siret: `${SIRENS_TEST.fermee}00017`,
+      raisonSociale: 'ANCIENNE PLOMBERIE GIRONDINE',
+      codeNaf: '43.22A',
+      fermee: true,
+      adresse: { ligne1: '3 rue Sainte-Catherine', codePostal: '33000', ville: 'Bordeaux' },
+    },
+    {
+      siren: SIRENS_TEST.inscrite,
+      siret: inscrite.siret as string,
+      raisonSociale: inscrite.raisonSociale as string,
+      nomCommercial: inscrite.nomCommercial as string,
+      codeNaf: '43.22A',
+      fermee: false,
+      adresse,
+    },
+  ];
+  for (const donnees of entrees)
+    c.docs.set(`${collections.cacheSirene}/${donnees.siren}`, {
+      schemaVersion: 1,
+      donnees,
+      createdAt: c.maintenant,
+      expireLe: new Date(c.maintenant.getTime() + 3650 * 86_400_000),
+    });
+}
+
 /** Cas limites : invitation expirée, revendication en cours (COMPTES §6.4). */
 export function genererCasLimites(c: ContexteSeed) {
+  cacheEntreprises(c);
   const passe = new Date(c.maintenant.getTime() - 10 * 86_400_000);
   c.docs.set(`${collections.invitations}/seed-invitation-expiree`, {
     schemaVersion: 1,

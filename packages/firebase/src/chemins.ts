@@ -65,6 +65,8 @@ export const collections = {
   brouillonsOnboarding: 'brouillonsOnboarding',
   simulations: 'simulations',
   cacheSirene: 'cacheSirene',
+  /** Émulateur uniquement : envois capturés pour les tests de bout en bout (secrets compris). */
+  capturesEmulateur: 'capturesEmulateur',
 } as const;
 
 export type NomCollection = keyof typeof collections;

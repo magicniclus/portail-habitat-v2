@@ -42,3 +42,16 @@ export function groupesMetiers(): GroupeMetiers[] {
 }
 
 export const nomMetier = (id: string) => metiers.find((m) => m.id === id)?.nom;
+
+export interface ChantierMetier {
+  id: string;
+  libelle: string;
+  metier: string;
+}
+
+/** Chantiers (intentions) de tous les métiers : cochés par défaut à l'inscription (ONB-01c). */
+export function chantiersParMetier(): ChantierMetier[] {
+  return (source as unknown as { intentions: ChantierMetier[] }).intentions.map(
+    ({ id, libelle, metier }) => ({ id, libelle, metier }),
+  );
+}

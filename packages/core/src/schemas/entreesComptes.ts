@@ -1,6 +1,6 @@
 import { ACTIONS_EQUIPE, ROLES_MEMBRE } from '../equipe/permissions';
 import { z } from '../zod';
-import { adresse, centimesPositifs, email, geo, id, siren, siret } from './commun';
+import { adresse, centimesPositifs, email, geo, id, siren, siret, telephoneE164 } from './commun';
 import { rayonKm } from './artisans';
 
 /** Entrées des Server Actions et Functions de comptes (COMPTES §7). Dates en chaînes ISO côté client. */
@@ -27,6 +27,8 @@ export const entreeFinaliserOnboarding = z
       codeNaf: z.string().max(10).optional(),
       dateCreationEntreprise: z.coerce.date().optional(),
       adresseSiege: adresse,
+      /** Téléphone saisi à l'étape 1 : affiché seulement en Premium ou avec l'option Visibilité. */
+      telephonePublic: telephoneE164.optional(),
     }),
     metierPrincipal: id,
     metiers: z.array(id).min(1).max(5),

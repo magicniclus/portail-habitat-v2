@@ -74,3 +74,35 @@ export async function validerSms(
   );
   await ouvrirSessionPro(await resolveur.resolveSignIn(assertion));
 }
+
+/**
+ * Étape 3 de l'inscription : compte email + mot de passe (ou connexion si l'adresse a déjà un compte
+ * avec ce mot de passe), session, création de l'entreprise, puis session renouvelée avec les
+ * nouveaux droits (rôle propriétaire, COMPTES §5).
+ */
+export async function activerEspace(e: {
+  email: string;
+  motDePasse: string;
+  nom: string;
+  siren: string;
+}): Promise<{ artisanId: string }> {
+  const auth = await authClient();
+  const m = await import('firebase/auth');
+  let c: UserCredential;
+  try {
+    c = await m.createUserWithEmailAndPassword(auth, e.email, e.motDePasse);
+    await m.updateProfile(c.user, { displayName: e.nom });
+  } catch (err) {
+    if ((err as { code?: string }).code !== 'auth/email-already-in-use') throw err;
+    c = await m.signInWithEmailAndPassword(auth, e.email, e.motDePasse);
+  }
+  await ouvrirSessionPro(c);
+  const r = await posterJson<{ artisanId: string }>('/api/pro/inscription/finaliser', {
+    cleIdempotence: crypto.randomUUID(),
+    siren: e.siren,
+  });
+  if (!r.ok) throw Object.assign(new Error(r.message), { code: 'finaliser', message: r.message });
+  await c.user.getIdToken(true);
+  await ouvrirSessionPro(c);
+  return r.data;
+}

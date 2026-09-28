@@ -33,3 +33,9 @@ export const entreeInscriptionEtape2 = z.strictObject({
 
 /** Reprise par le lien reçu par email (ONB-04). */
 export const entreeRepriseInscription = z.strictObject({ jeton: z.string().min(20).max(200) });
+
+/** Étape 3 : entreprise choisie par son SIREN ; tout le reste vient du brouillon, relu côté serveur. */
+export const entreeFinaliserInscription = z.strictObject({
+  cleIdempotence: z.string().min(8).max(64),
+  siren: z.string().regex(/^\d{9}$/, 'SIREN à 9 chiffres'),
+});
