@@ -209,6 +209,17 @@ describe('creerDemande', () => {
     expect(envois).toHaveLength(0);
   });
 
+  it('brouillon du lien de reprise supprimé avec l’envoi', async () => {
+    await db
+      .collection(collections.brouillons)
+      .doc('brouillon-e2e')
+      .set({ parcours: 'simulateur' });
+    await creerDemande(s, entree({ brouillonId: 'brouillon-e2e' }));
+    expect((await db.collection(collections.brouillons).doc('brouillon-e2e').get()).exists).toBe(
+      false,
+    );
+  });
+
   it('référence déjà prise : nouvel essai', async () => {
     const suite = [...Array(6).fill(0), ...Array(6).fill(0), ...Array(6).fill(0.5)];
     let i = 0;

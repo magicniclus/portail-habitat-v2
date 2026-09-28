@@ -1,4 +1,5 @@
 import { normaliserTel } from '../format/telephone';
+import { brouillonParcours } from '../parcours/brouillon';
 import { z } from '../zod';
 import { codePostal, email, id } from './commun';
 
@@ -43,7 +44,7 @@ export const entreeDemande = z.strictObject({
   }),
   precisions: z.string().trim().max(2000).optional(),
   miseEnRelation: z.boolean(),
-  /** Lien de reprise demandé (REPRISE_PARCOURS §4) : sans effet sur la demande elle-même. */
+  /** Brouillon serveur du lien de reprise, supprimé avec l'envoi (REPRISE_PARCOURS §4). */
   brouillonId: id.optional(),
   accepteConfidentialite: z.literal(true, 'Acceptez la politique de confidentialité'),
   /** Piège à robots : doit rester vide. */
@@ -51,3 +52,9 @@ export const entreeDemande = z.strictObject({
 });
 
 export type EntreeDemande = z.output<typeof entreeDemande>;
+
+/** « M'envoyer un lien pour reprendre plus tard » : brouillon sans coordonnées + adresse d'envoi. */
+export const entreeLienReprise = z.strictObject({ brouillon: brouillonParcours, email });
+
+/** Ouverture d'un lien de reprise (`/simulateur?reprise=…`). */
+export const entreeReprise = z.strictObject({ jeton: z.string().min(20).max(128) });

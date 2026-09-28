@@ -29,6 +29,8 @@ export function EtapeCoordonnees({
   chantier,
   contexte,
   onEnvoye,
+  onLienReprise,
+  brouillonId,
   onPrecedent,
   onChanger,
 }: {
@@ -37,6 +39,10 @@ export function EtapeCoordonnees({
   chantier: Chantier;
   contexte: { source: 'simulateur' | 'hero'; intention?: string; delai?: string };
   onEnvoye: (d: DemandeCreee, contact: Contact, miseEnRelation: boolean) => void;
+  /** Lien de reprise par email (consentement explicite) : message d'erreur, ou `null` si envoyé. */
+  onLienReprise: (email: string) => Promise<string | null>;
+  /** Brouillon serveur créé par le lien de reprise : supprimé avec l'envoi. */
+  brouillonId?: string;
   onPrecedent: () => void;
   onChanger: () => void;
 }) {
@@ -44,6 +50,26 @@ export function EtapeCoordonnees({
   const [erreurGenerale, setErreurGenerale] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [cle] = useState(() => crypto.randomUUID());
+  const [lien, setLien] = useState<{
+    etat: 'envoi' | 'envoye' | 'erreur';
+    message?: string;
+  } | null>(null);
+
+  // Case non cochée par défaut ; cochée : envoi immédiat à l'adresse saisie (REPRISE_PARCOURS §5).
+  const demanderLien = async (coche: boolean) => {
+    if (!coche) {
+      setLien(null);
+      return;
+    }
+    const email = String(new FormData(formulaire.current ?? undefined).get('email') ?? '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setLien({ etat: 'erreur', message: 'Saisissez d’abord votre email ci-dessus.' });
+      return;
+    }
+    setLien({ etat: 'envoi' });
+    const erreur = await onLienReprise(email);
+    setLien(erreur ? { etat: 'erreur', message: erreur } : { etat: 'envoye', message: email });
+  };
   const formulaire = useRef<HTMLFormElement>(null);
 
   const signaler = (champs: Record<string, string[] | undefined>) => {
@@ -77,6 +103,7 @@ export function EtapeCoordonnees({
       },
       ...(texte('precisions') ? { precisions: texte('precisions') } : {}),
       miseEnRelation: f.get('miseEnRelation') === 'on',
+      ...(brouillonId ? { brouillonId } : {}),
       accepteConfidentialite: f.get('accepteConfidentialite') === 'on',
     };
     const verif = entreeDemande.safeParse(brut);
@@ -195,6 +222,31 @@ export function EtapeCoordonnees({
             Je souhaite être mis en relation avec jusqu&apos;à 3 artisans vérifiés de mon secteur.
             Sans cette case, vous recevez uniquement l&apos;estimation par email.
           </Checkbox>
+          <div>
+            <Checkbox
+              name="lienReprise"
+              checked={lien !== null && lien.etat !== 'erreur'}
+              onChange={(e) => void demanderLien(e.target.checked)}
+              aria-describedby={lien ? 'etat-lien-reprise' : undefined}
+              className="text-sm leading-[22px]"
+            >
+              Pas le temps de finir ? M&apos;envoyer un lien pour reprendre plus tard, sur
+              n&apos;importe quel appareil (valable 30 jours).
+            </Checkbox>
+            {lien ? (
+              <p
+                id="etat-lien-reprise"
+                role="status"
+                className={`m-0 text-sm ${lien.etat === 'erreur' ? 'font-semibold text-danger' : 'text-neutre-800'}`}
+              >
+                {lien.etat === 'envoi'
+                  ? 'Envoi du lien…'
+                  : lien.etat === 'envoye'
+                    ? `Lien envoyé à ${lien.message}.`
+                    : lien.message}
+              </p>
+            ) : null}
+          </div>
           <div>
             <Checkbox
               name="accepteConfidentialite"

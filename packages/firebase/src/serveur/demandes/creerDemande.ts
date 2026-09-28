@@ -129,6 +129,8 @@ export async function creerDemande(
       createdAt: maintenant,
       ...trace,
     });
+    // Brouillon serveur du lien de reprise : supprimé avec l'envoi (REPRISE_PARCOURS §4).
+    if (e.brouillonId) t.delete(s.db.collection(collections.brouillons).doc(e.brouillonId));
     t.create(ref, {
       schemaVersion: 1,
       createdAt: maintenant,

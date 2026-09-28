@@ -13,6 +13,7 @@ export function AffichageReprise({
   encart,
   note,
   annulation,
+  lienExpire,
   autreOnglet,
   onReprendre,
   onRecommencer,
@@ -21,6 +22,7 @@ export function AffichageReprise({
   encart: EncartReprise | null;
   note: string | null;
   annulation: string | null;
+  lienExpire: string | null;
   autreOnglet: boolean;
   onReprendre: () => void;
   onRecommencer: () => void;
@@ -28,6 +30,11 @@ export function AffichageReprise({
 }) {
   return (
     <>
+      {lienExpire ? (
+        <Banner tone="attention" className="mb-5">
+          {lienExpire}
+        </Banner>
+      ) : null}
       {autreOnglet ? (
         <Banner
           tone="info"

@@ -1,16 +1,13 @@
 import { LIMITE_DEMANDES } from '@ph/core/demandes';
-import { CODES_ERREUR } from '@ph/core/erreurs';
 import { entreeDemande } from '@ph/core/schemas';
 import { creerDemande } from '@ph/firebase/demandes';
 import { headers } from 'next/headers';
 import { createHash } from 'node:crypto';
 import { action } from '@/server/action';
-import { memeOrigine } from '@/server/origine';
 import { servicesDemandes } from '@/server/demandes';
+import { routeJson } from '@/server/json';
 
 export const dynamic = 'force-dynamic';
-
-const TAILLE_MAX = 16 * 1024;
 
 const envoyer = action(
   {
@@ -36,15 +33,7 @@ const envoyer = action(
  * navigateur y joint l'en-tête App Check. La réponse porte l'estimation calculée côté serveur.
  */
 export async function POST(requete: Request) {
-  if (!memeOrigine(requete)) return new Response(null, { status: 403 });
-  const texte = await requete.text();
-  if (texte.length > TAILLE_MAX) return new Response(null, { status: 413 });
-  let brut: unknown;
-  try {
-    brut = JSON.parse(texte);
-  } catch {
-    return new Response(null, { status: 400 });
-  }
-  const r = await envoyer(brut);
-  return Response.json(r, { status: r.ok ? 201 : CODES_ERREUR[r.code].http });
+  const r = await routeJson(requete, envoyer);
+  // 201 : demande créée.
+  return r.status === 200 ? new Response(r.body, { status: 201, headers: r.headers }) : r;
 }

@@ -12,7 +12,8 @@
     "./seed": "./src/seed/index.ts",
     "./notifications": "./src/serveur/notifications/index.ts",
     "./support": "./src/serveur/support/index.ts",
-    "./demandes": "./src/serveur/demandes/index.ts"
+    "./demandes": "./src/serveur/demandes/index.ts",
+    "./parcours": "./src/serveur/parcours/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

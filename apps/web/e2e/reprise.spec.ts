@@ -185,4 +185,100 @@ test.describe('Reprise du simulateur', () => {
     await page.getByRole('button', { name: 'Y revenir' }).click();
     await expect(page).toHaveURL(/prestation=sdb&etape=\d/);
   });
+
+  test('SIM-06g : case cochée → lien demandé pour le brouillon courant, sans coordonnées', async ({
+    page,
+  }) => {
+    let corps: Record<string, unknown> | null = null;
+    await page.route('**/api/parcours/lien', (r) => {
+      corps = r.request().postDataJSON() as Record<string, unknown>;
+      return r.fulfill({ json: { ok: true, data: { brouillonId: 'brouillon-serveur-1' } } });
+    });
+    let demande: Record<string, unknown> = {};
+    await page.route('**/api/demandes', (r) => {
+      demande = r.request().postDataJSON() as Record<string, unknown>;
+      return r.fulfill({ status: 500, json: { ok: false, code: 'INTERNE', message: 'x' } });
+    });
+    await page.goto('/simulateur?prestation=peinture&etape=4');
+    await page.getByLabel('Code postal du chantier').fill('33000');
+    await page.getByRole('button', { name: 'Dernière étape' }).click();
+    await page.getByLabel(/^Email/).fill('camille@test.local');
+    await page.getByText('M’envoyer un lien pour reprendre plus tard'.replace('’', "'")).click();
+    await expect(page.getByText('Lien envoyé à camille@test.local.')).toBeVisible();
+    expect(corps).toMatchObject({
+      email: 'camille@test.local',
+      brouillon: { prestationId: 'peinture', etape: 5, chantier: { codePostal: '33000' } },
+    });
+    expect(JSON.stringify((corps as unknown as { brouillon: unknown }).brouillon)).not.toContain(
+      'camille',
+    );
+    // Le brouillon serveur accompagne la demande pour être supprimé avec elle.
+    await page.getByLabel(/^Prénom/).fill('Camille');
+    await page.getByLabel(/^Nom/).fill('Martin');
+    await page.getByLabel(/^Téléphone/).fill('0612345678');
+    await page.getByText("J'accepte que mes données").click();
+    await page.getByRole('button', { name: 'Voir mon estimation' }).click();
+    await expect.poll(() => demande.brouillonId).toBe('brouillon-serveur-1');
+  });
+
+  test('SIM-06h : sans la case, aucun lien de reprise, même avec un email saisi', async ({
+    page,
+  }) => {
+    let appels = 0;
+    await page.route('**/api/parcours/lien', (r) => {
+      appels++;
+      return r.fulfill({ json: { ok: true, data: { brouillonId: 'x' } } });
+    });
+    await page.goto('/simulateur?prestation=peinture&etape=5');
+    await page.getByLabel(/^Email/).fill('camille@test.local');
+    await page.getByLabel(/^Prénom/).fill('Camille');
+    await page.waitForTimeout(500);
+    expect(appels).toBe(0);
+  });
+
+  test('SIM-06g : lien ouvert sur un autre appareil → étape enregistrée ; lien usé → expiré', async ({
+    page,
+  }) => {
+    let utilise = false;
+    await page.route('**/api/parcours/reprise', (r) => {
+      if (utilise)
+        return r.fulfill({
+          status: 404,
+          json: {
+            ok: false,
+            code: 'INTROUVABLE',
+            message: 'Ce lien a expiré, votre estimation n’a pas pu être retrouvée.',
+          },
+        });
+      utilise = true;
+      return r.fulfill({
+        json: {
+          ok: true,
+          data: brouillon({
+            etape: 4,
+            reponses: {
+              surface: 70,
+              pieces: 2,
+              hauteur: 'std',
+              etat: 'bon',
+              extras: [],
+              gamme: 'eco',
+            },
+          }),
+        },
+      });
+    });
+    await page.goto('/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
+    await expect(page).toHaveURL(/prestation=peinture&etape=4/);
+    await expect(page.getByText(/Estimation reprise/)).toBeVisible();
+    await expect(encart(page)).toHaveCount(0);
+    await expect(page.getByLabel('Code postal du chantier')).toHaveValue('33000');
+    await expect(page.getByRole('complementary').getByText('70 m²')).toBeVisible();
+    await expect.poll(() => lireStockage(page)).toContain('"surface":70');
+
+    await page.goto('/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
+    await expect(
+      page.getByText('Ce lien a expiré, votre estimation n’a pas pu être retrouvée.'),
+    ).toBeVisible();
+  });
 });

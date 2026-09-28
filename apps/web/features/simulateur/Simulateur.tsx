@@ -17,7 +17,9 @@ import { AffichageReprise } from './AffichageReprise';
 import type { Contact } from './EtapeCoordonnees';
 import { EtapePrestation } from './EtapePrestation';
 import { EtapeQuestions } from './EtapeQuestions';
-import { useRepriseSimulateur } from './reprise';
+import { brouillonAJour, type BrouillonParcours } from '@ph/core/parcours';
+import { demanderLienReprise } from './envoi';
+import { useLienReprise, useRepriseSimulateur, type RepriseProposee } from './reprise';
 import type { CatalogueSimulateur, Chantier, PrestationSimulateur, Reponses } from './types';
 
 // Validation (Zod) et résultat chargés à la demande : la page, préchargée depuis l'accueil, reste
@@ -50,6 +52,7 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
       params.get('intention') || params.get('projet') ? ('hero' as const) : ('simulateur' as const),
     prestationId: params.get('prestation') ?? undefined,
     codePostal: params.get('cp') ?? undefined,
+    jeton: params.get('reprise') ?? undefined,
   }));
   const [intention, setIntention] = useState(arrivee.intention);
   const [reponses, setReponses] = useState<Record<string, Reponses>>({});
@@ -104,22 +107,58 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
 
   const encartVisible = !decide && !envoi && reprise.encart !== null;
 
-  const reprendre = () => {
-    const e = reprise.encart;
-    if (!e) return;
-    const b = e.brouillon;
-    setReponses((r) => ({ ...r, [e.prestation.id]: e.reponses }));
+  /** Restaure un brouillon (encart ou lien reçu par email) et va à l'étape de reprise. */
+  const appliquer = (r: RepriseProposee) => {
+    const b = r.brouillon;
+    setReponses((x) => ({ ...x, [r.prestation.id]: r.reponses }));
     setChantier({
       codePostal: b.chantier?.codePostal ?? '',
       acces: b.chantier?.acces ?? 'facile',
     });
     setNote(
-      e.retirees.length
+      r.retirees.length
         ? 'Certaines réponses ont été retirées car le simulateur a évolué : vérifiez-les.'
         : 'Vos réponses sont restaurées.',
     );
     agir();
-    aller(e.prestation, e.etape);
+    const q = new URLSearchParams({ prestation: r.prestation.id, etape: String(r.etape) });
+    router.replace(`?${q}` as Route, { scroll: true });
+  };
+
+  const reprendre = () => {
+    if (reprise.encart) appliquer(reprise.encart);
+  };
+
+  // Lien reçu par email : reprise directe, sans encart (le choix est fait en cliquant, §4).
+  const lienExpire = useLienReprise(arrivee.jeton, (b: BrouillonParcours) => {
+    const r = reprise.preparerBrouillon(b);
+    if (r) {
+      reprise.restaurer(b);
+      appliquer(r);
+    }
+  });
+
+  // « M'envoyer un lien pour reprendre plus tard » : brouillon courant, sans coordonnées.
+  const [brouillonId, setBrouillonId] = useState<string>();
+  const lienReprise = async (email: string) => {
+    if (!prestation) return null;
+    const b = brouillonAJour(
+      null,
+      {
+        parcours: 'simulateur',
+        versionReferentiel: catalogue.version,
+        prestationId: prestation.id,
+        etape,
+        reponses: { ...valeursParDefaut(prestation.champs), ...reponses[prestation.id] },
+        chantier: { codePostal: chantier.codePostal, acces: chantier.acces },
+      },
+      Date.now(),
+      () => crypto.randomUUID().replace(/-/g, ''),
+    );
+    const r = await demanderLienReprise(b, email);
+    if (!r.ok) return r.message;
+    setBrouillonId(r.data.brouillonId);
+    return null;
   };
 
   const recommencer = () => {
@@ -195,6 +234,7 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
         encart={encartVisible ? reprise.encart : null}
         note={prestation ? note : null}
         annulation={annulation}
+        lienExpire={prestation ? null : lienExpire}
         autreOnglet={reprise.autreOnglet}
         onReprendre={reprendre}
         onRecommencer={recommencer}
@@ -214,6 +254,8 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
           reponses={courantes}
           chantier={chantier}
           contexte={{ ...arrivee, intention }}
+          onLienReprise={lienReprise}
+          brouillonId={brouillonId}
           onEnvoye={(demande, contact, miseEnRelation) => {
             // Demande envoyée : brouillon supprimé, plus d'encart au retour (SIM-06f).
             reprise.effacer();
