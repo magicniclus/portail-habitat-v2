@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Field, Input, Select } from '@ph/ui';
+import { bouton, Field, Input, Select } from '@ph/ui';
 import { useState } from 'react';
 import { DELAIS, PROJETS_POPULAIRES } from './choix';
 
@@ -58,9 +58,13 @@ export function FormulaireProjet({ cible }: { cible: string }) {
             </Select>
           </Field>
         </div>
-        <Button type="submit" taille="lg" pleineLargeur className="min-h-[52px]">
+        {/* Bouton natif : le composant Button embarque Radix Slot, inutile ici (budget D46). */}
+        <button
+          type="submit"
+          className={bouton({ taille: 'lg', pleineLargeur: true, className: 'min-h-[52px]' })}
+        >
           Lancer mon estimation gratuite
-        </Button>
+        </button>
       </form>
 
       <div className="mt-[18px] flex flex-wrap items-center gap-x-3 gap-y-2">
