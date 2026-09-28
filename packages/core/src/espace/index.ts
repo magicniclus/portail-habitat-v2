@@ -5,20 +5,20 @@ type StatutDemande = (typeof STATUTS_DEMANDE)[number];
 /** Étapes du suivi d'une demande (maquette Mon Espace Particulier). */
 export const ETAPES_SUIVI = ['Envoyée', 'Artisans trouvés', 'Devis reçus', 'Travaux'] as const;
 
-/** Libellé et ton de l'étiquette de statut, vus par le particulier. */
+/** Libellé et ton (`StatusBadge`) de l'étiquette de statut, vus par le particulier. */
 export const LIBELLES_STATUT_PARTICULIER: Record<
   StatutDemande,
-  { libelle: string; ton: 'attente' | 'succes' | 'neutre'; etape: number }
+  { libelle: string; tone: 'attention' | 'succes' | 'neutre'; etape: number }
 > = {
-  nouvelle: { libelle: 'Envoyée', ton: 'attente', etape: 1 },
-  en_attribution: { libelle: 'En attente', ton: 'attente', etape: 1 },
-  appel_offres: { libelle: 'En attente', ton: 'attente', etape: 1 },
-  attribuee: { libelle: 'Artisans trouvés', ton: 'succes', etape: 2 },
-  devis_recus: { libelle: 'Devis reçus', ton: 'succes', etape: 3 },
-  signee: { libelle: 'Devis signé', ton: 'succes', etape: 4 },
-  close: { libelle: 'Terminé', ton: 'neutre', etape: 4 },
-  annulee: { libelle: 'Annulée', ton: 'neutre', etape: 0 },
-  spam: { libelle: 'Annulée', ton: 'neutre', etape: 0 },
+  nouvelle: { libelle: 'Envoyée', tone: 'attention', etape: 1 },
+  en_attribution: { libelle: 'En attente', tone: 'attention', etape: 1 },
+  appel_offres: { libelle: 'En attente', tone: 'attention', etape: 1 },
+  attribuee: { libelle: 'Artisans trouvés', tone: 'succes', etape: 2 },
+  devis_recus: { libelle: 'Devis reçus', tone: 'succes', etape: 3 },
+  signee: { libelle: 'Devis signé', tone: 'succes', etape: 4 },
+  close: { libelle: 'Terminé', tone: 'neutre', etape: 4 },
+  annulee: { libelle: 'Annulée', tone: 'neutre', etape: 0 },
+  spam: { libelle: 'Annulée', tone: 'neutre', etape: 0 },
 };
 
 export const etapeSuivi = (statut: StatutDemande) => LIBELLES_STATUT_PARTICULIER[statut].etape;
