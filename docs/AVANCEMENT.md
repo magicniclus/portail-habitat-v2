@@ -18,7 +18,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
 | 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
-| 8 | Parcours particuliers | ⬜ | | SIM, ESP, DIA, AVI | |
+| 8 | Parcours particuliers | 🟡 | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06 ; e2e sur 4 appareils, tests émulateur | Reste : avis (AVI), connexion et Mon espace (ESP), reprise « compte » (§14) |
 | 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
 | 10 | Espace artisan, équipes, PWA | ⬜ | | ACQ, ONB, PRO | |
 | 11 | Stripe | ⬜ | | PAY | |
@@ -226,6 +226,24 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 **Variables à fournir si D4 est validé** : `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE` (site, clé de recherche seule), `TYPESENSE_CLE_ADMIN` (Functions, Secret Manager). Première indexation : réécrire les intentions (le seed le fait) ou lancer une synchronisation complète à ajouter au lot 13 (écran admin Recherche).
 
 **Non fait (lots suivants)** : annuaire `/artisans?q=` (lot 9) ; écran admin Recherche, banc d'essai et popularité mensuelle (lot 13) ; saisonnalité (`saison`) non utilisée par le moteur.
+
+## 14. Lot 8 — Parcours particuliers (en cours, 28/09/2026)
+
+**Fait**
+- **Création d'une demande** (`creerDemande`, `POST /api/demandes`) : réponses revérifiées, estimation **recalculée avec les prix privés** (lecture d'une seule prestation), géocodage du code postal (API Découpage administratif, gratuite), compte particulier créé ou rattaché **sans ouvrir de session** (SIM-09), consentements (confidentialité, mise en relation), référence `PH-XXXXXX`, email `demande-confirmee` (lien magique si le compte vient d'être créé, sinon page de connexion), 5 envois / h (SIM-10), idempotence. Aucun montant accepté dans la requête (SIM-08).
+- **Simulateur** `/simulateur` : 5 étapes (112 prestations, recherche et 15 familles ; `?prestation=` démarre à l'étape 2), étape dans l'URL (SIM-02), messages d'erreur liés aux champs (SIM-03), **aucun prix avant l'envoi** (SIM-01b : descriptions d'options citant des euros retirées de la partie publique, aussi dans le seed), résultat affiché depuis la réponse du serveur, aides en négatif (SIM-05).
+- **Reprise** (REPRISE_PARCOURS) : `useParcours` + `<RepriseParcours />` (réutilisable), brouillon local sans coordonnées, Reprendre / Recommencer (Annuler 8 s), autre onglet, arrivée avec une autre prestation (SIM-06j), stockage bloqué sans erreur ; **lien de reprise par email** (case non cochée par défaut, jeton à usage unique 30 jours, empreintes seules, 3 liens / adresse / jour), brouillon serveur supprimé à l'envoi.
+- **Parcours diagnostic** `/diagnostic-immobilier/estimation` : préremplissage `?motif&type&periode&ville` (DIA-01), liste des diagnostics obligatoires gratuite **sans prix** (le navigateur reçoit un référentiel aux prix nuls), `creerDossierDiag` (`POST /api/diagnostics`) recalcule dossier et budget pack côté serveur (`PHD-XXXXXX`, email `dossier-diag-confirme`).
+- **Budget JavaScript** (D46) : l'accueil ne précharge plus le simulateur ; `tailwind-merge` n'est plus chargé au démarrage des pages (−11 Ko : `optimizePackageImports`, page 404 et formulaire de l'accueil en éléments natifs).
+
+**À signaler**
+1. **DIA-02** cite le plomb pour une maison de 1968 ; les règles de la maquette (et la loi) ne l'imposent qu'avant 1949. Le code suit la maquette. → corriger ACCEPTANCE ?
+2. **Lighthouse (D46 ⏳)** : le temps d'affichage de l'accueil et de `/maintenance` mesuré en CI oscille autour de 2,5 s selon la machine (même code rouge puis vert). Proposition : comparer la médiane de 5 passages, ou une marge (2,7 s) — à trancher.
+3. **App Check côté navigateur** non branché : les routes l'exigent, `APP_CHECK_MODE=desactive` en local et en e2e. À faire avec la configuration Firebase du site.
+4. Référentiels du simulateur (partie publique) et du diagnostic lus dans `docs/data` côté serveur (même source que le seed) ; la lecture Firestore viendra avec leur édition dans l'administration (lot 13).
+5. Emails de relance J+3 (`reprise-simulateur-rappel`) non planifiés.
+
+**Reste pour clore le lot** : Laisser un avis (AVI), connexion particulier et Mon espace (ESP), reprise pour une personne connectée (niveau « compte »).
 
 ## 2. Incohérences et zones floues
 
