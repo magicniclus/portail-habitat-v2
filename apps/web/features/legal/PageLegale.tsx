@@ -59,7 +59,7 @@ export function PageLegale({
             <Logo taille={32} variant={pro ? 'pro' : 'particulier'} />
           </Link>
           <span className="hidden text-[15px] text-neutre-800 sm:inline">Informations légales</span>
-          <nav aria-label="Espaces" className="ml-auto flex gap-3 text-sm">
+          <nav aria-label="Espaces" className="ml-auto flex flex-wrap gap-x-3 text-sm">
             <Link
               href={routes.accueil}
               className="inline-flex min-h-11 items-center text-neutre-800 no-underline"
@@ -174,9 +174,9 @@ export function PageLegale({
                 </p>
               </div>
             ) : null}
-            <div className="grid max-w-[72ch] gap-[30px]">
+            <div className="grid max-w-[72ch] grid-cols-[minmax(0,1fr)] gap-[30px]">
               {doc.sections.map((s) => (
-                <section key={s.titre}>
+                <section key={s.titre} className="min-w-0">
                   <h2 className="m-0 mb-3 text-[19.5px] leading-[1.2]">{s.titre}</h2>
                   {s.paragraphes.map((p) => (
                     <p key={p} className="m-0 mb-3 text-[15.5px] leading-[26px] text-neutre-800">
@@ -193,7 +193,7 @@ export function PageLegale({
                     </ul>
                   ) : null}
                   {s.tableau ? (
-                    <div className="mt-1.5 overflow-x-auto">
+                    <div className="mt-1.5 max-w-full overflow-x-auto">
                       <table className="w-full min-w-[480px] border-collapse text-left text-[14.5px]">
                         <thead>
                           <tr className="border-b-2 border-trait">
@@ -228,7 +228,7 @@ export function PageLegale({
               {precedent ? (
                 <Link
                   href={routes.legal(pub, precedent.slug)}
-                  className={bouton({ variant: 'fantome' })}
+                  className={bouton({ variant: 'fantome', className: 'whitespace-normal' })}
                 >
                   ← {precedent.titre}
                 </Link>
@@ -236,7 +236,10 @@ export function PageLegale({
               {suivant ? (
                 <Link
                   href={routes.legal(pub, suivant.slug)}
-                  className={bouton({ variant: 'secondaire', className: 'ml-auto' })}
+                  className={bouton({
+                    variant: 'secondaire',
+                    className: 'ml-auto whitespace-normal',
+                  })}
                 >
                   {suivant.titre} →
                 </Link>

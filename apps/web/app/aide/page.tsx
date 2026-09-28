@@ -55,7 +55,7 @@ export default function Aide() {
               <Logo taille={32} />
             </Link>
             <span className="hidden text-[15px] text-neutre-800 sm:inline">Aide et contact</span>
-            <nav aria-label="Espaces" className="ml-auto flex gap-3 text-sm">
+            <nav aria-label="Espaces" className="ml-auto flex flex-wrap gap-x-3 text-sm">
               <Link
                 href={routes.accueil}
                 className="inline-flex min-h-11 items-center text-neutre-800 no-underline"
