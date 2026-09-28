@@ -190,12 +190,12 @@ describe('Checkbox et RadioCard', () => {
 });
 
 describe('bouton()', () => {
-  it('fusionne les classes en conflit (la dernière gagne)', async () => {
+  it('une seule classe de retour à la ligne (pas de conflit laissé à l’ordre du CSS)', async () => {
     const { bouton } = await import('./bouton');
-    const c = bouton({ taille: 'lg', pleineLargeur: true, className: 'min-h-[52px]' });
-    expect(c).toContain('whitespace-normal');
-    expect(c).not.toContain('whitespace-nowrap');
-    expect(c).toContain('min-h-[52px]');
-    expect(c).not.toMatch(/\bmin-h-11\b|\bmin-h-12\b/);
+    const plein = bouton({ taille: 'lg', pleineLargeur: true });
+    expect(plein).toContain('whitespace-normal');
+    expect(plein).not.toContain('whitespace-nowrap');
+    expect(bouton()).toContain('whitespace-nowrap');
+    expect(bouton({ ligne: 'multiple' })).not.toContain('whitespace-nowrap');
   });
 });

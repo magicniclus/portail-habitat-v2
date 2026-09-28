@@ -1,10 +1,9 @@
 import { cva } from 'class-variance-authority';
-import { cn } from '../cn';
 
 /** Classes des boutons, sans dépendance à Radix : utilisable sur un lien ou dans un composant léger. */
 const variantesBouton = cva(
   [
-    'inline-flex items-center justify-center gap-2 rounded-control border font-semibold whitespace-nowrap no-underline',
+    'inline-flex items-center justify-center gap-2 rounded-control border font-semibold no-underline',
     'min-h-11 cursor-pointer transition-colors duration-150 select-none',
     'disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
   ],
@@ -24,16 +23,21 @@ const variantesBouton = cva(
         md: 'px-5 text-base',
         lg: 'min-h-12 px-6 text-[17px]',
       },
-      pleineLargeur: { true: 'w-full whitespace-normal' },
+      pleineLargeur: { true: 'w-full' },
+      /** Retour à la ligne : une seule classe `whitespace-*` à la fois, sans fusion coûteuse. */
+      ligne: { unique: 'whitespace-nowrap', multiple: 'whitespace-normal' },
     },
     defaultVariants: { variant: 'primaire', taille: 'md' },
   },
 );
 
 /**
- * Classes fusionnées (tailwind-merge) : `bouton({ pleineLargeur: true, className: 'min-h-[52px]' })` garde
- * `whitespace-normal` et `min-h-[52px]` au lieu de laisser l'ordre du CSS trancher (débordement Safari).
+ * Classes des boutons. Pas de tailwind-merge ici (coût d'exécution dans le navigateur, D46) : les variantes
+ * ne se contredisent pas ; un bouton pleine largeur passe à la ligne par défaut (`ligne: 'multiple'`).
  */
-export function bouton(options?: Parameters<typeof variantesBouton>[0]): string {
-  return cn(variantesBouton(options));
+export function bouton(options: Parameters<typeof variantesBouton>[0] = {}): string {
+  return variantesBouton({
+    ...options,
+    ligne: options.ligne ?? (options.pleineLargeur ? 'multiple' : 'unique'),
+  });
 }

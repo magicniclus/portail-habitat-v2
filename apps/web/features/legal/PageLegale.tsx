@@ -94,7 +94,8 @@ export function PageLegale({
                 aria-current={p === pub ? 'page' : undefined}
                 className={bouton({
                   variant: p === pub ? 'primaire' : 'secondaire',
-                  className: 'text-[15px] whitespace-normal',
+                  ligne: 'multiple',
+                  className: 'text-[15px]',
                 })}
               >
                 {p === 'pro' ? 'Artisans et professionnels' : 'Particuliers'}
@@ -228,7 +229,7 @@ export function PageLegale({
               {precedent ? (
                 <Link
                   href={routes.legal(pub, precedent.slug)}
-                  className={bouton({ variant: 'fantome', className: 'whitespace-normal' })}
+                  className={bouton({ variant: 'fantome', ligne: 'multiple' })}
                 >
                   ← {precedent.titre}
                 </Link>
@@ -238,7 +239,8 @@ export function PageLegale({
                   href={routes.legal(pub, suivant.slug)}
                   className={bouton({
                     variant: 'secondaire',
-                    className: 'ml-auto whitespace-normal',
+                    ligne: 'multiple',
+                    className: 'ml-auto',
                   })}
                 >
                   {suivant.titre} →
