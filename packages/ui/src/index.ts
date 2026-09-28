@@ -38,3 +38,4 @@ export { ConfirmDialog, type ConfirmDialogProps } from './patterns/ConfirmDialog
 export { Combobox, type ComboboxProps, type OptionCombobox } from './patterns/Combobox';
 export { ToastProvider, useToast } from './patterns/Toast';
 export { PageErreur, type PageErreurProps } from './patterns/PageErreur';
+export { MenuPleinEcran, type MenuPleinEcranProps } from './patterns/MenuPleinEcran';

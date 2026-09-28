@@ -11,6 +11,7 @@ import { Combobox, type OptionCombobox } from './Combobox';
 import { ConfirmDialog } from './ConfirmDialog';
 import { EmptyState } from './EmptyState';
 import { Modal, Sheet } from './Feuille';
+import { MenuPleinEcran } from './MenuPleinEcran';
 import { PageErreur } from './PageErreur';
 import { Stepper } from './Stepper';
 import { StickyActionBar } from './StickyActionBar';
@@ -237,5 +238,32 @@ describe('PageErreur', () => {
     );
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('MenuPleinEcran (MOBILE §6, ACC-04)', () => {
+  it('bouton avec aria-expanded, plein écran accessible, Échap referme', async () => {
+    const u = userEvent.setup();
+    render(
+      <MenuPleinEcran titre="Menu principal">
+        {(fermer) => (
+          <a href="#metiers" onClick={fermer}>
+            Métiers
+          </a>
+        )}
+      </MenuPleinEcran>,
+    );
+    const bouton = screen.getByRole('button', { name: 'Menu principal' });
+    expect(bouton).toHaveAttribute('aria-expanded', 'false');
+    await u.click(bouton);
+    expect(bouton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('dialog', { name: 'Menu principal' })).toBeInTheDocument();
+    expect(await axe(document.body)).toHaveNoViolations();
+    await u.click(screen.getByRole('link', { name: 'Métiers' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await u.click(bouton);
+    await u.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(bouton).toHaveFocus();
   });
 });
