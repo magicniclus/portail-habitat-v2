@@ -23,6 +23,15 @@ export function ciblesTropPetites(page: Page, racine = 'body'): Promise<CibleTro
       const boite = el.getBoundingClientRect();
       if (boite.width === 0 && boite.height === 0) continue;
       if (boite.width <= 1 && boite.height <= 1) continue; // sr-only
+      // Exception WCAG 2.5.8 : lien dans une phrase (inline, entouré de texte).
+      if (
+        el.tagName === 'A' &&
+        style.display === 'inline' &&
+        [...(el.parentElement?.childNodes ?? [])].some(
+          (n) => n !== el && n.nodeType === Node.TEXT_NODE && n.textContent!.trim().length > 1,
+        )
+      )
+        continue;
       // Case et bouton radio : la cible est leur <label> englobant.
       const cible =
         (el as HTMLInputElement).type === 'checkbox' || (el as HTMLInputElement).type === 'radio'
