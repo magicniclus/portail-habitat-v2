@@ -5,7 +5,9 @@ test.describe('Accueil particuliers', () => {
   test('ACC-02 : un chip « Projets populaires » remplit le champ projet', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Salle de bain' }).click();
-    await expect(page.getByLabel('Quel est votre projet ?')).toHaveValue('Salle de bain');
+    await expect(page.getByLabel('Quel est votre projet ?')).toHaveValue(
+      'Rénovation de salle de bain',
+    );
     await expect(page.getByRole('button', { name: 'Salle de bain' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -19,7 +21,9 @@ test.describe('Accueil particuliers', () => {
     await page.getByRole('button', { name: 'Peinture' }).click();
     await page.getByLabel('Code postal').fill('33000');
     await page.getByRole('button', { name: 'Lancer mon estimation gratuite' }).click();
-    await expect(page).toHaveURL(/\/simulateur\?prestation=peinture&cp=33000&delai=asap$/);
+    await expect(page).toHaveURL(
+      /\/simulateur\?prestation=peinture&intention=peinture-interieure&cp=33000&delai=asap$/,
+    );
   });
 
   test('ACC-04 : sur mobile, la navigation passe dans un menu accessible', async ({
@@ -50,10 +54,10 @@ test.describe('Accueil particuliers', () => {
 
   test('ACC-03 : texte libre transmis au simulateur', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Quel est votre projet ?').fill('Abri de jardin');
+    await page.getByLabel('Quel est votre projet ?').fill('xyzabc');
     await page.getByLabel('Code postal').fill('33000');
     await page.getByRole('button', { name: 'Lancer mon estimation gratuite' }).click();
-    await expect(page).toHaveURL(/\/simulateur\?projet=Abri\+de\+jardin&cp=33000&delai=asap$/);
+    await expect(page).toHaveURL(/\/simulateur\?projet=xyzabc&cp=33000&delai=asap$/);
   });
 
   test('pas de défilement horizontal ; JSON-LD FAQPage présent', async ({ page }) => {
