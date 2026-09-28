@@ -13,6 +13,9 @@
     },
     "packages/core": {
       "entry": ["scripts/*.mjs", "scripts/*.ts"]
+    },
+    "packages/emails": {
+      "entry": ["src/apercus/*.tsx"]
     }
   }
 }

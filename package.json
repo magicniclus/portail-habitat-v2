@@ -18,7 +18,8 @@
     "test:unit": "turbo run test --filter=!@ph/firebase",
     "e2e": "turbo run e2e",
     "verifier:referentiel": "pnpm --filter @ph/core verifier-referentiel",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "email:dev": "pnpm --filter @ph/emails dev"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

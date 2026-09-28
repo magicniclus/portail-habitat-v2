@@ -136,3 +136,28 @@ export const polices = {
 
 /** Points de rupture (MOBILE.md §2), en px. */
 export const pointsDeRupture = { sm: 640, md: 768, lg: 1024, xl: 1280 } as const;
+
+/**
+ * Couleurs des emails (maquette Modeles Emails) : valeurs pleines, sans `color-mix`
+ * que les clients de messagerie ignorent.
+ */
+export const couleursEmail = {
+  titre: '#1d1b1a',
+  corps: '#3d3a37',
+  doux: '#6b6763',
+  lien: '#57534f',
+  bord: '#e7e5e1',
+  separateur: '#ecebe7',
+  fondBloc: '#faf9f7',
+  fondPage: '#f1f0ed',
+  blanc: '#ffffff',
+  etoile: '#e8a33d',
+  hausse: '#0a6650',
+  tons: {
+    info: { fond: '#eef4fa', texte: '#0d3a65' },
+    ok: { fond: '#eef7f3', texte: '#085340' },
+    warn: { fond: '#fdf4e3', texte: '#7a5206' },
+    danger: { fond: '#fdecea', texte: '#8f1d14' },
+    neutre: { fond: '#f1f0ed', texte: '#57534f' },
+  },
+} as const;
