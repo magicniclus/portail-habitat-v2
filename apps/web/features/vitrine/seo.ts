@@ -1,7 +1,11 @@
 /** Adresse publique du site (EMAILS §9) ; repli local pour le développement et la CI. */
-const URL_SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+export const URL_SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(
+  /\/$/,
+  '',
+);
 
-const absolue = (chemin: string) => `${URL_SITE}${chemin.startsWith('/') ? '' : '/'}${chemin}`;
+export const absolue = (chemin: string) =>
+  `${URL_SITE}${chemin.startsWith('/') ? '' : '/'}${chemin}`;
 
 export interface QuestionFaq {
   q: string;

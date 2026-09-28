@@ -15,6 +15,9 @@ const PAGES = [
   '/diagnostic-immobilier',
   '/diagnostic-immobilier/cenon',
   '/maintenance',
+  '/aide',
+  '/legal/particuliers/confidentialite',
+  '/legal/pro/cgv',
 ];
 
 for (const chemin of PAGES) {

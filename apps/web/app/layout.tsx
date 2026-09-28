@@ -3,6 +3,7 @@ import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { BandeauCookies } from '@/features/cookies/BandeauCookies';
 import { viewportEspace } from '@/features/theme/viewport';
+import { URL_SITE } from '@/features/vitrine/seo';
 import './globals.css';
 
 // Sous-ensemble latin, display: swap (MOBILE.md §10). Source Sans 3 en police variable : un seul fichier
@@ -21,6 +22,7 @@ const serif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(URL_SITE),
   title: { default: 'Portail Habitat', template: '%s · Portail Habitat' },
   description: 'Trouvez un artisan vérifié près de chez vous et simulez votre devis.',
 };
