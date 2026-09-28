@@ -48,8 +48,15 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
     intention: params.get('intention') ?? undefined,
     delai: DELAIS.has(params.get('delai') ?? '') ? (params.get('delai') ?? undefined) : undefined,
     projet: params.get('projet') ?? '',
-    source:
-      params.get('intention') || params.get('projet') ? ('hero' as const) : ('simulateur' as const),
+    // `?artisan=<id>` : bouton « Demander un devis » d'une fiche ou de l'annuaire (artisan ciblé).
+    artisanCibleId: /^[A-Za-z0-9_-]{1,128}$/.test(params.get('artisan') ?? '')
+      ? (params.get('artisan') ?? undefined)
+      : undefined,
+    source: params.get('artisan')
+      ? ('fiche_artisan' as const)
+      : params.get('intention') || params.get('projet')
+        ? ('hero' as const)
+        : ('simulateur' as const),
     prestationId: params.get('prestation') ?? undefined,
     codePostal: params.get('cp') ?? undefined,
     jeton: params.get('reprise') ?? undefined,

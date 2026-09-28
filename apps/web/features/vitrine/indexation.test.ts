@@ -4,11 +4,19 @@ import { pagesDuSitemap, reglesRobots } from './indexation';
 describe('SEO : sitemap et robots', () => {
   const pages = pagesDuSitemap(new Date('2026-09-28'));
   const chemins = pages.map((p) => new URL(p.url).pathname);
-  it('accueil, landings, 11 communes, aide et 12 documents légaux ; adresses uniques', () => {
-    expect(pages).toHaveLength(3 + 11 + 1 + 12);
+  it('accueil, landings, annuaire, 11 communes, aide et 12 documents légaux ; adresses uniques', () => {
+    expect(pages).toHaveLength(4 + 11 + 1 + 12);
     expect(new Set(chemins).size).toBe(pages.length);
     expect(chemins).toContain('/diagnostic-immobilier/cenon');
     expect(chemins).toContain('/legal/pro/securite');
+  });
+  it('fiches des artisans en ligne', () => {
+    const avecFiches = pagesDuSitemap(new Date('2026-09-28'), [
+      'bertrand-renovation',
+      'atelier-lumiere',
+    ]);
+    expect(avecFiches.map((p) => new URL(p.url).pathname)).toContain('/artisans/atelier-lumiere');
+    expect(avecFiches).toHaveLength(pages.length + 2);
   });
   it('aucune page privée dans le sitemap', () => {
     expect(chemins.filter((c) => /^\/(admin|api|mon-espace|pro\/)/.test(c))).toEqual([]);

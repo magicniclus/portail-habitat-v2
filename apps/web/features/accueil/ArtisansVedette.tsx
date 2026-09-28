@@ -1,7 +1,7 @@
-import { formatNombre, formatTel } from '@ph/core/format';
+import { formatTel } from '@ph/core/format';
 import type { artisanPublic } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
-import { bouton } from '@ph/ui';
+import { bouton, NoteMoyenne } from '@ph/ui';
 import Link from 'next/link';
 import { EnTeteSection, Section } from '@/features/vitrine/Section';
 import { Visuel } from '@/features/vitrine/Visuel';
@@ -40,15 +40,7 @@ export function ArtisansVedette({ fiches }: { fiches: Fiche[] }) {
               <div className="flex flex-1 flex-col gap-2.5 p-[18px]">
                 <div className="flex items-start justify-between gap-2.5">
                   <h3 className="m-0 text-[19px]">{a.nomCommercial}</h3>
-                  {a.nbAvis > 0 ? (
-                    <span className="flex items-center gap-[5px] text-sm whitespace-nowrap">
-                      <span aria-hidden="true" className="text-etoile">
-                        ★
-                      </span>
-                      <strong>{formatNombre(a.noteMoyenne, 1)}</strong>
-                      <span className="text-neutre-700">({a.nbAvis} avis)</span>
-                    </span>
-                  ) : null}
+                  <NoteMoyenne note={a.noteMoyenne} nbAvis={a.nbAvis} className="text-sm" />
                 </div>
                 <p className="m-0 text-sm text-neutre-800">
                   {[a.tags.slice(0, 2).join(' · '), a.ville].filter(Boolean).join(' · ')}

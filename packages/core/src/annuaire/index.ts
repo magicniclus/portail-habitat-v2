@@ -7,6 +7,7 @@ export {
   ecrireFiltresAnnuaire,
   LIBELLES_LABELS,
   LIBELLES_TRIS,
+  libelleDisponibilite,
   LIEU_DEFAUT,
   lireFiltresAnnuaire,
   NOTES_ANNUAIRE,

@@ -1,6 +1,6 @@
 import { formatEuros } from '@ph/core/format';
 import type { ArtisanDemande } from '@ph/firebase/espace';
-import { bouton } from '@ph/ui';
+import { bouton, NoteMoyenne } from '@ph/ui';
 import { initiales } from '@/features/avis/types';
 
 /** Artisans sur le projet : état, devis reçu (montant), accès aux messages. */
@@ -38,14 +38,7 @@ export function ArtisansDemande({
           </span>
           <span className="flex min-w-0 flex-col gap-0.5">
             <span className="text-base font-bold">{a.nom}</span>
-            {a.nbAvis > 0 ? (
-              <span className="text-sm text-neutre-700">
-                <span aria-hidden="true" className="text-etoile">
-                  ★
-                </span>{' '}
-                {a.note.toFixed(1).replace('.', ',')} · {a.nbAvis} avis
-              </span>
-            ) : null}
+            <NoteMoyenne note={a.note} nbAvis={a.nbAvis} className="text-sm" />
             <span className="text-sm font-semibold text-neutre-800">{a.etat}</span>
           </span>
           <span className="col-span-2 flex items-center justify-end gap-3 sm:col-span-1 sm:flex-col sm:items-end sm:gap-1.5">

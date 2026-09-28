@@ -47,6 +47,7 @@ export default defineConfig({
     url: `http://localhost:${port}/api/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
-    env: { ACTIVER_ROUTE_TEST_ERREUR: '1' },
+    // ANNUAIRE_DEMO : annuaire et fiches servis par le jeu de test en mémoire (jamais en production).
+    env: { ACTIVER_ROUTE_TEST_ERREUR: '1', ANNUAIRE_DEMO: '1' },
   },
 });

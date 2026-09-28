@@ -19,7 +19,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
 | 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
-| 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
+| 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
 | 10 | Espace artisan, équipes, PWA | ⬜ | | ACQ, ONB, PRO | |
 | 11 | Stripe | ⬜ | | PAY | |
 | 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
@@ -256,6 +256,24 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 12. **Index ajouté** : `demandes` (`particulierUid`, `createdAt` décroissant) pour « Mes projets ».
 13. L'accès à `/mon-espace` sans cookie renvoie à la connexion ; la validité de la session est vérifiée par chaque route `/api/mon-espace/*`.
 
+## 15. Lot 9 — Annuaire et fiche publique (terminé, 28/09/2026)
+
+**Fait**
+- **Fiche publique calculée par une seule fonction** (`projeterArtisanPublic`, partagée par le déclencheur `projeterArtisan` et le seed) : liste blanche de champs (aucune donnée privée, testé), labels **vérifiés et non expirés** seulement (FIC-01), téléphone seulement en Premium ou avec l'option Visibilité (ANN-06), `scoreClassement` de MATCHING §4, fiche retirée si hors ligne, suspendue ou supprimée (FIC-02). Index Typesense de l'annuaire mis à jour si configuré (D4).
+- **`/artisans`** (page serveur, tout l'état dans l'URL, ANN-01) : recherche texte + lieu (commune ou code postal, API Découpage administratif ; Bordeaux par défaut), filtres métier, rayon 5–60 km, note, labels, disponibilité, budget ; colonne fixe sur ordinateur, feuille du bas sur mobile ; chips retirables et « Tout effacer » (ANN-02) ; « Artisans à la une » Premium signalés + mention L111-7 (ANN-03) ; tri ; état vide avec « Déposer mon projet » (ANN-05).
+- **Recherche par rayon** : plages de geohash calculées par notre code (portage de geofire-common, **aucune dépendance ajoutée**), puis distance exacte ; un artisan n'apparaît que si le lieu est dans le rayon choisi **et** dans sa zone d'intervention (cadrage n° 13).
+- **Texte** : Typesense s'il est configuré, sinon recherche de repli mot à mot sans accents (« douche italienne », ANN-04).
+- **`/artisans/[slug]`** (ISR 1 h) : présentation, réalisations publiées, derniers avis publiés avec réponse de l'artisan, labels vérifiés, zone, devis moyen, « Demander un devis » (le simulateur cible l'artisan : `?artisan=`, `source: fiche_artisan`), JSON-LD `LocalBusiness` avec note et nombre d'avis (FIC-03), 404 si hors ligne (FIC-02). `?apercu=1` : bandeau d'aperçu et en-tête `X-Robots-Tag: noindex`.
+- **Sitemap** : annuaire et fiches en ligne (régénéré toutes les heures).
+- **Composant partagé** `NoteMoyenne` (packages/ui) : « ★ 4,8 (24 avis) », rien sans avis ; remplace 2 copies existantes.
+
+**À signaler**
+1. **Formule de pertinence** : README et maquette (`note × 12 + avis × 0,4 − km × 0,6`) contredisent MATCHING §4 (`scoreClassement − 0,6 × km`). Appliqué : MATCHING, la formule de la maquette ne servant que si le score manque. À confirmer.
+2. **Mode démonstration `ANNUAIRE_DEMO=1`** (tests de bout en bout sans base) : l'annuaire et les fiches sont servis par le jeu de test généré en mémoire. **Refusé en production** (erreur au démarrage si `VERCEL_ENV=production`), conformément à D49.
+3. **Aperçu `?apercu=1`** d'une fiche **hors ligne** par son artisan : demande une session pro (lot 10) ; pour l'instant l'aperçu ne montre que les fiches en ligne.
+4. **Métiers proposés en filtre** : les 8 de la maquette (plomberie, électricité, peinture, carrelage, menuiserie, chauffage, couverture, maçonnerie) + ceux déjà choisis. L'intention reconnue par la recherche du lot 7 n'est pas encore transformée en filtre métier : le texte passe par la recherche plein texte.
+5. **Test du jeu de données (`seed.test.ts`)** : dépasse 5 s sur ce poste (déjà le cas avant ce lot), passe en CI.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -361,3 +379,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 28/09/2026 — Lot 6 terminé (pages publiques, SEO, cookies). Décision D49 proposée ; textes légaux et visuels à fournir.
 - 28/09/2026 — Lot 7 terminé (recherche de projet). Typesense prêt mais inactif (D4 à valider, clés à fournir).
 - 28/09/2026 — Lot 8 terminé (simulateur, reprise, diagnostic, avis, connexion particulier, Mon espace). Points à trancher : §14.
+- 28/09/2026 — Lot 9 terminé (annuaire, fiche publique). Formule de pertinence à confirmer (§15).

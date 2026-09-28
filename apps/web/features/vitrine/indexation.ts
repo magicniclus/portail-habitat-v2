@@ -4,8 +4,11 @@ import { tousLesDocuments } from '@/features/legal/documents';
 import { routes } from '@/lib/routes';
 import { absolue } from './seo';
 
-/** Pages publiques indexables (lot 6) ; l'annuaire et les fiches s'ajoutent au lot 9. */
-export function pagesDuSitemap(maintenant: Date): MetadataRoute.Sitemap {
+/** Pages publiques indexables : vitrine, annuaire et fiches des artisans en ligne (`slugs`). */
+export function pagesDuSitemap(
+  maintenant: Date,
+  slugs: readonly string[] = [],
+): MetadataRoute.Sitemap {
   const page = (
     chemin: string,
     priority: number,
@@ -19,6 +22,8 @@ export function pagesDuSitemap(maintenant: Date): MetadataRoute.Sitemap {
   return [
     page(routes.accueil, 1, 'daily'),
     page(routes.pro, 0.9, 'weekly'),
+    page(routes.artisans, 0.9, 'daily'),
+    ...slugs.map((slug) => page(routes.ficheArtisan(slug), 0.7, 'weekly')),
     page(routes.diagnostic, 0.9, 'weekly'),
     ...COMMUNES.map((c) => page(routes.diagnosticCommune(c.slug), 0.8, 'monthly')),
     page(routes.aide, 0.5, 'monthly'),

@@ -9,6 +9,8 @@ const r = (chemin: string) => chemin as Route;
 export const routes = {
   accueil: r('/'),
   artisans: r('/artisans'),
+  /** Annuaire avec une chaîne de requête déjà formée (`?metier=…`, `ecrireFiltresAnnuaire`). */
+  annuaire: (requete: string) => r(`/artisans${requete}`),
   artisansFiltres: (filtre: { metier?: string; ville?: string }) =>
     r(`/artisans?${new URLSearchParams(filtre as Record<string, string>)}`),
   ficheArtisan: (slug: string) => r(`/artisans/${slug}`),
@@ -20,6 +22,9 @@ export const routes = {
   monEspaceAvis: r('/mon-espace/avis'),
   monEspaceCompte: r('/mon-espace/compte'),
   simulateur: r('/simulateur'),
+  /** « Demander un devis » depuis une fiche : la demande cible cet artisan (`source: fiche_artisan`). */
+  simulateurArtisan: (artisanId: string) =>
+    r(`/simulateur?artisan=${encodeURIComponent(artisanId)}`),
   avis: r('/avis'),
   aide: r('/aide'),
   aideSujet: (sujet: string) => r(`/aide?sujet=${sujet}`),

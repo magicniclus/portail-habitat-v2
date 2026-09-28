@@ -6,6 +6,7 @@ import {
   ecrireFiltresAnnuaire,
   filtrerAnnuaire,
   jsonLdArtisan,
+  libelleDisponibilite,
   lireFiltresAnnuaire,
   parametresRechercheArtisans,
   pertinence,
@@ -231,5 +232,14 @@ describe('Typesense (annuaire)', () => {
     expect(
       parametresRechercheArtisans('douche', { latitude: 44.8, longitude: -0.6 }, 20).filter_by,
     ).toBe('lieu:(44.8, -0.6, 20 km)');
+  });
+});
+
+describe('libelleDisponibilite', () => {
+  it('48 h, jours, inconnu', () => {
+    expect(libelleDisponibilite(1)).toBe('Disponible sous 48 h');
+    expect(libelleDisponibilite(5)).toBe('Disponible sous 5 jours');
+    expect(libelleDisponibilite(undefined)).toBeNull();
+    expect(libelleDisponibilite(99)).toBeNull();
   });
 });

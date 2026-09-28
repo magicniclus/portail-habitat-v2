@@ -7,6 +7,7 @@ export {
 } from './fiche';
 export { publierFiche, type ResultatPublication } from './publication';
 export {
+  carteAnnuaire,
   fichesAutour,
   trierResultats,
   type ArtisanAnnuaire,

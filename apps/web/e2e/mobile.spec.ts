@@ -20,6 +20,8 @@ const PAGES = [
   '/simulateur',
   '/avis',
   '/connexion',
+  '/artisans',
+  '/artisans/bertrand-renovation-bordeaux',
   '/simulateur?prestation=peinture&etape=2',
   '/simulateur?prestation=peinture&etape=3',
   '/simulateur?prestation=peinture&etape=4',

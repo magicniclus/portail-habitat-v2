@@ -175,6 +175,8 @@ Ces scores sont ensuite recopiés dans `artisans/{id}` (`tauxReponse`, `tempsRep
 `0,35 × qualite + 0,25 × reactivite + 0,15 × completude + 0,15 × disponibilite + 0,10 × anciennete (plafonnée à 10 ans)`, sur 100.
 Tri « Pertinence » à l'affichage : `scoreClassement − 0,6 × distanceKm` (+ correspondance du texte si Typesense renvoie un score). Les Premium sont affichés à part dans « Artisans à la une » (mention légale obligatoire, voir README).
 
+**Rayon (cadrage n° 13, lot 9)** : un artisan apparaît dans l'annuaire si le lieu recherché est à moins du rayon choisi par le visiteur **et** à moins de son propre rayon d'intervention (`rayonKm`).
+
 ---
 
 ## 5. Tests obligatoires

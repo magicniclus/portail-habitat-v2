@@ -37,7 +37,12 @@ export function EtapeCoordonnees({
   prestation: PrestationSimulateur;
   reponses: Reponses;
   chantier: Chantier;
-  contexte: { source: 'simulateur' | 'hero'; intention?: string; delai?: string };
+  contexte: {
+    source: 'simulateur' | 'hero' | 'fiche_artisan';
+    intention?: string;
+    delai?: string;
+    artisanCibleId?: string;
+  };
   onEnvoye: (d: DemandeCreee, contact: Contact, miseEnRelation: boolean) => void;
   /** Lien de reprise par email (consentement explicite) : message d'erreur, ou `null` si envoyé. */
   onLienReprise: (email: string) => Promise<string | null>;
@@ -91,6 +96,7 @@ export function EtapeCoordonnees({
       source: contexte.source,
       prestationId: p.id,
       ...(contexte.intention ? { intention: contexte.intention } : {}),
+      ...(contexte.artisanCibleId ? { artisanCibleId: contexte.artisanCibleId } : {}),
       reponses,
       codePostal: chantier.codePostal,
       acces: chantier.acces,

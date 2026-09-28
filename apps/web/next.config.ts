@@ -9,6 +9,16 @@ const config: NextConfig = {
   // Index de @ph/ui : n'importer que les modules utilisés (sinon tout le paquet, tailwind-merge
   // compris, est exécuté sur chaque page par le bandeau cookies ; budget D46).
   experimental: { optimizePackageImports: ['@ph/ui', '@ph/core'] },
+  // Aperçu d'une fiche par son artisan (`?apercu=1`) : jamais indexé, la page reste statique (ISR).
+  async headers() {
+    return [
+      {
+        source: '/artisans/:slug',
+        has: [{ type: 'query', key: 'apercu' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(config, {

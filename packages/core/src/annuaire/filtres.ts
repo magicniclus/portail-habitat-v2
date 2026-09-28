@@ -133,3 +133,10 @@ export const sansFiltres = (f: FiltresAnnuaireUrl): FiltresAnnuaireUrl => ({
   ville: f.ville,
   tri: f.tri,
 });
+
+/** « Disponible sous 48 h » / « sous 5 jours » ; délai inconnu : rien. */
+export function libelleDisponibilite(jours: number | undefined): string | null {
+  if (jours === undefined || jours >= 99) return null;
+  if (jours <= 2) return 'Disponible sous 48 h';
+  return `Disponible sous ${jours} jours`;
+}

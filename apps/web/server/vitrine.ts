@@ -1,46 +1,14 @@
 import 'server-only';
 import { PRIX_AFFICHES, type PrixAffiches } from '@ph/core/facturation';
 import { artisanPublic, avis as schemaAvis, configApp, statsPublic } from '@ph/core/schemas';
-import { appAdmin, estEmulateur } from '@ph/firebase/admin';
+import { appAdmin } from '@ph/firebase/admin';
 import { chemins, collections } from '@ph/firebase/chemins';
 import { depot } from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { cache } from 'react';
 import type { AvisVitrine, StatsVitrine } from '@/features/accueil/vitrine';
 import type { ArtisanAvis } from '@/features/avis/types';
-
-/** Délai maximal d'une lecture de vitrine : la page s'affiche sans les chiffres plutôt que d'attendre. */
-const DELAI_MS = 2500;
-
-/**
- * Firestore n'est lu que s'il est joignable (émulateur, identifiants de service ou Google Cloud) :
- * au build CI, les pages sont générées sans données puis régénérées toutes les heures (ISR).
- */
-function firestoreConfigure(env = process.env): boolean {
-  return (
-    estEmulateur(env) ||
-    Boolean(env.FIREBASE_ADMIN_CLIENT_EMAIL && env.FIREBASE_ADMIN_PRIVATE_KEY) ||
-    Boolean(env.K_SERVICE || env.FIREBASE_CONFIG)
-  );
-}
-
-async function lire<T>(quoi: string, lecture: () => Promise<T>): Promise<T | null> {
-  if (!firestoreConfigure()) return null;
-  let minuterie: ReturnType<typeof setTimeout> | undefined;
-  try {
-    return await Promise.race([
-      lecture(),
-      new Promise<never>((_, rejeter) => {
-        minuterie = setTimeout(() => rejeter(new Error('délai dépassé')), DELAI_MS);
-      }),
-    ]);
-  } catch (e) {
-    console.warn(`vitrine : lecture « ${quoi} » impossible`, (e as Error).message);
-    return null;
-  } finally {
-    clearTimeout(minuterie);
-  }
-}
+import { lire } from './lecture';
 
 const db = () => getFirestore(appAdmin());
 
