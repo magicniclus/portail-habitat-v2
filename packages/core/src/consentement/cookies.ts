@@ -1,5 +1,3 @@
-import { z } from '../zod';
-
 /** Cookie first-party qui mémorise le choix (strictement nécessaire, exempté de consentement). */
 export const COOKIE_CONSENTEMENT = 'ph_consentement';
 
@@ -11,12 +9,6 @@ export interface Consentement {
   audienceDetaillee: boolean;
   le: number;
 }
-
-const stocke = z.object({
-  v: z.literal(1),
-  a: z.union([z.literal(0), z.literal(1)]),
-  le: z.number().int(),
-});
 
 export function ecrireConsentement(
   choix: { audienceDetaillee: boolean },
@@ -39,9 +31,11 @@ export function lireConsentement(
   } catch {
     return null;
   }
-  const r = stocke.safeParse(brut);
-  if (!r.success) return null;
-  const { a, le } = r.data;
-  if (le > maintenant || maintenant - le >= DUREE_CONSENTEMENT_MS) return null;
-  return { audienceDetaillee: a === 1, le };
+  // Validation manuelle : ce module part dans le JavaScript de chaque page (budget D46), sans Zod.
+  if (typeof brut !== 'object' || brut === null) return null;
+  const { v, a, le } = brut as Record<string, unknown>;
+  if (v !== 1 || (a !== 0 && a !== 1) || !Number.isSafeInteger(le)) return null;
+  if ((le as number) > maintenant || maintenant - (le as number) >= DUREE_CONSENTEMENT_MS)
+    return null;
+  return { audienceDetaillee: a === 1, le: le as number };
 }

@@ -35,3 +35,10 @@ describe('consentement cookies (INTEGRATIONS §7, CNIL)', () => {
     );
   });
 });
+
+describe('valeurs malformées', () => {
+  it.each(['{"v":2,"a":0,"le":1}', '{"v":1,"a":0}', '{"v":1,"a":0,"le":1.5}', 'null', '[1]'])(
+    '%s → null',
+    (brut) => expect(lireConsentement(encodeURIComponent(brut), t0)).toBeNull(),
+  );
+});
