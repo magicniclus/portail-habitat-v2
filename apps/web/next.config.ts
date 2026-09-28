@@ -4,8 +4,11 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
-  transpilePackages: ['@ph/core', '@ph/firebase'],
+  transpilePackages: ['@ph/core', '@ph/firebase', '@ph/ui'],
   serverExternalPackages: ['firebase-admin'],
+  // Index de @ph/ui : n'importer que les modules utilisés (sinon tout le paquet, tailwind-merge
+  // compris, est exécuté sur chaque page par le bandeau cookies ; budget D46).
+  experimental: { optimizePackageImports: ['@ph/ui', '@ph/core'] },
 };
 
 export default withSentryConfig(config, {

@@ -1,4 +1,4 @@
-import { Button, Input, PageErreur, classesChip } from '@ph/ui';
+import { Button, CLASSES_CHAMP, PageErreur, classesChip } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { EnteteErreur, PiedErreur } from './Cadre';
@@ -25,7 +25,10 @@ export function PageIntrouvable({ espace }: { espace: EspacePublic }) {
         >
           <label className="flex min-w-[min(100%,260px)] flex-1 flex-col gap-1.5 text-sm font-semibold">
             Rechercher un artisan ou un métier
-            <Input
+            {/* Champ natif : Input est un composant client (tailwind-merge) et cette page est chargée
+                d'avance sur toutes les pages (limite de la 404, budget D46). */}
+            <input
+              className={`min-h-11 ${CLASSES_CHAMP}`}
               type="search"
               name="q"
               placeholder="Ex. plombier Bordeaux"
