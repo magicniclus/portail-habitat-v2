@@ -1,7 +1,8 @@
 import { cva } from 'class-variance-authority';
+import { cn } from '../cn';
 
 /** Classes des boutons, sans dépendance à Radix : utilisable sur un lien ou dans un composant léger. */
-export const bouton = cva(
+const variantesBouton = cva(
   [
     'inline-flex items-center justify-center gap-2 rounded-control border font-semibold whitespace-nowrap no-underline',
     'min-h-11 cursor-pointer transition-colors duration-150 select-none',
@@ -28,3 +29,11 @@ export const bouton = cva(
     defaultVariants: { variant: 'primaire', taille: 'md' },
   },
 );
+
+/**
+ * Classes fusionnées (tailwind-merge) : `bouton({ pleineLargeur: true, className: 'min-h-[52px]' })` garde
+ * `whitespace-normal` et `min-h-[52px]` au lieu de laisser l'ordre du CSS trancher (débordement Safari).
+ */
+export function bouton(options?: Parameters<typeof variantesBouton>[0]): string {
+  return cn(variantesBouton(options));
+}
