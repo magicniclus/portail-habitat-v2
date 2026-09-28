@@ -199,7 +199,13 @@ export function genererEntreprises(c: ContexteSeed): EntrepriseSeed[] {
       pitch: demo?.pitch ?? `${nomCommercial} intervient à ${ville.nom} et alentours.`,
       description: '',
       labels: demo?.labels ?? ['decennale'],
-      labelsVerifies: {},
+      // Labels du jeu de test : preuves considérées comme vérifiées (FIC-01 n'affiche que celles-ci).
+      labelsVerifies: Object.fromEntries(
+        (demo?.labels ?? ['decennale']).map((l) => [
+          l,
+          { verifieLe: c.maintenant, docId: `seed-${l}` },
+        ]),
+      ),
       zoneIntervention: {
         centre: ville.geo,
         geohash: encoderGeohash(ville.geo.latitude, ville.geo.longitude),

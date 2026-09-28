@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { artisan, artisanPublic } from '../schemas/artisans';
 import {
   chipsFiltres,
+  documentArtisanTypesense,
   ecrireFiltresAnnuaire,
   filtrerAnnuaire,
   jsonLdArtisan,
   lireFiltresAnnuaire,
+  parametresRechercheArtisans,
   pertinence,
   projeterArtisanPublic,
   sansFiltres,
@@ -209,5 +211,25 @@ describe('JSON-LD LocalBusiness (FIC-03)', () => {
     expect(jsonLdArtisan({ ...f, nbAvis: 0 }, 'https://x.fr')).not.toHaveProperty(
       'aggregateRating',
     );
+  });
+});
+
+describe('Typesense (annuaire)', () => {
+  it('document indexé sans aucun champ privé, lieu en geopoint', () => {
+    const p = projeterArtisanPublic(base, T, 'Mérignac')!;
+    const d = documentArtisanTypesense('a1', p);
+    expect(d.lieu).toEqual([44.84, -0.64]);
+    expect(Object.keys(d).sort()).toEqual([
+      'id',
+      'lieu',
+      'metiers',
+      'nomCommercial',
+      'pitch',
+      'scoreClassement',
+      'tags',
+    ]);
+    expect(
+      parametresRechercheArtisans('douche', { latitude: 44.8, longitude: -0.6 }, 20).filter_by,
+    ).toBe('lieu:(44.8, -0.6, 20 km)');
   });
 });

@@ -15,7 +15,8 @@
     "./demandes": "./src/serveur/demandes/index.ts",
     "./parcours": "./src/serveur/parcours/index.ts",
     "./avis": "./src/serveur/avis/index.ts",
-    "./espace": "./src/serveur/espace/index.ts"
+    "./espace": "./src/serveur/espace/index.ts",
+    "./annuaire": "./src/serveur/annuaire/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

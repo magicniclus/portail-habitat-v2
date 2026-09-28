@@ -1,4 +1,9 @@
 import {
+  COLLECTION_ARTISANS,
+  documentArtisanTypesense,
+  schemaCollectionArtisans,
+} from '@ph/core/annuaire';
+import {
   COLLECTION_INTENTIONS,
   documentTypesense,
   JEU_MOTS_VIDES,
@@ -41,6 +46,19 @@ export function clientTypesense(env: NodeJS.ProcessEnv = process.env, appel: Fet
       const doc = donnees ? documentTypesense(id, donnees) : null;
       if (doc) await requete('POST', `${collection}/documents?action=upsert`, doc);
       else await requete('DELETE', `${collection}/documents/${encodeURIComponent(id)}`);
+    },
+    /** Fiche publiée → indexée dans `artisans` ; retirée (hors ligne) → supprimée de l'index. */
+    async artisan(id: string, fiche: Parameters<typeof documentArtisanTypesense>[1] | null) {
+      const chemin = `/collections/${COLLECTION_ARTISANS}`;
+      if ((await requete('GET', chemin)).status === 404)
+        await requete('POST', '/collections', schemaCollectionArtisans());
+      if (fiche)
+        await requete(
+          'POST',
+          `${chemin}/documents?action=upsert`,
+          documentArtisanTypesense(id, fiche),
+        );
+      else await requete('DELETE', `${chemin}/documents/${encodeURIComponent(id)}`);
     },
     /** Synonymes et mots vides, depuis `referentiel/recherche/synonymes/global`. */
     async synonymes(s: {

@@ -1,6 +1,7 @@
 import { claimsUtilisateur, type ClaimsUtilisateur } from '@ph/core/equipe';
 import type { Bareme } from '@ph/core/leads';
-import { SCHEMAS } from '@ph/core/schemas';
+import { projeterArtisanPublic } from '@ph/core/annuaire';
+import { artisan, SCHEMAS } from '@ph/core/schemas';
 import { calculerStatsPublic } from '@ph/core/stats';
 import type { z } from '@ph/core/zod';
 import { chemins, collections } from '../chemins';
@@ -94,33 +95,9 @@ function publierFiches(
     doc.noteMoyenne = moyenne;
     doc.nbAvis = liste.length;
     if (!e.enLigne) continue;
-    const zone = doc.zoneIntervention as { centre: unknown; geohash: string; rayonKm: number };
-    c.docs.set(chemins.artisanPublic(e.id), {
-      schemaVersion: 1,
-      slug: doc.slug,
-      nomCommercial: doc.nomCommercial,
-      metiers: doc.metiers,
-      metierPrincipal: doc.metierPrincipal,
-      intentions: doc.intentions,
-      tags: doc.tags,
-      pitch: doc.pitch,
-      description: doc.description,
-      ville: e.ville.nom,
-      geo: zone.centre,
-      geohash: zone.geohash,
-      rayonKm: zone.rayonKm,
-      labels: doc.labels,
-      noteMoyenne: moyenne,
-      nbAvis: liste.length,
-      notesCriteres: {},
-      budgetCle: doc.budgetCle,
-      delaiDispoJours: doc.delaiDispoJours,
-      premium: e.plan === 'premium',
-      telephone: e.plan === 'gratuit' ? null : doc.telephonePublic,
-      scoreClassement: Math.round((moyenne * 12 + liste.length * 0.4) * 100) / 100,
-      enLigne: true,
-      updatedAt: c.maintenant,
-    });
+    // Même projection que le déclencheur `projeterArtisan` (une seule règle, règle n° 8).
+    const fiche = projeterArtisanPublic(artisan.parse(doc), c.maintenant, e.ville.nom);
+    if (fiche) c.docs.set(chemins.artisanPublic(e.id), fiche as Record<string, unknown>);
   }
 }
 

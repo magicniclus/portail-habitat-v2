@@ -26,3 +26,9 @@ export {
   type FiltresAnnuaire,
   type Tri,
 } from './tri';
+export {
+  COLLECTION_ARTISANS,
+  documentArtisanTypesense,
+  parametresRechercheArtisans,
+  schemaCollectionArtisans,
+} from './typesense';

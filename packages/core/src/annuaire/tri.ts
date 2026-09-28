@@ -19,7 +19,8 @@ export interface FicheAnnuaire {
   labels: readonly string[];
   /** Délai de disponibilité en jours. */
   delaiJ: number;
-  budgetCle: 'petit' | 'moyen' | 'grand';
+  /** Absent : la fiche est exclue dès qu'un budget est filtré. */
+  budgetCle?: 'petit' | 'moyen' | 'grand';
   /** `scoreClassement` précalculé (MATCHING §4) ; absent : formule de la maquette. */
   score?: number;
 }
@@ -35,7 +36,7 @@ export interface FiltresAnnuaire {
   /** Tous requis. */
   labels?: readonly string[];
   dispo?: 'tous' | 'semaine' | 'quinze';
-  budget?: 'tous' | FicheAnnuaire['budgetCle'];
+  budget?: 'tous' | NonNullable<FicheAnnuaire['budgetCle']>;
 }
 
 /**
