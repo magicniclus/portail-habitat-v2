@@ -16,7 +16,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 3 | Logique métier pure | ✅ | 27/09/2026 | 3 324 tests core, couverture 100 % des lignes (99,8 % des instructions), pertinence 96,4 % au 1er rang | D47 et D48 à valider (§9) |
 | 4 | Comptes, équipes, seed | ✅ | 27/09/2026 | 58 tests sur émulateur (COMPTES §10), 3 480 tests core, CI verte | notificateur provisoire jusqu'au lot 5 (§10) |
 | 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
-| 6 | Pages publiques, SEO, cookies | ⬜ | | ACC, DIA-05 | |
+| 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
 | 7 | Recherche | ⬜ | | pertinence, RCH | |
 | 8 | Parcours particuliers | ⬜ | | SIM, ESP, DIA, AVI | |
 | 9 | Annuaire, fiche publique | ⬜ | | ANN, FIC | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 6 (pages publiques, SEO, cookies)
-- Dernier lot terminé : 5, le 28/09/2026 (détail §11)
+- Lot : 7 (recherche de projet)
+- Dernier lot terminé : 6, le 28/09/2026 (détail §12)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -186,6 +186,31 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 
 **Point de vigilance CI** : l'affichage principal de `/maintenance` mesuré à 2,55 s une fois (seuil provisoire 2,5 s, D46), passé aux exécutions suivantes ; à surveiller avec D46.
 
+## 12. Lot 6 — Pages publiques, SEO, cookies (terminé le 28/09/2026)
+
+**Fait**
+- **Accueil particuliers** `/` : hero (formulaire projet + code postal + délai, chips « Projets populaires » qui remplissent le champ et fixent la prestation, ACC-02 ; envoi vers `/simulateur?prestation=&cp=&delai=`, ACC-03), métiers, comment ça marche, aperçu du simulateur, artisans, avis, inspirations, application, villes, bandeau artisan, FAQ, appel final. Chiffres lus dans `stats/public` (ACC-01) avec régénération horaire (ISR) ; sans document, les chiffres sont masqués. La recherche avec suggestions reste au lot 7.
+- **En-tête public** commun (bandeau, navigation, bouton principal, menu plein écran Radix sous 1024 px avec `aria-expanded`, ACC-04) : nouveau pattern `MenuPleinEcran` dans `@ph/ui` ; pied de page commun.
+- **Diagnostic immobilier** `/diagnostic-immobilier` (hero préremplissant le parcours `?motif&type&periode`, cartes, tableau, repères, tarifs, FAQ) et **11 pages communes** générées au build depuis `docs/data/communes.json` (DIA-05 : titre unique, liens vers les 10 autres ; commune inconnue → 404). Les tableaux deviennent des cartes sous 640 px.
+- **Acquisition artisans** `/pro` : accroche, carte d'inscription (champs, métiers groupés par famille en `<optgroup>`, `?metier=` présélectionne et affiche le bandeau), exemples de demandes, étapes, espace artisan, application, **tarifs annuel / mensuel** lus dans `config/app.prix` (repli : D24/D25 dans `@ph/core/facturation`), FAQ. La page reste statique (paramètre lu dans le navigateur).
+- **Pages légales** `/legal/[public]/[doc]` : 12 documents statiques, textes extraits de la maquette vers `docs/data/documents-legaux.json`.
+- **Aide et contact** `/aide` (maquette Contact) : sujets `?sujet=`, champ de précision selon le sujet, Server Action (Zod, limite 5/h, App Check), `contacts/{CT-XXXXXX}` en transaction, piège à robots. La page d'aide de l'espace pro (maquette « Aide et Contact ») est `/pro/aide`, au lot 10.
+- **SEO** : metadata par page, canoniques (`metadataBase`), JSON-LD `Organization`, `FAQPage`, `BreadcrumbList`, `LocalBusiness` (communes) ; `sitemap.xml` (27 adresses) ; `robots.txt` (espaces privés exclus, tout bloqué hors production).
+- **Bandeau cookies CNIL** : « Tout refuser », « Personnaliser », « Tout accepter » au même niveau ; « Mesure d'audience détaillée » décochée par défaut ; choix redemandé après 6 mois (`@ph/core/consentement`) ; lien « Gérer les cookies » dans les pieds de page ; événement `ph:consentement` pour les futurs traceurs.
+- Core : `calculerStatsPublic` (le seed écrit maintenant `stats/public`), `formatNombre`, `nombreArrondi` (« 2 000+ »), `formatFourchette`, `grilleTarifs`, sujets de contact. Captures Playwright à 1440 et 390 px comparées aux maquettes (`CAPTURES=1 pnpm e2e captures`).
+
+**Modèle de données (signalé)** : `contacts.referenceDossier?` ; identifiant du contact = référence donnée à l'usager ; nouvel index `avis (statut, publieLe desc)`. DATABASE corrigé (prix de `config/app` alignés sur D24/D25, qui faisaient foi).
+
+**Décision proposée** : **D49** (contenus de la maquette sans source réelle : artisans, témoignages, inspirations tirés des vraies données et masqués sinon ; pas de badge App Store / Google Play tant que l'application est une PWA ; témoignages d'artisans de la landing pro masqués). Appliquée en attendant.
+
+**Non fait ou à fournir**
+1. **Textes légaux** : emplacements entre crochets (raison sociale, SIREN, hébergeur, directeur de publication…) à compléter et à faire relire avant la mise en production ; `EDITEUR_MENTION` idem (lot 5).
+2. **Visuels** : aucun visuel définitif (README « Visuels ») ; des aplats teintés occupent la place, au bon ratio.
+3. Formulaire d'inscription pro : mise en page et validation seulement ; création du compte, autres métiers, chantiers acceptés et estimation par code postal au **lot 10** (le bouton affiche pour l'instant un message d'attente).
+4. Accusé de réception par email du formulaire de contact : aucun modèle au catalogue EMAILS ; à ajouter si souhaité.
+5. Enregistrement du choix cookies dans `consentements` pour les utilisateurs connectés : avec la connexion (lot 8).
+6. Numéro de téléphone de la maquette Contact (fictif) non repris.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -288,3 +313,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Lot 3 terminé (logique métier pure, 9 modules). Décisions D47 (barème) et D48 (matching) proposées, à valider.
 - 27/09/2026 — Lot 4 terminé (comptes, équipes, session, seed). Nouveau statut de demande `appel_offres`, dépendance `tsx`.
 - 28/09/2026 — Lot 5 terminé (emails, SMS, notifications). Parcours Playwright + Mailpit reportés aux lots 8 et 10.
+- 28/09/2026 — Lot 6 terminé (pages publiques, SEO, cookies). Décision D49 proposée ; textes légaux et visuels à fournir.
