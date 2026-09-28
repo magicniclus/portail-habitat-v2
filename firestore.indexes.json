@@ -617,6 +617,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "demandes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "particulierUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

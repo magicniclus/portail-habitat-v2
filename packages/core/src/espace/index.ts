@@ -49,3 +49,29 @@ export function masquerCoordonnees(texte: string): { texte: string; masque: bool
 }
 
 export const contientCoordonnees = (texte: string) => masquerCoordonnees(texte).masque;
+
+type StatutAttribution =
+  | 'proposee'
+  | 'vue'
+  | 'acceptee'
+  | 'refusee'
+  | 'devis_envoye'
+  | 'devis_accepte'
+  | 'devis_refuse'
+  | 'expiree';
+
+/** Ce que le particulier voit d'un artisan sollicité ; `null` : l'artisan n'apparaît pas. */
+export const LIBELLES_ATTRIBUTION_PARTICULIER: Record<StatutAttribution, string | null> = {
+  proposee: 'Demande transmise, réponse attendue',
+  vue: 'Demande vue, réponse attendue',
+  acceptee: 'A accepté votre demande',
+  devis_envoye: 'Devis envoyé',
+  devis_accepte: 'Devis accepté',
+  devis_refuse: 'Devis refusé',
+  refusee: null,
+  expiree: null,
+};
+
+/** L'artisan a accepté la demande : les coordonnées ne sont plus masquées dans les messages. */
+export const artisanAAccepte = (statut: StatutAttribution) =>
+  statut === 'acceptee' || statut.startsWith('devis_');

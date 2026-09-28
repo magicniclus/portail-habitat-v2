@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { entreeConnexionLien, entreeMessageParticulier, entreeSuppressionCompte } from '../schemas';
 import { STATUTS_DEMANDE } from '../schemas/demandes';
 import {
+  artisanAAccepte,
   contientCoordonnees,
+  LIBELLES_ATTRIBUTION_PARTICULIER,
   ETAPES_SUIVI,
   etapeSuivi,
   LIBELLES_STATUT_PARTICULIER,
@@ -88,5 +90,19 @@ describe('entrées de l’espace particulier', () => {
     expect(
       entreeConnexionLien.safeParse({ email: 'a@b.fr', oobCode: 'AbCdEf0123456789' }).success,
     ).toBe(true);
+  });
+});
+
+describe('artisans d’une demande', () => {
+  it('un artisan qui refuse ou laisse expirer n’apparaît pas', () => {
+    expect(LIBELLES_ATTRIBUTION_PARTICULIER.refusee).toBeNull();
+    expect(LIBELLES_ATTRIBUTION_PARTICULIER.expiree).toBeNull();
+    expect(LIBELLES_ATTRIBUTION_PARTICULIER.vue).toMatch(/réponse attendue/);
+  });
+  it('coordonnées visibles seulement après acceptation', () => {
+    expect(artisanAAccepte('vue')).toBe(false);
+    expect(artisanAAccepte('proposee')).toBe(false);
+    expect(artisanAAccepte('acceptee')).toBe(true);
+    expect(artisanAAccepte('devis_envoye')).toBe(true);
   });
 });
