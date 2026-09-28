@@ -29,7 +29,8 @@
     "./matching": "./src/matching/index.ts",
     "./facturation": "./src/facturation/index.ts",
     "./consentement": "./src/consentement/index.ts",
-    "./support": "./src/support/index.ts"
+    "./support": "./src/support/index.ts",
+    "./demandes": "./src/demandes/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

@@ -11,7 +11,8 @@
     "./comptes": "./src/serveur/comptes/index.ts",
     "./seed": "./src/seed/index.ts",
     "./notifications": "./src/serveur/notifications/index.ts",
-    "./support": "./src/serveur/support/index.ts"
+    "./support": "./src/serveur/support/index.ts",
+    "./demandes": "./src/serveur/demandes/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

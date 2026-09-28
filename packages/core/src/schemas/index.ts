@@ -28,6 +28,7 @@ export * from './referentiels';
 export * from './support';
 export * from './entreesComptes';
 export * from './entreesNotifications';
+export * from './entreesDemandes';
 
 /**
  * Schéma de chaque collection (motif du chemin → schéma), liste de contrôle de DATABASE §16.
