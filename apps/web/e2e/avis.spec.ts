@@ -39,11 +39,15 @@ async function jusquAuFormulaire(page: Page) {
   ).toBeVisible();
 }
 
+/** Toucher l'étoile (l'étiquette visible), comme un utilisateur : le bouton radio est masqué. */
+async function noter(page: Page, n: number) {
+  const radio = page.getByRole('radio', { name: new RegExp(`^${n} étoiles?`) }).first();
+  await radio.locator('xpath=..').click();
+  await expect(radio).toBeChecked();
+}
+
 async function remplir(page: Page) {
-  await page
-    .getByRole('radio', { name: /^5 étoiles/ })
-    .first()
-    .check({ force: true });
+  await noter(page, 5);
   await page.getByLabel(/^Nom affiché/).fill('Camille M.');
   await page.getByLabel(/^Email/).fill('camille@example.fr');
   await page.getByLabel(/^Type de travaux/).selectOption('Plomberie');
@@ -56,10 +60,7 @@ test.describe('Laisser un avis', () => {
     await jusquAuFormulaire(page);
     const publier = page.getByRole('button', { name: 'Publier mon avis' });
     await expect(publier).toBeDisabled();
-    await page
-      .getByRole('radio', { name: /^4 étoiles/ })
-      .first()
-      .check({ force: true });
+    await noter(page, 4);
     await expect(publier).toBeDisabled();
     await page.getByRole('checkbox', { name: /Je certifie/ }).check();
     await expect(publier).toBeEnabled();
