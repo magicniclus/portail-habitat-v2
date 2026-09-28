@@ -94,7 +94,7 @@ export function PageLegale({
                 aria-current={p === pub ? 'page' : undefined}
                 className={bouton({
                   variant: p === pub ? 'primaire' : 'secondaire',
-                  className: 'text-[15px]',
+                  className: 'text-[15px] whitespace-normal',
                 })}
               >
                 {p === 'pro' ? 'Artisans et professionnels' : 'Particuliers'}
@@ -106,7 +106,7 @@ export function PageLegale({
 
       <main className={`${conteneur} flex-1 py-[clamp(24px,3.5vw,44px)]`}>
         <div className="grid items-start gap-x-[clamp(24px,3.5vw,44px)] gap-y-7 lg:grid-cols-[minmax(0,268px)_minmax(0,1fr)]">
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-[18px]">
+          <aside className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[18px]">
             <nav
               aria-labelledby="sommaire-legal"
               className="rounded-card border border-trait bg-blanc p-4"
@@ -155,7 +155,8 @@ export function PageLegale({
             </div>
           </aside>
 
-          <article className="min-w-0">
+          {/* Adresses, courriels et emplacements entre crochets : coupés plutôt que de déborder (MOB-01). */}
+          <article className="min-w-0 [overflow-wrap:anywhere]">
             <div className="mb-3 flex flex-wrap items-center gap-2.5">
               <span className="rounded-pill bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-800">
                 {pro ? 'Professionnels' : 'Particuliers'}
