@@ -14,7 +14,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 1b | Design system, composants, Storybook | ✅ | 27/09/2026 | 34 tests composants, catalogue 29 stories, e2e 44 (dont ERR-01/02, MOB-01 à 03), Lighthouse | D45 et D46 à valider (§7) |
 | 2 | Données et sécurité | ✅ | 27/09/2026 | 172 tests core, 1 890 cas de règles Firestore, 272 cas Storage, 11 tests serveur (émulateur) | écarts de sécurité à relire (§8) |
 | 3 | Logique métier pure | ✅ | 27/09/2026 | 3 324 tests core, couverture 100 % des lignes (99,8 % des instructions), pertinence 96,4 % au 1er rang | D47 et D48 à valider (§9) |
-| 4 | Comptes, équipes, seed | ⬜ | | CON, EQU, INV | |
+| 4 | Comptes, équipes, seed | ✅ | 27/09/2026 | 58 tests sur émulateur (COMPTES §10), 3 480 tests core, CI verte | notificateur provisoire jusqu'au lot 5 (§10) |
 | 5 | Emails, SMS, notifications | ⬜ | | MAIL | |
 | 6 | Pages publiques, SEO, cookies | ⬜ | | ACC, DIA-05 | |
 | 7 | Recherche | ⬜ | | pertinence, RCH | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 4 (comptes, équipes, seed)
-- Dernier lot terminé : 3, le 27/09/2026 (détail §9)
+- Lot : 5 (emails, SMS, notifications)
+- Dernier lot terminé : 4, le 27/09/2026 (détail §10)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -142,6 +142,29 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 
 **Reste** : branchement Firestore des moteurs (lots 4, 8, 9, 12) ; domaine RGE par prestation (lot 12b).
 
+## 10. Lot 4 — Comptes, entreprises, équipes, jeu de données (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/core/equipe` : claims (`ent` ne contient que les appartenances actives, 10 entreprises et 1 000 octets au maximum), répartition des sièges (suspension sans perte, propriétaire toujours actif), dernier propriétaire bloqué, email masqué. `@ph/core/entreprises` : contrôles de l'étape SIREN (fermée, hors bâtiment, récente, déjà inscrite). `@ph/core/geo` (geohash), `slugifier`, entrées Zod de toutes les opérations de compte.
+- Enveloppe : écriture refusée en impersonation, mot de passe ressaisi depuis moins de 5 min et double authentification exigibles par option ; contexte tiré du jeton (`callable()`) ou du cookie de session (`action()`, vérifié avec révocation).
+- Session : `POST/DELETE /api/session` (cookie httpOnly 14 j particuliers, 7 j pros, créé seulement après une connexion récente, contrôle de l'en-tête Origin).
+- `@ph/firebase/comptes` : `finaliserOnboarding` (transaction + `sirenIndex`), invitations (jeton haché, même email vérifié, sièges revérifiés, 20 par jour), `modifierMembre`, `retirerMembre` (jetons révoqués, demandes désassignées), `quitterEntreprise`, `transfererPropriete` (2FA du destinataire, vérifiée après la permission), `appliquerSieges`, demandes d'accès, `supprimerMonCompte`, `fermerEntreprise`, `rattacherOuCreerParticulier`, `rechercherEntreprise` (API Recherche d'entreprises, cache 24 h), `synchroniserClaims`. Functions : callables, déclencheur `syncClaims`, expiration horaire des invitations.
+- Jeu de données `pnpm seed` (déterministe, relançable) : 109 comptes dont les 5 fixes, 60 entreprises (tous plans et statuts), 5 équipes, une personne dans 2 entreprises, 200 demandes, 40 appels d'offres (auto, manuel, gratuit, promo), 300 avis, référentiel complet (prix séparés), 11 communes, invitation expirée, revendication en cours, SIREN en doublon. Chaque document est validé par son schéma. Refus hors émulateur ou préproduction.
+
+**Écarts et changements du modèle (signalés)**
+1. Nouveau statut de demande `appel_offres` (MATCHING [7] l'écrivait, le schéma ne l'avait pas) — DATABASE mis à jour.
+2. Fiche créée par l'admin : `proprietaireUid` facultatif et `nbMembres` à 0 tant qu'elle n'est pas revendiquée (COMPTES §3.5).
+3. Tarifs du catalogue stockés en objets dans `referentiel/prestations/prix` (Firestore refuse les tableaux imbriqués), conversion sans perte testée sur les 103 prestations.
+4. `prive/facturation` n'est pas créé à l'onboarding (il exige un client Stripe) : créé par le lot 11.
+5. Recherche d'entreprise : API Recherche d'entreprises seule ; l'appel Sirene INSEE (clé `INSEE_API_KEY`) n'apporte rien de plus pour ces contrôles, à ajouter si besoin.
+6. Nouvelle dépendance de développement : `tsx` (exécution du script de seed).
+
+**Reste**
+- Emails réels (invitation, bienvenue, demande d'accès…) : notificateur provisoire qui trace sans données personnelles, remplacé par `notifier()` au lot 5.
+- Revendications (`demanderRevendication`, `validerRevendication`), `adminCreerEntreprise`, `adminImpersonerLecture` : lot 13 (back-office).
+- Parcours d'authentification côté navigateur (lien magique, Google, liaison, 2FA) : avec les écrans (lots 6, 8, 10). `/dev/comptes` non réalisé (non nécessaire, tout est testé sur émulateur).
+- `matchingConfig` et `grillesTarifaires` : schémas à aligner sur MATCHING §2 et le barème (D47) au lot 12, puis ajout au seed.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -242,3 +265,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Lot 1b terminé (design system). Décisions D45 (contraste) et D46 (budget JS) proposées, à valider.
 - 27/09/2026 — Lot 2 terminé (données et sécurité). Dix corrections de sécurité par rapport à DATABASE §12 (§8).
 - 27/09/2026 — Lot 3 terminé (logique métier pure, 9 modules). Décisions D47 (barème) et D48 (matching) proposées, à valider.
+- 27/09/2026 — Lot 4 terminé (comptes, équipes, session, seed). Nouveau statut de demande `appel_offres`, dépendance `tsx`.
