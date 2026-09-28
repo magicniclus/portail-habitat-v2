@@ -19,7 +19,8 @@
     "e2e": "turbo run e2e",
     "verifier:referentiel": "pnpm --filter @ph/core verifier-referentiel",
     "seed": "tsx scripts/seed.ts",
-    "email:dev": "pnpm --filter @ph/emails dev"
+    "email:dev": "pnpm --filter @ph/emails dev",
+    "mailpit": "docker run --rm -p 1025:1025 -p 8025:8025 axllent/mailpit"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

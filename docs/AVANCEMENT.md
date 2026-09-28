@@ -15,7 +15,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 2 | Données et sécurité | ✅ | 27/09/2026 | 172 tests core, 1 890 cas de règles Firestore, 272 cas Storage, 11 tests serveur (émulateur) | écarts de sécurité à relire (§8) |
 | 3 | Logique métier pure | ✅ | 27/09/2026 | 3 324 tests core, couverture 100 % des lignes (99,8 % des instructions), pertinence 96,4 % au 1er rang | D47 et D48 à valider (§9) |
 | 4 | Comptes, équipes, seed | ✅ | 27/09/2026 | 58 tests sur émulateur (COMPTES §10), 3 480 tests core, CI verte | notificateur provisoire jusqu'au lot 5 (§10) |
-| 5 | Emails, SMS, notifications | ⬜ | | MAIL | |
+| 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
 | 6 | Pages publiques, SEO, cookies | ⬜ | | ACC, DIA-05 | |
 | 7 | Recherche | ⬜ | | pertinence, RCH | |
 | 8 | Parcours particuliers | ⬜ | | SIM, ESP, DIA, AVI | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 5 (emails, SMS, notifications)
-- Dernier lot terminé : 4, le 27/09/2026 (détail §10)
+- Lot : 6 (pages publiques, SEO, cookies)
+- Dernier lot terminé : 5, le 28/09/2026 (détail §11)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -165,6 +165,27 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - Parcours d'authentification côté navigateur (lien magique, Google, liaison, 2FA) : avec les écrans (lots 6, 8, 10). `/dev/comptes` non réalisé (non nécessaire, tout est testé sur émulateur).
 - `matchingConfig` et `grillesTarifaires` : schémas à aligner sur MATCHING §2 et le barème (D47) au lot 12, puis ajout au seed.
 
+## 11. Lot 5 — Emails, SMS et notifications (terminé le 28/09/2026)
+
+**Fait**
+- `@ph/core/notifications` : catalogue des **110 modèles** (EMAILS §4, catégorie, charte, SMS, in-app, différé, groupé) ; décisions de canal (sécurité et transactionnel jamais coupés, un email de sécurité passe une fois malgré la liste de blocage), heures calmes des SMS (21 h – 8 h, heure de Paris, sauf codes), limites de pression (1 email non transactionnel par jour, offres pro 2 par semaine et jamais le week-end), clé d'idempotence. *Le message du commit f65dd86 annonce 150 modèles par erreur : il y en a 110.*
+- `@ph/emails` (React Email) : 16 blocs (les 14 de la documentation, plus `code` et `lien`), mise en page commune aux 4 chartes (couleurs issues des tokens, `couleursEmail` ajouté à `@ph/ui`), pied légal, préférences et désabonnement selon la catégorie, version texte générée. **41 modèles rédigés** (§4.1 à 4.3 et `reprise-simulateur`), 69 squelettes (sujet et données d'exemple) complétés dans leurs lots. Aperçu : `pnpm email:dev`.
+- `@ph/firebase/notifications` : `notifier()` (une écriture `emails/{id}` par clé d'idempotence, préférences, liste de blocage, in-app, planification) ; **les secrets (liens magiques, jetons d'invitation) ne passent que par la tâche d'envoi**, jamais par Firestore ; suivi des statuts, 5 tentatives puis abandon et tâche de modération ; webhook (rebond définitif ou plainte → `suppressions`) ; désabonnement par catégorie ; jetons HMAC des liens.
+- Functions : tâche Cloud Tasks `envoyerEnvoi` (10 envois/s, 5 tentatives), relances annulées si `encoreValable` est faux (onboarding, invitation, reprise, fiche incomplète), liens absolus avec `utm_campaign`, en-têtes `List-Unsubscribe` en un clic, liste blanche de staging ; fournisseurs Resend, Brevo (SMS) et capture Mailpit (`pnpm mailpit`, `EMAIL_CAPTURE=mailpit`). Callables `demanderLienConnexion`, `demanderReinitialisation`, `renvoyerVerificationEmail` : liens Firebase envoyés par `notifier()`, même réponse que l'adresse existe ou non, 5 envois par heure et par adresse.
+- Site : `/api/resend/webhook` (signature Svix vérifiée, anti-rejeu 5 min), `/api/desabonnement` (POST RFC 8058 et lien), page `/preferences` sans connexion (jeton signé).
+- Functions du lot 4 branchées sur `notifier()` : bienvenue, invitation (et relance J+3), invitation acceptée ou expirée, demande d'accès et réponse, rôle modifié, membre retiré, transfert de propriété, sièges suspendus, entreprise fermée.
+
+**Nouvelles dépendances (signalées)** : `@react-email/components`, `@react-email/render`, `react`, `react-dom` (emails et Functions) ; en développement `react-email`, `@react-email/ui` (aperçu).
+
+**Non fait ou non vérifié**
+1. **Parcours Playwright + Mailpit** (inscription particulier, onboarding avec relance, invitation, mot de passe oublié) : ils exigent les écrans de connexion, d'inscription et d'équipe (lots 8 et 10). À écrire avec ces écrans ; Mailpit sera ajouté comme service de la CI à ce moment-là.
+2. `pnpm email:dev` : configuré mais pas lancé ici (serveur local refusé dans ce conteneur).
+3. `.env.example` : inaccessible depuis cette session ; variables à y ajouter : `MAILPIT_URL`, `EDITEUR_MENTION`, `NEXT_PUBLIC_SITE_URL` (liste complète dans EMAILS §9).
+4. Regroupement 15 min des modèles « groupés » (`nouveau-message`) : branché avec la messagerie (lots 8 et 10).
+5. Mention légale de l'éditeur (raison sociale, adresse) : valeur provisoire dans `EDITEUR_MENTION`, à fournir.
+
+**Point de vigilance CI** : l'affichage principal de `/maintenance` mesuré à 2,55 s une fois (seuil provisoire 2,5 s, D46), passé aux exécutions suivantes ; à surveiller avec D46.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -266,3 +287,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 27/09/2026 — Lot 2 terminé (données et sécurité). Dix corrections de sécurité par rapport à DATABASE §12 (§8).
 - 27/09/2026 — Lot 3 terminé (logique métier pure, 9 modules). Décisions D47 (barème) et D48 (matching) proposées, à valider.
 - 27/09/2026 — Lot 4 terminé (comptes, équipes, session, seed). Nouveau statut de demande `appel_offres`, dépendance `tsx`.
+- 28/09/2026 — Lot 5 terminé (emails, SMS, notifications). Parcours Playwright + Mailpit reportés aux lots 8 et 10.

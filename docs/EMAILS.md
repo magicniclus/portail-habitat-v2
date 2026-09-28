@@ -269,5 +269,10 @@ BREVO_API_KEY=                   # SMS (et plus tard newsletters, D3)
 SMS_SENDER=PortailHab
 EMAIL_CAPTURE=mailpit            # local et staging : aucun envoi réel
 EMAIL_WHITELIST=@portailhabitat.fr
-NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action
+NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action (32 caractères minimum)
+MAILPIT_URL=http://127.0.0.1:8025  # capture locale (pnpm mailpit), API d'envoi HTTP de Mailpit
+EDITEUR_MENTION="Portail Habitat · [Raison sociale] · [Adresse postale]"  # pied légal des emails
+NEXT_PUBLIC_SITE_URL=            # liens absolus des emails
 ```
+
+**Implémentation (lot 5)** : catalogue et règles dans `@ph/core/notifications`, modèles dans `@ph/emails` (`pnpm email:dev`), `notifier()` et suivi dans `@ph/firebase/notifications`, envoi par la tâche Cloud Tasks `envoyerEnvoi` (`apps/functions/src/notifications`), routes `/api/resend/webhook`, `/api/desabonnement` et page `/preferences`. En local, `pnpm mailpit` puis `EMAIL_CAPTURE=mailpit`.
