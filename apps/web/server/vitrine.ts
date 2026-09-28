@@ -7,6 +7,7 @@ import { depot } from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { cache } from 'react';
 import type { AvisVitrine, StatsVitrine } from '@/features/accueil/vitrine';
+import type { ArtisanAvis } from '@/features/avis/types';
 
 /** Délai maximal d'une lecture de vitrine : la page s'affiche sans les chiffres plutôt que d'attendre. */
 const DELAI_MS = 2500;
@@ -96,6 +97,28 @@ export const lireAvisRecents = cache((): Promise<AvisVitrine[] | null> =>
       };
     });
   }),
+);
+
+/** Fiches en ligne pour `/avis`, filtrées dans le navigateur (l'annuaire du lot 9 prendra le relais). */
+export const lireArtisansAvis = cache(
+  async (): Promise<ArtisanAvis[]> =>
+    (await lire('artisans (avis)', async () => {
+      const r = await depot(db(), collections.artisansPublic, artisanPublic)
+        .reference.where('enLigne', '==', true)
+        .limit(2000)
+        .get();
+      return r.docs.map((d) => {
+        const a = d.data();
+        return {
+          id: d.id,
+          nom: a.nomCommercial,
+          ville: a.ville,
+          metier: a.metierPrincipal,
+          note: a.noteMoyenne,
+          nbAvis: a.nbAvis,
+        };
+      });
+    })) ?? [],
 );
 
 /** Prix affichés (`config/app.prix`), sinon ceux des décisions D24 et D25. Stripe fait foi au paiement. */

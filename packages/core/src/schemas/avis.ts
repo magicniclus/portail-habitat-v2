@@ -51,6 +51,8 @@ export const auteurAvis = z.object({
   auteurEmail: email,
   ipHash: empreinte,
   userAgent: z.string().max(400).optional(),
+  /** Empreinte email + artisan + mois de chantier : un seul avis par combinaison (AVI-04). */
+  cleUnicite: empreinte.optional(),
 });
 
 export const signalement = z.object({

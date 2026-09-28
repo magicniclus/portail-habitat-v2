@@ -146,4 +146,24 @@ export const modelesParticuliers = {
       lien: 'https://portailhabitat.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
     },
   }),
+
+  /** Accusé de réception d'un avis (`/avis`) : relu sous 48 h avant publication. */
+  'avis-recu': modele<{ nomArtisan: string; note: number }>({
+    sujet: () => 'Merci pour votre avis',
+    preheader: (d) => `Votre avis sur ${d.nomArtisan} est en cours de vérification.`,
+    blocs: (d) => [
+      titre('Merci pour votre avis'),
+      para(
+        `Vous avez attribué ${d.note}/5 à ${d.nomArtisan}. Notre équipe le relit sous 48 h, puis il apparaît sur sa fiche et vous recevez un email de confirmation.`,
+      ),
+      recap([
+        ['Artisan', d.nomArtisan, true],
+        ['Votre note', `${d.note}/5`],
+      ]),
+      note(
+        'L’artisan peut vous répondre publiquement, sans jamais modifier ni supprimer votre avis. Votre adresse email n’est jamais publiée.',
+      ),
+    ],
+    exemple: { nomArtisan: 'Bertrand Rénovation', note: 5 },
+  }),
 };

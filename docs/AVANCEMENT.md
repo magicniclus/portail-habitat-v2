@@ -234,6 +234,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **Simulateur** `/simulateur` : 5 étapes (112 prestations, recherche et 15 familles ; `?prestation=` démarre à l'étape 2), étape dans l'URL (SIM-02), messages d'erreur liés aux champs (SIM-03), **aucun prix avant l'envoi** (SIM-01b : descriptions d'options citant des euros retirées de la partie publique, aussi dans le seed), résultat affiché depuis la réponse du serveur, aides en négatif (SIM-05).
 - **Reprise** (REPRISE_PARCOURS) : `useParcours` + `<RepriseParcours />` (réutilisable), brouillon local sans coordonnées, Reprendre / Recommencer (Annuler 8 s), autre onglet, arrivée avec une autre prestation (SIM-06j), stockage bloqué sans erreur ; **lien de reprise par email** (case non cochée par défaut, jeton à usage unique 30 jours, empreintes seules, 3 liens / adresse / jour), brouillon serveur supprimé à l'envoi.
 - **Parcours diagnostic** `/diagnostic-immobilier/estimation` : préremplissage `?motif&type&periode&ville` (DIA-01), liste des diagnostics obligatoires gratuite **sans prix** (le navigateur reçoit un référentiel aux prix nuls), `creerDossierDiag` (`POST /api/diagnostics`) recalcule dossier et budget pack côté serveur (`PHD-XXXXXX`, email `dossier-diag-confirme`).
+- **Laisser un avis** `/avis` : choix de l'artisan (fiches en ligne, liste régénérée toutes les heures), formulaire (note globale, 4 critères, points forts, commentaire limité à 1 200 caractères), publication bloquée sans note ni certification (AVI-01, AVI-02) ; `deposerAvis` (`POST /api/avis`) crée l'avis `en_attente` (AVI-03), refuse un deuxième avis même email + même artisan + même mois de chantier (AVI-04), 5 avis / jour, email `avis-recu`.
 - **Budget JavaScript** (D46) : l'accueil ne précharge plus le simulateur ; `tailwind-merge` n'est plus chargé au démarrage des pages (−11 Ko : `optimizePackageImports`, page 404 et formulaire de l'accueil en éléments natifs).
 
 **À signaler**
@@ -242,8 +243,10 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 3. **App Check côté navigateur** non branché : les routes l'exigent, `APP_CHECK_MODE=desactive` en local et en e2e. À faire avec la configuration Firebase du site.
 4. Référentiels du simulateur (partie publique) et du diagnostic lus dans `docs/data` côté serveur (même source que le seed) ; la lecture Firestore viendra avec leur édition dans l'administration (lot 13).
 5. Emails de relance J+3 (`reprise-simulateur-rappel`) non planifiés.
+6. **Modèle de données** : `avis/{id}/prive/auteur` gagne `cleUnicite` (empreinte SHA-256 de « email + artisan + mois de chantier ») et un index de groupe de collections `prive.cleUnicite`, pour refuser les doublons (AVI-04) sans stocker l'email en clair ailleurs.
+7. **Photos d'avis** non envoyées : l'emplacement de la maquette n'est pas encore branché (Storage + analyse antivirus D9). Lien `?jeton=` d'invitation à noter (D40) : au lot 10 avec les chantiers terminés.
 
-**Reste pour clore le lot** : Laisser un avis (AVI), connexion particulier et Mon espace (ESP), reprise pour une personne connectée (niveau « compte »).
+**Reste pour clore le lot** : connexion particulier et Mon espace (ESP), reprise pour une personne connectée (niveau « compte »).
 
 ## 2. Incohérences et zones floues
 
