@@ -10,3 +10,4 @@ export {
   sirenDeSiret,
 } from './siren';
 export { slugifier } from './slug';
+export { formatNombre, nombreArrondi } from './nombres';
