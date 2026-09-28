@@ -118,6 +118,16 @@ export async function inviterMembre(
     donnees: donneesInvitation(entrepriseLue, invitant, e.role, e.email, maintenant),
     secrets: { lien: lienInvitation(jeton) },
   });
+  // Relance à J+3, annulée à l'envoi si l'invitation n'est plus en attente (encoreValable).
+  await s.notifier({
+    modele: 'invitation-relance',
+    destinataire: { email: e.email, artisanId: e.artisanId },
+    refObjet: `invitations/${ref.id}`,
+    variante: empreinteJeton(jeton).slice(0, 12),
+    donnees: donneesInvitation(entrepriseLue, invitant, e.role, e.email, maintenant),
+    secrets: { lien: lienInvitation(jeton) },
+    envoyerLe: new Date(maintenant.getTime() + 3 * JOUR_MS),
+  });
   return { invitationId: ref.id };
 }
 
@@ -271,5 +281,19 @@ export async function expirerInvitations(s: ServicesComptes): Promise<number> {
   const lot = s.db.batch();
   perimees.docs.forEach((d) => lot.update(d.ref, { statut: 'expiree' }));
   if (!perimees.empty) await lot.commit();
+  for (const d of perimees.docs) {
+    const artisanId = d.get('artisanId') as string;
+    const nomCommercial = (await s.db.doc(chemins.artisan(artisanId)).get()).get('nomCommercial');
+    await s.notifier({
+      modele: 'invitation-expiree',
+      destinataire: { uid: d.get('invitePar') as string, artisanId },
+      refObjet: `invitations/${d.id}`,
+      donnees: {
+        nomCommercial,
+        emailMasque: masquerEmail(d.get('email') as string),
+        lien: '/pro/equipe',
+      },
+    });
+  }
   return perimees.size;
 }

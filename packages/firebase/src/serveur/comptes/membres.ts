@@ -25,9 +25,10 @@ export async function modifierMembre(
   uid: string,
   e: z.output<typeof entreeModifierMembre>,
 ): Promise<void> {
-  await s.db.runTransaction(async (tx) => {
+  const nomCommercial = await s.db.runTransaction(async (tx) => {
     const cible = await lireMembre(s, tx, e.artisanId, e.uid);
     const moi = await exigerPermission(s, tx, e.artisanId, uid, 'membres.gerer', cible.role);
+    const { nomCommercial } = await lireEntreprise(s, tx, e.artisanId);
     if (e.role && !peut(moi, 'membres.gerer', { roleCible: e.role }))
       throw new ErreurMetier('PERMISSION_REFUSEE');
     if (cible.role === 'proprietaire')
@@ -45,8 +46,17 @@ export async function modifierMembre(
           ? { plafondCreditsMois: e.plafondCreditsMois }
           : {}),
     });
+    return nomCommercial;
   });
-  if (e.role) await synchroniserClaims(s, e.uid, e.artisanId);
+  if (!e.role) return;
+  await synchroniserClaims(s, e.uid, e.artisanId);
+  await s.notifier({
+    modele: 'role-modifie',
+    destinataire: { uid: e.uid, artisanId: e.artisanId },
+    refObjet: `artisans/${e.artisanId}/membres/${e.uid}`,
+    variante: `${e.role}:${s.horloge()}`,
+    donnees: { nomCommercial, role: e.role, lien: '/pro' },
+  });
 }
 
 /**
@@ -133,8 +143,9 @@ export async function transfererPropriete(
 ): Promise<void> {
   if (e.uid === uid) throw new ErreurMetier('PRECONDITION', 'Choisissez un autre membre.');
   const maintenant = new Date(s.horloge());
-  await s.db.runTransaction(async (tx) => {
+  const nomCommercial = await s.db.runTransaction(async (tx) => {
     const moi = await exigerPermission(s, tx, e.artisanId, uid, 'propriete.transferer');
+    const { nomCommercial } = await lireEntreprise(s, tx, e.artisanId);
     if (moi.role !== 'proprietaire') throw new ErreurMetier('PERMISSION_REFUSEE');
     const cible = await lireMembre(s, tx, e.artisanId, e.uid);
     if (cible.statut !== 'actif')
@@ -152,11 +163,21 @@ export async function transfererPropriete(
       proprietaireUid: e.uid,
       updatedAt: maintenant,
     });
+    return nomCommercial;
   });
   await Promise.all([
     synchroniserClaims(s, uid, e.artisanId),
     synchroniserClaims(s, e.uid, e.artisanId),
   ]);
+  const nouveau = (await s.auth.getUser(e.uid)).displayName ?? 'Le nouveau propriétaire';
+  for (const destinataire of [uid, e.uid])
+    await s.notifier({
+      modele: 'transfert-propriete',
+      destinataire: { uid: destinataire, artisanId: e.artisanId },
+      refObjet: `artisans/${e.artisanId}`,
+      variante: String(maintenant.getTime()),
+      donnees: { nomCommercial, nouveauProprietaire: nouveau, lien: '/pro/equipe' },
+    });
 }
 
 /**
@@ -185,5 +206,18 @@ export async function appliquerSieges(
     });
   if (change.length) await lot.commit();
   await Promise.all(change.map((m) => synchroniserClaims(s, m.uid, artisanId)));
+  const suspendus = change.filter((m) => !r.actifs.includes(m.uid));
+  if (suspendus.length) {
+    const nomCommercial = (await s.db.doc(chemins.artisan(artisanId)).get()).get('nomCommercial');
+    const proprietaire = membres.find((m) => m.role === 'proprietaire');
+    for (const m of [...(proprietaire ? [proprietaire] : []), ...suspendus])
+      await s.notifier({
+        modele: 'sieges-suspendus',
+        destinataire: { uid: m.uid, artisanId },
+        refObjet: `artisans/${artisanId}`,
+        variante: `sieges-${siegesMax}-${s.horloge()}`,
+        donnees: { nomCommercial, suspendus: suspendus.length, lien: '/pro/abonnement/premium' },
+      });
+  }
   return r;
 }

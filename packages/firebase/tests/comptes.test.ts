@@ -197,6 +197,9 @@ describe('invitations (COMPTES §4.2)', () => {
       metiers: ['carreleur'],
     });
     const inv = (await db.collection(collections.invitations).doc(invitationId).get()).data()!;
+    // Invitation immédiate, puis relance à J+3 (annulée à l'envoi si acceptée entre-temps).
+    const relance = envois.find((x) => x.modele === 'invitation-relance')!;
+    expect(relance.envoyerLe!.getTime() - Date.now()).toBeGreaterThan(3 * 86_400_000 - 60_000);
     const jeton = jetonDe(envois.at(-1));
     expect(inv.jetonHash).toMatch(/^[0-9a-f]{64}$/);
     expect(JSON.stringify(inv)).not.toContain(jeton);
@@ -420,6 +423,10 @@ describe('invitations (COMPTES §4.2)', () => {
       .doc(autre)
       .update({ expireLe: Timestamp.fromMillis(Date.now() - 1000) });
     expect(await expirerInvitations(s)).toBe(1);
+    expect(envois.at(-1)).toMatchObject({
+      modele: 'invitation-expiree',
+      destinataire: { uid: prop },
+    });
     expect((await db.collection(collections.invitations).doc(autre).get()).get('statut')).toBe(
       'expiree',
     );
@@ -511,6 +518,9 @@ describe('membres (COMPTES §4.8)', () => {
       'PERMISSION_REFUSEE',
     );
     await transfererPropriete(s, prop, { artisanId, uid: g });
+    expect(
+      envois.filter((x) => x.modele === 'transfert-propriete').map((x) => x.destinataire.uid),
+    ).toEqual([prop, g]);
     expect((await db.doc(chemins.artisan(artisanId)).get()).get('proprietaireUid')).toBe(g);
     expect(await claims(g)).toEqual({ roles: ['artisan'], ent: { [artisanId]: 'p' } });
     expect(await claims(prop)).toEqual({ roles: ['artisan'], ent: { [artisanId]: 'g' } });
@@ -525,6 +535,7 @@ describe('membres (COMPTES §4.8)', () => {
       await inviterEtAccepter(artisanId, prop, 'x@test.local', 'comptable'),
     ];
     const r = await appliquerSieges(s, artisanId, 1);
+    expect(envois.filter((x) => x.modele === 'sieges-suspendus')).toHaveLength(4);
     expect(r.suspendus.sort()).toEqual([...autres].sort());
     for (const uid of autres) {
       expect((await db.doc(chemins.membre(artisanId, uid)).get()).get('statut')).toBe('suspendu');
