@@ -14,7 +14,7 @@ const enregistrer = action(
     schema: entreeEvenementRecherche,
     nom: 'journaliserRecherche',
     authentification: 'facultative',
-    // Mesure d'usage sans donnée personnelle, envoyée par sendBeacon : pas de jeton App Check possible ;
+    // Mesure d'usage sans donnée personnelle, envoyée en `keepalive` sans jeton App Check (lot 8) ;
     // même origine exigée et débit limité par client.
     appCheck: false,
     rateLimit: { cle: 'recherche-evenement', max: 120, fenetre: '1h' },

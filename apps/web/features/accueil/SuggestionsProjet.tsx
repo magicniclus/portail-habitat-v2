@@ -58,16 +58,16 @@ function idSession(): string {
 function journal(nature: Nature, q: string, extra: { intention?: string; rang?: number } = {}) {
   const requete = requeteJournal(q);
   if (!requete && nature !== 'choix') return;
-  try {
-    navigator.sendBeacon(
-      '/api/recherche/evenement',
-      new Blob([JSON.stringify({ nature, q: requete, session: idSession(), ...extra })], {
-        type: 'application/json',
-      }),
-    );
-  } catch {
+  // `keepalive` : l'envoi survit à la navigation qui suit la validation (comme sendBeacon, mais
+  // observable et interceptable partout, y compris Safari).
+  void fetch('/api/recherche/evenement', {
+    method: 'POST',
+    keepalive: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nature, q: requete, session: idSession(), ...extra }),
+  }).catch(() => {
     // Le journal ne doit jamais gêner la recherche.
-  }
+  });
 }
 
 const retenue = (s: Suggestion): Retenue => ({
