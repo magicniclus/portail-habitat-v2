@@ -1,4 +1,5 @@
 import { Logo } from '@ph/ui';
+import { LienGererCookies } from '@/features/cookies/BandeauCookies';
 import Link from 'next/link';
 import type { LienNav } from './EnTetePublic';
 
@@ -47,7 +48,8 @@ export function PiedPublic({
       </div>
       <p className="m-0 border-t border-blanc/12 px-[clamp(18px,4vw,44px)] py-[18px] text-center text-[13px]">
         © {new Date().getFullYear()} Portail Habitat{variantLogo === 'diag' ? ' Diag' : ''}.{' '}
-        {mention ?? 'Tous droits réservés.'}
+        {mention ?? 'Tous droits réservés.'} ·{' '}
+        <LienGererCookies className="min-h-11 cursor-pointer border-0 bg-transparent p-0 text-[13px] text-accent-200 underline hover:text-blanc" />
       </p>
     </footer>
   );

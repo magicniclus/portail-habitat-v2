@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { BandeauCookies } from '@/features/cookies/BandeauCookies';
 import { viewportEspace } from '@/features/theme/viewport';
 import './globals.css';
 
@@ -29,7 +30,10 @@ export const viewport: Viewport = viewportEspace('particulier');
 export default function RacineLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr" className={`${sans.variable} ${serif.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <BandeauCookies />
+      </body>
     </html>
   );
 }
