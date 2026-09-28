@@ -20,6 +20,12 @@ export const FLAGS = {
     description: 'SMS à chaque nouvelle demande',
     retraitPrevu: '2027-06',
   },
+  deuxFacteursSms: {
+    defaut: false,
+    description:
+      'Double authentification par SMS (Identity Platform, SMS facturés) ; sinon application seulement (TOTP)',
+    retraitPrevu: '2099-12',
+  },
   maintenance: {
     defaut: false,
     description: 'Page de maintenance partout sauf /admin (ERR-03)',

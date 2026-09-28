@@ -17,6 +17,10 @@ export const routes = {
   connexion: r('/connexion'),
   connexionSuite: (suite: string) => r(`/connexion?suite=${encodeURIComponent(suite)}`),
   connexionPro: r('/connexion?espace=pro'),
+  connexionProSuite: (suite: string) =>
+    r(`/connexion?espace=pro&suite=${encodeURIComponent(suite)}`),
+  proFacturation: r('/pro/facturation'),
+  proCompte: r('/pro/compte'),
   monEspace: r('/mon-espace'),
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),

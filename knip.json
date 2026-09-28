@@ -3,7 +3,7 @@
   "ignore": ["docs/**"],
   "workspaces": {
     "apps/web": {
-      "entry": ["server/**/*.ts"]
+      "entry": ["server/**/*.ts", "playwright.pro.config.ts", "e2e-pro/**/*.ts"]
     },
     "apps/functions": {
       "entry": ["src/index.ts"],

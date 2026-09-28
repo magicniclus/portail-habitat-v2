@@ -63,6 +63,39 @@ jobs:
           path: apps/web/playwright-report
           retention-days: 7
 
+  e2e-pro:
+    name: Playwright espace pro (émulateurs + seed)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SEED_MOT_DE_PASSE: MotDePasse-e2e-2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # Les émulateurs Firebase ont besoin de Java.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: emulateurs-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ph/web exec playwright install --with-deps chromium webkit
+      - run: pnpm --filter @ph/web build
+      - run: pnpm e2e:pro
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-playwright-pro
+          path: apps/web/playwright-report
+          retention-days: 7
+
   catalogue:
     name: Storybook et catalogue (4 thèmes, 320 px, cibles, axe)
     runs-on: ubuntu-latest

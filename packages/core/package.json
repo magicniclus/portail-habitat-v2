@@ -33,7 +33,8 @@
     "./support": "./src/support/index.ts",
     "./demandes": "./src/demandes/index.ts",
     "./avis": "./src/avis/index.ts",
-    "./espace": "./src/espace/index.ts"
+    "./espace": "./src/espace/index.ts",
+    "./connexion": "./src/connexion/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
