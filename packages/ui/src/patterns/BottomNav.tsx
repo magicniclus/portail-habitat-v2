@@ -33,7 +33,7 @@ export function BottomNavItem({ icone, libelle, actif, badge, children }: Bottom
       <Slot.Root
         aria-current={actif ? 'page' : undefined}
         className={cn(
-          'relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold no-underline',
+          'relative flex min-h-14 w-full flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold no-underline',
           actif ? 'text-accent-700' : 'text-neutre-700 hover:text-texte',
         )}
       >

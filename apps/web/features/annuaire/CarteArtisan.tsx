@@ -3,7 +3,7 @@ import { formatFourchette, formatNombre, formatTel } from '@ph/core/format';
 import type { ArtisanAnnuaire } from '@ph/firebase/annuaire';
 import { bouton, NoteMoyenne } from '@ph/ui';
 import Link from 'next/link';
-import { initiales } from '@/features/avis/types';
+import { initiales } from '@ph/core/format';
 import { routes } from '@/lib/routes';
 
 type Label = keyof typeof LIBELLES_LABELS;

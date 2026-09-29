@@ -8,13 +8,6 @@ export interface ArtisanAvis {
   nbAvis: number;
 }
 
-export const initiales = (nom: string) =>
-  nom
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((m) => m[0]?.toUpperCase() ?? '')
-    .join('');
-
 /** « 4,8 (24 avis) » ; fiche sans avis : « nouvel artisan ». */
 export const resumeNote = (a: Pick<ArtisanAvis, 'note' | 'nbAvis'>) =>
   a.nbAvis > 0 ? `${a.note.toFixed(1).replace('.', ',')} (${a.nbAvis} avis)` : 'aucun avis';

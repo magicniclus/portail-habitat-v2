@@ -27,6 +27,11 @@ export const routes = {
   proRevendiquer: (artisanId: string) =>
     r(`/pro/rejoindre?revendiquer=${encodeURIComponent(artisanId)}`),
   proCompte: r('/pro/compte'),
+  proFiche: r('/pro/fiche'),
+  proAvis: r('/pro/avis'),
+  proStatistiques: r('/pro/statistiques'),
+  proEquipe: r('/pro/equipe'),
+  proAbonnementPremium: r('/pro/abonnement/premium'),
   monEspace: r('/mon-espace'),
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),

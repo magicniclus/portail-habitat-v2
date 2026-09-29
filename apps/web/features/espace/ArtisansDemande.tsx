@@ -1,7 +1,7 @@
 import { formatEuros } from '@ph/core/format';
 import type { ArtisanDemande } from '@ph/firebase/espace';
 import { bouton, NoteMoyenne } from '@ph/ui';
-import { initiales } from '@/features/avis/types';
+import { initiales } from '@ph/core/format';
 
 /** Artisans sur le projet : état, devis reçu (montant), accès aux messages. */
 export function ArtisansDemande({

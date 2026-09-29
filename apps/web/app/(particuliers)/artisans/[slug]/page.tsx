@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { initiales } from '@/features/avis/types';
+import { initiales } from '@ph/core/format';
 import { BandeauApercu } from '@/features/fiche/BandeauApercu';
 import { Bloc, DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';

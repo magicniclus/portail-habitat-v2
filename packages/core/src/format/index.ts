@@ -11,3 +11,4 @@ export {
 } from './siren';
 export { slugifier } from './slug';
 export { formatNombre, nombreArrondi } from './nombres';
+export { initiales } from './initiales';

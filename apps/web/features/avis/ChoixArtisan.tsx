@@ -5,7 +5,8 @@ import { bouton, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
-import { initiales, resumeNote, type ArtisanAvis } from './types';
+import { initiales } from '@ph/core/format';
+import { resumeNote, type ArtisanAvis } from './types';
 
 /** Étape 1 : retrouver l'artisan (nom, ville ou métier). */
 export function ChoixArtisan({ onChoisir }: { onChoisir: (a: ArtisanAvis) => void }) {

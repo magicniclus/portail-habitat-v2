@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { choisirInspirations, choisirTemoignages, chiffresVitrine, initiales } from './vitrine';
+import { initiales } from '@ph/core/format';
+import { choisirInspirations, choisirTemoignages, chiffresVitrine } from './vitrine';
 
 const avis = (n: number, o: Partial<Parameters<typeof choisirTemoignages>[0][number]> = {}) => ({
   id: `a${n}`,

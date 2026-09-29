@@ -1,7 +1,8 @@
 import { bouton } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
-import { initiales, resumeNote, type ArtisanAvis } from './types';
+import { initiales } from '@ph/core/format';
+import { resumeNote, type ArtisanAvis } from './types';
 
 const puce = 'font-bold text-accent-400';
 

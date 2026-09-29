@@ -1,4 +1,4 @@
-import { formatNombre, nombreArrondi } from '@ph/core/format';
+import { formatNombre, initiales, nombreArrondi } from '@ph/core/format';
 
 /** Avis publié, réduit à ce que la vitrine affiche (aucune donnée personnelle). */
 export interface AvisVitrine {
@@ -23,13 +23,6 @@ export interface StatsVitrine {
 
 const TEXTE_MIN = 40;
 const AVIS_MIN_POUR_NOTE = 10;
-
-/** Premier et dernier mot : « Camille M. » → CM, « jean-pierre dupont » → JD. */
-export function initiales(nom: string): string {
-  const mots = nom.split(/\s+/).filter((m) => /\p{L}/u.test(m[0] ?? ''));
-  const extremes = mots.length > 1 ? [mots[0]!, mots.at(-1)!] : mots;
-  return extremes.map((m) => m[0]!.toUpperCase()).join('');
-}
 
 const projet = (a: AvisVitrine) => [a.typeTravaux, a.ville].filter(Boolean).join(' · ');
 
