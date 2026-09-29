@@ -7,7 +7,9 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   accepterInvitation,
+  apercuInvitation,
   appliquerSieges,
+  creerCompteInvite,
   demanderAcces,
   envoyerLienConnexion,
   envoyerReinitialisation,
@@ -727,5 +729,62 @@ describe('emails d’authentification personnalisés (EMAILS §4.1)', () => {
       });
     await envoyerLienConnexion(sa(), 'camille@test.local', 'pro');
     expect(envois).toHaveLength(0);
+  });
+});
+
+describe('page d’invitation (INV-01 à 03)', () => {
+  const inviter = async (email: string) => {
+    const { prop, artisanId } = await entreprise();
+    await db.doc(chemins.user(prop)).update({ nomAffiche: 'Paul Proprio' });
+    await inviterMembre(s, prop, {
+      cleIdempotence: `inv-${email}`,
+      artisanId,
+      email,
+      role: 'collaborateur',
+    });
+    return { artisanId, prop, jeton: jetonDe(envois.at(-1)) };
+  };
+
+  it('INV-01 : lien valide → entreprise, rôle, invitant, email masqué', async () => {
+    const { artisanId, jeton } = await inviter('nouveau@test.local');
+    expect(await apercuInvitation(db, jeton, Date.now())).toMatchObject({
+      etat: 'valide',
+      artisanId,
+      role: 'collaborateur',
+      invitant: 'Paul Proprio',
+      emailMasque: 'n•••@t•••.local',
+    });
+  });
+
+  it('INV-03 : lien révoqué ou expiré → « expiree » ; jeton inconnu → introuvable', async () => {
+    const { artisanId, prop, jeton } = await inviter('nouveau@test.local');
+    expect((await apercuInvitation(db, jeton, Date.now() + 8 * 86_400_000)).etat).toBe('expiree');
+    const invitationId = (await db.collection(collections.invitations).get()).docs[0]!.id;
+    await revoquerInvitation(s, prop, { artisanId, invitationId });
+    expect(await apercuInvitation(db, jeton, Date.now())).toMatchObject({
+      etat: 'expiree',
+      artisanId,
+    });
+    expect((await apercuInvitation(db, 'x'.repeat(43), Date.now())).etat).toBe('introuvable');
+  });
+
+  it('accès créé avec l’email vérifié, puis acceptation', async () => {
+    const { artisanId, jeton } = await inviter('nouveau@test.local');
+    await creerCompteInvite(s, { jeton, nom: 'Nina Nouveau', motDePasse: 'MotDePasse-long-1' });
+    const u = await auth.getUserByEmail('nouveau@test.local');
+    expect(u.emailVerified).toBe(true);
+    expect(await accepterInvitation(s, u.uid, { jeton })).toEqual({ artisanId });
+  });
+
+  it('adresse déjà inscrite : « connectez-vous », aucun compte modifié', async () => {
+    await compte('existe@test.local');
+    const { jeton } = await inviter('existe@test.local');
+    expect(
+      (
+        await erreur(
+          creerCompteInvite(s, { jeton, nom: 'Xavier', motDePasse: 'MotDePasse-long-1' }),
+        )
+      ).code,
+    ).toBe('CONFLIT');
   });
 });

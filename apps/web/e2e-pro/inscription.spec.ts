@@ -1,9 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { MOT_DE_PASSE, PDF } from './outils';
+import { liensEnvoyes, MOT_DE_PASSE, PDF } from './outils';
 
 // docs/ACCEPTANCE.md ONB-01 à 04 et ONB-07, sur les émulateurs et les SIREN du seed (cacheSirene).
 const SIRENS = { libre: '552100554', fermee: '443061841', inscrite: '404833048' } as const;
-const PROJET = 'demo-portail-habitat';
 
 const emailUnique = (prefixe: string) =>
   `${prefixe}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@test.local`;
@@ -37,22 +36,7 @@ async function etape1(page: Page, email: string) {
   await expect(page).toHaveURL(/\/pro\/inscription\/zone$/);
 }
 
-/** Envois capturés par l'émulateur (`capturesEmulateur`) : liens de reprise déjà émis. */
-async function liensReprise(): Promise<string[]> {
-  const hote = process.env.FIRESTORE_EMULATOR_HOST ?? 'localhost:8080';
-  const r = await fetch(
-    `http://${hote}/v1/projects/${PROJET}/databases/(default)/documents/capturesEmulateur?pageSize=500`,
-    { headers: { Authorization: 'Bearer owner' } },
-  );
-  const d = (await r.json()) as {
-    documents?: {
-      fields: { secrets?: { mapValue: { fields?: Record<string, { stringValue: string }> } } };
-    }[];
-  };
-  return (d.documents ?? [])
-    .map((doc) => doc.fields.secrets?.mapValue.fields?.lien?.stringValue ?? '')
-    .filter((l) => l.includes('/pro/inscription?reprise='));
-}
+const liensReprise = () => liensEnvoyes('/pro/inscription?reprise=');
 
 test.describe('Inscription pro', () => {
   test('ONB-07, ONB-01 à 03 : bouton inactif tant que l’étape est incomplète, entreprise vérifiée, activation', async ({

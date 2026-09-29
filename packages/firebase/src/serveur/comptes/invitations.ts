@@ -2,6 +2,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { masquerEmail, siegesDisponibles } from '@ph/core/equipe';
 import type {
   entreeAccepterInvitation,
+  entreeCompteInvite,
   entreeInvitation,
   entreeInviterMembre,
 } from '@ph/core/schemas';
@@ -296,4 +297,78 @@ export async function expirerInvitations(s: ServicesComptes): Promise<number> {
     });
   }
   return perimees.size;
+}
+
+export type ApercuInvitation =
+  | { etat: 'introuvable' }
+  | { etat: 'expiree'; artisanId: string; nomCommercial: string }
+  | {
+      etat: 'valide';
+      artisanId: string;
+      nomCommercial: string;
+      ville: string;
+      role: string;
+      invitant: string;
+      email: string;
+      emailMasque: string;
+    };
+
+async function invitationDuJeton(db: Firestore, jeton: string) {
+  const r = await db
+    .collection(collections.invitations)
+    .where('jetonHash', '==', empreinteJeton(jeton))
+    .limit(1)
+    .get();
+  return r.docs[0];
+}
+
+/**
+ * Page `/pro/invitation` (INV-01 à 03) : entreprise, rôle et invitant d'un lien valide ; sinon
+ * l'entreprise seule, pour « Demander une nouvelle invitation ». `email` n'est lu que par le serveur.
+ */
+export async function apercuInvitation(
+  db: Firestore,
+  jeton: string,
+  maintenant: number,
+): Promise<ApercuInvitation> {
+  const d = await invitationDuJeton(db, jeton);
+  if (!d) return { etat: 'introuvable' };
+  const inv = d.data();
+  const artisan = (await db.doc(chemins.artisan(inv.artisanId as string)).get()).data() ?? {};
+  const nomCommercial = (artisan.nomCommercial as string | undefined) ?? '';
+  const valide = inv.statut === 'envoyee' && (inv.expireLe as Timestamp).toMillis() > maintenant;
+  if (!valide) return { etat: 'expiree', artisanId: inv.artisanId as string, nomCommercial };
+  const invitant = (await db.doc(chemins.user(inv.invitePar as string)).get()).get('nomAffiche');
+  return {
+    etat: 'valide',
+    artisanId: inv.artisanId as string,
+    nomCommercial,
+    ville: (artisan.adresseSiege?.ville as string | undefined) ?? '',
+    role: inv.role as string,
+    invitant: (invitant as string | undefined) ?? 'Un membre de l’équipe',
+    email: inv.email as string,
+    emailMasque: masquerEmail(inv.email as string),
+  };
+}
+
+/**
+ * Accès d'une personne invitée sans compte : le lien reçu à cette adresse prouve l'email, le
+ * compte est donc créé vérifié. Adresse déjà inscrite : se connecter (aucune modification).
+ */
+export async function creerCompteInvite(
+  s: ServicesComptes,
+  e: z.output<typeof entreeCompteInvite>,
+): Promise<{ email: string }> {
+  const a = await apercuInvitation(s.db, e.jeton, s.horloge());
+  if (a.etat !== 'valide')
+    throw new ErreurMetier('INTROUVABLE', 'Ce lien d’invitation n’est plus valable.');
+  if (await s.auth.getUserByEmail(a.email).catch(() => null))
+    throw new ErreurMetier('CONFLIT', 'Un compte existe déjà avec cette adresse : connectez-vous.');
+  await s.auth.createUser({
+    email: a.email,
+    emailVerified: true,
+    password: e.motDePasse,
+    displayName: e.nom,
+  });
+  return { email: a.email };
 }

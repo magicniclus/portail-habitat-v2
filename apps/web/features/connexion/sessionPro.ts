@@ -1,6 +1,6 @@
 'use client';
 
-import type { MultiFactorResolver, UserCredential } from 'firebase/auth';
+import type { MultiFactorResolver, User, UserCredential } from 'firebase/auth';
 import { authClient } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 
@@ -9,7 +9,7 @@ export type Etape =
   | { etape: 'secondFacteur'; resolveur: MultiFactorResolver; type: 'totp' | 'phone' };
 
 /** Ouvre la session serveur (cookie httpOnly, 7 jours pour les pros) à partir de la connexion Firebase. */
-async function ouvrirSessionPro(c: UserCredential): Promise<void> {
+async function ouvrirSessionPro(c: { user: User }): Promise<void> {
   const r = await posterJson<null>('/api/session', {
     jetonId: await c.user.getIdToken(),
     espace: 'pro',
@@ -105,4 +105,38 @@ export async function activerEspace(e: {
   await c.user.getIdToken(true);
   await ouvrirSessionPro(c);
   return r.data;
+}
+
+/**
+ * Invitation (INV-01) : accès créé côté serveur puis connexion si besoin, acceptation, droits
+ * rafraîchis. Personne déjà connectée : acceptation avec la connexion en cours.
+ */
+export async function rejoindreEquipe(e: {
+  jeton: string;
+  acces?: { nom: string; motDePasse: string };
+}): Promise<void> {
+  const auth = await authClient();
+  const m = await import('firebase/auth');
+  if (e.acces) {
+    const r = await posterJson<{ email: string }>('/api/pro/invitation/compte', {
+      jeton: e.jeton,
+      ...e.acces,
+    });
+    if (!r.ok) throw Object.assign(new Error(r.message), { code: 'invitation' });
+    await ouvrirSessionPro(
+      await m.signInWithEmailAndPassword(auth, r.data.email, e.acces.motDePasse),
+    );
+  }
+  const r = await posterJson<{ artisanId: string }>('/api/pro/invitation/accepter', {
+    jeton: e.jeton,
+  });
+  if (!r.ok) throw Object.assign(new Error(r.message), { code: 'invitation' });
+  await auth.authStateReady();
+  const u = auth.currentUser;
+  // Nouveaux droits (claims) pour l'écoute temps réel et les fichiers ; la page relit la base.
+  if (u)
+    await u
+      .getIdToken(true)
+      .then(() => ouvrirSessionPro({ user: u }))
+      .catch(() => undefined);
 }

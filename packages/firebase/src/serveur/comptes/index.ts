@@ -7,10 +7,13 @@ export { synchroniserClaims } from './claims';
 export { demanderAcces, repondreDemandeAcces } from './demandesAcces';
 export {
   accepterInvitation,
+  apercuInvitation,
+  creerCompteInvite,
   expirerInvitations,
   inviterMembre,
   renvoyerInvitation,
   revoquerInvitation,
+  type ApercuInvitation,
 } from './invitations';
 export {
   appliquerSieges,

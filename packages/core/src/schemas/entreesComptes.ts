@@ -107,3 +107,10 @@ export const entreeEmailAuth = z.object({
   email,
   espace: z.enum(['particulier', 'pro']).default('particulier'),
 });
+
+/** Création de l'accès d'une personne invitée (le lien prouve l'adresse email, COMPTES §4.2). */
+export const entreeCompteInvite = z.object({
+  jeton: z.string().regex(/^[A-Za-z0-9_-]{43}$/, 'Lien d’invitation invalide'),
+  nom: z.string().trim().min(2, 'Indiquez votre nom').max(80),
+  motDePasse: z.string().min(10, '10 caractères au moins').max(128),
+});

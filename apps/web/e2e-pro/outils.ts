@@ -107,6 +107,23 @@ export async function siegesLibres(artisanId: string, n: number): Promise<() => 
   };
 }
 
+/** Liens secrets des envois capturés par l'émulateur (`capturesEmulateur`) contenant `motif`. */
+export async function liensEnvoyes(motif: string): Promise<string[]> {
+  const hote = process.env.FIRESTORE_EMULATOR_HOST ?? 'localhost:8080';
+  const r = await fetch(
+    `http://${hote}/v1/projects/demo-portail-habitat/databases/(default)/documents/capturesEmulateur?pageSize=500`,
+    { headers: { Authorization: 'Bearer owner' } },
+  );
+  const d = (await r.json()) as {
+    documents?: {
+      fields: { secrets?: { mapValue: { fields?: Record<string, { stringValue: string }> } } };
+    }[];
+  };
+  return (d.documents ?? [])
+    .map((doc) => doc.fields.secrets?.mapValue.fields?.lien?.stringValue ?? '')
+    .filter((l) => l.includes(motif));
+}
+
 /** Email du propriétaire d'une entreprise du seed ayant ce plan (autre que les comptes fixes). */
 export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'premium') {
   const { auth, db } = await admin();
