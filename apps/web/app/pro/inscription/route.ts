@@ -2,7 +2,7 @@ import { entreeRepriseInscription } from '@ph/core/schemas';
 import { lireBrouillonInscription, reprendreInscription } from '@ph/firebase/comptes';
 import { NextResponse } from 'next/server';
 import { servicesComptes } from '@/server/espace';
-import { COOKIE_INSCRIPTION } from '@/server/inscription';
+import { COOKIE_INSCRIPTION, optionsCookieInscription } from '@/server/inscription';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,13 +21,7 @@ export async function GET(requete: Request) {
     new URL(b.etape === 3 ? '/pro/inscription/compte' : '/pro/inscription/zone', url),
     303,
   );
-  r.cookies.set(COOKIE_INSCRIPTION, b.brouillonId, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 30 * 86_400,
-  });
+  r.cookies.set(COOKIE_INSCRIPTION, b.brouillonId, optionsCookieInscription());
   // Le jeton ne doit pas fuiter vers d'autres sites par l'en-tête Referer.
   r.headers.set('Referrer-Policy', 'no-referrer');
   return r;

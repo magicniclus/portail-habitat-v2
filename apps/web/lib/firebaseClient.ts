@@ -9,20 +9,14 @@ interface ConfigPage {
   emulateurs?: { auth?: string; firestore?: string; storage?: string };
 }
 
-declare global {
-  interface Window {
-    __PH_FIREBASE__?: ConfigPage;
-  }
-}
-
 let app: Promise<FirebaseApp> | null = null;
 let authP: Promise<Auth> | null = null;
 let dbP: Promise<Firestore> | null = null;
 
 function config(): ConfigPage {
-  const c = window.__PH_FIREBASE__;
-  if (!c) throw new Error('Configuration Firebase absente de la page (<ConfigFirebase />).');
-  return c;
+  const bloc = document.getElementById('config-firebase')?.textContent;
+  if (!bloc) throw new Error('Configuration Firebase absente de la page (<ConfigFirebase />).');
+  return JSON.parse(bloc) as ConfigPage;
 }
 
 /** SDK chargé à la demande : seulement dans l'espace pro (budget JavaScript D46). */

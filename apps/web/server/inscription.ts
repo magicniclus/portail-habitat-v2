@@ -2,19 +2,22 @@ import 'server-only';
 import { lireBrouillonInscription } from '@ph/firebase/comptes';
 import { cookies } from 'next/headers';
 import { servicesComptes } from './espace';
+import { cookieSecurise } from './sessionCookies';
 
 /** Brouillon d'inscription en cours : identifiant en cookie httpOnly (COMPTES §3.2), 30 jours. */
 export const COOKIE_INSCRIPTION = 'ph_inscription';
 const DUREE_S = 30 * 86_400;
 
+export const optionsCookieInscription = () => ({
+  httpOnly: true,
+  secure: cookieSecurise(),
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: DUREE_S,
+});
+
 export async function poserBrouillon(brouillonId: string) {
-  (await cookies()).set(COOKIE_INSCRIPTION, brouillonId, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: DUREE_S,
-  });
+  (await cookies()).set(COOKIE_INSCRIPTION, brouillonId, optionsCookieInscription());
 }
 
 export async function oublierBrouillon() {
