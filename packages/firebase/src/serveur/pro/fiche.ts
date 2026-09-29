@@ -18,7 +18,7 @@ import { chemins } from '../../chemins';
  * Complétude de la fiche (`artisans.completude`) à partir du document et des réalisations publiées ;
  * « coordonnées vérifiées » : téléphone vérifié du compte propriétaire.
  */
-export async function completudeDepuisBase(
+async function completudeDepuisBase(
   db: Firestore,
   artisanId: string,
   a: DocumentData,
