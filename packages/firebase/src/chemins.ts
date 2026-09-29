@@ -77,6 +77,8 @@ export const chemins = {
   brouillonOnboarding: (id: string) => `brouillonsOnboarding/${id}`,
   consentements: (uid: string) => `users/${uid}/consentements`,
   notifications: (uid: string) => `users/${uid}/notifications`,
+  /** Appareils ayant accepté les notifications push (jeton FCM, écrit par le serveur seulement). */
+  appareilsPush: (uid: string) => `users/${uid}/appareilsPush`,
   admin: (uid: string) => `admins/${uid}`,
   artisan: (id: string) => `artisans/${id}`,
   artisanPublic: (id: string) => `artisansPublic/${id}`,

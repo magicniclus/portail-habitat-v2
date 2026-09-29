@@ -1,7 +1,7 @@
 import { entreeAvis } from '@ph/core/schemas';
 import { appAdmin } from '@ph/firebase/admin';
 import { deposerAvis } from '@ph/firebase/avis';
-import { notifier, planifierCloudTask } from '@ph/firebase/notifications';
+import { notifier, servicesNotifications } from '@ph/firebase/notifications';
 import { getFirestore } from 'firebase-admin/firestore';
 import { action } from '@/server/action';
 import { routeJson } from '@/server/json';
@@ -23,7 +23,7 @@ const deposer = action(
       {
         db,
         horloge: Date.now,
-        notifier: (n) => notifier({ db, horloge: Date.now, planifier: planifierCloudTask }, n),
+        notifier: (n) => notifier(servicesNotifications(db), n),
       },
       e,
       { uid: ctx.uid, ...(await traceRequete('inconnue')) },

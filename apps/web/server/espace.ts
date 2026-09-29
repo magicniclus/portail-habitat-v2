@@ -2,7 +2,7 @@ import 'server-only';
 import { appAdmin } from '@ph/firebase/admin';
 import type { ServicesComptes } from '@ph/firebase/comptes';
 import { urlIdentite, type ServicesConnexion, type ServicesEspace } from '@ph/firebase/espace';
-import { notifier, planifierCloudTask } from '@ph/firebase/notifications';
+import { notifier, servicesNotifications } from '@ph/firebase/notifications';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { URL_SITE } from '@/features/vitrine/seo';
@@ -17,7 +17,7 @@ export function servicesComptes(): ServicesComptes & { urlSite: string } {
     db: base,
     auth: getAuth(appAdmin()),
     horloge: Date.now,
-    notifier: (e) => notifier({ db: base, horloge: Date.now, planifier: planifierCloudTask }, e),
+    notifier: (e) => notifier(servicesNotifications(base), e),
     urlSite: URL_SITE,
   };
 }

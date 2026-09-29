@@ -133,6 +133,16 @@ const CAS: Cas[] = [
     autorises: ['particulier'],
   },
   {
+    nom: 'lire ses appareils de notification push (serveur seulement)',
+    op: { get: 'users/part1/appareilsPush/j1' },
+    autorises: [],
+  },
+  {
+    nom: 'enregistrer un appareil de notification push soi-même',
+    op: { maj: 'users/part1/appareilsPush/j1', donnees: { jeton: 'x' } },
+    autorises: [],
+  },
+  {
     nom: 'modifier le texte d’une notification',
     op: { maj: 'users/part1/notifications/n1', donnees: { titre: 'x' } },
     autorises: [],

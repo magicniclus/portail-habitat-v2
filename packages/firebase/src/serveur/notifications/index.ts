@@ -1,4 +1,13 @@
 export { planifierCloudTask } from './cloudTasks';
+export {
+  enregistrerAppareilPush,
+  pousserFcm,
+  retirerAppareilPush,
+  type EnvoyeurPush,
+  type MessagePush,
+  type Pousser,
+} from './push';
+export { servicesNotifications } from './services';
 export { signerJeton, verifierJeton, type ContenuJeton } from './jetons';
 export {
   empreinteEmail,

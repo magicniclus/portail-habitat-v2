@@ -1,7 +1,7 @@
 import 'server-only';
 import { appAdmin } from '@ph/firebase/admin';
 import { geocodeurApiGeo, type ServicesDemandes } from '@ph/firebase/demandes';
-import { notifier, planifierCloudTask } from '@ph/firebase/notifications';
+import { notifier, servicesNotifications } from '@ph/firebase/notifications';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { VERSION_LEGALE } from '@/features/legal/documents';
@@ -14,7 +14,7 @@ export function servicesDemandes(): ServicesDemandes {
     db,
     auth: getAuth(appAdmin()),
     horloge: Date.now,
-    notifier: (e) => notifier({ db, horloge: Date.now, planifier: planifierCloudTask }, e),
+    notifier: (e) => notifier(servicesNotifications(db), e),
     urlSite: URL_SITE,
     geocoder: geocodeurApiGeo(),
     versionLegale: VERSION_LEGALE,

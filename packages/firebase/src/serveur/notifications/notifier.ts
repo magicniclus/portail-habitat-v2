@@ -10,6 +10,7 @@ import {
 import { createHash } from 'node:crypto';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import type { Pousser } from './push';
 
 /** Planifie l'envoi (Cloud Task `envoyerEnvoi`) ; les secrets ne passent que par la tâche. */
 export type PlanifierEnvoi = (e: {
@@ -22,6 +23,8 @@ export interface ServicesNotifications {
   db: Firestore;
   horloge: () => number;
   planifier: PlanifierEnvoi;
+  /** Push vers les appareils du destinataire, en plus de la notification in-app (MOB-06). */
+  pousser?: Pousser;
 }
 
 export interface Destinataire {
@@ -180,6 +183,15 @@ export async function notifier(s: ServicesNotifications, e: Envoi): Promise<Resu
       .catch((err: { code?: number }) => {
         if (err.code !== 6) throw err;
       });
+    // Au mieux : une panne FCM n'empêche jamais l'envoi de l'email ni la notification in-app.
+    if (res.inapp && s.pousser)
+      await s
+        .pousser(e.destinataire.uid, {
+          titre: (e.titreInApp ?? e.modele).slice(0, 140),
+          corps: String(e.donnees.resumeInApp ?? '').slice(0, 300),
+          lien: typeof e.donnees.lienInApp === 'string' ? e.donnees.lienInApp : '/pro',
+        })
+        .catch(() => undefined);
   } else if (canaux.inapp !== 'non_prevu') res.ignores.inapp = canaux.inapp;
   return res;
 }

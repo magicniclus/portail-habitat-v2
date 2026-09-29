@@ -1,7 +1,7 @@
 import { appAdmin } from '@ph/firebase/admin';
 import {
   notifier as notifierFirestore,
-  planifierCloudTask,
+  servicesNotifications,
   type Envoi,
 } from '@ph/firebase/notifications';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -9,11 +9,7 @@ import type { ConfigEnvoi } from './envoyer';
 import { brevoSms, mailpit, resend, smsCapture } from './fournisseurs';
 
 /** Seule porte d'entrée des envois pour les Functions (EMAILS §1). */
-export const notifier = (e: Envoi) =>
-  notifierFirestore(
-    { db: getFirestore(appAdmin()), horloge: Date.now, planifier: planifierCloudTask },
-    e,
-  );
+export const notifier = (e: Envoi) => notifierFirestore(servicesNotifications(), e);
 
 const env = (nom: string, defaut?: string) => {
   const v = process.env[nom] ?? defaut;
