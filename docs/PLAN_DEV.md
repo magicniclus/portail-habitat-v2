@@ -30,6 +30,7 @@
 | `IA_ADMIN.md` | audit IA de la conversion, assistant de rédaction des artisans | l'IA |
 | `ADMIN.md` | rôles et permissions admin, écrans, Functions admin | le back-office |
 | `INTEGRATIONS.md` | Stripe, Functions, auth, sécurité, SEO, RGPD, variables d'environnement | les intégrations |
+| `CLES.md` | liste des clés à fournir et où les mettre (Vercel, secrets Functions) | avant chaque mise en ligne |
 | `COUTS.md` | budget et **règles d'économie à respecter dans le code** | l'infrastructure |
 | `MOBILE.md` | mobile d'abord (390 px, cibles 44 px, champs 16 px) | chaque écran |
 | `RECHERCHE.md` | recherche « Quel est votre projet ? » | la recherche |
