@@ -36,7 +36,7 @@ describe.each(noms)('%s', (nom) => {
 });
 
 describe('modèles rédigés (§4.1 à 4.3 et reprise du simulateur)', () => {
-  it('41 modèles rédigés', () => expect(rediges).toHaveLength(41));
+  it('48 modèles rédigés', () => expect(rediges).toHaveLength(48));
   it.each(rediges)('%s : version texte', async (nom) => {
     const r = await rendreEmail(nom, MODELES_EMAIL[nom].exemple as Record<string, unknown>, {
       pied,

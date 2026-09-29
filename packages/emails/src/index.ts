@@ -5,6 +5,7 @@ import type { Theme } from '@ph/ui/tokens';
 import { charteEmail } from './chartes';
 import type { Modele } from './modele';
 import { modelesEquipes } from './modeles/equipes';
+import { modelesFacturation } from './modeles/facturation';
 import { modelesOnboarding } from './modeles/onboarding';
 import { modelesParticuliers } from './modeles/particuliers';
 import { modelesSecurite } from './modeles/securite';
@@ -16,6 +17,7 @@ const REDIGES: Record<string, Modele<never>> = {
   ...modelesOnboarding,
   ...modelesEquipes,
   ...modelesParticuliers,
+  ...modelesFacturation,
 } as unknown as Record<string, Modele<never>>;
 
 /** Tous les modèles du catalogue : rédigés, ou squelettes en attendant leur lot. */

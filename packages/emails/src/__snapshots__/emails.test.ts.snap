@@ -44,6 +44,84 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > abonnement-active : version texte 1`] = `
+"Premium est activé pour Bertrand Rénovation
+Merci ! Votre abonnement est actif dès maintenant.
+
+PORTAIL HABITAT PRO
+
+
+BIENVENUE DANS PREMIUM
+
+Bonjour Julien, votre abonnement est actif pour Bertrand Rénovation.
+
+Formule : Premium
+
+Facturation : annuelle (12 mois payés en une fois)
+
+Prochaine échéance : 1 octobre 2027
+
+Voir mon abonnement https://portailhabitat.fr/pro/facturation
+
+Vos factures sont disponibles à tout moment dans l’onglet Facturation.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > abonnement-resilie : version texte 1`] = `
+"Votre résiliation est enregistrée
+Premium reste actif jusqu’au 1 octobre 2027.
+
+PORTAIL HABITAT PRO
+
+
+RÉSILIATION ENREGISTRÉE
+
+Bonjour Julien, Premium reste actif pour Bertrand Rénovation jusqu’au 1 octobre 2027, puis votre fiche repasse à la formule gratuite.
+
+Fin de l’abonnement : 1 octobre 2027
+
+Ensuite : fiche gratuite, sans mise en avant ni demandes garanties
+
+Annuler la résiliation https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > abonnement-termine : version texte 1`] = `
+"Premium est terminé
+Votre fiche reste en ligne avec la formule gratuite.
+
+PORTAIL HABITAT PRO
+
+
+PREMIUM EST TERMINÉ
+
+Bonjour Julien, l’abonnement de Bertrand Rénovation est terminé. Votre fiche reste visible avec la formule gratuite.
+
+Reprendre un abonnement https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > bienvenue-particulier : version texte 1`] = `
 "Bienvenue sur Portail Habitat
 Suivez vos demandes et échangez avec les artisans depuis votre espace.
@@ -726,6 +804,84 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > pack-achete : version texte 1`] = `
+"10 crédits ajoutés à votre compte
+Nouveau solde : 14 crédits.
+
+PORTAIL HABITAT PRO
+
+
+CRÉDITS AJOUTÉS
+
+Bonjour Julien, votre pack de 10 crédits est disponible pour Bertrand Rénovation.
+
+Crédits ajoutés : 10
+
+Nouveau solde : 14
+
+Voir les appels d’offres https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > paiement-echoue : version texte 1`] = `
+"Votre paiement n’a pas abouti
+Mettez à jour votre carte pour garder votre abonnement.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE PAIEMENT N’A PAS ABOUTI
+
+Bonjour Julien, le paiement de 1 150,56 € TTC pour Bertrand Rénovation a été refusé par votre banque.
+
+Sans nouveau paiement sous 7 jours, votre abonnement repasse à la formule gratuite.
+
+Mettre à jour ma carte https://portailhabitat.fr/pro/facturation
+
+Nous réessayons automatiquement le paiement dans les prochains jours.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > recu : version texte 1`] = `
+"Reçu de paiement PH-2026-0042
+1 150,56 € TTC payés. Facture disponible en ligne.
+
+PORTAIL HABITAT PRO
+
+
+PAIEMENT REÇU, MERCI
+
+Bonjour Julien, nous avons bien reçu votre paiement pour Bertrand Rénovation.
+
+Facture : PH-2026-0042
+
+Montant : 1 150,56 € TTC
+
+Télécharger la facture https://invoice.stripe.com/i/exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > relance-onboarding-1 : version texte 1`] = `
 "Il vous reste 2 minutes pour recevoir vos demandes
 Votre inscription Bertrand Rénovation est enregistrée à 66 %.
@@ -812,6 +968,36 @@ L’équipe Portail Habitat Pro
 Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
 
 Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3 et reprise du simulateur) > renouvellement : version texte 1`] = `
+"Votre abonnement se renouvelle dans 7 jours
+Premium : 1 150,56 € TTC le 1 octobre 2027.
+
+PORTAIL HABITAT PRO
+
+
+RENOUVELLEMENT DE VOTRE ABONNEMENT
+
+Bonjour Julien, votre abonnement annuel Premium pour Bertrand Rénovation se renouvelle automatiquement le 1 octobre 2027.
+
+Formule : Premium
+
+Montant : 1 150,56 € TTC
+
+Date : 1 octobre 2027
+
+Gérer mon abonnement https://portailhabitat.fr/pro/facturation
+
+Vous pouvez résilier avant cette date depuis l’onglet Facturation, sans frais.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
 
 Portail Habitat · Raison sociale · Adresse postale"
 `;

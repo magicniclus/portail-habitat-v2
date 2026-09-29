@@ -126,13 +126,13 @@ export const MODELES = {
   'levee-sanction': { categorie: 'transactionnel', charte: 'pro' },
 
   // 4.6 Facturation
-  'abonnement-active': { categorie: 'transactionnel', charte: 'pro' },
-  recu: { categorie: 'transactionnel', charte: 'pro' },
-  'paiement-echoue': { categorie: 'transactionnel', charte: 'pro', differe: true },
-  renouvellement: { categorie: 'transactionnel', charte: 'pro' },
-  'abonnement-resilie': { categorie: 'transactionnel', charte: 'pro' },
-  'abonnement-termine': { categorie: 'transactionnel', charte: 'pro' },
-  'pack-achete': { categorie: 'transactionnel', charte: 'pro' },
+  'abonnement-active': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  recu: { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'paiement-echoue': { categorie: 'transactionnel', charte: 'pro', differe: true, complet: true },
+  renouvellement: { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'abonnement-resilie': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'abonnement-termine': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'pack-achete': { categorie: 'transactionnel', charte: 'pro', complet: true },
   'moyen-paiement-expire': { categorie: 'transactionnel', charte: 'pro', differe: true },
 
   // 4.7 Conversion (CONVERSION.md)
