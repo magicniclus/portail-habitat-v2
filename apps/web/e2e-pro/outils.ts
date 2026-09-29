@@ -81,3 +81,28 @@ export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'pre
   }
   throw new Error(`Aucune entreprise ${plan} dans le seed`);
 }
+
+/** Avis publié pour l'entreprise ; renvoie le nom affiché (unique) pour le retrouver. */
+export async function publierAvis(artisanId: string): Promise<string> {
+  const { db, Timestamp } = await admin();
+  const nomAffiche = `Client ${Math.random().toString(36).slice(2, 7)}`;
+  await db.doc(chemins.avis(randomUUID().replaceAll('-', '').slice(0, 20))).set({
+    schemaVersion: 1,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    artisanId,
+    nomAffiche,
+    note: 5,
+    criteres: {},
+    pointsPositifs: [],
+    texte: 'Travail soigné, équipe ponctuelle.',
+    photos: [],
+    typeTravaux: 'Peinture',
+    finChantier: '2026-08',
+    certificationAcceptee: true,
+    preuve: { type: 'aucune' },
+    statut: 'publie',
+    publieLe: Timestamp.now(),
+  });
+  return nomAffiche;
+}

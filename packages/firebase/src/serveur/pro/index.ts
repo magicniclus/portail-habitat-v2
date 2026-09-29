@@ -6,3 +6,4 @@ export {
   type ServicesDemandesPro,
 } from './demandes';
 export { lireStatsJours } from './statistiques';
+export { lireAvisPro, repondreAvis, type AvisPro } from './avis';

@@ -47,9 +47,14 @@ test.describe('Espace pro : tableau de bord', () => {
     await expect(page.getByRole('link', { name: /Mes demandes|^demandes$/i })).toHaveCount(0);
   });
 
-  test('MOB-01 à 03 sur le tableau de bord et Mes demandes', async ({ page }) => {
+  test('MOB-01 à 03 sur les pages de l’espace pro', async ({ page }) => {
     await connecter(page, COMPTES.proprio);
-    for (const chemin of ['/pro/tableau-de-bord', '/pro/demandes']) {
+    for (const chemin of [
+      '/pro/tableau-de-bord',
+      '/pro/demandes',
+      '/pro/avis',
+      '/pro/statistiques',
+    ]) {
       await page.goto(chemin);
       await page.evaluate(() => document.fonts.ready);
       expect(await defileHorizontalement(page), chemin).toBe(false);

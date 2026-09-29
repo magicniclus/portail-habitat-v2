@@ -10,3 +10,9 @@ export const entreeReponseDemande = z.strictObject({
 
 /** « Je m'en occupe » (PRO-03). */
 export const entreePrendreDemande = z.strictObject({ demandeId: id });
+
+/** Réponse publique de l'artisan à un avis (affichée sur sa fiche). */
+export const entreeReponseAvis = z.strictObject({
+  avisId: id,
+  texte: z.string().trim().min(2, 'Écrivez votre réponse').max(1200),
+});

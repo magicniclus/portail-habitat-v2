@@ -195,3 +195,4 @@ export function ongletsMobiles(menu: readonly { liens: readonly LienPro[] }[]) {
 }
 export * from './demandes';
 export * from './statistiques';
+export * from './avis';
