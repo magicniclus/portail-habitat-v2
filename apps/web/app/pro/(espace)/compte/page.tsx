@@ -10,6 +10,7 @@ import { SECTIONS_COMPTE, SectionCompte } from '@/features/comptePro/SectionComp
 import { SecuriteCompte } from '@/features/comptePro/SecuriteCompte';
 import { routes } from '@/lib/routes';
 import { servicesCompte } from '@/server/compte';
+import { configFirebaseClient } from '@/server/configFirebase';
 import { flagActif } from '@/server/flags';
 import { sessionPro } from '@/server/sessionPro';
 
@@ -23,11 +24,13 @@ export default async function PageCompte() {
   const s = await sessionPro(routes.proCompte);
   const services = servicesCompte();
   await synchroniserComptePro(services, s.uid).catch(() => undefined);
-  const [compte, smsActif, h] = await Promise.all([
+  const [compte, smsActif, pushActif, h] = await Promise.all([
     lireComptePro(services, s.uid, s.artisanId),
     flagActif('deuxFacteursSms'),
+    flagActif('notificationsPush'),
     headers(),
   ]);
+  const push = pushActif && Boolean(configFirebaseClient().vapid);
   return (
     <main className="grid max-w-[820px] gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <div>
@@ -58,7 +61,7 @@ export default async function PageCompte() {
         <Appareils appareil={decrireAppareil(h.get('user-agent') ?? '')} />
       </SectionCompte>
       <SectionCompte id="notifications" titre="Notifications">
-        <NotificationsCompte compte={compte} />
+        <NotificationsCompte compte={compte} push={push} />
       </SectionCompte>
       <SectionCompte id="donnees" titre="Mes données">
         <DonneesCompte

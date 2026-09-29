@@ -8,6 +8,7 @@ import type { FirebaseStorage } from 'firebase/storage';
 interface ConfigPage {
   config: Record<string, string>;
   emulateurs?: { auth?: string; firestore?: string; storage?: string };
+  vapid?: string;
 }
 
 let app: Promise<FirebaseApp> | null = null;
@@ -73,4 +74,25 @@ export async function deposerFichier(chemin: string, fichier: File): Promise<voi
   await authClient().then((a) => a.authStateReady());
   const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
   await m.uploadBytes(m.ref(st, chemin), fichier, { contentType: fichier.type });
+}
+
+/**
+ * Jeton FCM de cet appareil pour le service worker de l'espace pro (`null` si la clé VAPID
+ * manque ou si le navigateur ne gère pas le push). `supprimer` : jeton renvoyé puis supprimé.
+ */
+export async function jetonPush(
+  enregistrement: ServiceWorkerRegistration,
+  supprimer = false,
+): Promise<string | null> {
+  const vapid = config().vapid;
+  if (!vapid) return null;
+  const [a, m] = await Promise.all([application(), import('firebase/messaging')]);
+  if (!(await m.isSupported())) return null;
+  const messaging = m.getMessaging(a);
+  const jeton = await m.getToken(messaging, {
+    vapidKey: vapid,
+    serviceWorkerRegistration: enregistrement,
+  });
+  if (supprimer) await m.deleteToken(messaging);
+  return jeton;
 }

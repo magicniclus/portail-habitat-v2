@@ -20,7 +20,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
 | 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
 | 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
-| 10 | Espace artisan, équipes, PWA | 🟡 | | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03 ; 73 e2e espace pro sur émulateurs | 10a à 10g faits ; points à signaler : §16 |
+| 10 | Espace artisan, équipes, PWA | ✅ | 29/09/2026 | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03, MOB-06 (installation ; push à vérifier en recette) ; 80 e2e espace pro sur émulateurs, service worker testé en unitaire | Points à signaler : §16 |
 | 11 | Stripe | ⬜ | | PAY | |
 | 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
 | 12b | Demandes partenaires | ⬜ | | IMP | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes, 10e Ma fiche / documents / Mes avis / Statistiques, 10f Équipe et invitations, 10g Mon compte. Reste : 10h PWA
-- Dernier lot terminé : 9, le 28/09/2026 (détail §15)
+- Lot : 11 (Stripe), à démarrer. Prérequis côté propriétaire : clés Stripe de test, produits et prix (DECISIONS)
+- Dernier lot terminé : 10, le 29/09/2026 (détail §16)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -274,7 +274,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 4. **Métiers proposés en filtre** : les 8 de la maquette (plomberie, électricité, peinture, carrelage, menuiserie, chauffage, couverture, maçonnerie) + ceux déjà choisis. L'intention reconnue par la recherche du lot 7 n'est pas encore transformée en filtre métier : le texte passe par la recherche plein texte.
 5. **Test du jeu de données (`seed.test.ts`)** : dépasse 5 s sur ce poste (déjà le cas avant ce lot), passe en CI.
 
-## 16. Lot 10 — Espace artisan (en cours, 29/09/2026)
+## 16. Lot 10 — Espace artisan (terminé le 29/09/2026)
 
 **Fait**
 - **10a Connexion pro** (`/connexion?espace=pro`) : message identique que l'email existe ou non (CON-01), attente croissante après 5 échecs (CON-03), double authentification par application (TOTP) ; propriétaire ou gérant Premium sans 2FA → activation demandée avant la facturation (CON-02). **SMS : prêt mais coupé** par le flag `deuxFacteursSms` (activable en un clic dans `config/flags`, une fois les SMS Identity Platform payés).
@@ -284,6 +284,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **10e** : **Statistiques** réservées aux Premium (PRO-07 ; période dans l'URL, vues, appels, demandes de devis, vues par semaine) ; **Mes avis** (résumé, répartition, filtres, réponse publique unique) ; **Ma fiche** modifiable section par section (présentation, informations, devis moyen, zone), complétude recalculée côté serveur ; **documents** (dépôt Storage, vérification serveur : type, taille, SHA-256) avec **mise en ligne automatique** dès que le SIREN est vérifié (ou le Kbis envoyé) et la décennale envoyée (ONB-06b, COMPTES §3) ; **logo** et **projets réalisés** (accord du propriétaire du chantier).
 - **10f Équipe et invitations** : page **Équipe** (membres, sièges avec invitations en cours, inviter, annuler, changer de rôle, retirer, « Quitter » refusé au dernier propriétaire — EQU-01 à 04) ; page **Invitation** (entreprise, rôle, invitant ; accès créé pour qui n'a pas de compte, l'email étant prouvé par le lien ; autre adresse connectée : refus avec email masqué ; lien expiré ou annulé : nouvelle invitation — INV-01 à 03) ; **Rejoindre** une entreprise déjà inscrite (demande au propriétaire, acceptée ou refusée depuis Équipe).
 - **10g Mon compte** (`/pro/compte`, ancres `#profil`, `#telephone`, `#securite`, `#appareils`, `#notifications`, `#donnees`) : nom, changement d'email (lien à la nouvelle adresse, alerte masquée à l'ancienne), mobile ; mot de passe (alerte de sécurité par email) ; Google lié ou délié ; **double authentification par application** (QR code, clé, lien direct sur téléphone ; retrait avec mot de passe + code) et emails `2fa-activee` / `2fa-desactivee` ; **SMS (vérification du mobile, SMS de secours) prêts mais cachés** tant que le flag `deuxFacteursSms` est coupé ; « Tout déconnecter » (jetons révoqués partout) ; notifications par catégorie et canal (enregistrées aussitôt, consentements journalisés) et par entreprise (nouvelles demandes, avis, factures) ; export des données et suppression (bloquée pour le dernier propriétaire). Firebase Auth fait foi : `users/{uid}` (email, `mfaActive`, méthodes, téléphone vérifié) est recopié à chaque ouverture de la page.
+- **10h Application pro (PWA)** : manifest `/pro/manifest.webmanifest` (« Portail Habitat Pro », autonome, raccourcis), icônes 192 / 512 / maskable / Apple générées à la compilation, service worker `/pro/sw.js` (pages de l'espace gardées pour le **mode hors ligne**, page « Vous êtes hors ligne » sinon, pages effacées à la déconnexion), invitation à installer **dès la 2e visite** (bouton du navigateur, ou guide « Partager → Sur l'écran d'accueil » sur Safari iOS ; « Plus tard » retenu), bouton **Se déconnecter** (manquait dans l'espace pro). **Notifications push prêtes mais coupées** : flag `notificationsPush` + clé `NEXT_PUBLIC_FIREBASE_VAPID_KEY` ; activées par la personne depuis Mon compte (jamais au chargement), puis toute notification in-app (nouvelle demande, message, avis) part aussi en push ; jetons périmés oubliés ; désabonnement à la déconnexion.
 - **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
 
 **À signaler**
@@ -304,6 +305,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 15. **Mon compte — écarts avec la maquette** : la **liste des appareils** (« Safari sur iPhone · Mérignac ») demande un suivi des sessions qui n'existe pas dans DATABASE : seul l'appareil actuel est affiché, avec « Tout déconnecter » (y compris celui-ci) ; les notifications suivent le modèle de données (catégories `activite`, `relance`, `offres_pro`, `marketing` × canaux, plus `membres.notifs` pour l'entreprise) et non les 7 lignes de la maquette ; l'export est téléchargé tout de suite (JSON) au lieu d'une archive ZIP par email ; « Modifié il y a 4 mois » (mot de passe) n'est pas disponible dans Firebase.
 16. **Mon compte — à savoir** : l'email « Ce n'était pas moi » renvoie vers l'aide (sujet « pro »), l'annulation d'un changement d'email en 7 jours et le blocage de 24 h (EMAILS) ne sont pas encore faits ; sans SMS, le mobile ne peut pas être « vérifié », donc les 15 points « téléphone vérifié » de la complétude restent inaccessibles tant que le flag SMS est coupé (**à trancher** : compter un mobile renseigné en attendant ?) ; l'application d'authentification (TOTP) n'est pas gérée par l'émulateur Firebase : l'activation complète se vérifie sur le projet de recette, une fois Identity Platform activé.
 17. **Corrections** : un changement de mot de passe révoque les sessions en cours, la session est donc renouvelée avant tout autre appel ; la lecture des envois capturés (e2e) parcourt maintenant toutes les pages.
+18. **PWA — pour activer le push en un clic** : dans la console Firebase, Cloud Messaging → « Certificats Web push » → générer la paire de clés ; mettre la clé publique dans `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (et `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`), puis passer `notificationsPush` à vrai dans `config/flags`. Sur iPhone, le push ne marche que dans l'application installée (iOS 16.4+, D39).
+19. **PWA — modèle de données** : nouvelle sous-collection `users/{uid}/appareilsPush/{empreinte}` (`jeton`, `appareil`, `majLe`), écrite par le serveur seulement (règles : tout refusé côté client, testé). **Écarts** : pas de file d'envoi rejouée hors ligne (aucun formulaire de l'espace n'en a encore besoin : le brouillon de devis arrive au lot 12) ; raccourci « Appels d'offres » ajouté avec la page (lot 12) ; le mode hors ligne est vérifié par un test unitaire du worker (Playwright ne coupe pas le réseau du service worker), l'enregistrement du worker par un test de bout en bout ; la réception réelle d'une notification (MOB-06) se vérifie sur le projet de recette avec la clé VAPID.
 
 ## 2. Incohérences et zones floues
 

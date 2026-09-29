@@ -57,6 +57,7 @@ test.describe('Espace pro : tableau de bord', () => {
       '/pro/fiche',
       '/pro/equipe',
       '/pro/compte',
+      '/pro/hors-ligne',
     ]) {
       await page.goto(chemin);
       await page.evaluate(() => document.fonts.ready);

@@ -5,6 +5,7 @@ import { IconButton } from '@ph/ui';
 import { SidebarSimpleIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
+import { ApplicationPro } from '@/features/pwa/ApplicationPro';
 import { estActif } from './liens';
 import { NavMobilePro } from './NavMobilePro';
 import { SelecteurEntreprise } from './SelecteurEntreprise';
@@ -56,6 +57,7 @@ export function CadrePro(p: CadreProProps) {
             </span>
           </div>
         </header>
+        <ApplicationPro />
         {p.children}
       </div>
       <NavMobilePro menu={p.menu} selecteur={selecteur} />

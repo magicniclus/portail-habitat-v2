@@ -13,6 +13,8 @@ export interface ConfigFirebaseClient {
   };
   /** Émulateurs (développement, tests de bout en bout) : adresses `hôte:port`. */
   emulateurs?: { auth?: string; firestore?: string; storage?: string };
+  /** Clé publique VAPID des notifications push (FCM) ; absente → push indisponible. */
+  vapid?: string;
 }
 
 /**
@@ -40,5 +42,6 @@ export function configFirebaseClient(env = process.env): ConfigFirebaseClient {
         : {}),
     },
     ...(Object.keys(emulateurs).length ? { emulateurs } : {}),
+    ...(env.NEXT_PUBLIC_FIREBASE_VAPID_KEY ? { vapid: env.NEXT_PUBLIC_FIREBASE_VAPID_KEY } : {}),
   };
 }

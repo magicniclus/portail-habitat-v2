@@ -26,6 +26,12 @@ export const FLAGS = {
       'Double authentification par SMS (Identity Platform, SMS facturés) ; sinon application seulement (TOTP)',
     retraitPrevu: '2099-12',
   },
+  notificationsPush: {
+    defaut: false,
+    description:
+      'Notifications push de l’application pro (FCM) ; nécessite aussi la clé NEXT_PUBLIC_FIREBASE_VAPID_KEY',
+    retraitPrevu: '2099-12',
+  },
   maintenance: {
     defaut: false,
     description: 'Page de maintenance partout sauf /admin (ERR-03)',

@@ -12,6 +12,7 @@ import type { ComptePro } from '@ph/firebase/pro';
 import { Banner, Interrupteur } from '@ph/ui';
 import { useState, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
+import { NotificationsPush } from './NotificationsPush';
 
 const GRILLE = 'grid grid-cols-[minmax(0,1fr)_repeat(3,52px)] items-center gap-x-1';
 
@@ -43,7 +44,7 @@ const Case = ({ children }: { children?: ReactNode }) => (
  * Notifications (maquette Mon Compte, EMAILS §2) : chaque bascule est enregistrée aussitôt ; les
  * emails de sécurité et les reçus partent toujours.
  */
-export function NotificationsCompte({ compte }: { compte: ComptePro }) {
+export function NotificationsCompte({ compte, push }: { compte: ComptePro; push: boolean }) {
   const [prefs, setPrefs] = useState<PreferencesNotifs>(compte.notifs);
   const [entreprise, setEntreprise] = useState<NotifsEntreprise | null>(
     compte.entreprise?.notifs ?? null,
@@ -67,6 +68,7 @@ export function NotificationsCompte({ compte }: { compte: ComptePro }) {
 
   return (
     <div className="grid gap-3">
+      {push ? <NotificationsPush /> : null}
       <div
         className={`${GRILLE} text-center text-[13px] font-semibold text-neutre-700`}
         aria-hidden

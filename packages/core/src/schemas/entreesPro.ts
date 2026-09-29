@@ -113,3 +113,9 @@ export const entreeNotifsPro = z.strictObject({
     .strictObject({ demandes: z.boolean(), avis: z.boolean(), factures: z.boolean() })
     .optional(),
 });
+
+/** Notifications push de cet appareil (jeton FCM) : activées ou retirées. */
+export const entreePush = z.strictObject({
+  jeton: z.string().min(20).max(4096),
+  actif: z.boolean(),
+});
