@@ -30,7 +30,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes, 10e Ma fiche / documents / Mes avis / Statistiques. Reste : 10f Ma fiche / Mes avis / Statistiques, 10f Équipe et invitations, 10g Mon compte (2FA), 10h PWA
+- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes, 10e Ma fiche / documents / Mes avis / Statistiques, 10f Équipe et invitations. Reste : 10g Mon compte (2FA), 10h PWA
 - Dernier lot terminé : 9, le 28/09/2026 (détail §15)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
