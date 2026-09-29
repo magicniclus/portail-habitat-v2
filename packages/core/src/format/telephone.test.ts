@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { estMobileFr, formatTel, normaliserTel } from './telephone';
+import { estMobileFr, formatTel, masquerTel, normaliserTel } from './telephone';
 
 describe('normaliserTel', () => {
   it.each([
@@ -45,5 +45,14 @@ describe('estMobileFr', () => {
     expect(estMobileFr('+33712345678')).toBe(true);
     expect(estMobileFr('+33556000000')).toBe(false);
     expect(estMobileFr('+32470123456')).toBe(false);
+  });
+});
+
+describe('masquerTel', () => {
+  it('masque les deux groupes du milieu', () => {
+    expect(masquerTel('+33612345648')).toBe('06 12 •• •• 48');
+  });
+  it('numéro étranger : début et fin seulement', () => {
+    expect(masquerTel('+447911123456')).toBe('+447•••56');
   });
 });

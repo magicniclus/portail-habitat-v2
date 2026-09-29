@@ -197,3 +197,4 @@ export * from './demandes';
 export * from './statistiques';
 export * from './avis';
 export * from './miseEnLigne';
+export * from './compte';

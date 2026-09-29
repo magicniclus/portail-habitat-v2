@@ -19,3 +19,10 @@ export function formatTel(e164: string): string {
 export function estMobileFr(e164: string): boolean {
   return /^\+33[67]\d{8}$/.test(e164);
 }
+
+/** « 06 12 •• •• 48 » : numéro reconnaissable sans être lisible (écrans de sécurité). */
+export function masquerTel(e164: string): string {
+  const groupes = formatTel(e164).split(' ');
+  if (groupes.length !== 5) return `${e164.slice(0, 4)}•••${e164.slice(-2)}`;
+  return [groupes[0], groupes[1], '••', '••', groupes[4]].join(' ');
+}

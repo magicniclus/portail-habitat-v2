@@ -8,7 +8,7 @@ import { exigerPermission } from './acces';
 import { synchroniserClaims } from './claims';
 import type { ServicesComptes } from './services';
 
-async function equipe(s: ServicesComptes, artisanId: string) {
+async function equipe(s: Pick<ServicesComptes, 'db'>, artisanId: string) {
   const docs = await s.db.collection(chemins.membres(artisanId)).get();
   return docs.docs.map((d) => ({ uid: d.id, ...(d.data() as Membre) }));
 }
@@ -17,18 +17,28 @@ async function equipe(s: ServicesComptes, artisanId: string) {
  * Suppression du compte personnel (COMPTES §4.9) : bloquée pour le dernier propriétaire d'une
  * entreprise active ; sinon retrait de toutes les équipes, profil anonymisé, compte Auth supprimé.
  */
+/** Vrai si la personne est le dernier propriétaire d'une entreprise active (COMPTES §4.9). */
+export async function suppressionBloquee(
+  s: Pick<ServicesComptes, 'db'>,
+  uid: string,
+): Promise<boolean> {
+  const user = await s.db.doc(chemins.user(uid)).get();
+  for (const artisanId of (user.get('entreprises') as string[] | undefined) ?? []) {
+    const statut = (await s.db.doc(chemins.artisan(artisanId)).get()).get('statut');
+    if (statut !== 'supprime' && !peutQuitter(await equipe(s, artisanId), uid)) return true;
+  }
+  return false;
+}
+
 export async function supprimerMonCompte(s: ServicesComptes, uid: string): Promise<void> {
   const maintenant = new Date(s.horloge());
   const refUser = s.db.doc(chemins.user(uid));
+  if (await suppressionBloquee(s, uid))
+    throw new ErreurMetier(
+      'PRECONDITION',
+      'Vous êtes le dernier propriétaire d’une entreprise : transférez la propriété ou fermez l’entreprise.',
+    );
   const entreprises = ((await refUser.get()).get('entreprises') as string[] | undefined) ?? [];
-  for (const artisanId of entreprises) {
-    const statut = (await s.db.doc(chemins.artisan(artisanId)).get()).get('statut');
-    if (statut !== 'supprime' && !peutQuitter(await equipe(s, artisanId), uid))
-      throw new ErreurMetier(
-        'PRECONDITION',
-        'Vous êtes le dernier propriétaire d’une entreprise : transférez la propriété ou fermez l’entreprise.',
-      );
-  }
   for (const artisanId of entreprises) {
     const ref = s.db.doc(chemins.membre(artisanId, uid));
     await s.db.runTransaction(async (tx) => {

@@ -17,3 +17,13 @@ export {
   supprimerRealisation,
   type RealisationPro,
 } from './medias';
+export {
+  changerEmailPro,
+  deconnecterPartout,
+  lireComptePro,
+  modifierNotifsPro,
+  modifierProfilPro,
+  synchroniserComptePro,
+  type ComptePro,
+  type FacteurPro,
+} from './compte';

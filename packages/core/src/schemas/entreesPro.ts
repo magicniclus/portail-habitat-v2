@@ -88,3 +88,28 @@ export const entreeRealisation = z.strictObject({
 });
 
 export const entreeSupprimerRealisation = z.strictObject({ rid: idFichier });
+
+const canauxNotif = z.strictObject({ email: z.boolean(), sms: z.boolean(), inapp: z.boolean() });
+
+/** Mon compte : profil (chaîne vide = téléphone retiré). */
+export const entreeProfilPro = z.strictObject({
+  prenom: z.string().trim().min(1, 'Indiquez votre prénom').max(80),
+  nom: z.string().trim().min(1, 'Indiquez votre nom').max(80),
+  telephone: z.union([telephoneFr, z.literal('')]).optional(),
+});
+
+/** Mon compte : changement de l'email de connexion (lien de confirmation à la nouvelle adresse). */
+export const entreeChangerEmail = z.strictObject({ email });
+
+/** Mon compte : notifications personnelles et, si une entreprise est active, celles de l'entreprise. */
+export const entreeNotifsPro = z.strictObject({
+  preferences: z.strictObject({
+    activite: canauxNotif,
+    relance: canauxNotif,
+    offres_pro: canauxNotif,
+    marketing: canauxNotif,
+  }),
+  entreprise: z
+    .strictObject({ demandes: z.boolean(), avis: z.boolean(), factures: z.boolean() })
+    .optional(),
+});
