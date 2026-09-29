@@ -3,12 +3,13 @@ import { definition, estModele, MODELES } from './catalogue';
 import { cleIdempotence, deciderCanaux, instantSms, planifierEnvoi } from './decisions';
 
 describe('catalogue (EMAILS §4)', () => {
-  it('tous les modèles des §4.1 à 4.3 sont rédigés, plus la reprise du simulateur', () => {
+  it('tous les modèles des §4.1 à 4.3 et 4.6 sont rédigés, plus la reprise du simulateur', () => {
     const complets = Object.entries(MODELES)
       .filter(([, d]) => 'complet' in d)
       .map(([n]) => n);
-    expect(complets).toHaveLength(41);
+    expect(complets).toHaveLength(48);
     expect(complets).toContain('reprise-simulateur');
+    expect(complets).toContain('recu');
   });
   it('les modèles différés et groupés sont marqués', () => {
     expect(definition('relance-onboarding-2').differe).toBe(true);
