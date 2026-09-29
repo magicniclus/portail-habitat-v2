@@ -154,3 +154,4 @@ export * from './entreesAvis';
 export * from './entreesEspace';
 export * from './entreesAnnuaire';
 export * from './entreesInscription';
+export * from './entreesPro';

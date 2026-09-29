@@ -2,6 +2,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { artisanAAccepte, masquerCoordonnees } from '@ph/core/espace';
 import {
   etatPro,
+  STATUTS_ATTRIBUTION,
   transitionAttribution,
   type ActionAttribution,
   type EtatPro,
@@ -38,17 +39,6 @@ export interface DemandePro {
   recherche: string;
 }
 
-const TOUS: StatutAttributionPro[] = [
-  'proposee',
-  'vue',
-  'acceptee',
-  'refusee',
-  'devis_envoye',
-  'devis_accepte',
-  'devis_refuse',
-  'expiree',
-];
-
 /**
  * Attributions de l'entreprise, les plus récentes d'abord. Requête collection group
  * `artisanId ==`, `statut in`, `proposeeLe` décroissant : index existant (DATABASE §9).
@@ -61,7 +51,7 @@ export async function lireDemandesPro(
   const attributions = await s.db
     .collectionGroup(GROUPE_ATTRIBUTIONS)
     .where('artisanId', '==', artisanId)
-    .where('statut', 'in', TOUS)
+    .where('statut', 'in', [...STATUTS_ATTRIBUTION])
     .orderBy('proposeeLe', 'desc')
     .limit(limite)
     .get();

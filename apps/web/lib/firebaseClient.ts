@@ -38,7 +38,7 @@ export function authClient(): Promise<Auth> {
   return authP;
 }
 
-/** Firestore temps réel de l'espace pro (demandes, lot 10d). @public */
+/** Firestore temps réel de l'espace pro (Mes demandes, PRO-01). */
 export function firestoreClient(): Promise<Firestore> {
   dbP ??= Promise.all([application(), import('firebase/firestore')]).then(([a, m]) => {
     const db = m.getFirestore(a);

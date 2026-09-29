@@ -2,15 +2,17 @@ import { normaliser } from '../recherche/texte';
 
 /** « Mes demandes » côté artisan (maquette Mes Demandes, DATABASE `attributions`). */
 
-export type StatutAttributionPro =
-  | 'proposee'
-  | 'vue'
-  | 'acceptee'
-  | 'refusee'
-  | 'devis_envoye'
-  | 'devis_accepte'
-  | 'devis_refuse'
-  | 'expiree';
+export const STATUTS_ATTRIBUTION = [
+  'proposee',
+  'vue',
+  'acceptee',
+  'refusee',
+  'devis_envoye',
+  'devis_accepte',
+  'devis_refuse',
+  'expiree',
+] as const;
+export type StatutAttributionPro = (typeof STATUTS_ATTRIBUTION)[number];
 
 export const ETATS_PRO = ['nouveau', 'contacte', 'converti', 'perdu'] as const;
 export type EtatPro = (typeof ETATS_PRO)[number];
