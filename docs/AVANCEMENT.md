@@ -20,7 +20,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
 | 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
 | 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
-| 10 | Espace artisan, équipes, PWA | 🟡 | | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 07 ; e2e espace pro sur émulateurs | 10a à 10c faits ; points à signaler : §16 |
+| 10 | Espace artisan, équipes, PWA | 🟡 | | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 07, PRO-01 à 03 ; e2e espace pro sur émulateurs | 10a à 10d faits ; points à signaler : §16 |
 | 11 | Stripe | ⬜ | | PAY | |
 | 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
 | 12b | Demandes partenaires | ⬜ | | IMP | |
@@ -30,7 +30,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord. Reste : 10d Mes demandes, 10e Ma fiche / Mes avis / Statistiques, 10f Équipe et invitations, 10g Mon compte (2FA), 10h PWA
+- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes. Reste : 10e Ma fiche / Mes avis / Statistiques, 10f Équipe et invitations, 10g Mon compte (2FA), 10h PWA
 - Dernier lot terminé : 9, le 28/09/2026 (détail §15)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -280,17 +280,19 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **10a Connexion pro** (`/connexion?espace=pro`) : message identique que l'email existe ou non (CON-01), attente croissante après 5 échecs (CON-03), double authentification par application (TOTP) ; propriétaire ou gérant Premium sans 2FA → activation demandée avant la facturation (CON-02). **SMS : prêt mais coupé** par le flag `deuxFacteursSms` (activable en un clic dans `config/flags`, une fois les SMS Identity Platform payés).
 - **10b Inscription** : étape 1 sur `/pro` (métiers, chantiers, estimation des demandes), zone 30/50/100 km, entreprise par SIREN (fermée refusée, déjà inscrite → « Demander à rejoindre »), mot de passe, activation ; lien de reprise par email (ONB-04).
 - **10c Cadre et tableau de bord** : barre latérale repliable (ordinateur), onglets du bas + « Plus » (mobile), menu selon le rôle (le comptable ne voit que la facturation), sélecteur d'entreprise (plusieurs entreprises, bascule vérifiée côté serveur), tableau de bord : indicateurs, complétude, « 3 étapes pour être en ligne » (ONB-06).
+- **10d Mes demandes** (`/pro/demandes`) : nouvelle demande affichée sans recharger (écoute Firestore, PRO-01), coordonnées du particulier seulement après « Accepter la demande » (PRO-02 ; numéros et emails masqués dans le texte avant), « Je m'en occupe » et « Pris en charge par … » (PRO-03), compteurs, recherche, filtre d'état ; comptable exclu.
 - **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
 
 **À signaler**
 1. **Dépendances ajoutées** : `firebase` (SDK client, chargé à la demande dans l'espace pro seulement) et `@phosphor-icons/react` dans le site.
 2. **Modèle de données** : `brouillonsOnboarding.jetonHash` (empreinte du lien de reprise) ; collection `capturesEmulateur` (émulateur uniquement, refusée par les règles).
-3. **Écarts avec la maquette et ACCEPTANCE** : email demandé dès l'étape 1 (nécessaire au lien de reprise) ; SIREN demandé à l'étape 3 ; rayon en choix 30/50/100 km sans carte ; tableau de bord : « Devis envoyés » et « Chantiers signés » remplacés par « Taux de réponse » et « Fiche complétée » (données inexistantes), liste « Demandes récentes » ajoutée avec Mes demandes (10d) ; encart Premium sans « 24 h d'avance » (non décidé).
+3. **Écarts avec la maquette et ACCEPTANCE** : email demandé dès l'étape 1 (nécessaire au lien de reprise) ; SIREN demandé à l'étape 3 ; rayon en choix 30/50/100 km sans carte ; tableau de bord : « Devis envoyés » et « Chantiers signés » remplacés par « Taux de réponse » et « Fiche complétée » (données inexistantes), pas encore de liste « Demandes récentes » sur le tableau de bord (le bouton mène à Mes demandes) ; encart Premium sans « 24 h d'avance » (non décidé).
 4. **Complétude de la fiche : pondération proposée, à valider** — métiers et zone 20, téléphone vérifié 15, présentation ≥ 60 caractères 20, logo 10, 3 photos 20, certifications 15. Seuil de mise en ligne : 60 % (EMAILS `bienvenue-pro`).
 5. **Double authentification** : nécessite **Identity Platform** activé sur le projet Firebase (TOTP gratuit ; SMS facturés, d'où le flag).
 6. PRO-04 à 06 (débloquer, paiement) passent au lot 11 (Stripe). D45 (contraste) toujours à valider.
 7. **Corrections de fond** : cookies `Secure` refusés par WebKit sur `http://localhost` (émulateur seulement) ; configuration Firebase du navigateur lisible après navigation côté client.
-8. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
+8. **Mes demandes** : l'onglet « Appels d'offres » de la maquette arrive avec les appels d'offres (lot 12) ; l'écriture au particulier passe pour l'instant par email / téléphone (messagerie intégrée avec le devis) ; le routage des collaborateurs par métier attend la correspondance prestation → métier du matching (lot 12) ; refuser ne demande pas encore de motif.
+9. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
 
 ## 2. Incohérences et zones floues
 
