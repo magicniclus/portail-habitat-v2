@@ -9,7 +9,11 @@ import { supprimerCompte } from './api';
  * Suppression du compte en deux temps (ESP-04) : le bouton ouvre une fenêtre d'explication, puis
  * il faut taper SUPPRIMER pour confirmer. Le serveur exige aussi ce mot.
  */
-export function SuppressionCompte() {
+export function SuppressionCompte({
+  description = 'Vos demandes en cours seront annulées et les artisans prévenus. Vos avis publiés restent visibles sous votre nom affiché. Cette action est définitive.',
+}: {
+  description?: string;
+}) {
   const router = useRouter();
   const [ouvert, setOuvert] = useState(false);
   const [mot, setMot] = useState('');
@@ -41,7 +45,7 @@ export function SuppressionCompte() {
         </Button>
       }
       titre="Supprimer mon compte ?"
-      description="Vos demandes en cours seront annulées et les artisans prévenus. Vos avis publiés restent visibles sous votre nom affiché. Cette action est définitive."
+      description={description}
       actions={
         <>
           <FermerFeuille asChild>

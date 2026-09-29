@@ -9,6 +9,7 @@ import { Checkbox } from './Checkbox';
 import { Chip, ChipGroup } from './Chip';
 import { Field } from './Field';
 import { IconButton } from './IconButton';
+import { Interrupteur } from './Interrupteur';
 import { Input, Select, Textarea } from './Input';
 import { Logo } from './Logo';
 import { RadioCard, RadioCardGroup } from './RadioCard';
@@ -56,6 +57,24 @@ describe('IconButton', () => {
   it('porte un nom accessible et mesure 44 px', async () => {
     const { container } = render(<IconButton aria-label="Fermer" icone={<svg />} />);
     expect(screen.getByRole('button', { name: 'Fermer' }).className).toContain('size-11');
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('Interrupteur', () => {
+  it('rôle switch, 44 px, bascule au clic ; désactivé = réglage imposé', async () => {
+    const changer = vi.fn();
+    const { container } = render(
+      <>
+        <Interrupteur aria-label="Avis par email" onCheckedChange={changer} />
+        <Interrupteur aria-label="Sécurité par email" checked disabled />
+      </>,
+    );
+    const inter = screen.getByRole('switch', { name: 'Avis par email' });
+    expect(inter.className).toContain('size-11');
+    await userEvent.click(inter);
+    expect(changer).toHaveBeenCalledWith(true);
+    expect(screen.getByRole('switch', { name: 'Sécurité par email' })).toBeDisabled();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

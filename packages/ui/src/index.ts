@@ -22,6 +22,7 @@ export { ATTRIBUTS_CHAMP, CLASSES_CHAMP, type TypeChamp } from './primitives/cha
 export { Field, useChamp, type FieldProps } from './primitives/Field';
 export { Input, Select, Textarea, type InputProps } from './primitives/Input';
 export { Checkbox, type CheckboxProps } from './primitives/Checkbox';
+export { Interrupteur, type InterrupteurProps } from './primitives/Interrupteur';
 export { NoteMoyenne, type NoteMoyenneProps } from './primitives/NoteMoyenne';
 export {
   RadioCard,

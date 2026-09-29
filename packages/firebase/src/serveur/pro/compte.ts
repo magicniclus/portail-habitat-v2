@@ -8,7 +8,7 @@ import {
   type PreferencesNotifs,
 } from '@ph/core/espace-pro';
 import { masquerEmail } from '@ph/core/equipe';
-import { masquerTel } from '@ph/core/format';
+import { formatDate, masquerTel } from '@ph/core/format';
 import type { entreeChangerEmail, entreeNotifsPro, entreeProfilPro } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import type { UserRecord } from 'firebase-admin/auth';
@@ -258,5 +258,23 @@ export async function modifierNotifsPro(
         ...(trace.ipHash ? { ipHash: trace.ipHash } : {}),
         ...(trace.userAgent ? { userAgent: trace.userAgent.slice(0, 400) } : {}),
       });
+  });
+}
+
+/** Mot de passe changé depuis Mon compte : alerte de sécurité (EMAILS §4.1) avec l'appareil. */
+export async function alerterMotDePasseModifie(
+  s: Services,
+  uid: string,
+  appareil: string,
+): Promise<void> {
+  const compte = await s.auth.getUser(uid);
+  if (!compte.email) return;
+  await s.notifier({
+    modele: 'mot-de-passe-modifie',
+    destinataire: { uid, email: compte.email },
+    refObjet: `users/${uid}`,
+    variante: String(s.horloge()),
+    donnees: { appareil, lieu: 'Non communiqué', date: formatDate(s.horloge(), 'dateHeure') },
+    secrets: { lien: `${s.urlSite}/aide?sujet=pro` },
   });
 }

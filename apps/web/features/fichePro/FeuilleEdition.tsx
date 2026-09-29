@@ -6,17 +6,19 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
 /**
- * Modification d'une section de la fiche dans une feuille (fenêtre sur ordinateur) : envoi à
- * `/api/pro/fiche`, page rafraîchie après l'enregistrement.
+ * Modification d'une section dans une feuille (fenêtre sur ordinateur) : envoi à `url`
+ * (`/api/pro/fiche` par défaut), page rafraîchie après l'enregistrement.
  */
 export function FeuilleEdition({
   titre,
   entree,
+  url = '/api/pro/fiche',
   children,
 }: {
   titre: string;
-  /** Données envoyées (schéma `entreeModifierFiche`). */
+  /** Données envoyées (schéma de la route, `entreeModifierFiche` par défaut). */
   entree: () => Record<string, unknown>;
+  url?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -29,7 +31,7 @@ export function FeuilleEdition({
     ev.preventDefault();
     setEnCours(true);
     setErreur(null);
-    const r = await posterJson<unknown>('/api/pro/fiche', entree());
+    const r = await posterJson<unknown>(url, entree());
     setEnCours(false);
     if (!r.ok) return setErreur(r.message);
     setOuvert(false);

@@ -20,7 +20,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
 | 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
 | 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
-| 10 | Espace artisan, équipes, PWA | 🟡 | | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03 ; 65 e2e espace pro sur émulateurs | 10a à 10f faits ; points à signaler : §16 |
+| 10 | Espace artisan, équipes, PWA | 🟡 | | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03 ; 73 e2e espace pro sur émulateurs | 10a à 10g faits ; points à signaler : §16 |
 | 11 | Stripe | ⬜ | | PAY | |
 | 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
 | 12b | Demandes partenaires | ⬜ | | IMP | |
@@ -30,7 +30,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes, 10e Ma fiche / documents / Mes avis / Statistiques, 10f Équipe et invitations. Reste : 10g Mon compte (2FA), 10h PWA
+- Lot : 10 (espace artisan). Faits : 10a connexion pro, 10b inscription, 10c cadre + tableau de bord, 10d Mes demandes, 10e Ma fiche / documents / Mes avis / Statistiques, 10f Équipe et invitations, 10g Mon compte. Reste : 10h PWA
 - Dernier lot terminé : 9, le 28/09/2026 (détail §15)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -283,6 +283,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **10d Mes demandes** (`/pro/demandes`) : nouvelle demande affichée sans recharger (écoute Firestore, PRO-01), coordonnées du particulier seulement après « Accepter la demande » (PRO-02 ; numéros et emails masqués dans le texte avant), « Je m'en occupe » et « Pris en charge par … » (PRO-03), compteurs, recherche, filtre d'état ; comptable exclu.
 - **10e** : **Statistiques** réservées aux Premium (PRO-07 ; période dans l'URL, vues, appels, demandes de devis, vues par semaine) ; **Mes avis** (résumé, répartition, filtres, réponse publique unique) ; **Ma fiche** modifiable section par section (présentation, informations, devis moyen, zone), complétude recalculée côté serveur ; **documents** (dépôt Storage, vérification serveur : type, taille, SHA-256) avec **mise en ligne automatique** dès que le SIREN est vérifié (ou le Kbis envoyé) et la décennale envoyée (ONB-06b, COMPTES §3) ; **logo** et **projets réalisés** (accord du propriétaire du chantier).
 - **10f Équipe et invitations** : page **Équipe** (membres, sièges avec invitations en cours, inviter, annuler, changer de rôle, retirer, « Quitter » refusé au dernier propriétaire — EQU-01 à 04) ; page **Invitation** (entreprise, rôle, invitant ; accès créé pour qui n'a pas de compte, l'email étant prouvé par le lien ; autre adresse connectée : refus avec email masqué ; lien expiré ou annulé : nouvelle invitation — INV-01 à 03) ; **Rejoindre** une entreprise déjà inscrite (demande au propriétaire, acceptée ou refusée depuis Équipe).
+- **10g Mon compte** (`/pro/compte`, ancres `#profil`, `#telephone`, `#securite`, `#appareils`, `#notifications`, `#donnees`) : nom, changement d'email (lien à la nouvelle adresse, alerte masquée à l'ancienne), mobile ; mot de passe (alerte de sécurité par email) ; Google lié ou délié ; **double authentification par application** (QR code, clé, lien direct sur téléphone ; retrait avec mot de passe + code) et emails `2fa-activee` / `2fa-desactivee` ; **SMS (vérification du mobile, SMS de secours) prêts mais cachés** tant que le flag `deuxFacteursSms` est coupé ; « Tout déconnecter » (jetons révoqués partout) ; notifications par catégorie et canal (enregistrées aussitôt, consentements journalisés) et par entreprise (nouvelles demandes, avis, factures) ; export des données et suppression (bloquée pour le dernier propriétaire). Firebase Auth fait foi : `users/{uid}` (email, `mfaActive`, méthodes, téléphone vérifié) est recopié à chaque ouverture de la page.
 - **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
 
 **À signaler**
@@ -299,6 +300,10 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 11. **Équipe** : « Ajouter un siège » mène à la facturation (achat de sièges au lot 11) ; la **revendication** d'une fiche sans propriétaire passe par le support (vérification par un modérateur au lot 13) ; le transfert de propriété et le plafond de crédits par membre (services prêts) n'ont pas encore d'écran ; EQU-05 (accès coupé immédiatement) est couvert par les tests de service du lot 4.
 12. **Contrôle MOB-01 renforcé** : il compare désormais la largeur de la page à celle de l'appareil (un navigateur mobile dézoome une page trop large, ce qui masquait le défaut). Il a révélé un débordement de l'en-tête de Ma fiche, corrigé.
 13. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
+14. **Mon compte — dépendance ajoutée** : `uqr` (QR code, sans dépendance, ~15 Ko) pour l'application d'authentification ; nouveau composant `Interrupteur` dans `@ph/ui` (Radix Switch, déjà présent).
+15. **Mon compte — écarts avec la maquette** : la **liste des appareils** (« Safari sur iPhone · Mérignac ») demande un suivi des sessions qui n'existe pas dans DATABASE : seul l'appareil actuel est affiché, avec « Tout déconnecter » (y compris celui-ci) ; les notifications suivent le modèle de données (catégories `activite`, `relance`, `offres_pro`, `marketing` × canaux, plus `membres.notifs` pour l'entreprise) et non les 7 lignes de la maquette ; l'export est téléchargé tout de suite (JSON) au lieu d'une archive ZIP par email ; « Modifié il y a 4 mois » (mot de passe) n'est pas disponible dans Firebase.
+16. **Mon compte — à savoir** : l'email « Ce n'était pas moi » renvoie vers l'aide (sujet « pro »), l'annulation d'un changement d'email en 7 jours et le blocage de 24 h (EMAILS) ne sont pas encore faits ; sans SMS, le mobile ne peut pas être « vérifié », donc les 15 points « téléphone vérifié » de la complétude restent inaccessibles tant que le flag SMS est coupé (**à trancher** : compter un mobile renseigné en attendant ?) ; l'application d'authentification (TOTP) n'est pas gérée par l'émulateur Firebase : l'activation complète se vérifie sur le projet de recette, une fois Identity Platform activé.
+17. **Corrections** : un changement de mot de passe révoque les sessions en cours, la session est donc renouvelée avant tout autre appel ; la lecture des envois capturés (e2e) parcourt maintenant toutes les pages.
 
 ## 2. Incohérences et zones floues
 

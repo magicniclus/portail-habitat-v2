@@ -9,7 +9,7 @@ export type Etape =
   | { etape: 'secondFacteur'; resolveur: MultiFactorResolver; type: 'totp' | 'phone' };
 
 /** Ouvre la session serveur (cookie httpOnly, 7 jours pour les pros) à partir de la connexion Firebase. */
-async function ouvrirSessionPro(c: { user: User }): Promise<void> {
+export async function ouvrirSessionPro(c: { user: User }): Promise<void> {
   const r = await posterJson<null>('/api/session', {
     jetonId: await c.user.getIdToken(),
     espace: 'pro',

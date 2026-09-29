@@ -7,6 +7,7 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import type { Notification, ServicesComptes } from '../src/serveur/comptes';
 import {
+  alerterMotDePasseModifie,
   changerEmailPro,
   lireComptePro,
   modifierNotifsPro,
@@ -182,5 +183,16 @@ describe('modifierNotifsPro', () => {
       ['marketing_email', true],
       ['opposition_offres_pro', true],
     ]);
+  });
+});
+
+describe('alerterMotDePasseModifie', () => {
+  it('alerte de sécurité avec l’appareil', async () => {
+    await alerterMotDePasseModifie(s, uid, 'Chrome sur Mac');
+    expect(envois[0]).toMatchObject({
+      modele: 'mot-de-passe-modifie',
+      destinataire: { email: 'paul@test.local' },
+      donnees: { appareil: 'Chrome sur Mac' },
+    });
   });
 });

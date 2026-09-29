@@ -110,18 +110,24 @@ export async function siegesLibres(artisanId: string, n: number): Promise<() => 
 /** Liens secrets des envois capturés par l'émulateur (`capturesEmulateur`) contenant `motif`. */
 export async function liensEnvoyes(motif: string): Promise<string[]> {
   const hote = process.env.FIRESTORE_EMULATOR_HOST ?? 'localhost:8080';
-  const r = await fetch(
-    `http://${hote}/v1/projects/demo-portail-habitat/databases/(default)/documents/capturesEmulateur?pageSize=500`,
-    { headers: { Authorization: 'Bearer owner' } },
-  );
-  const d = (await r.json()) as {
-    documents?: {
-      fields: { secrets?: { mapValue: { fields?: Record<string, { stringValue: string }> } } };
-    }[];
-  };
-  return (d.documents ?? [])
-    .map((doc) => doc.fields.secrets?.mapValue.fields?.lien?.stringValue ?? '')
-    .filter((l) => l.includes(motif));
+  const liens: string[] = [];
+  let page = '';
+  do {
+    const r = await fetch(
+      `http://${hote}/v1/projects/demo-portail-habitat/databases/(default)/documents/capturesEmulateur?pageSize=300${page ? `&pageToken=${page}` : ''}`,
+      { headers: { Authorization: 'Bearer owner' } },
+    );
+    const d = (await r.json()) as {
+      nextPageToken?: string;
+      documents?: {
+        fields: { secrets?: { mapValue: { fields?: Record<string, { stringValue: string }> } } };
+      }[];
+    };
+    for (const doc of d.documents ?? [])
+      liens.push(doc.fields.secrets?.mapValue.fields?.lien?.stringValue ?? '');
+    page = d.nextPageToken ?? '';
+  } while (page);
+  return liens.filter((l) => l.includes(motif));
 }
 
 /** Email du propriétaire d'une entreprise du seed ayant ce plan (autre que les comptes fixes). */
@@ -160,4 +166,29 @@ export async function publierAvis(artisanId: string): Promise<string> {
     publieLe: Timestamp.now(),
   });
   return nomAffiche;
+}
+
+/** Compte pro jetable (sans entreprise) pour les réglages qui changent la connexion. */
+export async function nouveauComptePro(prefixe: string): Promise<string> {
+  const { auth, db, Timestamp } = await admin();
+  const email = `${prefixe}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@test.local`;
+  const { uid } = await auth.createUser({
+    email,
+    emailVerified: true,
+    password: MOT_DE_PASSE,
+    displayName: 'Jeanne Jetable',
+  });
+  await db.doc(chemins.user(uid)).set({
+    schemaVersion: 1,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    roles: ['artisan'],
+    email,
+    emailVerifie: true,
+    entreprises: [],
+    fournisseurs: ['password'],
+    origine: 'onboarding_pro',
+    statut: 'actif',
+  });
+  return email;
 }

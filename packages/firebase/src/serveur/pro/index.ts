@@ -18,6 +18,7 @@ export {
   type RealisationPro,
 } from './medias';
 export {
+  alerterMotDePasseModifie,
   changerEmailPro,
   deconnecterPartout,
   lireComptePro,
