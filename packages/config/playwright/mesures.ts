@@ -50,8 +50,11 @@ export function ciblesTropPetites(page: Page, racine = 'body'): Promise<CibleTro
   }, racine);
 }
 
-export function defileHorizontalement(page: Page): Promise<boolean> {
-  return page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+export async function defileHorizontalement(page: Page): Promise<boolean> {
+  // Largeur de l'appareil, pas `innerWidth` : un navigateur mobile dézoome une page trop large,
+  // et `innerWidth` grandit alors avec le contenu.
+  const largeur = page.viewportSize()?.width ?? (await page.evaluate(() => window.innerWidth));
+  return page.evaluate((l) => document.documentElement.scrollWidth > l + 1, largeur);
 }
 
 /** Champs sous 16 px : Safari iOS zoome à la saisie (MOB-03). */

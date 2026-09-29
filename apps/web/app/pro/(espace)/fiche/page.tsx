@@ -1,7 +1,7 @@
 import { peut } from '@ph/core/equipe';
 import { formatFourchette, formatTel } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireFichePro } from '@ph/firebase/pro';
+import { lireDocumentsPro, lireFichePro, lireRealisationsPro } from '@ph/firebase/pro';
 import { bouton } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
@@ -9,6 +9,10 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { CarteCompletude } from '@/features/espacePro/BlocsTableauDeBord';
+import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
+import { Documents } from '@/features/fichePro/Documents';
+import { Logo } from '@/features/fichePro/Logo';
+import { Realisations } from '@/features/fichePro/Realisations';
 import {
   EditionCoordonnees,
   EditionDevis,
@@ -50,13 +54,26 @@ export default async function PageMaFiche() {
   const s = await sessionPro(routes.proFiche);
   const active = s.espace.active;
   if (!active || active.membre.role === 'comptable') redirect(routes.proTableauDeBord);
-  const f = await lireFichePro(getFirestore(appAdmin()), active.artisanId);
+  const db = getFirestore(appAdmin());
+  const [f, documents, realisations] = await Promise.all([
+    lireFichePro(db, active.artisanId),
+    lireDocumentsPro(db, active.artisanId),
+    lireRealisationsPro(db, active.artisanId),
+  ]);
   if (!f) redirect(routes.proTableauDeBord);
   const edite = peut(active.membre, 'fiche.modifier');
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
+      <ConfigFirebase />
+      {edite ? (
+        <Logo
+          artisanId={active.artisanId}
+          nom={f.nomCommercial}
+          {...(f.logoUrl ? { logoUrl: f.logoUrl } : {})}
+        />
+      ) : null}
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+        <div className="min-w-0 basis-[min(100%,420px)] grow">
           <h1 className="m-0 mb-1.5 text-[clamp(26px,3vw,34px)] leading-[1.1]">
             {f.nomCommercial}
           </h1>
@@ -102,6 +119,13 @@ export default async function PageMaFiche() {
               <dd className="m-0 break-all">{f.siteWeb ?? '—'}</dd>
             </dl>
           </Section>
+          <Section titre="Projets réalisés">
+            <Realisations
+              artisanId={active.artisanId}
+              realisations={realisations}
+              peutModifier={peut(active.membre, 'realisations.modifier')}
+            />
+          </Section>
         </div>
         <div className="grid gap-5">
           <CarteCompletude c={f.completude} />
@@ -125,6 +149,13 @@ export default async function PageMaFiche() {
               Rayon de <strong>{f.zone.rayonKm} km</strong>
               {f.ville ? ` · siège à ${f.ville}` : ''}
             </p>
+          </Section>
+          <Section titre="Documents et assurances">
+            <Documents
+              artisanId={active.artisanId}
+              documents={documents}
+              peutDeposer={peut(active.membre, 'documents.televerser')}
+            />
           </Section>
         </div>
       </div>

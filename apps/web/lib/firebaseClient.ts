@@ -3,6 +3,7 @@
 import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
+import type { FirebaseStorage } from 'firebase/storage';
 
 interface ConfigPage {
   config: Record<string, string>;
@@ -12,6 +13,7 @@ interface ConfigPage {
 let app: Promise<FirebaseApp> | null = null;
 let authP: Promise<Auth> | null = null;
 let dbP: Promise<Firestore> | null = null;
+let stockageP: Promise<FirebaseStorage> | null = null;
 
 function config(): ConfigPage {
   const bloc = document.getElementById('config-firebase')?.textContent;
@@ -50,4 +52,25 @@ export function firestoreClient(): Promise<Firestore> {
     return db;
   });
   return dbP;
+}
+
+/** Storage (documents, logo, réalisations) : la session Firebase du navigateur porte les droits. */
+function stockageClient(): Promise<FirebaseStorage> {
+  stockageP ??= Promise.all([application(), import('firebase/storage')]).then(([a, m]) => {
+    const st = m.getStorage(a);
+    const e = config().emulateurs?.storage;
+    if (e) {
+      const [hote, port] = e.split(':');
+      m.connectStorageEmulator(st, hote!, Number(port));
+    }
+    return st;
+  });
+  return stockageP;
+}
+
+/** Dépose un fichier dans Storage (règles : membre de l'entreprise, type et taille). */
+export async function deposerFichier(chemin: string, fichier: File): Promise<void> {
+  await authClient().then((a) => a.authStateReady());
+  const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
+  await m.uploadBytes(m.ref(st, chemin), fichier, { contentType: fichier.type });
 }

@@ -5,6 +5,23 @@ import { expect, type Page } from '@playwright/test';
 /** Mot de passe des comptes du seed (`SEED_MOT_DE_PASSE`, émulateur seulement). */
 export const MOT_DE_PASSE = process.env.SEED_MOT_DE_PASSE ?? 'MotDePasse-e2e-2026';
 
+/** Petit PDF valide pour les dépôts de documents. */
+export const PDF = {
+  name: 'attestation.pdf',
+  mimeType: 'application/pdf',
+  buffer: Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF'),
+};
+
+/** Image PNG valide de 1 × 1 px (logo, photos de chantier). */
+export const png = (nom: string) => ({
+  name: nom,
+  mimeType: 'image/png',
+  buffer: Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+    'base64',
+  ),
+});
+
 export const COMPTES = {
   proprio: 'proprio@test.local',
   collab: 'collab@test.local',

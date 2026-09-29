@@ -127,3 +127,12 @@ export const chemins = {
 
 /** Collection group des attributions (demandes et diagnostics) : filtrer par `artisanId`. */
 export const GROUPE_ATTRIBUTIONS = 'attributions';
+
+/** Chemins Storage (storage.rules) : fichiers de l'entreprise. */
+export const fichiers = {
+  document: (aid: string, docId: string, nom: string) =>
+    `artisans/${aid}/documents/${docId}/${nom}`,
+  logo: (aid: string, nom: string) => `artisans/${aid}/logo/${nom}`,
+  realisation: (aid: string, rid: string, nom: string) =>
+    `artisans/${aid}/realisations/${rid}/${nom}`,
+} as const;

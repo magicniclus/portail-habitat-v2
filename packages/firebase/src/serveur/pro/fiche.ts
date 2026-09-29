@@ -18,11 +18,13 @@ import { chemins } from '../../chemins';
  * Complétude de la fiche (`artisans.completude`) à partir du document et des réalisations publiées ;
  * « coordonnées vérifiées » : téléphone vérifié du compte propriétaire.
  */
-async function completudeDepuisBase(
+export async function completudeDepuisBase(
   db: Firestore,
   artisanId: string,
   a: DocumentData,
   t?: Transaction,
+  /** Photos publiées ajoutées (+) ou retirées (−) par l'écriture en cours de la transaction. */
+  ajustementPhotos = 0,
 ) {
   const requete = db.collection(chemins.realisations(artisanId)).where('publie', '==', true);
   const refProprietaire = a.proprietaireUid
@@ -38,10 +40,11 @@ async function completudeDepuisBase(
     telephoneVerifie: proprietaire?.get('telephoneVerifie') === true,
     description: (a.description as string | undefined) ?? '',
     logo: Boolean(a.logoUrl),
-    nbPhotos: realisations.docs.reduce(
-      (t, r) => t + ((r.get('photos') as unknown[] | undefined)?.length ?? 0),
-      0,
-    ),
+    nbPhotos:
+      realisations.docs.reduce(
+        (t, r) => t + ((r.get('photos') as unknown[] | undefined)?.length ?? 0),
+        0,
+      ) + ajustementPhotos,
     nbCertifications: ((a.labels as string[] | undefined) ?? []).length,
   });
 }
@@ -58,6 +61,7 @@ export interface FichePro {
   telephonePublic?: string;
   emailContact?: string;
   siteWeb?: string;
+  logoUrl?: string;
   devis?: { minCentimes: number; maxCentimes: number };
   zone: { centre: { latitude: number; longitude: number }; rayonKm: number };
   completude: Awaited<ReturnType<typeof completudeDepuisBase>>;
@@ -79,6 +83,7 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     ...facultatif('telephonePublic'),
     ...facultatif('emailContact'),
     ...facultatif('siteWeb'),
+    ...facultatif('logoUrl'),
     ...(a.budgetMin !== undefined && a.budgetMax !== undefined
       ? { devis: { minCentimes: a.budgetMin, maxCentimes: a.budgetMax } }
       : {}),

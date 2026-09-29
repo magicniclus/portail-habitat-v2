@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { MOT_DE_PASSE } from './outils';
+import { MOT_DE_PASSE, PDF } from './outils';
 
 // docs/ACCEPTANCE.md ONB-01 à 04 et ONB-07, sur les émulateurs et les SIREN du seed (cacheSirene).
 const SIRENS = { libre: '552100554', fermee: '443061841', inscrite: '404833048' } as const;
@@ -110,6 +110,19 @@ test.describe('Inscription pro', () => {
     await expect(
       page.getByRole('dialog', { name: 'Plus' }).getByRole('link', { name: 'Facturation' }),
     ).toBeVisible();
+
+    // ONB-06b : SIREN vérifié à l'inscription + décennale envoyée → fiche en ligne.
+    await page.goto('/pro/fiche');
+    await expect(page.getByText(/Votre fiche est hors ligne/)).toBeVisible();
+    await page.getByLabel('Type de document').selectOption('decennale');
+    await page.getByLabel(/^Fichier/).setInputFiles(PDF);
+    await page.getByRole('button', { name: 'Envoyer le document' }).click();
+    await expect(page.getByText(/Votre fiche est en ligne/).first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByRole('list', { name: 'Documents envoyés' })).toContainText(
+      'En cours de vérification',
+    );
   });
 
   test('ONB-04 : le lien reçu par email reprend l’inscription sur un autre appareil', async ({
