@@ -194,3 +194,4 @@ export function ongletsMobiles(menu: readonly { liens: readonly LienPro[] }[]) {
   return { onglets, plus: liens.filter((l) => !onglets.includes(l)) };
 }
 export * from './demandes';
+export * from './statistiques';

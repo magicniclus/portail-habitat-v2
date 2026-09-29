@@ -43,3 +43,8 @@ export function formatRelatif(entree: DateEntree, maintenant: DateEntree = new D
   if (abs < 7 * JOUR) return relatif.format(Math.round(ecart / JOUR), 'day');
   return formatDate(entree);
 }
+
+const jourParis = new Intl.DateTimeFormat('en-CA', { timeZone: FUSEAU });
+
+/** Jour « AAAA-MM-JJ » à Paris (identifiants `statsJour`). */
+export const jourIso = (entree: DateEntree): string => jourParis.format(versDate(entree));

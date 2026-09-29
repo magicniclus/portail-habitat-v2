@@ -48,3 +48,11 @@ describe('formatRelatif', () => {
     expect(formatRelatif(new Date(maintenant.getTime() + 2 * h), maintenant)).toBe('dans 2 heures');
   });
 });
+
+describe('jourIso', () => {
+  it('jour à Paris, pas en UTC', async () => {
+    const { jourIso } = await import('./dates');
+    expect(jourIso(new Date('2026-09-28T22:30:00Z'))).toBe('2026-09-29');
+    expect(jourIso(new Date('2026-01-15T10:00:00Z'))).toBe('2026-01-15');
+  });
+});

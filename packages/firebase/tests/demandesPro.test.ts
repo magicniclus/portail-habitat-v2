@@ -143,3 +143,17 @@ describe('prendreEnCharge (PRO-03)', () => {
     expect((await db.doc(chemins.attribution('d1', 'a1')).get()).get('assigneA')).toBe('p1');
   });
 });
+
+describe('lireStatsJours', () => {
+  it('jours à partir de la date donnée seulement', async () => {
+    const { lireStatsJours } = await import('../src/serveur/pro');
+    for (const [jour, vues] of [
+      ['2026-09-01', 3],
+      ['2026-08-31', 9],
+    ] as const)
+      await db.doc(chemins.statsJour('a1', jour)).set({ vuesFiche: vues, clicsTelephone: 1 });
+    expect(await lireStatsJours(db, 'a1', '2026-09-01')).toEqual([
+      { jour: '2026-09-01', vuesFiche: 3, clicsTelephone: 1, clicsDevis: 0 },
+    ]);
+  });
+});

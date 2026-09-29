@@ -1,5 +1,5 @@
 export { formatEuros, formatFourchette, parseEuros, type OptionsEuros } from './euros';
-export { formatDate, formatRelatif, type DateEntree, type StyleDate } from './dates';
+export { formatDate, formatRelatif, jourIso, type DateEntree, type StyleDate } from './dates';
 export { estMobileFr, formatTel, normaliserTel } from './telephone';
 export {
   estSirenValide,

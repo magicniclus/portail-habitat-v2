@@ -68,3 +68,16 @@ export async function proposerDemande(artisanId: string): Promise<{ reference: s
   });
   return { reference };
 }
+
+/** Email du propriétaire d'une entreprise du seed ayant ce plan (autre que les comptes fixes). */
+export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'premium') {
+  const { auth, db } = await admin();
+  const artisans = db.doc(chemins.artisan('_')).parent;
+  const r = await artisans.where('plan', '==', plan).where('nbMembres', '>=', 1).limit(10).get();
+  for (const d of r.docs) {
+    const uid = d.get('proprietaireUid') as string | undefined;
+    if (uid && !Object.values(COMPTES).some((e) => uid.includes(e.split('@')[0]!)))
+      return (await auth.getUser(uid)).email!;
+  }
+  throw new Error(`Aucune entreprise ${plan} dans le seed`);
+}

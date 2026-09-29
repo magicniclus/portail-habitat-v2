@@ -53,7 +53,28 @@ export function genererJeu(
   const notes = genererAvis(c, entreprises);
   publierFiches(c, entreprises, notes);
   publierStats(c);
+  genererStatsJour(c, 'seed-a-00', 120);
   return { documents: c.docs, comptes: c.comptes, claims: calculerClaims(c) };
+}
+
+/** Statistiques quotidiennes de démonstration (page Statistiques) ; générées en dernier : le reste du jeu ne change pas. */
+function genererStatsJour(c: ContexteSeed, artisanId: string, nbJours: number) {
+  for (let i = 0; i < nbJours; i++) {
+    const jour = new Date(c.maintenant.getTime() - i * 86_400_000).toISOString().slice(0, 10);
+    const vuesFiche = c.h.entier(0, 25);
+    c.docs.set(chemins.statsJour(artisanId, jour), {
+      schemaVersion: 1,
+      vuesFiche,
+      vuesAnnuaire: vuesFiche * 3 + c.h.entier(0, 10),
+      clicsTelephone: c.h.entier(0, Math.ceil(vuesFiche / 8)),
+      clicsDevis: c.h.entier(0, Math.ceil(vuesFiche / 12)),
+      demandesRecues: 0,
+      demandesRepondues: 0,
+      devisEnvoyes: 0,
+      devisAcceptes: 0,
+      sources: { annuaire: vuesFiche, recherche: 0, direct: 0, diagnostic: 0 },
+    });
+  }
 }
 
 /** `stats/public` tel que le recalcul nocturne le produira (INTEGRATIONS §3). */
