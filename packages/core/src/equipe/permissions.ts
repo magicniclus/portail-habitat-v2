@@ -89,3 +89,19 @@ export function peut(
   }
   return true;
 }
+
+/** Libellés des rôles (écrans et emails, EMAILS §4.3). */
+export const LIBELLES_ROLE: Record<RoleMembre, string> = {
+  proprietaire: 'Propriétaire',
+  gerant: 'Gérant',
+  collaborateur: 'Collaborateur',
+  comptable: 'Comptable',
+};
+
+/** Ce que chaque rôle permet, en une phrase (invitation, page Équipe). */
+export const POUVOIRS_ROLE: Record<RoleMembre, string> = {
+  gerant: 'Gérer les demandes, la fiche, l’équipe et l’abonnement',
+  collaborateur: 'Répondre aux demandes, envoyer des devis, ajouter des réalisations',
+  comptable: 'Consulter et télécharger les factures',
+  proprietaire: 'Tous les droits sur l’entreprise',
+};

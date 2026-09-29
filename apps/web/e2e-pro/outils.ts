@@ -86,6 +86,27 @@ export async function proposerDemande(artisanId: string): Promise<{ reference: s
   return { reference };
 }
 
+/**
+ * Donne `n` sièges libres à l'entreprise (donnée de test : en production seul le webhook Stripe
+ * écrit `siegesMax`) ; renvoie la remise en l'état.
+ */
+export async function siegesLibres(artisanId: string, n: number): Promise<() => Promise<void>> {
+  const { db, Timestamp } = await admin();
+  const ref = db.doc(chemins.artisan(artisanId));
+  const avant = (await ref.get()).get('siegesMax') as number;
+  const membres = (await db.doc(chemins.membre(artisanId, '_')).parent.get()).size;
+  const invitations = await db
+    .doc(`invitations/_`)
+    .parent.where('artisanId', '==', artisanId)
+    .where('statut', '==', 'envoyee')
+    .where('expireLe', '>', Timestamp.now())
+    .get();
+  await ref.update({ siegesMax: membres + invitations.size + n });
+  return async () => {
+    await ref.update({ siegesMax: avant });
+  };
+}
+
 /** Email du propriétaire d'une entreprise du seed ayant ce plan (autre que les comptes fixes). */
 export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'premium') {
   const { auth, db } = await admin();

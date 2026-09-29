@@ -1,19 +1,10 @@
+import { LIBELLES_ROLE, POUVOIRS_ROLE } from '@ph/core/equipe';
 import { alerte, bouton, note, para, recap, titre } from '../blocs';
 import { bonjour, modele } from '../modele';
 
 /** EMAILS §4.3 : équipes (charte orange). */
-const ROLES: Record<string, string> = {
-  proprietaire: 'Propriétaire',
-  gerant: 'Gérant',
-  collaborateur: 'Collaborateur',
-  comptable: 'Comptable',
-};
-const POUVOIRS: Record<string, string> = {
-  gerant: 'Gérer les demandes, la fiche, l’équipe et l’abonnement',
-  collaborateur: 'Répondre aux demandes, envoyer des devis, ajouter des réalisations',
-  comptable: 'Consulter et télécharger les factures',
-  proprietaire: 'Tous les droits sur l’entreprise',
-};
+const ROLES: Record<string, string> = LIBELLES_ROLE;
+const POUVOIRS: Record<string, string> = POUVOIRS_ROLE;
 const libelleRole = (r: string) => ROLES[r] ?? r;
 
 interface Equipe {
