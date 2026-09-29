@@ -193,3 +193,4 @@ export function ongletsMobiles(menu: readonly { liens: readonly LienPro[] }[]) {
   const onglets = [...liens].sort((a, b) => rang(a) - rang(b)).slice(0, 4);
   return { onglets, plus: liens.filter((l) => !onglets.includes(l)) };
 }
+export * from './demandes';
