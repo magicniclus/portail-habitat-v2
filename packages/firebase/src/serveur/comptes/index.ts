@@ -19,6 +19,13 @@ export {
   retirerMembre,
   transfererPropriete,
 } from './membres';
+export {
+  choisirEntrepriseActive,
+  lireEspacePro,
+  tableauDeBordPro,
+  type EspacePro,
+  type ResumeArtisan,
+} from './espacePro';
 export { rechercherEntreprise, type EntrepriseProposee } from './entreprises';
 export { finaliserOnboarding } from './onboarding';
 export {
