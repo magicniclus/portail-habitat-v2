@@ -21,6 +21,11 @@ export const codePostal = z.string().regex(/^\d{5}$/, 'Code postal à 5 chiffres
 export const telephoneE164 = z
   .string()
   .regex(/^\+[1-9]\d{7,14}$/, 'Téléphone au format international');
+/** Numéro français tel que saisi (« 06 12 34 56 78 », « +33 6… ») ; normalisé en E.164 par le serveur. */
+export const telephoneFr = z
+  .string()
+  .trim()
+  .regex(/^(\+33|0)[1-9](\s?\d{2}){4}$/, 'Numéro de téléphone invalide');
 export const email = z.email().transform((e) => e.toLowerCase());
 export const siren = z.string().refine(estSirenValide, 'SIREN invalide');
 export const siret = z.string().refine(estSiretValide, 'SIRET invalide');

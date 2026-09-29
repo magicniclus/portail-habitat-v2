@@ -3,16 +3,11 @@
 import { statutZone } from '@ph/core/onboarding';
 import { Banner, Combobox, type OptionCombobox } from '@ph/ui';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { libelleSource, useDemandesEstimees } from '@/features/pro/useDemandesEstimees';
 import { posterJson } from '@/lib/posterJson';
 import { BarreEtape } from './BarreEtape';
-
-interface Lieu {
-  nom: string;
-  codePostal: string;
-  centre: { latitude: number; longitude: number };
-}
+import { useLieux, type Lieu } from './useLieux';
 
 const RAYONS = [30, 50, 100] as const;
 
@@ -28,7 +23,6 @@ export function EtapeZone({
 }) {
   const router = useRouter();
   const [saisie, setSaisie] = useState(zoneInitiale?.ville ?? '');
-  const [options, setOptions] = useState<Lieu[]>([]);
   const [lieu, setLieu] = useState<Lieu | null>(
     zoneInitiale ? { nom: zoneInitiale.ville, codePostal: '', centre: zoneInitiale.centre } : null,
   );
@@ -37,17 +31,7 @@ export function EtapeZone({
   const [enCours, setEnCours] = useState(false);
   const estimation = useDemandesEstimees(lieu?.codePostal ?? '', metiers, rayon);
   const s = statutZone({ ville: lieu?.nom, rayonKm: rayon });
-
-  useEffect(() => {
-    if (saisie.trim().length < 2 || saisie === lieu?.nom) return;
-    const minuterie = setTimeout(() => {
-      void fetch(`/api/lieux?q=${encodeURIComponent(saisie.trim())}`)
-        .then((r) => r.json() as Promise<{ lieux: Lieu[] }>)
-        .then((d) => setOptions(d.lieux))
-        .catch(() => setOptions([]));
-    }, 250);
-    return () => clearTimeout(minuterie);
-  }, [saisie, lieu?.nom]);
+  const options = useLieux(saisie, lieu?.nom);
 
   const envoyer = async (ev: FormEvent) => {
     ev.preventDefault();

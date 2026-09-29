@@ -7,3 +7,4 @@ export {
 } from './demandes';
 export { lireStatsJours } from './statistiques';
 export { lireAvisPro, repondreAvis, type AvisPro } from './avis';
+export { lireFichePro, modifierFiche, type FichePro } from './fiche';

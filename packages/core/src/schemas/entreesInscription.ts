@@ -1,15 +1,12 @@
 import { z } from '../zod';
-import { codePostal, email, geo, id } from './commun';
+import { codePostal, email, geo, id, telephoneFr } from './commun';
 import { rayonKm } from './artisans';
 
 /** Étape 1 (formulaire de la page d'acquisition, COMPTES §3.1 bis) : identité, métiers, chantiers. */
 export const entreeInscriptionEtape1 = z
   .strictObject({
     nom: z.string().trim().min(2, 'Indiquez votre nom et prénom').max(80),
-    telephone: z
-      .string()
-      .trim()
-      .regex(/^(\+33|0)[1-9](\s?\d{2}){4}$/, 'Numéro de téléphone invalide'),
+    telephone: telephoneFr,
     email,
     codePostal,
     metierPrincipal: id,
