@@ -281,6 +281,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **10b Inscription** : étape 1 sur `/pro` (métiers, chantiers, estimation des demandes), zone 30/50/100 km, entreprise par SIREN (fermée refusée, déjà inscrite → « Demander à rejoindre »), mot de passe, activation ; lien de reprise par email (ONB-04).
 - **10c Cadre et tableau de bord** : barre latérale repliable (ordinateur), onglets du bas + « Plus » (mobile), menu selon le rôle (le comptable ne voit que la facturation), sélecteur d'entreprise (plusieurs entreprises, bascule vérifiée côté serveur), tableau de bord : indicateurs, complétude, « 3 étapes pour être en ligne » (ONB-06).
 - **10d Mes demandes** (`/pro/demandes`) : nouvelle demande affichée sans recharger (écoute Firestore, PRO-01), coordonnées du particulier seulement après « Accepter la demande » (PRO-02 ; numéros et emails masqués dans le texte avant), « Je m'en occupe » et « Pris en charge par … » (PRO-03), compteurs, recherche, filtre d'état ; comptable exclu.
+- **10e (en cours)** : **Statistiques** réservées aux Premium (PRO-07 ; période dans l'URL, vues, appels, demandes de devis, vues par semaine) ; **Mes avis** (résumé, répartition, filtres, réponse publique unique) ; **Ma fiche** modifiable section par section (présentation, informations, devis moyen, zone), complétude recalculée côté serveur. Reste : documents (Kbis, décennale…) avec mise en ligne automatique (ONB-06b), logo et réalisations photo.
 - **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
 
 **À signaler**
@@ -292,7 +293,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 6. PRO-04 à 06 (débloquer, paiement) passent au lot 11 (Stripe). D45 (contraste) toujours à valider.
 7. **Corrections de fond** : cookies `Secure` refusés par WebKit sur `http://localhost` (émulateur seulement) ; configuration Firebase du navigateur lisible après navigation côté client.
 8. **Mes demandes** : l'onglet « Appels d'offres » de la maquette arrive avec les appels d'offres (lot 12) ; l'écriture au particulier passe pour l'instant par email / téléphone (messagerie intégrée avec le devis) ; le routage des collaborateurs par métier attend la correspondance prestation → métier du matching (lot 12) ; refuser ne demande pas encore de motif.
-9. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
+9. **Espace pro, suite** : les statistiques quotidiennes (`statsJour`) ne sont pas encore alimentées (suivi des vues au lot 13c ; le seed en contient pour la démonstration) ; « Demander un avis » donne le lien de `/avis`, sans présélection de l'entreprise ; le nom commercial et les métiers ne se modifient pas encore depuis Ma fiche ; **contradiction à trancher** : COMPTES §3 met la fiche en ligne dès que le Kbis (ou SIREN vérifié) et la décennale sont envoyés, alors qu'EMAILS `bienvenue-pro` annonce 3 étapes (téléphone, décennale, fiche à 60 %). Le tableau de bord suit EMAILS ; la mise en ligne suivra COMPTES (prime sur les autres documents).
+10. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
 
 ## 2. Incohérences et zones floues
 
