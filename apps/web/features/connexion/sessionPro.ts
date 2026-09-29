@@ -76,16 +76,14 @@ export async function validerSms(
 }
 
 /**
- * Étape 3 de l'inscription : compte email + mot de passe (ou connexion si l'adresse a déjà un compte
- * avec ce mot de passe), session, création de l'entreprise, puis session renouvelée avec les
- * nouveaux droits (rôle propriétaire, COMPTES §5).
+ * Compte email + mot de passe créé, ou connexion si l'adresse a déjà un compte avec ce mot de
+ * passe ; la session serveur est ouverte.
  */
-export async function activerEspace(e: {
+export async function creerOuConnecter(e: {
   email: string;
   motDePasse: string;
   nom: string;
-  siren: string;
-}): Promise<{ artisanId: string }> {
+}): Promise<UserCredential> {
   const auth = await authClient();
   const m = await import('firebase/auth');
   let c: UserCredential;
@@ -97,6 +95,21 @@ export async function activerEspace(e: {
     c = await m.signInWithEmailAndPassword(auth, e.email, e.motDePasse);
   }
   await ouvrirSessionPro(c);
+  return c;
+}
+
+/**
+ * Étape 3 de l'inscription : compte email + mot de passe (ou connexion si l'adresse a déjà un compte
+ * avec ce mot de passe), session, création de l'entreprise, puis session renouvelée avec les
+ * nouveaux droits (rôle propriétaire, COMPTES §5).
+ */
+export async function activerEspace(e: {
+  email: string;
+  motDePasse: string;
+  nom: string;
+  siren: string;
+}): Promise<{ artisanId: string }> {
+  const c = await creerOuConnecter(e);
   const r = await posterJson<{ artisanId: string }>('/api/pro/inscription/finaliser', {
     cleIdempotence: crypto.randomUUID(),
     siren: e.siren,

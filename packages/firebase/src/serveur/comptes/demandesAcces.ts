@@ -3,6 +3,7 @@ import type { entreeDemanderAcces, entreeRepondreDemandeAcces } from '@ph/core/s
 import type { z } from '@ph/core/zod';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import { nouvelUtilisateur } from './utilisateurs';
 import { exigerPermission, lireEntreprise } from './acces';
 import { synchroniserClaims } from './claims';
 import { nouveauMembre } from './membres-outils';
@@ -14,6 +15,31 @@ const DUREE_DEMANDE_ACCES_MS = 14 * JOUR_MS;
  * « Cette entreprise a déjà un compte » → demander à rejoindre (COMPTES §4.4). Le propriétaire et les
  * gérants sont prévenus par uid : le demandeur ne voit jamais leur email.
  */
+/**
+ * Nom affiché du demandeur ; compte créé depuis le navigateur sans profil : profil créé avec le nom
+ * du compte (le propriétaire doit savoir qui demande).
+ */
+async function nomDuDemandeur(s: ServicesComptes, uid: string, maintenant: Date): Promise<string> {
+  const ref = s.db.doc(chemins.user(uid));
+  const nom = (await ref.get()).get('nomAffiche') as string | undefined;
+  if (nom) return nom;
+  const compte = await s.auth.getUser(uid);
+  const nomCompte = compte.displayName?.trim().slice(0, 80);
+  if (!(await ref.get()).exists && compte.email)
+    await ref.set({
+      ...nouvelUtilisateur({
+        email: compte.email,
+        roles: [],
+        origine: 'inscription',
+        fournisseurs: ['password'],
+        emailVerifie: compte.emailVerified,
+        maintenant,
+      }),
+      ...(nomCompte ? { nomAffiche: nomCompte } : {}),
+    });
+  return nomCompte || 'Une personne';
+}
+
 export async function demanderAcces(
   s: ServicesComptes,
   uid: string,
@@ -21,9 +47,7 @@ export async function demanderAcces(
 ): Promise<{ demandeId: string }> {
   const maintenant = new Date(s.horloge());
   const ref = s.db.collection(collections.demandesAcces).doc();
-  const demandeur =
-    ((await s.db.doc(chemins.user(uid)).get()).get('nomAffiche') as string | undefined) ??
-    'Une personne';
+  const demandeur = await nomDuDemandeur(s, uid, maintenant);
   const { nomCommercial } = await s.db.runTransaction(async (tx) => {
     const entreprise = await lireEntreprise(s, tx, e.artisanId);
     if ((await tx.get(s.db.doc(chemins.membre(e.artisanId, uid)))).exists)

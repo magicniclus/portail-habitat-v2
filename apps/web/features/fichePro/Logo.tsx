@@ -63,7 +63,7 @@ export function Logo({
             accept={TYPES_IMAGE.join(',')}
             disabled={enCours}
             onChange={(e) => void choisir(e.target.files?.[0])}
-            className="absolute inset-0 size-full cursor-pointer opacity-0"
+            className="sr-only text-base"
           />
         </label>
         <span className="text-xs text-neutre-700">JPEG, PNG ou WebP, 2 Mo au plus.</span>

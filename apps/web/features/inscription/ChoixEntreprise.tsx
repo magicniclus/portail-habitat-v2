@@ -105,7 +105,7 @@ export function ChoixEntreprise({
                         Demander à rejoindre
                       </Link>
                       <Link
-                        href={routes.aideSujet('usurpation')}
+                        href={routes.aideSujet('signalement')}
                         className={bouton({ variant: 'fantome' })}
                       >
                         Signaler une usurpation
