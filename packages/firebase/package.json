@@ -18,6 +18,7 @@
     "./espace": "./src/serveur/espace/index.ts",
     "./annuaire": "./src/serveur/annuaire/index.ts",
     "./pro": "./src/serveur/pro/index.ts",
+    "./facturation": "./src/serveur/facturation/index.ts",
     "./client": "./src/client/index.ts"
   },
   "scripts": {
