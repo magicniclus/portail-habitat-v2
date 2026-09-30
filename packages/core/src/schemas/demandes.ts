@@ -145,6 +145,8 @@ export const attribution = z.object({
   motifRefus: z.string().optional(),
   coordonneesDebloquees: z.boolean(),
   scoreMatching: pourcent,
+  /** Attribution issue du déblocage d'un appel d'offres. */
+  appelOffresId: id.optional(),
 });
 
 export const message = z.object({

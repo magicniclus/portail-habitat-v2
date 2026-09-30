@@ -141,6 +141,8 @@ export const achatLead = z.object({
   stripePaymentIntentId: z.string().optional(),
   stripeInvoiceId: z.string().optional(),
   statut: z.enum(['paye', 'rembourse', 'rembourse_credits', 'litige']),
+  /** Membre qui a débloqué (plafond par collaborateur, historique). */
+  par: id.optional(),
   createdAt: horodatage,
 });
 
