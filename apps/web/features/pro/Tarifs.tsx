@@ -186,7 +186,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
             }
             action={
               <Link
-                href={routes.connexionPro}
+                href={routes.proAbonnement('visibilite', f)}
                 className={bouton({
                   variant: 'secondaire',
                   pleineLargeur: true,
@@ -226,7 +226,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
             }
             action={
               <Link
-                href={routes.connexionPro}
+                href={routes.proAbonnement('premium', f)}
                 className={bouton({ pleineLargeur: true, className: 'min-h-[50px]' })}
               >
                 Passer Premium

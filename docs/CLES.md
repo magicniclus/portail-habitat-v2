@@ -22,7 +22,7 @@
 | `STRIPE_SECRET_KEY` (`sk_test_…`) | Dashboard Stripe, mode Test → *Développeurs* → *Clés API* → « Clé secrète » (de préférence une **clé restreinte** : Checkout, Customer Portal, Customers, Subscriptions, Invoices, Products, Prices en écriture) | Vercel |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (`pk_test_…`) | même page, « Clé publiable » | Vercel |
 | `STRIPE_WEBHOOK_SECRET` (`whsec_…`) | *Développeurs* → *Webhooks* → « Ajouter un endpoint » : URL `https://<site>/api/stripe/webhook`, événements listés ci-dessous → « Clé de signature » | Vercel |
-| `STRIPE_PRICE_*` (Premium, Visibilité, siège, packs) | **rien à faire** : le script `pnpm stripe:produits` les crée et affiche les identifiants à copier | Vercel |
+| Produits et prix (Premium, Visibilité, siège, packs) | **rien à copier** : lancer une fois `STRIPE_SECRET_KEY=sk_test_… pnpm stripe:produits` depuis le dépôt ; le site retrouve les prix par leur clé (`ph_premium_annuel`…). Relançable sans créer de doublon | — |
 | **Stripe Tax** (pas une clé) | *Paramètres* → *Taxes* → activer, adresse de l'entreprise, enregistrement TVA France | — |
 | **Customer Portal** (pas une clé) | *Paramètres* → *Facturation* → *Portail client* → activer (changement de carte, factures, résiliation en fin de période) | — |
 

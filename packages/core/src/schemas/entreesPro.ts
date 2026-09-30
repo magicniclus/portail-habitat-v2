@@ -119,3 +119,9 @@ export const entreePush = z.strictObject({
   jeton: z.string().min(20).max(4096),
   actif: z.boolean(),
 });
+
+/** Paiement d'un abonnement (Checkout) : formule et facturation choisies sur la page de paiement. */
+export const entreeCheckout = z.strictObject({
+  produit: z.enum(['premium', 'visibilite']),
+  periode: z.enum(['annuel', 'mensuel']),
+});

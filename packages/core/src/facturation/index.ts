@@ -7,9 +7,13 @@ export {
   type PrixAffiches,
 } from './tarifs';
 export {
+  AVANTAGES_OFFRE,
   CATALOGUE_STRIPE,
+  NOMS_OFFRE,
   cleStripe,
   effetAbonnements,
+  etatAbonnement,
+  LIBELLES_STATUT_FACTURE,
   GRACE_PAIEMENT_MS,
   lirePrix,
   prixAbonnement,

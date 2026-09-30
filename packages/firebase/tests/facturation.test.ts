@@ -5,6 +5,9 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
 import {
+  creerCheckoutAbonnement,
+  lireFacturation,
+  ouvrirPortailClient,
   traiterEvenementStripe,
   type EvenementStripe,
   type ServicesFacturation,
@@ -259,5 +262,127 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
 
   it('événement non géré : ignoré mais noté', async () => {
     expect(await traiterEvenementStripe(s, evenement('customer.created', {}))).toBe('ignore');
+  });
+});
+
+describe('Checkout et portail client', () => {
+  const appels: { type: string; p: Record<string, unknown> }[] = [];
+  const faux = (prix = true) => ({
+    customers: {
+      create: async (p: Record<string, unknown>) => (
+        appels.push({ type: 'client', p }),
+        { id: 'cus_nouveau' }
+      ),
+    },
+    prices: {
+      list: async () => ({
+        data: prix ? [{ id: 'price_pa', lookup_key: 'ph_premium_annuel' }] : [],
+      }),
+    },
+    checkout: {
+      sessions: {
+        create: async (p: Record<string, unknown>) => (
+          appels.push({ type: 'session', p }),
+          { id: 'cs_1', url: 'https://checkout.stripe.com/c/cs_1' }
+        ),
+      },
+    },
+    billingPortal: {
+      sessions: { create: async () => ({ url: 'https://billing.stripe.com/p/x' }) },
+    },
+  });
+  const services = (prix = true) => ({ db, stripe: faux(prix), urlSite: 'https://ph.test' });
+
+  beforeEach(() => {
+    appels.length = 0;
+  });
+
+  it('crée le client Stripe une seule fois et une session avec l’entreprise en métadonnées', async () => {
+    const e = {
+      artisanId: 'a1',
+      email: 'p@test.local',
+      produit: 'premium' as const,
+      periode: 'annuel' as const,
+    };
+    expect(await creerCheckoutAbonnement(services(), e)).toEqual({
+      url: 'https://checkout.stripe.com/c/cs_1',
+    });
+    await creerCheckoutAbonnement(services(), e);
+    expect(appels.filter((a) => a.type === 'client')).toHaveLength(1);
+    const session = appels.find((a) => a.type === 'session')!.p;
+    expect(session).toMatchObject({
+      mode: 'subscription',
+      customer: 'cus_nouveau',
+      client_reference_id: 'a1',
+      line_items: [{ price: 'price_pa', quantity: 1 }],
+      subscription_data: { metadata: { artisanId: 'a1', produit: 'premium' } },
+      allow_promotion_codes: true,
+      cancel_url: 'https://ph.test/pro/abonnement/premium?facturation=annuel',
+    });
+  });
+
+  it('refuse un second Premium et une offre sans prix Stripe', async () => {
+    await expect(
+      creerCheckoutAbonnement(services(false), {
+        artisanId: 'a1',
+        email: 'p@test.local',
+        produit: 'premium',
+        periode: 'mensuel',
+      }),
+    ).rejects.toMatchObject({ code: 'INDISPONIBLE' });
+    await db.doc(chemins.artisan('a1')).update({ plan: 'premium', optionVisibilite: true });
+    await expect(
+      creerCheckoutAbonnement(services(), {
+        artisanId: 'a1',
+        email: 'p@test.local',
+        produit: 'visibilite',
+        periode: 'annuel',
+      }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
+  });
+
+  it('portail : seulement après un premier paiement', async () => {
+    await expect(ouvrirPortailClient(services(), 'a1')).rejects.toMatchObject({
+      code: 'PRECONDITION',
+    });
+    await db.doc(chemins.facturationPrivee('a1')).set({ stripeCustomerId: 'cus_1' });
+    expect(await ouvrirPortailClient(services(), 'a1')).toEqual({
+      url: 'https://billing.stripe.com/p/x',
+    });
+  });
+});
+
+describe('lireFacturation', () => {
+  it('abonnements en cours et factures récentes, objets simples', async () => {
+    await traiterEvenementStripe(s, evenement('customer.subscription.created', abonnement({})));
+    await traiterEvenementStripe(
+      s,
+      evenement('customer.subscription.created', abonnement({ id: 'sub_old', statut: 'canceled' })),
+    );
+    await db
+      .collection(collections.factures)
+      .doc('in_1')
+      .set({
+        artisanId: 'a1',
+        numero: 'PH-0001',
+        montantTtcCentimes: 115_056,
+        statut: 'paid',
+        hostedUrl: 'https://invoice.stripe.com/i/x',
+        createdAt: Timestamp.fromMillis(T),
+      });
+    const f = await lireFacturation(db, 'a1');
+    expect(f.abonnements.map((a) => [a.id, a.produit, a.periode])).toEqual([
+      ['sub_1', 'premium', 'annuel'],
+    ]);
+    expect(f.factures).toEqual([
+      {
+        id: 'in_1',
+        numero: 'PH-0001',
+        montantTtcCentimes: 115_056,
+        statut: 'paid',
+        date: T,
+        lien: 'https://invoice.stripe.com/i/x',
+      },
+    ]);
   });
 });

@@ -9,6 +9,7 @@ export interface ResumeArtisan {
   logoUrl?: string;
   enLigne: boolean;
   plan: 'gratuit' | 'visibilite' | 'premium';
+  optionVisibilite: boolean;
   ville: string;
   rayonKm: number;
 }
@@ -26,6 +27,7 @@ const resume = (d: FirebaseFirestore.DocumentData): ResumeArtisan => ({
   ...(d.logoUrl ? { logoUrl: d.logoUrl as string } : {}),
   enLigne: d.enLigne === true,
   plan: d.plan ?? 'gratuit',
+  optionVisibilite: d.optionVisibilite === true,
   ville: d.adresseSiege?.ville ?? '',
   rayonKm: d.zoneIntervention?.rayonKm ?? 0,
 });

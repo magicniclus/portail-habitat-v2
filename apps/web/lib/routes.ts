@@ -32,6 +32,9 @@ export const routes = {
   proStatistiques: r('/pro/statistiques'),
   proEquipe: r('/pro/equipe'),
   proAbonnementPremium: r('/pro/abonnement/premium'),
+  /** Page de paiement d'une offre, formule préremplie (ACQ-03). */
+  proAbonnement: (produit: 'premium' | 'visibilite', facturation?: 'annuel' | 'mensuel') =>
+    r(`/pro/abonnement/${produit}${facturation ? `?facturation=${facturation}` : ''}`),
   monEspace: r('/mon-espace'),
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),

@@ -1,3 +1,4 @@
+import { formatDate } from '../format/dates';
 import type { Facturation } from './tarifs';
 
 /**
@@ -177,4 +178,48 @@ export function effetAbonnements(
     siegesMax: premium ? SIEGES_INCLUS.premium + premium.sieges : SIEGES_INCLUS.gratuit,
     paiementEnEchec: abonnements.some((a) => a.statut === 'past_due'),
   };
+}
+
+/** Avantages rappelés sur la page de paiement (maquettes Paiement Offre Premium / Option Visibilité). */
+export const AVANTAGES_OFFRE: Record<ProduitAbonnement, readonly string[]> = {
+  premium: [
+    '4 mises en relation exclusives par mois, sinon le 2e mois est offert',
+    'Priorité sur les appels d’offres de votre zone',
+    'Toute l’option Visibilité incluse',
+    '0 % de commission, résiliable en un clic',
+  ],
+  visibilite: [
+    'Mise en avant dans l’annuaire de votre secteur',
+    'Téléphone affiché sur votre fiche',
+    'Badge Visibilité et statistiques de votre fiche',
+    '0 % de commission',
+  ],
+};
+
+export const NOMS_OFFRE: Record<ProduitAbonnement, string> = {
+  premium: 'Abonnement Premium',
+  visibilite: 'Option Visibilité',
+};
+
+export const LIBELLES_STATUT_FACTURE: Record<string, string> = {
+  paid: 'Payée',
+  open: 'À payer',
+  draft: 'En préparation',
+  uncollectible: 'Impayée',
+  void: 'Annulée',
+};
+
+/** Ligne d'état d'un abonnement sur la page Facturation. */
+export function etatAbonnement(a: {
+  statut: StatutAbonnement;
+  annulationFinPeriode: boolean;
+  finPeriode: number;
+}): { texte: string; ton: 'succes' | 'attention' | 'danger' } {
+  const date = formatDate(a.finPeriode, 'long');
+  if (a.statut === 'past_due' || a.statut === 'unpaid')
+    return { texte: 'Paiement refusé : mettez à jour votre carte sous 7 jours', ton: 'danger' };
+  if (a.statut === 'incomplete')
+    return { texte: 'Paiement en attente de confirmation', ton: 'attention' };
+  if (a.annulationFinPeriode) return { texte: `Résilié, actif jusqu’au ${date}`, ton: 'attention' };
+  return { texte: `Actif · prochaine échéance le ${date}`, ton: 'succes' };
 }

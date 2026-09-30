@@ -1,4 +1,11 @@
 export {
+  synchroniserCatalogueStripe,
+  type ClientCatalogueStripe,
+  type LigneCatalogue,
+} from './catalogue';
+export { lireFacturation, type AbonnementPro, type FacturePro } from './lecture';
+export { creerCheckoutAbonnement, ouvrirPortailClient, type ServicesCheckout } from './checkout';
+export {
   CREDITS_INCLUS_PREMIUM,
   traiterEvenementStripe,
   type ResultatWebhook,

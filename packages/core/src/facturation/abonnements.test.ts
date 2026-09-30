@@ -3,6 +3,7 @@ import {
   CATALOGUE_STRIPE,
   cleStripe,
   effetAbonnements,
+  etatAbonnement,
   lirePrix,
   recapPaiement,
   type AbonnementEtat,
@@ -111,5 +112,23 @@ describe('effetAbonnements (seul le webhook écrit plan, optionVisibilite, siege
   });
   it('résiliation en fin de période : actif jusqu’au bout', () => {
     expect(effetAbonnements([abo({ statut: 'active' })], T).plan).toBe('premium');
+  });
+});
+
+describe('etatAbonnement', () => {
+  const fin = Date.UTC(2027, 9, 1, 12);
+  it('actif, résilié, paiement refusé', () => {
+    expect(
+      etatAbonnement({ statut: 'active', annulationFinPeriode: false, finPeriode: fin }),
+    ).toEqual({
+      texte: 'Actif · prochaine échéance le 1 octobre 2027',
+      ton: 'succes',
+    });
+    expect(
+      etatAbonnement({ statut: 'active', annulationFinPeriode: true, finPeriode: fin }).texte,
+    ).toBe('Résilié, actif jusqu’au 1 octobre 2027');
+    expect(
+      etatAbonnement({ statut: 'past_due', annulationFinPeriode: false, finPeriode: fin }).ton,
+    ).toBe('danger');
   });
 });
