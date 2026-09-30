@@ -17,3 +17,10 @@ export {
   type Urgence,
 } from './prix';
 export { BAREME_DEFAUT, GRILLE_DEFAUT } from './bareme';
+export {
+  accesAppelOffres,
+  choisirMoyen,
+  debutMois,
+  type AccesAppelOffres,
+  type MoyenDeblocage,
+} from './deblocage';
