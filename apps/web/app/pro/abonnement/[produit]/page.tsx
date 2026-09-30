@@ -33,7 +33,11 @@ export default async function PagePaiement({
   return (
     <div className="min-h-dvh bg-blanc">
       <header className="border-b border-trait px-4 py-3">
-        <Link href={routes.proTableauDeBord} aria-label="Portail Habitat Pro, mon espace">
+        <Link
+          href={routes.proTableauDeBord}
+          aria-label="Portail Habitat Pro, mon espace"
+          className="inline-flex min-h-11 items-center"
+        >
           <Logo variant="pro" />
         </Link>
       </header>

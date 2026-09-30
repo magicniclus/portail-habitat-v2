@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { chemins } from '@ph/firebase/chemins';
-import { expect, type Page } from '@playwright/test';
+import { expect, type APIRequestContext, type Page } from '@playwright/test';
+import Stripe from 'stripe';
 
 /** Mot de passe des comptes du seed (`SEED_MOT_DE_PASSE`, émulateur seulement). */
 export const MOT_DE_PASSE = process.env.SEED_MOT_DE_PASSE ?? 'MotDePasse-e2e-2026';
@@ -191,4 +192,21 @@ export async function nouveauComptePro(prefixe: string): Promise<string> {
     statut: 'actif',
   });
   return email;
+}
+
+/** Événement Stripe signé avec le secret de test du serveur e2e, envoyé au webhook. */
+export async function webhookStripe(
+  request: APIRequestContext,
+  evenement: { id: string; type: string; created?: number; data: { object: unknown } },
+) {
+  const corps = JSON.stringify({ created: Math.floor(Date.now() / 1000), ...evenement });
+  const signature = Stripe.webhooks.generateTestHeaderString({
+    payload: corps,
+    secret: 'whsec_e2e_local',
+  });
+  const r = await request.post('/api/stripe/webhook', {
+    data: corps,
+    headers: { 'content-type': 'application/json', 'stripe-signature': signature },
+  });
+  return { status: r.status(), corps: (await r.json()) as { resultat?: string } };
 }

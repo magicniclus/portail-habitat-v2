@@ -21,7 +21,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
 | 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
 | 10 | Espace artisan, équipes, PWA | ✅ | 29/09/2026 | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03, MOB-06 (installation ; push à vérifier en recette) ; 80 e2e espace pro sur émulateurs, service worker testé en unitaire | Points à signaler : §16 |
-| 11 | Stripe | ⬜ | | PAY | |
+| 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
 | 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
 | 12b | Demandes partenaires | ⬜ | | IMP | |
 | 13 | Back-office | ⬜ | | ADM | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 11 (Stripe), à démarrer. Prérequis côté propriétaire : clés Stripe de test, produits et prix (DECISIONS)
-- Dernier lot terminé : 10, le 29/09/2026 (détail §16)
+- Lot : 12 (matching et appels d'offres), à démarrer
+- Dernier lot terminé : 11, le 30/09/2026 (détail §17)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -307,6 +307,23 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 17. **Corrections** : un changement de mot de passe révoque les sessions en cours, la session est donc renouvelée avant tout autre appel ; la lecture des envois capturés (e2e) parcourt maintenant toutes les pages.
 18. **PWA — pour activer le push en un clic** : dans la console Firebase, Cloud Messaging → « Certificats Web push » → générer la paire de clés ; mettre la clé publique dans `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (et `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`), puis passer `notificationsPush` à vrai dans `config/flags`. Sur iPhone, le push ne marche que dans l'application installée (iOS 16.4+, D39).
 19. **PWA — modèle de données** : nouvelle sous-collection `users/{uid}/appareilsPush/{empreinte}` (`jeton`, `appareil`, `majLe`), écrite par le serveur seulement (règles : tout refusé côté client, testé). **Écarts** : pas de file d'envoi rejouée hors ligne (aucun formulaire de l'espace n'en a encore besoin : le brouillon de devis arrive au lot 12) ; raccourci « Appels d'offres » ajouté avec la page (lot 12) ; le mode hors ligne est vérifié par un test unitaire du worker (Playwright ne coupe pas le réseau du service worker), l'enregistrement du worker par un test de bout en bout ; la réception réelle d'une notification (MOB-06) se vérifie sur le projet de recette avec la clé VAPID.
+
+## 17. Lot 11 — Paiements Stripe (terminé le 30/09/2026)
+
+**Fait**
+- **Catalogue** (`@ph/core/facturation`) : Premium 99,90 € HT/mois ou 958,80 € HT/an payé en une fois, Visibilité 12,90 € HT/mois ou 79,90 € HT/an, siège 9 € HT/mois, packs 10/25/50 crédits (D24 à D29), en centimes ; TVA 20 % ; récapitulatif HT/TVA/TTC (en annuel, le total dû couvre 12 mois, ACQ-03).
+- **Script** `pnpm stripe:produits` : crée les produits (`ph_premium`…) et les prix retrouvés par **clé de recherche** (`ph_premium_annuel`…), relançable sans doublon ; aucun identifiant de prix à copier ; clé live refusée sans `--live`.
+- **Webhook** `/api/stripe/webhook` : signature vérifiée, **un seul effet par événement** (`stripeEvents`, PAY-02), erreur notée puis retraitée au renvoi de Stripe, événements dans le désordre ignorés. Seul endroit qui écrit `plan`, `planPeriode`, `optionVisibilite` (Premium l'inclut), `siegesMax` (3 + sièges achetés ; équipe suspendue ou réactivée en conséquence), avec **7 jours de grâce** après un échec de paiement. Miroirs `abonnements`, `factures`, `paiements` ; crédits inclus Premium remis à 5 à chaque facture payée (D27) ; pack de crédits crédité une fois (mouvement `achat_pack`).
+- **Emails** (§4.6) : `abonnement-active`, `recu`, `paiement-echoue`, `renouvellement` (annuel, 7 jours avant), `abonnement-resilie`, `abonnement-termine`, `pack-achete`.
+- **Pages de paiement** `/pro/abonnement/premium` et `/pro/abonnement/visibilite` (formule préremplie par `?facturation=`, liens de la landing mis à jour), **Stripe Checkout** (client Stripe créé au premier paiement, TVA automatique, numéro de TVA, codes promo saisis chez Stripe), page de retour qui **attend le webhook** (PAY-01), **Facturation** (abonnement en cours, sièges, factures téléchargeables, « Gérer mon abonnement » = portail client Stripe ; CON-02 conservé ; comptable en lecture).
+
+**À signaler**
+1. **Dépendance ajoutée** : `stripe` (SDK officiel, serveur et script seulement).
+2. **Modèle de données** : `abonnements/{id}.evenementLe` (date de l'événement Stripe, pour ignorer un état plus ancien).
+3. **Écart avec les maquettes** : le formulaire de carte des maquettes est remplacé par un bouton vers la page sécurisée Stripe (règle 7) ; le code promo s'y saisit.
+4. **Non vérifiable ici, à faire en recette avec la clé de test** : redirection réelle vers Checkout, portail client, **Test Clocks** (renouvellement, échec, résiliation) ; le parcours est couvert avec des événements signés et un faux Stripe.
+5. **Reste pour d'autres lots** : achat de packs et déblocage à l'unité (lot 12, avec les appels d'offres) ; remboursements et litiges (`charge.refunded`, `charge.dispute.created` : lots 12 et 13) ; codes promo personnels (lot 13b) ; relances J+3 et J+6 après échec et `moyen-paiement-expire` (envois différés) ; bandeau « paiement refusé » sur le tableau de bord (la page Facturation l'affiche déjà) ; achat de sièges supplémentaires depuis l'écran Équipe (possible via le portail client si la modification de quantité y est activée).
+6. Décisions ⏳ appliquées en attendant : D19 (TVA 20 %, Stripe Tax), D26 (siège 9 €), D27 (5 crédits), D29 (packs), D32 (pas d'essai).
 
 ## 2. Incohérences et zones floues
 

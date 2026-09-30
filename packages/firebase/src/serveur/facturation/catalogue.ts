@@ -47,15 +47,13 @@ export async function synchroniserCatalogueStripe(
     }
     const produitId = `ph_${p.produit}`;
     if (!produits.has(produitId)) {
-      await stripe.products
-        .retrieve(produitId)
-        .catch(() =>
-          stripe.products.create({
-            id: produitId,
-            name: p.nomProduit,
-            metadata: { produit: p.produit },
-          }),
-        );
+      await stripe.products.retrieve(produitId).catch(() =>
+        stripe.products.create({
+          id: produitId,
+          name: p.nomProduit,
+          metadata: { produit: p.produit },
+        }),
+      );
       produits.add(produitId);
     }
     const { id } = await stripe.prices.create({
