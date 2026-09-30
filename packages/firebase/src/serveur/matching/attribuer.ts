@@ -81,43 +81,17 @@ async function destinatairesDemandes(db: Firestore, artisanId: string, metier: s
     .map((m) => m.id);
 }
 
-export async function attribuerDemande(
+/** Candidats, score, aiguillage et trace d'une demande (commun à l'attribution et aux relances). */
+async function analyser(
   s: ServicesMatching,
   demandeId: string,
-): Promise<ResultatAttribution> {
+  d: DocumentData,
+  qualite: number,
+  maintenant: number,
+  dejaVus: ReadonlySet<string> = new Set(),
+) {
   const config = s.config ?? CONFIG_MATCHING_DEFAUT;
-  const maintenant = s.horloge();
-  const refDemande = s.db.doc(chemins.demande(demandeId));
-  const snap = await refDemande.get();
-  if (!snap.exists || snap.get('statut') !== 'nouvelle') return 'deja_traitee';
-  const d = snap.data()!;
   const debut = Date.now();
-
-  const emailVerifie = d.particulierUid
-    ? (await s.db.doc(chemins.user(d.particulierUid as string)).get()).get('emailVerifie') === true
-    : false;
-  const qualite = qualiteLead(signauxLead(d, emailVerifie));
-  if (aModerer(qualite)) {
-    await s.db.runTransaction(async (t) => {
-      if ((await t.get(refDemande)).get('statut') !== 'nouvelle') return;
-      t.update(refDemande, {
-        qualiteLead: qualite,
-        moderation: true,
-        updatedAt: Timestamp.fromMillis(maintenant),
-      });
-      t.create(s.db.collection(collections.filesModeration).doc(`fraude-${demandeId}`), {
-        schemaVersion: 1,
-        createdAt: Timestamp.fromMillis(maintenant),
-        type: 'fraude_suspectee',
-        refs: { demandeId },
-        priorite: 2,
-        statut: 'a_traiter',
-        permissionRequise: 'demandes.moderer',
-      });
-    });
-    return 'moderation';
-  }
-
   const ref = await lireReferentielMetiers(s.db, maintenant);
   const metier = metierDeDemande(
     { ...(d.intention ? { intention: d.intention } : {}), prestationId: d.prestationId },
@@ -135,13 +109,14 @@ export async function attribuerDemande(
       tauxRefus30j: (x.data.tauxRefus30j as number | undefined) ?? 0,
     }),
   );
-  const candidats = evaluer(artisans, demande, config);
+  const candidats = evaluer(artisans, demande, config, dejaVus);
   const aiguillage = aiguiller(candidats, demande.artisanCibleId);
   // Appel d'offres : le quota de demandes garanties ne compte pas (ouvert à toutes les formules).
   const eligiblesAppel = evaluer(
     artisans.map((a) => ({ ...a, quotaDemandesMois: Number.MAX_SAFE_INTEGER })),
     demande,
     config,
+    dejaVus,
   ).filter((c) => !c.raisonExclusion);
 
   const trace = (resultat: string, retenus: Candidat[]) => ({
@@ -169,6 +144,47 @@ export async function attribuerDemande(
     updatedAt: Timestamp.fromMillis(maintenant),
   };
 
+  return { ref, metier, demande, candidats, aiguillage, eligiblesAppel, trace, communDemande };
+}
+
+export async function attribuerDemande(
+  s: ServicesMatching,
+  demandeId: string,
+): Promise<ResultatAttribution> {
+  const config = s.config ?? CONFIG_MATCHING_DEFAUT;
+  const maintenant = s.horloge();
+  const refDemande = s.db.doc(chemins.demande(demandeId));
+  const snap = await refDemande.get();
+  if (!snap.exists || snap.get('statut') !== 'nouvelle') return 'deja_traitee';
+  const d = snap.data()!;
+
+  const emailVerifie = d.particulierUid
+    ? (await s.db.doc(chemins.user(d.particulierUid as string)).get()).get('emailVerifie') === true
+    : false;
+  const qualite = qualiteLead(signauxLead(d, emailVerifie));
+  if (aModerer(qualite)) {
+    await s.db.runTransaction(async (t) => {
+      if ((await t.get(refDemande)).get('statut') !== 'nouvelle') return;
+      t.update(refDemande, {
+        qualiteLead: qualite,
+        moderation: true,
+        updatedAt: Timestamp.fromMillis(maintenant),
+      });
+      t.create(s.db.collection(collections.filesModeration).doc(`fraude-${demandeId}`), {
+        schemaVersion: 1,
+        createdAt: Timestamp.fromMillis(maintenant),
+        type: 'fraude_suspectee',
+        refs: { demandeId },
+        priorite: 2,
+        statut: 'a_traiter',
+        permissionRequise: 'demandes.moderer',
+      });
+    });
+    return 'moderation';
+  }
+
+  const { ref, metier, demande, candidats, aiguillage, eligiblesAppel, trace, communDemande } =
+    await analyser(s, demandeId, d, qualite, maintenant);
   if (aiguillage.canal === 'garantie') {
     const choisi = aiguillage.artisan;
     const refArtisan = s.db.doc(chemins.artisan(choisi.artisanId));
@@ -350,4 +366,39 @@ export async function publierAppelOffres(
     });
   }
   return true;
+}
+
+/**
+ * Demande garantie non acceptée dans le délai, ou refusée (D41, MATCHING [7]) : elle devient un
+ * appel d'offres ; les artisans déjà sollicités ne sont pas réinvités.
+ */
+export async function convertirEnAppelOffres(
+  s: ServicesMatching,
+  demandeId: string,
+): Promise<boolean> {
+  const maintenant = s.horloge();
+  const snap = await s.db.doc(chemins.demande(demandeId)).get();
+  if (!snap.exists || snap.get('statut') !== 'en_attribution') return false;
+  const d = snap.data()!;
+  const vus = await s.db.collection(chemins.attributions(demandeId)).get();
+  if (vus.docs.some((a) => ['acceptee', 'vue', 'proposee'].includes(a.get('statut') as string)))
+    return false;
+  const a = await analyser(
+    s,
+    demandeId,
+    d,
+    (d.qualiteLead as number | undefined) ?? 50,
+    maintenant,
+    new Set(vus.docs.map((x) => x.id)),
+  );
+  return publierAppelOffres(s, {
+    demandeId,
+    demande: d,
+    metier: a.metier ?? '',
+    famille: a.ref.metiers.find((m) => m.id === a.metier)?.famille,
+    qualite: (d.qualiteLead as number | undefined) ?? 50,
+    eligibles: a.eligiblesAppel,
+    communDemande: { updatedAt: Timestamp.fromMillis(maintenant) },
+    trace: a.trace('appel_offres', []),
+  });
 }

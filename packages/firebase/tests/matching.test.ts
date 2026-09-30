@@ -6,6 +6,7 @@ import { chemins, collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
 import {
   attribuerDemande,
+  relancerMatching,
   viderCacheReferentiel,
   type ServicesMatching,
 } from '../src/serveur/matching';
@@ -173,5 +174,49 @@ describe('attribuerDemande (MATCHING, D41)', () => {
     await demande('d5', { artisanCibleId: 'prem1' });
     expect(await attribuerDemande(s, 'd5')).toBe('attribuee');
     expect((await db.doc(chemins.attribution('d5', 'prem1')).get()).exists).toBe(true);
+  });
+});
+
+describe('relancerMatching (MATCHING [7])', () => {
+  it('garantie non acceptée dans le délai : expirée puis appel d’offres sans réinviter l’artisan', async () => {
+    await artisan('prem', { plan: 'premium' });
+    await artisan('grat', {});
+    await demande('d10');
+    await attribuerDemande(s, 'd10');
+    const plusTard = { ...s, horloge: () => T + 25 * 3_600_000 };
+    envois = [];
+    const bilan = await relancerMatching(plusTard);
+    expect(bilan).toMatchObject({ expirees: 1, converties: 1 });
+    expect((await db.doc(chemins.attribution('d10', 'prem')).get()).get('statut')).toBe('expiree');
+    expect((await db.doc(chemins.demande('d10')).get()).get('statut')).toBe('appel_offres');
+    const invites = envois
+      .filter((e) => e.modele === 'nouvel-appel-offres')
+      .map((e) => e.destinataire.uid);
+    expect(invites).toEqual(['u-grat']);
+    // Rejouée : rien de plus.
+    expect(await relancerMatching(plusTard)).toMatchObject({ expirees: 0, converties: 0 });
+  });
+
+  it('refus d’une garantie : appel d’offres au passage suivant', async () => {
+    await artisan('prem', { plan: 'premium' });
+    await artisan('grat', {});
+    await demande('d11');
+    await attribuerDemande(s, 'd11');
+    await db.doc(chemins.attribution('d11', 'prem')).update({
+      statut: 'refusee',
+      reponduLe: Timestamp.fromMillis(T + 60_000),
+    });
+    expect((await relancerMatching({ ...s, horloge: () => T + 5 * 60_000 })).converties).toBe(1);
+  });
+
+  it('appel d’offres sans preneur à 48 h : signalé une fois ; échu : clos', async () => {
+    await artisan('grat', {});
+    await demande('d12');
+    await attribuerDemande(s, 'd12');
+    const h49 = { ...s, horloge: () => T + 49 * 3_600_000 };
+    expect((await relancerMatching(h49)).sansPreneur).toBe(1);
+    expect((await relancerMatching(h49)).sansPreneur).toBe(0);
+    expect((await relancerMatching({ ...s, horloge: () => T + 8 * 86_400_000 })).clos).toBe(1);
+    expect((await db.doc(chemins.appelOffres('d12')).get()).get('statut')).toBe('clos');
   });
 });

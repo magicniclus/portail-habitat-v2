@@ -1,5 +1,6 @@
 export {
   attribuerDemande,
+  convertirEnAppelOffres,
   publierAppelOffres,
   type ResultatAttribution,
   type ServicesMatching,
@@ -11,3 +12,4 @@ export {
   viderCacheReferentiel,
   type ReferentielMetiers,
 } from './lecture';
+export { relancerMatching, type BilanRelance } from './relances';
