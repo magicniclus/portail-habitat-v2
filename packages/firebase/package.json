@@ -19,6 +19,7 @@
     "./annuaire": "./src/serveur/annuaire/index.ts",
     "./pro": "./src/serveur/pro/index.ts",
     "./facturation": "./src/serveur/facturation/index.ts",
+    "./matching": "./src/serveur/matching/index.ts",
     "./client": "./src/client/index.ts"
   },
   "scripts": {

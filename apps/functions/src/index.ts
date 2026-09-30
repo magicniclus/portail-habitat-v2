@@ -8,5 +8,6 @@ export { ping } from './appelables/ping';
 export * from './comptes/appelables';
 export { expirerInvitations, syncClaims } from './comptes/declencheurs';
 export { projeterArtisan } from './annuaire/declencheurs';
+export { attribuerNouvelleDemande } from './matching/declencheurs';
 export { envoyerEnvoi } from './notifications/tache';
 export { syncIntentionTypesense, syncSynonymesTypesense } from './recherche/declencheurs';

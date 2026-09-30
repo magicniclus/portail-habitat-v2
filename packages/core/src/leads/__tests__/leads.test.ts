@@ -202,3 +202,18 @@ describe('prix payé au déblocage (MATCHING [8])', () => {
     });
   });
 });
+
+describe('BAREME_DEFAUT', () => {
+  it('identique à docs/data/bareme-appels-offres.json', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
+    const { BAREME_DEFAUT } = await import('..');
+    const f = JSON.parse(
+      readFileSync(
+        resolve(__dirname, '../../../../../docs/data/bareme-appels-offres.json'),
+        'utf8',
+      ),
+    );
+    expect(BAREME_DEFAUT).toEqual(f.bareme);
+  });
+});

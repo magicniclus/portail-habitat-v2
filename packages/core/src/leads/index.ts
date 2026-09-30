@@ -16,3 +16,4 @@ export {
   type TrancheBudget,
   type Urgence,
 } from './prix';
+export { BAREME_DEFAUT, GRILLE_DEFAUT } from './bareme';

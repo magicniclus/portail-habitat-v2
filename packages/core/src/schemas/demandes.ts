@@ -97,6 +97,11 @@ export const demande = z
     artisanCibleId: id.optional(),
     statut: z.enum(STATUTS_DEMANDE),
     nbAttributions: z.number().int().min(0).max(3),
+    /** Matching (MATCHING [6]) : métier retenu, qualité, lead mis en modération, appel d'offres créé. */
+    metierRequis: z.string().optional(),
+    qualiteLead: pourcent.optional(),
+    moderation: z.boolean().optional(),
+    appelOffresId: id.optional(),
     consentementId: id,
     ipHash: empreinte.optional(),
     userAgent: z.string().max(400).optional(),
@@ -128,7 +133,10 @@ export const attribution = z.object({
     'expiree',
   ]),
   exclusive: z.boolean().default(false),
+  /** Rang dans la sélection (1 = meilleur) et échéance de la proposition (MATCHING [6]). */
+  rang: z.number().int().min(1).optional(),
   proposeeLe: horodatage,
+  expireLe: horodatage.optional(),
   vueLe: horodatage.optional(),
   reponduLe: horodatage.optional(),
   devis: z

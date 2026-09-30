@@ -66,6 +66,8 @@ export const appelOffres = z
     ouvertJusquau: horodatage,
     statut: z.enum(['brouillon', 'ouvert', 'complet', 'clos', 'annule', 'suspendu']),
     publiePar: z.string(),
+    /** Artisans éligibles prévenus à la publication (pas deux fois pour la même demande). */
+    artisansInvites: z.array(id).max(50).default([]),
   })
   .refine((a) => a.nbDeblocages <= a.nbDeblocagesMax, {
     message: 'Trop de déblocages',
