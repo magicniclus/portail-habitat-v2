@@ -19,3 +19,15 @@ export type {
   RaisonExclusion,
   SousScores,
 } from './types';
+export { CONFIG_MATCHING_DEFAUT, type ConfigMatchingComplete } from './config';
+export {
+  artisanPourMatching,
+  delaiEnJours,
+  demandePourMatching,
+  empreintesContact,
+  estUrgente,
+  expirationProposition,
+  metierDeDemande,
+  type DocArtisan,
+  type DocDemande,
+} from './adaptateurs';
