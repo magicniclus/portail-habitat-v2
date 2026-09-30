@@ -183,8 +183,13 @@ export async function attribuerDemande(
     return 'moderation';
   }
 
-  const { ref, metier, demande, candidats, aiguillage, eligiblesAppel, trace, communDemande } =
-    await analyser(s, demandeId, d, qualite, maintenant);
+  const { ref, metier, aiguillage, eligiblesAppel, trace, communDemande } = await analyser(
+    s,
+    demandeId,
+    d,
+    qualite,
+    maintenant,
+  );
   if (aiguillage.canal === 'garantie') {
     const choisi = aiguillage.artisan;
     const refArtisan = s.db.doc(chemins.artisan(choisi.artisanId));
