@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { chemins } from '@ph/firebase/chemins';
+import { chemins, collections } from '@ph/firebase/chemins';
 import { expect, type APIRequestContext, type Page } from '@playwright/test';
 import Stripe from 'stripe';
 
@@ -307,4 +307,31 @@ export async function appelOffresInvite(
 export async function completerAppelOffres(id: string): Promise<void> {
   const { db } = await admin();
   await db.doc(chemins.appelOffres(id)).update({ nbDeblocages: 3, statut: 'complet' });
+}
+
+/** Entreprise du seed sans compte fixe (tests admin qui modifient son statut). */
+export async function entrepriseSansCompteFixe(rang = 0): Promise<{ id: string; nom: string }> {
+  const { db } = await admin();
+  const r = await db
+    .doc(chemins.artisan('_'))
+    .parent.where('statut', '==', 'actif')
+    .limit(40)
+    .get();
+  const libres = r.docs.filter((d) => {
+    const uid = (d.get('proprietaireUid') as string | undefined) ?? '';
+    return uid && !Object.values(COMPTES).some((e) => uid.includes(e.split('@')[0]!));
+  });
+  const d = libres[rang]!;
+  return { id: d.id, nom: d.get('nomCommercial') as string };
+}
+
+/** Entrées du journal d'audit pour une action et une cible. */
+export async function audits(action: string, cible: string): Promise<number> {
+  const { db } = await admin();
+  const r = await db
+    .doc(`${collections.auditLog}/_`)
+    .parent.where('action', '==', action)
+    .where('cible', '==', cible)
+    .get();
+  return r.size;
 }
