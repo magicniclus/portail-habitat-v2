@@ -147,16 +147,21 @@ describe('importerDemandePartenaire (IMPORT_LEADS)', () => {
     expect(envois).toHaveLength(0);
   });
 
-  it('IMP-01 : même idExterne renvoyé (y compris en même temps) → une seule demande', async () => {
-    const [a, b] = await Promise.all([envoyer(corps()), envoyer(corps())]);
-    const c = await envoyer(corps());
-    expect([a.http, b.http].sort()).toEqual([200, 201]);
-    expect(c).toMatchObject({
-      http: 200,
-      corps: { statut: 'deja_recue', reference: a.corps.reference ?? b.corps.reference },
-    });
-    expect(await nbDemandes()).toBe(1);
-  });
+  // Deux transactions concurrentes sur le même journal : l'émulateur peut réessayer plusieurs fois.
+  it(
+    'IMP-01 : même idExterne renvoyé (y compris en même temps) → une seule demande',
+    { timeout: 30_000 },
+    async () => {
+      const [a, b] = await Promise.all([envoyer(corps()), envoyer(corps())]);
+      const c = await envoyer(corps());
+      expect([a.http, b.http].sort()).toEqual([200, 201]);
+      expect(c).toMatchObject({
+        http: 200,
+        corps: { statut: 'deja_recue', reference: a.corps.reference ?? b.corps.reference },
+      });
+      expect(await nbDemandes()).toBe(1);
+    },
+  );
 
   it('IMP-02 : consentement non conforme → rejet visible dans le journal, aucune donnée personnelle', async () => {
     const r = await envoyer(
