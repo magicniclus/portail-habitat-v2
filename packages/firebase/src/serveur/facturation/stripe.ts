@@ -58,6 +58,7 @@ export interface SessionCheckoutStripe {
   client_reference_id: string | null;
   metadata: Record<string, string>;
   payment_status?: string;
+  payment_intent?: string | null;
 }
 
 export interface EvenementStripe {

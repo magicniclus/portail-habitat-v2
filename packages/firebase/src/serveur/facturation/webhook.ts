@@ -4,11 +4,13 @@ import {
   type AbonnementEtat,
   type StatutAbonnement,
 } from '@ph/core/facturation';
+import { ErreurMetier } from '@ph/core/erreurs';
 import { formatDate } from '@ph/core/format';
 import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import { appliquerSieges } from '../comptes/membres';
 import type { ServicesComptes } from '../comptes/services';
+import { debloquerAppelOffres } from '../matching/deblocage';
 import type {
   AbonnementStripe,
   EvenementStripe,
@@ -302,7 +304,65 @@ async function renouvellementProche(
   return true;
 }
 
-/** `checkout.session.completed` : client Stripe lié à l'entreprise ; pack de crédits crédité. */
+/**
+ * Déblocage payé par carte (MATCHING [8]) : finalisé après la transaction du webhook (le déblocage
+ * a la sienne). Plus de place ou plus autorisé entre-temps : tâche de remboursement pour l'équipe.
+ * Erreur inattendue : l'événement est noté en échec pour que Stripe le renvoie (déblocage idempotent).
+ */
+function finaliserLead(
+  s: ServicesFacturation,
+  ev: EvenementStripe,
+  c: SessionCheckoutStripe,
+  artisanId: string,
+): Suite {
+  const { appelOffresId, uid } = c.metadata;
+  return async () => {
+    try {
+      await debloquerAppelOffres(s, {
+        appelOffresId: appelOffresId!,
+        artisanId,
+        uid: uid!,
+        choix: 'carte',
+        paiementCarte: {
+          sessionId: c.id,
+          centimes: Number(c.metadata.centimes),
+          ...(c.payment_intent ? { paymentIntentId: c.payment_intent } : {}),
+        },
+      });
+    } catch (e) {
+      if (!(e instanceof ErreurMetier)) {
+        await s.db
+          .collection(collections.stripeEvents)
+          .doc(ev.id)
+          .set(
+            { ok: false, erreur: String((e as Error).message ?? e).slice(0, 500) },
+            { merge: true },
+          );
+        throw e;
+      }
+      await s.db
+        .collection(collections.filesModeration)
+        .doc(`remboursement-${c.id}`)
+        .set({
+          schemaVersion: 1,
+          type: 'remboursement_carte_lead',
+          refs: {
+            artisanId,
+            appelOffresId: appelOffresId!,
+            sessionId: c.id,
+            ...(c.payment_intent ? { paymentIntentId: c.payment_intent } : {}),
+            motif: e.message,
+          },
+          priorite: 1,
+          statut: 'a_traiter',
+          permissionRequise: 'finances.rembourser_carte',
+          createdAt: Timestamp.fromMillis(s.horloge()),
+        });
+    }
+  };
+}
+
+/** `checkout.session.completed` : client Stripe lié à l'entreprise ; pack crédité ; lead débloqué. */
 async function checkoutTermine(
   s: ServicesFacturation,
   t: Transaction,
@@ -333,8 +393,12 @@ async function checkoutTermine(
       },
       { merge: true },
     );
-  if (!pack || !portefeuille) return true;
-  if (c.payment_status && c.payment_status !== 'paid') return true;
+  const paye = !c.payment_status || c.payment_status === 'paid';
+  if (c.mode === 'payment' && c.metadata.type === 'lead' && c.metadata.appelOffresId) {
+    if (paye) suites.push(finaliserLead(s, ev, c, artisanId));
+    return true;
+  }
+  if (!pack || !portefeuille || !paye) return true;
   const solde = ((portefeuille.get('soldeCredits') as number | undefined) ?? 0) + credits;
   const maintenant = Timestamp.fromMillis(s.horloge());
   t.set(

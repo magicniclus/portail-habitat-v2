@@ -6,6 +6,7 @@ import { chemins, collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
 import {
   creerCheckoutAbonnement,
+  creerCheckoutPaiement,
   lireFacturation,
   ouvrirPortailClient,
   traiterEvenementStripe,
@@ -49,6 +50,25 @@ beforeEach(async () => {
       .set({ role: 'proprietaire', statut: 'actif', ajouteLe: Timestamp.fromMillis(T) }),
   ]);
 });
+
+async function appelOffresOuvert(id: string) {
+  await db.doc(chemins.appelOffres(id)).set({
+    demandeId: `dem-${id}`,
+    statut: 'ouvert',
+    acces: 'premium_prioritaire',
+    fenetrePremiumMin: 60,
+    ouvertLe: Timestamp.fromMillis(T - 2 * 3_600_000),
+    nbDeblocages: 0,
+    nbDeblocagesMax: 3,
+    exigences: [],
+    tarification: {
+      mode: 'auto',
+      prixBaseCentimes: 1900,
+      prixPremiumCentimes: 1300,
+      prixCredits: 2,
+    },
+  });
+}
 
 let n = 0;
 const evenement = (
@@ -253,6 +273,60 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
     expect(envois.map((e) => e.modele)).toEqual(['abonnement-active', 'renouvellement']);
   });
 
+  it('déblocage payé par carte : finalisé une fois, montant encaissé conservé', async () => {
+    await appelOffresOuvert('ao2');
+    const session = {
+      id: 'cs_lead',
+      mode: 'payment',
+      customer: 'cus_1',
+      subscription: null,
+      client_reference_id: 'a1',
+      payment_status: 'paid',
+      payment_intent: 'pi_1',
+      metadata: { type: 'lead', appelOffresId: 'ao2', uid: 'p1', centimes: '1700' },
+    };
+    const ev = evenement('checkout.session.completed', session);
+    expect(await traiterEvenementStripe(s, ev)).toBe('traite');
+    expect(await traiterEvenementStripe(s, ev)).toBe('deja_traite');
+    expect((await db.doc(chemins.deblocage('ao2', 'a1')).get()).data()).toMatchObject({
+      moyen: 'carte',
+      montantCentimes: 1700,
+    });
+    const achats = await db.collection(collections.achatsLeads).get();
+    expect(achats.docs.map((d) => d.get('stripePaymentIntentId'))).toEqual(['pi_1']);
+    expect((await db.doc(chemins.attribution('dem-ao2', 'a1')).get()).get('statut')).toBe(
+      'acceptee',
+    );
+  });
+
+  it('déblocage payé mais complet entre-temps : tâche de remboursement', async () => {
+    await appelOffresOuvert('ao3');
+    await db.doc(chemins.appelOffres('ao3')).update({ statut: 'complet', nbDeblocages: 3 });
+    await traiterEvenementStripe(
+      s,
+      evenement('checkout.session.completed', {
+        id: 'cs_trop_tard',
+        mode: 'payment',
+        customer: 'cus_1',
+        subscription: null,
+        client_reference_id: 'a1',
+        payment_status: 'paid',
+        payment_intent: 'pi_2',
+        metadata: { type: 'lead', appelOffresId: 'ao3', uid: 'p1', centimes: '1900' },
+      }),
+    );
+    const tache = await db
+      .collection(collections.filesModeration)
+      .doc('remboursement-cs_trop_tard')
+      .get();
+    expect(tache.data()).toMatchObject({
+      type: 'remboursement_carte_lead',
+      refs: { paymentIntentId: 'pi_2', appelOffresId: 'ao3' },
+      permissionRequise: 'finances.rembourser_carte',
+    });
+    expect((await db.collection(collections.achatsLeads).get()).size).toBe(0);
+  });
+
   it('entreprise inconnue : erreur notée, l’événement sera retraité au prochain envoi', async () => {
     const orphelin = { ...abonnement({ id: 'sub_x' }), metadata: {} };
     const ev = evenement('customer.subscription.updated', orphelin);
@@ -291,7 +365,12 @@ describe('Checkout et portail client', () => {
       sessions: { create: async () => ({ url: 'https://billing.stripe.com/p/x' }) },
     },
   });
-  const services = (prix = true) => ({ db, stripe: faux(prix), urlSite: 'https://ph.test' });
+  const services = (prix = true) => ({
+    db,
+    stripe: faux(prix),
+    urlSite: 'https://ph.test',
+    horloge: () => T,
+  });
 
   beforeEach(() => {
     appels.length = 0;
@@ -339,6 +418,55 @@ describe('Checkout et portail client', () => {
         periode: 'annuel',
       }),
     ).rejects.toMatchObject({ code: 'PRECONDITION' });
+  });
+
+  it('pack de crédits : prix du catalogue, crédits en métadonnées ; pack inconnu refusé', async () => {
+    await creerCheckoutPaiement(services(), {
+      artisanId: 'a1',
+      email: 'p@test.local',
+      type: 'pack',
+      cle: 'pack_25',
+    });
+    expect(appels.find((a) => a.type === 'session')!.p).toMatchObject({
+      mode: 'payment',
+      line_items: [{ price: 'price_pa', quantity: 1 }],
+      metadata: { type: 'pack', artisanId: 'a1', credits: '25' },
+    });
+    await expect(
+      creerCheckoutPaiement(services(), {
+        artisanId: 'a1',
+        email: 'p@test.local',
+        type: 'pack',
+        cle: 'premium_annuel',
+      }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+  });
+
+  it('déblocage par carte : prix recalculé côté serveur, rien d’écrit avant le paiement', async () => {
+    await appelOffresOuvert('ao1');
+    await creerCheckoutPaiement(services(), {
+      artisanId: 'a1',
+      email: 'p@test.local',
+      type: 'lead',
+      appelOffresId: 'ao1',
+      uid: 'p1',
+    });
+    expect(appels.find((a) => a.type === 'session')!.p).toMatchObject({
+      mode: 'payment',
+      line_items: [{ quantity: 1, price_data: { currency: 'eur', unit_amount: 1900 } }],
+      metadata: { type: 'lead', appelOffresId: 'ao1', uid: 'p1', centimes: '1900' },
+    });
+    expect((await db.doc(chemins.appelOffres('ao1')).get()).get('nbDeblocages')).toBe(0);
+    await db.doc(chemins.appelOffres('ao1')).update({ statut: 'complet' });
+    await expect(
+      creerCheckoutPaiement(services(), {
+        artisanId: 'a1',
+        email: 'p@test.local',
+        type: 'lead',
+        appelOffresId: 'ao1',
+        uid: 'p1',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
   });
 
   it('portail : seulement après un premier paiement', async () => {

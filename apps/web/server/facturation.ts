@@ -13,7 +13,7 @@ export function servicesCheckout(): ServicesCheckout {
   const stripe = clientStripe();
   if (!stripe)
     throw new ErreurMetier('INDISPONIBLE', 'Les paiements en ligne ne sont pas encore ouverts.');
-  return { db: getFirestore(appAdmin()), stripe, urlSite: URL_SITE };
+  return { db: getFirestore(appAdmin()), stripe, urlSite: URL_SITE, horloge: Date.now };
 }
 
 /** CON-02 : propriétaire ou gérant Premium sans second facteur → facturation bloquée. */

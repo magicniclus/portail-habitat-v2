@@ -1,7 +1,13 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import { cleStripe, prixAbonnement, type ProduitAbonnement } from '@ph/core/facturation';
+import {
+  CATALOGUE_STRIPE,
+  cleStripe,
+  prixAbonnement,
+  type ProduitAbonnement,
+} from '@ph/core/facturation';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
+import { debloquerAppelOffres } from '../matching/deblocage';
 import type { ClientStripe } from './stripe';
 
 /**
@@ -13,6 +19,7 @@ export interface ServicesCheckout {
   db: Firestore;
   stripe: ClientStripe;
   urlSite: string;
+  horloge: () => number;
 }
 
 async function clientStripe(
@@ -75,6 +82,83 @@ export async function creerCheckoutAbonnement(
     locale: 'fr',
     success_url: `${s.urlSite}/pro/abonnement/confirme?produit=${p.produit}`,
     cancel_url: `${s.urlSite}/pro/abonnement/${p.produit}?facturation=${p.periode}`,
+  });
+  if (!session.url) throw new ErreurMetier('INDISPONIBLE');
+  return { url: session.url };
+}
+
+export type AchatCarte =
+  { type: 'pack'; cle: string } | { type: 'lead'; appelOffresId: string; uid: string };
+
+/**
+ * Paiement unique par carte (MATCHING [8], PRO-05) : pack de crédits au prix du catalogue, ou
+ * déblocage d'un appel d'offres au prix recalculé ici (les vérifications du déblocage passent
+ * d'abord, sans rien écrire). Le webhook crédite ou débloque à réception du paiement.
+ */
+export async function creerCheckoutPaiement(
+  s: ServicesCheckout,
+  p: { artisanId: string; email: string } & AchatCarte,
+): Promise<{ url: string }> {
+  const artisan = await s.db.doc(chemins.artisan(p.artisanId)).get();
+  if (!artisan.exists) throw new ErreurMetier('INTROUVABLE');
+  const nom = (artisan.get('nomCommercial') as string | undefined) ?? '';
+  let ligne: Record<string, unknown>;
+  let metadata: Record<string, string>;
+  let retour: string;
+  if (p.type === 'pack') {
+    const pack = CATALOGUE_STRIPE.find((c) => c.produit === 'pack' && c.cle === p.cle);
+    if (!pack?.credits) throw new ErreurMetier('ENTREE_INVALIDE', 'Pack inconnu.');
+    const [prix] = (
+      await s.stripe.prices.list({ lookup_keys: [cleStripe(pack.cle)], active: true })
+    ).data;
+    if (!prix)
+      throw new ErreurMetier('INDISPONIBLE', 'Ce pack n’est pas disponible pour le moment.');
+    ligne = { price: prix.id, quantity: 1 };
+    metadata = { type: 'pack', artisanId: p.artisanId, credits: String(pack.credits) };
+    retour = '/pro/facturation';
+  } else {
+    const verif = await debloquerAppelOffres(s, {
+      appelOffresId: p.appelOffresId,
+      artisanId: p.artisanId,
+      uid: p.uid,
+      choix: 'carte',
+    });
+    if (verif.etat !== 'paiement_requis')
+      throw new ErreurMetier('CONFLIT', 'Ce chantier est déjà débloqué.');
+    ligne = {
+      quantity: 1,
+      price_data: {
+        currency: 'eur',
+        unit_amount: verif.centimes,
+        tax_behavior: 'exclusive',
+        product_data: { name: 'Coordonnées d’un appel d’offres' },
+      },
+    };
+    metadata = {
+      type: 'lead',
+      artisanId: p.artisanId,
+      appelOffresId: p.appelOffresId,
+      uid: p.uid,
+      centimes: String(verif.centimes),
+    };
+    retour = '/pro/appels-d-offres';
+  }
+  const customer = await clientStripe(s, p.artisanId, p.email, nom);
+  const session = await s.stripe.checkout.sessions.create({
+    mode: 'payment',
+    customer,
+    client_reference_id: p.artisanId,
+    line_items: [ligne],
+    metadata,
+    payment_intent_data: { metadata },
+    invoice_creation: { enabled: true },
+    automatic_tax: { enabled: true },
+    tax_id_collection: { enabled: true },
+    billing_address_collection: 'required',
+    customer_update: { address: 'auto', name: 'auto' },
+    locale: 'fr',
+    success_url: `${s.urlSite}${retour}?paiement=ok`,
+    cancel_url: `${s.urlSite}${retour}`,
   });
   if (!session.url) throw new ErreurMetier('INDISPONIBLE');
   return { url: session.url };

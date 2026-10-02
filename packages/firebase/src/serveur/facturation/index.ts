@@ -4,7 +4,13 @@ export {
   type LigneCatalogue,
 } from './catalogue';
 export { lireFacturation, type AbonnementPro, type FacturePro } from './lecture';
-export { creerCheckoutAbonnement, ouvrirPortailClient, type ServicesCheckout } from './checkout';
+export {
+  creerCheckoutAbonnement,
+  creerCheckoutPaiement,
+  ouvrirPortailClient,
+  type AchatCarte,
+  type ServicesCheckout,
+} from './checkout';
 export {
   CREDITS_INCLUS_PREMIUM,
   traiterEvenementStripe,

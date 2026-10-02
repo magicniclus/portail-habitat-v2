@@ -49,7 +49,7 @@ export async function debloquerAppelOffres(
     uid: string;
     choix: 'auto' | 'carte';
     /** Paiement par carte déjà encaissé (webhook Stripe) : finalisation seulement. */
-    paiementCarte?: { paymentIntentId?: string; sessionId: string };
+    paiementCarte?: { paymentIntentId?: string; sessionId: string; centimes: number };
   },
 ): Promise<ResultatDeblocage> {
   const maintenant = s.horloge();
@@ -138,6 +138,8 @@ export async function debloquerAppelOffres(
     }
 
     const horodatage = Timestamp.fromMillis(maintenant);
+    // Carte : montant réellement encaissé (fixé au Checkout), pas un prix recalculé après coup.
+    const carte = choix.moyen === 'carte' ? (e.paiementCarte?.centimes ?? prix.centimes) : 0;
     const nouveauSolde = choix.moyen === 'credits' ? solde - prix.credits : solde;
     const nouveauxInclus = choix.moyen === 'inclus_premium' ? inclus - prix.credits : inclus;
     t.create(refAchat, {
@@ -146,8 +148,8 @@ export async function debloquerAppelOffres(
       appelOffreId: e.appelOffresId,
       demandeId: ao.get('demandeId') as string,
       moyen: choix.moyen,
-      prixHtCentimes: choix.moyen === 'carte' ? prix.centimes : 0,
-      tvaCentimes: choix.moyen === 'carte' ? tvaDe(prix.centimes) : 0,
+      prixHtCentimes: carte,
+      tvaCentimes: tvaDe(carte),
       credits: enCredits ? prix.credits : 0,
       ...(e.paiementCarte?.paymentIntentId
         ? { stripePaymentIntentId: e.paiementCarte.paymentIntentId }
@@ -160,7 +162,7 @@ export async function debloquerAppelOffres(
       schemaVersion: 1,
       achatId: refAchat.id,
       moyen: choix.moyen,
-      montantCentimes: choix.moyen === 'carte' ? prix.centimes : 0,
+      montantCentimes: carte,
       credits: enCredits ? prix.credits : 0,
       debloqueLe: horodatage,
       statut: 'actif',
