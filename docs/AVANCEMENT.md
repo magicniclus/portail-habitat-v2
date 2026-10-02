@@ -23,15 +23,15 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 10 | Espace artisan, équipes, PWA | ✅ | 29/09/2026 | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03, MOB-06 (installation ; push à vérifier en recette) ; 80 e2e espace pro sur émulateurs, service worker testé en unitaire | Points à signaler : §16 |
 | 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
 | 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
-| 12b | Demandes partenaires | ⬜ | | IMP | |
+| 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | ⬜ | | ADM | |
 | 13b | Conversion, séquences | ⬜ | | CONV | |
 | 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 12b (demandes partenaires), à démarrer
-- Dernier lot terminé : 12, le 02/10/2026 (détail §18)
+- Lot : 13 (back-office), à démarrer
+- Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -342,6 +342,23 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 4. **Reste pour d'autres lots** : contestation d'un déblocage par l'artisan et remboursement (écran admin, lot 13) ; onglet « Appels d'offres » dans Mes demandes (l'entrée du menu mène à la page) ; réponse écrite à un appel d'offres (`reponses`) avec le devis ; scores `tauxDevis`, `tauxConversion`, `tauxRemboursementLeads` quand ces données existeront.
 5. **Non vérifiable ici** : redirection réelle vers Checkout pour une carte (même mécanique que les abonnements, à vérifier en recette avec la clé de test).
 
+## 19. Lot 12b — Demandes partenaires (terminé le 02/10/2026)
+
+**Fait**
+- **Webhook** `importerDemandePartenaire` (Function HTTPS, contrat IMPORT_LEADS) : clé API (empreinte seule en base) et IP autorisées, quota du jour, corps de 32 Ko au plus, validation stricte, **idempotence** par `idExterne` y compris pour deux envois simultanés (IMP-01), consentement exact (version, texte, finalités) sinon rejet tracé **sans donnée personnelle** (IMP-02), téléphone français, zone couverte, doublons sur 30 jours, qualification **A/B/C**, estimation recalculée (surface fournie), preuve de consentement (IP et navigateur hachés), demande `source: 'partenaire'` sans compte particulier ; le matching démarre aussitôt.
+- **SMS de confirmation** (votre choix) quand le partenaire n'a pas vérifié le téléphone : lien vers `/confirmer-telephone`, confirmation par un clic (les aperçus de liens ne confirment pas à la place de la personne), niveau relevé (B → A).
+- **Matching** : RGE vérifié exigé si éligible aux aides, avec un domaine qui couvre la prestation (IMP-03) ; niveau C jamais en exclusive, prix × 0,4 / 0,7 / 1 selon le niveau et × 1,2 / 0,9 selon l'éligibilité (IMP-05) ; exclusive **non vue sous 2 h** réattribuée (ouvrir Mes demandes la marque vue) ; rayon de l'artisan respecté (filtres existants, IMP-06).
+- **Invendues** : marquées à 24 h sans déblocage, archivées à 72 h (appel d'offres clos, jamais revendue). **Supervision** : alerte dans les journaux si une demande attend plus de 15 min.
+- **Espace artisan** : niveau et « Aides estimées du client (… montant indicatif) » sur la carte de Mes demandes et dans l'email nouvelle-demande (IMP-06).
+- **Script** `pnpm partenaire:source <fichier.json>` (exemple : `docs/data/source-partenaire.exemple.json`) : crée la source, affiche la clé API une seule fois.
+- **Test de charge IMP-04** : 200 demandes importées puis proposées, chacune bien en dessous des 5 minutes.
+
+**À signaler**
+1. **Modèle de données** : `sourcesDemandes.departementsCouverts` et `versionConsentement` ; `importsDemandes.details` (chemins des champs en cause, jamais leur valeur) et `traiteLe` ; `demandes.partenaire.cleDoublon` et `jetonTelephoneHash` ; `demandes.invendueLe`, `archiveeLe` ; `attributions.expireLeSiVue`. Index : doublons (empreinte + date), quota (source + date), demandes en attente (statut + date). `notifier()` accepte un téléphone sans compte (SMS de confirmation).
+2. **Choix à valider** : barème du score de qualification 0-100 (téléphone 35, propriétaire 25, bailleur 20, horizon jusqu'à 25, aides jusqu'à 15) ; « bailleur » compte comme propriétaire pour le niveau A ; horizon 3-6 mois → délai « 3 mois », plus de 6 mois → « je me renseigne » ; un RGE sans domaine déclaré est accepté (pas encore de table prestation → domaine RGE) ; pas de compte particulier créé pour une demande partenaire (pas d'email au particulier, seulement le SMS si besoin).
+3. **À fournir avant la mise en ligne** (IMPORT_LEADS §5) : IP de sortie du partenaire, table de correspondance de ses types de travaux, texte exact et version de la case de consentement, quota et zone couverte ; clé Brevo pour l'envoi réel des SMS (docs/CLES.md).
+4. **Reste pour d'autres lots** : écrans admin (sources, journal des imports et rejets, rentabilité par métier et zone) au lot 13 ; offre de la demande invendue aux artisans Gratuit contre l'activation de Visibilité au lot 13b.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -449,3 +466,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 28/09/2026 — Lot 8 terminé (simulateur, reprise, diagnostic, avis, connexion particulier, Mon espace). Points à trancher : §14.
 - 28/09/2026 — Lot 9 terminé (annuaire, fiche publique). Formule de pertinence à confirmer (§15).
 - 02/10/2026 — Lot 12 terminé (matching, appels d'offres, déblocage, scores de nuit). D50 : 60 minutes d'avance Premium.
+- 02/10/2026 — Lot 12b terminé (demandes partenaires : webhook, SMS de confirmation, matching A/B/C, invendues).
