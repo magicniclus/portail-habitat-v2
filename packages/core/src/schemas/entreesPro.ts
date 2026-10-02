@@ -125,3 +125,14 @@ export const entreeCheckout = z.strictObject({
   produit: z.enum(['premium', 'visibilite']),
   periode: z.enum(['annuel', 'mensuel']),
 });
+
+/** Déblocage d'un appel d'offres : crédits d'abord (`auto`), ou paiement par carte (PRO-05). */
+export const entreeDebloquerAppelOffres = z.strictObject({
+  appelOffresId: id,
+  choix: z.enum(['auto', 'carte']),
+});
+
+/** Achat d'un pack de crédits (Checkout, paiement unique). */
+export const entreeAchatPack = z.strictObject({
+  cle: z.enum(['pack_10', 'pack_25', 'pack_50']),
+});

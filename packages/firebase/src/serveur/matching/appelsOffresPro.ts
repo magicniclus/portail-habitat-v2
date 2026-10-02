@@ -52,8 +52,9 @@ function lu(id: string, d: DocumentData): AppelOffresLu {
 export async function lireAppelsOffresPro(
   db: Firestore,
   artisanId: string,
-  maintenant: number,
+  horloge: () => number,
 ): Promise<AppelsOffresPro> {
+  const maintenant = horloge();
   const [artisan, portefeuille, appels, ref] = await Promise.all([
     db.doc(chemins.artisan(artisanId)).get(),
     db.doc(chemins.portefeuille(artisanId)).get(),

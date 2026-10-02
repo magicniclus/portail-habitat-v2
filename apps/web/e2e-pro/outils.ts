@@ -210,3 +210,80 @@ export async function webhookStripe(
   });
   return { status: r.status(), corps: (await r.json()) as { resultat?: string } };
 }
+
+/** Active ou coupe un flag global (`config/flags`) ; renvoie la remise en l'état. */
+export async function flagGlobal(nom: string, valeur: boolean): Promise<() => Promise<void>> {
+  const { db } = await admin();
+  const ref = db.doc(chemins.configFlags());
+  const avant = (await ref.get()).get(nom) as boolean | undefined;
+  await ref.set({ [nom]: valeur }, { merge: true });
+  return async () => {
+    await ref.set({ [nom]: avant ?? false }, { merge: true });
+  };
+}
+
+/** Solde de crédits de l'entreprise (donnée de test : en production seuls achats et débits l'écrivent). */
+export async function soldeCredits(artisanId: string, solde?: number): Promise<number> {
+  const { db, Timestamp } = await admin();
+  const ref = db.doc(chemins.portefeuille(artisanId));
+  if (solde !== undefined)
+    await ref.set(
+      {
+        schemaVersion: 1,
+        soldeCredits: solde,
+        creditsInclusMois: 0,
+        creditsInclusRestants: 0,
+        updatedAt: Timestamp.now(),
+      },
+      { merge: true },
+    );
+  return (await ref.get()).get('soldeCredits') as number;
+}
+
+/** Appel d'offres ouvert depuis 2 h auquel l'entreprise est invitée (comme le ferait le matching). */
+export async function appelOffresInvite(
+  artisanId: string,
+  p: { nbDeblocages?: number } = {},
+): Promise<{ id: string; titre: string }> {
+  const { db, Timestamp } = await admin();
+  const id = `e2e-ao-${randomUUID().slice(0, 8)}`;
+  const titre = `Peinture du séjour ${id.slice(-4)} à Floirac`;
+  const ouvertLe = Timestamp.fromMillis(Date.now() - 2 * 3_600_000);
+  await db.doc(chemins.appelOffres(id)).set({
+    schemaVersion: 1,
+    createdAt: ouvertLe,
+    demandeId: `dem-${id}`,
+    titre,
+    resume: 'Séjour de 30 m², murs et plafond.',
+    metier: 'peintre',
+    ville: 'Floirac',
+    codePostal: '33270',
+    geo: { latitude: 44.8366, longitude: -0.5285 },
+    budgetMinCentimes: 150_000,
+    budgetMaxCentimes: 250_000,
+    urgence: 'normale',
+    exigences: [],
+    tarification: {
+      mode: 'manuel',
+      prixBaseCentimes: 1900,
+      prixPremiumCentimes: 1300,
+      prixCredits: 2,
+    },
+    nbDeblocagesMax: 3,
+    nbDeblocages: p.nbDeblocages ?? 0,
+    acces: 'premium_prioritaire',
+    fenetrePremiumMin: 60,
+    ouvertLe,
+    ouvertJusquau: Timestamp.fromMillis(Date.now() + 7 * 86_400_000),
+    statut: 'ouvert',
+    publiePar: 'algo',
+    artisansInvites: [artisanId],
+  });
+  return { id, titre };
+}
+
+/** Prend la dernière place d'un appel d'offres (un concurrent plus rapide, PRO-06). */
+export async function completerAppelOffres(id: string): Promise<void> {
+  const { db } = await admin();
+  await db.doc(chemins.appelOffres(id)).update({ nbDeblocages: 3, statut: 'complet' });
+}

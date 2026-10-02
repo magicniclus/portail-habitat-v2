@@ -177,7 +177,7 @@ describe('lireAppelsOffresPro', () => {
     await appelOffres('x1', { invites: ['g1'], statut: 'clos' });
     await appelOffres('autre', { invites: ['h1'] });
     expect((await debloquer('o1', 'g1')).etat).toBe('debloque');
-    const v = await lireAppelsOffresPro(db, 'g1', T);
+    const v = await lireAppelsOffresPro(db, 'g1', () => T);
     expect(v.cartes.map((c) => [c.id, c.etat])).toEqual([
       ['r1', 'reserve'],
       ['o1', 'debloque'],
