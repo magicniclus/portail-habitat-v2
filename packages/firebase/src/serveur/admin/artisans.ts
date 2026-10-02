@@ -3,6 +3,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { masquerTel } from '@ph/core/format';
 import { Timestamp, type DocumentData, type Firestore, type Query } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import { lireDocumentsPro, type DocumentPro } from '../pro/documents';
 import { auditerAdmin } from './audit';
 
 /** Back-office › Artisans (ADMIN §2.3, maquette « Admin Artisans »). */
@@ -72,6 +73,9 @@ export interface FicheArtisanAdmin extends LigneArtisanAdmin {
   tauxReponse: number | null;
   tempsReponseMin: number | null;
   sanctions: { type: string; motif: string; le: number; levee: boolean }[];
+  documents: DocumentPro[];
+  equipe: { uid: string; nom: string; role: string; statut: string }[];
+  siegesMax: number;
   notes: { texte: string; parUid: string; le: number }[];
 }
 
@@ -79,12 +83,17 @@ export async function lireArtisanAdmin(
   db: Firestore,
   id: string,
 ): Promise<FicheArtisanAdmin | null> {
-  const [a, portefeuille, sanctions, notes] = await Promise.all([
+  const [a, portefeuille, sanctions, notes, documents, membres] = await Promise.all([
     db.doc(chemins.artisan(id)).get(),
     db.doc(chemins.portefeuille(id)).get(),
     db.collection(collections.sanctions).where('artisanId', '==', id).limit(20).get(),
     db.collection(collections.notesInternes).where('cible', '==', `artisans/${id}`).limit(20).get(),
+    lireDocumentsPro(db, id),
+    db.collection(chemins.membres(id)).get(),
   ]);
+  const profils = membres.empty
+    ? []
+    : await db.getAll(...membres.docs.map((m) => db.doc(chemins.user(m.id))));
   if (!a.exists) return null;
   const d = a.data()!;
   const fin = (d.assuranceDecennale?.fin as Timestamp | undefined)?.toMillis();
@@ -116,6 +125,14 @@ export async function lireArtisanAdmin(
         levee: Boolean(x.get('leveeLe')),
       }))
       .sort((x, y) => y.le - x.le),
+    documents,
+    equipe: membres.docs.map((m, i) => ({
+      uid: m.id,
+      nom: (profils[i]?.get('nomAffiche') as string | undefined) ?? 'Membre',
+      role: m.get('role') as string,
+      statut: m.get('statut') as string,
+    })),
+    siegesMax: (d.siegesMax as number | undefined) ?? 1,
     notes: notes.docs
       .map((x) => ({
         texte: x.get('texte') as string,

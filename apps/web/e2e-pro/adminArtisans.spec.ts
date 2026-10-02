@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { audits, COMPTES, connecter, entrepriseDe, entrepriseSansCompteFixe } from './outils';
+import {
+  audits,
+  COMPTES,
+  connecter,
+  deposerDocument,
+  entrepriseDe,
+  entrepriseSansCompteFixe,
+} from './outils';
 
 // docs/ACCEPTANCE.md ADM-02 à ADM-04 (back-office, section Artisans), sur émulateurs.
 test.describe.configure({ mode: 'serial' });
@@ -69,4 +76,33 @@ test('ADM-04 : « voir en tant que » : bandeau rouge et toute écriture échoue
     return (await res.json()) as { ok: boolean; message?: string };
   });
   expect(r).toMatchObject({ ok: false, message: expect.stringContaining('voir en tant que') });
+});
+
+test('documents : le modérateur valide une décennale ; la tâche quitte la file ; note interne', async ({
+  page,
+}) => {
+  const { id, nom } = await entrepriseSansCompteFixe(3);
+  await deposerDocument(id);
+  await connecter(
+    page,
+    'moderateur@test.local',
+    `/admin/artisans?id=${id}&onglet=documents`,
+    'admin',
+  );
+  const fiche = page.getByRole('region', { name: `Fiche de ${nom}` });
+  await expect(fiche.getByText('à vérifier')).toBeVisible();
+  await fiche.getByRole('button', { name: 'Valider' }).click();
+  const dialogue = page.getByRole('dialog', { name: /Valider :/ });
+  await dialogue.getByLabel('Valable jusqu’au (si indiqué sur le document)').fill('2027-06-30');
+  await dialogue.getByLabel('Motif (obligatoire)').fill('Attestation lisible et à jour');
+  await dialogue.getByText('Je confirme cette action').click();
+  await dialogue.getByRole('button', { name: 'Confirmer' }).click();
+  await expect(fiche.getByText('validé')).toBeVisible();
+  await page.goto('/admin/file');
+  await expect(page.getByRole('listitem').filter({ hasText: nom })).toHaveCount(0);
+
+  await page.goto(`/admin/artisans?id=${id}&onglet=notes`);
+  await page.getByLabel('Nouvelle note interne').fill('Décennale vérifiée au téléphone.');
+  await page.getByRole('button', { name: 'Ajouter la note' }).click();
+  await expect(page.getByText('Décennale vérifiée au téléphone.')).toBeVisible();
 });

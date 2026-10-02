@@ -349,3 +349,30 @@ export async function creerTache(type: string, artisanId: string): Promise<void>
     permissionRequise: 'avis.moderer',
   });
 }
+
+/** Document déposé en attente de vérification, avec sa tâche dans la file (comme à l'envoi). */
+export async function deposerDocument(artisanId: string, type = 'decennale'): Promise<string> {
+  const { db, Timestamp } = await admin();
+  const id = `doc${randomUUID().slice(0, 8)}`;
+  await db.doc(`${chemins.documents(artisanId)}/${id}`).set({
+    schemaVersion: 1,
+    type,
+    storagePath: `artisans/${artisanId}/documents/${id}/attestation.pdf`,
+    nomFichier: 'attestation.pdf',
+    mime: 'application/pdf',
+    tailleOctets: 1000,
+    sha256: '0'.repeat(64),
+    statut: 'en_attente',
+    createdAt: Timestamp.now(),
+  });
+  await db.doc(`${collections.filesModeration}/document-${artisanId}-${id}`).set({
+    schemaVersion: 1,
+    createdAt: Timestamp.now(),
+    type: 'document',
+    refs: { artisanId, documentId: id },
+    priorite: 4,
+    statut: 'a_traiter',
+    permissionRequise: 'documents.valider',
+  });
+  return id;
+}

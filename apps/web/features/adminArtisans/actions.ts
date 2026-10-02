@@ -1,15 +1,23 @@
 'use server';
 
-import { entreeActionArtisanAdmin, entreeCrediterAdmin } from '@ph/core/schemas';
+import {
+  entreeActionArtisanAdmin,
+  entreeCrediterAdmin,
+  entreeDocumentAdmin,
+  entreeNoteAdmin,
+} from '@ph/core/schemas';
 import { appAdmin } from '@ph/firebase/admin';
 import {
+  ajouterNoteAdmin,
   crediterArtisanAdmin,
+  deciderDocumentAdmin,
   sanctionnerArtisanAdmin,
   verifierArtisanAdmin,
 } from '@ph/firebase/admin-serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
+import { servicesComptes } from '@/server/espace';
 import { lireSessionAdmin } from '@/server/sessionAdmin';
 
 const services = () => ({ db: getFirestore(appAdmin()), horloge: Date.now });
@@ -61,4 +69,56 @@ export async function crediterArtisan(
   const r = await crediter({ artisanId, credits, motif });
   revalidatePath('/admin/artisans');
   return r.ok ? null : r.message;
+}
+
+const documenter = actionAdmin(
+  { schema: entreeDocumentAdmin, nom: 'adminValiderDocument', permission: 'documents.valider' },
+  async (e, ctx) =>
+    deciderDocumentAdmin(
+      { ...services(), notifier: servicesComptes().notifier },
+      {
+        acteurUid: ctx.uid!,
+        artisanId: e.artisanId,
+        documentId: e.documentId,
+        decision: e.decision,
+        motif: e.motif,
+        ...(e.valideAu ? { valideAu: Date.parse(`${e.valideAu}T23:59:59Z`) } : {}),
+      },
+    ),
+);
+
+/** Valider ou refuser un document déposé (motif obligatoire, artisan prévenu). */
+export async function deciderDocument(
+  artisanId: string,
+  documentId: string,
+  decision: 'valide' | 'refuse',
+  motif: string,
+  valideAu?: string,
+): Promise<string | null> {
+  const r = await documenter({
+    artisanId,
+    documentId,
+    decision,
+    motif,
+    ...(valideAu ? { valideAu } : {}),
+  });
+  revalidatePath('/admin/artisans');
+  return r.ok ? null : r.message;
+}
+
+const noter = actionAdmin(
+  { schema: entreeNoteAdmin, nom: 'adminNoteInterne', permission: 'artisans.lire' },
+  async (e, ctx) =>
+    ajouterNoteAdmin(services(), {
+      acteurUid: ctx.uid!,
+      cible: `artisans/${e.artisanId}`,
+      texte: e.texte,
+    }),
+);
+
+/** Formulaire « Ajouter une note » de la fiche. */
+export async function ajouterNote(formulaire: FormData): Promise<void> {
+  const artisanId = String(formulaire.get('artisanId') ?? '');
+  await noter({ artisanId, texte: String(formulaire.get('texte') ?? '') });
+  revalidatePath('/admin/artisans');
 }

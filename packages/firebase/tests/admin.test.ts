@@ -6,9 +6,12 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   afficherDonneePersonnelle,
+  ajouterNoteAdmin,
   assignerTacheAdmin,
   crediterArtisanAdmin,
   creerSuperAdmin,
+  deciderDocumentAdmin,
+  idTacheDocument,
   jetonImpersonation,
   lireArtisanAdmin,
   lireTableauDeBordAdmin,
@@ -333,5 +336,79 @@ describe('file de travail et tableau de bord (ADMIN §2.1 et 2.2)', () => {
     expect(
       (await lireTableauDeBordAdmin(db, { maintenant: T, finances: false })).chiffreAffairesHt30j,
     ).toBeNull();
+  });
+});
+
+describe('documents et notes (ADMIN §2.3)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  it('valider une décennale : label vérifié avec sa fin, tâche close, artisan prévenu ; refuser : motif', async () => {
+    const envois: unknown[] = [];
+    const s = { db, horloge: () => T, notifier: async (e: unknown) => void envois.push(e) };
+    await db.doc(chemins.artisan('a1')).set({ nomCommercial: 'X', proprietaireUid: 'p1' });
+    for (const [id, type] of [
+      ['d1', 'decennale'],
+      ['d2', 'kbis'],
+    ])
+      await db.doc(`${chemins.documents('a1')}/${id}`).set({
+        type,
+        statut: 'en_attente',
+        createdAt: Timestamp.fromMillis(T - 3_600_000),
+      });
+    await db.collection(collections.filesModeration).doc(idTacheDocument('a1', 'd1')).set({
+      type: 'document',
+      statut: 'a_traiter',
+    });
+    const fin = Date.UTC(2027, 5, 30);
+    await deciderDocumentAdmin(s, {
+      acteurUid: 'm1',
+      artisanId: 'a1',
+      documentId: 'd1',
+      decision: 'valide',
+      valideAu: fin,
+      motif: 'Attestation lisible',
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.labelsVerifies.decennale.expireLe.toMillis()).toBe(fin);
+    expect(
+      (await db.collection(collections.filesModeration).doc(idTacheDocument('a1', 'd1')).get()).get(
+        'statut',
+      ),
+    ).toBe('traitee');
+    await deciderDocumentAdmin(s, {
+      acteurUid: 'm1',
+      artisanId: 'a1',
+      documentId: 'd2',
+      decision: 'refuse',
+      motif: 'Kbis de plus de 3 mois',
+    });
+    expect((await db.doc(`${chemins.documents('a1')}/d2`).get()).get('motifRefus')).toBe(
+      'Kbis de plus de 3 mois',
+    );
+    expect(envois.map((x) => (x as { modele: string }).modele)).toEqual([
+      'document-valide',
+      'document-refuse',
+    ]);
+    await expect(
+      deciderDocumentAdmin(s, {
+        acteurUid: 'm1',
+        artisanId: 'a1',
+        documentId: 'd2',
+        decision: 'valide',
+        motif: 'erreur',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await ajouterNoteAdmin(s, {
+      acteurUid: 'm1',
+      cible: 'artisans/a1',
+      texte: 'Kbis relancé par email.',
+    });
+    const f = (await lireArtisanAdmin(db, 'a1'))!;
+    expect(f.notes.map((n) => n.texte)).toEqual(['Kbis relancé par email.']);
+    expect(f.documents.map((d) => [d.type, d.statut])).toEqual(
+      expect.arrayContaining([
+        ['decennale', 'valide'],
+        ['kbis', 'refuse'],
+      ]),
+    );
   });
 });

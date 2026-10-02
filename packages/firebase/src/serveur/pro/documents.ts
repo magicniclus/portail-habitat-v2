@@ -10,7 +10,8 @@ import type { entreeDocument } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import type { bucketFichiers } from '../../admin';
-import { chemins, fichiers } from '../../chemins';
+import { chemins, collections, fichiers } from '../../chemins';
+import { idTacheDocument } from '../admin/documents';
 
 type Bucket = ReturnType<typeof bucketFichiers>;
 
@@ -87,6 +88,19 @@ export async function enregistrerDocument(
       statut: 'en_attente',
       createdAt: Timestamp.fromMillis(maintenant),
     });
+    // File de travail de l'admin : vérification sous 48 h (ADMIN §2.2).
+    t.create(
+      s.db.collection(collections.filesModeration).doc(idTacheDocument(ctx.artisanId, e.docId)),
+      {
+        schemaVersion: 1,
+        createdAt: Timestamp.fromMillis(maintenant),
+        type: 'document',
+        refs: { artisanId: ctx.artisanId, documentId: e.docId },
+        priorite: e.type === 'decennale' || e.type === 'kbis' ? 4 : 3,
+        statut: 'a_traiter',
+        permissionRequise: 'documents.valider',
+      },
+    );
     const documents = derniersStatutsDocuments([
       ...docs.docs.map((d) => ({
         type: d.get('type') as string,

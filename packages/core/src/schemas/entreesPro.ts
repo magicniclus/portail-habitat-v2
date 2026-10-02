@@ -172,3 +172,18 @@ export const entreeTacheAdmin = z.strictObject({
   action: z.enum(['prendre', 'rendre', 'traiter', 'rejeter']),
   resolution: z.string().trim().max(1000).optional(),
 });
+
+/** Back-office › Artisans › Documents : valider (date de fin lue sur le document) ou refuser. */
+export const entreeDocumentAdmin = z.strictObject({
+  artisanId: id,
+  documentId: id,
+  decision: z.enum(['valide', 'refuse']),
+  valideAu: z.iso.date().optional(),
+  motif: motifAdmin,
+});
+
+/** Back-office : note interne sur une fiche (jamais visible de l'artisan). */
+export const entreeNoteAdmin = z.strictObject({
+  artisanId: id,
+  texte: z.string().trim().min(2).max(4000),
+});

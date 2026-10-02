@@ -1,73 +1,22 @@
-import { LIBELLES_PLAN, LIBELLES_STATUT_ARTISAN_ADMIN } from '@ph/core/admin';
+import { LIBELLES_STATUT_ARTISAN_ADMIN } from '@ph/core/admin';
 import { formatDate } from '@ph/core/format';
 import type { FicheArtisanAdmin as Fiche } from '@ph/firebase/admin-serveur';
 import type { Route } from 'next';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
 import { DonneePersonnelle } from '@/features/admin/DonneePersonnelle';
 import type { SessionAdmin } from '@/server/sessionAdmin';
 import { ActionsArtisan } from './ActionsArtisan';
+import { Ligne, OngletFiche } from './OngletsFiche';
 
 const ONGLETS = [
   ['identite', 'Identité'],
+  ['documents', 'Documents'],
   ['abonnement', 'Abonnement'],
+  ['equipe', 'Équipe'],
   ['activite', 'Activité'],
   ['sanctions', 'Sanctions'],
   ['notes', 'Notes'],
 ] as const;
-
-function Ligne({ k, children }: { k: string; children: ReactNode }) {
-  return (
-    <div className="grid gap-1 border-b border-trait py-2.5 sm:grid-cols-[180px_minmax(0,1fr)]">
-      <dt className="text-sm text-neutre-700">{k}</dt>
-      <dd className="m-0 text-base">{children}</dd>
-    </div>
-  );
-}
-
-function Onglet({ f, onglet }: { f: Fiche; onglet: string }) {
-  if (onglet === 'abonnement')
-    return (
-      <>
-        <Ligne k="Formule">{LIBELLES_PLAN[f.plan as keyof typeof LIBELLES_PLAN] ?? f.plan}</Ligne>
-        <Ligne k="Crédits">{f.credits}</Ligne>
-      </>
-    );
-  if (onglet === 'activite')
-    return (
-      <>
-        <Ligne k="Taux de réponse">
-          {f.tauxReponse !== null ? `${Math.round(f.tauxReponse * 100)} %` : '—'}
-        </Ligne>
-        <Ligne k="Temps de réponse">
-          {f.tempsReponseMin !== null ? `${f.tempsReponseMin} min` : '—'}
-        </Ligne>
-        <Ligne k="Note">{f.note !== null ? `${f.note.toFixed(1)} ★` : 'Aucun avis'}</Ligne>
-      </>
-    );
-  if (onglet === 'sanctions')
-    return f.sanctions.length ? (
-      f.sanctions.map((x) => (
-        <Ligne key={x.le} k={formatDate(x.le)}>
-          {x.type}
-          {x.levee ? ' (levée)' : ''} · {x.motif}
-        </Ligne>
-      ))
-    ) : (
-      <Ligne k="Historique">Aucune sanction</Ligne>
-    );
-  if (onglet === 'notes')
-    return f.notes.length ? (
-      f.notes.map((n) => (
-        <Ligne key={n.le} k={formatDate(n.le)}>
-          {n.texte}
-        </Ligne>
-      ))
-    ) : (
-      <Ligne k="Notes">Aucune note</Ligne>
-    );
-  return null;
-}
 
 /** Fiche 360° (ADMIN §2.3) : données personnelles masquées, actions selon les permissions. */
 export function FicheArtisanAdmin({
@@ -155,7 +104,12 @@ export function FicheArtisanAdmin({
             </Ligne>
           </>
         ) : (
-          <Onglet f={f} onglet={onglet} />
+          <OngletFiche
+            f={f}
+            onglet={onglet}
+            peutValider={p('documents.valider')}
+            peutNoter={s.role !== 'lecture'}
+          />
         )}
       </dl>
     </section>
