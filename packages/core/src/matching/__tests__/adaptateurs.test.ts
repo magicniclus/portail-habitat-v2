@@ -121,3 +121,123 @@ describe('adaptateurs demande et artisan', () => {
     expect(expirationProposition(CONFIG_MATCHING_DEFAUT, true, T)).toBe(T + 4 * 3_600_000);
   });
 });
+
+describe('adaptateurs : champs facultatifs', () => {
+  const ctx = { maintenant: T, empreintes: ['email:x'], attributions7j: 2, tauxRefus30j: 0.1 };
+
+  it('demande minimale : « je me renseigne », sans réponses ni contact, intention et artisan ciblé', () => {
+    const d = demandePourMatching(
+      'd2',
+      {
+        ...demande,
+        intention: 'repeindre',
+        delaiSouhaite: 'renseignement',
+        reponsesLisibles: undefined,
+        contact: {},
+        artisanCibleId: 'a9',
+      },
+      'peintre',
+      T,
+    );
+    expect(d).toMatchObject({
+      intention: 'repeindre',
+      delaiSouhaiteJours: null,
+      motsReponses: [],
+      empreintesDemandeur: [],
+      artisanCibleId: 'a9',
+    });
+    expect(d.demarrageLe).toBe(T + 90 * JOUR);
+    expect(
+      demandePourMatching('d3', { ...demande, delaiSouhaite: 'inconnu' }, 'p', T)
+        .delaiSouhaiteJours,
+    ).toBeNull();
+  });
+
+  it('artisan minimal : valeurs par défaut, non vérifié, sans décennale', () => {
+    const a = artisanPourMatching(
+      'a3',
+      {
+        siren: '1',
+        zoneIntervention: { centre: BORDEAUX, rayonKm: 10 },
+        metierPrincipal: 'peintre',
+        metiers: ['peintre'],
+        verification: { statut: 'a_faire' },
+        plan: 'gratuit',
+      },
+      ctx,
+    );
+    expect(a).toMatchObject({
+      intentions: [],
+      tags: [],
+      verifie: false,
+      qualifications: [],
+      sanctionActive: false,
+      enPause: false,
+      demandesRecuesMois: 0,
+      quotaDemandesMois: 0,
+      premium: false,
+      optionVisibilite: false,
+      note: 0,
+      nbAvis: 0,
+      tauxRecommandation: 0,
+      tauxReponse: 0,
+      tempsReponseMoyenMin: 1440,
+      completude: 0,
+      joursDepuisVerification: 9999,
+      empreintes: ['email:x', 'siren:1'],
+    });
+    expect(a.decennaleExpireLe).toBeUndefined();
+    expect(a.budgetMinCentimes).toBeUndefined();
+    expect(a.derniereAttributionLe).toBeUndefined();
+  });
+
+  it('artisan complet : assurance saisie, RGE valable ou expiré, budget, disponibilité', () => {
+    const complet: DocArtisan = {
+      ...artisan,
+      assuranceDecennale: { fin: T + 300 * JOUR },
+      labelsVerifies: { rge: {} },
+      rge: { verifie: true, expireLe: T + JOUR },
+      tags: ['bio'],
+      sanctionActive: true,
+      enPause: true,
+      budgetMin: 1000,
+      budgetMax: 9000,
+      delaiDispoJours: 15,
+      derniereAttributionLe: T - JOUR,
+    };
+    const a = artisanPourMatching('a4', complet, ctx);
+    expect(a).toMatchObject({
+      decennaleExpireLe: T + 300 * JOUR,
+      qualifications: ['rge'],
+      tags: ['bio'],
+      sanctionActive: true,
+      enPause: true,
+      budgetMinCentimes: 1000,
+      budgetMaxCentimes: 9000,
+      delaiDispoJours: 15,
+      derniereAttributionLe: T - JOUR,
+    });
+    const expire = artisanPourMatching(
+      'a5',
+      {
+        ...complet,
+        labelsVerifies: { decennale: { expireLe: T + 10 * JOUR } },
+        rge: { verifie: true, expireLe: T - 1 },
+      },
+      ctx,
+    );
+    expect(expire.qualifications).toEqual(['decennale']);
+    const sansDate = artisanPourMatching(
+      'a6',
+      {
+        ...complet,
+        assuranceDecennale: undefined,
+        labelsVerifies: { decennale: { expireLe: T + 5 * JOUR } },
+        rge: { verifie: true },
+      },
+      ctx,
+    );
+    expect(sansDate.decennaleExpireLe).toBe(T + 5 * JOUR);
+    expect(sansDate.qualifications).toEqual(['decennale', 'rge']);
+  });
+});
