@@ -75,7 +75,7 @@ export async function relancerMatching(s: ServicesMatching): Promise<BilanRelanc
         refs: { appelOffresId: ao.id, demandeId: ao.get('demandeId') as string },
         priorite: 3,
         statut: 'a_traiter',
-        permissionRequise: 'appels_offres.tarifer',
+        permissionRequise: 'leads.prix',
       })
       .then(
         () => true,

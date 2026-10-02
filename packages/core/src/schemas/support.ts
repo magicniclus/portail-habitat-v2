@@ -142,6 +142,10 @@ export const tacheModeration = z.object({
   assigneA: id.optional(),
   permissionRequise: z.string(),
   echeance: horodatage.optional(),
+  /** Traitement (ADMIN §2.2) : qui, quand, et ce qui a été décidé. */
+  resolution: z.string().max(1000).optional(),
+  traiteePar: id.optional(),
+  traiteeLe: horodatage.optional(),
 });
 
 export const migration = z.object({

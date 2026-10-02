@@ -64,8 +64,13 @@ const tout = [...PERMISSIONS_ADMIN];
 const PAR_ROLE: Record<RoleAdminSysteme, readonly PermissionAdmin[]> = {
   superadmin: tout,
   admin: tout.filter((p) => p !== 'equipe.gerer' && p !== 'artisans.supprimer'),
+  // Maquette « Admin Portail Habitat » : vérification, contestations et litiges en plus.
   moderateur: [
     'artisans.lire',
+    'artisans.verifier',
+    'leads.lire',
+    'leads.rembourser',
+    'litiges.traiter',
     'documents.valider',
     'avis.lire',
     'avis.moderer',

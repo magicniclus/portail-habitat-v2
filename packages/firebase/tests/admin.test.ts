@@ -1,16 +1,21 @@
 import { getAuth, type Auth } from 'firebase-admin/auth';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { permissionsEffectives } from '@ph/core/admin';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   afficherDonneePersonnelle,
+  assignerTacheAdmin,
   crediterArtisanAdmin,
   creerSuperAdmin,
   jetonImpersonation,
   lireArtisanAdmin,
+  lireTableauDeBordAdmin,
+  listerFileAdmin,
   listerArtisansAdmin,
   sanctionnerArtisanAdmin,
+  traiterTacheAdmin,
   verifierArtisanAdmin,
   verifierSessionAdmin,
 } from '../src/serveur/admin';
@@ -232,5 +237,101 @@ describe('artisans dans l’admin (ADMIN §2.3)', () => {
       motif: 'Kbis et décennale vus',
     });
     expect((await db.doc(chemins.artisan('a1')).get()).get('verification.statut')).toBe('verifie');
+  });
+});
+
+describe('file de travail et tableau de bord (ADMIN §2.1 et 2.2)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const s = () => ({ db, horloge: () => T });
+  const tache = (id: string, type: string, priorite: number, ilYaH: number, refs = {}) =>
+    db
+      .collection(collections.filesModeration)
+      .doc(id)
+      .set({
+        type,
+        priorite,
+        statut: 'a_traiter',
+        refs,
+        permissionRequise: 'x',
+        createdAt: Timestamp.fromMillis(T - ilYaH * 3_600_000),
+      });
+
+  it('file : types autorisés seulement, tri priorité puis ancienneté, SLA ; prendre et clore', async () => {
+    await db.doc(chemins.artisan('a1')).set({ nomCommercial: 'Isolation Gironde' });
+    await tache('t1', 'avis', 3, 30);
+    await tache('t2', 'fraude_suspectee', 5, 1);
+    await tache('t3', 'remboursement_carte_lead', 4, 2);
+    await tache('t4', 'artisan_nouveau', 1, 1, { artisanId: 'a1' });
+    const moderateur = permissionsEffectives({ role: 'moderateur' });
+    const file = await listerFileAdmin(db, { permissions: moderateur, maintenant: T });
+    expect(file.map((x) => [x.id, x.sla])).toEqual([
+      ['t1', 'depasse'],
+      ['t4', 'ok'],
+    ]);
+    expect(file[1]!.titre).toBe('Isolation Gironde');
+    const admin = permissionsEffectives({ role: 'admin' });
+    expect(
+      (await listerFileAdmin(db, { permissions: admin, maintenant: T })).map((x) => x.id),
+    ).toEqual(['t2', 't3', 't1', 't4']);
+    await assignerTacheAdmin(s(), {
+      acteurUid: 'm1',
+      permissions: moderateur,
+      id: 't1',
+      prendre: true,
+    });
+    expect((await db.collection(collections.filesModeration).doc('t1').get()).data()).toMatchObject(
+      {
+        assigneA: 'm1',
+        statut: 'en_cours',
+      },
+    );
+    await expect(
+      assignerTacheAdmin(s(), {
+        acteurUid: 'm1',
+        permissions: moderateur,
+        id: 't3',
+        prendre: true,
+      }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+    await traiterTacheAdmin(s(), {
+      acteurUid: 'm1',
+      permissions: moderateur,
+      id: 't1',
+      issue: 'traitee',
+      resolution: 'Avis publié',
+    });
+    expect(
+      (await listerFileAdmin(db, { permissions: moderateur, maintenant: T })).map((x) => x.id),
+    ).toEqual(['t4']);
+  });
+
+  it('tableau de bord : compteurs par agrégation, chiffre d’affaires si finances', async () => {
+    await db
+      .collection(collections.demandes)
+      .doc('d1')
+      .set({ createdAt: Timestamp.fromMillis(T - 3_600_000) });
+    await db
+      .collection(collections.demandes)
+      .doc('d2')
+      .set({ createdAt: Timestamp.fromMillis(T - 3 * 86_400_000) });
+    await db
+      .collection(collections.factures)
+      .doc('f1')
+      .set({
+        statut: 'paid',
+        montantHtCentimes: 95_880,
+        createdAt: Timestamp.fromMillis(T - 86_400_000),
+      });
+    const t = await lireTableauDeBordAdmin(db, { maintenant: T, finances: true });
+    expect(t).toMatchObject({
+      demandes30j: 2,
+      demandesAujourdhui: 1,
+      chiffreAffairesHt30j: 95_880,
+    });
+    expect(t.demandesParJour).toHaveLength(14);
+    expect(t.demandesParJour.at(-1)!.n).toBe(1);
+    expect(
+      (await lireTableauDeBordAdmin(db, { maintenant: T, finances: false })).chiffreAffairesHt30j,
+    ).toBeNull();
   });
 });

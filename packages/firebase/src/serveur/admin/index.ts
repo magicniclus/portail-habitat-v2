@@ -15,3 +15,5 @@ export {
   type FiltreArtisans,
   type LigneArtisanAdmin,
 } from './artisans';
+export { assignerTacheAdmin, listerFileAdmin, traiterTacheAdmin, type TacheAdmin } from './file';
+export { lireTableauDeBordAdmin, type TableauDeBordAdmin } from './tableau';

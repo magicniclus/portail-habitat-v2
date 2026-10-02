@@ -148,7 +148,7 @@ export async function finaliserOnboarding(
         createdAt: maintenant,
         type: 'artisan_nouveau',
         refs: { artisanId },
-        priorite: 3,
+        priorite: 1,
         statut: 'a_traiter',
         permissionRequise: 'artisans.verifier',
       }),

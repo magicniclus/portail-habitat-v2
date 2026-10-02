@@ -335,3 +335,17 @@ export async function audits(action: string, cible: string): Promise<number> {
     .get();
   return r.size;
 }
+
+/** Tâche de la file de travail (comme en créent le matching, les avis, le webhook…). */
+export async function creerTache(type: string, artisanId: string): Promise<void> {
+  const { db, Timestamp } = await admin();
+  await db.doc(`${collections.filesModeration}/${type}-${randomUUID().slice(0, 8)}`).set({
+    schemaVersion: 1,
+    createdAt: Timestamp.now(),
+    type,
+    refs: { artisanId },
+    priorite: 4,
+    statut: 'a_traiter',
+    permissionRequise: 'avis.moderer',
+  });
+}

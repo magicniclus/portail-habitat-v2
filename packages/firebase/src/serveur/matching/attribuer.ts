@@ -209,9 +209,9 @@ export async function attribuerDemande(
         createdAt: Timestamp.fromMillis(maintenant),
         type: 'fraude_suspectee',
         refs: { demandeId },
-        priorite: 2,
+        priorite: 5,
         statut: 'a_traiter',
-        permissionRequise: 'demandes.moderer',
+        permissionRequise: 'demandes.annuler',
       });
     });
     return 'moderation';

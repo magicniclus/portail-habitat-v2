@@ -165,3 +165,10 @@ export const entreeCrediterAdmin = z.strictObject({
   credits: z.number().int().min(1).max(100),
   motif: motifAdmin,
 });
+
+/** Back-office › File de travail : prendre, rendre ou clore une tâche. */
+export const entreeTacheAdmin = z.strictObject({
+  id,
+  action: z.enum(['prendre', 'rendre', 'traiter', 'rejeter']),
+  resolution: z.string().trim().max(1000).optional(),
+});

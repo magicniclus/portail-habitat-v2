@@ -353,7 +353,7 @@ function finaliserLead(
             ...(c.payment_intent ? { paymentIntentId: c.payment_intent } : {}),
             motif: e.message,
           },
-          priorite: 1,
+          priorite: 4,
           statut: 'a_traiter',
           permissionRequise: 'finances.rembourser_carte',
           createdAt: Timestamp.fromMillis(s.horloge()),
