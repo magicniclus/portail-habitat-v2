@@ -1,0 +1,42 @@
+{
+  "name": "@ph/firebase",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./admin": "./src/admin.ts",
+    "./chemins": "./src/chemins.ts",
+    "./conversion": "./src/conversion.ts",
+    "./serveur": "./src/serveur/index.ts",
+    "./comptes": "./src/serveur/comptes/index.ts",
+    "./seed": "./src/seed/index.ts",
+    "./notifications": "./src/serveur/notifications/index.ts",
+    "./support": "./src/serveur/support/index.ts",
+    "./demandes": "./src/serveur/demandes/index.ts",
+    "./parcours": "./src/serveur/parcours/index.ts",
+    "./avis": "./src/serveur/avis/index.ts",
+    "./espace": "./src/serveur/espace/index.ts",
+    "./annuaire": "./src/serveur/annuaire/index.ts",
+    "./pro": "./src/serveur/pro/index.ts",
+    "./facturation": "./src/serveur/facturation/index.ts",
+    "./matching": "./src/serveur/matching/index.ts",
+    "./client": "./src/client/index.ts",
+    "./partenaires": "./src/serveur/partenaires/index.ts",
+    "./admin-serveur": "./src/serveur/admin/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0",
+    "@ph/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@ph/config": "workspace:*",
+    "firebase": "^12.19.0",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

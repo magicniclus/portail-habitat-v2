@@ -1,0 +1,16 @@
+{
+  "id": "simulateur-aides",
+  "nom": "Simulateur aides",
+  "ipAutorisees": ["203.0.113.7"],
+  "coutUnitaireCentimes": 700,
+  "quotaJour": 300,
+  "departementsCouverts": ["33"],
+  "versionConsentement": "v3-2026-06",
+  "texteConsentementAttendu": "J'accepte que mes coordonnées soient transmises à Portail Habitat et à des professionnels partenaires afin d'être recontacté pour mon projet.",
+  "mappingPrestations": {
+    "isolation_combles": "isolation",
+    "isolation_murs": "isolation",
+    "toiture": "toiture",
+    "menuiseries": "menuiserie"
+  }
+}

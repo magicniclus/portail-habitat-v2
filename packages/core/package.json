@@ -1,0 +1,58 @@
+{
+  "name": "@ph/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "./src/zod.ts"
+  ],
+  "exports": {
+    "./format": "./src/format/index.ts",
+    "./erreurs": "./src/erreurs.ts",
+    "./resultat": "./src/resultat.ts",
+    "./enveloppe": "./src/enveloppe/index.ts",
+    "./zod": "./src/zod.ts",
+    "./equipe": "./src/equipe/index.ts",
+    "./admin": "./src/admin/index.ts",
+    "./flags": "./src/flags.ts",
+    "./schemas": "./src/schemas/index.ts",
+    "./simulateur": "./src/simulateur/index.ts",
+    "./diagnostic": "./src/diagnostic/index.ts",
+    "./recherche": "./src/recherche/index.ts",
+    "./geo": "./src/geo/index.ts",
+    "./entreprises": "./src/entreprises/index.ts",
+    "./notifications": "./src/notifications/index.ts",
+    "./parcours": "./src/parcours/index.ts",
+    "./parcours/reponses": "./src/parcours/reprise.ts",
+    "./stats": "./src/stats/index.ts",
+    "./leads": "./src/leads/index.ts",
+    "./annuaire": "./src/annuaire/index.ts",
+    "./matching": "./src/matching/index.ts",
+    "./facturation": "./src/facturation/index.ts",
+    "./consentement": "./src/consentement/index.ts",
+    "./support": "./src/support/index.ts",
+    "./demandes": "./src/demandes/index.ts",
+    "./avis": "./src/avis/index.ts",
+    "./espace": "./src/espace/index.ts",
+    "./connexion": "./src/connexion/index.ts",
+    "./onboarding": "./src/onboarding/index.ts",
+    "./espace-pro": "./src/espacePro/index.ts",
+    "./partenaires": "./src/partenaires/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "cas": "node scripts/generer-cas-simulateur.mjs && node scripts/generer-cas-diagnostic.mjs && node scripts/generer-cas-recherche.mjs && node scripts/generer-cas-parcours.mjs && node scripts/generer-cas-stats.mjs && node scripts/generer-cas-leads.mjs && node scripts/generer-cas-annuaire.mjs && node scripts/generer-cas-matching.mjs",
+    "verifier-referentiel": "node --experimental-strip-types --no-warnings scripts/verifier-referentiel.ts"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@ph/config": "workspace:*",
+    "@types/node": "^22.19.0",
+    "@vitest/coverage-v8": "^5.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

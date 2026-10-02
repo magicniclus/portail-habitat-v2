@@ -1,0 +1,1805 @@
+{
+  "_source": "DATABASE.md §5 + D47, implémentation de référence indépendante",
+  "cas": [
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 3900,
+        "prixPremiumCentimes": 2700,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 93,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 3900,
+        "prixPremiumCentimes": 2700,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 21,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 4500,
+        "prixPremiumCentimes": 3200,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 51,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 2900,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 2800,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 51,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 4800,
+        "prixPremiumCentimes": 3400,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 2600,
+        "prixPremiumCentimes": 1800,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 600,
+        "prixPremiumCentimes": 400,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 3400,
+        "prixPremiumCentimes": 2400,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 10,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 1300,
+        "prixPremiumCentimes": 900,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 51,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 2300,
+        "prixPremiumCentimes": 1600,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 80,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 1100,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 100,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 4000,
+        "prixPremiumCentimes": 2800,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 51,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 700,
+        "prixPremiumCentimes": 500,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 4100,
+        "prixPremiumCentimes": 2900,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 0,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 2700,
+        "prixPremiumCentimes": 1900,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 80,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1500,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 80,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 6600,
+        "prixPremiumCentimes": 4600,
+        "prixCredits": 7
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 49,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 0,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 7600,
+        "prixPremiumCentimes": 5300,
+        "prixCredits": 8
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2500,
+        "prixPremiumCentimes": 1800,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "S",
+        "urgence": "urgente",
+        "qualiteLead": 71,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1100,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 34,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 1800,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 51,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 3200,
+        "prixPremiumCentimes": 2200,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 80,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1500,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 49,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 2400,
+        "prixPremiumCentimes": 1700,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 79,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 2000,
+        "prixPremiumCentimes": 1400,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 79,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 4700,
+        "prixPremiumCentimes": 3300,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 50,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 3600,
+        "prixPremiumCentimes": 2500,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 75,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 3400,
+        "prixPremiumCentimes": 2400,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 1400,
+        "prixPremiumCentimes": 1000,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 1500,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 0,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 700,
+        "prixPremiumCentimes": 500,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 49,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 1900,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1300,
+        "prixPremiumCentimes": 900,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 80,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 4300,
+        "prixPremiumCentimes": 3000,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 600,
+        "prixPremiumCentimes": 400,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 500,
+        "prixPremiumCentimes": 400,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 1500,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 50,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 3200,
+        "prixPremiumCentimes": 2200,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 7200,
+        "prixPremiumCentimes": 5000,
+        "prixCredits": 8
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 50,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 7000,
+        "prixPremiumCentimes": 4900,
+        "prixCredits": 7
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 96,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 9900,
+        "prixPremiumCentimes": 6900,
+        "prixCredits": 10
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 0,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 900,
+        "prixPremiumCentimes": 600,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 2800,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 27,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2000,
+        "prixPremiumCentimes": 1400,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1400,
+        "prixPremiumCentimes": 1000,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 0,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 3300,
+        "prixPremiumCentimes": 2300,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 2100,
+        "prixPremiumCentimes": 1500,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 2900,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 100,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 3100,
+        "prixPremiumCentimes": 2200,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 79,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1800,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 3700,
+        "prixPremiumCentimes": 2600,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 50,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 7200,
+        "prixPremiumCentimes": 5000,
+        "prixCredits": 8
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 0,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 2400,
+        "prixPremiumCentimes": 1700,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 600,
+        "prixPremiumCentimes": 400,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 79,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 3400,
+        "prixPremiumCentimes": 2400,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 68,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 3100,
+        "prixPremiumCentimes": 2200,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 80,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 6700,
+        "prixPremiumCentimes": 4700,
+        "prixCredits": 7
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 80,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 2300,
+        "prixPremiumCentimes": 1600,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 80,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 6300,
+        "prixPremiumCentimes": 4400,
+        "prixCredits": 7
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "urgente",
+        "qualiteLead": 51,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 3700,
+        "prixPremiumCentimes": 2600,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 51,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2000,
+        "prixPremiumCentimes": 1400,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 100,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 5700,
+        "prixPremiumCentimes": 4000,
+        "prixCredits": 6
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 51,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 1100,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 100,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 80,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 6600,
+        "prixPremiumCentimes": 4600,
+        "prixCredits": 7
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 80,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 4500,
+        "prixPremiumCentimes": 3200,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 0,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 46,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 700,
+        "prixPremiumCentimes": 500,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 51,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 4300,
+        "prixPremiumCentimes": 3000,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 1800,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 2100,
+        "prixPremiumCentimes": 1500,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 80,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2800,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 500,
+        "prixPremiumCentimes": 400,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 100,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 4000,
+        "prixPremiumCentimes": 2800,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 9,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 800,
+        "prixPremiumCentimes": 600,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 29,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 1100,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 50,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 3600,
+        "prixPremiumCentimes": 2500,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "S",
+        "urgence": "urgente",
+        "qualiteLead": 43,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 900,
+        "prixPremiumCentimes": 600,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 64,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2500,
+        "prixPremiumCentimes": 1800,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 50,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 3400,
+        "prixPremiumCentimes": 2400,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 0,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 2000,
+        "prixPremiumCentimes": 1400,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 50,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 1700,
+        "prixPremiumCentimes": 1200,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 51,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 100,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 3300,
+        "prixPremiumCentimes": 2300,
+        "prixCredits": 4
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 3000,
+        "prixPremiumCentimes": 2100,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 100,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 2800,
+        "prixPremiumCentimes": 2000,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "macon",
+        "famille": "gros-oeuvre",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 79,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 4200,
+        "prixPremiumCentimes": 2900,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "S",
+        "urgence": "rapide",
+        "qualiteLead": 49,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "M",
+        "urgence": "rapide",
+        "qualiteLead": 79,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 1700,
+        "prixPremiumCentimes": 1200,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 100,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 5900,
+        "prixPremiumCentimes": 4100,
+        "prixCredits": 6
+      }
+    },
+    {
+      "entree": {
+        "metier": "diag",
+        "famille": "traitements",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 11,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 1200,
+        "prixPremiumCentimes": 800,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "L",
+        "urgence": "rapide",
+        "qualiteLead": 51,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 3000,
+        "prixPremiumCentimes": 2100,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 1000,
+        "prixPremiumCentimes": 700,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 50,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 2600,
+        "prixPremiumCentimes": 1800,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "cuisiniste",
+        "famille": "sdb-cuisine",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 0,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 5000,
+        "prixPremiumCentimes": 3500,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 0,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 2100,
+        "prixPremiumCentimes": 1500,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 0,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 800,
+        "prixPremiumCentimes": 600,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "M",
+        "urgence": "urgente",
+        "qualiteLead": 79,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1800,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "multiservice",
+        "famille": "depannage",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 51,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1800,
+        "prixPremiumCentimes": 1300,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "XL",
+        "urgence": "rapide",
+        "qualiteLead": 0,
+        "nbEligibles": 7
+      },
+      "attendu": {
+        "prixBaseCentimes": 4400,
+        "prixPremiumCentimes": 3100,
+        "prixCredits": 5
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 74,
+        "nbEligibles": 8
+      },
+      "attendu": {
+        "prixBaseCentimes": 1400,
+        "prixPremiumCentimes": 1000,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 49,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 2400,
+        "prixPremiumCentimes": 1700,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 100,
+        "nbEligibles": 20
+      },
+      "attendu": {
+        "prixBaseCentimes": 7600,
+        "prixPremiumCentimes": 5300,
+        "prixCredits": 8
+      }
+    },
+    {
+      "entree": {
+        "metier": "renovation",
+        "famille": "interieur",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 3
+      },
+      "attendu": {
+        "prixBaseCentimes": 2200,
+        "prixPremiumCentimes": 1500,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "peintre",
+        "famille": "deco",
+        "trancheBudget": "L",
+        "urgence": "normale",
+        "qualiteLead": 79,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 1600,
+        "prixPremiumCentimes": 1100,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "L",
+        "urgence": "urgente",
+        "qualiteLead": 0,
+        "nbEligibles": 5
+      },
+      "attendu": {
+        "prixBaseCentimes": 2000,
+        "prixPremiumCentimes": 1400,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "electricien",
+        "famille": "electricite",
+        "trancheBudget": "M",
+        "urgence": "normale",
+        "qualiteLead": 29,
+        "nbEligibles": 2
+      },
+      "attendu": {
+        "prixBaseCentimes": 900,
+        "prixPremiumCentimes": 600,
+        "prixCredits": 1
+      }
+    },
+    {
+      "entree": {
+        "metier": "couvreur",
+        "famille": "toiture",
+        "trancheBudget": "S",
+        "urgence": "normale",
+        "qualiteLead": 0,
+        "nbEligibles": 1
+      },
+      "attendu": {
+        "prixBaseCentimes": 1300,
+        "prixPremiumCentimes": 900,
+        "prixCredits": 2
+      }
+    },
+    {
+      "entree": {
+        "metier": "plombier",
+        "famille": "plomberie",
+        "trancheBudget": "XL",
+        "urgence": "normale",
+        "qualiteLead": 79,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 3000,
+        "prixPremiumCentimes": 2100,
+        "prixCredits": 3
+      }
+    },
+    {
+      "entree": {
+        "metier": "inconnu",
+        "famille": "famille-inconnue",
+        "trancheBudget": "XL",
+        "urgence": "urgente",
+        "qualiteLead": 49,
+        "nbEligibles": 0
+      },
+      "attendu": {
+        "prixBaseCentimes": 2700,
+        "prixPremiumCentimes": 1900,
+        "prixCredits": 3
+      }
+    }
+  ]
+}
