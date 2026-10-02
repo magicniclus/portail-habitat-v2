@@ -47,6 +47,10 @@ export const demande = z
         idExterne: z.string(),
         recueLe: horodatage,
         coutAchatCentimes: centimesPositifs,
+        /** Empreinte téléphone + prestation : doublons sur 30 jours (DATABASE §4 bis). */
+        cleDoublon: empreinte.optional(),
+        /** Lien de confirmation du téléphone envoyé par SMS (empreinte du jeton). */
+        jetonTelephoneHash: empreinte.optional(),
       })
       .optional(),
     aides: z
@@ -102,6 +106,9 @@ export const demande = z
     qualiteLead: pourcent.optional(),
     moderation: z.boolean().optional(),
     appelOffresId: id.optional(),
+    /** Demande partenaire sans preneur : marquée à 24 h, archivée à 72 h (CONVERSION §3 bis). */
+    invendueLe: horodatage.optional(),
+    archiveeLe: horodatage.optional(),
     consentementId: id,
     ipHash: empreinte.optional(),
     userAgent: z.string().max(400).optional(),
