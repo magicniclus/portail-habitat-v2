@@ -187,3 +187,15 @@ export const entreeNoteAdmin = z.strictObject({
   artisanId: id,
   texte: z.string().trim().min(2).max(4000),
 });
+
+/** Back-office › Demandes : spam, annulation, relance de l'algorithme, ajout d'un artisan. */
+export const entreeDemandeAdmin = z.strictObject({
+  demandeId: id,
+  action: z.enum(['spam', 'annuler', 'relancer']),
+  motif: motifAdmin,
+});
+export const entreeAjoutArtisanAdmin = z.strictObject({
+  demandeId: id,
+  artisanId: id,
+  motif: motifAdmin,
+});

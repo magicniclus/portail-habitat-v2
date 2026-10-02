@@ -64,13 +64,15 @@ export async function entrepriseDe(email: string): Promise<string> {
 export async function proposerDemande(
   artisanId: string,
   partenaire = false,
-): Promise<{ reference: string }> {
+): Promise<{ reference: string; demandeId: string }> {
   const { db, Timestamp } = await admin();
   const code = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, 'X');
   const reference = `PH-${code}`;
   const demandeId = randomUUID().replaceAll('-', '').slice(0, 20);
   await db.doc(chemins.demande(demandeId)).set({
     reference,
+    statut: 'en_attribution',
+    createdAt: Timestamp.now(),
     prestationId: 'peinture',
     contact: {
       prenom: 'Hélène',
@@ -105,7 +107,7 @@ export async function proposerDemande(
     coordonneesDebloquees: false,
     scoreMatching: 80,
   });
-  return { reference };
+  return { reference, demandeId };
 }
 
 /**

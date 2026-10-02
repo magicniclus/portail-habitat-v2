@@ -18,3 +18,15 @@ export {
 export { assignerTacheAdmin, listerFileAdmin, traiterTacheAdmin, type TacheAdmin } from './file';
 export { lireTableauDeBordAdmin, type TableauDeBordAdmin } from './tableau';
 export { ajouterNoteAdmin, deciderDocumentAdmin, idTacheDocument } from './documents';
+export {
+  ajouterArtisanDemandeAdmin,
+  FILTRES_DEMANDES,
+  lireDemandeAdmin,
+  listerDemandesAdmin,
+  rejeterDemandeAdmin,
+  relancerMatchingAdmin,
+  type CandidatTrace,
+  type FicheDemandeAdmin,
+  type FiltreDemandes,
+  type LigneDemandeAdmin,
+} from './demandes';

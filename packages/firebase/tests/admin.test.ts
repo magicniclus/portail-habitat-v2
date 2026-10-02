@@ -6,6 +6,7 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   afficherDonneePersonnelle,
+  ajouterArtisanDemandeAdmin,
   ajouterNoteAdmin,
   assignerTacheAdmin,
   crediterArtisanAdmin,
@@ -14,9 +15,13 @@ import {
   idTacheDocument,
   jetonImpersonation,
   lireArtisanAdmin,
+  lireDemandeAdmin,
   lireTableauDeBordAdmin,
+  listerDemandesAdmin,
   listerFileAdmin,
   listerArtisansAdmin,
+  rejeterDemandeAdmin,
+  relancerMatchingAdmin,
   sanctionnerArtisanAdmin,
   traiterTacheAdmin,
   verifierArtisanAdmin,
@@ -410,5 +415,85 @@ describe('documents et notes (ADMIN §2.3)', () => {
         ['kbis', 'refuse'],
       ]),
     );
+  });
+});
+
+describe('demandes dans l’admin (ADMIN §2.4)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const envois: unknown[] = [];
+  const s = () => ({ db, horloge: () => T, notifier: async (e: unknown) => void envois.push(e) });
+  const demande = (id: string, statut: string) =>
+    db.doc(chemins.demande(id)).set({
+      reference: `PH-${id.toUpperCase().padEnd(6, 'X')}`,
+      statut,
+      source: 'simulateur',
+      prestationId: 'peinture',
+      adresseChantier: { ville: 'Floirac' },
+      estimation: { minCentimes: 100_000, maxCentimes: 200_000 },
+      contact: {
+        prenom: 'Hélène',
+        nom: 'Marty',
+        email: 'helene@test.local',
+        telephone: '+33612345678',
+      },
+      createdAt: Timestamp.fromMillis(T),
+      nbAttributions: 0,
+    });
+
+  it('liste filtrée, fiche masquée avec la trace ; spam ; ajout manuel d’un artisan', async () => {
+    await demande('d1', 'attribuee');
+    await demande('d2', 'nouvelle');
+    await db
+      .collection(collections.matching)
+      .doc('d1')
+      .set({
+        resultat: 'attribuee',
+        candidats: [
+          { artisanId: 'a1', score: 82, distance: 4, retenu: true },
+          { artisanId: 'a2', score: 0, exclu: 'non_verifie', retenu: false },
+        ],
+      });
+    await db
+      .doc(chemins.artisan('a1'))
+      .set({ nomCommercial: 'Bertrand', statut: 'actif', proprietaireUid: 'p1' });
+    await db.doc(chemins.artisan('a2')).set({ nomCommercial: 'Nguyen', statut: 'actif' });
+    expect((await listerDemandesAdmin(db, { filtre: 'attente' })).map((d) => d.id)).toEqual(['d2']);
+    expect(
+      (await listerDemandesAdmin(db, { filtre: 'toutes', reference: 'ph-d1xxxx' })).map(
+        (d) => d.id,
+      ),
+    ).toEqual(['d1']);
+    const f = (await lireDemandeAdmin(db, 'd1'))!;
+    expect(f).toMatchObject({ particulier: 'Hélène M.', emailMasque: 'h•••@t•••.local' });
+    expect(JSON.stringify(f)).not.toContain('helene@test.local');
+    expect(f.candidats.map((c) => [c.nom, c.retenu, c.exclu])).toEqual([
+      ['Bertrand', true, null],
+      ['Nguyen', false, 'non_verifie'],
+    ]);
+    await rejeterDemandeAdmin(s(), {
+      acteurUid: 'adm',
+      demandeId: 'd2',
+      statut: 'spam',
+      motif: 'Numéro factice',
+    });
+    expect((await db.doc(chemins.demande('d2')).get()).get('statut')).toBe('spam');
+    await ajouterArtisanDemandeAdmin(s(), {
+      acteurUid: 'adm',
+      demandeId: 'd1',
+      artisanId: 'a2',
+      motif: 'Demande du client',
+    });
+    expect((await db.doc(chemins.attribution('d1', 'a2')).get()).get('statut')).toBe('proposee');
+    await expect(
+      ajouterArtisanDemandeAdmin(s(), {
+        acteurUid: 'adm',
+        demandeId: 'd1',
+        artisanId: 'a2',
+        motif: 'encore',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await expect(
+      relancerMatchingAdmin(s(), { acteurUid: 'adm', demandeId: 'd1', motif: 'test' }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
   });
 });
