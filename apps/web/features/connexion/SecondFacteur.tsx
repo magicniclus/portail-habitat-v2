@@ -4,7 +4,7 @@ import { messageErreurConnexion } from '@ph/core/connexion';
 import { Banner, Button, Field, Input } from '@ph/ui';
 import type { MultiFactorResolver } from 'firebase/auth';
 import { useState, type FormEvent } from 'react';
-import { envoyerSms, validerSms, validerTotp } from './sessionPro';
+import { envoyerSms, validerSms, validerTotp, type EspaceConnexion } from './sessionPro';
 
 /**
  * Second facteur (COMPTES §5) : code de l'application d'authentification, ou SMS si le flag
@@ -15,11 +15,13 @@ export function SecondFacteur({
   type,
   smsActif,
   onConnecte,
+  espace = 'pro',
 }: {
   resolveur: MultiFactorResolver;
   type: 'totp' | 'phone';
   smsActif: boolean;
   onConnecte: () => void;
+  espace?: EspaceConnexion;
 }) {
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -32,8 +34,8 @@ export function SecondFacteur({
     if (!/^\d{6}$/.test(code)) return setErreur('Le code comporte 6 chiffres.');
     setEnCours(true);
     try {
-      if (sms && verification) await validerSms(resolveur, verification, code);
-      else await validerTotp(resolveur, code);
+      if (sms && verification) await validerSms(resolveur, verification, code, espace);
+      else await validerTotp(resolveur, code, espace);
       onConnecte();
     } catch (e) {
       setErreur(messageErreurConnexion((e as { code?: string }).code ?? ''));

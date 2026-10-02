@@ -29,6 +29,11 @@ export default defineConfig({
     timeout: 60_000,
     // Émulateurs hérités de `firebase emulators:exec` (FIRESTORE_EMULATOR_HOST…).
     // Secret de test du webhook Stripe (e2e seulement) : les événements sont signés par le test.
-    env: { APP_CHECK_MODE: 'desactive', STRIPE_WEBHOOK_SECRET: 'whsec_e2e_local' },
+    // Les émulateurs n'ont pas de TOTP : double authentification admin coupée pour les tests seulement.
+    env: {
+      APP_CHECK_MODE: 'desactive',
+      ADMIN_MFA: 'desactive',
+      STRIPE_WEBHOOK_SECRET: 'whsec_e2e_local',
+    },
   },
 });

@@ -29,8 +29,13 @@ export const COMPTES = {
   compta: 'compta@test.local',
 } as const;
 
-export async function connecter(page: Page, email: string, suite = '/pro/tableau-de-bord') {
-  await page.goto(`/connexion?espace=pro&suite=${encodeURIComponent(suite)}`);
+export async function connecter(
+  page: Page,
+  email: string,
+  suite = '/pro/tableau-de-bord',
+  espace: 'pro' | 'admin' = 'pro',
+) {
+  await page.goto(`/connexion?espace=${espace}&suite=${encodeURIComponent(suite)}`);
   await page.getByLabel(/^Email/).fill(email);
   await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
   await page.getByRole('button', { name: 'Me connecter' }).click();

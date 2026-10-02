@@ -8,11 +8,22 @@ export type Etape =
   | { etape: 'connecte' }
   | { etape: 'secondFacteur'; resolveur: MultiFactorResolver; type: 'totp' | 'phone' };
 
-/** Ouvre la session serveur (cookie httpOnly, 7 jours pour les pros) à partir de la connexion Firebase. */
-export async function ouvrirSessionPro(c: { user: User }): Promise<void> {
+export type EspaceConnexion = 'pro' | 'admin';
+
+/**
+ * Ouvre la session serveur (cookie httpOnly : 7 jours pour les pros, 8 h pour l'admin) à partir de
+ * la connexion Firebase. Sans espace précisé : celui de la page en cours.
+ */
+export async function ouvrirSessionPro(
+  c: { user: User },
+  espace: EspaceConnexion = typeof window !== 'undefined' &&
+  window.location.pathname.startsWith('/admin')
+    ? 'admin'
+    : 'pro',
+): Promise<void> {
   const r = await posterJson<null>('/api/session', {
     jetonId: await c.user.getIdToken(),
-    espace: 'pro',
+    espace,
   });
   if (!r.ok) throw Object.assign(new Error(r.message), { code: 'session' });
 }
@@ -22,12 +33,13 @@ export async function connecterPro(
   email: string,
   motDePasse: string,
   memoriser: boolean,
+  espace: EspaceConnexion = 'pro',
 ): Promise<Etape> {
   const auth = await authClient();
   const m = await import('firebase/auth');
   await m.setPersistence(auth, memoriser ? m.browserLocalPersistence : m.browserSessionPersistence);
   try {
-    await ouvrirSessionPro(await m.signInWithEmailAndPassword(auth, email, motDePasse));
+    await ouvrirSessionPro(await m.signInWithEmailAndPassword(auth, email, motDePasse), espace);
     return { etape: 'connecte' };
   } catch (e) {
     if ((e as { code?: string }).code !== 'auth/multi-factor-auth-required') throw e;
@@ -41,11 +53,15 @@ export async function connecterPro(
 }
 
 /** Code de l'application d'authentification (TOTP). */
-export async function validerTotp(resolveur: MultiFactorResolver, code: string) {
+export async function validerTotp(
+  resolveur: MultiFactorResolver,
+  code: string,
+  espace: EspaceConnexion = 'pro',
+) {
   const m = await import('firebase/auth');
   const indice = resolveur.hints.find((h) => h.factorId === m.TotpMultiFactorGenerator.FACTOR_ID)!;
   const assertion = m.TotpMultiFactorGenerator.assertionForSignIn(indice.uid, code);
-  await ouvrirSessionPro(await resolveur.resolveSignIn(assertion));
+  await ouvrirSessionPro(await resolveur.resolveSignIn(assertion), espace);
 }
 
 /**
@@ -67,12 +83,13 @@ export async function validerSms(
   resolveur: MultiFactorResolver,
   verificationId: string,
   code: string,
+  espace: EspaceConnexion = 'pro',
 ) {
   const m = await import('firebase/auth');
   const assertion = m.PhoneMultiFactorGenerator.assertion(
     m.PhoneAuthProvider.credential(verificationId, code),
   );
-  await ouvrirSessionPro(await resolveur.resolveSignIn(assertion));
+  await ouvrirSessionPro(await resolveur.resolveSignIn(assertion), espace);
 }
 
 /**

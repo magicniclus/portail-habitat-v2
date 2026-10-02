@@ -20,6 +20,13 @@ export const routes = {
   connexionProSuite: (suite: string) =>
     r(`/connexion?espace=pro&suite=${encodeURIComponent(suite)}`),
   proFacturation: r('/pro/facturation'),
+  admin: r('/admin'),
+  adminSection: (chemin: string) => r(chemin ? `/admin/${chemin}` : '/admin'),
+  adminSecurite: r('/admin/securite'),
+  connexionAdminSuite: (suite: string, raison?: 'inactivite' | 'expiree') =>
+    r(
+      `/connexion?espace=admin&suite=${encodeURIComponent(suite)}${raison ? `&raison=${raison}` : ''}`,
+    ),
   /** Demander à rejoindre une entreprise déjà inscrite (COMPTES §4.4, ONB-03). */
   proRejoindre: (artisanId: string) =>
     r(`/pro/rejoindre?entreprise=${encodeURIComponent(artisanId)}`),

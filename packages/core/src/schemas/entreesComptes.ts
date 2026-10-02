@@ -11,7 +11,7 @@ const surcharges = z.array(z.enum(ACTIONS_EQUIPE)).max(ACTIONS_EQUIPE.length);
 /** POST /api/session : jeton d'identification Firebase à échanger contre un cookie. */
 export const entreeSession = z.object({
   jetonId: z.string().min(20).max(4096),
-  espace: z.enum(['particulier', 'pro']),
+  espace: z.enum(['particulier', 'pro', 'admin']),
 });
 
 export const entreeFinaliserOnboarding = z

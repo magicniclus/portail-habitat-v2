@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DemandeLien } from '@/features/connexion/DemandeLien';
+import { PageConnexionAdmin } from '@/features/connexion/PageConnexionAdmin';
 import { PageConnexionPro } from '@/features/connexion/PageConnexionPro';
 import { PageParcours } from '@/features/parcours/PageParcours';
 import { suiteSure } from '@/lib/suite';
@@ -18,6 +19,14 @@ type Params = Promise<Record<string, string | string[] | undefined>>;
  */
 export default async function PageConnexion({ searchParams }: { searchParams: Params }) {
   const p = await searchParams;
+  if (p.espace === 'admin')
+    return (
+      <PageConnexionAdmin
+        suite={suiteSure(typeof p.suite === 'string' ? p.suite : null, '/admin')}
+        raison={typeof p.raison === 'string' ? p.raison : undefined}
+        smsActif={await flagActif('deuxFacteursSms')}
+      />
+    );
   if (p.espace === 'pro')
     return (
       <PageConnexionPro

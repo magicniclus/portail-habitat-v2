@@ -6,7 +6,12 @@ import { appAdmin } from '../admin';
 export const COOKIE_SESSION = '__session';
 
 /** Durées de session (COMPTES §5) : 14 jours pour les particuliers, 7 jours pour les pros. */
-export const DUREE_SESSION_MS = { particulier: 14 * 86_400_000, pro: 7 * 86_400_000 } as const;
+export const DUREE_SESSION_MS = {
+  particulier: 14 * 86_400_000,
+  pro: 7 * 86_400_000,
+  /** Back-office : 8 h au plus (ADMIN §1). */
+  admin: 8 * 3_600_000,
+} as const;
 export type EspaceSession = keyof typeof DUREE_SESSION_MS;
 
 /** Un cookie de session ne se crée qu'après une connexion récente (recommandation Firebase). */

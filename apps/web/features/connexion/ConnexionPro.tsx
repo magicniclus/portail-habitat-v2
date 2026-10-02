@@ -9,7 +9,7 @@ import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import { SecondFacteur } from './SecondFacteur';
-import { connecterPro, type Etape } from './sessionPro';
+import { connecterPro, type EspaceConnexion, type Etape } from './sessionPro';
 import { blocageJusqua, echec, reussite } from './tentatives';
 
 /** Secondes restantes d'un blocage, mises à jour chaque seconde (CON-03). */
@@ -28,7 +28,15 @@ const sAbonner = () => () => {};
 const duree = (s: number) => (s >= 60 ? `${Math.ceil(s / 60)} min` : `${s} s`);
 
 /** Connexion pro (maquette Connexion) : email + mot de passe, puis second facteur s'il existe. */
-export function ConnexionPro({ suite, smsActif }: { suite: string; smsActif: boolean }) {
+export function ConnexionPro({
+  suite,
+  smsActif,
+  espace = 'pro',
+}: {
+  suite: string;
+  smsActif: boolean;
+  espace?: EspaceConnexion;
+}) {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -57,6 +65,7 @@ export function ConnexionPro({ suite, smsActif }: { suite: string; smsActif: boo
         String(f.get('email') ?? '').trim(),
         String(f.get('motDePasse') ?? ''),
         f.get('memoriser') === 'on',
+        espace,
       );
       if (r.etape === 'connecte') entrer();
       else setFacteur(r);
@@ -76,6 +85,7 @@ export function ConnexionPro({ suite, smsActif }: { suite: string; smsActif: boo
   if (facteur)
     return (
       <SecondFacteur
+        espace={espace}
         resolveur={facteur.resolveur}
         type={facteur.type}
         smsActif={smsActif}
