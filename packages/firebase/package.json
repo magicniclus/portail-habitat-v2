@@ -20,7 +20,8 @@
     "./pro": "./src/serveur/pro/index.ts",
     "./facturation": "./src/serveur/facturation/index.ts",
     "./matching": "./src/serveur/matching/index.ts",
-    "./client": "./src/client/index.ts"
+    "./client": "./src/client/index.ts",
+    "./partenaires": "./src/serveur/partenaires/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

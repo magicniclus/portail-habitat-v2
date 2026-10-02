@@ -11,6 +11,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
 import { demande, type EntreeDemande } from '@ph/core/schemas';
 import { estimer } from '@ph/core/simulateur';
+import type { Firestore } from 'firebase-admin/firestore';
 import { collections, chemins } from '../../chemins';
 import type { ServicesComptes } from '../comptes/services';
 import { depot } from '../depot';
@@ -32,11 +33,12 @@ export interface ContexteDemande {
   userAgent?: string;
 }
 
-async function lireReferentiel(s: ServicesDemandes, prestationId: string) {
-  const [item, prix, coefs] = await s.db.getAll(
-    s.db.doc(chemins.prestationItem(prestationId)),
-    s.db.doc(chemins.prestationPrix(prestationId)),
-    s.db.doc(chemins.prestationPrix('_coefficients')),
+/** Champs publiés et prix privés d'une prestation (une lecture par prestation, COUTS). */
+export async function lireReferentielPrestation(db: Firestore, prestationId: string) {
+  const [item, prix, coefs] = await db.getAll(
+    db.doc(chemins.prestationItem(prestationId)),
+    db.doc(chemins.prestationPrix(prestationId)),
+    db.doc(chemins.prestationPrix('_coefficients')),
   );
   if (!item?.exists || item.get('actif') !== true) throw new ErreurMetier('INTROUVABLE');
   if (!prix?.exists || !coefs?.exists)
@@ -63,7 +65,7 @@ export async function creerDemande(
   ctx: ContexteDemande = {},
 ): Promise<DemandeCreee> {
   const maintenant = new Date(s.horloge());
-  const { nom, champs, referentiel } = await lireReferentiel(s, e.prestationId);
+  const { nom, champs, referentiel } = await lireReferentielPrestation(s.db, e.prestationId);
   const verif = verifierReponses(champs, e.reponses);
   if (verif.invalides.length)
     throw new ErreurMetier(

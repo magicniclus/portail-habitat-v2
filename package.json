@@ -22,7 +22,8 @@
     "email:dev": "pnpm --filter @ph/emails dev",
     "mailpit": "docker run --rm -p 1025:1025 -p 8025:8025 axllent/mailpit",
     "e2e:pro": "SEED_MOT_DE_PASSE=${SEED_MOT_DE_PASSE:-MotDePasse-e2e-2026} firebase emulators:exec --project demo-portail-habitat --only auth,firestore,storage \"pnpm seed && pnpm --filter @ph/web exec playwright test -c playwright.pro.config.ts\"",
-    "stripe:produits": "tsx apps/web/scripts/stripeProduits.ts"
+    "stripe:produits": "tsx apps/web/scripts/stripeProduits.ts",
+    "partenaire:source": "tsx scripts/sourcePartenaire.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

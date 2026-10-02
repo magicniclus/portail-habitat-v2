@@ -57,6 +57,24 @@ export const modelesParticuliers = {
   }),
 
   /** EMAILS §4.4 et COMPTES §2 : récapitulatif, estimation, référence, lien de suivi. */
+  'confirmer-telephone': modele<{ prenom: string; prestation: string; lien: string }>({
+    sujet: () => 'Confirmez votre numéro de téléphone',
+    preheader: (d) => `Votre projet : ${d.prestation}. Un clic suffit.`,
+    blocs: (d) => [
+      titre('Confirmez votre numéro'),
+      para(
+        `${bonjour(d.prenom)}vous avez demandé à être recontacté pour votre projet (${d.prestation}). Confirmez votre numéro pour que des artisans vérifiés vous rappellent.`,
+      ),
+      bouton('Confirmer mon numéro', d.lien),
+    ],
+    sms: (d) =>
+      `Portail Habitat : ${d.prenom}, confirmez votre numéro pour être rappelé par des artisans (${d.prestation}) : ${d.lien}`,
+    exemple: {
+      prenom: 'Claire',
+      prestation: 'Isolation des combles',
+      lien: 'https://portailhabitat.fr/confirmer-telephone?jeton=exemple',
+    },
+  }),
   'demande-confirmee': modele<DemandeConfirmee>({
     sujet: (d) => `Votre demande ${d.reference} est enregistrée`,
     preheader: (d) =>

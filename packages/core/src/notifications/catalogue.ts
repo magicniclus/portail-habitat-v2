@@ -90,6 +90,8 @@ export const MODELES = {
   'reprise-simulateur': { categorie: 'relance', charte: 'particulier', complet: true },
   'reprise-simulateur-rappel': { categorie: 'relance', charte: 'particulier', differe: true },
   'demande-confirmee': { categorie: 'transactionnel', charte: 'particulier' },
+  /** Demande d'un site partenaire au téléphone non vérifié : lien de confirmation par SMS. */
+  'confirmer-telephone': { categorie: 'transactionnel', charte: 'particulier', sms: true },
   'demande-sans-artisan': { categorie: 'transactionnel', charte: 'particulier', differe: true },
   'artisan-a-repondu': { categorie: 'activite', charte: 'particulier', inapp: true },
   'devis-recu': { categorie: 'activite', charte: 'particulier', inapp: true },

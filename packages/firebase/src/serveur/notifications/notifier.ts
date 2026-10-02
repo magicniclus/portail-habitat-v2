@@ -31,6 +31,8 @@ export interface Destinataire {
   uid?: string;
   /** Sans compte (invitation, prospect) : adresse fournie par l'appelant. */
   email?: string;
+  /** Sans compte, téléphone fourni avec consentement (demande partenaire, E.164). */
+  telephone?: string;
   artisanId?: string;
 }
 
@@ -103,7 +105,7 @@ export async function notifier(s: ServicesNotifications, e: Envoi): Promise<Resu
       {})
     : {};
   const email = profil.email ?? e.destinataire.email;
-  const telephone = profil.telephoneVerifie ? profil.telephone : undefined;
+  const telephone = profil.telephoneVerifie ? profil.telephone : e.destinataire.telephone;
   const suppression = email
     ? await s.db.collection(collections.suppressions).doc(empreinteEmail(email)).get()
     : null;
@@ -114,7 +116,9 @@ export async function notifier(s: ServicesNotifications, e: Envoi): Promise<Resu
     telephone: Boolean(telephone),
   });
   const res: ResultatNotifier = { ignores: {} };
-  const destinataireCle = e.destinataire.uid ?? (email ? empreinteEmail(email) : 'inconnu');
+  const destinataireCle =
+    e.destinataire.uid ??
+    (email ? empreinteEmail(email) : telephone ? empreinteEmail(telephone) : 'inconnu');
   const cle = cleIdempotence(e.modele, e.refObjet, destinataireCle, e.variante);
   const voulu = e.envoyerLe ?? new Date(maintenant);
 

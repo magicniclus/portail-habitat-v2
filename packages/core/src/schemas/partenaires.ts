@@ -20,6 +20,8 @@ export const sourceDemandes = z.object({
   coutUnitaireCentimes: centimesPositifs,
   mappingPrestations: z.record(z.string(), id),
   texteConsentementAttendu: z.string(),
+  /** Version convenue du texte de la case (`consentement.versionTexte`, ex. « v3-2026-06 »). */
+  versionConsentement: z.string().min(1),
   quotaJour: z.number().int().positive(),
   /** Zone couverte : départements (« 33 », « 2A », « 971 ») ; vide = toute la France. */
   departementsCouverts: z.array(z.string().regex(/^(\d{2,3}|2[AB])$/)).default([]),
@@ -45,6 +47,7 @@ export const importDemande = z.object({
   details: z.string().max(300).optional(),
   demandeId: id.optional(),
   payloadHash: empreinte,
+  traiteLe: horodatage,
   expireLe: horodatage,
 });
 
@@ -122,3 +125,8 @@ export const entreeDemandePartenaire = z.strictObject({
   }),
 });
 export type EntreeDemandePartenaire = z.infer<typeof entreeDemandePartenaire>;
+
+/** Lien du SMS de confirmation (demande partenaire au téléphone non vérifié). */
+export const entreeConfirmerTelephone = z.strictObject({
+  jeton: z.string().regex(/^[\w-]{20,100}$/),
+});
