@@ -16,7 +16,7 @@ export default async function PageMesDemandes() {
   const active = s.espace.active;
   if (!active || !peut(active.membre, 'demandes.repondre')) redirect(routes.proTableauDeBord);
   // Ouvrir Mes demandes = les propositions sont vues (demande partenaire : délai normal, pas 2 h).
-  await marquerDemandesVues(servicesDemandesPro(), active.artisanId);
+  if (!s.impersonation) await marquerDemandesVues(servicesDemandesPro(), active.artisanId);
   const demandes = await lireDemandesPro(servicesDemandesPro(), active.artisanId);
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">

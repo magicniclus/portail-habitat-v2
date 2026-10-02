@@ -2,6 +2,7 @@ import { menuPro } from '@ph/core/espace-pro';
 import { peut } from '@ph/core/equipe';
 import { initiales } from '@ph/core/format';
 import type { ReactNode } from 'react';
+import { BandeauImpersonation } from '@/features/admin/BandeauImpersonation';
 import { CadrePro } from '@/features/espacePro/CadrePro';
 import { EncartPremium } from '@/features/espacePro/EncartPremium';
 import { EtatFiche } from '@/features/espacePro/EtatFiche';
@@ -28,6 +29,7 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
       initiales={initiales(s.nomAffiche) || '?'}
       encart={offrePremium ? <EncartPremium prix={await lirePrixAffiches()} /> : null}
     >
+      {s.impersonation ? <BandeauImpersonation /> : null}
       {children}
     </CadrePro>
   );

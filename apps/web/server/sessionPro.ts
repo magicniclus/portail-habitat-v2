@@ -13,6 +13,8 @@ export interface SessionPro {
   nomAffiche: string;
   email: string;
   secondFacteur: boolean;
+  /** « Voir en tant que » d'un superadmin : lecture seule, bandeau rouge (ADM-04). */
+  impersonation: boolean;
   /** Entreprise active (sélecteur d'entreprise) et rôle de la personne dans celle-ci. */
   artisanId: string | null;
   role: string | null;
@@ -30,6 +32,7 @@ export const lireSessionPro = cache(async (): Promise<SessionPro | null> => {
     nomAffiche: espace.nomAffiche || jeton.email || '',
     email: jeton.email ?? '',
     secondFacteur: contexteDepuisJeton(jeton).secondFacteur ?? false,
+    impersonation: contexteDepuisJeton(jeton).impersonation ?? false,
     artisanId: espace.active?.artisanId ?? null,
     role: espace.active?.membre.role ?? null,
     plan: espace.active?.artisan.plan ?? null,

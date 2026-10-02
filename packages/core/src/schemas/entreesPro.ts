@@ -136,3 +136,18 @@ export const entreeDebloquerAppelOffres = z.strictObject({
 export const entreeAchatPack = z.strictObject({
   cle: z.enum(['pack_10', 'pack_25', 'pack_50']),
 });
+
+/** Back-office : afficher une donnée personnelle masquée (consultation journalisée, ADM-02). */
+export const entreeAfficherDonnee = z.strictObject({
+  cible: z.string().regex(/^[a-zA-Z]+\/[\w-]+$/),
+  champ: z
+    .string()
+    .regex(/^[\w.]+$/)
+    .max(60),
+});
+
+/** Back-office : « Voir en tant que » un compte, en lecture seule (ADM-04). */
+export const entreeVoirEnTantQue = z.strictObject({
+  uid: id,
+  motif: z.string().trim().min(5).max(500),
+});
