@@ -1,16 +1,7 @@
-import { sectionsVisibles } from '@ph/core/admin';
+import { LIBELLES_ROLE_ADMIN, sectionsVisibles } from '@ph/core/admin';
 import type { ReactNode } from 'react';
 import { CoqueAdmin } from '@/features/admin/CoqueAdmin';
 import { lireSessionAdmin } from '@/server/sessionAdmin';
-
-const NOMS_ROLE: Record<string, string> = {
-  superadmin: 'Super-administrateur',
-  admin: 'Administrateur',
-  moderateur: 'Modérateur',
-  commercial: 'Commercial',
-  finance: 'Finance',
-  lecture: 'Lecture seule',
-};
 
 /** Coque du back-office : chaque page revérifie la session et la section (`pageAdmin`). */
 export default async function LayoutCoqueAdmin({ children }: { children: ReactNode }) {
@@ -26,7 +17,7 @@ export default async function LayoutCoqueAdmin({ children }: { children: ReactNo
     <CoqueAdmin
       liens={liens}
       nom={r.session.nom}
-      role={NOMS_ROLE[r.session.role] ?? r.session.role}
+      role={LIBELLES_ROLE_ADMIN[r.session.role] ?? r.session.role}
     >
       {children}
     </CoqueAdmin>

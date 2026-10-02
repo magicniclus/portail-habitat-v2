@@ -5,8 +5,13 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   afficherDonneePersonnelle,
+  crediterArtisanAdmin,
   creerSuperAdmin,
   jetonImpersonation,
+  lireArtisanAdmin,
+  listerArtisansAdmin,
+  sanctionnerArtisanAdmin,
+  verifierArtisanAdmin,
   verifierSessionAdmin,
 } from '../src/serveur/admin';
 
@@ -135,5 +140,97 @@ describe('données personnelles et impersonation (ADM-02, ADM-04)', () => {
       .where('action', '==', 'impersonation')
       .get();
     expect(audit.size).toBe(1);
+  });
+});
+
+describe('artisans dans l’admin (ADMIN §2.3)', () => {
+  const s = () => ({ db, horloge: () => Date.UTC(2026, 9, 2, 10) });
+  beforeEach(async () => {
+    await db.doc(chemins.artisan('a1')).set({
+      nomCommercial: 'Bertrand Rénovation',
+      siren: '812345678',
+      metierPrincipal: 'plombier',
+      adresseSiege: { ville: 'Bordeaux' },
+      emailContact: 'contact@bertrand.fr',
+      telephonePublic: '+33612345678',
+      plan: 'premium',
+      statut: 'actif',
+      enLigne: true,
+      verification: { statut: 'en_cours' },
+    });
+  });
+
+  it('liste filtrée et fiche avec coordonnées masquées', async () => {
+    expect((await listerArtisansAdmin(db, { filtre: 'a_verifier' })).map((l) => l.id)).toEqual([
+      'a1',
+    ]);
+    expect(await listerArtisansAdmin(db, { filtre: 'suspendus' })).toEqual([]);
+    expect(await listerArtisansAdmin(db, { filtre: 'tous', q: 'bordeaux' })).toHaveLength(1);
+    const f = (await lireArtisanAdmin(db, 'a1'))!;
+    expect(f).toMatchObject({ statut: 'a_verifier', emailMasque: 'c•••@b•••.fr' });
+    expect(JSON.stringify(f)).not.toContain('contact@bertrand.fr');
+  });
+
+  it('suspendre puis lever : sanction, statut, audit avec avant/après et motif', async () => {
+    await sanctionnerArtisanAdmin(s(), {
+      acteurUid: 'adm',
+      artisanId: 'a1',
+      action: 'suspendre',
+      motif: 'SIREN radié',
+    });
+    expect((await db.doc(chemins.artisan('a1')).get()).get('statut')).toBe('suspendu');
+    await expect(
+      sanctionnerArtisanAdmin(s(), {
+        acteurUid: 'adm',
+        artisanId: 'a1',
+        action: 'suspendre',
+        motif: 'encore',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await sanctionnerArtisanAdmin(s(), {
+      acteurUid: 'adm',
+      artisanId: 'a1',
+      action: 'lever',
+      motif: 'Kbis à jour',
+    });
+    const f = (await lireArtisanAdmin(db, 'a1'))!;
+    expect(f.sanctions).toEqual([expect.objectContaining({ type: 'suspension', levee: true })]);
+    const audit = await db
+      .collection(collections.auditLog)
+      .where('action', '==', 'adminSanctionner')
+      .get();
+    expect(audit.docs.map((d) => [d.get('avant'), d.get('apres'), d.get('motif')])).toEqual(
+      expect.arrayContaining([
+        [{ statut: 'actif' }, { statut: 'suspendu' }, 'SIREN radié'],
+        [{ statut: 'suspendu' }, { statut: 'actif' }, 'Kbis à jour'],
+      ]),
+    );
+  });
+
+  it('créditer : plafond de 5 sans permission illimitée ; vérifier', async () => {
+    await expect(
+      crediterArtisanAdmin(s(), {
+        acteurUid: 'adm',
+        illimite: false,
+        artisanId: 'a1',
+        credits: 6,
+        motif: 'geste',
+      }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+    expect(
+      await crediterArtisanAdmin(s(), {
+        acteurUid: 'adm',
+        illimite: false,
+        artisanId: 'a1',
+        credits: 3,
+        motif: 'geste',
+      }),
+    ).toEqual({ soldeCredits: 3 });
+    await verifierArtisanAdmin(s(), {
+      acteurUid: 'adm',
+      artisanId: 'a1',
+      motif: 'Kbis et décennale vus',
+    });
+    expect((await db.doc(chemins.artisan('a1')).get()).get('verification.statut')).toBe('verifie');
   });
 });
