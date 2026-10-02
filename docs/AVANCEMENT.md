@@ -24,13 +24,13 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
 | 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
-| 13 | Back-office | ⬜ | | ADM | |
+| 13 | Back-office | 🟡 | | ADM-01 à 04 (e2e sur émulateurs) | 13a fait (socle) + Artisans (début de 13c) ; détail §20 |
 | 13b | Conversion, séquences | ⬜ | | CONV | |
 | 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 13 (back-office), à démarrer
+- Lot : 13 (back-office), en cours : 13a terminé, Artisans livré ; suite : 13b (tableau de bord, file de travail)
 - Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -358,6 +358,24 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 2. **Choix à valider** : barème du score de qualification 0-100 (téléphone 35, propriétaire 25, bailleur 20, horizon jusqu'à 25, aides jusqu'à 15) ; « bailleur » compte comme propriétaire pour le niveau A ; horizon 3-6 mois → délai « 3 mois », plus de 6 mois → « je me renseigne » ; un RGE sans domaine déclaré est accepté (pas encore de table prestation → domaine RGE) ; pas de compte particulier créé pour une demande partenaire (pas d'email au particulier, seulement le SMS si besoin).
 3. **À fournir avant la mise en ligne** (IMPORT_LEADS §5) : IP de sortie du partenaire, table de correspondance de ses types de travaux, texte exact et version de la case de consentement, quota et zone couverte ; clé Brevo pour l'envoi réel des SMS (docs/CLES.md).
 4. **Reste pour d'autres lots** : écrans admin (sources, journal des imports et rejets, rentabilité par métier et zone) au lot 13 ; offre de la demande invendue aux artisans Gratuit contre l'activation de Visibilité au lot 13b.
+
+## 20. Lot 13 — Back-office (en cours)
+
+Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c artisans, 13d demandes et appels d'offres (dont sources partenaires), 13e avis, litiges, finances, 13f référentiels et réglages, 13g équipe, audit, RGPD. Conversion, comportement et IA : lots 13b/13c du plan général.
+
+**Fait (13a et Artisans)**
+- **Connexion admin** `/connexion?espace=admin` : session de **8 h** au plus, déconnexion après **30 min d'inactivité** (vérifiée par le serveur à chaque page, `admins/{uid}.dernierAcces`, et dans le navigateur), **double authentification obligatoire** (sinon seule la page d'activation est accessible), compte artisan refusé.
+- **Coque** d'après la maquette : menu à icônes filtré par les permissions, repliable à 72 px (mémorisé), menu plein écran sur mobile ; section hors permissions → **403** (`forbidden()`).
+- **Enveloppe `actionAdmin`** : permission relue dans `admins/{uid}`, double authentification, audit, refus pendant une impersonation ; audit détaillé (avant, après, motif) écrit dans la transaction de chaque action.
+- **Données personnelles masquées**, « Afficher » journalisé (liste fermée de champs), rien pour le rôle lecture (ADM-02) ; **motif + confirmation** pour les actions sensibles (ADM-03) ; **« Voir en tant que »** réservé au superadmin, journalisé, lecture seule avec **bandeau rouge** (ADM-04).
+- **Artisans** : liste (filtres, recherche), fiche (identité, abonnement, activité, sanctions, notes), vérifier, suspendre / lever (fiche retirée de l'annuaire), créditer (5 au plus sans permission illimitée).
+- **Comptes de test** par rôle dans le seed ; **script** `pnpm admin:creer <email> "<Prénom Nom>"` pour le premier superadmin (lien pour choisir le mot de passe).
+
+**À signaler**
+1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
+2. **Tests** : les émulateurs n'ont pas d'application d'authentification ; `ADMIN_MFA=desactive` coupe l'exigence pour les tests de bout en bout seulement (refusé en production). La vraie double authentification se vérifie en recette.
+3. **Invitations admin** : pas de limite de domaine pour l'instant (votre choix).
+4. **Modèle** : `admins/{uid}.dernierAcces` utilisé pour l'inactivité ; jeton d'impersonation avec le claim `imp`.
 
 ## 2. Incohérences et zones floues
 
