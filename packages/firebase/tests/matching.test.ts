@@ -6,6 +6,7 @@ import { chemins, collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
 import {
   attribuerDemande,
+  calculerScoresNuit,
   relancerMatching,
   viderCacheReferentiel,
   type ServicesMatching,
@@ -218,5 +219,53 @@ describe('relancerMatching (MATCHING [7])', () => {
     expect((await relancerMatching(h49)).sansPreneur).toBe(0);
     expect((await relancerMatching({ ...s, horloge: () => T + 8 * 86_400_000 })).clos).toBe(1);
     expect((await db.doc(chemins.appelOffres('d12')).get()).get('statut')).toBe('clos');
+  });
+});
+
+describe('calculerScoresNuit (MATCHING [10])', () => {
+  const attribution = (
+    demandeId: string,
+    artisanId: string,
+    statut: string,
+    ilYaH: number,
+    repH?: number,
+  ) =>
+    db.doc(chemins.attribution(demandeId, artisanId)).set({
+      artisanId,
+      demandeId,
+      statut,
+      proposeeLe: Timestamp.fromMillis(T - ilYaH * 3_600_000),
+      ...(repH !== undefined
+        ? { reponduLe: Timestamp.fromMillis(T - ilYaH * 3_600_000 + repH * 3_600_000) }
+        : {}),
+    });
+
+  it('scores et recopie sur l’entreprise ; rien n’est réécrit si rien ne change ; remise à zéro', async () => {
+    await artisan('vif', {});
+    await artisan('calme', {});
+    await db.doc(chemins.artisan('calme')).update({ attributions7j: 4 });
+    await attribution('d20', 'vif', 'acceptee', 48, 1);
+    await attribution('d21', 'vif', 'refusee', 24, 3);
+    expect(await calculerScoresNuit({ db, horloge: () => T })).toEqual({
+      artisans: 2,
+      modifies: 2,
+    });
+    expect((await db.doc(chemins.artisan('vif')).get()).data()).toMatchObject({
+      tauxReponse: 1,
+      tempsReponseMoyenMin: 120,
+      attributions7j: 2,
+      tauxRefus30j: 0.5,
+      labels: ['rapide'],
+    });
+    expect((await db.collection(collections.artisanScores).doc('vif').get()).data()).toMatchObject({
+      nbProposees: 2,
+      tauxAcceptation: 0.5,
+      capacite: 80,
+    });
+    expect((await db.doc(chemins.artisan('calme')).get()).get('attributions7j')).toBe(0);
+    expect(await calculerScoresNuit({ db, horloge: () => T })).toEqual({
+      artisans: 1,
+      modifies: 0,
+    });
   });
 });

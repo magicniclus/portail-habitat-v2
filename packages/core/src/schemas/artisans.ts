@@ -120,6 +120,9 @@ export const artisan = z
     tauxRecommandation: ratio.optional(),
     tempsReponseMoyenMin: z.number().nonnegative().optional(),
     tauxReponse: ratio.optional(),
+    /** Scores de nuit (MATCHING [10]) lus par le moteur : charge récente et refus récents. */
+    attributions7j: z.number().int().nonnegative().optional(),
+    tauxRefus30j: ratio.optional(),
     quotaDemandesMois: z.number().int().nonnegative(),
     demandesRecuesMois: z.number().int().nonnegative().default(0),
     completude: pourcent.default(0),
@@ -321,6 +324,14 @@ export const artisanScore = z.object({
   reactivite: pourcent,
   capacite: pourcent,
   equite: pourcent.optional(),
+  nbProposees: z.number().int().nonnegative().optional(),
+  tauxReponse: ratio.optional(),
+  tempsReponseMoyenMin: z.number().nonnegative().optional(),
+  tauxAcceptation: ratio.optional(),
+  tauxRefus: ratio.optional(),
+  expirations30j: z.number().int().nonnegative().optional(),
+  attributions7j: z.number().int().nonnegative().optional(),
+  tauxRefus30j: ratio.optional(),
   calculeLe: horodatage,
 });
 

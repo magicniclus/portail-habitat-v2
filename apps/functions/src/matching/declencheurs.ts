@@ -1,5 +1,5 @@
 import { appAdmin } from '@ph/firebase/admin';
-import { attribuerDemande, relancerMatching } from '@ph/firebase/matching';
+import { attribuerDemande, calculerScoresNuit, relancerMatching } from '@ph/firebase/matching';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
@@ -28,5 +28,13 @@ export const matchingRelance = onSchedule(
   { schedule: 'every 15 minutes', region: REGION, timeZone: 'Europe/Paris' },
   async () => {
     logger.info('Relance du matching', { ...(await relancerMatching(services())) });
+  },
+);
+
+/** Scores de nuit (MATCHING [10]) : réactivité recopiée sur les entreprises, chaque nuit à 3 h. */
+export const scoresNuit = onSchedule(
+  { schedule: '0 3 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 540 },
+  async () => {
+    logger.info('Scores de nuit', { ...(await calculerScoresNuit(services())) });
   },
 );

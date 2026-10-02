@@ -31,3 +31,10 @@ export {
   type DocArtisan,
   type DocDemande,
 } from './adaptateurs';
+export {
+  labelsAuto,
+  scoresNuit,
+  syntheseScores,
+  type AttributionScore,
+  type ScoresNuit,
+} from './scoresNuit';
