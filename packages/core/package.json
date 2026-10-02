@@ -13,7 +13,7 @@
     "./enveloppe": "./src/enveloppe/index.ts",
     "./zod": "./src/zod.ts",
     "./equipe": "./src/equipe/index.ts",
-    "./admin": "./src/admin/permissions.ts",
+    "./admin": "./src/admin/index.ts",
     "./flags": "./src/flags.ts",
     "./schemas": "./src/schemas/index.ts",
     "./simulateur": "./src/simulateur/index.ts",

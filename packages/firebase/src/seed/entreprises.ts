@@ -59,6 +59,13 @@ export const COMPTES_FIXES = {
   collab: { uid: 'seed-collab', email: 'collab@test.local', nomAffiche: 'Chloé Collab' },
   compta: { uid: 'seed-compta', email: 'compta@test.local', nomAffiche: 'Hugo Compta' },
   admin: { uid: 'seed-admin', email: 'admin@test.local', nomAffiche: 'Anne Admin' },
+  moderateur: {
+    uid: 'seed-moderateur',
+    email: 'moderateur@test.local',
+    nomAffiche: 'Marc Modérateur',
+  },
+  finance: { uid: 'seed-finance', email: 'finance@test.local', nomAffiche: 'Fanny Finance' },
+  lecture: { uid: 'seed-lecture', email: 'lecture@test.local', nomAffiche: 'Léo Lecture' },
 } as const satisfies Record<string, CompteSeed>;
 
 const NB_ARTISANS = 60;
@@ -97,22 +104,30 @@ export function ajouterUtilisateur(
   });
 }
 
-/** Équipe interne : un superadmin. */
+/** Équipe interne : un superadmin et un compte par rôle testé (ADM-01 à 04). */
 export function genererAdmin(c: ContexteSeed) {
-  const a = COMPTES_FIXES.admin;
-  ajouterUtilisateur(c, a, [], 'admin');
-  c.docs.set(chemins.admin(a.uid), {
-    schemaVersion: 1,
-    createdAt: c.maintenant,
-    nom: a.nomAffiche,
-    email: a.email,
-    role: 'superadmin',
-    permissionsPlus: [],
-    permissionsMoins: [],
-    permissionsEffectives: permissionsEffectives({ role: 'superadmin' }),
-    mfaObligatoire: true,
-    actif: true,
-  });
+  const f = COMPTES_FIXES;
+  const equipe = [
+    [f.admin, 'superadmin'],
+    [f.moderateur, 'moderateur'],
+    [f.finance, 'finance'],
+    [f.lecture, 'lecture'],
+  ] as const;
+  for (const [a, role] of equipe) {
+    ajouterUtilisateur(c, a, [], 'admin');
+    c.docs.set(chemins.admin(a.uid), {
+      schemaVersion: 1,
+      createdAt: c.maintenant,
+      nom: a.nomAffiche,
+      email: a.email,
+      role,
+      permissionsPlus: [],
+      permissionsMoins: [],
+      permissionsEffectives: permissionsEffectives({ role }),
+      mfaObligatoire: true,
+      actif: true,
+    });
+  }
 }
 
 /** Rôle de chaque membre des 5 entreprises multi-membres (dont une personne dans 2 entreprises). */

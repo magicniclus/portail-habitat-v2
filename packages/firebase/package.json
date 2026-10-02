@@ -21,7 +21,8 @@
     "./facturation": "./src/serveur/facturation/index.ts",
     "./matching": "./src/serveur/matching/index.ts",
     "./client": "./src/client/index.ts",
-    "./partenaires": "./src/serveur/partenaires/index.ts"
+    "./partenaires": "./src/serveur/partenaires/index.ts",
+    "./admin-serveur": "./src/serveur/admin/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

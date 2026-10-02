@@ -1,0 +1,1 @@
+export { creerSuperAdmin } from './equipe';
