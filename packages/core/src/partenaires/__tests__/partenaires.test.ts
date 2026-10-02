@@ -131,7 +131,7 @@ describe('qualification A/B/C (MATCHING « Demandes partenaires »)', () => {
     expect(delaiDepuisHorizon('plus_6_mois')).toBe('renseignement');
     expect(rgeRequisPartenaire({ eligibilite: 'ampleur_seulement' })).toBe(true);
     expect(rgeRequisPartenaire({ eligibilite: 'non_eligible' })).toBe(false);
-    const espaces = (t: string | null) => t?.replace(/[  ]/g, ' ');
+    const espaces = (t: string | null) => t?.replace(/[\u00a0\u202f]/g, ' ');
     expect(
       espaces(
         texteAides({
