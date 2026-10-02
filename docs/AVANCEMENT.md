@@ -24,13 +24,13 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
 | 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
-| 13 | Back-office | 🟡 | | ADM-01 à 04 (e2e sur émulateurs) | 13a fait (socle) + Artisans (début de 13c) ; détail §20 |
+| 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a et 13b faits, Artisans (début de 13c) ; détail §20 |
 | 13b | Conversion, séquences | ⬜ | | CONV | |
 | 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 13 (back-office), en cours : 13a terminé, Artisans livré ; suite : 13b (tableau de bord, file de travail)
+- Lot : 13 (back-office), en cours : 13a et 13b terminés, Artisans livré ; suite : fin de 13c (documents, équipe de l'entreprise, notes), puis 13d
 - Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -369,13 +369,16 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Enveloppe `actionAdmin`** : permission relue dans `admins/{uid}`, double authentification, audit, refus pendant une impersonation ; audit détaillé (avant, après, motif) écrit dans la transaction de chaque action.
 - **Données personnelles masquées**, « Afficher » journalisé (liste fermée de champs), rien pour le rôle lecture (ADM-02) ; **motif + confirmation** pour les actions sensibles (ADM-03) ; **« Voir en tant que »** réservé au superadmin, journalisé, lecture seule avec **bandeau rouge** (ADM-04).
 - **Artisans** : liste (filtres, recherche), fiche (identité, abonnement, activité, sanctions, notes), vérifier, suspendre / lever (fiche retirée de l'annuaire), créditer (5 au plus sans permission illimitée).
+- **Tableau de bord** (13b) : demandes 30 jours et du jour, demandes par jour sur 14 jours, artisans en ligne, appels d'offres sans preneur, chiffre d'affaires HT (rôles finances seulement), urgences par type, santé (webhooks Stripe, envois) ; compteurs par agrégations Firestore.
+- **File de travail** (13b) : tâches filtrées par permission, priorité puis ancienneté, SLA vert / orange / rouge, prendre, rendre, clore avec résolution journalisée, lien vers l'élément.
 - **Comptes de test** par rôle dans le seed ; **script** `pnpm admin:creer <email> "<Prénom Nom>"` pour le premier superadmin (lien pour choisir le mot de passe).
 
 **À signaler**
 1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
 2. **Tests** : les émulateurs n'ont pas d'application d'authentification ; `ADMIN_MFA=desactive` coupe l'exigence pour les tests de bout en bout seulement (refusé en production). La vraie double authentification se vérifie en recette.
 3. **Invitations admin** : pas de limite de domaine pour l'instant (votre choix).
-4. **Modèle** : `admins/{uid}.dernierAcces` utilisé pour l'inactivité ; jeton d'impersonation avec le claim `imp`.
+4. **Modèle** : `admins/{uid}.dernierAcces` utilisé pour l'inactivité ; jeton d'impersonation avec le claim `imp` ; `filesModeration.resolution`, `traiteePar`, `traiteeLe` ; index factures et emails (statut + date).
+5. **Permissions modifiées** : le modérateur reçoit en plus `artisans.verifier`, `leads.lire`, `leads.rembourser`, `litiges.traiter` (comme la maquette). **Priorités** des tâches réalignées sur la maquette (5 = la plus urgente) et deux permissions inexistantes corrigées dans les tâches créées par le matching.
 
 ## 2. Incohérences et zones floues
 
