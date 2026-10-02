@@ -30,6 +30,7 @@ export {
   metierDeDemande,
   type DocArtisan,
   type DocDemande,
+  rgeCouvre,
 } from './adaptateurs';
 export {
   labelsAuto,

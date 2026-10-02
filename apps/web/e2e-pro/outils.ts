@@ -56,7 +56,10 @@ export async function entrepriseDe(email: string): Promise<string> {
 }
 
 /** Nouvelle demande proposée à l'entreprise (comme le ferait le matching, lot 12). */
-export async function proposerDemande(artisanId: string): Promise<{ reference: string }> {
+export async function proposerDemande(
+  artisanId: string,
+  partenaire = false,
+): Promise<{ reference: string }> {
   const { db, Timestamp } = await admin();
   const code = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, 'X');
   const reference = `PH-${code}`;
@@ -73,6 +76,19 @@ export async function proposerDemande(artisanId: string): Promise<{ reference: s
     adresseChantier: { ville: 'Floirac', codePostal: '33270' },
     precisions: 'Peinture du séjour, 30 m².',
     estimation: { minCentimes: 150_000, maxCentimes: 250_000 },
+    ...(partenaire
+      ? {
+          source: 'partenaire',
+          qualification: { niveau: 'A', score: 100, telephoneVerifie: true },
+          aides: {
+            eligibilite: 'eligible',
+            trancheRevenus: 'jaune',
+            montantEstimeCentimes: 180_000,
+            dispositifs: ['MaPrimeRenov'],
+            mention: 'indicatif',
+          },
+        }
+      : {}),
   });
   await db.doc(chemins.attribution(demandeId, artisanId)).set({
     schemaVersion: 1,

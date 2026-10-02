@@ -1,5 +1,6 @@
 export {
   lireDemandesPro,
+  marquerDemandesVues,
   prendreEnCharge,
   repondreDemande,
   type DemandePro,

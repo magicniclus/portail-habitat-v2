@@ -84,7 +84,13 @@ export function versDocArtisan(d: DocumentData): DocArtisan {
     ...(finDecennale !== undefined ? { assuranceDecennale: { fin: finDecennale } } : {}),
     labelsVerifies: labels,
     ...(d.rge
-      ? { rge: { verifie: d.rge.verifie === true, ...(rgeExpire ? { expireLe: rgeExpire } : {}) } }
+      ? {
+          rge: {
+            verifie: d.rge.verifie === true,
+            domaines: (d.rge.domaines as string[] | undefined) ?? [],
+            ...(rgeExpire ? { expireLe: rgeExpire } : {}),
+          },
+        }
       : {}),
     sanctionActive: d.statut === 'suspendu',
     enPause: d.pause === true,

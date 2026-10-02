@@ -90,7 +90,7 @@ export interface DocArtisan {
   /** Fin de la décennale ; `labelsVerifies.decennale` sans date : valable. */
   assuranceDecennale?: { fin: number };
   labelsVerifies?: Record<string, { expireLe?: number }>;
-  rge?: { verifie: boolean; expireLe?: number };
+  rge?: { verifie: boolean; domaines?: readonly string[]; expireLe?: number };
   sanctionActive?: boolean;
   enPause?: boolean;
   demandesRecuesMois?: number;
@@ -109,6 +109,18 @@ export interface DocArtisan {
   derniereAttributionLe?: number;
 }
 
+/**
+ * Domaines RGE déclarés : ils doivent couvrir le métier ou la prestation demandés. Aucun domaine
+ * déclaré : le RGE vérifié suffit (proposition, en attendant une table prestation → domaine RGE).
+ */
+export function rgeCouvre(
+  domaines: readonly string[],
+  requis: { metier: string; prestationId: string } | undefined,
+): boolean {
+  if (!requis || domaines.length === 0) return true;
+  return domaines.includes(requis.metier) || domaines.includes(requis.prestationId);
+}
+
 /** Échéance de la décennale : assurance saisie, sinon label vérifié (sans date = valable). */
 function finDecennale(a: DocArtisan): number | undefined {
   if (a.assuranceDecennale) return a.assuranceDecennale.fin;
@@ -125,14 +137,18 @@ export function artisanPourMatching(
     empreintes: readonly string[];
     attributions7j: number;
     tauxRefus30j: number;
+    /** Demande éligible aux aides : le RGE doit couvrir ce métier ou cette prestation (IMP-03). */
+    domaineRge?: { metier: string; prestationId: string };
   },
 ): ArtisanMatching {
-  const qualifications = [
-    ...Object.entries(a.labelsVerifies ?? {})
-      .filter(([, v]) => (v.expireLe ?? Infinity) > contexte.maintenant)
-      .map(([k]) => k),
-    ...(a.rge?.verifie && (a.rge.expireLe ?? Infinity) > contexte.maintenant ? ['rge'] : []),
-  ];
+  const labels = Object.entries(a.labelsVerifies ?? {})
+    .filter(([, v]) => (v.expireLe ?? Infinity) > contexte.maintenant)
+    .map(([k]) => k);
+  const rgeValable =
+    (labels.includes('rge') ||
+      (a.rge?.verifie === true && (a.rge.expireLe ?? Infinity) > contexte.maintenant)) &&
+    rgeCouvre(a.rge?.domaines ?? [], contexte.domaineRge);
+  const qualifications = [...labels.filter((k) => k !== 'rge'), ...(rgeValable ? ['rge'] : [])];
   const decennale = finDecennale(a);
   return {
     id,

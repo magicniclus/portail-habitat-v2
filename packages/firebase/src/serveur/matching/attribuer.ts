@@ -1,5 +1,16 @@
 import { masquerCoordonnees } from '@ph/core/espace';
-import { BAREME_DEFAUT, calculerPrixLead, GRILLE_DEFAUT, trancheBudget } from '@ph/core/leads';
+import {
+  BAREME_DEFAUT,
+  calculerPrixLead,
+  GRILLE_DEFAUT,
+  trancheBudget,
+  type CaracteristiquesLead,
+  type NiveauLead,
+} from '@ph/core/leads';
+
+type EligibiliteAides = NonNullable<CaracteristiquesLead['eligibiliteAides']>;
+/** Demandes partenaires : exclusive non vue sous 2 h → réattribuée (MATCHING « Demandes partenaires »). */
+const DELAI_NON_VUE_PARTENAIRE_MS = 2 * 3_600_000;
 import {
   aiguiller,
   aModerer,
@@ -17,6 +28,7 @@ import {
   type DocDemande,
 } from '@ph/core/matching';
 import { encoderGeohash } from '@ph/core/geo';
+import { LIBELLES_NIVEAU, texteAides, type NiveauPartenaire } from '@ph/core/partenaires';
 import { FieldValue, Timestamp, type DocumentData, type Firestore } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
@@ -66,6 +78,21 @@ function resumeAnonyme(d: DocumentData): string {
   return [reponses, precisions].filter(Boolean).join('. ').slice(0, 1000);
 }
 
+/** Texte de l'email « nouvelle demande » : niveau et aides estimées si demande partenaire (IMP-06). */
+function messageNouvelleDemande(d: DocumentData): string {
+  const base = `Demande ${d.reference as string} à ${(d.adresseChantier?.ville as string) ?? ''}.`;
+  const niveau = d.qualification?.niveau as NiveauPartenaire | undefined;
+  const aides = d.aides ? texteAides(d.aides as Parameters<typeof texteAides>[0]) : null;
+  return [
+    base,
+    niveau ? `${LIBELLES_NIVEAU[niveau]}.` : '',
+    aides ? `Aides estimées du client : ${aides}.` : '',
+    'Acceptez-la pour voir les coordonnées du particulier.',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
 /** Membres prévenus d'une nouvelle demande (COMPTES §4.6) : actifs, `notifs.demandes`, métier. */
 async function destinatairesDemandes(db: Firestore, artisanId: string, metier: string) {
   const membres = await db.collection(chemins.membres(artisanId)).get();
@@ -107,6 +134,9 @@ async function analyser(
         .map((v: string) => (v.includes('@') ? `email:${v.toLowerCase()}` : `tel:${v}`)),
       attributions7j: (x.data.attributions7j as number | undefined) ?? 0,
       tauxRefus30j: (x.data.tauxRefus30j as number | undefined) ?? 0,
+      ...(d.rgeRequis
+        ? { domaineRge: { metier: metier ?? '', prestationId: d.prestationId } }
+        : {}),
     }),
   );
   const candidats = evaluer(artisans, demande, config, dejaVus);
@@ -158,11 +188,15 @@ export async function attribuerDemande(
   if (!snap.exists || snap.get('statut') !== 'nouvelle') return 'deja_traitee';
   const d = snap.data()!;
 
+  const partenaire = d.source === 'partenaire';
   const emailVerifie = d.particulierUid
     ? (await s.db.doc(chemins.user(d.particulierUid as string)).get()).get('emailVerifie') === true
     : false;
-  const qualite = qualiteLead(signauxLead(d, emailVerifie));
-  if (aModerer(qualite)) {
+  // Demande partenaire : consentement prouvé et qualification A/B/C faite à l'import.
+  const qualite = partenaire
+    ? (d.qualification.score as number)
+    : qualiteLead(signauxLead(d, emailVerifie));
+  if (!partenaire && aModerer(qualite)) {
     await s.db.runTransaction(async (t) => {
       if ((await t.get(refDemande)).get('statut') !== 'nouvelle') return;
       t.update(refDemande, {
@@ -190,10 +224,16 @@ export async function attribuerDemande(
     qualite,
     maintenant,
   );
-  if (aiguillage.canal === 'garantie') {
+  // Niveau C : jamais en demande exclusive, appel d'offres à prix réduit seulement (IMP-05).
+  const exclusivePossible = !partenaire || d.qualification.niveau !== 'C';
+  if (aiguillage.canal === 'garantie' && exclusivePossible) {
     const choisi = aiguillage.artisan;
     const refArtisan = s.db.doc(chemins.artisan(choisi.artisanId));
     const expire = expirationProposition(config, estUrgente(d.delaiSouhaite), maintenant);
+    // Partenaire : réattribuée si l'artisan ne l'a pas vue sous 2 h ; vue, le délai normal s'applique.
+    const expireNonVue = partenaire
+      ? Math.min(expire, maintenant + DELAI_NON_VUE_PARTENAIRE_MS)
+      : expire;
     const ok = await s.db.runTransaction(async (t) => {
       const [dem, art] = await Promise.all([t.get(refDemande), t.get(refArtisan)]);
       if (dem.get('statut') !== 'nouvelle') return false;
@@ -207,7 +247,8 @@ export async function attribuerDemande(
         exclusive: true,
         rang: 1,
         proposeeLe: Timestamp.fromMillis(maintenant),
-        expireLe: Timestamp.fromMillis(expire),
+        expireLe: Timestamp.fromMillis(expireNonVue),
+        ...(expireNonVue !== expire ? { expireLeSiVue: Timestamp.fromMillis(expire) } : {}),
         coordonneesDebloquees: false,
         scoreMatching: Math.round(choisi.score),
       });
@@ -228,6 +269,7 @@ export async function attribuerDemande(
           donnees: {
             ville: d.adresseChantier?.ville ?? '',
             reference: d.reference,
+            message: messageNouvelleDemande(d),
             resumeInApp: `Demande ${d.reference} à ${d.adresseChantier?.ville ?? ''}`,
             lienInApp: '/pro/demandes',
             lien: '/pro/demandes',
@@ -289,6 +331,10 @@ export async function publierAppelOffres(
       urgence,
       qualiteLead: p.qualite,
       nbEligibles: p.eligibles.length,
+      ...(d.qualification?.niveau ? { niveau: d.qualification.niveau as NiveauLead } : {}),
+      ...(d.aides?.eligibilite
+        ? { eligibiliteAides: d.aides.eligibilite as EligibiliteAides }
+        : {}),
     },
     BAREME_DEFAUT,
   );

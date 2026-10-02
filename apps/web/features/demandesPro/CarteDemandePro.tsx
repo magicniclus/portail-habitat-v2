@@ -2,6 +2,7 @@
 
 import { LIBELLES_ETAT_PRO, type EtatPro } from '@ph/core/espace-pro';
 import { formatFourchette, formatRelatif, formatTel, initiales } from '@ph/core/format';
+import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Badge, Button, bouton, type Tone } from '@ph/ui';
 import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
@@ -43,6 +44,18 @@ export function CarteDemandePro({
             <Badge tone={TONS[d.etat]}>{LIBELLES_ETAT_PRO[d.etat]}</Badge>
           </p>
           <h3 className="m-0 text-base">{d.titre}</h3>
+          {d.niveau ? (
+            <p className="m-0">
+              <Badge tone={d.niveau === 'A' ? 'succes' : d.niveau === 'B' ? 'info' : 'neutre'}>
+                {LIBELLES_NIVEAU[d.niveau]}
+              </Badge>
+            </p>
+          ) : null}
+          {d.aides ? (
+            <p className="m-0 rounded-md bg-succes-fond px-3 py-2 text-sm text-succes">
+              <strong>Aides estimées du client :</strong> {d.aides}
+            </p>
+          ) : null}
           {d.precisions ? <p className="m-0 text-sm text-neutre-800">{d.precisions}</p> : null}
           <p className="m-0 text-[13px] text-neutre-700">
             {d.ville} ({d.codePostal}) ·{' '}

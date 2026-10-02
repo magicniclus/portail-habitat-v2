@@ -144,6 +144,8 @@ export const attribution = z.object({
   rang: z.number().int().min(1).optional(),
   proposeeLe: horodatage,
   expireLe: horodatage.optional(),
+  /** Demande partenaire : échéance normale, appliquée quand l'artisan ouvre la demande (2 h sinon). */
+  expireLeSiVue: horodatage.optional(),
   vueLe: horodatage.optional(),
   reponduLe: horodatage.optional(),
   devis: z

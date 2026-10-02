@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import { collections, GROUPE_ATTRIBUTIONS } from '../../chemins';
+import { chemins, collections, GROUPE_ATTRIBUTIONS } from '../../chemins';
 import { convertirEnAppelOffres, type ServicesMatching } from './attribuer';
 
 /**
@@ -10,12 +10,21 @@ import { convertirEnAppelOffres, type ServicesMatching } from './attribuer';
 const LOT = 200;
 const SANS_PRENEUR_MS = 48 * 3_600_000;
 const FENETRE_REFUS_MS = 60 * 60_000;
+/** Demandes partenaires sans preneur : invendues à 24 h, archivées à 72 h (CONVERSION §3 bis). */
+const INVENDUE_MS = 24 * 3_600_000;
+const ARCHIVE_MS = 72 * 3_600_000;
+/** Supervision : import partenaire encore sans proposition après 15 min (cible < 5 min, IMP-04). */
+const RETARD_IMPORT_MS = 15 * 60_000;
 
 export interface BilanRelance {
   expirees: number;
   converties: number;
   sansPreneur: number;
   clos: number;
+  invendues: number;
+  archivees: number;
+  /** Demandes encore « nouvelles » au-delà de 15 min (alerte de supervision). */
+  enRetard: number;
 }
 
 export async function relancerMatching(s: ServicesMatching): Promise<BilanRelance> {
@@ -88,5 +97,58 @@ export async function relancerMatching(s: ServicesMatching): Promise<BilanRelanc
   for (const ao of echus.docs) lotClos.update(ao.ref, { statut: 'clos', updatedAt: t });
   if (!echus.empty) await lotClos.commit();
 
-  return { expirees: echues.size, converties, sansPreneur: signales, clos: echus.size };
+  const partenaires = await invenduesPartenaires(s, maintenant);
+  const enRetard = await s.db
+    .collection(collections.demandes)
+    .where('statut', '==', 'nouvelle')
+    .where('createdAt', '<=', Timestamp.fromMillis(maintenant - RETARD_IMPORT_MS))
+    .count()
+    .get();
+
+  return {
+    expirees: echues.size,
+    converties,
+    sansPreneur: signales,
+    clos: echus.size,
+    ...partenaires,
+    enRetard: enRetard.data().count,
+  };
+}
+
+/**
+ * Appels d'offres de demandes partenaires sans aucun déblocage : la demande est marquée invendue
+ * à 24 h (offre aux artisans Gratuit : moteur de conversion, lot 13b), puis archivée à 72 h et
+ * jamais revendue (appel d'offres clos, demande close).
+ */
+async function invenduesPartenaires(s: ServicesMatching, maintenant: number) {
+  const t = Timestamp.fromMillis(maintenant);
+  const sansDeblocage = await s.db
+    .collection(collections.appelsOffres)
+    .where('statut', '==', 'ouvert')
+    .where('nbDeblocages', '==', 0)
+    .where('ouvertLe', '<=', Timestamp.fromMillis(maintenant - INVENDUE_MS))
+    .limit(LOT)
+    .get();
+  if (sansDeblocage.empty) return { invendues: 0, archivees: 0 };
+  const demandes = await s.db.getAll(
+    ...sansDeblocage.docs.map((a) => s.db.doc(chemins.demande(a.get('demandeId') as string))),
+  );
+  const lot = s.db.batch();
+  let invendues = 0;
+  let archivees = 0;
+  sansDeblocage.docs.forEach((ao, i) => {
+    const d = demandes[i];
+    if (!d?.exists || d.get('source') !== 'partenaire' || d.get('archiveeLe')) return;
+    const age = maintenant - (d.get('createdAt') as Timestamp).toMillis();
+    if (age >= ARCHIVE_MS) {
+      lot.update(ao.ref, { statut: 'clos', updatedAt: t });
+      lot.update(d.ref, { statut: 'close', archiveeLe: t, updatedAt: t });
+      archivees++;
+    } else if (!d.get('invendueLe')) {
+      lot.update(d.ref, { invendueLe: t, updatedAt: t });
+      invendues++;
+    }
+  });
+  if (invendues || archivees) await lot.commit();
+  return { invendues, archivees };
 }

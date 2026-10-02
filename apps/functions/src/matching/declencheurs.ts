@@ -27,7 +27,13 @@ export const attribuerNouvelleDemande = onDocumentCreated(
 export const matchingRelance = onSchedule(
   { schedule: 'every 15 minutes', region: REGION, timeZone: 'Europe/Paris' },
   async () => {
-    logger.info('Relance du matching', { ...(await relancerMatching(services())) });
+    const bilan = await relancerMatching(services());
+    logger.info('Relance du matching', { ...bilan });
+    // Supervision IMP-04 : une demande sans proposition après 15 min déclenche une alerte.
+    if (bilan.enRetard > 0)
+      logger.error('Demandes sans proposition depuis plus de 15 minutes', {
+        enRetard: bilan.enRetard,
+      });
   },
 );
 

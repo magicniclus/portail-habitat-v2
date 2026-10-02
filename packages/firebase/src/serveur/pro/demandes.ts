@@ -9,6 +9,7 @@ import {
   type StatutAttributionPro,
 } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
+import { texteAides, type NiveauPartenaire } from '@ph/core/partenaires';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
 
@@ -35,6 +36,9 @@ export interface DemandePro {
   particulier: string;
   contact?: { email: string; telephone: string };
   assigneA?: { uid: string; nom: string };
+  /** Demande d'un site partenaire : niveau de qualification et aides estimées (IMP-06). */
+  niveau?: NiveauPartenaire;
+  aides?: string;
   /** Texte de recherche (sans coordonnées avant acceptation). */
   recherche: string;
 }
@@ -85,6 +89,9 @@ export async function lireDemandesPro(
     const titre = s.nomPrestation(d.get('prestationId'));
     const adresse = d.get('adresseChantier') as { ville: string; codePostal: string };
     const assigne = a.get('assigneA') as string | undefined;
+    const niveau = d.get('qualification.niveau') as NiveauPartenaire | undefined;
+    const aides = d.get('aides') as Parameters<typeof texteAides>[0] | undefined;
+    const texte = aides ? texteAides(aides) : null;
     return [
       {
         demandeId: d.id,
@@ -103,6 +110,8 @@ export async function lireDemandesPro(
         particulier,
         ...(accepte ? { contact: { email: c.email, telephone: c.telephone } } : {}),
         ...(assigne ? { assigneA: { uid: assigne, nom: noms.get(assigne) ?? 'Un membre' } } : {}),
+        ...(niveau ? { niveau } : {}),
+        ...(texte ? { aides: texte } : {}),
         recherche: `${particulier} ${titre} ${adresse.ville} ${adresse.codePostal} ${precisions}`,
       },
     ];
@@ -139,9 +148,12 @@ export async function repondreDemande(
       throw new ErreurMetier('CONFLIT', 'Cette demande a déjà reçu une réponse ou a expiré.');
     if (apres === avant) return { statut: avant };
     const maintenant = Timestamp.fromMillis(s.horloge());
+    const siVue = a.get('expireLeSiVue') as Timestamp | undefined;
     t.update(ref, {
       statut: apres,
-      ...(e.action === 'voir' ? { vueLe: maintenant } : { reponduLe: maintenant }),
+      ...(e.action === 'voir'
+        ? { vueLe: maintenant, ...(siVue ? { expireLe: siVue } : {}) }
+        : { reponduLe: maintenant }),
       ...(apres === 'acceptee' ? { coordonneesDebloquees: true } : {}),
       ...(apres === 'refusee' && e.motif ? { motifRefus: e.motif } : {}),
     });
@@ -168,4 +180,29 @@ export async function prendreEnCharge(
       throw new ErreurMetier('CONFLIT', 'Un autre membre de l’équipe traite déjà cette demande.');
     t.update(ref, { assigneA: ctx.uid });
   });
+}
+
+/**
+ * Ouverture de Mes demandes : les propositions affichées passent à « vue » (une demande partenaire
+ * retrouve alors son délai normal au lieu des 2 h). Écrit seulement s'il y a du nouveau.
+ */
+export async function marquerDemandesVues(
+  s: { db: Firestore; horloge: () => number },
+  artisanId: string,
+): Promise<number> {
+  const proposees = await s.db
+    .collectionGroup(GROUPE_ATTRIBUTIONS)
+    .where('artisanId', '==', artisanId)
+    .where('statut', '==', 'proposee')
+    .limit(50)
+    .get();
+  if (proposees.empty) return 0;
+  const maintenant = Timestamp.fromMillis(s.horloge());
+  const lot = s.db.batch();
+  for (const a of proposees.docs) {
+    const siVue = a.get('expireLeSiVue') as Timestamp | undefined;
+    lot.update(a.ref, { statut: 'vue', vueLe: maintenant, ...(siVue ? { expireLe: siVue } : {}) });
+  }
+  await lot.commit();
+  return proposees.size;
 }

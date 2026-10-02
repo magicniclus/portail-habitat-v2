@@ -8,6 +8,7 @@ import {
   evaluer,
   expirationProposition,
   metierDeDemande,
+  rgeCouvre,
   type DocArtisan,
   type DocDemande,
 } from '..';
@@ -239,5 +240,21 @@ describe('adaptateurs : champs facultatifs', () => {
     );
     expect(sansDate.decennaleExpireLe).toBe(T + 5 * JOUR);
     expect(sansDate.qualifications).toEqual(['decennale', 'rge']);
+  });
+});
+
+describe('RGE et domaines (IMP-03)', () => {
+  const ctx = { maintenant: T, empreintes: [], attributions7j: 0, tauxRefus30j: 0 };
+  const rge = (domaines: string[]) =>
+    artisanPourMatching(
+      'r',
+      { ...artisan, labelsVerifies: {}, rge: { verifie: true, domaines } },
+      { ...ctx, domaineRge: { metier: 'isolation', prestationId: 'isolation' } },
+    ).qualifications;
+  it('domaine déclaré qui couvre, aucun domaine déclaré : RGE retenu ; autre domaine : non', () => {
+    expect(rge(['isolation'])).toEqual(['rge']);
+    expect(rge([])).toEqual(['rge']);
+    expect(rge(['chauffage'])).toEqual([]);
+    expect(rgeCouvre(['x'], undefined)).toBe(true);
   });
 });

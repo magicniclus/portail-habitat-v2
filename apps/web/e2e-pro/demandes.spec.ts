@@ -39,6 +39,19 @@ test.describe('Mes demandes', () => {
     await autre.close();
   });
 
+  test('IMP-06 : demande partenaire, niveau et aides estimées « indicatif » ; ouverte = vue', async ({
+    page,
+  }) => {
+    const { reference } = await proposerDemande(await entrepriseDe(COMPTES.proprio), true);
+    await connecter(page, COMPTES.proprio, '/pro/demandes');
+    const carte = page.getByRole('listitem').filter({ hasText: reference });
+    await expect(carte.getByText('Niveau A · projet confirmé')).toBeVisible();
+    await expect(carte.locator('p', { hasText: 'Aides estimées du client' })).toContainText(
+      'montant indicatif',
+    );
+    await expect(carte.getByRole('button', { name: 'Accepter la demande' })).toBeVisible();
+  });
+
   test('le comptable n’a pas accès aux demandes', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/facturation');
     await page.goto('/pro/demandes');
