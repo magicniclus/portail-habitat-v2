@@ -22,7 +22,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
 | 10 | Espace artisan, équipes, PWA | ✅ | 29/09/2026 | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03, MOB-06 (installation ; push à vérifier en recette) ; 80 e2e espace pro sur émulateurs, service worker testé en unitaire | Points à signaler : §16 |
 | 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
-| 12 | Matching, appels d'offres | ⬜ | | unitaires + e2e | |
+| 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
 | 12b | Demandes partenaires | ⬜ | | IMP | |
 | 13 | Back-office | ⬜ | | ADM | |
 | 13b | Conversion, séquences | ⬜ | | CONV | |
@@ -30,8 +30,8 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 12 (matching et appels d'offres), à démarrer
-- Dernier lot terminé : 11, le 30/09/2026 (détail §17)
+- Lot : 12b (demandes partenaires), à démarrer
+- Dernier lot terminé : 12, le 02/10/2026 (détail §18)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -325,6 +325,23 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 5. **Reste pour d'autres lots** : achat de packs et déblocage à l'unité (lot 12, avec les appels d'offres) ; remboursements et litiges (`charge.refunded`, `charge.dispute.created` : lots 12 et 13) ; codes promo personnels (lot 13b) ; relances J+3 et J+6 après échec et `moyen-paiement-expire` (envois différés) ; bandeau « paiement refusé » sur le tableau de bord (la page Facturation l'affiche déjà) ; achat de sièges supplémentaires depuis l'écran Équipe (possible via le portail client si la modification de quantité y est activée).
 6. Décisions ⏳ appliquées en attendant : D19 (TVA 20 %, Stripe Tax), D26 (siège 9 €), D27 (5 crédits), D29 (packs), D32 (pas d'essai).
 
+## 18. Lot 12 — Matching et appels d'offres (terminé le 02/10/2026)
+
+**Fait**
+- **Attribution des nouvelles demandes** (Function `attribuerNouvelleDemande`, rejouable) : modération avant tout matching (qualité < 30), candidats de la zone lus dans `artisansPublic` (géohash + métier) puis filtres durs et score du cœur, trace `matching/{demandeId}`. Aiguillage D41 : demande **garantie** exclusive au meilleur Premium qui a du quota (24 h pour accepter, 4 h si urgente), sinon **appel d'offres** anonymisé au prix du barème (D47), 3 places, invitations notifiées (Premium tout de suite, les autres **60 minutes plus tard**, D50).
+- **Relances** (`matchingRelance`, toutes les 15 min) : propositions expirées, garantie refusée ou expirée → appel d'offres sans réinviter l'artisan, appel d'offres sans preneur à 48 h signalé une fois dans la file admin, appel d'offres échu clos.
+- **Déblocage** en une transaction : place libre, fenêtre Premium, RGE si exigé, droit `leads.debloquer` et plafond mensuel du collaborateur, prix recalculé côté serveur, crédits inclus Premium puis crédits achetés, achat + déblocage + attribution acceptée avec coordonnées. Dix artisans sur la dernière place : un seul réussit, aucun débit en trop (PRO-06).
+- **Carte et packs** : Stripe Checkout en paiement unique (prix du déblocage recalculé avant la session, montant encaissé conservé) ; le webhook finalise le déblocage ou crédite le pack ; plus de place entre le paiement et le webhook → tâche de remboursement pour l'équipe finance.
+- **Écran `/pro/appels-d-offres`** (maquette « Appels d Offres ») : bandeau Premium, filtres par métier, cartes (réservé avec compte à rebours, ouvert, débloqué, complet), feuille de déblocage (crédits, sinon carte ou pack, PRO-05). Collaborateur sans droit de dépense : pas de bouton (PRO-04). Paiements derrière le flag `appelsOffresPayants` (coupé par défaut : la page s'affiche en consultation).
+- **Scores de nuit** (`scoresNuit`, 3 h) : taux de réponse, médiane du temps de réponse, refus et charge récents, labels automatiques `rapide` et `recommande` ; recopiés sur l'entreprise seulement si une valeur change (chaque écriture relance la projection publique).
+
+**À signaler**
+1. **Modèle de données** : attribution `rang`, `expireLe`, `appelOffresId` ; demande `metierRequis`, `qualiteLead`, `moderation`, `appelOffresId` ; `appelsOffres.artisansInvites` (≤ 50) ; `achatsLeads.par` ; `artisans.attributions7j` et `tauxRefus30j` ; champs détaillés dans `artisanScores`. Nouveaux index : attributions (statut + expireLe, statut + reponduLe, proposeeLe en groupe), appels d'offres (statut + nbDeblocages + ouvertLe, statut + ouvertJusquau, artisansInvites + statut + ouvertLe).
+2. **Décisions ⏳ appliquées en attendant** : D47 (barème) et D48 (paramètres du matching). D50 tranchée : 60 minutes d'avance Premium (la maquette affiche 24 h, texte adapté).
+3. **Choix à valider** : pas de vagues supplémentaires pour une demande garantie (elle passe directement en appel d'offres) ; empreintes de conflit d'intérêts limitées aux contacts publics de l'artisan et à son SIREN ; double authentification exigée pour payer par carte ou acheter un pack (comme la facturation, CON-02), pas pour dépenser des crédits ; achat de pack réservé au droit `abonnement.gerer` (propriétaire, gérant).
+4. **Reste pour d'autres lots** : contestation d'un déblocage par l'artisan et remboursement (écran admin, lot 13) ; onglet « Appels d'offres » dans Mes demandes (l'entrée du menu mène à la page) ; réponse écrite à un appel d'offres (`reponses`) avec le devis ; scores `tauxDevis`, `tauxConversion`, `tauxRemboursementLeads` quand ces données existeront.
+5. **Non vérifiable ici** : redirection réelle vers Checkout pour une carte (même mécanique que les abonnements, à vérifier en recette avec la clé de test).
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -431,3 +448,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 28/09/2026 — Lot 7 terminé (recherche de projet). Typesense prêt mais inactif (D4 à valider, clés à fournir).
 - 28/09/2026 — Lot 8 terminé (simulateur, reprise, diagnostic, avis, connexion particulier, Mon espace). Points à trancher : §14.
 - 28/09/2026 — Lot 9 terminé (annuaire, fiche publique). Formule de pertinence à confirmer (§15).
+- 02/10/2026 — Lot 12 terminé (matching, appels d'offres, déblocage, scores de nuit). D50 : 60 minutes d'avance Premium.
