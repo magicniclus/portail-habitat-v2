@@ -24,3 +24,13 @@ export {
   type AccesAppelOffres,
   type MoyenDeblocage,
 } from './deblocage';
+export {
+  filtresAppelsOffres,
+  texteDisponibleDans,
+  textePlaces,
+  textePrix,
+  vueAppelOffres,
+  type AppelOffresLu,
+  type CarteAppelOffres,
+  type EtatCarteAppelOffres,
+} from './vue';

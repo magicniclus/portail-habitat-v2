@@ -14,3 +14,4 @@ export {
 } from './lecture';
 export { relancerMatching, type BilanRelance } from './relances';
 export { debloquerAppelOffres, type ResultatDeblocage, type ServicesDeblocage } from './deblocage';
+export { lireAppelsOffresPro, type AppelsOffresPro } from './appelsOffresPro';

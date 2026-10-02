@@ -1,3 +1,4 @@
+import type { TarificationLead } from '@ph/core/leads';
 import type { DocArtisan } from '@ph/core/matching';
 import type { Point } from '@ph/core/matching';
 import { plagesGeohash } from '@ph/core/geo';
@@ -8,7 +9,7 @@ import { chemins, collections } from '../../chemins';
 
 export interface ReferentielMetiers {
   intentions: { id: string; metier: string; prestation: string }[];
-  metiers: { id: string; prestation?: string; famille?: string }[];
+  metiers: { id: string; nom?: string; prestation?: string; famille?: string }[];
 }
 
 let cache: { valeur: ReferentielMetiers; lu: number } | null = null;
@@ -31,6 +32,7 @@ export async function lireReferentielMetiers(
     })),
     metiers: metiers.docs.map((d) => ({
       id: d.id,
+      nom: d.get('nom') as string | undefined,
       prestation: d.get('prestationDefaut') as string | undefined,
       famille: d.get('famille') as string | undefined,
     })),
@@ -45,6 +47,17 @@ export const viderCacheReferentiel = () => {
 };
 
 const ms = (t: unknown) => (t as Timestamp | undefined)?.toMillis?.();
+
+/** Tarification d'un appel d'offres telle que stockée → prix du cœur (date de fin de promo). */
+export function tarificationLue(t: Record<string, unknown>): TarificationLead {
+  const promo = t.promo as { pourcentage: number; jusquau: unknown } | undefined;
+  return {
+    ...(t as unknown as TarificationLead),
+    ...(promo
+      ? { promo: { pourcentage: promo.pourcentage, jusquau: new Date(ms(promo.jusquau)!) } }
+      : {}),
+  };
+}
 
 /** Document `artisans/{id}` vers les champs lus par l'adaptateur du moteur (dates en ms). */
 export function versDocArtisan(d: DocumentData): DocArtisan {

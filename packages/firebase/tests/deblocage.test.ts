@@ -2,7 +2,12 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
-import { debloquerAppelOffres, type ServicesDeblocage } from '../src/serveur/matching';
+import {
+  debloquerAppelOffres,
+  lireAppelsOffresPro,
+  viderCacheReferentiel,
+  type ServicesDeblocage,
+} from '../src/serveur/matching';
 
 let db: Firestore;
 let s: ServicesDeblocage;
@@ -39,10 +44,23 @@ async function entreprise(
   ]);
 }
 
-async function appelOffres(id: string, p: { ouvertLe?: number; max?: number; nb?: number } = {}) {
+async function appelOffres(
+  id: string,
+  p: { ouvertLe?: number; max?: number; nb?: number; invites?: string[]; statut?: string } = {},
+) {
   await db.doc(chemins.appelOffres(id)).set({
     demandeId: `dem-${id}`,
-    statut: 'ouvert',
+    statut: p.statut ?? 'ouvert',
+    titre: `Peinture ${id}`,
+    resume: 'Séjour.',
+    metier: 'peintre',
+    ville: 'Floirac',
+    codePostal: '33270',
+    geo: { latitude: 44.8366, longitude: -0.5285 },
+    budgetMinCentimes: 150_000,
+    budgetMaxCentimes: 250_000,
+    urgence: 'normale',
+    artisansInvites: p.invites ?? [],
     acces: 'premium_prioritaire',
     fenetrePremiumMin: 60,
     ouvertLe: Timestamp.fromMillis(p.ouvertLe ?? T - 2 * 3_600_000),
@@ -141,5 +159,39 @@ describe('debloquerAppelOffres (MATCHING [8])', () => {
     );
     expect(soldes.filter((x) => x === 10)).toHaveLength(9);
     expect((await db.collection(collections.achatsLeads).get()).size).toBe(1);
+  });
+});
+
+describe('lireAppelsOffresPro', () => {
+  it('appels d’offres où l’entreprise est invitée : réservés, débloqués, complets ; clos masqués', async () => {
+    viderCacheReferentiel();
+    await entreprise('g1', { solde: 4 });
+    await db.doc(chemins.artisan('g1')).update({
+      zoneIntervention: { centre: { latitude: 44.8378, longitude: -0.5792 }, rayonKm: 30 },
+      adresseSiege: { ville: 'Bordeaux' },
+    });
+    await db.doc(`${chemins.metiersRecherche()}/peintre`).set({ nom: 'Peintre' });
+    await appelOffres('r1', { invites: ['g1'], ouvertLe: T - 10 * 60_000 });
+    await appelOffres('o1', { invites: ['g1'] });
+    await appelOffres('c1', { invites: ['g1'], statut: 'complet', nb: 3 });
+    await appelOffres('x1', { invites: ['g1'], statut: 'clos' });
+    await appelOffres('autre', { invites: ['h1'] });
+    expect((await debloquer('o1', 'g1')).etat).toBe('debloque');
+    const v = await lireAppelsOffresPro(db, 'g1', T);
+    expect(v.cartes.map((c) => [c.id, c.etat])).toEqual([
+      ['r1', 'reserve'],
+      ['o1', 'debloque'],
+      ['c1', 'complet'],
+    ]);
+    expect(v).toMatchObject({
+      premium: false,
+      zone: 'Bordeaux · 30 km',
+      nbReserves: 1,
+      soldeCredits: 2,
+      filtres: [
+        { id: 'tous', label: 'Tous' },
+        { id: 'peintre', label: 'Peintre' },
+      ],
+    });
   });
 });

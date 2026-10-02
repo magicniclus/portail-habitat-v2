@@ -691,6 +691,24 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "appelsOffres",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "artisansInvites",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ouvertLe",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

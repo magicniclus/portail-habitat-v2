@@ -8,10 +8,10 @@ import {
   prixDeblocage,
   type AccesAppelOffres,
   type MoyenDeblocage,
-  type TarificationLead,
 } from '@ph/core/leads';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import { tarificationLue } from './lecture';
 
 /**
  * Déblocage d'un appel d'offres (MATCHING [8]) en une transaction : place libre, accès (fenêtre
@@ -30,16 +30,6 @@ export type ResultatDeblocage =
   | { etat: 'paiement_requis'; centimes: number; credits: number; soldeCredits: number };
 
 const ms = (t: unknown) => (t as Timestamp).toMillis();
-
-function tarification(t: Record<string, unknown>): TarificationLead {
-  const promo = t.promo as { pourcentage: number; jusquau: unknown } | undefined;
-  return {
-    ...(t as unknown as TarificationLead),
-    ...(promo
-      ? { promo: { pourcentage: promo.pourcentage, jusquau: new Date(ms(promo.jusquau)) } }
-      : {}),
-  };
-}
 
 export async function debloquerAppelOffres(
   s: ServicesDeblocage,
@@ -93,7 +83,7 @@ export async function debloquerAppelOffres(
     if (exigences.includes('rge') && artisan.get('rge.verifie') !== true)
       throw new ErreurMetier('PRECONDITION', 'Ce chantier demande un artisan RGE.');
 
-    const prix = prixDeblocage(tarification(ao.get('tarification')), {
+    const prix = prixDeblocage(tarificationLue(ao.get('tarification')), {
       premium,
       maintenant: new Date(maintenant),
     });
