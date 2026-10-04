@@ -96,3 +96,9 @@ export {
   modifierPrixPrestationAdmin,
   type PrestationAdmin,
 } from './referentiels';
+export {
+  arreterAnnonceAdmin,
+  lireAnnoncesActives,
+  listerAnnoncesAdmin,
+  publierAnnonceAdmin,
+} from './annonces';

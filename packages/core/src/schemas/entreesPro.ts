@@ -375,3 +375,14 @@ export const entreeFlagAdmin = z.strictObject({
   valeur: z.boolean(),
   motif: motifAdmin,
 });
+
+/** Back-office › Contenus : annonce in-app (ADMIN §2.11). */
+export const entreeAnnonce = z.strictObject({
+  titre: z.string().trim().min(3).max(120),
+  texte: z.string().trim().min(3).max(600),
+  cible: z.enum(['particuliers', 'pros', 'tous']),
+  ton: z.enum(['info', 'attention', 'premium']),
+  debut: z.iso.date(),
+  fin: z.iso.date().optional(),
+});
+export const entreeArreterAnnonce = z.strictObject({ id, motif: motifAdmin });

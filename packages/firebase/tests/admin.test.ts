@@ -10,6 +10,7 @@ import {
   activerSourceAdmin,
   changerFlagAdmin,
   afficherDonneePersonnelle,
+  arreterAnnonceAdmin,
   ajouterArtisanDemandeAdmin,
   ajouterNoteAdmin,
   assignerTacheAdmin,
@@ -22,6 +23,7 @@ import {
   fixerPrixAppelOffresAdmin,
   idTacheDocument,
   jetonImpersonation,
+  lireAnnoncesActives,
   journalImportsAdmin,
   lireBaremesAdmin,
   lireAppelOffresAdmin,
@@ -46,6 +48,7 @@ import {
   parametresAppelOffresAdmin,
   piecesDuMois,
   promoAppelOffresAdmin,
+  publierAnnonceAdmin,
   publierBaremeAdmin,
   rejeterDemandeAdmin,
   relancerMatchingAdmin,
@@ -1148,5 +1151,34 @@ describe('référentiels et réglages (ADMIN §2.9)', () => {
       motif: 'Migration',
     });
     expect((await lireFlagsAdmin(db)).find((f) => f.nom === 'maintenance')!.valeur).toBe(true);
+  });
+});
+
+describe('annonces (ADMIN §2.11)', () => {
+  const T = Date.UTC(2026, 9, 4, 12);
+  const s = () => ({ db, horloge: () => T });
+  it('publier puis arrêter une annonce ; dates contrôlées', async () => {
+    const id = await publierAnnonceAdmin(s(), {
+      acteurUid: 'adm',
+      titre: 'Nouveau',
+      texte: 'Les appels d’offres arrivent.',
+      cible: 'pros',
+      ton: 'info',
+      debut: T,
+    });
+    expect((await lireAnnoncesActives(db)).map((a) => a.id)).toEqual([id]);
+    await expect(
+      publierAnnonceAdmin(s(), {
+        acteurUid: 'adm',
+        titre: 'X',
+        texte: 'Y',
+        cible: 'tous',
+        ton: 'info',
+        debut: T,
+        fin: T - 1,
+      }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    await arreterAnnonceAdmin(s(), { acteurUid: 'adm', id, motif: 'Message obsolète' });
+    expect(await lireAnnoncesActives(db)).toEqual([]);
   });
 });

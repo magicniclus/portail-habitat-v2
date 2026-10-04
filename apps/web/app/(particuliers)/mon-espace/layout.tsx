@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { BandeauAnnonces } from '@/features/annonces/BandeauAnnonces';
 import { EnteteEspace } from '@/features/espace/EnteteEspace';
 import { routes } from '@/lib/routes';
 
@@ -17,6 +18,7 @@ export default async function LayoutEspace({ children }: { children: ReactNode }
   return (
     <div className="flex min-h-dvh flex-col bg-blanc">
       <EnteteEspace />
+      <BandeauAnnonces public_="particuliers" />
       {children}
     </div>
   );
