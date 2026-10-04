@@ -37,7 +37,8 @@
     "./connexion": "./src/connexion/index.ts",
     "./onboarding": "./src/onboarding/index.ts",
     "./espace-pro": "./src/espacePro/index.ts",
-    "./partenaires": "./src/partenaires/index.ts"
+    "./partenaires": "./src/partenaires/index.ts",
+    "./conversion": "./src/conversion/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
