@@ -961,6 +961,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "attributions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "exclusive",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "proposeeLe",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

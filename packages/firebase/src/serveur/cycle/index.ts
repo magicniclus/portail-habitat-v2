@@ -9,3 +9,4 @@ export {
   type ConfigCycleLue,
   type ServicesCycle,
 } from './moteur';
+export { envoyerDemandesManquees } from './hebdo';

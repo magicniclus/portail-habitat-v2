@@ -1,5 +1,5 @@
 import { appAdmin } from '@ph/firebase/admin';
-import { calculerCycles, planifierCycle } from '@ph/firebase/cycle';
+import { calculerCycles, envoyerDemandesManquees, planifierCycle } from '@ph/firebase/cycle';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
@@ -28,5 +28,13 @@ export const cyclePlanifierSoir = onSchedule(
   { schedule: '15 18 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 540 },
   async () => {
     logger.info('Cycle : planification du soir', { ...(await planifierCycle(services())) });
+  },
+);
+
+/** `cycleHebdo` (lundi 7 h) : demandes exclusives parties chez un Premium du secteur. */
+export const cycleHebdo = onSchedule(
+  { schedule: '0 7 * * 1', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 540 },
+  async () => {
+    logger.info('Cycle : hebdomadaire', { ...(await envoyerDemandesManquees(services())) });
   },
 );

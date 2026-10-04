@@ -189,3 +189,10 @@ export {
   type EntreeSecteur,
   type PositionSecteur,
 } from './secteur';
+export {
+  demandesManquees,
+  depenseAppelsOffres,
+  signalCredits,
+  type AchatAppelOffres,
+  type DemandeExclusive,
+} from './opportunites';

@@ -8,6 +8,9 @@ import {
   prochainPas,
   scoreCycle,
   signauxDeclenches,
+  depenseAppelsOffres,
+  signalCredits,
+  type AchatAppelOffres,
   classerSecteurs,
   type PositionSecteur,
   SEQUENCES_DEFAUT,
@@ -127,7 +130,14 @@ export async function synchroniserCycle(
   s: Pick<ServicesCycle, 'db' | 'horloge'>,
   artisan: DocumentSnapshot,
   config: ConfigCycleLue,
-  mesures: Partial<{ vues7j: number; vues30j: number } & PositionSecteur> = {},
+  mesures: Partial<
+    {
+      vues7j: number;
+      vues30j: number;
+      creditsAchetes30j: number;
+      montantAchete30j: number;
+    } & PositionSecteur
+  > = {},
 ): Promise<{ etape: EtapeCycle; changee: boolean }> {
   const maintenant = s.horloge();
   const a = artisan.data()!;
@@ -169,7 +179,12 @@ export async function synchroniserCycle(
   const changee = ancienne !== etape;
   const seqId = sequencePourEtape(etape, offre);
   const precedents = (etat.get('signaux') as Record<string, number> | undefined) ?? {};
-  const signal =
+  const derniers = Object.fromEntries(
+    Object.entries(
+      (etat.get('derniersSignaux') as Record<string, Timestamp> | undefined) ?? {},
+    ).map(([k, v]) => [k, v.toMillis()]),
+  );
+  const concurrent =
     mesures.position !== undefined && mesures.misesEnAvant !== undefined
       ? signauxDeclenches(
           etape,
@@ -180,15 +195,20 @@ export async function synchroniserCycle(
               : {}),
           },
           { position: mesures.position, misesEnAvant: mesures.misesEnAvant },
-          {
-            maintenant,
-            dernier: Object.fromEntries(
-              Object.entries(
-                (etat.get('derniersSignaux') as Record<string, Timestamp> | undefined) ?? {},
-              ).map(([k, v]) => [k, v.toMillis()]),
-            ),
-          },
+          { maintenant, dernier: derniers },
         )[0]
+      : undefined;
+  const depense = {
+    credits30j: mesures.creditsAchetes30j ?? 0,
+    montant30jCentimes: mesures.montantAchete30j ?? 0,
+  };
+  const signal = concurrent
+    ? { modele: concurrent.modele, extra: { recul: concurrent.recul } }
+    : signalCredits(etape, depense, {
+          maintenant,
+          ...(derniers['prem-credits'] !== undefined ? { dernier: derniers['prem-credits'] } : {}),
+        })
+      ? { modele: 'prem-credits', extra: depense }
       : undefined;
   const commun = {
     schemaVersion: 1,
@@ -204,7 +224,7 @@ export async function synchroniserCycle(
           signal: {
             modele: signal.modele,
             du: Timestamp.fromMillis(creneauEnvoi(maintenant, 'signal')),
-            extra: { recul: signal.recul },
+            extra: signal.extra,
           },
           derniersSignaux: { [signal.modele]: t0 },
         }
@@ -276,7 +296,7 @@ type IssueEnvoi = 'planifie' | 'pression' | 'bloque' | 'annule';
  * Un email de conversion pour une entreprise : interrupteur, témoin, veille et pression, puis
  * chiffres réels obligatoires, puis `notifier()` au prochain créneau. Chaque issue est tracée.
  */
-async function tenterEnvoi(
+export async function tenterEnvoi(
   s: ServicesCycle,
   config: ConfigCycleLue,
   etat: DocumentSnapshot,
@@ -497,6 +517,23 @@ export async function calculerCycles(
       }),
     );
   }
+  const achats = new Map<string, AchatAppelOffres[]>();
+  const payes = await s.db
+    .collection(collections.achatsLeads)
+    .where('statut', '==', 'paye')
+    .where('createdAt', '>', Timestamp.fromMillis(maintenant - 30 * J))
+    .get();
+  for (const d of payes.docs) {
+    const id = d.get('artisanId') as string;
+    achats.set(id, [
+      ...(achats.get(id) ?? []),
+      {
+        moyen: d.get('moyen') as string,
+        prixHtCentimes: (d.get('prixHtCentimes') as number | undefined) ?? 0,
+        credits: (d.get('credits') as number | undefined) ?? 0,
+      },
+    ]);
+  }
   const secteurs = classerSecteurs(
     artisans
       .filter((a) => a.get('enLigne') === true)
@@ -514,6 +551,10 @@ export async function calculerCycles(
     const { changee } = await synchroniserCycle(s, a, config, {
       ...vues.get(a.id),
       ...secteurs.get(a.id),
+      ...(({ credits30j, montant30jCentimes }) => ({
+        creditsAchetes30j: credits30j,
+        montantAchete30j: montant30jCentimes,
+      }))(depenseAppelsOffres(achats.get(a.id) ?? [])),
     });
     if (changee) changements++;
   }
