@@ -359,7 +359,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 3. **À fournir avant la mise en ligne** (IMPORT_LEADS §5) : IP de sortie du partenaire, table de correspondance de ses types de travaux, texte exact et version de la case de consentement, quota et zone couverte ; clé Brevo pour l'envoi réel des SMS (docs/CLES.md).
 4. **Reste pour d'autres lots** : écrans admin (sources, journal des imports et rejets, rentabilité par métier et zone) au lot 13 ; offre de la demande invendue aux artisans Gratuit contre l'activation de Visibilité au lot 13b.
 
-## 20. Lot 13 — Back-office (en cours)
+## 20. Lot 13 — Back-office (fait le 04/10/2026, points à confirmer ci-dessous)
 
 Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c artisans, 13d demandes et appels d'offres (dont sources partenaires), 13e avis, litiges, finances, 13f référentiels et réglages, 13g équipe, audit, RGPD. Conversion, comportement et IA : lots 13b/13c du plan général.
 
@@ -388,6 +388,11 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Référentiels** (13f) : prix privés de chaque prestation (chaque nombre du barème, nouvelle version, ancienne archivée), retrait ou remise en ligne d'une prestation ; **fonctionnalités** (feature flags) activables avec motif.
 - **Contenus** (13f) : annonces in-app (public, ton, période) affichées en haut des espaces artisan et particulier.
 
+- **Équipe et audit** (13g) : membres, invitation (lien pour choisir le mot de passe, double authentification à la première connexion), changement de rôle, désactivation (sessions coupées) ; jamais soi-même ni le dernier superadmin ; journal d'audit filtrable (action, acteur, cible) et exportable.
+- **RGPD** (13g) : demandes enregistrées avec l'échéance d'un mois, export des données, anonymisation d'un compte particulier, constat pour les autres cas ; preuve archivée et téléchargeable, consultation journalisée.
+- **Tests** : 24 scénarios sur émulateur (`tests/admin.test.ts`) et un test de bout en bout par écran (`e2e-pro/admin*.spec.ts`), tous verts ; CI verte.
+- **Reste du lot 13** : sections Conversion, Comportement et Assistant IA (lots 13b et 13c du plan général) ; onglet « Facebook et invendues » ; métiers, labels et pages communes ; création d'entreprise non revendiquée, transfert de propriété assisté, suppression définitive d'une entreprise, recalcul forcé de la fiche publique.
+
 **À signaler**
 1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
 2. **Tests** : les émulateurs n'ont pas d'application d'authentification ; `ADMIN_MFA=desactive` coupe l'exigence pour les tests de bout en bout seulement (refusé en production). La vraie double authentification se vérifie en recette.
@@ -397,6 +402,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 6. **Permissions choisies (13d), à confirmer** : promo avec `leads.prix` ; déblocages maximum et accès avec `leads.publier` ; simuler un barème avec `leads.prix`, le **publier avec `leads.prix_illimite`** (admin et superadmin) ; rembourser sur la carte avec `finances.rembourser_carte` (admin et superadmin).
 7. **Barèmes** : les paliers de qualité, de concurrence, de niveau et d'aides restent modifiables seulement par script pour l'instant (pas dans l'écran) ; les métiers s'affichent par leur identifiant.
 9. **Points 13e à trancher** : (a) l'ouverture d'un litige par le particulier ou l'artisan n'existe pas encore (seul l'admin les traite) ; (b) codes promo en lecture seule : leur création se fait dans Stripe, à brancher si vous le souhaitez ; (c) l'export comptable lit Firestore : les factures d'abonnement, les déblocages par carte et les packs (prix du catalogue D29) ; les **avoirs** (remboursements) n'y figurent pas encore et Stripe reste la référence comptable ; (d) poids du score de risque des avis choisis par moi ; (e) trois nouveaux modèles d'email en squelette : `avis-preuve-demandee`, `litige-message`, `litige-decision`.
+11. **Points 13g** : l'export RGPD et la réponse à la personne s'envoient à la main (le fichier est téléchargé depuis l'admin) ; un modèle d'email dédié reste à écrire ; nouveau modèle « invitation-equipe-admin » en squelette.
 10. **Points 13f** : les métiers, labels et pages communes ne sont pas encore éditables depuis l'admin (le matching et le SEO en dépendent, à faire avec précaution) ; `config/app` n'est lu par aucun code, je ne l'ai donc pas exposé (les fonctionnalités passent par `config/flags`) ; modèle : `matchingConfig` reçoit `options` et `motif`, `referentiel/prestations/prix/{id}/versions`.
 8. **Modèle (13d)** : `grilleTarifaire` reçoit `prixBaseDefaut` et `seuilsConcurrence` ; `remboursementLead` reçoit `appelOffresId`, `demandeId`, `motifDecision` (identifiant = celui de l'achat) ; `demande` reçoit `contestationsAcceptees` et `douteux` ; index `demandes` et `appelsOffres` (statut + date décroissante) ; client Stripe : `refunds.create` (remboursement intégral du paiement, clé d'idempotence).
 
