@@ -142,4 +142,37 @@ describe('moteur de conversion (CONVERSION §9)', () => {
       sequence: { id: 'S9' },
     });
   });
+  it('un concurrent passe en Visibilité : signal « vis-concurrents » avec le recul, une seule fois', async () => {
+    await artisan('moi');
+    await artisan('rival');
+    await artisan('loin', { adresseSiege: { ville: 'Lyon' } });
+    await db.doc(chemins.artisanPublic('moi')).set({ scoreClassement: 80 });
+    await db.doc(chemins.artisanPublic('rival')).set({ scoreClassement: 40 });
+    await calculerCycles(s(T0));
+    const etat = () => db.collection(collections.cycleEtat).doc('moi').get();
+    expect((await etat()).get('signaux')).toMatchObject({ position: 1, total: 2, misesEnAvant: 0 });
+    await db.doc(chemins.artisan('rival')).update({ optionVisibilite: true });
+    await calculerCycles(s(T0 + J));
+    expect((await etat()).data()).toMatchObject({
+      signaux: { position: 2, positionPrec: 1, misesEnAvant: 1 },
+      signal: { modele: 'vis-concurrents', extra: { recul: 1 } },
+    });
+    expect((await etat()).get('derniersSignaux.vis-concurrents')).toBeDefined();
+    await db
+      .collection(collections.cycleEtat)
+      .doc('moi')
+      .update({ groupeTemoin: false, 'signaux.recherchesSecteur30j': 146 });
+    await planifierCycle(s(T0 + 2 * J));
+    expect(envois.map((e) => e.modele)).toEqual(['vis-concurrents']);
+    expect((envois[0] as unknown as { donnees: Record<string, unknown> }).donnees).toMatchObject({
+      recul: 1,
+      position: 2,
+      total: 2,
+      misesEnAvant: 1,
+      recherches30j: 146,
+    });
+    expect((await etat()).get('signal')).toBeUndefined();
+    await calculerCycles(s(T0 + 3 * J));
+    expect((await etat()).get('signal')).toBeUndefined();
+  });
 });

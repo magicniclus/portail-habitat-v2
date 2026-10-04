@@ -7,6 +7,9 @@ import {
   preparerDonnees,
   prochainPas,
   scoreCycle,
+  signauxDeclenches,
+  classerSecteurs,
+  type PositionSecteur,
   SEQUENCES_DEFAUT,
   sequencePourEtape,
   variante,
@@ -15,9 +18,15 @@ import {
 } from '@ph/core/conversion';
 import { definition, type NomModele } from '@ph/core/notifications';
 import { randomUUID } from 'node:crypto';
-import { Timestamp, type DocumentSnapshot, type Firestore } from 'firebase-admin/firestore';
+import {
+  FieldValue,
+  Timestamp,
+  type DocumentSnapshot,
+  type Firestore,
+} from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
+import { lireStatsJours } from '../pro/statistiques';
 
 /**
  * Moteur de conversion (CONVERSION §9) : `cycleEtat/{artisanId}` est mis à jour chaque jour
@@ -118,6 +127,7 @@ export async function synchroniserCycle(
   s: Pick<ServicesCycle, 'db' | 'horloge'>,
   artisan: DocumentSnapshot,
   config: ConfigCycleLue,
+  mesures: Partial<{ vues7j: number; vues30j: number } & PositionSecteur> = {},
 ): Promise<{ etape: EtapeCycle; changee: boolean }> {
   const maintenant = s.horloge();
   const a = artisan.data()!;
@@ -158,10 +168,47 @@ export async function synchroniserCycle(
   const ancienne = etat.get('etape') as EtapeCycle | undefined;
   const changee = ancienne !== etape;
   const seqId = sequencePourEtape(etape, offre);
+  const precedents = (etat.get('signaux') as Record<string, number> | undefined) ?? {};
+  const signal =
+    mesures.position !== undefined && mesures.misesEnAvant !== undefined
+      ? signauxDeclenches(
+          etape,
+          {
+            ...(precedents.position !== undefined ? { position: precedents.position } : {}),
+            ...(precedents.misesEnAvant !== undefined
+              ? { misesEnAvant: precedents.misesEnAvant }
+              : {}),
+          },
+          { position: mesures.position, misesEnAvant: mesures.misesEnAvant },
+          {
+            maintenant,
+            dernier: Object.fromEntries(
+              Object.entries(
+                (etat.get('derniersSignaux') as Record<string, Timestamp> | undefined) ?? {},
+              ).map(([k, v]) => [k, v.toMillis()]),
+            ),
+          },
+        )[0]
+      : undefined;
   const commun = {
     schemaVersion: 1,
     score,
     offreCible: offre,
+    signaux: {
+      ...precedents,
+      ...mesures,
+      ...(precedents.position !== undefined ? { positionPrec: precedents.position } : {}),
+    },
+    ...(signal
+      ? {
+          signal: {
+            modele: signal.modele,
+            du: Timestamp.fromMillis(creneauEnvoi(maintenant, 'signal')),
+            extra: { recul: signal.recul },
+          },
+          derniersSignaux: { [signal.modele]: t0 },
+        }
+      : {}),
     ...(etat.get('offreCible') !== offre ? { offreChangeeLe: t0 } : {}),
     updatedAt: t0,
   };
@@ -175,7 +222,6 @@ export async function synchroniserCycle(
         ...(!etat.exists
           ? {
               groupeTemoin: dansGroupeTemoin(artisan.id, config.tailleTemoin),
-              signaux: {},
               derniereRemise: null,
               derniereOffreRetention: null,
               emailsNonOuvertsConsecutifs: 0,
@@ -224,26 +270,154 @@ export interface BilanPlanification {
   termines: number;
 }
 
+type IssueEnvoi = 'planifie' | 'pression' | 'bloque' | 'annule';
+
 /**
- * `cyclePlanifier` (7 h 00 et 18 h 15) : pour chaque séquence dont le prochain envoi est dû,
- * étape suivante → contrôles (interrupteur, pause, témoin, veille, pression) → `notifier()` au
- * prochain créneau, ou trace du blocage.
+ * Un email de conversion pour une entreprise : interrupteur, témoin, veille et pression, puis
+ * chiffres réels obligatoires, puis `notifier()` au prochain créneau. Chaque issue est tracée.
+ */
+async function tenterEnvoi(
+  s: ServicesCycle,
+  config: ConfigCycleLue,
+  etat: DocumentSnapshot,
+  e: {
+    modele: string;
+    refObjet: string;
+    type: 'calendrier' | 'signal';
+    sequenceId?: string;
+    ab?: string[];
+    extra?: Record<string, unknown>;
+  },
+): Promise<IssueEnvoi> {
+  const maintenant = s.horloge();
+  const base = {
+    artisanId: etat.id,
+    fonction: 'cyclePlanifier',
+    modele: e.modele,
+    ...(e.sequenceId ? { sequenceId: e.sequenceId } : {}),
+  };
+  const artisan = await s.db.doc(chemins.artisan(etat.id)).get();
+  const uid = artisan.get('proprietaireUid') as string | undefined;
+  const envois = uid
+    ? (
+        await s.db
+          .collection(collections.emails)
+          .where('uid', '==', uid)
+          .where('createdAt', '>', Timestamp.fromMillis(maintenant - 7 * J))
+          .get()
+      ).docs.map((x) => ({
+        le: ms(x.get('envoyerLe')) ?? 0,
+        categorie: x.get('categorie') as string,
+      }))
+    : [];
+  const decision = !config.actif
+    ? ({ ok: false, raison: 'interrupteur' } as const)
+    : !uid
+      ? ({ ok: false, raison: 'preferences' } as const)
+      : controlerPression({
+          categorie: definition(e.modele as NomModele).categorie,
+          maintenant,
+          envois,
+          emailsNonOuverts: (etat.get('emailsNonOuvertsConsecutifs') as number | undefined) ?? 0,
+          groupeTemoin: etat.get('groupeTemoin') === true,
+          maxSemaine: config.maxOffresProSemaine,
+          maxJour: config.maxNonTransacJour,
+          veilleApres: config.veilleApres,
+        });
+  if (!decision.ok) {
+    await tracer(s.db, maintenant, { ...base, type: 'email_bloque', raison: decision.raison });
+    return decision.raison === 'pression' ? 'pression' : 'bloque';
+  }
+  // Chiffres réels de l'entreprise : sans eux, pas d'envoi (CONVERSION §1.2).
+  const proprietaire = await s.db.doc(chemins.user(uid!)).get();
+  const signaux = (etat.get('signaux') as Record<string, unknown> | undefined) ?? {};
+  const contexte = {
+    ...signaux,
+    recherches30j: signaux.recherchesSecteur30j,
+    ...e.extra,
+    prenom:
+      ((proprietaire.get('nomAffiche') as string | undefined) ?? '').split(' ')[0] || undefined,
+    nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
+    metier: (artisan.get('metierPrincipal') as string | undefined) ?? '',
+    ville: (artisan.get('adresseSiege.ville') as string | undefined) ?? '',
+    nbAvis: (artisan.get('nbAvis') as number | undefined) ?? 0,
+    offre: etat.get('offreCible') as string,
+    signataire: config.signataire.nom,
+    lien: `${s.urlSite ?? URL_SITE_DEFAUT}/pro/abonnement`,
+  };
+  const preparees = preparerDonnees(e.modele, contexte);
+  if (!preparees.ok) {
+    await tracer(s.db, maintenant, {
+      ...base,
+      type: 'email_annule',
+      raison: 'plus_valable',
+      details: { manque: preparees.manque },
+    });
+    return 'annule';
+  }
+  const v = variante(etat.id, e.modele, e.ab);
+  const envoyerLe = new Date(creneauEnvoi(maintenant, e.type));
+  await s.notifier({
+    modele: e.modele as NomModele,
+    destinataire: { uid: uid!, artisanId: etat.id },
+    refObjet: e.refObjet,
+    ...(v ? { variante: v } : {}),
+    envoyerLe,
+    donnees: preparees.donnees,
+  });
+  await tracer(s.db, maintenant, {
+    ...base,
+    type: 'email_planifie',
+    ...(v ? { variante: v } : {}),
+    details: { envoyerLe: envoyerLe.toISOString(), declencheur: e.type },
+  });
+  return 'planifie';
+}
+
+/**
+ * `cyclePlanifier` (7 h 00 et 18 h 15) : signaux en attente, puis étapes dues des séquences.
  */
 export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<BilanPlanification> {
   const maintenant = s.horloge();
   const config = await lireConfigCycle(s.db);
+  const bilan: BilanPlanification = { examines: 0, planifies: 0, bloques: 0, termines: 0 };
+  const compter = (issue: IssueEnvoi) => {
+    if (issue === 'planifie') bilan.planifies++;
+    else if (issue !== 'annule') bilan.bloques++;
+  };
+
+  // Signaux (« T ») : prioritaires sur le calendrier, envoyés une seule fois.
+  const signaux = await s.db
+    .collection(collections.cycleEtat)
+    .where('signal.du', '<=', Timestamp.fromMillis(maintenant))
+    .limit(limite)
+    .get();
+  for (const etat of signaux.docs) {
+    bilan.examines++;
+    const sig = etat.get('signal') as { modele: string; extra?: Record<string, unknown> };
+    if (etat.get('pause') || etat.get('exclu') === true) continue;
+    compter(
+      await tenterEnvoi(s, config, etat, {
+        modele: sig.modele,
+        refObjet: `cycle/${etat.id}/signal/${sig.modele}/${(etat.get('signal.du') as Timestamp).toMillis()}`,
+        type: 'signal',
+        ...(sig.extra ? { extra: sig.extra } : {}),
+      }),
+    );
+    await etat.ref.update({ signal: FieldValue.delete() });
+  }
+
   const dus = await s.db
     .collection(collections.cycleEtat)
     .where('sequence.prochainEnvoi', '<=', Timestamp.fromMillis(maintenant))
     .limit(limite)
     .get();
   const cache = new Map<string, { etapes: EtapeSequence[]; actif: boolean } | null>();
-  const bilan: BilanPlanification = { examines: dus.size, planifies: 0, bloques: 0, termines: 0 };
   for (const etat of dus.docs) {
+    bilan.examines++;
     const seq = etat.get('sequence') as { id: string; etape: number };
     const sequence = await lireSequence(s.db, seq.id, cache);
     const ref = etat.ref;
-    const base = { artisanId: etat.id, fonction: 'cyclePlanifier', sequenceId: seq.id };
     if (!sequence || !sequence.actif || etat.get('pause') || etat.get('exclu') === true) {
       // Séquence en pause, supprimée, ou entreprise exclue : on repasse demain.
       await ref.update({ 'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant + J) });
@@ -259,117 +433,41 @@ export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<Bi
       await ref.update({ 'sequence.prochainEnvoi': Timestamp.fromMillis(pas.le) });
       continue;
     }
-    const artisan = await s.db.doc(chemins.artisan(etat.id)).get();
-    const uid = artisan.get('proprietaireUid') as string | undefined;
-    const envois = uid
-      ? (
-          await s.db
-            .collection(collections.emails)
-            .where('uid', '==', uid)
-            .where('createdAt', '>', Timestamp.fromMillis(maintenant - 7 * J))
-            .get()
-        ).docs.map((e) => ({
-          le: ms(e.get('envoyerLe')) ?? 0,
-          categorie: e.get('categorie') as string,
-        }))
-      : [];
-    const decision = !config.actif
-      ? ({ ok: false, raison: 'interrupteur' } as const)
-      : !uid
-        ? ({ ok: false, raison: 'preferences' } as const)
-        : controlerPression({
-            categorie: definition(pas.modele as NomModele).categorie,
-            maintenant,
-            envois,
-            emailsNonOuverts: (etat.get('emailsNonOuvertsConsecutifs') as number | undefined) ?? 0,
-            groupeTemoin: etat.get('groupeTemoin') === true,
-            maxSemaine: config.maxOffresProSemaine,
-            maxJour: config.maxNonTransacJour,
-            veilleApres: config.veilleApres,
-          });
-    if (!decision.ok) {
-      bilan.bloques++;
-      await tracer(s.db, maintenant, {
-        ...base,
-        type: 'email_bloque',
-        raison: decision.raison,
-        modele: pas.modele,
-      });
-      // Pression : nouvel essai demain ; témoin, veille, interrupteur : l'étape est passée.
-      await ref.update(
-        decision.raison === 'pression'
-          ? { 'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant + J) }
-          : {
-              'sequence.etape': pas.index + 1,
-              'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant),
-            },
-      );
-      continue;
-    }
-    // Chiffres réels de l'entreprise : sans eux, pas d'envoi (CONVERSION §1.2).
-    const proprietaire = await s.db.doc(chemins.user(uid!)).get();
-    const contexte = {
-      ...((etat.get('signaux') as Record<string, unknown> | undefined) ?? {}),
-      prenom:
-        ((proprietaire.get('nomAffiche') as string | undefined) ?? '').split(' ')[0] || undefined,
-      nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
-      metier: (artisan.get('metierPrincipal') as string | undefined) ?? '',
-      ville: (artisan.get('adresseSiege.ville') as string | undefined) ?? '',
-      nbAvis: (artisan.get('nbAvis') as number | undefined) ?? 0,
-      offre: etat.get('offreCible') as string,
-      signataire: config.signataire.nom,
-      lien: `${s.urlSite ?? URL_SITE_DEFAUT}/pro/abonnement`,
-    };
-    const preparees = preparerDonnees(pas.modele, contexte);
-    if (!preparees.ok) {
-      await tracer(s.db, maintenant, {
-        ...base,
-        type: 'email_annule',
-        raison: 'plus_valable',
-        modele: pas.modele,
-        details: { manque: preparees.manque },
-      });
-      await ref.update({
-        'sequence.etape': pas.index + 1,
-        'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant),
-      });
-      continue;
-    }
-    const v = variante(etat.id, pas.modele, sequence.etapes[pas.index]?.ab);
-    const envoyerLe = new Date(creneauEnvoi(maintenant, 'calendrier'));
-    await s.notifier({
-      modele: pas.modele as NomModele,
-      destinataire: { uid: uid!, artisanId: etat.id },
-      refObjet: `cycle/${etat.id}/${seq.id}/${pas.index}`,
-      ...(v ? { variante: v } : {}),
-      envoyerLe,
-      donnees: preparees.donnees,
-    });
-    await tracer(s.db, maintenant, {
-      ...base,
-      type: 'email_planifie',
+    const ab = sequence.etapes[pas.index]?.ab;
+    const issue = await tenterEnvoi(s, config, etat, {
       modele: pas.modele,
-      ...(v ? { variante: v } : {}),
-      details: { envoyerLe: envoyerLe.toISOString(), etape: pas.index },
+      refObjet: `cycle/${etat.id}/${seq.id}/${pas.index}`,
+      type: 'calendrier',
+      sequenceId: seq.id,
+      ...(ab ? { ab } : {}),
     });
-    await ref.update({
-      'sequence.etape': pas.index + 1,
-      'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant),
-    });
-    bilan.planifies++;
+    compter(issue);
+    // Pression : nouvel essai demain ; sinon l'étape est passée (envoyée, bloquée ou sans chiffres).
+    await ref.update(
+      issue === 'pression'
+        ? { 'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant + J) }
+        : {
+            'sequence.etape': pas.index + 1,
+            'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant),
+          },
+    );
   }
   return bilan;
 }
 
-/** `cycleCalculer` (5 h) : toutes les entreprises actives, par lots. */
+/**
+ * `cycleCalculer` (5 h) : vues des 7 et 30 derniers jours, position dans le secteur (métier +
+ * commune), puis étape, score, offre cible, séquence et signaux de chaque entreprise active.
+ */
 export async function calculerCycles(
   s: ServicesCycle,
   lot = 200,
 ): Promise<{ entreprises: number; changements: number }> {
   const config = await lireConfigCycle(s.db);
+  const maintenant = s.horloge();
+  const jour = (j: number) => new Date(maintenant - j * J).toISOString().slice(0, 10);
+  const artisans: DocumentSnapshot[] = [];
   let dernier: DocumentSnapshot | undefined;
-  let entreprises = 0;
-  let changements = 0;
   for (;;) {
     let q = s.db
       .collection(collections.artisans)
@@ -378,13 +476,46 @@ export async function calculerCycles(
       .limit(lot);
     if (dernier) q = q.startAfter(dernier);
     const r = await q.get();
-    for (const a of r.docs) {
-      const { changee } = await synchroniserCycle(s, a, config);
-      entreprises++;
-      if (changee) changements++;
-    }
+    artisans.push(...r.docs);
     if (r.size < lot) break;
     dernier = r.docs[r.size - 1];
   }
-  return { entreprises, changements };
+  const vues = new Map<string, { vues7j: number; vues30j: number }>();
+  const scores = new Map<string, number>();
+  for (let i = 0; i < artisans.length; i += lot) {
+    const tranche = artisans.slice(i, i + lot);
+    const publics = await s.db.getAll(...tranche.map((a) => s.db.doc(chemins.artisanPublic(a.id))));
+    publics.forEach((p) => scores.set(p.id, (p.get('scoreClassement') as number | undefined) ?? 0));
+    await Promise.all(
+      tranche.map(async (a) => {
+        const jours = await lireStatsJours(s.db, a.id, jour(30));
+        const depuis7 = jour(7);
+        vues.set(a.id, {
+          vues30j: jours.reduce((n, j) => n + j.vuesFiche, 0),
+          vues7j: jours.filter((j) => j.jour >= depuis7).reduce((n, j) => n + j.vuesFiche, 0),
+        });
+      }),
+    );
+  }
+  const secteurs = classerSecteurs(
+    artisans
+      .filter((a) => a.get('enLigne') === true)
+      .map((a) => ({
+        id: a.id,
+        metier: (a.get('metierPrincipal') as string | undefined) ?? '',
+        ville: (a.get('adresseSiege.ville') as string | undefined) ?? '',
+        misEnAvant: a.get('plan') === 'premium' || a.get('optionVisibilite') === true,
+        score: scores.get(a.id) ?? 0,
+        vues7j: vues.get(a.id)?.vues7j ?? 0,
+      })),
+  );
+  let changements = 0;
+  for (const a of artisans) {
+    const { changee } = await synchroniserCycle(s, a, config, {
+      ...vues.get(a.id),
+      ...secteurs.get(a.id),
+    });
+    if (changee) changements++;
+  }
+  return { entreprises: artisans.length, changements };
 }

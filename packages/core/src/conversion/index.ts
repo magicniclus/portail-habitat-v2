@@ -183,3 +183,9 @@ export {
   type PasSequence,
 } from './sequences';
 export { preparerDonnees, type DonneesPreparees } from './donnees';
+export {
+  classerSecteurs,
+  signauxDeclenches,
+  type EntreeSecteur,
+  type PositionSecteur,
+} from './secteur';
