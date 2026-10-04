@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
+  activerSourceAdmin,
   afficherDonneePersonnelle,
   ajouterArtisanDemandeAdmin,
   ajouterNoteAdmin,
@@ -17,6 +18,7 @@ import {
   fixerPrixAppelOffresAdmin,
   idTacheDocument,
   jetonImpersonation,
+  journalImportsAdmin,
   lireBaremesAdmin,
   lireAppelOffresAdmin,
   lireArtisanAdmin,
@@ -25,6 +27,7 @@ import {
   listerAppelsOffresAdmin,
   listerDemandesAdmin,
   listerFileAdmin,
+  listerSourcesAdmin,
   listerArtisansAdmin,
   listerContestationsAdmin,
   parametresAppelOffresAdmin,
@@ -789,5 +792,56 @@ describe('contestations (ADMIN §2.5, DATABASE §5)', () => {
       deciderContestationAdmin(s(), { ...base, id: 'ach3', decision: 'credits' }),
     ).rejects.toMatchObject({ code: 'CONFLIT' });
     expect(envois.filter((e) => e.modele === 'remboursement-lead')).toHaveLength(3);
+  });
+});
+
+describe('sources partenaires (IMPORT_LEADS, IMP-02)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  it('sources avec les imports de la semaine, journal sans donnée personnelle, coupure auditée', async () => {
+    await db
+      .collection(collections.sourcesDemandes)
+      .doc('src1')
+      .set({
+        nom: 'Simulateur aides',
+        actif: true,
+        quotaJour: 200,
+        coutUnitaireCentimes: 700,
+        departementsCouverts: ['33'],
+      });
+    const imp = (id: string, statut: string, il: number, extra = {}) =>
+      db
+        .collection(collections.importsDemandes)
+        .doc(id)
+        .set({
+          sourceId: 'src1',
+          idExterne: `ext-${id}`,
+          statut,
+          recueLe: Timestamp.fromMillis(T - il),
+          ...extra,
+        });
+    await imp('i1', 'creee', 1000, { demandeId: 'd1' });
+    await imp('i2', 'rejetee', 2000, {
+      motifRejet: 'consentement_absent',
+      details: 'consentement.texteAffiche',
+    });
+    await imp('i3', 'creee', 10 * 86_400_000);
+    const [src] = await listerSourcesAdmin(db, T);
+    expect(src).toMatchObject({
+      nom: 'Simulateur aides',
+      semaine: { creee: 1, doublon: 0, rejetee: 1 },
+    });
+    const j = await journalImportsAdmin(db, 'src1');
+    expect(j.map((x) => [x.id, x.statut, x.motifRejet])).toEqual([
+      ['i1', 'creee', null],
+      ['i2', 'rejetee', 'consentement_absent'],
+      ['i3', 'creee', null],
+    ]);
+    await activerSourceAdmin(
+      { db, horloge: () => T },
+      { acteurUid: 'adm', sourceId: 'src1', actif: false, motif: 'Pic de doublons' },
+    );
+    expect((await db.collection(collections.sourcesDemandes).doc('src1').get()).get('actif')).toBe(
+      false,
+    );
   });
 });

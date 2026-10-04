@@ -274,3 +274,10 @@ export const entreeDecisionContestation = z.strictObject({
   decision: z.enum(['credits', 'carte', 'refuser']),
   motif: motifAdmin,
 });
+
+/** Back-office › Sources partenaires : couper ou rouvrir une source (motif obligatoire). */
+export const entreeSourceAdmin = z.strictObject({
+  sourceId: id,
+  actif: z.boolean(),
+  motif: motifAdmin,
+});

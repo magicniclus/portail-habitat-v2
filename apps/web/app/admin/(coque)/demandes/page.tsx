@@ -12,6 +12,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { FicheDemandeAdmin } from '@/features/adminDemandes/FicheDemandeAdmin';
+import { NavDemandes } from '@/features/adminDemandes/NavDemandes';
 import { pageAdmin } from '@/server/sessionAdmin';
 
 export const metadata: Metadata = { title: 'Demandes' };
@@ -41,6 +42,7 @@ export default async function DemandesAdmin({ searchParams }: { searchParams: Pa
           <h1 className="m-0 text-[clamp(26px,3vw,32px)]">Demandes</h1>
           <p className="m-0 text-sm text-neutre-800">Avec la trace complète de l’algorithme.</p>
         </div>
+        <NavDemandes actif="/admin/demandes" />
         <form action="/admin/demandes">
           <label className="sr-only" htmlFor="ref-demande">
             Référence

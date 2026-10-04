@@ -422,3 +422,35 @@ export async function appelOffresDebloque(
   });
   return { reference, appelOffresId: id, achatId };
 }
+
+/** Source partenaire avec un import créé et un import rejeté (IMP-02). */
+export async function sourceAvecImports(): Promise<{ id: string; nom: string }> {
+  const { db, Timestamp } = await admin();
+  const id = `e2e-src-${randomUUID().slice(0, 6)}`;
+  const nom = `Simulateur ${id.slice(-6)}`;
+  await db.doc(`${collections.sourcesDemandes}/${id}`).set({
+    schemaVersion: 1,
+    nom,
+    actif: true,
+    quotaJour: 200,
+    coutUnitaireCentimes: 700,
+    departementsCouverts: ['33'],
+    createdAt: Timestamp.now(),
+  });
+  const imports = db.doc(`${collections.importsDemandes}/_`).parent;
+  await imports.add({
+    sourceId: id,
+    idExterne: 'ext-1',
+    statut: 'creee',
+    recueLe: Timestamp.now(),
+  });
+  await imports.add({
+    sourceId: id,
+    idExterne: 'ext-2',
+    statut: 'rejetee',
+    motifRejet: 'consentement_absent',
+    details: 'consentement.texteAffiche',
+    recueLe: Timestamp.now(),
+  });
+  return { id, nom };
+}

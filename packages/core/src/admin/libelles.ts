@@ -109,3 +109,17 @@ export const LIBELLES_DETAIL_CALCUL = {
   coefNiveau: 'Niveau',
   coefEligibilite: 'Aides',
 } as const;
+
+/** Journal des imports partenaires (IMP-02) : issue et motif de rejet lisibles. */
+export const LIBELLES_STATUT_IMPORT: Record<string, string> = {
+  creee: 'Créée',
+  doublon: 'Doublon',
+  rejetee: 'Rejetée',
+};
+export const LIBELLES_MOTIF_REJET_IMPORT: Record<string, string> = {
+  consentement_absent: 'consentement incomplet',
+  telephone_invalide: 'téléphone invalide',
+  hors_zone_couverte: 'hors de la zone couverte',
+  doublon_30j: 'déjà reçue sous 30 jours',
+  schema_invalide: 'format invalide',
+};
