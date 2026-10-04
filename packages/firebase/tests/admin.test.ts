@@ -6,7 +6,9 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
+  activerPrestationAdmin,
   activerSourceAdmin,
+  changerFlagAdmin,
   afficherDonneePersonnelle,
   ajouterArtisanDemandeAdmin,
   ajouterNoteAdmin,
@@ -26,12 +28,16 @@ import {
   lireArtisanAdmin,
   lireDemandeAdmin,
   lireFinancesAdmin,
+  lireFlagsAdmin,
+  lirePrixPrestationAdmin,
   lireLitigeAdmin,
   lireTableauDeBordAdmin,
   listerAppelsOffresAdmin,
   listerDemandesAdmin,
   listerFileAdmin,
   listerLitigesAdmin,
+  listerPrestationsAdmin,
+  modifierPrixPrestationAdmin,
   listerSourcesAdmin,
   modererAvisAdmin,
   listerArtisansAdmin,
@@ -1099,5 +1105,48 @@ describe('finances (ADMIN §2.8)', () => {
       .where('action', '==', 'adminExportFinances')
       .get();
     expect(audit.docs[0]!.get('cible')).toBe('finances/2026-09');
+  });
+});
+
+describe('référentiels et réglages (ADMIN §2.9)', () => {
+  const T = Date.UTC(2026, 9, 4, 12);
+  const s = () => ({ db, horloge: () => T });
+  it('prix d’une prestation : nombres modifiés, nouvelle version, ancienne archivée ; retrait ; flags', async () => {
+    await db
+      .doc(chemins.prestationItem('peinture'))
+      .set({ nom: 'Peinture', famille: 'deco', actif: true, ordre: 1, version: '2026-09-01.1' });
+    await db.doc(chemins.prestationPrix('peinture')).set({
+      parametres: { tarif: { min: 2500, max: 3800 }, tva: 'reduite' },
+      version: '2026-09-01.1',
+    });
+    expect((await listerPrestationsAdmin(db)).map((p) => p.nom)).toEqual(['Peinture']);
+    const base = { acteurUid: 'adm', id: 'peinture', motif: 'Hausse des matériaux' };
+    expect(await modifierPrixPrestationAdmin(s(), { ...base, modifs: { 'tarif.min': 2700 } })).toBe(
+      '2026-10-04.1',
+    );
+    expect((await lirePrixPrestationAdmin(db, 'peinture'))!.feuilles).toEqual([
+      { chemin: 'tarif.min', valeur: 2700 },
+      { chemin: 'tarif.max', valeur: 3800 },
+    ]);
+    expect(
+      (await db.doc(`${chemins.prestationPrix('peinture')}/versions/2026-09-01.1`).get()).get(
+        'parametres.tarif.min',
+      ),
+    ).toBe(2500);
+    expect((await db.doc(chemins.prestationItem('peinture')).get()).get('version')).toBe(
+      '2026-10-04.1',
+    );
+    await expect(
+      modifierPrixPrestationAdmin(s(), { ...base, modifs: { tva: 1 } }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    await activerPrestationAdmin(s(), { ...base, actif: false });
+    expect((await listerPrestationsAdmin(db))[0]!.actif).toBe(false);
+    await changerFlagAdmin(s(), {
+      acteurUid: 'adm',
+      nom: 'maintenance',
+      valeur: true,
+      motif: 'Migration',
+    });
+    expect((await lireFlagsAdmin(db)).find((f) => f.nom === 'maintenance')!.valeur).toBe(true);
   });
 });

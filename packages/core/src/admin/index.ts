@@ -5,3 +5,4 @@ export * from './file';
 export * from './prix';
 export * from './bareme';
 export * from './finances';
+export * from './referentiels';

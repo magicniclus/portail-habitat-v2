@@ -87,3 +87,12 @@ export {
   type ComparaisonClassement,
   type VersionAlgorithme,
 } from './algorithme';
+export {
+  activerPrestationAdmin,
+  changerFlagAdmin,
+  lireFlagsAdmin,
+  lirePrixPrestationAdmin,
+  listerPrestationsAdmin,
+  modifierPrixPrestationAdmin,
+  type PrestationAdmin,
+} from './referentiels';

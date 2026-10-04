@@ -1,3 +1,4 @@
+import { FLAGS, type NomFlag } from '../flags';
 import { z } from '../zod';
 import { rayonKm, TYPES_DOCUMENT } from './artisans';
 import { email, geo, id, telephoneFr } from './commun';
@@ -356,4 +357,21 @@ export const entreeRejouerDemande = z.strictObject({
     .trim()
     .toUpperCase()
     .regex(/^PH-[A-Z0-9]{4,8}$/, 'Référence PH-… attendue'),
+});
+
+/** Back-office › Référentiels : prix d'une prestation, mise en ligne, feature flags (ADMIN §2.9). */
+export const entreePrixPrestation = z.strictObject({
+  id,
+  modifs: z.record(z.string().regex(/^[\w.]{1,120}$/), z.number().nonnegative().max(10_000_000)),
+  motif: motifAdmin,
+});
+export const entreeActiverPrestation = z.strictObject({
+  id,
+  actif: z.boolean(),
+  motif: motifAdmin,
+});
+export const entreeFlagAdmin = z.strictObject({
+  nom: z.enum(Object.keys(FLAGS) as [NomFlag, ...NomFlag[]]),
+  valeur: z.boolean(),
+  motif: motifAdmin,
 });
