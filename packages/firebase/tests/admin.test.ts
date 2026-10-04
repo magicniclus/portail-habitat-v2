@@ -12,14 +12,19 @@ import {
   crediterArtisanAdmin,
   creerSuperAdmin,
   deciderDocumentAdmin,
+  fixerPrixAppelOffresAdmin,
   idTacheDocument,
   jetonImpersonation,
+  lireAppelOffresAdmin,
   lireArtisanAdmin,
   lireDemandeAdmin,
   lireTableauDeBordAdmin,
+  listerAppelsOffresAdmin,
   listerDemandesAdmin,
   listerFileAdmin,
   listerArtisansAdmin,
+  parametresAppelOffresAdmin,
+  promoAppelOffresAdmin,
   rejeterDemandeAdmin,
   relancerMatchingAdmin,
   sanctionnerArtisanAdmin,
@@ -495,5 +500,120 @@ describe('demandes dans l’admin (ADMIN §2.4)', () => {
     await expect(
       relancerMatchingAdmin(s(), { acteurUid: 'adm', demandeId: 'd1', motif: 'test' }),
     ).rejects.toMatchObject({ code: 'PRECONDITION' });
+  });
+});
+
+describe('appels d’offres et prix dans l’admin (ADMIN §2.5)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const s = () => ({ db, horloge: () => T });
+  const H = 3_600_000;
+  const appel = (id: string, statut: string, nbDeblocages = 0) =>
+    db.doc(chemins.appelOffres(id)).set({
+      titre: 'Peinture à Floirac',
+      demandeId: id,
+      statut,
+      qualiteLead: 70,
+      nbDeblocages,
+      nbDeblocagesMax: 3,
+      acces: 'premium_prioritaire',
+      ouvertLe: Timestamp.fromMillis(T - H),
+      ouvertJusquau: Timestamp.fromMillis(T + 72 * H),
+      tarification: {
+        mode: 'auto',
+        prixBaseCentimes: 1500,
+        prixPremiumCentimes: 1100,
+        prixCredits: 2,
+        detailCalcul: {
+          base: 1500,
+          coefBudget: 1,
+          coefUrgence: 1,
+          coefQualite: 1,
+          coefConcurrence: 1,
+          coefNiveau: 1,
+          coefEligibilite: 1,
+        },
+        prixPlancherCentimes: 500,
+        prixPlafondCentimes: 9900,
+        historique: [],
+      },
+    });
+  const tarif = async (id: string) =>
+    (await db.doc(chemins.appelOffres(id)).get()).get('tarification') as Record<string, unknown>;
+  const base = { acteurUid: 'adm', appelOffresId: 'ao1', motif: 'Relance commerciale' };
+
+  it('prix manuel borné, gratuit puis retour au calcul ; historique et audit', async () => {
+    await appel('ao1', 'ouvert');
+    await appel('ao2', 'clos');
+    expect((await listerAppelsOffresAdmin(db, 'ouverts')).map((a) => a.id)).toEqual(['ao1']);
+    const manuel = { prixBaseCentimes: 2500, prixPremiumCentimes: 1800, prixCredits: 3 };
+    await fixerPrixAppelOffresAdmin(s(), {
+      ...base,
+      mode: 'manuel',
+      prix: manuel,
+      illimite: false,
+    });
+    expect(await tarif('ao1')).toMatchObject({ mode: 'manuel', ...manuel, fixePar: 'adm' });
+    await expect(
+      fixerPrixAppelOffresAdmin(s(), {
+        ...base,
+        mode: 'manuel',
+        prix: { ...manuel, prixBaseCentimes: 4500 },
+        illimite: false,
+      }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+    await fixerPrixAppelOffresAdmin(s(), {
+      ...base,
+      mode: 'manuel',
+      prix: { ...manuel, prixBaseCentimes: 4500 },
+      illimite: true,
+    });
+    await fixerPrixAppelOffresAdmin(s(), { ...base, mode: 'gratuit', illimite: false });
+    expect(await tarif('ao1')).toMatchObject({ mode: 'gratuit', prixBaseCentimes: 0 });
+    await fixerPrixAppelOffresAdmin(s(), { ...base, mode: 'auto', illimite: false });
+    expect(await tarif('ao1')).toMatchObject({
+      mode: 'auto',
+      prixBaseCentimes: 1500,
+      prixPremiumCentimes: 1100,
+      prixCredits: 2,
+    });
+    const f = (await lireAppelOffresAdmin(db, 'ao1'))!;
+    expect(f.historique.map((h) => h.prixHtCentimes).sort()).toEqual([0, 1500, 2500, 4500]);
+    expect((await tarif('ao1')).historique).toHaveLength(4);
+    const audit = await db
+      .collection(collections.auditLog)
+      .where('action', '==', 'adminFixerPrixLead')
+      .get();
+    expect(audit.size).toBe(4);
+    await expect(
+      fixerPrixAppelOffresAdmin(s(), {
+        ...base,
+        appelOffresId: 'ao2',
+        mode: 'gratuit',
+        illimite: true,
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+  });
+
+  it('promo bornée par la clôture ; déblocages max jamais sous ceux faits', async () => {
+    await appel('ao1', 'ouvert', 2);
+    await expect(
+      promoAppelOffresAdmin(s(), { ...base, pourcentage: 50, jusquau: T + 100 * H }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    await promoAppelOffresAdmin(s(), { ...base, pourcentage: 50, jusquau: T + 24 * H });
+    expect((await lireAppelOffresAdmin(db, 'ao1'))!).toMatchObject({
+      promo: 50,
+      promoJusquau: T + 24 * H,
+    });
+    await promoAppelOffresAdmin(s(), base);
+    expect((await tarif('ao1')).promo).toBeUndefined();
+    await expect(
+      parametresAppelOffresAdmin(s(), { ...base, nbDeblocagesMax: 1, acces: 'tous' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await parametresAppelOffresAdmin(s(), { ...base, nbDeblocagesMax: 2, acces: 'tous' });
+    expect((await lireAppelOffresAdmin(db, 'ao1'))!).toMatchObject({
+      statut: 'complet',
+      acces: 'tous',
+      nbDeblocagesMax: 2,
+    });
   });
 });

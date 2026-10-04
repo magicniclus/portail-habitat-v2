@@ -793,6 +793,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "appelsOffres",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ouvertLe",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

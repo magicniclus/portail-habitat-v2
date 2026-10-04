@@ -70,3 +70,42 @@ export const libelleExclusion = (raison: string) =>
   raison.startsWith('exigence:')
     ? `qualification manquante : ${raison.slice('exigence:'.length)}`
     : (LIBELLES_EXCLUSION[raison] ?? raison);
+
+/** Back-office › Appels d'offres (ADMIN §2.5). */
+export const FILTRES_APPELS_OFFRES_ADMIN = {
+  ouverts: 'Ouverts',
+  complets: 'Complets',
+  termines: 'Terminés',
+  tous: 'Tous',
+} as const;
+
+export const LIBELLES_STATUT_APPEL_OFFRES: Record<string, string> = {
+  brouillon: 'Brouillon',
+  ouvert: 'Ouvert',
+  complet: 'Complet',
+  clos: 'Clos',
+  annule: 'Annulé',
+  suspendu: 'Suspendu',
+};
+
+export const LIBELLES_MODE_PRIX = {
+  auto: 'Automatique',
+  manuel: 'Manuel',
+  gratuit: 'Gratuit',
+} as const;
+
+export const LIBELLES_ACCES_APPEL_OFFRES = {
+  tous: 'Tous les artisans',
+  premium_seul: 'Premium seulement',
+  premium_prioritaire: 'Premium en priorité',
+} as const;
+
+/** Lignes du détail du calcul automatique (base × coefficients). */
+export const LIBELLES_DETAIL_CALCUL = {
+  coefBudget: 'Budget',
+  coefUrgence: 'Urgence',
+  coefQualite: 'Qualité',
+  coefConcurrence: 'Concurrence',
+  coefNiveau: 'Niveau',
+  coefEligibilite: 'Aides',
+} as const;

@@ -1,6 +1,12 @@
 import 'server-only';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireTableauDeBordAdmin, listerFileAdmin } from '@ph/firebase/admin-serveur';
+import {
+  lireAppelOffresAdmin,
+  lireTableauDeBordAdmin,
+  listerAppelsOffresAdmin,
+  listerFileAdmin,
+  type FiltreAppelsOffres,
+} from '@ph/firebase/admin-serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 
 /** Lectures des pages admin (l'heure est prise ici, pas pendant le rendu). */
@@ -20,4 +26,13 @@ export async function lireFile(permissions: readonly string[]) {
     maintenant,
     file: await listerFileAdmin(getFirestore(appAdmin()), { permissions, maintenant }),
   };
+}
+
+export async function lireAppelsOffres(filtre: FiltreAppelsOffres, id: string | undefined) {
+  const db = getFirestore(appAdmin());
+  const [lignes, fiche] = await Promise.all([
+    listerAppelsOffresAdmin(db, filtre),
+    id ? lireAppelOffresAdmin(db, id) : null,
+  ]);
+  return { maintenant: Date.now(), lignes, fiche };
 }

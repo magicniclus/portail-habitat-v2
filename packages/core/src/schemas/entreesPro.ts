@@ -199,3 +199,30 @@ export const entreeAjoutArtisanAdmin = z.strictObject({
   artisanId: id,
   motif: motifAdmin,
 });
+
+/** Back-office › Appels d'offres : éditeur de prix (ADMIN §2.5). Montants en euros entiers. */
+const euros = z.number().int().min(0).max(10_000);
+export const entreePrixAppelOffres = z.discriminatedUnion('mode', [
+  z.strictObject({
+    appelOffresId: id,
+    mode: z.literal('manuel'),
+    prixEuros: euros,
+    prixPremiumEuros: euros,
+    credits: z.number().int().min(0).max(1000),
+    motif: motifAdmin,
+  }),
+  z.strictObject({ appelOffresId: id, mode: z.enum(['auto', 'gratuit']), motif: motifAdmin }),
+]);
+/** Promo en pourcentage jusqu'à une date ; sans pourcentage, la promo est retirée. */
+export const entreePromoAppelOffres = z.strictObject({
+  appelOffresId: id,
+  pourcentage: z.number().int().min(1).max(90).optional(),
+  jusquau: z.iso.date().optional(),
+  motif: motifAdmin,
+});
+export const entreeParametresAppelOffres = z.strictObject({
+  appelOffresId: id,
+  nbDeblocagesMax: z.number().int().min(1).max(3),
+  acces: z.enum(['tous', 'premium_seul', 'premium_prioritaire']),
+  motif: motifAdmin,
+});
