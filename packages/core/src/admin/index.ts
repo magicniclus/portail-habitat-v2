@@ -3,3 +3,4 @@ export * from './sections';
 export * from './libelles';
 export * from './file';
 export * from './prix';
+export * from './bareme';

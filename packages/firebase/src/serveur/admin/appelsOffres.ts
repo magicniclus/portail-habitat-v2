@@ -7,7 +7,7 @@ import {
   type PrixManuel,
 } from '@ph/core/admin';
 import { ErreurMetier } from '@ph/core/erreurs';
-import { BAREME_DEFAUT, type DetailCalcul } from '@ph/core/leads';
+import type { DetailCalcul } from '@ph/core/leads';
 import {
   FieldValue,
   Timestamp,
@@ -16,6 +16,7 @@ import {
   type Query,
 } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import { lireBareme } from '../matching/bareme';
 import { auditerAdmin } from './audit';
 
 /** Back-office › Appels d'offres et prix (ADMIN §2.5) : liste et éditeur de prix. */
@@ -176,6 +177,11 @@ export async function fixerPrixAppelOffresAdmin(
     motif: string;
   },
 ): Promise<void> {
+  // Barème d'origine de l'appel d'offres (son `grilleId` ne change jamais) pour le retour au calcul.
+  const grilleId = (await s.db.doc(chemins.appelOffres(e.appelOffresId)).get()).get(
+    'tarification.grilleId',
+  ) as string | undefined;
+  const bareme = await lireBareme(s.db, grilleId);
   await modifier(s, { ...e, action: 'adminFixerPrixLead' }, (d, t0) => {
     const t = d.get('tarification') as Record<string, unknown>;
     let prix: PrixManuel;
@@ -191,7 +197,7 @@ export async function fixerPrixAppelOffresAdmin(
       prix = { prixBaseCentimes: 0, prixPremiumCentimes: 0, prixCredits: 0 };
     else {
       if (!t.detailCalcul) throw new ErreurMetier('PRECONDITION', 'Aucun calcul automatique.');
-      prix = prixDepuisDetail(t.detailCalcul as DetailCalcul, BAREME_DEFAUT);
+      prix = prixDepuisDetail(t.detailCalcul as DetailCalcul, bareme);
     }
     const ancien = t.prixBaseCentimes as number;
     return {

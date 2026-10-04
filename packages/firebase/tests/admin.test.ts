@@ -1,6 +1,7 @@
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { permissionsEffectives } from '@ph/core/admin';
+import { baremeDepuisSaisie, permissionsEffectives, saisieDepuisBareme } from '@ph/core/admin';
+import { BAREME_DEFAUT } from '@ph/core/leads';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
@@ -15,6 +16,7 @@ import {
   fixerPrixAppelOffresAdmin,
   idTacheDocument,
   jetonImpersonation,
+  lireBaremesAdmin,
   lireAppelOffresAdmin,
   lireArtisanAdmin,
   lireDemandeAdmin,
@@ -25,9 +27,11 @@ import {
   listerArtisansAdmin,
   parametresAppelOffresAdmin,
   promoAppelOffresAdmin,
+  publierBaremeAdmin,
   rejeterDemandeAdmin,
   relancerMatchingAdmin,
   sanctionnerArtisanAdmin,
+  simulerBaremeAdmin,
   traiterTacheAdmin,
   verifierArtisanAdmin,
   verifierSessionAdmin,
@@ -615,5 +619,59 @@ describe('appels d’offres et prix dans l’admin (ADMIN §2.5)', () => {
       acces: 'tous',
       nbDeblocagesMax: 2,
     });
+  });
+});
+
+describe('barèmes (ADMIN §2.5, ADM-05)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const s = () => ({ db, horloge: () => T });
+  it('simulation sur les derniers leads, publication versionnée, nouveau prix au matching', async () => {
+    for (const [i, metier] of ['plomberie', 'deco'].entries()) {
+      await db.doc(chemins.demande(`d${i}`)).set({ qualification: { niveau: 'A' } });
+      await db.doc(chemins.appelOffres(`ao${i}`)).set({
+        titre: `Lead ${i}`,
+        demandeId: `d${i}`,
+        metier,
+        trancheBudget: 'M',
+        urgence: 'normale',
+        qualiteLead: 60,
+        artisansInvites: ['a1', 'a2', 'a3', 'a4'],
+        ouvertLe: Timestamp.fromMillis(T - i * 1000),
+      });
+    }
+    const saisie = saisieDepuisBareme(BAREME_DEFAUT);
+    const nouveau = baremeDepuisSaisie(
+      { ...saisie, prixBaseParMetier: { ...saisie.prixBaseParMetier, plomberie: 20 } },
+      BAREME_DEFAUT,
+    );
+    const sim = await simulerBaremeAdmin(db, nouveau, T);
+    expect(sim.lignes.map((l) => [l.id, l.avant, l.apres])).toEqual([
+      ['ao0', 1500, 2000],
+      ['ao1', 1200, 1200],
+    ]);
+    expect(
+      await publierBaremeAdmin(s(), {
+        acteurUid: 'adm',
+        bareme: nouveau,
+        motif: 'Hausse plomberie',
+      }),
+    ).toBe('gironde-2026-v1');
+    const v2 = baremeDepuisSaisie({ ...saisie, plafond: 80 }, BAREME_DEFAUT);
+    await publierBaremeAdmin(s(), { acteurUid: 'adm', bareme: v2, motif: 'Plafond abaissé' });
+    const l = await lireBaremesAdmin(db);
+    expect(l.actif).toMatchObject({ id: 'gironde-2026-v2', version: 2 });
+    expect(l.actif.bareme.plafond).toBe(8000);
+    expect(l.versions.map((v) => [v.id, v.actif])).toEqual([
+      ['gironde-2026-v2', true],
+      ['gironde-2026-v1', false],
+    ]);
+    const audit = await db
+      .collection(collections.auditLog)
+      .where('action', '==', 'adminMajBareme')
+      .get();
+    expect(audit.docs.map((a) => a.get('motif')).sort()).toEqual([
+      'Hausse plomberie',
+      'Plafond abaissé',
+    ]);
   });
 });

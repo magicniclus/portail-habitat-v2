@@ -9,6 +9,7 @@ import { Badge } from '@ph/ui';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { FicheAppelOffresAdmin } from '@/features/adminAppelsOffres/FicheAppelOffresAdmin';
+import { NavAppelsOffres } from '@/features/adminAppelsOffres/NavAppelsOffres';
 import { lireAppelsOffres } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
 
@@ -36,6 +37,7 @@ export default async function AppelsOffresAdmin({ searchParams }: { searchParams
           <h1 className="m-0 text-[clamp(26px,3vw,32px)]">Appels d’offres</h1>
           <p className="m-0 text-sm text-neutre-800">Prix, déblocages et historique.</p>
         </div>
+        <NavAppelsOffres actif="/admin/appels-d-offres" />
         <nav aria-label="Filtres" className="flex flex-wrap gap-2">
           {(Object.keys(FILTRES_APPELS_OFFRES_ADMIN) as FiltreAppelsOffres[]).map((f) => (
             <Link

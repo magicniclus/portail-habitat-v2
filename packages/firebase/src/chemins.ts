@@ -103,6 +103,7 @@ export const chemins = {
   deblocage: (aoId: string, artisanId: string) => `appelsOffres/${aoId}/deblocages/${artisanId}`,
   reponse: (aoId: string, artisanId: string) => `appelsOffres/${aoId}/reponses/${artisanId}`,
   historiquePrix: (aoId: string) => `appelsOffres/${aoId}/historiquePrix`,
+  grilleTarifaire: (id: string) => `grillesTarifaires/${id}`,
   portefeuille: (aid: string) => `portefeuilles/${aid}`,
   mouvements: (aid: string) => `portefeuilles/${aid}/mouvements`,
   avis: (id: string) => `avis/${id}`,

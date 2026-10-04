@@ -1,8 +1,6 @@
 import { masquerCoordonnees } from '@ph/core/espace';
 import {
-  BAREME_DEFAUT,
   calculerPrixLead,
-  GRILLE_DEFAUT,
   trancheBudget,
   type CaracteristiquesLead,
   type NiveauLead,
@@ -32,6 +30,7 @@ import { LIBELLES_NIVEAU, texteAides, type NiveauPartenaire } from '@ph/core/par
 import { FieldValue, Timestamp, type DocumentData, type Firestore } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
+import { lireBaremeActif } from './bareme';
 import { chercherCandidats, lireReferentielMetiers, versDocArtisan } from './lecture';
 
 /**
@@ -323,6 +322,7 @@ export async function publierAppelOffres(
   const refAppel = s.db.doc(chemins.appelOffres(p.demandeId));
   const tranche = trancheBudget(d.estimation.minCentimes, d.estimation.maxCentimes);
   const urgence = estUrgente(d.delaiSouhaite) ? 'urgente' : 'normale';
+  const grille = await lireBaremeActif(s.db);
   const prix = calculerPrixLead(
     {
       metier: p.metier,
@@ -336,7 +336,7 @@ export async function publierAppelOffres(
         ? { eligibiliteAides: d.aides.eligibilite as EligibiliteAides }
         : {}),
     },
-    BAREME_DEFAUT,
+    grille.bareme,
   );
   const nomPrestation =
     ((await s.db.doc(chemins.prestationItem(d.prestationId)).get()).get('nom') as
@@ -370,11 +370,11 @@ export async function publierAppelOffres(
         prixBaseCentimes: prix.prixBaseCentimes,
         prixPremiumCentimes: prix.prixPremiumCentimes,
         prixCredits: prix.prixCredits,
-        grilleId: GRILLE_DEFAUT,
+        grilleId: grille.id,
         detailCalcul: { ...prix.detailCalcul },
         fixeLe: Timestamp.fromMillis(maintenant),
-        prixPlancherCentimes: BAREME_DEFAUT.plancher,
-        prixPlafondCentimes: BAREME_DEFAUT.plafond,
+        prixPlancherCentimes: grille.bareme.plancher,
+        prixPlafondCentimes: grille.bareme.plafond,
         historique: [],
       },
       nbDeblocagesMax: 3,

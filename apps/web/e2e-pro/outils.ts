@@ -284,6 +284,7 @@ export async function appelOffresInvite(
     geo: { latitude: 44.8366, longitude: -0.5285 },
     budgetMinCentimes: 150_000,
     budgetMaxCentimes: 250_000,
+    trancheBudget: 'S',
     urgence: 'normale',
     exigences: [],
     qualiteLead: 70,

@@ -226,3 +226,30 @@ export const entreeParametresAppelOffres = z.strictObject({
   acces: z.enum(['tous', 'premium_seul', 'premium_prioritaire']),
   motif: motifAdmin,
 });
+
+/** Back-office › Barèmes : saisie en euros entiers et pourcentages (ADMIN §2.5, ADM-05). */
+const coefBareme = z.number().positive().max(5);
+const eurosBareme = z.number().int().min(1).max(1000);
+export const entreeBaremeAdmin = z
+  .strictObject({
+    prixBaseParMetier: z.record(z.string().regex(/^[a-z0-9-]{2,40}$/), eurosBareme),
+    prixBaseDefaut: eurosBareme,
+    coefBudget: z.strictObject({ S: coefBareme, M: coefBareme, L: coefBareme, XL: coefBareme }),
+    coefUrgence: z.strictObject({
+      normale: coefBareme,
+      rapide: coefBareme,
+      urgente: coefBareme,
+    }),
+    remisePremiumPourcent: z.number().int().min(0).max(90),
+    eurosParCredit: z.number().int().min(1).max(100),
+    plancher: eurosBareme,
+    plafond: eurosBareme,
+  })
+  .refine((b) => b.plancher <= b.plafond, {
+    message: 'Le plancher dépasse le plafond.',
+    path: ['plafond'],
+  });
+export const entreePublierBaremeAdmin = z.strictObject({
+  bareme: entreeBaremeAdmin,
+  motif: motifAdmin,
+});

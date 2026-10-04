@@ -41,3 +41,9 @@ export {
   type FiltreAppelsOffres,
   type LigneAppelOffresAdmin,
 } from './appelsOffres';
+export {
+  lireBaremesAdmin,
+  publierBaremeAdmin,
+  simulerBaremeAdmin,
+  type VersionBareme,
+} from './baremes';
