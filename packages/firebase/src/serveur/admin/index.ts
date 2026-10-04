@@ -47,3 +47,9 @@ export {
   simulerBaremeAdmin,
   type VersionBareme,
 } from './baremes';
+export {
+  deciderContestationAdmin,
+  listerContestationsAdmin,
+  type ContestationAdmin,
+  type ServicesContestation,
+} from './contestations';

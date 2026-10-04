@@ -6,6 +6,7 @@ import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Badge, Button, bouton, type Tone } from '@ph/ui';
 import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
+import { ContesterAppelOffres } from './ContesterAppelOffres';
 
 const TONS: Record<EtatPro, Tone> = {
   nouveau: 'accent',
@@ -89,6 +90,9 @@ export function CarteDemandePro({
               <EnvelopeSimpleIcon aria-hidden="true" /> Écrire
             </a>
           </>
+        ) : null}
+        {d.contestable ? (
+          <ContesterAppelOffres appelOffresId={d.contestable.appelOffresId} />
         ) : null}
         {!aMoi && d.etat !== 'perdu' ? (
           <Button variant="fantome" onClick={() => agir('prendre')} disabled={enCours}>

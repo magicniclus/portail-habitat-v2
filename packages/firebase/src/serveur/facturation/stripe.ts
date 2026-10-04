@@ -88,4 +88,10 @@ export interface ClientStripe {
   billingPortal: {
     sessions: { create(p: { customer: string; return_url: string }): Promise<{ url: string }> };
   };
+  refunds: {
+    create(
+      p: { payment_intent: string; metadata: Record<string, string> },
+      o: { idempotencyKey: string },
+    ): Promise<{ id: string }>;
+  };
 }

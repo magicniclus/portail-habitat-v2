@@ -9,6 +9,7 @@ import {
   type StatutAttributionPro,
 } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
+import { DELAI_CONTESTATION_MS } from '@ph/core/leads';
 import { texteAides, type NiveauPartenaire } from '@ph/core/partenaires';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
@@ -39,6 +40,8 @@ export interface DemandePro {
   /** Demande d'un site partenaire : niveau de qualification et aides estimées (IMP-06). */
   niveau?: NiveauPartenaire;
   aides?: string;
+  /** Appel d'offres débloqué depuis moins de 7 jours : contestable (DATABASE §5). */
+  contestable?: { appelOffresId: string };
   /** Texte de recherche (sans coordonnées avant acceptation). */
   recherche: string;
 }
@@ -92,6 +95,10 @@ export async function lireDemandesPro(
     const niveau = d.get('qualification.niveau') as NiveauPartenaire | undefined;
     const aides = d.get('aides') as Parameters<typeof texteAides>[0] | undefined;
     const texte = aides ? texteAides(aides) : null;
+    const appelOffresId = a.get('appelOffresId') as string | undefined;
+    const reponduLe = (a.get('reponduLe') as Timestamp | undefined)?.toMillis() ?? 0;
+    const contestable =
+      appelOffresId && s.horloge() - reponduLe <= DELAI_CONTESTATION_MS ? { appelOffresId } : null;
     return [
       {
         demandeId: d.id,
@@ -112,6 +119,7 @@ export async function lireDemandesPro(
         ...(assigne ? { assigneA: { uid: assigne, nom: noms.get(assigne) ?? 'Un membre' } } : {}),
         ...(niveau ? { niveau } : {}),
         ...(texte ? { aides: texte } : {}),
+        ...(contestable ? { contestable } : {}),
         recherche: `${particulier} ${titre} ${adresse.ville} ${adresse.codePostal} ${precisions}`,
       },
     ];

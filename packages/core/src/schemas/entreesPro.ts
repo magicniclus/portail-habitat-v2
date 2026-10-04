@@ -253,3 +253,24 @@ export const entreePublierBaremeAdmin = z.strictObject({
   bareme: entreeBaremeAdmin,
   motif: motifAdmin,
 });
+
+/** Espace pro : contester un appel d'offres débloqué (7 jours, DATABASE §5). */
+export const entreeContestation = z.strictObject({
+  appelOffresId: id,
+  motif: z.enum([
+    'faux_numero',
+    'projet_inexistant',
+    'hors_zone',
+    'doublon',
+    'deja_realise',
+    'autre',
+  ]),
+  details: z.string().trim().min(10, 'Expliquez en quelques mots').max(2000),
+});
+
+/** Back-office : décision sur une contestation (crédits, carte ou refus, motif obligatoire). */
+export const entreeDecisionContestation = z.strictObject({
+  id,
+  decision: z.enum(['credits', 'carte', 'refuser']),
+  motif: motifAdmin,
+});

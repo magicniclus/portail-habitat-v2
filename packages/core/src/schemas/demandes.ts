@@ -109,6 +109,9 @@ export const demande = z
     /** Demande partenaire sans preneur : marquée à 24 h, archivée à 72 h (CONVERSION §3 bis). */
     invendueLe: horodatage.optional(),
     archiveeLe: horodatage.optional(),
+    /** Contestations acceptées sur cette demande ; au-delà de 3, lead douteux (ADMIN §2.5). */
+    contestationsAcceptees: z.number().int().nonnegative().optional(),
+    douteux: z.boolean().optional(),
     consentementId: id,
     ipHash: empreinte.optional(),
     userAgent: z.string().max(400).optional(),

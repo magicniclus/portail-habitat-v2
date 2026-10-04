@@ -11,6 +11,7 @@ import {
   ajouterNoteAdmin,
   assignerTacheAdmin,
   crediterArtisanAdmin,
+  deciderContestationAdmin,
   creerSuperAdmin,
   deciderDocumentAdmin,
   fixerPrixAppelOffresAdmin,
@@ -25,6 +26,7 @@ import {
   listerDemandesAdmin,
   listerFileAdmin,
   listerArtisansAdmin,
+  listerContestationsAdmin,
   parametresAppelOffresAdmin,
   promoAppelOffresAdmin,
   publierBaremeAdmin,
@@ -36,6 +38,7 @@ import {
   verifierArtisanAdmin,
   verifierSessionAdmin,
 } from '../src/serveur/admin';
+import { contesterAppelOffres } from '../src/serveur/matching';
 
 let db: Firestore;
 let auth: Auth;
@@ -673,5 +676,118 @@ describe('barèmes (ADMIN §2.5, ADM-05)', () => {
       'Hausse plomberie',
       'Plafond abaissé',
     ]);
+  });
+});
+
+describe('contestations (ADMIN §2.5, DATABASE §5)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const J = 86_400_000;
+  const envois: { modele: string }[] = [];
+  const remboursements: string[] = [];
+  const s = (maintenant = T) => ({
+    db,
+    horloge: () => maintenant,
+    notifier: async (e: unknown) => void envois.push(e as { modele: string }),
+    rembourserCarte: async (pi: string, cle: string) => {
+      remboursements.push(`${pi}:${cle}`);
+      return 're_1';
+    },
+  });
+  /** Achat `ach{n}` de l'appel d'offres `ao{n}` par l'artisan a1 (zone : Bordeaux, 20 km). */
+  const achat = async (n: number, moyen: 'credits' | 'carte', debloqueLe = T - J) => {
+    await db.doc(chemins.appelOffres(`ao${n}`)).set({
+      titre: `Toiture ${n}`,
+      demandeId: 'dem1',
+      geo: { latitude: 44.86, longitude: -0.55 },
+    });
+    await db.doc(`${collections.achatsLeads}/ach${n}`).set({
+      artisanId: 'a1',
+      moyen,
+      credits: moyen === 'credits' ? 2 : 0,
+      prixHtCentimes: moyen === 'carte' ? 1900 : 0,
+      statut: 'paye',
+      ...(moyen === 'carte' ? { stripePaymentIntentId: `pi_${n}` } : {}),
+    });
+    await db.doc(chemins.deblocage(`ao${n}`, 'a1')).set({
+      achatId: `ach${n}`,
+      statut: 'actif',
+      debloqueLe: Timestamp.fromMillis(debloqueLe),
+    });
+  };
+  const contester = (n: number, motif: 'faux_numero' | 'hors_zone', maintenant = T) =>
+    contesterAppelOffres(s(maintenant), {
+      artisanId: 'a1',
+      uid: 'p1',
+      appelOffresId: `ao${n}`,
+      motif,
+      details: 'Numéro non attribué, trois appels.',
+    });
+
+  beforeEach(async () => {
+    envois.length = 0;
+    remboursements.length = 0;
+    await db.doc(chemins.artisan('a1')).set({
+      nomCommercial: 'Toitures Rive Droite',
+      proprietaireUid: 'p1',
+      zoneIntervention: { centre: { latitude: 44.84, longitude: -0.58 }, rayonKm: 20 },
+    });
+    await db.doc(chemins.membre('a1', 'p1')).set({ role: 'proprietaire', statut: 'actif' });
+    await db.doc(chemins.demande('dem1')).set({ contestationsAcceptees: 3 });
+    await db.doc(chemins.portefeuille('a1')).set({ soldeCredits: 1 });
+  });
+
+  it('contester : une fois, 7 jours, hors zone refusé dans le rayon ; tâche créée', async () => {
+    await achat(1, 'credits');
+    await achat(2, 'credits');
+    await achat(3, 'credits', T - 8 * J);
+    expect(await contester(1, 'faux_numero')).toEqual({ etat: 'ouverte' });
+    await expect(contester(1, 'faux_numero')).rejects.toMatchObject({ code: 'CONFLIT' });
+    expect(await contester(2, 'hors_zone')).toMatchObject({ etat: 'refusee' });
+    await expect(contester(3, 'faux_numero')).rejects.toMatchObject({ code: 'PRECONDITION' });
+    expect(
+      (await db.doc(`${collections.filesModeration}/contestation-ach1`).get()).get('type'),
+    ).toBe('remboursement_lead');
+    const l = await listerContestationsAdmin(db);
+    expect(l.map((c) => [c.id, c.artisan, c.motif, c.parArtisan])).toEqual([
+      ['ach1', 'Toitures Rive Droite', 'Numéro invalide', 2],
+    ]);
+  });
+
+  it('crédits rendus, lead douteux ; carte remboursée ; refus motivé', async () => {
+    await achat(1, 'credits');
+    await achat(2, 'carte');
+    await achat(3, 'credits');
+    for (const n of [1, 2, 3]) await contester(n, 'faux_numero');
+    const base = { acteurUid: 'adm', motif: 'Numéro vérifié invalide', peutCarte: false };
+    await deciderContestationAdmin(s(), { ...base, id: 'ach1', decision: 'credits' });
+    expect((await db.doc(chemins.portefeuille('a1')).get()).get('soldeCredits')).toBe(3);
+    expect((await db.doc(`${collections.achatsLeads}/ach1`).get()).get('statut')).toBe(
+      'rembourse_credits',
+    );
+    expect((await db.doc(chemins.deblocage('ao1', 'a1')).get()).get('statut')).toBe('rembourse');
+    expect((await db.doc(chemins.demande('dem1')).get()).get('douteux')).toBe(true);
+    expect(
+      (await db.doc(`${collections.filesModeration}/contestation-ach1`).get()).get('statut'),
+    ).toBe('traitee');
+    await expect(
+      deciderContestationAdmin(s(), { ...base, id: 'ach2', decision: 'carte' }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+    await deciderContestationAdmin(s(), {
+      ...base,
+      peutCarte: true,
+      id: 'ach2',
+      decision: 'carte',
+    });
+    expect(remboursements).toEqual(['pi_2:contestation-ach2']);
+    expect((await db.doc(`${collections.achatsLeads}/ach2`).get()).get('statut')).toBe('rembourse');
+    await deciderContestationAdmin(s(), { ...base, id: 'ach3', decision: 'refuser' });
+    expect((await db.doc(`${collections.remboursementsLeads}/ach3`).get()).data()).toMatchObject({
+      statut: 'refuse',
+      motifDecision: 'Numéro vérifié invalide',
+    });
+    await expect(
+      deciderContestationAdmin(s(), { ...base, id: 'ach3', decision: 'credits' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    expect(envois.filter((e) => e.modele === 'remboursement-lead')).toHaveLength(3);
   });
 });

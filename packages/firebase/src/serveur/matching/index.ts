@@ -17,3 +17,4 @@ export { debloquerAppelOffres, type ResultatDeblocage, type ServicesDeblocage } 
 export { lireAppelsOffresPro, type AppelsOffresPro } from './appelsOffresPro';
 export { calculerScoresNuit, type BilanScores } from './scoresNuit';
 export { lireBareme, lireBaremeActif, versBareme, type BaremeLu } from './bareme';
+export { contesterAppelOffres } from './contestations';

@@ -36,3 +36,6 @@ export async function lireAppelsOffres(filtre: FiltreAppelsOffres, id: string | 
   ]);
   return { maintenant: Date.now(), lignes, fiche };
 }
+
+/** Heure du serveur pour les pages admin (jamais pendant le rendu). */
+export const maintenantServeur = () => Date.now();

@@ -34,3 +34,13 @@ export {
   type CarteAppelOffres,
   type EtatCarteAppelOffres,
 } from './vue';
+export {
+  creditsARembourser,
+  DELAI_CONTESTATION_MS,
+  examinerContestation,
+  leadDouteux,
+  MOTIFS_CONTESTATION,
+  SEUIL_LEAD_DOUTEUX,
+  type ExamenContestation,
+  type MotifContestation,
+} from './contestation';

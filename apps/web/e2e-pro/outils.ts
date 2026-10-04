@@ -382,3 +382,43 @@ export async function deposerDocument(artisanId: string, type = 'decennale'): Pr
   });
   return id;
 }
+
+/** Appel d'offres débloqué hier en crédits par l'entreprise (comme après PRO-04), contestable. */
+export async function appelOffresDebloque(
+  artisanId: string,
+): Promise<{ reference: string; appelOffresId: string; achatId: string }> {
+  const { db, Timestamp } = await admin();
+  const { reference, demandeId } = await proposerDemande(artisanId);
+  const { id } = await appelOffresInvite(artisanId);
+  const hier = Timestamp.fromMillis(Date.now() - 86_400_000);
+  const achatId = `ach-${id}`;
+  await db.doc(chemins.appelOffres(id)).update({ demandeId, nbDeblocages: 1 });
+  await db.doc(`${collections.achatsLeads}/${achatId}`).set({
+    schemaVersion: 1,
+    artisanId,
+    appelOffreId: id,
+    demandeId,
+    moyen: 'credits',
+    prixHtCentimes: 0,
+    tvaCentimes: 0,
+    credits: 2,
+    statut: 'paye',
+    createdAt: hier,
+  });
+  await db.doc(chemins.deblocage(id, artisanId)).set({
+    schemaVersion: 1,
+    achatId,
+    moyen: 'credits',
+    montantCentimes: 0,
+    credits: 2,
+    debloqueLe: hier,
+    statut: 'actif',
+  });
+  await db.doc(chemins.attribution(demandeId, artisanId)).update({
+    statut: 'acceptee',
+    appelOffresId: id,
+    reponduLe: hier,
+    coordonneesDebloquees: true,
+  });
+  return { reference, appelOffresId: id, achatId };
+}

@@ -197,6 +197,8 @@ export const remboursementLead = z.object({
   ...meta,
   achatId: id,
   artisanId: id,
+  appelOffresId: id,
+  demandeId: id,
   motif: z.enum([
     'faux_numero',
     'projet_inexistant',
@@ -211,4 +213,6 @@ export const remboursementLead = z.object({
   decisionPar: id.optional(),
   decisionLe: horodatage.optional(),
   rembourseEn: z.enum(['credits', 'carte']).optional(),
+  /** Explication donnée à l'artisan (refus automatique ou motif de l'équipe). */
+  motifDecision: z.string().max(500).optional(),
 });

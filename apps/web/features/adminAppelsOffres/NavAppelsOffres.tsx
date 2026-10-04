@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 const LIENS = [
   ['/admin/appels-d-offres', 'Appels d’offres'],
+  ['/admin/appels-d-offres/contestations', 'Contestations'],
   ['/admin/appels-d-offres/baremes', 'Barèmes'],
 ] as const;
 

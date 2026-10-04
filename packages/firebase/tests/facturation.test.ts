@@ -364,6 +364,7 @@ describe('Checkout et portail client', () => {
     billingPortal: {
       sessions: { create: async () => ({ url: 'https://billing.stripe.com/p/x' }) },
     },
+    refunds: { create: async () => ({ id: 're_test' }) },
   });
   const services = (prix = true) => ({
     db,

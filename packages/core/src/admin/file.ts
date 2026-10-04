@@ -41,7 +41,7 @@ export const TYPES_TACHES: Readonly<Record<string, TypeTache>> = {
   remboursement_lead: {
     libelle: 'Contestation',
     permission: 'leads.rembourser',
-    section: 'appels-d-offres',
+    section: 'appels-d-offres/contestations',
     slaHeures: 72,
   },
   remboursement_carte_lead: {
