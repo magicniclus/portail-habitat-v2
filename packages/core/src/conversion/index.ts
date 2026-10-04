@@ -173,3 +173,12 @@ export const PRIORITES_ENVOI = [
   'calendrier',
   'rapport',
 ] as const;
+
+export {
+  prochainPas,
+  SEQUENCES_DEFAUT,
+  sequencePourEtape,
+  variante,
+  type EtapeSequence,
+  type PasSequence,
+} from './sequences';
