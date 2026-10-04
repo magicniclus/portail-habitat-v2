@@ -19,6 +19,7 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'avis-preuve-demandee': 'Une preuve est demandée pour votre avis',
   'litige-message': 'Message du médiateur',
   'litige-decision': 'Décision sur votre litige',
+  'invitation-equipe-admin': 'Bienvenue dans l’équipe Portail Habitat',
   'reponse-artisan-avis': 'L’artisan a répondu à votre avis',
   'dossier-diag-confirme': 'Votre dossier de diagnostics est enregistré',
   'compte-inactif': 'Votre compte va être supprimé',

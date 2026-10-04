@@ -1,4 +1,10 @@
-export { creerSuperAdmin } from './equipe';
+export {
+  creerSuperAdmin,
+  inviterMembreEquipeAdmin,
+  listerEquipeAdmin,
+  modifierMembreEquipeAdmin,
+  type MembreEquipeAdmin,
+} from './equipe';
 export { verifierSessionAdmin, type EtatSessionAdmin, type ProfilAdminSession } from './session';
 export { auditerAdmin, type EntreeAuditAdmin } from './audit';
 export { afficherDonneePersonnelle } from './pii';
@@ -102,3 +108,4 @@ export {
   listerAnnoncesAdmin,
   publierAnnonceAdmin,
 } from './annonces';
+export { FILTRES_AUDIT, lireJournalAdmin, type EntreeJournal, type FiltreAudit } from './journal';

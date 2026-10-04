@@ -386,3 +386,24 @@ export const entreeAnnonce = z.strictObject({
   fin: z.iso.date().optional(),
 });
 export const entreeArreterAnnonce = z.strictObject({ id, motif: motifAdmin });
+
+/** Back-office › Équipe : invitation et modification d'un membre (ADMIN §2.12). */
+const roleSysteme = z.enum([
+  'superadmin',
+  'admin',
+  'moderateur',
+  'commercial',
+  'finance',
+  'lecture',
+]);
+export const entreeInvitationEquipe = z.strictObject({
+  email,
+  nom: z.string().trim().min(2).max(80),
+  role: roleSysteme,
+});
+export const entreeModifierEquipe = z.strictObject({
+  uid: id,
+  role: roleSysteme,
+  actif: z.boolean(),
+  motif: motifAdmin,
+});

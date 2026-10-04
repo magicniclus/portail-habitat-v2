@@ -48,7 +48,7 @@ test.describe('Back-office : accès par rôle', () => {
     await page.context().clearCookies();
     await connecter(page, ADMIN.super, '/admin/equipe', 'admin');
     await expect(menu(page).getByRole('link', { name: 'Équipe et audit' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Équipe et audit' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Équipe', exact: true })).toBeVisible();
   });
 
   test('un compte artisan n’entre pas dans l’admin', async ({ page }) => {

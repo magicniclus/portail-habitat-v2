@@ -168,6 +168,7 @@ export const MODELES = {
   'resume-file': { categorie: 'interne', charte: 'admin' },
   'alerte-urgente': { categorie: 'interne', charte: 'admin' },
   'rgpd-demande': { categorie: 'interne', charte: 'admin' },
+  'invitation-equipe-admin': { categorie: 'transactionnel', charte: 'admin' },
   'ia-synthese-hebdo': { categorie: 'interne', charte: 'admin' },
   'alerte-budget': { categorie: 'interne', charte: 'admin' },
 } as const satisfies Record<string, DefinitionModele>;

@@ -22,6 +22,7 @@ import {
   deciderDocumentAdmin,
   fixerPrixAppelOffresAdmin,
   idTacheDocument,
+  inviterMembreEquipeAdmin,
   jetonImpersonation,
   lireAnnoncesActives,
   journalImportsAdmin,
@@ -30,18 +31,21 @@ import {
   lireArtisanAdmin,
   lireDemandeAdmin,
   lireFinancesAdmin,
+  lireJournalAdmin,
   lireFlagsAdmin,
   lirePrixPrestationAdmin,
   lireLitigeAdmin,
   lireTableauDeBordAdmin,
   listerAppelsOffresAdmin,
   listerDemandesAdmin,
+  listerEquipeAdmin,
   listerFileAdmin,
   listerLitigesAdmin,
   listerPrestationsAdmin,
   modifierPrixPrestationAdmin,
   listerSourcesAdmin,
   modererAvisAdmin,
+  modifierMembreEquipeAdmin,
   listerArtisansAdmin,
   listerAvisAdmin,
   listerContestationsAdmin,
@@ -1180,5 +1184,79 @@ describe('annonces (ADMIN §2.11)', () => {
     ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
     await arreterAnnonceAdmin(s(), { acteurUid: 'adm', id, motif: 'Message obsolète' });
     expect(await lireAnnoncesActives(db)).toEqual([]);
+  });
+});
+
+describe('équipe et audit (ADMIN §2.12)', () => {
+  const T = Date.UTC(2026, 9, 4, 12);
+  const envois: { modele: string }[] = [];
+  const s = () => ({
+    db,
+    auth,
+    horloge: () => T,
+    notifier: async (e: unknown) => void envois.push(e as { modele: string }),
+  });
+  it('inviter, changer de rôle, désactiver ; jamais soi-même ni le dernier superadmin ; journal filtré', async () => {
+    const { uid: chef } = await creerSuperAdmin(s(), { email: 'chef@test.local', nom: 'Chef' });
+    const uid = await inviterMembreEquipeAdmin(s(), {
+      acteurUid: chef,
+      email: 'Lea@Test.local',
+      nom: 'Léa',
+      role: 'lecture',
+    });
+    expect(envois.map((e) => e.modele)).toEqual(['invitation-equipe-admin']);
+    await expect(
+      inviterMembreEquipeAdmin(s(), {
+        acteurUid: chef,
+        email: 'lea@test.local',
+        nom: 'Léa',
+        role: 'lecture',
+      }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await modifierMembreEquipeAdmin(s(), {
+      acteurUid: chef,
+      uid,
+      role: 'commercial',
+      actif: true,
+      motif: 'Changement de poste',
+    });
+    expect((await auth.getUser(uid)).customClaims?.staff).toBeTruthy();
+    expect((await db.doc(chemins.admin(uid)).get()).get('permissionsEffectives')).toContain(
+      'leads.prix',
+    );
+    await modifierMembreEquipeAdmin(s(), {
+      acteurUid: chef,
+      uid,
+      role: 'commercial',
+      actif: false,
+      motif: 'Départ',
+    });
+    expect((await auth.getUser(uid)).customClaims?.staff).toBeFalsy();
+    await expect(
+      modifierMembreEquipeAdmin(s(), {
+        acteurUid: chef,
+        uid: chef,
+        role: 'admin',
+        actif: true,
+        motif: 'moi',
+      }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
+    await expect(
+      modifierMembreEquipeAdmin(s(), {
+        acteurUid: uid,
+        uid: chef,
+        role: 'admin',
+        actif: true,
+        motif: 'coup',
+      }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
+    expect((await listerEquipeAdmin(db)).map((m) => [m.nom, m.role, m.actif])).toEqual([
+      ['Chef', 'superadmin', true],
+      ['Léa', 'commercial', false],
+    ]);
+    const j = await lireJournalAdmin(db, { champ: 'action', valeur: 'adminModifierEquipe' });
+    expect(j).toHaveLength(2);
+    expect(j[0]).toMatchObject({ acteur: 'Chef', motif: expect.any(String) });
+    expect((await lireJournalAdmin(db, { champ: 'acteurUid', valeur: chef })).length).toBe(3);
   });
 });
