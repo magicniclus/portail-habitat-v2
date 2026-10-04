@@ -196,3 +196,12 @@ export {
   type AchatAppelOffres,
   type DemandeExclusive,
 } from './opportunites';
+export {
+  codePersonnel,
+  decisionRemise,
+  finValidite,
+  libelleExpiration,
+  modeleAvecCode,
+  type CodeActif,
+  type DecisionRemise,
+} from './remises';

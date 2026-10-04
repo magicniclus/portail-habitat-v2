@@ -66,6 +66,9 @@ export const envoi = z.object({
     'bloque_preferences',
   ]),
   fournisseurId: z.string().optional(),
+  /** Première ouverture et premier clic : gardés même si le statut change ensuite. */
+  ouvertLe: horodatage.optional(),
+  cliqueLe: horodatage.optional(),
   tentatives: z.number().int().nonnegative(),
   erreur: z.string().optional(),
   createdAt: horodatage,

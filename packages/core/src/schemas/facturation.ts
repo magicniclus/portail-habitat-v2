@@ -64,7 +64,8 @@ export const paiement = z.object({
 
 export const codePromo = z.object({
   ...meta,
-  stripePromotionCodeId: z.string().startsWith('promo_'),
+  /** Créé chez Stripe au premier clic sur le code (codes de conversion réservés à l'envoi). */
+  stripePromotionCodeId: z.string().startsWith('promo_').optional(),
   couponId: z.string(),
   pourcentage: z.number().int().min(1).max(100),
   duree: z.enum(['once', 'repeating', 'forever']),

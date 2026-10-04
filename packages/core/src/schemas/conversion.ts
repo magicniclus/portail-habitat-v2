@@ -73,6 +73,16 @@ export const cycleEtat = z.object({
     .nullable(),
   derniereRemise: horodatage.nullable(),
   derniereOffreRetention: horodatage.nullable(),
+  /** Dernier code personnel envoyé : repris tel quel par l'email de rappel. */
+  codeActif: z
+    .object({
+      code: z.string(),
+      pourcentage: z.number().int().min(1).max(50),
+      produit: z.enum(['visibilite', 'premium']),
+      expire: horodatage,
+      utilise: z.boolean(),
+    })
+    .optional(),
   emailsNonOuvertsConsecutifs: z.number().int().nonnegative(),
   enVeille: z.boolean(),
   pause: z.object({ par: z.string(), depuis: horodatage, motif: z.string() }).optional(),

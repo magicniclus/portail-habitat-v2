@@ -91,7 +91,14 @@ export async function appliquerEvenement(
     .get();
   const doc = trouves.docs[0];
   if (!doc) return false;
-  await doc.ref.update({ statut: type, updatedAt: Timestamp.fromMillis(s.horloge()) });
+  const t0 = Timestamp.fromMillis(s.horloge());
+  // Ouverture et clic gardés à part : un statut plus tardif ne les efface pas (CONVERSION S4).
+  await doc.ref.update({
+    statut: type,
+    ...(type === 'ouvert' && !doc.get('ouvertLe') ? { ouvertLe: t0 } : {}),
+    ...(type === 'clic' && !doc.get('cliqueLe') ? { cliqueLe: t0 } : {}),
+    updatedAt: t0,
+  });
   if (type === 'rebond' || type === 'plainte') {
     await s.db
       .collection(collections.suppressions)

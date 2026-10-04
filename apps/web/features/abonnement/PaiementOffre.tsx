@@ -9,7 +9,7 @@ import {
   type Facturation,
   type ProduitAbonnement,
 } from '@ph/core/facturation';
-import { formatEuros } from '@ph/core/format';
+import { formatDate, formatEuros } from '@ph/core/format';
 import { Banner, Button, RadioCard, RadioCardGroup } from '@ph/ui';
 import { CheckIcon, LockSimpleIcon } from '@phosphor-icons/react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,11 +27,15 @@ export function PaiementOffre({
   produit,
   periodeInitiale,
   zone,
+  remise = null,
 }: {
   produit: ProduitAbonnement;
   periodeInitiale: Facturation;
   zone: string;
+  /** Code personnel reçu par email (CONVERSION §6), appliqué sans saisie sur la page Stripe. */
+  remise?: { code: string; pourcentage: number; expireLe: number } | 'invalide' | null;
 }) {
+  const code = remise && remise !== 'invalide' ? remise : null;
   const router = useRouter();
   const chemin = usePathname();
   const [periode, setPeriode] = useState<Facturation>(periodeInitiale);
@@ -44,7 +48,9 @@ export function PaiementOffre({
 
   const choisir = (p: Facturation) => {
     setPeriode(p);
-    router.replace(`${chemin}?facturation=${p}` as never, { scroll: false });
+    router.replace(`${chemin}?facturation=${p}${code ? `&code=${code.code}` : ''}` as never, {
+      scroll: false,
+    });
   };
   const payer = async () => {
     setEnCours(true);
@@ -52,6 +58,7 @@ export function PaiementOffre({
     const r = await posterJson<{ url: string }>('/api/pro/abonnement/checkout', {
       produit,
       periode,
+      ...(code ? { code: code.code } : {}),
     });
     if (!r.ok) {
       setEnCours(false);
@@ -62,6 +69,16 @@ export function PaiementOffre({
 
   return (
     <div className="grid gap-5">
+      {code ? (
+        <Banner tone="succes" titre={`Votre remise de ${code.pourcentage} % est prête`}>
+          Le code {code.code} sera appliqué automatiquement sur la page de paiement sécurisée,
+          jusqu&apos;au {formatDate(code.expireLe, 'dateHeure')}.
+        </Banner>
+      ) : remise === 'invalide' ? (
+        <Banner tone="info">
+          Ce code n&apos;est plus valable : le tarif normal s&apos;applique.
+        </Banner>
+      ) : null}
       <RadioCardGroup legende="Facturation">
         <RadioCard
           name="facturation"

@@ -125,6 +125,10 @@ export const entreePush = z.strictObject({
 export const entreeCheckout = z.strictObject({
   produit: z.enum(['premium', 'visibilite']),
   periode: z.enum(['annuel', 'mensuel']),
+  code: z
+    .string()
+    .regex(/^[A-Z0-9]{4,24}$/)
+    .optional(),
 });
 
 /** Déblocage d'un appel d'offres : crédits d'abord (`auto`), ou paiement par carte (PRO-05). */

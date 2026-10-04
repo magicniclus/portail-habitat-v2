@@ -9,6 +9,8 @@ import { formatDate } from '@ph/core/format';
 import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import { appliquerSieges } from '../comptes/membres';
+import { marquerCodeUtilise } from '../cycle/codes';
+import { synchroniserArtisan } from '../cycle/moteur';
 import type { ServicesComptes } from '../comptes/services';
 import { debloquerAppelOffres } from '../matching/deblocage';
 import type {
@@ -158,6 +160,12 @@ async function abonnementModifie(
   });
   if (artisan.get('siegesMax') !== e.siegesMax)
     suites.push(() => appliquerSieges(s, artisanId, e.siegesMax));
+
+  // Moteur de conversion : code personnel utilisé, étape recalculée sans attendre la nuit.
+  const code = sub.metadata.codePromo;
+  if (code && (lu.statut === 'active' || lu.statut === 'trialing'))
+    suites.push(() => marquerCodeUtilise(s.db, s.horloge(), { code, artisanId }));
+  suites.push(() => synchroniserArtisan(s, artisanId));
 
   const avantResiliation = ev.data.previous_attributes?.cancel_at_period_end;
   const modele =

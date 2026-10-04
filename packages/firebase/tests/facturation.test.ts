@@ -365,6 +365,8 @@ describe('Checkout et portail client', () => {
       sessions: { create: async () => ({ url: 'https://billing.stripe.com/p/x' }) },
     },
     refunds: { create: async () => ({ id: 're_test' }) },
+    coupons: { create: async () => ({ id: 'coupon' }) },
+    promotionCodes: { create: async () => ({ id: 'promo_1' }) },
   });
   const services = (prix = true) => ({
     db,

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PaiementOffre } from '@/features/abonnement/PaiementOffre';
 import { routes } from '@/lib/routes';
+import { remiseConversion } from '@/server/facturation';
 import { sessionPro } from '@/server/sessionPro';
 
 export const metadata: Metadata = { title: 'Paiement', robots: { index: false } };
@@ -19,16 +20,19 @@ export default async function PagePaiement({
   searchParams,
 }: {
   params: Promise<{ produit: string }>;
-  searchParams: Promise<{ facturation?: string }>;
+  searchParams: Promise<{ facturation?: string; code?: string }>;
 }) {
   const produit = (await params).produit as ProduitAbonnement;
   if (!PRODUITS.includes(produit)) notFound();
-  const periode = (await searchParams).facturation === 'mensuel' ? 'mensuel' : 'annuel';
+  const recherche = await searchParams;
+  const periode = recherche.facturation === 'mensuel' ? 'mensuel' : 'annuel';
   const s = await sessionPro(routes.proAbonnement(produit, periode));
   const active = s.espace.active;
   const dejaActif =
     active?.artisan.plan === 'premium' ||
     (produit === 'visibilite' && active?.artisan.optionVisibilite === true);
+  const remise =
+    active && !dejaActif ? await remiseConversion(recherche.code, active.artisanId, produit) : null;
 
   return (
     <div className="min-h-dvh bg-blanc">
@@ -66,6 +70,7 @@ export default async function PagePaiement({
           <PaiementOffre
             produit={produit}
             periodeInitiale={periode}
+            remise={remise}
             zone={[
               active.artisan.ville,
               active.artisan.rayonKm ? `${active.artisan.rayonKm} km` : '',

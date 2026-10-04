@@ -1,5 +1,10 @@
 import { appAdmin } from '@ph/firebase/admin';
-import { calculerCycles, envoyerDemandesManquees, planifierCycle } from '@ph/firebase/cycle';
+import {
+  calculerCycles,
+  envoyerDemandesManquees,
+  expirerCodes,
+  planifierCycle,
+} from '@ph/firebase/cycle';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
@@ -36,5 +41,14 @@ export const cycleHebdo = onSchedule(
   { schedule: '0 7 * * 1', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 540 },
   async () => {
     logger.info('Cycle : hebdomadaire', { ...(await envoyerDemandesManquees(services())) });
+  },
+);
+
+/** `cycleCodesExpires` (chaque heure) : codes personnels arrivés à échéance désactivés. */
+export const cycleCodesExpires = onSchedule(
+  { schedule: '0 * * * *', region: REGION, timeZone: 'Europe/Paris' },
+  async () => {
+    const n = await expirerCodes(getFirestore(appAdmin()), Date.now());
+    if (n) logger.info('Cycle : codes expirés', { n });
   },
 );

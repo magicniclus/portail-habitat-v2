@@ -7,6 +7,7 @@ import {
 } from '@ph/core/facturation';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
+import { codeStripe, lireCodeValable } from '../cycle/codes';
 import { debloquerAppelOffres } from '../matching/deblocage';
 import type { ClientStripe } from './stripe';
 
@@ -48,6 +49,8 @@ export async function creerCheckoutAbonnement(
     email: string;
     produit: ProduitAbonnement;
     periode: 'annuel' | 'mensuel';
+    /** Code personnel reçu par email (CONVERSION §6) : appliqué sans saisie. */
+    code?: string;
   },
 ): Promise<{ url: string }> {
   const artisan = await s.db.doc(chemins.artisan(p.artisanId)).get();
@@ -66,7 +69,24 @@ export async function creerCheckoutAbonnement(
     p.email,
     (artisan.get('nomCommercial') as string | undefined) ?? '',
   );
-  const metadata = { artisanId: p.artisanId, produit: p.produit };
+  const code = p.code
+    ? await lireCodeValable(s.db, {
+        code: p.code,
+        artisanId: p.artisanId,
+        produit: p.produit,
+        maintenant: s.horloge(),
+      })
+    : null;
+  if (p.code && !code)
+    throw new ErreurMetier(
+      'PRECONDITION',
+      'Ce code n’est plus valable. Le tarif normal s’applique.',
+    );
+  const metadata = {
+    artisanId: p.artisanId,
+    produit: p.produit,
+    ...(code ? { codePromo: code.code } : {}),
+  };
   const session = await s.stripe.checkout.sessions.create({
     mode: 'subscription',
     customer,
@@ -74,7 +94,9 @@ export async function creerCheckoutAbonnement(
     line_items: [{ price: prix.id, quantity: 1 }],
     metadata,
     subscription_data: { metadata },
-    allow_promotion_codes: true,
+    ...(code
+      ? { discounts: [{ promotion_code: await codeStripe(s, code, customer) }] }
+      : { allow_promotion_codes: true }),
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },
     billing_address_collection: 'required',

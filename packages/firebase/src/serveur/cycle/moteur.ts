@@ -16,6 +16,9 @@ import {
   SEQUENCES_DEFAUT,
   sequencePourEtape,
   variante,
+  decisionRemise,
+  libelleExpiration,
+  modeleAvecCode,
   type EtapeCycle,
   type EtapeSequence,
 } from '@ph/core/conversion';
@@ -30,6 +33,7 @@ import {
 import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import { lireStatsJours } from '../pro/statistiques';
+import { lireCodeActif, reserverCode } from './codes';
 
 /**
  * Moteur de conversion (CONVERSION §9) : `cycleEtat/{artisanId}` est mis à jour chaque jour
@@ -263,6 +267,27 @@ export async function synchroniserCycle(
   return { etape, changee };
 }
 
+/**
+ * `cycleOnAbonnement` (appelé par le webhook Stripe) : étape recalculée tout de suite, pour que
+ * plus aucune offre ne parte après un paiement ; un passage à un abonnement payant est tracé.
+ */
+export async function synchroniserArtisan(
+  s: Pick<ServicesCycle, 'db' | 'horloge'>,
+  artisanId: string,
+): Promise<EtapeCycle | null> {
+  const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
+  if (!artisan.exists || artisan.get('statut') !== 'actif') return null;
+  const { etape, changee } = await synchroniserCycle(s, artisan, await lireConfigCycle(s.db));
+  if (changee && (etape === 'visibilite' || etape === 'premium'))
+    await tracer(s.db, s.horloge(), {
+      artisanId,
+      type: 'conversion',
+      fonction: 'cycleOnAbonnement',
+      details: { etape },
+    });
+  return etape;
+}
+
 /** Séquence lue dans `sequences/{id}`, ou la séquence par défaut tant qu'elle n'y est pas. */
 async function lireSequence(
   db: Firestore,
@@ -348,6 +373,36 @@ export async function tenterEnvoi(
     await tracer(s.db, maintenant, { ...base, type: 'email_bloque', raison: decision.raison });
     return decision.raison === 'pression' ? 'pression' : 'bloque';
   }
+  // Remise : une au plus tous les 90 jours ; le rappel reprend le code encore valable.
+  const remise = modeleAvecCode(e.modele)
+    ? decisionRemise(e.modele, {
+        maintenant,
+        ...(ms(etat.get('derniereRemise')) !== undefined
+          ? { derniereRemise: ms(etat.get('derniereRemise'))! }
+          : {}),
+        ...(lireCodeActif(etat) ? { codeActif: lireCodeActif(etat)! } : {}),
+        produit: etat.get('offreCible') === 'premium' ? 'premium' : 'visibilite',
+      })
+    : ({ type: 'aucune' } as const);
+  if (e.modele === 'vis-offre-rappel' && !(await offreLue(s.db, uid!, maintenant))) {
+    await tracer(s.db, maintenant, { ...base, type: 'email_annule', raison: 'offre_non_ouverte' });
+    return 'annule';
+  }
+  if (remise.type === 'refus') {
+    await tracer(s.db, maintenant, { ...base, type: 'email_annule', raison: 'remise_refusee' });
+    return 'annule';
+  }
+  const urlSite = s.urlSite ?? URL_SITE_DEFAUT;
+  const lienCode = (produit: string, code: string) =>
+    `${urlSite}/pro/abonnement/${produit}?facturation=annuel&code=${code}`;
+  const offre =
+    remise.type === 'aucune'
+      ? {}
+      : {
+          code: remise.type === 'reprise' ? remise.code : 'RESERVE',
+          pourcentage: remise.pourcentage,
+          expire: libelleExpiration(remise.expire),
+        };
   // Chiffres réels de l'entreprise : sans eux, pas d'envoi (CONVERSION §1.2).
   const proprietaire = await s.db.doc(chemins.user(uid!)).get();
   const signaux = (etat.get('signaux') as Record<string, unknown> | undefined) ?? {};
@@ -363,7 +418,11 @@ export async function tenterEnvoi(
     nbAvis: (artisan.get('nbAvis') as number | undefined) ?? 0,
     offre: etat.get('offreCible') as string,
     signataire: config.signataire.nom,
-    lien: `${s.urlSite ?? URL_SITE_DEFAUT}/pro/abonnement`,
+    lien:
+      remise.type === 'reprise'
+        ? lienCode(remise.produit, remise.code)
+        : `${urlSite}/pro/abonnement`,
+    ...offre,
   };
   const preparees = preparerDonnees(e.modele, contexte);
   if (!preparees.ok) {
@@ -374,6 +433,20 @@ export async function tenterEnvoi(
       details: { manque: preparees.manque },
     });
     return 'annule';
+  }
+  if (remise.type === 'nouveau') {
+    // Le code n'est réservé qu'une fois toutes les autres conditions remplies.
+    const code = await reserverCode(s.db, maintenant, {
+      artisanId: etat.id,
+      nom: contexte.nomCommercial,
+      modele: e.modele,
+      pourcentage: remise.pourcentage,
+      dureeMois: remise.dureeMois,
+      produit: remise.produit,
+      expire: remise.expire,
+    });
+    preparees.donnees.code = code;
+    preparees.donnees.lien = lienCode(remise.produit, code);
   }
   const v = variante(etat.id, e.modele, e.ab);
   const envoyerLe = new Date(creneauEnvoi(maintenant, e.type));
@@ -392,6 +465,20 @@ export async function tenterEnvoi(
     details: { envoyerLe: envoyerLe.toISOString(), declencheur: e.type },
   });
   return 'planifie';
+}
+
+/** Le rappel ne part que si l'offre de lancement a été ouverte ou cliquée (CONVERSION S4). */
+async function offreLue(db: Firestore, uid: string, maintenant: number): Promise<boolean> {
+  const r = await db
+    .collection(collections.emails)
+    .where('uid', '==', uid)
+    .where('modele', '==', 'vis-offre-lancement')
+    .get();
+  return r.docs.some(
+    (d) =>
+      (ms(d.get('createdAt')) ?? 0) > maintenant - 14 * J &&
+      (d.get('ouvertLe') || d.get('cliqueLe') || ['ouvert', 'clic'].includes(d.get('statut'))),
+  );
 }
 
 /**

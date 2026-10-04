@@ -88,6 +88,25 @@ export interface ClientStripe {
   billingPortal: {
     sessions: { create(p: { customer: string; return_url: string }): Promise<{ url: string }> };
   };
+  coupons: {
+    create(p: {
+      id: string;
+      percent_off: number;
+      duration: 'repeating';
+      duration_in_months: number;
+      name: string;
+    }): Promise<{ id: string }>;
+  };
+  promotionCodes: {
+    create(p: {
+      promotion: { type: 'coupon'; coupon: string };
+      code: string;
+      customer: string;
+      max_redemptions: number;
+      expires_at: number;
+      metadata: Record<string, string>;
+    }): Promise<{ id: string }>;
+  };
   refunds: {
     create(
       p: { payment_intent: string; metadata: Record<string, string> },
