@@ -34,6 +34,8 @@ const artisan = (id: string, p: Record<string, unknown> = {}) =>
     plan: 'gratuit',
     optionVisibilite: false,
     metiers: ['peintre'],
+    metierPrincipal: 'peintre',
+    adresseSiege: { ville: 'Bordeaux' },
     completude: 80,
     proprietaireUid: `u-${id}`,
     ...p,
@@ -47,7 +49,13 @@ describe('moteur de conversion (CONVERSION §9)', () => {
   it('gratuit en ligne : S4, vis-position à J+3 au créneau, puis rien avant J+14', async () => {
     await artisan('a1');
     expect(await calculerCycles(s(T0))).toEqual({ entreprises: 1, changements: 1 });
-    await db.collection(collections.cycleEtat).doc('a1').update({ groupeTemoin: false });
+    await db
+      .collection(collections.cycleEtat)
+      .doc('a1')
+      .update({
+        groupeTemoin: false,
+        signaux: { vues7j: 31, position: 14, total: 22, vuesMisesEnAvant: 312 },
+      });
     const etat = (await db.collection(collections.cycleEtat).doc('a1').get()).data()!;
     expect(etat).toMatchObject({
       etape: 'gratuit_actif',
@@ -62,6 +70,17 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     await planifierCycle(s(T0 + 5 * J));
     expect(envois).toHaveLength(1);
     expect((await traces('email_planifie')).map((t) => t.modele)).toEqual(['vis-position']);
+  });
+
+  it('sans les chiffres de la zone, l’email ne part pas (« plus_valable »)', async () => {
+    await artisan('v1');
+    await calculerCycles(s(T0));
+    await db.collection(collections.cycleEtat).doc('v1').update({ groupeTemoin: false });
+    await planifierCycle(s(T0 + 3 * J));
+    expect(envois).toEqual([]);
+    expect(
+      (await traces('email_annule')).map((t) => [t.modele, t.raison, t.details.manque]),
+    ).toEqual([['vis-position', 'plus_valable', 'vues7j']]);
   });
 
   it('groupe témoin, pression et interrupteur : rien ne part, la décision est tracée', async () => {

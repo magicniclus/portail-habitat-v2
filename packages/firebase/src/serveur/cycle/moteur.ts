@@ -4,6 +4,7 @@ import {
   dansGroupeTemoin,
   etapeCycle,
   offreCible,
+  preparerDonnees,
   prochainPas,
   scoreCycle,
   SEQUENCES_DEFAUT,
@@ -28,9 +29,12 @@ export interface ServicesCycle {
   db: Firestore;
   horloge: () => number;
   notifier: Notifier;
+  /** Adresse du site pour les liens des emails. */
+  urlSite?: string;
 }
 
 const J = 86_400_000;
+const URL_SITE_DEFAUT = 'https://portailhabitat.fr';
 const SIX_MOIS = 183 * J;
 
 export interface ConfigCycleLue {
@@ -302,6 +306,35 @@ export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<Bi
       );
       continue;
     }
+    // Chiffres réels de l'entreprise : sans eux, pas d'envoi (CONVERSION §1.2).
+    const proprietaire = await s.db.doc(chemins.user(uid!)).get();
+    const contexte = {
+      ...((etat.get('signaux') as Record<string, unknown> | undefined) ?? {}),
+      prenom:
+        ((proprietaire.get('nomAffiche') as string | undefined) ?? '').split(' ')[0] || undefined,
+      nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
+      metier: (artisan.get('metierPrincipal') as string | undefined) ?? '',
+      ville: (artisan.get('adresseSiege.ville') as string | undefined) ?? '',
+      nbAvis: (artisan.get('nbAvis') as number | undefined) ?? 0,
+      offre: etat.get('offreCible') as string,
+      signataire: config.signataire.nom,
+      lien: `${s.urlSite ?? URL_SITE_DEFAUT}/pro/abonnement`,
+    };
+    const preparees = preparerDonnees(pas.modele, contexte);
+    if (!preparees.ok) {
+      await tracer(s.db, maintenant, {
+        ...base,
+        type: 'email_annule',
+        raison: 'plus_valable',
+        modele: pas.modele,
+        details: { manque: preparees.manque },
+      });
+      await ref.update({
+        'sequence.etape': pas.index + 1,
+        'sequence.prochainEnvoi': Timestamp.fromMillis(maintenant),
+      });
+      continue;
+    }
     const v = variante(etat.id, pas.modele, sequence.etapes[pas.index]?.ab);
     const envoyerLe = new Date(creneauEnvoi(maintenant, 'calendrier'));
     await s.notifier({
@@ -310,13 +343,7 @@ export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<Bi
       refObjet: `cycle/${etat.id}/${seq.id}/${pas.index}`,
       ...(v ? { variante: v } : {}),
       envoyerLe,
-      donnees: {
-        nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
-        offreCible: etat.get('offreCible') as string,
-        signataire: config.signataire.nom,
-        message: `Les chiffres de votre activité sur Portail Habitat.`,
-        lien: '/pro/tableau-de-bord',
-      },
+      donnees: preparees.donnees,
     });
     await tracer(s.db, maintenant, {
       ...base,

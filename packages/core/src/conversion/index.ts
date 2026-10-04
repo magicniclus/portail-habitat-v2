@@ -182,3 +182,4 @@ export {
   type EtapeSequence,
   type PasSequence,
 } from './sequences';
+export { preparerDonnees, type DonneesPreparees } from './donnees';
