@@ -373,6 +373,11 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Tableau de bord** (13b) : demandes 30 jours et du jour, demandes par jour sur 14 jours, artisans en ligne, appels d'offres sans preneur, chiffre d'affaires HT (rôles finances seulement), urgences par type, santé (webhooks Stripe, envois) ; compteurs par agrégations Firestore.
 - **File de travail** (13b) : tâches filtrées par permission, priorité puis ancienneté, SLA vert / orange / rouge, prendre, rendre, clore avec résolution journalisée, lien vers l'élément.
 - **Comptes de test** par rôle dans le seed ; **script** `pnpm admin:creer <email> "<Prénom Nom>"` pour le premier superadmin (lien pour choisir le mot de passe).
+- **Demandes** (13d, 04/10/2026) : liste filtrée et recherche par référence, fiche avec contact masqué et **trace de l'algorithme** (candidats retenus, écartés, exclus avec la raison), artisans sollicités ; marquer comme spam, annuler, relancer l'algorithme (nouvelle demande : nouveau calcul ; demande garantie sans réponse : appel d'offres), proposer à un artisan choisi.
+- **Appels d'offres et prix** (13d) : liste (prix, mode, déblocages, qualité, ancienneté) ; **éditeur de prix** : détail du calcul automatique, prix manuel dans les bornes et **30 € HT au plus sans `leads.prix_illimite`**, gratuit, retour au calcul, promo (au plus tard à la clôture), déblocages maximum et accès ; historique des prix (`historiquePrix`) et audit.
+- **Barèmes** (13d, **ADM-05**) : édition des prix de base par métier, coefficients budget et urgence, remise Premium, valeur du crédit, plancher et plafond ; **simulation sur les 50 derniers leads** obligatoire avant publication ; versions `grillesTarifaires/gironde-2026-vN` (une seule active), lues par l'algorithme pour les nouveaux appels d'offres.
+- **Contestations** (13d) : l'artisan conteste depuis Mes demandes (7 jours, une fois par achat ; « hors zone » refusé d'office dans son rayon) ; l'équipe rembourse en crédits, sur la carte (Stripe) ou refuse avec motif ; artisan prévenu ; au-delà de 3 contestations acceptées, la demande est marquée douteuse.
+- **Reste en 13d** : packs de crédits, onglet « Facebook et invendues », écrans des sources partenaires et du journal des imports.
 
 **À signaler**
 1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
@@ -380,6 +385,9 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 3. **Invitations admin** : pas de limite de domaine pour l'instant (votre choix).
 4. **Modèle** : `admins/{uid}.dernierAcces` utilisé pour l'inactivité ; jeton d'impersonation avec le claim `imp` ; `filesModeration.resolution`, `traiteePar`, `traiteeLe` ; index factures et emails (statut + date).
 5. **Permissions modifiées** : le modérateur reçoit en plus `artisans.verifier`, `leads.lire`, `leads.rembourser`, `litiges.traiter` (comme la maquette). **Priorités** des tâches réalignées sur la maquette (5 = la plus urgente) et deux permissions inexistantes corrigées dans les tâches créées par le matching.
+6. **Permissions choisies (13d), à confirmer** : promo avec `leads.prix` ; déblocages maximum et accès avec `leads.publier` ; simuler un barème avec `leads.prix`, le **publier avec `leads.prix_illimite`** (admin et superadmin) ; rembourser sur la carte avec `finances.rembourser_carte` (admin et superadmin).
+7. **Barèmes** : les paliers de qualité, de concurrence, de niveau et d'aides restent modifiables seulement par script pour l'instant (pas dans l'écran) ; les métiers s'affichent par leur identifiant.
+8. **Modèle (13d)** : `grilleTarifaire` reçoit `prixBaseDefaut` et `seuilsConcurrence` ; `remboursementLead` reçoit `appelOffresId`, `demandeId`, `motifDecision` (identifiant = celui de l'achat) ; `demande` reçoit `contestationsAcceptees` et `douteux` ; index `demandes` et `appelsOffres` (statut + date décroissante) ; client Stripe : `refunds.create` (remboursement intégral du paiement, clé d'idempotence).
 
 ## 2. Incohérences et zones floues
 
