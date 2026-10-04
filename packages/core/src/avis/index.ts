@@ -49,3 +49,12 @@ export function finChantierValide(mois: string, maintenant: Date): boolean {
  */
 export const texteUniciteAvis = (email: string, artisanId: string, finChantier: string) =>
   `avis|${email.trim().toLowerCase()}|${artisanId}|${finChantier}`;
+export {
+  moyenneApres,
+  MOTIFS_REFUS_AVIS,
+  niveauRisque,
+  scoreRisqueAvis,
+  textesProches,
+  type NiveauRisque,
+  type SignauxAvis,
+} from './moderation';

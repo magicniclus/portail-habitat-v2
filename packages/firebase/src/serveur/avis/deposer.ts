@@ -67,6 +67,16 @@ export async function deposerAvis(
       ...(ctx.userAgent ? { userAgent: ctx.userAgent.slice(0, 400) } : {}),
       cleUnicite,
     });
+    // Tâche de modération (ADMIN §2.2) : publication sous 48 h.
+    t.create(s.db.collection(collections.filesModeration).doc(`avis-${ref.id}`), {
+      schemaVersion: 1,
+      type: 'avis',
+      refs: { artisanId: e.artisanId, avisId: ref.id },
+      priorite: 2,
+      statut: 'a_traiter',
+      permissionRequise: 'avis.moderer',
+      createdAt: maintenant,
+    });
   });
 
   await s.notifier({

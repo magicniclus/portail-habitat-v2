@@ -16,6 +16,7 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'avis-recu': 'Merci pour votre avis',
   'avis-publie': 'Votre avis est publié',
   'avis-refuse': 'Votre avis n’a pas été publié',
+  'avis-preuve-demandee': 'Une preuve est demandée pour votre avis',
   'reponse-artisan-avis': 'L’artisan a répondu à votre avis',
   'dossier-diag-confirme': 'Votre dossier de diagnostics est enregistré',
   'compte-inactif': 'Votre compte va être supprimé',

@@ -60,3 +60,12 @@ export {
   type ImportAdmin,
   type SourceAdmin,
 } from './partenaires';
+export {
+  FILTRES_AVIS,
+  listerAvisAdmin,
+  modererAvisAdmin,
+  supprimerAvisAdmin,
+  type ActionAvis,
+  type AvisAdmin,
+  type FiltreAvis,
+} from './avis';

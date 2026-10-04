@@ -28,7 +28,9 @@ import {
   listerDemandesAdmin,
   listerFileAdmin,
   listerSourcesAdmin,
+  modererAvisAdmin,
   listerArtisansAdmin,
+  listerAvisAdmin,
   listerContestationsAdmin,
   parametresAppelOffresAdmin,
   promoAppelOffresAdmin,
@@ -37,6 +39,7 @@ import {
   relancerMatchingAdmin,
   sanctionnerArtisanAdmin,
   simulerBaremeAdmin,
+  supprimerAvisAdmin,
   traiterTacheAdmin,
   verifierArtisanAdmin,
   verifierSessionAdmin,
@@ -843,5 +846,100 @@ describe('sources partenaires (IMPORT_LEADS, IMP-02)', () => {
     expect((await db.collection(collections.sourcesDemandes).doc('src1').get()).get('actif')).toBe(
       false,
     );
+  });
+});
+
+describe('avis dans l’admin (ADMIN §2.6)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const envois: { modele: string }[] = [];
+  const s = () => ({
+    db,
+    horloge: () => T,
+    notifier: async (e: unknown) => void envois.push(e as { modele: string }),
+  });
+  const avis = async (
+    id: string,
+    p: { note: number; texte: string; ip: string; uid?: string; statut?: string },
+  ) => {
+    await db.doc(chemins.avis(id)).set({
+      artisanId: 'a1',
+      nomAffiche: 'Paul G.',
+      note: p.note,
+      texte: p.texte,
+      preuve: { type: 'aucune' },
+      statut: p.statut ?? 'en_attente',
+      createdAt: Timestamp.fromMillis(T),
+    });
+    await db.doc(`${chemins.avis(id)}/prive/auteur`).set({
+      auteurEmail: `${id}@test.local`,
+      ipHash: p.ip,
+      ...(p.uid ? { auteurUid: p.uid } : {}),
+    });
+  };
+  it('risque, publication avec la note de l’entreprise, refus, preuve, suspension, suppression', async () => {
+    envois.length = 0;
+    await db
+      .doc(chemins.artisan('a1'))
+      .set({ nomCommercial: 'Bertrand', proprietaireUid: 'p1', noteMoyenne: 4, nbAvis: 1 });
+    await db.doc(chemins.user('u1')).set({ createdAt: Timestamp.fromMillis(T - 3_600_000) });
+    await db.doc(chemins.membre('a1', 'u2')).set({ role: 'collaborateur', statut: 'actif' });
+    await avis('av1', {
+      note: 1,
+      texte: 'Arnaque, ne venez pas, acompte jamais rendu.',
+      ip: 'ip1',
+      uid: 'u1',
+    });
+    await avis('av2', { note: 5, texte: 'Arnaque ne venez pas acompte jamais rendu', ip: 'ip1' });
+    await avis('av3', { note: 5, texte: 'Parfait, très professionnel.', ip: 'ip3', uid: 'u2' });
+    await db
+      .collection(collections.filesModeration)
+      .doc('avis-av3')
+      .set({ type: 'avis', statut: 'a_traiter' });
+    const l = await listerAvisAdmin(db, 'attente');
+    const r = new Map(l.map((a) => [a.id, a.risque!]));
+    expect(r.get('av1')!.raisons).toEqual(
+      expect.arrayContaining(['Compte créé il y a moins de 48 h', 'Texte proche d’un autre avis']),
+    );
+    expect(r.get('av1')!.niveau).toBe('eleve');
+    expect(r.get('av3')!.raisons).toContain('Auteur lié à l’entreprise');
+    expect((await listerAvisAdmin(db, 'risque')).map((a) => a.id)).toContain('av1');
+    const base = { acteurUid: 'adm', motif: 'Devis vérifié' };
+    await modererAvisAdmin(s(), { ...base, avisId: 'av3', action: 'publier' });
+    expect((await db.doc(chemins.artisan('a1')).get()).data()).toMatchObject({
+      noteMoyenne: 4.5,
+      nbAvis: 2,
+    });
+    expect((await db.doc(`${collections.filesModeration}/avis-av3`).get()).get('statut')).toBe(
+      'traitee',
+    );
+    await modererAvisAdmin(s(), {
+      acteurUid: 'adm',
+      avisId: 'av1',
+      action: 'refuser',
+      motif: 'Insultes envers l’artisan',
+      motifRefus: 'Propos injurieux ou diffamatoires',
+    });
+    await modererAvisAdmin(s(), { ...base, avisId: 'av2', action: 'preuve' });
+    expect((await db.doc(chemins.avis('av2')).get()).get('statut')).toBe('en_attente');
+    await expect(
+      modererAvisAdmin(s(), { ...base, avisId: 'av1', action: 'publier' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    await modererAvisAdmin(s(), { ...base, avisId: 'av3', action: 'suspendre' });
+    expect((await db.doc(chemins.artisan('a1')).get()).data()).toMatchObject({
+      noteMoyenne: 4,
+      nbAvis: 1,
+    });
+    expect(envois.map((e) => e.modele)).toEqual([
+      'avis-publie',
+      'nouvel-avis',
+      'avis-refuse',
+      'avis-preuve-demandee',
+    ]);
+    await supprimerAvisAdmin(
+      { db, horloge: () => T },
+      { acteurUid: 'adm', avisId: 'av1', motif: 'Demande de l’auteur' },
+    );
+    expect((await db.doc(chemins.avis('av1')).get()).exists).toBe(false);
+    expect((await db.doc(`${chemins.avis('av1')}/prive/auteur`).get()).exists).toBe(false);
   });
 });

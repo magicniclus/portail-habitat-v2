@@ -281,3 +281,18 @@ export const entreeSourceAdmin = z.strictObject({
   actif: z.boolean(),
   motif: motifAdmin,
 });
+
+/** Back-office › Avis : décision sans modification du texte (ADMIN §2.6). */
+export const entreeModererAvis = z.strictObject({
+  avisId: id,
+  action: z.enum(['publier', 'refuser', 'preuve', 'suspendre', 'supprimer']),
+  motif: motifAdmin,
+  motifRefus: z
+    .enum([
+      'Sans lien avec une prestation',
+      'Propos injurieux ou diffamatoires',
+      'Conflit d’intérêts',
+      'Doublon',
+    ])
+    .optional(),
+});

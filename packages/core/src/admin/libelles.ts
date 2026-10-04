@@ -123,3 +123,18 @@ export const LIBELLES_MOTIF_REJET_IMPORT: Record<string, string> = {
   doublon_30j: 'déjà reçue sous 30 jours',
   schema_invalide: 'format invalide',
 };
+
+/** Back-office › Avis : filtres et statuts (maquette « Admin Avis »). */
+export const FILTRES_AVIS_ADMIN = {
+  attente: 'En attente',
+  risque: 'Risque élevé',
+  publies: 'Publiés',
+  tous: 'Tous',
+} as const;
+export const LIBELLES_STATUT_AVIS: Record<string, string> = {
+  en_attente: 'En attente',
+  publie: 'Publié',
+  refuse: 'Refusé',
+  retire: 'Retiré',
+  suspendu: 'Suspendu',
+};

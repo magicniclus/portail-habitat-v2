@@ -168,10 +168,17 @@ export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'pre
 }
 
 /** Avis publié pour l'entreprise ; renvoie le nom affiché (unique) pour le retrouver. */
-export async function publierAvis(artisanId: string): Promise<string> {
+export async function publierAvis(artisanId: string, statut = 'publie'): Promise<string> {
   const { db, Timestamp } = await admin();
   const nomAffiche = `Client ${Math.random().toString(36).slice(2, 7)}`;
-  await db.doc(chemins.avis(randomUUID().replaceAll('-', '').slice(0, 20))).set({
+  const id = randomUUID().replaceAll('-', '').slice(0, 20);
+  if (statut === 'en_attente')
+    await db.doc(`${chemins.avis(id)}/prive/auteur`).set({
+      schemaVersion: 1,
+      auteurEmail: `${nomAffiche.replace(' ', '.').toLowerCase()}@test.local`,
+      ipHash: `ip-${id}`,
+    });
+  await db.doc(chemins.avis(id)).set({
     schemaVersion: 1,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
@@ -186,8 +193,8 @@ export async function publierAvis(artisanId: string): Promise<string> {
     finChantier: '2026-08',
     certificationAcceptee: true,
     preuve: { type: 'aucune' },
-    statut: 'publie',
-    publieLe: Timestamp.now(),
+    statut,
+    ...(statut === 'publie' ? { publieLe: Timestamp.now() } : {}),
   });
   return nomAffiche;
 }

@@ -102,6 +102,7 @@ export const MODELES = {
   'avis-recu': { categorie: 'transactionnel', charte: 'particulier' },
   'avis-publie': { categorie: 'transactionnel', charte: 'particulier' },
   'avis-refuse': { categorie: 'transactionnel', charte: 'particulier' },
+  'avis-preuve-demandee': { categorie: 'transactionnel', charte: 'particulier' },
   'reponse-artisan-avis': { categorie: 'activite', charte: 'particulier' },
   'dossier-diag-confirme': { categorie: 'transactionnel', charte: 'diag' },
   'compte-inactif': { categorie: 'transactionnel', charte: 'particulier', differe: true },
