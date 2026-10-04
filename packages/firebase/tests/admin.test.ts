@@ -13,6 +13,8 @@ import {
   assignerTacheAdmin,
   crediterArtisanAdmin,
   deciderContestationAdmin,
+  deciderLitigeAdmin,
+  ecrireLitigeAdmin,
   creerSuperAdmin,
   deciderDocumentAdmin,
   fixerPrixAppelOffresAdmin,
@@ -23,10 +25,12 @@ import {
   lireAppelOffresAdmin,
   lireArtisanAdmin,
   lireDemandeAdmin,
+  lireLitigeAdmin,
   lireTableauDeBordAdmin,
   listerAppelsOffresAdmin,
   listerDemandesAdmin,
   listerFileAdmin,
+  listerLitigesAdmin,
   listerSourcesAdmin,
   modererAvisAdmin,
   listerArtisansAdmin,
@@ -941,5 +945,65 @@ describe('avis dans l’admin (ADMIN §2.6)', () => {
     );
     expect((await db.doc(chemins.avis('av1')).get()).exists).toBe(false);
     expect((await db.doc(`${chemins.avis('av1')}/prive/auteur`).get()).exists).toBe(false);
+  });
+});
+
+describe('litiges et médiation (ADMIN §2.7)', () => {
+  const T = Date.UTC(2026, 9, 2, 12);
+  const envois: { modele: string }[] = [];
+  const s = () => ({
+    db,
+    horloge: () => T,
+    notifier: async (e: unknown) => void envois.push(e as { modele: string }),
+  });
+  it('message du médiateur aux deux parties, décision avec avertissement, audit', async () => {
+    await db.doc(chemins.user('u1')).set({ nomAffiche: 'Camille Martin' });
+    await db
+      .doc(chemins.artisan('a1'))
+      .set({ nomCommercial: 'Atelier Garnier', proprietaireUid: 'p1' });
+    await db
+      .collection(collections.litiges)
+      .doc('l1')
+      .set({
+        particulierUid: 'u1',
+        artisanId: 'a1',
+        description: 'Chantier non terminé, il reste la faïence et le meuble.',
+        statut: 'ouvert',
+        echanges: [
+          {
+            le: Timestamp.fromMillis(T - 1000),
+            par: 'particulier',
+            texte: 'Travaux arrêtés depuis 3 semaines.',
+          },
+        ],
+        createdAt: Timestamp.fromMillis(T - 1000),
+      });
+    const l = await listerLitigesAdmin(db, 'ouverts');
+    expect(l.map((x) => [x.particulier, x.artisan])).toEqual([['Camille M.', 'Atelier Garnier']]);
+    await ecrireLitigeAdmin(s(), {
+      acteurUid: 'adm',
+      id: 'l1',
+      texte: 'Merci d’indiquer une date de reprise sous 5 jours.',
+    });
+    expect(envois.map((e) => e.modele)).toEqual(['litige-message', 'litige-message']);
+    await deciderLitigeAdmin(s(), {
+      acteurUid: 'adm',
+      id: 'l1',
+      issue: 'resolu',
+      sanction: 'avertissement',
+      motif: 'Reprise faite le 30/09',
+    });
+    const f = (await lireLitigeAdmin(db, 'l1'))!;
+    expect(f.statut).toBe('resolu');
+    expect(f.echanges.map((x) => x.auteur)).toEqual(['particulier', 'mediateur', 'decision']);
+    const sanctions = await db
+      .collection(collections.sanctions)
+      .where('artisanId', '==', 'a1')
+      .get();
+    expect(sanctions.docs.map((x) => x.get('type'))).toEqual(['avertissement']);
+    await expect(
+      ecrireLitigeAdmin(s(), { acteurUid: 'adm', id: 'l1', texte: 'encore' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    expect((await listerLitigesAdmin(db, 'termines')).map((x) => x.id)).toEqual(['l1']);
   });
 });

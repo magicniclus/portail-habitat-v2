@@ -138,3 +138,18 @@ export const LIBELLES_STATUT_AVIS: Record<string, string> = {
   retire: 'Retiré',
   suspendu: 'Suspendu',
 };
+
+/** Back-office › Litiges (maquette « Admin Litiges »). */
+export const FILTRES_LITIGES_ADMIN = { ouverts: 'En cours', termines: 'Terminés' } as const;
+export const LIBELLES_STATUT_LITIGE: Record<string, string> = {
+  ouvert: 'Ouvert',
+  mediation: 'En médiation',
+  resolu: 'Résolu',
+  clos: 'Clos',
+};
+export const LIBELLES_AUTEUR_LITIGE = {
+  particulier: 'Particulier',
+  artisan: 'Artisan',
+  mediateur: 'Médiateur',
+  decision: 'Décision',
+} as const;

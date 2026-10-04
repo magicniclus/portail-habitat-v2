@@ -296,3 +296,15 @@ export const entreeModererAvis = z.strictObject({
     ])
     .optional(),
 });
+
+/** Back-office › Litiges : message du médiateur, décision (ADMIN §2.7). */
+export const entreeMessageLitige = z.strictObject({
+  id,
+  texte: z.string().trim().min(5).max(2000),
+});
+export const entreeDecisionLitige = z.strictObject({
+  id,
+  issue: z.enum(['resolu', 'clos']),
+  sanction: z.enum(['rappel', 'avertissement']).optional(),
+  motif: motifAdmin,
+});

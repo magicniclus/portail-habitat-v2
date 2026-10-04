@@ -69,3 +69,13 @@ export {
   type AvisAdmin,
   type FiltreAvis,
 } from './avis';
+export {
+  deciderLitigeAdmin,
+  ecrireLitigeAdmin,
+  FILTRES_LITIGES,
+  lireLitigeAdmin,
+  listerLitigesAdmin,
+  type FicheLitigeAdmin,
+  type FiltreLitiges,
+  type LitigeAdmin,
+} from './litiges';

@@ -461,3 +461,25 @@ export async function sourceAvecImports(): Promise<{ id: string; nom: string }> 
   });
   return { id, nom };
 }
+
+/** Litige ouvert par un particulier contre l'entreprise (ADMIN §2.7). */
+export async function litigeOuvert(artisanId: string): Promise<{ id: string; texte: string }> {
+  const { db, Timestamp } = await admin();
+  const id = `e2e-lit-${randomUUID().slice(0, 6)}`;
+  const uid = `e2e-part-${id.slice(-6)}`;
+  await db.doc(chemins.user(uid)).set({ schemaVersion: 1, nomAffiche: 'Camille Martin' });
+  const texte = `Chantier non terminé ${id.slice(-6)}, il reste la faïence.`;
+  await db.doc(`${collections.litiges}/${id}`).set({
+    schemaVersion: 1,
+    particulierUid: uid,
+    artisanId,
+    description: texte,
+    statut: 'ouvert',
+    pieces: [],
+    echanges: [
+      { le: Timestamp.now(), par: 'particulier', texte: 'Travaux arrêtés depuis 3 semaines.' },
+    ],
+    createdAt: Timestamp.now(),
+  });
+  return { id, texte };
+}
