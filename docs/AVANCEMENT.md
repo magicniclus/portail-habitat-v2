@@ -384,6 +384,10 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Litiges** (13e) : fil d'échanges, message du médiateur aux deux parties, clôture (résolu ou clos sans suite) avec rappel ou avertissement éventuel à l'artisan.
 - **Finances** (13e) : MRR, abonnés et part en annuel, appels d'offres du mois, factures, codes promo (lecture), remboursements ; **export CSV mensuel** journalisé (date, pièce, client, HT, TVA, TTC, moyen).
 
+- **Algorithme** (13f) : poids (en %, total 100), seuils et options ; **bac à sable** qui rejoue une demande passée et compare rangs et scores sans rien écrire ; publication versionnée lue par les Functions du matching.
+- **Référentiels** (13f) : prix privés de chaque prestation (chaque nombre du barème, nouvelle version, ancienne archivée), retrait ou remise en ligne d'une prestation ; **fonctionnalités** (feature flags) activables avec motif.
+- **Contenus** (13f) : annonces in-app (public, ton, période) affichées en haut des espaces artisan et particulier.
+
 **À signaler**
 1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
 2. **Tests** : les émulateurs n'ont pas d'application d'authentification ; `ADMIN_MFA=desactive` coupe l'exigence pour les tests de bout en bout seulement (refusé en production). La vraie double authentification se vérifie en recette.
@@ -393,6 +397,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 6. **Permissions choisies (13d), à confirmer** : promo avec `leads.prix` ; déblocages maximum et accès avec `leads.publier` ; simuler un barème avec `leads.prix`, le **publier avec `leads.prix_illimite`** (admin et superadmin) ; rembourser sur la carte avec `finances.rembourser_carte` (admin et superadmin).
 7. **Barèmes** : les paliers de qualité, de concurrence, de niveau et d'aides restent modifiables seulement par script pour l'instant (pas dans l'écran) ; les métiers s'affichent par leur identifiant.
 9. **Points 13e à trancher** : (a) l'ouverture d'un litige par le particulier ou l'artisan n'existe pas encore (seul l'admin les traite) ; (b) codes promo en lecture seule : leur création se fait dans Stripe, à brancher si vous le souhaitez ; (c) l'export comptable lit Firestore : les factures d'abonnement, les déblocages par carte et les packs (prix du catalogue D29) ; les **avoirs** (remboursements) n'y figurent pas encore et Stripe reste la référence comptable ; (d) poids du score de risque des avis choisis par moi ; (e) trois nouveaux modèles d'email en squelette : `avis-preuve-demandee`, `litige-message`, `litige-decision`.
+10. **Points 13f** : les métiers, labels et pages communes ne sont pas encore éditables depuis l'admin (le matching et le SEO en dépendent, à faire avec précaution) ; `config/app` n'est lu par aucun code, je ne l'ai donc pas exposé (les fonctionnalités passent par `config/flags`) ; modèle : `matchingConfig` reçoit `options` et `motif`, `referentiel/prestations/prix/{id}/versions`.
 8. **Modèle (13d)** : `grilleTarifaire` reçoit `prixBaseDefaut` et `seuilsConcurrence` ; `remboursementLead` reçoit `appelOffresId`, `demandeId`, `motifDecision` (identifiant = celui de l'achat) ; `demande` reçoit `contestationsAcceptees` et `douteux` ; index `demandes` et `appelsOffres` (statut + date décroissante) ; client Stripe : `refunds.create` (remboursement intégral du paiement, clé d'idempotence).
 
 ## 2. Incohérences et zones floues
