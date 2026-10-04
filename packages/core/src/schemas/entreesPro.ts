@@ -407,3 +407,11 @@ export const entreeModifierEquipe = z.strictObject({
   actif: z.boolean(),
   motif: motifAdmin,
 });
+
+/** Back-office › RGPD : enregistrer une demande reçue, la traiter (ADMIN §2.13). */
+export const entreeDemandeRgpd = z.strictObject({
+  type: z.enum(['acces', 'rectification', 'effacement', 'opposition', 'portabilite']),
+  email,
+  recueLe: z.iso.date(),
+});
+export const entreeTraiterRgpd = z.strictObject({ id, motif: motifAdmin });

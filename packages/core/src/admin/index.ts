@@ -7,3 +7,4 @@ export * from './bareme';
 export * from './finances';
 export * from './referentiels';
 export * from './annonces';
+export * from './rgpd';

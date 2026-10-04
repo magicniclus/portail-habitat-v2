@@ -109,3 +109,10 @@ export {
   publierAnnonceAdmin,
 } from './annonces';
 export { FILTRES_AUDIT, lireJournalAdmin, type EntreeJournal, type FiltreAudit } from './journal';
+export {
+  enregistrerDemandeRgpdAdmin,
+  listerRgpdAdmin,
+  traiterRgpdAdmin,
+  type DemandeRgpdAdmin,
+  type TypeRgpd,
+} from './rgpd';

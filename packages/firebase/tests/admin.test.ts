@@ -17,6 +17,7 @@ import {
   crediterArtisanAdmin,
   deciderContestationAdmin,
   deciderLitigeAdmin,
+  enregistrerDemandeRgpdAdmin,
   ecrireLitigeAdmin,
   creerSuperAdmin,
   deciderDocumentAdmin,
@@ -42,6 +43,7 @@ import {
   listerFileAdmin,
   listerLitigesAdmin,
   listerPrestationsAdmin,
+  listerRgpdAdmin,
   modifierPrixPrestationAdmin,
   listerSourcesAdmin,
   modererAvisAdmin,
@@ -59,6 +61,7 @@ import {
   sanctionnerArtisanAdmin,
   simulerBaremeAdmin,
   supprimerAvisAdmin,
+  traiterRgpdAdmin,
   traiterTacheAdmin,
   verifierArtisanAdmin,
   verifierSessionAdmin,
@@ -1258,5 +1261,77 @@ describe('équipe et audit (ADMIN §2.12)', () => {
     expect(j).toHaveLength(2);
     expect(j[0]).toMatchObject({ acteur: 'Chef', motif: expect.any(String) });
     expect((await lireJournalAdmin(db, { champ: 'acteurUid', valeur: chef })).length).toBe(3);
+  });
+});
+
+describe('RGPD (ADMIN §2.13)', () => {
+  const T = Date.UTC(2026, 9, 4, 12);
+  it('accès : export et preuve ; effacement : compte particulier anonymisé ; compte artisan refusé', async () => {
+    const fichiers = new Map<string, string>();
+    const s = () => ({
+      db,
+      auth,
+      horloge: () => T,
+      notifier: async () => undefined,
+      ecrire: async (c: string, x: string) => void fichiers.set(c, x),
+    });
+    const { uid } = await auth.createUser({ email: 'paul@test.local' });
+    await db.doc(chemins.user(uid)).set({
+      email: 'paul@test.local',
+      nomAffiche: 'Paul G.',
+      entreprises: [],
+      roles: ['particulier'],
+    });
+    await db
+      .doc(chemins.demande('d1'))
+      .set({ particulierUid: uid, statut: 'nouvelle', reference: 'PH-AAAA11' });
+    const acces = await enregistrerDemandeRgpdAdmin(s(), {
+      acteurUid: 'adm',
+      type: 'acces',
+      email: 'Paul@test.local',
+      recueLe: T,
+    });
+    const l = await listerRgpdAdmin(db);
+    expect(l[0]).toMatchObject({
+      type: 'acces',
+      aUnCompte: true,
+      emailMasque: expect.stringContaining('•'),
+    });
+    expect(l[0]!.echeance).toBe(Date.UTC(2026, 10, 4, 12));
+    expect(
+      await traiterRgpdAdmin(s(), {
+        acteurUid: 'adm',
+        id: acces,
+        motif: 'Export envoyé par email',
+      }),
+    ).toEqual({ export: `rgpd/${acces}/export.json` });
+    expect(fichiers.get(`rgpd/${acces}/export.json`)).toContain('PH-AAAA11');
+    expect(JSON.parse(fichiers.get(`rgpd/${acces}/preuve.json`)!)).toMatchObject({
+      type: 'acces',
+      traitePar: 'adm',
+    });
+    await expect(
+      traiterRgpdAdmin(s(), { acteurUid: 'adm', id: acces, motif: 'encore' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+    const eff = await enregistrerDemandeRgpdAdmin(s(), {
+      acteurUid: 'adm',
+      type: 'effacement',
+      email: 'paul@test.local',
+      recueLe: T,
+    });
+    await traiterRgpdAdmin(s(), { acteurUid: 'adm', id: eff, motif: 'Demande écrite reçue' });
+    expect((await db.doc(chemins.demande('d1')).get()).get('statut')).toBe('annulee');
+    await expect(auth.getUser(uid)).rejects.toBeTruthy();
+    const { uid: pro } = await auth.createUser({ email: 'pro@test.local' });
+    await db.doc(chemins.user(pro)).set({ email: 'pro@test.local', entreprises: ['a1'] });
+    const effPro = await enregistrerDemandeRgpdAdmin(s(), {
+      acteurUid: 'adm',
+      type: 'effacement',
+      email: 'pro@test.local',
+      recueLe: T,
+    });
+    await expect(
+      traiterRgpdAdmin(s(), { acteurUid: 'adm', id: effPro, motif: 'Demande écrite' }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
   });
 });
