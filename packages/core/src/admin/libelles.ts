@@ -167,3 +167,31 @@ export const LIBELLES_STATUT_FACTURE: Record<string, string> = {
   uncollectible: 'Échouée',
   void: 'Annulée',
 };
+
+/** Back-office › Algorithme (maquette « Admin Algorithme »). */
+export const LIBELLES_POIDS_MATCHING = {
+  competence: 'Compétence',
+  distance: 'Distance',
+  qualite: 'Note et avis',
+  reactivite: 'Réactivité',
+  disponibilite: 'Disponibilité',
+  adequationBudget: 'Budget',
+  completude: 'Complétude de la fiche',
+} as const;
+export const LIBELLES_SEUILS_MATCHING = {
+  nbCibles: 'Artisans visés par demande',
+  nbPropositionsInitiales: 'Propositions initiales',
+  vagueSupplementaire: 'Vague supplémentaire',
+  delaiAcceptationH: 'Délai pour accepter (h)',
+  delaiAcceptationUrgentH: 'Délai si urgent (h)',
+  rayonMaxKm: 'Rayon maximal (km)',
+  bonusPremium: 'Bonus Premium (points)',
+  bonusVisibilite: 'Bonus Visibilité (points)',
+  quotaPremiumMax: 'Premium au plus par demande',
+  scoreMin: 'Score minimal',
+  delaiAvantAppelOffresH: 'Délai avant appel d’offres (h)',
+} as const;
+export const LIBELLES_OPTIONS_MATCHING = {
+  garantirUnNonPremium: 'Garantir au moins un artisan non Premium',
+  convertirEnAppelOffres: 'Convertir en appel d’offres sans preneur',
+} as const;

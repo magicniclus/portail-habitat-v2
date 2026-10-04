@@ -1,5 +1,6 @@
 export {
   attribuerDemande,
+  classerDemande,
   convertirEnAppelOffres,
   publierAppelOffres,
   type ResultatAttribution,
@@ -18,3 +19,4 @@ export { lireAppelsOffresPro, type AppelsOffresPro } from './appelsOffresPro';
 export { calculerScoresNuit, type BilanScores } from './scoresNuit';
 export { lireBareme, lireBaremeActif, versBareme, type BaremeLu } from './bareme';
 export { contesterAppelOffres } from './contestations';
+export { lireConfigMatching } from './reglages';

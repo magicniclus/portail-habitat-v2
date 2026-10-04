@@ -39,3 +39,12 @@ export {
   type AttributionScore,
   type ScoresNuit,
 } from './scoresNuit';
+export {
+  configDepuisDocument,
+  configDepuisSaisie,
+  documentDepuisConfig,
+  saisieDepuisConfig,
+  SEUILS_MATCHING,
+  type DocumentConfigMatching,
+  type SaisieConfigMatching,
+} from './reglages';

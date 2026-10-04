@@ -308,3 +308,52 @@ export const entreeDecisionLitige = z.strictObject({
   sanction: z.enum(['rappel', 'avertissement']).optional(),
   motif: motifAdmin,
 });
+
+/** Back-office › Algorithme : poids en pourcentages (total 100), seuils, options (ADMIN §2.10). */
+const pourcentPoids = z.number().int().min(0).max(100);
+const seuilMatching = z.number().int().min(0).max(1000);
+export const entreeConfigMatching = z
+  .strictObject({
+    poids: z.strictObject({
+      competence: pourcentPoids,
+      distance: pourcentPoids,
+      qualite: pourcentPoids,
+      reactivite: pourcentPoids,
+      disponibilite: pourcentPoids,
+      adequationBudget: pourcentPoids,
+      completude: pourcentPoids,
+    }),
+    seuils: z.strictObject({
+      nbCibles: z.number().int().min(1).max(10),
+      nbPropositionsInitiales: z.number().int().min(1).max(10),
+      vagueSupplementaire: z.number().int().min(0).max(10),
+      delaiAcceptationH: z.number().int().min(1).max(168),
+      delaiAcceptationUrgentH: z.number().int().min(1).max(48),
+      rayonMaxKm: z.number().int().min(10).max(100),
+      bonusPremium: seuilMatching,
+      bonusVisibilite: seuilMatching,
+      quotaPremiumMax: z.number().int().min(0).max(10),
+      scoreMin: z.number().int().min(0).max(100),
+      delaiAvantAppelOffresH: z.number().int().min(1).max(168),
+    }),
+    options: z.strictObject({
+      garantirUnNonPremium: z.boolean(),
+      convertirEnAppelOffres: z.boolean(),
+    }),
+  })
+  .refine((c) => Object.values(c.poids).reduce((a, b) => a + b, 0) === 100, {
+    message: 'Le total des poids doit faire 100.',
+    path: ['poids'],
+  });
+export const entreePublierConfigMatching = z.strictObject({
+  config: entreeConfigMatching,
+  motif: motifAdmin,
+});
+export const entreeRejouerDemande = z.strictObject({
+  config: entreeConfigMatching,
+  reference: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^PH-[A-Z0-9]{4,8}$/, 'Référence PH-… attendue'),
+});

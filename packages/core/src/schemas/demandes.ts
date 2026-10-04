@@ -246,6 +246,9 @@ export const configMatching = z.object({
   version: z.number().int().positive(),
   poids: z.record(z.string(), z.number()),
   seuils: z.record(z.string(), z.number()),
+  /** Options booléennes (garantir un non-Premium, conversion en appel d'offres). */
+  options: z.record(z.string(), z.boolean()).optional(),
+  motif: z.string().max(500).optional(),
   modifiePar: id,
   updatedAt: horodatage,
 });

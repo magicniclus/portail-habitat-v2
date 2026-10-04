@@ -11,6 +11,12 @@ import {
   viderCacheReferentiel,
   type ServicesMatching,
 } from '../src/serveur/matching';
+import {
+  lireAlgorithmeAdmin,
+  publierConfigMatchingAdmin,
+  rejouerDemandeAdmin,
+} from '../src/serveur/admin';
+import { CONFIG_MATCHING_DEFAUT } from '@ph/core/matching';
 
 let db: Firestore;
 let envois: Notification[];
@@ -267,5 +273,37 @@ describe('calculerScoresNuit (MATCHING [10])', () => {
       artisans: 1,
       modifies: 0,
     });
+  });
+});
+
+describe('algorithme dans l’admin (ADMIN §2.10)', () => {
+  it('bac à sable : classement avant et après sans rien écrire ; publication versionnée lue par le matching', async () => {
+    await artisan('pres', { centre: FLOIRAC, plan: 'premium' });
+    await artisan('loin', { centre: BORDEAUX, plan: 'premium' });
+    await demande('d1', { statut: 'attribuee' });
+    const nouvelle = {
+      ...CONFIG_MATCHING_DEFAUT,
+      poids: { ...CONFIG_MATCHING_DEFAUT.poids, distance: 0.6, competence: 0.05, qualite: 0.05 },
+    };
+    const c = await rejouerDemandeAdmin(s, { reference: 'PH-ABC123', config: nouvelle });
+    expect(c.lignes.map((l) => [l.nom, l.apres])).toEqual([
+      ['Entreprise pres', 1],
+      ['Entreprise loin', 2],
+    ]);
+    expect(c.lignes[0]!.scoreApres).not.toBe(c.lignes[0]!.scoreAvant);
+    expect((await db.doc(chemins.demande('d1')).get()).get('statut')).toBe('attribuee');
+    await expect(
+      rejouerDemandeAdmin(s, { reference: 'PH-ZZZZZZ', config: nouvelle }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    expect(
+      await publierConfigMatchingAdmin(s, {
+        acteurUid: 'adm',
+        config: nouvelle,
+        motif: 'Proximité d’abord',
+      }),
+    ).toBe(8);
+    const a = await lireAlgorithmeAdmin(db);
+    expect(a.config.poids.distance).toBe(0.6);
+    expect(a.versions.map((v) => [v.version, v.motif])).toEqual([[8, 'Proximité d’abord']]);
   });
 });

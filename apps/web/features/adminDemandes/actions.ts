@@ -6,19 +6,20 @@ import {
   rejeterDemandeAdmin,
   relancerMatchingAdmin,
 } from '@ph/firebase/admin-serveur';
+import { lireConfigMatching } from '@ph/firebase/matching';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
 import { servicesComptes } from '@/server/espace';
 
-const services = () => {
+const services = async () => {
   const { db, horloge, notifier } = servicesComptes();
-  return { db, horloge, notifier };
+  return { db, horloge, notifier, config: await lireConfigMatching(db) };
 };
 
 const rejeter = actionAdmin(
   { schema: entreeDemandeAdmin, nom: 'adminRejeterDemande', permission: 'demandes.annuler' },
   async (e, ctx) =>
-    rejeterDemandeAdmin(services(), {
+    rejeterDemandeAdmin(await services(), {
       acteurUid: ctx.uid!,
       demandeId: e.demandeId,
       statut: e.action === 'spam' ? 'spam' : 'annulee',
@@ -28,7 +29,7 @@ const rejeter = actionAdmin(
 const relancer = actionAdmin(
   { schema: entreeDemandeAdmin, nom: 'adminRelancerMatching', permission: 'matching.forcer' },
   async (e, ctx) =>
-    relancerMatchingAdmin(services(), {
+    relancerMatchingAdmin(await services(), {
       acteurUid: ctx.uid!,
       demandeId: e.demandeId,
       motif: e.motif,
@@ -36,7 +37,7 @@ const relancer = actionAdmin(
 );
 const ajouter = actionAdmin(
   { schema: entreeAjoutArtisanAdmin, nom: 'adminReattribuer', permission: 'demandes.reattribuer' },
-  async (e, ctx) => ajouterArtisanDemandeAdmin(services(), { acteurUid: ctx.uid!, ...e }),
+  async (e, ctx) => ajouterArtisanDemandeAdmin(await services(), { acteurUid: ctx.uid!, ...e }),
 );
 
 /** Spam, annulation ou relance de l'algorithme (motif obligatoire, audit). */

@@ -80,3 +80,10 @@ export {
   type LitigeAdmin,
 } from './litiges';
 export { lireFinancesAdmin, piecesDuMois, type FinancesAdmin } from './finances';
+export {
+  lireAlgorithmeAdmin,
+  publierConfigMatchingAdmin,
+  rejouerDemandeAdmin,
+  type ComparaisonClassement,
+  type VersionAlgorithme,
+} from './algorithme';

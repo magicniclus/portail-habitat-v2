@@ -176,6 +176,22 @@ async function analyser(
   return { ref, metier, demande, candidats, aiguillage, eligiblesAppel, trace, communDemande };
 }
 
+/**
+ * Bac à sable de l'admin (ADMIN §2.10) : classement d'une demande passée avec une configuration
+ * donnée, sans rien écrire.
+ */
+export async function classerDemande(
+  s: ServicesMatching,
+  demandeId: string,
+): Promise<{ artisanId: string; score: number; exclu: string | null }[]> {
+  const snap = await s.db.doc(chemins.demande(demandeId)).get();
+  if (!snap.exists) return [];
+  const { candidats } = await analyser(s, demandeId, snap.data()!, 0, s.horloge());
+  return candidats
+    .map((c) => ({ artisanId: c.artisanId, score: c.score, exclu: c.raisonExclusion ?? null }))
+    .sort((a, b) => Number(Boolean(a.exclu)) - Number(Boolean(b.exclu)) || b.score - a.score);
+}
+
 export async function attribuerDemande(
   s: ServicesMatching,
   demandeId: string,
