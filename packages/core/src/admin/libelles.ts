@@ -153,3 +153,17 @@ export const LIBELLES_AUTEUR_LITIGE = {
   mediateur: 'Médiateur',
   decision: 'Décision',
 } as const;
+
+/** Back-office › Finances (maquette « Admin Finances »). */
+export const ONGLETS_FINANCES = {
+  factures: 'Factures',
+  promos: 'Codes promo',
+  remboursements: 'Remboursements',
+} as const;
+export const LIBELLES_STATUT_FACTURE: Record<string, string> = {
+  draft: 'Brouillon',
+  open: 'À payer',
+  paid: 'Payée',
+  uncollectible: 'Échouée',
+  void: 'Annulée',
+};

@@ -25,6 +25,7 @@ import {
   lireAppelOffresAdmin,
   lireArtisanAdmin,
   lireDemandeAdmin,
+  lireFinancesAdmin,
   lireLitigeAdmin,
   lireTableauDeBordAdmin,
   listerAppelsOffresAdmin,
@@ -37,6 +38,7 @@ import {
   listerAvisAdmin,
   listerContestationsAdmin,
   parametresAppelOffresAdmin,
+  piecesDuMois,
   promoAppelOffresAdmin,
   publierBaremeAdmin,
   rejeterDemandeAdmin,
@@ -1005,5 +1007,97 @@ describe('litiges et médiation (ADMIN §2.7)', () => {
       ecrireLitigeAdmin(s(), { acteurUid: 'adm', id: 'l1', texte: 'encore' }),
     ).rejects.toMatchObject({ code: 'CONFLIT' });
     expect((await listerLitigesAdmin(db, 'termines')).map((x) => x.id)).toEqual(['l1']);
+  });
+});
+
+describe('finances (ADMIN §2.8)', () => {
+  const T = Date.UTC(2026, 8, 20, 12);
+  it('MRR, abonnés, appels d’offres du mois ; pièces du mois pour la comptabilité', async () => {
+    await db.doc(chemins.artisan('a1')).set({ nomCommercial: 'Bertrand' });
+    await db.collection(collections.abonnements).doc('sub1').set({
+      artisanId: 'a1',
+      produit: 'premium',
+      periode: 'mensuel',
+      statut: 'active',
+      sieges: 0,
+    });
+    await db.collection(collections.abonnements).doc('sub2').set({
+      artisanId: 'a1',
+      produit: 'visibilite',
+      periode: 'annuel',
+      statut: 'canceled',
+      sieges: 0,
+    });
+    await db
+      .collection(collections.factures)
+      .doc('in1')
+      .set({
+        artisanId: 'a1',
+        numero: 'F-2026-0001',
+        montantHtCentimes: 9990,
+        tvaCentimes: 1998,
+        montantTtcCentimes: 11988,
+        statut: 'paid',
+        payeeLe: Timestamp.fromMillis(T),
+        createdAt: Timestamp.fromMillis(T),
+      });
+    await db
+      .collection(collections.factures)
+      .doc('in0')
+      .set({
+        artisanId: 'a1',
+        numero: 'F-2026-0000',
+        montantHtCentimes: 9990,
+        tvaCentimes: 1998,
+        montantTtcCentimes: 11988,
+        statut: 'paid',
+        payeeLe: Timestamp.fromMillis(Date.UTC(2026, 7, 31, 12)),
+        createdAt: Timestamp.fromMillis(T),
+      });
+    await db
+      .collection(collections.achatsLeads)
+      .doc('al1')
+      .set({
+        artisanId: 'a1',
+        moyen: 'carte',
+        prixHtCentimes: 1900,
+        tvaCentimes: 380,
+        createdAt: Timestamp.fromMillis(T),
+      });
+    await db
+      .collection(collections.achatsLeads)
+      .doc('al2')
+      .set({
+        artisanId: 'a1',
+        moyen: 'credits',
+        prixHtCentimes: 0,
+        tvaCentimes: 0,
+        createdAt: Timestamp.fromMillis(T),
+      });
+    await db
+      .collection(chemins.mouvements('a1'))
+      .doc('ev1')
+      .set({ type: 'achat_pack', credits: 10, refId: 'cs_1', createdAt: Timestamp.fromMillis(T) });
+    const f = await lireFinancesAdmin(db, T);
+    expect(f).toMatchObject({
+      mrr: 9990,
+      abonnes: { premium: 1, visibilite: 0 },
+      appelsOffres30j: { ht: 1900, deblocages: 2 },
+    });
+    expect(f.factures[0]).toMatchObject({
+      client: 'Bertrand',
+      numero: expect.stringMatching(/^F-2026-000/),
+    });
+    const pieces = await piecesDuMois(db, { mois: '2026-09', acteurUid: 'fin', maintenant: T });
+    expect(pieces.map((p) => [p.piece, p.ht, p.ttc]).sort()).toEqual([
+      ['AL-al1', 1900, 2280],
+      ['F-2026-0001', 9990, 11988],
+      ['PK-cs_1', 9000, 10800],
+    ]);
+    const audit = await db
+      .collection(collections.auditLog)
+      .where('action', '==', 'adminExportFinances')
+      .get();
+    expect(audit.docs[0]!.get('cible')).toBe('finances/2026-09');
   });
 });

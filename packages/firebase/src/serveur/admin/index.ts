@@ -79,3 +79,4 @@ export {
   type FiltreLitiges,
   type LitigeAdmin,
 } from './litiges';
+export { lireFinancesAdmin, piecesDuMois, type FinancesAdmin } from './finances';

@@ -849,6 +849,48 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "factures",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payeeLe",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "remboursementsLeads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "decisionLe",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "mouvements",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
