@@ -18,3 +18,9 @@ export const evenementResend = z.object({
     bounce: z.object({ type: z.string() }).optional(),
   }),
 });
+
+/** Resend Inbound : réponse reçue sur l'adresse du signataire (CONVERSION §9). Le texte n'est pas lu. */
+export const evenementResendRecu = z.object({
+  type: z.literal('email.received'),
+  data: z.object({ from: z.string().min(3).max(400) }),
+});

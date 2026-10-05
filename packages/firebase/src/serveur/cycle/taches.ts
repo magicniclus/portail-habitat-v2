@@ -13,7 +13,8 @@ const PRIORITE: Record<TacheConversion, number> = {
   appel_commercial: 3,
   appel_activation: 2,
 };
-const PREFIXE = 'tache:';
+export const PREFIXE_TACHE = 'tache:';
+const PREFIXE = PREFIXE_TACHE;
 
 /**
  * Tâches d'appel du moteur (`filesModeration`, CONVERSION §3) : la séquence de l'entreprise est en

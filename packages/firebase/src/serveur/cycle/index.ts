@@ -26,3 +26,4 @@ export {
   planifierProspects,
   type ServicesProspect,
 } from './prospects';
+export { traiterReponseEmail } from './reponses';

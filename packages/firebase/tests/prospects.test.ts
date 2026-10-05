@@ -2,7 +2,7 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
-import { enregistrerProspect, planifierProspects } from '../src/serveur/cycle';
+import { enregistrerProspect, planifierProspects, traiterReponseEmail } from '../src/serveur/cycle';
 import { empreinteEmail } from '../src/serveur/notifications';
 
 /** Prospects (CONVERSION §3 S1) : estimation reçue par email depuis la page d'acquisition. */
@@ -160,5 +160,37 @@ describe('planifierProspects (séquence S1)', () => {
     ]);
     await planifierProspects({ ...s, horloge: () => T + J });
     expect(envois).toHaveLength(1);
+  });
+});
+
+describe('réponses aux emails (Resend Inbound)', () => {
+  it('artisan : tâche « réponse commerciale » et séquence en pause ; une seule tâche ouverte', async () => {
+    await db.doc(chemins.user('u1')).set({ email: 'marc@exemple.fr' });
+    await db.doc(chemins.artisan('a1')).set({ proprietaireUid: 'u1' });
+    expect(await traiterReponseEmail(s, 'Marc <Marc@Exemple.fr>')).toBe('artisan');
+    expect(await traiterReponseEmail(s, 'marc@exemple.fr')).toBe('artisan');
+    const taches = await db.collection(collections.filesModeration).get();
+    expect(taches.docs.map((d) => [d.get('type'), d.get('refs')])).toEqual([
+      ['reponse_commerciale', { artisanId: 'a1' }],
+    ]);
+    expect((await db.collection(collections.cycleEtat).doc('a1').get()).get('pause.par')).toBe(
+      `tache:${taches.docs[0]!.id}`,
+    );
+  });
+
+  it('prospect : séquence S1 en pause tant que la tâche est ouverte ; inconnu : rien', async () => {
+    await enregistrerProspect(s, e);
+    envois.length = 0;
+    expect(await traiterReponseEmail(s, e.email)).toBe('prospect');
+    expect(await traiterReponseEmail(s, 'inconnu@exemple.fr')).toBeNull();
+    const ref = db.collection(collections.prospects).doc(empreinteEmail(e.email));
+    await ref.update({ createdAt: Timestamp.fromMillis(T - 12 * J) });
+    await planifierProspects(s);
+    expect(envois).toEqual([]);
+    const tache = (await db.collection(collections.filesModeration).get()).docs[0]!;
+    await tache.ref.update({ statut: 'traitee' });
+    await planifierProspects(s);
+    expect(envois.map((x) => x.modele)).toEqual(['prospect-derniere']);
+    expect((await ref.get()).get('pause')).toBeUndefined();
   });
 });

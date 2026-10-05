@@ -282,6 +282,8 @@ export interface TacheConversion {
   id: string;
   type: string;
   artisanId: string;
+  /** Tâche d'un prospect (réponse à un email de la séquence S1). */
+  prospect: boolean;
   entreprise: string;
   statut: string;
   creeeLe: number;
@@ -304,7 +306,10 @@ export async function listerTachesConversion(db: Firestore): Promise<TacheConver
       id: d.id,
       type: d.get('type') as string,
       artisanId: (d.get('refs.artisanId') as string | undefined) ?? '',
-      entreprise: noms.get(d.get('refs.artisanId') as string) ?? '—',
+      prospect: Boolean(d.get('refs.prospectId')),
+      entreprise: d.get('refs.prospectId')
+        ? 'Prospect (non inscrit)'
+        : (noms.get(d.get('refs.artisanId') as string) ?? '—'),
       statut: d.get('statut') as string,
       creeeLe: ms(d.get('createdAt')) ?? 0,
       assigneA: (d.get('assigneA') as string | undefined) ?? null,

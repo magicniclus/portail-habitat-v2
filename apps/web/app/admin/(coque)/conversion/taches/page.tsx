@@ -29,12 +29,14 @@ export default async function TachesConversion() {
                 Créée le {formatDate(t.creeeLe, 'dateHeure')} · assignée : {t.assigneA ?? '—'}
               </p>
               <div className="flex flex-wrap gap-4 text-sm">
-                <Link
-                  href={`/admin/conversion/fiche/${t.artisanId}` as Route}
-                  className="text-accent-700"
-                >
-                  Ouvrir la fiche cycle
-                </Link>
+                {t.prospect ? null : (
+                  <Link
+                    href={`/admin/conversion/fiche/${t.artisanId}` as Route}
+                    className="text-accent-700"
+                  >
+                    Ouvrir la fiche cycle
+                  </Link>
+                )}
                 <Link href="/admin/file" className="text-accent-700">
                   Traiter dans la file de travail
                 </Link>

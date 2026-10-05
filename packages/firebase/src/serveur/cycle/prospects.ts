@@ -4,13 +4,14 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
 import { distanceKm } from '@ph/core/matching';
 import { TEXTE_CONSENTEMENT_PROSPECT } from '@ph/core/schemas';
-import { Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import type { NomModele } from '@ph/core/notifications';
 import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import type { Geocodeur } from '../demandes/geocodage';
 import { empreinteEmail } from '../notifications/notifier';
 import { lireConfigCycle } from './moteur';
+import { PREFIXE_TACHE } from './taches';
 
 const J = 86_400_000;
 const RAYON_KM = 20;
@@ -188,6 +189,16 @@ export async function planifierProspects(
   let envoyes = 0;
   for (const p of prospects.docs) {
     if (p.get('desabonne') === true) continue;
+    // Réponse en cours de traitement : pause tant que la tâche est ouverte.
+    const pause = p.get('pause.par') as string | undefined;
+    if (pause?.startsWith(PREFIXE_TACHE)) {
+      const tache = await s.db
+        .collection(collections.filesModeration)
+        .doc(pause.slice(PREFIXE_TACHE.length))
+        .get();
+      if (tache.exists && !['traitee', 'rejetee'].includes(tache.get('statut') as string)) continue;
+      await p.ref.update({ pause: FieldValue.delete() });
+    }
     const metier = (p.get('metiers') as string[])[0]!;
     const nom = s.nomMetier(metier)?.toLowerCase();
     const geo = p.get('geo') as DemandeProche['geo'] | undefined;
