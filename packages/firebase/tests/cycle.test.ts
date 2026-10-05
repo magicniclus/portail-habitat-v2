@@ -244,4 +244,31 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     ]);
     expect(e.donnees.semaine).toBe('Semaine du 29 septembre 2026 au 5 octobre 2026');
   });
+  it('tâche d’activation à J+10 : séquence en pause pendant la tâche, reprise ensuite', async () => {
+    await artisan('act', {
+      enLigne: false,
+      metiers: ['a', 'b', 'c'],
+      tempsReponseMoyenMin: 30,
+      demandesRecuesMois: 8,
+      completude: 100,
+    });
+    await calculerCycles(s(T0));
+    const ref = db.collection(collections.cycleEtat).doc('act');
+    expect((await ref.get()).get('etape')).toBe('compte_cree');
+    await calculerCycles(s(T0 + 9 * J));
+    expect((await db.collection(collections.filesModeration).get()).size).toBe(0);
+    await calculerCycles(s(T0 + 10 * J));
+    const taches = await db.collection(collections.filesModeration).get();
+    expect(taches.docs.map((d) => [d.get('type'), d.get('refs.artisanId')])).toEqual([
+      ['appel_activation', 'act'],
+    ]);
+    expect((await ref.get()).get('pause.par')).toBe(`tache:${taches.docs[0]!.id}`);
+    await calculerCycles(s(T0 + 11 * J));
+    expect((await ref.get()).get('pause')).toBeDefined();
+    await taches.docs[0]!.ref.update({ statut: 'traitee' });
+    await calculerCycles(s(T0 + 12 * J));
+    expect((await ref.get()).get('pause')).toBeUndefined();
+    expect((await db.collection(collections.filesModeration).get()).size).toBe(1);
+    expect((await traces('tache_creee')).map((t) => t.details.tache)).toEqual(['appel_activation']);
+  });
 });

@@ -218,3 +218,4 @@ export {
   TYPES_TACHE_CONVERSION,
   libelleTrace,
 } from './libelles';
+export { tachesACreer, type TacheConversion } from './taches';

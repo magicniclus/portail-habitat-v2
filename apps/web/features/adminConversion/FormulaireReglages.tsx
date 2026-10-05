@@ -6,12 +6,14 @@ import { useState } from 'react';
 import { ConfirmationAdmin } from '@/features/admin/ConfirmationAdmin';
 import { enregistrerReglages } from './actions';
 
-type Nombre = 'maxOffresProSemaine' | 'maxNonTransacJour' | 'veilleApres' | 'seuilPremium';
+type Nombre =
+  'maxOffresProSemaine' | 'maxNonTransacJour' | 'veilleApres' | 'seuilPremium' | 'seuilAppel';
 const NOMBRES: [Nombre, string][] = [
   ['maxOffresProSemaine', 'Emails offres_pro max. par semaine'],
   ['maxNonTransacJour', 'Emails non transactionnels max. par jour'],
   ['veilleApres', 'Mise en veille après N emails non ouverts'],
   ['seuilPremium', 'Score → offre cible Premium'],
+  ['seuilAppel', 'Score → tâche d’appel commercial'],
 ];
 
 /** Réglages du moteur (`config/cycle`) : enregistrés avec motif et audit. */

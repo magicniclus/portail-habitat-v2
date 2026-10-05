@@ -34,6 +34,7 @@ import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import { lireStatsJours } from '../pro/statistiques';
 import { lireCodeActif, reserverCode } from './codes';
+import { gererTachesCycle } from './taches';
 
 /**
  * Moteur de conversion (CONVERSION §9) : `cycleEtat/{artisanId}` est mis à jour chaque jour
@@ -57,6 +58,8 @@ export interface ConfigCycleLue {
   actif: boolean;
   tailleTemoin: number;
   seuilPremium: number;
+  /** Score à partir duquel une tâche d'appel commercial est créée. */
+  seuilAppel: number;
   maxOffresProSemaine: number;
   maxNonTransacJour: number;
   veilleApres: number;
@@ -67,6 +70,7 @@ export const CONFIG_CYCLE_DEFAUT: ConfigCycleLue = {
   actif: true,
   tailleTemoin: 0.1,
   seuilPremium: 50,
+  seuilAppel: 70,
   maxOffresProSemaine: 2,
   maxNonTransacJour: 1,
   veilleApres: 5,
@@ -264,6 +268,7 @@ export async function synchroniserCycle(
       details: { avant: ancienne ?? null, apres: etape, score, offreCible: offre },
     });
   } else await ref.set(commun, { merge: true });
+  await gererTachesCycle(s, artisan, config.seuilAppel);
   return { etape, changee };
 }
 

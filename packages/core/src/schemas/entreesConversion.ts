@@ -71,6 +71,7 @@ export const entreeReglagesCycle = z.strictObject({
   maxNonTransacJour: z.number().int().min(0).max(5),
   veilleApres: z.number().int().min(1).max(20),
   seuilPremium: z.number().int().min(0).max(100),
+  seuilAppel: z.number().int().min(0).max(100),
   tailleTemoin: z.number().min(0).max(0.5),
   signataire: z.strictObject({
     nom: z.string().trim().min(2).max(40),
