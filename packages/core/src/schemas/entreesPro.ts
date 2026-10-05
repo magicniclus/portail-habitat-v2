@@ -157,7 +157,7 @@ export const entreeVoirEnTantQue = z.strictObject({
   motif: z.string().trim().min(5).max(500),
 });
 
-const motifAdmin = z.string().trim().min(5).max(500);
+export const motifAdmin = z.string().trim().min(5).max(500);
 
 /** Back-office › Artisans : vérifier, suspendre ou lever, créditer (motif obligatoire, ADM-03). */
 export const entreeActionArtisanAdmin = z.strictObject({
