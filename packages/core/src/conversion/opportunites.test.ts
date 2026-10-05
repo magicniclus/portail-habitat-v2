@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { demandesManquees, depenseAppelsOffres, signalCredits } from './opportunites';
+import {
+  demandesManquees,
+  depenseAppelsOffres,
+  signalCredits,
+  signalGarantie,
+} from './opportunites';
 
 const J = 86_400_000;
 
@@ -60,5 +65,17 @@ describe('demandes exclusives manquées (prem-demandes-manquees)', () => {
       [1, 2, 3, 4, 5, 6].map((n) => ({ ...dem(`d${n}`, 'plombier'), budgetCentimes: n * 1000 })),
     );
     expect(r.map((x) => x.budgetCentimes)).toEqual([6000, 5000, 4000, 3000, 2000]);
+  });
+});
+
+describe('signal garantie-tenue (CONVERSION S7)', () => {
+  // 15 octobre 2026, midi.
+  const T = Date.UTC(2026, 9, 15, 10);
+  it('Premium, 4 demandes reçues ce mois-ci, pas encore envoyé ce mois', () => {
+    expect(signalGarantie('premium', 4, { maintenant: T })).toBe(true);
+    expect(signalGarantie('premium', 3, { maintenant: T })).toBe(false);
+    expect(signalGarantie('visibilite', 6, { maintenant: T })).toBe(false);
+    expect(signalGarantie('premium', 5, { maintenant: T, dernier: T - 5 * J })).toBe(false);
+    expect(signalGarantie('premium', 4, { maintenant: T, dernier: T - 20 * J })).toBe(true);
   });
 });

@@ -76,3 +76,19 @@ export function demandesManquees(
     .sort((x, y) => y.budgetCentimes - x.budgetCentimes)
     .slice(0, 5);
 }
+
+const moisParis = (ms: number) =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(ms).slice(0, 7);
+
+/** `garantie-tenue` (S7) : Premium, 4e demande exclusive du mois reçue ; une fois par mois. */
+export function signalGarantie(
+  etape: EtapeCycle,
+  demandesMois: number,
+  o: { maintenant: number; dernier?: number },
+): boolean {
+  return (
+    etape === 'premium' &&
+    demandesMois >= 4 &&
+    (o.dernier === undefined || moisParis(o.dernier) !== moisParis(o.maintenant))
+  );
+}

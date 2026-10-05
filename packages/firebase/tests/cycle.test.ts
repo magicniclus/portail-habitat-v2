@@ -271,4 +271,21 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await db.collection(collections.filesModeration).get()).size).toBe(1);
     expect((await traces('tache_creee')).map((t) => t.details.tache)).toEqual(['appel_activation']);
   });
+  it('Premium : 4e demande garantie du mois → « garantie-tenue », une fois par mois', async () => {
+    await artisan('gar', { plan: 'premium', demandesRecuesMois: 4 });
+    await calculerCycles(s(T0));
+    const ref = db.collection(collections.cycleEtat).doc('gar');
+    await ref.update({ groupeTemoin: false });
+    expect((await ref.get()).get('signal.modele')).toBe('garantie-tenue');
+    await planifierCycle(s(T0 + 3_600_000));
+    const e = envois.find((x) => x.modele === 'garantie-tenue') as unknown as {
+      donnees: Record<string, unknown>;
+    };
+    expect(e.donnees).toMatchObject({
+      demandesMois: 4,
+      lien: 'https://portailhabitat.fr/pro/demandes',
+    });
+    await calculerCycles(s(T0 + 2 * J));
+    expect((await ref.get()).get('signal')).toBeUndefined();
+  });
 });

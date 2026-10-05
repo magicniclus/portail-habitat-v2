@@ -193,6 +193,7 @@ export {
   demandesManquees,
   depenseAppelsOffres,
   signalCredits,
+  signalGarantie,
   type AchatAppelOffres,
   type DemandeExclusive,
 } from './opportunites';

@@ -10,6 +10,7 @@ import {
   signauxDeclenches,
   depenseAppelsOffres,
   signalCredits,
+  signalGarantie,
   type AchatAppelOffres,
   classerSecteurs,
   type PositionSecteur,
@@ -219,7 +220,17 @@ export async function synchroniserCycle(
           ...(derniers['prem-credits'] !== undefined ? { dernier: derniers['prem-credits'] } : {}),
         })
       ? { modele: 'prem-credits', extra: depense }
-      : undefined;
+      : signalGarantie(etape, (a.demandesRecuesMois as number | undefined) ?? 0, {
+            maintenant,
+            ...(derniers['garantie-tenue'] !== undefined
+              ? { dernier: derniers['garantie-tenue'] }
+              : {}),
+          })
+        ? {
+            modele: 'garantie-tenue',
+            extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
+          }
+        : undefined;
   const commun = {
     schemaVersion: 1,
     score,
@@ -546,6 +557,7 @@ export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<Bi
   for (const etat of signaux.docs) {
     bilan.examines++;
     const sig = etat.get('signal') as { modele: string; extra?: Record<string, unknown> };
+    const lien = sig.extra?.lien as string | undefined;
     if (etat.get('pause') || etat.get('exclu') === true) continue;
     compter(
       await tenterEnvoi(s, config, etat, {
@@ -553,6 +565,7 @@ export async function planifierCycle(s: ServicesCycle, limite = 200): Promise<Bi
         refObjet: `cycle/${etat.id}/signal/${sig.modele}/${(etat.get('signal.du') as Timestamp).toMillis()}`,
         type: 'signal',
         ...(sig.extra ? { extra: sig.extra } : {}),
+        ...(lien ? { surcharge: { lien: `${s.urlSite ?? URL_SITE_DEFAUT}${lien}` } } : {}),
       }),
     );
     await etat.ref.update({ signal: FieldValue.delete() });
