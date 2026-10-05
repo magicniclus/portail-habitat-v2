@@ -74,3 +74,11 @@ describe('décision de remise (CONVERSION §1.4)', () => {
     expect(decisionRemise('vis-position', { maintenant: T })).toEqual({ type: 'aucune' });
   });
 });
+
+describe('libellés du back-office', () => {
+  it('type de trace connu ou repli', async () => {
+    const { libelleTrace } = await import('./libelles');
+    expect(libelleTrace('conversion')).toEqual({ libelle: 'Conversion', tone: 'succes' });
+    expect(libelleTrace('inconnu')).toEqual({ libelle: 'inconnu', tone: 'neutre' });
+  });
+});
