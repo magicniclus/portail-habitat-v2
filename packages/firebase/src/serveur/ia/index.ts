@@ -2,6 +2,7 @@ export {
   analyserIa,
   lireBudgetIa,
   lireConfigIa,
+  lireQuotaJourIa,
   type ConfigIaLue,
   type ServicesIa,
 } from './analyser';

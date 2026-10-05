@@ -26,7 +26,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
 | 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
-| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e, émulateur) ; traceur (jsdom, poids) | 13c-1 à 13c-4 faits (traceur, `/api/t`, nuit, écran admin) ; suite : §22 |
+| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e, émulateur) ; traceur (jsdom, poids) | 13c-1 à 13c-5 faits (traceur, `/api/t`, nuit, écran admin, assistant IA) ; reste 13c-6 : §22 |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
@@ -453,12 +453,20 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 
 **Fait (13c-4)** — écran `/admin/comportement` (maquette « Admin Comportement ») : page réelle dans un cadre à la largeur de référence (le traceur ne mesure jamais une page encadrée), six calques (clics, trajets, attention, défilement avec seuils 75/50/25 %, clics morts et rage encadrés, sorties par section) avec opacité réglable ; filtres page / appareil / période dans l'URL ; **une seule lecture** de l'agrégat pré-cumulé par affichage (CMP-03) ; indicateurs, alertes ouvertes (« Demander à l'IA » préremplit la question, « Marquer traitée » / « Ignorer » avec audit, permission `comportement.configurer`), éléments et sections (le survol d'une ligne la surligne sur la page). Onglet **Replays** (permission `comportement.replays`) : 30 dernières sessions avec leur issue, lecteur (curseur, trace, clics, défilement, vitesses ×1/×2/×4), chaque lecture journalisée (`adminLectureReplay`). Palette des cartes ajoutée aux tokens (`echelleChaleur`, `couleursComportement`). Index : sessions (page + aReplay + date), alertes (page + statut + gravité). e2e : CMP-03 et lecture de replay.
 
+**Fait (13c-5)** — assistant IA de l'admin (`/admin/ia`, maquette « Admin IA ») :
+- **Contrat** (`@ph/core/ia`) : sortie validée par Zod (et schéma JSON envoyé au modèle), contrôle automatique que **chaque valeur citée existe dans le contexte** (IA-01), bornes par mode (rapide 3 à 6, audit 7 étapes notées et 6 à 12, IA-04), étape et gain obligatoires (IA-05), coût en centimes (arrondi au-dessus), prompt système versionné (jamais « lead », aucun chiffre inventé), clé de cache.
+- **Serveur** (`@ph/firebase/ia`) : contexte de nuit `iaContexte/{périmètre}` (landings, parcours, emails, offres, fiches ; agrégats seulement, ≤ 6 000 jetons), analyse avec cache 24 h sans nouvel appel (IA-02, « Relancer » pour forcer), quota 30 par jour et par membre, budget 10 €/mois (alerte à 80 %, coupure à 100 %, IA-03), seuls les périmètres choisis envoyés (IA-06), une nouvelle tentative si la sortie est refusée, puis échec sans rien enregistrer d'inventé ; actions : tâche `recommandation_ia`, brouillon `abTests`, « faite », « ignorer » avec motif qui rejoint `config/ia.consignes` (audit à chaque action). Synthèse du lundi 7 h (`iaSyntheseHebdo`, Sonnet) envoyée aux superadmins avec l'évolution des notes (IA-07) ; `iaContexteNuit` à 3 h 30.
+- **Modèles** : Claude Haiku 4.5 par défaut, Claude Sonnet 5.5 pour l'analyse approfondie et la synthèse (avec repli serveur si le modèle décline) ; prompt système et contexte mis en cache. **Nouvelle dépendance** : `@anthropic-ai/sdk` dans `@ph/firebase`.
+- **Coupé sans clé** : sans `ANTHROPIC_API_KEY`, l'écran l'indique et le bouton est désactivé ; la Function du lundi ne fait rien.
+- Tests : 9 purs, 11 sur émulateur avec un faux modèle, e2e de l'écran.
+
 **À signaler**
 1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).
 2. Modèle : `sessionComportement` reçoit `sessionId`, `appareil`, `hauteur`, `champs`, `abandon`, `elements.*.hesitations`, `sortie.intention`, `jour` ; `conversion` devient l'objectif atteint (`inscription`, `demande`, `paiement`) au lieu d'un booléen.
 3. **Choix faits par moi (13c-3)** : seuil d'hésitation à 10 % des sessions (non chiffré dans COMPORTEMENT) ; « section qui fait partir » = taux de sortie > 1,5 × la moyenne des sections avec au moins 30 sorties ; les médianes des cumuls sont la moyenne des médianes du jour pondérée par les sessions (approximation) ; `scroll` stocke des nombres de sessions (la part se calcule à l'affichage). L'alerte « élément vu par moins de 30 % » n'est pas calculée : le traceur ne sait pas si un élément a été vu, seulement les sections.
 4. **Tests A/B des pages** : l'évaluation est prête, mais aucune page n'affiche encore de variante B (à décider page par page avec le contenu).
-5. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, et le secret `COMPORTEMENT_SALT_SECRET`.
+5. **Choix faits par moi (13c-5)** : l'analyse se lance depuis une **action serveur** de l'admin (comme toutes les écritures du back-office) et non depuis une Function appelable ; la synthèse du lundi est une Function. La clé doit donc être posée côté site **et** côté Functions. Conversion dollars → euros à 0,95 pour le budget. « Utiliser ce texte » crée une tâche (l'ouverture directe de l'éditeur de séquence reste à faire) ; pas encore de questions de suivi sur une analyse ni de mesure de l'effet à 30 jours ; réglages de l'IA en lecture seule à l'écran. L'email `ia-synthese-hebdo` utilise le squelette (texte + bouton).
+6. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, le secret `COMPORTEMENT_SALT_SECRET` et, pour activer l'assistant, `ANTHROPIC_API_KEY` (site et Functions).
 
 ## 2. Incohérences et zones floues
 

@@ -56,6 +56,14 @@ const refBudget = (db: Firestore, mois: string) =>
 const refQuota = (db: Firestore, uid: string, jour: string) =>
   db.collection(collections.iaQuotas).doc(`${uid}_${jour}`);
 
+/** Analyses déjà lancées aujourd'hui par un membre (quota). */
+export async function lireQuotaJourIa(db: Firestore, uid: string, maintenant: number) {
+  return (
+    ((await refQuota(db, uid, jourIso(maintenant)).get()).get('utilisations') as
+      number | undefined) ?? 0
+  );
+}
+
 /** Dépense du mois en cours, pour l'écran (alerte à 80 %, coupure à 100 %). */
 export async function lireBudgetIa(db: Firestore, maintenant: number) {
   const [config, budget] = await Promise.all([
