@@ -22,39 +22,46 @@ export const analyseIa = z.object({
   etapes: z
     .array(z.object({ etape: z.string(), score: z.number(), constat: z.string() }))
     .default([]),
-  gainTotal: z.number().optional(),
+  gainTotal: z.string().optional(),
   questionsOuvertes: z.array(z.string()).default([]),
   tokensEntree: z.number().int().nonnegative(),
   tokensSortie: z.number().int().nonnegative(),
   coutCentimes: centimesPositifs,
   dureeMs: z.number().nonnegative(),
   cleCache: z.string(),
-  statut: z.enum(['en_cours', 'terminee', 'erreur']),
+  /** Sources de contexte utilisées (périmètres et date du contexte). */
+  sources: z.array(z.string()).default([]),
+  statut: z.enum(['ok', 'erreur']),
+  erreur: z.string().optional(),
 });
+
+const niveau = z.enum(['élevé', 'moyen', 'faible']);
 
 export const recommandationIa = z.object({
   ...meta,
   analyseId: id,
   titre: z.string(),
   perimetre: z.string(),
-  etape: z.string().optional(),
-  gainEstime: z.number().optional(),
+  etape: z.string(),
+  gainEstime: z.string(),
   priorite: z.number().int().min(1).max(5),
-  impact: z.enum(['faible', 'moyen', 'fort']),
-  effort: z.enum(['faible', 'moyen', 'fort']),
+  impact: niveau,
+  effort: niveau,
   confiance: z.number().min(0).max(1),
   constat: z.string(),
-  preuves: z.array(z.string()),
-  action: z.record(z.string(), z.unknown()),
+  preuves: z.array(z.object({ source: z.string(), ref: z.string(), valeur: z.string() })),
+  action: z.object({ type: z.string(), details: z.string() }),
   propositionTexte: z.string().optional(),
   statut: z.enum(['nouvelle', 'en_cours', 'faite', 'ignoree']),
   motifIgnore: z.string().optional(),
   effetMesure: z.string().optional(),
 });
 
+/** `iaQuotas/{uid_jour}` (analyses du jour) et `iaQuotas/budget_{mois}` (dépense du mois). */
 export const quotaIa = z.object({
   schemaVersion,
-  utilisations: z.number().int().nonnegative(),
+  utilisations: z.number().int().nonnegative().optional(),
+  coutCentimes: centimesPositifs.optional(),
   expireLe: horodatage,
 });
 

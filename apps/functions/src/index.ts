@@ -22,6 +22,7 @@ export {
   cycleTestsAB,
 } from './cycle/planifiees';
 export { comportementAgreger } from './comportement/planifiees';
+export { iaContexteNuit, iaSyntheseHebdo } from './ia/planifiees';
 export { envoyerEnvoi } from './notifications/tache';
 export { importerDemandePartenaireHttp as importerDemandePartenaire } from './partenaires/webhook';
 export { syncIntentionTypesense, syncSynonymesTypesense } from './recherche/declencheurs';

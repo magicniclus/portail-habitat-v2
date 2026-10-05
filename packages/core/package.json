@@ -39,7 +39,8 @@
     "./espace-pro": "./src/espacePro/index.ts",
     "./partenaires": "./src/partenaires/index.ts",
     "./conversion": "./src/conversion/index.ts",
-    "./comportement": "./src/comportement/index.ts"
+    "./comportement": "./src/comportement/index.ts",
+    "./ia": "./src/ia/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
