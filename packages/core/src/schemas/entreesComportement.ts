@@ -71,3 +71,12 @@ export const entreeResumeVisite = z.strictObject({
     .optional(),
 });
 export type ResumeVisite = z.infer<typeof entreeResumeVisite>;
+
+/** Admin › Comportement : lecture d'un replay (journalisée) et suivi d'une alerte. */
+export const entreeLectureReplay = z.strictObject({
+  vueId: z.string().regex(/^[a-z0-9]{16}$/),
+});
+export const entreeStatutAlerte = z.strictObject({
+  alerteId: z.string().regex(/^[a-z0-9_-]{1,140}$/i),
+  statut: z.enum(['ouverte', 'traitee', 'ignoree']),
+});

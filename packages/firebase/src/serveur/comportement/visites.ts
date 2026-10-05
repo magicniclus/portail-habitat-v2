@@ -71,7 +71,7 @@ export async function enregistrerVisite(
   await ref.set({
     schemaVersion: 1,
     ...resume,
-    ...(replayPath ? { replayPath } : {}),
+    ...(replayPath ? { replayPath, aReplay: true } : {}),
     jour,
     createdAt: Timestamp.fromMillis(maintenant),
     expireLe: Timestamp.fromMillis(maintenant + DUREE_SESSION_JOURS * J),

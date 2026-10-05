@@ -46,6 +46,8 @@ export const sessionComportement = z.object({
   conversion: z.enum(['inscription', 'demande', 'paiement']).optional(),
   trajet: z.array(z.number()).optional(),
   replayPath: z.string().optional(),
+  /** Présent avec `replayPath` : liste des replays d'une page (index page + aReplay + date). */
+  aReplay: z.literal(true).optional(),
   /** Jour de la visite (heure de Paris) : l'agrégation de nuit lit par page et par jour. */
   jour: jourIso,
   createdAt: horodatage,

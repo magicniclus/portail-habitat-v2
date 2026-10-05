@@ -117,6 +117,26 @@ export const couleurs = {
   infoFond: '#eef4fa',
 } as const;
 
+/**
+ * Cartes de chaleur de l'admin › Comportement : échelle du froid (peu) au chaud (beaucoup),
+ * et repères des frictions (clic mort, rage, section qui fait partir).
+ */
+export const echelleChaleur = [
+  [0, '#2b59c3'],
+  [0.3, '#1fb5c9'],
+  [0.5, '#3ccf4e'],
+  [0.7, '#f5d33b'],
+  [0.85, '#f28c28'],
+  [1, '#d7191c'],
+] as const;
+export const couleursComportement = {
+  clicMort: '#f28c28',
+  rage: '#d7191c',
+  sortie: '#b3261e',
+  trajet: '#14508a',
+  curseur: '#201e1d',
+} as const;
+
 /** Trait de séparation : texte à 16 % d'opacité. */
 export const trait = `color-mix(in srgb, ${couleurs.texte} 16%, transparent)`;
 

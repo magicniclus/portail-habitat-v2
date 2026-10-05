@@ -28,6 +28,8 @@ export function signalerConversion(objectif: NonNullable<ResumeVisite['conversio
 
 /** Lance le traceur ; la fonction rendue l'arrête et envoie le résumé (changement de page). */
 export function initTracker(o: OptionsTraceur): () => void {
+  // Page affichée dans un cadre (aperçu de l'admin) : jamais mesurée.
+  if (window.top !== window.self) return () => {};
   if (Math.random() >= (o.echantillon ?? ECHANTILLONS_DEFAUT.visites)) return () => {};
   const nav = navigator as Navigator & { globalPrivacyControl?: boolean };
   let arreter: ((envoyer: boolean) => void) | undefined;

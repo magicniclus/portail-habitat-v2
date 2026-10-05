@@ -148,3 +148,15 @@ export {
   type PublicationFacebook,
   type ResultatsFacebook,
 } from './facebook';
+export {
+  changerStatutAlerte,
+  lireAlertesComportement,
+  lireReplay,
+  lireVueComportement,
+  listerReplays,
+  type AlerteLue,
+  type PeriodeComportement,
+  type ReplayListe,
+  type ReplayLu,
+  type VueComportement,
+} from './comportement';

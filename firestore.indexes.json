@@ -1137,6 +1137,42 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "comportementSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "page",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "aReplay",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "comportementAlertes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "page",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "gravite",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
