@@ -4,6 +4,7 @@ import {
   depenseAppelsOffres,
   signalCredits,
   signalGarantie,
+  signalPassageAnnuel,
 } from './opportunites';
 
 const J = 86_400_000;
@@ -77,5 +78,31 @@ describe('signal garantie-tenue (CONVERSION S7)', () => {
     expect(signalGarantie('visibilite', 6, { maintenant: T })).toBe(false);
     expect(signalGarantie('premium', 5, { maintenant: T, dernier: T - 5 * J })).toBe(false);
     expect(signalGarantie('premium', 4, { maintenant: T, dernier: T - 20 * J })).toBe(true);
+  });
+});
+
+describe('signal passage-annuel (CONVERSION S7)', () => {
+  const T = 400 * J;
+  const abo = (p: Partial<Parameters<typeof signalPassageAnnuel>[0][number]> = {}) => ({
+    produit: 'premium' as const,
+    periode: 'mensuel' as const,
+    statut: 'active',
+    creeLe: T - 61 * J,
+    debutPeriode: T - J,
+    ...p,
+  });
+  it('après la 3e échéance mensuelle payée, une seule fois', () => {
+    expect(signalPassageAnnuel([abo()], { dejaEnvoye: false })).toBe('premium');
+    expect(
+      signalPassageAnnuel([abo({ debutPeriode: T - 31 * J })], { dejaEnvoye: false }),
+    ).toBeNull();
+    expect(signalPassageAnnuel([abo()], { dejaEnvoye: true })).toBeNull();
+  });
+  it('annuel, résilié : rien ; Visibilité seule : offre Visibilité', () => {
+    expect(signalPassageAnnuel([abo({ periode: 'annuel' })], { dejaEnvoye: false })).toBeNull();
+    expect(signalPassageAnnuel([abo({ statut: 'canceled' })], { dejaEnvoye: false })).toBeNull();
+    expect(signalPassageAnnuel([abo({ produit: 'visibilite' })], { dejaEnvoye: false })).toBe(
+      'visibilite',
+    );
   });
 });

@@ -194,6 +194,7 @@ export {
   depenseAppelsOffres,
   signalCredits,
   signalGarantie,
+  signalPassageAnnuel,
   type AchatAppelOffres,
   type DemandeExclusive,
 } from './opportunites';

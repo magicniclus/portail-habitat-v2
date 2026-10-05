@@ -288,4 +288,36 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     await calculerCycles(s(T0 + 2 * J));
     expect((await ref.get()).get('signal')).toBeUndefined();
   });
+  it('Premium mensuel : « passage-annuel » après la 3e échéance payée, une seule fois', async () => {
+    await artisan('men', { plan: 'premium' });
+    await db
+      .collection(collections.abonnements)
+      .doc('sub_men')
+      .set({
+        artisanId: 'men',
+        produit: 'premium',
+        periode: 'mensuel',
+        statut: 'active',
+        createdAt: Timestamp.fromMillis(T0 - 40 * J),
+        debutPeriode: Timestamp.fromMillis(T0 - 10 * J),
+      });
+    await calculerCycles(s(T0));
+    const ref = db.collection(collections.cycleEtat).doc('men');
+    expect((await ref.get()).get('signal')).toBeUndefined();
+    await db
+      .collection(collections.abonnements)
+      .doc('sub_men')
+      .update({ debutPeriode: Timestamp.fromMillis(T0 + 20 * J) });
+    await calculerCycles(s(T0 + 21 * J));
+    await ref.update({ groupeTemoin: false });
+    expect((await ref.get()).get('signal.modele')).toBe('passage-annuel');
+    // Après le passage à l'heure d'hiver : créneau de 7 h 15 = 6 h 15 UTC.
+    await planifierCycle(s(T0 + 21 * J + 2 * 3_600_000));
+    const e = envois.find((x) => x.modele === 'passage-annuel') as unknown as {
+      donnees: Record<string, unknown>;
+    };
+    expect(e.donnees.lien).toBe('https://portailhabitat.fr/pro/facturation');
+    await calculerCycles(s(T0 + 60 * J));
+    expect((await ref.get()).get('signal')).toBeUndefined();
+  });
 });

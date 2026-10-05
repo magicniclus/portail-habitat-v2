@@ -11,6 +11,7 @@ import {
   depenseAppelsOffres,
   signalCredits,
   signalGarantie,
+  signalPassageAnnuel,
   type AchatAppelOffres,
   classerSecteurs,
   type PositionSecteur,
@@ -131,6 +132,13 @@ async function etatAbonnement(db: Firestore, artisanId: string) {
   return {
     resiliationDemandee: actifs.some((a) => a.get('annulationFinPeriode') === true),
     ancienAbonne: !actifs.length && r.docs.some((a) => a.get('statut') === 'canceled'),
+    abonnements: r.docs.map((a) => ({
+      produit: a.get('produit') as 'premium' | 'visibilite',
+      periode: a.get('periode') as 'mensuel' | 'annuel',
+      statut: a.get('statut') as string,
+      creeLe: (a.get('createdAt') as Timestamp | undefined)?.toMillis() ?? 0,
+      debutPeriode: (a.get('debutPeriode') as Timestamp | undefined)?.toMillis() ?? 0,
+    })),
   };
 }
 
@@ -158,7 +166,8 @@ export async function synchroniserCycle(
     (a.plan as 'gratuit' | 'visibilite' | 'premium') === 'gratuit' && a.optionVisibilite === true
       ? 'visibilite'
       : a.plan;
-  const etape = etapeCycle({ compte: true, enLigne: a.enLigne === true, plan, ...abo });
+  const { abonnements, ...etatAbo } = abo;
+  const etape = etapeCycle({ compte: true, enLigne: a.enLigne === true, plan, ...etatAbo });
   const derniere = ms(etat.get('signaux.derniereConnexion'));
   const score = scoreCycle({
     nbMetiers: (a.metiers as string[] | undefined)?.length ?? 0,
@@ -209,6 +218,9 @@ export async function synchroniserCycle(
           { maintenant, dernier: derniers },
         )[0]
       : undefined;
+  const passageAnnuel = signalPassageAnnuel(abonnements, {
+    dejaEnvoye: derniers['passage-annuel'] !== undefined,
+  });
   const depense = {
     credits30j: mesures.creditsAchetes30j ?? 0,
     montant30jCentimes: mesures.montantAchete30j ?? 0,
@@ -230,7 +242,13 @@ export async function synchroniserCycle(
             modele: 'garantie-tenue',
             extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
           }
-        : undefined;
+        : passageAnnuel
+          ? {
+              modele: 'passage-annuel',
+              // Changement de formule dans le portail client Stripe (page Facturation).
+              extra: { produit: passageAnnuel, lien: '/pro/facturation' },
+            }
+          : undefined;
   const commun = {
     schemaVersion: 1,
     score,

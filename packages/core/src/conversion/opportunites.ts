@@ -92,3 +92,28 @@ export function signalGarantie(
     (o.dernier === undefined || moisParis(o.dernier) !== moisParis(o.maintenant))
   );
 }
+
+/**
+ * `passage-annuel` (S7) : abonnement mensuel actif dont la 3e échéance est payée (date de création
+ * et début de la période en cours) ; une seule fois par entreprise. Produit visé : le plus élevé.
+ */
+export function signalPassageAnnuel(
+  abonnements: readonly {
+    produit: 'premium' | 'visibilite';
+    periode: 'mensuel' | 'annuel';
+    statut: string;
+    creeLe: number;
+    debutPeriode: number;
+  }[],
+  o: { dejaEnvoye: boolean },
+): 'premium' | 'visibilite' | null {
+  if (o.dejaEnvoye) return null;
+  const eligibles = abonnements.filter(
+    (a) =>
+      a.periode === 'mensuel' &&
+      a.statut === 'active' &&
+      Math.round((a.debutPeriode - a.creeLe) / (30 * J)) + 1 >= 3,
+  );
+  if (!eligibles.length) return null;
+  return eligibles.some((a) => a.produit === 'premium') ? 'premium' : 'visibilite';
+}

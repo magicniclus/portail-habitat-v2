@@ -127,7 +127,7 @@ export const SEQUENCES_DEFAUT: Record<
     nom: 'Mensuel → annuel, fidélité',
     etapeEntree: 'premium',
     objectif: 'passage à l’année',
-    etapes: [d('passage-annuel', 90), sig('garantie-tenue')],
+    etapes: [sig('passage-annuel'), sig('garantie-tenue')],
   },
   S8: {
     nom: 'Rétention',
