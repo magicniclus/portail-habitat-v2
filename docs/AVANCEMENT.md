@@ -26,7 +26,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
 | 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
-| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e, émulateur) ; traceur (jsdom, poids) | 13c-1 traceur et 13c-2 `/api/t` faits ; suite : §22 |
+| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e, émulateur) ; traceur (jsdom, poids) | 13c-1 à 13c-3 faits (traceur, `/api/t`, nuit) ; suite : §22 |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
@@ -446,10 +446,17 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 - **Replays** : JSON compressé dans `replays/{page}/{jour}/{vueId}.json.gz` (bucket `REPLAYS_BUCKET`, à créer avec une règle de cycle de vie à 30 jours ; aucune règle Storage ne l'ouvre aux clients) ; 300 par jour au plus (compteur dans `rateLimits`), un seul quota par page vue même après un envoi de secours.
 - Tests : émulateur (7) et e2e CMP-02 côté serveur.
 
+**Fait (13c-3)**
+- **Calculs purs** (`@ph/core/comportement`) : agrégation d'une journée par appareil (et `tous`, sans cartes), en compteurs additifs (cartes de clics, d'attention et de mouvements, sessions par palier de défilement, sections vues / lues plus de 3 s / sorties / conversions si lue, éléments, sources, variantes) ; cumuls par simple somme ; détection (aucune alerte sous 200 sessions ; clics morts > 2 %, rages > 0,5 %, hésitations > 10 %, section dont le taux de sortie dépasse 1,5 fois la moyenne, baisse de conversion > 20 % sur 7 jours contre les 28 précédents) ; tests A/B des pages (répartition `hash(sessionId) % 100`, bêta-binomial, bascule **proposée** à 95 %, 100 sessions minimum par variante).
+- **`comportementAgreger`** (3 h) : `comportementAgregats/{page}_{jour}_{appareil}` puis cumuls `{page}_{7j|30j|90j}_{appareil}` (une lecture par écran d'admin), alertes dédoublonnées (une par page, type et élément ; une alerte ignorée le reste ; une alerte traitée qui revient est rouverte), tâche `friction_page` dans la file si gravité ≥ 4, résultat des tests A/B en cours (jamais de bascule). Index ajoutés : sessions (page + jour), agrégats (page + appareil + jour).
+- Tests : 32 tests purs, 5 sur émulateur (CMP-03 côté données, CMP-04).
+
 **À signaler**
 1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).
 2. Modèle : `sessionComportement` reçoit `sessionId`, `appareil`, `hauteur`, `champs`, `abandon`, `elements.*.hesitations`, `sortie.intention`, `jour` ; `conversion` devient l'objectif atteint (`inscription`, `demande`, `paiement`) au lieu d'un booléen.
-3. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, et le secret `COMPORTEMENT_SALT_SECRET`.
+3. **Choix faits par moi (13c-3)** : seuil d'hésitation à 10 % des sessions (non chiffré dans COMPORTEMENT) ; « section qui fait partir » = taux de sortie > 1,5 × la moyenne des sections avec au moins 30 sorties ; les médianes des cumuls sont la moyenne des médianes du jour pondérée par les sessions (approximation) ; `scroll` stocke des nombres de sessions (la part se calcule à l'affichage). L'alerte « élément vu par moins de 30 % » n'est pas calculée : le traceur ne sait pas si un élément a été vu, seulement les sections.
+4. **Tests A/B des pages** : l'évaluation est prête, mais aucune page n'affiche encore de variante B (à décider page par page avec le contenu).
+5. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, et le secret `COMPORTEMENT_SALT_SECRET`.
 
 ## 2. Incohérences et zones floues
 

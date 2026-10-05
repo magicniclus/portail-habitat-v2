@@ -52,8 +52,34 @@ export const sessionComportement = z.object({
   expireLe: horodatage,
 });
 
+const statSection = z.object({
+  vues: z.number().int().nonnegative(),
+  lues: z.number().int().nonnegative(),
+  tempsTotalMs: z.number().nonnegative(),
+  sorties: z.number().int().nonnegative(),
+  conversionsSiLue: z.number().int().nonnegative(),
+});
+const statElement = z.object({
+  clics: z.number().int().nonnegative(),
+  morts: z.number().int().nonnegative(),
+  rages: z.number().int().nonnegative(),
+  hesitations: z.number().int().nonnegative(),
+  survolTotalMs: z.number().nonnegative(),
+});
+
+/**
+ * `comportementAgregats/{page}_{jour}_{appareil}` (journée) et `{page}_{7j|30j|90j}_{appareil}`
+ * (cumuls prêts à afficher, une lecture par écran). Compteurs additifs ; les cartes sont des
+ * objets creux `"colonne:ligne" → valeur` encodés en JSON.
+ */
 export const agregatComportement = z.object({
   schemaVersion,
+  page: z.string(),
+  appareil: z.enum(['ordinateur', 'tablette', 'mobile', 'tous']),
+  periode: z.enum(['jour', '7j', '30j', '90j']),
+  /** Journée agrégée (absent des cumuls) ou dernier jour couvert (`jusquAu`). */
+  jour: jourIso.optional(),
+  jusquAu: jourIso,
   sessions: z.number().int().nonnegative(),
   conversions: z.number().int().nonnegative(),
   dureeMediane: z.number().nonnegative(),
@@ -61,20 +87,13 @@ export const agregatComportement = z.object({
   grilleClics: z.string(),
   grilleAttention: z.string(),
   grilleMouvements: z.string(),
-  scroll: z.array(z.number()).length(20),
-  sections: z.record(
-    z.string(),
-    z.object({
-      vues: z.number(),
-      tempsMoyen: z.number(),
-      sorties: z.number(),
-      convSiLue: z.number(),
-    }),
-  ),
-  elements: z.record(z.string(), z.record(z.string(), z.number())),
+  scroll: z.array(z.number().int().nonnegative()).length(20),
+  sections: z.record(z.string(), statSection),
+  elements: z.record(z.string(), statElement),
   sorties: z.array(z.object({ section: z.string(), part: z.number() })),
   sources: compteurs,
   variantes: compteurs,
+  conversionsVariantes: compteurs,
   updatedAt: horodatage,
 });
 
@@ -95,6 +114,8 @@ export const alerteComportement = z.object({
   reference: z.number(),
   statut: z.enum(['ouverte', 'traitee', 'ignoree']),
   createdAt: horodatage,
+  /** Dernière nuit où la friction a été constatée. */
+  constateeLe: horodatage.optional(),
 });
 
 export const testAB = z.object({

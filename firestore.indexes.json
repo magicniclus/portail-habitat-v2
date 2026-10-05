@@ -1105,6 +1105,38 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "comportementSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "page",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "jour",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "comportementAgregats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "page",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "appareil",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "jour",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
