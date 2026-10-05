@@ -164,7 +164,9 @@ export async function debloquerAppelOffres(
     const nb = (ao.get('nbDeblocages') as number) + 1;
     t.update(refAo, {
       nbDeblocages: nb,
-      ...(nb >= (ao.get('nbDeblocagesMax') as number) ? { statut: 'complet' } : {}),
+      ...(nb >= (ao.get('nbDeblocagesMax') as number)
+        ? { statut: 'complet', completLe: horodatage }
+        : {}),
       updatedAt: horodatage,
     });
     if (enCredits) {

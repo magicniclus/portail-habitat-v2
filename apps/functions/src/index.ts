@@ -11,6 +11,7 @@ export { projeterArtisan } from './annuaire/declencheurs';
 export { attribuerNouvelleDemande, matchingRelance, scoresNuit } from './matching/declencheurs';
 export {
   cycleAgreger,
+  cycleAppelsComplets,
   cycleCalculer,
   cycleCodesExpires,
   cycleDemandesInvendues,

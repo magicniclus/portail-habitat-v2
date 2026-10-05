@@ -60,6 +60,8 @@ export const appelOffres = z
     tarification,
     nbDeblocagesMax: z.number().int().min(1).max(3),
     /** Offert à des artisans Gratuit contre Visibilité (CONVERSION §3 bis). */
+    /** Dernière place prise (moteur de conversion : « complet avant votre résumé »). */
+    completLe: horodatage.optional(),
     offerteLe: horodatage.optional(),
     offerteA: z.array(id).max(5).optional(),
     nbDeblocages: z.number().int().nonnegative(),

@@ -1063,6 +1063,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "appelsOffres",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completLe",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

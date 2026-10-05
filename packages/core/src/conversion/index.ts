@@ -190,6 +190,7 @@ export {
   type PositionSecteur,
 } from './secteur';
 export {
+  completAvantResume,
   demandesManquees,
   depenseAppelsOffres,
   signalCredits,

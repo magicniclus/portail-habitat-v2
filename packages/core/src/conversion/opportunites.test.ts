@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  completAvantResume,
   demandesManquees,
   depenseAppelsOffres,
   signalCredits,
@@ -131,5 +132,16 @@ describe('signal prem-renouvellement (CONVERSION S6)', () => {
       { produit: 'premium' },
     ])
       expect(signalRenouvellement([abo(p)], { maintenant: T })).toBeNull();
+  });
+});
+
+describe('appel d’offres complet avant le résumé (CONVERSION S6)', () => {
+  // Mardi 6 octobre 2026, 7 h 30 à Paris (5 h 30 UTC) ; résumé à 7 h = 5 h UTC.
+  const T = Date.UTC(2026, 9, 6, 5, 30);
+  const H = 3_600_000;
+  it('publié après le résumé d’hier, complet avant celui d’aujourd’hui', () => {
+    expect(completAvantResume({ ouvertLe: T - 10 * H, completLe: T - 2 * H }, T)).toBe(true);
+    expect(completAvantResume({ ouvertLe: T - 30 * H, completLe: T - 2 * H }, T)).toBe(false);
+    expect(completAvantResume({ ouvertLe: T - 10 * H, completLe: T - 0.25 * H }, T)).toBe(false);
   });
 });

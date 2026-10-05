@@ -2,6 +2,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import {
   agregerCycleJour,
   calculerCycles,
+  envoyerAppelsComplets,
   envoyerDemandesManquees,
   expirerCodes,
   nomsMetiers,
@@ -90,5 +91,13 @@ export const cycleProspects = onSchedule(
       urlSite: (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
     });
     logger.info('Cycle : prospects', { ...bilan });
+  },
+);
+
+/** `cycleAppelsComplets` (7 h 05) : appels d'offres complets avant le résumé du matin. */
+export const cycleAppelsComplets = onSchedule(
+  { schedule: '5 7 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
+  async () => {
+    logger.info('Cycle : appels complets', { ...(await envoyerAppelsComplets(services())) });
   },
 );

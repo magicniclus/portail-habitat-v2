@@ -10,7 +10,7 @@ export {
   type ConfigCycleLue,
   type ServicesCycle,
 } from './moteur';
-export { envoyerDemandesManquees } from './hebdo';
+export { envoyerAppelsComplets, envoyerDemandesManquees } from './hebdo';
 export {
   codeStripe,
   expirerCodes,

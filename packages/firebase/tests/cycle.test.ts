@@ -2,7 +2,12 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
-import { calculerCycles, envoyerDemandesManquees, planifierCycle } from '../src/serveur/cycle';
+import {
+  calculerCycles,
+  envoyerAppelsComplets,
+  envoyerDemandesManquees,
+  planifierCycle,
+} from '../src/serveur/cycle';
 
 let db: Firestore;
 const J = 86_400_000;
@@ -345,5 +350,41 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     await ref.update({ signal: null });
     await calculerCycles(s(T0 + 2 * J));
     expect((await ref.get()).get('signal')).toBeNull();
+  });
+  it('Visibilité : appel d’offres de son métier complet avant le résumé de 7 h, une fois par semaine', async () => {
+    const bordeaux = { latitude: 44.84, longitude: -0.58 };
+    const zone = { centre: bordeaux, geohash: 'ezzz', rayonKm: 20 };
+    await artisan('vac', { optionVisibilite: true, metiers: ['plombier'], zoneIntervention: zone });
+    await artisan('autre', {
+      optionVisibilite: true,
+      metiers: ['peintre'],
+      zoneIntervention: zone,
+    });
+    await calculerCycles(s(T0 - J));
+    for (const id of ['vac', 'autre'])
+      await db.collection(collections.cycleEtat).doc(id).update({ groupeTemoin: false });
+    await db.doc(chemins.prestationItem('sdb')).set({ nom: 'Salle de bain' });
+    await db.doc(chemins.demande('dc')).set({
+      prestationId: 'sdb',
+      metierRequis: 'plombier',
+      adresseChantier: { ville: 'Talence', geo: bordeaux },
+    });
+    // Ouvert hier à 20 h, complet cette nuit à 3 h ; tâche à 7 h 05 (T0 = 7 h).
+    await db.doc(chemins.appelOffres('aoc')).set({
+      demandeId: 'dc',
+      statut: 'complet',
+      ouvertLe: Timestamp.fromMillis(T0 - 11 * 3_600_000),
+      completLe: Timestamp.fromMillis(T0 - 4 * 3_600_000),
+    });
+    const t = T0 + 5 * 60_000;
+    expect(await envoyerAppelsComplets(s(t))).toEqual({ appels: 1, planifies: 1 });
+    expect(envois.map((e) => [e.modele, e.destinataire.uid])).toEqual([
+      ['prem-appel-offres-complet', 'u-vac'],
+    ]);
+    expect((envois[0] as unknown as { donnees: Record<string, unknown> }).donnees).toMatchObject({
+      travaux: 'Salle de bain',
+      ville: 'Talence',
+    });
+    expect(await envoyerAppelsComplets(s(t + 3_600_000))).toMatchObject({ planifies: 0 });
   });
 });

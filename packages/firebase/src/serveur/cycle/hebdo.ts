@@ -1,4 +1,4 @@
-import { demandesManquees, type DemandeExclusive } from '@ph/core/conversion';
+import { completAvantResume, demandesManquees, type DemandeExclusive } from '@ph/core/conversion';
 import { formatDate } from '@ph/core/format';
 import { Timestamp, type DocumentSnapshot } from 'firebase-admin/firestore';
 import { chemins, collections, GROUPE_ATTRIBUTIONS } from '../../chemins';
@@ -95,4 +95,83 @@ export async function envoyerDemandesManquees(
     }
   }
   return { demandes: demandes.length, planifies };
+}
+
+/**
+ * `cycleAppelsComplets` (7 h 05) : `prem-appel-offres-complet` aux abonnés Visibilité du métier et
+ * de la zone, pour un appel d'offres complet avant leur résumé du matin ; une fois par semaine.
+ */
+export async function envoyerAppelsComplets(
+  s: ServicesCycle,
+): Promise<{ appels: number; planifies: number }> {
+  const maintenant = s.horloge();
+  const complets = (
+    await s.db
+      .collection(collections.appelsOffres)
+      .where('statut', '==', 'complet')
+      .where('completLe', '>=', Timestamp.fromMillis(maintenant - 2 * J))
+      .get()
+  ).docs.filter((ao) =>
+    completAvantResume(
+      {
+        ouvertLe: (ao.get('ouvertLe') as Timestamp).toMillis(),
+        completLe: (ao.get('completLe') as Timestamp).toMillis(),
+      },
+      maintenant,
+    ),
+  );
+  if (!complets.length) return { appels: 0, planifies: 0 };
+  const config = await lireConfigCycle(s.db);
+  const etats = (
+    await s.db.collection(collections.cycleEtat).where('etape', '==', 'visibilite').get()
+  ).docs.filter((e) => !e.get('pause') && e.get('exclu') !== true);
+  const artisans = etats.length
+    ? await s.db.getAll(...etats.map((e) => s.db.doc(chemins.artisan(e.id))))
+    : [];
+  const deja = new Set<string>();
+  let planifies = 0;
+  for (const ao of complets) {
+    const d = await s.db.doc(chemins.demande(ao.get('demandeId') as string)).get();
+    const geo = d.get('adresseChantier.geo') as DemandeExclusive['geo'] | undefined;
+    const metier = d.get('metierRequis') as string | undefined;
+    if (!geo || !metier) continue;
+    const travaux =
+      ((await s.db.doc(chemins.prestationItem(d.get('prestationId') as string)).get()).get(
+        'nom',
+      ) as string | undefined) ?? 'Travaux';
+    for (const [i, a] of artisans.entries()) {
+      const etat = etats[i]!;
+      const dernier = (
+        etat.get('derniersSignaux.prem-appel-offres-complet') as Timestamp | undefined
+      )?.toMillis();
+      const zone = a.get('zoneIntervention') as
+        { centre: DemandeExclusive['geo']; rayonKm: number } | undefined;
+      if (
+        deja.has(a.id) ||
+        !zone ||
+        (dernier !== undefined && maintenant - dernier < 7 * J) ||
+        !demandesManquees(
+          a.id,
+          { metiers: (a.get('metiers') as string[] | undefined) ?? [], ...zone },
+          [{ id: ao.id, metier, geo, artisanId: '', travaux, ville: '', budgetCentimes: 0 }],
+        ).length
+      )
+        continue;
+      deja.add(a.id);
+      const issue = await tenterEnvoi(s, config, etat, {
+        modele: 'prem-appel-offres-complet',
+        refObjet: `cycle/${a.id}/appel-complet/${ao.id}`,
+        type: 'signal',
+        extra: { travaux },
+        surcharge: { ville: d.get('adresseChantier.ville') as string },
+      });
+      if (issue === 'planifie') {
+        planifies++;
+        await etat.ref.update({
+          'derniersSignaux.prem-appel-offres-complet': Timestamp.fromMillis(maintenant),
+        });
+      }
+    }
+  }
+  return { appels: complets.length, planifies };
 }

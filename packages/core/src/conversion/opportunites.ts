@@ -1,3 +1,4 @@
+import { minuitParis } from '../admin/annonces';
 import { distanceKm } from '../matching/filtres';
 import type { EtapeCycle } from './index';
 
@@ -143,4 +144,19 @@ export function signalRenouvellement(
   );
   if (!a || (o.dernier !== undefined && a.finPeriode - o.dernier <= 60 * J)) return null;
   return a.finPeriode;
+}
+
+/**
+ * `prem-appel-offres-complet` (S6) : appel d'offres publié après le résumé d'hier (7 h, Paris) et
+ * complet avant celui d'aujourd'hui ; l'abonné Visibilité ne l'a donc jamais vu ouvert.
+ */
+export function completAvantResume(
+  ao: { ouvertLe: number; completLe: number },
+  maintenant: number,
+): boolean {
+  const jour = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(maintenant);
+  const resume = minuitParis(jour) + 7 * 3_600_000;
+  const fin = maintenant >= resume ? resume : resume - J;
+  const debut = fin - J;
+  return ao.ouvertLe >= debut && ao.completLe < fin && ao.completLe >= debut;
 }
