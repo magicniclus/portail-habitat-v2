@@ -224,6 +224,33 @@ describe('suivi des envois', () => {
       donnees: {},
     });
 
+  it('offres pro : non ouverts comptés une fois, veille après 5, une ouverture remet à zéro', async () => {
+    for (let i = 1; i <= 5; i++)
+      await db
+        .collection(collections.emails)
+        .doc(`o${i}`)
+        .set({
+          categorie: 'offres_pro',
+          artisanId: 'a-veille',
+          fournisseurId: `re_o${i}`,
+          statut: 'envoye',
+        });
+    for (let i = 1; i <= 4; i++) await appliquerEvenement(s, `re_o${i}`, 'delivre', empreinteEmail);
+    await appliquerEvenement(s, 're_o4', 'delivre', empreinteEmail);
+    const etat = () => db.collection(collections.cycleEtat).doc('a-veille').get();
+    expect((await etat()).data()).toMatchObject({
+      emailsNonOuvertsConsecutifs: 4,
+      enVeille: false,
+    });
+    await appliquerEvenement(s, 're_o5', 'delivre', empreinteEmail);
+    expect((await etat()).data()).toMatchObject({ emailsNonOuvertsConsecutifs: 5, enVeille: true });
+    await appliquerEvenement(s, 're_o5', 'ouvert', empreinteEmail);
+    expect((await etat()).data()).toMatchObject({
+      emailsNonOuvertsConsecutifs: 0,
+      enVeille: false,
+    });
+  });
+
   it('envoyé, puis événements du fournisseur ; rebond → liste de blocage', async () => {
     const { email: id } = await creer();
     expect((await lireEnvoi(s, id!))!.destinataire).toBe('lea@test.local');

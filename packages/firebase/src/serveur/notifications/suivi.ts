@@ -1,6 +1,7 @@
 import { CATEGORIES_OBLIGATOIRES, type Categorie } from '@ph/core/notifications';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
+import { lireConfigCycle } from '../cycle/moteur';
 import type { ContenuJeton } from './jetons';
 import type { ServicesNotifications } from './notifier';
 
@@ -99,6 +100,7 @@ export async function appliquerEvenement(
     ...(type === 'clic' && !doc.get('cliqueLe') ? { cliqueLe: t0 } : {}),
     updatedAt: t0,
   });
+  await suivreOffrePro(s, doc, type, t0);
   if (type === 'rebond' || type === 'plainte') {
     await s.db
       .collection(collections.suppressions)
@@ -149,4 +151,33 @@ export async function majPreferences(s: Services, uid: string, p: PreferencesPag
     'preferences.notifs.marketing.email': p.marketing.email,
     updatedAt: FieldValue.serverTimestamp(),
   });
+}
+
+/**
+ * Emails commerciaux (`offres_pro`, CONVERSION §5) : un email remis compte comme non ouvert
+ * jusqu'à son ouverture ; après N non ouverts d'affilée, l'entreprise passe en veille. Une
+ * ouverture ou un clic remet le compteur à zéro.
+ */
+async function suivreOffrePro(
+  s: Services,
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
+  type: EvenementFournisseur,
+  t0: Timestamp,
+) {
+  const artisanId = doc.get('artisanId') as string | undefined;
+  if (doc.get('categorie') !== 'offres_pro' || !artisanId) return;
+  const ref = s.db.collection(collections.cycleEtat).doc(artisanId);
+  if (type === 'delivre' && !doc.get('compteNonOuvert')) {
+    const veilleApres = (await lireConfigCycle(s.db)).veilleApres;
+    await s.db.runTransaction(async (t) => {
+      const etat = await t.get(ref);
+      const n = ((etat.get('emailsNonOuvertsConsecutifs') as number | undefined) ?? 0) + 1;
+      t.set(ref, { emailsNonOuvertsConsecutifs: n, enVeille: n >= veilleApres }, { merge: true });
+      t.update(doc.ref, { compteNonOuvert: true });
+    });
+  } else if ((type === 'ouvert' || type === 'clic') && !doc.get('ouvertLe') && !doc.get('cliqueLe'))
+    await ref.set(
+      { emailsNonOuvertsConsecutifs: 0, enVeille: false, updatedAt: t0 },
+      { merge: true },
+    );
 }
