@@ -155,15 +155,18 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     expect((await db.collection(collections.codesPromo).get()).size).toBe(1);
   });
 
-  it('une seule remise par 90 jours : la relance J+90 est annulée', async () => {
-    await jusquALOffre();
+  it('relance J+104 : 90 jours après l’offre de J+14, un nouveau code personnel', async () => {
+    const premier = (await jusquALOffre()).donnees!.code as string;
     await db
       .collection(collections.cycleEtat)
       .doc('a1')
       .update({ 'sequence.etape': 5, 'sequence.prochainEnvoi': Timestamp.fromMillis(T0) });
-    await planifierCycle(cycle(T0 + 90 * J));
+    await planifierCycle(cycle(T0 + 100 * J));
     expect(envois.map((e) => e.modele)).not.toContain('vis-offre-relance');
-    expect((await traces('email_annule')).map((t) => t.raison)).toContain('remise_refusee');
+    await planifierCycle(cycle(T0 + 104 * J));
+    const relance = envois.find((e) => e.modele === 'vis-offre-relance')!;
+    expect(relance.donnees!.code).not.toBe(premier);
+    expect((await db.collection(collections.codesPromo).get()).size).toBe(2);
   });
 
   it('paiement avec le code : appliqué sans saisie, marqué utilisé, plus aucune offre', async () => {

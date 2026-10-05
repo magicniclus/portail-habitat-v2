@@ -68,7 +68,7 @@ Départ : `fiche-en-ligne`.
 | **C** J+17, 8 h | `vis-offre-rappel` | « expire ce soir » : **uniquement si** l'email J+14 a été ouvert ou cliqué |
 | 1er du mois | `rapport-mensuel` | existant, avec encart Visibilité |
 
-Sans conversion à J+30 : plus aucun email calendrier. Seuls restent les emails **T** (au maximum 2 par mois) et le rapport mensuel. Une nouvelle offre €, `vis-offre-relance`, part à J+90.
+Sans conversion à J+30 : plus aucun email calendrier. Seuls restent les emails **T** (au maximum 2 par mois) et le rapport mensuel. Une nouvelle offre €, `vis-offre-relance`, part à J+104 (90 jours après l'offre de J+14, règle d'une remise tous les 90 jours ; validé le 05/10/2026).
 
 ### S5 · Gratuit → Premium direct (offre cible Premium, score ≥ 50)
 Même rythme que S4, avec des messages Premium : `vis-position` (variante Premium), `prem-demandes-manquees` (T), `prem-credits` (T). **Pas de remise** : l'argument est la **garantie** (4 demandes exclusives par mois, sinon le 2e mois est offert). Score ≥ 70 : **tâche d'appel commercial** à J+7.

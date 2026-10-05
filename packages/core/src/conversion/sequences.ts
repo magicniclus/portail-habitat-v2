@@ -103,7 +103,7 @@ export const SEQUENCES_DEFAUT: Record<
       sig('vis-recherches-manquees'),
       d('vis-offre-lancement', 14),
       d('vis-offre-rappel', 17),
-      d('vis-offre-relance', 90),
+      d('vis-offre-relance', 104),
     ],
   },
   S5: {

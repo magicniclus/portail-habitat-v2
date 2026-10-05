@@ -420,7 +420,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Écran `/admin/conversion`** : vue d'ensemble, séquences (créer, modifier, dupliquer, pause, supprimer avec devenir des entreprises, versions et audit), journal filtré, fiche cycle (pause, exclusion, étape forcée), tâches, réglages.
 
 **À trancher ou signaler**
-1. **D32c (⏳) remises** : valeurs codées par défaut (−30 % sur 12 mois, 72 h, 7 j en reconquête, une remise tous les 90 jours). Conséquence : la relance `vis-offre-relance` prévue à J+90 tombe 76 jours après l'offre de J+14 et **est donc annulée** par la règle des 90 jours. À arbitrer (décaler à J+104 ou compter les 90 jours depuis la dernière remise utilisée).
+1. **D32c (⏳) remises** : valeurs codées par défaut (−30 % sur 12 mois, 72 h, 7 j en reconquête, une remise tous les 90 jours). La relance `vis-offre-relance` passe de J+90 à **J+104** (validé le 05/10/2026) pour respecter la règle des 90 jours.
 2. **D32d (⏳) catégorie offres_pro** et **D32e (⏳) relances signées Julie** : en place, à valider juridiquement.
 3. **Choix faits par moi** : valeur d'un crédit dans les emails = 10 € (« 5 crédits (50 €) ») ; budget d'une demande manquée = milieu de la fourchette ; distance minimale affichée 1 km ; délai d'activation d'une demande offerte 48 h.
 4. **Modèle de données** : `codesPromo.stripePromotionCodeId` devient facultatif ; `cycleEtat` reçoit `codeActif`, `demandeOfferte`, `demandeOfferteRecue`, `derniersSignaux`, `signal`, `signaux.montantAchete30j` ; `appelsOffres` reçoit `offerteLe`, `offerteA` ; `emails` reçoit `ouvertLe`, `cliqueLe` ; nouveau moyen de déblocage `offerte_conversion` ; abonnement Stripe : métadonnée `codePromo` ; index ajoutés (attributions exclusives, codes, artisans par métier et plan, traces par séquence, témoin, tâches). La liste des délais souhaités est passée dans `@ph/core/demandes`.
@@ -515,6 +515,7 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
+- 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
 - 27/09/2026 — D47 barème des appels d'offres, D48 matching (propositions ⏳) — DECISIONS, docs/data ; STATS_DEMANDES §4 (emplacement des paramètres).
 - 27/09/2026 — D44 versions du socle (Next.js 16, TypeScript 6, ESLint 9, Zod 4 en français) — DECISIONS, CLAUDE.md, README, PROMPT_CLAUDE_CODE. EXPLOITATION §5 : DEPLOIEMENT.md au lot 14.
 - 27/09/2026 — D40 routes, D41 aiguillage des demandes, D42 emplacement du code et Tailwind 4, D43 suivi et découpage du lot 1 — DECISIONS, PLAN_DEV, README, ACCEPTANCE, INTEGRATIONS, CONVERSION, ADMIN, MATCHING, DATABASE, EMAILS, IA_ADMIN, COMPTES, ARCHITECTURE, PROMPT_CLAUDE_CODE, CLAUDE.md.
