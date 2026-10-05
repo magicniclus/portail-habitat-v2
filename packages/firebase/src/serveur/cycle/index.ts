@@ -20,4 +20,9 @@ export {
 } from './codes';
 export { attribuerDemandeOfferte, offrirDemandesInvendues } from './offertes';
 export { agregerCycleJour } from './agreger';
-export { enregistrerProspect, type ServicesProspect } from './prospects';
+export {
+  enregistrerProspect,
+  nomsMetiers,
+  planifierProspects,
+  type ServicesProspect,
+} from './prospects';

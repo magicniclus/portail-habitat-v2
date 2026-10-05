@@ -4,8 +4,10 @@ import {
   calculerCycles,
   envoyerDemandesManquees,
   expirerCodes,
+  nomsMetiers,
   offrirDemandesInvendues,
   planifierCycle,
+  planifierProspects,
 } from '@ph/firebase/cycle';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
@@ -72,5 +74,21 @@ export const cycleAgreger = onSchedule(
     );
     await agregerCycleJour(getFirestore(appAdmin()), veille);
     logger.info('Cycle : agrégat', { jour: veille });
+  },
+);
+
+/** `cycleProspects` (7 h 05) : suite de la séquence S1 des prospects (demande de la zone, J+12, mois). */
+export const cycleProspects = onSchedule(
+  { schedule: '5 7 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
+  async () => {
+    const db = getFirestore(appAdmin());
+    const bilan = await planifierProspects({
+      db,
+      horloge: Date.now,
+      notifier,
+      nomMetier: await nomsMetiers(db),
+      urlSite: (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
+    });
+    logger.info('Cycle : prospects', { ...bilan });
   },
 );

@@ -1,13 +1,16 @@
-import { preparerDonnees } from '@ph/core/conversion';
+import { emailsProspect, preparerDonnees } from '@ph/core/conversion';
+import { libelleDelai } from '@ph/core/demandes';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
 import { distanceKm } from '@ph/core/matching';
 import { TEXTE_CONSENTEMENT_PROSPECT } from '@ph/core/schemas';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { collections } from '../../chemins';
+import type { NomModele } from '@ph/core/notifications';
+import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import type { Geocodeur } from '../demandes/geocodage';
 import { empreinteEmail } from '../notifications/notifier';
+import { lireConfigCycle } from './moteur';
 
 const J = 86_400_000;
 const RAYON_KM = 20;
@@ -127,4 +130,152 @@ export async function enregistrerProspect(
       refObjet: `${collections.prospects}/${id}`,
       donnees: preparees.donnees,
     });
+}
+
+type DemandeProche = {
+  le: number;
+  geo: { latitude: number; longitude: number };
+  ville: string;
+  prestationId: string;
+  delai: string;
+  min: number;
+  max: number;
+};
+
+/** Demandes des 30 derniers jours d'un métier (une lecture par métier et par passage). */
+async function demandesRecentes(db: Firestore, metier: string, maintenant: number) {
+  const r = await db
+    .collection(collections.demandes)
+    .where('metierRequis', '==', metier)
+    .where('createdAt', '>=', Timestamp.fromMillis(maintenant - 30 * J))
+    .limit(500)
+    .get();
+  return r.docs
+    .filter((d) => d.get('adresseChantier.geo'))
+    .map((d): DemandeProche => ({
+      le: (d.get('createdAt') as Timestamp).toMillis(),
+      geo: d.get('adresseChantier.geo') as DemandeProche['geo'],
+      ville: d.get('adresseChantier.ville') as string,
+      prestationId: d.get('prestationId') as string,
+      delai: d.get('delaiSouhaite') as string,
+      min: d.get('estimation.minCentimes') as number,
+      max: d.get('estimation.maxCentimes') as number,
+    }));
+}
+
+const CLE_ENVOI: Record<string, 'demandeZone' | 'derniere' | 'resume'> = {
+  'prospect-demande-zone': 'demandeZone',
+  'prospect-derniere': 'derniere',
+  'resume-zone-mensuel': 'resume',
+};
+
+/**
+ * `cycleProspects` (7 h) : suite de la séquence S1. Un email au plus par prospect et par jour,
+ * dans l'ordre demande réelle de la zone, « dernière », résumé mensuel ; sans chiffre, rien.
+ */
+export async function planifierProspects(
+  s: Pick<ServicesProspect, 'db' | 'horloge' | 'notifier' | 'nomMetier' | 'urlSite'>,
+): Promise<{ examines: number; envoyes: number }> {
+  const maintenant = s.horloge();
+  const signataire = (await lireConfigCycle(s.db)).signataire.nom;
+  const prospects = await s.db
+    .collection(collections.prospects)
+    .where('etape', '==', 'prospect')
+    .limit(500)
+    .get();
+  const parMetier = new Map<string, Promise<DemandeProche[]>>();
+  const noms = new Map<string, string>();
+  let envoyes = 0;
+  for (const p of prospects.docs) {
+    if (p.get('desabonne') === true) continue;
+    const metier = (p.get('metiers') as string[])[0]!;
+    const nom = s.nomMetier(metier)?.toLowerCase();
+    const geo = p.get('geo') as DemandeProche['geo'] | undefined;
+    if (!nom || !geo) continue;
+    const envois = Object.fromEntries(
+      Object.entries((p.get('envois') as Record<string, Timestamp> | undefined) ?? {}).map(
+        ([k, v]) => [k, v.toMillis()],
+      ),
+    );
+    const possibles = emailsProspect({
+      creeLe: (p.get('createdAt') as Timestamp).toMillis(),
+      maintenant,
+      envois,
+    });
+    if (!parMetier.has(metier)) parMetier.set(metier, demandesRecentes(s.db, metier, maintenant));
+    const proches = (await parMetier.get(metier)!)
+      .map((d) => ({ ...d, km: Math.round(distanceKm(geo, d.geo)) }))
+      .filter((d) => d.km <= RAYON_KM);
+    const base = {
+      metier: nom,
+      ville: p.get('commune') as string,
+      lien: `${s.urlSite}/pro?metier=${metier}#inscription`,
+    };
+    const veille = proches
+      .filter((d) => d.km <= 15 && maintenant - d.le <= J)
+      .sort((a, b) => a.km - b.km)[0];
+    const mois = new Intl.DateTimeFormat('fr-FR', {
+      timeZone: 'Europe/Paris',
+      month: 'long',
+    }).format(maintenant - J);
+    const candidats: [string, Record<string, unknown>][] = [];
+    if (possibles.includes('prospect-demande-zone') && veille) {
+      if (!noms.has(veille.prestationId))
+        noms.set(
+          veille.prestationId,
+          ((await s.db.doc(chemins.prestationItem(veille.prestationId)).get()).get('nom') as
+            string | undefined) ?? 'Travaux',
+        );
+      candidats.push([
+        'prospect-demande-zone',
+        {
+          ...base,
+          ville: veille.ville,
+          travaux: noms.get(veille.prestationId),
+          budgetMinCentimes: veille.min,
+          budgetMaxCentimes: veille.max,
+          distanceKm: Math.max(1, veille.km),
+          delai: libelleDelai(veille.delai),
+        },
+      ]);
+    }
+    if (possibles.includes('prospect-derniere'))
+      candidats.push(['prospect-derniere', { ...base, signataire }]);
+    if (possibles.includes('resume-zone-mensuel') && proches.length)
+      candidats.push([
+        'resume-zone-mensuel',
+        {
+          ...base,
+          mois: `${mois[0]!.toUpperCase()}${mois.slice(1)}`,
+          demandes: proches.length,
+          budgetMoyenCentimes: Math.round(
+            proches.reduce((n, d) => n + (d.min + d.max) / 2, 0) / proches.length,
+          ),
+        },
+      ]);
+    for (const [modele, contexte] of candidats) {
+      const preparees = preparerDonnees(modele, contexte);
+      if (!preparees.ok) continue;
+      await s.notifier({
+        modele: modele as NomModele,
+        destinataire: { email: p.get('email') as string },
+        refObjet: `${collections.prospects}/${p.id}/${modele}/${new Date(maintenant).toISOString().slice(0, 10)}`,
+        donnees: preparees.donnees,
+      });
+      await p.ref.update({
+        [`envois.${CLE_ENVOI[modele]}`]: Timestamp.fromMillis(maintenant),
+        updatedAt: Timestamp.fromMillis(maintenant),
+      });
+      envoyes++;
+      break;
+    }
+  }
+  return { examines: prospects.size, envoyes };
+}
+
+/** Noms des métiers lus dans le référentiel (une lecture par passage de la tâche). */
+export async function nomsMetiers(db: Firestore): Promise<(id: string) => string | undefined> {
+  const r = await db.collection(chemins.metiersRecherche()).get();
+  const noms = new Map(r.docs.map((d) => [d.id, d.get('nom') as string]));
+  return (id) => noms.get(id);
 }

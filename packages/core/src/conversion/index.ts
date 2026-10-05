@@ -221,3 +221,4 @@ export {
 } from './libelles';
 export { tachesACreer, type TacheConversion } from './taches';
 export { agregerJourCycle, attribuerConversion } from './attribution';
+export { emailsProspect } from './prospects';

@@ -2,7 +2,7 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
-import { enregistrerProspect } from '../src/serveur/cycle';
+import { enregistrerProspect, planifierProspects } from '../src/serveur/cycle';
 import { empreinteEmail } from '../src/serveur/notifications';
 
 /** Prospects (CONVERSION §3 S1) : estimation reçue par email depuis la page d'acquisition. */
@@ -102,5 +102,63 @@ describe('enregistrerProspect', () => {
     await expect(enregistrerProspect(s, { ...e, metier: 'astronaute' })).rejects.toMatchObject({
       code: 'ENTREE_INVALIDE',
     });
+  });
+});
+
+describe('planifierProspects (séquence S1)', () => {
+  const prospect = (id: string, creeLe: number, p: Record<string, unknown> = {}) =>
+    db
+      .collection(collections.prospects)
+      .doc(id)
+      .set({
+        email: `${id}@exemple.fr`,
+        metiers: ['electricien'],
+        commune: 'Bordeaux',
+        geo: bordeaux,
+        etape: 'prospect',
+        desabonne: false,
+        createdAt: Timestamp.fromMillis(creeLe),
+        ...p,
+      });
+  const demande = (id: string, le: number, geo = { latitude: 44.8, longitude: -0.6 }) =>
+    db.doc(chemins.demande(id)).set({
+      metierRequis: 'electricien',
+      prestationId: 'tableau',
+      delaiSouhaite: 'asap',
+      adresseChantier: { ville: 'Talence', geo, codePostal: '33400' },
+      estimation: { minCentimes: 240_000, maxCentimes: 320_000 },
+      createdAt: Timestamp.fromMillis(le),
+    });
+
+  it('demande réelle à moins de 15 km arrivée la veille, puis rien pendant 7 jours', async () => {
+    await db.doc(chemins.prestationItem('tableau')).set({ nom: 'Tableau électrique' });
+    await prospect('p1', T - 3 * J);
+    await demande('d1', T - 3_600_000);
+    expect(await planifierProspects(s)).toEqual({ examines: 1, envoyes: 1 });
+    expect(envois[0]).toMatchObject({
+      modele: 'prospect-demande-zone',
+      destinataire: { email: 'p1@exemple.fr' },
+      donnees: {
+        travaux: 'Tableau électrique',
+        ville: 'Talence',
+        distanceKm: 5,
+        delai: 'Dès que possible',
+        budgetMinCentimes: 240_000,
+      },
+    });
+    await planifierProspects({ ...s, horloge: () => T + J });
+    expect(envois).toHaveLength(1);
+  });
+
+  it('J+12 : « dernière » signée ; désinscrit ou inscrit : rien', async () => {
+    await prospect('p2', T - 12 * J);
+    await prospect('p3', T - 12 * J, { desabonne: true });
+    await prospect('p4', T - 12 * J, { etape: 'inscription_commencee' });
+    await planifierProspects(s);
+    expect(envois.map((e) => [e.modele, e.destinataire.email, e.donnees.signataire])).toEqual([
+      ['prospect-derniere', 'p2@exemple.fr', 'Julie'],
+    ]);
+    await planifierProspects({ ...s, horloge: () => T + J });
+    expect(envois).toHaveLength(1);
   });
 });
