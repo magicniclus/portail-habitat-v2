@@ -50,6 +50,13 @@ export function bucketFichiers(env: NodeJS.ProcessEnv = process.env) {
   return getStorage(appAdmin(env)).bucket(nomBucket(env));
 }
 
+/** Bucket des replays (`REPLAYS_BUCKET`, cycle de vie 30 jours) ; émulateur : bucket des fichiers. */
+export function bucketReplays(env: NodeJS.ProcessEnv = process.env) {
+  return env.REPLAYS_BUCKET
+    ? getStorage(appAdmin(env)).bucket(env.REPLAYS_BUCKET)
+    : bucketFichiers(env);
+}
+
 /** Adresse de lecture d'un fichier PUBLIC selon storage.rules (logo, photos de réalisations). */
 export function urlPubliqueFichier(chemin: string, env: NodeJS.ProcessEnv = process.env): string {
   const hote = env.FIREBASE_STORAGE_EMULATOR_HOST

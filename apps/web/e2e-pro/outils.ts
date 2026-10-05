@@ -43,7 +43,7 @@ export async function connecter(
 }
 
 /** Admin SDK sur l'émulateur (variables héritées de `firebase emulators:exec`). */
-async function admin() {
+export async function admin() {
   const [{ getApps, initializeApp }, { getAuth }, { getFirestore, Timestamp }] = await Promise.all([
     import('firebase-admin/app'),
     import('firebase-admin/auth'),

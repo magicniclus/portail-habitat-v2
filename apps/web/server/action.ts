@@ -60,3 +60,28 @@ export function action<S extends z.ZodType, R>(
   const executer = envelopper(options, traitement);
   return async (brut) => executer(brut, await contexteRequete());
 }
+
+/**
+ * Enveloppe des envois de mesure du comportement (`/api/t`, COMPORTEMENT §3) : ni session ni
+ * App Check (un `sendBeacon` ne porte pas d'en-tête), client identifié par l'IP hachée avec un
+ * sel du jour (jamais d'IP en clair).
+ */
+export function actionMesure<S extends z.ZodType, R>(
+  options: OptionsEnveloppe<S>,
+  traitement: Traitement<S, ContexteBase, R>,
+): (brut: unknown) => Promise<Resultat<R>> {
+  const executer = envelopper(
+    { ...options, authentification: 'facultative', appCheck: false },
+    traitement,
+  );
+  return async (brut) => {
+    const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'inconnue';
+    const sel = `${process.env.COMPORTEMENT_SALT_SECRET ?? 'local'}:${new Date().toISOString().slice(0, 10)}`;
+    const empreinte = createHash('sha256').update(`${sel}:${ip}`).digest('hex').slice(0, 16);
+    return executer(brut, {
+      uid: null,
+      identifiantClient: `ip:${empreinte}`,
+      appCheckVerifie: false,
+    });
+  };
+}

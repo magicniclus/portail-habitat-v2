@@ -138,4 +138,6 @@ export const fichiers = {
   logo: (aid: string, nom: string) => `artisans/${aid}/logo/${nom}`,
   realisation: (aid: string, rid: string, nom: string) =>
     `artisans/${aid}/realisations/${rid}/${nom}`,
+  /** Replay compressé (bucket des replays, jamais lisible par un client). */
+  replay: (page: string, jour: string, vueId: string) => `replays/${page}/${jour}/${vueId}.json.gz`,
 } as const;

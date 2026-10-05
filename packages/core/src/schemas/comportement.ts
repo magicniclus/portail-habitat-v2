@@ -1,5 +1,5 @@
 import { z } from '../zod';
-import { horodatage, id, meta, schemaVersion } from './commun';
+import { horodatage, id, jourIso, meta, schemaVersion } from './commun';
 
 /** Collections de COMPORTEMENT.md §5 : écrites par les Functions uniquement. */
 export const pageSuivie = z.object({
@@ -17,12 +17,16 @@ export const pageSuivie = z.object({
 
 const compteurs = z.record(z.string(), z.number());
 
+/** Résumé d'une page vue (`comportementSessions/{vueId}`), écrit par `/api/t` : le dernier envoi l'emporte. */
 export const sessionComportement = z.object({
   schemaVersion,
+  sessionId: z.string(),
   page: z.string(),
   variante: z.string().optional(),
   app: z.enum(['particulier', 'pro', 'diag']),
+  appareil: z.enum(['ordinateur', 'tablette', 'mobile']),
   largeur: z.number().int().positive(),
+  hauteur: z.number().int().nonnegative(),
   source: z.string(),
   nouvelle: z.boolean(),
   duree: z.number().nonnegative(),
@@ -30,13 +34,20 @@ export const sessionComportement = z.object({
   cellulesClics: compteurs,
   cellulesAttention: compteurs,
   sections: compteurs,
-  elements: z.record(z.string(), z.object({ survolMs: z.number(), clics: z.number() })),
+  elements: z.record(
+    z.string(),
+    z.object({ survolMs: z.number(), clics: z.number(), hesitations: z.number().optional() }),
+  ),
   morts: z.array(z.string()),
   rages: z.array(z.string()),
-  sortie: z.object({ section: z.string(), type: z.string() }).optional(),
-  conversion: z.boolean().optional(),
+  champs: compteurs,
+  abandon: z.string().optional(),
+  sortie: z.object({ section: z.string(), type: z.string(), intention: z.boolean() }),
+  conversion: z.enum(['inscription', 'demande', 'paiement']).optional(),
   trajet: z.array(z.number()).optional(),
   replayPath: z.string().optional(),
+  /** Jour de la visite (heure de Paris) : l'agrégation de nuit lit par page et par jour. */
+  jour: jourIso,
   createdAt: horodatage,
   expireLe: horodatage,
 });

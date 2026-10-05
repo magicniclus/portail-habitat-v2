@@ -70,3 +70,26 @@ export const PAGES_SUIVIES = {
   diagnostic: 'diag',
 } as const satisfies Record<string, 'particulier' | 'pro' | 'diag'>;
 export type PageSuivie = keyof typeof PAGES_SUIVIES;
+
+/** Résumés de visite conservés 35 jours (COMPORTEMENT §7). */
+export const DUREE_SESSION_JOURS = 35;
+/** Replays : au plus 300 par jour (COUTS §2). */
+export const REPLAYS_MAX_JOUR = 300;
+
+/**
+ * Échantillonnage côté serveur, stable pour une session : toutes les pages vues d'un même
+ * visiteur sont gardées ou écartées ensemble (hachage FNV-1a de l'identifiant).
+ */
+export function visiteRetenue(sessionId: string, echantillon: number) {
+  if (echantillon >= 1) return true;
+  let h = 0x811c9dc5;
+  for (let i = 0; i < sessionId.length; i++) h = Math.imul(h ^ sessionId.charCodeAt(i), 0x01000193);
+  return (h >>> 0) % 10_000 < echantillon * 10_000;
+}
+
+/** Robots, navigateurs automatisés et aperçus de liens : jamais mesurés. */
+export const estRobot = (agent: string | null) =>
+  !agent ||
+  /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|curl|wget|python|java\//i.test(
+    agent,
+  );
