@@ -15,6 +15,7 @@
   "dependencies": {
     "@ph/core": "workspace:*",
     "@ph/firebase": "workspace:*",
+    "@ph/tracker": "workspace:*",
     "@ph/ui": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
     "@sentry/nextjs": "^11.0.0",

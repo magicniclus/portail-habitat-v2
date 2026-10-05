@@ -12,6 +12,7 @@ import { bouton } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarreRecherche } from '@/features/annuaire/BarreRecherche';
+import { Traceur } from '@/features/comportement/Traceur';
 import { Filtres, type OptionsFiltres } from '@/features/annuaire/Filtres';
 import { PanneauFiltres } from '@/features/annuaire/PanneauFiltres';
 import { Resultats } from '@/features/annuaire/Resultats';
@@ -91,7 +92,10 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
           <PanneauFiltres key={cle} valeurs={f} options={options} nbActifs={nbActifs} />
         </div>
         <div className="grid items-start gap-x-[clamp(22px,3vw,38px)] gap-y-6 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
-          <aside className="sticky top-4.5 hidden max-h-[calc(100vh-36px)] min-h-0 flex-col gap-3.5 lg:flex">
+          <aside
+            data-ph-section="filtres"
+            className="sticky top-4.5 hidden max-h-[calc(100vh-36px)] min-h-0 flex-col gap-3.5 lg:flex"
+          >
             <div className="flex min-h-0 flex-col overflow-hidden rounded-[14px] border border-trait bg-blanc p-4.5">
               <p className="m-0 mb-4 flex-none text-base font-bold">Filtres</p>
               <div className="min-h-0 overflow-y-auto pr-1.5">
@@ -103,7 +107,12 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
               <p className="m-0 mb-3 text-[13.5px] leading-[21px] text-neutre-800">
                 Décrivez votre projet : les artisans disponibles de votre secteur viennent à vous.
               </p>
-              <Link href={routes.simulateur} prefetch={false} className={bouton()}>
+              <Link
+                href={routes.simulateur}
+                prefetch={false}
+                className={bouton()}
+                data-ph="cta-deposer-projet"
+              >
                 Déposer mon projet
               </Link>
             </div>
@@ -111,6 +120,7 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
           <Resultats f={f} r={r} nomMetier={nomMetier} />
         </div>
       </main>
+      <Traceur page="annuaire" />
       <PiedPublic {...piedParticuliers} />
     </>
   );

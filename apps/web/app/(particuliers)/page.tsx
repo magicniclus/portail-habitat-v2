@@ -4,6 +4,8 @@ import { Application } from '@/features/accueil/Application';
 import { ArtisansVedette } from '@/features/accueil/ArtisansVedette';
 import { Avis } from '@/features/accueil/Avis';
 import { CommentCaMarche } from '@/features/accueil/CommentCaMarche';
+import { Traceur } from '@/features/comportement/Traceur';
+import { Zone } from '@/features/comportement/Zone';
 import { FAQ_ACCUEIL } from '@/features/accueil/contenu';
 import { AppelFinal, BandeauArtisan, FaqAccueil, Villes } from '@/features/accueil/FinDePage';
 import { Hero } from '@/features/accueil/Hero';
@@ -44,19 +46,44 @@ export default async function Accueil() {
       <JsonLd donnees={faqPage(FAQ_ACCUEIL)} />
       <EnTetePublic {...enTeteParticuliers} />
       <main>
-        <Hero chiffres={chiffres} />
-        <Metiers />
-        <CommentCaMarche />
-        <ApercuSimulateur />
-        <ArtisansVedette fiches={artisans ?? []} />
-        <Avis chiffres={chiffres} temoignages={choisirTemoignages(avis ?? [])} />
-        <Inspirations liste={choisirInspirations(avis ?? [])} />
-        <Application />
-        <Villes chiffres={chiffres} />
-        <BandeauArtisan />
-        <FaqAccueil />
-        <AppelFinal />
+        <Zone id="hero">
+          <Hero chiffres={chiffres} />
+        </Zone>
+        <Zone id="metiers">
+          <Metiers />
+        </Zone>
+        <Zone id="comment-ca-marche">
+          <CommentCaMarche />
+        </Zone>
+        <Zone id="simulateur">
+          <ApercuSimulateur />
+        </Zone>
+        <Zone id="artisans">
+          <ArtisansVedette fiches={artisans ?? []} />
+        </Zone>
+        <Zone id="avis">
+          <Avis chiffres={chiffres} temoignages={choisirTemoignages(avis ?? [])} />
+        </Zone>
+        <Zone id="inspirations">
+          <Inspirations liste={choisirInspirations(avis ?? [])} />
+        </Zone>
+        <Zone id="application">
+          <Application />
+        </Zone>
+        <Zone id="villes">
+          <Villes chiffres={chiffres} />
+        </Zone>
+        <Zone id="bandeau-artisan">
+          <BandeauArtisan />
+        </Zone>
+        <Zone id="faq">
+          <FaqAccueil />
+        </Zone>
+        <Zone id="appel-final">
+          <AppelFinal />
+        </Zone>
       </main>
+      <Traceur page="accueil" />
       <PiedPublic {...piedParticuliers} />
     </>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { Traceur } from '@/features/comportement/Traceur';
 import { PageParcours } from '@/features/parcours/PageParcours';
 import { Simulateur } from '@/features/simulateur/Simulateur';
 import { lireCatalogueSimulateur } from '@/server/simulateur';
@@ -18,6 +19,7 @@ export default function PageSimulateur() {
       <Suspense>
         <Simulateur catalogue={lireCatalogueSimulateur()} />
       </Suspense>
+      <Traceur page="simulateur" />
     </PageParcours>
   );
 }

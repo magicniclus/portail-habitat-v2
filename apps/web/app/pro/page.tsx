@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
+import { Traceur } from '@/features/comportement/Traceur';
+import { Zone } from '@/features/comportement/Zone';
 import { FAQ_PRO } from '@/features/pro/contenu';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';
@@ -44,6 +46,7 @@ export default async function AcquisitionArtisans() {
       <EnTetePublic {...enTetePro} />
       <main>
         <section
+          data-ph-section="hero"
           className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,60px)] gap-y-8 py-[clamp(24px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]`}
         >
           <AccrochePro chiffres={chiffres} bandeau={<BandeauMetier groupes={groupes} />} />
@@ -53,15 +56,32 @@ export default async function AcquisitionArtisans() {
             demandesMois={chiffres?.demandes ?? null}
           />
         </section>
-        <ExemplesDemandes />
-        <EtapesPro />
-        <EspaceArtisan />
-        <FichePro />
-        <ApplicationPro />
-        <Tarifs prix={prix} />
-        <FaqPro />
-        <AppelFinalPro />
+        <Zone id="exemples">
+          <ExemplesDemandes />
+        </Zone>
+        <Zone id="etapes">
+          <EtapesPro />
+        </Zone>
+        <Zone id="espace">
+          <EspaceArtisan />
+        </Zone>
+        <Zone id="fiche">
+          <FichePro />
+        </Zone>
+        <Zone id="application">
+          <ApplicationPro />
+        </Zone>
+        <Zone id="offres">
+          <Tarifs prix={prix} />
+        </Zone>
+        <Zone id="faq">
+          <FaqPro />
+        </Zone>
+        <Zone id="appel-final">
+          <AppelFinalPro />
+        </Zone>
       </main>
+      <Traceur page="acquisition-artisans" />
       <PiedPublic {...piedPro} variantLogo="pro" />
     </>
   );

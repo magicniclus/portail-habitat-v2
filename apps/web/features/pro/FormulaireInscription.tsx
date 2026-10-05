@@ -5,6 +5,7 @@ import { Banner, Button, Checkbox, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, type FormEvent } from 'react';
+import { signalerConversion } from '@ph/tracker';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import { ChoixMetiers } from './ChoixMetiers';
@@ -75,6 +76,7 @@ export function FormulaireInscription({
     const r = await posterJson<null>('/api/pro/inscription', brut);
     setEnCours(false);
     if (!r.ok) return setErreurGenerale(r.message);
+    signalerConversion('inscription');
     router.push('/pro/inscription/zone' as Parameters<typeof router.push>[0]);
   };
 
@@ -159,7 +161,13 @@ export function FormulaireInscription({
         {erreurs.cgv ? (
           <p className="m-0 text-sm font-semibold text-danger">{erreurs.cgv}</p>
         ) : null}
-        <Button type="submit" pleineLargeur className="min-h-12" disabled={enCours}>
+        <Button
+          type="submit"
+          pleineLargeur
+          className="min-h-12"
+          disabled={enCours}
+          data-ph="cta-inscription"
+        >
           {enCours ? 'Enregistrement…' : 'Voir les demandes de ma zone'}
         </Button>
         <GarantiesInscription />

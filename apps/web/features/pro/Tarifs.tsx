@@ -25,7 +25,10 @@ function Formule({
   inclusTitre,
   inclus,
   vedette,
+  suivi,
 }: {
+  /** Clé de mesure (`data-ph`) : prix et carte de la formule. */
+  suivi: string;
   surtitre: string;
   nom: string;
   accroche: string;
@@ -39,6 +42,7 @@ function Formule({
 }) {
   return (
     <li
+      data-ph={`offre-${suivi}`}
       className={cn(
         'relative flex flex-col rounded-card bg-blanc p-[clamp(22px,2.4vw,30px)] shadow-sm',
         vedette && 'border-2 border-accent shadow-md',
@@ -61,7 +65,12 @@ function Formule({
             {barre}
           </s>
         ) : null}
-        <span className="text-[44px] leading-none font-bold tracking-tight">{prix}</span>
+        <span
+          data-ph={`prix-${suivi}`}
+          className="text-[44px] leading-none font-bold tracking-tight"
+        >
+          {prix}
+        </span>
         <span className="text-[15px] text-neutre-800">HT / mois</span>
       </p>
       <p className="m-0 mt-2 mb-[22px] text-sm leading-5 text-neutre-700">{detail}</p>
@@ -143,12 +152,14 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
           <Formule
             surtitre="Pour démarrer"
             nom="Gratuit"
+            suivi="gratuit"
             accroche="Votre fiche en ligne et les demandes de votre zone, sans rien payer."
             prix={formatEuros(0)}
             detail="Pour toujours. Sans carte bancaire, sans engagement."
             action={
               <a
                 href="#inscription"
+                data-ph="cta-gratuit"
                 className={bouton({
                   variant: 'secondaire',
                   pleineLargeur: true,
@@ -176,6 +187,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
           <Formule
             surtitre="Pour être vu en premier"
             nom="Visibilité"
+            suivi="visibilite"
             accroche="Votre fiche mise en avant auprès des particuliers de votre secteur géographique."
             prix={ht(g.visibilite.parMois)}
             barre={g.visibilite.barre ? ht(g.visibilite.barre) : null}
@@ -187,6 +199,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
             action={
               <Link
                 href={routes.proAbonnement('visibilite', f)}
+                data-ph="cta-visibilite"
                 className={bouton({
                   variant: 'secondaire',
                   pleineLargeur: true,
@@ -216,6 +229,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
             vedette
             surtitre="Pour remplir votre planning"
             nom="Premium"
+            suivi="premium"
             accroche="Des clients rien que pour vous chaque mois, et la priorité sur les appels d'offres."
             prix={ht(g.premium.parMois)}
             barre={g.premium.barre ? ht(g.premium.barre) : null}
@@ -227,6 +241,7 @@ export function Tarifs({ prix }: { prix: PrixAffiches }) {
             action={
               <Link
                 href={routes.proAbonnement('premium', f)}
+                data-ph="cta-premium"
                 className={bouton({ pleineLargeur: true, className: 'min-h-[50px]' })}
               >
                 Passer Premium

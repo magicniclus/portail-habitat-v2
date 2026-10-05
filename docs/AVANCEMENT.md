@@ -26,7 +26,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
 | 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
-| 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
+| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e) ; traceur (jsdom, poids) | 13c-1 traceur fait ; suite : §22 |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
@@ -429,6 +429,20 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 3. **Choix faits par moi** : valeur d'un crédit dans les emails = 10 € (« 5 crédits (50 €) ») ; budget d'une demande manquée = milieu de la fourchette ; distance minimale affichée 1 km ; délai d'activation d'une demande offerte 48 h.
 4. **Modèle de données** : `codesPromo.stripePromotionCodeId` devient facultatif ; `cycleEtat` reçoit `codeActif`, `demandeOfferte`, `demandeOfferteRecue`, `derniersSignaux`, `signal`, `signaux.montantAchete30j` ; `appelsOffres` reçoit `offerteLe`, `offerteA` ; `emails` reçoit `ouvertLe`, `cliqueLe` ; nouveau moyen de déblocage `offerte_conversion` ; abonnement Stripe : métadonnée `codePromo` ; index ajoutés (attributions exclusives, codes, artisans par métier et plan, traces par séquence, témoin, tâches). La liste des délais souhaités est passée dans `@ph/core/demandes`.
 5. **Reste à faire** : `prospect-temoignage` (J+5) attend un vrai délai de première demande par métier  ; `vis-recherches-manquees` (attend le comptage des recherches du lot 13c) ;  journal en temps réel (aujourd'hui rechargé à l'ouverture).
+
+## 22. Lot 13c — Comportement et IA (en cours, 05/10/2026)
+
+Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13c-3 agrégation de nuit, alertes et tests A/B des pages, 13c-4 écran `/admin/comportement`, 13c-5 assistant IA, 13c-6 aide à la rédaction. Replays « maison, légers » (curseur, clics, défilement rejoués sur une capture, pas de DOM) ; assistant prêt mais coupé tant que `ANTHROPIC_API_KEY` n'est pas posée.
+
+**Fait (13c-1)**
+- **Nouveau paquet `@ph/tracker`** (dépendance signalée, 3,7 Ko compressé, test de poids < 6 Ko) : résumé de la page vue tenu en mémoire et envoyé une fois (`sendBeacon` à la sortie ou au changement de page, repli `fetch` keepalive, envoi de secours à 60 s) ; cellules de 20 px sur la mise en page de référence (1280 / 768 / 390 px), attention pondérée par la durée des arrêts, profondeur par paliers de 5 %, temps par section, survols et clics des éléments `data-ph`, clics morts, clics de rage, hésitations (arrêt de 2 s sans clic dans les 5 s), champs (temps, abandon, jamais la valeur), sortie (section, type, intention), conversion, trajet simplifié (10 % des sessions ordinateur, 40 points), replay compact plafonné à 2 000 événements (5 % des sessions, ou rage, ou abandon).
+- **Consentement** : démarre seulement avec « Mesure d'audience détaillée » et hors Do Not Track / Global Privacy Control ; retrait du consentement en cours de visite = rien n'est envoyé et les repères de session sont effacés. Lien « Ne plus mesurer ma visite » dans le pied de page public.
+- **Pages suivies** (`PAGES_SUIVIES`, `@ph/core/comportement`) : accueil, annuaire, simulateur, `/pro`, diagnostic ; sections marquées (`data-ph-section`), offres, prix et boutons marqués (`data-ph`) ; conversions signalées : inscription commencée sur `/pro`, demande envoyée par le simulateur. Les espaces connectés ne sont pas suivis.
+- **Schéma** `entreeResumeVisite` (strict, borné, clés sans texte libre) pour la future route `/api/t`.
+
+**À signaler**
+1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).
+2. Modèle : la session reçoit `appareil`, `hauteur`, `champs`, `abandon`, `elements.*.hesitations`, `sortie.intention` (à ajouter à `sessionComportement` au 13c-2).
 
 ## 2. Incohérences et zones floues
 

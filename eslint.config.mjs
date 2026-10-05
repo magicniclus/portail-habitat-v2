@@ -138,6 +138,16 @@ export default tseslint.config(
     },
   },
   {
+    files: ['packages/tracker/**/*.ts'],
+    ignores: TESTS,
+    rules: {
+      'no-restricted-imports': restreindre(
+        [interdits.react, interdits.next, interdits.firebase, ['node:*']],
+        '@ph/tracker tourne dans le navigateur et reste sous 6 Ko : seul @ph/core est autorisé.',
+      ),
+    },
+  },
+  {
     files: ['packages/firebase/**/*.ts', 'packages/emails/**/*.{ts,tsx}'],
     ignores: TESTS,
     rules: {
@@ -161,6 +171,7 @@ export default tseslint.config(
         { type: 'ui', pattern: 'packages/ui' },
         { type: 'firebase', pattern: 'packages/firebase' },
         { type: 'emails', pattern: 'packages/emails' },
+        { type: 'tracker', pattern: 'packages/tracker' },
         { type: 'config', pattern: 'packages/config' },
         { type: 'web', pattern: 'apps/web' },
         { type: 'functions', pattern: 'apps/functions' },
@@ -182,13 +193,21 @@ export default tseslint.config(
               allow: { to: { element: { types: { anyOf: ['firebase', 'core'] } } } },
             },
             {
+              from: { element: { type: 'tracker' } },
+              allow: { to: { element: { types: { anyOf: ['tracker', 'core'] } } } },
+            },
+            {
               from: { element: { type: 'emails' } },
               allow: { to: { element: { types: { anyOf: ['emails', 'ui', 'core'] } } } },
             },
             {
               from: { element: { type: 'web' } },
               allow: {
-                to: { element: { types: { anyOf: ['web', 'core', 'ui', 'firebase', 'emails'] } } },
+                to: {
+                  element: {
+                    types: { anyOf: ['web', 'core', 'ui', 'firebase', 'emails', 'tracker'] },
+                  },
+                },
               },
             },
             {

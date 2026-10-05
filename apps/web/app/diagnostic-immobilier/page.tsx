@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Traceur } from '@/features/comportement/Traceur';
+import { Zone } from '@/features/comportement/Zone';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { FAQ_DIAG } from '@/features/diagnostic/contenu';
 import { enTeteDiag, piedDiag } from '@/features/diagnostic/navigation';
@@ -40,15 +42,32 @@ export default async function DiagnosticImmobilier() {
       />
       <EnTetePublic {...enTeteDiag} />
       <main>
-        <HeroDiag chiffres={chiffresVitrine(stats)} />
-        <Diagnostics />
-        <Reperes />
-        <Deroule />
-        <Tarifs />
-        <FaqDiag />
-        <AppelFinalDiag />
-        <LiensCommunes />
+        <Zone id="hero">
+          <HeroDiag chiffres={chiffresVitrine(stats)} />
+        </Zone>
+        <Zone id="diagnostics">
+          <Diagnostics />
+        </Zone>
+        <Zone id="reperes">
+          <Reperes />
+        </Zone>
+        <Zone id="deroule">
+          <Deroule />
+        </Zone>
+        <Zone id="tarifs">
+          <Tarifs />
+        </Zone>
+        <Zone id="faq">
+          <FaqDiag />
+        </Zone>
+        <Zone id="appel-final">
+          <AppelFinalDiag />
+        </Zone>
+        <Zone id="communes">
+          <LiensCommunes />
+        </Zone>
       </main>
+      <Traceur page="diagnostic" />
       <PiedPublic
         {...piedDiag}
         variantLogo="diag"
