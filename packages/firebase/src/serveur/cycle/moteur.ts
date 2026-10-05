@@ -515,6 +515,18 @@ export async function tenterEnvoi(
     ...offre,
     ...e.surcharge,
   };
+  if (e.modele === 'resiliation-alternative') {
+    // Abonnement résilié en fin de période : produit et date de fin réels (S8).
+    const abo = (
+      await s.db.collection(collections.abonnements).where('artisanId', '==', etat.id).get()
+    ).docs.find((d) => d.get('annulationFinPeriode') === true && d.get('statut') === 'active');
+    if (abo)
+      Object.assign(contexte, {
+        produit: abo.get('produit') as string,
+        finLe: formatDate((abo.get('finPeriode') as Timestamp).toMillis(), 'long'),
+        lien: `${urlSite}/pro/facturation`,
+      });
+  }
   const preparees = preparerDonnees(e.modele, contexte);
   if (!preparees.ok) {
     await tracer(s.db, maintenant, {

@@ -5,6 +5,14 @@ export {
 } from './catalogue';
 export { lireFacturation, type AbonnementPro, type FacturePro } from './lecture';
 export {
+  accepterAlternative,
+  confirmerResiliation,
+  lireResiliation,
+  proposerAlternative,
+  type AbonnementResiliable,
+  type ServicesResiliation,
+} from './resiliation';
+export {
   creerCheckoutAbonnement,
   creerCheckoutPaiement,
   ouvrirPortailClient,

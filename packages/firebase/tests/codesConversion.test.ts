@@ -38,6 +38,7 @@ const stripe = {
   },
   billingPortal: { sessions: { create: async () => ({ url: 'x' }) } },
   refunds: { create: async () => ({ id: 're_1' }) },
+  subscriptions: { update: async (id: string) => ({ id }) },
   coupons: {
     create: async (p: Record<string, unknown>) => {
       appels.push({ type: 'coupon', p });

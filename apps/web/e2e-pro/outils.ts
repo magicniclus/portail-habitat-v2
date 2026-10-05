@@ -483,3 +483,26 @@ export async function litigeOuvert(artisanId: string): Promise<{ id: string; tex
   });
   return { id, texte };
 }
+
+/** Abonnement actif (miroir Stripe) pour l'entreprise du compte ; renvoie son identifiant. */
+export async function abonnementActif(
+  email: string,
+  produit: 'premium' | 'visibilite',
+): Promise<string> {
+  const { db, Timestamp } = await admin();
+  const artisanId = await entrepriseDe(email);
+  const id = `sub_e2e${Date.now()}`;
+  await db.doc(`${collections.abonnements}/${id}`).set({
+    schemaVersion: 1,
+    artisanId,
+    produit,
+    periode: 'mensuel',
+    statut: 'active',
+    annulationFinPeriode: false,
+    debutPeriode: Timestamp.fromMillis(Date.now() - 10 * 86_400_000),
+    finPeriode: Timestamp.fromMillis(Date.now() + 20 * 86_400_000),
+    sieges: 0,
+    createdAt: Timestamp.now(),
+  });
+  return id;
+}

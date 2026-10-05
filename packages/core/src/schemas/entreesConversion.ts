@@ -99,3 +99,10 @@ export const entreeProspect = z.strictObject({
 export const entreePublicationFacebook = z.strictObject({
   departement: z.string().regex(/^(\d{2}|2[AB]|97)$/),
 });
+
+/** Parcours de résiliation (CONVERSION S8) : raison obligatoire, puis alternative ou confirmation. */
+export const entreeResiliation = z.strictObject({
+  etape: z.enum(['proposer', 'accepter', 'confirmer']),
+  abonnementId: z.string().regex(/^sub_[A-Za-z0-9]+$/),
+  raison: z.enum(['trop_cher', 'pas_assez_demandes', 'saison_creuse', 'autre']),
+});

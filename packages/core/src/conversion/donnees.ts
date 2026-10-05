@@ -34,7 +34,7 @@ const REQUIS: Record<string, readonly string[]> = {
   'prem-renouvellement': ['date'],
   'passage-annuel': [],
   'garantie-tenue': ['demandesMois'],
-  'resiliation-alternative': ['produit', 'finLe', 'nbAvis'],
+  'resiliation-alternative': ['produit', 'finLe'],
   'reconquete-1': ['demandesExclusives', 'recherches', 'position', 'code', 'expire'],
   'reconquete-2': ['signataire'],
 };

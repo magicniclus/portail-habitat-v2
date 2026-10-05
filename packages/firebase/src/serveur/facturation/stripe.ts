@@ -107,6 +107,17 @@ export interface ClientStripe {
       metadata: Record<string, string>;
     }): Promise<{ id: string }>;
   };
+  subscriptions: {
+    update(
+      id: string,
+      p: {
+        cancel_at_period_end?: boolean;
+        discounts?: { coupon: string }[];
+        pause_collection?: { behavior: 'void'; resumes_at: number };
+        metadata?: Record<string, string>;
+      },
+    ): Promise<{ id: string }>;
+  };
   refunds: {
     create(
       p: { payment_intent: string; metadata: Record<string, string> },

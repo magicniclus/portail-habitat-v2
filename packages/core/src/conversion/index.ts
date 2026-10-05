@@ -227,3 +227,9 @@ export { agregerJourCycle, attribuerConversion } from './attribution';
 export { emailsProspect } from './prospects';
 export { adresseExpediteur } from './reponses';
 export { LIEN_FACEBOOK, textePublicationFacebook } from './facebook';
+export {
+  alternativeResiliation,
+  RAISONS_RESILIATION,
+  type AlternativeResiliation,
+  type RaisonResiliation,
+} from './retention';

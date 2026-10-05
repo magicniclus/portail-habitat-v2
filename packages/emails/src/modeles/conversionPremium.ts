@@ -259,7 +259,7 @@ export const modelesConversionPremium = {
         ],
       ]),
       alerte(
-        `Le ${d.finLe}, votre fiche repassera en gratuit. Vos ${d.nbAvis} avis sont conservés.`,
+        `Le ${d.finLe}, votre fiche repassera en gratuit. ${d.nbAvis ? `Vos ${d.nbAvis} avis sont conservés.` : 'Votre fiche et ses informations sont conservées.'}`,
         'warn',
       ),
       bouton('Choisir une option', d.lien),

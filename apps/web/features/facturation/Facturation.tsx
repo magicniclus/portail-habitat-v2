@@ -67,7 +67,16 @@ export function OffreActuelle({
           );
         })}
       </ul>
-      {gerer ? <GererAbonnement /> : null}
+      {gerer ? (
+        <div className="flex flex-wrap items-start gap-3">
+          <GererAbonnement />
+          {abonnements.some((a) => a.statut === 'active' && !a.annulationFinPeriode) ? (
+            <Link href={routes.proResiliation} className="flex min-h-11 items-center text-sm">
+              Résilier mon abonnement
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }
