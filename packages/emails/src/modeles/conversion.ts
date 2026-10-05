@@ -22,7 +22,8 @@ import {
 
 interface Estimation extends BaseConversion {
   demandes30j: number;
-  budgetMoyenCentimes: number;
+  /** Absent sans demande réelle du métier dans le département. */
+  budgetMoyenCentimes?: number;
   inscritsZone: number;
 }
 interface DemandeZone extends BaseConversion {
@@ -125,7 +126,15 @@ export const modelesConversion = {
       titre(`${d.demandes30j} particuliers cherchent un ${d.metier} autour de ${d.ville}`),
       stats([
         [String(d.demandes30j), '30 jours', 'Demandes dans votre métier'],
-        [formatEuros(d.budgetMoyenCentimes), '', 'Budget moyen par projet'],
+        ...(d.budgetMoyenCentimes
+          ? [
+              [formatEuros(d.budgetMoyenCentimes), '', 'Budget moyen par projet'] as [
+                string,
+                string,
+                string,
+              ],
+            ]
+          : []),
         [
           String(d.inscritsZone),
           '',
@@ -133,7 +142,9 @@ export const modelesConversion = {
         ],
       ]),
       para(
-        `Ces demandes sont aujourd’hui partagées entre seulement ${d.inscritsZone} ${d.metier}s. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.`,
+        d.inscritsZone
+          ? `Ces demandes sont aujourd’hui partagées entre seulement ${d.inscritsZone} ${d.metier}s. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.`
+          : `Aucun ${d.metier} n’est encore inscrit à 20 km : les premiers inscrits reçoivent ces demandes. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.`,
       ),
       bouton('Recevoir mes premières demandes', d.lien),
       note(
@@ -224,7 +235,12 @@ export const modelesConversion = {
       bouton('Voir comment les recevoir', d.lien),
       note('Vous recevez ce résumé une fois par mois. Désabonnement en un clic ci-dessous.'),
     ],
-    exemple: { ...EX_ESTIMATION, mois: 'Septembre', demandes: 27 },
+    exemple: {
+      ...EX_ESTIMATION,
+      budgetMoyenCentimes: 640_000,
+      mois: 'Septembre',
+      demandes: 27,
+    },
   }),
   'vis-position': modele<Position>({
     sujet: (d) => `Vous êtes ${d.position}e sur ${d.total} ${d.metier}s à ${d.ville}`.slice(0, 59),

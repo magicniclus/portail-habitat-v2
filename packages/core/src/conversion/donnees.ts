@@ -3,7 +3,7 @@
  * S'il en manque un (ou s'il vaut 0), l'email ne part pas : le moteur trace « plus_valable ».
  */
 const REQUIS: Record<string, readonly string[]> = {
-  'prospect-estimation': ['demandes30j', 'budgetMoyenCentimes', 'inscritsZone'],
+  'prospect-estimation': ['demandes30j'],
   'prospect-demande-zone': [
     'travaux',
     'budgetMinCentimes',

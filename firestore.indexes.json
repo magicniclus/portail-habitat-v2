@@ -1049,6 +1049,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "demandes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "metierRequis",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

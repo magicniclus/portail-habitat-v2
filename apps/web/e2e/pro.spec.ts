@@ -45,6 +45,30 @@ test.describe('Acquisition artisans (/pro)', () => {
     await expect(page.getByText(`≈ ${attendu.total} demandes estimées`)).toBeVisible();
   });
 
+  test('prospect : l’estimation reçue par email, usage de l’adresse affiché (CONVERSION S1, §7)', async ({
+    page,
+  }) => {
+    let envoye: unknown = null;
+    await page.route('**/api/pro/prospect', (r) => {
+      envoye = r.request().postDataJSON();
+      return r.fulfill({ status: 200, json: { ok: true, data: null } });
+    });
+    await page.goto('/pro?metier=couvreur');
+    await page.getByLabel(/^Code postal/).fill('33000');
+    const bloc = page.getByRole('form', { name: 'Recevoir l’estimation par email' });
+    await expect(bloc).toContainText('Désinscription en un clic');
+    await bloc.getByRole('button', { name: 'M’envoyer l’estimation' }).click();
+    await expect(bloc).toContainText('Indiquez une adresse email valide.');
+    await bloc.getByLabel('Email').fill('marc@exemple.fr');
+    await bloc.getByRole('button', { name: 'M’envoyer l’estimation' }).click();
+    await expect(page.getByText('C’est envoyé')).toBeVisible();
+    expect(envoye).toMatchObject({
+      email: 'marc@exemple.fr',
+      metier: 'couvreur',
+      codePostal: '33000',
+    });
+  });
+
   test('ACQ-02 : « Espace pro » (pied de page sur mobile) mène à la connexion ; jamais le mot « lead »', async ({
     page,
   }) => {

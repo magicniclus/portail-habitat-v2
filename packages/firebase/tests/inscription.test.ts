@@ -1,3 +1,4 @@
+import { empreinteEmail } from '../src/serveur/notifications';
 import { entreeInscriptionEtape1 } from '@ph/core/schemas';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
@@ -70,6 +71,13 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
       metiers: ['couvreur', 'zingueur'],
       identite: { email: 'julien@test.local' },
     });
+  });
+
+  it('un prospect qui commence son inscription sort de la séquence S1', async () => {
+    const ref = db.collection('prospects').doc(empreinteEmail('julien@test.local'));
+    await ref.set({ etape: 'prospect' });
+    await enregistrerEtape1(s(), etape1);
+    expect((await ref.get()).get('etape')).toBe('inscription_commencee');
   });
 
   it('étape 2 : zone enregistrée, étape 3 ensuite ; même email → pas de second envoi', async () => {

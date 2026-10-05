@@ -56,6 +56,13 @@ export async function enregistrerEtape1(
     },
     { merge: true },
   );
+  // Prospect devenu inscrit : la séquence S1 s'arrête (CONVERSION §3 S1).
+  const prospect = s.db.collection(collections.prospects).doc(empreinteEmail(e.email));
+  if ((await prospect.get()).exists)
+    await prospect.update({
+      etape: 'inscription_commencee',
+      updatedAt: Timestamp.fromMillis(maintenant),
+    });
   if (nouveau)
     await s.notifier({
       modele: 'reprise-onboarding',

@@ -1,6 +1,6 @@
 import { z } from '../zod';
 import { ETAPES_CYCLE } from './conversion';
-import { id } from './commun';
+import { codePostal, email, id } from './commun';
 import { motifAdmin } from './entreesPro';
 
 /** Back-office › Conversion (ADMIN §2.8b, CONVERSION §9) : séquences, fiche cycle, réglages. */
@@ -78,4 +78,17 @@ export const entreeReglagesCycle = z.strictObject({
     email: z.email(),
   }),
   motif: motifAdmin,
+});
+
+/** Texte affiché à côté du bouton et gardé comme preuve (CONVERSION §7, intérêt légitime B2B). */
+export const TEXTE_CONSENTEMENT_PROSPECT =
+  'Votre email sert à vous envoyer cette estimation et des informations sur les demandes de votre métier. Désinscription en un clic dans chaque email.';
+
+/** Page d'acquisition : « Recevoir l'estimation par email » (prospect, séquence S1). */
+export const entreeProspect = z.strictObject({
+  email,
+  metier: id,
+  codePostal,
+  /** Champ piège pour les robots : doit rester vide. */
+  site: z.string().max(0).optional(),
 });
