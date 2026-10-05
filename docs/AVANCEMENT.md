@@ -25,12 +25,12 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
-| 13b | Conversion, séquences | ⬜ | | CONV | |
+| 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
 | 13c | Comportement, IA | ⬜ | | CMP, IA, RED | |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 13 (back-office), en cours : 13a, 13b et 13c terminés ; suite : 13d (demandes, appels d'offres et prix, sources partenaires)
+- Lot : 13b (conversion), en grande partie fait (§21) ; suite : compléments 13b listés au §21, puis lot 13c (comportement, IA)
 - Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -406,6 +406,23 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 10. **Points 13f** : les métiers, labels et pages communes ne sont pas encore éditables depuis l'admin (le matching et le SEO en dépendent, à faire avec précaution) ; `config/app` n'est lu par aucun code, je ne l'ai donc pas exposé (les fonctionnalités passent par `config/flags`) ; modèle : `matchingConfig` reçoit `options` et `motif`, `referentiel/prestations/prix/{id}/versions`.
 8. **Modèle (13d)** : `grilleTarifaire` reçoit `prixBaseDefaut` et `seuilsConcurrence` ; `remboursementLead` reçoit `appelOffresId`, `demandeId`, `motifDecision` (identifiant = celui de l'achat) ; `demande` reçoit `contestationsAcceptees` et `douteux` ; index `demandes` et `appelsOffres` (statut + date décroissante) ; client Stripe : `refunds.create` (remboursement intégral du paiement, clé d'idempotence).
 
+## 21. Lot 13b — Conversion et séquences (en grande partie fait le 05/10/2026)
+
+**Fait**
+- **Cœur** (`@ph/core/conversion`) : score, offre cible, étape, groupe témoin, pression et créneaux, séquences par défaut (S1, S4 à S9), chiffres obligatoires par modèle, position dans le secteur, signaux (concurrent passé devant, crédits achetés, demandes exclusives manquées), remises et codes personnels, demandes offertes, libellés.
+- **Moteur** : `cycleCalculer` (5 h : vues, position, dépense 30 jours, étape, séquence, signaux), `cyclePlanifier` (7 h et 18 h 15 : signaux d'abord, puis séquences), `cycleHebdo` (lundi : `prem-demandes-manquees`), `cycleCodesExpires` (chaque heure), `cycleDemandesInvendues` (chaque heure). Chaque décision est tracée, y compris les non-envois et leur raison.
+- **22 emails de conversion rédigés** (catégorie `offres_pro`), avec les vrais chiffres ; sans chiffre, l'email ne part pas.
+- **Codes promo personnels** (CONV-01, 02) : réservés à l'envoi, créés chez Stripe au premier clic (usage unique, réservés au client, date de fin réelle), appliqués sans saisie par le lien ; le paiement les marque utilisés, recalcule l'étape tout de suite (plus aucune offre ensuite) et trace la conversion. Le rappel J+17 ne part que si l'offre a été ouverte.
+- **Demandes invendues offertes** (CONV-07) : 24 h sans déblocage → 5 artisans Gratuit du secteur ; les 3 premiers qui activent Visibilité la reçoivent débloquée ; une fois par entreprise.
+- **Écran `/admin/conversion`** : vue d'ensemble, séquences (créer, modifier, dupliquer, pause, supprimer avec devenir des entreprises, versions et audit), journal filtré, fiche cycle (pause, exclusion, étape forcée), tâches, réglages.
+
+**À trancher ou signaler**
+1. **D32c (⏳) remises** : valeurs codées par défaut (−30 % sur 12 mois, 72 h, 7 j en reconquête, une remise tous les 90 jours). Conséquence : la relance `vis-offre-relance` prévue à J+90 tombe 76 jours après l'offre de J+14 et **est donc annulée** par la règle des 90 jours. À arbitrer (décaler à J+104 ou compter les 90 jours depuis la dernière remise utilisée).
+2. **D32d (⏳) catégorie offres_pro** et **D32e (⏳) relances signées Julie** : en place, à valider juridiquement.
+3. **Choix faits par moi** : valeur d'un crédit dans les emails = 10 € (« 5 crédits (50 €) ») ; budget d'une demande manquée = milieu de la fourchette ; distance minimale affichée 1 km ; délai d'activation d'une demande offerte 48 h.
+4. **Modèle de données** : `codesPromo.stripePromotionCodeId` devient facultatif ; `cycleEtat` reçoit `codeActif`, `demandeOfferte`, `demandeOfferteRecue`, `derniersSignaux`, `signal`, `signaux.montantAchete30j` ; `appelsOffres` reçoit `offerteLe`, `offerteA` ; `emails` reçoit `ouvertLe`, `cliqueLe` ; nouveau moyen de déblocage `offerte_conversion` ; abonnement Stripe : métadonnée `codePromo` ; index ajoutés (attributions exclusives, codes, artisans par métier et plan, traces par séquence, témoin, tâches). La liste des délais souhaités est passée dans `@ph/core/demandes`.
+5. **Reste à faire** : prospects (S1, `cycleOnProspectCreate`, `prospect-demande-zone`) — aucun formulaire de capture n'existe encore ; `resume-zone-mensuel` (`cycleMensuel`) ; agrégats `cycleStats` (`cycleAgreger`) et revenu attribué ; webhook et réponses Resend (ouvertures comptées, mise en veille, tâches `reponse_commerciale`) ; tâches automatiques (appel commercial, risque de résiliation, activation) ; `vis-recherches-manquees` (attend le comptage des recherches du lot 13c) ; `prem-appel-offres-complet`, `garantie-tenue`, `prem-renouvellement`, compteur d'échéances pour `passage-annuel` ; écran de résiliation (S8) ; publication Facebook (CONV-08) ; bascule automatique des tests A/B ; journal en temps réel (aujourd'hui rechargé à l'ouverture).
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -514,3 +531,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 28/09/2026 — Lot 9 terminé (annuaire, fiche publique). Formule de pertinence à confirmer (§15).
 - 02/10/2026 — Lot 12 terminé (matching, appels d'offres, déblocage, scores de nuit). D50 : 60 minutes d'avance Premium.
 - 02/10/2026 — Lot 12b terminé (demandes partenaires : webhook, SMS de confirmation, matching A/B/C, invendues).
+- 05/10/2026 — Lot 13b en grande partie fait (moteur de conversion, codes personnels, demandes offertes, écran admin). Restes et points à trancher : §21.
