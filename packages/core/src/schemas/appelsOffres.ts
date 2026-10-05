@@ -59,6 +59,9 @@ export const appelOffres = z
     qualiteLead: pourcent,
     tarification,
     nbDeblocagesMax: z.number().int().min(1).max(3),
+    /** Offert à des artisans Gratuit contre Visibilité (CONVERSION §3 bis). */
+    offerteLe: horodatage.optional(),
+    offerteA: z.array(id).max(5).optional(),
     nbDeblocages: z.number().int().nonnegative(),
     acces: z.enum(['tous', 'premium_seul', 'premium_prioritaire']),
     fenetrePremiumMin: z.number().int().nonnegative(),
@@ -77,7 +80,7 @@ export const appelOffres = z
 export const deblocage = z.object({
   schemaVersion,
   achatId: id,
-  moyen: z.enum(['carte', 'credits', 'inclus_premium', 'offert_admin']),
+  moyen: z.enum(['carte', 'credits', 'inclus_premium', 'offert_admin', 'offerte_conversion']),
   montantCentimes: centimesPositifs,
   credits: z.number().int().nonnegative(),
   debloqueLe: horodatage,
@@ -139,7 +142,7 @@ export const achatLead = z.object({
   artisanId: id,
   appelOffreId: id,
   demandeId: id,
-  moyen: z.enum(['carte', 'credits', 'inclus_premium', 'offert_admin']),
+  moyen: z.enum(['carte', 'credits', 'inclus_premium', 'offert_admin', 'offerte_conversion']),
   prixHtCentimes: centimesPositifs,
   tvaCentimes: centimesPositifs,
   credits: z.number().int().nonnegative(),

@@ -205,3 +205,9 @@ export {
   type CodeActif,
   type DecisionRemise,
 } from './remises';
+export {
+  DEMANDE_OFFERTE,
+  demandeOffrable,
+  destinatairesDemandeOfferte,
+  type CandidatOffre,
+} from './offertes';

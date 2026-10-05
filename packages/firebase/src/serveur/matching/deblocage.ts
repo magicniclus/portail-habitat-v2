@@ -40,6 +40,8 @@ export async function debloquerAppelOffres(
     choix: 'auto' | 'carte';
     /** Paiement par carte déjà encaissé (webhook Stripe) : finalisation seulement. */
     paiementCarte?: { paymentIntentId?: string; sessionId: string; centimes: number };
+    /** Demande invendue offerte par le moteur de conversion : aucun paiement. */
+    offerte?: boolean;
   },
 ): Promise<ResultatDeblocage> {
   const maintenant = s.horloge();
@@ -89,14 +91,16 @@ export async function debloquerAppelOffres(
     });
     const solde = (portefeuille.get('soldeCredits') as number | undefined) ?? 0;
     const inclus = (portefeuille.get('creditsInclusRestants') as number | undefined) ?? 0;
-    const choix = e.paiementCarte
-      ? ({ moyen: 'carte' } as const)
-      : choisirMoyen(
-          prix,
-          { soldeCredits: solde, creditsInclusRestants: inclus },
-          premium,
-          e.choix,
-        );
+    const choix = e.offerte
+      ? ({ moyen: 'offerte_conversion' } as const)
+      : e.paiementCarte
+        ? ({ moyen: 'carte' } as const)
+        : choisirMoyen(
+            prix,
+            { soldeCredits: solde, creditsInclusRestants: inclus },
+            premium,
+            e.choix,
+          );
     if (choix.moyen === null)
       return {
         etat: 'paiement_requis' as const,

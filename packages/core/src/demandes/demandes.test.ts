@@ -213,3 +213,11 @@ describe('entreeDemande', () => {
     expect(entreeDemande.safeParse({ ...base, site: 'http://x' }).success).toBe(false);
   });
 });
+
+describe('délais souhaités', () => {
+  it('libellé en clair, vide si inconnu', async () => {
+    const { libelleDelai } = await import('./delais');
+    expect(libelleDelai('1mois')).toBe('Sous 1 mois');
+    expect(libelleDelai('x')).toBe('');
+  });
+});

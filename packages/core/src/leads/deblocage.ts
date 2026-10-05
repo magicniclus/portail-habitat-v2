@@ -17,7 +17,9 @@ export function accesAppelOffres(
   return maintenant >= ao.ouvertLe + ao.fenetrePremiumMin * 60_000 ? 'ok' : 'reserve_premium';
 }
 
-export type MoyenDeblocage = 'carte' | 'credits' | 'inclus_premium' | 'offert_admin';
+/** `offerte_conversion` : demande invendue offerte à l'activation de Visibilité (CONVERSION §3 bis). */
+export type MoyenDeblocage =
+  'carte' | 'credits' | 'inclus_premium' | 'offert_admin' | 'offerte_conversion';
 
 /**
  * `auto` : gratuit → offert ; crédits inclus Premium, puis crédits achetés ; sinon rien n'est

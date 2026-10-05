@@ -50,7 +50,7 @@ export interface ServicesCycle {
 }
 
 const J = 86_400_000;
-const URL_SITE_DEFAUT = 'https://portailhabitat.fr';
+export const URL_SITE_DEFAUT = 'https://portailhabitat.fr';
 const SIX_MOIS = 183 * J;
 
 export interface ConfigCycleLue {
@@ -332,6 +332,8 @@ export async function tenterEnvoi(
     sequenceId?: string;
     ab?: string[];
     extra?: Record<string, unknown>;
+    /** Remplace les valeurs de l'entreprise (ville du chantier, lien de l'offre). */
+    surcharge?: Record<string, unknown>;
   },
 ): Promise<IssueEnvoi> {
   const maintenant = s.horloge();
@@ -423,6 +425,7 @@ export async function tenterEnvoi(
         ? lienCode(remise.produit, remise.code)
         : `${urlSite}/pro/abonnement`,
     ...offre,
+    ...e.surcharge,
   };
   const preparees = preparerDonnees(e.modele, contexte);
   if (!preparees.ok) {

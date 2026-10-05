@@ -18,3 +18,4 @@ export {
   marquerCodeUtilise,
   type CodeValable,
 } from './codes';
+export { attribuerDemandeOfferte, offrirDemandesInvendues } from './offertes';

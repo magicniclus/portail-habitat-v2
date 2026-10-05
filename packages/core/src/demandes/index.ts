@@ -126,3 +126,5 @@ export function referentielDepuisDocuments(d: DocumentsPrix): Referentiel {
     tvaCatalogue: generique ? { [d.prestationId]: Number(d.parametres.tva) } : {},
   };
 }
+
+export { DELAIS, libelleDelai } from './delais';

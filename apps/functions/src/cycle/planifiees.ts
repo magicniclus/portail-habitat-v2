@@ -3,6 +3,7 @@ import {
   calculerCycles,
   envoyerDemandesManquees,
   expirerCodes,
+  offrirDemandesInvendues,
   planifierCycle,
 } from '@ph/firebase/cycle';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -50,5 +51,13 @@ export const cycleCodesExpires = onSchedule(
   async () => {
     const n = await expirerCodes(getFirestore(appAdmin()), Date.now());
     if (n) logger.info('Cycle : codes expirés', { n });
+  },
+);
+
+/** `cycleDemandesInvendues` (chaque heure) : appels d'offres sans preneur offerts contre Visibilité. */
+export const cycleDemandesInvendues = onSchedule(
+  { schedule: '30 * * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
+  async () => {
+    logger.info('Cycle : demandes offertes', { ...(await offrirDemandesInvendues(services())) });
   },
 );

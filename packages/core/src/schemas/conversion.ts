@@ -83,6 +83,9 @@ export const cycleEtat = z.object({
       utilise: z.boolean(),
     })
     .optional(),
+  /** Demande invendue proposée, valable 48 h ; `demandeOfferteRecue` : une seule fois. */
+  demandeOfferte: z.object({ appelOffresId: id, le: horodatage, jusqua: horodatage }).optional(),
+  demandeOfferteRecue: z.boolean().optional(),
   emailsNonOuvertsConsecutifs: z.number().int().nonnegative(),
   enVeille: z.boolean(),
   pause: z.object({ par: z.string(), depuis: horodatage, motif: z.string() }).optional(),

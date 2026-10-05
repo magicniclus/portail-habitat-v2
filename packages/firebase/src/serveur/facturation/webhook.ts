@@ -11,6 +11,7 @@ import { chemins, collections } from '../../chemins';
 import { appliquerSieges } from '../comptes/membres';
 import { marquerCodeUtilise } from '../cycle/codes';
 import { synchroniserArtisan } from '../cycle/moteur';
+import { attribuerDemandeOfferte } from '../cycle/offertes';
 import type { ServicesComptes } from '../comptes/services';
 import { debloquerAppelOffres } from '../matching/deblocage';
 import type {
@@ -165,7 +166,11 @@ async function abonnementModifie(
   const code = sub.metadata.codePromo;
   if (code && (lu.statut === 'active' || lu.statut === 'trialing'))
     suites.push(() => marquerCodeUtilise(s.db, s.horloge(), { code, artisanId }));
-  suites.push(() => synchroniserArtisan(s, artisanId));
+  suites.push(async () => {
+    await synchroniserArtisan(s, artisanId);
+    if (lu.statut === 'active' || lu.statut === 'trialing')
+      await attribuerDemandeOfferte(s, artisanId);
+  });
 
   const avantResiliation = ev.data.previous_attributes?.cancel_at_period_end;
   const modele =

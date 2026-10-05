@@ -989,6 +989,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "artisans",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "metiers",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "plan",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

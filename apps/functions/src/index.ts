@@ -12,6 +12,7 @@ export { attribuerNouvelleDemande, matchingRelance, scoresNuit } from './matchin
 export {
   cycleCalculer,
   cycleCodesExpires,
+  cycleDemandesInvendues,
   cycleHebdo,
   cyclePlanifier,
   cyclePlanifierSoir,
