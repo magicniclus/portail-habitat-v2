@@ -1,5 +1,6 @@
 import { appAdmin } from '@ph/firebase/admin';
 import {
+  agregerCycleJour,
   calculerCycles,
   envoyerDemandesManquees,
   expirerCodes,
@@ -59,5 +60,17 @@ export const cycleDemandesInvendues = onSchedule(
   { schedule: '30 * * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
   async () => {
     logger.info('Cycle : demandes offertes', { ...(await offrirDemandesInvendues(services())) });
+  },
+);
+
+/** `cycleAgreger` (chaque nuit, 1 h 30) : statistiques de la veille dans `cycleStats/{jour}`. */
+export const cycleAgreger = onSchedule(
+  { schedule: '30 1 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
+  async () => {
+    const veille = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(
+      Date.now() - 86_400_000,
+    );
+    await agregerCycleJour(getFirestore(appAdmin()), veille);
+    logger.info('Cycle : agrégat', { jour: veille });
   },
 );

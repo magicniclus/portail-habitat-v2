@@ -16,12 +16,14 @@ import {
   SEQUENCES_DEFAUT,
   sequencePourEtape,
   variante,
+  attribuerConversion,
   decisionRemise,
   libelleExpiration,
   modeleAvecCode,
   type EtapeCycle,
   type EtapeSequence,
 } from '@ph/core/conversion';
+import { prixAbonnement, type Facturation, type ProduitAbonnement } from '@ph/core/facturation';
 import { definition, type NomModele } from '@ph/core/notifications';
 import { randomUUID } from 'node:crypto';
 import {
@@ -283,13 +285,47 @@ export async function synchroniserArtisan(
   const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
   if (!artisan.exists || artisan.get('statut') !== 'actif') return null;
   const { etape, changee } = await synchroniserCycle(s, artisan, await lireConfigCycle(s.db));
-  if (changee && (etape === 'visibilite' || etape === 'premium'))
-    await tracer(s.db, s.horloge(), {
+  if (changee && (etape === 'visibilite' || etape === 'premium')) {
+    const maintenant = s.horloge();
+    const [emails, abos, etat] = await Promise.all([
+      s.db
+        .collection(collections.cycleTraces)
+        .where('artisanId', '==', artisanId)
+        .where('createdAt', '>=', Timestamp.fromMillis(maintenant - 7 * J))
+        .orderBy('createdAt', 'desc')
+        .limit(50)
+        .get(),
+      s.db.collection(collections.abonnements).where('artisanId', '==', artisanId).get(),
+      s.db.collection(collections.cycleEtat).doc(artisanId).get(),
+    ]);
+    // Revenu : l'abonnement actif le plus récent, au prix du catalogue (HT).
+    const abo = abos.docs
+      .filter((a) => ['active', 'trialing'].includes(a.get('statut') as string))
+      .sort((a, b) => (ms(b.get('debutPeriode')) ?? 0) - (ms(a.get('debutPeriode')) ?? 0))[0];
+    const catalogue = abo
+      ? prixAbonnement(abo.get('produit') as ProduitAbonnement, abo.get('periode') as Facturation)
+          .montantHt
+      : 0;
+    // Code personnel utilisé pour ce produit : le montant payé est remisé.
+    const code = lireCodeActif(etat);
+    const montantHtCentimes =
+      code?.utilise && abo && code.produit === abo.get('produit')
+        ? Math.round((catalogue * (100 - code.pourcentage)) / 100)
+        : catalogue;
+    const modele = attribuerConversion(
+      emails.docs
+        .filter((d) => d.get('type') === 'email_planifie')
+        .map((d) => ({ modele: d.get('modele') as string, le: ms(d.get('createdAt'))! })),
+      maintenant,
+    );
+    await tracer(s.db, maintenant, {
       artisanId,
       type: 'conversion',
       fonction: 'cycleOnAbonnement',
-      details: { etape },
+      ...(modele ? { modele } : {}),
+      details: { etape, montantHtCentimes, temoin: etat.get('groupeTemoin') === true },
     });
+  }
   return etape;
 }
 

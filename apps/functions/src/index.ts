@@ -10,6 +10,7 @@ export { expirerInvitations, syncClaims } from './comptes/declencheurs';
 export { projeterArtisan } from './annuaire/declencheurs';
 export { attribuerNouvelleDemande, matchingRelance, scoresNuit } from './matching/declencheurs';
 export {
+  cycleAgreger,
   cycleCalculer,
   cycleCodesExpires,
   cycleDemandesInvendues,

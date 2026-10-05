@@ -1,5 +1,5 @@
 import { LIBELLES_ETAPE_CYCLE } from '@ph/core/conversion';
-import { formatNombre } from '@ph/core/format';
+import { formatEuros, formatNombre } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import { lireApercuConversion, lireReglagesCycle } from '@ph/firebase/admin-serveur';
 import { Banner, Card, CardBody, CardHeader, CardTitle } from '@ph/ui';
@@ -66,13 +66,15 @@ export default async function ConversionAdmin() {
           </CardHeader>
           <CardBody>
             <p className="m-0 mb-2 text-sm text-neutre-700">
-              Conversions attribuées au dernier email dans les 7 jours.
+              Revenu attribué au dernier email dans les 7 jours :{' '}
+              {formatEuros(a.revenuAttribueCentimes)} HT sur 30 jours.
             </p>
             {a.meilleursModeles.length ? (
               <ol className="m-0 grid gap-1 pl-5 text-sm">
                 {a.meilleursModeles.map((m) => (
                   <li key={m.modele}>
-                    {m.modele} · {m.conversions} conversion{m.conversions > 1 ? 's' : ''}
+                    {m.modele} · {formatEuros(m.revenuCentimes)} HT · {m.conversions} conversion
+                    {m.conversions > 1 ? 's' : ''}
                   </li>
                 ))}
               </ol>

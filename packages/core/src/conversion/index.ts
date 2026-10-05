@@ -219,3 +219,4 @@ export {
   libelleTrace,
 } from './libelles';
 export { tachesACreer, type TacheConversion } from './taches';
+export { agregerJourCycle, attribuerConversion } from './attribution';

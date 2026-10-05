@@ -15,7 +15,7 @@ import {
   listerSequencesAdmin,
   supprimerSequenceAdmin,
 } from '../src/serveur/admin';
-import { planifierCycle, tracer } from '../src/serveur/cycle';
+import { agregerCycleJour, planifierCycle, tracer } from '../src/serveur/cycle';
 
 /** Back-office › Conversion (ADMIN §2.8b, CONV-05). */
 let db: Firestore;
@@ -203,7 +203,23 @@ describe('fiche cycle et réglages', () => {
       fonction: 'f',
       raison: 'pression',
     });
-    await tracer(db, T + 2, { artisanId: 'a1', type: 'conversion', fonction: 'f' });
+    await tracer(db, T + 2, {
+      artisanId: 'a1',
+      type: 'conversion',
+      fonction: 'f',
+      modele: 'vis-position',
+      details: { montantHtCentimes: 7990, temoin: false },
+    });
+    await agregerCycleJour(db, '2026-10-06');
+    expect(
+      (await db.collection(collections.cycleStats).doc('2026-10-06').get()).data(),
+    ).toMatchObject({
+      envois: { 'vis-position': 1 },
+      conversions: { 'vis-position': 1 },
+      revenuAttribueCentimes: { 'vis-position': 7990 },
+      entonnoir: { gratuit_actif: 1 },
+      temoin: { effectif: 0, conversions: 0 },
+    });
     expect(
       (await lireJournalCycle(db, { filtre: 'non_envois' })).map((t) => [t.entreprise, t.raison]),
     ).toEqual([['Bertrand Rénovation', 'pression']]);
@@ -214,7 +230,8 @@ describe('fiche cycle et réglages', () => {
       bloques: 1,
       conversions: 1,
       parEtape: { gratuit_actif: 1 },
-      meilleursModeles: [{ modele: 'vis-position', conversions: 1 }],
+      revenuAttribueCentimes: 7990,
+      meilleursModeles: [{ modele: 'vis-position', conversions: 1, revenuCentimes: 7990 }],
     });
   });
 });

@@ -19,3 +19,4 @@ export {
   type CodeValable,
 } from './codes';
 export { attribuerDemandeOfferte, offrirDemandesInvendues } from './offertes';
+export { agregerCycleJour } from './agreger';

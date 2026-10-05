@@ -18,7 +18,8 @@ export interface ApercuConversion {
   conversions: number;
   codes: number;
   temoin: { effectif: number; payants: number; autres: number; autresPayants: number };
-  meilleursModeles: { modele: string; conversions: number }[];
+  revenuAttribueCentimes: number;
+  meilleursModeles: { modele: string; conversions: number; revenuCentimes: number }[];
 }
 
 export async function lireApercuConversion(
@@ -46,29 +47,24 @@ export async function lireApercuConversion(
     ]);
   const parEtape = Object.fromEntries(ETAPES_CYCLE.map((e, i) => [e, etapes[i]!]));
   const total = Object.values(parEtape).reduce((a, b) => a + b, 0);
-  // Conversion attribuée au dernier email planifié dans les 7 jours qui la précèdent.
-  const convs = await traces
-    .where('type', '==', 'conversion')
-    .where('createdAt', '>=', depuis)
-    .orderBy('createdAt', 'desc')
-    .limit(100)
-    .get();
-  const attributions = new Map<string, number>();
-  await Promise.all(
-    convs.docs.map(async (c) => {
-      const le = ms(c.get('createdAt'))!;
-      const dernier = await traces
-        .where('artisanId', '==', c.get('artisanId'))
-        .where('createdAt', '>=', Timestamp.fromMillis(le - 7 * J))
-        .where('createdAt', '<=', Timestamp.fromMillis(le))
-        .orderBy('createdAt', 'desc')
-        .limit(20)
-        .get();
-      const email = dernier.docs.find((d) => d.get('type') === 'email_planifie');
-      const modele = email?.get('modele') as string | undefined;
-      if (modele) attributions.set(modele, (attributions.get(modele) ?? 0) + 1);
-    }),
+  // Revenu attribué et meilleurs emails : agrégats quotidiens (`cycleAgreger`).
+  const jourDebut = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(
+    maintenant - jours * J,
   );
+  const stats = await db.collection(collections.cycleStats).where('jour', '>=', jourDebut).get();
+  const parModele = new Map<string, { conversions: number; revenuCentimes: number }>();
+  for (const d of stats.docs) {
+    const conv = (d.get('conversions') as Record<string, number> | undefined) ?? {};
+    const rev = (d.get('revenuAttribueCentimes') as Record<string, number> | undefined) ?? {};
+    for (const m of new Set([...Object.keys(conv), ...Object.keys(rev)])) {
+      if (m === 'sans_email') continue;
+      const p = parModele.get(m) ?? { conversions: 0, revenuCentimes: 0 };
+      parModele.set(m, {
+        conversions: p.conversions + (conv[m] ?? 0),
+        revenuCentimes: p.revenuCentimes + (rev[m] ?? 0),
+      });
+    }
+  }
   return {
     parEtape,
     envois,
@@ -82,9 +78,10 @@ export async function lireApercuConversion(
       autres: total - temoin,
       autresPayants: payants - temoinPayants,
     },
-    meilleursModeles: [...attributions]
-      .map(([modele, n]) => ({ modele, conversions: n }))
-      .sort((a, b) => b.conversions - a.conversions)
+    revenuAttribueCentimes: [...parModele.values()].reduce((n, p) => n + p.revenuCentimes, 0),
+    meilleursModeles: [...parModele]
+      .map(([modele, p]) => ({ modele, ...p }))
+      .sort((a, b) => b.revenuCentimes - a.revenuCentimes || b.conversions - a.conversions)
       .slice(0, 5),
   };
 }

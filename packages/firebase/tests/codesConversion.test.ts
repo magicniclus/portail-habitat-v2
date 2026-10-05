@@ -246,6 +246,10 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     });
     expect((await traces('code_utilise')).length).toBe(1);
     expect((await traces('conversion')).map((t) => t.details.etape)).toEqual(['visibilite']);
+    expect((await traces('conversion'))[0]).toMatchObject({
+      modele: 'vis-offre-lancement',
+      details: { montantHtCentimes: 5593, temoin: false },
+    });
     envois.length = 0;
     await planifierCycle(cycle(T0 + 17 * J + 3_600_000));
     expect(envois.filter((x) => x.modele.startsWith('vis-'))).toEqual([]);
