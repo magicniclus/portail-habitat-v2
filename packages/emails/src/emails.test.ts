@@ -72,3 +72,13 @@ describe('modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur)',
     expect(r.html).toContain('/pro/invitation?t=');
   });
 });
+
+describe('variante B (tests A/B)', () => {
+  it('objet B quand la donnée variante vaut B, objet A sinon', async () => {
+    const ex = MODELES_EMAIL['vis-position'].exemple as Record<string, unknown>;
+    const a = await rendreEmail('vis-position', ex, { pied });
+    const b = await rendreEmail('vis-position', { ...ex, variante: 'B' }, { pied });
+    expect(b.sujet).not.toBe(a.sujet);
+    expect(b.sujet.length).toBeLessThan(60);
+  });
+});

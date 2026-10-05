@@ -552,6 +552,7 @@ export async function tenterEnvoi(
     preparees.donnees.lien = lienCode(remise.produit, code);
   }
   const v = variante(etat.id, e.modele, e.ab);
+  if (v) preparees.donnees.variante = v;
   const envoyerLe = new Date(creneauEnvoi(maintenant, e.type));
   await s.notifier({
     modele: e.modele as NomModele,

@@ -19,6 +19,7 @@ export {
   cyclePlanifier,
   cyclePlanifierSoir,
   cycleProspects,
+  cycleTestsAB,
 } from './cycle/planifiees';
 export { envoyerEnvoi } from './notifications/tache';
 export { importerDemandePartenaireHttp as importerDemandePartenaire } from './partenaires/webhook';

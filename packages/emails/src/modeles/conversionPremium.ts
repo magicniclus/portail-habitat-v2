@@ -75,6 +75,7 @@ const EX_RECONQUETE: Reconquete = {
 export const modelesConversionPremium = {
   'prem-bilan-visibilite': modele<Bilan>({
     sujet: (d) => `Votre 1er mois en Visibilité : ${d.vues} vues`,
+    sujetB: (d) => `${d.appels} appels ce mois-ci grâce à la Visibilité`,
     preheader: (d) => `${d.vues} vues, ${d.appels} appels. Voici l’étape suivante.`,
     blocs: (d) => [
       surtitre('Bilan du mois'),

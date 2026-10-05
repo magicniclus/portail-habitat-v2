@@ -69,11 +69,14 @@ export function sequencePourEtape(
   }
 }
 
-const d = (modele: string, jours: number): EtapeSequence => ({
+const d = (modele: string, jours: number, ab?: string[]): EtapeSequence => ({
   modele,
   declencheur: 'delai',
   valeur: jours,
+  ...(ab ? { ab } : {}),
 });
+/** Test A/B de l'objet (variante B rédigée dans le modèle d'email). */
+const AB = ['A', 'B'];
 const sig = (modele: string): EtapeSequence => ({ modele, declencheur: 'signal' });
 
 /** Séquences initiales (CONVERSION §3), recopiées dans `sequences/` par le seed. */
@@ -98,10 +101,10 @@ export const SEQUENCES_DEFAUT: Record<
     etapeEntree: 'gratuit_actif',
     objectif: '1er paiement',
     etapes: [
-      d('vis-position', 3),
+      d('vis-position', 3, AB),
       sig('vis-concurrents'),
       sig('vis-recherches-manquees'),
-      d('vis-offre-lancement', 14),
+      d('vis-offre-lancement', 14, AB),
       d('vis-offre-rappel', 17),
       d('vis-offre-relance', 104),
     ],
@@ -110,14 +113,14 @@ export const SEQUENCES_DEFAUT: Record<
     nom: 'Gratuit → Premium direct',
     etapeEntree: 'gratuit_actif',
     objectif: '1er paiement Premium',
-    etapes: [d('vis-position', 3), sig('prem-demandes-manquees'), sig('prem-credits')],
+    etapes: [d('vis-position', 3, AB), sig('prem-demandes-manquees'), sig('prem-credits')],
   },
   S6: {
     nom: 'Visibilité → Premium',
     etapeEntree: 'visibilite',
     objectif: 'passage à Premium',
     etapes: [
-      d('prem-bilan-visibilite', 30),
+      d('prem-bilan-visibilite', 30, AB),
       sig('prem-demandes-manquees'),
       sig('prem-credits'),
       sig('prem-appel-offres-complet'),

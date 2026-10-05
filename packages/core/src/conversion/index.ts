@@ -233,3 +233,4 @@ export {
   type AlternativeResiliation,
   type RaisonResiliation,
 } from './retention';
+export { gagnantAB } from './ab';

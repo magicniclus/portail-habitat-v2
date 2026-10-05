@@ -27,3 +27,4 @@ export {
   type ServicesProspect,
 } from './prospects';
 export { traiterReponseEmail } from './reponses';
+export { evaluerTestsAB } from './ab';

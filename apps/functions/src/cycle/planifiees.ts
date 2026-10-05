@@ -3,6 +3,7 @@ import {
   agregerCycleJour,
   calculerCycles,
   envoyerAppelsComplets,
+  evaluerTestsAB,
   envoyerDemandesManquees,
   expirerCodes,
   nomsMetiers,
@@ -99,5 +100,15 @@ export const cycleAppelsComplets = onSchedule(
   { schedule: '5 7 * * *', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
   async () => {
     logger.info('Cycle : appels complets', { ...(await envoyerAppelsComplets(services())) });
+  },
+);
+
+/** `cycleTestsAB` (lundi 6 h) : bascule des tests A/B gagnants à 95 % de confiance. */
+export const cycleTestsAB = onSchedule(
+  { schedule: '0 6 * * 1', region: REGION, timeZone: 'Europe/Paris', timeoutSeconds: 300 },
+  async () => {
+    logger.info('Cycle : tests A/B', {
+      ...(await evaluerTestsAB({ db: getFirestore(appAdmin()), horloge: Date.now })),
+    });
   },
 );

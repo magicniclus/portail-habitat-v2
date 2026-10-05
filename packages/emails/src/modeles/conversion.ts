@@ -244,6 +244,7 @@ export const modelesConversion = {
   }),
   'vis-position': modele<Position>({
     sujet: (d) => `Vous êtes ${d.position}e sur ${d.total} ${d.metier}s à ${d.ville}`.slice(0, 59),
+    sujetB: (d) => `${d.vues7j} vues cette semaine : et les fiches en tête ?`.slice(0, 59),
     preheader: (d) =>
       `Votre fiche a été vue ${d.vues7j} fois. Les fiches mises en avant, bien plus.`,
     blocs: (d) => [
@@ -323,6 +324,7 @@ export const modelesConversion = {
   'vis-offre-lancement': modele<Offre>({
     sujet: (d) =>
       `${d.prenom ? `${d.prenom}, ` : ''}−${d.pourcentage} % sur votre Visibilité`.slice(0, 59),
+    sujetB: (d) => `Votre code −${d.pourcentage} % valable jusqu’au ${d.expire}`.slice(0, 59),
     preheader: (d) =>
       `Code personnel : ${ht(remise(PRIX.visibiliteAn, d.pourcentage))} pour toute l’année.`,
     blocs: (d) => [

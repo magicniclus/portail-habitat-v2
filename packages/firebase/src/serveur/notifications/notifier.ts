@@ -137,6 +137,7 @@ export async function notifier(s: ServicesNotifications, e: Envoi): Promise<Resu
           ...(e.destinataire.artisanId ? { artisanId: e.destinataire.artisanId } : {}),
           categorie: def.categorie,
           refObjet: e.refObjet,
+          ...(e.variante ? { variante: e.variante } : {}),
           cleIdempotence: `${canal}:${cle}`,
           donnees: e.donnees,
           envoyerLe: Timestamp.fromDate(envoyerLe),

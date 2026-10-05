@@ -1091,6 +1091,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "emails",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "modele",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

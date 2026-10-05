@@ -15,7 +15,7 @@ import {
   listerSequencesAdmin,
   supprimerSequenceAdmin,
 } from '../src/serveur/admin';
-import { agregerCycleJour, planifierCycle, tracer } from '../src/serveur/cycle';
+import { agregerCycleJour, evaluerTestsAB, planifierCycle, tracer } from '../src/serveur/cycle';
 
 /** Back-office › Conversion (ADMIN §2.8b, CONV-05). */
 let db: Firestore;
@@ -233,5 +233,32 @@ describe('fiche cycle et réglages', () => {
       revenuAttribueCentimes: 7990,
       meilleursModeles: [{ modele: 'vis-position', conversions: 1, revenuCentimes: 7990 }],
     });
+  });
+});
+
+describe('tests A/B (CONVERSION §5)', () => {
+  it('variante B nettement meilleure en clics : les séquences ne gardent qu’elle', async () => {
+    const lot = db.batch();
+    for (const [variante, clics] of [
+      ['A', 20],
+      ['B', 50],
+    ] as const)
+      for (let i = 0; i < 300; i++)
+        lot.set(db.collection(collections.emails).doc(`${variante}${i}`), {
+          modele: 'vis-position',
+          variante,
+          statut: 'delivre',
+          ...(i < clics ? { cliqueLe: Timestamp.fromMillis(T - J) } : {}),
+          createdAt: Timestamp.fromMillis(T - 10 * J),
+        });
+    await lot.commit();
+    const r = await evaluerTestsAB(s);
+    expect(r.basculees.sort()).toEqual(['S4:vis-position:B', 'S5:vis-position:B']);
+    const s4 = (await db.collection(collections.sequences).doc('S4').get()).data()!;
+    expect(s4.etapes[0]).toMatchObject({ modele: 'vis-position', ab: ['B'] });
+    expect(
+      s4.etapes.find((e: { modele: string }) => e.modele === 'vis-offre-lancement').ab,
+    ).toEqual(['A', 'B']);
+    expect((await evaluerTestsAB(s)).basculees).toEqual([]);
   });
 });

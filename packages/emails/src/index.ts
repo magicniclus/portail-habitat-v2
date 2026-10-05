@@ -61,7 +61,7 @@ export async function rendreEmail(
   });
   const [html, texte] = await Promise.all([render(element), render(element, { plainText: true })]);
   return {
-    sujet: m.sujet(donnees),
+    sujet: donnees.variante === 'B' && m.sujetB ? m.sujetB(donnees) : m.sujet(donnees),
     preheader: m.preheader(donnees),
     html,
     texte,
