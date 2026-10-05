@@ -117,3 +117,30 @@ export function signalPassageAnnuel(
   if (!eligibles.length) return null;
   return eligibles.some((a) => a.produit === 'premium') ? 'premium' : 'visibilite';
 }
+
+/**
+ * `prem-renouvellement` (S6) : Visibilité annuelle qui se renouvelle dans 30 jours au plus (et pas
+ * résiliée) ; une fois par période. Renvoie la date de renouvellement.
+ */
+export function signalRenouvellement(
+  abonnements: readonly {
+    produit: string;
+    periode: string;
+    statut: string;
+    finPeriode: number;
+    annulationFinPeriode: boolean;
+  }[],
+  o: { maintenant: number; dernier?: number },
+): number | null {
+  const a = abonnements.find(
+    (x) =>
+      x.produit === 'visibilite' &&
+      x.periode === 'annuel' &&
+      x.statut === 'active' &&
+      !x.annulationFinPeriode &&
+      x.finPeriode > o.maintenant &&
+      x.finPeriode - o.maintenant <= 30 * J,
+  );
+  if (!a || (o.dernier !== undefined && a.finPeriode - o.dernier <= 60 * J)) return null;
+  return a.finPeriode;
+}

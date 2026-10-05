@@ -320,4 +320,30 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     await calculerCycles(s(T0 + 60 * J));
     expect((await ref.get()).get('signal')).toBeUndefined();
   });
+  it('Visibilité annuelle : « prem-renouvellement » 30 jours avant le renouvellement', async () => {
+    await artisan('ren', { optionVisibilite: true });
+    await db
+      .collection(collections.abonnements)
+      .doc('sub_ren')
+      .set({
+        artisanId: 'ren',
+        produit: 'visibilite',
+        periode: 'annuel',
+        statut: 'active',
+        annulationFinPeriode: false,
+        createdAt: Timestamp.fromMillis(T0 - 340 * J),
+        debutPeriode: Timestamp.fromMillis(T0 - 340 * J),
+        finPeriode: Timestamp.fromMillis(T0 + 25 * J),
+      });
+    await calculerCycles(s(T0));
+    const ref = db.collection(collections.cycleEtat).doc('ren');
+    expect((await ref.get()).get('signal')).toMatchObject({
+      modele: 'prem-renouvellement',
+      extra: { date: '31 octobre 2026' },
+    });
+    await calculerCycles(s(T0 + J));
+    await ref.update({ signal: null });
+    await calculerCycles(s(T0 + 2 * J));
+    expect((await ref.get()).get('signal')).toBeNull();
+  });
 });

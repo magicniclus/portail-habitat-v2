@@ -5,6 +5,7 @@ import {
   signalCredits,
   signalGarantie,
   signalPassageAnnuel,
+  signalRenouvellement,
 } from './opportunites';
 
 const J = 86_400_000;
@@ -104,5 +105,31 @@ describe('signal passage-annuel (CONVERSION S7)', () => {
     expect(signalPassageAnnuel([abo({ produit: 'visibilite' })], { dejaEnvoye: false })).toBe(
       'visibilite',
     );
+  });
+});
+
+describe('signal prem-renouvellement (CONVERSION S6)', () => {
+  const T = 400 * J;
+  const abo = (p: Record<string, unknown> = {}) => ({
+    produit: 'visibilite',
+    periode: 'annuel',
+    statut: 'active',
+    finPeriode: T + 30 * J,
+    annulationFinPeriode: false,
+    ...p,
+  });
+  it('Visibilité annuelle renouvelée dans 30 jours : une fois par période', () => {
+    expect(signalRenouvellement([abo()], { maintenant: T })).toBe(T + 30 * J);
+    expect(signalRenouvellement([abo({ finPeriode: T + 31 * J })], { maintenant: T })).toBeNull();
+    expect(signalRenouvellement([abo()], { maintenant: T, dernier: T - J })).toBeNull();
+    expect(signalRenouvellement([abo()], { maintenant: T, dernier: T - 300 * J })).toBe(T + 30 * J);
+  });
+  it('mensuelle, résiliée ou Premium : rien', () => {
+    for (const p of [
+      { periode: 'mensuel' },
+      { annulationFinPeriode: true },
+      { produit: 'premium' },
+    ])
+      expect(signalRenouvellement([abo(p)], { maintenant: T })).toBeNull();
   });
 });

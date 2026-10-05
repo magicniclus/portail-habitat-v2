@@ -12,6 +12,7 @@ import {
   signalCredits,
   signalGarantie,
   signalPassageAnnuel,
+  signalRenouvellement,
   type AchatAppelOffres,
   classerSecteurs,
   type PositionSecteur,
@@ -26,6 +27,7 @@ import {
   type EtapeSequence,
 } from '@ph/core/conversion';
 import { prixAbonnement, type Facturation, type ProduitAbonnement } from '@ph/core/facturation';
+import { formatDate } from '@ph/core/format';
 import { definition, type NomModele } from '@ph/core/notifications';
 import { randomUUID } from 'node:crypto';
 import {
@@ -138,6 +140,8 @@ async function etatAbonnement(db: Firestore, artisanId: string) {
       statut: a.get('statut') as string,
       creeLe: (a.get('createdAt') as Timestamp | undefined)?.toMillis() ?? 0,
       debutPeriode: (a.get('debutPeriode') as Timestamp | undefined)?.toMillis() ?? 0,
+      finPeriode: (a.get('finPeriode') as Timestamp | undefined)?.toMillis() ?? 0,
+      annulationFinPeriode: a.get('annulationFinPeriode') === true,
     })),
   };
 }
@@ -218,6 +222,12 @@ export async function synchroniserCycle(
           { maintenant, dernier: derniers },
         )[0]
       : undefined;
+  const renouvellement = signalRenouvellement(abonnements, {
+    maintenant,
+    ...(derniers['prem-renouvellement'] !== undefined
+      ? { dernier: derniers['prem-renouvellement'] }
+      : {}),
+  });
   const passageAnnuel = signalPassageAnnuel(abonnements, {
     dejaEnvoye: derniers['passage-annuel'] !== undefined,
   });
@@ -242,13 +252,21 @@ export async function synchroniserCycle(
             modele: 'garantie-tenue',
             extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
           }
-        : passageAnnuel
+        : renouvellement
           ? {
-              modele: 'passage-annuel',
-              // Changement de formule dans le portail client Stripe (page Facturation).
-              extra: { produit: passageAnnuel, lien: '/pro/facturation' },
+              modele: 'prem-renouvellement',
+              extra: {
+                date: formatDate(renouvellement, 'long'),
+                lien: '/pro/abonnement/premium?facturation=annuel',
+              },
             }
-          : undefined;
+          : passageAnnuel
+            ? {
+                modele: 'passage-annuel',
+                // Changement de formule dans le portail client Stripe (page Facturation).
+                extra: { produit: passageAnnuel, lien: '/pro/facturation' },
+              }
+            : undefined;
   const commun = {
     schemaVersion: 1,
     score,

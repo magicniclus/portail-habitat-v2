@@ -195,6 +195,7 @@ export {
   signalCredits,
   signalGarantie,
   signalPassageAnnuel,
+  signalRenouvellement,
   type AchatAppelOffres,
   type DemandeExclusive,
 } from './opportunites';
