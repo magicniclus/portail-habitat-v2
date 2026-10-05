@@ -89,6 +89,13 @@ export const entreeProspect = z.strictObject({
   email,
   metier: id,
   codePostal,
+  /** Arrivé par le lien du groupe Facebook (`utm_source=facebook`). */
+  source: z.enum(['estimation', 'facebook']).optional(),
   /** Champ piège pour les robots : doit rester vide. */
   site: z.string().max(0).optional(),
+});
+
+/** Publication Facebook du jour marquée comme faite (département publié). */
+export const entreePublicationFacebook = z.strictObject({
+  departement: z.string().regex(/^(\d{2}|2[AB]|97)$/),
 });

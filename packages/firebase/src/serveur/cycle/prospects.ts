@@ -76,7 +76,7 @@ async function budgetMoyen(db: Firestore, metier: string, codePostal: string, ma
  */
 export async function enregistrerProspect(
   s: ServicesProspect,
-  e: { email: string; metier: string; codePostal: string },
+  e: { email: string; metier: string; codePostal: string; source?: 'estimation' | 'facebook' },
 ): Promise<void> {
   const nom = s.nomMetier(e.metier);
   if (!nom) throw new ErreurMetier('ENTREE_INVALIDE', 'Choisissez votre métier dans la liste.');
@@ -99,7 +99,7 @@ export async function enregistrerProspect(
     await ref.create({
       schemaVersion: 1,
       email: e.email,
-      source: 'estimation',
+      source: e.source ?? 'estimation',
       metiers: [e.metier],
       commune: lieu.ville,
       geo: lieu.geo,

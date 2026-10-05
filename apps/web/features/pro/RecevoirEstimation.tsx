@@ -21,6 +21,9 @@ export function RecevoirEstimation({ metier, codePostal }: { metier: string; cod
       email: String(f.get('email') ?? '').trim(),
       metier,
       codePostal,
+      ...(new URLSearchParams(window.location.search).get('utm_source') === 'facebook'
+        ? { source: 'facebook' as const }
+        : {}),
       site: String(f.get('site') ?? '') || undefined,
     };
     const v = entreeProspect.safeParse(brut);

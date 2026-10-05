@@ -141,3 +141,10 @@ export {
   type TacheConversion,
   type TraceCycle,
 } from './conversionLectures';
+export {
+  lirePublicationFacebook,
+  lireResultatsFacebook,
+  marquerPublicationFacebook,
+  type PublicationFacebook,
+  type ResultatsFacebook,
+} from './facebook';

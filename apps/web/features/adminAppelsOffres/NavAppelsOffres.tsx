@@ -5,6 +5,7 @@ const LIENS = [
   ['/admin/appels-d-offres', 'Appels d’offres'],
   ['/admin/appels-d-offres/contestations', 'Contestations'],
   ['/admin/appels-d-offres/baremes', 'Barèmes'],
+  ['/admin/appels-d-offres/facebook', 'Facebook et invendues'],
 ] as const;
 
 /** Sous-sections d'« Appels d'offres et prix » (ADMIN §2.5). */
