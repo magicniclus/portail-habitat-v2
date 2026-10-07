@@ -1,3 +1,4 @@
+import { collections } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
 import { admin, audits, COMPTES, connecter, entrepriseDe } from './outils';
 
@@ -90,7 +91,7 @@ test('journal en direct : une nouvelle décision apparaît sans recharger ; expo
   await expect(page.getByText('En direct')).toBeVisible();
   const { db, Timestamp } = await admin();
   const artisanId = await entrepriseDe(COMPTES.proprio);
-  const ref = await db.collection('cycleTraces').add({
+  const ref = await db.doc(`${collections.cycleTraces}/_`).parent.add({
     schemaVersion: 1,
     artisanId,
     type: 'email_bloque',
