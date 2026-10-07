@@ -506,3 +506,9 @@ export async function abonnementActif(
   });
   return id;
 }
+
+/** Retire un abonnement créé par `abonnementActif` (les comptes du seed sont partagés). */
+export async function supprimerAbonnement(id: string): Promise<void> {
+  const { db } = await admin();
+  await db.doc(`${collections.abonnements}/${id}`).delete();
+}

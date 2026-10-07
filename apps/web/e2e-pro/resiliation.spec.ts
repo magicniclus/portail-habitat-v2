@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { abonnementActif, connecter, proprietaireAvecPlan } from './outils';
+import { abonnementActif, connecter, proprietaireAvecPlan, supprimerAbonnement } from './outils';
 
 // docs/CONVERSION.md §3 S8 (lot 13b) : la route serveur (Stripe) est simulée ici, elle est
 // couverte sur émulateur avec un faux Stripe.
@@ -7,8 +7,10 @@ import { abonnementActif, connecter, proprietaireAvecPlan } from './outils';
 test('S8 : raison obligatoire, alternative proposée, puis résiliation confirmée en fin de période', async ({
   page,
 }) => {
-  const email = await proprietaireAvecPlan('gratuit');
-  await abonnementActif(email, 'visibilite');
+  // Compte déjà en Visibilité : le compte « gratuit » partagé sert au test de paiement (PAY-01).
+  const email = await proprietaireAvecPlan('visibilite');
+  const abonnement = await abonnementActif(email, 'visibilite');
+  test.info().attach('abonnement', { body: abonnement });
   const id = expect.stringMatching(/^sub_e2e\d+$/);
   const recus: unknown[] = [];
   await page.route('**/api/pro/abonnement/resiliation', async (r) => {
@@ -38,4 +40,9 @@ test('S8 : raison obligatoire, alternative proposée, puis résiliation confirm�
     { etape: 'proposer', abonnementId: id, raison: 'saison_creuse' },
     { etape: 'confirmer', abonnementId: id, raison: 'saison_creuse' },
   ]);
+});
+
+test.afterEach(async () => {
+  const a = test.info().attachments.find((x) => x.name === 'abonnement');
+  if (a?.body) await supprimerAbonnement(a.body.toString());
 });

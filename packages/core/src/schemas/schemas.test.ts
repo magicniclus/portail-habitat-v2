@@ -379,8 +379,8 @@ describe('invariants', () => {
     const r = {
       schemaVersion: 1,
       artisanId: 'a1',
-      type: 'presentation',
-      action: 'ameliorer',
+      type: 'apropos',
+      action: 'reecrire',
       accepte: true,
       tokens: 300,
       coutCentimes: 1,
