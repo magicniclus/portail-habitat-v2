@@ -5,6 +5,7 @@ import {
   lireBudgetIa,
   lireConfigIa,
   lireQuotaJourIa,
+  lireStatsRedactionIa,
   listerAnalysesIa,
 } from '@ph/firebase/ia';
 import { Banner } from '@ph/ui';
@@ -14,6 +15,7 @@ import Link from 'next/link';
 import { FormulaireAnalyse } from '@/features/adminIa/FormulaireAnalyse';
 import { ReglagesIa } from '@/features/adminIa/ReglagesIa';
 import { ResultatAnalyse } from '@/features/adminIa/ResultatAnalyse';
+import { UsageRedaction } from '@/features/adminIa/UsageRedaction';
 import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
 
@@ -30,11 +32,12 @@ export default async function AssistantIa({ searchParams }: { searchParams: Para
   const p = await searchParams;
   const db = getFirestore(appAdmin());
   const maintenant = maintenantServeur();
-  const [historique, budget, config, quota] = await Promise.all([
+  const [historique, budget, config, quota, redaction] = await Promise.all([
     listerAnalysesIa(db),
     lireBudgetIa(db, maintenant),
     lireConfigIa(db),
     lireQuotaJourIa(db, session.uid, maintenant),
+    lireStatsRedactionIa(db, maintenant),
   ]);
   const choisie = texte(p.analyse) || historique.find((a) => a.statut === 'ok')?.id;
   const resultat = choisie ? await lireAnalyseIa(db, choisie) : null;
@@ -109,6 +112,7 @@ export default async function AssistantIa({ searchParams }: { searchParams: Para
               </Link>
             ))}
           </section>
+          <UsageRedaction stats={redaction} />
           {peut('ia.configurer') ? (
             <ReglagesIa initial={config} depenseCentimes={budget.depenseCentimes} />
           ) : null}

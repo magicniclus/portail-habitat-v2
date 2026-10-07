@@ -12,6 +12,7 @@ import {
   syntheseHebdoIa,
   type AppelIa,
   type ClientIa,
+  lireStatsRedactionIa,
 } from '../src/serveur/ia';
 
 /** Assistant IA (IA_ADMIN ; IA-01 à IA-06) avec un faux modèle : aucun appel réel. */
@@ -248,5 +249,28 @@ describe('syntheseHebdoIa (IA-07)', () => {
     expect(appels[0]!.modele).toBe('claude-sonnet-5-5');
     expect(envois[0]).toMatchObject({ modele: 'ia-synthese-hebdo', destinataire: { uid: 'sa1' } });
     expect(envois[0]!.donnees.message).toContain('Acquisition (trafic) 30/100 (-20)');
+  });
+});
+
+describe('lireStatsRedactionIa', () => {
+  it('30 derniers jours seulement, taux d’acceptation', async () => {
+    const ligne = (action: string, accepte: boolean, ilYa: number) =>
+      db.collection(collections.iaRedactions).add({
+        artisanId: 'a1',
+        type: 'apropos',
+        action,
+        accepte,
+        coutCentimes: 1,
+        createdAt: Timestamp.fromMillis(T - ilYa * 86_400_000),
+      });
+    await ligne('relire', true, 1);
+    await ligne('reecrire', false, 2);
+    await ligne('relire', true, 40);
+    expect(await lireStatsRedactionIa(db, T)).toMatchObject({
+      total: 2,
+      acceptees: 1,
+      tauxAcceptation: 50,
+      parAction: { relire: { total: 1, acceptees: 1 } },
+    });
   });
 });

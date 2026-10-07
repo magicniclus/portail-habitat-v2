@@ -100,3 +100,46 @@ export const SCHEMA_JSON_REDACTION: Record<string, unknown> = {
   required: ['texte', 'changements'],
   additionalProperties: false,
 };
+
+type ActionRedaction = (typeof ACTIONS_REDACTION)[number];
+
+export const LIBELLES_ACTION_REDACTION: Readonly<Record<ActionRedaction, string>> = {
+  relire: 'Relire et corriger',
+  reecrire: 'Réécrire',
+  generer: 'Rédiger à partir des infos',
+};
+
+export interface StatsRedaction {
+  total: number;
+  acceptees: number;
+  /** Part des propositions reprises (« Remplacer mon texte »), en %, `null` sans utilisation. */
+  tauxAcceptation: number | null;
+  coutCentimes: number;
+  parAction: Record<ActionRedaction, { total: number; acceptees: number }>;
+}
+
+/** Usage de l'aide à la rédaction à partir du journal `iaRedactions` (sans le texte). */
+export function statsRedaction(
+  lignes: readonly { action: ActionRedaction; accepte: boolean; coutCentimes: number }[],
+): StatsRedaction {
+  const parAction = Object.fromEntries(
+    ACTIONS_REDACTION.map((a) => [a, { total: 0, acceptees: 0 }]),
+  ) as StatsRedaction['parAction'];
+  let acceptees = 0;
+  let coutCentimes = 0;
+  for (const l of lignes) {
+    parAction[l.action].total++;
+    if (l.accepte) {
+      parAction[l.action].acceptees++;
+      acceptees++;
+    }
+    coutCentimes += l.coutCentimes;
+  }
+  return {
+    total: lignes.length,
+    acceptees,
+    tauxAcceptation: lignes.length ? Math.round((acceptees / lignes.length) * 100) : null,
+    coutCentimes,
+    parAction,
+  };
+}

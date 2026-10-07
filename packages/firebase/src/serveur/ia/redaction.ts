@@ -8,7 +8,9 @@ import {
   QUOTA_REDACTION_JOUR,
   SCHEMA_JSON_REDACTION,
   sortieRedaction,
+  statsRedaction,
   type SortieRedaction,
+  type StatsRedaction,
 } from '@ph/core/ia';
 import type { EntreeRedactionIa } from '@ph/core/schemas';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -126,4 +128,23 @@ export async function marquerRedactionAcceptee(
   const d = await ref.get();
   if (d.get('artisanId') !== artisanId) throw new ErreurMetier('INTROUVABLE');
   await ref.update({ accepte: true });
+}
+
+/** Usage des 30 derniers jours (Admin › IA) : utilisations, taux d'acceptation, coût. */
+export async function lireStatsRedactionIa(
+  db: Firestore,
+  maintenant: number,
+): Promise<StatsRedaction> {
+  const r = await db
+    .collection(collections.iaRedactions)
+    .where('createdAt', '>=', Timestamp.fromMillis(maintenant - 30 * J))
+    .select('action', 'accepte', 'coutCentimes')
+    .get();
+  return statsRedaction(
+    r.docs.map((d) => ({
+      action: d.get('action') as keyof StatsRedaction['parAction'],
+      accepte: d.get('accepte') === true,
+      coutCentimes: (d.get('coutCentimes') as number | undefined) ?? 0,
+    })),
+  );
 }

@@ -17,5 +17,10 @@ export {
   type RecommandationLue,
 } from './recommandations';
 export { ACTEUR_SYNTHESE, syntheseHebdoIa } from './synthese';
-export { marquerRedactionAcceptee, redigerIa, type ServicesRedaction } from './redaction';
+export {
+  lireStatsRedactionIa,
+  marquerRedactionAcceptee,
+  redigerIa,
+  type ServicesRedaction,
+} from './redaction';
 export { enregistrerReglagesIa } from './reglages';

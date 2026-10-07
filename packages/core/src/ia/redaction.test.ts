@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { controlerRedaction, promptRedaction, sortieRedaction } from './redaction';
+import { controlerRedaction, promptRedaction, sortieRedaction, statsRedaction } from './redaction';
 
 describe('controlerRedaction', () => {
   const e = { type: 'apropos' as const, texte: 'Plombier à Bordeaux depuis longtemps.' };
@@ -48,5 +48,30 @@ describe('promptRedaction', () => {
 
   it('valide la sortie', () => {
     expect(sortieRedaction.parse({ texte: 'Bonjour.' }).changements).toEqual([]);
+  });
+});
+
+describe('usage de l’aide à la rédaction (Admin › IA)', () => {
+  it('taux d’acceptation global et par action, coût total', () => {
+    const r = statsRedaction([
+      { action: 'relire', accepte: true, coutCentimes: 1 },
+      { action: 'relire', accepte: false, coutCentimes: 1 },
+      { action: 'reecrire', accepte: true, coutCentimes: 2 },
+      { action: 'generer', accepte: true, coutCentimes: 3 },
+    ]);
+    expect(r).toEqual({
+      total: 4,
+      acceptees: 3,
+      tauxAcceptation: 75,
+      coutCentimes: 7,
+      parAction: {
+        relire: { total: 2, acceptees: 1 },
+        reecrire: { total: 1, acceptees: 1 },
+        generer: { total: 1, acceptees: 1 },
+      },
+    });
+  });
+  it('aucune utilisation : taux nul, sans division par zéro', () => {
+    expect(statsRedaction([])).toMatchObject({ total: 0, tauxAcceptation: null });
   });
 });
