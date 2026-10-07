@@ -26,7 +26,7 @@ test.describe('Mesure du comportement', () => {
     await page.getByRole('heading', { level: 1 }).click();
     await page.goto('/');
     await choisir(page, 'Tout refuser');
-    await page.mouse.wheel(0, 800);
+    await page.evaluate(() => window.scrollBy(0, 800));
     await page.goto('/aide');
     await page.waitForTimeout(300);
     expect(envois).toHaveLength(0);
