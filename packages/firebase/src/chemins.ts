@@ -115,6 +115,8 @@ export const chemins = {
   diagnosticPrix: (id: string) => `referentiel/diagnostics/prix/${id}`,
   metiers: () => 'referentiel/metiers/items',
   labels: () => 'referentiel/labels/items',
+  /** Textes des pages communes (contenu SEO public, écrit par l'admin). */
+  communeTexte: (slug: string) => `referentiel/communes/items/${slug}`,
   intentions: () => 'referentiel/recherche/intentions',
   metiersRecherche: () => 'referentiel/recherche/metiers',
   synonymes: () => 'referentiel/recherche/synonymes/global',

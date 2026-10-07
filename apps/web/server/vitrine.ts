@@ -1,6 +1,12 @@
 import 'server-only';
 import { PRIX_AFFICHES, type PrixAffiches } from '@ph/core/facturation';
-import { artisanPublic, avis as schemaAvis, configApp, statsPublic } from '@ph/core/schemas';
+import {
+  artisanPublic,
+  avis as schemaAvis,
+  configApp,
+  statsPublic,
+  texteCommune,
+} from '@ph/core/schemas';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins, collections } from '@ph/firebase/chemins';
 import { depot } from '@ph/firebase/serveur';
@@ -97,4 +103,15 @@ export const lirePrixAffiches = cache(
       const r = configApp.shape.prix.safeParse(brut);
       return r.success ? r.data : null;
     })) ?? PRIX_AFFICHES,
+);
+
+/** Textes d'une page commune modifiés dans l'admin (ADMIN §2.9) ; absents : ceux du dépôt. */
+export const lireTexteCommunePublic = cache((slug: string) =>
+  lire(`communes/${slug}`, async () => {
+    // La date de mise à jour (Timestamp Firestore) n'est pas affichée : on ne la valide pas ici.
+    const r = texteCommune
+      .omit({ updatedAt: true })
+      .safeParse((await db().doc(chemins.communeTexte(slug)).get()).data());
+    return r.success ? r.data : null;
+  }),
 );

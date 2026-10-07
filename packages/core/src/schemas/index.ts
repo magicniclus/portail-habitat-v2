@@ -101,6 +101,7 @@ export const SCHEMAS = {
   'referentiel/diagnostics/prix/{}': referentiels.prestationPrix,
   'referentiel/metiers/items/{}': referentiels.metierOuLabel,
   'referentiel/labels/items/{}': referentiels.metierOuLabel,
+  'referentiel/communes/items/{}': referentiels.texteCommune,
   'referentiel/recherche/intentions/{}': referentiels.intentionRecherche,
   'referentiel/recherche/metiers/{}': referentiels.metierRecherche,
   'referentiel/recherche/synonymes/global': referentiels.synonymesRecherche,

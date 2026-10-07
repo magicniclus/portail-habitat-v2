@@ -175,3 +175,24 @@ export const annonce = z.object({
   fin: horodatage.optional(),
   actif: z.boolean(),
 });
+
+/** Textes d'une page commune (contenu SEO, ADMIN §2.9) : ils remplacent ceux de docs/data/communes.json. */
+const paragrapheCommune = z.string().trim().min(20).max(1500);
+export const texteCommune = z.object({
+  schemaVersion,
+  intro: paragrapheCommune,
+  bati: paragrapheCommune,
+  secteurs: paragrapheCommune,
+  risques: paragrapheCommune,
+  frequents: z
+    .array(
+      z.object({
+        titre: z.string().trim().min(3).max(120),
+        texte: z.string().trim().min(10).max(600),
+      }),
+    )
+    .min(1)
+    .max(6),
+  version: z.number().int().positive(),
+  updatedAt: horodatage,
+});

@@ -10,6 +10,7 @@ import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { EditeurPrixPrestation } from '@/features/adminReferentiels/EditeurPrixPrestation';
 import { FlagsAdmin } from '@/features/adminReferentiels/FlagsAdmin';
+import { OngletCommunes } from '@/features/adminReferentiels/OngletCommunes';
 import { pageAdmin } from '@/server/sessionAdmin';
 
 export const metadata: Metadata = { title: 'Référentiels' };
@@ -17,6 +18,7 @@ export const metadata: Metadata = { title: 'Référentiels' };
 type Params = Promise<Record<string, string | undefined>>;
 const ONGLETS = [
   ['prestations', 'Prestations du simulateur'],
+  ['communes', 'Pages communes'],
   ['configuration', 'Configuration'],
 ] as const;
 
@@ -25,7 +27,7 @@ export default async function ReferentielsAdmin({ searchParams }: { searchParams
   const p = await searchParams;
   const s = await pageAdmin('/admin/referentiels', 'referentiels');
   const db = getFirestore(appAdmin());
-  const onglet = p.onglet === 'configuration' ? 'configuration' : 'prestations';
+  const onglet = p.onglet === 'configuration' || p.onglet === 'communes' ? p.onglet : 'prestations';
   const peut = s.role !== 'lecture' && s.permissions.includes('referentiels.modifier');
   const [prestations, prix, flags] = await Promise.all([
     onglet === 'prestations' ? listerPrestationsAdmin(db) : [],
@@ -48,7 +50,12 @@ export default async function ReferentielsAdmin({ searchParams }: { searchParams
           </Link>
         ))}
       </nav>
-      {onglet === 'configuration' ? (
+      {onglet === 'communes' ? (
+        <OngletCommunes
+          slug={p.commune}
+          peut={s.role !== 'lecture' && s.permissions.includes('communes.modifier')}
+        />
+      ) : onglet === 'configuration' ? (
         <FlagsAdmin flags={flags} peut={peut} />
       ) : (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">

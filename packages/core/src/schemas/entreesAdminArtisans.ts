@@ -32,3 +32,22 @@ export const entreeSuppressionEntrepriseAdmin = z.strictObject({
 });
 
 export const entreeRecalculFicheAdmin = z.strictObject({ artisanId: id });
+
+/** Référentiels › Pages communes : nouvelle version des textes d'une commune. */
+export const entreeTexteCommuneAdmin = z.strictObject({
+  slug: z.string().regex(/^[a-z0-9-]{2,60}$/),
+  intro: z.string().trim().min(20).max(1500),
+  bati: z.string().trim().min(20).max(1500),
+  secteurs: z.string().trim().min(20).max(1500),
+  risques: z.string().trim().min(20).max(1500),
+  frequents: z
+    .array(
+      z.strictObject({
+        titre: z.string().trim().min(3).max(120),
+        texte: z.string().trim().min(10).max(600),
+      }),
+    )
+    .min(1)
+    .max(6),
+  motif: motifAdmin,
+});

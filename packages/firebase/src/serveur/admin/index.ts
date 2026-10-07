@@ -167,3 +167,4 @@ export {
   supprimerEntrepriseAdmin,
   transfererProprieteAdmin,
 } from './entreprises';
+export { lireTexteCommune, modifierTexteCommuneAdmin, type TexteCommune } from './communes';
