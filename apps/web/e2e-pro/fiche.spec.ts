@@ -48,6 +48,19 @@ test.describe('Ma fiche', () => {
     await expect(devis).toContainText(/1\s000\s–\s20\s000\s€/);
   });
 
+  test('assistant de rédaction : sans clé, message clair et texte intact', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    await page.getByRole('button', { name: 'Modifier : Présentation' }).click();
+    const feuille = page.getByRole('dialog', { name: 'Présentation' });
+    const apropos = feuille.getByLabel(/^À propos/);
+    await apropos.fill('Couvreur a Bordeaux, on fait les toitures.');
+    await feuille.getByRole('button', { name: 'Relire et corriger' }).click();
+    await expect(
+      feuille.getByText('L’assistant de rédaction n’est pas encore disponible.'),
+    ).toBeVisible();
+    await expect(apropos).toHaveValue('Couvreur a Bordeaux, on fait les toitures.');
+  });
+
   test('devis inversé : message d’erreur, rien n’est enregistré', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
     await page.getByRole('button', { name: 'Modifier : Devis moyen' }).click();

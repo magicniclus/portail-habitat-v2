@@ -3,6 +3,7 @@
 import { Combobox, Field, Input, Select, Textarea } from '@ph/ui';
 import { useState } from 'react';
 import { useLieux } from '@/features/inscription/useLieux';
+import { AssistantRedaction } from './AssistantRedaction';
 import { FeuilleEdition } from './FeuilleEdition';
 
 export function EditionPresentation({
@@ -25,6 +26,7 @@ export function EditionPresentation({
       >
         <Textarea value={d} onChange={(e) => setD(e.target.value)} maxLength={3000} rows={8} />
       </Field>
+      <AssistantRedaction type="apropos" texte={d} remplacer={setD} />
     </FeuilleEdition>
   );
 }

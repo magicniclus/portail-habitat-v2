@@ -26,7 +26,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
 | 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
 | 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
-| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01, CMP-02 (e2e, émulateur) ; traceur (jsdom, poids) | 13c-1 à 13c-5 faits (traceur, `/api/t`, nuit, écran admin, assistant IA) ; reste 13c-6 : §22 |
+| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01 à 04, IA-01 à 07 (émulateur, faux modèle), e2e des écrans | 13c-1 à 13c-6 faits ; reste et points à trancher : §22 |
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
@@ -430,7 +430,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 4. **Modèle de données** : `codesPromo.stripePromotionCodeId` devient facultatif ; `cycleEtat` reçoit `codeActif`, `demandeOfferte`, `demandeOfferteRecue`, `derniersSignaux`, `signal`, `signaux.montantAchete30j` ; `appelsOffres` reçoit `offerteLe`, `offerteA` ; `emails` reçoit `ouvertLe`, `cliqueLe` ; nouveau moyen de déblocage `offerte_conversion` ; abonnement Stripe : métadonnée `codePromo` ; index ajoutés (attributions exclusives, codes, artisans par métier et plan, traces par séquence, témoin, tâches). La liste des délais souhaités est passée dans `@ph/core/demandes`.
 5. **Reste à faire** : `prospect-temoignage` (J+5) attend un vrai délai de première demande par métier  ; `vis-recherches-manquees` (attend le comptage des recherches du lot 13c) ;  journal en temps réel (aujourd'hui rechargé à l'ouverture).
 
-## 22. Lot 13c — Comportement et IA (en cours, 05/10/2026)
+## 22. Lot 13c — Comportement et IA (en grande partie fait le 05/10/2026)
 
 Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13c-3 agrégation de nuit, alertes et tests A/B des pages, 13c-4 écran `/admin/comportement`, 13c-5 assistant IA, 13c-6 aide à la rédaction. Replays « maison, légers » (curseur, clics, défilement rejoués sur une capture, pas de DOM) ; assistant prêt mais coupé tant que `ANTHROPIC_API_KEY` n'est pas posée.
 
@@ -459,6 +459,10 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 - **Modèles** : Claude Haiku 4.5 par défaut, Claude Sonnet 5.5 pour l'analyse approfondie et la synthèse (avec repli serveur si le modèle décline) ; prompt système et contexte mis en cache. **Nouvelle dépendance** : `@anthropic-ai/sdk` dans `@ph/firebase`.
 - **Coupé sans clé** : sans `ANTHROPIC_API_KEY`, l'écran l'indique et le bouton est désactivé ; la Function du lundi ne fait rien.
 - Tests : 9 purs, 11 sur émulateur avec un faux modèle, e2e de l'écran.
+
+**Fait (13c-6)** — assistant de rédaction de Ma Fiche (IA_ADMIN §8) : dans l'éditeur « À propos », « Relire et corriger » et « Réécrire » (Plus professionnel, Plus chaleureux, Plus court, Plus convaincant) ; la proposition s'affiche à côté, « Remplacer mon texte » ou « Garder le mien », rien n'est enregistré sans « Enregistrer ». Serveur : route `/api/pro/redaction` (droit `fiche.modifier`), Claude Haiku 4.5, 900 jetons, 20 utilisations par jour et par entreprise (`iaQuotas/{artisanId_jour}`), limites 1 200 (présentation) et 400 (chantier) caractères, **toute certification citée (RGE, Qualibat, décennale) doit figurer dans les labels de la fiche** sinon la proposition est écartée après une nouvelle tentative ; journal `iaRedactions` sans le texte (type, action, ton, accepté, jetons, coût ; TTL 90 jours). Sans clé : message clair, édition manuelle intacte. Tests : 6 purs, 5 sur émulateur, e2e.
+
+**Reste du lot 13c** : bouton de l'assistant dans « Ajouter un projet » (le serveur sait déjà « rédiger à partir des infos ») ; questions de suivi sur une analyse ; mesure de l'effet d'une recommandation à 30 jours ; ouverture de l'éditeur avec « Utiliser ce texte » ; réglages de l'IA modifiables ; variantes B affichées sur les pages (tests A/B des pages) ; taux d'acceptation de la rédaction dans l'admin.
 
 **À signaler**
 1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).

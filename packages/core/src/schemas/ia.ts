@@ -70,7 +70,7 @@ export const redactionIa = z
   .object({
     schemaVersion,
     artisanId: id,
-    type: z.enum(['presentation', 'chantier']),
+    type: z.enum(['apropos', 'projet']),
     action: z.string(),
     ton: z.string().optional(),
     accepte: z.boolean(),
