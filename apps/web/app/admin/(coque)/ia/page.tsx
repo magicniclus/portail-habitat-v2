@@ -12,6 +12,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { FormulaireAnalyse } from '@/features/adminIa/FormulaireAnalyse';
+import { ReglagesIa } from '@/features/adminIa/ReglagesIa';
 import { ResultatAnalyse } from '@/features/adminIa/ResultatAnalyse';
 import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
@@ -109,18 +110,7 @@ export default async function AssistantIa({ searchParams }: { searchParams: Para
             ))}
           </section>
           {peut('ia.configurer') ? (
-            <section
-              aria-labelledby="reglages-ia"
-              className="grid gap-1 rounded-card border border-trait bg-blanc p-4 text-sm"
-            >
-              <h2 id="reglages-ia" className="m-0 mb-1 text-base">
-                Réglages
-              </h2>
-              <p className="m-0">Modèle par défaut : {config.modeleDefaut}</p>
-              <p className="m-0">Analyse approfondie : {config.modeleApprofondi}</p>
-              <p className="m-0">Cache des réponses : 24 h</p>
-              <p className="m-0">Consignes apprises : {config.consignes.length}</p>
-            </section>
+            <ReglagesIa initial={config} depenseCentimes={budget.depenseCentimes} />
           ) : null}
         </aside>
       </div>

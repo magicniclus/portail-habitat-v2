@@ -18,3 +18,4 @@ export {
 } from './recommandations';
 export { ACTEUR_SYNTHESE, syntheseHebdoIa } from './synthese';
 export { marquerRedactionAcceptee, redigerIa, type ServicesRedaction } from './redaction';
+export { enregistrerReglagesIa } from './reglages';

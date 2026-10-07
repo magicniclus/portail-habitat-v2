@@ -1,9 +1,14 @@
 'use server';
 
-import { entreeActionRecommandation, entreeAnalyseIa } from '@ph/core/schemas';
+import { entreeActionRecommandation, entreeAnalyseIa, entreeReglagesIa } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { appAdmin } from '@ph/firebase/admin';
-import { agirSurRecommandation, analyserIa, clientAnthropic } from '@ph/firebase/ia';
+import {
+  agirSurRecommandation,
+  analyserIa,
+  clientAnthropic,
+  enregistrerReglagesIa,
+} from '@ph/firebase/ia';
 import { getFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
@@ -44,6 +49,23 @@ export async function agirRecommandation(
   e: z.input<typeof entreeActionRecommandation>,
 ): Promise<string | null> {
   const r = await agir(e);
+  revalidatePath('/admin/ia');
+  return r.ok ? null : r.message;
+}
+
+const reglages = actionAdmin(
+  { schema: entreeReglagesIa, nom: 'adminReglagesIa', permission: 'ia.configurer' },
+  async (e, ctx) =>
+    enregistrerReglagesIa(
+      { db: getFirestore(appAdmin()), horloge: Date.now },
+      { ...e, acteurUid: ctx.uid! },
+    ),
+);
+
+export async function enregistrerReglages(
+  e: z.input<typeof entreeReglagesIa>,
+): Promise<string | null> {
+  const r = await reglages(e);
   revalidatePath('/admin/ia');
   return r.ok ? null : r.message;
 }

@@ -462,7 +462,9 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 
 **Fait (13c-6)** — assistant de rédaction de Ma Fiche (IA_ADMIN §8) : dans l'éditeur « À propos », « Relire et corriger » et « Réécrire » (Plus professionnel, Plus chaleureux, Plus court, Plus convaincant) ; la proposition s'affiche à côté, « Remplacer mon texte » ou « Garder le mien », rien n'est enregistré sans « Enregistrer ». Serveur : route `/api/pro/redaction` (droit `fiche.modifier`), Claude Haiku 4.5, 900 jetons, 20 utilisations par jour et par entreprise (`iaQuotas/{artisanId_jour}`), limites 1 200 (présentation) et 400 (chantier) caractères, **toute certification citée (RGE, Qualibat, décennale) doit figurer dans les labels de la fiche** sinon la proposition est écartée après une nouvelle tentative ; journal `iaRedactions` sans le texte (type, action, ton, accepté, jetons, coût ; TTL 90 jours). Sans clé : message clair, édition manuelle intacte. Tests : 6 purs, 5 sur émulateur, e2e.
 
-**Reste du lot 13c** : bouton de l'assistant dans « Ajouter un projet » (le serveur sait déjà « rédiger à partir des infos ») ; questions de suivi sur une analyse ; mesure de l'effet d'une recommandation à 30 jours ; ouverture de l'éditeur avec « Utiliser ce texte » ; réglages de l'IA modifiables ; variantes B affichées sur les pages (tests A/B des pages) ; taux d'acceptation de la rédaction dans l'admin.
+**Fait ensuite (07/10/2026)** : « Ajouter un projet » reçoit une description (400 caractères) et l'assistant (« Rédiger à partir des infos », relire, réécrire) ; les réglages de l'IA sont modifiables à l'écran (assistant actif, synthèse du lundi, budget saisi en euros et stocké en centimes, quota du jour, retrait des consignes apprises ; audit `adminReglagesIa`).
+
+**Reste du lot 13c** : questions de suivi sur une analyse ; mesure de l'effet d'une recommandation à 30 jours ; ouverture de l'éditeur avec « Utiliser ce texte » ; variantes B affichées sur les pages (tests A/B des pages) ; taux d'acceptation de la rédaction dans l'admin.
 
 **À signaler**
 1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).

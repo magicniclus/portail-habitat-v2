@@ -61,6 +61,19 @@ test.describe('Ma fiche', () => {
     await expect(apropos).toHaveValue('Couvreur a Bordeaux, on fait les toitures.');
   });
 
+  test('projet : « Rédiger à partir des infos » demande d’abord un titre', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    await page.getByRole('button', { name: 'Ajouter un projet' }).click();
+    const f = page.getByRole('dialog', { name: 'Ajouter un projet' });
+    const rediger = f.getByRole('button', { name: 'Rédiger à partir des infos' });
+    await expect(rediger).toBeDisabled();
+    await f.getByLabel(/^Titre du chantier/).fill('Salle de bain');
+    await rediger.click();
+    await expect(
+      f.getByText('L’assistant de rédaction n’est pas encore disponible.'),
+    ).toBeVisible();
+  });
+
   test('devis inversé : message d’erreur, rien n’est enregistré', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
     await page.getByRole('button', { name: 'Modifier : Devis moyen' }).click();

@@ -32,6 +32,7 @@ export interface ServicesIa {
 
 export interface ConfigIaLue {
   actif: boolean;
+  analyseHebdo: boolean;
   modeleDefaut: string;
   modeleApprofondi: string;
   quotaJour: number;
@@ -43,6 +44,7 @@ export async function lireConfigIa(db: Firestore): Promise<ConfigIaLue> {
   const d = (await db.doc(chemins.configIa()).get()).data() as Partial<ConfigIaLue> | undefined;
   return {
     actif: d?.actif ?? true,
+    analyseHebdo: d?.analyseHebdo ?? true,
     modeleDefaut: d?.modeleDefaut ?? MODELE_DEFAUT,
     modeleApprofondi: d?.modeleApprofondi ?? MODELE_APPROFONDI,
     quotaJour: d?.quotaJour ?? 30,

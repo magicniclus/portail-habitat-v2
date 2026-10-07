@@ -56,3 +56,13 @@ export type EntreeRedactionIa = z.infer<typeof entreeRedactionIa>;
 
 /** « Remplacer mon texte » : mesure du taux d'acceptation (le texte n'est jamais stocké). */
 export const entreeRedactionAcceptee = z.strictObject({ redactionId: z.string().min(1).max(64) });
+
+/** Réglages de l'assistant (permission `ia.configurer`) ; budget en centimes entiers. */
+export const entreeReglagesIa = z.strictObject({
+  actif: z.boolean(),
+  analyseHebdo: z.boolean(),
+  quotaJour: z.number().int().min(1).max(200),
+  budgetMensuelCentimes: z.number().int().min(0).max(100_000),
+  /** Consignes apprises conservées (les autres sont retirées). */
+  consignes: z.array(z.string().trim().min(1).max(300)).max(50),
+});

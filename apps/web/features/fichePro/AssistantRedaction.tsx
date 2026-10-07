@@ -15,16 +15,19 @@ export function AssistantRedaction({
   type,
   texte,
   remplacer,
+  infos,
 }: {
   type: TypeRedaction;
   texte: string;
   remplacer: (t: string) => void;
+  /** Chantier : titre et ville pour « Rédiger à partir des infos » (les notes = le texte). */
+  infos?: { titre: string; ville: string };
 }) {
   const [ton, setTon] = useState<(typeof TONS_REDACTION)[number]>('professionnel');
   const [proposition, setProposition] = useState<Proposition | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const demander = async (action: 'relire' | 'reecrire') => {
+  const demander = async (action: 'relire' | 'reecrire' | 'generer') => {
     setEnCours(true);
     setErreur(null);
     const r = await posterJson<Proposition>('/api/pro/redaction', {
@@ -32,6 +35,16 @@ export function AssistantRedaction({
       action,
       texte,
       ...(action === 'reecrire' ? { ton } : {}),
+      ...(action === 'generer' && infos
+        ? {
+            texte: '',
+            infos: {
+              titre: infos.titre,
+              ville: infos.ville,
+              ...(texte.trim() ? { notes: texte.trim() } : {}),
+            },
+          }
+        : {}),
     });
     setEnCours(false);
     if (!r.ok) return setErreur(r.message);
@@ -41,6 +54,17 @@ export function AssistantRedaction({
     <div className="grid gap-2 rounded-control bg-neutre-100 p-3">
       <p className="m-0 text-sm font-semibold">Assistant de rédaction</p>
       <div className="flex flex-wrap items-center gap-2">
+        {infos ? (
+          <Button
+            type="button"
+            variant="secondaire"
+            taille="sm"
+            disabled={enCours || infos.titre.trim().length < 2}
+            onClick={() => demander('generer')}
+          >
+            Rédiger à partir des infos
+          </Button>
+        ) : null}
         <Button
           type="button"
           variant="secondaire"

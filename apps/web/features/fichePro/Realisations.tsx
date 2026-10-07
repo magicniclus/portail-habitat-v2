@@ -2,9 +2,11 @@
 
 import { fichiers } from '@ph/firebase/chemins';
 import type { RealisationPro } from '@ph/firebase/pro';
-import { Banner, Button, Checkbox, Feuille, Field, Input } from '@ph/ui';
+import { LIMITES_REDACTION } from '@ph/core/ia';
+import { Banner, Button, Checkbox, Feuille, Field, Input, Textarea } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
+import { AssistantRedaction } from './AssistantRedaction';
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import {
@@ -30,6 +32,7 @@ export function Realisations({
   const [ouvert, setOuvert] = useState(false);
   const [titre, setTitre] = useState('');
   const [ville, setVille] = useState('');
+  const [description, setDescription] = useState('');
   const [photos, setPhotos] = useState<File[]>([]);
   const [accord, setAccord] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -54,6 +57,7 @@ export function Realisations({
         rid,
         titre,
         ville,
+        description,
         photos: envoyees,
         autorisationProprietaire: accord,
       });
@@ -62,6 +66,7 @@ export function Realisations({
         setOuvert(false);
         setTitre('');
         setVille('');
+        setDescription('');
         setPhotos([]);
         setAccord(false);
         router.refresh();
@@ -147,6 +152,23 @@ export function Realisations({
             <Field label="Ville" requis>
               <Input value={ville} onChange={(e) => setVille(e.target.value)} maxLength={80} />
             </Field>
+            <Field
+              label="Description du chantier"
+              aide={`Facultatif (${description.length}/${LIMITES_REDACTION.projet}).`}
+            >
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={LIMITES_REDACTION.projet}
+                rows={3}
+              />
+            </Field>
+            <AssistantRedaction
+              type="projet"
+              texte={description}
+              remplacer={setDescription}
+              infos={{ titre, ville }}
+            />
             <div className="grid gap-1.5">
               <label htmlFor={idPhotos} className="text-[15px] font-semibold">
                 Photos{' '}

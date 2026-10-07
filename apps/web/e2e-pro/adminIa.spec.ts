@@ -101,3 +101,16 @@ test('« Demander à l’IA » depuis une alerte préremplit la question', async
     'Pourquoi ce clic mort ?',
   );
 });
+
+test('réglages de l’assistant : budget en euros enregistré en centimes, avec audit', async ({
+  page,
+}) => {
+  await connecter(page, 'admin@test.local', '/admin/ia', 'admin');
+  const reglages = page.getByRole('region', { name: 'Réglages' });
+  await reglages.getByLabel('Budget mensuel (€)').fill('12,5');
+  await reglages.getByRole('button', { name: 'Enregistrer les réglages' }).click();
+  await expect(reglages.getByText('Réglages enregistrés.')).toBeVisible();
+  const { db } = await admin();
+  expect((await db.doc('config/ia').get()).get('budgetMensuelCentimes')).toBe(1250);
+  expect(await audits('adminReglagesIa', 'config/ia')).toBeGreaterThanOrEqual(1);
+});

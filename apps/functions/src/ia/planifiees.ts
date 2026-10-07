@@ -1,6 +1,10 @@
 import { appAdmin } from '@ph/firebase/admin';
-import { chemins } from '@ph/firebase/chemins';
-import { calculerContextesIa, clientAnthropic, syntheseHebdoIa } from '@ph/firebase/ia';
+import {
+  calculerContextesIa,
+  clientAnthropic,
+  lireConfigIa,
+  syntheseHebdoIa,
+} from '@ph/firebase/ia';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
@@ -33,7 +37,7 @@ export const iaSyntheseHebdo = onSchedule(
     const db = getFirestore(appAdmin());
     const cle = process.env.ANTHROPIC_API_KEY;
     if (!cle) return logger.info('IA : synthèse ignorée, clé API absente');
-    if ((await db.doc(chemins.configIa()).get()).get('analyseHebdo') === false)
+    if (!(await lireConfigIa(db)).analyseHebdo)
       return logger.info('IA : synthèse hebdomadaire désactivée');
     const r = await syntheseHebdoIa({
       db,
