@@ -128,6 +128,7 @@ export const SCHEMAS = {
   'cycleEtat/{}': conversion.cycleEtat,
   'cycleTraces/{}': conversion.traceCycle,
   'cycleStats/{}': conversion.statsCycle,
+  'recherchesSecteur/{}': conversion.rechercheSecteur,
   'sequences/{}': conversion.sequence,
   'sequences/{}/versions/{}': conversion.sequence,
   'config/cycle': conversion.configCycle,

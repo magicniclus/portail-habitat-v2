@@ -149,6 +149,7 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   'stripeEvents/evt1': { ...v, ok: true },
   'comportementSessions/cs1': { ...v, page: 'accueil' },
   'iaContexte/global': { ...v, json: '{}' },
+  'recherchesSecteur/2026-10-01_plombier_bordeaux': { ...v, n: 1 },
 };
 
 // Une réalisation à supprimer par profil (les suppressions réussies ne gênent pas les autres cas).

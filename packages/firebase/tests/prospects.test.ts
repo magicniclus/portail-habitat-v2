@@ -61,6 +61,8 @@ describe('enregistrerProspect', () => {
       source: 'estimation',
       metiers: ['electricien'],
       commune: 'Bordeaux',
+      codePostal: '33000',
+      demandes30j: 27,
       etape: 'prospect',
       consentement: { base: 'interet_legitime_b2b' },
       desabonne: false,
@@ -158,6 +160,47 @@ describe('planifierProspects (séquence S1)', () => {
     expect(envois.map((e) => [e.modele, e.destinataire.email, e.donnees.signataire])).toEqual([
       ['prospect-derniere', 'p2@exemple.fr', 'Julie'],
     ]);
+    await planifierProspects({ ...s, horloge: () => T + J });
+    expect(envois).toHaveLength(1);
+  });
+
+  it('J+5 : témoignage avec le délai réel du département ; sans 3 mesures, rien', async () => {
+    await prospect('p5', T - 5 * J, { codePostal: '33000', demandes30j: 27 });
+    const artisan = async (
+      id: string,
+      inscritLe: number,
+      premiere: number | null,
+      cp = '33700',
+    ) => {
+      await db.doc(chemins.artisan(id)).set({
+        metiers: ['electricien'],
+        origine: 'onboarding',
+        adresseSiege: { codePostal: cp },
+        createdAt: Timestamp.fromMillis(inscritLe),
+      });
+      if (premiere !== null)
+        await db.doc(`demandes/d-${id}/attributions/${id}`).set({
+          artisanId: id,
+          proposeeLe: Timestamp.fromMillis(premiere),
+        });
+    };
+    await artisan('a1', T - 40 * J, T - 37 * J);
+    await artisan('a2', T - 60 * J, T - 55 * J);
+    await artisan('a3', T - 90 * J, null);
+    await artisan('a4', T - 30 * J, T - 29 * J, '75011');
+    expect(await planifierProspects(s)).toMatchObject({ envoyes: 0 });
+    await artisan('a5', T - 20 * J, T - 13 * J);
+    // Une 2e attribution plus tardive ne change pas la première.
+    await db.doc('demandes/d-x/attributions/a1').set({
+      artisanId: 'a1',
+      proposeeLe: Timestamp.fromMillis(T - 2 * J),
+    });
+    expect(await planifierProspects(s)).toMatchObject({ envoyes: 1 });
+    expect(envois[0]).toMatchObject({
+      modele: 'prospect-temoignage',
+      destinataire: { email: 'p5@exemple.fr' },
+      donnees: { joursPremiereDemande: 5, demandes30j: 27, ville: 'Bordeaux' },
+    });
     await planifierProspects({ ...s, horloge: () => T + J });
     expect(envois).toHaveLength(1);
   });

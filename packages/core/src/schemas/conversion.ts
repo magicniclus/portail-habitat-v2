@@ -33,6 +33,13 @@ export const prospect = z.object({
   source: z.enum(['estimation', 'guide', 'salon', 'import', 'facebook']),
   metiers: z.array(id),
   commune: z.string().optional(),
+  /** Département du témoignage J+5 (moyenne calculée sur ce département). */
+  codePostal: z
+    .string()
+    .regex(/^\d{5}$/)
+    .optional(),
+  /** Demandes estimées sur 30 jours à l'inscription (STATS_DEMANDES), reprises à J+5. */
+  demandes30j: z.number().int().nonnegative().optional(),
   geo: geo.optional(),
   geohash: geohash.optional(),
   rayonKm: rayonKm.optional(),
@@ -62,6 +69,8 @@ export const cycleEtat = z.object({
     position: z.number().int().positive().nullable(),
     positionPrec: z.number().int().positive().nullable(),
     recherchesSecteur30j: z.number().int().nonnegative(),
+    /** Recherches « métier + ville » des 7 derniers jours sans la fiche en 1re page. */
+    recherchesManquees7j: z.number().int().nonnegative().optional(),
     demandesExclusivesManquees7j: z.number().int().nonnegative(),
     montantManque7j: centimesPositifs,
     creditsAchetes30j: z.number().int().nonnegative(),
@@ -159,4 +168,18 @@ export const configCycle = z.object({
   seuilAppel: pourcent,
   tailleTemoin: z.number().min(0).max(0.5),
   updatedAt: horodatage,
+});
+
+/**
+ * `recherchesSecteur/{jour}_{metier}_{ville}` : recherches de l'annuaire avec un métier et une
+ * ville, et apparitions en 1re page par fiche. Aucune donnée personnelle ; supprimé après 40 jours.
+ */
+export const rechercheSecteur = z.object({
+  schemaVersion,
+  jour: jourIso,
+  metier: id,
+  ville: z.string().min(1).max(80),
+  n: z.number().int().nonnegative(),
+  premierePage: z.record(z.string(), z.number().int().nonnegative()),
+  expireLe: horodatage,
 });

@@ -8,6 +8,8 @@ import {
   prochainPas,
   scoreCycle,
   signauxDeclenches,
+  signalRecherchesManquees,
+  recherchesDuSecteur,
   depenseAppelsOffres,
   signalCredits,
   signalGarantie,
@@ -40,6 +42,7 @@ import { chemins, collections } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import { lireStatsJours } from '../pro/statistiques';
 import { lireCodeActif, reserverCode } from './codes';
+import { lireRecherchesSecteur } from './recherches';
 import { gererTachesCycle } from './taches';
 
 /**
@@ -159,6 +162,8 @@ export async function synchroniserCycle(
       vues30j: number;
       creditsAchetes30j: number;
       montantAchete30j: number;
+      recherchesSecteur30j: number;
+      recherchesManquees7j: number;
     } & PositionSecteur
   > = {},
 ): Promise<{ etape: EtapeCycle; changee: boolean }> {
@@ -235,38 +240,48 @@ export async function synchroniserCycle(
     credits30j: mesures.creditsAchetes30j ?? 0,
     montant30jCentimes: mesures.montantAchete30j ?? 0,
   };
+  const manquees = mesures.recherchesManquees7j ?? 0;
   const signal = concurrent
     ? { modele: concurrent.modele, extra: { recul: concurrent.recul } }
-    : signalCredits(etape, depense, {
+    : signalRecherchesManquees(etape, manquees, {
           maintenant,
-          ...(derniers['prem-credits'] !== undefined ? { dernier: derniers['prem-credits'] } : {}),
+          ...(derniers['vis-recherches-manquees'] !== undefined
+            ? { dernier: derniers['vis-recherches-manquees'] }
+            : {}),
         })
-      ? { modele: 'prem-credits', extra: depense }
-      : signalGarantie(etape, (a.demandesRecuesMois as number | undefined) ?? 0, {
+      ? { modele: 'vis-recherches-manquees', extra: { recherches7j: manquees } }
+      : signalCredits(etape, depense, {
             maintenant,
-            ...(derniers['garantie-tenue'] !== undefined
-              ? { dernier: derniers['garantie-tenue'] }
+            ...(derniers['prem-credits'] !== undefined
+              ? { dernier: derniers['prem-credits'] }
               : {}),
           })
-        ? {
-            modele: 'garantie-tenue',
-            extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
-          }
-        : renouvellement
+        ? { modele: 'prem-credits', extra: depense }
+        : signalGarantie(etape, (a.demandesRecuesMois as number | undefined) ?? 0, {
+              maintenant,
+              ...(derniers['garantie-tenue'] !== undefined
+                ? { dernier: derniers['garantie-tenue'] }
+                : {}),
+            })
           ? {
-              modele: 'prem-renouvellement',
-              extra: {
-                date: formatDate(renouvellement, 'long'),
-                lien: '/pro/abonnement/premium?facturation=annuel',
-              },
+              modele: 'garantie-tenue',
+              extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
             }
-          : passageAnnuel
+          : renouvellement
             ? {
-                modele: 'passage-annuel',
-                // Changement de formule dans le portail client Stripe (page Facturation).
-                extra: { produit: passageAnnuel, lien: '/pro/facturation' },
+                modele: 'prem-renouvellement',
+                extra: {
+                  date: formatDate(renouvellement, 'long'),
+                  lien: '/pro/abonnement/premium?facturation=annuel',
+                },
               }
-            : undefined;
+            : passageAnnuel
+              ? {
+                  modele: 'passage-annuel',
+                  // Changement de formule dans le portail client Stripe (page Facturation).
+                  extra: { produit: passageAnnuel, lien: '/pro/facturation' },
+                }
+              : undefined;
   const commun = {
     schemaVersion: 1,
     score,
@@ -739,10 +754,22 @@ export async function calculerCycles(
         vues7j: vues.get(a.id)?.vues7j ?? 0,
       })),
   );
+  const recherches = await lireRecherchesSecteur(s.db, maintenant);
   let changements = 0;
   for (const a of artisans) {
+    const secteur = recherchesDuSecteur(
+      recherches,
+      {
+        id: a.id,
+        metier: (a.get('metierPrincipal') as string | undefined) ?? '',
+        ville: (a.get('adresseSiege.ville') as string | undefined) ?? '',
+      },
+      maintenant,
+    );
     const { changee } = await synchroniserCycle(s, a, config, {
       ...vues.get(a.id),
+      recherchesSecteur30j: secteur.recherches30j,
+      recherchesManquees7j: secteur.manquees7j,
       ...secteurs.get(a.id),
       ...(({ credits30j, montant30jCentimes }) => ({
         creditsAchetes30j: credits30j,

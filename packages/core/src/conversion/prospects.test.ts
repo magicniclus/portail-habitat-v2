@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emailsProspect } from './prospects';
+import { delaiPremiereDemande, emailsProspect } from './prospects';
 
 const J = 86_400_000;
 // Jeudi 1er octobre 2026, 7 h à Paris.
@@ -41,5 +41,39 @@ describe('séquence S1 des prospects (CONVERSION §3)', () => {
     expect(
       emailsProspect({ creeLe: T - 10 * J, maintenant: T, envois: { demandeZone: T - 6 * J } }),
     ).not.toContain('prospect-demande-zone');
+  });
+});
+
+describe('témoignage J+5 (CONVERSION §3 S1)', () => {
+  it('part à J+5, une seule fois, jusqu’à J+30', () => {
+    expect(emailsProspect({ creeLe: T - 5 * J, maintenant: T, envois: {} })).toContain(
+      'prospect-temoignage',
+    );
+    expect(emailsProspect({ creeLe: T - 4 * J, maintenant: T, envois: {} })).not.toContain(
+      'prospect-temoignage',
+    );
+    expect(
+      emailsProspect({ creeLe: T - 6 * J, maintenant: T, envois: { temoignage: T - J } }),
+    ).not.toContain('prospect-temoignage');
+    expect(emailsProspect({ creeLe: T - 31 * J, maintenant: T, envois: {} })).not.toContain(
+      'prospect-temoignage',
+    );
+  });
+});
+
+describe('délai avant la première demande', () => {
+  const ins = (jours: number, premiere?: number) => ({
+    inscritLe: T - jours * J,
+    ...(premiere !== undefined ? { premiereLe: T - jours * J + premiere * J } : {}),
+  });
+  it('moyenne en jours des inscrits de moins de 6 mois qui ont reçu une demande', () => {
+    expect(delaiPremiereDemande([ins(30, 2), ins(60, 4), ins(90, 9), ins(20)], T)).toBe(5);
+  });
+  it('rien sous 3 artisans mesurés, et les inscrits de plus de 6 mois sont ignorés', () => {
+    expect(delaiPremiereDemande([ins(30, 2), ins(60, 4)], T)).toBeNull();
+    expect(delaiPremiereDemande([ins(30, 2), ins(60, 4), ins(200, 1)], T)).toBeNull();
+  });
+  it('au moins 1 jour', () => {
+    expect(delaiPremiereDemande([ins(30, 0.1), ins(60, 0.2), ins(90, 0.3)], T)).toBe(1);
   });
 });

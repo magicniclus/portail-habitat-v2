@@ -1,5 +1,6 @@
 import 'server-only';
 import { COLLECTION_ARTISANS, LIEU_DEFAUT, parametresRechercheArtisans } from '@ph/core/annuaire';
+import { estRobot, idsPremierePage } from '@ph/core/conversion';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   fichesAutour,
@@ -8,7 +9,9 @@ import {
   type ArtisanAnnuaire,
   type FichePublique,
 } from '@ph/firebase/annuaire';
+import { compterRechercheSecteur } from '@ph/firebase/cycle';
 import { getFirestore } from 'firebase-admin/firestore';
+import { after } from 'next/server';
 import { cache } from 'react';
 import { lire } from './lecture';
 
@@ -103,4 +106,24 @@ export async function idsTexte(q: string, lieu: Lieu, rayonKm: number): Promise<
   } catch {
     return null;
   }
+}
+
+/**
+ * Recherche « métier + ville » d'un visiteur (robots exclus) : compteur du secteur et fiches de
+ * la 1re page, écrits après la réponse (`vis-recherches-manquees`, CONVERSION §3 S4).
+ */
+export function compterRecherche(
+  e: { metier: string; lieu: Lieu; userAgent: string },
+  r: { premium: { id: string }[]; standards: { id: string }[] },
+): void {
+  if (e.lieu.inconnu || modeDemo() || estRobot(e.userAgent)) return;
+  const premierePage = idsPremierePage(r);
+  after(() =>
+    lire('compteur de recherches', () =>
+      compterRechercheSecteur(
+        { db: db(), horloge: Date.now },
+        { metier: e.metier, ville: e.lieu.nom, premierePage },
+      ),
+    ),
+  );
 }

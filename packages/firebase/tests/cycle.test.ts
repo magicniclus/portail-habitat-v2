@@ -4,6 +4,7 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import {
   calculerCycles,
+  compterRechercheSecteur,
   envoyerAppelsComplets,
   envoyerDemandesManquees,
   planifierCycle,
@@ -179,6 +180,39 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await etat()).get('signal')).toBeUndefined();
     await calculerCycles(s(T0 + 3 * J));
     expect((await etat()).get('signal')).toBeUndefined();
+  });
+  it('10 recherches « peintre Bordeaux » en 7 jours sans la fiche en 1re page : « vis-recherches-manquees »', async () => {
+    await artisan('moi');
+    await artisan('premier');
+    const rechercher = (t: number, premierePage: string[]) =>
+      compterRechercheSecteur(s(t), { metier: 'peintre', ville: 'Bordeaux', premierePage });
+    for (let i = 0; i < 9; i++) await rechercher(T0 - 2 * J, ['premier']);
+    await rechercher(T0 - 2 * J, ['premier', 'moi']);
+    await rechercher(T0 - 20 * J, ['premier']);
+    await calculerCycles(s(T0));
+    const ref = db.collection(collections.cycleEtat).doc('moi');
+    expect((await ref.get()).get('signaux')).toMatchObject({
+      recherchesSecteur30j: 11,
+      recherchesManquees7j: 9,
+    });
+    expect((await ref.get()).get('signal')).toBeUndefined();
+    await rechercher(T0 - J, []);
+    await calculerCycles(s(T0 + J));
+    expect((await ref.get()).data()).toMatchObject({
+      signaux: { recherchesManquees7j: 10 },
+      signal: { modele: 'vis-recherches-manquees', extra: { recherches7j: 10 } },
+    });
+    await ref.update({ groupeTemoin: false });
+    await planifierCycle(s(T0 + 2 * J));
+    expect(envois.map((e) => e.modele)).toEqual(['vis-recherches-manquees']);
+    expect((envois[0] as unknown as { donnees: Record<string, unknown> }).donnees).toMatchObject({
+      recherches7j: 10,
+      ville: 'Bordeaux',
+    });
+    // Au plus tous les 14 jours.
+    await rechercher(T0 + 2 * J, []);
+    await calculerCycles(s(T0 + 3 * J));
+    expect((await ref.get()).get('signal')).toBeUndefined();
   });
   it('plus de 40 € d’appels d’offres en 30 jours : signal « prem-credits » avec les montants', async () => {
     await artisan('cr', { optionVisibilite: true });

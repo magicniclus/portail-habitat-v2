@@ -50,6 +50,7 @@ export const collections = {
   cycleEtat: 'cycleEtat',
   cycleTraces: 'cycleTraces',
   cycleStats: 'cycleStats',
+  recherchesSecteur: 'recherchesSecteur',
   sequences: 'sequences',
   pagesSuivies: 'pagesSuivies',
   comportementSessions: 'comportementSessions',

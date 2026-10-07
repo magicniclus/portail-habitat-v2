@@ -632,6 +632,7 @@ const CAS: Cas[] = [
     'stripeEvents/evt1',
     'comportementSessions/cs1',
     'iaContexte/global',
+    'recherchesSecteur/2026-10-01_plombier_bordeaux',
   ].map((chemin): Cas => ({
     nom: `lire ${chemin.split('/')[0]} (Admin SDK uniquement)`,
     op: { get: chemin },

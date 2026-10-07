@@ -1,12 +1,13 @@
-import { emailsProspect, preparerDonnees } from '@ph/core/conversion';
+import { delaiPremiereDemande, emailsProspect, preparerDonnees } from '@ph/core/conversion';
 import { libelleDelai } from '@ph/core/demandes';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { encoderGeohash } from '@ph/core/geo';
 import { distanceKm } from '@ph/core/matching';
+import { departementDuCodePostal } from '@ph/core/stats';
 import { TEXTE_CONSENTEMENT_PROSPECT } from '@ph/core/schemas';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import type { NomModele } from '@ph/core/notifications';
-import { chemins, collections } from '../../chemins';
+import { chemins, collections, GROUPE_ATTRIBUTIONS } from '../../chemins';
 import type { Notifier } from '../comptes/services';
 import type { Geocodeur } from '../demandes/geocodage';
 import { empreinteEmail } from '../notifications/notifier';
@@ -94,6 +95,7 @@ export async function enregistrerProspect(
     inscritsZone(s.db, e.metier, lieu.geo),
     budgetMoyen(s.db, e.metier, e.codePostal, maintenant),
   ]);
+  const demandes30j = s.estimerDemandes(e.codePostal, e.metier) ?? 0;
   const t0 = Timestamp.fromMillis(maintenant);
   try {
     await ref.create({
@@ -102,6 +104,8 @@ export async function enregistrerProspect(
       source: e.source ?? 'estimation',
       metiers: [e.metier],
       commune: lieu.ville,
+      codePostal: e.codePostal,
+      demandes30j,
       geo: lieu.geo,
       geohash: encoderGeohash(lieu.geo.latitude, lieu.geo.longitude),
       rayonKm: RAYON_KM,
@@ -119,7 +123,7 @@ export async function enregistrerProspect(
   const preparees = preparerDonnees('prospect-estimation', {
     metier: nom.toLowerCase(),
     ville: lieu.ville,
-    demandes30j: s.estimerDemandes(e.codePostal, e.metier) ?? 0,
+    demandes30j,
     inscritsZone: inscrits,
     ...(budget ? { budgetMoyenCentimes: budget } : {}),
     lien: `${s.urlSite}/pro?metier=${e.metier}#inscription`,
@@ -164,15 +168,61 @@ async function demandesRecentes(db: Firestore, metier: string, maintenant: numbe
     }));
 }
 
-const CLE_ENVOI: Record<string, 'demandeZone' | 'derniere' | 'resume'> = {
+/** Artisans mesurés au plus par métier et département (coût borné, COUTS). */
+const MAX_MESURES = 40;
+
+/**
+ * Délai moyen avant la 1re demande des artisans du métier inscrits depuis moins de 6 mois dans
+ * le département (`prospect-temoignage`) : une lecture d'attribution par artisan mesuré.
+ */
+async function delaiDepartement(
+  db: Firestore,
+  metier: string,
+  departement: string,
+  maintenant: number,
+): Promise<number | null> {
+  const r = await db
+    .collection(collections.artisans)
+    .where('metiers', 'array-contains', metier)
+    .limit(500)
+    .get();
+  const recents = r.docs
+    .filter(
+      (a) =>
+        a.get('origine') === 'onboarding' &&
+        departementDuCodePostal(String(a.get('adresseSiege.codePostal') ?? '')) === departement &&
+        maintenant - ((a.get('createdAt') as Timestamp | undefined)?.toMillis() ?? 0) <= 183 * J,
+    )
+    .slice(0, MAX_MESURES);
+  const mesures = await Promise.all(
+    recents.map(async (a) => {
+      const premiere = await db
+        .collectionGroup(GROUPE_ATTRIBUTIONS)
+        .where('artisanId', '==', a.id)
+        .orderBy('proposeeLe')
+        .limit(1)
+        .get();
+      const le = (premiere.docs[0]?.get('proposeeLe') as Timestamp | undefined)?.toMillis();
+      return {
+        inscritLe: (a.get('createdAt') as Timestamp).toMillis(),
+        ...(le !== undefined ? { premiereLe: le } : {}),
+      };
+    }),
+  );
+  return delaiPremiereDemande(mesures, maintenant);
+}
+
+const CLE_ENVOI: Record<string, 'demandeZone' | 'derniere' | 'resume' | 'temoignage'> = {
   'prospect-demande-zone': 'demandeZone',
+  'prospect-temoignage': 'temoignage',
   'prospect-derniere': 'derniere',
   'resume-zone-mensuel': 'resume',
 };
 
 /**
  * `cycleProspects` (7 h) : suite de la séquence S1. Un email au plus par prospect et par jour,
- * dans l'ordre demande réelle de la zone, « dernière », résumé mensuel ; sans chiffre, rien.
+ * dans l'ordre demande réelle de la zone, témoignage J+5, « dernière », résumé mensuel ; sans
+ * chiffre, rien.
  */
 export async function planifierProspects(
   s: Pick<ServicesProspect, 'db' | 'horloge' | 'notifier' | 'nomMetier' | 'urlSite'>,
@@ -185,6 +235,7 @@ export async function planifierProspects(
     .limit(500)
     .get();
   const parMetier = new Map<string, Promise<DemandeProche[]>>();
+  const delais = new Map<string, Promise<number | null>>();
   const noms = new Map<string, string>();
   let envoyes = 0;
   for (const p of prospects.docs) {
@@ -249,6 +300,22 @@ export async function planifierProspects(
           delai: libelleDelai(veille.delai),
         },
       ]);
+    }
+    const departement = departementDuCodePostal(String(p.get('codePostal') ?? ''));
+    if (possibles.includes('prospect-temoignage') && departement) {
+      const cle = `${metier}|${departement}`;
+      if (!delais.has(cle))
+        delais.set(cle, delaiDepartement(s.db, metier, departement, maintenant));
+      const jours = await delais.get(cle)!;
+      if (jours !== null)
+        candidats.push([
+          'prospect-temoignage',
+          {
+            ...base,
+            joursPremiereDemande: jours,
+            demandes30j: (p.get('demandes30j') as number | undefined) ?? 0,
+          },
+        ]);
     }
     if (possibles.includes('prospect-derniere'))
       candidats.push(['prospect-derniere', { ...base, signataire }]);

@@ -10,6 +10,7 @@ import {
 import { trierResultats } from '@ph/firebase/annuaire';
 import { bouton } from '@ph/ui';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { BarreRecherche } from '@/features/annuaire/BarreRecherche';
 import { Traceur } from '@/features/comportement/Traceur';
@@ -20,7 +21,7 @@ import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { routes } from '@/lib/routes';
-import { artisansAutour, idsTexte, resoudreLieu } from '@/server/annuaire';
+import { artisansAutour, compterRecherche, idsTexte, resoudreLieu } from '@/server/annuaire';
 import { metiersFiltre, nomMetier } from '@/server/metiers';
 
 type Params = Promise<Record<string, string | string[] | undefined>>;
@@ -60,6 +61,11 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
     idsTexte(f.q, lieu, f.rayon),
   ]);
   const r = trierResultats(fiches, f, ordre);
+  if (f.metier.length === 1 && f.ville)
+    compterRecherche(
+      { metier: f.metier[0]!, lieu, userAgent: (await headers()).get('user-agent') ?? '' },
+      r,
+    );
   const options: OptionsFiltres = {
     metiers: metiersFiltre(f.metier),
     notes: NOTES_ANNUAIRE,

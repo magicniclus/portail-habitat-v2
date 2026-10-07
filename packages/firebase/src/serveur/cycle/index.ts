@@ -28,3 +28,4 @@ export {
 } from './prospects';
 export { traiterReponseEmail } from './reponses';
 export { evaluerTestsAB } from './ab';
+export { compterRechercheSecteur } from './recherches';

@@ -113,6 +113,20 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "proposeeLe",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "attributions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "artisanId",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "statut",
           "order": "ASCENDING"
         },
@@ -1226,6 +1240,12 @@
     },
     {
       "collectionGroup": "evenements",
+      "fieldPath": "expireLe",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "recherchesSecteur",
       "fieldPath": "expireLe",
       "ttl": true,
       "indexes": []

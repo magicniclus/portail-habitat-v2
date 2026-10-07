@@ -224,7 +224,17 @@ export {
 } from './libelles';
 export { tachesACreer, type TacheConversion } from './taches';
 export { agregerJourCycle, attribuerConversion } from './attribution';
-export { emailsProspect } from './prospects';
+export { delaiPremiereDemande, emailsProspect } from './prospects';
+export {
+  estRobot,
+  idRechercheSecteur,
+  idsPremierePage,
+  PREMIERE_PAGE,
+  recherchesDuSecteur,
+  SEUIL_RECHERCHES_MANQUEES,
+  signalRecherchesManquees,
+  type CompteurRecherches,
+} from './recherches';
 export { adresseExpediteur } from './reponses';
 export { LIEN_FACEBOOK, textePublicationFacebook } from './facebook';
 export {
