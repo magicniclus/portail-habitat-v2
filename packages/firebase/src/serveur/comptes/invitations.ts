@@ -231,8 +231,12 @@ export async function accepterInvitation(
         invitationId: doc.id,
       }),
     );
+    // Revendication (COMPTES §3.5) : l'entreprise créée par l'admin reçoit son propriétaire.
+    if (inv.revendication && (entreprise as { revendiquee?: boolean }).revendiquee)
+      throw new ErreurMetier('CONFLIT', 'Cette entreprise a déjà été revendiquée.');
     tx.update(s.db.doc(chemins.artisan(inv.artisanId as string)), {
       nbMembres: FieldValue.increment(1),
+      ...(inv.revendication ? { proprietaireUid: uid, revendiquee: true } : {}),
       updatedAt: maintenant,
     });
     tx.update(doc.ref, { statut: 'acceptee', acceptePar: uid, updatedAt: maintenant });
@@ -241,6 +245,8 @@ export async function accepterInvitation(
 
   await rattacherProfil(s, uid, compte.email!, maintenant);
   await synchroniserClaims(s, uid, inv.artisanId as string);
+  // Une revendication vient de l'équipe Portail Habitat : pas de membre à prévenir.
+  if (inv.revendication) return { artisanId: inv.artisanId as string };
   await s.notifier({
     modele: 'invitation-acceptee',
     destinataire: { uid: inv.invitePar as string, artisanId: inv.artisanId as string },

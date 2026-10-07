@@ -64,6 +64,8 @@ export async function listerArtisansAdmin(
 
 export interface FicheArtisanAdmin extends LigneArtisanAdmin {
   proprietaireUid: string | null;
+  /** Entreprise créée par l'admin et pas encore revendiquée (COMPTES §3.5). */
+  revendiquee: boolean;
   emailMasque: string | null;
   telephoneMasque: string | null;
   zone: string;
@@ -107,6 +109,7 @@ export async function lireArtisanAdmin(
     statut: statutDe(d),
     plan: d.plan ?? 'gratuit',
     proprietaireUid: d.proprietaireUid ?? null,
+    revendiquee: d.revendiquee !== false,
     emailMasque: d.emailContact ? masquerEmail(d.emailContact) : null,
     telephoneMasque: d.telephonePublic ? masquerTel(d.telephonePublic) : null,
     zone: d.zoneIntervention

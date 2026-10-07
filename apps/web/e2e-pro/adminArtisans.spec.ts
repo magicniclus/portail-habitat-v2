@@ -1,5 +1,7 @@
+import { collections } from '@ph/firebase/chemins';
 import { expect, test } from '@playwright/test';
 import {
+  admin,
   audits,
   COMPTES,
   connecter,
@@ -105,4 +107,62 @@ test('documents : le modérateur valide une décennale ; la tâche quitte la fil
   await page.getByLabel('Nouvelle note interne').fill('Décennale vérifiée au téléphone.');
   await page.getByRole('button', { name: 'Ajouter la note' }).click();
   await expect(page.getByText('Décennale vérifiée au téléphone.')).toBeVisible();
+});
+
+test('entreprise créée par l’admin : non revendiquée, fiche recalculée, puis suppression définitive', async ({
+  page,
+}) => {
+  const siren = '732829320';
+  const { db, Timestamp } = await admin();
+  // Résultat SIRENE en cache : aucun appel au répertoire pendant le test.
+  await db.doc(`${collections.cacheSirene}/${siren}`).set({
+    schemaVersion: 1,
+    donnees: {
+      siren,
+      siret: `${siren}00017`,
+      raisonSociale: 'ZINGUERIE E2E SARL',
+      nomCommercial: 'Zinguerie E2E',
+      fermee: false,
+      adresse: {
+        ligne1: '3 quai des Chartrons',
+        codePostal: '33000',
+        ville: 'Bordeaux',
+        geo: { latitude: 44.85, longitude: -0.57 },
+      },
+    },
+    createdAt: Timestamp.now(),
+    expireLe: Timestamp.fromMillis(Date.now() + 86_400_000),
+  });
+  await db.doc(`${collections.sirenIndex}/${siren}`).delete();
+
+  await connecter(page, 'admin@test.local', '/admin/artisans?q=Zinguerie', 'admin');
+  await page.getByRole('button', { name: 'Créer une entreprise' }).click();
+  const creer = page.getByRole('dialog', { name: 'Créer une entreprise non revendiquée' });
+  await creer.getByLabel('SIREN').fill(siren);
+  await creer.getByLabel('Motif (obligatoire)').fill('Partenariat chambre des métiers');
+  await creer.getByText('Je confirme cette action').click();
+  await creer.getByRole('button', { name: 'Confirmer' }).click();
+  await expect(creer).toBeHidden();
+  const artisanId = (await db.doc(`${collections.sirenIndex}/${siren}`).get()).get(
+    'artisanId',
+  ) as string;
+  expect(await audits('adminCreerEntreprise', `artisans/${artisanId}`)).toBe(1);
+
+  await page.goto(`/admin/artisans?id=${artisanId}`);
+  const fiche = page.getByRole('region', { name: 'Fiche de Zinguerie E2E' });
+  await expect(fiche.getByRole('button', { name: 'Inviter à revendiquer' })).toBeVisible();
+  await fiche.getByRole('button', { name: 'Recalculer la fiche publique' }).click();
+  await expect(fiche.getByText('Fiche retirée de l’annuaire (hors ligne).')).toBeVisible();
+
+  await fiche.getByRole('button', { name: 'Supprimer définitivement' }).click();
+  const supprimer = page.getByRole('dialog', { name: 'Supprimer définitivement Zinguerie E2E' });
+  await supprimer.getByLabel('Saisissez « Zinguerie E2E » pour confirmer').fill('Zinguerie E2E');
+  await supprimer.getByLabel('Motif (obligatoire)').fill('Créée par erreur');
+  await supprimer.getByText('Je confirme cette action').click();
+  await supprimer.getByRole('button', { name: 'Confirmer' }).click();
+  await expect(supprimer).toBeHidden();
+  expect((await db.doc(`${collections.artisans}/${artisanId}`).get()).get('statut')).toBe(
+    'supprime',
+  );
+  expect((await db.doc(`${collections.sirenIndex}/${siren}`).get()).exists).toBe(false);
 });

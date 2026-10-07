@@ -160,3 +160,10 @@ export {
   type ReplayLu,
   type VueComportement,
 } from './comportement';
+export {
+  creerEntrepriseAdmin,
+  inviterRevendicationAdmin,
+  recalculerFicheAdmin,
+  supprimerEntrepriseAdmin,
+  transfererProprieteAdmin,
+} from './entreprises';

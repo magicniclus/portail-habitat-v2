@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { DonneePersonnelle } from '@/features/admin/DonneePersonnelle';
 import type { SessionAdmin } from '@/server/sessionAdmin';
 import { ActionsArtisan } from './ActionsArtisan';
+import { ActionsEntreprise } from './ActionsEntreprise';
 import { Ligne, OngletFiche } from './OngletsFiche';
 
 const ONGLETS = [
@@ -55,6 +56,19 @@ export function FicheArtisanAdmin({
             crediter: p('credits.crediter'),
             illimite: p('credits.crediter_illimite'),
             voir: s.role === 'superadmin',
+          }}
+        />
+      ) : null}
+      {s.role !== 'lecture' ? (
+        <ActionsEntreprise
+          artisanId={f.id}
+          nom={f.nom}
+          revendiquee={f.revendiquee}
+          equipe={f.equipe}
+          droits={{
+            creer: p('artisans.creer'),
+            modifier: p('artisans.modifier'),
+            supprimer: p('artisans.supprimer'),
           }}
         />
       ) : null}

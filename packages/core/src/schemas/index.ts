@@ -31,6 +31,7 @@ export * from './entreesNotifications';
 export * from './entreesDemandes';
 export * from './entreesComportement';
 export * from './entreesIa';
+export * from './entreesAdminArtisans';
 
 /**
  * Schéma de chaque collection (motif du chemin → schéma), liste de contrôle de DATABASE §16.

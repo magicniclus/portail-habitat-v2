@@ -30,7 +30,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
 
 ### Lot en cours
-- Lot : 13b (conversion), en grande partie fait (§21) ; suite : compléments 13b listés au §21, puis lot 13c (comportement, IA)
+- Lot : 13 (back-office), compléments en cours (§20 à §22) ; ensuite lot 14 (qualité). Pas de mise en ligne prévue tout de suite (07/10/2026) : d'autres fonctionnalités seront ajoutées.
 - Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
@@ -369,7 +369,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Enveloppe `actionAdmin`** : permission relue dans `admins/{uid}`, double authentification, audit, refus pendant une impersonation ; audit détaillé (avant, après, motif) écrit dans la transaction de chaque action.
 - **Données personnelles masquées**, « Afficher » journalisé (liste fermée de champs), rien pour le rôle lecture (ADM-02) ; **motif + confirmation** pour les actions sensibles (ADM-03) ; **« Voir en tant que »** réservé au superadmin, journalisé, lecture seule avec **bandeau rouge** (ADM-04).
 - **Artisans** : liste (filtres, recherche), fiche (identité, abonnement, activité, sanctions, notes), vérifier, suspendre / lever (fiche retirée de l'annuaire), créditer (5 au plus sans permission illimitée).
-- **Artisans, suite** (13c) : onglet Documents (aperçu journalisé, valider avec date de fin ou refuser avec motif ; label vérifié décennale, RGE ou Qualibat sur la fiche ; artisan prévenu par email ; chaque dépôt crée sa tâche dans la file), onglet Équipe (membres, sièges), notes internes. **Reste** : création d'une entreprise non revendiquée, transfert de propriété assisté, suppression définitive (avec double confirmation), recalcul forcé de la fiche publique.
+- **Artisans, suite** (13c) : onglet Documents (aperçu journalisé, valider avec date de fin ou refuser avec motif ; label vérifié décennale, RGE ou Qualibat sur la fiche ; artisan prévenu par email ; chaque dépôt crée sa tâche dans la file), onglet Équipe (membres, sièges), notes internes. **Fait le 07/10/2026** : création d'une entreprise non revendiquée (`adminCreerEntreprise`, SIREN lu au répertoire, aucun membre, hors ligne, invitation de revendication facultative), invitation à revendiquer (le destinataire devient propriétaire ; modèle : `invitations.revendication`, rôle `proprietaire` autorisé seulement dans ce cas), transfert de propriété assisté (membre actif, l'ancien propriétaire devient gérant), suppression définitive (nom ressaisi + case + motif ; membres retirés et déconnectés, coordonnées effacées, SIREN libéré, factures et avis conservés), recalcul forcé de la fiche publique. Tout est audité ; tests sur émulateur et e2e. **À noter** : la suppression n'annule pas l'abonnement Stripe en cours (à faire depuis Stripe, ou à brancher).
 - **Tableau de bord** (13b) : demandes 30 jours et du jour, demandes par jour sur 14 jours, artisans en ligne, appels d'offres sans preneur, chiffre d'affaires HT (rôles finances seulement), urgences par type, santé (webhooks Stripe, envois) ; compteurs par agrégations Firestore.
 - **File de travail** (13b) : tâches filtrées par permission, priorité puis ancienneté, SLA vert / orange / rouge, prendre, rendre, clore avec résolution journalisée, lien vers l'élément.
 - **Comptes de test** par rôle dans le seed ; **script** `pnpm admin:creer <email> "<Prénom Nom>"` pour le premier superadmin (lien pour choisir le mot de passe).
@@ -391,7 +391,7 @@ Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c a
 - **Équipe et audit** (13g) : membres, invitation (lien pour choisir le mot de passe, double authentification à la première connexion), changement de rôle, désactivation (sessions coupées) ; jamais soi-même ni le dernier superadmin ; journal d'audit filtrable (action, acteur, cible) et exportable.
 - **RGPD** (13g) : demandes enregistrées avec l'échéance d'un mois, export des données, anonymisation d'un compte particulier, constat pour les autres cas ; preuve archivée et téléchargeable, consultation journalisée.
 - **Tests** : 24 scénarios sur émulateur (`tests/admin.test.ts`) et un test de bout en bout par écran (`e2e-pro/admin*.spec.ts`), tous verts ; CI verte.
-- **Reste du lot 13** : sections Conversion, Comportement et Assistant IA (lots 13b et 13c du plan général) ; onglet « Facebook et invendues » ; métiers, labels et pages communes ; création d'entreprise non revendiquée, transfert de propriété assisté, suppression définitive d'une entreprise, recalcul forcé de la fiche publique.
+- **Reste du lot 13** : métiers, labels et pages communes éditables depuis l'admin (le reste est fait : conversion, comportement, IA, Facebook et invendues, actions sur l'entreprise).
 
 **À signaler**
 1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.

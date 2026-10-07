@@ -98,19 +98,27 @@ export const roleAdmin = z.object({
 });
 
 /** `invitations/{id}` : le jeton n'est jamais stocké en clair. */
-export const invitation = z.object({
-  ...meta,
-  artisanId: id,
-  email,
-  role: z.enum(ROLES_MEMBRE).exclude(['proprietaire']),
-  permissions: z.array(z.string()).optional(),
-  metiers: z.array(id).optional(),
-  invitePar: id,
-  jetonHash: empreinte,
-  statut: z.enum(['envoyee', 'acceptee', 'revoquee', 'expiree']),
-  expireLe: horodatage,
-  acceptePar: id.optional(),
-});
+export const invitation = z
+  .object({
+    ...meta,
+    artisanId: id,
+    email,
+    /** `proprietaire` seulement pour une invitation de revendication envoyée par l'admin. */
+    role: z.enum(ROLES_MEMBRE),
+    /** Entreprise créée par l'admin et non revendiquée (COMPTES §3.5) : le destinataire en devient propriétaire. */
+    revendication: z.boolean().optional(),
+    permissions: z.array(z.string()).optional(),
+    metiers: z.array(id).optional(),
+    invitePar: id,
+    jetonHash: empreinte,
+    statut: z.enum(['envoyee', 'acceptee', 'revoquee', 'expiree']),
+    expireLe: horodatage,
+    acceptePar: id.optional(),
+  })
+  .refine((i) => i.role !== 'proprietaire' || i.revendication === true, {
+    message: 'Seule une revendication invite un propriétaire',
+    path: ['role'],
+  });
 
 export const revendication = z.object({
   ...meta,
