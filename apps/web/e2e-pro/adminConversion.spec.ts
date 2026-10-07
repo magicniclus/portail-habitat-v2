@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { audits, connecter } from './outils';
+import { admin, audits, COMPTES, connecter, entrepriseDe } from './outils';
 
 // docs/ADMIN.md §2.8b et CONVERSION.md §9 (lot 13b), sur émulateurs.
 test.describe.configure({ mode: 'serial' });
@@ -81,4 +81,37 @@ test('vue d’ensemble, journal et réglages', async ({ page }) => {
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await confirmer(page, 'Enregistrer les réglages', 'Pression réduite pour le test');
   expect(await audits('adminReglagesCycle', 'config/cycle')).toBeGreaterThan(0);
+});
+
+test('journal en direct : une nouvelle décision apparaît sans recharger ; export CSV journalisé', async ({
+  page,
+}) => {
+  await connecter(page, 'admin@test.local', '/admin/conversion/journal?filtre=tous', 'admin');
+  await expect(page.getByText('En direct')).toBeVisible();
+  const { db, Timestamp } = await admin();
+  const artisanId = await entrepriseDe(COMPTES.proprio);
+  const ref = await db.collection('cycleTraces').add({
+    schemaVersion: 1,
+    artisanId,
+    type: 'email_bloque',
+    raison: 'pression',
+    modele: 'vis-test-direct',
+    details: {},
+    function: 'e2e',
+    createdAt: Timestamp.now(),
+    expireLe: Timestamp.fromMillis(Date.now() + 86_400_000),
+  });
+  try {
+    await expect(page.getByRole('cell', { name: 'vis-test-direct' })).toBeVisible();
+    const telechargement = page.waitForEvent('download');
+    await page.getByRole('link', { name: 'Exporter en CSV' }).click();
+    const chemin = await (await telechargement).path();
+    const { readFile } = await import('node:fs/promises');
+    const csv = await readFile(chemin, 'utf8');
+    expect(csv.split('\r\n')[0]).toBe('date;entreprise;type;modele;raison;fonction;details');
+    expect(csv).toContain('vis-test-direct');
+    expect(await audits('adminExportJournalConversion', 'cycleTraces')).toBeGreaterThan(0);
+  } finally {
+    await ref.delete();
+  }
 });

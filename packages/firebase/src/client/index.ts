@@ -1,6 +1,6 @@
 import { STATUTS_ATTRIBUTION } from '@ph/core/espace-pro';
 import type * as F from 'firebase/firestore';
-import { GROUPE_ATTRIBUTIONS } from '../chemins';
+import { collections, GROUPE_ATTRIBUTIONS } from '../chemins';
 
 /**
  * Côté navigateur (SDK chargé à la demande par l'appelant) : attributions de l'entreprise, même
@@ -14,3 +14,7 @@ export const requeteAttributionsPro = (m: typeof F, db: F.Firestore, artisanId: 
     m.orderBy('proposeeLe', 'desc'),
     m.limit(100),
   );
+
+/** Dernière trace du moteur de conversion (journal admin en direct ; règles : lecture `cnv`). */
+export const requeteDerniereTraceCycle = (m: typeof F, db: F.Firestore) =>
+  m.query(m.collection(db, collections.cycleTraces), m.orderBy('createdAt', 'desc'), m.limit(1));
