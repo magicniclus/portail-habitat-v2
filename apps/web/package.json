@@ -29,6 +29,7 @@
     "uqr": "^0.1.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@lhci/cli": "^0.15.1",
     "@ph/config": "workspace:*",
     "@playwright/test": "1.56.1",

@@ -28,6 +28,11 @@
   a:hover {
     color: var(--accent);
   }
+  /* Lien au fil d'un texte : souligné, pas seulement coloré (WCAG 1.4.1, axe link-in-text-block). */
+  :where(p, li, td) a:not([class]) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
   :focus-visible {
     outline: 2px solid var(--accent-300);
     outline-offset: 1px;

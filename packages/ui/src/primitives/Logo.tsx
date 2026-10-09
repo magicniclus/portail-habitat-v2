@@ -77,7 +77,8 @@ export function Logo({
         {suffixe && (
           <span
             className={cn('ml-[0.3em]', variant === 'diag' && 'tracking-[0.22em]')}
-            style={{ color: accent }}
+            // Texte : teinte foncée de l'accent (contraste AA) ; sur fond foncé, la teinte claire.
+            style={{ color: inverse ? accent : 'var(--accent-700)' }}
           >
             {suffixe}
           </span>

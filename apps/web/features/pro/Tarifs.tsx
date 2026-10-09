@@ -60,7 +60,7 @@ function Formule({
       <p className="m-0 mb-5 text-[15.5px] leading-[23px] text-neutre-800">{accroche}</p>
       <p className="m-0 flex flex-wrap items-baseline gap-2">
         {barre ? (
-          <s className="text-[22px] leading-none font-semibold text-neutre-600">
+          <s className="text-[22px] leading-none font-semibold text-neutre-700">
             <span className="sr-only">au lieu de </span>
             {barre}
           </s>
