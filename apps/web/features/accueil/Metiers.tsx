@@ -55,7 +55,7 @@ export function Metiers() {
             </svg>
             <span>
               <span className="mb-1.5 block text-[19px] font-bold">Simuler mon devis</span>
-              <span className="block text-[14.5px] leading-[21px] opacity-95">
+              <span className="block text-[14.5px] leading-[21px]">
                 Estimation détaillée poste par poste, en 2 minutes.
               </span>
             </span>
