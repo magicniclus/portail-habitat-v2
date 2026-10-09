@@ -73,6 +73,7 @@ Interdits hors des tests (le code refuse de démarrer avec en production) : `APP
 | `expirerInvitations` | toutes les heures | invitations périmées |
 | `cycleCodesExpires` / `cycleDemandesInvendues` | toutes les heures (h00 / h30) | codes de remise expirés, demandes invendues offertes |
 | `cycleAgreger` | 1 h 30 | statistiques de conversion |
+| `purgesNuit` | 2 h 30 | anonymisation des demandes de 3 ans, traces de matching de 18 mois |
 | `scoresNuit`, `comportementAgreger` | 3 h | scores des artisans, agrégats de comportement |
 | `iaContexteNuit` | 3 h 30 | contexte de l'assistant, effet des recommandations à 30 jours |
 | `cycleCalculer` | 5 h | étapes, signaux (dont recherches manquées) |

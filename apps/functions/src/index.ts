@@ -28,6 +28,7 @@ export {
   comptesInactifs,
   compteursMois,
   intentionsPopularite,
+  purgesNuit,
   rapportHebdo,
 } from './exploitation/planifiees';
 export { envoyerEnvoi } from './notifications/tache';
