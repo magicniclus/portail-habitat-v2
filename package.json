@@ -24,7 +24,8 @@
     "e2e:pro": "SEED_MOT_DE_PASSE=${SEED_MOT_DE_PASSE:-MotDePasse-e2e-2026} firebase emulators:exec --project demo-portail-habitat --only auth,firestore,storage \"pnpm seed && pnpm --filter @ph/web exec playwright test -c playwright.pro.config.ts\"",
     "stripe:produits": "tsx apps/web/scripts/stripeProduits.ts",
     "partenaire:source": "tsx scripts/sourcePartenaire.ts",
-    "admin:creer": "tsx scripts/creerAdmin.ts"
+    "admin:creer": "tsx scripts/creerAdmin.ts",
+    "migrer": "tsx scripts/migrer.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
