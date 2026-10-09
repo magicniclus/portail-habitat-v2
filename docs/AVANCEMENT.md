@@ -24,14 +24,14 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 | 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
 | 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
 | 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
-| 13 | Back-office | 🟡 | | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 |
-| 13b | Conversion, séquences | 🟡 | 05/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
-| 13c | Comportement, IA | 🟡 | 05/10/2026 | CMP-01 à 04, IA-01 à 07 (émulateur, faux modèle), e2e des écrans | 13c-1 à 13c-6 faits ; reste et points à trancher : §22 |
-| 14 | Qualité, préparation de la mise en production | ⬜ | | ERR, MISE_EN_PROD | |
+| 13 | Back-office | ✅ | 09/10/2026 | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 ; reste : variantes B des pages (contenu à choisir) |
+| 13b | Conversion, séquences | ✅ | 07/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
+| 13c | Comportement, IA | ✅ | 09/10/2026 | CMP-01 à 04, IA-01 à 07 (émulateur, faux modèle), e2e des écrans | 13c-1 à 13c-6 faits ; reste et points à trancher : §22 |
+| 14 | Qualité, préparation de la mise en production | 🟡 | 09/10/2026 | ALL-02, 03, 06 (48 tests sur 4 appareils), en-têtes de sécurité, tâches planifiées (émulateur), migrations | détail §23 ; rien déployé |
 
 ### Lot en cours
-- Lot : 13 (back-office), compléments en cours (§20 à §22) ; ensuite lot 14 (qualité). Pas de mise en ligne prévue tout de suite (07/10/2026) : d'autres fonctionnalités seront ajoutées.
-- Dernier lot terminé : 12b, le 02/10/2026 (détail §19)
+- Lot : 14 (qualité, préparation de la mise en production), §23. Pas de mise en ligne prévue tout de suite : d'autres fonctionnalités seront ajoutées.
+- Dernier lot terminé : 13, le 09/10/2026 (détail §20 à §22)
 
 ## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
 
@@ -483,6 +483,28 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 5. **Choix faits par moi (13c-5)** : l'analyse se lance depuis une **action serveur** de l'admin (comme toutes les écritures du back-office) et non depuis une Function appelable ; la synthèse du lundi est une Function. La clé doit donc être posée côté site **et** côté Functions. Conversion dollars → euros à 0,95 pour le budget. « Utiliser ce texte » crée une tâche (l'ouverture directe de l'éditeur de séquence reste à faire) ; pas encore de questions de suivi sur une analyse ni de mesure de l'effet à 30 jours ; réglages de l'IA en lecture seule à l'écran. L'email `ia-synthese-hebdo` utilise le squelette (texte + bouton).
 6. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, le secret `COMPORTEMENT_SALT_SECRET` et, pour activer l'assistant, `ANTHROPIC_API_KEY` (site et Functions).
 
+## 23. Lot 14 — Qualité et préparation de la mise en production (09/10/2026, rien déployé)
+
+Plan validé le 09/10/2026.
+
+**Fait**
+- **En-têtes de sécurité** (`apps/web/lib/securite.ts`, posés par `proxy.ts`) : CSP, HSTS (production seulement), `X-Frame-Options: SAMEORIGIN`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`. **Choix à valider** : pages publiques **sans nonce** (`script-src 'self' 'unsafe-inline'` + Google), car un nonce rendrait chaque page dynamique et supprimerait le cache (budget EXPLOITATION §1) ; espaces connectés (pro, admin, Mon espace) **avec nonce et `strict-dynamic`**. Cadres limités au site (et non `DENY`) : l'écran Comportement de l'admin affiche les pages publiques dans un cadre. Test e2e : en-têtes présents, aucune violation de CSP ; suites publique et pro vertes avec la CSP.
+- **App Check côté navigateur** (trou corrigé) : le serveur exigeait un jeton que le navigateur n'envoyait jamais (toutes les actions protégées auraient échoué en production). Chargé au premier geste du visiteur (pas d'effet sur l'affichage), jeton relu en en-tête ou dans un cookie court `ph_appcheck` (les Server Actions ne portent pas d'en-tête). Limite : une action déclenchée à la toute première interaction, avant l'arrivée du jeton (~1 s), est refusée une fois.
+- **Statistiques des fiches** (`statsJour`, trou corrigé : jamais écrites jusqu'ici, alors que la page Statistiques, le cycle de conversion et le rapport hebdomadaire en dépendent) : vues (une par onglet), clics sur le téléphone et sur « Demander un devis » par `POST /api/fiche/evenement` (compteur anonyme, sans cookie ni identifiant, robots écartés, même origine, débit limité) ; demandes reçues comptées à l'attribution. Non fait : `vuesAnnuaire`, `demandesRepondues`, `devisEnvoyes`, `sources`.
+- **Tâches planifiées** (`apps/functions/src/exploitation`) : `assurancesNuit` (décennale : J-30, J-7, J0, puis fiche retirée et label ôté jusqu'à la nouvelle attestation) ; `rapportHebdo` (lundi 8 h, Premium) ; `compteursMois` (**trou corrigé** : `demandesRecuesMois` n'était jamais remis à zéro, tout artisan restait bloqué à son quota dès le 2e mois) ; `intentionsPopularite` (1er du mois, 90 jours de demandes, rien sous 200 demandes) ; `comptesInactifs` (dimanche : avertissement `compte-inactif` puis suppression à 3 ans, jamais un artisan ni l'équipe, 100 suppressions au plus par passage). Tous testés sur émulateur.
+- **Flags et maintenance** (trous corrigés) : le site lisait les flags à la racine de `config/flags` alors que l'admin les écrit dans `valeurs` (aucun interrupteur de l'admin n'avait d'effet) ; l'interrupteur « maintenance » de l'admin est maintenant suivi par le proxy (relu toutes les 30 s), `MAINTENANCE=1` reste le recours. e2e.
+- **Migrations** : `executerMigration` (idempotent, lots de 400, reprise au curseur `migrations/{id}`) et `pnpm migrer <id> --dry-run | --executer` ; registre vide pour l'instant.
+- **Tests transverses** (`e2e/transverse.spec.ts`) sur 11 pages publiques et 4 appareils : aucune erreur axe sérieuse ou critique, focus visible au clavier, console et réseau sans erreur (ALL-02, ALL-03), titres et descriptions uniques (ALL-06). Corrigé au passage : liens au fil du texte soulignés (aide, avis), suffixe « PRO » du logo et prix barrés de `/pro` plus contrastés. **Dépendance** : `@axe-core/playwright` en développement dans `@ph/web` (déjà dans `@ph/ui`).
+- **Docs** : `docs/RUNBOOK.md` (incidents, maintenance, retour arrière, sauvegardes) et `docs/DEPLOIEMENT.md` (environnements, variables, ordre de déploiement, à faire une fois, tâches planifiées, liste de contrôle avec les 🔒 D13, D18, D20, D22).
+- Export et suppression de compte : déjà faits (Mon espace, Mon compte pro), vérifiés.
+
+**Reste**
+- Sauvegardes : commande `gcloud` à lancer une fois par environnement (DEPLOIEMENT §4), pas de code.
+- Anonymisation des demandes après 3 ans et purge des traces `matching` à 18 mois (DATABASE §14) : pas encore de Function.
+- ALL-01 (captures comparées aux maquettes) et ALL-04 (squelettes, états vides et d'erreur) : non automatisés ; ALL-02/03 non encore étendus aux espaces connectés.
+- Lighthouse : budget suivi par la CI.
+- Rien n'est déployé : la mise en ligne attend le « go » du propriétaire et les 🔒 de DECISIONS.
+
 ## 2. Incohérences et zones floues
 
 **Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
@@ -594,3 +616,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 02/10/2026 — Lot 12 terminé (matching, appels d'offres, déblocage, scores de nuit). D50 : 60 minutes d'avance Premium.
 - 02/10/2026 — Lot 12b terminé (demandes partenaires : webhook, SMS de confirmation, matching A/B/C, invendues).
 - 05/10/2026 — Lot 13b en grande partie fait (moteur de conversion, codes personnels, demandes offertes, écran admin). Restes et points à trancher : §21.
+- 09/10/2026 — Lot 13 terminé (journal en direct, questions de suivi et effet à 30 jours de l'IA, recherches manquées, témoignage J+5). Lot 14 en cours : sécurité, App Check, statistiques des fiches, tâches planifiées, migrations, tests transverses, RUNBOOK et DEPLOIEMENT.

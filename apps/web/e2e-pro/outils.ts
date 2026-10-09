@@ -245,10 +245,11 @@ export async function webhookStripe(
 export async function flagGlobal(nom: string, valeur: boolean): Promise<() => Promise<void>> {
   const { db } = await admin();
   const ref = db.doc(chemins.configFlags());
-  const avant = (await ref.get()).get(nom) as boolean | undefined;
-  await ref.set({ [nom]: valeur }, { merge: true });
+  // Même format que l'admin (`valeurs.<nom>`), lu par le site.
+  const avant = (await ref.get()).get(`valeurs.${nom}`) as boolean | undefined;
+  await ref.set({ valeurs: { [nom]: valeur } }, { merge: true });
   return async () => {
-    await ref.set({ [nom]: avant ?? false }, { merge: true });
+    await ref.set({ valeurs: { [nom]: avant ?? false } }, { merge: true });
   };
 }
 

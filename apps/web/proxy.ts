@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
 import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
 import { enTetesSecurite, espaceStrict, politiqueContenu } from '@/lib/securite';
+import { maintenanceActive } from '@/server/flags';
 
 let empreinte: Promise<string> | undefined;
 /** Empreinte du script en ligne du bandeau cookies (seul script fixe des espaces stricts). */
@@ -18,8 +19,8 @@ const emulateurs = () =>
   ].filter((h): h is string => Boolean(h));
 
 /**
- * En-têtes de sécurité sur chaque réponse (INTEGRATIONS §5) ; maintenance (ERR-03) : toutes les
- * pages publiques réécrites vers /maintenance, en 503.
+ * En-têtes de sécurité sur chaque réponse (INTEGRATIONS §5) ; maintenance (ERR-03, interrupteur
+ * de l'admin ou `MAINTENANCE=1`) : toutes les pages publiques réécrites vers /maintenance, en 503.
  */
 export async function proxy(requete: NextRequest) {
   // Poste local et tests (http://localhost, émulateurs) : ni HSTS ni passage forcé en https.
@@ -34,7 +35,8 @@ export async function proxy(requete: NextRequest) {
   });
   const entetes = enTetesSecurite({ production, csp });
   let reponse: NextResponse;
-  if (doitAfficherMaintenance(requete.nextUrl.pathname, process.env.MAINTENANCE === '1'))
+  // Admin, API et fichiers ne sont jamais concernés : pas de lecture du flag pour eux.
+  if (doitAfficherMaintenance(requete.nextUrl.pathname, true) && (await maintenanceActive()))
     reponse = NextResponse.rewrite(new URL('/maintenance', requete.url), {
       status: 503,
       headers: { 'Retry-After': '600' },

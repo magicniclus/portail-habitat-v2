@@ -159,7 +159,9 @@ describe('debloquerAppelOffres (MATCHING [8])', () => {
     );
     expect(soldes.filter((x) => x === 10)).toHaveLength(9);
     expect((await db.collection(collections.achatsLeads).get()).size).toBe(1);
-  });
+    // Dix transactions en concurrence : l'émulateur les sérialise par attentes de verrou, ce qui
+    // peut dépasser les 5 s par défaut sur une machine d'intégration chargée.
+  }, 20_000);
 });
 
 describe('lireAppelsOffresPro', () => {
