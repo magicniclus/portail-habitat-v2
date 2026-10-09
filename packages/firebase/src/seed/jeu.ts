@@ -1,0 +1,173 @@
+import { claimsUtilisateur, type ClaimsUtilisateur } from '@ph/core/equipe';
+import type { Bareme } from '@ph/core/leads';
+import { projeterArtisanPublic } from '@ph/core/annuaire';
+import { artisan, SCHEMAS } from '@ph/core/schemas';
+import { calculerStatsPublic } from '@ph/core/stats';
+import type { z } from '@ph/core/zod';
+import { chemins, collections } from '../chemins';
+import { genererAppelsOffres, genererAvis, genererDemandes } from './activite';
+import {
+  genererAdmin,
+  genererCasLimites,
+  genererEntreprises,
+  type CompteSeed,
+  type ContexteSeed,
+  type EntrepriseSeed,
+} from './entreprises';
+import { creerHasard } from './hasard';
+import {
+  documentsReferentiel,
+  referentielPrix,
+  type Documents,
+  type FichiersSeed,
+} from './referentiel';
+
+export interface JeuSeed {
+  documents: Documents;
+  comptes: CompteSeed[];
+  claims: Map<string, ClaimsUtilisateur>;
+}
+
+/**
+ * Jeu de données complet (COMPTES §6.4), déterministe pour une graine et une date données.
+ * Aucun accès réseau ni disque : le script `pnpm seed` écrit le résultat.
+ */
+export function genererJeu(
+  f: FichiersSeed & { bareme: { bareme: Bareme } },
+  graine: number,
+  maintenant: Date,
+): JeuSeed {
+  const c: ContexteSeed = {
+    h: creerHasard(graine),
+    f,
+    maintenant,
+    docs: documentsReferentiel(f, maintenant),
+    comptes: [],
+    appartenances: [],
+  };
+  genererAdmin(c);
+  const entreprises = genererEntreprises(c);
+  genererCasLimites(c);
+  const sources = genererDemandes(c, entreprises, referentielPrix(f));
+  genererAppelsOffres(c, sources, f.bareme.bareme);
+  const notes = genererAvis(c, entreprises);
+  publierFiches(c, entreprises, notes);
+  publierStats(c);
+  genererStatsJour(c, 'seed-a-00', 120);
+  return { documents: c.docs, comptes: c.comptes, claims: calculerClaims(c) };
+}
+
+/** Statistiques quotidiennes de démonstration (page Statistiques) ; générées en dernier : le reste du jeu ne change pas. */
+function genererStatsJour(c: ContexteSeed, artisanId: string, nbJours: number) {
+  for (let i = 0; i < nbJours; i++) {
+    const jour = new Date(c.maintenant.getTime() - i * 86_400_000).toISOString().slice(0, 10);
+    const vuesFiche = c.h.entier(0, 25);
+    c.docs.set(chemins.statsJour(artisanId, jour), {
+      schemaVersion: 1,
+      vuesFiche,
+      vuesAnnuaire: vuesFiche * 3 + c.h.entier(0, 10),
+      clicsTelephone: c.h.entier(0, Math.ceil(vuesFiche / 8)),
+      clicsDevis: c.h.entier(0, Math.ceil(vuesFiche / 12)),
+      demandesRecues: 0,
+      demandesRepondues: 0,
+      devisEnvoyes: 0,
+      devisAcceptes: 0,
+      sources: { annuaire: vuesFiche, recherche: 0, direct: 0, diagnostic: 0 },
+    });
+  }
+}
+
+/** `stats/public` tel que le recalcul nocturne le produira (INTEGRATIONS §3). */
+function publierStats(c: ContexteSeed) {
+  const de = (collection: string) =>
+    [...c.docs].filter(([p]) => p.split('/').length === 2 && p.startsWith(`${collection}/`));
+  const valeurs = (collection: string) => de(collection).map(([, d]) => d);
+  c.docs.set(chemins.statsPublic(), {
+    schemaVersion: 1,
+    ...calculerStatsPublic({
+      maintenant: c.maintenant,
+      artisans: valeurs(collections.artisansPublic).map((d) => ({
+        enLigne: d.enLigne as boolean,
+        ville: d.ville as string,
+      })),
+      demandes: valeurs(collections.demandes).map((d) => ({ createdAt: d.createdAt as Date })),
+      avis: valeurs(collections.avis).map((d) => ({
+        statut: d.statut as string,
+        note: d.note as number,
+      })),
+      nbDossiersDiag: de(collections.dossiersDiag).length,
+    }),
+    updatedAt: c.maintenant,
+  });
+}
+
+/** Notes recalculées sur les avis publiés, fiche publique pour chaque entreprise en ligne. */
+function publierFiches(
+  c: ContexteSeed,
+  entreprises: EntrepriseSeed[],
+  notes: Map<string, number[]>,
+) {
+  for (const e of entreprises) {
+    const doc = c.docs.get(chemins.artisan(e.id))!;
+    const liste = notes.get(e.id) ?? [];
+    const moyenne = liste.length
+      ? Math.round((liste.reduce((a, b) => a + b, 0) / liste.length) * 10) / 10
+      : 0;
+    doc.noteMoyenne = moyenne;
+    doc.nbAvis = liste.length;
+    if (!e.enLigne) continue;
+    // Même projection que le déclencheur `projeterArtisan` (une seule règle, règle n° 8).
+    const fiche = projeterArtisanPublic(artisan.parse(doc), c.maintenant, e.ville.nom);
+    if (fiche) c.docs.set(chemins.artisanPublic(e.id), fiche as Record<string, unknown>);
+  }
+}
+
+function calculerClaims(c: ContexteSeed): Map<string, ClaimsUtilisateur> {
+  const claims = new Map<string, ClaimsUtilisateur>();
+  for (const compte of c.comptes) {
+    const user = c.docs.get(chemins.user(compte.uid))!;
+    const admin = c.docs.get(chemins.admin(compte.uid)) as
+      { role: string; actif: boolean; permissionsEffectives: string[] } | undefined;
+    claims.set(
+      compte.uid,
+      claimsUtilisateur({
+        roles: user.roles as ('particulier' | 'artisan')[],
+        membres: c.appartenances.filter((a) => a.uid === compte.uid),
+        admin,
+      }),
+    );
+    const entreprises = c.appartenances.filter((a) => a.uid === compte.uid).map((a) => a.artisanId);
+    user.entreprises = entreprises;
+    if (entreprises[0]) user.entrepriseActive = entreprises[0];
+  }
+  return claims;
+}
+
+/** Schéma Zod d'un chemin de document (motifs de `SCHEMAS`, `{}` = identifiant). */
+export function schemaPour(chemin: string): z.ZodType | undefined {
+  const segments = chemin.split('/');
+  for (const [motif, schema] of Object.entries(SCHEMAS)) {
+    const m = motif.split('/');
+    if (m.length === segments.length && m.every((s, i) => s === '{}' || s === segments[i]))
+      return schema as z.ZodType;
+  }
+  return undefined;
+}
+
+/** Valide chaque document ; renvoie les erreurs (chemin et premier problème). */
+export function validerDocuments(docs: Documents): string[] {
+  const erreurs: string[] = [];
+  for (const [chemin, donnees] of docs) {
+    const schema = schemaPour(chemin);
+    if (!schema) {
+      erreurs.push(`${chemin} : aucun schéma`);
+      continue;
+    }
+    const r = schema.safeParse(donnees);
+    if (!r.success)
+      erreurs.push(
+        `${chemin} : ${r.error.issues[0]!.path.join('.')} ${r.error.issues[0]!.message}`,
+      );
+  }
+  return erreurs;
+}

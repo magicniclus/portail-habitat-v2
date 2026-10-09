@@ -1,0 +1,62 @@
+rules_version = '2';
+
+// Règles Storage (docs/DATABASE.md §13). Fichiers privés : jamais d'URL permanente, URL signées de 15 min.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn()   { return request.auth != null; }
+    function tok()        { return request.auth.token; }
+    function noImp()      { return !('imp' in tok()); }
+    function entRole(aid) { return signedIn() && ('ent' in tok()) && (aid in tok().ent) ? tok().ent[aid] : null; }
+    function isGestion(aid)      { return entRole(aid) in ['p', 'g']; }
+    function isOperationnel(aid) { return entRole(aid) in ['p', 'g', 'c']; }
+    function lit(sec)     { return signedIn() && ('staff' in tok()) && tok().staff.s.hasAny([sec]); }
+    function isModo()     { return lit('avi') || lit('file'); }
+    function image(maxMo) { return request.resource.contentType.matches('image/(jpeg|png|webp|avif)') && request.resource.size <= maxMo * 1024 * 1024; }
+    function pieceJustificative() {
+      return request.resource.contentType.matches('application/pdf|image/(jpeg|png)') && request.resource.size <= 10 * 1024 * 1024;
+    }
+    // Les écritures de fichiers d'une entreprise exigent aussi un membre actif en base.
+    function membreActif(aid, roles) {
+      return firestore.exists(/databases/(default)/documents/artisans/$(aid)/membres/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/artisans/$(aid)/membres/$(request.auth.uid)).data.statut == 'actif'
+        && firestore.get(/databases/(default)/documents/artisans/$(aid)/membres/$(request.auth.uid)).data.role in roles;
+    }
+
+    // Logo de l'entreprise : public, 2 Mo, image.
+    match /artisans/{aid}/logo/{fichier} {
+      allow read: if true;
+      allow write: if noImp() && isGestion(aid) && image(2) && membreActif(aid, ['proprietaire', 'gerant']);
+      allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
+    }
+    // Photos de réalisations : publiques, 8 Mo (EXIF retirées par Function à l'envoi).
+    match /artisans/{aid}/realisations/{rid}/{fichier} {
+      allow read: if true;
+      allow create, update: if noImp() && isOperationnel(aid) && image(8) && membreActif(aid, ['proprietaire', 'gerant', 'collaborateur']);
+      allow delete: if noImp() && isOperationnel(aid) && membreActif(aid, ['proprietaire', 'gerant', 'collaborateur']);
+    }
+    // Documents (assurances, Kbis…) : PRIVÉS, jamais remplacés ni supprimés par le client.
+    match /artisans/{aid}/documents/{docId}/{fichier} {
+      allow read: if isOperationnel(aid) || isModo() || lit('art');
+      // `resource == null` : jamais d'écrasement d'une pièce existante, même traité comme une création.
+      allow create: if resource == null && noImp() && isOperationnel(aid) && pieceJustificative()
+        && membreActif(aid, ['proprietaire', 'gerant', 'collaborateur']);
+      allow update, delete: if false;
+    }
+    // Photos d'avis publiés : copiées par Function après modération.
+    match /avis/{avisId}/photos/{fichier} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // Téléversements en attente (photos d'avis ou de demande) : seul leur auteur y écrit et les relit ;
+    // une Function les déplace vers leur emplacement définitif.
+    match /televersements/{uid}/{fichier} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if resource == null && signedIn() && request.auth.uid == uid && noImp() && image(8);
+      allow update, delete: if false;
+    }
+    // Tout le reste (photos et devis des demandes, replays) : Admin SDK et URL signées uniquement.
+    match /{chemin=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,211 @@
+rules_version = '2';
+
+// Règles Firestore (docs/DATABASE.md §12, corrections du lot 2 listées dans docs/AVANCEMENT.md §8).
+// Principes : tout est refusé par défaut ; les écritures sensibles passent par des Functions ;
+// les lectures courantes s'appuient sur les claims, les écritures sur le document `membres`.
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    // ---------- outils ----------
+    function signedIn()  { return request.auth != null; }
+    function tok()       { return request.auth.token; }
+    function uid()       { return request.auth.uid; }
+    function noImp()     { return !('imp' in tok()); }                  // aucune écriture en impersonation
+    function hasRole(r)  { return signedIn() && ('roles' in tok()) && tok().roles.hasAny([r]); }
+    function isStaff()   { return signedIn() && ('staff' in tok()); }
+    function lit(sec)    { return isStaff() && tok().staff.s.hasAny([sec]); }  // lecture d'une section admin
+    function pii()       { return isStaff() && tok().staff.get('pii', false) == true; }
+    function isAdmin()   { return isStaff() && tok().staff.r in ['superadmin', 'admin']; }
+    function isModo()    { return lit('avi') || lit('file'); }
+    function isFinance() { return lit('fin'); }
+
+    // appartenance par les claims (lectures courantes, sans lecture facturée)
+    function entRole(aid)       { return signedIn() && ('ent' in tok()) && (aid in tok().ent) ? tok().ent[aid] : null; }
+    function isMembre(aid)      { return entRole(aid) != null; }
+    function isGestion(aid)     { return entRole(aid) in ['p', 'g']; }
+    function isOperationnel(aid){ return entRole(aid) in ['p', 'g', 'c']; }
+
+    // appartenance vérifiée en base (écritures : révocation immédiate)
+    function cheminMembre(aid)  { return /databases/$(db)/documents/artisans/$(aid)/membres/$(uid()); }
+    function isMembreActif(aid) { return signedIn() && exists(cheminMembre(aid)) && get(cheminMembre(aid)).data.statut == 'actif'; }
+    function isGestionActif(aid){ return isMembreActif(aid) && get(cheminMembre(aid)).data.role in ['proprietaire', 'gerant']; }
+    function isOperationnelActif(aid) {
+      return isMembreActif(aid) && get(cheminMembre(aid)).data.role in ['proprietaire', 'gerant', 'collaborateur'];
+    }
+
+    function onlyChanged(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+    function changed(key)      { return request.resource.data.diff(resource.data).affectedKeys().hasAny([key]); }
+
+    // ---------- utilisateurs ----------
+    match /users/{u} {
+      // Le profil contient des données personnelles : l'équipe interne ne le lit qu'avec le droit `pii`.
+      allow read: if signedIn() && (uid() == u || pii());
+      allow create, delete: if false;                          // créé par Function (demande, onboarding, invitation)
+      // Le téléphone et l'email changent par Function (vérification par code) : pas ici.
+      allow update: if signedIn() && uid() == u && noImp()
+        && onlyChanged(['prenom', 'nom', 'nomAffiche', 'adresse', 'preferences', 'entrepriseActive', 'updatedAt'])
+        && (!changed('entrepriseActive') || isMembre(request.resource.data.entrepriseActive));
+
+      match /consentements/{id} {
+        allow read: if signedIn() && (uid() == u || pii());
+        allow create: if signedIn() && uid() == u && noImp()
+          && request.resource.data.keys().hasAll(['schemaVersion', 'type', 'valeur', 'version', 'source', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['schemaVersion', 'type', 'valeur', 'version', 'source', 'createdAt', 'userAgent'])
+          && request.resource.data.type in ['cgu', 'cgv', 'confidentialite', 'marketing_email', 'opposition_offres_pro',
+                                            'cookies_mesure', 'cookies_pub', 'mise_en_relation']
+          && request.resource.data.valeur is bool
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;                        // journal en ajout seul
+      }
+      match /notifications/{id} {
+        allow read: if signedIn() && uid() == u;
+        allow update: if signedIn() && uid() == u && noImp() && onlyChanged(['lu']) && request.resource.data.lu is bool;
+        allow create, delete: if false;
+      }
+    }
+
+    // ---------- artisans ----------
+    match /artisansPublic/{id} { allow read: if true; allow write: if false; }
+
+    match /artisans/{aid} {
+      allow read: if isMembre(aid) || lit('art');
+      allow update: if noImp() && isGestionActif(aid)
+        && onlyChanged(['nomCommercial', 'pitch', 'description', 'tags', 'metiers', 'metierPrincipal', 'telephonePublic',
+                        'emailContact', 'siteWeb', 'logoUrl', 'zoneIntervention', 'budgetMin', 'budgetMax', 'delaiDispoJours', 'updatedAt'])
+        // Rayon de transmission de 10 à 100 km (CGV Pro §1 bis) ; son acceptation ne se falsifie pas.
+        && (!changed('zoneIntervention') || (
+              request.resource.data.zoneIntervention.rayonKm is int
+              && request.resource.data.zoneIntervention.rayonKm >= 10
+              && request.resource.data.zoneIntervention.rayonKm <= 100
+              && request.resource.data.zoneIntervention.rayonAccepteLe == resource.data.zoneIntervention.rayonAccepteLe))
+        && (!changed('pitch') || request.resource.data.pitch.size() <= 280)
+        && (!changed('description') || request.resource.data.description.size() <= 3000);
+      allow create, delete: if false;
+
+      match /membres/{m}        { allow read: if isMembre(aid) || lit('art'); allow write: if false; }
+      match /etablissements/{s} { allow read: if isMembre(aid) || lit('art'); allow write: if false; }
+      match /documents/{d} {
+        allow read: if isOperationnel(aid) || isModo() || lit('art');
+        allow create: if noImp() && isOperationnelActif(aid)
+          && request.resource.data.statut == 'en_attente'
+          && request.resource.data.storagePath.matches('artisans/' + aid + '/documents/' + d + '/[^/]+')
+          && request.resource.data.tailleOctets <= 10 * 1024 * 1024;
+        allow update, delete: if false;                        // validation par Function admin
+      }
+      match /realisations/{r} {
+        // Visible publiquement une fois publiée ; en préparation, seulement par l'équipe.
+        allow read: if resource.data.publie == true || isMembre(aid) || lit('art');
+        allow create, update: if noImp() && isOperationnelActif(aid)
+          && (request.resource.data.publie != true || request.resource.data.autorisationProprietaire == true);
+        allow delete: if noImp() && isOperationnelActif(aid);
+      }
+      match /disponibilites/{m} { allow read: if isMembre(aid) || lit('art'); allow write: if noImp() && isOperationnelActif(aid); }
+      match /statsJour/{j}      { allow read: if isOperationnel(aid) || lit('art'); allow write: if false; }
+      match /prive/{p}          { allow read: if isGestion(aid) || entRole(aid) == 'x' || isFinance(); allow write: if false; }
+    }
+    match /artisanScores/{aid} { allow read: if isGestion(aid) || lit('mat'); allow write: if false; }
+
+    // ---------- demandes (création et écritures par Functions) ----------
+    match /demandes/{id} {
+      allow read: if signedIn() && (resource.data.particulierUid == uid() || lit('dem'));
+      allow write: if false;
+      match /attributions/{aid} { allow read: if isOperationnel(aid) || lit('dem'); allow write: if false; }
+      match /messages/{m} {
+        allow read: if signedIn() && (get(/databases/$(db)/documents/demandes/$(id)).data.particulierUid == uid()
+                     || isOperationnel(resource.data.artisanId) || lit('dem'));
+        allow write: if false;
+      }
+    }
+    // requêtes collection group « mes attributions » (tableau de bord temps réel)
+    match /{path=**}/attributions/{aid} { allow read: if isOperationnel(resource.data.artisanId) || lit('dem'); }
+
+    match /dossiersDiag/{id} {
+      allow read: if signedIn() && (resource.data.particulierUid == uid() || lit('dem'));
+      allow write: if false;
+      match /attributions/{aid} { allow read: if isOperationnel(aid) || lit('dem'); allow write: if false; }
+    }
+    match /matching/{id}         { allow read: if lit('mat'); allow write: if false; }
+    match /matchingConfig/{p=**} { allow read: if lit('mat'); allow write: if false; }
+
+    // ---------- appels d'offres, achats, crédits ----------
+    match /appelsOffres/{id} {
+      allow read: if hasRole('artisan') || lit('ao');       // anonymisés par construction
+      allow write: if false;
+      match /reponses/{aid}       { allow read: if isOperationnel(aid) || lit('ao'); allow write: if false; }
+      match /deblocages/{aid}     { allow read: if isOperationnel(aid) || lit('ao'); allow write: if false; }
+      match /historiquePrix/{h}   { allow read: if lit('ao'); allow write: if false; }
+    }
+    match /achatsLeads/{id}         { allow read: if isMembre(resource.data.artisanId) || lit('ao') || isFinance(); allow write: if false; }
+    match /portefeuilles/{aid}      { allow read: if isMembre(aid) || lit('ao') || isFinance(); allow write: if false;
+      match /mouvements/{m}         { allow read: if isMembre(aid) || lit('ao') || isFinance(); allow write: if false; } }
+    match /packsCredits/{id}        { allow read: if signedIn(); allow write: if false; }
+    match /remboursementsLeads/{id} { allow read: if isOperationnel(resource.data.artisanId) || lit('ao'); allow write: if false; }
+    match /grillesTarifaires/{id}   { allow read: if lit('ao'); allow write: if false; }
+
+    // ---------- équipes (lecture par jeton via Function) ----------
+    match /invitations/{id}    { allow read: if isGestion(resource.data.artisanId) || lit('art'); allow write: if false; }
+    match /revendications/{id} { allow read: if (signedIn() && resource.data.demandeurUid == uid()) || isModo() || lit('art'); allow write: if false; }
+    match /demandesAcces/{id}  { allow read: if (signedIn() && resource.data.demandeurUid == uid()) || isGestion(resource.data.artisanId) || lit('art'); allow write: if false; }
+
+    // ---------- back-office (toutes les écritures par Functions : assertPermission + audit) ----------
+    match /admins/{u}           { allow read: if isAdmin() || (signedIn() && uid() == u); allow write: if false; }
+    match /rolesAdmin/{id}      { allow read: if lit('aud') || isAdmin(); allow write: if false; }
+    match /filesModeration/{id} { allow read: if lit('file'); allow write: if false; }
+    match /sanctions/{id}       { allow read: if lit('art') || isGestion(resource.data.artisanId); allow write: if false; }
+    match /notesInternes/{id}   { allow read: if isStaff() && tok().staff.r != 'lecture'; allow write: if false; }
+    match /annonces/{id}        { allow read: if true; allow write: if false; }
+    match /auditLog/{id}        { allow read: if lit('aud'); allow write: if false; }
+    match /rgpdDemandes/{id}    { allow read: if lit('rgpd'); allow write: if false; }
+    // conversion
+    match /cycleEtat/{aid}      { allow read: if lit('cnv'); allow write: if false; }
+    match /cycleTraces/{id}     { allow read: if lit('cnv'); allow write: if false; }
+    match /cycleStats/{j}       { allow read: if lit('cnv'); allow write: if false; }
+    match /sequences/{p=**}     { allow read: if lit('cnv'); allow write: if false; }
+    match /prospects/{id}       { allow read: if lit('cnv') && pii(); allow write: if false; }
+    // demandes partenaires
+    match /sourcesDemandes/{id}     { allow read: if lit('dem'); allow write: if false; }
+    match /importsDemandes/{id}     { allow read: if lit('dem'); allow write: if false; }
+    match /preuvesConsentement/{id} { allow read: if lit('rgpd') || (lit('dem') && pii()); allow write: if false; }
+    // comportement et IA
+    match /pagesSuivies/{id}         { allow read: if lit('cmp'); allow write: if false; }
+    match /comportementAgregats/{id} { allow read: if lit('cmp'); allow write: if false; }
+    match /comportementAlertes/{id}  { allow read: if lit('cmp'); allow write: if false; }
+    match /abTests/{id}              { allow read: if lit('cmp'); allow write: if false; }
+    match /iaAnalyses/{id}           { allow read: if lit('ia'); allow write: if false; }
+    match /iaRecommandations/{id}    { allow read: if lit('ia'); allow write: if false; }
+
+    // ---------- avis ----------
+    match /avis/{id} {
+      // Le document publié ne contient aucune donnée sur l'auteur (voir /prive/auteur).
+      allow read: if resource.data.statut == 'publie' || isModo() || isMembre(resource.data.artisanId);
+      allow write: if false;
+      match /prive/{p}        { allow read: if isModo() && pii(); allow write: if false; }
+      match /signalements/{s} { allow read: if isModo(); allow write: if false; }
+    }
+
+    // ---------- facturation (miroirs Stripe, webhooks uniquement) ----------
+    match /abonnements/{id} { allow read: if isGestion(resource.data.artisanId) || isFinance(); allow write: if false; }
+    match /factures/{id}    { allow read: if isGestion(resource.data.artisanId) || entRole(resource.data.artisanId) == 'x' || isFinance(); allow write: if false; }
+    match /paiements/{id}   { allow read: if isGestion(resource.data.artisanId) || isFinance(); allow write: if false; }
+    match /codesPromo/{id}  { allow read: if isFinance() || lit('cnv'); allow write: if false; }
+
+    // ---------- référentiels et contenu (écriture par Functions admin, versionnée et auditée) ----------
+    match /referentiel/{type}/items/{id} { allow read: if true; allow write: if false; }  // champs et libellés, sans prix
+    match /referentiel/{type}/prix/{id}  { allow read, write: if false; }                 // prix : serveur uniquement
+    match /referentiel/recherche/{collection}/{id} {
+      allow read: if collection in ['intentions', 'metiers', 'synonymes'];
+      allow write: if false;
+    }
+    match /communes/{id}  { allow read: if true; allow write: if false; }
+    match /stats/public   { allow read: if true; allow write: if false; }
+    match /config/app     { allow read: if true; allow write: if false; }
+    match /config/cycle   { allow read: if lit('cnv'); allow write: if false; }
+    match /config/comportement { allow read: if lit('cmp'); allow write: if false; }
+    match /config/ia      { allow read: if lit('ia'); allow write: if false; }
+
+    // Tout le reste est réservé à l'Admin SDK (règle par défaut : refus) :
+    // brouillons, brouillonsOnboarding, contacts, litiges, emails, suppressions, evenements, stripeEvents,
+    // rateLimits, idempotence, sirenIndex, cacheSirene, simulations, migrations, config/flags,
+    // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur.
+  }
+}

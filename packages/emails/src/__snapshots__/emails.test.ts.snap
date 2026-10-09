@@ -1,0 +1,1947 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > 2fa-activee : version texte 1`] = `
+"Double authentification activée
+Votre compte est mieux protégé.
+
+PORTAIL HABITAT
+
+
+DOUBLE AUTHENTIFICATION ACTIVÉE
+
+Un code vous sera demandé à chaque connexion depuis un nouvel appareil.
+
+Ce n’était pas moi https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > 2fa-desactivee : version texte 1`] = `
+"Double authentification désactivée
+Votre compte est moins protégé. C’était vous ?
+
+PORTAIL HABITAT
+
+
+DOUBLE AUTHENTIFICATION DÉSACTIVÉE
+
+Votre compte n’est plus protégé par un second facteur.
+
+Ce n’était pas moi : sécuriser mon compte https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-active : version texte 1`] = `
+"Premium est activé pour Bertrand Rénovation
+Merci ! Votre abonnement est actif dès maintenant.
+
+PORTAIL HABITAT PRO
+
+
+BIENVENUE DANS PREMIUM
+
+Bonjour Julien, votre abonnement est actif pour Bertrand Rénovation.
+
+Formule : Premium
+
+Facturation : annuelle (12 mois payés en une fois)
+
+Prochaine échéance : 1 octobre 2027
+
+Voir mon abonnement https://portailhabitat.fr/pro/facturation
+
+Vos factures sont disponibles à tout moment dans l’onglet Facturation.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-resilie : version texte 1`] = `
+"Votre résiliation est enregistrée
+Premium reste actif jusqu’au 1 octobre 2027.
+
+PORTAIL HABITAT PRO
+
+
+RÉSILIATION ENREGISTRÉE
+
+Bonjour Julien, Premium reste actif pour Bertrand Rénovation jusqu’au 1 octobre 2027, puis votre fiche repasse à la formule gratuite.
+
+Fin de l’abonnement : 1 octobre 2027
+
+Ensuite : fiche gratuite, sans mise en avant ni demandes garanties
+
+Annuler la résiliation https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-termine : version texte 1`] = `
+"Premium est terminé
+Votre fiche reste en ligne avec la formule gratuite.
+
+PORTAIL HABITAT PRO
+
+
+PREMIUM EST TERMINÉ
+
+Bonjour Julien, l’abonnement de Bertrand Rénovation est terminé. Votre fiche reste visible avec la formule gratuite.
+
+Reprendre un abonnement https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > bienvenue-particulier : version texte 1`] = `
+"Bienvenue sur Portail Habitat
+Suivez vos demandes et échangez avec les artisans depuis votre espace.
+
+PORTAIL HABITAT
+
+
+BIENVENUE SUR PORTAIL HABITAT
+
+Bonjour Camille, votre espace vous permet de suivre vos demandes, de comparer les devis et d’échanger avec les artisans.
+
+Accéder à mon espace https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > bienvenue-pro : version texte 1`] = `
+"Bienvenue sur Portail Habitat Pro, Julien
+3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.
+
+PORTAIL HABITAT PRO
+
+
+BIENVENUE, BERTRAND RÉNOVATION
+
+Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.
+
+✓
+
+Créer votre compte
+
+2
+
+Vérifier votre numéro de mobile
+
+3
+
+Déposer votre attestation décennale
+
+4
+
+Compléter votre fiche à 60 % (logo, photos, description)
+
+Accéder à mon espace https://portailhabitat.fr/pro
+
+Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > changement-email-alerte : version texte 1`] = `
+"Changement de l’adresse email de votre compte
+Nouvelle adresse : c•••@e•••.fr. Annulation possible pendant 7 jours.
+
+PORTAIL HABITAT
+
+
+L’ADRESSE EMAIL DE VOTRE COMPTE VA CHANGER
+
+Une demande de changement vers c•••@e•••.fr a été faite depuis votre compte.
+
+Ce n’était pas moi : annuler https://portailhabitat.fr/connexion/lien?t=exemple
+
+Lien d’annulation valable 7 jours. Le compte est bloqué 24 heures par précaution si vous annulez.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > changement-email-verifier : version texte 1`] = `
+"Confirmez votre nouvelle adresse email
+Cliquez pour utiliser cette adresse sur Portail Habitat.
+
+PORTAIL HABITAT
+
+
+CONFIRMEZ VOTRE NOUVELLE ADRESSE
+
+Bonjour Camille, confirmez que cette adresse vous appartient pour terminer le changement.
+
+Confirmer cette adresse https://portailhabitat.fr/connexion/lien?t=exemple
+
+Lien valable 24 heures.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-bloque : version texte 1`] = `
+"Votre compte est temporairement bloqué
+Trop de tentatives de connexion. Débloquez-le en un clic.
+
+PORTAIL HABITAT
+
+
+VOTRE COMPTE EST TEMPORAIREMENT BLOQUÉ
+
+Nous avons constaté 10 tentatives de connexion infructueuses et bloqué l’accès par précaution.
+
+Débloquer mon compte https://portailhabitat.fr/connexion/lien?t=exemple
+
+Si ce n’était pas vous, changez votre mot de passe après le déblocage.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-reactive : version texte 1`] = `
+"Votre compte est de nouveau actif
+Vous pouvez à nouveau vous connecter.
+
+PORTAIL HABITAT
+
+
+VOTRE COMPTE EST DE NOUVEAU ACTIF
+
+Me connecter https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-suspendu : version texte 1`] = `
+"Votre compte a été suspendu
+Motif : Non-respect de la charte des avis
+
+PORTAIL HABITAT
+
+
+VOTRE COMPTE A ÉTÉ SUSPENDU
+
+Motif : Non-respect de la charte des avis
+
+Vous pouvez contester cette décision en répondant à cet email ou depuis la page d’aide.
+
+Contester la décision https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > demande-acces : version texte 1`] = `
+"Hugo Martin demande à rejoindre votre équipe
+Acceptez en choisissant un rôle, ou refusez.
+
+PORTAIL HABITAT PRO
+
+
+DEMANDE POUR REJOINDRE VOTRE ÉQUIPE
+
+Hugo Martin souhaite rejoindre Bertrand Rénovation sur Portail Habitat Pro.
+
+« Je suis le nouveau chef de chantier. »
+
+Répondre à la demande https://portailhabitat.fr/pro/equipe
+
+Sans réponse sous 14 jours, la demande expire automatiquement.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > demande-acces-reponse : version texte 1`] = `
+"Bienvenue dans l’équipe Bertrand Rénovation
+Rôle : collaborateur.
+
+PORTAIL HABITAT PRO
+
+
+BIENVENUE DANS L’ÉQUIPE BERTRAND RÉNOVATION
+
+Rôle : Collaborateur
+
+Accéder à l’espace pro https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-recu : version texte 1`] = `
+"Attestation décennale bien reçue
+Vérification sous 48 h ouvrées.
+
+PORTAIL HABITAT PRO
+
+
+DOCUMENT BIEN REÇU
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Notre équipe le vérifie sous 48 h ouvrées. Vous recevrez un email dès la décision.
+
+Voir mes documents https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-refuse : version texte 1`] = `
+"Attestation décennale : document non validé
+Motif : Attestation expirée le 31/12/2025. Déposez un nouveau document.
+
+PORTAIL HABITAT PRO
+
+
+NOUS N’AVONS PAS PU VALIDER VOTRE DOCUMENT
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Motif : Attestation expirée le 31/12/2025
+
+Votre fiche reste hors ligne tant qu’un document valide n’est pas déposé.
+
+Déposer un nouveau document https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Vérification sous 48 h ouvrées après le dépôt.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-valide : version texte 1`] = `
+"Attestation décennale validée
+Votre document est vérifié.
+
+PORTAIL HABITAT PRO
+
+
+DOCUMENT VALIDÉ
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Le label correspondant apparaît sur votre fiche publique.
+
+Voir ma fiche https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > entreprise-existe-deja : version texte 1`] = `
+"Quelqu’un a tenté d’inscrire votre entreprise
+Une inscription de Bertrand Rénovation a été tentée. C’était un membre de votre équipe ?
+
+PORTAIL HABITAT PRO
+
+
+TENTATIVE D’INSCRIPTION DE VOTRE ENTREPRISE
+
+Quelqu’un a essayé d’inscrire Bertrand Rénovation, qui a déjà un compte. Il peut vous demander à rejoindre l’équipe.
+
+Si vous ne reconnaissez pas cette démarche, aucune action n’est nécessaire : personne n’a accès à votre compte.
+
+Gérer mon équipe https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Habitat Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > entreprise-fermee : version texte 1`] = `
+"Bertrand Rénovation a été fermée
+La fiche est retirée de l’annuaire. Les factures restent disponibles.
+
+PORTAIL HABITAT PRO
+
+
+ENTREPRISE FERMÉE
+
+L’espace de Bertrand Rénovation a été fermé par son propriétaire. La fiche est retirée de l’annuaire.
+
+Les factures restent conservées 10 ans et disponibles sur demande.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > export-donnees-pret : version texte 1`] = `
+"L’export de vos données est prêt
+Téléchargeable pendant 7 jours, connexion requise.
+
+PORTAIL HABITAT
+
+
+L’EXPORT DE VOS DONNÉES EST PRÊT
+
+Télécharger mes données https://portailhabitat.fr/connexion/lien?t=exemple
+
+Lien valable 7 jours. Vous devrez vous connecter pour télécharger le fichier.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-en-ligne : version texte 1`] = `
+"Votre fiche est en ligne
+Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Habitat.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE FICHE EST EN LIGNE
+
+Félicitations : Bertrand Rénovation est visible par les particuliers de votre zone et peut recevoir des demandes.
+
+BR
+Bertrand Rénovation
+★ Nouveau · Bordeaux et 25 km
+Vérifié · Décennale
+
+Voir ma fiche publique https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+
+POUR RECEVOIR PLUS DE DEMANDES
+
+1
+
+Ajoutez 3 photos de réalisations
+
+2
+
+Répondez aux demandes en moins de 2 h pour obtenir le label « Réponse rapide »
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-incomplete : version texte 1`] = `
+"Votre fiche est complète à 40 %
+À partir de 60 %, votre fiche apparaît dans l’annuaire.
+
+PORTAIL HABITAT PRO
+
+
+COMPLÉTEZ VOTRE FICHE
+
+Fiche40 %
+
+
+
+1
+
+Ajouter votre logo
+
+2
+
+Ajouter 3 photos de réalisations
+
+3
+
+Rédiger votre présentation
+
+Compléter ma fiche https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > garantie-tenue : version texte 1`] = `
+"Votre 4e demande garantie du mois est arrivée
+La garantie Premium est tenue ce mois-ci.
+
+PORTAIL HABITAT PRO
+
+
+GARANTIE TENUE
+
+Bonjour Julien, vous avez reçu 4 demandes exclusives ce mois-ci : la garantie Premium est tenue.
+
+Voir mes demandes https://portailhabitat.fr/pro/demandes
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-acceptee : version texte 1`] = `
+"Léa Durand a rejoint votre équipe
+Rôle : collaborateur.
+
+PORTAIL HABITAT PRO
+
+
+LÉA DURAND A REJOINT BERTRAND RÉNOVATION
+
+Rôle : Collaborateur
+
+Voir mon équipe https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-expiree : version texte 1`] = `
+"Une invitation a expiré
+L’invitation envoyée à l•••@g•••.com n’a pas été acceptée.
+
+PORTAIL HABITAT PRO
+
+
+INVITATION EXPIRÉE
+
+L’invitation envoyée à l•••@g•••.com n’a pas été acceptée dans les 7 jours.
+
+Renvoyer l’invitation https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-membre : version texte 1`] = `
+"Julien vous invite à rejoindre Bertrand Rénovation
+Rôle : collaborateur. Invitation valable 7 jours.
+
+PORTAIL HABITAT PRO
+
+
+REJOIGNEZ L’ÉQUIPE BERTRAND RÉNOVATION
+
+Julien Bertrand vous invite à gérer les demandes de devis de l’entreprise sur Portail Habitat Pro.
+
+Entreprise : Bertrand Rénovation · Bordeaux
+
+Votre rôle : Collaborateur
+
+Vous pourrez : Répondre aux demandes, envoyer des devis, ajouter des réalisations
+
+Accepter l’invitation https://portailhabitat.fr/pro/invitation?t=exemple
+
+Invitation valable jusqu’au 2 octobre 2026, destinée à l•••@g•••.com. Vous ne connaissez pas Julien Bertrand ? Ignorez cet email.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-relance : version texte 1`] = `
+"Rappel : Bertrand Rénovation vous attend
+Invitation valable jusqu’au 2 octobre 2026.
+
+PORTAIL HABITAT PRO
+
+
+JULIEN BERTRAND VOUS ATTEND
+
+Vous avez été invité à rejoindre Bertrand Rénovation en tant que collaborateur.
+
+Accepter l’invitation https://portailhabitat.fr/pro/invitation?t=exemple
+
+Invitation valable jusqu’au 2 octobre 2026.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > lien-connexion : version texte 1`] = `
+"Votre lien de connexion à Portail Habitat
+Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.
+
+PORTAIL HABITAT
+
+
+CONNECTEZ-VOUS EN UN CLIC
+
+Bonjour Camille, voici votre lien pour accéder à votre espace. Aucun mot de passe n’est nécessaire.
+
+Me connecter https://portailhabitat.fr/connexion/lien?t=exemple
+
+Ce lien est valable 1 heure et ne fonctionne qu’une seule fois.
+
+Vous n’êtes pas à l’origine de cette demande ? Ignorez simplement cet email : personne ne peut se connecter sans ce lien.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > membre-retire : version texte 1`] = `
+"Vous ne faites plus partie de Bertrand Rénovation
+Votre accès à l’espace de l’entreprise a été retiré.
+
+PORTAIL HABITAT PRO
+
+
+ACCÈS RETIRÉ
+
+Bonjour Léa, votre accès à l’espace pro de Bertrand Rénovation a été retiré. Vos messages restent visibles par l’équipe.
+
+Votre compte personnel reste actif.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > mot-de-passe-modifie : version texte 1`] = `
+"Votre mot de passe a été modifié
+Safari sur iPhone · 25 septembre 2026 à 08 h 12. C’était vous ?
+
+PORTAIL HABITAT
+
+
+VOTRE MOT DE PASSE A ÉTÉ MODIFIÉ
+
+Appareil : Safari sur iPhone
+
+Lieu approximatif : Mérignac, France
+
+Date : 25 septembre 2026 à 08 h 12
+
+C’était vous ? Vous n’avez rien à faire.
+
+Ce n’était pas moi https://portailhabitat.fr/connexion/lien?t=exemple
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > mot-de-passe-oublie : version texte 1`] = `
+"Réinitialisation de votre mot de passe
+Choisissez un nouveau mot de passe. Lien valable 1 heure.
+
+PORTAIL HABITAT
+
+
+CHOISISSEZ UN NOUVEAU MOT DE PASSE
+
+Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Habitat.
+
+Choisir un nouveau mot de passe https://portailhabitat.fr/connexion/lien?t=exemple
+
+Lien valable 1 heure, utilisable une seule fois. Votre mot de passe actuel reste valable tant que vous n’en choisissez pas un nouveau.
+
+Ce n’était pas vous ? Aucune action n’est nécessaire, mais nous vous conseillons d’activer la double authentification.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > nouvel-appareil : version texte 1`] = `
+"Nouvelle connexion à votre compte
+Safari sur iPhone · Mérignac, France · 25 septembre 2026 à 08 h 12. C’était vous ?
+
+PORTAIL HABITAT
+
+
+NOUVELLE CONNEXION DÉTECTÉE
+
+Votre compte Portail Habitat vient d’être utilisé depuis un appareil que nous ne connaissions pas.
+
+Appareil : Safari sur iPhone
+
+Lieu approximatif : Mérignac, France
+
+Date : 25 septembre 2026 à 08 h 12
+
+C’était vous ? Vous n’avez rien à faire.
+
+Ce n’était pas moi : sécuriser mon compte https://portailhabitat.fr/connexion/lien?t=exemple
+
+Sécuriser votre compte déconnecte tous les appareils et vous demande un nouveau mot de passe.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > pack-achete : version texte 1`] = `
+"10 crédits ajoutés à votre compte
+Nouveau solde : 14 crédits.
+
+PORTAIL HABITAT PRO
+
+
+CRÉDITS AJOUTÉS
+
+Bonjour Julien, votre pack de 10 crédits est disponible pour Bertrand Rénovation.
+
+Crédits ajoutés : 10
+
+Nouveau solde : 14
+
+Voir les appels d’offres https://portailhabitat.fr/pro/facturation
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > paiement-echoue : version texte 1`] = `
+"Votre paiement n’a pas abouti
+Mettez à jour votre carte pour garder votre abonnement.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE PAIEMENT N’A PAS ABOUTI
+
+Bonjour Julien, le paiement de 1 150,56 € TTC pour Bertrand Rénovation a été refusé par votre banque.
+
+Sans nouveau paiement sous 7 jours, votre abonnement repasse à la formule gratuite.
+
+Mettre à jour ma carte https://portailhabitat.fr/pro/facturation
+
+Nous réessayons automatiquement le paiement dans les prochains jours.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > passage-annuel : version texte 1`] = `
+"Économisez 240 € en passant Premium à l’année
+79,90 € HT / mois au lieu de 99,90 € HT. Le mois en cours est déduit.
+
+PORTAIL HABITAT PRO
+
+
+PREMIUM DEPUIS 3 MOIS : PASSEZ À L’ANNÉE
+
+Aujourd’hui (mensuel) : 99,90 € HT / mois
+
+À l’année : 79,90 € HT / mois
+
+Payé en une fois : 958,80 € HT
+
+Économie : 240 € HT par an
+
+Mêmes avantages, même garantie de 4 demandes exclusives par mois. Le mois en cours est déduit au prorata.
+
+Passer à l’année https://portailhabitat.fr/pro/abonnement
+
+En Visibilité : 79,90 € HT par an au lieu de 154,80 € HT.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-appel-offres-complet : version texte 1`] = `
+"Cet appel d’offres était complet avant votre résumé
+Rénovation de salle de bain à Bordeaux : 3 réponses reçues avant 7 h.
+
+PORTAIL HABITAT PRO
+
+
+LES ARTISANS PREMIUM L’ONT VU EN PREMIER
+
+L’appel d’offres « Rénovation de salle de bain » à Bordeaux a reçu ses 3 réponses avant l’envoi de votre résumé du matin.
+
+En Premium, vous voyez les appels d’offres dès leur publication, et 5 crédits sont inclus chaque mois.
+
+Passer Premium https://portailhabitat.fr/pro/abonnement
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-bilan-visibilite : version texte 1`] = `
+"Votre 1er mois en Visibilité : 287 vues
+287 vues, 19 appels. Voici l’étape suivante.
+
+PORTAIL HABITAT PRO
+
+Bilan du mois
+
+
+VISIBILITÉ FONCTIONNE : VOICI VOS CHIFFRES
+
+287 ×4,1
+Vues de votre fiche
+19
+Appels depuis votre fiche
+3
+Demandes reçues
+
+
+L’ÉTAPE SUIVANTE : DES DEMANDES GARANTIES
+
+Avec Premium, nous vous transmettons 4 demandes exclusives par mois : vous êtes le seul artisan contacté.
+
+Demandes exclusives : 4 par mois
+
+Garantie : Sinon le 2e mois est offert
+
+Crédits appels d’offres : 5 par mois inclus
+
+Appels d’offres : Vous les voyez en premier
+
+Vos mois de Visibilité restants (73,24 € HT) sont déduits de votre abonnement Premium.
+
+Découvrir Premium https://portailhabitat.fr/pro/abonnement
+
+Premium : 79,90 € HT / mois payé à l’année, ou 99,90 € HT / mois sans engagement.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-credits : version texte 1`] = `
+"Vous avez payé 60 € d’appels d’offres ce mois-ci
+Avec Premium, 5 crédits par mois sont inclus.
+
+PORTAIL HABITAT PRO
+
+
+PREMIUM SERAIT DÉJÀ RENTABLE POUR VOUS
+
+Crédits achetés sur 30 jours : 6 crédits · 60 € HT
+
+Inclus chaque mois en Premium : 5 crédits
+
+En plus : 4 demandes exclusives garanties
+
+Vous répondez souvent aux appels d’offres. En Premium, vous les voyez avant les autres artisans, et 5 crédits sont inclus chaque mois.
+
+Passer Premium https://portailhabitat.fr/pro/abonnement
+
+Crédits inclus non reportables. Vos crédits déjà achetés restent valables.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-demandes-manquees : version texte 1`] = `
+"3 chantiers (21 500 €) partis en exclusivité
+Ils ont été confiés à un seul artisan Premium de votre secteur.
+
+PORTAIL HABITAT PRO
+
+Semaine du 21 au 27 septembre
+
+
+3 DEMANDES EXCLUSIVES QUE VOUS N’AVEZ PAS REÇUES
+
+Salle de bain · CaudéranExclusive9 800 €
+
+Chaudière vers PAC · TalenceExclusive8 400 €
+
+Ballon d’eau chaude · BèglesExclusive3 300 €
+
+Ces demandes n’ont été transmises qu’à un seul artisan, abonné Premium : aucun concurrent face à lui.
+
+Recevoir mes 4 demandes exclusives https://portailhabitat.fr/pro/abonnement
+
+Budgets estimés TTC. Aucune donnée du particulier n’est communiquée.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-renouvellement : version texte 1`] = `
+"Renouvelez directement en Premium
+Votre Visibilité se renouvelle le 1er novembre 2026.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE RENOUVELLEMENT APPROCHE
+
+Bonjour Julien, votre Visibilité se renouvelle le 1er novembre 2026. C’est le meilleur moment pour passer en Premium : vous ne payez pas deux fois.
+
+Demandes exclusives : 4 par mois
+
+Garantie : Sinon le 2e mois est offert
+
+Crédits appels d’offres : 5 par mois inclus
+
+Appels d’offres : Vous les voyez en premier
+
+Renouveler en Premium https://portailhabitat.fr/pro/abonnement
+
+Sans action de votre part, votre Visibilité est renouvelée normalement.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-demande-zone : version texte 1`] = `
+"Hier à Lormont : 2 400 – 3 200 € TTC
+Cette demande est partie chez un autre électricien. Recevez les suivantes.
+
+PORTAIL HABITAT PRO
+
+Demande reçue hier
+
+
+UN PARTICULIER DE LORMONT CHERCHAIT UN ÉLECTRICIEN
+
+Travaux : Remplacement du tableau et mise aux normes
+
+Budget estimé : 2 400 – 3 200 € TTC
+
+Distance : 3 km de votre siège
+
+Délai souhaité : Sous 2 semaines
+
+Faute de électricien inscrit près de chez vous, elle a été transmise à une autre entreprise.
+
+Inscrivez-vous gratuitement : les prochaines demandes de ce type vous arriveront par email et par SMS.
+
+M’inscrire gratuitement https://portailhabitat.fr/pro/inscription
+
+Aucune donnée personnelle du particulier n’est communiquée dans cet email.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-derniere : version texte 1`] = `
+"Je clôture votre dossier ?
+Une question avant de ne plus vous écrire, Marc.
+
+PORTAIL HABITAT PRO
+
+Bonjour Marc,
+
+Je vous ai envoyé il y a 12 jours l’estimation des demandes autour de Lormont. Depuis, 9 nouvelles demandes sont arrivées dans votre secteur.
+
+Je ne veux pas vous encombrer : si ce n’est pas le moment, je clôture votre dossier et vous ne recevrez plus qu’un résumé mensuel de votre zone.
+
+Une question sur le fonctionnement, les prix ou l’engagement ? Répondez simplement à cet email, c’est moi qui lis les réponses.
+
+Créer ma fiche gratuite en 3 minutes → https://portailhabitat.fr/pro/inscription
+
+Julie, Portail Habitat
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-estimation : version texte 1`] = `
+"Électricien à Lormont : 27 demandes ce mois-ci
+Votre estimation détaillée, et comment recevoir ces demandes gratuitement.
+
+PORTAIL HABITAT PRO
+
+Votre estimation
+
+
+27 PARTICULIERS CHERCHENT UN ÉLECTRICIEN AUTOUR DE LORMONT
+
+27 30 jours
+Demandes dans votre métier
+6 400 €
+Budget moyen par projet
+4
+Électriciens inscrits à 20 km
+
+Ces demandes sont aujourd’hui partagées entre seulement 4 électriciens. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.
+
+Recevoir mes premières demandes https://portailhabitat.fr/pro/inscription
+
+Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Habitat.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-temoignage : version texte 1`] = `
+"Un électricien inscrit reçoit sa 1re demande en 6 jours
+27 demandes de électricien ce mois-ci autour de Lormont.
+
+PORTAIL HABITAT PRO
+
+
+COMBIEN DE TEMPS AVANT LA PREMIÈRE DEMANDE ?
+
+6 j en moyenne
+Avant la 1re demande
+27 30 jours
+Demandes autour de Lormont
+
+Bonjour Marc, les électriciens qui s’inscrivent dans votre secteur reçoivent leur première demande en 6 jours en moyenne, sans payer.
+
+Créer ma fiche gratuite https://portailhabitat.fr/pro/inscription
+
+Moyenne calculée sur les artisans inscrits depuis moins de 6 mois dans votre département.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reconquete-1 : version texte 1`] = `
+"Julien, 11 demandes exclusives sont parties depuis
+Revenez en Premium avec −30 % sur votre premier mois.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE SECTEUR A CONTINUÉ SANS VOUS
+
+11
+Demandes exclusives confiées à d’autres
+164
+Recherches « plombier Bordeaux »
+18e
+Position de votre fiche
+
+Vos avis sont toujours là. Reprenez Premium et retrouvez votre place et vos demandes garanties dès aujourd’hui.
+
+RETOUR30
+
+Reprendre Premium à −30 % https://portailhabitat.fr/pro/abonnement
+
+Code personnel valable jusqu’au 3 octobre 2026, appliqué au premier mois.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reconquete-2 : version texte 1`] = `
+"Une dernière question
+Je ne vous écrirai plus après celui-ci.
+
+PORTAIL HABITAT PRO
+
+Bonjour Julien,
+
+Vous avez quitté Premium il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?
+
+Répondez à cet email en une ligne, c’est moi qui lis les réponses. Ce sera mon dernier message : ensuite, vous ne recevrez plus que le rapport mensuel gratuit.
+
+Julie, Portail Habitat
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > recu : version texte 1`] = `
+"Reçu de paiement PH-2026-0042
+1 150,56 € TTC payés. Facture disponible en ligne.
+
+PORTAIL HABITAT PRO
+
+
+PAIEMENT REÇU, MERCI
+
+Bonjour Julien, nous avons bien reçu votre paiement pour Bertrand Rénovation.
+
+Facture : PH-2026-0042
+
+Montant : 1 150,56 € TTC
+
+Télécharger la facture https://invoice.stripe.com/i/exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-1 : version texte 1`] = `
+"Il vous reste 2 minutes pour recevoir vos demandes
+Votre inscription Bertrand Rénovation est enregistrée à 66 %.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE INSCRIPTION EST PRESQUE TERMINÉE
+
+Bonjour Julien, vous avez commencé à inscrire Bertrand Rénovation. Reprenez exactement où vous en étiez.
+
+Inscription66 %
+
+
+
+✓
+
+Entreprise
+
+✓
+
+Zone et métiers
+
+3
+
+Création du compte
+
+Terminer mon inscription https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Ce mois-ci, 38 particuliers ont cherché un plombier autour de Bordeaux.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-2 : version texte 1`] = `
+"38 demandes dans votre zone ce mois-ci
+Terminez votre inscription pour les recevoir.
+
+PORTAIL HABITAT PRO
+
+
+DES PARTICULIERS CHERCHENT UN ARTISAN PRÈS DE CHEZ VOUS
+
+Ce mois-ci, 38 particuliers ont cherché un plombier autour de Bordeaux.
+
+Terminez votre inscription : votre fiche peut être en ligne dès aujourd’hui, gratuitement.
+
+Terminer mon inscription https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Chiffre estimé à partir des demandes déposées dans votre département.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-3 : version texte 1`] = `
+"Dernier rappel : votre inscription vous attend
+Après cet email, nous ne vous relancerons plus.
+
+PORTAIL HABITAT PRO
+
+
+DERNIER RAPPEL
+
+Bonjour Julien, l’inscription de Bertrand Rénovation est enregistrée à 66 %. C’est notre dernière relance.
+
+Terminer mon inscription https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Sans action de votre part, vos informations seront supprimées dans 20 jours.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > renouvellement : version texte 1`] = `
+"Votre abonnement se renouvelle dans 7 jours
+Premium : 1 150,56 € TTC le 1 octobre 2027.
+
+PORTAIL HABITAT PRO
+
+
+RENOUVELLEMENT DE VOTRE ABONNEMENT
+
+Bonjour Julien, votre abonnement annuel Premium pour Bertrand Rénovation se renouvelle automatiquement le 1 octobre 2027.
+
+Formule : Premium
+
+Montant : 1 150,56 € TTC
+
+Date : 1 octobre 2027
+
+Gérer mon abonnement https://portailhabitat.fr/pro/facturation
+
+Vous pouvez résilier avant cette date depuis l’onglet Facturation, sans frais.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reprise-onboarding : version texte 1`] = `
+"Reprenez votre inscription où vous l’avez laissée
+Inscription de Bertrand Rénovation : vos informations sont enregistrées.
+
+PORTAIL HABITAT PRO
+
+
+REPRENEZ VOTRE INSCRIPTION
+
+Bonjour Julien, vos informations sont enregistrées. Ce lien vous permet de terminer sur n’importe quel appareil.
+
+Reprendre mon inscription https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Lien valable 30 jours.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reprise-simulateur : version texte 1`] = `
+"Reprenez votre estimation où vous l’avez laissée
+Salle de bain · 6 m² · douche à l’italienne · étape 3 sur 5.
+
+PORTAIL HABITAT
+
+
+REPRENEZ VOTRE ESTIMATION
+
+Bonjour Camille, votre projet est enregistré. Ce lien vous ramène à l’étape où vous vous êtes arrêté, sur n’importe quel appareil.
+
+Projet : Salle de bain · 6 m² · douche à l’italienne
+
+Étape : 3 sur 5
+
+Reprendre à l’étape 3 https://portailhabitat.fr/simulateur?reprise=exemple
+
+Lien valable 30 jours, utilisable une seule fois. Vous avez demandé ce lien en cochant « M’envoyer un lien pour reprendre plus tard ».
+
+L’équipe Portail Habitat
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > resiliation-alternative : version texte 1`] = `
+"Avant le 24 octobre : gardez l’essentiel pour moins cher
+Passez en Visibilité ou suspendez 2 mois au lieu de tout perdre.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE PREMIUM S’ARRÊTE LE 24 OCTOBRE
+
+Votre résiliation est bien enregistrée. D’ici là, trois options s’offrent à vous :
+
+Passer en VisibilitéRester en tête de liste6,66 € HT / mois
+
+Suspendre 2 moisReprise automatique0 €
+
+Rester abonné−50 % pendant 2 mois49,95 € HT
+
+Le 24 octobre, votre fiche repassera en gratuit. Vos 87 avis sont conservés.
+
+Choisir une option https://portailhabitat.fr/pro/abonnement
+
+Vous n’avez rien à faire pour confirmer la résiliation.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > resume-zone-mensuel : version texte 1`] = `
+"Septembre : 27 demandes de électricien près de Lormont
+Le résumé mensuel de votre zone.
+
+PORTAIL HABITAT PRO
+
+Résumé de Septembre
+
+
+27 DEMANDES DANS VOTRE MÉTIER AUTOUR DE LORMONT
+
+27
+Demandes
+6 400 €
+Budget moyen
+
+Voir comment les recevoir https://portailhabitat.fr/pro/inscription
+
+Vous recevez ce résumé une fois par mois. Désabonnement en un clic ci-dessous.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > revendication-code : version texte 1`] = `
+"Votre code pour revendiquer votre fiche
+Fiche Bertrand Rénovation : saisissez ce code pour la gérer.
+
+PORTAIL HABITAT PRO
+
+
+REVENDIQUEZ VOTRE FICHE
+
+Saisissez ce code pour prendre la main sur la fiche Bertrand Rénovation.
+
+K7Q2M9
+
+Saisir mon code https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+Code valable 30 jours, à usage unique.
+
+L’équipe Portail Habitat Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > revendication-resultat : version texte 1`] = `
+"Votre fiche vous appartient
+Vous gérez désormais Bertrand Rénovation.
+
+PORTAIL HABITAT PRO
+
+
+REVENDICATION ACCEPTÉE
+
+Vous gérez désormais la fiche Bertrand Rénovation. Les avis et statistiques sont conservés.
+
+Accéder à mon espace https://portailhabitat.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > role-modifie : version texte 1`] = `
+"Votre rôle chez Bertrand Rénovation a changé
+Nouveau rôle : gérant.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE RÔLE A CHANGÉ
+
+Entreprise : Bertrand Rénovation
+
+Nouveau rôle : Gérant
+
+Vous pouvez : Gérer les demandes, la fiche, l’équipe et l’abonnement
+
+Accéder à l’espace pro https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > sieges-suspendus : version texte 1`] = `
+"Accès de votre équipe suspendu
+3 membre(s) suspendu(s) : réactivez Premium pour leur rendre l’accès.
+
+PORTAIL HABITAT PRO
+
+
+ACCÈS DE L’ÉQUIPE SUSPENDU
+
+Bertrand Rénovation est passée à l’offre gratuite, qui comprend un seul siège. 3 membre(s) sont suspendus : aucune donnée n’est perdue.
+
+Réactiver Premium https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > suppression-compte-confirmee : version texte 1`] = `
+"Votre compte a été supprimé
+Récapitulatif de ce qui est conservé.
+
+PORTAIL HABITAT
+
+
+VOTRE COMPTE A ÉTÉ SUPPRIMÉ
+
+Bonjour Camille, vos données personnelles ont été effacées.
+
+Conservé : Factures (10 ans, obligation comptable)
+
+Effacé : Profil, préférences, historique de connexion
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > transfert-propriete : version texte 1`] = `
+"Transfert de propriété de Bertrand Rénovation
+Léa Durand est désormais propriétaire.
+
+PORTAIL HABITAT PRO
+
+
+TRANSFERT DE PROPRIÉTÉ EFFECTUÉ
+
+Entreprise : Bertrand Rénovation
+
+Nouveau propriétaire : Léa Durand
+
+L’ancien propriétaire devient gérant.
+
+Vous n’êtes pas à l’origine de ce transfert ? Contactez-nous immédiatement.
+
+Voir mon équipe https://portailhabitat.fr/pro/equipe
+
+L’équipe Portail Habitat Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > verifier-email : version texte 1`] = `
+"Confirmez votre adresse email
+Une dernière étape pour activer votre compte Portail Habitat.
+
+PORTAIL HABITAT
+
+
+CONFIRMEZ VOTRE ADRESSE EMAIL
+
+Bonjour Camille, cliquez sur le bouton ci-dessous pour confirmer que cette adresse vous appartient.
+
+Confirmer mon adresse https://portailhabitat.fr/connexion/lien?t=exemple
+
+Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur : https://portailhabitat.fr/connexion/lien?t=exemple · Valable 24 heures.
+
+L’équipe Portail Habitat
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > verifier-telephone : version texte 1`] = `
+"Votre code de vérification
+Code : 482913. Valable 10 minutes.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE CODE DE VÉRIFICATION
+
+482913
+
+Valable 10 minutes. Ne le communiquez à personne : Portail Habitat ne vous le demandera jamais.
+
+L’équipe Portail Habitat Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-concurrents : version texte 1`] = `
+"Un 3e plombier est affiché avant vous
+Votre fiche passe à la 17e place à Bordeaux.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE FICHE RECULE DANS VOTRE SECTEUR
+
+Fiches mises en avant+1 cette semaine3
+
+Votre position−3 places17e / 23
+
+Recherches « plombier Bordeaux »30 derniers jours146
+
+Les fiches Visibilité et Premium passent devant les fiches gratuites. Reprenez votre place pour 6,66 € HT par mois.
+
+Remonter en tête https://portailhabitat.fr/pro/abonnement
+
+Nous ne communiquons jamais le nom des autres artisans.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-demande-offerte : version texte 1`] = `
+"Cette demande de 9 600 € est à vous
+Chaudière gaz → pompe à chaleur air-eau à Talence, 9 km. Offerte avec Visibilité.
+
+PORTAIL HABITAT PRO
+
+Demande offerte
+
+
+UNE DEMANDE VOUS ATTEND, GRATUITEMENT
+
+Travaux : Chaudière gaz → pompe à chaleur air-eau
+
+Budget estimé : 7 200 – 9 600 € TTC
+
+Commune : Talence · 9 km de votre siège
+
+Délai souhaité : Sous 1 mois
+
+Activez Visibilité aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.
+
+Visibilité à l’année : 6,66 € HT / mois
+
+Payé en une fois : 79,90 € HT pour 12 mois
+
+Sans engagement : 12,90 € HT / mois
+
+Activer Visibilité et recevoir la demande https://portailhabitat.fr/pro/inscription
+
+Offre valable une seule fois par entreprise. Les coordonnées du particulier s’affichent après l’activation.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-lancement : version texte 1`] = `
+"Julien, −30 % sur votre Visibilité
+Code personnel : 55,93 € HT pour toute l’année.
+
+PORTAIL HABITAT PRO
+
+Offre de bienvenue
+
+
+−30 % SUR VOTRE PREMIÈRE ANNÉE DE VISIBILITÉ
+
+Prix normal : 79,90 € HT / an
+
+Avec votre code : 55,93 € HT / an
+
+Soit : 4,66 € HT / mois
+
+JULIEN30
+
+Valable jusqu’au jeudi 1er octobre à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer ma Visibilité à −30 % https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+
+Remise appliquée à la première année. Renouvellement au tarif normal, avec un rappel 7 jours avant.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-rappel : version texte 1`] = `
+"Votre code −30 % expire ce soir
+55,93 € HT au lieu de 79,90 € HT pour l’année.
+
+PORTAIL HABITAT PRO
+
+
+DERNIER JOUR POUR VOTRE REMISE
+
+Bonjour Julien, votre code personnel expire ce soir. Après, la Visibilité repasse au tarif normal.
+
+Prix normal : 79,90 € HT / an
+
+Avec votre code : 55,93 € HT / an
+
+Soit : 4,66 € HT / mois
+
+JULIEN30
+
+Valable jusqu’au ce soir à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer à −30 % https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-relance : version texte 1`] = `
+"Une nouvelle remise de 30 % pour Bertrand Rénovation
+Votre fiche est en ligne depuis 3 mois : voici une nouvelle offre.
+
+PORTAIL HABITAT PRO
+
+
+PASSEZ EN TÊTE DE VOTRE SECTEUR
+
+Bonjour Julien, votre fiche est en ligne depuis 3 mois. Pour vous aider à passer le cap, voici un code personnel.
+
+Prix normal : 79,90 € HT / an
+
+Avec votre code : 55,93 € HT / an
+
+Soit : 4,66 € HT / mois
+
+JULIEN30
+
+Valable jusqu’au mardi 15 décembre à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer ma Visibilité https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-position : version texte 1`] = `
+"Vous êtes 14e sur 22 plombiers à Bordeaux
+Votre fiche a été vue 31 fois. Les fiches mises en avant, bien plus.
+
+PORTAIL HABITAT PRO
+
+Votre première semaine
+
+
+VOTRE FICHE EST EN LIGNE, MAIS PAS EN TÊTE
+
+31
+Vues de votre fiche
+14e sur 22
+Votre position à Bordeaux
+312
+Vues moyennes d’une fiche mise en avant
+
+Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Visibilité, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et un badge.
+
+Visibilité à l’année : 6,66 € HT / mois
+
+Payé en une fois : 79,90 € HT pour 12 mois
+
+Sans engagement : 12,90 € HT / mois
+
+Passer en tête de mon secteur https://portailhabitat.fr/pro/abonnement
+
+Activation immédiate, résiliable depuis votre espace.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-recherches-manquees : version texte 1`] = `
+"14 recherches de plombier sans vous en 1re page
+Cette semaine à Bordeaux, votre fiche n’apparaissait pas en premier.
+
+PORTAIL HABITAT PRO
+
+
+DES PARTICULIERS VOUS CHERCHENT, SANS VOUS TROUVER
+
+14 7 jours
+Recherches « plombier Bordeaux »
+
+Votre fiche n’était pas en première page de ces recherches. Avec Visibilité, elle passe en tête de votre secteur.
+
+Visibilité à l’année : 6,66 € HT / mois
+
+Payé en une fois : 79,90 € HT pour 12 mois
+
+Sans engagement : 12,90 € HT / mois
+
+Passer en tête de mon secteur https://portailhabitat.fr/pro/abonnement
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
