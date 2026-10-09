@@ -17,6 +17,7 @@ import {
 } from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { cookies, headers } from 'next/headers';
+import { COOKIE_APP_CHECK } from '@/lib/appCheckCookie';
 import type { z } from '@ph/core/zod';
 
 // Permission (peut() / admins), limite de débit, audit et idempotence : Firestore via l'Admin SDK.
@@ -38,13 +39,18 @@ async function contexteRequete(): Promise<ContexteBase> {
   const h = await headers();
   const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'inconnue';
   // Cookie vérifié avec les révocations : un membre retiré perd l'accès immédiatement.
-  const session = await lireSession((await cookies()).get(COOKIE_SESSION)?.value);
+  const pot = await cookies();
+  const session = await lireSession(pot.get(COOKIE_SESSION)?.value);
   return {
     ...(session ? contexteDepuisJeton(session) : { uid: null }),
     identifiantClient:
       session?.uid ?? `ip:${createHash('sha256').update(ip).digest('hex').slice(0, 16)}`,
     appCheckVerifie:
-      appCheckDesactive() || (await verifierJetonAppCheck(h.get('x-firebase-appcheck'))),
+      appCheckDesactive() ||
+      // En-tête (appels fetch) ou cookie posé par le navigateur (Server Actions, sans en-tête).
+      (await verifierJetonAppCheck(
+        h.get('x-firebase-appcheck') ?? pot.get(COOKIE_APP_CHECK)?.value,
+      )),
   };
 }
 

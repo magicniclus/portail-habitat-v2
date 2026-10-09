@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   type CompteurRecherches,
-  estRobot,
   idRechercheSecteur,
   idsPremierePage,
   PREMIERE_PAGE,
@@ -45,11 +44,5 @@ describe('recherches de l’annuaire par secteur (CONVERSION §3 S4)', () => {
     expect(
       signalRecherchesManquees('gratuit_actif', 30, { maintenant: T, dernier: T - 14 * J }),
     ).toBe(true);
-  });
-  it('robots et aperçus ne comptent pas', () => {
-    expect(estRobot('Mozilla/5.0 (compatible; Googlebot/2.1)')).toBe(true);
-    expect(estRobot('Mozilla/5.0 HeadlessChrome/120')).toBe(true);
-    expect(estRobot('')).toBe(true);
-    expect(estRobot('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Safari/604.1')).toBe(false);
   });
 });

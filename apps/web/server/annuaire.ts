@@ -1,6 +1,7 @@
 import 'server-only';
 import { COLLECTION_ARTISANS, LIEU_DEFAUT, parametresRechercheArtisans } from '@ph/core/annuaire';
-import { estRobot, idsPremierePage } from '@ph/core/conversion';
+import { estRobot } from '@ph/core/comportement';
+import { idsPremierePage } from '@ph/core/conversion';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   fichesAutour,

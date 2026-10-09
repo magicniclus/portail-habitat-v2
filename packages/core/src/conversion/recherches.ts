@@ -65,11 +65,3 @@ export function signalRecherchesManquees(
     (o.dernier === undefined || o.maintenant - o.dernier >= ESPACEMENT)
   );
 }
-
-/** Robots, aperçus de liens et navigateurs sans interface : jamais comptés. */
-export function estRobot(userAgent: string): boolean {
-  return (
-    !userAgent ||
-    /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit/i.test(userAgent)
-  );
-}

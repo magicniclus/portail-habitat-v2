@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { BandeauCookies, SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/BandeauCookies';
+import { BandeauCookies } from '@/features/cookies/BandeauCookies';
+import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
+import { AppCheck } from '@/features/firebase/AppCheck';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
@@ -41,6 +43,7 @@ export default function RacineLayout({ children }: { children: ReactNode }) {
       <body>
         {children}
         <BandeauCookies politique={routes.legal('particuliers', 'cookies')} />
+        <AppCheck />
       </body>
     </html>
   );

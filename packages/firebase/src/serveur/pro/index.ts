@@ -7,6 +7,7 @@ export {
   type ServicesDemandesPro,
 } from './demandes';
 export { lireStatsJours } from './statistiques';
+export { verifierAssurances } from './assurances';
 export { lireAvisPro, repondreAvis, type AvisPro } from './avis';
 export { lireFichePro, modifierFiche, type FichePro } from './fiche';
 export { enregistrerDocument, lireDocumentsPro, type DocumentPro } from './documents';

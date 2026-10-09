@@ -22,14 +22,6 @@ const aChoisi = () => consentementActuel() !== null;
 /** Au rendu serveur, le bandeau est dans le HTML ; `SCRIPT_BANDEAU_COOKIES` le masque avant l'affichage si un choix existe. */
 const auServeur = () => false;
 
-/**
- * À placer dans `<head>` : masque le bandeau avant le premier affichage quand un choix est enregistré
- * (sinon le bandeau apparaîtrait après l'hydratation et deviendrait l'élément LCP). La validité exacte
- * (6 mois) est vérifiée ensuite par le composant.
- */
-export const SCRIPT_BANDEAU_COOKIES =
-  "try{if(/(^|; )ph_consentement=/.test(document.cookie))document.documentElement.setAttribute('data-cookies-choisis','')}catch(e){}";
-
 const classeBouton = bouton({ variant: 'secondaire', className: 'flex-1' });
 
 /**

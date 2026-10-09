@@ -226,7 +226,6 @@ export { tachesACreer, type TacheConversion } from './taches';
 export { agregerJourCycle, attribuerConversion } from './attribution';
 export { delaiPremiereDemande, emailsProspect } from './prospects';
 export {
-  estRobot,
   idRechercheSecteur,
   idsPremierePage,
   PREMIERE_PAGE,
