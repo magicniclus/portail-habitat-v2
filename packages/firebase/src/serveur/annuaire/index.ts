@@ -13,3 +13,4 @@ export {
   type ArtisanAnnuaire,
   type ResultatsAnnuaire,
 } from './recherche';
+export { compterDemandeRecue, compterEvenementFiche } from './statsFiche';

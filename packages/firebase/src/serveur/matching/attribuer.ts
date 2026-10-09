@@ -1,3 +1,4 @@
+import { compterDemandeRecue } from '../annuaire/statsFiche';
 import { masquerCoordonnees } from '@ph/core/espace';
 import {
   calculerPrixLead,
@@ -276,6 +277,7 @@ export async function attribuerDemande(
       return true;
     });
     if (ok) {
+      await compterDemandeRecue(s.db, choisi.artisanId, maintenant);
       for (const uid of await destinatairesDemandes(s.db, choisi.artisanId, metier ?? ''))
         await s.notifier({
           modele: 'nouvelle-demande',

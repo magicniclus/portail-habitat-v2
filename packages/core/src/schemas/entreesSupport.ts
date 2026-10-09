@@ -24,3 +24,9 @@ export const entreeEvenementRecherche = z.object({
   /** Identifiant aléatoire d'onglet, sans lien avec une personne. */
   session: z.string().regex(/^[a-z0-9]{8,32}$/),
 });
+
+/** Compteurs d'une fiche publique (`statsJour`) : anonymes, sans cookie ni identifiant. */
+export const entreeEvenementFiche = z.strictObject({
+  artisanId: z.string().regex(/^[A-Za-z0-9_-]{4,64}$/),
+  type: z.enum(['vue', 'tel', 'devis']),
+});

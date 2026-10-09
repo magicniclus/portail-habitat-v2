@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { initiales } from '@ph/core/format';
 import { BandeauApercu } from '@/features/fiche/BandeauApercu';
+import { MesureFiche } from '@/features/fiche/MesureFiche';
 import { Bloc, DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
@@ -99,12 +100,18 @@ export default async function PageFiche({ params }: { params: Params }) {
             <NoteMoyenne note={f.noteMoyenne} nbAvis={f.nbAvis} className="text-[15px]" />
           </div>
           <div className="flex flex-wrap gap-2.5">
-            <Link href={devis} prefetch={false} className={bouton({ taille: 'lg' })}>
+            <Link
+              href={devis}
+              prefetch={false}
+              className={bouton({ taille: 'lg' })}
+              data-ph-fiche="devis"
+            >
               Demander un devis
             </Link>
             {f.telephone ? (
               <a
                 href={`tel:${f.telephone}`}
+                data-ph-fiche="tel"
                 className={bouton({ variant: 'secondaire', taille: 'lg' })}
               >
                 <span className="sr-only">Appeler au </span>
@@ -152,13 +159,14 @@ export default async function PageFiche({ params }: { params: Params }) {
                 Décrivez vos travaux en 2 minutes : l&apos;artisan reçoit votre demande et vous
                 répond.
               </p>
-              <Link href={devis} prefetch={false} className={bouton()}>
+              <Link href={devis} prefetch={false} className={bouton()} data-ph-fiche="devis">
                 Demander un devis
               </Link>
             </div>
           </aside>
         </div>
       </main>
+      <MesureFiche artisanId={id} />
       <PiedPublic {...piedParticuliers} />
     </>
   );

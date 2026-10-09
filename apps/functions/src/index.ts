@@ -23,7 +23,7 @@ export {
 } from './cycle/planifiees';
 export { comportementAgreger } from './comportement/planifiees';
 export { iaContexteNuit, iaSyntheseHebdo } from './ia/planifiees';
-export { assurancesNuit } from './exploitation/planifiees';
+export { assurancesNuit, rapportHebdo } from './exploitation/planifiees';
 export { envoyerEnvoi } from './notifications/tache';
 export { importerDemandePartenaireHttp as importerDemandePartenaire } from './partenaires/webhook';
 export { syncIntentionTypesense, syncSynonymesTypesense } from './recherche/declencheurs';
