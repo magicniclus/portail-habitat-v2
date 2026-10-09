@@ -46,6 +46,8 @@ for (const chemin of PAGES)
   });
 
 test('ALL-06 : titre et description uniques', async ({ page }) => {
+  // Onze pages à la suite : plus que le délai par défaut d'un test.
+  test.setTimeout(120_000);
   const titres = new Map<string, string>();
   const descriptions = new Map<string, string>();
   for (const chemin of PAGES) {

@@ -130,7 +130,8 @@ describe('dépendances de l’enveloppe', () => {
     );
     expect(resultats.filter(Boolean)).toHaveLength(3);
     expect(await deps.limiterDebit!(regle, 'ip:2')).toBe(true);
-  });
+    // Six transactions en concurrence sur le même compteur : l'émulateur les sérialise.
+  }, 20_000);
 
   it('limite de débit : nouvelle fenêtre une fois la précédente écoulée', async () => {
     let t = Date.parse('2026-09-27T10:00:00Z');
