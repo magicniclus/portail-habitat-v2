@@ -28,6 +28,12 @@ export const entreeActionRecommandation = z.discriminatedUnion('action', [
   }),
 ]);
 
+/** Question de suivi sur une analyse (IA_ADMIN §4). */
+export const entreeQuestionSuiviIa = z.strictObject({
+  analyseId: z.string().min(1).max(64),
+  question: z.string().trim().min(3).max(1000),
+});
+
 /** Assistant de rédaction de Ma Fiche (IA_ADMIN §8) ; l'entreprise vient de la session. */
 export const entreeRedactionIa = z
   .strictObject({

@@ -13,6 +13,8 @@ import {
   type AppelIa,
   type ClientIa,
   lireStatsRedactionIa,
+  mesurerEffetsIa,
+  poserQuestionSuiviIa,
 } from '../src/serveur/ia';
 
 /** Assistant IA (IA_ADMIN ; IA-01 à IA-06) avec un faux modèle : aucun appel réel. */
@@ -272,5 +274,83 @@ describe('lireStatsRedactionIa', () => {
       tauxAcceptation: 50,
       parAction: { relire: { total: 1, acceptees: 1 } },
     });
+  });
+});
+
+describe('questions de suivi', () => {
+  it('réponse vérifiée enregistrée sur l’analyse ; valeur inventée deux fois : refusée', async () => {
+    const r = await analyserIa(services(faux(reponse(3))), entree(), 'admin1');
+    appels.length = 0;
+    const ok = JSON.stringify({
+      reponse: 'Sur mobile, les sorties restent à 62 %.',
+      preuves: [{ source: 'landings', ref: 'acquisition-artisans', valeur: '62 %' }],
+    });
+    const suivi = await poserQuestionSuiviIa(
+      services(faux(ok)),
+      { analyseId: r.analyseId, question: 'Et sur mobile ?' },
+      'admin1',
+    );
+    expect(suivi).toMatchObject({ question: 'Et sur mobile ?', reponse: expect.any(String) });
+    expect(appels[0]!.demande).toContain('Reco 0');
+    expect(appels[0]!.contexte).toContain('1234');
+    const doc = await db.collection(collections.iaAnalyses).doc(r.analyseId).get();
+    expect(doc.get('suivis')).toHaveLength(1);
+    const faux2 = JSON.stringify({
+      reponse: 'x',
+      preuves: [{ source: 'a', ref: 'b', valeur: '99 %' }],
+    });
+    await expect(
+      poserQuestionSuiviIa(
+        services(faux(faux2)),
+        { analyseId: r.analyseId, question: 'Autre ?' },
+        'admin1',
+      ),
+    ).rejects.toMatchObject({ code: 'INDISPONIBLE' });
+    expect(
+      (await db.collection(collections.iaAnalyses).doc(r.analyseId).get()).get('suivis'),
+    ).toHaveLength(1);
+  });
+});
+
+describe('mesurerEffetsIa', () => {
+  it('30 jours après « faite » : effet enregistré une fois ; avant 30 jours : rien', async () => {
+    const r = await analyserIa(services(faux(reponse(3))), entree(), 'admin1');
+    const [a, b] = (await lireAnalyseIa(db, r.analyseId))!.recommandations;
+    const refA = db.collection(collections.iaRecommandations).doc(a!.id);
+    await refA.update({ statut: 'faite', faiteLe: Timestamp.fromMillis(T - 31 * 86_400_000) });
+    await db
+      .collection(collections.iaRecommandations)
+      .doc(b!.id)
+      .update({ statut: 'faite', faiteLe: Timestamp.fromMillis(T - 10 * 86_400_000) });
+    await db.doc(`${collections.iaContexte}/landings`).update({
+      json: JSON.stringify([{ page: 'acquisition-artisans', sessions: 1500, sorties: '48 %' }]),
+    });
+    appels.length = 0;
+    const effet = JSON.stringify({
+      verdict: 'amelioration',
+      resume: 'Les sorties passent de 62 % à 48 %.',
+      mesures: [{ ref: 'acquisition-artisans', avant: '62 %', apres: '48 %' }],
+    });
+    expect(await mesurerEffetsIa(services(faux(effet)))).toEqual({ mesurees: 1 });
+    expect(appels[0]!.demande).toContain('62 %');
+    expect((await refA.get()).get('effet')).toMatchObject({
+      verdict: 'amelioration',
+      mesures: [{ avant: '62 %', apres: '48 %' }],
+    });
+    expect(await mesurerEffetsIa(services(faux(effet)))).toEqual({ mesurees: 0 });
+  });
+  it('valeurs introuvables : « non mesurable », sans nouvel essai la nuit suivante', async () => {
+    const r = await analyserIa(services(faux(reponse(3))), entree(), 'admin1');
+    const [a] = (await lireAnalyseIa(db, r.analyseId))!.recommandations;
+    const refA = db.collection(collections.iaRecommandations).doc(a!.id);
+    await refA.update({ statut: 'faite', faiteLe: Timestamp.fromMillis(T - 31 * 86_400_000) });
+    const invente = JSON.stringify({
+      verdict: 'amelioration',
+      resume: 'x',
+      mesures: [{ ref: 'r', avant: '62 %', apres: '12 %' }],
+    });
+    await mesurerEffetsIa(services(faux(invente)));
+    expect((await refA.get()).get('effet.verdict')).toBe('indetermine');
+    expect(await mesurerEffetsIa(services(faux(invente)))).toEqual({ mesurees: 0 });
   });
 });

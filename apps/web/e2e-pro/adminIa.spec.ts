@@ -47,6 +47,14 @@ test.beforeAll(async () => {
     cleCache: 'e2e',
     sources: [],
     statut: 'ok',
+    suivis: [
+      {
+        question: 'Et sur mobile ?',
+        reponse: 'Les sorties mobiles restent à 62 %.',
+        preuves: [{ source: 'landings', ref: 'acquisition-artisans', valeur: '62 %' }],
+        le: Date.now(),
+      },
+    ],
   });
   await db
     .doc(`${collections.iaRecommandations}/e2e-reco-1`)
@@ -54,6 +62,33 @@ test.beforeAll(async () => {
   await db
     .doc(`${collections.iaRecommandations}/e2e-reco-2`)
     .set({ ...reco('Raccourcir le formulaire', 'tache', 2), createdAt: t, updatedAt: t });
+  await db.doc(`${collections.iaRecommandations}/e2e-reco-3`).set({
+    ...reco('Réduire le hero', 'texte', 3),
+    propositionTexte: 'Recevez des demandes près de chez vous.',
+    statut: 'faite',
+    faiteLe: t,
+    effet: {
+      verdict: 'amelioration',
+      resume: 'Les sorties passent de 62 % à 48 %.',
+      mesures: [{ ref: 'acquisition-artisans', avant: '62 %', apres: '48 %' }],
+      mesureLe: t,
+    },
+    createdAt: t,
+    updatedAt: t,
+  });
+});
+
+test('suivi, effet mesuré à 30 jours et usage de la rédaction', async ({ page }) => {
+  await connecter(page, 'admin@test.local', `/admin/ia?analyse=${ANALYSE}`, 'admin');
+  const suivi = page.getByRole('region', { name: 'Questions de suivi' });
+  await expect(suivi).toContainText('« Et sur mobile ? »');
+  await suivi.getByLabel('Votre question').fill('Quel gain sur mobile ?');
+  await expect(suivi.getByRole('button', { name: 'Poser la question' })).toBeDisabled();
+  const faite = page.getByRole('article', { name: 'Réduire le hero' });
+  await expect(faite.getByRole('region', { name: 'Effet mesuré' })).toContainText('Amélioration');
+  await expect(faite).toContainText('62 % → 48 %');
+  await expect(faite.getByRole('button', { name: 'Utiliser ce texte (copier)' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Aide à la rédaction · 30 jours' })).toBeVisible();
 });
 
 test('IA-05 : recommandations avec étape, gain et preuves ; actions humaines tracées', async ({

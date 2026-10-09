@@ -70,6 +70,11 @@ const normaliser = (v: string) =>
     .replace(/[\s\u00a0\u202f]+/g, '')
     .replace(/,/g, '.');
 
+/** La valeur citée figure-t-elle dans le texte source (espaces, virgules et casse neutralisés) ? */
+export function valeurDansContexte(valeur: string, contexte: string): boolean {
+  return normaliser(contexte).includes(normaliser(valeur));
+}
+
 /**
  * Contrôles après le schéma (IA-01, IA-04, IA-05) : nombre de recommandations et d'étapes selon
  * le mode, et **chaque valeur citée doit exister dans le contexte fourni** (sinon elle est

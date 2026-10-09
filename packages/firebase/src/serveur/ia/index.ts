@@ -24,3 +24,4 @@ export {
   type ServicesRedaction,
 } from './redaction';
 export { enregistrerReglagesIa } from './reglages';
+export { mesurerEffetsIa, poserQuestionSuiviIa, type SuiviLu } from './suivi';

@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "iaRecommandations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "faiteLe",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "artisansPublic",
       "queryScope": "COLLECTION",
       "fields": [

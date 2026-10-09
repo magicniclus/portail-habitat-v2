@@ -3,3 +3,4 @@ export * from './couts';
 export * from './prompt';
 export * from './libelles';
 export * from './redaction';
+export * from './suivi';

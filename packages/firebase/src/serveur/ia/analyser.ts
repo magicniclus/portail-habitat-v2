@@ -53,9 +53,9 @@ export async function lireConfigIa(db: Firestore): Promise<ConfigIaLue> {
   };
 }
 
-const refBudget = (db: Firestore, mois: string) =>
+export const refBudget = (db: Firestore, mois: string) =>
   db.collection(collections.iaQuotas).doc(`budget_${mois}`);
-const refQuota = (db: Firestore, uid: string, jour: string) =>
+export const refQuota = (db: Firestore, uid: string, jour: string) =>
   db.collection(collections.iaQuotas).doc(`${uid}_${jour}`);
 
 /** Analyses déjà lancées aujourd'hui par un membre (quota). */

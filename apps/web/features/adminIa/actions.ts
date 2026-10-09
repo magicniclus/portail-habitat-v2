@@ -1,6 +1,11 @@
 'use server';
 
-import { entreeActionRecommandation, entreeAnalyseIa, entreeReglagesIa } from '@ph/core/schemas';
+import {
+  entreeActionRecommandation,
+  entreeAnalyseIa,
+  entreeQuestionSuiviIa,
+  entreeReglagesIa,
+} from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { appAdmin } from '@ph/firebase/admin';
 import {
@@ -8,6 +13,7 @@ import {
   analyserIa,
   clientAnthropic,
   enregistrerReglagesIa,
+  poserQuestionSuiviIa,
 } from '@ph/firebase/ia';
 import { getFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
@@ -34,6 +40,22 @@ export async function lancerAnalyse(
   const r = await analyser(e);
   revalidatePath('/admin/ia');
   return r.ok ? { analyseId: r.data.analyseId } : { erreur: r.message };
+}
+
+const suivi = actionAdmin(
+  { schema: entreeQuestionSuiviIa, nom: 'adminQuestionSuiviIa', permission: 'ia.utiliser' },
+  async (e, ctx) => {
+    await poserQuestionSuiviIa(services(), e, ctx.uid!);
+    return null;
+  },
+);
+
+export async function poserQuestionSuivi(
+  e: z.input<typeof entreeQuestionSuiviIa>,
+): Promise<string | null> {
+  const r = await suivi(e);
+  revalidatePath('/admin/ia');
+  return r.ok ? null : r.message;
 }
 
 const agir = actionAdmin(

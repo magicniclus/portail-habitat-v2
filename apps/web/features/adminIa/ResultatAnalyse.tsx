@@ -1,25 +1,23 @@
-import {
-  LIBELLES_PERIMETRE_IA,
-  LIBELLES_STATUT_RECOMMANDATION,
-  type PerimetreIa,
-} from '@ph/core/ia';
+import { LIBELLES_PERIMETRE_IA, type PerimetreIa } from '@ph/core/ia';
 import { formatDate, formatEuros } from '@ph/core/format';
 import type { AnalyseLue, RecommandationLue } from '@ph/firebase/ia';
-import { Badge } from '@ph/ui';
-import { ActionsRecommandation } from './ActionsRecommandation';
+import { CarteRecommandation } from './CarteRecommandation';
+import { SuivisAnalyse } from './SuivisAnalyse';
 
 const carte = 'grid gap-3 rounded-card border border-trait bg-blanc p-4';
-const TON_PRIORITE = { 1: 'danger', 2: 'attention' } as const;
 
 /** Résultat d'une analyse : résumé, audit de l'entonnoir, recommandations avec preuves. */
 export function ResultatAnalyse({
   analyse,
   recommandations,
   peutAgir,
+  actif,
 }: {
   analyse: AnalyseLue;
   recommandations: RecommandationLue[];
   peutAgir: boolean;
+  /** Assistant utilisable (clé posée, actif, budget restant) : questions de suivi possibles. */
+  actif: boolean;
 }) {
   const perimetres = analyse.perimetres
     .map((p) => LIBELLES_PERIMETRE_IA[p as PerimetreIa] ?? p)
@@ -70,43 +68,9 @@ export function ResultatAnalyse({
         </section>
       ) : null}
       {recommandations.map((r) => (
-        <article
-          key={r.id}
-          className={`${carte} ${r.statut === 'ignoree' ? 'opacity-60' : ''}`}
-          aria-label={r.titre}
-        >
-          <p className="m-0 flex flex-wrap items-center gap-2">
-            <Badge tone={TON_PRIORITE[r.priorite as 1 | 2] ?? 'neutre'}>P{r.priorite}</Badge>
-            <Badge tone="succes">Gain {r.gainEstime}</Badge>
-            <Badge tone="info">{r.etape}</Badge>
-          </p>
-          <h3 className="m-0 text-base">{r.titre}</h3>
-          <p className="m-0 text-sm text-neutre-700">
-            {r.perimetre} · impact {r.impact} · effort {r.effort} · confiance{' '}
-            {Math.round(r.confiance * 100)} %
-          </p>
-          <p className="m-0">{r.constat}</p>
-          <ul className="m-0 grid list-none gap-1 p-0 text-sm">
-            {r.preuves.map((p, i) => (
-              <li key={i}>
-                <strong>{p.valeur}</strong> · {p.ref}
-              </li>
-            ))}
-          </ul>
-          {r.propositionTexte ? (
-            <blockquote className="m-0 rounded-control bg-neutre-100 p-3 text-sm">
-              <strong>Proposition</strong> — {r.propositionTexte}
-            </blockquote>
-          ) : null}
-          {r.statut === 'nouvelle' && peutAgir ? (
-            <ActionsRecommandation id={r.id} typeAction={r.action.type} />
-          ) : (
-            <p className="m-0 text-sm font-semibold">
-              {LIBELLES_STATUT_RECOMMANDATION[r.statut] ?? r.statut}
-            </p>
-          )}
-        </article>
+        <CarteRecommandation key={r.id} r={r} peutAgir={peutAgir} />
       ))}
+      <SuivisAnalyse analyseId={analyse.id} suivis={analyse.suivis} actif={peutAgir && actif} />
       {analyse.questionsOuvertes.length ? (
         <section aria-labelledby="questions-ia" className={carte}>
           <h2 id="questions-ia" className="m-0 text-base">

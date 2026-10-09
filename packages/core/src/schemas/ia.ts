@@ -33,6 +33,18 @@ export const analyseIa = z.object({
   sources: z.array(z.string()).default([]),
   statut: z.enum(['ok', 'erreur']),
   erreur: z.string().optional(),
+  /** Questions de suivi (10 au plus), réponses vérifiées comme l'analyse. */
+  suivis: z
+    .array(
+      z.object({
+        question: z.string().max(1000),
+        reponse: z.string(),
+        preuves: z.array(z.object({ source: z.string(), ref: z.string(), valeur: z.string() })),
+        le: z.number().int(),
+      }),
+    )
+    .max(10)
+    .optional(),
 });
 
 const niveau = z.enum(['élevé', 'moyen', 'faible']);
@@ -54,7 +66,16 @@ export const recommandationIa = z.object({
   propositionTexte: z.string().optional(),
   statut: z.enum(['nouvelle', 'en_cours', 'faite', 'ignoree']),
   motifIgnore: z.string().optional(),
-  effetMesure: z.string().optional(),
+  faiteLe: horodatage.optional(),
+  /** Mesuré 30 jours après « faite » (`iaContexteNuit`). */
+  effet: z
+    .object({
+      verdict: z.enum(['amelioration', 'degradation', 'stable', 'indetermine']),
+      resume: z.string(),
+      mesures: z.array(z.object({ ref: z.string(), avant: z.string(), apres: z.string() })),
+      mesureLe: horodatage,
+    })
+    .optional(),
 });
 
 /** `iaQuotas/{uid_jour}` (analyses du jour) et `iaQuotas/budget_{mois}` (dépense du mois). */

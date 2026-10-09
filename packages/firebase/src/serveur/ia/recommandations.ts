@@ -89,6 +89,12 @@ export interface AnalyseLue {
   coutCentimes: number;
   statut: string;
   createdAt: number;
+  suivis: {
+    question: string;
+    reponse: string;
+    preuves: RecommandationLue['preuves'];
+    le: number;
+  }[];
 }
 export interface RecommandationLue {
   id: string;
@@ -105,6 +111,13 @@ export interface RecommandationLue {
   action: { type: string; details: string };
   propositionTexte?: string;
   statut: string;
+  /** Effet mesuré 30 jours après « faite ». */
+  effet?: {
+    verdict: string;
+    resume: string;
+    mesures: { ref: string; avant: string; apres: string }[];
+    mesureLe: number;
+  };
 }
 
 const versAnalyse = (d: FirebaseFirestore.DocumentSnapshot): AnalyseLue => {
@@ -122,6 +135,7 @@ const versAnalyse = (d: FirebaseFirestore.DocumentSnapshot): AnalyseLue => {
     coutCentimes: x.coutCentimes,
     statut: x.statut,
     createdAt: (x.createdAt as Timestamp).toMillis(),
+    suivis: x.suivis ?? [],
   };
 };
 
@@ -135,7 +149,16 @@ export async function lireAnalyseIa(db: Firestore, id: string) {
   return {
     analyse: versAnalyse(a),
     recommandations: recos.docs
-      .map((d) => ({ id: d.id, ...(d.data() as Omit<RecommandationLue, 'id'>) }))
+      .map((d): RecommandationLue => {
+        const { effet, faiteLe: _f, createdAt: _c, updatedAt: _u, ...x } = d.data();
+        return {
+          id: d.id,
+          ...(x as Omit<RecommandationLue, 'id' | 'effet'>),
+          ...(effet
+            ? { effet: { ...effet, mesureLe: (effet.mesureLe as Timestamp).toMillis() } }
+            : {}),
+        };
+      })
       .sort((x, y) => x.priorite - y.priorite),
   };
 }

@@ -467,7 +467,13 @@ Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13
 
 **Fait ensuite (07/10/2026)** : « Ajouter un projet » reçoit une description (400 caractères) et l'assistant (« Rédiger à partir des infos », relire, réécrire) ; les réglages de l'IA sont modifiables à l'écran (assistant actif, synthèse du lundi, budget saisi en euros et stocké en centimes, quota du jour, retrait des consignes apprises ; audit `adminReglagesIa`).
 
-**Reste du lot 13c** : questions de suivi sur une analyse ; mesure de l'effet d'une recommandation à 30 jours ; ouverture de l'éditeur avec « Utiliser ce texte » ; variantes B affichées sur les pages (tests A/B des pages) ; taux d'acceptation de la rédaction dans l'admin.
+**Fait le 09/10/2026** :
+- **Questions de suivi** sur une analyse : même modèle et même contexte (préfixe en cache), quota et budget de l'assistant, 10 au plus par analyse, chaque valeur citée vérifiée dans le contexte (une nouvelle tentative, sinon refus sans rien enregistrer) ; échanges gardés dans `iaAnalyses.suivis`.
+- **Effet à 30 jours** : chaque nuit après le contexte (`iaContexteNuit`, seulement avec la clé), au plus 10 recommandations « faites » depuis 30 jours ; Haiku compare les valeurs des preuves d'origine au contexte du jour ; « avant » doit être une preuve d'origine, « après » une valeur du contexte actuel, sinon « Effet non mesurable » (une seule fois). Affiché sur la carte (verdict, résumé, avant → après). Champs `iaRecommandations.faiteLe` et `effet` ; index `statut` + `faiteLe`.
+- **Taux d'acceptation de la rédaction** dans Admin › IA (30 jours, par action, coût).
+- **« Utiliser ce texte »** : copie la proposition. Il n'existe pas d'éditeur de textes d'emails ou de pages dans l'admin (les modèles d'email sont dans le code, l'éditeur de séquence ne règle que l'ordre et les délais) : l'ouverture directe d'un éditeur attendra qu'un tel éditeur existe.
+
+**Reste du lot 13c** : variantes B affichées sur les pages (tests A/B des pages) — **à décider avec vous** : quelles pages et quels textes tester (le calcul et la bascule proposée sont prêts).
 
 **À signaler**
 1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).

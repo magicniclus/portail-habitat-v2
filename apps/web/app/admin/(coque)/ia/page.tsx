@@ -82,7 +82,11 @@ export default async function AssistantIa({ searchParams }: { searchParams: Para
             />
           ) : null}
           {resultat ? (
-            <ResultatAnalyse {...resultat} peutAgir={peut('ia.utiliser')} />
+            <ResultatAnalyse
+              {...resultat}
+              peutAgir={peut('ia.utiliser')}
+              actif={cle && config.actif && !epuise}
+            />
           ) : (
             <p className="m-0 text-neutre-700">Aucune analyse pour le moment.</p>
           )}
