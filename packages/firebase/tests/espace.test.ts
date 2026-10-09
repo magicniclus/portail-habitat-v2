@@ -12,6 +12,7 @@ import {
   lireMaDemande,
   lireMesDemandes,
   lireProfilEspace,
+  purgerComptesInactifs,
   supprimerCompteParticulier,
   urlIdentite,
 } from '../src/serveur/espace';
@@ -242,5 +243,44 @@ describe('mes données (ESP-04)', () => {
     expect((await db.doc(chemins.demande('d2')).get()).get('statut')).toBe('close');
     await expect(auth.getUser(u.uid)).rejects.toBeTruthy();
     expect((await db.doc(chemins.user(u.uid)).get()).get('statut')).toBe('supprime');
+  });
+});
+
+describe('purgerComptesInactifs (DATABASE §14)', () => {
+  const J = 86_400_000;
+  const vieux = T - 1100 * J;
+  async function* comptes(liste: { uid: string; derniere: number }[]) {
+    yield* liste;
+  }
+  it('avertit d’abord, supprime 30 jours après ; jamais un artisan ni l’équipe', async () => {
+    const p = await auth.createUser({ email: 'p@test.local' });
+    const a = await auth.createUser({ email: 'a@test.local' });
+    const st = await auth.createUser({ email: 'st@test.local' });
+    await db.doc(chemins.user(p.uid)).set({ email: 'p@test.local', roles: ['particulier'] });
+    await db
+      .doc(chemins.user(a.uid))
+      .set({ email: 'a@test.local', roles: ['particulier', 'artisan'] });
+    await db.doc(chemins.user(st.uid)).set({ email: 'st@test.local', roles: [] });
+    await db.doc(chemins.admin(st.uid)).set({ role: 'admin' });
+    const envois: string[] = [];
+    const s = (t: number) => ({
+      db,
+      auth,
+      horloge: () => t,
+      notifier: async (n: unknown) => void envois.push((n as { modele: string }).modele),
+    });
+    const liste = [p, a, st].map((u) => ({ uid: u.uid, derniere: vieux }));
+    expect(await purgerComptesInactifs(s(T), comptes(liste))).toEqual({ avertis: 1, supprimes: 0 });
+    expect(envois).toEqual(['compte-inactif']);
+    expect(await purgerComptesInactifs(s(T + 10 * J), comptes(liste))).toEqual({
+      avertis: 0,
+      supprimes: 0,
+    });
+    expect(await purgerComptesInactifs(s(T + 30 * J), comptes(liste))).toEqual({
+      avertis: 0,
+      supprimes: 1,
+    });
+    await expect(auth.getUser(p.uid)).rejects.toBeTruthy();
+    await expect(auth.getUser(a.uid)).resolves.toBeTruthy();
   });
 });

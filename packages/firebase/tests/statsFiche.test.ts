@@ -1,8 +1,9 @@
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import { compterDemandeRecue, compterEvenementFiche } from '../src/serveur/annuaire';
+import { recalculerPopularites, remettreCompteursMois } from '../src/serveur/matching';
 import { envoyerRapportsHebdo } from '../src/serveur/pro';
 
 /** `statsJour` (DATABASE §5) : vues, clics et demandes reçues, au jour de Paris. */
@@ -68,5 +69,43 @@ describe('envoyerRapportsHebdo', () => {
     expect(r).toEqual({ envoyes: 1 });
     expect(envois[0]).toMatchObject({ modele: 'rapport-hebdo' });
     expect(envois[0]!.donnees.message).toContain('12 vues');
+  });
+});
+
+describe('remettreCompteursMois', () => {
+  it('toutes les entreprises repartent à zéro', async () => {
+    for (let i = 0; i < 3; i++)
+      await db.doc(chemins.artisan(`m${i}`)).set({ demandesRecuesMois: i + 1 });
+    await db.doc(chemins.artisan('zero')).set({ demandesRecuesMois: 0 });
+    expect(await remettreCompteursMois(db)).toEqual({ remises: 3 });
+    expect((await db.doc(chemins.artisan('m2')).get()).get('demandesRecuesMois')).toBe(0);
+  });
+});
+
+describe('recalculerPopularites', () => {
+  it('d’après les demandes de 90 jours ; sous 200 demandes, rien ne change', async () => {
+    const T = Date.UTC(2026, 9, 1, 2);
+    for (const id of ['a', 'b', 'c', 'd', 'e'])
+      await db.doc(`${chemins.intentions()}/${id}`).set({ popularite: 3 });
+    const lot = db.batch();
+    const ajouter = (intention: string, n: number) => {
+      for (let i = 0; i < n; i++)
+        lot.set(db.collection('demandes').doc(), {
+          intention,
+          createdAt: Timestamp.fromMillis(T - 86_400_000),
+        });
+    };
+    ajouter('a', 100);
+    ajouter('b', 60);
+    expect(await recalculerPopularites(db, T)).toBeNull();
+    ajouter('c', 40);
+    ajouter('d', 10);
+    await lot.commit();
+    expect(await recalculerPopularites(db, T)).toEqual({ modifiees: 4 });
+    const p = async (id: string) =>
+      (await db.doc(`${chemins.intentions()}/${id}`).get()).get('popularite') as number;
+    expect([await p('a'), await p('b'), await p('c'), await p('d'), await p('e')]).toEqual([
+      5, 4, 3, 2, 1,
+    ]);
   });
 });

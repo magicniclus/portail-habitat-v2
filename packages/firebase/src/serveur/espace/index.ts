@@ -14,3 +14,4 @@ export {
   exporterMesDonnees,
   supprimerCompteParticulier,
 } from './actions';
+export { activitesAuth, purgerComptesInactifs } from './inactifs';

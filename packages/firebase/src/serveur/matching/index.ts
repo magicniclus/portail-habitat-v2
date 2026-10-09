@@ -20,3 +20,5 @@ export { calculerScoresNuit, type BilanScores } from './scoresNuit';
 export { lireBareme, lireBaremeActif, versBareme, type BaremeLu } from './bareme';
 export { contesterAppelOffres } from './contestations';
 export { lireConfigMatching } from './reglages';
+export { remettreCompteursMois } from './compteursMois';
+export { recalculerPopularites } from './popularite';

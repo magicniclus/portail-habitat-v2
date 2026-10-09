@@ -19,3 +19,4 @@ export {
   synonymesTypesense,
   type IntentionIndexee,
 } from './typesense';
+export { popularitesIntentions } from './popularite';
