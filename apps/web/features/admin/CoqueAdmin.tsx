@@ -110,7 +110,7 @@ export function CoqueAdmin({
   return (
     <div className="flex min-h-dvh flex-col bg-fond md:flex-row">
       <header className="flex items-center justify-between gap-3 bg-accent-700 px-4 py-2 md:hidden">
-        <Logo variant="admin" taille={28} />
+        <Logo variant="admin" taille={28} inverse />
         <MenuPleinEcran titre="Menu de l’administration">
           {(fermer) => <nav className="grid gap-1">{liens.map((l) => lien(l, fermer))}</nav>}
         </MenuPleinEcran>
@@ -120,7 +120,7 @@ export function CoqueAdmin({
         className="sticky top-0 hidden h-dvh w-[72px] flex-none flex-col gap-1 overflow-y-auto bg-accent-700 px-3 py-4 transition-[width] duration-200 motion-reduce:transition-none data-[deplie=true]:w-[252px] md:flex"
       >
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
-          {deplie ? <Logo variant="admin" taille={28} /> : null}
+          {deplie ? <Logo variant="admin" taille={28} inverse /> : null}
           <button
             type="button"
             onClick={basculer}

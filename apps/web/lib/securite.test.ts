@@ -17,6 +17,7 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
     expect(directive(csp, 'base-uri')).toBe("base-uri 'self'");
     expect(directive(csp, 'frame-ancestors')).toBe("frame-ancestors 'self'");
     expect(csp).toContain('upgrade-insecure-requests');
+    expect(directive(csp, 'img-src')).toContain('https://www.google.com');
   });
   it('espaces connectés : nonce et strict-dynamic, script du bandeau autorisé par son empreinte', () => {
     const csp = politiqueContenu({ production: true, nonce: 'abc', empreintes: ['sha256-xyz'] });

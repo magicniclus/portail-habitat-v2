@@ -500,7 +500,7 @@ Plan validé le 09/10/2026.
 
 **Reste**
 - Sauvegardes : commande `gcloud` à lancer une fois par environnement (DEPLOIEMENT §4), pas de code.
-- ALL-01 (captures comparées aux maquettes) et ALL-04 (squelettes, états vides et d'erreur) : non automatisés ; ALL-02/03 non encore étendus aux espaces connectés.
+- ALL-01 (captures comparées aux maquettes) et ALL-04 (squelettes, états vides et d'erreur) : non automatisés ; ALL-02/03 étendus aux espaces connectés (`e2e-pro/transverse.spec.ts`, 8 pages pro et 8 pages admin) ; corrigé : logo de l'admin illisible sur le fond foncé, liens du tableau de conversion soulignés, image de test de connexion de Firestore autorisée par la CSP.
 - Lighthouse : budget suivi par la CI.
 - Rien n'est déployé : la mise en ligne attend le « go » du propriétaire et les 🔒 de DECISIONS.
 

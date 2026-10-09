@@ -93,7 +93,7 @@ export default async function ConversionAdmin() {
             Part d’abonnés payants : <strong>{pct(a.temoin.autresPayants, a.temoin.autres)}</strong>{' '}
             avec les emails, contre <strong>{pct(a.temoin.payants, a.temoin.effectif)}</strong> sans
             ({formatNombre(a.temoin.effectif)} entreprises témoins).{' '}
-            <Link href="/admin/conversion/journal" className="text-accent-700">
+            <Link href="/admin/conversion/journal" className="text-accent-700 underline">
               Voir le journal
             </Link>
           </p>

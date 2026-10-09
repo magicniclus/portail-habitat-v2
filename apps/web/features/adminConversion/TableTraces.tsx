@@ -45,7 +45,7 @@ export function TableTraces({
                   {t.artisanId ? (
                     <Link
                       href={`/admin/conversion/fiche/${t.artisanId}` as Route}
-                      className="text-accent-700"
+                      className="text-accent-700 underline"
                     >
                       {t.entreprise}
                     </Link>

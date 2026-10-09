@@ -55,6 +55,8 @@ export function politiqueContenu(o: OptionsCsp): string {
         'blob:',
         'https://firebasestorage.googleapis.com',
         'https://storage.googleapis.com',
+        // Test de connectivité du canal temps réel de Firestore (cleardot.gif).
+        'https://www.google.com',
         ...emulateurs.filter((e) => e.startsWith('http')),
       ],
     ],
