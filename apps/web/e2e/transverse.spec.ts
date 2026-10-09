@@ -31,7 +31,10 @@ for (const chemin of PAGES)
     const axe = await new AxeBuilder({ page }).analyze();
     const graves = axe.violations
       .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-      .map((v) => `${v.id} (${v.nodes.length})`);
+      .map(
+        (v) =>
+          `${v.id} : ${v.nodes.map((n) => `${n.target.join(' ')} — ${n.failureSummary?.split('\n')[1]?.trim() ?? ''}`).join(' | ')}`,
+      );
     expect(graves).toEqual([]);
     // Clavier : le premier élément atteint a un indicateur de focus visible.
     await page.keyboard.press('Tab');

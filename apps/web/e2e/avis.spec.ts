@@ -31,8 +31,11 @@ const moisPrecedent = () => {
 async function jusquAuFormulaire(page: Page) {
   await page.route('**/api/avis/artisans', (r) => r.fulfill({ json: { artisans: ARTISANS } }));
   await page.goto('/avis');
-  await page.getByRole('searchbox').fill('mérignac');
-  await expect(page.getByText('1 artisan trouvé')).toBeVisible();
+  // Saisie avant l'hydratation (WebKit lent) : perdue ; on recommence jusqu'au résultat.
+  await expect(async () => {
+    await page.getByRole('searchbox').fill('mérignac');
+    await expect(page.getByText('1 artisan trouvé')).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Laisser un avis sur Bertrand Rénovation' }).click();
   await expect(
     page.getByRole('heading', { name: 'Votre avis sur Bertrand Rénovation' }),
