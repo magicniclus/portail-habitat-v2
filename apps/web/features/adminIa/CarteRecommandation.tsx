@@ -20,7 +20,7 @@ export function CarteRecommandation({ r, peutAgir }: { r: RecommandationLue; peu
   const verdict = r.effet?.verdict as Verdict | undefined;
   return (
     <article
-      className={`grid gap-3 rounded-card border border-trait bg-blanc p-4 ${r.statut === 'ignoree' ? 'opacity-60' : ''}`}
+      className={`grid gap-3 rounded-card border border-trait p-4 ${r.statut === 'ignoree' ? 'border-dashed bg-neutre-100' : 'bg-blanc'}`}
       aria-label={r.titre}
     >
       <p className="m-0 flex flex-wrap items-center gap-2">
