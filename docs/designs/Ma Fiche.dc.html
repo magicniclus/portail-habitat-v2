@@ -54,8 +54,8 @@ body { margin: 0; background: #fff; }
       </svg>
       <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}">
         <span style="{{ styleLibelles }}" data-libelle="1">
-          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
-          <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span>
         </span>
       </sc-if>
     </a>
@@ -76,6 +76,10 @@ body { margin: 0; background: #fff; }
         </sc-if>
       </a>
     </sc-for>
+    <a href="Mon Compte.dc.html" title="Mon compte" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:var(--color-text);border:1px solid var(--color-divider);background:#fff" style-hover="border-color:var(--color-accent-300)">
+      <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">JB</span>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="display:grid;line-height:1.25;min-width:0"><span style="font-size:14.5px;font-weight:700;white-space:nowrap">Mon compte</span><span style="font-size:12.5px;font-weight:500;color:var(--color-neutral-700);white-space:nowrap">Équipe · Abonnement · Aide</span></span></sc-if>
+    </a>
   </aside>
 
   <div style="display:flex;flex-direction:column;min-width:0">
@@ -206,7 +210,7 @@ body { margin: 0; background: #fff; }
           <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
             <div>
               <h2 style="font-size:19px;margin:0 0 2px">Projets réalisés</h2>
-              <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Vos dernières réalisations, visibles par les particuliers.</p>
+              <p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Vos dernières réalisations, visibles par les particuliers. 5 projets maximum en Gratuit.</p>
             </div>
             <button type="button" onClick="{{ ouvrirProjet }}" class="btn btn-primary" style="min-height:40px;font-size:14px;margin-left:auto">Ajouter un projet</button>
           </div>
@@ -268,6 +272,7 @@ body { margin: 0; background: #fff; }
         <span class="btn btn-primary" style="min-height:46px;font-size:15px;pointer-events:none">Envoyer ma demande</span>
         <span class="btn btn-secondary" style="min-height:44px;font-size:15px;background:#fff;pointer-events:none">Voir le numéro de téléphone</span>
         <p style="margin:0;font-size:13px;line-height:20px;color:var(--color-neutral-700)">C'est le formulaire que voient les particuliers sur votre fiche.</p>
+        <div style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 14px;border-radius:10px;background:var(--color-accent-100);font-size:14px;line-height:20px;color:var(--color-accent-900)"><span style="flex:1 1 240px">Votre numéro est masqué : les particuliers doivent passer par le formulaire. <strong>Affichez-le avec Fiche Pro.</strong></span><a href="Mon Abonnement.dc.html?offre=fiche" style="font-weight:700;white-space:nowrap">Afficher mon numéro →</a></div>
       </div>
     </main>
   </div>
@@ -323,10 +328,11 @@ body { margin: 0; background: #fff; }
   <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:90;background:#201e1d;color:#fff;padding:12px 18px;border-radius:10px;font-size:14.5px">{{ toast }}</div></sc-if>
 </div>
 
+<dc-import name="Fenetre Offre" hint-size="0px,0px"></dc-import>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 const ICONES = {
-  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
+  site: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z", dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5",
   fiche: "M4 5h16v14H4zM8 9h8M8 13h5",
   demandes: "M4 6h16v10H9l-5 3V6z",
   avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
@@ -490,11 +496,12 @@ class Component extends DCLogic {
         lien("Tableau de bord", ICONES.dashboard, false, "", "Espace Artisan Dashboard.dc.html"),
         lien("Ma fiche", ICONES.fiche, true, "", "Ma Fiche.dc.html"),
         lien("Mes demandes", ICONES.demandes, false, "3", "Mes Demandes.dc.html"),
+        lien("Devis & factures", "M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5", false, "2", "Devis et Factures.dc.html"),
         titre("Gestion"),
         lien("Appels d'offres", ICONES.zone, false, "12", "Appels d Offres.dc.html"),
         lien("Mes avis", ICONES.avis, false, "", "Mes Avis.dc.html"),
+        lien("Mon site internet", ICONES.site, false, "", "Site Internet Artisan.dc.html"),
         lien("Statistiques", ICONES.stats, false, "", "Statistiques.dc.html"),
-        lien("Aide & contact", ICONES.support, false, "", "Aide et Contact.dc.html"),
       ],
       calqueTuiles: tuiles.map((t, i) => React.createElement("img", { key: i, src: t.url, alt: "", style: { position: "absolute", left: t.left + "px", top: t.top + "px", width: "256px", height: "256px", maxWidth: "none" } })),
       cercleStyle: {

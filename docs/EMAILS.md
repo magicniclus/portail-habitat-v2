@@ -8,7 +8,7 @@ Document de référence pour **tout ce qui part vers un utilisateur** : emails, 
 
 ```
 Événement (Function, Server Action, webhook Stripe, tâche planifiée)
-   └─ notifier(evenement, destinataires, donnees)          apps/functions/src/notifications/notifier.ts
+   └─ notifier(evenement, destinataires, donnees)          lib/notifications/notifier.ts
         ├─ résout les canaux (email / SMS / in-app) selon le modèle + préférences
         ├─ écrit emails/{id} (statut 'en_file') avec cleIdempotence unique
         └─ Cloud Task "envoyerEmail" (file dédiée, 10 envois/s)
@@ -26,7 +26,7 @@ Webhook Resend (/api/resend/webhook) → 'delivre' | 'ouvert' | 'clic' | 'rebond
 | Canal | Fournisseur | Notes |
 |---|---|---|
 | Email | **Resend** (région UE) + **React Email** | domaine `notifications.portailhabitat.fr`, SPF, DKIM, DMARC `p=quarantine` |
-| SMS | **Brevo SMS**, derrière une interface `EnvoiSms` remplaçable (expéditeur alphanumérique `PortailHab`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
+| SMS | **Brevo SMS** ou Twilio (expéditeur alphanumérique `PortailHab`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
 | In-app | `users/{uid}/notifications` | cloche dans les espaces particulier et pro |
 | Codes d'authentification | Firebase Auth (SMS 2FA) | les emails Auth sont **personnalisés** (§4) : Firebase ne les envoie pas lui-même |
 
@@ -167,6 +167,12 @@ Légende : **G** = groupé · **D** = différé · **S** = aussi par SMS · **A*
 | `rapport-mensuel` | 1er du mois (tous) : résumé et encart vers l'offre cible (CONVERSION.md §4), catégorie `offres_pro` |
 | `avertissement-charte` / `suspension` / `levee-sanction` | décision admin |
 
+| `blog-a-valider` | pilote automatique, mode « Je valide d'abord » : 48 h avant la date prévue | titre, extrait, bouton **Valider et publier** (lien signé, 1 clic), « Modifier », « Passer cet article » ; sans réponse, rien n'est publié |
+| `blog-publie` | article publié par le pilote ou le mode autonome | lien vers l'article, textes réseaux à copier, rappel « Désactiver le pilote » |
+| `blog-quota-atteint` **D** | dernier article du quota mensuel utilisé | date de remise à zéro ; Site Pro : lien vers l'offre Tout inclus |
+
+| `site-domaine-actif` · `site-domaine-attente` · `site-domaine-echec` · `site-domaine-casse` · `site-domaine-renouvele` · `site-domaine-transfert` | cycle de vie du domaine (DOMAINES.md §7) | domaine, état, prochaine action, tableau DNS si besoin |
+
 ### 4.6 Facturation (webhooks Stripe, charte orange, catégorie `transactionnel`)
 | Modèle | Déclencheur |
 |---|---|
@@ -265,14 +271,9 @@ EMAIL_FROM_PRO="Portail Habitat Pro <pro@notifications.portailhabitat.fr>"
 EMAIL_FROM_HUMAIN="Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>"
 EMAIL_REPLY_TO_COMMERCIAL=julie@portailhabitat.fr
 EMAIL_REPLY_TO=support@portailhabitat.fr
-BREVO_API_KEY=                   # SMS (et plus tard newsletters, D3)
+SMS_API_KEY=
 SMS_SENDER=PortailHab
 EMAIL_CAPTURE=mailpit            # local et staging : aucun envoi réel
 EMAIL_WHITELIST=@portailhabitat.fr
-NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action (32 caractères minimum)
-MAILPIT_URL=http://127.0.0.1:8025  # capture locale (pnpm mailpit), API d'envoi HTTP de Mailpit
-EDITEUR_MENTION="Portail Habitat · [Raison sociale] · [Adresse postale]"  # pied légal des emails
-NEXT_PUBLIC_SITE_URL=            # liens absolus des emails
+NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action
 ```
-
-**Implémentation (lot 5)** : catalogue et règles dans `@ph/core/notifications`, modèles dans `@ph/emails` (`pnpm email:dev`), `notifier()` et suivi dans `@ph/firebase/notifications`, envoi par la tâche Cloud Tasks `envoyerEnvoi` (`apps/functions/src/notifications`), routes `/api/resend/webhook`, `/api/desabonnement` et page `/preferences`. En local, `pnpm mailpit` puis `EMAIL_CAPTURE=mailpit`.

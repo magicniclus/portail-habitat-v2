@@ -237,9 +237,9 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 | `precisions` | string? | |
 | `photos` | `[{ storagePath }]` | |
 | `estimation` | `{ minCentimes, maxCentimes, coefRegion, coefAcces, aidesCentimes, postes: [{ label, min, max }], versionReferentiel }` | **figée au moment de l'envoi** |
-| `miseEnRelation` | bool | case « Être mis en relation avec des artisans » : demande garantie Premium (1 artisan) si un Premium a du quota, sinon appel d'offres (3 réponses max), voir MATCHING |
+| `miseEnRelation` | bool | case « jusqu'à 3 artisans » |
 | `artisanCibleId` | string? | si la demande part d'une fiche |
-| `statut` | `'nouvelle' \| 'en_attribution' \| 'appel_offres' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
+| `statut` | `'nouvelle' \| 'en_attribution' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
 | `nbAttributions` | number (≤ 3) | |
 | `consentementId` | string | lien vers le journal ; pour les demandes partenaires, pointe vers `preuvesConsentement` |
 | `ipHash`, `userAgent` | string | anti-fraude |
@@ -343,7 +343,7 @@ Un appel d'offres est une demande **anonymisée** publiée pour les artisans de 
 | `arrondi` | 100 (arrondi à l'euro) |
 | `version`, `modifiePar`, `updatedAt` | |
 
-**Formule** (`packages/core/leads/prix.ts`, testée) :
+**Formule** (`lib/leads/prix.ts`, testée) :
 ```
 prix = arrondi( clamp( prixBaseParMetier[metier]
         × coefBudget[tranche] × coefUrgence[urgence]
@@ -396,7 +396,7 @@ Même structure que pour les demandes (réservé aux artisans ayant le métier `
 |---|---|---|
 | `artisanId` | string | |
 | `auteurUid` | string? | |
-| `auteurEmail` | string | **privé** : stocké dans `avis/{id}/prive/auteur` (avec `auteurUid`, `ipHash`, `userAgent`), car un avis publié est lisible par tous et les règles ne masquent pas de champ |
+| `auteurEmail` | string | **privé**, jamais exposé en public |
 | `nomAffiche` | string | |
 | `note` | 1..5 | obligatoire |
 | `criteres` | `{ qualite?, delais?, proprete?, rapportQP? }` | 1..5 |
@@ -426,7 +426,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 ## 8. Facturation (miroir Stripe, écrit par les webhooks uniquement)
 
 ### `abonnements/{stripeSubscriptionId}`
-`artisanId`, `produit` (`premium`, `visibilite`), `priceId`, `periode` (`mensuel`, `annuel`), `statut` (miroir de Stripe : `trialing`, `active`, `past_due`, `canceled`, `unpaid`, `incomplete`), `debutPeriode`, `finPeriode`, `annulationFinPeriode: bool`, `annuleLe?`, `codePromo?`, `createdAt`, `updatedAt`.
+`artisanId`, `produit` (`fiche_pro`, `site_pro`, `pack_fiche_site`, `tout_inclus`), `priceId`, `periode` (`mensuel`), `statut` (miroir de Stripe : `trialing`, `active`, `past_due`, `canceled`, `unpaid`, `incomplete`), `debutPeriode`, `finPeriode`, `annulationFinPeriode: bool`, `annuleLe?`, `codePromo?`, `createdAt`, `updatedAt`.
 
 ### `factures/{stripeInvoiceId}`
 `artisanId`, `numero`, `montantHtCentimes`, `tvaCentimes`, `montantTtcCentimes`, `devise: 'eur'`, `statut`, `pdfUrl`, `hostedUrl`, `periodeDebut`, `periodeFin`, `payeeLe`, `createdAt`.
@@ -437,16 +437,37 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 ### `codesPromo/{code}`
 `stripePromotionCodeId`, `couponId`, `pourcentage` (ex. 30), `duree` (`once`), `produits`, `actif`, `utilisations`, `maxUtilisations`, `expireLe`, `source` (`admin`, `conversion`), `artisanId?` (code personnel), `modele?` (email qui l'a créé), `creePar`.
 
+### `artisans/{id}.droits` (webhook uniquement, PAIEMENTS §5)
+`formule`, `ficheMiseEnAvant`, `badgeRecommande`, `photosIllimitees`, `coordonneesVisibles`, `statsDetaillees`, `sitePro`, `iaSite`, `iaMultiplicateur`, `remiseAppelsOffres`, `avanceAppelsOffresH`, `supportPrioritaire`, `statut`, `finPeriode`, `majLe`. Remplace `plan` et `optionVisibilite` (migration : Visibilité → `fiche_pro`, Premium → `tout_inclus`).
+
 ### `stripeEvents/{eventId}`
 `type`, `traiteLe`, `ok: bool`, `erreur?`. **Idempotence** : tout événement déjà présent est ignoré.
 
 ---
 
+## 8 bis. Devis et factures des artisans (gratuit, toutes formules)
+
+### `artisans/{id}/devis/{devisId}` (membres en lecture/écriture selon rôle)
+`numero` (`D-{aaaa}-{nnnn}`, compteur transactionnel `artisans/{id}/compteurs/devis`), `statut` (`brouillon`, `envoye`, `accepte`, `refuse`, `expire`, `archive`), `client: { nom, email, tel?, adresse }`, `demandeId?` (créé depuis « Mes demandes »), `modeleId?`, `objet`, `descriptionHtml` (b, i, u, a, ul, ol uniquement, assaini côté serveur), `typeClient` (`particulier`, `pro`), `sirenClient?` (obligatoire si `pro`), `horsEtablissement: bool` (signé au domicile → rétractation 14 j + formulaire annexé), `debutTravauxLe`, `dureeEstimee`, `fraisDeplacement` (texte ou centimes), `devisGratuit: bool`, `mentionsOk: bool` + `mentionsManquantes: string[]` (calculés serveur, bloquent l'envoi), `lignes: [{ designation, quantite, unite, puHtCentimes, tva: 5.5|10|20, coutHtCentimes? }]`, `remisePct`, `acomptePct`, `totaux: { htCentimes, tva: {taux: centimes}, ttcCentimes }`, `margeHtCentimes` (privé, jamais dans le PDF), `validiteLe`, `notes`, `signatureElectronique: bool`, `tampon: bool`, `envoiLe?`, `signature?: { nom, ip, le, hashPdf }`, `pdfPath`, `factureId?`, `createdAt`, `updatedAt`.
+
+### `artisans/{id}/facturesClients/{id}`
+`numero` (`F-{aaaa}-{nnnn}`, **sans trou**, compteur transactionnel, jamais réutilisé), `devisId?`, `type` (`facture`, `acompte`, `avoir`), `statut` (`brouillon`, `emise`, `partiellement_payee`, `payee`, `impayee`), mêmes `client`, `lignes`, `totaux`, `echeanceLe`, `paiements: [{ montantCentimes, moyen: 'virement'|'cheque'|'especes'|'carte', le, ref? }]`, `resteCentimes`, `penalites: { tauxAnnuel, indemnite: 4000 }`, `relances: [{ le, type }]`, `lienPaiement?` (Stripe Connect, ⏳ D61), `pdfPath`, `emiseLe`. Une facture émise n'est **plus modifiable** : correction = avoir.
+
+### `artisans/{id}/modelesDevis/{id}` · `artisans/{id}/prestationsBiblio/{id}` · `artisans/{id}/parametresFacturation` (document unique)
+Modèles (`titre`, `lignes`, `usage`) ; bibliothèque (`designation`, `unite`, `puHtCentimes`, `tva`, `coutHtCentimes`) ; paramètres (`raisonSociale`, `formeJuridique`, `capitalSocial`, `adresseSiege`, `siret`, `rne`, `tvaIntra`, `franchiseTva: bool` (→ « TVA non applicable, art. 293 B du CGI »), `tvaSurDebits: bool`, `assuranceDecennale: { assureur, contrat, zone }` (**obligatoire** sur devis et factures, art. L243-2 C. assurances), `rcPro?`, `mediateur: { nom, adresse, site }` (obligatoire pour les particuliers), `logo: Media`, `tampon: Media?`, `iban` (chiffré), `delaiPaiementJours`, `acompteDefautPct`, `validiteDevisJours`, `tvaDefaut`, `plateformeAgreee?` (facturation électronique, voir §8 ter)).
+
+### 8 ter. Mentions obligatoires et PDF
+- **Devis** (BTP) : identité complète de l'entreprise, assurance décennale (assureur, n°, zone), date et validité, client et adresse du chantier, SIREN client si pro, détail (désignation, quantité, PU HT, TVA), totaux HT/TVA/TTC, date de début et durée, frais de déplacement, conditions de paiement et pénalités (+ indemnité 40 € si pro), devis gratuit ou payant, médiateur (particulier), rétractation 14 j + formulaire (signé à domicile), attestation TVA réduite (5,5 % / 10 %), mention « Devis reçu avant l'exécution des travaux » + « Bon pour accord ».
+- **Facture** : numéro chronologique sans trou, dates d'émission et de prestation, référence du devis, échéance, « pas d'escompte », pénalités (+ 40 € si pro), assurance décennale, et les **4 mentions de la réforme** : SIREN du client, adresse de livraison/exécution si différente, nature de l'opération (prestation de services), option TVA sur les débits le cas échéant.
+- Fonction pure `verifierMentions(doc, parametres)` (`packages/core/devis/mentions.ts`, testée) : utilisée par l'écran (liste ✓/!) **et** par la Function d'envoi (refus si incomplet).
+- **PDF** : généré **côté serveur** (Function `genererPdfDevis`, gabarit HTML → PDF via Chromium headless), stocké `Storage artisans/{id}/devis/{num}.pdf`, empreinte SHA-256 enregistrée à l'envoi et à la signature. Jamais affiché en aperçu dans l'éditeur : bouton **Télécharger le PDF** uniquement.
+- **Facturation électronique** : réception obligatoire pour toutes les entreprises depuis le 1er septembre 2026 ; **émission obligatoire pour les TPE/PME au 1er septembre 2027** (B2B, via une plateforme agréée, format Factur-X/UBL/CII) + e-reporting des opérations B2C. Prévoir l'export **Factur-X** dès le lancement et le raccordement à une plateforme agréée avant septembre 2027 (⏳ D62).
+
 ## 9. Référentiels et contenu
 
 ### `referentiel/prestations/items/{id}`
 `nom`, `pitch`, `repere`, `icone`, `ordre`, `actif`, `tva` (0,055 ou 0,10), `champs: [{ id, kind, label, aide, min?, max?, pas?, def?, unite?, etape, options?: [{ v, label, desc, coef? }] }]`, `formule` (identifiant de la fonction dans le code, `calcPeinture` par exemple), `parametres` (tous les prix unitaires sous forme de JSON, modifiables dans l'admin), `version`, `updatedAt`.
-> La **formule** vit dans le code (`packages/core/simulateur/formules.ts`) ; les **nombres** vivent dans Firestore. Chaque demande garde la `versionReferentiel` utilisée.
+> La **formule** vit dans le code (`lib/simulateur/formules.ts`) ; les **nombres** vivent dans Firestore. Chaque demande garde la `versionReferentiel` utilisée.
 
 ### `referentiel/diagnostics/items/{id}`
 `nom`, `prixMin`, `prixMax`, `validiteAns`, `invalideAvantAnnee?`, `quand`, `validiteTexte`, `note`, `regle` (identifiant de la fonction), `icone`, `conseille: bool`, `version`.
@@ -461,20 +482,19 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 `nbArtisans`, `nbDemandesMois`, `nbVilles`, `noteMoyenneGlobale`, `nbAvisTotal`, `nbDossiersDiag`. Recalculé chaque nuit.
 
 ### `config/app`
-`prix: { premiumMensuelHt: 9990, premiumAnnuelHtMois: 7990, visibiliteAnnuelHt: 7990, visibiliteMensuelHt: 1290 }` (DECISIONS D24, D25 ; affichage seulement, Stripe fait foi ; valeurs par défaut `PRIX_AFFICHES` de `@ph/core/facturation`), `versionsLegales: { cgu, cgv, confidentialite, avis, charte }`, `maintenance: bool`, `quotas: { gratuit, premium }`, `maxAttributions: 3`.
+`prix: { premiumMensuelHt: 9900, premiumAnnuelHtMois: 7900, visibiliteAnnuelHt: 7990, visibiliteMensuelHt: 1290 }` (affichage seulement, Stripe fait foi), `versionsLegales: { cgu, cgv, confidentialite, avis, charte }`, `maintenance: bool`, `quotas: { gratuit, premium }`, `maxAttributions: 3`.
 
 ---
 
 ## 10. Support, litiges, journaux
 
-- `contacts/{id}` (identifiant = référence donnée à l’usager, `CT-XXXXXX`) : `nom`, `email`, `role`, `sujet` (`SUJETS_CONTACT` de `@ph/core/support`), `referenceDossier?`, `message`, `pieces`, `statut` (`ouvert`, `en_cours`, `resolu`), `assigneA`, `historique: [{ le, par, action }]`, `createdAt`.
+- `contacts/{id}` : `nom`, `email`, `role`, `sujet`, `message`, `pieces`, `statut` (`ouvert`, `en_cours`, `resolu`), `assigneA`, `historique: [{ le, par, action }]`, `createdAt`.
 - `litiges/{id}` : `demandeId?`, `avisId?`, `particulierUid`, `artisanId`, `description`, `statut` (`ouvert`, `mediation`, `resolu`, `clos`), `pieces`, `echanges`, `createdAt`.
 - `emails/{id}` : schéma complet dans EMAILS.md §1 (`categorie`, `variante`, `envoyerLe`, `sequenceId?`, statuts `en_file` … `annule`, `bloque_preferences`).
-- `evenements/{id}` : `type` (`vue_fiche`, `clic_tel`, `clic_devis`, `recherche`), `artisanId?`, `sessionId`, `meta`, `createdAt`, `expireLe` (+13 mois, champ TTL).
+- `evenements/{id}` : `type` (`vue_fiche`, `clic_tel`, `clic_devis`, `recherche`), `artisanId?`, `sessionId`, `meta`, `createdAt`. **TTL 13 mois** (politique Firestore).
 - `auditLog/{id}` : `acteurUid`, `action`, `cible`, `avant`, `apres`, `motif?`, `ip`, `createdAt`. **Création seule, jamais modifié.** Inclut les consultations de données personnelles (`consultationPII`) et les exports.
 - `rgpdDemandes/{id}` : `type` (`acces`, `rectification`, `effacement`), `demandeurUid?`, `email`, `recueLe`, `echeance` (+1 mois), `statut` (`a_traiter`, `traite`), `traitePar`, `preuveStoragePath`.
-- `rateLimits/{hash(cle:client)}` : `compteur`, `fenetreDebut`, `expireLe` (fin de fenêtre + 1 h, champ TTL).
-- `idempotence/{hash(cle)}` : résultat sérialisé d'une action déjà traitée (enveloppe `action()` / `callable()`), `expireLe` (+24 h, champ TTL).
+- `rateLimits/{hashIp_route}` : `compteur`, `fenetreDebut`. TTL 1 h.
 
 ### Back-office et conversion (écriture par Functions uniquement)
 - `admins/{uid}` : `nom`, `email`, `role` (système ou `rolesAdmin`), `permissionsPlus[]`, `permissionsMoins[]`, `permissionsEffectives[]` (calculé), `mfaObligatoire: true`, `ipAutorisees?`, `actif`, `dernierAcces`, `createdAt`.
@@ -537,7 +557,7 @@ Invariants **appliqués par Function** : un seul avis publié par (`auteurEmail`
 
 | `contacts` | `statut ==`, `createdAt` asc |
 
-Champs TTL (tous sur `expireLe`, jamais sur `createdAt`, qui déclencherait une suppression immédiate) : `brouillons`, `brouillonsOnboarding`, `evenements`, `rateLimits`, `idempotence`, `importsDemandes`, `comportementSessions`, `cycleTraces`, `iaQuotas`, `iaRedactions`, `emails`, `simulations`, `cacheSirene`, `prospects`. `demandes` et `dossiersDiag` ne sont **pas** supprimés par TTL : une Function planifiée les anonymise (§14). Fichier : `firestore.indexes.json`.
+Champs TTL : `brouillons.expireLe` (+30 j), `evenements.createdAt` (+13 mois), `rateLimits.fenetreDebut` (+1 h), `demandes.expireLe`, `dossiersDiag.expireLe`.
 
 ---
 
@@ -552,8 +572,6 @@ staff:  { r: 'superadmin' | 'admin' | … | 'custom_xxx', s: ['art','dem','ao','
 imp:    { par, cible } | absent              // impersonation en lecture seule
 ```
 Les permissions fines de l'équipe interne (`admins/{uid}.permissions`) sont vérifiées **dans les Functions**, pas dans les règles. Les règles ne font que de la lecture par rôle.
-
-> **Les règles en vigueur sont dans `firestore.rules` et `storage.rules`** (lot 2), testées pour 16 profils. Elles corrigent le brouillon ci-dessous : lecture staff par section (`lit('dem')`, `lit('art')`…) au lieu de `isStaff()`, profils et consentements lisibles par le staff seulement avec `pii`, téléphone non modifiable par le client, réalisations non publiées privées, rayon 10–100 km vérifié, auteur des avis dans `avis/{id}/prive/auteur`, consentements horodatés par le serveur, `notesInternes` corrigée (`staff().r`), `referentiel/recherche/*` en lecture publique. Détail : AVANCEMENT.md §8.
 
 ```js
 rules_version = '2';
@@ -731,7 +749,6 @@ artisans/{artisanId}/documents/{docId}/{fichier} PRIVÉ (membres + admin), ≤ 1
 demandes/{demandeId}/photos/{fichier}            privé (particulier + artisans acceptés via URL signée)
 demandes/{demandeId}/devis/{artisanId}/{fichier} privé
 avis/{avisId}/photos/{fichier}                   public après publication (copie par Function)
-televersements/{uid}/{fichier}                   dépôt temporaire (photos d'avis, de demande), écrit et relu par son auteur, déplacé par Function
 ```
 - Vérification du type MIME côté règles (`request.resource.contentType.matches('image/.*')`) et de la taille
 - Suppression des métadonnées EXIF (géolocalisation) par une Function au moment de l'upload
@@ -772,6 +789,102 @@ Les comptes, entreprises et équipes multi-utilisateurs (`roles[]`, `membres`, `
 
 ---
 
+## 15 bis. Sites internet des artisans (voir SITE_INTERNET.md)
+
+> Types partagés (Zod, `packages/core/sites/schemas.ts`) :
+> - `ParAppareil<T> = { desktop: T, tablet: T, mobile: T }`
+> - `Couleur = 'aucun' | 'auto' | 'blanc' | 'clair' | 'primaire' | 'sombre' | 'accent' | string` (chaîne CSS validée : `#rrggbb`, `rgb()`, `hsl()`)
+> - `Media = 'lib:{realisationId}/{photoIndex}' | 'up:{mediaId}' | ''`
+> - `Action = { type: 'page'|'ancre'|'url'|'tel'|'email'|'sms'|'whatsapp'|'formulaire'|'fichier'|'aucun', page?, ancre?, url?, onglet?, nofollow?, tel?, email?, objet?, message?, formulaire?: 'defiler'|'popup', fichierId? }` ; validée par `validerAction()` (même code côté éditeur et à la publication)
+> - `Fond = { fond: Couleur, fondType: 'couleur'|'image', fondImage: Media, voile: Couleur, voileOpacite: 0-95, fondPos: 'top'|'center'|'bottom', texteCouleur: 'auto'|'clair'|'fonce' }`
+
+### `sites/{siteId}` (siteId = artisanId ; membres en lecture, écriture par Function)
+`artisanId`, `offre` (`gratuit`, `site_pro`), `sousDomaine`, `domaine?`, `domaineStatut` (`aucun`, `verification`, `actif`, `erreur`), `domaineSource` (`achat_ovh`, `existant`), `ovhCommandeId?`, `theme: { palette: { primaire, accent, clair, sombre }, polices: { titre, texte }, rayonBoutons: 2 | 8 | 999, ton: 'pro'|'chaleureux'|'direct' }`, `modeleId?` (modèle fourni appliqué en dernier), `seoGlobal: { nomSite, activiteSchema, zone, imagePartage }`, `publieLe?`, `versionPubliee`, `brouillonModifieLe`, `stripeSubscriptionId?`, `quotaIA: { generations, reecritures, mois }`, `hebergement: { fournisseur: 'cloudflare', customHostnameId?, sslStatut ('en_attente','actif','erreur'), validationTxt?, verifieLe? }`, `createdAt`, `updatedAt`.
+
+### `sites/{id}/navigation` (document unique, composant global)
+Brouillon modifiable ; **enregistré séparément** des pages (`enregistreeLe`, `versionEnregistree`).
+`logo: { mode ('logo-nom','logo','nom'), image: Media, initiales, fond: Couleur, taille: ParAppareil<px> }`, `nom`, `liens: [{ id, label, action: Action }]`, `align`, `cta: { visible, texte, couleur, couleurTexte, action: Action }`, `tel: { visible, numero }`, `fond: Couleur`, `texte: Couleur`, `padY: ParAppareil`, `fixe`, `ombre`, `transparente`, `masque: ParAppareil<bool>`, `mobile: { sens ('droite','gauche'), burger ('gauche','droite'), traits: Couleur, ctaBarreTablette, telBarreTablette, fond: Couleur, tailleLiens, separateurs, ctaMenu }`.
+
+### `sites/{id}/pages/{pageId}`
+`nom`, `court`, `slug` (unique par site), `type` (`accueil`, `prestations`, `realisations`, `avis`, `contact`, `locale`, `libre`, `mentions`), `communeSlug?`, `statut` (`brouillon`, `publiee`), `ordre`, `sansNavigation: bool`, `seo: { title, meta, motCle, score }`, `genereParIA: bool`, `updatedAt`,
+`sections: [Section]` où :
+- `Section = { id, p: { nom, ancre (= ID HTML, unique sur la page), largeur ('boite','plein'), padY: ParAppareil, masque: ParAppareil<bool>, ...Fond }, rows: [Ligne] }`
+- `Ligne = { id, p: { htmlId, gap, valign, fond: Couleur, empile, inverse, masque }, cols: [Colonne] }` (1 à 6 colonnes)
+- `Colonne = { id, w (1-12), p: { htmlId, pad, arrondi, ombre, valign, masque, ...Fond }, els: [Element] }`
+- `Element = { id, type, p }` ; `p` commun : `htmlId`, `mb`, `masque: ParAppareil<bool>`, `texteMobileOn`, `texteMobile`. Selon `type` :
+  - `titre` / `texte` : `texte` (liens au format `[mot](#L1)`), `liens: { L1: Action, … }`, `lienCouleur`, `lienSouligne`, `niveau` (h1-h3, titre), `taille: ParAppareil`, `couleur`, `align`
+  - `surtitre` : `texte`, `taille`, `couleur`, `align` · `bouton` : `texte`, `action: Action`, `variante` (`plein`,`contour`), `couleur`, `largeur`, `enLigne`, `align`
+  - `image` : `src: Media`, `legende` (texte alternatif, obligatoire à la publication), `ratio`, `ajuste`, `pos`, `arrondi`, `voile`, `voileOpacite`, `action: Action`
+  - `liste` : `items[]`, `icone` · `avis` : `nom`, `texte`, `note` ou `avisId` (synchronisé) · `chiffre` : `valeur`, `label`, `taille`
+  - `formulaire` : `bouton` (champs dans `sites/{id}/formulaire`) · `video` : `url` · `carte` : `adresse` · `espace` : `hauteur: ParAppareil` · `separateur` : `largeur` · `logo` / `menu` : lisent `navigation`
+Limite : 900 Ko par document (contrôlée à l'enregistrement ; au-delà, découper la page).
+
+### `sites/{id}/medias/{mediaId}` (Storage `sites/{id}/medias/`)
+`nom`, `storagePath`, `mime`, `tailleOctets`, `largeur`, `hauteur`, `variantes: { webp640, webp1280, webp1920 }`, `usage` (`image`, `logo`, `fond`, `fichier`), `createdAt`. Fichiers téléchargeables (`Action.fichierId`) : PDF, Office, images, ZIP ; 20 Mo max ; analyse antivirus avant publication.
+
+### `sites/{id}/modeles/{modeleId}` (modèles enregistrés par l'artisan)
+`nom`, `instantane: { theme, navigation, pages: [{ meta, sections }] }`, `nbPages`, `createdAt`. 10 maximum par site.
+
+### `sites/{id}/sectionsEnregistrees/{id}`
+`nom`, `section: Section` (ids régénérés à l'insertion), `createdAt`. 30 maximum.
+
+### `modelesSite/{modeleId}` (fournis par Portail Habitat, admin)
+`nom`, `description`, `paletteId`, `polices`, `rayonBoutons`, `ton`, `variante` (`split`,`photo`,`sombre`,`minimal`), `vignette`, `actif`, `ordre`.
+
+### `sites/{id}/versions/{n}` (ajout seul, 20 dernières gardées)
+Instantané publié : `navigation`, `theme`, `pages`, `r2Prefix` (`sites/{siteId}/v{n}/`), `publiePar`, `publieLe`, `liensVerifies: bool`. Retour arrière = repointer la clé KV.
+
+### `sites/{id}/formulaire` (document unique)
+`champs: [{ id, type (texte, email, tel, cp, liste, choix, zone, date, photos, budget), libelle, requis, options? }]`, `notifEmail`, `notifSms`, `antispam: { turnstile: true, siteKeyId }`, `mentionRgpd: true`. Envoi → `demandes/{id}` avec `source: 'site_artisan'`, `siteId`, `turnstileOk: true`, attribution directe `acceptee` à l'artisan, **hors matching et jamais facturée**.
+
+### `sites/{id}/statsJour/{yyyy-mm-dd}` (écrit par Function, sans cookie)
+`visites`, `visiteursUniques` (hachage salé du jour, jamais stocké), `pages: { slug: n }`, `sources: { google, fiche, direct, social, maps }`, `appareils`, `clicsTel`, `formulaires`. Conservation 13 mois. Requêtes Google : `sites/{id}/searchConsole/{yyyy-mm}`.
+
+### `sitesSlugs/{slug}` et `sitesDomaines/{domaine}`
+Index d'unicité → `siteId`. `sitesDomaines` porte aussi `customHostnameId`, `sslStatut`, `apexRedirige: bool`. Recopié dans **Cloudflare KV** (`hote → { siteId, version }`) à chaque publication ou changement de domaine : c'est le Worker qui résout le site, pas la plateforme.
+
+---
+
+## 15 ter. IA des sites (voir IA_SITE.md)
+
+### Champs ajoutés à `sites/{siteId}`
+`droits: { ia: 'aucun'|'essai'|'complet', source: 'site_pro'|'premium'|null, majLe }` (écrit **uniquement** par le webhook Stripe), `essaiIA: { apercuFait: bool, textesRestants: 0-3 }`, `iaEnAttente?: sessionId` (session à reprendre après paiement).
+
+### `sites/{id}/iaSessions/{sessionId}` (lecture membres, écriture Function `iaSite` uniquement)
+`mode` (`creation`, `textes`, `composant`, `page`, `theme`, `seo`), `portee` (`selection`, `element`, `section`, `page`, `site`), `cibles: NoeudId[]`, `demande` (texte de l'artisan, 600 car. max), `questions: [{ id, texte, type, options?, reponse?, passee: bool }]`, `reponsesCreation?: { travaux[], clients, atouts[], urgence?, montrer[], ton, communes[] }`, `operations: OperationIA[]` (IA_SITE §2.1), `resume`, `avertissements: [{ cible, type: 'a_completer'|'lien'|'longueur', message }]`, `statut` (`question`, `proposee`, `appliquee`, `annulee`, `echec`, `attente_paiement`), `apercu: bool` (essai gratuit, non publiable), `modele`, `promptVersion`, `tokensEntree`, `tokensSortie`, `coutEstime`, `demandePar`, `createdAt`, `appliqueeLe?`. Conservation 12 mois (TTL `expireLe`).
+
+### `iaQuotasSite/{siteId_yyyy-mm}` (Function uniquement)
+`creations`, `composants`, `textes`, `reserves` (crédits réservés pendant un appel, rendus si échec), `packsAchetes`. TTL 3 mois.
+
+### `iaContexteFiche/{artisanId}` (Function uniquement)
+Faits autorisés pour le garde-fou (IA_SITE §2.2) : `metiers`, `prestations`, `communes`, `annees`, `equipe`, `certifications[]` (vérifiées seulement), `assurance`, `noteAvis`, `nbAvis`, `delais?`, `horaires`, `coordonnees`, `medias: [{ id, alt, tags }]`, `palette?` (extraite du logo), `tokensEstimes`, `updatedAt`. Recalculé à chaque modification de la fiche.
+
+Règles : `iaSessions` `allow read: if isMembre(siteId)`, `allow write: if false` ; `iaQuotasSite` et `iaContexteFiche` : `allow read, write: if false` (lecture du quota restant via la callable `iaSiteEtat`).
+Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
+
+---
+
+## 15 quater. Blog des artisans (voir BLOG.md)
+
+| Collection | Champs principaux |
+|---|---|
+| `sites/{siteId}/articles/{articleId}` | titre, sousTitre, slug, anciensSlugs[], corpsHtml (assaini), image {url, alt}, meta, motCle, motsSecondaires[], categorieId, tags[], auteurId, statut (`brouillon`·`planifie`·`publie`·`archive`), datePublication, genereParIA (bool), origine (`manuel`·`ia`·`autonome`·`pilote`), finAuto? (`relire`·`planifier`·`publier`), validation? {envoyeeLe, valideeLe, par}, postsReseaux {facebook, instagram, linkedin, google, hashtags[]}, seo {score, bloquants[], recommandations[]}, creeLe, modifieLe, supprimeLe? |
+| `sites/{siteId}/blogCategories/{id}` | nom, slug, ordre |
+| `sites/{siteId}/blogTags/{id}` | nom, slug |
+| `sites/{siteId}/blogAbonnes/{id}` | email, consentement {texte, date, ip hachée}, desinscritLe? |
+| `sites/{siteId}/blogStats/{articleId_jour}` | vues, uniques, rebonds, tempsTotal, sources {google, social, direct, referent}, demandes |
+| `usageIA/{entrepriseId}_{AAAAMM}` | + champ `blogArticles` (compteur, transaction) à côté du quota du site |
+| `motsClesCache/{dept}_{motCle}` | volume, difficulte, tendance[12], associes[], majLe (TTL 30 j) |
+| `serpCache/{dept}_{motCle}` | 10 premiers résultats {url, titre, h2[], mots}, majLe (TTL 14 j) — analyse du mode autonome |
+| `sites/{siteId}.blogPilote` | actif, rythme (`mois2`·`semaine`·`semaine2`), validation (`relire`·`publier`), prochains[] {date, motCle, titre, articleId?}, motsClesUtilises[] |
+
+- Pas de mentions légales stockées sur l'article : rendu à partir de `entreprises/{id}.parametresDocuments` (mêmes champs que devis et factures).
+- Affichage : élément `blog` du catalogue §15 bis, p = { affichage: 'grille'|'liste'|'une', nb: 3|6|9, cat: 'toutes'|categorieId, extrait: bool }.
+- Règles : lecture publique des articles `publie` seulement ; écriture `site.modifier` ; Function planifiée toutes les 5 min pour passer `planifie` → `publie`.
+- Index : (statut, datePublication desc), (categorieId, statut, datePublication desc), (tags array-contains, statut).
+
+---
+
 ## 16. Index de toutes les collections (liste de contrôle)
 
 À cocher au lot 2 : chaque collection a un schéma Zod, ses règles, ses index et sa durée de conservation.
@@ -784,10 +897,21 @@ Les comptes, entreprises et équipes multi-utilisateurs (`roles[]`, `membres`, `
 | Demandes partenaires | `sourcesDemandes`, `importsDemandes`, `preuvesConsentement` |
 | Appels d'offres et crédits | `appelsOffres` (+ `deblocages`, `reponses`, `historiquePrix`), `grillesTarifaires`, `achatsLeads`, `portefeuilles` (+ `mouvements`), `packsCredits`, `remboursementsLeads` |
 | Avis | `avis` (+ `signalements`) |
-| Facturation | `abonnements`, `factures`, `paiements`, `codesPromo`, `stripeEvents` |
+| Facturation | `abonnements`, `factures`, `paiements`, `codesPromo`, `stripeEvents` (+ `artisans.droits`) |
+| Devis et factures artisans | `artisans/{id}/devis`, `facturesClients`, `modelesDevis`, `prestationsBiblio`, `parametresFacturation`, `compteurs` |
+| Interface artisan | `users/{uid}.encartsMasques: { [encartId]: masqueJusquau }` (offres contextuelles, PAIEMENTS §4) |
+| Sites (IA) | `sites/{id}/iaSessions`, `iaQuotasSite`, `iaContexteFiche` |
 | Référentiels | `referentiel/*`, `communes`, `stats/public`, `config/app`, `annonces` |
 | Support et journaux | `contacts`, `litiges`, `emails`, `suppressions`, `evenements`, `auditLog`, `rateLimits`, `rgpdDemandes`, `filesModeration` |
 | Conversion | `prospects`, `cycleEtat`, `cycleTraces`, `cycleStats`, `sequences` (+ `versions`), `config/cycle` |
 | Comportement | `pagesSuivies`, `comportementSessions`, `comportementAgregats`, `comportementAlertes`, `abTests`, `config/comportement` |
 | IA | `iaContexte`, `iaAnalyses`, `iaRecommandations`, `iaQuotas`, `iaRedactions`, `config/ia` |
 | Parcours | brouillons de parcours (REPRISE_PARCOURS.md), `brouillonsOnboarding`, `simulations` |
+| Sites artisans | `sites` (+ `navigation`, `pages`, `medias`, `modeles`, `sectionsEnregistrees`, `versions`, `formulaire`, `statsJour`, `searchConsole`), `modelesSite`, `sitesSlugs`, `sitesDomaines` ; hors Firestore : Cloudflare R2 `sites/{siteId}/v{n}/`, KV `hote → site` |
+
+
+### Acquisition (landings)
+| Champ | Contenu |
+|---|---|
+| `artisans/{id}.acquisition` | source (`trouver-chantier`·`site-internet-artisan`·`logiciel-devis-facture`·`pro`), utm_source, utm_medium, utm_campaign, landingAt — écrit à la création, jamais modifié (LANDINGS.md §1) |
+| `config/preuveSociale` | nbInscrits, nbSites, note, nbAvis, temoignages[] {nom, metier, ville, photo, texte, accordLe} — vide = section masquée |

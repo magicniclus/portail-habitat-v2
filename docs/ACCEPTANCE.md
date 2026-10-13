@@ -86,7 +86,7 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **ACQ-02** : le lien « Espace pro » de l'en-tête mène à la connexion ; aucun texte ne contient le mot « lead »
 - **ONB-06** : à la fin, je suis propriétaire, la fiche est hors ligne et la liste « 3 étapes pour être en ligne » s'affiche
 
-### Connexion `/connexion` (`?espace=pro`)
+### Connexion `/pro/connexion`
 - **CON-01** : identifiants faux : message générique (sans dire si l'email existe)
 - **CON-02** : propriétaire Premium sans 2FA : activation demandée avant l'accès à la facturation
 - **CON-03** : après 5 échecs, délai d'attente affiché
@@ -169,3 +169,32 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **ERR-01** : une URL inconnue affiche la page 404 avec recherche et liens utiles, et renvoie le code HTTP 404
 - **ERR-02** : une erreur serveur affiche la page 500 avec un identifiant d'incident (le même que dans Sentry)
 - **ERR-03** : `config/app.maintenance = true` affiche la page de maintenance partout sauf `/admin`
+
+
+## Site internet · IA (détail : IA_SITE.md §7)
+- **SITE-IA-01** à **SITE-IA-10** : aperçu gratuit non publiable, reprise après paiement Site Pro, droits vérifiés côté serveur, sorties hors schéma rejetées, faits absents → `[à compléter]` bloquant, Ctrl Z sur une proposition, questionnaire sans doublon avec la fiche, quotas, sauvegarde « Avant IA », aucune publication par l'IA.
+
+## Paiements (détail : PAIEMENTS.md §7)
+- **PAY-01** à **PAY-09** : aucun prix avant inscription, ouverture du paiement par `?offre=`, prorata en montée, descente à l'échéance, droits par webhook seulement, appels d'offres au prix admin (−15 % Tout inclus), packs de crédits, grâce de 7 jours, devis/factures/avis sans paiement.
+
+## Devis et factures (DATABASE §8 bis-ter)
+- **DEV-01** il manque une mention obligatoire → bouton Envoyer refusé avec la liste ; même contrôle côté serveur
+- **DEV-02** client professionnel sans SIREN valide (9 chiffres) → envoi refusé
+- **DEV-03** devis signé au domicile → PDF avec mention de rétractation 14 j et formulaire annexé
+- **DEV-04** ligne à 5,5 % ou 10 % → attestation TVA réduite jointe
+- **DEV-05** aucun aperçu du PDF dans l'éditeur ; « Télécharger le PDF » renvoie le même fichier que celui joint à l'email
+- **DEV-06** numérotation des factures sans trou sous concurrence (100 créations simultanées)
+- **DEV-07** facture : SIREN client (pro), lieu d'exécution, nature de l'opération présents ; export Factur-X valide
+- **SITE-13** site gratuit : formulaire limité à 4 champs, réglages verrouillés, champ supplémentaire rejeté par l'API
+- **NAV-01** Mon compte épinglé en bas de la barre latérale sur toutes les pages /pro ; onglets identiques sur les 4 pages du compte
+
+
+## Blog
+Critères BLOG-01 à BLOG-14 : voir `BLOG.md` §8.
+
+
+## Landings par outil
+Critères LAND-01 à LAND-07 : voir `LANDINGS.md` §8.
+
+## Domaines
+Critères DOM-01 à DOM-08 : voir `DOMAINES.md` §8.

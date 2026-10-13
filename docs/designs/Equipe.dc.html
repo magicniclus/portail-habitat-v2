@@ -37,40 +37,12 @@ body { margin: 0; background: #fff; }
         <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
       </svg>
       <span>
-        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
-        <span style="display:block;font-size:14px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+        <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+        <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span>
       </span>
     </a>
 
-    <div style="position:relative;margin-bottom:8px">
-      <button type="button" onClick="{{ toggleSwitch }}" aria-expanded="{{ switchOpen }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--color-divider);border-radius:10px;background:#fff;cursor:pointer;font:inherit;text-align:left" style-hover="background:var(--color-neutral-100)">
-        <span style="width:32px;height:32px;border-radius:8px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">{{ active.ini }}</span>
-        <span style="display:flex;flex-direction:column;min-width:0;flex:1">
-          <span style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ active.nom }}</span>
-          <span style="font-size:12.5px;color:var(--color-neutral-700)">{{ active.role }}</span>
-        </span>
-        <span style="width:8px;height:8px;border-radius:99px;background:var(--color-accent);flex:none" title="Nouvelles demandes dans une autre entreprise"></span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
-      </button>
-      <sc-if value="{{ switchOpen }}" hint-placeholder-val="{{ false }}">
-        <div style="position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--color-divider);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;z-index:40;display:flex;flex-direction:column;gap:2px">
-          <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-600);padding:6px 8px">Mes entreprises</span>
-          <sc-for list="{{ entreprises }}" as="en" hint-placeholder-count="2">
-            <button type="button" onClick="{{ en.select }}" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:8px;background:{{ en.bg }};cursor:pointer;font:inherit;text-align:left" style-hover="background:var(--color-neutral-100)">
-              <span style="width:28px;height:28px;border-radius:7px;background:var(--color-accent-100);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">{{ en.ini }}</span>
-              <span style="display:flex;flex-direction:column;flex:1;min-width:0">
-                <span style="font-size:14px;font-weight:600">{{ en.nom }}</span>
-                <span style="font-size:12.5px;color:var(--color-neutral-700)">{{ en.role }}</span>
-              </span>
-              <sc-if value="{{ en.badge }}" hint-placeholder-val="{{ false }}">
-                <span style="background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 7px">{{ en.badge }}</span>
-              </sc-if>
-            </button>
-          </sc-for>
-          <a href="#" style="font-size:14px;font-weight:600;padding:8px;text-decoration:none">+ Ajouter une entreprise</a>
-        </div>
-      </sc-if>
-    </div>
+    
 
     <sc-for list="{{ menu }}" as="item" hint-placeholder-count="10">
       <sc-if value="{{ item.titre }}" hint-placeholder-val="{{ false }}">
@@ -83,6 +55,10 @@ body { margin: 0; background: #fff; }
         </a>
       </sc-if>
     </sc-for>
+    <a href="Mon Compte.dc.html" title="Mon compte" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:var(--color-text);border:1px solid var(--color-accent-300);background:var(--color-accent-100)" style-hover="border-color:var(--color-accent-300)">
+      <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">JB</span>
+      <span style="display:grid;line-height:1.25;min-width:0"><span style="font-size:14.5px;font-weight:700;white-space:nowrap">Mon compte</span><span style="font-size:12.5px;font-weight:500;color:var(--color-neutral-700);white-space:nowrap">Équipe · Abonnement · Aide</span></span>
+    </a>
   </aside>
 
   <div style="display:flex;flex-direction:column;min-width:0">
@@ -92,9 +68,19 @@ body { margin: 0; background: #fff; }
     </header>
 
     <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px;max-width:1120px;width:100%;box-sizing:border-box">
+      <div style="grid-column:1/-1">
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Mon compte</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Votre profil, votre équipe, votre abonnement et l'aide, au même endroit.</p>
+        </div>
+      <nav aria-label="Mon compte" style="display:flex;gap:4px 28px;flex-wrap:wrap;border-bottom:1px solid var(--color-divider);margin-bottom:4px">
+        <a href="Mon Compte.dc.html" style="white-space:nowrap;text-decoration:none;font-size:15.5px;font-weight:600;padding:12px 0 11px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--color-neutral-700)" style-hover="color:var(--color-text)">Profil et sécurité</a>
+        <a href="Equipe.dc.html" aria-current="page" style="white-space:nowrap;text-decoration:none;font-size:15.5px;font-weight:700;padding:12px 0 11px;margin-bottom:-1px;border-bottom:2px solid var(--color-accent);color:var(--color-text)" style-hover="color:var(--color-text)">Équipe</a>
+        <a href="Mon Abonnement.dc.html" style="white-space:nowrap;text-decoration:none;font-size:15.5px;font-weight:600;padding:12px 0 11px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--color-neutral-700)" style-hover="color:var(--color-text)">Abonnement</a>
+        <a href="Aide et Contact.dc.html" style="white-space:nowrap;text-decoration:none;font-size:15.5px;font-weight:600;padding:12px 0 11px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--color-neutral-700)" style-hover="color:var(--color-text)">Aide & contact</a>
+      </nav>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
         <div>
-          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Équipe</h1>
+          <h2 style="font-size:22px;line-height:1.1;margin:0 0 6px">Équipe</h2>
           <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Les personnes qui gèrent les demandes et la fiche de {{ active.nom }}.</p>
         </div>
         <sc-if value="{{ peutInviter }}" hint-placeholder-val="{{ true }}">
@@ -104,7 +90,7 @@ body { margin: 0; background: #fff; }
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
         <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;font-weight:700">Sièges utilisés</span><span style="font-size:13px;color:var(--color-neutral-700)">Offre Premium</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;font-weight:700">Sièges utilisés</span><span style="font-size:13px;color:var(--color-neutral-700)">Fiche Pro</span></div>
           <p style="margin:0;font-size:32px;line-height:1;font-weight:700">{{ utilises }} <span style="font-size:18px;color:var(--color-neutral-600);font-weight:600">/ {{ siegesMax }}</span></p>
           <div style="height:8px;border-radius:99px;background:var(--color-neutral-200);overflow:hidden"><div style="height:100%;width:{{ siegesPct }};background:var(--color-accent);border-radius:99px"></div></div>
           <p style="margin:0;font-size:13.5px;color:var(--color-neutral-700)">{{ utilisesNote }}</p>
@@ -199,7 +185,7 @@ body { margin: 0; background: #fff; }
             </span>
             <span style="display:flex;gap:8px">
               <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Refuser</button>
-              <button type="button" class="btn btn-primary" style="min-height:40px;font-size:14px">Accepter</button>
+              <button type="button" class="btn btn-secondary" style="min-height:40px;font-size:14px">Accepter</button>
             </span>
           </div>
         </section>
@@ -350,9 +336,8 @@ class Component extends DCLogic {
     const utilises = MEMBRES.length + INVITS.filter(i => i.tag === 'En attente').length;
     const pleins = utilises >= siegesMax;
     const menuDef = [
-      ['t', "Vue d'ensemble"], ['l', 'Tableau de bord', IC.dashboard, 'Espace Artisan Dashboard.dc.html'], ['l', 'Ma fiche', IC.fiche, 'Ma Fiche.dc.html'], ['l', 'Mes demandes', IC.demandes, 'Mes Demandes.dc.html'],
+      ['t', "Vue d'ensemble"], ['l', 'Tableau de bord', IC.dashboard, 'Espace Artisan Dashboard.dc.html'], ['l', 'Ma fiche', IC.fiche, 'Ma Fiche.dc.html'], ['l', 'Mes demandes', IC.demandes, 'Mes Demandes.dc.html'], ['l', 'Devis & factures', 'M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5', 'Devis et Factures.dc.html'],
       ['t', 'Gestion'], ["l", "Appels d'offres", IC.zone, 'Appels d Offres.dc.html'], ['l', 'Mes avis', IC.avis, 'Mes Avis.dc.html'], ['l', 'Statistiques', IC.stats, 'Statistiques.dc.html'],
-      ['t', 'Entreprise'], ['l', 'Équipe', IC.equipe, 'Equipe.dc.html', true], ['l', 'Mon compte', IC.compte, 'Mon Compte.dc.html'], ['l', 'Aide & contact', IC.support, 'Aide et Contact.dc.html'],
     ];
     const menu = menuDef.map(([k, label, d, href, act]) => k === 't'
       ? { titre: true, lien: false, label }

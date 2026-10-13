@@ -3,12 +3,12 @@
 > À copier à la racine du dépôt. Claude Code relit ce fichier à chaque session : il doit rester court.
 
 ## Stack
-Next.js 16 (App Router, TypeScript 6 strict) · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · React Hook Form · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
+Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · React Hook Form · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
 
 ## Commandes
-- `pnpm dev` : Next.js + émulateurs Firebase (Java requis)
-- `pnpm test` : Vitest sous émulateurs (logique + règles Firestore) · `pnpm test:unit` : sans émulateur
-- `pnpm typecheck`, `pnpm lint`, `pnpm knip`, `pnpm format`
+- `pnpm dev` : Next.js + émulateurs Firebase
+- `pnpm test` : Vitest (logique + règles Firestore sur émulateur)
+- `pnpm typecheck`, `pnpm lint`
 - `pnpm seed` : jeu de données de test (refuse de tourner hors émulateur ou staging)
 - `pnpm e2e` : Playwright
 
@@ -29,12 +29,18 @@ Next.js 16 (App Router, TypeScript 6 strict) · Firebase (Auth, Firestore `eur3`
 - Recherche « Quel est votre projet ? » : `docs/RECHERCHE.md` + `docs/data/recherche-intentions.json`
 - Parcours en plusieurs étapes et reprise : `docs/REPRISE_PARCOURS.md`
 - Emails, SMS, notifications : `docs/EMAILS.md` (tout envoi passe par `notifier()`)
+- **Devis et factures** (gratuit) : `docs/DATABASE.md` §8 bis-ter — mentions obligatoires vérifiées par `verifierMentions()` côté client ET serveur ; PDF uniquement téléchargeable ; facturation électronique 2027
+- **Navigation espace artisan** : outils dans la barre latérale, « Mon compte » épinglé en bas (onglets Profil · Équipe · Abonnement · Aide)
+- **Offres, prix, droits, paiements : `docs/PAIEMENTS.md` (fait foi ; aucun prix avant l'inscription)**
 - Stripe, Functions, SEO, RGPD : `docs/INTEGRATIONS.md`
 - Back-office : `docs/ADMIN.md` · Algorithme : `docs/MATCHING.md` · Demandes partenaires : `docs/IMPORT_LEADS.md` (contrat du webhook) + `docs/DATABASE.md` §4 bis
 - Conversion et séquences d'emails : `docs/CONVERSION.md` · Comportement des visiteurs : `docs/COMPORTEMENT.md` · Assistant IA : `docs/IA_ADMIN.md`
+- **Site internet artisan** : `docs/SITE_INTERNET.md` · **IA du site** (création, composants, textes, monétisation Site Pro) : `docs/IA_SITE.md` — l'IA ne renvoie que des opérations validées, jamais de HTML, et ne publie jamais
+- **Blog artisan** : `docs/BLOG.md` (un blog par artisan, quotas IA 5/15, mode autonome en un clic, pilote automatique, mentions légales lues depuis les paramètres de devis)
+- **Fonction payante cliquée** : toujours la fenêtre d'offre (PAIEMENTS §4) → `/pro/abonnement?offre=` ; jamais d'activation directe
 - **Coûts** : `docs/COUTS.md` (règles d'économie à respecter dans tout le code)
-- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `packages/core/`)
-- Avancement, reprise et décisions : `docs/AVANCEMENT.md` (seul fichier de suivi, à mettre à jour à la fin de chaque lot)
+- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `lib/`)
+- Avancement et décisions : `docs/AVANCEMENT.md` (à mettre à jour à la fin de chaque lot)
 
 ## Architecture (détail : `docs/ARCHITECTURE.md`, à suivre strictement)
 ```
@@ -54,7 +60,7 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 
 ## Règles non négociables
 1. Montants en **centimes entiers**. Jamais de `float` pour de l'argent.
-2. Toute entrée passe par un **schéma Zod** de `packages/core/schemas`, côté client **et** côté serveur. `z` s'importe de `@ph/core/zod` (messages en français), jamais de `zod`.
+2. Toute entrée passe par un **schéma Zod** de `lib/schemas`, côté client **et** côté serveur.
 3. Les prix (simulateur, leads, diagnostic) sont **recalculés côté serveur** ; la valeur du client est ignorée.
 4. `plan`, `optionVisibilite`, `siegesMax` : écrits **uniquement** par le webhook Stripe.
 5. Écritures sensibles (demandes, avis, crédits, membres, prix) : **Function ou Server Action uniquement**, en transaction, avec vérification `peut()` et `auditLog` si admin.
@@ -68,11 +74,14 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - Commence chaque lot par un **plan** ; n'écris pas de code avant validation.
 - Logique métier : **tests d'abord**, puis implémentation.
 - Ne pas ajouter de dépendance, changer le modèle de données ou une règle de sécurité **sans le signaler** dans le plan.
-- Un lot = une branche `lot-XX-nom` (en session web : la branche imposée par la session) = des commits atomiques en français (`feat(simulateur): …`).
+- Un lot = une branche `lot-XX-nom` = des commits atomiques en français (`feat(simulateur): …`).
 - Un lot est terminé quand `pnpm typecheck && pnpm lint && pnpm test` passent et que les écrans correspondent aux maquettes.
 - En cas de doute sur une règle métier : **demander**, ne pas inventer.
 
 ## Suivi et reprise
-- À la fin de chaque lot (et avant toute pause longue) : mets à jour `docs/AVANCEMENT.md` (statut, date, tests passés, ce qui reste), puis commite.
+- À la fin de chaque lot (et avant toute pause longue) : mets à jour `docs/PROGRESSION.md` (statut, date, tests passés, ce qui reste), puis commite.
 - Commits petits et fréquents : une fonctionnalité qui passe ses tests = un commit. Une session interrompue ne doit jamais perdre plus d'une heure de travail.
 - Ne déploie jamais en production sans le « go » explicite du propriétaire.
+
+- **Landings par outil** : `docs/LANDINGS.md` (gabarit `Landing Outil`, source enregistrée sur le compte, onboarding selon la source ; jamais d'avis fictif ni de chiffre non sourcé en production)
+- **Domaines / DNS / HTTPS** : `docs/DOMAINES.md` (sous-domaine gratuit, achat OVH au nom de l'artisan, connexion domaine existant, vérification, valeurs DNS lues depuis l'API Vercel)

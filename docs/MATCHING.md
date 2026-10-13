@@ -1,8 +1,6 @@
 # Algorithme de mise en relation (matching)
 
-> **Deux canaux** : (1) les **demandes garanties** de l'offre Premium (4 par mois) sont attribuées à **un seul artisan**, exclusif (un projet multi-métiers peut avoir un artisan par métier) ; (2) les **appels d'offres**, ouverts à toutes les formules, acceptent **3 réponses maximum**, avec 60 minutes d'avance pour Premium (D50). Ceci remplace toute mention de « 3 artisans par demande » ailleurs dans ce document.
->
-> **Aiguillage d'une demande du site** (D41) : si au moins un Premium compatible a encore du quota de demandes garanties ce mois-ci, la demande devient une demande garantie (1 artisan) ; sinon, ou si elle n'est pas acceptée dans le délai, elle devient **automatiquement un appel d'offres** (3 réponses max, 60 minutes d'avance Premium (D50)).
+> **Deux canaux** : (1) les **demandes garanties** de l'offre Premium (4 par mois) sont attribuées à **un seul artisan**, exclusif (un projet multi-métiers peut avoir un artisan par métier) ; (2) les **appels d'offres**, ouverts à toutes les formules, acceptent **3 réponses maximum**, avec 24 h d'avance pour Premium. Ceci remplace toute mention de « 3 artisans par demande » ailleurs dans ce document.
 >
 > **Filtre métier** : la demande porte `intention` et `prestation` (référentiel `referentiel/recherche`). Un artisan est éligible si `artisans.intentions` contient l'intention de la demande ; sinon, repli sur `artisans.metiers` contenant le métier de l'intention. Voir COMPTES.md §3.1 bis.
 
@@ -174,8 +172,6 @@ Ces scores sont ensuite recopiés dans `artisans/{id}` (`tauxReponse`, `tempsRep
 `artisansPublic.scoreClassement` est recalculé à chaque écriture de l'artisan et chaque nuit :
 `0,35 × qualite + 0,25 × reactivite + 0,15 × completude + 0,15 × disponibilite + 0,10 × anciennete (plafonnée à 10 ans)`, sur 100.
 Tri « Pertinence » à l'affichage : `scoreClassement − 0,6 × distanceKm` (+ correspondance du texte si Typesense renvoie un score). Les Premium sont affichés à part dans « Artisans à la une » (mention légale obligatoire, voir README).
-
-**Rayon (cadrage n° 13, lot 9)** : un artisan apparaît dans l'annuaire si le lieu recherché est à moins du rayon choisi par le visiteur **et** à moins de son propre rayon d'intervention (`rayonKm`).
 
 ---
 

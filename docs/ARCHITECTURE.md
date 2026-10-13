@@ -78,7 +78,7 @@ export const themes = {
 export const premium = { or: '#b8862b', fond: '#fdf6e7' };
 export const radius = { control: 10, card: 14, panel: 18, pill: 999 };
 ```
-- Un script génère `themes.css` (`[data-theme="pro"] { --accent: …; --accent-100: … }`) et le **thème Tailwind 4** en CSS (`@theme`, pour `bg-accent`, `text-accent-700`…)
+- Un script génère `themes.css` (`[data-theme="pro"] { --accent: …; --accent-100: … }`) et le **preset Tailwind** (`bg-accent`, `text-accent-700`…)
 - Les emails lisent les **mêmes objets** en JS (les clients mail n'ont pas de variables CSS)
 - **Interdit** : un code hexadécimal dans un composant. Lint `no-restricted-syntax` sur `/#[0-9a-f]{3,6}/i` hors de `tokens/`
 
@@ -109,7 +109,7 @@ Une page (`app/.../page.tsx`) **ne contient pas de mise en page détaillée** : 
   });
   ```
 - `asChild` (Radix Slot) pour qu'un `Button` puisse être un `Link` sans dupliquer le style
-- `ref` passé en prop (React 19 : `forwardRef` n'est plus nécessaire), `...rest` transmis à l'élément, `className` fusionné avec `cn()` (clsx + tailwind-merge)
+- `forwardRef`, `...rest` transmis à l'élément, `className` fusionné avec `cn()` (clsx + tailwind-merge)
 - **Composition plutôt que props booléennes en cascade** : `<Card><Card.Header/><Card.Body/></Card>` au lieu de `<Card showHeader headerIcon titleSize…>`
 - Accessibilité intégrée une fois pour toutes : **Radix UI** pour Dialog, Tabs, Select, Popover, Tooltip, Toast (clavier, focus, ARIA)
 - Tout texte visible est une prop ou un enfant ; aucun texte métier en dur dans `ui`

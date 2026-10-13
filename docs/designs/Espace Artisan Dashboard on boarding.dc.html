@@ -48,7 +48,7 @@ a:hover { color: var(--color-accent); }
         </svg>
         <span style="display:flex;flex-direction:column;line-height:1.02">
           <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
-          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span>
+          <span style="display:block;font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span>
         </span>
       </a>
       <sc-if value="{{ peutAvancer }}" hint-placeholder-val="{{ true }}">
@@ -214,13 +214,13 @@ a:hover { color: var(--color-accent); }
           </div>
 
           <div style="border:1px solid var(--color-accent);border-radius:12px;padding:18px;display:grid;gap:14px">
-            <p style="margin:0;font-size:14px"><span style="font-size:30px;font-weight:700;white-space:nowrap">79,90 €</span> <span style="font-size:13px;color:var(--color-neutral-700)">HT / an payé en une fois · 12,90 € / mois sans engagement</span></p>
+            <p style="margin:0;font-size:14px"><span style="font-size:30px;font-weight:700;white-space:nowrap">29 €</span> <span style="font-size:13px;color:var(--color-neutral-700)">HT / mois · sans engagement</span></p>
             <ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px;font-size:14.5px;line-height:22px">
               <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span><strong>Priorité d'affichage</strong> dans votre secteur</span></li>
               <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span><strong>Téléphone et email visibles</strong> directement sur votre fiche</span></li>
-              <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Badge Pro vérifié et bannière mise en avant</span></li>
+              <li style="display:flex;gap:9px"><span style="color:var(--color-accent);font-weight:700">✓</span><span>Badge « Artisan recommandé », photos illimitées et statistiques détaillées</span></li>
             </ul>
-            <a href="Paiement Option Visibilite.dc.html" class="btn btn-primary" style="min-height:48px;font-size:16px;width:100%">Activer l'option</a>
+            <a href="Mon Abonnement.dc.html?offre=fiche" class="btn btn-primary" style="min-height:48px;font-size:16px;width:100%">Activer l'option</a>
             <a href="Espace Artisan Dashboard.dc.html" style="text-align:center;font-size:13.5px;text-decoration:none;color:var(--color-neutral-700)">Continuer sans l'option</a>
           </div>
         </div>
@@ -328,6 +328,7 @@ a:hover { color: var(--color-accent); }
   </sc-if>
 </div>
 
+<dc-import name="Fenetre Offre" hint-size="0px,0px"></dc-import>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 const PRESTATIONS = [

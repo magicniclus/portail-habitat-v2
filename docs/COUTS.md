@@ -12,6 +12,8 @@ Hypothèse de départ : **30 000 pages vues par mois** sur les pages publiques, 
 | Moteur de conversion (Functions + Firestore) | calcul quotidien de 1 200 fiches, ~70 000 traces | < 0,50 € |
 | Assistant IA | ~40 analyses Haiku + 4 synthèses Sonnet, avec cache | 1 à 3 € (plafond 10 €) |
 | Assistant de rédaction (artisans) | ~3 000 utilisations Haiku (≈ 1 500 tokens chacune) | 2 à 4 € |
+| Blog des artisans (si 300 abonnés × 8 articles) | 2 400 articles Sonnet + retouches Haiku | 120 à 240 € (≈ 0,05 à 0,10 € / article) |
+| Données mots-clés et SERP (API, cache 30 j / 14 j) | ~3 000 requêtes | 30 à 60 € |
 | Cloud Functions / Scheduler | quelques milliers d'invocations | dans le quota gratuit |
 | **Total comportement + conversion + IA** | | **moins de 10 € par mois** |
 | Emails (Resend, hors périmètre ci-dessus) | 10 000 à 50 000 emails | 0 à 20 € selon l'offre |
