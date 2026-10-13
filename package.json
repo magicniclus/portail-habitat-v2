@@ -25,11 +25,13 @@
     "stripe:produits": "tsx apps/web/scripts/stripeProduits.ts",
     "partenaire:source": "tsx scripts/sourcePartenaire.ts",
     "admin:creer": "tsx scripts/creerAdmin.ts",
-    "migrer": "tsx scripts/migrer.ts"
+    "migrer": "tsx scripts/migrer.ts",
+    "captures": "tsx scripts/captures.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "@ph/firebase": "workspace:*",
+    "@playwright/test": "1.56.1",
     "@types/node": "^22.19.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.6",
@@ -40,6 +42,7 @@
     "globals": "^17.12.0",
     "knip": "^6.38.0",
     "prettier": "^3.9.9",
+    "sharp": "0.35.5",
     "tsx": "^4.23.15",
     "turbo": "^2.11.4",
     "typescript": "~6.0.3",
