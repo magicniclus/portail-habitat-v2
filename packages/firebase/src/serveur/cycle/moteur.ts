@@ -1,3 +1,4 @@
+import { FORMULE_ETAPE, niveauConversion, offreUrlDe } from '@ph/core/paiements';
 import {
   controlerPression,
   creneauEnvoi,
@@ -28,7 +29,7 @@ import {
   type EtapeCycle,
   type EtapeSequence,
 } from '@ph/core/conversion';
-import { prixAbonnement, type Facturation, type ProduitAbonnement } from '@ph/core/facturation';
+import { prixAbonnement, type ProduitAbonnement } from '@ph/core/facturation';
 import { formatDate } from '@ph/core/format';
 import { definition, type NomModele } from '@ph/core/notifications';
 import { randomUUID } from 'node:crypto';
@@ -171,10 +172,7 @@ export async function synchroniserCycle(
   const a = artisan.data()!;
   const ref = s.db.collection(collections.cycleEtat).doc(artisan.id);
   const [etat, abo] = await Promise.all([ref.get(), etatAbonnement(s.db, artisan.id)]);
-  const plan =
-    (a.plan as 'gratuit' | 'visibilite' | 'premium') === 'gratuit' && a.optionVisibilite === true
-      ? 'visibilite'
-      : a.plan;
+  const plan = niveauConversion(a.droits?.formule as string | undefined);
   const { abonnements, ...etatAbo } = abo;
   const etape = etapeCycle({ compte: true, enLigne: a.enLigne === true, plan, ...etatAbo });
   const derniere = ms(etat.get('signaux.derniereConnexion'));
@@ -272,7 +270,7 @@ export async function synchroniserCycle(
                 modele: 'prem-renouvellement',
                 extra: {
                   date: formatDate(renouvellement, 'long'),
-                  lien: '/pro/abonnement/premium?facturation=annuel',
+                  lien: '/pro/abonnement',
                 },
               }
             : passageAnnuel
@@ -365,13 +363,12 @@ export async function synchroniserArtisan(
       .filter((a) => ['active', 'trialing'].includes(a.get('statut') as string))
       .sort((a, b) => (ms(b.get('debutPeriode')) ?? 0) - (ms(a.get('debutPeriode')) ?? 0))[0];
     const catalogue = abo
-      ? prixAbonnement(abo.get('produit') as ProduitAbonnement, abo.get('periode') as Facturation)
-          .montantHt
+      ? (prixAbonnement(abo.get('produit') as ProduitAbonnement)?.montantHt ?? 0)
       : 0;
     // Code personnel utilisé pour ce produit : le montant payé est remisé.
     const code = lireCodeActif(etat);
     const montantHtCentimes =
-      code?.utilise && abo && code.produit === abo.get('produit')
+      code?.utilise && abo && FORMULE_ETAPE[code.produit] === abo.get('produit')
         ? Math.round((catalogue * (100 - code.pourcentage)) / 100)
         : catalogue;
     const modele = attribuerConversion(
@@ -498,8 +495,8 @@ export async function tenterEnvoi(
     return 'annule';
   }
   const urlSite = s.urlSite ?? URL_SITE_DEFAUT;
-  const lienCode = (produit: string, code: string) =>
-    `${urlSite}/pro/abonnement/${produit}?facturation=annuel&code=${code}`;
+  const lienCode = (produit: 'visibilite' | 'premium', code: string) =>
+    `${urlSite}/pro/abonnement?offre=${offreUrlDe(FORMULE_ETAPE[produit])}&code=${code}`;
   const offre =
     remise.type === 'aucune'
       ? {}
@@ -749,7 +746,7 @@ export async function calculerCycles(
         id: a.id,
         metier: (a.get('metierPrincipal') as string | undefined) ?? '',
         ville: (a.get('adresseSiege.ville') as string | undefined) ?? '',
-        misEnAvant: a.get('plan') === 'premium' || a.get('optionVisibilite') === true,
+        misEnAvant: a.get('droits.ficheMiseEnAvant') === true,
         score: scores.get(a.id) ?? 0,
         vues7j: vues.get(a.id)?.vues7j ?? 0,
       })),

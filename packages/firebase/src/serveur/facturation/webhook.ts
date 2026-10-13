@@ -5,8 +5,9 @@ import {
   type StatutAbonnement,
 } from '@ph/core/facturation';
 import { ErreurMetier } from '@ph/core/erreurs';
+import { droitsDe } from '@ph/core/paiements';
 import { formatDate } from '@ph/core/format';
-import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
+import { Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import { appliquerSieges } from '../comptes/membres';
 import { marquerCodeUtilise } from '../cycle/codes';
@@ -22,7 +23,7 @@ import type {
 } from './stripe';
 
 /**
- * Webhook Stripe (INTEGRATIONS §1) : seul endroit qui écrit `plan`, `optionVisibilite` et
+ * Webhook Stripe (INTEGRATIONS §1, PAIEMENTS §5) : seul endroit qui écrit `droits` et
  * `siegesMax`. Chaque événement n'a qu'un effet (`stripeEvents/{id}`, PAY-02) ; les miroirs et
  * l'entreprise sont écrits dans une transaction, les emails partent ensuite.
  */
@@ -30,8 +31,6 @@ import type {
 export type ServicesFacturation = ServicesComptes;
 type Suite = () => Promise<unknown>;
 
-/** Crédits inclus chaque mois en Premium (D27, proposition appliquée en attendant). */
-export const CREDITS_INCLUS_PREMIUM = 5;
 const LIEN_FACTURATION = '/pro/facturation';
 
 const ts = (secondes: number) => Timestamp.fromMillis(secondes * 1000);
@@ -61,7 +60,6 @@ async function destinataire(s: ServicesFacturation, t: Transaction, artisanId: s
 
 function lireAbonnement(sub: AbonnementStripe, supprime: boolean) {
   let produit: AbonnementEtat['produit'] | null = null;
-  let periode: 'mensuel' | 'annuel' = 'mensuel';
   let priceId = '';
   let sieges = 0;
   let debut = sub.current_period_start ?? 0;
@@ -70,7 +68,6 @@ function lireAbonnement(sub: AbonnementStripe, supprime: boolean) {
     const p = lirePrix(el.price.lookup_key);
     if (p?.type === 'abonnement') {
       produit = p.produit;
-      periode = p.periode;
       priceId = el.price.id;
       debut = el.current_period_start ?? debut;
       fin = el.current_period_end ?? fin;
@@ -79,7 +76,6 @@ function lireAbonnement(sub: AbonnementStripe, supprime: boolean) {
   if (!produit) return null;
   return {
     produit,
-    periode,
     priceId,
     sieges,
     statut: (supprime ? 'canceled' : sub.status) as StatutAbonnement,
@@ -115,7 +111,7 @@ async function abonnementModifie(
     artisanId,
     produit: lu.produit,
     priceId: lu.priceId,
-    periode: lu.periode,
+    periode: 'mensuel',
     statut: lu.statut,
     debutPeriode: ts(lu.debut),
     finPeriode: ts(lu.fin),
@@ -135,6 +131,7 @@ async function abonnementModifie(
       debutPeriode: (d.get('debutPeriode') as Timestamp).toMillis(),
       finPeriode: (d.get('finPeriode') as Timestamp).toMillis(),
       sieges: (d.get('sieges') as number | undefined) ?? 0,
+      annulationFinPeriode: d.get('annulationFinPeriode') === true,
     }));
   etats.push({
     produit: lu.produit,
@@ -142,20 +139,16 @@ async function abonnementModifie(
     debutPeriode: lu.debut * 1000,
     finPeriode: lu.fin * 1000,
     sieges: lu.sieges,
+    annulationFinPeriode: sub.cancel_at_period_end,
   });
   const e = effetAbonnements(etats, maintenant);
   t.update(refArtisan, {
-    plan: e.plan,
-    planExpireLe: e.planExpireLe ? Timestamp.fromMillis(e.planExpireLe) : FieldValue.delete(),
-    ...(e.plan === 'gratuit'
-      ? { planPeriode: FieldValue.delete() }
-      : lu.produit === 'premium'
-        ? { planPeriode: lu.periode }
-        : {}),
-    optionVisibilite: e.optionVisibilite,
-    optionVisibiliteExpireLe: e.optionVisibiliteExpireLe
-      ? Timestamp.fromMillis(e.optionVisibiliteExpireLe)
-      : FieldValue.delete(),
+    droits: {
+      ...droitsDe(e.formule),
+      statut: e.statut,
+      ...(e.finPeriode ? { finPeriode: Timestamp.fromMillis(e.finPeriode) } : {}),
+      majLe: Timestamp.fromMillis(maintenant),
+    },
     siegesMax: e.siegesMax,
     updatedAt: Timestamp.fromMillis(maintenant),
   });
@@ -194,9 +187,9 @@ async function abonnementModifie(
         donnees: {
           nomCommercial,
           produit: lu.produit,
-          periode: lu.periode,
+          periode: 'mensuel',
           finPeriode: jour(lu.fin),
-          lien: modele === 'abonnement-termine' ? '/pro/abonnement/premium' : LIEN_FACTURATION,
+          lien: modele === 'abonnement-termine' ? '/pro/abonnement' : LIEN_FACTURATION,
         },
       }),
     );
@@ -206,7 +199,7 @@ async function abonnementModifie(
 const subscriptionDe = (f: FactureStripe) =>
   f.parent?.subscription_details?.subscription ?? f.subscription ?? null;
 
-/** `invoice.paid` / `invoice.payment_failed` : miroir de la facture, reçu ou relance, crédits inclus. */
+/** `invoice.paid` / `invoice.payment_failed` : miroir de la facture, reçu ou relance. */
 async function factureModifiee(
   s: ServicesFacturation,
   t: Transaction,
@@ -218,11 +211,7 @@ async function factureModifiee(
   const subId = subscriptionDe(f);
   if (!subId) return false;
   const artisanId = await artisanDe(s, t, f.parent?.subscription_details?.metadata, subId);
-  const [abo, dest, portefeuille] = await Promise.all([
-    t.get(s.db.collection(collections.abonnements).doc(subId)),
-    destinataire(s, t, artisanId),
-    t.get(s.db.doc(chemins.portefeuille(artisanId))),
-  ]);
+  const dest = await destinataire(s, t, artisanId);
   const paye = ev.type === 'invoice.paid';
   const ht = f.total_excluding_tax ?? f.subtotal;
   const periode = f.lines?.data[0]?.period ?? { start: f.period_start, end: f.period_end };
@@ -250,20 +239,6 @@ async function factureModifiee(
       statut: paye ? 'succeeded' : 'failed',
       createdAt: Timestamp.fromMillis(s.horloge()),
     });
-  // Premium payé : crédits inclus du mois remis à neuf (non reportables, D27).
-  if (paye && abo.get('produit') === 'premium')
-    t.set(
-      portefeuille.ref,
-      {
-        schemaVersion: 1,
-        soldeCredits: (portefeuille.get('soldeCredits') as number | undefined) ?? 0,
-        creditsInclusMois: CREDITS_INCLUS_PREMIUM,
-        creditsInclusRestants: CREDITS_INCLUS_PREMIUM,
-        renouvelleLe: ts(periode.end),
-        updatedAt: Timestamp.fromMillis(s.horloge()),
-      },
-      { merge: true },
-    );
   if (dest.uid && f.total > 0)
     suites.push(() =>
       s.notifier({
@@ -277,40 +252,6 @@ async function factureModifiee(
           montantTtcCentimes: f.total,
           lien: LIEN_FACTURATION,
           ...(f.hosted_invoice_url ? { lienFacture: f.hosted_invoice_url } : {}),
-        },
-      }),
-    );
-  return true;
-}
-
-/** `invoice.upcoming` : information obligatoire avant la reconduction d'un abonnement annuel. */
-async function renouvellementProche(
-  s: ServicesFacturation,
-  t: Transaction,
-  ev: EvenementStripe,
-  suites: Suite[],
-): Promise<boolean> {
-  const f = ev.data.object as FactureStripe;
-  const subId = subscriptionDe(f);
-  if (!subId) return false;
-  const abo = await t.get(s.db.collection(collections.abonnements).doc(subId));
-  if (!abo.exists || abo.get('periode') !== 'annuel') return false;
-  const artisanId = abo.get('artisanId') as string;
-  const dest = await destinataire(s, t, artisanId);
-  if (dest.uid)
-    suites.push(() =>
-      s.notifier({
-        modele: 'renouvellement',
-        destinataire: { uid: dest.uid, artisanId },
-        refObjet: `abonnements/${subId}`,
-        variante: ev.id,
-        donnees: {
-          nomCommercial: dest.nomCommercial,
-          produit: abo.get('produit'),
-          periode: 'annuel',
-          finPeriode: formatDate((abo.get('finPeriode') as Timestamp).toMillis(), 'long'),
-          montantTtcCentimes: f.total,
-          lien: LIEN_FACTURATION,
         },
       }),
     );
@@ -396,13 +337,7 @@ async function checkoutTermine(
       s.db.doc(chemins.facturationPrivee(artisanId)),
       {
         stripeCustomerId: c.customer,
-        ...(c.subscription
-          ? {
-              [c.metadata.produit === 'visibilite'
-                ? 'stripeVisibiliteSubscriptionId'
-                : 'stripeSubscriptionId']: c.subscription,
-            }
-          : {}),
+        ...(c.subscription ? { stripeSubscriptionId: c.subscription } : {}),
       },
       { merge: true },
     );
@@ -462,7 +397,6 @@ const GESTIONNAIRES: Record<
   'customer.subscription.deleted': abonnementModifie,
   'invoice.paid': factureModifiee,
   'invoice.payment_failed': factureModifiee,
-  'invoice.upcoming': renouvellementProche,
 };
 
 export type ResultatWebhook = 'traite' | 'deja_traite' | 'ignore';

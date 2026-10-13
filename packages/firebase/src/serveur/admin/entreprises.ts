@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { masquerEmail } from '@ph/core/equipe';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { slugifier } from '@ph/core/format';
@@ -94,8 +95,7 @@ export async function creerEntrepriseAdmin(
       },
       source: 'admin',
       demandeOfferteUtilisee: false,
-      plan: 'gratuit',
-      optionVisibilite: false,
+      droits: droitsInitiaux('gratuit', maintenant),
       verification: { statut: 'a_faire' },
       noteMoyenne: 0,
       nbAvis: 0,

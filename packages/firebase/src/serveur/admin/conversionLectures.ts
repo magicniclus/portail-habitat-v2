@@ -249,10 +249,7 @@ export async function lireFicheCycle(db: Firestore, artisanId: string): Promise<
     entreprise: (artisan.get('nomCommercial') as string | undefined) ?? artisanId,
     metier: (artisan.get('metierPrincipal') as string | undefined) ?? '',
     ville: (artisan.get('adresseSiege.ville') as string | undefined) ?? '',
-    plan:
-      artisan.get('plan') === 'gratuit' && artisan.get('optionVisibilite') === true
-        ? 'visibilite'
-        : ((artisan.get('plan') as string | undefined) ?? 'gratuit'),
+    plan: (artisan.get('droits.formule') as string | undefined) ?? 'gratuit',
     etape: (etat.get('etape') as string | undefined) ?? null,
     depuis: ms(etat.get('depuis')) ?? null,
     score: (etat.get('score') as number | undefined) ?? null,

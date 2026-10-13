@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -38,7 +39,7 @@ beforeEach(async () => {
   );
   await db
     .doc(chemins.artisan('a1'))
-    .set({ nomCommercial: 'Bertrand Rénovation', plan: 'gratuit' });
+    .set({ nomCommercial: 'Bertrand Rénovation', droits: droitsInitiaux('gratuit', new Date(0)) });
   await db
     .collection(collections.cycleEtat)
     .doc('a1')

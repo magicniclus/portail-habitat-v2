@@ -48,7 +48,7 @@ export function carteAnnuaire(
     km: Math.round(km * 10) / 10,
     note: a.noteMoyenne,
     avis: a.nbAvis,
-    premium: a.premium,
+    premium: a.misEnAvant,
     labels: a.labels,
     delaiJ: a.delaiDispoJours ?? 99,
     score: a.scoreClassement,

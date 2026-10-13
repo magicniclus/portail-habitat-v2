@@ -2,9 +2,11 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import {
   CATALOGUE_STRIPE,
   cleStripe,
+  lirePrix,
   prixAbonnement,
   type ProduitAbonnement,
 } from '@ph/core/facturation';
+import { inclut, NOMS_FORMULE, PRIX_FORMULES_HT, type Formule } from '@ph/core/paiements';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import { codeStripe, lireCodeValable } from '../cycle/codes';
@@ -41,28 +43,76 @@ async function clientStripe(
   return id;
 }
 
-/** Abonnement Premium ou Visibilité : session Checkout ; la page de retour attend le webhook (PAY-01). */
-export async function creerCheckoutAbonnement(
+async function prixStripe(s: ServicesCheckout, cle: string): Promise<string> {
+  const [prix] = (await s.stripe.prices.list({ lookup_keys: [cleStripe(cle)], active: true })).data;
+  if (!prix)
+    throw new ErreurMetier('INDISPONIBLE', 'Cette offre n’est pas disponible pour le moment.');
+  return prix.id;
+}
+
+export type ChangementFormule =
+  { mode: 'checkout'; url: string } | { mode: 'montee' | 'descente'; formule: ProduitAbonnement };
+
+/**
+ * Changement de formule (PAIEMENTS §4, PAY-02 à PAY-04). Sans abonnement : session Checkout
+ * (aucune saisie de carte chez nous, règle 7). Avec abonnement : montée immédiate avec prorata
+ * facturé tout de suite, descente à l'échéance (planning Stripe). `droits` ne change que par le
+ * webhook : l'écran attend sa mise à jour.
+ */
+export async function changerFormule(
   s: ServicesCheckout,
   p: {
     artisanId: string;
     email: string;
     produit: ProduitAbonnement;
-    periode: 'annuel' | 'mensuel';
     /** Code personnel reçu par email (CONVERSION §6) : appliqué sans saisie. */
     code?: string;
   },
-): Promise<{ url: string }> {
-  const artisan = await s.db.doc(chemins.artisan(p.artisanId)).get();
+): Promise<ChangementFormule> {
+  const [artisan, prive] = await Promise.all([
+    s.db.doc(chemins.artisan(p.artisanId)).get(),
+    s.db.doc(chemins.facturationPrivee(p.artisanId)).get(),
+  ]);
   if (!artisan.exists) throw new ErreurMetier('INTROUVABLE');
-  if (artisan.get('plan') === 'premium')
-    throw new ErreurMetier('PRECONDITION', 'Votre entreprise est déjà Premium.');
-  if (p.produit === 'visibilite' && artisan.get('optionVisibilite') === true)
-    throw new ErreurMetier('PRECONDITION', 'L’option Visibilité est déjà active.');
-  const cle = cleStripe(prixAbonnement(p.produit, p.periode).cle);
-  const [prix] = (await s.stripe.prices.list({ lookup_keys: [cle], active: true })).data;
-  if (!prix)
-    throw new ErreurMetier('INDISPONIBLE', 'Cette offre n’est pas disponible pour le moment.');
+  const actuelle = (artisan.get('droits.formule') as Formule | undefined) ?? 'gratuit';
+  if (actuelle === p.produit)
+    throw new ErreurMetier('PRECONDITION', `Vous avez déjà ${NOMS_FORMULE[p.produit]}.`);
+  const prixId = await prixStripe(s, prixAbonnement(p.produit).cle);
+  const subId = prive.get('stripeSubscriptionId') as string | undefined;
+
+  if (actuelle !== 'gratuit' && subId) {
+    const sub = await s.stripe.subscriptions.retrieve(subId);
+    const element = sub.items.data.find((e) => lirePrix(e.price.lookup_key)?.type === 'abonnement');
+    if (!element) throw new ErreurMetier('INDISPONIBLE');
+    const metadata = { artisanId: p.artisanId, produit: p.produit };
+    const montee =
+      inclut(p.produit, actuelle as ProduitAbonnement) ||
+      PRIX_FORMULES_HT[p.produit] > PRIX_FORMULES_HT[actuelle as ProduitAbonnement];
+    if (montee) {
+      await s.stripe.subscriptions.update(subId, {
+        items: [{ id: element.id ?? '', price: prixId }],
+        proration_behavior: 'always_invoice',
+        cancel_at_period_end: false,
+        metadata,
+      });
+      return { mode: 'montee', formule: p.produit };
+    }
+    const planning = await s.stripe.subscriptionSchedules.create({ from_subscription: subId });
+    const courante = planning.phases[0]!;
+    await s.stripe.subscriptionSchedules.update(planning.id, {
+      end_behavior: 'release',
+      phases: [
+        {
+          items: [{ price: element.price.id, quantity: 1 }],
+          start_date: courante.start_date,
+          end_date: courante.end_date,
+        },
+        { items: [{ price: prixId, quantity: 1 }], proration_behavior: 'none', metadata },
+      ],
+    });
+    return { mode: 'descente', formule: p.produit };
+  }
+
   const customer = await clientStripe(
     s,
     p.artisanId,
@@ -91,7 +141,7 @@ export async function creerCheckoutAbonnement(
     mode: 'subscription',
     customer,
     client_reference_id: p.artisanId,
-    line_items: [{ price: prix.id, quantity: 1 }],
+    line_items: [{ price: prixId, quantity: 1 }],
     metadata,
     subscription_data: { metadata },
     ...(code
@@ -103,10 +153,10 @@ export async function creerCheckoutAbonnement(
     customer_update: { address: 'auto', name: 'auto' },
     locale: 'fr',
     success_url: `${s.urlSite}/pro/abonnement/confirme?produit=${p.produit}`,
-    cancel_url: `${s.urlSite}/pro/abonnement/${p.produit}?facturation=${p.periode}`,
+    cancel_url: `${s.urlSite}/pro/abonnement`,
   });
   if (!session.url) throw new ErreurMetier('INDISPONIBLE');
-  return { url: session.url };
+  return { mode: 'checkout', url: session.url };
 }
 
 export type AchatCarte =
@@ -128,14 +178,9 @@ export async function creerCheckoutPaiement(
   let metadata: Record<string, string>;
   let retour: string;
   if (p.type === 'pack') {
-    const pack = CATALOGUE_STRIPE.find((c) => c.produit === 'pack' && c.cle === p.cle);
+    const pack = CATALOGUE_STRIPE.find((c) => c.produit === 'credits' && c.cle === p.cle);
     if (!pack?.credits) throw new ErreurMetier('ENTREE_INVALIDE', 'Pack inconnu.');
-    const [prix] = (
-      await s.stripe.prices.list({ lookup_keys: [cleStripe(pack.cle)], active: true })
-    ).data;
-    if (!prix)
-      throw new ErreurMetier('INDISPONIBLE', 'Ce pack n’est pas disponible pour le moment.');
-    ligne = { price: prix.id, quantity: 1 };
+    ligne = { price: await prixStripe(s, pack.cle), quantity: 1 };
     metadata = { type: 'pack', artisanId: p.artisanId, credits: String(pack.credits) };
     retour = '/pro/facturation';
   } else {
@@ -198,7 +243,7 @@ export async function ouvrirPortailClient(
     throw new ErreurMetier('PRECONDITION', 'Aucun abonnement n’a encore été souscrit.');
   const { url } = await s.stripe.billingPortal.sessions.create({
     customer,
-    return_url: `${s.urlSite}/pro/facturation`,
+    return_url: `${s.urlSite}/pro/abonnement`,
   });
   return { url };
 }

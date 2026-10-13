@@ -1,3 +1,4 @@
+import { droitsInitiaux, type Formule } from '@ph/core/paiements';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -29,7 +30,10 @@ async function entreprise(
   } = {},
 ) {
   await Promise.all([
-    db.doc(chemins.artisan(id)).set({ plan: p.plan ?? 'gratuit', nomCommercial: id }),
+    db.doc(chemins.artisan(id)).set({
+      droits: droitsInitiaux((p.plan ?? 'gratuit') as Formule, new Date(0)),
+      nomCommercial: id,
+    }),
     db.doc(chemins.membre(id, `u-${id}`)).set({
       role: p.role ?? 'proprietaire',
       statut: 'actif',
@@ -88,8 +92,8 @@ beforeEach(async () => {
 });
 
 describe('debloquerAppelOffres (MATCHING [8])', () => {
-  it('crédits inclus Premium : débit, achat, déblocage, attribution acceptée avec coordonnées', async () => {
-    await entreprise('a1', { plan: 'premium', inclus: 5, solde: 10 });
+  it('crédits inclus Tout inclus : débit, achat, déblocage, attribution acceptée avec coordonnées', async () => {
+    await entreprise('a1', { plan: 'tout_inclus', inclus: 5, solde: 10 });
     await appelOffres('ao1');
     expect(await debloquer('ao1', 'a1')).toMatchObject({
       etat: 'debloque',
@@ -146,7 +150,7 @@ describe('debloquerAppelOffres (MATCHING [8])', () => {
 
   it('PRO-06 : dix artisans sur la dernière place, un seul réussit, aucun débit en trop', async () => {
     const ids = Array.from({ length: 10 }, (_, i) => `c${i}`);
-    await Promise.all(ids.map((id) => entreprise(id, { plan: 'premium', solde: 10 })));
+    await Promise.all(ids.map((id) => entreprise(id, { plan: 'tout_inclus', solde: 10 })));
     await appelOffres('ao7', { nb: 2, max: 3 });
     const r = await Promise.allSettled(ids.map((id) => debloquer('ao7', id)));
     const ok = r.filter((x) => x.status === 'fulfilled' && x.value.etat === 'debloque');

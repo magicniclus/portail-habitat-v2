@@ -51,12 +51,14 @@ describe('statsJour', () => {
 });
 
 describe('envoyerRapportsHebdo', () => {
-  it('Premium en ligne avec de l’activité : un rapport ; gratuit ou sans activité : rien', async () => {
+  it('Tout inclus en ligne avec de l’activité : un rapport ; gratuit ou sans activité : rien', async () => {
     const lundi = Date.UTC(2026, 9, 12, 6);
-    const artisan = (id: string, plan: string) =>
-      db.doc(chemins.artisan(id)).set({ plan, enLigne: true, proprietaireUid: `u-${id}` });
-    await artisan('p1', 'premium');
-    await artisan('p2', 'premium');
+    const artisan = (id: string, formule: string) =>
+      db
+        .doc(chemins.artisan(id))
+        .set({ droits: { formule }, enLigne: true, proprietaireUid: `u-${id}` });
+    await artisan('p1', 'tout_inclus');
+    await artisan('p2', 'tout_inclus');
     await artisan('g1', 'gratuit');
     await db.doc(chemins.statsJour('p1', '2026-10-06')).set({ vuesFiche: 12, demandesRecues: 1 });
     await db.doc(chemins.statsJour('g1', '2026-10-06')).set({ vuesFiche: 3 });

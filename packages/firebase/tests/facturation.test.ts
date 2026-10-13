@@ -4,8 +4,9 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import type { Notification } from '../src/serveur/comptes';
+import { droitsInitiaux } from '@ph/core/paiements';
 import {
-  creerCheckoutAbonnement,
+  changerFormule,
   creerCheckoutPaiement,
   lireFacturation,
   ouvrirPortailClient,
@@ -41,8 +42,7 @@ beforeEach(async () => {
     db.doc(chemins.artisan('a1')).set({
       nomCommercial: 'Bertrand Rénovation',
       proprietaireUid: 'p1',
-      plan: 'gratuit',
-      optionVisibilite: false,
+      droits: droitsInitiaux('gratuit', new Date(T)),
       siegesMax: 1,
     }),
     db
@@ -100,10 +100,11 @@ const abonnement = (p: {
   items: {
     data: [
       {
-        price: { id: 'price_x', lookup_key: p.cle ?? 'ph_premium_annuel' },
+        id: 'si_1',
+        price: { id: 'price_x', lookup_key: p.cle ?? 'ph_tout_inclus' },
         quantity: 1,
         current_period_start: p.debut ?? sec(T) - 10 * JOUR,
-        current_period_end: sec(T) + 355 * JOUR,
+        current_period_end: sec(T) + 20 * JOUR,
       },
       ...(p.sieges
         ? [{ price: { id: 'price_s', lookup_key: 'ph_siege' }, quantity: p.sieges }]
@@ -122,16 +123,22 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
     expect(envois.map((e) => e.modele)).toEqual(['abonnement-active']);
     const a = await artisan();
     expect(a).toMatchObject({
-      plan: 'premium',
-      planPeriode: 'annuel',
-      optionVisibilite: true,
+      droits: {
+        formule: 'tout_inclus',
+        statut: 'actif',
+        iaMultiplicateur: 2,
+        remiseAppelsOffres: 0.15,
+        avanceAppelsOffresH: 12,
+      },
       siegesMax: 3,
     });
+    expect(a.droits.finPeriode.toMillis()).toBe(T + 20 * JOUR * 1000);
+    expect(a.plan).toBeUndefined();
     const abo = await db.collection(collections.abonnements).doc('sub_1').get();
     expect(abo.data()).toMatchObject({
       artisanId: 'a1',
-      produit: 'premium',
-      periode: 'annuel',
+      produit: 'tout_inclus',
+      periode: 'mensuel',
       statut: 'active',
     });
   });
@@ -144,7 +151,7 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
     expect((await artisan()).siegesMax).toBe(5);
   });
 
-  it('résiliation en fin de période : email, Premium gardé jusqu’au bout, puis fin', async () => {
+  it('résiliation en fin de période : email, Tout inclus gardé jusqu’au bout, puis Gratuit', async () => {
     await traiterEvenementStripe(s, evenement('customer.subscription.created', abonnement({})));
     await traiterEvenementStripe(
       s,
@@ -155,14 +162,16 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
         },
       }),
     );
-    expect((await artisan()).plan).toBe('premium');
+    expect((await artisan()).droits).toMatchObject({
+      formule: 'tout_inclus',
+      statut: 'resilie_fin_periode',
+    });
     await traiterEvenementStripe(
       s,
       evenement('customer.subscription.deleted', abonnement({ statut: 'canceled' })),
     );
     const a = await artisan();
-    expect(a).toMatchObject({ plan: 'gratuit', optionVisibilite: false, siegesMax: 1 });
-    expect(a.planPeriode).toBeUndefined();
+    expect(a).toMatchObject({ droits: { formule: 'gratuit', sitePro: false }, siegesMax: 1 });
     expect(envois.map((e) => e.modele)).toEqual([
       'abonnement-active',
       'abonnement-resilie',
@@ -178,26 +187,47 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
     };
     await traiterEvenementStripe(s, recent);
     expect(await traiterEvenementStripe(s, ancien)).toBe('ignore');
-    expect((await artisan()).plan).toBe('gratuit');
+    expect((await artisan()).droits.formule).toBe('gratuit');
   });
 
-  it('Visibilité seule, puis Premium : les deux abonnements comptent', async () => {
+  it('Fiche Pro, puis Tout inclus pendant le changement : la formule la plus complète l’emporte', async () => {
     await traiterEvenementStripe(
       s,
-      evenement(
-        'customer.subscription.created',
-        abonnement({ id: 'sub_v', cle: 'ph_visibilite_mensuel' }),
-      ),
+      evenement('customer.subscription.created', abonnement({ id: 'sub_v', cle: 'ph_fiche_pro' })),
     );
-    expect(await artisan()).toMatchObject({ plan: 'gratuit', optionVisibilite: true });
+    expect((await artisan()).droits).toMatchObject({
+      formule: 'fiche_pro',
+      coordonneesVisibles: true,
+      sitePro: false,
+    });
     await traiterEvenementStripe(
       s,
       evenement('customer.subscription.created', abonnement({ id: 'sub_p' })),
     );
-    expect(await artisan()).toMatchObject({ plan: 'premium', optionVisibilite: true });
+    expect((await artisan()).droits.formule).toBe('tout_inclus');
   });
 
-  it('facture payée : miroir, reçu, crédits inclus du mois ; échec : relance', async () => {
+  it('PAY-08 : paiement refusé, 7 jours de grâce, puis Gratuit', async () => {
+    await traiterEvenementStripe(
+      s,
+      evenement(
+        'customer.subscription.updated',
+        abonnement({ statut: 'past_due', debut: sec(T) - 2 * JOUR }),
+      ),
+    );
+    expect((await artisan()).droits).toMatchObject({ formule: 'tout_inclus', statut: 'grace' });
+    s = { ...s, horloge: () => T + 6 * JOUR * 1000 };
+    await traiterEvenementStripe(
+      s,
+      evenement(
+        'customer.subscription.updated',
+        abonnement({ statut: 'past_due', debut: sec(T) - 2 * JOUR }),
+      ),
+    );
+    expect((await artisan()).droits.formule).toBe('gratuit');
+  });
+
+  it('facture payée : miroir et reçu ; échec : relance', async () => {
     await traiterEvenementStripe(s, evenement('customer.subscription.created', abonnement({})));
     const facture = {
       id: 'in_1',
@@ -222,10 +252,6 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
       montantHtCentimes: 95_880,
       tvaCentimes: 19_176,
       montantTtcCentimes: 115_056,
-    });
-    expect((await db.doc(chemins.portefeuille('a1')).get()).data()).toMatchObject({
-      creditsInclusRestants: 5,
-      soldeCredits: 0,
     });
     await traiterEvenementStripe(
       s,
@@ -252,25 +278,6 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
       'cus_1',
     );
     expect(envois.map((e) => e.modele)).toEqual(['pack-achete']);
-  });
-
-  it('renouvellement annuel : information 7 jours avant', async () => {
-    await traiterEvenementStripe(s, evenement('customer.subscription.created', abonnement({})));
-    await traiterEvenementStripe(
-      s,
-      evenement('invoice.upcoming', {
-        number: null,
-        customer: 'cus_1',
-        status: 'draft',
-        subscription: 'sub_1',
-        subtotal: 95_880,
-        total: 115_056,
-        currency: 'eur',
-        period_start: sec(T),
-        period_end: sec(T),
-      }),
-    );
-    expect(envois.map((e) => e.modele)).toEqual(['abonnement-active', 'renouvellement']);
   });
 
   it('déblocage payé par carte : finalisé une fois, montant encaissé conservé', async () => {
@@ -350,7 +357,7 @@ describe('Checkout et portail client', () => {
     },
     prices: {
       list: async () => ({
-        data: prix ? [{ id: 'price_pa', lookup_key: 'ph_premium_annuel' }] : [],
+        data: prix ? [{ id: 'price_pa', lookup_key: 'ph_tout_inclus' }] : [],
       }),
     },
     checkout: {
@@ -365,7 +372,23 @@ describe('Checkout et portail client', () => {
       sessions: { create: async () => ({ url: 'https://billing.stripe.com/p/x' }) },
     },
     refunds: { create: async () => ({ id: 're_test' }) },
-    subscriptions: { update: async (id: string) => ({ id }) },
+    subscriptions: {
+      retrieve: async (id: string) => ({
+        ...abonnement({ id, cle: 'ph_fiche_pro' }),
+        schedule: null,
+      }),
+      update: async (id: string, p: Record<string, unknown>) => (
+        appels.push({ type: 'maj', p }),
+        { id }
+      ),
+    },
+    subscriptionSchedules: {
+      create: async () => ({ id: 'sub_sched_1', phases: [{ start_date: 1, end_date: 2 }] }),
+      update: async (id: string, p: Record<string, unknown>) => (
+        appels.push({ type: 'planning', p }),
+        { id }
+      ),
+    },
     coupons: { create: async () => ({ id: 'coupon' }) },
     promotionCodes: { create: async () => ({ id: 'promo_1' }) },
   });
@@ -380,17 +403,13 @@ describe('Checkout et portail client', () => {
     appels.length = 0;
   });
 
-  it('crée le client Stripe une seule fois et une session avec l’entreprise en métadonnées', async () => {
-    const e = {
-      artisanId: 'a1',
-      email: 'p@test.local',
-      produit: 'premium' as const,
-      periode: 'annuel' as const,
-    };
-    expect(await creerCheckoutAbonnement(services(), e)).toEqual({
+  it('sans abonnement : client Stripe créé une seule fois, session Checkout avec l’entreprise', async () => {
+    const e = { artisanId: 'a1', email: 'p@test.local', produit: 'tout_inclus' as const };
+    expect(await changerFormule(services(), e)).toEqual({
+      mode: 'checkout',
       url: 'https://checkout.stripe.com/c/cs_1',
     });
-    await creerCheckoutAbonnement(services(), e);
+    await changerFormule(services(), e);
     expect(appels.filter((a) => a.type === 'client')).toHaveLength(1);
     const session = appels.find((a) => a.type === 'session')!.p;
     expect(session).toMatchObject({
@@ -398,30 +417,55 @@ describe('Checkout et portail client', () => {
       customer: 'cus_nouveau',
       client_reference_id: 'a1',
       line_items: [{ price: 'price_pa', quantity: 1 }],
-      subscription_data: { metadata: { artisanId: 'a1', produit: 'premium' } },
+      subscription_data: { metadata: { artisanId: 'a1', produit: 'tout_inclus' } },
       allow_promotion_codes: true,
-      cancel_url: 'https://ph.test/pro/abonnement/premium?facturation=annuel',
+      cancel_url: 'https://ph.test/pro/abonnement',
     });
   });
 
-  it('refuse un second Premium et une offre sans prix Stripe', async () => {
-    await expect(
-      creerCheckoutAbonnement(services(false), {
+  it('refuse la formule déjà active et une offre sans prix Stripe', async () => {
+    const e = { artisanId: 'a1', email: 'p@test.local', produit: 'fiche_pro' as const };
+    await expect(changerFormule(services(false), e)).rejects.toMatchObject({
+      code: 'INDISPONIBLE',
+    });
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'fiche_pro' });
+    await expect(changerFormule(services(), e)).rejects.toMatchObject({ code: 'PRECONDITION' });
+  });
+
+  it('PAY-03 : montée Fiche Pro → Tout inclus, prorata facturé tout de suite', async () => {
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'fiche_pro' });
+    await db.doc(chemins.facturationPrivee('a1')).set({ stripeSubscriptionId: 'sub_1' });
+    expect(
+      await changerFormule(services(), {
         artisanId: 'a1',
         email: 'p@test.local',
-        produit: 'premium',
-        periode: 'mensuel',
+        produit: 'tout_inclus',
       }),
-    ).rejects.toMatchObject({ code: 'INDISPONIBLE' });
-    await db.doc(chemins.artisan('a1')).update({ plan: 'premium', optionVisibilite: true });
-    await expect(
-      creerCheckoutAbonnement(services(), {
+    ).toEqual({ mode: 'montee', formule: 'tout_inclus' });
+    expect(appels.find((a) => a.type === 'maj')!.p).toMatchObject({
+      items: [{ id: 'si_1', price: 'price_pa' }],
+      proration_behavior: 'always_invoice',
+    });
+    expect(appels.some((a) => a.type === 'session')).toBe(false);
+  });
+
+  it('PAY-04 : descente Tout inclus → Site Pro, effective à l’échéance', async () => {
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'tout_inclus' });
+    await db.doc(chemins.facturationPrivee('a1')).set({ stripeSubscriptionId: 'sub_1' });
+    expect(
+      await changerFormule(services(), {
         artisanId: 'a1',
         email: 'p@test.local',
-        produit: 'visibilite',
-        periode: 'annuel',
+        produit: 'site_pro',
       }),
-    ).rejects.toMatchObject({ code: 'PRECONDITION' });
+    ).toEqual({ mode: 'descente', formule: 'site_pro' });
+    const planning = appels.find((a) => a.type === 'planning')!.p as {
+      phases: { items: { price: string }[]; end_date?: number }[];
+    };
+    expect(planning.phases).toHaveLength(2);
+    expect(planning.phases[0]!.end_date).toBe(2);
+    expect(planning.phases[1]!.items[0]!.price).toBe('price_pa');
+    expect(appels.some((a) => a.type === 'maj')).toBe(false);
   });
 
   it('pack de crédits : prix du catalogue, crédits en métadonnées ; pack inconnu refusé', async () => {
@@ -429,19 +473,19 @@ describe('Checkout et portail client', () => {
       artisanId: 'a1',
       email: 'p@test.local',
       type: 'pack',
-      cle: 'pack_25',
+      cle: 'credits_100',
     });
     expect(appels.find((a) => a.type === 'session')!.p).toMatchObject({
       mode: 'payment',
       line_items: [{ price: 'price_pa', quantity: 1 }],
-      metadata: { type: 'pack', artisanId: 'a1', credits: '25' },
+      metadata: { type: 'pack', artisanId: 'a1', credits: '110' },
     });
     await expect(
       creerCheckoutPaiement(services(), {
         artisanId: 'a1',
         email: 'p@test.local',
         type: 'pack',
-        cle: 'premium_annuel',
+        cle: 'tout_inclus',
       }),
     ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
   });
@@ -504,7 +548,7 @@ describe('lireFacturation', () => {
       });
     const f = await lireFacturation(db, 'a1');
     expect(f.abonnements.map((a) => [a.id, a.produit, a.periode])).toEqual([
-      ['sub_1', 'premium', 'annuel'],
+      ['sub_1', 'tout_inclus', 'mensuel'],
     ]);
     expect(f.factures).toEqual([
       {

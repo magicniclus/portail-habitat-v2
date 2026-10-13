@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -37,8 +38,7 @@ const artisan = (id: string, p: Record<string, unknown> = {}) =>
     nomCommercial: `Entreprise ${id}`,
     statut: 'actif',
     enLigne: true,
-    plan: 'gratuit',
-    optionVisibilite: false,
+    droits: droitsInitiaux('gratuit', new Date(0)),
     metiers: ['peintre'],
     metierPrincipal: 'peintre',
     adresseSiege: { ville: 'Bordeaux' },
@@ -122,7 +122,7 @@ describe('moteur de conversion (CONVERSION §9)', () => {
   });
 
   it('changement d’étape : Premium → S7 ; offre cible Premium (score ≥ 50) → S5', async () => {
-    await artisan('pr', { plan: 'premium' });
+    await artisan('pr', { droits: droitsInitiaux('tout_inclus', new Date(0)) });
     await artisan('fort', {
       metiers: ['a', 'b', 'c'],
       tempsReponseMoyenMin: 30,
@@ -137,7 +137,7 @@ describe('moteur de conversion (CONVERSION §9)', () => {
       offreCible: 'premium',
       sequence: { id: 'S5' },
     });
-    await db.doc(chemins.artisan('pr')).update({ plan: 'gratuit' });
+    await db.doc(chemins.artisan('pr')).update({ droits: droitsInitiaux('gratuit', new Date(0)) });
     await db
       .collection(collections.abonnements)
       .doc('sub')
@@ -157,7 +157,9 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     await calculerCycles(s(T0));
     const etat = () => db.collection(collections.cycleEtat).doc('moi').get();
     expect((await etat()).get('signaux')).toMatchObject({ position: 1, total: 2, misesEnAvant: 0 });
-    await db.doc(chemins.artisan('rival')).update({ optionVisibilite: true });
+    await db
+      .doc(chemins.artisan('rival'))
+      .update({ droits: droitsInitiaux('fiche_pro', new Date(0)) });
     await calculerCycles(s(T0 + J));
     expect((await etat()).data()).toMatchObject({
       signaux: { position: 2, positionPrec: 1, misesEnAvant: 1 },
@@ -215,7 +217,7 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await ref.get()).get('signal')).toBeUndefined();
   });
   it('plus de 40 € d’appels d’offres en 30 jours : signal « prem-credits » avec les montants', async () => {
-    await artisan('cr', { optionVisibilite: true });
+    await artisan('cr', { droits: droitsInitiaux('fiche_pro', new Date(0)) });
     const achat = (moyen: string, prixHtCentimes: number, credits: number) =>
       db.collection(collections.achatsLeads).add({
         artisanId: 'cr',
@@ -245,8 +247,16 @@ describe('moteur de conversion (CONVERSION §9)', () => {
   it('lundi : « prem-demandes-manquees » si 2 exclusives de son métier sont parties dans sa zone', async () => {
     const bordeaux = { latitude: 44.84, longitude: -0.58 };
     const zone = { centre: bordeaux, geohash: 'ezzz', rayonKm: 20 };
-    await artisan('vis', { optionVisibilite: true, metiers: ['plombier'], zoneIntervention: zone });
-    await artisan('seul', { optionVisibilite: true, metiers: ['peintre'], zoneIntervention: zone });
+    await artisan('vis', {
+      droits: droitsInitiaux('fiche_pro', new Date(0)),
+      metiers: ['plombier'],
+      zoneIntervention: zone,
+    });
+    await artisan('seul', {
+      droits: droitsInitiaux('fiche_pro', new Date(0)),
+      metiers: ['peintre'],
+      zoneIntervention: zone,
+    });
     await db.doc(chemins.prestationItem('sdb')).set({ nom: 'Salle de bain' });
     for (const [id, min, max] of [
       ['d1', 800_000, 1_000_000],
@@ -311,7 +321,10 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await traces('tache_creee')).map((t) => t.details.tache)).toEqual(['appel_activation']);
   });
   it('Premium : 4e demande garantie du mois → « garantie-tenue », une fois par mois', async () => {
-    await artisan('gar', { plan: 'premium', demandesRecuesMois: 4 });
+    await artisan('gar', {
+      droits: droitsInitiaux('tout_inclus', new Date(0)),
+      demandesRecuesMois: 4,
+    });
     await calculerCycles(s(T0));
     const ref = db.collection(collections.cycleEtat).doc('gar');
     await ref.update({ groupeTemoin: false });
@@ -328,7 +341,7 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await ref.get()).get('signal')).toBeUndefined();
   });
   it('Premium mensuel : « passage-annuel » après la 3e échéance payée, une seule fois', async () => {
-    await artisan('men', { plan: 'premium' });
+    await artisan('men', { droits: droitsInitiaux('tout_inclus', new Date(0)) });
     await db
       .collection(collections.abonnements)
       .doc('sub_men')
@@ -360,7 +373,7 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await ref.get()).get('signal')).toBeUndefined();
   });
   it('Visibilité annuelle : « prem-renouvellement » 30 jours avant le renouvellement', async () => {
-    await artisan('ren', { optionVisibilite: true });
+    await artisan('ren', { droits: droitsInitiaux('fiche_pro', new Date(0)) });
     await db
       .collection(collections.abonnements)
       .doc('sub_ren')
@@ -388,9 +401,13 @@ describe('moteur de conversion (CONVERSION §9)', () => {
   it('Visibilité : appel d’offres de son métier complet avant le résumé de 7 h, une fois par semaine', async () => {
     const bordeaux = { latitude: 44.84, longitude: -0.58 };
     const zone = { centre: bordeaux, geohash: 'ezzz', rayonKm: 20 };
-    await artisan('vac', { optionVisibilite: true, metiers: ['plombier'], zoneIntervention: zone });
+    await artisan('vac', {
+      droits: droitsInitiaux('fiche_pro', new Date(0)),
+      metiers: ['plombier'],
+      zoneIntervention: zone,
+    });
     await artisan('autre', {
-      optionVisibilite: true,
+      droits: droitsInitiaux('fiche_pro', new Date(0)),
       metiers: ['peintre'],
       zoneIntervention: zone,
     });

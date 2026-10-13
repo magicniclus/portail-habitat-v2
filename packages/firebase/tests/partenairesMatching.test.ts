@@ -1,3 +1,4 @@
+import { formuleMigree } from '@ph/core/paiements';
 import { encoderGeohash } from '@ph/core/geo';
 import { createHash } from 'node:crypto';
 import { GeoPoint, getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -12,7 +13,6 @@ import {
   type ServicesMatching,
 } from '../src/serveur/matching';
 import { importerDemandePartenaire, type ServicesImport } from '../src/serveur/partenaires';
-import { marquerDemandesVues } from '../src/serveur/pro';
 import { lireFichiersSeed } from '../src/seed/fichiers';
 import { documentsReferentiel } from '../src/seed/referentiel';
 
@@ -89,8 +89,7 @@ async function artisan(id: string, p: { plan?: string; rge?: string[] | null } =
       verification: { statut: 'verifie', verifieLe: Timestamp.fromMillis(T - 100 * 86_400_000) },
       labelsVerifies: { decennale: {} },
       ...(p.rge !== null ? { rge: { verifie: true, domaines: p.rge ?? [] } } : {}),
-      plan,
-      optionVisibilite: plan !== 'gratuit',
+      droits: { formule: formuleMigree({ plan, optionVisibilite: plan !== 'gratuit' }) },
       quotaDemandesMois: plan === 'premium' ? 4 : 0,
       demandesRecuesMois: 0,
       noteMoyenne: 4.7,
@@ -160,7 +159,7 @@ describe('matching des demandes partenaires', () => {
     await artisan('sansrge', { plan: 'premium', rge: null });
     await artisan('autredomaine', { plan: 'premium', rge: ['chauffage'] });
     const id = await importer();
-    expect(await attribuerDemande(mat, id)).toBe('attribuee');
+    expect(await attribuerDemande(mat, id)).toBe('appel_offres');
     const trace = (await db.collection(collections.matching).doc(id).get()).get('candidats') as {
       artisanId: string;
       exclu?: string;
@@ -168,16 +167,11 @@ describe('matching des demandes partenaires', () => {
     expect(trace.filter((c) => !c.exclu).map((c) => c.artisanId)).toEqual(['rge']);
   });
 
-  it('A : exclusive Premium réattribuée si non vue sous 2 h ; vue, le délai normal revient', async () => {
+  it('A : appel d’offres, plus de demande exclusive (D31, PAIEMENTS §2)', async () => {
     await artisan('prem', { plan: 'premium' });
     const id = await importer();
-    await attribuerDemande(mat, id);
-    const ref = db.doc(chemins.attribution(id, 'prem'));
-    expect((await ref.get()).get('expireLe').toMillis()).toBe(T + 2 * H);
-    expect((await ref.get()).get('expireLeSiVue').toMillis()).toBe(T + 24 * H);
-    expect(await marquerDemandesVues(mat, 'prem')).toBe(1);
-    expect((await ref.get()).data()).toMatchObject({ statut: 'vue' });
-    expect((await ref.get()).get('expireLe').toMillis()).toBe(T + 24 * H);
+    expect(await attribuerDemande(mat, id)).toBe('appel_offres');
+    expect((await db.doc(chemins.attribution(id, 'prem')).get()).exists).toBe(false);
   });
 
   it('IMP-05 : niveau C jamais exclusive ; prix × 0,4 (niveau) × 1,2 (éligible)', async () => {

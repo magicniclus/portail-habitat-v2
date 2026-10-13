@@ -46,8 +46,8 @@ describe('jeu de données (COMPTES §6.4)', () => {
   it('60 artisans, tous plans et statuts de vérification', () => {
     const artisans = dans(/^artisans\/[^/]+$/);
     expect(artisans).toHaveLength(60);
-    expect(new Set(artisans.map((a) => a.plan))).toEqual(
-      new Set(['gratuit', 'visibilite', 'premium']),
+    expect(new Set(artisans.map((a) => (a.droits as { formule: string }).formule))).toEqual(
+      new Set(['gratuit', 'fiche_pro', 'tout_inclus']),
     );
     expect(new Set(artisans.map((a) => (a.verification as { statut: string }).statut))).toEqual(
       new Set(['a_faire', 'en_cours', 'verifie', 'refuse', 'expire']),

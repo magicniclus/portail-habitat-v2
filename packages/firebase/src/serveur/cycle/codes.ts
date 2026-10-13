@@ -1,3 +1,4 @@
+import { FORMULE_ETAPE } from '@ph/core/paiements';
 import { codePersonnel, type CodeActif } from '@ph/core/conversion';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { randomInt } from 'node:crypto';
@@ -42,7 +43,8 @@ export async function reserverCode(
         pourcentage: e.pourcentage,
         duree: 'repeating',
         dureeMois: e.dureeMois,
-        produits: [e.produit],
+        // Code valable pour la formule qui remplace l'offre de l'étape (D60).
+        produits: [FORMULE_ETAPE[e.produit]],
         actif: true,
         utilisations: 0,
         maxUtilisations: 1,

@@ -1,3 +1,4 @@
+import { droitsDe } from '@ph/core/paiements';
 import { compterDemandeRecue } from '../annuaire/statsFiche';
 import { masquerCoordonnees } from '@ph/core/espace';
 import {
@@ -50,7 +51,8 @@ export interface ServicesMatching {
 export type ResultatAttribution =
   'attribuee' | 'appel_offres' | 'aucun_candidat' | 'moderation' | 'deja_traitee';
 
-const FENETRE_PREMIUM_MIN = 60;
+/** Avance de Tout inclus sur les appels d'offres (PAIEMENTS §2 : 12 h). */
+const FENETRE_PREMIUM_MIN = droitsDe('tout_inclus').avanceAppelsOffresH * 60;
 const DUREE_APPEL_OFFRES_MS = 7 * 86_400_000;
 
 function signauxLead(d: DocumentData, emailVerifie: boolean) {
@@ -139,15 +141,16 @@ async function analyser(
         : {}),
     }),
   );
-  const candidats = evaluer(artisans, demande, config, dejaVus);
-  const aiguillage = aiguiller(candidats, demande.artisanCibleId);
-  // Appel d'offres : le quota de demandes garanties ne compte pas (ouvert à toutes les formules).
-  const eligiblesAppel = evaluer(
+  // Plus de quota de demandes garanties (D31, D56) : demandes de la fiche et appels d'offres
+  // sont ouverts à toutes les formules.
+  const candidats = evaluer(
     artisans.map((a) => ({ ...a, quotaDemandesMois: Number.MAX_SAFE_INTEGER })),
     demande,
     config,
     dejaVus,
-  ).filter((c) => !c.raisonExclusion);
+  );
+  const aiguillage = aiguiller(candidats, demande.artisanCibleId);
+  const eligiblesAppel = candidats.filter((c) => !c.raisonExclusion);
 
   const trace = (resultat: string, retenus: Candidat[]) => ({
     schemaVersion: 1,
@@ -252,9 +255,7 @@ export async function attribuerDemande(
       : expire;
     const ok = await s.db.runTransaction(async (t) => {
       const [dem, art] = await Promise.all([t.get(refDemande), t.get(refArtisan)]);
-      if (dem.get('statut') !== 'nouvelle') return false;
-      // Quota revérifié dans la transaction : deux demandes simultanées ne le dépassent pas.
-      if ((art.get('demandesRecuesMois') ?? 0) >= (art.get('quotaDemandesMois') ?? 0)) return false;
+      if (dem.get('statut') !== 'nouvelle' || !art.exists) return false;
       t.create(s.db.doc(chemins.attribution(demandeId, choisi.artisanId)), {
         schemaVersion: 1,
         artisanId: choisi.artisanId,

@@ -1,3 +1,4 @@
+import { droitsInitiaux, formuleMigree } from '@ph/core/paiements';
 import { permissionsEffectives } from '@ph/core/admin';
 import { slugifier } from '@ph/core/format';
 import { encoderGeohash } from '@ph/core/geo';
@@ -241,8 +242,11 @@ export function genererEntreprises(c: ContexteSeed): EntrepriseSeed[] {
       demandeOfferteUtilisee: false,
       budgetCle: demo?.budgetCle ?? h.choisir(['petit', 'moyen', 'grand'] as const),
       delaiDispoJours: demo?.delaiJ ?? h.entier(2, 30),
-      plan,
-      optionVisibilite: plan !== 'gratuit',
+      // Anciennes formules du jeu de données migrées (D60) : Visibilité → Fiche Pro, Premium → Tout inclus.
+      droits: droitsInitiaux(
+        formuleMigree({ plan, optionVisibilite: plan !== 'gratuit' }),
+        c.maintenant,
+      ),
       verification: {
         statut: verification,
         ...(verification === 'verifie'

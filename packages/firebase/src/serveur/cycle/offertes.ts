@@ -60,13 +60,12 @@ export async function offrirDemandesInvendues(
       await s.db
         .collection(collections.artisans)
         .where('metiers', 'array-contains', metier)
-        .where('plan', '==', 'gratuit')
+        .where('droits.formule', '==', 'gratuit')
         .get()
     ).docs.filter(
       (a) =>
         a.get('statut') === 'actif' &&
         a.get('enLigne') === true &&
-        a.get('optionVisibilite') !== true &&
         a.get('zoneIntervention.centre'),
     );
     if (!artisans.length) continue;
@@ -156,7 +155,9 @@ export async function attribuerDemandeOfferte(
   if (!offre || etat.get('demandeOfferteRecue') === true || offre.jusqua.toMillis() < maintenant)
     return null;
   const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
-  if (artisan.get('optionVisibilite') !== true && artisan.get('plan') !== 'premium') return null;
+  // Offerte contre une formule payante (CONV-07 ; Visibilité → Fiche Pro, D60).
+  if (((artisan.get('droits.formule') as string | undefined) ?? 'gratuit') === 'gratuit')
+    return null;
   try {
     const r = await debloquerAppelOffres(s, {
       appelOffresId: offre.appelOffresId,

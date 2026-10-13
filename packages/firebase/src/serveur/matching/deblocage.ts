@@ -66,7 +66,7 @@ export async function debloquerAppelOffres(
     if (!m || !peut(m, 'leads.debloquer')) throw new ErreurMetier('PERMISSION_REFUSEE');
     if (ao.get('statut') !== 'ouvert' || ao.get('nbDeblocages') >= ao.get('nbDeblocagesMax'))
       throw new ErreurMetier('CONFLIT', 'Complet : toutes les places ont été prises.');
-    const premium = artisan.get('plan') === 'premium';
+    const premium = artisan.get('droits.formule') === 'tout_inclus';
     const acces = accesAppelOffres(
       {
         acces: ao.get('acces') as AccesAppelOffres,

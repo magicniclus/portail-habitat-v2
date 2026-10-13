@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { encoderGeohash } from '@ph/core/geo';
 import { lireFiltresAnnuaire } from '@ph/core/annuaire';
 import { artisan } from '@ph/core/schemas';
@@ -59,8 +60,7 @@ async function creerArtisan(
       rayonAccepteLe: new Date(T),
     },
     source: 'direct',
-    plan: 'gratuit',
-    optionVisibilite: false,
+    droits: droitsInitiaux('gratuit', new Date(0)),
     verification: { statut: 'verifie' },
     quotaDemandesMois: 0,
     enLigne: true,
@@ -115,7 +115,11 @@ describe('recherche géographique', () => {
     });
     await creerArtisan('paris', { centre: { latitude: 48.8566, longitude: 2.3522 } });
     await creerArtisan('prem', {
-      autres: { plan: 'premium', optionVisibilite: true, siegesMax: 3, quotaDemandesMois: 4 },
+      autres: {
+        droits: droitsInitiaux('tout_inclus', new Date(0)),
+        siegesMax: 3,
+        quotaDemandesMois: 4,
+      },
     });
     const a20 = (await fichesAutour(db, BORDEAUX, 20)).map((a) => a.id).sort();
     expect(a20).toEqual(['pessac', 'prem', 'proche']);

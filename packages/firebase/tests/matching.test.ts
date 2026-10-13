@@ -1,3 +1,4 @@
+import { formuleMigree } from '@ph/core/paiements';
 import { encoderGeohash } from '@ph/core/geo';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -47,8 +48,7 @@ async function artisan(
       zoneIntervention: { centre, rayonKm: 30 },
       verification: { statut: 'verifie', verifieLe: Timestamp.fromMillis(T - 100 * 86_400_000) },
       labelsVerifies: { decennale: { verifieLe: Timestamp.fromMillis(T) } },
-      plan,
-      optionVisibilite: plan !== 'gratuit',
+      droits: { formule: formuleMigree({ plan, optionVisibilite: plan !== 'gratuit' }) },
       quotaDemandesMois: p.quota ?? (plan === 'premium' ? 4 : 0),
       demandesRecuesMois: p.recues ?? 0,
       noteMoyenne: 4.7,
@@ -104,11 +104,11 @@ beforeEach(async () => {
   ]);
 });
 
-describe('attribuerDemande (MATCHING, D41)', () => {
-  it('Premium avec quota : demande garantie exclusive, compteur, trace, notification', async () => {
-    await artisan('prem', { plan: 'premium' });
-    await artisan('grat', {});
-    await demande('d1');
+describe('attribuerDemande (MATCHING, D31)', () => {
+  it('envoyée depuis la fiche : pour l’artisan seul, gratuit compris, compteur, trace, notification', async () => {
+    await artisan('prem', {});
+    await artisan('grat', { plan: 'premium' });
+    await demande('d1', { artisanCibleId: 'prem' });
     expect(await attribuerDemande(s, 'd1')).toBe('attribuee');
     const att = await db.doc(chemins.attribution('d1', 'prem')).get();
     expect(att.data()).toMatchObject({ statut: 'proposee', exclusive: true, rang: 1 });
@@ -129,7 +129,7 @@ describe('attribuerDemande (MATCHING, D41)', () => {
     expect(await attribuerDemande(s, 'd1')).toBe('deja_traitee');
   });
 
-  it('aucun Premium disponible : appel d’offres anonymisé, 60 min d’avance Premium (D50)', async () => {
+  it('sans artisan ciblé : appel d’offres anonymisé, 12 h d’avance Tout inclus (PAIEMENTS §2)', async () => {
     await artisan('prem', { plan: 'premium', recues: 4 });
     await artisan('grat', {});
     await demande('d2');
@@ -138,7 +138,7 @@ describe('attribuerDemande (MATCHING, D41)', () => {
     expect(ao).toMatchObject({
       statut: 'ouvert',
       acces: 'premium_prioritaire',
-      fenetrePremiumMin: 60,
+      fenetrePremiumMin: 720,
       nbDeblocagesMax: 3,
       nbDeblocages: 0,
       metier: 'peintre',
@@ -151,7 +151,7 @@ describe('attribuerDemande (MATCHING, D41)', () => {
     const invites = envois.filter((e) => e.modele === 'nouvel-appel-offres');
     expect(invites.map((e) => e.destinataire.uid).sort()).toEqual(['u-grat', 'u-prem']);
     expect(invites.find((e) => e.destinataire.uid === 'u-grat')!.envoyerLe!.getTime()).toBe(
-      T + 60 * 60_000,
+      T + 720 * 60_000,
     );
     expect(invites.find((e) => e.destinataire.uid === 'u-prem')!.envoyerLe).toBeUndefined();
   });
@@ -175,8 +175,8 @@ describe('attribuerDemande (MATCHING, D41)', () => {
     expect((await db.doc(chemins.attribution('d4', 'prem')).get()).exists).toBe(false);
   });
 
-  it('artisan ciblé depuis sa fiche : la demande garantie lui revient s’il est Premium', async () => {
-    await artisan('prem1', { plan: 'premium' });
+  it('artisan ciblé depuis sa fiche : la demande lui revient, même si un autre est plus proche', async () => {
+    await artisan('prem1', {});
     await artisan('prem2', { plan: 'premium', centre: FLOIRAC });
     await demande('d5', { artisanCibleId: 'prem1' });
     expect(await attribuerDemande(s, 'd5')).toBe('attribuee');
@@ -186,9 +186,9 @@ describe('attribuerDemande (MATCHING, D41)', () => {
 
 describe('relancerMatching (MATCHING [7])', () => {
   it('garantie non acceptée dans le délai : expirée puis appel d’offres sans réinviter l’artisan', async () => {
-    await artisan('prem', { plan: 'premium' });
+    await artisan('prem', {});
     await artisan('grat', {});
-    await demande('d10');
+    await demande('d10', { artisanCibleId: 'prem' });
     await attribuerDemande(s, 'd10');
     const plusTard = { ...s, horloge: () => T + 25 * 3_600_000 };
     envois = [];
@@ -205,9 +205,9 @@ describe('relancerMatching (MATCHING [7])', () => {
   });
 
   it('refus d’une garantie : appel d’offres au passage suivant', async () => {
-    await artisan('prem', { plan: 'premium' });
+    await artisan('prem', {});
     await artisan('grat', {});
-    await demande('d11');
+    await demande('d11', { artisanCibleId: 'prem' });
     await attribuerDemande(s, 'd11');
     await db.doc(chemins.attribution('d11', 'prem')).update({
       statut: 'refusee',

@@ -165,12 +165,12 @@ async function contexteFiches(db: Firestore) {
   const r = await db
     .collection(collections.artisans)
     .where('enLigne', '==', true)
-    .select('plan', 'completude', 'nbAvis', 'noteMoyenne')
+    .select('droits.formule', 'completude', 'nbAvis', 'noteMoyenne')
     .get();
   const parPlan: Record<string, { fiches: number; completudeMoyenne: number; avecAvis: number }> =
     {};
   for (const d of r.docs) {
-    const p = (parPlan[d.get('plan') as string] ??= {
+    const p = (parPlan[(d.get('droits.formule') as string | undefined) ?? 'gratuit'] ??= {
       fiches: 0,
       completudeMoyenne: 0,
       avecAvis: 0,

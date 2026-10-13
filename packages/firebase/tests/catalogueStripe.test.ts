@@ -46,7 +46,15 @@ describe('synchroniserCatalogueStripe', () => {
     const premier = await synchroniserCatalogueStripe(f.client);
     expect(premier.every((l) => l.etat === 'cree')).toBe(true);
     expect(premier).toHaveLength(CATALOGUE_STRIPE.length);
-    expect([...f.produits].sort()).toEqual(['ph_pack', 'ph_premium', 'ph_siege', 'ph_visibilite']);
+    expect([...f.produits].sort()).toEqual([
+      'ph_credits',
+      'ph_fiche_pro',
+      'ph_ia',
+      'ph_pack_fiche_site',
+      'ph_siege',
+      'ph_site_pro',
+      'ph_tout_inclus',
+    ]);
     const second = await synchroniserCatalogueStripe(f.client);
     expect(second.every((l) => l.etat === 'a_jour')).toBe(true);
   });

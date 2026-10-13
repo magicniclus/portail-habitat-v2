@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -5,7 +6,7 @@ import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins, collections } from '../src/chemins';
 import { calculerCycles, expirerCodes, planifierCycle } from '../src/serveur/cycle';
 import {
-  creerCheckoutAbonnement,
+  changerFormule,
   traiterEvenementStripe,
   type EvenementStripe,
 } from '../src/serveur/facturation';
@@ -26,7 +27,7 @@ let coupons = 0;
 const stripe = {
   customers: { create: async () => ({ id: 'cus_1' }) },
   prices: {
-    list: async () => ({ data: [{ id: 'price_va', lookup_key: 'ph_visibilite_annuel' }] }),
+    list: async () => ({ data: [{ id: 'price_va', lookup_key: 'ph_fiche_pro' }] }),
   },
   checkout: {
     sessions: {
@@ -38,7 +39,16 @@ const stripe = {
   },
   billingPortal: { sessions: { create: async () => ({ url: 'x' }) } },
   refunds: { create: async () => ({ id: 're_1' }) },
-  subscriptions: { update: async (id: string) => ({ id }) },
+  subscriptions: {
+    retrieve: async () => {
+      throw new Error('inutile');
+    },
+    update: async (id: string) => ({ id }),
+  },
+  subscriptionSchedules: {
+    create: async () => ({ id: 'sched', phases: [] }),
+    update: async (id: string) => ({ id }),
+  },
   coupons: {
     create: async (p: Record<string, unknown>) => {
       appels.push({ type: 'coupon', p });
@@ -70,8 +80,7 @@ beforeEach(async () => {
     nomCommercial: 'Élec Dupont',
     statut: 'actif',
     enLigne: true,
-    plan: 'gratuit',
-    optionVisibilite: false,
+    droits: droitsInitiaux('gratuit', new Date(T0)),
     metiers: ['electricien'],
     metierPrincipal: 'electricien',
     adresseSiege: { ville: 'Bordeaux' },
@@ -111,7 +120,7 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     expect(offre.donnees).toMatchObject({
       pourcentage: 30,
       expire: 'vendredi 23 octobre à 23 h 59',
-      lien: `https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=${code}`,
+      lien: `https://portailhabitat.fr/pro/abonnement?offre=fiche&code=${code}`,
     });
     const doc = (await db.collection(collections.codesPromo).doc(code).get()).data()!;
     expect(doc).toMatchObject({
@@ -119,7 +128,7 @@ describe('codes promo personnels (CONVERSION §6)', () => {
       artisanId: 'a1',
       pourcentage: 30,
       dureeMois: 12,
-      produits: ['visibilite'],
+      produits: ['fiche_pro'],
       maxUtilisations: 1,
       utilisations: 0,
       actif: true,
@@ -175,12 +184,11 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     const e = {
       artisanId: 'a1',
       email: 'p@test.local',
-      produit: 'visibilite' as const,
-      periode: 'annuel' as const,
+      produit: 'fiche_pro' as const,
       code,
     };
-    await creerCheckoutAbonnement(checkout(T0 + 15 * J), e);
-    await creerCheckoutAbonnement(checkout(T0 + 15 * J), e);
+    await changerFormule(checkout(T0 + 15 * J), e);
+    await changerFormule(checkout(T0 + 15 * J), e);
     const promos = appels.filter((a) => a.type === 'promo');
     expect(promos).toHaveLength(1);
     expect(promos[0]!.p).toMatchObject({
@@ -205,11 +213,11 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     expect(session.subscription_data).toMatchObject({ metadata: { codePromo: code } });
 
     // Code d'une autre entreprise, ou expiré : refusé.
-    await db.doc(chemins.artisan('autre')).set({ plan: 'gratuit', optionVisibilite: false });
+    await db.doc(chemins.artisan('autre')).set({ droits: { formule: 'gratuit' } });
     await expect(
-      creerCheckoutAbonnement(checkout(T0 + 15 * J), { ...e, artisanId: 'autre' }),
+      changerFormule(checkout(T0 + 15 * J), { ...e, artisanId: 'autre' }),
     ).rejects.toMatchObject({ code: 'PRECONDITION' });
-    await expect(creerCheckoutAbonnement(checkout(T0 + 18 * J), e)).rejects.toMatchObject({
+    await expect(changerFormule(checkout(T0 + 18 * J), e)).rejects.toMatchObject({
       code: 'PRECONDITION',
     });
 
@@ -222,13 +230,13 @@ describe('codes promo personnels (CONVERSION §6)', () => {
           id: 'sub_1',
           customer: 'cus_1',
           status: 'active',
-          metadata: { artisanId: 'a1', produit: 'visibilite', codePromo: code },
+          metadata: { artisanId: 'a1', produit: 'fiche_pro', codePromo: code },
           cancel_at_period_end: false,
           canceled_at: null,
           items: {
             data: [
               {
-                price: { id: 'price_va', lookup_key: 'ph_visibilite_annuel' },
+                price: { id: 'price_va', lookup_key: 'ph_fiche_pro' },
                 quantity: 1,
                 current_period_start: Math.floor((T0 + 15 * J) / 1000),
                 current_period_end: Math.floor((T0 + 380 * J) / 1000),
@@ -252,7 +260,7 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     expect((await traces('conversion')).map((t) => t.details.etape)).toEqual(['visibilite']);
     expect((await traces('conversion'))[0]).toMatchObject({
       modele: 'vis-offre-lancement',
-      details: { montantHtCentimes: 5593, temoin: false },
+      details: { montantHtCentimes: 2030, temoin: false },
     });
     envois.length = 0;
     await planifierCycle(cycle(T0 + 17 * J + 3_600_000));

@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { ETAPES_ENTONNOIR } from '@ph/core/ia';
 import { entreeAnalyseIa } from '@ph/core/schemas';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -205,7 +206,7 @@ describe('calculerContextesIa', () => {
     });
     await db.doc(`${collections.artisans}/a1`).set({
       enLigne: true,
-      plan: 'gratuit',
+      droits: droitsInitiaux('gratuit', new Date(0)),
       completude: 80,
       nbAvis: 2,
       email: 'pierre@exemple.fr',

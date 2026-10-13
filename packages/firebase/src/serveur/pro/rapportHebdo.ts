@@ -20,7 +20,7 @@ export async function envoyerRapportsHebdo(s: {
   const depuis = jourParis(maintenant - 14 * J);
   const premium = await s.db
     .collection(collections.artisans)
-    .where('plan', '==', 'premium')
+    .where('droits.formule', '==', 'tout_inclus')
     .where('enLigne', '==', true)
     .get();
   let envoyes = 0;

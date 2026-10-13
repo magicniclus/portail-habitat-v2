@@ -259,7 +259,7 @@ export function genererAppelsOffres(
       nbDeblocagesMax: 3,
       nbDeblocages,
       acces: 'premium_prioritaire',
-      fenetrePremiumMin: 60,
+      fenetrePremiumMin: 720,
       ouvertLe: d.createdAt,
       ouvertJusquau: new Date(d.createdAt.getTime() + 7 * JOUR),
       statut,

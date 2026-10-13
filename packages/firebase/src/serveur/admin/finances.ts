@@ -1,3 +1,4 @@
+import { FORMULES_PAYANTES, type FormulePayante } from '@ph/core/paiements';
 import { bornesMois, mrrCentimes, prixPack, type PieceComptable } from '@ph/core/admin';
 import { tvaDe } from '@ph/core/facturation';
 import { AggregateField, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -8,7 +9,8 @@ import { auditerAdmin } from './audit';
 
 export interface FinancesAdmin {
   mrr: number;
-  abonnes: { premium: number; visibilite: number; premiumAnnuel: number; visibiliteAnnuel: number };
+  /** Abonnés actifs par formule (PAIEMENTS §6). */
+  abonnes: Record<FormulePayante, number>;
   appelsOffres30j: { ht: number; deblocages: number };
   factures: {
     id: string;
@@ -57,24 +59,20 @@ export async function lireFinancesAdmin(db: Firestore, maintenant: number): Prom
   ]);
   const lignes = abos.docs.map((a) => ({
     produit: a.get('produit') as string,
-    periode: a.get('periode') as string,
     statut: a.get('statut') as string,
     sieges: (a.get('sieges') as number | undefined) ?? 0,
   }));
-  const compte = (produit: string, annuel = false) =>
-    lignes.filter((l) => l.produit === produit && (!annuel || l.periode === 'annuel')).length;
+  const compte = (produit: string) => lignes.filter((l) => l.produit === produit).length;
   const noms = await nomsArtisans(db, [
     ...factures.docs.map((f) => f.get('artisanId') as string),
     ...remb.docs.map((r) => r.get('artisanId') as string),
   ]);
   return {
     mrr: mrrCentimes(lignes),
-    abonnes: {
-      premium: compte('premium'),
-      visibilite: compte('visibilite'),
-      premiumAnnuel: compte('premium', true),
-      visibiliteAnnuel: compte('visibilite', true),
-    },
+    abonnes: Object.fromEntries(FORMULES_PAYANTES.map((f) => [f, compte(f)])) as Record<
+      FormulePayante,
+      number
+    >,
     appelsOffres30j: { ht: ao.data().ht ?? 0, deblocages: ao.data().n },
     factures: factures.docs.map((f) => ({
       id: f.id,

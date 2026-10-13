@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { baremeDepuisSaisie, permissionsEffectives, saisieDepuisBareme } from '@ph/core/admin';
@@ -206,7 +207,7 @@ describe('artisans dans l’admin (ADMIN §2.3)', () => {
       adresseSiege: { ville: 'Bordeaux' },
       emailContact: 'contact@bertrand.fr',
       telephonePublic: '+33612345678',
-      plan: 'premium',
+      droits: droitsInitiaux('tout_inclus', new Date(0)),
       statut: 'actif',
       enLigne: true,
       verification: { statut: 'en_cours' },
@@ -608,7 +609,7 @@ describe('appels d’offres et prix dans l’admin (ADMIN §2.5)', () => {
     expect(await tarif('ao1')).toMatchObject({
       mode: 'auto',
       prixBaseCentimes: 1500,
-      prixPremiumCentimes: 1100,
+      prixPremiumCentimes: 1300,
       prixCredits: 2,
     });
     const f = (await lireAppelOffresAdmin(db, 'ao1'))!;
@@ -1032,15 +1033,15 @@ describe('finances (ADMIN §2.8)', () => {
     await db.doc(chemins.artisan('a1')).set({ nomCommercial: 'Bertrand' });
     await db.collection(collections.abonnements).doc('sub1').set({
       artisanId: 'a1',
-      produit: 'premium',
+      produit: 'tout_inclus',
       periode: 'mensuel',
       statut: 'active',
       sieges: 0,
     });
     await db.collection(collections.abonnements).doc('sub2').set({
       artisanId: 'a1',
-      produit: 'visibilite',
-      periode: 'annuel',
+      produit: 'fiche_pro',
+      periode: 'mensuel',
       statut: 'canceled',
       sieges: 0,
     });
@@ -1093,11 +1094,11 @@ describe('finances (ADMIN §2.8)', () => {
     await db
       .collection(chemins.mouvements('a1'))
       .doc('ev1')
-      .set({ type: 'achat_pack', credits: 10, refId: 'cs_1', createdAt: Timestamp.fromMillis(T) });
+      .set({ type: 'achat_pack', credits: 110, refId: 'cs_1', createdAt: Timestamp.fromMillis(T) });
     const f = await lireFinancesAdmin(db, T);
     expect(f).toMatchObject({
-      mrr: 9990,
-      abonnes: { premium: 1, visibilite: 0 },
+      mrr: 4900,
+      abonnes: { tout_inclus: 1, fiche_pro: 0, site_pro: 0, pack_fiche_site: 0 },
       appelsOffres30j: { ht: 1900, deblocages: 2 },
     });
     expect(f.factures[0]).toMatchObject({
@@ -1108,7 +1109,7 @@ describe('finances (ADMIN §2.8)', () => {
     expect(pieces.map((p) => [p.piece, p.ht, p.ttc]).sort()).toEqual([
       ['AL-al1', 1900, 2280],
       ['F-2026-0001', 9990, 11988],
-      ['PK-cs_1', 9000, 10800],
+      ['PK-cs_1', 10000, 12000],
     ]);
     const audit = await db
       .collection(collections.auditLog)

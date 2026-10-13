@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { entreeFinaliserOnboarding } from '@ph/core/schemas';
 import { getAuth, type Auth } from 'firebase-admin/auth';
@@ -121,7 +122,7 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
     expect(slug).toBe('bertrand-renovation-bordeaux');
     const a = (await db.doc(chemins.artisan(artisanId)).get()).data()!;
     expect(a).toMatchObject({
-      plan: 'gratuit',
+      droits: { ...droitsInitiaux('gratuit', new Date(0)), majLe: expect.anything() },
       siegesMax: 1,
       nbMembres: 1,
       enLigne: false,

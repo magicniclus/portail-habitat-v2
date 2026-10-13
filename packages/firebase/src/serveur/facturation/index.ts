@@ -13,18 +13,14 @@ export {
   type ServicesResiliation,
 } from './resiliation';
 export {
-  creerCheckoutAbonnement,
+  changerFormule,
+  type ChangementFormule,
   creerCheckoutPaiement,
   ouvrirPortailClient,
   type AchatCarte,
   type ServicesCheckout,
 } from './checkout';
-export {
-  CREDITS_INCLUS_PREMIUM,
-  traiterEvenementStripe,
-  type ResultatWebhook,
-  type ServicesFacturation,
-} from './webhook';
+export { traiterEvenementStripe, type ResultatWebhook, type ServicesFacturation } from './webhook';
 export type {
   AbonnementStripe,
   ClientStripe,

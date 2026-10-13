@@ -166,8 +166,18 @@ const CAS: Cas[] = [
     autorises: ['proprietaire', 'gerant'],
   },
   {
-    nom: 'modifier son plan (webhook Stripe uniquement)',
-    op: { maj: 'artisans/a1', donnees: { plan: 'premium' } },
+    nom: 'PAY-05 : passer en Tout inclus soi-même (webhook Stripe uniquement)',
+    op: { maj: 'artisans/a1', donnees: { 'droits.formule': 'tout_inclus' } },
+    autorises: [],
+  },
+  {
+    nom: 'PAY-05 : réécrire ses droits en entier',
+    op: { maj: 'artisans/a1', donnees: { droits: { formule: 'tout_inclus', sitePro: true } } },
+    autorises: [],
+  },
+  {
+    nom: 'changer son nombre de sièges (webhook Stripe uniquement)',
+    op: { maj: 'artisans/a1', donnees: { siegesMax: 10 } },
     autorises: [],
   },
   {

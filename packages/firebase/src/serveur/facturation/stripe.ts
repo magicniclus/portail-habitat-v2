@@ -9,6 +9,7 @@ export interface PrixStripe {
 }
 
 interface ElementAbonnementStripe {
+  id?: string;
   price: PrixStripe;
   quantity?: number;
   current_period_start?: number;
@@ -108,6 +109,7 @@ export interface ClientStripe {
     }): Promise<{ id: string }>;
   };
   subscriptions: {
+    retrieve(id: string): Promise<AbonnementStripe & { schedule?: string | null }>;
     update(
       id: string,
       p: {
@@ -115,6 +117,28 @@ export interface ClientStripe {
         discounts?: { coupon: string }[];
         pause_collection?: { behavior: 'void'; resumes_at: number };
         metadata?: Record<string, string>;
+        items?: { id: string; price: string }[];
+        proration_behavior?: 'always_invoice' | 'none';
+      },
+    ): Promise<{ id: string }>;
+  };
+  /** Descente de formule à l'échéance (PAIEMENTS §4) : deux phases, puis l'abonnement est libéré. */
+  subscriptionSchedules: {
+    create(p: { from_subscription: string }): Promise<{
+      id: string;
+      phases: { start_date: number; end_date: number }[];
+    }>;
+    update(
+      id: string,
+      p: {
+        end_behavior: 'release';
+        phases: {
+          items: { price: string; quantity: number }[];
+          start_date?: number;
+          end_date?: number;
+          proration_behavior?: 'none';
+          metadata?: Record<string, string>;
+        }[];
       },
     ): Promise<{ id: string }>;
   };

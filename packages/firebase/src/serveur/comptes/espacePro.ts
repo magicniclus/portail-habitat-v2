@@ -1,3 +1,4 @@
+import type { Formule } from '@ph/core/paiements';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { completudeFiche, etapesMiseEnLigne, type EtatDecennale } from '@ph/core/espace-pro';
 import type { Membre } from '@ph/core/equipe';
@@ -8,8 +9,8 @@ export interface ResumeArtisan {
   nomCommercial: string;
   logoUrl?: string;
   enLigne: boolean;
-  plan: 'gratuit' | 'visibilite' | 'premium';
-  optionVisibilite: boolean;
+  /** Formule active (`droits.formule`, PAIEMENTS §5) : affichage seulement. */
+  formule: Formule;
   ville: string;
   rayonKm: number;
 }
@@ -26,8 +27,7 @@ const resume = (d: FirebaseFirestore.DocumentData): ResumeArtisan => ({
   nomCommercial: d.nomCommercial ?? '',
   ...(d.logoUrl ? { logoUrl: d.logoUrl as string } : {}),
   enLigne: d.enLigne === true,
-  plan: d.plan ?? 'gratuit',
-  optionVisibilite: d.optionVisibilite === true,
+  formule: (d.droits?.formule as Formule | undefined) ?? 'gratuit',
   ville: d.adresseSiege?.ville ?? '',
   rayonKm: d.zoneIntervention?.rayonKm ?? 0,
 });

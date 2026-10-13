@@ -43,7 +43,7 @@ function lu(id: string, d: DocumentData): AppelOffresLu {
     nbDeblocagesMax: d.nbDeblocagesMax,
     statut: d.statut,
     acces: d.acces,
-    fenetrePremiumMin: d.fenetrePremiumMin ?? 60,
+    fenetrePremiumMin: d.fenetrePremiumMin ?? 720,
     ouvertLe: ms(d.ouvertLe),
     tarification: tarificationLue(d.tarification),
   };
@@ -72,7 +72,7 @@ export async function lireAppelsOffresPro(
     : await db.getAll(...appels.docs.map((a) => db.doc(chemins.deblocage(a.id, artisanId))));
   const noms = new Map(ref.metiers.map((m) => [m.id, m.nom ?? m.id]));
   const nomMetier = (id: string) => noms.get(id) ?? id;
-  const premium = artisan.get('plan') === 'premium';
+  const premium = artisan.get('droits.formule') === 'tout_inclus';
   const zone = artisan.get('zoneIntervention') as
     { centre: { latitude: number; longitude: number }; rayonKm: number } | undefined;
   const ville = artisan.get('adresseSiege.ville') as string | undefined;

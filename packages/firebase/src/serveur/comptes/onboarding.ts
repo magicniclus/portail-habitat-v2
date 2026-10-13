@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { slugifier } from '@ph/core/format';
 import { encoderGeohash } from '@ph/core/geo';
@@ -74,8 +75,7 @@ export async function finaliserOnboarding(
       source: 'direct',
       demandeOfferteUtilisee: false,
       ...(e.budgetMin !== undefined ? { budgetMin: e.budgetMin } : {}),
-      plan: 'gratuit',
-      optionVisibilite: false,
+      droits: droitsInitiaux('gratuit', maintenant),
       verification: { statut: 'en_cours' },
       noteMoyenne: 0,
       nbAvis: 0,

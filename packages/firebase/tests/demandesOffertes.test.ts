@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -60,8 +61,7 @@ beforeEach(async () => {
       nomCommercial: `Entreprise ${id}`,
       statut: 'actif',
       enLigne: true,
-      plan: 'gratuit',
-      optionVisibilite: false,
+      droits: droitsInitiaux('gratuit', new Date(0)),
       metiers: ['electricien'],
       metierPrincipal: 'electricien',
       adresseSiege: { ville: 'Bordeaux' },
@@ -95,7 +95,7 @@ beforeEach(async () => {
     await artisan(id, score);
   await artisan('deja', 99, {}, { demandeOfferteRecue: true });
   await artisan('temoin', 99, {}, { groupeTemoin: true });
-  await artisan('vis', 99, { optionVisibilite: true });
+  await artisan('vis', 99, { droits: droitsInitiaux('fiche_pro', new Date(0)) });
   await artisan('loin', 99, {
     zoneIntervention: {
       centre: { latitude: 45.76, longitude: 4.83 },
@@ -135,7 +135,9 @@ describe('demandes invendues offertes (CONVERSION §3 bis)', () => {
     await offrirDemandesInvendues(s(T));
     expect(await attribuerDemandeOfferte(s(T + H), 'a')).toBeNull(); // pas encore Visibilité
     for (const id of ['a', 'b', 'c', 'd'])
-      await db.doc(chemins.artisan(id)).update({ optionVisibilite: true });
+      await db
+        .doc(chemins.artisan(id))
+        .update({ droits: droitsInitiaux('fiche_pro', new Date(0)) });
     expect(await attribuerDemandeOfferte(s(T + H), 'a')).toBe('debloquee');
     expect(await attribuerDemandeOfferte(s(T + H), 'a')).toBeNull();
     expect(await attribuerDemandeOfferte(s(T + H), 'b')).toBe('debloquee');
@@ -160,7 +162,7 @@ describe('demandes invendues offertes (CONVERSION §3 bis)', () => {
 
   it('offre expirée après 48 h : rien n’est débloqué', async () => {
     await offrirDemandesInvendues(s(T));
-    await db.doc(chemins.artisan('e')).update({ optionVisibilite: true });
+    await db.doc(chemins.artisan('e')).update({ droits: droitsInitiaux('fiche_pro', new Date(0)) });
     expect(await attribuerDemandeOfferte(s(T + 49 * H), 'e')).toBeNull();
   });
 });

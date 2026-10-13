@@ -1,3 +1,4 @@
+import { droitsInitiaux } from '@ph/core/paiements';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -22,7 +23,7 @@ const membre = (role: string, statut = 'actif') => ({
 const artisan = (nom: string, extra: Record<string, unknown> = {}) => ({
   nomCommercial: nom,
   enLigne: false,
-  plan: 'gratuit',
+  droits: droitsInitiaux('gratuit', new Date(0)),
   metiers: ['couvreur'],
   metierPrincipal: 'couvreur',
   zoneIntervention: { rayonKm: 30, centre: { latitude: 44.8, longitude: -0.6 } },
@@ -48,7 +49,12 @@ beforeEach(async () => {
       telephoneVerifie: false,
     }),
     db.doc(chemins.artisan('a1')).set(artisan('Bertrand Toiture')),
-    db.doc(chemins.artisan('a2')).set(artisan('Bertrand Zinc', { enLigne: true, plan: 'premium' })),
+    db.doc(chemins.artisan('a2')).set(
+      artisan('Bertrand Zinc', {
+        enLigne: true,
+        droits: droitsInitiaux('tout_inclus', new Date(0)),
+      }),
+    ),
     db.doc(chemins.artisan('a3')).set(artisan('Ancienne SARL')),
     db.doc(chemins.membre('a1', 'u1')).set(membre('proprietaire')),
     db.doc(chemins.membre('a2', 'u1')).set(membre('collaborateur')),

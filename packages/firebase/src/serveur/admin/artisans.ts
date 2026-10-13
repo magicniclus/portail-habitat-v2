@@ -1,3 +1,4 @@
+import { FORMULES_PAYANTES } from '@ph/core/paiements';
 import { masquerEmail } from '@ph/core/equipe';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { masquerTel } from '@ph/core/format';
@@ -40,7 +41,7 @@ export async function listerArtisansAdmin(
     req = req.where('verification.statut', 'in', ['a_faire', 'en_cours']);
   if (e.filtre === 'en_ligne')
     req = req.where('enLigne', '==', true).where('statut', '==', 'actif');
-  if (e.filtre === 'payants') req = req.where('plan', 'in', ['visibilite', 'premium']);
+  if (e.filtre === 'payants') req = req.where('droits.formule', 'in', [...FORMULES_PAYANTES]);
   const docs = (await req.limit(LIMITE).get()).docs;
   const q = e.q?.trim().toLowerCase();
   return docs
@@ -55,7 +56,7 @@ export async function listerArtisansAdmin(
           (a.adresseSiege?.ville as string | undefined) ?? (a.ville as string | undefined) ?? '',
         note: (a.nbAvis as number | undefined) ? (a.noteMoyenne as number) : null,
         statut: statutDe(a),
-        plan: (a.plan as string | undefined) ?? 'gratuit',
+        plan: (a.droits?.formule as string | undefined) ?? 'gratuit',
       };
     })
     .filter((l) => !q || `${l.nom} ${l.siren} ${l.ville}`.toLowerCase().includes(q))
@@ -107,7 +108,7 @@ export async function lireArtisanAdmin(
     ville: d.adresseSiege?.ville ?? '',
     note: d.nbAvis ? d.noteMoyenne : null,
     statut: statutDe(d),
-    plan: d.plan ?? 'gratuit',
+    plan: d.droits?.formule ?? 'gratuit',
     proprietaireUid: d.proprietaireUid ?? null,
     revendiquee: d.revendiquee !== false,
     emailMasque: d.emailContact ? masquerEmail(d.emailContact) : null,

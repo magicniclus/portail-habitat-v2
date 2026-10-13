@@ -1027,7 +1027,7 @@
           "arrayConfig": "CONTAINS"
         },
         {
-          "fieldPath": "plan",
+          "fieldPath": "droits.formule",
           "order": "ASCENDING"
         }
       ]
