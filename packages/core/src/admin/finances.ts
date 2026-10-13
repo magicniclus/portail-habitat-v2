@@ -6,23 +6,18 @@ import { debutMois } from '../leads/deblocage';
 const ACTIFS = ['active', 'trialing', 'past_due'];
 const prix = (cle: string) => CATALOGUE_STRIPE.find((p) => p.cle === cle)?.montantHt ?? 0;
 
-/** Revenu mensuel récurrent HT : annuel divisé par 12, sièges supplémentaires compris. */
+/** Revenu mensuel récurrent HT : formules mensuelles (PAIEMENTS §2), sièges supplémentaires compris. */
 export function mrrCentimes(
-  abonnements: readonly { produit: string; periode: string; statut: string; sieges: number }[],
+  abonnements: readonly { produit: string; statut: string; sieges: number }[],
 ): number {
   return abonnements
     .filter((a) => ACTIFS.includes(a.statut))
-    .reduce((total, a) => {
-      const base = prix(`${a.produit}_${a.periode}`);
-      return (
-        total + Math.round(a.periode === 'annuel' ? base / 12 : base) + a.sieges * prix('siege')
-      );
-    }, 0);
+    .reduce((total, a) => total + prix(a.produit) + a.sieges * prix('siege'), 0);
 }
 
-/** Prix HT d'un pack de crédits du catalogue (D29), `null` s'il n'existe pas. */
+/** Prix HT d'un pack de crédits du catalogue (D59), `null` s'il n'existe pas. */
 export const prixPack = (credits: number): number | null =>
-  CATALOGUE_STRIPE.find((p) => p.produit === 'pack' && p.credits === credits)?.montantHt ?? null;
+  CATALOGUE_STRIPE.find((p) => p.produit === 'credits' && p.credits === credits)?.montantHt ?? null;
 
 /** Bornes [début, fin[ d'un mois civil « AAAA-MM » à l'heure de Paris, en ms. */
 export function bornesMois(mois: string): [number, number] {

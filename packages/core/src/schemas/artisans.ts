@@ -1,4 +1,5 @@
 import { ROLES_MEMBRE } from '../equipe/permissions';
+import { FORMULES } from '../paiements/droits';
 import { z } from '../zod';
 import {
   adresse,
@@ -28,7 +29,40 @@ export const LABELS = [
   'photos',
   'devis48',
 ] as const;
-export const PLANS = ['gratuit', 'visibilite', 'premium'] as const;
+
+/** `artisans/{id}.droits` (PAIEMENTS §5) : écrit uniquement par le webhook Stripe. */
+export const droitsArtisan = z.object({
+  formule: z.enum(FORMULES),
+  ficheMiseEnAvant: z.boolean(),
+  badgeRecommande: z.boolean(),
+  photosIllimitees: z.boolean(),
+  coordonneesVisibles: z.boolean(),
+  statsDetaillees: z.boolean(),
+  sitePro: z.boolean(),
+  iaSite: z.enum(['essai', 'complet']),
+  iaMultiplicateur: z.union([z.literal(1), z.literal(2)]),
+  remiseAppelsOffres: z.union([z.literal(0), z.literal(0.15)]),
+  avanceAppelsOffresH: z.union([z.literal(0), z.literal(12)]),
+  supportPrioritaire: z.boolean(),
+  statut: z.enum(['actif', 'grace', 'resilie_fin_periode']),
+  finPeriode: horodatage.optional(),
+  majLe: horodatage,
+});
+
+/** Landing d'origine (LANDINGS §1) : écrite à la création du compte, jamais modifiée. */
+export const SOURCES_ACQUISITION = [
+  'trouver-chantier',
+  'site-internet-artisan',
+  'logiciel-devis-facture',
+  'pro',
+] as const;
+export const acquisitionArtisan = z.object({
+  source: z.enum(SOURCES_ACQUISITION),
+  utm_source: z.string().max(100).optional(),
+  utm_medium: z.string().max(100).optional(),
+  utm_campaign: z.string().max(100).optional(),
+  landingAt: horodatage,
+});
 
 const assurance = z.object({
   assureur: z.string(),
@@ -93,11 +127,8 @@ export const artisan = z
     budgetMax: centimesPositifs.optional(),
     budgetCle: z.enum(['petit', 'moyen', 'grand']).optional(),
     delaiDispoJours: z.number().int().nonnegative().optional(),
-    plan: z.enum(PLANS),
-    planPeriode: z.enum(['mensuel', 'annuel']).optional(),
-    planExpireLe: horodatage.optional(),
-    optionVisibilite: z.boolean(),
-    optionVisibiliteExpireLe: horodatage.optional(),
+    droits: droitsArtisan,
+    acquisition: acquisitionArtisan.optional(),
     verification: z.object({
       statut: z.enum(['a_faire', 'en_cours', 'verifie', 'refuse', 'expire']),
       verifieLe: horodatage.optional(),
@@ -150,10 +181,6 @@ export const artisan = z
   .refine((a) => !a.revendiquee || a.proprietaireUid !== undefined, {
     message: 'Une entreprise revendiquée a un propriétaire',
     path: ['proprietaireUid'],
-  })
-  .refine((a) => a.optionVisibilite || a.plan === 'gratuit', {
-    message: 'Visibilité incluse dans Visibilité et Premium',
-    path: ['optionVisibilite'],
   });
 
 /** `artisans/{id}/prive/facturation` : serveur uniquement. */
@@ -161,7 +188,6 @@ export const facturationPrivee = z.object({
   schemaVersion,
   stripeCustomerId: z.string().startsWith('cus_'),
   stripeSubscriptionId: z.string().optional(),
-  stripeVisibiliteSubscriptionId: z.string().optional(),
   adresseFacturation: adresse.optional(),
   emailFacturation: email.optional(),
   defaultPaymentMethodLast4: z
@@ -309,7 +335,9 @@ export const artisanPublic = z
     budgetCle: z.enum(['petit', 'moyen', 'grand']).optional(),
     delaiDispoJours: z.number().int().nonnegative().optional(),
     dispoLabel: z.string().optional(),
-    premium: z.boolean(),
+    /** Priorité d'affichage dans le secteur et badge « Artisan recommandé » (Fiche Pro). */
+    misEnAvant: z.boolean(),
+    badgeRecommande: z.boolean(),
     argumentPremium: z.string().max(140).optional(),
     telephone: telephoneE164.nullable(),
     scoreClassement: z.number(),

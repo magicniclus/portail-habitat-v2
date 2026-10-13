@@ -66,7 +66,8 @@ export const BAREME_DEFAUT: Bareme = {
     eligible: 1.2,
     non_eligible: 0.9,
   },
-  remisePremium: 0.3,
+  /** Remise Tout inclus (PAIEMENTS §3 : −15 %). */
+  remisePremium: 0.15,
   centimesParCredit: 1000,
   plancher: 500,
   plafond: 9900,

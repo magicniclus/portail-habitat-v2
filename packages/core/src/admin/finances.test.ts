@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { bornesMois, exportComptable, mrrCentimes, prixPack } from './finances';
 
 describe('finances (ADMIN §2.8)', () => {
-  it('MRR : abonnements actifs ramenés au mois, sièges compris, résiliés exclus', () => {
+  it('MRR : formules actives, sièges compris, résiliées exclues', () => {
     expect(
       mrrCentimes([
-        { produit: 'premium', periode: 'mensuel', statut: 'active', sieges: 0 },
-        { produit: 'premium', periode: 'annuel', statut: 'active', sieges: 2 },
-        { produit: 'visibilite', periode: 'annuel', statut: 'past_due', sieges: 0 },
-        { produit: 'visibilite', periode: 'mensuel', statut: 'canceled', sieges: 0 },
+        { produit: 'fiche_pro', statut: 'active', sieges: 0 },
+        { produit: 'tout_inclus', statut: 'active', sieges: 2 },
+        { produit: 'site_pro', statut: 'past_due', sieges: 0 },
+        { produit: 'pack_fiche_site', statut: 'canceled', sieges: 0 },
       ]),
-    ).toBe(9990 + 7990 + 1800 + 666);
+    ).toBe(2900 + 4900 + 1800 + 990);
   });
   it('mois civil à Paris : du 1er à minuit au 1er du mois suivant', () => {
     const [debut, fin] = bornesMois('2026-09');
@@ -53,8 +53,8 @@ describe('finances (ADMIN §2.8)', () => {
       ]),
     ).toContain(';-19,05;-3,81;-22,86;');
   });
-  it('prix d’un pack d’après le catalogue (D29)', () => {
-    expect(prixPack(10)).toBe(9000);
+  it('prix d’un pack d’après le catalogue (D59)', () => {
+    expect(prixPack(110)).toBe(10_000);
     expect(prixPack(7)).toBeNull();
   });
 });

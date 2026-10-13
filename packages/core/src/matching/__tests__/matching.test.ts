@@ -324,38 +324,29 @@ describe('sélection équitable (§3 [5] et §5)', () => {
   });
 });
 
-describe('aiguillage d’une demande du site (D41)', () => {
+describe('aiguillage d’une demande du site (D31, D56)', () => {
   const cands = (pop: ArtisanMatching[]) => evaluer(pop, demande(), config);
-  it('un Premium avec du quota : demande garantie à un seul artisan', () => {
+  it('sans artisan ciblé : appel d’offres, même avec un Tout inclus disponible', () => {
     const r = aiguiller(cands([artisan('libre', { note: 5 }), artisan('prem', { premium: true })]));
-    expect(r).toMatchObject({ canal: 'garantie', artisan: { artisanId: 'prem' } });
-  });
-  it('Premium sans quota : appel d’offres', () => {
-    const r = aiguiller(
-      cands([artisan('libre'), artisan('prem', { premium: true, demandesRecuesMois: 4 })]),
-    );
     expect(r.canal).toBe('appel_offres');
-    expect((r as { eligibles: Candidat[] }).eligibles.map((x) => x.artisanId)).toEqual(['libre']);
-  });
-  it('artisan ciblé Premium : il reçoit la demande garantie', () => {
-    const r = aiguiller(
-      cands([
-        artisan('p1', { premium: true, note: 5 }),
-        artisan('p2', { premium: true, note: 3.6 }),
-      ]),
-      'p2',
-    );
-    expect(r).toMatchObject({ canal: 'garantie', artisan: { artisanId: 'p2' } });
-  });
-  it('artisan ciblé gratuit sans Premium disponible : en tête de l’appel d’offres (D48)', () => {
-    const r = aiguiller(
-      cands([artisan('a', { note: 5 }), artisan('cible', { note: 3.6 })]),
-      'cible',
-    );
-    expect(r.canal === 'appel_offres' && r.eligibles.map((x) => x.artisanId)).toEqual([
-      'cible',
-      'a',
+    expect((r as { eligibles: Candidat[] }).eligibles.map((x) => x.artisanId).sort()).toEqual([
+      'libre',
+      'prem',
     ]);
+  });
+  it('envoyée depuis la fiche : pour l’artisan seul, quelle que soit sa formule', () => {
+    const r = aiguiller(
+      cands([artisan('p1', { premium: true, note: 5 }), artisan('gratuit', { note: 3.6 })]),
+      'gratuit',
+    );
+    expect(r).toMatchObject({ canal: 'garantie', artisan: { artisanId: 'gratuit' } });
+  });
+  it('artisan ciblé hors critères : appel d’offres aux autres', () => {
+    const r = aiguiller(
+      cands([artisan('a', { note: 5 }), artisan('cible', { enPause: true })]),
+      'cible',
+    );
+    expect(r.canal === 'appel_offres' && r.eligibles.map((x) => x.artisanId)).toEqual(['a']);
   });
   it('aucun éligible : appel d’offres vide', () => {
     expect(aiguiller(cands([artisan('a', { enPause: true })]))).toEqual({

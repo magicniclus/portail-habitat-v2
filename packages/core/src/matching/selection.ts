@@ -85,17 +85,14 @@ export type Aiguillage =
   { canal: 'garantie'; artisan: Candidat } | { canal: 'appel_offres'; eligibles: Candidat[] };
 
 /**
- * Aiguillage d'une demande du site (D41, D48) : demande garantie au meilleur Premium éligible
- * (quota restant vérifié par les filtres durs ; l'artisan ciblé d'abord s'il est Premium),
- * sinon appel d'offres ouvert aux éligibles, l'artisan ciblé en tête.
+ * Aiguillage d'une demande du site (D31, D56) : envoyée depuis la fiche d'un artisan éligible,
+ * elle est pour lui seul (canal `garantie`, gratuite, quelle que soit sa formule) ; sinon appel
+ * d'offres ouvert aux éligibles (3 réponses au plus). Les demandes garanties Premium n'existent
+ * plus (PAIEMENTS §2).
  */
 export function aiguiller(candidats: readonly Candidat[], artisanCibleId?: string): Aiguillage {
   const tries = eligibles(candidats);
   const cible = tries.find((x) => x.artisanId === artisanCibleId);
-  const premium = cible?.premium ? cible : tries.find((x) => x.premium);
-  if (premium) return { canal: 'garantie', artisan: premium };
-  return {
-    canal: 'appel_offres',
-    eligibles: cible ? [cible, ...tries.filter((x) => x !== cible)] : tries,
-  };
+  if (cible) return { canal: 'garantie', artisan: cible };
+  return { canal: 'appel_offres', eligibles: tries };
 }

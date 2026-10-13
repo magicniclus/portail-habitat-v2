@@ -29,6 +29,7 @@
     "./annuaire": "./src/annuaire/index.ts",
     "./matching": "./src/matching/index.ts",
     "./facturation": "./src/facturation/index.ts",
+    "./paiements": "./src/paiements/index.ts",
     "./consentement": "./src/consentement/index.ts",
     "./support": "./src/support/index.ts",
     "./demandes": "./src/demandes/index.ts",

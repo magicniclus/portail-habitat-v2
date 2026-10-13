@@ -7,10 +7,9 @@ type ArtisanPublic = z.input<typeof artisanPublic>;
 
 const ANNEE_MS = 365.25 * 86_400_000;
 
-/** Téléphone public : Premium ou option Visibilité seulement (ANN-06, DATABASE §3). */
-export const telephoneAffiche = (
-  a: Pick<Artisan, 'plan' | 'optionVisibilite' | 'telephonePublic'>,
-) => ((a.plan === 'premium' || a.optionVisibilite) && a.telephonePublic ? a.telephonePublic : null);
+/** Téléphone public : formules avec coordonnées visibles seulement (ANN-06, PAIEMENTS §2). */
+export const telephoneAffiche = (a: Pick<Artisan, 'droits' | 'telephonePublic'>) =>
+  a.droits.coordonneesVisibles && a.telephonePublic ? a.telephonePublic : null;
 
 /** Labels affichés : seulement ceux qui ont une preuve vérifiée et non expirée (FIC-01). */
 export function labelsVerifies(a: Pick<Artisan, 'labels' | 'labelsVerifies'>, maintenant: Date) {
@@ -63,7 +62,8 @@ export function projeterArtisanPublic(
     noteMoyenne: a.noteMoyenne,
     nbAvis: a.nbAvis,
     notesCriteres: a.notesCriteres,
-    premium: a.plan === 'premium',
+    misEnAvant: a.droits.ficheMiseEnAvant,
+    badgeRecommande: a.droits.badgeRecommande,
     telephone: telephoneAffiche(a),
     scoreClassement: scoreClassement({ ...a, anneesActivite }),
     enLigne: true,

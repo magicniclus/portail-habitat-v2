@@ -113,7 +113,7 @@ export function vueAppelOffres(
     ],
     badge:
       etat === 'reserve'
-        ? { texte: `Premium · ${ao.fenetrePremiumMin / 60} h d’avance`, ton: 'premium' }
+        ? { texte: `Tout inclus · ${ao.fenetrePremiumMin / 60} h d’avance`, ton: 'premium' }
         : urgente
           ? { texte: 'Urgent', ton: 'urgent' }
           : { texte: ctx.nomMetier(ao.metier), ton: 'normal' },

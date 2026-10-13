@@ -1,15 +1,5 @@
 export {
-  GARANTIES_PREMIUM_MOIS,
-  grilleTarifs,
-  PRIX_AFFICHES,
-  type Facturation,
-  type LigneTarif,
-  type PrixAffiches,
-} from './tarifs';
-export {
-  AVANTAGES_OFFRE,
   CATALOGUE_STRIPE,
-  NOMS_OFFRE,
   cleStripe,
   effetAbonnements,
   etatAbonnement,
@@ -18,7 +8,6 @@ export {
   lirePrix,
   prixAbonnement,
   recapPaiement,
-  SIEGES_INCLUS,
   TAUX_TVA_POURCENT,
   tvaDe,
   type AbonnementEtat,

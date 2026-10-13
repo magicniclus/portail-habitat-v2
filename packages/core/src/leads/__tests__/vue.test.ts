@@ -47,7 +47,7 @@ describe('vueAppelOffres', () => {
       etat: 'reserve',
       lieu: 'Floirac (33270)',
       distance: 'à 4 km',
-      badge: { texte: 'Premium · 1 h d’avance', ton: 'premium' },
+      badge: { texte: 'Tout inclus · 1 h d’avance', ton: 'premium' },
       disponibleDans: 'Disponible pour vous dans 40 min',
       places: '2 places restantes sur 3',
       prix: { centimes: 1900, credits: 2 },

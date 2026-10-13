@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { droitsInitiaux } from '../paiements/droits';
 import {
   SCHEMAS,
   appelOffres,
@@ -32,8 +33,7 @@ const artisanValide = {
   metierPrincipal: 'plombier',
   zoneIntervention: { centre: geo, geohash: 'ezzx7', rayonKm: 30, rayonAccepteLe: maintenant },
   source: 'direct',
-  plan: 'gratuit',
-  optionVisibilite: false,
+  droits: droitsInitiaux('gratuit', maintenant),
   verification: { statut: 'a_faire' },
   quotaDemandesMois: 5,
   enLigne: false,
@@ -154,13 +154,15 @@ describe('invariants', () => {
       artisan.safeParse({ ...artisanValide, budgetMin: 500000, budgetMax: 100000 }).success,
     ).toBe(false);
   });
-  it('artisan : Visibilité incluse dès que le plan est payant', () => {
+  it('artisan : droits d’une formule connue uniquement (PAIEMENTS §5)', () => {
+    const tout = droitsInitiaux('tout_inclus', maintenant);
+    expect(artisan.safeParse({ ...artisanValide, droits: tout }).success).toBe(true);
     expect(
-      artisan.safeParse({ ...artisanValide, plan: 'premium', optionVisibilite: false }).success,
+      artisan.safeParse({ ...artisanValide, droits: { ...tout, formule: 'premium' } }).success,
     ).toBe(false);
     expect(
-      artisan.safeParse({ ...artisanValide, plan: 'premium', optionVisibilite: true }).success,
-    ).toBe(true);
+      artisan.safeParse({ ...artisanValide, droits: { ...tout, remiseAppelsOffres: 0.5 } }).success,
+    ).toBe(false);
   });
   it('artisansPublic refuse toute donnée privée (règle n° 8)', () => {
     const publique = {
@@ -180,7 +182,8 @@ describe('invariants', () => {
       noteMoyenne: 4.8,
       nbAvis: 12,
       notesCriteres: {},
-      premium: false,
+      misEnAvant: false,
+      badgeRecommande: false,
       telephone: null,
       scoreClassement: 10,
       enLigne: true,

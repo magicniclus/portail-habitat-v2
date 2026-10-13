@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { droitsInitiaux } from '../paiements/droits';
 import { artisan, artisanPublic } from '../schemas/artisans';
 import {
   chipsFiltres,
@@ -44,8 +45,7 @@ const base = artisan.parse({
     rayonAccepteLe: T,
   },
   source: 'direct',
-  plan: 'gratuit',
-  optionVisibilite: false,
+  droits: droitsInitiaux('gratuit', T),
   verification: { statut: 'verifie' },
   quotaDemandesMois: 0,
   enLigne: true,
@@ -72,15 +72,20 @@ describe('projeterArtisanPublic', () => {
     expect(projeterArtisanPublic(base, T, 'Mérignac')!.labels).toEqual(['decennale']);
   });
 
-  it('ANN-06 : téléphone seulement en Premium ou avec l’option Visibilité', () => {
-    expect(projeterArtisanPublic(base, T, 'M')!.telephone).toBeNull();
-    const visibilite = { ...base, plan: 'visibilite' as const, optionVisibilite: true };
-    expect(projeterArtisanPublic(visibilite, T, 'M')!.telephone).toBe('+33556000090');
-    const premium = { ...base, plan: 'premium' as const, optionVisibilite: true };
-    expect(projeterArtisanPublic(premium, T, 'M')).toMatchObject({
-      premium: true,
-      telephone: '+33556000090',
+  it('ANN-06 : téléphone et mise en avant seulement avec Fiche Pro (ou formule qui l’inclut)', () => {
+    expect(projeterArtisanPublic(base, T, 'M')).toMatchObject({
+      telephone: null,
+      misEnAvant: false,
+      badgeRecommande: false,
     });
+    const site = { ...base, droits: droitsInitiaux('site_pro', T) };
+    expect(projeterArtisanPublic(site, T, 'M')!.telephone).toBeNull();
+    for (const f of ['fiche_pro', 'pack_fiche_site', 'tout_inclus'] as const)
+      expect(projeterArtisanPublic({ ...base, droits: droitsInitiaux(f, T) }, T, 'M')).toMatchObject({
+        misEnAvant: true,
+        badgeRecommande: true,
+        telephone: '+33556000090',
+      });
   });
 
   it('FIC-02 : hors ligne ou suspendu → pas de fiche publique', () => {

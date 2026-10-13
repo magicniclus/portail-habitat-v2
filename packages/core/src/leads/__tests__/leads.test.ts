@@ -35,10 +35,10 @@ describe('prix automatique (DATABASE §5)', () => {
     qualiteLead: 60,
     nbEligibles: 5,
   };
-  it('exemple : plomberie, budget M, qualité moyenne → 15 €, Premium 11 €, 2 crédits', () => {
+  it('exemple : plomberie, budget M, qualité moyenne → 15 €, Tout inclus 13 €, 2 crédits', () => {
     expect(calculerPrixLead(lead, bareme)).toEqual({
       prixBaseCentimes: 1500,
-      prixPremiumCentimes: 1100,
+      prixPremiumCentimes: 1300,
       prixCredits: 2,
       detailCalcul: {
         base: 1500,

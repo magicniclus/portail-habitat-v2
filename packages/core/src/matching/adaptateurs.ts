@@ -97,8 +97,8 @@ export interface DocArtisan {
   quotaDemandesMois?: number;
   budgetMin?: number;
   budgetMax?: number;
-  plan: string;
-  optionVisibilite?: boolean;
+  /** `droits.formule` (PAIEMENTS §5) ; absente : Gratuit. */
+  formule?: string;
   noteMoyenne?: number;
   nbAvis?: number;
   tauxRecommandation?: number;
@@ -128,6 +128,8 @@ function finDecennale(a: DocArtisan): number | undefined {
   if (!label) return undefined;
   return label.expireLe ?? Number.MAX_SAFE_INTEGER;
 }
+
+const FORMULES_FICHE = new Set(['fiche_pro', 'pack_fiche_site', 'tout_inclus']);
 
 export function artisanPourMatching(
   id: string,
@@ -169,8 +171,9 @@ export function artisanPourMatching(
     empreintes: [...contexte.empreintes, `siren:${a.siren}`],
     ...(a.budgetMin !== undefined ? { budgetMinCentimes: a.budgetMin } : {}),
     ...(a.budgetMax !== undefined ? { budgetMaxCentimes: a.budgetMax } : {}),
-    premium: a.plan === 'premium',
-    optionVisibilite: a.optionVisibilite === true,
+    // Tout inclus reprend les avantages Premium du matching ; Fiche Pro, ceux de la Visibilité (D60).
+    premium: a.formule === 'tout_inclus',
+    optionVisibilite: a.formule !== undefined && FORMULES_FICHE.has(a.formule),
     note: a.noteMoyenne ?? 0,
     nbAvis: a.nbAvis ?? 0,
     tauxRecommandation: a.tauxRecommandation ?? 0,

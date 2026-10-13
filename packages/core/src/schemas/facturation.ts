@@ -1,3 +1,4 @@
+import { FORMULES_PAYANTES } from '../paiements/droits';
 import { z } from '../zod';
 import { centimesPositifs, horodatage, id, meta, schemaVersion } from './commun';
 
@@ -5,8 +6,9 @@ import { centimesPositifs, horodatage, id, meta, schemaVersion } from './commun'
 export const abonnement = z.object({
   ...meta,
   artisanId: id,
-  produit: z.enum(['premium', 'visibilite']),
+  produit: z.enum(FORMULES_PAYANTES),
   priceId: z.string().startsWith('price_'),
+  /** Formules mensuelles uniquement (PAIEMENTS §2) ; `annuel` : anciens abonnements migrés. */
   periode: z.enum(['mensuel', 'annuel']),
   statut: z.enum([
     'trialing',
@@ -70,7 +72,7 @@ export const codePromo = z.object({
   pourcentage: z.number().int().min(1).max(100),
   duree: z.enum(['once', 'repeating', 'forever']),
   dureeMois: z.number().int().positive().optional(),
-  produits: z.array(z.enum(['premium', 'visibilite', 'pack'])),
+  produits: z.array(z.enum([...FORMULES_PAYANTES, 'credits'])),
   actif: z.boolean(),
   utilisations: z.number().int().nonnegative(),
   maxUtilisations: z.number().int().positive().optional(),
