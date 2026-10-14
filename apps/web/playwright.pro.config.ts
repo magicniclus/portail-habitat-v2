@@ -34,6 +34,8 @@ export default defineConfig({
       APP_CHECK_MODE: 'desactive',
       ADMIN_MFA: 'desactive',
       STRIPE_WEBHOOK_SECRET: 'whsec_e2e_local',
+      // Sites artisans servis sur {slug}.localhost (Chromium résout *.localhost en local).
+      DOMAINE_SITES: 'localhost',
     },
   },
 });

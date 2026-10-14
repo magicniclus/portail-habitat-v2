@@ -5,3 +5,5 @@ export * from './formulaire';
 export * from './schemas';
 export * from './seo';
 export * from './sousDomaine';
+export * from './libelles';
+export * from './edition';

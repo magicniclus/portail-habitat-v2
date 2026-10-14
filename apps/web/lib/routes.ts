@@ -36,6 +36,13 @@ export const routes = {
   proCompte: r('/pro/compte'),
   proFiche: r('/pro/fiche'),
   proAvis: r('/pro/avis'),
+  /** Mon site (SITE_INTERNET §3) : `?onglet=pages|domaine|stats|formulaire`. */
+  proSite: r('/pro/site'),
+  proSiteOnglet: (onglet: 'pages' | 'domaine' | 'stats' | 'formulaire') =>
+    r(`/pro/site?onglet=${onglet}`),
+  /** Éditeur plein écran (SITE_INTERNET §4) sur une page. */
+  proSiteEditeur: (page?: string) =>
+    r(`/pro/site/editeur${page ? `?page=${encodeURIComponent(page)}` : ''}`),
   proDevis: r('/pro/devis'),
   proDevisNouveau: r('/pro/devis/nouveau'),
   proDevisParametres: r('/pro/devis/parametres'),

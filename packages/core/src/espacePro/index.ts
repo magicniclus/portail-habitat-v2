@@ -6,6 +6,7 @@ export const PAGES_PRO = [
   'tableauDeBord',
   'fiche',
   'demandes',
+  'site',
   'devis',
   'appelsOffres',
   'avis',
@@ -35,6 +36,7 @@ const SECTIONS: { titre: string; liens: { cle: PagePro; libelle: string; visible
         { cle: 'tableauDeBord', libelle: 'Tableau de bord', visible: pas('comptable') },
         { cle: 'fiche', libelle: 'Ma fiche', visible: pas('comptable') },
         { cle: 'demandes', libelle: 'Mes demandes', visible: droit('demandes.repondre') },
+        { cle: 'site', libelle: 'Mon site', visible: droit('site.gerer') },
       ],
     },
     {

@@ -3,6 +3,15 @@ import { navigation, pageSite, theme } from '../sites/schemas';
 import { z } from '../zod';
 import { horodatage, id, schemaVersion } from './commun';
 
+/** Champ du formulaire de contact (constructeur Site Pro). */
+export const champFormulaire = z.object({
+  id: z.string().regex(/^[a-zA-Z0-9_]{1,40}$/),
+  type: z.enum(TYPES_CHAMP),
+  libelle: z.string().trim().min(1).max(80),
+  requis: z.boolean(),
+  options: z.array(z.string().max(80)).max(20).optional(),
+});
+
 /** `sites/{siteId}` (siteId = artisanId), écrit par le serveur seulement (DATABASE §15 bis). */
 export const siteArtisan = z.object({
   schemaVersion,
@@ -15,15 +24,7 @@ export const siteArtisan = z.object({
   /** Site Pro : champs du formulaire (gratuit : 4 champs figés). */
   formulaire: z
     .object({
-      champs: z.array(
-        z.object({
-          id: z.string().max(40),
-          type: z.enum(TYPES_CHAMP),
-          libelle: z.string().max(80),
-          requis: z.boolean(),
-          options: z.array(z.string().max(80)).max(20).optional(),
-        }),
-      ),
+      champs: z.array(champFormulaire).max(30),
     })
     .optional(),
   publieLe: horodatage.optional(),

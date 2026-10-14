@@ -12,6 +12,7 @@ export {
 export { envoyerFormulaireSite, type ServicesFormulaireSite } from './formulaire';
 export {
   lireSiteEdition,
+  lirePhotosPubliees,
   lireSitePublie,
   pageDuChemin,
   type SiteEdition,

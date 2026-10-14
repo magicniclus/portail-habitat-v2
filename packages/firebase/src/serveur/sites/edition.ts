@@ -54,14 +54,19 @@ export async function creerSite(
   const refSlug = s.db.doc(chemins.slugSite(e.sousDomaine));
   await s.db.runTransaction(async (t) => {
     await exigerSite(s, t, ctx);
-    const [site, slug] = await Promise.all([t.get(refSite), t.get(refSlug)]);
+    const [site, slug, artisan] = await Promise.all([
+      t.get(refSite),
+      t.get(refSlug),
+      t.get(s.db.doc(chemins.artisan(ctx.artisanId))),
+    ]);
     if (site.exists) throw new ErreurMetier('CONFLIT', 'Le site existe déjà.');
     if (slug.exists) throw new ErreurMetier('CONFLIT', 'Ce sous-domaine est déjà pris.');
     const maintenant = Timestamp.fromMillis(s.horloge());
     t.create(refSite, {
       schemaVersion: 1,
       artisanId: ctx.artisanId,
-      offre: 'gratuit',
+      // Site Pro déjà inclus dans la formule (droits écrits par le webhook Stripe).
+      offre: artisan.get('droits.sitePro') === true ? 'site_pro' : 'gratuit',
       sousDomaine: e.sousDomaine,
       theme: e.initial.theme,
       versionPubliee: 0,

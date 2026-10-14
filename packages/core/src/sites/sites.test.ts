@@ -279,3 +279,16 @@ describe('SEO de page', () => {
     expect(r.score).toBeGreaterThanOrEqual(60);
   });
 });
+
+describe('libellés du site', () => {
+  it('score SEO et état de publication', async () => {
+    const { libelleScoreSeo, etatPublication, STATUTS_PAGE } = await import('./libelles');
+    expect(libelleScoreSeo(100).tone).toBe('succes');
+    expect(libelleScoreSeo(60).tone).toBe('attention');
+    expect(libelleScoreSeo(20).tone).toBe('danger');
+    expect(etatPublication({ modifie: true }).libelle).toBe('Pas encore publié');
+    expect(etatPublication({ versionPubliee: 2, modifie: true }).tone).toBe('attention');
+    expect(etatPublication({ versionPubliee: 2, modifie: false }).libelle).toBe('En ligne');
+    expect(STATUTS_PAGE.publiee.tone).toBe('succes');
+  });
+});

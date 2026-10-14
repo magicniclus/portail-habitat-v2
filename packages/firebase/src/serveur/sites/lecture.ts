@@ -93,3 +93,20 @@ export async function lireSiteEdition(db: Firestore, siteId: string): Promise<Si
     })),
   };
 }
+
+/** Photos des réalisations publiées (autorisation du propriétaire du chantier) : médiathèque du site. */
+export async function lirePhotosPubliees(
+  db: Firestore,
+  artisanId: string,
+  limite = 30,
+): Promise<{ id: string; urls: string[] }[]> {
+  const r = await db
+    .collection(chemins.realisations(artisanId))
+    .where('publie', '==', true)
+    .limit(limite)
+    .get();
+  return r.docs.map((d) => ({
+    id: d.id,
+    urls: ((d.get('photos') as { url: string }[] | undefined) ?? []).map((p) => p.url),
+  }));
+}

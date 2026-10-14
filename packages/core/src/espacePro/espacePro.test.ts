@@ -22,6 +22,7 @@ describe('menuPro', () => {
       'tableauDeBord',
       'fiche',
       'demandes',
+      'site',
       'appelsOffres',
       'devis',
       'avis',
@@ -140,6 +141,7 @@ describe('ongletsMobiles (MOBILE §6)', () => {
       'fiche',
     ]);
     expect(plus.map((l) => l.cle)).toEqual([
+      'site',
       'devis',
       'avis',
       'statistiques',

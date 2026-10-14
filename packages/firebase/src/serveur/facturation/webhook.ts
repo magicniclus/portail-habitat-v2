@@ -6,6 +6,7 @@ import {
 } from '@ph/core/facturation';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { droitsDe } from '@ph/core/paiements';
+import { synchroniserOffreSite } from '../sites/offre';
 import { formatDate } from '@ph/core/format';
 import { Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
@@ -152,6 +153,8 @@ async function abonnementModifie(
     siegesMax: e.siegesMax,
     updatedAt: Timestamp.fromMillis(maintenant),
   });
+  // Offre du site (Site Pro inclus ou non) : suit les droits, comme la fiche (SITE-06).
+  suites.push(() => synchroniserOffreSite(s.db, artisanId, droitsDe(e.formule).sitePro));
   if (artisan.get('siegesMax') !== e.siegesMax)
     suites.push(() => appliquerSieges(s, artisanId, e.siegesMax));
 

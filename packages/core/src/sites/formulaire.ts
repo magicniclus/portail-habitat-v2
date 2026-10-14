@@ -13,6 +13,20 @@ export const TYPES_CHAMP = [
 ] as const;
 export type TypeChamp = (typeof TYPES_CHAMP)[number];
 
+/** Libellés du constructeur de champs (Site Pro). */
+export const LIBELLES_TYPE_CHAMP: Record<TypeChamp, string> = {
+  texte: 'Texte court',
+  email: 'Email',
+  tel: 'Téléphone',
+  cp: 'Code postal',
+  liste: 'Liste déroulante',
+  choix: 'Choix multiple',
+  zone: 'Texte long',
+  date: 'Date',
+  photos: 'Photos',
+  budget: 'Budget',
+};
+
 export interface ChampFormulaire {
   id: string;
   type: TypeChamp;

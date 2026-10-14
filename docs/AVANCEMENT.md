@@ -665,6 +665,23 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
 - Signature électronique du client, relances automatiques (devis sans réponse, factures impayées → statut `impayee`), expiration des devis, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré, création d'un devis depuis « Mes demandes ».
 
+## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
+Fait :
+- Cœur `packages/core/src/sites/` : schémas (section → ligne → colonne → 16 éléments, réglages par appareil), validation des actions et liens (SITE-09), sous-domaine, formulaire (4 champs figés en gratuit), DNS, site de départ depuis la fiche (sans IA ni chiffre inventé), contrôles SEO, logique de l'éditeur (historique de 80 états, sections, éléments, nouvelles pages).
+- Données (DATABASE §15 bis) : `sites/{id}` (+ `pages`, `reglages/navigation`, `versions`), index `sitesSlugs` et `sitesDomaines` ; aucune écriture directe (règles testées). Permission `site.gerer` (propriétaire, gérant).
+- Serveur `@ph/firebase/sites` : création avec réservation du sous-domaine, pages, navigation à part (SITE-11), thème, formulaire (Site Pro seulement, SITE-13), publication avec liens vérifiés et 20 versions gardées (SITE-08, SITE-09), remise en ligne d'une version, envoi du formulaire → demande attribuée directement, hors matching (SITE-03, SITE-12).
+- Offre du site suivie depuis les droits écrits par le webhook Stripe (Site Pro ↔ gratuit, SITE-06 pour l'offre ; le domaine personnel viendra avec les domaines).
+- Rendu public : `proxy.ts` réécrit l'hôte d'un site vers `/s/{hôte}` (jamais servi sur le domaine de la plateforme) ; HTML statique sans cookie (SITE-07), cache partagé 30 s ; CSP propre aux sites (script fixe par empreinte + Turnstile), HSTS sans sous-domaines sur le domaine de l'artisan ; API `/api/sites/demande` sur le domaine du site (Turnstile, débit limité).
+- Écrans : menu « Mon site » ; `/pro/site` (création du site, onglets Pages, Domaine, Statistiques, Formulaire ; Publier ; versions) ; éditeur `/pro/site/editeur` (calques, réglages des éléments, masquage par appareil et texte mobile, pages, SEO, navigation, styles, aperçu 1200/768/390, annuler/rétablir, enregistrer, publier).
+- e2e `e2e-pro/site.spec.ts` : SITE-03, 07, 08, 09, 10, 11, 13 (iPhone et ordinateur) ; sites servis en local sur `{slug}.localhost`.
+
+Choix à signaler :
+- **Hébergement** : D45 (SITE_INTERNET §5) prévoit Cloudflare for SaaS + R2 ; DOMAINES.md et le handoff prévoient Vercel. Le rendu est fait par l'application Next.js (Vercel) avec un cache de 30 s ; passer à Cloudflare plus tard ne change que la couche de service (le modèle de données et les versions restent). **À confirmer.**
+- Aperçu de l'éditeur dans un cadre sans script (sécurité de l'espace pro) : le menu mobile ne s'ouvre pas dans l'aperçu, il fonctionne sur le site publié.
+- Formulaire : le type « photos » n'est pas encore proposé (envoi de fichiers à faire).
+
+Reste (lot 10b) : domaines personnels (achat OVH, connexion d'un domaine existant, vérification DNS toutes les 10 min, emails ; DOM-01 à 08), statistiques sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -692,3 +709,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 14/10/2026 — Handoff intégré ; lot 11 refait selon PAIEMENTS.md (formules 2026, droits, Mon abonnement, fenêtre d'offre). Détail et choix à valider : §24.
 - 14/10/2026 — Lot 10e : landing « Trouver des chantiers » en ligne, landings site et devis prêtes derrière flags, source d'acquisition enregistrée sur le compte. Détail : §25.
 - 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
+- 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
