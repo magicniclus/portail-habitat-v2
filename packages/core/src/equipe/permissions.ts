@@ -21,6 +21,9 @@ export const ACTIONS_EQUIPE = [
   'statistiques.voir',
   'abonnement.gerer',
   'factures.voir',
+  /** Devis & factures des clients (DATABASE §8 bis). */
+  'devis.gerer',
+  'factures.emettre',
   'membres.gerer',
   'propriete.transferer',
   'entreprise.fermer',
@@ -32,6 +35,7 @@ export const PERMISSIONS_PAR_ROLE: Record<RoleMembre, readonly ActionEquipe[]> =
   gerant: ACTIONS_EQUIPE.filter((a) => a !== 'propriete.transferer' && a !== 'entreprise.fermer'),
   collaborateur: [
     'demandes.repondre',
+    'devis.gerer',
     'realisations.modifier',
     'documents.televerser',
     'statistiques.voir',

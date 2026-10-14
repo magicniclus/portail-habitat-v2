@@ -70,6 +70,12 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   },
   'artisans/a1/statsJour/2026-09-01': { ...v, vuesFiche: 3 },
   'artisans/a1/prive/facturation': { ...v, stripeCustomerId: 'cus_1' },
+  'artisans/a1/devis/d1': { ...v, statut: 'brouillon', margeHtCentimes: 1000 },
+  'artisans/a1/facturesClients/f1': { ...v, statut: 'emise', numero: 'F-2026-0001' },
+  'artisans/a1/modelesDevis/m1': { ...v, titre: 'Salle de bain' },
+  'artisans/a1/prestationsBiblio/b1': { ...v, designation: 'Pose' },
+  'artisans/a1/parametresFacturation/actuels': { ...v, raisonSociale: 'Bertrand' },
+  'artisans/a1/compteurs/factures': { ...v, annee: 2026, dernier: 1 },
   'artisanScores/a1': { ...v, qualite: 80 },
   'demandes/dem1': {
     ...v,

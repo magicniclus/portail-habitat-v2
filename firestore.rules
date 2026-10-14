@@ -102,6 +102,14 @@ service cloud.firestore {
       match /disponibilites/{m} { allow read: if isMembre(aid) || lit('art'); allow write: if noImp() && isOperationnelActif(aid); }
       match /statsJour/{j}      { allow read: if isOperationnel(aid) || lit('art'); allow write: if false; }
       match /prive/{p}          { allow read: if isGestion(aid) || entRole(aid) == 'x' || isFinance(); allow write: if false; }
+      // Devis & factures (DATABASE §8 bis) : totaux, mentions et numéros calculés côté serveur,
+      // donc aucune écriture directe ; données des clients de l'artisan, jamais lues par le staff.
+      match /devis/{d}                 { allow read: if isOperationnel(aid); allow write: if false; }
+      match /facturesClients/{f}       { allow read: if isGestion(aid) || entRole(aid) == 'x'; allow write: if false; }
+      match /modelesDevis/{m}          { allow read: if isOperationnel(aid); allow write: if false; }
+      match /prestationsBiblio/{b}     { allow read: if isOperationnel(aid); allow write: if false; }
+      match /parametresFacturation/{x} { allow read: if isMembre(aid); allow write: if false; }
+      match /compteurs/{c}             { allow read, write: if false; }
     }
     match /artisanScores/{aid} { allow read: if isGestion(aid) || lit('mat'); allow write: if false; }
 

@@ -295,6 +295,62 @@ const CAS: Cas[] = [
     op: { maj: 'artisans/a1/prive/facturation', donnees: { stripeCustomerId: 'cus_2' } },
     autorises: [],
   },
+  // ----- devis & factures des clients (DATABASE §8 bis) -----
+  {
+    nom: 'lire un devis (avec sa marge)',
+    op: { get: 'artisans/a1/devis/d1' },
+    autorises: membresA1('p', 'g', 'c'),
+  },
+  {
+    nom: 'écrire un devis directement (totaux et mentions recalculés par le serveur)',
+    op: { maj: 'artisans/a1/devis/d1', donnees: { statut: 'envoye' } },
+    autorises: [],
+  },
+  {
+    nom: 'créer un devis directement',
+    op: { creer: 'artisans/a1/devis/nouveau-{p}', donnees: { statut: 'brouillon' } },
+    autorises: [],
+  },
+  {
+    nom: 'lire une facture client',
+    op: { get: 'artisans/a1/facturesClients/f1' },
+    autorises: membresA1('p', 'g', 'x'),
+  },
+  {
+    nom: 'modifier une facture émise',
+    op: { maj: 'artisans/a1/facturesClients/f1', donnees: { numero: 'F-2026-0002' } },
+    autorises: [],
+  },
+  {
+    nom: 'lire les modèles et la bibliothèque de prestations',
+    op: { get: 'artisans/a1/modelesDevis/m1' },
+    autorises: membresA1('p', 'g', 'c'),
+  },
+  {
+    nom: 'lire la bibliothèque de prestations',
+    op: { get: 'artisans/a1/prestationsBiblio/b1' },
+    autorises: membresA1('p', 'g', 'c'),
+  },
+  {
+    nom: 'lire les paramètres de facturation',
+    op: { get: 'artisans/a1/parametresFacturation/actuels' },
+    autorises: membresA1('p', 'g', 'c', 'x'),
+  },
+  {
+    nom: 'écrire les paramètres de facturation directement',
+    op: { maj: 'artisans/a1/parametresFacturation/actuels', donnees: { siret: '1' } },
+    autorises: [],
+  },
+  {
+    nom: 'lire ou avancer le compteur des factures',
+    op: { maj: 'artisans/a1/compteurs/factures', donnees: { dernier: 0 } },
+    autorises: [],
+  },
+  {
+    nom: 'lire le compteur des factures',
+    op: { get: 'artisans/a1/compteurs/factures' },
+    autorises: [],
+  },
   {
     nom: 'lire les scores de nuit',
     op: { get: 'artisanScores/a1' },

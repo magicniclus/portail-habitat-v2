@@ -140,6 +140,14 @@ export const factureClient = z.object({
       }),
     )
     .max(100),
+  /** Facture de solde : acomptes déjà facturés, déduits du reste à payer. */
+  acomptesDeduits: z
+    .array(z.object({ factureId: id, numero: z.string().max(30), ttcCentimes: centimes }))
+    .max(20)
+    .optional(),
+  /** Avoir émis pour corriger cette facture. */
+  avoirId: id.optional(),
+  motifAvoir: z.string().max(300).optional(),
   resteCentimes: centimes,
   penalites: z.object({ tauxAnnuel: z.number().min(0).max(100), indemnite: z.literal(4000) }),
   relances: z.array(z.object({ le: horodatage, type: z.string().max(40) })).max(50),
