@@ -4,6 +4,7 @@ import {
   conditionsDevis,
   conditionsFacture,
   formulaireRetractation,
+  tonStatut,
   assainirHtml,
   calculerTotaux,
   numeroDocument,
@@ -324,5 +325,91 @@ describe('textes légaux du PDF', () => {
         { ...params, franchiseTva: true },
       ).join(' '),
     ).toContain('293 B');
+  });
+});
+
+describe('cas complémentaires', () => {
+  it('pastilles de statut', () => {
+    expect(tonStatut('accepte')).toBe('succes');
+    expect(tonStatut('payee')).toBe('succes');
+    expect(tonStatut('refuse')).toBe('danger');
+    expect(tonStatut('impayee')).toBe('danger');
+    expect(tonStatut('envoye')).toBe('info');
+    expect(tonStatut('emise')).toBe('info');
+    expect(tonStatut('partiellement_payee')).toBe('attention');
+    expect(tonStatut('brouillon')).toBe('neutre');
+  });
+
+  it('liens entre apostrophes ou sans guillemets ; lien vide', () => {
+    expect(assainirHtml("<a href='mailto:a@b.fr'>m</a>")).toBe(
+      '<a href="mailto:a@b.fr" rel="noopener noreferrer nofollow">m</a>',
+    );
+    expect(assainirHtml('<a href=https://x.fr>x</a>')).toBe(
+      '<a href="https://x.fr" rel="noopener noreferrer nofollow">x</a>',
+    );
+    expect(assainirHtml('<a>x</a>')).toBe('<a>x</a>');
+  });
+
+  it('conditions sans acompte, sans dates, avec conditions de paiement et franchise', () => {
+    const t = conditionsDevis(
+      {
+        typeClient: 'particulier',
+        horsEtablissement: false,
+        tauxReduit: true,
+        devisGratuit: false,
+        dureeEstimee: '',
+        fraisDeplacement: '',
+        acomptePct: 0,
+        acompteCentimes: 0,
+      },
+      {
+        ...params,
+        franchiseTva: true,
+        conditionsPaiement: 'Virement ou chèque.',
+        mediateur: { nom: 'CM2C', adresse: 'Paris', site: 'cm2c.net' },
+      },
+    ).join(' ');
+    expect(t).toContain('payant');
+    expect(t).toContain('à convenir');
+    expect(t).toContain('Paiement à réception');
+    expect(t).toContain('Virement ou chèque.');
+    expect(t).toContain('293 B');
+    expect(t).toContain('(cm2c.net)');
+    // Franchise : pas de mention de TVA réduite.
+    expect(t).not.toContain('attestation simplifiée');
+  });
+
+  it('avoir : référence de la facture annulée, ni échéance ni pénalités', () => {
+    const t = conditionsFacture(
+      { typeClient: 'particulier', type: 'avoir', factureOrigine: 'F-2026-0001' },
+      { ...params, conditionsPaiement: 'Virement.' },
+    ).join(' ');
+    expect(t).toContain('F-2026-0001');
+    expect(t).not.toContain('Pas d’escompte');
+    expect(
+      conditionsFacture(
+        { typeClient: 'particulier', type: 'facture' },
+        { ...params, conditionsPaiement: 'Virement.' },
+      ).join(' '),
+    ).toContain('à réception. Virement.');
+  });
+
+  it('facture : client ou lignes incomplets, dates absentes', () => {
+    const r = verifierMentionsFacture(
+      {
+        typeClient: 'particulier',
+        client: { nom: '', adresse: '' },
+        lignes: [],
+      },
+      { ...params, raisonSociale: '' },
+    );
+    expect(r.manquantes).toEqual([
+      'identite',
+      'dates',
+      'client',
+      'lieu_execution',
+      'lignes',
+      'echeance',
+    ]);
   });
 });
