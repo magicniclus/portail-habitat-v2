@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  attestationTvaReduite,
+  conditionsDevis,
+  conditionsFacture,
+  formulaireRetractation,
   assainirHtml,
   calculerTotaux,
   numeroDocument,
@@ -252,5 +256,73 @@ describe('texte riche assaini (b, i, u, a, ul, ol, li)', () => {
   it('balises non fermées refermées, fermetures orphelines retirées', () => {
     expect(assainirHtml('<b>gras <i>et italique')).toBe('<b>gras <i>et italique</i></b>');
     expect(assainirHtml('texte</b></ul>')).toBe('texte');
+  });
+});
+
+describe('textes légaux du PDF', () => {
+  const base = {
+    typeClient: 'particulier' as const,
+    horsEtablissement: false,
+    tauxReduit: false,
+    devisGratuit: true,
+    validiteLe: new Date('2026-11-09T12:00:00Z'),
+    debutTravauxLe: new Date('2026-11-16T12:00:00Z'),
+    dureeEstimee: '5 jours',
+    fraisDeplacement: 'Inclus',
+    acomptePct: 30,
+    acompteCentimes: 53658,
+  };
+
+  it('DEV-03 : rétractation 14 j seulement pour un particulier démarché à domicile', () => {
+    expect(conditionsDevis({ ...base, horsEtablissement: true }, params).join(' ')).toContain(
+      'rétractation de 14 jours',
+    );
+    expect(conditionsDevis(base, params).join(' ')).not.toContain('rétractation');
+    expect(
+      conditionsDevis({ ...base, typeClient: 'pro', horsEtablissement: true }, params).join(' '),
+    ).not.toContain('rétractation');
+    expect(formulaireRetractation(params).lignes[1]).toContain('Bertrand Rénovation');
+  });
+
+  it('DEV-04 : taux réduit → mention et attestation au nom du client', () => {
+    expect(conditionsDevis({ ...base, tauxReduit: true }, params).join(' ')).toContain(
+      'attestation simplifiée',
+    );
+    expect(
+      attestationTvaReduite({ nom: 'Claire Martin', adresse: 'Mérignac' }).lignes[0],
+    ).toContain('Claire Martin');
+  });
+
+  it('acompte, médiateur (particulier), indemnité 40 € (pro)', () => {
+    const t = conditionsDevis(base, params).join(' ');
+    expect(t).toContain('30 %');
+    expect(t).toContain('536,58');
+    expect(t).toContain('CM2C');
+    expect(t).not.toContain('40 €');
+    const pro = conditionsDevis({ ...base, typeClient: 'pro' }, params).join(' ');
+    expect(pro).toContain('40 €');
+    expect(pro).not.toContain('Médiateur');
+  });
+
+  it('facture : nature de l’opération, pas d’escompte, TVA sur les débits, franchise', () => {
+    const t = conditionsFacture(
+      {
+        typeClient: 'pro',
+        type: 'facture',
+        devisNumero: 'D-2026-0001',
+        echeanceLe: new Date('2026-11-13T12:00:00Z'),
+      },
+      { ...params, tvaSurDebits: true },
+    ).join(' ');
+    expect(t).toContain('prestation de services');
+    expect(t).toContain('Pas d’escompte');
+    expect(t).toContain('débits');
+    expect(t).toContain('40 €');
+    expect(
+      conditionsFacture(
+        { typeClient: 'particulier', type: 'facture' },
+        { ...params, franchiseTva: true },
+      ).join(' '),
+    ).toContain('293 B');
   });
 });
