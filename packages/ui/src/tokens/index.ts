@@ -181,3 +181,52 @@ export const couleursEmail = {
     neutre: { fond: '#f1f0ed', texte: '#57534f' },
   },
 } as const;
+
+/**
+ * Palettes proposées aux sites des artisans (maquette Éditeur de Site) : couleurs du site de
+ * l'artisan, pas de Portail Habitat. La première sert au site de départ.
+ */
+export const palettesSites = [
+  {
+    nom: 'Extraite du logo',
+    primaire: '#1d4f73',
+    accent: '#c97a2b',
+    clair: '#f2ede4',
+    sombre: '#14222e',
+  },
+  {
+    nom: 'Plus contrastée',
+    primaire: '#16324f',
+    accent: '#e0681c',
+    clair: '#eef2f6',
+    sombre: '#0d1b2a',
+  },
+  {
+    nom: 'Plus chaleureuse',
+    primaire: '#2f5d50',
+    accent: '#b9853f',
+    clair: '#f4efe6',
+    sombre: '#1c2b26',
+  },
+  {
+    nom: 'Ardoise et jaune',
+    primaire: '#2b3a42',
+    accent: '#d99a1e',
+    clair: '#f1efe9',
+    sombre: '#161e22',
+  },
+  {
+    nom: 'Bordeaux et crème',
+    primaire: '#6e1f2f',
+    accent: '#b88536',
+    clair: '#f6f0e6',
+    sombre: '#2a1015',
+  },
+  {
+    nom: 'Bleu franc',
+    primaire: '#1957a6',
+    accent: '#e8801f',
+    clair: '#eef3f9',
+    sombre: '#0d2340',
+  },
+] as const;
