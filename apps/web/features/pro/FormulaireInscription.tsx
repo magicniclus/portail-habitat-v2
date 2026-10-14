@@ -1,11 +1,13 @@
 'use client';
 
-import { entreeInscriptionEtape1 } from '@ph/core/schemas';
+import { evenementLanding, type OutilLanding } from '@ph/core/landings';
+import { entreeInscriptionEtape1, type SourceAcquisition } from '@ph/core/schemas';
 import { Banner, Button, Checkbox, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, type FormEvent } from 'react';
 import { signalerConversion } from '@ph/tracker';
+import { pousserEvenement } from '@/lib/dataLayer';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import { ChoixMetiers } from './ChoixMetiers';
@@ -17,19 +19,42 @@ import { useMetierCible } from './useMetierCible';
 
 type Champ = 'nom' | 'telephone' | 'email' | 'codePostal' | 'metierPrincipal' | 'cgv';
 
+const UTM = ['utm_source', 'utm_medium', 'utm_campaign'] as const;
+
+/** Source de la landing et paramètres de campagne de l'URL (LANDINGS §1), sans donnée personnelle. */
+function acquisitionDe(source: SourceAcquisition) {
+  const p = new URLSearchParams(window.location.search);
+  const utm = Object.fromEntries(
+    UTM.map((k) => [k, (p.get(k) ?? '').replace(/[^\w.\-+ ]/gu, '').slice(0, 100)]).filter(
+      ([, v]) => v,
+    ),
+  );
+  return { source, ...utm };
+}
+
 /**
- * Carte « Créer mon compte gratuit » (maquette Acquisition Artisans v2), étape 1 de l'inscription :
- * identité, métiers et chantiers ; brouillon enregistré et lien de reprise envoyé par email (ONB-04).
+ * Carte « Créer mon compte gratuit » (maquettes Acquisition Artisans v2 et Formulaire Espace), étape 1
+ * de l'inscription : identité, métiers et chantiers ; brouillon enregistré et lien de reprise envoyé
+ * par email (ONB-04). Sur une landing par outil, la source part avec le formulaire (LAND-01).
  */
 export function FormulaireInscription({
   groupes,
   chantiers,
   demandesMois,
+  titre = 'Créer mon compte gratuit',
+  cta = 'Voir les demandes de ma zone',
+  source = 'pro',
+  landing,
 }: {
   groupes: GroupeMetiers[];
   chantiers: ChantierMetier[];
   /** Demandes déposées ce mois-ci (stats/public), déjà formaté ; masqué sans donnée. */
   demandesMois: string | null;
+  titre?: string;
+  cta?: string;
+  source?: SourceAcquisition;
+  /** Landing par outil : événements `hero_form_*` (LANDINGS §5). */
+  landing?: OutilLanding;
 }) {
   const router = useRouter();
   const cible = useMetierCible(groupes);
@@ -39,6 +64,12 @@ export function FormulaireInscription({
   const [codePostal, setCodePostal] = useState('');
   const [principal, setPrincipal] = useState<string>('');
   const formulaire = useRef<HTMLFormElement>(null);
+  const commence = useRef(false);
+  const commencer = () => {
+    if (commence.current || !landing) return;
+    commence.current = true;
+    pousserEvenement(evenementLanding('hero_form_started', landing));
+  };
   const metierActif = principal || cible?.id || '';
   const estimation = useDemandesEstimees(codePostal, metierActif ? [metierActif] : [], 30);
   const nomActif = groupes.flatMap((g) => g.metiers).find((m) => m.id === metierActif)?.nom;
@@ -57,6 +88,7 @@ export function FormulaireInscription({
       intentions: f.getAll('intentions').map(String),
       cgv: f.get('cgv') === 'on',
       site: t('site') || undefined,
+      acquisition: acquisitionDe(source),
     };
     const v = entreeInscriptionEtape1.safeParse(brut);
     if (!v.success) {
@@ -77,7 +109,8 @@ export function FormulaireInscription({
     setEnCours(false);
     if (!r.ok) return setErreurGenerale(r.message);
     signalerConversion('inscription');
-    router.push('/pro/inscription/zone' as Parameters<typeof router.push>[0]);
+    if (landing) pousserEvenement(evenementLanding('hero_form_submitted', landing, { source }));
+    router.push(`/pro/inscription/zone?source=${source}` as Parameters<typeof router.push>[0]);
   };
 
   return (
@@ -85,9 +118,15 @@ export function FormulaireInscription({
       id="inscription"
       className="scroll-mt-[70px] rounded-[16px] border border-trait bg-blanc p-[clamp(20px,2.4vw,28px)] shadow-lg"
     >
-      <form ref={formulaire} onSubmit={envoyer} noValidate className="grid gap-3.5">
+      <form
+        ref={formulaire}
+        onSubmit={envoyer}
+        onFocus={commencer}
+        noValidate
+        className="grid gap-3.5"
+      >
         <div>
-          <h2 className="m-0 mb-1.5 text-[23px]">Créer mon compte gratuit</h2>
+          <h2 className="m-0 mb-1.5 text-[23px]">{titre}</h2>
           <p className="m-0 text-sm leading-[21px] text-neutre-700">
             1 minute. Sans carte bancaire.
           </p>
@@ -168,7 +207,7 @@ export function FormulaireInscription({
           disabled={enCours}
           data-ph="cta-inscription"
         >
-          {enCours ? 'Enregistrement…' : 'Voir les demandes de ma zone'}
+          {enCours ? 'Enregistrement…' : cta}
         </Button>
         <GarantiesInscription />
       </form>

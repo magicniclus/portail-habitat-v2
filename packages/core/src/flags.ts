@@ -32,6 +32,22 @@ export const FLAGS = {
       'Notifications push de l’application pro (FCM) ; nécessite aussi la clé NEXT_PUBLIC_FIREBASE_VAPID_KEY',
     retraitPrevu: '2099-12',
   },
+  preuvesMarketing: {
+    defaut: false,
+    description:
+      'config.marketing.preuves : avis de la maquette, « premier réseau », « 300+ demandes/jour » (LANDINGS §7, preuve datée exigée)',
+    retraitPrevu: '2099-12',
+  },
+  landingSite: {
+    defaut: false,
+    description: 'Landing /pro/site-internet-artisan (à ouvrir avec le site artisan, lot 10b)',
+    retraitPrevu: '2027-06',
+  },
+  landingDevis: {
+    defaut: false,
+    description: 'Landing /pro/logiciel-devis-factures (à ouvrir avec les devis, lot 11b)',
+    retraitPrevu: '2027-06',
+  },
   maintenance: {
     defaut: false,
     description: 'Page de maintenance partout sauf /admin (ERR-03)',

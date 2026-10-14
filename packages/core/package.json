@@ -41,7 +41,8 @@
     "./partenaires": "./src/partenaires/index.ts",
     "./conversion": "./src/conversion/index.ts",
     "./comportement": "./src/comportement/index.ts",
-    "./ia": "./src/ia/index.ts"
+    "./ia": "./src/ia/index.ts",
+    "./landings": "./src/landings/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

@@ -124,6 +124,7 @@ export const chemins = {
   statsPublic: () => 'stats/public',
   configApp: () => 'config/app',
   configFlags: () => 'config/flags',
+  configPreuveSociale: () => 'config/preuveSociale',
   flagsArtisan: (aid: string) => `config/flags/artisans/${aid}`,
   configCycle: () => 'config/cycle',
   configComportement: () => 'config/comportement',

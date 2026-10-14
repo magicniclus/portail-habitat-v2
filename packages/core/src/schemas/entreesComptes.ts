@@ -1,7 +1,7 @@
 import { ACTIONS_EQUIPE, ROLES_MEMBRE } from '../equipe/permissions';
 import { z } from '../zod';
 import { adresse, centimesPositifs, email, geo, id, siren, siret, telephoneE164 } from './commun';
-import { rayonKm } from './artisans';
+import { entreeAcquisition, rayonKm } from './artisans';
 
 /** Entrées des Server Actions et Functions de comptes (COMPTES §7). Dates en chaînes ISO côté client. */
 const cleIdempotence = z.string().min(8).max(64);
@@ -37,6 +37,8 @@ export const entreeFinaliserOnboarding = z
     budgetMin: centimesPositifs.optional(),
     /** Version des CGV Pro acceptées (case obligatoire de l'étape 3). */
     cgvVersion: z.string().min(1).max(20),
+    /** Landing d'origine relue dans le brouillon (LANDINGS §1) ; `pro` par défaut. */
+    acquisition: entreeAcquisition.extend({ landingAt: z.number().int().nonnegative() }).optional(),
   })
   .refine((e) => e.metiers.includes(e.metierPrincipal), {
     message: 'Le métier principal doit faire partie des métiers.',

@@ -21,6 +21,15 @@ describe('SEO : sitemap et robots', () => {
   it('aucune page privée dans le sitemap', () => {
     expect(chemins.filter((c) => /^\/(admin|api|mon-espace|pro\/)/.test(c))).toEqual([]);
   });
+  it('landings par outil ouvertes : dans le sitemap et autorisées malgré /pro/', () => {
+    const avec = pagesDuSitemap(new Date('2026-09-28'), [], ['/pro/trouver-des-chantiers']);
+    expect(avec.map((p) => new URL(p.url).pathname)).toContain('/pro/trouver-des-chantiers');
+    expect(reglesRobots(true).rules).toEqual([
+      expect.objectContaining({
+        allow: expect.arrayContaining(['/pro/trouver-des-chantiers', '/pro/site-internet-artisan']),
+      }),
+    ]);
+  });
   it('production : espaces privés exclus, sitemap déclaré ; sinon tout est bloqué', () => {
     const r = reglesRobots(true);
     expect(r.sitemap).toMatch(/\/sitemap\.xml$/);

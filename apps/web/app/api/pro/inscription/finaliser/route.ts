@@ -57,6 +57,7 @@ const finaliser = action(
       intentions: b.intentions,
       zone: { centre: b.zone.centre, rayonKm: b.zone.rayonKm },
       cgvVersion: VERSION_LEGALE,
+      ...(b.acquisition ? { acquisition: b.acquisition } : {}),
     });
     const r = await finaliserOnboarding(s, ctx.uid!, entree);
     await oublierBrouillon();

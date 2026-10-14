@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { liensEnvoyes, MOT_DE_PASSE, PDF } from './outils';
+import { chemins } from '@ph/firebase/chemins';
+import { admin, liensEnvoyes, MOT_DE_PASSE, PDF } from './outils';
 
 // docs/ACCEPTANCE.md ONB-01 à 04 et ONB-07, sur les émulateurs et les SIREN du seed (cacheSirene).
 const SIRENS = { libre: '552100554', fermee: '443061841', inscrite: '404833048' } as const;
@@ -33,12 +34,37 @@ async function etape1(page: Page, email: string) {
   await page.getByLabel(/^Métier principal/).selectOption('couvreur');
   await page.getByRole('checkbox', { name: /conditions générales/ }).check();
   await page.getByRole('button', { name: 'Voir les demandes de ma zone' }).click();
-  await expect(page).toHaveURL(/\/pro\/inscription\/zone$/);
+  await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=pro$/);
 }
 
 const liensReprise = () => liensEnvoyes('/pro/inscription?reprise=');
 
 test.describe('Inscription pro', () => {
+  test('LAND-01 : la source de la landing est gardée jusqu’au compte (brouillon d’inscription)', async ({
+    page,
+  }) => {
+    const email = emailUnique('landing');
+    await page.goto('/pro/trouver-des-chantiers?utm_source=google&utm_medium=cpc');
+    await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
+    await page.getByLabel(/^Email/).fill(email);
+    await page.getByLabel(/^Téléphone/).fill('0612345678');
+    await page.getByLabel(/^Code postal/).fill('33700');
+    await page.getByLabel(/^Métier principal/).selectOption('couvreur');
+    await page.getByRole('checkbox', { name: /conditions générales/ }).check();
+    await page.getByRole('button', { name: 'Voir les demandes près de chez moi' }).click();
+    await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=trouver-chantier$/);
+    const { db } = await admin();
+    const brouillons = await db
+      .doc(chemins.brouillonOnboarding('_'))
+      .parent.where('donnees.identite.email', '==', email)
+      .get();
+    expect(brouillons.docs[0]?.get('donnees.acquisition')).toMatchObject({
+      source: 'trouver-chantier',
+      utm_source: 'google',
+      utm_medium: 'cpc',
+    });
+  });
+
   test('ONB-07, ONB-01 à 03 : bouton inactif tant que l’étape est incomplète, entreprise vérifiée, activation', async ({
     page,
   }, info) => {

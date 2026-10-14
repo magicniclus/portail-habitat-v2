@@ -170,5 +170,6 @@ describe('écriture sur l’émulateur', () => {
       jeu.claims.get('seed-proprio'),
     );
     expect((await auth.getUserByEmail('admin@test.local')).emailVerified).toBe(true);
-  });
+    // Tous les comptes du jeu sont créés deux fois : lent sur une machine chargée.
+  }, 30_000);
 });

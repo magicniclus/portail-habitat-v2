@@ -616,6 +616,31 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 
 **Reste** : encarts contextuels de PAIEMENTS §4 (tableau de bord, Ma fiche), D63/NAV-01, emails qui citent encore Visibilité/Premium, lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
 
+## 25. Lot 10e : landings par outil (14/10/2026)
+
+**Fait**
+- `/pro/trouver-des-chantiers` en ligne ; `/pro/site-internet-artisan` et `/pro/logiciel-devis-factures` construites mais fermées (404) derrière les flags `landingSite` et `landingDevis` tant que le site artisan (10b) et les devis (11b) ne sont pas livrés : on ne vante pas un outil absent.
+- Gabarit unique `features/landings/PageLanding` ; contenu dans `@ph/core/landings` (`contenuLanding`, à migrer dans le CMS).
+- Source d'acquisition (LAND-01) : le formulaire envoie `acquisition {source, utm_*}` ; gardée dans le brouillon (la première landing l'emporte), écrite dans `artisans.acquisition` à la création du compte (`pro` par défaut) ; l'URL de l'étape 2 porte `?source=`.
+- Étapes « scrollytelling » avec GSAP 3.12 + ScrollTrigger (`useGSAP`, `gsap.matchMedia`) : un geste = une étape, sortie libre ; liste simple sur téléphone et avec `prefers-reduced-motion`.
+- Barre mobile masquée quand un formulaire est visible ; tous les CTA vont au formulaire ; en-tête sans bouton orange (LAND-02).
+- Événements `dataLayer` avec `landing` (`lib/dataLayer.ts`) ; aucun gestionnaire de balises n'est chargé pour l'instant.
+- Preuve sociale lue dans `config/preuveSociale` (nouveau schéma) : masquée sans donnée réelle ; un témoignage sans `accordLe` n'est jamais affiché.
+- Flag `preuvesMarketing` (= `config.marketing.preuves`, désactivé) : seul lui affiche les avis fictifs du bandeau défilant, « Plus de 300 demandes… » et « Premier réseau de France ».
+- Landings dans le sitemap et autorisées dans robots.txt malgré `/pro/` ; ajoutées aux pages pro statiques (CSP sans nonce).
+- Tests : `landings.test.ts` (core), LAND-01 sur émulateur (brouillon et compte), `e2e/landings.spec.ts` (LAND-01 à LAND-07 sur 4 appareils).
+
+**Nouvelles dépendances** : `gsap` 3.12.5 et `@gsap/react` 2.1.1 (demandées par le handoff). **Modèle de données** : `config/preuveSociale`, `donnees.acquisition` du brouillon d'inscription, `acquisition` écrit sur chaque nouveau compte.
+
+**Choix faits seuls (à valider)**
+1. Phrases retirées ou reformulées faute de preuve (LANDINGS §7) : « En ligne en 5 minutes » → « Textes rédigés par l'IA » ; « plusieurs centaines d'euros » → « Ce qu'une agence vous facturerait » ; « 0 € pour commencer » → « Gratuit pour commencer » (aucun prix dans le hero).
+2. `pricing_section_viewed` part quand la section « Un seul compte / gratuit » est vue (la maquette n'a pas de section prix, et aucun prix avant l'inscription).
+
+**Reste**
+- `demo_played` et `site_example_clicked` : la démo `SiteGenerationDemo` et les exemples par métier attendent le site artisan (10b) et de vraies vidéos et captures.
+- Onboarding selon la source (LANDINGS §4) : la source est enregistrée ; la première action dédiée (site, devis) viendra avec ces outils.
+- Photos du hero (`public/landing/photos`) à fournir ; traceur de comportement non branché sur ces pages.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -641,3 +666,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 05/10/2026 — Lot 13b en grande partie fait (moteur de conversion, codes personnels, demandes offertes, écran admin). Restes et points à trancher : §21.
 - 09/10/2026 — Lot 13 terminé (journal en direct, questions de suivi et effet à 30 jours de l'IA, recherches manquées, témoignage J+5). Lot 14 en cours : sécurité, App Check, statistiques des fiches, tâches planifiées, migrations, tests transverses, RUNBOOK et DEPLOIEMENT.
 - 14/10/2026 — Handoff intégré ; lot 11 refait selon PAIEMENTS.md (formules 2026, droits, Mon abonnement, fenêtre d'offre). Détail et choix à valider : §24.
+- 14/10/2026 — Lot 10e : landing « Trouver des chantiers » en ligne, landings site et devis prêtes derrière flags, source d'acquisition enregistrée sur le compte. Détail : §25.

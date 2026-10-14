@@ -95,6 +95,26 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
     });
   });
 
+  it('LAND-01 : la source de la landing est gardée dans le brouillon, la première l’emporte', async () => {
+    const avecSource = entreeInscriptionEtape1.parse({
+      ...etape1,
+      acquisition: { source: 'site-internet-artisan', utm_source: 'google', utm_campaign: 'site' },
+    });
+    const { brouillonId } = await enregistrerEtape1(s(), avecSource);
+    horloge = T + 60_000;
+    await enregistrerEtape1(
+      s(),
+      { ...avecSource, acquisition: { source: 'logiciel-devis-facture' } },
+      brouillonId,
+    );
+    expect((await lireBrouillonInscription(s(), brouillonId))?.acquisition).toEqual({
+      source: 'site-internet-artisan',
+      utm_source: 'google',
+      utm_campaign: 'site',
+      landingAt: T,
+    });
+  });
+
   it('après 30 jours : brouillon et lien expirés', async () => {
     const { brouillonId } = await enregistrerEtape1(s(), etape1);
     horloge = T + 31 * 86_400_000;

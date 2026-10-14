@@ -13,6 +13,7 @@
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
+    "@gsap/react": "2.1.1",
     "@ph/core": "workspace:*",
     "@ph/firebase": "workspace:*",
     "@ph/tracker": "workspace:*",
@@ -21,6 +22,7 @@
     "@sentry/nextjs": "^11.0.0",
     "firebase": "^12.19.0",
     "firebase-admin": "^14.5.0",
+    "gsap": "3.12.5",
     "next": "^16.3.6",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

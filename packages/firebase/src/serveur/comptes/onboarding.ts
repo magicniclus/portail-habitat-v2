@@ -73,6 +73,9 @@ export async function finaliserOnboarding(
         rayonAccepteLe: maintenant,
       },
       source: 'direct',
+      acquisition: e.acquisition
+        ? { ...e.acquisition, landingAt: new Date(e.acquisition.landingAt) }
+        : { source: 'pro', landingAt: maintenant },
       demandeOfferteUtilisee: false,
       ...(e.budgetMin !== undefined ? { budgetMin: e.budgetMin } : {}),
       droits: droitsInitiaux('gratuit', maintenant),

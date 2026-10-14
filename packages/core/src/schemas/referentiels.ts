@@ -165,6 +165,30 @@ export const configFlags = z.object({
   updatedAt: horodatage,
 });
 
+/** `config/preuveSociale` (LANDINGS §3.8) : données réelles uniquement ; vide = section masquée. */
+export const configPreuveSociale = z.object({
+  schemaVersion,
+  nbInscrits: z.number().int().nonnegative().default(0),
+  nbSites: z.number().int().nonnegative().default(0),
+  note: z.number().min(0).max(5).default(0),
+  nbAvis: z.number().int().nonnegative().default(0),
+  temoignages: z
+    .array(
+      z.object({
+        nom: z.string().max(60),
+        metier: z.string().max(60),
+        ville: z.string().max(60),
+        texte: z.string().max(400),
+        photo: z.string().max(300).optional(),
+        /** Accord écrit de l'artisan : obligatoire pour être affiché. */
+        accordLe: horodatage.optional(),
+      }),
+    )
+    .max(20)
+    .default([]),
+  updatedAt: horodatage,
+});
+
 export const annonce = z.object({
   ...meta,
   titre: z.string().max(120),

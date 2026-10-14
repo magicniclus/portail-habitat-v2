@@ -56,6 +56,20 @@ export const SOURCES_ACQUISITION = [
   'logiciel-devis-facture',
   'pro',
 ] as const;
+export type SourceAcquisition = (typeof SOURCES_ACQUISITION)[number];
+const utm = z
+  .string()
+  .trim()
+  .max(100)
+  .regex(/^[\w.\-+ ]*$/u, 'Paramètre de campagne invalide')
+  .optional();
+/** Ce que le formulaire d'une landing transmet (source + paramètres de campagne, sans donnée personnelle). */
+export const entreeAcquisition = z.strictObject({
+  source: z.enum(SOURCES_ACQUISITION),
+  utm_source: utm,
+  utm_medium: utm,
+  utm_campaign: utm,
+});
 export const acquisitionArtisan = z.object({
   source: z.enum(SOURCES_ACQUISITION),
   utm_source: z.string().max(100).optional(),

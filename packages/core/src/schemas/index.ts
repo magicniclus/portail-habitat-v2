@@ -109,6 +109,7 @@ export const SCHEMAS = {
   'stats/public': referentiels.statsPublic,
   'config/app': referentiels.configApp,
   'config/flags': referentiels.configFlags,
+  'config/preuveSociale': referentiels.configPreuveSociale,
   'config/flags/artisans/{}': referentiels.configFlags,
   'annonces/{}': referentiels.annonce,
 

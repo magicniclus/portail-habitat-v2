@@ -151,6 +151,19 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
     );
     expect(await claims(uid)).toEqual({ roles: ['artisan'], ent: { [artisanId]: 'p' } });
     expect(envois.map((e) => e.modele)).toEqual(['bienvenue-pro']);
+    expect(a.acquisition).toEqual({ source: 'pro', landingAt: expect.anything() });
+  });
+
+  it('LAND-01 : la source de la landing est écrite sur le compte créé', async () => {
+    const uid = await compte('proprio@test.local');
+    const { artisanId } = await finaliserOnboarding(s, uid, {
+      ...onboarding(),
+      acquisition: { source: 'trouver-chantier', utm_medium: 'cpc', landingAt: 1_700_000_000_000 },
+    });
+    const a = (await db.doc(chemins.artisan(artisanId)).get()).data()!;
+    expect(a.acquisition.source).toBe('trouver-chantier');
+    expect(a.acquisition.utm_medium).toBe('cpc');
+    expect(a.acquisition.landingAt.toMillis()).toBe(1_700_000_000_000);
   });
 
   it('deux personnes, même SIREN, même seconde : une seule réussit (sirenIndex)', async () => {

@@ -1,13 +1,21 @@
+import { LANDINGS, OUTILS_LANDING } from '@ph/core/landings';
 import type { MetadataRoute } from 'next';
 import { COMMUNES } from '@/features/diagnostic/communes';
 import { tousLesDocuments } from '@/features/legal/documents';
 import { routes } from '@/lib/routes';
 import { absolue } from './seo';
 
-/** Pages publiques indexables : vitrine, annuaire et fiches des artisans en ligne (`slugs`). */
+/** Landings par outil : publiques et indexables, alors que le reste de `/pro/` est privé. */
+const ROUTES_LANDINGS = OUTILS_LANDING.map((o) => LANDINGS[o].route);
+
+/**
+ * Pages publiques indexables : vitrine, annuaire, fiches des artisans en ligne (`slugs`) et
+ * landings ouvertes (`landings`, selon leurs flags).
+ */
 export function pagesDuSitemap(
   maintenant: Date,
   slugs: readonly string[] = [],
+  landings: readonly string[] = [],
 ): MetadataRoute.Sitemap {
   const page = (
     chemin: string,
@@ -22,6 +30,7 @@ export function pagesDuSitemap(
   return [
     page(routes.accueil, 1, 'daily'),
     page(routes.pro, 0.9, 'weekly'),
+    ...landings.map((l) => page(l, 0.8, 'weekly')),
     page(routes.artisans, 0.9, 'daily'),
     ...slugs.map((slug) => page(routes.ficheArtisan(slug), 0.7, 'weekly')),
     page(routes.diagnostic, 0.9, 'weekly'),
@@ -38,7 +47,7 @@ export function reglesRobots(production: boolean): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ['/', ...ROUTES_LANDINGS],
         disallow: [
           '/api/',
           '/admin',

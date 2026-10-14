@@ -98,6 +98,10 @@ const PRO_STATIQUES = [
   '/pro/icone',
   '/pro/manifest',
   '/pro/sw',
+  // Landings par outil (LANDINGS §1), en ISR comme /pro.
+  '/pro/trouver-des-chantiers',
+  '/pro/site-internet-artisan',
+  '/pro/logiciel-devis-factures',
 ];
 
 export function espaceStrict(chemin: string): boolean {

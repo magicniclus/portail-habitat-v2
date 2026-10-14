@@ -58,9 +58,9 @@ beforeEach(async () => {
         finPeriode: Timestamp.fromMillis(T + 20 * J),
         ...p,
       });
-  await abo('sub_p', 'a1', 'premium');
-  await abo('sub_old', 'a1', 'visibilite', { statut: 'canceled' });
-  await abo('sub_x', 'autre', 'premium');
+  await abo('sub_p', 'a1', 'tout_inclus');
+  await abo('sub_old', 'a1', 'fiche_pro', { statut: 'canceled' });
+  await abo('sub_x', 'autre', 'tout_inclus');
 });
 
 describe('parcours de résiliation', () => {

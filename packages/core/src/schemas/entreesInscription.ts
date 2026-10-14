@@ -1,6 +1,6 @@
 import { z } from '../zod';
 import { codePostal, email, geo, id, telephoneFr } from './commun';
-import { rayonKm } from './artisans';
+import { entreeAcquisition, rayonKm } from './artisans';
 
 /** Étape 1 (formulaire de la page d'acquisition, COMPTES §3.1 bis) : identité, métiers, chantiers. */
 export const entreeInscriptionEtape1 = z
@@ -13,6 +13,8 @@ export const entreeInscriptionEtape1 = z
     metiers: z.array(id).min(1).max(5),
     intentions: z.array(id).max(200),
     cgv: z.literal(true, 'Acceptez les conditions pour continuer'),
+    /** Landing d'origine (LANDINGS §1), gardée dans le brouillon puis écrite sur le compte. */
+    acquisition: entreeAcquisition.optional(),
     /** Piège à robots. */
     site: z.string().max(0).optional(),
   })

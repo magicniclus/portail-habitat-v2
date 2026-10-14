@@ -1,5 +1,12 @@
 import 'server-only';
-import { artisanPublic, avis as schemaAvis, statsPublic, texteCommune } from '@ph/core/schemas';
+import type { DonneesPreuveSociale } from '@ph/core/landings';
+import {
+  artisanPublic,
+  avis as schemaAvis,
+  configPreuveSociale,
+  statsPublic,
+  texteCommune,
+} from '@ph/core/schemas';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins, collections } from '@ph/firebase/chemins';
 import { depot } from '@ph/firebase/serveur';
@@ -96,5 +103,14 @@ export const lireTexteCommunePublic = cache((slug: string) =>
       .omit({ updatedAt: true })
       .safeParse((await db().doc(chemins.communeTexte(slug)).get()).data());
     return r.success ? r.data : null;
+  }),
+);
+
+/** `config/preuveSociale` (LANDINGS §3.8) : `null` sans document ou s'il est invalide. */
+export const lirePreuveSociale = cache((): Promise<DonneesPreuveSociale | null> =>
+  lire('config/preuveSociale', async () => {
+    const d = await db().doc(chemins.configPreuveSociale()).get();
+    const p = configPreuveSociale.safeParse(d.data());
+    return p.success ? p.data : null;
   }),
 );

@@ -52,6 +52,9 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
     expect(espaceStrict('/pro/demandes')).toBe(true);
     expect(espaceStrict('/mon-espace')).toBe(true);
     expect(espaceStrict('/pro')).toBe(false);
+    expect(espaceStrict('/pro/trouver-des-chantiers')).toBe(false);
+    expect(espaceStrict('/pro/site-internet-artisan')).toBe(false);
+    expect(espaceStrict('/pro/logiciel-devis-factures')).toBe(false);
     expect(espaceStrict('/artisans/x')).toBe(false);
   });
 });

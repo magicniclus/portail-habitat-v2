@@ -16,7 +16,14 @@ export interface BrouillonInscription {
   metiers: string[];
   intentions: string[];
   zone?: { ville: string; centre: { latitude: number; longitude: number }; rayonKm: number };
+  /** Landing d'origine (LANDINGS §1) ; `landingAt` en millisecondes. */
+  acquisition?: NonNullable<z.output<typeof entreeInscriptionEtape1>['acquisition']> & {
+    landingAt: number;
+  };
 }
+
+const sansVides = <T extends object>(o: T): T =>
+  Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== '')) as T;
 
 const ref = (s: ServicesComptes, id: string) =>
   s.db.collection(collections.brouillonsOnboarding).doc(id);
@@ -40,6 +47,10 @@ export async function enregistrerEtape1(
     metierPrincipal: e.metierPrincipal,
     metiers: e.metiers,
     intentions: e.intentions,
+    // La première landing l'emporte : un second passage par une autre page ne change pas la source.
+    ...(e.acquisition && !existant?.get('donnees.acquisition')
+      ? { acquisition: { ...sansVides(e.acquisition), landingAt: maintenant } }
+      : {}),
   };
   const jeton = (s.jeton ?? nouveauJeton)();
   const nouveau = !existant?.exists || existant.get('emailHash') !== empreinteEmail(e.email);
