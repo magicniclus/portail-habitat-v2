@@ -23,6 +23,13 @@ import {
 
 type EntreeDevis = z.output<typeof entreeEnregistrerDevis>;
 
+/** Ce que l'envoi enregistre : PDF stocké, son empreinte et celle du lien envoyé au client. */
+export interface ResultatEnvoi {
+  pdfPath: string;
+  hashPdf: string;
+  jetonHash?: string;
+}
+
 const sansIndefinis = <T extends Record<string, unknown>>(o: T) =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
@@ -115,10 +122,7 @@ export async function enregistrerDevis(
  */
 export async function envoyerDevis(
   s: ServicesDevis & {
-    apresEnvoi?: (
-      artisanId: string,
-      devisId: string,
-    ) => Promise<{ pdfPath: string; hashPdf: string }>;
+    apresEnvoi?: (artisanId: string, devisId: string) => Promise<ResultatEnvoi>;
   },
   ctx: ContexteDevis,
   devisId: string,

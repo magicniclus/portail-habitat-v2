@@ -56,6 +56,43 @@ export const modelesParticuliers = {
     },
   }),
 
+  /** Devis envoyé par un artisan depuis Devis & factures (DATABASE §8 bis) : PDF à télécharger. */
+  'devis-recu': modele<{
+    entreprise: string;
+    numero: string;
+    objet: string;
+    montant: string;
+    validite: string;
+    lien: string;
+  }>({
+    sujet: (d) => `Devis ${d.numero} de ${d.entreprise}`,
+    preheader: (d) => `${d.objet} · ${d.montant}`,
+    blocs: (d) => [
+      titre('Vous avez reçu un devis'),
+      para(
+        `Bonjour, ${d.entreprise} vous adresse son devis pour votre projet. Le document complet, avec les conditions et les mentions légales, est à télécharger ci-dessous.`,
+      ),
+      recap([
+        ['Devis', d.numero, true],
+        ['Objet', d.objet],
+        ['Montant', d.montant],
+        ...(d.validite ? ([['Valable jusqu’au', d.validite]] as [string, string][]) : []),
+      ]),
+      bouton('Télécharger le devis (PDF)', d.lien),
+      note(
+        'Pour l’accepter, renvoyez-le daté et signé avec la mention « Bon pour accord », ou répondez directement à l’artisan. Ce lien est personnel : ne le transférez pas.',
+      ),
+    ],
+    exemple: {
+      entreprise: 'Bertrand Rénovation',
+      numero: 'D-2026-0152',
+      objet: 'Rénovation de salle de bain',
+      montant: '8 932,40 € TTC',
+      validite: '13 novembre 2026',
+      lien: 'https://portailhabitat.fr/api/devis-client/exemple',
+    },
+  }),
+
   /** EMAILS §4.4 et COMPTES §2 : récapitulatif, estimation, référence, lien de suivi. */
   'confirmer-telephone': modele<{ prenom: string; prestation: string; lien: string }>({
     sujet: () => 'Confirmez votre numéro de téléphone',

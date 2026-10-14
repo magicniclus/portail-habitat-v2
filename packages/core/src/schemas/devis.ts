@@ -104,6 +104,8 @@ export const devis = z.object({
     .optional(),
   pdfPath: z.string().max(300).optional(),
   hashPdf: empreinte.optional(),
+  /** Empreinte du lien envoyé au client (téléchargement du PDF) ; le jeton n'est jamais stocké. */
+  jetonHash: empreinte.optional(),
   factureId: id.optional(),
   creePar: id,
 });

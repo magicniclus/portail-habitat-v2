@@ -3,7 +3,8 @@
   "ignore": ["docs/**"],
   "workspaces": {
     "apps/web": {
-      "entry": ["server/**/*.ts", "playwright.pro.config.ts", "e2e-pro/**/*.ts"]
+      "entry": ["server/**/*.ts", "playwright.pro.config.ts", "e2e-pro/**/*.ts"],
+      "ignoreDependencies": ["pdfkit"]
     },
     "apps/functions": {
       "entry": ["src/index.ts"],

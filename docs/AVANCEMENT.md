@@ -641,6 +641,30 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - Onboarding selon la source (LANDINGS §4) : la source est enregistrée ; la première action dédiée (site, devis) viendra avec ces outils.
 - Photos du hero (`public/landing/photos`) à fournir ; traceur de comportement non branché sur ces pages.
 
+## 26. Lot 11b : devis et factures (14/10/2026)
+
+**Fait**
+- Cœur (`@ph/core/devis`) : totaux en centimes (remise avant TVA, TVA par taux, acompte, marge privée, franchise), `verifierMentionsDevis` et `verifierMentionsFacture` (mêmes fonctions à l'écran et sur le serveur), numéros D-/F-aaaa-nnnn, `assainirHtml` (b, i, u, a, ul, ol, li), textes légaux (conditions, rétractation, attestation TVA), libellés.
+- Données : collections `devis`, `facturesClients`, `modelesDevis`, `prestationsBiblio`, `parametresFacturation`, `compteurs` (schémas Zod) ; règles : lecture selon le rôle, **aucune écriture directe** (tout passe par le serveur), testées.
+- Permissions d'équipe ajoutées : `devis.gerer` (propriétaire, gérant, collaborateur) et `factures.emettre` (propriétaire, gérant).
+- Serveur : enregistrement (totaux et mentions recalculés), envoi (mentions revérifiées, DEV-01/02), statuts, facture et facture d'acompte (acomptes déduits du solde), paiements partiels, avoir ; numérotation dans la transaction de création, idempotente, **sans trou sous 100 créations simultanées (DEV-06)**.
+- PDF côté serveur (`@ph/emails/pdf`, pdfkit) : stocké à l'envoi dans Storage et servi tel quel ; le PDF téléchargé est identique, octet pour octet, à celui reçu par le client (DEV-05) ; annexes rétractation (DEV-03) et attestation TVA (DEV-04).
+- Email `devis-recu` au client avec un lien personnel de téléchargement (seule l'empreinte du jeton est stockée).
+- Écrans `/pro/devis` (devis, factures), éditeur avec totaux et mentions ✓/! en direct, sans aperçu PDF, détail d'un devis envoyé (accepté, refusé, acompte, facture, archive), facture (paiement, avoir, PDF), paramètres de facturation ; lien « Devis & factures » dans le menu.
+- Tests : core (24), serveur sur émulateur (11, dont DEV-06), règles, PDF (5), e2e DEV-01, DEV-02, DEV-05 + facture et paiement.
+
+**Nouvelle dépendance** : `pdfkit` (dans `@ph/emails` et `apps/web`, paquet externe de Next), au lieu de Chromium headless prévu par DATABASE §8 ter : beaucoup plus léger et moins cher dans une Function. À valider.
+
+**Choix faits seuls (à valider)**
+1. Le collaborateur peut faire des devis ; seuls propriétaire et gérant facturent. Le comptable lit les factures (règles) mais n'a pas l'écran dans son menu.
+2. Un devis envoyé est figé (le dupliquer pour en faire un nouveau) ; une facture est émise directement (pas de brouillon de facture), donc le numéro n'est jamais pris pour rien.
+3. Le client télécharge le PDF par un lien personnel (pas de pièce jointe) ; l'acceptation se fait encore « Bon pour accord » signé ou par l'artisan dans l'écran.
+
+**Reste**
+- **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
+- Lien de paiement Stripe Connect sur les factures : D61 ⏳.
+- Signature électronique du client, relances automatiques (devis sans réponse, factures impayées → statut `impayee`), expiration des devis, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré, création d'un devis depuis « Mes demandes ».
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -667,3 +691,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 09/10/2026 — Lot 13 terminé (journal en direct, questions de suivi et effet à 30 jours de l'IA, recherches manquées, témoignage J+5). Lot 14 en cours : sécurité, App Check, statistiques des fiches, tâches planifiées, migrations, tests transverses, RUNBOOK et DEPLOIEMENT.
 - 14/10/2026 — Handoff intégré ; lot 11 refait selon PAIEMENTS.md (formules 2026, droits, Mon abonnement, fenêtre d'offre). Détail et choix à valider : §24.
 - 14/10/2026 — Lot 10e : landing « Trouver des chantiers » en ligne, landings site et devis prêtes derrière flags, source d'acquisition enregistrée sur le compte. Détail : §25.
+- 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.

@@ -23,6 +23,7 @@ describe('menuPro', () => {
       'fiche',
       'demandes',
       'appelsOffres',
+      'devis',
       'avis',
       'statistiques',
       'equipe',
@@ -139,6 +140,7 @@ describe('ongletsMobiles (MOBILE §6)', () => {
       'fiche',
     ]);
     expect(plus.map((l) => l.cle)).toEqual([
+      'devis',
       'avis',
       'statistiques',
       'equipe',

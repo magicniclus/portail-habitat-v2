@@ -15,6 +15,7 @@
   "dependencies": {
     "@gsap/react": "2.1.1",
     "@ph/core": "workspace:*",
+    "@ph/emails": "workspace:*",
     "@ph/firebase": "workspace:*",
     "@ph/tracker": "workspace:*",
     "@ph/ui": "workspace:*",
@@ -24,6 +25,7 @@
     "firebase-admin": "^14.5.0",
     "gsap": "3.12.5",
     "next": "^16.3.6",
+    "pdfkit": "0.15.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "server-only": "^0.0.1",

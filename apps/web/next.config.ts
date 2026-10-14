@@ -4,8 +4,9 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
-  transpilePackages: ['@ph/core', '@ph/firebase', '@ph/tracker', '@ph/ui'],
-  serverExternalPackages: ['firebase-admin'],
+  transpilePackages: ['@ph/core', '@ph/emails', '@ph/firebase', '@ph/tracker', '@ph/ui'],
+  // pdfkit lit ses polices standard sur le disque : jamais empaqueté (PDF des devis, lot 11b).
+  serverExternalPackages: ['firebase-admin', 'pdfkit'],
   // Index de @ph/ui : n'importer que les modules utilisés (sinon tout le paquet, tailwind-merge
   // compris, est exécuté sur chaque page par le bandeau cookies ; budget D46).
   experimental: {
