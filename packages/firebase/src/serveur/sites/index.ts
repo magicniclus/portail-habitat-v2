@@ -1,3 +1,4 @@
+export { hebergeurDepuisEnv, hebergeurVercel, resolveurDoh } from './adaptateurs';
 export {
   changerSousDomaine,
   creerSite,
@@ -9,12 +10,22 @@ export {
   type ContexteSite,
   type ServicesSites,
 } from './edition';
+export {
+  connecterDomaine,
+  domainesAVerifier,
+  retirerDomaine,
+  verifierDomaineSite,
+  type HebergeurSites,
+  type ResolveurDns,
+  type ServicesDomaines,
+} from './domaines';
 export { envoyerFormulaireSite, type ServicesFormulaireSite } from './formulaire';
 export {
   lireSiteEdition,
   lirePhotosPubliees,
   lireSitePublie,
   pageDuChemin,
+  type DomaineEdition,
   type SiteEdition,
   type SitePublie,
 } from './lecture';

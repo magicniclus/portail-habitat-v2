@@ -7,3 +7,4 @@ export * from './seo';
 export * from './sousDomaine';
 export * from './libelles';
 export * from './edition';
+export * from './domaines';

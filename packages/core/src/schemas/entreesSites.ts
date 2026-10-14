@@ -28,3 +28,5 @@ export const entreeThemeSite = z.object({ theme });
 export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(1).max(30) });
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});
+/** Domaine existant saisi par l'artisan (normalisé ensuite par `normaliserDomaine`). */
+export const entreeDomaineSite = z.object({ domaine: z.string().trim().min(3).max(253) });

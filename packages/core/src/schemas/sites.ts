@@ -1,3 +1,4 @@
+import { STATUTS_DOMAINE, type StatutDomaine } from '../sites/domaines';
 import { TYPES_CHAMP } from '../sites/formulaire';
 import { navigation, pageSite, theme } from '../sites/schemas';
 import { z } from '../zod';
@@ -10,6 +11,32 @@ export const champFormulaire = z.object({
   libelle: z.string().trim().min(1).max(80),
   requis: z.boolean(),
   options: z.array(z.string().max(80)).max(20).optional(),
+});
+
+/** Domaine personnel du site (DOMAINES §5), écrit par le serveur seulement. */
+export const domaineSite = z.object({
+  nom: z.string().max(253),
+  mode: z.enum(['achat', 'connexion']),
+  statut: z.enum(Object.keys(STATUTS_DOMAINE) as [StatutDomaine, ...StatutDomaine[]]),
+  principal: z.enum(['www', 'apex']),
+  token: z.string().length(24),
+  enregistrements: z
+    .array(
+      z.object({
+        type: z.enum(['A', 'CNAME', 'TXT']),
+        nom: z.string().max(253),
+        valeur: z.string().max(500),
+        etat: z.enum(['en_attente', 'ok', 'incorrect']),
+        trouve: z.string().max(500).optional(),
+        verifieLe: horodatage.optional(),
+      }),
+    )
+    .max(10),
+  /** Prochaine vérification planifiée ; absente quand il n'y a plus rien à vérifier. */
+  prochaineVerifLe: horodatage.optional(),
+  derniereVerifLe: horodatage.optional(),
+  creeLe: horodatage,
+  activeLe: horodatage.optional(),
 });
 
 /** `sites/{siteId}` (siteId = artisanId), écrit par le serveur seulement (DATABASE §15 bis). */
@@ -27,6 +54,7 @@ export const siteArtisan = z.object({
       champs: z.array(champFormulaire).max(30),
     })
     .optional(),
+  domaine: domaineSite.optional(),
   publieLe: horodatage.optional(),
   brouillonModifieLe: horodatage,
   createdAt: horodatage,

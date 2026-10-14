@@ -680,7 +680,9 @@ Choix à signaler :
 - Aperçu de l'éditeur dans un cadre sans script (sécurité de l'espace pro) : le menu mobile ne s'ouvre pas dans l'aperçu, il fonctionne sur le site publié.
 - Formulaire : le type « photos » n'est pas encore proposé (envoi de fichiers à faire).
 
-Reste (lot 10b) : domaines personnels (achat OVH, connexion d'un domaine existant, vérification DNS toutes les 10 min, emails ; DOM-01 à 08), statistiques sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
+Domaines (fait, cas C) : connexion d'un domaine existant en Site Pro (A et CNAME lus chez l'hébergeur Vercel, TXT `_portailhabitat`, jamais de MX), vérification par ligne via DNS-over-HTTPS (DOM-04), Function `verifierDomaines` toutes les 2 min (2 min la 1re heure, 30 min jusqu'à 72 h, puis `echec`), « Vérifier maintenant » 1 / 30 s, index des hôtes écrit seulement après vérification, 301 vers l'adresse canonique (DOM-05), retrait par l'artisan, résiliation → retour au sous-domaine (DOM-07), emails `site-domaine-actif` et `site-domaine-echec`. Modèle de données : champ `sites/{id}.domaine` (DOMAINES §5). Secrets à fournir : `VERCEL_API_TOKEN`, `VERCEL_PROJET_SITES`, `VERCEL_EQUIPE` ; sans eux, la connexion est refusée en production.
+
+Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), contrôle quotidien `casse` (DOM-06), emails attente/renouvelé/transfert, statistiques sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

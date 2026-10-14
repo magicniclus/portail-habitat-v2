@@ -132,6 +132,9 @@ export const MODELES = {
 
   // 4.6 Facturation
   'abonnement-active': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  // Site internet artisan : domaine personnel (DOMAINES §7).
+  'site-domaine-actif': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'site-domaine-echec': { categorie: 'transactionnel', charte: 'pro', complet: true },
   recu: { categorie: 'transactionnel', charte: 'pro', complet: true },
   'paiement-echoue': { categorie: 'transactionnel', charte: 'pro', differe: true, complet: true },
   renouvellement: { categorie: 'transactionnel', charte: 'pro', complet: true },

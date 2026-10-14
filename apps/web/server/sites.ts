@@ -12,8 +12,11 @@ import {
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import {
+  hebergeurDepuisEnv,
   lirePhotosPubliees,
   lireSiteEdition,
+  resolveurDoh,
+  type ServicesDomaines,
   type ServicesSites,
   type SiteEdition,
 } from '@ph/firebase/sites';
@@ -22,6 +25,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/routes';
+import { servicesComptes } from './espace';
 import { nomMetier } from './metiers';
 import { sessionPro } from './sessionPro';
 
@@ -32,6 +36,16 @@ export const DOMAINE_BASE = process.env.DOMAINE_SITES ?? 'portailhabitat.fr';
 
 export function servicesSites(): ServicesSites {
   return { db: db(), horloge: Date.now, domaineBase: DOMAINE_BASE };
+}
+
+/** Domaines personnels : hébergeur (Vercel) et DNS public, jamais appelés par le navigateur. */
+export function servicesDomaines(): ServicesDomaines {
+  return {
+    ...servicesSites(),
+    hebergeur: hebergeurDepuisEnv(),
+    dns: resolveurDoh(),
+    notifier: servicesComptes().notifier,
+  };
 }
 
 /** Palette de départ : la première des palettes proposées (tokens de `@ph/ui`). */

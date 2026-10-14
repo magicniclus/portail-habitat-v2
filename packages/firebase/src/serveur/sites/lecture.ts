@@ -1,4 +1,4 @@
-import type { Navigation, PageSite, Theme } from '@ph/core/sites';
+import type { Navigation, PageSite, StatutDomaine, Theme } from '@ph/core/sites';
 import type { DocumentData, Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
@@ -7,6 +7,8 @@ export interface SitePublie {
   version: number;
   offre: 'gratuit' | 'site_pro';
   sousDomaine: string;
+  /** Domaine personnel (pour l'adresse canonique et les redirections 301). */
+  domaine?: { nom: string; statut: string; principal: 'www' | 'apex' };
   theme: Theme;
   navigation: Navigation;
   pages: Record<string, PageSite>;
@@ -30,6 +32,15 @@ export async function lireSitePublie(db: Firestore, hote: string): Promise<SiteP
     version: n,
     offre: site.get('offre'),
     sousDomaine: site.get('sousDomaine'),
+    ...(site.get('domaine.nom')
+      ? {
+          domaine: {
+            nom: site.get('domaine.nom') as string,
+            statut: site.get('domaine.statut') as string,
+            principal: site.get('domaine.principal') as 'www' | 'apex',
+          },
+        }
+      : {}),
     theme: v.theme,
     navigation: v.navigation,
     pages: v.pages,
@@ -58,6 +69,21 @@ export interface SiteEdition {
   pages: Record<string, PageSite>;
   navigation?: Navigation;
   versions: { n: number; publieLe: number }[];
+  domaine?: DomaineEdition;
+}
+
+/** Domaine personnel tel que l'écran Domaine l'affiche. */
+export interface DomaineEdition {
+  nom: string;
+  statut: StatutDomaine;
+  enregistrements: {
+    type: 'A' | 'CNAME' | 'TXT';
+    nom: string;
+    valeur: string;
+    etat: 'en_attente' | 'ok' | 'incorrect';
+    trouve?: string;
+  }[];
+  derniereVerifLe?: number;
 }
 
 /** Tout ce que l'éditeur et le tableau de bord du site lisent. */
@@ -87,6 +113,26 @@ export async function lireSiteEdition(db: Firestore, siteId: string): Promise<Si
       }),
     ),
     navigation: nav.exists ? (navigation as Navigation) : undefined,
+    ...(site.get('domaine.nom')
+      ? {
+          domaine: {
+            nom: site.get('domaine.nom') as string,
+            statut: site.get('domaine.statut') as StatutDomaine,
+            enregistrements: (
+              (site.get('domaine.enregistrements') as DomaineEdition['enregistrements']) ?? []
+            ).map(({ type, nom, valeur, etat, trouve }) => ({
+              type,
+              nom,
+              valeur,
+              etat,
+              ...(trouve ? { trouve } : {}),
+            })),
+            ...(ms(site.get('domaine.derniereVerifLe'))
+              ? { derniereVerifLe: ms(site.get('domaine.derniereVerifLe')) }
+              : {}),
+          },
+        }
+      : {}),
     versions: versions.docs.map((d) => ({
       n: d.get('n') as number,
       publieLe: ms(d.get('publieLe')) ?? 0,

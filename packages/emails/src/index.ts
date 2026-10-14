@@ -11,6 +11,7 @@ import { modelesFacturation } from './modeles/facturation';
 import { modelesOnboarding } from './modeles/onboarding';
 import { modelesParticuliers } from './modeles/particuliers';
 import { modelesSecurite } from './modeles/securite';
+import { modelesSites } from './modeles/sites';
 import { nomsSquelettes, squelette } from './modeles/squelettes';
 import { Email, type PiedEmail } from './rendu/Email';
 
@@ -22,6 +23,7 @@ const REDIGES: Record<string, Modele<never>> = {
   ...modelesFacturation,
   ...modelesConversion,
   ...modelesConversionPremium,
+  ...modelesSites,
 } as unknown as Record<string, Modele<never>>;
 
 /** Tous les modèles du catalogue : rédigés, ou squelettes en attendant leur lot. */

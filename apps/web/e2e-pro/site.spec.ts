@@ -21,6 +21,12 @@ async function sansSite() {
   return id;
 }
 
+/** Offre du site (écrite par le webhook Stripe en production). */
+async function offre(o: 'gratuit' | 'site_pro') {
+  const { db } = await admin();
+  await db.doc(chemins.site(await entrepriseDe(COMPTES.proprio))).update({ offre: o });
+}
+
 async function publier(page: Page) {
   await page.getByRole('button', { name: 'Publier', exact: true }).click();
 }
@@ -106,6 +112,7 @@ test.describe('Site internet artisan', () => {
     page,
   }) => {
     await page.goto(`${URL_SITE}/`);
+    await offre('gratuit');
     const formulaire = page.locator('[data-formulaire]').first();
     await formulaire.getByLabel(/^Nom et prénom/).fill('Lucie Site');
     await formulaire.getByLabel(/^Téléphone/).fill('0612345678');
@@ -162,5 +169,36 @@ test.describe('Site internet artisan', () => {
         });
       }
     }).toPass({ timeout: 60_000 });
+  });
+
+  test('DOM-02 : domaine sans Site Pro → fenêtre d’offre ; DOM-04 : tableau des enregistrements', async ({
+    page,
+  }) => {
+    await offre('gratuit');
+    await connecter(page, COMPTES.proprio, '/pro/site?onglet=domaine');
+    await page.getByRole('button', { name: 'Utiliser mon domaine' }).click();
+    await expect(page.getByRole('dialog')).toContainText('Site Pro');
+    await expect(page.getByRole('link', { name: 'Continuer vers le paiement' })).toHaveAttribute(
+      'href',
+      '/pro/abonnement?offre=site',
+    );
+
+    // Site Pro (droits écrits par le webhook en production) : connexion d'un domaine existant.
+    await offre('site_pro');
+    try {
+      await page.goto('/pro/site?onglet=domaine');
+      await page.getByLabel(/^Votre domaine/).fill('https://www.exemple-e2e.fr/');
+      await page.getByRole('button', { name: 'Connecter mon domaine' }).click();
+      const lignes = page.getByRole('list', { name: 'Enregistrements DNS' }).getByRole('listitem');
+      await expect(lignes).toHaveCount(3);
+      await expect(page.getByText('exemple-e2e.fr', { exact: true })).toBeVisible();
+      await expect(lignes.filter({ hasText: '_portailhabitat' })).toContainText('ph-verif=');
+      await expect(lignes.filter({ hasText: 'En attente' })).toHaveCount(3);
+      await page.getByRole('button', { name: 'Retirer ce domaine' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Retirer' }).click();
+      await expect(page.getByRole('button', { name: 'Connecter mon domaine' })).toBeVisible();
+    } finally {
+      await offre('gratuit');
+    }
   });
 });

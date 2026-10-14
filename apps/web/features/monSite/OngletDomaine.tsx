@@ -2,6 +2,7 @@ import { formatDate } from '@ph/core/format';
 import type { SiteEdition } from '@ph/firebase/sites';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { BoutonRetablir } from './ActionsSite';
+import { DomainePerso } from './DomainePerso';
 import { SousDomaine } from './SousDomaine';
 
 /** Onglet Domaine : adresse gratuite, domaine personnel (Site Pro), hébergement, publications. */
@@ -28,10 +29,7 @@ export function OngletDomaine({ site, domaine }: { site: SiteEdition; domaine: s
           Votre propre domaine
         </h2>
         {site.offre === 'site_pro' ? (
-          <p className="m-0 text-[15px] text-neutre-800">
-            L’achat d’un domaine à votre nom et la connexion d’un domaine existant arrivent très
-            bientôt dans cet onglet. Votre site reste en ligne sur son adresse gratuite d’ici là.
-          </p>
+          <DomainePerso {...(site.domaine ? { domaine: site.domaine } : {})} />
         ) : (
           <>
             <p className="m-0 text-[15px] text-neutre-800">

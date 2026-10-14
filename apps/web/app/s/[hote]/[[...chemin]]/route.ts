@@ -25,9 +25,18 @@ export async function GET(
   const site = await siteServi(decodeURIComponent(hote));
   const trouve = site && pageDuChemin(site, `/${(chemin ?? []).join('/')}`);
   if (!site || !trouve) return html(PAGE_404, 404, 'public, s-maxage=30');
+  // Une seule adresse canonique (DOM-05) : sous-domaine ou variante www/nu → 301.
+  if (site.canonique !== decodeURIComponent(hote))
+    return new Response(null, {
+      status: 301,
+      headers: {
+        Location: `https://${site.canonique}/${(chemin ?? []).map(encodeURIComponent).join('/')}`,
+        'Cache-Control': 'public, s-maxage=300',
+      },
+    });
   const corps = rendreDocument(
     {
-      hote: decodeURIComponent(hote),
+      hote: site.canonique,
       offre: site.offre,
       theme: site.theme,
       navigation: site.navigation,

@@ -1600,6 +1600,56 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-actif : version texte 1`] = `
+"Votre site est en ligne sur bertrand-renovation.fr
+Adresse vérifiée, certificat HTTPS en place.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DOMAINE EST ACTIF
+
+Le site de Bertrand Rénovation répond maintenant sur bertrand-renovation.fr, en HTTPS. Votre adresse gratuite redirige automatiquement vers ce domaine.
+
+Voir mon site https://www.bertrand-renovation.fr
+
+Vos emails ne sont pas concernés : nous ne modifions jamais vos enregistrements MX.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-echec : version texte 1`] = `
+"bertrand-renovation.fr : vérification impossible
+Il manque des enregistrements chez votre hébergeur de domaine.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DOMAINE N’A PAS PU ÊTRE VÉRIFIÉ
+
+Après 72 heures, nous ne trouvons pas tous les enregistrements demandés pour bertrand-renovation.fr. Votre site reste en ligne sur son adresse gratuite.
+
+Encore à créer ou à corriger : TXT _portailhabitat.
+
+Voir les enregistrements https://portailhabitat.fr/pro/site?onglet=domaine
+
+Une fois les enregistrements ajoutés, cliquez sur « Vérifier maintenant ».
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > suppression-compte-confirmee : version texte 1`] = `
 "Votre compte a été supprimé
 Récapitulatif de ce qui est conservé.

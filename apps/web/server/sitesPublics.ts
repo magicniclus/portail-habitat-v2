@@ -1,5 +1,10 @@
 import 'server-only';
-import { FORMULAIRE_GRATUIT, type ChampFormulaire, type PageSite } from '@ph/core/sites';
+import {
+  FORMULAIRE_GRATUIT,
+  hoteCanonique,
+  type ChampFormulaire,
+  type PageSite,
+} from '@ph/core/sites';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import { lireSitePublie, type SitePublie } from '@ph/firebase/sites';
@@ -8,6 +13,8 @@ import { getFirestore } from 'firebase-admin/firestore';
 const db = () => getFirestore(appAdmin());
 
 export interface SiteServi extends SitePublie {
+  /** Adresse canonique : domaine actif, sinon le sous-domaine (DOM-05). */
+  canonique: string;
   nomEntreprise: string;
   urlFiche?: string;
   champs: ChampFormulaire[];
@@ -61,6 +68,7 @@ async function charger(hote: string): Promise<SiteServi | null> {
   const slug = publique.get('slug') as string | undefined;
   return {
     ...site,
+    canonique: hoteCanonique(site, process.env.DOMAINE_SITES ?? 'portailhabitat.fr'),
     nomEntreprise: (artisan.get('nomCommercial') as string | undefined) ?? site.navigation.nom,
     ...(slug ? { urlFiche: `https://portailhabitat.fr/artisans/${slug}` } : {}),
     champs:
