@@ -5,6 +5,7 @@ import * as comportement from './comportement';
 import * as comptes from './comptes';
 import * as conversion from './conversion';
 import * as demandes from './demandes';
+import * as devis from './devis';
 import * as facturation from './facturation';
 import * as ia from './ia';
 import * as parcours from './parcours';
@@ -20,6 +21,7 @@ export * from './comportement';
 export * from './comptes';
 export * from './conversion';
 export * from './demandes';
+export * from './devis';
 export * from './facturation';
 export * from './ia';
 export * from './parcours';
@@ -27,6 +29,7 @@ export * from './partenaires';
 export * from './referentiels';
 export * from './support';
 export * from './entreesComptes';
+export * from './entreesDevis';
 export * from './entreesNotifications';
 export * from './entreesDemandes';
 export * from './entreesComportement';
@@ -56,6 +59,12 @@ export const SCHEMAS = {
   'artisans/{}/realisations/{}': artisans.realisation,
   'artisans/{}/disponibilites/{}': artisans.disponibilite,
   'artisans/{}/statsJour/{}': artisans.statsJour,
+  'artisans/{}/devis/{}': devis.devis,
+  'artisans/{}/facturesClients/{}': devis.factureClient,
+  'artisans/{}/modelesDevis/{}': devis.modeleDevis,
+  'artisans/{}/prestationsBiblio/{}': devis.prestationBiblio,
+  'artisans/{}/parametresFacturation/{}': devis.parametresFacturation,
+  'artisans/{}/compteurs/{}': devis.compteurDocuments,
   'artisansPublic/{}': artisans.artisanPublic,
   'artisanScores/{}': artisans.artisanScore,
   'sanctions/{}': artisans.sanction,
