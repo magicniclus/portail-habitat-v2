@@ -45,17 +45,17 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-active : version texte 1`] = `
-"Premium est activé pour Bertrand Rénovation
+"Tout inclus est activé pour Bertrand Rénovation
 Merci ! Votre abonnement est actif dès maintenant.
 
 PORTAIL HABITAT PRO
 
 
-BIENVENUE DANS PREMIUM
+BIENVENUE DANS TOUT INCLUS
 
 Bonjour Julien, votre abonnement est actif pour Bertrand Rénovation.
 
-Formule : Premium
+Formule : Tout inclus
 
 Facturation : annuelle (12 mois payés en une fois)
 
@@ -76,14 +76,14 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-resilie : version texte 1`] = `
 "Votre résiliation est enregistrée
-Premium reste actif jusqu’au 1 octobre 2027.
+Tout inclus reste actif jusqu’au 1 octobre 2027.
 
 PORTAIL HABITAT PRO
 
 
 RÉSILIATION ENREGISTRÉE
 
-Bonjour Julien, Premium reste actif pour Bertrand Rénovation jusqu’au 1 octobre 2027, puis votre fiche repasse à la formule gratuite.
+Bonjour Julien, Tout inclus reste actif pour Bertrand Rénovation jusqu’au 1 octobre 2027, puis votre fiche repasse à la formule gratuite.
 
 Fin de l’abonnement : 1 octobre 2027
 
@@ -101,13 +101,13 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-termine : version texte 1`] = `
-"Premium est terminé
+"Tout inclus est terminé
 Votre fiche reste en ligne avec la formule gratuite.
 
 PORTAIL HABITAT PRO
 
 
-PREMIUM EST TERMINÉ
+TOUT INCLUS EST TERMINÉ
 
 Bonjour Julien, l’abonnement de Bertrand Rénovation est terminé. Votre fiche reste visible avec la formule gratuite.
 
@@ -573,15 +573,15 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > garantie-tenue : version texte 1`] = `
-"Votre 4e demande garantie du mois est arrivée
-La garantie Premium est tenue ce mois-ci.
+"4 demandes reçues ce mois-ci
+Le point sur vos demandes du mois.
 
 PORTAIL HABITAT PRO
 
 
-GARANTIE TENUE
+VOS DEMANDES DU MOIS
 
-Bonjour Julien, vous avez reçu 4 demandes exclusives ce mois-ci : la garantie Premium est tenue.
+Bonjour Julien, vous avez reçu 4 demandes ce mois-ci.
 
 Voir mes demandes https://portailhabitat.fr/pro/demandes
 
@@ -879,27 +879,17 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > passage-annuel : version texte 1`] = `
-"Économisez 240 € en passant Premium à l’année
-79,90 € HT / mois au lieu de 99,90 € HT. Le mois en cours est déduit.
+"Votre abonnement Portail Habitat
+Tout inclus : 49 € HT / mois, sans engagement.
 
 PORTAIL HABITAT PRO
 
 
-PREMIUM DEPUIS 3 MOIS : PASSEZ À L’ANNÉE
+VOTRE ABONNEMENT
 
-Aujourd’hui (mensuel) : 99,90 € HT / mois
+Toutes les formules sont mensuelles et sans engagement.
 
-À l’année : 79,90 € HT / mois
-
-Payé en une fois : 958,80 € HT
-
-Économie : 240 € HT par an
-
-Mêmes avantages, même garantie de 4 demandes exclusives par mois. Le mois en cours est déduit au prorata.
-
-Passer à l’année https://portailhabitat.fr/pro/abonnement
-
-En Visibilité : 79,90 € HT par an au lieu de 154,80 € HT.
+Voir mon abonnement https://portailhabitat.fr/pro/abonnement
 
 L’équipe Portail Habitat Pro
 
@@ -917,13 +907,13 @@ Rénovation de salle de bain à Bordeaux : 3 réponses reçues avant 7 h.
 PORTAIL HABITAT PRO
 
 
-LES ARTISANS PREMIUM L’ONT VU EN PREMIER
+LES ARTISANS TOUT INCLUS L’ONT VU EN PREMIER
 
 L’appel d’offres « Rénovation de salle de bain » à Bordeaux a reçu ses 3 réponses avant l’envoi de votre résumé du matin.
 
-En Premium, vous voyez les appels d’offres dès leur publication, et 5 crédits sont inclus chaque mois.
+En Tout inclus, vous voyez les appels d’offres 12 h avant les autres artisans, et vous les payez 15 % moins cher.
 
-Passer Premium https://portailhabitat.fr/pro/abonnement
+Découvrir Tout inclus https://portailhabitat.fr/pro/abonnement
 
 L’équipe Portail Habitat Pro
 
@@ -935,7 +925,7 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-bilan-visibilite : version texte 1`] = `
-"Votre 1er mois en Visibilité : 287 vues
+"Votre 1er mois en Fiche Pro : 287 vues
 287 vues, 19 appels. Voici l’étape suivante.
 
 PORTAIL HABITAT PRO
@@ -943,7 +933,7 @@ PORTAIL HABITAT PRO
 Bilan du mois
 
 
-VISIBILITÉ FONCTIONNE : VOICI VOS CHIFFRES
+FICHE PRO FONCTIONNE : VOICI VOS CHIFFRES
 
 287 ×4,1
 Vues de votre fiche
@@ -953,23 +943,23 @@ Appels depuis votre fiche
 Demandes reçues
 
 
-L’ÉTAPE SUIVANTE : DES DEMANDES GARANTIES
+L’ÉTAPE SUIVANTE : TOUT INCLUS
 
-Avec Premium, nous vous transmettons 4 demandes exclusives par mois : vous êtes le seul artisan contacté.
+Avec Tout inclus, vous voyez les appels d’offres de votre zone 12 h avant les autres artisans, vous les payez 15 % moins cher, et votre site internet est inclus.
 
-Demandes exclusives : 4 par mois
+Appels d’offres : 12 h avant les autres artisans
 
-Garantie : Sinon le 2e mois est offert
+Prix des appels d’offres : −15 %
 
-Crédits appels d’offres : 5 par mois inclus
+Site internet : Site Pro inclus, avec votre domaine
 
-Appels d’offres : Vous les voyez en premier
+Support : Prioritaire
 
-Vos mois de Visibilité restants (73,24 € HT) sont déduits de votre abonnement Premium.
+Le reste de votre mois de Fiche Pro (73,24 € HT) est déduit au prorata.
 
-Découvrir Premium https://portailhabitat.fr/pro/abonnement
+Découvrir Tout inclus https://portailhabitat.fr/pro/abonnement
 
-Premium : 79,90 € HT / mois payé à l’année, ou 99,90 € HT / mois sans engagement.
+Tout inclus : 49 € HT / mois, sans engagement.
 
 L’équipe Portail Habitat Pro
 
@@ -982,24 +972,24 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-credits : version texte 1`] = `
 "Vous avez payé 60 € d’appels d’offres ce mois-ci
-Avec Premium, 5 crédits par mois sont inclus.
+Avec Tout inclus, vos appels d’offres coûtent 15 % moins cher.
 
 PORTAIL HABITAT PRO
 
 
-PREMIUM SERAIT DÉJÀ RENTABLE POUR VOUS
+TOUT INCLUS POURRAIT VOUS FAIRE ÉCONOMISER
 
-Crédits achetés sur 30 jours : 6 crédits · 60 € HT
+Appels d’offres sur 30 jours : 6 crédits · 60 € HT
 
-Inclus chaque mois en Premium : 5 crédits
+Avec Tout inclus : −15 % sur chaque appel d’offres
 
-En plus : 4 demandes exclusives garanties
+En plus : Accès 12 h avant les autres artisans
 
-Vous répondez souvent aux appels d’offres. En Premium, vous les voyez avant les autres artisans, et 5 crédits sont inclus chaque mois.
+Vous répondez souvent aux appels d’offres. En Tout inclus, vous les voyez 12 h avant les autres artisans et vous les payez 15 % moins cher.
 
-Passer Premium https://portailhabitat.fr/pro/abonnement
+Découvrir Tout inclus https://portailhabitat.fr/pro/abonnement
 
-Crédits inclus non reportables. Vos crédits déjà achetés restent valables.
+Vos crédits déjà achetés restent valables.
 
 L’équipe Portail Habitat Pro
 
@@ -1011,25 +1001,25 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-demandes-manquees : version texte 1`] = `
-"3 chantiers (21 500 €) partis en exclusivité
-Ils ont été confiés à un seul artisan Premium de votre secteur.
+"3 chantiers (21 500 €) demandés à d’autres artisans
+Des particuliers de votre secteur ont contacté un artisan depuis sa fiche.
 
 PORTAIL HABITAT PRO
 
 Semaine du 21 au 27 septembre
 
 
-3 DEMANDES EXCLUSIVES QUE VOUS N’AVEZ PAS REÇUES
+3 DEMANDES ENVOYÉES À D’AUTRES ARTISANS DE VOTRE SECTEUR
 
-Salle de bain · CaudéranExclusive9 800 €
+Salle de bain · CaudéranDepuis une fiche9 800 €
 
-Chaudière vers PAC · TalenceExclusive8 400 €
+Chaudière vers PAC · TalenceDepuis une fiche8 400 €
 
-Ballon d’eau chaude · BèglesExclusive3 300 €
+Ballon d’eau chaude · BèglesDepuis une fiche3 300 €
 
-Ces demandes n’ont été transmises qu’à un seul artisan, abonné Premium : aucun concurrent face à lui.
+Ces particuliers ont choisi un artisan depuis sa fiche et lui ont écrit directement. Avec Fiche Pro, la vôtre passe en tête de votre secteur, avec votre téléphone affiché.
 
-Recevoir mes 4 demandes exclusives https://portailhabitat.fr/pro/abonnement
+Mettre ma fiche en avant https://portailhabitat.fr/pro/abonnement
 
 Budgets estimés TTC. Aucune donnée du particulier n’est communiquée.
 
@@ -1043,27 +1033,27 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-renouvellement : version texte 1`] = `
-"Renouvelez directement en Premium
-Votre Visibilité se renouvelle le 1er novembre 2026.
+"Passez à Tout inclus avant votre échéance
+Votre Fiche Pro se renouvelle le 1er novembre 2026.
 
 PORTAIL HABITAT PRO
 
 
-VOTRE RENOUVELLEMENT APPROCHE
+VOTRE ÉCHÉANCE APPROCHE
 
-Bonjour Julien, votre Visibilité se renouvelle le 1er novembre 2026. C’est le meilleur moment pour passer en Premium : vous ne payez pas deux fois.
+Bonjour Julien, votre Fiche Pro se renouvelle le 1er novembre 2026. En passant à Tout inclus maintenant, seule la différence est facturée au prorata.
 
-Demandes exclusives : 4 par mois
+Appels d’offres : 12 h avant les autres artisans
 
-Garantie : Sinon le 2e mois est offert
+Prix des appels d’offres : −15 %
 
-Crédits appels d’offres : 5 par mois inclus
+Site internet : Site Pro inclus, avec votre domaine
 
-Appels d’offres : Vous les voyez en premier
+Support : Prioritaire
 
-Renouveler en Premium https://portailhabitat.fr/pro/abonnement
+Découvrir Tout inclus https://portailhabitat.fr/pro/abonnement
 
-Sans action de votre part, votre Visibilité est renouvelée normalement.
+Sans action de votre part, votre Fiche Pro continue normalement.
 
 L’équipe Portail Habitat Pro
 
@@ -1200,8 +1190,8 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reconquete-1 : version texte 1`] = `
-"Julien, 11 demandes exclusives sont parties depuis
-Revenez en Premium avec −30 % sur votre premier mois.
+"Julien, 11 demandes sont parties ailleurs depuis
+Revenez avec −30 % sur votre premier mois.
 
 PORTAIL HABITAT PRO
 
@@ -1209,17 +1199,17 @@ PORTAIL HABITAT PRO
 VOTRE SECTEUR A CONTINUÉ SANS VOUS
 
 11
-Demandes exclusives confiées à d’autres
+Demandes envoyées à d’autres artisans
 164
 Recherches « plombier Bordeaux »
 18e
 Position de votre fiche
 
-Vos avis sont toujours là. Reprenez Premium et retrouvez votre place et vos demandes garanties dès aujourd’hui.
+Vos avis sont toujours là. Reprenez votre formule et retrouvez votre place en tête de votre secteur dès aujourd’hui.
 
 RETOUR30
 
-Reprendre Premium à −30 % https://portailhabitat.fr/pro/abonnement
+Revenir à −30 % https://portailhabitat.fr/pro/abonnement
 
 Code personnel valable jusqu’au 3 octobre 2026, appliqué au premier mois.
 
@@ -1240,7 +1230,7 @@ PORTAIL HABITAT PRO
 
 Bonjour Julien,
 
-Vous avez quitté Premium il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?
+Vous avez quitté votre abonnement il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?
 
 Répondez à cet email en une ligne, c’est moi qui lis les réponses. Ce sera mon dernier message : ensuite, vous ne recevrez plus que le rapport mensuel gratuit.
 
@@ -1373,16 +1363,16 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > renouvellement : version texte 1`] = `
 "Votre abonnement se renouvelle dans 7 jours
-Premium : 1 150,56 € TTC le 1 octobre 2027.
+Tout inclus : 1 150,56 € TTC le 1 octobre 2027.
 
 PORTAIL HABITAT PRO
 
 
 RENOUVELLEMENT DE VOTRE ABONNEMENT
 
-Bonjour Julien, votre abonnement annuel Premium pour Bertrand Rénovation se renouvelle automatiquement le 1 octobre 2027.
+Bonjour Julien, votre abonnement annuel Tout inclus pour Bertrand Rénovation se renouvelle automatiquement le 1 octobre 2027.
 
-Formule : Premium
+Formule : Tout inclus
 
 Montant : 1 150,56 € TTC
 
@@ -1455,20 +1445,20 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > resiliation-alternative : version texte 1`] = `
 "Avant le 24 octobre : gardez l’essentiel pour moins cher
-Passez en Visibilité ou suspendez 2 mois au lieu de tout perdre.
+Passez à Fiche Pro ou suspendez 2 mois au lieu de tout perdre.
 
 PORTAIL HABITAT PRO
 
 
-VOTRE PREMIUM S’ARRÊTE LE 24 OCTOBRE
+VOTRE TOUT INCLUS S’ARRÊTE LE 24 OCTOBRE
 
 Votre résiliation est bien enregistrée. D’ici là, trois options s’offrent à vous :
 
-Passer en VisibilitéRester en tête de liste6,66 € HT / mois
+Passer à Fiche ProRester en tête de liste29 € HT / mois
 
 Suspendre 2 moisReprise automatique0 €
 
-Rester abonné−50 % pendant 2 mois49,95 € HT
+Rester abonné−50 % pendant 2 mois24,50 € HT
 
 Le 24 octobre, votre fiche repassera en gratuit. Vos 87 avis sont conservés.
 
@@ -1590,7 +1580,7 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > sieges-suspendus : version texte 1`] = `
 "Accès de votre équipe suspendu
-3 membre(s) suspendu(s) : réactivez Premium pour leur rendre l’accès.
+3 membre(s) suspendu(s) : réactivez Tout inclus pour leur rendre l’accès.
 
 PORTAIL HABITAT PRO
 
@@ -1599,7 +1589,7 @@ ACCÈS DE L’ÉQUIPE SUSPENDU
 
 Bertrand Rénovation est passée à l’offre gratuite, qui comprend un seul siège. 3 membre(s) sont suspendus : aucune donnée n’est perdue.
 
-Réactiver Premium https://portailhabitat.fr/pro/equipe
+Réactiver Tout inclus https://portailhabitat.fr/pro/equipe
 
 L’équipe Portail Habitat Pro
 
@@ -1723,7 +1713,7 @@ Votre position−3 places17e / 23
 
 Recherches « plombier Bordeaux »30 derniers jours146
 
-Les fiches Visibilité et Premium passent devant les fiches gratuites. Reprenez votre place pour 6,66 € HT par mois.
+Les fiches recommandées passent devant les fiches gratuites. Reprenez votre place avec Fiche Pro, pour 29 € HT par mois.
 
 Remonter en tête https://portailhabitat.fr/pro/abonnement
 
@@ -1740,7 +1730,7 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-demande-offerte : version texte 1`] = `
 "Cette demande de 9 600 € est à vous
-Chaudière gaz → pompe à chaleur air-eau à Talence, 9 km. Offerte avec Visibilité.
+Chaudière gaz → pompe à chaleur air-eau à Talence, 9 km. Offerte avec Fiche Pro.
 
 PORTAIL HABITAT PRO
 
@@ -1757,15 +1747,13 @@ Commune : Talence · 9 km de votre siège
 
 Délai souhaité : Sous 1 mois
 
-Activez Visibilité aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.
+Activez Fiche Pro aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.
 
-Visibilité à l’année : 6,66 € HT / mois
+Fiche Pro : 29 € HT / mois
 
-Payé en une fois : 79,90 € HT pour 12 mois
+Sans engagement : résiliable à tout moment
 
-Sans engagement : 12,90 € HT / mois
-
-Activer Visibilité et recevoir la demande https://portailhabitat.fr/pro/inscription
+Activer Fiche Pro et recevoir la demande https://portailhabitat.fr/pro/inscription
 
 Offre valable une seule fois par entreprise. Les coordonnées du particulier s’affichent après l’activation.
 
@@ -1779,29 +1767,29 @@ Portail Habitat · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-lancement : version texte 1`] = `
-"Julien, −30 % sur votre Visibilité
-Code personnel : 55,93 € HT pour toute l’année.
+"Julien, −30 % sur Fiche Pro
+Code personnel : 20,30 € HT par mois pendant 12 mois.
 
 PORTAIL HABITAT PRO
 
 Offre de bienvenue
 
 
-−30 % SUR VOTRE PREMIÈRE ANNÉE DE VISIBILITÉ
+−30 % SUR VOS 12 PREMIERS MOIS DE FICHE PRO
 
-Prix normal : 79,90 € HT / an
+Prix normal : 29 € HT / mois
 
-Avec votre code : 55,93 € HT / an
+Avec votre code : 20,30 € HT / mois
 
-Soit : 4,66 € HT / mois
+Pendant : 12 mois, puis tarif normal
 
 JULIEN30
 
 Valable jusqu’au jeudi 1er octobre à 23 h 59. Le code est déjà appliqué via le bouton.
 
-Activer ma Visibilité à −30 % https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+Activer Fiche Pro à −30 % https://portailhabitat.fr/pro/abonnement?offre=fiche&code=JULIEN30
 
-Remise appliquée à la première année. Renouvellement au tarif normal, avec un rappel 7 jours avant.
+Remise appliquée pendant 12 mois, puis tarif normal. Sans engagement.
 
 L’équipe Portail Habitat Pro
 
@@ -1814,26 +1802,26 @@ Portail Habitat · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-rappel : version texte 1`] = `
 "Votre code −30 % expire ce soir
-55,93 € HT au lieu de 79,90 € HT pour l’année.
+20,30 € HT au lieu de 29 € HT par mois.
 
 PORTAIL HABITAT PRO
 
 
 DERNIER JOUR POUR VOTRE REMISE
 
-Bonjour Julien, votre code personnel expire ce soir. Après, la Visibilité repasse au tarif normal.
+Bonjour Julien, votre code personnel expire ce soir. Après, Fiche Pro repasse au tarif normal.
 
-Prix normal : 79,90 € HT / an
+Prix normal : 29 € HT / mois
 
-Avec votre code : 55,93 € HT / an
+Avec votre code : 20,30 € HT / mois
 
-Soit : 4,66 € HT / mois
+Pendant : 12 mois, puis tarif normal
 
 JULIEN30
 
 Valable jusqu’au ce soir à 23 h 59. Le code est déjà appliqué via le bouton.
 
-Activer à −30 % https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+Activer à −30 % https://portailhabitat.fr/pro/abonnement?offre=fiche&code=JULIEN30
 
 L’équipe Portail Habitat Pro
 
@@ -1855,17 +1843,17 @@ PASSEZ EN TÊTE DE VOTRE SECTEUR
 
 Bonjour Julien, votre fiche est en ligne depuis 3 mois. Pour vous aider à passer le cap, voici un code personnel.
 
-Prix normal : 79,90 € HT / an
+Prix normal : 29 € HT / mois
 
-Avec votre code : 55,93 € HT / an
+Avec votre code : 20,30 € HT / mois
 
-Soit : 4,66 € HT / mois
+Pendant : 12 mois, puis tarif normal
 
 JULIEN30
 
 Valable jusqu’au mardi 15 décembre à 23 h 59. Le code est déjà appliqué via le bouton.
 
-Activer ma Visibilité https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30
+Activer Fiche Pro https://portailhabitat.fr/pro/abonnement?offre=fiche&code=JULIEN30
 
 L’équipe Portail Habitat Pro
 
@@ -1894,13 +1882,11 @@ Votre position à Bordeaux
 312
 Vues moyennes d’une fiche mise en avant
 
-Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Visibilité, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et un badge.
+Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Fiche Pro, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et le badge « Artisan recommandé ».
 
-Visibilité à l’année : 6,66 € HT / mois
+Fiche Pro : 29 € HT / mois
 
-Payé en une fois : 79,90 € HT pour 12 mois
-
-Sans engagement : 12,90 € HT / mois
+Sans engagement : résiliable à tout moment
 
 Passer en tête de mon secteur https://portailhabitat.fr/pro/abonnement
 
@@ -1927,13 +1913,11 @@ DES PARTICULIERS VOUS CHERCHENT, SANS VOUS TROUVER
 14 7 jours
 Recherches « plombier Bordeaux »
 
-Votre fiche n’était pas en première page de ces recherches. Avec Visibilité, elle passe en tête de votre secteur.
+Votre fiche n’était pas en première page de ces recherches. Avec Fiche Pro, elle passe en tête de votre secteur.
 
-Visibilité à l’année : 6,66 € HT / mois
+Fiche Pro : 29 € HT / mois
 
-Payé en une fois : 79,90 € HT pour 12 mois
-
-Sans engagement : 12,90 € HT / mois
+Sans engagement : résiliable à tout moment
 
 Passer en tête de mon secteur https://portailhabitat.fr/pro/abonnement
 

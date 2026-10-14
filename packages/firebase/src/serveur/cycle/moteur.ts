@@ -13,9 +13,6 @@ import {
   recherchesDuSecteur,
   depenseAppelsOffres,
   signalCredits,
-  signalGarantie,
-  signalPassageAnnuel,
-  signalRenouvellement,
   type AchatAppelOffres,
   classerSecteurs,
   type PositionSecteur,
@@ -173,7 +170,7 @@ export async function synchroniserCycle(
   const ref = s.db.collection(collections.cycleEtat).doc(artisan.id);
   const [etat, abo] = await Promise.all([ref.get(), etatAbonnement(s.db, artisan.id)]);
   const plan = niveauConversion(a.droits?.formule as string | undefined);
-  const { abonnements, ...etatAbo } = abo;
+  const { abonnements: _abonnements, ...etatAbo } = abo;
   const etape = etapeCycle({ compte: true, enLigne: a.enLigne === true, plan, ...etatAbo });
   const derniere = ms(etat.get('signaux.derniereConnexion'));
   const score = scoreCycle({
@@ -225,15 +222,6 @@ export async function synchroniserCycle(
           { maintenant, dernier: derniers },
         )[0]
       : undefined;
-  const renouvellement = signalRenouvellement(abonnements, {
-    maintenant,
-    ...(derniers['prem-renouvellement'] !== undefined
-      ? { dernier: derniers['prem-renouvellement'] }
-      : {}),
-  });
-  const passageAnnuel = signalPassageAnnuel(abonnements, {
-    dejaEnvoye: derniers['passage-annuel'] !== undefined,
-  });
   const depense = {
     credits30j: mesures.creditsAchetes30j ?? 0,
     montant30jCentimes: mesures.montantAchete30j ?? 0,
@@ -255,31 +243,8 @@ export async function synchroniserCycle(
               : {}),
           })
         ? { modele: 'prem-credits', extra: depense }
-        : signalGarantie(etape, (a.demandesRecuesMois as number | undefined) ?? 0, {
-              maintenant,
-              ...(derniers['garantie-tenue'] !== undefined
-                ? { dernier: derniers['garantie-tenue'] }
-                : {}),
-            })
-          ? {
-              modele: 'garantie-tenue',
-              extra: { demandesMois: a.demandesRecuesMois as number, lien: '/pro/demandes' },
-            }
-          : renouvellement
-            ? {
-                modele: 'prem-renouvellement',
-                extra: {
-                  date: formatDate(renouvellement, 'long'),
-                  lien: '/pro/abonnement',
-                },
-              }
-            : passageAnnuel
-              ? {
-                  modele: 'passage-annuel',
-                  // Changement de formule dans le portail client Stripe (page Facturation).
-                  extra: { produit: passageAnnuel, lien: '/pro/facturation' },
-                }
-              : undefined;
+        : // Garantie Premium, renouvellement et passage à l'année n'existent plus (PAIEMENTS §2).
+          undefined;
   const commun = {
     schemaVersion: 1,
     score,

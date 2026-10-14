@@ -1,19 +1,18 @@
-import { CATALOGUE_STRIPE } from '@ph/core/facturation';
+import { PRIX_FORMULES_HT } from '@ph/core/paiements';
 import { formatEuros, formatFourchette } from '@ph/core/format';
 import type { Bloc, Ton } from '../blocs';
 
-/** Outils communs aux emails de conversion (CONVERSION §3) : prix réels du catalogue, blocs. */
+/**
+ * Outils communs aux emails de conversion (CONVERSION §3) : prix réels des formules (PAIEMENTS §2,
+ * mensuels, sans engagement), blocs. Les étapes « Visibilité » et « Premium » du moteur vendent
+ * Fiche Pro et Tout inclus (D60).
+ */
 
-const montant = (cle: string) => CATALOGUE_STRIPE.find((p) => p.cle === cle)?.montantHt ?? 0;
 export const ht = (c: number) => formatEuros(c, { suffixe: 'HT' });
 export const PRIX = {
-  visibiliteAn: montant('visibilite_annuel'),
-  visibiliteMois: montant('visibilite_mensuel'),
-  premiumAn: montant('premium_annuel'),
-  premiumMois: montant('premium_mensuel'),
+  fichePro: PRIX_FORMULES_HT.fiche_pro,
+  toutInclus: PRIX_FORMULES_HT.tout_inclus,
 };
-/** Prix annuel ramené au mois, arrondi au centime (« 6,66 € HT / mois »). */
-export const parMois = (annuel: number) => Math.round(annuel / 12);
 export const fourchette = (min: number, max: number) => `${formatFourchette(min, max)} TTC`;
 
 export const surtitre = (texte: string): Bloc => ({ type: 'surtitre', texte });

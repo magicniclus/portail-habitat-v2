@@ -167,13 +167,13 @@ export const modelesEquipes = {
   'sieges-suspendus': modele<Equipe & { suspendus: number }>({
     sujet: () => 'Accès de votre équipe suspendu',
     preheader: (d) =>
-      `${d.suspendus} membre(s) suspendu(s) : réactivez Premium pour leur rendre l’accès.`,
+      `${d.suspendus} membre(s) suspendu(s) : réactivez Tout inclus pour leur rendre l’accès.`,
     blocs: (d) => [
       titre('Accès de l’équipe suspendu'),
       para(
         `${d.nomCommercial} est passée à l’offre gratuite, qui comprend un seul siège. ${d.suspendus} membre(s) sont suspendus : aucune donnée n’est perdue.`,
       ),
-      bouton('Réactiver Premium', d.lien),
+      bouton('Réactiver Tout inclus', d.lien),
     ],
     exemple: { ...EX, suspendus: 3 },
   }),

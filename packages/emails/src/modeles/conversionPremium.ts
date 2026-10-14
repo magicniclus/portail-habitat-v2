@@ -6,14 +6,17 @@ import {
   EX_BASE,
   ht,
   lignes,
-  parMois,
   PRIX,
   stats,
   surtitre,
   type BaseConversion,
 } from './conversionOutils';
 
-/** EMAILS §4.7, CONVERSION §3 : Visibilité → Premium, fidélisation, rétention, reconquête. */
+/**
+ * EMAILS §4.7, CONVERSION §3 : Fiche Pro → Tout inclus, fidélisation, rétention, reconquête (les
+ * étapes « Visibilité » et « Premium » du moteur vendent ces formules, D60). Aucune demande garantie
+ * ni crédit inclus n'est promis : ils n'existent plus (PAIEMENTS §2).
+ */
 
 interface Bilan extends BaseConversion {
   vues: number;
@@ -55,13 +58,12 @@ interface Humain extends BaseConversion {
   signataire: string;
 }
 
-const premiumAn = ht(parMois(PRIX.premiumAn));
-const premiumMois = ht(PRIX.premiumMois);
+const toutMois = ht(PRIX.toutInclus);
 const avantagesPremium = recap([
-  ['Demandes exclusives', '4 par mois', true],
-  ['Garantie', 'Sinon le 2e mois est offert'],
-  ['Crédits appels d’offres', '5 par mois inclus'],
-  ['Appels d’offres', 'Vous les voyez en premier'],
+  ['Appels d’offres', '12 h avant les autres artisans', true],
+  ['Prix des appels d’offres', '−15 %'],
+  ['Site internet', 'Site Pro inclus, avec votre domaine'],
+  ['Support', 'Prioritaire'],
 ]);
 const EX_RECONQUETE: Reconquete = {
   ...EX_BASE,
@@ -74,34 +76,32 @@ const EX_RECONQUETE: Reconquete = {
 
 export const modelesConversionPremium = {
   'prem-bilan-visibilite': modele<Bilan>({
-    sujet: (d) => `Votre 1er mois en Visibilité : ${d.vues} vues`,
-    sujetB: (d) => `${d.appels} appels ce mois-ci grâce à la Visibilité`,
+    sujet: (d) => `Votre 1er mois en Fiche Pro : ${d.vues} vues`,
+    sujetB: (d) => `${d.appels} appels ce mois-ci grâce à Fiche Pro`,
     preheader: (d) => `${d.vues} vues, ${d.appels} appels. Voici l’étape suivante.`,
     blocs: (d) => [
       surtitre('Bilan du mois'),
-      titre('Visibilité fonctionne : voici vos chiffres'),
+      titre('Fiche Pro fonctionne : voici vos chiffres'),
       stats([
         [String(d.vues), d.multiplicateur ?? '', 'Vues de votre fiche'],
         [String(d.appels), '', 'Appels depuis votre fiche'],
         [String(d.demandes), '', 'Demandes reçues'],
       ]),
-      sousTitre('L’étape suivante : des demandes garanties'),
+      sousTitre('L’étape suivante : Tout inclus'),
       para(
-        'Avec Premium, nous vous transmettons 4 demandes exclusives par mois : vous êtes le seul artisan contacté.',
+        'Avec Tout inclus, vous voyez les appels d’offres de votre zone 12 h avant les autres artisans, vous les payez 15 % moins cher, et votre site internet est inclus.',
       ),
       avantagesPremium,
       ...(d.deductionCentimes
         ? [
             alerte(
-              `Vos mois de Visibilité restants (${ht(d.deductionCentimes)}) sont déduits de votre abonnement Premium.`,
+              `Le reste de votre mois de Fiche Pro (${ht(d.deductionCentimes)}) est déduit au prorata.`,
               'ok',
             ),
           ]
         : []),
-      bouton('Découvrir Premium', d.lien),
-      note(
-        `Premium : ${premiumAn} / mois payé à l’année, ou ${premiumMois} / mois sans engagement.`,
-      ),
+      bouton('Découvrir Tout inclus', d.lien),
+      note(`Tout inclus : ${toutMois} / mois, sans engagement.`),
     ],
     exemple: {
       ...EX_BASE,
@@ -114,26 +114,26 @@ export const modelesConversionPremium = {
   }),
   'prem-demandes-manquees': modele<Manquees>({
     sujet: (d) =>
-      `${d.demandes.length} chantiers (${formatEuros(d.demandes.reduce((n, x) => n + x.budgetCentimes, 0))}) partis en exclusivité`.slice(
+      `${d.demandes.length} chantiers (${formatEuros(d.demandes.reduce((n, x) => n + x.budgetCentimes, 0))}) demandés à d’autres artisans`.slice(
         0,
         59,
       ),
-    preheader: () => 'Ils ont été confiés à un seul artisan Premium de votre secteur.',
+    preheader: () => 'Des particuliers de votre secteur ont contacté un artisan depuis sa fiche.',
     blocs: (d) => [
       surtitre(d.semaine),
-      titre(`${d.demandes.length} demandes exclusives que vous n’avez pas reçues`),
+      titre(`${d.demandes.length} demandes envoyées à d’autres artisans de votre secteur`),
       lignes(
         d.demandes.map((x) => [
           `${x.travaux} · ${x.ville}`,
-          'Exclusive',
+          'Depuis une fiche',
           'warn',
           formatEuros(x.budgetCentimes),
         ]),
       ),
       para(
-        'Ces demandes n’ont été transmises qu’à un seul artisan, abonné Premium : aucun concurrent face à lui.',
+        'Ces particuliers ont choisi un artisan depuis sa fiche et lui ont écrit directement. Avec Fiche Pro, la vôtre passe en tête de votre secteur, avec votre téléphone affiché.',
       ),
-      bouton('Recevoir mes 4 demandes exclusives', d.lien),
+      bouton('Mettre ma fiche en avant', d.lien),
       note('Budgets estimés TTC. Aucune donnée du particulier n’est communiquée.'),
     ],
     exemple: {
@@ -152,19 +152,19 @@ export const modelesConversionPremium = {
         0,
         59,
       ),
-    preheader: () => 'Avec Premium, 5 crédits par mois sont inclus.',
+    preheader: () => 'Avec Tout inclus, vos appels d’offres coûtent 15 % moins cher.',
     blocs: (d) => [
-      titre('Premium serait déjà rentable pour vous'),
+      titre('Tout inclus pourrait vous faire économiser'),
       recap([
-        ['Crédits achetés sur 30 jours', `${d.credits30j} crédits · ${ht(d.montant30jCentimes)}`],
-        ['Inclus chaque mois en Premium', '5 crédits', true],
-        ['En plus', '4 demandes exclusives garanties'],
+        ['Appels d’offres sur 30 jours', `${d.credits30j} crédits · ${ht(d.montant30jCentimes)}`],
+        ['Avec Tout inclus', '−15 % sur chaque appel d’offres', true],
+        ['En plus', 'Accès 12 h avant les autres artisans'],
       ]),
       para(
-        'Vous répondez souvent aux appels d’offres. En Premium, vous les voyez avant les autres artisans, et 5 crédits sont inclus chaque mois.',
+        'Vous répondez souvent aux appels d’offres. En Tout inclus, vous les voyez 12 h avant les autres artisans et vous les payez 15 % moins cher.',
       ),
-      bouton('Passer Premium', d.lien),
-      note('Crédits inclus non reportables. Vos crédits déjà achetés restent valables.'),
+      bouton('Découvrir Tout inclus', d.lien),
+      note('Vos crédits déjà achetés restent valables.'),
     ],
     exemple: { ...EX_BASE, credits30j: 6, montant30jCentimes: 6000 },
   }),
@@ -172,82 +172,69 @@ export const modelesConversionPremium = {
     sujet: () => 'Cet appel d’offres était complet avant votre résumé',
     preheader: (d) => `${d.travaux} à ${d.ville} : 3 réponses reçues avant 7 h.`.slice(0, 120),
     blocs: (d) => [
-      titre('Les artisans Premium l’ont vu en premier'),
+      titre('Les artisans Tout inclus l’ont vu en premier'),
       para(
         `L’appel d’offres « ${d.travaux} » à ${d.ville} a reçu ses 3 réponses avant l’envoi de votre résumé du matin.`,
       ),
       para(
-        'En Premium, vous voyez les appels d’offres dès leur publication, et 5 crédits sont inclus chaque mois.',
+        'En Tout inclus, vous voyez les appels d’offres 12 h avant les autres artisans, et vous les payez 15 % moins cher.',
       ),
-      bouton('Passer Premium', d.lien),
+      bouton('Découvrir Tout inclus', d.lien),
     ],
     exemple: { ...EX_BASE, travaux: 'Rénovation de salle de bain' },
   }),
   'prem-renouvellement': modele<Renouvellement>({
-    sujet: () => 'Renouvelez directement en Premium',
-    preheader: (d) => `Votre Visibilité se renouvelle le ${d.date}.`,
+    sujet: () => 'Passez à Tout inclus avant votre échéance',
+    preheader: (d) => `Votre Fiche Pro se renouvelle le ${d.date}.`,
     blocs: (d) => [
-      titre('Votre renouvellement approche'),
+      titre('Votre échéance approche'),
       para(
-        `${bonjour(d.prenom)}votre Visibilité se renouvelle le ${d.date}. C’est le meilleur moment pour passer en Premium : vous ne payez pas deux fois.`,
+        `${bonjour(d.prenom)}votre Fiche Pro se renouvelle le ${d.date}. En passant à Tout inclus maintenant, seule la différence est facturée au prorata.`,
       ),
       avantagesPremium,
-      bouton('Renouveler en Premium', d.lien),
-      note('Sans action de votre part, votre Visibilité est renouvelée normalement.'),
+      bouton('Découvrir Tout inclus', d.lien),
+      note('Sans action de votre part, votre Fiche Pro continue normalement.'),
     ],
     exemple: { ...EX_BASE, date: '1er novembre 2026' },
   }),
   'passage-annuel': modele<BaseConversion>({
-    sujet: () =>
-      `Économisez ${formatEuros(PRIX.premiumMois * 12 - PRIX.premiumAn)} en passant Premium à l’année`.slice(
-        0,
-        59,
-      ),
-    preheader: () => `${premiumAn} / mois au lieu de ${premiumMois}. Le mois en cours est déduit.`,
+    // Plus envoyé : aucune formule annuelle (PAIEMENTS §2). Modèle gardé pour l'historique des envois.
+    sujet: () => 'Votre abonnement Portail Habitat',
+    preheader: () => `Tout inclus : ${toutMois} / mois, sans engagement.`,
     blocs: (d) => [
-      titre('Premium depuis 3 mois : passez à l’année'),
-      recap([
-        ['Aujourd’hui (mensuel)', `${premiumMois} / mois`],
-        ['À l’année', `${premiumAn} / mois`, true],
-        ['Payé en une fois', ht(PRIX.premiumAn)],
-        ['Économie', `${ht(PRIX.premiumMois * 12 - PRIX.premiumAn)} par an`, true],
-      ]),
-      para(
-        'Mêmes avantages, même garantie de 4 demandes exclusives par mois. Le mois en cours est déduit au prorata.',
-      ),
-      bouton('Passer à l’année', d.lien),
-      note(
-        `En Visibilité : ${ht(PRIX.visibiliteAn)} par an au lieu de ${ht(PRIX.visibiliteMois * 12)}.`,
-      ),
+      titre('Votre abonnement'),
+      para('Toutes les formules sont mensuelles et sans engagement.'),
+      bouton('Voir mon abonnement', d.lien),
     ],
     exemple: EX_BASE,
   }),
   'garantie-tenue': modele<Garantie>({
-    sujet: (d) => `Votre ${d.demandesMois}e demande garantie du mois est arrivée`,
-    preheader: () => 'La garantie Premium est tenue ce mois-ci.',
+    // Plus envoyé : les demandes garanties n'existent plus (PAIEMENTS §2).
+    sujet: (d) => `${d.demandesMois} demandes reçues ce mois-ci`,
+    preheader: () => 'Le point sur vos demandes du mois.',
     blocs: (d) => [
-      titre('Garantie tenue'),
-      para(
-        `${bonjour(d.prenom)}vous avez reçu ${d.demandesMois} demandes exclusives ce mois-ci : la garantie Premium est tenue.`,
-      ),
+      titre('Vos demandes du mois'),
+      para(`${bonjour(d.prenom)}vous avez reçu ${d.demandesMois} demandes ce mois-ci.`),
       bouton('Voir mes demandes', d.lien),
     ],
     exemple: { ...EX_BASE, demandesMois: 4, lien: 'https://portailhabitat.fr/pro/demandes' },
   }),
   'resiliation-alternative': modele<Resiliation>({
     sujet: (d) => `Avant le ${d.finLe} : gardez l’essentiel pour moins cher`.slice(0, 59),
-    preheader: () => 'Passez en Visibilité ou suspendez 2 mois au lieu de tout perdre.',
+    preheader: () => 'Passez à Fiche Pro ou suspendez 2 mois au lieu de tout perdre.',
     blocs: (d) => [
-      titre(`Votre ${d.produit === 'premium' ? 'Premium' : 'Visibilité'} s’arrête le ${d.finLe}`),
+      titre(
+        `Votre ${d.produit === 'premium' ? 'Tout inclus' : 'Fiche Pro'} s’arrête le ${d.finLe}`,
+      ),
       para('Votre résiliation est bien enregistrée. D’ici là, trois options s’offrent à vous :'),
       lignes([
         ...(d.produit === 'premium'
           ? [
               [
-                'Passer en Visibilité',
+                'Passer à Fiche Pro',
                 'Rester en tête de liste',
                 'ok',
-                `${ht(parMois(PRIX.visibiliteAn))} / mois`,
+                `${ht(PRIX.fichePro)} / mois`,
               ] as [string, string, 'ok', string],
             ]
           : []),
@@ -256,7 +243,7 @@ export const modelesConversionPremium = {
           'Rester abonné',
           '−50 % pendant 2 mois',
           'warn',
-          ht(Math.round((d.produit === 'premium' ? PRIX.premiumMois : PRIX.visibiliteMois) / 2)),
+          ht(Math.round((d.produit === 'premium' ? PRIX.toutInclus : PRIX.fichePro) / 2)),
         ],
       ]),
       alerte(
@@ -270,23 +257,23 @@ export const modelesConversionPremium = {
   }),
   'reconquete-1': modele<Reconquete>({
     sujet: (d) =>
-      `${d.prenom ? `${d.prenom}, ` : ''}${d.demandesExclusives} demandes exclusives sont parties depuis`.slice(
+      `${d.prenom ? `${d.prenom}, ` : ''}${d.demandesExclusives} demandes sont parties ailleurs depuis`.slice(
         0,
         59,
       ),
-    preheader: () => 'Revenez en Premium avec −30 % sur votre premier mois.',
+    preheader: () => 'Revenez avec −30 % sur votre premier mois.',
     blocs: (d) => [
       titre('Votre secteur a continué sans vous'),
       stats([
-        [String(d.demandesExclusives), '', 'Demandes exclusives confiées à d’autres'],
+        [String(d.demandesExclusives), '', 'Demandes envoyées à d’autres artisans'],
         [String(d.recherches), '', `Recherches « ${d.metier} ${d.ville} »`],
         [`${d.position}e`, '', 'Position de votre fiche'],
       ]),
       para(
-        'Vos avis sont toujours là. Reprenez Premium et retrouvez votre place et vos demandes garanties dès aujourd’hui.',
+        'Vos avis sont toujours là. Reprenez votre formule et retrouvez votre place en tête de votre secteur dès aujourd’hui.',
       ),
       code(d.code),
-      bouton('Reprendre Premium à −30 %', d.lien),
+      bouton('Revenir à −30 %', d.lien),
       note(`Code personnel valable jusqu’au ${d.expire}, appliqué au premier mois.`),
     ],
     exemple: EX_RECONQUETE,
@@ -297,7 +284,7 @@ export const modelesConversionPremium = {
     blocs: (d) => [
       para(bonjour(d.prenom).trim()),
       para(
-        'Vous avez quitté Premium il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?',
+        'Vous avez quitté votre abonnement il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?',
       ),
       para(
         'Répondez à cet email en une ligne, c’est moi qui lis les réponses. Ce sera mon dernier message : ensuite, vous ne recevrez plus que le rapport mensuel gratuit.',

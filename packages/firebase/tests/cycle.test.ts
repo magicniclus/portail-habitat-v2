@@ -320,84 +320,20 @@ describe('moteur de conversion (CONVERSION §9)', () => {
     expect((await db.collection(collections.filesModeration).get()).size).toBe(1);
     expect((await traces('tache_creee')).map((t) => t.details.tache)).toEqual(['appel_activation']);
   });
-  it('Premium : 4e demande garantie du mois → « garantie-tenue », une fois par mois', async () => {
+  it('plus de garantie, de renouvellement annuel ni de passage à l’année (PAIEMENTS §2)', async () => {
     await artisan('gar', {
       droits: droitsInitiaux('tout_inclus', new Date(0)),
       demandesRecuesMois: 4,
     });
     await calculerCycles(s(T0));
     const ref = db.collection(collections.cycleEtat).doc('gar');
+    expect((await ref.get()).get('signal')).toBeUndefined();
     await ref.update({ groupeTemoin: false });
-    expect((await ref.get()).get('signal.modele')).toBe('garantie-tenue');
     await planifierCycle(s(T0 + 3_600_000));
-    const e = envois.find((x) => x.modele === 'garantie-tenue') as unknown as {
-      donnees: Record<string, unknown>;
-    };
-    expect(e.donnees).toMatchObject({
-      demandesMois: 4,
-      lien: 'https://portailhabitat.fr/pro/demandes',
-    });
-    await calculerCycles(s(T0 + 2 * J));
-    expect((await ref.get()).get('signal')).toBeUndefined();
+    const interdits = ['garantie-tenue', 'passage-annuel', 'prem-renouvellement'];
+    expect(envois.filter((x) => interdits.includes(x.modele))).toEqual([]);
   });
-  it('Premium mensuel : « passage-annuel » après la 3e échéance payée, une seule fois', async () => {
-    await artisan('men', { droits: droitsInitiaux('tout_inclus', new Date(0)) });
-    await db
-      .collection(collections.abonnements)
-      .doc('sub_men')
-      .set({
-        artisanId: 'men',
-        produit: 'premium',
-        periode: 'mensuel',
-        statut: 'active',
-        createdAt: Timestamp.fromMillis(T0 - 40 * J),
-        debutPeriode: Timestamp.fromMillis(T0 - 10 * J),
-      });
-    await calculerCycles(s(T0));
-    const ref = db.collection(collections.cycleEtat).doc('men');
-    expect((await ref.get()).get('signal')).toBeUndefined();
-    await db
-      .collection(collections.abonnements)
-      .doc('sub_men')
-      .update({ debutPeriode: Timestamp.fromMillis(T0 + 20 * J) });
-    await calculerCycles(s(T0 + 21 * J));
-    await ref.update({ groupeTemoin: false });
-    expect((await ref.get()).get('signal.modele')).toBe('passage-annuel');
-    // Après le passage à l'heure d'hiver : créneau de 7 h 15 = 6 h 15 UTC.
-    await planifierCycle(s(T0 + 21 * J + 2 * 3_600_000));
-    const e = envois.find((x) => x.modele === 'passage-annuel') as unknown as {
-      donnees: Record<string, unknown>;
-    };
-    expect(e.donnees.lien).toBe('https://portailhabitat.fr/pro/facturation');
-    await calculerCycles(s(T0 + 60 * J));
-    expect((await ref.get()).get('signal')).toBeUndefined();
-  });
-  it('Visibilité annuelle : « prem-renouvellement » 30 jours avant le renouvellement', async () => {
-    await artisan('ren', { droits: droitsInitiaux('fiche_pro', new Date(0)) });
-    await db
-      .collection(collections.abonnements)
-      .doc('sub_ren')
-      .set({
-        artisanId: 'ren',
-        produit: 'visibilite',
-        periode: 'annuel',
-        statut: 'active',
-        annulationFinPeriode: false,
-        createdAt: Timestamp.fromMillis(T0 - 340 * J),
-        debutPeriode: Timestamp.fromMillis(T0 - 340 * J),
-        finPeriode: Timestamp.fromMillis(T0 + 25 * J),
-      });
-    await calculerCycles(s(T0));
-    const ref = db.collection(collections.cycleEtat).doc('ren');
-    expect((await ref.get()).get('signal')).toMatchObject({
-      modele: 'prem-renouvellement',
-      extra: { date: '31 octobre 2026' },
-    });
-    await calculerCycles(s(T0 + J));
-    await ref.update({ signal: null });
-    await calculerCycles(s(T0 + 2 * J));
-    expect((await ref.get()).get('signal')).toBeNull();
-  });
+
   it('Visibilité : appel d’offres de son métier complet avant le résumé de 7 h, une fois par semaine', async () => {
     const bordeaux = { latitude: 44.84, longitude: -0.58 };
     const zone = { centre: bordeaux, geohash: 'ezzz', rayonKm: 20 };

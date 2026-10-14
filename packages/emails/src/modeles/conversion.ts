@@ -8,7 +8,6 @@ import {
   ht,
   lien,
   lignes,
-  parMois,
   PRIX,
   stats,
   surtitre,
@@ -16,7 +15,7 @@ import {
 } from './conversionOutils';
 
 /**
- * EMAILS §4.7, CONVERSION §3 : prospects et Gratuit → Visibilité (catégorie offres_pro).
+ * EMAILS §4.7, CONVERSION §3 : prospects et Gratuit → Fiche Pro (catégorie offres_pro).
  * Chiffres réels de la zone et du métier ; sans chiffre, le moteur n'envoie pas (`encoreValable`).
  */
 
@@ -93,21 +92,20 @@ const EX_OFFRE: Offre = {
   code: 'JULIEN30',
   pourcentage: 30,
   expire: 'jeudi 1er octobre à 23 h 59',
-  lien: 'https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel&code=JULIEN30',
+  lien: 'https://portailhabitat.fr/pro/abonnement?offre=fiche&code=JULIEN30',
 };
 
-const visMois = ht(parMois(PRIX.visibiliteAn));
+const visMois = ht(PRIX.fichePro);
 const offreVisibilite = recap([
-  ['Visibilité à l’année', `${visMois} / mois`, true],
-  ['Payé en une fois', `${ht(PRIX.visibiliteAn)} pour 12 mois`],
-  ['Sans engagement', `${ht(PRIX.visibiliteMois)} / mois`],
+  ['Fiche Pro', `${visMois} / mois`, true],
+  ['Sans engagement', 'résiliable à tout moment'],
 ]);
 const remise = (c: number, p: number) => Math.round((c * (100 - p)) / 100);
 const offreRemisee = (d: Offre) => [
   recap([
-    ['Prix normal', `${ht(PRIX.visibiliteAn)} / an`],
-    ['Avec votre code', `${ht(remise(PRIX.visibiliteAn, d.pourcentage))} / an`, true],
-    ['Soit', `${ht(parMois(remise(PRIX.visibiliteAn, d.pourcentage)))} / mois`],
+    ['Prix normal', `${visMois} / mois`],
+    ['Avec votre code', `${ht(remise(PRIX.fichePro, d.pourcentage))} / mois`, true],
+    ['Pendant', '12 mois, puis tarif normal'],
   ]),
   code(d.code),
   alerte(`Valable jusqu’au ${d.expire}. Le code est déjà appliqué via le bouton.`),
@@ -258,17 +256,17 @@ export const modelesConversion = {
       ...(d.offre === 'premium'
         ? [
             para(
-              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Premium, vous passez en tête et recevez en plus 4 demandes exclusives par mois, garanties.',
+              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Tout inclus, votre fiche passe en tête, vous voyez les appels d’offres 12 h avant les autres et vous les payez 15 % moins cher.',
             ),
             recap([
-              ['Premium à l’année', `${ht(parMois(PRIX.premiumAn))} / mois`, true],
-              ['Garantie', '4 demandes exclusives par mois, sinon le 2e mois est offert'],
+              ['Tout inclus', `${ht(PRIX.toutInclus)} / mois`, true],
+              ['Inclus', 'Fiche Pro, Site Pro, −15 % sur les appels d’offres'],
             ]),
-            bouton('Découvrir Premium', d.lien),
+            bouton('Découvrir Tout inclus', d.lien),
           ]
         : [
             para(
-              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Visibilité, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et un badge.',
+              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Fiche Pro, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et le badge « Artisan recommandé ».',
             ),
             offreVisibilite,
             bouton('Passer en tête de mon secteur', d.lien),
@@ -300,7 +298,7 @@ export const modelesConversion = {
         ],
       ]),
       para(
-        `Les fiches Visibilité et Premium passent devant les fiches gratuites. Reprenez votre place pour ${visMois} par mois.`,
+        `Les fiches recommandées passent devant les fiches gratuites. Reprenez votre place avec Fiche Pro, pour ${visMois} par mois.`,
       ),
       bouton('Remonter en tête', d.lien),
       note('Nous ne communiquons jamais le nom des autres artisans.'),
@@ -314,7 +312,7 @@ export const modelesConversion = {
       titre('Des particuliers vous cherchent, sans vous trouver'),
       stats([[String(d.recherches7j), '7 jours', `Recherches « ${d.metier} ${d.ville} »`]]),
       para(
-        'Votre fiche n’était pas en première page de ces recherches. Avec Visibilité, elle passe en tête de votre secteur.',
+        'Votre fiche n’était pas en première page de ces recherches. Avec Fiche Pro, elle passe en tête de votre secteur.',
       ),
       offreVisibilite,
       bouton('Passer en tête de mon secteur', d.lien),
@@ -323,29 +321,26 @@ export const modelesConversion = {
   }),
   'vis-offre-lancement': modele<Offre>({
     sujet: (d) =>
-      `${d.prenom ? `${d.prenom}, ` : ''}−${d.pourcentage} % sur votre Visibilité`.slice(0, 59),
+      `${d.prenom ? `${d.prenom}, ` : ''}−${d.pourcentage} % sur Fiche Pro`.slice(0, 59),
     sujetB: (d) => `Votre code −${d.pourcentage} % valable jusqu’au ${d.expire}`.slice(0, 59),
     preheader: (d) =>
-      `Code personnel : ${ht(remise(PRIX.visibiliteAn, d.pourcentage))} pour toute l’année.`,
+      `Code personnel : ${ht(remise(PRIX.fichePro, d.pourcentage))} par mois pendant 12 mois.`,
     blocs: (d) => [
       surtitre('Offre de bienvenue'),
-      titre(`−${d.pourcentage} % sur votre première année de Visibilité`),
+      titre(`−${d.pourcentage} % sur vos 12 premiers mois de Fiche Pro`),
       ...offreRemisee(d),
-      bouton(`Activer ma Visibilité à −${d.pourcentage} %`, d.lien),
-      note(
-        'Remise appliquée à la première année. Renouvellement au tarif normal, avec un rappel 7 jours avant.',
-      ),
+      bouton(`Activer Fiche Pro à −${d.pourcentage} %`, d.lien),
+      note('Remise appliquée pendant 12 mois, puis tarif normal. Sans engagement.'),
     ],
     exemple: EX_OFFRE,
   }),
   'vis-offre-rappel': modele<Offre>({
     sujet: (d) => `Votre code −${d.pourcentage} % expire ce soir`,
-    preheader: (d) =>
-      `${ht(remise(PRIX.visibiliteAn, d.pourcentage))} au lieu de ${ht(PRIX.visibiliteAn)} pour l’année.`,
+    preheader: (d) => `${ht(remise(PRIX.fichePro, d.pourcentage))} au lieu de ${visMois} par mois.`,
     blocs: (d) => [
       titre('Dernier jour pour votre remise'),
       para(
-        `${bonjour(d.prenom)}votre code personnel expire ce soir. Après, la Visibilité repasse au tarif normal.`,
+        `${bonjour(d.prenom)}votre code personnel expire ce soir. Après, Fiche Pro repasse au tarif normal.`,
       ),
       ...offreRemisee(d),
       bouton(`Activer à −${d.pourcentage} %`, d.lien),
@@ -362,14 +357,14 @@ export const modelesConversion = {
         `${bonjour(d.prenom)}votre fiche est en ligne depuis 3 mois. Pour vous aider à passer le cap, voici un code personnel.`,
       ),
       ...offreRemisee(d),
-      bouton('Activer ma Visibilité', d.lien),
+      bouton('Activer Fiche Pro', d.lien),
     ],
     exemple: { ...EX_OFFRE, expire: 'mardi 15 décembre à 23 h 59' },
   }),
   'vis-demande-offerte': modele<DemandeZone>({
     sujet: (d) => `Cette demande de ${formatEuros(d.budgetMaxCentimes)} est à vous`.slice(0, 59),
     preheader: (d) =>
-      `${d.travaux} à ${d.ville}, ${d.distanceKm} km. Offerte avec Visibilité.`.slice(0, 120),
+      `${d.travaux} à ${d.ville}, ${d.distanceKm} km. Offerte avec Fiche Pro.`.slice(0, 120),
     blocs: (d) => [
       surtitre('Demande offerte'),
       titre('Une demande vous attend, gratuitement'),
@@ -380,10 +375,10 @@ export const modelesConversion = {
         ['Délai souhaité', d.delai],
       ]),
       alerte(
-        'Activez Visibilité aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.',
+        'Activez Fiche Pro aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.',
       ),
       offreVisibilite,
-      bouton('Activer Visibilité et recevoir la demande', d.lien),
+      bouton('Activer Fiche Pro et recevoir la demande', d.lien),
       note(
         'Offre valable une seule fois par entreprise. Les coordonnées du particulier s’affichent après l’activation.',
       ),

@@ -1,10 +1,11 @@
+import { NOMS_FORMULE } from '@ph/core/paiements';
 import { formatEuros } from '@ph/core/format';
 import { alerte, bouton, note, para, recap, titre } from '../blocs';
 import { bonjour, modele } from '../modele';
 
 /** EMAILS §4.6 : facturation (webhooks Stripe, charte orange, catégorie transactionnel). */
 
-const OFFRES: Record<string, string> = { premium: 'Premium', visibilite: 'Option Visibilité' };
+const OFFRES: Record<string, string> = NOMS_FORMULE;
 const offre = (p: string) => OFFRES[p] ?? p;
 const periode = (p: string) =>
   p === 'annuel' ? 'annuelle (12 mois payés en une fois)' : 'mensuelle, sans engagement';
@@ -38,7 +39,7 @@ interface Pack {
 const EX: Abonnement = {
   prenom: 'Julien',
   nomCommercial: 'Bertrand Rénovation',
-  produit: 'premium',
+  produit: 'tout_inclus',
   periode: 'annuel',
   finPeriode: '1 octobre 2027',
   lien: 'https://portailhabitat.fr/pro/facturation',
