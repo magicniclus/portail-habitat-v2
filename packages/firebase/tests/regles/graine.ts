@@ -76,6 +76,9 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   'artisans/a1/prestationsBiblio/b1': { ...v, designation: 'Pose' },
   'artisans/a1/parametresFacturation/actuels': { ...v, raisonSociale: 'Bertrand' },
   'artisans/a1/compteurs/factures': { ...v, annee: 2026, dernier: 1 },
+  'sites/a1': { ...v, offre: 'gratuit', sousDomaine: 'bertrand' },
+  'sites/a1/pages/accueil': { ...v, nom: 'Accueil' },
+  'sitesSlugs/bertrand': { ...v, siteId: 'a1' },
   'artisanScores/a1': { ...v, qualite: 80 },
   'demandes/dem1': {
     ...v,

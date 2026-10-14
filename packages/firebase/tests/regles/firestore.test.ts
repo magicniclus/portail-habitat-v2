@@ -351,6 +351,27 @@ const CAS: Cas[] = [
     op: { get: 'artisans/a1/compteurs/factures' },
     autorises: [],
   },
+  // ----- sites des artisans -----
+  {
+    nom: 'lire le site de son entreprise',
+    op: { get: 'sites/a1' },
+    autorises: membresA1('p', 'g', 'c', 'x'),
+  },
+  {
+    nom: 'lire une page du site',
+    op: { get: 'sites/a1/pages/accueil' },
+    autorises: membresA1('p', 'g', 'c', 'x'),
+  },
+  {
+    nom: 'modifier une page directement (validée et publiée par le serveur)',
+    op: { maj: 'sites/a1/pages/accueil', donnees: { nom: 'x' } },
+    autorises: [],
+  },
+  {
+    nom: 'lire l’index des sous-domaines',
+    op: { get: 'sitesSlugs/bertrand' },
+    autorises: [],
+  },
   {
     nom: 'lire les scores de nuit',
     op: { get: 'artisanScores/a1' },

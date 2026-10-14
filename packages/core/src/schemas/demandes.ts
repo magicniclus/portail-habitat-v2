@@ -40,7 +40,15 @@ export const demande = z
   .object({
     ...meta,
     reference: z.string().regex(/^PH-[A-Z0-9]{6}$/),
-    source: z.enum(['simulateur', 'hero', 'fiche_artisan', 'annuaire', 'partenaire']),
+    /** `site_artisan` : formulaire du site de l'artisan, attribuée directement, hors matching. */
+    source: z.enum([
+      'simulateur',
+      'hero',
+      'fiche_artisan',
+      'annuaire',
+      'partenaire',
+      'site_artisan',
+    ]),
     partenaire: z
       .object({
         sourceId: id,

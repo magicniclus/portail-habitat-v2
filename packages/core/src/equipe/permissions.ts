@@ -23,6 +23,8 @@ export const ACTIONS_EQUIPE = [
   'factures.voir',
   /** Devis & factures des clients (DATABASE §8 bis). */
   'devis.gerer',
+  /** Site internet de l'entreprise (SITE_INTERNET.md) : éditer, publier, domaine. */
+  'site.gerer',
   'factures.emettre',
   'membres.gerer',
   'propriete.transferer',

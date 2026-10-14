@@ -11,6 +11,7 @@ import * as ia from './ia';
 import * as parcours from './parcours';
 import * as partenaires from './partenaires';
 import * as referentiels from './referentiels';
+import * as sites from './sites';
 import * as support from './support';
 
 export * from './commun';
@@ -27,6 +28,7 @@ export * from './ia';
 export * from './parcours';
 export * from './partenaires';
 export * from './referentiels';
+export * from './sites';
 export * from './support';
 export * from './entreesComptes';
 export * from './entreesDevis';
@@ -65,6 +67,12 @@ export const SCHEMAS = {
   'artisans/{}/prestationsBiblio/{}': devis.prestationBiblio,
   'artisans/{}/parametresFacturation/{}': devis.parametresFacturation,
   'artisans/{}/compteurs/{}': devis.compteurDocuments,
+  'sites/{}': sites.siteArtisan,
+  'sites/{}/pages/{}': sites.pageSiteDoc,
+  'sites/{}/reglages/{}': sites.navigationSiteDoc,
+  'sites/{}/versions/{}': sites.versionSite,
+  'sitesSlugs/{}': sites.indexSite,
+  'sitesDomaines/{}': sites.indexSite,
   'artisansPublic/{}': artisans.artisanPublic,
   'artisanScores/{}': artisans.artisanScore,
   'sanctions/{}': artisans.sanction,

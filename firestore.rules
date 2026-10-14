@@ -111,6 +111,14 @@ service cloud.firestore {
       match /parametresFacturation/{x} { allow read: if isMembre(aid); allow write: if false; }
       match /compteurs/{c}             { allow read, write: if false; }
     }
+    // Sites des artisans (siteId = artisanId) : écrits par le serveur seulement (SITE_INTERNET.md).
+    match /sites/{aid} {
+      allow read: if isMembre(aid);
+      allow write: if false;
+      match /{sous=**} { allow read: if isMembre(aid); allow write: if false; }
+    }
+    match /sitesSlugs/{slug}   { allow read, write: if false; }
+    match /sitesDomaines/{h}   { allow read, write: if false; }
     match /artisanScores/{aid} { allow read: if isGestion(aid) || lit('mat'); allow write: if false; }
 
     // ---------- demandes (création et écritures par Functions) ----------
