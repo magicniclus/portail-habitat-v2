@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enTetesSecurite, espaceStrict, politiqueContenu } from './securite';
+import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from './securite';
 
 const directive = (csp: string, nom: string) =>
   csp
@@ -56,5 +56,22 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
     expect(espaceStrict('/pro/site-internet-artisan')).toBe(false);
     expect(espaceStrict('/pro/logiciel-devis-factures')).toBe(false);
     expect(espaceStrict('/artisans/x')).toBe(false);
+  });
+});
+
+describe('sites artisans', () => {
+  it('n’autorise que le script fixe de la page et Turnstile', () => {
+    const csp = politiqueSite({ production: true, empreinte: 'sha256-abc' });
+    expect(directive(csp, 'script-src')).toBe(
+      "script-src 'sha256-abc' https://challenges.cloudflare.com",
+    );
+    expect(csp).not.toContain('unsafe-eval');
+    expect(directive(csp, 'connect-src')).toContain("'self'");
+  });
+
+  it('HSTS sans sous-domaines sur le domaine de l’artisan, cadre autorisé pour l’aperçu', () => {
+    const h = enTetesSecurite({ production: true, csp: 'x', site: true });
+    expect(h['Strict-Transport-Security']).toBe('max-age=31536000');
+    expect(h['X-Frame-Options']).toBeUndefined();
   });
 });

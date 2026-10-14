@@ -32,6 +32,7 @@ export * from './sites';
 export * from './support';
 export * from './entreesComptes';
 export * from './entreesDevis';
+export * from './entreesSites';
 export * from './entreesNotifications';
 export * from './entreesDemandes';
 export * from './entreesComportement';

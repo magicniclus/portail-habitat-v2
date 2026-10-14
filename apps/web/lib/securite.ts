@@ -77,16 +77,48 @@ export function politiqueContenu(o: OptionsCsp): string {
   ].join('; ');
 }
 
-export function enTetesSecurite(o: { production: boolean; csp: string }): Record<string, string> {
+/**
+ * CSP des sites artisans (SITE_INTERNET §6) : aucun script hors le script fixe de la page
+ * (empreinte) et Turnstile ; images de Storage ; vidéos YouTube sans cookie ; envois vers le
+ * même domaine seulement.
+ */
+export function politiqueSite(o: { production: boolean; empreinte: string }): string {
+  const turnstile = 'https://challenges.cloudflare.com';
+  return [
+    "default-src 'self'",
+    `script-src '${o.empreinte}' ${turnstile}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com",
+    "font-src 'self'",
+    `connect-src 'self' ${turnstile}`,
+    `frame-src ${turnstile} https://www.youtube-nocookie.com`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self' https://portailhabitat.fr",
+    ...(o.production ? ['upgrade-insecure-requests'] : []),
+  ].join('; ');
+}
+
+export function enTetesSecurite(o: {
+  production: boolean;
+  csp: string;
+  /** Site artisan : domaine de l'artisan, HSTS sans `includeSubDomains` ni `preload`. */
+  site?: boolean;
+}): Record<string, string> {
   return {
     'Content-Security-Policy': o.csp,
-    'X-Frame-Options': 'SAMEORIGIN',
+    ...(o.site ? {} : { 'X-Frame-Options': 'SAMEORIGIN' }),
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
     'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     ...(o.production
-      ? { 'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload' }
+      ? {
+          'Strict-Transport-Security': o.site
+            ? 'max-age=31536000'
+            : 'max-age=63072000; includeSubDomains; preload',
+        }
       : {}),
   };
 }

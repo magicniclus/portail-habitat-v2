@@ -1,15 +1,29 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
 import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
-import { enTetesSecurite, espaceStrict, politiqueContenu } from '@/lib/securite';
+import { SCRIPT_SITE } from '@/features/siteArtisan/document';
+import { hoteSite } from '@/lib/hotesSites';
+import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from '@/lib/securite';
 import { maintenanceActive } from '@/server/flags';
 
+const sha256 = (texte: string) =>
+  crypto.subtle
+    .digest('SHA-256', new TextEncoder().encode(texte))
+    .then((h) => `sha256-${btoa(String.fromCharCode(...new Uint8Array(h)))}`);
 let empreinte: Promise<string> | undefined;
 /** Empreinte du script en ligne du bandeau cookies (seul script fixe des espaces stricts). */
-const empreinteBandeau = () =>
-  (empreinte ??= crypto.subtle
-    .digest('SHA-256', new TextEncoder().encode(SCRIPT_BANDEAU_COOKIES))
-    .then((h) => `sha256-${btoa(String.fromCharCode(...new Uint8Array(h)))}`));
+const empreinteBandeau = () => (empreinte ??= sha256(SCRIPT_BANDEAU_COOKIES));
+let empreinteS: Promise<string> | undefined;
+const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
+
+/** Domaine de la plateforme (les autres hôtes sont des sites artisans). */
+const plateforme = () => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://portailhabitat.fr').hostname;
+  } catch {
+    return 'portailhabitat.fr';
+  }
+};
 
 const emulateurs = () =>
   [
@@ -26,6 +40,20 @@ export async function proxy(requete: NextRequest) {
   // Poste local et tests (http://localhost, émulateurs) : ni HSTS ni passage forcé en https.
   const local = ['localhost', '127.0.0.1'].includes(requete.nextUrl.hostname);
   const production = process.env.NODE_ENV === 'production' && !local && !emulateurs().length;
+  // Site artisan (sous-domaine ou domaine connecté) : réécrit vers son rendu, hors API du formulaire.
+  const site = hoteSite(requete.headers.get('host'), plateforme());
+  if (site) {
+    const chemin = requete.nextUrl.pathname;
+    const reponse = chemin.startsWith('/api/sites/')
+      ? NextResponse.next()
+      : NextResponse.rewrite(new URL(`/s/${site}${chemin === '/' ? '' : chemin}`, requete.url));
+    const csp = politiqueSite({ production, empreinte: await empreinteSite() });
+    for (const [k, v] of Object.entries(enTetesSecurite({ production, csp, site: true })))
+      reponse.headers.set(k, v);
+    return reponse;
+  }
+  // Le rendu des sites n'est jamais servi sur le domaine de la plateforme.
+  if (requete.nextUrl.pathname.startsWith('/s/')) return new NextResponse(null, { status: 404 });
   const strict = espaceStrict(requete.nextUrl.pathname);
   const nonce = strict ? btoa(crypto.randomUUID()) : undefined;
   const csp = politiqueContenu({
