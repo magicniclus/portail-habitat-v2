@@ -319,8 +319,17 @@ describe('factures', () => {
   });
 
   it('DEV-06 : 100 factures créées en même temps, numéros 1 à 100 sans trou ni doublon', async () => {
-    const ids: string[] = [];
-    for (let i = 0; i < 100; i++) ids.push(await devisAccepte());
+    // Un devis accepté par le service, recopié 99 fois : seule la facturation est concurrente ici.
+    const modele = await devisAccepte();
+    const donnees = (await db.doc(chemins.unDevis('a1', modele)).get()).data()!;
+    const lot = db.batch();
+    const ids = [modele];
+    for (let i = 1; i < 100; i++) {
+      const id = `concurrent-${i}`;
+      lot.set(db.doc(chemins.unDevis('a1', id)), { ...donnees, numero: `D-2026-${1000 + i}` });
+      ids.push(id);
+    }
+    await lot.commit();
     const r = await Promise.all(
       ids.map((devisId, i) =>
         facturerDevis(s(), proprio, {
@@ -335,5 +344,7 @@ describe('factures', () => {
     expect((await db.doc(chemins.compteurDocuments('a1', 'factures')).get()).get('dernier')).toBe(
       100,
     );
-  }, 300_000);
+    // Émulateur : les 100 transactions se disputent un seul compteur (verrous pessimistes,
+    // ~150 s sur un poste, davantage sur les machines de CI).
+  }, 900_000);
 });
