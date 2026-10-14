@@ -62,8 +62,9 @@ test.describe('Devis & factures', () => {
       page.getByText(/Envoi impossible, il manque : Identité de l’entreprise, Assurance décennale/),
     ).toBeVisible();
     await expect(page).toHaveURL(/\/pro\/devis\/nouveau$/);
-    // DEV-05 : aucun aperçu du PDF dans l'éditeur.
-    await expect(page.locator('iframe, embed, object')).toHaveCount(0);
+    // DEV-05 : aucun aperçu du PDF dans l'éditeur (le cadre invisible de reCAPTCHA est hors de main).
+    await expect(page.locator('main').locator('iframe, embed, object')).toHaveCount(0);
+    await expect(page.locator('iframe[src*=".pdf"], embed[type="application/pdf"]')).toHaveCount(0);
   });
 
   test('paramètres de facturation enregistrés depuis l’écran', async ({ page }) => {
