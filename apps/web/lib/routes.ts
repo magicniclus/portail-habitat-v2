@@ -19,7 +19,7 @@ export const routes = {
   connexionPro: r('/connexion?espace=pro'),
   connexionProSuite: (suite: string) =>
     r(`/connexion?espace=pro&suite=${encodeURIComponent(suite)}`),
-  proFacturation: r('/pro/facturation'),
+  proFacturation: r('/pro/abonnement'),
   admin: r('/admin'),
   adminSection: (chemin: string) => r(chemin ? `/admin/${chemin}` : '/admin'),
   adminSecurite: r('/admin/securite'),
@@ -38,11 +38,11 @@ export const routes = {
   proAvis: r('/pro/avis'),
   proStatistiques: r('/pro/statistiques'),
   proEquipe: r('/pro/equipe'),
-  proAbonnementPremium: r('/pro/abonnement/premium'),
   proResiliation: r('/pro/abonnement/resilier'),
-  /** Page de paiement d'une offre, formule préremplie (ACQ-03). */
-  proAbonnement: (produit: 'premium' | 'visibilite', facturation?: 'annuel' | 'mensuel') =>
-    r(`/pro/abonnement/${produit}${facturation ? `?facturation=${facturation}` : ''}`),
+  /** Mon abonnement (PAIEMENTS §4) ; `?offre=` ouvre directement le paiement de la formule. */
+  proAbonnement: r('/pro/abonnement'),
+  proOffre: (offre: 'fiche' | 'site' | 'pack' | 'tout', code?: string) =>
+    r(`/pro/abonnement?offre=${offre}${code ? `&code=${code}` : ''}`),
   monEspace: r('/mon-espace'),
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),
@@ -57,7 +57,6 @@ export const routes = {
   legal: (public_: 'particuliers' | 'pro', doc: string) => r(`/legal/${public_}/${doc}`),
   mentionsParticuliers: r('/legal/particuliers/mentions'),
   mentionsPro: r('/legal/pro/mentions'),
-  proOffres: r('/pro#offres'),
   proInscription: r('/pro#inscription'),
   pro: r('/pro'),
   proTableauDeBord: r('/pro/tableau-de-bord'),

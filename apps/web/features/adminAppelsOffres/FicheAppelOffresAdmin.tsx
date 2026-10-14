@@ -60,7 +60,8 @@ export function FicheAppelOffresAdmin({
       <dl className="m-0">
         <Ligne k="Mode">{LIBELLES_MODE_PRIX[a.mode]}</Ligne>
         <Ligne k="Prix">
-          {ht(a.prixBaseCentimes)} · Premium {ht(a.prixPremiumCentimes)} · {a.prixCredits} crédits
+          {ht(a.prixBaseCentimes)} · Tout inclus {ht(a.prixPremiumCentimes)} · {a.prixCredits}{' '}
+          crédits
           {a.promo && a.promoJusquau
             ? ` · promo −${a.promo} % jusqu’au ${formatDate(a.promoJusquau)}`
             : ''}

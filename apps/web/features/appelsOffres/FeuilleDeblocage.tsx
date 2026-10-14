@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
-const PACKS = CATALOGUE_STRIPE.filter((p) => p.produit === 'pack');
+const PACKS = CATALOGUE_STRIPE.filter((p) => p.produit === 'credits');
 const pluriel = (n: number) => `${n} crédit${n > 1 ? 's' : ''}`;
 
 type Reponse =

@@ -34,7 +34,7 @@ test('espace pro : aucune erreur axe sérieuse, console propre', async ({ page }
     '/pro/avis',
     '/pro/equipe',
     '/pro/compte',
-    '/pro/facturation',
+    '/pro/abonnement',
   ])
     problemes.push(...(await verifier(page, c)));
   expect(problemes).toEqual([]);

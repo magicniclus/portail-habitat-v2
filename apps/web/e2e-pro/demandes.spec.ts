@@ -53,7 +53,7 @@ test.describe('Mes demandes', () => {
   });
 
   test('le comptable n’a pas accès aux demandes', async ({ page }) => {
-    await connecter(page, COMPTES.compta, '/pro/facturation');
+    await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/demandes');
     await expect(page).not.toHaveURL(/\/pro\/demandes$/);
   });

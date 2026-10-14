@@ -41,9 +41,9 @@ test.describe('Espace pro : tableau de bord', () => {
   });
 
   test('comptable : arrive sur la facturation, sans les demandes', async ({ page }) => {
-    await connecter(page, COMPTES.compta, '/pro/facturation');
+    await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/tableau-de-bord');
-    await expect(page).toHaveURL(/\/pro\/facturation$/);
+    await expect(page).toHaveURL(/\/pro\/abonnement$/);
     await expect(page.getByRole('link', { name: /Mes demandes|^demandes$/i })).toHaveCount(0);
   });
 

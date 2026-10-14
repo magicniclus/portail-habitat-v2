@@ -78,16 +78,13 @@ test.describe('Acquisition artisans (/pro)', () => {
     expect(await page.locator('body').innerText()).not.toMatch(/\blead/i);
   });
 
-  test('tarifs : bascule annuel / mensuel (D24, D25)', async ({ page }) => {
+  test('PAY-01 : aucun prix ni formule payante avant l’inscription', async ({ page }) => {
     await page.goto('/pro');
-    const tarifs = page.locator('#offres');
-    await expect(tarifs.getByRole('radio', { name: /Annuel/ })).toHaveAttribute(
-      'aria-checked',
-      'true',
+    const html = await page.content();
+    expect(html).not.toMatch(/\/pro\/abonnement/);
+    const texte = await page.locator('body').innerText();
+    expect(texte).not.toMatch(
+      /\d+[,.]\d{2}\s?€|Premium|Fiche Pro|Site Pro|Tout inclus|abonnement/i,
     );
-    await expect(tarifs).toContainText('958,80');
-    await tarifs.getByRole('radio', { name: 'Mensuel' }).click();
-    await expect(tarifs).toContainText('99,90');
-    await expect(tarifs).toContainText('12,90');
   });
 });

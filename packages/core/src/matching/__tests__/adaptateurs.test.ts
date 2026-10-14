@@ -59,8 +59,7 @@ const artisan: DocArtisan = {
   intentions: ['repeindre'],
   verification: { statut: 'verifie', verifieLe: T - 100 * JOUR },
   labelsVerifies: { decennale: {}, qualibat: { expireLe: T - JOUR } },
-  plan: 'premium',
-  optionVisibilite: true,
+  formule: 'tout_inclus',
   quotaDemandesMois: 4,
   demandesRecuesMois: 1,
   noteMoyenne: 4.8,
@@ -163,7 +162,6 @@ describe('adaptateurs : champs facultatifs', () => {
         metierPrincipal: 'peintre',
         metiers: ['peintre'],
         verification: { statut: 'a_faire' },
-        plan: 'gratuit',
       },
       ctx,
     );

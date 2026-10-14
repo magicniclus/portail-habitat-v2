@@ -57,7 +57,7 @@ export function ChampsBareme({ s }: { s: SaisieBareme }) {
         <div className={grille}>
           <Nombre
             nom="remisePremiumPourcent"
-            label="Remise Premium (%)"
+            label="Remise Tout inclus (%)"
             valeur={s.remisePremiumPourcent}
           />
           <Nombre nom="eurosParCredit" label="Valeur d’un crédit (€)" valeur={s.eurosParCredit} />

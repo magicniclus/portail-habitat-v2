@@ -96,7 +96,7 @@ export const FAQ_PRO: QuestionFaq[] = [
   },
   {
     q: 'Est-ce que je partage le client avec d’autres artisans ?',
-    r: 'Cela dépend du type de demande. Les demandes garanties de l’offre Premium sont transmises à vous seul. Les appels d’offres, accessibles à toutes les formules, sont ouverts à 3 artisans maximum.',
+    r: 'Non pour les demandes envoyées depuis votre fiche : elles sont pour vous seul. Les appels d’offres de votre zone sont ouverts à 3 artisans maximum.',
   },
   {
     q: 'Pourquoi vérifiez-vous mon SIREN et mon assurance ?',

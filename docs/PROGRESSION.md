@@ -21,7 +21,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 10c | IA du site | ⬜ | | SITE-IA | nouveau |
 | 10d | Blog | ⬜ | | BLOG | nouveau |
 | 10e | Landings par outil | ⬜ | | LAND | nouveau |
-| 11 | Stripe | 🟡 | | PAY | fait avec Visibilité/Premium ; nouvelle grille (PAIEMENTS.md, 4 formules, droits) à faire |
+| 11 | Stripe | 🟡 | | PAY-01 à 05, 08, 10 | nouvelle grille faite (AVANCEMENT §24) ; restent encarts, NAV-01, emails |
 | 11b | Devis et factures | ⬜ | | DEV | nouveau |
 | 12 | Matching, appels d'offres | ✅ | avant le 13/10/2026 | unitaires + e2e | |
 | 12b | Demandes partenaires | ✅ | avant le 13/10/2026 | IMP | |

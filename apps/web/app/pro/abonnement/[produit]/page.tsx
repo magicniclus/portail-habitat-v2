@@ -1,85 +1,25 @@
-import { peut } from '@ph/core/equipe';
-import { NOMS_OFFRE, type ProduitAbonnement } from '@ph/core/facturation';
-import { Banner, bouton, Logo } from '@ph/ui';
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { PaiementOffre } from '@/features/abonnement/PaiementOffre';
+import { FORMULE_ETAPE, formuleDeOffre, offreUrlDe } from '@ph/core/paiements';
+import { redirect } from 'next/navigation';
 import { routes } from '@/lib/routes';
-import { remiseConversion } from '@/server/facturation';
-import { sessionPro } from '@/server/sessionPro';
 
-export const metadata: Metadata = { title: 'Paiement', robots: { index: false } };
-export const dynamic = 'force-dynamic';
-
-const PRODUITS: readonly ProduitAbonnement[] = ['premium', 'visibilite'];
-
-/** Maquettes Paiement Offre Premium et Paiement Option Visibilité (ACQ-03, PAY-01). */
-export default async function PagePaiement({
+/**
+ * Anciennes pages de paiement (`/pro/abonnement/premium|visibilite`, liens des emails déjà
+ * envoyés) : redirigées vers la fenêtre de paiement de la formule qui les remplace (D60), code
+ * personnel conservé.
+ */
+export default async function AncienPaiement({
   params,
   searchParams,
 }: {
   params: Promise<{ produit: string }>;
-  searchParams: Promise<{ facturation?: string; code?: string }>;
+  searchParams: Promise<{ code?: string }>;
 }) {
-  const produit = (await params).produit as ProduitAbonnement;
-  if (!PRODUITS.includes(produit)) notFound();
-  const recherche = await searchParams;
-  const periode = recherche.facturation === 'mensuel' ? 'mensuel' : 'annuel';
-  const s = await sessionPro(routes.proAbonnement(produit, periode));
-  const active = s.espace.active;
-  const dejaActif =
-    active?.artisan.plan === 'premium' ||
-    (produit === 'visibilite' && active?.artisan.optionVisibilite === true);
-  const remise =
-    active && !dejaActif ? await remiseConversion(recherche.code, active.artisanId, produit) : null;
-
-  return (
-    <div className="min-h-dvh bg-blanc">
-      <header className="border-b border-trait px-4 py-3">
-        <Link
-          href={routes.proTableauDeBord}
-          aria-label="Portail Habitat Pro, mon espace"
-          className="inline-flex min-h-11 items-center"
-        >
-          <Logo variant="pro" />
-        </Link>
-      </header>
-      <main className="mx-auto grid w-full max-w-[560px] gap-5 px-4 py-8">
-        <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">{NOMS_OFFRE[produit]}</h1>
-        {!active ? (
-          <Banner tone="info">Rattachez d&apos;abord une entreprise à votre compte.</Banner>
-        ) : dejaActif ? (
-          <Banner
-            tone="succes"
-            titre="Cette offre est déjà active"
-            action={
-              <Link href={routes.proFacturation} className={bouton({ variant: 'secondaire' })}>
-                Voir la facturation
-              </Link>
-            }
-          >
-            {active.artisan.nomCommercial} en profite déjà.
-          </Banner>
-        ) : !peut(active.membre, 'abonnement.gerer') ? (
-          <Banner tone="info">
-            Seuls le propriétaire et les gérants peuvent souscrire un abonnement pour{' '}
-            {active.artisan.nomCommercial}.
-          </Banner>
-        ) : (
-          <PaiementOffre
-            produit={produit}
-            periodeInitiale={periode}
-            remise={remise}
-            zone={[
-              active.artisan.ville,
-              active.artisan.rayonKm ? `${active.artisan.rayonKm} km` : '',
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          />
-        )}
-      </main>
-    </div>
-  );
+  const { produit } = await params;
+  const { code } = await searchParams;
+  const formule =
+    produit === 'premium' || produit === 'visibilite'
+      ? FORMULE_ETAPE[produit]
+      : formuleDeOffre(produit);
+  const valide = code && /^[A-Z0-9]{4,24}$/.test(code) ? code : undefined;
+  redirect(formule ? routes.proOffre(offreUrlDe(formule), valide) : routes.proAbonnement);
 }

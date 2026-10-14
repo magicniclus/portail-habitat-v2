@@ -1,3 +1,4 @@
+import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import type { CarteAppelOffres } from '@ph/core/leads';
 import { Badge, Button, bouton, type Tone } from '@ph/ui';
 import { LockSimpleIcon } from '@phosphor-icons/react';
@@ -63,9 +64,13 @@ export function CarteAppelOffresPro({
         ) : null}
         {reserve ? (
           <>
-            <Link href={routes.proAbonnementPremium} className={bouton({})}>
-              <LockSimpleIcon aria-hidden="true" /> Débloquer avec Premium
-            </Link>
+            <FenetreOffre
+              formule="tout_inclus"
+              raison="Cet appel d’offres est réservé quelques heures aux comptes Tout inclus."
+              className={bouton({})}
+            >
+              <LockSimpleIcon aria-hidden="true" /> Débloquer avec Tout inclus
+            </FenetreOffre>
             {c.disponibleDans ? (
               <span className="text-[13px] text-neutre-700">{c.disponibleDans}</span>
             ) : null}

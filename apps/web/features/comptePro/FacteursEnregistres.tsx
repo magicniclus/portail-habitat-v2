@@ -26,7 +26,7 @@ function Retirer({
       titre={`Retirer ${nom} ?`}
       description={
         dernier
-          ? 'Votre compte ne sera plus protégé par un second facteur. Si votre entreprise est Premium, l’accès à la facturation sera bloqué.'
+          ? 'Votre compte ne sera plus protégé par un second facteur. Si votre entreprise est en Tout inclus, l’accès à la facturation sera bloqué.'
           : 'Confirmez avec votre mot de passe.'
       }
       declencheur={

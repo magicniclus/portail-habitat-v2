@@ -50,7 +50,7 @@ export function EditionCoordonnees(p: {
     >
       <Field
         label="Téléphone affiché"
-        aide="Visible avec Premium ou l'option Visibilité. Laissez vide pour le retirer."
+        aide="Visible avec Fiche Pro (ou une formule qui l’inclut). Laissez vide pour le retirer."
       >
         <Input champ="tel" value={tel} onChange={(e) => setTel(e.target.value)} />
       </Field>

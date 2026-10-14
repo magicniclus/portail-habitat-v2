@@ -40,10 +40,12 @@ test.describe('Annuaire', () => {
     await expect(page.getByRole('list', { name: 'Filtres actifs' })).toHaveCount(0);
   });
 
-  test('ANN-03 : Premium en tête et signalés, mention L111-7 visible', async ({ page }) => {
+  test('ANN-03 : artisans recommandés en tête et signalés, mention L111-7 visible', async ({
+    page,
+  }) => {
     await page.goto('/artisans');
     const une = page.getByRole('region', { name: /Artisans à la une/ });
-    await expect(une.locator('article').first()).toContainText('Premium');
+    await expect(une.locator('article').first()).toContainText('Artisan recommandé');
     const premiers = await page
       .locator('#resultats article')
       .evaluateAll((els) =>
@@ -52,7 +54,7 @@ test.describe('Annuaire', () => {
     expect(premiers.indexOf(false)).toBeGreaterThan(0);
     expect(premiers.slice(premiers.indexOf(false)).every((x) => !x)).toBe(true);
     await expect(
-      page.getByText(/Les profils Premium apparaissent en tête de liste, signalés comme tels/),
+      page.getByText(/option payante de mise en avant : ils apparaissent en tête de liste/),
     ).toBeVisible();
   });
 
@@ -74,7 +76,9 @@ test.describe('Annuaire', () => {
     );
   });
 
-  test('ANN-06 : téléphone seulement pour Premium ou Visibilité', async ({ page }) => {
+  test('ANN-06 : téléphone seulement avec Fiche Pro (ou une formule qui l’inclut)', async ({
+    page,
+  }) => {
     await page.goto('/artisans?metier=menuisier,plombier&rayon=40');
     const carte = (nom: string) =>
       page.locator('article', { has: page.getByRole('heading', { name: nom }) });

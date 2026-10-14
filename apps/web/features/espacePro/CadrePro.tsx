@@ -18,7 +18,8 @@ export interface CadreProProps {
   /** Pastille d'état de la fiche (« Fiche en ligne · Mérignac · 30 km »). */
   etatFiche: ReactNode;
   initiales: string;
-  encart: ReactNode;
+  /** Encart du bas de la barre latérale (offre contextuelle, PAIEMENTS §4), facultatif. */
+  encart?: ReactNode;
   children: ReactNode;
 }
 

@@ -1,12 +1,5 @@
 import 'server-only';
-import { PRIX_AFFICHES, type PrixAffiches } from '@ph/core/facturation';
-import {
-  artisanPublic,
-  avis as schemaAvis,
-  configApp,
-  statsPublic,
-  texteCommune,
-} from '@ph/core/schemas';
+import { artisanPublic, avis as schemaAvis, statsPublic, texteCommune } from '@ph/core/schemas';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins, collections } from '@ph/firebase/chemins';
 import { depot } from '@ph/firebase/serveur';
@@ -27,12 +20,12 @@ export const lireStatsPublic = cache((): Promise<StatsVitrine | null> =>
   }),
 );
 
-/** D49 (1) : fiches en ligne, Premium d'abord puis classement (index existant). */
+/** D49 (1) : fiches en ligne, artisans mis en avant d'abord puis classement (index existant). */
 export const lireArtisansVedette = cache(() =>
   lire('artisans', async () => {
     const r = await depot(db(), collections.artisansPublic, artisanPublic)
       .reference.where('enLigne', '==', true)
-      .orderBy('premium', 'desc')
+      .orderBy('misEnAvant', 'desc')
       .orderBy('scoreClassement', 'desc')
       .limit(3)
       .get();
@@ -93,16 +86,6 @@ export const lireArtisansAvis = cache(
         };
       });
     })) ?? [],
-);
-
-/** Prix affichés (`config/app.prix`), sinon ceux des décisions D24 et D25. Stripe fait foi au paiement. */
-export const lirePrixAffiches = cache(
-  async (): Promise<PrixAffiches> =>
-    (await lire('config/app', async () => {
-      const brut = (await db().doc(chemins.configApp()).get()).get('prix');
-      const r = configApp.shape.prix.safeParse(brut);
-      return r.success ? r.data : null;
-    })) ?? PRIX_AFFICHES,
 );
 
 /** Textes d'une page commune modifiés dans l'admin (ADMIN §2.9) ; absents : ceux du dépôt. */

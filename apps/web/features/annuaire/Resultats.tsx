@@ -15,7 +15,7 @@ import { SelectTri } from './SelectTri';
 
 /** Mention obligatoire (art. L111-7 du Code de la consommation), toujours visible (ANN-03). */
 const MENTION_L111_7 =
-  'Les profils Premium apparaissent en tête de liste, signalés comme tels. Le classement des autres résultats dépend du tri choisi, de la distance et des avis vérifiés. Aucune position n’est vendue dans la liste standard.';
+  'Les artisans « recommandés » bénéficient d’une option payante de mise en avant : ils apparaissent en tête de liste, signalés comme tels. Le classement des autres résultats dépend du tri choisi, de la distance et des avis vérifiés. Aucune position n’est vendue dans la liste standard.';
 
 /** Colonne des résultats : nombre, tri, chips retirables (ANN-02), à la une, liste, état vide (ANN-05). */
 export function Resultats({
@@ -83,7 +83,7 @@ export function Resultats({
             </span>{' '}
             Artisans à la une
             <span className="text-[13px] font-normal text-neutre-700">
-              — profils Premium, vérifiés et engagés à répondre sous 24 h
+              — artisans recommandés et vérifiés
             </span>
           </h2>
           <div className="grid gap-3.5">

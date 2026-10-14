@@ -198,7 +198,7 @@ export function EspaceArtisan() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <strong className="text-[17px]">Appels d&apos;offres · Gironde</strong>
                 <span className="rounded-pill bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-800">
-                  Premium : 24 h d&apos;avance
+                  3 artisans maximum
                 </span>
               </div>
               <div className="flex flex-wrap gap-2 text-xs">
@@ -246,8 +246,8 @@ export function EspaceArtisan() {
             </div>
           </div>
           <figcaption className="mt-2.5 text-[13px] text-neutre-800">
-            L&apos;espace appels d&apos;offres : les projets de votre zone, ouverts 24 h avant pour
-            les comptes Premium.
+            L&apos;espace appels d&apos;offres : les projets de votre zone, ouverts à 3 artisans au
+            maximum.
           </figcaption>
         </figure>
       </div>
@@ -398,10 +398,10 @@ export function AppelFinalPro() {
               Créer mon compte gratuit
             </a>
             <a
-              href="#offres"
+              href="#faq"
               className={bouton({ variant: 'fantome', taille: 'lg', className: 'min-h-[50px]' })}
             >
-              Voir les tarifs Premium
+              Questions fréquentes
             </a>
           </div>
         </div>

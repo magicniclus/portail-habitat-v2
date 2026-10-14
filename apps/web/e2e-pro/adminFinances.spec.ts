@@ -9,7 +9,8 @@ test('finances : indicateurs, onglets, export CSV journalisé', async ({ page })
   await connecter(page, 'finance@test.local', '/admin/finances', 'admin');
   const indicateurs = page.getByRole('list', { name: 'Indicateurs' });
   await expect(indicateurs).toContainText('MRR');
-  await expect(indicateurs).toContainText('Abonnés Premium');
+  await expect(indicateurs).toContainText('Abonnés');
+  await expect(indicateurs).toContainText('Tout inclus');
   await page.getByRole('link', { name: 'Codes promo' }).click();
   await expect(page.getByRole('list', { name: 'Codes promo' })).toBeVisible();
   const avant = await audits('adminExportFinances', 'finances/2026-09');

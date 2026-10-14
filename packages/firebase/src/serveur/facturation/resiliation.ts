@@ -1,3 +1,4 @@
+import { niveauConversion, type FormulePayante } from '@ph/core/paiements';
 import {
   alternativeResiliation,
   type AlternativeResiliation,
@@ -26,7 +27,10 @@ const COUPON_RETENTION = 'ph_retention_50_2m';
 
 export interface AbonnementResiliable {
   id: string;
+  /** Étape de conversion (Visibilité / Premium) qui choisit l'alternative proposée (D60). */
   produit: 'premium' | 'visibilite';
+  /** Formule réellement souscrite (PAIEMENTS §2), pour l'affichage. */
+  formule: FormulePayante;
   periode: 'mensuel' | 'annuel';
   finPeriode: number;
 }
@@ -45,7 +49,9 @@ export async function lireResiliation(
       .filter((a) => a.get('statut') === 'active' && a.get('annulationFinPeriode') !== true)
       .map((a) => ({
         id: a.id,
-        produit: a.get('produit') as 'premium' | 'visibilite',
+        // Étape de conversion de la formule (D60) : Tout inclus = Premium, autres = Visibilité.
+        produit: niveauConversion(a.get('produit') as string) as 'premium' | 'visibilite',
+        formule: a.get('produit') as FormulePayante,
         periode: a.get('periode') as 'mensuel' | 'annuel',
         finPeriode: (a.get('finPeriode') as Timestamp).toMillis(),
       })),

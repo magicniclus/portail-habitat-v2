@@ -1,3 +1,4 @@
+import { droitsDe } from '@ph/core/paiements';
 import { PERIODES_STATS, type PeriodeStats } from '@ph/core/espace-pro';
 import { peut } from '@ph/core/equipe';
 import type { Metadata } from 'next';
@@ -10,7 +11,7 @@ import { statistiquesFiche } from '@/server/statistiques';
 
 export const metadata: Metadata = { title: 'Statistiques', robots: { index: false } };
 
-/** Maquette Statistiques ; réservée aux Premium (PRO-07). */
+/** Maquette Statistiques ; détail réservé aux formules avec Fiche Pro (PRO-07, PAIEMENTS §2). */
 export default async function PageStatistiques({
   searchParams,
 }: {
@@ -19,12 +20,12 @@ export default async function PageStatistiques({
   const s = await sessionPro(routes.proStatistiques);
   const active = s.espace.active;
   if (!active || !peut(active.membre, 'statistiques.voir')) redirect(routes.proTableauDeBord);
-  const premium = active.artisan.plan === 'premium';
+  const detail = droitsDe(active.artisan.formule).statsDetaillees;
   const p = (await searchParams).periode;
   const periode: PeriodeStats = PERIODES_STATS.includes(p as PeriodeStats)
     ? (p as PeriodeStats)
     : '30j';
-  const stats = premium ? await statistiquesFiche(active.artisanId, periode) : null;
+  const stats = detail ? await statistiquesFiche(active.artisanId, periode) : null;
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import type { AppelsOffresPro as Donnees } from '@ph/firebase/matching';
 import { Banner, EmptyState, bouton } from '@ph/ui';
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import { routes } from '@/lib/routes';
 import { CarteAppelOffresPro } from './CarteAppelOffresPro';
 import { FeuilleDeblocage } from './FeuilleDeblocage';
 
-/** Maquette « Appels d Offres » : bandeau Premium, filtres par métier, cartes, déblocage. */
+/** Maquette « Appels d Offres » : bandeau Tout inclus, filtres par métier, cartes, déblocage. */
 export function AppelsOffresPro({
   d,
   peutDebloquer,
@@ -30,15 +31,20 @@ export function AppelsOffresPro({
       {!d.premium && d.nbReserves > 0 ? (
         <Banner
           tone="premium"
-          titre="Les artisans Premium voient ces chantiers 1 h avant vous"
+          titre="Avec Tout inclus, vous voyez ces chantiers 12 h avant les autres"
           action={
-            <Link href={routes.proAbonnementPremium} className={bouton({})}>
-              Passer Premium
-            </Link>
+            <FenetreOffre
+              formule="tout_inclus"
+              raison="L’accès anticipé aux appels d’offres est inclus dans Tout inclus."
+              className={bouton({})}
+            >
+              Voir Tout inclus
+            </FenetreOffre>
           }
         >
           Sur les {d.cartes.length} appels d’offres de votre zone, {d.nbReserves}{' '}
-          {d.nbReserves > 1 ? 'sont encore réservés' : 'est encore réservé'} aux comptes Premium.
+          {d.nbReserves > 1 ? 'sont encore réservés' : 'est encore réservé'} aux comptes Tout
+          inclus.
         </Banner>
       ) : null}
       {!paiementsOuverts ? (

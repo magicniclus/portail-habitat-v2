@@ -1,8 +1,11 @@
+import { niveauConversion } from '@ph/core/paiements';
 import 'server-only';
 import { deuxFacteursRequisPourFacturation } from '@ph/core/connexion';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { appAdmin } from '@ph/firebase/admin';
+import { chemins } from '@ph/firebase/chemins';
 import { lireCodeValable } from '@ph/firebase/cycle';
+import { lireFacturation } from '@ph/firebase/facturation';
 import type { ServicesCheckout } from '@ph/firebase/facturation';
 import { getFirestore } from 'firebase-admin/firestore';
 import { URL_SITE } from '@/features/vitrine/seo';
@@ -17,13 +20,13 @@ export function servicesCheckout(): ServicesCheckout {
   return { db: getFirestore(appAdmin()), stripe, urlSite: URL_SITE, horloge: Date.now };
 }
 
-/** CON-02 : propriétaire ou gérant Premium sans second facteur → facturation bloquée. */
+/** CON-02 : propriétaire ou gérant Tout inclus (ex-Premium) sans second facteur → facturation bloquée. */
 export function facturationBloquee(s: SessionPro): boolean {
   return (
-    s.plan !== null &&
+    s.formule !== null &&
     s.role !== null &&
     deuxFacteursRequisPourFacturation({
-      plan: s.plan,
+      plan: niveauConversion(s.formule),
       role: s.role,
       secondFacteur: s.secondFacteur,
     })
@@ -44,4 +47,23 @@ export async function remiseConversion(
     maintenant: Date.now(),
   });
   return c ? { code: c.code, pourcentage: c.pourcentage, expireLe: c.expireLe } : 'invalide';
+}
+
+/** Page Mon abonnement : abonnements, factures, solde de crédits et carte enregistrée. */
+export async function lireMonAbonnement(artisanId: string) {
+  const db = getFirestore(appAdmin());
+  const [f, portefeuille, prive] = await Promise.all([
+    lireFacturation(db, artisanId),
+    db.doc(chemins.portefeuille(artisanId)).get(),
+    db.doc(chemins.facturationPrivee(artisanId)).get(),
+  ]);
+  const last4 = prive.get('defaultPaymentMethodLast4') as string | undefined;
+  return {
+    ...f,
+    soldeCredits: (portefeuille.get('soldeCredits') as number | undefined) ?? 0,
+    carte: last4
+      ? { last4, marque: (prive.get('defaultPaymentMethodBrand') as string | undefined) ?? '' }
+      : null,
+    emailFacturation: (prive.get('emailFacturation') as string | undefined) ?? null,
+  };
 }

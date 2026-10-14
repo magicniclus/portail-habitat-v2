@@ -18,12 +18,11 @@ import {
   FaqPro,
   FichePro,
 } from '@/features/pro/Sections';
-import { Tarifs } from '@/features/pro/Tarifs';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
-import { lirePrixAffiches, lireStatsPublic } from '@/server/vitrine';
+import { lireStatsPublic } from '@/server/vitrine';
 
 export const revalidate = 3600;
 
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AcquisitionArtisans() {
-  const [stats, prix] = await Promise.all([lireStatsPublic(), lirePrixAffiches()]);
+  const stats = await lireStatsPublic();
   const chiffres = chiffresVitrine(stats);
   const groupes = groupesMetiers();
   return (
@@ -70,9 +69,6 @@ export default async function AcquisitionArtisans() {
         </Zone>
         <Zone id="application">
           <ApplicationPro />
-        </Zone>
-        <Zone id="offres">
-          <Tarifs prix={prix} />
         </Zone>
         <Zone id="faq">
           <FaqPro />

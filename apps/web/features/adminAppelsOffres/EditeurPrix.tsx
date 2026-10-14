@@ -81,7 +81,7 @@ export function EditeurPrix({
             <Field label="Prix HT (€)">
               <Input inputMode="numeric" value={prix} onChange={(e) => setPrix(e.target.value)} />
             </Field>
-            <Field label="Prix Premium HT (€)">
+            <Field label="Prix Tout inclus HT (€)">
               <Input
                 inputMode="numeric"
                 value={premium}

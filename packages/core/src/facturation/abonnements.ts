@@ -161,7 +161,11 @@ export function effetAbonnements(
   return {
     formule: f,
     statut:
-      a?.statut === 'past_due' ? 'grace' : a?.annulationFinPeriode ? 'resilie_fin_periode' : 'actif',
+      a?.statut === 'past_due'
+        ? 'grace'
+        : a?.annulationFinPeriode
+          ? 'resilie_fin_periode'
+          : 'actif',
     finPeriode: a?.finPeriode ?? null,
     siegesMax: siegesInclus(f) + (f === 'tout_inclus' ? (a?.sieges ?? 0) : 0),
     paiementEnEchec: abonnements.some((x) => x.statut === 'past_due'),

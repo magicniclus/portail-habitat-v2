@@ -20,7 +20,7 @@ test('éditeur de prix : réservé à leads.prix, prix manuel avec motif et hist
   await fiche.getByRole('button', { name: 'Modifier le prix' }).click();
   const dialogue = page.getByRole('dialog', { name: `Prix : ${titre}` });
   await dialogue.getByLabel('Prix HT (€)', { exact: true }).fill('25');
-  await dialogue.getByLabel('Prix Premium HT (€)').fill('18');
+  await dialogue.getByLabel('Prix Tout inclus HT (€)').fill('18');
   await dialogue.getByLabel('Prix en crédits').fill('3');
   await dialogue.getByLabel('Motif (obligatoire)').fill('Lead très qualifié');
   await dialogue.getByText('Je confirme cette action').click();

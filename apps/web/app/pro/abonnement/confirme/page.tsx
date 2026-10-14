@@ -1,4 +1,4 @@
-import type { ProduitAbonnement } from '@ph/core/facturation';
+import { FORMULES_PAYANTES, type FormulePayante } from '@ph/core/paiements';
 import { Logo } from '@ph/ui';
 import type { Metadata } from 'next';
 import { AttenteConfirmation } from '@/features/abonnement/AttenteConfirmation';
@@ -11,10 +11,13 @@ export const dynamic = 'force-dynamic';
 export default async function PageConfirmation({
   searchParams,
 }: {
-  searchParams: Promise<{ produit?: string }>;
+  searchParams: Promise<{ produit?: string; mode?: string }>;
 }) {
-  const produit: ProduitAbonnement =
-    (await searchParams).produit === 'visibilite' ? 'visibilite' : 'premium';
+  const q = await searchParams;
+  const produit: FormulePayante = FORMULES_PAYANTES.includes(q.produit as FormulePayante)
+    ? (q.produit as FormulePayante)
+    : 'fiche_pro';
+  const descente = q.mode === 'descente';
   const s = await sessionPro(`/pro/abonnement/confirme?produit=${produit}`);
   const a = s.espace.active?.artisan;
   const zone = a ? [a.ville, a.rayonKm ? `${a.rayonKm} km` : ''].filter(Boolean).join(' · ') : '';
@@ -24,7 +27,7 @@ export default async function PageConfirmation({
         <Logo variant="pro" />
       </header>
       <main className="mx-auto w-full max-w-[560px] px-4 py-10">
-        <AttenteConfirmation produit={produit} zone={zone} />
+        <AttenteConfirmation produit={produit} zone={zone} descente={descente} />
       </main>
     </div>
   );

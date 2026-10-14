@@ -81,7 +81,9 @@ describe('projeterArtisanPublic', () => {
     const site = { ...base, droits: droitsInitiaux('site_pro', T) };
     expect(projeterArtisanPublic(site, T, 'M')!.telephone).toBeNull();
     for (const f of ['fiche_pro', 'pack_fiche_site', 'tout_inclus'] as const)
-      expect(projeterArtisanPublic({ ...base, droits: droitsInitiaux(f, T) }, T, 'M')).toMatchObject({
+      expect(
+        projeterArtisanPublic({ ...base, droits: droitsInitiaux(f, T) }, T, 'M'),
+      ).toMatchObject({
         misEnAvant: true,
         badgeRecommande: true,
         telephone: '+33556000090',

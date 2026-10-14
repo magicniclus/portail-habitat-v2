@@ -35,7 +35,6 @@ export const piedParticuliers: { accroche: string; colonnes: ColonnePied[] } = {
       liens: [
         { libelle: 'Devenir partenaire', href: routes.pro },
         { libelle: 'Connexion Pro', href: routes.connexionPro },
-        { libelle: 'Tarifs', href: routes.proOffres },
       ],
     },
     {

@@ -6,48 +6,41 @@ import {
 import { expect, test } from '@playwright/test';
 import { connecter, entrepriseDe, proprietaireAvecPlan, webhookStripe } from './outils';
 
-// ACQ-03, PAY-01, PAY-02 (maquettes Paiement Offre Premium / Option Visibilité). Sans clé Stripe
-// sur le serveur e2e, la redirection vers Checkout se vérifie en recette ; le webhook, lui, est
-// appelé ici avec des événements signés.
+// PAY-02, PAY-05, PAY-10 (maquettes Mon Abonnement et Fenetre Offre). Sans clé Stripe sur le
+// serveur e2e, la redirection vers Checkout se vérifie en recette ; le webhook, lui, est appelé
+// ici avec des événements signés.
 
 test.describe('Paiement', () => {
-  test('ACQ-03 : la landing transmet ?facturation= et la page s’ouvre sur la bonne formule', async ({
+  test('PAY-02 : ?offre=tout ouvre la fenêtre de paiement de Tout inclus, CGV obligatoires', async ({
     page,
   }) => {
-    await page.goto('/pro');
-    await page
-      .getByRole('radiogroup', { name: 'Facturation' })
-      .getByRole('radio', { name: /^Mensuel/ })
-      .click();
-    await expect(page.getByRole('link', { name: 'Passer Premium' })).toHaveAttribute(
-      'href',
-      '/pro/abonnement/premium?facturation=mensuel',
-    );
     const email = await proprietaireAvecPlan('gratuit');
-    await connecter(page, email, '/pro/abonnement/premium?facturation=mensuel');
-    await expect(page.getByRole('heading', { level: 1, name: 'Abonnement Premium' })).toBeVisible();
-    await expect(page.getByRole('radio', { name: /^Mensuel/ })).toBeChecked();
-    await expect(page.getByTestId('total-ttc')).toHaveText(/119,88\s€/);
-    await page.getByRole('radio', { name: /^Annuel/ }).check();
-    await expect(page).toHaveURL(/facturation=annuel/);
-    // Annuel : total dû = 12 mois TTC (958,80 € HT + 20 %).
-    await expect(page.getByTestId('total-ttc')).toHaveText(/1\s150,56\s€/);
+    await connecter(page, email, '/pro/abonnement?offre=tout');
+    const fenetre = page.getByRole('dialog', { name: 'Passer à Tout inclus' });
+    await expect(fenetre.getByTestId('total-ttc')).toHaveText(/58,80\s€/);
+    const payer = fenetre.getByRole('button', { name: 'Continuer vers le paiement' });
+    await expect(payer).toBeDisabled();
+    await fenetre.getByRole('checkbox', { name: /J’accepte les/ }).check();
+    await expect(payer).toBeEnabled();
     await page.evaluate(() => document.fonts.ready);
     expect(await defileHorizontalement(page)).toBe(false);
     expect(await ciblesTropPetites(page)).toEqual([]);
     expect(await champsTropPetits(page)).toEqual([]);
+    // Aucune carte saisie ici (règle 7) ; sans clé Stripe, paiement annoncé indisponible.
+    await expect(page.locator('input[autocomplete^="cc-"]')).toHaveCount(0);
+    await payer.click();
+    await expect(
+      fenetre.getByText('Les paiements en ligne ne sont pas encore ouverts.'),
+    ).toBeVisible();
   });
 
-  test('sans clé Stripe, le paiement est annoncé indisponible (aucune carte saisie ici)', async ({
+  test('ancienne page de paiement : redirigée vers la formule qui la remplace (D60)', async ({
     page,
   }) => {
-    await connecter(page, await proprietaireAvecPlan('gratuit'), '/pro/abonnement/visibilite');
-    await expect(page.getByTestId('total-ttc')).toHaveText(/95,88\s€/);
-    await expect(page.locator('input[autocomplete^="cc-"]')).toHaveCount(0);
-    await page.getByRole('button', { name: /^Payer/ }).click();
-    await expect(
-      page.getByText('Les paiements en ligne ne sont pas encore ouverts.'),
-    ).toBeVisible();
+    await connecter(page, await proprietaireAvecPlan('gratuit'), '/pro/abonnement');
+    await page.goto('/pro/abonnement/visibilite?facturation=annuel');
+    await expect(page).toHaveURL(/\/pro\/abonnement\?offre=fiche$/);
+    await expect(page.getByRole('dialog', { name: 'Passer à Fiche Pro' })).toBeVisible();
   });
 
   test('PAY-01 et PAY-02 : le retour attend le webhook ; un événement rejoué n’a qu’un effet', async ({
@@ -56,7 +49,7 @@ test.describe('Paiement', () => {
   }, info) => {
     const email = await proprietaireAvecPlan('gratuit');
     const artisanId = await entrepriseDe(email);
-    await connecter(page, email, '/pro/abonnement/confirme?produit=visibilite');
+    await connecter(page, email, '/pro/abonnement/confirme?produit=fiche_pro');
     await expect(page.getByRole('heading', { name: 'Confirmation du paiement…' })).toBeVisible();
 
     const maintenant = Math.floor(Date.now() / 1000);
@@ -70,10 +63,10 @@ test.describe('Paiement', () => {
       items: {
         data: [
           {
-            price: { id: 'price_e2e', lookup_key: 'ph_visibilite_annuel' },
+            price: { id: 'price_e2e', lookup_key: 'ph_fiche_pro' },
             quantity: 1,
             current_period_start: maintenant,
-            current_period_end: maintenant + 365 * 86_400,
+            current_period_end: maintenant + 30 * 86_400,
           },
         ],
       },
@@ -89,9 +82,9 @@ test.describe('Paiement', () => {
     });
     expect((await webhookStripe(request, cree)).corps.resultat).toBe('deja_traite');
 
-    // Facturation : l'abonnement apparaît, avec le portail client.
-    await page.goto('/pro/facturation');
-    await expect(page.getByText(/Option Visibilité · annuel/)).toBeVisible();
+    // Mon abonnement : la formule apparaît, avec le portail client.
+    await page.goto('/pro/abonnement');
+    await expect(page.getByRole('region', { name: 'Votre formule' })).toContainText('Fiche Pro');
     await expect(page.getByRole('button', { name: 'Gérer mon abonnement' })).toBeVisible();
 
     // Remise en l'état : fin de l'abonnement, par le webhook aussi.
@@ -103,7 +96,7 @@ test.describe('Paiement', () => {
     });
     expect(fin.corps.resultat).toBe('traite');
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Formule gratuite' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Votre formule' })).toContainText('Gratuit');
   });
 
   test('signature fausse : refusée', async ({ request }) => {

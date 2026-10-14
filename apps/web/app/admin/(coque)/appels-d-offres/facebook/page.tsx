@@ -84,7 +84,7 @@ export default async function FacebookInvendues({
               [
                 ['Prospects venus du groupe', r.prospects],
                 ['Demandes invendues offertes', r.demandesOffertes],
-                ['Demandes offertes reçues (Visibilité activée)', r.demandesOffertesRecues],
+                ['Demandes offertes reçues (formule payante activée)', r.demandesOffertesRecues],
               ] as const
             ).map(([l, v]) => (
               <div key={l} className="contents">
@@ -111,7 +111,7 @@ export default async function FacebookInvendues({
         )}
         <p className="m-0 text-[13px] text-neutre-700">
           Règle : sans déblocage après 24 h, offerte à 5 artisans gratuits du secteur ; les 3
-          premiers qui activent Visibilité la reçoivent.
+          premiers qui activent une formule payante la reçoivent.
         </p>
       </section>
     </main>

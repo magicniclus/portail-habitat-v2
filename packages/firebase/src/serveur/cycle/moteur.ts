@@ -139,7 +139,7 @@ async function etatAbonnement(db: Firestore, artisanId: string) {
     resiliationDemandee: actifs.some((a) => a.get('annulationFinPeriode') === true),
     ancienAbonne: !actifs.length && r.docs.some((a) => a.get('statut') === 'canceled'),
     abonnements: r.docs.map((a) => ({
-      produit: a.get('produit') as 'premium' | 'visibilite',
+      produit: niveauConversion(a.get('produit') as string) as 'premium' | 'visibilite',
       periode: a.get('periode') as 'mensuel' | 'annuel',
       statut: a.get('statut') as string,
       creeLe: (a.get('createdAt') as Timestamp | undefined)?.toMillis() ?? 0,

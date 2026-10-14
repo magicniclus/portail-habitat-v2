@@ -5,7 +5,7 @@ import { COMPTES, connecter, liensEnvoyes, MOT_DE_PASSE, nouveauComptePro } from
 
 test.describe('Mon compte', () => {
   test('CON-02 : « Activer maintenant » mène à la double authentification', async ({ page }) => {
-    await connecter(page, COMPTES.proprio, '/pro/facturation');
+    await connecter(page, COMPTES.proprio, '/pro/abonnement');
     await page.getByRole('link', { name: 'Activer maintenant' }).click();
     await expect(page).toHaveURL(/\/pro\/compte#securite$/);
     const securite = page.getByRole('region', { name: 'Connexion et sécurité' });

@@ -13,9 +13,7 @@ export const FORMULES = [
 ] as const;
 export type Formule = (typeof FORMULES)[number];
 export type FormulePayante = Exclude<Formule, 'gratuit'>;
-export const FORMULES_PAYANTES = FORMULES.filter(
-  (f): f is FormulePayante => f !== 'gratuit',
-);
+export const FORMULES_PAYANTES = FORMULES.filter((f): f is FormulePayante => f !== 'gratuit');
 
 /** Prix mensuels HT en centimes (sans engagement, TVA 20 % en sus). Stripe fait foi. */
 export const PRIX_FORMULES_HT: Record<FormulePayante, number> = {
@@ -66,8 +64,7 @@ export interface DroitsFormule {
 
 const avecFiche = (f: Formule) =>
   f === 'fiche_pro' || f === 'pack_fiche_site' || f === 'tout_inclus';
-const avecSite = (f: Formule) =>
-  f === 'site_pro' || f === 'pack_fiche_site' || f === 'tout_inclus';
+const avecSite = (f: Formule) => f === 'site_pro' || f === 'pack_fiche_site' || f === 'tout_inclus';
 
 export function droitsDe(formule: Formule): DroitsFormule {
   const fiche = avecFiche(formule);
@@ -136,3 +133,9 @@ export const droitsInitiaux = (formule: Formule, majLe: Date) => ({
  */
 export const niveauConversion = (f: string | undefined): 'gratuit' | 'visibilite' | 'premium' =>
   f === 'tout_inclus' ? 'premium' : f && f !== 'gratuit' ? 'visibilite' : 'gratuit';
+
+/** Formule vendue par une offre du moteur de conversion (codes personnels, liens `?offre=`). */
+export const FORMULE_ETAPE: Record<'visibilite' | 'premium', FormulePayante> = {
+  visibilite: 'fiche_pro',
+  premium: 'tout_inclus',
+};

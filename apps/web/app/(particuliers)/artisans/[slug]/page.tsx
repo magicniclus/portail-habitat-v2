@@ -87,9 +87,9 @@ export default async function PageFiche({ params }: { params: Params }) {
             </span>
           )}
           <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-1.5">
-            {f.premium ? (
+            {f.badgeRecommande ? (
               <span className="w-fit rounded-pill bg-premium-fond px-2.5 py-0.5 text-xs font-bold tracking-[0.04em] text-premium-texte uppercase">
-                Premium
+                Artisan recommandé
               </span>
             ) : null}
             <h1 className="m-0 text-[clamp(26px,3.4vw,38px)] leading-[1.1]">{f.nomCommercial}</h1>

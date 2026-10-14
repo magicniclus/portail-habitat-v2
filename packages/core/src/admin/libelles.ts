@@ -1,3 +1,5 @@
+import { NOMS_FORMULE } from '../paiements/droits';
+
 /** Libellés du back-office (maquette « Admin Artisans »). */
 export const LIBELLES_STATUT_ARTISAN_ADMIN = {
   en_ligne: 'En ligne',
@@ -14,10 +16,11 @@ export const LIBELLES_FILTRE_ARTISANS = {
   payants: 'Payants',
 } as const;
 
+/** Formules (PAIEMENTS §2), plus les anciennes encore lisibles avant la migration D60. */
 export const LIBELLES_PLAN = {
-  gratuit: 'Gratuit',
-  visibilite: 'Visibilité',
-  premium: 'Premium',
+  ...NOMS_FORMULE,
+  visibilite: 'Visibilité (ancienne)',
+  premium: 'Premium (ancienne)',
 } as const;
 
 export const LIBELLES_ROLE_ADMIN: Record<string, string> = {

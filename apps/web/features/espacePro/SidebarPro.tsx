@@ -18,7 +18,8 @@ export function SidebarPro({
   menu: { titre: string; liens: LienPro[] }[];
   ouvert: boolean;
   selecteur: ReactNode;
-  encart: ReactNode;
+  /** Encart du bas de la barre latérale (offre contextuelle, PAIEMENTS §4), facultatif. */
+  encart?: ReactNode;
 }) {
   const chemin = usePathname();
   return (

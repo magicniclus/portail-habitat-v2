@@ -7,9 +7,9 @@ import { abonnementActif, connecter, proprietaireAvecPlan, supprimerAbonnement }
 test('S8 : raison obligatoire, alternative proposée, puis résiliation confirmée en fin de période', async ({
   page,
 }) => {
-  // Compte déjà en Visibilité : le compte « gratuit » partagé sert au test de paiement (PAY-01).
-  const email = await proprietaireAvecPlan('visibilite');
-  const abonnement = await abonnementActif(email, 'visibilite');
+  // Compte déjà en Fiche Pro : le compte « gratuit » partagé sert au test de paiement (PAY-02).
+  const email = await proprietaireAvecPlan('fiche_pro');
+  const abonnement = await abonnementActif(email, 'fiche_pro');
   test.info().attach('abonnement', { body: abonnement });
   const id = expect.stringMatching(/^sub_e2e\d+$/);
   const recus: unknown[] = [];
@@ -24,7 +24,7 @@ test('S8 : raison obligatoire, alternative proposée, puis résiliation confirm�
           : { ok: true, data: { finPeriode: Date.UTC(2026, 10, 24, 12) } },
     });
   });
-  await connecter(page, email, '/pro/facturation');
+  await connecter(page, email, '/pro/abonnement');
   await page.getByRole('link', { name: 'Résilier mon abonnement' }).click();
   await expect(page.getByRole('heading', { name: 'Résilier mon abonnement' })).toBeVisible();
   const continuer = page.getByRole('button', { name: 'Continuer' });

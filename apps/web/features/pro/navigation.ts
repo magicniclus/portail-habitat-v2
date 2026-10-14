@@ -11,7 +11,7 @@ export const enTetePro: EnTetePublicProps = {
   accueil: routes.pro,
   variantLogo: 'pro',
   liens: [
-    { libelle: 'Tarifs', href: ancre('offres') },
+    { libelle: 'Votre espace', href: ancre('espace') },
     { libelle: 'Questions fréquentes', href: ancre('faq') },
     { libelle: 'Je suis un particulier', href: routes.accueil },
   ],
@@ -27,8 +27,8 @@ export const piedPro: { accroche: string; colonnes: ColonnePied[] } = {
       titre: 'Portail Habitat Pro',
       liens: [
         { libelle: 'Inscription gratuite', href: ancre('inscription') },
-        { libelle: 'Tarifs', href: ancre('offres') },
         { libelle: 'Votre espace', href: ancre('espace') },
+        { libelle: 'Questions fréquentes', href: ancre('faq') },
       ],
     },
     {

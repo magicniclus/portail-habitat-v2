@@ -1,3 +1,4 @@
+import type { Formule } from '@ph/core/paiements';
 import 'server-only';
 import { appAdmin } from '@ph/firebase/admin';
 import { lireEspacePro, type EspacePro } from '@ph/firebase/comptes';
@@ -18,7 +19,8 @@ export interface SessionPro {
   /** Entreprise active (sélecteur d'entreprise) et rôle de la personne dans celle-ci. */
   artisanId: string | null;
   role: string | null;
-  plan: 'gratuit' | 'visibilite' | 'premium' | null;
+  /** Formule active (`droits.formule`), affichage seulement. */
+  formule: Formule | null;
   espace: EspacePro;
 }
 
@@ -35,7 +37,7 @@ export const lireSessionPro = cache(async (): Promise<SessionPro | null> => {
     impersonation: contexteDepuisJeton(jeton).impersonation ?? false,
     artisanId: espace.active?.artisanId ?? null,
     role: espace.active?.membre.role ?? null,
-    plan: espace.active?.artisan.plan ?? null,
+    formule: espace.active?.artisan.formule ?? null,
     espace,
   };
 });

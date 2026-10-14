@@ -96,7 +96,10 @@ describe('effetAbonnements (seul le webhook écrit droits et siegesMax)', () => 
       paiementEnEchec: true,
     });
     const tard = abo({ statut: 'past_due', debutPeriode: T - 8 * JOUR });
-    expect(effetAbonnements([tard], T)).toMatchObject({ formule: 'gratuit', paiementEnEchec: true });
+    expect(effetAbonnements([tard], T)).toMatchObject({
+      formule: 'gratuit',
+      paiementEnEchec: true,
+    });
   });
   it('résilié ou impayé : plus d’effet', () => {
     for (const statut of ['canceled', 'unpaid', 'incomplete', 'incomplete_expired'] as const)

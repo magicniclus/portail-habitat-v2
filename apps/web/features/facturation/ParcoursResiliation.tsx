@@ -1,26 +1,27 @@
 'use client';
 
+import { routes } from '@/lib/routes';
 import {
   RAISONS_RESILIATION,
   type AlternativeResiliation,
   type RaisonResiliation,
 } from '@ph/core/conversion';
-import { NOMS_OFFRE } from '@ph/core/facturation';
+import { NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
 import { formatDate } from '@ph/core/format';
 import { Banner, Button, RadioCard, RadioCardGroup } from '@ph/ui';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
-type Abonnement = { id: string; produit: 'premium' | 'visibilite'; finPeriode: number };
+type Abonnement = { id: string; formule: FormulePayante; finPeriode: number };
 
 const OFFRES: Record<
   AlternativeResiliation['type'],
   { titre: string; texte: string; bouton: string }
 > = {
   descendre: {
-    titre: 'Passez en Visibilité plutôt que de tout arrêter',
+    titre: 'Passez à Fiche Pro plutôt que de tout arrêter',
     texte: 'Votre fiche reste en tête de liste dans votre secteur, pour beaucoup moins cher.',
-    bouton: 'Passer en Visibilité',
+    bouton: 'Passer à Fiche Pro',
   },
   remise: {
     titre: '−50 % pendant 2 mois',
@@ -67,8 +68,8 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
   };
   const accepter = async () => {
     if (alternative?.type === 'descendre') {
-      const r = await posterJson<{ url: string }>('/api/pro/abonnement/portail', {});
-      return r.ok ? window.location.assign(r.data.url) : setErreur(r.message);
+      // Descente à l'échéance par la fenêtre de paiement (PAIEMENTS §4, PAY-04).
+      return window.location.assign(routes.proOffre('fiche'));
     }
     const r = await appeler<{ alternative: AlternativeResiliation }>('accepter');
     if (r) setFin('alternative');
@@ -85,7 +86,7 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
   if (fin)
     return (
       <Banner tone="info" titre="Résiliation enregistrée">
-        Votre {NOMS_OFFRE[abo.produit]} reste actif jusqu’au {fin}, puis votre fiche repasse en
+        Votre {NOMS_FORMULE[abo.formule]} reste actif jusqu’au {fin}, puis votre fiche repasse en
         formule gratuite. Vous recevez une confirmation par email.
       </Banner>
     );
@@ -100,7 +101,7 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
               value={a.id}
               checked={a.id === abonnementId}
               onChange={() => (setAbonnementId(a.id), setAlternative(null))}
-              titre={NOMS_OFFRE[a.produit]}
+              titre={NOMS_FORMULE[a.formule]}
               description={`Période en cours jusqu’au ${formatDate(a.finPeriode, 'long')}`}
             />
           ))}

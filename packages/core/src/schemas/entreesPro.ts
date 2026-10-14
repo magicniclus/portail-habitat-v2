@@ -1,3 +1,4 @@
+import { FORMULES_PAYANTES } from '../paiements/droits';
 import { FLAGS, type NomFlag } from '../flags';
 import { z } from '../zod';
 import { rayonKm, TYPES_DOCUMENT } from './artisans';
@@ -121,10 +122,9 @@ export const entreePush = z.strictObject({
   actif: z.boolean(),
 });
 
-/** Paiement d'un abonnement (Checkout) : formule et facturation choisies sur la page de paiement. */
+/** Changement de formule (PAIEMENTS §4) : Checkout, montée immédiate ou descente à l'échéance. */
 export const entreeCheckout = z.strictObject({
-  produit: z.enum(['premium', 'visibilite']),
-  periode: z.enum(['annuel', 'mensuel']),
+  produit: z.enum(FORMULES_PAYANTES),
   code: z
     .string()
     .regex(/^[A-Z0-9]{4,24}$/)
@@ -139,7 +139,7 @@ export const entreeDebloquerAppelOffres = z.strictObject({
 
 /** Achat d'un pack de crédits (Checkout, paiement unique). */
 export const entreeAchatPack = z.strictObject({
-  cle: z.enum(['pack_10', 'pack_25', 'pack_50']),
+  cle: z.enum(['credits_50', 'credits_100', 'credits_250']),
 });
 
 /** Back-office : afficher une donnée personnelle masquée (consultation journalisée, ADM-02). */

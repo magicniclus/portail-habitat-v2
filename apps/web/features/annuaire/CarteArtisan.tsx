@@ -55,7 +55,7 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
         className="overflow-hidden rounded-[16px] border-[1.5px] border-premium bg-blanc shadow-md"
       >
         <p className="m-0 flex items-center gap-2 bg-premium-fond px-4 py-2 text-[12.5px] font-bold tracking-[0.04em] text-premium-texte uppercase">
-          <span aria-hidden="true">★</span> Premium · vérifié, répond sous 24 h
+          <span aria-hidden="true">★</span> Artisan recommandé · vérifié
         </p>
         <div className="flex flex-wrap items-start gap-4.5 p-4.5">
           <Logo a={a} taille="grand" />

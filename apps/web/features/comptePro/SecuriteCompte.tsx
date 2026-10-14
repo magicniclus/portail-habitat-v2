@@ -109,8 +109,8 @@ export function SecuriteCompte({ compte, smsActif }: { compte: ComptePro; smsAct
         <FacteursEnregistres compte={compte} smsActif={smsActif} />
       ) : (
         <Banner tone="info">
-          Obligatoire pour les propriétaires et gérants d&apos;une entreprise Premium : sans elle,
-          l&apos;accès à la facturation est bloqué.
+          Obligatoire pour les propriétaires et gérants d&apos;une entreprise en Tout inclus : sans
+          elle, l&apos;accès à la facturation est bloqué.
         </Banner>
       )}
     </>

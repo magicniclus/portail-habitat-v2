@@ -154,11 +154,15 @@ export async function liensEnvoyes(motif: string): Promise<string[]> {
   return liens.filter((l) => l.includes(motif));
 }
 
-/** Email du propriétaire d'une entreprise du seed ayant ce plan (autre que les comptes fixes). */
-export async function proprietaireAvecPlan(plan: 'gratuit' | 'visibilite' | 'premium') {
+/** Email du propriétaire d'une entreprise du seed ayant cette formule (autre que les comptes fixes). */
+export async function proprietaireAvecPlan(plan: 'gratuit' | 'fiche_pro' | 'tout_inclus') {
   const { auth, db } = await admin();
   const artisans = db.doc(chemins.artisan('_')).parent;
-  const r = await artisans.where('plan', '==', plan).where('nbMembres', '>=', 1).limit(10).get();
+  const r = await artisans
+    .where('droits.formule', '==', plan)
+    .where('nbMembres', '>=', 1)
+    .limit(10)
+    .get();
   for (const d of r.docs) {
     const uid = d.get('proprietaireUid') as string | undefined;
     if (uid && !Object.values(COMPTES).some((e) => uid.includes(e.split('@')[0]!)))
@@ -488,7 +492,7 @@ export async function litigeOuvert(artisanId: string): Promise<{ id: string; tex
 /** Abonnement actif (miroir Stripe) pour l'entreprise du compte ; renvoie son identifiant. */
 export async function abonnementActif(
   email: string,
-  produit: 'premium' | 'visibilite',
+  produit: 'fiche_pro' | 'tout_inclus',
 ): Promise<string> {
   const { db, Timestamp } = await admin();
   const artisanId = await entrepriseDe(email);

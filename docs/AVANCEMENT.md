@@ -592,6 +592,30 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 5. D5, D6, D8, D15, D17 : propositions par défaut retenues.
 6. Corrections documentaires appliquées (§2 n° 3 à 11). N° 13 (rayon de l'annuaire) : proposition retenue, à reporter dans MATCHING §4 au lot 9. N° 12 : libellé de la case corrigé dans DATABASE.
 
+## 24. Handoff du 13/10/2026 et lot 11 (formules 2026)
+
+**Handoff** : docs remplacés (blog, domaines, landings, paiements, site, IA du site, devis et factures). Régressions corrigées : décisions D40 à D50 du développement reprises en D73 à D83 ; synonymes de recherche du lot 7 remis (RECHERCHE §6).
+
+**Lot 11 refait selon PAIEMENTS.md (fait foi)**
+- `artisans.droits` (écrit par le webhook seulement) remplace `plan` et `optionVisibilite` ; `droitsDe()` dans `@ph/core/paiements` ; migration `001-formules-droits` (Visibilité → Fiche Pro, Premium → Tout inclus, D60).
+- Catalogue Stripe : Fiche Pro 29 €, Site Pro 9,90 €, Fiche + Site 34,90 €, Tout inclus 49 € (HT, mensuel), packs 50/110/290 crédits, pack IA 2,90 €. Plus d'annuel.
+- Changement de formule : Checkout sans abonnement ; montée immédiate au prorata (PAY-03) ; descente à l'échéance par planning Stripe (PAY-04). Grâce de 7 jours (PAY-08).
+- `/pro/abonnement` (maquette Mon Abonnement) : formule, crédits, carte, factures ; `?offre=` ouvre la fenêtre de paiement (récapitulatif HT/TVA/TTC, CGV) ; `/pro/facturation` et `/pro/abonnement/premium|visibilite` redirigent.
+- Fenêtre d'offre partagée (`features/offres/FenetreOffre`, PAY-10) : statistiques (Fiche Pro), appels d'offres (Tout inclus).
+- PAY-01 : plus aucun prix ni lien d'abonnement sur `/pro` (section Tarifs retirée).
+- Matching (D31) : demande envoyée depuis une fiche → l'artisan seul, quelle que soit sa formule ; sinon appel d'offres (plus de demandes garanties Premium). Tout inclus : −15 % et 12 h d'avance sur les appels d'offres.
+- Fiche publique : badge « Artisan recommandé » et téléphone avec Fiche Pro ; mention L111-7 reformulée.
+
+**Choix faits par moi, à valider**
+1. Paiement : la maquette montre une carte enregistrée et un bouton « Payer » ; CLAUDE.md règle 7 interdit toute saisie de carte chez nous. La fenêtre envoie vers Stripe Checkout (premier abonnement) ou laisse Stripe changer la formule (carte déjà enregistrée).
+2. Sièges (D26 ⏳) : 3 inclus en Tout inclus (ex-Premium), 1 sinon.
+3. Moteur de conversion (CONVERSION.md, toujours écrit en Visibilité/Premium) : ses étapes restent nommées ainsi ; elles vendent Fiche Pro et Tout inclus.
+4. Pack IA et sections « IA du site » de Mon abonnement : en attente du lot 10c (aucune IA du site encore).
+5. « Plus tard » de la fenêtre d'offre ne masque pas encore l'encart 30 jours (`encartsMasques`).
+6. Navigation « Mon compte » épinglée (D63, NAV-01) : pas encore faite.
+
+**Reste** : encarts contextuels de PAIEMENTS §4 (tableau de bord, Ma fiche), D63/NAV-01, emails qui citent encore Visibilité/Premium, lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -616,3 +640,4 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 - 02/10/2026 — Lot 12b terminé (demandes partenaires : webhook, SMS de confirmation, matching A/B/C, invendues).
 - 05/10/2026 — Lot 13b en grande partie fait (moteur de conversion, codes personnels, demandes offertes, écran admin). Restes et points à trancher : §21.
 - 09/10/2026 — Lot 13 terminé (journal en direct, questions de suivi et effet à 30 jours de l'IA, recherches manquées, témoignage J+5). Lot 14 en cours : sécurité, App Check, statistiques des fiches, tâches planifiées, migrations, tests transverses, RUNBOOK et DEPLOIEMENT.
+- 14/10/2026 — Handoff intégré ; lot 11 refait selon PAIEMENTS.md (formules 2026, droits, Mon abonnement, fenêtre d'offre). Détail et choix à valider : §24.

@@ -1,21 +1,15 @@
+import { FORMULES_PAYANTES, NOMS_FORMULE } from '@ph/core/paiements';
 import { formatEuros } from '@ph/core/format';
 import type { FinancesAdmin } from '@ph/firebase/admin-serveur';
-
-const pct = (part: number, total: number) => (total ? Math.round((part / total) * 100) : 0);
 
 /** Indicateurs de la maquette « Admin Finances ». */
 export function IndicateursFinances({ f }: { f: FinancesAdmin }) {
   const tuiles: [string, string, string][] = [
     ['MRR', formatEuros(f.mrr, { suffixe: 'HT' }), 'abonnements actifs, ramenés au mois'],
     [
-      'Abonnés Premium',
-      String(f.abonnes.premium),
-      `${pct(f.abonnes.premiumAnnuel, f.abonnes.premium)} % en annuel`,
-    ],
-    [
-      'Abonnés Visibilité',
-      String(f.abonnes.visibilite),
-      `${pct(f.abonnes.visibiliteAnnuel, f.abonnes.visibilite)} % en annuel`,
+      'Abonnés',
+      String(FORMULES_PAYANTES.reduce((n, x) => n + f.abonnes[x], 0)),
+      FORMULES_PAYANTES.map((x) => `${NOMS_FORMULE[x]} ${f.abonnes[x]}`).join(' · '),
     ],
     [
       'Appels d’offres (30 j)',

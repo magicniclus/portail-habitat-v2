@@ -31,14 +31,14 @@ test.describe('Connexion pro', () => {
   });
 
   test('connexion réussie : session ouverte, page demandée', async ({ page, context }) => {
-    await connecter(page, COMPTES.proprio, '/pro/facturation');
+    await connecter(page, COMPTES.proprio, '/pro/abonnement');
     expect((await context.cookies()).some((c) => c.name === '__session' && c.httpOnly)).toBe(true);
   });
 
-  test('CON-02 : propriétaire Premium sans double authentification → activation demandée', async ({
+  test('CON-02 : propriétaire Tout inclus sans double authentification → activation demandée', async ({
     page,
   }) => {
-    await connecter(page, COMPTES.proprio, '/pro/facturation');
+    await connecter(page, COMPTES.proprio, '/pro/abonnement');
     await expect(page.getByText('Activez la double authentification')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Activer maintenant' })).toHaveAttribute(
       'href',
@@ -47,7 +47,7 @@ test.describe('Connexion pro', () => {
   });
 
   test('sans session : retour à la connexion pro avec la page demandée', async ({ page }) => {
-    await page.goto('/pro/facturation');
-    await expect(page).toHaveURL(/\/connexion\?espace=pro&suite=%2Fpro%2Ffacturation/);
+    await page.goto('/pro/abonnement');
+    await expect(page).toHaveURL(/\/connexion\?espace=pro&suite=%2Fpro%2Fabonnement/);
   });
 });
