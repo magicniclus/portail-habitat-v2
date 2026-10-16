@@ -5,7 +5,7 @@ import { MODES, texteRestants, type RestantsIa } from './modesIa';
 import { QuestionIa } from './QuestionIa';
 import { PropositionIa, type Proposition } from './PropositionIa';
 import { Banner, bouton, Button, Field, Select, Textarea } from '@ph/ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import Link from 'next/link';
 import { posterJson } from '@/lib/posterJson';
@@ -23,6 +23,7 @@ export function PanneauIa({
   restantsInitiaux,
   enregistrer,
   appliquer,
+  onProposition,
 }: {
   pageId: string;
   selection: string | null;
@@ -30,6 +31,8 @@ export function PanneauIa({
   restantsInitiaux: RestantsIa;
   enregistrer: () => Promise<string | null>;
   appliquer: (ops: OperationIa[]) => string | null;
+  /** Proposition affichée dans l'aperçu, changements surlignés ; `null` quand elle disparaît. */
+  onProposition: (ops: OperationIa[] | null) => void;
 }) {
   const [mode, setMode] = useState<ModeIaSite | 'auto'>(iaComplete ? 'auto' : 'textes');
   const [restants, setRestants] = useState(restantsInitiaux);
@@ -40,6 +43,10 @@ export function PanneauIa({
   const [prop, setProp] = useState<Proposition | null>(null);
   const [message, setMessage] = useState<{ ton: 'danger' | 'succes'; texte: string } | null>(null);
   const [enCours, setEnCours] = useState(false);
+  useEffect(() => {
+    onProposition(prop?.operations.length ? prop.operations : null);
+  }, [prop, onProposition]);
+  useEffect(() => () => onProposition(null), [onProposition]);
   const verrou = !iaComplete && !MODES.find((m) => m.mode === mode)!.essai;
 
   const envoyer = async (avecReponse?: string) => {

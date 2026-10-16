@@ -716,7 +716,10 @@ Fait (tranche 3, IA_SITE §1, §4, §5) :
 - Routeur : action « Automatique (l'IA choisit) » par défaut avec Site Pro ; un appel court (Haiku, 200 jetons, sans crédit) choisit le mode et la portée, sortie illisible → textes. Sans Site Pro, pas de routeur : textes sur les essais.
 - Demandes restantes affichées dans le panneau (« 52 modifications restantes ce mois-ci », essais gratuits restants), mises à jour après chaque demande.
 
-Reste (lot 10c) : surlignage des changements dans l'aperçu, trois variantes visuelles après génération. Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
+- Aperçu en direct d'une proposition de l'IA avant « Appliquer » : appliquée à une copie, la page concernée (ou la page créée) s'affiche avec les sections nouvelles et les éléments modifiés entourés ; rien n'est surligné sur le site publié.
+- Fin de la création : trois variantes visuelles (Moderne, Chantier, Élégant : palette, polices, boutons) à choisir, sans appel à l'IA, appliquées en direct (Ctrl Z pour revenir).
+
+Lot 10c : tout le périmètre d'IA_SITE est codé. Reste à vérifier la génération réelle avec la clé `ANTHROPIC_API_KEY` (temps de création des 7 pages, SITE-01 < 90 s) et à valider D48, D50, D51. La palette « extraite du logo » reste la palette par défaut des tokens tant que l'extraction depuis le logo n'est pas faite (traitement d'image côté serveur, à prévoir avec les médias). Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

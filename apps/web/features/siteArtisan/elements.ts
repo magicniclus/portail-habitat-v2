@@ -8,6 +8,8 @@ export interface ContexteRendu {
   media: (src: string) => string | null;
   champs: readonly ChampFormulaire[];
   turnstileSiteKey?: string;
+  /** Éditeur seulement : sections et éléments changés par une proposition de l'IA. */
+  surligner?: ReadonlySet<string>;
 }
 
 const JETONS: Record<string, string> = {
@@ -38,7 +40,7 @@ function avecMobile(e: Element, html: string, rendreMobile: (t: string) => strin
 }
 
 export function rendreElement(e: Element, ctx: ContexteRendu): string {
-  const base = `${masques(e.p.masque)} el`.trim();
+  const base = `${masques(e.p.masque)} el${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
   switch (e.type) {

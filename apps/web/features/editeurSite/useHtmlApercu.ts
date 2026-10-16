@@ -2,43 +2,50 @@
 
 import {
   appliquerOperations,
+  changementsIa,
   FORMULAIRE_GRATUIT,
   type ChampFormulaire,
   type OperationIa,
-  type PageSite,
 } from '@ph/core/sites';
 import { useMemo } from 'react';
 import { rendreDocument } from '@/features/siteArtisan/document';
 import type { BrouillonSite } from './useBrouillonSite';
 
 /**
- * Document de l'aperçu : la page du brouillon, ou l'accueil de l'aperçu gratuit de l'IA, appliqué
- * à une copie seulement (jamais au brouillon ni au site, SITE-IA-01).
+ * Document de l'aperçu : la page du brouillon ; ou, appliquées à une copie seulement (jamais au
+ * brouillon ni au site), l'accueil de l'aperçu gratuit (SITE-IA-01) ou la proposition de l'IA en
+ * cours, changements surlignés (IA_SITE §2.3).
  */
 export function useHtmlApercu(
   b: BrouillonSite,
-  page: PageSite,
+  pageId: string,
   o: {
     hote: string;
     offre: 'gratuit' | 'site_pro';
     medias: Record<string, string>;
     champs?: ChampFormulaire[];
     apercuIa: OperationIa[] | null;
+    proposition: OperationIa[] | null;
   },
 ): string {
-  const { hote, offre, medias, champs, apercuIa } = o;
+  const { hote, offre, medias, champs, apercuIa, proposition } = o;
   return useMemo(() => {
+    const ops = apercuIa ?? proposition;
     let n = 0;
-    const r = apercuIa ? appliquerOperations(b, apercuIa, () => `apercu${n++}`) : null;
+    const r = ops ? appliquerOperations(b, ops, () => `apercu${n++}`) : null;
     const base = r?.ok ? r.brouillon : b;
-    const p = r?.ok ? base.pages.accueil! : page;
+    const c =
+      r?.ok && !apercuIa
+        ? changementsIa(b, base, pageId)
+        : { pageId: apercuIa && r?.ok ? 'accueil' : pageId, ids: [] };
+    const page = base.pages[c.pageId] ?? base.pages.accueil!;
     return rendreDocument(
       {
         hote,
         offre,
         theme: base.theme,
         navigation: base.navigation,
-        page: p,
+        page,
         pages: base.pages,
         nomEntreprise: base.navigation.nom,
       },
@@ -46,7 +53,8 @@ export function useHtmlApercu(
         pages: base.pages,
         media: (src) => medias[src] ?? null,
         champs: offre === 'site_pro' && champs ? champs : FORMULAIRE_GRATUIT,
+        ...(c.ids.length ? { surligner: new Set(c.ids) } : {}),
       },
     );
-  }, [b, page, hote, offre, medias, champs, apercuIa]);
+  }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition]);
 }

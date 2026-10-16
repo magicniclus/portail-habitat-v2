@@ -1,6 +1,12 @@
 'use client';
 
-import { elementsDe, majElement, type Appareil, type PageSite } from '@ph/core/sites';
+import {
+  elementsDe,
+  majElement,
+  type Appareil,
+  type OperationIa,
+  type PageSite,
+} from '@ph/core/sites';
 import { Banner, Button } from '@ph/ui';
 import { useState } from 'react';
 import { Apercu } from './Apercu';
@@ -38,7 +44,8 @@ export function EditeurSite(props: ProprietesEditeur) {
     s.modifier((b) => ({ ...b, pages: { ...b.pages, [pageId]: f(b.pages[pageId]!) } }));
   const element = selection ? elementsDe(page).find((e) => e.el.id === selection)?.el : undefined;
 
-  const html = useHtmlApercu(s.b, page, { ...props, apercuIa });
+  const [proposition, setProposition] = useState<OperationIa[] | null>(null);
+  const html = useHtmlApercu(s.b, pageId, { ...props, apercuIa, proposition });
 
   const operationSection = (id: string, op: 'haut' | 'bas' | 'dupliquer' | 'supprimer') =>
     s.operationSection(pageId, id, op);
@@ -85,6 +92,8 @@ export function EditeurSite(props: ProprietesEditeur) {
               appliquer={s.appliquerIa}
               onApercu={setApercuIa}
               onFermer={() => setAssistant(null)}
+              theme={s.b.theme}
+              onTheme={(t) => s.modifier((b) => ({ ...b, theme: t }))}
             />
           ) : null}
           <div className={assistant ? 'hidden' : 'contents'}>
@@ -157,6 +166,7 @@ export function EditeurSite(props: ProprietesEditeur) {
                 restantsInitiaux={props.restantsIa}
                 enregistrer={s.enregistrer}
                 appliquer={s.appliquerIa}
+                onProposition={setProposition}
               />
             ) : null}
             {panneau === 'modeles' ? <PanneauModeles onRestaurer={s.restaurer} /> : null}

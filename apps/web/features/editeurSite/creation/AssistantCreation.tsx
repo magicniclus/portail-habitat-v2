@@ -5,11 +5,13 @@ import type {
   PagePlanifiee,
   QuestionCreation,
   ReponsesCreation,
+  Theme,
 } from '@ph/core/sites';
 import { Banner, Button } from '@ph/ui';
 import { useEffect, useRef, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { QuestionnaireCreation } from './QuestionnaireCreation';
+import { VariantesVisuelles } from './VariantesVisuelles';
 
 interface PageGeneree {
   operations: OperationIa[];
@@ -29,6 +31,8 @@ export function AssistantCreation({
   appliquer,
   onApercu,
   onFermer,
+  theme,
+  onTheme,
 }: {
   questionnaire?: { questions: QuestionCreation[]; repris: string[] };
   /** Reprise après paiement (SITE-IA-02) : démarre aussitôt, sans questionnaire. */
@@ -37,6 +41,8 @@ export function AssistantCreation({
   appliquer: (ops: OperationIa[]) => string | null;
   onApercu: (ops: OperationIa[]) => void;
   onFermer: () => void;
+  theme: Theme;
+  onTheme: (t: Theme) => void;
 }) {
   const [etat, setEtat] = useState<'questions' | 'generation' | 'fin'>(
     reprise ? 'generation' : 'questions',
@@ -143,6 +149,7 @@ export function AssistantCreation({
       ) : null}
       {etat === 'fin' ? (
         <>
+          <VariantesVisuelles theme={theme} onChoisir={onTheme} />
           <Banner tone="succes">
             {`${progres?.total ?? 0} pages créées. Relisez-les, puis Enregistrer et Publier. Ctrl Z annule la dernière page ; votre ancien site est dans « Mes modèles ».`}
           </Banner>

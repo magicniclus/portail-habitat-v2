@@ -62,7 +62,13 @@ function rendreSection(s: Section, ctx: ContexteRendu): string {
   const fonce =
     s.p.texteCouleur === 'clair' ||
     (s.p.texteCouleur === 'auto' && (image || SOMBRES.has(s.p.fond)));
-  const classes = ['s', image ? 'img' : '', fonce ? 'fonce' : '', masques(s.p.masque)]
+  const classes = [
+    's',
+    image ? 'img' : '',
+    fonce ? 'fonce' : '',
+    masques(s.p.masque),
+    ctx.surligner?.has(s.id) ? 'ia-modifie' : '',
+  ]
     .filter(Boolean)
     .join(' ');
   const lignes = s.rows
@@ -124,6 +130,10 @@ export interface DocumentSite {
  * Page complète d'un site publié : HTML statique, aucun cookie (SITE-07), aucun script tiers hors
  * Turnstile. Canonique sur l'hôte servi ; mention Portail Habitat sur les sites gratuits.
  */
+/** Contour des changements proposés par l'IA (aperçu de l'éditeur, jamais en ligne). */
+const SURLIGNAGE =
+  '.ia-modifie{outline:3px dashed var(--accent);outline-offset:3px;scroll-margin:80px}';
+
 export function rendreDocument(d: DocumentSite, ctx: ContexteRendu): string {
   const canonique = `https://${d.hote}/${d.page.slug}`;
   const sections = d.page.sections.map((s) => rendreSection(s, ctx)).join('');
@@ -138,5 +148,5 @@ export function rendreDocument(d: DocumentSite, ctx: ContexteRendu): string {
       ? `<p>Site créé avec <a href="https://portailhabitat.fr/pro/site-internet-artisan" rel="noopener">Portail Habitat</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Habitat</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}"><meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${SCRIPT_SITE}</script></body></html>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}"><meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${ctx.surligner?.size ? SURLIGNAGE : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${SCRIPT_SITE}</script></body></html>`;
 }

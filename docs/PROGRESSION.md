@@ -18,7 +18,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 9 | Annuaire, fiche publique | ✅ | avant le 13/10/2026 | ANN, FIC | |
 | 10 | Espace artisan | ✅ | avant le 13/10/2026 | ACQ, ONB, PRO | |
 | 10b | Site internet artisan, domaines | 🟡 | 14/10/2026 | SITE-03, 07, 08, 09, 10, 11, 13, DOM-02, 04, 06 ✅ | éditeur, publication, rendu public, domaine existant, statistiques faits ; achat OVH, modèles à faire (AVANCEMENT §27) |
-| 10c | IA du site | 🟡 | 16/10/2026 | SITE-IA-01 à 10 ✅ (sans clé IA) | opérations, garde-fou, crédits, panneau, création assistée, aperçu gratuit, reprise, Mes modèles, routeur, modération, quotas affichés faits ; surlignage et variantes visuelles à faire ; D48, D50, D51 ⏳ (AVANCEMENT §28) |
+| 10c | IA du site | 🟡 | 16/10/2026 | SITE-IA-01 à 10 ✅ (sans clé IA) | opérations, garde-fou, crédits, panneau, création assistée, aperçu gratuit, reprise, Mes modèles, routeur, modération, quotas affichés, surlignage, variantes visuelles faits ; génération réelle à vérifier avec la clé ; D48, D50, D51 ⏳ (AVANCEMENT §28) |
 | 10d | Blog | ⬜ | | BLOG | nouveau |
 | 10e | Landings par outil | 🟡 | 14/10/2026 | LAND-01 à 07 ✅ | chantiers en ligne ; site et devis derrière flags ; démo et exemples avec 10b (AVANCEMENT §25) |
 | 11 | Stripe | 🟡 | | PAY-01 à 05, 08, 10 | nouvelle grille faite (AVANCEMENT §24) ; restent encarts, NAV-01, emails |

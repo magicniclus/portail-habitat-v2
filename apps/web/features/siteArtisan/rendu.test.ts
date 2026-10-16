@@ -51,6 +51,27 @@ describe('rendu des sites publiés', () => {
     expect(h).toContain('src="https://storage.googleapis.com/x.webp"');
   });
 
+  it('surlignage des changements de l’IA : éditeur seulement, jamais sur le site publié', () => {
+    expect(doc()).not.toContain('ia-modifie');
+    const section = s.pages.accueil!.sections[0]!;
+    const el = section.rows[0]!.cols[0]!.els[0]!;
+    const h = rendreDocument(
+      {
+        hote: 'bertrand.portailhabitat.fr',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: s.navigation,
+        page: s.pages.accueil!,
+        pages: s.pages,
+        nomEntreprise: 'Bertrand',
+      },
+      { ...ctx, surligner: new Set([section.id, el.id]) },
+    );
+    expect(h).toContain('.ia-modifie{');
+    expect(h.match(/ia-modifie"/g)?.length ?? 0).toBeGreaterThanOrEqual(1);
+    expect(h).toMatch(/<section class="[^"]*ia-modifie/);
+  });
+
   it('mention Portail Habitat seulement sur un site gratuit', () => {
     expect(doc('gratuit')).toContain('Site créé avec');
     expect(doc('site_pro')).not.toContain('Site créé avec');
