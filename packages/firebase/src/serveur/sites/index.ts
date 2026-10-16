@@ -20,6 +20,12 @@ export {
   type ResolveurDns,
   type ServicesDomaines,
 } from './domaines';
+export {
+  demanderIaSite,
+  type DemandeIaSite,
+  type PropositionIaSite,
+  type ServicesIaSite,
+} from './ia';
 export { envoyerFormulaireSite, type ServicesFormulaireSite } from './formulaire';
 export {
   lireSiteEdition,

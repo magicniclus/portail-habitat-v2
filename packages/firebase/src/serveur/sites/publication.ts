@@ -1,5 +1,6 @@
 import { ErreurMetier } from '@ph/core/erreurs';
 import {
+  textesACompleter,
   verifierLiensSite,
   type LienInvalide,
   type Navigation,
@@ -49,7 +50,18 @@ export async function publierSite(
       }),
     );
     const { schemaVersion: _sv, enregistreeLe: _e, ...navigation } = nav.data() ?? {};
-    const erreurs = verifierLiensSite(toutes, navigation as Navigation);
+    const erreurs = [
+      ...verifierLiensSite(toutes, navigation as Navigation),
+      // Faits que l'IA n'a pas pu vérifier : à remplir avant la mise en ligne (SITE-IA-05).
+      ...textesACompleter(
+        Object.fromEntries(Object.entries(toutes).filter(([, p]) => p.statut === 'publiee')),
+      ).map((t) => ({
+        pageId: t.pageId,
+        page: t.page,
+        ou: 'Texte',
+        erreur: 'texte « [à compléter] » à remplir',
+      })),
+    ];
     if (erreurs.length) throw new PublicationRefusee(erreurs);
     const publiees = Object.fromEntries(
       Object.entries(toutes).filter(([, p]) => p.statut === 'publiee'),

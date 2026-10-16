@@ -73,6 +73,8 @@ export const SCHEMAS = {
   'sites/{}/reglages/{}': sites.navigationSiteDoc,
   'sites/{}/versions/{}': sites.versionSite,
   'sites/{}/statsJour/{}': sites.statsSite,
+  'sites/{}/ia/{}': sites.compteurIaSite,
+  'sites/{}/iaSessions/{}': sites.sessionIaSite,
   'sites/{}/statsMois/{}': sites.statsSite,
   'sitesSlugs/{}': sites.indexSite,
   'sitesDomaines/{}': sites.indexSite,

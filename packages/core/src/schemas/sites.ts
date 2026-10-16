@@ -94,3 +94,28 @@ export const statsSite = z.object({
   demandes: z.number().int().nonnegative().default(0),
   pages: z.record(z.string().max(40), z.number().int().nonnegative()).default({}),
 });
+
+/** `sites/{id}/ia/{AAAA-MM|essai}` : crédits IA consommés (réservés avant l'appel, rendus si échec). */
+export const compteurIaSite = z.object({
+  schemaVersion,
+  creation: z.number().int().nonnegative().optional(),
+  composants: z.number().int().nonnegative().optional(),
+  textes: z.number().int().nonnegative().optional(),
+});
+
+/** `sites/{id}/iaSessions/{id}` : proposition de l'IA (jamais appliquée ni publiée par le serveur). */
+export const sessionIaSite = z.object({
+  schemaVersion,
+  uid: id,
+  mode: z.string().max(20),
+  portee: z.string().max(20),
+  demande: z.string().max(2000),
+  resume: z.string().max(2000),
+  question: z.string().max(500),
+  operations: z.array(z.unknown()).max(400),
+  avertissements: z.array(z.string()).max(50),
+  modele: z.string(),
+  versionPrompt: z.string(),
+  coutCentimes: z.number().int().nonnegative(),
+  createdAt: horodatage,
+});

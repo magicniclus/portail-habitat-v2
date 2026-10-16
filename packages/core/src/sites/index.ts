@@ -10,3 +10,6 @@ export * from './edition';
 export * from './domaines';
 export * from './stats';
 export * from './catalogue';
+export * from './ia/operations';
+export * from './ia/reglages';
+export * from './ia/prompt';

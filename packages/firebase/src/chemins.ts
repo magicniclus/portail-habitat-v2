@@ -106,6 +106,9 @@ export const chemins = {
   demande: (id: string) => `demandes/${id}`,
   site: (id: string) => `sites/${id}`,
   statsJourSite: (id: string, jour: string) => `sites/${id}/statsJour/${jour}`,
+  /** Compteurs de l'IA du site : `{AAAA-MM}` (quotas du mois) ou `essai` (essais à vie). */
+  compteurIaSite: (id: string, cle: string) => `sites/${id}/ia/${cle}`,
+  sessionsIaSite: (id: string) => `sites/${id}/iaSessions`,
   statsMoisSite: (id: string, mois: string) => `sites/${id}/statsMois/${mois}`,
   pagesSite: (id: string) => `sites/${id}/pages`,
   pageSite: (id: string, pageId: string) => `sites/${id}/pages/${pageId}`,
