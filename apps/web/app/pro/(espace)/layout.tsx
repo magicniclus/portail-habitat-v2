@@ -1,4 +1,4 @@
-import { menuPro } from '@ph/core/espace-pro';
+import { menuPro, ongletsCompte } from '@ph/core/espace-pro';
 import { initiales } from '@ph/core/format';
 import type { ReactNode } from 'react';
 import { BandeauImpersonation } from '@/features/admin/BandeauImpersonation';
@@ -19,6 +19,7 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
   return (
     <CadrePro
       menu={menuPro(membre)}
+      ongletsCompte={ongletsCompte(membre)}
       entreprises={s.espace.entreprises}
       activeId={active?.artisanId ?? null}
       etatFiche={active ? <EtatFiche artisan={active.artisan} /> : null}

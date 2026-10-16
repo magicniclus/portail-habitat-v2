@@ -1,6 +1,6 @@
 'use client';
 
-import type { LienPro } from '@ph/core/espace-pro';
+import { PAGES_COMPTE, type LienPro } from '@ph/core/espace-pro';
 import { cn, Logo } from '@ph/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,12 +12,12 @@ import { estActif, LIENS_PRO } from './liens';
 export function SidebarPro({
   menu,
   ouvert,
-  selecteur,
+  initiales,
   encart,
 }: {
   menu: { titre: string; liens: LienPro[] }[];
   ouvert: boolean;
-  selecteur: ReactNode;
+  initiales: string;
   /** Encart du bas de la barre latérale (offre contextuelle, PAIEMENTS §4), facultatif. */
   encart?: ReactNode;
 }) {
@@ -37,7 +37,6 @@ export function SidebarPro({
       >
         <Logo variant="pro" iconeSeule={!ouvert} />
       </Link>
-      {ouvert ? <div className="mb-2">{selecteur}</div> : null}
       <nav aria-label="Espace pro" className="grid gap-0.5">
         {menu.map((s) => (
           <div key={s.titre} className="grid gap-0.5">
@@ -83,6 +82,28 @@ export function SidebarPro({
         ))}
       </nav>
       {ouvert && encart ? <div className="mt-auto pt-4">{encart}</div> : null}
+      {/* « Mon compte » épinglé en bas (D63, NAV-01) : profil, équipe, abonnement, aide. */}
+      <Link
+        href={LIENS_PRO.compte.href}
+        title={ouvert ? undefined : 'Mon compte'}
+        aria-current={PAGES_COMPTE.some((c) => estActif(chemin, c)) ? 'page' : undefined}
+        className={cn(
+          'flex min-h-14 items-center gap-3 rounded-[10px] border border-transparent text-neutre-800 no-underline hover:bg-neutre-100 aria-[current=page]:border-accent-300 aria-[current=page]:bg-accent-100',
+          encart && ouvert ? 'mt-3' : 'mt-auto',
+          ouvert ? 'px-2' : 'justify-center px-0',
+        )}
+      >
+        <span
+          aria-hidden="true"
+          className="flex size-9 flex-none items-center justify-center rounded-full bg-accent-200 text-sm font-bold text-accent-800"
+        >
+          {initiales}
+        </span>
+        <span className={ouvert ? 'grid' : 'sr-only'}>
+          <span className="font-bold text-texte">Mon compte</span>
+          <span className="text-xs">Équipe · Abonnement · Aide</span>
+        </span>
+      </Link>
     </aside>
   );
 }

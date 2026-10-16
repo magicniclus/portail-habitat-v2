@@ -20,7 +20,8 @@ test.describe('Espace pro : tableau de bord', () => {
         'aria-current',
         'page',
       );
-      await expect(menu(page).getByRole('link', { name: 'Facturation' })).toBeVisible();
+      // NAV-01 : « Mon compte » épinglé en bas de la barre latérale.
+      await expect(page.getByRole('link', { name: /^Mon compte/ })).toBeVisible();
       await page.getByRole('button', { name: 'Replier le menu' }).click();
       await expect(page.getByRole('button', { name: 'Déplier le menu' })).toHaveAttribute(
         'aria-expanded',
@@ -30,14 +31,37 @@ test.describe('Espace pro : tableau de bord', () => {
       await expect(menu(page).getByRole('link', { name: 'Tableau de bord' })).toBeVisible();
       await menu(page).getByRole('button', { name: 'Plus' }).click();
       const feuille = page.getByRole('dialog', { name: 'Plus' });
-      await expect(feuille.getByRole('link', { name: 'Facturation' })).toBeVisible();
+      await expect(feuille.getByRole('link', { name: 'Mon compte' })).toBeVisible();
     }
   });
 
-  test('collaborateur : pas de facturation', async ({ page }) => {
-    await connecter(page, COMPTES.collab);
-    await expect(page.getByRole('heading', { level: 1, name: /^Bonjour / })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Facturation' })).toHaveCount(0);
+  test('NAV-01 : Mon compte, mêmes onglets sur les 4 pages du compte', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/compte');
+    const onglets = page
+      .getByRole('navigation', { name: 'Mon compte', exact: true })
+      .getByRole('link');
+    for (const chemin of ['/pro/compte', '/pro/equipe', '/pro/abonnement', '/pro/aide']) {
+      await page.goto(chemin);
+      await expect(onglets).toHaveText([
+        'Profil et sécurité',
+        'Équipe',
+        'Abonnement',
+        'Aide & contact',
+      ]);
+      await expect(
+        page
+          .getByRole('navigation', { name: 'Mon compte', exact: true })
+          .locator('[aria-current="page"]'),
+      ).toHaveCount(1);
+    }
+    await expect(page.getByRole('heading', { level: 1, name: 'Aide & contact' })).toBeVisible();
+  });
+
+  test('collaborateur : pas d’abonnement dans Mon compte', async ({ page }) => {
+    await connecter(page, COMPTES.collab, '/pro/compte');
+    const onglets = page.getByRole('navigation', { name: 'Mon compte', exact: true });
+    await expect(onglets.getByRole('link', { name: 'Équipe' })).toBeVisible();
+    await expect(onglets.getByRole('link', { name: 'Abonnement' })).toHaveCount(0);
   });
 
   test('comptable : arrive sur la facturation, sans les demandes', async ({ page }) => {
@@ -57,6 +81,7 @@ test.describe('Espace pro : tableau de bord', () => {
       '/pro/fiche',
       '/pro/equipe',
       '/pro/compte',
+      '/pro/aide',
       '/pro/hors-ligne',
     ]) {
       await page.goto(chemin);

@@ -614,7 +614,9 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 5. « Plus tard » de la fenêtre d'offre ne masque pas encore l'encart 30 jours (`encartsMasques`).
 6. Navigation « Mon compte » épinglée (D63, NAV-01) : pas encore faite.
 
-**Reste** : encarts contextuels de PAIEMENTS §4 (tableau de bord, Ma fiche), D63/NAV-01, emails qui citent encore Visibilité/Premium, lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
+**Fait le 16/10/2026** : NAV-01 / D63 — la barre latérale ne garde que les outils ; « Mon compte » (initiales, « Équipe · Abonnement · Aide ») est épinglé en bas ; ses onglets Profil et sécurité · Équipe · Abonnement · Aide & contact s'affichent à l'identique sur les quatre pages selon le rôle ; sélecteur d'entreprise déplacé dans l'en-tête ; nouvelle page `/pro/aide` (formulaire, email, raccourcis, questions fréquentes ; pas de numéro de téléphone tant qu'un vrai n'est pas fourni). Le comptable arrive toujours sur l'abonnement.
+
+**Reste** : encarts contextuels de PAIEMENTS §4 (tableau de bord, Ma fiche), emails qui citent encore Visibilité/Premium, lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
 
 ## 25. Lot 10e : landings par outil (14/10/2026)
 

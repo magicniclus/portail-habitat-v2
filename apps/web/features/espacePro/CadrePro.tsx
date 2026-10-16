@@ -1,6 +1,6 @@
 'use client';
 
-import type { LienPro } from '@ph/core/espace-pro';
+import { PAGES_COMPTE, type LienPro } from '@ph/core/espace-pro';
 import { IconButton } from '@ph/ui';
 import { SidebarSimpleIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
@@ -8,11 +8,14 @@ import { useState, type ReactNode } from 'react';
 import { ApplicationPro } from '@/features/pwa/ApplicationPro';
 import { estActif } from './liens';
 import { NavMobilePro } from './NavMobilePro';
+import { OngletsCompte } from './OngletsCompte';
 import { SelecteurEntreprise } from './SelecteurEntreprise';
 import { SidebarPro } from './SidebarPro';
 
 export interface CadreProProps {
   menu: { titre: string; liens: LienPro[] }[];
+  /** Onglets de Mon compte selon le rôle (NAV-01). */
+  ongletsCompte: LienPro[];
   entreprises: { artisanId: string; nomCommercial: string }[];
   activeId: string | null;
   /** Pastille d'état de la fiche (« Fiche en ligne · Mérignac · 30 km »). */
@@ -27,15 +30,18 @@ export interface CadreProProps {
 export function CadrePro(p: CadreProProps) {
   const [ouvert, setOuvert] = useState(true);
   const chemin = usePathname();
-  const titre =
-    p.menu.flatMap((s) => s.liens).find((l) => estActif(chemin, l.cle))?.libelle ?? 'Espace pro';
+  const surCompte = PAGES_COMPTE.some((c) => estActif(chemin, c));
+  const titre = surCompte
+    ? 'Mon compte'
+    : (p.menu.flatMap((s) => s.liens).find((l) => estActif(chemin, l.cle))?.libelle ??
+      'Espace pro');
   const selecteur =
     p.entreprises.length > 1 ? (
       <SelecteurEntreprise entreprises={p.entreprises} activeId={p.activeId} />
     ) : null;
   return (
     <div className="min-h-dvh bg-blanc text-texte lg:grid lg:grid-cols-[auto_minmax(0,1fr)]">
-      <SidebarPro menu={p.menu} ouvert={ouvert} selecteur={selecteur} encart={p.encart} />
+      <SidebarPro menu={p.menu} ouvert={ouvert} initiales={p.initiales} encart={p.encart} />
       <div className="flex min-w-0 flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-2.5">
           <IconButton
@@ -49,6 +55,8 @@ export function CadrePro(p: CadreProProps) {
           />
           <p className="m-0 truncate text-[17px] font-bold">{titre}</p>
           <div className="ml-auto flex min-w-0 items-center gap-2.5">
+            {/* Sélecteur d'entreprise dans l'en-tête, hors de la barre latérale (D63). */}
+            {selecteur ? <div className="hidden lg:block">{selecteur}</div> : null}
             {p.etatFiche}
             <span
               aria-hidden="true"
@@ -59,9 +67,16 @@ export function CadrePro(p: CadreProProps) {
           </div>
         </header>
         <ApplicationPro />
+        {surCompte ? <OngletsCompte onglets={p.ongletsCompte} /> : null}
         {p.children}
       </div>
-      <NavMobilePro menu={p.menu} selecteur={selecteur} />
+      <NavMobilePro
+        menu={[
+          ...p.menu,
+          { titre: 'Mon compte', liens: [{ cle: 'compte', libelle: 'Mon compte' }] },
+        ]}
+        selecteur={selecteur}
+      />
     </div>
   );
 }

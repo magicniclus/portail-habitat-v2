@@ -4,7 +4,9 @@ import {
   completudeFiche,
   etapesMiseEnLigne,
   menuPro,
+  ongletsCompte,
   ongletsMobiles,
+  PAGES_COMPTE,
   SEUIL_FICHE_EN_LIGNE,
 } from './index';
 
@@ -14,10 +16,10 @@ const membre = (role: 'proprietaire' | 'gerant' | 'collaborateur' | 'comptable')
 });
 const cles = (m: ReturnType<typeof menuPro>) => m.flatMap((s) => s.liens.map((l) => l.cle));
 
-describe('menuPro', () => {
-  it('le propriétaire voit tout, groupé comme la maquette', () => {
+describe('menuPro (D63 : la barre latérale = les outils)', () => {
+  it('le propriétaire voit tous les outils, groupés comme la maquette', () => {
     const m = menuPro(membre('proprietaire'));
-    expect(m.map((s) => s.titre)).toEqual(["Vue d'ensemble", 'Gestion', 'Mon entreprise']);
+    expect(m.map((s) => s.titre)).toEqual(["Vue d'ensemble", 'Gestion']);
     expect(cles(m)).toEqual([
       'tableauDeBord',
       'fiche',
@@ -27,19 +29,11 @@ describe('menuPro', () => {
       'devis',
       'avis',
       'statistiques',
-      'equipe',
-      'facturation',
-      'compte',
-      'aide',
     ]);
   });
 
-  it('le collaborateur ne voit pas la facturation', () => {
-    expect(cles(menuPro(membre('collaborateur')))).not.toContain('facturation');
-  });
-
-  it('le comptable ne voit que la facturation, son compte et l’aide', () => {
-    expect(cles(menuPro(membre('comptable')))).toEqual(['facturation', 'compte', 'aide']);
+  it('le comptable n’a aucun outil : il passe par Mon compte', () => {
+    expect(menuPro(membre('comptable'))).toEqual([]);
   });
 
   it('badges repris sur les liens, sections vides retirées', () => {
@@ -47,17 +41,34 @@ describe('menuPro', () => {
     const liens = m.flatMap((s) => s.liens);
     expect(liens.find((l) => l.cle === 'demandes')?.badge).toBe(3);
     expect(liens.find((l) => l.cle === 'appelsOffres')?.badge).toBeUndefined();
-    expect(menuPro(membre('comptable')).every((s) => s.liens.length > 0)).toBe(true);
   });
 
-  it('membre suspendu ou absent : compte et aide seulement', () => {
-    expect(cles(menuPro(null))).toEqual(['compte', 'aide']);
-    expect(cles(menuPro({ role: 'gerant', statut: 'suspendu' }))).toEqual(['compte', 'aide']);
+  it('membre suspendu ou absent : aucun outil', () => {
+    expect(menuPro(null)).toEqual([]);
+    expect(menuPro({ role: 'gerant', statut: 'suspendu' })).toEqual([]);
+  });
+});
+
+describe('ongletsCompte (NAV-01 : Profil et sécurité · Équipe · Abonnement · Aide & contact)', () => {
+  const o = (m: Parameters<typeof ongletsCompte>[0]) => ongletsCompte(m).map((x) => x.cle);
+  it('selon le rôle, mêmes onglets sur les quatre pages', () => {
+    expect(ongletsCompte(membre('proprietaire')).map((x) => x.libelle)).toEqual([
+      'Profil et sécurité',
+      'Équipe',
+      'Abonnement',
+      'Aide & contact',
+    ]);
+    expect(o(membre('collaborateur'))).toEqual(['compte', 'equipe', 'aide']);
+    expect(o(membre('comptable'))).toEqual(['compte', 'facturation', 'aide']);
+    expect(o(null)).toEqual(['compte', 'aide']);
+  });
+  it('pages du compte : le lien épinglé « Mon compte » est actif sur chacune', () => {
+    expect(PAGES_COMPTE).toEqual(['compte', 'equipe', 'facturation', 'aide']);
   });
 });
 
 describe('accueilPro', () => {
-  it('tableau de bord, sauf pour le comptable (facturation)', () => {
+  it('tableau de bord, sauf pour le comptable (abonnement et factures)', () => {
     expect(accueilPro(membre('collaborateur'))).toBe('tableauDeBord');
     expect(accueilPro(membre('comptable'))).toBe('facturation');
     expect(accueilPro(null)).toBe('compte');
@@ -132,29 +143,24 @@ describe('etapesMiseEnLigne (EMAILS bienvenue-pro, ONB-06)', () => {
 });
 
 describe('ongletsMobiles (MOBILE §6)', () => {
-  it('propriétaire : 4 onglets prioritaires, le reste dans « Plus »', () => {
-    const { onglets, plus } = ongletsMobiles(menuPro(membre('proprietaire')));
+  const avecCompte = (m: ReturnType<typeof menuPro>) => [
+    ...m,
+    { liens: [{ cle: 'compte' as const, libelle: 'Mon compte' }] },
+  ];
+  it('propriétaire : 4 onglets prioritaires, le reste et Mon compte dans « Plus »', () => {
+    const { onglets, plus } = ongletsMobiles(avecCompte(menuPro(membre('proprietaire'))));
     expect(onglets.map((l) => l.cle)).toEqual([
       'tableauDeBord',
       'demandes',
       'appelsOffres',
       'fiche',
     ]);
-    expect(plus.map((l) => l.cle)).toEqual([
-      'site',
-      'devis',
-      'avis',
-      'statistiques',
-      'equipe',
-      'facturation',
-      'compte',
-      'aide',
-    ]);
+    expect(plus.map((l) => l.cle)).toEqual(['site', 'devis', 'avis', 'statistiques', 'compte']);
   });
 
-  it('comptable : 3 entrées, pas de « Plus »', () => {
-    const { onglets, plus } = ongletsMobiles(menuPro(membre('comptable')));
-    expect(onglets).toHaveLength(3);
+  it('comptable : Mon compte seul, pas de « Plus »', () => {
+    const { onglets, plus } = ongletsMobiles(avecCompte(menuPro(membre('comptable'))));
+    expect(onglets.map((l) => l.cle)).toEqual(['compte']);
     expect(plus).toEqual([]);
   });
 });

@@ -52,19 +52,6 @@ const SECTIONS: { titre: string; liens: { cle: PagePro; libelle: string; visible
         { cle: 'statistiques', libelle: 'Statistiques', visible: droit('statistiques.voir') },
       ],
     },
-    {
-      titre: 'Mon entreprise',
-      liens: [
-        { cle: 'equipe', libelle: 'Équipe', visible: pas('comptable') },
-        {
-          cle: 'facturation',
-          libelle: 'Facturation',
-          visible: droit('factures.voir', 'abonnement.gerer'),
-        },
-        { cle: 'compte', libelle: 'Mon compte' },
-        { cle: 'aide', libelle: 'Aide & contact' },
-      ],
-    },
   ];
 
 export interface LienPro {
@@ -74,8 +61,8 @@ export interface LienPro {
 }
 
 /**
- * Menu de la barre latérale selon le rôle (COMPTES §4.1) : un lien n'apparaît que si la personne peut
- * s'en servir ; membre absent ou suspendu → son compte et l'aide seulement.
+ * Outils de la barre latérale selon le rôle (COMPTES §4.1, D63) : un lien n'apparaît que si la
+ * personne peut s'en servir. Le compte, l'équipe, l'abonnement et l'aide sont dans « Mon compte ».
  */
 export function menuPro(
   membre: Membre | null | undefined,
@@ -94,9 +81,37 @@ export function menuPro(
   })).filter((s) => s.liens.length > 0);
 }
 
-/** Première page de l'espace : la première du menu (le comptable arrive sur la facturation). */
+/** « Mon compte », épinglé en bas de la barre latérale (D63, NAV-01) : ses quatre onglets. */
+export const PAGES_COMPTE = [
+  'compte',
+  'equipe',
+  'facturation',
+  'aide',
+] as const satisfies readonly PagePro[];
+const ONGLETS_COMPTE: { cle: (typeof PAGES_COMPTE)[number]; libelle: string; visible?: Visible }[] =
+  [
+    { cle: 'compte', libelle: 'Profil et sécurité' },
+    { cle: 'equipe', libelle: 'Équipe', visible: pas('comptable') },
+    {
+      cle: 'facturation',
+      libelle: 'Abonnement',
+      visible: droit('factures.voir', 'abonnement.gerer'),
+    },
+    { cle: 'aide', libelle: 'Aide & contact' },
+  ];
+
+/** Onglets de Mon compte selon le rôle : identiques sur les quatre pages du compte. */
+export function ongletsCompte(membre: Membre | null | undefined): LienPro[] {
+  const actif = membre?.statut === 'actif' ? membre : null;
+  return ONGLETS_COMPTE.filter((o) => (o.visible ? actif !== null && o.visible(actif) : true)).map(
+    ({ cle, libelle }) => ({ cle, libelle }),
+  );
+}
+
+/** Première page de l'espace : le premier outil ; sinon l'abonnement (comptable), sinon le compte. */
 export const accueilPro = (membre: Membre | null | undefined): PagePro =>
-  menuPro(membre)[0]!.liens[0]!.cle;
+  menuPro(membre)[0]?.liens[0]?.cle ??
+  (ongletsCompte(membre).some((o) => o.cle === 'facturation') ? 'facturation' : 'compte');
 
 /** Complétude minimale pour être mis en ligne (EMAILS `bienvenue-pro`, `fiche-incomplete`). */
 export const SEUIL_FICHE_EN_LIGNE = 60;

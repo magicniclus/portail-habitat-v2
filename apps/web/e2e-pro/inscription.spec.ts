@@ -112,13 +112,13 @@ test.describe('Inscription pro', () => {
     // ONB-06 : propriétaire, fiche hors ligne, étapes de mise en ligne.
     await expect(page.getByText('Votre espace est créé')).toBeVisible();
     await expect(page.getByRole('heading', { name: '3 étapes pour être en ligne' })).toBeVisible();
-    // Propriétaire : la facturation figure dans « Plus » (onglets mobiles).
+    // Propriétaire : Mon compte (abonnement, équipe, aide) figure dans « Plus » (onglets mobiles).
     await page
       .getByRole('navigation', { name: 'Espace pro' })
       .getByRole('button', { name: 'Plus' })
       .click();
     await expect(
-      page.getByRole('dialog', { name: 'Plus' }).getByRole('link', { name: 'Facturation' }),
+      page.getByRole('dialog', { name: 'Plus' }).getByRole('link', { name: 'Mon compte' }),
     ).toBeVisible();
 
     // ONB-06b : SIREN vérifié à l'inscription + décennale envoyée → fiche en ligne.
