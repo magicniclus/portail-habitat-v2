@@ -3,12 +3,26 @@ import type { DroitsFormule } from '../paiements/droits';
 /** Statuts d'un article (DATABASE §15 quater) et leurs libellés. */
 export const STATUTS_ARTICLE = ['brouillon', 'planifie', 'publie', 'archive'] as const;
 export type StatutArticle = (typeof STATUTS_ARTICLE)[number];
+export const STATUTS_ARTICLE_AFFICHES = {
+  brouillon: { libelle: 'Brouillon', tone: 'neutre' },
+  planifie: { libelle: 'Planifié', tone: 'info' },
+  publie: { libelle: 'Publié', tone: 'succes' },
+  archive: { libelle: 'Archivé', tone: 'attention' },
+} as const satisfies Record<StatutArticle, { libelle: string; tone: string }>;
 export const LIBELLES_STATUT_ARTICLE: Record<StatutArticle, string> = {
-  brouillon: 'Brouillon',
-  planifie: 'Planifié',
-  publie: 'Publié',
-  archive: 'Archivé',
+  brouillon: STATUTS_ARTICLE_AFFICHES.brouillon.libelle,
+  planifie: STATUTS_ARTICLE_AFFICHES.planifie.libelle,
+  publie: STATUTS_ARTICLE_AFFICHES.publie.libelle,
+  archive: STATUTS_ARTICLE_AFFICHES.archive.libelle,
 };
+
+/** Actions groupées de la liste (BLOG §5). */
+export const ACTIONS_ARTICLES = [
+  ['publier', 'Publier'],
+  ['archiver', 'Archiver'],
+  ['brouillon', 'Remettre en brouillon'],
+  ['corbeille', 'Mettre à la corbeille'],
+] as const;
 
 /** Rédactions complètes par l'IA, par mois (D66 ✅). Retouches illimitées. */
 export const ARTICLES_IA_MOIS = { sitePro: 5, toutInclus: 15 } as const;

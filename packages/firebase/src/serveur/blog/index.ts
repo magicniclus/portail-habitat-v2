@@ -1,4 +1,4 @@
-export { exigerBlog, lireMentionsBlog, sitePro, type ServicesBlog } from './acces';
+export { exigerBlog, lireCreditsBlog, lireMentionsBlog, sitePro, type ServicesBlog } from './acces';
 export {
   agirSurArticles,
   enregistrerArticle,
@@ -9,6 +9,7 @@ export { gererCategorie, gererTag, type ActionCategorie, type ActionTag } from '
 export {
   articleParAdresse,
   articlesPublies,
+  auteursBlog,
   lireArticle,
   lireClassement,
   listerArticles,

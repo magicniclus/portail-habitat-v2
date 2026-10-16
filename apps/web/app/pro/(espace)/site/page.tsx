@@ -2,6 +2,7 @@ import { etatPublication } from '@ph/core/sites';
 import { bouton, cn, StatusBadge } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { OngletBlog, VUES_BLOG, type VueBlog } from '@/features/blog/OngletBlog';
 import { BoutonPublier } from '@/features/monSite/ActionsSite';
 import { CreationSite } from '@/features/monSite/CreationSite';
 import { ListePages } from '@/features/monSite/ListePages';
@@ -9,12 +10,14 @@ import { OngletDomaine } from '@/features/monSite/OngletDomaine';
 import { OngletFormulaire } from '@/features/monSite/OngletFormulaire';
 import { OngletStats } from '@/features/monSite/OngletStats';
 import { routes } from '@/lib/routes';
+import { ongletBlog } from '@/server/blog';
 import { accesSite, DOMAINE_BASE, statsDuSite, tableauSite } from '@/server/sites';
 
 export const metadata: Metadata = { title: 'Mon site internet', robots: { index: false } };
 
 const ONGLETS = [
   { cle: 'pages', libelle: 'Pages' },
+  { cle: 'blog', libelle: 'Blog' },
   { cle: 'domaine', libelle: 'Domaine' },
   { cle: 'stats', libelle: 'Statistiques' },
   { cle: 'formulaire', libelle: 'Formulaire' },
@@ -25,10 +28,11 @@ type Onglet = (typeof ONGLETS)[number]['cle'];
 export default async function PageMonSite({
   searchParams,
 }: {
-  searchParams: Promise<{ onglet?: string }>;
+  searchParams: Promise<{ onglet?: string; vue?: string }>;
 }) {
   const acces = await accesSite(routes.proSite);
-  const demande = (await searchParams).onglet;
+  const q = await searchParams;
+  const demande = q.onglet;
   const onglet: Onglet = ONGLETS.some((o) => o.cle === demande) ? (demande as Onglet) : 'pages';
   const t = await tableauSite(acces.artisanId);
   const etat = etatPublication({
@@ -100,6 +104,12 @@ export default async function PageMonSite({
           </nav>
           {onglet === 'pages' ? (
             <ListePages pages={t.pages} {...(t.url ? { url: t.url } : {})} />
+          ) : null}
+          {onglet === 'blog' ? (
+            <OngletBlog
+              donnees={await ongletBlog(acces.artisanId)}
+              vue={VUES_BLOG.some(([v]) => v === q.vue) ? (q.vue as VueBlog) : 'articles'}
+            />
           ) : null}
           {onglet === 'domaine' ? <OngletDomaine site={t.site} domaine={DOMAINE_BASE} /> : null}
           {onglet === 'stats' ? (

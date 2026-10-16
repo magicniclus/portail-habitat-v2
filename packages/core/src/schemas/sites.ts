@@ -103,6 +103,8 @@ export const compteurIaSite = z.object({
   apercu: z.number().int().nonnegative().optional(),
   composants: z.number().int().nonnegative().optional(),
   textes: z.number().int().nonnegative().optional(),
+  /** Articles du blog rédigés entièrement par l'IA (D66). */
+  blogArticles: z.number().int().nonnegative().optional(),
 });
 
 /** `sites/{id}/iaSessions/{id}` : proposition de l'IA (jamais appliquée ni publiée par le serveur). */

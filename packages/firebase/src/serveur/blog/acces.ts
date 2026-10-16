@@ -1,5 +1,5 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import { mentionsBlog } from '@ph/core/blog';
+import { creditsArticlesMois, mentionsBlog } from '@ph/core/blog';
 import type { ParametresFacturation } from '@ph/core/devis';
 import { droitsDe, type Formule } from '@ph/core/paiements';
 import type { Firestore, Transaction } from 'firebase-admin/firestore';
@@ -32,4 +32,22 @@ export async function exigerBlog(s: ServicesBlog, t: Transaction, ctx: ContexteS
 export async function lireMentionsBlog(db: Firestore, artisanId: string) {
   const p = await db.doc(chemins.parametresFacturation(artisanId)).get();
   return mentionsBlog((p.data() as Partial<ParametresFacturation> | undefined) ?? null);
+}
+
+const moisParis = (ms: number) =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(ms).slice(0, 7);
+
+/** Rédactions complètes par l'IA ce mois-ci (D66 : 5 ou 15), compteur à côté de celui du site. */
+export async function lireCreditsBlog(s: ServicesBlog, artisanId: string) {
+  const [artisan, c] = await Promise.all([
+    s.db.doc(chemins.artisan(artisanId)).get(),
+    s.db.doc(chemins.compteurIaSite(artisanId, moisParis(s.horloge()))).get(),
+  ]);
+  const d = artisan.get('droits') as { formule?: Formule; sitePro?: boolean } | undefined;
+  const formule = d?.formule ?? 'gratuit';
+  return {
+    utilises: (c.get('blogArticles') as number | undefined) ?? 0,
+    max: creditsArticlesMois({ formule, sitePro: sitePro(d) }),
+    toutInclus: formule === 'tout_inclus',
+  };
 }

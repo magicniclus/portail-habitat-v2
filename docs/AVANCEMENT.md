@@ -740,7 +740,14 @@ Fait (tranche 1, cœur et serveur) :
 - Hébergement affiché dans les mentions : Portail Habitat, sites hébergés chez Vercel (choix d'hébergement par défaut, à confirmer avec D45).
 - Directeur de la publication : raison sociale par défaut (aucun champ dédié dans les paramètres).
 
-Reste : écrans (onglet Blog, éditeur d'article, panneaux SEO, Mots-clés, Diffusion), affichage sur le site (élément « Articles du blog », pages `/blog`, RSS, sitemap, `BlogPosting`), IA de rédaction et de retouche.
+Fait (tranche 2, écrans) :
+- Onglet **Blog** de Mon site : résumé, crédits IA du mois (« Tout inclus : 15 articles / mois » pour Site Pro), vues Articles · Catégories et tags · Corbeille ; recherche (titre, tag, catégorie), sélection, actions groupées avec bilan des refus, export CSV (sélection ou liste affichée, BLOG-08). Sans Site Pro : encart et fenêtre d'offre, éditeur inaccessible (BLOG-01).
+- **Éditeur d'article** (`/pro/site/blog/nouveau`, `/pro/site/blog/{id}`) : image à la une (photos des Réalisations) et texte alternatif, titre, sous-titre, adresse qui suit le titre, corps riche (gras, italique, souligné, H2, H3, paragraphe, listes, citation, lien vers les pages du site ou https, annuler), méta-description, catégorie, auteur, tags créés à la volée, mentions lues dans Devis & factures. Panneaux Mots-clés (principal et secondaires, sans données inventées : D68), SEO (score, aperçu Google, bloquants puis recommandations) et Diffusion (texte prêt à copier par réseau, D69). Publier ou Planifier avec un point bloquant ouvre l'onglet SEO (BLOG-04).
+- Tests : `e2e-pro/blog.spec.ts` (BLOG-01, 04, 08) ; site et export du back-office repassés.
+
+Choix signalés : pas de pilote automatique ni d'« Article en un clic » à l'écran (D70) ; statistiques de lecture et panneau IA de l'éditeur avec la tranche 3.
+
+Reste : affichage sur le site (élément « Articles du blog », pages `/blog`, catégories, RSS, sitemap, `BlogPosting`, mentions sous l'article), statistiques de lecture sans cookie, IA de rédaction et de retouche.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

@@ -38,11 +38,14 @@ export const routes = {
   proAvis: r('/pro/avis'),
   /** Mon site (SITE_INTERNET §3) : `?onglet=pages|domaine|stats|formulaire`. */
   proSite: r('/pro/site'),
-  proSiteOnglet: (onglet: 'pages' | 'domaine' | 'stats' | 'formulaire') =>
+  proSiteOnglet: (onglet: 'pages' | 'blog' | 'domaine' | 'stats' | 'formulaire') =>
     r(`/pro/site?onglet=${onglet}`),
   /** Éditeur plein écran (SITE_INTERNET §4) sur une page. */
   proSiteEditeur: (page?: string) =>
     r(`/pro/site/editeur${page ? `?page=${encodeURIComponent(page)}` : ''}`),
+  /** Éditeur d'article du blog (BLOG §3). */
+  proBlogNouvelArticle: r('/pro/site/blog/nouveau'),
+  proBlogArticle: (id: string) => r(`/pro/site/blog/${encodeURIComponent(id)}`),
   /** Création assistée par l'IA (`?creation=1`) ; `?ia=reprendre` au retour du paiement. */
   proSiteCreationIa: r('/pro/site/editeur?creation=1'),
   proSiteRepriseIa: r('/pro/site/editeur?ia=reprendre'),

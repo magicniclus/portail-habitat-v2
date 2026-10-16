@@ -4,6 +4,14 @@ import type { ParametresFacturation } from '../devis/mentions';
 export const HEBERGEUR_SITES =
   'Portail Habitat (sites hébergés chez Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis)';
 
+/** Mentions obligatoires, nommées pour l'artisan quand elles manquent. */
+export const LIBELLES_MENTIONS_BLOG: Record<string, string> = {
+  editeur: 'raison sociale et adresse du siège',
+  siret: 'SIRET',
+  decennale: 'assurance décennale (assureur, contrat, zone)',
+  mediateur: 'médiateur de la consommation',
+};
+
 export interface LigneMention {
   cle: string;
   libelle: string;

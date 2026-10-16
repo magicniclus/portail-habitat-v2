@@ -168,3 +168,19 @@ export async function articleParAdresse(
     .get();
   return ancien.empty ? null : { redirection: ancien.docs[0]!.get('slug') as string };
 }
+
+/** Auteurs possibles : membres de l'équipe, par leur nom affiché (jamais d'adresse email). */
+export async function auteursBlog(
+  db: Firestore,
+  artisanId: string,
+): Promise<{ uid: string; nom: string }[]> {
+  const membres = await db.collection(chemins.membres(artisanId)).get();
+  if (!membres.size) return [];
+  const users = await db.getAll(...membres.docs.map((m) => db.doc(chemins.user(m.id))));
+  return membres.docs
+    .map((m, i) => ({
+      uid: m.id,
+      nom: (users[i]?.get('nomAffiche') as string | undefined) || 'Membre de l’équipe',
+    }))
+    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+}
