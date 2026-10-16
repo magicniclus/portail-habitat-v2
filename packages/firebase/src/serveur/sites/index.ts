@@ -1,3 +1,9 @@
+export {
+  demarrerCreationIa,
+  genererPageCreation,
+  lireCreationIa,
+  reprendreCreationIa,
+} from './creationIa';
 export { controlerDomaineActif, domainesAControler } from './controle';
 export { hebergeurDepuisEnv, hebergeurVercel, resolveurDoh } from './adaptateurs';
 export {

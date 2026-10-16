@@ -23,6 +23,7 @@ const OPERATIONS = `Opérations possibles (tableau JSON dans le champ "operation
 {"op":"supprimer","cible":ID} · {"op":"deplacer","cible":ID_SECTION,"index":N}
 {"op":"creerPage","page":{"nom":"…","sections":[…],"seo":{"title":"…","meta":"…"}}}
 {"op":"supprimerPage","cible":ID_PAGE} (jamais accueil ni mentions)
+{"op":"remplacerContenuPage","cible":ID_PAGE,"sections":[…],"seo":{…}} (création assistée)
 {"op":"theme","patch":{…}} · {"op":"navigation","patch":{…}}
 {"op":"seo","page":ID_PAGE,"patch":{"title":"…","meta":"…","motCle":"…"}}`;
 
@@ -70,5 +71,27 @@ export function messageIaSite(e: {
     `Portée : ${e.portee === 'selection' ? `sélection ${e.cibles.join(', ')}` : e.portee === 'page' ? `page ${e.pageId}` : 'tout le site'} (page ouverte : ${e.pageId})`,
     `Demande de l'artisan : ${e.demande}`,
     ...(e.reponse ? [`Réponse de l'artisan à ta question : ${e.reponse}`] : []),
+  ].join('\n');
+}
+
+/** Création assistée : une page à la fois (accueil d'abord), une seule opération attendue. */
+export function messageCreationPage(e: {
+  nom: string;
+  consigne: string;
+  remplace?: string;
+  reponses: string;
+  exclus: string[];
+}): string {
+  return [
+    `Mode : création complète du site, page « ${e.nom} ».`,
+    e.remplace
+      ? `Réponds avec une seule opération "remplacerContenuPage" sur la page ${e.remplace}.`
+      : `Réponds avec une seule opération "creerPage" (nom « ${e.nom} »).`,
+    'Entre 3 et 8 sections, titre SEO de 30 à 60 caractères et méta-description de 110 à 155 caractères, un seul H1.',
+    `Consigne : ${e.consigne}`,
+    `Réponses de l'artisan au questionnaire : ${e.reponses}`,
+    ...(e.exclus.length
+      ? [`Informations de la fiche à ne pas utiliser : ${e.exclus.join(', ')}`]
+      : []),
   ].join('\n');
 }

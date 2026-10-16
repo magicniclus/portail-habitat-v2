@@ -109,6 +109,10 @@ export const chemins = {
   /** Compteurs de l'IA du site : `{AAAA-MM}` (quotas du mois) ou `essai` (essais à vie). */
   compteurIaSite: (id: string, cle: string) => `sites/${id}/ia/${cle}`,
   sessionsIaSite: (id: string) => `sites/${id}/iaSessions`,
+  creationIaSite: (id: string) => `sites/${id}/iaCreation/courante`,
+  /** Mes modèles : sites complets enregistrés, dont « Avant IA – date » (SITE-IA-09). */
+  modelesSite: (id: string) => `sites/${id}/modeles`,
+  modeleSite: (id: string, m: string) => `sites/${id}/modeles/${m}`,
   statsMoisSite: (id: string, mois: string) => `sites/${id}/statsMois/${mois}`,
   pagesSite: (id: string) => `sites/${id}/pages`,
   pageSite: (id: string, pageId: string) => `sites/${id}/pages/${pageId}`,

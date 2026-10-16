@@ -184,6 +184,15 @@ describe('chaque opération, succès et refus', () => {
     ],
     [{ op: 'supprimerPage', cible: 'contact' }],
     [{ op: 'theme', patch: { polices: 'barlow' } }],
+    [
+      {
+        op: 'remplacerContenuPage',
+        cible: 'accueil',
+        sections: [sec],
+        seo: { title: 'Plombier à Pessac' },
+      },
+    ],
+    [{ op: 'remplacerContenuPage', cible: 'contact', sections: [sec] }],
     [{ op: 'navigation', patch: { nom: 'Durand' } }],
     [{ op: 'seo', page: 'accueil', patch: { title: 'Plombier à Pessac' } }],
     [
@@ -210,6 +219,7 @@ describe('chaque opération, succès et refus', () => {
     [{ op: 'supprimerPage', cible: 'mentions' }],
     [{ op: 'supprimerPage', cible: 'x' }],
     [{ op: 'seo', page: 'x', patch: {} }],
+    [{ op: 'remplacerContenuPage', cible: 'x', sections: [sec] }],
     [{ op: 'lien', cible: premier('formulaire').id, lid: 'L1', action: { type: 'aucun' } }],
     [{ op: 'theme', patch: { polices: 'comic' } }],
     [{ op: 'navigation', patch: { fixe: 'oui' } }],
@@ -250,5 +260,15 @@ describe('chaque opération, succès et refus', () => {
     expect(m('page')).toContain('page accueil');
     expect(m('site', '48 h')).toContain('tout le site');
     expect(m('site', '48 h')).toContain('48 h');
+  });
+});
+
+describe('message de création d’une page', () => {
+  it('remplace une page existante ou en crée une, exclusions comprises', async () => {
+    const { messageCreationPage } = await import('./prompt');
+    const base = { nom: 'Accueil', consigne: 'c', reponses: '{}', exclus: [] };
+    expect(messageCreationPage({ ...base, remplace: 'accueil' })).toContain('remplacerContenuPage');
+    expect(messageCreationPage(base)).toContain('creerPage');
+    expect(messageCreationPage({ ...base, exclus: ['12 avis'] })).toContain('12 avis');
   });
 });

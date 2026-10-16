@@ -62,8 +62,12 @@ function droitsLus(
   };
 }
 
-/** Textes à surveiller dans une opération (garde-fou des faits). */
-function garderFaitsOperation(o: OperationIa, sources: string, avert: string[]): OperationIa {
+/** Textes à surveiller dans une opération (garde-fou des faits) : jamais les réglages numériques. */
+export function garderFaitsOperation(
+  o: OperationIa,
+  sources: string,
+  avert: string[],
+): OperationIa {
   const g = (t: string) => {
     const r = garderFaits(t, sources);
     avert.push(...r.remplaces);
@@ -100,6 +104,8 @@ function garderFaitsOperation(o: OperationIa, sources: string, avert: string[]):
       return { ...o, section: section(o.section) } as OperationIa;
     case 'creerPage':
       return { ...o, page: { ...o.page, sections: o.page.sections.map(section) } } as OperationIa;
+    case 'remplacerContenuPage':
+      return { ...o, sections: o.sections.map(section) } as OperationIa;
     default:
       return o;
   }

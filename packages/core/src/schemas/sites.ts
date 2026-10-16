@@ -99,6 +99,8 @@ export const statsSite = z.object({
 export const compteurIaSite = z.object({
   schemaVersion,
   creation: z.number().int().nonnegative().optional(),
+  /** Aperçu gratuit de l'accueil (une fois, D48 ⏳). */
+  apercu: z.number().int().nonnegative().optional(),
   composants: z.number().int().nonnegative().optional(),
   textes: z.number().int().nonnegative().optional(),
 });
@@ -117,5 +119,38 @@ export const sessionIaSite = z.object({
   modele: z.string(),
   versionPrompt: z.string(),
   coutCentimes: z.number().int().nonnegative(),
+  createdAt: horodatage,
+});
+
+/** `sites/{id}/iaCreation/courante` : création assistée (réponses gardées pour la reprise). */
+export const creationIaSite = z.object({
+  schemaVersion,
+  statut: z.enum(['en_cours', 'apercu', 'attente_paiement', 'terminee']),
+  reponses: z.record(z.string(), z.unknown()),
+  fiche: z.record(z.string(), z.unknown()),
+  plan: z.array(
+    z.object({
+      cle: z.string(),
+      nom: z.string(),
+      remplace: z.string().optional(),
+      consigne: z.string(),
+    }),
+  ),
+  faites: z.array(z.string()),
+  apercu: z.array(z.unknown()).optional(),
+  avantIa: id.optional(),
+  coutCentimes: z.number().int().nonnegative().optional(),
+  versionPrompt: z.string().optional(),
+  updatedAt: horodatage,
+});
+
+/** `sites/{id}/modeles/{id}` : site complet enregistré (Mes modèles, « Avant IA – date »). */
+export const modeleSite = z.object({
+  schemaVersion,
+  nom: z.string().max(120),
+  type: z.enum(['avant_ia', 'artisan']),
+  pages: z.record(z.string(), pageSite),
+  navigation: navigation.nullable(),
+  theme: theme.nullable(),
   createdAt: horodatage,
 });

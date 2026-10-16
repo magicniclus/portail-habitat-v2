@@ -108,6 +108,16 @@ export const operationIa = z.discriminatedUnion('op', [
     }),
   }),
   z.object({ op: z.literal('supprimerPage'), cible: id }),
+  /** Création assistée : contenu complet d'une page existante (accueil, contact) réécrit. */
+  z.object({
+    op: z.literal('remplacerContenuPage'),
+    cible: id,
+    sections: z.array(sectionIa).min(1).max(12),
+    seo: z
+      .object({ title: z.string().max(120), meta: z.string().max(320), motCle: z.string().max(80) })
+      .partial()
+      .optional(),
+  }),
   z.object({ op: z.literal('theme'), patch: reglages }),
   z.object({ op: z.literal('navigation'), patch: reglages }),
   z.object({
@@ -300,6 +310,13 @@ function appliquerUne(b: BrouillonIa, o: OperationIa, nouvelId: () => string): s
         seo: { title: '', meta: '', motCle: '', ...(o.page.seo ?? {}) },
         sections: o.page.sections.map((s) => construireSection(s, nouvelId)),
       };
+      return null;
+    }
+    case 'remplacerContenuPage': {
+      const page = b.pages[o.cible];
+      if (!page) return `Page introuvable : ${o.cible}`;
+      page.sections = o.sections.map((x) => construireSection(x, nouvelId));
+      page.seo = { ...page.seo, ...(o.seo ?? {}) };
       return null;
     }
     case 'supprimerPage':

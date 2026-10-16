@@ -13,3 +13,4 @@ export * from './catalogue';
 export * from './ia/operations';
 export * from './ia/reglages';
 export * from './ia/prompt';
+export * from './ia/creation';
