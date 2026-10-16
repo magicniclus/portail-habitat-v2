@@ -15,6 +15,9 @@ import {
   textesDuSite,
   VERSION_PROMPT_IA_SITE,
   type FicheCreation,
+  type Navigation,
+  type PageSite,
+  type Theme,
   type OperationIa,
   type PagePlanifiee,
   type ReponsesCreation,
@@ -243,4 +246,20 @@ export async function lireCreationIa(
     faites: c.faites as string[],
     ...(c.apercu ? { apercu: c.apercu as OperationIa[] } : {}),
   };
+}
+
+/** Mes modèles (dont « Avant IA – date ») : contenu complet, pour restauration dans l'éditeur. */
+export async function lireModelesSite(db: ServicesIaSite['db'], artisanId: string) {
+  const r = await db
+    .collection(chemins.modelesSite(artisanId))
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+    .get();
+  return r.docs.map((d) => ({
+    id: d.id,
+    nom: d.get('nom') as string,
+    pages: d.get('pages') as Record<string, PageSite>,
+    navigation: (d.get('navigation') ?? null) as Navigation | null,
+    theme: (d.get('theme') ?? null) as Theme | null,
+  }));
 }

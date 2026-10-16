@@ -1,3 +1,4 @@
+import { reponsesCreation } from '../sites/ia/creation';
 import { MODES_IA_SITE } from '../sites/ia/reglages';
 import { navigation, pageSite, theme } from '../sites/schemas';
 import { z } from '../zod';
@@ -41,3 +42,7 @@ export const entreeIaSite = z.object({
   demande: z.string().trim().min(3).max(1000),
   reponse: z.string().trim().max(500).optional(),
 });
+
+/** Création assistée : réponses au questionnaire, puis une page à la fois. */
+export const entreeCreationIa = z.object({ reponses: reponsesCreation });
+export const entreePageCreationIa = z.object({ cle: z.string().regex(/^[a-z0-9-]{1,60}$/) });

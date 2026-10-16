@@ -2,6 +2,7 @@ export {
   demarrerCreationIa,
   genererPageCreation,
   lireCreationIa,
+  lireModelesSite,
   reprendreCreationIa,
 } from './creationIa';
 export { controlerDomaineActif, domainesAControler } from './controle';

@@ -9,6 +9,7 @@ import {
   resumeStatsSite,
   sousDomaineDe,
   type ChampFormulaire,
+  type FicheCreation,
   type FicheSite,
   type PageSite,
 } from '@ph/core/sites';
@@ -31,6 +32,7 @@ import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/routes';
 import { servicesComptes } from './espace';
+import intentions from '../../../docs/data/recherche-intentions.json';
 import { nomMetier } from './metiers';
 import { sessionPro } from './sessionPro';
 
@@ -177,3 +179,44 @@ export async function statsDuSite(artisanId: string, sitePro: boolean) {
   };
 }
 export type StatsDuSite = Awaited<ReturnType<typeof statsDuSite>>;
+
+const INTENTIONS = (
+  intentions as {
+    intentions: { id: string; libelle: string; metier: string; popularite: number }[];
+  }
+).intentions;
+
+/** Ce que la création assistée reprend de la fiche (jamais redemandé, SITE-IA-07). */
+export async function ficheCreation(artisanId: string): Promise<FicheCreation> {
+  const [artisan, publique, realisations] = await Promise.all([
+    db().doc(chemins.artisan(artisanId)).get(),
+    db().doc(chemins.artisanPublic(artisanId)).get(),
+    lirePhotosPubliees(db(), artisanId, 30),
+  ]);
+  const a = artisan.data() ?? {};
+  const metiers = (a.metiers as string[] | undefined) ?? [];
+  const choisies = ((a.intentions as string[] | undefined) ?? [])
+    .map((id) => INTENTIONS.find((i) => i.id === id)?.libelle)
+    .filter((x): x is string => Boolean(x));
+  const prestations = choisies.length
+    ? choisies
+    : INTENTIONS.filter((i) => metiers.includes(i.metier))
+        .sort((x, y) => y.popularite - x.popularite)
+        .map((i) => i.libelle)
+        .slice(0, 8);
+  return {
+    metierPrincipal: (a.metierPrincipal as string | undefined) ?? '',
+    metierNom: nomMetier((a.metierPrincipal as string | undefined) ?? ''),
+    ville:
+      (publique.get('ville') as string | undefined) ??
+      (a.adresseSiege?.ville as string | undefined) ??
+      '',
+    prestations,
+    nbPhotos: realisations.reduce((n, r) => n + r.urls.length, 0),
+    nbAvis: (publique.get('nbAvis') as number | undefined) ?? 0,
+    labels: (a.labels as string[] | undefined) ?? [],
+    rayonKm: (a.zoneIntervention?.rayonKm as number | undefined) ?? 0,
+    communesProches: (a.zoneIntervention?.communes as string[] | undefined) ?? [],
+    ...(a.pitch ? { pitch: a.pitch as string } : {}),
+  };
+}
