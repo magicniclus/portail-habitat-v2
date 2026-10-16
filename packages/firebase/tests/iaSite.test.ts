@@ -9,6 +9,7 @@ import type { AppelIa, ReponseIa } from '../src/serveur/ia';
 import {
   creerSite,
   demanderIaSite,
+  lireRestantsIaSite,
   lireSiteEdition,
   type ServicesIaSite,
 } from '../src/serveur/sites';
@@ -95,7 +96,7 @@ describe('IA du site', () => {
     expect(appels[0]!.modele).toBe('claude-haiku-5-5');
     expect(appels[0]!.contexte).toContain(titreId);
     const session = await db.doc(`${chemins.sessionsIaSite('a1')}/${r.sessionId}`).get();
-    expect(session.get('versionPrompt')).toBe('site.v1');
+    expect(session.get('versionPrompt')).toBe('site.v2');
     const apres = await lireSiteEdition(db, 'a1');
     expect(JSON.stringify(apres.pages)).not.toContain('Votre plombier à Pessac');
     expect(apres.versions).toEqual([]);
@@ -160,5 +161,52 @@ describe('IA du site', () => {
     const r = await demanderIaSite(s(), proprio, demande);
     expect(r.question).toContain('délai');
     expect((await compteur('2026-10'))?.textes).toBe(0);
+  });
+
+  it('modération : dénigrement d’un concurrent refusé avant tout appel et tout crédit', async () => {
+    const e = await erreur(
+      demanderIaSite(s(), proprio, {
+        ...demande,
+        demande: 'Dis que Plomberie Martin sont des escrocs',
+      }),
+    );
+    expect(e.code).toBe('ENTREE_INVALIDE');
+    expect(e.message).toMatch(/concurrent/);
+    expect(appels).toHaveLength(0);
+    expect(await compteur('2026-10')).toBeUndefined();
+  });
+
+  it('routeur : sans mode choisi, un appel court classe la demande, puis le crédit du mode retenu', async () => {
+    reponses = [
+      JSON.stringify({ mode: 'seo', portee: 'site' }),
+      sortie([{ op: 'texte', cible: titreId, champ: 'texte', valeur: 'Plombier à Pessac' }]),
+    ];
+    const { mode: _m, ...sansMode } = demande;
+    const r = await demanderIaSite(s(), proprio, sansMode);
+    expect(appels[0]!.modele).toBe('claude-haiku-5-5');
+    expect(appels[0]!.maxTokens).toBe(200);
+    expect(appels[1]!.demande).toMatch(/Référencement/);
+    expect(appels[1]!.demande).toMatch(/tout le site/);
+    expect(r.mode).toBe('seo');
+    expect(r.restant).toBe(299);
+    expect(await lireRestantsIaSite(s(), 'a1')).toEqual({
+      type: 'mois',
+      textes: 299,
+      composants: 60,
+    });
+  });
+
+  it('sans Site Pro : pas de routeur, textes sur les essais à vie', async () => {
+    await formule('gratuit');
+    reponses = [sortie([{ op: 'texte', cible: titreId, champ: 'texte', valeur: 'Plombier' }])];
+    const { mode: _m, ...sansMode } = demande;
+    const r = await demanderIaSite(s(), proprio, sansMode);
+    expect(appels).toHaveLength(1);
+    expect(r).toMatchObject({ mode: 'textes', restant: 2 });
+    expect(await lireRestantsIaSite(s(), 'a1')).toEqual({
+      type: 'essai',
+      textes: 2,
+      composants: 0,
+    });
   });
 });

@@ -1,7 +1,7 @@
 import type { ModeIaSite } from './reglages';
 
 /** Version du prompt, enregistrée dans chaque session (IA_SITE §5). */
-export const VERSION_PROMPT_IA_SITE = 'site.v1';
+export const VERSION_PROMPT_IA_SITE = 'site.v2';
 
 const CATALOGUE = `Éléments (champ "type", réglages dans "p") :
 - titre { texte, niveau: h1|h2|h3, align: left|center|right }
@@ -38,6 +38,7 @@ Règles :
 - Français, vouvoiement, phrases courtes, vocabulaire de chantier. Jamais le mot « lead » : on parle de demandes ou de devis.
 - N'invente aucun fait. Chiffres, années, certifications (RGE, Qualibat…), assurances, notes d'avis, prix et délais : seulement s'ils figurent dans la fiche, les réponses de l'artisan ou le texte existant. Sinon écris « [à compléter] ».
 - Pas d'autres coordonnées que celles de la fiche. Pas de promesse de prix ferme.
+- Jamais de critique d'un concurrent, de propos injurieux ni de pratique interdite (travail non déclaré, faux avis).
 - Les "cible" doivent être des identifiants présents dans le résumé du site. N'ajoute pas d'images : "src" vide ou une référence existante.
 - Reste dans la portée demandée. 60 opérations au plus.
 - S'il manque une information indispensable, laisse "operations" vide et pose une seule question courte dans "question". Sinon "question" est vide.

@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  elementsDe,
-  majElement,
-  type Appareil,
-  type ChampFormulaire,
-  type OperationIa,
-  type PageSite,
-  type QuestionCreation,
-} from '@ph/core/sites';
+import { elementsDe, majElement, type Appareil, type PageSite } from '@ph/core/sites';
 import { Banner, Button } from '@ph/ui';
 import { useState } from 'react';
 import { Apercu } from './Apercu';
@@ -24,28 +16,12 @@ import { PanneauSeo } from './PanneauSeo';
 import { PanneauStyles } from './PanneauStyles';
 import { ReglagesElement } from './ReglagesElement';
 import { useActionsEditeur } from './useActionsEditeur';
-import { useBrouillonSite, type BrouillonSite } from './useBrouillonSite';
+import { useBrouillonSite } from './useBrouillonSite';
 import { useHtmlApercu } from './useHtmlApercu';
+import type { ProprietesEditeur } from './proprietes';
 
 /** Éditeur plein écran (maquette Editeur de Site) : panneaux à gauche, aperçu mis à l'échelle. */
-export function EditeurSite(props: {
-  initial: BrouillonSite;
-  pageInitiale: string;
-  panneauInitial: Panneau;
-  medias: Record<string, string>;
-  hote: string;
-  offre: 'gratuit' | 'site_pro';
-  champs?: ChampFormulaire[];
-  ville?: string;
-  /** Droits IA (Site Pro) calculés côté serveur ; revérifiés à chaque demande. */
-  iaComplete: boolean;
-  /** `?creation=1` : questionnaire de la création assistée (IA_SITE §3.1). */
-  questionnaire?: { questions: QuestionCreation[]; repris: string[] };
-  /** Aperçu gratuit de l'accueil déjà généré, en attente de Site Pro. */
-  apercuInitial: OperationIa[] | null;
-  /** Site Pro actif et création en attente : `auto` si l'artisan revient du paiement. */
-  reprise: 'non' | 'proposee' | 'auto';
-}) {
+export function EditeurSite(props: ProprietesEditeur) {
   const s = useBrouillonSite(props.initial);
   const [pageId, setPageId] = useState(props.pageInitiale);
   const [panneau, setPanneau] = useState<Panneau>(props.panneauInitial);
@@ -178,6 +154,7 @@ export function EditeurSite(props: {
                 pageId={pageId}
                 selection={selection}
                 iaComplete={props.iaComplete}
+                restantsInitiaux={props.restantsIa}
                 enregistrer={s.enregistrer}
                 appliquer={s.appliquerIa}
               />

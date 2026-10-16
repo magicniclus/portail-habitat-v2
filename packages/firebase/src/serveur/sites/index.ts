@@ -29,6 +29,7 @@ export {
 } from './domaines';
 export {
   demanderIaSite,
+  lireRestantsIaSite,
   type DemandeIaSite,
   type PropositionIaSite,
   type ServicesIaSite,

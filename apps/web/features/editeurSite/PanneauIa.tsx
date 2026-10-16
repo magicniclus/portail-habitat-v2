@@ -1,6 +1,8 @@
 'use client';
 
-import type { ModeIaSite, OperationIa } from '@ph/core/sites';
+import { CATEGORIE_MODE, type ModeIaSite, type OperationIa } from '@ph/core/sites';
+import { MODES, texteRestants, type RestantsIa } from './modesIa';
+import { QuestionIa } from './QuestionIa';
 import { PropositionIa, type Proposition } from './PropositionIa';
 import { Banner, bouton, Button, Field, Select, Textarea } from '@ph/ui';
 import { useState } from 'react';
@@ -8,14 +10,6 @@ import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import Link from 'next/link';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
-
-const MODES: { mode: ModeIaSite; libelle: string; essai: boolean }[] = [
-  { mode: 'textes', libelle: 'Améliorer les textes', essai: true },
-  { mode: 'seo', libelle: 'Référencement (titres, descriptions)', essai: true },
-  { mode: 'composant', libelle: 'Créer ou modifier des sections', essai: false },
-  { mode: 'page', libelle: 'Créer ou refaire une page', essai: false },
-  { mode: 'theme', libelle: 'Couleurs et polices', essai: false },
-];
 
 /**
  * Panneau IA (IA_SITE §2.3) : la demande part sur le brouillon enregistré ; la proposition est
@@ -26,21 +20,23 @@ export function PanneauIa({
   pageId,
   selection,
   iaComplete,
+  restantsInitiaux,
   enregistrer,
   appliquer,
 }: {
   pageId: string;
   selection: string | null;
   iaComplete: boolean;
+  restantsInitiaux: RestantsIa;
   enregistrer: () => Promise<string | null>;
   appliquer: (ops: OperationIa[]) => string | null;
 }) {
-  const [mode, setMode] = useState<ModeIaSite>('textes');
+  const [mode, setMode] = useState<ModeIaSite | 'auto'>(iaComplete ? 'auto' : 'textes');
+  const [restants, setRestants] = useState(restantsInitiaux);
   const [portee, setPortee] = useState<'selection' | 'page' | 'site'>(
     selection ? 'selection' : 'page',
   );
   const [demande, setDemande] = useState('');
-  const [reponse, setReponse] = useState('');
   const [prop, setProp] = useState<Proposition | null>(null);
   const [message, setMessage] = useState<{ ton: 'danger' | 'succes'; texte: string } | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -54,16 +50,21 @@ export function PanneauIa({
       setEnCours(false);
       return setMessage({ ton: 'danger', texte: e });
     }
-    const r = await posterJson<Proposition>('/api/pro/site/ia', {
-      mode,
-      portee,
-      pageId,
-      cibles: portee === 'selection' && selection ? [selection] : [],
-      demande,
-      ...(avecReponse ? { reponse: avecReponse } : {}),
-    });
+    const r = await posterJson<Proposition & { mode: ModeIaSite; restant: number }>(
+      '/api/pro/site/ia',
+      {
+        ...(mode === 'auto' ? {} : { mode }),
+        portee,
+        pageId,
+        cibles: portee === 'selection' && selection ? [selection] : [],
+        demande,
+        ...(avecReponse ? { reponse: avecReponse } : {}),
+      },
+    );
     setEnCours(false);
     if (!r.ok) return setMessage({ ton: 'danger', texte: r.message });
+    const cat = CATEGORIE_MODE[r.data.mode] === 'textes' ? 'textes' : 'composants';
+    setRestants((x) => ({ ...x, [cat]: r.data.restant }));
     setProp(r.data);
   };
 
@@ -73,7 +74,7 @@ export function PanneauIa({
         Créer tout le site avec l’IA
       </Link>
       <Field label="Que voulez-vous faire ?">
-        <Select value={mode} onChange={(e) => setMode(e.target.value as ModeIaSite)}>
+        <Select value={mode} onChange={(e) => setMode(e.target.value as ModeIaSite | 'auto')}>
           {MODES.map((m) => (
             <option key={m.mode} value={m.mode}>
               {!iaComplete && !m.essai ? '🔒 ' : ''}
@@ -137,31 +138,17 @@ export function PanneauIa({
           </div>
         </form>
       )}
+      {!verrou ? (
+        <p className="m-0 text-sm text-neutre-700">{texteRestants(restants, mode)}</p>
+      ) : null}
       {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
       {prop?.question ? (
-        <form
-          className="grid gap-3 rounded-[12px] border border-trait p-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void envoyer(reponse);
-          }}
-        >
-          <Field label={prop.question}>
-            <Textarea
-              value={reponse}
-              maxLength={500}
-              onChange={(e) => setReponse(e.target.value)}
-            />
-          </Field>
-          <div className="flex gap-2">
-            <Button type="submit" disabled={enCours || !reponse.trim()}>
-              Répondre
-            </Button>
-            <Button variant="fantome" onClick={() => setProp(null)}>
-              Passer
-            </Button>
-          </div>
-        </form>
+        <QuestionIa
+          question={prop.question}
+          enCours={enCours}
+          onRepondre={(r) => void envoyer(r)}
+          onPasser={() => setProp(null)}
+        />
       ) : null}
       {prop && prop.operations.length ? (
         <PropositionIa

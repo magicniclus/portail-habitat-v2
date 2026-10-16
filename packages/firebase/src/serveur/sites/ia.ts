@@ -5,13 +5,19 @@ import {
   appliquerOperations,
   creditIaSite,
   garderFaits,
+  lireRoutage,
   lireSortieIa,
   MAX_OPERATIONS,
+  modererDemandeIa,
   messageIaSite,
   MODELE_MODE,
+  PROMPT_ROUTEUR_IA_SITE,
   PROMPT_SYSTEME_IA_SITE,
+  QUOTAS_MOIS_SITE_PRO,
+  ESSAIS_TEXTES_A_VIE,
   resumeArbre,
   SCHEMA_JSON_IA_SITE,
+  SCHEMA_JSON_ROUTEUR,
   textesDuSite,
   VERSION_PROMPT_IA_SITE,
   type BrouillonIa,
@@ -30,7 +36,8 @@ export interface ServicesIaSite extends ServicesSites {
 }
 
 export interface DemandeIaSite {
-  mode: ModeIaSite;
+  /** Absent : le routeur choisit le mode et la portée (IA_SITE §1). */
+  mode?: ModeIaSite;
   portee: 'selection' | 'page' | 'site';
   pageId: string;
   cibles: string[];
@@ -46,6 +53,10 @@ export interface PropositionIaSite {
   operations: OperationIa[];
   /** Faits remplacés par « [à compléter] » (signalés en orange dans l'éditeur). */
   avertissements: string[];
+  /** Mode retenu (choisi par l'artisan ou par le routeur). */
+  mode: ModeIaSite;
+  /** Demandes restantes dans la catégorie (mois Site Pro, ou essais à vie). */
+  restant: number;
 }
 
 const moisParis = (ms: number) =>
@@ -146,11 +157,24 @@ export async function demanderIaSite(
   ctx: ContexteSite,
   e: DemandeIaSite,
 ): Promise<PropositionIaSite> {
+  // Filtre avant tout appel et tout crédit (IA_SITE §5).
+  const moderation = modererDemandeIa(`${e.demande}\n${e.reponse ?? ''}`);
+  if (!moderation.ok) throw new ErreurMetier('ENTREE_INVALIDE', moderation.message);
   if (!s.client)
     throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
+  const client = s.client;
   const maintenant = s.horloge();
   const artisan = await s.db.doc(chemins.artisan(ctx.artisanId)).get();
-  const credit = creditIaSite(droitsLus(artisan.get('droits')), e.mode);
+  const droits = droitsLus(artisan.get('droits'));
+  // Sans Site Pro, seuls les textes sont ouverts : pas d'appel au routeur.
+  const route = e.mode
+    ? { mode: e.mode, portee: e.portee }
+    : droits.iaSite !== 'complet'
+      ? { mode: 'textes' as const, portee: e.portee }
+      : await routerDemande(client, e);
+  e = { ...e, ...route };
+  const mode = route.mode;
+  const credit = creditIaSite(droits, mode);
   if (!credit)
     throw new ErreurMetier(
       'PERMISSION_REFUSEE',
@@ -163,7 +187,7 @@ export async function demanderIaSite(
     ),
   );
   const champ = credit.type === 'essai' ? 'textes' : credit.categorie;
-  await s.db.runTransaction(async (t) => {
+  const utilises = await s.db.runTransaction(async (t) => {
     await exigerSite(s, t, ctx);
     const n = ((await t.get(ref)).get(champ) as number | undefined) ?? 0;
     if (n >= credit.max)
@@ -174,6 +198,7 @@ export async function demanderIaSite(
           : `Vous avez utilisé vos ${credit.max} demandes de ce mois-ci. L’édition manuelle reste disponible.`,
       );
     t.set(ref, { schemaVersion: 1, [champ]: FieldValue.increment(1) }, { merge: true });
+    return n + 1;
   });
   const rendre = () => ref.set({ [champ]: FieldValue.increment(-1) }, { merge: true });
 
@@ -187,17 +212,17 @@ export async function demanderIaSite(
     };
     const fiche = await sourcesFiche(s, ctx.artisanId);
     const sources = `${fiche}\n${textesDuSite(site.pages)}\n${e.demande}\n${e.reponse ?? ''}`;
-    const modele = MODELE_MODE[e.mode];
-    let demande = messageIaSite(e);
+    const modele = MODELE_MODE[mode];
+    let demande = messageIaSite({ ...e, mode });
     let cout = 0;
     for (let essai = 0; essai < 2; essai++) {
-      const r = await s.client({
+      const r = await client({
         modele,
         systeme: PROMPT_SYSTEME_IA_SITE,
         contexte: `Fiche vérifiée de l'artisan :\n${fiche}\n\nRésumé du site :\n${resumeArbre(brouillon)}`,
         demande,
         schema: SCHEMA_JSON_IA_SITE,
-        maxTokens: e.mode === 'page' ? 16_000 : 8_000,
+        maxTokens: mode === 'page' ? 16_000 : 8_000,
       });
       cout += coutCentimes(modele, r.usage);
       if (r.refus) break;
@@ -217,7 +242,7 @@ export async function demanderIaSite(
         await session.set({
           schemaVersion: 1,
           uid: ctx.uid,
-          mode: e.mode,
+          mode,
           portee: e.portee,
           demande: e.demande.slice(0, 2000),
           resume: lu.sortie.resume,
@@ -237,9 +262,11 @@ export async function demanderIaSite(
           question: lu.sortie.question,
           operations,
           avertissements,
+          mode,
+          restant: credit.max - utilises + (operations.length ? 0 : 1),
         };
       }
-      demande = `${messageIaSite(e)}\n\nTa réponse précédente a été refusée : ${erreur}. Corrige-la en respectant le format et les identifiants du résumé.`;
+      demande = `${messageIaSite({ ...e, mode })}\n\nTa réponse précédente a été refusée : ${erreur}. Corrige-la en respectant le format et les identifiants du résumé.`;
     }
     throw new ErreurMetier(
       'INDISPONIBLE',
@@ -249,4 +276,39 @@ export async function demanderIaSite(
     await rendre();
     throw err;
   }
+}
+
+/** Routeur (Haiku, sortie courte) : coût sans crédit, ≈ 0,0002 € (COUTS.md). */
+async function routerDemande(client: ClientIa, e: DemandeIaSite) {
+  const r = await client({
+    modele: 'claude-haiku-5-5',
+    systeme: PROMPT_ROUTEUR_IA_SITE,
+    contexte: `Élément sélectionné : ${e.cibles.length ? 'oui' : 'non'}.`,
+    demande: e.demande,
+    schema: SCHEMA_JSON_ROUTEUR,
+    maxTokens: 200,
+  });
+  return lireRoutage(r.refus ? '' : r.texte, { selection: e.cibles.length > 0 });
+}
+
+/** Demandes restantes affichées dans le panneau (IA_SITE §4) ; remises à zéro le 1er du mois. */
+export async function lireRestantsIaSite(
+  s: Pick<ServicesSites, 'db' | 'horloge'>,
+  artisanId: string,
+): Promise<{ type: 'mois' | 'essai'; textes: number; composants: number }> {
+  const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
+  const d = droitsLus(artisan.get('droits'));
+  const complet = d.iaSite === 'complet';
+  const c = await s.db
+    .doc(chemins.compteurIaSite(artisanId, complet ? moisParis(s.horloge()) : 'essai'))
+    .get();
+  const n = (k: string) => (c.get(k) as number | undefined) ?? 0;
+  if (!complet)
+    return { type: 'essai', textes: Math.max(0, ESSAIS_TEXTES_A_VIE - n('textes')), composants: 0 };
+  const m = d.iaMultiplicateur;
+  return {
+    type: 'mois',
+    textes: Math.max(0, QUOTAS_MOIS_SITE_PRO.textes * m - n('textes')),
+    composants: Math.max(0, QUOTAS_MOIS_SITE_PRO.composants * m - n('composants')),
+  };
 }

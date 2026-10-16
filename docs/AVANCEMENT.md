@@ -711,7 +711,12 @@ Fait (tranche 2, IA_SITE §3.1, §4) :
 
 Choix signalé : le lien de paiement de la fenêtre d'offre reste `/pro/abonnement?offre=site` (comme partout) ; le retour dans l'éditeur se fait par la page de confirmation plutôt que par un paramètre `retour` dans l'URL de paiement (IA_SITE §4).
 
-Reste (lot 10c) : routeur automatique des demandes, filtre de modération, surlignage des changements dans l'aperçu, trois variantes visuelles après génération, quotas restants affichés dans le panneau. Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
+Fait (tranche 3, IA_SITE §1, §4, §5) :
+- Filtre de modération avant tout appel et tout crédit : propos injurieux, pratiques interdites (sans facture, au noir), informations trompeuses (faux avis, certification inventée), critique d'un concurrent nommé. Même règle ajoutée au prompt (version `site.v2`). La réponse « Autre » du questionnaire passe aussi par le filtre.
+- Routeur : action « Automatique (l'IA choisit) » par défaut avec Site Pro ; un appel court (Haiku, 200 jetons, sans crédit) choisit le mode et la portée, sortie illisible → textes. Sans Site Pro, pas de routeur : textes sur les essais.
+- Demandes restantes affichées dans le panneau (« 52 modifications restantes ce mois-ci », essais gratuits restants), mises à jour après chaque demande.
+
+Reste (lot 10c) : surlignage des changements dans l'aperçu, trois variantes visuelles après génération. Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

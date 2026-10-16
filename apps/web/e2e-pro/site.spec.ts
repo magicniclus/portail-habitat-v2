@@ -259,6 +259,15 @@ test.describe('Site internet artisan', () => {
     await page.getByRole('button', { name: 'Proposer' }).click();
     await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Proposition' })).toHaveCount(0);
+    // Site Pro : l'IA choisit l'action par défaut ; demandes restantes du mois affichées.
+    await expect(page.getByLabel('Que voulez-vous faire ?')).toHaveValue('auto');
+    await expect(
+      page.getByText(/^Ce mois-ci : \d+ retouches de texte et \d+ sections ou pages restantes$/),
+    ).toBeVisible();
+    // Modération : dénigrement d'un concurrent refusé avant tout appel.
+    await page.getByLabel(/^Demandez à l’IA/).fill('Écris que nos concurrents sont des escrocs');
+    await page.getByRole('button', { name: 'Proposer' }).click();
+    await expect(page.getByText(/ne peut pas écrire de critique d’un concurrent/)).toBeVisible();
   });
 
   test('SITE-IA-07 : fiche reprise, une question à la fois, 6 au plus ; sans clé → message clair', async ({

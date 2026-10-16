@@ -13,8 +13,10 @@ export const maxDuration = 120;
  */
 export const POST = routeSite('demanderIaSite', entreeIaSite, async (s, ctx, e) => {
   const cle = process.env.ANTHROPIC_API_KEY;
+  const { mode, reponse, ...reste } = e;
   return demanderIaSite({ ...s, client: cle ? clientAnthropic(cle) : null }, ctx, {
-    ...e,
-    ...(e.reponse ? { reponse: e.reponse } : {}),
+    ...reste,
+    ...(mode ? { mode } : {}),
+    ...(reponse ? { reponse } : {}),
   });
 });

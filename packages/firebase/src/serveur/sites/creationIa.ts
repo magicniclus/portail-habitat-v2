@@ -5,6 +5,7 @@ import {
   appliquerOperations,
   lireSortieIa,
   MAX_OPERATIONS,
+  modererDemandeIa,
   messageCreationPage,
   MODELE_MODE,
   planCreation,
@@ -97,6 +98,8 @@ export async function demarrerCreationIa(
   ctx: ContexteSite,
   e: { reponses: ReponsesCreation; fiche: FicheCreation },
 ): Promise<{ statut: StatutCreation; plan: PagePlanifiee[] }> {
+  const moderation = modererDemandeIa(e.reponses.autre ?? '');
+  if (!moderation.ok) throw new ErreurMetier('ENTREE_INVALIDE', moderation.message);
   if (!s.client)
     throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
   const artisan = await s.db.doc(chemins.artisan(ctx.artisanId)).get();
