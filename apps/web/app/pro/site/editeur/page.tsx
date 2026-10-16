@@ -1,6 +1,7 @@
 import { questionsCreation } from '@ph/core/sites';
 import { lireCreationIa, lireRestantsIaSite, lireSiteEdition } from '@ph/firebase/sites';
 import { appAdmin } from '@ph/firebase/admin';
+import { blogPublic } from '@ph/firebase/blog';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -19,13 +20,14 @@ export default async function PageEditeur({
   const acces = await accesSite(routes.proSiteEditeur());
   const db = getFirestore(appAdmin());
   const q = await searchParams;
-  const [site, medias, tableau, creation, fiche, restantsIa] = await Promise.all([
+  const [site, medias, tableau, creation, fiche, restantsIa, blog] = await Promise.all([
     lireSiteEdition(db, acces.artisanId),
     mediasDuSite(acces.artisanId),
     tableauSite(acces.artisanId),
     lireCreationIa(db, acces.artisanId),
     q.creation === '1' ? ficheCreation(acces.artisanId) : null,
     lireRestantsIaSite({ db, horloge: Date.now }, acces.artisanId),
+    blogPublic(db, acces.artisanId, 12),
   ]);
   if (!site.existe || !site.theme || !site.navigation) redirect(routes.proSite);
   const { page, panneau } = q;
@@ -43,6 +45,7 @@ export default async function PageEditeur({
       offre={site.offre ?? 'gratuit'}
       iaComplete={acces.sitePro}
       restantsIa={restantsIa}
+      blog={blog}
       {...(fiche ? { questionnaire: questionsCreation(fiche) } : {})}
       apercuInitial={enAttente && !acces.sitePro ? (creation.apercu ?? null) : null}
       reprise={!enAttente || !acces.sitePro ? 'non' : q.ia === 'reprendre' ? 'auto' : 'proposee'}

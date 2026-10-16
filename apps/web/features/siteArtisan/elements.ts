@@ -1,6 +1,7 @@
 import type { Appareil, ChampFormulaire, Couleur, Element, PageSite } from '@ph/core/sites';
 import { balise, texteRiche } from './actions';
 import { esc } from './html';
+import { rendreCartesBlog, type ArticleRendu, type ClassementRendu } from './blog';
 
 export interface ContexteRendu {
   pages: Record<string, Pick<PageSite, 'slug'>>;
@@ -10,6 +11,8 @@ export interface ContexteRendu {
   turnstileSiteKey?: string;
   /** Éditeur seulement : sections et éléments changés par une proposition de l'IA. */
   surligner?: ReadonlySet<string>;
+  /** Articles publiés du site, pour l'élément « Articles du blog » (BLOG §6). */
+  blog?: { articles: readonly ArticleRendu[]; classement: ClassementRendu };
 }
 
 const JETONS: Record<string, string> = {
@@ -99,8 +102,15 @@ export function rendreElement(e: Element, ctx: ContexteRendu): string {
     case 'logo':
       return `<p class="${base} logo-el" style="${esc(mb)}">${esc(e.p.texte)}</p>`;
     case 'menu':
-    case 'blog':
       return '';
+    case 'blog':
+      return ctx.blog
+        ? rendreCartesBlog(ctx.blog.articles, e.p, {
+            media: ctx.media,
+            classement: ctx.blog.classement,
+            classe: base,
+          })
+        : '';
   }
 }
 

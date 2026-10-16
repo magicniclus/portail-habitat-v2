@@ -1,5 +1,7 @@
+import { elementsDe } from '@ph/core/sites';
 import { pageDuChemin } from '@ph/firebase/sites';
 import { rendreDocument } from '@/features/siteArtisan/document';
+import { blogServi, fichierSite, pageBlog } from '@/server/blogsPublics';
 import { resoudreMedia, siteServi } from '@/server/sitesPublics';
 
 export const dynamic = 'force-dynamic';
@@ -22,9 +24,9 @@ export async function GET(
   { params }: { params: Promise<{ hote: string; chemin?: string[] }> },
 ) {
   const { hote, chemin } = await params;
+  const segments = (chemin ?? []).map(decodeURIComponent);
   const site = await siteServi(decodeURIComponent(hote));
-  const trouve = site && pageDuChemin(site, `/${(chemin ?? []).join('/')}`);
-  if (!site || !trouve) return html(PAGE_404, 404, 'public, s-maxage=30');
+  if (!site) return html(PAGE_404, 404, 'public, s-maxage=30');
   // Une seule adresse canonique (DOM-05) : sous-domaine ou variante www/nu → 301.
   if (site.canonique !== decodeURIComponent(hote))
     return new Response(null, {
@@ -34,6 +36,16 @@ export async function GET(
         'Cache-Control': 'public, s-maxage=300',
       },
     });
+  // Blog (BLOG §7), plan du site et robots.txt.
+  const special =
+    segments[0] === 'blog'
+      ? await pageBlog(site, segments.slice(1))
+      : segments.length === 1
+        ? await fichierSite(site, segments[0]!)
+        : null;
+  if (special) return special;
+  const trouve = pageDuChemin(site, `/${segments.join('/')}`);
+  if (!trouve) return html(PAGE_404, 404, 'public, s-maxage=30');
   const corps = rendreDocument(
     {
       hote: site.canonique,
@@ -49,6 +61,10 @@ export async function GET(
       pages: site.pages,
       media: resoudreMedia(site),
       champs: site.champs,
+      // Articles lus seulement si la page affiche l'élément « Articles du blog » (COUTS.md).
+      ...(elementsDe(trouve.page).some((x) => x.el.type === 'blog')
+        ? { blog: await blogServi(site.siteId) }
+        : {}),
       ...(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
         ? { turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY }
         : {}),

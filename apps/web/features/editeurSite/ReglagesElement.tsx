@@ -23,12 +23,15 @@ export function ReglagesElement({
   pages,
   medias,
   erreurAction,
+  categoriesBlog = [],
 }: {
   el: Element;
   onChange: (p: Record<string, unknown>) => void;
   pages: Record<string, PageSite>;
   medias: Record<string, string>;
   erreurAction: (a: Action) => string | null;
+  /** Catégories du blog, pour l'élément « Articles du blog ». */
+  categoriesBlog?: { id: string; nom: string }[];
 }) {
   const p = el.p as Record<string, unknown>;
   const texte = (cle: string, label: string, long = false) => (
@@ -114,6 +117,48 @@ export function ReglagesElement({
       {el.type === 'video' ? texte('url', 'Adresse YouTube') : null}
       {el.type === 'carte' ? texte('adresse', 'Adresse') : null}
       {el.type === 'logo' ? texte('texte', 'Nom affiché') : null}
+      {el.type === 'blog' ? (
+        <>
+          <Field label="Affichage">
+            <Select
+              value={el.p.affichage}
+              onChange={(e) => onChange({ affichage: e.target.value })}
+            >
+              <option value="grille">Grille</option>
+              <option value="liste">Liste</option>
+              <option value="une">À la une</option>
+            </Select>
+          </Field>
+          <Field label="Nombre d’articles">
+            <Select
+              value={String(el.p.nb)}
+              onChange={(e) => onChange({ nb: Number(e.target.value) })}
+            >
+              {[3, 6, 9].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Catégorie">
+            <Select value={el.p.cat} onChange={(e) => onChange({ cat: e.target.value })}>
+              <option value="">Toutes</option>
+              {categoriesBlog.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nom}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Checkbox
+            checked={el.p.extrait}
+            onChange={(e) => onChange({ extrait: e.target.checked })}
+          >
+            Afficher le résumé
+          </Checkbox>
+        </>
+      ) : null}
       {AVEC_TEXTE_MOBILE.has(el.type) ? (
         <div className="grid gap-2">
           <Checkbox

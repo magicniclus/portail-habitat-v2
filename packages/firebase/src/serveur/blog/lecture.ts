@@ -1,5 +1,5 @@
 import type { StatutArticle } from '@ph/core/blog';
-import type { Firestore, Timestamp } from 'firebase-admin/firestore';
+import { FieldValue, type Firestore, type Timestamp } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
 const ms = (t: unknown) => (t ? (t as Timestamp).toMillis() : undefined);
@@ -183,4 +183,79 @@ export async function auteursBlog(
       nom: (users[i]?.get('nomAffiche') as string | undefined) || 'Membre de l’équipe',
     }))
     .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+}
+
+export interface ResumeArticle {
+  slug: string;
+  titre: string;
+  sousTitre: string;
+  meta: string;
+  image: { src: string; alt: string };
+  categorieId: string;
+  tags: string[];
+  datePublication: number;
+  modifieLe: number;
+}
+
+/**
+ * Blog d'un site pour le rendu public : résumés des articles publiés (sans le corps), catégories
+ * et tags. Toujours limité au site demandé (BLOG-07).
+ */
+export async function blogPublic(
+  db: Firestore,
+  artisanId: string,
+  limite = 60,
+): Promise<{ articles: ResumeArticle[]; classement: Classement }> {
+  const [r, classement] = await Promise.all([
+    db
+      .collection(chemins.articlesBlog(artisanId))
+      .where('statut', '==', 'publie')
+      .orderBy('datePublication', 'desc')
+      .select(
+        'slug',
+        'titre',
+        'sousTitre',
+        'meta',
+        'image',
+        'categorieId',
+        'tags',
+        'datePublication',
+        'modifieLe',
+      )
+      .limit(limite)
+      .get(),
+    lireClassement(db, artisanId),
+  ]);
+  return {
+    articles: r.docs.map((d) => {
+      const a = d.data();
+      return {
+        slug: a.slug as string,
+        titre: a.titre as string,
+        sousTitre: (a.sousTitre as string) ?? '',
+        meta: a.meta as string,
+        image: a.image as { src: string; alt: string },
+        categorieId: a.categorieId as string,
+        tags: (a.tags as string[]) ?? [],
+        datePublication: ms(a.datePublication)!,
+        modifieLe: ms(a.modifieLe)!,
+      };
+    }),
+    classement,
+  };
+}
+
+/** Vue d'un article publié (mesure sans cookie, BLOG §5) ; adresse inconnue : rien n'est compté. */
+export async function compterVueArticle(
+  db: Firestore,
+  artisanId: string,
+  slug: string,
+): Promise<void> {
+  const r = await db
+    .collection(chemins.articlesBlog(artisanId))
+    .where('statut', '==', 'publie')
+    .where('slug', '==', slug)
+    .limit(1)
+    .get();
+  if (!r.empty) await r.docs[0]!.ref.update({ vues: FieldValue.increment(1) });
 }

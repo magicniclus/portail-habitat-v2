@@ -115,6 +115,7 @@ export function EditeurSite(props: ProprietesEditeur) {
                   pages={s.b.pages}
                   medias={props.medias}
                   erreurAction={s.erreurAction(pageId)}
+                  categoriesBlog={props.blog.classement.categories}
                 />
               </>
             ) : null}

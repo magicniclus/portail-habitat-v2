@@ -1,6 +1,7 @@
 import { estRobot } from '@ph/core/comportement';
 import { z } from '@ph/core/zod';
 import { appAdmin } from '@ph/firebase/admin';
+import { compterVueArticle } from '@ph/firebase/blog';
 import { compterVueSite, pageDuChemin } from '@ph/firebase/sites';
 import { getFirestore } from 'firebase-admin/firestore';
 import { headers } from 'next/headers';
@@ -28,6 +29,10 @@ const compter = actionMesure(
     // Page inconnue : rien n'est compté (aucune clé libre dans les compteurs).
     if (site && page)
       await compterVueSite(getFirestore(appAdmin()), site.siteId, page.id, Date.now());
+    // Article du blog : vues de l'article (onglet Blog, BLOG §5).
+    const article = site && !page ? /^\/blog\/([a-z0-9-]{1,80})$/.exec(e.p) : null;
+    if (site && article)
+      await compterVueArticle(getFirestore(appAdmin()), site.siteId, article[1]!);
     return null;
   },
 );

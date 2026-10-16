@@ -2,6 +2,7 @@ import type { ChampFormulaire, OperationIa, QuestionCreation } from '@ph/core/si
 import type { Panneau } from './BarreEditeur';
 import type { RestantsIa } from './modesIa';
 import type { BrouillonSite } from './useBrouillonSite';
+import type { ArticleRendu, ClassementRendu } from '@/features/siteArtisan/blog';
 
 /** Données de l'éditeur, lues côté serveur par la page `/pro/site/editeur`. */
 export interface ProprietesEditeur {
@@ -22,4 +23,6 @@ export interface ProprietesEditeur {
   apercuInitial: OperationIa[] | null;
   /** Site Pro actif et création en attente : `auto` si l'artisan revient du paiement. */
   reprise: 'non' | 'proposee' | 'auto';
+  /** Articles publiés : aperçu de l'élément « Articles du blog ». */
+  blog: { articles: ArticleRendu[]; classement: ClassementRendu };
 }

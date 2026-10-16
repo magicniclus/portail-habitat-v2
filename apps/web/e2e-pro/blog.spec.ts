@@ -90,6 +90,50 @@ test.describe('Blog des artisans', () => {
       );
       expect(lignes[1]).toContain(`${TITRE};`);
       expect(lignes[1]).toContain(';Publié;Chauffage;');
+
+      // Sur le site de l'artisan : page de l'article, mentions lues en direct (BLOG-05), RSS.
+      const site = db.doc(chemins.site(id));
+      if (!(await site.get()).get('versionPubliee'))
+        expect(
+          await page.evaluate(() =>
+            fetch('/api/pro/site/publier', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: '{}',
+            }).then((r) => r.status),
+          ),
+        ).toBe(200);
+      const hote = `http://${(await site.get()).get('sousDomaine') as string}.localhost:3200`;
+      const slug = (await db.doc(chemins.articleBlog(id, '_')).parent.get()).docs[0]!.get('slug');
+      await expect(async () => {
+        const r = await page.goto(`${hote}/blog/${slug}`);
+        expect(r?.status()).toBe(200);
+        await expect(page.getByRole('heading', { name: TITRE })).toBeVisible({ timeout: 1000 });
+      }).toPass({ timeout: 60_000 });
+      await expect(page.getByText('SMABTP, contrat E2E-1, France')).toBeVisible();
+      await db
+        .doc(chemins.parametresFacturation(id))
+        .update({ 'assuranceDecennale.contrat': 'E2E-2' });
+      await page.reload();
+      await expect(page.getByText('SMABTP, contrat E2E-2, France')).toBeVisible();
+      expect(await page.locator('script[type="application/ld+json"]').textContent()).toContain(
+        '"@type":"BlogPosting"',
+      );
+      await expect(async () => {
+        await page.goto(`${hote}/blog`);
+        await expect(page.getByRole('link', { name: new RegExp(TITRE) })).toBeVisible({
+          timeout: 1000,
+        });
+      }).toPass({ timeout: 60_000 });
+      // Même origine que le site (Node ne résout pas *.localhost).
+      const rss = await page.evaluate(() =>
+        fetch('/blog/rss.xml').then(async (r) => ({
+          type: r.headers.get('content-type') ?? '',
+          texte: await r.text(),
+        })),
+      );
+      expect(rss.type).toContain('application/rss+xml');
+      expect(rss.texte).toContain(`/blog/${slug}</link>`);
     } finally {
       await restaurer();
     }

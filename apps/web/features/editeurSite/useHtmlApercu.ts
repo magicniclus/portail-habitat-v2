@@ -9,6 +9,7 @@ import {
 } from '@ph/core/sites';
 import { useMemo } from 'react';
 import { rendreDocument } from '@/features/siteArtisan/document';
+import type { ContexteRendu } from '@/features/siteArtisan/elements';
 import type { BrouillonSite } from './useBrouillonSite';
 
 /**
@@ -26,9 +27,10 @@ export function useHtmlApercu(
     champs?: ChampFormulaire[];
     apercuIa: OperationIa[] | null;
     proposition: OperationIa[] | null;
+    blog?: ContexteRendu['blog'];
   },
 ): string {
-  const { hote, offre, medias, champs, apercuIa, proposition } = o;
+  const { hote, offre, medias, champs, apercuIa, proposition, blog } = o;
   return useMemo(() => {
     const ops = apercuIa ?? proposition;
     let n = 0;
@@ -54,7 +56,8 @@ export function useHtmlApercu(
         media: (src) => medias[src] ?? null,
         champs: offre === 'site_pro' && champs ? champs : FORMULAIRE_GRATUIT,
         ...(c.ids.length ? { surligner: new Set(c.ids) } : {}),
+        ...(blog ? { blog } : {}),
       },
     );
-  }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition]);
+  }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition, blog]);
 }

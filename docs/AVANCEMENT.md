@@ -747,7 +747,13 @@ Fait (tranche 2, écrans) :
 
 Choix signalés : pas de pilote automatique ni d'« Article en un clic » à l'écran (D70) ; statistiques de lecture et panneau IA de l'éditeur avec la tranche 3.
 
-Reste : affichage sur le site (élément « Articles du blog », pages `/blog`, catégories, RSS, sitemap, `BlogPosting`, mentions sous l'article), statistiques de lecture sans cookie, IA de rédaction et de retouche.
+Fait (tranche 3a, le blog sur le site) :
+- Élément « Articles du blog » rendu (grille de cartes de 240 px minimum, liste, à la une ; nombre, catégorie, résumé), réglable dans l'éditeur de site et visible dans son aperçu ; articles lus seulement si la page contient l'élément (COUTS.md), cache de 30 s.
+- Pages publiques : `/blog` (onglets des catégories dans leur ordre), `/blog/{slug}` (ancienne adresse → 301), `/blog/categorie/{slug}` indexée, `/blog/tag/{slug}` en `noindex`, `/blog/rss.xml`, `BlogPosting` lié à l'entreprise, mentions légales lues en direct sous chaque article (BLOG-05). `sitemap.xml` (pages, blog, catégories utilisées, articles) et `robots.txt` du site.
+- Vues par article comptées par la mesure sans cookie existante (colonne Vues de l'onglet Blog).
+- Tests : rendu (cartes, index, article, `BlogPosting`, RSS, plan du site), e2e de bout en bout (article publié visible sur `{slug}.localhost`, mentions modifiées visibles sans republier, RSS).
+
+Reste : IA de rédaction et de retouche (crédits 5/15, BLOG-02, 03, 14) ; statistiques détaillées (lecteurs uniques, rebond, sources) et positions Search Console.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

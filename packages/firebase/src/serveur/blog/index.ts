@@ -10,11 +10,14 @@ export {
   articleParAdresse,
   articlesPublies,
   auteursBlog,
+  blogPublic,
+  compterVueArticle,
   lireArticle,
   lireClassement,
   listerArticles,
   type ArticleComplet,
   type ArticleListe,
+  type ResumeArticle,
   type Classement,
 } from './lecture';
 export { publierArticlesPlanifies, viderCorbeilleBlog } from './planifiees';

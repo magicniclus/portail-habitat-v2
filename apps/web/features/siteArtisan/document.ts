@@ -1,6 +1,7 @@
 import type { Navigation, PageSite, Section, Theme } from '@ph/core/sites';
 import { balise } from './actions';
 import { css, masques, parAppareil, rendreElement, type ContexteRendu } from './elements';
+import { STYLE_BLOG } from './blog';
 import { esc } from './html';
 
 const POLICES: Record<Theme['polices'], { titre: string; texte: string; poids: number }> = {
@@ -120,10 +121,16 @@ export interface DocumentSite {
   offre: 'gratuit' | 'site_pro';
   theme: Theme;
   navigation: Navigation;
-  page: PageSite;
+  page: Pick<PageSite, 'slug' | 'nom' | 'seo' | 'sections' | 'sansNavigation'>;
   pages: Record<string, PageSite>;
   nomEntreprise: string;
   urlFiche?: string;
+  /** Pages du blog : contenu déjà rendu à la place des sections (BLOG §7). */
+  contenu?: string;
+  /** Données structurées propres à la page (`BlogPosting`), sinon l'entreprise. */
+  jsonLd?: object;
+  /** Pages de tag : hors index. */
+  noindex?: boolean;
 }
 
 /**
@@ -136,17 +143,19 @@ const SURLIGNAGE =
 
 export function rendreDocument(d: DocumentSite, ctx: ContexteRendu): string {
   const canonique = `https://${d.hote}/${d.page.slug}`;
-  const sections = d.page.sections.map((s) => rendreSection(s, ctx)).join('');
-  const jsonLd = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    name: d.nomEntreprise,
-    url: `https://${d.hote}/`,
-  }).replace(/</g, '\\u003c');
+  const sections = d.contenu ?? d.page.sections.map((s) => rendreSection(s, ctx)).join('');
+  const jsonLd = JSON.stringify(
+    d.jsonLd ?? {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: d.nomEntreprise,
+      url: `https://${d.hote}/`,
+    },
+  ).replace(/</g, '\\u003c');
   const mention =
     d.offre === 'gratuit'
       ? `<p>Site créé avec <a href="https://portailhabitat.fr/pro/site-internet-artisan" rel="noopener">Portail Habitat</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Habitat</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}"><meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${ctx.surligner?.size ? SURLIGNAGE : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${SCRIPT_SITE}</script></body></html>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${SCRIPT_SITE}</script></body></html>`;
 }
