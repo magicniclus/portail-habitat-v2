@@ -123,7 +123,7 @@ export function garderFaitsOperation(
 }
 
 /** Fiche vérifiée et réponses de l'artisan : seules sources autorisées pour les faits. */
-async function sourcesFiche(s: ServicesSites, artisanId: string): Promise<string> {
+export async function sourcesFiche(s: ServicesSites, artisanId: string): Promise<string> {
   const [pub, param] = await Promise.all([
     s.db.doc(chemins.artisanPublic(artisanId)).get(),
     s.db.doc(chemins.parametresFacturation(artisanId)).get(),

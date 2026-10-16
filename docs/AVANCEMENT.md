@@ -753,7 +753,13 @@ Fait (tranche 3a, le blog sur le site) :
 - Vues par article comptées par la mesure sans cookie existante (colonne Vues de l'onglet Blog).
 - Tests : rendu (cartes, index, article, `BlogPosting`, RSS, plan du site), e2e de bout en bout (article publié visible sur `{slug}.localhost`, mentions modifiées visibles sans republier, RSS).
 
-Reste : IA de rédaction et de retouche (crédits 5/15, BLOG-02, 03, 14) ; statistiques détaillées (lecteurs uniques, rebond, sources) et positions Search Console.
+Fait (tranche 3b, IA du blog) :
+- Panneau **IA** de l'éditeur d'article : rédaction complète (sujet, type d'article, longueur, citer chantiers et avis) qui remplace le texte et pose le badge « rédigé avec l'IA » ; retouches illimitées : titres, méta-description, texte alternatif, catégorie et tags (tags proposés ajoutés d'un clic), textes réseaux (onglet Diffusion), idées d'articles (une idée devient le sujet). Rien n'est enregistré ni publié par l'IA.
+- Serveur `demanderIaBlog` : filtre de modération, droits revérifiés, crédit `blogArticles` du mois réservé puis rendu en cas d'échec (BLOG-02 : 6e refusée en Site Pro, 16e en Tout inclus ; BLOG-14 : simple message en Tout inclus), retouches sans décompte (BLOG-03), une relance si la sortie est hors format, faits non sourcés remplacés par « [à compléter] » (texte seulement, jamais dans les liens), session journalisée (`blog.v1`, coût).
+- Contrôle SEO : un « [à compléter] » restant bloque la publication.
+- Tests : cœur (schémas, lecture des sorties, garde-fou HTML, messages), 4 tests serveur avec un faux client, e2e sans clé (message clair, quota intact).
+
+Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à valider : mode autonome et pilote automatique (D70, BLOG-10 à 13), données de mots-clés (D68), publication automatique sur les réseaux (D69), commentaires (D67), prix d'un blog renforcé (D71). Reportés : statistiques détaillées de lecture (lecteurs uniques, rebond, sources), positions Search Console (clés à fournir), abonnés au blog. La génération réelle est à vérifier avec la clé `ANTHROPIC_API_KEY`.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
@@ -784,5 +790,5 @@ Reste : IA de rédaction et de retouche (crédits 5/15, BLOG-02, 03, 14) ; stati
 - 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
 - 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
 - 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
-- 16/10/2026 — Lot 10d commencé : cœur et serveur du blog. Détail : §29.
+- 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.

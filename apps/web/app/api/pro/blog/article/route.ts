@@ -9,12 +9,13 @@ export const POST = routeSite(
   'enregistrerArticle',
   entreeArticle,
   (s, ctx, e) => {
-    const { articleId, slug, auteurUid, ...reste } = e;
+    const { articleId, slug, auteurUid, genereParIA, ...reste } = e;
     return enregistrerArticle(s, ctx, {
       ...reste,
       ...(articleId ? { articleId } : {}),
       ...(slug ? { slug } : {}),
       ...(auteurUid ? { auteurUid } : {}),
+      ...(genereParIA ? { genereParIA } : {}),
     });
   },
   400 * 1024,

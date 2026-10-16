@@ -19,6 +19,7 @@ export interface ChampsArticle {
   categorieId: string;
   tags: string[];
   auteurUid: string;
+  genereParIA: boolean;
 }
 
 const vide = (auteur: string, categorie: string): ChampsArticle => ({
@@ -34,6 +35,7 @@ const vide = (auteur: string, categorie: string): ChampsArticle => ({
   categorieId: categorie,
   tags: [],
   auteurUid: auteur,
+  genereParIA: false,
 });
 
 /**
@@ -58,6 +60,7 @@ export function useArticle(d: EditeurArticleDonnees, moi: string) {
       categorieId: a.categorieId,
       tags: a.tags,
       auteurUid: a.auteurUid,
+      genereParIA: a.genereParIA,
     };
   });
   const [id, setId] = useState(d.article?.id);

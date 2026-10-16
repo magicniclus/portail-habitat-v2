@@ -21,3 +21,4 @@ export {
   type Classement,
 } from './lecture';
 export { publierArticlesPlanifies, viderCorbeilleBlog } from './planifiees';
+export { demanderIaBlog, type PropositionIaBlog, type ServicesIaBlog } from './ia';

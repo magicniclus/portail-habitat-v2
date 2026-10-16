@@ -34,7 +34,7 @@ export async function lireMentionsBlog(db: Firestore, artisanId: string) {
   return mentionsBlog((p.data() as Partial<ParametresFacturation> | undefined) ?? null);
 }
 
-const moisParis = (ms: number) =>
+export const moisParis = (ms: number) =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(ms).slice(0, 7);
 
 /** Rédactions complètes par l'IA ce mois-ci (D66 : 5 ou 15), compteur à côté de celui du site. */

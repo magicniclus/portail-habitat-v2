@@ -160,4 +160,22 @@ test.describe('Blog des artisans', () => {
       await artisan.update({ droits });
     }
   });
+
+  test('IA du blog sans clé configurée : message clair, aucun crédit consommé (BLOG-03)', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/blog/nouveau');
+    await expect(page.getByText('Articles rédigés par l’IA ce mois-ci')).toBeVisible();
+    await page.getByLabel('Sujet ou mot-clé').fill('prix pompe à chaleur Bordeaux');
+    await page.getByRole('button', { name: '✦ Rédiger l’article' }).click();
+    await expect(page.getByText('L’assistant du blog n’est pas encore disponible.')).toBeVisible();
+    await page.getByRole('button', { name: 'Titres' }).click();
+    await expect(page.getByText('L’assistant du blog n’est pas encore disponible.')).toBeVisible();
+    const { db } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    const mois = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' })
+      .format(Date.now())
+      .slice(0, 7);
+    expect((await db.doc(chemins.compteurIaSite(id, mois)).get()).get('blogArticles') ?? 0).toBe(0);
+  });
 });

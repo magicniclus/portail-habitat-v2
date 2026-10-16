@@ -24,6 +24,7 @@ export interface EntreeArticle {
   categorieId: string;
   tags: string[];
   auteurUid?: string;
+  genereParIA?: boolean;
 }
 
 const EN_LIGNE: StatutArticle[] = ['publie', 'planifie'];
@@ -97,8 +98,8 @@ export async function enregistrerArticle(
       auteurUid: e.auteurUid ?? (avant?.auteurUid as string | undefined) ?? ctx.uid,
       statut,
       ...(avant?.datePublication ? { datePublication: avant.datePublication } : {}),
-      genereParIA: (avant?.genereParIA as boolean | undefined) ?? false,
-      origine: (avant?.origine as string | undefined) ?? 'manuel',
+      genereParIA: Boolean(avant?.genereParIA) || e.genereParIA === true,
+      origine: avant?.origine === 'ia' || e.genereParIA ? 'ia' : 'manuel',
       ...(avant?.postsReseaux ? { postsReseaux: avant.postsReseaux } : {}),
       seo,
       vues: (avant?.vues as number | undefined) ?? 0,

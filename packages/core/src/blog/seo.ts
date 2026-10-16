@@ -1,3 +1,4 @@
+import { A_COMPLETER } from '../sites/ia/operations';
 import { contientMotCle, statsTexte } from './html';
 
 export interface ArticleAControler {
@@ -32,6 +33,9 @@ export function controleSeo(
   const t = a.titre.trim();
   const m = a.meta.trim();
   const s = statsTexte(a.corpsHtml, a.motCle);
+  const aCompleter = [a.titre, a.meta, a.corpsHtml, a.image.alt].some((x) =>
+    x.includes(A_COMPLETER),
+  );
   const bloquants: [boolean, PointSeo][] = [
     [t.length >= 10 && t.length <= 70, { cle: 'titre', libelle: 'Titre de 10 à 70 caractères' }],
     [
@@ -51,6 +55,7 @@ export function controleSeo(
       ctx.mentionsCompletes,
       { cle: 'mentions', libelle: 'Mentions légales complètes (Devis & factures › Paramètres)' },
     ],
+    [!aCompleter, { cle: 'aCompleter', libelle: 'Informations à compléter (« [à compléter] »)' }],
   ];
   const recommandations: [boolean, PointSeo][] = [
     [

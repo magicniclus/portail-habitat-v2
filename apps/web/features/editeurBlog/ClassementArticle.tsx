@@ -11,10 +11,13 @@ export function ClassementArticle({
   c,
   maj,
   d,
+  suggeres = [],
 }: {
   c: ChampsArticle;
   maj: (p: Partial<ChampsArticle>) => void;
   d: EditeurArticleDonnees;
+  /** Tags proposés par l'IA, ajoutés d'un clic. */
+  suggeres?: string[];
 }) {
   const [tags, setTags] = useState(d.classement.tags);
   const [saisie, setSaisie] = useState('');
@@ -66,6 +69,16 @@ export function ClassementArticle({
             {t.nom}
           </Chip>
         ))}
+        {suggeres
+          .filter(
+            (n) =>
+              !tags.some((t) => t.nom.toLowerCase() === n.toLowerCase() && c.tags.includes(t.id)),
+          )
+          .map((n) => (
+            <Chip key={n} onClick={() => void ajouter(n)}>
+              ✦ + {n}
+            </Chip>
+          ))}
         <form
           onSubmit={(e) => {
             e.preventDefault();

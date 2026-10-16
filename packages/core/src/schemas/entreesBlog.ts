@@ -1,3 +1,4 @@
+import { ACTIONS_IA_BLOG, TYPES_ARTICLE } from '../blog/ia';
 import { z } from '../zod';
 import { id } from './commun';
 
@@ -22,6 +23,8 @@ export const entreeArticle = z.object({
   categorieId: z.string().max(60),
   tags: z.array(id).max(20),
   auteurUid: id.optional(),
+  /** Texte rédigé par l'IA (badge « rédigé avec l'IA », définitif une fois posé). */
+  genereParIA: z.boolean().optional(),
 });
 
 /** Actions sur un ou plusieurs articles (BLOG §5) ; « planifier » exige une date future. */
@@ -42,3 +45,18 @@ export const entreeTagBlog = z.discriminatedUnion('action', [
   z.object({ action: z.literal('creer'), nom: z.string().trim().min(1).max(40) }),
   z.object({ action: z.literal('supprimer'), id }),
 ]);
+
+/** Demande à l'IA du blog : rédaction complète (1 crédit) ou retouche (illimitée). */
+export const entreeIaBlog = z.object({
+  action: z.enum(ACTIONS_IA_BLOG),
+  sujet: z.string().trim().max(300).optional(),
+  type: z.enum(TYPES_ARTICLE).optional(),
+  longueur: z.enum(['court', 'moyen', 'long']).optional(),
+  chantiers: z.boolean().optional(),
+  article: z.object({
+    titre: z.string().max(200),
+    meta: z.string().max(320),
+    motCle: z.string().max(80),
+    corps: z.string().max(20_000),
+  }),
+});

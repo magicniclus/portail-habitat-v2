@@ -19,10 +19,13 @@ export function PanneauDiffusion({
   c,
   url,
   tags,
+  posts,
 }: {
   c: ChampsArticle;
   url: string;
   tags: string[];
+  /** Textes rédigés par l'IA (retouche « Textes réseaux ») ; sinon texte simple de l'article. */
+  posts?: Record<string, string>;
 }) {
   const [reseau, setReseau] = useState<(typeof RESEAUX)[number][0]>('facebook');
   const [copie, setCopie] = useState(false);
@@ -34,9 +37,11 @@ export function PanneauDiffusion({
         .replace(/[^A-Za-z0-9]/g, '')}`,
   );
   const lien = reseau === 'instagram' ? 'Lien dans la bio.' : url;
-  const texte = [c.titre, c.meta, lien, reseau === 'google' ? '' : hashtags.join(' ')]
-    .filter(Boolean)
-    .join('\n\n');
+  const texte =
+    posts?.[reseau] ??
+    [c.titre, c.meta, lien, reseau === 'google' ? '' : hashtags.join(' ')]
+      .filter(Boolean)
+      .join('\n\n');
   return (
     <div className="grid gap-3">
       <p className="m-0 text-[15px] text-neutre-800">Copiez, collez, publiez.</p>
