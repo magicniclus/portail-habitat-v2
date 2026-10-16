@@ -1,3 +1,4 @@
+import { versCsv } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   auditerAdmin,
@@ -9,8 +10,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { lireSessionAdmin, mfaAdminDesactivee } from '@/server/sessionAdmin';
 
 export const dynamic = 'force-dynamic';
-
-const champCsv = (v: string) => (/[;"\r\n]/.test(v) ? `"${v.replaceAll('"', '""')}"` : v);
 
 /** Export du journal d'audit filtré (`audit.lire`, double authentification) ; l'export est journalisé. */
 export async function GET(requete: Request) {
@@ -40,15 +39,17 @@ export async function GET(requete: Request) {
     },
     Date.now(),
   );
-  const csv = [
-    'date;acteur;action;cible;motif;detail',
-    ...journal.map((x) =>
-      [new Date(x.le).toISOString(), x.acteur, x.action, x.cible, x.motif, x.detail]
-        .map(champCsv)
-        .join(';'),
-    ),
-    '',
-  ].join('\r\n');
+  const csv = versCsv(
+    ['date', 'acteur', 'action', 'cible', 'motif', 'detail'],
+    journal.map((x) => [
+      new Date(x.le).toISOString(),
+      x.acteur,
+      x.action,
+      x.cible,
+      x.motif,
+      x.detail,
+    ]),
+  );
   return new Response(csv, {
     headers: {
       'content-type': 'text/csv; charset=utf-8',

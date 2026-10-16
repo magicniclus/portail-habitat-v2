@@ -20,6 +20,7 @@
     "./pro": "./src/serveur/pro/index.ts",
     "./devis": "./src/serveur/devis/index.ts",
     "./sites": "./src/serveur/sites/index.ts",
+    "./blog": "./src/serveur/blog/index.ts",
     "./facturation": "./src/serveur/facturation/index.ts",
     "./matching": "./src/serveur/matching/index.ts",
     "./client": "./src/client/index.ts",

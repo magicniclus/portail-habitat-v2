@@ -1,6 +1,7 @@
 import * as appelsOffres from './appelsOffres';
 import * as artisans from './artisans';
 import * as avis from './avis';
+import * as blog from './blog';
 import * as comportement from './comportement';
 import * as comptes from './comptes';
 import * as conversion from './conversion';
@@ -18,6 +19,8 @@ export * from './commun';
 export * from './appelsOffres';
 export * from './artisans';
 export * from './avis';
+export * from './blog';
+export * from './entreesBlog';
 export * from './comportement';
 export * from './comptes';
 export * from './conversion';
@@ -78,6 +81,9 @@ export const SCHEMAS = {
   'sites/{}/iaCreation/{}': sites.creationIaSite,
   'sites/{}/modeles/{}': sites.modeleSite,
   'sites/{}/statsMois/{}': sites.statsSite,
+  'sites/{}/articles/{}': blog.articleBlog,
+  'sites/{}/blogCategories/{}': blog.categorieBlog,
+  'sites/{}/blogTags/{}': blog.tagBlog,
   'sitesSlugs/{}': sites.indexSite,
   'sitesDomaines/{}': sites.indexSite,
   'artisansPublic/{}': artisans.artisanPublic,

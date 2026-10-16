@@ -1,3 +1,4 @@
+import { versCsv } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   auditerAdmin,
@@ -9,8 +10,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { lireSessionAdmin, mfaAdminDesactivee } from '@/server/sessionAdmin';
 
 export const dynamic = 'force-dynamic';
-
-const champCsv = (v: string) => (/[;"\r\n]/.test(v) ? `"${v.replaceAll('"', '""')}"` : v);
 
 /** Export CSV du journal de conversion filtré (`conversion.lire`, double authentification), journalisé. */
 export async function GET(requete: Request) {
@@ -35,23 +34,18 @@ export async function GET(requete: Request) {
     },
     Date.now(),
   );
-  const csv = [
-    'date;entreprise;type;modele;raison;fonction;details',
-    ...traces.map((t) =>
-      [
-        new Date(t.le).toISOString(),
-        t.entreprise,
-        t.type,
-        t.modele ?? '',
-        t.raison ?? '',
-        t.fonction ?? '',
-        JSON.stringify(t.details),
-      ]
-        .map(champCsv)
-        .join(';'),
-    ),
-    '',
-  ].join('\r\n');
+  const csv = versCsv(
+    ['date', 'entreprise', 'type', 'modele', 'raison', 'fonction', 'details'],
+    traces.map((t) => [
+      new Date(t.le).toISOString(),
+      t.entreprise,
+      t.type,
+      t.modele ?? '',
+      t.raison ?? '',
+      t.fonction ?? '',
+      JSON.stringify(t.details),
+    ]),
+  );
   return new Response(csv, {
     headers: {
       'content-type': 'text/csv; charset=utf-8',

@@ -115,6 +115,13 @@ export const chemins = {
   modeleSite: (id: string, m: string) => `sites/${id}/modeles/${m}`,
   statsMoisSite: (id: string, mois: string) => `sites/${id}/statsMois/${mois}`,
   pagesSite: (id: string) => `sites/${id}/pages`,
+  /** Blog de l'artisan (BLOG.md, DATABASE §15 quater). */
+  articlesBlog: (id: string) => `sites/${id}/articles`,
+  articleBlog: (id: string, a: string) => `sites/${id}/articles/${a}`,
+  categoriesBlog: (id: string) => `sites/${id}/blogCategories`,
+  categorieBlog: (id: string, c: string) => `sites/${id}/blogCategories/${c}`,
+  tagsBlog: (id: string) => `sites/${id}/blogTags`,
+  tagBlog: (id: string, t: string) => `sites/${id}/blogTags/${t}`,
   pageSite: (id: string, pageId: string) => `sites/${id}/pages/${pageId}`,
   navigationSite: (id: string) => `sites/${id}/reglages/navigation`,
   versionsSite: (id: string) => `sites/${id}/versions`,

@@ -44,7 +44,8 @@
     "./ia": "./src/ia/index.ts",
     "./landings": "./src/landings/index.ts",
     "./devis": "./src/devis/index.ts",
-    "./sites": "./src/sites/index.ts"
+    "./sites": "./src/sites/index.ts",
+    "./blog": "./src/blog/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

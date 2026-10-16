@@ -721,6 +721,27 @@ Fait (tranche 3, IA_SITE §1, §4, §5) :
 
 Lot 10c : tout le périmètre d'IA_SITE est codé. Reste à vérifier la génération réelle avec la clé `ANTHROPIC_API_KEY` (temps de création des 7 pages, SITE-01 < 90 s) et à valider D48, D50, D51. La palette « extraite du logo » reste la palette par défaut des tokens tant que l'extraction depuis le logo n'est pas faite (traitement d'image côté serveur, à prévoir avec les médias). Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
 
+## 29. Lot 10d : Blog des artisans (16/10/2026, en cours)
+Plan validé le 16/10/2026 (« adapter ce qu'il faut »). D67 à D71 ⏳ non codés : pas de mode autonome ni de pilote automatique (D70, BLOG-10 à 13), pas de fournisseur de mots-clés (D68), textes réseaux à copier seulement (D69), pas de commentaires (D67).
+
+Fait (tranche 1, cœur et serveur) :
+- Cœur `@ph/core/blog` : statuts et libellés, adresse unique tirée du titre, corps assaini (liste blanche du blog, `script`/`iframe`/`style` retirés avec leur contenu, liens externes `nofollow`, liens internes simples, BLOG-09), contrôle SEO (6 points bloquants, 6 recommandations, score), mentions légales lues dans les paramètres de Devis & factures (BLOG-05), crédits de rédaction 5/15 (D66), export CSV (BLOG-08), articles planifiés à publier.
+- `versCsv` partagé (`;`, BOM UTF-8, CRLF, formules neutralisées) : les deux exports du back-office l'utilisent aussi (troisième répétition).
+- Nettoyage HTML des devis généralisé (règles par usage) ; correction : les balises à chiffre (`h2`, `h3`) sont reconnues.
+- Serveur `@ph/firebase/blog` : enregistrer (adresse qui suit le titre, ancienne adresse gardée pour la redirection 301, article en ligne jamais enregistré avec un point bloquant), publier / planifier / archiver / brouillon / corbeille / restaurer en groupe (refus détaillé par article, BLOG-04), catégories (nom unique, ordre, renommage sans copie, suppression refusée si utilisée), tags (retirés des articles à la suppression), lectures (liste, article, classement, articles publiés d'un site seulement, BLOG-06 et 07, adresse ou redirection).
+- Tâches planifiées : `publierArticlesBlog` (5 min) et `viderCorbeilleBlogNuit` (03 h 20, 30 jours).
+- Index Firestore des requêtes du blog. Règles inchangées : `sites/{id}/**` est déjà en lecture membre et en écriture serveur seulement ; le site public est rendu côté serveur.
+- Tests : cœur (blog 100 % des lignes), 10 tests serveur sur émulateur.
+
+Écarts signalés :
+- Compteur des rédactions IA prévu dans `sites/{id}/ia/{mois}` (à côté de celui du site) plutôt que `usageIA/…` (tranche 3).
+- `blogAbonnes` et positions Search Console reportés (non décrits dans BLOG.md / clés à fournir).
+- Image à la une : référence de média du site (`src`) plutôt qu'une URL, comme les images des pages.
+- Hébergement affiché dans les mentions : Portail Habitat, sites hébergés chez Vercel (choix d'hébergement par défaut, à confirmer avec D45).
+- Directeur de la publication : raison sociale par défaut (aucun champ dédié dans les paramètres).
+
+Reste : écrans (onglet Blog, éditeur d'article, panneaux SEO, Mots-clés, Diffusion), affichage sur le site (élément « Articles du blog », pages `/blog`, RSS, sitemap, `BlogPosting`), IA de rédaction et de retouche.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -750,4 +771,5 @@ Lot 10c : tout le périmètre d'IA_SITE est codé. Reste à vérifier la génér
 - 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
 - 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
 - 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
+- 16/10/2026 — Lot 10d commencé : cœur et serveur du blog. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.

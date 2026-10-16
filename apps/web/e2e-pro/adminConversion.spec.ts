@@ -109,7 +109,8 @@ test('journal en direct : une nouvelle décision apparaît sans recharger ; expo
     const chemin = await (await telechargement).path();
     const { readFile } = await import('node:fs/promises');
     const csv = await readFile(chemin, 'utf8');
-    expect(csv.split('\r\n')[0]).toBe('date;entreprise;type;modele;raison;fonction;details');
+    // BOM UTF-8 en tête (Excel), puis la ligne d'en-tête.
+    expect(csv.split('\r\n')[0]).toBe('\uFEFFdate;entreprise;type;modele;raison;fonction;details');
     expect(csv).toContain('vis-test-direct');
     expect(await audits('adminExportJournalConversion', 'cycleTraces')).toBeGreaterThan(0);
   } finally {
