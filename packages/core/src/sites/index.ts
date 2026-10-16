@@ -8,3 +8,4 @@ export * from './sousDomaine';
 export * from './libelles';
 export * from './edition';
 export * from './domaines';
+export * from './stats';

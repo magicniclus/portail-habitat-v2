@@ -47,4 +47,20 @@ export const modelesSites = {
     ],
     exemple: EX,
   }),
+  'site-domaine-casse': modele<Domaine>({
+    sujet: (d) => `${d.domaine} ne mène plus à votre site`.slice(0, 59),
+    preheader: () => 'Votre site reste en ligne sur son adresse gratuite.',
+    blocs: (d) => [
+      titre('Votre domaine ne pointe plus vers votre site'),
+      para(
+        `Depuis 3 jours, les enregistrements de ${d.domaine} ne mènent plus au site de ${d.nomCommercial}. Pour que vos visiteurs le trouvent toujours, il reste en ligne sur son adresse gratuite.`,
+      ),
+      alerte(
+        `À corriger chez votre hébergeur de domaine : ${d.manquants.length ? d.manquants.join(', ') : 'voir le tableau dans votre espace'}.`,
+      ),
+      bouton('Voir les enregistrements', d.lien),
+      note('Dès que les enregistrements sont corrects, le domaine est réactivé automatiquement.'),
+    ],
+    exemple: EX,
+  }),
 };

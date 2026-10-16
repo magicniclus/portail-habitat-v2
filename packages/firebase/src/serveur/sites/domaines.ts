@@ -95,6 +95,29 @@ export async function connecterDomaine(
   });
 }
 
+/** État de chaque enregistrement attendu, lu sur un résolveur public (DOM-04). */
+export async function resoudreLignes(
+  s: Pick<ServicesDomaines, 'dns'>,
+  nom: string,
+  enregistrements: EnregistrementAttendu[],
+  maintenant: number,
+) {
+  return Promise.all(
+    enregistrements.map(async (e) => {
+      const trouves = await s.dns.resoudre(e.type, fqdn(nom, e.nom)).catch(() => []);
+      const r = etatEnregistrement(e, trouves);
+      return {
+        type: e.type,
+        nom: e.nom,
+        valeur: e.valeur,
+        etat: r.etat,
+        ...(r.trouve ? { trouve: r.trouve.slice(0, 500) } : {}),
+        verifieLe: Timestamp.fromMillis(maintenant),
+      };
+    }),
+  );
+}
+
 /**
  * Vérification (planifiée ou « Vérifier maintenant ») : chaque ligne jugée seule (DOM-04) ; les
  * trois correctes → vérification chez l'hébergeur → index des hôtes écrit, statut `actif`, email.
@@ -114,20 +137,7 @@ export async function verifierDomaineSite(
   if (o.manuel && maintenant - derniere < INTERVALLE_MANUEL)
     throw new ErreurMetier('TROP_DE_REQUETES', 'Patientez 30 secondes entre deux vérifications.');
   const nom = d.nom as string;
-  const lignes = await Promise.all(
-    (d.enregistrements as (EnregistrementAttendu & DocumentData)[]).map(async (e) => {
-      const trouves = await s.dns.resoudre(e.type, fqdn(nom, e.nom)).catch(() => []);
-      const r = etatEnregistrement(e, trouves);
-      return {
-        type: e.type,
-        nom: e.nom,
-        valeur: e.valeur,
-        etat: r.etat,
-        ...(r.trouve ? { trouve: r.trouve.slice(0, 500) } : {}),
-        verifieLe: Timestamp.fromMillis(maintenant),
-      };
-    }),
-  );
+  const lignes = await resoudreLignes(s, nom, d.enregistrements, maintenant);
   const toutOk = lignes.every((l) => l.etat === 'ok');
   const servi = toutOk && (await s.hebergeur.verifierDomaine(nom));
   const creeLe = (d.creeLe as Timestamp).toMillis();

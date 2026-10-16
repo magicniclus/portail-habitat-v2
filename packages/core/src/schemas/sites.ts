@@ -35,6 +35,8 @@ export const domaineSite = z.object({
   /** Prochaine vérification planifiée ; absente quand il n'y a plus rien à vérifier. */
   prochaineVerifLe: horodatage.optional(),
   derniereVerifLe: horodatage.optional(),
+  /** Domaine actif dont le DNS ne pointe plus vers nous (DOM-06 : `casse` après 3 jours). */
+  incorrectDepuis: horodatage.optional(),
   creeLe: horodatage,
   activeLe: horodatage.optional(),
 });
@@ -81,3 +83,14 @@ export const versionSite = z.object({
 
 /** `sitesSlugs/{slug}` et `sitesDomaines/{hote}` : index d'unicité → site. */
 export const indexSite = z.object({ schemaVersion, siteId: id, createdAt: horodatage });
+
+/**
+ * `sites/{id}/statsJour/{AAAA-MM-JJ}` et `sites/{id}/statsMois/{AAAA-MM}` : compteurs anonymes
+ * (aucun cookie, aucune IP, aucun identifiant de visiteur), écrits par le serveur seulement.
+ */
+export const statsSite = z.object({
+  schemaVersion,
+  vues: z.number().int().nonnegative().default(0),
+  demandes: z.number().int().nonnegative().default(0),
+  pages: z.record(z.string().max(40), z.number().int().nonnegative()).default({}),
+});

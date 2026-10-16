@@ -22,7 +22,7 @@ export {
   cycleTestsAB,
 } from './cycle/planifiees';
 export { comportementAgreger } from './comportement/planifiees';
-export { verifierDomaines } from './sites/planifiees';
+export { controlerDomaines, verifierDomaines } from './sites/planifiees';
 export { iaContexteNuit, iaSyntheseHebdo } from './ia/planifiees';
 export {
   assurancesNuit,

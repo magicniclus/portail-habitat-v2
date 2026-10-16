@@ -1,5 +1,5 @@
 import { etatPublication } from '@ph/core/sites';
-import { bouton, cn, EmptyState, StatusBadge } from '@ph/ui';
+import { bouton, cn, StatusBadge } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BoutonPublier } from '@/features/monSite/ActionsSite';
@@ -7,8 +7,9 @@ import { CreationSite } from '@/features/monSite/CreationSite';
 import { ListePages } from '@/features/monSite/ListePages';
 import { OngletDomaine } from '@/features/monSite/OngletDomaine';
 import { OngletFormulaire } from '@/features/monSite/OngletFormulaire';
+import { OngletStats } from '@/features/monSite/OngletStats';
 import { routes } from '@/lib/routes';
-import { accesSite, DOMAINE_BASE, tableauSite } from '@/server/sites';
+import { accesSite, DOMAINE_BASE, statsDuSite, tableauSite } from '@/server/sites';
 
 export const metadata: Metadata = { title: 'Mon site internet', robots: { index: false } };
 
@@ -99,10 +100,11 @@ export default async function PageMonSite({
           ) : null}
           {onglet === 'domaine' ? <OngletDomaine site={t.site} domaine={DOMAINE_BASE} /> : null}
           {onglet === 'stats' ? (
-            <EmptyState titre="Statistiques du site">
-              Mesure sans cookie : aucun bandeau à afficher à vos visiteurs. Les visites
-              apparaîtront ici dès la mise en service de la mesure.
-            </EmptyState>
+            <OngletStats
+              stats={await statsDuSite(acces.artisanId, t.site.offre === 'site_pro')}
+              pages={t.pages}
+              sitePro={t.site.offre === 'site_pro'}
+            />
           ) : null}
           {onglet === 'formulaire' ? (
             <OngletFormulaire

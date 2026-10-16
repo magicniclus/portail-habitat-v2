@@ -100,8 +100,11 @@ function rendreNavigation(n: Navigation, ctx: ContexteRendu): string {
   return `<header class="nav${n.ombre ? ' ombre' : ''}" style="${esc(css(n.fond) ? `--navfond:${css(n.fond)}` : '')}"><div class="boite"><a class="marque" href="/">${esc(n.nom)}</a><button type="button" class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu" data-burger>☰</button><nav id="menu" class="menu" aria-label="Menu principal" style="${n.mobile.sens === 'gauche' ? '--sens:-100%' : ''}"><button type="button" class="fermer" aria-label="Fermer le menu" data-fermer>×</button><div class="liens">${liens}${tel}${cta}</div></nav></div></header>`;
 }
 
-/** Comportements : menu mobile (SITE-10) et envoi du formulaire vers l'API du même domaine. */
-export const SCRIPT_SITE = `(function(){var d=document,h=d.documentElement,b=d.querySelector('[data-burger]');function m(o){h.classList.toggle('ouvert',o);b&&b.setAttribute('aria-expanded',String(o));}
+/**
+ * Comportements : mesure d'audience sans cookie (une balise par page vue), menu mobile (SITE-10)
+ * et envoi du formulaire vers l'API du même domaine.
+ */
+export const SCRIPT_SITE = `(function(){try{navigator.sendBeacon('/api/sites/t',JSON.stringify({p:location.pathname}));}catch(e){}var d=document,h=d.documentElement,b=d.querySelector('[data-burger]');function m(o){h.classList.toggle('ouvert',o);b&&b.setAttribute('aria-expanded',String(o));}
 if(b){b.addEventListener('click',function(){m(true);});d.querySelector('[data-fermer]').addEventListener('click',function(){m(false);});d.querySelectorAll('#menu a').forEach(function(a){a.addEventListener('click',function(){m(false);});});d.addEventListener('keydown',function(e){if(e.key==='Escape')m(false);});}
 d.querySelectorAll('[data-formulaire]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var s=f.querySelector('.statut'),v={},t='';new FormData(f).forEach(function(x,k){if(k==='cf-turnstile-response')t=String(x);else v[k]=String(x);});
 s.textContent='Envoi en cours…';fetch('/api/sites/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valeurs:v,jeton:t,page:location.pathname})}).then(function(r){return r.json();}).then(function(r){if(r&&r.ok){f.reset();s.textContent='Merci, votre demande est envoyée. Nous vous recontactons rapidement.';}else{s.textContent=(r&&r.erreur&&r.erreur.message)||'Envoi impossible, vérifiez les champs.';}}).catch(function(){s.textContent='Envoi impossible, réessayez.';});});});})();`;

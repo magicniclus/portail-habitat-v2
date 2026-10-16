@@ -17,7 +17,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 8 | Parcours particuliers | ✅ | avant le 13/10/2026 | ESP, DIA | |
 | 9 | Annuaire, fiche publique | ✅ | avant le 13/10/2026 | ANN, FIC | |
 | 10 | Espace artisan | ✅ | avant le 13/10/2026 | ACQ, ONB, PRO | |
-| 10b | Site internet artisan, domaines | 🟡 | 14/10/2026 | SITE-03, 07, 08, 09, 10, 11, 13, DOM-02, 04 ✅ | éditeur, publication, rendu public, connexion de domaine faits ; achat OVH, statistiques, modèles à faire (AVANCEMENT §27) |
+| 10b | Site internet artisan, domaines | 🟡 | 14/10/2026 | SITE-03, 07, 08, 09, 10, 11, 13, DOM-02, 04, 06 ✅ | éditeur, publication, rendu public, domaine existant, statistiques faits ; achat OVH, modèles à faire (AVANCEMENT §27) |
 | 10c | IA du site | ⬜ | | SITE-IA | nouveau |
 | 10d | Blog | ⬜ | | BLOG | nouveau |
 | 10e | Landings par outil | 🟡 | 14/10/2026 | LAND-01 à 07 ✅ | chantiers en ligne ; site et devis derrière flags ; démo et exemples avec 10b (AVANCEMENT §25) |

@@ -682,7 +682,10 @@ Choix à signaler :
 
 Domaines (fait, cas C) : connexion d'un domaine existant en Site Pro (A et CNAME lus chez l'hébergeur Vercel, TXT `_portailhabitat`, jamais de MX), vérification par ligne via DNS-over-HTTPS (DOM-04), Function `verifierDomaines` toutes les 2 min (2 min la 1re heure, 30 min jusqu'à 72 h, puis `echec`), « Vérifier maintenant » 1 / 30 s, index des hôtes écrit seulement après vérification, 301 vers l'adresse canonique (DOM-05), retrait par l'artisan, résiliation → retour au sous-domaine (DOM-07), emails `site-domaine-actif` et `site-domaine-echec`. Modèle de données : champ `sites/{id}.domaine` (DOMAINES §5). Secrets à fournir : `VERCEL_API_TOKEN`, `VERCEL_PROJET_SITES`, `VERCEL_EQUIPE` ; sans eux, la connexion est refusée en production.
 
-Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), contrôle quotidien `casse` (DOM-06), emails attente/renouvelé/transfert, statistiques sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
+Statistiques (fait) : mesure maison sans cookie, ni IP, ni identifiant de visiteur ; une balise par page vue (`/api/sites/t`, robots écartés, même origine, débit limité) ; compteurs `sites/{id}/statsJour/{jour}` et `statsMois/{mois}` (vues, demandes, vues par page) ; onglet Statistiques : 30 jours pour tous, 12 mois avec Site Pro (12 lectures mensuelles, COUTS.md), tableau lisible en plus du graphique.
+Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS incorrect 3 jours → `casse`, index retirés (le sous-domaine reprend le relais), email `site-domaine-casse` ; corrigé → réactivé.
+
+Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), emails attente/renouvelé/transfert, statistiques Search Console sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)

@@ -1,3 +1,4 @@
+export { controlerDomaineActif, domainesAControler } from './controle';
 export { hebergeurDepuisEnv, hebergeurVercel, resolveurDoh } from './adaptateurs';
 export {
   changerSousDomaine,
@@ -30,3 +31,4 @@ export {
   type SitePublie,
 } from './lecture';
 export { PublicationRefusee, publierSite, retablirVersion } from './publication';
+export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from './stats';

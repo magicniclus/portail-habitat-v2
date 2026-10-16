@@ -4,6 +4,9 @@ import { formatTel } from '@ph/core/format';
 import { droitsDe } from '@ph/core/paiements';
 import {
   controlesSeo,
+  joursPrecedents,
+  moisPrecedents,
+  resumeStatsSite,
   sousDomaineDe,
   type ChampFormulaire,
   type FicheSite,
@@ -15,6 +18,8 @@ import {
   hebergeurDepuisEnv,
   lirePhotosPubliees,
   lireSiteEdition,
+  lireStatsSite,
+  periodesParis,
   resolveurDoh,
   type ServicesDomaines,
   type ServicesSites,
@@ -153,3 +158,22 @@ export async function mediasDuSite(artisanId: string): Promise<Record<string, st
   const r = await lirePhotosPubliees(db(), artisanId);
   return Object.fromEntries(r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])));
 }
+
+/**
+ * Onglet Statistiques : 30 derniers jours pour tous ; 12 mois en plus avec Site Pro (12 lectures
+ * de compteurs mensuels plutôt que 365 journaliers, COUTS.md).
+ */
+export async function statsDuSite(artisanId: string, sitePro: boolean) {
+  const { jour, mois } = periodesParis(Date.now());
+  const jours = joursPrecedents(jour, 30);
+  const listeMois = sitePro ? moisPrecedents(mois, 12) : [];
+  const [lusJours, lusMois] = await Promise.all([
+    lireStatsSite(db(), artisanId, 'jour', jours),
+    lireStatsSite(db(), artisanId, 'mois', listeMois),
+  ]);
+  return {
+    jours: resumeStatsSite(lusJours, jours),
+    ...(sitePro ? { mois: resumeStatsSite(lusMois, listeMois) } : {}),
+  };
+}
+export type StatsDuSite = Awaited<ReturnType<typeof statsDuSite>>;

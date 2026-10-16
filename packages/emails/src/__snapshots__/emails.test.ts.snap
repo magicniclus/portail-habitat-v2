@@ -1624,6 +1624,32 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-casse : version texte 1`] = `
+"bertrand-renovation.fr ne mène plus à votre site
+Votre site reste en ligne sur son adresse gratuite.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DOMAINE NE POINTE PLUS VERS VOTRE SITE
+
+Depuis 3 jours, les enregistrements de bertrand-renovation.fr ne mènent plus au site de Bertrand Rénovation. Pour que vos visiteurs le trouvent toujours, il reste en ligne sur son adresse gratuite.
+
+À corriger chez votre hébergeur de domaine : TXT _portailhabitat.
+
+Voir les enregistrements https://portailhabitat.fr/pro/site?onglet=domaine
+
+Dès que les enregistrements sont corrects, le domaine est réactivé automatiquement.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-echec : version texte 1`] = `
 "bertrand-renovation.fr : vérification impossible
 Il manque des enregistrements chez votre hébergeur de domaine.

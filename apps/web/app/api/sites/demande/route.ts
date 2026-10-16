@@ -1,6 +1,6 @@
 import { ErreurMetier } from '@ph/core/erreurs';
 import { entreeFormulaireSite } from '@ph/core/schemas';
-import { envoyerFormulaireSite } from '@ph/firebase/sites';
+import { compterDemandeSite, envoyerFormulaireSite } from '@ph/firebase/sites';
 import { headers } from 'next/headers';
 import { hoteSite } from '@/lib/hotesSites';
 import { actionMesure } from '@/server/action';
@@ -33,6 +33,8 @@ const envoyer = actionMesure(
       page: e.page,
       trace: await traceRequete(),
     });
+    // Compteur anonyme des demandes du site (onglet Statistiques) ; un échec n'annule pas l'envoi.
+    await compterDemandeSite(servicesCompte().db, site.siteId, Date.now()).catch(() => undefined);
     return { reference: r.reference };
   },
 );

@@ -5,9 +5,14 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import {
+  compterDemandeSite,
+  compterVueSite,
   connecterDomaine,
+  controlerDomaineActif,
   creerSite,
+  domainesAControler,
   domainesAVerifier,
+  lireStatsSite,
   lireSitePublie,
   publierSite,
   retirerDomaine,
@@ -179,5 +184,52 @@ describe('fin du domaine', () => {
     await retirerDomaine(s(), proprio);
     expect(await lireSitePublie(db, 'exemple.fr')).toBeNull();
     expect(await domaine()).toBeUndefined();
+  });
+});
+
+describe('contrôle quotidien (DOM-06)', () => {
+  it('DNS retiré 3 jours → casse, email, sous-domaine en ligne ; corrigé → réactivé', async () => {
+    await synchroniserOffreSite(db, 'a1', true);
+    await connecterDomaine(s(), proprio, 'exemple.fr');
+    dnsActuel = DNS_OK;
+    await verifierDomaineSite(s(), 'a1');
+    envois.length = 0;
+    expect(await domainesAControler(s())).toEqual(['a1']);
+    expect(await controlerDomaineActif(s(), 'a1')).toBe('ok');
+
+    dnsActuel = {};
+    expect(await controlerDomaineActif(s(), 'a1')).toBe('surveille');
+    horloge += 2 * 86_400_000;
+    expect(await controlerDomaineActif(s(), 'a1')).toBe('surveille');
+    expect((await lireSitePublie(db, 'www.exemple.fr'))?.siteId).toBe('a1');
+    horloge += 86_400_000;
+    expect(await controlerDomaineActif(s(), 'a1')).toBe('casse');
+    expect(await lireSitePublie(db, 'www.exemple.fr')).toBeNull();
+    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.siteId).toBe('a1');
+    expect(envois.map((e) => e.modele)).toEqual(['site-domaine-casse']);
+
+    dnsActuel = DNS_OK;
+    expect(await controlerDomaineActif(s(), 'a1')).toBe('reactive');
+    expect((await domaine()).statut).toBe('actif');
+    expect((await domaine()).incorrectDepuis).toBeUndefined();
+    expect((await lireSitePublie(db, 'www.exemple.fr'))?.siteId).toBe('a1');
+  });
+});
+
+describe('statistiques sans cookie', () => {
+  it('vues par page et demandes, au jour et au mois', async () => {
+    const t = Date.UTC(2026, 9, 14, 10);
+    await compterVueSite(db, 'a1', 'accueil', t);
+    await compterVueSite(db, 'a1', 'accueil', t);
+    await compterVueSite(db, 'a1', 'contact', t);
+    await compterDemandeSite(db, 'a1', t);
+    const [j] = await lireStatsSite(db, 'a1', 'jour', ['2026-10-13', '2026-10-14']);
+    expect(j).toEqual({
+      cle: '2026-10-14',
+      vues: 3,
+      demandes: 1,
+      pages: { accueil: 2, contact: 1 },
+    });
+    expect((await lireStatsSite(db, 'a1', 'mois', ['2026-10']))[0]?.vues).toBe(3);
   });
 });

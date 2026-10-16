@@ -72,6 +72,8 @@ export const SCHEMAS = {
   'sites/{}/pages/{}': sites.pageSiteDoc,
   'sites/{}/reglages/{}': sites.navigationSiteDoc,
   'sites/{}/versions/{}': sites.versionSite,
+  'sites/{}/statsJour/{}': sites.statsSite,
+  'sites/{}/statsMois/{}': sites.statsSite,
   'sitesSlugs/{}': sites.indexSite,
   'sitesDomaines/{}': sites.indexSite,
   'artisansPublic/{}': artisans.artisanPublic,

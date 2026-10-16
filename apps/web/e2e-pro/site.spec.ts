@@ -201,4 +201,22 @@ test.describe('Site internet artisan', () => {
       await offre('gratuit');
     }
   });
+
+  test('statistiques sans cookie : visites et demandes du site dans l’onglet Statistiques', async ({
+    page,
+  }) => {
+    await page.goto(`${URL_SITE}/`);
+    await page.goto(`${URL_SITE}/contact-devis`);
+    // Seul le choix cookies posé par le jeu de test (sur localhost) est présent : le site n'en pose aucun.
+    const cookies = await page.context().cookies(URL_SITE);
+    expect(cookies.filter((c) => c.name !== 'ph_consentement')).toEqual([]);
+    await connecter(page, COMPTES.proprio, '/pro/site?onglet=stats');
+    await expect(async () => {
+      await page.reload();
+      const visites = page.locator('text=Visites').first().locator('..').locator('strong');
+      expect(Number((await visites.textContent())?.replace(/\D/g, ''))).toBeGreaterThan(0);
+    }).toPass({ timeout: 20_000 });
+    await expect(page.getByRole('heading', { name: 'Pages les plus vues' })).toBeVisible();
+    await expect(page.getByText('Visites par jour')).toBeVisible();
+  });
 });
