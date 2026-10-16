@@ -149,6 +149,22 @@ describe('connexion d’un domaine existant (cas C)', () => {
     expect(e.message).not.toContain('a2');
   });
 
+  it('24 h sans DNS : rappel avec le tableau des enregistrements, une seule fois', async () => {
+    await synchroniserOffreSite(db, 'a1', true);
+    await connecterDomaine(s(), proprio, 'exemple.fr');
+    horloge += 3_600_000;
+    await verifierDomaineSite(s(), 'a1');
+    expect(envois).toEqual([]);
+    horloge += 24 * 3_600_000;
+    expect(await verifierDomaineSite(s(), 'a1')).toBe('attente_dns');
+    expect(envois.map((e) => e.modele)).toEqual(['site-domaine-attente']);
+    const donnees = (envois[0] as unknown as { donnees: { lignes: unknown[] } }).donnees;
+    expect(donnees.lignes).toHaveLength(3);
+    horloge += 3_600_000;
+    await verifierDomaineSite(s(), 'a1');
+    expect(envois).toHaveLength(1);
+  });
+
   it('72 h sans enregistrements → échec et email ; « Vérifier maintenant » limité à 1 / 30 s', async () => {
     await synchroniserOffreSite(db, 'a1', true);
     await connecterDomaine(s(), proprio, 'exemple.fr');

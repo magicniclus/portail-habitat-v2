@@ -759,6 +759,8 @@ Fait (tranche 3b, IA du blog) :
 - Contrôle SEO : un « [à compléter] » restant bloque la publication.
 - Tests : cœur (schémas, lecture des sorties, garde-fou HTML, messages), 4 tests serveur avec un faux client, e2e sans clé (message clair, quota intact).
 
+Emails (16/10/2026) : `blog-quota-atteint` (dernier article du quota, date de remise à zéro, lien Tout inclus pour Site Pro) ; `site-domaine-attente` (rappel unique après 24 h sans DNS, avec le tableau des enregistrements manquants) ; modèles `site-domaine-renouvele` et `site-domaine-transfert` rédigés, déclenchés avec l'achat OVH (clés à fournir). `blog-a-valider` et `blog-publie` attendent le pilote automatique (D70). Catalogue : 77 modèles rédigés.
+
 Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à valider : mode autonome et pilote automatique (D70, BLOG-10 à 13), données de mots-clés (D68), publication automatique sur les réseaux (D69), commentaires (D67), prix d'un blog renforcé (D71). Reportés : statistiques détaillées de lecture (lecteurs uniques, rebond, sources), positions Search Console (clés à fournir), abonnés au blog. La génération réelle est à vérifier avec la clé `ANTHROPIC_API_KEY`.
 
 ## Décisions prises en cours de route

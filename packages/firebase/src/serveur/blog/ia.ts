@@ -16,6 +16,7 @@ import { modererDemandeIa } from '@ph/core/sites';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import type { ClientIa } from '../ia/client';
+import type { Notifier } from '../comptes/services';
 import type { ContexteSite } from '../sites/edition';
 import { sourcesFiche } from '../sites/ia';
 import { exigerBlog, moisParis, sitePro, type ServicesBlog } from './acces';
@@ -23,6 +24,40 @@ import { exigerBlog, moisParis, sitePro, type ServicesBlog } from './acces';
 export interface ServicesIaBlog extends ServicesBlog {
   /** `null` sans clé Anthropic : refus propre, aucun crédit consommé. */
   client: ClientIa | null;
+  /** Email `blog-quota-atteint` au dernier article du mois (facultatif dans les tests). */
+  notifier?: Notifier;
+}
+
+const MOIS = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', month: 'long' });
+
+/** « 1er novembre » : remise à zéro du compteur, le 1er du mois suivant. */
+function remiseDuCompteur(maintenant: number): string {
+  const d = new Date(maintenant);
+  return `1er ${MOIS.format(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 15))}`;
+}
+
+async function notifierQuota(
+  s: ServicesIaBlog,
+  artisanId: string,
+  max: number,
+  toutInclus: boolean,
+) {
+  const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
+  const uid = artisan.get('proprietaireUid') as string | undefined;
+  if (!uid || !s.notifier) return;
+  await s.notifier({
+    modele: 'blog-quota-atteint',
+    destinataire: { uid, artisanId },
+    refObjet: `sites/${artisanId}`,
+    variante: moisParis(s.horloge()),
+    donnees: {
+      nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
+      max,
+      remise: remiseDuCompteur(s.horloge()),
+      ...(toutInclus ? {} : { lienOffre: '/pro/abonnement?offre=tout' }),
+      lien: '/pro/site?onglet=blog',
+    },
+  });
 }
 
 export type PropositionIaBlog = SortieIaBlog & {
@@ -48,7 +83,7 @@ export async function demanderIaBlog(
   const client = s.client;
   const ref = s.db.doc(chemins.compteurIaSite(ctx.artisanId, moisParis(s.horloge())));
   const redaction = e.action === 'rediger';
-  const { utilises, max } = await s.db.runTransaction(async (t) => {
+  const { utilises, max, toutInclus } = await s.db.runTransaction(async (t) => {
     await exigerBlog(s, t, ctx);
     const [artisan, c] = await Promise.all([
       t.get(s.db.doc(chemins.artisan(ctx.artisanId))),
@@ -64,7 +99,7 @@ export async function demanderIaBlog(
       );
     if (redaction)
       t.set(ref, { schemaVersion: 1, blogArticles: FieldValue.increment(1) }, { merge: true });
-    return { utilises: redaction ? n + 1 : n, max };
+    return { utilises: redaction ? n + 1 : n, max, toutInclus: d?.formule === 'tout_inclus' };
   });
   const rendre = () =>
     redaction ? ref.set({ blogArticles: FieldValue.increment(-1) }, { merge: true }) : null;
@@ -102,6 +137,9 @@ export async function demanderIaBlog(
           coutCentimes: cout,
           createdAt: Timestamp.fromMillis(s.horloge()),
         });
+        // Dernier article du quota : prévenir, sans bloquer la réponse si l'envoi échoue.
+        if (redaction && utilises >= max)
+          await notifierQuota(s, ctx.artisanId, max, toutInclus).catch(() => undefined);
         const { ok: _ok, ...p } = lu;
         return { ...p, restant: Math.max(0, max - utilises) } as PropositionIaBlog;
       }

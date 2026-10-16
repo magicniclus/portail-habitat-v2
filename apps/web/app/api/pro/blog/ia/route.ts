@@ -3,6 +3,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { demanderIaBlog, lireClassement } from '@ph/firebase/blog';
 import { clientAnthropic } from '@ph/firebase/ia';
 import { getFirestore } from 'firebase-admin/firestore';
+import { servicesComptes } from '@/server/espace';
 import { routeSite } from '@/server/routesSite';
 
 export const dynamic = 'force-dynamic';
@@ -14,12 +15,16 @@ export const POST = routeSite('demanderIaBlog', entreeIaBlog, async (s, ctx, e) 
   const cle = process.env.ANTHROPIC_API_KEY;
   const { categories } = await lireClassement(getFirestore(appAdmin()), ctx.artisanId);
   const { sujet, type, longueur, chantiers, ...reste } = e;
-  return demanderIaBlog({ ...s, client: cle ? clientAnthropic(cle) : null }, ctx, {
-    ...reste,
-    ...(sujet ? { sujet } : {}),
-    ...(type ? { type } : {}),
-    ...(longueur ? { longueur } : {}),
-    ...(chantiers !== undefined ? { chantiers } : {}),
-    categories: categories.map((c) => c.nom),
-  });
+  return demanderIaBlog(
+    { ...s, client: cle ? clientAnthropic(cle) : null, notifier: servicesComptes().notifier },
+    ctx,
+    {
+      ...reste,
+      ...(sujet ? { sujet } : {}),
+      ...(type ? { type } : {}),
+      ...(longueur ? { longueur } : {}),
+      ...(chantiers !== undefined ? { chantiers } : {}),
+      categories: categories.map((c) => c.nom),
+    },
+  );
 });

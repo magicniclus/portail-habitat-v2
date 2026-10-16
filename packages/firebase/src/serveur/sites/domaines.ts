@@ -118,6 +118,38 @@ export async function resoudreLignes(
   );
 }
 
+const RAPPEL_ATTENTE = 24 * 3600 * 1000;
+
+/** Email du cycle de vie du domaine au propriétaire de l'entreprise. */
+async function notifierDomaine(
+  s: ServicesDomaines,
+  siteId: string,
+  modele: 'site-domaine-actif' | 'site-domaine-echec' | 'site-domaine-attente',
+  e: {
+    nom: string;
+    variante: string;
+    manquants: string[];
+    lignes?: { type: string; nom: string; valeur: string }[];
+  },
+) {
+  const artisan = await s.db.doc(chemins.artisan(siteId)).get();
+  const uid = artisan.get('proprietaireUid') as string | undefined;
+  if (!uid) return;
+  await s.notifier({
+    modele,
+    destinataire: { uid, artisanId: siteId },
+    refObjet: `sites/${siteId}`,
+    variante: e.variante,
+    donnees: {
+      nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
+      domaine: e.nom,
+      manquants: e.manquants,
+      ...(e.lignes ? { lignes: e.lignes } : {}),
+      lien: '/pro/site?onglet=domaine',
+    },
+  });
+}
+
 /**
  * Vérification (planifiée ou « Vérifier maintenant ») : chaque ligne jugée seule (DOM-04) ; les
  * trois correctes → vérification chez l'hébergeur → index des hôtes écrit, statut `actif`, email.
@@ -164,22 +196,32 @@ export async function verifierDomaineSite(
       updatedAt: Timestamp.fromMillis(maintenant),
     });
   });
-  if (statut !== d.statut && (statut === 'actif' || statut === 'echec')) {
-    const artisan = await s.db.doc(chemins.artisan(siteId)).get();
-    const uid = artisan.get('proprietaireUid') as string | undefined;
-    if (uid)
-      await s.notifier({
-        modele: statut === 'actif' ? 'site-domaine-actif' : 'site-domaine-echec',
-        destinataire: { uid, artisanId: siteId },
-        refObjet: `sites/${siteId}`,
+  const manquants = lignes.filter((l) => l.etat !== 'ok');
+  if (statut !== d.statut && (statut === 'actif' || statut === 'echec'))
+    await notifierDomaine(
+      s,
+      siteId,
+      statut === 'actif' ? 'site-domaine-actif' : 'site-domaine-echec',
+      {
+        nom,
         variante: `${nom}:${statut}`,
-        donnees: {
-          nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
-          domaine: nom,
-          manquants: lignes.filter((l) => l.etat !== 'ok').map((l) => `${l.type} ${l.nom}`),
-          lien: '/pro/site?onglet=domaine',
-        },
-      });
+        manquants: manquants.map((l) => `${l.type} ${l.nom}`),
+      },
+    );
+  // Rappel unique après 24 h sans DNS, avec le tableau des enregistrements (DOMAINES §7).
+  if (
+    statut === 'attente_dns' &&
+    !o.manuel &&
+    !d.rappelAttenteLe &&
+    maintenant - creeLe >= RAPPEL_ATTENTE
+  ) {
+    await ref.update({ 'domaine.rappelAttenteLe': Timestamp.fromMillis(maintenant) });
+    await notifierDomaine(s, siteId, 'site-domaine-attente', {
+      nom,
+      variante: `${nom}:attente`,
+      manquants: manquants.map((l) => `${l.type} ${l.nom}`),
+      lignes: manquants.map((l) => ({ type: l.type, nom: l.nom, valeur: l.valeur })),
+    });
   }
   return statut;
 }

@@ -1,4 +1,4 @@
-import { alerte, bouton, note, para, titre } from '../blocs';
+import { alerte, bouton, note, para, recap, titre } from '../blocs';
 import { modele } from '../modele';
 
 /** DOMAINES §7 : domaine personnel du site (charte pro, transactionnel). */
@@ -62,5 +62,67 @@ export const modelesSites = {
       note('Dès que les enregistrements sont corrects, le domaine est réactivé automatiquement.'),
     ],
     exemple: EX,
+  }),
+  'site-domaine-attente': modele<
+    Domaine & { lignes: { type: string; nom: string; valeur: string }[] }
+  >({
+    sujet: (d) => `${d.domaine} : il reste une étape`.slice(0, 59),
+    preheader: () => 'Les enregistrements DNS ne sont pas encore en place.',
+    blocs: (d) => [
+      titre('Votre domaine attend ses enregistrements'),
+      para(
+        `Depuis 24 heures, nous ne trouvons pas encore tous les enregistrements de ${d.domaine}. Ajoutez-les chez votre hébergeur de domaine (OVH, Gandi, IONOS…) : la vérification reprend toute seule.`,
+      ),
+      recap(d.lignes.map((l) => [`${l.type} ${l.nom}`, l.valeur])),
+      bouton('Voir les enregistrements', d.lien),
+      note(
+        'Votre site reste en ligne sur son adresse gratuite en attendant. Vos emails (MX) ne sont pas concernés.',
+      ),
+    ],
+    exemple: {
+      ...EX,
+      lignes: [
+        { type: 'A', nom: '@', valeur: '76.76.21.21' },
+        { type: 'CNAME', nom: 'www', valeur: 'cname.vercel-dns.com' },
+        { type: 'TXT', nom: '_portailhabitat', valeur: 'ph-verif=…' },
+      ],
+    },
+  }),
+  'site-domaine-renouvele': modele<{
+    nomCommercial: string;
+    domaine: string;
+    le: string;
+    lien: string;
+  }>({
+    sujet: (d) => `${d.domaine} sera renouvelé le ${d.le}`.slice(0, 59),
+    preheader: () => 'Rien à faire : le renouvellement est inclus dans Site Pro.',
+    blocs: (d) => [
+      titre('Renouvellement de votre domaine'),
+      para(
+        `Le domaine ${d.domaine} de ${d.nomCommercial} sera renouvelé automatiquement le ${d.le}. Il reste enregistré à votre nom.`,
+      ),
+      bouton('Voir mon domaine', d.lien),
+      note('Pour garder le domaine sans Site Pro, demandez son transfert depuis l’onglet Domaine.'),
+    ],
+    exemple: { ...EX, le: '14 novembre 2026' },
+  }),
+  'site-domaine-transfert': modele<{
+    nomCommercial: string;
+    domaine: string;
+    authCode: string;
+    lien: string;
+  }>({
+    sujet: (d) => `${d.domaine} : votre code de transfert`.slice(0, 59),
+    preheader: () => 'Le domaine est à votre nom : vous pouvez le garder.',
+    blocs: (d) => [
+      titre('Votre domaine vous appartient'),
+      para(
+        `Site Pro est résilié. Le domaine ${d.domaine} est enregistré au nom de ${d.nomCommercial} : pour le garder, transférez-le chez le bureau d’enregistrement de votre choix avec ce code.`,
+      ),
+      recap([['Code de transfert (AuthCode)', d.authCode, true]]),
+      alerte('Ne communiquez ce code qu’au bureau d’enregistrement qui reçoit le domaine.', 'warn'),
+      bouton('Voir mon domaine', d.lien),
+    ],
+    exemple: { ...EX, authCode: 'X7#k-29Qp' },
   }),
 };

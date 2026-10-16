@@ -37,6 +37,8 @@ export const domaineSite = z.object({
   derniereVerifLe: horodatage.optional(),
   /** Domaine actif dont le DNS ne pointe plus vers nous (DOM-06 : `casse` après 3 jours). */
   incorrectDepuis: horodatage.optional(),
+  /** Rappel « 24 h sans DNS » déjà envoyé (une seule fois). */
+  rappelAttenteLe: horodatage.optional(),
   creeLe: horodatage,
   activeLe: horodatage.optional(),
 });

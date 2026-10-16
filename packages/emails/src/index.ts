@@ -4,6 +4,7 @@ import { createElement } from 'react';
 import type { Theme } from '@ph/ui/tokens';
 import { charteEmail } from './chartes';
 import type { Modele } from './modele';
+import { modelesBlog } from './modeles/blog';
 import { modelesConversion } from './modeles/conversion';
 import { modelesConversionPremium } from './modeles/conversionPremium';
 import { modelesEquipes } from './modeles/equipes';
@@ -24,6 +25,7 @@ const REDIGES: Record<string, Modele<never>> = {
   ...modelesConversion,
   ...modelesConversionPremium,
   ...modelesSites,
+  ...modelesBlog,
 } as unknown as Record<string, Modele<never>>;
 
 /** Tous les modèles du catalogue : rédigés, ou squelettes en attendant leur lot. */

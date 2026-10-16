@@ -136,6 +136,11 @@ export const MODELES = {
   'site-domaine-actif': { categorie: 'transactionnel', charte: 'pro', complet: true },
   'site-domaine-echec': { categorie: 'transactionnel', charte: 'pro', complet: true },
   'site-domaine-casse': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'site-domaine-attente': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'site-domaine-renouvele': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  'site-domaine-transfert': { categorie: 'transactionnel', charte: 'pro', complet: true },
+  // Blog de l'artisan (BLOG §2) ; blog-a-valider et blog-publie attendent le pilote (D70 ⏳).
+  'blog-quota-atteint': { categorie: 'activite', charte: 'pro', differe: true, complet: true },
   recu: { categorie: 'transactionnel', charte: 'pro', complet: true },
   'paiement-echoue': { categorie: 'transactionnel', charte: 'pro', differe: true, complet: true },
   renouvellement: { categorie: 'transactionnel', charte: 'pro', complet: true },

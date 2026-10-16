@@ -184,6 +184,32 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > blog-quota-atteint : version texte 1`] = `
+"Vos 5 articles du mois sont rédigés
+Nouveaux articles par l’IA dès le 1er novembre.
+
+PORTAIL HABITAT PRO
+
+
+QUOTA D’ARTICLES DU MOIS ATTEINT
+
+L’IA a rédigé les 5 articles inclus ce mois-ci pour Bertrand Rénovation. Le compteur repart à zéro le 1er novembre.
+
+Vous pouvez toujours écrire vous-même ; titres, descriptions et tags restent disponibles avec l’IA.
+
+Tout inclus : 15 articles par mois https://portailhabitat.fr/pro/abonnement?offre=tout
+
+Vous recevez cet email car vous utilisez le blog de votre site Portail Habitat.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > changement-email-alerte : version texte 1`] = `
 "Changement de l’adresse email de votre compte
 Nouvelle adresse : c•••@e•••.fr. Annulation possible pendant 7 jours.
@@ -1624,6 +1650,36 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-attente : version texte 1`] = `
+"bertrand-renovation.fr : il reste une étape
+Les enregistrements DNS ne sont pas encore en place.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DOMAINE ATTEND SES ENREGISTREMENTS
+
+Depuis 24 heures, nous ne trouvons pas encore tous les enregistrements de bertrand-renovation.fr. Ajoutez-les chez votre hébergeur de domaine (OVH, Gandi, IONOS…) : la vérification reprend toute seule.
+
+A @ : 76.76.21.21
+
+CNAME www : cname.vercel-dns.com
+
+TXT _portailhabitat : ph-verif=…
+
+Voir les enregistrements https://portailhabitat.fr/pro/site?onglet=domaine
+
+Votre site reste en ligne sur son adresse gratuite en attendant. Vos emails (MX) ne sont pas concernés.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-casse : version texte 1`] = `
 "bertrand-renovation.fr ne mène plus à votre site
 Votre site reste en ligne sur son adresse gratuite.
@@ -1666,6 +1722,56 @@ Encore à créer ou à corriger : TXT _portailhabitat.
 Voir les enregistrements https://portailhabitat.fr/pro/site?onglet=domaine
 
 Une fois les enregistrements ajoutés, cliquez sur « Vérifier maintenant ».
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-renouvele : version texte 1`] = `
+"bertrand-renovation.fr sera renouvelé le 14 novembre 2026
+Rien à faire : le renouvellement est inclus dans Site Pro.
+
+PORTAIL HABITAT PRO
+
+
+RENOUVELLEMENT DE VOTRE DOMAINE
+
+Le domaine bertrand-renovation.fr de Bertrand Rénovation sera renouvelé automatiquement le 14 novembre 2026. Il reste enregistré à votre nom.
+
+Voir mon domaine https://portailhabitat.fr/pro/site?onglet=domaine
+
+Pour garder le domaine sans Site Pro, demandez son transfert depuis l’onglet Domaine.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email suite à une action sur Portail Habitat.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-transfert : version texte 1`] = `
+"bertrand-renovation.fr : votre code de transfert
+Le domaine est à votre nom : vous pouvez le garder.
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DOMAINE VOUS APPARTIENT
+
+Site Pro est résilié. Le domaine bertrand-renovation.fr est enregistré au nom de Bertrand Rénovation : pour le garder, transférez-le chez le bureau d’enregistrement de votre choix avec ce code.
+
+Code de transfert (AuthCode) : X7#k-29Qp
+
+Ne communiquez ce code qu’au bureau d’enregistrement qui reçoit le domaine.
+
+Voir mon domaine https://portailhabitat.fr/pro/site?onglet=domaine
 
 L’équipe Portail Habitat Pro
 

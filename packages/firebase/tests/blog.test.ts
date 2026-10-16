@@ -273,7 +273,13 @@ describe('blog des artisans', () => {
         refus: false,
       };
     };
-    const si = (avec = true) => ({ ...s(), client: avec ? client : null });
+    const envois: { modele: string; donnees: Record<string, unknown> }[] = [];
+    const si = (avec = true) => ({
+      ...s(),
+      client: avec ? client : null,
+      notifier: async (e: { modele: string; donnees?: Record<string, unknown> }) =>
+        void envois.push({ modele: e.modele, donnees: e.donnees ?? {} }),
+    });
     const redaction = JSON.stringify({
       titre: 'Pompe à chaleur : prix',
       sousTitre: '',
@@ -289,9 +295,13 @@ describe('blog des artisans', () => {
       ((await db.doc(chemins.compteurIaSite('a1', '2026-10')).get()).get('blogArticles') as
         number | undefined) ?? 0;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       reponses = [];
       appels.length = 0;
+      envois.length = 0;
+      await db
+        .doc(chemins.artisan('a1'))
+        .update({ proprietaireUid: 'p1', nomCommercial: 'Durand' });
     });
 
     it('BLOG-02 : Site Pro, 6e rédaction du mois refusée ; retouches toujours possibles (BLOG-03)', async () => {
@@ -300,6 +310,13 @@ describe('blog des artisans', () => {
         const r = await demanderIaBlog(si(), ctx, { ...base, action: 'rediger', sujet: 'pac' });
         expect(r.restant).toBe(4 - i);
       }
+      // Dernier article du quota : un email, avec le lien vers Tout inclus (Site Pro).
+      expect(envois.map((x) => x.modele)).toEqual(['blog-quota-atteint']);
+      expect(envois[0]!.donnees).toMatchObject({
+        max: 5,
+        remise: '1er novembre',
+        lienOffre: '/pro/abonnement?offre=tout',
+      });
       const e = await erreur(demanderIaBlog(si(), ctx, { ...base, action: 'rediger' }));
       expect(e.code).toBe('TROP_DE_REQUETES');
       expect(e.message).toMatch(/5 articles/);
