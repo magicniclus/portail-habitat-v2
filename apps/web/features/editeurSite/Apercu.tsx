@@ -9,7 +9,16 @@ const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, mobile:
  * Aperçu mis à l'échelle (ordinateur 1200 px, tablette 768, mobile 390) : la page rendue comme en
  * ligne, dans un cadre isolé sans script (aucun accès à l'espace pro).
  */
-export function Apercu({ html, appareil }: { html: string; appareil: Appareil }) {
+export function Apercu({
+  html,
+  appareil,
+  filigrane,
+}: {
+  html: string;
+  appareil: Appareil;
+  /** Aperçu gratuit de l'IA : mention « Aperçu » sur toute la page (SITE-IA-01). */
+  filigrane?: string;
+}) {
   const largeur = LARGEURS[appareil];
   const ref = useRef<HTMLDivElement>(null);
   const [echelle, setEchelle] = useState(1);
@@ -24,7 +33,18 @@ export function Apercu({ html, appareil }: { html: string; appareil: Appareil })
   }, [largeur]);
   return (
     <div ref={ref} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
-      <div className="mx-auto h-full" style={{ width: largeur * echelle }}>
+      <div className="relative mx-auto h-full" style={{ width: largeur * echelle }}>
+        {filigrane ? (
+          <div
+            aria-hidden="true"
+            data-filigrane
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden"
+          >
+            <span className="-rotate-[24deg] select-none text-[clamp(48px,10vw,120px)] font-extrabold text-neutre-900/15">
+              {filigrane}
+            </span>
+          </div>
+        ) : null}
         <iframe
           title="Aperçu de la page"
           sandbox=""

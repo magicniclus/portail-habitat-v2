@@ -207,6 +207,8 @@ export async function reprendreCreationIa(
   s: ServicesIaSite,
   ctx: ContexteSite,
 ): Promise<{ plan: PagePlanifiee[]; accueil: OperationIa[] }> {
+  if (!s.client)
+    throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
   const refCreation = s.db.doc(chemins.creationIaSite(ctx.artisanId));
   const c = (await refCreation.get()).data() as DocumentData | undefined;
   if (c?.statut !== 'attente_paiement')

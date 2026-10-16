@@ -12,6 +12,7 @@ const PANNEAUX = [
   ['navigation', 'Navigation'],
   ['styles', 'Styles'],
   ['ia', 'IA'],
+  ['modeles', 'Modèles'],
 ] as const;
 export type Panneau = (typeof PANNEAUX)[number][0];
 
@@ -34,6 +35,8 @@ export function BarreEditeur(p: {
   aEnregistrer: boolean;
   onPublier: () => void;
   enCours: boolean;
+  /** Aperçu gratuit de l'IA affiché : rien à publier (SITE-IA-01). */
+  publicationBloquee?: boolean;
 }) {
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-trait px-3 py-2">
@@ -79,14 +82,14 @@ export function BarreEditeur(p: {
       >
         Enregistrer
       </Button>
-      <Button onClick={p.onPublier} disabled={p.enCours}>
+      <Button onClick={p.onPublier} disabled={p.enCours || p.publicationBloquee}>
         Publier
       </Button>
     </header>
   );
 }
 
-/** Barre de gauche : Calques · Pages · SEO · Navigation · Styles. */
+/** Barre de gauche : Calques · Pages · SEO · Navigation · Styles · IA · Modèles. */
 export function NavPanneaux({
   actif,
   onChoisir,

@@ -2,10 +2,12 @@
 
 import type { ModeIaSite, OperationIa } from '@ph/core/sites';
 import { PropositionIa, type Proposition } from './PropositionIa';
-import { Banner, Button, Field, Select, Textarea } from '@ph/ui';
+import { Banner, bouton, Button, Field, Select, Textarea } from '@ph/ui';
 import { useState } from 'react';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
+import Link from 'next/link';
 import { posterJson } from '@/lib/posterJson';
+import { routes } from '@/lib/routes';
 
 const MODES: { mode: ModeIaSite; libelle: string; essai: boolean }[] = [
   { mode: 'textes', libelle: 'Améliorer les textes', essai: true },
@@ -67,6 +69,9 @@ export function PanneauIa({
 
   return (
     <div className="grid gap-4">
+      <Link href={routes.proSiteCreationIa} className={bouton({ variant: 'secondaire' })}>
+        Créer tout le site avec l’IA
+      </Link>
       <Field label="Que voulez-vous faire ?">
         <Select value={mode} onChange={(e) => setMode(e.target.value as ModeIaSite)}>
           {MODES.map((m) => (

@@ -21,7 +21,7 @@ import {
   type PageSite,
   type Theme,
 } from '@ph/core/sites';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
 export interface BrouillonSite {
@@ -38,6 +38,11 @@ export function useBrouillonSite(initial: BrouillonSite) {
   const [h, setH] = useState(() => historique(initial));
   const [enregistre, setEnregistre] = useState(initial);
   const b = h.present;
+  // Dernier état connu, pour enchaîner plusieurs propositions sans attendre un rendu (création).
+  const courant = useRef(b);
+  useEffect(() => {
+    courant.current = b;
+  }, [b]);
   const modifier = useCallback(
     (f: (b: BrouillonSite) => BrouillonSite) => setH((x) => appliquer(x, f(x.present))),
     [],
@@ -125,11 +130,22 @@ export function useBrouillonSite(initial: BrouillonSite) {
 
   /** Proposition de l'IA appliquée en une seule étape d'historique (SITE-IA-06). */
   const appliquerIa = (ops: OperationIa[]): string | null => {
-    const r = appliquerOperations(b, ops, () => Math.random().toString(36).slice(2, 10));
+    const r = appliquerOperations(courant.current, ops, () =>
+      Math.random().toString(36).slice(2, 10),
+    );
     if (!r.ok) return `Proposition impossible à appliquer : ${r.erreurs[0] ?? ''}`;
+    courant.current = r.brouillon;
     modifier(() => r.brouillon);
     return null;
   };
+
+  /** Modèle enregistré (dont « Avant IA ») restauré en une étape d'historique (SITE-IA-09). */
+  const restaurer = (m: Partial<BrouillonSite> & { pages: BrouillonSite['pages'] }) =>
+    modifier((x) => ({
+      pages: m.pages,
+      navigation: m.navigation ?? x.navigation,
+      theme: m.theme ?? x.theme,
+    }));
 
   /** Section monter, descendre, dupliquer, supprimer. */
   const operationSection = (
@@ -154,6 +170,7 @@ export function useBrouillonSite(initial: BrouillonSite) {
     modifier,
     operationSection,
     appliquerIa,
+    restaurer,
     ajouterPage,
     supprimerPage,
     annuler: () => setH(annuler),

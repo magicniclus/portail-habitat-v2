@@ -701,7 +701,17 @@ Fait (tranche 1, IA_SITE §2, §4, §5) :
 - D51 : 5 créations, 60 sections/pages, 300 textes par mois en Site Pro, doublés en Tout inclus.
 - Clé `ANTHROPIC_API_KEY` à fournir en secret ; sans elle, l'IA répond « pas encore disponible » et ne consomme rien.
 
-Reste (lot 10c) : questionnaire de création et génération complète page par page, aperçu gratuit de l'accueil avec filigrane et reprise après paiement (SITE-IA-01, 02, 07, 09), routeur automatique des demandes, filtre de modération, surlignage des changements dans l'aperçu.
+Fait (tranche 2, IA_SITE §3.1, §4) :
+- Création assistée (`/pro/site/editeur?creation=1`, boutons « Créer avec l'IA » dans Mon site et le panneau IA) : « J'ai repris de votre fiche » avec une case pour exclure chaque information, puis une question à la fois (puces, « Passer », « Je ne sais pas »), 6 questions au plus plus les pages locales si le rayon dépasse 10 km ; rien de la fiche n'est redemandé (SITE-IA-07).
+- Génération page par page, l'accueil d'abord, barre de progression ; chaque page est appliquée en une étape d'historique (Ctrl Z annule la dernière), « Réessayer » reprend où l'échec a eu lieu. Le brouillon est enregistré avant de commencer ; l'ancien site est gardé en « Avant IA – date » dans le nouveau panneau « Modèles », restaurable en une étape (SITE-IA-09).
+- Aperçu gratuit (compte sans Site Pro) : seule l'accueil est générée, une fois, et montrée sur une copie avec le filigrane « Aperçu » ; Publier désactivé, le site n'est pas modifié ; « Activer Site Pro » ouvre la fenêtre d'offre (SITE-IA-01).
+- Reprise après paiement : la page de confirmation propose « Terminer la création de mon site » (`?ia=reprendre`), l'éditeur reprend l'accueil de l'aperçu puis génère les autres pages avec les mêmes réponses, sans question (SITE-IA-02). Sans clé IA, la reprise refuse avant de consommer un crédit.
+- Modèle de données : `sites/{id}/iaCreation/courante` (réponses, plan, pages faites, aperçu) et `sites/{id}/modeles/{id}`.
+- Tests : 20 e2e du site (dont SITE-IA-01, 02, 07, 09 sans clé IA), 10 tests serveur sur émulateur.
+
+Choix signalé : le lien de paiement de la fenêtre d'offre reste `/pro/abonnement?offre=site` (comme partout) ; le retour dans l'éditeur se fait par la page de confirmation plutôt que par un paramètre `retour` dans l'URL de paiement (IA_SITE §4).
+
+Reste (lot 10c) : routeur automatique des demandes, filtre de modération, surlignage des changements dans l'aperçu, trois variantes visuelles après génération, quotas restants affichés dans le panneau. Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
@@ -732,3 +742,4 @@ Reste (lot 10c) : questionnaire de création et génération complète page par 
 - 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
 - 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
 - 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
+- 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.

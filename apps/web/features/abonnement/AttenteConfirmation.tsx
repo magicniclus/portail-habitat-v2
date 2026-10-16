@@ -2,6 +2,7 @@
 
 import { NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
 import { Banner, bouton } from '@ph/ui';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -18,11 +19,14 @@ export function AttenteConfirmation({
   produit,
   zone,
   descente = false,
+  suite,
 }: {
   produit: FormulePayante;
   zone: string;
   /** Descente de formule : effective à l'échéance, rien à attendre maintenant (PAY-04). */
   descente?: boolean;
+  /** Étape suivante propre au produit (reprise de la création du site par l'IA, SITE-IA-02). */
+  suite?: { href: Route; libelle: string };
 }) {
   const [etat, setEtat] = useState<'attente' | 'confirme' | 'long'>('attente');
   useEffect(() => {
@@ -63,7 +67,15 @@ export function AttenteConfirmation({
           {`${NOMS_FORMULE[produit]} est actif${zone ? ` sur ${zone}` : ''}.`} Un reçu vient de
           partir par email.
         </p>
-        <Link href={routes.proTableauDeBord} className={bouton()}>
+        {suite ? (
+          <Link href={suite.href} className={bouton()}>
+            {suite.libelle}
+          </Link>
+        ) : null}
+        <Link
+          href={routes.proTableauDeBord}
+          className={suite ? bouton({ variant: 'secondaire' }) : bouton()}
+        >
           Retour à mon espace
         </Link>
       </div>

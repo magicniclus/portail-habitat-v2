@@ -43,6 +43,9 @@ export const routes = {
   /** Éditeur plein écran (SITE_INTERNET §4) sur une page. */
   proSiteEditeur: (page?: string) =>
     r(`/pro/site/editeur${page ? `?page=${encodeURIComponent(page)}` : ''}`),
+  /** Création assistée par l'IA (`?creation=1`) ; `?ia=reprendre` au retour du paiement. */
+  proSiteCreationIa: r('/pro/site/editeur?creation=1'),
+  proSiteRepriseIa: r('/pro/site/editeur?ia=reprendre'),
   proDevis: r('/pro/devis'),
   proDevisNouveau: r('/pro/devis/nouveau'),
   proDevisParametres: r('/pro/devis/parametres'),

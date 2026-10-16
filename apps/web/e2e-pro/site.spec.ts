@@ -27,6 +27,36 @@ async function offre(o: 'gratuit' | 'site_pro') {
   await db.doc(chemins.site(await entrepriseDe(COMPTES.proprio))).update({ offre: o });
 }
 
+/** Création commencée en aperçu gratuit (accueil générée), en attente de Site Pro. */
+async function creationEnAttente(id: string) {
+  const { db } = await admin();
+  await db.doc(chemins.creationIaSite(id)).set({
+    schemaVersion: 1,
+    statut: 'attente_paiement',
+    reponses: { q2: 'Particuliers' },
+    plan: [{ cle: 'accueil', nom: 'Accueil', remplace: 'accueil', consigne: 'e2e' }],
+    faites: ['accueil'],
+    apercu: [
+      {
+        op: 'remplacerContenuPage',
+        cible: 'accueil',
+        sections: [
+          {
+            p: { nom: 'Bandeau' },
+            rows: [
+              {
+                cols: [
+                  { w: 12, els: [{ type: 'titre', p: { texte: 'Accueil IA e2e', niveau: 'h1' } }] },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+}
+
 async function publier(page: Page) {
   await page.getByRole('button', { name: 'Publier', exact: true }).click();
 }
@@ -229,5 +259,94 @@ test.describe('Site internet artisan', () => {
     await page.getByRole('button', { name: 'Proposer' }).click();
     await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Proposition' })).toHaveCount(0);
+  });
+
+  test('SITE-IA-07 : fiche reprise, une question à la fois, 6 au plus ; sans clé → message clair', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?creation=1');
+    await expect(page.getByRole('heading', { name: 'J’ai repris de votre fiche' })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: /^Métier :/ })).toBeChecked();
+    await page.getByRole('checkbox', { name: /^Ville :/ }).uncheck();
+    await page.getByRole('button', { name: 'Commencer' }).click();
+    const compteur = page.getByText(/^Question 1 sur \d+$/);
+    await expect(compteur).toBeVisible();
+    const total = Number((await compteur.textContent())!.match(/sur (\d+)/)![1]);
+    // 6 questions au plus, plus la question des pages locales quand le rayon dépasse 10 km.
+    expect(total).toBeLessThanOrEqual(7);
+    // Le métier et la ville viennent de la fiche : jamais redemandés.
+    await expect(page.getByText(/Quel est votre métier|Dans quelle ville/)).toHaveCount(0);
+    await page.getByRole('button', { name: 'Suivant' }).click();
+    await page.getByRole('button', { name: 'Particuliers' }).click();
+    await expect(page.getByText(`Question 3 sur ${total}`)).toBeVisible();
+    for (let i = 3; i <= total; i++) await page.getByRole('button', { name: 'Passer' }).click();
+    await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
+    await page.getByRole('button', { name: 'Fermer' }).click();
+    await expect(page.getByRole('navigation', { name: 'Panneaux' })).toBeVisible();
+  });
+
+  test('SITE-IA-01 : aperçu gratuit de l’accueil, filigrane, Publier désactivé, offre Site Pro', async ({
+    page,
+  }) => {
+    const { db } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    const artisan = db.doc(chemins.artisan(id));
+    const formule = (await artisan.get()).get('droits.formule') as string;
+    await artisan.update({ 'droits.formule': 'gratuit' });
+    await creationEnAttente(id);
+    try {
+      await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+      await expect(page.getByText(/^Aperçu de votre page d’accueil créée par l’IA/)).toBeVisible();
+      await expect(page.locator('[data-filigrane]')).toHaveText('Aperçu');
+      await expect(page.getByRole('button', { name: 'Publier', exact: true })).toBeDisabled();
+      const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+      await expect(apercu.getByRole('heading', { name: 'Accueil IA e2e' })).toBeVisible();
+      await page.getByRole('button', { name: 'Activer Site Pro' }).click();
+      await expect(page.getByRole('link', { name: 'Continuer vers le paiement' })).toHaveAttribute(
+        'href',
+        '/pro/abonnement?offre=site',
+      );
+      await page.getByRole('button', { name: 'Plus tard' }).click();
+      // Fermer l'aperçu : le brouillon n'a pas changé, la publication redevient possible.
+      await page.getByRole('button', { name: 'Fermer l’aperçu' }).click();
+      await expect(page.locator('[data-filigrane]')).toHaveCount(0);
+      await expect(apercu.getByRole('heading', { name: 'Accueil IA e2e' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Publier', exact: true })).toBeEnabled();
+    } finally {
+      await artisan.update({ 'droits.formule': formule });
+    }
+  });
+
+  test('SITE-IA-02 : Site Pro actif → reprise proposée sans question ; Mes modèles', async ({
+    page,
+  }) => {
+    const { db } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    await creationEnAttente(id);
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    await expect(page.getByRole('button', { name: 'Reprendre la création' })).toBeVisible();
+    await page.getByRole('button', { name: 'Reprendre la création' }).click();
+    await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
+    await expect(page.getByText(/^Question \d/)).toHaveCount(0);
+    await db.doc(chemins.creationIaSite(id)).delete();
+
+    // SITE-IA-09 : « Avant IA – date » restaurable depuis Mes modèles.
+    await db.doc(chemins.modeleSite(id, 'avant-ia-e2e')).set({
+      schemaVersion: 1,
+      nom: 'Avant IA – e2e',
+      type: 'avant_ia',
+      pages: (await db.doc(chemins.pageSite(id, '_')).parent.get()).docs.reduce(
+        (acc, d) => ({ ...acc, [d.id]: d.data() }),
+        {},
+      ),
+      navigation: null,
+      theme: null,
+      createdAt: new Date(),
+    });
+    await page.goto('/pro/site/editeur?panneau=modeles');
+    await expect(page.getByRole('heading', { name: 'Mes modèles' })).toBeVisible();
+    const ligne = page.getByRole('listitem').filter({ hasText: 'Avant IA – e2e' });
+    await ligne.getByRole('button', { name: 'Restaurer' }).click();
+    await expect(page.getByText(/« Avant IA – e2e » restauré/)).toBeVisible();
   });
 });

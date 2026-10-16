@@ -71,6 +71,9 @@ export default async function PageMonSite({
             <Link href={routes.proSiteEditeur()} className={bouton({ variant: 'secondaire' })}>
               Ouvrir l’éditeur
             </Link>
+            <Link href={routes.proSiteCreationIa} className={bouton({ variant: 'secondaire' })}>
+              Créer avec l’IA
+            </Link>
             {t.modifieDepuisPublication ? (
               <BoutonPublier
                 libelle={t.site.versionPubliee ? 'Publier les modifications' : 'Publier le site'}
