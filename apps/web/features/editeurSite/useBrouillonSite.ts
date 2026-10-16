@@ -4,15 +4,20 @@ import {
   ancresDe,
   annuler,
   appliquer,
+  appliquerOperations,
+  deplacer,
+  dupliquerSection,
   elementsDe,
   historique,
   nouvellePage,
   retablir,
   slugDePage,
+  supprimerSection,
   validerAction,
   type Action,
   type ContexteLiens,
   type Navigation,
+  type OperationIa,
   type PageSite,
   type Theme,
 } from '@ph/core/sites';
@@ -118,9 +123,37 @@ export function useBrouillonSite(initial: BrouillonSite) {
       return { ...x, pages: reste };
     });
 
+  /** Proposition de l'IA appliquée en une seule étape d'historique (SITE-IA-06). */
+  const appliquerIa = (ops: OperationIa[]): string | null => {
+    const r = appliquerOperations(b, ops, () => Math.random().toString(36).slice(2, 10));
+    if (!r.ok) return `Proposition impossible à appliquer : ${r.erreurs[0] ?? ''}`;
+    modifier(() => r.brouillon);
+    return null;
+  };
+
+  /** Section monter, descendre, dupliquer, supprimer. */
+  const operationSection = (
+    pageId: string,
+    id: string,
+    op: 'haut' | 'bas' | 'dupliquer' | 'supprimer',
+  ) =>
+    modifier((x) => {
+      const p = x.pages[pageId]!;
+      const i = p.sections.findIndex((v) => v.id === id);
+      const page =
+        op === 'supprimer'
+          ? supprimerSection(p, id)
+          : op === 'dupliquer'
+            ? dupliquerSection(p, id, () => Math.random().toString(36).slice(2, 10))
+            : { ...p, sections: deplacer(p.sections, i, op === 'haut' ? -1 : 1) };
+      return { ...x, pages: { ...x.pages, [pageId]: page } };
+    });
+
   return {
     b,
     modifier,
+    operationSection,
+    appliquerIa,
     ajouterPage,
     supprimerPage,
     annuler: () => setH(annuler),

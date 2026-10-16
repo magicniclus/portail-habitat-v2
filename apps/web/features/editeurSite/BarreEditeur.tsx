@@ -11,6 +11,7 @@ const PANNEAUX = [
   ['seo', 'SEO'],
   ['navigation', 'Navigation'],
   ['styles', 'Styles'],
+  ['ia', 'IA'],
 ] as const;
 export type Panneau = (typeof PANNEAUX)[number][0];
 

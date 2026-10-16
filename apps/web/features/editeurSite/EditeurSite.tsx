@@ -1,12 +1,9 @@
 'use client';
 
 import {
-  deplacer,
-  dupliquerSection,
   elementsDe,
   FORMULAIRE_GRATUIT,
   majElement,
-  supprimerSection,
   type Appareil,
   type ChampFormulaire,
   type PageSite,
@@ -18,6 +15,7 @@ import { posterJson } from '@/lib/posterJson';
 import { Apercu } from './Apercu';
 import { BarreEditeur, NavPanneaux, type Panneau } from './BarreEditeur';
 import { PanneauCalques } from './PanneauCalques';
+import { PanneauIa } from './PanneauIa';
 import { PanneauNavigation } from './PanneauNavigation';
 import { PanneauPages } from './PanneauPages';
 import { PanneauSeo } from './PanneauSeo';
@@ -35,6 +33,8 @@ export function EditeurSite(props: {
   offre: 'gratuit' | 'site_pro';
   champs?: ChampFormulaire[];
   ville?: string;
+  /** Droits IA (Site Pro) calculés côté serveur ; revérifiés à chaque demande. */
+  iaComplete: boolean;
 }) {
   const s = useBrouillonSite(props.initial);
   const [pageId, setPageId] = useState(props.pageInitiale);
@@ -85,13 +85,7 @@ export function EditeurSite(props: {
     }, 'Site publié : il est en ligne en moins d’une minute.');
 
   const operationSection = (id: string, op: 'haut' | 'bas' | 'dupliquer' | 'supprimer') =>
-    majPage((p) => {
-      if (op === 'supprimer') return supprimerSection(p, id);
-      if (op === 'dupliquer')
-        return dupliquerSection(p, id, () => Math.random().toString(36).slice(2, 10));
-      const i = p.sections.findIndex((x) => x.id === id);
-      return { ...p, sections: deplacer(p.sections, i, op === 'haut' ? -1 : 1) };
-    });
+    s.operationSection(pageId, id, op);
 
   return (
     <div className="flex min-h-dvh flex-col bg-blanc">
@@ -174,6 +168,15 @@ export function EditeurSite(props: {
               }
               enCours={enCours}
               erreurAction={s.erreurAction(pageId)}
+            />
+          ) : null}
+          {panneau === 'ia' ? (
+            <PanneauIa
+              pageId={pageId}
+              selection={selection}
+              iaComplete={props.iaComplete}
+              enregistrer={s.enregistrer}
+              appliquer={s.appliquerIa}
             />
           ) : null}
           {panneau === 'styles' ? (

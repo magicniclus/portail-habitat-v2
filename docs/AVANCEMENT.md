@@ -687,6 +687,22 @@ Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS in
 
 Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), emails attente/renouvelé/transfert, statistiques Search Console sans cookie, ajout d'éléments et de sections prêtes dans l'éditeur, médiathèque avec import, modèles, mots liés dans les textes, SITE-02 en e2e, Lighthouse SITE-04.
 
+## 28. Lot 10c : IA du site (16/10/2026, en cours)
+Fait (tranche 1, IA_SITE §2, §4, §5) :
+- Opérations sur l'arbre du site, jamais de HTML (D49) : texte, réglages, insérer / remplacer / supprimer / déplacer une section, créer / supprimer une page (jamais l'accueil ni les mentions), thème, navigation, SEO, mot lié. Sections proposées sans identifiants, complétées par le catalogue des réglages par défaut, puis revalidées par le schéma ; une seule erreur et rien n'est appliqué (SITE-IA-04).
+- Garde-fou des faits : chiffres, années, notes et certifications absents de la fiche, des réponses de l'artisan ou des textes du site deviennent « [à compléter] » ; la publication est refusée tant qu'il en reste (SITE-IA-05).
+- Service `demanderIaSite` : droits revérifiés côté serveur (SITE-IA-03, aucun appel au modèle sans droit), crédit réservé avant l'appel et rendu en cas d'échec (SITE-IA-08), une seule relance avec l'erreur, session `sites/{id}/iaSessions` avec version du prompt et coût, aucune écriture des pages ni des versions (SITE-IA-10). Sortie structurée : `{resume, question, operations}` où `operations` est un texte JSON (les sorties structurées n'acceptent ni objets libres ni schémas récursifs) validé par Zod.
+- Panneau IA de l'éditeur : action, portée (sélection, page, site), proposition lisible, Appliquer en une étape d'historique (SITE-IA-06), Autre version, question de précision, faits à compléter signalés, cadenas et fenêtre d'offre pour les actions réservées à Site Pro.
+- Modèle de données : `sites/{id}/ia/{mois|essai}` (crédits) et `sites/{id}/iaSessions/{id}`.
+
+À valider (⏳, codés en réglages modifiables dans `packages/core/src/sites/ia/reglages.ts`) :
+- D48 : essai gratuit = 3 améliorations de texte à vie (aperçu IA de l'accueil : tranche 2).
+- D50 : Haiku 5.5 pour textes, SEO, sections, thème ; Sonnet 5.5 pour les pages.
+- D51 : 5 créations, 60 sections/pages, 300 textes par mois en Site Pro, doublés en Tout inclus.
+- Clé `ANTHROPIC_API_KEY` à fournir en secret ; sans elle, l'IA répond « pas encore disponible » et ne consomme rien.
+
+Reste (lot 10c) : questionnaire de création et génération complète page par page, aperçu gratuit de l'accueil avec filigrane et reprise après paiement (SITE-IA-01, 02, 07, 09), routeur automatique des demandes, filtre de modération, surlignage des changements dans l'aperçu.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -715,3 +731,4 @@ Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à four
 - 14/10/2026 — Lot 10e : landing « Trouver des chantiers » en ligne, landings site et devis prêtes derrière flags, source d'acquisition enregistrée sur le compte. Détail : §25.
 - 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
 - 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
+- 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.

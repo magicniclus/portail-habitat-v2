@@ -23,14 +23,16 @@ export default async function PageEditeur({
   ]);
   if (!site.existe || !site.theme || !site.navigation) redirect(routes.proSite);
   const { page, panneau } = await searchParams;
+  const panneauInitial = panneau === 'seo' || panneau === 'ia' ? panneau : 'calques';
   return (
     <EditeurSite
       initial={{ pages: site.pages, navigation: site.navigation, theme: site.theme }}
       pageInitiale={page && site.pages[page] ? page : 'accueil'}
-      panneauInitial={panneau === 'seo' ? 'seo' : 'calques'}
+      panneauInitial={panneauInitial}
       medias={medias}
       hote={`${site.sousDomaine}.${DOMAINE_BASE}`}
       offre={site.offre ?? 'gratuit'}
+      iaComplete={acces.sitePro}
       {...(tableau.champs ? { champs: tableau.champs } : {})}
       {...(tableau.ville ? { ville: tableau.ville } : {})}
     />

@@ -1,3 +1,4 @@
+import { MODES_IA_SITE } from '../sites/ia/reglages';
 import { navigation, pageSite, theme } from '../sites/schemas';
 import { z } from '../zod';
 import { champFormulaire } from './sites';
@@ -30,3 +31,13 @@ export const entreeVersionSite = z.object({ version: z.number().int().positive()
 export const entreePublierSite = z.object({});
 /** Domaine existant saisi par l'artisan (normalisé ensuite par `normaliserDomaine`). */
 export const entreeDomaineSite = z.object({ domaine: z.string().trim().min(3).max(253) });
+
+/** Demande à l'IA du site (IA_SITE §5) ; mode et portée choisis dans le panneau IA. */
+export const entreeIaSite = z.object({
+  mode: z.enum(MODES_IA_SITE),
+  portee: z.enum(['selection', 'page', 'site']),
+  pageId: z.string().regex(/^[a-z0-9_-]{1,40}$/),
+  cibles: z.array(z.string().max(60)).max(20),
+  demande: z.string().trim().min(3).max(1000),
+  reponse: z.string().trim().max(500).optional(),
+});

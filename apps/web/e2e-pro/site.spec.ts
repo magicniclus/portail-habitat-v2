@@ -219,4 +219,15 @@ test.describe('Site internet artisan', () => {
     await expect(page.getByRole('heading', { name: 'Pages les plus vues' })).toBeVisible();
     await expect(page.getByText('Visites par jour')).toBeVisible();
   });
+
+  test('panneau IA : demande sans clé configurée → message clair, rien n’est modifié', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ia');
+    await expect(page.getByLabel('Que voulez-vous faire ?')).toBeVisible();
+    await page.getByLabel(/^Demandez à l’IA/).fill('Plus court et plus chaleureux');
+    await page.getByRole('button', { name: 'Proposer' }).click();
+    await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Proposition' })).toHaveCount(0);
+  });
 });
