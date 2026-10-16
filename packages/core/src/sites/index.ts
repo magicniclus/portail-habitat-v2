@@ -9,3 +9,4 @@ export * from './libelles';
 export * from './edition';
 export * from './domaines';
 export * from './stats';
+export * from './catalogue';

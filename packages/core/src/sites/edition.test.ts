@@ -13,6 +13,7 @@ import {
   supprimerSection,
 } from './edition';
 import { siteParDefaut } from './defaut';
+import { pageSite } from './schemas';
 
 const palette = {
   primaire: '#111111',
@@ -93,5 +94,7 @@ describe('opérations de page', () => {
     const n = nouvellePage('Nos tarifs', 'nos-tarifs', 7);
     expect(n).toMatchObject({ statut: 'brouillon', menu: true, ordre: 7, type: 'libre' });
     expect(n.sections).toHaveLength(1);
+    // La page ajoutée dans l'éditeur doit passer le schéma d'enregistrement.
+    expect(pageSite.safeParse(n).success).toBe(true);
   });
 });

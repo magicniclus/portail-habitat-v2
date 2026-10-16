@@ -1,3 +1,4 @@
+import { DEFAUTS_COLONNE, DEFAUTS_LIGNE, DEFAUTS_SECTION, elementDuCatalogue } from './catalogue';
 import type { Element, PageSite, Section } from './schemas';
 
 /** Historique de l'éditeur (SITE_INTERNET §4.1) : 80 états, une modification efface le futur. */
@@ -109,11 +110,8 @@ export function slugDePage(nom: string, pages: Record<string, Pick<PageSite, 'sl
   return slug;
 }
 
-const v3 = <T>(v: T) => ({ desktop: v, tablet: v, mobile: v });
-
 /** Page libre en brouillon : un bandeau titre + texte, à compléter dans l'éditeur. */
 export function nouvellePage(nom: string, slug: string, ordre: number): PageSite {
-  const base = { htmlId: '', mb: 16, masque: v3(false) };
   return {
     nom,
     court: nom.slice(0, 40),
@@ -127,75 +125,25 @@ export function nouvellePage(nom: string, slug: string, ordre: number): PageSite
     sections: [
       {
         id: `s-${slug}`,
-        p: {
-          nom: 'Introduction',
-          ancre: '',
-          largeur: 'boite',
-          padY: { desktop: 80, tablet: 64, mobile: 48 },
-          masque: v3(false),
-          fond: 'clair',
-          fondType: 'couleur',
-          fondImage: '',
-          voile: 'sombre',
-          voileOpacite: 0,
-          fondPos: 'center',
-          texteCouleur: 'auto',
-        },
+        p: { ...DEFAUTS_SECTION, nom: 'Introduction', fond: 'clair' },
         rows: [
           {
             id: `r-${slug}`,
-            p: {
-              htmlId: '',
-              gap: 24,
-              valign: 'start',
-              fond: '',
-              empile: true,
-              inverse: false,
-              masque: v3(false),
-            },
+            p: DEFAUTS_LIGNE,
             cols: [
               {
                 id: `c-${slug}`,
                 w: 12,
-                p: {
-                  htmlId: '',
-                  pad: 0,
-                  arrondi: 0,
-                  ombre: false,
-                  valign: 'start',
-                  masque: v3(false),
-                  fond: '',
-                  fondType: 'couleur',
-                  fondImage: '',
-                  voile: 'sombre',
-                  voileOpacite: 0,
-                  fondPos: 'center',
-                  texteCouleur: 'auto',
-                },
+                p: DEFAUTS_COLONNE,
                 els: [
-                  {
-                    id: `t-${slug}`,
-                    type: 'titre',
-                    p: {
-                      ...base,
-                      texte: nom,
-                      niveau: 'h1',
-                      taille: { desktop: 44, tablet: 36, mobile: 30 },
-                      couleur: '',
-                      align: 'left',
-                    },
-                  },
-                  {
-                    id: `x-${slug}`,
-                    type: 'texte',
-                    p: {
-                      ...base,
-                      texte: 'Présentez ici ce que vous proposez.',
-                      taille: { desktop: 18, tablet: 17, mobile: 16 },
-                      couleur: '',
-                      align: 'left',
-                    },
-                  },
+                  elementDuCatalogue('titre', `t-${slug}`, {
+                    texte: nom,
+                    niveau: 'h1',
+                    taille: { desktop: 44, tablet: 36, mobile: 30 },
+                  }),
+                  elementDuCatalogue('texte', `x-${slug}`, {
+                    texte: 'Présentez ici ce que vous proposez.',
+                  }),
                 ],
               },
             ],
