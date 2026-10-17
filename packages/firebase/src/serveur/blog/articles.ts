@@ -101,6 +101,7 @@ export async function enregistrerArticle(
       genereParIA: Boolean(avant?.genereParIA) || e.genereParIA === true,
       origine: avant?.origine === 'ia' || e.genereParIA ? 'ia' : 'manuel',
       ...(avant?.postsReseaux ? { postsReseaux: avant.postsReseaux } : {}),
+      ...(avant?.pilote ? { pilote: avant.pilote } : {}),
       seo,
       vues: (avant?.vues as number | undefined) ?? 0,
       creeLe: avant?.creeLe ?? maintenant,

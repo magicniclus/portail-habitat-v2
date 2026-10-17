@@ -1353,6 +1353,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "reglagesBlog",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "actif",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "prochaineLe",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

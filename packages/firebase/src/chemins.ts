@@ -126,6 +126,8 @@ export const chemins = {
   categorieBlog: (id: string, c: string) => `sites/${id}/blogCategories/${c}`,
   tagsBlog: (id: string) => `sites/${id}/blogTags`,
   tagBlog: (id: string, t: string) => `sites/${id}/blogTags/${t}`,
+  /** Pilote automatique du blog (D70 : toujours validé par l'artisan). */
+  piloteBlog: (id: string) => `sites/${id}/reglagesBlog/pilote`,
   pageSite: (id: string, pageId: string) => `sites/${id}/pages/${pageId}`,
   navigationSite: (id: string) => `sites/${id}/reglages/navigation`,
   versionsSite: (id: string) => `sites/${id}/versions`,

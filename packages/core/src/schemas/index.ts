@@ -83,6 +83,7 @@ export const SCHEMAS = {
   'sites/{}/statsMois/{}': sites.statsSite,
   'sites/{}/articles/{}': blog.articleBlog,
   'sites/{}/blogCategories/{}': blog.categorieBlog,
+  'sites/{}/reglagesBlog/{}': blog.piloteBlog,
   'sites/{}/blogTags/{}': blog.tagBlog,
   'sitesSlugs/{}': sites.indexSite,
   'sitesDomaines/{}': sites.indexSite,

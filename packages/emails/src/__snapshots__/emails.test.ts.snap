@@ -184,6 +184,36 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > blog-a-valider : version texte 1`] = `
+"Article prêt : à valider avant le 21 octobre 2026
+« Pompe à chaleur : 5 questions avant de se lancer » ne sera publié qu’après votre accord.
+
+PORTAIL HABITAT PRO
+
+
+UN NOUVEL ARTICLE ATTEND VOTRE ACCORD
+
+Le pilote automatique du blog de Bertrand Rénovation a rédigé un article. Relisez-le, puis validez-le : il sera publié le 21 octobre 2026.
+
+Article : Pompe à chaleur : 5 questions avant de se lancer
+
+Publication prévue : 21 octobre 2026
+
+Relire et valider https://portailhabitat.fr/blog-valider/a1.b2.jeton
+
+Vous préférez le modifier ? Ouvrez-le dans votre espace : https://portailhabitat.fr/pro/site/blog/a1
+
+Sans votre clic, l’article reste un brouillon et n’est jamais publié. Ce lien est personnel : ne le transférez pas.
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > blog-quota-atteint : version texte 1`] = `
 "Vos 5 articles du mois sont rédigés
 Nouveaux articles par l’IA dès le 1er novembre.

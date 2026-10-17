@@ -47,6 +47,14 @@ export const articleBlog = z.object({
     recommandations: z.array(pointSeo).max(20),
   }),
   vues: z.number().int().nonnegative(),
+  /** Article préparé par le pilote (D70) : publié seulement après le clic du lien de l'email. */
+  pilote: z
+    .object({
+      jetonHash: z.string().max(128).optional(),
+      publierLe: horodatage,
+      valideLe: horodatage.optional(),
+    })
+    .optional(),
   creeLe: horodatage,
   modifieLe: horodatage,
   /** Corbeille : suppression définitive 30 jours après. */
@@ -63,3 +71,16 @@ export const categorieBlog = z.object({
 
 /** `sites/{id}/blogTags/{id}` (pages de tag en `noindex`). */
 export const tagBlog = z.object({ schemaVersion, nom: z.string().trim().min(1).max(40), slug });
+
+/** `sites/{id}/reglagesBlog/pilote` : pilote automatique, toujours « Je valide d'abord » (D70). */
+export const piloteBlog = z.object({
+  schemaVersion,
+  actif: z.boolean(),
+  rythme: z.enum(['2_mois', '1_semaine', '2_semaine']),
+  validation: z.literal('avant'),
+  uid: id,
+  sujets: z.array(z.object({ titre: z.string().max(200), motCle: z.string().max(80) })).max(3),
+  prochaineLe: horodatage.nullable(),
+  derniereLe: horodatage.optional(),
+  majLe: horodatage,
+});

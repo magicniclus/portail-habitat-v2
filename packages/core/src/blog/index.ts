@@ -4,3 +4,4 @@ export * from './mentions';
 export * from './reglages';
 export * from './seo';
 export * from './ia';
+export * from './autonome';

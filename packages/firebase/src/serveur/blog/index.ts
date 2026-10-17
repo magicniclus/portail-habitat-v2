@@ -22,3 +22,14 @@ export {
 } from './lecture';
 export { publierArticlesPlanifies, viderCorbeilleBlog } from './planifiees';
 export { demanderIaBlog, type PropositionIaBlog, type ServicesIaBlog } from './ia';
+export { articleEnUnClic, type ArticleAutonome } from './autonome';
+export {
+  lirePilote,
+  lireValidationPilote,
+  preparerArticlesPilote,
+  reglerPilote,
+  remplacerSujetPilote,
+  validerArticlePilote,
+  type EtatValidation,
+  type Pilote,
+} from './pilote';

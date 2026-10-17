@@ -23,7 +23,7 @@ export {
 } from './cycle/planifiees';
 export { comportementAgreger } from './comportement/planifiees';
 export { controlerDomaines, verifierDomaines } from './sites/planifiees';
-export { publierArticlesBlog, viderCorbeilleBlogNuit } from './blog/planifiees';
+export { piloteBlog, publierArticlesBlog, viderCorbeilleBlogNuit } from './blog/planifiees';
 export { echeancesDevisFactures } from './devis/planifiees';
 export { iaContexteNuit, iaSyntheseHebdo } from './ia/planifiees';
 export {
