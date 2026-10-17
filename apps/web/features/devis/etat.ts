@@ -1,6 +1,6 @@
 import type { LigneDevis, TauxTva } from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
-import type { DevisComplet } from '@ph/firebase/devis';
+import type { DevisComplet, DevisDepuisDemande } from '@ph/firebase/devis';
 
 /** Ligne telle que saisie : montants en texte (« 78,50 »), convertis en centimes à l'envoi. */
 export interface LigneSaisie {
@@ -56,6 +56,8 @@ export const ligneVide = (tva: TauxTva): LigneSaisie => ({
 
 export function etatInitial(o: {
   devis?: DevisComplet;
+  /** « Créer un devis » depuis une demande acceptée : client et objet repris. */
+  demande?: DevisDepuisDemande;
   acompteDefautPct: number;
   validiteJours: number;
   tvaDefaut: TauxTva;
@@ -98,13 +100,15 @@ export function etatInitial(o: {
       tampon: d.tampon,
       demandeId: d.demandeId,
     };
+  const m = o.demande;
   return {
-    client: { nom: '', email: '', tel: '', adresse: '' },
+    client: m ? { ...m.client } : { nom: '', email: '', tel: '', adresse: '' },
     typeClient: 'particulier',
     sirenClient: '',
     horsEtablissement: false,
-    objet: '',
+    objet: m?.objet ?? '',
     descriptionHtml: '',
+    ...(m ? { demandeId: m.demandeId } : {}),
     lignes: [ligneVide(o.tvaDefaut)],
     remisePct: '0',
     acomptePct: String(o.acompteDefautPct),

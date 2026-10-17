@@ -12,6 +12,7 @@ import {
   enregistrerParametresFacturation,
   envoyerDevis,
   facturerDevis,
+  lireDevisDepuisDemande,
   marquerDevisExpires,
   relancerFacture,
   traiterDevisEnvoyes,
@@ -209,5 +210,53 @@ describe('devis envoyés', () => {
       faits: [envoye],
     });
     expect((await db.doc(chemins.unDevis('a1', brouillon)).get()).get('statut')).toBe('brouillon');
+  });
+});
+
+describe('devis créé depuis « Mes demandes »', () => {
+  const attribution = () => db.doc(chemins.attribution('dem1', 'a1'));
+  beforeEach(async () => {
+    await db.doc(chemins.demande('dem1')).set({
+      prestationId: 'salle-de-bain',
+      contact: {
+        prenom: 'Claire',
+        nom: 'Martin',
+        email: 'claire@test.local',
+        telephone: '+33612345678',
+      },
+      adresseChantier: { codePostal: '33700', ville: 'Mérignac' },
+      precisions: 'Douche à l’italienne',
+    });
+    await attribution().set({ artisanId: 'a1', demandeId: 'dem1', statut: 'vue' });
+  });
+
+  it('pas de coordonnées ni de devis lié avant l’acceptation', async () => {
+    expect(await lireDevisDepuisDemande(db, 'a1', 'dem1', () => 'Salle de bain')).toBeNull();
+    expect(
+      (await erreur(enregistrerDevis(s(), proprio, { ...entree(), demandeId: 'dem1' }))).code,
+    ).toBe('PRECONDITION');
+  });
+
+  it('client repris, puis la mise en relation suit le devis : envoyé, accepté', async () => {
+    await attribution().update({ statut: 'acceptee' });
+    const m = await lireDevisDepuisDemande(db, 'a1', 'dem1', () => 'Salle de bain');
+    expect(m).toMatchObject({
+      client: { nom: 'Claire Martin', email: 'claire@test.local', adresse: '33700 Mérignac' },
+      objet: 'Salle de bain',
+      precisions: 'Douche à l’italienne',
+    });
+    const { devisId } = await enregistrerDevis(s(), proprio, { ...entree(), demandeId: 'dem1' });
+    await envoyerDevis(s(), proprio, devisId);
+    expect((await attribution().get()).get('statut')).toBe('devis_envoye');
+    await changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' });
+    expect((await attribution().get()).get('statut')).toBe('devis_accepte');
+  });
+
+  it('devis refusé : la mise en relation passe « devis refusé »', async () => {
+    await attribution().update({ statut: 'acceptee' });
+    const { devisId } = await enregistrerDevis(s(), proprio, { ...entree(), demandeId: 'dem1' });
+    await envoyerDevis(s(), proprio, devisId);
+    await changerStatutDevis(s(), proprio, { devisId, statut: 'refuse' });
+    expect((await attribution().get()).get('statut')).toBe('devis_refuse');
   });
 });

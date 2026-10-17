@@ -5,10 +5,16 @@ import {
   verifierMentionsDevis,
   type LigneDevis,
 } from '@ph/core/devis';
+import { artisanAAccepte } from '@ph/core/espace';
+import {
+  attributionApresDevis,
+  type EvenementDevis,
+  type StatutAttributionPro,
+} from '@ph/core/espace-pro';
 import { ErreurMetier } from '@ph/core/erreurs';
 import type { entreeEnregistrerDevis, entreeStatutDevis } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import {
   exiger,
@@ -30,6 +36,29 @@ export interface ResultatEnvoi {
   jetonHash?: string;
 }
 
+/**
+ * Devis créé depuis « Mes demandes » : la mise en relation suit le devis (envoyé, accepté, refusé)
+ * et le particulier le voit dans son espace. Lecture dans la transaction, écriture renvoyée pour
+ * passer après toutes les lectures.
+ */
+async function suivreDemande(
+  t: Transaction,
+  s: ServicesDevis,
+  artisanId: string,
+  demandeId: string | undefined,
+  e: EvenementDevis,
+): Promise<() => void> {
+  if (!demandeId) return () => undefined;
+  const ref = s.db.doc(chemins.attribution(demandeId, artisanId));
+  const a = await t.get(ref);
+  const statut = a.exists
+    ? attributionApresDevis(a.get('statut') as StatutAttributionPro, e)
+    : null;
+  return () => {
+    if (statut) t.update(ref, { statut, reponduLe: Timestamp.fromMillis(s.horloge()) });
+  };
+}
+
 const sansIndefinis = <T extends Record<string, unknown>>(o: T) =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
@@ -45,6 +74,14 @@ export async function enregistrerDevis(
   const col = s.db.collection(chemins.devis(ctx.artisanId));
   const ref = e.devisId ? col.doc(e.devisId) : col.doc();
   await exiger(s, null, ctx, 'devis.gerer');
+  if (e.demandeId) {
+    const a = await s.db.doc(chemins.attribution(e.demandeId, ctx.artisanId)).get();
+    if (!a.exists || !artisanAAccepte(a.get('statut') as StatutAttributionPro))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Acceptez la demande avant d’y répondre par un devis.',
+      );
+  }
   const p = await lireParametresTx(s, null, ctx.artisanId);
   return avecReprise(() =>
     s.db.runTransaction(
@@ -162,6 +199,8 @@ export async function envoyerDevis(
         'PRECONDITION',
         'Indiquez l’email du client pour lui envoyer le devis.',
       );
+    const suivre = await suivreDemande(t, s, ctx.artisanId, d.get('demandeId'), 'envoye');
+    suivre();
     t.update(ref, {
       statut: 'envoye',
       mentionsOk: true,
@@ -173,6 +212,16 @@ export async function envoyerDevis(
   if (s.apresEnvoi) {
     const pdf = await s.apresEnvoi(ctx.artisanId, devisId);
     await ref.update(pdf);
+    const d = await ref.get();
+    const demandeId = d.get('demandeId') as string | undefined;
+    if (demandeId)
+      await s.db.doc(chemins.attribution(demandeId, ctx.artisanId)).update({
+        devis: {
+          montantCentimes: d.get('totaux.ttcCentimes') as number,
+          storagePath: pdf.pdfPath,
+          envoyeLe: d.get('envoiLe') as Timestamp,
+        },
+      });
   }
 }
 
@@ -195,6 +244,16 @@ export async function changerStatutDevis(
     if (!d.exists) throw new ErreurMetier('INTROUVABLE');
     if (!TRANSITIONS[e.statut]!.includes(d.get('statut') as string))
       throw new ErreurMetier('CONFLIT', 'Ce changement de statut n’est pas possible.');
+    if (e.statut !== 'archive')
+      (
+        await suivreDemande(
+          t,
+          s,
+          ctx.artisanId,
+          d.get('demandeId'),
+          e.statut === 'accepte' ? 'accepte' : 'refuse',
+        )
+      )();
     t.update(ref, { statut: e.statut, updatedAt: Timestamp.fromMillis(s.horloge()) });
   });
 }

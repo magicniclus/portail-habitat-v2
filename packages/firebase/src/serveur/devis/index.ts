@@ -3,11 +3,13 @@ export { changerStatutDevis, enregistrerDevis, envoyerDevis, type ResultatEnvoi 
 export { creerAvoir, enregistrerPaiement, facturerDevis } from './factures';
 export {
   lireDevisComplet,
+  lireDevisDepuisDemande,
   lireDevisListe,
   lireFactureComplete,
   lireFacturesListe,
   lireParametresFacturation,
   type DevisComplet,
+  type DevisDepuisDemande,
   type DevisResume,
   type FactureComplete,
   type FactureResume,

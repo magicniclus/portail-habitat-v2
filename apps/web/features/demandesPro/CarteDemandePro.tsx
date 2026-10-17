@@ -5,7 +5,9 @@ import { formatFourchette, formatRelatif, formatTel, initiales } from '@ph/core/
 import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Badge, Button, bouton, type Tone } from '@ph/ui';
+import Link from 'next/link';
 import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
+import { routes } from '@/lib/routes';
 import { ContesterAppelOffres } from './ContesterAppelOffres';
 
 const TONS: Record<EtatPro, Tone> = {
@@ -21,11 +23,13 @@ export type ActionCarte = 'accepter' | 'refuser' | 'prendre';
 export function CarteDemandePro({
   d,
   uid,
+  peutDevis,
   enCours,
   agir,
 }: {
   d: DemandePro;
   uid: string;
+  peutDevis: boolean;
   enCours: boolean;
   agir: (action: ActionCarte) => void;
 }) {
@@ -89,6 +93,16 @@ export function CarteDemandePro({
             <a href={`mailto:${d.contact.email}`} className={bouton({ variant: 'secondaire' })}>
               <EnvelopeSimpleIcon aria-hidden="true" /> Écrire
             </a>
+            {peutDevis && d.statut !== 'devis_accepte' ? (
+              <Link
+                href={
+                  `${routes.proDevisNouveau}?demande=${d.demandeId}` as typeof routes.proDevisNouveau
+                }
+                className={bouton()}
+              >
+                Créer un devis
+              </Link>
+            ) : null}
           </>
         ) : null}
         {d.contestable ? (

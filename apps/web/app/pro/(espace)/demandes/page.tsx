@@ -28,7 +28,12 @@ export default async function PageMesDemandes() {
           coordonnées du particulier.
         </p>
       </div>
-      <MesDemandesPro initiales={demandes} artisanId={active.artisanId} uid={s.uid} />
+      <MesDemandesPro
+        initiales={demandes}
+        artisanId={active.artisanId}
+        uid={s.uid}
+        peutDevis={peut(active.membre, 'devis.gerer')}
+      />
     </main>
   );
 }

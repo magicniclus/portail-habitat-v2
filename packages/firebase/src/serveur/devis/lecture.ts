@@ -1,4 +1,6 @@
 import type { LigneDevis } from '@ph/core/devis';
+import { artisanAAccepte } from '@ph/core/espace';
+import type { StatutAttributionPro } from '@ph/core/espace-pro';
 import { Timestamp, type DocumentData, type Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
@@ -212,4 +214,40 @@ export async function lireParametresFacturation(
   if (!d.exists) return null;
   const { updatedAt: _u, schemaVersion: _v, ...reste } = d.data() as DocumentData;
   return reste;
+}
+
+/** Client et objet d'un devis créé depuis une demande acceptée (« Créer un devis »). */
+export interface DevisDepuisDemande {
+  demandeId: string;
+  client: { nom: string; email: string; tel: string; adresse: string };
+  objet: string;
+  precisions: string;
+}
+
+/** `null` si la demande n'a pas été acceptée par l'entreprise : aucune coordonnée avant. */
+export async function lireDevisDepuisDemande(
+  db: Firestore,
+  artisanId: string,
+  demandeId: string,
+  nomPrestation: (id: string) => string,
+): Promise<DevisDepuisDemande | null> {
+  const [a, d] = await Promise.all([
+    db.doc(chemins.attribution(demandeId, artisanId)).get(),
+    db.doc(chemins.demande(demandeId)).get(),
+  ]);
+  if (!a.exists || !d.exists || !artisanAAccepte(a.get('statut') as StatutAttributionPro))
+    return null;
+  const c = d.get('contact') as { prenom: string; nom: string; email: string; telephone: string };
+  const lieu = d.get('adresseChantier') as { codePostal: string; ville: string };
+  return {
+    demandeId,
+    client: {
+      nom: `${c.prenom} ${c.nom}`.trim(),
+      email: c.email,
+      tel: c.telephone,
+      adresse: `${lieu.codePostal} ${lieu.ville}`,
+    },
+    objet: nomPrestation(d.get('prestationId') as string),
+    precisions: (d.get('precisions') as string | undefined) ?? '',
+  };
 }

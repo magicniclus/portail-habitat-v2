@@ -18,6 +18,11 @@ test.describe('Mes demandes', () => {
     await carte.getByRole('button', { name: 'Accepter la demande' }).click();
     await expect(carte.getByRole('link', { name: /06 12 34 56 78/ })).toBeVisible();
     await expect(carte).toContainText('Hélène Marty');
+    // Réponse par un devis : client repris de la demande.
+    await carte.getByRole('link', { name: 'Créer un devis' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/nouveau\?demande=/);
+    await expect(page.getByLabel(/^Nom du client/)).toHaveValue('Hélène Marty');
+    await expect(page.getByText(/^En réponse à la demande/)).toBeVisible();
   });
 
   test('PRO-03 : « Je m’en occupe » ; les autres voient qui traite la demande', async ({

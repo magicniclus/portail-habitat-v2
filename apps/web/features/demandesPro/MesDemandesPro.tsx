@@ -26,10 +26,13 @@ export function MesDemandesPro({
   initiales,
   artisanId,
   uid,
+  peutDevis,
 }: {
   initiales: DemandePro[];
   artisanId: string;
   uid: string;
+  /** « Créer un devis » sur une demande acceptée (`devis.gerer`). */
+  peutDevis: boolean;
 }) {
   const { liste, recharger } = useDemandesPro(initiales, artisanId);
   const [q, setQ] = useState('');
@@ -101,6 +104,7 @@ export function MesDemandesPro({
               key={d.demandeId}
               d={d}
               uid={uid}
+              peutDevis={peutDevis}
               enCours={enCours === d.demandeId}
               agir={(a) => void agir(d, a)}
             />

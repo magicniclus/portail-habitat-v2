@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Signature électronique du client, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré, création d'un devis depuis « Mes demandes ».
+- Signature électronique du client, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré.
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -677,6 +677,11 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - **Modèle de données (signalé)** : `devis.relanceLe` (relance J+7 partie) et `facturesClients.jetonHash` (empreinte du dernier lien envoyé ; chaque relance crée un lien neuf, les précédents cessent de marcher).
 - **Choix à confirmer** : les relances de facture partent au client de l'artisan au nom de l'entreprise (catégorie `activite`) ; la relance J+7 d'un devis ne contient pas de lien (le client garde celui du premier email, qui reste valable).
 - Tests : 7 tests du cœur, 5 tests sur émulateur (`tests/relancesDevis.test.ts`).
+
+**Devis depuis « Mes demandes » (17/10/2026)**
+- Bouton « Créer un devis » sur une demande acceptée (membre avec `devis.gerer`) → `/pro/devis/nouveau?demande=` : client (nom, email, téléphone, code postal et ville) et objet repris, précisions du particulier affichées au-dessus de l'éditeur. Rien n'est lu avant l'acceptation (`lireDevisDepuisDemande` renvoie `null`) et le serveur refuse un `demandeId` non accepté.
+- La mise en relation suit le devis (`attributionApresDevis`, cœur testé) : envoyé → `devis_envoye` (avec `devis: { montantCentimes, storagePath, envoyeLe }` une fois le PDF produit), accepté → `devis_accepte`, refusé → `devis_refuse` ; le particulier le voit dans son espace. `demandes.statut` n'est pas modifié (à décider si « devis reçus » doit suivre).
+- Tests : 2 tests du cœur, 3 sur émulateur, 1 test de l'éditeur, étape ajoutée à l'e2e PRO-02.
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

@@ -5,6 +5,7 @@ import {
   filtrerDemandesPro,
   LIBELLES_ETAT_PRO,
   transitionAttribution,
+  attributionApresDevis,
 } from './demandes';
 
 describe('etatPro (maquette Mes Demandes)', () => {
@@ -78,5 +79,22 @@ describe('compteurs et filtres', () => {
     expect(filtrerDemandesPro(liste, { etat: 'nouveau' })).toHaveLength(2);
     expect(filtrerDemandesPro(liste, { q: 'toiture', etat: 'contacte' })).toHaveLength(0);
     expect(filtrerDemandesPro(liste, {})).toHaveLength(4);
+  });
+});
+
+describe('attributionApresDevis', () => {
+  it('devis envoyé après acceptation, puis accepté ou refusé', () => {
+    expect(attributionApresDevis('acceptee', 'envoye')).toBe('devis_envoye');
+    expect(attributionApresDevis('devis_refuse', 'envoye')).toBe('devis_envoye');
+    expect(attributionApresDevis('devis_envoye', 'envoye')).toBe('devis_envoye');
+    expect(attributionApresDevis('devis_envoye', 'accepte')).toBe('devis_accepte');
+    expect(attributionApresDevis('devis_envoye', 'refuse')).toBe('devis_refuse');
+  });
+  it('demande non acceptée ou déjà conclue : rien ne change', () => {
+    expect(attributionApresDevis('proposee', 'envoye')).toBeNull();
+    expect(attributionApresDevis('refusee', 'envoye')).toBeNull();
+    expect(attributionApresDevis('devis_accepte', 'envoye')).toBeNull();
+    expect(attributionApresDevis('acceptee', 'accepte')).toBeNull();
+    expect(attributionApresDevis('devis_accepte', 'refuse')).toBeNull();
   });
 });

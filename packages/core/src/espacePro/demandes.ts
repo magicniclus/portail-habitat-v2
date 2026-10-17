@@ -53,6 +53,23 @@ export function transitionAttribution(
   return action === 'accepter' ? 'acceptee' : 'refusee';
 }
 
+export type EvenementDevis = 'envoye' | 'accepte' | 'refuse';
+
+/**
+ * Mise en relation suivie par le devis créé depuis « Mes demandes » : devis envoyé (une fois la
+ * demande acceptée, ou un nouveau devis après un refus), puis accepté ou refusé. `null` : rien à
+ * changer (demande pas acceptée, ou déjà conclue).
+ */
+export function attributionApresDevis(
+  statut: StatutAttributionPro,
+  e: EvenementDevis,
+): StatutAttributionPro | null {
+  if (e === 'envoye')
+    return ['acceptee', 'devis_envoye', 'devis_refuse'].includes(statut) ? 'devis_envoye' : null;
+  if (statut !== 'devis_envoye') return null;
+  return e === 'accepte' ? 'devis_accepte' : 'devis_refuse';
+}
+
 export function compterDemandesPro(liste: readonly { etat: EtatPro }[]) {
   const c = { total: liste.length, nouveau: 0, contacte: 0, converti: 0, perdu: 0 };
   for (const d of liste) c[d.etat] += 1;
