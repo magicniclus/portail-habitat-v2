@@ -218,6 +218,8 @@ export const parametresFacturation = z.object({
   ibanFin: z.string().max(4).optional(),
   /** Chemin Storage du cachet de l'entreprise (privé), posé sur les devis et factures. */
   tamponChemin: z.string().max(300).optional(),
+  /** Chemin Storage du logo propre aux devis et factures (sinon celui de « Ma fiche »). */
+  logoChemin: z.string().max(300).optional(),
   updatedAt: horodatage,
 });
 

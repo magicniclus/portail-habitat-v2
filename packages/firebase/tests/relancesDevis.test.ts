@@ -8,7 +8,7 @@ import { empreinteJeton, type Notification } from '../src/serveur/comptes/servic
 import {
   changerStatutDevis,
   dechiffrer,
-  enregistrerTampon,
+  enregistrerImageFacturation,
   lireParametresFacturation,
   enregistrerDevis,
   enregistrerPaiement,
@@ -398,14 +398,22 @@ describe('cachet de l’entreprise', () => {
     await bucketFichiers()
       .file('artisans/a1/tampon/cachet.png')
       .save(PNG, { contentType: 'image/png', resumable: false });
-    await enregistrerTampon(sb(), proprio, { action: 'enregistrer', nomFichier: 'cachet.png' });
+    await enregistrerImageFacturation(sb(), proprio, {
+      action: 'enregistrer',
+      quoi: 'tampon',
+      nomFichier: 'cachet.png',
+    });
     expect((await ref().get()).get('tamponChemin')).toBe('artisans/a1/tampon/cachet.png');
     await enregistrerParametresFacturation(s(), proprio, PARAMS);
     expect((await ref().get()).get('tamponChemin')).toBe('artisans/a1/tampon/cachet.png');
-    expect((await erreur(enregistrerTampon(sb(), compta, { action: 'retirer' }))).code).toBe(
-      'PERMISSION_REFUSEE',
-    );
-    await enregistrerTampon(sb(), proprio, { action: 'retirer' });
+    expect(
+      (
+        await erreur(
+          enregistrerImageFacturation(sb(), compta, { action: 'retirer', quoi: 'tampon' }),
+        )
+      ).code,
+    ).toBe('PERMISSION_REFUSEE');
+    await enregistrerImageFacturation(sb(), proprio, { action: 'retirer', quoi: 'tampon' });
     expect((await ref().get()).get('tamponChemin')).toBeUndefined();
   });
 
@@ -413,9 +421,47 @@ describe('cachet de l’entreprise', () => {
     expect(
       (
         await erreur(
-          enregistrerTampon(sb(), proprio, { action: 'enregistrer', nomFichier: 'x.png' }),
+          enregistrerImageFacturation(sb(), proprio, {
+            action: 'enregistrer',
+            quoi: 'tampon',
+            nomFichier: 'x.png',
+          }),
         )
       ).code,
     ).toBe('INTROUVABLE');
+  });
+});
+
+describe('logo propre aux devis et factures', () => {
+  const ref = () => db.doc(chemins.parametresFacturation('a1'));
+
+  it('enregistré dans le dossier du logo, gardé au réenregistrement, refusé si ce n’est pas une image', async () => {
+    const sb = { ...s(), bucket: bucketFichiers() };
+    await bucketFichiers()
+      .file('artisans/a1/logo/devis-1.png')
+      .save(Buffer.from('png'), { contentType: 'image/png', resumable: false });
+    await bucketFichiers()
+      .file('artisans/a1/logo/devis-2.pdf')
+      .save(Buffer.from('pdf'), { contentType: 'application/pdf', resumable: false });
+    await enregistrerImageFacturation(sb, proprio, {
+      action: 'enregistrer',
+      quoi: 'logo',
+      nomFichier: 'devis-1.png',
+    });
+    await enregistrerParametresFacturation(s(), proprio, PARAMS);
+    expect((await ref().get()).get('logoChemin')).toBe('artisans/a1/logo/devis-1.png');
+    expect(
+      (
+        await erreur(
+          enregistrerImageFacturation(sb, proprio, {
+            action: 'enregistrer',
+            quoi: 'logo',
+            nomFichier: 'devis-2.pdf',
+          }),
+        )
+      ).code,
+    ).toBe('ENTREE_INVALIDE');
+    await enregistrerImageFacturation(sb, proprio, { action: 'retirer', quoi: 'logo' });
+    expect((await ref().get()).get('logoChemin')).toBeUndefined();
   });
 });

@@ -8,19 +8,49 @@ import { nomFichierSur, nouvelIdFichier, problemeFichier } from '@/features/fich
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 
+/** PNG ou JPEG seulement : les seuls formats que le PDF sait poser. */
 const TYPES = ['image/png', 'image/jpeg'];
 
+const TEXTES = {
+  tampon: {
+    titre: 'Cachet de l’entreprise',
+    present: 'Cachet enregistré : posé sur vos factures et sur les devis où « Tampon » est coché.',
+    absent: 'Aucun cachet. PNG ou JPEG, 2 Mo au plus, fond transparent conseillé.',
+    ajouter: 'Ajouter un cachet',
+    changer: 'Changer le cachet',
+    echec: "L'envoi du cachet n'a pas abouti. Réessayez.",
+  },
+  logo: {
+    titre: 'Logo des devis et factures',
+    present: 'Logo enregistré : en haut de vos prochains devis et factures.',
+    absent: 'Aucun logo : celui de « Ma fiche » est repris. PNG ou JPEG, 2 Mo au plus.',
+    ajouter: 'Ajouter un logo',
+    changer: 'Changer le logo',
+    echec: "L'envoi du logo n'a pas abouti. Réessayez.",
+  },
+} as const;
+
 /**
- * Cachet de l'entreprise (maquette, onglet Paramètres) : image PNG ou JPEG de 2 Mo, gardée privée,
- * posée sur les devis où « Tampon » est coché et sur les factures. Fond transparent conseillé.
+ * Cachet ou logo des devis et factures (maquette, onglet Paramètres) : image de 2 Mo déposée dans
+ * Storage puis vérifiée par le serveur. Le cachet reste privé ; le logo rejoint le dossier public
+ * du logo de l'entreprise.
  */
-export function Tampon({ artisanId, present }: { artisanId: string; present: boolean }) {
+export function ImageFacturation({
+  artisanId,
+  quoi,
+  present,
+}: {
+  artisanId: string;
+  quoi: keyof typeof TEXTES;
+  present: boolean;
+}) {
   const router = useRouter();
   const id = useId();
+  const t = TEXTES[quoi];
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const appeler = async (corps: object) => {
-    const r = await posterJson<unknown>('/api/pro/devis/tampon', corps);
+    const r = await posterJson<unknown>('/api/pro/devis/image', { quoi, ...corps });
     if (!r.ok) setErreur(r.message);
     else router.refresh();
   };
@@ -30,31 +60,28 @@ export function Tampon({ artisanId, present }: { artisanId: string; present: boo
     if (probleme) return setErreur(probleme.replace(', PNG ou WebP', ' ou PNG'));
     setEnCours(true);
     setErreur(null);
-    const nomFichier = `${nouvelIdFichier()}-${nomFichierSur(f)}`.slice(0, 200);
+    const base = `${nouvelIdFichier()}-${nomFichierSur(f)}`;
+    const nomFichier = (quoi === 'logo' ? `devis-${base}` : base).slice(0, 200);
     try {
-      await deposerFichier(fichiers.tampon(artisanId, nomFichier), f);
+      await deposerFichier(fichiers[quoi](artisanId, nomFichier), f);
       await appeler({ action: 'enregistrer', nomFichier });
     } catch {
-      setErreur("L'envoi du cachet n'a pas abouti. Réessayez.");
+      setErreur(t.echec);
     }
     setEnCours(false);
   };
   return (
-    <section aria-labelledby="tampon" className="grid gap-2">
-      <h2 id="tampon" className="m-0 text-lg">
-        Cachet de l’entreprise
+    <section aria-labelledby={`${id}-titre`} className="grid gap-2">
+      <h2 id={`${id}-titre`} className="m-0 text-lg">
+        {t.titre}
       </h2>
-      <p className="m-0 text-sm text-neutre-700">
-        {present
-          ? 'Cachet enregistré : posé sur vos factures et sur les devis où « Tampon » est coché.'
-          : 'Aucun cachet. PNG ou JPEG, 2 Mo au plus, fond transparent conseillé.'}
-      </p>
+      <p className="m-0 text-sm text-neutre-700">{present ? t.present : t.absent}</p>
       <div className="flex flex-wrap items-center gap-2">
         <label
           htmlFor={id}
           className="relative inline-flex min-h-11 cursor-pointer items-center overflow-hidden rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
         >
-          {enCours ? 'Envoi…' : present ? 'Changer le cachet' : 'Ajouter un cachet'}
+          {enCours ? 'Envoi…' : present ? t.changer : t.ajouter}
           <input
             id={id}
             type="file"

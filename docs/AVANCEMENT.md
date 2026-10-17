@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
+- ~~Dépôt d'un logo propre aux devis dans l'onglet Paramètres~~ : fait le 17/10 (voir plus bas).
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -712,6 +712,13 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - **Modèle de données (signalé)** : `parametresFacturation.tamponChemin` (DATABASE §8 bis prévoyait `tampon: Media?`), gardé quand les paramètres sont réenregistrés.
 - Tests : 1 PDF, 2 sur émulateur.
 - CI : la médiathèque passe désormais (la configuration Firebase manquait sur la page de l'éditeur).
+
+**Logo propre aux devis et factures (17/10/2026)**
+- Paramètres de facturation : « Ajouter un logo », « Changer », « Retirer » (PNG ou JPEG, 2 Mo). Sans lui, le logo de « Ma fiche » reste repris en haut des PDF. Un PDF déjà produit ne change pas.
+- Rangé dans le dossier public existant `artisans/{aid}/logo/` (nom `devis-…`) : **aucune nouvelle règle Storage**. Même service que le cachet (`enregistrerImageFacturation`, route `/api/pro/devis/image`).
+- **Modèle de données (signalé)** : `parametresFacturation.logoChemin` (DATABASE §8 bis prévoyait `logo: Media`), gardé quand les paramètres sont réenregistrés.
+- **Écart avec la maquette (signalé)** : elle accepte aussi SVG et WebP ; le générateur de PDF ne sait poser que PNG et JPEG, donc seuls ces deux formats sont proposés.
+- Tests : 1 sur émulateur (dépôt, conservation, refus d'un fichier non image, retrait).
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

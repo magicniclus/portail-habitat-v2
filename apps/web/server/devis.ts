@@ -48,11 +48,15 @@ const date = (v: unknown) => (v instanceof Timestamp ? v.toDate() : undefined);
 const sha256 = (b: Buffer) => createHash('sha256').update(b).digest('hex');
 
 /**
- * Logo de « Ma fiche » (déjà vérifié au dépôt) repris en haut des devis et factures. Un logo
- * absent, d'un autre dossier ou illisible : le PDF part sans lui.
+ * Logo des devis et factures : celui des paramètres de facturation, sinon celui de « Ma fiche »
+ * (déjà vérifiés au dépôt). Un logo absent, d'un autre dossier ou illisible : le PDF part sans lui.
  */
-async function logoPdf(artisanId: string, url: string | undefined): Promise<Buffer | undefined> {
-  const chemin = url ? cheminDepuisUrlPublique(url) : null;
+async function logoPdf(
+  artisanId: string,
+  propre: string | undefined,
+  url: string | undefined,
+): Promise<Buffer | undefined> {
+  const chemin = propre ?? (url ? cheminDepuisUrlPublique(url) : null);
   if (!chemin?.startsWith(`artisans/${artisanId}/logo/`)) return undefined;
   try {
     const [b] = await bucketFichiers().file(chemin).download();
@@ -79,16 +83,19 @@ async function entreprise(artisanId: string) {
     db().doc(chemins.artisan(artisanId)).get(),
   ]);
   const tel = a.get('telephonePublic') as string | undefined;
-  const logo = await logoPdf(artisanId, a.get('logoUrl') as string | undefined);
   const { ibanChiffre, ...parametres } = p.data() as ParametresFacturation & {
     tauxPenalitesAnnuel?: number;
     rcPro?: string;
     ibanChiffre?: string;
     tamponChemin?: string;
+    logoChemin?: string;
   };
   const cle = cleChiffrementIban();
   const iban = ibanChiffre && cle ? dechiffrer(ibanChiffre, cle) : null;
-  const tampon = await tamponPdf(artisanId, parametres.tamponChemin);
+  const [logo, tampon] = await Promise.all([
+    logoPdf(artisanId, parametres.logoChemin, a.get('logoUrl') as string | undefined),
+    tamponPdf(artisanId, parametres.tamponChemin),
+  ]);
   return {
     logo,
     tampon,

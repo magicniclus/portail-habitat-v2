@@ -1,6 +1,6 @@
 import { finIban, normaliserIban } from '@ph/core/devis';
 import { ErreurMetier } from '@ph/core/erreurs';
-import type { entreeParametresFacturation, entreeTampon } from '@ph/core/schemas';
+import type { entreeImageFacturation, entreeParametresFacturation } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import type { bucketFichiers } from '../../admin';
@@ -25,7 +25,10 @@ export async function enregistrerParametresFacturation(
     await exiger(s, t, ctx, 'factures.emettre');
     const avant = await t.get(ref);
     // IBAN absent de l'envoi : celui déjà enregistré est gardé ; vide : retiré.
-    const tamponChemin = avant.get('tamponChemin') as string | undefined;
+    const images = {
+      tamponChemin: avant.get('tamponChemin') as string | undefined,
+      logoChemin: avant.get('logoChemin') as string | undefined,
+    };
     const banque =
       iban === undefined
         ? {
@@ -35,7 +38,7 @@ export async function enregistrerParametresFacturation(
         : iban === ''
           ? {}
           : { ibanChiffre: chiffrer(normaliserIban(iban), s.cleIban!), ibanFin: finIban(iban) };
-    const propre = JSON.parse(JSON.stringify({ ...reste, ...banque, tamponChemin })) as Record<
+    const propre = JSON.parse(JSON.stringify({ ...reste, ...banque, ...images })) as Record<
       string,
       unknown
     >;
@@ -43,19 +46,26 @@ export async function enregistrerParametresFacturation(
   });
 }
 
+const IMAGES = {
+  tampon: { champ: 'tamponChemin', chemin: fichiers.tampon },
+  logo: { champ: 'logoChemin', chemin: fichiers.logo },
+} as const;
+
 /**
- * Cachet de l'entreprise (`factures.emettre`) : image de 2 Mo déjà déposée dans Storage
- * (`artisans/{id}/tampon/`), vérifiée ici ; ou retrait. Les PDF déjà produits ne changent pas.
+ * Cachet ou logo des devis et factures (`factures.emettre`) : image PNG ou JPEG de 2 Mo déjà
+ * déposée dans Storage (`artisans/{id}/tampon/` ou `/logo/`), vérifiée ici ; ou retrait. Les PDF
+ * déjà produits ne changent pas.
  */
-export async function enregistrerTampon(
+export async function enregistrerImageFacturation(
   s: ServicesDevis & { bucket: ReturnType<typeof bucketFichiers> },
   ctx: ContexteDevis,
-  e: z.output<typeof entreeTampon>,
+  e: z.output<typeof entreeImageFacturation>,
 ): Promise<void> {
   const ref = s.db.doc(chemins.parametresFacturation(ctx.artisanId));
+  const image = IMAGES[e.quoi];
   let chemin: string | undefined;
   if (e.action === 'enregistrer') {
-    chemin = fichiers.tampon(ctx.artisanId, e.nomFichier);
+    chemin = image.chemin(ctx.artisanId, e.nomFichier);
     const f = s.bucket.file(chemin);
     const [existe] = await f.exists();
     if (!existe) throw new ErreurMetier('INTROUVABLE', 'Image introuvable : renvoyez-la.');
@@ -69,7 +79,7 @@ export async function enregistrerTampon(
     if (!avant.exists)
       throw new ErreurMetier('PRECONDITION', 'Enregistrez d’abord vos paramètres de facturation.');
     t.update(ref, {
-      tamponChemin: chemin ?? FieldValue.delete(),
+      [image.champ]: chemin ?? FieldValue.delete(),
       updatedAt: Timestamp.fromMillis(s.horloge()),
     });
   });

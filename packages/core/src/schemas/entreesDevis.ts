@@ -70,10 +70,14 @@ export const entreeModeleDevis = z.discriminatedUnion('action', [
 /** « Marquer expirés » : devis envoyés de la sélection. */
 export const entreeExpirerDevis = z.strictObject({ ids: z.array(id).min(1).max(100) });
 
-/** Cachet de l'entreprise : fichier déjà déposé dans Storage, ou retrait. */
-export const entreeTampon = z.discriminatedUnion('action', [
-  z.strictObject({ action: z.literal('enregistrer'), nomFichier }),
-  z.strictObject({ action: z.literal('retirer') }),
+/** Cachet ou logo des devis et factures : fichier déjà déposé dans Storage, ou retrait. */
+export const entreeImageFacturation = z.discriminatedUnion('action', [
+  z.strictObject({
+    action: z.literal('enregistrer'),
+    quoi: z.enum(['tampon', 'logo']),
+    nomFichier,
+  }),
+  z.strictObject({ action: z.literal('retirer'), quoi: z.enum(['tampon', 'logo']) }),
 ]);
 
 /** « Accepter ce devis » depuis le lien reçu par email (signature électronique simple). */
@@ -113,6 +117,7 @@ export const entreeParametresFacturation = parametresFacturation
     ibanChiffre: true,
     ibanFin: true,
     tamponChemin: true,
+    logoChemin: true,
   })
   .extend({
     /** Absent : IBAN inchangé ; vide : retiré ; sinon vérifié puis chiffré par le serveur. */
