@@ -1,18 +1,12 @@
 'use client';
 
-import {
-  APPAREILS,
-  LIBELLES_ELEMENT,
-  type Action,
-  type Element,
-  type PageSite,
-} from '@ph/core/sites';
-import { Checkbox, Field, Input, Select, Textarea } from '@ph/ui';
+import { LIBELLES_ELEMENT, type Action, type Element, type PageSite } from '@ph/core/sites';
+import { Button, Checkbox, Field, Input, Select, Textarea } from '@ph/ui';
 import { ChampAction } from './ChampAction';
-import { ImportImage } from './ImportImage';
+import { MasquerSur } from './MasquerSur';
+import { ReglagesImage } from './ReglagesImage';
 import { TexteLie } from './TexteLie';
 
-const NOMS_APPAREIL = { desktop: 'ordinateur', tablet: 'tablette', mobile: 'mobile' } as const;
 const AVEC_TEXTE_MOBILE = new Set(['titre', 'surtitre', 'texte', 'bouton']);
 
 /**
@@ -25,8 +19,10 @@ export function ReglagesElement({
   pages,
   medias,
   artisanId,
+  onMedia,
   erreurAction,
   categoriesBlog = [],
+  onRetour,
 }: {
   el: Element;
   onChange: (p: Record<string, unknown>) => void;
@@ -34,9 +30,13 @@ export function ReglagesElement({
   medias: Record<string, string>;
   /** Dossier Storage de la médiathèque (import d'images). */
   artisanId: string;
+  /** Image importée : ajoutée tout de suite aux médias de l'éditeur (liste et aperçu). */
+  onMedia: (cle: string, url: string) => void;
   erreurAction: (a: Action) => string | null;
   /** Catégories du blog, pour l'élément « Articles du blog ». */
   categoriesBlog?: { id: string; nom: string }[];
+  /** « ← Calques » : retour à la liste des sections. */
+  onRetour: () => void;
 }) {
   const p = el.p as Record<string, unknown>;
   const texte = (cle: string, label: string, long = false) => (
@@ -61,6 +61,9 @@ export function ReglagesElement({
   );
   return (
     <div className="grid gap-4">
+      <Button variant="fantome" taille="sm" className="justify-self-start" onClick={onRetour}>
+        ← Calques
+      </Button>
       <h3 className="m-0 text-lg">{LIBELLES_ELEMENT[el.type]}</h3>
       {el.type === 'titre' || el.type === 'texte' ? (
         <TexteLie
@@ -91,17 +94,13 @@ export function ReglagesElement({
       ) : null}
       {el.type === 'image' ? (
         <>
-          <Field label="Photo" aide="Vos réalisations publiées et vos images importées.">
-            <Select value={el.p.src} onChange={(e) => onChange({ src: e.target.value })}>
-              <option value="">Aucune</option>
-              {Object.keys(medias).map((m, i) => (
-                <option key={m} value={m}>
-                  {m.startsWith('up:') ? `Image importée ${i + 1}` : `Photo ${i + 1}`}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <ImportImage artisanId={artisanId} onImportee={(cle) => onChange({ src: cle })} />
+          <ReglagesImage
+            src={el.p.src}
+            medias={medias}
+            artisanId={artisanId}
+            onMedia={onMedia}
+            onChoisir={(src) => onChange({ src })}
+          />
           {texte('legende', 'Texte alternatif (décrit la photo)')}
           {action(el.p.action)}
         </>
@@ -183,18 +182,7 @@ export function ReglagesElement({
           {el.p.texteMobileOn ? texte('texteMobile', 'Texte sur mobile', true) : null}
         </div>
       ) : null}
-      <fieldset className="m-0 grid gap-2 border-0 p-0">
-        <legend className="mb-1 font-semibold">Masquer sur</legend>
-        {APPAREILS.map((a) => (
-          <Checkbox
-            key={a}
-            checked={el.p.masque[a]}
-            onChange={(e) => onChange({ masque: { ...el.p.masque, [a]: e.target.checked } })}
-          >
-            {NOMS_APPAREIL[a]}
-          </Checkbox>
-        ))}
-      </fieldset>
+      <MasquerSur masque={el.p.masque} onChange={(masque) => onChange({ masque })} />
     </div>
   );
 }

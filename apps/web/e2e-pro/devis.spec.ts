@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { chemins } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
 import { admin, COMPTES, connecter, entrepriseDe, liensEnvoyes } from './outils';
@@ -171,5 +172,45 @@ test.describe('Devis & factures', () => {
       'Faïence murale, fourniture et pose',
     );
     await expect(page.getByLabel('PU HT (€)').nth(1)).toHaveValue('78,00');
+  });
+
+  test('signature en ligne : le client accepte le devis depuis son lien, l’entreprise le voit', async ({
+    page,
+  }) => {
+    const { db, Timestamp } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    const jeton = `jeton-e2e-${Date.now()}-0123456789`;
+    const ref = db.doc(chemins.unDevis(id, `sig-${Date.now()}`));
+    await ref.set({
+      schemaVersion: 1,
+      numero: 'D-2026-9901',
+      statut: 'envoye',
+      client: { nom: 'Claire Martin', email: 'claire@test.local', adresse: 'Mérignac' },
+      objet: 'Salle de bain e2e',
+      totaux: { ttcCentimes: 110000, htCentimes: 100000, tva: { '10': 10000 } },
+      signatureElectronique: true,
+      validiteLe: Timestamp.fromMillis(Date.now() + 30 * 86_400_000),
+      jetonHash: createHash('sha256').update(jeton).digest('hex'),
+      hashPdf: 'a'.repeat(64),
+      createdAt: Timestamp.now(),
+    });
+    await parametres(PARAMS);
+    await page.goto(`/devis-client/${id}.${ref.id}.${jeton}`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Devis D-2026-9901' })).toBeVisible();
+    await page.getByRole('button', { name: 'Accepter le devis' }).click();
+    // Nom et « Bon pour accord » obligatoires : le navigateur bloque l'envoi.
+    await expect(page.getByText('Devis accepté')).toHaveCount(0);
+    await page.getByLabel('Vos nom et prénom').fill('Claire Martin');
+    await page.getByRole('checkbox', { name: /Bon pour accord/ }).check();
+    await page.getByRole('button', { name: 'Accepter le devis' }).click();
+    await expect(page.getByText('Devis accepté')).toBeVisible();
+    const d = (await ref.get()).data()!;
+    expect(d.statut).toBe('accepte');
+    expect(d.signature).toMatchObject({ nom: 'Claire Martin', hashPdf: 'a'.repeat(64) });
+    await page.reload();
+    await expect(page.getByText(/^Accepté par Claire Martin le /)).toBeVisible();
+    // Un autre jeton : page introuvable.
+    const r = await page.goto(`/devis-client/${id}.${ref.id}.${'x'.repeat(30)}`);
+    expect(r?.status()).toBe(404);
   });
 });

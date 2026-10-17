@@ -115,7 +115,7 @@ export const MODELES = {
   'nouvelle-demande': { categorie: 'transactionnel', charte: 'pro', sms: true, inapp: true },
   'relance-demande': { categorie: 'activite', charte: 'pro', differe: true },
   'demande-expiree': { categorie: 'activite', charte: 'pro', inapp: true },
-  'devis-accepte': { categorie: 'activite', charte: 'pro', inapp: true },
+  'devis-accepte': { categorie: 'activite', charte: 'pro', inapp: true, complet: true },
   'devis-refuse': { categorie: 'activite', charte: 'pro', inapp: true },
   'nouvel-appel-offres': { categorie: 'activite', charte: 'pro', inapp: true },
   'resume-appels-offres': { categorie: 'activite', charte: 'pro' },

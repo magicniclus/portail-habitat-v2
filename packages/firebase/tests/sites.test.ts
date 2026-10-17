@@ -12,6 +12,7 @@ import {
   enregistrerPage,
   envoyerFormulaireSite,
   enregistrerMediaSite,
+  lireMediasSite,
   gererSectionsEnregistrees,
   lireSitePublie,
   PublicationRefusee,
@@ -287,5 +288,22 @@ describe('médiathèque du site', () => {
     );
     expect(e.code).toBe('INTROUVABLE');
     expect((await db.collection(chemins.mediasSite('a1')).get()).size).toBe(0);
+  });
+
+  it('image déposée : enregistrée, relue avec sa clé up: et son URL publique', async () => {
+    const PNG = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    await bucketFichiers()
+      .file('sites/a1/medias/chantier.png')
+      .save(PNG, { contentType: 'image/png', resumable: false });
+    const r = await enregistrerMediaSite({ ...s(), bucket: bucketFichiers() }, proprio, {
+      nomFichier: 'chantier.png',
+    });
+    expect(r.cle).toMatch(/^up:/);
+    expect(await lireMediasSite(db, 'a1')).toEqual([
+      expect.objectContaining({ cle: r.cle, nom: 'chantier.png', url: r.url }),
+    ]);
   });
 });

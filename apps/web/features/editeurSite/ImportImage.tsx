@@ -1,7 +1,6 @@
 'use client';
 
 import { fichiers } from '@ph/firebase/chemins';
-import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import {
   nomFichierSur,
@@ -21,9 +20,9 @@ export function ImportImage({
   onImportee,
 }: {
   artisanId: string;
-  onImportee: (cle: string) => void;
+  /** Image enregistrée : sa clé `up:` et son URL, ajoutées à la médiathèque de l'éditeur. */
+  onImportee: (cle: string, url: string) => void;
 }) {
-  const router = useRouter();
   const id = useId();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -36,12 +35,11 @@ export function ImportImage({
     const nomFichier = `${nouvelIdFichier()}-${nomFichierSur(f)}`.slice(0, 200);
     try {
       await deposerFichier(fichiers.mediaSite(artisanId, nomFichier), f);
-      const r = await posterJson<{ cle: string }>('/api/pro/site/medias', { nomFichier });
+      const r = await posterJson<{ cle: string; url: string }>('/api/pro/site/medias', {
+        nomFichier,
+      });
       if (!r.ok) setErreur(r.message);
-      else {
-        onImportee(r.data.cle);
-        router.refresh();
-      }
+      else onImportee(r.data.cle, r.data.url);
     } catch {
       setErreur("L'envoi de l'image n'a pas abouti. Réessayez.");
     }

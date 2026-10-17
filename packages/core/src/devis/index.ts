@@ -4,3 +4,4 @@ export * from './mentions';
 export * from './textes';
 export * from './libelles';
 export * from './relances';
+export * from './signature';

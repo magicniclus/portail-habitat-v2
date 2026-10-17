@@ -24,7 +24,6 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'nouvelle-demande': 'Nouvelle demande de devis',
   'relance-demande': 'Une demande attend votre réponse',
   'demande-expiree': 'Une demande a expiré',
-  'devis-accepte': 'Votre devis a été accepté',
   'devis-refuse': 'Votre devis n’a pas été retenu',
   'nouvel-appel-offres': 'Nouvel appel d’offres dans votre zone',
   'resume-appels-offres': 'Les appels d’offres du jour',

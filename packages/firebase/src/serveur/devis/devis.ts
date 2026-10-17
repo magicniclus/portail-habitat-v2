@@ -42,7 +42,7 @@ export interface ResultatEnvoi {
  * et le particulier le voit dans son espace. Lecture dans la transaction, écriture renvoyée pour
  * passer après toutes les lectures.
  */
-async function suivreDemande(
+export async function suivreDemande(
   t: Transaction,
   s: ServicesDevis,
   artisanId: string,

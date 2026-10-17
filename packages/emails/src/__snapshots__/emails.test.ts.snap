@@ -374,6 +374,30 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > devis-accepte : version texte 1`] = `
+"Devis D-2026-0152 accepté par Claire Martin
+8 932,40 € TTC · signé en ligne
+
+PORTAIL HABITAT PRO
+
+
+VOTRE DEVIS A ÉTÉ ACCEPTÉ
+
+Claire Martin a accepté en ligne votre devis D-2026-0152 (8 932,40 € TTC). La signature (nom, date et empreinte du PDF envoyé) est enregistrée avec le devis.
+
+Vous pouvez maintenant facturer l’acompte ou transformer le devis en facture.
+
+Ouvrir le devis https://portailhabitat.fr/pro/devis/exemple
+
+L’équipe Portail Habitat Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-recu : version texte 1`] = `
 "Attestation décennale bien reçue
 Vérification sous 48 h ouvrées.

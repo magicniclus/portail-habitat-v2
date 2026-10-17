@@ -30,3 +30,4 @@ export {
   type ModeleDevisResume,
   type PrestationBiblio,
 } from './bibliotheque';
+export { lireLienClient, signerDevis } from './signature';

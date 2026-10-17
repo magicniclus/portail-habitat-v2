@@ -68,6 +68,13 @@ export const entreeModeleDevis = z.discriminatedUnion('action', [
 /** « Marquer expirés » : devis envoyés de la sélection. */
 export const entreeExpirerDevis = z.strictObject({ ids: z.array(id).min(1).max(100) });
 
+/** « Accepter ce devis » depuis le lien reçu par email (signature électronique simple). */
+export const entreeSignatureDevis = z.strictObject({
+  lien: z.string().regex(/^[\w-]{1,128}\.[\w-]{1,128}\.[\w-]{20,128}$/),
+  nom: z.string().trim().min(2, 'Indiquez vos nom et prénom.').max(120),
+  accord: z.literal(true, 'Cochez « Bon pour accord » pour accepter le devis.'),
+});
+
 /** Bouton « Relancer » d'une facture. */
 export const entreeRelancerFacture = z.strictObject({ factureId: id });
 

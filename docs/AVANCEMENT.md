@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Signature électronique du client, tampon sur le PDF, IBAN chiffré, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
+- Tampon sur le PDF, IBAN chiffré, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -692,6 +692,12 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Logo sur les PDF (17/10/2026)**
 - Le logo de « Ma fiche » (déjà vérifié au dépôt, 2 Mo) est repris en haut des devis et factures produits à partir de maintenant ; absent, hors du dossier `artisans/{id}/logo/` ou illisible (SVG, WebP non pris en charge par le moteur PDF) : le PDF part sans lui. Un PDF déjà produit n'est jamais régénéré (DEV-05).
 - Choix signalé : pas de second logo propre aux devis pour l'instant (la maquette prévoit un dépôt dans l'onglet Paramètres) ; à ajouter si l'artisan doit pouvoir avoir un logo différent de sa fiche.
+
+**Signature en ligne par le client (17/10/2026)**
+- Quand l'artisan coche « Signature électronique », l'email `devis-recu` ajoute « Accepter le devis en ligne » (lien personnel `/devis-client/{artisan}.{devis}.{jeton}`, même jeton que le PDF, dont seule l'empreinte est gardée). La page montre le résumé, le PDF à télécharger et le formulaire : nom et prénom + « Bon pour accord » obligatoires.
+- Serveur `signerDevis` (transaction) : jeton vérifié, `signatureDevis` (cœur testé : devis envoyé, valable, signature activée), devis `accepte`, `signature: { nom, ip, le, hashPdf }` (DATABASE §8 bis), mise en relation suivie (`devis_accepte`), email `devis-accepte` rédigé pour le propriétaire. Un devis déjà accepté, expiré ou à signer sur papier affiche la raison.
+- Choix signalé : signature électronique **simple** (eIDAS) ; l'adresse IP est conservée avec la signature comme preuve (donnée personnelle, mentionnée sur la page). Une signature avancée (prestataire type Yousign) serait une nouvelle dépendance à décider.
+- Tests : 2 cœur, 2 sur émulateur, 1 e2e.
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :
@@ -721,6 +727,7 @@ Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS in
 
 **Médiathèque (17/10/2026)** : « Importer une image » dans les réglages d'un élément image : dépôt dans Storage `sites/{id}/medias/`, vérification serveur (image JPEG, PNG, WebP ou AVIF, 8 Mo), document `sites/{id}/medias/{mediaId}` (DATABASE §15 bis), clé `up:{mediaId}` choisie pour l'élément. Les images importées s'ajoutent aux photos de réalisations publiées dans la liste ; le site public ne lit que celles citées par ses pages.
 - **Règle de sécurité ajoutée (signalée)** : `storage.rules` `match /sites/{aid}/medias/{fichier}` : lecture publique ; création par propriétaire ou gérant seulement (`site.gerer`), image de 8 Mo au plus, jamais d'écrasement ; suppression par les mêmes. 5 cas ajoutés dans `tests/regles/storage.test.ts` (refus vérifiés ici ; les envois autorisés échouent dans ce conteneur comme tous les envois Storage, CI fait foi).
+- L'image importée s'ajoute tout de suite aux médias de l'éditeur (liste et aperçu), sans recharger la page.
 - Pas encore : variantes WebP 640/1280/1920 (redimensionnement côté serveur, nouvelle dépendance à valider), suppression d'une image depuis l'éditeur, fichiers téléchargeables (`Action.fichierId`, antivirus).
 
 Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), statistiques Search Console sans cookie, variantes WebP de la médiathèque, 6 modèles de site fournis (D47 ⏳), Lighthouse SITE-04.

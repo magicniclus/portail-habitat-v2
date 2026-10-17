@@ -33,7 +33,34 @@ interface RelanceFacture {
   lien: string;
 }
 
+/** Devis accepté en ligne par le client (signature électronique simple). */
+interface DevisAccepte {
+  numero: string;
+  client: string;
+  montant: string;
+  lien: string;
+}
+
 export const modelesDevis = {
+  'devis-accepte': modele<DevisAccepte>({
+    sujet: (d) => `Devis ${d.numero} accepté par ${d.client}`.slice(0, 59),
+    preheader: (d) => `${d.montant} · signé en ligne`,
+    blocs: (d) => [
+      titre('Votre devis a été accepté'),
+      para(
+        `${d.client} a accepté en ligne votre devis ${d.numero} (${d.montant}). La signature (nom, date et empreinte du PDF envoyé) est enregistrée avec le devis.`,
+      ),
+      para('Vous pouvez maintenant facturer l’acompte ou transformer le devis en facture.'),
+      bouton('Ouvrir le devis', d.lien),
+    ],
+    exemple: {
+      numero: 'D-2026-0152',
+      client: 'Claire Martin',
+      montant: '8 932,40 € TTC',
+      lien: 'https://portailhabitat.fr/pro/devis/exemple',
+    },
+  }),
+
   'relance-devis': modele<RelanceDevis>({
     sujet: (d) => `Devis ${d.numero} : il attend votre réponse`,
     preheader: (d) => `${d.objet} · ${d.montant}`,

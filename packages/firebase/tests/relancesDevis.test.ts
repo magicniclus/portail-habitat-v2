@@ -4,7 +4,7 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
-import type { Notification } from '../src/serveur/comptes/services';
+import { empreinteJeton, type Notification } from '../src/serveur/comptes/services';
 import {
   changerStatutDevis,
   enregistrerDevis,
@@ -18,6 +18,7 @@ import {
   lireDevisDepuisDemande,
   marquerDevisExpires,
   relancerFacture,
+  signerDevis,
   traiterDevisEnvoyes,
   traiterFacturesEcheances,
 } from '../src/serveur/devis';
@@ -296,5 +297,60 @@ describe('modèles de devis et bibliothèque de prestations', () => {
     const [m] = (await lireBibliotheque(db, 'a1')).modeles;
     expect(m).toMatchObject({ id, titre: 'Salle de bain', usage: 2, htCentimes: 100000 });
     expect(m!.lignes).toHaveLength(1);
+  });
+});
+
+describe('signature en ligne du devis par le client', () => {
+  const JETON = 'jeton-client-de-test-0123456789';
+  async function devisSignable(signatureElectronique = true) {
+    const { devisId } = await enregistrerDevis(s(), proprio, {
+      ...entree(),
+      signatureElectronique,
+    });
+    await envoyerDevis(s(), proprio, devisId);
+    const ref = db.doc(chemins.unDevis('a1', devisId));
+    await ref.update({ jetonHash: empreinteJeton(JETON), hashPdf: 'a'.repeat(64) });
+    await db.doc(chemins.artisan('a1')).set({ proprietaireUid: 'p1' }, { merge: true });
+    return { ref, lien: `a1.${devisId}.${JETON}` };
+  }
+
+  it('lien valide : accepté, signature enregistrée, entreprise prévenue ; pas deux fois', async () => {
+    const { ref, lien } = await devisSignable();
+    await signerDevis(s(), { lien, nom: 'Claire Martin', ip: '203.0.113.7' });
+    const d = (await ref.get()).data()!;
+    expect(d.statut).toBe('accepte');
+    expect(d.signature).toMatchObject({
+      nom: 'Claire Martin',
+      ip: '203.0.113.7',
+      hashPdf: 'a'.repeat(64),
+    });
+    expect(envois.at(-1)).toMatchObject({
+      modele: 'devis-accepte',
+      destinataire: { uid: 'p1', artisanId: 'a1' },
+      donnees: { client: 'Claire Martin' },
+    });
+    expect((await erreur(signerDevis(s(), { lien, nom: 'X', ip: '' }))).message).toBe(
+      'Ce devis a déjà été accepté.',
+    );
+  });
+
+  it('mauvais jeton, signature en ligne désactivée ou devis expiré : refusé', async () => {
+    const { lien } = await devisSignable();
+    expect(
+      (
+        await erreur(
+          signerDevis(s(), { lien: lien.replace(JETON, 'x'.repeat(30)), nom: 'X', ip: '' }),
+        )
+      ).code,
+    ).toBe('INTROUVABLE');
+    horloge = Date.UTC(2026, 10, 20);
+    expect((await erreur(signerDevis(s(), { lien, nom: 'X', ip: '' }))).message).toMatch(
+      /plus valable/,
+    );
+    horloge = T;
+    const papier = await devisSignable(false);
+    expect(
+      (await erreur(signerDevis(s(), { lien: papier.lien, nom: 'X', ip: '' }))).message,
+    ).toMatch(/sur papier/);
   });
 });

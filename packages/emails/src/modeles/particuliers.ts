@@ -64,6 +64,8 @@ export const modelesParticuliers = {
     montant: string;
     validite: string;
     lien: string;
+    /** Signature en ligne activée par l'artisan : page « Accepter ce devis ». */
+    lienAccepter?: string;
   }>({
     sujet: (d) => `Devis ${d.numero} de ${d.entreprise}`,
     preheader: (d) => `${d.objet} · ${d.montant}`,
@@ -79,8 +81,11 @@ export const modelesParticuliers = {
         ...(d.validite ? ([['Valable jusqu’au', d.validite]] as [string, string][]) : []),
       ]),
       bouton('Télécharger le devis (PDF)', d.lien),
+      ...(d.lienAccepter ? [bouton('Accepter le devis en ligne', d.lienAccepter)] : []),
       note(
-        'Pour l’accepter, renvoyez-le daté et signé avec la mention « Bon pour accord », ou répondez directement à l’artisan. Ce lien est personnel : ne le transférez pas.',
+        d.lienAccepter
+          ? 'Vous pouvez l’accepter en ligne en un clic, ou le renvoyer daté et signé avec la mention « Bon pour accord ». Ces liens sont personnels : ne les transférez pas.'
+          : 'Pour l’accepter, renvoyez-le daté et signé avec la mention « Bon pour accord », ou répondez directement à l’artisan. Ce lien est personnel : ne le transférez pas.',
       ),
     ],
     exemple: {

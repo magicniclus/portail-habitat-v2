@@ -2,6 +2,7 @@ import 'server-only';
 import {
   conditionsDevis,
   conditionsFacture,
+  signatureDevis,
   verifierMentionsDevis,
   type LigneDevis,
   type ParametresFacturation,
@@ -10,7 +11,7 @@ import { formatDate, formatEuros, formatTel } from '@ph/core/format';
 import { genererPdf, htmlEnTexte, type DonneesPdf } from '@ph/emails/pdf';
 import { appAdmin, bucketFichiers, cheminDepuisUrlPublique } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
-import type { ResultatEnvoi, ServicesDevis } from '@ph/firebase/devis';
+import { lireLienClient, type ResultatEnvoi, type ServicesDevis } from '@ph/firebase/devis';
 import { empreinteJeton, nouveauJeton } from '@ph/firebase/comptes';
 import { getFirestore, Timestamp, type DocumentData } from 'firebase-admin/firestore';
 import { createHash } from 'node:crypto';
@@ -146,7 +147,12 @@ export async function produireEtEnvoyerDevis(
       }),
       validite: x.validiteLe ? formatDate(date(x.validiteLe)!) : '',
     },
-    secrets: { lien: `${URL_SITE}/api/devis-client/${artisanId}.${devisId}.${jeton}` },
+    secrets: {
+      lien: `${URL_SITE}/api/devis-client/${artisanId}.${devisId}.${jeton}`,
+      ...(x.signatureElectronique
+        ? { lienAccepter: `${URL_SITE}/devis-client/${artisanId}.${devisId}.${jeton}` }
+        : {}),
+    },
   });
   return { pdfPath, hashPdf: sha256(pdf), jetonHash: empreinteJeton(jeton) };
 }
@@ -223,4 +229,33 @@ export async function pdfDuLienClient(
   const d = await db().doc(chemin).get();
   if (!d.exists || !d.get('pdfPath') || d.get('jetonHash') !== empreinteJeton(jeton)) return null;
   return { pdf: await lirePdf(d.get('pdfPath') as string), numero: d.get('numero') as string };
+}
+
+/** Résumé du devis pour la page du client (lien de l'email) ; `null` si le lien ne vaut rien. */
+export async function devisPourClient(lien: string) {
+  const l = lireLienClient(lien);
+  if (!l) return null;
+  const d = await db().doc(chemins.unDevis(l.artisanId, l.devisId)).get();
+  if (!d.exists || d.get('jetonHash') !== empreinteJeton(l.jeton)) return null;
+  const x = d.data() as DocumentData;
+  const p = await db().doc(chemins.parametresFacturation(l.artisanId)).get();
+  const validite = date(x.validiteLe);
+  return {
+    numero: x.numero as string,
+    entreprise: (p.get('raisonSociale') as string | undefined) ?? '',
+    objet: x.objet as string,
+    montant: formatEuros(x.totaux.ttcCentimes as number, { decimales: 'toujours', suffixe: 'TTC' }),
+    validite: validite ? formatDate(validite) : '',
+    signature: signatureDevis(
+      {
+        statut: x.statut as string,
+        signatureElectronique: x.signatureElectronique === true,
+        ...(validite ? { validiteLe: validite } : {}),
+      },
+      Date.now(),
+    ),
+    signe: x.signature
+      ? { nom: x.signature.nom as string, le: formatDate(date(x.signature.le)!) }
+      : null,
+  };
 }

@@ -1,4 +1,4 @@
-import { chemins } from '@ph/firebase/chemins';
+import { chemins, collections } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
 import { admin, COMPTES, connecter, entrepriseDe, png } from './outils';
 
@@ -141,6 +141,10 @@ test.describe('Site internet artisan', () => {
   test('SITE-03 : envoi du formulaire → « Mes demandes » ; SITE-13 : champ en trop rejeté', async ({
     page,
   }) => {
+    // Le formulaire public est limité à 5 envois par heure et par IP, et tous les projets
+    // Playwright partagent la même IP : le compteur repart de zéro pour ce test.
+    const { db } = await admin();
+    await db.recursiveDelete(db.doc(`${collections.rateLimits}/_`).parent);
     await page.goto(`${URL_SITE}/`);
     await offre('gratuit');
     const formulaire = page.locator('[data-formulaire]').first();
@@ -151,7 +155,6 @@ test.describe('Site internet artisan', () => {
     await formulaire.getByRole('button').click();
     await expect(formulaire.getByText(/votre demande est envoyée/)).toBeVisible();
 
-    const { db } = await admin();
     await expect(async () => {
       const d = await db
         .doc(chemins.demande('_'))

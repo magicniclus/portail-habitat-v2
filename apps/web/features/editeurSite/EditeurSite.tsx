@@ -7,7 +7,7 @@ import {
   type OperationIa,
   type PageSite,
 } from '@ph/core/sites';
-import { Banner, Button } from '@ph/ui';
+import { Banner } from '@ph/ui';
 import { useState } from 'react';
 import { Apercu } from './Apercu';
 import { BarreEditeur, NavPanneaux, type Panneau } from './BarreEditeur';
@@ -46,7 +46,8 @@ export function EditeurSite(props: ProprietesEditeur) {
   const element = selection ? elementsDe(page).find((e) => e.el.id === selection)?.el : undefined;
 
   const [proposition, setProposition] = useState<OperationIa[] | null>(null);
-  const html = useHtmlApercu(s.b, pageId, { ...props, apercuIa, proposition });
+  const [medias, setMedias] = useState(props.medias);
+  const html = useHtmlApercu(s.b, pageId, { ...props, medias, apercuIa, proposition });
 
   return (
     <div className="flex min-h-dvh flex-col bg-blanc">
@@ -114,20 +115,17 @@ export function EditeurSite(props: ProprietesEditeur) {
               />
             ) : null}
             {panneau === 'calques' && element ? (
-              <>
-                <Button variant="fantome" taille="sm" onClick={() => setSelection(null)}>
-                  ← Calques
-                </Button>
-                <ReglagesElement
-                  el={element}
-                  onChange={(r) => majPage((p) => majElement(p, element.id, r))}
-                  pages={s.b.pages}
-                  medias={props.medias}
-                  artisanId={props.artisanId}
-                  erreurAction={s.erreurAction(pageId)}
-                  categoriesBlog={props.blog.classement.categories}
-                />
-              </>
+              <ReglagesElement
+                onRetour={() => setSelection(null)}
+                el={element}
+                onChange={(r) => majPage((p) => majElement(p, element.id, r))}
+                pages={s.b.pages}
+                medias={medias}
+                onMedia={(cle, url) => setMedias((m) => ({ ...m, [cle]: url }))}
+                artisanId={props.artisanId}
+                erreurAction={s.erreurAction(pageId)}
+                categoriesBlog={props.blog.classement.categories}
+              />
             ) : null}
             {panneau === 'calques' && !element ? (
               <PanneauCalques
