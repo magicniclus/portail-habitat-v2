@@ -1,7 +1,13 @@
 import { peut } from '@ph/core/equipe';
 import { formatFourchette, formatTel } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireDocumentsPro, lireFichePro, lireRealisationsPro } from '@ph/firebase/pro';
+import { encartAffiche, type CleEncart } from '@ph/core/paiements';
+import {
+  lireDocumentsPro,
+  lireEncartsMasques,
+  lireFichePro,
+  lireRealisationsPro,
+} from '@ph/firebase/pro';
 import { bouton } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
@@ -13,6 +19,7 @@ import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
 import { Logo } from '@/features/fichePro/Logo';
 import { Realisations } from '@/features/fichePro/Realisations';
+import { EncartOffre } from '@/features/offres/EncartOffre';
 import {
   EditionCoordonnees,
   EditionDevis,
@@ -21,6 +28,7 @@ import {
 } from '@/features/fichePro/EditionsFiche';
 import { routes } from '@/lib/routes';
 import { sessionPro } from '@/server/sessionPro';
+import { maintenant } from '@/server/temps';
 
 export const metadata: Metadata = { title: 'Ma fiche', robots: { index: false } };
 
@@ -55,13 +63,29 @@ export default async function PageMaFiche() {
   const active = s.espace.active;
   if (!active || active.membre.role === 'comptable') redirect(routes.proTableauDeBord);
   const db = getFirestore(appAdmin());
-  const [f, documents, realisations] = await Promise.all([
+  const [f, documents, realisations, masques] = await Promise.all([
     lireFichePro(db, active.artisanId),
     lireDocumentsPro(db, active.artisanId),
     lireRealisationsPro(db, active.artisanId),
+    lireEncartsMasques(db, s.uid),
   ]);
   if (!f) redirect(routes.proTableauDeBord);
   const edite = peut(active.membre, 'fiche.modifier');
+  const instant = maintenant();
+  // Un seul encart d'offre par écran (PAIEMENTS §4) : numéro masqué d'abord, puis 5 projets.
+  const encartPour = (cle: CleEncart) =>
+    peut(active.membre, 'abonnement.gerer')
+      ? encartAffiche({
+          cle,
+          formule: active.artisan.formule,
+          masques,
+          enLigne: f.enLigne,
+          maintenant: instant,
+        })
+      : null;
+  const offreCoordonnees = encartPour('coordonnees');
+  const offreRealisations =
+    !offreCoordonnees && realisations.length >= 5 ? encartPour('realisations') : null;
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <ConfigFirebase />
@@ -118,6 +142,7 @@ export default async function PageMaFiche() {
               <dt className="font-semibold">Site</dt>
               <dd className="m-0 break-all">{f.siteWeb ?? '—'}</dd>
             </dl>
+            {offreCoordonnees ? <EncartOffre cle="coordonnees" offre={offreCoordonnees} /> : null}
           </Section>
           <Section titre="Projets réalisés">
             <Realisations
@@ -125,6 +150,9 @@ export default async function PageMaFiche() {
               realisations={realisations}
               peutModifier={peut(active.membre, 'realisations.modifier')}
             />
+            {offreRealisations ? (
+              <EncartOffre cle="realisations" offre={offreRealisations} />
+            ) : null}
           </Section>
         </div>
         <div className="grid gap-5">

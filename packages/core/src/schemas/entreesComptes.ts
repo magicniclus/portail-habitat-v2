@@ -1,3 +1,4 @@
+import { CLES_ENCART, type CleEncart } from '../paiements/encarts';
 import { ACTIONS_EQUIPE, ROLES_MEMBRE } from '../equipe/permissions';
 import { z } from '../zod';
 import { adresse, centimesPositifs, email, geo, id, siren, siret, telephoneE164 } from './commun';
@@ -115,4 +116,9 @@ export const entreeCompteInvite = z.object({
   jeton: z.string().regex(/^[A-Za-z0-9_-]{43}$/, 'Lien d’invitation invalide'),
   nom: z.string().trim().min(2, 'Indiquez votre nom').max(80),
   motDePasse: z.string().min(10, '10 caractères au moins').max(128),
+});
+
+/** « Plus tard » sur un encart d'offre (PAIEMENTS §4). */
+export const entreeMasquerEncart = z.object({
+  cle: z.enum(CLES_ENCART as [CleEncart, ...CleEncart[]]),
 });

@@ -31,3 +31,4 @@ export {
   type ComptePro,
   type FacteurPro,
 } from './compte';
+export { lireEncartsMasques, masquerEncart } from './encarts';

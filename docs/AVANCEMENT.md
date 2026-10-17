@@ -616,7 +616,9 @@ Les clés passent uniquement par `.env.local` (non commité) et les secrets Verc
 
 **Fait le 16/10/2026** : NAV-01 / D63 — la barre latérale ne garde que les outils ; « Mon compte » (initiales, « Équipe · Abonnement · Aide ») est épinglé en bas ; ses onglets Profil et sécurité · Équipe · Abonnement · Aide & contact s'affichent à l'identique sur les quatre pages selon le rôle ; sélecteur d'entreprise déplacé dans l'en-tête ; nouvelle page `/pro/aide` (formulaire, email, raccourcis, questions fréquentes ; pas de numéro de téléphone tant qu'un vrai n'est pas fourni). Le comptable arrive toujours sur l'abonnement.
 
-**Reste** : encarts contextuels de PAIEMENTS §4 (tableau de bord, Ma fiche), emails qui citent encore Visibilité/Premium, lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
+Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jamais une offre incluse, Fiche + Site pour qui a déjà l'autre moitié, aucun encart tant que la fiche n'est pas en ligne, « Plus tard » 30 jours dans `users/{uid}.encartsMasques` — nouveau champ), encarts de Ma fiche (numéro masqué, puis 5 projets atteints ; un seul par écran ; visibles par qui peut souscrire). Les emails n'affichent plus « Visibilité » ni « Premium » (identifiants internes seulement).
+
+**Reste** : encart du tableau de bord « au-delà du top 5 du secteur » (la position dans le secteur n'est pas encore calculée), plafond de 5 projets pour le compte gratuit (règle à confirmer : PAIEMENTS ne donne que le déclencheur), lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
 
 ## 25. Lot 10e : landings par outil (14/10/2026)
 

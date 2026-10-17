@@ -38,6 +38,8 @@ export const utilisateur = z.object({
   cguVersionAcceptee: z.string().optional(),
   cguAccepteeLe: horodatage.optional(),
   derniereConnexion: horodatage.optional(),
+  /** Encarts d'offre masqués par « Plus tard » (PAIEMENTS §4) : clé → date. */
+  encartsMasques: z.record(z.string().max(40), horodatage).optional(),
   statut: z.enum(['actif', 'suspendu', 'supprime']),
   suspensionMotif: z.string().optional(),
 });
