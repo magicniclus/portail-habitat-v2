@@ -38,3 +38,4 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 17/10/2026 — D71 option Blog 9,90 € ; D61 pas en v1 ; D47 6 modèles à coder ; D70 toujours validé ; D68 DataForSEO ; D62 Factur-X + plateforme agréée dès maintenant (plateforme à choisir) ; autres ⏳ validées en bloc (D29 remplacé par D59). Documents : DECISIONS.md, A_FOURNIR.md.
