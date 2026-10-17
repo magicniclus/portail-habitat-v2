@@ -62,6 +62,17 @@ async function logoPdf(artisanId: string, url: string | undefined): Promise<Buff
   }
 }
 
+/** Cachet de l'entreprise (privé), lu dans son dossier seulement ; illisible : sans cachet. */
+async function tamponPdf(artisanId: string, chemin: string | undefined) {
+  if (!chemin?.startsWith(`artisans/${artisanId}/tampon/`)) return undefined;
+  try {
+    const [b] = await bucketFichiers().file(chemin).download();
+    return b;
+  } catch {
+    return undefined;
+  }
+}
+
 async function entreprise(artisanId: string) {
   const [p, a] = await Promise.all([
     db().doc(chemins.parametresFacturation(artisanId)).get(),
@@ -73,11 +84,14 @@ async function entreprise(artisanId: string) {
     tauxPenalitesAnnuel?: number;
     rcPro?: string;
     ibanChiffre?: string;
+    tamponChemin?: string;
   };
   const cle = cleChiffrementIban();
   const iban = ibanChiffre && cle ? dechiffrer(ibanChiffre, cle) : null;
+  const tampon = await tamponPdf(artisanId, parametres.tamponChemin);
   return {
     logo,
+    tampon,
     ...parametres,
     ...(iban ? { iban } : {}),
     ...(tel ? { telephone: formatTel(tel) } : {}),
@@ -89,7 +103,7 @@ async function entreprise(artisanId: string) {
 function donneesDevis(
   numero: string,
   x: DocumentData,
-  e: Omit<Awaited<ReturnType<typeof entreprise>>, 'logo'>,
+  e: Omit<Awaited<ReturnType<typeof entreprise>>, 'logo' | 'tampon'>,
 ): DonneesPdf {
   const lignes = x.lignes as LigneDevis[];
   const m = verifierMentionsDevis(
@@ -151,10 +165,12 @@ export async function produireEtEnvoyerDevis(
   const d = await db().doc(chemins.unDevis(artisanId, devisId)).get();
   const x = d.data() as DocumentData;
   const e = await entreprise(artisanId);
-  const { logo, ...ent } = e;
+  const { logo, tampon, ...ent } = e;
   const pdf = await genererPdf({
     ...donneesDevis(x.numero as string, x, ent),
     ...(logo ? { logo } : {}),
+    // Cachet sur le devis seulement si l'artisan l'a coché.
+    ...(tampon && x.tampon === true ? { tampon } : {}),
   });
   const pdfPath = `artisans/${artisanId}/devis/${x.numero as string}.pdf`;
   await bucketFichiers()
@@ -191,7 +207,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
   const f = await ref.get();
   const x = f.data() as DocumentData;
   if (x.pdfPath) return;
-  const { logo, ...e } = await entreprise(artisanId);
+  const { logo, tampon, ...e } = await entreprise(artisanId);
   const origine = x.factureOrigineId
     ? ((
         await db()
@@ -228,6 +244,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
     annexes: [],
     entreprise: e,
     ...(logo ? { logo } : {}),
+    ...(tampon ? { tampon } : {}),
   });
   const pdfPath = `artisans/${artisanId}/factures/${x.numero as string}.pdf`;
   await bucketFichiers()

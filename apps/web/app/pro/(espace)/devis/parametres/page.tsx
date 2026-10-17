@@ -3,6 +3,8 @@ import { lireParametresFacturation } from '@ph/firebase/devis';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { FormulaireParametres } from '@/features/devis/FormulaireParametres';
+import { Tampon } from '@/features/devis/Tampon';
+import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { routes } from '@/lib/routes';
 import { accesDevis } from '@/server/pageDevis';
 
@@ -24,6 +26,12 @@ export default async function PageParametresFacturation() {
         </p>
       </div>
       <FormulaireParametres valeurs={valeurs} modifiable={acces.facturer} />
+      {acces.facturer && Object.keys(valeurs).length ? (
+        <>
+          <ConfigFirebase />
+          <Tampon artisanId={acces.artisanId} present={Boolean(valeurs.tamponChemin)} />
+        </>
+      ) : null}
     </main>
   );
 }

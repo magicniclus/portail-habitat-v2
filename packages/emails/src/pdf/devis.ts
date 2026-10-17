@@ -39,6 +39,8 @@ export interface DonneesPdf {
   annexes: ('retractation' | 'attestation_tva_reduite')[];
   entreprise: ParametresFacturation & { rcPro?: string; telephone?: string; email?: string };
   logo?: Buffer;
+  /** Cachet de l'entreprise (image) : à côté de « Bon pour accord » ou sous les conditions. */
+  tampon?: Buffer;
 }
 
 const TITRES: Record<DonneesPdf['type'], string> = {
@@ -251,9 +253,18 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     doc.moveDown(0.4);
     doc.text(net(d.notes), { width: largeur });
   }
+  const cachet = (x: number, y: number) => {
+    if (!d.tampon) return;
+    try {
+      doc.image(d.tampon, x, y, { fit: [150, 70] });
+    } catch {
+      // Cachet illisible : le PDF part sans lui.
+    }
+  };
   if (d.type === 'devis') {
     doc.moveDown(0.8);
     const y = doc.y;
+    cachet(MARGE, y);
     doc
       .rect(MARGE + largeur / 2, y, largeur / 2, 70)
       .lineWidth(0.6)
@@ -265,6 +276,11 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       .text(net(TEXTE_BON_POUR_ACCORD), MARGE + largeur / 2 + 8, y + 8, {
         width: largeur / 2 - 16,
       });
+    doc.y = y + 80;
+  } else if (d.tampon) {
+    doc.moveDown(0.8);
+    const y = doc.y;
+    cachet(MARGE + largeur / 2, y);
     doc.y = y + 80;
   }
   doc.x = MARGE;

@@ -1,5 +1,6 @@
 import { ibanValide } from '../devis/iban';
 import { z } from '../zod';
+import { nomFichier } from './entreesPro';
 import { centimesPositifs, id, jourIso, pourcent } from './commun';
 import {
   clientDocument,
@@ -69,6 +70,12 @@ export const entreeModeleDevis = z.discriminatedUnion('action', [
 /** « Marquer expirés » : devis envoyés de la sélection. */
 export const entreeExpirerDevis = z.strictObject({ ids: z.array(id).min(1).max(100) });
 
+/** Cachet de l'entreprise : fichier déjà déposé dans Storage, ou retrait. */
+export const entreeTampon = z.discriminatedUnion('action', [
+  z.strictObject({ action: z.literal('enregistrer'), nomFichier }),
+  z.strictObject({ action: z.literal('retirer') }),
+]);
+
 /** « Accepter ce devis » depuis le lien reçu par email (signature électronique simple). */
 export const entreeSignatureDevis = z.strictObject({
   lien: z.string().regex(/^[\w-]{1,128}\.[\w-]{1,128}\.[\w-]{20,128}$/),
@@ -100,7 +107,13 @@ export const entreeAvoir = z.strictObject({
 });
 
 export const entreeParametresFacturation = parametresFacturation
-  .omit({ schemaVersion: true, updatedAt: true, ibanChiffre: true, ibanFin: true })
+  .omit({
+    schemaVersion: true,
+    updatedAt: true,
+    ibanChiffre: true,
+    ibanFin: true,
+    tamponChemin: true,
+  })
   .extend({
     /** Absent : IBAN inchangé ; vide : retiré ; sinon vérifié puis chiffré par le serveur. */
     iban: z

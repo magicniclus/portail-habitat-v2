@@ -14,7 +14,7 @@ export {
   type FactureComplete,
   type FactureResume,
 } from './lecture';
-export { enregistrerParametresFacturation } from './parametres';
+export { enregistrerParametresFacturation, enregistrerTampon } from './parametres';
 export {
   marquerDevisExpires,
   relancerFacture,

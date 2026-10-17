@@ -216,6 +216,8 @@ export const parametresFacturation = z.object({
   ibanChiffre: z.string().max(400).optional(),
   /** 4 derniers caractères de l'IBAN, seuls affichés dans l'espace pro. */
   ibanFin: z.string().max(4).optional(),
+  /** Chemin Storage du cachet de l'entreprise (privé), posé sur les devis et factures. */
+  tamponChemin: z.string().max(300).optional(),
   updatedAt: horodatage,
 });
 

@@ -30,6 +30,14 @@ service firebase.storage {
       allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
     }
 
+    // Cachet de l'entreprise (devis et factures) : privé, lu par le serveur seulement ; 2 Mo, image.
+    match /artisans/{aid}/tampon/{fichier} {
+      allow read: if false;
+      allow create: if resource == null && noImp() && isGestion(aid) && image(2) && membreActif(aid, ['proprietaire', 'gerant']);
+      allow update: if false;
+      allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
+    }
+
     // Logo de l'entreprise : public, 2 Mo, image.
     match /artisans/{aid}/logo/{fichier} {
       allow read: if true;

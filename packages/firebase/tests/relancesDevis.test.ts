@@ -2,12 +2,13 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { entreeEnregistrerDevis } from '@ph/core/schemas';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { appAdmin, bucketFichiers, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import { empreinteJeton, type Notification } from '../src/serveur/comptes/services';
 import {
   changerStatutDevis,
   dechiffrer,
+  enregistrerTampon,
   lireParametresFacturation,
   enregistrerDevis,
   enregistrerPaiement,
@@ -382,5 +383,39 @@ describe('IBAN des paramètres de facturation', () => {
       (await erreur(enregistrerParametresFacturation(s(), proprio, { ...PARAMS, iban: IBAN })))
         .code,
     ).toBe('PRECONDITION');
+  });
+});
+
+describe('cachet de l’entreprise', () => {
+  const PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    'base64',
+  );
+  const sb = () => ({ ...s(), bucket: bucketFichiers() });
+  const ref = () => db.doc(chemins.parametresFacturation('a1'));
+
+  it('enregistré, gardé quand les paramètres sont réenregistrés, puis retiré', async () => {
+    await bucketFichiers()
+      .file('artisans/a1/tampon/cachet.png')
+      .save(PNG, { contentType: 'image/png', resumable: false });
+    await enregistrerTampon(sb(), proprio, { action: 'enregistrer', nomFichier: 'cachet.png' });
+    expect((await ref().get()).get('tamponChemin')).toBe('artisans/a1/tampon/cachet.png');
+    await enregistrerParametresFacturation(s(), proprio, PARAMS);
+    expect((await ref().get()).get('tamponChemin')).toBe('artisans/a1/tampon/cachet.png');
+    expect((await erreur(enregistrerTampon(sb(), compta, { action: 'retirer' }))).code).toBe(
+      'PERMISSION_REFUSEE',
+    );
+    await enregistrerTampon(sb(), proprio, { action: 'retirer' });
+    expect((await ref().get()).get('tamponChemin')).toBeUndefined();
+  });
+
+  it('fichier absent : refusé', async () => {
+    expect(
+      (
+        await erreur(
+          enregistrerTampon(sb(), proprio, { action: 'enregistrer', nomFichier: 'x.png' }),
+        )
+      ).code,
+    ).toBe('INTROUVABLE');
   });
 });

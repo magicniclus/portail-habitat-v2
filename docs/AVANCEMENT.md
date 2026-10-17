@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Tampon sur le PDF, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
+- Dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -705,6 +705,13 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - **À configurer (signalé)** : secret `IBAN_CLE_CHIFFREMENT` (32 octets en base64) en staging et production. Sans lui en production, l'IBAN est refusé avec un message ; hors production, une clé de développement fixe est utilisée. Changer la clé rend les IBAN déjà enregistrés illisibles (l'artisan les ressaisit).
 - **Modèle de données (signalé)** : `parametresFacturation.ibanChiffre`, `ibanFin` (DATABASE §8 bis prévoyait `iban` chiffré).
 - Tests : 3 cœur, 2 sur émulateur.
+
+**Cachet de l'entreprise (17/10/2026)**
+- Paramètres de facturation : « Ajouter un cachet » (PNG ou JPEG, 2 Mo, fond transparent conseillé), « Changer », « Retirer ». Le cachet est posé à côté de « Bon pour accord » sur les devis où « Tampon » est coché, et sous les conditions des factures. Un PDF déjà produit ne change pas (DEV-05).
+- **Règle de sécurité ajoutée (signalée)** : `storage.rules` `artisans/{aid}/tampon/{fichier}` : jamais lisible par un client (lu par le serveur pour le PDF), création par propriétaire ou gérant, image de 2 Mo, sans écrasement. 3 cas de test.
+- **Modèle de données (signalé)** : `parametresFacturation.tamponChemin` (DATABASE §8 bis prévoyait `tampon: Media?`), gardé quand les paramètres sont réenregistrés.
+- Tests : 1 PDF, 2 sur émulateur.
+- CI : la médiathèque passe désormais (la configuration Firebase manquait sur la page de l'éditeur).
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

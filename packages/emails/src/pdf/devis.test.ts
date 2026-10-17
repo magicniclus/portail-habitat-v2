@@ -106,4 +106,23 @@ describe('PDF des devis et factures', () => {
       'Dépose et \n• un\n• deux & trois',
     );
   });
+
+  it('cachet de l’entreprise : image intégrée sur le devis et la facture ; illisible, ignoré', async () => {
+    const PNG = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    const sans = await genererPdf(base, { compresser: false });
+    const avec = await genererPdf({ ...base, tampon: PNG }, { compresser: false });
+    expect(avec.toString('latin1')).toContain('/Subtype /Image');
+    expect(sans.toString('latin1')).not.toContain('/Subtype /Image');
+    const facture = await genererPdf(
+      { ...base, type: 'facture', tampon: PNG },
+      { compresser: false },
+    );
+    expect(facture.toString('latin1')).toContain('/Subtype /Image');
+    await expect(
+      genererPdf({ ...base, tampon: Buffer.from('pas une image') }),
+    ).resolves.toBeInstanceOf(Buffer);
+  });
 });
