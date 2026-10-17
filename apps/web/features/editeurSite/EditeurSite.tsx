@@ -182,7 +182,7 @@ export function EditeurSite(props: ProprietesEditeur) {
                 onProposition={setProposition}
               />
             ) : null}
-            {panneau === 'modeles' ? <PanneauModeles onRestaurer={s.restaurer} /> : null}
+            {panneau === 'modeles' ? <PanneauModeles site={s.b} onRestaurer={s.restaurer} /> : null}
             {panneau === 'styles' ? (
               <PanneauStyles
                 theme={s.b.theme}

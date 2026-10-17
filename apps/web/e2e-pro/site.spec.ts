@@ -462,4 +462,21 @@ test.describe('Site internet artisan', () => {
       page.frameLocator('iframe[title="Aperçu de la page"]').locator('img[src*="sites%2F"]'),
     ).toHaveCount(1);
   });
+
+  test('modèles de site : appliquer « Dépannage 24/7 » à tout le site, puis revenir', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=modeles');
+    await expect(page.getByRole('heading', { name: 'Modèles de site' })).toBeVisible();
+    await page.getByRole('button', { name: /^Dépannage 24\/7/ }).click();
+    await page.getByRole('button', { name: 'Appliquer à tout le site' }).click();
+    await expect(page.getByText(/Modèle « Dépannage 24\/7 » appliqué à \d+ pages/)).toBeVisible();
+    await page.getByRole('button', { name: /^Minimal/ }).click();
+    await page.getByRole('button', { name: 'Couleurs et polices seulement' }).click();
+    await expect(
+      page.getByText('Modèle « Minimal » appliqué (couleurs et polices).', { exact: false }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Revenir à l’état précédent' }).click();
+    await expect(page.getByText('Site d’avant le modèle restauré.')).toBeVisible();
+  });
 });
