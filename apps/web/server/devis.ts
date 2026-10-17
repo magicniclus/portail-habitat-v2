@@ -186,13 +186,19 @@ export async function lirePdf(pdfPath: string): Promise<Buffer> {
   return b;
 }
 
-/** Lien du client : `artisanId.devisId.jeton`, vérifié par l'empreinte stockée sur le devis. */
+/**
+ * Lien du client : `artisanId.documentId.jeton`, vérifié par l'empreinte stockée sur le devis (envoi)
+ * ou sur la facture (dernière relance).
+ */
 export async function pdfDuLienClient(
   lien: string,
+  type: 'devis' | 'facture' = 'devis',
 ): Promise<{ pdf: Buffer; numero: string } | null> {
-  const [artisanId, devisId, jeton] = lien.split('.');
-  if (!artisanId || !devisId || !jeton || jeton.length < 20) return null;
-  const d = await db().doc(chemins.unDevis(artisanId, devisId)).get();
+  const [artisanId, docId, jeton] = lien.split('.');
+  if (!artisanId || !docId || !jeton || jeton.length < 20) return null;
+  const chemin =
+    type === 'devis' ? chemins.unDevis(artisanId, docId) : chemins.factureClient(artisanId, docId);
+  const d = await db().doc(chemin).get();
   if (!d.exists || !d.get('pdfPath') || d.get('jetonHash') !== empreinteJeton(jeton)) return null;
   return { pdf: await lirePdf(d.get('pdfPath') as string), numero: d.get('numero') as string };
 }

@@ -1,10 +1,13 @@
+import { devisAExpirer } from '@ph/core/devis';
 import { lireDevisListe, lireFacturesListe } from '@ph/firebase/devis';
 import { Banner, bouton, cn } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ExpirerDevis } from '@/features/devis/ExpirerDevis';
 import { ListeDevis, ListeFactures } from '@/features/devis/Listes';
 import { routes } from '@/lib/routes';
 import { accesDevis, dbDevis, parametresEditeur } from '@/server/pageDevis';
+import { maintenant } from '@/server/temps';
 
 export const metadata: Metadata = { title: 'Devis & factures', robots: { index: false } };
 
@@ -21,6 +24,15 @@ export default async function PageDevis({
     onglet === 'factures' ? lireFacturesListe(dbDevis(), acces.artisanId) : [],
     parametresEditeur(acces.artisanId),
   ]);
+  const instant = maintenant();
+  const horsValidite = devis
+    .filter((d) =>
+      devisAExpirer(
+        { ...d, validiteLe: d.validiteLe ? new Date(d.validiteLe) : undefined },
+        instant,
+      ),
+    )
+    .map((d) => d.id);
   const ongletCls = (actif: boolean) =>
     cn(
       'flex min-h-11 items-center rounded-control px-4 font-semibold no-underline',
@@ -76,7 +88,16 @@ export default async function PageDevis({
           Factures
         </Link>
       </nav>
+      {onglet === 'devis' && acces.gerer && horsValidite.length ? (
+        <ExpirerDevis ids={horsValidite.slice(0, 100)} />
+      ) : null}
       {onglet === 'devis' ? <ListeDevis devis={devis} /> : <ListeFactures factures={factures} />}
+      {onglet === 'factures' && factures.length ? (
+        <p className="m-0 text-sm text-neutre-700">
+          Relances automatiques du client à J−3, J+1 et J+15. Pénalités calculées selon vos{' '}
+          <Link href={routes.proDevisParametres}>paramètres</Link>.
+        </p>
+      ) : null}
     </main>
   );
 }

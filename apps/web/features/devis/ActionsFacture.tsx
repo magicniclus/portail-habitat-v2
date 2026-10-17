@@ -15,6 +15,7 @@ export function ActionsFacture({
   aPdf,
   annulable,
   payable,
+  relancable,
   aujourdHui,
 }: {
   factureId: string;
@@ -22,12 +23,24 @@ export function ActionsFacture({
   aPdf: boolean;
   annulable: boolean;
   payable: boolean;
+  /** « Relancer » : en attente de paiement, pas déjà relancée aujourd'hui. */
+  relancable: boolean;
   aujourdHui: string;
 }) {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [avoir, setAvoir] = useState(false);
+  const [relancee, setRelancee] = useState(false);
+  const relancer = async () => {
+    setEnCours(true);
+    setErreur(null);
+    const r = await posterJson<unknown>('/api/pro/factures/relancer', { factureId });
+    setEnCours(false);
+    if (!r.ok) return setErreur(r.message);
+    setRelancee(true);
+    router.refresh();
+  };
   const payer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
@@ -62,6 +75,7 @@ export function ActionsFacture({
   return (
     <div className="grid gap-4">
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+      {relancee ? <Banner tone="succes">Relance envoyée au client.</Banner> : null}
       <div className="flex flex-wrap gap-3">
         {aPdf ? (
           <a
@@ -70,6 +84,11 @@ export function ActionsFacture({
           >
             Télécharger le PDF
           </a>
+        ) : null}
+        {relancable ? (
+          <Button variant="secondaire" disabled={enCours} onClick={() => void relancer()}>
+            Relancer
+          </Button>
         ) : null}
         {annulable ? (
           <Button variant="fantome" onClick={() => setAvoir(true)}>

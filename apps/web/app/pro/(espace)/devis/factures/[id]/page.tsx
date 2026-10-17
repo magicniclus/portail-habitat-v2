@@ -1,5 +1,7 @@
 import {
   LIBELLES_MOYEN_PAIEMENT,
+  LIBELLES_RELANCE_FACTURE,
+  relanceManuellePossible,
   LIBELLES_STATUT_FACTURE,
   LIBELLES_TYPE_FACTURE,
   tonStatut,
@@ -24,6 +26,19 @@ export default async function PageFacture({ params }: { params: Promise<{ id: st
   const acces = await accesDevis(routes.proFactureClient(id));
   const f = await lireFactureComplete(dbDevis(), acces.artisanId, id);
   if (!f) notFound();
+  const relancable =
+    acces.facturer &&
+    f.aEmailClient &&
+    Boolean(f.pdfPath) &&
+    relanceManuellePossible(
+      {
+        ...f,
+        echeanceLe: f.echeanceLe ? new Date(f.echeanceLe) : undefined,
+        avoirId: f.avoirId,
+        relances: f.relances.map((r) => ({ ...r, le: new Date(r.le) })),
+      },
+      maintenant(),
+    );
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <div className="flex flex-wrap items-center gap-3">
@@ -93,12 +108,36 @@ export default async function PageFacture({ params }: { params: Promise<{ id: st
           </ul>
         </section>
       ) : null}
+      {f.type !== 'avoir' && !f.annulee ? (
+        <section aria-labelledby="relances" className="grid gap-2">
+          <h2 id="relances" className="m-0 text-lg">
+            Relances
+          </h2>
+          <p className="m-0 text-sm text-neutre-700">
+            {f.aEmailClient
+              ? 'Relances automatiques du client à J−3, J+1 et J+15 autour de l’échéance, tant qu’un reste est dû.'
+              : 'L’email du client n’est pas connu : il ne peut pas être relancé automatiquement.'}
+          </p>
+          {f.relances.length ? (
+            <ul className="m-0 grid list-none gap-1 p-0">
+              {f.relances.map((r, i) => (
+                <li key={i}>
+                  {formatDate(r.le)} ·{' '}
+                  {LIBELLES_RELANCE_FACTURE[r.type as keyof typeof LIBELLES_RELANCE_FACTURE] ??
+                    r.type}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
       <ActionsFacture
         factureId={f.id}
         resteCentimes={f.resteCentimes}
         aPdf={Boolean(f.pdfPath)}
         annulable={acces.facturer && f.type !== 'avoir' && !f.annulee}
         payable={acces.facturer && f.type !== 'avoir' && !f.annulee}
+        relancable={relancable}
         aujourdHui={new Date(maintenant()).toISOString().slice(0, 10)}
       />
     </main>

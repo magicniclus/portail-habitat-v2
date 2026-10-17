@@ -42,6 +42,12 @@ export const entreeStatutDevis = z.strictObject({
   statut: z.enum(['accepte', 'refuse', 'archive']),
 });
 
+/** « Marquer expirés » : devis envoyés de la sélection. */
+export const entreeExpirerDevis = z.strictObject({ ids: z.array(id).min(1).max(100) });
+
+/** Bouton « Relancer » d'une facture. */
+export const entreeRelancerFacture = z.strictObject({ factureId: id });
+
 export const entreeFacturerDevis = z.strictObject({
   devisId: id,
   type: z.enum(['facture', 'acompte']),

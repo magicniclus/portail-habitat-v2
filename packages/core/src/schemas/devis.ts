@@ -90,6 +90,8 @@ export const devis = z.object({
   mentionsOk: z.boolean(),
   mentionsManquantes: z.array(z.string()),
   validiteLe: horodatage.optional(),
+  /** Relance du client à J+7 déjà partie (une seule). */
+  relanceLe: horodatage.optional(),
   notes: z.string().max(2000),
   signatureElectronique: z.boolean(),
   tampon: z.boolean(),
@@ -155,6 +157,8 @@ export const factureClient = z.object({
   relances: z.array(z.object({ le: horodatage, type: z.string().max(40) })).max(50),
   pdfPath: z.string().max(300).optional(),
   hashPdf: empreinte.optional(),
+  /** Empreinte du dernier lien de téléchargement envoyé au client (relances) ; le jeton n'est jamais stocké. */
+  jetonHash: empreinte.optional(),
   emiseLe: horodatage.optional(),
   creePar: id,
 });

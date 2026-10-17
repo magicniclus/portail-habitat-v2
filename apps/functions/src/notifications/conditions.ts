@@ -21,6 +21,11 @@ const CONDITIONS: Partial<Record<string, Condition>> = {
   'invitation-relance': async (db, e) =>
     (await db.doc(e.refObjet).get()).get('statut') === 'envoyee',
   'reprise-simulateur-rappel': async (db, e) => (await db.doc(e.refObjet).get()).exists,
+  'relance-devis': async (db, e) => (await db.doc(e.refObjet).get()).get('statut') === 'envoye',
+  'facture-relance': async (db, e) => {
+    const f = await db.doc(e.refObjet).get();
+    return ((f.get('resteCentimes') as number | undefined) ?? 0) > 0 && !f.get('avoirId');
+  },
   'fiche-incomplete': async (db, e) =>
     ((await db.doc(chemins.artisan(e.artisanId ?? '_')).get()).get('completude') ?? 100) < 60,
 };

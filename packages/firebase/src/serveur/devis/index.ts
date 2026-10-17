@@ -13,3 +13,10 @@ export {
   type FactureResume,
 } from './lecture';
 export { enregistrerParametresFacturation } from './parametres';
+export {
+  marquerDevisExpires,
+  relancerFacture,
+  traiterDevisEnvoyes,
+  traiterFacturesEcheances,
+  type ServicesRelances,
+} from './relances';

@@ -9,7 +9,6 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'demande-sans-artisan': 'Nous cherchons toujours un artisan',
   'artisan-a-repondu': 'Un artisan a répondu à votre demande',
   'nouveau-message': 'Nouveau message',
-  'relance-devis': 'Un devis attend votre réponse',
   'demande-avis': 'Comment s’est passé votre chantier ?',
   'rappel-avis': 'Votre avis aide les autres particuliers',
   'avis-recu': 'Merci pour votre avis',

@@ -156,6 +156,9 @@ export interface FactureComplete extends FactureResume {
   avoirId?: string;
   factureOrigineId?: string;
   motifAvoir?: string;
+  relances: { le: number; type: string }[];
+  /** L'email du client est connu (relances possibles). */
+  aEmailClient: boolean;
 }
 
 export async function lireFactureComplete(
@@ -192,6 +195,11 @@ export async function lireFactureComplete(
     avoirId: x.avoirId,
     factureOrigineId: x.factureOrigineId,
     motifAvoir: x.motifAvoir,
+    relances: ((x.relances ?? []) as DocumentData[]).map((r) => ({
+      le: ms(r.le) ?? 0,
+      type: r.type as string,
+    })),
+    aEmailClient: Boolean(x.client?.email),
   };
 }
 

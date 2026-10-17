@@ -524,6 +524,40 @@ Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https:
 Portail Habitat · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > facture-relance : version texte 1`] = `
+"Facture F-2026-0087 : paiement en attente
+2 679,72 € à régler · échéance le 20 octobre 2026
+
+PORTAIL HABITAT
+
+
+VOTRE FACTURE ATTEND SON RÈGLEMENT
+
+Bonjour, sauf erreur de notre part, la facture de Bertrand Rénovation arrivée à échéance le 20 octobre 2026 n’est pas encore réglée.
+
+Facture : F-2026-0087
+
+Objet : Rénovation de salle de bain
+
+Reste à payer : 2 679,72 €
+
+Échéance : 20 octobre 2026
+
+Tout retard de paiement entraîne des pénalités au taux annuel de 12,15 %.
+
+Télécharger la facture (PDF) https://portailhabitat.fr/api/facture-client/exemple
+
+Pour toute question, contactez directement Bertrand Rénovation. Si vous avez déjà réglé, ne tenez pas compte de ce message. Ce lien est personnel : ne le transférez pas.
+
+L’équipe Portail Habitat
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-en-ligne : version texte 1`] = `
 "Votre fiche est en ligne
 Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Habitat.
@@ -1293,6 +1327,36 @@ L’équipe Portail Habitat Pro
 Vous recevez cet email suite à une action sur Portail Habitat.
 
 Mes préférences https://portailhabitat.fr/preferences?t=exemple · Aide https://portailhabitat.fr/aide
+
+Portail Habitat · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-devis : version texte 1`] = `
+"Devis D-2026-0152 : il attend votre réponse
+Rénovation de salle de bain · 8 932,40 € TTC
+
+PORTAIL HABITAT
+
+
+UN DEVIS ATTEND VOTRE RÉPONSE
+
+Bonjour, Bertrand Rénovation vous a adressé le 10 octobre 2026 son devis pour votre projet. Vous le retrouverez, avec son lien de téléchargement, dans l’email reçu ce jour-là.
+
+Devis : D-2026-0152
+
+Objet : Rénovation de salle de bain
+
+Montant : 8 932,40 € TTC
+
+Valable jusqu’au : 9 novembre 2026
+
+Pour l’accepter, renvoyez-le daté et signé avec la mention « Bon pour accord », ou répondez directement à l’artisan. Si vous avez déjà répondu, ne tenez pas compte de ce message.
+
+L’équipe Portail Habitat
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailhabitat.fr/preferences?t=exemple · Se désabonner de ces emails https://portailhabitat.fr/api/desabonnement?t=exemple · Aide https://portailhabitat.fr/aide
 
 Portail Habitat · Raison sociale · Adresse postale"
 `;

@@ -667,7 +667,16 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Signature électronique du client, relances automatiques (devis sans réponse, factures impayées → statut `impayee`), expiration des devis, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré, création d'un devis depuis « Mes demandes ».
+- Signature électronique du client, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré, création d'un devis depuis « Mes demandes ».
+
+**Relances et échéances (17/10/2026)**
+- Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
+- Function `echeancesDevisFactures` chaque matin (8 h 50, Paris) : requêtes de groupe sur `devis` et `facturesClients` (3 index composites ajoutés ; fenêtre J−3 à J+20 pour borner la lecture). La relance est écrite en transaction, puis l'email part par `notifier()` ; conditions `encoreValable` ajoutées (devis toujours envoyé, facture toujours due).
+- Emails : `relance-devis` rédigé, nouveau `facture-relance` (reste dû, échéance, pénalités rappelées à J+15, + 40 € si client pro, lien personnel vers le PDF `/api/facture-client/…`).
+- Écrans : bouton « Relancer » et historique des relances sur la facture ; « Marquer expirés » sur la liste des devis (devis envoyés hors validité) ; mention des relances automatiques sous les factures (maquette).
+- **Modèle de données (signalé)** : `devis.relanceLe` (relance J+7 partie) et `facturesClients.jetonHash` (empreinte du dernier lien envoyé ; chaque relance crée un lien neuf, les précédents cessent de marcher).
+- **Choix à confirmer** : les relances de facture partent au client de l'artisan au nom de l'entreprise (catégorie `activite`) ; la relance J+7 d'un devis ne contient pas de lien (le client garde celui du premier email, qui reste valable).
+- Tests : 7 tests du cœur, 5 tests sur émulateur (`tests/relancesDevis.test.ts`).
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

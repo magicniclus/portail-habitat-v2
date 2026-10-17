@@ -7,6 +7,7 @@ import type { Modele } from './modele';
 import { modelesBlog } from './modeles/blog';
 import { modelesConversion } from './modeles/conversion';
 import { modelesConversionPremium } from './modeles/conversionPremium';
+import { modelesDevis } from './modeles/devis';
 import { modelesEquipes } from './modeles/equipes';
 import { modelesFacturation } from './modeles/facturation';
 import { modelesOnboarding } from './modeles/onboarding';
@@ -26,6 +27,7 @@ const REDIGES: Record<string, Modele<never>> = {
   ...modelesConversionPremium,
   ...modelesSites,
   ...modelesBlog,
+  ...modelesDevis,
 } as unknown as Record<string, Modele<never>>;
 
 /** Tous les modèles du catalogue : rédigés, ou squelettes en attendant leur lot. */
