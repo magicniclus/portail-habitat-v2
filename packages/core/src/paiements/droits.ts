@@ -60,13 +60,19 @@ export interface DroitsFormule {
   remiseAppelsOffres: 0 | 0.15;
   avanceAppelsOffresH: 0 | 12;
   supportPrioritaire: boolean;
+  /** Option Blog (D71) : +20 articles IA par mois, en Site Pro ou Fiche + Site seulement. */
+  optionBlog: boolean;
 }
 
 const avecFiche = (f: Formule) =>
   f === 'fiche_pro' || f === 'pack_fiche_site' || f === 'tout_inclus';
 const avecSite = (f: Formule) => f === 'site_pro' || f === 'pack_fiche_site' || f === 'tout_inclus';
 
-export function droitsDe(formule: Formule): DroitsFormule {
+/** Option Blog 9,90 € HT/mois (D71) : ajoutable à Site Pro et Fiche + Site, pas à Tout inclus. */
+export const PRIX_OPTION_BLOG_HT = 990;
+export const optionBlogPossible = (f: Formule) => f === 'site_pro' || f === 'pack_fiche_site';
+
+export function droitsDe(formule: Formule, optionBlog = false): DroitsFormule {
   const fiche = avecFiche(formule);
   const site = avecSite(formule);
   const tout = formule === 'tout_inclus';
@@ -83,6 +89,7 @@ export function droitsDe(formule: Formule): DroitsFormule {
     remiseAppelsOffres: tout ? 0.15 : 0,
     avanceAppelsOffresH: tout ? 12 : 0,
     supportPrioritaire: tout,
+    optionBlog: optionBlog && optionBlogPossible(formule),
   };
 }
 

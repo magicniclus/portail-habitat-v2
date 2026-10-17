@@ -44,6 +44,7 @@ export const droitsArtisan = z.object({
   remiseAppelsOffres: z.union([z.literal(0), z.literal(0.15)]),
   avanceAppelsOffresH: z.union([z.literal(0), z.literal(12)]),
   supportPrioritaire: z.boolean(),
+  optionBlog: z.boolean().default(false),
   statut: z.enum(['actif', 'grace', 'resilie_fin_periode']),
   finPeriode: horodatage.optional(),
   majLe: horodatage,

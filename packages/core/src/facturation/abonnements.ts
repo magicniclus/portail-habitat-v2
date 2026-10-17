@@ -1,7 +1,9 @@
 import { formatDate } from '../format/dates';
 import {
   NOMS_FORMULE,
+  optionBlogPossible,
   PRIX_FORMULES_HT,
+  PRIX_OPTION_BLOG_HT,
   siegesInclus,
   type Formule,
   type FormulePayante,
@@ -18,7 +20,7 @@ export const TAUX_TVA_POURCENT = 20;
 
 export interface PrixCatalogue {
   cle: string;
-  produit: ProduitAbonnement | 'siege' | 'credits' | 'ia';
+  produit: ProduitAbonnement | 'siege' | 'credits' | 'ia' | 'option_blog';
   nomProduit: string;
   /** Centimes HT. */
   montantHt: number;
@@ -58,6 +60,13 @@ export const CATALOGUE_STRIPE: readonly PrixCatalogue[] = [
     montantHt: 900,
     intervalle: 'month',
   },
+  {
+    cle: 'option_blog',
+    produit: 'option_blog',
+    nomProduit: 'Option Blog : 20 articles IA par mois',
+    montantHt: PRIX_OPTION_BLOG_HT,
+    intervalle: 'month',
+  },
   pack(50, 50),
   pack(100, 110),
   pack(250, 290),
@@ -77,6 +86,7 @@ export const cleStripe = (cle: string) => `ph_${cle}`;
 export type PrixLu =
   | { type: 'abonnement'; produit: ProduitAbonnement }
   | { type: 'siege' }
+  | { type: 'option_blog' }
   | { type: 'credits'; credits: number }
   | { type: 'ia'; modifications: number };
 
@@ -84,12 +94,13 @@ export function lirePrix(lookupKey: string | null | undefined): PrixLu | null {
   const p = CATALOGUE_STRIPE.find((x) => cleStripe(x.cle) === lookupKey);
   if (!p) return null;
   if (p.produit === 'siege') return { type: 'siege' };
+  if (p.produit === 'option_blog') return { type: 'option_blog' };
   if (p.produit === 'credits') return { type: 'credits', credits: p.credits! };
   if (p.produit === 'ia') return { type: 'ia', modifications: p.modificationsIa! };
   return { type: 'abonnement', produit: p.produit };
 }
 
-export function prixAbonnement(produit: ProduitAbonnement): PrixCatalogue {
+export function prixAbonnement(produit: ProduitAbonnement | 'option_blog'): PrixCatalogue {
   return CATALOGUE_STRIPE.find((p) => p.produit === produit)!;
 }
 
@@ -97,7 +108,7 @@ export function prixAbonnement(produit: ProduitAbonnement): PrixCatalogue {
 export const tvaDe = (ht: number) => Math.round((ht * TAUX_TVA_POURCENT) / 100);
 
 /** Récapitulatif de la fenêtre de paiement : HT, TVA, TTC d'une mensualité (PAY-02). */
-export function recapPaiement(produit: ProduitAbonnement) {
+export function recapPaiement(produit: ProduitAbonnement | 'option_blog') {
   const p = prixAbonnement(produit);
   const tva = tvaDe(p.montantHt);
   return { cle: p.cle, montantHt: p.montantHt, tva, montantTtc: p.montantHt + tva };
@@ -121,6 +132,8 @@ export interface AbonnementEtat {
   finPeriode: number;
   /** Sièges achetés en plus des sièges inclus. */
   sieges: number;
+  /** Option Blog (D71) sur cet abonnement. */
+  optionBlog?: boolean;
   annulationFinPeriode?: boolean;
 }
 
@@ -146,6 +159,8 @@ export interface EffetFacturation {
   statut: 'actif' | 'grace' | 'resilie_fin_periode';
   finPeriode: number | null;
   siegesMax: number;
+  /** Option Blog active, et permise par la formule (D71). */
+  optionBlog: boolean;
   paiementEnEchec: boolean;
 }
 
@@ -168,6 +183,7 @@ export function effetAbonnements(
           : 'actif',
     finPeriode: a?.finPeriode ?? null,
     siegesMax: siegesInclus(f) + (f === 'tout_inclus' ? (a?.sieges ?? 0) : 0),
+    optionBlog: Boolean(a?.optionBlog) && optionBlogPossible(f),
     paiementEnEchec: abonnements.some((x) => x.statut === 'past_due'),
   };
 }

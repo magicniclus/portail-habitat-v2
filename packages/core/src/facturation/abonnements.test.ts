@@ -29,18 +29,20 @@ describe('catalogue Stripe (PAIEMENTS §2-3, D54, D59)', () => {
       pack_fiche_site: 3490,
       tout_inclus: 4900,
       siege: 900,
+      option_blog: 990,
       credits_50: 5000,
       credits_100: 10_000,
       credits_250: 25_000,
       ia_100: 290,
     });
-    expect(CATALOGUE_STRIPE.filter((p) => p.intervalle === 'month')).toHaveLength(5);
+    expect(CATALOGUE_STRIPE.filter((p) => p.intervalle === 'month')).toHaveLength(6);
     expect(cleStripe('tout_inclus')).toBe('ph_tout_inclus');
   });
 
   it('lirePrix retrouve le produit depuis la clé de recherche Stripe', () => {
     expect(lirePrix('ph_site_pro')).toEqual({ type: 'abonnement', produit: 'site_pro' });
     expect(lirePrix('ph_siege')).toEqual({ type: 'siege' });
+    expect(lirePrix('ph_option_blog')).toEqual({ type: 'option_blog' });
     expect(lirePrix('ph_credits_100')).toEqual({ type: 'credits', credits: 110 });
     expect(lirePrix('ph_ia_100')).toEqual({ type: 'ia', modifications: 100 });
     expect(lirePrix('ph_premium_mensuel')).toBeNull();
@@ -68,8 +70,18 @@ describe('effetAbonnements (seul le webhook écrit droits et siegesMax)', () => 
       statut: 'actif',
       finPeriode: null,
       siegesMax: 1,
+      optionBlog: false,
       paiementEnEchec: false,
     });
+  });
+  it('option Blog (D71) : active en Site Pro et Fiche + Site, jamais en Tout inclus', () => {
+    const avec = (produit: AbonnementEtat['produit']) =>
+      effetAbonnements([abo({ produit, optionBlog: true })], T).optionBlog;
+    expect(avec('site_pro')).toBe(true);
+    expect(avec('pack_fiche_site')).toBe(true);
+    expect(avec('tout_inclus')).toBe(false);
+    expect(avec('fiche_pro')).toBe(false);
+    expect(effetAbonnements([abo({ produit: 'site_pro' })], T).optionBlog).toBe(false);
   });
   it('Tout inclus actif : 3 sièges + sièges achetés', () => {
     expect(effetAbonnements([abo({ sieges: 2 })], T)).toMatchObject({

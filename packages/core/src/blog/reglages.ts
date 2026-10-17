@@ -24,12 +24,15 @@ export const ACTIONS_ARTICLES = [
   ['corbeille', 'Mettre à la corbeille'],
 ] as const;
 
-/** Rédactions complètes par l'IA, par mois (D66 ✅). Retouches illimitées. */
-export const ARTICLES_IA_MOIS = { sitePro: 5, toutInclus: 15 } as const;
+/** Rédactions complètes par l'IA, par mois (D66 ✅, option Blog D71 : +20). Retouches illimitées. */
+export const ARTICLES_IA_MOIS = { sitePro: 5, toutInclus: 15, optionBlog: 20 } as const;
 
-export function creditsArticlesMois(d: Pick<DroitsFormule, 'formule' | 'sitePro'>): number {
+export function creditsArticlesMois(
+  d: Pick<DroitsFormule, 'formule' | 'sitePro'> & { optionBlog?: boolean },
+): number {
   if (!d.sitePro) return 0;
-  return d.formule === 'tout_inclus' ? ARTICLES_IA_MOIS.toutInclus : ARTICLES_IA_MOIS.sitePro;
+  if (d.formule === 'tout_inclus') return ARTICLES_IA_MOIS.toutInclus;
+  return ARTICLES_IA_MOIS.sitePro + (d.optionBlog ? ARTICLES_IA_MOIS.optionBlog : 0);
 }
 
 /** Corbeille : suppression définitive 30 jours après (BLOG §5). */

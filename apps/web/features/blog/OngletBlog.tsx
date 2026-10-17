@@ -5,6 +5,7 @@ import { routes } from '@/lib/routes';
 import type { OngletBlogDonnees } from '@/server/blog';
 import { ClassementBlog } from './ClassementBlog';
 import { ListeArticles } from './ListeArticles';
+import { PlusArticles } from './PlusArticles';
 
 export const VUES_BLOG = [
   ['articles', 'Articles'],
@@ -58,14 +59,7 @@ export function OngletBlog({ donnees: d, vue }: { donnees: OngletBlogDonnees; vu
               {d.credits.utilises} / {d.credits.max}
             </strong>
           </span>
-          {!d.credits.toutInclus ? (
-            <FenetreOffre
-              formule="tout_inclus"
-              raison="Avec Tout inclus, l’IA rédige 15 articles par mois."
-            >
-              Tout inclus : 15 articles / mois
-            </FenetreOffre>
-          ) : null}
+          <PlusArticles credits={d.credits} />
         </div>
       ) : (
         <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-4">

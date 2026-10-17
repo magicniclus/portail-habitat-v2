@@ -89,8 +89,13 @@ export async function demanderIaBlog(
       t.get(s.db.doc(chemins.artisan(ctx.artisanId))),
       t.get(ref),
     ]);
-    const d = artisan.get('droits') as { formule?: Formule; sitePro?: boolean } | undefined;
-    const max = creditsArticlesMois({ formule: d?.formule ?? 'gratuit', sitePro: sitePro(d) });
+    const d = artisan.get('droits') as
+      { formule?: Formule; sitePro?: boolean; optionBlog?: boolean } | undefined;
+    const max = creditsArticlesMois({
+      formule: d?.formule ?? 'gratuit',
+      sitePro: sitePro(d),
+      optionBlog: d?.optionBlog === true,
+    });
     const n = (c.get('blogArticles') as number | undefined) ?? 0;
     if (redaction && n >= max)
       throw new ErreurMetier(

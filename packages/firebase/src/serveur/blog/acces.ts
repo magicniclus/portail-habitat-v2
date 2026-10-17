@@ -37,17 +37,19 @@ export async function lireMentionsBlog(db: Firestore, artisanId: string) {
 export const moisParis = (ms: number) =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(ms).slice(0, 7);
 
-/** Rédactions complètes par l'IA ce mois-ci (D66 : 5 ou 15), compteur à côté de celui du site. */
+/** Rédactions complètes par l'IA ce mois-ci (D66 : 5 ou 15, +20 avec l'option Blog D71). */
 export async function lireCreditsBlog(s: ServicesBlog, artisanId: string) {
   const [artisan, c] = await Promise.all([
     s.db.doc(chemins.artisan(artisanId)).get(),
     s.db.doc(chemins.compteurIaSite(artisanId, moisParis(s.horloge()))).get(),
   ]);
-  const d = artisan.get('droits') as { formule?: Formule; sitePro?: boolean } | undefined;
+  const d = artisan.get('droits') as
+    { formule?: Formule; sitePro?: boolean; optionBlog?: boolean } | undefined;
   const formule = d?.formule ?? 'gratuit';
   return {
     utilises: (c.get('blogArticles') as number | undefined) ?? 0,
-    max: creditsArticlesMois({ formule, sitePro: sitePro(d) }),
+    max: creditsArticlesMois({ formule, sitePro: sitePro(d), optionBlog: d?.optionBlog === true }),
     toutInclus: formule === 'tout_inclus',
+    optionBlog: d?.optionBlog === true,
   };
 }

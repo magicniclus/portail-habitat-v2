@@ -52,10 +52,11 @@ export async function remiseConversion(
 /** Page Mon abonnement : abonnements, factures, solde de crédits et carte enregistrée. */
 export async function lireMonAbonnement(artisanId: string) {
   const db = getFirestore(appAdmin());
-  const [f, portefeuille, prive] = await Promise.all([
+  const [f, portefeuille, prive, artisan] = await Promise.all([
     lireFacturation(db, artisanId),
     db.doc(chemins.portefeuille(artisanId)).get(),
     db.doc(chemins.facturationPrivee(artisanId)).get(),
+    db.doc(chemins.artisan(artisanId)).get(),
   ]);
   const last4 = prive.get('defaultPaymentMethodLast4') as string | undefined;
   return {
@@ -65,5 +66,6 @@ export async function lireMonAbonnement(artisanId: string) {
       ? { last4, marque: (prive.get('defaultPaymentMethodBrand') as string | undefined) ?? '' }
       : null,
     emailFacturation: (prive.get('emailFacturation') as string | undefined) ?? null,
+    optionBlog: artisan.get('droits.optionBlog') === true,
   };
 }

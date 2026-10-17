@@ -132,6 +132,9 @@ export const entreeCheckout = z.strictObject({
     .optional(),
 });
 
+/** Option Blog 9,90 € HT/mois (D71) : ajoutée à l'abonnement en cours, ou retirée. */
+export const entreeOptionBlog = z.strictObject({ activer: z.boolean() });
+
 /** Déblocage d'un appel d'offres : crédits d'abord (`auto`), ou paiement par carte (PRO-05). */
 export const entreeDebloquerAppelOffres = z.strictObject({
   appelOffresId: id,

@@ -9,7 +9,7 @@ import {
 } from '@ph/core/blog';
 import { Banner, Button, Checkbox, Chip, ChipGroup, Field, Input } from '@ph/ui';
 import { useState } from 'react';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
+import { PlusArticles } from '@/features/blog/PlusArticles';
 import { posterJson } from '@/lib/posterJson';
 import type { EditeurArticleDonnees } from '@/server/blog';
 import { PropositionsIa, type ReponseIaBlog } from './PropositionsIa';
@@ -79,14 +79,7 @@ export function PanneauIaArticle({
         <strong>
           {credits.max - restant} / {credits.max}
         </strong>
-        {!credits.toutInclus ? (
-          <FenetreOffre
-            formule="tout_inclus"
-            raison="Avec Tout inclus, l’IA rédige 15 articles par mois."
-          >
-            Passer à Tout inclus : 15 articles par mois
-          </FenetreOffre>
-        ) : null}
+        <PlusArticles credits={credits} />
       </div>
       <form
         className="grid gap-3"

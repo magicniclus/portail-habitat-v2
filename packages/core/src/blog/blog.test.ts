@@ -149,6 +149,11 @@ describe('creditsArticlesMois (D66, BLOG-02, BLOG-14)', () => {
     expect(creditsArticlesMois(droitsDe('fiche_pro'))).toBe(0);
     expect(creditsArticlesMois(droitsDe('gratuit'))).toBe(0);
   });
+  it('option Blog (D71) : 5 + 20 = 25 en Site Pro et Fiche + Site', () => {
+    expect(creditsArticlesMois(droitsDe('site_pro', true))).toBe(25);
+    expect(creditsArticlesMois(droitsDe('pack_fiche_site', true))).toBe(25);
+    expect(creditsArticlesMois(droitsDe('tout_inclus', true))).toBe(15);
+  });
 });
 
 describe('articlesAPublier (planifié → publié)', () => {

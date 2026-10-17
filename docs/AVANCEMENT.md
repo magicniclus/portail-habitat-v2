@@ -829,6 +829,17 @@ Emails (16/10/2026) : `blog-quota-atteint` (dernier article du quota, date de re
 
 Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à valider : mode autonome et pilote automatique (D70, BLOG-10 à 13), données de mots-clés (D68), publication automatique sur les réseaux (D69), commentaires (D67), prix d'un blog renforcé (D71). Reportés : statistiques détaillées de lecture (lecteurs uniques, rebond, sources), positions Search Console (clés à fournir), abonnés au blog. La génération réelle est à vérifier avec la clé `ANTHROPIC_API_KEY`.
 
+## 30. Décisions du 17/10/2026 : modèles de site, option Blog
+
+**Modèles de site (D47 ✅)** : les 6 modèles de la maquette (Artisan classique, Premium photo, Dépannage 24/7, Minimal, Chaleureux, Bleu franc) dans Éditeur › Modèles, au-dessus de « Mes modèles ». « Appliquer à tout le site » change le thème et la mise en page (bandeau photo plein écran voilé, sombre avec boutons accent, ou minimal tout blanc) en **gardant les textes et photos** du site ; « Couleurs et polices seulement » ne change que le thème. Chaque modèle part du site d'avant le premier modèle appliqué (les variantes ne s'additionnent pas) ; « Revenir à l'état précédent » le restaure, Ctrl Z aussi. Cœur `appliquerModeleSite` (7 tests), 1 e2e. **Écart avec la maquette** : la maquette reconstruit les pages depuis des textes d'exemple ; ici on garde les textes de l'artisan (rien d'inventé).
+
+**Option Blog (D71 ✅)** : 9,90 € HT/mois, +20 articles rédigés par l'IA (5 + 20 = 25), pour Site Pro et Fiche + Site seulement.
+- Catalogue Stripe : prix `ph_option_blog` (mensuel), élément ajouté à l'abonnement en cours (prorata facturé tout de suite, carte déjà enregistrée chez Stripe, aucune saisie chez nous) ; retrait sans remboursement du mois entamé.
+- Webhook : `droits.optionBlog` (nouveau champ, écrit par le webhook seulement, faux si la formule ne le permet pas) et `abonnements/{id}.optionBlog`. Passage à Tout inclus : l'option est retirée de l'abonnement dans la même modification ; descente à l'échéance : gardée seulement si la nouvelle formule la permet.
+- Écrans : `?offre=blog` ouvre la fenêtre de l'option (HT, TVA, TTC, CGV) ; sans site, la fenêtre Site Pro s'ouvre d'abord ; encart « Option Blog » sur Mon abonnement quand elle est souscrite (Retirer) ; lien « Option Blog : +20 articles / mois » à côté du compteur d'articles.
+- **Modèle de données (signalé)** : `droits.optionBlog`, `abonnements.optionBlog`. Le prix Stripe se crée avec `pnpm stripe:produits`.
+- Tests : 4 cœur, 3 sur émulateur (webhook, ajout/retrait, montée vers Tout inclus).
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.

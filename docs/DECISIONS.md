@@ -70,9 +70,9 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D67 | Blog : commentaires | aucun en v1 (modération et spam à la charge de l'artisan) (validé en bloc le 17/10/2026) | ✅ |
 | D68 | Blog : données de mots-clés | **DataForSEO**, cache 30 j par mot-clé et département (validé le 17/10/2026 ; compte à créer) | ✅ |
 | D69 | Blog : réseaux sociaux | textes à copier en v1 ; publication automatique Facebook/Google plus tard (validé en bloc le 17/10/2026) | ✅ |
-| D70 | Blog : mode autonome | un clic = mot-clé + rédaction + SEO + image + liens + réseaux ; pilote automatique **toujours avec validation de l'artisan** (aucune publication sans son clic, pas d'option sans validation) (validé le 17/10/2026) | ✅ |
+| D70 | Blog : mode autonome | un clic = mot-clé + rédaction + SEO + image + liens + réseaux ; fin au choix « Je relis » (brouillon) ou « Planifier seul » (le clic de l'artisan vaut validation) ; pilote automatique **toujours « Je valide d'abord »** (email 48 h avant, sans clic rien n'est publié) ; « Publier seul » et « Publier sans moi » retirés (validé le 17/10/2026) | ✅ |
 | D72 | Landings : preuves marketing | « Premier réseau d'artisans de France », « 300+ demandes/jour », avis du bandeau : **le propriétaire fournit les sources et les vrais avis** (17/10/2026) ; masqués en production tant qu'ils ne sont pas reçus | ⏳ |
-| D71 | Blog : prix | **Option Blog 9,90 € HT/mois**, 20 articles IA par mois, ajoutable à Site Pro (validé le 17/10/2026) | ✅ |
+| D71 | Blog : prix | **Option Blog 9,90 € HT/mois : +20 articles IA par mois (5 + 20 = 25)**, ajoutable à Site Pro et Fiche + Site, pas à Tout inclus (validé le 17/10/2026) | ✅ |
 | D61 | Paiement en ligne des factures clients | **Pas en v1** : virement seulement (IBAN sur la facture) ; Stripe Connect plus tard (validé le 17/10/2026) | ✅ |
 | D41 | Site artisan : génération IA | Toutes les pages d'un coup + pages locales par commune (validé en bloc le 17/10/2026) | ✅ |
 | D42 | Registrar | **OVHcloud API** (revendeur), domaine au nom de l'artisan (validé en bloc le 17/10/2026) | ✅ |

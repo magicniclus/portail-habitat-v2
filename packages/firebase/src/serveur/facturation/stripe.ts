@@ -117,7 +117,11 @@ export interface ClientStripe {
         discounts?: { coupon: string }[];
         pause_collection?: { behavior: 'void'; resumes_at: number };
         metadata?: Record<string, string>;
-        items?: { id: string; price: string }[];
+        items?: (
+          | { id: string; price: string }
+          | { price: string; quantity: number }
+          | { id: string; deleted: true }
+        )[];
         proration_behavior?: 'always_invoice' | 'none';
       },
     ): Promise<{ id: string }>;

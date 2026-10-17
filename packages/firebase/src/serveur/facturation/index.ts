@@ -14,6 +14,7 @@ export {
 } from './resiliation';
 export {
   changerFormule,
+  changerOptionBlog,
   type ChangementFormule,
   creerCheckoutPaiement,
   ouvrirPortailClient,

@@ -24,6 +24,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 | **Appel d'offres** | **fixé par l'admin** : grille `grillesTarifaires` par catégorie × qualification A/B/C × budget, surchargeable par appel d'offres (Admin › Appels d'offres) | carte (Checkout `payment`, `price_data` dynamique) **ou** crédits |
 | Packs de crédits | 50 € → 50 crédits · 100 € → 110 · 250 € → 290 (définis dans `packsCredits`, éditables en admin) | paiement unique ; 1 crédit = 1 € HT ; validité 24 mois |
 | Pack IA | +100 modifications du site : 2,90 € HT | paiement unique, consommé après le quota du mois |
+| Option Blog (D71) | +20 articles rédigés par l'IA par mois : 9,90 € HT/mois | ajoutée à Site Pro ou Fiche + Site (5 + 20 = 25 articles), pas à Tout inclus ; prorata à l'ajout, retirée sans remboursement du mois entamé, retirée d'office au passage à une formule qui ne la permet pas |
 
 - Remise Tout inclus (−15 %) appliquée au prix affiché, en carte comme en crédits.
 - Contestation d'un appel d'offres acceptée → remboursement **en crédits** (ou sur la carte si payé par carte, au choix de l'admin).
@@ -40,6 +41,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 | Mon site › Domaine · Éditeur › IA | domaine, IA, publication sans mention | Site Pro ; **Fiche + Site** si l'artisan a déjà Fiche Pro (et inversement) |
 | Appels d'offres | appel d'offres en accès anticipé, prix affiché | Tout inclus (−15 %, 12 h d'avance) |
 | Éditeur › IA, quota épuisé | quota du mois atteint | Pack IA 2,90 € |
+| Blog, quota d'articles atteint (Site Pro, Fiche + Site) | 5 articles du mois utilisés | Option Blog `?offre=blog` (ou Tout inclus) |
 | Mon site › Blog | gratuit ou Fiche Pro seule : création d'article | Site Pro (ou Fiche + Site) |
 | Éditeur de blog › IA, quota épuisé | Site Pro, 5 articles rédigés | Tout inclus (15/mois) |
 

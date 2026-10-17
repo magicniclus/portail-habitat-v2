@@ -26,7 +26,14 @@ describe('droitsDe (PAIEMENTS §5)', () => {
       remiseAppelsOffres: 0,
       avanceAppelsOffresH: 0,
       supportPrioritaire: false,
+      optionBlog: false,
     });
+  });
+  it('option Blog : seulement avec Site Pro ou Fiche + Site (D71)', () => {
+    expect(droitsDe('site_pro', true).optionBlog).toBe(true);
+    expect(droitsDe('pack_fiche_site', true).optionBlog).toBe(true);
+    expect(droitsDe('tout_inclus', true).optionBlog).toBe(false);
+    expect(droitsDe('gratuit', true).optionBlog).toBe(false);
   });
 
   it('Fiche Pro : avantages de la fiche, pas de site', () => {

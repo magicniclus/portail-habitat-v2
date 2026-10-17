@@ -6,7 +6,13 @@ import {
   prixAbonnement,
   type ProduitAbonnement,
 } from '@ph/core/facturation';
-import { inclut, NOMS_FORMULE, PRIX_FORMULES_HT, type Formule } from '@ph/core/paiements';
+import {
+  inclut,
+  NOMS_FORMULE,
+  optionBlogPossible,
+  PRIX_FORMULES_HT,
+  type Formule,
+} from '@ph/core/paiements';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import { codeStripe, lireCodeValable } from '../cycle/codes';
@@ -84,13 +90,19 @@ export async function changerFormule(
     const sub = await s.stripe.subscriptions.retrieve(subId);
     const element = sub.items.data.find((e) => lirePrix(e.price.lookup_key)?.type === 'abonnement');
     if (!element) throw new ErreurMetier('INDISPONIBLE');
+    // Option Blog (D71) : retirée si la nouvelle formule ne la permet pas (Tout inclus, sans site).
+    const option = sub.items.data.find((e) => lirePrix(e.price.lookup_key)?.type === 'option_blog');
+    const garderOption = Boolean(option) && optionBlogPossible(p.produit);
     const metadata = { artisanId: p.artisanId, produit: p.produit };
     const montee =
       inclut(p.produit, actuelle as ProduitAbonnement) ||
       PRIX_FORMULES_HT[p.produit] > PRIX_FORMULES_HT[actuelle as ProduitAbonnement];
     if (montee) {
       await s.stripe.subscriptions.update(subId, {
-        items: [{ id: element.id ?? '', price: prixId }],
+        items: [
+          { id: element.id ?? '', price: prixId },
+          ...(option && !garderOption ? [{ id: option.id ?? '', deleted: true as const }] : []),
+        ],
         proration_behavior: 'always_invoice',
         cancel_at_period_end: false,
         metadata,
@@ -103,11 +115,21 @@ export async function changerFormule(
       end_behavior: 'release',
       phases: [
         {
-          items: [{ price: element.price.id, quantity: 1 }],
+          items: [
+            { price: element.price.id, quantity: 1 },
+            ...(option ? [{ price: option.price.id, quantity: 1 }] : []),
+          ],
           start_date: courante.start_date,
           end_date: courante.end_date,
         },
-        { items: [{ price: prixId, quantity: 1 }], proration_behavior: 'none', metadata },
+        {
+          items: [
+            { price: prixId, quantity: 1 },
+            ...(garderOption ? [{ price: option!.price.id, quantity: 1 }] : []),
+          ],
+          proration_behavior: 'none',
+          metadata,
+        },
       ],
     });
     return { mode: 'descente', formule: p.produit };
@@ -157,6 +179,41 @@ export async function changerFormule(
   });
   if (!session.url) throw new ErreurMetier('INDISPONIBLE');
   return { mode: 'checkout', url: session.url };
+}
+
+/**
+ * Option Blog 9,90 € HT/mois (D71) : ajoutée à l'abonnement en cours (Site Pro ou Fiche + Site),
+ * prorata facturé tout de suite ; retirée sans remboursement du mois entamé. Aucune saisie de carte
+ * chez nous : la carte de l'abonnement est utilisée. `droits.optionBlog` suit par le webhook.
+ */
+export async function changerOptionBlog(
+  s: ServicesCheckout,
+  p: { artisanId: string; activer: boolean },
+): Promise<void> {
+  const [artisan, prive] = await Promise.all([
+    s.db.doc(chemins.artisan(p.artisanId)).get(),
+    s.db.doc(chemins.facturationPrivee(p.artisanId)).get(),
+  ]);
+  if (!artisan.exists) throw new ErreurMetier('INTROUVABLE');
+  const formule = (artisan.get('droits.formule') as Formule | undefined) ?? 'gratuit';
+  const subId = prive.get('stripeSubscriptionId') as string | undefined;
+  if (p.activer && (!optionBlogPossible(formule) || !subId))
+    throw new ErreurMetier(
+      'PRECONDITION',
+      formule === 'tout_inclus'
+        ? 'Tout inclus comprend déjà 15 articles par mois.'
+        : 'L’option Blog s’ajoute à Site Pro ou Fiche + Site.',
+    );
+  if (!subId) return;
+  const sub = await s.stripe.subscriptions.retrieve(subId);
+  const option = sub.items.data.find((e) => lirePrix(e.price.lookup_key)?.type === 'option_blog');
+  if (p.activer === Boolean(option)) return;
+  await s.stripe.subscriptions.update(subId, {
+    items: p.activer
+      ? [{ price: await prixStripe(s, 'option_blog'), quantity: 1 }]
+      : [{ id: option!.id ?? '', deleted: true }],
+    proration_behavior: p.activer ? 'always_invoice' : 'none',
+  });
 }
 
 export type AchatCarte =

@@ -1,12 +1,19 @@
 import { peut } from '@ph/core/equipe';
-import { formuleDeOffre, PRIX_FORMULES_HT } from '@ph/core/paiements';
+import {
+  formuleDeOffre,
+  offreProposee,
+  optionBlogPossible,
+  PRIX_FORMULES_HT,
+} from '@ph/core/paiements';
 import { Banner, bouton } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { CreditsPacks } from '@/features/abonnement/CreditsPacks';
+import { FenetreOptionBlog } from '@/features/abonnement/FenetreOptionBlog';
 import { FenetrePaiement } from '@/features/abonnement/FenetrePaiement';
 import { MoyenPaiement } from '@/features/abonnement/MoyenPaiement';
+import { OptionBlog } from '@/features/abonnement/OptionBlog';
 import { VotreFormule } from '@/features/abonnement/VotreFormule';
 import { ListeFactures } from '@/features/facturation/Facturation';
 import { routes } from '@/lib/routes';
@@ -60,7 +67,15 @@ export default async function PageAbonnement({
   const gerer = peut(active.membre, 'abonnement.gerer');
   const formule = active.artisan.formule;
   const m = await lireMonAbonnement(active.artisanId);
-  const voulue = gerer ? formuleDeOffre(q.offre) : null;
+  // `?offre=blog` (D71) : fenêtre de l'option si la formule la permet ; sans site, Site Pro d'abord.
+  const optionBlog = gerer && q.offre === 'blog' && optionBlogPossible(formule) && !m.optionBlog;
+  const voulue = !gerer
+    ? null
+    : q.offre === 'blog'
+      ? optionBlogPossible(formule) || formule === 'tout_inclus'
+        ? null
+        : offreProposee(formule, 'site_pro')
+      : formuleDeOffre(q.offre);
   const code = voulue && q.code ? await remiseConversion(q.code, active.artisanId, voulue) : null;
   return (
     <main className="grid max-w-[860px] gap-6 px-[clamp(16px,3vw,32px)] py-10">
@@ -69,6 +84,7 @@ export default async function PageAbonnement({
         <Banner tone="attention">Ce code n’est plus valable. Le tarif normal s’applique.</Banner>
       ) : null}
       <VotreFormule formule={formule} abonnement={m.abonnements[0]} gerer={gerer} />
+      {m.optionBlog ? <OptionBlog gerer={gerer} /> : null}
       <CreditsPacks solde={m.soldeCredits} peutAcheter={gerer} />
       <MoyenPaiement carte={m.carte} email={m.emailFacturation} gerer={gerer && !!m.carte} />
       <ListeFactures factures={m.factures} />
@@ -81,6 +97,7 @@ export default async function PageAbonnement({
           code={code && code !== 'invalide' ? code : null}
         />
       ) : null}
+      {optionBlog ? <FenetreOptionBlog /> : null}
     </main>
   );
 }

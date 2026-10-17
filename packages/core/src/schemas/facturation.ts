@@ -26,6 +26,8 @@ export const abonnement = z.object({
   annuleLe: horodatage.optional(),
   codePromo: z.string().optional(),
   sieges: z.number().int().nonnegative().default(0),
+  /** Option Blog (D71) présente sur l'abonnement. */
+  optionBlog: z.boolean().default(false),
 });
 
 export const facture = z

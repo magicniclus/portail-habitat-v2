@@ -63,6 +63,7 @@ function lireAbonnement(sub: AbonnementStripe, supprime: boolean) {
   let produit: AbonnementEtat['produit'] | null = null;
   let priceId = '';
   let sieges = 0;
+  let optionBlog = false;
   let debut = sub.current_period_start ?? 0;
   let fin = sub.current_period_end ?? 0;
   for (const el of sub.items.data) {
@@ -73,12 +74,14 @@ function lireAbonnement(sub: AbonnementStripe, supprime: boolean) {
       debut = el.current_period_start ?? debut;
       fin = el.current_period_end ?? fin;
     } else if (p?.type === 'siege') sieges = el.quantity ?? 0;
+    else if (p?.type === 'option_blog') optionBlog = (el.quantity ?? 1) > 0;
   }
   if (!produit) return null;
   return {
     produit,
     priceId,
     sieges,
+    optionBlog,
     statut: (supprime ? 'canceled' : sub.status) as StatutAbonnement,
     debut,
     fin,
@@ -120,6 +123,7 @@ async function abonnementModifie(
     ...(sub.canceled_at ? { annuleLe: ts(sub.canceled_at) } : {}),
     ...(sub.discount?.promotion_code ? { codePromo: sub.discount.promotion_code } : {}),
     sieges: lu.sieges,
+    optionBlog: lu.optionBlog,
     evenementLe: ev.created,
     createdAt: avant.exists ? avant.get('createdAt') : Timestamp.fromMillis(maintenant),
     updatedAt: Timestamp.fromMillis(maintenant),
@@ -132,6 +136,7 @@ async function abonnementModifie(
       debutPeriode: (d.get('debutPeriode') as Timestamp).toMillis(),
       finPeriode: (d.get('finPeriode') as Timestamp).toMillis(),
       sieges: (d.get('sieges') as number | undefined) ?? 0,
+      optionBlog: d.get('optionBlog') === true,
       annulationFinPeriode: d.get('annulationFinPeriode') === true,
     }));
   etats.push({
@@ -140,12 +145,13 @@ async function abonnementModifie(
     debutPeriode: lu.debut * 1000,
     finPeriode: lu.fin * 1000,
     sieges: lu.sieges,
+    optionBlog: lu.optionBlog,
     annulationFinPeriode: sub.cancel_at_period_end,
   });
   const e = effetAbonnements(etats, maintenant);
   t.update(refArtisan, {
     droits: {
-      ...droitsDe(e.formule),
+      ...droitsDe(e.formule, e.optionBlog),
       statut: e.statut,
       ...(e.finPeriode ? { finPeriode: Timestamp.fromMillis(e.finPeriode) } : {}),
       majLe: Timestamp.fromMillis(maintenant),

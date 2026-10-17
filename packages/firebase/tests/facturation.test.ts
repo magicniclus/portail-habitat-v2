@@ -7,6 +7,7 @@ import type { Notification } from '../src/serveur/comptes';
 import { droitsInitiaux } from '@ph/core/paiements';
 import {
   changerFormule,
+  changerOptionBlog,
   creerCheckoutPaiement,
   lireFacturation,
   ouvrirPortailClient,
@@ -88,6 +89,7 @@ const abonnement = (p: {
   statut?: string;
   cle?: string;
   sieges?: number;
+  option?: boolean;
   resiliation?: boolean;
   debut?: number;
 }) => ({
@@ -108,6 +110,9 @@ const abonnement = (p: {
       },
       ...(p.sieges
         ? [{ price: { id: 'price_s', lookup_key: 'ph_siege' }, quantity: p.sieges }]
+        : []),
+      ...(p.option
+        ? [{ id: 'si_blog', price: { id: 'price_b', lookup_key: 'ph_option_blog' }, quantity: 1 }]
         : []),
     ],
   },
@@ -141,6 +146,20 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
       periode: 'mensuel',
       statut: 'active',
     });
+  });
+
+  it('option Blog (D71) : droits.optionBlog en Site Pro, jamais en Tout inclus', async () => {
+    await traiterEvenementStripe(
+      s,
+      evenement('customer.subscription.updated', abonnement({ cle: 'ph_site_pro', option: true })),
+    );
+    expect((await artisan()).droits).toMatchObject({ formule: 'site_pro', optionBlog: true });
+    expect((await db.doc(`${collections.abonnements}/sub_1`).get()).get('optionBlog')).toBe(true);
+    await traiterEvenementStripe(
+      s,
+      evenement('customer.subscription.updated', abonnement({ option: true })),
+    );
+    expect((await artisan()).droits).toMatchObject({ formule: 'tout_inclus', optionBlog: false });
   });
 
   it('sièges achetés : siegesMax suit la quantité', async () => {
@@ -374,7 +393,7 @@ describe('Checkout et portail client', () => {
     refunds: { create: async () => ({ id: 're_test' }) },
     subscriptions: {
       retrieve: async (id: string) => ({
-        ...abonnement({ id, cle: 'ph_fiche_pro' }),
+        ...abonnement({ id, ...enCours }),
         schedule: null,
       }),
       update: async (id: string, p: Record<string, unknown>) => (
@@ -399,8 +418,51 @@ describe('Checkout et portail client', () => {
     horloge: () => T,
   });
 
+  let enCours: { cle: string; option?: boolean } = { cle: 'ph_fiche_pro' };
   beforeEach(() => {
     appels.length = 0;
+    enCours = { cle: 'ph_fiche_pro' };
+  });
+
+  it('option Blog (D71) : ajoutée au prorata en Site Pro, retirée, refusée en Tout inclus', async () => {
+    await db.doc(chemins.facturationPrivee('a1')).set({ stripeSubscriptionId: 'sub_1' });
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'site_pro' });
+    enCours = { cle: 'ph_site_pro' };
+    await changerOptionBlog(services(), { artisanId: 'a1', activer: true });
+    expect(appels.find((a) => a.type === 'maj')!.p).toEqual({
+      items: [{ price: 'price_pa', quantity: 1 }],
+      proration_behavior: 'always_invoice',
+    });
+    appels.length = 0;
+    enCours = { cle: 'ph_site_pro', option: true };
+    await changerOptionBlog(services(), { artisanId: 'a1', activer: true });
+    expect(appels).toHaveLength(0);
+    await changerOptionBlog(services(), { artisanId: 'a1', activer: false });
+    expect(appels.find((a) => a.type === 'maj')!.p).toEqual({
+      items: [{ id: 'si_blog', deleted: true }],
+      proration_behavior: 'none',
+    });
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'tout_inclus' });
+    await expect(
+      changerOptionBlog(services(), { artisanId: 'a1', activer: true }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION' });
+  });
+
+  it('montée Site Pro + option → Tout inclus : l’option est retirée de l’abonnement', async () => {
+    await db.doc(chemins.facturationPrivee('a1')).set({ stripeSubscriptionId: 'sub_1' });
+    await db.doc(chemins.artisan('a1')).update({ 'droits.formule': 'site_pro' });
+    enCours = { cle: 'ph_site_pro', option: true };
+    await changerFormule(services(), {
+      artisanId: 'a1',
+      email: 'p@test.local',
+      produit: 'tout_inclus',
+    });
+    expect(appels.find((a) => a.type === 'maj')!.p).toMatchObject({
+      items: [
+        { id: 'si_1', price: 'price_pa' },
+        { id: 'si_blog', deleted: true },
+      ],
+    });
   });
 
   it('sans abonnement : client Stripe créé une seule fois, session Checkout avec l’entreprise', async () => {
