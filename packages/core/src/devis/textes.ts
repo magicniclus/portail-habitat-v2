@@ -1,3 +1,4 @@
+import { formatIban } from './iban';
 import { formatDate, formatEuros } from '../format';
 import type { ParametresFacturation } from './mentions';
 
@@ -40,7 +41,12 @@ export const TEXTE_BON_POUR_ACCORD =
 
 export function conditionsDevis(
   c: ContexteConditionsDevis,
-  p: ParametresFacturation & { tauxPenalitesAnnuel?: number; conditionsPaiement?: string },
+  p: ParametresFacturation & {
+    tauxPenalitesAnnuel?: number;
+    conditionsPaiement?: string;
+    /** IBAN déchiffré au moment du PDF (jamais stocké en clair). */
+    iban?: string;
+  },
 ): string[] {
   const pro = c.typeClient === 'pro';
   const l = [
@@ -80,7 +86,12 @@ export interface ContexteConditionsFacture {
 /** Conditions d'une facture, dont la nature de l'opération et l'option TVA sur les débits. */
 export function conditionsFacture(
   c: ContexteConditionsFacture,
-  p: ParametresFacturation & { tauxPenalitesAnnuel?: number; conditionsPaiement?: string },
+  p: ParametresFacturation & {
+    tauxPenalitesAnnuel?: number;
+    conditionsPaiement?: string;
+    /** IBAN déchiffré au moment du PDF (jamais stocké en clair). */
+    iban?: string;
+  },
 ): string[] {
   const pro = c.typeClient === 'pro';
   const l: string[] = [];
@@ -94,6 +105,7 @@ export function conditionsFacture(
         p.conditionsPaiement ? ` ${p.conditionsPaiement}` : ''
       }`,
     );
+    if (p.iban) l.push(`Paiement par virement : IBAN ${formatIban(p.iban)}.`);
     l.push('Pas d’escompte pour paiement anticipé.');
     l.push(penalites(pro, p));
   }

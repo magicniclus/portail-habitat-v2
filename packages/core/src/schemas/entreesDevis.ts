@@ -1,3 +1,4 @@
+import { ibanValide } from '../devis/iban';
 import { z } from '../zod';
 import { centimesPositifs, id, jourIso, pourcent } from './commun';
 import {
@@ -99,5 +100,14 @@ export const entreeAvoir = z.strictObject({
 });
 
 export const entreeParametresFacturation = parametresFacturation
-  .omit({ schemaVersion: true, updatedAt: true })
+  .omit({ schemaVersion: true, updatedAt: true, ibanChiffre: true, ibanFin: true })
+  .extend({
+    /** Absent : IBAN inchangé ; vide : retiré ; sinon vérifié puis chiffré par le serveur. */
+    iban: z
+      .string()
+      .trim()
+      .max(42)
+      .refine((v) => v === '' || ibanValide(v), 'IBAN invalide : vérifiez les chiffres.')
+      .optional(),
+  })
   .strict();

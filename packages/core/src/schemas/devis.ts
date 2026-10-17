@@ -212,6 +212,10 @@ export const parametresFacturation = z.object({
   validiteDevisJours: z.number().int().min(1).max(365),
   tvaDefaut: tauxTva,
   tauxPenalitesAnnuel: z.number().min(0).max(100),
+  /** IBAN chiffré (AES-256-GCM, clé hors base) : jamais renvoyé au navigateur. */
+  ibanChiffre: z.string().max(400).optional(),
+  /** 4 derniers caractères de l'IBAN, seuls affichés dans l'espace pro. */
+  ibanFin: z.string().max(4).optional(),
   updatedAt: horodatage,
 });
 

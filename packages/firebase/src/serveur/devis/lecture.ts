@@ -214,7 +214,8 @@ export async function lireParametresFacturation(
 ): Promise<Record<string, unknown> | null> {
   const d = await db.doc(chemins.parametresFacturation(artisanId)).get();
   if (!d.exists) return null;
-  const { updatedAt: _u, schemaVersion: _v, ...reste } = d.data() as DocumentData;
+  // L'IBAN chiffré ne quitte jamais le serveur : seuls ses 4 derniers caractères sont lus.
+  const { updatedAt: _u, schemaVersion: _v, ibanChiffre: _i, ...reste } = d.data() as DocumentData;
   return reste;
 }
 

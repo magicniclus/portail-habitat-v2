@@ -31,3 +31,4 @@ export {
   type PrestationBiblio,
 } from './bibliotheque';
 export { lireLienClient, signerDevis } from './signature';
+export { chiffrer, dechiffrer } from './chiffrement';

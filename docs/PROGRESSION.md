@@ -22,7 +22,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 10d | Blog | 🟡 | 16/10/2026 | BLOG-01 à 09, 14 ✅ (IA sans clé) | cœur, serveur, écrans, affichage sur le site et IA faits ; BLOG-10 à 13 attendent D70 ; stats détaillées et Search Console reportées ; D67 à D71 ⏳ non codés (AVANCEMENT §29) |
 | 10e | Landings par outil | 🟡 | 14/10/2026 | LAND-01 à 07 ✅ | chantiers en ligne ; site et devis derrière flags ; démo et exemples avec 10b (AVANCEMENT §25) |
 | 11 | Stripe | 🟡 | | PAY-01 à 05, 08, 10 | nouvelle grille faite (AVANCEMENT §24) ; restent encarts, NAV-01, emails |
-| 11b | Devis et factures | 🟡 | 14/10/2026 | DEV-01 à 06 ✅, DEV-07 sans Factur-X (D62 ⏳) | tampon, IBAN (AVANCEMENT §26) ; faits le 17/10 : signature en ligne, relances J−3/J+1/J+15, expiration, devis depuis « Mes demandes », modèles et bibliothèque, logo de la fiche sur les PDF |
+| 11b | Devis et factures | 🟡 | 14/10/2026 | DEV-01 à 06 ✅, DEV-07 sans Factur-X (D62 ⏳) | tampon (AVANCEMENT §26) ; faits le 17/10 : IBAN chiffré, signature en ligne, relances J−3/J+1/J+15, expiration, devis depuis « Mes demandes », modèles et bibliothèque, logo de la fiche sur les PDF |
 | 12 | Matching, appels d'offres | ✅ | avant le 13/10/2026 | unitaires + e2e | |
 | 12b | Demandes partenaires | ✅ | avant le 13/10/2026 | IMP | |
 | 13 | Back-office | ✅ | avant le 13/10/2026 | ADM | |

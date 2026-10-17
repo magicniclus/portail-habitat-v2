@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Tampon sur le PDF, IBAN chiffré, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
+- Tampon sur le PDF, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -698,6 +698,13 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - Serveur `signerDevis` (transaction) : jeton vérifié, `signatureDevis` (cœur testé : devis envoyé, valable, signature activée), devis `accepte`, `signature: { nom, ip, le, hashPdf }` (DATABASE §8 bis), mise en relation suivie (`devis_accepte`), email `devis-accepte` rédigé pour le propriétaire. Un devis déjà accepté, expiré ou à signer sur papier affiche la raison.
 - Choix signalé : signature électronique **simple** (eIDAS) ; l'adresse IP est conservée avec la signature comme preuve (donnée personnelle, mentionnée sur la page). Une signature avancée (prestataire type Yousign) serait une nouvelle dépendance à décider.
 - Tests : 2 cœur, 2 sur émulateur, 1 e2e.
+
+**IBAN chiffré (17/10/2026)**
+- Champ IBAN dans les paramètres de facturation : vérifié (pays, longueur, clé modulo 97, cœur `ibanValide`), chiffré par le serveur en AES-256-GCM (`ibanChiffre`), seuls les 4 derniers caractères (`ibanFin`) sont lus par l'espace pro ; jamais renvoyé au navigateur. Laisser le champ vide le garde, « Retirer l'IBAN » le supprime.
+- Factures (pas les avoirs) : ligne « Paiement par virement : IBAN FR76 … » dans les conditions, déchiffrée au moment du PDF.
+- **À configurer (signalé)** : secret `IBAN_CLE_CHIFFREMENT` (32 octets en base64) en staging et production. Sans lui en production, l'IBAN est refusé avec un message ; hors production, une clé de développement fixe est utilisée. Changer la clé rend les IBAN déjà enregistrés illisibles (l'artisan les ressaisit).
+- **Modèle de données (signalé)** : `parametresFacturation.ibanChiffre`, `ibanFin` (DATABASE §8 bis prévoyait `iban` chiffré).
+- Tests : 3 cœur, 2 sur émulateur.
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

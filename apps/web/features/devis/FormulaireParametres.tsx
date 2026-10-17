@@ -60,6 +60,8 @@ export function FormulaireParametres({
           }
         : {}),
       ...opt('conditionsPaiement'),
+      // IBAN : vide = inchangé ; « Retirer » = supprimé ; sinon vérifié et chiffré par le serveur.
+      ...(t('iban') ? { iban: t('iban') } : f.get('retirerIban') === 'on' ? { iban: '' } : {}),
       delaiPaiementJours: Math.round(nombre('delaiPaiementJours', 30)),
       acompteDefautPct: nombre('acompteDefautPct', 30),
       validiteDevisJours: Math.round(nombre('validiteDevisJours', 30)),
@@ -148,6 +150,17 @@ export function FormulaireParametres({
           texte(valeurs, 'conditionsPaiement'),
           'Ex. : virement (IBAN sur la facture), chèque.',
         )}
+        {champ(
+          'iban',
+          'IBAN (imprimé sur vos factures)',
+          '',
+          valeurs.ibanFin
+            ? `Enregistré, se termine par ${texte(valeurs, 'ibanFin')}. Laissez vide pour le garder.`
+            : 'Conservé chiffré ; seuls les 4 derniers caractères s’affichent ici.',
+        )}
+        {valeurs.ibanFin && modifiable ? (
+          <Checkbox name="retirerIban">Retirer l’IBAN des factures</Checkbox>
+        ) : null}
       </fieldset>
       <div className="grid gap-2">
         <Checkbox

@@ -7,6 +7,8 @@ import { chemins } from '../src/chemins';
 import { empreinteJeton, type Notification } from '../src/serveur/comptes/services';
 import {
   changerStatutDevis,
+  dechiffrer,
+  lireParametresFacturation,
   enregistrerDevis,
   enregistrerPaiement,
   enregistrerParametresFacturation,
@@ -352,5 +354,33 @@ describe('signature en ligne du devis par le client', () => {
     expect(
       (await erreur(signerDevis(s(), { lien: papier.lien, nom: 'X', ip: '' }))).message,
     ).toMatch(/sur papier/);
+  });
+});
+
+describe('IBAN des paramètres de facturation', () => {
+  const cleIban = Buffer.alloc(32, 7);
+  const IBAN = 'FR76 3000 6000 0112 3456 7890 189';
+  const ref = () => db.doc(chemins.parametresFacturation('a1'));
+
+  it('chiffré, jamais en clair ni renvoyé ; gardé si absent, retiré si vide', async () => {
+    await enregistrerParametresFacturation({ ...s(), cleIban }, proprio, { ...PARAMS, iban: IBAN });
+    const d = (await ref().get()).data()!;
+    expect(JSON.stringify(d)).not.toContain('30006000011234567890189');
+    expect(d.ibanFin).toBe('0189');
+    expect(dechiffrer(d.ibanChiffre as string, cleIban)).toBe('FR7630006000011234567890189');
+    expect(dechiffrer(d.ibanChiffre as string, Buffer.alloc(32, 8))).toBeNull();
+    expect(await lireParametresFacturation(db, 'a1')).not.toHaveProperty('ibanChiffre');
+
+    await enregistrerParametresFacturation({ ...s(), cleIban }, proprio, PARAMS);
+    expect((await ref().get()).get('ibanFin')).toBe('0189');
+    await enregistrerParametresFacturation({ ...s(), cleIban }, proprio, { ...PARAMS, iban: '' });
+    expect((await ref().get()).get('ibanChiffre')).toBeUndefined();
+  });
+
+  it('sans clé de chiffrement : IBAN refusé', async () => {
+    expect(
+      (await erreur(enregistrerParametresFacturation(s(), proprio, { ...PARAMS, iban: IBAN })))
+        .code,
+    ).toBe('PRECONDITION');
   });
 });

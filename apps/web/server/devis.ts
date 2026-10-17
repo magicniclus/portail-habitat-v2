@@ -11,7 +11,12 @@ import { formatDate, formatEuros, formatTel } from '@ph/core/format';
 import { genererPdf, htmlEnTexte, type DonneesPdf } from '@ph/emails/pdf';
 import { appAdmin, bucketFichiers, cheminDepuisUrlPublique } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
-import { lireLienClient, type ResultatEnvoi, type ServicesDevis } from '@ph/firebase/devis';
+import {
+  dechiffrer,
+  lireLienClient,
+  type ResultatEnvoi,
+  type ServicesDevis,
+} from '@ph/firebase/devis';
 import { empreinteJeton, nouveauJeton } from '@ph/firebase/comptes';
 import { getFirestore, Timestamp, type DocumentData } from 'firebase-admin/firestore';
 import { createHash } from 'node:crypto';
@@ -20,8 +25,23 @@ import { servicesComptes } from './espace';
 
 const db = () => getFirestore(appAdmin());
 
-export function servicesDevis(): ServicesDevis {
-  return { db: db(), horloge: Date.now };
+export function servicesDevis(): ServicesDevis & { cleIban?: Buffer } {
+  const cleIban = cleChiffrementIban();
+  return { db: db(), horloge: Date.now, ...(cleIban ? { cleIban } : {}) };
+}
+
+/**
+ * Clé AES-256 des IBAN (secret `IBAN_CLE_CHIFFREMENT`, 32 octets en base64). Hors production
+ * seulement, une clé de développement fixe ; en production sans secret, l'IBAN est refusé.
+ */
+function cleChiffrementIban(): Buffer | undefined {
+  const b64 = process.env.IBAN_CLE_CHIFFREMENT;
+  if (b64) {
+    const cle = Buffer.from(b64, 'base64');
+    return cle.length === 32 ? cle : undefined;
+  }
+  if (process.env.VERCEL_ENV === 'production') return undefined;
+  return createHash('sha256').update('cle-iban-developpement-local-uniquement').digest();
 }
 
 const date = (v: unknown) => (v instanceof Timestamp ? v.toDate() : undefined);
@@ -49,9 +69,17 @@ async function entreprise(artisanId: string) {
   ]);
   const tel = a.get('telephonePublic') as string | undefined;
   const logo = await logoPdf(artisanId, a.get('logoUrl') as string | undefined);
+  const { ibanChiffre, ...parametres } = p.data() as ParametresFacturation & {
+    tauxPenalitesAnnuel?: number;
+    rcPro?: string;
+    ibanChiffre?: string;
+  };
+  const cle = cleChiffrementIban();
+  const iban = ibanChiffre && cle ? dechiffrer(ibanChiffre, cle) : null;
   return {
     logo,
-    ...(p.data() as ParametresFacturation & { tauxPenalitesAnnuel?: number; rcPro?: string }),
+    ...parametres,
+    ...(iban ? { iban } : {}),
     ...(tel ? { telephone: formatTel(tel) } : {}),
     ...(a.get('emailContact') ? { email: a.get('emailContact') as string } : {}),
   };

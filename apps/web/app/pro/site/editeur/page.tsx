@@ -5,6 +5,7 @@ import { blogPublic } from '@ph/firebase/blog';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { EditeurSite } from '@/features/editeurSite/EditeurSite';
 import { routes } from '@/lib/routes';
 import { accesSite, DOMAINE_BASE, ficheCreation, mediasDuSite, tableauSite } from '@/server/sites';
@@ -38,22 +39,26 @@ export default async function PageEditeur({
   // Création en attente de Site Pro (IA_SITE §4) : aperçu non publiable, ou reprise sans question.
   const enAttente = creation?.statut === 'attente_paiement';
   return (
-    <EditeurSite
-      initial={{ pages: site.pages, navigation: site.navigation, theme: site.theme }}
-      pageInitiale={page && site.pages[page] ? page : 'accueil'}
-      panneauInitial={panneauInitial}
-      medias={medias}
-      artisanId={acces.artisanId}
-      hote={`${site.sousDomaine}.${DOMAINE_BASE}`}
-      offre={site.offre ?? 'gratuit'}
-      iaComplete={acces.sitePro}
-      restantsIa={restantsIa}
-      blog={blog}
-      {...(fiche ? { questionnaire: questionsCreation(fiche) } : {})}
-      apercuInitial={enAttente && !acces.sitePro ? (creation.apercu ?? null) : null}
-      reprise={!enAttente || !acces.sitePro ? 'non' : q.ia === 'reprendre' ? 'auto' : 'proposee'}
-      {...(tableau.champs ? { champs: tableau.champs } : {})}
-      {...(tableau.ville ? { ville: tableau.ville } : {})}
-    />
+    <>
+      {/* SDK du navigateur : import d'images dans la médiathèque (dépôt direct dans Storage). */}
+      <ConfigFirebase />
+      <EditeurSite
+        initial={{ pages: site.pages, navigation: site.navigation, theme: site.theme }}
+        pageInitiale={page && site.pages[page] ? page : 'accueil'}
+        panneauInitial={panneauInitial}
+        medias={medias}
+        artisanId={acces.artisanId}
+        hote={`${site.sousDomaine}.${DOMAINE_BASE}`}
+        offre={site.offre ?? 'gratuit'}
+        iaComplete={acces.sitePro}
+        restantsIa={restantsIa}
+        blog={blog}
+        {...(fiche ? { questionnaire: questionsCreation(fiche) } : {})}
+        apercuInitial={enAttente && !acces.sitePro ? (creation.apercu ?? null) : null}
+        reprise={!enAttente || !acces.sitePro ? 'non' : q.ia === 'reprendre' ? 'auto' : 'proposee'}
+        {...(tableau.champs ? { champs: tableau.champs } : {})}
+        {...(tableau.ville ? { ville: tableau.ville } : {})}
+      />
+    </>
   );
 }

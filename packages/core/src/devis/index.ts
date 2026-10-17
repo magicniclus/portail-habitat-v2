@@ -5,3 +5,4 @@ export * from './textes';
 export * from './libelles';
 export * from './relances';
 export * from './signature';
+export * from './iban';
