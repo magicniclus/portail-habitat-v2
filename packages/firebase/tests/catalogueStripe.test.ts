@@ -50,6 +50,7 @@ describe('synchroniserCatalogueStripe', () => {
       'ph_credits',
       'ph_fiche_pro',
       'ph_ia',
+      'ph_option_blog',
       'ph_pack_fiche_site',
       'ph_siege',
       'ph_site_pro',
