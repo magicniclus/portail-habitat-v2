@@ -719,7 +719,11 @@ Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS in
 
 **Mes sections (17/10/2026)** : « Enregistrer » sur une section dans Calques la garde (`sites/{id}/sectionsEnregistrees`, 30 au plus, DATABASE §15 bis) ; elle réapparaît dans Ajouter › Mes sections (lue à l'ouverture du panneau seulement) et s'insère avec des identifiants neufs (`copieSection`, aussi utilisé par « Dupliquer »). Route `/api/pro/site/sections` (`site.gerer`). Tests : 1 sur émulateur, 1 cœur, 1 e2e. **D47 est ⏳** : « Mes sections » suit SITE_INTERNET §4.7 et se retire sans effet sur le reste si D47 change ; les **6 modèles fournis** ne sont pas codés en attendant la validation de D47.
 
-Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), statistiques Search Console sans cookie, médiathèque avec import (nouvelle règle Storage `sites/{id}/medias/` à écrire et tester), 6 modèles de site fournis (D47 ⏳), Lighthouse SITE-04.
+**Médiathèque (17/10/2026)** : « Importer une image » dans les réglages d'un élément image : dépôt dans Storage `sites/{id}/medias/`, vérification serveur (image JPEG, PNG, WebP ou AVIF, 8 Mo), document `sites/{id}/medias/{mediaId}` (DATABASE §15 bis), clé `up:{mediaId}` choisie pour l'élément. Les images importées s'ajoutent aux photos de réalisations publiées dans la liste ; le site public ne lit que celles citées par ses pages.
+- **Règle de sécurité ajoutée (signalée)** : `storage.rules` `match /sites/{aid}/medias/{fichier}` : lecture publique ; création par propriétaire ou gérant seulement (`site.gerer`), image de 8 Mo au plus, jamais d'écrasement ; suppression par les mêmes. 5 cas ajoutés dans `tests/regles/storage.test.ts` (refus vérifiés ici ; les envois autorisés échouent dans ce conteneur comme tous les envois Storage, CI fait foi).
+- Pas encore : variantes WebP 640/1280/1920 (redimensionnement côté serveur, nouvelle dépendance à valider), suppression d'une image depuis l'éditeur, fichiers téléchargeables (`Action.fichierId`, antivirus).
+
+Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), statistiques Search Console sans cookie, variantes WebP de la médiathèque, 6 modèles de site fournis (D47 ⏳), Lighthouse SITE-04.
 
 ## 28. Lot 10c : IA du site (16/10/2026, en cours)
 Fait (tranche 1, IA_SITE §2, §4, §5) :

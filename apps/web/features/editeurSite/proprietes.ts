@@ -10,6 +10,8 @@ export interface ProprietesEditeur {
   pageInitiale: string;
   panneauInitial: Panneau;
   medias: Record<string, string>;
+  /** Entreprise active : dossier Storage de la médiathèque. */
+  artisanId: string;
   hote: string;
   offre: 'gratuit' | 'site_pro';
   champs?: ChampFormulaire[];

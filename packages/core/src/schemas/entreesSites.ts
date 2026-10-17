@@ -2,6 +2,7 @@ import { reponsesCreation } from '../sites/ia/creation';
 import { MODES_IA_SITE } from '../sites/ia/reglages';
 import { navigation, pageSite, section, theme } from '../sites/schemas';
 import { z } from '../zod';
+import { nomFichier } from './entreesPro';
 import { champFormulaire } from './sites';
 
 /**
@@ -30,6 +31,9 @@ export const entreeThemeSite = z.object({ theme });
 export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(1).max(30) });
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});
+
+/** Image importée dans la médiathèque du site (déposée dans Storage puis vérifiée ici). */
+export const entreeMediaSite = z.strictObject({ nomFichier });
 
 /** « Mes sections » (SITE_INTERNET §4.7) : enregistrer une section, la supprimer, ou les lire. */
 export const entreeSectionEnregistree = z.discriminatedUnion('action', [

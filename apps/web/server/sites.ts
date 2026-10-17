@@ -17,6 +17,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import {
   hebergeurDepuisEnv,
+  lireMediasSite,
   lirePhotosPubliees,
   lireSiteEdition,
   lireStatsSite,
@@ -157,8 +158,14 @@ export async function tableauSite(artisanId: string): Promise<TableauSite> {
 
 /** Médiathèque de l'aperçu : photos des réalisations publiées (`lib:{id}/{i}` → URL). */
 export async function mediasDuSite(artisanId: string): Promise<Record<string, string>> {
-  const r = await lirePhotosPubliees(db(), artisanId);
-  return Object.fromEntries(r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])));
+  const [r, importees] = await Promise.all([
+    lirePhotosPubliees(db(), artisanId),
+    lireMediasSite(db(), artisanId),
+  ]);
+  return Object.fromEntries([
+    ...r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])),
+    ...importees.map((m) => [m.cle, m.url]),
+  ]);
 }
 
 /**

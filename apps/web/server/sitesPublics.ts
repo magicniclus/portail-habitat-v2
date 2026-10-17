@@ -5,7 +5,7 @@ import {
   type ChampFormulaire,
   type PageSite,
 } from '@ph/core/sites';
-import { appAdmin } from '@ph/firebase/admin';
+import { appAdmin, urlPubliqueFichier } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import { lireSitePublie, type SitePublie } from '@ph/firebase/sites';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -19,17 +19,20 @@ export interface SiteServi extends SitePublie {
   urlFiche?: string;
   champs: ChampFormulaire[];
   photos: Record<string, string[]>;
+  /** Images importées (`up:{id}`) utilisées par les pages publiées. */
+  importees: Record<string, string>;
 }
 
 /** 30 s de cache par instance : une publication est visible en moins d'une minute (SITE-08). */
 const CACHE_MS = 30_000;
 const cache = new Map<string, { site: SiteServi | null; lu: number }>();
 
-function refsPhotos(pages: Record<string, PageSite>): Set<string> {
-  const ids = new Set<string>();
+/** Réalisations (`lib:`) et images importées (`up:`) citées par les pages. */
+function refsPhotos(pages: Record<string, PageSite>): { lib: Set<string>; up: Set<string> } {
+  const ids = { lib: new Set<string>(), up: new Set<string>() };
   const ajouter = (src: string) => {
-    const m = /^lib:([\w-]+)\//.exec(src);
-    if (m) ids.add(m[1]!);
+    const m = /^(lib|up):([\w-]+)/.exec(src);
+    if (m) ids[m[1] as 'lib' | 'up'].add(m[2]!);
   };
   for (const p of Object.values(pages))
     for (const s of p.sections) {
@@ -49,14 +52,23 @@ async function charger(hote: string): Promise<SiteServi | null> {
     db().doc(chemins.site(site.siteId)).get(),
   ]);
   // Seules les réalisations publiées (autorisation du propriétaire du chantier) sont servies.
-  const ids = [...refsPhotos(site.pages)];
-  const realisations = await Promise.all(
-    ids.map((r) =>
-      db()
-        .doc(`${chemins.realisations(site.siteId)}/${r}`)
-        .get(),
+  const refs = refsPhotos(site.pages);
+  const [realisations, medias] = await Promise.all([
+    Promise.all(
+      [...refs.lib].map((r) =>
+        db()
+          .doc(`${chemins.realisations(site.siteId)}/${r}`)
+          .get(),
+      ),
     ),
-  );
+    Promise.all(
+      [...refs.up].map((m) =>
+        db()
+          .doc(`${chemins.mediasSite(site.siteId)}/${m}`)
+          .get(),
+      ),
+    ),
+  ]);
   const photos = Object.fromEntries(
     realisations
       .filter((r) => r.exists && r.get('publie') === true)
@@ -78,6 +90,11 @@ async function charger(hote: string): Promise<SiteServi | null> {
           ])
         : [...FORMULAIRE_GRATUIT],
     photos,
+    importees: Object.fromEntries(
+      medias
+        .filter((m) => m.exists)
+        .map((m) => [m.id, urlPubliqueFichier(m.get('storagePath') as string)]),
+    ),
   };
 }
 
@@ -91,8 +108,13 @@ export async function siteServi(hote: string, maintenant = Date.now()): Promise<
   return site;
 }
 
-/** `lib:{realisationId}/{i}` → URL publique de la photo, si la réalisation est publiée. */
+/**
+ * `lib:{realisationId}/{i}` → URL de la photo si la réalisation est publiée ; `up:{id}` → URL de
+ * l'image importée dans la médiathèque du site.
+ */
 export const resoudreMedia = (site: SiteServi) => (src: string) => {
+  const up = /^up:([\w-]+)$/.exec(src);
+  if (up) return site.importees[up[1]!] ?? null;
   const m = /^lib:([\w-]+)\/(\d+)$/.exec(src);
   return m ? (site.photos[m[1]!]?.[Number(m[2])] ?? null) : null;
 };

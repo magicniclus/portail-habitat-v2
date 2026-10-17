@@ -3,7 +3,7 @@ import { siteParDefaut } from '@ph/core/sites';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { appAdmin, bucketFichiers, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import {
   changerSousDomaine,
@@ -11,6 +11,7 @@ import {
   enregistrerNavigation,
   enregistrerPage,
   envoyerFormulaireSite,
+  enregistrerMediaSite,
   gererSectionsEnregistrees,
   lireSitePublie,
   PublicationRefusee,
@@ -274,5 +275,17 @@ describe('Mes sections (SITE_INTERNET §4.7)', () => {
       id: apres[0]!.id,
     });
     expect(vide).toEqual([]);
+  });
+});
+
+describe('médiathèque du site', () => {
+  it('image absente de Storage : refusée, rien n’est enregistré', async () => {
+    const e = await erreur(
+      enregistrerMediaSite({ ...s(), bucket: bucketFichiers() }, proprio, {
+        nomFichier: 'absente.png',
+      }),
+    );
+    expect(e.code).toBe('INTROUVABLE');
+    expect((await db.collection(chemins.mediasSite('a1')).get()).size).toBe(0);
   });
 });

@@ -9,6 +9,7 @@ import {
 } from '@ph/core/sites';
 import { Checkbox, Field, Input, Select, Textarea } from '@ph/ui';
 import { ChampAction } from './ChampAction';
+import { ImportImage } from './ImportImage';
 import { TexteLie } from './TexteLie';
 
 const NOMS_APPAREIL = { desktop: 'ordinateur', tablet: 'tablette', mobile: 'mobile' } as const;
@@ -23,6 +24,7 @@ export function ReglagesElement({
   onChange,
   pages,
   medias,
+  artisanId,
   erreurAction,
   categoriesBlog = [],
 }: {
@@ -30,6 +32,8 @@ export function ReglagesElement({
   onChange: (p: Record<string, unknown>) => void;
   pages: Record<string, PageSite>;
   medias: Record<string, string>;
+  /** Dossier Storage de la médiathèque (import d'images). */
+  artisanId: string;
   erreurAction: (a: Action) => string | null;
   /** Catégories du blog, pour l'élément « Articles du blog ». */
   categoriesBlog?: { id: string; nom: string }[];
@@ -87,16 +91,17 @@ export function ReglagesElement({
       ) : null}
       {el.type === 'image' ? (
         <>
-          <Field label="Photo" aide="Photos de vos réalisations publiées.">
+          <Field label="Photo" aide="Vos réalisations publiées et vos images importées.">
             <Select value={el.p.src} onChange={(e) => onChange({ src: e.target.value })}>
               <option value="">Aucune</option>
               {Object.keys(medias).map((m, i) => (
                 <option key={m} value={m}>
-                  Photo {i + 1}
+                  {m.startsWith('up:') ? `Image importée ${i + 1}` : `Photo ${i + 1}`}
                 </option>
               ))}
             </Select>
           </Field>
+          <ImportImage artisanId={artisanId} onImportee={(cle) => onChange({ src: cle })} />
           {texte('legende', 'Texte alternatif (décrit la photo)')}
           {action(el.p.action)}
         </>

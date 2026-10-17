@@ -17,7 +17,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 8 | Parcours particuliers | ✅ | avant le 13/10/2026 | ESP, DIA | |
 | 9 | Annuaire, fiche publique | ✅ | avant le 13/10/2026 | ANN, FIC | |
 | 10 | Espace artisan | ✅ | avant le 13/10/2026 | ACQ, ONB, PRO | |
-| 10b | Site internet artisan, domaines | 🟡 | 14/10/2026 | SITE-02, 03, 07, 08, 09, 10, 11, 13, DOM-02, 04, 06 ✅ | éditeur (dont panneau Ajouter et mots liés), publication, rendu public, domaine existant, statistiques faits ; achat OVH, médiathèque, modèles de site à faire (AVANCEMENT §27) |
+| 10b | Site internet artisan, domaines | 🟡 | 14/10/2026 | SITE-02, 03, 07, 08, 09, 10, 11, 13, DOM-02, 04, 06 ✅ | éditeur (Ajouter, mots liés, Mes sections, médiathèque), publication, rendu public, domaine existant, statistiques faits ; achat OVH, variantes WebP, modèles de site (D47 ⏳) à faire (AVANCEMENT §27) |
 | 10c | IA du site | 🟡 | 16/10/2026 | SITE-IA-01 à 10 ✅ (sans clé IA) | opérations, garde-fou, crédits, panneau, création assistée, aperçu gratuit, reprise, Mes modèles, routeur, modération, quotas affichés, surlignage, variantes visuelles faits ; génération réelle à vérifier avec la clé ; D48, D50, D51 ⏳ (AVANCEMENT §28) |
 | 10d | Blog | 🟡 | 16/10/2026 | BLOG-01 à 09, 14 ✅ (IA sans clé) | cœur, serveur, écrans, affichage sur le site et IA faits ; BLOG-10 à 13 attendent D70 ; stats détaillées et Search Console reportées ; D67 à D71 ⏳ non codés (AVANCEMENT §29) |
 | 10e | Landings par outil | 🟡 | 14/10/2026 | LAND-01 à 07 ✅ | chantiers en ligne ; site et devis derrière flags ; démo et exemples avec 10b (AVANCEMENT §25) |

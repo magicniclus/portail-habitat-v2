@@ -50,7 +50,8 @@ export const entreeModifierFiche = z
  * Document déposé (Kbis, décennale…) : le fichier est déjà dans Storage
  * (`artisans/{id}/documents/{docId}/{nomFichier}`) ; le serveur le vérifie avant de l'enregistrer.
  */
-const nomFichier = z
+/** Nom de fichier déposé dans Storage, sans dossier. */
+export const nomFichier = z
   .string()
   .trim()
   .min(1)

@@ -1,6 +1,6 @@
 import { chemins } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
-import { admin, COMPTES, connecter, entrepriseDe } from './outils';
+import { admin, COMPTES, connecter, entrepriseDe, png } from './outils';
 
 // docs/SITE_INTERNET.md §8 : SITE-03, SITE-07, SITE-08, SITE-09, SITE-10, SITE-11, SITE-13
 // (SITE-12 : Turnstile refusé → aucune demande, couvert par tests/sites.test.ts).
@@ -444,5 +444,19 @@ test.describe('Site internet artisan', () => {
     await expect(mes.getByRole('button', { name: nom, exact: true })).toBeVisible();
     await mes.getByRole('button', { name: `Supprimer ${nom} de Mes sections` }).click();
     await expect(mes.getByRole('button', { name: nom, exact: true })).toHaveCount(0);
+  });
+
+  test('médiathèque : image importée dans l’éditeur puis choisie pour l’élément image', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
+    await page.getByRole('button', { name: 'Image', exact: true }).click();
+    await page.getByLabel('Importer une image').setInputFiles(png('chantier.png'));
+    const photo = page.getByLabel('Photo', { exact: true });
+    await expect(photo).toHaveValue(/^up:/);
+    await expect(photo.locator('option', { hasText: /^Image importée/ })).toHaveCount(1);
+    await expect(
+      page.frameLocator('iframe[title="Aperçu de la page"]').locator('img[src*="sites%2F"]'),
+    ).toHaveCount(1);
   });
 });

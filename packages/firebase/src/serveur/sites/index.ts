@@ -47,3 +47,4 @@ export {
 export { PublicationRefusee, publierSite, retablirVersion } from './publication';
 export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from './stats';
 export { gererSectionsEnregistrees, type SectionEnregistree } from './sectionsEnregistrees';
+export { enregistrerMediaSite, lireMediasSite } from './medias';

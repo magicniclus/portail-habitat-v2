@@ -43,6 +43,7 @@ export default async function PageEditeur({
       pageInitiale={page && site.pages[page] ? page : 'accueil'}
       panneauInitial={panneauInitial}
       medias={medias}
+      artisanId={acces.artisanId}
       hote={`${site.sousDomaine}.${DOMAINE_BASE}`}
       offre={site.offre ?? 'gratuit'}
       iaComplete={acces.sitePro}

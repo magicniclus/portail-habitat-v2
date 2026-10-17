@@ -39,6 +39,27 @@ const CAS: Cas[] = [
     op: { ecrire: 'artisans/a1/logo/{p}.svg', type: 'image/svg+xml', taille: 1000 },
     autorises: [],
   },
+  { nom: 'lire une image du site', op: { lire: 'sites/a1/medias/m.jpg' }, autorises: PROFILS },
+  {
+    nom: 'importer une image dans la médiathèque du site',
+    op: { ecrire: 'sites/a1/medias/{p}.jpg', type: 'image/jpeg', taille: 1000 },
+    autorises: ['proprietaire', 'gerant'],
+  },
+  {
+    nom: 'importer une image de plus de 8 Mo dans le site',
+    op: { ecrire: 'sites/a1/medias/gros-{p}.jpg', type: 'image/jpeg', taille: 8 * Mo + 1 },
+    autorises: [],
+  },
+  {
+    nom: 'importer un fichier qui n’est pas une image dans le site',
+    op: { ecrire: 'sites/a1/medias/{p}.svg', type: 'image/svg+xml', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'remplacer une image existante du site',
+    op: { ecrire: 'sites/a1/medias/m.jpg', type: 'image/jpeg', taille: 1000 },
+    autorises: [],
+  },
   {
     nom: 'envoyer une photo de réalisation',
     op: { ecrire: 'artisans/a1/realisations/r1/{p}.jpg', type: 'image/jpeg', taille: 1000 },
@@ -124,6 +145,7 @@ const CAS: Cas[] = [
 
 const FICHIERS = [
   'artisans/a1/logo/logo.png',
+  'sites/a1/medias/m.jpg',
   'artisans/a1/realisations/r1/photo.jpg',
   'artisans/a1/documents/d1/kbis.pdf',
   'avis/av1/photos/photo.jpg',

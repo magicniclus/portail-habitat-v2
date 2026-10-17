@@ -116,6 +116,7 @@ export const chemins = {
   modelesSite: (id: string) => `sites/${id}/modeles`,
   modeleSite: (id: string, m: string) => `sites/${id}/modeles/${m}`,
   sectionsEnregistrees: (id: string) => `sites/${id}/sectionsEnregistrees`,
+  mediasSite: (id: string) => `sites/${id}/medias`,
   statsMoisSite: (id: string, mois: string) => `sites/${id}/statsMois/${mois}`,
   pagesSite: (id: string) => `sites/${id}/pages`,
   /** Blog de l'artisan (BLOG.md, DATABASE §15 quater). */
@@ -179,6 +180,8 @@ export const fichiers = {
   document: (aid: string, docId: string, nom: string) =>
     `artisans/${aid}/documents/${docId}/${nom}`,
   logo: (aid: string, nom: string) => `artisans/${aid}/logo/${nom}`,
+  /** Médiathèque du site (images importées dans l'éditeur). */
+  mediaSite: (aid: string, nom: string) => `sites/${aid}/medias/${nom}`,
   realisation: (aid: string, rid: string, nom: string) =>
     `artisans/${aid}/realisations/${rid}/${nom}`,
   /** Replay compressé (bucket des replays, jamais lisible par un client). */

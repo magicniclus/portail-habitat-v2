@@ -48,9 +48,6 @@ export function EditeurSite(props: ProprietesEditeur) {
   const [proposition, setProposition] = useState<OperationIa[] | null>(null);
   const html = useHtmlApercu(s.b, pageId, { ...props, apercuIa, proposition });
 
-  const operationSection = (id: string, op: 'haut' | 'bas' | 'dupliquer' | 'supprimer') =>
-    s.operationSection(pageId, id, op);
-
   return (
     <div className="flex min-h-dvh flex-col bg-blanc">
       <BarreEditeur
@@ -126,13 +123,18 @@ export function EditeurSite(props: ProprietesEditeur) {
                   onChange={(r) => majPage((p) => majElement(p, element.id, r))}
                   pages={s.b.pages}
                   medias={props.medias}
+                  artisanId={props.artisanId}
                   erreurAction={s.erreurAction(pageId)}
                   categoriesBlog={props.blog.classement.categories}
                 />
               </>
             ) : null}
             {panneau === 'calques' && !element ? (
-              <PanneauCalques page={page} onSection={operationSection} onSelection={setSelection} />
+              <PanneauCalques
+                page={page}
+                onSection={(id, op) => s.operationSection(pageId, id, op)}
+                onSelection={setSelection}
+              />
             ) : null}
             {panneau === 'pages' ? (
               <PanneauPages
