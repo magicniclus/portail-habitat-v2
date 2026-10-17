@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<form style="display:grid;gap:14px" onSubmit="{{ soumettre }}" onFocus="{{ suivreDebut }}" onSubmitCapture="{{ suivreEnvoi }}">
+  <div>
+    <h2 style="font-size:23px;margin:0">{{ titre }}</h2>
+    <sc-if value="{{ aCompteur }}" hint-placeholder-val="{{ false }}">
+      <p style="display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--color-accent-100);font-size:14px;line-height:20px;color:var(--color-accent-800)">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent);display:block;flex:none"></span>
+        <span><strong>{{ nbDemandes }} demandes</strong> déposées {{ zoneLabel }} ce mois-ci</span>
+      </p>
+    </sc-if>
+  </div>
+  <div class="field"><label for="{{ idNom }}">Nom et prénom</label><input class="input" id="{{ idNom }}" name="nom" type="text" autocomplete="name" placeholder="Julien Bertrand" required="required"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:14px">
+    <div class="field"><label for="{{ idTel }}">Téléphone</label><input class="input" id="{{ idTel }}" name="tel" type="tel" autocomplete="tel" placeholder="06 12 34 56 78" required="required"></div>
+    <div class="field"><label for="{{ idCp }}">Code postal</label><input class="input" id="{{ idCp }}" name="cp" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="33000" required="required" onInput="{{ majCp }}"></div>
+  </div>
+  <div class="field"><label for="{{ idMetier }}">Métier principal</label>
+    <select class="input" id="{{ idMetier }}" name="metier" required="required" value="{{ mId }}" onChange="{{ choisirPrincipal }}" aria-invalid="{{ mErreurAria }}">
+      <option value="">Choisissez votre métier</option>
+      <sc-for list="{{ groupesMetiers }}" as="g" hint-placeholder-count="0"><optgroup label="{{ g.nom }}"><sc-for list="{{ g.metiers }}" as="m" hint-placeholder-count="0"><option value="{{ m.id }}">{{ m.nom }}</option></sc-for></optgroup></sc-for>
+    </select>
+    <sc-if value="{{ mErreur }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size:13px;color:#b42318;font-weight:600;margin-top:4px">Choisissez votre métier dans la liste.</span></sc-if>
+  </div>
+  <sc-if value="{{ mChoisi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:12px;background:var(--color-accent-100)">
+      <sc-if value="{{ peutAjouter }}" hint-placeholder-val="{{ true }}">
+        <div class="field" style="margin:0"><label for="{{ idAutre }}">Autres métiers <span style="font-weight:400;color:var(--color-neutral-700)">(facultatif, jusqu'à 4)</span></label>
+          <select class="input" id="{{ idAutre }}" value="" onChange="{{ ajouterMetier }}" style="background:#fff">
+            <option value="">Ajouter un métier…</option>
+            <sc-for list="{{ groupesAutres }}" as="g" hint-placeholder-count="0"><optgroup label="{{ g.nom }}"><sc-for list="{{ g.metiers }}" as="m" hint-placeholder-count="0"><option value="{{ m.id }}">{{ m.nom }}</option></sc-for></optgroup></sc-for>
+          </select>
+        </div>
+      </sc-if>
+      <sc-if value="{{ aAutres }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ autresChoisis }}" as="mc" hint-placeholder-count="1"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 11px;border-radius:999px;background:var(--color-accent);color:#fff;font-size:13.5px;font-weight:600">{{ mc.nom }}<button type="button" onClick="{{ mc.retirer }}" aria-label="{{ mc.aria }}" style="width:22px;height:22px;border-radius:99px;border:0;background:rgba(255,255,255,.25);color:#fff;cursor:pointer;font-size:13px;line-height:1">×</button></span></sc-for>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:14px;font-weight:700">Chantiers que vous acceptez <span style="font-weight:500;color:var(--color-neutral-700)">({{ nbActives }} sur {{ nbTotal }})</span></span>
+        <span style="font-size:13px;line-height:19px;color:var(--color-neutral-800);margin-top:-4px">Décochez ce que vous ne faites pas.</span>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ chantiers }}" as="pm" hint-placeholder-count="6"><button type="button" role="switch" aria-checked="{{ pm.on }}" onClick="{{ pm.toggle }}" style="{{ pm.style }}">{{ pm.mark }} {{ pm.libelle }}</button></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:20px;cursor:pointer">
+    <input type="checkbox" required="required" style="width:16px;height:16px;margin-top:2px;accent-color:var(--color-accent)">
+    <span>J'accepte les <a href="Pages Legales.dc.html?public=pro&amp;doc=cgv">conditions générales</a>, la <a href="Pages Legales.dc.html?public=pro&amp;doc=charte">charte de bonne conduite</a> et la <a href="Pages Legales.dc.html?public=pro&amp;doc=confidentialite">politique de confidentialité</a>.</span>
+  </label>
+  <button type="submit" class="btn btn-primary btn-block" style="min-height:48px;font-size:16px;border-radius:10px">{{ libelleCta }}</button>
+  <sc-if value="{{ listeReassurance }}" hint-placeholder-val="{{ true }}"><ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;font-size:13px;color:var(--color-neutral-800)">
+    <li style="display:flex;align-items:center;gap:6px"><span style="color:var(--color-accent);font-weight:700">✓</span>Sans abonnement</li>
+    <li style="display:flex;align-items:center;gap:6px"><span style="color:var(--color-accent);font-weight:700">✓</span>0 % de commission</li>
+  </ul></sc-if>
+  <sc-if value="{{ reassuranceSite }}" hint-placeholder-val="{{ false }}"><p style="margin:0;text-align:center;font-size:13px;line-height:18px;color:#666A70">Gratuit · Sans carte bancaire · Vous restez libre</p></sc-if>
+</form>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;titre&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Créer mon espace gratuit&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;outil&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chantiers&quot;,&quot;site&quot;,&quot;devis&quot;],&quot;default&quot;:&quot;chantiers&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;source&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const FAM = [["sdb-cuisine","Salle de bain et cuisine"],["deco","Peinture et décoration"],["sols","Sols"],["interieur","Aménagement intérieur"],["gros-oeuvre","Gros œuvre et extension"],["plomberie","Plomberie et eau"],["chauffage","Chauffage et climatisation"],["electricite","Électricité et énergie"],["isolation","Isolation"],["menuiseries","Menuiseries et fermetures"],["toiture","Toiture et façade"],["exterieur","Extérieur et jardin"],["securite","Sécurité et accessibilité"],["traitements","Diagnostics et traitements"],["depannage","Dépannage et petits travaux"]];
+const CTA = { chantiers: "Voir les demandes près de chez moi", site: "Créer mon espace et mon site", devis: "Créer mon espace et mon premier devis" };
+const ETAPE1 = "Onboarding Outil Etape 2.dc.html";
+let n = 0;
+
+class Component extends DCLogic {
+  state = { cp: "", mId: "", autres: [], off: {}, mErreur: false };
+  uid = "f" + (++n);
+  componentDidMount() { if (!window.PH_RECHERCHE) this._w = setInterval(() => { if (window.PH_RECHERCHE) { clearInterval(this._w); this.forceUpdate(); } }, 80); }
+  componentWillUnmount() { clearInterval(this._w); }
+  renderVals() {
+    const s = this.state, RS = window.PH_RECHERCHE, E = window.PH_DEMANDES, outil = this.props.outil || "chantiers";
+    const tous = RS ? Object.values(RS.METIERS) : [];
+    const grouper = (ex) => FAM.map(([id, nom]) => ({ nom, metiers: tous.filter((m) => m.famille === id && ex.indexOf(m.id) < 0).sort((x, y) => x.nom.localeCompare(y.nom, "fr")).map((m) => ({ id: m.id, nom: m.nom })) })).filter((g) => g.metiers.length);
+    const mets = s.mId ? [s.mId].concat(s.autres) : [];
+    const vus = {}, prest = [];
+    mets.forEach((id) => RS && RS.intentionsDuMetier(id).forEach((it) => { if (!vus[it.id]) { vus[it.id] = 1; prest.push(it); } }));
+    const actives = prest.filter((it) => !s.off[it.id]);
+    const cp = (s.cp || "").replace(/\D/g, ""), valide = cp.length === 5;
+    const est = E && valide ? E.estimer({ cp, metiers: s.mId ? [s.mId] : [], rayon: 30 }) : null;
+    const reel = outil === "chantiers" && est && est.source === "reel" && est.total > 0;
+    const nom = s.mId && RS ? RS.metierNom(s.mId).toLowerCase() : "";
+    const u = this.uid;
+    return {
+      titre: this.props.titre || "Créer mon espace gratuit",
+      listeReassurance: this.props.outil !== "site", reassuranceSite: this.props.outil === "site",
+      suivreDebut: () => { if (this._debut) return; this._debut = true; try { (window.dataLayer = window.dataLayer || []).push({ event: "hero_form_started", landing: this.props.outil || "chantiers" }); } catch (e) {} },
+      suivreEnvoi: () => { try { (window.dataLayer = window.dataLayer || []).push({ event: "hero_form_submitted", landing: this.props.outil || "chantiers", source: this.props.source || "" }); } catch (e) {} }, libelleCta: this.props.outil === "site" ? "Créer mon espace et mon site" : CTA[outil] || CTA.chantiers,
+      idNom: u + "-nom", idTel: u + "-tel", idCp: u + "-cp", idMetier: u + "-metier", idAutre: u + "-autre",
+      aCompteur: !!reel, nbDemandes: reel ? est.total.toLocaleString("fr-FR") : "", zoneLabel: (nom ? "pour un " + nom + " " : "") + "à 30 km autour du " + cp,
+      majCp: (e) => this.setState({ cp: e.target.value }),
+      mId: s.mId, mChoisi: !!s.mId, mErreur: !!s.mErreur, mErreurAria: String(!!s.mErreur),
+      groupesMetiers: grouper([]), groupesAutres: grouper(mets),
+      choisirPrincipal: (e) => this.setState({ mId: e.target.value, autres: s.autres.filter((x) => x !== e.target.value), mErreur: false }),
+      ajouterMetier: (e) => { const v = e.target.value; if (v && s.autres.length < 4 && mets.indexOf(v) < 0) this.setState({ autres: s.autres.concat([v]) }); e.target.value = ""; },
+      peutAjouter: s.autres.length < 4, aAutres: s.autres.length > 0,
+      autresChoisis: s.autres.map((id) => ({ key: id, nom: RS ? RS.metierNom(id) : id, aria: "Retirer " + (RS ? RS.metierNom(id) : id), retirer: () => this.setState({ autres: s.autres.filter((x) => x !== id) }) })),
+      chantiers: prest.map((it) => { const on = !s.off[it.id]; return { key: it.id, libelle: it.libelle, on: String(on), mark: on ? "✓" : "+", toggle: () => this.setState({ off: { ...s.off, [it.id]: on } }),
+        style: { borderRadius: "999px", padding: "6px 11px", minHeight: "34px", font: "inherit", fontSize: "13px", fontWeight: 600, cursor: "pointer", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-neutral-400)"), background: on ? "#fff" : "transparent", color: on ? "var(--color-accent-800)" : "var(--color-neutral-700)" } }; }),
+      nbActives: String(actives.length), nbTotal: String(prest.length),
+      soumettre: (e) => {
+        e.preventDefault(); const f = e.target; const v = (k) => (f.querySelector("[name=" + k + "]") || {}).value || "";
+        if (!s.mId) { this.setState({ mErreur: true }); const el = f.querySelector("[name=metier]"); if (el) el.focus(); return; }
+        const q = new URLSearchParams({ outil, source: this.props.source || "", nom: v("nom"), tel: v("tel"), cp: v("cp"), metier: RS ? RS.metierNom(s.mId) : "", metierId: s.mId, metiers: mets.join(","), intentions: actives.map((it) => it.id).join(",") });
+        location.href = ETAPE1 + "?" + q.toString();
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

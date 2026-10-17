@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm knip)",
+      "Bash(pnpm e2e:*)",
+      "Bash(pnpm storybook)",
+      "Bash(pnpm seed)",
+      "Bash(pnpm email:dev)",
+      "Bash(pnpm turbo:*)",
+      "Bash(pnpm exec playwright:*)",
+      "Bash(pnpm dlx jscpd:*)",
+      "Bash(firebase emulators:*)",
+      "Bash(stripe listen:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout -b:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(vercel:*)",
+      "Bash(stripe:*)"
+    ],
+    "deny": [
+      "Bash(firebase deploy:*--project portail-habitat-prod*)",
+      "Bash(firebase use portail-habitat-prod)",
+      "Bash(vercel --prod:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/.env.production)",
+      "Read(**/serviceAccount*.json)",
+      "Read(**/*-firebase-adminsdk-*.json)",
+      "Edit(./.env*)"
+    ]
+  },
+  "env": {
+    "FIRESTORE_EMULATOR_HOST": "127.0.0.1:8080",
+    "FIREBASE_AUTH_EMULATOR_HOST": "127.0.0.1:9099",
+    "EMAIL_CAPTURE": "mailpit"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm -s turbo run typecheck lint --filter=...[HEAD] --output-logs=errors-only || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm -s test --changed --reporter=dot || true"
+          }
+        ]
+      }
+    ]
+  }
+}

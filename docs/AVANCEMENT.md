@@ -1,0 +1,879 @@
+# Avancement — Portail Habitat
+
+Produit au lot 0 (cadrage, 27/09/2026). Mis à jour à la fin de chaque lot, puis commité.
+Légende : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE verts) · ⏸ bloqué (raison dans Notes)
+
+## 1. Lots
+
+Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interruption, c'est ici qu'on regarde où on en est (prompt « Reprise » de PROMPT_CLAUDE_CODE.md).
+
+| Lot | Contenu | Statut | Terminé le | Tests | Notes |
+|---|---|---|---|---|---|
+| 0 | Cadrage | ✅ | 27/09/2026 | — | incohérences tranchées, documents corrigés (§2) |
+| 1a | Socle technique : monorepo, outillage, CI, émulateurs | ✅ | 27/09/2026 | format, lint, types, Knip, 102 tests (dont règles sur émulateur), build, e2e | CI GitHub à confirmer au premier passage (§6) |
+| 1b | Design system, composants, Storybook | ✅ | 27/09/2026 | 34 tests composants, catalogue 29 stories, e2e 44 (dont ERR-01/02, MOB-01 à 03), Lighthouse | D45 et D46 à valider (§7) |
+| 2 | Données et sécurité | ✅ | 27/09/2026 | 172 tests core, 1 890 cas de règles Firestore, 272 cas Storage, 11 tests serveur (émulateur) | écarts de sécurité à relire (§8) |
+| 3 | Logique métier pure | ✅ | 27/09/2026 | 3 324 tests core, couverture 100 % des lignes (99,8 % des instructions), pertinence 96,4 % au 1er rang | D47 et D48 à valider (§9) |
+| 4 | Comptes, équipes, seed | ✅ | 27/09/2026 | 58 tests sur émulateur (COMPTES §10), 3 480 tests core, CI verte | notificateur provisoire jusqu'au lot 5 (§10) |
+| 5 | Emails, SMS, notifications | ✅ | 28/09/2026 | 17 tests core, 156 tests emails, 18 tests Functions, 20 tests site, 20 tests sur émulateur | parcours Playwright + Mailpit reportés aux lots 8 et 10 (§11) |
+| 6 | Pages publiques, SEO, cookies | ✅ | 28/09/2026 | ACC-01 à 04, DIA-05 (+ DIA-01 côté landing), 132 e2e (4 appareils), 57 tests site, 3 543 tests core, 2 tests sur émulateur | D49 à valider ; textes légaux et visuels à fournir (§12) |
+| 7 | Recherche | ✅ | 28/09/2026 | RCH-01 à 08 (168 e2e sur 4 appareils), pertinence 96,4 % au 1er rang, tests API, Functions et émulateur | Typesense inactif tant que D4 n'est pas tranché et que les clés ne sont pas fournies (§13) |
+| 8 | Parcours particuliers | ✅ | 28/09/2026 | SIM-01 à 10 (dont 01b, 06a à j), DIA-01 à 04 et 06, AVI-01 à 04, ESP-01 à 04 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §14 |
+| 9 | Annuaire, fiche publique | ✅ | 28/09/2026 | ANN-01 à 06, FIC-01 à 03 ; e2e sur 4 appareils, tests émulateur | Points à signaler : §15 |
+| 10 | Espace artisan, équipes, PWA | ✅ | 29/09/2026 | CON-01 à 03, ACQ-01/02, ONB-01 à 04, 06, 06b, 07, PRO-01 à 03, PRO-07, EQU-01 à 04, INV-01 à 03, MOB-06 (installation ; push à vérifier en recette) ; 80 e2e espace pro sur émulateurs, service worker testé en unitaire | Points à signaler : §16 |
+| 11 | Stripe | ✅ | 30/09/2026 | ACQ-03, PAY-01, PAY-02 (e2e sur émulateurs avec événements signés), webhook rejoué deux fois, Checkout, portail, catalogue et facturation testés sur émulateur avec un faux Stripe | Clés de test à fournir (docs/CLES.md) ; points à signaler : §17 |
+| 12 | Matching, appels d'offres | ✅ | 02/10/2026 | PRO-04 à 06 (e2e sur émulateurs, mobile et ordinateur), course de 10 artisans sur la dernière place (émulateur), attribution, relances, déblocage, paiement par carte, scores de nuit sur émulateur ; 3 717 tests core (couverture des branches ≥ 95 %) | D50 (60 min d'avance Premium) ; points à signaler : §18 |
+| 12b | Demandes partenaires | ✅ | 02/10/2026 | IMP-01 à 06 (émulateur + e2e IMP-06 sur 2 appareils), test de charge 200 demandes (chacune proposée en quelques secondes), 3 723 tests core | écrans admin au lot 13 ; points à signaler : §19 |
+| 13 | Back-office | ✅ | 09/10/2026 | ADM-01 à 04, tableau de bord et file (e2e sur émulateurs) | 13a, 13b et 13c faits ; détail §20 ; reste : variantes B des pages (contenu à choisir) |
+| 13b | Conversion, séquences | ✅ | 07/10/2026 | CONV-01 à 07 (émulateur), CONV-05 et 06 (e2e) ; 3 800 tests core | Moteur, codes, demandes offertes et écran faits ; reste et points à trancher : §21 |
+| 13c | Comportement, IA | ✅ | 09/10/2026 | CMP-01 à 04, IA-01 à 07 (émulateur, faux modèle), e2e des écrans | 13c-1 à 13c-6 faits ; reste et points à trancher : §22 |
+| 14 | Qualité, préparation de la mise en production | 🟡 | 09/10/2026 | ALL-02, 03, 06 (48 tests sur 4 appareils), en-têtes de sécurité, tâches planifiées (émulateur), migrations | détail §23 ; rien déployé |
+
+### Lot en cours
+- Lot : 14 (qualité, préparation de la mise en production), §23. Pas de mise en ligne prévue tout de suite : d'autres fonctionnalités seront ajoutées.
+- Dernier lot terminé : 13, le 09/10/2026 (détail §20 à §22)
+
+## 6. Lot 1a — Socle technique (terminé le 27/09/2026)
+
+**Fait**
+- Monorepo pnpm 10 + Turborepo 2, Node 22 : `apps/web` (Next.js 16), `apps/functions` (Functions v2, `europe-west1`), `packages/core`, `packages/firebase`, `packages/config`. `packages/ui` arrive au lot 1b, `packages/emails` au lot 5.
+- `@ph/core` : `format` (euros en centimes, dates Europe/Paris, relatif, téléphone E.164, SIREN/SIRET avec l'exception La Poste), `erreurs` (codes centralisés : message FR, statut HTTP, code callable), `resultat`, `enveloppe` (connexion → App Check → Zod → permission → débit → idempotence → traitement → audit ; une option dont la dépendance manque fait échouer le démarrage), `zod` (Zod configuré en français). 92 tests, couverture 100 % lignes, 99 % branches (seuil 95 %).
+- `action()` (site, `apps/web/server/action.ts`) et `callable()` (Functions) branchés sur l'enveloppe ; Function `ping` vérifiée sur émulateur (succès et erreur de validation en français).
+- `@ph/firebase/admin` : `appAdmin()` (émulateur, compte de service ou identifiants Google Cloud), `verifierJetonAppCheck()`.
+- Firebase : `firebase.json`, `.firebaserc` (projet d'émulation `demo-portail-habitat`, alias dev/staging/prod), règles Firestore et Storage « tout refusé » avec leur test sur émulateur ; garde-fou qui refuse tout test Firebase hors émulateur local `demo-*`.
+- ESLint 9 : boundaries (dépendances entre paquets), dépendances externes interdites par paquet, pas de couleur hexadécimale ni de `collection()` hors de leur paquet, pas d'import direct de `zod`. Vérifié avec des violations volontaires. Prettier, Knip.
+- Sentry (site et Functions), inactif sans DSN. `/api/health`. `.env.example` complet.
+- Playwright : projets iPhone 13, iPhone SE, Pixel 7, ordinateur ; test de fumée (sonde, langue, pas de défilement horizontal).
+- CI GitHub Actions : format, lint, types, Knip, tests sous émulateurs, build ; e2e Chromium + WebKit.
+
+**Vérifié dans cette session** : `pnpm format:check`, `lint`, `typecheck`, `knip`, `test` (sous émulateurs), `build` ; e2e sur Pixel 7 et ordinateur (seul Chromium est installé ici ; les projets iPhone tournent sur WebKit dans la CI).
+
+**Reste / dettes connues**
+- `pnpm dev` : le site et les Functions démarrent ; ici, l'interface web des émulateurs n'a pas pu être téléchargée (réseau du conteneur). À vérifier sur un poste : `pnpm dev`, puis http://localhost:4000.
+- Premier passage de la CI GitHub à observer (téléchargement de WebKit, cache des émulateurs).
+- Lot 2 : brancher `verifierPermission` (`peut()`), `limiterDebit`, `auditer` et `idempotence` sur Firestore ; lot 4 : `uid` depuis le cookie de session dans `action()`.
+- Déploiement des Functions : `lib/index.js` est autonome (esbuild) ; le déploiement réel sera validé au lot 14.
+- Lighthouse CI et build Storybook : lot 1b.
+
+## 7. Lot 1b — Design system et composants (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/ui/tokens` : source unique des 4 thèmes (rampes 100 → 900 des maquettes ; ardoise admin complétée en 800/900), neutres et ombres Broadsheet, statuts, Premium, rayons, polices, points de rupture. Génération de `themes.css` (`[data-theme]`) et du thème Tailwind 4 (`@theme`, palette par défaut désactivée) ; un test vérifie la synchronisation et les contrastes AA.
+- Primitives : Logo (3 espaces + admin, version inversée), Button (`asChild`), IconButton, Chip, ChipGroup, Badge, StatusBadge, Field (libellé, aide, erreur reliés), Input (préréglages MOBILE §5 : tel, email, code postal, SIREN, code SMS…), Textarea, Select natif (`optgroup`), Checkbox, RadioCard, Skeleton.
+- Patterns : Card composable, Stepper (barre de progression sous 640 px), Modal (feuille du bas sous 640 px, balayage pour fermer) et Sheet, ConfirmDialog (motif obligatoire), EmptyState, Banner, Combobox (ARIA 1.2), Toast (Radix), BottomNav, StickyActionBar (zones sûres iOS), PageErreur.
+- Storybook 10 : les 4 thèmes côte à côte ou un seul, tailles 320 / 390 / 768 / 1280, extension a11y. Test « catalogue » Playwright sur le Storybook compilé : chaque story à 320 px, sans défilement horizontal, cibles ≥ 44 px, champs ≥ 16 px, axe avec contraste.
+- Site : thème par espace (`(particuliers)`, `/pro`, `/diagnostic-immobilier`, `/admin`, ce dernier en `noindex`), posé aussi sur `<html>` pour les fenêtres ; `theme-color` et `viewport-fit=cover` par espace ; polices Source Sans 3 et Source Serif 4 italique (next/font).
+- Pages d'erreur d'après la maquette : 404 par espace avec recherche et liens (ERR-01, code 404), 500 avec identifiant d'incident envoyé à Sentry en étiquette `incident` (ERR-02), page de maintenance et bascule `MAINTENANCE=1` dans `proxy.ts` (réécriture en 503, sauf `/admin` et `/api`).
+- Tests : MOB-01 à 03 sur 5 pages, 4 appareils ; ERR-01 et ERR-02. `PW_CHROMIUM_SEUL=1` permet de lancer les projets iPhone sans WebKit.
+- Performance : Sentry navigateur et pages d'erreur chargés à la demande (JavaScript initial de l'accueil passé de 226 à 154 Ko). Lighthouse CI mobile : performance ≥ 0,95, LCP ≤ 2 s, CLS ≤ 0,05, TBT ≤ 150 ms, accessibilité ≥ 0,95.
+- CI : jobs « catalogue » (Storybook + Playwright) et « Lighthouse ».
+
+**Écarts et décisions à valider**
+- **D45** : les boutons principaux pro utilisent `#c94f0a` au lieu de `#e05a10` (contraste AA) ; ambre et or plus foncés pour le texte.
+- **D46** : budget JavaScript initial irréaliste avec Next.js 16 (voir DECISIONS) ; seuil provisoire de 160 Ko en CI.
+- Chips : 44 px de haut partout (MOB-02), au lieu d'environ 37 px dans les maquettes.
+- ERR-03 : la maintenance se pilote par variable d'environnement ; le branchement sur `config/app.maintenance` se fera avec les feature flags (lot 2).
+
+**Reste / dettes connues**
+- Comparaison visuelle automatique aux maquettes (`/maquette`) : les `.dc.html` ne s'affichent pas en `file://` ; à outiller au lot 6 (serveur statique sur `docs/designs`).
+- Layouts complets (PublicLayout, ProLayout avec sidebar, AdminLayout) : ils arrivent avec leurs écrans (lots 6, 10, 13), en réutilisant BottomNav, Sheet et Logo.
+
+## 8. Lot 2 — Données et sécurité (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/core/schemas` : un schéma Zod par collection et sous-collection de DATABASE §16 (registre `SCHEMAS`, test de couverture), `schemaVersion` partout, dates en `Date`, montants en centimes entiers, `artisansPublic`, `avis` et `iaRedactions` stricts (un champ privé en trop fait échouer l'écriture).
+- `@ph/core/equipe` : `peut(membre, action, contexte)` (matrice COMPTES §4.1, collaborateur limité à ses métiers ou à ses demandes assignées, gérant sans pouvoir sur le propriétaire ni les gérants, surcharges jamais sur les actions du propriétaire). `@ph/core/admin` : permissions effectives (rôle + plus − moins, rôles personnalisés), codes de section des claims. `@ph/core/flags` : `flag(nom, sources)` avec surcharge par artisan.
+- `firestore.rules` complet, `storage.rules`, 36 index composites, 14 TTL sur `expireLe`.
+- Tests de règles : matrice de 118 cas Firestore et 17 cas Storage, chacun vérifié pour 16 profils (anonyme, particulier, propriétaire, gérant, collaborateur, comptable, membre suspendu, autre artisan, 6 rôles staff, impersonation) ; test dédié : les prix du référentiel sont illisibles côté client. Test de mutation fait : une règle affaiblie fait échouer la matrice.
+- `@ph/firebase` : `chemins` (seul endroit qui nomme les collections), conversion Timestamp/GeoPoint, convertisseur et dépôt validés par Zod, `dependancesEnveloppe` (permission via `membres` ou `admins`, limite de débit en transaction, audit, idempotence 24 h), branchés dans `action()` et `callable()`.
+
+**Écarts de sécurité par rapport à DATABASE §12 (appliqués, à relire)**
+1. **Avis** : un avis publié est lisible par tous et les règles ne masquent aucun champ. L'email, l'uid et l'empreinte IP de l'auteur passent donc dans `avis/{id}/prive/auteur` (modération avec droit aux données personnelles).
+2. Lecture par l'équipe interne **par section** (`lit('dem')`, `lit('art')`, `lit('ao')`…) au lieu de « tout staff ».
+3. Profils `users` et consentements : lisibles par le staff seulement avec le droit aux données personnelles (`staff.pii`, absent pour le rôle `lecture`).
+4. Téléphone retiré des champs modifiables par l'utilisateur (changement par Function avec vérification par code, comme l'email).
+5. Réalisations non publiées : visibles de l'équipe seulement ; publication impossible sans l'autorisation du propriétaire du chantier.
+6. Rayon d'intervention contrôlé (10 à 100 km) et date d'acceptation non falsifiable.
+7. Consentements : horodatage serveur obligatoire, champs et types contrôlés.
+8. Documents : chemin de stockage imposé, 10 Mo maximum. Écritures Storage vérifiées aussi sur le document `membres` (révocation immédiate).
+9. Correction de `notesInternes` (`staff().r`) et ouverture en lecture de `referentiel/recherche/*` (intentions, métiers, synonymes).
+10. Zone Storage `televersements/{uid}/` pour les photos d'avis et de demande (écrites par leur auteur, déplacées par Function).
+
+**Écarts de modèle de données (DATABASE.md mis à jour)**
+- Nouvelle collection `idempotence/{cle}` (TTL 24 h) pour l'enveloppe des actions.
+- TTL toujours sur `expireLe` : un TTL sur `createdAt` ou `fenetreDebut`, comme le prévoyait §11, supprimerait les documents immédiatement.
+- `demandes` et `dossiersDiag` sans TTL (anonymisation planifiée, §14).
+- `referentiel/recherche/synonymes/global` (un document ne peut pas se trouver au chemin `referentiel/recherche/synonymes`).
+- Points géographiques stockés en `GeoPoint`, manipulés en `{ latitude, longitude }`.
+
+**Vérifications**
+- Ici : `typecheck`, `lint`, `knip`, 172 tests core, 1 890 cas Firestore, 11 tests serveur sur émulateur, ping de bout en bout.
+- Storage : 247 cas sur 255 passent ici. Les 8 restants (écritures qui relisent `membres` depuis Storage) échouent seulement dans ce conteneur, parce que `firebase-tools` y passe par le proxy réseau pour interroger Firestore. La CI GitHub les valide.
+
+**Reste**
+- `syncClaims` (claims `roles`, `ent`, `staff`) : lot 4.
+- Migrations (`scripts/migrations`, curseur dans `migrations/{id}`) : dès la première évolution de schéma.
+- Remote Config pour les valeurs globales des flags : branché avec le premier flag utilisé (lot 12).
+
+## 9. Lot 3 — Logique métier pure (terminé le 27/09/2026)
+
+**Méthode** : les cas attendus sont calculés **en exécutant le code des maquettes** dans un bac à sable Node (`packages/core/scripts/maquette.mjs`), puis le portage TypeScript doit les reproduire. Quand aucune maquette ne calcule le résultat (prix des appels d'offres, matching), les cas viennent d'une **implémentation de référence écrite séparément** à partir de la formule du document. `pnpm --filter @ph/core cas` régénère tous les fichiers `__tests__/*.cases.json`.
+
+| Module (`@ph/core/…`) | Source | Cas |
+|---|---|---|
+| `simulateur` | `calculer()`, `coefRegion` de la maquette ; 9 formules + moteur générique des 103 prestations du catalogue ; prix passés en paramètre (`docs/data/prestations-prix-detaillees.json`) | 560 |
+| `diagnostic` | Parcours Diagnostic (obligatoires, conseillés, validités, remise pack ; année de référence en paramètre, `docs/data/diagnostics-regles.json`) | 300 |
+| `recherche` | `recherche-projets.js` porté à l'identique ; 411 requêtes étiquetées : **96,4 %** au 1er rang, 100 % dans le top 3, 17 exemples obligatoires | 554 + 411 |
+| `parcours` | `migrer`, `valeursParDefaut`, `lisible`, champs des 112 prestations (`champsDuTarif`) ; brouillon strict, étape de reprise, arrivée avec paramètres | 260 |
+| `stats` | `PH_DEMANDES.estimer` (Bordeaux ≈ 800, plombier 104, couvreur 28, Lozère 5) ; bascule vers le réel à 3 mois ; paramètres dans `docs/data/stats-demandes.json` | 204 |
+| `leads` | DATABASE §5 : barème, Premium, crédits, promo ; barème initial `docs/data/bareme-appels-offres.json` | 120 |
+| `annuaire` | `filtrer()` et `trier()` de la maquette, Premium en tête | 150 |
+| `matching` | MATCHING §3 : filtres durs (raison consignée), score, sélection équitable, aiguillage D41, qualité de la demande ; config `docs/data/matching-config.json` | 600 + 40 populations |
+| `referentiel` | `pnpm verifier:referentiel` : 112 prestations, 15 familles, 60 métiers, 137 intentions cohérents | — |
+
+**Écarts assumés par rapport aux maquettes**
+1. Recherche : bonus de correspondance exacte (libellé +8, mot-clé +4), mots vides « qui, que, quoi », mots-clés ajoutés (pompe à chaleur, fuite de toiture) pour passer de 93,9 % à 96,4 % au 1er rang (RECHERCHE.md mis à jour).
+2. Reprise de parcours : la maquette enregistre la fourchette de prix dans le brouillon et l'affiche dans l'encart ; REPRISE_PARCOURS §3 l'interdit (aucun montant avant l'envoi des coordonnées). Le brouillon n'a donc pas de fourchette, et un brouillon contenant une clé inconnue (email, nom…) est rejeté.
+3. Étape de reprise : la maquette reprend à l'étape enregistrée ; le code reprend à la première étape dont une réponse a disparu ou changé de bornes (SIM-06e), ou à l'étape 4 si le code postal est incomplet.
+
+**Vérifications** : `typecheck`, `lint`, `knip`, `format`, 3 324 tests core (lignes 100 %, branches 97,4 %), tests de mutation sur la migration des réponses et la sélection du matching. Le test de pertinence calcule ses classements une seule fois (il dépassait 5 s en CI à côté des émulateurs).
+
+**À valider** : D47 (compléments au barème des appels d'offres) et D48 (points non précisés du matching), appliqués en attendant.
+
+**Reste** : branchement Firestore des moteurs (lots 4, 8, 9, 12) ; domaine RGE par prestation (lot 12b).
+
+## 10. Lot 4 — Comptes, entreprises, équipes, jeu de données (terminé le 27/09/2026)
+
+**Fait**
+- `@ph/core/equipe` : claims (`ent` ne contient que les appartenances actives, 10 entreprises et 1 000 octets au maximum), répartition des sièges (suspension sans perte, propriétaire toujours actif), dernier propriétaire bloqué, email masqué. `@ph/core/entreprises` : contrôles de l'étape SIREN (fermée, hors bâtiment, récente, déjà inscrite). `@ph/core/geo` (geohash), `slugifier`, entrées Zod de toutes les opérations de compte.
+- Enveloppe : écriture refusée en impersonation, mot de passe ressaisi depuis moins de 5 min et double authentification exigibles par option ; contexte tiré du jeton (`callable()`) ou du cookie de session (`action()`, vérifié avec révocation).
+- Session : `POST/DELETE /api/session` (cookie httpOnly 14 j particuliers, 7 j pros, créé seulement après une connexion récente, contrôle de l'en-tête Origin).
+- `@ph/firebase/comptes` : `finaliserOnboarding` (transaction + `sirenIndex`), invitations (jeton haché, même email vérifié, sièges revérifiés, 20 par jour), `modifierMembre`, `retirerMembre` (jetons révoqués, demandes désassignées), `quitterEntreprise`, `transfererPropriete` (2FA du destinataire, vérifiée après la permission), `appliquerSieges`, demandes d'accès, `supprimerMonCompte`, `fermerEntreprise`, `rattacherOuCreerParticulier`, `rechercherEntreprise` (API Recherche d'entreprises, cache 24 h), `synchroniserClaims`. Functions : callables, déclencheur `syncClaims`, expiration horaire des invitations.
+- Jeu de données `pnpm seed` (déterministe, relançable) : 109 comptes dont les 5 fixes, 60 entreprises (tous plans et statuts), 5 équipes, une personne dans 2 entreprises, 200 demandes, 40 appels d'offres (auto, manuel, gratuit, promo), 300 avis, référentiel complet (prix séparés), 11 communes, invitation expirée, revendication en cours, SIREN en doublon. Chaque document est validé par son schéma. Refus hors émulateur ou préproduction.
+
+**Écarts et changements du modèle (signalés)**
+1. Nouveau statut de demande `appel_offres` (MATCHING [7] l'écrivait, le schéma ne l'avait pas) — DATABASE mis à jour.
+2. Fiche créée par l'admin : `proprietaireUid` facultatif et `nbMembres` à 0 tant qu'elle n'est pas revendiquée (COMPTES §3.5).
+3. Tarifs du catalogue stockés en objets dans `referentiel/prestations/prix` (Firestore refuse les tableaux imbriqués), conversion sans perte testée sur les 103 prestations.
+4. `prive/facturation` n'est pas créé à l'onboarding (il exige un client Stripe) : créé par le lot 11.
+5. Recherche d'entreprise : API Recherche d'entreprises seule ; l'appel Sirene INSEE (clé `INSEE_API_KEY`) n'apporte rien de plus pour ces contrôles, à ajouter si besoin.
+6. Nouvelle dépendance de développement : `tsx` (exécution du script de seed).
+
+**Reste**
+- Emails réels (invitation, bienvenue, demande d'accès…) : notificateur provisoire qui trace sans données personnelles, remplacé par `notifier()` au lot 5.
+- Revendications (`demanderRevendication`, `validerRevendication`), `adminCreerEntreprise`, `adminImpersonerLecture` : lot 13 (back-office).
+- Parcours d'authentification côté navigateur (lien magique, Google, liaison, 2FA) : avec les écrans (lots 6, 8, 10). `/dev/comptes` non réalisé (non nécessaire, tout est testé sur émulateur).
+- `matchingConfig` et `grillesTarifaires` : schémas à aligner sur MATCHING §2 et le barème (D47) au lot 12, puis ajout au seed.
+
+## 11. Lot 5 — Emails, SMS et notifications (terminé le 28/09/2026)
+
+**Fait**
+- `@ph/core/notifications` : catalogue des **110 modèles** (EMAILS §4, catégorie, charte, SMS, in-app, différé, groupé) ; décisions de canal (sécurité et transactionnel jamais coupés, un email de sécurité passe une fois malgré la liste de blocage), heures calmes des SMS (21 h – 8 h, heure de Paris, sauf codes), limites de pression (1 email non transactionnel par jour, offres pro 2 par semaine et jamais le week-end), clé d'idempotence. *Le message du commit f65dd86 annonce 150 modèles par erreur : il y en a 110.*
+- `@ph/emails` (React Email) : 16 blocs (les 14 de la documentation, plus `code` et `lien`), mise en page commune aux 4 chartes (couleurs issues des tokens, `couleursEmail` ajouté à `@ph/ui`), pied légal, préférences et désabonnement selon la catégorie, version texte générée. **41 modèles rédigés** (§4.1 à 4.3 et `reprise-simulateur`), 69 squelettes (sujet et données d'exemple) complétés dans leurs lots. Aperçu : `pnpm email:dev`.
+- `@ph/firebase/notifications` : `notifier()` (une écriture `emails/{id}` par clé d'idempotence, préférences, liste de blocage, in-app, planification) ; **les secrets (liens magiques, jetons d'invitation) ne passent que par la tâche d'envoi**, jamais par Firestore ; suivi des statuts, 5 tentatives puis abandon et tâche de modération ; webhook (rebond définitif ou plainte → `suppressions`) ; désabonnement par catégorie ; jetons HMAC des liens.
+- Functions : tâche Cloud Tasks `envoyerEnvoi` (10 envois/s, 5 tentatives), relances annulées si `encoreValable` est faux (onboarding, invitation, reprise, fiche incomplète), liens absolus avec `utm_campaign`, en-têtes `List-Unsubscribe` en un clic, liste blanche de staging ; fournisseurs Resend, Brevo (SMS) et capture Mailpit (`pnpm mailpit`, `EMAIL_CAPTURE=mailpit`). Callables `demanderLienConnexion`, `demanderReinitialisation`, `renvoyerVerificationEmail` : liens Firebase envoyés par `notifier()`, même réponse que l'adresse existe ou non, 5 envois par heure et par adresse.
+- Site : `/api/resend/webhook` (signature Svix vérifiée, anti-rejeu 5 min), `/api/desabonnement` (POST RFC 8058 et lien), page `/preferences` sans connexion (jeton signé).
+- Functions du lot 4 branchées sur `notifier()` : bienvenue, invitation (et relance J+3), invitation acceptée ou expirée, demande d'accès et réponse, rôle modifié, membre retiré, transfert de propriété, sièges suspendus, entreprise fermée.
+
+**Nouvelles dépendances (signalées)** : `@react-email/components`, `@react-email/render`, `react`, `react-dom` (emails et Functions) ; en développement `react-email`, `@react-email/ui` (aperçu).
+
+**Non fait ou non vérifié**
+1. **Parcours Playwright + Mailpit** (inscription particulier, onboarding avec relance, invitation, mot de passe oublié) : ils exigent les écrans de connexion, d'inscription et d'équipe (lots 8 et 10). À écrire avec ces écrans ; Mailpit sera ajouté comme service de la CI à ce moment-là.
+2. `pnpm email:dev` : configuré mais pas lancé ici (serveur local refusé dans ce conteneur).
+3. `.env.example` : inaccessible depuis cette session ; variables à y ajouter : `MAILPIT_URL`, `EDITEUR_MENTION`, `NEXT_PUBLIC_SITE_URL` (liste complète dans EMAILS §9).
+4. Regroupement 15 min des modèles « groupés » (`nouveau-message`) : branché avec la messagerie (lots 8 et 10).
+5. Mention légale de l'éditeur (raison sociale, adresse) : valeur provisoire dans `EDITEUR_MENTION`, à fournir.
+
+**Point de vigilance CI** : l'affichage principal de `/maintenance` mesuré à 2,55 s une fois (seuil provisoire 2,5 s, D46), passé aux exécutions suivantes ; à surveiller avec D46.
+
+## 12. Lot 6 — Pages publiques, SEO, cookies (terminé le 28/09/2026)
+
+**Fait**
+- **Accueil particuliers** `/` : hero (formulaire projet + code postal + délai, chips « Projets populaires » qui remplissent le champ et fixent la prestation, ACC-02 ; envoi vers `/simulateur?prestation=&cp=&delai=`, ACC-03), métiers, comment ça marche, aperçu du simulateur, artisans, avis, inspirations, application, villes, bandeau artisan, FAQ, appel final. Chiffres lus dans `stats/public` (ACC-01) avec régénération horaire (ISR) ; sans document, les chiffres sont masqués. La recherche avec suggestions reste au lot 7.
+- **En-tête public** commun (bandeau, navigation, bouton principal, menu plein écran Radix sous 1024 px avec `aria-expanded`, ACC-04) : nouveau pattern `MenuPleinEcran` dans `@ph/ui` ; pied de page commun.
+- **Diagnostic immobilier** `/diagnostic-immobilier` (hero préremplissant le parcours `?motif&type&periode`, cartes, tableau, repères, tarifs, FAQ) et **11 pages communes** générées au build depuis `docs/data/communes.json` (DIA-05 : titre unique, liens vers les 10 autres ; commune inconnue → 404). Les tableaux deviennent des cartes sous 640 px.
+- **Acquisition artisans** `/pro` : accroche, carte d'inscription (champs, métiers groupés par famille en `<optgroup>`, `?metier=` présélectionne et affiche le bandeau), exemples de demandes, étapes, espace artisan, application, **tarifs annuel / mensuel** lus dans `config/app.prix` (repli : D24/D25 dans `@ph/core/facturation`), FAQ. La page reste statique (paramètre lu dans le navigateur).
+- **Pages légales** `/legal/[public]/[doc]` : 12 documents statiques, textes extraits de la maquette vers `docs/data/documents-legaux.json`.
+- **Aide et contact** `/aide` (maquette Contact) : sujets `?sujet=`, champ de précision selon le sujet, Server Action (Zod, limite 5/h, App Check), `contacts/{CT-XXXXXX}` en transaction, piège à robots. La page d'aide de l'espace pro (maquette « Aide et Contact ») est `/pro/aide`, au lot 10.
+- **SEO** : metadata par page, canoniques (`metadataBase`), JSON-LD `Organization`, `FAQPage`, `BreadcrumbList`, `LocalBusiness` (communes) ; `sitemap.xml` (27 adresses) ; `robots.txt` (espaces privés exclus, tout bloqué hors production).
+- **Bandeau cookies CNIL** : « Tout refuser », « Personnaliser », « Tout accepter » au même niveau ; « Mesure d'audience détaillée » décochée par défaut ; choix redemandé après 6 mois (`@ph/core/consentement`) ; lien « Gérer les cookies » dans les pieds de page ; événement `ph:consentement` pour les futurs traceurs.
+- Core : `calculerStatsPublic` (le seed écrit maintenant `stats/public`), `formatNombre`, `nombreArrondi` (« 2 000+ »), `formatFourchette`, `grilleTarifs`, sujets de contact. Captures Playwright à 1440 et 390 px comparées aux maquettes (`CAPTURES=1 pnpm e2e captures`).
+
+**Modèle de données (signalé)** : `contacts.referenceDossier?` ; identifiant du contact = référence donnée à l'usager ; nouvel index `avis (statut, publieLe desc)`. DATABASE corrigé (prix de `config/app` alignés sur D24/D25, qui faisaient foi).
+
+**Décision proposée** : **D49** (contenus de la maquette sans source réelle : artisans, témoignages, inspirations tirés des vraies données et masqués sinon ; pas de badge App Store / Google Play tant que l'application est une PWA ; témoignages d'artisans de la landing pro masqués). Appliquée en attendant.
+
+**Performance (Lighthouse mobile, budget D46)** : la CI a échoué après l'accueil puis le bandeau cookies (JS 272 Ko, LCP 3,1 s sur `/maintenance`). Corrections : bandeau rendu côté serveur et masqué avant l'affichage par un script en tête quand un choix existe (il devenait l'élément LCP), lecture du cookie sans Zod, détail des catégories et panneau du menu chargés à la première ouverture (`PanneauPleinEcran` sans déclencheur dans `@ph/ui`), classes `bouton` isolées de Radix, liens des pages d'erreur et du bandeau sans préchargement, sections sous la ligne de flottaison en `content-visibility: auto`, formulaire du hero en GET natif (plus de JavaScript à l'envoi ; le texte libre part en `?projet=`), police serif non préchargée, routes passées en propriétés aux composants client. Mesure locale : `/maintenance` conforme ; accueil LCP conforme, JS ≈ 164 Ko pour 160 Ko (socle Next + React ≈ 150 Ko).
+
+**Non fait ou à fournir**
+1. **Textes légaux** : emplacements entre crochets (raison sociale, SIREN, hébergeur, directeur de publication…) à compléter et à faire relire avant la mise en production ; `EDITEUR_MENTION` idem (lot 5).
+2. **Visuels** : aucun visuel définitif (README « Visuels ») ; des aplats teintés occupent la place, au bon ratio.
+3. Formulaire d'inscription pro : mise en page et validation seulement ; création du compte, autres métiers, chantiers acceptés et estimation par code postal au **lot 10** (le bouton affiche pour l'instant un message d'attente).
+4. Accusé de réception par email du formulaire de contact : aucun modèle au catalogue EMAILS ; à ajouter si souhaité.
+5. Enregistrement du choix cookies dans `consentements` pour les utilisateurs connectés : avec la connexion (lot 8).
+6. Numéro de téléphone de la maquette Contact (fictif) non repris.
+
+## 13. Lot 7 — Recherche de projet (terminé le 28/09/2026)
+
+**Fait**
+- **Champ « Quel est votre projet ? »** de l'accueil : suggestions dès 2 caractères, 7 au plus, mots reconnus en gras, métier, badge « Estimation en ligne », « Résultats pour … » (correction), message d'urgence (délai « Dès que possible » présélectionné), métiers vers l'annuaire, « Projets associés » à la place des chips, champ vide → « Projets les plus demandés ». Clavier (↓ ↑ Entrée Échap), ARIA combobox + listbox + `aria-activedescendant`, nombre de suggestions annoncé. Sur mobile, recherche en plein écran avec « Annuler » (MOBILE §7).
+- **Poids** : l'accueil n'embarque qu'un champ ; moteur, index (≈ 16 Ko compressés) et liste sont chargés au premier focus. La liste suit la frappe sans délai (moteur local instantané ; un délai laissait une liste périmée que la touche Entrée pouvait choisir). Sans JavaScript ou avant le chargement, l'envoi GET natif reste possible.
+- **Routage à la validation** (`cibleRecherche`, core) : prestation → `/simulateur?prestation&intention&cp&delai` ; `diagnostic` → parcours diagnostic ; rien de choisi → meilleur résultat s'il est net (score ≥ 8), sinon demande libre (`?projet=&metier=`).
+- **Journal** `evenements` (type `recherche`) : `saisie`, `choix` (intention, rang), `zero` (après 800 ms sans frappe), `abandon` ; requête normalisée sans email ni suite de chiffres (téléphone, code postal), identifiant d'onglet aléatoire ; `POST /api/recherche/evenement` (même origine, 120 / h, sans App Check, envoi `fetch` en `keepalive`).
+- **`GET /api/recherche?q=`** : cache CDN 1 h, 30 requêtes / min / IP (par instance, meilleur effort), Typesense si configuré sinon moteur local ; surlignage, correction, urgence, métiers et projets associés viennent toujours du moteur local.
+- **Typesense** (D4 ⏳) : formats dans `@ph/core/recherche` (collection, documents, synonymes, mots vides, paramètres de RECHERCHE §4) ; Functions `syncIntentionTypesense` et `syncSynonymesTypesense` déclenchées à chaque modification du référentiel, **inactives sans configuration**.
+
+**Variables à fournir si D4 est validé** : `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE` (site, clé de recherche seule), `TYPESENSE_CLE_ADMIN` (Functions, Secret Manager). Première indexation : réécrire les intentions (le seed le fait) ou lancer une synchronisation complète à ajouter au lot 13 (écran admin Recherche).
+
+**Non fait (lots suivants)** : annuaire `/artisans?q=` (lot 9) ; écran admin Recherche, banc d'essai et popularité mensuelle (lot 13) ; saisonnalité (`saison`) non utilisée par le moteur.
+
+## 14. Lot 8 — Parcours particuliers (terminé, 28/09/2026)
+
+**Fait**
+- **Création d'une demande** (`creerDemande`, `POST /api/demandes`) : réponses revérifiées, estimation **recalculée avec les prix privés** (lecture d'une seule prestation), géocodage du code postal (API Découpage administratif, gratuite), compte particulier créé ou rattaché **sans ouvrir de session** (SIM-09), consentements (confidentialité, mise en relation), référence `PH-XXXXXX`, email `demande-confirmee` (lien magique si le compte vient d'être créé, sinon page de connexion), 5 envois / h (SIM-10), idempotence. Aucun montant accepté dans la requête (SIM-08).
+- **Simulateur** `/simulateur` : 5 étapes (112 prestations, recherche et 15 familles ; `?prestation=` démarre à l'étape 2), étape dans l'URL (SIM-02), messages d'erreur liés aux champs (SIM-03), **aucun prix avant l'envoi** (SIM-01b : descriptions d'options citant des euros retirées de la partie publique, aussi dans le seed), résultat affiché depuis la réponse du serveur, aides en négatif (SIM-05).
+- **Reprise** (REPRISE_PARCOURS) : `useParcours` + `<RepriseParcours />` (réutilisable), brouillon local sans coordonnées, Reprendre / Recommencer (Annuler 8 s), autre onglet, arrivée avec une autre prestation (SIM-06j), stockage bloqué sans erreur ; **lien de reprise par email** (case non cochée par défaut, jeton à usage unique 30 jours, empreintes seules, 3 liens / adresse / jour), brouillon serveur supprimé à l'envoi.
+- **Parcours diagnostic** `/diagnostic-immobilier/estimation` : préremplissage `?motif&type&periode&ville` (DIA-01), liste des diagnostics obligatoires gratuite **sans prix** (le navigateur reçoit un référentiel aux prix nuls), `creerDossierDiag` (`POST /api/diagnostics`) recalcule dossier et budget pack côté serveur (`PHD-XXXXXX`, email `dossier-diag-confirme`).
+- **Laisser un avis** `/avis` : choix de l'artisan (fiches en ligne, liste régénérée toutes les heures), formulaire (note globale, 4 critères, points forts, commentaire limité à 1 200 caractères), publication bloquée sans note ni certification (AVI-01, AVI-02) ; `deposerAvis` (`POST /api/avis`) crée l'avis `en_attente` (AVI-03), refuse un deuxième avis même email + même artisan + même mois de chantier (AVI-04), 5 avis / jour, email `avis-recu`.
+- **Connexion des particuliers** `/connexion` → `/connexion/lien` : lien magique (même réponse que le compte existe ou non), adresse reconfirmée au retour (mémorisée sur l'appareil qui a demandé le lien), code échangé **côté serveur** contre la session (API d'identité REST : aucun SDK Firebase dans le navigateur), profil particulier créé au premier clic, adresse vérifiée, retour vers la page demandée (chemins internes seulement).
+- **Mon espace** `/mon-espace` : mes projets (statut, nombre d'artisans et de devis, ESP-01), détail d'une demande (suivi en 4 étapes, artisans, montant des devis, messages), demande d'un autre = « introuvable » (ESP-02), messages avec coordonnées masquées **avant enregistrement** tant que l'artisan n'a pas accepté (ESP-03), export JSON de mes données et suppression du compte en deux temps (fenêtre + « SUPPRIMER » tapé ; demandes en cours annulées) (ESP-04).
+- **Reprise « compte »** (REPRISE_PARCOURS §5, niveau 2) : personne connectée → brouillon `brouillons/{uid}_simulateur` écrit à chaque changement d'étape (et au départ de la page), le plus récent de l'appareil et du compte est proposé ; supprimé à l'envoi de la demande. Aucun appel réseau sans session.
+- **Budget JavaScript** (D46) : l'accueil ne précharge plus le simulateur ; `tailwind-merge` n'est plus chargé au démarrage des pages (−11 Ko : `optimizePackageImports`, page 404 et formulaire de l'accueil en éléments natifs).
+
+**À signaler**
+1. **DIA-02** cite le plomb pour une maison de 1968 ; les règles de la maquette (et la loi) ne l'imposent qu'avant 1949. Le code suit la maquette. → corriger ACCEPTANCE ?
+2. **Lighthouse (D46 ⏳)** : le temps d'affichage de l'accueil et de `/maintenance` mesuré en CI oscille autour de 2,5 s selon la machine (même code rouge puis vert). Proposition : comparer la médiane de 5 passages, ou une marge (2,7 s) — à trancher.
+3. **App Check côté navigateur** non branché : les routes l'exigent, `APP_CHECK_MODE=desactive` en local et en e2e. À faire avec la configuration Firebase du site.
+4. Référentiels du simulateur (partie publique) et du diagnostic lus dans `docs/data` côté serveur (même source que le seed) ; la lecture Firestore viendra avec leur édition dans l'administration (lot 13).
+5. Emails de relance J+3 (`reprise-simulateur-rappel`) non planifiés.
+6. **Modèle de données** : `avis/{id}/prive/auteur` gagne `cleUnicite` (empreinte SHA-256 de « email + artisan + mois de chantier ») et un index de groupe de collections `prive.cleUnicite`, pour refuser les doublons (AVI-04) sans stocker l'email en clair ailleurs.
+7. **Photos d'avis** non envoyées : l'emplacement de la maquette n'est pas encore branché (Storage + analyse antivirus D9). Lien `?jeton=` d'invitation à noter (D40) : au lot 10 avec les chantiers terminés.
+
+8. **Connexion sans SDK Firebase dans le navigateur** (choix de coût et de poids JS, D46) : le lien magique est validé par le serveur. Google et mot de passe pour les particuliers (COMPTES §5) ne sont pas proposés : ils demanderaient ce SDK (+~60 Ko). À trancher si vous les voulez.
+9. **Cookie `ph_connecte=1`** (lisible par le navigateur, sans donnée personnelle) posé avec la session : il évite tout appel de synchronisation pour les visiteurs non connectés. Durée = celle de la session. À ajouter à la liste des cookies strictement nécessaires (page cookies).
+10. **Export des données** : téléchargement immédiat d'un fichier JSON (profil, demandes, messages, dossiers de diagnostic), au lieu de « archive envoyée par email sous 24 h » (maquette). Les avis déposés n'y sont pas encore (ils ne sont reliés au compte que par l'email).
+11. **Mes avis** : l'onglet propose de laisser un avis ; la liste des avis déposés viendra avec leur modération (lot 13). « Voir le devis » (fichier) et la notification de l'artisan à chaque message viendront avec l'espace pro (lot 10).
+12. **Index ajouté** : `demandes` (`particulierUid`, `createdAt` décroissant) pour « Mes projets ».
+13. L'accès à `/mon-espace` sans cookie renvoie à la connexion ; la validité de la session est vérifiée par chaque route `/api/mon-espace/*`.
+
+## 15. Lot 9 — Annuaire et fiche publique (terminé, 28/09/2026)
+
+**Fait**
+- **Fiche publique calculée par une seule fonction** (`projeterArtisanPublic`, partagée par le déclencheur `projeterArtisan` et le seed) : liste blanche de champs (aucune donnée privée, testé), labels **vérifiés et non expirés** seulement (FIC-01), téléphone seulement en Premium ou avec l'option Visibilité (ANN-06), `scoreClassement` de MATCHING §4, fiche retirée si hors ligne, suspendue ou supprimée (FIC-02). Index Typesense de l'annuaire mis à jour si configuré (D4).
+- **`/artisans`** (page serveur, tout l'état dans l'URL, ANN-01) : recherche texte + lieu (commune ou code postal, API Découpage administratif ; Bordeaux par défaut), filtres métier, rayon 5–60 km, note, labels, disponibilité, budget ; colonne fixe sur ordinateur, feuille du bas sur mobile ; chips retirables et « Tout effacer » (ANN-02) ; « Artisans à la une » Premium signalés + mention L111-7 (ANN-03) ; tri ; état vide avec « Déposer mon projet » (ANN-05).
+- **Recherche par rayon** : plages de geohash calculées par notre code (portage de geofire-common, **aucune dépendance ajoutée**), puis distance exacte ; un artisan n'apparaît que si le lieu est dans le rayon choisi **et** dans sa zone d'intervention (cadrage n° 13).
+- **Texte** : Typesense s'il est configuré, sinon recherche de repli mot à mot sans accents (« douche italienne », ANN-04).
+- **`/artisans/[slug]`** (ISR 1 h) : présentation, réalisations publiées, derniers avis publiés avec réponse de l'artisan, labels vérifiés, zone, devis moyen, « Demander un devis » (le simulateur cible l'artisan : `?artisan=`, `source: fiche_artisan`), JSON-LD `LocalBusiness` avec note et nombre d'avis (FIC-03), 404 si hors ligne (FIC-02). `?apercu=1` : bandeau d'aperçu et en-tête `X-Robots-Tag: noindex`.
+- **Sitemap** : annuaire et fiches en ligne (régénéré toutes les heures).
+- **Composant partagé** `NoteMoyenne` (packages/ui) : « ★ 4,8 (24 avis) », rien sans avis ; remplace 2 copies existantes.
+
+**À signaler**
+1. **Formule de pertinence** : README et maquette (`note × 12 + avis × 0,4 − km × 0,6`) contredisent MATCHING §4 (`scoreClassement − 0,6 × km`). Appliqué : MATCHING, la formule de la maquette ne servant que si le score manque. À confirmer.
+2. **Mode démonstration `ANNUAIRE_DEMO=1`** (tests de bout en bout sans base) : l'annuaire et les fiches sont servis par le jeu de test généré en mémoire. **Refusé en production** (erreur au démarrage si `VERCEL_ENV=production`), conformément à D49.
+3. **Aperçu `?apercu=1`** d'une fiche **hors ligne** par son artisan : demande une session pro (lot 10) ; pour l'instant l'aperçu ne montre que les fiches en ligne.
+4. **Métiers proposés en filtre** : les 8 de la maquette (plomberie, électricité, peinture, carrelage, menuiserie, chauffage, couverture, maçonnerie) + ceux déjà choisis. L'intention reconnue par la recherche du lot 7 n'est pas encore transformée en filtre métier : le texte passe par la recherche plein texte.
+5. **Test du jeu de données (`seed.test.ts`)** : dépasse 5 s sur ce poste (déjà le cas avant ce lot), passe en CI.
+
+## 16. Lot 10 — Espace artisan (terminé le 29/09/2026)
+
+**Fait**
+- **10a Connexion pro** (`/connexion?espace=pro`) : message identique que l'email existe ou non (CON-01), attente croissante après 5 échecs (CON-03), double authentification par application (TOTP) ; propriétaire ou gérant Premium sans 2FA → activation demandée avant la facturation (CON-02). **SMS : prêt mais coupé** par le flag `deuxFacteursSms` (activable en un clic dans `config/flags`, une fois les SMS Identity Platform payés).
+- **10b Inscription** : étape 1 sur `/pro` (métiers, chantiers, estimation des demandes), zone 30/50/100 km, entreprise par SIREN (fermée refusée, déjà inscrite → « Demander à rejoindre »), mot de passe, activation ; lien de reprise par email (ONB-04).
+- **10c Cadre et tableau de bord** : barre latérale repliable (ordinateur), onglets du bas + « Plus » (mobile), menu selon le rôle (le comptable ne voit que la facturation), sélecteur d'entreprise (plusieurs entreprises, bascule vérifiée côté serveur), tableau de bord : indicateurs, complétude, « 3 étapes pour être en ligne » (ONB-06).
+- **10d Mes demandes** (`/pro/demandes`) : nouvelle demande affichée sans recharger (écoute Firestore, PRO-01), coordonnées du particulier seulement après « Accepter la demande » (PRO-02 ; numéros et emails masqués dans le texte avant), « Je m'en occupe » et « Pris en charge par … » (PRO-03), compteurs, recherche, filtre d'état ; comptable exclu.
+- **10e** : **Statistiques** réservées aux Premium (PRO-07 ; période dans l'URL, vues, appels, demandes de devis, vues par semaine) ; **Mes avis** (résumé, répartition, filtres, réponse publique unique) ; **Ma fiche** modifiable section par section (présentation, informations, devis moyen, zone), complétude recalculée côté serveur ; **documents** (dépôt Storage, vérification serveur : type, taille, SHA-256) avec **mise en ligne automatique** dès que le SIREN est vérifié (ou le Kbis envoyé) et la décennale envoyée (ONB-06b, COMPTES §3) ; **logo** et **projets réalisés** (accord du propriétaire du chantier).
+- **10f Équipe et invitations** : page **Équipe** (membres, sièges avec invitations en cours, inviter, annuler, changer de rôle, retirer, « Quitter » refusé au dernier propriétaire — EQU-01 à 04) ; page **Invitation** (entreprise, rôle, invitant ; accès créé pour qui n'a pas de compte, l'email étant prouvé par le lien ; autre adresse connectée : refus avec email masqué ; lien expiré ou annulé : nouvelle invitation — INV-01 à 03) ; **Rejoindre** une entreprise déjà inscrite (demande au propriétaire, acceptée ou refusée depuis Équipe).
+- **10g Mon compte** (`/pro/compte`, ancres `#profil`, `#telephone`, `#securite`, `#appareils`, `#notifications`, `#donnees`) : nom, changement d'email (lien à la nouvelle adresse, alerte masquée à l'ancienne), mobile ; mot de passe (alerte de sécurité par email) ; Google lié ou délié ; **double authentification par application** (QR code, clé, lien direct sur téléphone ; retrait avec mot de passe + code) et emails `2fa-activee` / `2fa-desactivee` ; **SMS (vérification du mobile, SMS de secours) prêts mais cachés** tant que le flag `deuxFacteursSms` est coupé ; « Tout déconnecter » (jetons révoqués partout) ; notifications par catégorie et canal (enregistrées aussitôt, consentements journalisés) et par entreprise (nouvelles demandes, avis, factures) ; export des données et suppression (bloquée pour le dernier propriétaire). Firebase Auth fait foi : `users/{uid}` (email, `mfaActive`, méthodes, téléphone vérifié) est recopié à chaque ouverture de la page.
+- **10h Application pro (PWA)** : manifest `/pro/manifest.webmanifest` (« Portail Habitat Pro », autonome, raccourcis), icônes 192 / 512 / maskable / Apple générées à la compilation, service worker `/pro/sw.js` (pages de l'espace gardées pour le **mode hors ligne**, page « Vous êtes hors ligne » sinon, pages effacées à la déconnexion), invitation à installer **dès la 2e visite** (bouton du navigateur, ou guide « Partager → Sur l'écran d'accueil » sur Safari iOS ; « Plus tard » retenu), bouton **Se déconnecter** (manquait dans l'espace pro). **Notifications push prêtes mais coupées** : flag `notificationsPush` + clé `NEXT_PUBLIC_FIREBASE_VAPID_KEY` ; activées par la personne depuis Mon compte (jamais au chargement), puis toute notification in-app (nouvelle demande, message, avis) part aussi en push ; jetons périmés oubliés ; désabonnement à la déconnexion.
+- **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
+
+**À signaler**
+1. **Dépendances ajoutées** : `firebase` (SDK client, chargé à la demande dans l'espace pro seulement) et `@phosphor-icons/react` dans le site.
+2. **Modèle de données** : `brouillonsOnboarding.jetonHash` (empreinte du lien de reprise) ; collection `capturesEmulateur` (émulateur uniquement, refusée par les règles).
+3. **Écarts avec la maquette et ACCEPTANCE** : email demandé dès l'étape 1 (nécessaire au lien de reprise) ; SIREN demandé à l'étape 3 ; rayon en choix 30/50/100 km sans carte ; tableau de bord : « Devis envoyés » et « Chantiers signés » remplacés par « Taux de réponse » et « Fiche complétée » (données inexistantes), pas encore de liste « Demandes récentes » sur le tableau de bord (le bouton mène à Mes demandes) ; encart Premium sans « 24 h d'avance » (non décidé).
+4. **Complétude de la fiche : pondération proposée, à valider** — métiers et zone 20, téléphone vérifié 15, présentation ≥ 60 caractères 20, logo 10, 3 photos 20, certifications 15. Seuil de mise en ligne : 60 % (EMAILS `bienvenue-pro`).
+5. **Double authentification** : nécessite **Identity Platform** activé sur le projet Firebase (TOTP gratuit ; SMS facturés, d'où le flag).
+6. PRO-04 à 06 (débloquer, paiement) passent au lot 11 (Stripe). D45 (contraste) toujours à valider.
+7. **Corrections de fond** : cookies `Secure` refusés par WebKit sur `http://localhost` (émulateur seulement) ; configuration Firebase du navigateur lisible après navigation côté client.
+8. **Mes demandes** : l'onglet « Appels d'offres » de la maquette arrive avec les appels d'offres (lot 12) ; l'écriture au particulier passe pour l'instant par email / téléphone (messagerie intégrée avec le devis) ; le routage des collaborateurs par métier attend la correspondance prestation → métier du matching (lot 12) ; refuser ne demande pas encore de motif.
+9. **Espace pro, suite** : les statistiques quotidiennes (`statsJour`) ne sont pas encore alimentées (suivi des vues au lot 13c ; le seed en contient pour la démonstration) ; « Demander un avis » donne le lien de `/avis`, sans présélection de l'entreprise ; le nom commercial et les métiers ne se modifient pas encore depuis Ma fiche ; **contradiction à trancher** : COMPTES §3 met la fiche en ligne dès que le Kbis (ou SIREN vérifié) et la décennale sont envoyés, alors qu'EMAILS `bienvenue-pro` annonce 3 étapes (téléphone, décennale, fiche à 60 %). Le tableau de bord suit EMAILS ; la mise en ligne suivra COMPTES (prime sur les autres documents).
+10. **Documents** : le refus d'un document par un modérateur (retrait de la fiche + email `document-refuse`) arrive avec le back-office (lot 13) ; les photos ne sont pas encore débarrassées de leurs données EXIF (Function prévue par storage.rules) ; les règles Storage qui vérifient l'appartenance en base échouent sur **ce** poste (émulateur local, déjà le cas avant ce lot), elles passent en CI.
+11. **Équipe** : « Ajouter un siège » mène à la facturation (achat de sièges au lot 11) ; la **revendication** d'une fiche sans propriétaire passe par le support (vérification par un modérateur au lot 13) ; le transfert de propriété et le plafond de crédits par membre (services prêts) n'ont pas encore d'écran ; EQU-05 (accès coupé immédiatement) est couvert par les tests de service du lot 4.
+12. **Contrôle MOB-01 renforcé** : il compare désormais la largeur de la page à celle de l'appareil (un navigateur mobile dézoome une page trop large, ce qui masquait le défaut). Il a révélé un débordement de l'en-tête de Ma fiche, corrigé.
+13. SIM-06f (simulateur) échoue parfois sous forte charge locale (30 s), passe isolé ; à surveiller en CI.
+14. **Mon compte — dépendance ajoutée** : `uqr` (QR code, sans dépendance, ~15 Ko) pour l'application d'authentification ; nouveau composant `Interrupteur` dans `@ph/ui` (Radix Switch, déjà présent).
+15. **Mon compte — écarts avec la maquette** : la **liste des appareils** (« Safari sur iPhone · Mérignac ») demande un suivi des sessions qui n'existe pas dans DATABASE : seul l'appareil actuel est affiché, avec « Tout déconnecter » (y compris celui-ci) ; les notifications suivent le modèle de données (catégories `activite`, `relance`, `offres_pro`, `marketing` × canaux, plus `membres.notifs` pour l'entreprise) et non les 7 lignes de la maquette ; l'export est téléchargé tout de suite (JSON) au lieu d'une archive ZIP par email ; « Modifié il y a 4 mois » (mot de passe) n'est pas disponible dans Firebase.
+16. **Mon compte — à savoir** : l'email « Ce n'était pas moi » renvoie vers l'aide (sujet « pro »), l'annulation d'un changement d'email en 7 jours et le blocage de 24 h (EMAILS) ne sont pas encore faits ; sans SMS, le mobile ne peut pas être « vérifié », donc les 15 points « téléphone vérifié » de la complétude restent inaccessibles tant que le flag SMS est coupé (**à trancher** : compter un mobile renseigné en attendant ?) ; l'application d'authentification (TOTP) n'est pas gérée par l'émulateur Firebase : l'activation complète se vérifie sur le projet de recette, une fois Identity Platform activé.
+17. **Corrections** : un changement de mot de passe révoque les sessions en cours, la session est donc renouvelée avant tout autre appel ; la lecture des envois capturés (e2e) parcourt maintenant toutes les pages.
+18. **PWA — pour activer le push en un clic** : dans la console Firebase, Cloud Messaging → « Certificats Web push » → générer la paire de clés ; mettre la clé publique dans `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (et `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`), puis passer `notificationsPush` à vrai dans `config/flags`. Sur iPhone, le push ne marche que dans l'application installée (iOS 16.4+, D39).
+19. **PWA — modèle de données** : nouvelle sous-collection `users/{uid}/appareilsPush/{empreinte}` (`jeton`, `appareil`, `majLe`), écrite par le serveur seulement (règles : tout refusé côté client, testé). **Écarts** : pas de file d'envoi rejouée hors ligne (aucun formulaire de l'espace n'en a encore besoin : le brouillon de devis arrive au lot 12) ; raccourci « Appels d'offres » ajouté avec la page (lot 12) ; le mode hors ligne est vérifié par un test unitaire du worker (Playwright ne coupe pas le réseau du service worker), l'enregistrement du worker par un test de bout en bout ; la réception réelle d'une notification (MOB-06) se vérifie sur le projet de recette avec la clé VAPID.
+
+## 17. Lot 11 — Paiements Stripe (terminé le 30/09/2026)
+
+**Fait**
+- **Catalogue** (`@ph/core/facturation`) : Premium 99,90 € HT/mois ou 958,80 € HT/an payé en une fois, Visibilité 12,90 € HT/mois ou 79,90 € HT/an, siège 9 € HT/mois, packs 10/25/50 crédits (D24 à D29), en centimes ; TVA 20 % ; récapitulatif HT/TVA/TTC (en annuel, le total dû couvre 12 mois, ACQ-03).
+- **Script** `pnpm stripe:produits` : crée les produits (`ph_premium`…) et les prix retrouvés par **clé de recherche** (`ph_premium_annuel`…), relançable sans doublon ; aucun identifiant de prix à copier ; clé live refusée sans `--live`.
+- **Webhook** `/api/stripe/webhook` : signature vérifiée, **un seul effet par événement** (`stripeEvents`, PAY-02), erreur notée puis retraitée au renvoi de Stripe, événements dans le désordre ignorés. Seul endroit qui écrit `plan`, `planPeriode`, `optionVisibilite` (Premium l'inclut), `siegesMax` (3 + sièges achetés ; équipe suspendue ou réactivée en conséquence), avec **7 jours de grâce** après un échec de paiement. Miroirs `abonnements`, `factures`, `paiements` ; crédits inclus Premium remis à 5 à chaque facture payée (D27) ; pack de crédits crédité une fois (mouvement `achat_pack`).
+- **Emails** (§4.6) : `abonnement-active`, `recu`, `paiement-echoue`, `renouvellement` (annuel, 7 jours avant), `abonnement-resilie`, `abonnement-termine`, `pack-achete`.
+- **Pages de paiement** `/pro/abonnement/premium` et `/pro/abonnement/visibilite` (formule préremplie par `?facturation=`, liens de la landing mis à jour), **Stripe Checkout** (client Stripe créé au premier paiement, TVA automatique, numéro de TVA, codes promo saisis chez Stripe), page de retour qui **attend le webhook** (PAY-01), **Facturation** (abonnement en cours, sièges, factures téléchargeables, « Gérer mon abonnement » = portail client Stripe ; CON-02 conservé ; comptable en lecture).
+
+**À signaler**
+1. **Dépendance ajoutée** : `stripe` (SDK officiel, serveur et script seulement).
+2. **Modèle de données** : `abonnements/{id}.evenementLe` (date de l'événement Stripe, pour ignorer un état plus ancien).
+3. **Écart avec les maquettes** : le formulaire de carte des maquettes est remplacé par un bouton vers la page sécurisée Stripe (règle 7) ; le code promo s'y saisit.
+4. **Non vérifiable ici, à faire en recette avec la clé de test** : redirection réelle vers Checkout, portail client, **Test Clocks** (renouvellement, échec, résiliation) ; le parcours est couvert avec des événements signés et un faux Stripe.
+5. **Reste pour d'autres lots** : achat de packs et déblocage à l'unité (lot 12, avec les appels d'offres) ; remboursements et litiges (`charge.refunded`, `charge.dispute.created` : lots 12 et 13) ; codes promo personnels (lot 13b) ; relances J+3 et J+6 après échec et `moyen-paiement-expire` (envois différés) ; bandeau « paiement refusé » sur le tableau de bord (la page Facturation l'affiche déjà) ; achat de sièges supplémentaires depuis l'écran Équipe (possible via le portail client si la modification de quantité y est activée).
+6. Décisions ⏳ appliquées en attendant : D19 (TVA 20 %, Stripe Tax), D26 (siège 9 €), D27 (5 crédits), D29 (packs), D32 (pas d'essai).
+
+## 18. Lot 12 — Matching et appels d'offres (terminé le 02/10/2026)
+
+**Fait**
+- **Attribution des nouvelles demandes** (Function `attribuerNouvelleDemande`, rejouable) : modération avant tout matching (qualité < 30), candidats de la zone lus dans `artisansPublic` (géohash + métier) puis filtres durs et score du cœur, trace `matching/{demandeId}`. Aiguillage D41 : demande **garantie** exclusive au meilleur Premium qui a du quota (24 h pour accepter, 4 h si urgente), sinon **appel d'offres** anonymisé au prix du barème (D47), 3 places, invitations notifiées (Premium tout de suite, les autres **60 minutes plus tard**, D50).
+- **Relances** (`matchingRelance`, toutes les 15 min) : propositions expirées, garantie refusée ou expirée → appel d'offres sans réinviter l'artisan, appel d'offres sans preneur à 48 h signalé une fois dans la file admin, appel d'offres échu clos.
+- **Déblocage** en une transaction : place libre, fenêtre Premium, RGE si exigé, droit `leads.debloquer` et plafond mensuel du collaborateur, prix recalculé côté serveur, crédits inclus Premium puis crédits achetés, achat + déblocage + attribution acceptée avec coordonnées. Dix artisans sur la dernière place : un seul réussit, aucun débit en trop (PRO-06).
+- **Carte et packs** : Stripe Checkout en paiement unique (prix du déblocage recalculé avant la session, montant encaissé conservé) ; le webhook finalise le déblocage ou crédite le pack ; plus de place entre le paiement et le webhook → tâche de remboursement pour l'équipe finance.
+- **Écran `/pro/appels-d-offres`** (maquette « Appels d Offres ») : bandeau Premium, filtres par métier, cartes (réservé avec compte à rebours, ouvert, débloqué, complet), feuille de déblocage (crédits, sinon carte ou pack, PRO-05). Collaborateur sans droit de dépense : pas de bouton (PRO-04). Paiements derrière le flag `appelsOffresPayants` (coupé par défaut : la page s'affiche en consultation).
+- **Scores de nuit** (`scoresNuit`, 3 h) : taux de réponse, médiane du temps de réponse, refus et charge récents, labels automatiques `rapide` et `recommande` ; recopiés sur l'entreprise seulement si une valeur change (chaque écriture relance la projection publique).
+
+**À signaler**
+1. **Modèle de données** : attribution `rang`, `expireLe`, `appelOffresId` ; demande `metierRequis`, `qualiteLead`, `moderation`, `appelOffresId` ; `appelsOffres.artisansInvites` (≤ 50) ; `achatsLeads.par` ; `artisans.attributions7j` et `tauxRefus30j` ; champs détaillés dans `artisanScores`. Nouveaux index : attributions (statut + expireLe, statut + reponduLe, proposeeLe en groupe), appels d'offres (statut + nbDeblocages + ouvertLe, statut + ouvertJusquau, artisansInvites + statut + ouvertLe).
+2. **Décisions ⏳ appliquées en attendant** : D47 (barème) et D48 (paramètres du matching). D50 tranchée : 60 minutes d'avance Premium (la maquette affiche 24 h, texte adapté).
+3. **Choix à valider** : pas de vagues supplémentaires pour une demande garantie (elle passe directement en appel d'offres) ; empreintes de conflit d'intérêts limitées aux contacts publics de l'artisan et à son SIREN ; double authentification exigée pour payer par carte ou acheter un pack (comme la facturation, CON-02), pas pour dépenser des crédits ; achat de pack réservé au droit `abonnement.gerer` (propriétaire, gérant).
+4. **Reste pour d'autres lots** : contestation d'un déblocage par l'artisan et remboursement (écran admin, lot 13) ; onglet « Appels d'offres » dans Mes demandes (l'entrée du menu mène à la page) ; réponse écrite à un appel d'offres (`reponses`) avec le devis ; scores `tauxDevis`, `tauxConversion`, `tauxRemboursementLeads` quand ces données existeront.
+5. **Non vérifiable ici** : redirection réelle vers Checkout pour une carte (même mécanique que les abonnements, à vérifier en recette avec la clé de test).
+
+## 19. Lot 12b — Demandes partenaires (terminé le 02/10/2026)
+
+**Fait**
+- **Webhook** `importerDemandePartenaire` (Function HTTPS, contrat IMPORT_LEADS) : clé API (empreinte seule en base) et IP autorisées, quota du jour, corps de 32 Ko au plus, validation stricte, **idempotence** par `idExterne` y compris pour deux envois simultanés (IMP-01), consentement exact (version, texte, finalités) sinon rejet tracé **sans donnée personnelle** (IMP-02), téléphone français, zone couverte, doublons sur 30 jours, qualification **A/B/C**, estimation recalculée (surface fournie), preuve de consentement (IP et navigateur hachés), demande `source: 'partenaire'` sans compte particulier ; le matching démarre aussitôt.
+- **SMS de confirmation** (votre choix) quand le partenaire n'a pas vérifié le téléphone : lien vers `/confirmer-telephone`, confirmation par un clic (les aperçus de liens ne confirment pas à la place de la personne), niveau relevé (B → A).
+- **Matching** : RGE vérifié exigé si éligible aux aides, avec un domaine qui couvre la prestation (IMP-03) ; niveau C jamais en exclusive, prix × 0,4 / 0,7 / 1 selon le niveau et × 1,2 / 0,9 selon l'éligibilité (IMP-05) ; exclusive **non vue sous 2 h** réattribuée (ouvrir Mes demandes la marque vue) ; rayon de l'artisan respecté (filtres existants, IMP-06).
+- **Invendues** : marquées à 24 h sans déblocage, archivées à 72 h (appel d'offres clos, jamais revendue). **Supervision** : alerte dans les journaux si une demande attend plus de 15 min.
+- **Espace artisan** : niveau et « Aides estimées du client (… montant indicatif) » sur la carte de Mes demandes et dans l'email nouvelle-demande (IMP-06).
+- **Script** `pnpm partenaire:source <fichier.json>` (exemple : `docs/data/source-partenaire.exemple.json`) : crée la source, affiche la clé API une seule fois.
+- **Test de charge IMP-04** : 200 demandes importées puis proposées, chacune bien en dessous des 5 minutes.
+
+**À signaler**
+1. **Modèle de données** : `sourcesDemandes.departementsCouverts` et `versionConsentement` ; `importsDemandes.details` (chemins des champs en cause, jamais leur valeur) et `traiteLe` ; `demandes.partenaire.cleDoublon` et `jetonTelephoneHash` ; `demandes.invendueLe`, `archiveeLe` ; `attributions.expireLeSiVue`. Index : doublons (empreinte + date), quota (source + date), demandes en attente (statut + date). `notifier()` accepte un téléphone sans compte (SMS de confirmation).
+2. **Choix à valider** : barème du score de qualification 0-100 (téléphone 35, propriétaire 25, bailleur 20, horizon jusqu'à 25, aides jusqu'à 15) ; « bailleur » compte comme propriétaire pour le niveau A ; horizon 3-6 mois → délai « 3 mois », plus de 6 mois → « je me renseigne » ; un RGE sans domaine déclaré est accepté (pas encore de table prestation → domaine RGE) ; pas de compte particulier créé pour une demande partenaire (pas d'email au particulier, seulement le SMS si besoin).
+3. **À fournir avant la mise en ligne** (IMPORT_LEADS §5) : IP de sortie du partenaire, table de correspondance de ses types de travaux, texte exact et version de la case de consentement, quota et zone couverte ; clé Brevo pour l'envoi réel des SMS (docs/CLES.md).
+4. **Reste pour d'autres lots** : écrans admin (sources, journal des imports et rejets, rentabilité par métier et zone) au lot 13 ; offre de la demande invendue aux artisans Gratuit contre l'activation de Visibilité au lot 13b.
+
+## 20. Lot 13 — Back-office (fait le 04/10/2026, points à confirmer ci-dessous)
+
+Découpage validé le 02/10/2026 : 13a socle, 13b tableau de bord et file, 13c artisans, 13d demandes et appels d'offres (dont sources partenaires), 13e avis, litiges, finances, 13f référentiels et réglages, 13g équipe, audit, RGPD. Conversion, comportement et IA : lots 13b/13c du plan général.
+
+**Fait (13a et Artisans)**
+- **Connexion admin** `/connexion?espace=admin` : session de **8 h** au plus, déconnexion après **30 min d'inactivité** (vérifiée par le serveur à chaque page, `admins/{uid}.dernierAcces`, et dans le navigateur), **double authentification obligatoire** (sinon seule la page d'activation est accessible), compte artisan refusé.
+- **Coque** d'après la maquette : menu à icônes filtré par les permissions, repliable à 72 px (mémorisé), menu plein écran sur mobile ; section hors permissions → **403** (`forbidden()`).
+- **Enveloppe `actionAdmin`** : permission relue dans `admins/{uid}`, double authentification, audit, refus pendant une impersonation ; audit détaillé (avant, après, motif) écrit dans la transaction de chaque action.
+- **Données personnelles masquées**, « Afficher » journalisé (liste fermée de champs), rien pour le rôle lecture (ADM-02) ; **motif + confirmation** pour les actions sensibles (ADM-03) ; **« Voir en tant que »** réservé au superadmin, journalisé, lecture seule avec **bandeau rouge** (ADM-04).
+- **Artisans** : liste (filtres, recherche), fiche (identité, abonnement, activité, sanctions, notes), vérifier, suspendre / lever (fiche retirée de l'annuaire), créditer (5 au plus sans permission illimitée).
+- **Artisans, suite** (13c) : onglet Documents (aperçu journalisé, valider avec date de fin ou refuser avec motif ; label vérifié décennale, RGE ou Qualibat sur la fiche ; artisan prévenu par email ; chaque dépôt crée sa tâche dans la file), onglet Équipe (membres, sièges), notes internes. **Fait le 07/10/2026** : création d'une entreprise non revendiquée (`adminCreerEntreprise`, SIREN lu au répertoire, aucun membre, hors ligne, invitation de revendication facultative), invitation à revendiquer (le destinataire devient propriétaire ; modèle : `invitations.revendication`, rôle `proprietaire` autorisé seulement dans ce cas), transfert de propriété assisté (membre actif, l'ancien propriétaire devient gérant), suppression définitive (nom ressaisi + case + motif ; membres retirés et déconnectés, coordonnées effacées, SIREN libéré, factures et avis conservés), recalcul forcé de la fiche publique. Tout est audité ; tests sur émulateur et e2e. **À noter** : la suppression n'annule pas l'abonnement Stripe en cours (à faire depuis Stripe, ou à brancher).
+- **Tableau de bord** (13b) : demandes 30 jours et du jour, demandes par jour sur 14 jours, artisans en ligne, appels d'offres sans preneur, chiffre d'affaires HT (rôles finances seulement), urgences par type, santé (webhooks Stripe, envois) ; compteurs par agrégations Firestore.
+- **File de travail** (13b) : tâches filtrées par permission, priorité puis ancienneté, SLA vert / orange / rouge, prendre, rendre, clore avec résolution journalisée, lien vers l'élément.
+- **Comptes de test** par rôle dans le seed ; **script** `pnpm admin:creer <email> "<Prénom Nom>"` pour le premier superadmin (lien pour choisir le mot de passe).
+- **Demandes** (13d, 04/10/2026) : liste filtrée et recherche par référence, fiche avec contact masqué et **trace de l'algorithme** (candidats retenus, écartés, exclus avec la raison), artisans sollicités ; marquer comme spam, annuler, relancer l'algorithme (nouvelle demande : nouveau calcul ; demande garantie sans réponse : appel d'offres), proposer à un artisan choisi.
+- **Appels d'offres et prix** (13d) : liste (prix, mode, déblocages, qualité, ancienneté) ; **éditeur de prix** : détail du calcul automatique, prix manuel dans les bornes et **30 € HT au plus sans `leads.prix_illimite`**, gratuit, retour au calcul, promo (au plus tard à la clôture), déblocages maximum et accès ; historique des prix (`historiquePrix`) et audit.
+- **Barèmes** (13d, **ADM-05**) : édition des prix de base par métier, coefficients budget et urgence, remise Premium, valeur du crédit, plancher et plafond ; **simulation sur les 50 derniers leads** obligatoire avant publication ; versions `grillesTarifaires/gironde-2026-vN` (une seule active), lues par l'algorithme pour les nouveaux appels d'offres.
+- **Contestations** (13d) : l'artisan conteste depuis Mes demandes (7 jours, une fois par achat ; « hors zone » refusé d'office dans son rayon) ; l'équipe rembourse en crédits, sur la carte (Stripe) ou refuse avec motif ; artisan prévenu ; au-delà de 3 contestations acceptées, la demande est marquée douteuse.
+- **Sources partenaires** (13d, **IMP-02**) : sources avec les imports des 7 derniers jours (créées, doublons, rejetées), journal des imports avec le motif de rejet et le champ en cause (jamais de donnée personnelle), couper ou rouvrir une source (`matching.config`). La création et les clés restent faites par script (`pnpm partenaire:source`).
+- **Reste en 13d** : onglet « Facebook et invendues » (il dépend du moteur de conversion, lot 13b du plan). **Packs de crédits** : ils restent fixés par le catalogue et le script Stripe (D29, 10/25/50) ; un écran d'édition demanderait de créer des prix Stripe depuis l'admin, à décider.
+
+- **Avis** (13e) : file d'après la maquette (en attente, risque élevé, publiés), **score de risque** (auteur lié à l'entreprise 40, même IP 30, texte proche 25, compte de moins de 48 h 20, sans preuve 10) ; publier (note de l'entreprise recalculée), refuser avec un motif prédéfini envoyé à l'auteur, demander une preuve, suspendre, supprimer définitivement ; jamais de modification du texte. Chaque nouvel avis crée sa tâche dans la file.
+- **Litiges** (13e) : fil d'échanges, message du médiateur aux deux parties, clôture (résolu ou clos sans suite) avec rappel ou avertissement éventuel à l'artisan.
+- **Finances** (13e) : MRR, abonnés et part en annuel, appels d'offres du mois, factures, codes promo (lecture), remboursements ; **export CSV mensuel** journalisé (date, pièce, client, HT, TVA, TTC, moyen).
+
+- **Algorithme** (13f) : poids (en %, total 100), seuils et options ; **bac à sable** qui rejoue une demande passée et compare rangs et scores sans rien écrire ; publication versionnée lue par les Functions du matching.
+- **Référentiels** (13f) : prix privés de chaque prestation (chaque nombre du barème, nouvelle version, ancienne archivée), retrait ou remise en ligne d'une prestation ; **fonctionnalités** (feature flags) activables avec motif.
+- **Contenus** (13f) : annonces in-app (public, ton, période) affichées en haut des espaces artisan et particulier.
+
+- **Équipe et audit** (13g) : membres, invitation (lien pour choisir le mot de passe, double authentification à la première connexion), changement de rôle, désactivation (sessions coupées) ; jamais soi-même ni le dernier superadmin ; journal d'audit filtrable (action, acteur, cible) et exportable.
+- **RGPD** (13g) : demandes enregistrées avec l'échéance d'un mois, export des données, anonymisation d'un compte particulier, constat pour les autres cas ; preuve archivée et téléchargeable, consultation journalisée.
+- **Tests** : 24 scénarios sur émulateur (`tests/admin.test.ts`) et un test de bout en bout par écran (`e2e-pro/admin*.spec.ts`), tous verts ; CI verte.
+- **Pages communes (fait le 07/10/2026)** : Référentiels › Pages communes, textes SEO des 11 communes (introduction, bâti, secteurs, risques, points fréquents) ; chaque enregistrement crée une version (la précédente archivée, motif, audit, permission `communes.modifier`) et régénère la page publique ; sans version en base, les textes de `docs/data/communes.json` s'affichent. Modèle : `referentiel/communes/items/{slug}`.
+- **Reste du lot 13** : métiers et labels éditables depuis l'admin. **Choix** : je ne l'ai pas fait, car les métiers et labels sont des identifiants utilisés par le matching, la recherche, le SEO et les données des artisans ; les rendre modifiables sans migration casserait des données. Ajouter un métier reste une modification du dépôt (`docs/data`), à décider si un écran est utile.
+
+**À signaler**
+1. **ADM-01** dit « le modérateur ne voit que Projets et Avis » ; la maquette et les permissions du lot 2 lui donnent aussi la file de travail, les artisans, les demandes, les appels d'offres et les litiges. J'ai suivi la maquette (le test vérifie qu'il ne voit ni les finances, ni l'équipe, ni le RGPD, ni l'algorithme, et que ces adresses renvoient une 403). À confirmer.
+2. **Tests** : les émulateurs n'ont pas d'application d'authentification ; `ADMIN_MFA=desactive` coupe l'exigence pour les tests de bout en bout seulement (refusé en production). La vraie double authentification se vérifie en recette.
+3. **Invitations admin** : pas de limite de domaine pour l'instant (votre choix).
+4. **Modèle** : `admins/{uid}.dernierAcces` utilisé pour l'inactivité ; jeton d'impersonation avec le claim `imp` ; `filesModeration.resolution`, `traiteePar`, `traiteeLe` ; index factures et emails (statut + date).
+5. **Permissions modifiées** : le modérateur reçoit en plus `artisans.verifier`, `leads.lire`, `leads.rembourser`, `litiges.traiter` (comme la maquette). **Priorités** des tâches réalignées sur la maquette (5 = la plus urgente) et deux permissions inexistantes corrigées dans les tâches créées par le matching.
+6. **Permissions choisies (13d), à confirmer** : promo avec `leads.prix` ; déblocages maximum et accès avec `leads.publier` ; simuler un barème avec `leads.prix`, le **publier avec `leads.prix_illimite`** (admin et superadmin) ; rembourser sur la carte avec `finances.rembourser_carte` (admin et superadmin).
+7. **Barèmes** : les paliers de qualité, de concurrence, de niveau et d'aides restent modifiables seulement par script pour l'instant (pas dans l'écran) ; les métiers s'affichent par leur identifiant.
+9. **Points 13e à trancher** : (a) l'ouverture d'un litige par le particulier ou l'artisan n'existe pas encore (seul l'admin les traite) ; (b) codes promo en lecture seule : leur création se fait dans Stripe, à brancher si vous le souhaitez ; (c) l'export comptable lit Firestore : les factures d'abonnement, les déblocages par carte et les packs (prix du catalogue D29) ; les **avoirs** (remboursements) n'y figurent pas encore et Stripe reste la référence comptable ; (d) poids du score de risque des avis choisis par moi ; (e) trois nouveaux modèles d'email en squelette : `avis-preuve-demandee`, `litige-message`, `litige-decision`.
+11. **Points 13g** : l'export RGPD et la réponse à la personne s'envoient à la main (le fichier est téléchargé depuis l'admin) ; un modèle d'email dédié reste à écrire ; nouveau modèle « invitation-equipe-admin » en squelette.
+10. **Points 13f** : les métiers, labels et pages communes ne sont pas encore éditables depuis l'admin (le matching et le SEO en dépendent, à faire avec précaution) ; `config/app` n'est lu par aucun code, je ne l'ai donc pas exposé (les fonctionnalités passent par `config/flags`) ; modèle : `matchingConfig` reçoit `options` et `motif`, `referentiel/prestations/prix/{id}/versions`.
+8. **Modèle (13d)** : `grilleTarifaire` reçoit `prixBaseDefaut` et `seuilsConcurrence` ; `remboursementLead` reçoit `appelOffresId`, `demandeId`, `motifDecision` (identifiant = celui de l'achat) ; `demande` reçoit `contestationsAcceptees` et `douteux` ; index `demandes` et `appelsOffres` (statut + date décroissante) ; client Stripe : `refunds.create` (remboursement intégral du paiement, clé d'idempotence).
+
+## 21. Lot 13b — Conversion et séquences (en grande partie fait le 05/10/2026)
+
+**Fait**
+- **Cœur** (`@ph/core/conversion`) : score, offre cible, étape, groupe témoin, pression et créneaux, séquences par défaut (S1, S4 à S9), chiffres obligatoires par modèle, position dans le secteur, signaux (concurrent passé devant, crédits achetés, demandes exclusives manquées, garantie Premium tenue, passage à l'année après la 3e échéance mensuelle payée — lien vers la page Facturation, car le changement de formule se fait dans le portail client Stripe, qui doit autoriser le passage mensuel → annuel ; proposition de Premium 30 jours avant le renouvellement d'une Visibilité annuelle ; appel d'offres du métier complet avant le résumé de 7 h ; une réponse à un email de conversion (Resend Inbound) crée une tâche « réponse commerciale » et met la séquence en pause, artisan ou prospect, sans stocker le texte, une fois par semaine — champ `appelsOffres.completLe` ajouté), remises et codes personnels, demandes offertes, libellés.
+- **Moteur** : `cycleCalculer` (5 h : vues, position, dépense 30 jours, étape, séquence, signaux), `cyclePlanifier` (7 h et 18 h 15 : signaux d'abord, puis séquences), `cycleHebdo` (lundi : `prem-demandes-manquees`), `cycleCodesExpires` (chaque heure), `cycleDemandesInvendues` (chaque heure). Chaque décision est tracée, y compris les non-envois et leur raison.
+- **22 emails de conversion rédigés** (catégorie `offres_pro`), avec les vrais chiffres ; sans chiffre, l'email ne part pas.
+- **Codes promo personnels** (CONV-01, 02) : réservés à l'envoi, créés chez Stripe au premier clic (usage unique, réservés au client, date de fin réelle), appliqués sans saisie par le lien ; le paiement les marque utilisés, recalcule l'étape tout de suite (plus aucune offre ensuite) et trace la conversion. Le rappel J+17 ne part que si l'offre a été ouverte.
+- **Demandes invendues offertes** (CONV-07) : 24 h sans déblocage → 5 artisans Gratuit du secteur ; les 3 premiers qui activent Visibilité la reçoivent débloquée ; une fois par entreprise.
+- **Tâches d'appel automatiques** : activation (J+10, score ≥ 40), appel commercial (J+7, score ≥ seuil réglable), risque de résiliation (14 jours sans activité du propriétaire, lue sur `membres.derniereActivite`) ; séquence en pause tant que la tâche est ouverte.
+- **Mise en veille** : chaque email offres_pro remis compte comme non ouvert jusqu'à son ouverture (webhook Resend) ; après N d'affilée (réglage), plus d'email commercial ; une ouverture ou un clic remet à zéro. Champ ajouté : `emails.compteNonOuvert`.
+- **Statistiques** : `cycleAgreger` (1 h 30) écrit `cycleStats/{jour}` (étapes, envois, ouvertures, clics, conversions et revenu par modèle, témoin) ; chaque conversion est attribuée au dernier email planifié dans les 7 jours, avec le montant réellement payé (remise déduite, prix du catalogue HT). La vue d'ensemble lit ces agrégats.
+- **Prospects** (validé le 05/10/2026) : sur `/pro`, « Pas encore prêt ? Recevez cette estimation par email » (texte d'usage de l'adresse à côté du bouton) ; un prospect par adresse, jamais si l'adresse a déjà un compte (même réponse dans tous les cas) ; `prospect-estimation` part tout de suite (demandes estimées comme sur la page, inscrits à 20 km, budget moyen des vraies demandes du département sur 90 jours, absent sinon) ; l'inscription arrête la séquence. Conservation 3 ans. Suite (`cycleProspects`, 7 h 05) : une vraie demande du métier à moins de 15 km arrivée la veille (de J+1 à J+30, une par semaine), « dernière » signée à J+12, résumé de la zone le 1er du mois pendant 6 mois (à partir de J+20) ; un email par jour au plus, sans chiffre rien ne part. Index ajouté : demandes (métier + date).
+- **Facebook et invendues** (onglet de l'admin des appels d'offres, CONV-08) : texte du jour (5 à 8 demandes des dernières 24 h du département choisi, travaux, commune, budget, délai — rien d'autre n'est lu), bouton copier, « marquer comme publiée » (audit, permission `leads.publier`), résultats 30 jours (prospects venus du groupe, demandes offertes et reçues), demandes invendues offertes de la semaine. Les prospects arrivés par le lien du groupe sont marqués `source: facebook`. Les noms de départements n'existent pas dans les données : le titre dit « département 33 ».
+- **Résiliation (S8, sans maquette, fait « au mieux » le 05/10/2026)** : lien « Résilier mon abonnement » sur la page Facturation → `/pro/abonnement/resilier` : raison obligatoire, une alternative calculée côté serveur (Premium trop cher → Visibilité via le portail Stripe ; pas assez de demandes ou Visibilité trop chère → −50 % pendant 2 mois, coupon `ph_retention_50_2m` appliqué à l'abonnement ; saison creuse → facturation suspendue 2 mois, reprise automatique ; autre → tâche d'appel), une seule offre de rétention par 12 mois, puis résiliation en fin de période (`cancel_at_period_end`, raison en métadonnée). L'email `resiliation-alternative` reprend le produit et la date de fin réels. Les valeurs (−50 %, 2 mois) suivent CONVERSION et restent liées à D32c ⏳. **À régler dans Stripe** : le portail client permet encore de résilier directement ; désactiver la résiliation dans le portail pour que tout passe par ce parcours.
+- **Tests A/B (fait « au mieux » le 05/10/2026)** : objet B rédigé par moi pour `vis-position`, `vis-offre-lancement` et `prem-bilan-visibilite` (à relire), séquences S4, S5 et S6 en test A/B sur ces étapes, variante enregistrée sur chaque email ; `cycleTestsAB` (lundi 6 h) compare les taux de clic sur 60 jours (200 envois minimum par variante) et ne garde que la gagnante à 95 % de confiance (nouvelle version de la séquence, audit `moteur-ab`).
+- **Écran `/admin/conversion`** : vue d'ensemble, séquences (créer, modifier, dupliquer, pause, supprimer avec devenir des entreprises, versions et audit), journal filtré, fiche cycle (pause, exclusion, étape forcée), tâches, réglages.
+
+**À trancher ou signaler**
+1. **D32c (⏳) remises** : valeurs codées par défaut (−30 % sur 12 mois, 72 h, 7 j en reconquête, une remise tous les 90 jours). La relance `vis-offre-relance` passe de J+90 à **J+104** (validé le 05/10/2026) pour respecter la règle des 90 jours.
+2. **D32d (⏳) catégorie offres_pro** et **D32e (⏳) relances signées Julie** : en place, à valider juridiquement.
+3. **Choix faits par moi** : valeur d'un crédit dans les emails = 10 € (« 5 crédits (50 €) ») ; budget d'une demande manquée = milieu de la fourchette ; distance minimale affichée 1 km ; délai d'activation d'une demande offerte 48 h.
+4. **Modèle de données** : `codesPromo.stripePromotionCodeId` devient facultatif ; `cycleEtat` reçoit `codeActif`, `demandeOfferte`, `demandeOfferteRecue`, `derniersSignaux`, `signal`, `signaux.montantAchete30j` ; `appelsOffres` reçoit `offerteLe`, `offerteA` ; `emails` reçoit `ouvertLe`, `cliqueLe` ; nouveau moyen de déblocage `offerte_conversion` ; abonnement Stripe : métadonnée `codePromo` ; index ajoutés (attributions exclusives, codes, artisans par métier et plan, traces par séquence, témoin, tâches). La liste des délais souhaités est passée dans `@ph/core/demandes`.
+5. **Fait (07/10/2026)** : `prospect-temoignage` (J+5) part avec le délai moyen réel avant la 1re demande (artisans du métier inscrits depuis moins de 6 mois dans le département du prospect, au moins 3 mesures, sinon rien) et les demandes estimées gardées à l'inscription du prospect. `vis-recherches-manquees` : chaque recherche « métier + ville » de l'annuaire (robots exclus, écrite après la réponse) incrémente un compteur du jour ; `cycleCalculer` en tire les recherches du secteur sur 30 jours et celles des 7 jours où la fiche n'était pas dans les 10 premières ; signal à partir de 10, au plus tous les 14 jours. Tests : core, `prospects.test.ts`, `cycle.test.ts`, règles.
+   - ⚠️ **Changements de données à valider** : nouvelle collection `recherchesSecteur/{jour}_{metier}_{ville}` (Admin SDK seulement, aucune donnée personnelle, TTL 40 jours sur `expireLe`) ; `prospects.codePostal` et `prospects.demandes30j` (facultatifs) ; `cycleEtat.signaux.recherchesManquees7j` ; `signaux.recherchesSecteur30j` enfin alimenté ; index `attributions` (groupe) `artisanId` + `proposeeLe`.
+   - **Journal en direct (fait)** : écoute de la dernière trace `cycleTraces` dans le navigateur (règle de lecture `cnv` existante), relecture serveur à chaque nouvelle décision ; export CSV filtré (1 000 lignes au plus, `conversion.lire`, double authentification, export audité `adminExportJournalConversion`). Lot 13b terminé.
+
+## 22. Lot 13c — Comportement et IA (en grande partie fait le 05/10/2026)
+
+Découpage validé le 05/10/2026 : 13c-1 traceur, 13c-2 `/api/t` et stockage, 13c-3 agrégation de nuit, alertes et tests A/B des pages, 13c-4 écran `/admin/comportement`, 13c-5 assistant IA, 13c-6 aide à la rédaction. Replays « maison, légers » (curseur, clics, défilement rejoués sur une capture, pas de DOM) ; assistant prêt mais coupé tant que `ANTHROPIC_API_KEY` n'est pas posée.
+
+**Fait (13c-1)**
+- **Nouveau paquet `@ph/tracker`** (dépendance signalée, 3,7 Ko compressé, test de poids < 6 Ko) : résumé de la page vue tenu en mémoire et envoyé une fois (`sendBeacon` à la sortie ou au changement de page, repli `fetch` keepalive, envoi de secours à 60 s) ; cellules de 20 px sur la mise en page de référence (1280 / 768 / 390 px), attention pondérée par la durée des arrêts, profondeur par paliers de 5 %, temps par section, survols et clics des éléments `data-ph`, clics morts, clics de rage, hésitations (arrêt de 2 s sans clic dans les 5 s), champs (temps, abandon, jamais la valeur), sortie (section, type, intention), conversion, trajet simplifié (10 % des sessions ordinateur, 40 points), replay compact plafonné à 2 000 événements (5 % des sessions, ou rage, ou abandon).
+- **Consentement** : démarre seulement avec « Mesure d'audience détaillée » et hors Do Not Track / Global Privacy Control ; retrait du consentement en cours de visite = rien n'est envoyé et les repères de session sont effacés. Lien « Ne plus mesurer ma visite » dans le pied de page public.
+- **Pages suivies** (`PAGES_SUIVIES`, `@ph/core/comportement`) : accueil, annuaire, simulateur, `/pro`, diagnostic ; sections marquées (`data-ph-section`), offres, prix et boutons marqués (`data-ph`) ; conversions signalées : inscription commencée sur `/pro`, demande envoyée par le simulateur. Les espaces connectés ne sont pas suivis.
+- **Schéma** `entreeResumeVisite` (strict, borné, clés sans texte libre).
+
+**Fait (13c-2)**
+- **Route `/api/t`** : robots et navigateurs automatisés écartés, même origine, 64 Ko au plus, schéma strict, page et espace vérifiés, débit limité par IP hachée avec un sel du jour (`COMPORTEMENT_SALT_SECRET`), mesure coupable et échantillonnable par session (`config/comportement`, relue toutes les 5 min). Enveloppe `actionMesure` (sans session ni App Check : un `sendBeacon` ne porte pas d'en-tête).
+- **`comportementSessions/{vueId}`** : une écriture par envoi, le dernier l'emporte ; champ `jour` (Paris) pour l'agrégation ; expiration à 35 jours.
+- **Replays** : JSON compressé dans `replays/{page}/{jour}/{vueId}.json.gz` (bucket `REPLAYS_BUCKET`, à créer avec une règle de cycle de vie à 30 jours ; aucune règle Storage ne l'ouvre aux clients) ; 300 par jour au plus (compteur dans `rateLimits`), un seul quota par page vue même après un envoi de secours.
+- Tests : émulateur (7) et e2e CMP-02 côté serveur.
+
+**Fait (13c-3)**
+- **Calculs purs** (`@ph/core/comportement`) : agrégation d'une journée par appareil (et `tous`, sans cartes), en compteurs additifs (cartes de clics, d'attention et de mouvements, sessions par palier de défilement, sections vues / lues plus de 3 s / sorties / conversions si lue, éléments, sources, variantes) ; cumuls par simple somme ; détection (aucune alerte sous 200 sessions ; clics morts > 2 %, rages > 0,5 %, hésitations > 10 %, section dont le taux de sortie dépasse 1,5 fois la moyenne, baisse de conversion > 20 % sur 7 jours contre les 28 précédents) ; tests A/B des pages (répartition `hash(sessionId) % 100`, bêta-binomial, bascule **proposée** à 95 %, 100 sessions minimum par variante).
+- **`comportementAgreger`** (3 h) : `comportementAgregats/{page}_{jour}_{appareil}` puis cumuls `{page}_{7j|30j|90j}_{appareil}` (une lecture par écran d'admin), alertes dédoublonnées (une par page, type et élément ; une alerte ignorée le reste ; une alerte traitée qui revient est rouverte), tâche `friction_page` dans la file si gravité ≥ 4, résultat des tests A/B en cours (jamais de bascule). Index ajoutés : sessions (page + jour), agrégats (page + appareil + jour).
+- Tests : 32 tests purs, 5 sur émulateur (CMP-03 côté données, CMP-04).
+
+**Fait (13c-4)** — écran `/admin/comportement` (maquette « Admin Comportement ») : page réelle dans un cadre à la largeur de référence (le traceur ne mesure jamais une page encadrée), six calques (clics, trajets, attention, défilement avec seuils 75/50/25 %, clics morts et rage encadrés, sorties par section) avec opacité réglable ; filtres page / appareil / période dans l'URL ; **une seule lecture** de l'agrégat pré-cumulé par affichage (CMP-03) ; indicateurs, alertes ouvertes (« Demander à l'IA » préremplit la question, « Marquer traitée » / « Ignorer » avec audit, permission `comportement.configurer`), éléments et sections (le survol d'une ligne la surligne sur la page). Onglet **Replays** (permission `comportement.replays`) : 30 dernières sessions avec leur issue, lecteur (curseur, trace, clics, défilement, vitesses ×1/×2/×4), chaque lecture journalisée (`adminLectureReplay`). Palette des cartes ajoutée aux tokens (`echelleChaleur`, `couleursComportement`). Index : sessions (page + aReplay + date), alertes (page + statut + gravité). e2e : CMP-03 et lecture de replay.
+
+**Fait (13c-5)** — assistant IA de l'admin (`/admin/ia`, maquette « Admin IA ») :
+- **Contrat** (`@ph/core/ia`) : sortie validée par Zod (et schéma JSON envoyé au modèle), contrôle automatique que **chaque valeur citée existe dans le contexte** (IA-01), bornes par mode (rapide 3 à 6, audit 7 étapes notées et 6 à 12, IA-04), étape et gain obligatoires (IA-05), coût en centimes (arrondi au-dessus), prompt système versionné (jamais « lead », aucun chiffre inventé), clé de cache.
+- **Serveur** (`@ph/firebase/ia`) : contexte de nuit `iaContexte/{périmètre}` (landings, parcours, emails, offres, fiches ; agrégats seulement, ≤ 6 000 jetons), analyse avec cache 24 h sans nouvel appel (IA-02, « Relancer » pour forcer), quota 30 par jour et par membre, budget 10 €/mois (alerte à 80 %, coupure à 100 %, IA-03), seuls les périmètres choisis envoyés (IA-06), une nouvelle tentative si la sortie est refusée, puis échec sans rien enregistrer d'inventé ; actions : tâche `recommandation_ia`, brouillon `abTests`, « faite », « ignorer » avec motif qui rejoint `config/ia.consignes` (audit à chaque action). Synthèse du lundi 7 h (`iaSyntheseHebdo`, Sonnet) envoyée aux superadmins avec l'évolution des notes (IA-07) ; `iaContexteNuit` à 3 h 30.
+- **Modèles** : Claude Haiku 4.5 par défaut, Claude Sonnet 5.5 pour l'analyse approfondie et la synthèse (avec repli serveur si le modèle décline) ; prompt système et contexte mis en cache. **Nouvelle dépendance** : `@anthropic-ai/sdk` dans `@ph/firebase`.
+- **Coupé sans clé** : sans `ANTHROPIC_API_KEY`, l'écran l'indique et le bouton est désactivé ; la Function du lundi ne fait rien.
+- Tests : 9 purs, 11 sur émulateur avec un faux modèle, e2e de l'écran.
+
+**Fait (13c-6)** — assistant de rédaction de Ma Fiche (IA_ADMIN §8) : dans l'éditeur « À propos », « Relire et corriger » et « Réécrire » (Plus professionnel, Plus chaleureux, Plus court, Plus convaincant) ; la proposition s'affiche à côté, « Remplacer mon texte » ou « Garder le mien », rien n'est enregistré sans « Enregistrer ». Serveur : route `/api/pro/redaction` (droit `fiche.modifier`), Claude Haiku 4.5, 900 jetons, 20 utilisations par jour et par entreprise (`iaQuotas/{artisanId_jour}`), limites 1 200 (présentation) et 400 (chantier) caractères, **toute certification citée (RGE, Qualibat, décennale) doit figurer dans les labels de la fiche** sinon la proposition est écartée après une nouvelle tentative ; journal `iaRedactions` sans le texte (type, action, ton, accepté, jetons, coût ; TTL 90 jours). Sans clé : message clair, édition manuelle intacte. Tests : 6 purs, 5 sur émulateur, e2e.
+
+**Fait ensuite (07/10/2026)** : « Ajouter un projet » reçoit une description (400 caractères) et l'assistant (« Rédiger à partir des infos », relire, réécrire) ; les réglages de l'IA sont modifiables à l'écran (assistant actif, synthèse du lundi, budget saisi en euros et stocké en centimes, quota du jour, retrait des consignes apprises ; audit `adminReglagesIa`).
+
+**Fait le 09/10/2026** :
+- **Questions de suivi** sur une analyse : même modèle et même contexte (préfixe en cache), quota et budget de l'assistant, 10 au plus par analyse, chaque valeur citée vérifiée dans le contexte (une nouvelle tentative, sinon refus sans rien enregistrer) ; échanges gardés dans `iaAnalyses.suivis`.
+- **Effet à 30 jours** : chaque nuit après le contexte (`iaContexteNuit`, seulement avec la clé), au plus 10 recommandations « faites » depuis 30 jours ; Haiku compare les valeurs des preuves d'origine au contexte du jour ; « avant » doit être une preuve d'origine, « après » une valeur du contexte actuel, sinon « Effet non mesurable » (une seule fois). Affiché sur la carte (verdict, résumé, avant → après). Champs `iaRecommandations.faiteLe` et `effet` ; index `statut` + `faiteLe`.
+- **Taux d'acceptation de la rédaction** dans Admin › IA (30 jours, par action, coût).
+- **« Utiliser ce texte »** : copie la proposition. Il n'existe pas d'éditeur de textes d'emails ou de pages dans l'admin (les modèles d'email sont dans le code, l'éditeur de séquence ne règle que l'ordre et les délais) : l'ouverture directe d'un éditeur attendra qu'un tel éditeur existe.
+
+**Reste du lot 13c** : variantes B affichées sur les pages (tests A/B des pages) — **à décider avec vous** : quelles pages et quels textes tester (le calcul et la bascule proposée sont prêts).
+
+**À signaler**
+1. COMPORTEMENT §3 parle de cellules de 40 px, §4 de 20 px : j'ai pris 20 px (l'agrégation pourra regrouper).
+2. Modèle : `sessionComportement` reçoit `sessionId`, `appareil`, `hauteur`, `champs`, `abandon`, `elements.*.hesitations`, `sortie.intention`, `jour` ; `conversion` devient l'objectif atteint (`inscription`, `demande`, `paiement`) au lieu d'un booléen.
+3. **Choix faits par moi (13c-3)** : seuil d'hésitation à 10 % des sessions (non chiffré dans COMPORTEMENT) ; « section qui fait partir » = taux de sortie > 1,5 × la moyenne des sections avec au moins 30 sorties ; les médianes des cumuls sont la moyenne des médianes du jour pondérée par les sessions (approximation) ; `scroll` stocke des nombres de sessions (la part se calcule à l'affichage). L'alerte « élément vu par moins de 30 % » n'est pas calculée : le traceur ne sait pas si un élément a été vu, seulement les sections.
+4. **Tests A/B des pages** : l'évaluation est prête, mais aucune page n'affiche encore de variante B (à décider page par page avec le contenu).
+5. **Choix faits par moi (13c-5)** : l'analyse se lance depuis une **action serveur** de l'admin (comme toutes les écritures du back-office) et non depuis une Function appelable ; la synthèse du lundi est une Function. La clé doit donc être posée côté site **et** côté Functions. Conversion dollars → euros à 0,95 pour le budget. « Utiliser ce texte » crée une tâche (l'ouverture directe de l'éditeur de séquence reste à faire) ; pas encore de questions de suivi sur une analyse ni de mesure de l'effet à 30 jours ; réglages de l'IA en lecture seule à l'écran. L'email `ia-synthese-hebdo` utilise le squelette (texte + bouton).
+6. **À créer avant la production** : le bucket des replays (UE) avec sa règle de cycle de vie à 30 jours, le secret `COMPORTEMENT_SALT_SECRET` et, pour activer l'assistant, `ANTHROPIC_API_KEY` (site et Functions).
+
+## 23. Lot 14 — Qualité et préparation de la mise en production (09/10/2026, rien déployé)
+
+Plan validé le 09/10/2026.
+
+**Fait**
+- **En-têtes de sécurité** (`apps/web/lib/securite.ts`, posés par `proxy.ts`) : CSP, HSTS (production seulement), `X-Frame-Options: SAMEORIGIN`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`. **Choix à valider** : pages publiques **sans nonce** (`script-src 'self' 'unsafe-inline'` + Google), car un nonce rendrait chaque page dynamique et supprimerait le cache (budget EXPLOITATION §1) ; espaces connectés (pro, admin, Mon espace) **avec nonce et `strict-dynamic`**. Cadres limités au site (et non `DENY`) : l'écran Comportement de l'admin affiche les pages publiques dans un cadre. Test e2e : en-têtes présents, aucune violation de CSP ; suites publique et pro vertes avec la CSP.
+- **App Check côté navigateur** (trou corrigé) : le serveur exigeait un jeton que le navigateur n'envoyait jamais (toutes les actions protégées auraient échoué en production). Chargé au premier geste du visiteur (pas d'effet sur l'affichage), jeton relu en en-tête ou dans un cookie court `ph_appcheck` (les Server Actions ne portent pas d'en-tête). Limite : une action déclenchée à la toute première interaction, avant l'arrivée du jeton (~1 s), est refusée une fois.
+- **Statistiques des fiches** (`statsJour`, trou corrigé : jamais écrites jusqu'ici, alors que la page Statistiques, le cycle de conversion et le rapport hebdomadaire en dépendent) : vues (une par onglet), clics sur le téléphone et sur « Demander un devis » par `POST /api/fiche/evenement` (compteur anonyme, sans cookie ni identifiant, robots écartés, même origine, débit limité) ; demandes reçues comptées à l'attribution. Non fait : `vuesAnnuaire`, `demandesRepondues`, `devisEnvoyes`, `sources`.
+- **Tâches planifiées** (`apps/functions/src/exploitation`) : `assurancesNuit` (décennale : J-30, J-7, J0, puis fiche retirée et label ôté jusqu'à la nouvelle attestation) ; `rapportHebdo` (lundi 8 h, Premium) ; `compteursMois` (**trou corrigé** : `demandesRecuesMois` n'était jamais remis à zéro, tout artisan restait bloqué à son quota dès le 2e mois) ; `intentionsPopularite` (1er du mois, 90 jours de demandes, rien sous 200 demandes) ; `comptesInactifs` (dimanche : avertissement `compte-inactif` puis suppression à 3 ans, jamais un artisan ni l'équipe, 100 suppressions au plus par passage). Tous testés sur émulateur. `purgesNuit` (2 h 30) : demandes et dossiers de diagnostic arrivés à `expireLe` (3 ans) anonymisés — coordonnées remplacées, précisions, photos (fichiers compris), IP, navigateur et messages effacés, statistiques gardées — et traces `matching` supprimées à 18 mois. Champ ajouté : `anonymiseeLe`.
+- **Flags et maintenance** (trous corrigés) : le site lisait les flags à la racine de `config/flags` alors que l'admin les écrit dans `valeurs` (aucun interrupteur de l'admin n'avait d'effet) ; l'interrupteur « maintenance » de l'admin est maintenant suivi par le proxy (relu toutes les 30 s), `MAINTENANCE=1` reste le recours. e2e.
+- **Migrations** : `executerMigration` (idempotent, lots de 400, reprise au curseur `migrations/{id}`) et `pnpm migrer <id> --dry-run | --executer` ; registre vide pour l'instant.
+- **Tests transverses** (`e2e/transverse.spec.ts`) sur 11 pages publiques et 4 appareils : aucune erreur axe sérieuse ou critique, focus visible au clavier, console et réseau sans erreur (ALL-02, ALL-03), titres et descriptions uniques (ALL-06). Corrigé au passage : liens au fil du texte soulignés (aide, avis), suffixe « PRO » du logo et prix barrés de `/pro` plus contrastés. **Dépendance** : `@axe-core/playwright` en développement dans `@ph/web` (déjà dans `@ph/ui`).
+- **Docs** : `docs/RUNBOOK.md` (incidents, maintenance, retour arrière, sauvegardes) et `docs/DEPLOIEMENT.md` (environnements, variables, ordre de déploiement, à faire une fois, tâches planifiées, liste de contrôle avec les 🔒 D13, D18, D20, D22).
+- Export et suppression de compte : déjà faits (Mon espace, Mon compte pro), vérifiés.
+
+**Reste**
+- Sauvegardes : commande `gcloud` à lancer une fois par environnement (DEPLOIEMENT §4), pas de code.
+- ALL-01 (captures comparées aux maquettes) : non automatisé. ALL-04 : une erreur dans l'espace pro, l'admin ou Mon espace s'affiche **dans le cadre** de l'espace (`ErreurSection` : message, identifiant d'incident envoyé à Sentry, « Réessayer ») ; les squelettes `loading.tsx` ont été écartés, car ils font partir la réponse en streaming (statut 200) et cassent le 403 de l'admin et les redirections de session ; ALL-02/03 étendus aux espaces connectés (`e2e-pro/transverse.spec.ts`, 8 pages pro et 8 pages admin) ; corrigé : logo de l'admin illisible sur le fond foncé, liens du tableau de conversion soulignés, image de test de connexion de Firestore autorisée par la CSP.
+- Lighthouse : budget suivi par la CI.
+- Rien n'est déployé : la mise en ligne attend le « go » du propriétaire et les 🔒 de DECISIONS.
+
+## 2. Incohérences et zones floues
+
+**Toutes tranchées le 27/09/2026** : propositions retenues et documents corrigés (DECISIONS D5, D6, D8, D15, D17 passées en ✅ ; nouvelles décisions D40 à D43). Détail conservé ci-dessous pour mémoire.
+
+1. **Deux fichiers de suivi.** CLAUDE.md, PLAN_DEV §2 et README citent `PROGRESSION.md` ; CLAUDE.md (« Où trouver quoi »), ARCHITECTURE §13 et les commandes `/nouveau-lot`, `/fin-lot`, `/reprise` citent `AVANCEMENT.md`.
+   → *Proposition* : `AVANCEMENT.md` = suivi détaillé (ce fichier), `PROGRESSION.md` = tableau de statut court ; les deux mis à jour par `/fin-lot`. Ou fusionner dans `AVANCEMENT.md` et supprimer `PROGRESSION.md` (plus simple).
+2. **Routes divergentes entre README/ACCEPTANCE et PLAN_DEV §4.**
+   | Écran | README / ACCEPTANCE / INTEGRATIONS | PLAN_DEV §4 / CONVERSION |
+   |---|---|---|
+   | Diagnostic | `/diagnostic-immobilier`, `/estimation`, `/[commune]` | `/diagnostic`, `/diagnostic/[commune]` |
+   | Connexion | `/pro/connexion` | `/connexion` |
+   | Avis | `/avis` | `/avis/[jeton]` |
+   | Paiement | `/pro/abonnement/premium` et `/visibilite` | `/pro/paiement?offre=&facturation=&code=` |
+   → *Proposition* : garder les routes de README (plus SEO pour `/diagnostic-immobilier/...`, déjà dans ACCEPTANCE) ; `/avis` avec `?jeton=` facultatif ; `/connexion` unique pour tous les publics avec redirection `/pro/connexion` → `/connexion?espace=pro` ; paiement : `/pro/abonnement/[offre]?facturation=&code=`. Mettre PLAN_DEV §4 et CONVERSION à jour en conséquence.
+3. **Emplacement du code : `lib/…` vs `packages/…`.** CLAUDE.md (règle 2 : `lib/schemas`), README, COMPTES §6.1, DATABASE (`lib/simulateur/formules.ts`), EMAILS et INTEGRATIONS parlent de `lib/` ; ARCHITECTURE et les prompts des lots 1-3 imposent `packages/core/*`.
+   → *Proposition* : ARCHITECTURE fait foi ; `lib/schemas` = `packages/core/schemas`, `lib/simulateur` = `packages/core/simulateur`, `lib/notifications/notifier.ts` = `apps/functions/src/notifications/notifier.ts` (ou `packages/firebase` côté serveur). Corriger CLAUDE.md et les autres documents.
+4. **Packs de crédits.** DECISIONS D29 : packs de 10, 25 et 50 crédits ; INTEGRATIONS §1 : `price_pack_5`, `price_pack_10`, `price_pack_25`.
+   → *Proposition* : D29 fait foi (10/25/50) ; les identifiants Stripe deviennent `price_pack_10/25/50`, et les packs restent pilotés par `packsCredits`.
+5. **Variables Stripe incomplètes.** INTEGRATIONS §8 n'a qu'un `STRIPE_PRICE_VISIBILITE` alors qu'il y a deux prix (annuel, mensuel) ; rien pour le siège supplémentaire (D26, quantité `seat`) ni pour les packs.
+   → *Proposition* : `STRIPE_PRICE_VISIBILITE_ANNUEL`, `STRIPE_PRICE_VISIBILITE_MENSUEL`, `STRIPE_PRICE_SIEGE`, `STRIPE_PRICE_PACK_10/25/50` (ou lecture par `lookup_key` Stripe, sans variables : plus robuste, créé par le script idempotent du lot 11).
+6. **Code promo.** INTEGRATIONS §1 : « −30 % sur le premier mois » (coupon `duration: once`) ; D32c/CONVERSION : codes personnels −30 % max, 1 fois / 90 j, expiration réelle. Un −30 % « premier mois » n'a pas de sens sur un annuel payé en une fois.
+   → *Proposition* : −30 % appliqué à la première facture (mensuelle ou annuelle), codes personnels selon D32c ; supprimer la mention générique d'INTEGRATIONS.
+7. **Fournisseur SMS.** D2 : Brevo ; EMAILS §1 : « Brevo SMS ou Twilio » ; variables génériques `SMS_API_KEY`.
+   → *Proposition* : Brevo seul, derrière une interface `EnvoiSms` pour pouvoir changer ; variable `BREVO_API_KEY`.
+8. **BigQuery.** README décrit COMPORTEMENT comme « chaîne BigQuery » et IA_ADMIN §3 lit « Firestore + BigQuery », alors que COMPORTEMENT §3 et COUTS excluent BigQuery au lancement.
+   → *Proposition* : pas de BigQuery au lancement ; `construireContexte` lit les agrégats Firestore (`cumuls 7/30/90 j`). Corriger README et IA_ADMIN.
+9. **Tailwind 4 et « preset ».** D37 : Tailwind 4 + preset ; Tailwind 4 se configure en CSS (`@theme`), la notion de preset JS est héritée de la v3.
+   → *Proposition* : le script de tokens génère `themes.css` + un fichier `@theme` partagé (`packages/config/tailwind/theme.css`) importé par le site et Storybook ; pas de `tailwind.config.js`.
+10. **Nombre de prompts.** README annonce « les 13 prompts » ; il y a 18 lots (0 à 14, plus 12b, 13b, 13c). → corriger README.
+11. **Route admin des appels d'offres.** ADMIN §2.5 : `/admin/leads` (le mot « lead » apparaît dans l'URL, visible par l'équipe) ; maquette `Admin Appels d offres`.
+    → *Proposition* : `/admin/appels-d-offres` (règle de vocabulaire D34b).
+12. **Case « jusqu'à 3 artisans ».** DATABASE §4 `miseEnRelation` : « case jusqu'à 3 artisans » ; MATCHING (en tête) dit que ce « 3 artisans par demande » est remplacé (demande garantie Premium = 1 artisan ; appels d'offres = 3 réponses max).
+    → *Proposition* : renommer le libellé de la case (« Être mis en relation avec des artisans ») et documenter dans DATABASE quel canal il déclenche. **À trancher par vous** : une demande du site qui n'est pas une demande garantie Premium devient-elle automatiquement un appel d'offres ?
+13. **Rayons.** Annuaire : filtre 5–60 km ; transmission des demandes : 10–100 km (D31c). Cohérent en soi, mais l'annuaire filtre-t-il sur la distance au client ou sur le rayon d'intervention déclaré par l'artisan ?
+    → *Proposition* : distance au client ≤ filtre ET client dans le rayon déclaré de l'artisan.
+14. **Branches.** CLAUDE.md : une branche `lot-XX-nom` par lot ; la session actuelle impose `claude/relaxed-meitner-lxsu0r`.
+    → *Proposition* : en session web, travailler sur la branche imposée ; sinon `lot-XX-nom`. Merci de confirmer.
+15. **Composants du lot 1.** Le prompt du lot 1 et ARCHITECTURE §5.3 citent Chip, Combobox, Toast… ; MOBILE ajoute Sheet, BottomNav, StickyActionBar. Aucun écart, mais le lot 1 est très gros (monorepo + ~22 composants + Storybook + CI + Lighthouse + Playwright + Sentry).
+    → *Proposition* : le découper en 1a (monorepo, config, CI, émulateurs, `core/format`, enveloppes) et 1b (tokens, composants, Storybook, layouts, pages d'erreur).
+16. **Données de départ.** Les chiffres annoncés concordent avec `docs/data/` (9 + 103 prestations, 15 familles, 137 intentions, 60 métiers, 11 communes). Aucun écart constaté.
+
+## 3. Lignes ⏳ de DECISIONS.md qui bloquent les premiers lots
+
+| Décision | Proposition | Lot touché | Pourquoi c'est bloquant |
+|---|---|---|---|
+| D5 Hébergement | Vercel `cdg1` | 1 | config Next.js (runtime, `output`), CI de prévisualisation |
+| D6 Suivi des erreurs | Sentry UE | 1 | intégration site + Functions au lot 1 |
+| D8 Feature flags | Remote Config + surcharge Firestore | 1-2 | `packages/core/flags.ts`, `config/flags` et règles au lot 2 |
+| D15 Projets Firebase | `portail-habitat-dev/-staging/-prod` | 1-2 | `.firebaserc`, garde-fou du seed (émulateur ou staging) |
+| D17 Dépôt Git | GitHub privé, `main` protégée, CI obligatoire | 1 | configuration de la CI et des branches |
+| D9 Antivirus | extension « Scan files » | 2 | champ de statut de scan et règles Storage des documents |
+| D26 Sièges | 3 inclus, +9 € HT | 2-4 | valeur par défaut de `siegesMax`, tests des invitations |
+| D27 / D28 Crédits | 5 / mois, 10 € HT l'unité | 2-3 | portefeuilles et `packages/core/leads/prix` |
+| D1 Emails | Resend | 4-5 | branchement des emails Auth (lot 4) et `notifier()` (lot 5) |
+| D14 Sous-domaines | tout sur le domaine, emails `notifications.` | 5 | expéditeurs et DNS Resend |
+
+Non bloquants avant le lot 5 : D2, D3, D4 (lot 7), D7, D19, D21, D23, D29, D32, D32c-e. Les 🔒 (D13, D18, D20, D22) ne bloquent que la mise en ligne.
+
+## 4. Variables d'environnement et comptes externes
+
+**Comptes à créer (MISE_EN_PROD étape 1)** : GitHub · Firebase Blaze (3 projets) · Vercel · Stripe (test) · Resend (domaine vérifié) · Brevo (SMS, expéditeur `PortailHab`) · Typesense Cloud UE · clé API Sirene INSEE · Sentry UE · Anthropic · registrar du domaine. Pour le lot 1, seuls **GitHub, Firebase (dev) et Sentry** sont nécessaires ; tout le reste fonctionne sur émulateurs et captures locales jusqu'aux lots concernés.
+
+| Service | Variables | Lot |
+|---|---|---|
+| Firebase (client) | `NEXT_PUBLIC_FIREBASE_API_KEY`, `_AUTH_DOMAIN`, `_PROJECT_ID`, `_STORAGE_BUCKET`, `_APP_ID`, `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` (App Check) | 1 |
+| Firebase (admin) | `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY` | 1 |
+| Site | `NEXT_PUBLIC_SITE_URL` | 1 |
+| Sentry | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` (+ `SENTRY_AUTH_TOKEN` pour les sourcemaps en CI, absent des docs) | 1 |
+| INSEE | `INSEE_API_KEY` | 4 |
+| Resend / emails | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, `EMAIL_FROM`, `EMAIL_FROM_PRO`, `EMAIL_FROM_HUMAIN`, `EMAIL_REPLY_TO`, `EMAIL_REPLY_TO_COMMERCIAL`, `EMAIL_CAPTURE`, `EMAIL_WHITELIST`, `NOTIF_SIGNING_SECRET` | 5 |
+| SMS (Brevo) | `SMS_API_KEY`, `SMS_SENDER` | 5 |
+| Typesense | `TYPESENSE_HOST`, `TYPESENSE_ADMIN_KEY`, `NEXT_PUBLIC_TYPESENSE_SEARCH_KEY` | 7 |
+| Stripe | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_PRICE_PREMIUM_MENSUEL`, `STRIPE_PRICE_PREMIUM_ANNUEL`, `STRIPE_PRICE_VISIBILITE` (à dédoubler, voir §2 n° 5) | 11 |
+| Partenaires | `PARTENAIRE_API_KEYS` (Secret Manager) | 12b |
+| Conversion | `RESEND_INBOUND_SECRET` (webhook Resend Inbound, adresse du signataire, route `/api/resend/inbound`) | 13b |
+| Comportement | `REPLAYS_BUCKET`, `COMPORTEMENT_SALT_SECRET` (Secret Manager) | 13c |
+| IA | `ANTHROPIC_API_KEY` (Secret Manager) | 13c |
+
+Les clés passent uniquement par `.env.local` (non commité) et les secrets Vercel / Firebase, jamais par le chat.
+
+## 5. Réponses du cadrage (27/09/2026)
+1. Suivi : fusion dans `AVANCEMENT.md` (D43).
+2. Routes : proposition validée (D40).
+3. Une demande du site hors quota Premium garanti devient automatiquement un appel d'offres (D41, MATCHING, DATABASE §4).
+4. Lot 1 découpé en 1a et 1b (D43, PROMPT_CLAUDE_CODE, PLAN_DEV §3).
+5. D5, D6, D8, D15, D17 : propositions par défaut retenues.
+6. Corrections documentaires appliquées (§2 n° 3 à 11). N° 13 (rayon de l'annuaire) : proposition retenue, à reporter dans MATCHING §4 au lot 9. N° 12 : libellé de la case corrigé dans DATABASE.
+
+## 24. Handoff du 13/10/2026 et lot 11 (formules 2026)
+
+**Handoff** : docs remplacés (blog, domaines, landings, paiements, site, IA du site, devis et factures). Régressions corrigées : décisions D40 à D50 du développement reprises en D73 à D83 ; synonymes de recherche du lot 7 remis (RECHERCHE §6).
+
+**Lot 11 refait selon PAIEMENTS.md (fait foi)**
+- `artisans.droits` (écrit par le webhook seulement) remplace `plan` et `optionVisibilite` ; `droitsDe()` dans `@ph/core/paiements` ; migration `001-formules-droits` (Visibilité → Fiche Pro, Premium → Tout inclus, D60).
+- Catalogue Stripe : Fiche Pro 29 €, Site Pro 9,90 €, Fiche + Site 34,90 €, Tout inclus 49 € (HT, mensuel), packs 50/110/290 crédits, pack IA 2,90 €. Plus d'annuel.
+- Changement de formule : Checkout sans abonnement ; montée immédiate au prorata (PAY-03) ; descente à l'échéance par planning Stripe (PAY-04). Grâce de 7 jours (PAY-08).
+- `/pro/abonnement` (maquette Mon Abonnement) : formule, crédits, carte, factures ; `?offre=` ouvre la fenêtre de paiement (récapitulatif HT/TVA/TTC, CGV) ; `/pro/facturation` et `/pro/abonnement/premium|visibilite` redirigent.
+- Fenêtre d'offre partagée (`features/offres/FenetreOffre`, PAY-10) : statistiques (Fiche Pro), appels d'offres (Tout inclus).
+- PAY-01 : plus aucun prix ni lien d'abonnement sur `/pro` (section Tarifs retirée).
+- Matching (D31) : demande envoyée depuis une fiche → l'artisan seul, quelle que soit sa formule ; sinon appel d'offres (plus de demandes garanties Premium). Tout inclus : −15 % et 12 h d'avance sur les appels d'offres.
+- Fiche publique : badge « Artisan recommandé » et téléphone avec Fiche Pro ; mention L111-7 reformulée.
+
+**Choix faits par moi, à valider**
+1. Paiement : la maquette montre une carte enregistrée et un bouton « Payer » ; CLAUDE.md règle 7 interdit toute saisie de carte chez nous. La fenêtre envoie vers Stripe Checkout (premier abonnement) ou laisse Stripe changer la formule (carte déjà enregistrée).
+2. Sièges (D26 ⏳) : 3 inclus en Tout inclus (ex-Premium), 1 sinon.
+3. Moteur de conversion (CONVERSION.md, toujours écrit en Visibilité/Premium) : ses étapes restent nommées ainsi ; elles vendent Fiche Pro et Tout inclus.
+4. Pack IA et sections « IA du site » de Mon abonnement : en attente du lot 10c (aucune IA du site encore).
+5. « Plus tard » de la fenêtre d'offre ne masque pas encore l'encart 30 jours (`encartsMasques`).
+6. Navigation « Mon compte » épinglée (D63, NAV-01) : pas encore faite.
+
+**Fait le 16/10/2026** : NAV-01 / D63 — la barre latérale ne garde que les outils ; « Mon compte » (initiales, « Équipe · Abonnement · Aide ») est épinglé en bas ; ses onglets Profil et sécurité · Équipe · Abonnement · Aide & contact s'affichent à l'identique sur les quatre pages selon le rôle ; sélecteur d'entreprise déplacé dans l'en-tête ; nouvelle page `/pro/aide` (formulaire, email, raccourcis, questions fréquentes ; pas de numéro de téléphone tant qu'un vrai n'est pas fourni). Le comptable arrive toujours sur l'abonnement.
+
+Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jamais une offre incluse, Fiche + Site pour qui a déjà l'autre moitié, aucun encart tant que la fiche n'est pas en ligne, « Plus tard » 30 jours dans `users/{uid}.encartsMasques` — nouveau champ), encarts de Ma fiche (numéro masqué, puis 5 projets atteints ; un seul par écran ; visibles par qui peut souscrire). Les emails n'affichent plus « Visibilité » ni « Premium » (identifiants internes seulement).
+
+**Reste** : encart du tableau de bord « au-delà du top 5 du secteur » (la position dans le secteur n'est pas encore calculée), plafond de 5 projets pour le compte gratuit (règle à confirmer : PAIEMENTS ne donne que le déclencheur), lancer la migration et changer les prix Stripe des abonnés existants (préavis 30 jours, D60).
+
+## 25. Lot 10e : landings par outil (14/10/2026)
+
+**Fait**
+- `/pro/trouver-des-chantiers` en ligne ; `/pro/site-internet-artisan` et `/pro/logiciel-devis-factures` construites mais fermées (404) derrière les flags `landingSite` et `landingDevis` tant que le site artisan (10b) et les devis (11b) ne sont pas livrés : on ne vante pas un outil absent.
+- Gabarit unique `features/landings/PageLanding` ; contenu dans `@ph/core/landings` (`contenuLanding`, à migrer dans le CMS).
+- Source d'acquisition (LAND-01) : le formulaire envoie `acquisition {source, utm_*}` ; gardée dans le brouillon (la première landing l'emporte), écrite dans `artisans.acquisition` à la création du compte (`pro` par défaut) ; l'URL de l'étape 2 porte `?source=`.
+- Étapes « scrollytelling » avec GSAP 3.12 + ScrollTrigger (`useGSAP`, `gsap.matchMedia`) : un geste = une étape, sortie libre ; liste simple sur téléphone et avec `prefers-reduced-motion`.
+- Barre mobile masquée quand un formulaire est visible ; tous les CTA vont au formulaire ; en-tête sans bouton orange (LAND-02).
+- Événements `dataLayer` avec `landing` (`lib/dataLayer.ts`) ; aucun gestionnaire de balises n'est chargé pour l'instant.
+- Preuve sociale lue dans `config/preuveSociale` (nouveau schéma) : masquée sans donnée réelle ; un témoignage sans `accordLe` n'est jamais affiché.
+- Flag `preuvesMarketing` (= `config.marketing.preuves`, désactivé) : seul lui affiche les avis fictifs du bandeau défilant, « Plus de 300 demandes… » et « Premier réseau de France ».
+- Landings dans le sitemap et autorisées dans robots.txt malgré `/pro/` ; ajoutées aux pages pro statiques (CSP sans nonce).
+- Tests : `landings.test.ts` (core), LAND-01 sur émulateur (brouillon et compte), `e2e/landings.spec.ts` (LAND-01 à LAND-07 sur 4 appareils).
+
+**Nouvelles dépendances** : `gsap` 3.12.5 et `@gsap/react` 2.1.1 (demandées par le handoff). **Modèle de données** : `config/preuveSociale`, `donnees.acquisition` du brouillon d'inscription, `acquisition` écrit sur chaque nouveau compte.
+
+**Choix faits seuls (à valider)**
+1. Phrases retirées ou reformulées faute de preuve (LANDINGS §7) : « En ligne en 5 minutes » → « Textes rédigés par l'IA » ; « plusieurs centaines d'euros » → « Ce qu'une agence vous facturerait » ; « 0 € pour commencer » → « Gratuit pour commencer » (aucun prix dans le hero).
+2. `pricing_section_viewed` part quand la section « Un seul compte / gratuit » est vue (la maquette n'a pas de section prix, et aucun prix avant l'inscription).
+
+**Reste**
+- `demo_played` et `site_example_clicked` : la démo `SiteGenerationDemo` et les exemples par métier attendent le site artisan (10b) et de vraies vidéos et captures.
+- Onboarding selon la source (LANDINGS §4) : la source est enregistrée ; la première action dédiée (site, devis) viendra avec ces outils.
+- Photos du hero (`public/landing/photos`) à fournir. Traceur de comportement branché (pages `landing-chantiers`, `landing-site`, `landing-devis`, rattachées à l’espace « pro » du traceur), visibles dans admin › Comportement et le contexte IA des landings.
+
+## 26. Lot 11b : devis et factures (14/10/2026)
+
+**Fait**
+- Cœur (`@ph/core/devis`) : totaux en centimes (remise avant TVA, TVA par taux, acompte, marge privée, franchise), `verifierMentionsDevis` et `verifierMentionsFacture` (mêmes fonctions à l'écran et sur le serveur), numéros D-/F-aaaa-nnnn, `assainirHtml` (b, i, u, a, ul, ol, li), textes légaux (conditions, rétractation, attestation TVA), libellés.
+- Données : collections `devis`, `facturesClients`, `modelesDevis`, `prestationsBiblio`, `parametresFacturation`, `compteurs` (schémas Zod) ; règles : lecture selon le rôle, **aucune écriture directe** (tout passe par le serveur), testées.
+- Permissions d'équipe ajoutées : `devis.gerer` (propriétaire, gérant, collaborateur) et `factures.emettre` (propriétaire, gérant).
+- Serveur : enregistrement (totaux et mentions recalculés), envoi (mentions revérifiées, DEV-01/02), statuts, facture et facture d'acompte (acomptes déduits du solde), paiements partiels, avoir ; numérotation dans la transaction de création, idempotente, **sans trou sous 100 créations simultanées (DEV-06)**.
+- PDF côté serveur (`@ph/emails/pdf`, pdfkit) : stocké à l'envoi dans Storage et servi tel quel ; le PDF téléchargé est identique, octet pour octet, à celui reçu par le client (DEV-05) ; annexes rétractation (DEV-03) et attestation TVA (DEV-04).
+- Email `devis-recu` au client avec un lien personnel de téléchargement (seule l'empreinte du jeton est stockée).
+- Écrans `/pro/devis` (devis, factures), éditeur avec totaux et mentions ✓/! en direct, sans aperçu PDF, détail d'un devis envoyé (accepté, refusé, acompte, facture, archive), facture (paiement, avoir, PDF), paramètres de facturation ; lien « Devis & factures » dans le menu.
+- Tests : core (24), serveur sur émulateur (11, dont DEV-06), règles, PDF (5), e2e DEV-01, DEV-02, DEV-05 + facture et paiement.
+
+**Nouvelle dépendance** : `pdfkit` (dans `@ph/emails` et `apps/web`, paquet externe de Next), au lieu de Chromium headless prévu par DATABASE §8 ter : beaucoup plus léger et moins cher dans une Function. À valider.
+
+**Choix faits seuls (à valider)**
+1. Le collaborateur peut faire des devis ; seuls propriétaire et gérant facturent. Le comptable lit les factures (règles) mais n'a pas l'écran dans son menu.
+2. Un devis envoyé est figé (le dupliquer pour en faire un nouveau) ; une facture est émise directement (pas de brouillon de facture), donc le numéro n'est jamais pris pour rien.
+3. Le client télécharge le PDF par un lien personnel (pas de pièce jointe) ; l'acceptation se fait encore « Bon pour accord » signé ou par l'artisan dans l'écran.
+
+**Reste**
+- **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
+- Lien de paiement Stripe Connect sur les factures : D61 ⏳.
+- ~~Dépôt d'un logo propre aux devis dans l'onglet Paramètres~~ : fait le 17/10 (voir plus bas).
+
+**Relances et échéances (17/10/2026)**
+- Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
+- Function `echeancesDevisFactures` chaque matin (8 h 50, Paris) : requêtes de groupe sur `devis` et `facturesClients` (3 index composites ajoutés ; fenêtre J−3 à J+20 pour borner la lecture). La relance est écrite en transaction, puis l'email part par `notifier()` ; conditions `encoreValable` ajoutées (devis toujours envoyé, facture toujours due).
+- Emails : `relance-devis` rédigé, nouveau `facture-relance` (reste dû, échéance, pénalités rappelées à J+15, + 40 € si client pro, lien personnel vers le PDF `/api/facture-client/…`).
+- Écrans : bouton « Relancer » et historique des relances sur la facture ; « Marquer expirés » sur la liste des devis (devis envoyés hors validité) ; mention des relances automatiques sous les factures (maquette).
+- **Modèle de données (signalé)** : `devis.relanceLe` (relance J+7 partie) et `facturesClients.jetonHash` (empreinte du dernier lien envoyé ; chaque relance crée un lien neuf, les précédents cessent de marcher).
+- **Choix à confirmer** : les relances de facture partent au client de l'artisan au nom de l'entreprise (catégorie `activite`) ; la relance J+7 d'un devis ne contient pas de lien (le client garde celui du premier email, qui reste valable).
+- Tests : 7 tests du cœur, 5 tests sur émulateur (`tests/relancesDevis.test.ts`).
+
+**Devis depuis « Mes demandes » (17/10/2026)**
+- Bouton « Créer un devis » sur une demande acceptée (membre avec `devis.gerer`) → `/pro/devis/nouveau?demande=` : client (nom, email, téléphone, code postal et ville) et objet repris, précisions du particulier affichées au-dessus de l'éditeur. Rien n'est lu avant l'acceptation (`lireDevisDepuisDemande` renvoie `null`) et le serveur refuse un `demandeId` non accepté.
+- La mise en relation suit le devis (`attributionApresDevis`, cœur testé) : envoyé → `devis_envoye` (avec `devis: { montantCentimes, storagePath, envoyeLe }` une fois le PDF produit), accepté → `devis_accepte`, refusé → `devis_refuse` ; le particulier le voit dans son espace. `demandes.statut` n'est pas modifié (à décider si « devis reçus » doit suivre).
+- Tests : 2 tests du cœur, 3 sur émulateur, 1 test de l'éditeur, étape ajoutée à l'e2e PRO-02.
+
+**Modèles et bibliothèque de prestations (17/10/2026)**
+- Onglet « Modèles » de Devis & factures (maquette) : cartes des modèles (lignes, « à partir de » HT, « Utilisé n fois », « Utiliser ce modèle » → `/pro/devis/nouveau?modele=`) et tableau de la bibliothèque (désignation, unité, prix HT, TVA, coût privé ; ajout et suppression).
+- Éditeur : liste « + Depuis la bibliothèque… » (select natif) qui ajoute la ligne d'un clic (la ligne vide de départ est remplacée). « Enregistrer comme modèle » sur un devis envoyé (titre = objet).
+- Serveur : `gererPrestation`, `gererModele`, `lireBibliotheque`, compteur `usage` incrémenté à la création d'un devis depuis un modèle ; plafonds 300 prestations et 50 modèles (choix signalé, pour borner les lectures à chaque ouverture de l'éditeur). Routes `/api/pro/devis/bibliotheque` et `/api/pro/devis/modeles` (`devis.gerer`). L'ancien schéma `entreePrestationBiblio` (jamais utilisé) est remplacé.
+- Tests : 2 sur émulateur, 1 e2e (bibliothèque, modèle utilisé, reprise dans l'éditeur).
+
+**Logo sur les PDF (17/10/2026)**
+- Le logo de « Ma fiche » (déjà vérifié au dépôt, 2 Mo) est repris en haut des devis et factures produits à partir de maintenant ; absent, hors du dossier `artisans/{id}/logo/` ou illisible (SVG, WebP non pris en charge par le moteur PDF) : le PDF part sans lui. Un PDF déjà produit n'est jamais régénéré (DEV-05).
+- Choix signalé : pas de second logo propre aux devis pour l'instant (la maquette prévoit un dépôt dans l'onglet Paramètres) ; à ajouter si l'artisan doit pouvoir avoir un logo différent de sa fiche.
+
+**Signature en ligne par le client (17/10/2026)**
+- Quand l'artisan coche « Signature électronique », l'email `devis-recu` ajoute « Accepter le devis en ligne » (lien personnel `/devis-client/{artisan}.{devis}.{jeton}`, même jeton que le PDF, dont seule l'empreinte est gardée). La page montre le résumé, le PDF à télécharger et le formulaire : nom et prénom + « Bon pour accord » obligatoires.
+- Serveur `signerDevis` (transaction) : jeton vérifié, `signatureDevis` (cœur testé : devis envoyé, valable, signature activée), devis `accepte`, `signature: { nom, ip, le, hashPdf }` (DATABASE §8 bis), mise en relation suivie (`devis_accepte`), email `devis-accepte` rédigé pour le propriétaire. Un devis déjà accepté, expiré ou à signer sur papier affiche la raison.
+- Choix signalé : signature électronique **simple** (eIDAS) ; l'adresse IP est conservée avec la signature comme preuve (donnée personnelle, mentionnée sur la page). Une signature avancée (prestataire type Yousign) serait une nouvelle dépendance à décider.
+- Tests : 2 cœur, 2 sur émulateur, 1 e2e.
+
+**IBAN chiffré (17/10/2026)**
+- Champ IBAN dans les paramètres de facturation : vérifié (pays, longueur, clé modulo 97, cœur `ibanValide`), chiffré par le serveur en AES-256-GCM (`ibanChiffre`), seuls les 4 derniers caractères (`ibanFin`) sont lus par l'espace pro ; jamais renvoyé au navigateur. Laisser le champ vide le garde, « Retirer l'IBAN » le supprime.
+- Factures (pas les avoirs) : ligne « Paiement par virement : IBAN FR76 … » dans les conditions, déchiffrée au moment du PDF.
+- **À configurer (signalé)** : secret `IBAN_CLE_CHIFFREMENT` (32 octets en base64) en staging et production. Sans lui en production, l'IBAN est refusé avec un message ; hors production, une clé de développement fixe est utilisée. Changer la clé rend les IBAN déjà enregistrés illisibles (l'artisan les ressaisit).
+- **Modèle de données (signalé)** : `parametresFacturation.ibanChiffre`, `ibanFin` (DATABASE §8 bis prévoyait `iban` chiffré).
+- Tests : 3 cœur, 2 sur émulateur.
+
+**Cachet de l'entreprise (17/10/2026)**
+- Paramètres de facturation : « Ajouter un cachet » (PNG ou JPEG, 2 Mo, fond transparent conseillé), « Changer », « Retirer ». Le cachet est posé à côté de « Bon pour accord » sur les devis où « Tampon » est coché, et sous les conditions des factures. Un PDF déjà produit ne change pas (DEV-05).
+- **Règle de sécurité ajoutée (signalée)** : `storage.rules` `artisans/{aid}/tampon/{fichier}` : jamais lisible par un client (lu par le serveur pour le PDF), création par propriétaire ou gérant, image de 2 Mo, sans écrasement. 3 cas de test.
+- **Modèle de données (signalé)** : `parametresFacturation.tamponChemin` (DATABASE §8 bis prévoyait `tampon: Media?`), gardé quand les paramètres sont réenregistrés.
+- Tests : 1 PDF, 2 sur émulateur.
+- CI : la médiathèque passe désormais (la configuration Firebase manquait sur la page de l'éditeur).
+
+**Logo propre aux devis et factures (17/10/2026)**
+- Paramètres de facturation : « Ajouter un logo », « Changer », « Retirer » (PNG ou JPEG, 2 Mo). Sans lui, le logo de « Ma fiche » reste repris en haut des PDF. Un PDF déjà produit ne change pas.
+- Rangé dans le dossier public existant `artisans/{aid}/logo/` (nom `devis-…`) : **aucune nouvelle règle Storage**. Même service que le cachet (`enregistrerImageFacturation`, route `/api/pro/devis/image`).
+- **Modèle de données (signalé)** : `parametresFacturation.logoChemin` (DATABASE §8 bis prévoyait `logo: Media`), gardé quand les paramètres sont réenregistrés.
+- **Écart avec la maquette (signalé)** : elle accepte aussi SVG et WebP ; le générateur de PDF ne sait poser que PNG et JPEG, donc seuls ces deux formats sont proposés.
+- Tests : 1 sur émulateur (dépôt, conservation, refus d'un fichier non image, retrait).
+
+## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
+Fait :
+- Cœur `packages/core/src/sites/` : schémas (section → ligne → colonne → 16 éléments, réglages par appareil), validation des actions et liens (SITE-09), sous-domaine, formulaire (4 champs figés en gratuit), DNS, site de départ depuis la fiche (sans IA ni chiffre inventé), contrôles SEO, logique de l'éditeur (historique de 80 états, sections, éléments, nouvelles pages).
+- Données (DATABASE §15 bis) : `sites/{id}` (+ `pages`, `reglages/navigation`, `versions`), index `sitesSlugs` et `sitesDomaines` ; aucune écriture directe (règles testées). Permission `site.gerer` (propriétaire, gérant).
+- Serveur `@ph/firebase/sites` : création avec réservation du sous-domaine, pages, navigation à part (SITE-11), thème, formulaire (Site Pro seulement, SITE-13), publication avec liens vérifiés et 20 versions gardées (SITE-08, SITE-09), remise en ligne d'une version, envoi du formulaire → demande attribuée directement, hors matching (SITE-03, SITE-12).
+- Offre du site suivie depuis les droits écrits par le webhook Stripe (Site Pro ↔ gratuit, SITE-06 pour l'offre ; le domaine personnel viendra avec les domaines).
+- Rendu public : `proxy.ts` réécrit l'hôte d'un site vers `/s/{hôte}` (jamais servi sur le domaine de la plateforme) ; HTML statique sans cookie (SITE-07), cache partagé 30 s ; CSP propre aux sites (script fixe par empreinte + Turnstile), HSTS sans sous-domaines sur le domaine de l'artisan ; API `/api/sites/demande` sur le domaine du site (Turnstile, débit limité).
+- Écrans : menu « Mon site » ; `/pro/site` (création du site, onglets Pages, Domaine, Statistiques, Formulaire ; Publier ; versions) ; éditeur `/pro/site/editeur` (calques, réglages des éléments, masquage par appareil et texte mobile, pages, SEO, navigation, styles, aperçu 1200/768/390, annuler/rétablir, enregistrer, publier).
+- e2e `e2e-pro/site.spec.ts` : SITE-03, 07, 08, 09, 10, 11, 13 (iPhone et ordinateur) ; sites servis en local sur `{slug}.localhost`.
+
+Choix à signaler :
+- **Hébergement** : D45 (SITE_INTERNET §5) prévoit Cloudflare for SaaS + R2 ; DOMAINES.md et le handoff prévoient Vercel. Le rendu est fait par l'application Next.js (Vercel) avec un cache de 30 s ; passer à Cloudflare plus tard ne change que la couche de service (le modèle de données et les versions restent). **À confirmer.**
+- Aperçu de l'éditeur dans un cadre sans script (sécurité de l'espace pro) : le menu mobile ne s'ouvre pas dans l'aperçu, il fonctionne sur le site publié.
+- Formulaire : le type « photos » n'est pas encore proposé (envoi de fichiers à faire).
+
+Domaines (fait, cas C) : connexion d'un domaine existant en Site Pro (A et CNAME lus chez l'hébergeur Vercel, TXT `_portailhabitat`, jamais de MX), vérification par ligne via DNS-over-HTTPS (DOM-04), Function `verifierDomaines` toutes les 2 min (2 min la 1re heure, 30 min jusqu'à 72 h, puis `echec`), « Vérifier maintenant » 1 / 30 s, index des hôtes écrit seulement après vérification, 301 vers l'adresse canonique (DOM-05), retrait par l'artisan, résiliation → retour au sous-domaine (DOM-07), emails `site-domaine-actif` et `site-domaine-echec`. Modèle de données : champ `sites/{id}.domaine` (DOMAINES §5). Secrets à fournir : `VERCEL_API_TOKEN`, `VERCEL_PROJET_SITES`, `VERCEL_EQUIPE` ; sans eux, la connexion est refusée en production.
+
+Statistiques (fait) : mesure maison sans cookie, ni IP, ni identifiant de visiteur ; une balise par page vue (`/api/sites/t`, robots écartés, même origine, débit limité) ; compteurs `sites/{id}/statsJour/{jour}` et `statsMois/{mois}` (vues, demandes, vues par page) ; onglet Statistiques : 30 jours pour tous, 12 mois avec Site Pro (12 lectures mensuelles, COUTS.md), tableau lisible en plus du graphique.
+Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS incorrect 3 jours → `casse`, index retirés (le sous-domaine reprend le relais), email `site-domaine-casse` ; corrigé → réactivé.
+
+**Panneau « Ajouter » (17/10/2026)** : premier panneau de la barre de gauche (SITE_INTERNET §4.1). Les 16 éléments s'ajoutent juste après l'élément sélectionné (ou dans une nouvelle section en bas de page) et leurs réglages s'ouvrent ; 12 sections prêtes (bandeau, présentation, services, chiffres clés, avis, réalisations, étapes, atouts, appel à l'action, contact, zone d'intervention, articles du blog) s'insèrent après la section de l'élément sélectionné. Une étape d'historique par ajout. Aucun fait inventé : chiffres et avis restent « [à compléter] », ce qui bloque la publication tant qu'ils ne sont pas remplis. Cœur `sites/ajout.ts` (6 tests), e2e dans `site.spec.ts`.
+
+**Mots liés et SITE-02 (17/10/2026)** : dans les réglages d'un titre ou d'un texte, sélectionner un passage puis « Lier la sélection » le stocke en `[mot](#Ln)` (premier numéro libre) ; chaque mot lié reçoit son action (même champ que les boutons, validée en direct) et peut être retiré (le mot reste). Cœur `lierSelection`, `retirerLien`, `motsLies` (4 tests). SITE-02 couvert en e2e : texte différent sur mobile et masquage sur mobile sans effet sur l'aperçu ordinateur.
+
+**Mes sections (17/10/2026)** : « Enregistrer » sur une section dans Calques la garde (`sites/{id}/sectionsEnregistrees`, 30 au plus, DATABASE §15 bis) ; elle réapparaît dans Ajouter › Mes sections (lue à l'ouverture du panneau seulement) et s'insère avec des identifiants neufs (`copieSection`, aussi utilisé par « Dupliquer »). Route `/api/pro/site/sections` (`site.gerer`). Tests : 1 sur émulateur, 1 cœur, 1 e2e. **D47 est ⏳** : « Mes sections » suit SITE_INTERNET §4.7 et se retire sans effet sur le reste si D47 change ; les **6 modèles fournis** ne sont pas codés en attendant la validation de D47.
+
+**Médiathèque (17/10/2026)** : « Importer une image » dans les réglages d'un élément image : dépôt dans Storage `sites/{id}/medias/`, vérification serveur (image JPEG, PNG, WebP ou AVIF, 8 Mo), document `sites/{id}/medias/{mediaId}` (DATABASE §15 bis), clé `up:{mediaId}` choisie pour l'élément. Les images importées s'ajoutent aux photos de réalisations publiées dans la liste ; le site public ne lit que celles citées par ses pages.
+- **Règle de sécurité ajoutée (signalée)** : `storage.rules` `match /sites/{aid}/medias/{fichier}` : lecture publique ; création par propriétaire ou gérant seulement (`site.gerer`), image de 8 Mo au plus, jamais d'écrasement ; suppression par les mêmes. 5 cas ajoutés dans `tests/regles/storage.test.ts` (refus vérifiés ici ; les envois autorisés échouent dans ce conteneur comme tous les envois Storage, CI fait foi).
+- L'image importée s'ajoute tout de suite aux médias de l'éditeur (liste et aperçu), sans recharger la page.
+- Pas encore : variantes WebP 640/1280/1920 (redimensionnement côté serveur, nouvelle dépendance à valider), suppression d'une image depuis l'éditeur, fichiers téléchargeables (`Action.fichierId`, antivirus).
+
+Reste (lot 10b) : achat de domaine OVH (cas B, compte revendeur et clés à fournir ; DOM-03), statistiques Search Console sans cookie, variantes WebP de la médiathèque, 6 modèles de site fournis (D47 ⏳), Lighthouse SITE-04.
+
+## 28. Lot 10c : IA du site (16/10/2026, en cours)
+Fait (tranche 1, IA_SITE §2, §4, §5) :
+- Opérations sur l'arbre du site, jamais de HTML (D49) : texte, réglages, insérer / remplacer / supprimer / déplacer une section, créer / supprimer une page (jamais l'accueil ni les mentions), thème, navigation, SEO, mot lié. Sections proposées sans identifiants, complétées par le catalogue des réglages par défaut, puis revalidées par le schéma ; une seule erreur et rien n'est appliqué (SITE-IA-04).
+- Garde-fou des faits : chiffres, années, notes et certifications absents de la fiche, des réponses de l'artisan ou des textes du site deviennent « [à compléter] » ; la publication est refusée tant qu'il en reste (SITE-IA-05).
+- Service `demanderIaSite` : droits revérifiés côté serveur (SITE-IA-03, aucun appel au modèle sans droit), crédit réservé avant l'appel et rendu en cas d'échec (SITE-IA-08), une seule relance avec l'erreur, session `sites/{id}/iaSessions` avec version du prompt et coût, aucune écriture des pages ni des versions (SITE-IA-10). Sortie structurée : `{resume, question, operations}` où `operations` est un texte JSON (les sorties structurées n'acceptent ni objets libres ni schémas récursifs) validé par Zod.
+- Panneau IA de l'éditeur : action, portée (sélection, page, site), proposition lisible, Appliquer en une étape d'historique (SITE-IA-06), Autre version, question de précision, faits à compléter signalés, cadenas et fenêtre d'offre pour les actions réservées à Site Pro.
+- Modèle de données : `sites/{id}/ia/{mois|essai}` (crédits) et `sites/{id}/iaSessions/{id}`.
+
+À valider (⏳, codés en réglages modifiables dans `packages/core/src/sites/ia/reglages.ts`) :
+- D48 : essai gratuit = 3 améliorations de texte à vie (aperçu IA de l'accueil : tranche 2).
+- D50 : Haiku 5.5 pour textes, SEO, sections, thème ; Sonnet 5.5 pour les pages.
+- D51 : 5 créations, 60 sections/pages, 300 textes par mois en Site Pro, doublés en Tout inclus.
+- Clé `ANTHROPIC_API_KEY` à fournir en secret ; sans elle, l'IA répond « pas encore disponible » et ne consomme rien.
+
+Fait (tranche 2, IA_SITE §3.1, §4) :
+- Création assistée (`/pro/site/editeur?creation=1`, boutons « Créer avec l'IA » dans Mon site et le panneau IA) : « J'ai repris de votre fiche » avec une case pour exclure chaque information, puis une question à la fois (puces, « Passer », « Je ne sais pas »), 6 questions au plus plus les pages locales si le rayon dépasse 10 km ; rien de la fiche n'est redemandé (SITE-IA-07).
+- Génération page par page, l'accueil d'abord, barre de progression ; chaque page est appliquée en une étape d'historique (Ctrl Z annule la dernière), « Réessayer » reprend où l'échec a eu lieu. Le brouillon est enregistré avant de commencer ; l'ancien site est gardé en « Avant IA – date » dans le nouveau panneau « Modèles », restaurable en une étape (SITE-IA-09).
+- Aperçu gratuit (compte sans Site Pro) : seule l'accueil est générée, une fois, et montrée sur une copie avec le filigrane « Aperçu » ; Publier désactivé, le site n'est pas modifié ; « Activer Site Pro » ouvre la fenêtre d'offre (SITE-IA-01).
+- Reprise après paiement : la page de confirmation propose « Terminer la création de mon site » (`?ia=reprendre`), l'éditeur reprend l'accueil de l'aperçu puis génère les autres pages avec les mêmes réponses, sans question (SITE-IA-02). Sans clé IA, la reprise refuse avant de consommer un crédit.
+- Modèle de données : `sites/{id}/iaCreation/courante` (réponses, plan, pages faites, aperçu) et `sites/{id}/modeles/{id}`.
+- Tests : 20 e2e du site (dont SITE-IA-01, 02, 07, 09 sans clé IA), 10 tests serveur sur émulateur.
+
+Choix signalé : le lien de paiement de la fenêtre d'offre reste `/pro/abonnement?offre=site` (comme partout) ; le retour dans l'éditeur se fait par la page de confirmation plutôt que par un paramètre `retour` dans l'URL de paiement (IA_SITE §4).
+
+Fait (tranche 3, IA_SITE §1, §4, §5) :
+- Filtre de modération avant tout appel et tout crédit : propos injurieux, pratiques interdites (sans facture, au noir), informations trompeuses (faux avis, certification inventée), critique d'un concurrent nommé. Même règle ajoutée au prompt (version `site.v2`). La réponse « Autre » du questionnaire passe aussi par le filtre.
+- Routeur : action « Automatique (l'IA choisit) » par défaut avec Site Pro ; un appel court (Haiku, 200 jetons, sans crédit) choisit le mode et la portée, sortie illisible → textes. Sans Site Pro, pas de routeur : textes sur les essais.
+- Demandes restantes affichées dans le panneau (« 52 modifications restantes ce mois-ci », essais gratuits restants), mises à jour après chaque demande.
+
+- Aperçu en direct d'une proposition de l'IA avant « Appliquer » : appliquée à une copie, la page concernée (ou la page créée) s'affiche avec les sections nouvelles et les éléments modifiés entourés ; rien n'est surligné sur le site publié.
+- Fin de la création : trois variantes visuelles (Moderne, Chantier, Élégant : palette, polices, boutons) à choisir, sans appel à l'IA, appliquées en direct (Ctrl Z pour revenir).
+
+Lot 10c : tout le périmètre d'IA_SITE est codé. Reste à vérifier la génération réelle avec la clé `ANTHROPIC_API_KEY` (temps de création des 7 pages, SITE-01 < 90 s) et à valider D48, D50, D51. La palette « extraite du logo » reste la palette par défaut des tokens tant que l'extraction depuis le logo n'est pas faite (traitement d'image côté serveur, à prévoir avec les médias). Génération réelle à vérifier dès que la clé `ANTHROPIC_API_KEY` est fournie.
+
+## 29. Lot 10d : Blog des artisans (16/10/2026, en cours)
+Plan validé le 16/10/2026 (« adapter ce qu'il faut »). D67 à D71 ⏳ non codés : pas de mode autonome ni de pilote automatique (D70, BLOG-10 à 13), pas de fournisseur de mots-clés (D68), textes réseaux à copier seulement (D69), pas de commentaires (D67).
+
+Fait (tranche 1, cœur et serveur) :
+- Cœur `@ph/core/blog` : statuts et libellés, adresse unique tirée du titre, corps assaini (liste blanche du blog, `script`/`iframe`/`style` retirés avec leur contenu, liens externes `nofollow`, liens internes simples, BLOG-09), contrôle SEO (6 points bloquants, 6 recommandations, score), mentions légales lues dans les paramètres de Devis & factures (BLOG-05), crédits de rédaction 5/15 (D66), export CSV (BLOG-08), articles planifiés à publier.
+- `versCsv` partagé (`;`, BOM UTF-8, CRLF, formules neutralisées) : les deux exports du back-office l'utilisent aussi (troisième répétition).
+- Nettoyage HTML des devis généralisé (règles par usage) ; correction : les balises à chiffre (`h2`, `h3`) sont reconnues.
+- Serveur `@ph/firebase/blog` : enregistrer (adresse qui suit le titre, ancienne adresse gardée pour la redirection 301, article en ligne jamais enregistré avec un point bloquant), publier / planifier / archiver / brouillon / corbeille / restaurer en groupe (refus détaillé par article, BLOG-04), catégories (nom unique, ordre, renommage sans copie, suppression refusée si utilisée), tags (retirés des articles à la suppression), lectures (liste, article, classement, articles publiés d'un site seulement, BLOG-06 et 07, adresse ou redirection).
+- Tâches planifiées : `publierArticlesBlog` (5 min) et `viderCorbeilleBlogNuit` (03 h 20, 30 jours).
+- Index Firestore des requêtes du blog. Règles inchangées : `sites/{id}/**` est déjà en lecture membre et en écriture serveur seulement ; le site public est rendu côté serveur.
+- Tests : cœur (blog 100 % des lignes), 10 tests serveur sur émulateur.
+
+Écarts signalés :
+- Compteur des rédactions IA prévu dans `sites/{id}/ia/{mois}` (à côté de celui du site) plutôt que `usageIA/…` (tranche 3).
+- `blogAbonnes` et positions Search Console reportés (non décrits dans BLOG.md / clés à fournir).
+- Image à la une : référence de média du site (`src`) plutôt qu'une URL, comme les images des pages.
+- Hébergement affiché dans les mentions : Portail Habitat, sites hébergés chez Vercel (choix d'hébergement par défaut, à confirmer avec D45).
+- Directeur de la publication : raison sociale par défaut (aucun champ dédié dans les paramètres).
+
+Fait (tranche 2, écrans) :
+- Onglet **Blog** de Mon site : résumé, crédits IA du mois (« Tout inclus : 15 articles / mois » pour Site Pro), vues Articles · Catégories et tags · Corbeille ; recherche (titre, tag, catégorie), sélection, actions groupées avec bilan des refus, export CSV (sélection ou liste affichée, BLOG-08). Sans Site Pro : encart et fenêtre d'offre, éditeur inaccessible (BLOG-01).
+- **Éditeur d'article** (`/pro/site/blog/nouveau`, `/pro/site/blog/{id}`) : image à la une (photos des Réalisations) et texte alternatif, titre, sous-titre, adresse qui suit le titre, corps riche (gras, italique, souligné, H2, H3, paragraphe, listes, citation, lien vers les pages du site ou https, annuler), méta-description, catégorie, auteur, tags créés à la volée, mentions lues dans Devis & factures. Panneaux Mots-clés (principal et secondaires, sans données inventées : D68), SEO (score, aperçu Google, bloquants puis recommandations) et Diffusion (texte prêt à copier par réseau, D69). Publier ou Planifier avec un point bloquant ouvre l'onglet SEO (BLOG-04).
+- Tests : `e2e-pro/blog.spec.ts` (BLOG-01, 04, 08) ; site et export du back-office repassés.
+
+Choix signalés : pas de pilote automatique ni d'« Article en un clic » à l'écran (D70) ; statistiques de lecture et panneau IA de l'éditeur avec la tranche 3.
+
+Fait (tranche 3a, le blog sur le site) :
+- Élément « Articles du blog » rendu (grille de cartes de 240 px minimum, liste, à la une ; nombre, catégorie, résumé), réglable dans l'éditeur de site et visible dans son aperçu ; articles lus seulement si la page contient l'élément (COUTS.md), cache de 30 s.
+- Pages publiques : `/blog` (onglets des catégories dans leur ordre), `/blog/{slug}` (ancienne adresse → 301), `/blog/categorie/{slug}` indexée, `/blog/tag/{slug}` en `noindex`, `/blog/rss.xml`, `BlogPosting` lié à l'entreprise, mentions légales lues en direct sous chaque article (BLOG-05). `sitemap.xml` (pages, blog, catégories utilisées, articles) et `robots.txt` du site.
+- Vues par article comptées par la mesure sans cookie existante (colonne Vues de l'onglet Blog).
+- Tests : rendu (cartes, index, article, `BlogPosting`, RSS, plan du site), e2e de bout en bout (article publié visible sur `{slug}.localhost`, mentions modifiées visibles sans republier, RSS).
+
+Fait (tranche 3b, IA du blog) :
+- Panneau **IA** de l'éditeur d'article : rédaction complète (sujet, type d'article, longueur, citer chantiers et avis) qui remplace le texte et pose le badge « rédigé avec l'IA » ; retouches illimitées : titres, méta-description, texte alternatif, catégorie et tags (tags proposés ajoutés d'un clic), textes réseaux (onglet Diffusion), idées d'articles (une idée devient le sujet). Rien n'est enregistré ni publié par l'IA.
+- Serveur `demanderIaBlog` : filtre de modération, droits revérifiés, crédit `blogArticles` du mois réservé puis rendu en cas d'échec (BLOG-02 : 6e refusée en Site Pro, 16e en Tout inclus ; BLOG-14 : simple message en Tout inclus), retouches sans décompte (BLOG-03), une relance si la sortie est hors format, faits non sourcés remplacés par « [à compléter] » (texte seulement, jamais dans les liens), session journalisée (`blog.v1`, coût).
+- Contrôle SEO : un « [à compléter] » restant bloque la publication.
+- Tests : cœur (schémas, lecture des sorties, garde-fou HTML, messages), 4 tests serveur avec un faux client, e2e sans clé (message clair, quota intact).
+
+Emails (16/10/2026) : `blog-quota-atteint` (dernier article du quota, date de remise à zéro, lien Tout inclus pour Site Pro) ; `site-domaine-attente` (rappel unique après 24 h sans DNS, avec le tableau des enregistrements manquants) ; modèles `site-domaine-renouvele` et `site-domaine-transfert` rédigés, déclenchés avec l'achat OVH (clés à fournir). `blog-a-valider` et `blog-publie` attendent le pilote automatique (D70). Catalogue : 77 modèles rédigés.
+
+Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à valider : mode autonome et pilote automatique (D70, BLOG-10 à 13), données de mots-clés (D68), publication automatique sur les réseaux (D69), commentaires (D67), prix d'un blog renforcé (D71). Reportés : statistiques détaillées de lecture (lecteurs uniques, rebond, sources), positions Search Console (clés à fournir), abonnés au blog. La génération réelle est à vérifier avec la clé `ANTHROPIC_API_KEY`.
+
+## 30. Décisions du 17/10/2026 : modèles de site, option Blog
+
+**Modèles de site (D47 ✅)** : les 6 modèles de la maquette (Artisan classique, Premium photo, Dépannage 24/7, Minimal, Chaleureux, Bleu franc) dans Éditeur › Modèles, au-dessus de « Mes modèles ». « Appliquer à tout le site » change le thème et la mise en page (bandeau photo plein écran voilé, sombre avec boutons accent, ou minimal tout blanc) en **gardant les textes et photos** du site ; « Couleurs et polices seulement » ne change que le thème. Chaque modèle part du site d'avant le premier modèle appliqué (les variantes ne s'additionnent pas) ; « Revenir à l'état précédent » le restaure, Ctrl Z aussi. Cœur `appliquerModeleSite` (7 tests), 1 e2e. **Écart avec la maquette** : la maquette reconstruit les pages depuis des textes d'exemple ; ici on garde les textes de l'artisan (rien d'inventé).
+
+**Option Blog (D71 ✅)** : 9,90 € HT/mois, +20 articles rédigés par l'IA (5 + 20 = 25), pour Site Pro et Fiche + Site seulement.
+- Catalogue Stripe : prix `ph_option_blog` (mensuel), élément ajouté à l'abonnement en cours (prorata facturé tout de suite, carte déjà enregistrée chez Stripe, aucune saisie chez nous) ; retrait sans remboursement du mois entamé.
+- Webhook : `droits.optionBlog` (nouveau champ, écrit par le webhook seulement, faux si la formule ne le permet pas) et `abonnements/{id}.optionBlog`. Passage à Tout inclus : l'option est retirée de l'abonnement dans la même modification ; descente à l'échéance : gardée seulement si la nouvelle formule la permet.
+- Écrans : `?offre=blog` ouvre la fenêtre de l'option (HT, TVA, TTC, CGV) ; sans site, la fenêtre Site Pro s'ouvre d'abord ; encart « Option Blog » sur Mon abonnement quand elle est souscrite (Retirer) ; lien « Option Blog : +20 articles / mois » à côté du compteur d'articles.
+- **Modèle de données (signalé)** : `droits.optionBlog`, `abonnements.optionBlog`. Le prix Stripe se crée avec `pnpm stripe:produits`.
+- Tests : 4 cœur, 3 sur émulateur (webhook, ajout/retrait, montée vers Tout inclus).
+
+**Blog autonome (D70 ✅, 17/10/2026)** : « ✦ Article en un clic » et pilote automatique dans l'onglet Blog.
+- Article en un clic : sujet facultatif (sinon une idée de l'IA dont le mot-clé n'est pas déjà pris), rédaction (1 crédit), catégorie, photo des réalisations + texte alternatif, liens internes complétés jusqu'à 3 (« Pour aller plus loin »), corrections SEO automatiques (mot-clé dans le titre, longueurs, texte alternatif), textes réseaux. « Je relis » : brouillon ; « Planifier seul » : planifié le 1er du mois avant le pic de recherche — **sans DataForSEO (clés à fournir), date de repli : dans 7 jours à 8 h**.
+- Pilote : rythmes 2 par mois, 1 par semaine, 2 par semaine (Tout inclus seulement, fenêtre d'offre sinon, BLOG-13) ; 3 prochains sujets, « Autre sujet » ; jamais deux articles sur le même mot-clé. Function `piloteBlog` (toutes les heures) : 48 h avant la date, l'article est rédigé en brouillon et l'email `blog-a-valider` part avec un lien personnel `/pro/blog-valider/…` ; la page ne valide qu'au clic sur « Valider la publication » (un lien d'email ouvert par un antivirus ne publie rien). Sans clic, jamais publié (BLOG-12). Clic après la date : publié tout de suite.
+- **Modèle de données (signalé)** : `sites/{id}/reglagesBlog/pilote` (serveur seulement, aucune règle client), `articles.pilote {jetonHash, publierLe, valideLe}` ; index `reglagesBlog (actif, prochaineLe)` ; nouveau modèle d'email `blog-a-valider`.
+- Tests : 10 cœur, 5 sur émulateur (BLOG-10 à 13), 1 e2e. Reste : la rédaction réelle attend `ANTHROPIC_API_KEY` ; les volumes et tendances de mots-clés attendent DataForSEO (D68).
+
+## Décisions prises en cours de route
+(date, décision, document mis à jour)
+- 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
+- 27/09/2026 — D47 barème des appels d'offres, D48 matching (propositions ⏳) — DECISIONS, docs/data ; STATS_DEMANDES §4 (emplacement des paramètres).
+- 27/09/2026 — D44 versions du socle (Next.js 16, TypeScript 6, ESLint 9, Zod 4 en français) — DECISIONS, CLAUDE.md, README, PROMPT_CLAUDE_CODE. EXPLOITATION §5 : DEPLOIEMENT.md au lot 14.
+- 27/09/2026 — D40 routes, D41 aiguillage des demandes, D42 emplacement du code et Tailwind 4, D43 suivi et découpage du lot 1 — DECISIONS, PLAN_DEV, README, ACCEPTANCE, INTEGRATIONS, CONVERSION, ADMIN, MATCHING, DATABASE, EMAILS, IA_ADMIN, COMPTES, ARCHITECTURE, PROMPT_CLAUDE_CODE, CLAUDE.md.
+
+## Journal
+- 27/09/2026 — Rangement du dépôt (`docs/`, `CLAUDE.md` et `.claude/` à la racine). Lot 0 : cadrage produit.
+- 27/09/2026 — Réponses reçues, documents corrigés, lot 0 clos.
+- 27/09/2026 — Lot 1a terminé (socle technique). Décision D44 : Next.js 16, TypeScript 6.
+- 27/09/2026 — Lot 1b terminé (design system). Décisions D45 (contraste) et D46 (budget JS) proposées, à valider.
+- 27/09/2026 — Lot 2 terminé (données et sécurité). Dix corrections de sécurité par rapport à DATABASE §12 (§8).
+- 27/09/2026 — Lot 3 terminé (logique métier pure, 9 modules). Décisions D47 (barème) et D48 (matching) proposées, à valider.
+- 27/09/2026 — Lot 4 terminé (comptes, équipes, session, seed). Nouveau statut de demande `appel_offres`, dépendance `tsx`.
+- 28/09/2026 — Lot 5 terminé (emails, SMS, notifications). Parcours Playwright + Mailpit reportés aux lots 8 et 10.
+- 28/09/2026 — Lot 6 terminé (pages publiques, SEO, cookies). Décision D49 proposée ; textes légaux et visuels à fournir.
+- 28/09/2026 — Lot 7 terminé (recherche de projet). Typesense prêt mais inactif (D4 à valider, clés à fournir).
+- 28/09/2026 — Lot 8 terminé (simulateur, reprise, diagnostic, avis, connexion particulier, Mon espace). Points à trancher : §14.
+- 28/09/2026 — Lot 9 terminé (annuaire, fiche publique). Formule de pertinence à confirmer (§15).
+- 02/10/2026 — Lot 12 terminé (matching, appels d'offres, déblocage, scores de nuit). D50 : 60 minutes d'avance Premium.
+- 02/10/2026 — Lot 12b terminé (demandes partenaires : webhook, SMS de confirmation, matching A/B/C, invendues).
+- 05/10/2026 — Lot 13b en grande partie fait (moteur de conversion, codes personnels, demandes offertes, écran admin). Restes et points à trancher : §21.
+- 09/10/2026 — Lot 13 terminé (journal en direct, questions de suivi et effet à 30 jours de l'IA, recherches manquées, témoignage J+5). Lot 14 en cours : sécurité, App Check, statistiques des fiches, tâches planifiées, migrations, tests transverses, RUNBOOK et DEPLOIEMENT.
+- 14/10/2026 — Handoff intégré ; lot 11 refait selon PAIEMENTS.md (formules 2026, droits, Mon abonnement, fenêtre d'offre). Détail et choix à valider : §24.
+- 14/10/2026 — Lot 10e : landing « Trouver des chantiers » en ligne, landings site et devis prêtes derrière flags, source d'acquisition enregistrée sur le compte. Détail : §25.
+- 14/10/2026 — Lot 11b en grande partie fait (devis, factures, PDF, numérotation sans trou, mentions vérifiées). Restes et choix : §26.
+- 14/10/2026 — Lot 10b en cours : sites artisans créés, édités, publiés et servis (sous-domaine), formulaire → Mes demandes. Domaines et statistiques à faire. Détail et choix : §27.
+- 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
+- 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
+- 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.

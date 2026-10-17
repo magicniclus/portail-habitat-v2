@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="image-slot.js"></script></helmet>
+<div ref="{{ refRoot }}" style="width:100%;max-width:950px;margin:0 auto;box-sizing:border-box;border:1px solid #E6E0D8;border-radius:18px;background:#fff;overflow:hidden;display:flex;flex-direction:column;font-family:inherit;color:#17191C;text-align:left">
+  <sc-if value="{{ aVideo }}" hint-placeholder-val="{{ false }}">
+    <video src="{{ video }}" poster="{{ poster }}" autoplay="" muted="" loop="" playsinline="" preload="none" aria-label="Démonstration : création d'un site d'artisan en quelques minutes" style="width:100%;aspect-ratio:16 / 9;object-fit:cover;display:block"></video>
+  </sc-if>
+  <sc-if value="{{ sansVideo }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:none;display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #E6E0D8;background:#FFFEFC">
+      <span style="display:flex;gap:6px;flex:none"><span style="width:10px;height:10px;border-radius:50%;background:#E6E0D8"></span><span style="width:10px;height:10px;border-radius:50%;background:#E6E0D8"></span><span style="width:10px;height:10px;border-radius:50%;background:#E6E0D8"></span></span>
+      <span style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:8px;background:#F5F0E8;font-size:13px;color:#666A70;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">{{ urlBarre }}</span>
+      <span style="flex:none;font-size:12px;font-weight:700;color:var(--color-accent-700)">{{ chrono }}</span>
+    </div>
+    <div style="flex:none;display:flex;gap:6px;padding:10px 14px;overflow-x:auto;border-bottom:1px solid #E6E0D8" role="tablist" aria-label="Étapes de la démonstration">
+      <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="6"><button type="button" role="tab" aria-selected="{{ e.sel }}" onClick="{{ e.aller }}" style="{{ e.style }}"><span style="{{ e.styleN }}">{{ e.n }}</span>{{ e.label }}</button></sc-for>
+    </div>
+    <div style="position:relative;aspect-ratio:16 / 9;display:grid;grid-template-rows:minmax(0,1fr);background:#F5F0E8;overflow:hidden;container-type:size">
+      <span aria-hidden="true" style="position:absolute;inset:0;background-image:radial-gradient(rgba(32,30,29,.09) 1px,transparent 1.2px);background-size:20px 20px"></span>
+
+      <div style="{{ p.0 }}">
+        <div style="width:min(88%,640px);background:#fff;border:1px solid #E6E0D8;border-radius:14px;overflow:hidden">
+          <div style="padding:clamp(14px,3%,22px) clamp(14px,3%,22px) 12px;display:grid;gap:4px">
+            <span style="font-size:clamp(10px,1.1vw,12px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-accent-700)">Étape 1 sur 3</span>
+            <span style="font-size:clamp(14px,2vw,20px);font-weight:700">Quelle est votre entreprise ?</span>
+            <span style="font-size:clamp(10px,1.2vw,13px);color:#666A70">Nom ou numéro SIRET : on récupère le reste pour vous.</span>
+          </div>
+          <div style="padding:0 clamp(14px,3%,22px) 14px">
+            <span style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--color-accent);border-radius:9px;padding:9px 12px;font-size:clamp(11px,1.5vw,15px)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666A70" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><span>{{ saisie }}</span><span style="width:1.5px;height:1.1em;background:#17191C"></span></span>
+          </div>
+          <div style="{{ styleSuggestion }}">
+            <span style="width:34px;height:34px;border-radius:8px;background:#292B2D;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">BR</span>
+            <span style="display:grid;gap:1px;min-width:0;flex:1"><span style="font-size:clamp(11px,1.4vw,14px);font-weight:700">Bertrand Rénovation</span><span style="font-size:clamp(10px,1.1vw,12px);color:#666A70">SIRET 852 147 963 00021 · Bordeaux</span></span>
+            <span style="font-size:clamp(10px,1.1vw,12px);font-weight:700;color:#18864B;flex:none">Trouvée</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ p.1 }}">
+        <div style="width:min(92%,720px);background:#fff;border:1px solid #E6E0D8;border-radius:14px;padding:clamp(16px,3.4%,28px);display:grid;gap:16px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:44px;height:44px;border-radius:10px;background:#292B2D;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">BR</span>
+            <span style="display:grid;gap:2px;flex:1;min-width:0"><span style="font-size:clamp(13px,1.8vw,18px);font-weight:700">Bertrand Rénovation</span><span style="font-size:clamp(10px,1.2vw,13px);color:#666A70">Couvreur · zingueur — Bordeaux (33000)</span></span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:#18864B;flex:none"><span style="width:18px;height:18px;border-radius:50%;background:#18864B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px">✓</span>Récupéré</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ infos }}" as="f" hint-placeholder-count="4"><span style="{{ f.style }}"><span style="font-size:clamp(9px,1vw,11px);color:#666A70;text-transform:uppercase;letter-spacing:.05em">{{ f.k }}</span><span style="font-size:clamp(11px,1.3vw,14px);font-weight:600">{{ f.v }}</span></span></sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ p.2 }}">
+        <div style="width:min(94%,760px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px">
+          <div style="background:#fff;border:1px solid #E6E0D8;border-radius:14px;padding:clamp(12px,2.6%,20px);display:grid;gap:10px;align-content:start">
+            <span style="display:flex;align-items:center;gap:8px;font-size:clamp(11px,1.5vw,15px);font-weight:700"><span style="width:26px;height:26px;border-radius:8px;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"></path></svg></span>L'IA crée votre site</span>
+            <span style="height:6px;border-radius:999px;background:var(--color-accent-100);overflow:hidden;display:block"><span style="{{ barre }}"></span></span>
+            <sc-for list="{{ taches }}" as="tk" hint-placeholder-count="5"><span style="{{ tk.style }}"><span style="{{ tk.puce }}">{{ tk.ic }}</span><span style="min-width:0;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tk.t }}</span></span></sc-for>
+          </div>
+          <div style="background:#fff;border:1px solid #E6E0D8;border-radius:14px;padding:clamp(12px,2.6%,20px);display:grid;gap:8px;align-content:start">
+            <span style="font-size:clamp(9px,1vw,11px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#666A70">Texte en cours</span>
+            <span style="font-size:clamp(12px,1.6vw,16px);font-weight:700;line-height:1.25">Couvreur à Bordeaux : toiture, zinguerie et réparation de fuites</span>
+            <span style="font-size:clamp(10px,1.2vw,13px);line-height:1.5;color:#666A70">{{ redaction }}<span style="display:inline-block;width:1.5px;height:1em;background:#17191C;vertical-align:-2px;margin-left:1px"></span></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ p.3 }}">
+        <div style="display:flex;align-items:center;justify-content:center;gap:clamp(16px,4%,40px);height:100%;width:94%">
+          <div style="height:92%;aspect-ratio:9 / 18.6;background:#17191C;border-radius:30px;padding:6px;box-sizing:border-box;flex:none">
+            <div ref="{{ refMobile }}" style="position:relative;height:100%;background:#fff;border-radius:24px;overflow:hidden">
+              <div style="{{ styleMobile }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:44px 18px 14px;border-bottom:1px solid #eee"><span style="display:flex;align-items:center;gap:9px"><span style="width:36px;height:36px;border-radius:9px;background:#1d4f73;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center">BR</span><strong style="font-size:16px;color:#14222e">Bertrand Rénovation</strong></span><span style="display:grid;gap:4px"><span style="width:20px;height:2px;background:#14222e"></span><span style="width:20px;height:2px;background:#14222e"></span><span style="width:20px;height:2px;background:#14222e"></span></span></div>
+                <div style="padding:22px 18px;background:#f2ede4;display:grid;gap:12px">
+                  <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#c97a2b">Couvreur à Bordeaux</span>
+                  <span style="font-size:28px;line-height:1.08;font-weight:800;color:#14222e">Votre toiture, refaite dans les règles de l'art.</span>
+                  <span style="font-size:14px;line-height:1.5;color:#4a4f55">Réfection, zinguerie et fuites. Chantier nettoyé chaque soir.</span>
+                  <span style="position:relative;aspect-ratio:4 / 3;border-radius:12px;overflow:hidden;background:#d9d2c5"><image-slot id="demo-site-m-hero" shape="rect" placeholder="Photo de toiture"></image-slot></span>
+                  <span style="display:grid;gap:6px;font-size:13px;font-weight:600;color:#14222e"><span style="display:flex;gap:7px;align-items:center"><span style="width:18px;height:18px;border-radius:50%;background:#c97a2b;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">✓</span>Garantie décennale</span><span style="display:flex;gap:7px;align-items:center"><span style="width:18px;height:18px;border-radius:50%;background:#c97a2b;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">✓</span>Devis sous 48 h</span></span>
+                </div>
+                <div style="padding:22px 18px;display:grid;gap:10px">
+                  <span style="font-size:20px;font-weight:800;color:#14222e">Nos prestations</span>
+                  <div style="display:flex;gap:12px;align-items:center;border:1px solid #e8e2d8;border-radius:12px;padding:12px"><span style="width:36px;height:36px;border-radius:9px;background:#f2ede4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4f73" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7M5 10v10h14V10"></path></svg></span><span style="display:grid;gap:2px"><strong style="font-size:15px;color:#14222e">Couverture</strong><span style="font-size:12.5px;line-height:1.4;color:#666A70">Tuiles, ardoises, zinc : réfection complète ou partielle.</span></span></div>
+                  <div style="display:flex;gap:12px;align-items:center;border:1px solid #e8e2d8;border-radius:12px;padding:12px"><span style="width:36px;height:36px;border-radius:9px;background:#f2ede4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4f73" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M6 6v6a6 6 0 0 0 12 0V6"></path></svg></span><span style="display:grid;gap:2px"><strong style="font-size:15px;color:#14222e">Zinguerie</strong><span style="font-size:12.5px;line-height:1.4;color:#666A70">Gouttières, chéneaux, descentes et habillages.</span></span></div>
+                  <div style="display:flex;gap:12px;align-items:center;border:1px solid #e8e2d8;border-radius:12px;padding:12px"><span style="width:36px;height:36px;border-radius:9px;background:#f2ede4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4f73" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"></path></svg></span><span style="display:grid;gap:2px"><strong style="font-size:15px;color:#14222e">Recherche de fuite</strong><span style="font-size:12.5px;line-height:1.4;color:#666A70">Diagnostic et réparation, bâchage en urgence.</span></span></div>
+                  <div style="display:flex;gap:12px;align-items:center;border:1px solid #e8e2d8;border-radius:12px;padding:12px"><span style="width:36px;height:36px;border-radius:9px;background:#f2ede4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4f73" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16M6 16h12M8 12h8M10 8h4"></path></svg></span><span style="display:grid;gap:2px"><strong style="font-size:15px;color:#14222e">Isolation</strong><span style="font-size:12.5px;line-height:1.4;color:#666A70">Combles et sarking, pour un toit qui garde la chaleur.</span></span></div>
+                </div>
+                <div style="margin:0 18px 90px;padding:20px;border-radius:14px;background:#1d4f73;color:#fff;display:grid;gap:8px"><span style="font-size:20px;font-weight:800">Un projet de toiture ?</span><span style="font-size:13px;opacity:.85">Réponse sous 48 h.</span></div>
+              </div>
+              <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px 16px;background:rgba(255,255,255,.96);border-top:1px solid #eee"><span style="background:#1d4f73;color:#fff;border-radius:9px;padding:11px 0;text-align:center;font-weight:700;font-size:14px">Appeler</span><span style="background:#c97a2b;color:#fff;border-radius:9px;padding:11px 0;text-align:center;font-weight:700;font-size:14px">Devis gratuit</span></div>
+              <span style="position:absolute;left:50%;top:10px;transform:translateX(-50%);width:34%;height:20px;border-radius:999px;background:#17191C"></span>
+            </div>
+          </div>
+          <ul style="list-style:none;margin:0;padding:0;display:grid;gap:clamp(8px,2cqh,16px);max-width:250px">
+            <sc-for list="{{ notesMobile }}" as="nm" hint-placeholder-count="3"><li style="{{ nm.style }}"><span style="width:26px;height:26px;border-radius:8px;background:var(--color-accent-100,#fff2ea);border:1px solid var(--color-accent-300,#ffc19c);color:var(--color-accent-700,#b4460a);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">{{ nm.n }}</span><span style="font-size:clamp(11px,1.5vw,15px);line-height:1.35;font-weight:600">{{ nm.t }}</span></li></sc-for>
+          </ul>
+        </div>
+      </div>
+
+      <div style="{{ p.4 }}">
+        <div style="width:min(88%,640px);background:#fff;border:1px solid #E6E0D8;border-radius:14px;padding:clamp(18px,3.6%,30px);display:grid;gap:16px">
+          <span style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:#e8f4ec;color:#18864B;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">✓</span><span style="display:grid;gap:1px"><span style="font-size:clamp(13px,1.8vw,18px);font-weight:700">Votre site est en ligne</span><span style="font-size:clamp(10px,1.2vw,13px);color:#666A70">Enregistré et publié il y a quelques secondes</span></span></span>
+          <span style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;background:#F5F0E8;font-size:clamp(10px,1.3vw,14px);font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#18864B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>bertrand-renovation.portailhabitat.fr</span>
+          <span style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ suites }}" as="su" hint-placeholder-count="3"><span style="display:grid;gap:2px;padding:8px 10px;border-radius:8px;border:1px solid #E6E0D8"><strong style="font-size:clamp(9px,1.1vw,12px)">{{ su.t }}</strong><span style="font-size:clamp(8px,1vw,11px);color:#666A70">{{ su.l }}</span></span></sc-for>
+          </span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:640},&quot;video&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;poster&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { i: 0, tic: 0 };
+  componentDidMount() {
+    this._calme = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!this._calme) this._iv = setInterval(() => { if (!this._vu) return; this.setState((s) => { const tic = s.tic + 1; return tic >= 32 ? { i: (s.i + 1) % 5, tic: 0 } : { tic }; }); }, 100);
+    if (typeof IntersectionObserver !== "undefined" && this._el) { this._io = new IntersectionObserver((es) => { this._vu = es[0].isIntersecting; if (this._vu && !this._joue) { this._joue = true; try { (window.dataLayer = window.dataLayer || []).push({ event: "demo_played", landing: "site" }); } catch (e) {} } }, { threshold: 0.4 }); this._io.observe(this._el); } else this._vu = true;
+  }
+  observer(el, cle, base) { if (!el) return; this._ros = this._ros || {}; if (this._ros[cle]) this._ros[cle].disconnect(); const f = () => { const w = el.clientWidth; if (w > 0) { const v = w / base; if (Math.abs(v - (this.state[cle] || 0)) > 0.002) this.setState({ [cle]: v }); } }; if (typeof ResizeObserver !== "undefined") { this._ros[cle] = new ResizeObserver(f); this._ros[cle].observe(el); } setTimeout(f, 0); }
+  componentWillUnmount() { Object.values(this._ros || {}).forEach((r) => r.disconnect()); clearInterval(this._iv); this._io && this._io.disconnect(); }
+  renderVals() {
+    const i = this.state.i, k = this._calme ? 32 : this.state.tic, ez = "cubic-bezier(.2,.8,.2,1)", calme = this._calme;
+    const L = ["Entreprise", "Infos", "Génération", "Mobile", "Publier"];
+    const p = {}; for (let n = 0; n < 5; n++) p[n] = { gridArea: "1 / 1", height: "100%", minHeight: 0, overflow: "hidden", boxSizing: "border-box", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: "3%", opacity: n === i ? 1 : 0, transform: n === i ? "none" : "translateY(16px) scale(.98)", transition: calme ? "none" : "opacity .45s ease, transform .6s " + ez, pointerEvents: n === i ? "auto" : "none" };
+    const nom = "Bertrand Rénovation", nc = i === 0 ? Math.min(nom.length, Math.floor(k * 0.9)) : nom.length;
+    const fade = (on, d) => ({ opacity: on ? 1 : 0, transform: on ? "none" : "translateY(6px)", transition: calme ? "none" : "opacity .35s ease, transform .4s " + ez + (d ? " " + d + "ms" : "") });
+    const INF = [["Activité", "Couverture, zinguerie"], ["Zone", "30 km autour de Bordeaux"], ["Avis Google", "Récupérés depuis votre fiche"], ["Photos", "12 réalisations importées"]];
+    const TK = ["Page d'accueil", "Prestations", "Réalisations", "Avis clients", "Référencement Google"];
+    const done = i === 2 ? Math.floor(k / 6) : 0;
+    const TXT = "Bertrand Rénovation intervient à Bordeaux et dans un rayon de 30 km pour la réfection de toiture, la zinguerie et la réparation de fuites.";
+    const nT = i === 2 ? Math.floor(TXT.length * Math.min(1, k / 28)) : 0;
+    const video = this.props.video || "";
+    const sb = this.state.sb || 0.6, sm = this.state.sm || 0.6, pb = i === 3 ? Math.min(1, Math.max(0, (k - 4) / 26)) : 0, pmo = i === 3 ? Math.min(1, Math.max(0, (k - 4) / 26)) : 0;
+    const tr = calme ? "none" : "transform .12s linear";
+    return { refMobile: (el) => this.observer(el, "sm", 375),
+      styleMobile: { position: "absolute", left: 0, top: 0, width: "375px", transformOrigin: "0 0", transform: "scale(" + sm + ") translateY(calc(" + (-pmo).toFixed(3) + " * (100% - 720px)))", transition: tr },
+      notesMobile: ["Bouton d'appel toujours visible", "Textes lisibles sans zoomer", "Demande de devis en une minute"].map((x, n) => ({ key: n, n: n + 1, t: x, style: { display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "12px", background: "#fff", border: "1px solid #E6E0D8", opacity: i === 3 && k > 6 + n * 6 ? 1 : 0, transform: i === 3 && k > 6 + n * 6 ? "none" : "translateX(-10px)", transition: calme ? "none" : "opacity .4s ease, transform .5s " + ez } })),
+      aVideo: !!video, sansVideo: !video, video, poster: this.props.poster || "", p,
+      refRoot: (el) => { this._el = el; },
+      urlBarre: i >= 3 ? "bertrand-renovation.portailhabitat.fr" : "portailhabitat.fr/pro/site/creation",
+      chrono: ["0:05", "0:20", "1:10", "2:40", "3:00"][i],
+      saisie: nom.slice(0, nc),
+      styleSuggestion: Object.assign({ display: "flex", alignItems: "center", gap: "10px", padding: "10px clamp(14px,3%,22px)", borderTop: "1px solid #E6E0D8", background: "var(--color-accent-100)" }, fade(i === 0 && k > 22)),
+      infos: INF.map(([kk, v], n) => ({ key: n, k: kk, v, style: Object.assign({ display: "grid", gap: "2px", padding: "8px 10px", borderRadius: "8px", background: "#F5F0E8" }, fade(i === 1 && k > 3 + n * 5)) })),
+      barre: { display: "block", height: "100%", background: "var(--color-accent)", borderRadius: "999px", width: (i === 2 ? Math.min(100, Math.round(k / 30 * 100)) : 0) + "%", transition: calme ? "none" : "width .1s linear" },
+      taches: TK.map((t, n) => { const ok = n < done, cur = n === done; return { key: n, t, ic: ok ? "✓" : cur ? "…" : "", style: { display: "flex", alignItems: "center", gap: "8px", fontSize: "clamp(10px,1.3vw,14px)", fontWeight: ok || cur ? 600 : 400, color: ok || cur ? "#17191C" : "#666A70" }, puce: { width: "18px", height: "18px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: 700, background: ok ? "#18864B" : cur ? "var(--color-accent-100)" : "#F5F0E8", color: ok ? "#fff" : "var(--color-accent-700)", border: cur ? "1px solid var(--color-accent-300)" : "1px solid transparent" } }; }),
+      redaction: TXT.slice(0, nT),
+      services: [["Toiture", "Réfection, tuiles, ardoises"], ["Zinguerie", "Gouttières, chéneaux"], ["Fuites", "Intervention rapide"]].map(([t, l], n) => ({ key: n, t, l, style: Object.assign({ display: "grid", gap: "2px", padding: "8px", borderRadius: "6px", background: "#F5F0E8" }, fade(i === 3 && k > 4 + n * 4)) })),
+      suites: [["Modifier", "Textes et photos"], ["Partager", "Lien et QR code"], ["Recevoir", "Demandes de devis"]].map(([t, l], n) => ({ key: n, t, l })),
+      etapes: L.map((label, n) => ({ key: n, n: n + 1, label, sel: String(n === i), aller: () => this.setState({ i: n, tic: 0 }),
+        style: { flex: "none", display: "inline-flex", alignItems: "center", gap: "6px", border: "1px solid " + (n === i ? "var(--color-accent)" : "#E6E0D8"), background: n === i ? "var(--color-accent-100)" : "#fff", color: n === i ? "var(--color-accent-800)" : "#666A70", borderRadius: "999px", padding: "4px 12px 4px 4px", minHeight: "32px", fontSize: "13px", fontWeight: 600, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" },
+        styleN: { width: "22px", height: "22px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, background: n < i ? "#18864B" : n === i ? "var(--color-accent)" : "#F5F0E8", color: n <= i ? "#fff" : "#666A70" } })) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "demo-portail-habitat",
+    "dev": "portail-habitat-dev",
+    "staging": "portail-habitat-staging",
+    "prod": "portail-habitat-prod"
+  }
+}
