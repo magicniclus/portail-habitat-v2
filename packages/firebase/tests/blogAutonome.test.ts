@@ -187,8 +187,8 @@ describe('pilote automatique (D70 : toujours « Je valide d’abord »)', () => 
     expect(await preparerArticlesPilote(s())).toEqual({ prepares: 1, echecs: 0 });
     const envoi = envois.find((e) => e.modele === 'blog-a-valider')!;
     const lienValider = (envoi.secrets as { lienValider: string }).lienValider;
-    expect(lienValider).toMatch(/^\/blog-valider\/a1\./);
-    const lien = lienValider.replace('/blog-valider/', '');
+    expect(lienValider).toMatch(/^\/pro\/blog-valider\/a1\./);
+    const lien = lienValider.replace('/pro/blog-valider/', '');
     const articleId = lien.split('.')[1]!;
     const avant = (await db.doc(chemins.articleBlog('a1', articleId)).get()).data()!;
     expect(avant).toMatchObject({ statut: 'brouillon', motCle: 'chaudière gaz' });
@@ -226,7 +226,7 @@ describe('pilote automatique (D70 : toujours « Je valide d’abord »)', () => 
     maintenant = p.prochaineLe! - 40 * 3_600_000;
     await preparerArticlesPilote(s());
     const lien = (envois[0]!.secrets as { lienValider: string }).lienValider.replace(
-      '/blog-valider/',
+      '/pro/blog-valider/',
       '',
     );
     const r = await validerArticlePilote(s(), lien);

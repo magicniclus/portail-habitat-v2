@@ -840,6 +840,12 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - **Modèle de données (signalé)** : `droits.optionBlog`, `abonnements.optionBlog`. Le prix Stripe se crée avec `pnpm stripe:produits`.
 - Tests : 4 cœur, 3 sur émulateur (webhook, ajout/retrait, montée vers Tout inclus).
 
+**Blog autonome (D70 ✅, 17/10/2026)** : « ✦ Article en un clic » et pilote automatique dans l'onglet Blog.
+- Article en un clic : sujet facultatif (sinon une idée de l'IA dont le mot-clé n'est pas déjà pris), rédaction (1 crédit), catégorie, photo des réalisations + texte alternatif, liens internes complétés jusqu'à 3 (« Pour aller plus loin »), corrections SEO automatiques (mot-clé dans le titre, longueurs, texte alternatif), textes réseaux. « Je relis » : brouillon ; « Planifier seul » : planifié le 1er du mois avant le pic de recherche — **sans DataForSEO (clés à fournir), date de repli : dans 7 jours à 8 h**.
+- Pilote : rythmes 2 par mois, 1 par semaine, 2 par semaine (Tout inclus seulement, fenêtre d'offre sinon, BLOG-13) ; 3 prochains sujets, « Autre sujet » ; jamais deux articles sur le même mot-clé. Function `piloteBlog` (toutes les heures) : 48 h avant la date, l'article est rédigé en brouillon et l'email `blog-a-valider` part avec un lien personnel `/pro/blog-valider/…` ; la page ne valide qu'au clic sur « Valider la publication » (un lien d'email ouvert par un antivirus ne publie rien). Sans clic, jamais publié (BLOG-12). Clic après la date : publié tout de suite.
+- **Modèle de données (signalé)** : `sites/{id}/reglagesBlog/pilote` (serveur seulement, aucune règle client), `articles.pilote {jetonHash, publierLe, valideLe}` ; index `reglagesBlog (actif, prochaineLe)` ; nouveau modèle d'email `blog-a-valider`.
+- Tests : 10 cœur, 5 sur émulateur (BLOG-10 à 13), 1 e2e. Reste : la rédaction réelle attend `ANTHROPIC_API_KEY` ; les volumes et tendances de mots-clés attendent DataForSEO (D68).
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.

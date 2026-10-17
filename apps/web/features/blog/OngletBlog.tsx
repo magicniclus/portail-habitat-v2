@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { routes } from '@/lib/routes';
 import type { OngletBlogDonnees } from '@/server/blog';
+import { ArticleEnUnClic } from './ArticleEnUnClic';
 import { ClassementBlog } from './ClassementBlog';
 import { ListeArticles } from './ListeArticles';
+import { PiloteBlog } from './PiloteBlog';
 import { PlusArticles } from './PlusArticles';
 
 export const VUES_BLOG = [
@@ -21,8 +23,8 @@ const lienVue = (v: VueBlog) =>
 
 /**
  * Onglet Blog de Mon site (maquette Site Internet Artisan, BLOG §1, §2, §5). Sans Site Pro :
- * onglet visible, toute action payante ouvre la fenêtre d'offre (BLOG-01). Pas de pilote
- * automatique ni d'article en un clic tant que D70 n'est pas tranchée.
+ * onglet visible, toute action payante ouvre la fenêtre d'offre (BLOG-01). Article en un clic et
+ * pilote automatique toujours validé par l'artisan (D70).
  */
 export function OngletBlog({ donnees: d, vue }: { donnees: OngletBlogDonnees; vue: VueBlog }) {
   const actif = d.credits.max > 0;
@@ -61,7 +63,14 @@ export function OngletBlog({ donnees: d, vue }: { donnees: OngletBlogDonnees; vu
           </span>
           <PlusArticles credits={d.credits} />
         </div>
-      ) : (
+      ) : null}
+      {actif && vue === 'articles' ? (
+        <div className="grid gap-3 min-[900px]:grid-cols-2">
+          <ArticleEnUnClic restant={d.credits.max - d.credits.utilises} />
+          <PiloteBlog initial={d.pilote} toutInclus={d.credits.toutInclus} />
+        </div>
+      ) : null}
+      {actif ? null : (
         <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-4">
           <strong>Le blog est inclus dans Site Pro et Tout inclus</strong>
           <p className="m-0 text-[15px]">

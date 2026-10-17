@@ -172,7 +172,7 @@ export async function preparerArticlesPilote(
           aCorriger: a.seo.bloquants.map((b) => b.libelle),
           lienRelire: `/pro/site/blog/${a.articleId}`,
         },
-        secrets: { lienValider: `/blog-valider/${artisanId}.${a.articleId}.${jeton}` },
+        secrets: { lienValider: `/pro/blog-valider/${artisanId}.${a.articleId}.${jeton}` },
       });
       prepares++;
     } catch {

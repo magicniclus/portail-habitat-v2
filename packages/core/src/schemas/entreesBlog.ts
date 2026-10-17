@@ -60,3 +60,24 @@ export const entreeIaBlog = z.object({
     corps: z.string().max(20_000),
   }),
 });
+
+/** « Tout faire en un clic » (D70) : sujet facultatif ; fin « relire » (brouillon) ou « planifier ». */
+export const entreeArticleEnUnClic = z.object({
+  sujet: z.string().trim().max(300).optional(),
+  fin: z.enum(['relire', 'planifier']),
+});
+
+/** Pilote automatique (D70 : toujours validé par l'artisan) : réglage, ou « Autre sujet ». */
+export const entreePiloteBlog = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('regler'),
+    actif: z.boolean(),
+    rythme: z.enum(['2_mois', '1_semaine', '2_semaine']),
+  }),
+  z.object({ action: z.literal('autre'), index: z.number().int().min(0).max(2) }),
+]);
+
+/** Lien de l'email `blog-a-valider` : `{artisan}.{article}.{jeton}`. */
+export const entreeValidationPilote = z.object({
+  lien: z.string().regex(/^[\w-]{1,128}\.[\w-]{1,128}\.[\w-]{20,128}$/),
+});

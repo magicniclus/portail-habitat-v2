@@ -6,6 +6,7 @@ import {
   lireClassement,
   lireCreditsBlog,
   lireMentionsBlog,
+  lirePilote,
   listerArticles,
 } from '@ph/firebase/blog';
 import { lireSiteEdition } from '@ph/firebase/sites';
@@ -21,15 +22,24 @@ async function hoteDuSite(artisanId: string): Promise<string> {
 
 /** Onglet Blog de Mon site (BLOG §5) : liste, classement, auteurs, crédits IA, mentions. */
 export async function ongletBlog(artisanId: string) {
-  const [articles, classement, auteurs, credits, mentions, hote] = await Promise.all([
+  const [articles, classement, auteurs, credits, mentions, hote, pilote] = await Promise.all([
     listerArticles(db(), artisanId),
     lireClassement(db(), artisanId),
     auteursBlog(db(), artisanId),
     lireCreditsBlog({ db: db(), horloge: Date.now }, artisanId),
     lireMentionsBlog(db(), artisanId),
     hoteDuSite(artisanId),
+    lirePilote({ db: db(), horloge: Date.now }, artisanId),
   ]);
-  return { articles, classement, auteurs, credits, mentionsCompletes: mentions.complet, hote };
+  return {
+    articles,
+    classement,
+    auteurs,
+    credits,
+    mentionsCompletes: mentions.complet,
+    hote,
+    pilote,
+  };
 }
 export type OngletBlogDonnees = Awaited<ReturnType<typeof ongletBlog>>;
 

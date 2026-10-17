@@ -53,7 +53,7 @@ export const modelesBlog = {
       date: '21 octobre 2026',
       aCorriger: [],
       lienRelire: 'https://portailhabitat.fr/pro/site/blog/a1',
-      lienValider: 'https://portailhabitat.fr/blog-valider/a1.b2.jeton',
+      lienValider: 'https://portailhabitat.fr/pro/blog-valider/a1.b2.jeton',
     },
   }),
   'blog-quota-atteint': modele<QuotaBlog>({

@@ -16,13 +16,13 @@ Maquettes : `designs/Site Internet Artisan.dc.html` (onglet **Blog**), `designs/
 - Seule la **rédaction complète** consomme un crédit (« Rédiger l'article », ou chaque idée cochée dans « Idées d'articles »). Remise à zéro le 1er du mois, pas de report.
 - Compteur séparé du quota de modifications du site (IA_SITE §4). Échec technique : crédit non consommé.
 - Quota atteint : bouton désactivé, message, l'écriture manuelle et les retouches restent disponibles ; Site Pro voit « Passer à Tout inclus : 15 articles par mois ».
-- L'IA ne publie **que si l'artisan l'a choisi** (mode autonome « Publier seul » ou pilote « Publier sans moi », §2 bis) ; sinon tout article généré reste un brouillon.
+- L'IA ne publie **jamais sans un clic de l'artisan** (D70) : « Planifier seul » dans le mode autonome, ou le lien de l'email `blog-a-valider` pour le pilote ; sinon tout article généré reste un brouillon.
 
 ## 2 bis. Mode autonome (un clic)
 - **Éditeur › ✦ Mode autonome › « Tout faire en un clic »** : sujet facultatif (vide = l'IA choisit). Enchaîne : choix du mot-clé (volume, difficulté, saison) → analyse des 10 premiers résultats Google → plan → rédaction (fiche + chantiers + avis) → titre, sous-titre, slug, méta → image à la une (Réalisations) + texte alternatif → catégorie, tags, liens internes → contrôle SEO et corrections automatiques jusqu'à 0 point bloquant → textes réseaux sociaux.
-- Fin au choix : **Je relis** (brouillon) · **Planifier seul** (meilleure date calculée depuis la tendance du mot-clé) · **Publier seul**. Compte 1 article dans le quota.
+- Fin au choix : **Je relis** (brouillon) · **Planifier seul** (meilleure date calculée depuis la tendance du mot-clé). Pas de « Publier seul » (D70). Compte 1 article dans le quota.
 - Raccourci depuis l'onglet Blog : « ✦ Article en un clic » (`Editeur de Blog?nouveau=1&auto=1`).
-- **Pilote automatique** (onglet Blog) : l'IA planifie et produit les articles sans intervention. Rythme 2/mois, 1/semaine (Site Pro et plus) ou 2/semaine (Tout inclus seulement, quota oblige). Validation : « Je valide d'abord » (email 48 h avant, un clic ; sans réponse rien n'est publié) ou « Publier sans moi » (email après publication). Liste des 3 prochains sujets, chacun remplaçable (« Autre sujet »). Jamais deux articles sur le même mot-clé principal.
+- **Pilote automatique** (onglet Blog) : l'IA planifie et produit les articles sans intervention. Rythme 2/mois, 1/semaine (Site Pro et plus) ou 2/semaine (Tout inclus seulement, quota oblige). Validation : toujours « Je valide d'abord » (email 48 h avant, un clic ; sans réponse rien n'est publié) ; pas de « Publier sans moi » (D70). Liste des 3 prochains sujets, chacun remplaçable (« Autre sujet »). Jamais deux articles sur le même mot-clé principal.
 - Garde-fous : jamais de chiffre, prix ou promesse absent de la fiche ou des sources ; vocabulaire interdit (« lead ») ; pas plus de 2 publications automatiques par semaine pour éviter le contenu de masse pénalisé par Google.
 
 ## 3. Éditeur d'article

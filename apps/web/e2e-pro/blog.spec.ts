@@ -178,4 +178,33 @@ test.describe('Blog des artisans', () => {
       .slice(0, 7);
     expect((await db.doc(chemins.compteurIaSite(id, mois)).get()).get('blogArticles') ?? 0).toBe(0);
   });
+
+  test('D70 : article en un clic sans clé IA ; pilote, 2 par semaine réservé à Tout inclus (BLOG-13)', async ({
+    page,
+  }) => {
+    const { db } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    const artisan = db.doc(chemins.artisan(id));
+    const droits = (await artisan.get()).get('droits') as Record<string, unknown>;
+    await artisan.update({ 'droits.formule': 'site_pro', 'droits.sitePro': true });
+    try {
+      await connecter(page, COMPTES.proprio, '/pro/site?onglet=blog');
+      await page.getByRole('button', { name: 'Tout faire en un clic' }).click();
+      await expect(
+        page.getByText('L’assistant du blog n’est pas encore disponible.'),
+      ).toBeVisible();
+      await page.getByLabel('Rythme').selectOption('2_semaine');
+      await expect(
+        page.getByRole('button', { name: '2 articles par semaine avec Tout inclus' }),
+      ).toBeVisible();
+      await expect(page.getByLabel('Activer le pilote automatique')).toBeDisabled();
+      await page.getByLabel('Rythme').selectOption('1_semaine');
+      await page.getByLabel('Activer le pilote automatique').click();
+      await expect(page.getByText('Prochain article prévu le')).toBeVisible();
+      expect((await db.doc(chemins.piloteBlog(id)).get()).get('validation')).toBe('avant');
+    } finally {
+      await db.doc(chemins.piloteBlog(id)).delete();
+      await artisan.update({ droits });
+    }
+  });
 });
