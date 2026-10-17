@@ -46,3 +46,4 @@ export {
 } from './lecture';
 export { PublicationRefusee, publierSite, retablirVersion } from './publication';
 export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from './stats';
+export { gererSectionsEnregistrees, type SectionEnregistree } from './sectionsEnregistrees';

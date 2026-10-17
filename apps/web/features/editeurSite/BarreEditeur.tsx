@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { routes } from '@/lib/routes';
 
 const PANNEAUX = [
+  ['ajouter', 'Ajouter'],
   ['calques', 'Calques'],
   ['pages', 'Pages'],
   ['seo', 'SEO'],

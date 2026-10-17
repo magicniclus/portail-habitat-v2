@@ -66,7 +66,7 @@ const sectionIa = z.object({
     .min(1)
     .max(20),
 });
-type SectionIa = z.output<typeof sectionIa>;
+export type SectionIa = z.output<typeof sectionIa>;
 
 const CHAMPS_TEXTE = [
   'texte',
@@ -206,7 +206,7 @@ function trouver(b: BrouillonIa, cible: string): Noeud | null {
 }
 
 /** Section complète : identifiants neufs, réglages du catalogue complétés par ceux de l'IA. */
-function construireSection(s: SectionIa, nouvelId: () => string): Section {
+export function construireSection(s: SectionIa, nouvelId: () => string): Section {
   return {
     id: nouvelId(),
     p: { ...DEFAUTS_SECTION, ...(s.p ?? {}) } as Section['p'],

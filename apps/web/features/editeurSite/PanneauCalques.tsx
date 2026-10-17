@@ -2,6 +2,8 @@
 
 import { LIBELLES_ELEMENT, type Element, type PageSite } from '@ph/core/sites';
 import { Button } from '@ph/ui';
+import { useState } from 'react';
+import { appelSections } from './MesSections';
 
 const extrait = (e: Element) => {
   const p = e.p as Record<string, unknown>;
@@ -21,57 +23,77 @@ export function PanneauCalques({
   onSection: (id: string, op: 'haut' | 'bas' | 'dupliquer' | 'supprimer') => void;
   onSelection: (id: string) => void;
 }) {
+  const [message, setMessage] = useState<string | null>(null);
+  const enregistrer = async (s: PageSite['sections'][number]) => {
+    const r = await appelSections({ action: 'enregistrer', nom: s.p.nom || 'Section', section: s });
+    setMessage(r.ok ? `« ${s.p.nom || 'Section'} » ajoutée à Mes sections.` : r.message);
+  };
   return (
-    <ol className="m-0 grid list-none gap-3 p-0">
-      {page.sections.map((s, i) => (
-        <li key={s.id} className="grid gap-2 rounded-[12px] border border-trait p-3">
-          <strong>{s.p.nom || `Section ${i + 1}`}</strong>
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant="fantome"
-              taille="sm"
-              disabled={i === 0}
-              onClick={() => onSection(s.id, 'haut')}
-              aria-label={`Monter ${s.p.nom}`}
-            >
-              ↑
-            </Button>
-            <Button
-              variant="fantome"
-              taille="sm"
-              disabled={i === page.sections.length - 1}
-              onClick={() => onSection(s.id, 'bas')}
-              aria-label={`Descendre ${s.p.nom}`}
-            >
-              ↓
-            </Button>
-            <Button variant="fantome" taille="sm" onClick={() => onSection(s.id, 'dupliquer')}>
-              Dupliquer
-            </Button>
-            <Button variant="fantome" taille="sm" onClick={() => onSection(s.id, 'supprimer')}>
-              Supprimer
-            </Button>
-          </div>
-          <ul className="m-0 grid list-none gap-1 p-0">
-            {s.rows.flatMap((r) =>
-              r.cols.flatMap((c) =>
-                c.els.map((e) => (
-                  <li key={e.id}>
-                    <button
-                      type="button"
-                      onClick={() => onSelection(e.id)}
-                      className="flex min-h-11 w-full items-center gap-2 rounded-control px-2 text-left hover:bg-neutre-100"
-                    >
-                      <span className="font-semibold">{LIBELLES_ELEMENT[e.type]}</span>
-                      <span className="truncate text-sm text-neutre-800">{extrait(e)}</span>
-                    </button>
-                  </li>
-                )),
-              ),
-            )}
-          </ul>
-        </li>
-      ))}
-    </ol>
+    <div className="grid gap-3">
+      {message ? (
+        <p className="m-0 text-sm" role="status">
+          {message}
+        </p>
+      ) : null}
+      <ol className="m-0 grid list-none gap-3 p-0">
+        {page.sections.map((s, i) => (
+          <li key={s.id} className="grid gap-2 rounded-[12px] border border-trait p-3">
+            <strong>{s.p.nom || `Section ${i + 1}`}</strong>
+            <div className="flex flex-wrap gap-1">
+              <Button
+                variant="fantome"
+                taille="sm"
+                disabled={i === 0}
+                onClick={() => onSection(s.id, 'haut')}
+                aria-label={`Monter ${s.p.nom}`}
+              >
+                ↑
+              </Button>
+              <Button
+                variant="fantome"
+                taille="sm"
+                disabled={i === page.sections.length - 1}
+                onClick={() => onSection(s.id, 'bas')}
+                aria-label={`Descendre ${s.p.nom}`}
+              >
+                ↓
+              </Button>
+              <Button variant="fantome" taille="sm" onClick={() => onSection(s.id, 'dupliquer')}>
+                Dupliquer
+              </Button>
+              <Button variant="fantome" taille="sm" onClick={() => onSection(s.id, 'supprimer')}>
+                Supprimer
+              </Button>
+              <Button
+                variant="fantome"
+                taille="sm"
+                onClick={() => void enregistrer(s)}
+                aria-label={`Enregistrer ${s.p.nom || 'la section'} dans Mes sections`}
+              >
+                Enregistrer
+              </Button>
+            </div>
+            <ul className="m-0 grid list-none gap-1 p-0">
+              {s.rows.flatMap((r) =>
+                r.cols.flatMap((c) =>
+                  c.els.map((e) => (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        onClick={() => onSelection(e.id)}
+                        className="flex min-h-11 w-full items-center gap-2 rounded-control px-2 text-left hover:bg-neutre-100"
+                      >
+                        <span className="font-semibold">{LIBELLES_ELEMENT[e.type]}</span>
+                        <span className="truncate text-sm text-neutre-800">{extrait(e)}</span>
+                      </button>
+                    </li>
+                  )),
+                ),
+              )}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

@@ -50,12 +50,9 @@ export const supprimerSection = (p: PageSite, id: string): PageSite => ({
   sections: p.sections.filter((s) => s.id !== id),
 });
 
-/** Copie juste après l'original : nouveaux identifiants partout, ancres et ID HTML vidés (uniques). */
-export function dupliquerSection(p: PageSite, id: string, nouvelId: () => string): PageSite {
-  const i = p.sections.findIndex((s) => s.id === id);
-  if (i < 0) return p;
-  const s = p.sections[i]!;
-  const copie: Section = {
+/** Copie d'une section : nouveaux identifiants partout, ancres et ID HTML vidés (uniques). */
+export function copieSection(s: Section, nouvelId: () => string): Section {
+  return {
     id: nouvelId(),
     p: { ...s.p, ancre: '' },
     rows: s.rows.map((r) => ({
@@ -69,7 +66,27 @@ export function dupliquerSection(p: PageSite, id: string, nouvelId: () => string
       })),
     })),
   };
+}
+
+/** Copie juste après l'original. */
+export function dupliquerSection(p: PageSite, id: string, nouvelId: () => string): PageSite {
+  const i = p.sections.findIndex((s) => s.id === id);
+  if (i < 0) return p;
+  const copie = copieSection(p.sections[i]!, nouvelId);
   return { ...p, sections: [...p.sections.slice(0, i + 1), copie, ...p.sections.slice(i + 1)] };
+}
+
+/** Section enregistrée (« Mes sections ») insérée après `apres`, ou en bas de page. */
+export function insererCopieSection(
+  p: PageSite,
+  s: Section,
+  apres: string | null,
+  nouvelId: () => string,
+): PageSite {
+  const i = apres === null ? -1 : p.sections.findIndex((x) => x.id === apres);
+  const sections = [...p.sections];
+  sections.splice(i < 0 ? sections.length : i + 1, 0, copieSection(s, nouvelId));
+  return { ...p, sections };
 }
 
 /** Réglages d'un élément fusionnés (le schéma revalide à l'enregistrement). */

@@ -115,6 +115,7 @@ export const chemins = {
   /** Mes modèles : sites complets enregistrés, dont « Avant IA – date » (SITE-IA-09). */
   modelesSite: (id: string) => `sites/${id}/modeles`,
   modeleSite: (id: string, m: string) => `sites/${id}/modeles/${m}`,
+  sectionsEnregistrees: (id: string) => `sites/${id}/sectionsEnregistrees`,
   statsMoisSite: (id: string, mois: string) => `sites/${id}/statsMois/${mois}`,
   pagesSite: (id: string) => `sites/${id}/pages`,
   /** Blog de l'artisan (BLOG.md, DATABASE §15 quater). */

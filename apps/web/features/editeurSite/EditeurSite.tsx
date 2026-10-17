@@ -13,6 +13,7 @@ import { Apercu } from './Apercu';
 import { BarreEditeur, NavPanneaux, type Panneau } from './BarreEditeur';
 import { AssistantCreation } from './creation/AssistantCreation';
 import { BandeauCreation } from './creation/BandeauCreation';
+import { PanneauAjout } from './PanneauAjout';
 import { PanneauCalques } from './PanneauCalques';
 import { PanneauIa } from './PanneauIa';
 import { PanneauModeles } from './PanneauModeles';
@@ -101,9 +102,20 @@ export function EditeurSite(props: ProprietesEditeur) {
               actif={panneau}
               onChoisir={(p) => {
                 setPanneau(p);
-                setSelection(null);
+                if (p !== 'ajouter') setSelection(null);
               }}
             />
+            {panneau === 'ajouter' ? (
+              <PanneauAjout
+                page={page}
+                selection={selection}
+                onPage={(n) => majPage(() => n)}
+                onElement={(id) => {
+                  setPanneau('calques');
+                  setSelection(id);
+                }}
+              />
+            ) : null}
             {panneau === 'calques' && element ? (
               <>
                 <Button variant="fantome" taille="sm" onClick={() => setSelection(null)}>

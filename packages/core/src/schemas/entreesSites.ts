@@ -1,6 +1,6 @@
 import { reponsesCreation } from '../sites/ia/creation';
 import { MODES_IA_SITE } from '../sites/ia/reglages';
-import { navigation, pageSite, theme } from '../sites/schemas';
+import { navigation, pageSite, section, theme } from '../sites/schemas';
 import { z } from '../zod';
 import { champFormulaire } from './sites';
 
@@ -30,6 +30,17 @@ export const entreeThemeSite = z.object({ theme });
 export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(1).max(30) });
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});
+
+/** « Mes sections » (SITE_INTERNET §4.7) : enregistrer une section, la supprimer, ou les lire. */
+export const entreeSectionEnregistree = z.discriminatedUnion('action', [
+  z.strictObject({ action: z.literal('lire') }),
+  z.strictObject({
+    action: z.literal('enregistrer'),
+    nom: z.string().trim().min(1).max(60),
+    section,
+  }),
+  z.strictObject({ action: z.literal('supprimer'), id: z.string().min(1).max(60) }),
+]);
 /** Domaine existant saisi par l'artisan (normalisé ensuite par `normaliserDomaine`). */
 export const entreeDomaineSite = z.object({ domaine: z.string().trim().min(3).max(253) });
 

@@ -358,4 +358,91 @@ test.describe('Site internet artisan', () => {
     await ligne.getByRole('button', { name: 'Restaurer' }).click();
     await expect(page.getByText(/« Avant IA – e2e » restauré/)).toBeVisible();
   });
+
+  test('Ajouter : élément placé après la sélection, section prête insérée (une étape d’historique)', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await page.getByRole('button', { name: /^Appel à l’action/ }).click();
+    await expect(apercu.getByRole('heading', { name: 'Un projet ? Parlons-en.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Annuler (Ctrl Z)' }).click();
+    await expect(apercu.getByRole('heading', { name: 'Un projet ? Parlons-en.' })).toHaveCount(0);
+
+    // Élément sans sélection : nouvelle section en bas ; ses réglages s'ouvrent.
+    await page.getByRole('button', { name: 'Chiffre clé', exact: true }).click();
+    await expect(page.getByRole('button', { name: '← Calques' })).toBeVisible();
+    await page.getByRole('button', { name: '← Calques' }).click();
+    await expect(page.getByText('Nouvelle section')).toBeVisible();
+  });
+
+  test('SITE-02 : un réglage mobile (texte, masquage) est sans effet sur l’ordinateur', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await page
+      .getByRole('button', { name: /^Titre/ })
+      .first()
+      .click();
+    await page.getByRole('checkbox', { name: 'Texte différent sur mobile' }).check();
+    await page.getByLabel('Texte sur mobile').fill('Titre mobile e2e');
+    const mobile = apercu.getByText('Titre mobile e2e');
+    await expect(mobile).toBeHidden();
+    await page
+      .getByRole('group', { name: 'Appareil' })
+      .getByRole('button', { name: 'Mobile' })
+      .click();
+    await expect(mobile).toBeVisible();
+
+    // Masqué sur mobile seulement : toujours là sur ordinateur.
+    await page.getByRole('checkbox', { name: 'mobile', exact: true }).check();
+    await expect(mobile).toBeHidden();
+    await page
+      .getByRole('group', { name: 'Appareil' })
+      .getByRole('button', { name: 'Ordinateur' })
+      .click();
+    await expect(apercu.getByRole('heading').first()).toBeVisible();
+  });
+
+  test('mots liés : « Lier la sélection » puis une action ; le mot devient un lien dans l’aperçu', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
+    await page.getByRole('button', { name: 'Texte', exact: true }).click();
+    const zone = page.getByLabel('Texte', { exact: true });
+    await expect(zone).toHaveValue('Votre texte.');
+    await zone.evaluate((z: HTMLTextAreaElement) => z.setSelectionRange(6, 11));
+    await page.getByRole('button', { name: 'Lier la sélection' }).click();
+    await expect(zone).toHaveValue('Votre [texte](#L1).');
+    await page.getByLabel('Lien « texte »').selectOption('tel');
+    await page.getByLabel('Numéro').fill('0556000000');
+    const lien = page.frameLocator('iframe[title="Aperçu de la page"]').locator('a[href^="tel:"]', {
+      hasText: 'texte',
+    });
+    await expect(lien).toBeVisible();
+    await page.getByRole('button', { name: 'Retirer le lien' }).click();
+    await expect(zone).toHaveValue('Votre texte.');
+  });
+
+  test('Mes sections : une section enregistrée depuis Calques réapparaît dans Ajouter', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    await page
+      .getByRole('button', { name: /^Enregistrer .* dans Mes sections$/ })
+      .first()
+      .click();
+    const message = page.getByRole('status').filter({ hasText: 'ajoutée à Mes sections' });
+    await expect(message).toBeVisible();
+    const nom = (await message.textContent())!.match(/« (.+) »/)![1]!;
+    await page
+      .getByRole('navigation', { name: 'Panneaux' })
+      .getByRole('button', { name: 'Ajouter' })
+      .click();
+    const mes = page.getByRole('region', { name: 'Mes sections' });
+    await expect(mes.getByRole('button', { name: nom, exact: true })).toBeVisible();
+    await mes.getByRole('button', { name: `Supprimer ${nom} de Mes sections` }).click();
+    await expect(mes.getByRole('button', { name: nom, exact: true })).toHaveCount(0);
+  });
 });

@@ -6,6 +6,7 @@ import {
   dupliquerSection,
   elementsDe,
   historique,
+  insererCopieSection,
   majElement,
   nouvellePage,
   retablir,
@@ -71,6 +72,18 @@ describe('opérations de page', () => {
     const ids = elementsDe(p).map((e) => e.el.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(dupliquerSection(accueil, 'inconnue', () => 'x')).toBe(accueil);
+  });
+
+  it('section enregistrée insérée après la section choisie, en bas sinon, ids neufs', () => {
+    const s = accueil.sections[0]!;
+    let n = 0;
+    const id = () => `m${n++}`;
+    const apres = insererCopieSection(accueil, s, s.id, id);
+    expect(apres.sections[1]!.id).toBe('m0');
+    const fin = insererCopieSection(accueil, s, null, id);
+    expect(fin.sections.at(-1)!.p.nom).toBe(s.p.nom);
+    expect(fin.sections.at(-1)!.id).not.toBe(s.id);
+    expect(pageSite.safeParse(fin).success).toBe(true);
   });
 
   it('supprimer une section', () => {

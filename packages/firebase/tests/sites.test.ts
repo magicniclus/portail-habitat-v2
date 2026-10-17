@@ -11,6 +11,7 @@ import {
   enregistrerNavigation,
   enregistrerPage,
   envoyerFormulaireSite,
+  gererSectionsEnregistrees,
   lireSitePublie,
   PublicationRefusee,
   publierSite,
@@ -241,5 +242,37 @@ describe('formulaire du site → Mes demandes', () => {
       statut: 'acceptee',
       coordonneesDebloquees: true,
     });
+  });
+});
+
+describe('Mes sections (SITE_INTERNET §4.7)', () => {
+  it('enregistrée puis relue et supprimée ; un collaborateur ne peut pas enregistrer', async () => {
+    const section = initial().pages.accueil!.sections[0]!;
+    const apres = await gererSectionsEnregistrees(s(), proprio, {
+      action: 'enregistrer',
+      nom: 'Bandeau maison',
+      section,
+    });
+    expect(apres).toEqual([expect.objectContaining({ nom: 'Bandeau maison', section })]);
+    expect(
+      (
+        await erreur(
+          gererSectionsEnregistrees(
+            s(),
+            { artisanId: 'a1', uid: 'c1' },
+            {
+              action: 'enregistrer',
+              nom: 'X',
+              section,
+            },
+          ),
+        )
+      ).code,
+    ).toBe('PERMISSION_REFUSEE');
+    const vide = await gererSectionsEnregistrees(s(), proprio, {
+      action: 'supprimer',
+      id: apres[0]!.id,
+    });
+    expect(vide).toEqual([]);
   });
 });

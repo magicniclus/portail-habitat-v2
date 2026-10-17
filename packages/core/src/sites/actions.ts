@@ -59,6 +59,50 @@ export function liensOrphelins(texte: string, liens: Record<string, Action> = {}
   return [...texte.matchAll(RE_MOT_LIE)].filter((m) => !liens[m[2]!]).map((m) => m[1]!);
 }
 
+/** Mots liés d'un texte, dans l'ordre. */
+export const motsLies = (texte: string): { lid: string; mot: string }[] =>
+  [...texte.matchAll(RE_MOT_LIE)].map((m) => ({ lid: m[2]!, mot: m[1]! }));
+
+/**
+ * « Lier la sélection » : le passage choisi devient `[mot](#Ln)` (premier numéro libre) avec une
+ * action vide à régler. `null` si la sélection est vide, touche un lien existant ou un crochet.
+ */
+export function lierSelection(
+  texte: string,
+  sel: { debut: number; fin: number },
+  liens: Record<string, Action> = {},
+): { texte: string; lid: string; liens: Record<string, Action> } | null {
+  let { debut, fin } = sel;
+  while (debut < fin && /\s/.test(texte[debut]!)) debut++;
+  while (fin > debut && /\s/.test(texte[fin - 1]!)) fin--;
+  const mot = texte.slice(debut, fin);
+  if (!mot || /[[\]()]/.test(mot)) return null;
+  for (const m of texte.matchAll(RE_MOT_LIE))
+    if (debut < m.index + m[0].length && fin > m.index) return null;
+  const pris = new Set([...Object.keys(liens), ...motsLies(texte).map((x) => x.lid)]);
+  let n = 1;
+  while (pris.has(`L${n}`)) n++;
+  const lid = `L${n}`;
+  return {
+    texte: `${texte.slice(0, debut)}[${mot}](#${lid})${texte.slice(fin)}`,
+    lid,
+    liens: { ...liens, [lid]: { type: 'aucun' } },
+  };
+}
+
+/** Retire un mot lié : le mot reste, son action disparaît. */
+export function retirerLien(
+  texte: string,
+  liens: Record<string, Action>,
+  lid: string,
+): { texte: string; liens: Record<string, Action> } {
+  const { [lid]: _retire, ...reste } = liens;
+  return {
+    texte: texte.replace(RE_MOT_LIE, (tout, mot: string, id: string) => (id === lid ? mot : tout)),
+    liens: reste,
+  };
+}
+
 function* elements(sections: readonly Section[]): Generator<Element> {
   for (const s of sections) for (const r of s.rows) for (const c of r.cols) yield* c.els;
 }

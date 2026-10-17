@@ -9,6 +9,7 @@ import {
 } from '@ph/core/sites';
 import { Checkbox, Field, Input, Select, Textarea } from '@ph/ui';
 import { ChampAction } from './ChampAction';
+import { TexteLie } from './TexteLie';
 
 const NOMS_APPAREIL = { desktop: 'ordinateur', tablet: 'tablette', mobile: 'mobile' } as const;
 const AVEC_TEXTE_MOBILE = new Set(['titre', 'surtitre', 'texte', 'bouton']);
@@ -57,9 +58,17 @@ export function ReglagesElement({
   return (
     <div className="grid gap-4">
       <h3 className="m-0 text-lg">{LIBELLES_ELEMENT[el.type]}</h3>
+      {el.type === 'titre' || el.type === 'texte' ? (
+        <TexteLie
+          texte={el.p.texte}
+          {...(el.p.liens ? { liens: el.p.liens } : {})}
+          onChange={onChange}
+          pages={pages}
+          erreurAction={erreurAction}
+        />
+      ) : null}
       {el.type === 'titre' ? (
         <>
-          {texte('texte', 'Texte', true)}
           <Field label="Niveau">
             <Select value={el.p.niveau} onChange={(e) => onChange({ niveau: e.target.value })}>
               <option value="h1">Titre principal (H1)</option>
@@ -70,7 +79,6 @@ export function ReglagesElement({
         </>
       ) : null}
       {el.type === 'surtitre' ? texte('texte', 'Texte') : null}
-      {el.type === 'texte' ? texte('texte', 'Texte', true) : null}
       {el.type === 'bouton' ? (
         <>
           {texte('texte', 'Libellé')}

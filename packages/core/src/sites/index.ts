@@ -17,3 +17,4 @@ export * from './ia/creation';
 export * from './ia/differences';
 export * from './ia/moderation';
 export * from './ia/routeur';
+export * from './ajout';
