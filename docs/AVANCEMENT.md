@@ -643,7 +643,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - `demo_played` et `site_example_clicked` : la démo `SiteGenerationDemo` et les exemples par métier attendent le site artisan (10b) et de vraies vidéos et captures.
 - Onboarding selon la source (LANDINGS §4) : la source est enregistrée ; la première action dédiée (site, devis) viendra avec ces outils.
-- Photos du hero (`public/landing/photos`) à fournir ; traceur de comportement non branché sur ces pages.
+- Photos du hero (`public/landing/photos`) à fournir. Traceur de comportement branché (pages `landing-chantiers`, `landing-site`, `landing-devis`, rattachées à l’espace « pro » du traceur), visibles dans admin › Comportement et le contexte IA des landings.
 
 ## 26. Lot 11b : devis et factures (14/10/2026)
 

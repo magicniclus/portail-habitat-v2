@@ -193,7 +193,15 @@ async function contexteFiches(db: Firestore) {
 
 /** Calcule et écrit `iaContexte/{perimetre}` (nuit, après l'agrégation du comportement). */
 export async function calculerContextesIa(db: Firestore, maintenant: number) {
-  const pagesLandings: PageSuivie[] = ['acquisition-artisans', 'accueil', 'diagnostic', 'annuaire'];
+  const pagesLandings: PageSuivie[] = [
+    'acquisition-artisans',
+    'landing-chantiers',
+    'landing-site',
+    'landing-devis',
+    'accueil',
+    'diagnostic',
+    'annuaire',
+  ];
   const contenus: Record<PerimetreIa, unknown> = {
     landings: await Promise.all(pagesLandings.map((p) => resumePage(db, p))),
     parcours: [await resumePage(db, 'simulateur')],

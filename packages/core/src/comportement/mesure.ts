@@ -67,6 +67,9 @@ export const PAGES_SUIVIES = {
   annuaire: 'particulier',
   simulateur: 'particulier',
   'acquisition-artisans': 'pro',
+  'landing-chantiers': 'pro',
+  'landing-site': 'pro',
+  'landing-devis': 'pro',
   diagnostic: 'diag',
 } as const satisfies Record<string, 'particulier' | 'pro' | 'diag'>;
 export type PageSuivie = keyof typeof PAGES_SUIVIES;

@@ -1,6 +1,7 @@
 import { contenuLanding, LANDINGS, preuveSociale, type OutilLanding } from '@ph/core/landings';
 import { cn } from '@ph/ui';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
+import { Traceur } from '@/features/comportement/Traceur';
 import { Zone } from '@/features/comportement/Zone';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
@@ -43,6 +44,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
   return (
     <>
       <JsonLd donnees={faqPage(c.faq)} />
+      <Traceur page={`landing-${outil}`} />
       <EnTeteLanding />
       <main className="pb-[76px] md:pb-0">
         <section

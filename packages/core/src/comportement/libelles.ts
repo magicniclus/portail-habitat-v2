@@ -4,6 +4,15 @@ import type { PageSuivie } from './mesure';
 /** Libellés de l'admin › Comportement (COMPORTEMENT §6). */
 export const PAGES_COMPORTEMENT: Readonly<Record<PageSuivie, { nom: string; chemin: string }>> = {
   'acquisition-artisans': { nom: 'Landing pro · acquisition artisans', chemin: '/pro' },
+  'landing-chantiers': {
+    nom: 'Landing pro · trouver des chantiers',
+    chemin: '/pro/trouver-des-chantiers',
+  },
+  'landing-site': { nom: 'Landing pro · site internet', chemin: '/pro/site-internet-artisan' },
+  'landing-devis': {
+    nom: 'Landing pro · devis et factures',
+    chemin: '/pro/logiciel-devis-factures',
+  },
   accueil: { nom: 'Accueil particuliers', chemin: '/' },
   simulateur: { nom: 'Simulateur de devis', chemin: '/simulateur' },
   diagnostic: { nom: 'Landing diagnostic immobilier', chemin: '/diagnostic-immobilier' },
