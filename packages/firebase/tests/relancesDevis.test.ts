@@ -12,6 +12,9 @@ import {
   enregistrerParametresFacturation,
   envoyerDevis,
   facturerDevis,
+  gererModele,
+  gererPrestation,
+  lireBibliotheque,
   lireDevisDepuisDemande,
   marquerDevisExpires,
   relancerFacture,
@@ -258,5 +261,40 @@ describe('devis créé depuis « Mes demandes »', () => {
     await envoyerDevis(s(), proprio, devisId);
     await changerStatutDevis(s(), proprio, { devisId, statut: 'refuse' });
     expect((await attribution().get()).get('statut')).toBe('devis_refuse');
+  });
+});
+
+describe('modèles de devis et bibliothèque de prestations', () => {
+  it('prestation ajoutée puis supprimée ; un comptable ne touche à rien', async () => {
+    const { id } = await gererPrestation(s(), proprio, {
+      action: 'creer',
+      designation: 'Faïence murale, fourniture et pose',
+      unite: 'm²',
+      puHtCentimes: 7800,
+      tva: 10,
+      coutHtCentimes: 4100,
+    });
+    expect((await lireBibliotheque(db, 'a1')).prestations).toEqual([
+      expect.objectContaining({ id, unite: 'm²', puHtCentimes: 7800, coutHtCentimes: 4100 }),
+    ]);
+    expect((await erreur(gererPrestation(s(), compta, { action: 'supprimer', id }))).code).toBe(
+      'PERMISSION_REFUSEE',
+    );
+    await gererPrestation(s(), proprio, { action: 'supprimer', id });
+    expect((await lireBibliotheque(db, 'a1')).prestations).toHaveLength(0);
+  });
+
+  it('modèle créé depuis un devis, « Utilisé n fois » à chaque devis qui en part', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    const { id } = await gererModele(s(), proprio, {
+      action: 'depuisDevis',
+      devisId,
+      titre: 'Salle de bain',
+    });
+    await enregistrerDevis(s(), proprio, { ...entree(), modeleId: id });
+    await enregistrerDevis(s(), proprio, { ...entree(), modeleId: id });
+    const [m] = (await lireBibliotheque(db, 'a1')).modeles;
+    expect(m).toMatchObject({ id, titre: 'Salle de bain', usage: 2, htCentimes: 100000 });
+    expect(m!.lignes).toHaveLength(1);
   });
 });

@@ -22,3 +22,11 @@ export {
   traiterFacturesEcheances,
   type ServicesRelances,
 } from './relances';
+export {
+  compterUsageModele,
+  gererModele,
+  gererPrestation,
+  lireBibliotheque,
+  type ModeleDevisResume,
+  type PrestationBiblio,
+} from './bibliotheque';

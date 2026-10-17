@@ -667,7 +667,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 **Reste**
 - **Factur-X** : bloqué par D62 ⏳ (plateforme agréée) ; mention « en cours de mise en conformité » gardée.
 - Lien de paiement Stripe Connect sur les factures : D61 ⏳.
-- Signature électronique du client, modèles et bibliothèque de prestations à l'écran, logo et tampon sur le PDF, IBAN chiffré.
+- Signature électronique du client, tampon sur le PDF, IBAN chiffré, dépôt d'un logo propre aux devis dans l'onglet Paramètres (maquette).
 
 **Relances et échéances (17/10/2026)**
 - Cœur `devis/relances.ts` (tests d'abord) : relances des factures à J−3, J+1, J+15 autour de l'échéance (la plus avancée des étapes atteintes, une étape manquée n'est pas rattrapée, « J−3 » jamais après l'échéance, jamais deux relances le même jour, manuelle comprise) ; passage « impayée » après l'échéance avec un reste dû ; devis « expiré » après sa validité ; relance du client à J+7 d'un devis sans réponse, une seule fois.
@@ -682,6 +682,16 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - Bouton « Créer un devis » sur une demande acceptée (membre avec `devis.gerer`) → `/pro/devis/nouveau?demande=` : client (nom, email, téléphone, code postal et ville) et objet repris, précisions du particulier affichées au-dessus de l'éditeur. Rien n'est lu avant l'acceptation (`lireDevisDepuisDemande` renvoie `null`) et le serveur refuse un `demandeId` non accepté.
 - La mise en relation suit le devis (`attributionApresDevis`, cœur testé) : envoyé → `devis_envoye` (avec `devis: { montantCentimes, storagePath, envoyeLe }` une fois le PDF produit), accepté → `devis_accepte`, refusé → `devis_refuse` ; le particulier le voit dans son espace. `demandes.statut` n'est pas modifié (à décider si « devis reçus » doit suivre).
 - Tests : 2 tests du cœur, 3 sur émulateur, 1 test de l'éditeur, étape ajoutée à l'e2e PRO-02.
+
+**Modèles et bibliothèque de prestations (17/10/2026)**
+- Onglet « Modèles » de Devis & factures (maquette) : cartes des modèles (lignes, « à partir de » HT, « Utilisé n fois », « Utiliser ce modèle » → `/pro/devis/nouveau?modele=`) et tableau de la bibliothèque (désignation, unité, prix HT, TVA, coût privé ; ajout et suppression).
+- Éditeur : liste « + Depuis la bibliothèque… » (select natif) qui ajoute la ligne d'un clic (la ligne vide de départ est remplacée). « Enregistrer comme modèle » sur un devis envoyé (titre = objet).
+- Serveur : `gererPrestation`, `gererModele`, `lireBibliotheque`, compteur `usage` incrémenté à la création d'un devis depuis un modèle ; plafonds 300 prestations et 50 modèles (choix signalé, pour borner les lectures à chaque ouverture de l'éditeur). Routes `/api/pro/devis/bibliotheque` et `/api/pro/devis/modeles` (`devis.gerer`). L'ancien schéma `entreePrestationBiblio` (jamais utilisé) est remplacé.
+- Tests : 2 sur émulateur, 1 e2e (bibliothèque, modèle utilisé, reprise dans l'éditeur).
+
+**Logo sur les PDF (17/10/2026)**
+- Le logo de « Ma fiche » (déjà vérifié au dépôt, 2 Mo) est repris en haut des devis et factures produits à partir de maintenant ; absent, hors du dossier `artisans/{id}/logo/` ou illisible (SVG, WebP non pris en charge par le moteur PDF) : le PDF part sans lui. Un PDF déjà produit n'est jamais régénéré (DEV-05).
+- Choix signalé : pas de second logo propre aux devis pour l'instant (la maquette prévoit un dépôt dans l'onglet Paramètres) ; à ajouter si l'artisan doit pouvoir avoir un logo différent de sa fiche.
 
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :

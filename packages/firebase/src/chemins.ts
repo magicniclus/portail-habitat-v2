@@ -98,6 +98,8 @@ export const chemins = {
   factureClient: (aid: string, fid: string) => `artisans/${aid}/facturesClients/${fid}`,
   modelesDevis: (aid: string) => `artisans/${aid}/modelesDevis`,
   prestationsBiblio: (aid: string) => `artisans/${aid}/prestationsBiblio`,
+  modeleDevis: (aid: string, mid: string) => `artisans/${aid}/modelesDevis/${mid}`,
+  prestationBiblio: (aid: string, pid: string) => `artisans/${aid}/prestationsBiblio/${pid}`,
   parametresFacturation: (aid: string) => `artisans/${aid}/parametresFacturation/actuels`,
   compteurDocuments: (aid: string, type: 'devis' | 'factures') =>
     `artisans/${aid}/compteurs/${type}`,

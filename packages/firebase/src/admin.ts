@@ -58,6 +58,17 @@ export function bucketReplays(env: NodeJS.ProcessEnv = process.env) {
 }
 
 /** Adresse de lecture d'un fichier PUBLIC selon storage.rules (logo, photos de réalisations). */
+/** Chemin Storage d'une URL produite par `urlPubliqueFichier` ; `null` si elle n'en vient pas. */
+export function cheminDepuisUrlPublique(url: string): string | null {
+  const m = /\/o\/([^?]+)\?alt=media$/.exec(url);
+  if (!m) return null;
+  try {
+    return decodeURIComponent(m[1]!);
+  } catch {
+    return null;
+  }
+}
+
 export function urlPubliqueFichier(chemin: string, env: NodeJS.ProcessEnv = process.env): string {
   const hote = env.FIREBASE_STORAGE_EMULATOR_HOST
     ? `http://${env.FIREBASE_STORAGE_EMULATOR_HOST}`

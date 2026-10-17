@@ -1,4 +1,4 @@
-import { lireDevisDepuisDemande } from '@ph/firebase/devis';
+import { lireBibliotheque, lireDevisDepuisDemande } from '@ph/firebase/devis';
 import { Banner } from '@ph/ui';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -11,17 +11,22 @@ import { maintenant } from '@/server/temps';
 
 export const metadata: Metadata = { title: 'Nouveau devis', robots: { index: false } };
 
-/** Nouveau devis ; `?demande=` : depuis une demande acceptée de « Mes demandes », client repris. */
+/**
+ * Nouveau devis ; `?demande=` : depuis une demande acceptée de « Mes demandes », client repris ;
+ * `?modele=` : lignes et titre d'un modèle.
+ */
 export default async function PageNouveauDevis({
   searchParams,
 }: {
-  searchParams: Promise<{ demande?: string }>;
+  searchParams: Promise<{ demande?: string; modele?: string }>;
 }) {
   const acces = await accesDevis(routes.proDevisNouveau);
   if (!acces.gerer) redirect(routes.proDevis);
-  const demandeId = (await searchParams).demande;
-  const [{ p }, demande] = await Promise.all([
+  const q = await searchParams;
+  const demandeId = q.demande;
+  const [{ p }, biblio, demande] = await Promise.all([
     parametresEditeur(acces.artisanId),
+    lireBibliotheque(dbDevis(), acces.artisanId),
     demandeId && /^[A-Za-z0-9_-]{1,128}$/.test(demandeId)
       ? lireDevisDepuisDemande(
           dbDevis(),
@@ -31,6 +36,7 @@ export default async function PageNouveauDevis({
         )
       : null,
   ]);
+  const modele = q.modele ? biblio.modeles.find((m) => m.id === q.modele) : undefined;
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Nouveau devis</h1>
@@ -43,6 +49,7 @@ export default async function PageNouveauDevis({
       <EditeurDevis
         initial={etatInitial({
           ...(demande ? { demande } : {}),
+          ...(modele ? { modele } : {}),
           acompteDefautPct: p.acompteDefautPct,
           validiteJours: p.validiteDevisJours,
           tvaDefaut: p.tvaDefaut,
@@ -50,6 +57,7 @@ export default async function PageNouveauDevis({
         })}
         parametres={p}
         tvaDefaut={p.tvaDefaut}
+        bibliotheque={biblio.prestations}
       />
     </main>
   );

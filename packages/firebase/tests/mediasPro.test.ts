@@ -1,6 +1,12 @@
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { appAdmin, bucketFichiers, PROJET_EMULATEUR } from '../src/admin';
+import {
+  appAdmin,
+  bucketFichiers,
+  cheminDepuisUrlPublique,
+  PROJET_EMULATEUR,
+  urlPubliqueFichier,
+} from '../src/admin';
 import { chemins, fichiers } from '../src/chemins';
 import {
   enregistrerLogo,
@@ -91,5 +97,14 @@ describe('réalisations', () => {
     await expect(enregistrerRealisation(s(), ctx('p1'), realisation(1))).rejects.toMatchObject({
       code: 'INTROUVABLE',
     });
+  });
+});
+
+describe('logo repris sur les PDF', () => {
+  it('chemin Storage relu depuis l’URL publique ; une autre URL est ignorée', () => {
+    const chemin = 'artisans/a1/logo/logo été.png';
+    expect(cheminDepuisUrlPublique(urlPubliqueFichier(chemin))).toBe(chemin);
+    expect(cheminDepuisUrlPublique('https://exemple.fr/logo.png')).toBeNull();
+    expect(cheminDepuisUrlPublique('https://x/o/%E0%A4%A?alt=media')).toBeNull();
   });
 });

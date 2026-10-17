@@ -8,7 +8,7 @@ import {
 } from '@ph/core/devis';
 import { formatDate, formatEuros, formatTel } from '@ph/core/format';
 import { genererPdf, htmlEnTexte, type DonneesPdf } from '@ph/emails/pdf';
-import { appAdmin, bucketFichiers } from '@ph/firebase/admin';
+import { appAdmin, bucketFichiers, cheminDepuisUrlPublique } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import type { ResultatEnvoi, ServicesDevis } from '@ph/firebase/devis';
 import { empreinteJeton, nouveauJeton } from '@ph/firebase/comptes';
@@ -26,13 +26,30 @@ export function servicesDevis(): ServicesDevis {
 const date = (v: unknown) => (v instanceof Timestamp ? v.toDate() : undefined);
 const sha256 = (b: Buffer) => createHash('sha256').update(b).digest('hex');
 
+/**
+ * Logo de « Ma fiche » (déjà vérifié au dépôt) repris en haut des devis et factures. Un logo
+ * absent, d'un autre dossier ou illisible : le PDF part sans lui.
+ */
+async function logoPdf(artisanId: string, url: string | undefined): Promise<Buffer | undefined> {
+  const chemin = url ? cheminDepuisUrlPublique(url) : null;
+  if (!chemin?.startsWith(`artisans/${artisanId}/logo/`)) return undefined;
+  try {
+    const [b] = await bucketFichiers().file(chemin).download();
+    return b;
+  } catch {
+    return undefined;
+  }
+}
+
 async function entreprise(artisanId: string) {
   const [p, a] = await Promise.all([
     db().doc(chemins.parametresFacturation(artisanId)).get(),
     db().doc(chemins.artisan(artisanId)).get(),
   ]);
   const tel = a.get('telephonePublic') as string | undefined;
+  const logo = await logoPdf(artisanId, a.get('logoUrl') as string | undefined);
   return {
+    logo,
     ...(p.data() as ParametresFacturation & { tauxPenalitesAnnuel?: number; rcPro?: string }),
     ...(tel ? { telephone: formatTel(tel) } : {}),
     ...(a.get('emailContact') ? { email: a.get('emailContact') as string } : {}),
@@ -43,7 +60,7 @@ async function entreprise(artisanId: string) {
 function donneesDevis(
   numero: string,
   x: DocumentData,
-  e: Awaited<ReturnType<typeof entreprise>>,
+  e: Omit<Awaited<ReturnType<typeof entreprise>>, 'logo'>,
 ): DonneesPdf {
   const lignes = x.lignes as LigneDevis[];
   const m = verifierMentionsDevis(
@@ -105,7 +122,11 @@ export async function produireEtEnvoyerDevis(
   const d = await db().doc(chemins.unDevis(artisanId, devisId)).get();
   const x = d.data() as DocumentData;
   const e = await entreprise(artisanId);
-  const pdf = await genererPdf(donneesDevis(x.numero as string, x, e));
+  const { logo, ...ent } = e;
+  const pdf = await genererPdf({
+    ...donneesDevis(x.numero as string, x, ent),
+    ...(logo ? { logo } : {}),
+  });
   const pdfPath = `artisans/${artisanId}/devis/${x.numero as string}.pdf`;
   await bucketFichiers()
     .file(pdfPath)
@@ -136,7 +157,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
   const f = await ref.get();
   const x = f.data() as DocumentData;
   if (x.pdfPath) return;
-  const e = await entreprise(artisanId);
+  const { logo, ...e } = await entreprise(artisanId);
   const origine = x.factureOrigineId
     ? ((
         await db()
@@ -172,6 +193,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
     ),
     annexes: [],
     entreprise: e,
+    ...(logo ? { logo } : {}),
   });
   const pdfPath = `artisans/${artisanId}/factures/${x.numero as string}.pdf`;
   await bucketFichiers()

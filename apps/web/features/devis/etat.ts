@@ -1,6 +1,6 @@
 import type { LigneDevis, TauxTva } from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
-import type { DevisComplet, DevisDepuisDemande } from '@ph/firebase/devis';
+import type { DevisComplet, DevisDepuisDemande, ModeleDevisResume } from '@ph/firebase/devis';
 
 /** Ligne telle que saisie : montants en texte (« 78,50 »), convertis en centimes à l'envoi. */
 export interface LigneSaisie {
@@ -34,6 +34,7 @@ export interface EtatDevis {
   signatureElectronique: boolean;
   tampon: boolean;
   demandeId?: string;
+  modeleId?: string;
 }
 
 let compteur = 0;
@@ -54,10 +55,25 @@ export const ligneVide = (tva: TauxTva): LigneSaisie => ({
   cout: '',
 });
 
+/** Ligne enregistrée (devis, modèle, bibliothèque) → ligne saisie. */
+export const ligneSaisie = (
+  l: Omit<LigneDevis, 'quantite' | 'designation'> & { quantite?: number; designation: string },
+): LigneSaisie => ({
+  cle: cle(),
+  designation: l.designation,
+  quantite: String(l.quantite ?? 1).replace('.', ','),
+  unite: l.unite,
+  puHt: texteEuros(l.puHtCentimes),
+  tva: l.tva,
+  cout: l.coutHtCentimes !== undefined ? texteEuros(l.coutHtCentimes) : '',
+});
+
 export function etatInitial(o: {
   devis?: DevisComplet;
   /** « Créer un devis » depuis une demande acceptée : client et objet repris. */
   demande?: DevisDepuisDemande;
+  /** « Utiliser ce modèle » : lignes et titre repris. */
+  modele?: ModeleDevisResume;
   acompteDefautPct: number;
   validiteJours: number;
   tvaDefaut: TauxTva;
@@ -79,15 +95,7 @@ export function etatInitial(o: {
       horsEtablissement: d.horsEtablissement,
       objet: d.objet,
       descriptionHtml: d.descriptionHtml,
-      lignes: d.lignes.map((l) => ({
-        cle: cle(),
-        designation: l.designation,
-        quantite: String(l.quantite).replace('.', ','),
-        unite: l.unite,
-        puHt: texteEuros(l.puHtCentimes),
-        tva: l.tva,
-        cout: l.coutHtCentimes !== undefined ? texteEuros(l.coutHtCentimes) : '',
-      })),
+      lignes: d.lignes.map(ligneSaisie),
       remisePct: String(d.remisePct),
       acomptePct: String(d.acomptePct),
       validiteLe: d.validiteLe ?? '',
@@ -99,6 +107,7 @@ export function etatInitial(o: {
       signatureElectronique: d.signatureElectronique,
       tampon: d.tampon,
       demandeId: d.demandeId,
+      modeleId: d.modeleId,
     };
   const m = o.demande;
   return {
@@ -106,10 +115,11 @@ export function etatInitial(o: {
     typeClient: 'particulier',
     sirenClient: '',
     horsEtablissement: false,
-    objet: m?.objet ?? '',
+    objet: m?.objet ?? o.modele?.titre ?? '',
     descriptionHtml: '',
     ...(m ? { demandeId: m.demandeId } : {}),
-    lignes: [ligneVide(o.tvaDefaut)],
+    ...(o.modele ? { modeleId: o.modele.id } : {}),
+    lignes: o.modele?.lignes.length ? o.modele.lignes.map(ligneSaisie) : [ligneVide(o.tvaDefaut)],
     remisePct: '0',
     acomptePct: String(o.acompteDefautPct),
     validiteLe: new Date(o.aujourdHui + o.validiteJours * 86_400_000).toISOString().slice(0, 10),
@@ -166,5 +176,6 @@ export function versEntree(e: EtatDevis) {
     signatureElectronique: e.signatureElectronique,
     tampon: e.tampon,
     ...(e.demandeId ? { demandeId: e.demandeId } : {}),
+    ...(e.modeleId ? { modeleId: e.modeleId } : {}),
   };
 }

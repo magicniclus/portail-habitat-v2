@@ -106,6 +106,7 @@ export interface DevisComplet {
   pdfPath?: string;
   factureId?: string;
   demandeId?: string;
+  modeleId?: string;
 }
 
 export async function lireDevisComplet(
@@ -144,6 +145,7 @@ export async function lireDevisComplet(
     pdfPath: x.pdfPath,
     factureId: x.factureId,
     demandeId: x.demandeId,
+    modeleId: x.modeleId,
   };
 }
 

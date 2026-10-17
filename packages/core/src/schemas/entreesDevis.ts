@@ -42,6 +42,29 @@ export const entreeStatutDevis = z.strictObject({
   statut: z.enum(['accepte', 'refuse', 'archive']),
 });
 
+/** Bibliothèque de prestations (onglet Modèles) : ajout ou suppression d'une prestation. */
+export const entreePrestationBiblio = z.discriminatedUnion('action', [
+  z.strictObject({
+    action: z.literal('creer'),
+    designation: z.string().trim().min(1).max(300),
+    unite: z.string().trim().min(1).max(20),
+    puHtCentimes: centimesPositifs.min(1).max(100_000_000),
+    tva: tauxTva,
+    coutHtCentimes: centimesPositifs.max(100_000_000).optional(),
+  }),
+  z.strictObject({ action: z.literal('supprimer'), id }),
+]);
+
+/** Modèle de devis : créé depuis un devis (ses lignes), ou supprimé. */
+export const entreeModeleDevis = z.discriminatedUnion('action', [
+  z.strictObject({
+    action: z.literal('depuisDevis'),
+    devisId: id,
+    titre: z.string().trim().min(1).max(120),
+  }),
+  z.strictObject({ action: z.literal('supprimer'), id }),
+]);
+
 /** « Marquer expirés » : devis envoyés de la sélection. */
 export const entreeExpirerDevis = z.strictObject({ ids: z.array(id).min(1).max(100) });
 
@@ -71,12 +94,3 @@ export const entreeAvoir = z.strictObject({
 export const entreeParametresFacturation = parametresFacturation
   .omit({ schemaVersion: true, updatedAt: true })
   .strict();
-
-export const entreePrestationBiblio = z.strictObject({
-  prestationId: id.optional(),
-  designation: z.string().trim().min(1).max(300),
-  unite: z.string().trim().max(20),
-  puHtCentimes: centimesPositifs,
-  tva: tauxTva,
-  coutHtCentimes: centimesPositifs.optional(),
-});

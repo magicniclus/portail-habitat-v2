@@ -6,6 +6,7 @@ import {
   type ParametresFacturation,
   type TauxTva,
 } from '@ph/core/devis';
+import type { PrestationBiblio } from '@ph/firebase/devis';
 import { Banner, Button } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -28,10 +29,13 @@ export function EditeurDevis({
   initial,
   parametres,
   tvaDefaut,
+  bibliotheque,
 }: {
   initial: EtatDevis;
   parametres: ParametresFacturation;
   tvaDefaut: TauxTva;
+  /** Prestations reprises d'un clic (« + Depuis la bibliothèque… »). */
+  bibliotheque: PrestationBiblio[];
 }) {
   const router = useRouter();
   const [e, setE] = useState(initial);
@@ -113,7 +117,12 @@ export function EditeurDevis({
         {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
         <ChampsClient e={e} maj={maj} />
         <ConditionsDevis e={e} maj={maj} />
-        <LignesDevis lignes={e.lignes} tvaDefaut={tvaDefaut} onChange={(l) => maj({ lignes: l })} />
+        <LignesDevis
+          lignes={e.lignes}
+          tvaDefaut={tvaDefaut}
+          bibliotheque={bibliotheque}
+          onChange={(l) => maj({ lignes: l })}
+        />
         <div className="flex flex-wrap gap-3">
           <Button variant="secondaire" onClick={surEnregistrer} disabled={enCours !== null}>
             {enCours === 'enregistrer' ? 'Enregistrement…' : 'Enregistrer le brouillon'}

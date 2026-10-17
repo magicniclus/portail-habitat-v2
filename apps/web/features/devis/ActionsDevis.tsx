@@ -16,6 +16,7 @@ export function ActionsDevis({
   factureId,
   peutFacturer,
   peutGerer,
+  objet,
 }: {
   devisId: string;
   statut: string;
@@ -24,10 +25,13 @@ export function ActionsDevis({
   factureId?: string;
   peutFacturer: boolean;
   peutGerer: boolean;
+  /** Titre proposé pour « Enregistrer comme modèle ». */
+  objet: string;
 }) {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
+  const [modele, setModele] = useState(false);
   const appeler = async (url: string, corps: object, ensuite?: (d: unknown) => void) => {
     setEnCours(true);
     setErreur(null);
@@ -48,6 +52,9 @@ export function ActionsDevis({
   return (
     <div className="grid gap-3">
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+      {modele ? (
+        <Banner tone="succes">Modèle enregistré : retrouvez-le dans l’onglet Modèles.</Banner>
+      ) : null}
       <div className="flex flex-wrap gap-3">
         {aPdf ? (
           <a href={`/api/pro/devis/${devisId}/pdf`} className={bouton({ variant: 'secondaire' })}>
@@ -81,6 +88,21 @@ export function ActionsDevis({
           >
             Voir la facture
           </Link>
+        ) : null}
+        {peutGerer && !modele ? (
+          <Button
+            variant="fantome"
+            disabled={enCours}
+            onClick={() =>
+              void appeler(
+                '/api/pro/devis/modeles',
+                { action: 'depuisDevis', devisId, titre: (objet || 'Modèle').slice(0, 120) },
+                () => setModele(true),
+              )
+            }
+          >
+            Enregistrer comme modèle
+          </Button>
         ) : null}
         {peutGerer && statut !== 'archive' ? (
           <Button variant="fantome" onClick={() => statutDevis('archive')} disabled={enCours}>

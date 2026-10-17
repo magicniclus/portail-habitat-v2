@@ -1,6 +1,6 @@
 import { LIBELLES_STATUT_DEVIS, tonStatut } from '@ph/core/devis';
 import { formatDate, formatEuros } from '@ph/core/format';
-import { lireDevisComplet } from '@ph/firebase/devis';
+import { lireBibliotheque, lireDevisComplet } from '@ph/firebase/devis';
 import { Badge } from '@ph/ui';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -19,9 +19,10 @@ const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 export default async function PageUnDevis({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const acces = await accesDevis(routes.proUnDevis(id));
-  const [d, { p }] = await Promise.all([
+  const [d, { p }, biblio] = await Promise.all([
     lireDevisComplet(dbDevis(), acces.artisanId, id),
     parametresEditeur(acces.artisanId),
+    lireBibliotheque(dbDevis(), acces.artisanId),
   ]);
   if (!d) notFound();
   const titre = (
@@ -46,6 +47,7 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
           })}
           parametres={p}
           tvaDefaut={p.tvaDefaut}
+          bibliotheque={biblio.prestations}
         />
       </main>
     );
@@ -78,6 +80,7 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
         factureId={d.factureId}
         peutFacturer={acces.facturer}
         peutGerer={acces.gerer}
+        objet={d.objet}
       />
     </main>
   );

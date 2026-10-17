@@ -2,18 +2,26 @@
 
 import { TAUX_TVA, type TauxTva } from '@ph/core/devis';
 import { Button, Field, Input, Select } from '@ph/ui';
-import { ligneVide, type LigneSaisie } from './etat';
+import type { PrestationBiblio } from '@ph/firebase/devis';
+import { ligneSaisie, ligneVide, type LigneSaisie } from './etat';
 
 /** Lignes du devis : désignation, quantité, unité, PU HT, TVA et coût (privé, pour la marge). */
 export function LignesDevis({
   lignes,
   tvaDefaut,
+  bibliotheque,
   onChange,
 }: {
   lignes: LigneSaisie[];
   tvaDefaut: TauxTva;
+  bibliotheque: PrestationBiblio[];
   onChange: (l: LigneSaisie[]) => void;
 }) {
+  /** Une ligne vide (la seule, au départ) est remplacée plutôt que gardée. */
+  const ajouter = (l: LigneSaisie) => {
+    const utiles = lignes.filter((x) => x.designation || x.puHt);
+    onChange([...utiles, l]);
+  };
   const maj = (i: number, patch: Partial<LigneSaisie>) =>
     onChange(lignes.map((l, j) => (j === i ? { ...l, ...patch } : l)));
   return (
@@ -78,10 +86,28 @@ export function LignesDevis({
           </Button>
         </div>
       ))}
-      <div>
+      <div className="flex flex-wrap items-center gap-3">
         <Button variant="secondaire" onClick={() => onChange([...lignes, ligneVide(tvaDefaut)])}>
           + Ajouter une ligne
         </Button>
+        {bibliotheque.length ? (
+          <Select
+            aria-label="Ajouter depuis la bibliothèque"
+            value=""
+            className="max-w-full min-[600px]:w-auto"
+            onChange={(e) => {
+              const p = bibliotheque.find((x) => x.id === e.target.value);
+              if (p) ajouter(ligneSaisie(p));
+            }}
+          >
+            <option value="">+ Depuis la bibliothèque…</option>
+            {bibliotheque.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.designation}
+              </option>
+            ))}
+          </Select>
+        ) : null}
       </div>
     </fieldset>
   );

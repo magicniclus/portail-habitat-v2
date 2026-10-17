@@ -1,10 +1,12 @@
 import { devisAExpirer } from '@ph/core/devis';
-import { lireDevisListe, lireFacturesListe } from '@ph/firebase/devis';
+import { lireBibliotheque, lireDevisListe, lireFacturesListe } from '@ph/firebase/devis';
 import { Banner, bouton, cn } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BibliothequePrestations } from '@/features/devis/BibliothequePrestations';
 import { ExpirerDevis } from '@/features/devis/ExpirerDevis';
 import { ListeDevis, ListeFactures } from '@/features/devis/Listes';
+import { ModelesDevis } from '@/features/devis/ModelesDevis';
 import { routes } from '@/lib/routes';
 import { accesDevis, dbDevis, parametresEditeur } from '@/server/pageDevis';
 import { maintenant } from '@/server/temps';
@@ -18,10 +20,12 @@ export default async function PageDevis({
   searchParams: Promise<{ onglet?: string }>;
 }) {
   const acces = await accesDevis(routes.proDevis);
-  const onglet = (await searchParams).onglet === 'factures' ? 'factures' : 'devis';
-  const [devis, factures, { saisis }] = await Promise.all([
+  const demande = (await searchParams).onglet;
+  const onglet = demande === 'factures' || demande === 'modeles' ? demande : 'devis';
+  const [devis, factures, biblio, { saisis, p }] = await Promise.all([
     onglet === 'devis' ? lireDevisListe(dbDevis(), acces.artisanId) : [],
     onglet === 'factures' ? lireFacturesListe(dbDevis(), acces.artisanId) : [],
+    onglet === 'modeles' ? lireBibliotheque(dbDevis(), acces.artisanId) : null,
     parametresEditeur(acces.artisanId),
   ]);
   const instant = maintenant();
@@ -72,7 +76,7 @@ export default async function PageDevis({
           est bloqué.
         </Banner>
       ) : null}
-      <nav aria-label="Devis ou factures" className="flex gap-2">
+      <nav aria-label="Devis, factures et modèles" className="flex flex-wrap gap-2">
         <Link
           href={routes.proDevis}
           className={ongletCls(onglet === 'devis')}
@@ -87,11 +91,29 @@ export default async function PageDevis({
         >
           Factures
         </Link>
+        <Link
+          href={`${routes.proDevis}?onglet=modeles` as typeof routes.proDevis}
+          className={ongletCls(onglet === 'modeles')}
+          aria-current={onglet === 'modeles' ? 'page' : undefined}
+        >
+          Modèles
+        </Link>
       </nav>
       {onglet === 'devis' && acces.gerer && horsValidite.length ? (
         <ExpirerDevis ids={horsValidite.slice(0, 100)} />
       ) : null}
-      {onglet === 'devis' ? <ListeDevis devis={devis} /> : <ListeFactures factures={factures} />}
+      {onglet === 'devis' ? <ListeDevis devis={devis} /> : null}
+      {onglet === 'factures' ? <ListeFactures factures={factures} /> : null}
+      {biblio ? (
+        <div className="grid gap-8">
+          <ModelesDevis modeles={biblio.modeles} peutGerer={acces.gerer} />
+          <BibliothequePrestations
+            prestations={biblio.prestations}
+            peutGerer={acces.gerer}
+            tvaDefaut={p.tvaDefaut}
+          />
+        </div>
+      ) : null}
       {onglet === 'factures' && factures.length ? (
         <p className="m-0 text-sm text-neutre-700">
           Relances automatiques du client à J−3, J+1 et J+15. Pénalités calculées selon vos{' '}

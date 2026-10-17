@@ -16,6 +16,7 @@ import type { entreeEnregistrerDevis, entreeStatutDevis } from '@ph/core/schemas
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
+import { compterUsageModele } from './bibliotheque';
 import {
   exiger,
   jourEnDate,
@@ -83,7 +84,7 @@ export async function enregistrerDevis(
       );
   }
   const p = await lireParametresTx(s, null, ctx.artisanId);
-  return avecReprise(() =>
+  const r = await avecReprise(() =>
     s.db.runTransaction(
       async (t) => {
         const existant = e.devisId ? await t.get(ref) : null;
@@ -151,6 +152,8 @@ export async function enregistrerDevis(
       { maxAttempts: 30 },
     ),
   );
+  if (!e.devisId && e.modeleId) await compterUsageModele(s.db, ctx.artisanId, e.modeleId);
+  return r;
 }
 
 /**

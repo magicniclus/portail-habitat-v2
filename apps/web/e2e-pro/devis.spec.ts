@@ -124,4 +124,52 @@ test.describe('Devis & factures', () => {
     await page.goto('/pro/devis/nouveau');
     await expect(page).not.toHaveURL(/\/pro\/devis/);
   });
+
+  test('Modèles : prestation ajoutée à la bibliothèque, reprise dans un devis ; modèle utilisé', async ({
+    page,
+  }) => {
+    const { db, Timestamp } = await admin();
+    const id = await entrepriseDe(COMPTES.proprio);
+    await db.recursiveDelete(db.doc(chemins.prestationBiblio(id, '_')).parent);
+    await db.recursiveDelete(db.doc(chemins.modeleDevis(id, '_')).parent);
+    await db.doc(chemins.modeleDevis(id, 'mod-e2e')).set({
+      schemaVersion: 1,
+      titre: 'Plomberie d’urgence',
+      lignes: [
+        {
+          designation: 'Recherche de fuite',
+          quantite: 1,
+          unite: 'forfait',
+          puHtCentimes: 16000,
+          tva: 20,
+        },
+      ],
+      usage: 3,
+      createdAt: Timestamp.now(),
+    });
+    await connecter(page, COMPTES.proprio, '/pro/devis?onglet=modeles');
+    await expect(page.getByText('Utilisé 3 fois')).toBeVisible();
+
+    await page.getByRole('button', { name: '+ Ajouter une prestation' }).click();
+    const form = page.getByRole('form', { name: 'Nouvelle prestation' });
+    await form.getByLabel('Désignation').fill('Faïence murale, fourniture et pose');
+    await form.getByLabel('Unité').fill('m²');
+    await form.getByLabel('Prix HT (€)').fill('78,00');
+    await form.getByRole('button', { name: 'Ajouter' }).click();
+    await expect(
+      page.getByRole('cell', { name: 'Faïence murale, fourniture et pose', exact: true }),
+    ).toBeVisible();
+
+    await page.getByRole('link', { name: 'Utiliser ce modèle' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/nouveau\?modele=mod-e2e/);
+    await expect(page.getByLabel(/^Objet du devis/)).toHaveValue('Plomberie d’urgence');
+    await expect(page.getByLabel('Désignation').first()).toHaveValue('Recherche de fuite');
+    await page
+      .getByLabel('Ajouter depuis la bibliothèque')
+      .selectOption({ label: 'Faïence murale, fourniture et pose' });
+    await expect(page.getByLabel('Désignation').nth(1)).toHaveValue(
+      'Faïence murale, fourniture et pose',
+    );
+    await expect(page.getByLabel('PU HT (€)').nth(1)).toHaveValue('78,00');
+  });
 });
