@@ -1,0 +1,25 @@
+node_modules/
+.turbo/
+.next/
+out/
+apps/functions/lib/
+coverage/
+dist/
+storybook-static/
+playwright-report/
+test-results/
+.emulateurs/
+*.log
+.env
+.env.local
+.env.*.local
+!.env.example
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Journaux des émulateurs Firebase
+*-debug.log
+firebase-debug.log
+storybook-static/
+.lighthouseci/

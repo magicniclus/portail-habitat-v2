@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<script src="recherche-projets.js"></script>
+<script src="estimation-demandes.js"></script>
+<style>
+:root { --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857; --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif; --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; }
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-block { white-space: normal; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.btn-secondary, .btn-secondary:hover { color: var(--color-text); }
+.input, select.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); }
+.input:focus, select.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+.tag { border-radius: 999px; }
+html, body { background: #fff; }
+@keyframes avisG { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 8px)); } }
+@keyframes avisD { from { transform: translateX(calc(-50% - 8px)); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { [style*="avisG"], [style*="avisD"] { animation: none !important; } }
+html { scroll-behavior: auto; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent-800); }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+</style>
+</helmet>
+
+<div style="width:100%;padding-bottom:{{ padBas }}">
+
+  <div style="position:sticky;top:0;z-index:50;background:var(--color-accent);color:#fff;font-size:14px;text-align:center;padding:10px 20px">100 % gratuit · Sans carte bancaire</div>
+
+  <nav class="nav" style="max-width:1240px;margin:0 auto;padding:14px clamp(16px,4vw,48px);gap:clamp(10px,2vw,24px);flex-wrap:nowrap;background:#fff;align-items:center">
+    <span class="nav-brand" style="display:flex;align-items:center;gap:12px">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style="flex:none"><path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect></svg>
+      <span style="display:flex;flex-direction:column;line-height:1.02"><span style="font-size:16px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span><span style="font-size:16px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent)">Pro</span></span></span>
+    </span>
+    <span style="flex:1"></span>
+    <a href="Connexion.dc.html" class="btn btn-secondary" style="min-height:44px;font-size:15px;padding:0 14px;background:#fff">Espace pro</a>
+  </nav>
+
+  <section style="max-width:1240px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(20px,4vw,48px) clamp(48px,6vw,80px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:24px clamp(28px,4vw,64px);align-items:start">
+    <div style="min-width:0">
+      <p style="margin:0 0 12px;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-accent-700)">{{ c.surtitre }}</p>
+      <h1 style="font-size:clamp(32px,4.6vw,54px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 20px">{{ c.h1a }} <span style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:600;color:var(--color-accent)">{{ c.h1b }}</span></h1>
+      <p style="font-size:18px;line-height:29px;max-width:56ch;margin:0 0 20px"><sc-for list="{{ sousTitreParts }}" as="st" hint-placeholder-count="1"><span style="{{ st.style }}">{{ st.t }}</span></sc-for></p>
+      <sc-if value="{{ estSite }}" hint-placeholder-val="{{ false }}">
+        <ul style="list-style:none;padding:0;margin:0 0 20px;display:flex;flex-wrap:wrap;flex-direction:{{ dirPoints }};gap:10px 22px;font-size:16px;font-weight:600;line-height:22px">
+          <sc-for list="{{ heroPoints }}" as="hp" hint-placeholder-count="3"><li style="display:flex;align-items:center;gap:8px"><span style="width:20px;height:20px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none">✓</span>{{ hp }}</li></sc-for>
+        </ul>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 12px;margin:0 0 8px">
+        <sc-for list="{{ badges }}" as="b" hint-placeholder-count="4"><span class="tag tag-accent" style="white-space:nowrap;flex:none;font-size:13px;padding:6px 12px;border:1px solid var(--color-accent-300);color:var(--color-accent-800)">{{ b }}</span></sc-for>
+      </div>
+    </div>
+    <div id="inscription" ref="{{ refForm1 }}" style="scroll-margin-top:70px;background:#fff;border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:clamp(20px,3vw,28px);box-shadow:var(--shadow-md);min-width:0">
+      <dc-import name="Formulaire Espace" titre="Créer mon espace gratuit" outil="{{ outil }}" source="{{ source }}" hint-size="100%,420px"></dc-import>
+    </div>
+    <div style="grid-column:1 / -1;position:relative;aspect-ratio:21/7"><image-slot id="hero-{{ outil }}" shape="rounded" radius="16" placeholder="{{ c.heroPhoto }}"></image-slot></div>
+  </section>
+
+  <sc-if value="{{ estSite }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#FFFEFC;padding:clamp(56px,7vw,90px) 0">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,24px);display:grid;gap:clamp(24px,3vw,36px);text-align:center">
+      <div style="max-width:720px;margin:0 auto">
+        <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.1;letter-spacing:-0.02em;margin:0 0 14px">Regardez votre site se construire tout seul</h2>
+        <p style="font-size:17px;line-height:27px;margin:0;color:#666A70">Vous donnez votre SIRET, l'IA récupère vos infos, écrit vos pages et vous montre le résultat. Vous n'avez plus qu'à cliquer sur « Publier ». Ce qui prenait des semaines prend maintenant quelques minutes.</p>
+      </div>
+      <dc-import name="SiteGenerationDemo" grand="{{ c.vitrine.grand }}" tel="{{ c.vitrine.tel }}" video="{{ demoVideo }}" poster="{{ demoPoster }}" hint-size="100%,520px"></dc-import>
+      <p style="font-size:15.5px;line-height:24px;margin:0 auto;max-width:60ch;color:#666A70">Rien n'est figé : textes, photos, couleurs, pages, tout se change en un clic, quand vous voulez.</p>
+    </div>
+  </section>
+  </sc-if>
+  <section style="{{ styleSectionEtape }}">
+    <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+      <div style="position:sticky;top:0;height:100vh;overflow:hidden">
+        <span style="{{ deco.blob1 }}"></span><span style="{{ deco.blob2 }}"></span><span style="{{ deco.grille }}"></span><span style="{{ deco.chiffre }}">{{ deco.num }}</span>
+      </div>
+    </div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;gap:12px">
+      <div style="max-width:62ch">
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:10px">{{ c.outilNom }} · gratuit</span>
+        <h2 style="font-size:clamp(28px,3.4vw,40px);line-height:1.12;margin:0 0 12px">{{ c.beneficesTitre }}</h2>
+        <p style="font-size:17px;line-height:27px;margin:0;color:var(--color-neutral-800)">{{ c.beneficesIntro }}</p>
+      </div>
+      <div data-scrolly="1" style="position:relative;height:calc(100vh - 44px + 110vh)">
+        <div data-cran="0" aria-hidden="true" style="position:absolute;left:0;top:0vh;width:1px;height:1px;pointer-events:none;scroll-margin-top:44px"></div><div data-cran="1" aria-hidden="true" style="position:absolute;left:0;top:55vh;width:1px;height:1px;pointer-events:none;scroll-margin-top:44px"></div><div data-cran="2" aria-hidden="true" style="position:absolute;left:0;top:110vh;width:1px;height:1px;pointer-events:none;scroll-margin-top:44px"></div>
+        <div data-panneau="1" style="position:sticky;top:44px;min-height:calc(100vh - 44px);box-sizing:border-box;padding:clamp(24px,6vh,64px) 0 12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px clamp(28px,4vw,64px);align-items:start;align-content:start">
+          <div style="display:grid;gap:clamp(12px,2.4vh,24px);min-width:0">
+            <div style="position:relative;display:grid" role="tablist" aria-label="Étapes">
+              <span aria-hidden="true" ref="{{ refRailFond }}" style="{{ railFond }}"></span>
+              <span aria-hidden="true" ref="{{ refRail }}" style="{{ railPlein }}"></span>
+              <sc-for list="{{ benefices }}" as="b" hint-placeholder-count="3">
+                <button type="button" role="tab" aria-selected="{{ b.ariaSel }}" onClick="{{ b.aller }}" style="{{ b.stBouton }}">
+                  <span style="{{ b.stylePuce }}">{{ b.num }}</span>
+                  <span style="display:grid;gap:2px;min-width:0">
+                    <span style="{{ b.stSur }}">Étape {{ b.num }}</span>
+                    <span style="{{ b.stTitre }}">{{ b.titre }}</span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="display:grid;min-width:0;padding-left:64px">
+              <sc-for list="{{ benefices }}" as="b" hint-placeholder-count="3">
+                <div aria-hidden="{{ b.cache }}" style="{{ b.styleTexte }}">
+                  <div style="{{ b.stInterieur }}">
+                    <p style="{{ b.stPara }}">{{ b.texte }}</p>
+                    <ul style="{{ b.stPoints }}">
+                      <sc-for list="{{ b.points }}" as="pt" hint-placeholder-count="3"><li style="{{ b.stPoint }}"><span style="{{ b.stCoche }}">✓</span><span>{{ pt }}</span></li></sc-for>
+                    </ul>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:grid;min-width:0;align-items:center">
+            <sc-for list="{{ benefices }}" as="b" hint-placeholder-count="3">
+              <div aria-hidden="{{ b.cache }}" style="{{ b.styleCapture }}">
+                <div style="{{ b.stScene }}">
+                  <span aria-hidden="true" style="{{ b.stPlaque }}"></span>
+                  <div style="position:relative;z-index:1;border-radius:14px;overflow:hidden">
+                    <dc-import name="Capture Ecran" src="{{ b.cap.src }}" url="{{ b.cap.url }}" cadre="{{ b.cap.cadre }}" vw="{{ b.cap.vw }}" vh="{{ b.cap.vh }}" x="{{ b.cap.x }}" y="{{ b.cap.y }}" w="{{ b.cap.w }}" h="{{ b.cap.h }}" clics="{{ b.cap.clics }}" hint-size="100%,360px"></dc-import>
+                  </div>
+                  <sc-for list="{{ b.puces }}" as="pu" hint-placeholder-count="0">
+                    <div style="{{ pu.style }}">
+                      <span style="width:30px;height:30px;border-radius:8px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ pu.d }}"></path></svg></span>
+                      <span style="display:grid;gap:1px;min-width:0"><span style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-accent-700)">{{ pu.k }}</span><span style="font-size:14px;font-weight:600;line-height:19px;color:#17191C">{{ pu.t }}</span></span>
+                    </div>
+                  </sc-for>
+                  <span style="{{ b.stLegende }}">{{ b.legendeCap }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:linear-gradient(180deg,#fff 0%,var(--color-accent-100) 100%)">
+    <div data-vitrine="1" style="height:260vh;position:relative">
+      <div style="position:sticky;top:44px;height:calc(100vh - 44px);box-sizing:border-box;padding:clamp(20px,3vh,40px) clamp(20px,4vw,48px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,3vh,32px);overflow:hidden">
+        <div style="{{ vit.styleTete }}">
+          <span style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--color-accent-300);margin-bottom:12px">{{ c.vitrine.surtitre }}</span>
+          <h2 style="font-size:clamp(26px,3.6vw,46px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 10px">{{ c.vitrine.titre }}</h2>
+          <p style="font-size:clamp(15px,1.5vw,17px);line-height:1.55;margin:0 auto;max-width:56ch;color:var(--color-neutral-800)">{{ c.vitrine.texte }}</p>
+        </div>
+        <div style="{{ vit.styleScene }}">
+          <div style="position:relative;z-index:1;border-radius:16px">
+            <dc-import name="Capture Ecran" src="{{ c.vitrine.grand.src }}" url="{{ c.vitrine.grand.url }}" cadre="navigateur" vw="{{ c.vitrine.grand.vw }}" vh="{{ c.vitrine.grand.vh }}" x="{{ c.vitrine.grand.x }}" y="{{ c.vitrine.grand.y }}" w="{{ c.vitrine.grand.w }}" h="{{ c.vitrine.grand.h }}" clics="{{ c.vitrine.grand.clics }}" defil="{{ vit.defil }}" defil-sel="{{ c.vitrine.defilSel }}" hint-size="100%,420px"></dc-import>
+          </div>
+          <div style="{{ vit.styleTel }}">
+            <dc-import name="Capture Ecran" src="{{ c.vitrine.tel.src }}" cadre="telephone" vw="{{ c.vitrine.tel.vw }}" vh="{{ c.vitrine.tel.vh }}" x="{{ c.vitrine.tel.x }}" y="{{ c.vitrine.tel.y }}" w="{{ c.vitrine.tel.w }}" h="{{ c.vitrine.tel.h }}" clics="{{ c.vitrine.tel.clics }}" defil="{{ vit.defil }}" defil-sel="{{ c.vitrine.defilSel }}" hint-size="100%,440px"></dc-import>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="position:relative;padding:clamp(56px,7vw,104px) 0;background:#fff;overflow:hidden">
+    <span aria-hidden="true" style="position:absolute;inset:0;background-image:radial-gradient(rgba(32,30,29,.10) 1px,transparent 1.2px);background-size:22px 22px;-webkit-mask-image:radial-gradient(ellipse 60% 70% at 85% 30%,#000 20%,transparent 70%);mask-image:radial-gradient(ellipse 60% 70% at 85% 30%,#000 20%,transparent 70%);pointer-events:none"></span>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(32px,5vw,72px);align-items:start">
+      <div style="{{ styleEtapesTete }}">
+        <span style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);padding:6px 12px;border-radius:999px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);margin-bottom:16px">En 3 étapes</span>
+        <h2 style="font-size:clamp(30px,4vw,48px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 14px">Comment ça marche</h2>
+        <p style="font-size:17px;line-height:27px;margin:0 0 22px;color:var(--color-neutral-800);max-width:42ch">Pas de rendez-vous, pas d'installation. Vous avancez à votre rythme, depuis votre téléphone ou votre ordinateur.</p>
+        <a href="#inscription" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--color-accent-700);text-decoration:none" style-hover="text-decoration:underline">Créer mon espace gratuit<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <ol data-etapes="1" style="list-style:none;margin:0;padding:0;position:relative;display:grid;gap:clamp(18px,2.4vw,28px)">
+        <span aria-hidden="true" style="position:absolute;left:27px;top:28px;bottom:28px;width:2px;background:var(--color-neutral-200);border-radius:2px"></span>
+        <span aria-hidden="true" style="{{ styleEtapesFil }}"></span>
+        <sc-for list="{{ etapes }}" as="e" hint-placeholder-count="3">
+          <li style="{{ e.styleLi }}">
+            <span style="{{ e.stylePastille }}">{{ e.n }}</span>
+            <div style="{{ e.styleCarte }}">
+              <span aria-hidden="true" style="{{ e.styleFiligrane }}">{{ e.nn }}</span>
+              <h3 style="position:relative;font-size:clamp(19px,2vw,23px);line-height:1.2;margin:0 0 8px">{{ e.titre }}</h3>
+              <p style="position:relative;font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:0;max-width:52ch">{{ e.texte }}</p>
+            </div>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <sc-if value="{{ estSite }}" hint-placeholder-val="{{ false }}">
+
+  <section style="background:#fff;padding:clamp(56px,7vw,96px) 0">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,24px);display:grid;gap:clamp(24px,3vw,36px)">
+      <h2 style="font-size:clamp(30px,4vw,48px);line-height:1.06;letter-spacing:-0.02em;margin:0;max-width:20ch">Pas une fiche annuaire. Un vrai site, à votre nom.</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(20px,3vw,32px) clamp(20px,3vw,40px)">
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h10l6 6v10H4zM14 4v6h6"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Plusieurs pages</span><span style="font-size:15px;line-height:22px;color:#666A70">Accueil, prestations, réalisations, contact : ajoutez autant de pages que nécessaire.</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L20 8l-4-4L4 16zM14 6l4 4"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Éditeur visuel complet</span><span style="font-size:15px;line-height:22px;color:#666A70">Cliquez sur un texte, une photo ou un bouton pour le modifier.</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM11 18h2"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Site mobile automatiquement</span><span style="font-size:15px;line-height:22px;color:#666A70">Votre site s'adapte au téléphone, avec un bouton d'appel visible.</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Référencement page par page</span><span style="font-size:15px;line-height:22px;color:#666A70">Titre, description et adresse de chaque page, prêts pour Google.</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h4"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Formulaire de devis intégré</span><span style="font-size:15px;line-height:22px;color:#666A70">Chaque demande arrive dans votre espace avec les coordonnées du client.</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start">
+          <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg></span>
+          <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700;line-height:1.25">Statistiques des visites</span><span style="font-size:15px;line-height:22px;color:#666A70">Visiteurs, pages vues et demandes reçues, sans cookie.</span></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px">
+        <p style="margin:0;font-size:17px;line-height:26px;font-weight:600">Laissez l'IA tout faire, ou reprenez la main sur chaque détail. Dans les deux cas, c'est gratuit.</p>
+        <a href="#inscription" style="display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:10px;border:1.5px solid var(--color-accent);color:var(--color-accent-800);background:transparent;font-weight:700;font-size:16px;text-decoration:none;box-sizing:border-box" style-hover="background:var(--color-accent-100)">Créer gratuitement mon site</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#FFFEFC;padding:clamp(56px,7vw,96px) 0">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,24px);display:grid;gap:clamp(24px,3vw,36px)">
+      <div style="max-width:680px">
+        <h2 style="font-size:clamp(30px,4vw,48px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 14px">Votre métier, vos couleurs, votre ville</h2>
+        <p style="font-size:17px;line-height:27px;margin:0;color:#666A70">L'IA adapte chaque site à l'entreprise : ses services, ses photos, son secteur. Le vôtre ne ressemblera qu'à vous.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:20px">
+        <sc-for list="{{ exemples }}" as="ex" hint-placeholder-count="6">
+          <article style="background:#fff;border:1px solid #E6E0D8;border-radius:16px;padding:14px;display:grid;gap:14px">
+            <div style="position:relative;padding:0 10% 8% 0">
+              <div style="position:relative;aspect-ratio:16 / 10;border-radius:10px;overflow:hidden;border:1px solid #E6E0D8"><image-slot id="{{ ex.idBureau }}" shape="rect" placeholder="{{ ex.phBureau }}"></image-slot></div>
+              <div style="position:absolute;right:0;bottom:0;width:24%;aspect-ratio:9 / 18;border-radius:12px;overflow:hidden;border:3px solid #17191C;background:#fff"><image-slot id="{{ ex.idMobile }}" shape="rect" placeholder="Mobile"></image-slot></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 4px 4px">
+              <span style="display:grid;gap:2px"><span style="font-size:17px;font-weight:700">{{ ex.metier }}</span><span style="font-size:14px;color:#666A70">{{ ex.ville }} · exemple</span></span>
+              <a href="{{ ex.lien }}" onClick="{{ ex.clic }}" style="font-size:15px;font-weight:700;color:var(--color-accent-800);text-decoration:none;min-height:44px;display:inline-flex;align-items:center" style-hover="text-decoration:underline">Voir l'exemple</a>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+  <section style="position:relative;background:var(--color-neutral-100);padding:clamp(56px,7vw,104px) 0">
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;gap:clamp(24px,3vw,36px)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px 32px">
+        <div style="max-width:640px">
+          <span style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--color-accent-300);margin-bottom:16px">Un seul compte</span>
+          <h2 style="font-size:clamp(30px,4vw,48px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 12px">{{ eco.titre }}</h2>
+          <p style="font-size:17px;line-height:27px;margin:0;color:var(--color-neutral-800)">{{ eco.texte }}</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ badgesOutils }}" as="bo" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--color-accent-300);font-size:14.5px;font-weight:600"><span style="color:var(--color-accent);font-weight:700">✓</span>{{ bo }}</span></sc-for>
+        </div>
+      </div>
+      <a href="#inscription" style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px clamp(24px,4vw,56px);align-items:center;padding:clamp(22px,3vw,36px);border-radius:16px;background:#fff;border:2px solid var(--color-accent);box-shadow:var(--shadow-md);text-decoration:none;color:var(--color-text);overflow:hidden" style-hover="box-shadow:var(--shadow-lg);transform:translateY(-2px)">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-300)" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:-24px;top:-30px;width:clamp(160px,20vw,260px);height:clamp(160px,20vw,260px);opacity:.7;pointer-events:none"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9v11h14V9"></path><path d="M10 20v-6h4v6"></path></svg>
+        <span style="position:relative;display:grid;gap:12px">
+          <span style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span style="width:56px;height:56px;border-radius:14px;background:var(--color-accent);display:flex;align-items:center;justify-content:center;flex:none"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ outilActif.d }}"></path></svg></span>
+            <span style="font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);color:var(--color-accent-800)">Sur cette page</span>
+          </span>
+          <span style="font-size:clamp(24px,2.8vw,32px);font-weight:700;line-height:1.1">{{ outilActif.nom }}</span>
+          <span style="font-size:16.5px;line-height:25px;color:var(--color-neutral-800);max-width:44ch">{{ outilActif.ligne }}</span>
+        </span>
+        <span style="position:relative;display:grid;gap:10px">
+          <sc-for list="{{ outilActif.points }}" as="p" hint-placeholder-count="3"><span style="display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--color-accent-100);font-size:15.5px;font-weight:600;line-height:21px"><span style="width:24px;height:24px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none">✓</span>{{ p }}</span></sc-for>
+        </span>
+      </a>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px">
+        <sc-for list="{{ outilsAutres }}" as="o" hint-placeholder-count="5">
+          <a href="#inscription" style="position:relative;display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:#fff;border:1px solid var(--color-divider);text-decoration:none;color:var(--color-text);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease" style-hover="transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--color-accent-300);background:#fff">
+            <span style="display:flex;justify-content:space-between;align-items:flex-start">
+              <span style="width:44px;height:44px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ o.d }}"></path></svg></span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+            </span>
+            <span style="font-size:17px;font-weight:700;line-height:1.2">{{ o.nom }}</span>
+            <span style="font-size:14.5px;line-height:21px;color:var(--color-neutral-800)">{{ o.ligne }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ preuve.visible }}" hint-placeholder-val="{{ false }}">
+  <section style="background:#fff;padding:clamp(56px,7vw,96px) 0">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,24px);display:grid;gap:28px">
+      <h2 style="font-size:clamp(28px,3.6vw,42px);line-height:1.1;margin:0;max-width:22ch">Ils ont déjà leur site Portail Travaux</h2>
+      <sc-if value="{{ preuve.aChiffres }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px 48px">
+          <sc-for list="{{ preuve.chiffres }}" as="ch" hint-placeholder-count="2"><span style="display:grid;gap:2px"><span style="font-size:clamp(32px,4vw,44px);font-weight:700;line-height:1">{{ ch.v }}</span><span style="font-size:15px;color:#666A70">{{ ch.l }}</span></span></sc-for>
+        </div>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px">
+        <sc-for list="{{ preuve.temoignages }}" as="tm" hint-placeholder-count="0">
+          <figure style="margin:0;background:#fff;border:1px solid #E6E0D8;border-radius:16px;padding:24px;display:grid;gap:16px">
+            <blockquote style="margin:0;font-size:16.5px;line-height:26px">« {{ tm.citation }} »</blockquote>
+            <figcaption style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:var(--color-accent-100);flex:none;position:relative"><image-slot id="{{ tm.idPhoto }}" shape="circle" placeholder="Logo"></image-slot></span><span style="display:grid"><strong style="font-size:15px">{{ tm.nom }}</strong><span style="font-size:14px;color:#666A70">{{ tm.metier }} · {{ tm.ville }}</span></span></figcaption>
+          </figure>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+  <section id="faq" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,80px) clamp(20px,4vw,48px)">
+    <h2 style="font-size:clamp(26px,3vw,34px);line-height:1.14;margin:0 0 24px">Les questions qu'on nous pose avant de s'inscrire</h2>
+    <div style="max-width:74ch">
+      <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
+        <details open="{{ q.ouvert }}" onToggle="{{ q.toggle }}" style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+          <summary style="display:flex;justify-content:space-between;gap:16px;align-items:center;font-weight:700;font-size:17px;cursor:pointer">{{ q.q }}<span aria-hidden="true" style="color:var(--color-accent-700);font-size:20px;line-height:1">+</span></summary>
+          <p style="font-size:15.5px;line-height:25px;color:var(--color-neutral-800);margin:12px 0 0">{{ q.r }}</p>
+        </details>
+      </sc-for>
+    </div>
+  </section>
+  <section aria-label="Avis d'artisans" style="background:#fff;padding:clamp(48px,6vw,88px) 0;overflow:hidden">
+    <div style="max-width:1200px;margin:0 auto clamp(24px,3vw,40px);padding:0 clamp(20px,4vw,24px)">
+      <h2 style="font-size:clamp(28px,3.6vw,42px);line-height:1.1;margin:0;max-width:22ch">Ce qu'en disent les artisans</h2>
+    </div>
+    <div style="position:relative;display:grid;gap:16px">
+      <div style="display:flex;gap:16px;width:max-content;animation:avisG 80s linear infinite" style-hover="animation-play-state:paused">
+          <sc-for list="{{ avisHaut }}" as="av" hint-placeholder-count="6"><div style="flex:none;width:clamp(290px,calc((100vw - 96px) / 5),340px);height:214px;box-sizing:border-box;position:relative;overflow:hidden;background:#fff;border:1px solid var(--color-divider);border-radius:16px;padding:16px 18px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px">
+              <span aria-hidden="true" style="position:absolute;right:14px;top:-6px;font-size:84px;line-height:1;font-weight:700;color:var(--color-accent-100);pointer-events:none">”</span>
+              <div style="position:relative;display:flex;align-items:center;gap:8px"><span aria-label="5 étoiles sur 5" style="display:inline-flex;gap:2px;color:var(--color-accent);font-size:14px;line-height:1">★★★★★</span><span style="font-size:12px;font-weight:700;color:var(--color-accent-800);background:var(--color-accent-100);border-radius:999px;padding:3px 8px">5,0</span></div>
+              <p style="position:relative;margin:0;font-size:15px;line-height:22px;color:var(--color-neutral-900, #17191C);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;align-self:start">{{ av.texte }}</p>
+              <div style="position:relative;display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--color-divider)"><span style="width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;background:{{ av.fond }}">{{ av.ini }}</span><span style="display:grid;min-width:0"><span style="font-weight:700;font-size:14px;line-height:18px">{{ av.nom }}</span><span style="font-size:12.5px;line-height:17px;color:#666A70">{{ av.metier }}</span></span></div>
+            </div></sc-for>
+        </div>
+      <div style="display:flex;gap:16px;width:max-content;animation:avisD 80s linear infinite" style-hover="animation-play-state:paused">
+          <sc-for list="{{ avisBas }}" as="av" hint-placeholder-count="6"><div style="flex:none;width:clamp(290px,calc((100vw - 96px) / 5),340px);height:214px;box-sizing:border-box;position:relative;overflow:hidden;background:#fff;border:1px solid var(--color-divider);border-radius:16px;padding:16px 18px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px">
+              <span aria-hidden="true" style="position:absolute;right:14px;top:-6px;font-size:84px;line-height:1;font-weight:700;color:var(--color-accent-100);pointer-events:none">”</span>
+              <div style="position:relative;display:flex;align-items:center;gap:8px"><span aria-label="5 étoiles sur 5" style="display:inline-flex;gap:2px;color:var(--color-accent);font-size:14px;line-height:1">★★★★★</span><span style="font-size:12px;font-weight:700;color:var(--color-accent-800);background:var(--color-accent-100);border-radius:999px;padding:3px 8px">5,0</span></div>
+              <p style="position:relative;margin:0;font-size:15px;line-height:22px;color:var(--color-neutral-900, #17191C);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;align-self:start">{{ av.texte }}</p>
+              <div style="position:relative;display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--color-divider)"><span style="width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;background:{{ av.fond }}">{{ av.ini }}</span><span style="display:grid;min-width:0"><span style="font-weight:700;font-size:14px;line-height:18px">{{ av.nom }}</span><span style="font-size:12.5px;line-height:17px;color:#666A70">{{ av.metier }}</span></span></div>
+            </div></sc-for>
+        </div>
+      <div aria-hidden="true" style="position:absolute;top:0;bottom:0;left:0;width:clamp(48px,12vw,200px);pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.7) 45%,rgba(255,255,255,0) 100%);mask-image:linear-gradient(90deg,#000 40%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent)"></div>
+      <div aria-hidden="true" style="position:absolute;top:0;bottom:0;right:0;width:clamp(48px,12vw,200px);pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:linear-gradient(270deg,#fff 0%,rgba(255,255,255,.7) 45%,rgba(255,255,255,0) 100%);mask-image:linear-gradient(270deg,#000 40%,transparent);-webkit-mask-image:linear-gradient(270deg,#000 40%,transparent)"></div>
+    </div>
+  </section>
+
+  <section style="background:var(--color-accent-100);padding:clamp(48px,6vw,80px) 0">
+    <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:40px clamp(28px,4vw,64px);align-items:center">
+      <div>
+        <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">Application mobile</span>
+        <h2 style="font-size:clamp(28px,3.4vw,38px);line-height:1.12;margin:0 0 16px">Une notification dès qu'une demande tombe près de vous</h2>
+        <p style="font-size:17px;line-height:27px;margin:0 0 24px;max-width:48ch;color:var(--color-neutral-800)">Vous voyez la demande, vous appelez le client, vous envoyez le devis — sans redescendre de l'échafaudage. L'appli est incluse, gratuite comme le reste.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="#ios" style="display:inline-flex;align-items:center;border-radius:8px;font-weight:600;text-decoration:none;font-family:inherit;min-height:48px;gap:10px;background:#1b1b1d;color:#fff;padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.3 12.8c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.1-.8-2.1-3.6zM14.2 5.8c.6-.7 1-1.7.9-2.8-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.2z"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.85">Télécharger dans l'</span><span style="font-size:15px">App Store</span></span>
+          </a>
+          <a href="#android" style="display:inline-flex;align-items:center;border-radius:8px;font-weight:600;text-decoration:none;font-family:inherit;min-height:48px;gap:10px;background:#1b1b1d;color:#fff;padding-inline:18px">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.6 2.3z" fill="#34c3eb"></path><path d="M16.1 15.6l-3.1-3.1v-.2l3.1-3.1.1.1 3.7 2.1c1.1.6 1.1 1.6 0 2.2l-3.7 2.1-.1-.1z" fill="#fbcd00"></path><path d="M16.2 15.5L13 12.3 3.6 21.7c.4.4 1 .4 1.7.1l10.9-6.3" fill="#ec4b4b"></path><path d="M16.2 9.1L5.3 2.9c-.7-.4-1.3-.3-1.7.1L13 12.3l3.2-3.2z" fill="#42c76a"></path></svg>
+            <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1"><span style="font-size:10px;font-weight:400;opacity:0.85">Disponible sur</span><span style="font-size:15px">Google Play</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div style="justify-self:center;width:100%;max-width:320px;background:#1b1b1d;border-radius:44px;padding:10px;box-shadow:var(--shadow-lg)">
+        <div style="background:#fff;border-radius:36px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:center;padding:12px 22px 6px;font-size:13px;font-weight:600">
+            <span>9:41</span>
+            <span style="position:absolute;left:50%;transform:translateX(-50%);top:8px;width:96px;height:22px;background:#1b1b1d;border-radius:12px"></span>
+            <span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:9px;border:1px solid var(--color-neutral-700);border-radius:2px;display:block"></span></span>
+          </div>
+
+          <div style="padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div>
+              <p style="margin:0;font-size:12px;color:var(--color-neutral-700)">Bonjour Julien</p>
+              <p style="margin:0;font-size:17px;font-weight:700">Mes demandes</p>
+            </div>
+            <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+          </div>
+
+          <div style="margin:4px 14px 0;padding:14px;border-radius:14px;background:var(--color-accent);color:#fff">
+            <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.9">Nouvelle demande · il y a 4 min</p>
+            <p style="margin:0 0 2px;font-size:16px;font-weight:700">Réfection toiture, 90 m²</p>
+            <p style="margin:0;font-size:13px;opacity:0.95">Pessac (33600) · 9 000 – 14 000 € · Urgent</p>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span style="flex:1;text-align:center;background:#fff;color:var(--color-accent-700);border-radius:8px;padding:8px 0;font-size:13px;font-weight:600">Répondre</span>
+              <span style="flex:1;text-align:center;border:1px solid rgba(255,255,255,0.7);border-radius:8px;padding:8px 0;font-size:13px;font-weight:600">Ignorer</span>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;padding:14px 14px 4px">
+            <div style="flex:1;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:10px 12px">
+              <p style="margin:0;font-size:20px;font-weight:700">12</p>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-700)">Demandes ce mois</p>
+            </div>
+            <div style="flex:1;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:10px 12px">
+              <p style="margin:0;font-size:20px;font-weight:700">4</p>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-700)">Devis en attente</p>
+            </div>
+          </div>
+
+          <div style="padding:10px 14px 0;display:grid;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px">
+              <span>Isolation combles · Mérignac</span><span style="color:var(--color-accent-700);font-weight:600">À rappeler</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--color-divider);border-radius:12px;padding:11px 12px;font-size:13px">
+              <span>Salle de bain · Bordeaux</span><span style="color:var(--color-neutral-700)">Devis envoyé</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:10px 24px 12px;display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider)">
+            <span style="color:var(--color-accent-700);font-weight:600">Demandes</span><span>Planning</span><span>Messages</span><span>Ma fiche</span>
+          </div>
+          <div style="display:flex;justify-content:center;padding-bottom:8px"><span style="width:110px;height:4px;border-radius:2px;background:var(--color-neutral-400)"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ estSite }}" hint-placeholder-val="{{ false }}">
+  <section ref="{{ refForm2 }}" style="position:relative;overflow:hidden;background-color:#173A55;background-image:radial-gradient(circle at 88% 110%,rgba(232,91,12,.42) 0,rgba(232,91,12,0) 42%),radial-gradient(circle at 0% 0%,rgba(255,255,255,.07) 0,rgba(255,255,255,0) 38%),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:auto,auto,22px 22px;color:#fff;padding:clamp(64px,8vw,120px) 0">
+    <div style="position:relative;max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,24px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(40px,6vw,72px);align-items:center">
+      <div style="display:grid;gap:22px;justify-items:start;min-width:0">
+        <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent)"></span>Portail Travaux</span>
+        <h2 style="font-size:clamp(34px,4.6vw,58px);line-height:1.04;letter-spacing:-0.025em;margin:0;color:#fff;max-width:16ch">Le premier réseau d'artisans <span style="color:var(--color-accent)">de France.</span></h2>
+        <p style="font-size:clamp(17px,1.6vw,19px);line-height:1.55;margin:0;color:rgba(255,255,255,.9);max-width:44ch">Portail Travaux met en relation les particuliers et les artisans du bâtiment. En rejoignant le réseau, vous recevez des demandes de travaux et vous profitez de tous nos outils, gratuitement.</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin-top:6px"><a href="#inscription" onClick="{{ clicFinal }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border-radius:10px;background:var(--color-accent);color:#fff;font-weight:700;font-size:17px;text-decoration:none;margin-top:6px" style-hover="background:#C94C06">Créer mon site gratuitement</a><span style="font-size:14px;color:rgba(255,255,255,.8)">Sans abonnement · Sans carte bancaire</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;min-width:0"><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v10H9l-5 3V6z"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Demandes de travaux</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Des particuliers de votre secteur décrivent leur projet. Vous choisissez ceux qui vous intéressent.</span></div><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Visibilité sur le portail</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Votre fiche apparaît quand un client cherche un artisan de votre métier près de chez lui.</span></div><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Site internet</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Un vrai site à votre nom, créé avec l'IA, modifiable en un clic.</span></div><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Gestion des avis</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Vous demandez un avis après chaque chantier et vous répondez depuis votre espace.</span></div><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Devis et factures</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Modèles par métier, mentions vérifiées, signature en ligne et relances.</span></div><div style="display:grid;gap:10px;align-content:start;padding:20px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16)"><span style="width:40px;height:40px;border-radius:10px;background:var(--color-accent);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 9h16M9 4v16"></path></svg></span><span style="font-size:17px;font-weight:700;line-height:1.25;color:#fff">Suivi clients</span><span style="font-size:14.5px;line-height:21px;color:rgba(255,255,255,.82)">Chaque client et chaque chantier au même endroit, du premier appel à la facture.</span></div></div>
+    </div>
+  </section>
+  </sc-if>
+  <footer ref="{{ refForm2 }}" style="background:#fff;border-top:1px solid var(--color-divider)">
+    <div style="max-width:1240px;margin:0 auto;padding:clamp(40px,5vw,64px) clamp(20px,4vw,48px) 24px;display:grid;gap:clamp(32px,4vw,48px)">
+      <div style="display:flex;flex-wrap:wrap;gap:32px clamp(24px,4vw,56px);font-size:15px;line-height:22px">
+        <div style="display:grid;gap:14px;align-content:start;justify-items:start;flex:1.4 1 260px;min-width:0">
+          <span style="display:flex;align-items:center;gap:10px">
+            <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true" style="flex:none"><path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect></svg>
+            <span style="display:flex;flex-direction:column;line-height:1.02;color:var(--color-text)"><span style="font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span><span style="font-size:15px;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span></span>
+          </span>
+          <p style="margin:0;color:var(--color-neutral-800);max-width:32ch">La plateforme des artisans du bâtiment et de leurs clients.</p>
+          <a href="#inscription" style="display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--color-accent-700);text-decoration:none;white-space:nowrap" style-hover="text-decoration:underline">Créer mon espace gratuit<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+        <div style="display:grid;gap:12px;align-content:start;flex:1 1 170px;min-width:0">
+          <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text)">Outils gratuits</p>
+          <ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px"><li><a href="#inscription" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Demandes de chantiers</a></li><li><a href="#inscription" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Fiche pro</a></li><li><a href="#inscription" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Site internet</a></li><li><a href="#inscription" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Devis et factures</a></li><li><a href="#inscription" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Suivi clients et avis</a></li></ul>
+        </div>
+        <div style="display:grid;gap:12px;align-content:start;flex:1 1 170px;min-width:0">
+          <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text)">Espace pro</p>
+          <ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px"><li><a href="Connexion.dc.html" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Connexion</a></li><li><a href="#ios" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Application mobile</a></li><li><a href="Aide et Contact.dc.html" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Aide et contact</a></li></ul>
+        </div>
+        <div style="display:grid;gap:12px;align-content:start;flex:1 1 170px;min-width:0">
+          <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text)">Informations légales</p>
+          <ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px"><li><a href="Pages Legales.dc.html?public=pro&amp;doc=cgv" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">CGV professionnels</a></li><li><a href="Pages Legales.dc.html?public=pro&amp;doc=charte" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Charte de bonne conduite</a></li><li><a href="Pages Legales.dc.html?public=pro&amp;doc=mentions" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Mentions légales</a></li><li><a href="Pages Legales.dc.html?public=pro&amp;doc=confidentialite" style="color:var(--color-neutral-800);text-decoration:none" style-hover="color:var(--color-accent-700);text-decoration:underline">Confidentialité</a></li></ul>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 24px;padding-top:20px;border-top:1px solid var(--color-divider);font-size:13.5px;line-height:20px;color:var(--color-neutral-800)">
+        <p style="margin:0;white-space:nowrap">© 2026 Portail Travaux. Tous droits réservés.</p>
+        <p style="margin:0;display:flex;flex-wrap:wrap;gap:6px 16px"><span style="white-space:nowrap">Sans abonnement</span><span style="white-space:nowrap">Sans carte bancaire</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ barreVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,0.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid #E6E0D8;padding:10px 14px calc(10px + env(safe-area-inset-bottom))">
+      <a href="#inscription" onClick="{{ clicSticky }}" class="btn btn-primary btn-block" style="min-height:48px;border-radius:10px;font-size:17px;text-decoration:none">{{ stickyLabel }}</a>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;outil&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;chantiers&quot;,&quot;site&quot;,&quot;devis&quot;],&quot;default&quot;:&quot;chantiers&quot;,&quot;tsType&quot;:&quot;'chantiers' | 'site' | 'devis'&quot;},&quot;demoVideo&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Démo&quot;},&quot;demoPoster&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Démo&quot;},&quot;nbInscrits&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale (données réelles uniquement)&quot;},&quot;nbSites&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale (données réelles uniquement)&quot;},&quot;noteMoyenne&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:5,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale (données réelles uniquement)&quot;},&quot;nbAvis&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preuve sociale (données réelles uniquement)&quot;},&quot;temoignages&quot;:{&quot;editor&quot;:null,&quot;default&quot;:[],&quot;tsType&quot;:&quot;{nom:string;metier:string;ville:string;citation:string}[]&quot;}}">
+const IC = {
+  demandes: "M4 6h16v10H9l-5 3V6z", fiche: "M4 5h16v14H4zM8 9h8M8 13h5",
+  site: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z",
+  devis: "M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5", suivi: "M4 4h16v16H4zM4 9h16M9 4v16",
+  avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z", zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01",
+  ia: "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6", mobile: "M8 3h8v18H8zM11 18h2",
+  check: "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6zM9 12l2 2 4-4", signe: "M4 19c3-1 4-6 7-6s2 4 5 4 3-3 4-3M4 5h10",
+};
+const OUTILS = [
+  ["chantiers", "Demandes de chantiers", IC.demandes, "Les projets des particuliers de votre secteur."],
+  ["fiche", "Fiche pro", IC.fiche, "Vos métiers, votre zone, vos réalisations et vos garanties."],
+  ["site", "Site internet", IC.site, "Créé avec l'IA, sur une adresse gratuite."],
+  ["devis", "Devis et factures", IC.devis, "Mentions vérifiées, PDF à votre logo, signature en ligne."],
+  ["suivi", "Suivi clients", IC.suivi, "Chaque demande suivie jusqu'au chantier signé."],
+  ["avis", "Avis clients", IC.avis, "Demandés en fin de chantier, affichés sur votre fiche."],
+];
+const PIEGE = "Il n'y en a pas : la fiche, le site, les devis, les factures, le suivi clients, les avis et l'accès aux demandes restent gratuits, sans limite de durée. Nous gagnons notre vie avec des options facultatives : certains appels d'offres achetés à l'unité, une mise en avant de votre fiche, ou Site Pro (votre propre nom de domaine, l'IA complète). Vous ne payez que si vous choisissez une option, et jamais pour commencer.";
+const C = {
+  chantiers: {
+    heroPhoto: "Photo : artisan qui consulte une demande sur son téléphone, sur chantier",
+    source: "trouver-chantier", surtitre: "Plus de 300 demandes de travaux chaque jour sur le réseau", h1a: "Trouvez des chantiers", h1b: "gratuitement",
+    sousTitre: "Des **particuliers de votre secteur** décrivent leur projet : chantier, ville, budget et délai. Ces demandes sont **réservées exclusivement aux membres du réseau Portail Travaux** : rejoignez-le **gratuitement** et répondez à celles qui vous intéressent.",
+    outilNom: "Demandes de chantiers", beneficesTitre: "Des demandes qui correspondent à votre métier et à votre zone",
+    benefices: [[IC.zone, "Seulement votre secteur et vos métiers", "Vous choisissez vos communes, votre rayon et les chantiers que vous acceptez. Le reste ne vous arrive pas.", ["Rayon réglable de 10 à 100 km","Plusieurs métiers sur une même fiche","Modifiable à tout moment"], {"src":"Ma Fiche.dc.html","url":"portailtravaux.fr/pro/fiche","legende":"« Ma fiche » : métiers, zone d'intervention et réalisations.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}],
+      [IC.demandes, "Toutes les infos avant d'appeler", "Type de travaux, ville, budget annoncé, délai et photos quand le client en ajoute : vous savez si ça vaut le déplacement.", ["Budget et délai affichés","Demandes de votre fiche réservées à vous seul","Appels d'offres limités à 3 artisans"], {"src":"Appels d Offres.dc.html","url":"portailtravaux.fr/pro/appels-offres","legende":"« Appels d'offres » : les projets déposés dans votre zone.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}],
+      [IC.suivi, "Suivi jusqu'au chantier signé", "Chaque demande devient une fiche : à rappeler, devis envoyé, signé. Rien ne se perd entre deux chantiers.", ["Statut de chaque client","Rappels à faire du jour","Devis créé depuis la demande"], {"src":"Mes Demandes.dc.html","url":"portailtravaux.fr/pro/demandes","legende":"« Mes demandes » : chaque contact suivi jusqu'au devis.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}]],
+    beneficesIntro: "Trois écrans de votre espace, tels que vous les utiliserez dès l'inscription.",
+    vitrine: {"surtitre":"Sur le chantier","titre":"Les demandes vous suivent sur votre téléphone","texte":"Vous voyez la demande, vous appelez le client, vous répondez : sans attendre d'être rentré au bureau.","points":["Même espace sur ordinateur et téléphone","Appel du client en un geste","Rien à installer pour commencer"],"grand":{"src":"Espace Artisan Dashboard.dc.html","url":"portailtravaux.fr/pro","legende":"Le tableau de bord : nouvelles demandes, rappels et activité.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""},"tel":{"src":"Mes Demandes.dc.html","url":"","legende":"« Mes demandes » sur téléphone.","cadre":"telephone","vw":390,"vh":780,"x":0,"y":0,"w":0,"h":0,"clics":""}},
+    etapes: [["Vous créez votre espace", "Métier, téléphone et code postal : votre fiche est prête en quelques minutes."], ["Vous réglez votre zone", "Communes, rayon et chantiers acceptés. Vous voyez les demandes proches de chez vous."], ["Vous répondez", "Un appel ou un message au client, puis le devis, depuis votre téléphone si besoin."]],
+    faq: [["Combien de demandes vais-je recevoir ?", "Cela dépend de votre métier et de votre secteur : nous ne promettons pas de volume. Après l'inscription, vous voyez les demandes réellement déposées autour de vous."],
+      ["Prenez-vous une commission sur mes chantiers ?", "Non, aucune. Vous traitez directement avec le client et vous facturez comme d'habitude."],
+      ["Est-ce que je partage le client avec d'autres artisans ?", "Une demande envoyée depuis votre fiche est pour vous seul. Les appels d'offres de votre zone sont ouverts à 3 artisans au maximum."],
+      ["Pourquoi vérifiez-vous mon SIREN et mon assurance ?", "Pour que les particuliers ne croisent que des entreprises immatriculées et assurées. Ils vous font confiance plus vite."]],
+    ctaTitre: "Voyez les demandes près de chez vous.",
+  },
+  site: {
+    heroPhoto: "Photo : artisan devant sa camionnette ou sa réalisation, téléphone en main montrant son site",
+    source: "site-internet-artisan", surtitre: "Plus de 300 demandes de travaux chaque jour sur le réseau", h1a: "Créez votre site internet d'artisan", h1b: "gratuitement",
+    sousTitre: "Vos clients vous cherchent sur Google avant d'appeler. Sans site, ils appellent celui qui en a un. Ici, l'IA vous écrit un vrai site pro en 5 minutes, et il ne vous coûte rien. Pas aujourd'hui, pas dans un an.",
+    outilNom: "Mon site internet", beneficesTitre: "Le site que vous repoussez depuis des années, fait pendant votre pause café",
+    benefices: [[IC.ia, "Vous répondez à 3 questions, l'IA écrit tout", "Métiers, zone, réalisations, avis : elle reprend votre fiche et rédige chaque page. Pas de page blanche, pas de webmaster à payer.", ["Questions en un clic","Textes et titres rédigés pour Google","Vos photos de chantier réutilisées"], {"src":"Editeur de Site.dc.html?creation=1","url":"portailtravaux.fr/pro/site/editeur","legende":"La création assistée : l'IA reprend votre fiche.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}],
+      [IC.mobile, "Si vous savez envoyer un SMS, vous savez le modifier", "Vous cliquez sur un texte ou une photo, vous changez, c'est enregistré. Le rendu téléphone est vérifié pour vous.", ["Sections prêtes à ajouter","Couleurs et polices du site en un clic","Aperçu par appareil"], {"src":"Editeur de Site.dc.html","url":"portailtravaux.fr/pro/site/editeur","legende":"L'éditeur : structure à gauche, réglages à droite.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}],
+      [IC.demandes, "Votre site travaille pendant que vous êtes sur le chantier", "Chaque demande de devis arrive dans « Mes demandes » avec le nom, le téléphone et l'adresse du client. Zéro commission, elle est à vous.", ["Nom et téléphone du prospect","Adresse du chantier","Détails de la demande","Suivi directement depuis Portail Travaux"], {"src":"Site Internet Artisan.dc.html?onglet=formulaire","url":"portailtravaux.fr/pro/site","legende":"« Mon site internet » : le formulaire relié à vos demandes.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}]],
+    beneficesIntro: "Ce que les agences facturent plusieurs centaines d'euros, vous l'avez ici sans sortir la carte bancaire.",
+    vitrine: {"surtitre":"Le résultat","defilSel":"[data-canvas=\"1\"]","titre":"Ce que vos clients verront demain matin","texte":"Présentation, prestations, réalisations, avis, bouton d'appel et demande de devis. Le genre de site qui donne envie de vous appeler, vous plutôt qu'un autre.","points":["Bouton d'appel et devis toujours visibles sur téléphone","Pages par commune pour être trouvé localement","Tout reste modifiable après publication"],"grand":{"src":"Editeur de Site.dc.html?page=accueil","url":"bertrand-renovation.portailtravaux.fr","legende":"Le site publié, version ordinateur.","cadre":"navigateur","vw":1280,"vh":800,"x":236,"y":92,"w":792,"h":495,"clics":"Aperçu"},"tel":{"src":"Editeur de Site.dc.html?page=accueil","url":"","legende":"Le même site sur téléphone.","cadre":"telephone","vw":1280,"vh":900,"x":504,"y":92,"w":257,"h":514,"clics":"Mobile|Aperçu"}},
+    etapes: [["4 champs, 30 secondes", "Nom, téléphone, code postal, métier. C'est tout ce qu'on vous demande."], ["L'IA construit votre site", "Pages, textes, photos et formulaire de devis. Vous regardez, vous changez ce qui ne vous plaît pas."], ["Vous cliquez sur « Publier »", "Votre site est en ligne sur nom.portailtravaux.fr. Gratuit, et il le reste."]],
+    faq: [["Est-ce vraiment gratuit ?","Oui. Le site sur une adresse Portail Travaux peut rester gratuit sans limite de durée. Site Pro est uniquement nécessaire si vous souhaitez votre propre nom de domaine et certaines fonctions avancées."],["Suis-je obligé de prendre Site Pro ?","Non. Votre site reste en ligne gratuitement sur votre adresse Portail Travaux, aussi longtemps que vous le souhaitez."],["Puis-je modifier mon site moi-même ?","Oui. Textes, photos, couleurs, pages et référencement se modifient en cliquant dessus, à tout moment, sans code."],["Puis-je utiliser mon propre nom de domaine ?","Oui, avec Site Pro. Le domaine est inclus et votre adresse Portail Travaux est conservée et redirigée."],["Portail Travaux prend-il une commission sur les demandes reçues via mon site ?","Non. Les demandes envoyées depuis votre propre site arrivent gratuitement dans votre espace, sans commission."],["Est-ce que je peux quitter Portail Travaux ?","Oui. Vous pouvez arrêter Site Pro ou supprimer votre compte à tout moment depuis votre espace."],["À qui appartient mon nom de domaine ?","À vous. Il est enregistré au nom de votre entreprise et reste transférable."],["Est-ce adapté au téléphone ?","Oui. Le site s'adapte automatiquement aux téléphones et tablettes, avec un bouton d'appel toujours visible."],["Je n'y connais rien en informatique, est-ce que c'est pour moi ?","Oui. Vous ne touchez à aucun code : vous cliquez sur ce que vous voulez changer, et vous pouvez demander à l'IA de réécrire un texte."],["Mon site sera-t-il visible sur Google ?","Chaque page a son titre et sa description, et le plan du site est envoyé à Google à chaque publication. La position dépend ensuite de votre secteur et de vos contenus."]],
+    ctaTitre: "Vos concurrents ont un site. Dans 5 minutes, vous aussi.",
+  },
+  devis: {
+    heroPhoto: "Photo : artisan qui prépare un devis chez un client, tablette ou ordinateur",
+    source: "logiciel-devis-facture", surtitre: "Devis et factures pour le bâtiment", h1a: "Logiciel de devis et factures", h1b: "gratuit pour artisans",
+    sousTitre: "Des devis et des factures avec vos mentions obligatoires vérifiées, un PDF à votre logo, la signature en ligne et les relances. Depuis l'ordinateur ou le téléphone.",
+    outilNom: "Devis et factures", beneficesTitre: "Des devis propres en quelques minutes, des factures sans oubli",
+    benefices: [[IC.devis, "Modèles par métier et bibliothèque de prestations", "Partez d'un modèle prêt pour votre métier, ajoutez vos lignes : le total HT, la TVA et le TTC se calculent seuls.", ["Prestations réutilisables","TVA 5,5 %, 10 % et 20 % par ligne","Logo et coordonnées sur chaque PDF"], {"src":"Devis et Factures.dc.html","url":"portailtravaux.fr/pro/devis","legende":"« Devis & factures » : vos documents et leur statut.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":""}],
+      [IC.check, "Mentions obligatoires vérifiées avant l'envoi", "SIRET, assurance décennale, validité, TVA, droit de rétractation : s'il manque une mention, l'envoi est bloqué et vous savez quoi compléter.", ["Contrôle en direct pendant la saisie","Paramètres de l'entreprise saisis une fois","PDF téléchargeable à tout moment"], {"src":"Devis et Factures.dc.html","url":"portailtravaux.fr/pro/devis/nouveau","legende":"L'éditeur de devis et le contrôle des mentions.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":"+ Nouveau devis"}],
+      [IC.signe, "Devis signé, facture en un clic", "Le client signe en ligne, vous transformez le devis en facture et les relances partent seules.", ["Signature en ligne du client","Numérotation des factures sans trou","Facture électronique : en cours de mise en conformité"], {"src":"Devis et Factures.dc.html","url":"portailtravaux.fr/pro/devis?onglet=factures","legende":"Les factures : paiements, relances et export.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":"Factures"}]],
+    beneficesIntro: "Le module que vous utiliserez chaque jour, avec vos vrais documents.",
+    vitrine: {"surtitre":"Sur le chantier","titre":"Un devis depuis votre téléphone","texte":"Chez le client, vous préparez le devis et vous l'envoyez avant de repartir. Il le signe depuis son téléphone.","points":["Même module sur ordinateur et téléphone","PDF envoyé par email au client","Statut mis à jour à la signature"],"grand":{"src":"Devis et Factures.dc.html","url":"portailtravaux.fr/pro/devis/nouveau","legende":"Le devis en cours de rédaction.","cadre":"navigateur","vw":1280,"vh":800,"x":0,"y":0,"w":0,"h":0,"clics":"+ Nouveau devis"},"tel":{"src":"Devis et Factures.dc.html","url":"","legende":"« Devis & factures » sur téléphone.","cadre":"telephone","vw":390,"vh":780,"x":0,"y":0,"w":0,"h":0,"clics":""}},
+    etapes: [["Vous créez votre espace", "Métier, téléphone et code postal : vos informations remplissent l'en-tête de vos documents."], ["Vous faites votre premier devis", "À partir d'un modèle prêt pour votre métier. Vous ajustez les lignes et les prix."], ["Vous l'envoyez", "Le client reçoit un PDF à votre logo et le signe en ligne. Vous le transformez en facture."]],
+    faq: [["Combien de devis et de factures puis-je faire ?", "Autant que vous voulez. Le module Devis & factures reste gratuit, sans limite."],
+      ["Est-ce conforme à la facture électronique ?", "Le module est en cours de mise en conformité avec la facture électronique obligatoire. Un export Factur-X est prévu, et vous serez prévenu avant chaque échéance."],
+      ["Puis-je récupérer mes documents si je pars ?", "Oui. Vos devis et factures se téléchargent en PDF à tout moment, et la liste s'exporte pour votre comptable."],
+      ["Les mentions obligatoires sont-elles vraiment vérifiées ?", "Oui : identité de l'entreprise, assurance décennale, validité, TVA, droit de rétractation selon le client. Une mention manquante bloque l'envoi."]],
+    ctaTitre: "Votre premier devis, en quelques minutes.",
+  },
+};
+
+const AVIS = [
+  ["Julien M.", "Plombier · Lyon", "En une soirée j'avais un site propre. Mes clients me disent qu'ils m'ont trouvé dessus."],
+  ["Sandrine L.", "Peintre · Lille", "Je repoussais depuis des années. L'IA a tout écrit, j'ai juste changé deux photos."],
+  ["Karim B.", "Électricien · Nantes", "Gratuit, sans piège. J'ai reçu ma première demande de devis la semaine suivante."],
+  ["Thomas R.", "Couvreur · Bordeaux", "Je ne suis pas à l'aise avec l'informatique et pourtant je modifie tout seul."],
+  ["Nadia F.", "Carreleuse · Marseille", "Le bouton d'appel sur téléphone change tout. Les clients appellent directement."],
+  ["Pierre D.", "Maçon · Toulouse", "Mon ancien site me coûtait cher pour rien. Celui-ci est mieux et ne coûte rien."],
+  ["Élodie G.", "Menuisière · Rennes", "Mes réalisations sont enfin mises en valeur. Ça fait sérieux devant un client."],
+  ["Mehdi A.", "Chauffagiste · Grenoble", "Les demandes arrivent dans mon espace avec le téléphone du client. Pratique."],
+  ["Laurent C.", "Plaquiste · Dijon", "Cinq minutes montre en main. Je ne pensais pas que c'était possible."],
+  ["Sophie V.", "Paysagiste · Angers", "J'ai fait mes devis au même endroit. Tout est relié, je gagne du temps."],
+  ["Antoine P.", "Serrurier · Nice", "Simple, rapide, et les clients me trouvent sur Google avec ma ville."],
+  ["Céline H.", "Architecte d'intérieur · Paris", "Je voulais un site élégant sans payer une agence. C'est exactement ça."],
+  ["Yann K.", "Charpentier · Brest", "J'ai demandé à l'IA de réécrire ma présentation, le résultat est top."],
+  ["Fatima S.", "Façadière · Montpellier", "Aucune carte bancaire demandée. J'ai testé, j'ai gardé."],
+  ["Nicolas T.", "Cuisiniste · Strasbourg", "Les pages par commune m'ont amené des clients des villages autour."],
+  ["Aurélie B.", "Peintre · Tours", "Je l'ai fait sur mon téléphone entre deux chantiers. Incroyable."],
+  ["Hugo L.", "Plombier · Reims", "Plus besoin d'expliquer ce que je fais : j'envoie le lien de mon site."],
+  ["Marine D.", "Décoratrice · Caen", "Les couleurs et les photos me ressemblent. On dirait un site sur mesure."],
+  ["Rachid E.", "Électricien · Lens", "Je recommande à tous les collègues : ça ne coûte rien d'essayer."],
+  ["Olivier N.", "Couvreur · Metz", "Mon site est en ligne et je n'ai rien payé. Je ne vois pas où est le piège."],
+];
+const FONDS = ["var(--color-accent-700)", "#173A55", "var(--color-accent-800)", "#292B2D", "#18864B"];
+const avisCarte = (a, i) => ({ nom: a[0], metier: a[1], texte: a[2], ini: a[0].split(" ").map((x) => x[0]).join("").replace(".", ""), fond: FONDS[i % FONDS.length] });
+const AVIS_H = AVIS.map(avisCarte), AVIS_B = AVIS.slice(10).concat(AVIS.slice(0, 10)).map((a, i) => avisCarte(a, i + 2));
+const AVIS_HAUT = AVIS_H.concat(AVIS_H).map((a, i) => Object.assign({ key: "h" + i }, a)), AVIS_BAS = AVIS_B.concat(AVIS_B).map((a, i) => Object.assign({ key: "b" + i }, a));
+class Component extends DCLogic {
+  state = { capW: 560, formVu: true };
+  poserRail() {
+    const r = this._rail, f = this._railFond; if (!r || !f) return;
+    const box = r.parentElement, dots = box.querySelectorAll('[role="tab"] > span:first-child'); if (dots.length < 2) return;
+    const b0 = box.getBoundingClientRect().top, c = [...dots].map((d) => { const q = d.getBoundingClientRect(); return q.top + q.height / 2 - b0; });
+    const top = c[0], len = c[c.length - 1] - top, e = Math.min(c.length - 1, this.state.etape || 0);
+    f.style.top = r.style.top = top + "px"; f.style.height = r.style.height = len + "px";
+    r.style.transform = "scaleY(" + (len > 0 ? (c[e] - top) / len : 0).toFixed(4) + ")";
+  }
+  componentDidUpdate(pp, ps) { if (this._rail && ps && ps.etape !== this.state.etape) requestAnimationFrame(() => this.poserRail()); }
+  track(ev, d) { try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: ev, landing: this.props.outil || "chantiers" }, d || {})); } catch (e) {} }
+  componentDidMount() {
+    if (this.props.outil === "site") this.track("landing_site_view");
+    setTimeout(() => { const pr = document.querySelector('[data-pricing="1"]'); if (pr && typeof IntersectionObserver !== "undefined") { this._iop = new IntersectionObserver((es) => { if (es[0].isIntersecting) { this.track("pricing_section_viewed"); this._iop.disconnect(); } }, { threshold: 0.3 }); this._iop.observe(pr); } }, 800);
+    this._mq = window.matchMedia("(max-width: 760px)");
+    this._rs = () => { const w = 0;
+      const o = {}; if (this._mq.matches !== this.state.m) o.m = this._mq.matches; if (w && Math.abs(w - this.state.capW) > 2) o.capW = w; if (Object.keys(o).length) this.setState(o); };
+    this._mq.addEventListener("change", this._rs); window.addEventListener("resize", this._rs);
+    if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(this._rs); this._ro.observe(document.documentElement); }
+    this._tm = [0, 150, 500, 1500, 3000].map((d) => setTimeout(this._rs, d));
+    this._calme = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this._sc = () => { if (this._raf) return; this._raf = requestAnimationFrame(() => { this._raf = 0; this._scJ(); }); };
+    this._scJ = () => { const eo = document.querySelector('[data-etapes="1"]'); if (eo) { const ro = eo.getBoundingClientRect(); const pe = Math.min(1, Math.max(0, (window.innerHeight * 0.75 - ro.top) / Math.max(1, ro.height))); if (Math.abs(pe - (this.state.pe || 0)) > 0.01) this.setState({ pe }); } const ev = document.querySelector('[data-vitrine="1"]'); if (ev) { const rv = ev.getBoundingClientRect(), cv = ev.offsetHeight - window.innerHeight; const pv = cv > 0 ? Math.min(1, Math.max(0, -rv.top / cv)) : 0; if (Math.abs(pv - (this.state.pv || 0)) > 0.004) this.setState({ pv }); }
+      if (this._gel && Date.now() < this._gel) return; const etr = window.matchMedia("(max-width: 760px)").matches; this._m = etr; if (etr !== this.state.m) this.setState({ m: etr }); this.suivreEtapes(); };
+    window.addEventListener("scroll", this._sc, { passive: true });
+    this.initGsap(0);
+    this._rsT = () => this.mesurer(); window.addEventListener("resize", this._rsT); setTimeout(() => this.mesurer(), 50); setTimeout(() => this.mesurer(), 600);
+    if (typeof ResizeObserver !== "undefined") { this._roP = new ResizeObserver(() => this.mesurer()); const pp = document.querySelector('[data-panneau="1"]'); if (pp) this._roP.observe(pp); }
+    this._vus = new Set();
+    if (typeof IntersectionObserver !== "undefined") this._io = new IntersectionObserver((es) => { es.forEach((e) => e.isIntersecting ? this._vus.add(e.target) : this._vus.delete(e.target)); const v = this._vus.size > 0, mm = window.matchMedia("(max-width: 760px)").matches; if (v !== this.state.formVu || mm !== this.state.m) this.setState({ formVu: v, m: mm }); }, { threshold: 0.15 });
+    (this._forms || []).forEach((el) => this._io && this._io.observe(el));
+  }
+  geo() { const el = document.querySelector('[data-scrolly="1"]'); if (!el) return null; return { el, r: el.getBoundingClientRect() }; }
+  mesurer() { const el = document.querySelector('[data-scrolly="1"]'); if (!el) return; const p = el.querySelector('[data-panneau="1"]'); if (!p) return;
+    const vh = window.innerHeight, ph = p.offsetHeight, pas = Math.round(vh * 0.55), top = Math.min(44, vh - ph);
+    this._pas = pas; this._top = top; p.style.top = top + "px"; el.style.height = (ph + 2 * pas) + "px";
+    el.querySelectorAll('[data-cran]').forEach((m, i) => { m.style.top = (i * pas) + "px"; m.style.scrollMarginTop = top + "px"; });
+    this.suivreEtapes(); if (window.ScrollTrigger && this._gs) window.ScrollTrigger.refresh(); }
+  initGsap(n) {
+    const g = window.gsap, ST = window.ScrollTrigger;
+    if (!g || !ST) { if ((n || 0) < 80) this._tm = (this._tm || []).concat(setTimeout(() => this.initGsap((n || 0) + 1), 100)); return; }
+    if (this._gs) return; this._gs = true; g.registerPlugin(ST);
+    const el = document.querySelector('[data-scrolly="1"]');
+    this._mm = g.matchMedia();
+    this._mm.add("(prefers-reduced-motion: no-preference)", () => {
+      g.utils.toArray("section h2").forEach((h) => { if (h.closest('[data-scrolly="1"]')) return; g.from(h, { y: 28, autoAlpha: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: h, start: "top 88%", once: true } }); });
+    });
+    if (!el) return;
+    const clamp = (v) => Math.max(0, Math.min(2, v));
+    this._st = ST.create({
+      trigger: el, start: () => "top " + (this._top || 44) + "px", end: () => "+=" + 2 * (this._pas || window.innerHeight * 0.55),
+      onEnter: () => { this._snapE = 0; }, onEnterBack: () => { this._snapE = 2; },
+      onUpdate: (self) => { const e = clamp(Math.round(self.progress * 2)); if (e !== (this.state.etape || 0)) { this.setState({ etape: e }); this.animRail(); } },
+      snap: { snapTo: (v) => { const pos = v * 2, cur = this._snapE != null ? this._snapE : Math.round(pos); const ecart = pos - cur; const tgt = Math.abs(ecart) < 0.06 ? cur : clamp(cur + (ecart > 0 ? 1 : -1)); return tgt / 2; },
+        duration: { min: 0.35, max: 0.7 }, delay: 0.02, ease: "power3.inOut", inertia: false,
+        onComplete: (self) => { this._snapE = clamp(Math.round(self.progress * 2)); } },
+    });
+    ST.refresh();
+  }
+  allerEtape(i) { this._snapE = i; const g = this.geo(); if (!g || !this._pas) { this.setState({ etape: i }); this.animRail(); return; } window.scrollTo({ top: Math.round(window.scrollY + g.r.top - this._top + i * this._pas), behavior: "smooth" }); }
+  suivreEtapes() { const g = this.geo(); if (!g || !this._pas) return; const prog = (this._top - g.r.top) / this._pas; const e = Math.max(0, Math.min(2, Math.round(prog)));
+    if (e !== (this.state.etape || 0)) { this.setState({ etape: e }); this.animRail(); } }
+  animRail() { requestAnimationFrame(() => this.poserRail()); }
+  componentWillUnmount() { window.removeEventListener("resize", this._rsT); window.removeEventListener("wheel", this._wh); window.removeEventListener("touchstart", this._ts); window.removeEventListener("touchmove", this._tmv); window.removeEventListener("keydown", this._kd); window.removeEventListener("scroll", this._sc); window.removeEventListener("resize", this._rs); if (this._mq) this._mq.removeEventListener("change", this._rs); (this._tm || []).forEach(clearTimeout); if (this._io) this._io.disconnect(); if (this._ro) this._ro.disconnect(); if (this._roP) this._roP.disconnect(); if (this._st) this._st.kill(); if (this._mm) this._mm.revert(); }
+  refF(el) { if (!el) return; this._forms = this._forms || []; if (this._forms.indexOf(el) < 0) { this._forms.push(el); if (this._io) this._io.observe(el); } }
+  renderVals() {
+    const s = this.state, outil = C[this.props.outil] ? this.props.outil : "chantiers", c = C[outil], m = s.m === undefined ? (window.matchMedia ? window.matchMedia("(max-width: 760px)").matches : false) : s.m;
+        return {
+      outil, source: c.source, c, mobile: m, desktop: !m,
+      padBas: m ? "76px" : "0",
+      badges: outil === "site" ? ["0 € pour commencer", "Devis et factures inclus", "0 % de commission"] : ["0 € pour commencer", "Sans abonnement", "0 % de commission"],
+      sousTitreParts: String(c.sousTitre || "").split("**").map((x, i) => ({ key: i, t: x, style: i % 2 ? { fontWeight: 700, color: "#17191C" } : {} })),
+      estSite: outil === "site", dirPoints: m ? "column" : "row",
+      heroPoints: ["Gratuit pour toujours, pas un essai", "Aucune carte bancaire demandée", "En ligne en 5 minutes", "Premier réseau de France"],
+      avisHaut: AVIS_HAUT, avisBas: AVIS_BAS,
+      demoVideo: this.props.demoVideo || "", demoPoster: this.props.demoPoster || "",
+      eco: outil === "site" ? { titre: "Et ce n'est que le début", texte: "Le même compte gratuit vous donne aussi vos devis, vos factures, vos avis et les demandes de travaux près de chez vous. Vous ne payez toujours rien." } : { titre: "Votre espace gratuit inclut aussi", texte: "Tous les outils au même endroit. Rien à installer, rien à payer pour commencer." },
+      exemples: [["plombier", "Plombier", "Lyon"], ["couvreur", "Couvreur", "Bordeaux"], ["electricien", "Électricien", "Nantes"], ["peintre", "Peintre", "Lille"], ["macon", "Maçon", "Toulouse"], ["menuisier", "Menuisier", "Rennes"]].map(([id, metier, ville]) => ({ key: id, metier, ville, idBureau: "ex-" + id + "-bureau", idMobile: "ex-" + id + "-mobile", phBureau: "Capture du site " + metier.toLowerCase(), lien: "Editeur de Site.dc.html?page=accueil&exemple=" + id, clic: () => this.track("site_example_clicked", { metier: id }) })),
+      preuve: (() => { const p = this.props, ch = []; if (p.nbInscrits > 0) ch.push({ key: "i", v: Number(p.nbInscrits).toLocaleString("fr-FR"), l: "entreprises inscrites" }); if (p.nbSites > 0) ch.push({ key: "s", v: Number(p.nbSites).toLocaleString("fr-FR"), l: "sites publiés" }); if (p.noteMoyenne > 0 && p.nbAvis > 0) ch.push({ key: "n", v: String(p.noteMoyenne).replace(".", ",") + "/5", l: "sur " + Number(p.nbAvis).toLocaleString("fr-FR") + " avis vérifiés" }); let tm = []; try { tm = (Array.isArray(p.temoignages) ? p.temoignages : JSON.parse(p.temoignages || "[]")).map((x, i) => Object.assign({ key: i, idPhoto: "temoin-" + i }, x)); } catch (e) {} return { visible: ch.length > 0 || tm.length > 0, aChiffres: ch.length > 0, chiffres: ch, temoignages: tm }; })(),
+      stickyLabel: outil === "site" ? "Créer mon site gratuitement" : "Créer mon espace gratuit",
+      clicSticky: () => this.track("sticky_cta_clicked"), clicFinal: () => this.track("final_cta_clicked"),
+      ...(() => {
+        const e = s.etape || 0, calme = this._calme;
+        const TEINTES = [["var(--color-accent-100)", "rgba(255,152,87,.45)", "rgba(255,193,156,.6)"], ["var(--color-neutral-100)", "rgba(255,255,255,.95)", "rgba(32,30,29,.07)"], ["#201e1d", "rgba(224,90,16,.30)", "rgba(255,255,255,.07)"]][e]; const fonce = e === 2;
+        const POS = [["-12vw", "-20vh", "58vw", "40vh"], ["52vw", "-26vh", "-14vw", "44vh"], ["24vw", "34vh", "66vw", "-30vh"]][e];
+        const lent = calme ? "none" : "transform 1.2s cubic-bezier(.2,.8,.2,1), opacity .8s ease";
+        const blob = (l, tp, c, sz) => ({ position: "absolute", left: 0, top: 0, width: sz, height: sz, borderRadius: "50%", background: "radial-gradient(circle at 50% 50%," + c + " 0%,transparent 68%)", transform: "translate3d(" + l + "," + tp + ",0)", willChange: "transform", transition: lent });
+        const ease = "cubic-bezier(.2,.8,.2,1)";
+        return {
+          vit: (() => { const pv = this._calme ? 1 : (s.pv || 0), cl = (x) => Math.min(1, Math.max(0, x)), e1 = cl(pv / 0.28), q = 1 - Math.pow(1 - e1, 3), e2 = cl((pv - 0.3) / 0.62), th = cl(pv / 0.22);
+            return { defil: e2.toFixed(3),
+              styleTete: { maxWidth: "720px", textAlign: "center", overflow: "hidden", maxHeight: Math.round(260 * (1 - th)) + "px", opacity: 1 - th, transform: "translateY(" + Math.round(-24 * th) + "px)", flex: "none" },
+              styleScene: { position: "relative", width: "100%", boxSizing: "border-box", maxWidth: "min(1240px, calc((100vh - " + Math.round(44 + 40 + 34 + 12 + 240 * (1 - th)) + "px) * 1.6))", transform: "scale(" + (0.92 + 0.08 * th).toFixed(3) + ")", transformOrigin: "50% 50%" },
+              styleTel: { position: "absolute", zIndex: 2, right: "-3%", bottom: "0", width: "21%", opacity: q, transform: "translate(" + Math.round((1 - q) * 120) + "%," + Math.round((1 - q) * 30) + "%) rotate(" + ((1 - q) * 8).toFixed(2) + "deg)" },
+            }; })(),
+          styleSectionEtape: { backgroundColor: TEINTES[0], padding: "clamp(48px,6vw,88px) 0", position: "relative", overflow: "clip", transition: calme ? "none" : "background-color .9s cubic-bezier(.2,.8,.2,1)" },
+          deco: { num: "0" + (e + 1),
+            blob1: blob(POS[0], POS[1], TEINTES[1], "min(90vw,1100px)"), blob2: blob(POS[2], POS[3], TEINTES[2], "min(80vw,900px)"),
+            grille: { position: "absolute", inset: 0, backgroundImage: fonce ? "radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.2px)" : "radial-gradient(rgba(32,30,29,.12) 1px, transparent 1.2px)", backgroundSize: "22px 22px", maskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, #000 30%, transparent 75%)", WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, #000 30%, transparent 75%)" },
+            chiffre: { position: "absolute", left: "-0.04em", bottom: "-0.18em", fontSize: "min(38vw,420px)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.06em", color: "transparent", WebkitTextStroke: fonce ? "2px rgba(255,255,255,.12)" : "2px rgba(32,30,29,.10)", transition: calme ? "none" : "transform .9s " + ease, transform: "translateY(" + (e * -2) + "%)", userSelect: "none" } },
+          benefices: c.benefices.map(([d, titre, texte, points, cap], i) => {
+            const on = i === e, avant = i < e;
+            const sortie = avant ? "translateY(-28px)" : "translateY(32px)";
+            const tr = (delai) => calme ? "none" : "color .8s ease, background-color .8s ease, border-color .8s ease, opacity .55s ease " + (on ? delai : 0) + "ms, transform .7s " + ease + " " + (on ? delai : 0) + "ms, filter .55s ease " + (on ? delai : 0) + "ms";
+            const bloc = (delai, extra) => Object.assign({ color: fonce ? "#fff" : "inherit", opacity: on ? 1 : 0, transform: on ? "none" : sortie, transition: tr(delai) }, extra || {});
+            return { key: i, d, titre, texte, points, cap, legendeCap: m ? "" : cap.legende, num: "0" + (i + 1), ariaSel: String(on), cache: String(!on), aller: () => this.allerEtape(i),
+              stylePuce: { width: "48px", height: "48px", display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", borderRadius: "999px", border: "1px solid " + (on ? "var(--color-accent)" : fonce ? "rgba(255,255,255,.28)" : "rgba(32,30,29,.16)"), background: on ? "var(--color-accent)" : fonce ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.7)", color: on || fonce ? "#fff" : "var(--color-neutral-700)", fontWeight: 700, fontSize: "14px", cursor: "pointer", fontFamily: "inherit", transition: calme ? "none" : "background-color .45s ease, border-color .45s ease, color .45s ease, box-shadow .45s ease", boxShadow: on ? "0 6px 16px -6px rgba(224,90,16,.6)" : "none" },
+              styleTexte: { gridArea: "1 / 1", minWidth: 0, pointerEvents: on ? "auto" : "none", visibility: on ? "visible" : "hidden", transition: calme ? "none" : "visibility 0s linear " + (on ? 0 : 700) + "ms" },
+              stIcone: bloc(0, { flex: "none", width: "44px", height: "44px", borderRadius: "12px", color: fonce ? "#ff9857" : "var(--color-accent-700)", background: fonce ? "rgba(255,255,255,.08)" : "#fff", border: "1px solid " + (fonce ? "rgba(255,255,255,.18)" : "var(--color-accent-300)"), display: m ? "none" : "flex", alignItems: "center", justifyContent: "center", marginBottom: "14px", boxShadow: "var(--shadow-sm)" }),
+              stTitre: { fontSize: "clamp(18px,1.9vw,24px)", fontWeight: 700, lineHeight: 1.2, letterSpacing: "-0.01em", color: on ? (fonce ? "#fff" : "var(--color-text)") : (fonce ? "rgba(255,255,255,.55)" : "var(--color-neutral-700)"), transition: calme ? "none" : "color .45s ease" },
+              stPara: { fontSize: "clamp(15px,1.6vw,17px)", lineHeight: 1.55, color: fonce ? "rgba(255,255,255,.86)" : "var(--color-neutral-800)", margin: "0 0 14px", maxWidth: "48ch" },
+              stPoints: { listStyle: "none", padding: 0, margin: 0, display: m ? "none" : "grid", gap: "8px" },
+              stLigne: { position: "relative", display: "grid", padding: "6px 0" },
+              stBouton: { display: "grid", gridTemplateColumns: "48px minmax(0,1fr)", gap: "16px", alignItems: "center", textAlign: "left", background: "transparent", border: 0, padding: "8px 0", cursor: "pointer", fontFamily: "inherit", color: fonce ? "#fff" : "var(--color-text)", position: "relative", zIndex: 1 },
+              stSur: { fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: on ? (fonce ? "#ff9857" : "var(--color-accent-700)") : (fonce ? "rgba(255,255,255,.55)" : "var(--color-neutral-700)"), transition: calme ? "none" : "color .5s ease" },
+              stCorps: { display: "grid", gridTemplateRows: on ? "1fr" : "0fr", transition: calme ? "none" : "grid-template-rows .65s cubic-bezier(.65,0,.35,1)", paddingLeft: "64px", minHeight: on && !m ? "270px" : "0px" },
+              stInterieur: { opacity: on ? 1 : 0, transform: on ? "translate3d(0,0,0)" : "translate3d(0," + (avant ? -14 : 14) + "px,0)", willChange: "opacity, transform", transition: calme ? "none" : (on ? "opacity .45s ease 160ms, transform .55s " + ease + " 160ms" : "opacity .25s ease, transform .3s ease") },
+              stPoint: { display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "10px", fontSize: "15px", lineHeight: "20px", fontWeight: 600, background: fonce ? "rgba(255,255,255,.07)" : "rgba(255,255,255,.75)", border: "1px solid " + (fonce ? "rgba(255,255,255,.14)" : "var(--color-divider)"), color: fonce ? "#fff" : "var(--color-text)" },
+              stCoche: { width: "20px", height: "20px", borderRadius: "50%", background: "var(--color-accent)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, flex: "none" },
+              stScene: { position: "relative", padding: m ? "0" : "34px 40px 44px 28px" },
+              stPlaque: { position: "absolute", left: m ? "-8px" : "0", right: m ? "-8px" : "16px", top: m ? "-8px" : "0", bottom: m ? "-8px" : "16px", borderRadius: "20px", background: fonce ? "rgba(255,255,255,.06)" : "rgba(255,255,255,.65)", border: "1px solid " + (fonce ? "rgba(255,255,255,.14)" : "var(--color-accent-300)"), transform: on ? "none" : "translate(-14px,14px)", transition: calme ? "none" : "transform 1s " + ease + " 120ms" },
+              stLegende: { display: m ? "none" : "block", position: "absolute", left: "28px", bottom: "14px", fontSize: "13px", lineHeight: "18px", color: fonce ? "rgba(255,255,255,.75)" : "var(--color-neutral-700)", opacity: on ? 1 : 0, transition: calme ? "none" : "opacity .5s ease " + (on ? 500 : 0) + "ms" },
+              puces: m ? [] : [[0, { left: "0", top: "8px" }, "M20 6 9 17l-5-5"], [1, { right: "0", top: "42%" }, "M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1"], [2, { right: "12%", bottom: "0" }, "M4 12h16M14 6l6 6-6 6"]].filter(([n]) => points[n]).map(([n, pos, dd]) => ({ key: n, t: points[n], k: ["Inclus", "Automatique", "Ensuite"][n], d: dd,
+                style: Object.assign({ position: "absolute", zIndex: 2, display: "flex", alignItems: "center", gap: "10px", maxWidth: "250px", padding: "10px 14px 10px 10px", borderRadius: "12px", background: "#fff", border: "1px solid var(--color-divider)", opacity: on ? 1 : 0, transform: on ? "none" : "translateY(" + (avant ? -18 : 18) + "px) scale(.96)", transition: calme ? "none" : "opacity .5s ease " + (on ? 420 + n * 140 : 0) + "ms, transform .7s " + ease + " " + (on ? 420 + n * 140 : 0) + "ms" }, pos) })),
+              styleCapture: { gridArea: "1 / 1", minWidth: 0, pointerEvents: "none", opacity: on ? 1 : 0, transform: on ? "translate3d(0,0,0)" : (avant ? "translate3d(0,-32px,0) scale(.96)" : "translate3d(0,40px,0) scale(.96)"), willChange: "transform, opacity", transition: calme ? "none" : "opacity .55s ease " + (on ? 120 : 0) + "ms, transform .8s " + ease + " " + (on ? 120 : 0) + "ms" } };
+          }),
+        };
+      })(),
+      railFond: { position: "absolute", left: "23px", top: "34px", height: "0px", width: "2px", borderRadius: "2px", background: (s.etape || 0) === 2 ? "rgba(255,255,255,.18)" : "rgba(32,30,29,.12)" },
+      railPlein: { position: "absolute", left: "23px", top: "34px", height: "0px", transformOrigin: "50% 0", willChange: "transform", transition: this._calme ? "none" : "transform .7s cubic-bezier(.65,0,.35,1)", width: "2px", borderRadius: "2px", background: "var(--color-accent)", },
+      refRail: (el) => { this._rail = el; if (el) setTimeout(() => this.poserRail(), 60); },
+      refRailFond: (el) => { this._railFond = el; },
+      styleProgres: { display: "block", height: "100%", width: Math.round(((s.etape || 0) + 1) / 3 * 100) + "%", background: "var(--color-accent)", borderRadius: "999px", transition: this._calme ? "none" : "width .45s ease" },
+      ...(() => { const pe = this._calme ? 1 : (s.pe || 0), ez = "cubic-bezier(.2,.8,.2,1)", n = c.etapes.length;
+        return { etapes: c.etapes.map(([titre, texte], i) => { const on = pe >= (i + 0.35) / n, fin = i === n - 1;
+          return { key: i, n: String(i + 1), nn: "0" + (i + 1), titre, texte,
+            styleLi: { position: "relative", display: "grid", gridTemplateColumns: "56px minmax(0,1fr)", gap: "clamp(14px,2vw,24px)", alignItems: "start", opacity: on ? 1 : 0.35, transform: on ? "none" : "translateX(16px)", transition: this._calme ? "none" : "opacity .6s ease, transform .7s " + ez },
+            stylePastille: { position: "relative", zIndex: 1, width: "56px", height: "56px", borderRadius: "50%", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: 700, background: on ? "var(--color-accent)" : "#fff", color: on ? "#fff" : "var(--color-neutral-700)", border: on ? "2px solid var(--color-accent)" : "2px solid var(--color-neutral-200)", boxShadow: on ? "0 0 0 6px var(--color-accent-100)" : "none", transition: this._calme ? "none" : "all .5s " + ez },
+            styleCarte: { position: "relative", overflow: "hidden", padding: "clamp(20px,2.4vw,28px)", borderRadius: "14px", background: fin ? "var(--color-accent-100)" : "#fff", border: "1px solid " + (fin ? "var(--color-accent-300)" : "var(--color-divider)"), boxShadow: on ? "var(--shadow-md)" : "none", transition: this._calme ? "none" : "box-shadow .6s ease" },
+            styleFiligrane: { position: "absolute", right: "12px", top: "-14px", fontSize: "96px", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.05em", color: "transparent", WebkitTextStroke: "1.5px " + (fin ? "rgba(224,90,16,.22)" : "rgba(32,30,29,.08)"), pointerEvents: "none" } }; }),
+          styleEtapesFil: { position: "absolute", left: "27px", top: "28px", width: "2px", borderRadius: "2px", background: "var(--color-accent)", height: "calc((100% - 56px) * " + Math.min(1, pe * 1.1).toFixed(3) + ")", transition: this._calme ? "none" : "height .3s linear" },
+          styleEtapesTete: { position: m ? "static" : "sticky", top: "96px" } }; })(),
+      badgesOutils: ["Sans abonnement", "Sans carte bancaire"],
+      outilActif: (() => { const o = OUTILS.find((x) => x[0] === outil); return { nom: o[1], d: o[2], ligne: o[3], points: c.benefices.map((b) => b[1]) }; })(),
+      outilsAutres: OUTILS.filter((o) => o[0] !== outil).map(([id, nom, d, ligne]) => ({ key: id, nom, d, ligne })),
+      faq: (outil === "site" ? c.faq : [["Où est le piège ?", PIEGE]].concat(c.faq)).map(([q, r], i) => ({ key: i, q, r, ouvert: i === 0, toggle: (e) => { if (e.currentTarget.open) this.track("faq_opened", { question: q }); } })),
+      refForm1: (el) => this.refF(el), refForm2: (el) => this.refF(el),
+      barreVisible: m && !s.formVu,
+    };
+  }
+}
+</script>
+</body>
+</html>

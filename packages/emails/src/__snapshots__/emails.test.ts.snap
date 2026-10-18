@@ -1,0 +1,2231 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > 2fa-activee : version texte 1`] = `
+"Double authentification activée
+Votre compte est mieux protégé.
+
+PORTAIL TRAVAUX
+
+
+DOUBLE AUTHENTIFICATION ACTIVÉE
+
+Un code vous sera demandé à chaque connexion depuis un nouvel appareil.
+
+Ce n’était pas moi https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > 2fa-desactivee : version texte 1`] = `
+"Double authentification désactivée
+Votre compte est moins protégé. C’était vous ?
+
+PORTAIL TRAVAUX
+
+
+DOUBLE AUTHENTIFICATION DÉSACTIVÉE
+
+Votre compte n’est plus protégé par un second facteur.
+
+Ce n’était pas moi : sécuriser mon compte https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-active : version texte 1`] = `
+"Tout inclus est activé pour Bertrand Rénovation
+Merci ! Votre abonnement est actif dès maintenant.
+
+PORTAIL TRAVAUX PRO
+
+
+BIENVENUE DANS TOUT INCLUS
+
+Bonjour Julien, votre abonnement est actif pour Bertrand Rénovation.
+
+Formule : Tout inclus
+
+Facturation : annuelle (12 mois payés en une fois)
+
+Prochaine échéance : 1 octobre 2027
+
+Voir mon abonnement https://portailtravaux.fr/pro/facturation
+
+Vos factures sont disponibles à tout moment dans l’onglet Facturation.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-resilie : version texte 1`] = `
+"Votre résiliation est enregistrée
+Tout inclus reste actif jusqu’au 1 octobre 2027.
+
+PORTAIL TRAVAUX PRO
+
+
+RÉSILIATION ENREGISTRÉE
+
+Bonjour Julien, Tout inclus reste actif pour Bertrand Rénovation jusqu’au 1 octobre 2027, puis votre fiche repasse à la formule gratuite.
+
+Fin de l’abonnement : 1 octobre 2027
+
+Ensuite : fiche gratuite, sans mise en avant ni demandes garanties
+
+Annuler la résiliation https://portailtravaux.fr/pro/facturation
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > abonnement-termine : version texte 1`] = `
+"Tout inclus est terminé
+Votre fiche reste en ligne avec la formule gratuite.
+
+PORTAIL TRAVAUX PRO
+
+
+TOUT INCLUS EST TERMINÉ
+
+Bonjour Julien, l’abonnement de Bertrand Rénovation est terminé. Votre fiche reste visible avec la formule gratuite.
+
+Reprendre un abonnement https://portailtravaux.fr/pro/facturation
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > bienvenue-particulier : version texte 1`] = `
+"Bienvenue sur Portail Travaux
+Suivez vos demandes et échangez avec les artisans depuis votre espace.
+
+PORTAIL TRAVAUX
+
+
+BIENVENUE SUR PORTAIL TRAVAUX
+
+Bonjour Camille, votre espace vous permet de suivre vos demandes, de comparer les devis et d’échanger avec les artisans.
+
+Accéder à mon espace https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > bienvenue-pro : version texte 1`] = `
+"Bienvenue sur Portail Travaux Pro, Julien
+3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.
+
+PORTAIL TRAVAUX PRO
+
+
+BIENVENUE, BERTRAND RÉNOVATION
+
+Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.
+
+✓
+
+Créer votre compte
+
+2
+
+Vérifier votre numéro de mobile
+
+3
+
+Déposer votre attestation décennale
+
+4
+
+Compléter votre fiche à 60 % (logo, photos, description)
+
+Accéder à mon espace https://portailtravaux.fr/pro
+
+Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > blog-a-valider : version texte 1`] = `
+"Article prêt : à valider avant le 21 octobre 2026
+« Pompe à chaleur : 5 questions avant de se lancer » ne sera publié qu’après votre accord.
+
+PORTAIL TRAVAUX PRO
+
+
+UN NOUVEL ARTICLE ATTEND VOTRE ACCORD
+
+Le pilote automatique du blog de Bertrand Rénovation a rédigé un article. Relisez-le, puis validez-le : il sera publié le 21 octobre 2026.
+
+Article : Pompe à chaleur : 5 questions avant de se lancer
+
+Publication prévue : 21 octobre 2026
+
+Relire et valider https://portailtravaux.fr/pro/blog-valider/a1.b2.jeton
+
+Vous préférez le modifier ? Ouvrez-le dans votre espace : https://portailtravaux.fr/pro/site/blog/a1
+
+Sans votre clic, l’article reste un brouillon et n’est jamais publié. Ce lien est personnel : ne le transférez pas.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > blog-quota-atteint : version texte 1`] = `
+"Vos 5 articles du mois sont rédigés
+Nouveaux articles par l’IA dès le 1er novembre.
+
+PORTAIL TRAVAUX PRO
+
+
+QUOTA D’ARTICLES DU MOIS ATTEINT
+
+L’IA a rédigé les 5 articles inclus ce mois-ci pour Bertrand Rénovation. Le compteur repart à zéro le 1er novembre.
+
+Vous pouvez toujours écrire vous-même ; titres, descriptions et tags restent disponibles avec l’IA.
+
+Tout inclus : 15 articles par mois https://portailtravaux.fr/pro/abonnement?offre=tout
+
+Vous recevez cet email car vous utilisez le blog de votre site Portail Travaux.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > changement-email-alerte : version texte 1`] = `
+"Changement de l’adresse email de votre compte
+Nouvelle adresse : c•••@e•••.fr. Annulation possible pendant 7 jours.
+
+PORTAIL TRAVAUX
+
+
+L’ADRESSE EMAIL DE VOTRE COMPTE VA CHANGER
+
+Une demande de changement vers c•••@e•••.fr a été faite depuis votre compte.
+
+Ce n’était pas moi : annuler https://portailtravaux.fr/connexion/lien?t=exemple
+
+Lien d’annulation valable 7 jours. Le compte est bloqué 24 heures par précaution si vous annulez.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > changement-email-verifier : version texte 1`] = `
+"Confirmez votre nouvelle adresse email
+Cliquez pour utiliser cette adresse sur Portail Travaux.
+
+PORTAIL TRAVAUX
+
+
+CONFIRMEZ VOTRE NOUVELLE ADRESSE
+
+Bonjour Camille, confirmez que cette adresse vous appartient pour terminer le changement.
+
+Confirmer cette adresse https://portailtravaux.fr/connexion/lien?t=exemple
+
+Lien valable 24 heures.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-bloque : version texte 1`] = `
+"Votre compte est temporairement bloqué
+Trop de tentatives de connexion. Débloquez-le en un clic.
+
+PORTAIL TRAVAUX
+
+
+VOTRE COMPTE EST TEMPORAIREMENT BLOQUÉ
+
+Nous avons constaté 10 tentatives de connexion infructueuses et bloqué l’accès par précaution.
+
+Débloquer mon compte https://portailtravaux.fr/connexion/lien?t=exemple
+
+Si ce n’était pas vous, changez votre mot de passe après le déblocage.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-reactive : version texte 1`] = `
+"Votre compte est de nouveau actif
+Vous pouvez à nouveau vous connecter.
+
+PORTAIL TRAVAUX
+
+
+VOTRE COMPTE EST DE NOUVEAU ACTIF
+
+Me connecter https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > compte-suspendu : version texte 1`] = `
+"Votre compte a été suspendu
+Motif : Non-respect de la charte des avis
+
+PORTAIL TRAVAUX
+
+
+VOTRE COMPTE A ÉTÉ SUSPENDU
+
+Motif : Non-respect de la charte des avis
+
+Vous pouvez contester cette décision en répondant à cet email ou depuis la page d’aide.
+
+Contester la décision https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > demande-acces : version texte 1`] = `
+"Hugo Martin demande à rejoindre votre équipe
+Acceptez en choisissant un rôle, ou refusez.
+
+PORTAIL TRAVAUX PRO
+
+
+DEMANDE POUR REJOINDRE VOTRE ÉQUIPE
+
+Hugo Martin souhaite rejoindre Bertrand Rénovation sur Portail Travaux Pro.
+
+« Je suis le nouveau chef de chantier. »
+
+Répondre à la demande https://portailtravaux.fr/pro/equipe
+
+Sans réponse sous 14 jours, la demande expire automatiquement.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > demande-acces-reponse : version texte 1`] = `
+"Bienvenue dans l’équipe Bertrand Rénovation
+Rôle : collaborateur.
+
+PORTAIL TRAVAUX PRO
+
+
+BIENVENUE DANS L’ÉQUIPE BERTRAND RÉNOVATION
+
+Rôle : Collaborateur
+
+Accéder à l’espace pro https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > devis-accepte : version texte 1`] = `
+"Devis D-2026-0152 accepté par Claire Martin
+8 932,40 € TTC · signé en ligne
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DEVIS A ÉTÉ ACCEPTÉ
+
+Claire Martin a accepté en ligne votre devis D-2026-0152 (8 932,40 € TTC). La signature (nom, date et empreinte du PDF envoyé) est enregistrée avec le devis.
+
+Vous pouvez maintenant facturer l’acompte ou transformer le devis en facture.
+
+Ouvrir le devis https://portailtravaux.fr/pro/devis/exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-recu : version texte 1`] = `
+"Attestation décennale bien reçue
+Vérification sous 48 h ouvrées.
+
+PORTAIL TRAVAUX PRO
+
+
+DOCUMENT BIEN REÇU
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Notre équipe le vérifie sous 48 h ouvrées. Vous recevrez un email dès la décision.
+
+Voir mes documents https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-refuse : version texte 1`] = `
+"Attestation décennale : document non validé
+Motif : Attestation expirée le 31/12/2025. Déposez un nouveau document.
+
+PORTAIL TRAVAUX PRO
+
+
+NOUS N’AVONS PAS PU VALIDER VOTRE DOCUMENT
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Motif : Attestation expirée le 31/12/2025
+
+Votre fiche reste hors ligne tant qu’un document valide n’est pas déposé.
+
+Déposer un nouveau document https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Vérification sous 48 h ouvrées après le dépôt.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > document-valide : version texte 1`] = `
+"Attestation décennale validée
+Votre document est vérifié.
+
+PORTAIL TRAVAUX PRO
+
+
+DOCUMENT VALIDÉ
+
+Document : Attestation décennale
+
+Déposé le : 24 septembre 2026
+
+Le label correspondant apparaît sur votre fiche publique.
+
+Voir ma fiche https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > entreprise-existe-deja : version texte 1`] = `
+"Quelqu’un a tenté d’inscrire votre entreprise
+Une inscription de Bertrand Rénovation a été tentée. C’était un membre de votre équipe ?
+
+PORTAIL TRAVAUX PRO
+
+
+TENTATIVE D’INSCRIPTION DE VOTRE ENTREPRISE
+
+Quelqu’un a essayé d’inscrire Bertrand Rénovation, qui a déjà un compte. Il peut vous demander à rejoindre l’équipe.
+
+Si vous ne reconnaissez pas cette démarche, aucune action n’est nécessaire : personne n’a accès à votre compte.
+
+Gérer mon équipe https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Travaux Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > entreprise-fermee : version texte 1`] = `
+"Bertrand Rénovation a été fermée
+La fiche est retirée de l’annuaire. Les factures restent disponibles.
+
+PORTAIL TRAVAUX PRO
+
+
+ENTREPRISE FERMÉE
+
+L’espace de Bertrand Rénovation a été fermé par son propriétaire. La fiche est retirée de l’annuaire.
+
+Les factures restent conservées 10 ans et disponibles sur demande.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > export-donnees-pret : version texte 1`] = `
+"L’export de vos données est prêt
+Téléchargeable pendant 7 jours, connexion requise.
+
+PORTAIL TRAVAUX
+
+
+L’EXPORT DE VOS DONNÉES EST PRÊT
+
+Télécharger mes données https://portailtravaux.fr/connexion/lien?t=exemple
+
+Lien valable 7 jours. Vous devrez vous connecter pour télécharger le fichier.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > facture-relance : version texte 1`] = `
+"Facture F-2026-0087 : paiement en attente
+2 679,72 € à régler · échéance le 20 octobre 2026
+
+PORTAIL TRAVAUX
+
+
+VOTRE FACTURE ATTEND SON RÈGLEMENT
+
+Bonjour, sauf erreur de notre part, la facture de Bertrand Rénovation arrivée à échéance le 20 octobre 2026 n’est pas encore réglée.
+
+Facture : F-2026-0087
+
+Objet : Rénovation de salle de bain
+
+Reste à payer : 2 679,72 €
+
+Échéance : 20 octobre 2026
+
+Tout retard de paiement entraîne des pénalités au taux annuel de 12,15 %.
+
+Télécharger la facture (PDF) https://portailtravaux.fr/api/facture-client/exemple
+
+Pour toute question, contactez directement Bertrand Rénovation. Si vous avez déjà réglé, ne tenez pas compte de ce message. Ce lien est personnel : ne le transférez pas.
+
+L’équipe Portail Travaux
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-en-ligne : version texte 1`] = `
+"Votre fiche est en ligne
+Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Travaux.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE FICHE EST EN LIGNE
+
+Félicitations : Bertrand Rénovation est visible par les particuliers de votre zone et peut recevoir des demandes.
+
+BR
+Bertrand Rénovation
+★ Nouveau · Bordeaux et 25 km
+Vérifié · Décennale
+
+Voir ma fiche publique https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+
+POUR RECEVOIR PLUS DE DEMANDES
+
+1
+
+Ajoutez 3 photos de réalisations
+
+2
+
+Répondez aux demandes en moins de 2 h pour obtenir le label « Réponse rapide »
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-incomplete : version texte 1`] = `
+"Votre fiche est complète à 40 %
+À partir de 60 %, votre fiche apparaît dans l’annuaire.
+
+PORTAIL TRAVAUX PRO
+
+
+COMPLÉTEZ VOTRE FICHE
+
+Fiche40 %
+
+
+
+1
+
+Ajouter votre logo
+
+2
+
+Ajouter 3 photos de réalisations
+
+3
+
+Rédiger votre présentation
+
+Compléter ma fiche https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > garantie-tenue : version texte 1`] = `
+"4 demandes reçues ce mois-ci
+Le point sur vos demandes du mois.
+
+PORTAIL TRAVAUX PRO
+
+
+VOS DEMANDES DU MOIS
+
+Bonjour Julien, vous avez reçu 4 demandes ce mois-ci.
+
+Voir mes demandes https://portailtravaux.fr/pro/demandes
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-acceptee : version texte 1`] = `
+"Léa Durand a rejoint votre équipe
+Rôle : collaborateur.
+
+PORTAIL TRAVAUX PRO
+
+
+LÉA DURAND A REJOINT BERTRAND RÉNOVATION
+
+Rôle : Collaborateur
+
+Voir mon équipe https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-expiree : version texte 1`] = `
+"Une invitation a expiré
+L’invitation envoyée à l•••@g•••.com n’a pas été acceptée.
+
+PORTAIL TRAVAUX PRO
+
+
+INVITATION EXPIRÉE
+
+L’invitation envoyée à l•••@g•••.com n’a pas été acceptée dans les 7 jours.
+
+Renvoyer l’invitation https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-membre : version texte 1`] = `
+"Julien vous invite à rejoindre Bertrand Rénovation
+Rôle : collaborateur. Invitation valable 7 jours.
+
+PORTAIL TRAVAUX PRO
+
+
+REJOIGNEZ L’ÉQUIPE BERTRAND RÉNOVATION
+
+Julien Bertrand vous invite à gérer les demandes de devis de l’entreprise sur Portail Travaux Pro.
+
+Entreprise : Bertrand Rénovation · Bordeaux
+
+Votre rôle : Collaborateur
+
+Vous pourrez : Répondre aux demandes, envoyer des devis, ajouter des réalisations
+
+Accepter l’invitation https://portailtravaux.fr/pro/invitation?t=exemple
+
+Invitation valable jusqu’au 2 octobre 2026, destinée à l•••@g•••.com. Vous ne connaissez pas Julien Bertrand ? Ignorez cet email.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > invitation-relance : version texte 1`] = `
+"Rappel : Bertrand Rénovation vous attend
+Invitation valable jusqu’au 2 octobre 2026.
+
+PORTAIL TRAVAUX PRO
+
+
+JULIEN BERTRAND VOUS ATTEND
+
+Vous avez été invité à rejoindre Bertrand Rénovation en tant que collaborateur.
+
+Accepter l’invitation https://portailtravaux.fr/pro/invitation?t=exemple
+
+Invitation valable jusqu’au 2 octobre 2026.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > lien-connexion : version texte 1`] = `
+"Votre lien de connexion à Portail Travaux
+Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.
+
+PORTAIL TRAVAUX
+
+
+CONNECTEZ-VOUS EN UN CLIC
+
+Bonjour Camille, voici votre lien pour accéder à votre espace. Aucun mot de passe n’est nécessaire.
+
+Me connecter https://portailtravaux.fr/connexion/lien?t=exemple
+
+Ce lien est valable 1 heure et ne fonctionne qu’une seule fois.
+
+Vous n’êtes pas à l’origine de cette demande ? Ignorez simplement cet email : personne ne peut se connecter sans ce lien.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > membre-retire : version texte 1`] = `
+"Vous ne faites plus partie de Bertrand Rénovation
+Votre accès à l’espace de l’entreprise a été retiré.
+
+PORTAIL TRAVAUX PRO
+
+
+ACCÈS RETIRÉ
+
+Bonjour Léa, votre accès à l’espace pro de Bertrand Rénovation a été retiré. Vos messages restent visibles par l’équipe.
+
+Votre compte personnel reste actif.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > mot-de-passe-modifie : version texte 1`] = `
+"Votre mot de passe a été modifié
+Safari sur iPhone · 25 septembre 2026 à 08 h 12. C’était vous ?
+
+PORTAIL TRAVAUX
+
+
+VOTRE MOT DE PASSE A ÉTÉ MODIFIÉ
+
+Appareil : Safari sur iPhone
+
+Lieu approximatif : Mérignac, France
+
+Date : 25 septembre 2026 à 08 h 12
+
+C’était vous ? Vous n’avez rien à faire.
+
+Ce n’était pas moi https://portailtravaux.fr/connexion/lien?t=exemple
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > mot-de-passe-oublie : version texte 1`] = `
+"Réinitialisation de votre mot de passe
+Choisissez un nouveau mot de passe. Lien valable 1 heure.
+
+PORTAIL TRAVAUX
+
+
+CHOISISSEZ UN NOUVEAU MOT DE PASSE
+
+Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Travaux.
+
+Choisir un nouveau mot de passe https://portailtravaux.fr/connexion/lien?t=exemple
+
+Lien valable 1 heure, utilisable une seule fois. Votre mot de passe actuel reste valable tant que vous n’en choisissez pas un nouveau.
+
+Ce n’était pas vous ? Aucune action n’est nécessaire, mais nous vous conseillons d’activer la double authentification.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > nouvel-appareil : version texte 1`] = `
+"Nouvelle connexion à votre compte
+Safari sur iPhone · Mérignac, France · 25 septembre 2026 à 08 h 12. C’était vous ?
+
+PORTAIL TRAVAUX
+
+
+NOUVELLE CONNEXION DÉTECTÉE
+
+Votre compte Portail Travaux vient d’être utilisé depuis un appareil que nous ne connaissions pas.
+
+Appareil : Safari sur iPhone
+
+Lieu approximatif : Mérignac, France
+
+Date : 25 septembre 2026 à 08 h 12
+
+C’était vous ? Vous n’avez rien à faire.
+
+Ce n’était pas moi : sécuriser mon compte https://portailtravaux.fr/connexion/lien?t=exemple
+
+Sécuriser votre compte déconnecte tous les appareils et vous demande un nouveau mot de passe.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > pack-achete : version texte 1`] = `
+"10 crédits ajoutés à votre compte
+Nouveau solde : 14 crédits.
+
+PORTAIL TRAVAUX PRO
+
+
+CRÉDITS AJOUTÉS
+
+Bonjour Julien, votre pack de 10 crédits est disponible pour Bertrand Rénovation.
+
+Crédits ajoutés : 10
+
+Nouveau solde : 14
+
+Voir les appels d’offres https://portailtravaux.fr/pro/facturation
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > paiement-echoue : version texte 1`] = `
+"Votre paiement n’a pas abouti
+Mettez à jour votre carte pour garder votre abonnement.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE PAIEMENT N’A PAS ABOUTI
+
+Bonjour Julien, le paiement de 1 150,56 € TTC pour Bertrand Rénovation a été refusé par votre banque.
+
+Sans nouveau paiement sous 7 jours, votre abonnement repasse à la formule gratuite.
+
+Mettre à jour ma carte https://portailtravaux.fr/pro/facturation
+
+Nous réessayons automatiquement le paiement dans les prochains jours.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > passage-annuel : version texte 1`] = `
+"Votre abonnement Portail Travaux
+Tout inclus : 49 € HT / mois, sans engagement.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE ABONNEMENT
+
+Toutes les formules sont mensuelles et sans engagement.
+
+Voir mon abonnement https://portailtravaux.fr/pro/abonnement
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-appel-offres-complet : version texte 1`] = `
+"Cet appel d’offres était complet avant votre résumé
+Rénovation de salle de bain à Bordeaux : 3 réponses reçues avant 7 h.
+
+PORTAIL TRAVAUX PRO
+
+
+LES ARTISANS TOUT INCLUS L’ONT VU EN PREMIER
+
+L’appel d’offres « Rénovation de salle de bain » à Bordeaux a reçu ses 3 réponses avant l’envoi de votre résumé du matin.
+
+En Tout inclus, vous voyez les appels d’offres 12 h avant les autres artisans, et vous les payez 15 % moins cher.
+
+Découvrir Tout inclus https://portailtravaux.fr/pro/abonnement
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-bilan-visibilite : version texte 1`] = `
+"Votre 1er mois en Fiche Pro : 287 vues
+287 vues, 19 appels. Voici l’étape suivante.
+
+PORTAIL TRAVAUX PRO
+
+Bilan du mois
+
+
+FICHE PRO FONCTIONNE : VOICI VOS CHIFFRES
+
+287 ×4,1
+Vues de votre fiche
+19
+Appels depuis votre fiche
+3
+Demandes reçues
+
+
+L’ÉTAPE SUIVANTE : TOUT INCLUS
+
+Avec Tout inclus, vous voyez les appels d’offres de votre zone 12 h avant les autres artisans, vous les payez 15 % moins cher, et votre site internet est inclus.
+
+Appels d’offres : 12 h avant les autres artisans
+
+Prix des appels d’offres : −15 %
+
+Site internet : Site Pro inclus, avec votre domaine
+
+Support : Prioritaire
+
+Le reste de votre mois de Fiche Pro (73,24 € HT) est déduit au prorata.
+
+Découvrir Tout inclus https://portailtravaux.fr/pro/abonnement
+
+Tout inclus : 49 € HT / mois, sans engagement.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-credits : version texte 1`] = `
+"Vous avez payé 60 € d’appels d’offres ce mois-ci
+Avec Tout inclus, vos appels d’offres coûtent 15 % moins cher.
+
+PORTAIL TRAVAUX PRO
+
+
+TOUT INCLUS POURRAIT VOUS FAIRE ÉCONOMISER
+
+Appels d’offres sur 30 jours : 6 crédits · 60 € HT
+
+Avec Tout inclus : −15 % sur chaque appel d’offres
+
+En plus : Accès 12 h avant les autres artisans
+
+Vous répondez souvent aux appels d’offres. En Tout inclus, vous les voyez 12 h avant les autres artisans et vous les payez 15 % moins cher.
+
+Découvrir Tout inclus https://portailtravaux.fr/pro/abonnement
+
+Vos crédits déjà achetés restent valables.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-demandes-manquees : version texte 1`] = `
+"3 chantiers (21 500 €) demandés à d’autres artisans
+Des particuliers de votre secteur ont contacté un artisan depuis sa fiche.
+
+PORTAIL TRAVAUX PRO
+
+Semaine du 21 au 27 septembre
+
+
+3 DEMANDES ENVOYÉES À D’AUTRES ARTISANS DE VOTRE SECTEUR
+
+Salle de bain · CaudéranDepuis une fiche9 800 €
+
+Chaudière vers PAC · TalenceDepuis une fiche8 400 €
+
+Ballon d’eau chaude · BèglesDepuis une fiche3 300 €
+
+Ces particuliers ont choisi un artisan depuis sa fiche et lui ont écrit directement. Avec Fiche Pro, la vôtre passe en tête de votre secteur, avec votre téléphone affiché.
+
+Mettre ma fiche en avant https://portailtravaux.fr/pro/abonnement
+
+Budgets estimés TTC. Aucune donnée du particulier n’est communiquée.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prem-renouvellement : version texte 1`] = `
+"Passez à Tout inclus avant votre échéance
+Votre Fiche Pro se renouvelle le 1er novembre 2026.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE ÉCHÉANCE APPROCHE
+
+Bonjour Julien, votre Fiche Pro se renouvelle le 1er novembre 2026. En passant à Tout inclus maintenant, seule la différence est facturée au prorata.
+
+Appels d’offres : 12 h avant les autres artisans
+
+Prix des appels d’offres : −15 %
+
+Site internet : Site Pro inclus, avec votre domaine
+
+Support : Prioritaire
+
+Découvrir Tout inclus https://portailtravaux.fr/pro/abonnement
+
+Sans action de votre part, votre Fiche Pro continue normalement.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-demande-zone : version texte 1`] = `
+"Hier à Lormont : 2 400 – 3 200 € TTC
+Cette demande est partie chez un autre électricien. Recevez les suivantes.
+
+PORTAIL TRAVAUX PRO
+
+Demande reçue hier
+
+
+UN PARTICULIER DE LORMONT CHERCHAIT UN ÉLECTRICIEN
+
+Travaux : Remplacement du tableau et mise aux normes
+
+Budget estimé : 2 400 – 3 200 € TTC
+
+Distance : 3 km de votre siège
+
+Délai souhaité : Sous 2 semaines
+
+Faute de électricien inscrit près de chez vous, elle a été transmise à une autre entreprise.
+
+Inscrivez-vous gratuitement : les prochaines demandes de ce type vous arriveront par email et par SMS.
+
+M’inscrire gratuitement https://portailtravaux.fr/pro/inscription
+
+Aucune donnée personnelle du particulier n’est communiquée dans cet email.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-derniere : version texte 1`] = `
+"Je clôture votre dossier ?
+Une question avant de ne plus vous écrire, Marc.
+
+PORTAIL TRAVAUX PRO
+
+Bonjour Marc,
+
+Je vous ai envoyé il y a 12 jours l’estimation des demandes autour de Lormont. Depuis, 9 nouvelles demandes sont arrivées dans votre secteur.
+
+Je ne veux pas vous encombrer : si ce n’est pas le moment, je clôture votre dossier et vous ne recevrez plus qu’un résumé mensuel de votre zone.
+
+Une question sur le fonctionnement, les prix ou l’engagement ? Répondez simplement à cet email, c’est moi qui lis les réponses.
+
+Créer ma fiche gratuite en 3 minutes → https://portailtravaux.fr/pro/inscription
+
+Julie, Portail Travaux
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-estimation : version texte 1`] = `
+"Électricien à Lormont : 27 demandes ce mois-ci
+Votre estimation détaillée, et comment recevoir ces demandes gratuitement.
+
+PORTAIL TRAVAUX PRO
+
+Votre estimation
+
+
+27 PARTICULIERS CHERCHENT UN ÉLECTRICIEN AUTOUR DE LORMONT
+
+27 30 jours
+Demandes dans votre métier
+6 400 €
+Budget moyen par projet
+4
+Électriciens inscrits à 20 km
+
+Ces demandes sont aujourd’hui partagées entre seulement 4 électriciens. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.
+
+Recevoir mes premières demandes https://portailtravaux.fr/pro/inscription
+
+Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Travaux.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > prospect-temoignage : version texte 1`] = `
+"Un électricien inscrit reçoit sa 1re demande en 6 jours
+27 demandes de électricien ce mois-ci autour de Lormont.
+
+PORTAIL TRAVAUX PRO
+
+
+COMBIEN DE TEMPS AVANT LA PREMIÈRE DEMANDE ?
+
+6 j en moyenne
+Avant la 1re demande
+27 30 jours
+Demandes autour de Lormont
+
+Bonjour Marc, les électriciens qui s’inscrivent dans votre secteur reçoivent leur première demande en 6 jours en moyenne, sans payer.
+
+Créer ma fiche gratuite https://portailtravaux.fr/pro/inscription
+
+Moyenne calculée sur les artisans inscrits depuis moins de 6 mois dans votre département.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reconquete-1 : version texte 1`] = `
+"Julien, 11 demandes sont parties ailleurs depuis
+Revenez avec −30 % sur votre premier mois.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE SECTEUR A CONTINUÉ SANS VOUS
+
+11
+Demandes envoyées à d’autres artisans
+164
+Recherches « plombier Bordeaux »
+18e
+Position de votre fiche
+
+Vos avis sont toujours là. Reprenez votre formule et retrouvez votre place en tête de votre secteur dès aujourd’hui.
+
+RETOUR30
+
+Revenir à −30 % https://portailtravaux.fr/pro/abonnement
+
+Code personnel valable jusqu’au 3 octobre 2026, appliqué au premier mois.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reconquete-2 : version texte 1`] = `
+"Une dernière question
+Je ne vous écrirai plus après celui-ci.
+
+PORTAIL TRAVAUX PRO
+
+Bonjour Julien,
+
+Vous avez quitté votre abonnement il y a 3 mois. Je voudrais simplement comprendre ce qui n’a pas fonctionné pour vous : trop cher, pas assez de demandes, autre chose ?
+
+Répondez à cet email en une ligne, c’est moi qui lis les réponses. Ce sera mon dernier message : ensuite, vous ne recevrez plus que le rapport mensuel gratuit.
+
+Julie, Portail Travaux
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > recu : version texte 1`] = `
+"Reçu de paiement PT-2026-0042
+1 150,56 € TTC payés. Facture disponible en ligne.
+
+PORTAIL TRAVAUX PRO
+
+
+PAIEMENT REÇU, MERCI
+
+Bonjour Julien, nous avons bien reçu votre paiement pour Bertrand Rénovation.
+
+Facture : PT-2026-0042
+
+Montant : 1 150,56 € TTC
+
+Télécharger la facture https://invoice.stripe.com/i/exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-devis : version texte 1`] = `
+"Devis D-2026-0152 : il attend votre réponse
+Rénovation de salle de bain · 8 932,40 € TTC
+
+PORTAIL TRAVAUX
+
+
+UN DEVIS ATTEND VOTRE RÉPONSE
+
+Bonjour, Bertrand Rénovation vous a adressé le 10 octobre 2026 son devis pour votre projet. Vous le retrouverez, avec son lien de téléchargement, dans l’email reçu ce jour-là.
+
+Devis : D-2026-0152
+
+Objet : Rénovation de salle de bain
+
+Montant : 8 932,40 € TTC
+
+Valable jusqu’au : 9 novembre 2026
+
+Pour l’accepter, renvoyez-le daté et signé avec la mention « Bon pour accord », ou répondez directement à l’artisan. Si vous avez déjà répondu, ne tenez pas compte de ce message.
+
+L’équipe Portail Travaux
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-1 : version texte 1`] = `
+"Il vous reste 2 minutes pour recevoir vos demandes
+Votre inscription Bertrand Rénovation est enregistrée à 66 %.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE INSCRIPTION EST PRESQUE TERMINÉE
+
+Bonjour Julien, vous avez commencé à inscrire Bertrand Rénovation. Reprenez exactement où vous en étiez.
+
+Inscription66 %
+
+
+
+✓
+
+Entreprise
+
+✓
+
+Zone et métiers
+
+3
+
+Création du compte
+
+Terminer mon inscription https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Ce mois-ci, 38 particuliers ont cherché un plombier autour de Bordeaux.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-2 : version texte 1`] = `
+"38 demandes dans votre zone ce mois-ci
+Terminez votre inscription pour les recevoir.
+
+PORTAIL TRAVAUX PRO
+
+
+DES PARTICULIERS CHERCHENT UN ARTISAN PRÈS DE CHEZ VOUS
+
+Ce mois-ci, 38 particuliers ont cherché un plombier autour de Bordeaux.
+
+Terminez votre inscription : votre fiche peut être en ligne dès aujourd’hui, gratuitement.
+
+Terminer mon inscription https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Chiffre estimé à partir des demandes déposées dans votre département.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > relance-onboarding-3 : version texte 1`] = `
+"Dernier rappel : votre inscription vous attend
+Après cet email, nous ne vous relancerons plus.
+
+PORTAIL TRAVAUX PRO
+
+
+DERNIER RAPPEL
+
+Bonjour Julien, l’inscription de Bertrand Rénovation est enregistrée à 66 %. C’est notre dernière relance.
+
+Terminer mon inscription https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Sans action de votre part, vos informations seront supprimées dans 20 jours.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > renouvellement : version texte 1`] = `
+"Votre abonnement se renouvelle dans 7 jours
+Tout inclus : 1 150,56 € TTC le 1 octobre 2027.
+
+PORTAIL TRAVAUX PRO
+
+
+RENOUVELLEMENT DE VOTRE ABONNEMENT
+
+Bonjour Julien, votre abonnement annuel Tout inclus pour Bertrand Rénovation se renouvelle automatiquement le 1 octobre 2027.
+
+Formule : Tout inclus
+
+Montant : 1 150,56 € TTC
+
+Date : 1 octobre 2027
+
+Gérer mon abonnement https://portailtravaux.fr/pro/facturation
+
+Vous pouvez résilier avant cette date depuis l’onglet Facturation, sans frais.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reprise-onboarding : version texte 1`] = `
+"Reprenez votre inscription où vous l’avez laissée
+Inscription de Bertrand Rénovation : vos informations sont enregistrées.
+
+PORTAIL TRAVAUX PRO
+
+
+REPRENEZ VOTRE INSCRIPTION
+
+Bonjour Julien, vos informations sont enregistrées. Ce lien vous permet de terminer sur n’importe quel appareil.
+
+Reprendre mon inscription https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Lien valable 30 jours.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > reprise-simulateur : version texte 1`] = `
+"Reprenez votre estimation où vous l’avez laissée
+Salle de bain · 6 m² · douche à l’italienne · étape 3 sur 5.
+
+PORTAIL TRAVAUX
+
+
+REPRENEZ VOTRE ESTIMATION
+
+Bonjour Camille, votre projet est enregistré. Ce lien vous ramène à l’étape où vous vous êtes arrêté, sur n’importe quel appareil.
+
+Projet : Salle de bain · 6 m² · douche à l’italienne
+
+Étape : 3 sur 5
+
+Reprendre à l’étape 3 https://portailtravaux.fr/simulateur?reprise=exemple
+
+Lien valable 30 jours, utilisable une seule fois. Vous avez demandé ce lien en cochant « M’envoyer un lien pour reprendre plus tard ».
+
+L’équipe Portail Travaux
+
+Vous recevez cet email car votre démarche n’est pas terminée. 3 relances au maximum.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > resiliation-alternative : version texte 1`] = `
+"Avant le 24 octobre : gardez l’essentiel pour moins cher
+Passez à Fiche Pro ou suspendez 2 mois au lieu de tout perdre.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE TOUT INCLUS S’ARRÊTE LE 24 OCTOBRE
+
+Votre résiliation est bien enregistrée. D’ici là, trois options s’offrent à vous :
+
+Passer à Fiche ProRester en tête de liste29 € HT / mois
+
+Suspendre 2 moisReprise automatique0 €
+
+Rester abonné−50 % pendant 2 mois24,50 € HT
+
+Le 24 octobre, votre fiche repassera en gratuit. Vos 87 avis sont conservés.
+
+Choisir une option https://portailtravaux.fr/pro/abonnement
+
+Vous n’avez rien à faire pour confirmer la résiliation.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > resume-zone-mensuel : version texte 1`] = `
+"Septembre : 27 demandes de électricien près de Lormont
+Le résumé mensuel de votre zone.
+
+PORTAIL TRAVAUX PRO
+
+Résumé de Septembre
+
+
+27 DEMANDES DANS VOTRE MÉTIER AUTOUR DE LORMONT
+
+27
+Demandes
+6 400 €
+Budget moyen
+
+Voir comment les recevoir https://portailtravaux.fr/pro/inscription
+
+Vous recevez ce résumé une fois par mois. Désabonnement en un clic ci-dessous.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > revendication-code : version texte 1`] = `
+"Votre code pour revendiquer votre fiche
+Fiche Bertrand Rénovation : saisissez ce code pour la gérer.
+
+PORTAIL TRAVAUX PRO
+
+
+REVENDIQUEZ VOTRE FICHE
+
+Saisissez ce code pour prendre la main sur la fiche Bertrand Rénovation.
+
+K7Q2M9
+
+Saisir mon code https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+Code valable 30 jours, à usage unique.
+
+L’équipe Portail Travaux Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > revendication-resultat : version texte 1`] = `
+"Votre fiche vous appartient
+Vous gérez désormais Bertrand Rénovation.
+
+PORTAIL TRAVAUX PRO
+
+
+REVENDICATION ACCEPTÉE
+
+Vous gérez désormais la fiche Bertrand Rénovation. Les avis et statistiques sont conservés.
+
+Accéder à mon espace https://portailtravaux.fr/pro/inscription?reprise=exemple
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > role-modifie : version texte 1`] = `
+"Votre rôle chez Bertrand Rénovation a changé
+Nouveau rôle : gérant.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE RÔLE A CHANGÉ
+
+Entreprise : Bertrand Rénovation
+
+Nouveau rôle : Gérant
+
+Vous pouvez : Gérer les demandes, la fiche, l’équipe et l’abonnement
+
+Accéder à l’espace pro https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > sieges-suspendus : version texte 1`] = `
+"Accès de votre équipe suspendu
+3 membre(s) suspendu(s) : réactivez Tout inclus pour leur rendre l’accès.
+
+PORTAIL TRAVAUX PRO
+
+
+ACCÈS DE L’ÉQUIPE SUSPENDU
+
+Bertrand Rénovation est passée à l’offre gratuite, qui comprend un seul siège. 3 membre(s) sont suspendus : aucune donnée n’est perdue.
+
+Réactiver Tout inclus https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-actif : version texte 1`] = `
+"Votre site est en ligne sur bertrand-renovation.fr
+Adresse vérifiée, certificat HTTPS en place.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DOMAINE EST ACTIF
+
+Le site de Bertrand Rénovation répond maintenant sur bertrand-renovation.fr, en HTTPS. Votre adresse gratuite redirige automatiquement vers ce domaine.
+
+Voir mon site https://www.bertrand-renovation.fr
+
+Vos emails ne sont pas concernés : nous ne modifions jamais vos enregistrements MX.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-attente : version texte 1`] = `
+"bertrand-renovation.fr : il reste une étape
+Les enregistrements DNS ne sont pas encore en place.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DOMAINE ATTEND SES ENREGISTREMENTS
+
+Depuis 24 heures, nous ne trouvons pas encore tous les enregistrements de bertrand-renovation.fr. Ajoutez-les chez votre hébergeur de domaine (OVH, Gandi, IONOS…) : la vérification reprend toute seule.
+
+A @ : 76.76.21.21
+
+CNAME www : cname.vercel-dns.com
+
+TXT _portailtravaux : ph-verif=…
+
+Voir les enregistrements https://portailtravaux.fr/pro/site?onglet=domaine
+
+Votre site reste en ligne sur son adresse gratuite en attendant. Vos emails (MX) ne sont pas concernés.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-casse : version texte 1`] = `
+"bertrand-renovation.fr ne mène plus à votre site
+Votre site reste en ligne sur son adresse gratuite.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DOMAINE NE POINTE PLUS VERS VOTRE SITE
+
+Depuis 3 jours, les enregistrements de bertrand-renovation.fr ne mènent plus au site de Bertrand Rénovation. Pour que vos visiteurs le trouvent toujours, il reste en ligne sur son adresse gratuite.
+
+À corriger chez votre hébergeur de domaine : TXT _portailtravaux.
+
+Voir les enregistrements https://portailtravaux.fr/pro/site?onglet=domaine
+
+Dès que les enregistrements sont corrects, le domaine est réactivé automatiquement.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-echec : version texte 1`] = `
+"bertrand-renovation.fr : vérification impossible
+Il manque des enregistrements chez votre hébergeur de domaine.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DOMAINE N’A PAS PU ÊTRE VÉRIFIÉ
+
+Après 72 heures, nous ne trouvons pas tous les enregistrements demandés pour bertrand-renovation.fr. Votre site reste en ligne sur son adresse gratuite.
+
+Encore à créer ou à corriger : TXT _portailtravaux.
+
+Voir les enregistrements https://portailtravaux.fr/pro/site?onglet=domaine
+
+Une fois les enregistrements ajoutés, cliquez sur « Vérifier maintenant ».
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-renouvele : version texte 1`] = `
+"bertrand-renovation.fr sera renouvelé le 14 novembre 2026
+Rien à faire : le renouvellement est inclus dans Site Pro.
+
+PORTAIL TRAVAUX PRO
+
+
+RENOUVELLEMENT DE VOTRE DOMAINE
+
+Le domaine bertrand-renovation.fr de Bertrand Rénovation sera renouvelé automatiquement le 14 novembre 2026. Il reste enregistré à votre nom.
+
+Voir mon domaine https://portailtravaux.fr/pro/site?onglet=domaine
+
+Pour garder le domaine sans Site Pro, demandez son transfert depuis l’onglet Domaine.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > site-domaine-transfert : version texte 1`] = `
+"bertrand-renovation.fr : votre code de transfert
+Le domaine est à votre nom : vous pouvez le garder.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE DOMAINE VOUS APPARTIENT
+
+Site Pro est résilié. Le domaine bertrand-renovation.fr est enregistré au nom de Bertrand Rénovation : pour le garder, transférez-le chez le bureau d’enregistrement de votre choix avec ce code.
+
+Code de transfert (AuthCode) : X7#k-29Qp
+
+Ne communiquez ce code qu’au bureau d’enregistrement qui reçoit le domaine.
+
+Voir mon domaine https://portailtravaux.fr/pro/site?onglet=domaine
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email suite à une action sur Portail Travaux.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > suppression-compte-confirmee : version texte 1`] = `
+"Votre compte a été supprimé
+Récapitulatif de ce qui est conservé.
+
+PORTAIL TRAVAUX
+
+
+VOTRE COMPTE A ÉTÉ SUPPRIMÉ
+
+Bonjour Camille, vos données personnelles ont été effacées.
+
+Conservé : Factures (10 ans, obligation comptable)
+
+Effacé : Profil, préférences, historique de connexion
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > transfert-propriete : version texte 1`] = `
+"Transfert de propriété de Bertrand Rénovation
+Léa Durand est désormais propriétaire.
+
+PORTAIL TRAVAUX PRO
+
+
+TRANSFERT DE PROPRIÉTÉ EFFECTUÉ
+
+Entreprise : Bertrand Rénovation
+
+Nouveau propriétaire : Léa Durand
+
+L’ancien propriétaire devient gérant.
+
+Vous n’êtes pas à l’origine de ce transfert ? Contactez-nous immédiatement.
+
+Voir mon équipe https://portailtravaux.fr/pro/equipe
+
+L’équipe Portail Travaux Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > verifier-email : version texte 1`] = `
+"Confirmez votre adresse email
+Une dernière étape pour activer votre compte Portail Travaux.
+
+PORTAIL TRAVAUX
+
+
+CONFIRMEZ VOTRE ADRESSE EMAIL
+
+Bonjour Camille, cliquez sur le bouton ci-dessous pour confirmer que cette adresse vous appartient.
+
+Confirmer mon adresse https://portailtravaux.fr/connexion/lien?t=exemple
+
+Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur : https://portailtravaux.fr/connexion/lien?t=exemple · Valable 24 heures.
+
+L’équipe Portail Travaux
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > verifier-telephone : version texte 1`] = `
+"Votre code de vérification
+Code : 482913. Valable 10 minutes.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE CODE DE VÉRIFICATION
+
+482913
+
+Valable 10 minutes. Ne le communiquez à personne : Portail Travaux ne vous le demandera jamais.
+
+L’équipe Portail Travaux Pro
+
+Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-concurrents : version texte 1`] = `
+"Un 3e plombier est affiché avant vous
+Votre fiche passe à la 17e place à Bordeaux.
+
+PORTAIL TRAVAUX PRO
+
+
+VOTRE FICHE RECULE DANS VOTRE SECTEUR
+
+Fiches mises en avant+1 cette semaine3
+
+Votre position−3 places17e / 23
+
+Recherches « plombier Bordeaux »30 derniers jours146
+
+Les fiches recommandées passent devant les fiches gratuites. Reprenez votre place avec Fiche Pro, pour 29 € HT par mois.
+
+Remonter en tête https://portailtravaux.fr/pro/abonnement
+
+Nous ne communiquons jamais le nom des autres artisans.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-demande-offerte : version texte 1`] = `
+"Cette demande de 9 600 € est à vous
+Chaudière gaz → pompe à chaleur air-eau à Talence, 9 km. Offerte avec Fiche Pro.
+
+PORTAIL TRAVAUX PRO
+
+Demande offerte
+
+
+UNE DEMANDE VOUS ATTEND, GRATUITEMENT
+
+Travaux : Chaudière gaz → pompe à chaleur air-eau
+
+Budget estimé : 7 200 – 9 600 € TTC
+
+Commune : Talence · 9 km de votre siège
+
+Délai souhaité : Sous 1 mois
+
+Activez Fiche Pro aujourd’hui : cette demande est débloquée immédiatement, sans frais. Seuls les 3 premiers artisans la reçoivent.
+
+Fiche Pro : 29 € HT / mois
+
+Sans engagement : résiliable à tout moment
+
+Activer Fiche Pro et recevoir la demande https://portailtravaux.fr/pro/inscription
+
+Offre valable une seule fois par entreprise. Les coordonnées du particulier s’affichent après l’activation.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-lancement : version texte 1`] = `
+"Julien, −30 % sur Fiche Pro
+Code personnel : 20,30 € HT par mois pendant 12 mois.
+
+PORTAIL TRAVAUX PRO
+
+Offre de bienvenue
+
+
+−30 % SUR VOS 12 PREMIERS MOIS DE FICHE PRO
+
+Prix normal : 29 € HT / mois
+
+Avec votre code : 20,30 € HT / mois
+
+Pendant : 12 mois, puis tarif normal
+
+JULIEN30
+
+Valable jusqu’au jeudi 1er octobre à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer Fiche Pro à −30 % https://portailtravaux.fr/pro/abonnement?offre=fiche&code=JULIEN30
+
+Remise appliquée pendant 12 mois, puis tarif normal. Sans engagement.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-rappel : version texte 1`] = `
+"Votre code −30 % expire ce soir
+20,30 € HT au lieu de 29 € HT par mois.
+
+PORTAIL TRAVAUX PRO
+
+
+DERNIER JOUR POUR VOTRE REMISE
+
+Bonjour Julien, votre code personnel expire ce soir. Après, Fiche Pro repasse au tarif normal.
+
+Prix normal : 29 € HT / mois
+
+Avec votre code : 20,30 € HT / mois
+
+Pendant : 12 mois, puis tarif normal
+
+JULIEN30
+
+Valable jusqu’au ce soir à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer à −30 % https://portailtravaux.fr/pro/abonnement?offre=fiche&code=JULIEN30
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-offre-relance : version texte 1`] = `
+"Une nouvelle remise de 30 % pour Bertrand Rénovation
+Votre fiche est en ligne depuis 3 mois : voici une nouvelle offre.
+
+PORTAIL TRAVAUX PRO
+
+
+PASSEZ EN TÊTE DE VOTRE SECTEUR
+
+Bonjour Julien, votre fiche est en ligne depuis 3 mois. Pour vous aider à passer le cap, voici un code personnel.
+
+Prix normal : 29 € HT / mois
+
+Avec votre code : 20,30 € HT / mois
+
+Pendant : 12 mois, puis tarif normal
+
+JULIEN30
+
+Valable jusqu’au mardi 15 décembre à 23 h 59. Le code est déjà appliqué via le bouton.
+
+Activer Fiche Pro https://portailtravaux.fr/pro/abonnement?offre=fiche&code=JULIEN30
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-position : version texte 1`] = `
+"Vous êtes 14e sur 22 plombiers à Bordeaux
+Votre fiche a été vue 31 fois. Les fiches mises en avant, bien plus.
+
+PORTAIL TRAVAUX PRO
+
+Votre première semaine
+
+
+VOTRE FICHE EST EN LIGNE, MAIS PAS EN TÊTE
+
+31
+Vues de votre fiche
+14e sur 22
+Votre position à Bordeaux
+312
+Vues moyennes d’une fiche mise en avant
+
+Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Fiche Pro, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et le badge « Artisan recommandé ».
+
+Fiche Pro : 29 € HT / mois
+
+Sans engagement : résiliable à tout moment
+
+Passer en tête de mon secteur https://portailtravaux.fr/pro/abonnement
+
+Activation immédiate, résiliable depuis votre espace.
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > vis-recherches-manquees : version texte 1`] = `
+"14 recherches de plombier sans vous en 1re page
+Cette semaine à Bordeaux, votre fiche n’apparaissait pas en premier.
+
+PORTAIL TRAVAUX PRO
+
+
+DES PARTICULIERS VOUS CHERCHENT, SANS VOUS TROUVER
+
+14 7 jours
+Recherches « plombier Bordeaux »
+
+Votre fiche n’était pas en première page de ces recherches. Avec Fiche Pro, elle passe en tête de votre secteur.
+
+Fiche Pro : 29 € HT / mois
+
+Sans engagement : résiliable à tout moment
+
+Passer en tête de mon secteur https://portailtravaux.fr/pro/abonnement
+
+L’équipe Portail Travaux Pro
+
+Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
