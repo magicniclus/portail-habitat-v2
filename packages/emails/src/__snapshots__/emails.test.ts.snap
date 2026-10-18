@@ -1360,7 +1360,7 @@ Portail Travaux · Raison sociale · Adresse postale"
 `;
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > recu : version texte 1`] = `
-"Reçu de paiement PH-2026-0042
+"Reçu de paiement PT-2026-0042
 1 150,56 € TTC payés. Facture disponible en ligne.
 
 PORTAIL TRAVAUX PRO
@@ -1370,7 +1370,7 @@ PAIEMENT REÇU, MERCI
 
 Bonjour Julien, nous avons bien reçu votre paiement pour Bertrand Rénovation.
 
-Facture : PH-2026-0042
+Facture : PT-2026-0042
 
 Montant : 1 150,56 € TTC
 

@@ -211,8 +211,8 @@ const PACKS = [[50, 50, ""], [110, 100, " · 10 offerts"], [290, 250, " · 40 of
 const eur = (n) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 class Component extends DCLogic {
   state = { ouvert: true, offre: "fiche", panier: null, cgv: true, solde: 12, ia: 0, message: "", factures: [
-    { num: "PH-2026-01884", date: "02/10/2026", objet: "Appel d'offres AO-2291 · Toiture Pessac", ttc: 22.8, statut: "Payée" },
-    { num: "PH-2026-01702", date: "18/09/2026", objet: "Pack 50 crédits", ttc: 60, statut: "Payée" },
+    { num: "PT-2026-01884", date: "02/10/2026", objet: "Appel d'offres AO-2291 · Toiture Pessac", ttc: 22.8, statut: "Payée" },
+    { num: "PT-2026-01702", date: "18/09/2026", objet: "Pack 50 crédits", ttc: 60, statut: "Payée" },
   ] };
   componentDidMount() { let q = {}; try { q = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {} const o = OFFRES.find((x) => x.id === q.offre); if (o && o.prix) this.ouvrirOffre(o); }
   ouvrirOffre(o) {
@@ -252,7 +252,7 @@ class Component extends DCLogic {
       cgv: s.cgv, basculerCgv: () => this.setState({ cgv: !s.cgv }), payerBloque: !s.cgv,
       fermer: () => this.setState({ panier: null }),
       payer: () => this.setState((x) => {
-        const f = { num: "PH-2026-0" + (1900 + x.factures.length), date: "10/10/2026", objet: p.titre, ttc: ht * 1.2, statut: "Payée" };
+        const f = { num: "PT-2026-0" + (1900 + x.factures.length), date: "10/10/2026", objet: p.titre, ttc: ht * 1.2, statut: "Payée" };
         const m = { panier: null, factures: [f].concat(x.factures) };
         if (p.type === "offre") { m.offre = p.id; m.message = OFFRES.find((o) => o.id === p.id).nom + " activé. Facture envoyée par email."; }
         if (p.type === "credits") { m.solde = x.solde + p.credits; m.message = p.credits + " crédits ajoutés à votre solde."; }

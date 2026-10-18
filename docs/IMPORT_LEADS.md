@@ -119,7 +119,7 @@ Règles générales : UTF-8, montants **toujours en centimes**, dates **ISO 8601
 | `5xx` | — | Erreur de notre côté : **renvoyez** (même `idExterne`) | — |
 
 ```json
-{ "statut": "creee", "idExterne": "SIM-2026-0918-004512", "reference": "PH-4F8K2Q", "niveau": "A" }
+{ "statut": "creee", "idExterne": "SIM-2026-0918-004512", "reference": "PT-4F8K2Q", "niveau": "A" }
 ```
 ```json
 { "statut": "rejetee", "idExterne": "SIM-2026-0918-004513", "motifRejet": "consentement_absent", "details": "consentement.texteAffiche ne correspond pas à v3-2026-06" }

@@ -97,8 +97,8 @@ describe('referentielSansPrix', () => {
 });
 
 describe('referenceDossier', () => {
-  it('PHD- suivi de 6 caractères', () => {
-    expect(referenceDossier(() => 0)).toBe('PHD-222222');
+  it('PTD- suivi de 6 caractères', () => {
+    expect(referenceDossier(() => 0)).toBe('PTD-222222');
   });
 });
 

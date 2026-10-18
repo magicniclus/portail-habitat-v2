@@ -1035,7 +1035,7 @@ class Component extends DCLogic {
         e.preventDefault();
         const f = e.target, g = (id) => ((f.querySelector("#" + id) || {}).value || "").trim();
         const payload = {
-          reference: "PH-" + Date.now().toString().slice(-6),
+          reference: "PT-" + Date.now().toString().slice(-6),
           prestation: p.nom,
           reponses: p.champs.map((c) => ({ question: c.label, reponse: this.valeurLisible(c) })),
           codePostal: s.cp, acces: s.acces,

@@ -23,7 +23,7 @@ const membre = (role: string, statut = 'actif') => ({
 
 async function demande(id: string, minutes: number, statut = 'proposee') {
   await db.doc(chemins.demande(id)).set({
-    reference: `PH-${id.toUpperCase().padEnd(6, 'X')}`,
+    reference: `PT-${id.toUpperCase().padEnd(6, 'X')}`,
     prestationId: 'toiture',
     contact: {
       prenom: 'Hélène',

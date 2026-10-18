@@ -46,12 +46,12 @@ const champs: Champ[] = [
 ];
 
 describe('referenceDemande', () => {
-  it('PH- suivi de 6 caractères sans ambiguïté (ni 0, ni O, ni 1, ni I)', () => {
-    expect(referenceDemande(() => 0)).toBe('PH-222222');
-    expect(referenceDemande(() => 0.999)).toBe('PH-ZZZZZZ');
+  it('PT- suivi de 6 caractères sans ambiguïté (ni 0, ni O, ni 1, ni I)', () => {
+    expect(referenceDemande(() => 0)).toBe('PT-222222');
+    expect(referenceDemande(() => 0.999)).toBe('PT-ZZZZZZ');
     let i = 0;
     const r = referenceDemande(() => (i++ % 32) / 32);
-    expect(r).toMatch(/^PH-[2-9A-HJ-NP-Z]{6}$/);
+    expect(r).toMatch(/^PT-[2-9A-HJ-NP-Z]{6}$/);
   });
 });
 

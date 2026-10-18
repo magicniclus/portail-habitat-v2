@@ -632,7 +632,7 @@ class Component extends DCLogic {
         e.preventDefault();
         const f = e.target, g = (id) => ((f.querySelector("#" + id) || {}).value || "").trim();
         const payload = {
-          reference: "PHD-" + Date.now().toString().slice(-6),
+          reference: "PTD-" + Date.now().toString().slice(-6),
           bien: { adresse: s.adresse, commune: c.com.nom, codePostal: c.com.cp, type: typ.label, periode: per.label,
             surface: s.surface, motif: s.motif, gaz: s.gaz, electricite: s.elec, assainissement: s.assainissement, classeDpe: s.classe },
           diagnostics: analyse.map((x) => ({ nom: x.d.nom, statut: x.statut })),

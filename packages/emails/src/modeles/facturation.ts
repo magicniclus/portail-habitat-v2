@@ -47,7 +47,7 @@ const EX: Abonnement = {
 const EX_FACTURE: Facture = {
   prenom: 'Julien',
   nomCommercial: 'Bertrand Rénovation',
-  numero: 'PH-2026-0042',
+  numero: 'PT-2026-0042',
   montantTtcCentimes: 115_056,
   lien: 'https://portailtravaux.fr/pro/facturation',
   lienFacture: 'https://invoice.stripe.com/i/exemple',

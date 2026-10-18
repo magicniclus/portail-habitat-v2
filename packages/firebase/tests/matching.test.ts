@@ -71,7 +71,7 @@ async function artisan(
 
 async function demande(id: string, extra: Record<string, unknown> = {}) {
   await db.doc(chemins.demande(id)).set({
-    reference: 'PH-ABC123',
+    reference: 'PT-ABC123',
     statut: 'nouvelle',
     prestationId: 'peinture',
     adresseChantier: { ville: 'Floirac', codePostal: '33270', geo: FLOIRAC },
@@ -285,7 +285,7 @@ describe('algorithme dans l’admin (ADMIN §2.10)', () => {
       ...CONFIG_MATCHING_DEFAUT,
       poids: { ...CONFIG_MATCHING_DEFAUT.poids, distance: 0.6, competence: 0.05, qualite: 0.05 },
     };
-    const c = await rejouerDemandeAdmin(s, { reference: 'PH-ABC123', config: nouvelle });
+    const c = await rejouerDemandeAdmin(s, { reference: 'PT-ABC123', config: nouvelle });
     expect(c.lignes.map((l) => [l.nom, l.apres])).toEqual([
       ['Entreprise pres', 1],
       ['Entreprise loin', 2],
@@ -293,7 +293,7 @@ describe('algorithme dans l’admin (ADMIN §2.10)', () => {
     expect(c.lignes[0]!.scoreApres).not.toBe(c.lignes[0]!.scoreAvant);
     expect((await db.doc(chemins.demande('d1')).get()).get('statut')).toBe('attribuee');
     await expect(
-      rejouerDemandeAdmin(s, { reference: 'PH-ZZZZZZ', config: nouvelle }),
+      rejouerDemandeAdmin(s, { reference: 'PT-ZZZZZZ', config: nouvelle }),
     ).rejects.toMatchObject({ code: 'INTROUVABLE' });
     expect(
       await publierConfigMatchingAdmin(s, {

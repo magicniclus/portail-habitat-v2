@@ -6,7 +6,7 @@ const T = Date.UTC(2026, 8, 22, 10);
 const DEMANDES = [
   {
     id: 'd1',
-    reference: 'PH-4K82Q9',
+    reference: 'PT-4K82Q9',
     titre: 'Rénovation de salle de bain',
     ville: 'Bordeaux',
     envoyeeLe: T,
@@ -17,7 +17,7 @@ const DEMANDES = [
   },
   {
     id: 'd2',
-    reference: 'PH-9M31T2',
+    reference: 'PT-9M31T2',
     titre: 'Peinture du séjour',
     ville: 'Bordeaux',
     envoyeeLe: T - 86_400_000,

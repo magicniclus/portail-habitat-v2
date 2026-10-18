@@ -67,7 +67,7 @@ export async function proposerDemande(
 ): Promise<{ reference: string; demandeId: string }> {
   const { db, Timestamp } = await admin();
   const code = Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, 'X');
-  const reference = `PH-${code}`;
+  const reference = `PT-${code}`;
   const demandeId = randomUUID().replaceAll('-', '').slice(0, 20);
   await db.doc(chemins.demande(demandeId)).set({
     reference,

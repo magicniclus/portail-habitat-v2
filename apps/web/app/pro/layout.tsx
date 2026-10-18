@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: { default: 'Portail Travaux Pro', template: '%s · Portail Travaux Pro' },
   // Application installable (MOBILE §9, MOB-06).
   manifest: PWA_PRO.manifest,
-  appleWebApp: { capable: true, title: 'PH Pro', statusBarStyle: 'default' },
+  appleWebApp: { capable: true, title: 'PT Pro', statusBarStyle: 'default' },
   icons: { apple: PWA_PRO.icone('apple') },
 };
 

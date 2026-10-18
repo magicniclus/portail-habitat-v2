@@ -465,7 +465,7 @@ describe('demandes dans l’admin (ADMIN §2.4)', () => {
   const s = () => ({ db, horloge: () => T, notifier: async (e: unknown) => void envois.push(e) });
   const demande = (id: string, statut: string) =>
     db.doc(chemins.demande(id)).set({
-      reference: `PH-${id.toUpperCase().padEnd(6, 'X')}`,
+      reference: `PT-${id.toUpperCase().padEnd(6, 'X')}`,
       statut,
       source: 'simulateur',
       prestationId: 'peinture',
@@ -500,7 +500,7 @@ describe('demandes dans l’admin (ADMIN §2.4)', () => {
     await db.doc(chemins.artisan('a2')).set({ nomCommercial: 'Nguyen', statut: 'actif' });
     expect((await listerDemandesAdmin(db, { filtre: 'attente' })).map((d) => d.id)).toEqual(['d2']);
     expect(
-      (await listerDemandesAdmin(db, { filtre: 'toutes', reference: 'ph-d1xxxx' })).map(
+      (await listerDemandesAdmin(db, { filtre: 'toutes', reference: 'pt-d1xxxx' })).map(
         (d) => d.id,
       ),
     ).toEqual(['d1']);
@@ -1285,7 +1285,7 @@ describe('RGPD (ADMIN §2.13)', () => {
     });
     await db
       .doc(chemins.demande('d1'))
-      .set({ particulierUid: uid, statut: 'nouvelle', reference: 'PH-AAAA11' });
+      .set({ particulierUid: uid, statut: 'nouvelle', reference: 'PT-AAAA11' });
     const acces = await enregistrerDemandeRgpdAdmin(s(), {
       acteurUid: 'adm',
       type: 'acces',
@@ -1306,7 +1306,7 @@ describe('RGPD (ADMIN §2.13)', () => {
         motif: 'Export envoyé par email',
       }),
     ).toEqual({ export: `rgpd/${acces}/export.json` });
-    expect(fichiers.get(`rgpd/${acces}/export.json`)).toContain('PH-AAAA11');
+    expect(fichiers.get(`rgpd/${acces}/export.json`)).toContain('PT-AAAA11');
     expect(JSON.parse(fichiers.get(`rgpd/${acces}/preuve.json`)!)).toMatchObject({
       type: 'acces',
       traitePar: 'adm',

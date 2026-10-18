@@ -28,7 +28,7 @@ test.describe('pages d’erreur', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
       'Un souci technique de notre côté.',
     );
-    await expect(page.getByTestId('incident')).toHaveText(/^PH-ERR-[0-9a-z]{8}$/);
+    await expect(page.getByTestId('incident')).toHaveText(/^PT-ERR-[0-9a-z]{8}$/);
   });
 
   test('la page de maintenance s’affiche', async ({ page }) => {

@@ -18,7 +18,7 @@ test('algorithme : total des poids à 100, bac à sable, publication versionnée
   await distance.fill(initial);
   await expect(publier).toBeEnabled();
   const bac = page.getByRole('region', { name: 'Bac à sable' });
-  await bac.getByLabel('Référence d’une demande passée').fill('PH-ZZZZZZ');
+  await bac.getByLabel('Référence d’une demande passée').fill('PT-ZZZZZZ');
   await bac.getByRole('button', { name: 'Rejouer avec ces réglages' }).click();
   await expect(bac).toContainText('Aucune demande avec cette référence.');
   await publier.click();

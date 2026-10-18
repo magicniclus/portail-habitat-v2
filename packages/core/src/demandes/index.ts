@@ -10,8 +10,8 @@ const JOUR_MS = 86_400_000;
 /** COMPTES §2 et SIM-10 : 5 demandes par heure et par client (IP hachée, ou compte connecté). */
 export const LIMITE_DEMANDES = { cle: 'demande', max: 5, fenetre: '1h' } as const;
 
-/** Référence donnée au particulier (« PH-7K2Q9M ») ; `alea` fournit des réels dans [0, 1[. */
-export const referenceDemande = (alea: () => number) => referenceLisible('PH', alea);
+/** Référence donnée au particulier (« PT-7K2Q9M ») ; `alea` fournit des réels dans [0, 1[. */
+export const referenceDemande = (alea: () => number) => referenceLisible('PT', alea);
 
 /** Réponse de `creerDemande` : l'écran de résultat affiche cette estimation, jamais celle du navigateur. */
 export interface DemandeCreee {

@@ -8,7 +8,7 @@ const REPONSE = {
   ok: true,
   data: {
     demandeId: 'demande-e2e',
-    reference: 'PH-7K2Q9M',
+    reference: 'PT-7K2Q9M',
     prestation: { id: 'peinture', nom: 'Peinture' },
     estimation: {
       minCentimes: 412_345,
@@ -62,7 +62,7 @@ test.describe('Simulateur de devis', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Votre projet en détail');
   });
 
-  test('SIM-01 et SIM-07 : envoi → référence PH-XXXXXX et estimation du serveur affichée', async ({
+  test('SIM-01 et SIM-07 : envoi → référence PT-XXXXXX et estimation du serveur affichée', async ({
     page,
   }) => {
     await page.route('**/api/demandes', (r: Route) => r.fulfill({ status: 201, json: REPONSE }));
@@ -70,7 +70,7 @@ test.describe('Simulateur de devis', () => {
     await remplirCoordonnees(page);
     await page.getByRole('button', { name: 'Voir mon estimation' }).click();
     await expect(page.locator('[data-test="fourchette"]')).toHaveText(/4\s?120\s–\s5\s?990\s€/);
-    await expect(page.locator('[data-test="reference"]')).toHaveText(/^PH-[A-Z0-9]{6}$/);
+    await expect(page.locator('[data-test="reference"]')).toHaveText(/^PT-[A-Z0-9]{6}$/);
     await expect(page.getByText('Deux couches de peinture')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Suivre ma demande' })).toHaveAttribute(
       'href',

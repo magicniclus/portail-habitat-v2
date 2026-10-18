@@ -11,7 +11,7 @@ const REPONSE = {
   ok: true,
   data: {
     dossierId: 'dossier-e2e',
-    reference: 'PHD-7K2Q9M',
+    reference: 'PTD-7K2Q9M',
     resultat: [
       {
         diagId: 'dpe',
@@ -136,7 +136,7 @@ test.describe('Parcours diagnostic', () => {
     await page.getByText('J’accepte d’être contacté'.replace(/’/g, "'")).click();
     await page.getByRole('button', { name: 'Voir mon budget' }).click();
 
-    await expect(page.locator('[data-test="reference"]')).toHaveText('PHD-7K2Q9M');
+    await expect(page.locator('[data-test="reference"]')).toHaveText('PTD-7K2Q9M');
     await expect(page.locator('[data-test="budget"]')).toContainText('€');
     await expect(page.getByRole('listitem').filter({ hasText: 'ERP' })).toContainText('€');
     expect(JSON.stringify(corps)).not.toMatch(/centimes|prix|estimation|€/i);

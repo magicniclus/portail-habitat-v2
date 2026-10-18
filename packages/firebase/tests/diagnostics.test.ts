@@ -96,9 +96,9 @@ const entree = (autres: Record<string, unknown> = {}) =>
   });
 
 describe('creerDossierDiag', () => {
-  it('DIA-02, DIA-03, DIA-04 : dossier recalculé côté serveur, pack, PHD-XXXXXX, email', async () => {
+  it('DIA-02, DIA-03, DIA-04 : dossier recalculé côté serveur, pack, PTD-XXXXXX, email', async () => {
     const r = await creerDossierDiag(s, entree());
-    expect(r.reference).toMatch(/^PHD-[2-9A-HJ-NP-Z]{6}$/);
+    expect(r.reference).toMatch(/^PTD-[2-9A-HJ-NP-Z]{6}$/);
     // Maison 1968 à la vente : DPE (2019 → à refaire), amiante, termites, électricité, ERP.
     expect(r.resultat.map((l) => [l.diagId, l.statut])).toEqual([
       ['dpe', 'a_refaire'],

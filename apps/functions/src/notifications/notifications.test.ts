@@ -127,7 +127,7 @@ describe('traiterEnvoi', () => {
     sms: { envoyer: async (m: (typeof sms)[number]) => (sms.push(m), { id: 'sms_1' }) },
     secret: 's'.repeat(32),
     urlSite: 'https://portailtravaux.fr',
-    expediteurs: { defaut: 'PH <n@p.fr>', pro: 'PH Pro <pro@p.fr>' },
+    expediteurs: { defaut: 'PT <n@p.fr>', pro: 'PT Pro <pro@p.fr>' },
     editeur: 'Portail Travaux',
   };
   const envoi = (x: Partial<EnvoiEnFile> = {}): EnvoiEnFile => ({
@@ -158,7 +158,7 @@ describe('traiterEnvoi', () => {
   it('rend le modèle avec le secret (lien d’invitation) et note l’envoi', async () => {
     stockage.envoi = envoi();
     expect(await traiterEnvoi(config, 'e1', { lien: '/pro/invitation?t=JETON' })).toBe('envoye');
-    expect(emails[0]!.de).toBe('PH Pro <pro@p.fr>');
+    expect(emails[0]!.de).toBe('PT Pro <pro@p.fr>');
     expect(emails[0]!.html).toContain(
       'https://portailtravaux.fr/pro/invitation?t=JETON&amp;utm_source=email',
     );

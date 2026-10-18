@@ -83,9 +83,9 @@ const entree = (autres: Record<string, unknown> = {}) =>
   });
 
 describe('creerDemande', () => {
-  it('SIM-07 : demande PH-XXXXXX créée, conforme au schéma, consentements et email', async () => {
+  it('SIM-07 : demande PT-XXXXXX créée, conforme au schéma, consentements et email', async () => {
     const r = await creerDemande(s, entree(), { ipHash: 'ab'.repeat(8), userAgent: 'Vitest' });
-    expect(r.reference).toMatch(/^PH-[2-9A-HJ-NP-Z]{6}$/);
+    expect(r.reference).toMatch(/^PT-[2-9A-HJ-NP-Z]{6}$/);
     const d = (await db.doc(chemins.demande(r.demandeId)).get()).data()!;
     expect(d).toMatchObject({
       reference: r.reference,
@@ -227,8 +227,8 @@ describe('creerDemande', () => {
     const a = await creerDemande(s, entree());
     i = 0;
     const b = await creerDemande(s, entree());
-    expect(a.reference).toBe('PH-222222');
-    expect(b.reference).not.toBe('PH-222222');
+    expect(a.reference).toBe('PT-222222');
+    expect(b.reference).not.toBe('PT-222222');
   });
 });
 

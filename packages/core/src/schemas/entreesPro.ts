@@ -364,7 +364,7 @@ export const entreeRejouerDemande = z.strictObject({
     .string()
     .trim()
     .toUpperCase()
-    .regex(/^PH-[A-Z0-9]{4,8}$/, 'Référence PH-… attendue'),
+    .regex(/^PT-[A-Z0-9]{4,8}$/, 'Référence PT-… attendue'),
 });
 
 /** Back-office › Référentiels : prix d'une prestation, mise en ligne, feature flags (ADMIN §2.9). */

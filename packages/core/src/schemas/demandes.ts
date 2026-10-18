@@ -39,7 +39,7 @@ export const STATUTS_DEMANDE = [
 export const demande = z
   .object({
     ...meta,
-    reference: z.string().regex(/^PH-[A-Z0-9]{6}$/),
+    reference: z.string().regex(/^PT-[A-Z0-9]{6}$/),
     /** `site_artisan` : formulaire du site de l'artisan, attribuée directement, hors matching. */
     source: z.enum([
       'simulateur',
@@ -186,7 +186,7 @@ export const message = z.object({
 /** `dossiersDiag/{id}` (DATABASE §6). */
 export const dossierDiag = z.object({
   ...meta,
-  reference: z.string().regex(/^PHD-[A-Z0-9]{6}$/),
+  reference: z.string().regex(/^PTD-[A-Z0-9]{6}$/),
   bien: z.object({
     adresse: z.string(),
     communeSlug: z.string(),

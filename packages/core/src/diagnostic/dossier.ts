@@ -76,5 +76,5 @@ export function referentielSansPrix(r: ReferentielDiagnostic): ReferentielDiagno
   };
 }
 
-/** Référence d'un dossier de diagnostics (« PHD-7K2Q9M »). */
-export const referenceDossier = (alea: () => number) => referenceLisible('PHD', alea);
+/** Référence d'un dossier de diagnostics (« PTD-7K2Q9M »). */
+export const referenceDossier = (alea: () => number) => referenceLisible('PTD', alea);

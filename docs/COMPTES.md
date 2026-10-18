@@ -53,7 +53,7 @@ Trois portes d'entrée, un seul compte à la fin.
    - **n'existe pas** → `createUser({ email, emailVerified: false })`, `users/{uid}` avec `roles: ['particulier']`, `origine: 'demande'`
    - **existe** → on rattache la demande à cet uid **sans connecter la personne** (sinon, n'importe qui pourrait accéder au compte avec un email). Le lien de l'email mène à la connexion
 3. Écriture de `demandes/{id}` (`particulierUid`) et du consentement, en transaction
-4. Email « Votre demande PH-XXXXXX » avec un lien magique (valable 24 h) vers `/mon-espace/demandes/{id}`
+4. Email « Votre demande PT-XXXXXX » avec un lien magique (valable 24 h) vers `/mon-espace/demandes/{id}`
 5. Au premier clic : `emailVerifie = true`, acceptation des CGU enregistrée si ce n'est pas déjà fait
 
 ### Liaison de méthodes

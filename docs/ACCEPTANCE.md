@@ -30,7 +30,7 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **SIM-04** : un code postal 75xxx applique le coefficient Île-de-France (×1,16)
 - **SIM-05** : pour l'isolation, la ligne d'aides apparaît en négatif et respecte le plafond
 - **SIM-06a à SIM-06j** : reprise d'un parcours interrompu, voir **REPRISE_PARCOURS.md §7**
-- **SIM-07** : quand j'envoie, une demande `PH-XXXXXX` est créée et j'arrive sur la confirmation
+- **SIM-07** : quand j'envoie, une demande `PT-XXXXXX` est créée et j'arrive sur la confirmation
 - **SIM-08** : la requête d'envoi ne contient aucun montant ; l'estimation enregistrée et affichée vient du serveur
 - **SIM-09** : avec un email déjà inscrit, la demande est rattachée à ce compte et aucune session n'est ouverte automatiquement
 - **SIM-10** : 6 envois en 1 h depuis la même IP : le 6e est refusé avec un message clair

@@ -112,7 +112,7 @@ export function genererDemandes(c: ContexteSeed, entreprises: EntrepriseSeed[], 
       schemaVersion: 1,
       createdAt,
       updatedAt: createdAt,
-      reference: `PH-${h
+      reference: `PT-${h
         .identifiant(6)
         .toUpperCase()
         .replace(/[^A-Z0-9]/g, 'X')}`,

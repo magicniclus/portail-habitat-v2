@@ -28,7 +28,7 @@ export async function GET(_r: Request, { params }: { params: Promise<{ format: s
         letterSpacing: -taille * 0.01,
       }}
     >
-      PH
+      PT
     </div>,
     { width: taille, height: taille },
   );

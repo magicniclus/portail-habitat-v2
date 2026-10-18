@@ -150,7 +150,7 @@ export const modelesParticuliers = {
     ],
     exemple: {
       prenom: 'Camille',
-      reference: 'PH-7K2Q9M',
+      reference: 'PT-7K2Q9M',
       prestation: 'Salle de bain',
       ville: 'Bordeaux',
       minCentimes: 812_000,
@@ -195,7 +195,7 @@ export const modelesParticuliers = {
     ],
     exemple: {
       prenom: 'Camille',
-      reference: 'PHD-7K2Q9M',
+      reference: 'PTD-7K2Q9M',
       commune: 'Cenon',
       aRealiser: 5,
       reutilises: 1,

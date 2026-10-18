@@ -52,7 +52,7 @@ export default async function DemandesAdmin({ searchParams }: { searchParams: Pa
             type="search"
             name="ref"
             defaultValue={p.ref ?? ''}
-            placeholder="Référence PH-…"
+            placeholder="Référence PT-…"
           />
         </form>
         <nav aria-label="Filtres" className="flex flex-wrap gap-2">

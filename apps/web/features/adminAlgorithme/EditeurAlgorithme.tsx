@@ -53,7 +53,7 @@ export function EditeurAlgorithme({
             <Input
               value={reference}
               onChange={(e) => setReference(e.target.value)}
-              placeholder="PH-…"
+              placeholder="PT-…"
             />
           </Field>
           <Button

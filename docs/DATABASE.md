@@ -220,7 +220,7 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 ### `demandes/{demandeId}`
 | Champ | Type | Notes |
 |---|---|---|
-| `reference` | string unique | `PH-XXXXXX` |
+| `reference` | string unique | `PT-XXXXXX` |
 | `source` | `'simulateur' \| 'hero' \| 'fiche_artisan' \| 'annuaire' \| 'partenaire'` | `partenaire` = demande importée du simulateur d'aides (§4 bis) |
 | `partenaire?` | `{ sourceId, idExterne, recueLe, coutAchatCentimes }` | demandes importées uniquement |
 | `aides?` | `{ eligibilite: 'eligible' \| 'ampleur_seulement' \| 'non_eligible', trancheRevenus: 'bleu' \| 'jaune' \| 'violet' \| 'rose' \| null, montantEstimeCentimes, dispositifs: string[], mention: 'indicatif' }` | affiché à l'artisan (« aides estimées ») |
@@ -376,7 +376,7 @@ L'admin peut toujours **forcer** un prix (`mode: 'manuel'`), le mettre **gratuit
 ### `dossiersDiag/{id}`
 | Champ | Type |
 |---|---|
-| `reference` | `PHD-XXXXXX` |
+| `reference` | `PTD-XXXXXX` |
 | `bien` | `{ adresse, communeSlug, codePostal, geo, type: 'appartement'\|'maison'\|'immeuble', periode: 'av1949'\|'1949-1976'\|'1977-1996'\|'1997-2010'\|'ap2011', surface, motif: 'vente'\|'location'\|'travaux', gaz, electricite, assainissement, classeDpe }` |
 | `existants` | `[{ diagId, annee }]` |
 | `resultat` | `[{ diagId, nom, statut: 'a_realiser'\|'a_refaire'\|'deja_valide'\|'conseille', prixMin, prixMax, raison }]` |

@@ -317,7 +317,7 @@ describe('invariants', () => {
     const d = {
       schemaVersion: 1,
       createdAt: maintenant,
-      reference: 'PH-A1B2C3',
+      reference: 'PT-A1B2C3',
       source: 'simulateur',
       particulierUid: null,
       contact: { prenom: 'Camille', nom: 'M', email: 'c@m.fr', telephone: '+33612345678' },

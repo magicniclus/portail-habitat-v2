@@ -117,7 +117,7 @@ test.describe('Reprise du simulateur', () => {
           ok: true,
           data: {
             demandeId: 'd1',
-            reference: 'PH-7K2Q9M',
+            reference: 'PT-7K2Q9M',
             prestation: { id: 'peinture', nom: 'Peinture' },
             estimation: {
               minCentimes: 100_000,

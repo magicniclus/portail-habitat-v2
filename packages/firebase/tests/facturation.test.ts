@@ -250,7 +250,7 @@ describe('webhook Stripe (INTEGRATIONS §1)', () => {
     await traiterEvenementStripe(s, evenement('customer.subscription.created', abonnement({})));
     const facture = {
       id: 'in_1',
-      number: 'PH-0001',
+      number: 'PT-0001',
       customer: 'cus_1',
       status: 'paid',
       parent: { subscription_details: { subscription: 'sub_1', metadata: { artisanId: 'a1' } } },
@@ -602,7 +602,7 @@ describe('lireFacturation', () => {
       .doc('in_1')
       .set({
         artisanId: 'a1',
-        numero: 'PH-0001',
+        numero: 'PT-0001',
         montantTtcCentimes: 115_056,
         statut: 'paid',
         hostedUrl: 'https://invoice.stripe.com/i/x',
@@ -615,7 +615,7 @@ describe('lireFacturation', () => {
     expect(f.factures).toEqual([
       {
         id: 'in_1',
-        numero: 'PH-0001',
+        numero: 'PT-0001',
         montantTtcCentimes: 115_056,
         statut: 'paid',
         date: T,

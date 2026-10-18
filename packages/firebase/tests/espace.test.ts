@@ -45,7 +45,7 @@ beforeEach(async () => {
 
 async function demande(id: string, uid: string, autres: Record<string, unknown> = {}) {
   await db.doc(chemins.demande(id)).set({
-    reference: `PH-${id.toUpperCase().padEnd(6, 'X').slice(0, 6)}`,
+    reference: `PT-${id.toUpperCase().padEnd(6, 'X').slice(0, 6)}`,
     particulierUid: uid,
     prestationId: 'sdb',
     adresseChantier: { ville: 'Bordeaux', codePostal: '33000' },

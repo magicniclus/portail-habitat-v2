@@ -25,7 +25,7 @@ export function manifestPro() {
   return {
     id: '/pro/',
     name: 'Portail Travaux Pro',
-    short_name: 'PH Pro',
+    short_name: 'PT Pro',
     description: 'Vos demandes de travaux, votre fiche et vos avis, partout.',
     lang: 'fr',
     start_url: '/pro/tableau-de-bord',
