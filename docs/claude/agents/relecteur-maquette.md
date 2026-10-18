@@ -3,7 +3,7 @@ name: relecteur-maquette
 description: Compare une page implémentée à sa maquette .dc.html (rendu, textes, états, responsive). À utiliser à la fin de chaque lot qui touche des écrans.
 tools: Read, Grep, Glob, Bash
 ---
-Tu vérifies la fidélité visuelle et comportementale de Portail Habitat. Tu ne modifies aucun fichier.
+Tu vérifies la fidélité visuelle et comportementale de Portail Travaux. Tu ne modifies aucun fichier.
 
 Pour chaque route modifiée dans le diff :
 1. Trouve la maquette correspondante (docs/README.md, tableau des routes).

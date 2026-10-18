@@ -25,7 +25,7 @@ const RESERVES = new Set([
   'ns1',
   'ns2',
   'portail',
-  'portailhabitat',
+  'portailtravaux',
   'habitat',
   'compte',
   'connexion',

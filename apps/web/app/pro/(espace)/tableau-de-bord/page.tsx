@@ -52,14 +52,14 @@ export default async function PageTableauDeBord({
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       {bienvenue ? (
         <Banner tone="succes" titre="Votre espace est créé">
-          Bienvenue sur Portail Habitat Pro. Un email récapitulatif vous a été envoyé.
+          Bienvenue sur Portail Travaux Pro. Un email récapitulatif vous a été envoyé.
         </Banner>
       ) : null}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="m-0 mb-1.5 text-[clamp(26px,3vw,34px)] leading-[1.1]">Bonjour {prenom}</h1>
           <p className="m-0 text-base text-neutre-800">
-            Voici l&apos;activité de {active.artisan.nomCommercial} sur Portail Habitat.
+            Voici l&apos;activité de {active.artisan.nomCommercial} sur Portail Travaux.
           </p>
         </div>
         {peut(active.membre, 'demandes.repondre') ? (

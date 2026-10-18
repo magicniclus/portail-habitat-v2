@@ -212,7 +212,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
                 [
                   el.chiffre(
                     `${String(f.noteMoyenne).replace('.', ',')}/5`,
-                    `Note moyenne sur ${f.nbAvis} avis vérifiés par Portail Habitat`,
+                    `Note moyenne sur ${f.nbAvis} avis vérifiés par Portail Travaux`,
                   ),
                 ],
                 12,
@@ -273,7 +273,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
         .filter(Boolean)
         .join(' · '),
     ],
-    ['Hébergeur', 'Portail Habitat'],
+    ['Hébergeur', 'Portail Travaux'],
     ...(f.decennale ? [['Assurance décennale', f.decennale]] : []),
     [
       'Données personnelles',

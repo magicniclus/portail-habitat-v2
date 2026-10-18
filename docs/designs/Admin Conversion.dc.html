@@ -426,7 +426,7 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#conversion'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#conversion'); } catch (e) {} }, 0); }
     const s = this.state;
     const k = PERIODES[s.periode];
     const n = (x) => Math.round(x * k).toLocaleString('fr-FR');

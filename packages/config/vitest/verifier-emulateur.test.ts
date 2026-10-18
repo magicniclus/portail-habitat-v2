@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { verifierEmulateur } from './verifier-emulateur';
 
-const ok = { FIRESTORE_EMULATOR_HOST: '127.0.0.1:8080', GCLOUD_PROJECT: 'demo-portail-habitat' };
+const ok = { FIRESTORE_EMULATOR_HOST: '127.0.0.1:8080', GCLOUD_PROJECT: 'demo-portail-travaux' };
 
 describe('verifierEmulateur', () => {
   it('accepte un émulateur local sur un projet demo-', () => {
@@ -19,7 +19,7 @@ describe('verifierEmulateur', () => {
     );
   });
   it('refuse un vrai projet', () => {
-    expect(() => verifierEmulateur({ ...ok, GCLOUD_PROJECT: 'portail-habitat-prod' })).toThrow(
+    expect(() => verifierEmulateur({ ...ok, GCLOUD_PROJECT: 'portail-travaux-prod' })).toThrow(
       /demo-/,
     );
     expect(() =>

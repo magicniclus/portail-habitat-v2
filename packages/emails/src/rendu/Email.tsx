@@ -43,7 +43,7 @@ export function Email({ preheader, blocs, charte: t, categorie, pied }: Propriet
               color: c.titre,
             }}
           >
-            PORTAIL HABITAT{' '}
+            PORTAIL TRAVAUX{' '}
             {t.suffixe ? (
               <span style={{ letterSpacing: '0.18em', color: t.fonce }}>{t.suffixe}</span>
             ) : null}

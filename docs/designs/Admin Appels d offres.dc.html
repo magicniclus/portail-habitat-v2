@@ -97,7 +97,7 @@ class Component extends DCLogic {
   state = { tab: 'liste', sel: 'AO-2301', over: {}, dec: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#leads'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#leads'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const leads = LEADS.map((l) => ({ ...l, ...(s.over[l.ref] || {}) }));
     const l = leads.find((x) => x.ref === s.sel) || leads[0];
@@ -110,7 +110,7 @@ class Component extends DCLogic {
     return {
       tabs: [['liste', 'Appels d’offres'], ['contest', 'Contestations (' + CONTESTS.filter((_, i) => !s.dec[i]).length + ')'], ['fb', 'Facebook et invendues']].map(([id, nom]) => ({ nom, fw: s.tab === id ? 700 : 500, fg: s.tab === id ? '#201e1d' : '#6b6763', bd: s.tab === id ? '#3f4a57' : 'transparent', go: () => this.setState({ tab: id }) })),
       isListe: s.tab === 'liste', isContest: s.tab === 'contest', isFb: s.tab === 'fb',
-      fbTexte: "🔨 Demandes de travaux du jour – Gironde (samedi 26/09)\n\n• Pompe à chaleur air-eau · Talence · 7 200 à 9 600 € · sous 1 mois\n• Réfection de toiture 110 m² · Cenon · 14 000 à 19 000 € · sous 2 mois\n• Tableau électrique + mise aux normes · Lormont · 2 400 à 3 200 € · sous 15 jours\n• Salle de bain complète · Mérignac · 8 000 à 11 000 € · sous 1 mois\n• Isolation des combles 80 m² · Pessac · 3 100 à 4 200 € · dès que possible\n\n👉 Inscription gratuite, votre 1re demande offerte en passant en Visibilité :\nhttps://www.portailhabitat.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier\n\nArtisans vérifiés (SIREN + décennale), demandes jusqu’à 100 km de chez vous.",
+      fbTexte: "🔨 Demandes de travaux du jour – Gironde (samedi 26/09)\n\n• Pompe à chaleur air-eau · Talence · 7 200 à 9 600 € · sous 1 mois\n• Réfection de toiture 110 m² · Cenon · 14 000 à 19 000 € · sous 2 mois\n• Tableau électrique + mise aux normes · Lormont · 2 400 à 3 200 € · sous 15 jours\n• Salle de bain complète · Mérignac · 8 000 à 11 000 € · sous 1 mois\n• Isolation des combles 80 m² · Pessac · 3 100 à 4 200 € · dès que possible\n\n👉 Inscription gratuite, votre 1re demande offerte en passant en Visibilité :\nhttps://www.portailtravaux.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier\n\nArtisans vérifiés (SIREN + décennale), demandes jusqu’à 100 km de chez vous.",
       copierFb: () => { try { navigator.clipboard.writeText((document.querySelector('textarea[readonly]') || {}).value || ''); } catch (e) {} this.flash('Texte copié : collez-le dans le groupe Trouver chantier'); },
       noPublier: lect, marquerFb: () => this.flash('Publication du 26/09 marquée comme faite · les inscriptions du jour lui seront attribuées'),
       fbStats: [['Clics depuis le groupe', '2 140'], ['Inscriptions commencées', '318'], ['Fiches en ligne', '241'], ['Passages en Visibilité', '57'], ['Dont grâce à une demande offerte', '34']].map(([l, v]) => ({ l, v })),

@@ -51,7 +51,7 @@ class Component extends DCLogic {
   state = { sel: 'LIT-0042', msg: '', ajouts: {}, clos: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#litiges'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#litiges'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, noT = lect || !(P['litiges.traiter'] ?? true);
     const l = LIT.find((x) => x.ref === s.sel);
     const anon = (t) => (lect ? t.replace(/[A-Z]\. [A-Z][a-z]+|Camille M\.|Nadia R\./g, '•••') : t);

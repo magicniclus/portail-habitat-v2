@@ -43,7 +43,7 @@ beforeEach(async () => {
     auth,
     horloge: Date.now,
     notifier: async (n) => void envois.push(n),
-    urlSite: 'https://portailhabitat.test',
+    urlSite: 'https://portailtravaux.test',
     versionLegale: '2026-09',
   };
   uid = (

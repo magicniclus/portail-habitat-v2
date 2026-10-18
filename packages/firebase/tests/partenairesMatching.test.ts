@@ -20,7 +20,7 @@ const fichiers = lireFichiersSeed(new URL('../../../docs/data/', import.meta.url
 const T = Date.UTC(2026, 9, 2, 10);
 const H = 3_600_000;
 const TEXTE =
-  'J’accepte que mes coordonnées soient transmises à Portail Habitat et à des partenaires.';
+  'J’accepte que mes coordonnées soient transmises à Portail Travaux et à des partenaires.';
 const PESSAC = { latitude: 44.8, longitude: -0.63 };
 const sha = (t: string) => createHash('sha256').update(t).digest('hex');
 
@@ -141,7 +141,7 @@ async function importer(p: { statut?: string; horizon?: string; eligibilite?: st
         urlPage: 'https://sim.test/resultat',
         ip: '9.9.9.9',
         userAgent: 'test',
-        finalites: ['transmission_portail_habitat', 'mise_en_relation_professionnels'],
+        finalites: ['transmission_portail_travaux', 'mise_en_relation_professionnels'],
       },
     },
   });

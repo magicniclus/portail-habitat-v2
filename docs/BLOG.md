@@ -3,7 +3,7 @@
 Maquettes : `designs/Site Internet Artisan.dc.html` (onglet **Blog**), `designs/Editeur de Blog.dc.html` (écrire un article), `designs/Editeur de Site.dc.html` (contenu **Articles du blog** et zone **Articles du blog**). Données : `DATABASE.md` §15 quater. Décisions : D64 à D69.
 
 ## 1. Périmètre
-- **Un blog par artisan**, dans « Mon site internet ». Ses articles ne s'affichent **que sur son site** (pas d'agrégation sur portailhabitat.fr, pas de centre d'aide commun). (D64 ✅)
+- **Un blog par artisan**, dans « Mon site internet ». Ses articles ne s'affichent **que sur son site** (pas d'agrégation sur portailtravaux.fr, pas de centre d'aide commun). (D64 ✅)
 - Accès : **Site Pro, Fiche + Site, Tout inclus**. Compte gratuit ou Fiche Pro seule : onglet visible, tout clic sur une action payante ouvre la **fenêtre d'offre** (PAIEMENTS §4). (D65 ✅)
 - Pas de commentaires en v1 (D67 ⏳).
 
@@ -62,7 +62,7 @@ URL `/blog/{slug}` (redirection 301 si le slug change), données structurées `B
 - **BLOG-04** méta-description vide → « Publier » et « Planifier » refusés, onglet SEO ouvert
 - **BLOG-05** modifier le n° de décennale dans Devis & factures → visible sous tous les articles publiés sans action
 - **BLOG-06** un article publié dans « Chauffage » apparaît dans chaque section filtrée « Chauffage » sans republication
-- **BLOG-07** les articles d'un artisan n'apparaissent jamais sur le site d'un autre ni sur portailhabitat.fr
+- **BLOG-07** les articles d'un artisan n'apparaissent jamais sur le site d'un autre ni sur portailtravaux.fr
 - **BLOG-08** export CSV ouvert dans Excel : accents corrects, une ligne par article
 - **BLOG-09** HTML injecté dans le corps (script, iframe, onclick) supprimé à l'enregistrement
 - **BLOG-10** « Tout faire en un clic » sans sujet : article complet avec 0 point bloquant et 0 recommandation restante, 3 liens internes réellement présents dans le texte

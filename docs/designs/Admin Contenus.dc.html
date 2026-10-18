@@ -48,7 +48,7 @@ class Component extends DCLogic {
   state = { annonces: [['Nouveau : répondez aux demandes depuis l’application mobile', 'Tous les artisans', 'du 20/09 au 10/10'], ['Maintenance le 3 octobre de 6 h à 7 h', 'Tous les artisans', 'du 01/10 au 03/10']], nv: { texte: '', cible: 'Tous les artisans', periode: '' }, leg: [['CGU', 4, '12/09/2026'], ['CGV Pro', 3, '12/09/2026'], ['Politique de confidentialité', 5, '01/09/2026'], ['Politique d’avis', 2, '15/07/2026']], toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#contenus'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#contenus'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, can = (p) => P[p] ?? true;
     const noAnn = lect || !can('annonces.gerer');
     return {

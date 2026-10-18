@@ -48,7 +48,7 @@ export const rampes: Record<Theme, Rampe> = {
     800: '#0a2e50',
     900: '#081f37',
   },
-  // Ardoise de l'admin (maquette Admin Portail Habitat) ; 800 et 900 prolongent la rampe.
+  // Ardoise de l'admin (maquette Admin Portail Travaux) ; 800 et 900 prolongent la rampe.
   admin: {
     base: '#3f4a57',
     100: '#eef0f3',
@@ -184,7 +184,7 @@ export const couleursEmail = {
 
 /**
  * Palettes proposées aux sites des artisans (maquette Éditeur de Site) : couleurs du site de
- * l'artisan, pas de Portail Habitat. La première sert au site de départ.
+ * l'artisan, pas de Portail Travaux. La première sert au site de départ.
  */
 export const palettesSites = [
   {

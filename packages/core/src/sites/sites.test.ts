@@ -239,13 +239,13 @@ describe('DNS du domaine existant (DOM-04)', () => {
       ]),
     ).toEqual({ etat: 'incorrect', trouve: 'ghs.google.com' });
     expect(
-      etatEnregistrement({ type: 'TXT', nom: '_portailhabitat', valeur: 'ph-verif=abc' }, [
+      etatEnregistrement({ type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=abc' }, [
         '"v=spf1 -all"',
         '"ph-verif=abc"',
       ]),
     ).toEqual({ etat: 'ok' });
     expect(
-      etatEnregistrement({ type: 'TXT', nom: '_portailhabitat', valeur: 'ph-verif=abc' }, [
+      etatEnregistrement({ type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=abc' }, [
         'ph-verif=ABC',
       ]),
     ).toEqual({ etat: 'incorrect', trouve: 'ph-verif=ABC' });
@@ -260,7 +260,7 @@ describe('DNS du domaine existant (DOM-04)', () => {
       'bertrand-renovation.fr',
     );
     expect(normaliserDomaine('bertrand')).toBeNull();
-    expect(normaliserDomaine('x.portailhabitat.fr')).toBeNull();
+    expect(normaliserDomaine('x.portailtravaux.fr')).toBeNull();
   });
 });
 

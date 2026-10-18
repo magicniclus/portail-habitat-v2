@@ -41,14 +41,14 @@ export const LIGNES_NOTIFS: readonly {
   },
   {
     cle: 'offres_pro',
-    libelle: 'Offres Portail Habitat Pro',
+    libelle: 'Offres Portail Travaux Pro',
     description: 'Conseils et offres pour développer votre activité',
     canaux: ['email'],
   },
   {
     cle: 'marketing',
     libelle: 'Actualités',
-    description: 'Nouveautés de Portail Habitat Pro',
+    description: 'Nouveautés de Portail Travaux Pro',
     canaux: ['email'],
   },
 ];

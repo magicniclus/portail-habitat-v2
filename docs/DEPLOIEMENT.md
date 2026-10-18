@@ -7,8 +7,8 @@ Complète MISE_EN_PROD.md (comptes et étapes côté propriétaire) et RUNBOOK.m
 | | Site (Vercel) | Firebase | Stripe | Emails |
 |---|---|---|---|---|
 | Aperçu (PR) | aperçu Vercel | émulateurs | test | capturés |
-| Staging | `staging.portailhabitat.fr`, branche `main` | `portail-habitat-staging` | test | limités à `EMAIL_WHITELIST` |
-| Production | `www.portailhabitat.fr`, tag `vX.Y.Z` | `portail-habitat-prod` | live | réels |
+| Staging | `staging.portailtravaux.fr`, branche `main` | `portail-travaux-staging` | test | limités à `EMAIL_WHITELIST` |
+| Production | `www.portailtravaux.fr`, tag `vX.Y.Z` | `portail-travaux-prod` | live | réels |
 
 Région : Firestore `eur3`, Storage et Functions `europe-west1`. Projet Firebase en plan Blaze.
 
@@ -91,7 +91,7 @@ Interdits hors des tests (le code refuse de démarrer avec en production) : `APP
 
 **Bloquants de DECISIONS.md (🔒), à lever par le propriétaire**
 
-- [ ] D13 — nom de domaine `portailhabitat.fr` réservé (et `.com` en redirection)
+- [ ] D13 — nom de domaine `portailtravaux.fr` réservé (et `.com` en redirection)
 - [ ] D18 — raison sociale, SIREN, adresse, capital renseignés dans les pages légales et les emails
 - [ ] D20 — médiateur de la consommation choisi
 - [ ] D22 — CGU, CGV et politique d'avis relues par un avocat
@@ -101,7 +101,7 @@ Interdits hors des tests (le code refuse de démarrer avec en production) : `APP
 - [ ] CI verte sur le tag, y compris les tests ACCEPTANCE en staging
 - [ ] Règles, index et TTL déployés en production
 - [ ] Sauvegardes quotidiennes actives ; restauration testée une fois en staging
-- [ ] En-têtes de sécurité présents (`curl -I https://www.portailhabitat.fr` : CSP, HSTS, X-Frame-Options, Referrer-Policy)
+- [ ] En-têtes de sécurité présents (`curl -I https://www.portailtravaux.fr` : CSP, HSTS, X-Frame-Options, Referrer-Policy)
 - [ ] App Check : jeton présent dans les requêtes (formulaire public envoyé avec succès), application stricte activée
 - [ ] Webhooks Stripe et Resend en production, secrets en place
 - [ ] Lighthouse mobile ≥ 90 (accueil, simulateur, annuaire, `/pro`)

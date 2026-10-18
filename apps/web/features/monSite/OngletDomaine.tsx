@@ -55,7 +55,7 @@ export function OngletDomaine({ site, domaine }: { site: SiteEdition; domaine: s
           Hébergement et sécurité
         </h2>
         <p className="m-0 text-[15px] text-neutre-800">
-          Votre site est hébergé et protégé par Portail Habitat : HTTPS, protection contre les
+          Votre site est hébergé et protégé par Portail Travaux : HTTPS, protection contre les
           robots sur le formulaire, aucun cookie. Rien à installer ni à configurer.
         </p>
       </section>

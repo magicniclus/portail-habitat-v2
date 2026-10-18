@@ -30,20 +30,20 @@ export function configurationEnvoi(): ConfigEnvoi {
     email: capture
       ? mailpit(env('MAILPIT_URL', 'http://127.0.0.1:8025'))
       : resend(env('RESEND_API_KEY')),
-    sms: capture ? smsCapture : brevoSms(env('BREVO_API_KEY'), env('SMS_SENDER', 'PortailHab')),
+    sms: capture ? smsCapture : brevoSms(env('BREVO_API_KEY'), env('SMS_SENDER', 'PortailTrav')),
     secret: env(
       'NOTIF_SIGNING_SECRET',
       capture ? 'secret-de-developpement-local-uniquement-32' : undefined,
     ),
     urlSite: env('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000').replace(/\/$/, ''),
     expediteurs: {
-      defaut: env('EMAIL_FROM', 'Portail Habitat <notifications@portailhabitat.fr>'),
-      pro: env('EMAIL_FROM_PRO', 'Portail Habitat Pro <pro@notifications.portailhabitat.fr>'),
+      defaut: env('EMAIL_FROM', 'Portail Travaux <notifications@portailtravaux.fr>'),
+      pro: env('EMAIL_FROM_PRO', 'Portail Travaux Pro <pro@notifications.portailtravaux.fr>'),
     },
     repondreA: process.env.EMAIL_REPLY_TO,
     editeur: env(
       'EDITEUR_MENTION',
-      'Portail Habitat · [Raison sociale] · [Adresse postale de l’éditeur]',
+      'Portail Travaux · [Raison sociale] · [Adresse postale de l’éditeur]',
     ),
     listeBlanche: process.env.EMAIL_WHITELIST,
   };

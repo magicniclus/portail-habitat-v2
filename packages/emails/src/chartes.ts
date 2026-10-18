@@ -14,10 +14,10 @@ export interface CharteEmail {
 }
 
 const SIGNATURES: Record<Theme, string> = {
-  particulier: 'L’équipe Portail Habitat',
-  pro: 'L’équipe Portail Habitat Pro',
-  diag: 'L’équipe Portail Habitat Diag',
-  admin: 'Back-office Portail Habitat · envoi automatique',
+  particulier: 'L’équipe Portail Travaux',
+  pro: 'L’équipe Portail Travaux Pro',
+  diag: 'L’équipe Portail Travaux Diag',
+  admin: 'Back-office Portail Travaux · envoi automatique',
 };
 
 /** Charte d'un email ; `destinataire` : charte de l'espace de la personne (particulier par défaut). */
@@ -44,7 +44,7 @@ export const RAISONS: Record<Categorie, { raison: string; desabonnable: boolean 
     desabonnable: false,
   },
   transactionnel: {
-    raison: 'Vous recevez cet email suite à une action sur Portail Habitat.',
+    raison: 'Vous recevez cet email suite à une action sur Portail Travaux.',
     desabonnable: false,
   },
   activite: {
@@ -57,11 +57,11 @@ export const RAISONS: Record<Categorie, { raison: string; desabonnable: boolean 
   },
   offres_pro: {
     raison:
-      'Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.',
+      'Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.',
     desabonnable: true,
   },
   marketing: {
-    raison: 'Vous recevez cet email car vous avez accepté les actualités de Portail Habitat.',
+    raison: 'Vous recevez cet email car vous avez accepté les actualités de Portail Travaux.',
     desabonnable: true,
   },
   interne: { raison: 'Envoi automatique du back-office.', desabonnable: false },

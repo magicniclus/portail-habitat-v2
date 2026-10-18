@@ -57,7 +57,7 @@ export const modelesDevis = {
       numero: 'D-2026-0152',
       client: 'Claire Martin',
       montant: '8 932,40 € TTC',
-      lien: 'https://portailhabitat.fr/pro/devis/exemple',
+      lien: 'https://portailtravaux.fr/pro/devis/exemple',
     },
   }),
 
@@ -131,7 +131,7 @@ export const modelesDevis = {
       dernier: true,
       penalites: '12,15 %',
       pro: false,
-      lien: 'https://portailhabitat.fr/api/facture-client/exemple',
+      lien: 'https://portailtravaux.fr/api/facture-client/exemple',
     },
   }),
 };

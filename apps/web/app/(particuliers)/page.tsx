@@ -27,7 +27,7 @@ import { lireArtisansVedette, lireAvisRecents, lireStatsPublic } from '@/server/
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Portail Habitat · Trouvez le bon artisan pour vos travaux' },
+  title: { absolute: 'Portail Travaux · Trouvez le bon artisan pour vos travaux' },
   description:
     "Estimez votre budget travaux en 2 minutes et recevez jusqu'à 3 devis d'artisans vérifiés près de chez vous. Gratuit et sans engagement.",
   alternates: { canonical: '/' },

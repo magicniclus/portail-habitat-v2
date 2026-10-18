@@ -66,7 +66,7 @@ describe('résolveur DNS-over-HTTPS', () => {
           ],
         }),
       );
-    expect(await resolveurDoh(f as never).resoudre('TXT', '_portailhabitat.e.fr')).toEqual([
+    expect(await resolveurDoh(f as never).resoudre('TXT', '_portailtravaux.e.fr')).toEqual([
       'ph-verif=abc',
     ]);
     expect(String(f.mock.calls[1]![0])).toContain('dns.google');

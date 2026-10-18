@@ -156,7 +156,7 @@ Tâche planifiée `calculerCycle`, chaque jour à 5 h, pour chaque entreprise (0
 - **Pression** : 2 emails commerciaux (`offres_pro`) par semaine maximum, 1 email non transactionnel par jour maximum, jamais le week-end.
 - **Heure d'envoi** : mardi au jeudi à 7 h 15 (avant le chantier) ; les signaux **T** partent à 7 h 15 ou 18 h 30, le premier créneau qui suit.
 - **Mise en veille** : 5 emails commerciaux consécutifs non ouverts → plus que le rapport mensuel (protège la délivrabilité).
-- **Réponses** : les emails **H** ont `Reply-To: julie@portailhabitat.fr`. Une réponse crée une tâche `reponse_commerciale` dans l'admin et **met la séquence en pause**.
+- **Réponses** : les emails **H** ont `Reply-To: julie@portailtravaux.fr`. Une réponse crée une tâche `reponse_commerciale` dans l'admin et **met la séquence en pause**.
 - **Groupe témoin** : 10 % des entreprises (`cycle.groupeTemoin = true`, tirage à l'inscription) ne reçoivent aucun email commercial. C'est la seule façon de mesurer le gain réel.
 - **Tests A/B** : `variante` (déjà dans `cleIdempotence`) ; un test à la fois par modèle, bascule à 95 % de confiance.
 

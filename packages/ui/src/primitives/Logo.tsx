@@ -73,7 +73,7 @@ export function Logo({
           iconeSeule && 'sr-only',
         )}
       >
-        PORTAIL HABITAT
+        PORTAIL TRAVAUX
         {suffixe && (
           <span
             className={cn('ml-[0.3em]', variant === 'diag' && 'tracking-[0.22em]')}

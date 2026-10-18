@@ -3,12 +3,12 @@ import { formatDate, formatEuros } from '@ph/core/format';
 import type { FacturePro } from '@ph/firebase/facturation';
 import { Badge, bouton, EmptyState } from '@ph/ui';
 
-/** Factures Portail Habitat (miroirs Stripe), avec le lien du PDF hébergé par Stripe. */
+/** Factures Portail Travaux (miroirs Stripe), avec le lien du PDF hébergé par Stripe. */
 export function ListeFactures({ factures }: { factures: FacturePro[] }) {
   return (
     <section aria-labelledby="factures" className="grid gap-3">
       <h2 id="factures" className="m-0 text-xl">
-        Factures Portail Habitat
+        Factures Portail Travaux
       </h2>
       {factures.length === 0 ? (
         <EmptyState titre="Aucune facture pour le moment" />

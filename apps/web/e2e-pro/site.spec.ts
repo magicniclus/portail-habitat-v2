@@ -225,7 +225,7 @@ test.describe('Site internet artisan', () => {
       const lignes = page.getByRole('list', { name: 'Enregistrements DNS' }).getByRole('listitem');
       await expect(lignes).toHaveCount(3);
       await expect(page.getByText('exemple-e2e.fr', { exact: true })).toBeVisible();
-      await expect(lignes.filter({ hasText: '_portailhabitat' })).toContainText('ph-verif=');
+      await expect(lignes.filter({ hasText: '_portailtravaux' })).toContainText('ph-verif=');
       await expect(lignes.filter({ hasText: 'En attente' })).toHaveCount(3);
       await page.getByRole('button', { name: 'Retirer ce domaine' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'Retirer' }).click();

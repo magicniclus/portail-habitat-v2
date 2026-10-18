@@ -59,7 +59,7 @@ test.beforeAll(async () => {
   const chemin = `replays/acquisition-artisans/2026-10-04/${VUE}.json.gz`;
   const { getStorage } = await import('firebase-admin/storage');
   await getStorage()
-    .bucket('demo-portail-habitat.appspot.com')
+    .bucket('demo-portail-travaux.appspot.com')
     .file(chemin)
     .save(
       gzipSync(

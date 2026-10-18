@@ -1,5 +1,5 @@
 /** Domaine des sous-domaines gratuits des sites artisans (DOMAINES §2). */
-const DOMAINE_SITES = process.env.DOMAINE_SITES ?? 'portailhabitat.fr';
+const DOMAINE_SITES = process.env.DOMAINE_SITES ?? 'portailtravaux.fr';
 
 /**
  * Hôte d'un site artisan, ou `null` pour la plateforme elle-même (domaine principal, `www`,

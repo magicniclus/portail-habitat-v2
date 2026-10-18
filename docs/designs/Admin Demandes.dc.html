@@ -68,7 +68,7 @@ class Component extends DCLogic {
   state = { f: 'Toutes', sel: 'PH-4K82Q9', over: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#demandes'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#demandes'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const dem = DEM.map((d) => (s.over[d[0]] ? [...d.slice(0, 5), ...s.over[d[0]], d[7]] : d));
     const list = dem.filter((d) => s.f === 'Toutes' || d[5] === s.f);

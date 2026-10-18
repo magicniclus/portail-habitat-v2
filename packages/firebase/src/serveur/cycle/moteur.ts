@@ -58,7 +58,7 @@ export interface ServicesCycle {
 }
 
 const J = 86_400_000;
-export const URL_SITE_DEFAUT = 'https://portailhabitat.fr';
+export const URL_SITE_DEFAUT = 'https://portailtravaux.fr';
 const SIX_MOIS = 183 * J;
 
 export interface ConfigCycleLue {
@@ -81,7 +81,7 @@ export const CONFIG_CYCLE_DEFAUT: ConfigCycleLue = {
   maxOffresProSemaine: 2,
   maxNonTransacJour: 1,
   veilleApres: 5,
-  signataire: { nom: 'Julie', email: 'julie@portailhabitat.fr' },
+  signataire: { nom: 'Julie', email: 'julie@portailtravaux.fr' },
 };
 
 export async function lireConfigCycle(db: Firestore): Promise<ConfigCycleLue> {

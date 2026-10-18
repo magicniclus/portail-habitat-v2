@@ -39,7 +39,7 @@ class Component extends DCLogic {
   state = { fait: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#rgpd'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#rgpd'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, noRgpd = lect || !(P['rgpd.traiter'] ?? true);
     return {
       demandes: DEM.map(([type, qui, recue, echeance, j, [btn, fini]], i) => { const done = !!s.fait[i]; return { type, qui: lect ? '•••' : qui, recue, echeance, etat: done ? fini : 'à traiter', reste: done ? 'Traité le 26/09 · preuve archivée' : 'Reste ' + j + ' jours', col: done ? '#085340' : j < 10 ? '#8f1d14' : '#7a5206', btn: done ? fini : btn, off: noRgpd || done,

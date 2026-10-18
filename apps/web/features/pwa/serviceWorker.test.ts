@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CACHES_PRO, sourceServiceWorker } from './serviceWorker';
 
 type Ecouteur = (e: Record<string, unknown>) => void;
-const ORIGINE = 'https://portailhabitat.test';
+const ORIGINE = 'https://portailtravaux.test';
 
 /** Worker exécuté dans un bac à sable : caches, réseau et notifications simulés. */
 function worker(reseau: (url: string) => Promise<Response>) {

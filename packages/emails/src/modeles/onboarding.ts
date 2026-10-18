@@ -23,7 +23,7 @@ interface Document extends Base {
 const EX: Base = {
   prenom: 'Julien',
   nomCommercial: 'Bertrand Rénovation',
-  lien: 'https://portailhabitat.fr/pro/inscription?reprise=exemple',
+  lien: 'https://portailtravaux.fr/pro/inscription?reprise=exemple',
 };
 const EX_RELANCE: Relance = {
   ...EX,
@@ -110,7 +110,7 @@ export const modelesOnboarding = {
     exemple: EX_RELANCE,
   }),
   'bienvenue-pro': modele<Base>({
-    sujet: (d) => `Bienvenue sur Portail Habitat Pro${d.prenom ? `, ${d.prenom}` : ''}`,
+    sujet: (d) => `Bienvenue sur Portail Travaux Pro${d.prenom ? `, ${d.prenom}` : ''}`,
     preheader: () => '3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.',
     blocs: (d) => [
       titre(`Bienvenue, ${d.nomCommercial}`),
@@ -128,7 +128,7 @@ export const modelesOnboarding = {
         'Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.',
       ),
     ],
-    exemple: { ...EX, lien: 'https://portailhabitat.fr/pro' },
+    exemple: { ...EX, lien: 'https://portailtravaux.fr/pro' },
   }),
   'verifier-telephone': modele<{ code: string }>({
     sujet: () => 'Votre code de vérification',
@@ -137,11 +137,11 @@ export const modelesOnboarding = {
       titre('Votre code de vérification'),
       { type: 'code', texte: d.code },
       note(
-        'Valable 10 minutes. Ne le communiquez à personne : Portail Habitat ne vous le demandera jamais.',
+        'Valable 10 minutes. Ne le communiquez à personne : Portail Travaux ne vous le demandera jamais.',
       ),
     ],
     sms: (d) =>
-      `Portail Habitat : votre code est ${d.code}. Valable 10 min. Ne le communiquez à personne.`,
+      `Portail Travaux : votre code est ${d.code}. Valable 10 min. Ne le communiquez à personne.`,
     exemple: { code: '482913' },
   }),
   'fiche-incomplete': modele<Base & { completude: number; manques: string[] }>({
@@ -209,7 +209,7 @@ export const modelesOnboarding = {
   }),
   'fiche-en-ligne': modele<Base & { initiales: string; meta: string; labels: string }>({
     sujet: () => 'Votre fiche est en ligne',
-    preheader: (d) => `${d.nomCommercial} apparaît désormais dans l’annuaire de Portail Habitat.`,
+    preheader: (d) => `${d.nomCommercial} apparaît désormais dans l’annuaire de Portail Travaux.`,
     blocs: (d) => [
       titre('Votre fiche est en ligne'),
       para(

@@ -28,7 +28,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Artisans : recevez les demandes de travaux de votre secteur · Portail Habitat Pro',
+    absolute: 'Artisans : recevez les demandes de travaux de votre secteur · Portail Travaux Pro',
   },
   description:
     'Inscription gratuite, 0 % de commission : créez votre fiche, choisissez vos métiers et vos communes, et répondez aux demandes des particuliers près de chez vous.',

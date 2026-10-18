@@ -56,7 +56,7 @@ const SLA = { red: ['#c0392b', '#8f1d14', 'dépassé'], amber: ['#d99a1e', '#7a5
 class Component extends DCLogic {
   state = { f: 'Tous', mes: false, assign: {} };
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#file'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#file'); } catch (e) {} }, 0); }
     const P = this.props.perms || {};
     const can = (p) => P[p] ?? true;
     const vis = ITEMS.map((x, i) => ({ x, i })).filter(({ x }) => can(x[8]));

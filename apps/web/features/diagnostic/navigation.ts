@@ -42,7 +42,7 @@ export const piedDiag: { accroche: string; colonnes: ColonnePied[] } = {
       ],
     },
     {
-      titre: 'Portail Habitat',
+      titre: 'Portail Travaux',
       liens: [
         { libelle: 'Trouver un artisan', href: routes.accueil },
         { libelle: 'Simulateur de travaux', href: routes.simulateur },

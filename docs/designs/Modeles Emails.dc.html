@@ -79,7 +79,7 @@ a:hover { color: #0d7a5f; }
                 <circle cx="20" cy="25.6" r="4.8" fill="none" stroke="{{ loupe }}" stroke-width="2.6"></circle>
                 <path d="m23.5 29.1 2.6 2.6" stroke="{{ loupe }}" stroke-width="2.6" stroke-linecap="round"></path>
               </svg>
-              <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;color:#201e1d">PORTAIL HABITAT</span>
+              <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;color:#201e1d">PORTAIL TRAVAUX</span>
               <span style="font-size:15px;font-weight:700;letter-spacing:0.18em;color:{{ t.accent }}">{{ t.suffix }}</span>
             </div>
 
@@ -193,7 +193,7 @@ a:hover { color: #0d7a5f; }
                 </sc-if>
                 <a href="#" style="color:#57534f">Aide</a>
               </div>
-              <span>Portail Habitat · [Raison sociale] · [Adresse postale de l'éditeur]</span>
+              <span>Portail Travaux · [Raison sociale] · [Adresse postale de l'éditeur]</span>
             </div>
           </div>
         </div>
@@ -201,7 +201,7 @@ a:hover { color: #0d7a5f; }
 
       <sc-if value="{{ showSms }}" hint-placeholder-val="{{ false }}">
         <div style="width:100%;max-width:{{ outerW }};display:flex;flex-direction:column;gap:10px">
-          <div style="font-size:12.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8580">Aussi envoyé par SMS · expéditeur PortailHab</div>
+          <div style="font-size:12.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8580">Aussi envoyé par SMS · expéditeur PortailTrav</div>
           <div style="background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
             <div style="max-width:330px;background:#e9e9eb;border-radius:18px 18px 18px 4px;padding:11px 14px;font-size:15px;line-height:1.45;color:#1d1b1a;font-family:-apple-system,system-ui,sans-serif">{{ e.sms }}</div>
             <div style="font-size:12.5px;color:#8a8580;margin-top:8px">{{ smsLen }} caractères · 1 SMS · jamais entre 21 h et 8 h</div>
@@ -214,35 +214,35 @@ a:hover { color: #0d7a5f; }
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;afficherEnTete&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Aperçu&quot;}, &quot;afficherSms&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Aperçu&quot;}}">
 const TH = {
-  particulier: { accent: '#0d7a5f', light: '#eef7f3', light2: '#a5d7c4', dark: '#085340', suffix: '', from: 'Portail Habitat <notifications@portailhabitat.fr>', signature: "L'équipe Portail Habitat" },
-  pro: { accent: '#e05a10', light: '#fff2ea', light2: '#ffc19c', dark: '#a33f05', suffix: 'PRO', from: 'Portail Habitat Pro <pro@notifications.portailhabitat.fr>', signature: "L'équipe Portail Habitat Pro" },
-  diag: { accent: '#14508a', light: '#eef4fa', light2: '#a4c5e3', dark: '#0d3a65', suffix: 'DIAG', from: 'Portail Habitat Diag <notifications@portailhabitat.fr>', signature: "L'équipe Portail Habitat Diag" },
-  admin: { accent: '#3f4a57', light: '#eef0f3', light2: '#c3c9d1', dark: '#2a323c', suffix: 'ADMIN', from: 'Portail Habitat Admin <admin@notifications.portailhabitat.fr>', signature: 'Back-office Portail Habitat · envoi automatique' },
+  particulier: { accent: '#0d7a5f', light: '#eef7f3', light2: '#a5d7c4', dark: '#085340', suffix: '', from: 'Portail Travaux <notifications@portailtravaux.fr>', signature: "L'équipe Portail Travaux" },
+  pro: { accent: '#e05a10', light: '#fff2ea', light2: '#ffc19c', dark: '#a33f05', suffix: 'PRO', from: 'Portail Travaux Pro <pro@notifications.portailtravaux.fr>', signature: "L'équipe Portail Travaux Pro" },
+  diag: { accent: '#14508a', light: '#eef4fa', light2: '#a4c5e3', dark: '#0d3a65', suffix: 'DIAG', from: 'Portail Travaux Diag <notifications@portailtravaux.fr>', signature: "L'équipe Portail Travaux Diag" },
+  admin: { accent: '#3f4a57', light: '#eef0f3', light2: '#c3c9d1', dark: '#2a323c', suffix: 'ADMIN', from: 'Portail Travaux Admin <admin@notifications.portailtravaux.fr>', signature: 'Back-office Portail Travaux · envoi automatique' },
 };
 const CAT = {
   securite: { label: 'Sécurité · non désactivable', bg: '#fdecea', fg: '#8f1d14', desabo: false, raison: "Email de sécurité envoyé suite à une action sur votre compte. Il ne peut pas être désactivé." },
-  transactionnel: { label: 'Transactionnel', bg: '#eef0f3', fg: '#2a323c', desabo: false, raison: 'Vous recevez cet email suite à une action sur Portail Habitat.' },
+  transactionnel: { label: 'Transactionnel', bg: '#eef0f3', fg: '#2a323c', desabo: false, raison: 'Vous recevez cet email suite à une action sur Portail Travaux.' },
   activite: { label: 'Activité', bg: '#eef4fa', fg: '#0d3a65', desabo: true, raison: "Vous recevez cet email car les notifications d'activité sont activées." },
   relance: { label: 'Relance', bg: '#fdf4e3', fg: '#7a5206', desabo: true, raison: 'Vous recevez cet email car votre inscription n’est pas terminée. 3 relances maximum.' },
-  offres_pro: { label: 'Offres pro · désabonnable', bg: '#fff2ea', fg: '#a33f05', desabo: true, raison: 'Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Habitat Pro. Désabonnement en un clic.' },
-  marketing: { label: 'Marketing · consentement requis', bg: '#fdf6e7', fg: '#7a5a1c', desabo: true, raison: 'Vous recevez cet email car vous avez accepté les actualités de Portail Habitat.' },
+  offres_pro: { label: 'Offres pro · désabonnable', bg: '#fff2ea', fg: '#a33f05', desabo: true, raison: 'Vous recevez cet email en tant que professionnel du bâtiment ayant utilisé Portail Travaux Pro. Désabonnement en un clic.' },
+  marketing: { label: 'Marketing · consentement requis', bg: '#fdf6e7', fg: '#7a5a1c', desabo: true, raison: 'Vous recevez cet email car vous avez accepté les actualités de Portail Travaux.' },
 };
 const TONE = { warn: ['#fdf4e3', '#7a5206'], danger: ['#fdecea', '#8f1d14'], ok: ['#eef7f3', '#085340'], info: ['#eef4fa', '#0d3a65'] };
 const TAG = { amber: ['#fdf4e3', '#7a5206'], red: ['#fdecea', '#8f1d14'], green: ['#eef7f3', '#085340'], blue: ['#eef4fa', '#0d3a65'], grey: ['#f1f0ed', '#57534f'] };
 
 const EMAILS = [
   { g: 'Sécurité et connexion', id: 'lien-connexion', titre: 'Lien de connexion', th: 'particulier', cat: 'securite', to: 'camille.m@gmail.com', quand: 'Demande de lien magique. Valable 1 h, usage unique.',
-    sujet: 'Votre lien de connexion à Portail Habitat', pre: 'Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.',
+    sujet: 'Votre lien de connexion à Portail Travaux', pre: 'Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.',
     b: [['h', 'Connectez-vous en un clic'], ['p', 'Bonjour Camille, voici votre lien pour accéder à votre espace. Aucun mot de passe n’est nécessaire.'], ['btn', 'Me connecter'], ['note', 'Ce lien est valable 1 heure et ne fonctionne qu’une seule fois. Demandé le 25 septembre 2026 à 14 h 32 depuis Chrome sur Mac, près de Bordeaux.'], ['alert', 'Vous n’êtes pas à l’origine de cette demande ? Ignorez simplement cet email : personne ne peut se connecter sans ce lien.', 'info']] },
   { g: 'Sécurité et connexion', id: 'verifier-email', titre: 'Vérifier l’adresse email', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Création d’un compte avec mot de passe. Lien valable 24 h.',
-    sujet: 'Confirmez votre adresse email', pre: 'Une dernière étape pour activer votre compte Portail Habitat Pro.',
-    b: [['h', 'Confirmez votre adresse email'], ['p', 'Bonjour Julien, cliquez sur le bouton ci-dessous pour confirmer que cette adresse vous appartient. Elle servira à recevoir vos demandes de devis.'], ['btn', 'Confirmer mon adresse'], ['note', 'Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur : https://portailhabitat.fr/v/8Kq2…  · Valable 24 heures.']] },
+    sujet: 'Confirmez votre adresse email', pre: 'Une dernière étape pour activer votre compte Portail Travaux Pro.',
+    b: [['h', 'Confirmez votre adresse email'], ['p', 'Bonjour Julien, cliquez sur le bouton ci-dessous pour confirmer que cette adresse vous appartient. Elle servira à recevoir vos demandes de devis.'], ['btn', 'Confirmer mon adresse'], ['note', 'Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur : https://portailtravaux.fr/v/8Kq2…  · Valable 24 heures.']] },
   { g: 'Sécurité et connexion', id: 'mot-de-passe-oublie', titre: 'Mot de passe oublié', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Demande de réinitialisation. Même message à l’écran que l’email existe ou non.',
     sujet: 'Réinitialisation de votre mot de passe', pre: 'Choisissez un nouveau mot de passe. Lien valable 1 heure.',
-    b: [['h', 'Choisissez un nouveau mot de passe'], ['p', 'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Habitat Pro.'], ['btn', 'Choisir un nouveau mot de passe'], ['note', 'Lien valable 1 heure, utilisable une seule fois. Votre mot de passe actuel reste valable tant que vous n’en choisissez pas un nouveau.'], ['alert', 'Ce n’était pas vous ? Aucune action n’est nécessaire, mais nous vous conseillons d’activer la double authentification.', 'info']] },
+    b: [['h', 'Choisissez un nouveau mot de passe'], ['p', 'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Travaux Pro.'], ['btn', 'Choisir un nouveau mot de passe'], ['note', 'Lien valable 1 heure, utilisable une seule fois. Votre mot de passe actuel reste valable tant que vous n’en choisissez pas un nouveau.'], ['alert', 'Ce n’était pas vous ? Aucune action n’est nécessaire, mais nous vous conseillons d’activer la double authentification.', 'info']] },
   { g: 'Sécurité et connexion', id: 'nouvel-appareil', titre: 'Nouvel appareil', th: 'pro', cat: 'securite', to: 'contact@bertrand-renovation.fr', quand: 'Connexion depuis un appareil ou un pays inconnu.',
     sujet: 'Nouvelle connexion à votre compte', pre: 'iPhone · Mérignac · aujourd’hui à 08 h 12. C’était vous ?',
-    b: [['h', 'Nouvelle connexion détectée'], ['p', 'Votre compte Portail Habitat Pro vient d’être utilisé depuis un appareil que nous ne connaissions pas.'], ['recap', [['Appareil', 'Safari sur iPhone'], ['Lieu approximatif', 'Mérignac, France'], ['Date', '25 septembre 2026 à 08 h 12']]], ['p', 'C’était vous ? Vous n’avez rien à faire.'], ['btn', 'Ce n’était pas moi : sécuriser mon compte'], ['note', 'Sécuriser votre compte déconnecte tous les appareils et vous demande un nouveau mot de passe.']] },
+    b: [['h', 'Nouvelle connexion détectée'], ['p', 'Votre compte Portail Travaux Pro vient d’être utilisé depuis un appareil que nous ne connaissions pas.'], ['recap', [['Appareil', 'Safari sur iPhone'], ['Lieu approximatif', 'Mérignac, France'], ['Date', '25 septembre 2026 à 08 h 12']]], ['p', 'C’était vous ? Vous n’avez rien à faire.'], ['btn', 'Ce n’était pas moi : sécuriser mon compte'], ['note', 'Sécuriser votre compte déconnecte tous les appareils et vous demande un nouveau mot de passe.']] },
 
   { g: 'Particuliers', id: 'demande-confirmee', titre: 'Demande confirmée', th: 'particulier', cat: 'transactionnel', to: 'camille.m@gmail.com', quand: 'Envoi d’une demande depuis le simulateur. Contient le lien de connexion si le compte vient d’être créé.',
     sujet: 'Votre demande PH-4K82Q9 est bien envoyée', pre: 'Salle de bain · Bordeaux · estimation 7 800 à 10 400 € TTC. Jusqu’à 3 artisans vont vous répondre.',
@@ -264,33 +264,33 @@ const EMAILS = [
     sujet: 'Il vous reste 2 minutes pour recevoir vos premières demandes', pre: 'Votre inscription Bertrand Rénovation est enregistrée à 66 %.',
     b: [['h', 'Votre inscription est presque terminée'], ['p', 'Bonjour Julien, vous avez commencé à inscrire Bertrand Rénovation hier. Vos informations sont enregistrées : reprenez exactement où vous en étiez.'], ['prog', 'Inscription', '66%'], ['steps', [['Entreprise (SIREN 812 345 678)', 'done'], ['Zone et métiers', 'done'], ['Création du compte', 'todo']]], ['btn', 'Terminer mon inscription'], ['alert', 'Ce mois-ci, 38 particuliers ont cherché un plombier-chauffagiste autour de Bordeaux.', 'info']] },
   { g: 'Inscription artisan', id: 'bienvenue-pro', titre: 'Bienvenue', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Fin de l’onboarding (finaliserOnboarding). Les relances sont annulées.',
-    sujet: 'Bienvenue sur Portail Habitat Pro, Julien', pre: '3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.',
+    sujet: 'Bienvenue sur Portail Travaux Pro, Julien', pre: '3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.',
     b: [['h', 'Bienvenue, Bertrand Rénovation'], ['p', 'Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.'], ['steps', [['Créer votre compte', 'done'], ['Vérifier votre numéro de mobile', 'todo'], ['Déposer votre attestation décennale', 'todo'], ['Compléter votre fiche à 60 % (logo, photos, description)', 'todo']]], ['btn', 'Accéder à mon espace'], ['note', 'Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.']] },
   { g: 'Inscription artisan', id: 'document-refuse', titre: 'Document refusé', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Décision d’un modérateur sur un document (motif obligatoire).',
     sujet: 'Votre attestation décennale n’a pas pu être validée', pre: 'Motif : attestation expirée. Déposez une attestation en cours de validité.',
     b: [['h', 'Nous n’avons pas pu valider votre document'], ['recap', [['Document', 'Attestation décennale'], ['Déposé le', '24 septembre 2026'], ['Motif', 'Attestation expirée le 31/12/2025', 1]]], ['p', 'Votre fiche reste hors ligne tant qu’une attestation décennale valide n’est pas déposée. Demandez l’attestation 2026 à votre assureur : elle est en général disponible dans votre espace client.'], ['btn', 'Déposer une nouvelle attestation'], ['note', 'Vérification sous 48 h ouvrées après le dépôt.']] },
   { g: 'Inscription artisan', id: 'fiche-en-ligne', titre: 'Fiche en ligne', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Le champ enLigne passe à true.',
-    sujet: 'Votre fiche est en ligne 🎉', pre: 'Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Habitat.',
+    sujet: 'Votre fiche est en ligne 🎉', pre: 'Bertrand Rénovation apparaît désormais dans l’annuaire de Portail Travaux.',
     b: [['h', 'Votre fiche est en ligne'], ['p', 'Félicitations Julien : Bertrand Rénovation est visible par les particuliers de votre zone et peut recevoir des demandes.'], ['art', 'BR', 'Bertrand Rénovation', 'Nouveau · Bordeaux et 25 km', 'Vérifié · Décennale'], ['btn', 'Voir ma fiche publique'], ['h3', 'Pour recevoir plus de demandes'], ['steps', [['Ajoutez 3 photos de réalisations', 'todo'], ['Répondez aux demandes en moins de 2 h pour obtenir le label « Réponse rapide »', 'todo']]]] },
 
   { g: 'Équipe', id: 'invitation-membre', titre: 'Invitation d’un collaborateur', th: 'pro', cat: 'transactionnel', to: 'lea.durand@gmail.com', quand: 'inviterMembre. Lien valable 7 jours, relance à J+3.',
     sujet: 'Julien vous invite à rejoindre Bertrand Rénovation', pre: 'Rôle : collaborateur. Invitation valable 7 jours.',
-    b: [['h', 'Rejoignez l’équipe Bertrand Rénovation'], ['p', 'Julien Bertrand vous invite à gérer les demandes de devis de l’entreprise sur Portail Habitat Pro.'], ['recap', [['Entreprise', 'Bertrand Rénovation · Bordeaux'], ['Votre rôle', 'Collaborateur', 1], ['Vous pourrez', 'Répondre aux demandes, envoyer des devis, ajouter des réalisations']]], ['btn', 'Accepter l’invitation'], ['note', 'Invitation valable jusqu’au 2 octobre 2026, destinée à l.•••@gmail.com. Vous ne connaissez pas Julien Bertrand ? Ignorez cet email.']] },
+    b: [['h', 'Rejoignez l’équipe Bertrand Rénovation'], ['p', 'Julien Bertrand vous invite à gérer les demandes de devis de l’entreprise sur Portail Travaux Pro.'], ['recap', [['Entreprise', 'Bertrand Rénovation · Bordeaux'], ['Votre rôle', 'Collaborateur', 1], ['Vous pourrez', 'Répondre aux demandes, envoyer des devis, ajouter des réalisations']]], ['btn', 'Accepter l’invitation'], ['note', 'Invitation valable jusqu’au 2 octobre 2026, destinée à l.•••@gmail.com. Vous ne connaissez pas Julien Bertrand ? Ignorez cet email.']] },
 
   { g: 'Activité artisan', id: 'nouvelle-demande', titre: 'Nouvelle demande', th: 'pro', cat: 'activite', to: 'contact@bertrand-renovation.fr', quand: 'Attribution « proposée ». Relance à 4 h et 20 h si non vue. Aussi par SMS si activé.',
     sujet: 'Nouvelle demande : salle de bain à Bordeaux · 7 800 à 10 400 €', pre: 'Particulier · délai sous 1 mois. Répondez vite : vous êtes 1 artisan sur 3.',
-    sms: 'Portail Habitat : nouvelle demande Salle de bain, Bordeaux, 7 800-10 400 €. Répondez sous 24 h : portailhabitat.fr/d/4K82 STOP 36xxx',
+    sms: 'Portail Travaux : nouvelle demande Salle de bain, Bordeaux, 7 800-10 400 €. Répondez sous 24 h : portailtravaux.fr/d/4K82 STOP 36xxx',
     b: [['k', 'Nouvelle demande'], ['h', 'Rénovation de salle de bain à Bordeaux'], ['recap', [['Budget estimé', '7 800 – 10 400 € TTC', 1], ['Surface', '6 m²'], ['Travaux', 'Douche à l’italienne, meuble double vasque, faïence'], ['Délai souhaité', 'Sous 1 mois'], ['Distance', '6 km de votre siège']]], ['alert', 'Vous êtes l’un des 3 artisans sélectionnés. Cette demande expire dans 24 h sans réponse.', 'warn'], ['btn', 'Voir et répondre'], ['note', 'Les coordonnées du particulier s’affichent dès que vous acceptez la demande.']] },
   { g: 'Activité artisan', id: 'lead-debloque', titre: 'Appel d’offres débloqué', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'Déblocage réussi (carte ou crédits).',
     sujet: 'Appel d’offres débloqué : isolation de combles à Pessac', pre: 'Coordonnées du client et reçu. 2 crédits utilisés.',
     b: [['h', 'Vous pouvez contacter le client'], ['recap', [['Projet', 'Isolation de combles perdus, 80 m²'], ['Client', 'Marc D. · 06 12 •• •• 48'], ['Adresse', 'Pessac (33600)'], ['Payé', '2 crédits (valeur 20 € HT)', 1], ['Crédits restants', '6']]], ['btn', 'Contacter le client'], ['note', 'Faux numéro, projet inexistant ou doublon ? Vous pouvez contester sous 7 jours depuis votre espace.']] },
   { g: 'Activité artisan', id: 'assurance-expire', titre: 'Assurance qui expire', th: 'pro', cat: 'transactionnel', to: 'contact@bertrand-renovation.fr', quand: 'J-30, J-7 et J0 avant la fin de la décennale. Suspension automatique à J0. SMS à J-7 et J0.',
     sujet: 'Votre décennale expire dans 7 jours', pre: 'Sans nouvelle attestation, votre fiche sera suspendue le 2 octobre.',
-    sms: 'Portail Habitat : votre décennale expire le 02/10. Déposez la nouvelle attestation pour éviter la suspension de votre fiche : portailhabitat.fr/pro/docs',
+    sms: 'Portail Travaux : votre décennale expire le 02/10. Déposez la nouvelle attestation pour éviter la suspension de votre fiche : portailtravaux.fr/pro/docs',
     b: [['h', 'Votre attestation décennale expire dans 7 jours'], ['alert', 'Le 2 octobre 2026, votre fiche sera automatiquement retirée de l’annuaire et vous ne recevrez plus de demandes.', 'danger'], ['recap', [['Assureur', 'MAAF Pro'], ['Police', 'N° 4521 •••• 88'], ['Fin de validité', '2 octobre 2026', 1]]], ['btn', 'Déposer ma nouvelle attestation'], ['note', 'La vérification prend moins de 48 h. Votre fiche est remise en ligne dès la validation.']] },
   { g: 'Activité artisan', id: 'rapport-hebdo', titre: 'Rapport hebdomadaire', th: 'pro', cat: 'activite', to: 'contact@bertrand-renovation.fr', quand: 'Chaque lundi à 8 h (Premium).',
     sujet: 'Votre semaine : 214 vues, 6 demandes', pre: '+18 % de vues par rapport à la semaine précédente.',
-    b: [['k', 'Semaine du 15 au 21 septembre'], ['h', 'Votre semaine sur Portail Habitat'], ['stats', [['214', '+18 %', 'Vues de votre fiche'], ['23', '+4', 'Clics sur votre téléphone'], ['6', '+2', 'Demandes reçues']]], ['p', 'Temps de réponse moyen : 1 h 40. Vous gardez le label « Réponse rapide ».'], ['btn', 'Voir mes statistiques']] },
+    b: [['k', 'Semaine du 15 au 21 septembre'], ['h', 'Votre semaine sur Portail Travaux'], ['stats', [['214', '+18 %', 'Vues de votre fiche'], ['23', '+4', 'Clics sur votre téléphone'], ['6', '+2', 'Demandes reçues']]], ['p', 'Temps de réponse moyen : 1 h 40. Vous gardez le label « Réponse rapide ».'], ['btn', 'Voir mes statistiques']] },
 
   { g: 'Facturation', id: 'recu', titre: 'Reçu de paiement', th: 'pro', cat: 'transactionnel', to: 'compta@bertrand-renovation.fr', quand: 'Webhook invoice.paid.',
     sujet: 'Reçu : Premium annuel · 1 150,56 € TTC', pre: 'Facture F-2026-00412 disponible en PDF.',
@@ -301,11 +301,11 @@ const EMAILS = [
 
   { g: 'Conversion · prospects', id: 'prospect-estimation', titre: 'Estimation de demandes', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', quand: 'Immédiat : email saisi sur la landing pro pour recevoir l’estimation (sans inscription). Démarre la séquence S1.',
     sujet: 'Électricien à Lormont : 27 demandes ce mois-ci', pre: 'Votre estimation détaillée, et comment recevoir ces demandes gratuitement.',
-    b: [['k', 'Votre estimation'], ['h', '27 particuliers cherchent un électricien autour de Lormont'], ['stats', [['27', '30 jours', 'Demandes dans votre métier'], ['6 400 €', '', 'Budget moyen par projet'], ['4', '', 'Électriciens inscrits à 20 km']]], ['p', 'Ces demandes sont aujourd’hui partagées entre seulement 4 électriciens. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.'], ['btn', 'Recevoir mes premières demandes'], ['note', 'Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Habitat en Gironde.']] },
+    b: [['k', 'Votre estimation'], ['h', '27 particuliers cherchent un électricien autour de Lormont'], ['stats', [['27', '30 jours', 'Demandes dans votre métier'], ['6 400 €', '', 'Budget moyen par projet'], ['4', '', 'Électriciens inscrits à 20 km']]], ['p', 'Ces demandes sont aujourd’hui partagées entre seulement 4 électriciens. L’inscription est gratuite et prend 3 minutes : SIREN, zone, métiers.'], ['btn', 'Recevoir mes premières demandes'], ['note', 'Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Travaux en Gironde.']] },
   { g: 'Conversion · prospects', id: 'prospect-demande-zone', titre: 'Demande dans sa zone', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', quand: 'Signal : une demande réelle de son métier arrive à moins de 15 km (J+1 à J+30, 1 par semaine max). Remplace l’email calendrier du jour.',
     sujet: 'Hier : tableau électrique à Lormont, 2 400 à 3 200 €', pre: 'Cette demande est partie chez un autre électricien. Recevez les suivantes.',
     b: [['k', 'Demande reçue hier'], ['h', 'Un particulier de Lormont cherchait un électricien'], ['recap', [['Travaux', 'Remplacement du tableau et mise aux normes'], ['Budget estimé', '2 400 – 3 200 € TTC', 1], ['Distance', '3 km de votre siège'], ['Délai souhaité', 'Sous 2 semaines']]], ['alert', 'Faute d’électricien inscrit à Lormont, elle a été transmise à une entreprise de Cenon.', 'warn'], ['p', 'Inscrivez-vous gratuitement : les prochaines demandes de ce type vous arriveront par email et par SMS.'], ['btn', 'M’inscrire gratuitement'], ['note', 'Aucune donnée personnelle du particulier n’est communiquée dans cet email.']] },
-  { g: 'Conversion · prospects', id: 'prospect-derniere', titre: 'Dernier email (humain)', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', from: 'Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>', sig: 'Julie Martin · Responsable des artisans en Gironde · répondez directement à cet email', quand: 'J+12, fin de la séquence S1. Texte simple, un seul lien, réponses lues (une réponse met la séquence en pause et crée une tâche). Ensuite : résumé mensuel de la zone uniquement.',
+  { g: 'Conversion · prospects', id: 'prospect-derniere', titre: 'Dernier email (humain)', th: 'pro', cat: 'offres_pro', to: 'm.dupuy@dupuy-elec.fr', from: 'Julie de Portail Travaux Pro <julie@notifications.portailtravaux.fr>', sig: 'Julie Martin · Responsable des artisans en Gironde · répondez directement à cet email', quand: 'J+12, fin de la séquence S1. Texte simple, un seul lien, réponses lues (une réponse met la séquence en pause et crée une tâche). Ensuite : résumé mensuel de la zone uniquement.',
     sujet: 'Je clôture votre dossier ?', pre: 'Une question avant de ne plus vous écrire, Marc.',
     b: [['p', 'Bonjour Marc,'], ['p', 'Je vous ai envoyé il y a 12 jours l’estimation des demandes d’électricité autour de Lormont. Depuis, 9 nouvelles demandes sont arrivées dans votre secteur.'], ['p', 'Je ne veux pas vous encombrer : si ce n’est pas le moment, je clôture votre dossier et vous ne recevrez plus qu’un résumé mensuel de votre zone.'], ['p', 'Une question sur le fonctionnement, les prix ou l’engagement ? Répondez simplement à cet email, c’est moi qui lis les réponses.'], ['link', 'Créer ma fiche gratuite en 3 minutes →']] },
 
@@ -342,7 +342,7 @@ const EMAILS = [
     sujet: 'Julien, 11 demandes exclusives sont parties depuis', pre: 'Revenez en Premium avec −30 % sur votre premier mois.',
     b: [['h', 'Votre secteur a continué sans vous'], ['stats', [['11', '', 'Demandes exclusives confiées à d’autres'], ['164', '', 'Recherches « plombier Bordeaux »'], ['18e', '', 'Position de votre fiche (2e avant)']]], ['p', 'Vos 87 avis sont toujours là. Reprenez Premium et retrouvez votre place et vos demandes garanties dès aujourd’hui.'], ['code', 'RETOUR30'], ['btn', 'Reprendre Premium à −30 %'], ['note', 'Code personnel valable jusqu’au 3 octobre 2026, appliqué au premier mois.']] },
 
-  { g: 'Interne', id: 'resume-file', titre: 'Résumé de la file', th: 'admin', cat: 'transactionnel', to: 'moderation@portailhabitat.fr', quand: 'Chaque jour à 9 h et 14 h, aux membres de l’équipe concernés.',
+  { g: 'Interne', id: 'resume-file', titre: 'Résumé de la file', th: 'admin', cat: 'transactionnel', to: 'moderation@portailtravaux.fr', quand: 'Chaque jour à 9 h et 14 h, aux membres de l’équipe concernés.',
     sujet: 'File de travail : 17 éléments, 3 hors délai', pre: '5 documents, 4 avis, 3 remboursements de leads, 2 litiges…',
     b: [['h', '17 éléments à traiter'], ['rows', [['Documents à vérifier', '3 hors délai', 'red', '5'], ['Avis en attente', 'Dans les délais', 'grey', '4'], ['Contestations de leads', 'Dans les délais', 'grey', '3'], ['Litiges ouverts', '', 'grey', '2'], ['Nouveaux artisans', '', 'grey', '2'], ['Suspicion de fraude', 'Priorité 5', 'red', '1']]], ['btn', 'Ouvrir la file de travail'], ['note', 'Délai cible : documents 48 h, avis 48 h, contestations 72 h.']] },
 ];

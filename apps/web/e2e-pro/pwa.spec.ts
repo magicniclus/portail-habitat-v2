@@ -8,7 +8,7 @@ test.describe('Application pro (MOB-06)', () => {
   test('manifest installable et icônes', async ({ page, request }) => {
     const m = await (await request.get('/pro/manifest.webmanifest')).json();
     expect(m).toMatchObject({
-      name: 'Portail Habitat Pro',
+      name: 'Portail Travaux Pro',
       display: 'standalone',
       scope: '/pro/',
       start_url: '/pro/tableau-de-bord',
@@ -54,7 +54,7 @@ test.describe('Application pro (MOB-06)', () => {
       }
     });
     await connecter(page, COMPTES.proprio);
-    const invitation = page.getByText("Installez l'application Portail Habitat Pro");
+    const invitation = page.getByText("Installez l'application Portail Travaux Pro");
     await expect(invitation).toBeVisible();
     await expect(page.getByText(/touchez Partager puis « Sur l’écran d’accueil »/)).toBeVisible();
     await page.getByRole('button', { name: 'Plus tard' }).click();

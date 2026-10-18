@@ -19,9 +19,9 @@ const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
 /** Domaine de la plateforme (les autres hôtes sont des sites artisans). */
 const plateforme = () => {
   try {
-    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://portailhabitat.fr').hostname;
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://portailtravaux.fr').hostname;
   } catch {
-    return 'portailhabitat.fr';
+    return 'portailtravaux.fr';
   }
 };
 

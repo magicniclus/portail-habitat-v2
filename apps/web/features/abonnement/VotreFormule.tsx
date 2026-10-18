@@ -17,7 +17,7 @@ const POINTS_GRATUIT = [
   'Fiche artisan dans votre zone',
   'Demandes reçues depuis votre fiche',
   'Avis clients, devis et factures',
-  'Site sur portailhabitat.fr',
+  'Site sur portailtravaux.fr',
 ];
 
 /**

@@ -8,14 +8,14 @@ Commencer par l'environnement de **recette** (staging) : clés de test partout, 
 
 | # | Compte | À faire | Clés ou réglages à poser | Débloque |
 |---|---|---|---|---|
-| 1 | **Nom de domaine** (D13 🔒) | Réserver `portailhabitat.fr` (+ `.com` en redirection) chez un registrar | — | tout le reste (emails, site) |
-| 2 | **Firebase / Google Cloud** (plan Blaze) | Créer `portail-habitat-staging` puis `portail-habitat-prod` ; Firestore `eur3`, Storage et Functions `europe-west1` ; alertes de budget 50/80/100 % | `NEXT_PUBLIC_FIREBASE_*` (6 valeurs), `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY`, `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (push, facultatif) | comptes, données, fichiers |
+| 1 | **Nom de domaine** (D13 🔒) | Réserver `portailtravaux.fr` (+ `.com` en redirection) chez un registrar | — | tout le reste (emails, site) |
+| 2 | **Firebase / Google Cloud** (plan Blaze) | Créer `portail-travaux-staging` puis `portail-travaux-prod` ; Firestore `eur3`, Storage et Functions `europe-west1` ; alertes de budget 50/80/100 % | `NEXT_PUBLIC_FIREBASE_*` (6 valeurs), `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY`, `NEXT_PUBLIC_FIREBASE_VAPID_KEY` (push, facultatif) | comptes, données, fichiers |
 | 3 | **reCAPTCHA Enterprise** (même projet Google) | Enregistrer le site pour App Check (domaines `www.` et `staging.`) | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | protection des formulaires (obligatoire en production) |
 | 4 | **Identity Platform** (même projet Google) | Activer, pour la double authentification par application | — | 2FA artisans et admins |
 | 5 | **Vercel** | Créer l'équipe et le projet, relier le dépôt GitHub, région `cdg1` | `VERCEL_API_TOKEN`, `VERCEL_EQUIPE`, `VERCEL_PROJET_SITES` (domaines des sites artisans) | mise en ligne |
 | 6 | **Stripe** (mode **test** d'abord) | Créer le compte, puis je lance `pnpm stripe:produits` | `STRIPE_SECRET_KEY` (clé restreinte), `STRIPE_WEBHOOK_SECRET` | abonnements, crédits, packs |
 | 7 | **Resend** (région UE) | Vérifier le domaine (SPF, DKIM, DMARC) | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, `RESEND_INBOUND_SECRET`, `EMAIL_FROM`, `EMAIL_FROM_PRO`, `EMAIL_REPLY_TO`, `EMAIL_WHITELIST` (recette) | tous les emails |
-| 8 | **Brevo** | Compte SMS, expéditeur `PortailHab` | `BREVO_API_KEY`, `SMS_SENDER` | SMS (codes, confirmations) |
+| 8 | **Brevo** | Compte SMS, expéditeur `PortailTrav` | `BREVO_API_KEY`, `SMS_SENDER` | SMS (codes, confirmations) |
 | 9 | **Typesense Cloud** (région UE) | Créer un cluster | `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE`, `TYPESENSE_CLE_ADMIN` | recherche de l'annuaire |
 | 10 | **Sentry** (région UE) | Créer l'organisation et le projet | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | suivi des erreurs |
 | 11 | **Anthropic** | Compte API, plafond de dépense mensuel | `ANTHROPIC_API_KEY` (site **et** Functions) | IA du site, du blog, assistant admin |

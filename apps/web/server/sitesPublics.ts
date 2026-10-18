@@ -80,9 +80,9 @@ async function charger(hote: string): Promise<SiteServi | null> {
   const slug = publique.get('slug') as string | undefined;
   return {
     ...site,
-    canonique: hoteCanonique(site, process.env.DOMAINE_SITES ?? 'portailhabitat.fr'),
+    canonique: hoteCanonique(site, process.env.DOMAINE_SITES ?? 'portailtravaux.fr'),
     nomEntreprise: (artisan.get('nomCommercial') as string | undefined) ?? site.navigation.nom,
-    ...(slug ? { urlFiche: `https://portailhabitat.fr/artisans/${slug}` } : {}),
+    ...(slug ? { urlFiche: `https://portailtravaux.fr/artisans/${slug}` } : {}),
     champs:
       site.offre === 'site_pro'
         ? ((doc.get('formulaire.champs') as ChampFormulaire[] | undefined) ?? [

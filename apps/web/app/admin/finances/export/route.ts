@@ -29,7 +29,7 @@ export async function GET(requete: Request) {
   return new Response(BOM + exportComptable(pieces), {
     headers: {
       'content-type': 'text/csv; charset=utf-8',
-      'content-disposition': `attachment; filename="portail-habitat-${mois}.csv"`,
+      'content-disposition': `attachment; filename="portail-travaux-${mois}.csv"`,
       'cache-control': 'private, no-store',
     },
   });

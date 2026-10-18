@@ -1,6 +1,6 @@
 # Reprise du développement avec les ajouts récents
 
-Message à coller dans Claude Code (à la racine du dépôt, après avoir remplacé le dossier `docs/` par ce dossier `design_handoff_portail_habitat/`) :
+Message à coller dans Claude Code (à la racine du dépôt, après avoir remplacé le dossier `docs/` par ce dossier `design_handoff_portail_travaux/`) :
 
 ---
 

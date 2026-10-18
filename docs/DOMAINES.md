@@ -5,20 +5,20 @@ Maquette : `designs/Site Internet Artisan.dc.html?onglet=domaine`. Hébergement 
 ## 1. Trois cas
 | Cas | Offre | Qui gère le DNS | Résultat |
 |---|---|---|---|
-| A. Sous-domaine `{slug}.portailhabitat.fr` | Gratuit | Nous (wildcard) | En ligne immédiatement |
+| A. Sous-domaine `{slug}.portailtravaux.fr` | Gratuit | Nous (wildcard) | En ligne immédiatement |
 | B. Domaine acheté chez nous | Site Pro | Nous (zone OVH créée par API) | En ligne < 15 min, rien à faire pour l'artisan |
 | C. Domaine existant de l'artisan | Site Pro | L'artisan, chez son registrar | En ligne après ajout de 3 enregistrements |
 Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le domaine principal.
 
 ## 2. Cas A — sous-domaine
-- DNS Portail Habitat (une fois pour toutes) : `*.portailhabitat.fr  CNAME  cname.vercel-dns.com.` + domaine wildcard ajouté au projet Vercel (certificat wildcard géré par Vercel).
+- DNS Portail Travaux (une fois pour toutes) : `*.portailtravaux.fr  CNAME  cname.vercel-dns.com.` + domaine wildcard ajouté au projet Vercel (certificat wildcard géré par Vercel).
 - Slug : `^[a-z0-9-]{3,40}$`, pas de tiret en début/fin, unique, liste réservée (`www`, `admin`, `api`, `pro`, `mail`, `app`, `static`, noms de métiers seuls…). Vérification de disponibilité en direct (`sites` where slug ==).
 - Le middleware Next.js lit l'en-tête `Host`, retrouve `sites/{siteId}` via `domainesIndex/{host}`, rend le site.
 
 ## 3. Cas B — achat de domaine (Site Pro)
 1. Recherche : Function `domaineDisponibilite(q)` → API OVH `/order/cart` + `/domain/...`, extensions proposées `.fr .com .eu` (+ variante `-ville.fr`). Cache 10 min.
 2. Clic sur un domaine sans Site Pro → **fenêtre d'offre** (PAIEMENTS §4), jamais d'achat direct.
-3. Après paiement Stripe confirmé (webhook) : commande OVH **au nom de l'entreprise de l'artisan** (contact propriétaire = raison sociale, SIREN, adresse de la fiche vérifiée ; Portail Habitat = contact technique). Pour `.fr` : éligibilité AFNIC vérifiée avec le SIREN.
+3. Après paiement Stripe confirmé (webhook) : commande OVH **au nom de l'entreprise de l'artisan** (contact propriétaire = raison sociale, SIREN, adresse de la fiche vérifiée ; Portail Travaux = contact technique). Pour `.fr` : éligibilité AFNIC vérifiée avec le SIREN.
 4. Zone DNS créée par API OVH :
    - `@  A  76.76.21.21`
    - `www  CNAME  cname.vercel-dns.com.`
@@ -34,9 +34,9 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
 |---|---|---|---|
 | A | `@` | `76.76.21.21` | domaine nu vers nos sites |
 | CNAME | `www` | `cname.vercel-dns.com.` | www vers nos sites |
-| TXT | `_portailhabitat` | `ph-verif={token}` | preuve que l'artisan contrôle le domaine |
+| TXT | `_portailtravaux` | `ph-verif={token}` | preuve que l'artisan contrôle le domaine |
 - **Ne jamais coder les valeurs A/CNAME en dur** : les lire depuis la réponse de l'API Vercel lors de l'ajout du domaine (Vercel peut renvoyer des valeurs propres au projet) et les stocker dans `sites/{id}.domaine.enregistrements`.
-- TXT sur un sous-nom (`_portailhabitat`) pour ne pas entrer en conflit avec un SPF existant sur `@`.
+- TXT sur un sous-nom (`_portailtravaux`) pour ne pas entrer en conflit avec un SPF existant sur `@`.
 - `{token}` : 24 caractères aléatoires, généré une fois par (site, domaine).
 - Si Vercel exige sa propre vérification (`_vercel TXT vc-domain-verify=…`, domaine déjà utilisé ailleurs), l'ajouter au tableau automatiquement.
 - Si l'artisan a un CAA restrictif : afficher « Autorisez letsencrypt.org dans votre enregistrement CAA ».
@@ -58,7 +58,7 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
   registrar: { fournisseur: "ovh", commandeId, expireLe, authCodeEnvoyeLe } | null,
   vercel: { ajouteLe, verifie, certificatLe }, creeLe, activeLe }
 ```
-`domainesIndex/{host}` → `{ siteId }` (host = domaine, www.domaine, slug.portailhabitat.fr). Écrit uniquement par les Functions.
+`domainesIndex/{host}` → `{ siteId }` (host = domaine, www.domaine, slug.portailtravaux.fr). Écrit uniquement par les Functions.
 
 ## 6. Règles et sécurité
 - Un domaine ne peut être relié qu'à un seul site ; tentative sur un domaine déjà actif ailleurs → refus sans révéler le site.

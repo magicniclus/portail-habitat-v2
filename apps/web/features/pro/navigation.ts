@@ -24,7 +24,7 @@ export const piedPro: { accroche: string; colonnes: ColonnePied[] } = {
   accroche: 'La plateforme des artisans du bâtiment et de leurs clients.',
   colonnes: [
     {
-      titre: 'Portail Habitat Pro',
+      titre: 'Portail Travaux Pro',
       liens: [
         { libelle: 'Inscription gratuite', href: ancre('inscription') },
         { libelle: 'Votre espace', href: ancre('espace') },

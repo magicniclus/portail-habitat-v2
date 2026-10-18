@@ -191,7 +191,7 @@ export function EspaceArtisan() {
                 <span key={i} className="size-2.5 rounded-full bg-neutre-400" />
               ))}
               <span className="ml-2.5 text-xs text-neutre-700">
-                portailhabitat.fr/pro/appels-d-offres
+                portailtravaux.fr/pro/appels-d-offres
               </span>
             </div>
             <div className="grid gap-3.5 p-[18px]">

@@ -161,7 +161,7 @@ export function PreuveSociale({ p }: { p: ReturnType<typeof preuveSociale> }) {
   return (
     <section data-preuve-sociale className={bande}>
       <div className={conteneur}>
-        <h2 className={titre2}>Ils utilisent déjà Portail Habitat</h2>
+        <h2 className={titre2}>Ils utilisent déjà Portail Travaux</h2>
         {p.chiffres.length ? (
           <p className="m-0 mb-8 flex flex-wrap gap-x-10 gap-y-3">
             {p.chiffres.map((c) => (
@@ -249,7 +249,7 @@ const TUILES = [
   'Suivi clients',
 ];
 
-/** Bloc final Portail Habitat (6 tuiles) et appel final vers le formulaire. */
+/** Bloc final Portail Travaux (6 tuiles) et appel final vers le formulaire. */
 export function AppelFinal({ titre, cta }: { titre: string; cta: string }) {
   return (
     <section data-formulaire-landing className={cn(bande, 'bg-accent-900 text-blanc')}>
@@ -257,7 +257,7 @@ export function AppelFinal({ titre, cta }: { titre: string; cta: string }) {
         <div>
           <h2 className={cn(titre2, 'text-blanc')}>{titre}</h2>
           <p className="m-0 mb-6 max-w-[56ch] text-[17px] leading-[27px] text-accent-100">
-            Portail Habitat met en relation les particuliers et les artisans du bâtiment. En
+            Portail Travaux met en relation les particuliers et les artisans du bâtiment. En
             rejoignant le réseau, vous recevez des demandes de travaux et vous profitez de tous nos
             outils, gratuitement.
           </p>

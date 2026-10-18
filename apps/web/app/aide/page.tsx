@@ -87,7 +87,7 @@ export default function Aide() {
             <div className="grid gap-1.5">
               <h2 className="m-0 text-[19px]">Autres moyens</h2>
               <p className="m-0 text-[15.5px] leading-[25px] text-neutre-800">
-                Email : <a href="mailto:contact@portail-habitat.fr">contact@portail-habitat.fr</a>
+                Email : <a href="mailto:contact@portailtravaux.fr">contact@portailtravaux.fr</a>
                 <br />
                 Du lundi au vendredi, 9 h – 18 h
               </p>
@@ -107,7 +107,7 @@ export default function Aide() {
             className={`${conteneur} flex flex-wrap items-center justify-between gap-x-5 gap-y-2 py-4`}
           >
             <span>
-              © {new Date().getFullYear()} Portail Habitat · Plateforme de mise en relation
+              © {new Date().getFullYear()} Portail Travaux · Plateforme de mise en relation
             </span>
             <span className="flex flex-wrap items-center gap-x-[18px]">
               <Link

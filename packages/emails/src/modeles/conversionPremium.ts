@@ -199,7 +199,7 @@ export const modelesConversionPremium = {
   }),
   'passage-annuel': modele<BaseConversion>({
     // Plus envoyé : aucune formule annuelle (PAIEMENTS §2). Modèle gardé pour l'historique des envois.
-    sujet: () => 'Votre abonnement Portail Habitat',
+    sujet: () => 'Votre abonnement Portail Travaux',
     preheader: () => `Tout inclus : ${toutMois} / mois, sans engagement.`,
     blocs: (d) => [
       titre('Votre abonnement'),
@@ -217,7 +217,7 @@ export const modelesConversionPremium = {
       para(`${bonjour(d.prenom)}vous avez reçu ${d.demandesMois} demandes ce mois-ci.`),
       bouton('Voir mes demandes', d.lien),
     ],
-    exemple: { ...EX_BASE, demandesMois: 4, lien: 'https://portailhabitat.fr/pro/demandes' },
+    exemple: { ...EX_BASE, demandesMois: 4, lien: 'https://portailtravaux.fr/pro/demandes' },
   }),
   'resiliation-alternative': modele<Resiliation>({
     sujet: (d) => `Avant le ${d.finLe} : gardez l’essentiel pour moins cher`.slice(0, 59),
@@ -289,7 +289,7 @@ export const modelesConversionPremium = {
       para(
         'Répondez à cet email en une ligne, c’est moi qui lis les réponses. Ce sera mon dernier message : ensuite, vous ne recevrez plus que le rapport mensuel gratuit.',
       ),
-      para(`${d.signataire}, Portail Habitat`),
+      para(`${d.signataire}, Portail Travaux`),
     ],
     exemple: { ...EX_BASE, signataire: 'Julie' },
   }),

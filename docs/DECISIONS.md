@@ -23,9 +23,9 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 ## 2. Domaines et comptes
 | # | Question | Proposition | Statut |
 |---|---|---|---|
-| D13 | Nom de domaine principal | `portailhabitat.fr` (à vérifier et réserver, avec `.com` en redirection) | 🔒 |
-| D14 | Sous-domaines | `pro.` non : tout sur le même domaine (`/pro`), meilleur pour le SEO. Emails : `notifications.portailhabitat.fr` (validé en bloc le 17/10/2026) | ✅ |
-| D15 | Projets Firebase | `portail-habitat-dev`, `-staging`, `-prod` (plan Blaze, alertes de budget à 50 €, 200 €, 500 €) (validé en bloc le 17/10/2026) | ✅ |
+| D13 | Nom de domaine principal | `portailtravaux.fr` (à vérifier et réserver, avec `.com` en redirection) | 🔒 |
+| D14 | Sous-domaines | `pro.` non : tout sur le même domaine (`/pro`), meilleur pour le SEO. Emails : `notifications.portailtravaux.fr` (validé en bloc le 17/10/2026) | ✅ |
+| D15 | Projets Firebase | `portail-travaux-dev`, `-staging`, `-prod` (plan Blaze, alertes de budget à 50 €, 200 €, 500 €) (validé en bloc le 17/10/2026) | ✅ |
 | D16 | Compte Stripe | un compte, mode test pour dev et staging | ✅ |
 | D17 | Dépôt Git | GitHub privé, branche `main` protégée (PR + CI verte obligatoires) (validé en bloc le 17/10/2026) | ✅ |
 
@@ -78,7 +78,7 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D42 | Registrar | **OVHcloud API** (revendeur), domaine au nom de l'artisan (validé en bloc le 17/10/2026) | ✅ |
 | D43 | Stats des sites artisans | Mesure maison sans cookie, agrégée par jour + Search Console (validé en bloc le 17/10/2026) | ✅ |
 | D44 | Formulaire des sites | Multi-champs, envois = demandes directes gratuites, hors matching (validé en bloc le 17/10/2026) | ✅ |
-| D45 | Hébergement des sites artisans | **Cloudflare for SaaS** (Worker unique + R2 + KV) sur le compte Portail Habitat ; domaines nus redirigés vers `www.` par OVH ; plateforme et sites isolés (validé en bloc le 17/10/2026) | ✅ |
+| D45 | Hébergement des sites artisans | **Cloudflare for SaaS** (Worker unique + R2 + KV) sur le compte Portail Travaux ; domaines nus redirigés vers `www.` par OVH ; plateforme et sites isolés (validé en bloc le 17/10/2026) | ✅ |
 | D46 | Anti-spam des formulaires de site | **Cloudflare Turnstile** invisible, vérifié côté API avant création de la demande (validé en bloc le 17/10/2026) | ✅ |
 | D48 | IA du site : monétisation | IA complète réservée à **Site Pro 9,90 € HT/mois** (et Fiche + Site, Tout inclus) ; gratuit = questionnaire + aperçu de l'accueil (1 fois, non publiable) + 3 réécritures à vie (validé en bloc le 17/10/2026) | ✅ |
 | D49 | IA du site : sortie | Uniquement des **opérations** validées (Zod) sur l'arbre du site, catalogue de 15 éléments / 12 sections ; jamais de HTML ; jamais de publication automatique | ✅ |

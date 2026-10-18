@@ -28,7 +28,7 @@ const serif = Source_Serif_4({
 
 export const metadata: Metadata = {
   metadataBase: new URL(URL_SITE),
-  title: { default: 'Portail Habitat', template: '%s · Portail Habitat' },
+  title: { default: 'Portail Travaux', template: '%s · Portail Travaux' },
   description: 'Trouvez un artisan vérifié près de chez vous et simulez votre devis.',
 };
 

@@ -55,7 +55,7 @@ class Component extends DCLogic {
   state = { poids: [['Distance', 25], ['Réactivité (temps de réponse)', 20], ['Note et avis', 20], ['Taux d’acceptation', 15], ['Formule (Premium, Visibilité)', 10], ['Complétude de la fiche', 10]], joue: false, versions: [[7, 'Poids réactivité 15 → 20', 'Julie M. · 12/09'], [6, 'Bonus nouveaux inscrits', 'Julie M. · 28/08'], [5, 'Rayon 20 → 25 km', 'Karim B. · 02/08']], toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#algorithme'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#algorithme'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, lect = !!this.props.pii, can = (p) => P[p] ?? true;
     const noConf = lect || !can('matching.config');
     const total = s.poids.reduce((a, p) => a + p[1], 0);

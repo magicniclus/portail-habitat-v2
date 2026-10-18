@@ -245,7 +245,7 @@ export async function accepterInvitation(
 
   await rattacherProfil(s, uid, compte.email!, maintenant);
   await synchroniserClaims(s, uid, inv.artisanId as string);
-  // Une revendication vient de l'équipe Portail Habitat : pas de membre à prévenir.
+  // Une revendication vient de l'équipe Portail Travaux : pas de membre à prévenir.
   if (inv.revendication) return { artisanId: inv.artisanId as string };
   await s.notifier({
     modele: 'invitation-acceptee',

@@ -4,7 +4,7 @@ import { EspaceTheme } from '@/features/theme/Theme';
 import { viewportEspace } from '@/features/theme/viewport';
 
 export const metadata: Metadata = {
-  title: { default: 'Portail Habitat Diag', template: '%s · Portail Habitat Diag' },
+  title: { default: 'Portail Travaux Diag', template: '%s · Portail Travaux Diag' },
 };
 
 export const viewport: Viewport = viewportEspace('diag');

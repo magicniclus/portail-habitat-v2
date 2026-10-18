@@ -27,7 +27,7 @@ const ctx = {
 const doc = (offre: 'gratuit' | 'site_pro' = 'gratuit') =>
   rendreDocument(
     {
-      hote: 'bertrand.portailhabitat.fr',
+      hote: 'bertrand.portailtravaux.fr',
       offre,
       theme: s.theme,
       navigation: s.navigation,
@@ -42,7 +42,7 @@ describe('rendu des sites publiés', () => {
   it('HTML complet, canonique, menu mobile et formulaire ; textes de l’artisan échappés', () => {
     const h = doc();
     expect(h.startsWith('<!doctype html>')).toBe(true);
-    expect(h).toContain('<link rel="canonical" href="https://bertrand.portailhabitat.fr/">');
+    expect(h).toContain('<link rel="canonical" href="https://bertrand.portailtravaux.fr/">');
     expect(h).toContain('aria-label="Ouvrir le menu"');
     expect(h).toContain('aria-label="Fermer le menu"');
     expect(h).toContain('data-formulaire');
@@ -57,7 +57,7 @@ describe('rendu des sites publiés', () => {
     const el = section.rows[0]!.cols[0]!.els[0]!;
     const h = rendreDocument(
       {
-        hote: 'bertrand.portailhabitat.fr',
+        hote: 'bertrand.portailtravaux.fr',
         offre: 'gratuit',
         theme: s.theme,
         navigation: s.navigation,
@@ -72,7 +72,7 @@ describe('rendu des sites publiés', () => {
     expect(h).toMatch(/<section class="[^"]*ia-modifie/);
   });
 
-  it('mention Portail Habitat seulement sur un site gratuit', () => {
+  it('mention Portail Travaux seulement sur un site gratuit', () => {
     expect(doc('gratuit')).toContain('Site créé avec');
     expect(doc('site_pro')).not.toContain('Site créé avec');
   });

@@ -16,7 +16,7 @@ const meta = {
       'Le lien est peut-être ancien, ou la page n’existe plus. Retrouvez un artisan ou reprenez votre projet depuis l’accueil.',
     visuel: '404',
     entete: <Logo />,
-    pied: <span>© 2026 Portail Habitat</span>,
+    pied: <span>© 2026 Portail Travaux</span>,
     actions: (
       <>
         <Button taille="lg">Retour à l’accueil</Button>

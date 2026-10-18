@@ -8,8 +8,8 @@
 <body>
 <x-dc>
 <helmet>
-<title>Mentions légales, CGU, CGV et confidentialité | Portail Habitat</title>
-<meta name="description" content="Mentions légales, conditions générales d'utilisation particuliers, conditions générales de vente professionnels, politique de confidentialité RGPD, politique d'avis, cookies et sécurité de la plateforme Portail Habitat.">
+<title>Mentions légales, CGU, CGV et confidentialité | Portail Travaux</title>
+<meta name="description" content="Mentions légales, conditions générales d'utilisation particuliers, conditions générales de vente professionnels, politique de confidentialité RGPD, politique d'avis, cookies et sécurité de la plateforme Portail Travaux.">
 <link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,600&amp;display=swap">
@@ -80,7 +80,7 @@ button { font-family: inherit; }
   <div style="background:var(--color-accent-100);border-bottom:1px solid var(--color-accent-200);padding:clamp(22px,3vw,40px) clamp(18px,4vw,44px)">
     <div style="max-width:1220px;margin:0 auto">
       <h1 style="font-size:clamp(25px,3.2vw,36px);line-height:1.1;margin:0 0 10px">Informations légales et sécurité</h1>
-      <p style="margin:0 0 18px;font-size:16.5px;line-height:26px;color:var(--color-neutral-800);max-width:64ch">Portail Habitat est une plateforme de mise en relation. Ces documents précisent le rôle exact de l'éditeur, les responsabilités de chacun, le traitement de vos données et les mesures de sécurité en place. Version en vigueur au {{ dateVersion }}.</p>
+      <p style="margin:0 0 18px;font-size:16.5px;line-height:26px;color:var(--color-neutral-800);max-width:64ch">Portail Travaux est une plateforme de mise en relation. Ces documents précisent le rôle exact de l'éditeur, les responsabilités de chacun, le traitement de vos données et les mesures de sécurité en place. Version en vigueur au {{ dateVersion }}.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <sc-for list="{{ publics }}" as="p" hint-placeholder-count="2">
           <button type="button" onClick="{{ p.choisir }}" aria-pressed="{{ p.actif }}" style="cursor:pointer;border-radius:10px;padding:10px 18px;min-height:44px;font-size:15px;font-weight:600;white-space:nowrap;background:{{ p.bg }};border:1.5px solid {{ p.bd }};color:{{ p.fg }}">{{ p.label }}</button>
@@ -178,7 +178,7 @@ button { font-family: inherit; }
 
   <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
     <div style="max-width:1220px;margin:0 auto;padding:24px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
-      <span>© 2026 Portail Habitat · Plateforme de mise en relation</span>
+      <span>© 2026 Portail Travaux · Plateforme de mise en relation</span>
       <span style="display:flex;gap:18px;flex-wrap:wrap">
         <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Particuliers</a>
         <a href="Acquisition Artisans v2.dc.html" style="color:var(--color-accent-200)">Artisans</a>
@@ -207,9 +207,9 @@ const COMMUN = {
     chapeau: "Informations relatives à l'éditeur du site, à son hébergeur et aux conditions de publication, conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique.",
     encadre: ["Champs à compléter.", "Les mentions ci-dessous contiennent des emplacements entre crochets à renseigner avec vos informations réelles avant mise en ligne. Une mention légale incomplète ou inexacte engage la responsabilité de l'éditeur."],
     sections: [
-      { titre: "1. Éditeur du site", paragraphes: ["Le site Portail Habitat, accessible à l'adresse [www.portailhabitat.fr], est édité par [Dénomination sociale], [forme juridique] au capital de [montant] euros, immatriculée au registre du commerce et des sociétés de [ville] sous le numéro [SIREN], dont le siège social est situé [adresse complète].", "Numéro de TVA intracommunautaire : [FR00000000000]. Directeur de la publication : [nom et prénom]. Contact : [email] — [téléphone]."] },
+      { titre: "1. Éditeur du site", paragraphes: ["Le site Portail Travaux, accessible à l'adresse [www.portailtravaux.fr], est édité par [Dénomination sociale], [forme juridique] au capital de [montant] euros, immatriculée au registre du commerce et des sociétés de [ville] sous le numéro [SIREN], dont le siège social est situé [adresse complète].", "Numéro de TVA intracommunautaire : [FR00000000000]. Directeur de la publication : [nom et prénom]. Contact : [email] — [téléphone]."] },
       { titre: "2. Hébergement", paragraphes: ["Le site est hébergé par [dénomination de l'hébergeur], [adresse complète], [téléphone]. L'hébergeur assure la conservation des données de connexion dans les conditions prévues par la loi."] },
-      { titre: "3. Nature du service", paragraphes: ["Portail Habitat est une plateforme de mise en relation entre des particuliers porteurs de projets de travaux ou de diagnostics immobiliers et des professionnels indépendants. L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni diagnostiqueur, ni courtier en travaux : il n'exécute aucune prestation et n'est pas partie aux contrats conclus entre utilisateurs et professionnels.", "L'éditeur n'est pas un service de paiement et n'intervient pas dans le règlement des prestations, sauf indication contraire expresse dans les conditions applicables à un service spécifique."] },
+      { titre: "3. Nature du service", paragraphes: ["Portail Travaux est une plateforme de mise en relation entre des particuliers porteurs de projets de travaux ou de diagnostics immobiliers et des professionnels indépendants. L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni diagnostiqueur, ni courtier en travaux : il n'exécute aucune prestation et n'est pas partie aux contrats conclus entre utilisateurs et professionnels.", "L'éditeur n'est pas un service de paiement et n'intervient pas dans le règlement des prestations, sauf indication contraire expresse dans les conditions applicables à un service spécifique."] },
       { titre: "4. Propriété intellectuelle", paragraphes: ["La structure du site, son arborescence, ses interfaces, ses textes, sa charte graphique, ses logos, ses marques et ses bases de données sont la propriété exclusive de l'éditeur ou font l'objet d'une licence à son profit. Ils sont protégés par le code de la propriété intellectuelle.", "Toute reproduction, représentation, adaptation, extraction ou réutilisation, totale ou partielle, par quelque procédé que ce soit, sans autorisation écrite préalable de l'éditeur, est interdite et constitue une contrefaçon. L'extraction automatisée de données, notamment par aspiration, moissonnage ou entraînement de modèles, est expressément prohibée."] },
       { titre: "5. Signalement de contenu", paragraphes: ["Tout contenu manifestement illicite peut être signalé à [email de signalement], avec la description du contenu, son adresse précise et les motifs du signalement. L'éditeur, en sa qualité d'hébergeur des contenus publiés par les utilisateurs au sens de l'article 6 de la loi du 21 juin 2004, retire promptement tout contenu manifestement illicite dont il a connaissance."] },
       { titre: "6. Médiation et droit applicable", paragraphes: ["Conformément aux articles L. 611-1 et suivants du code de la consommation, le consommateur peut recourir gratuitement à un médiateur de la consommation : [nom et coordonnées du médiateur]. La plateforme européenne de règlement en ligne des litiges est également accessible.", "Le présent site et les documents qui le régissent sont soumis au droit français. Les tribunaux français sont seuls compétents, sous réserve des règles impératives de compétence applicables aux consommateurs."] },
@@ -258,7 +258,7 @@ const COMMUN = {
   securite: {
     titre: "Sécurité de la plateforme",
     icone: IC.bouclier,
-    chapeau: "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Habitat, et engagements attendus des utilisateurs.",
+    chapeau: "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Travaux, et engagements attendus des utilisateurs.",
     sections: [
       { titre: "1. Protection des échanges et des données", paragraphes: ["L'ensemble des échanges entre votre navigateur et nos serveurs est chiffré en transit (TLS 1.2 minimum, HSTS activé). Les données sensibles sont chiffrées au repos et les mots de passe ne sont jamais stockés en clair : ils sont dérivés au moyen d'une fonction de hachage lente et salée.", "Les documents que vous déposez (devis, attestations d'assurance, rapports de diagnostic, photos de chantier) sont stockés sur un espace à accès restreint et servis par des liens temporaires signés."] },
       { titre: "2. Contrôle d'accès", paragraphes: ["L'accès aux données est cloisonné selon le principe du moindre privilège : un professionnel n'accède qu'aux demandes qui lui sont attribuées, un particulier qu'à son propre dossier. Les accès des équipes internes sont nominatifs, journalisés et soumis à une authentification renforcée.", "La double authentification est disponible sur tous les comptes et fortement recommandée pour les comptes professionnels disposant d'un moyen de paiement enregistré."] },
@@ -281,7 +281,7 @@ const PARTICULIERS = {
     titre: "Conditions générales d'utilisation",
     icone: IC.doc,
     chapeau: "Règles d'accès et d'usage du service par les particuliers : dépôt d'un projet, estimations, mise en relation, avis. Leur acceptation est un préalable à l'utilisation de la plateforme.",
-    encadre: ["Portail Habitat n'exécute aucun travaux.", "La plateforme met en relation ; le contrat de travaux ou de diagnostic est conclu directement entre vous et le professionnel, qui en assume seul l'exécution, les garanties et les assurances."],
+    encadre: ["Portail Travaux n'exécute aucun travaux.", "La plateforme met en relation ; le contrat de travaux ou de diagnostic est conclu directement entre vous et le professionnel, qui en assume seul l'exécution, les garanties et les assurances."],
     sections: [
       { titre: "1. Objet et acceptation", paragraphes: ["Les présentes conditions régissent l'accès au site et l'utilisation des services destinés aux particuliers : recherche de professionnels, simulateurs d'estimation, dépôt de demandes de devis, dossier de diagnostics, messagerie et dépôt d'avis.", "La création d'un compte ou le dépôt d'une demande vaut acceptation sans réserve des présentes conditions, dans leur version en vigueur à la date d'utilisation."] },
       { titre: "2. Accès au service", paragraphes: ["Le service est réservé aux personnes physiques majeures et capables, agissant à des fins non professionnelles, résidant dans la zone géographique couverte. Il est gratuit pour les particuliers ; seuls les frais de connexion restent à votre charge.", "Vous vous engagez à fournir des informations exactes et à les tenir à jour. Une demande manifestement fantaisiste, un projet inexistant ou une utilisation à des fins de prospection peuvent entraîner la suspension du compte."] },
@@ -319,7 +319,7 @@ const ARTISANS = {
   cgv: {
     titre: "Conditions générales de vente professionnels",
     icone: IC.balance,
-    chapeau: "Conditions applicables aux professionnels souscrivant un abonnement ou une option de visibilité sur Portail Habitat. Elles complètent les conditions d'utilisation et prévalent en cas de contradiction pour tout ce qui concerne l'abonnement.",
+    chapeau: "Conditions applicables aux professionnels souscrivant un abonnement ou une option de visibilité sur Portail Travaux. Elles complètent les conditions d'utilisation et prévalent en cas de contradiction pour tout ce qui concerne l'abonnement.",
     encadre: ["Contrat entre professionnels.", "Le souscripteur agit dans le cadre de son activité professionnelle : les dispositions protectrices du code de la consommation relatives au droit de rétractation ne s'appliquent pas, sauf professionnel de moins de six salariés souscrivant hors de son champ d'activité principale."],
     sections: [
       { titre: "1. Objet", paragraphes: ["L'éditeur fournit au professionnel un service d'accès à des demandes de particuliers, une fiche de présentation publiée sur la plateforme et, selon l'offre souscrite, des options de visibilité, des outils de gestion de devis et des statistiques.", "L'éditeur n'est pas mandataire, agent commercial, courtier ni apporteur d'affaires exclusif du professionnel. Il ne garantit aucun volume de demandes, aucun taux de conversion, aucun chiffre d'affaires."] },

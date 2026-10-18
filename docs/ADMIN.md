@@ -1,7 +1,7 @@
 # Back-office administrateur (`/admin`)
 
 Espace interne pour piloter la plateforme : vérification des artisans, prix des appels d'offres, modération, litiges, finances, référentiels, réglages de l'algorithme.
-**Maquette : `designs/Admin Portail Habitat.dc.html`** (coque + menu à icônes filtré par permissions, repliable à gauche avec animation (72 px, icônes seules, pastille sur les sections qui ont des éléments en attente, état mémorisé), sélecteur « Aperçu en tant que » pour tester chaque rôle), une maquette par section : `Admin Tableau de bord`, `Admin File`, `Admin Artisans`, `Admin Demandes`, `Admin Appels d offres`, `Admin Avis`, `Admin Litiges`, `Admin Finances`, `Admin Conversion`, `Admin Comportement`, `Admin IA`, `Admin Referentiels`, `Admin Algorithme`, `Admin Contenus`, `Admin Equipe`, `Admin RGPD`. Thème neutre ardoise pour ne jamais le confondre avec un espace public.
+**Maquette : `designs/Admin Portail Travaux.dc.html`** (coque + menu à icônes filtré par permissions, repliable à gauche avec animation (72 px, icônes seules, pastille sur les sections qui ont des éléments en attente, état mémorisé), sélecteur « Aperçu en tant que » pour tester chaque rôle), une maquette par section : `Admin Tableau de bord`, `Admin File`, `Admin Artisans`, `Admin Demandes`, `Admin Appels d offres`, `Admin Avis`, `Admin Litiges`, `Admin Finances`, `Admin Conversion`, `Admin Comportement`, `Admin IA`, `Admin Referentiels`, `Admin Algorithme`, `Admin Contenus`, `Admin Equipe`, `Admin RGPD`. Thème neutre ardoise pour ne jamais le confondre avec un espace public.
 
 ---
 
@@ -47,7 +47,7 @@ ia.utiliser  ia.configurer
 - **Plafonds** : `commercial` limité à 5 crédits par geste (`credits.crediter_illimite` au-delà) et à 30 € HT de prix manuel (`leads.prix_illimite` au-delà)
 - **Surcharges individuelles** : `admins/{uid}.permissionsPlus[]` / `permissionsMoins[]` en plus du rôle ; permissions effectives = rôle + plus − moins, calculées par `syncClaims` et stockées dans `admins/{uid}.permissionsEffectives` ; le claim ne porte que le rôle et les **codes de lecture de section** (`staff: { r, s: ['art','cnv',…] }`), car la liste complète dépasserait la limite de 1 000 octets des claims. Toute écriture relit `admins/{uid}` côté serveur
 - **Rôles personnalisés** : `rolesAdmin/{id}` (`nom`, `permissions[]`) ; les 6 rôles système sont en lecture seule ; un rôle utilisé ne peut pas être supprimé
-- **Garde-fous** : personne ne modifie ses propres droits ni ne se désactive ; il reste toujours au moins un superadmin actif ; invitations limitées au domaine @portailhabitat.fr
+- **Garde-fous** : personne ne modifie ses propres droits ni ne se désactive ; il reste toujours au moins un superadmin actif ; invitations limitées au domaine @portailtravaux.fr
 - **Rôle `lecture`** : données personnelles masquées partout, aucune action d'écriture
 - **« Aperçu en tant que »** (maquette) : en production, réservé au superadmin, en lecture seule, et journalisé
 
@@ -100,7 +100,7 @@ Fil d'échanges particulier, artisan et médiateur ; pièces jointes ; statuts ;
 Abonnements actifs, MRR, factures, achats de leads, packs vendus, remboursements, codes promo. **Exports CSV** mensuels pour la comptabilité : date, n° de pièce, client, HT, TVA, TTC, moyen de paiement. Les remboursements par carte passent par la Function `adminRembourserStripe`.
 
 ### 2.8b Conversion `/admin/conversion`
-Maquette : `designs/Admin Portail Habitat.dc.html`. Onglets :
+Maquette : `designs/Admin Portail Travaux.dc.html`. Onglets :
 - **Vue d'ensemble** : indicateurs, entonnoir, meilleurs emails par revenu attribué, gain par rapport au groupe témoin
 - **Séquences** : statut, performances par étape, tests A/B, modifier et tester l'envoi
 - **Journal** : `cycleTraces` en temps réel, filtres (envois, non-envois avec leur raison, signaux, conversions, admin), export CSV

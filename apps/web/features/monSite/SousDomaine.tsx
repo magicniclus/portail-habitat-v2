@@ -5,7 +5,7 @@ import { Banner, Button, Field, Input } from '@ph/ui';
 import { useState } from 'react';
 import { useAppelSite } from './appelSite';
 
-/** Adresse gratuite `{slug}.portailhabitat.fr` : modifiable, unicité vérifiée par le serveur (DOM-01). */
+/** Adresse gratuite `{slug}.portailtravaux.fr` : modifiable, unicité vérifiée par le serveur (DOM-01). */
 export function SousDomaine({ actuel, domaine }: { actuel: string; domaine: string }) {
   const [slug, setSlug] = useState(actuel);
   const { appeler, erreur, enCours } = useAppelSite();

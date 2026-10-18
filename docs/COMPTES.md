@@ -159,7 +159,7 @@ Constantes dans `lib/equipe/permissions.ts` : `PERMISSIONS_PAR_ROLE` + surcharge
 
 Flux :
 1. `inviterMembre({ email, role })` : vérifie la permission, les **sièges disponibles** (`nbMembres + invitations en cours < siegesMax`), l'absence de doublon (déjà membre ou invitation active), et 20 invitations max par jour
-2. Email « X vous invite à rejoindre Y sur Portail Habitat Pro » → `/pro/invitation?t=<jeton>`
+2. Email « X vous invite à rejoindre Y sur Portail Travaux Pro » → `/pro/invitation?t=<jeton>`
 3. La page affiche l'entreprise et le rôle ; connexion ou création de compte **avec le même email** (sinon, refus explicite : « Cette invitation est destinée à c•••@… »)
 4. `accepterInvitation(jeton)` en transaction : création de `membres/{uid}`, `nbMembres + 1`, `users.entreprises` mis à jour, claims rafraîchis, notification à l'invitant
 5. Renvoyer (nouveau jeton, l'ancien est invalidé), révoquer, expiration automatique par tâche planifiée
@@ -251,8 +251,8 @@ Voir ADMIN.md §2.5 (barèmes : effet sur les 50 derniers leads) et §2.10 (bac 
 | Environnement | Projet Firebase | Stripe | Emails |
 |---|---|---|---|
 | Local | Emulator Suite (Auth, Firestore, Functions, Storage) | mode test + `stripe listen` | capturés (Mailpit) |
-| Préproduction | `portail-habitat-staging` | mode test, **Test Clocks** pour simuler renouvellements, échecs de paiement et fins d'abonnement | envoi limité à une liste blanche |
-| Production | `portail-habitat-prod` | live | réel |
+| Préproduction | `portail-travaux-staging` | mode test, **Test Clocks** pour simuler renouvellements, échecs de paiement et fins d'abonnement | envoi limité à une liste blanche |
+| Production | `portail-travaux-prod` | live | réel |
 
 **Jeu de données** (`scripts/seed.ts`, déterministe avec une graine) :
 - 60 artisans répartis sur 11 communes de Gironde, tous plans et statuts de vérification, dont 5 entreprises multi-membres (propriétaire, gérant, collaborateur, comptable) et 1 personne membre de 2 entreprises

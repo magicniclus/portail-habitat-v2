@@ -48,7 +48,7 @@ beforeEach(async () => {
   });
 });
 
-const lien = { lien: 'https://portailhabitat.fr/connexion?t=SECRET-XYZ' };
+const lien = { lien: 'https://portailtravaux.fr/connexion?t=SECRET-XYZ' };
 
 describe('notifier() (EMAILS §1 et §8)', () => {
   it('écrit emails/{id} en file et planifie l’envoi ; le secret ne va qu’à la tâche', async () => {

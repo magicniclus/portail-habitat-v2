@@ -138,7 +138,7 @@ export async function inviterMembreEquipeAdmin(
     destinataire: { uid: r.uid, email: r.email },
     refObjet: chemins.admin(r.uid),
     donnees: {
-      message: `Vous rejoignez l’équipe Portail Habitat. Choisissez votre mot de passe, puis activez la double authentification.`,
+      message: `Vous rejoignez l’équipe Portail Travaux. Choisissez votre mot de passe, puis activez la double authentification.`,
       lien: await s.auth.generatePasswordResetLink(r.email),
     },
   });

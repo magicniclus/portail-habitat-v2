@@ -20,7 +20,7 @@ import { notifier } from '../notifications/configuration';
 const services = () => ({
   db: getFirestore(appAdmin()),
   horloge: Date.now,
-  domaineBase: process.env.DOMAINE_SITES ?? 'portailhabitat.fr',
+  domaineBase: process.env.DOMAINE_SITES ?? 'portailtravaux.fr',
   hebergeur: hebergeurDepuisEnv(),
   dns: resolveurDoh(),
   notifier,

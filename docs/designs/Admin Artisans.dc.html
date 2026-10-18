@@ -87,7 +87,7 @@ class Component extends DCLogic {
   state = { q: '', f: 'Tous', sel: 'BR', tab: 'Identité', pii: false, m: null, over: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#artisans'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#artisans'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const arts = ART.map((a) => ({ ...a, ...(s.over[a.id] || {}) }));
     const list = arts.filter(FILTRES[s.f]).filter((a) => !s.q || (a.nom + a.siren + a.ville).toLowerCase().includes(s.q.toLowerCase()));

@@ -64,7 +64,7 @@ function useInactivite() {
 }
 
 /**
- * Coque du back-office (maquette « Admin Portail Habitat ») : menu à icônes filtré par les
+ * Coque du back-office (maquette « Admin Portail Travaux ») : menu à icônes filtré par les
  * permissions, repliable à 72 px (état mémorisé), menu plein écran sur mobile.
  */
 export function CoqueAdmin({

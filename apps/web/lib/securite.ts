@@ -95,7 +95,7 @@ export function politiqueSite(o: { production: boolean; empreinte: string }): st
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self' https://portailhabitat.fr",
+    "frame-ancestors 'self' https://portailtravaux.fr",
     ...(o.production ? ['upgrade-insecure-requests'] : []),
   ].join('; ');
 }

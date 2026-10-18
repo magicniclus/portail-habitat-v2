@@ -74,7 +74,7 @@ export function ApplicationPro() {
     <div className="px-[clamp(16px,3vw,32px)] pt-3">
       <Banner
         tone="info"
-        titre="Installez l'application Portail Habitat Pro"
+        titre="Installez l'application Portail Travaux Pro"
         action={
           <span className="flex flex-wrap gap-2">
             {mode === 'bouton' && invite ? (

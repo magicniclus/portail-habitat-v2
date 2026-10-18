@@ -136,7 +136,7 @@ test.describe('Mon espace particulier', () => {
     await page.goto('/mon-espace/compte');
     const telechargement = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Télécharger' }).click();
-    expect((await telechargement).suggestedFilename()).toBe('mes-donnees-portail-habitat.json');
+    expect((await telechargement).suggestedFilename()).toBe('mes-donnees-portail-travaux.json');
 
     await page.getByRole('button', { name: 'Supprimer', exact: true }).click();
     const fenetre = page.getByRole('dialog', { name: 'Supprimer mon compte ?' });

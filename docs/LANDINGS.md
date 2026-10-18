@@ -25,7 +25,7 @@ Seuls varient : surtitre, H1, sous-titre (gras via `**…**`), bénéfices + cap
 8. Preuve sociale : masquée tant que `nbInscrits` / `nbSites` / `note` / `temoignages` ne sont pas renseignés
 9. FAQ (site : 10 questions dont gratuité, Site Pro optionnel, domaine à l'artisan, sans commission)
 10. Bandeau d'avis défilants : 2 lignes × 20 cartes, sens opposés, bords flous, pause au survol, `prefers-reduced-motion` = arrêt
-11. Bloc final Portail Habitat (6 tuiles : demandes, visibilité portail, site, avis, devis/factures, suivi clients) · footer
+11. Bloc final Portail Travaux (6 tuiles : demandes, visibilité portail, site, avis, devis/factures, suivi clients) · footer
 - Mobile ≤ 768 px : barre fixe « Créer mon site gratuitement » / « Créer mon espace gratuit », masquée si un formulaire est visible.
 
 ## 4. Onboarding selon la source

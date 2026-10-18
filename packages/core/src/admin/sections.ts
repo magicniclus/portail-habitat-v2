@@ -1,7 +1,7 @@
 import type { PermissionAdmin } from './permissions';
 
 /**
- * Sections du back-office (maquette « Admin Portail Habitat ») : une section n'apparaît dans le menu
+ * Sections du back-office (maquette « Admin Portail Travaux ») : une section n'apparaît dans le menu
  * que si le membre a au moins une des permissions listées (ADMIN §1, « Règles d'affichage ») ;
  * sinon son URL renvoie une 403. Le serveur revérifie chaque action.
  */

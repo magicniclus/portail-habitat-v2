@@ -73,7 +73,7 @@ class Component extends DCLogic {
   state = { tab: 'fact', promos: [['LANCEMENT33', 30, 'Toutes', 200, 41, true], ['SALON-BTP', 20, 'Premium', 50, 7, true], ['ETE2026', 15, 'Visibilité', 100, 100, false]], nv: { code: '', pct: 20, offre: 'Visibilité', max: 50 }, err: '', toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#finances'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#finances'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const noPromo = lect || !can('promos.gerer');
     const nv = s.nv, setNv = (patch) => this.setState({ nv: { ...nv, ...patch }, err: '' });

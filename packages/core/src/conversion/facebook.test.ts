@@ -25,7 +25,7 @@ describe('publication Facebook du jour (CONVERSION §3 ter, CONV-08)', () => {
     );
     expect(t).toContain(LIEN_FACEBOOK);
     expect(LIEN_FACEBOOK).toBe(
-      'https://www.portailhabitat.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier',
+      'https://www.portailtravaux.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier',
     );
   });
   it('moins de 5 demandes : pas de publication', () => {

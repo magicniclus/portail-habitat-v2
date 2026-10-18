@@ -8,7 +8,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 ## 2. Offres (mensuelles, HT, sans engagement, TVA 20 % en sus)
 | Offre | Prix HT/mois | Contenu | Produit Stripe |
 |---|---|---|---|
-| **Gratuit** | 0 € | Fiche, demandes depuis la fiche, **avis clients**, **devis et factures**, appels d'offres à l'unité, site sur `{slug}.portailhabitat.fr` + aperçu IA | — |
+| **Gratuit** | 0 € | Fiche, demandes depuis la fiche, **avis clients**, **devis et factures**, appels d'offres à l'unité, site sur `{slug}.portailtravaux.fr` + aperçu IA | — |
 | **Fiche Pro** | **29 €** | Priorité d'affichage dans le secteur, badge « Artisan recommandé », photos et réalisations illimitées, téléphone et site visibles, statistiques détaillées | `fiche_pro` |
 | **Site Pro** | **9,90 €** | Domaine inclus, IA du site (IA_SITE §4), **blog avec 5 articles IA/mois** (BLOG.md), sans mention, stats 12 mois, Search Console | `site_pro` |
 | **Fiche + Site** | **34,90 €** | Fiche Pro + Site Pro (−4 €) | `pack_fiche_site` |

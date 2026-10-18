@@ -72,7 +72,7 @@ async function preparer(aid: string, uid: string, formule: 'site_pro' | 'gratuit
     { primaire: 'primaire', accent: 'accent', clair: 'clair', sombre: 'sombre' },
   );
   await creerSite(
-    { ...s(), domaineBase: 'portailhabitat.fr' },
+    { ...s(), domaineBase: 'portailtravaux.fr' },
     { artisanId: aid, uid },
     { sousDomaine: `site-${aid}`, initial },
   );

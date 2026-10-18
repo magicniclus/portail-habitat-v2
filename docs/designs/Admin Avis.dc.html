@@ -53,7 +53,7 @@ class Component extends DCLogic {
   state = { f: 'En attente', dec: {}, toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#avis'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#avis'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const statut = (i, a) => (s.dec[i] ? s.dec[i].st : a[8]);
     const fil = { 'En attente': (st) => st === 'en_attente', 'Risque élevé': (st, a) => st === 'en_attente' && a[6] >= 50, Publiés: (st) => st === 'publie', Tous: () => true };

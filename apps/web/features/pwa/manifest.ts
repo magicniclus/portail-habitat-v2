@@ -24,7 +24,7 @@ export const TAILLES_ICONE: Record<FormatIcone, number> = {
 export function manifestPro() {
   return {
     id: '/pro/',
-    name: 'Portail Habitat Pro',
+    name: 'Portail Travaux Pro',
     short_name: 'PH Pro',
     description: 'Vos demandes de travaux, votre fiche et vos avis, partout.',
     lang: 'fr',

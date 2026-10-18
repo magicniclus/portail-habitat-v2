@@ -11,7 +11,7 @@ export async function telechargerDonnees(): Promise<string | null> {
   );
   const a = Object.assign(document.createElement('a'), {
     href: url,
-    download: 'mes-donnees-portail-habitat.json',
+    download: 'mes-donnees-portail-travaux.json',
   });
   a.click();
   URL.revokeObjectURL(url);

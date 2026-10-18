@@ -1,4 +1,4 @@
-# Portail Habitat
+# Portail Travaux
 
 Place de marché de l'habitat (particuliers, artisans, diagnostic). Point d'entrée : [`docs/PLAN_DEV.md`](docs/PLAN_DEV.md) ; règles de travail : [`CLAUDE.md`](CLAUDE.md) ; avancement : [`docs/AVANCEMENT.md`](docs/AVANCEMENT.md).
 

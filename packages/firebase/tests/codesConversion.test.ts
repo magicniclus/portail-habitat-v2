@@ -120,7 +120,7 @@ describe('codes promo personnels (CONVERSION §6)', () => {
     expect(offre.donnees).toMatchObject({
       pourcentage: 30,
       expire: 'vendredi 23 octobre à 23 h 59',
-      lien: `https://portailhabitat.fr/pro/abonnement?offre=fiche&code=${code}`,
+      lien: `https://portailtravaux.fr/pro/abonnement?offre=fiche&code=${code}`,
     });
     const doc = (await db.collection(collections.codesPromo).doc(code).get()).data()!;
     expect(doc).toMatchObject({

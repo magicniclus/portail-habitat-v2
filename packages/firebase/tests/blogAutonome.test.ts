@@ -111,7 +111,7 @@ beforeEach(async () => {
     nomCommercial: 'Durand',
   });
   await db.doc(chemins.parametresFacturation('a1')).set(PARAMS);
-  await creerSite({ db, horloge: () => maintenant, domaineBase: 'portailhabitat.fr' }, ctx, {
+  await creerSite({ db, horloge: () => maintenant, domaineBase: 'portailtravaux.fr' }, ctx, {
     sousDomaine: 'site-a1',
     initial: siteParDefaut(
       { nomCommercial: 'Durand', metier: 'Plombier', ville: 'Pessac', photos: [] },

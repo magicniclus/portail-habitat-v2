@@ -1,4 +1,4 @@
-# Avancement — Portail Habitat
+# Avancement — Portail Travaux
 
 Produit au lot 0 (cadrage, 27/09/2026). Mis à jour à la fin de chaque lot, puis commité.
 Légende : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE verts) · ⏸ bloqué (raison dans Notes)
@@ -40,7 +40,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - `@ph/core` : `format` (euros en centimes, dates Europe/Paris, relatif, téléphone E.164, SIREN/SIRET avec l'exception La Poste), `erreurs` (codes centralisés : message FR, statut HTTP, code callable), `resultat`, `enveloppe` (connexion → App Check → Zod → permission → débit → idempotence → traitement → audit ; une option dont la dépendance manque fait échouer le démarrage), `zod` (Zod configuré en français). 92 tests, couverture 100 % lignes, 99 % branches (seuil 95 %).
 - `action()` (site, `apps/web/server/action.ts`) et `callable()` (Functions) branchés sur l'enveloppe ; Function `ping` vérifiée sur émulateur (succès et erreur de validation en français).
 - `@ph/firebase/admin` : `appAdmin()` (émulateur, compte de service ou identifiants Google Cloud), `verifierJetonAppCheck()`.
-- Firebase : `firebase.json`, `.firebaserc` (projet d'émulation `demo-portail-habitat`, alias dev/staging/prod), règles Firestore et Storage « tout refusé » avec leur test sur émulateur ; garde-fou qui refuse tout test Firebase hors émulateur local `demo-*`.
+- Firebase : `firebase.json`, `.firebaserc` (projet d'émulation `demo-portail-travaux`, alias dev/staging/prod), règles Firestore et Storage « tout refusé » avec leur test sur émulateur ; garde-fou qui refuse tout test Firebase hors émulateur local `demo-*`.
 - ESLint 9 : boundaries (dépendances entre paquets), dépendances externes interdites par paquet, pas de couleur hexadécimale ni de `collection()` hors de leur paquet, pas d'import direct de `zod`. Vérifié avec des violations volontaires. Prettier, Knip.
 - Sentry (site et Functions), inactif sans DSN. `/api/health`. `.env.example` complet.
 - Playwright : projets iPhone 13, iPhone SE, Pixel 7, ordinateur ; test de fumée (sonde, langue, pas de défilement horizontal).
@@ -284,7 +284,7 @@ Seul fichier de suivi (PROGRESSION.md y a été fusionné, D43). En cas d'interr
 - **10e** : **Statistiques** réservées aux Premium (PRO-07 ; période dans l'URL, vues, appels, demandes de devis, vues par semaine) ; **Mes avis** (résumé, répartition, filtres, réponse publique unique) ; **Ma fiche** modifiable section par section (présentation, informations, devis moyen, zone), complétude recalculée côté serveur ; **documents** (dépôt Storage, vérification serveur : type, taille, SHA-256) avec **mise en ligne automatique** dès que le SIREN est vérifié (ou le Kbis envoyé) et la décennale envoyée (ONB-06b, COMPTES §3) ; **logo** et **projets réalisés** (accord du propriétaire du chantier).
 - **10f Équipe et invitations** : page **Équipe** (membres, sièges avec invitations en cours, inviter, annuler, changer de rôle, retirer, « Quitter » refusé au dernier propriétaire — EQU-01 à 04) ; page **Invitation** (entreprise, rôle, invitant ; accès créé pour qui n'a pas de compte, l'email étant prouvé par le lien ; autre adresse connectée : refus avec email masqué ; lien expiré ou annulé : nouvelle invitation — INV-01 à 03) ; **Rejoindre** une entreprise déjà inscrite (demande au propriétaire, acceptée ou refusée depuis Équipe).
 - **10g Mon compte** (`/pro/compte`, ancres `#profil`, `#telephone`, `#securite`, `#appareils`, `#notifications`, `#donnees`) : nom, changement d'email (lien à la nouvelle adresse, alerte masquée à l'ancienne), mobile ; mot de passe (alerte de sécurité par email) ; Google lié ou délié ; **double authentification par application** (QR code, clé, lien direct sur téléphone ; retrait avec mot de passe + code) et emails `2fa-activee` / `2fa-desactivee` ; **SMS (vérification du mobile, SMS de secours) prêts mais cachés** tant que le flag `deuxFacteursSms` est coupé ; « Tout déconnecter » (jetons révoqués partout) ; notifications par catégorie et canal (enregistrées aussitôt, consentements journalisés) et par entreprise (nouvelles demandes, avis, factures) ; export des données et suppression (bloquée pour le dernier propriétaire). Firebase Auth fait foi : `users/{uid}` (email, `mfaActive`, méthodes, téléphone vérifié) est recopié à chaque ouverture de la page.
-- **10h Application pro (PWA)** : manifest `/pro/manifest.webmanifest` (« Portail Habitat Pro », autonome, raccourcis), icônes 192 / 512 / maskable / Apple générées à la compilation, service worker `/pro/sw.js` (pages de l'espace gardées pour le **mode hors ligne**, page « Vous êtes hors ligne » sinon, pages effacées à la déconnexion), invitation à installer **dès la 2e visite** (bouton du navigateur, ou guide « Partager → Sur l'écran d'accueil » sur Safari iOS ; « Plus tard » retenu), bouton **Se déconnecter** (manquait dans l'espace pro). **Notifications push prêtes mais coupées** : flag `notificationsPush` + clé `NEXT_PUBLIC_FIREBASE_VAPID_KEY` ; activées par la personne depuis Mon compte (jamais au chargement), puis toute notification in-app (nouvelle demande, message, avis) part aussi en push ; jetons périmés oubliés ; désabonnement à la déconnexion.
+- **10h Application pro (PWA)** : manifest `/pro/manifest.webmanifest` (« Portail Travaux Pro », autonome, raccourcis), icônes 192 / 512 / maskable / Apple générées à la compilation, service worker `/pro/sw.js` (pages de l'espace gardées pour le **mode hors ligne**, page « Vous êtes hors ligne » sinon, pages effacées à la déconnexion), invitation à installer **dès la 2e visite** (bouton du navigateur, ou guide « Partager → Sur l'écran d'accueil » sur Safari iOS ; « Plus tard » retenu), bouton **Se déconnecter** (manquait dans l'espace pro). **Notifications push prêtes mais coupées** : flag `notificationsPush` + clé `NEXT_PUBLIC_FIREBASE_VAPID_KEY` ; activées par la personne depuis Mon compte (jamais au chargement), puis toute notification in-app (nouvelle demande, message, avis) part aussi en push ; jetons périmés oubliés ; désabonnement à la déconnexion.
 - **Tests de bout en bout sur émulateurs** (`pnpm e2e:pro`, job CI dédié) : vraie connexion, vraies règles, comptes du seed. Sous émulateur, les envois d'emails sont capturés (`capturesEmulateur`, jamais en ligne) pour lire les liens secrets.
 
 **À signaler**
@@ -552,7 +552,7 @@ Plan validé le 09/10/2026.
 | D5 Hébergement | Vercel `cdg1` | 1 | config Next.js (runtime, `output`), CI de prévisualisation |
 | D6 Suivi des erreurs | Sentry UE | 1 | intégration site + Functions au lot 1 |
 | D8 Feature flags | Remote Config + surcharge Firestore | 1-2 | `packages/core/flags.ts`, `config/flags` et règles au lot 2 |
-| D15 Projets Firebase | `portail-habitat-dev/-staging/-prod` | 1-2 | `.firebaserc`, garde-fou du seed (émulateur ou staging) |
+| D15 Projets Firebase | `portail-travaux-dev/-staging/-prod` | 1-2 | `.firebaserc`, garde-fou du seed (émulateur ou staging) |
 | D17 Dépôt Git | GitHub privé, `main` protégée, CI obligatoire | 1 | configuration de la CI et des branches |
 | D9 Antivirus | extension « Scan files » | 2 | champ de statut de scan et règles Storage des documents |
 | D26 Sièges | 3 inclus, +9 € HT | 2-4 | valeur par défaut de `siegesMax`, tests des invitations |
@@ -564,7 +564,7 @@ Non bloquants avant le lot 5 : D2, D3, D4 (lot 7), D7, D19, D21, D23, D29, D32, 
 
 ## 4. Variables d'environnement et comptes externes
 
-**Comptes à créer (MISE_EN_PROD étape 1)** : GitHub · Firebase Blaze (3 projets) · Vercel · Stripe (test) · Resend (domaine vérifié) · Brevo (SMS, expéditeur `PortailHab`) · Typesense Cloud UE · clé API Sirene INSEE · Sentry UE · Anthropic · registrar du domaine. Pour le lot 1, seuls **GitHub, Firebase (dev) et Sentry** sont nécessaires ; tout le reste fonctionne sur émulateurs et captures locales jusqu'aux lots concernés.
+**Comptes à créer (MISE_EN_PROD étape 1)** : GitHub · Firebase Blaze (3 projets) · Vercel · Stripe (test) · Resend (domaine vérifié) · Brevo (SMS, expéditeur `PortailTrav`) · Typesense Cloud UE · clé API Sirene INSEE · Sentry UE · Anthropic · registrar du domaine. Pour le lot 1, seuls **GitHub, Firebase (dev) et Sentry** sont nécessaires ; tout le reste fonctionne sur émulateurs et captures locales jusqu'aux lots concernés.
 
 | Service | Variables | Lot |
 |---|---|---|
@@ -735,7 +735,7 @@ Choix à signaler :
 - Aperçu de l'éditeur dans un cadre sans script (sécurité de l'espace pro) : le menu mobile ne s'ouvre pas dans l'aperçu, il fonctionne sur le site publié.
 - Formulaire : le type « photos » n'est pas encore proposé (envoi de fichiers à faire).
 
-Domaines (fait, cas C) : connexion d'un domaine existant en Site Pro (A et CNAME lus chez l'hébergeur Vercel, TXT `_portailhabitat`, jamais de MX), vérification par ligne via DNS-over-HTTPS (DOM-04), Function `verifierDomaines` toutes les 2 min (2 min la 1re heure, 30 min jusqu'à 72 h, puis `echec`), « Vérifier maintenant » 1 / 30 s, index des hôtes écrit seulement après vérification, 301 vers l'adresse canonique (DOM-05), retrait par l'artisan, résiliation → retour au sous-domaine (DOM-07), emails `site-domaine-actif` et `site-domaine-echec`. Modèle de données : champ `sites/{id}.domaine` (DOMAINES §5). Secrets à fournir : `VERCEL_API_TOKEN`, `VERCEL_PROJET_SITES`, `VERCEL_EQUIPE` ; sans eux, la connexion est refusée en production.
+Domaines (fait, cas C) : connexion d'un domaine existant en Site Pro (A et CNAME lus chez l'hébergeur Vercel, TXT `_portailtravaux`, jamais de MX), vérification par ligne via DNS-over-HTTPS (DOM-04), Function `verifierDomaines` toutes les 2 min (2 min la 1re heure, 30 min jusqu'à 72 h, puis `echec`), « Vérifier maintenant » 1 / 30 s, index des hôtes écrit seulement après vérification, 301 vers l'adresse canonique (DOM-05), retrait par l'artisan, résiliation → retour au sous-domaine (DOM-07), emails `site-domaine-actif` et `site-domaine-echec`. Modèle de données : champ `sites/{id}.domaine` (DOMAINES §5). Secrets à fournir : `VERCEL_API_TOKEN`, `VERCEL_PROJET_SITES`, `VERCEL_EQUIPE` ; sans eux, la connexion est refusée en production.
 
 Statistiques (fait) : mesure maison sans cookie, ni IP, ni identifiant de visiteur ; une balise par page vue (`/api/sites/t`, robots écartés, même origine, débit limité) ; compteurs `sites/{id}/statsJour/{jour}` et `statsMois/{mois}` (vues, demandes, vues par page) ; onglet Statistiques : 30 jours pour tous, 12 mois avec Site Pro (12 lectures mensuelles, COUTS.md), tableau lisible en plus du graphique.
 Contrôle quotidien (fait, DOM-06) : Function `controlerDomaines` (6 h) ; DNS incorrect 3 jours → `casse`, index retirés (le sous-domaine reprend le relais), email `site-domaine-casse` ; corrigé → réactivé.
@@ -803,7 +803,7 @@ Fait (tranche 1, cœur et serveur) :
 - Compteur des rédactions IA prévu dans `sites/{id}/ia/{mois}` (à côté de celui du site) plutôt que `usageIA/…` (tranche 3).
 - `blogAbonnes` et positions Search Console reportés (non décrits dans BLOG.md / clés à fournir).
 - Image à la une : référence de média du site (`src`) plutôt qu'une URL, comme les images des pages.
-- Hébergement affiché dans les mentions : Portail Habitat, sites hébergés chez Vercel (choix d'hébergement par défaut, à confirmer avec D45).
+- Hébergement affiché dans les mentions : Portail Travaux, sites hébergés chez Vercel (choix d'hébergement par défaut, à confirmer avec D45).
 - Directeur de la publication : raison sociale par défaut (aucun champ dédié dans les paramètres).
 
 Fait (tranche 2, écrans) :

@@ -138,7 +138,7 @@ Replays : Cloud Storage `replays/` (gzip, cycle de vie 30 j). BigQuery uniquemen
 ## 8. Variables et coûts
 ```
 TRACKER_ENDPOINT=/api/t
-REPLAYS_BUCKET=portailhabitat-replays      # cycle de vie 30 j
+REPLAYS_BUCKET=portailtravaux-replays      # cycle de vie 30 j
 COMPORTEMENT_SALT_SECRET=                  # Secret Manager, rotation quotidienne
 ```
 Coût estimé : voir **COUTS.md** (moins de 1 € par mois à 30 000 pages vues par mois).

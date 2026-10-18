@@ -1,4 +1,4 @@
-# Portail Habitat — règles du projet
+# Portail Travaux — règles du projet
 
 > À copier à la racine du dépôt. Claude Code relit ce fichier à chaque session : il doit rester court.
 

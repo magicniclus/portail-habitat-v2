@@ -22,7 +22,7 @@ interface Invitation extends Equipe {
 const EX: Equipe = {
   prenom: 'Léa',
   nomCommercial: 'Bertrand Rénovation',
-  lien: 'https://portailhabitat.fr/pro/equipe',
+  lien: 'https://portailtravaux.fr/pro/equipe',
 };
 const EX_INV: Invitation = {
   ...EX,
@@ -31,7 +31,7 @@ const EX_INV: Invitation = {
   ville: 'Bordeaux',
   expireLe: '2 octobre 2026',
   emailMasque: 'l•••@g•••.com',
-  lien: 'https://portailhabitat.fr/pro/invitation?t=exemple',
+  lien: 'https://portailtravaux.fr/pro/invitation?t=exemple',
 };
 
 export const modelesEquipes = {
@@ -42,7 +42,7 @@ export const modelesEquipes = {
     blocs: (d) => [
       titre(`Rejoignez l’équipe ${d.nomCommercial}`),
       para(
-        `${d.invitant} vous invite à gérer les demandes de devis de l’entreprise sur Portail Habitat Pro.`,
+        `${d.invitant} vous invite à gérer les demandes de devis de l’entreprise sur Portail Travaux Pro.`,
       ),
       recap([
         ['Entreprise', `${d.nomCommercial} · ${d.ville}`],
@@ -94,7 +94,7 @@ export const modelesEquipes = {
     preheader: () => 'Acceptez en choisissant un rôle, ou refusez.',
     blocs: (d) => [
       titre('Demande pour rejoindre votre équipe'),
-      para(`${d.demandeur} souhaite rejoindre ${d.nomCommercial} sur Portail Habitat Pro.`),
+      para(`${d.demandeur} souhaite rejoindre ${d.nomCommercial} sur Portail Travaux Pro.`),
       ...(d.message ? [{ type: 'citation' as const, texte: `« ${d.message} »` }] : []),
       bouton('Répondre à la demande', d.lien),
       note('Sans réponse sous 14 jours, la demande expire automatiquement.'),

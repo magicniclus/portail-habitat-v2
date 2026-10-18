@@ -77,7 +77,7 @@ const EX_ESTIMATION: Estimation = {
   demandes30j: 27,
   budgetMoyenCentimes: 640_000,
   inscritsZone: 4,
-  lien: 'https://portailhabitat.fr/pro/inscription',
+  lien: 'https://portailtravaux.fr/pro/inscription',
 };
 const EX_DEMANDE: DemandeZone = {
   ...EX_ESTIMATION,
@@ -92,7 +92,7 @@ const EX_OFFRE: Offre = {
   code: 'JULIEN30',
   pourcentage: 30,
   expire: 'jeudi 1er octobre à 23 h 59',
-  lien: 'https://portailhabitat.fr/pro/abonnement?offre=fiche&code=JULIEN30',
+  lien: 'https://portailtravaux.fr/pro/abonnement?offre=fiche&code=JULIEN30',
 };
 
 const visMois = ht(PRIX.fichePro);
@@ -146,7 +146,7 @@ export const modelesConversion = {
       ),
       bouton('Recevoir mes premières demandes', d.lien),
       note(
-        'Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Habitat.',
+        'Gratuit, sans engagement, sans carte bancaire. Chiffres calculés sur les demandes réellement reçues par Portail Travaux.',
       ),
     ],
     exemple: EX_ESTIMATION,
@@ -215,7 +215,7 @@ export const modelesConversion = {
         'Une question sur le fonctionnement, les prix ou l’engagement ? Répondez simplement à cet email, c’est moi qui lis les réponses.',
       ),
       lien('Créer ma fiche gratuite en 3 minutes →', d.lien),
-      para(`${d.signataire}, Portail Habitat`),
+      para(`${d.signataire}, Portail Travaux`),
     ],
     exemple: { ...EX_ESTIMATION, signataire: 'Julie', nouvellesDemandes: 9 },
   }),

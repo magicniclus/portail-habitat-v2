@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = communeParSlug((await params).commune);
   if (!c) return {};
   return {
-    title: { absolute: `${titreCommune(c)} · Portail Habitat Diag` },
+    title: { absolute: `${titreCommune(c)} · Portail Travaux Diag` },
     description: descriptionCommune(c),
     alternates: { canonical: routes.diagnosticCommune(c.slug) },
   };
@@ -60,7 +60,7 @@ export default async function Commune({ params }: Props) {
       />
       <JsonLd
         donnees={entrepriseLocale({
-          nom: `Portail Habitat Diag · ${c.nom}`,
+          nom: `Portail Travaux Diag · ${c.nom}`,
           chemin,
           description: descriptionCommune(c),
           ville: c.nom,

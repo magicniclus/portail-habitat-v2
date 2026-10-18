@@ -256,7 +256,7 @@ class Component extends DCLogic {
   pause() { cancelAnimationFrame(this.raf); this.setState({ playing: false }); }
 
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#comportement'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#comportement'); } catch (e) {} }, 0); }
     const s = this.state, d = s.data, P = this.props.perms || {}, can = (p) => P[p] ?? true;
     const W = this.refW(), H = s.H, sc = this.scale();
     const dk = [d && d.sessions, d && d.clics.length, s.calque, s.w, s.tab, H, s.periode, s.page, s.app].join('|');

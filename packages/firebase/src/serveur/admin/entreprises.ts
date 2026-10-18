@@ -193,7 +193,7 @@ export async function inviterRevendicationAdmin(
     donnees: {
       nomCommercial: a.nomCommercial as string,
       ville: (a.adresseSiege as { ville?: string } | undefined)?.ville ?? '',
-      invitant: 'L’équipe Portail Habitat',
+      invitant: 'L’équipe Portail Travaux',
       role: 'proprietaire',
       emailMasque: masquerEmail(email),
       expireLe: new Intl.DateTimeFormat('fr-FR', {

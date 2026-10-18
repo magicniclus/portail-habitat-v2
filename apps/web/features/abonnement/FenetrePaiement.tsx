@@ -105,7 +105,7 @@ export function FenetrePaiement({
         <p className="m-0 text-sm text-neutre-700">{note} Sans engagement.</p>
         <p className="m-0 text-sm text-neutre-700">
           Paiement sécurisé par Stripe, 3-D Secure si votre banque le demande. Aucune carte n’est
-          saisie sur Portail Habitat.
+          saisie sur Portail Travaux.
         </p>
         <Checkbox checked={cgv} onChange={(e) => setCgv(e.target.checked)}>
           J’accepte les{' '}

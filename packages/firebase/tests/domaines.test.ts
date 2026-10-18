@@ -31,7 +31,7 @@ const ajoutes: string[] = [];
 const s = (): ServicesDomaines => ({
   db,
   horloge: () => horloge,
-  domaineBase: 'portailhabitat.fr',
+  domaineBase: 'portailtravaux.fr',
   jeton: () => 'a'.repeat(24),
   notifier: async (e) => void envois.push(e),
   hebergeur: {
@@ -65,7 +65,7 @@ async function erreur(p: Promise<unknown>): Promise<ErreurMetier> {
 const DNS_OK = {
   'A exemple.fr': ['203.0.113.7'],
   'CNAME www.exemple.fr': ['cname.hebergeur.test.'],
-  'TXT _portailhabitat.exemple.fr': [`ph-verif=${'a'.repeat(24)}`],
+  'TXT _portailtravaux.exemple.fr': [`ph-verif=${'a'.repeat(24)}`],
 };
 const domaine = async () => (await db.doc(chemins.site('a1')).get()).get('domaine');
 
@@ -119,7 +119,7 @@ describe('connexion d’un domaine existant (cas C)', () => {
     dnsActuel = {
       ...DNS_OK,
       'A exemple.fr': ['198.51.100.1'],
-      'TXT _portailhabitat.exemple.fr': [],
+      'TXT _portailtravaux.exemple.fr': [],
     };
     expect(await verifierDomaineSite(s(), 'a1')).toBe('attente_dns');
     const e = (await domaine()).enregistrements;
@@ -136,7 +136,7 @@ describe('connexion d’un domaine existant (cas C)', () => {
     expect((await domaine()).prochaineVerifLe).toBeUndefined();
     expect((await lireSitePublie(db, 'www.exemple.fr'))?.siteId).toBe('a1');
     expect((await lireSitePublie(db, 'exemple.fr'))?.siteId).toBe('a1');
-    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.siteId).toBe('a1');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.siteId).toBe('a1');
     expect(envois.map((e) => e.modele)).toEqual(['site-domaine-actif']);
     expect(await domainesAVerifier(s())).toEqual([]);
   });
@@ -188,7 +188,7 @@ describe('fin du domaine', () => {
     await verifierDomaineSite(s(), 'a1');
     await synchroniserOffreSite(db, 'a1', false);
     expect(await lireSitePublie(db, 'www.exemple.fr')).toBeNull();
-    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.siteId).toBe('a1');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.siteId).toBe('a1');
     expect((await domaine()).statut).toBe('resilie');
   });
 
@@ -221,7 +221,7 @@ describe('contrôle quotidien (DOM-06)', () => {
     horloge += 86_400_000;
     expect(await controlerDomaineActif(s(), 'a1')).toBe('casse');
     expect(await lireSitePublie(db, 'www.exemple.fr')).toBeNull();
-    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.siteId).toBe('a1');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.siteId).toBe('a1');
     expect(envois.map((e) => e.modele)).toEqual(['site-domaine-casse']);
 
     dnsActuel = DNS_OK;

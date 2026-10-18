@@ -1,4 +1,4 @@
-# Plan de développement complet — Portail Habitat
+# Plan de développement complet — Portail Travaux
 
 **Point d'entrée unique pour le développement.** Ce document liste tout ce qu'il faut construire, dans l'ordre, avec les documents à lire, les maquettes à reproduire et les critères de fin. Rien n'est hors de cette liste ; si un point manque, il est dans le document cité.
 
@@ -94,9 +94,9 @@
 | Connexion · Contact (public) · Pages Legales · Pages Erreur | `/connexion` · `/aide` (`?sujet=`) · `/legal/*` · 404 / 500 |
 | Aide et Contact (espace artisan) | `/pro/aide` |
 | Editeur de Blog | `/pro/site/blog/nouveau` · `/pro/site/blog/{id}` (`?auto=1` lance le mode autonome) |
-| Site Internet Artisan | `/pro/site?onglet=` (`pages`·`blog`·`domaine`·`stats`·`formulaire`) · sites publiés : `{slug}.portailhabitat.fr` et domaines personnalisés (middleware) |
+| Site Internet Artisan | `/pro/site?onglet=` (`pages`·`blog`·`domaine`·`stats`·`formulaire`) · sites publiés : `{slug}.portailtravaux.fr` et domaines personnalisés (middleware) |
 | Modeles Emails | `packages/emails` (React Email) |
-| Admin Portail Habitat + 16 sections `Admin *` | `/admin#<section>` → `/admin/<section>` |
+| Admin Portail Travaux + 16 sections `Admin *` | `/admin#<section>` → `/admin/<section>` |
 
 ## 5. Règles transverses (rappel, à respecter partout)
 1. Montants en centimes, Zod partout, écritures sensibles via Functions avec `assertPermission` et `auditLog`.
@@ -118,5 +118,5 @@
 - [ ] Alertes budget Google Cloud (20 €) et IA (10 €) actives
 - [ ] Test de charge des imports : 200 demandes/heure, import → proposition en moins de 5 min
 - [ ] Sauvegardes Firestore quotidiennes et restauration testée
-- [ ] Compte revendeur OVHcloud + clés API ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailhabitat.fr` vers Vercel
+- [ ] Compte revendeur OVHcloud + clés API ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` vers Vercel
 - [ ] Tous les critères d'ACCEPTANCE.md passent en CI

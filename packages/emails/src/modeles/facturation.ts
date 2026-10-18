@@ -42,14 +42,14 @@ const EX: Abonnement = {
   produit: 'tout_inclus',
   periode: 'annuel',
   finPeriode: '1 octobre 2027',
-  lien: 'https://portailhabitat.fr/pro/facturation',
+  lien: 'https://portailtravaux.fr/pro/facturation',
 };
 const EX_FACTURE: Facture = {
   prenom: 'Julien',
   nomCommercial: 'Bertrand Rénovation',
   numero: 'PH-2026-0042',
   montantTtcCentimes: 115_056,
-  lien: 'https://portailhabitat.fr/pro/facturation',
+  lien: 'https://portailtravaux.fr/pro/facturation',
   lienFacture: 'https://invoice.stripe.com/i/exemple',
 };
 
@@ -166,7 +166,7 @@ export const modelesFacturation = {
       nomCommercial: 'Bertrand Rénovation',
       credits: 10,
       soldeCredits: 14,
-      lien: 'https://portailhabitat.fr/pro/facturation',
+      lien: 'https://portailtravaux.fr/pro/facturation',
     },
   }),
 };

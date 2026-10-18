@@ -93,7 +93,7 @@ Ce document s'applique à **tous les lots** qui produisent de l'interface. Il co
 - Appareil photo : `<input type="file" accept="image/*" capture="environment">` pour les documents et photos de chantier ; compression côté client (≤ 2 Mo, 2000 px) avant envoi
 
 ## 9. Application mobile (PWA, voir DECISIONS D33)
-- **Manifest** par espace (`/pro` : nom « Portail Habitat Pro », icônes 192 / 512 / maskable, `display: standalone`, raccourcis « Mes demandes », « Appels d'offres »)
+- **Manifest** par espace (`/pro` : nom « Portail Travaux Pro », icônes 192 / 512 / maskable, `display: standalone`, raccourcis « Mes demandes », « Appels d'offres »)
 - **Service worker** (Serwist / Workbox) : pages de l'espace en cache, **mode hors ligne** lisible (demandes déjà chargées, brouillon de devis), file d'envoi rejouée au retour du réseau
 - **Notifications push** (Web Push + Firebase Cloud Messaging) : nouvelle demande, message, appel d'offres ; demande d'autorisation **après** une première action utile, jamais au chargement
 - Invitation « Installer l'application » après la 2e visite de l'espace pro (et guide spécifique pour iOS : Partager → Sur l'écran d'accueil)

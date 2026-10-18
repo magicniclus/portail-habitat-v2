@@ -52,7 +52,7 @@ export const modelesParticuliers = {
       prenom: 'Camille',
       resume: 'Salle de bain · 6 m² · douche à l’italienne',
       etape: 3,
-      lien: 'https://portailhabitat.fr/simulateur?reprise=exemple',
+      lien: 'https://portailtravaux.fr/simulateur?reprise=exemple',
     },
   }),
 
@@ -94,7 +94,7 @@ export const modelesParticuliers = {
       objet: 'Rénovation de salle de bain',
       montant: '8 932,40 € TTC',
       validite: '13 novembre 2026',
-      lien: 'https://portailhabitat.fr/api/devis-client/exemple',
+      lien: 'https://portailtravaux.fr/api/devis-client/exemple',
     },
   }),
 
@@ -110,11 +110,11 @@ export const modelesParticuliers = {
       bouton('Confirmer mon numéro', d.lien),
     ],
     sms: (d) =>
-      `Portail Habitat : ${d.prenom}, confirmez votre numéro pour être rappelé par des artisans (${d.prestation}) : ${d.lien}`,
+      `Portail Travaux : ${d.prenom}, confirmez votre numéro pour être rappelé par des artisans (${d.prestation}) : ${d.lien}`,
     exemple: {
       prenom: 'Claire',
       prestation: 'Isolation des combles',
-      lien: 'https://portailhabitat.fr/confirmer-telephone?jeton=exemple',
+      lien: 'https://portailtravaux.fr/confirmer-telephone?jeton=exemple',
     },
   }),
   'demande-confirmee': modele<DemandeConfirmee>({
@@ -157,7 +157,7 @@ export const modelesParticuliers = {
       maxCentimes: 1_164_000,
       miseEnRelation: true,
       nouveauCompte: true,
-      lien: 'https://portailhabitat.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
+      lien: 'https://portailtravaux.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
     },
   }),
 
@@ -203,7 +203,7 @@ export const modelesParticuliers = {
       maxCentimes: 65_320,
       remisePack: true,
       nouveauCompte: true,
-      lien: 'https://portailhabitat.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
+      lien: 'https://portailtravaux.fr/connexion/lien?suite=%2Fmon-espace%2Fdemandes%2Fexemple',
     },
   }),
 

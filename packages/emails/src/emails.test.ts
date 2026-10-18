@@ -4,10 +4,10 @@ import { RAISONS } from './chartes';
 import { MODELES_EMAIL, rendreEmail } from './index';
 
 const pied = {
-  preferences: 'https://portailhabitat.fr/preferences?t=exemple',
-  desabonnement: 'https://portailhabitat.fr/api/desabonnement?t=exemple',
-  aide: 'https://portailhabitat.fr/aide',
-  editeur: 'Portail Habitat · Raison sociale · Adresse postale',
+  preferences: 'https://portailtravaux.fr/preferences?t=exemple',
+  desabonnement: 'https://portailtravaux.fr/api/desabonnement?t=exemple',
+  aide: 'https://portailtravaux.fr/aide',
+  editeur: 'Portail Travaux · Raison sociale · Adresse postale',
 };
 const noms = Object.keys(MODELES) as NomModele[];
 const rediges = noms.filter((n) => 'complet' in MODELES[n]);

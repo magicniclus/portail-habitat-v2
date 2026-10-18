@@ -25,8 +25,8 @@ Webhook Resend (/api/resend/webhook) → 'delivre' | 'ouvert' | 'clic' | 'rebond
 ### Fournisseurs
 | Canal | Fournisseur | Notes |
 |---|---|---|
-| Email | **Resend** (région UE) + **React Email** | domaine `notifications.portailhabitat.fr`, SPF, DKIM, DMARC `p=quarantine` |
-| SMS | **Brevo SMS** ou Twilio (expéditeur alphanumérique `PortailHab`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
+| Email | **Resend** (région UE) + **React Email** | domaine `notifications.portailtravaux.fr`, SPF, DKIM, DMARC `p=quarantine` |
+| SMS | **Brevo SMS** ou Twilio (expéditeur alphanumérique `PortailTrav`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
 | In-app | `users/{uid}/notifications` | cloche dans les espaces particulier et pro |
 | Codes d'authentification | Firebase Auth (SMS 2FA) | les emails Auth sont **personnalisés** (§4) : Firebase ne les envoie pas lui-même |
 
@@ -267,14 +267,14 @@ invitation-membre → (J+3) invitation-relance → [accepte] invitation-acceptee
 ```
 RESEND_API_KEY=
 RESEND_WEBHOOK_SECRET=
-EMAIL_FROM="Portail Habitat <notifications@portailhabitat.fr>"
-EMAIL_FROM_PRO="Portail Habitat Pro <pro@notifications.portailhabitat.fr>"
-EMAIL_FROM_HUMAIN="Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>"
-EMAIL_REPLY_TO_COMMERCIAL=julie@portailhabitat.fr
-EMAIL_REPLY_TO=support@portailhabitat.fr
+EMAIL_FROM="Portail Travaux <notifications@portailtravaux.fr>"
+EMAIL_FROM_PRO="Portail Travaux Pro <pro@notifications.portailtravaux.fr>"
+EMAIL_FROM_HUMAIN="Julie de Portail Travaux Pro <julie@notifications.portailtravaux.fr>"
+EMAIL_REPLY_TO_COMMERCIAL=julie@portailtravaux.fr
+EMAIL_REPLY_TO=support@portailtravaux.fr
 SMS_API_KEY=
-SMS_SENDER=PortailHab
+SMS_SENDER=PortailTrav
 EMAIL_CAPTURE=mailpit            # local et staging : aucun envoi réel
-EMAIL_WHITELIST=@portailhabitat.fr
+EMAIL_WHITELIST=@portailtravaux.fr
 NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action
 ```

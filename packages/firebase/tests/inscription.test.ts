@@ -22,7 +22,7 @@ const s = () => ({
   auth,
   horloge: () => horloge,
   notifier: async (n: Notification) => void envois.push(n),
-  urlSite: 'https://portail-habitat.test',
+  urlSite: 'https://portail-travaux.test',
   jeton: () => 'jeton-de-reprise-0123456789abcdef',
 });
 
@@ -59,7 +59,7 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
       destinataire: { email: 'julien@test.local' },
     });
     expect(envois[0]!.secrets!.lien).toBe(
-      'https://portail-habitat.test/pro/inscription?reprise=jeton-de-reprise-0123456789abcdef',
+      'https://portail-travaux.test/pro/inscription?reprise=jeton-de-reprise-0123456789abcdef',
     );
     const brut = JSON.stringify(
       (await db.collection('brouillonsOnboarding').doc(brouillonId).get()).data(),

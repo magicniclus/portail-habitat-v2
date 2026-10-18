@@ -23,7 +23,7 @@ import { lireStatsPublic } from '@/server/vitrine';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Diagnostic immobilier Bordeaux et Gironde · Portail Habitat Diag' },
+  title: { absolute: 'Diagnostic immobilier Bordeaux et Gironde · Portail Travaux Diag' },
   description:
     'Diagnostic immobilier à Bordeaux et en Gironde : DPE, amiante, plomb, termites, gaz, électricité, ERP. Savez en 2 minutes quels diagnostics sont obligatoires et recevez 3 devis de diagnostiqueurs certifiés.',
   alternates: { canonical: '/diagnostic-immobilier' },

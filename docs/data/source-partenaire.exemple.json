@@ -6,7 +6,7 @@
   "quotaJour": 300,
   "departementsCouverts": ["33"],
   "versionConsentement": "v3-2026-06",
-  "texteConsentementAttendu": "J'accepte que mes coordonnées soient transmises à Portail Habitat et à des professionnels partenaires afin d'être recontacté pour mon projet.",
+  "texteConsentementAttendu": "J'accepte que mes coordonnées soient transmises à Portail Travaux et à des professionnels partenaires afin d'être recontacté pour mon projet.",
   "mappingPrestations": {
     "isolation_combles": "isolation",
     "isolation_murs": "isolation",

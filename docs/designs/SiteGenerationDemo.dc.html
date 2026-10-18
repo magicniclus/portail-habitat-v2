@@ -105,7 +105,7 @@
       <div style="{{ p.4 }}">
         <div style="width:min(88%,640px);background:#fff;border:1px solid #E6E0D8;border-radius:14px;padding:clamp(18px,3.6%,30px);display:grid;gap:16px">
           <span style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:#e8f4ec;color:#18864B;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none">✓</span><span style="display:grid;gap:1px"><span style="font-size:clamp(13px,1.8vw,18px);font-weight:700">Votre site est en ligne</span><span style="font-size:clamp(10px,1.2vw,13px);color:#666A70">Enregistré et publié il y a quelques secondes</span></span></span>
-          <span style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;background:#F5F0E8;font-size:clamp(10px,1.3vw,14px);font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#18864B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>bertrand-renovation.portailhabitat.fr</span>
+          <span style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;background:#F5F0E8;font-size:clamp(10px,1.3vw,14px);font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#18864B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>bertrand-renovation.portailtravaux.fr</span>
           <span style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
             <sc-for list="{{ suites }}" as="su" hint-placeholder-count="3"><span style="display:grid;gap:2px;padding:8px 10px;border-radius:8px;border:1px solid #E6E0D8"><strong style="font-size:clamp(9px,1.1vw,12px)">{{ su.t }}</strong><span style="font-size:clamp(8px,1vw,11px);color:#666A70">{{ su.l }}</span></span></sc-for>
           </span>
@@ -144,7 +144,7 @@ class Component extends DCLogic {
       notesMobile: ["Bouton d'appel toujours visible", "Textes lisibles sans zoomer", "Demande de devis en une minute"].map((x, n) => ({ key: n, n: n + 1, t: x, style: { display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "12px", background: "#fff", border: "1px solid #E6E0D8", opacity: i === 3 && k > 6 + n * 6 ? 1 : 0, transform: i === 3 && k > 6 + n * 6 ? "none" : "translateX(-10px)", transition: calme ? "none" : "opacity .4s ease, transform .5s " + ez } })),
       aVideo: !!video, sansVideo: !video, video, poster: this.props.poster || "", p,
       refRoot: (el) => { this._el = el; },
-      urlBarre: i >= 3 ? "bertrand-renovation.portailhabitat.fr" : "portailhabitat.fr/pro/site/creation",
+      urlBarre: i >= 3 ? "bertrand-renovation.portailtravaux.fr" : "portailtravaux.fr/pro/site/creation",
       chrono: ["0:05", "0:20", "1:10", "2:40", "3:00"][i],
       saisie: nom.slice(0, nc),
       styleSuggestion: Object.assign({ display: "flex", alignItems: "center", gap: "10px", padding: "10px clamp(14px,3%,22px)", borderTop: "1px solid #E6E0D8", background: "var(--color-accent-100)" }, fade(i === 0 && k > 22)),

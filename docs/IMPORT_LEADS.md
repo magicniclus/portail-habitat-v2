@@ -1,4 +1,4 @@
-# Envoi des leads à Portail Habitat — format attendu
+# Envoi des leads à Portail Travaux — format attendu
 
 Pour le site partenaire (simulateur d'aides) qui envoie ses demandes. Chaque lead est envoyé **un par un, en temps réel**, à un webhook HTTPS. Le webhook (Cloud Function `importerDemandePartenaire`, `europe-west1`) valide, déduplique, qualifie puis écrit dans Firestore. **Vous n'écrivez jamais directement dans Firestore.**
 
@@ -11,7 +11,7 @@ Références internes : DATABASE.md §4 bis, MATCHING.md « Demandes partenaires
 ```
 POST https://europe-west1-<projet>.cloudfunctions.net/importerDemandePartenaire
 Content-Type: application/json
-X-Api-Key: <clé fournie par Portail Habitat>
+X-Api-Key: <clé fournie par Portail Travaux>
 X-Source-Id: <identifiant de votre source, ex. simulateur-aides>
 ```
 
@@ -58,14 +58,14 @@ X-Source-Id: <identifiant de votre source, ex. simulateur-aides>
 
   "consentement": {
     "coche": true,
-    "texteAffiche": "J'accepte que mes coordonnées soient transmises à Portail Habitat et à des professionnels partenaires afin d'être recontacté pour mon projet.",
+    "texteAffiche": "J'accepte que mes coordonnées soient transmises à Portail Travaux et à des professionnels partenaires afin d'être recontacté pour mon projet.",
     "versionTexte": "v3-2026-06",
     "horodatage": "2026-09-27T09:41:58+02:00",
     "urlPage": "https://simulateur-aides.fr/resultat",
     "ip": "92.184.12.40",
     "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) …",
     "finalites": [
-      "transmission_portail_habitat",
+      "transmission_portail_travaux",
       "mise_en_relation_professionnels",
       "rappel_telephonique"
     ]
@@ -100,7 +100,7 @@ X-Source-Id: <identifiant de votre source, ex. simulateur-aides>
 | `consentement.horodatage` | ISO 8601 | ✅ | Clic sur la case |
 | `consentement.urlPage` | URL | ✅ | Page où la case était affichée |
 | `consentement.ip`, `consentement.userAgent` | string | ✅ | Hachés à réception, jamais stockés en clair |
-| `consentement.finalites` | string[] | ✅ | Doit contenir au moins `transmission_portail_habitat` et `mise_en_relation_professionnels` |
+| `consentement.finalites` | string[] | ✅ | Doit contenir au moins `transmission_portail_travaux` et `mise_en_relation_professionnels` |
 
 Règles générales : UTF-8, montants **toujours en centimes**, dates **ISO 8601 avec fuseau**, aucun champ inconnu (rejeté par la validation stricte), taille max 32 Ko.
 

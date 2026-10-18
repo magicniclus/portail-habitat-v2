@@ -36,7 +36,7 @@ export function messageAuth(e: unknown): string {
   if (code === 'auth/credential-already-in-use')
     return 'Ce compte Google est déjà lié à un autre compte.';
   if (code === 'auth/operation-not-allowed' || code === 'auth/admin-restricted-operation')
-    return 'Cette option n’est pas encore activée sur Portail Habitat.';
+    return 'Cette option n’est pas encore activée sur Portail Travaux.';
   return 'Une erreur est survenue. Réessayez dans un instant.';
 }
 
@@ -85,7 +85,7 @@ export async function preparerTotp(motDePasse: string, code?: string) {
   const secret = await m.TotpMultiFactorGenerator.generateSecret(
     await m.multiFactor(u).getSession(),
   );
-  return { secret, lien: secret.generateQrCodeUrl(u.email ?? 'compte', 'Portail Habitat') };
+  return { secret, lien: secret.generateQrCodeUrl(u.email ?? 'compte', 'Portail Travaux') };
 }
 
 export async function finaliserTotp(secret: TotpSecret, code: string) {

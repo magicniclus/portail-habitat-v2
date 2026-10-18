@@ -59,7 +59,7 @@ beforeEach(async () => {
     auth,
     horloge: () => T,
     notifier: async (n) => void envois.push(n),
-    urlSite: 'https://portail-habitat.test',
+    urlSite: 'https://portail-travaux.test',
     versionLegale: '2026-09-22',
     referentiel,
     textes: { dpe: { nom: 'DPE', quand: 'Vente et location', validite: '10 ans' } },

@@ -25,7 +25,7 @@ button:disabled { opacity: .45; cursor: not-allowed !important; }
   <aside style="background:#2a323c;color:#e6e9ed;padding:18px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;transition:width .28s cubic-bezier(.4,0,.2,1);width:{{ asideW }}">
     <div style="display:flex;align-items:center;gap:10px;padding:2px 8px 18px;min-width:0">
       <svg width="28" height="28" viewBox="0 0 40 40" aria-hidden="true" style="flex:none"><path d="M5 19.5 20 7l15 12.5" fill="none" stroke="#c3c9d1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M9 21.5V33h22V21.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path><rect x="17" y="25" width="6" height="8" rx="1" fill="#c3c9d1"></rect></svg>
-      <span style="font-size:13px;font-weight:700;letter-spacing:0.06em;line-height:1.2;white-space:nowrap;transition:opacity .2s ease .06s, transform .28s cubic-bezier(.4,0,.2,1);opacity:{{ lblOp }};transform:{{ lblTr }}">PORTAIL HABITAT<br><span style="color:#aab3be;letter-spacing:0.18em">ADMIN</span></span>
+      <span style="font-size:13px;font-weight:700;letter-spacing:0.06em;line-height:1.2;white-space:nowrap;transition:opacity .2s ease .06s, transform .28s cubic-bezier(.4,0,.2,1);opacity:{{ lblOp }};transform:{{ lblTr }}">PORTAIL TRAVAUX<br><span style="color:#aab3be;letter-spacing:0.18em">ADMIN</span></span>
     </div>
 
     <sc-for list="{{ nav }}" as="n" hint-placeholder-count="15">
@@ -134,7 +134,7 @@ class Component extends DCLogic {
       basculerLabel: this.state.ouvert ? 'Replier le menu' : 'Déplier le menu',
       basculer: () => this.setState((st) => { const o = !st.ouvert; try { localStorage.setItem('ph-admin-menu', o ? 'ouvert' : 'replie'); } catch (e) {} return { ouvert: o }; }),
       showIaBtn: cur !== 'ia' && (perms['ia.utiliser'] || perms['ia.configurer']), goIa: () => goTo('ia'),
-      user: { nom: 'Julie Martin', email: 'julie@portailhabitat.fr' },
+      user: { nom: 'Julie Martin', email: 'julie@portailtravaux.fr' },
     };
   }
 }

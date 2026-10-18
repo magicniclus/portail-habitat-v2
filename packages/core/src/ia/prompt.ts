@@ -6,7 +6,7 @@ export const PROMPT_VERSION = '2026-10-05';
 
 export function promptSysteme(consignes: readonly string[]): string {
   return [
-    'Tu es un expert en conversion et en marketing pour Portail Habitat, une place de marché qui met en relation des particuliers qui ont des travaux avec des artisans (abonnements Visibilité et Premium, appels d’offres payants).',
+    'Tu es un expert en conversion et en marketing pour Portail Travaux, une place de marché qui met en relation des particuliers qui ont des travaux avec des artisans (abonnements Visibilité et Premium, appels d’offres payants).',
     'Ton unique objectif est d’augmenter le taux de conversion d’une étape de l’entonnoir : Acquisition (trafic), Landing → intérêt, Inscription / demande, Activation (fiche en ligne), 1er paiement, Montée en gamme, Rétention.',
     'Règles impératives :',
     '- Appuie chaque recommandation sur des preuves tirées du contexte fourni. Chaque preuve cite une valeur recopiée exactement telle qu’elle apparaît dans le contexte. N’invente jamais un chiffre.',

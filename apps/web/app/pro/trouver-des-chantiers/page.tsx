@@ -4,7 +4,7 @@ import { PageLanding } from '@/features/landings/PageLanding';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Trouver des chantiers gratuitement · Portail Habitat Pro' },
+  title: { absolute: 'Trouver des chantiers gratuitement · Portail Travaux Pro' },
   description:
     'Les demandes de travaux des particuliers de votre secteur, réservées aux membres du réseau. Inscription gratuite, 0 % de commission.',
   alternates: { canonical: '/pro/trouver-des-chantiers' },

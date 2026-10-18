@@ -50,7 +50,7 @@ export function normaliserDomaine(saisie: string): string | null {
     .replace(/^www\./, '')
     .replace(/\.$/, '');
   return /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(d) &&
-    !d.endsWith('portailhabitat.fr')
+    !d.endsWith('portailtravaux.fr')
     ? d
     : null;
 }

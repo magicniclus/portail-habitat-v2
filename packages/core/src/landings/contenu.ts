@@ -95,7 +95,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     h1a: 'Trouvez des chantiers',
     h1b: 'gratuitement',
     sousTitre:
-      'Des **particuliers de votre secteur** décrivent leur projet : chantier, ville, budget et délai. Ces demandes sont **réservées exclusivement aux membres du réseau Portail Habitat** : rejoignez-le **gratuitement** et répondez à celles qui vous intéressent.',
+      'Des **particuliers de votre secteur** décrivent leur projet : chantier, ville, budget et délai. Ces demandes sont **réservées exclusivement aux membres du réseau Portail Travaux** : rejoignez-le **gratuitement** et répondez à celles qui vous intéressent.',
     points: [],
     badges: BADGES,
     titreFormulaire: 'Créer mon espace gratuit',
@@ -116,7 +116,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           'ma-fiche',
-          'portailhabitat.fr/pro/fiche',
+          'portailtravaux.fr/pro/fiche',
           '« Ma fiche » : métiers, zone d’intervention et réalisations.',
         ),
       },
@@ -132,7 +132,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           'appels-d-offres',
-          'portailhabitat.fr/pro/appels-offres',
+          'portailtravaux.fr/pro/appels-offres',
           '« Appels d’offres » : les projets déposés dans votre zone.',
         ),
       },
@@ -148,7 +148,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           'mes-demandes',
-          'portailhabitat.fr/pro/demandes',
+          'portailtravaux.fr/pro/demandes',
           '« Mes demandes » : chaque contact suivi jusqu’au devis.',
         ),
       },
@@ -165,7 +165,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
       ],
       grand: capture(
         'espace-artisan-dashboard',
-        'portailhabitat.fr/pro',
+        'portailtravaux.fr/pro',
         'Le tableau de bord : nouvelles demandes, rappels et activité.',
       ),
       tel: capture('mes-demandes', '', '« Mes demandes » sur téléphone.'),
@@ -243,7 +243,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/site/editeur',
+          'portailtravaux.fr/pro/site/editeur',
           'La création assistée : l’IA reprend votre fiche.',
         ),
       },
@@ -259,7 +259,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/site/editeur',
+          'portailtravaux.fr/pro/site/editeur',
           'L’éditeur : structure à gauche, réglages à droite.',
         ),
       },
@@ -272,11 +272,11 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Nom et téléphone du prospect',
           'Adresse du chantier',
           'Détails de la demande',
-          'Suivi directement depuis Portail Habitat',
+          'Suivi directement depuis Portail Travaux',
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/site',
+          'portailtravaux.fr/pro/site',
           '« Mon site internet » : le formulaire relié à vos demandes.',
         ),
       },
@@ -293,7 +293,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
       ],
       grand: capture(
         null,
-        'bertrand-renovation.portailhabitat.fr',
+        'bertrand-renovation.portailtravaux.fr',
         'Le site publié, version ordinateur.',
       ),
       tel: capture(null, '', 'Le même site sur téléphone.'),
@@ -310,17 +310,17 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
       {
         titre: 'Vous cliquez sur « Publier »',
-        texte: 'Votre site est en ligne sur nom.portailhabitat.fr. Gratuit, et il le reste.',
+        texte: 'Votre site est en ligne sur nom.portailtravaux.fr. Gratuit, et il le reste.',
       },
     ],
     faq: [
       {
         q: 'Est-ce vraiment gratuit ?',
-        r: 'Oui. Le site sur une adresse Portail Habitat peut rester gratuit sans limite de durée. Site Pro est uniquement nécessaire si vous souhaitez votre propre nom de domaine et certaines fonctions avancées.',
+        r: 'Oui. Le site sur une adresse Portail Travaux peut rester gratuit sans limite de durée. Site Pro est uniquement nécessaire si vous souhaitez votre propre nom de domaine et certaines fonctions avancées.',
       },
       {
         q: 'Suis-je obligé de prendre Site Pro ?',
-        r: 'Non. Votre site reste en ligne gratuitement sur votre adresse Portail Habitat, aussi longtemps que vous le souhaitez.',
+        r: 'Non. Votre site reste en ligne gratuitement sur votre adresse Portail Travaux, aussi longtemps que vous le souhaitez.',
       },
       {
         q: 'Puis-je modifier mon site moi-même ?',
@@ -328,14 +328,14 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
       {
         q: 'Puis-je utiliser mon propre nom de domaine ?',
-        r: 'Oui, avec Site Pro. Le domaine est inclus et votre adresse Portail Habitat est conservée et redirigée.',
+        r: 'Oui, avec Site Pro. Le domaine est inclus et votre adresse Portail Travaux est conservée et redirigée.',
       },
       {
-        q: 'Portail Habitat prend-il une commission sur les demandes reçues via mon site ?',
+        q: 'Portail Travaux prend-il une commission sur les demandes reçues via mon site ?',
         r: 'Non. Les demandes envoyées depuis votre propre site arrivent gratuitement dans votre espace, sans commission.',
       },
       {
-        q: 'Est-ce que je peux quitter Portail Habitat ?',
+        q: 'Est-ce que je peux quitter Portail Travaux ?',
         r: 'Oui. Vous pouvez arrêter Site Pro ou supprimer votre compte à tout moment depuis votre espace.',
       },
       {
@@ -389,7 +389,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/devis',
+          'portailtravaux.fr/pro/devis',
           '« Devis & factures » : vos documents et leur statut.',
         ),
       },
@@ -405,7 +405,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/devis/nouveau',
+          'portailtravaux.fr/pro/devis/nouveau',
           'L’éditeur de devis et le contrôle des mentions.',
         ),
       },
@@ -421,7 +421,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         ],
         capture: capture(
           null,
-          'portailhabitat.fr/pro/devis?onglet=factures',
+          'portailtravaux.fr/pro/devis?onglet=factures',
           'Les factures : paiements, relances et export.',
         ),
       },
@@ -438,7 +438,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
       ],
       grand: capture(
         null,
-        'portailhabitat.fr/pro/devis/nouveau',
+        'portailtravaux.fr/pro/devis/nouveau',
         'Le devis en cours de rédaction.',
       ),
       tel: capture(null, '', '« Devis & factures » sur téléphone.'),

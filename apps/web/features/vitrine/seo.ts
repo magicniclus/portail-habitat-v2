@@ -39,7 +39,7 @@ export const filAriane = (etapes: readonly { nom: string; chemin: string }[]) =>
 export const organisation = () => ({
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Portail Habitat',
+  name: 'Portail Travaux',
   url: URL_SITE,
   logo: absolue('/icon.svg'),
 });

@@ -229,8 +229,8 @@ describe('PageErreur', () => {
         texte="Le lien est peut-être ancien."
         visuel="404"
         actions={<a href="/">Retour à l’accueil</a>}
-        entete={<a href="/">Portail Habitat</a>}
-        pied={<span>© 2026 Portail Habitat</span>}
+        entete={<a href="/">Portail Travaux</a>}
+        pied={<span>© 2026 Portail Travaux</span>}
       />,
     );
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(

@@ -52,8 +52,8 @@ export const modelesBlog = {
       titre: 'Pompe à chaleur : 5 questions avant de se lancer',
       date: '21 octobre 2026',
       aCorriger: [],
-      lienRelire: 'https://portailhabitat.fr/pro/site/blog/a1',
-      lienValider: 'https://portailhabitat.fr/pro/blog-valider/a1.b2.jeton',
+      lienRelire: 'https://portailtravaux.fr/pro/site/blog/a1',
+      lienValider: 'https://portailtravaux.fr/pro/blog-valider/a1.b2.jeton',
     },
   }),
   'blog-quota-atteint': modele<QuotaBlog>({
@@ -70,14 +70,14 @@ export const modelesBlog = {
       ...(d.lienOffre
         ? [bouton('Tout inclus : 15 articles par mois', d.lienOffre)]
         : [bouton('Ouvrir mon blog', d.lien)]),
-      note('Vous recevez cet email car vous utilisez le blog de votre site Portail Habitat.'),
+      note('Vous recevez cet email car vous utilisez le blog de votre site Portail Travaux.'),
     ],
     exemple: {
       nomCommercial: 'Bertrand Rénovation',
       max: 5,
       remise: '1er novembre',
-      lienOffre: 'https://portailhabitat.fr/pro/abonnement?offre=tout',
-      lien: 'https://portailhabitat.fr/pro/site?onglet=blog',
+      lienOffre: 'https://portailtravaux.fr/pro/abonnement?offre=tout',
+      lien: 'https://portailtravaux.fr/pro/site?onglet=blog',
     },
   }),
 };

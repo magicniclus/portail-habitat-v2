@@ -34,7 +34,7 @@ test.describe('pages d’erreur', () => {
   test('la page de maintenance s’affiche', async ({ page }) => {
     await page.goto('/maintenance');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
-      'Nous améliorons Portail Habitat.',
+      'Nous améliorons Portail Travaux.',
     );
   });
 });

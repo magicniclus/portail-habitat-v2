@@ -67,7 +67,7 @@ class Component extends DCLogic {
     config: [['Artisans max. par demande', '3'], ['Demandes exclusives Premium / mois', '4'], ['Expiration d’une attribution (h)', '24'], ['Quota gratuit (demandes / mois)', '3'], ['Crédit (€ HT)', '10'], ['TVA simulateur', '10 %']], toast: '' };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#referentiels'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#referentiels'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const noRef = lect || !can('referentiels.modifier');
     const mod = (patch) => this.setState({ ...patch, dirty: true });

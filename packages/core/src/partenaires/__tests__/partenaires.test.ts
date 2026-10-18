@@ -13,7 +13,7 @@ import {
 import { entreeDemandePartenaire } from '../../schemas';
 
 const TEXTE =
-  'J’accepte que mes coordonnées soient transmises à Portail Habitat et à des professionnels partenaires afin d’être recontacté pour mon projet.';
+  'J’accepte que mes coordonnées soient transmises à Portail Travaux et à des professionnels partenaires afin d’être recontacté pour mon projet.';
 const exemple = {
   idExterne: 'SIM-2026-0918-004512',
   recueLe: '2026-09-27T09:42:11+02:00',
@@ -46,7 +46,7 @@ const exemple = {
     urlPage: 'https://simulateur-aides.fr/resultat',
     ip: '92.184.12.40',
     userAgent: 'Mozilla/5.0',
-    finalites: ['transmission_portail_habitat', 'mise_en_relation_professionnels'],
+    finalites: ['transmission_portail_travaux', 'mise_en_relation_professionnels'],
   },
 };
 
@@ -77,7 +77,7 @@ describe('contrôles', () => {
       details: 'consentement.texteAffiche ne correspond pas à v3-2026-06',
     });
     expect(
-      controlerConsentement({ ...c, finalites: ['transmission_portail_habitat'] }, attendu),
+      controlerConsentement({ ...c, finalites: ['transmission_portail_travaux'] }, attendu),
     ).toEqual({
       ok: false,
       details: 'consentement.finalites sans mise_en_relation_professionnels',

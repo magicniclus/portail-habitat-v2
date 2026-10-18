@@ -5,10 +5,10 @@ import { MODELES_EMAIL } from '../index';
 import { Email } from '../rendu/Email';
 
 const pied = {
-  preferences: 'https://portailhabitat.fr/preferences',
-  desabonnement: 'https://portailhabitat.fr/api/desabonnement',
-  aide: 'https://portailhabitat.fr/aide',
-  editeur: 'Portail Habitat · Raison sociale · Adresse postale',
+  preferences: 'https://portailtravaux.fr/preferences',
+  desabonnement: 'https://portailtravaux.fr/api/desabonnement',
+  aide: 'https://portailtravaux.fr/aide',
+  editeur: 'Portail Travaux · Raison sociale · Adresse postale',
 };
 
 /** Aperçu d'un modèle avec ses données d'exemple (serveur `pnpm email:dev`). */

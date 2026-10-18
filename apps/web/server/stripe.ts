@@ -10,7 +10,7 @@ let client: Stripe | null | undefined;
 export function stripe(): Stripe | null {
   if (client === undefined) {
     const cle = process.env.STRIPE_SECRET_KEY;
-    client = cle ? new Stripe(cle, { appInfo: { name: 'Portail Habitat' } }) : null;
+    client = cle ? new Stripe(cle, { appInfo: { name: 'Portail Travaux' } }) : null;
   }
   return client;
 }

@@ -394,7 +394,7 @@ button { font-family: inherit; }
 
   <footer style="background:var(--color-accent-900);color:var(--color-accent-200);font-size:13.5px">
     <div style="max-width:1280px;margin:0 auto;padding:22px clamp(18px,4vw,44px);display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap">
-      <span>© 2026 Portail Habitat · Estimations indicatives</span>
+      <span>© 2026 Portail Travaux · Estimations indicatives</span>
       <span style="display:flex;gap:18px;flex-wrap:wrap">
         <a href="Accueil Particuliers.dc.html" style="color:var(--color-accent-200)">Accueil</a>
         <a href="Laisser un Avis.dc.html" style="color:var(--color-accent-200)">Laisser un avis</a>
@@ -1043,7 +1043,7 @@ class Component extends DCLogic {
           contact: { prenom: g("sim-prenom"), nom: g("sim-nom"), email: g("sim-email"), telephone: g("sim-tel"), precisions: g("sim-precisions") },
           envoyeLe: new Date().toISOString(),
         };
-        console.log("[Portail Habitat] demande de devis", payload);
+        console.log("[Portail Travaux] demande de devis", payload);
         this.effacerBrouillon();
         this.setState({ client: payload.contact, ref: payload.reference, etape: 6, repris: "" });
         window.scrollTo(0, 0);

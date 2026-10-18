@@ -1,4 +1,4 @@
-/* Portail Habitat — moteur de recherche de projets (maquette de référence).
+/* Portail Travaux — moteur de recherche de projets (maquette de référence).
    Données : intentions de projet + métiers + synonymes. En production : packages/core/recherche (même logique)
    et Typesense pour le classement (voir docs/RECHERCHE.md). */
 (function () {

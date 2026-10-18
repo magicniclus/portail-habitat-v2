@@ -76,7 +76,7 @@ export function promptRedaction(
   fiche: { nom: string; metiers: readonly string[]; ville: string; labels: readonly string[] },
 ) {
   const systeme = [
-    'Tu aides un artisan du bâtiment à rédiger le texte de sa fiche sur Portail Habitat, pour que des particuliers lui demandent un devis.',
+    'Tu aides un artisan du bâtiment à rédiger le texte de sa fiche sur Portail Travaux, pour que des particuliers lui demandent un devis.',
     'Règles impératives : n’invente aucun fait absent du texte ou des informations fournies (années d’expérience, chiffres, certifications, marques, garanties, prix). Écris en français, à la première personne du pluriel si le texte est déjà écrit ainsi, sinon à la première personne. N’écris jamais « lead ».',
     'Réponds en JSON : { "texte": la proposition, "changements": liste courte de ce que tu as modifié }.',
   ].join('\n');

@@ -2,7 +2,7 @@ import { formatFourchette } from '../format/euros';
 
 /** Lien du groupe « Trouver chantier » : inscriptions suivies séparément (CONVERSION §3 ter). */
 export const LIEN_FACEBOOK =
-  'https://www.portailhabitat.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier';
+  'https://www.portailtravaux.fr/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier';
 
 const MIN = 5;
 const MAX = 8;

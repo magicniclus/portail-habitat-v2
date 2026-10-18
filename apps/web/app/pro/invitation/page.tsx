@@ -48,7 +48,7 @@ export default async function PageInvitation({
           </Link>
         ) : (
           <Link href={routes.pro} className={bouton({ variant: 'secondaire' })}>
-            Découvrir Portail Habitat Pro
+            Découvrir Portail Travaux Pro
           </Link>
         )}
       </Cadre>
@@ -63,7 +63,7 @@ export default async function PageInvitation({
       <section className="grid gap-2 rounded-2xl border border-trait p-5">
         <p className="m-0 text-base">
           <strong>{a.invitant}</strong> vous invite à rejoindre <strong>{a.nomCommercial}</strong>
-          {a.ville ? ` (${a.ville})` : ''} sur Portail Habitat Pro.
+          {a.ville ? ` (${a.ville})` : ''} sur Portail Travaux Pro.
         </p>
         <p className="m-0 text-base">
           Rôle : <strong>{LIBELLES_ROLE[role]}</strong> — {POUVOIRS_ROLE[role]}.

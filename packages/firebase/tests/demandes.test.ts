@@ -54,7 +54,7 @@ beforeEach(async () => {
     auth,
     horloge: () => T,
     notifier: async (n) => void envois.push(n),
-    urlSite: 'https://portail-habitat.test',
+    urlSite: 'https://portail-travaux.test',
     versionLegale: '2026-09-22',
     geocoder: async (cp) =>
       cp === '33000' ? { ville: 'Bordeaux', geo: { latitude: 44.84, longitude: -0.58 } } : null,
@@ -181,7 +181,7 @@ describe('creerDemande', () => {
     expect(d.particulierUid).toBe(existant.uid);
     expect((await auth.listUsers()).users).toHaveLength(1);
     expect(envois[0]!.secrets!.lien).toBe(
-      `https://portail-habitat.test/connexion?suite=${encodeURIComponent(`/mon-espace/demandes/${r.demandeId}`)}`,
+      `https://portail-travaux.test/connexion?suite=${encodeURIComponent(`/mon-espace/demandes/${r.demandeId}`)}`,
     );
   });
 

@@ -15,7 +15,7 @@ export interface SitePublie {
 }
 
 /**
- * Site servi pour un hôte (`slug.portailhabitat.fr`, domaine de l'artisan) : index des domaines →
+ * Site servi pour un hôte (`slug.portailtravaux.fr`, domaine de l'artisan) : index des domaines →
  * version publiée. `null` si l'hôte est inconnu ou si rien n'est encore publié.
  */
 export async function lireSitePublie(db: Firestore, hote: string): Promise<SitePublie | null> {

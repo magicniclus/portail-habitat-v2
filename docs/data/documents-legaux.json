@@ -32,7 +32,7 @@
     {
      "titre": "1. Éditeur du site",
      "paragraphes": [
-      "Le site Portail Habitat, accessible à l'adresse [www.portailhabitat.fr], est édité par [Dénomination sociale], [forme juridique] au capital de [montant] euros, immatriculée au registre du commerce et des sociétés de [ville] sous le numéro [SIREN], dont le siège social est situé [adresse complète].",
+      "Le site Portail Travaux, accessible à l'adresse [www.portailtravaux.fr], est édité par [Dénomination sociale], [forme juridique] au capital de [montant] euros, immatriculée au registre du commerce et des sociétés de [ville] sous le numéro [SIREN], dont le siège social est situé [adresse complète].",
       "Numéro de TVA intracommunautaire : [FR00000000000]. Directeur de la publication : [nom et prénom]. Contact : [email] — [téléphone]."
      ]
     },
@@ -45,7 +45,7 @@
     {
      "titre": "3. Nature du service",
      "paragraphes": [
-      "Portail Habitat est une plateforme de mise en relation entre des particuliers porteurs de projets de travaux ou de diagnostics immobiliers et des professionnels indépendants. L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni diagnostiqueur, ni courtier en travaux : il n'exécute aucune prestation et n'est pas partie aux contrats conclus entre utilisateurs et professionnels.",
+      "Portail Travaux est une plateforme de mise en relation entre des particuliers porteurs de projets de travaux ou de diagnostics immobiliers et des professionnels indépendants. L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni diagnostiqueur, ni courtier en travaux : il n'exécute aucune prestation et n'est pas partie aux contrats conclus entre utilisateurs et professionnels.",
       "L'éditeur n'est pas un service de paiement et n'intervient pas dans le règlement des prestations, sauf indication contraire expresse dans les conditions applicables à un service spécifique."
      ]
     },
@@ -201,7 +201,7 @@
   "securite": {
    "titre": "Sécurité de la plateforme",
    "icone": "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
-   "chapeau": "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Habitat, et engagements attendus des utilisateurs.",
+   "chapeau": "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Travaux, et engagements attendus des utilisateurs.",
    "sections": [
     {
      "titre": "1. Protection des échanges et des données",
@@ -260,7 +260,7 @@
    "icone": "M6 3.5h9l4 4v13H6zM9.5 12h6M9.5 16h4",
    "chapeau": "Règles d'accès et d'usage du service par les particuliers : dépôt d'un projet, estimations, mise en relation, avis. Leur acceptation est un préalable à l'utilisation de la plateforme.",
    "encadre": [
-    "Portail Habitat n'exécute aucun travaux.",
+    "Portail Travaux n'exécute aucun travaux.",
     "La plateforme met en relation ; le contrat de travaux ou de diagnostic est conclu directement entre vous et le professionnel, qui en assume seul l'exécution, les garanties et les assurances."
    ],
    "sections": [
@@ -379,7 +379,7 @@
   "cgv": {
    "titre": "Conditions générales de vente professionnels",
    "icone": "M12 4v16M6 8h12M8.5 8 6 14h5L8.5 8ZM15.5 8 13 14h5l-2.5-6ZM8 20h8",
-   "chapeau": "Conditions applicables aux professionnels souscrivant un abonnement ou une option de visibilité sur Portail Habitat. Elles complètent les conditions d'utilisation et prévalent en cas de contradiction pour tout ce qui concerne l'abonnement.",
+   "chapeau": "Conditions applicables aux professionnels souscrivant un abonnement ou une option de visibilité sur Portail Travaux. Elles complètent les conditions d'utilisation et prévalent en cas de contradiction pour tout ce qui concerne l'abonnement.",
    "encadre": [
     "Contrat entre professionnels.",
     "Le souscripteur agit dans le cadre de son activité professionnelle : les dispositions protectrices du code de la consommation relatives au droit de rétractation ne s'appliquent pas, sauf professionnel de moins de six salariés souscrivant hors de son champ d'activité principale."

@@ -31,11 +31,11 @@
         <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:#faf9f7">
           <strong style="font-size:14.5px">Inviter un membre</strong>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <input value="{{ inv.email }}" onChange="{{ setInvEmail }}" disabled="{{ noEquipe }}" placeholder="prenom@portailhabitat.fr" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;flex:1 1 180px">
+            <input value="{{ inv.email }}" onChange="{{ setInvEmail }}" disabled="{{ noEquipe }}" placeholder="prenom@portailtravaux.fr" style="font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d9d6d1;border-radius:8px;flex:1 1 180px">
             <select value="{{ inv.role }}" onChange="{{ setInvRole }}" disabled="{{ noEquipe }}" style="font:inherit;font-size:14px;padding:7px 8px;border:1px solid #d9d6d1;border-radius:8px;background:#fff"><sc-for list="{{ roleOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.nom }}</option></sc-for></select>
             <button onClick="{{ inviter }}" disabled="{{ noInviter }}" title="{{ equipeTitle }}" class="btn btn-primary" style="font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;line-height:1.3;background:#3f4a57;border-color:#3f4a57;color:#fff">Inviter</button>
           </div>
-          <span style="font-size:12.5px;color:#6b6763">Domaine @portailhabitat.fr uniquement · lien valable 48 h · MFA à configurer à la première connexion.</span>
+          <span style="font-size:12.5px;color:#6b6763">Domaine @portailtravaux.fr uniquement · lien valable 48 h · MFA à configurer à la première connexion.</span>
         </div>
       </section>
 
@@ -124,16 +124,16 @@ const AUDIT = [
 class Component extends DCLogic {
   state = { tab: 'membres', sel: 'lea', q: '', nvRole: '', custom: {}, inv: { email: '', role: 'moderateur' }, toast: '',
     membres: [
-      { id: 'julie', nom: 'Julie Martin', email: 'julie@portailhabitat.fr', role: 'superadmin', mfa: 'TOTP', acces: 'en ligne', actif: true, plus: [], moins: [] },
-      { id: 'karim', nom: 'Karim Benali', email: 'karim@portailhabitat.fr', role: 'moderateur', mfa: 'TOTP', acces: 'il y a 2 h', actif: true, plus: [], moins: [] },
-      { id: 'sarah', nom: 'Sarah Dubois', email: 'sarah@portailhabitat.fr', role: 'admin', mfa: 'SMS', acces: 'hier', actif: true, plus: [], moins: [] },
-      { id: 'lea', nom: 'Léa Durand', email: 'lea@portailhabitat.fr', role: 'commercial', mfa: 'TOTP', acces: 'il y a 20 min', actif: true, plus: ['credits.crediter_illimite'], moins: ['finances.lire'] },
-      { id: 'marc', nom: 'Marc Thomas', email: 'marc@portailhabitat.fr', role: 'finance', mfa: 'TOTP', acces: 'il y a 3 j', actif: true, plus: [], moins: [] },
-      { id: 'tom', nom: 'Tom Leroy (stagiaire)', email: 'tom@portailhabitat.fr', role: 'lecture', mfa: 'TOTP', acces: 'il y a 12 j', actif: false, plus: [], moins: [] },
+      { id: 'julie', nom: 'Julie Martin', email: 'julie@portailtravaux.fr', role: 'superadmin', mfa: 'TOTP', acces: 'en ligne', actif: true, plus: [], moins: [] },
+      { id: 'karim', nom: 'Karim Benali', email: 'karim@portailtravaux.fr', role: 'moderateur', mfa: 'TOTP', acces: 'il y a 2 h', actif: true, plus: [], moins: [] },
+      { id: 'sarah', nom: 'Sarah Dubois', email: 'sarah@portailtravaux.fr', role: 'admin', mfa: 'SMS', acces: 'hier', actif: true, plus: [], moins: [] },
+      { id: 'lea', nom: 'Léa Durand', email: 'lea@portailtravaux.fr', role: 'commercial', mfa: 'TOTP', acces: 'il y a 20 min', actif: true, plus: ['credits.crediter_illimite'], moins: ['finances.lire'] },
+      { id: 'marc', nom: 'Marc Thomas', email: 'marc@portailtravaux.fr', role: 'finance', mfa: 'TOTP', acces: 'il y a 3 j', actif: true, plus: [], moins: [] },
+      { id: 'tom', nom: 'Tom Leroy (stagiaire)', email: 'tom@portailtravaux.fr', role: 'lecture', mfa: 'TOTP', acces: 'il y a 12 j', actif: false, plus: [], moins: [] },
     ] };
   flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3200); }
   renderVals() {
-    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Habitat.dc.html#equipe'); } catch (e) {} }, 0); }
+    if (!this.props.go && !this._redir) { this._redir = 1; setTimeout(() => { try { location.replace('Admin Portail Travaux.dc.html#equipe'); } catch (e) {} }, 0); }
     const s = this.state, P = this.props.perms || {}, can = (p) => P[p] ?? true, lect = !!this.props.pii;
     const ROLES = { ...SYS, ...s.custom };
     const noEquipe = lect || !can('equipe.gerer');
@@ -159,7 +159,7 @@ class Component extends DCLogic {
       actifLabel: m.actif ? 'Désactiver le compte' : 'Réactiver le compte', toggleActif: () => { updM({ actif: !m.actif }); this.flash(m.nom + (m.actif ? ' désactivé : sessions révoquées' : ' réactivé')); },
       resetMfa: () => this.flash('MFA de ' + m.nom + ' réinitialisé : nouvelle configuration à la prochaine connexion'),
       inv: s.inv, setInvEmail: (e) => this.setState({ inv: { ...s.inv, email: e.target.value } }), setInvRole: (e) => this.setState({ inv: { ...s.inv, role: e.target.value } }),
-      noInviter: noEquipe || !/^[^@\s]+@portailhabitat\.fr$/.test(s.inv.email), equipeTitle: can('equipe.gerer') ? 'Adresse @portailhabitat.fr requise' : 'Permission requise : equipe.gerer',
+      noInviter: noEquipe || !/^[^@\s]+@portailtravaux\.fr$/.test(s.inv.email), equipeTitle: can('equipe.gerer') ? 'Adresse @portailtravaux.fr requise' : 'Permission requise : equipe.gerer',
       inviter: () => { const id = s.inv.email.split('@')[0]; this.setState({ membres: [...s.membres, { id, nom: id.charAt(0).toUpperCase() + id.slice(1) + ' (invité)', email: s.inv.email, role: s.inv.role, mfa: 'à configurer', acces: 'invitation envoyée', actif: true, plus: [], moins: [] }], inv: { email: '', role: 'moderateur' }, sel: id }); this.flash('Invitation envoyée à ' + s.inv.email); },
       nbRoles: Object.keys(ROLES).length,
       rolesCols: Object.entries(ROLES).map(([id, r]) => ({ nom: r[0], custom: custIds.includes(id), suppr: () => { const c = { ...s.custom }; delete c[id]; const utilise = s.membres.some((x) => x.role === id); if (utilise) return this.flash('Rôle utilisé par au moins un membre : réaffectez-le d’abord'); this.setState({ custom: c }); this.flash('Rôle ' + r[0] + ' supprimé'); } })),

@@ -31,7 +31,7 @@ const OPERATIONS = `Opérations possibles (tableau JSON dans le champ "operation
  * Prompt système (stable, mis en cache) : règles, catalogue et format de sortie. Le contexte
  * (fiche vérifiée, résumé de l'arbre) et la demande viennent ensuite.
  */
-export const PROMPT_SYSTEME_IA_SITE = `Tu aides un artisan du bâtiment à améliorer son site internet sur Portail Habitat.
+export const PROMPT_SYSTEME_IA_SITE = `Tu aides un artisan du bâtiment à améliorer son site internet sur Portail Travaux.
 Tu ne produis jamais de HTML : tu proposes des opérations sur l'arbre du site, qui seront vérifiées puis montrées à l'artisan. Il décide seul d'appliquer et de publier.
 
 Règles :

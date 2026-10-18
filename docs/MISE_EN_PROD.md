@@ -9,23 +9,23 @@ Pour le propriétaire du projet. Ce que Claude Code ne peut pas faire seul (cré
 | Service | Pour quoi | À récupérer | Coût de départ |
 |---|---|---|---|
 | **GitHub** | le code (dépôt `portail-habitat-v2`) | — | gratuit |
-| **Firebase** (plan Blaze) | base, connexion, fichiers, fonctions | 3 projets : `portail-habitat-dev`, `-staging`, `-prod` ; config web + compte de service | quelques € / mois |
+| **Firebase** (plan Blaze) | base, connexion, fichiers, fonctions | 3 projets : `portail-travaux-dev`, `-staging`, `-prod` ; config web + compte de service | quelques € / mois |
 | **Vercel** | héberger le site | relier le dépôt GitHub | gratuit puis 20 $ / mois (Pro) |
 | **Stripe** | paiements | clés test puis live ; SIRET, IBAN, pièce d'identité pour activer le live | % par transaction |
-| **Resend** | emails | clé API ; domaine `notifications.portailhabitat.fr` vérifié (DNS) | gratuit jusqu'à 3 000 / mois |
-| **Brevo** | SMS | clé API ; expéditeur `PortailHab` validé | ~0,05 € / SMS |
+| **Resend** | emails | clé API ; domaine `notifications.portailtravaux.fr` vérifié (DNS) | gratuit jusqu'à 3 000 / mois |
+| **Brevo** | SMS | clé API ; expéditeur `PortailTrav` validé | ~0,05 € / SMS |
 | **Typesense Cloud** (région UE) | recherche | hôte, clé admin, clé recherche | ~7 $ / mois |
 | **INSEE (API Sirene)** | vérif. SIRET | clé API | gratuit |
 | **Sentry** (région UE) | erreurs | DSN | gratuit au départ |
 | **Anthropic** | assistant IA admin | clé API | à l'usage (voir COUTS.md) |
-| **Registrar du domaine** | `portailhabitat.fr` | accès DNS | ~10 € / an |
+| **Registrar du domaine** | `portailtravaux.fr` | accès DNS | ~10 € / an |
 
 Donnez les clés à Claude Code **uniquement via les fichiers `.env.local` (dev) et les secrets Vercel / Firebase** — jamais dans le chat, jamais commitées.
 
 ## Étape 2 — Environnements
 - **dev** : votre machine, émulateurs Firebase, emails capturés (Mailpit), Stripe test.
-- **staging** : `staging.portailhabitat.fr`, Firebase `-staging`, Stripe test, emails limités à `@portailhabitat.fr`. Chaque PR fusionnée y part automatiquement.
-- **prod** : `www.portailhabitat.fr`, Firebase `-prod`, Stripe live. Déploiement **uniquement** sur tag `v*` après votre « go ».
+- **staging** : `staging.portailtravaux.fr`, Firebase `-staging`, Stripe test, emails limités à `@portailtravaux.fr`. Chaque PR fusionnée y part automatiquement.
+- **prod** : `www.portailtravaux.fr`, Firebase `-prod`, Stripe live. Déploiement **uniquement** sur tag `v*` après votre « go ».
 
 Liste complète des variables : INTEGRATIONS.md §Variables et EMAILS.md §9. Claude Code crée `.env.example` au lot 1.
 

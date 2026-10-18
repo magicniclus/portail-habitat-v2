@@ -140,16 +140,16 @@ STRIPE_PRICE_PREMIUM_MENSUEL=
 STRIPE_PRICE_PREMIUM_ANNUEL=
 STRIPE_PRICE_VISIBILITE=
 RESEND_API_KEY=
-EMAIL_FROM="Portail Habitat <notifications@portailhabitat.fr>"
+EMAIL_FROM="Portail Travaux <notifications@portailtravaux.fr>"
 TYPESENSE_HOST= / TYPESENSE_ADMIN_KEY= / NEXT_PUBLIC_TYPESENSE_SEARCH_KEY=
 SENTRY_DSN= / NEXT_PUBLIC_SENTRY_DSN=
 PARTENAIRE_API_KEYS=               # Secret Manager, une clé par source (IMPORT_LEADS.md)
 INSEE_API_KEY=
 ANTHROPIC_API_KEY=                 # Secret Manager, assistant IA (IA_ADMIN.md)
-REPLAYS_BUCKET=portailhabitat-replays
+REPLAYS_BUCKET=portailtravaux-replays
 COMPORTEMENT_SALT_SECRET=          # Secret Manager
-EMAIL_FROM_HUMAIN="Julie de Portail Habitat Pro <julie@notifications.portailhabitat.fr>"
-NEXT_PUBLIC_SITE_URL=https://www.portailhabitat.fr
+EMAIL_FROM_HUMAIN="Julie de Portail Travaux Pro <julie@notifications.portailtravaux.fr>"
+NEXT_PUBLIC_SITE_URL=https://www.portailtravaux.fr
 ```
 
 ---

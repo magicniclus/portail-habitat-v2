@@ -1,4 +1,4 @@
-/* Portail Habitat — catalogue des prestations estimables en ligne (complète les 9 prestations détaillées du simulateur).
+/* Portail Travaux — catalogue des prestations estimables en ligne (complète les 9 prestations détaillées du simulateur).
    Format déclaratif, stockable tel quel dans Firestore : referentiel/prestations/items/{id} (champs, libellés)
    et referentiel/prestations/prix/{id} (unitaire, base, k, extras : serveur uniquement). Calcul générique :
    quantité × prix unitaire × coefficients des choix + forfait de base + options + évacuation. Montants TTC indicatifs, Gironde 2026. */

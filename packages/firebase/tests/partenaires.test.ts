@@ -17,7 +17,7 @@ import { documentsReferentiel } from '../src/seed/referentiel';
 const fichiers = lireFichiersSeed(new URL('../../../docs/data/', import.meta.url));
 const T = Date.UTC(2026, 9, 2, 10);
 const TEXTE =
-  'J’accepte que mes coordonnées soient transmises à Portail Habitat et à des professionnels partenaires afin d’être recontacté pour mon projet.';
+  'J’accepte que mes coordonnées soient transmises à Portail Travaux et à des professionnels partenaires afin d’être recontacté pour mon projet.';
 const IP = '203.0.113.7';
 const sha = (t: string) => createHash('sha256').update(t).digest('hex');
 
@@ -61,7 +61,7 @@ beforeEach(async () => {
     db,
     horloge: () => T,
     notifier: async (e) => void envois.push(e),
-    urlSite: 'https://portail-habitat.test',
+    urlSite: 'https://portail-travaux.test',
     smsConfirmation: true,
     jeton: () => `jeton-de-confirmation-${++n}-abcdefghij`,
     geocoder: async (cp) =>
@@ -101,7 +101,7 @@ const corps = (p: { id?: string; tel?: string; verifie?: boolean; extra?: object
     urlPage: 'https://simulateur-aides.fr/resultat',
     ip: '92.184.12.40',
     userAgent: 'Mozilla/5.0',
-    finalites: ['transmission_portail_habitat', 'mise_en_relation_professionnels'],
+    finalites: ['transmission_portail_travaux', 'mise_en_relation_professionnels'],
   },
   ...p.extra,
 });
@@ -228,7 +228,7 @@ describe('importerDemandePartenaire (IMPORT_LEADS)', () => {
         modele: 'confirmer-telephone',
         destinataire: { telephone: '+33631420045' },
         secrets: {
-          lien: 'https://portail-habitat.test/confirmer-telephone?jeton=jeton-de-confirmation-1-abcdefghij',
+          lien: 'https://portail-travaux.test/confirmer-telephone?jeton=jeton-de-confirmation-1-abcdefghij',
         },
       }),
     ]);

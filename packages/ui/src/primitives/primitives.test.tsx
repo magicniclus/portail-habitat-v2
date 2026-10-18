@@ -25,7 +25,7 @@ describe('Logo', () => {
   });
   it('garde le nom lisible quand seule l’icône est visible', () => {
     render(<Logo iconeSeule />);
-    expect(screen.getByText('PORTAIL HABITAT')).toHaveClass('sr-only');
+    expect(screen.getByText('PORTAIL TRAVAUX')).toHaveClass('sr-only');
   });
 });
 

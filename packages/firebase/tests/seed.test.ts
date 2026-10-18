@@ -129,19 +129,19 @@ describe('garde du seed', () => {
   const ok = { SEED_MOT_DE_PASSE: 'un-mot-de-passe-long' };
   it('émulateur demo-… : accepté', () => {
     expect(verifierCibleSeed({ ...ok, FIRESTORE_EMULATOR_HOST: '127.0.0.1:8080' })).toMatchObject({
-      projet: 'demo-portail-habitat',
+      projet: 'demo-portail-travaux',
       emulateur: true,
     });
   });
   it('préproduction -staging : acceptée', () => {
-    expect(verifierCibleSeed({ ...ok, GCLOUD_PROJECT: 'portail-habitat-staging' }).emulateur).toBe(
+    expect(verifierCibleSeed({ ...ok, GCLOUD_PROJECT: 'portail-travaux-staging' }).emulateur).toBe(
       false,
     );
   });
   it.each([
     [{ ...ok, NODE_ENV: 'production', FIRESTORE_EMULATOR_HOST: 'x' }, /NODE_ENV/],
-    [{ ...ok, GCLOUD_PROJECT: 'portail-habitat-prod' }, /refusé/],
-    [{ ...ok, FIRESTORE_EMULATOR_HOST: 'x', GCLOUD_PROJECT: 'portail-habitat-prod' }, /refusé/],
+    [{ ...ok, GCLOUD_PROJECT: 'portail-travaux-prod' }, /refusé/],
+    [{ ...ok, FIRESTORE_EMULATOR_HOST: 'x', GCLOUD_PROJECT: 'portail-travaux-prod' }, /refusé/],
     [{ ...ok }, /refusé/],
     [{ FIRESTORE_EMULATOR_HOST: 'x', SEED_MOT_DE_PASSE: 'court' }, /SEED_MOT_DE_PASSE/],
   ])('refusé : %j', (env, message) => {

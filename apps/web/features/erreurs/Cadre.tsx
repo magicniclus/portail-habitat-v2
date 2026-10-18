@@ -8,7 +8,7 @@ export function EnteteErreur({ espace }: { espace: EspacePublic }) {
       prefetch={false}
       href={ESPACES_ERREUR[espace].accueil}
       className="inline-flex min-h-11 items-center no-underline"
-      aria-label="Portail Habitat, accueil"
+      aria-label="Portail Travaux, accueil"
     >
       <Logo variant={espace} />
     </Link>
@@ -22,7 +22,7 @@ export function PiedErreur({ espace }: { espace: EspacePublic }) {
   return (
     <>
       <span className="inline-flex min-h-11 items-center">
-        © {new Date().getFullYear()} Portail Habitat
+        © {new Date().getFullYear()} Portail Travaux
       </span>
       <Link prefetch={false} href={e.aide} className={lienPied}>
         Aide et contact

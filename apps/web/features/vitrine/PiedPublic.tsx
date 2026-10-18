@@ -52,7 +52,7 @@ export function PiedPublic({
         ))}
       </div>
       <p className="m-0 border-t border-blanc/12 px-[clamp(18px,4vw,44px)] py-[18px] text-center text-[13px]">
-        © {new Date().getFullYear()} Portail Habitat{variantLogo === 'diag' ? ' Diag' : ''}.{' '}
+        © {new Date().getFullYear()} Portail Travaux{variantLogo === 'diag' ? ' Diag' : ''}.{' '}
         {mention ?? 'Tous droits réservés.'} · <LienGererCookies className={lienPied} /> ·{' '}
         <LienNePlusMesurer className={lienPied} />
       </p>

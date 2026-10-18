@@ -29,7 +29,7 @@ export interface ConfigHebergeur {
 
 /**
  * Enregistrements à créer chez le registrar de l'artisan (cas C) : A et CNAME lus chez
- * l'hébergeur, TXT de preuve sur `_portailhabitat` (sans conflit avec un SPF), vérifications
+ * l'hébergeur, TXT de preuve sur `_portailtravaux` (sans conflit avec un SPF), vérifications
  * propres à l'hébergeur. Jamais de MX (DOM-08).
  */
 export function enregistrementsConnexion(
@@ -39,7 +39,7 @@ export function enregistrementsConnexion(
   return [
     ...h.apex.map((ip) => ({ type: 'A' as const, nom: '@', valeur: ip })),
     { type: 'CNAME', nom: 'www', valeur: h.cname.replace(/\.$/, '') },
-    { type: 'TXT', nom: '_portailhabitat', valeur: `ph-verif=${jeton}` },
+    { type: 'TXT', nom: '_portailtravaux', valeur: `ph-verif=${jeton}` },
     ...h.verifications.map((v) => ({ type: 'TXT' as const, nom: v.nom, valeur: v.valeur })),
   ];
 }

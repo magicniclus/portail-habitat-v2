@@ -17,7 +17,7 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'avis-preuve-demandee': 'Une preuve est demandée pour votre avis',
   'litige-message': 'Message du médiateur',
   'litige-decision': 'Décision sur votre litige',
-  'invitation-equipe-admin': 'Bienvenue dans l’équipe Portail Habitat',
+  'invitation-equipe-admin': 'Bienvenue dans l’équipe Portail Travaux',
   'reponse-artisan-avis': 'L’artisan a répondu à votre avis',
   'dossier-diag-confirme': 'Votre dossier de diagnostics est enregistré',
   'compte-inactif': 'Votre compte va être supprimé',
@@ -34,8 +34,8 @@ const SUJETS: Partial<Record<NomModele, string>> = {
   'nouvel-avis': 'Vous avez reçu un nouvel avis',
   'avis-signale-decision': 'Décision sur votre signalement',
   'assurance-expire': 'Votre attestation décennale expire bientôt',
-  'rapport-hebdo': 'Votre semaine sur Portail Habitat',
-  'rapport-mensuel': 'Votre mois sur Portail Habitat',
+  'rapport-hebdo': 'Votre semaine sur Portail Travaux',
+  'rapport-mensuel': 'Votre mois sur Portail Travaux',
   'avertissement-charte': 'Avertissement concernant la charte',
   suspension: 'Votre fiche est suspendue',
   'levee-sanction': 'Votre fiche est de nouveau active',
@@ -69,7 +69,7 @@ export function squelette(nom: string): Modele<Squelette> {
     sujet: () => sujet,
     preheader: (d) => d.message,
     blocs: (d) => [titre(sujet), para(d.message), bouton('Voir le détail', d.lien)],
-    exemple: { message: 'Contenu rédigé dans le lot concerné.', lien: 'https://portailhabitat.fr' },
+    exemple: { message: 'Contenu rédigé dans le lot concerné.', lien: 'https://portailtravaux.fr' },
   });
 }
 

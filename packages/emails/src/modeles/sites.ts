@@ -5,7 +5,7 @@ import { modele } from '../modele';
 interface Domaine {
   nomCommercial: string;
   domaine: string;
-  /** Enregistrements encore manquants (« TXT _portailhabitat »). */
+  /** Enregistrements encore manquants (« TXT _portailtravaux »). */
   manquants: string[];
   lien: string;
 }
@@ -13,8 +13,8 @@ interface Domaine {
 const EX: Domaine = {
   nomCommercial: 'Bertrand Rénovation',
   domaine: 'bertrand-renovation.fr',
-  manquants: ['TXT _portailhabitat'],
-  lien: 'https://portailhabitat.fr/pro/site?onglet=domaine',
+  manquants: ['TXT _portailtravaux'],
+  lien: 'https://portailtravaux.fr/pro/site?onglet=domaine',
 };
 
 export const modelesSites = {
@@ -84,7 +84,7 @@ export const modelesSites = {
       lignes: [
         { type: 'A', nom: '@', valeur: '76.76.21.21' },
         { type: 'CNAME', nom: 'www', valeur: 'cname.vercel-dns.com' },
-        { type: 'TXT', nom: '_portailhabitat', valeur: 'ph-verif=…' },
+        { type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=…' },
       ],
     },
   }),

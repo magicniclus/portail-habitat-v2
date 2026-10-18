@@ -66,7 +66,7 @@ export const preuveConsentement = z.object({
   finalites: z
     .array(
       z.enum([
-        'transmission_portail_habitat',
+        'transmission_portail_travaux',
         'mise_en_relation_professionnels',
         'rappel_telephonique',
       ]),
@@ -76,7 +76,7 @@ export const preuveConsentement = z.object({
 });
 
 export const FINALITES_OBLIGATOIRES = [
-  'transmission_portail_habitat',
+  'transmission_portail_travaux',
   'mise_en_relation_professionnels',
 ] as const;
 

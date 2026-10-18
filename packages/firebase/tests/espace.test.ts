@@ -163,7 +163,7 @@ describe('connexion par lien magique', () => {
   });
   const code = async (email: string) => {
     const lien = await auth.generateSignInWithEmailLink(email, {
-      url: 'https://portail-habitat.test/connexion/lien',
+      url: 'https://portail-travaux.test/connexion/lien',
       handleCodeInApp: true,
     });
     return new URL(lien).searchParams.get('oobCode')!;

@@ -32,7 +32,7 @@ beforeEach(async () => {
     db,
     horloge: () => t,
     notifier: async (e) => void envois.push(e),
-    urlSite: 'https://portail-habitat.test',
+    urlSite: 'https://portail-travaux.test',
     jeton: () => `jeton-de-test-${++n}-abcdefghijklmnopqrstuvwxyz`,
   };
 });
@@ -70,7 +70,7 @@ describe('lien de reprise par email (REPRISE_PARCOURS §5)', () => {
       donnees: { resume: 'Peinture · 50 m²', etape: 3 },
     });
     expect(envois[0]!.secrets!.lien).toBe(
-      'https://portail-habitat.test/simulateur?reprise=jeton-de-test-1-abcdefghijklmnopqrstuvwxyz',
+      'https://portail-travaux.test/simulateur?reprise=jeton-de-test-1-abcdefghijklmnopqrstuvwxyz',
     );
   });
 

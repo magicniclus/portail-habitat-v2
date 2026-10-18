@@ -39,8 +39,8 @@ import { sessionPro } from './sessionPro';
 
 const db = () => getFirestore(appAdmin());
 
-/** Domaine des sous-domaines gratuits (`{slug}.portailhabitat.fr`, DOMAINES §2). */
-export const DOMAINE_BASE = process.env.DOMAINE_SITES ?? 'portailhabitat.fr';
+/** Domaine des sous-domaines gratuits (`{slug}.portailtravaux.fr`, DOMAINES §2). */
+export const DOMAINE_BASE = process.env.DOMAINE_SITES ?? 'portailtravaux.fr';
 
 export function servicesSites(): ServicesSites {
   return { db: db(), horloge: Date.now, domaineBase: DOMAINE_BASE };

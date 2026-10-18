@@ -74,7 +74,7 @@ export default async function Preferences({
                 Offres professionnelles (artisans)
               </Checkbox>
               <Checkbox name="marketingEmail" defaultChecked={val('marketing', 'email', false)}>
-                Actualités de Portail Habitat
+                Actualités de Portail Travaux
               </Checkbox>
               <p className="py-2 text-[14.5px] text-neutre-800">
                 Les emails de sécurité (connexion, mot de passe) et ceux qui suivent une de vos

@@ -35,7 +35,7 @@ export default async function PageRejoindre({
         <>
           <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Entreprise introuvable</h1>
           <Link href={routes.pro} className={bouton({ variant: 'secondaire' })}>
-            Retour à Portail Habitat Pro
+            Retour à Portail Travaux Pro
           </Link>
         </>
       ) : p.revendiquer ? (

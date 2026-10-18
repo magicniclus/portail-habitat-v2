@@ -189,13 +189,13 @@ describe('lignesExportArticles (BLOG-08)', () => {
           genereParIA: true,
         },
       ],
-      'durand.portailhabitat.fr',
+      'durand.portailtravaux.fr',
     );
     expect(l.entetes[0]).toBe('Titre');
     expect(l.lignes).toEqual([
       [
         'PAC',
-        'https://durand.portailhabitat.fr/blog/pac',
+        'https://durand.portailtravaux.fr/blog/pac',
         'Publié',
         'Chauffage',
         'aides, rge',

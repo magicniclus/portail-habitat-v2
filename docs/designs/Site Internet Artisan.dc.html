@@ -293,7 +293,7 @@ input, textarea, select { font: inherit; }
       <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:32px;max-width:1000px">
         <div style="display:grid;gap:6px">
           <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Adresse du site</h1>
-          <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">Gratuit sur portailhabitat.fr, ou votre propre nom de domaine avec Site Pro.</p>
+          <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">Gratuit sur portailtravaux.fr, ou votre propre nom de domaine avec Site Pro.</p>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
@@ -312,7 +312,7 @@ input, textarea, select { font: inherit; }
           <div style="display:flex;align-items:center;border:1px solid var(--color-divider);border-radius:10px;overflow:hidden;max-width:620px">
             <span style="padding:10px 12px;font-size:16px;color:var(--color-neutral-700);background:var(--color-neutral-100)">https://</span>
             <input value="{{ sousDomaine }}" onChange="{{ setSousDomaine }}" style="flex:1;min-width:0;padding:10px 12px;border:0;font-size:16px">
-            <span style="padding:10px 12px;font-size:16px;color:var(--color-neutral-700);background:var(--color-neutral-100)">.portailhabitat.fr</span>
+            <span style="padding:10px 12px;font-size:16px;color:var(--color-neutral-700);background:var(--color-neutral-100)">.portailtravaux.fr</span>
           </div>
           <span style="{{ styleDispoSousDomaine }}">{{ dispoSousDomaine }}</span>
         </section>
@@ -365,7 +365,7 @@ input, textarea, select { font: inherit; }
         <section style="display:grid;gap:14px">
           <div style="display:grid;gap:4px">
             <span style="font-size:17px;font-weight:700">Hébergement et sécurité</span>
-            <span style="font-size:14px;color:var(--color-neutral-700);max-width:70ch">Votre site est hébergé et protégé par Portail Habitat, sur un réseau mondial. Rien à installer ni à configurer, y compris avec votre propre domaine.</span>
+            <span style="font-size:14px;color:var(--color-neutral-700);max-width:70ch">Votre site est hébergé et protégé par Portail Travaux, sur un réseau mondial. Rien à installer ni à configurer, y compris avec votre propre domaine.</span>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
             <sc-for list="{{ hebCartes }}" as="c" hint-placeholder-count="4">
@@ -571,7 +571,7 @@ const SECTIONS0 = [
   { id: "hero", type: "hero", nom: "Bandeau d'accueil", kicker: "Plombier chauffagiste · Bordeaux", titre: "Votre salle de bain refaite en 10 jours, sans mauvaise surprise", texte: "Depuis 2009, Bertrand Rénovation rénove salles de bain et chauffages à Bordeaux et dans un rayon de 30 km. Note 4,8/5 sur 14 avis vérifiés.", cols: v3(2, 1, 1), pad: v3(80, 60, 40), marge: v3(0, 0, 0), taille: v3(48, 40, 30), align: v3("left", "left", "left"), fond: "clair", masque: v3(false, false, false) },
   { id: "presta", type: "prestations", nom: "Prestations", titre: "Ce que nous faisons", texte: "Trois métiers, une seule équipe qualifiée et assurée.", cols: v3(3, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "blanc", masque: v3(false, false, false) },
   { id: "real", type: "realisations", nom: "Réalisations", titre: "Chantiers récents", texte: "Photos prises chez nos clients, avec leur accord.", cols: v3(3, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "clair", masque: v3(false, false, false) },
-  { id: "avis", type: "avis", nom: "Avis clients", titre: "4,8 / 5 sur 14 avis vérifiés", texte: "Avis collectés par Portail Habitat après chaque chantier.", cols: v3(3, 1, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("center", "center", "left"), fond: "primaire", masque: v3(false, false, false) },
+  { id: "avis", type: "avis", nom: "Avis clients", titre: "4,8 / 5 sur 14 avis vérifiés", texte: "Avis collectés par Portail Travaux après chaque chantier.", cols: v3(3, 1, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("center", "center", "left"), fond: "primaire", masque: v3(false, false, false) },
   { id: "contact", type: "contact", nom: "Contact et devis", titre: "Parlons de votre projet", texte: "Réponse sous 24 h ouvrées. Devis gratuit et sans engagement.", cols: v3(2, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "blanc", masque: v3(false, false, false) },
   { id: "footer", type: "footer", nom: "Pied de page", titre: "", texte: "", cols: v3(3, 3, 1), pad: v3(40, 36, 28), marge: v3(0, 0, 0), taille: v3(16, 16, 15), align: v3("left", "left", "left"), fond: "sombre", masque: v3(false, false, false) },
 ];
@@ -584,7 +584,7 @@ const PAGES0 = [
   { id: "accueil", nom: "Accueil", court: "Accueil", slug: "", statut: "publiee", menu: true, vues: 412, motCle: "plombier Bordeaux", title: "Plombier chauffagiste à Bordeaux | Bertrand Rénovation", meta: "Plombier et chauffagiste à Bordeaux depuis 2009 : salle de bain clé en main, pompe à chaleur RGE et dépannage sous 24 h. Devis gratuit." },
   { id: "prestations", nom: "Prestations", court: "Prestations", slug: "prestations", statut: "publiee", menu: true, vues: 186, motCle: "rénovation salle de bain Bordeaux", title: "Salle de bain, chauffage, dépannage à Bordeaux | Bertrand Rénovation", meta: "Rénovation de salle de bain, installation de pompe à chaleur et dépannage plomberie à Bordeaux. Artisan RGE, décennale, devis sous 48 h." },
   { id: "realisations", nom: "Réalisations", court: "Réalisations", slug: "realisations", statut: "publiee", menu: true, vues: 141, motCle: "réalisations salle de bain Bordeaux", title: "Nos chantiers en Gironde | Bertrand Rénovation", meta: "Photos de salles de bain et chauffages réalisés à Bordeaux, Mérignac, Talence et Pessac." },
-  { id: "avis", nom: "Avis clients", court: "Avis", slug: "avis-clients", statut: "publiee", menu: true, vues: 77, motCle: "avis plombier Bordeaux", title: "Avis clients : 4,8/5 sur 14 avis | Bertrand Rénovation", meta: "Les avis vérifiés de nos clients à Bordeaux, collectés par Portail Habitat après chaque chantier." },
+  { id: "avis", nom: "Avis clients", court: "Avis", slug: "avis-clients", statut: "publiee", menu: true, vues: 77, motCle: "avis plombier Bordeaux", title: "Avis clients : 4,8/5 sur 14 avis | Bertrand Rénovation", meta: "Les avis vérifiés de nos clients à Bordeaux, collectés par Portail Travaux après chaque chantier." },
   { id: "contact", nom: "Contact et devis", court: "Contact", slug: "contact-devis", statut: "publiee", menu: true, vues: 98, motCle: "devis plombier Bordeaux", title: "Devis gratuit plombier Bordeaux | Bertrand Rénovation", meta: "Décrivez votre projet : réponse sous 24 h ouvrées, devis gratuit et sans engagement." },
   { id: "merignac", nom: "Plombier à Mérignac", court: "Mérignac", slug: "plombier-merignac", statut: "brouillon", menu: false, vues: 0, motCle: "plombier Mérignac", title: "Plombier à Mérignac : salle de bain et dépannage | Bertrand Rénovation", meta: "Votre plombier à Mérignac, à 15 minutes : dépannage sous 24 h, salle de bain clé en main, pompe à chaleur RGE." },
   { id: "mentions", nom: "Mentions légales", court: "Mentions", slug: "mentions-legales", statut: "publiee", menu: false, vues: 9, motCle: "", title: "Mentions légales | Bertrand Rénovation", meta: "Éditeur, hébergeur, assurance décennale et traitement des données personnelles." },
@@ -675,11 +675,11 @@ class Component extends DCLogic {
       ["accueil", "Accueil", "/", "Bandeau, prestations, réalisations, avis, contact", "Indispensable"],
       ["prestations", "Prestations", "/prestations", "Une section par métier, tarifs indicatifs, aides possibles", "SEO"],
       ["realisations", "Réalisations", "/realisations", "Vos 3 chantiers, avant/après", "Confiance"],
-      ["avis", "Avis clients", "/avis-clients", "Synchronisée avec vos avis Portail Habitat", "Confiance"],
+      ["avis", "Avis clients", "/avis-clients", "Synchronisée avec vos avis Portail Travaux", "Confiance"],
       ["contact", "Contact et devis", "/contact-devis", "Formulaire, horaires, carte de la zone", "Indispensable"],
       ["mentions", "Mentions légales", "/mentions-legales", "Générées depuis vos documents vérifiés", "Obligatoire"],
     ];
-    const TACHES = ["Rédaction des textes des 6 pages", "Pages locales : " + (Object.keys(s.locales).filter((k) => s.locales[k]).join(", ") || "aucune"), "Titres, descriptions et données structurées", "Optimisation des 9 photos (WebP, textes alternatifs)", "Formulaire de contact relié à « Mes demandes »", "Mise en ligne sur " + s.sousDomaine + ".portailhabitat.fr"];
+    const TACHES = ["Rédaction des textes des 6 pages", "Pages locales : " + (Object.keys(s.locales).filter((k) => s.locales[k]).join(", ") || "aucune"), "Titres, descriptions et données structurées", "Optimisation des 9 photos (WebP, textes alternatifs)", "Formulaire de contact relié à « Mes demandes »", "Mise en ligne sur " + s.sousDomaine + ".portailtravaux.fr"];
     const genFinie = s.gen >= 6;
 
     const champsSite = (list) => list.map((c) => ({ key: c.id, libelle: c.libelle, libelleAff: c.libelle + (c.requis ? " *" : ""), aide: AIDES[c.type] || "", styleChampSite: { display: "block", padding: c.type === "zone" ? "10px 12px 34px" : "10px 12px", borderRadius: "8px", border: "1px solid #cfd5dc", background: "#fff", fontSize: "14px", color: "#7a8591", fontFamily: pol.texte } }));
@@ -687,7 +687,7 @@ class Component extends DCLogic {
 
     // --- SEO
     const sp = s.pages.find((p) => p.id === s.seoSel) || s.pages[0];
-    const base = s.domaine && plan === "pro" ? s.domaine : s.sousDomaine + ".portailhabitat.fr";
+    const base = s.domaine && plan === "pro" ? s.domaine : s.sousDomaine + ".portailtravaux.fr";
     const verifs = [
       [sp.title.length >= 30 && sp.title.length <= 60, "Titre entre 30 et 60 caractères"],
       [sp.meta.length >= 110 && sp.meta.length <= 155, "Méta-description entre 110 et 155 caractères"],
@@ -876,7 +876,7 @@ class Component extends DCLogic {
         ["Zone desservie", "Bordeaux et 30 km autour", null, "Reprise de votre fiche ; modifiez-la dans « Ma fiche »"],
         ["Image de partage", "photo-salle-de-bain-cauderan.webp", null, "Affichée quand le site est partagé (Facebook, WhatsApp)"],
       ].map(([label, valeur, f, aide]) => ({ key: label, label, valeur, aide, changer: (e) => f && f(e.target.value) })),
-      seoAuto: ["Sitemap XML et robots.txt mis à jour à chaque publication", "Données structurées : entreprise, avis (note 4,8), zone, horaires", "Adresse canonique sur le domaine principal, redirection 301 du sous-domaine", "Images converties en WebP, chargement différé", "Lien réciproque avec votre fiche Portail Habitat"],
+      seoAuto: ["Sitemap XML et robots.txt mis à jour à chaque publication", "Données structurées : entreprise, avis (note 4,8), zone, horaires", "Adresse canonique sur le domaine principal, redirection 301 du sous-domaine", "Images converties en WebP, chargement différé", "Lien réciproque avec votre fiche Portail Travaux"],
       libelleGsc: s.gsc ? "Google Search Console connectée ✓" : "Connecter Google Search Console",
       connecterGsc: () => { this.setState({ gsc: true }); this.flash("Propriété vérifiée automatiquement (enregistrement TXT)"); },
       ongletsSeoPages: s.pages.map((p) => ({ key: p.id, nom: p.court, choisir: () => this.setState({ seoSel: p.id }), style: chip(s.seoSel === p.id) })),
@@ -897,13 +897,13 @@ class Component extends DCLogic {
 
       // domaine
       offres: [
-        { key: "g", nom: "Gratuit", prix: "0 €", actuelle: plan === "gratuit", peutPrendre: false, points: ["Adresse " + s.sousDomaine + ".portailhabitat.fr", "Toutes les pages et l'éditeur", "Aperçu IA de votre accueil (1 essai)", "Formulaire relié à vos demandes", "Mention « Site créé avec Portail Habitat »"] },
-        { key: "p", nom: "Site Pro", prix: "9,90 € / mois", actuelle: plan === "pro", peutPrendre: plan !== "pro", points: ["IA complète : création du site, sections, pages, textes et SEO", "Votre nom de domaine inclus (.fr, .com ou .eu)", "Sous-domaine gardé en secours, redirigé", "Sans mention Portail Habitat", "Statistiques sur 12 mois et Search Console"] },
+        { key: "g", nom: "Gratuit", prix: "0 €", actuelle: plan === "gratuit", peutPrendre: false, points: ["Adresse " + s.sousDomaine + ".portailtravaux.fr", "Toutes les pages et l'éditeur", "Aperçu IA de votre accueil (1 essai)", "Formulaire relié à vos demandes", "Mention « Site créé avec Portail Travaux »"] },
+        { key: "p", nom: "Site Pro", prix: "9,90 € / mois", actuelle: plan === "pro", peutPrendre: plan !== "pro", points: ["IA complète : création du site, sections, pages, textes et SEO", "Votre nom de domaine inclus (.fr, .com ou .eu)", "Sous-domaine gardé en secours, redirigé", "Sans mention Portail Travaux", "Statistiques sur 12 mois et Search Console"] },
       ].map((o) => ({ ...o, estGratuit: o.key === "g", style: { display: "flex", flexDirection: "column", gap: "12px", padding: "20px", borderRadius: "16px", border: o.actuelle ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)", background: o.key === "p" ? "var(--color-accent-100)" : "#fff" } })),
       passerPro: () => this.offre("site", tab === "formulaire" ? "Formulaire sur mesure et SMS" : tab === "blog" ? "Le blog est inclus dans Site Pro" : "Votre nom de domaine inclus"),
       
       sousDomaine: s.sousDomaine, setSousDomaine: (e) => this.setState({ sousDomaine: slugify(e.target.value) || e.target.value.toLowerCase() }),
-      dispoSousDomaine: sdOk ? "✓ Disponible · " + s.sousDomaine + ".portailhabitat.fr" : "Indisponible ou invalide (3 à 40 caractères : lettres, chiffres, tirets)",
+      dispoSousDomaine: sdOk ? "✓ Disponible · " + s.sousDomaine + ".portailtravaux.fr" : "Indisponible ou invalide (3 à 40 caractères : lettres, chiffres, tirets)",
       styleDispoSousDomaine: { fontSize: "14px", fontWeight: 600, color: sdOk ? "#1f7a4d" : "#b3261e" },
       modesDomaine: [["acheter", "Trouver un domaine"], ["connecter", "J'ai déjà un domaine"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ modeDomaine: id }), style: { ...seg(s.modeDomaine === id), padding: "9px 16px" } })),
       modeAcheter: s.modeDomaine === "acheter", modeConnecter: s.modeDomaine === "connecter",
@@ -915,9 +915,9 @@ class Component extends DCLogic {
         return {
           hebCartes: [
             ["Hébergement", "Actif", "Servi depuis le serveur le plus proche de chaque visiteur", "#1f9d55"],
-            ["Adresse", dom ? "https://" + (dom.indexOf("www.") === 0 ? dom : "www." + dom) : "https://" + s.sousDomaine + ".portailhabitat.fr", dom ? "Domaine sans www redirigé automatiquement · certificat HTTPS actif" : "Certificat HTTPS actif · passez à Site Pro pour votre domaine", "#1f9d55"],
+            ["Adresse", dom ? "https://" + (dom.indexOf("www.") === 0 ? dom : "www." + dom) : "https://" + s.sousDomaine + ".portailtravaux.fr", dom ? "Domaine sans www redirigé automatiquement · certificat HTTPS actif" : "Certificat HTTPS actif · passez à Site Pro pour votre domaine", "#1f9d55"],
             ["Protection", "Pare-feu et anti-robots", "Attaques par saturation bloquées, robots filtrés, formulaire protégé sans captcha", "#1f9d55"],
-            ["Formulaire et statistiques", "Reliés à Portail Habitat", "Les demandes arrivent dans « Mes demandes » ; mesure sans cookie", "#1f9d55"],
+            ["Formulaire et statistiques", "Reliés à Portail Travaux", "Les demandes arrivent dans « Mes demandes » ; mesure sans cookie", "#1f9d55"],
           ].map(([titre, valeur, detail, c]) => ({ key: titre, titre, valeur, detail, stylePastille: pt(c) })),
           hebVersions: VERS.map(([n, date, par]) => { const on = n === vEnLigne; return { key: n, num: "v" + n, date, par, etat: on ? "En ligne" : "Archivée", restaurable: !on,
             restaurer: () => { this.setState({ versionEnLigne: n }); this.flash("Version v" + n + " remise en ligne en quelques secondes"); },
@@ -932,7 +932,7 @@ class Component extends DCLogic {
       domaineExistant: s.domaineExistant, setDomaineExistant: (e) => this.setState({ domaineExistant: e.target.value, dnsVisible: false, dnsOk: false }),
       connecterDomaine: (e) => { e.preventDefault(); if (!domaineCible) return this.flash("Saisissez votre domaine, par exemple www.mon-entreprise.fr"); this.setState({ dnsVisible: true, dnsOk: false }); },
       dnsVisible: s.dnsVisible,
-      dns: [["A", "@", "76.76.21.21"], ["CNAME", "www", "cname.vercel-dns.com."], ["TXT", "_portailhabitat", "ph-verif=7f3a9c21-" + slugify(domaineCible).slice(0, 12)]].map(([type, nom, valeur], i) => { const ok = s.dnsOk || i === 2; return { key: type, type, nom, valeur, etat: ok ? "Détecté" : "En attente", styleEtat: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: ok ? "#e6f4ec" : "var(--color-neutral-100)", color: ok ? "#1f7a4d" : "var(--color-neutral-800)" } }; }),
+      dns: [["A", "@", "76.76.21.21"], ["CNAME", "www", "cname.vercel-dns.com."], ["TXT", "_portailtravaux", "ph-verif=7f3a9c21-" + slugify(domaineCible).slice(0, 12)]].map(([type, nom, valeur], i) => { const ok = s.dnsOk || i === 2; return { key: type, type, nom, valeur, etat: ok ? "Détecté" : "En attente", styleEtat: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: ok ? "#e6f4ec" : "var(--color-neutral-100)", color: ok ? "#1f7a4d" : "var(--color-neutral-800)" } }; }),
       verifierDns: () => { if (plan !== "pro") return this.offre("site", "Connecter votre propre domaine"); this.setState({ dnsOk: true, domaine: domaineCible }); this.flash(domaineCible + " connecté · certificat HTTPS en cours d'émission"); },
 
       // stats
@@ -954,7 +954,7 @@ class Component extends DCLogic {
         };
       })(),
       blocsStats: [
-        bloc("D'où viennent vos visiteurs", [["Google (recherche)", 468], ["Votre fiche Portail Habitat", 197], ["Accès direct", 121], ["Réseaux sociaux", 47], ["Google Maps", 20]]),
+        bloc("D'où viennent vos visiteurs", [["Google (recherche)", 468], ["Votre fiche Portail Travaux", 197], ["Accès direct", 121], ["Réseaux sociaux", 47], ["Google Maps", 20]]),
         bloc("Pages les plus vues", s.pages.filter((p) => p.vues > 0).slice(0, 5).map((p) => [p.nom, p.vues])),
         bloc("Recherches Google qui vous trouvent", [["plombier bordeaux", 212, "212 · pos. 9"], ["salle de bain bordeaux", 141, "141 · pos. 14"], ["bertrand renovation", 88, "88 · pos. 1"], ["pompe à chaleur mérignac", 54, "54 · pos. 21"], ["plombier caudéran", 31, "31 · pos. 6"]]),
       ],

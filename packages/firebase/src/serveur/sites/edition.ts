@@ -14,7 +14,7 @@ import { chemins } from '../../chemins';
 export interface ServicesSites {
   db: Firestore;
   horloge: () => number;
-  /** Domaine des sous-domaines gratuits (`portailhabitat.fr`). */
+  /** Domaine des sous-domaines gratuits (`portailtravaux.fr`). */
   domaineBase: string;
 }
 

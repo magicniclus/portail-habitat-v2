@@ -64,7 +64,7 @@ describe('fournisseurs', () => {
     const { appels, f } = faux({ ID: 'm1' });
     expect(
       await mailpit('http://127.0.0.1:8025/', f).envoyer({
-        de: 'Portail Habitat <n@p.fr>',
+        de: 'Portail Travaux <n@p.fr>',
         a: 'b@x.fr',
         sujet: 'S',
         html: 'h',
@@ -72,15 +72,15 @@ describe('fournisseurs', () => {
       }),
     ).toEqual({ id: 'mailpit:m1' });
     expect(appels[0]!.url).toBe('http://127.0.0.1:8025/api/v1/send');
-    expect(appels[0]!.corps.From).toEqual({ Name: 'Portail Habitat', Email: 'n@p.fr' });
+    expect(appels[0]!.corps.From).toEqual({ Name: 'Portail Travaux', Email: 'n@p.fr' });
   });
   it('Brevo : SMS transactionnel, numéro sans « + »', async () => {
     const { appels, f } = faux({ messageId: 42 });
     expect(
-      await brevoSms('k', 'PortailHab', f).envoyer({ a: '+33612345678', texte: 'Code 1' }),
+      await brevoSms('k', 'PortailTrav', f).envoyer({ a: '+33612345678', texte: 'Code 1' }),
     ).toEqual({ id: '42' });
     expect(appels[0]!.corps).toMatchObject({
-      sender: 'PortailHab',
+      sender: 'PortailTrav',
       recipient: '33612345678',
       type: 'transactional',
     });
@@ -97,15 +97,15 @@ describe('fournisseurs', () => {
     ).rejects.toThrow(/Resend 500/);
   });
   it('liste blanche de staging', () => {
-    expect(estAutorise('julie@portailhabitat.fr', '@portailhabitat.fr')).toBe(true);
-    expect(estAutorise('client@gmail.com', '@portailhabitat.fr, @test.local')).toBe(false);
+    expect(estAutorise('julie@portailtravaux.fr', '@portailtravaux.fr')).toBe(true);
+    expect(estAutorise('client@gmail.com', '@portailtravaux.fr, @test.local')).toBe(false);
     expect(estAutorise('client@gmail.com', undefined)).toBe(true);
   });
   it('liens absolus avec suivi de campagne, jamais sur un site tiers', () => {
-    expect(lienAbsolu('https://portailhabitat.fr', '/pro/equipe', 'invitation-membre')).toBe(
-      'https://portailhabitat.fr/pro/equipe?utm_source=email&utm_campaign=invitation-membre',
+    expect(lienAbsolu('https://portailtravaux.fr', '/pro/equipe', 'invitation-membre')).toBe(
+      'https://portailtravaux.fr/pro/equipe?utm_source=email&utm_campaign=invitation-membre',
     );
-    expect(lienAbsolu('https://portailhabitat.fr', 'https://stripe.com/x', 'recu')).toBe(
+    expect(lienAbsolu('https://portailtravaux.fr', 'https://stripe.com/x', 'recu')).toBe(
       'https://stripe.com/x',
     );
   });
@@ -126,9 +126,9 @@ describe('traiterEnvoi', () => {
     email: { envoyer: async (m: (typeof emails)[number]) => (emails.push(m), { id: 're_1' }) },
     sms: { envoyer: async (m: (typeof sms)[number]) => (sms.push(m), { id: 'sms_1' }) },
     secret: 's'.repeat(32),
-    urlSite: 'https://portailhabitat.fr',
+    urlSite: 'https://portailtravaux.fr',
     expediteurs: { defaut: 'PH <n@p.fr>', pro: 'PH Pro <pro@p.fr>' },
-    editeur: 'Portail Habitat',
+    editeur: 'Portail Travaux',
   };
   const envoi = (x: Partial<EnvoiEnFile> = {}): EnvoiEnFile => ({
     id: 'e1',
@@ -160,7 +160,7 @@ describe('traiterEnvoi', () => {
     expect(await traiterEnvoi(config, 'e1', { lien: '/pro/invitation?t=JETON' })).toBe('envoye');
     expect(emails[0]!.de).toBe('PH Pro <pro@p.fr>');
     expect(emails[0]!.html).toContain(
-      'https://portailhabitat.fr/pro/invitation?t=JETON&amp;utm_source=email',
+      'https://portailtravaux.fr/pro/invitation?t=JETON&amp;utm_source=email',
     );
     expect(emails[0]!.entetes).toBeUndefined();
     expect(stockage.envoyes).toEqual([['e1', 're_1']]);
@@ -170,7 +170,7 @@ describe('traiterEnvoi', () => {
     await traiterEnvoi(config, 'e1', { lien: '/x' });
     expect(emails[0]!.entetes!['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
     expect(emails[0]!.entetes!['List-Unsubscribe']).toMatch(
-      /^<https:\/\/portailhabitat\.fr\/api\/desabonnement\?t=/,
+      /^<https:\/\/portailtravaux\.fr\/api\/desabonnement\?t=/,
     );
     expect(emails[0]!.entetes!['List-Unsubscribe']).not.toContain('lea@');
   });
@@ -188,7 +188,7 @@ describe('traiterEnvoi', () => {
   });
   it('hors liste blanche (staging) : annulé', async () => {
     stockage.envoi = envoi();
-    expect(await traiterEnvoi({ ...config, listeBlanche: '@portailhabitat.fr' }, 'e1')).toBe(
+    expect(await traiterEnvoi({ ...config, listeBlanche: '@portailtravaux.fr' }, 'e1')).toBe(
       'hors_liste_blanche',
     );
   });

@@ -11,7 +11,7 @@ export default function Maintenance() {
     <PageErreur
       surtitre="Maintenance"
       titre="Nous améliorons"
-      motCle="Portail Habitat."
+      motCle="Portail Travaux."
       texte="Le site est en maintenance pour quelques minutes. Merci de votre patience."
       visuel="···"
       entete={<EnteteErreur espace="particulier" />}

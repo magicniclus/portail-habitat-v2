@@ -123,7 +123,7 @@ describe('demandes invendues offertes (CONVERSION §3 bis)', () => {
       budgetMaxCentimes: 320_000,
       distanceKm: 5,
       delai: 'Sous 1 mois',
-      lien: 'https://portailhabitat.fr/pro/abonnement/visibilite?facturation=annuel',
+      lien: 'https://portailtravaux.fr/pro/abonnement/visibilite?facturation=annuel',
     });
     expect(JSON.stringify(envois)).not.toMatch(/telephone|email|nom":/);
     expect((await db.doc(chemins.appelOffres('ao1')).get()).get('offerteA')).toHaveLength(5);

@@ -1,14 +1,14 @@
-# Handoff : Portail Habitat (plateforme particuliers, artisans et diagnostic)
+# Handoff : Portail Travaux (plateforme particuliers, artisans et diagnostic)
 
 ## Vue d'ensemble
 
-Portail Habitat est une **plateforme de mise en relation** entre particuliers et professionnels du bâtiment, en Gironde pour commencer. Elle comprend trois espaces, chacun avec sa propre identité visuelle :
+Portail Travaux est une **plateforme de mise en relation** entre particuliers et professionnels du bâtiment, en Gironde pour commencer. Elle comprend trois espaces, chacun avec sa propre identité visuelle :
 
 | Espace | Public | Couleur | Rôle |
 |---|---|---|---|
-| **Portail Habitat** (particuliers) | Particuliers | Vert `#0d7a5f` | Trouver un artisan, simuler un devis, déposer un projet, laisser un avis |
-| **Portail Habitat Pro** (artisans) | Artisans | Orange `#e05a10` | Acquisition, onboarding, tableau de bord, demandes, appels d'offres, fiche, avis, statistiques, abonnements |
-| **Portail Habitat Diag** | Vendeurs et bailleurs | Bleu `#14508a` | Landing SEO diagnostic immobilier, parcours d'estimation, sous-landings par commune |
+| **Portail Travaux** (particuliers) | Particuliers | Vert `#0d7a5f` | Trouver un artisan, simuler un devis, déposer un projet, laisser un avis |
+| **Portail Travaux Pro** (artisans) | Artisans | Orange `#e05a10` | Acquisition, onboarding, tableau de bord, demandes, appels d'offres, fiche, avis, statistiques, abonnements |
+| **Portail Travaux Diag** | Vendeurs et bailleurs | Bleu `#14508a` | Landing SEO diagnostic immobilier, parcours d'estimation, sous-landings par commune |
 
 Le modèle économique repose sur les artisans : **abonnement Premium** (79,90 € HT/mois payé à l'année ou 99,90 € HT/mois sans engagement), **option Visibilité** (79,90 € HT/an payé en une fois ou 12,90 € HT/mois sans engagement), et **déblocage payant des appels d'offres** à un prix fixé par l'admin (barème automatique ou prix manuel), payable par carte ou en crédits (Premium inclut des crédits mensuels, packs de crédits en vente). Le service est gratuit pour les particuliers.
 
@@ -117,7 +117,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 |---|---|
 | `/aide` | `Aide et Contact.dc.html` |
 | `/legal/[public]/[doc]` | `Pages Legales.dc.html`. `public` ∈ `particuliers`, `pro`. `doc` ∈ `cgu`, `cgv`, `avis`, `charte`, `mentions`, `confidentialite`, `cookies`, `securite`, `securite-pro` |
-| `/admin/*` | `Admin Portail Habitat.dc.html` + `ADMIN.md` |
+| `/admin/*` | `Admin Portail Travaux.dc.html` + `ADMIN.md` |
 | `not-found`, `error`, maintenance | `Pages Erreur.dc.html` (404, 500, maintenance × 3 chartes) |
 | — | `Modeles Emails.dc.html` : maquette de tous les emails (voir EMAILS.md) |
 

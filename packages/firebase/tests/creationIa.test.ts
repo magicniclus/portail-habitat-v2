@@ -31,7 +31,7 @@ const client = async (a: AppelIa): Promise<ReponseIa> => {
 const s = (): ServicesIaSite => ({
   db,
   horloge: () => Date.UTC(2026, 9, 16, 10),
-  domaineBase: 'portailhabitat.fr',
+  domaineBase: 'portailtravaux.fr',
   client,
 });
 const proprio = { artisanId: 'a1', uid: 'p1' };

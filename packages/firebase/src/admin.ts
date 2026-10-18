@@ -3,7 +3,7 @@ import { getAppCheck } from 'firebase-admin/app-check';
 import { getStorage } from 'firebase-admin/storage';
 
 /** Projet utilisé par les émulateurs : le préfixe « demo- » interdit tout appel à un vrai projet. */
-export const PROJET_EMULATEUR = 'demo-portail-habitat';
+export const PROJET_EMULATEUR = 'demo-portail-travaux';
 
 export function estEmulateur(env: NodeJS.ProcessEnv = process.env): boolean {
   return Boolean(

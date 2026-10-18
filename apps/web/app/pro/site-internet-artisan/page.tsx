@@ -6,9 +6,9 @@ import { flagActif } from '@/server/flags';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Site internet artisan gratuit, créé avec l’IA · Portail Habitat Pro' },
+  title: { absolute: 'Site internet artisan gratuit, créé avec l’IA · Portail Travaux Pro' },
   description:
-    'Créez votre site internet d’artisan gratuitement : l’IA rédige vos pages, vous publiez sur votre adresse Portail Habitat. Sans carte bancaire.',
+    'Créez votre site internet d’artisan gratuitement : l’IA rédige vos pages, vous publiez sur votre adresse Portail Travaux. Sans carte bancaire.',
   alternates: { canonical: '/pro/site-internet-artisan' },
 };
 

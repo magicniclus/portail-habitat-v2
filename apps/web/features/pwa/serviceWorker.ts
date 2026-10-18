@@ -70,7 +70,7 @@ self.addEventListener('fetch', (e) => {
 self.addEventListener('push', (e) => {
   let d = {};
   try { const j = e.data ? e.data.json() : {}; d = j.data || j; } catch (err) { d = {}; }
-  const titre = d.titre || 'Portail Habitat Pro';
+  const titre = d.titre || 'Portail Travaux Pro';
   e.waitUntil(self.registration.showNotification(titre, {
     body: d.corps || '',
     icon: PWA.icone,

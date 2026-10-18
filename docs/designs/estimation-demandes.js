@@ -1,4 +1,4 @@
-/* Portail Habitat — modèle d'estimation du nombre de demandes de travaux par zone et par métier.
+/* Portail Travaux — modèle d'estimation du nombre de demandes de travaux par zone et par métier.
    Sert tant que l'historique réel est insuffisant ; en production, remplacé par le décompte réel (voir docs/STATS_DEMANDES.md).
    Dépend de window.PH_RECHERCHE (référentiel des métiers et intentions) pour la part de chaque métier. */
 (function () {

@@ -174,7 +174,7 @@ Tests : IMP-*, test de charge 200 demandes/heure, supervision « import → prop
 
 ## Lot 13 — Back-office
 ```
-Lot 13 : admin. Lis docs/ADMIN.md en entier. Maquette : docs/designs/Admin Portail Habitat.dc.html.
+Lot 13 : admin. Lis docs/ADMIN.md en entier. Maquette : docs/designs/Admin Portail Travaux.dc.html.
 Écrans /admin/* (une section par maquette docs/designs/Admin *.dc.html, menu filtré par permissions, boutons désactivés avec l'infobulle « Permission requise »), rôles personnalisés et surcharges individuelles (ADMIN §1) : masquage des données personnelles, double confirmation, motif obligatoire, audit systématique, 2FA obligatoire, session courte.
 Inclure : éditeur du référentiel des prestations (catalogue + prix, publication versionnée qui rejoue les cas de test du lot 3 et montre l'écart), éditeur de la recherche (intentions, mots-clés, synonymes, requêtes sans résultat, banc d'essai : RECHERCHE §5), feature flags (EXPLOITATION §4), tableau de délivrabilité des emails.
 Toutes les Functions admin de ADMIN §3 et COMPTES §7 avec assertPermission.

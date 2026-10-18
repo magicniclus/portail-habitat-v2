@@ -23,7 +23,7 @@ import {
 // SITE_INTERNET.md et DOMAINES.md : SITE-03, SITE-08, SITE-09, SITE-11, SITE-12, SITE-13, DOM-01.
 let db: Firestore;
 let horloge = Date.UTC(2026, 9, 14, 10);
-const s = () => ({ db, horloge: () => horloge, domaineBase: 'portailhabitat.fr' });
+const s = () => ({ db, horloge: () => horloge, domaineBase: 'portailtravaux.fr' });
 const proprio = { artisanId: 'a1', uid: 'p1' };
 const PALETTE = {
   primaire: 'primaire',
@@ -106,8 +106,8 @@ describe('création et sous-domaine (DOM-01)', () => {
     await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: initial() });
     await publierSite(s(), proprio);
     await changerSousDomaine(s(), proprio, 'bertrand-bordeaux');
-    expect(await lireSitePublie(db, 'bertrand.portailhabitat.fr')).toBeNull();
-    expect((await lireSitePublie(db, 'bertrand-bordeaux.portailhabitat.fr'))?.siteId).toBe('a1');
+    expect(await lireSitePublie(db, 'bertrand.portailtravaux.fr')).toBeNull();
+    expect((await lireSitePublie(db, 'bertrand-bordeaux.portailtravaux.fr'))?.siteId).toBe('a1');
     expect((await db.doc(chemins.slugSite('bertrand')).get()).exists).toBe(false);
   });
 });
@@ -127,7 +127,7 @@ describe('publication', () => {
       erreur: 'Page introuvable',
     });
     expect(e.message).toContain('Bouton « Demander un devis gratuit » : Page introuvable');
-    expect(await lireSitePublie(db, 'bertrand.portailhabitat.fr')).toBeNull();
+    expect(await lireSitePublie(db, 'bertrand.portailtravaux.fr')).toBeNull();
   });
 
   it('SITE-08 : publiée puis retour immédiat à la version précédente', async () => {
@@ -138,11 +138,11 @@ describe('publication', () => {
     accueil.seo.title = 'Plombier à Bordeaux, nouvelle version';
     await enregistrerPage(s(), proprio, { pageId: 'accueil', page: accueil });
     expect(await publierSite(s(), proprio)).toEqual({ version: 2 });
-    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.pages.accueil?.seo.title).toBe(
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.pages.accueil?.seo.title).toBe(
       'Plombier à Bordeaux, nouvelle version',
     );
     await retablirVersion(s(), proprio, 1);
-    const v1 = await lireSitePublie(db, 'bertrand.portailhabitat.fr');
+    const v1 = await lireSitePublie(db, 'bertrand.portailtravaux.fr');
     expect(v1?.version).toBe(1);
     expect(v1?.pages.accueil?.seo.title).not.toBe('Plombier à Bordeaux, nouvelle version');
   });
@@ -155,7 +155,7 @@ describe('publication', () => {
     await enregistrerNavigation(s(), proprio, { ...i.navigation, nom: 'Bertrand & Fils' });
     expect((await db.doc(chemins.pageSite('a1', 'contact')).get()).get('updatedAt')).toEqual(avant);
     await publierSite(s(), proprio);
-    expect((await lireSitePublie(db, 'bertrand.portailhabitat.fr'))?.navigation.nom).toBe(
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.navigation.nom).toBe(
       'Bertrand & Fils',
     );
   });

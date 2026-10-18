@@ -6,7 +6,7 @@ import { flagActif } from '@/server/flags';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Logiciel de devis et factures gratuit pour artisans · Portail Habitat Pro' },
+  title: { absolute: 'Logiciel de devis et factures gratuit pour artisans · Portail Travaux Pro' },
   description:
     'Devis et factures du bâtiment avec mentions obligatoires vérifiées, PDF à votre logo et signature en ligne. Gratuit, sans limite.',
   alternates: { canonical: '/pro/logiciel-devis-factures' },

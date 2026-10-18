@@ -30,7 +30,7 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
       'IA complète : création du site, pages, textes et référencement',
       'Blog : 5 articles par mois, en un clic ou en pilote automatique',
       'Formulaire sur mesure et SMS à chaque demande',
-      'Sans la mention « Site créé avec Portail Habitat »',
+      'Sans la mention « Site créé avec Portail Travaux »',
       'Statistiques sur 12 mois et Search Console',
     ],
     raison: 'Fonction incluse dans Site Pro.',
@@ -47,7 +47,7 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
     raison: 'Option payante.',
   },
   tout_inclus: {
-    accroche: 'Tout Portail Habitat, avec des quotas IA doublés.',
+    accroche: 'Tout Portail Travaux, avec des quotas IA doublés.',
     avantages: [
       'Fiche Pro et Site Pro réunis',
       'Blog : 15 articles IA par mois, pilote jusqu’à 2 articles par semaine',

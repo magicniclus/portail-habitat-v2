@@ -103,7 +103,7 @@ describe('creerEntrepriseAdmin', () => {
     const { artisanId } = await creer({ emailDirigeant: 'dirigeant@exemple.fr' });
     expect(envois[0]).toMatchObject({
       modele: 'invitation-membre',
-      donnees: { role: 'proprietaire', invitant: 'L’équipe Portail Habitat' },
+      donnees: { role: 'proprietaire', invitant: 'L’équipe Portail Travaux' },
     });
     const { uid } = await auth.createUser({
       email: 'dirigeant@exemple.fr',

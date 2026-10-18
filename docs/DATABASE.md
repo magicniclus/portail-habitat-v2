@@ -254,7 +254,7 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 `sourceId`, `idExterne` (**unique par source** : idempotence), `recueLe`, `statut` (`creee` → `demandes/{id}`, `doublon`, `rejetee`), `motifRejet?` (`consentement_absent`, `telephone_invalide`, `hors_zone_couverte`, `doublon_30j`, `schema_invalide`), `demandeId?`, `payloadHash`. **Aucune donnée personnelle** (elles vont dans la demande). TTL 13 mois.
 
 #### `preuvesConsentement/{id}` (ajout seul, jamais modifié)
-`sourceId`, `idExterne`, `texteAffiche` (texte exact de la case cochée), `versionTexte`, `coche: true`, `horodatage` (fourni par le partenaire), `urlPage`, `ipHash`, `userAgentHash`, `finalites` (`transmission_portail_habitat`, `mise_en_relation_professionnels`, `rappel_telephonique`), `recueLe`. Conservé **5 ans** après la dernière utilisation de la demande (preuve RGPD et démarchage). Une demande sans preuve complète est **rejetée**.
+`sourceId`, `idExterne`, `texteAffiche` (texte exact de la case cochée), `versionTexte`, `coche: true`, `horodatage` (fourni par le partenaire), `urlPage`, `ipHash`, `userAgentHash`, `finalites` (`transmission_portail_travaux`, `mise_en_relation_professionnels`, `rappel_telephonique`), `recueLe`. Conservé **5 ans** après la dernière utilisation de la demande (preuve RGPD et démarchage). Une demande sans preuve complète est **rejetée**.
 
 #### Règles de traitement (Function `importerDemandePartenaire`, webhook HTTPS)
 1. Authentification par clé + IP autorisée, validation Zod, idempotence sur `idExterne`.
@@ -828,7 +828,7 @@ Limite : 900 Ko par document (contrôlée à l'enregistrement ; au-delà, décou
 ### `sites/{id}/sectionsEnregistrees/{id}`
 `nom`, `section: Section` (ids régénérés à l'insertion), `createdAt`. 30 maximum.
 
-### `modelesSite/{modeleId}` (fournis par Portail Habitat, admin)
+### `modelesSite/{modeleId}` (fournis par Portail Travaux, admin)
 `nom`, `description`, `paletteId`, `polices`, `rayonBoutons`, `ton`, `variante` (`split`,`photo`,`sombre`,`minimal`), `vignette`, `actif`, `ordre`.
 
 ### `sites/{id}/versions/{n}` (ajout seul, 20 dernières gardées)

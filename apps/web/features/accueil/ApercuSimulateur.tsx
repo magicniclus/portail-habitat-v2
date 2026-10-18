@@ -95,7 +95,7 @@ export function ApercuSimulateur() {
             {[0, 1, 2].map((i) => (
               <span key={i} className="size-2.5 rounded-full bg-neutre-400" />
             ))}
-            <span className="ml-2.5 text-xs text-neutre-700">portailhabitat.fr/simulateur</span>
+            <span className="ml-2.5 text-xs text-neutre-700">portailtravaux.fr/simulateur</span>
           </div>
           <div className="grid gap-3.5 p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">

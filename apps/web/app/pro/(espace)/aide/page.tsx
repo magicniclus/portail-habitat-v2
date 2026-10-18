@@ -47,10 +47,10 @@ export default async function PageAidePro() {
           <h2 className="m-0 text-[19px]">Par email</h2>
           <p className="m-0 text-[15.5px] text-neutre-800">
             <a
-              href="mailto:contact@portail-habitat.fr"
+              href="mailto:contact@portailtravaux.fr"
               className="inline-flex min-h-11 items-center"
             >
-              contact@portail-habitat.fr
+              contact@portailtravaux.fr
             </a>
           </p>
         </div>

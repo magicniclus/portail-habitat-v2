@@ -5,7 +5,7 @@ import { EspaceTheme } from '@/features/theme/Theme';
 import { viewportEspace } from '@/features/theme/viewport';
 
 export const metadata: Metadata = {
-  title: { default: 'Portail Habitat Pro', template: '%s · Portail Habitat Pro' },
+  title: { default: 'Portail Travaux Pro', template: '%s · Portail Travaux Pro' },
   // Application installable (MOBILE §9, MOB-06).
   manifest: PWA_PRO.manifest,
   appleWebApp: { capable: true, title: 'PH Pro', statusBarStyle: 'default' },

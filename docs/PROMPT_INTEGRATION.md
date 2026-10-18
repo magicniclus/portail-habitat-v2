@@ -1,17 +1,17 @@
 # Prompt : intégrer le dossier de handoff dans le dépôt
 
-À coller tel quel dans Claude Code, ouvert à la racine du dépôt, après avoir déposé le dossier `design_handoff_portail_habitat/` à la racine.
+À coller tel quel dans Claude Code, ouvert à la racine du dépôt, après avoir déposé le dossier `design_handoff_portail_travaux/` à la racine.
 
 ---
 
-Un dossier `design_handoff_portail_habitat/` vient d'être déposé à la racine du dépôt. C'est la nouvelle version de la documentation et des maquettes. Fais l'intégration toi-même, dans cet ordre, sans rien supprimer du code applicatif :
+Un dossier `design_handoff_portail_travaux/` vient d'être déposé à la racine du dépôt. C'est la nouvelle version de la documentation et des maquettes. Fais l'intégration toi-même, dans cet ordre, sans rien supprimer du code applicatif :
 
 ### 1. Remplacer la documentation
 - Crée une branche `docs/handoff-maj`.
-- Remplace le contenu de `docs/` par celui de `design_handoff_portail_habitat/` (tous les `.md`, `data/`, `designs/`). Conserve dans `docs/` tout fichier qui n'existe pas dans le nouveau dossier, et liste-les-moi.
-- Le fichier `design_handoff_portail_habitat/CLAUDE.md` remplace le `CLAUDE.md` racine du dépôt. Si l'ancien contient des règles absentes du nouveau, garde-les en fin de fichier sous « Règles locales » et montre-moi lesquelles.
-- Le dossier `design_handoff_portail_habitat/claude/` va dans `.claude/` (agents, commands, settings.json) : fusionne `settings.json` sans écraser mes permissions existantes.
-- Supprime ensuite `design_handoff_portail_habitat/` de la racine. Commit : `docs: mise à jour du handoff (blog, domaines, landings)`.
+- Remplace le contenu de `docs/` par celui de `design_handoff_portail_travaux/` (tous les `.md`, `data/`, `designs/`). Conserve dans `docs/` tout fichier qui n'existe pas dans le nouveau dossier, et liste-les-moi.
+- Le fichier `design_handoff_portail_travaux/CLAUDE.md` remplace le `CLAUDE.md` racine du dépôt. Si l'ancien contient des règles absentes du nouveau, garde-les en fin de fichier sous « Règles locales » et montre-moi lesquelles.
+- Le dossier `design_handoff_portail_travaux/claude/` va dans `.claude/` (agents, commands, settings.json) : fusionne `settings.json` sans écraser mes permissions existantes.
+- Supprime ensuite `design_handoff_portail_travaux/` de la racine. Commit : `docs: mise à jour du handoff (blog, domaines, landings)`.
 
 ### 2. Maquettes
 - `docs/designs/*.dc.html` sont des maquettes de référence : ne les importe pas dans l'app, ne les sers pas en production. Elles s'ouvrent dans un navigateur (`npx serve docs/designs`) pour comparer le rendu.

@@ -18,7 +18,7 @@ describe('domaines (DOMAINES §4)', () => {
     expect(e).toEqual([
       { type: 'A', nom: '@', valeur: '203.0.113.7' },
       { type: 'CNAME', nom: 'www', valeur: 'cname.exemple-hebergeur.net' },
-      { type: 'TXT', nom: '_portailhabitat', valeur: 'ph-verif=jeton24' },
+      { type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=jeton24' },
       { type: 'TXT', nom: '_vercel', valeur: 'vc-domain-verify=abc' },
     ]);
     expect(e.some((x) => (x.type as string) === 'MX')).toBe(false);
@@ -32,13 +32,13 @@ describe('domaines (DOMAINES §4)', () => {
 
   it('adresse canonique : domaine actif (www ou nu), sinon le sous-domaine', () => {
     const base = { sousDomaine: 'bertrand' };
-    expect(hoteCanonique(base, 'portailhabitat.fr')).toBe('bertrand.portailhabitat.fr');
+    expect(hoteCanonique(base, 'portailtravaux.fr')).toBe('bertrand.portailtravaux.fr');
     expect(
       hoteCanonique(
         { ...base, domaine: { nom: 'b.fr', statut: 'attente_dns', principal: 'www' } },
-        'portailhabitat.fr',
+        'portailtravaux.fr',
       ),
-    ).toBe('bertrand.portailhabitat.fr');
+    ).toBe('bertrand.portailtravaux.fr');
     expect(
       hoteCanonique(
         { ...base, domaine: { nom: 'b.fr', statut: 'actif', principal: 'www' } },

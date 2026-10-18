@@ -47,8 +47,8 @@
       "Bash(stripe:*)"
     ],
     "deny": [
-      "Bash(firebase deploy:*--project portail-habitat-prod*)",
-      "Bash(firebase use portail-habitat-prod)",
+      "Bash(firebase deploy:*--project portail-travaux-prod*)",
+      "Bash(firebase use portail-travaux-prod)",
       "Bash(vercel --prod:*)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",

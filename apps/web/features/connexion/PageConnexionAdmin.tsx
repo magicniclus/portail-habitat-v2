@@ -25,7 +25,7 @@ export function PageConnexionAdmin({
         <Logo variant="admin" taille={34} />
         <div>
           <h1 className="m-0 mb-2 text-[clamp(26px,3.4vw,34px)] leading-tight">Administration</h1>
-          <p className="m-0 text-base text-neutre-800">Accès réservé à l’équipe Portail Habitat.</p>
+          <p className="m-0 text-base text-neutre-800">Accès réservé à l’équipe Portail Travaux.</p>
         </div>
         {raison && RAISONS[raison] ? <Banner tone="info">{RAISONS[raison]}</Banner> : null}
         <ConnexionPro suite={suite} smsActif={smsActif} espace="admin" />

@@ -29,7 +29,7 @@ const client = async (a: AppelIa): Promise<ReponseIa> => {
 const s = (avecClient = true): ServicesIaSite => ({
   db,
   horloge: () => horloge,
-  domaineBase: 'portailhabitat.fr',
+  domaineBase: 'portailtravaux.fr',
   client: avecClient ? client : null,
 });
 const proprio = { artisanId: 'a1', uid: 'p1' };

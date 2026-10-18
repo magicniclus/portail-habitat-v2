@@ -49,7 +49,7 @@ export async function admin() {
     import('firebase-admin/auth'),
     import('firebase-admin/firestore'),
   ]);
-  const app = getApps()[0] ?? initializeApp({ projectId: 'demo-portail-habitat' });
+  const app = getApps()[0] ?? initializeApp({ projectId: 'demo-portail-travaux' });
   return { auth: getAuth(app), db: getFirestore(app), Timestamp };
 }
 
@@ -138,7 +138,7 @@ export async function liensEnvoyes(motif: string): Promise<string[]> {
   let page = '';
   do {
     const r = await fetch(
-      `http://${hote}/v1/projects/demo-portail-habitat/databases/(default)/documents/capturesEmulateur?pageSize=300${page ? `&pageToken=${page}` : ''}`,
+      `http://${hote}/v1/projects/demo-portail-travaux/databases/(default)/documents/capturesEmulateur?pageSize=300${page ? `&pageToken=${page}` : ''}`,
       { headers: { Authorization: 'Bearer owner' } },
     );
     const d = (await r.json()) as {

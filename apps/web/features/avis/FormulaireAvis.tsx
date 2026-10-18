@@ -168,7 +168,7 @@ export function FormulaireAvis({
             Je certifie avoir fait réaliser ces travaux par cet artisan, n&apos;avoir aucun lien
             personnel ou concurrentiel avec lui, et respecter la{' '}
             <Link href={routes.legal('particuliers', 'avis')}>
-              politique d&apos;avis de Portail Habitat
+              politique d&apos;avis de Portail Travaux
             </Link>
             .
           </Checkbox>

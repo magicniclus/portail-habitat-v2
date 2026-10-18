@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!d) return {};
   return {
     title: {
-      absolute: `${d.doc.titre} (${d.public === 'pro' ? 'professionnels' : 'particuliers'}) · Portail Habitat`,
+      absolute: `${d.doc.titre} (${d.public === 'pro' ? 'professionnels' : 'particuliers'}) · Portail Travaux`,
     },
     description: d.doc.chapeau.slice(0, 170),
     alternates: { canonical: routes.legal(d.public, d.slug) },

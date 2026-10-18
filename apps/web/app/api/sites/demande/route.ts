@@ -12,7 +12,7 @@ import { traceRequete } from '@/server/trace';
 export const dynamic = 'force-dynamic';
 
 const plateforme = () =>
-  new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://portailhabitat.fr').hostname;
+  new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://portailtravaux.fr').hostname;
 
 const envoyer = actionMesure(
   {

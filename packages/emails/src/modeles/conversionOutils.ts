@@ -46,5 +46,5 @@ export const EX_BASE: BaseConversion = {
   nomCommercial: 'Bertrand Rénovation',
   metier: 'plombier',
   ville: 'Bordeaux',
-  lien: 'https://portailhabitat.fr/pro/abonnement',
+  lien: 'https://portailtravaux.fr/pro/abonnement',
 };

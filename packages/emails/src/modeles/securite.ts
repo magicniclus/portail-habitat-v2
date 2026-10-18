@@ -11,7 +11,7 @@ interface Appareil extends Lien {
   lieu: string;
   date: string;
 }
-const EX = { prenom: 'Camille', lien: 'https://portailhabitat.fr/connexion/lien?t=exemple' };
+const EX = { prenom: 'Camille', lien: 'https://portailtravaux.fr/connexion/lien?t=exemple' };
 const EX_APPAREIL = {
   ...EX,
   appareil: 'Safari sur iPhone',
@@ -24,7 +24,7 @@ const pasVous = alerte(
 
 export const modelesSecurite = {
   'lien-connexion': modele<Lien>({
-    sujet: () => 'Votre lien de connexion à Portail Habitat',
+    sujet: () => 'Votre lien de connexion à Portail Travaux',
     preheader: () =>
       'Valable 1 heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.',
     blocs: (d) => [
@@ -40,7 +40,7 @@ export const modelesSecurite = {
   }),
   'verifier-email': modele<Lien>({
     sujet: () => 'Confirmez votre adresse email',
-    preheader: () => 'Une dernière étape pour activer votre compte Portail Habitat.',
+    preheader: () => 'Une dernière étape pour activer votre compte Portail Travaux.',
     blocs: (d) => [
       titre('Confirmez votre adresse email'),
       para(
@@ -59,7 +59,7 @@ export const modelesSecurite = {
     blocs: (d) => [
       titre('Choisissez un nouveau mot de passe'),
       para(
-        'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Habitat.',
+        'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Portail Travaux.',
       ),
       bouton('Choisir un nouveau mot de passe', d.lien),
       note(
@@ -92,7 +92,7 @@ export const modelesSecurite = {
     blocs: (d) => [
       titre('Nouvelle connexion détectée'),
       para(
-        'Votre compte Portail Habitat vient d’être utilisé depuis un appareil que nous ne connaissions pas.',
+        'Votre compte Portail Travaux vient d’être utilisé depuis un appareil que nous ne connaissions pas.',
       ),
       recap([
         ['Appareil', d.appareil],
@@ -125,7 +125,7 @@ export const modelesSecurite = {
   }),
   'changement-email-verifier': modele<Lien>({
     sujet: () => 'Confirmez votre nouvelle adresse email',
-    preheader: () => 'Cliquez pour utiliser cette adresse sur Portail Habitat.',
+    preheader: () => 'Cliquez pour utiliser cette adresse sur Portail Travaux.',
     blocs: (d) => [
       titre('Confirmez votre nouvelle adresse'),
       para(
@@ -212,10 +212,10 @@ export const modelesSecurite = {
     exemple: EX,
   }),
   'bienvenue-particulier': modele<Lien>({
-    sujet: () => 'Bienvenue sur Portail Habitat',
+    sujet: () => 'Bienvenue sur Portail Travaux',
     preheader: () => 'Suivez vos demandes et échangez avec les artisans depuis votre espace.',
     blocs: (d) => [
-      titre('Bienvenue sur Portail Habitat'),
+      titre('Bienvenue sur Portail Travaux'),
       para(
         `${bonjour(d.prenom)}votre espace vous permet de suivre vos demandes, de comparer les devis et d’échanger avec les artisans.`,
       ),

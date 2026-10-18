@@ -17,7 +17,7 @@
 ## 2. Revenir à la version précédente
 
 - **Site** : Vercel → Deployments → déploiement précédent → « Instant Rollback » (30 s).
-- **Functions** : `git checkout vX.Y.(Z-1)` puis `firebase deploy --only functions --project portail-habitat-prod`.
+- **Functions** : `git checkout vX.Y.(Z-1)` puis `firebase deploy --only functions --project portail-travaux-prod`.
 - **Règles et index** : `firebase deploy --only firestore:rules,firestore:indexes,storage` depuis le même tag. Une règle plus stricte se déploie **avant** le code qui en dépend ; au retour arrière, redéployer d'abord le code, puis les règles.
 - **Fonctionnalité seule** : la couper par son feature flag (Admin › Référentiels › Feature flags), sans redéployer.
 - **Données** : voir §8.
@@ -38,7 +38,7 @@ Ne jamais modifier `plan`, `optionVisibilite` ou `siegesMax` à la main : seul l
 |---|---|---|
 | Plus aucun email | collection `emails` : statut `echec`, message d'erreur ; tableau de bord Resend | Clé `RESEND_API_KEY` (Functions), domaine vérifié (DNS SPF/DKIM) |
 | Rebonds > 2 % | Resend → Suppressions ; `suppressions/{hash}` | Vérifier la liste importée et la séquence en cause ; couper la séquence dans Admin › Conversion |
-| SMS non reçus | journal Functions `envoyerEnvoi` ; crédit Brevo | Recharger le crédit ; l'expéditeur `PortailHab` doit être validé |
+| SMS non reçus | journal Functions `envoyerEnvoi` ; crédit Brevo | Recharger le crédit ; l'expéditeur `PortailTrav` doit être validé |
 
 Les envois passent par une file (`envoyerEnvoi`) : une panne courte se rattrape seule grâce aux nouvelles tentatives.
 

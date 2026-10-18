@@ -82,7 +82,7 @@ export function PageLegale({
             Informations légales et sécurité
           </p>
           <p className="m-0 mb-[18px] max-w-[80ch] text-[16.5px] leading-[26px] text-neutre-800">
-            Portail Habitat est une plateforme de mise en relation. Ces documents précisent le rôle
+            Portail Travaux est une plateforme de mise en relation. Ces documents précisent le rôle
             exact de l&apos;éditeur, les responsabilités de chacun, le traitement de vos données et
             les mesures de sécurité en place. Version en vigueur au {date}.
           </p>
@@ -255,7 +255,7 @@ export function PageLegale({
         <div
           className={`${conteneur} flex flex-wrap items-center justify-between gap-x-5 gap-y-2 py-4`}
         >
-          <span>© {new Date().getFullYear()} Portail Habitat · Plateforme de mise en relation</span>
+          <span>© {new Date().getFullYear()} Portail Travaux · Plateforme de mise en relation</span>
           <span className="flex flex-wrap items-center gap-x-[18px]">
             <Link
               href={routes.accueil}
