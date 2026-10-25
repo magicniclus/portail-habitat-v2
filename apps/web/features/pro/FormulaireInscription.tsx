@@ -127,9 +127,6 @@ export function FormulaireInscription({
       >
         <div>
           <h2 className="m-0 mb-1.5 text-[23px]">{titre}</h2>
-          <p className="m-0 text-sm leading-[21px] text-neutre-700">
-            1 minute. Sans carte bancaire.
-          </p>
           {demandesMois ? (
             <p className="m-0 mt-3 flex items-center gap-2 rounded-control bg-accent-100 px-3 py-2 text-sm text-accent-800">
               <span aria-hidden="true" className="size-2 flex-none rounded-full bg-accent" />
