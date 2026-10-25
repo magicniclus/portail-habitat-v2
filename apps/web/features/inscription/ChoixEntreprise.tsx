@@ -9,7 +9,7 @@ import { routes } from '@/lib/routes';
 
 /**
  * Entreprise par nom ou SIREN (COMPTES §3.1) : raison sociale et adresse préremplies (ONB-01),
- * entreprise fermée refusée (ONB-02), déjà inscrite → « Demander à rejoindre » (ONB-03).
+ * entreprise fermée jamais proposée, message si c'est la seule trouvée (ONB-02), déjà inscrite → « Demander à rejoindre » (ONB-03).
  */
 export function ChoixEntreprise({
   choisie,
@@ -22,6 +22,7 @@ export function ChoixEntreprise({
   const [resultats, setResultats] = useState<EntrepriseProposee[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
+  const [fermees, setFermees] = useState(false);
 
   const rechercher = async () => {
     if (q.trim().length < 2) return setErreur('Saisissez le nom ou le SIREN de votre entreprise.');
@@ -30,7 +31,9 @@ export function ChoixEntreprise({
     const r = await posterJson<EntrepriseProposee[]>('/api/pro/entreprise', { q: q.trim() });
     setEnCours(false);
     if (!r.ok) return setErreur(r.message);
-    setResultats(r.data);
+    // Entreprises fermées jamais proposées (ONB-02 : un message seulement si rien d'autre n'est trouvé).
+    setFermees(r.data.some((x) => x.analyse.refusee));
+    setResultats(r.data.filter((x) => !x.analyse.refusee));
     onChoix(null);
   };
 
@@ -42,8 +45,9 @@ export function ChoixEntreprise({
       <div className="flex flex-wrap items-end gap-2">
         <Field label="Nom ou numéro SIREN" className="min-w-[220px] flex-1">
           <Input
-            champ="siren"
-            inputMode="text"
+            type="text"
+            autoComplete="organization"
+            maxLength={120}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {
@@ -62,14 +66,16 @@ export function ChoixEntreprise({
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       {resultats?.length === 0 ? (
         <Banner tone="attention">
-          Nous ne trouvons pas cette entreprise. Vérifiez le SIREN (9 chiffres).
+          {fermees
+            ? 'Cette entreprise est fermée : l’inscription est impossible.'
+            : 'Nous ne trouvons pas cette entreprise. Vérifiez le SIREN (9 chiffres).'}
         </Banner>
       ) : null}
       {resultats?.length ? (
         <ul aria-label="Entreprises trouvées" className="m-0 grid list-none gap-2.5 p-0">
           {resultats.map((r) => {
             const e = r.entreprise;
-            const libre = !r.analyse.refusee && r.analyse.inscription === 'libre';
+            const libre = r.analyse.inscription === 'libre';
             return (
               <li key={e.siren} className="grid gap-2 rounded-[12px] border border-trait p-3.5">
                 <label className={`flex items-start gap-3 ${libre ? 'cursor-pointer' : ''}`}>
@@ -90,11 +96,7 @@ export function ChoixEntreprise({
                     </span>
                   </span>
                 </label>
-                {r.analyse.refusee ? (
-                  <p className="m-0 text-sm font-semibold text-danger">
-                    Cette entreprise est fermée : l&apos;inscription est impossible.
-                  </p>
-                ) : r.analyse.inscription === 'revendiquee' ? (
+                {r.analyse.inscription === 'revendiquee' ? (
                   <div className="grid gap-2 rounded-[10px] bg-accent-100 p-3">
                     <p className="m-0 text-sm font-semibold">Cette entreprise a déjà un compte.</p>
                     <div className="flex flex-wrap gap-2">

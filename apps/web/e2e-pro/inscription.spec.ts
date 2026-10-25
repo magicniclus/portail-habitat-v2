@@ -90,8 +90,8 @@ test.describe('Inscription pro', () => {
 
     await recherche.fill(SIRENS.fermee);
     await page.getByRole('button', { name: 'Rechercher' }).click();
-    await expect(entreprises).toContainText('Cette entreprise est fermée');
-    await expect(entreprises.getByRole('radio')).toBeDisabled();
+    await expect(page.getByText('Cette entreprise est fermée')).toBeVisible();
+    await expect(entreprises).toHaveCount(0);
 
     await recherche.fill(SIRENS.inscrite);
     await page.getByRole('button', { name: 'Rechercher' }).click();
