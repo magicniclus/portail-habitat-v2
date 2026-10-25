@@ -16,7 +16,7 @@ env:
 jobs:
   verifications:
     name: Format, lint, types, Knip, tests, build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
 
   e2e:
     name: Playwright (iPhone 13, iPhone SE, Pixel 7, ordinateur)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
 
   e2e-pro:
     name: Playwright espace pro (émulateurs + seed)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       SEED_MOT_DE_PASSE: MotDePasse-e2e-2026
@@ -98,7 +98,7 @@ jobs:
 
   catalogue:
     name: Storybook et catalogue (4 thèmes, 320 px, cibles, axe)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +114,7 @@ jobs:
 
   lighthouse:
     name: Lighthouse mobile (budget EXPLOITATION §1)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
