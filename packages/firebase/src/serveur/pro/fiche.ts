@@ -66,6 +66,7 @@ export interface FichePro {
   emailContact?: string;
   siteWeb?: string;
   logoUrl?: string;
+  banniereUrl?: string;
   devis?: { minCentimes: number; maxCentimes: number };
   zone: { centre: { latitude: number; longitude: number }; rayonKm: number };
   completude: Awaited<ReturnType<typeof completudeDepuisBase>>;
@@ -95,6 +96,7 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     ...facultatif('emailContact'),
     ...facultatif('siteWeb'),
     ...facultatif('logoUrl'),
+    ...facultatif('banniereUrl'),
     ...(a.budgetMin !== undefined && a.budgetMax !== undefined
       ? { devis: { minCentimes: a.budgetMin, maxCentimes: a.budgetMax } }
       : {}),

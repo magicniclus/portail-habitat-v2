@@ -14,6 +14,7 @@ export { lireFichePro, modifierFiche, type FichePro } from './fiche';
 export { enregistrerDocument, lireDocumentsPro, type DocumentPro } from './documents';
 export { lireEquipe, type Equipe, type MembreEquipe } from './equipe';
 export {
+  enregistrerBanniere,
   enregistrerLogo,
   enregistrerRealisation,
   lireRealisationsPro,

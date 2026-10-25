@@ -9,6 +9,7 @@ import {
 } from '../src/admin';
 import { chemins, fichiers } from '../src/chemins';
 import {
+  enregistrerBanniere,
   enregistrerLogo,
   enregistrerRealisation,
   lireRealisationsPro,
@@ -75,6 +76,22 @@ describe('enregistrerLogo', () => {
   it('fichier non image : refusé', async () => {
     await image(fichiers.logo('a1', 'logo.png'), 'text/html');
     await expect(enregistrerLogo(s(), ctx('p1'), 'logo.png')).rejects.toMatchObject({
+      code: 'ENTREE_INVALIDE',
+    });
+  });
+});
+
+describe('enregistrerBanniere', () => {
+  it('URL publique enregistrée ; collaborateur refusé ; non image refusée', async () => {
+    await image(fichiers.banniere('a1', 'b.png'));
+    await expect(enregistrerBanniere(s(), ctx('c1'), 'b.png')).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    const r = await enregistrerBanniere(s(), ctx('p1'), 'b.png');
+    expect(r.banniereUrl).toContain(encodeURIComponent('artisans/a1/banniere/b.png'));
+    expect((await db.doc(chemins.artisan('a1')).get()).get('banniereUrl')).toBe(r.banniereUrl);
+    await image(fichiers.banniere('a1', 'x.png'), 'text/html');
+    await expect(enregistrerBanniere(s(), ctx('p1'), 'x.png')).rejects.toMatchObject({
       code: 'ENTREE_INVALIDE',
     });
   });

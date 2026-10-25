@@ -44,6 +44,12 @@ service firebase.storage {
       allow write: if noImp() && isGestion(aid) && image(2) && membreActif(aid, ['proprietaire', 'gerant']);
       allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
     }
+    // Bannière de la fiche (1600 × 500) : publique, 5 Mo, image.
+    match /artisans/{aid}/banniere/{fichier} {
+      allow read: if true;
+      allow write: if noImp() && isGestion(aid) && image(5) && membreActif(aid, ['proprietaire', 'gerant']);
+      allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
+    }
     // Photos de réalisations : publiques, 8 Mo (EXIF retirées par Function à l'envoi).
     match /artisans/{aid}/realisations/{rid}/{fichier} {
       allow read: if true;

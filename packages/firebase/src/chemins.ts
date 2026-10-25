@@ -182,6 +182,7 @@ export const fichiers = {
   document: (aid: string, docId: string, nom: string) =>
     `artisans/${aid}/documents/${docId}/${nom}`,
   logo: (aid: string, nom: string) => `artisans/${aid}/logo/${nom}`,
+  banniere: (aid: string, nom: string) => `artisans/${aid}/banniere/${nom}`,
   /** Cachet de l'entreprise (privé, lu par le serveur pour les PDF). */
   tampon: (aid: string, nom: string) => `artisans/${aid}/tampon/${nom}`,
   /** Médiathèque du site (images importées dans l'éditeur). */

@@ -19,6 +19,7 @@ import { CarteCompletude } from '@/features/espacePro/BlocsTableauDeBord';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
 import { ApercuParticulier } from '@/features/fichePro/ApercuParticulier';
+import { Banniere } from '@/features/fichePro/Banniere';
 import { TexteAPropos } from '@/features/fichePro/APropos';
 import { CarteFiche } from '@/features/fichePro/CarteFiche';
 import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
@@ -97,7 +98,13 @@ export default async function PageMaFiche() {
             metiers={f.metiers}
             modifiable={edite}
             {...(f.logoUrl ? { logoUrl: f.logoUrl } : {})}
-            banniere={<div className="h-[clamp(120px,18vw,170px)] bg-accent-100" />}
+            banniere={
+              <Banniere
+                artisanId={active.artisanId}
+                modifiable={edite}
+                {...(f.banniereUrl ? { banniereUrl: f.banniereUrl } : {})}
+              />
+            }
           />
           {f.enLigne ? null : <CarteCompletude c={f.completude} />}
           <ResumeAvis note={note} nombre={avis.length} />

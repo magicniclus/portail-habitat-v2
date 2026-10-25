@@ -68,6 +68,16 @@ export default async function PageFiche({ params }: { params: Params }) {
           <span aria-hidden="true">›</span>
           <span aria-current="page">{f.nomCommercial}</span>
         </nav>
+        {f.banniereUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- bannière Storage (1600 × 500)
+          <img
+            src={f.banniereUrl}
+            alt=""
+            width={1600}
+            height={500}
+            className="aspect-[16/5] w-full rounded-[18px] object-cover"
+          />
+        ) : null}
         <header className="flex flex-wrap items-center gap-4.5 rounded-[18px] bg-accent-100 p-[clamp(18px,3vw,30px)]">
           {f.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- logo Storage, taille fixe

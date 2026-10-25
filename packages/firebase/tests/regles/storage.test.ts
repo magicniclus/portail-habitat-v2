@@ -39,6 +39,17 @@ const CAS: Cas[] = [
     op: { ecrire: 'artisans/a1/logo/{p}.svg', type: 'image/svg+xml', taille: 1000 },
     autorises: [],
   },
+  { nom: 'lire une bannière', op: { lire: 'artisans/a1/banniere/b.jpg' }, autorises: PROFILS },
+  {
+    nom: 'envoyer une bannière',
+    op: { ecrire: 'artisans/a1/banniere/{p}.jpg', type: 'image/jpeg', taille: 1000 },
+    autorises: ['proprietaire', 'gerant'],
+  },
+  {
+    nom: 'envoyer une bannière de plus de 5 Mo',
+    op: { ecrire: 'artisans/a1/banniere/gros-{p}.jpg', type: 'image/jpeg', taille: 5 * Mo + 1 },
+    autorises: [],
+  },
   {
     nom: 'lire le cachet de l’entreprise',
     op: { lire: 'artisans/a1/tampon/t.png' },
@@ -160,6 +171,7 @@ const CAS: Cas[] = [
 
 const FICHIERS = [
   'artisans/a1/logo/logo.png',
+  'artisans/a1/banniere/b.jpg',
   'sites/a1/medias/m.jpg',
   'artisans/a1/tampon/t.png',
   'artisans/a1/realisations/r1/photo.jpg',

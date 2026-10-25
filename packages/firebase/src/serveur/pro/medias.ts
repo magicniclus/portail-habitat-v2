@@ -60,6 +60,21 @@ export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: st
   });
 }
 
+/** Bannière de la fiche (5 Mo) : URL publique enregistrée, affichée sur la fiche publique. */
+export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier: string) {
+  const chemin = fichiers.banniere(ctx.artisanId, nomFichier);
+  await verifierImage(s, chemin, 5);
+  const banniereUrl = urlPubliqueFichier(chemin);
+  return s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    t.update(s.db.doc(chemins.artisan(ctx.artisanId)), {
+      banniereUrl,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return { banniereUrl };
+  });
+}
+
 export interface RealisationPro {
   id: string;
   titre: string;
