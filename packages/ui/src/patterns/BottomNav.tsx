@@ -23,11 +23,20 @@ export interface BottomNavItemProps {
   actif?: boolean;
   /** Nombre affiché en pastille (0 ou absent : rien). */
   badge?: number;
+  /** Pastille incitative sans nombre (point orange) ; le texte est lu par les lecteurs d'écran. */
+  alerte?: string;
   /** Lien vide (souvent `<Link href="…" />`) : il reçoit l'icône, le libellé et le style. */
   children: ReactElement;
 }
 
-export function BottomNavItem({ icone, libelle, actif, badge, children }: BottomNavItemProps) {
+export function BottomNavItem({
+  icone,
+  libelle,
+  actif,
+  badge,
+  alerte,
+  children,
+}: BottomNavItemProps) {
   return (
     <li>
       <Slot.Root
@@ -46,6 +55,10 @@ export function BottomNavItem({ icone, libelle, actif, badge, children }: Bottom
           <span className="absolute top-1.5 left-[calc(50%+6px)] min-w-5 rounded-pill bg-accent-action px-1.5 text-[11px] leading-5 text-blanc">
             {badge}
             <span className="sr-only"> nouveaux</span>
+          </span>
+        ) : alerte ? (
+          <span className="absolute top-2 left-[calc(50%+8px)] size-2.5 rounded-full border-2 border-blanc bg-accent-action">
+            <span className="sr-only"> · {alerte}</span>
           </span>
         ) : null}
       </Slot.Root>

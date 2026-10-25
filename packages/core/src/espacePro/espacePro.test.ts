@@ -17,6 +17,15 @@ const membre = (role: 'proprietaire' | 'gerant' | 'collaborateur' | 'comptable')
 const cles = (m: ReturnType<typeof menuPro>) => m.flatMap((s) => s.liens.map((l) => l.cle));
 
 describe('menuPro (D63 : la barre latérale = les outils)', () => {
+  it('pastille incitative sur « Ma fiche » tant que la fiche n’est pas en ligne', () => {
+    const fiche = (m: ReturnType<typeof menuPro>) =>
+      m.flatMap((x) => x.liens).find((l) => l.cle === 'fiche');
+    expect(fiche(menuPro(membre('proprietaire'), {}, { fiche: 'À compléter' }))?.alerte).toBe(
+      'À compléter',
+    );
+    expect(fiche(menuPro(membre('proprietaire')))?.alerte).toBeUndefined();
+  });
+
   it('le propriétaire voit tous les outils, groupés comme la maquette', () => {
     const m = menuPro(membre('proprietaire'));
     expect(m.map((s) => s.titre)).toEqual(["Vue d'ensemble", 'Gestion']);

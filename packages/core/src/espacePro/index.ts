@@ -58,6 +58,8 @@ export interface LienPro {
   cle: PagePro;
   libelle: string;
   badge?: number;
+  /** Pastille incitative (« À compléter ») : action attendue sur cette page. */
+  alerte?: string;
 }
 
 /**
@@ -67,6 +69,7 @@ export interface LienPro {
 export function menuPro(
   membre: Membre | null | undefined,
   badges: Partial<Record<PagePro, number>> = {},
+  alertes: Partial<Record<PagePro, string>> = {},
 ): { titre: string; liens: LienPro[] }[] {
   const actif = membre?.statut === 'actif' ? membre : null;
   return SECTIONS.map((s) => ({
@@ -77,6 +80,7 @@ export function menuPro(
         cle: l.cle,
         libelle: l.libelle,
         ...(badges[l.cle] ? { badge: badges[l.cle] } : {}),
+        ...(alertes[l.cle] ? { alerte: alertes[l.cle] } : {}),
       })),
   })).filter((s) => s.liens.length > 0);
 }

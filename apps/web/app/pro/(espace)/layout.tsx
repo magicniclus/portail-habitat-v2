@@ -18,7 +18,8 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
   const membre = active?.membre ?? null;
   return (
     <CadrePro
-      menu={menuPro(membre)}
+      // Pastille incitative tant que la fiche n'est pas en ligne (documents à envoyer).
+      menu={menuPro(membre, {}, active && !active.artisan.enLigne ? { fiche: 'À compléter' } : {})}
       ongletsCompte={ongletsCompte(membre)}
       entreprises={s.espace.entreprises}
       activeId={active?.artisanId ?? null}

@@ -55,7 +55,7 @@ export function SidebarPro({
                   title={ouvert ? undefined : l.libelle}
                   aria-current={actif ? 'page' : undefined}
                   className={cn(
-                    'flex min-h-11 items-center gap-3 rounded-[10px] border text-[15px] no-underline',
+                    'relative flex min-h-11 items-center gap-3 rounded-[10px] border text-[15px] no-underline',
                     ouvert ? 'px-3' : 'justify-center px-0',
                     actif
                       ? 'border-accent-300 bg-accent-100 font-bold text-accent-800'
@@ -73,6 +73,21 @@ export function SidebarPro({
                     >
                       {l.badge}
                       <span className="sr-only"> nouveaux</span>
+                    </span>
+                  ) : l.alerte ? (
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-pill bg-accent-action text-xs leading-5 font-bold whitespace-nowrap text-blanc',
+                        ouvert ? 'ml-auto px-2' : 'absolute top-1.5 right-1.5 size-2.5 p-0',
+                      )}
+                    >
+                      {ouvert ? (
+                        <span
+                          aria-hidden="true"
+                          className="size-1.5 rounded-full bg-blanc motion-safe:animate-pulse"
+                        />
+                      ) : null}
+                      <span className={ouvert ? '' : 'sr-only'}>{l.alerte}</span>
                     </span>
                   ) : null}
                 </Link>

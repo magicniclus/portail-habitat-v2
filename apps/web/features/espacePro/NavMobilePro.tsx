@@ -31,6 +31,7 @@ export function NavMobilePro({
             libelle={l.libelle.replace(/^Mes |^Ma /, '')}
             actif={estActif(chemin, l.cle)}
             {...(l.badge ? { badge: l.badge } : {})}
+            {...(l.alerte ? { alerte: l.alerte } : {})}
           >
             <Link href={href} />
           </BottomNavItem>
