@@ -1,8 +1,17 @@
 import { withSentryConfig } from '@sentry/nextjs/config';
+import { existsSync } from 'node:fs';
 import type { NextConfig } from 'next';
+
+/** Photo du hero de /pro : référencée seulement si le fichier est présent au build (sinon 404). */
+const PHOTO_HERO_PRO = '/landing/photos/hero-acquisition.webp';
 
 const config: NextConfig = {
   poweredByHeader: false,
+  env: {
+    PHOTO_HERO_PRO: existsSync(new URL(`./public${PHOTO_HERO_PRO}`, import.meta.url))
+      ? PHOTO_HERO_PRO
+      : '',
+  },
   typedRoutes: true,
   transpilePackages: ['@ph/core', '@ph/emails', '@ph/firebase', '@ph/tracker', '@ph/ui'],
   // pdfkit lit ses polices standard sur le disque : jamais empaqueté (PDF des devis, lot 11b).

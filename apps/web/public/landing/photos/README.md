@@ -6,6 +6,7 @@ Format : **WebP**, qualité 80 environ, sans texte incrusté. Mettre le fichier 
 
 | Fichier                            | Taille      | Ratio    | Contenu attendu                                                                       |
 | ---------------------------------- | ----------- | -------- | ------------------------------------------------------------------------------------- |
+| `hero-acquisition.webp`            | 1600 × 686  | 21:9     | Artisan sur chantier (plombier, couvreur, électricien) : hero de `/pro`               |
 | `hero-chantiers.webp`              | 1600 × 1200 | 4:3      | Artisan qui consulte une demande sur son téléphone, sur chantier                      |
 | `hero-site.webp`                   | 1600 × 1200 | 4:3      | Artisan devant sa camionnette ou une réalisation, téléphone en main montrant son site |
 | `hero-devis.webp`                  | 1600 × 1200 | 4:3      | Artisan qui prépare un devis chez un client (tablette ou ordinateur)                  |
