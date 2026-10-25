@@ -95,7 +95,7 @@ export default async function AcquisitionArtisans() {
         </Zone>
       </main>
       <Traceur page="acquisition-artisans" />
-      <PiedPublic {...piedPro} variantLogo="pro" />
+      <PiedPublic {...piedPro} variantLogo="pro" clair />
     </>
   );
 }

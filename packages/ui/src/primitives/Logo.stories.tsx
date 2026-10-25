@@ -12,6 +12,7 @@ export const Espaces: Story = {
       <Logo variant="pro" />
       <Logo variant="diag" />
       <Logo variant="admin" />
+      <Logo variant="pro" empile taille={40} />
     </div>
   ),
 };

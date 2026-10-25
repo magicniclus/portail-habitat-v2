@@ -318,8 +318,22 @@ export function FaqPro() {
 
 export function AppelFinalPro() {
   return (
-    <section aria-labelledby="appel-final-pro" className={`bg-surface ${bande}`}>
-      <div className={conteneurPro}>
+    <section
+      aria-labelledby="appel-final-pro"
+      className={`relative overflow-hidden bg-surface ${bande}`}
+    >
+      {/* Maison décorative de la maquette (opacité 13 %). */}
+      <svg
+        viewBox="0 0 600 420"
+        aria-hidden="true"
+        preserveAspectRatio="xMidYMid meet"
+        className="pointer-events-none absolute right-[clamp(-20px,2vw,40px)] bottom-0 w-[min(42%,460px)] opacity-[0.13]"
+      >
+        <path d="M430 60h48v86l-48-38z" fill="var(--accent)" />
+        <path d="M30 230 300 30l270 200v190H30z" fill="var(--accent)" />
+        <path d="M300 30 570 230v190H300z" fill="var(--color-texte)" opacity="0.3" />
+      </svg>
+      <div className={`relative ${conteneurPro}`}>
         <div className="max-w-[640px]">
           <h2 id="appel-final-pro" className="m-0 mb-3.5 text-[clamp(30px,4vw,46px)] leading-[1.1]">
             Votre prochain client cherche un artisan aujourd&apos;hui.
@@ -336,10 +350,10 @@ export function AppelFinalPro() {
               Créer mon compte gratuit
             </a>
             <a
-              href="#faq"
+              href="#espace"
               className={bouton({ variant: 'fantome', taille: 'lg', className: 'min-h-[50px]' })}
             >
-              Questions fréquentes
+              Voir votre futur espace
             </a>
           </div>
         </div>

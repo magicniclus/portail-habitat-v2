@@ -62,13 +62,14 @@ export function EnTetePublic({
     <Link href={accueil} className="flex min-h-11 min-w-11 items-center text-texte no-underline">
       <Logo
         variant={variantLogo}
-        taille={32}
+        taille={acquisition ? 40 : 32}
+        empile={acquisition}
         className={cn(
           // Texte du logo masqué (lu par les lecteurs d'écran) quand l'en-tête manque de place.
           variantLogo === 'particulier'
             ? 'max-[389px]:[&>span:last-child]:sr-only'
             : 'max-[479px]:[&>span:last-child]:sr-only',
-          'sm:[&_svg]:size-9',
+          !acquisition && 'sm:[&_svg]:size-9',
         )}
       />
     </Link>
