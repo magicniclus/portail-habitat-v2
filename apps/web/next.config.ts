@@ -13,6 +13,9 @@ const config: NextConfig = {
     optimizePackageImports: ['@ph/ui', '@ph/core'],
     // forbidden() : vraie réponse 403 pour une section admin hors permissions (ADM-01).
     authInterrupts: true,
+    // Cache disque de Turbopack en dev coupé : il resservait une feuille Tailwind périmée après
+    // un pull (classes des nouveaux composants absentes, notamment sous Windows).
+    turbopackFileSystemCacheForDev: false,
   },
   // Aperçu d'une fiche par son artisan (`?apercu=1`) : jamais indexé, la page reste statique (ISR).
   async headers() {

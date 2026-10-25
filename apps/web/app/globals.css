@@ -2,6 +2,7 @@
 
 /* Classes utilisées dans les pages et features du site. */
 @source '../';
+@source '../features';
 
 /* Bandeau d'avis des landings (LANDINGS §3.10) : deux lignes en sens opposés, arrêt si mouvement réduit. */
 @keyframes defiler-gauche {
