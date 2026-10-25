@@ -9,12 +9,8 @@ const ARGUMENTS = [
   'Visible en 3 minutes',
 ];
 
-/**
- * Photo du hero (maquette Acquisition Artisans v2, emplacement `v2-hero`) : fichier
- * `public/landing/photos/hero-acquisition.webp` (README), détecté au build (next.config).
- * Tant qu'il manque, seul l'aplat teinté s'affiche.
- */
-const PHOTO_HERO = process.env.PHOTO_HERO_PRO;
+/** Photo du hero (maquette Acquisition Artisans v2, emplacement `v2-hero`), README des photos. */
+const PHOTO_HERO = '/landing/photos/hero-acquisition.webp';
 
 /** Colonne gauche du hero ; le formulaire est à droite (dessous sur mobile, juste après le texte). */
 export function AccrochePro({
@@ -72,7 +68,7 @@ export function PhotoHeroPro({ className }: { className?: string }) {
       aria-hidden="true"
       className={`aspect-[21/9] w-full rounded-[16px] bg-cover bg-center ${className ?? ''}`}
       style={{
-        backgroundImage: `${PHOTO_HERO ? `url(${PHOTO_HERO}), ` : ''}linear-gradient(135deg, var(--accent-100), var(--accent-200))`,
+        backgroundImage: `url(${PHOTO_HERO}), linear-gradient(135deg, var(--accent-100), var(--accent-200))`,
       }}
     />
   );
