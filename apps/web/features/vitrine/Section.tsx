@@ -81,11 +81,11 @@ export function ListeFaq({ faq }: { faq: readonly { q: string; r: string }[] }) 
   return (
     <div>
       {faq.map((f) => (
-        <details key={f.q} className="group border-b border-trait py-4">
-          <summary className="flex min-h-11 cursor-pointer items-center text-[17px] font-semibold">
+        <details key={f.q} className="group border-b border-trait py-1.5">
+          <summary className="min-h-11 cursor-pointer py-2.5 text-[17px] leading-6 font-semibold">
             {f.q}
           </summary>
-          <p className="m-0 mt-3 text-[15.5px] leading-[25px] text-neutre-800">{f.r}</p>
+          <p className="m-0 mt-0.5 mb-2.5 text-[15.5px] leading-[25px] text-neutre-800">{f.r}</p>
         </details>
       ))}
     </div>
