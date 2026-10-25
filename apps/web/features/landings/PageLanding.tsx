@@ -9,7 +9,7 @@ import { piedPro } from '@/features/pro/navigation';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
-import { flagActif } from '@/server/flags';
+import { preuvesMarketingActives } from '@/server/flags';
 import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 import { BarreMobile } from './BarreMobile';
 import { EtapesDefilement } from './EtapesDefilement';
@@ -35,7 +35,7 @@ import { SuiviLanding } from './SuiviLanding';
  */
 export async function PageLanding({ outil }: { outil: OutilLanding }) {
   const [preuves, stats, donneesPreuve] = await Promise.all([
-    flagActif('preuvesMarketing'),
+    preuvesMarketingActives(),
     lireStatsPublic(),
     lirePreuveSociale(),
   ]);

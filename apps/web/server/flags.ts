@@ -58,3 +58,13 @@ export async function maintenanceActive(maintenant = Date.now()): Promise<boolea
 export async function flagActif(nom: NomFlag): Promise<boolean> {
   return flag(nom, { globales: await globales() });
 }
+
+/**
+ * Preuves de la maquette (avis fictifs, chiffres non sourcés, LANDINGS §7) : affichées d'office en
+ * développement (`pnpm dev`) et sur les aperçus Vercel pour les démonstrations ; en production,
+ * seulement si le flag `preuvesMarketing` est allumé.
+ */
+export async function preuvesMarketingActives(): Promise<boolean> {
+  if (process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview') return true;
+  return flagActif('preuvesMarketing');
+}

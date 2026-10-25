@@ -1,8 +1,9 @@
-import { preuveHeroPro } from '@ph/core/landings';
+import { contenuLanding, preuveHeroPro } from '@ph/core/landings';
 import type { Metadata } from 'next';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { Traceur } from '@/features/comportement/Traceur';
 import { Zone } from '@/features/comportement/Zone';
+import { AvisDefilants } from '@/features/landings/Sections';
 import { FAQ_PRO } from '@/features/pro/contenu';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';
@@ -23,6 +24,7 @@ import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
+import { preuvesMarketingActives } from '@/server/flags';
 import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 
 export const revalidate = 3600;
@@ -37,7 +39,13 @@ export const metadata: Metadata = {
 };
 
 export default async function AcquisitionArtisans() {
-  const [stats, preuveSociale] = await Promise.all([lireStatsPublic(), lirePreuveSociale()]);
+  const [stats, preuveSociale, preuves] = await Promise.all([
+    lireStatsPublic(),
+    lirePreuveSociale(),
+    preuvesMarketingActives(),
+  ]);
+  // Avis de la maquette (fictifs) : en démonstration (dev, aperçus) ; en production, seulement avec le flag.
+  const avis = contenuLanding('chantiers', { preuves }).avis;
   const chiffres = chiffresVitrine(stats);
   const groupes = groupesMetiers();
   return (
@@ -81,6 +89,7 @@ export default async function AcquisitionArtisans() {
         <Zone id="faq">
           <FaqPro />
         </Zone>
+        <AvisDefilants avis={avis} />
         <Zone id="appel-final">
           <AppelFinalPro />
         </Zone>
