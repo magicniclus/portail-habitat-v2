@@ -2,7 +2,17 @@
 export const TAUX_TVA = [5.5, 10, 20] as const;
 export type TauxTva = (typeof TAUX_TVA)[number];
 
+/** Ligne chiffrée (comptée) ou ligne de texte seul (titre, précision : hors totaux). */
+export const TYPES_LIGNE = ['chiffree', 'texte'] as const;
+export type TypeLigne = (typeof TYPES_LIGNE)[number];
+export const NATURES_LIGNE = ['prestation', 'fourniture'] as const;
+export type NatureLigne = (typeof NATURES_LIGNE)[number];
+
 export interface LigneDevis {
+  /** Absent : ligne chiffrée (devis antérieurs à l'éditeur A4). */
+  type?: TypeLigne;
+  /** Absent : prestation. */
+  nature?: NatureLigne;
   designation: string;
   quantite: number;
   unite: string;
@@ -24,6 +34,9 @@ export interface Totaux {
   margeHtCentimes: number;
 }
 
+export const estLigneChiffree = (l: Pick<LigneDevis, 'type'>) => l.type !== 'texte';
+export const natureLigne = (l: Pick<LigneDevis, 'nature'>): NatureLigne => l.nature ?? 'prestation';
+
 const totalLigne = (l: Pick<LigneDevis, 'quantite' | 'puHtCentimes'>) =>
   Math.round(l.quantite * l.puHtCentimes);
 
@@ -41,6 +54,7 @@ export function calculerTotaux(
   let htBrut = 0;
   let cout = 0;
   for (const l of d.lignes) {
+    if (!estLigneChiffree(l)) continue;
     const t = totalLigne(l);
     htBrut += t;
     cout += Math.round(l.quantite * (l.coutHtCentimes ?? 0));

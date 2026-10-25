@@ -2,10 +2,12 @@ import { ibanValide } from '../devis/iban';
 import { z } from '../zod';
 import { nomFichier } from './entreesPro';
 import { centimesPositifs, id, jourIso, pourcent } from './commun';
+import { NATURES_LIGNE } from '../devis/calcul';
 import {
   clientDocument,
   ligneDevis,
   MOYENS_PAIEMENT,
+  optionsDocument,
   parametresFacturation,
   tauxTva,
 } from './devis';
@@ -35,6 +37,7 @@ export const entreeEnregistrerDevis = z.strictObject({
   tampon: z.boolean(),
   demandeId: id.optional(),
   modeleId: id.optional(),
+  ...optionsDocument,
 });
 
 export const entreeDevisCible = z.strictObject({ devisId: id });
@@ -44,10 +47,18 @@ export const entreeStatutDevis = z.strictObject({
   statut: z.enum(['accepte', 'refuse', 'archive']),
 });
 
-/** Bibliothèque de prestations (onglet Modèles) : ajout ou suppression d'une prestation. */
+/**
+ * Bibliothèque de prestations (onglet Modèles, ou « Enregistrer comme ligne type » dans l'éditeur) :
+ * ligne chiffrée, ligne de texte seul, ou suppression.
+ */
 export const entreePrestationBiblio = z.discriminatedUnion('action', [
   z.strictObject({
+    action: z.literal('creerTexte'),
+    designation: z.string().trim().min(1).max(300),
+  }),
+  z.strictObject({
     action: z.literal('creer'),
+    nature: z.enum(NATURES_LIGNE).optional(),
     designation: z.string().trim().min(1).max(300),
     unite: z.string().trim().min(1).max(20),
     puHtCentimes: centimesPositifs.min(1).max(100_000_000),

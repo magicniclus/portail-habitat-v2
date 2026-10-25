@@ -110,6 +110,46 @@ async function devisAccepte() {
 }
 
 describe('devis', () => {
+  it('éditeur A4 : options et lignes de texte enregistrées, hors totaux', async () => {
+    const { devisId } = await enregistrerDevis(
+      s(),
+      proprio,
+      entree({
+        lignes: [
+          {
+            type: 'texte',
+            designation: 'Salle de bain',
+            quantite: 0,
+            unite: '',
+            puHtCentimes: 0,
+            tva: 20,
+          },
+          ...brut.lignes.map((l) => ({ ...l, nature: 'fourniture' })),
+        ],
+        modeSaisie: 'complet',
+        intitule: 'Proposition commerciale',
+        adresseChantier: '4 allée des Pins, 33600 Pessac',
+        tvaIntraClient: 'FR12552100554',
+        conditionsAcceptation: 'Devis valable après signature.',
+        champSignature: true,
+        champLibre: { titre: 'Garantie', texte: 'Pièces garanties 2 ans.' },
+        client: { ...brut.client, codePostal: '33000', ville: 'Bordeaux', pays: 'France' },
+      }),
+    );
+    const d = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(d.lignes[0]).toMatchObject({ type: 'texte', designation: 'Salle de bain' });
+    expect(d.lignes[1].nature).toBe('fourniture');
+    expect(d.totaux.tva['20']).toBeUndefined();
+    expect(d).toMatchObject({
+      intitule: 'Proposition commerciale',
+      adresseChantier: '4 allée des Pins, 33600 Pessac',
+      champSignature: true,
+      champLibre: { titre: 'Garantie', texte: 'Pièces garanties 2 ans.' },
+      client: { ville: 'Bordeaux', pays: 'France' },
+      mentionsOk: true,
+    });
+  });
+
   it('numéro D-aaaa-nnnn, totaux et marge recalculés, description assainie', async () => {
     const r1 = await enregistrerDevis(s(), collab, entree());
     const r2 = await enregistrerDevis(s(), collab, entree());

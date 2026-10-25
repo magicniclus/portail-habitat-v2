@@ -1,4 +1,5 @@
-import { TAUX_TVA } from '../devis/calcul';
+import { NATURES_LIGNE, TAUX_TVA, TYPES_LIGNE } from '../devis/calcul';
+import { MODES_SAISIE } from '../devis/libelles';
 import { z } from '../zod';
 import {
   centimes,
@@ -35,6 +36,9 @@ export const tauxTva = z.union(
 );
 
 export const ligneDevis = z.object({
+  /** Absent : ligne chiffrée. Une ligne de texte n'a ni quantité ni prix (0) et reste hors totaux. */
+  type: z.enum(TYPES_LIGNE).optional(),
+  nature: z.enum(NATURES_LIGNE).optional(),
   designation: z.string().trim().max(300),
   quantite: z.number().min(0).max(1_000_000),
   unite: z.string().trim().max(20),
@@ -48,7 +52,28 @@ export const clientDocument = z.object({
   email: z.string().trim().max(200).optional(),
   tel: z.string().trim().max(30).optional(),
   adresse: z.string().trim().max(300),
+  complement: z.string().trim().max(200).optional(),
+  codePostal: z.string().trim().max(10).optional(),
+  ville: z.string().trim().max(120).optional(),
+  pays: z.string().trim().max(60).optional(),
 });
+
+/** Options de l'éditeur A4 (devis et factures), toutes facultatives. */
+export const optionsDocument = {
+  /** Rapide : désignation, TVA, montant ; complet (défaut) : quantité, unité, prix unitaire. */
+  modeSaisie: z.enum(MODES_SAISIE).optional(),
+  /** Adresse de livraison ou du chantier, si différente de celle du client. */
+  adresseChantier: z.string().trim().max(300).optional(),
+  tvaIntraClient: z.string().trim().max(20).optional(),
+  /** Intitulé du document (« Devis » par défaut, « Proposition commerciale »…). */
+  intitule: z.string().trim().max(60).optional(),
+  conditionsAcceptation: z.string().trim().max(1000).optional(),
+  /** Cadre « Bon pour accord » avec date et signature sur le PDF. */
+  champSignature: z.boolean().optional(),
+  champLibre: z
+    .object({ titre: z.string().trim().max(80), texte: z.string().trim().max(1000) })
+    .optional(),
+};
 
 export const totauxDocument = z.object({
   htBrutCentimes: centimes,
@@ -84,6 +109,7 @@ export const devis = z.object({
   lignes: z.array(ligneDevis).max(200),
   remisePct: pourcent,
   acomptePct: pourcent,
+  ...optionsDocument,
   totaux: totauxDocument,
   /** Privé : jamais dans le PDF. */
   margeHtCentimes: centimes,
@@ -131,6 +157,7 @@ export const factureClient = z.object({
   objet: z.string().max(200),
   lignes: z.array(ligneDevis).max(200),
   remisePct: pourcent,
+  ...optionsDocument,
   totaux: totauxDocument,
   datePrestationLe: horodatage.optional(),
   echeanceLe: horodatage.optional(),
@@ -172,6 +199,9 @@ export const modeleDevis = z.object({
 
 export const prestationBiblio = z.object({
   ...meta,
+  /** Ligne type : chiffrée (défaut) ou texte seul (titre ou précision réutilisable). */
+  type: z.enum(TYPES_LIGNE).optional(),
+  nature: z.enum(NATURES_LIGNE).optional(),
   designation: z.string().trim().min(1).max(300),
   unite: z.string().trim().max(20),
   puHtCentimes: centimesPositifs,

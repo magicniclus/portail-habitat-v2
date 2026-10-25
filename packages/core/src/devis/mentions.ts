@@ -1,5 +1,5 @@
 import { estSirenValide } from '../format/siren';
-import { TAUX_TVA, type LigneDevis } from './calcul';
+import { estLigneChiffree, TAUX_TVA, type LigneDevis } from './calcul';
 
 /** `artisans/{id}/parametresFacturation` : ce que les mentions lisent. */
 export interface ParametresFacturation {
@@ -64,7 +64,7 @@ export interface ResultatMentions {
 const rempli = (s: string | undefined) => Boolean(s && s.trim());
 const sirenOk = (s: string | undefined) => Boolean(s && estSirenValide(s.replace(/\s/g, '')));
 const tauxReduit = (lignes: readonly LigneDevis[]) =>
-  lignes.some((l) => l.tva !== TAUX_TVA[TAUX_TVA.length - 1]);
+  lignes.some((l) => estLigneChiffree(l) && l.tva !== TAUX_TVA[TAUX_TVA.length - 1]);
 
 function identiteOk(p: ParametresFacturation): boolean {
   return rempli(p.raisonSociale) && rempli(p.adresseSiege) && rempli(p.siret);
@@ -76,9 +76,13 @@ const decennaleOk = (p: ParametresFacturation) =>
     rempli(p.assuranceDecennale.contrat) &&
     rempli(p.assuranceDecennale.zone),
   );
+/** Au moins une ligne chiffrée ; chaque ligne a sa désignation, et un prix si elle est chiffrée. */
 const lignesOk = (lignes: readonly LigneDevis[]) =>
-  lignes.length > 0 &&
-  lignes.every((l) => rempli(l.designation) && l.quantite > 0 && l.puHtCentimes > 0);
+  lignes.some(estLigneChiffree) &&
+  lignes.every(
+    (l) =>
+      rempli(l.designation) && (!estLigneChiffree(l) || (l.quantite > 0 && l.puHtCentimes > 0)),
+  );
 
 function resultat(m: (Mention | null)[], annexes: ResultatMentions['annexes'] = []) {
   const liste = m.filter((x): x is Mention => x !== null);

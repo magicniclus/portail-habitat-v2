@@ -12,6 +12,9 @@ const MAX_MODELES = 50;
 
 export interface PrestationBiblio {
   id: string;
+  /** Absent : ligne chiffrée ; `texte` : titre ou précision sans prix. */
+  type?: LigneDevis['type'];
+  nature?: LigneDevis['nature'];
   designation: string;
   unite: string;
   puHtCentimes: number;
@@ -49,8 +52,12 @@ export async function lireBibliotheque(
   });
   const prestations = p.docs.map((d) => {
     const cout = d.get('coutHtCentimes') as number | undefined;
+    const type = d.get('type') as LigneDevis['type'];
+    const nature = d.get('nature') as LigneDevis['nature'];
     return {
       id: d.id,
+      ...(type ? { type } : {}),
+      ...(nature ? { nature } : {}),
       designation: d.get('designation') as string,
       unite: d.get('unite') as string,
       puHtCentimes: d.get('puHtCentimes') as number,
@@ -64,7 +71,10 @@ export async function lireBibliotheque(
   };
 }
 
-/** « + Ajouter une prestation » ou suppression (`devis.gerer`). */
+/**
+ * « + Ajouter une prestation », « Enregistrer comme ligne type » (chiffrée ou texte seul) ou
+ * suppression (`devis.gerer`).
+ */
 export async function gererPrestation(
   s: ServicesDevis,
   ctx: ContexteDevis,
@@ -81,7 +91,12 @@ export async function gererPrestation(
       'PRECONDITION',
       `La bibliothèque compte déjà ${MAX_PRESTATIONS} prestations.`,
     );
-  const { action: _a, ...p } = e;
+  const { action: _a, ...saisie } = e;
+  // Ligne de texte : ni quantité ni prix, TVA neutre (jamais comptée).
+  const p =
+    e.action === 'creerTexte'
+      ? { type: 'texte', designation: e.designation, unite: '', puHtCentimes: 0, tva: 20 }
+      : saisie;
   const maintenant = Timestamp.fromMillis(s.horloge());
   const ref = col.doc();
   await ref.set({ schemaVersion: 1, ...p, createdAt: maintenant, updatedAt: maintenant });

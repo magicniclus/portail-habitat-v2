@@ -37,3 +37,16 @@ export function tonStatut(statut: string): 'neutre' | 'info' | 'succes' | 'dange
   if (statut === 'partiellement_payee') return 'attention';
   return 'neutre';
 }
+
+export const LIBELLES_NATURE_LIGNE = {
+  prestation: 'Prestation',
+  fourniture: 'Fourniture',
+} as const;
+
+/** Options › Type de document (éditeur A4). « Format électronique » : Factur-X, bientôt (D62). */
+export const MODES_SAISIE = ['rapide', 'complet'] as const;
+export type ModeSaisie = (typeof MODES_SAISIE)[number];
+export const LIBELLES_MODE_SAISIE = {
+  rapide: { titre: 'Rapide', aide: 'Désignation, TVA et montant.' },
+  complet: { titre: 'Complet', aide: 'Quantité, unité et prix unitaire.' },
+} as const;

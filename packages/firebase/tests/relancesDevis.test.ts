@@ -288,6 +288,16 @@ describe('modèles de devis et bibliothèque de prestations', () => {
     expect((await lireBibliotheque(db, 'a1')).prestations).toHaveLength(0);
   });
 
+  it('ligne type de texte (« Enregistrer comme ligne type ») : sans prix, relue avec son type', async () => {
+    const { id } = await gererPrestation(s(), proprio, {
+      action: 'creerTexte',
+      designation: 'Préparation du chantier',
+    });
+    expect((await lireBibliotheque(db, 'a1')).prestations).toEqual([
+      expect.objectContaining({ id, type: 'texte', puHtCentimes: 0 }),
+    ]);
+  });
+
   it('modèle créé depuis un devis, « Utilisé n fois » à chaque devis qui en part', async () => {
     const { devisId } = await enregistrerDevis(s(), proprio, entree());
     const { id } = await gererModele(s(), proprio, {

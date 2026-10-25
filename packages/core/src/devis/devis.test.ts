@@ -7,11 +7,15 @@ import {
   tonStatut,
   assainirHtml,
   calculerTotaux,
+  estLigneChiffree,
+  LIBELLES_NATURE_LIGNE,
+  natureLigne,
   numeroDocument,
   verifierMentionsDevis,
   verifierMentionsFacture,
   type DevisAVerifier,
   type FactureAVerifier,
+  type LigneDevis,
   type ParametresFacturation,
 } from './index';
 
@@ -411,5 +415,52 @@ describe('cas complémentaires', () => {
       'lignes',
       'echeance',
     ]);
+  });
+});
+
+describe('lignes de texte et nature (éditeur A4)', () => {
+  const texte = {
+    type: 'texte' as const,
+    designation: 'Salle de bain',
+    quantite: 0,
+    unite: '',
+    puHtCentimes: 0,
+    tva: 20 as const,
+  };
+
+  it('une ligne de texte ne compte pas dans les totaux ni dans la TVA', () => {
+    const t = calculerTotaux({ lignes: [texte, ligne(10000, 2, 10)], remisePct: 0, acomptePct: 0 });
+    expect(t.htCentimes).toBe(20000);
+    expect(t.tva).toEqual({ '10': 2000 });
+  });
+
+  it('la fourniture se chiffre comme la prestation', () => {
+    const f = { ...ligne(5000, 3, 20), nature: 'fourniture' as const };
+    expect(calculerTotaux({ lignes: [f], remisePct: 0, acomptePct: 0 }).htCentimes).toBe(15000);
+  });
+
+  it('mentions : lignes de texte permises, mais au moins une ligne chiffrée', () => {
+    expect(verifierMentionsDevis({ ...devis, lignes: [texte, ...devis.lignes] }, params).ok).toBe(
+      true,
+    );
+    expect(verifierMentionsDevis({ ...devis, lignes: [texte] }, params).manquantes).toEqual([
+      'lignes',
+    ]);
+    expect(
+      verifierMentionsDevis(
+        { ...devis, lignes: [{ ...texte, designation: ' ' }, ...devis.lignes] },
+        params,
+      ).manquantes,
+    ).toEqual(['lignes']);
+  });
+
+  it('libellé de la ligne : « Prestation » par défaut, « Fourniture » sinon', () => {
+    expect(estLigneChiffree(texte)).toBe(false);
+    const chiffree: LigneDevis = ligne(1, 1, 20);
+    expect(estLigneChiffree(chiffree)).toBe(true);
+    expect(LIBELLES_NATURE_LIGNE[natureLigne(chiffree)]).toBe('Prestation');
+    expect(LIBELLES_NATURE_LIGNE[natureLigne({ ...ligne(1, 1, 20), nature: 'fourniture' })]).toBe(
+      'Fourniture',
+    );
   });
 });
