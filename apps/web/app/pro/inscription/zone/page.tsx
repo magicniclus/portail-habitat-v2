@@ -14,6 +14,7 @@ export default async function PageZone() {
     <EtapeZone
       metiers={b.metiers}
       nomMetier={nomMetier(b.metierPrincipal) ?? 'artisan'}
+      codePostalSecours={b.identite.codePostal}
       {...(b.zone ? { zoneInitiale: b.zone } : {})}
     />
   );

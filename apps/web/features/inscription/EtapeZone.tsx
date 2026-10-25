@@ -17,9 +17,12 @@ export function EtapeZone({
   metiers,
   nomMetier,
   zoneInitiale,
+  codePostalSecours,
 }: {
   metiers: string[];
   nomMetier: string;
+  /** Code postal de l'étape 1, si la ville reprise du brouillon n'a pas le sien (même calcul qu'à l'étape 3). */
+  codePostalSecours: string;
   zoneInitiale?: { ville: string; codePostal?: string; centre: Lieu['centre']; rayonKm: number };
 }) {
   const router = useRouter();
@@ -36,7 +39,11 @@ export function EtapeZone({
   const [rayon, setRayon] = useState<number>(zoneInitiale?.rayonKm ?? 30);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const estimation = useDemandesEstimees(lieu?.codePostal ?? '', metiers, rayon);
+  const estimation = useDemandesEstimees(
+    lieu ? lieu.codePostal || codePostalSecours : '',
+    metiers,
+    rayon,
+  );
   const s = statutZone({ ville: lieu?.nom, rayonKm: rayon });
   const options = useLieux(saisie, lieu?.nom);
   const total = lieu ? (estimation?.total ?? null) : null;
