@@ -115,8 +115,8 @@ export const artisan = z
     pitch: z.string().max(280).default(''),
     description: z.string().max(3000).default(''),
     logoUrl: z.string().optional(),
-    /** Bannière de la fiche (1600 × 500), URL Storage publique. */
-    banniereUrl: z.string().optional(),
+    /** Bannières de la fiche (1600 × 500), URL Storage publiques : 5 avec la visibilité payante, 1 sinon. */
+    bannieres: z.array(z.string()).max(5).default([]),
     /** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo), URL Storage publique. */
     videoUrl: z.string().optional(),
     labels: z.array(z.enum(LABELS)).default([]),
@@ -333,7 +333,7 @@ export const artisanPublic = z
     pitch: z.string(),
     description: z.string(),
     logoUrl: z.string().optional(),
-    banniereUrl: z.string().optional(),
+    bannieres: z.array(z.string()).max(5).optional(),
     videoUrl: z.string().optional(),
     ville: z.string(),
     geo,

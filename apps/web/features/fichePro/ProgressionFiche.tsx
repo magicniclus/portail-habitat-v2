@@ -1,5 +1,5 @@
 /**
- * Barre de progression de la fiche, fixée en haut de Ma fiche tant qu'elle n'est pas en ligne
+ * Barre de progression de la fiche, fixée en haut de Ma fiche tant qu’elle n’est pas complète
  * (remplace la liste des points à compléter).
  */
 export function ProgressionFiche({ pourcent }: { pourcent: number }) {

@@ -15,6 +15,7 @@ export { enregistrerDocument, lireDocumentsPro, type DocumentPro } from './docum
 export { lireEquipe, type Equipe, type MembreEquipe } from './equipe';
 export {
   enregistrerBanniere,
+  retirerBanniere,
   enregistrerVideo,
   enregistrerLogo,
   enregistrerRealisation,

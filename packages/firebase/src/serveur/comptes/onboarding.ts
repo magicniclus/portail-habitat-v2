@@ -61,6 +61,7 @@ export async function finaliserOnboarding(
       metierPrincipal: e.metierPrincipal,
       intentions: e.intentions,
       tags: [],
+      bannieres: [],
       pitch: '',
       description: '',
       labels: [],

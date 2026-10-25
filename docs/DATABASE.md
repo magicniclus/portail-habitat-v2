@@ -160,6 +160,8 @@ rateLimits/{clé}                     ← anti-abus formulaires publics
 | `pitch` | string (≤ 280) | |
 | `description` | string (≤ 3000) | |
 | `logoUrl` | string? | Storage |
+| `bannieres` | string[] (≤ 5) | Storage ; 5 avec la visibilité payante (`droits.ficheMiseEnAvant`), 1 sinon ; écrit par le serveur seulement |
+| `videoUrl` | string? | Storage (MP4, WebM, OGG, 50 Mo) |
 | `labels` | string[] | `decennale`, `rge`, `qualibat`, `local`, `rapide`, `recommande`, `photos`, `devis48` |
 | `labelsVerifies` | `{ [label]: { verifieLe, expireLe?, docId } }` | seuls les labels vérifiés sont affichés |
 | `zoneIntervention` | `{ centre: GeoPoint, geohash, rayonKm, communes: string[] }` | `rayonKm` **10 à 100** (défaut 30), accepté avec la clause CGV Pro §1 bis (`rayonAccepteLe`) |
@@ -210,7 +212,7 @@ rateLimits/{clé}                     ← anti-abus formulaires publics
 
 ### `artisansPublic/{artisanId}` (**lecture publique**, écriture par Function uniquement)
 Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` par un trigger `onDocumentWritten`. Contient **uniquement** les champs affichables :
-`slug`, `nomCommercial`, `metiers`, `metierPrincipal`, `tags`, `pitch`, `description`, `logoUrl`, `ville`, `geo`, `geohash`, `rayonKm`, `labels` (vérifiés seulement), `noteMoyenne`, `nbAvis`, `notesCriteres`, `anneesActivite`, `budgetMin`, `budgetMax`, `budgetCle`, `delaiDispoJours`, `dispoLabel`, `premium: bool`, `argumentPremium`, `telephone` (**null si ni Premium ni Visibilité**), `scoreClassement` (précalculé), `enLigne`, `updatedAt`.
+`slug`, `nomCommercial`, `metiers`, `metierPrincipal`, `tags`, `pitch`, `description`, `logoUrl`, `bannieres` (permises par la formule), `videoUrl`, `ville`, `geo`, `geohash`, `rayonKm`, `labels` (vérifiés seulement), `noteMoyenne`, `nbAvis`, `notesCriteres`, `anneesActivite`, `budgetMin`, `budgetMax`, `budgetCle`, `delaiDispoJours`, `dispoLabel`, `premium: bool`, `argumentPremium`, `telephone` (**null si ni Premium ni Visibilité**), `scoreClassement` (précalculé), `enLigne`, `updatedAt`.
 > Cette collection est aussi celle qui est **indexée dans Typesense**.
 
 ---

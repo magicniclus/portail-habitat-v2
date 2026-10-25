@@ -1,5 +1,6 @@
 import type { artisan, artisanPublic } from '../schemas/artisans';
 import type { z } from '../zod';
+import { bannieresMax } from './bannieres';
 import { scoreClassement } from './classement';
 
 type Artisan = z.output<typeof artisan>;
@@ -37,7 +38,8 @@ export function projeterArtisanPublic(
     : undefined;
   const optionnels = {
     logoUrl: a.logoUrl,
-    banniereUrl: a.banniereUrl,
+    // Après une résiliation, seules les premières bannières permises restent visibles.
+    bannieres: a.bannieres.length ? a.bannieres.slice(0, bannieresMax(a.droits)) : undefined,
     videoUrl: a.videoUrl,
     anneesActivite,
     budgetMin: a.budgetMin,

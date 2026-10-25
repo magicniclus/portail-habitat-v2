@@ -73,7 +73,7 @@ export default async function PageMaFiche() {
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <ConfigFirebase />
-      {f.enLigne ? null : <ProgressionFiche pourcent={f.completude.pourcent} />}
+      {f.completude.pourcent < 100 ? <ProgressionFiche pourcent={f.completude.pourcent} /> : null}
       {f.enLigne ? (
         <Link
           href={`/artisans/${f.slug}` as Route}
@@ -99,8 +99,10 @@ export default async function PageMaFiche() {
             banniere={
               <Banniere
                 artisanId={active.artisanId}
+                bannieres={f.bannieres}
+                max={f.bannieresMax}
                 modifiable={edite}
-                {...(f.banniereUrl ? { banniereUrl: f.banniereUrl } : {})}
+                offre={peut(active.membre, 'abonnement.gerer')}
               />
             }
           />

@@ -90,6 +90,14 @@ describe('projeterArtisanPublic', () => {
       });
   });
 
+  it('bannières : absentes si vides, 5 avec la visibilité payante, la première seule sinon', () => {
+    expect(projeterArtisanPublic(base, T, 'M')).not.toHaveProperty('bannieres');
+    const cinq = ['a', 'b', 'c', 'd', 'e'];
+    expect(projeterArtisanPublic({ ...base, bannieres: cinq }, T, 'M')!.bannieres).toEqual(['a']);
+    const pro = { ...base, bannieres: cinq, droits: droitsInitiaux('fiche_pro', T) };
+    expect(projeterArtisanPublic(pro, T, 'M')!.bannieres).toEqual(cinq);
+  });
+
   it('FIC-02 : hors ligne ou suspendu → pas de fiche publique', () => {
     expect(projeterArtisanPublic({ ...base, enLigne: false }, T, 'M')).toBeNull();
     expect(projeterArtisanPublic({ ...base, statut: 'suspendu' }, T, 'M')).toBeNull();

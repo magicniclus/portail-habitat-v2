@@ -82,6 +82,7 @@ export async function creerEntrepriseAdmin(
       metierPrincipal: e.metierPrincipal,
       intentions: [],
       tags: [],
+      bannieres: [],
       pitch: '',
       description: '',
       labels: [],

@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { initiales } from '@ph/core/format';
 import { BandeauApercu } from '@/features/fiche/BandeauApercu';
+import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
 import { MesureFiche } from '@/features/fiche/MesureFiche';
 import { Bloc, DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
@@ -68,14 +69,10 @@ export default async function PageFiche({ params }: { params: Params }) {
           <span aria-hidden="true">›</span>
           <span aria-current="page">{f.nomCommercial}</span>
         </nav>
-        {f.banniereUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- bannière Storage (1600 × 500)
-          <img
-            src={f.banniereUrl}
-            alt=""
-            width={1600}
-            height={500}
-            className="aspect-[16/5] w-full rounded-[18px] object-cover"
+        {f.bannieres?.length ? (
+          <CarrouselBannieres
+            urls={f.bannieres}
+            className="aspect-[16/5] w-full overflow-hidden rounded-[18px]"
           />
         ) : null}
         <header className="flex flex-wrap items-center gap-4.5 rounded-[18px] bg-accent-100 p-[clamp(18px,3vw,30px)]">

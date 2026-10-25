@@ -1,9 +1,10 @@
+import { ajouterBanniere, bannieresMax } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
 import type { entreeRealisation } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { urlPubliqueFichier, type bucketFichiers } from '../../admin';
+import { cheminDepuisUrlPublique, urlPubliqueFichier, type bucketFichiers } from '../../admin';
 import { chemins, fichiers } from '../../chemins';
 import { completudeDepuisBase } from './fiche';
 
@@ -60,19 +61,55 @@ export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: st
   });
 }
 
-/** Bannière de la fiche (5 Mo) : URL publique enregistrée, affichée sur la fiche publique. */
+/** Supprime de Storage les bannières retirées de la liste (fichiers de cette entreprise seulement). */
+async function supprimerBannieres(s: Services, ctx: Contexte, urls: string[]) {
+  const prefixe = fichiers.banniere(ctx.artisanId, '');
+  await Promise.all(
+    urls
+      .map(cheminDepuisUrlPublique)
+      .filter((c): c is string => c !== null && c.startsWith(prefixe))
+      .map((c) => s.bucket.file(c).delete({ ignoreNotFound: true })),
+  );
+}
+
+/**
+ * Bannière de la fiche (5 Mo) : 5 avec la visibilité payante (droits relus dans la transaction),
+ * sinon une seule, remplacée à chaque envoi.
+ */
 export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier: string) {
   const chemin = fichiers.banniere(ctx.artisanId, nomFichier);
   await verifierImage(s, chemin, 5);
-  const banniereUrl = urlPubliqueFichier(chemin);
-  return s.db.runTransaction(async (t) => {
+  const url = urlPubliqueFichier(chemin);
+  const { bannieres, retirees } = await s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
-    t.update(s.db.doc(chemins.artisan(ctx.artisanId)), {
-      banniereUrl,
-      updatedAt: Timestamp.fromMillis(s.horloge()),
-    });
-    return { banniereUrl };
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    const a = await t.get(ref);
+    if (!a.exists) throw new ErreurMetier('INTROUVABLE');
+    const actuelles = (a.get('bannieres') as string[] | undefined) ?? [];
+    const max = bannieresMax({ ficheMiseEnAvant: a.get('droits.ficheMiseEnAvant') === true });
+    const liste = ajouterBanniere(actuelles, url, max);
+    if (!liste)
+      throw new ErreurMetier('PRECONDITION', `${max} bannières au plus : retirez-en une d'abord.`);
+    t.update(ref, { bannieres: liste, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    return { bannieres: liste, retirees: actuelles.filter((u) => !liste.includes(u)) };
   });
+  await supprimerBannieres(s, ctx, retirees);
+  return { bannieres };
+}
+
+/** Retire une bannière de la fiche et supprime son fichier. */
+export async function retirerBanniere(s: Services, ctx: Contexte, url: string) {
+  const bannieres = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    const actuelles = ((await t.get(ref)).get('bannieres') as string[] | undefined) ?? [];
+    if (!actuelles.includes(url)) throw new ErreurMetier('INTROUVABLE');
+    const liste = actuelles.filter((u) => u !== url);
+    t.update(ref, { bannieres: liste, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    return liste;
+  });
+  await supprimerBannieres(s, ctx, [url]);
+  return { bannieres };
 }
 
 const VIDEOS = /^video\/(mp4|webm|ogg)$/;

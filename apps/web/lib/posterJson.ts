@@ -2,10 +2,14 @@ import { messageErreur } from '@ph/core/erreurs';
 import type { Resultat } from '@ph/core/resultat';
 
 /** POST JSON vers une route de l'application ; panne réseau ou réponse illisible : `INDISPONIBLE`. */
-export async function posterJson<R>(url: string, corps: unknown): Promise<Resultat<R>> {
+export async function posterJson<R>(
+  url: string,
+  corps: unknown,
+  methode: 'POST' | 'DELETE' = 'POST',
+): Promise<Resultat<R>> {
   try {
     const r = await fetch(url, {
-      method: 'POST',
+      method: methode,
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(corps),
     });

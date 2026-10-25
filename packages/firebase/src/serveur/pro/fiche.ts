@@ -1,3 +1,4 @@
+import { bannieresMax } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { completudeFiche } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
@@ -66,7 +67,9 @@ export interface FichePro {
   emailContact?: string;
   siteWeb?: string;
   logoUrl?: string;
-  banniereUrl?: string;
+  /** Bannières (1 sans visibilité payante, 5 avec) et nombre permis par la formule. */
+  bannieres: string[];
+  bannieresMax: number;
   videoUrl?: string;
   /** Labels prouvés par un document validé et non expiré (décennale, RGE, Qualibat). */
   certifications: string[];
@@ -99,7 +102,8 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     ...facultatif('emailContact'),
     ...facultatif('siteWeb'),
     ...facultatif('logoUrl'),
-    ...facultatif('banniereUrl'),
+    bannieres: (a.bannieres as string[] | undefined) ?? [],
+    bannieresMax: bannieresMax({ ficheMiseEnAvant: a.droits?.ficheMiseEnAvant === true }),
     ...facultatif('videoUrl'),
     certifications: Object.entries(
       (a.labelsVerifies ?? {}) as Record<string, { expireLe?: { toMillis(): number } }>,

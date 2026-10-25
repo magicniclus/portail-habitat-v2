@@ -71,6 +71,9 @@ export const entreeLogo = z.strictObject({ nomFichier });
 /** Bannière déposée dans Storage (`artisans/{id}/banniere/{nomFichier}`), publique une fois enregistrée. */
 export const entreeBanniere = z.strictObject({ nomFichier });
 
+/** Bannière à retirer de la fiche (son URL publique, telle qu'enregistrée). */
+export const entreeRetraitBanniere = z.strictObject({ url: z.url().max(1000) });
+
 /** Vidéo de présentation déposée dans Storage (`artisans/{id}/video/{nomFichier}`). */
 export const entreeVideo = z.strictObject({ nomFichier });
 

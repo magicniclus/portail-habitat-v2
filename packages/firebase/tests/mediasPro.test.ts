@@ -14,6 +14,7 @@ import {
   enregistrerLogo,
   enregistrerRealisation,
   lireRealisationsPro,
+  retirerBanniere,
   supprimerRealisation,
 } from '../src/serveur/pro';
 
@@ -83,18 +84,55 @@ describe('enregistrerLogo', () => {
 });
 
 describe('enregistrerBanniere', () => {
+  const lire = async () => (await db.doc(chemins.artisan('a1')).get()).get('bannieres');
+  const existe = async (nom: string) =>
+    (await bucketFichiers().file(fichiers.banniere('a1', nom)).exists())[0];
+
   it('URL publique enregistrée ; collaborateur refusé ; non image refusée', async () => {
     await image(fichiers.banniere('a1', 'b.png'));
     await expect(enregistrerBanniere(s(), ctx('c1'), 'b.png')).rejects.toMatchObject({
       code: 'PERMISSION_REFUSEE',
     });
     const r = await enregistrerBanniere(s(), ctx('p1'), 'b.png');
-    expect(r.banniereUrl).toContain(encodeURIComponent('artisans/a1/banniere/b.png'));
-    expect((await db.doc(chemins.artisan('a1')).get()).get('banniereUrl')).toBe(r.banniereUrl);
+    expect(r.bannieres[0]).toContain(encodeURIComponent('artisans/a1/banniere/b.png'));
+    expect(await lire()).toEqual(r.bannieres);
     await image(fichiers.banniere('a1', 'x.png'), 'text/html');
     await expect(enregistrerBanniere(s(), ctx('p1'), 'x.png')).rejects.toMatchObject({
       code: 'ENTREE_INVALIDE',
     });
+  });
+
+  it('sans visibilité payante : une seule bannière, l’ancienne est remplacée et supprimée', async () => {
+    await image(fichiers.banniere('a1', 'b1.png'));
+    await image(fichiers.banniere('a1', 'b2.png'));
+    await enregistrerBanniere(s(), ctx('p1'), 'b1.png');
+    const r = await enregistrerBanniere(s(), ctx('p1'), 'b2.png');
+    expect(r.bannieres).toEqual([urlPubliqueFichier(fichiers.banniere('a1', 'b2.png'))]);
+    expect(await existe('b1.png')).toBe(false);
+  });
+
+  it('visibilité payante : jusqu’à 5 bannières, la 6e est refusée', async () => {
+    await db.doc(chemins.artisan('a1')).update({ 'droits.ficheMiseEnAvant': true });
+    for (let i = 1; i <= 6; i++) await image(fichiers.banniere('a1', `b${i}.png`));
+    for (let i = 1; i <= 5; i++) await enregistrerBanniere(s(), ctx('p1'), `b${i}.png`);
+    expect(await lire()).toHaveLength(5);
+    await expect(enregistrerBanniere(s(), ctx('p1'), 'b6.png')).rejects.toMatchObject({
+      code: 'PRECONDITION',
+    });
+  });
+
+  it('retrait : bannière ôtée de la liste et fichier supprimé ; inconnue ou collaborateur refusés', async () => {
+    await image(fichiers.banniere('a1', 'b.png'));
+    const { bannieres } = await enregistrerBanniere(s(), ctx('p1'), 'b.png');
+    await expect(retirerBanniere(s(), ctx('c1'), bannieres[0]!)).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await expect(
+      retirerBanniere(s(), ctx('p1'), 'https://ailleurs.test/x.png'),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    expect((await retirerBanniere(s(), ctx('p1'), bannieres[0]!)).bannieres).toEqual([]);
+    expect(await lire()).toEqual([]);
+    expect(await existe('b.png')).toBe(false);
   });
 });
 
