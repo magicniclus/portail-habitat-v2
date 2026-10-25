@@ -23,3 +23,7 @@ next-env.d.ts
 firebase-debug.log
 storybook-static/
 .lighthouseci/
+
+# Clés de compte de service Firebase / Google : jamais dans le dépôt
+*-firebase-adminsdk-*.json
+serviceAccount*.json
