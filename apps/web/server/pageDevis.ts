@@ -1,7 +1,9 @@
 import 'server-only';
 import type { ParametresFacturation, TauxTva } from '@ph/core/devis';
 import { peut } from '@ph/core/equipe';
-import { appAdmin } from '@ph/firebase/admin';
+import { formatTel } from '@ph/core/format';
+import { appAdmin, urlPubliqueFichier } from '@ph/firebase/admin';
+import { chemins } from '@ph/firebase/chemins';
 import { lireParametresFacturation } from '@ph/firebase/devis';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Route } from 'next';
@@ -46,5 +48,38 @@ export async function parametresEditeur(
       tvaDefaut: 10,
       ...(brut as Partial<ParametresEditeur> | null),
     },
+  };
+}
+
+/** En-tête de la feuille A4 : identité de l'entreprise (paramètres, sinon « Ma fiche ») et logo. */
+export interface EntrepriseFeuille {
+  nom: string;
+  adresse: string;
+  siret: string;
+  naf?: string;
+  tvaIntra?: string;
+  tel?: string;
+  email?: string;
+  logoUrl?: string;
+}
+
+export async function entrepriseFeuille(
+  artisanId: string,
+  p: ParametresEditeur & { logoChemin?: string },
+): Promise<EntrepriseFeuille> {
+  const a = (await dbDevis().doc(chemins.artisan(artisanId)).get()).data() ?? {};
+  const logoUrl = p.logoChemin
+    ? urlPubliqueFichier(p.logoChemin)
+    : (a.logoUrl as string | undefined);
+  const tel = a.telephonePublic as string | undefined;
+  return {
+    nom: p.raisonSociale || (a.nomCommercial as string | undefined) || '',
+    adresse: p.adresseSiege,
+    siret: p.siret,
+    ...(a.codeNaf ? { naf: a.codeNaf as string } : {}),
+    ...(p.tvaIntra ? { tvaIntra: p.tvaIntra } : {}),
+    ...(tel ? { tel: formatTel(tel) } : {}),
+    ...(a.emailContact ? { email: a.emailContact as string } : {}),
+    ...(logoUrl ? { logoUrl } : {}),
   };
 }

@@ -82,10 +82,26 @@ export interface DevisComplet {
   id: string;
   numero: string;
   statut: string;
-  client: { nom: string; email?: string; tel?: string; adresse: string };
+  client: {
+    nom: string;
+    email?: string;
+    tel?: string;
+    adresse: string;
+    complement?: string;
+    codePostal?: string;
+    ville?: string;
+    pays?: string;
+  };
   typeClient: 'particulier' | 'pro';
   sirenClient?: string;
   horsEtablissement: boolean;
+  modeSaisie?: 'rapide' | 'complet';
+  adresseChantier?: string;
+  tvaIntraClient?: string;
+  intitule?: string;
+  conditionsAcceptation?: string;
+  champSignature?: boolean;
+  champLibre?: { titre: string; texte: string };
   objet: string;
   descriptionHtml: string;
   lignes: LigneDevis[];
@@ -146,6 +162,13 @@ export async function lireDevisComplet(
     factureId: x.factureId,
     demandeId: x.demandeId,
     modeleId: x.modeleId,
+    modeSaisie: x.modeSaisie,
+    adresseChantier: x.adresseChantier,
+    tvaIntraClient: x.tvaIntraClient,
+    intitule: x.intitule,
+    conditionsAcceptation: x.conditionsAcceptation,
+    champSignature: x.champSignature,
+    champLibre: x.champLibre,
   };
 }
 
