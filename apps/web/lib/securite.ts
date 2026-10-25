@@ -57,6 +57,8 @@ export function politiqueContenu(o: OptionsCsp): string {
         'https://storage.googleapis.com',
         // Test de connectivité du canal temps réel de Firestore (cleardot.gif).
         'https://www.google.com',
+        // Fond de carte de l'étape 2 de l'inscription pro (tuiles OpenStreetMap, attribution affichée).
+        'https://tile.openstreetmap.org',
         ...emulateurs.filter((e) => e.startsWith('http')),
       ],
     ],

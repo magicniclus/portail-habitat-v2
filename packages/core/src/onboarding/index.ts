@@ -63,3 +63,4 @@ export function forceMotDePasse(m: string): number {
   const variete = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(m)).length;
   return Math.min(4, 2 + Math.floor(variete / 2));
 }
+export * from './carte';
