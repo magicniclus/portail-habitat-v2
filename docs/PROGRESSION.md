@@ -22,7 +22,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 10d | Blog | 🟡 | 16/10/2026 | BLOG-01 à 09, 14 ✅ (IA sans clé) | cœur, serveur, écrans, affichage sur le site et IA faits ; BLOG-10 à 13 faits le 17/10 (D70, sans clé IA ni DataForSEO) ; stats détaillées et Search Console reportées ; D67 à D71 ⏳ non codés (AVANCEMENT §29) |
 | 10e | Landings par outil | 🟡 | 14/10/2026 | LAND-01 à 07 ✅ | chantiers en ligne ; site et devis derrière flags ; démo et exemples avec 10b (AVANCEMENT §25) |
 | 11 | Stripe | 🟡 | | PAY-01 à 05, 08, 10 | nouvelle grille faite (AVANCEMENT §24) ; restent encarts, NAV-01, emails |
-| 11b | Devis et factures | 🟡 | 14/10/2026 | DEV-01 à 06 ✅, DEV-07 sans Factur-X (D62 ⏳) | Factur-X (D62 ⏳), lien de paiement (D61 ⏳) ; faits le 17/10 : cachet, logo propre aux devis, IBAN chiffré, signature en ligne, relances J−3/J+1/J+15, expiration, devis depuis « Mes demandes », modèles et bibliothèque, logo de la fiche sur les PDF |
+| 11b | Devis et factures | 🟡 | 14/10/2026 | DEV-01 à 06 ✅, DEV-07 sans Factur-X (D62 ⏳) | Factur-X (D62 ⏳), lien de paiement (D61 ⏳) ; faits le 17/10 : cachet, logo propre aux devis, IBAN chiffré, signature en ligne, relances J−3/J+1/J+15, expiration, devis depuis « Mes demandes », modèles et bibliothèque, logo de la fiche sur les PDF ; 25/10 : éditeur « feuille A4 » + panneau Options, lignes de texte, prestation/fourniture, lignes types depuis l'éditeur, mode Rapide/Complet, « Nouvelle facture » sans devis |
 | 12 | Matching, appels d'offres | ✅ | avant le 13/10/2026 | unitaires + e2e | |
 | 12b | Demandes partenaires | ✅ | avant le 13/10/2026 | IMP | |
 | 13 | Back-office | ✅ | avant le 13/10/2026 | ADM | |
@@ -38,4 +38,5 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 25/10/2026 — devis et factures façon « feuille A4 » (captures du propriétaire) : français seulement, Factur-X visible « bientôt » (D62), mention de TVA lue dans Paramètres. Données : lignes `type` (chiffrée/texte) et `nature` (prestation/fourniture), options facultatives, « Nouvelle facture » sans devis. Documents : DATABASE.md §8 bis, DECISIONS.md.
 - 17/10/2026 — faits : 6 modèles de site (D47), option Blog 9,90 € +20 articles (D71, 5 + 20). D71 option Blog 9,90 € ; D61 pas en v1 ; D47 6 modèles à coder ; D70 toujours validé ; D68 DataForSEO ; D62 Factur-X + plateforme agréée dès maintenant (plateforme à choisir) ; autres ⏳ validées en bloc (D29 remplacé par D59). Documents : DECISIONS.md, A_FOURNIR.md.

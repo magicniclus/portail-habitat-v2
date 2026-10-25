@@ -8,7 +8,10 @@ import { versRapide, type EtatDevis } from '../etat';
 export function OptionsDocument({
   e,
   maj,
+  facture = false,
 }: {
+  /** Facture : pas de signature à domicile (propre au devis). */
+  facture?: boolean;
   e: EtatDevis;
   maj: (patch: Partial<EtatDevis>) => void;
 }) {
@@ -78,7 +81,7 @@ export function OptionsDocument({
               />
             </Field>
           </>
-        ) : (
+        ) : facture ? null : (
           <Checkbox
             checked={e.horsEtablissement}
             onChange={(x) => maj({ horsEtablissement: x.target.checked })}

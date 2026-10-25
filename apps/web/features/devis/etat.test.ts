@@ -1,6 +1,6 @@
-import { entreeEnregistrerDevis } from '@ph/core/schemas';
+import { entreeCreerFacture, entreeEnregistrerDevis } from '@ph/core/schemas';
 import { describe, expect, it } from 'vitest';
-import { etatInitial, ligneTexte, versEntree, versRapide } from './etat';
+import { etatInitial, ligneTexte, versEntree, versEntreeFacture, versRapide } from './etat';
 
 describe('éditeur de devis : saisie → entrée du serveur', () => {
   const vide = etatInitial({
@@ -120,5 +120,33 @@ describe('éditeur A4 : lignes de texte, mode rapide, options', () => {
     expect(e).not.toHaveProperty('adresseChantier');
     expect(e.client).not.toHaveProperty('complement');
     expect(entreeEnregistrerDevis.safeParse(e).success).toBe(true);
+  });
+});
+
+describe('« Nouvelle facture » : saisie → entrée du serveur', () => {
+  it('passe le schéma strict ; sans validité, acompte ni options de devis', () => {
+    const e = etatInitial({
+      acompteDefautPct: 30,
+      validiteJours: 30,
+      tvaDefaut: 10,
+      aujourdHui: Date.UTC(2026, 9, 14),
+    });
+    const f = versEntreeFacture(
+      {
+        ...e,
+        client: { ...e.client, nom: 'Claire Martin', adresse: '3 rue des Lilas' },
+        objet: 'Dépannage',
+        lignes: [{ ...e.lignes[0]!, designation: 'Main-d’œuvre', puHt: '80' }],
+        datePrestationLe: '2026-10-13',
+        conditionsAcceptation: 'ignorée sur une facture',
+        intitule: 'ignoré',
+      },
+      'cle-facture-01',
+    );
+    expect(f).toMatchObject({ datePrestationLe: '2026-10-13', cleIdempotence: 'cle-facture-01' });
+    expect(f).not.toHaveProperty('acomptePct');
+    expect(f).not.toHaveProperty('conditionsAcceptation');
+    expect(f).not.toHaveProperty('intitule');
+    expect(entreeCreerFacture.safeParse(f).success).toBe(true);
   });
 });

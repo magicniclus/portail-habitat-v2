@@ -57,6 +57,8 @@ export interface EtatDevis {
   conditionsAcceptation?: string;
   champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
+  /** Facture sans devis : date de la prestation (AAAA-MM-JJ). */
+  datePrestationLe?: string;
 }
 
 let compteur = 0;
@@ -255,5 +257,28 @@ export function versEntree(e: EtatDevis) {
     ...(e.champLibre?.texte.trim()
       ? { champLibre: { titre: e.champLibre.titre.trim(), texte: e.champLibre.texte.trim() } }
       : {}),
+  };
+}
+
+/**
+ * Entrée de `POST /api/pro/factures` (« Nouvelle facture », schéma `entreeCreerFacture`) : la
+ * même saisie que le devis, sans ce qui n'existe que sur un devis (validité, acompte, travaux,
+ * intitulé, conditions d'acceptation, signature).
+ */
+export function versEntreeFacture(e: EtatDevis, cleIdempotence: string) {
+  const d = versEntree(e);
+  return {
+    client: d.client,
+    typeClient: d.typeClient,
+    ...(e.typeClient === 'pro' ? siRempli('sirenClient', e.sirenClient) : {}),
+    objet: d.objet,
+    lignes: d.lignes,
+    remisePct: d.remisePct,
+    datePrestationLe: e.datePrestationLe ?? '',
+    ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
+    ...siRempli('adresseChantier', e.adresseChantier),
+    ...siRempli('tvaIntraClient', e.tvaIntraClient),
+    ...(d.champLibre ? { champLibre: d.champLibre } : {}),
+    cleIdempotence,
   };
 }

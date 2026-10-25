@@ -12,11 +12,13 @@ const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
  * (lien « Modifier »), conditions d'acceptation, champ libre, cadre de signature et identité.
  */
 export function PiedFeuille({
+  typeDocument = 'devis',
   e,
   totaux,
   franchiseTva,
   entreprise,
 }: {
+  typeDocument?: 'devis' | 'facture';
   e: EtatDevis;
   totaux: Totaux;
   franchiseTva: boolean;
@@ -47,7 +49,7 @@ export function PiedFeuille({
             {eur(totaux.ttcCentimes)}
           </dd>
         </div>
-        {totaux.acompteCentimes > 0 ? (
+        {typeDocument === 'devis' && totaux.acompteCentimes > 0 ? (
           <div className="flex justify-between text-sm text-neutre-800">
             <dt>Acompte à la signature</dt>
             <dd className="m-0">{eur(totaux.acompteCentimes)}</dd>
@@ -61,7 +63,7 @@ export function PiedFeuille({
             Modifier
           </Link>
         </p>
-        {e.conditionsAcceptation?.trim() ? (
+        {typeDocument === 'devis' && e.conditionsAcceptation?.trim() ? (
           <p className="m-0 whitespace-pre-line">{e.conditionsAcceptation}</p>
         ) : null}
         {e.champLibre?.texte.trim() ? (
@@ -70,7 +72,7 @@ export function PiedFeuille({
             {e.champLibre.texte}
           </p>
         ) : null}
-        {e.champSignature ? (
+        {typeDocument === 'devis' && e.champSignature ? (
           <div className="ml-auto grid h-28 w-full max-w-[300px] content-start gap-1 rounded-[8px] border border-dashed border-neutre-400 p-2.5">
             <span>{TEXTE_BON_POUR_ACCORD}</span>
           </div>

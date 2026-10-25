@@ -55,6 +55,11 @@ export default async function PageDevis({
           <Link href={routes.proDevisParametres} className={bouton({ variant: 'secondaire' })}>
             Paramètres
           </Link>
+          {acces.facturer ? (
+            <Link href={routes.proFactureNouvelle} className={bouton({ variant: 'secondaire' })}>
+              + Nouvelle facture
+            </Link>
+          ) : null}
           {acces.gerer ? (
             <Link href={routes.proDevisNouveau} className={bouton()}>
               + Nouveau devis

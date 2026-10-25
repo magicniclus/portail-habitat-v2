@@ -133,6 +133,25 @@ test.describe('Devis & factures', () => {
     await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();
   });
 
+  test('« Nouvelle facture » sans devis : même feuille, émise après confirmation, PDF prêt', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/devis');
+    await page.getByRole('link', { name: '+ Nouvelle facture' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle facture' })).toBeVisible();
+    await page.getByLabel('Nom du client').fill('Claire Martin');
+    await page.getByLabel('Adresse du client').fill('3 rue des Lilas, 33700 Mérignac');
+    await page.getByLabel('Objet de la facture').fill('Dépannage chauffe-eau');
+    const ligne = page.getByRole('group', { name: 'Ligne 1' });
+    await ligne.getByLabel('Désignation').fill('Remplacement groupe de sécurité');
+    await ligne.getByLabel('PU HT (€)').fill('120');
+    await expect(page.getByTestId('total-ttc-devis')).toHaveText(/132,00/);
+    await page.getByRole('button', { name: 'Émettre la facture' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[a-f0-9]{24}$/);
+    await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();
+  });
+
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/devis/nouveau');

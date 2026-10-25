@@ -1,11 +1,17 @@
 import {
   calculerTotaux,
+  estLigneChiffree,
   numeroDocument,
   verifierMentionsFacture,
   type LigneDevis,
 } from '@ph/core/devis';
 import { ErreurMetier } from '@ph/core/erreurs';
-import type { entreeAvoir, entreeFacturerDevis, entreePaiementFacture } from '@ph/core/schemas';
+import type {
+  entreeAvoir,
+  entreeCreerFacture,
+  entreeFacturerDevis,
+  entreePaiementFacture,
+} from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type DocumentSnapshot } from 'firebase-admin/firestore';
 import { createHash } from 'node:crypto';
@@ -34,7 +40,7 @@ function lignesAcompte(d: DocumentSnapshot): LigneDevis[] {
   const lignes = d.get('lignes') as LigneDevis[];
   const remise = d.get('remisePct') as number;
   const parTaux = new Map<LigneDevis['tva'], number>();
-  for (const l of lignes)
+  for (const l of lignes.filter(estLigneChiffree))
     parTaux.set(l.tva, (parTaux.get(l.tva) ?? 0) + Math.round(l.quantite * l.puHtCentimes));
   return [...parTaux].map(([tva, ht]) => ({
     designation: `Acompte de ${pct} % sur le devis ${d.get('numero') as string}`,
@@ -43,6 +49,99 @@ function lignesAcompte(d: DocumentSnapshot): LigneDevis[] {
     puHtCentimes: Math.round((Math.round(ht * (1 - remise / 100)) * pct) / 100),
     tva,
   }));
+}
+
+/**
+ * « Nouvelle facture » sans devis (éditeur A4, `factures.emettre`) : mentions vérifiées puis
+ * numéro pris dans la même transaction (sans trou, DEV-06) ; émise et figée d'un coup.
+ */
+export async function creerFacture(
+  s: ServicesDevis,
+  ctx: ContexteDevis,
+  e: z.output<typeof entreeCreerFacture>,
+): Promise<{ factureId: string; numero: string }> {
+  const ref = s.db.doc(chemins.factureClient(ctx.artisanId, idFacture(e.cleIdempotence, 'libre')));
+  await exiger(s, null, ctx, 'factures.emettre');
+  const p = await lireParametresTx(s, null, ctx.artisanId);
+  return avecReprise(() =>
+    s.db.runTransaction(
+      async (t) => {
+        const deja = await t.get(ref);
+        if (deja.exists) return { factureId: ref.id, numero: deja.get('numero') as string };
+        const lignes = e.lignes as LigneDevis[];
+        const { margeHtCentimes: _m, ...totaux } = calculerTotaux(
+          { lignes, remisePct: e.remisePct, acomptePct: 0 },
+          { franchiseTva: p.franchiseTva },
+        );
+        const maintenant = s.horloge();
+        const sirenClient = e.typeClient === 'pro' ? e.sirenClient?.replace(/\s/g, '') : undefined;
+        const lieuExecution = e.adresseChantier || e.client.adresse;
+        const datePrestationLe = jourEnDate(e.datePrestationLe)!;
+        const echeanceLe = new Date(maintenant + (p.delaiPaiementJours as number) * JOUR_MS);
+        const mentions = verifierMentionsFacture(
+          {
+            typeClient: e.typeClient,
+            sirenClient,
+            client: e.client,
+            lieuExecution,
+            emiseLe: new Date(maintenant),
+            datePrestationLe: datePrestationLe.toDate(),
+            echeanceLe,
+            lignes,
+          },
+          p,
+        );
+        if (!mentions.ok)
+          throw new ErreurMetier(
+            'PRECONDITION',
+            `Mentions obligatoires manquantes : ${mentions.liste
+              .filter((x) => !x.ok)
+              .map((x) => x.libelle)
+              .join(', ')}.`,
+          );
+        const numero = await reserverNumero(s, t, ctx.artisanId, 'factures');
+        const num = numeroDocument('facture', numero.annee, numero.n);
+        const options = Object.fromEntries(
+          (['modeSaisie', 'tvaIntraClient', 'champLibre'] as const)
+            .map((k) => [k, e[k]])
+            .filter(([, v]) => v !== undefined && v !== ''),
+        );
+        numero.ecrire();
+        t.set(ref, {
+          schemaVersion: 1,
+          numero: num,
+          type: 'facture',
+          statut: 'emise',
+          client: e.client,
+          typeClient: e.typeClient,
+          ...(sirenClient ? { sirenClient } : {}),
+          lieuExecution,
+          objet: e.objet,
+          lignes: lignes.map((l) =>
+            Object.fromEntries(Object.entries(l).filter(([, v]) => v !== undefined)),
+          ),
+          remisePct: e.remisePct,
+          ...options,
+          totaux,
+          datePrestationLe,
+          echeanceLe: Timestamp.fromDate(echeanceLe),
+          paiements: [],
+          resteCentimes: totaux.ttcCentimes,
+          penalites: {
+            tauxAnnuel: (p.tauxPenalitesAnnuel as number | undefined) ?? 12.15,
+            indemnite: INDEMNITE,
+          },
+          relances: [],
+          emiseLe: Timestamp.fromMillis(maintenant),
+          creePar: ctx.uid,
+          createdAt: Timestamp.fromMillis(maintenant),
+          updatedAt: Timestamp.fromMillis(maintenant),
+        });
+        return { factureId: ref.id, numero: num };
+      },
+      { maxAttempts: 30 },
+    ),
+  );
 }
 
 /**

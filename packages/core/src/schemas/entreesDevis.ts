@@ -101,6 +101,22 @@ export const entreeSignatureDevis = z.strictObject({
 /** Bouton « Relancer » d'une facture. */
 export const entreeRelancerFacture = z.strictObject({ factureId: id });
 
+/**
+ * « Nouvelle facture » sans devis (éditeur A4) : émise d'un coup, numéro sans trou, figée.
+ * Totaux et mentions recalculés par le serveur.
+ */
+export const entreeCreerFacture = z.strictObject({
+  client: clientDocument,
+  typeClient: z.enum(['particulier', 'pro']),
+  sirenClient: z.string().trim().max(20).optional(),
+  objet: z.string().trim().max(200),
+  lignes: z.array(ligneDevis).min(1).max(200),
+  remisePct: pourcent,
+  datePrestationLe: jourIso,
+  ...optionsDocument,
+  cleIdempotence: z.string().min(8).max(64),
+});
+
 export const entreeFacturerDevis = z.strictObject({
   devisId: id,
   type: z.enum(['facture', 'acompte']),
