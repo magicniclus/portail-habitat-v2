@@ -117,6 +117,8 @@ export const artisan = z
     logoUrl: z.string().optional(),
     /** Bannière de la fiche (1600 × 500), URL Storage publique. */
     banniereUrl: z.string().optional(),
+    /** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo), URL Storage publique. */
+    videoUrl: z.string().optional(),
     labels: z.array(z.enum(LABELS)).default([]),
     labelsVerifies: z
       .record(
@@ -332,6 +334,7 @@ export const artisanPublic = z
     description: z.string(),
     logoUrl: z.string().optional(),
     banniereUrl: z.string().optional(),
+    videoUrl: z.string().optional(),
     ville: z.string(),
     geo,
     geohash,

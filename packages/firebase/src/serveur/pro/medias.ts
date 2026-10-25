@@ -75,6 +75,28 @@ export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier
   });
 }
 
+const VIDEOS = /^video\/(mp4|webm|ogg)$/;
+
+/** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo) : URL publique, lue sur la fiche publique. */
+export async function enregistrerVideo(s: Services, ctx: Contexte, nomFichier: string) {
+  const chemin = fichiers.video(ctx.artisanId, nomFichier);
+  const fichier = s.bucket.file(chemin);
+  const [existe] = await fichier.exists();
+  if (!existe) throw new ErreurMetier('INTROUVABLE', 'Vidéo introuvable : renvoyez-la.');
+  const [meta] = await fichier.getMetadata();
+  if (!VIDEOS.test(meta.contentType ?? '') || Number(meta.size) > 50 * 1024 * 1024)
+    throw new ErreurMetier('ENTREE_INVALIDE', 'Vidéo MP4, WebM ou OGG de 50 Mo au plus.');
+  const videoUrl = urlPubliqueFichier(chemin);
+  return s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    t.update(s.db.doc(chemins.artisan(ctx.artisanId)), {
+      videoUrl,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return { videoUrl };
+  });
+}
+
 export interface RealisationPro {
   id: string;
   titre: string;

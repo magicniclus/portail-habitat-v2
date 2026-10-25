@@ -19,6 +19,7 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
     expect(csp).toContain('upgrade-insecure-requests');
     expect(directive(csp, 'img-src')).toContain('https://www.google.com');
     expect(directive(csp, 'img-src')).toContain('https://tile.openstreetmap.org');
+    expect(directive(csp, 'media-src')).toContain('https://firebasestorage.googleapis.com');
   });
   it('espaces connectés : nonce et strict-dynamic, script du bandeau autorisé par son empreinte', () => {
     const csp = politiqueContenu({ production: true, nonce: 'abc', empreintes: ['sha256-xyz'] });

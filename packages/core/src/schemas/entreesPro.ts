@@ -71,6 +71,9 @@ export const entreeLogo = z.strictObject({ nomFichier });
 /** Bannière déposée dans Storage (`artisans/{id}/banniere/{nomFichier}`), publique une fois enregistrée. */
 export const entreeBanniere = z.strictObject({ nomFichier });
 
+/** Vidéo de présentation déposée dans Storage (`artisans/{id}/video/{nomFichier}`). */
+export const entreeVideo = z.strictObject({ nomFichier });
+
 /**
  * Réalisation (photos déjà dans `artisans/{id}/realisations/{rid}/`) : publiée seulement avec
  * l'autorisation du propriétaire du chantier (CGV §9).

@@ -38,6 +38,7 @@ export function projeterArtisanPublic(
   const optionnels = {
     logoUrl: a.logoUrl,
     banniereUrl: a.banniereUrl,
+    videoUrl: a.videoUrl,
     anneesActivite,
     budgetMin: a.budgetMin,
     budgetMax: a.budgetMax,

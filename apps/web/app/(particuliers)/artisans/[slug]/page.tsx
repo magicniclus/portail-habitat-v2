@@ -138,6 +138,16 @@ export default async function PageFiche({ params }: { params: Params }) {
                 {f.description || f.pitch}
               </p>
             </Bloc>
+            {f.videoUrl ? (
+              <Bloc titre="Vidéo de présentation" id="video">
+                <video
+                  src={f.videoUrl}
+                  controls
+                  preload="metadata"
+                  className="w-full rounded-[12px]"
+                />
+              </Bloc>
+            ) : null}
             {realisations.length ? (
               <Bloc titre="Projets réalisés" id="projets">
                 <Realisations liste={realisations} />

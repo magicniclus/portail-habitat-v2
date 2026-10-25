@@ -62,6 +62,16 @@ export function politiqueContenu(o: OptionsCsp): string {
         ...emulateurs.filter((e) => e.startsWith('http')),
       ],
     ],
+    // Vidéo de présentation des fiches (Storage public).
+    [
+      'media-src',
+      [
+        "'self'",
+        'https://firebasestorage.googleapis.com',
+        'https://storage.googleapis.com',
+        ...emulateurs.filter((e) => e.startsWith('http')),
+      ],
+    ],
     ['font-src', ["'self'"]],
     ['connect-src', ["'self'", ...CONNEXIONS, ...emulateurs]],
     ['frame-src', ["'self'", 'https://www.google.com', 'https://*.firebaseapp.com']],

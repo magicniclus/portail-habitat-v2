@@ -12,6 +12,7 @@ service firebase.storage {
     function lit(sec)     { return signedIn() && ('staff' in tok()) && tok().staff.s.hasAny([sec]); }
     function isModo()     { return lit('avi') || lit('file'); }
     function image(maxMo) { return request.resource.contentType.matches('image/(jpeg|png|webp|avif)') && request.resource.size <= maxMo * 1024 * 1024; }
+    function video(maxMo) { return request.resource.contentType.matches('video/(mp4|webm|ogg)') && request.resource.size <= maxMo * 1024 * 1024; }
     function pieceJustificative() {
       return request.resource.contentType.matches('application/pdf|image/(jpeg|png)') && request.resource.size <= 10 * 1024 * 1024;
     }
@@ -48,6 +49,12 @@ service firebase.storage {
     match /artisans/{aid}/banniere/{fichier} {
       allow read: if true;
       allow write: if noImp() && isGestion(aid) && image(5) && membreActif(aid, ['proprietaire', 'gerant']);
+      allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
+    }
+    // Vidéo de présentation de la fiche : publique, MP4/WebM/OGG, 50 Mo.
+    match /artisans/{aid}/video/{fichier} {
+      allow read: if true;
+      allow write: if noImp() && isGestion(aid) && video(50) && membreActif(aid, ['proprietaire', 'gerant']);
       allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
     }
     // Photos de réalisations : publiques, 8 Mo (EXIF retirées par Function à l'envoi).

@@ -1,5 +1,5 @@
 import { peut } from '@ph/core/equipe';
-import { formatFourchette, formatNombre, formatTel } from '@ph/core/format';
+import { formatNombre } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import { encartAffiche, type CleEncart } from '@ph/core/paiements';
 import {
@@ -14,7 +14,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { MapPinIcon, PhoneIcon } from '@phosphor-icons/react/ssr';
 import { CarteCompletude } from '@/features/espacePro/BlocsTableauDeBord';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
@@ -26,15 +25,12 @@ import { Certifications } from '@/features/fichePro/Certifications';
 import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
+import { InfosFiche } from '@/features/fichePro/InfosFiche';
 import { ResumeAvis } from '@/features/fichePro/ResumeAvis';
+import { VideoPresentation } from '@/features/fichePro/VideoPresentation';
 import { Realisations } from '@/features/fichePro/Realisations';
 import { EncartOffre } from '@/features/offres/EncartOffre';
-import {
-  EditionCoordonnees,
-  EditionDevis,
-  EditionPresentation,
-  EditionZone,
-} from '@/features/fichePro/EditionsFiche';
+import { EditionPresentation, EditionZone } from '@/features/fichePro/EditionsFiche';
 import { routes } from '@/lib/routes';
 import { sessionPro } from '@/server/sessionPro';
 import { maintenant } from '@/server/temps';
@@ -117,45 +113,7 @@ export default async function PageMaFiche() {
           >
             <TexteAPropos pitch={f.pitch} description={f.description} />
           </CarteFiche>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <CarteFiche titre="Informations" action={edite ? <EditionCoordonnees {...f} /> : null}>
-              <ul className="m-0 grid list-none gap-2.5 p-0 text-[15px]">
-                {f.adresse ? (
-                  <li className="flex gap-2.5">
-                    <MapPinIcon
-                      size={19}
-                      aria-hidden="true"
-                      className="mt-0.5 flex-none text-accent"
-                    />
-                    {f.adresse}
-                  </li>
-                ) : null}
-                <li className="flex gap-2.5">
-                  <PhoneIcon
-                    size={19}
-                    aria-hidden="true"
-                    className="mt-0.5 flex-none text-accent"
-                  />
-                  {f.telephonePublic ? formatTel(f.telephonePublic) : 'Téléphone non renseigné'}
-                </li>
-                {f.emailContact ? <li className="break-all">{f.emailContact}</li> : null}
-                {f.siteWeb ? <li className="break-all">{f.siteWeb}</li> : null}
-              </ul>
-            </CarteFiche>
-            <CarteFiche
-              titre="Devis moyen"
-              action={edite ? <EditionDevis {...(f.devis ? { devis: f.devis } : {})} /> : null}
-            >
-              <p className="m-0 text-[22px] font-bold">
-                {f.devis
-                  ? formatFourchette(f.devis.minCentimes, f.devis.maxCentimes)
-                  : 'Non renseigné'}
-              </p>
-              <p className="m-0 text-sm text-neutre-800">
-                Fourchette affichée aux particuliers pour qualifier leurs demandes.
-              </p>
-            </CarteFiche>
-          </div>
+          <InfosFiche f={f} edite={edite} />
           <Certifications
             labels={f.certifications}
             ajout={peut(active.membre, 'documents.televerser')}
@@ -177,6 +135,11 @@ export default async function PageMaFiche() {
               {edite ? <EditionZone zone={f.zone} /> : null}
             </div>
           </CarteFiche>
+          <VideoPresentation
+            artisanId={active.artisanId}
+            modifiable={edite}
+            {...(f.videoUrl ? { videoUrl: f.videoUrl } : {})}
+          />
           <CarteFiche
             titre="Projets réalisés"
             sousTitre="Vos dernières réalisations, visibles par les particuliers."

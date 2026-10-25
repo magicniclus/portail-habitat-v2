@@ -51,6 +51,26 @@ const CAS: Cas[] = [
     autorises: [],
   },
   {
+    nom: 'lire une vidéo de présentation',
+    op: { lire: 'artisans/a1/video/v.mp4' },
+    autorises: PROFILS,
+  },
+  {
+    nom: 'envoyer une vidéo de présentation',
+    op: { ecrire: 'artisans/a1/video/{p}.mp4', type: 'video/mp4', taille: 1000 },
+    autorises: ['proprietaire', 'gerant'],
+  },
+  {
+    nom: 'envoyer une vidéo de plus de 50 Mo',
+    op: { ecrire: 'artisans/a1/video/gros-{p}.mp4', type: 'video/mp4', taille: 50 * Mo + 1 },
+    autorises: [],
+  },
+  {
+    nom: 'envoyer autre chose qu’une vidéo comme vidéo',
+    op: { ecrire: 'artisans/a1/video/{p}.png', type: 'image/png', taille: 1000 },
+    autorises: [],
+  },
+  {
     nom: 'lire le cachet de l’entreprise',
     op: { lire: 'artisans/a1/tampon/t.png' },
     autorises: [],
@@ -172,6 +192,7 @@ const CAS: Cas[] = [
 const FICHIERS = [
   'artisans/a1/logo/logo.png',
   'artisans/a1/banniere/b.jpg',
+  'artisans/a1/video/v.mp4',
   'sites/a1/medias/m.jpg',
   'artisans/a1/tampon/t.png',
   'artisans/a1/realisations/r1/photo.jpg',
