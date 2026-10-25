@@ -1,8 +1,5 @@
 import { formatEuros, formatFourchette } from '@ph/core/format';
 import { bouton } from '@ph/ui';
-import type { ReactNode } from 'react';
-import type { ChiffresVitrine } from '@/features/accueil/vitrine';
-import { Etoiles } from '@/features/vitrine/Etoiles';
 import { ListeFaq } from '@/features/vitrine/Section';
 import { Visuel } from '@/features/vitrine/Visuel';
 import { ATOUTS_ESPACE, ETAPES_PRO, EXEMPLES_DEMANDES, FAQ_PRO } from './contenu';
@@ -10,65 +7,6 @@ import { ATOUTS_ESPACE, ETAPES_PRO, EXEMPLES_DEMANDES, FAQ_PRO } from './contenu
 export const conteneurPro = 'mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,44px)]';
 const titre2 = 'm-0 mb-3 text-[clamp(28px,3.4vw,38px)] leading-[1.12]';
 const bande = 'py-[clamp(48px,6vw,80px)]';
-
-const ARGUMENTS = [
-  "0 € à l'inscription",
-  '0 % de commission',
-  'Sans engagement',
-  'Visible en 3 minutes',
-];
-
-/** Colonne gauche du hero ; le formulaire est placé à droite (dessous sur mobile, directement après le titre). */
-export function AccrochePro({
-  chiffres,
-  bandeau,
-}: {
-  chiffres: ChiffresVitrine;
-  bandeau: ReactNode;
-}) {
-  return (
-    <div>
-      {bandeau}
-      <h1 className="m-0 mb-[18px] text-[clamp(34px,4.6vw,56px)] leading-[1.08]">
-        Recevez les <span className="accent-editorial">demandes</span> de travaux de{' '}
-        <span className="accent-editorial">votre secteur</span>. Inscription{' '}
-        <span className="accent-editorial">gratuite</span>.
-      </h1>
-      <p className="m-0 mb-[22px] max-w-[56ch] text-lg leading-[29px] text-neutre-800">
-        Des particuliers déposent chaque jour leur projet près de chez vous. Créez votre fiche,
-        choisissez vos métiers et vos communes, et répondez aux demandes qui vous intéressent. Pas
-        de commission, pas d&apos;engagement.
-      </p>
-      <ul className="m-0 mb-6 flex list-none flex-wrap gap-x-3 gap-y-2.5 p-0">
-        {ARGUMENTS.map((a) => (
-          <li
-            key={a}
-            className="rounded-pill border border-accent-200 bg-accent-100 px-3 py-1.5 text-[13px] font-semibold text-accent-800"
-          >
-            {a}
-          </li>
-        ))}
-      </ul>
-      {chiffres ? (
-        <p className="m-0 flex flex-col gap-0.5 text-[15px] leading-[22px] text-neutre-800">
-          {chiffres.note ? (
-            <span className="flex flex-wrap items-center gap-2">
-              <Etoiles />
-              <strong>{chiffres.note}/5</strong>
-              <span className="text-neutre-700">sur {chiffres.avis} avis</span>
-            </span>
-          ) : null}
-          <span>
-            <strong>{chiffres.artisans} artisans</strong> développent déjà leur activité avec nous
-          </span>
-        </p>
-      ) : null}
-      <div className="mt-9 hidden aspect-[21/9] overflow-hidden rounded-[16px] min-[900px]:block">
-        <Visuel />
-      </div>
-    </div>
-  );
-}
 
 export function ExemplesDemandes() {
   return (

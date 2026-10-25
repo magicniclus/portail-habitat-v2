@@ -7,8 +7,8 @@ import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { enTetePro, piedPro } from '@/features/pro/navigation';
+import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
 import {
-  AccrochePro,
   AppelFinalPro,
   ApplicationPro,
   conteneurPro,
@@ -46,14 +46,18 @@ export default async function AcquisitionArtisans() {
       <main>
         <section
           data-ph-section="hero"
-          className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,60px)] gap-y-8 py-[clamp(24px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]`}
+          className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,64px)] gap-y-9 pt-[clamp(24px,4vw,48px)] pb-[clamp(48px,6vw,80px)] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] min-[900px]:grid-rows-[auto_1fr]`}
         >
           <AccrochePro chiffres={chiffres} bandeau={<BandeauMetier groupes={groupes} />} />
-          <FormulaireInscription
-            groupes={groupes}
-            chantiers={chantiersParMetier()}
-            demandesMois={chiffres?.demandes ?? null}
-          />
+          {/* Ordre mobile : texte, formulaire, photo ; dès 900 px le formulaire occupe la colonne droite. */}
+          <div className="min-[900px]:sticky min-[900px]:top-24 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1">
+            <FormulaireInscription
+              groupes={groupes}
+              chantiers={chantiersParMetier()}
+              demandesMois={chiffres?.demandes ?? null}
+            />
+          </div>
+          <PhotoHeroPro className="min-[900px]:col-start-1 min-[900px]:row-start-2" />
         </section>
         <Zone id="exemples">
           <ExemplesDemandes />

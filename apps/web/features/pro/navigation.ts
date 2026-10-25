@@ -10,9 +10,10 @@ export const enTetePro: EnTetePublicProps = {
     'Des particuliers vous contactent gratuitement dans votre zone · Inscription gratuite · 0 % de commission',
   accueil: routes.pro,
   variantLogo: 'pro',
+  acquisition: true,
   liens: [
-    { libelle: 'Votre espace', href: ancre('espace') },
-    { libelle: 'Questions fréquentes', href: ancre('faq') },
+    { libelle: 'Votre espace', href: ancre('espace'), menuSeul: true },
+    { libelle: 'Questions fréquentes', href: ancre('faq'), menuSeul: true },
     { libelle: 'Je suis un particulier', href: routes.accueil },
   ],
   secondaire: { libelle: 'Espace pro', href: routes.connexionPro },
