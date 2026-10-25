@@ -5,11 +5,10 @@ import { Checkbox, Field, Select } from '@ph/ui';
 import { useState } from 'react';
 import type { ChantierMetier, GroupeMetiers } from './metiers';
 
-const MAX_AUTRES = 4;
-
 /**
- * Métiers et chantiers (COMPTES §3.1 bis) : métier principal (obligatoire), jusqu'à 4 autres métiers
- * en pastilles, chantiers de chaque métier cochés par défaut (ONB-01b, ONB-01c).
+ * Métier et chantiers (COMPTES §3.1 bis) : métier principal seul (obligatoire), ses chantiers cochés
+ * par défaut (ONB-01b, ONB-01c). Les autres métiers s'ajoutent ensuite dans l'espace pro (décision
+ * du propriétaire du 25/10/2026).
  */
 export function ChoixMetiers({
   groupes,
@@ -43,7 +42,7 @@ export function ChoixMetiers({
           value={principal}
           onChange={(e) => {
             const id = e.target.value;
-            changer(id ? [id, ...metiers.slice(1).filter((m) => m !== id)] : metiers.slice(1));
+            changer(id ? [id] : []);
             onPrincipal(id);
           }}
         >
@@ -61,42 +60,6 @@ export function ChoixMetiers({
       </Field>
       {principal ? (
         <>
-          <Field label="Autres métiers (facultatif, jusqu’à 4)">
-            <Select
-              value=""
-              disabled={metiers.length > MAX_AUTRES}
-              onChange={(e) => e.target.value && changer([...metiers, e.target.value])}
-            >
-              <option value="">Ajouter un métier…</option>
-              {groupes.map((g) => (
-                <optgroup key={g.nom} label={g.nom}>
-                  {g.metiers
-                    .filter((m) => !metiers.includes(m.id))
-                    .map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.nom}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </Select>
-          </Field>
-          {metiers.length > 1 ? (
-            <ul aria-label="Autres métiers" className="m-0 flex list-none flex-wrap gap-2 p-0">
-              {metiers.slice(1).map((m) => (
-                <li key={m}>
-                  <button
-                    type="button"
-                    onClick={() => changer(metiers.filter((x) => x !== m))}
-                    className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-pill border border-accent-300 bg-accent-100 px-3.5 text-sm font-semibold text-accent-800"
-                  >
-                    {noms.get(m)} <span aria-hidden="true">×</span>
-                    <span className="sr-only"> : retirer</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
           <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
             <legend className="mb-1 p-0 text-[15px] font-semibold">Chantiers acceptés</legend>
             <p className="m-0 text-[13px] text-neutre-700">

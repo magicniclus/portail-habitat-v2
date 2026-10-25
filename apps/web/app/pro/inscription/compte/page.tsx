@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { CadreInscription } from '@/features/inscription/CadreInscription';
+import { ActiviteSecteur } from '@/features/inscription/ActiviteSecteur';
 import { EtapeCompte } from '@/features/inscription/EtapeCompte';
+import { nomMetier } from '@/features/pro/metiers';
 import { brouillonCourant } from '@/server/inscription';
 import { demandesEstimees } from '@/server/statsDemandes';
 
@@ -13,10 +15,9 @@ export default async function PageCompte() {
   const b = await brouillonCourant();
   if (!b) redirect('/pro#inscription');
   if (!b.zone) redirect('/pro/inscription/zone');
-  const zone = `${b.zone.ville} · ${b.zone.rayonKm} km`;
-  // Même calcul qu'aux étapes 1 et 2 (STATS_DEMANDES), sur le code postal saisi à l'étape 1.
-  const { total } = demandesEstimees({
-    codePostal: b.identite.codePostal,
+  // Même calcul et mêmes valeurs qu'à l'étape 2 (STATS_DEMANDES) : code postal de la ville choisie.
+  const { total, source } = demandesEstimees({
+    codePostal: b.zone.codePostal ?? b.identite.codePostal,
     metiers: b.metiers,
     rayonKm: b.zone.rayonKm,
   });
@@ -25,23 +26,12 @@ export default async function PageCompte() {
       etape={3}
       largeur="max-w-[420px]"
       aside={
-        <div>
-          <p className="m-0 mb-2.5 text-xs font-bold tracking-[0.08em] text-accent-700 uppercase">
-            Ce qui vous attend
-          </p>
-          <h2 className="m-0 text-[clamp(22px,2.4vw,28px)] leading-[1.18] font-normal">
-            {total ? (
-              <>
-                <strong>≈ {total} demandes</strong> vous attendent sur {zone}.
-              </>
-            ) : (
-              <>
-                Les demandes de <strong>{zone}</strong> arrivent dans votre espace dès
-                l&apos;activation.
-              </>
-            )}
-          </h2>
-        </div>
+        <ActiviteSecteur
+          zone={b.zone}
+          total={total}
+          source={source}
+          nomMetier={nomMetier(b.metierPrincipal) ?? 'artisan'}
+        />
       }
     >
       <ConfigFirebase />

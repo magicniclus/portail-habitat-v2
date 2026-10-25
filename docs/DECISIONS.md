@@ -132,3 +132,5 @@ Ces décisions figuraient sous les numéros D40 à D50 avant la mise à jour du 
 ---
 
 Quand vous tranchez une question : changez le statut en ✅, corrigez la proposition si besoin, et demandez à Claude Code de mettre à jour les documents concernés.
+
+**25/10/2026 (propriétaire)** : formulaire d'inscription `/pro` limité au **métier principal** (autres métiers ajoutés ensuite dans l'espace pro) ; bloc « Pas encore prêt ? Recevez cette estimation par email » retiré (séquence prospect S1 sans point d'entrée sur `/pro`). Étapes 2 et 3 : même colonne « L'activité de votre secteur » (code postal de la ville choisie gardé dans le brouillon).

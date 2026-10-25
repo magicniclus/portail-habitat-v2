@@ -26,6 +26,11 @@ export const entreeInscriptionEtape1 = z
 /** Étape 2 (zone, COMPTES §3.2) : ville choisie, rayon 10 à 100 km (D31c). */
 export const entreeInscriptionEtape2 = z.strictObject({
   ville: z.string().trim().min(2).max(80),
+  /** Code postal de la ville choisie : même estimation des demandes aux étapes 2 et 3. */
+  codePostal: z
+    .string()
+    .regex(/^\d{5}$/)
+    .optional(),
   centre: geo,
   rayonKm,
 });

@@ -13,7 +13,6 @@ import { routes } from '@/lib/routes';
 import { ChoixMetiers } from './ChoixMetiers';
 import type { ChantierMetier, GroupeMetiers } from './metiers';
 import { GarantiesInscription } from './GarantiesInscription';
-import { RecevoirEstimation } from './RecevoirEstimation';
 import { libelleSource, useDemandesEstimees } from './useDemandesEstimees';
 import { useMetierCible } from './useMetierCible';
 
@@ -208,11 +207,6 @@ export function FormulaireInscription({
         </Button>
         <GarantiesInscription />
       </form>
-      {estimation?.total && nomActif ? (
-        <div className="mt-4">
-          <RecevoirEstimation metier={metierActif} codePostal={codePostal} />
-        </div>
-      ) : null}
     </div>
   );
 }

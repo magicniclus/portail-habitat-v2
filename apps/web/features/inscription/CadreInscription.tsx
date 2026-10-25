@@ -36,8 +36,9 @@ export function CadreInscription({
   largeur?: string;
 }) {
   return (
-    <div className="grid min-h-dvh grid-cols-[repeat(auto-fit,minmax(min(340px,100%),1fr))] bg-blanc pb-[84px] text-texte">
-      <div className="flex min-w-0 flex-col px-[clamp(20px,4vw,56px)] pt-[clamp(20px,3vw,32px)] pb-10">
+    // Ordinateur : seule la colonne de gauche défile ; la droite occupe la hauteur de l'écran, fixe.
+    <div className="grid min-h-dvh bg-blanc pb-[84px] text-texte md:grid-cols-2 md:pb-0">
+      <div className="flex min-w-0 flex-col px-[clamp(20px,4vw,56px)] pt-[clamp(20px,3vw,32px)] pb-10 md:pb-[124px]">
         <div className="flex flex-wrap items-center gap-5">
           <Link href={routes.pro} className="flex min-h-11 items-center text-texte no-underline">
             <Logo variant="pro" taille={36} empile />
@@ -67,7 +68,7 @@ export function CadreInscription({
           {children}
         </main>
       </div>
-      <aside className="relative flex min-w-0 flex-col justify-center gap-[22px] overflow-hidden bg-accent-100 p-[clamp(28px,4vw,56px)]">
+      <aside className="relative flex min-w-0 flex-col justify-center gap-[22px] overflow-hidden bg-accent-100 p-[clamp(28px,4vw,56px)] md:sticky md:top-0 md:h-dvh md:pb-[124px]">
         <MaisonDecor />
         <div className="relative grid max-w-[460px] gap-[22px]">{aside}</div>
       </aside>

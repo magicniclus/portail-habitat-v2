@@ -15,7 +15,12 @@ export interface BrouillonInscription {
   metierPrincipal: string;
   metiers: string[];
   intentions: string[];
-  zone?: { ville: string; centre: { latitude: number; longitude: number }; rayonKm: number };
+  zone?: {
+    ville: string;
+    codePostal?: string;
+    centre: { latitude: number; longitude: number };
+    rayonKm: number;
+  };
   /** Landing d'origine (LANDINGS §1) ; `landingAt` en millisecondes. */
   acquisition?: NonNullable<z.output<typeof entreeInscriptionEtape1>['acquisition']> & {
     landingAt: number;
@@ -94,7 +99,12 @@ export async function enregistrerZone(
   if (!d.exists) return;
   await d.ref.update({
     etape: 3,
-    'donnees.zone': { ville: e.ville, centre: e.centre, rayonKm: e.rayonKm },
+    'donnees.zone': {
+      ville: e.ville,
+      ...(e.codePostal ? { codePostal: e.codePostal } : {}),
+      centre: e.centre,
+      rayonKm: e.rayonKm,
+    },
     majLe: Timestamp.fromMillis(s.horloge()),
   });
 }

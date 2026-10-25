@@ -15,7 +15,7 @@ test.describe('Acquisition artisans (/pro)', () => {
     await expect(page).toHaveURL(/\/pro$/);
   });
 
-  test('ONB-01c : chantiers cochés ; ajouter « Zingueur » ajoute les siens ; décocher exclut', async ({
+  test('ONB-01c : chantiers du métier principal cochés ; un seul métier ; décocher exclut', async ({
     page,
   }) => {
     await page.goto('/pro');
@@ -23,11 +23,9 @@ test.describe('Acquisition artisans (/pro)', () => {
     const chantiers = page.getByRole('group', { name: 'Chantiers acceptés' });
     const coches = chantiers.getByRole('checkbox');
     await expect(coches.first()).toBeChecked();
-    const avant = await coches.count();
-    await page.getByLabel(/^Autres métiers/).selectOption('zingueur');
-    await expect(page.getByRole('list', { name: 'Autres métiers' })).toContainText('Zingueur');
-    await expect.poll(() => coches.count()).toBeGreaterThan(avant);
     for (const c of await coches.all()) await expect(c).toBeChecked();
+    // Autres métiers : dans l'espace pro, jamais dans ce formulaire (décision du 25/10/2026).
+    await expect(page.getByLabel(/^Autres métiers/)).toHaveCount(0);
     await coches.first().uncheck();
     await expect(coches.first()).not.toBeChecked();
   });
@@ -43,30 +41,6 @@ test.describe('Acquisition artisans (/pro)', () => {
       await page.request.get('/api/stats/demandes?cp=33000&metiers=couvreur&rayon=30')
     ).json()) as { total: number };
     await expect(page.getByText(`≈ ${attendu.total} demandes estimées`)).toBeVisible();
-  });
-
-  test('prospect : l’estimation reçue par email, usage de l’adresse affiché (CONVERSION S1, §7)', async ({
-    page,
-  }) => {
-    let envoye: unknown = null;
-    await page.route('**/api/pro/prospect', (r) => {
-      envoye = r.request().postDataJSON();
-      return r.fulfill({ status: 200, json: { ok: true, data: null } });
-    });
-    await page.goto('/pro?metier=couvreur');
-    await page.getByLabel(/^Code postal/).fill('33000');
-    const bloc = page.getByRole('form', { name: 'Recevoir l’estimation par email' });
-    await expect(bloc).toContainText('Désinscription en un clic');
-    await bloc.getByRole('button', { name: 'M’envoyer l’estimation' }).click();
-    await expect(bloc).toContainText('Indiquez une adresse email valide.');
-    await bloc.getByLabel('Email').fill('marc@exemple.fr');
-    await bloc.getByRole('button', { name: 'M’envoyer l’estimation' }).click();
-    await expect(page.getByText('C’est envoyé')).toBeVisible();
-    expect(envoye).toMatchObject({
-      email: 'marc@exemple.fr',
-      metier: 'couvreur',
-      codePostal: '33000',
-    });
   });
 
   test('ACQ-02 : « Espace pro » (pied de page sur mobile) mène à la connexion ; jamais le mot « lead »', async ({
