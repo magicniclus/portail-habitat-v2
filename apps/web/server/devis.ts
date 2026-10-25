@@ -106,6 +106,16 @@ async function entreprise(artisanId: string) {
   };
 }
 
+/** Options de l'éditeur A4 enregistrées sur le devis (ou reprises sur la facture). */
+const optionsPdf = (x: DocumentData) => ({
+  ...(x.tvaIntraClient ? { tvaIntraClient: x.tvaIntraClient as string } : {}),
+  ...(x.adresseChantier ? { lieuExecution: x.adresseChantier as string } : {}),
+  ...(x.intitule ? { intitule: x.intitule as string } : {}),
+  ...(x.modeSaisie ? { modeSaisie: x.modeSaisie as 'rapide' | 'complet' } : {}),
+  ...(x.conditionsAcceptation ? { conditionsAcceptation: x.conditionsAcceptation as string } : {}),
+  ...(x.champLibre ? { champLibre: x.champLibre as { titre: string; texte: string } } : {}),
+});
+
 /** Données du PDF d'un devis : conditions et annexes calculées depuis le document enregistré. */
 function donneesDevis(
   numero: string,
@@ -134,6 +144,7 @@ function donneesDevis(
     validiteLe: date(x.validiteLe),
     client: x.client,
     sirenClient: x.sirenClient,
+    ...optionsPdf(x),
     objet: x.objet,
     description: htmlEnTexte(x.descriptionHtml ?? ''),
     lignes,
@@ -230,6 +241,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
     echeanceLe: x.type === 'avoir' ? undefined : date(x.echeanceLe),
     client: x.client,
     sirenClient: x.sirenClient,
+    ...optionsPdf(x),
     lieuExecution: x.lieuExecution,
     objet: x.objet,
     description: x.motifAvoir ? `Motif : ${x.motifAvoir as string}` : '',

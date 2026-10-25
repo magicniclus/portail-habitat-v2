@@ -1,6 +1,9 @@
 import {
   attestationTvaReduite,
+  estLigneChiffree,
   formulaireRetractation,
+  LIBELLES_NATURE_LIGNE,
+  natureLigne,
   TEXTE_BON_POUR_ACCORD,
   type LigneDevis,
   type ParametresFacturation,
@@ -17,8 +20,23 @@ export interface DonneesPdf {
   validiteLe?: Date;
   datePrestationLe?: Date;
   echeanceLe?: Date;
-  client: { nom: string; adresse: string; email?: string };
+  client: {
+    nom: string;
+    adresse: string;
+    complement?: string;
+    codePostal?: string;
+    ville?: string;
+    pays?: string;
+    email?: string;
+  };
   sirenClient?: string;
+  tvaIntraClient?: string;
+  /** Intitulé choisi dans l'éditeur (« Proposition commerciale ») ; devis seulement. */
+  intitule?: string;
+  /** Rapide : désignation, TVA et montant HT, sans quantité ni prix unitaire. */
+  modeSaisie?: 'rapide' | 'complet';
+  conditionsAcceptation?: string;
+  champLibre?: { titre: string; texte: string };
   lieuExecution?: string;
   objet: string;
   /** Texte simple (HTML assaini converti). */
@@ -88,7 +106,7 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     margin: MARGE,
     compress: o.compresser ?? true,
     info: {
-      Title: `${TITRES[d.type]} ${d.numero}`,
+      Title: `${d.type === 'devis' && d.intitule?.trim() ? d.intitule.trim() : TITRES[d.type]} ${d.numero}`,
       Author: d.entreprise.raisonSociale,
       CreationDate: d.date,
       ModDate: d.date,
@@ -100,6 +118,8 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   const fin = new Promise<Buffer>((ok) => doc.on('end', () => ok(Buffer.concat(morceaux))));
   const largeur = doc.page.width - 2 * MARGE;
   const e = d.entreprise;
+  const titre =
+    d.type === 'devis' && d.intitule?.trim() ? d.intitule.trim().toUpperCase() : TITRES[d.type];
 
   // En-tête : entreprise à gauche, type et numéro à droite.
   const haut = doc.y;
@@ -126,9 +146,10 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   const basGauche = doc.y;
   doc
     .font('Helvetica-Bold')
-    .fontSize(20)
+    // Un intitulé long (« PROPOSITION COMMERCIALE ») reste sur une ligne.
+    .fontSize(titre.length > 14 ? 13 : 20)
     .fillColor(ORANGE)
-    .text(TITRES[d.type], MARGE + largeur / 2, haut, { width: largeur / 2, align: 'right' });
+    .text(net(titre), MARGE + largeur / 2, haut, { width: largeur / 2, align: 'right' });
   doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
   const droite = [
     `N° ${d.numero}`,
@@ -158,8 +179,12 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     [
       d.client.nom,
       d.client.adresse,
+      d.client.complement ?? '',
+      [d.client.codePostal, d.client.ville].filter(Boolean).join(' '),
+      d.client.pays ?? '',
       d.client.email ?? '',
       d.sirenClient ? `SIREN ${d.sirenClient}` : '',
+      d.tvaIntraClient ? `TVA intracommunautaire ${d.tvaIntraClient}` : '',
     ],
     MARGE,
   );
@@ -179,15 +204,31 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     doc.font('Helvetica').fontSize(10).text(net(d.description), { width: largeur });
   doc.moveDown(0.8);
 
-  // Lignes.
-  const colonnes = [
-    { titre: 'Désignation', l: largeur - 300, align: 'left' as const },
-    { titre: 'Qté', l: 50, align: 'right' as const },
-    { titre: 'Unité', l: 50, align: 'left' as const },
-    { titre: 'PU HT', l: 75, align: 'right' as const },
-    { titre: 'TVA', l: 45, align: 'right' as const },
-    { titre: 'Total HT', l: 80, align: 'right' as const },
-  ];
+  // Lignes (une ligne de texte s'imprime en intertitre, hors totaux).
+  const rapide = d.modeSaisie === 'rapide';
+  const colonnes = rapide
+    ? [
+        { titre: 'Désignation', l: largeur - 140, align: 'left' as const },
+        { titre: 'TVA', l: 50, align: 'right' as const },
+        { titre: 'Montant HT', l: 90, align: 'right' as const },
+      ]
+    : [
+        { titre: 'Désignation', l: largeur - 300, align: 'left' as const },
+        { titre: 'Qté', l: 50, align: 'right' as const },
+        { titre: 'Unité', l: 50, align: 'left' as const },
+        { titre: 'PU HT', l: 75, align: 'right' as const },
+        { titre: 'TVA', l: 45, align: 'right' as const },
+        { titre: 'Total HT', l: 80, align: 'right' as const },
+      ];
+  const filet = () => {
+    doc
+      .moveTo(MARGE, doc.y - 2)
+      .lineTo(MARGE + largeur, doc.y - 2)
+      .lineWidth(0.4)
+      .strokeColor(TRAIT)
+      .stroke();
+    if (doc.y > doc.page.height - 120) doc.addPage();
+  };
   const ligneTableau = (cellules: string[], gras = false) => {
     const y = doc.y;
     let x = MARGE;
@@ -200,27 +241,32 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       x += col.l;
     });
     doc.y = bas + 4;
-    doc
-      .moveTo(MARGE, doc.y - 2)
-      .lineTo(MARGE + largeur, doc.y - 2)
-      .lineWidth(0.4)
-      .strokeColor(TRAIT)
-      .stroke();
-    if (doc.y > doc.page.height - 120) doc.addPage();
+    filet();
   };
   ligneTableau(
     colonnes.map((c) => c.titre),
     true,
   );
-  for (const l of d.lignes)
-    ligneTableau([
-      l.designation,
-      quantite(l.quantite),
-      l.unite,
-      eur(l.puHtCentimes),
-      `${String(l.tva).replace('.', ',')} %`,
-      eur(Math.round(l.quantite * l.puHtCentimes)),
-    ]);
+  for (const l of d.lignes) {
+    if (!estLigneChiffree(l)) {
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(10)
+        .fillColor(TEXTE)
+        .text(net(l.designation), MARGE + 2, doc.y + 2, { width: largeur - 4 });
+      doc.y += 4;
+      filet();
+      continue;
+    }
+    const designation = `${l.designation}${natureLigne(l) === 'fourniture' ? `\n${LIBELLES_NATURE_LIGNE.fourniture}` : ''}`;
+    const totalLigne = eur(Math.round(l.quantite * l.puHtCentimes));
+    const tva = `${String(l.tva).replace('.', ',')} %`;
+    ligneTableau(
+      rapide
+        ? [designation, tva, totalLigne]
+        : [designation, quantite(l.quantite), l.unite, eur(l.puHtCentimes), tva, totalLigne],
+    );
+  }
 
   // Totaux.
   doc.moveDown(0.4);
@@ -249,9 +295,19 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   doc.font('Helvetica-Bold').fontSize(10).text('Conditions', MARGE, doc.y, { width: largeur });
   doc.font('Helvetica').fontSize(8.5).fillColor(TEXTE);
   for (const c of d.conditions) doc.text(`• ${net(c)}`, { width: largeur });
+  if (d.conditionsAcceptation?.trim())
+    doc.text(`• Conditions d’acceptation : ${net(d.conditionsAcceptation.trim())}`, {
+      width: largeur,
+    });
   if (d.notes) {
     doc.moveDown(0.4);
     doc.text(net(d.notes), { width: largeur });
+  }
+  if (d.champLibre?.texte.trim()) {
+    doc.moveDown(0.4);
+    if (d.champLibre.titre.trim())
+      doc.font('Helvetica-Bold').text(net(d.champLibre.titre.trim()), { width: largeur });
+    doc.font('Helvetica').text(net(d.champLibre.texte.trim()), { width: largeur });
   }
   const cachet = (x: number, y: number) => {
     if (!d.tampon) return;

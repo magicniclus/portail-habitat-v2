@@ -102,11 +102,13 @@ export async function facturerDevis(
           }));
         const maintenant = s.horloge();
         const client = d.get('client') as { nom: string; adresse: string };
+        // Adresse du chantier saisie dans les options du devis, sinon celle du client.
+        const lieuExecution = (d.get('adresseChantier') as string | undefined) || client.adresse;
         const facture = {
           typeClient: d.get('typeClient') as 'particulier' | 'pro',
           sirenClient: d.get('sirenClient') as string | undefined,
           client,
-          lieuExecution: client.adresse,
+          lieuExecution,
           emiseLe: new Date(maintenant),
           datePrestationLe: new Date(maintenant),
           echeanceLe: new Date(maintenant + (p.delaiPaiementJours as number) * JOUR_MS),
@@ -135,7 +137,13 @@ export async function facturerDevis(
           client,
           typeClient: facture.typeClient,
           ...(facture.sirenClient ? { sirenClient: facture.sirenClient } : {}),
-          lieuExecution: client.adresse,
+          lieuExecution,
+          // Options de l'éditeur A4 reprises du devis (présentation du PDF).
+          ...Object.fromEntries(
+            (['modeSaisie', 'tvaIntraClient', 'champLibre'] as const)
+              .map((k) => [k, d.get(k) as unknown])
+              .filter(([, v]) => v !== undefined),
+          ),
           objet: d.get('objet'),
           lignes,
           remisePct,

@@ -102,8 +102,8 @@ beforeEach(async () => {
   await enregistrerParametresFacturation(s(), proprio, PARAMS);
 });
 
-async function devisAccepte() {
-  const { devisId } = await enregistrerDevis(s(), proprio, entree());
+async function devisAccepte(extra: Record<string, unknown> = {}) {
+  const { devisId } = await enregistrerDevis(s(), proprio, entree(extra));
   await envoyerDevis(s(), proprio, devisId);
   await changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' });
   return devisId;
@@ -220,6 +220,26 @@ describe('devis', () => {
 });
 
 describe('factures', () => {
+  it('éditeur A4 : la facture reprend l’adresse du chantier et la présentation du devis', async () => {
+    const devisId = await devisAccepte({
+      adresseChantier: '4 allée des Pins, 33600 Pessac',
+      modeSaisie: 'rapide',
+      champLibre: { titre: 'Garantie', texte: '2 ans' },
+    });
+    const r = await facturerDevis(s(), proprio, {
+      devisId,
+      type: 'facture',
+      cleIdempotence: 'cle-a4-01',
+    });
+    const f = (await db.doc(chemins.factureClient('a1', r.factureId)).get()).data()!;
+    expect(f).toMatchObject({
+      lieuExecution: '4 allée des Pins, 33600 Pessac',
+      modeSaisie: 'rapide',
+      champLibre: { titre: 'Garantie', texte: '2 ans' },
+    });
+    expect(f).not.toHaveProperty('tvaIntraClient');
+  });
+
   it('DEV-07 : facture depuis un devis accepté ; mentions de la réforme ; échéance', async () => {
     const devisId = await devisAccepte();
     const r = await facturerDevis(s(), proprio, {
