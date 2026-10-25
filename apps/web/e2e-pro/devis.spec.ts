@@ -100,7 +100,9 @@ test.describe('Devis & factures', () => {
     await parametres(PARAMS);
     await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
     await remplir(page, { email: 'achats@sci.test', pro: '1234' });
-    await expect(page.locator('[data-mention="siren_client"]')).toHaveAttribute('data-ok', 'false');
+    await options(page, () =>
+      expect(page.locator('[data-mention="siren_client"]')).toHaveAttribute('data-ok', 'false'),
+    );
     await page.getByRole('button', { name: 'Envoyer au client' }).click();
     await expect(page.getByText(/Envoi impossible, il manque : SIREN du client/)).toBeVisible();
   });

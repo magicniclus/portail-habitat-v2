@@ -9,7 +9,7 @@ import { MenuLigne } from './MenuLigne';
 
 const nombre = (s: string) => Number(s.replace(',', '.').replace(/\s/g, '')) || 0;
 const selectFeuille =
-  'min-h-9 w-full rounded-[6px] border border-transparent bg-transparent px-1 text-base hover:border-dashed hover:border-neutre-400 focus:border-accent focus:outline-none sm:text-[15px]';
+  'min-h-11 w-full rounded-[6px] border border-transparent bg-transparent px-1 text-base hover:border-dashed hover:border-neutre-400 focus:border-accent focus:outline-none';
 
 /**
  * Colonnes des lignes, partagées avec l'en-tête du tableau. Mobile : désignation pleine largeur,
@@ -93,7 +93,7 @@ export function LigneFeuille({
                   inputMode="decimal"
                   value={l.cout}
                   onChange={(x) => maj({ cout: x.target.value })}
-                  className="min-h-7 w-24 text-sm sm:text-xs"
+                  className="w-28"
                 />
               </label>
             ) : null}

@@ -57,7 +57,7 @@ export function VideoPresentation({
         accept={TYPES_VIDEO.join(',')}
         disabled={enCours}
         onChange={(e) => void choisir(e.target.files?.[0])}
-        className="sr-only"
+        className="sr-only text-base"
       />
     </label>
   ) : null;

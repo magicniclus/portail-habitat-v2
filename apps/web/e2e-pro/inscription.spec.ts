@@ -123,7 +123,9 @@ test.describe('Inscription pro', () => {
 
     // ONB-06b : SIREN vérifié à l'inscription + décennale envoyée → fiche en ligne.
     await page.goto('/pro/fiche');
-    await expect(page.getByText(/Votre fiche est hors ligne/)).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'En-tête de la fiche' }).getByText('Fiche hors ligne'),
+    ).toBeVisible();
     await page.getByLabel('Type de document').selectOption('decennale');
     await page.getByLabel(/^Fichier/).setInputFiles(PDF);
     await page.getByRole('button', { name: 'Envoyer le document' }).click();

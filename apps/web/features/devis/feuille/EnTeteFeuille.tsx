@@ -52,7 +52,10 @@ export function EnTeteFeuille({
         {e.tel ? <span>{e.tel}</span> : null}
         {e.email ? <span>{e.email}</span> : null}
         {!e.adresse || !e.siret ? (
-          <Link href={routes.proDevisParametres} className="text-accent-700 underline">
+          <Link
+            href={routes.proDevisParametres}
+            className="inline-flex min-h-11 w-fit items-center text-accent-700 underline"
+          >
             Compléter mes informations
           </Link>
         ) : null}
