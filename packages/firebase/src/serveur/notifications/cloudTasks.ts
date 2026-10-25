@@ -23,10 +23,21 @@ export const planifierCloudTask: PlanifierEnvoi = async ({ envoiId, envoyerLe, s
       .set({ envoiId, secrets, envoyerLe: envoyerLe.toISOString() });
     return;
   }
-  await getFunctions(appAdmin())
-    .taskQueue(FILE_ENVOIS)
-    .enqueue(
-      { envoiId, secrets },
-      envoyerLe.getTime() > Date.now() + 1000 ? { scheduleTime: envoyerLe } : {},
+  try {
+    await getFunctions(appAdmin())
+      .taskQueue(FILE_ENVOIS)
+      .enqueue(
+        { envoiId, secrets },
+        envoyerLe.getTime() > Date.now() + 1000 ? { scheduleTime: envoyerLe } : {},
+      );
+  } catch (err) {
+    // `pnpm dev` sur un vrai projet sans Functions ni Cloud Tasks : le parcours continue et les liens
+    // de l'envoi s'affichent dans le terminal. Ailleurs, l'échec remonte (aucun envoi perdu en silence).
+    if (process.env.NODE_ENV !== 'development') throw err;
+    console.warn(
+      `[envoi non planifié : Cloud Tasks ou Functions absents] ${envoiId}`,
+      secrets,
+      (err as Error).message,
     );
+  }
 };
