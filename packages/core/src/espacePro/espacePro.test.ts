@@ -33,10 +33,10 @@ describe('menuPro (D63 : la barre latérale = les outils)', () => {
       'tableauDeBord',
       'fiche',
       'demandes',
-      'site',
-      'appelsOffres',
       'devis',
+      'appelsOffres',
       'avis',
+      'site',
       'statistiques',
     ]);
   });
@@ -164,7 +164,7 @@ describe('ongletsMobiles (MOBILE §6)', () => {
       'appelsOffres',
       'fiche',
     ]);
-    expect(plus.map((l) => l.cle)).toEqual(['site', 'devis', 'avis', 'statistiques', 'compte']);
+    expect(plus.map((l) => l.cle)).toEqual(['devis', 'avis', 'site', 'statistiques', 'compte']);
   });
 
   it('comptable : Mon compte seul, pas de « Plus »', () => {

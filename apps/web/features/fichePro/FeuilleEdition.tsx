@@ -1,6 +1,7 @@
 'use client';
 
-import { Banner, Button, Feuille } from '@ph/ui';
+import { Banner, Button, Feuille, IconButton } from '@ph/ui';
+import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -44,9 +45,11 @@ export function FeuilleEdition({
       onOpenChange={setOuvert}
       titre={titre}
       declencheur={
-        <Button variant="secondaire" taille="sm" aria-label={`Modifier : ${titre}`}>
-          Modifier
-        </Button>
+        <IconButton
+          variant="secondaire"
+          aria-label={`Modifier : ${titre}`}
+          icone={<PencilSimpleIcon />}
+        />
       }
       actions={
         <Button type="submit" form={id} disabled={enCours}>

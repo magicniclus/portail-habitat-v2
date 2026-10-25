@@ -36,19 +36,19 @@ const SECTIONS: { titre: string; liens: { cle: PagePro; libelle: string; visible
         { cle: 'tableauDeBord', libelle: 'Tableau de bord', visible: pas('comptable') },
         { cle: 'fiche', libelle: 'Ma fiche', visible: pas('comptable') },
         { cle: 'demandes', libelle: 'Mes demandes', visible: droit('demandes.repondre') },
-        { cle: 'site', libelle: 'Mon site', visible: droit('site.gerer') },
+        {
+          cle: 'devis',
+          libelle: 'Devis & factures',
+          visible: droit('devis.gerer', 'factures.emettre'),
+        },
       ],
     },
     {
       titre: 'Gestion',
       liens: [
         { cle: 'appelsOffres', libelle: "Appels d'offres", visible: droit('demandes.repondre') },
-        {
-          cle: 'devis',
-          libelle: 'Devis & factures',
-          visible: droit('devis.gerer', 'factures.emettre'),
-        },
         { cle: 'avis', libelle: 'Mes avis', visible: pas('comptable') },
+        { cle: 'site', libelle: 'Mon site internet', visible: droit('site.gerer') },
         { cle: 'statistiques', libelle: 'Statistiques', visible: droit('statistiques.voir') },
       ],
     },

@@ -1,22 +1,26 @@
 'use client';
 
 import { fichiers } from '@ph/firebase/chemins';
-import { Banner } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
 
-/** Logo de l'entreprise (2 Mo) : dépôt puis enregistrement serveur ; envoi dès le choix du fichier. */
+/**
+ * Logo (maquette Ma fiche) : carré posé sur la bannière, cliquable pour envoyer une image (2 Mo) ;
+ * dépôt Storage puis enregistrement serveur. Sans droit de modification, simple affichage.
+ */
 export function Logo({
   artisanId,
   logoUrl,
   nom,
+  modifiable,
 }: {
   artisanId: string;
   logoUrl?: string;
   nom: string;
+  modifiable: boolean;
 }) {
   const router = useRouter();
   const id = useId();
@@ -41,34 +45,37 @@ export function Logo({
     setEnCours(false);
   };
 
+  const contenu = logoUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element -- fichier Storage public, taille fixe
+    <img src={logoUrl} alt={`Logo de ${nom}`} className="size-full object-contain" />
+  ) : (
+    <span className="grid place-items-center gap-0.5 text-center text-sm font-semibold text-neutre-800">
+      Logo
+      {modifiable ? <span className="text-xs font-normal underline">Ajouter</span> : null}
+    </span>
+  );
+  const carre =
+    'relative flex size-[84px] flex-none items-center justify-center overflow-hidden rounded-[14px] border border-trait bg-blanc shadow-sm';
+  if (!modifiable) return <span className={carre}>{contenu}</span>;
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-4">
-      <span className="flex size-20 flex-none items-center justify-center overflow-hidden rounded-[14px] border border-trait bg-neutre-100">
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- fichier Storage public, taille fixe
-          <img src={logoUrl} alt={`Logo de ${nom}`} className="size-full object-contain" />
-        ) : (
-          <span className="text-xs text-neutre-700">Logo</span>
-        )}
-      </span>
-      <div className="grid min-w-0 gap-1.5">
-        <label
-          htmlFor={id}
-          className="relative inline-flex min-h-11 cursor-pointer overflow-hidden items-center rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
-        >
-          {enCours ? 'Envoi…' : logoUrl ? 'Changer le logo' : 'Ajouter un logo'}
-          <input
-            id={id}
-            type="file"
-            accept={TYPES_IMAGE.join(',')}
-            disabled={enCours}
-            onChange={(e) => void choisir(e.target.files?.[0])}
-            className="sr-only text-base"
-          />
-        </label>
-        <span className="text-xs text-neutre-700">JPEG, PNG ou WebP, 2 Mo au plus.</span>
-        {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
-      </div>
-    </div>
+    <span className="grid gap-1">
+      <label
+        htmlFor={id}
+        title={logoUrl ? 'Changer le logo' : 'Ajouter un logo'}
+        className={`${carre} cursor-pointer border-dashed has-focus-visible:outline-2 has-focus-visible:outline-accent`}
+      >
+        {enCours ? <span className="text-xs">Envoi…</span> : contenu}
+        <input
+          id={id}
+          type="file"
+          aria-label={logoUrl ? 'Changer le logo' : 'Ajouter un logo'}
+          accept={TYPES_IMAGE.join(',')}
+          disabled={enCours}
+          onChange={(e) => void choisir(e.target.files?.[0])}
+          className="sr-only"
+        />
+      </label>
+      {erreur ? <span className="max-w-[200px] text-xs text-danger">{erreur}</span> : null}
+    </span>
   );
 }

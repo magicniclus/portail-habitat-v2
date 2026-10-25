@@ -16,7 +16,7 @@ export function EditionPresentation({
   const [p, setP] = useState(pitch);
   const [d, setD] = useState(description);
   return (
-    <FeuilleEdition titre="Présentation" entree={() => ({ pitch: p, description: d })}>
+    <FeuilleEdition titre="À propos" entree={() => ({ pitch: p, description: d })}>
       <Field label="Accroche" aide={`Une phrase affichée dans l'annuaire (${p.length}/280).`}>
         <Input value={p} onChange={(e) => setP(e.target.value)} maxLength={280} />
       </Field>

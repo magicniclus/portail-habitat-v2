@@ -54,7 +54,11 @@ export interface FichePro {
   nomCommercial: string;
   slug: string;
   metierPrincipal: string;
+  /** Métiers de l'entreprise (identifiants, métier principal d'abord). */
+  metiers: string[];
   ville: string;
+  /** Adresse du siège affichée dans « Informations » (« 3 rue des Lilas, 33600 Pessac »). */
+  adresse: string;
   enLigne: boolean;
   pitch: string;
   description: string;
@@ -76,7 +80,14 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     nomCommercial: a.nomCommercial,
     slug: a.slug,
     metierPrincipal: a.metierPrincipal,
+    metiers: (a.metiers as string[] | undefined) ?? [a.metierPrincipal],
     ville: a.adresseSiege?.ville ?? '',
+    adresse: [
+      a.adresseSiege?.ligne1,
+      [a.adresseSiege?.codePostal, a.adresseSiege?.ville].filter(Boolean).join(' '),
+    ]
+      .filter(Boolean)
+      .join(', '),
     enLigne: a.enLigne === true,
     pitch: a.pitch ?? '',
     description: a.description ?? '',

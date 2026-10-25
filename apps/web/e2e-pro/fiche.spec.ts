@@ -31,9 +31,9 @@ test.describe('Ma fiche', () => {
   test('le propriétaire modifie la présentation et le devis moyen', async ({ page }, info) => {
     const accroche = `Couverture et zinguerie (${info.project.name} ${Date.now()})`;
     await connecter(page, COMPTES.proprio, '/pro/fiche');
-    const presentation = page.getByRole('region', { name: 'Présentation' });
-    await presentation.getByRole('button', { name: 'Modifier : Présentation' }).click();
-    const feuille = page.getByRole('dialog', { name: 'Présentation' });
+    const presentation = page.getByRole('region', { name: 'À propos' });
+    await presentation.getByRole('button', { name: 'Modifier : À propos' }).click();
+    const feuille = page.getByRole('dialog', { name: 'À propos' });
     await feuille.getByLabel(/^Accroche/).fill(accroche);
     await feuille.getByRole('button', { name: 'Enregistrer' }).click();
     await expect(feuille).toBeHidden();
@@ -50,8 +50,8 @@ test.describe('Ma fiche', () => {
 
   test('assistant de rédaction : sans clé, message clair et texte intact', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
-    await page.getByRole('button', { name: 'Modifier : Présentation' }).click();
-    const feuille = page.getByRole('dialog', { name: 'Présentation' });
+    await page.getByRole('button', { name: 'Modifier : À propos' }).click();
+    const feuille = page.getByRole('dialog', { name: 'À propos' });
     const apropos = feuille.getByLabel(/^À propos/);
     await apropos.fill('Couvreur a Bordeaux, on fait les toitures.');
     await feuille.getByRole('button', { name: 'Relire et corriger' }).click();
