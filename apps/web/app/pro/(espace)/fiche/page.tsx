@@ -22,6 +22,7 @@ import { ApercuParticulier } from '@/features/fichePro/ApercuParticulier';
 import { Banniere } from '@/features/fichePro/Banniere';
 import { TexteAPropos } from '@/features/fichePro/APropos';
 import { CarteFiche } from '@/features/fichePro/CarteFiche';
+import { Certifications } from '@/features/fichePro/Certifications';
 import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
@@ -155,7 +156,11 @@ export default async function PageMaFiche() {
               </p>
             </CarteFiche>
           </div>
-          <CarteFiche titre="Documents et assurances">
+          <Certifications
+            labels={f.certifications}
+            ajout={peut(active.membre, 'documents.televerser')}
+          />
+          <CarteFiche titre="Documents et assurances" id="documents">
             <Documents
               artisanId={active.artisanId}
               documents={documents}

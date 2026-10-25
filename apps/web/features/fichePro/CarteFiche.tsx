@@ -7,9 +7,12 @@ export function CarteFiche({
   sousTitre,
   action,
   className,
+  id,
   children,
 }: {
   titre: string;
+  /** Ancre (lien « + » des certifications vers les documents). */
+  id?: string;
   sousTitre?: ReactNode;
   action?: ReactNode;
   className?: string;
@@ -17,9 +20,10 @@ export function CarteFiche({
 }) {
   return (
     <section
+      id={id}
       aria-label={titre}
       className={cn(
-        'grid content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5',
+        'grid scroll-mt-24 content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5',
         className,
       )}
     >

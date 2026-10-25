@@ -67,6 +67,8 @@ export interface FichePro {
   siteWeb?: string;
   logoUrl?: string;
   banniereUrl?: string;
+  /** Labels prouvés par un document validé et non expiré (décennale, RGE, Qualibat). */
+  certifications: string[];
   devis?: { minCentimes: number; maxCentimes: number };
   zone: { centre: { latitude: number; longitude: number }; rayonKm: number };
   completude: Awaited<ReturnType<typeof completudeDepuisBase>>;
@@ -97,6 +99,11 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     ...facultatif('siteWeb'),
     ...facultatif('logoUrl'),
     ...facultatif('banniereUrl'),
+    certifications: Object.entries(
+      (a.labelsVerifies ?? {}) as Record<string, { expireLe?: { toMillis(): number } }>,
+    )
+      .filter(([, v]) => !v.expireLe || v.expireLe.toMillis() > Date.now())
+      .map(([cle]) => cle),
     ...(a.budgetMin !== undefined && a.budgetMax !== undefined
       ? { devis: { minCentimes: a.budgetMin, maxCentimes: a.budgetMax } }
       : {}),
