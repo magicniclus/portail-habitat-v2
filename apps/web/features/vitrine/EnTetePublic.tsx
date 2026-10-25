@@ -117,21 +117,24 @@ export function EnTetePublic({
             )}
           >
             {secondaire ? (
-              <Link
-                href={secondaire.href}
-                prefetch={secondaire.prefetch}
-                className={
-                  acquisition
-                    ? bouton({
-                        variant: 'secondaire',
-                        className: 'hidden min-h-11 gap-2 text-[15px] lg:inline-flex',
-                      })
-                    : 'hidden min-h-11 items-center text-[14.5px] text-neutre-800 no-underline hover:text-accent lg:inline-flex'
-                }
-              >
-                {acquisition ? <IconeCompte /> : null}
-                {secondaire.libelle}
-              </Link>
+              // Enveloppe : la classe `hidden` doit primer sur l'`inline-flex` du bouton.
+              <span className="hidden lg:contents">
+                <Link
+                  href={secondaire.href}
+                  prefetch={secondaire.prefetch}
+                  className={
+                    acquisition
+                      ? bouton({
+                          variant: 'secondaire',
+                          className: 'hidden min-h-11 gap-2 text-[15px] lg:inline-flex',
+                        })
+                      : 'hidden min-h-11 items-center text-[14.5px] text-neutre-800 no-underline hover:text-accent lg:inline-flex'
+                  }
+                >
+                  {acquisition ? <IconeCompte /> : null}
+                  {secondaire.libelle}
+                </Link>
+              </span>
             ) : null}
             <Link
               href={principal.href}
