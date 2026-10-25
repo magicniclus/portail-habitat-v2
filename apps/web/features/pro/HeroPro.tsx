@@ -1,5 +1,5 @@
+import type { preuveHeroPro } from '@ph/core/landings';
 import type { ReactNode } from 'react';
-import type { ChiffresVitrine } from '@/features/accueil/vitrine';
 import { Etoiles } from '@/features/vitrine/Etoiles';
 
 const ARGUMENTS = [
@@ -14,10 +14,10 @@ const PHOTO_HERO = '/landing/photos/hero-acquisition.webp';
 
 /** Colonne gauche du hero ; le formulaire est à droite (dessous sur mobile, juste après le texte). */
 export function AccrochePro({
-  chiffres,
+  preuve,
   bandeau,
 }: {
-  chiffres: ChiffresVitrine;
+  preuve: ReturnType<typeof preuveHeroPro>;
   bandeau: ReactNode;
 }) {
   return (
@@ -43,18 +43,21 @@ export function AccrochePro({
           </li>
         ))}
       </ul>
-      {chiffres ? (
+      {preuve.note || preuve.artisans ? (
         <p className="m-0 flex flex-col gap-0.5 text-[15px] leading-[22px] text-neutre-800">
-          {chiffres.note ? (
+          {preuve.note ? (
             <span className="flex flex-wrap items-center gap-2">
               <Etoiles />
-              <strong>{chiffres.note}/5</strong>
-              <span className="text-neutre-700">sur {chiffres.avis} avis</span>
+              <strong className="text-texte">{preuve.note}/5</strong>
+              <span className="text-neutre-700">sur {preuve.avis} avis</span>
             </span>
           ) : null}
-          <span>
-            <strong>{chiffres.artisans} artisans</strong> développent déjà leur activité avec nous
-          </span>
+          {preuve.artisans ? (
+            <span>
+              <strong className="text-texte">{preuve.artisans} artisans</strong> développent déjà
+              leur activité avec nous
+            </span>
+          ) : null}
         </p>
       ) : null}
     </div>

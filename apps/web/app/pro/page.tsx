@@ -1,3 +1,4 @@
+import { preuveHeroPro } from '@ph/core/landings';
 import type { Metadata } from 'next';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { Traceur } from '@/features/comportement/Traceur';
@@ -22,7 +23,7 @@ import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
-import { lireStatsPublic } from '@/server/vitrine';
+import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 
 export const revalidate = 3600;
 
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AcquisitionArtisans() {
-  const stats = await lireStatsPublic();
+  const [stats, preuveSociale] = await Promise.all([lireStatsPublic(), lirePreuveSociale()]);
   const chiffres = chiffresVitrine(stats);
   const groupes = groupesMetiers();
   return (
@@ -48,7 +49,10 @@ export default async function AcquisitionArtisans() {
           data-ph-section="hero"
           className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,64px)] gap-y-9 pt-[clamp(24px,4vw,48px)] pb-[clamp(48px,6vw,80px)] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] min-[900px]:grid-rows-[auto_1fr]`}
         >
-          <AccrochePro chiffres={chiffres} bandeau={<BandeauMetier groupes={groupes} />} />
+          <AccrochePro
+            preuve={preuveHeroPro(preuveSociale)}
+            bandeau={<BandeauMetier groupes={groupes} />}
+          />
           {/* Ordre mobile : texte, formulaire, photo ; dès 900 px le formulaire occupe la colonne droite. */}
           <div className="min-[900px]:sticky min-[900px]:top-24 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1">
             <FormulaireInscription

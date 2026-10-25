@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { formatNombre } from '../format/nombres';
 import { SOURCES_ACQUISITION } from '../schemas/artisans';
 import {
   contenuLanding,
@@ -7,6 +8,7 @@ import {
   evenementLanding,
   LANDINGS,
   OUTILS_LANDING,
+  preuveHeroPro,
   preuveSociale,
   sourceDeLanding,
 } from './index';
@@ -136,6 +138,32 @@ describe('LAND-06 : événements analytics', () => {
       event: 'faq_opened',
       landing: 'devis',
       question: 2,
+    });
+  });
+});
+
+describe('hero de /pro : note, avis et artisans (maquette Acquisition v2, D72)', () => {
+  it('sans réglage : chiffres déclarés par le propriétaire', () => {
+    expect(preuveHeroPro(null)).toEqual({
+      note: '4,8',
+      avis: `${formatNombre(2000)}+`,
+      artisans: formatNombre(3200),
+    });
+  });
+
+  it('réglage config/preuveSociale prioritaire, nombre d’avis arrondi', () => {
+    expect(preuveHeroPro({ note: 4.6, nbAvis: 2345, nbInscrits: 4100 })).toEqual({
+      note: '4,6',
+      avis: `${formatNombre(2000)}+`,
+      artisans: formatNombre(4100),
+    });
+  });
+
+  it('réglage partiel : la valeur manquante n’est pas affichée', () => {
+    expect(preuveHeroPro({ nbInscrits: 3500 })).toEqual({
+      note: null,
+      avis: null,
+      artisans: formatNombre(3500),
     });
   });
 });

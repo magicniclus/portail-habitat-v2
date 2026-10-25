@@ -1,4 +1,4 @@
-import { formatNombre } from '../format/nombres';
+import { formatNombre, nombreArrondi } from '../format/nombres';
 import { SOURCES_ACQUISITION } from '../schemas/artisans';
 import type { OutilLanding } from './contenu';
 
@@ -76,4 +76,31 @@ export function preuveSociale(p: DonneesPreuveSociale | null): {
     });
   const temoignages = (p?.temoignages ?? []).filter((t) => t.accordLe);
   return { visible: chiffres.length > 0 || temoignages.length > 0, chiffres, temoignages };
+}
+
+/**
+ * Chiffres du hero de /pro (maquette Acquisition Artisans v2) confirmés comme réels par le
+ * propriétaire le 25/10/2026 (D72) : « 4,8/5 sur 2 000+ avis », « 3 200 artisans ».
+ */
+const PREUVE_PRO_DECLAREE = { note: 4.8, avis: `${formatNombre(2000)}+`, artisans: 3200 };
+
+/** Hero de /pro : `config/preuveSociale` s'il est renseigné, sinon les chiffres déclarés. */
+export function preuveHeroPro(p: DonneesPreuveSociale | null): {
+  note: string | null;
+  avis: string | null;
+  artisans: string | null;
+} {
+  const renseigne = Boolean(
+    p && ((p.note ?? 0) > 0 || (p.nbAvis ?? 0) > 0 || (p.nbInscrits ?? 0) > 0),
+  );
+  if (!renseigne) {
+    const d = PREUVE_PRO_DECLAREE;
+    return { note: formatNombre(d.note, 1), avis: d.avis, artisans: formatNombre(d.artisans) };
+  }
+  const avecNote = (p!.note ?? 0) > 0 && (p!.nbAvis ?? 0) > 0;
+  return {
+    note: avecNote ? formatNombre(p!.note!, 1) : null,
+    avis: avecNote ? nombreArrondi(p!.nbAvis!) : null,
+    artisans: (p!.nbInscrits ?? 0) > 0 ? formatNombre(p!.nbInscrits!) : null,
+  };
 }
