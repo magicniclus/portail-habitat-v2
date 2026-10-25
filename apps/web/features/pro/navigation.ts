@@ -36,6 +36,7 @@ export const piedPro: { accroche: string; colonnes: ColonnePied[] } = {
       titre: 'Mon compte',
       liens: [
         { libelle: 'Connexion Pro', href: routes.connexionPro },
+        { libelle: 'Application mobile', href: ancre('application') },
         { libelle: 'Aide', href: routes.aideSujet('pro') },
       ],
     },

@@ -221,7 +221,7 @@ export function FichePro() {
 /** Application : PWA installable (D33), sans badge de store (D49). */
 export function ApplicationPro() {
   return (
-    <section className={`bg-accent-100 ${bande}`}>
+    <section id="application" className={`scroll-mt-20 bg-accent-100 ${bande}`}>
       <div
         className={`${conteneurPro} grid items-center gap-x-[clamp(28px,4vw,60px)] gap-y-10 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]`}
       >
