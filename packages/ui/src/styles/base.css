@@ -89,3 +89,22 @@
     transform: translateY(100%);
   }
 }
+
+@keyframes disparaitre {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Tiroir latéral (menu mobile de la maquette Acquisition) : entrée et sortie par la droite. */
+@keyframes entrer-droite {
+  from {
+    transform: translateX(104%);
+  }
+}
+
+@keyframes sortir-droite {
+  to {
+    transform: translateX(104%);
+  }
+}

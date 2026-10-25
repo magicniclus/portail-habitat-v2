@@ -152,8 +152,9 @@ export function EnTetePublic({
               )}
             </Link>
             <MenuPublic
-              liens={[...liens, ...(secondaire ? [secondaire] : [])]}
+              liens={liens}
               principal={principal}
+              secondaire={secondaire}
               variantLogo={variantLogo}
             />
           </div>

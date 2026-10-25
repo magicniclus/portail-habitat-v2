@@ -31,10 +31,13 @@ function IconeMenu() {
 export function MenuPublic({
   liens,
   principal,
+  secondaire,
   variantLogo,
 }: {
   liens: LienNav[];
   principal: LienNav;
+  /** Placé en bouton secondaire en bas du panneau (« Espace pro · Se connecter »). */
+  secondaire?: LienNav;
   variantLogo: 'particulier' | 'pro' | 'diag';
 }) {
   const [ouvert, setOuvert] = useState(false);
@@ -61,6 +64,7 @@ export function MenuPublic({
         <PanneauMenu
           liens={liens}
           principal={principal}
+          secondaire={secondaire}
           variantLogo={variantLogo}
           ouvert={ouvert}
           onOuvertChange={setOuvert}
