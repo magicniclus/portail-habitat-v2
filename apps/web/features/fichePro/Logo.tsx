@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
+import { useGlisserDeposer } from './useGlisserDeposer';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
 
 /**
- * Logo (maquette Ma fiche) : carré posé sur la bannière, cliquable pour envoyer une image (2 Mo) ;
+ * Logo (maquette Ma fiche) : carré posé sur la bannière ; clic ou glisser-déposer d'une image (2 Mo) ;
  * dépôt Storage puis enregistrement serveur. Sans droit de modification, simple affichage.
  */
 export function Logo({
@@ -44,6 +45,7 @@ export function Logo({
     }
     setEnCours(false);
   };
+  const { survol, zone } = useGlisserDeposer((f) => void choisir(f), modifiable && !enCours);
 
   const contenu = logoUrl ? (
     // eslint-disable-next-line @next/next/no-img-element -- fichier Storage public, taille fixe
@@ -61,8 +63,13 @@ export function Logo({
     <span className="grid gap-1">
       <label
         htmlFor={id}
-        title={logoUrl ? 'Changer le logo' : 'Ajouter un logo'}
-        className={`${carre} cursor-pointer border-dashed has-focus-visible:outline-2 has-focus-visible:outline-accent`}
+        title={
+          logoUrl
+            ? 'Changer le logo (cliquez ou déposez une image)'
+            : 'Ajouter un logo (cliquez ou déposez une image)'
+        }
+        {...zone}
+        className={`${carre} cursor-pointer border-dashed has-focus-visible:outline-2 has-focus-visible:outline-accent ${survol ? 'border-2 border-accent bg-accent-100' : ''}`}
       >
         {enCours ? <span className="text-xs">Envoi…</span> : contenu}
         <input

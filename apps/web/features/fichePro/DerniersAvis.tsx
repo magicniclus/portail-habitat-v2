@@ -6,9 +6,26 @@ import { Etoiles } from '@/features/vitrine/Etoiles';
 import { routes } from '@/lib/routes';
 import { CarteFiche } from './CarteFiche';
 
-/** « Derniers avis » (maquette Ma fiche) : les 4 plus récents, lien vers Mes avis. */
+/** « Derniers avis » (maquette Ma fiche) : les 4 plus récents, lien vers Mes avis ; « 0 avis » sinon. */
 export function DerniersAvis({ avis, note }: { avis: AvisPro[]; note: string | null }) {
-  if (!avis.length) return null;
+  if (!avis.length)
+    return (
+      <CarteFiche
+        titre="Derniers avis"
+        action={<span className="text-sm whitespace-nowrap text-neutre-700">0 avis</span>}
+      >
+        <p className="m-0 text-[15px] leading-[24px] text-neutre-800">
+          Aucun avis pour l&apos;instant. Les avis de vos clients s&apos;afficheront ici et sur
+          votre fiche publique.
+        </p>
+        <Link
+          href={routes.proAvis}
+          className={bouton({ variant: 'secondaire', className: 'justify-self-start' })}
+        >
+          Demander des avis
+        </Link>
+      </CarteFiche>
+    );
   return (
     <CarteFiche
       titre="Derniers avis"

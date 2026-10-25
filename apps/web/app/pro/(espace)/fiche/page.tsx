@@ -14,7 +14,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { CarteCompletude } from '@/features/espacePro/BlocsTableauDeBord';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
 import { ApercuParticulier } from '@/features/fichePro/ApercuParticulier';
@@ -26,6 +25,7 @@ import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
 import { InfosFiche } from '@/features/fichePro/InfosFiche';
+import { ProgressionFiche } from '@/features/fichePro/ProgressionFiche';
 import { ResumeAvis } from '@/features/fichePro/ResumeAvis';
 import { VideoPresentation } from '@/features/fichePro/VideoPresentation';
 import { Realisations } from '@/features/fichePro/Realisations';
@@ -73,6 +73,7 @@ export default async function PageMaFiche() {
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <ConfigFirebase />
+      {f.enLigne ? null : <ProgressionFiche pourcent={f.completude.pourcent} />}
       {f.enLigne ? (
         <Link
           href={`/artisans/${f.slug}` as Route}
@@ -103,7 +104,6 @@ export default async function PageMaFiche() {
               />
             }
           />
-          {f.enLigne ? null : <CarteCompletude c={f.completude} />}
           <ResumeAvis note={note} nombre={avis.length} />
           <CarteFiche
             titre="À propos"

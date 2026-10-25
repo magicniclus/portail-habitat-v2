@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
+import { useGlisserDeposer } from './useGlisserDeposer';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
 
 /**
- * Bannière de Ma fiche (1600 × 500, 5 Mo) : « Changer la bannière » n'existe que dans l'espace pro ;
+ * Bannière de Ma fiche (1600 × 500, 5 Mo ; clic ou glisser-déposer) : « Changer la bannière » n'existe que dans l'espace pro ;
  * la fiche publique n'affiche que l'image.
  */
 export function Banniere({
@@ -43,16 +44,20 @@ export function Banniere({
     }
     setEnCours(false);
   };
+  const { survol, zone } = useGlisserDeposer((f) => void choisir(f), modifiable && !enCours);
 
   return (
-    <div className="relative h-[clamp(120px,18vw,170px)] overflow-hidden bg-accent-100">
+    <div
+      {...zone}
+      className={`relative h-[clamp(120px,18vw,170px)] overflow-hidden bg-accent-100 ${survol ? 'outline-2 -outline-offset-4 outline-accent outline-dashed' : ''}`}
+    >
       {banniereUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- fichier Storage public
         <img src={banniereUrl} alt="" className="size-full object-cover" />
       ) : modifiable ? (
         <span className="flex size-full flex-col items-center justify-center gap-1 text-sm text-neutre-800">
           <ImageIcon size={26} aria-hidden="true" />
-          Bannière (1600 × 500 px)
+          Bannière (1600 × 500 px) : glissez une image ici
         </span>
       ) : null}
       {modifiable ? (
