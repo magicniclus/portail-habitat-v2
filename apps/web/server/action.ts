@@ -23,7 +23,11 @@ import type { z } from '@ph/core/zod';
 // Permission (peut() / admins), limite de débit, audit et idempotence : Firestore via l'Admin SDK.
 const envelopper = creerEnveloppe<ContexteBase>({
   ...dependancesEnveloppe(() => getFirestore(appAdmin())),
-  signalerErreur: (erreur) => Sentry.captureException(erreur),
+  signalerErreur: (erreur) => {
+    // En développement, l'erreur s'affiche aussi dans le terminal (sans Sentry, sinon rien ne s'y voit).
+    if (process.env.NODE_ENV === 'development') console.error('[action]', erreur);
+    Sentry.captureException(erreur);
+  },
 });
 
 /** App Check n'a pas d'émulateur : `APP_CHECK_MODE=desactive` en local, jamais en production. */
