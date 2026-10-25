@@ -66,9 +66,12 @@ export function EnTetePublic({
         empile={acquisition}
         className={cn(
           // Texte du logo masqué (lu par les lecteurs d'écran) quand l'en-tête manque de place.
-          variantLogo === 'particulier'
-            ? 'max-[389px]:[&>span:last-child]:sr-only'
-            : 'max-[479px]:[&>span:last-child]:sr-only',
+          // Nom sur deux lignes (Acquisition) : assez étroit pour rester visible dès 340 px.
+          acquisition
+            ? 'max-[339px]:[&>span:last-child]:sr-only'
+            : variantLogo === 'particulier'
+              ? 'max-[389px]:[&>span:last-child]:sr-only'
+              : 'max-[479px]:[&>span:last-child]:sr-only',
           !acquisition && 'sm:[&_svg]:size-9',
         )}
       />
