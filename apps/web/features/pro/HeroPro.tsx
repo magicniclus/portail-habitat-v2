@@ -9,6 +9,9 @@ const ARGUMENTS = [
   'Visible en 3 minutes',
 ];
 
+/** Pastilles décoratives de la maquette, gardées telles quelles à la demande du propriétaire (D72). */
+const PASTILLES = ['JB', 'SM', 'MD'];
+
 /** Photo du hero (maquette Acquisition Artisans v2, emplacement `v2-hero`), README des photos. */
 const PHOTO_HERO = '/landing/photos/hero-acquisition.webp';
 
@@ -44,21 +47,33 @@ export function AccrochePro({
         ))}
       </ul>
       {preuve.note || preuve.artisans ? (
-        <p className="m-0 flex flex-col gap-0.5 text-[15px] leading-[22px] text-neutre-800">
-          {preuve.note ? (
-            <span className="flex flex-wrap items-center gap-2">
-              <Etoiles />
-              <strong className="text-texte">{preuve.note}/5</strong>
-              <span className="text-neutre-700">sur {preuve.avis} avis</span>
-            </span>
-          ) : null}
-          {preuve.artisans ? (
-            <span>
-              <strong className="text-texte">{preuve.artisans} artisans</strong> développent déjà
-              leur activité avec nous
-            </span>
-          ) : null}
-        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <span aria-hidden="true" className="flex">
+            {PASTILLES.map((p, i) => (
+              <span
+                key={p}
+                className={`flex size-11 flex-none items-center justify-center rounded-full border-2 border-fond bg-accent-200 text-sm font-bold text-accent-800 ${i ? '-ml-2.5' : ''}`}
+              >
+                {p}
+              </span>
+            ))}
+          </span>
+          <p className="m-0 flex flex-col gap-0.5 text-[15px] leading-[22px] text-neutre-800">
+            {preuve.note ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <Etoiles />
+                <strong className="text-texte">{preuve.note}/5</strong>
+                <span className="text-neutre-700">sur {preuve.avis} avis</span>
+              </span>
+            ) : null}
+            {preuve.artisans ? (
+              <span>
+                <strong className="text-texte">{preuve.artisans} artisans</strong> développent déjà
+                leur activité avec nous
+              </span>
+            ) : null}
+          </p>
+        </div>
       ) : null}
     </div>
   );
