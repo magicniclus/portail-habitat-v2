@@ -4,7 +4,7 @@ import { PAGES_COMPTE, type LienPro } from '@ph/core/espace-pro';
 import { IconButton } from '@ph/ui';
 import { SidebarSimpleIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ApplicationPro } from '@/features/pwa/ApplicationPro';
 import { estActif } from './liens';
 import { NavMobilePro } from './NavMobilePro';
@@ -30,6 +30,7 @@ export interface CadreProProps {
 export function CadrePro(p: CadreProProps) {
   const [ouvert, setOuvert] = useState(true);
   const chemin = usePathname();
+  const entete = useEntete();
   const surCompte = PAGES_COMPTE.some((c) => estActif(chemin, c));
   const titre = surCompte
     ? 'Mon compte'
@@ -43,7 +44,10 @@ export function CadrePro(p: CadreProProps) {
     <div className="min-h-dvh bg-blanc text-texte lg:grid lg:grid-cols-[auto_minmax(0,1fr)]">
       <SidebarPro menu={p.menu} ouvert={ouvert} initiales={p.initiales} encart={p.encart} />
       <div className="flex min-w-0 flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-2.5">
+        <header
+          ref={entete}
+          className="sticky top-0 z-20 flex items-center gap-3 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-2.5"
+        >
           <IconButton
             variant="secondaire"
             aria-label={ouvert ? 'Replier le menu' : 'Déplier le menu'}
@@ -79,4 +83,26 @@ export function CadrePro(p: CadreProProps) {
       />
     </div>
   );
+}
+
+/**
+ * Hauteur réelle de l'en-tête collant (variable avec le sélecteur d'entreprise, le retour à la
+ * ligne…) publiée dans `--entete-pro` : les éléments collants des pages se placent juste dessous.
+ */
+function useEntete() {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const racine = document.documentElement.style;
+    const publier = () => racine.setProperty('--entete-pro', `${el.offsetHeight}px`);
+    publier();
+    const obs = new ResizeObserver(publier);
+    obs.observe(el);
+    return () => {
+      obs.disconnect();
+      racine.removeProperty('--entete-pro');
+    };
+  }, []);
+  return ref;
 }

@@ -29,7 +29,7 @@ export function EnTeteFiche({
     >
       {banniere}
       <div className="grid gap-4 px-5 pb-5">
-        <div className="-mt-10 flex flex-wrap items-end gap-x-4 gap-y-2">
+        <div className="-mt-[34px] flex flex-wrap items-end gap-x-4 gap-y-2">
           <Logo
             artisanId={artisanId}
             nom={nom}

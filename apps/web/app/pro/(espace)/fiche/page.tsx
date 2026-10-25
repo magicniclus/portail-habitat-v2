@@ -13,6 +13,7 @@ import { bouton } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
+import type { CSSProperties } from 'react';
 import { redirect } from 'next/navigation';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
@@ -25,7 +26,7 @@ import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
 import { InfosFiche } from '@/features/fichePro/InfosFiche';
-import { ProgressionFiche } from '@/features/fichePro/ProgressionFiche';
+import { HAUTEUR_PROGRESSION, ProgressionFiche } from '@/features/fichePro/ProgressionFiche';
 import { ResumeAvis } from '@/features/fichePro/ResumeAvis';
 import { VideoPresentation } from '@/features/fichePro/VideoPresentation';
 import { Realisations } from '@/features/fichePro/Realisations';
@@ -70,10 +71,15 @@ export default async function PageMaFiche() {
   const note = avis.length
     ? formatNombre(avis.reduce((t, a) => t + a.note, 0) / avis.length, 1)
     : null;
+  const progression = f.completude.pourcent < 100;
   return (
-    <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
+    <main
+      className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12"
+      // L'aperçu côté particulier se colle sous la barre de progression quand elle est affichée.
+      style={progression ? ({ '--barre-fiche': `${HAUTEUR_PROGRESSION}px` } as CSSProperties) : {}}
+    >
       <ConfigFirebase />
-      {f.completude.pourcent < 100 ? <ProgressionFiche pourcent={f.completude.pourcent} /> : null}
+      {progression ? <ProgressionFiche pourcent={f.completude.pourcent} /> : null}
       {f.enLigne ? (
         <Link
           href={`/artisans/${f.slug}` as Route}
