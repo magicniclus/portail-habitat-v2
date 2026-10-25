@@ -8,3 +8,4 @@ export {
   type RegleDebit,
   type Traitement,
 } from './enveloppe';
+export { plafondEffectif } from './debit';

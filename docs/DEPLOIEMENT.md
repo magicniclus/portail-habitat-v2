@@ -33,6 +33,7 @@ Noms seulement : les valeurs vont dans les secrets Vercel (site) ou Google Secre
 | `ANTHROPIC_API_KEY` | assistant IA (facultatif : coupé sans) |
 | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | erreurs et sourcemaps |
 | `MAINTENANCE` | `1` pour la maintenance (RUNBOOK §1) |
+| `RATE_LIMIT_FACTEUR` | facultatif : entier ≥ 1 qui multiplie les limites de débit (recette, pic) ; sous `pnpm dev`, aucune limite |
 
 Interdits hors des tests (le code refuse de démarrer avec en production) : `APP_CHECK_MODE=desactive`, `ANNUAIRE_DEMO=1`. `ADMIN_MFA=desactive` est réservé aux tests de bout en bout.
 

@@ -1,6 +1,11 @@
 import { createHash } from 'node:crypto';
 import { PERMISSIONS_ADMIN } from '@ph/core/admin';
-import type { ContexteBase, Dependances, RegleDebit } from '@ph/core/enveloppe';
+import {
+  plafondEffectif,
+  type ContexteBase,
+  type Dependances,
+  type RegleDebit,
+} from '@ph/core/enveloppe';
 import { ACTIONS_EQUIPE, peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
 import type { Resultat } from '@ph/core/resultat';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -49,6 +54,8 @@ export function dependancesEnveloppe(
     },
 
     async limiterDebit(regle: RegleDebit, identifiantClient: string): Promise<boolean> {
+      const plafond = plafondEffectif(regle.max, process.env);
+      if (plafond === null) return true;
       const ref = db()
         .collection(collections.rateLimits)
         .doc(empreinte(`${regle.cle}:${identifiantClient}`));
@@ -58,7 +65,7 @@ export function dependancesEnveloppe(
         const actuel = (await tx.get(ref)).data() as
           { compteur: number; fenetreDebut: Timestamp } | undefined;
         const nouvelleFenetre = !actuel || actuel.fenetreDebut.toMillis() + duree <= maintenant;
-        if (!nouvelleFenetre && actuel.compteur >= regle.max) return false;
+        if (!nouvelleFenetre && actuel.compteur >= plafond) return false;
         const debut = nouvelleFenetre ? maintenant : actuel.fenetreDebut.toMillis();
         tx.set(ref, {
           schemaVersion: 1,
