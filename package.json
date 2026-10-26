@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "turbo run dev emulateurs",
-    "dev:web": "pnpm --filter @ph/web dev",
+    "dev:web": "node -e \"require('fs').rmSync('apps/web/.next',{recursive:true,force:true})\" && pnpm --filter @ph/web dev",
     "emulateurs": "firebase emulators:start --project demo-portail-travaux --import=.emulateurs --export-on-exit",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
