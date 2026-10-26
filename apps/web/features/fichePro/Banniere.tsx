@@ -2,7 +2,7 @@
 
 import { BANNIERES_MAX_VISIBILITE } from '@ph/core/annuaire';
 import { fichiers } from '@ph/firebase/chemins';
-import { ImageIcon, TrashIcon } from '@phosphor-icons/react';
+import { CrownIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
@@ -129,8 +129,9 @@ export function Banniere({
             <FenetreOffre
               formule="fiche_pro"
               raison={`Jusqu'à ${BANNIERES_MAX_VISIBILITE} bannières sur votre fiche avec la visibilité Fiche Pro.`}
-              className={pastille}
+              className={`${pastille} border-premium bg-premium-fond text-premium-texte hover:bg-premium-fond hover:brightness-95`}
             >
+              <CrownIcon size={18} weight="fill" aria-hidden="true" className="text-premium" />
               Plus de bannières
             </FenetreOffre>
           ) : null}

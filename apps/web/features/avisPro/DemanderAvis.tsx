@@ -1,11 +1,11 @@
 'use client';
 
 import { Button, Feuille } from '@ph/ui';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { routes } from '@/lib/routes';
 
 /** « Demander un avis » : lien de la page publique à envoyer au client (copie en un clic). */
-export function DemanderAvis() {
+export function DemanderAvis({ declencheur }: { declencheur?: ReactNode } = {}) {
   const [copie, setCopie] = useState(false);
   const lien = () => `${window.location.origin}${routes.avis}`;
   const copier = async () => {
@@ -19,7 +19,7 @@ export function DemanderAvis() {
   return (
     <Feuille
       titre="Demander un avis"
-      declencheur={<Button variant="secondaire">Demander un avis</Button>}
+      declencheur={declencheur ?? <Button variant="secondaire">Demander un avis</Button>}
       description="Envoyez ce lien à votre client : il choisit votre entreprise et laisse son avis, vérifié avant publication."
       actions={
         <Button onClick={() => void copier()}>{copie ? 'Lien copié' : 'Copier le lien'}</Button>

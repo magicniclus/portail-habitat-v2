@@ -56,8 +56,10 @@ export function Logo({
       {modifiable ? <span className="text-xs font-normal underline">Ajouter</span> : null}
     </span>
   );
-  const carre =
-    'relative flex size-[84px] flex-none items-center justify-center overflow-hidden rounded-[14px] border border-trait bg-blanc shadow-sm';
+  // Sans logo : verre dépoli léger posé sur la bannière ; avec logo : fond blanc plein.
+  const carre = `relative flex size-[84px] flex-none items-center justify-center overflow-hidden rounded-[14px] border shadow-sm ${
+    logoUrl ? 'border-trait bg-blanc' : 'border-neutre-400/70 bg-blanc/55 backdrop-blur-md'
+  }`;
   if (!modifiable) return <span className={carre}>{contenu}</span>;
   return (
     <span className="grid gap-1">
@@ -79,7 +81,7 @@ export function Logo({
           accept={TYPES_IMAGE.join(',')}
           disabled={enCours}
           onChange={(e) => void choisir(e.target.files?.[0])}
-          className="sr-only"
+          className="sr-only text-base"
         />
       </label>
       {erreur ? <span className="max-w-[200px] text-xs text-danger">{erreur}</span> : null}

@@ -4,7 +4,7 @@ import { fichiers } from '@ph/firebase/chemins';
 import { LIMITES_REDACTION } from '@ph/core/ia';
 import { Banner, Button, Checkbox, Feuille, Field, Input, Textarea } from '@ph/ui';
 import { useRouter } from 'next/navigation';
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { deposerFichier } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { AssistantRedaction } from './AssistantRedaction';
@@ -17,7 +17,14 @@ import {
 } from './fichiers';
 
 /** « Ajouter un projet » (maquette Ma fiche) : photos publiques, accord du propriétaire du chantier. */
-export function FormulaireProjet({ artisanId }: { artisanId: string }) {
+export function FormulaireProjet({
+  artisanId,
+  declencheur,
+}: {
+  artisanId: string;
+  /** Bouton d'ouverture (« Ajouter un projet » par défaut ; carte vide de la grille). */
+  declencheur?: ReactNode;
+}) {
   const router = useRouter();
   const idPhotos = useId();
   const [ouvert, setOuvert] = useState(false);
@@ -73,7 +80,7 @@ export function FormulaireProjet({ artisanId }: { artisanId: string }) {
       open={ouvert}
       onOpenChange={setOuvert}
       titre="Ajouter un projet"
-      declencheur={<Button>Ajouter un projet</Button>}
+      declencheur={declencheur ?? <Button>Ajouter un projet</Button>}
       actions={
         <Button type="submit" form="form-projet" disabled={enCours || !photos.length || !accord}>
           {enCours ? 'Envoi…' : 'Publier le projet'}

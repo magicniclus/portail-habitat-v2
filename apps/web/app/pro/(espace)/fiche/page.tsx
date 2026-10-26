@@ -166,6 +166,7 @@ export default async function PageMaFiche() {
             }
           >
             <Realisations
+              artisanId={active.artisanId}
               realisations={realisations}
               peutModifier={peut(active.membre, 'realisations.modifier')}
               nomsMetiers={Object.fromEntries(

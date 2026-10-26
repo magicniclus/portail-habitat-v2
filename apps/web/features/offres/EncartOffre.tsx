@@ -16,7 +16,7 @@ export function EncartOffre({ cle, offre }: { cle: CleEncart; offre: FormulePaya
   const e = ENCARTS[cle];
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-[12px] border border-accent-300 bg-accent-100 p-3">
-      <p className="m-0 min-w-0 flex-1 text-[15px]">{e.texte}</p>
+      <p className="m-0 min-w-0 flex-[1_1_240px] text-[15px] leading-[22px]">{e.texte}</p>
       <FenetreOffre formule={offre} raison={e.raison}>
         Voir l’offre
       </FenetreOffre>
