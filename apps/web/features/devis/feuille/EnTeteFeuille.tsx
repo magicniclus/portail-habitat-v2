@@ -1,3 +1,4 @@
+import type { AdresseLivraison } from '@ph/core/devis';
 import { ArrowLineUpIcon } from '@phosphor-icons/react/ssr';
 import Link from 'next/link';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
@@ -34,6 +35,16 @@ export function EnTeteFeuille({
       placeholder={label.replace(/ du client$/, '')}
       value={e.client[cle] ?? ''}
       onChange={(x) => maj({ client: { ...e.client, [cle]: x.target.value } })}
+      autoComplete="off"
+      {...autres}
+    />
+  );
+  const livraison = (cle: keyof AdresseLivraison, label: string, autres: object = {}) => (
+    <Case
+      aria-label={label}
+      placeholder={label}
+      value={e.livraison?.[cle] ?? ''}
+      onChange={(x) => maj({ livraison: { ...e.livraison, [cle]: x.target.value } })}
       autoComplete="off"
       {...autres}
     />
@@ -77,12 +88,19 @@ export function EnTeteFeuille({
           <div className="grid gap-1.5">
             <p className="m-0 px-1 text-[15px] font-semibold">Adresse de livraison / du chantier</p>
             <BlocCases>
-              <Case
-                aria-label="Adresse du chantier"
-                placeholder="Adresse postale, code postal, ville"
-                value={e.adresseChantier ?? ''}
-                onChange={(x) => maj({ adresseChantier: x.target.value })}
-              />
+              {livraison('attention', 'À l’attention de')}
+              {livraison('adresse', 'Adresse du chantier', { placeholder: 'Adresse postale' })}
+              {livraison('complement', 'Complément d’adresse du chantier', {
+                placeholder: 'Complément d’adresse',
+              })}
+              <DeuxCases>
+                {livraison('codePostal', 'Code postal du chantier', {
+                  placeholder: 'Code postal',
+                  inputMode: 'numeric',
+                })}
+                {livraison('ville', 'Ville du chantier', { placeholder: 'Ville' })}
+              </DeuxCases>
+              {livraison('pays', 'Pays du chantier', { placeholder: 'Pays' })}
             </BlocCases>
           </div>
         ) : null}

@@ -2,6 +2,7 @@ import {
   calculerTotaux,
   estLigneChiffree,
   numeroDocument,
+  texteAdresse,
   verifierMentionsFacture,
   type LigneDevis,
 } from '@ph/core/devis';
@@ -75,7 +76,8 @@ export async function creerFacture(
         );
         const maintenant = s.horloge();
         const sirenClient = e.typeClient === 'pro' ? e.sirenClient?.replace(/\s/g, '') : undefined;
-        const lieuExecution = e.adresseChantier || e.client.adresse;
+        const lieuExecution =
+          (e.livraison ? texteAdresse(e.livraison) : e.adresseChantier) || e.client.adresse;
         const datePrestationLe = jourEnDate(e.datePrestationLe)!;
         const echeanceLe = new Date(maintenant + (p.delaiPaiementJours as number) * JOUR_MS);
         const mentions = verifierMentionsFacture(

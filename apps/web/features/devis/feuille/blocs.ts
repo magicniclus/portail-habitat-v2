@@ -14,7 +14,7 @@ export interface Blocs {
 
 /** Blocs affichés à l'ouverture : ceux qui ont déjà une valeur. */
 const blocsInitiaux = (e: EtatDevis): Blocs => ({
-  livraison: e.adresseChantier !== undefined,
+  livraison: e.livraison !== undefined,
   tvaIntra: e.tvaIntraClient !== undefined,
   conditions: e.conditionsAcceptation !== undefined,
   intitule: e.intitule !== undefined,
@@ -27,7 +27,7 @@ const blocsInitiaux = (e: EtatDevis): Blocs => ({
 function effetBloc(cle: keyof Blocs, oui: boolean, e: EtatDevis): Partial<EtatDevis> {
   switch (cle) {
     case 'livraison':
-      return { adresseChantier: oui ? (e.adresseChantier ?? '') : undefined };
+      return { livraison: oui ? (e.livraison ?? {}) : undefined };
     case 'tvaIntra':
       return { tvaIntraClient: oui ? (e.tvaIntraClient ?? '') : undefined };
     case 'conditions':

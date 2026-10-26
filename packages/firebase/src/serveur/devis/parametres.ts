@@ -1,6 +1,10 @@
 import { finIban, normaliserIban } from '@ph/core/devis';
 import { ErreurMetier } from '@ph/core/erreurs';
-import type { entreeImageFacturation, entreeParametresFacturation } from '@ph/core/schemas';
+import type {
+  entreeImageFacturation,
+  entreeParametresFacturation,
+  entreeRegimeTva,
+} from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import type { bucketFichiers } from '../../admin';
@@ -43,6 +47,24 @@ export async function enregistrerParametresFacturation(
       unknown
     >;
     t.set(ref, { ...propre, schemaVersion: 1, updatedAt: Timestamp.fromMillis(s.horloge()) });
+  });
+}
+
+/**
+ * Régime de TVA changé depuis la feuille du devis : seul `franchiseTva` est écrit. Les paramètres
+ * doivent exister (les autres mentions viennent de là).
+ */
+export async function changerRegimeTva(
+  s: ServicesDevis,
+  ctx: ContexteDevis,
+  e: z.output<typeof entreeRegimeTva>,
+): Promise<void> {
+  const ref = s.db.doc(chemins.parametresFacturation(ctx.artisanId));
+  await s.db.runTransaction(async (t) => {
+    await exiger(s, t, ctx, 'factures.emettre');
+    if (!(await t.get(ref)).exists)
+      throw new ErreurMetier('PRECONDITION', 'Complétez d’abord vos paramètres de facturation.');
+    t.update(ref, { franchiseTva: e.franchiseTva, updatedAt: Timestamp.fromMillis(s.horloge()) });
   });
 }
 

@@ -9,7 +9,7 @@ export const COLONNES = {
 
 /** Case en pointillés d'une ligne (désignation, quantité, prix…). */
 export const caseLigne =
-  'min-h-11 w-full min-w-0 rounded-[6px] border border-dashed border-neutre-300 bg-blanc px-2.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:border-solid focus:border-accent focus:bg-accent-100 focus:outline-none';
+  'min-h-11 w-full min-w-0 rounded-[6px] border border-dashed border-neutre-300 bg-blanc px-2.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:border-solid focus:border-accent focus:bg-blanc focus:outline-none';
 
 /**
  * Cases en pointillés de la feuille (captures du propriétaire) : un champ par case, les cases
@@ -36,7 +36,7 @@ export function Case({
   return (
     <input
       className={cn(
-        'min-h-11 w-full min-w-0 border-0 bg-transparent px-2.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:bg-accent-100 focus:outline-2 focus:-outline-offset-2 focus:outline-accent',
+        'min-h-11 w-full min-w-0 border-0 bg-transparent px-2.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:bg-blanc focus:outline-2 focus:-outline-offset-2 focus:outline-accent',
         principal && 'bg-neutre-100 font-semibold',
         className,
       )}

@@ -16,7 +16,7 @@ function CaseEtiquetee({ libelle, children }: { libelle: string; children: React
   );
 }
 const champBase =
-  'min-h-11 min-w-0 border-0 bg-transparent px-1.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:bg-accent-100 focus:outline-2 focus:-outline-offset-2 focus:outline-accent';
+  'min-h-11 min-w-0 border-0 bg-transparent px-1.5 text-base text-texte placeholder:text-neutre-500 placeholder:italic focus:bg-blanc focus:outline-2 focus:-outline-offset-2 focus:outline-accent';
 const champCase = `${champBase} w-0 flex-1`;
 const champCourt = `${champBase} ml-auto w-16 flex-none text-right`;
 

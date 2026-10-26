@@ -1,7 +1,5 @@
 import { TEXTE_BON_POUR_ACCORD, TEXTE_FRANCHISE, type Totaux } from '@ph/core/devis';
 import { formatEuros } from '@ph/core/format';
-import Link from 'next/link';
-import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import type { EtatDevis } from '../etat';
 import { BlocCases, Case } from './CasesFeuille';
@@ -9,7 +7,7 @@ import { BlocCases, Case } from './CasesFeuille';
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 const MAX_CONDITIONS = 1000;
 const zone =
-  'min-h-11 w-full resize-none rounded-[6px] border border-dashed border-neutre-300 bg-blanc px-3 py-2.5 text-base leading-[1.5] text-texte placeholder:text-neutre-500 placeholder:italic [field-sizing:content] focus:border-solid focus:border-accent focus:bg-accent-100 focus:outline-none';
+  'min-h-11 w-full resize-none rounded-[6px] border border-dashed border-neutre-300 bg-blanc px-3 py-2.5 text-base leading-[1.5] text-texte placeholder:text-neutre-500 placeholder:italic [field-sizing:content] focus:border-solid focus:border-accent focus:bg-blanc focus:outline-none';
 
 /** Blocs facultatifs du bas, cochés dans Options › Info complémentaires. */
 export interface BlocsPied {
@@ -19,7 +17,7 @@ export interface BlocsPied {
 }
 
 /**
- * Bas de la feuille (captures) : totaux, mention de TVA lue dans Paramètres (lien « Modifier »),
+ * Bas de la feuille (captures) : totaux, menu « soumis à la TVA » et sa mention visible dessous,
  * conditions d'acceptation avec compteur, champ libre, cadre de signature, identité.
  */
 export function PiedFeuille({
@@ -28,6 +26,7 @@ export function PiedFeuille({
   maj,
   totaux,
   franchiseTva,
+  onRegimeTva,
   entreprise,
   blocs,
 }: {
@@ -36,6 +35,8 @@ export function PiedFeuille({
   maj: (patch: Partial<EtatDevis>) => void;
   totaux: Totaux;
   franchiseTva: boolean;
+  /** Choix « soumis / pas soumis à la TVA », enregistré dans les paramètres. */
+  onRegimeTva: (franchise: boolean) => void;
   entreprise: EntrepriseFeuille;
   blocs: BlocsPied;
 }) {
@@ -74,16 +75,19 @@ export function PiedFeuille({
         ) : null}
       </dl>
       <div className="grid gap-3 border-t border-trait pt-5 text-[15px]">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[6px] border border-dashed border-neutre-300 px-3 py-2.5 text-neutre-800">
-          <span className="flex-1">
-            {franchiseTva ? TEXTE_FRANCHISE : 'TVA appliquée aux taux indiqués sur chaque ligne.'}
-          </span>
-          <Link
-            href={routes.proDevisParametres}
-            className="inline-flex min-h-11 items-center text-sm font-semibold"
+        <div className="grid gap-1.5">
+          <select
+            aria-label="Régime de TVA"
+            value={franchiseTva ? 'franchise' : 'tva'}
+            onChange={(x) => onRegimeTva(x.target.value === 'franchise')}
+            className="min-h-11 w-full max-w-[340px] cursor-pointer rounded-[8px] border border-trait bg-blanc px-3 text-base text-texte focus-visible:outline-2 focus-visible:outline-accent"
           >
-            Modifier
-          </Link>
+            <option value="tva">Je suis soumis à la TVA</option>
+            <option value="franchise">Je ne suis pas soumis à la TVA</option>
+          </select>
+          <p className="m-0 rounded-[6px] border border-dashed border-neutre-300 px-3 py-2.5 text-neutre-800">
+            {franchiseTva ? TEXTE_FRANCHISE : 'TVA appliquée aux taux indiqués sur chaque ligne.'}
+          </p>
         </div>
         {devis && blocs.conditions ? (
           <div className="grid gap-1">

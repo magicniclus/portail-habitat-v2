@@ -64,6 +64,17 @@ export const optionsDocument = {
   modeSaisie: z.enum(MODES_SAISIE).optional(),
   /** Adresse de livraison ou du chantier, si différente de celle du client. */
   adresseChantier: z.string().trim().max(300).optional(),
+  /** La même adresse en cases (rééditée dans l'éditeur) ; `adresseChantier` en est le texte. */
+  livraison: z
+    .object({
+      attention: z.string().trim().max(120).optional(),
+      adresse: z.string().trim().max(200).optional(),
+      complement: z.string().trim().max(200).optional(),
+      codePostal: z.string().trim().max(10).optional(),
+      ville: z.string().trim().max(120).optional(),
+      pays: z.string().trim().max(60).optional(),
+    })
+    .optional(),
   tvaIntraClient: z.string().trim().max(20).optional(),
   /** Intitulé du document (« Devis » par défaut, « Proposition commerciale »…). */
   intitule: z.string().trim().max(60).optional(),

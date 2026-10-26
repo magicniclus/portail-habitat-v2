@@ -1,6 +1,6 @@
 'use client';
 
-import { TAUX_TVA, type NatureLigne, type TauxTva } from '@ph/core/devis';
+import { TAUX_TVA, UNITES_LIGNE, type NatureLigne, type TauxTva } from '@ph/core/devis';
 import { formatEuros, parseEuros } from '@ph/core/format';
 import { cn } from '@ph/ui';
 import type { ReactNode } from 'react';
@@ -8,6 +8,7 @@ import type { LigneSaisie } from '../etat';
 import { caseLigne, COLONNES } from './CasesFeuille';
 import { MenuLigne } from './MenuLigne';
 
+const estUnite = (u: string) => (UNITES_LIGNE as readonly string[]).includes(u);
 const nombre = (s: string) => Number(s.replace(',', '.').replace(/\s/g, '')) || 0;
 
 /** Libellé court visible sous 640 px seulement (au-dessus, l'en-tête coloré suffit). */
@@ -157,13 +158,19 @@ export function LigneFeuille({
               />
             </Case>
             <Case titre="Unité">
-              <input
+              <select
                 aria-label="Unité"
-                placeholder="Aucune"
                 value={l.unite}
                 onChange={(x) => maj({ unite: x.target.value })}
-                className={caseLigne}
-              />
+                className={cn(caseLigne, 'px-1.5')}
+              >
+                <option value="">Aucune</option>
+                {[...UNITES_LIGNE, ...(l.unite && !estUnite(l.unite) ? [l.unite] : [])].map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
             </Case>
             {prix('PU HT (€)', 'Prix unitaire')}
             {tva}

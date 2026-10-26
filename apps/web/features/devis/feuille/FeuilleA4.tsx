@@ -27,6 +27,7 @@ export function FeuilleA4({
   totaux,
   entreprise,
   franchiseTva,
+  onRegimeTva,
   tvaDefaut,
   bibliotheque,
   aujourdHui,
@@ -41,6 +42,7 @@ export function FeuilleA4({
   totaux: Totaux;
   entreprise: EntrepriseFeuille;
   franchiseTva: boolean;
+  onRegimeTva: (franchise: boolean) => void;
   tvaDefaut: TauxTva;
   bibliotheque: PrestationBiblio[];
   aujourdHui: number;
@@ -113,6 +115,7 @@ export function FeuilleA4({
         maj={maj}
         totaux={totaux}
         franchiseTva={franchiseTva}
+        onRegimeTva={onRegimeTva}
         entreprise={entreprise}
         blocs={{
           conditions: blocs.conditions,

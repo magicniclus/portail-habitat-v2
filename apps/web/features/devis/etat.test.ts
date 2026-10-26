@@ -106,7 +106,7 @@ describe('éditeur A4 : lignes de texte, mode rapide, options', () => {
       client: { ...plein.client, codePostal: '33700', pays: 'France' },
       modeSaisie: 'rapide',
       intitule: 'Proposition commerciale',
-      adresseChantier: '',
+      livraison: { adresse: ' ', ville: '' },
       champSignature: true,
       champLibre: { titre: 'Garantie', texte: '2 ans' },
     });
@@ -118,6 +118,13 @@ describe('éditeur A4 : lignes de texte, mode rapide, options', () => {
       client: { codePostal: '33700', ville: 'Mérignac', pays: 'France' },
     });
     expect(e).not.toHaveProperty('adresseChantier');
+    expect(e).not.toHaveProperty('livraison');
+    expect(
+      versEntree({ ...plein, livraison: { adresse: '5 rue Neuve', ville: 'Bordeaux', pays: '' } }),
+    ).toMatchObject({
+      livraison: { adresse: '5 rue Neuve', ville: 'Bordeaux' },
+      adresseChantier: '5 rue Neuve, Bordeaux',
+    });
     expect(e.client).not.toHaveProperty('complement');
     expect(entreeEnregistrerDevis.safeParse(e).success).toBe(true);
   });

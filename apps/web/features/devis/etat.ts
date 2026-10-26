@@ -1,4 +1,11 @@
-import type { LigneDevis, ModeSaisie, NatureLigne, TauxTva } from '@ph/core/devis';
+import {
+  texteAdresse,
+  type AdresseLivraison,
+  type LigneDevis,
+  type ModeSaisie,
+  type NatureLigne,
+  type TauxTva,
+} from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
 import type { DevisComplet, DevisDepuisDemande, ModeleDevisResume } from '@ph/firebase/devis';
 
@@ -51,7 +58,8 @@ export interface EtatDevis {
   modeleId?: string;
   /** Options de l'éditeur A4. */
   modeSaisie?: ModeSaisie;
-  adresseChantier?: string;
+  /** Adresse de livraison / du chantier en cases (Options › Client). */
+  livraison?: AdresseLivraison;
   tvaIntraClient?: string;
   intitule?: string;
   conditionsAcceptation?: string;
@@ -124,7 +132,11 @@ export const versRapide = (lignes: readonly LigneSaisie[]): LigneSaisie[] =>
 
 const optionsDe = (d: DevisComplet): Partial<EtatDevis> => ({
   ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
-  ...(d.adresseChantier ? { adresseChantier: d.adresseChantier } : {}),
+  ...(d.livraison
+    ? { livraison: d.livraison }
+    : d.adresseChantier
+      ? { livraison: { adresse: d.adresseChantier } }
+      : {}),
   ...(d.tvaIntraClient ? { tvaIntraClient: d.tvaIntraClient } : {}),
   ...(d.intitule ? { intitule: d.intitule } : {}),
   ...(d.conditionsAcceptation ? { conditionsAcceptation: d.conditionsAcceptation } : {}),
@@ -223,6 +235,16 @@ const borner = (s: string) => Math.min(100, Math.max(0, nombre(s)));
 const siRempli = <K extends string>(cle: K, v: string | undefined) =>
   v?.trim() ? ({ [cle]: v.trim() } as Record<K, string>) : {};
 
+/** Cases de l'adresse de livraison remplies, et leur texte imprimé (recalculé par le serveur). */
+function livraisonEntree(l: AdresseLivraison | undefined) {
+  if (!l) return {};
+  const cases = Object.fromEntries(
+    Object.entries(l).flatMap(([k, v]) => (v?.trim() ? [[k, v.trim()]] : [])),
+  ) as AdresseLivraison;
+  const texte = texteAdresse(cases);
+  return texte ? { livraison: cases, adresseChantier: texte } : {};
+}
+
 /** Entrée de `POST /api/pro/devis` (schéma `entreeEnregistrerDevis`). */
 export function versEntree(e: EtatDevis) {
   const c = e.client;
@@ -258,7 +280,7 @@ export function versEntree(e: EtatDevis) {
     ...(e.demandeId ? { demandeId: e.demandeId } : {}),
     ...(e.modeleId ? { modeleId: e.modeleId } : {}),
     ...(e.modeSaisie ? { modeSaisie: e.modeSaisie } : {}),
-    ...siRempli('adresseChantier', e.adresseChantier),
+    ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
     ...siRempli('intitule', e.intitule),
     ...siRempli('conditionsAcceptation', e.conditionsAcceptation),
@@ -285,7 +307,7 @@ export function versEntreeFacture(e: EtatDevis, cleIdempotence: string) {
     remisePct: d.remisePct,
     datePrestationLe: e.datePrestationLe ?? '',
     ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
-    ...siRempli('adresseChantier', e.adresseChantier),
+    ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
     ...(d.champLibre ? { champLibre: d.champLibre } : {}),
     cleIdempotence,

@@ -5,6 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import {
+  changerRegimeTva,
   changerStatutDevis,
   creerAvoir,
   enregistrerDevis,
@@ -217,6 +218,47 @@ describe('devis', () => {
     expect(
       (await erreur(changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' }))).code,
     ).toBe('CONFLIT');
+  });
+});
+
+describe('adresse de livraison en cases', () => {
+  it('enregistrée en cases et imprimée en une ligne calculée par le serveur', async () => {
+    const livraison = {
+      attention: 'M. Durand',
+      adresse: '5 rue Neuve',
+      codePostal: '33000',
+      ville: 'Bordeaux',
+    };
+    const { devisId } = await enregistrerDevis(
+      s(),
+      proprio,
+      entree({ livraison, adresseChantier: 'ignorée' }),
+    );
+    const d = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(d.livraison).toEqual(livraison);
+    expect(d.adresseChantier).toBe('À l’attention de M. Durand, 5 rue Neuve, 33000 Bordeaux');
+  });
+});
+
+describe('régime de TVA choisi sur la feuille', () => {
+  it('« Je ne suis pas soumis à la TVA » : enregistré dans les paramètres, le reste intact', async () => {
+    await changerRegimeTva(s(), proprio, { franchiseTva: true });
+    const p = (await db.doc(chemins.parametresFacturation('a1')).get()).data()!;
+    expect(p.franchiseTva).toBe(true);
+    expect(p.raisonSociale).toBe(PARAMS.raisonSociale);
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    const d = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(d.totaux.ttcCentimes).toBe(d.totaux.htCentimes);
+  });
+  it('paramètres jamais saisis : refusé (rien d’écrit) ; collaborateur : refusé', async () => {
+    await db.doc(chemins.parametresFacturation('a1')).delete();
+    expect((await erreur(changerRegimeTva(s(), proprio, { franchiseTva: true }))).code).toBe(
+      'PRECONDITION',
+    );
+    expect((await db.doc(chemins.parametresFacturation('a1')).get()).exists).toBe(false);
+    expect((await erreur(changerRegimeTva(s(), collab, { franchiseTva: true }))).code).toBe(
+      'PERMISSION_REFUSEE',
+    );
   });
 });
 

@@ -50,3 +50,20 @@ export const LIBELLES_MODE_SAISIE = {
   rapide: { titre: 'Rapide', aide: 'Désignation, TVA et montant.' },
   complet: { titre: 'Complet', aide: 'Quantité, unité et prix unitaire.' },
 } as const;
+
+/** Unités proposées sur une ligne (« Aucune » = vide). */
+export const UNITES_LIGNE = [
+  'u',
+  'forfait',
+  'h',
+  'jour',
+  'm',
+  'ml',
+  'm²',
+  'm³',
+  'kg',
+  't',
+  'l',
+  'lot',
+  'ens.',
+] as const;

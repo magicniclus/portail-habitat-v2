@@ -7,3 +7,4 @@ export * from './relances';
 export * from './signature';
 export * from './iban';
 export * from './statuts';
+export * from './adresse';

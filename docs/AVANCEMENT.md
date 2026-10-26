@@ -727,6 +727,12 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - Liste : recherche (client, objet, numéro), montants HT ou TTC, tableau (date, icône de statut, numéro, client — objet, montant, statut modifiable sur la ligne quand c'est permis, action), 25 par page ; cartes sous 800 px. Mêmes règles de statut côté serveur et écran (`statutsPossibles`, cœur, testé).
 - Pas de changement du modèle de données stocké ; `DevisResume`/`FactureResume` lisent en plus le HT et la date.
 
+**Devis v2, retouches du 26/10/2026**
+- Bas de la feuille : menu déroulant « Je suis soumis à la TVA / Je ne suis pas soumis à la TVA », la mention visible juste dessous. **Nouvelle écriture (signalée)** : `POST /api/pro/devis/regime-tva` (schéma `entreeRegimeTva`, `factures.emettre`, en transaction) ne modifie que `parametresFacturation.franchiseTva` ; refusé si les paramètres n'ont jamais été saisis. Totaux recalculés à l'écran tout de suite, et toujours par le serveur.
+- Adresse de livraison / du chantier en cases (à l'attention de, adresse, complément, code postal | ville, pays). **Modèle de données (signalé)** : champ facultatif `livraison` (objet) sur les devis ; `adresseChantier` reste le texte imprimé, recalculé par le serveur (`texteAdresse`, cœur, testé). Les anciens devis s'ouvrent avec ce texte dans la case adresse.
+- Unité : menu déroulant (`UNITES_LIGNE` : u, forfait, h, jour, m, ml, m², m³, kg, t, l, lot, ens. ; « Aucune ») ; une unité ancienne hors liste reste proposée.
+- Champs sélectionnés : fond blanc (plus de fond orange).
+
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :
 - Cœur `packages/core/src/sites/` : schémas (section → ligne → colonne → 16 éléments, réglages par appareil), validation des actions et liens (SITE-09), sous-domaine, formulaire (4 champs figés en gratuit), DNS, site de départ depuis la fiche (sans IA ni chiffre inventé), contrôles SEO, logique de l'éditeur (historique de 80 états, sections, éléments, nouvelles pages).

@@ -14,7 +14,11 @@ export {
   type FactureComplete,
   type FactureResume,
 } from './lecture';
-export { enregistrerImageFacturation, enregistrerParametresFacturation } from './parametres';
+export {
+  changerRegimeTva,
+  enregistrerImageFacturation,
+  enregistrerParametresFacturation,
+} from './parametres';
 export {
   marquerDevisExpires,
   relancerFacture,

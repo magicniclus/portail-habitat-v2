@@ -2,6 +2,7 @@
 
 import {
   calculerTotaux,
+  texteAdresse,
   verifierMentionsFacture,
   type ParametresFacturation,
   type TauxTva,
@@ -15,6 +16,7 @@ import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import { lignesCentimes, versEntreeFacture, type EtatDevis } from './etat';
 import { useBlocs } from './feuille/blocs';
+import { useRegimeTva } from './feuille/useRegimeTva';
 import { CadreEditeur } from './feuille/CadreEditeur';
 import { FeuilleA4 } from './feuille/FeuilleA4';
 import { PanneauOptions } from './feuille/PanneauOptions';
@@ -46,18 +48,20 @@ export function EditeurFacture({
   const [enCours, setEnCours] = useState(false);
   const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
   const maj = (patch: Partial<EtatDevis>) => setE((x) => ({ ...x, ...patch }));
+  const regime = useRegimeTva(parametres.franchiseTva, setMessage);
+  const p = { ...parametres, franchiseTva: regime.franchiseTva };
   const { blocs, basculer } = useBlocs(e, maj);
   const lignes = lignesCentimes(e.lignes);
   const totaux = calculerTotaux(
     { lignes, remisePct: Number(e.remisePct.replace(',', '.')) || 0, acomptePct: 0 },
-    { franchiseTva: parametres.franchiseTva },
+    { franchiseTva: p.franchiseTva },
   );
   const mentions = verifierMentionsFacture(
     {
       typeClient: e.typeClient,
       sirenClient: e.sirenClient,
       client: e.client,
-      lieuExecution: e.adresseChantier,
+      lieuExecution: e.livraison ? texteAdresse(e.livraison) || undefined : undefined,
       emiseLe: new Date(aujourdHui),
       datePrestationLe: e.datePrestationLe
         ? new Date(`${e.datePrestationLe}T12:00:00Z`)
@@ -65,7 +69,7 @@ export function EditeurFacture({
       echeanceLe: new Date(aujourdHui + parametres.delaiPaiementJours * JOUR_MS),
       lignes,
     },
-    parametres,
+    p,
   );
 
   const emettre = async () => {
@@ -94,7 +98,8 @@ export function EditeurFacture({
           blocs={blocs}
           totaux={totaux}
           entreprise={entreprise}
-          franchiseTva={parametres.franchiseTva}
+          franchiseTva={p.franchiseTva}
+          onRegimeTva={(x) => void regime.changer(x)}
           tvaDefaut={tvaDefaut}
           bibliotheque={bibliotheque}
           aujourdHui={aujourdHui}

@@ -2,6 +2,7 @@ import {
   assainirHtml,
   calculerTotaux,
   numeroDocument,
+  texteAdresse,
   verifierMentionsDevis,
   type LigneDevis,
   transitionPermise,
@@ -143,7 +144,9 @@ export async function enregistrerDevis(
           signatureElectronique: e.signatureElectronique,
           tampon: e.tampon,
           modeSaisie: e.modeSaisie,
-          adresseChantier: e.adresseChantier || undefined,
+          adresseChantier:
+            (e.livraison ? texteAdresse(e.livraison) : e.adresseChantier) || undefined,
+          livraison: e.livraison,
           tvaIntraClient: e.tvaIntraClient || undefined,
           intitule: e.intitule || undefined,
           conditionsAcceptation: e.conditionsAcceptation || undefined,

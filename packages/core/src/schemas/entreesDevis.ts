@@ -137,6 +137,9 @@ export const entreeAvoir = z.strictObject({
   cleIdempotence: z.string().min(8).max(64),
 });
 
+/** Régime de TVA choisi sur la feuille (« Je suis / ne suis pas soumis à la TVA »). */
+export const entreeRegimeTva = z.strictObject({ franchiseTva: z.boolean() });
+
 export const entreeParametresFacturation = parametresFacturation
   .omit({
     schemaVersion: true,

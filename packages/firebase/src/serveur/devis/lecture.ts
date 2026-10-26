@@ -1,4 +1,4 @@
-import type { LigneDevis } from '@ph/core/devis';
+import type { AdresseLivraison, LigneDevis } from '@ph/core/devis';
 import { artisanAAccepte } from '@ph/core/espace';
 import type { StatutAttributionPro } from '@ph/core/espace-pro';
 import { Timestamp, type DocumentData, type Firestore } from 'firebase-admin/firestore';
@@ -105,6 +105,7 @@ export interface DevisComplet {
   horsEtablissement: boolean;
   modeSaisie?: 'rapide' | 'complet';
   adresseChantier?: string;
+  livraison?: AdresseLivraison;
   tvaIntraClient?: string;
   intitule?: string;
   conditionsAcceptation?: string;
@@ -172,6 +173,7 @@ export async function lireDevisComplet(
     modeleId: x.modeleId,
     modeSaisie: x.modeSaisie,
     adresseChantier: x.adresseChantier,
+    livraison: x.livraison,
     tvaIntraClient: x.tvaIntraClient,
     intitule: x.intitule,
     conditionsAcceptation: x.conditionsAcceptation,

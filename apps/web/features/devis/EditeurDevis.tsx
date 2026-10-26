@@ -15,6 +15,7 @@ import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import { lignesCentimes, versEntree, type EtatDevis } from './etat';
 import { useBlocs } from './feuille/blocs';
+import { useRegimeTva } from './feuille/useRegimeTva';
 import { CadreEditeur } from './feuille/CadreEditeur';
 import { FeuilleA4 } from './feuille/FeuilleA4';
 import { PanneauOptions } from './feuille/PanneauOptions';
@@ -51,11 +52,13 @@ export function EditeurDevis({
   const [enCours, setEnCours] = useState<null | 'enregistrer' | 'envoyer'>(null);
   const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
   const maj = (patch: Partial<EtatDevis>) => setE((x) => ({ ...x, ...patch }));
+  const regime = useRegimeTva(parametres.franchiseTva, setMessage);
+  const p = { ...parametres, franchiseTva: regime.franchiseTva };
   const { blocs, basculer } = useBlocs(e, maj);
   const lignes = lignesCentimes(e.lignes);
   const totaux = calculerTotaux(
     { lignes, remisePct: nombre(e.remisePct), acomptePct: nombre(e.acomptePct) },
-    { franchiseTva: parametres.franchiseTva },
+    { franchiseTva: p.franchiseTva },
   );
   const mentions = verifierMentionsDevis(
     {
@@ -64,7 +67,7 @@ export function EditeurDevis({
       debutTravauxLe: date(e.debutTravauxLe),
       lignes,
     },
-    parametres,
+    p,
   );
 
   const enregistrer = async (): Promise<string | null> => {
@@ -126,7 +129,8 @@ export function EditeurDevis({
           blocs={blocs}
           totaux={totaux}
           entreprise={entreprise}
-          franchiseTva={parametres.franchiseTva}
+          franchiseTva={p.franchiseTva}
+          onRegimeTva={(x) => void regime.changer(x)}
           tvaDefaut={tvaDefaut}
           bibliotheque={bibliotheque}
           aujourdHui={aujourdHui}
