@@ -10,6 +10,7 @@ Prérequis : Node 22, pnpm 10, Java 21 (émulateurs Firebase).
 pnpm install
 cp .env.example .env.local   # APP_CHECK_MODE=desactive en local
 pnpm dev                     # site (localhost:3000) + émulateurs (localhost:4000)
+pnpm dev:web                 # site seul, branché sur le projet Firebase de .env.local (sans émulateurs)
 ```
 
 | Commande                                                     | Rôle                                     |
