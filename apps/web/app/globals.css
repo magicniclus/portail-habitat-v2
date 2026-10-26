@@ -2,6 +2,8 @@
 
 /* Classes utilisées dans les pages et features du site. */
 @source '../';
+/* Déclaré explicitement : un chemin listé ici est lu même si un .gitignore (global, parent…) l'exclut
+   de la détection automatique (classes de Ma fiche absentes sur un poste Windows). */
 @source '../features';
 
 /* Bandeau d'avis des landings (LANDINGS §3.10) : deux lignes en sens opposés, arrêt si mouvement réduit. */
