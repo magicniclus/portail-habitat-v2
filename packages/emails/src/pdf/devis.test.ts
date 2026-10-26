@@ -126,3 +126,61 @@ describe('PDF des devis et factures', () => {
     ).resolves.toBeInstanceOf(Buffer);
   });
 });
+
+describe('PDF : options de l’éditeur A4', () => {
+  it('ligne de texte en titre, fourniture signalée, intitulé, adresse détaillée, options imprimées', async () => {
+    const t = texteDuPdf(
+      await genererPdf(
+        {
+          ...base,
+          intitule: 'Proposition commerciale',
+          client: {
+            ...base.client,
+            adresse: '3 rue des Lilas',
+            codePostal: '33700',
+            ville: 'Mérignac',
+            pays: 'France',
+          },
+          tvaIntraClient: 'FR12552100554',
+          lieuExecution: '4 allée des Pins, 33600 Pessac',
+          lignes: [
+            {
+              type: 'texte',
+              designation: 'Salle de bain',
+              quantite: 0,
+              unite: '',
+              puHtCentimes: 0,
+              tva: 20,
+            },
+            { ...base.lignes[0]!, nature: 'fourniture' },
+          ],
+          conditionsAcceptation: 'Valable après signature et acompte.',
+          champLibre: { titre: 'Garantie', texte: 'Pièces garanties 2 ans.' },
+        },
+        { compresser: false },
+      ),
+    );
+    for (const attendu of [
+      'PROPOSITION COMMERCIALE',
+      'Salle de bain',
+      'Fourniture',
+      '33700 Mérignac',
+      'France',
+      'FR12552100554',
+      '4 allée des Pins',
+      'Valable après signature et acompte.',
+      'Garantie',
+      'Pièces garanties 2 ans.',
+    ])
+      expect(t).toContain(attendu);
+  });
+
+  it('mode rapide : ni quantité ni prix unitaire, une colonne Montant HT', async () => {
+    const t = texteDuPdf(
+      await genererPdf({ ...base, modeSaisie: 'rapide' }, { compresser: false }),
+    );
+    expect(t).toContain('Montant HT');
+    expect(t).not.toContain('PU HT');
+    expect(t).not.toContain('Qté');
+  });
+});

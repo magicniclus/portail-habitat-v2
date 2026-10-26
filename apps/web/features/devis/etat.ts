@@ -1,10 +1,13 @@
-import type { LigneDevis, TauxTva } from '@ph/core/devis';
+import type { LigneDevis, ModeSaisie, NatureLigne, TauxTva } from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
 import type { DevisComplet, DevisDepuisDemande, ModeleDevisResume } from '@ph/firebase/devis';
 
 /** Ligne telle que saisie : montants en texte (« 78,50 »), convertis en centimes à l'envoi. */
 export interface LigneSaisie {
   cle: string;
+  /** Ligne de texte : désignation seule (titre, précision), hors totaux. */
+  type: 'chiffree' | 'texte';
+  nature: NatureLigne;
   designation: string;
   quantite: string;
   unite: string;
@@ -13,10 +16,21 @@ export interface LigneSaisie {
   cout: string;
 }
 
+export interface ClientSaisi {
+  nom: string;
+  email: string;
+  tel: string;
+  adresse: string;
+  complement?: string;
+  codePostal?: string;
+  ville?: string;
+  pays?: string;
+}
+
 export interface EtatDevis {
   devisId?: string;
   numero?: string;
-  client: { nom: string; email: string; tel: string; adresse: string };
+  client: ClientSaisi;
   typeClient: 'particulier' | 'pro';
   sirenClient: string;
   horsEtablissement: boolean;
@@ -35,6 +49,16 @@ export interface EtatDevis {
   tampon: boolean;
   demandeId?: string;
   modeleId?: string;
+  /** Options de l'éditeur A4. */
+  modeSaisie?: ModeSaisie;
+  adresseChantier?: string;
+  tvaIntraClient?: string;
+  intitule?: string;
+  conditionsAcceptation?: string;
+  champSignature?: boolean;
+  champLibre?: { titre: string; texte: string };
+  /** Facture sans devis : date de la prestation (AAAA-MM-JJ). */
+  datePrestationLe?: string;
 }
 
 let compteur = 0;
@@ -47,6 +71,8 @@ const nombre = (s: string) => {
 
 export const ligneVide = (tva: TauxTva): LigneSaisie => ({
   cle: cle(),
+  type: 'chiffree',
+  nature: 'prestation',
   designation: '',
   quantite: '1',
   unite: 'u',
@@ -55,17 +81,48 @@ export const ligneVide = (tva: TauxTva): LigneSaisie => ({
   cout: '',
 });
 
-/** Ligne enregistrée (devis, modèle, bibliothèque) → ligne saisie. */
+/** Ligne de texte seul (« + Ligne de texte ») : titre ou précision, sans prix. */
+export const ligneTexte = (tva: TauxTva): LigneSaisie => ({
+  ...ligneVide(tva),
+  type: 'texte',
+  quantite: '',
+  unite: '',
+});
+
+/** Ligne enregistrée (devis, modèle, ligne type) → ligne saisie. */
 export const ligneSaisie = (
   l: Omit<LigneDevis, 'quantite' | 'designation'> & { quantite?: number; designation: string },
-): LigneSaisie => ({
-  cle: cle(),
-  designation: l.designation,
-  quantite: String(l.quantite ?? 1).replace('.', ','),
-  unite: l.unite,
-  puHt: texteEuros(l.puHtCentimes),
-  tva: l.tva,
-  cout: l.coutHtCentimes !== undefined ? texteEuros(l.coutHtCentimes) : '',
+): LigneSaisie =>
+  l.type === 'texte'
+    ? { ...ligneTexte(l.tva), designation: l.designation }
+    : {
+        cle: cle(),
+        type: 'chiffree',
+        nature: l.nature ?? 'prestation',
+        designation: l.designation,
+        quantite: String(l.quantite ?? 1).replace('.', ','),
+        unite: l.unite,
+        puHt: texteEuros(l.puHtCentimes),
+        tva: l.tva,
+        cout: l.coutHtCentimes !== undefined ? texteEuros(l.coutHtCentimes) : '',
+      };
+
+/** Mode rapide (désignation, TVA, montant) : chaque ligne chiffrée devient « 1 × total ». */
+export const versRapide = (lignes: readonly LigneSaisie[]): LigneSaisie[] =>
+  lignes.map((l) => {
+    if (l.type === 'texte' || nombre(l.quantite) === 1) return l;
+    const total = Math.round(nombre(l.quantite) * (parseEuros(l.puHt) ?? 0));
+    return { ...l, quantite: '1', puHt: texteEuros(total) };
+  });
+
+const optionsDe = (d: DevisComplet): Partial<EtatDevis> => ({
+  ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
+  ...(d.adresseChantier ? { adresseChantier: d.adresseChantier } : {}),
+  ...(d.tvaIntraClient ? { tvaIntraClient: d.tvaIntraClient } : {}),
+  ...(d.intitule ? { intitule: d.intitule } : {}),
+  ...(d.conditionsAcceptation ? { conditionsAcceptation: d.conditionsAcceptation } : {}),
+  ...(d.champSignature ? { champSignature: true } : {}),
+  ...(d.champLibre ? { champLibre: d.champLibre } : {}),
 });
 
 export function etatInitial(o: {
@@ -84,12 +141,7 @@ export function etatInitial(o: {
     return {
       devisId: d.id,
       numero: d.numero,
-      client: {
-        nom: d.client.nom,
-        email: d.client.email ?? '',
-        tel: d.client.tel ?? '',
-        adresse: d.client.adresse,
-      },
+      client: { ...d.client, email: d.client.email ?? '', tel: d.client.tel ?? '' },
       typeClient: d.typeClient,
       sirenClient: d.sirenClient ?? '',
       horsEtablissement: d.horsEtablissement,
@@ -108,6 +160,7 @@ export function etatInitial(o: {
       tampon: d.tampon,
       demandeId: d.demandeId,
       modeleId: d.modeleId,
+      ...optionsDe(d),
     };
   const m = o.demande;
   return {
@@ -135,32 +188,50 @@ export function etatInitial(o: {
 
 /** Lignes en centimes, pour les totaux affichés et l'enregistrement. */
 export const lignesCentimes = (lignes: readonly LigneSaisie[]): LigneDevis[] =>
-  lignes.map((l) => ({
-    designation: l.designation.trim(),
-    quantite: nombre(l.quantite),
-    unite: l.unite.trim(),
-    puHtCentimes: parseEuros(l.puHt) ?? 0,
-    tva: l.tva,
-    ...(parseEuros(l.cout) !== null ? { coutHtCentimes: parseEuros(l.cout)! } : {}),
-  }));
+  lignes.map((l) =>
+    l.type === 'texte'
+      ? {
+          type: 'texte',
+          designation: l.designation.trim(),
+          quantite: 0,
+          unite: '',
+          puHtCentimes: 0,
+          tva: l.tva,
+        }
+      : {
+          ...(l.nature === 'fourniture' ? { nature: 'fourniture' as const } : {}),
+          designation: l.designation.trim(),
+          quantite: nombre(l.quantite),
+          unite: l.unite.trim(),
+          puHtCentimes: parseEuros(l.puHt) ?? 0,
+          tva: l.tva,
+          ...(parseEuros(l.cout) !== null ? { coutHtCentimes: parseEuros(l.cout)! } : {}),
+        },
+  );
 
 const borner = (s: string) => Math.min(100, Math.max(0, nombre(s)));
+/** `{ cle: valeur }` si le texte n'est pas vide (les champs vides ne partent pas). */
+const siRempli = <K extends string>(cle: K, v: string | undefined) =>
+  v?.trim() ? ({ [cle]: v.trim() } as Record<K, string>) : {};
 
 /** Entrée de `POST /api/pro/devis` (schéma `entreeEnregistrerDevis`). */
 export function versEntree(e: EtatDevis) {
+  const c = e.client;
   const client = {
-    nom: e.client.nom.trim(),
-    adresse: e.client.adresse.trim(),
-    ...(e.client.email.trim() ? { email: e.client.email.trim() } : {}),
-    ...(e.client.tel.trim() ? { tel: e.client.tel.trim() } : {}),
+    nom: c.nom.trim(),
+    adresse: c.adresse.trim(),
+    ...siRempli('email', c.email),
+    ...siRempli('tel', c.tel),
+    ...siRempli('complement', c.complement),
+    ...siRempli('codePostal', c.codePostal),
+    ...siRempli('ville', c.ville),
+    ...siRempli('pays', c.pays),
   };
   return {
     ...(e.devisId ? { devisId: e.devisId } : {}),
     client,
     typeClient: e.typeClient,
-    ...(e.typeClient === 'pro' && e.sirenClient.trim()
-      ? { sirenClient: e.sirenClient.trim() }
-      : {}),
+    ...(e.typeClient === 'pro' ? siRempli('sirenClient', e.sirenClient) : {}),
     horsEtablissement: e.horsEtablissement,
     objet: e.objet.trim(),
     descriptionHtml: e.descriptionHtml,
@@ -177,5 +248,37 @@ export function versEntree(e: EtatDevis) {
     tampon: e.tampon,
     ...(e.demandeId ? { demandeId: e.demandeId } : {}),
     ...(e.modeleId ? { modeleId: e.modeleId } : {}),
+    ...(e.modeSaisie ? { modeSaisie: e.modeSaisie } : {}),
+    ...siRempli('adresseChantier', e.adresseChantier),
+    ...siRempli('tvaIntraClient', e.tvaIntraClient),
+    ...siRempli('intitule', e.intitule),
+    ...siRempli('conditionsAcceptation', e.conditionsAcceptation),
+    ...(e.champSignature ? { champSignature: true } : {}),
+    ...(e.champLibre?.texte.trim()
+      ? { champLibre: { titre: e.champLibre.titre.trim(), texte: e.champLibre.texte.trim() } }
+      : {}),
+  };
+}
+
+/**
+ * Entrée de `POST /api/pro/factures` (« Nouvelle facture », schéma `entreeCreerFacture`) : la
+ * même saisie que le devis, sans ce qui n'existe que sur un devis (validité, acompte, travaux,
+ * intitulé, conditions d'acceptation, signature).
+ */
+export function versEntreeFacture(e: EtatDevis, cleIdempotence: string) {
+  const d = versEntree(e);
+  return {
+    client: d.client,
+    typeClient: d.typeClient,
+    ...(e.typeClient === 'pro' ? siRempli('sirenClient', e.sirenClient) : {}),
+    objet: d.objet,
+    lignes: d.lignes,
+    remisePct: d.remisePct,
+    datePrestationLe: e.datePrestationLe ?? '',
+    ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
+    ...siRempli('adresseChantier', e.adresseChantier),
+    ...siRempli('tvaIntraClient', e.tvaIntraClient),
+    ...(d.champLibre ? { champLibre: d.champLibre } : {}),
+    cleIdempotence,
   };
 }

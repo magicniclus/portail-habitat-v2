@@ -121,7 +121,7 @@ export function Banniere({
                 accept={TYPES_IMAGE.join(',')}
                 disabled={enCours}
                 onChange={(e) => void choisir(e.target.files?.[0])}
-                className="sr-only"
+                className="sr-only text-base"
               />
             </label>
           )}

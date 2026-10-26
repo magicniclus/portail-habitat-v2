@@ -6,7 +6,7 @@ import { EditeurDevis } from '@/features/devis/EditeurDevis';
 import { etatInitial } from '@/features/devis/etat';
 import { routes } from '@/lib/routes';
 import { servicesEspace } from '@/server/espace';
-import { accesDevis, dbDevis, parametresEditeur } from '@/server/pageDevis';
+import { accesDevis, dbDevis, entrepriseFeuille, parametresEditeur } from '@/server/pageDevis';
 import { maintenant } from '@/server/temps';
 
 export const metadata: Metadata = { title: 'Nouveau devis', robots: { index: false } };
@@ -37,16 +37,20 @@ export default async function PageNouveauDevis({
       : null,
   ]);
   const modele = q.modele ? biblio.modeles.find((m) => m.id === q.modele) : undefined;
+  const entreprise = await entrepriseFeuille(acces.artisanId, p);
   return (
-    <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
-      <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Nouveau devis</h1>
-      {demande ? (
-        <Banner tone="info" titre={`En réponse à la demande : ${demande.objet}`}>
-          {demande.precisions ||
-            'Client repris de la demande. Complétez son adresse avant l’envoi.'}
-        </Banner>
-      ) : null}
+    <main>
       <EditeurDevis
+        entreprise={entreprise}
+        aujourdHui={maintenant()}
+        bandeau={
+          demande ? (
+            <Banner tone="info" titre={`En réponse à la demande : ${demande.objet}`}>
+              {demande.precisions ||
+                'Client repris de la demande. Complétez son adresse avant l’envoi.'}
+            </Banner>
+          ) : null
+        }
         initial={etatInitial({
           ...(demande ? { demande } : {}),
           ...(modele ? { modele } : {}),

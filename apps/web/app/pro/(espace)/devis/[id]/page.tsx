@@ -8,7 +8,7 @@ import { ActionsDevis } from '@/features/devis/ActionsDevis';
 import { EditeurDevis } from '@/features/devis/EditeurDevis';
 import { etatInitial } from '@/features/devis/etat';
 import { routes } from '@/lib/routes';
-import { accesDevis, dbDevis, parametresEditeur } from '@/server/pageDevis';
+import { accesDevis, dbDevis, entrepriseFeuille, parametresEditeur } from '@/server/pageDevis';
 import { maintenant } from '@/server/temps';
 
 export const metadata: Metadata = { title: 'Devis', robots: { index: false } };
@@ -35,9 +35,10 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
   );
   if (d.statut === 'brouillon' && acces.gerer)
     return (
-      <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
-        {titre}
+      <main>
         <EditeurDevis
+          entreprise={await entrepriseFeuille(acces.artisanId, p)}
+          aujourdHui={maintenant()}
           initial={etatInitial({
             devis: d,
             acompteDefautPct: 30,

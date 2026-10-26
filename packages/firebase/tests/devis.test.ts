@@ -1,5 +1,5 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import { entreeEnregistrerDevis } from '@ph/core/schemas';
+import { entreeCreerFacture, entreeEnregistrerDevis } from '@ph/core/schemas';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -11,6 +11,7 @@ import {
   enregistrerPaiement,
   enregistrerParametresFacturation,
   envoyerDevis,
+  creerFacture,
   facturerDevis,
 } from '../src/serveur/devis';
 
@@ -102,8 +103,8 @@ beforeEach(async () => {
   await enregistrerParametresFacturation(s(), proprio, PARAMS);
 });
 
-async function devisAccepte() {
-  const { devisId } = await enregistrerDevis(s(), proprio, entree());
+async function devisAccepte(extra: Record<string, unknown> = {}) {
+  const { devisId } = await enregistrerDevis(s(), proprio, entree(extra));
   await envoyerDevis(s(), proprio, devisId);
   await changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' });
   return devisId;
@@ -220,6 +221,97 @@ describe('devis', () => {
 });
 
 describe('factures', () => {
+  const libre = (extra: Record<string, unknown> = {}) =>
+    entreeCreerFacture.parse({
+      client: brut.client,
+      typeClient: 'particulier',
+      objet: 'Dépannage chauffe-eau',
+      lignes: [
+        {
+          type: 'texte',
+          designation: 'Intervention',
+          quantite: 0,
+          unite: '',
+          puHtCentimes: 0,
+          tva: 20,
+        },
+        {
+          designation: 'Remplacement groupe de sécurité',
+          quantite: 1,
+          unite: 'u',
+          puHtCentimes: 12000,
+          tva: 10,
+        },
+      ],
+      remisePct: 0,
+      datePrestationLe: '2026-09-28',
+      cleIdempotence: 'libre-0001',
+      ...extra,
+    });
+
+  it('« Nouvelle facture » sans devis : émise, numérotée, totaux recalculés ; double clic = même facture', async () => {
+    const r = await creerFacture(s(), proprio, libre());
+    expect(r.numero).toBe('F-2026-0001');
+    const f = (await db.doc(chemins.factureClient('a1', r.factureId)).get()).data()!;
+    expect(f).toMatchObject({
+      statut: 'emise',
+      type: 'facture',
+      objet: 'Dépannage chauffe-eau',
+      totaux: { htCentimes: 12000, ttcCentimes: 13200 },
+      resteCentimes: 13200,
+      lieuExecution: '3 rue des Lilas, 33700 Mérignac',
+    });
+    expect(f).not.toHaveProperty('devisId');
+    expect(await creerFacture(s(), proprio, libre())).toEqual(r);
+    expect(
+      (await erreur(creerFacture(s(), collab, libre({ cleIdempotence: 'libre-0002' })))).code,
+    ).toBe('PERMISSION_REFUSEE');
+  });
+
+  it('« Nouvelle facture » : mention manquante (aucune ligne chiffrée) → refus, aucun numéro consommé', async () => {
+    const seulementTexte = libre({ lignes: [libre().lignes[0]], cleIdempotence: 'libre-0003' });
+    expect((await erreur(creerFacture(s(), proprio, seulementTexte))).code).toBe('PRECONDITION');
+    expect((await creerFacture(s(), proprio, libre({ cleIdempotence: 'libre-0004' }))).numero).toBe(
+      'F-2026-0001',
+    );
+  });
+
+  it('acompte : les lignes de texte ne créent pas de ligne d’acompte', async () => {
+    const devisId = await devisAccepte({
+      lignes: [
+        { type: 'texte', designation: 'Titre', quantite: 0, unite: '', puHtCentimes: 0, tva: 20 },
+        ...brut.lignes,
+      ],
+    });
+    const r = await facturerDevis(s(), proprio, {
+      devisId,
+      type: 'acompte',
+      cleIdempotence: 'acompte-txt',
+    });
+    const f = (await db.doc(chemins.factureClient('a1', r.factureId)).get()).data()!;
+    expect(f.lignes.every((l: { puHtCentimes: number }) => l.puHtCentimes > 0)).toBe(true);
+  });
+
+  it('éditeur A4 : la facture reprend l’adresse du chantier et la présentation du devis', async () => {
+    const devisId = await devisAccepte({
+      adresseChantier: '4 allée des Pins, 33600 Pessac',
+      modeSaisie: 'rapide',
+      champLibre: { titre: 'Garantie', texte: '2 ans' },
+    });
+    const r = await facturerDevis(s(), proprio, {
+      devisId,
+      type: 'facture',
+      cleIdempotence: 'cle-a4-01',
+    });
+    const f = (await db.doc(chemins.factureClient('a1', r.factureId)).get()).data()!;
+    expect(f).toMatchObject({
+      lieuExecution: '4 allée des Pins, 33600 Pessac',
+      modeSaisie: 'rapide',
+      champLibre: { titre: 'Garantie', texte: '2 ans' },
+    });
+    expect(f).not.toHaveProperty('tvaIntraClient');
+  });
+
   it('DEV-07 : facture depuis un devis accepté ; mentions de la réforme ; échéance', async () => {
     const devisId = await devisAccepte();
     const r = await facturerDevis(s(), proprio, {

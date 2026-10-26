@@ -1,6 +1,6 @@
 export { type ContexteDevis, type ServicesDevis } from './communs';
 export { changerStatutDevis, enregistrerDevis, envoyerDevis, type ResultatEnvoi } from './devis';
-export { creerAvoir, enregistrerPaiement, facturerDevis } from './factures';
+export { creerAvoir, creerFacture, enregistrerPaiement, facturerDevis } from './factures';
 export {
   lireDevisComplet,
   lireDevisDepuisDemande,

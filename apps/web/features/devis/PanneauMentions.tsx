@@ -5,8 +5,8 @@ import { cn } from '@ph/ui';
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
 /**
- * Colonne de droite de l'éditeur : totaux et mentions obligatoires (✓ / !), calculés par les mêmes
- * fonctions que le serveur. Jamais d'aperçu du PDF (DEV-05).
+ * Mentions obligatoires (✓ / !) et marge privée, en bas du panneau Options ; calculées par les
+ * mêmes fonctions que le serveur. Jamais d'aperçu du PDF (DEV-05).
  */
 export function PanneauMentions({
   totaux,
@@ -17,35 +17,11 @@ export function PanneauMentions({
 }) {
   const ok = mentions.liste.filter((m) => m.ok).length;
   return (
-    <aside className="grid content-start gap-4 rounded-[14px] border border-trait bg-blanc p-4">
-      <dl className="m-0 grid gap-1 text-[15px]">
-        {totaux.remiseCentimes > 0 ? (
-          <div className="flex justify-between">
-            <dt>Remise</dt>
-            <dd className="m-0">− {eur(totaux.remiseCentimes)}</dd>
-          </div>
-        ) : null}
-        <div className="flex justify-between">
-          <dt>Total HT</dt>
-          <dd className="m-0">{eur(totaux.htCentimes)}</dd>
-        </div>
-        {Object.entries(totaux.tva).map(([t, m]) => (
-          <div key={t} className="flex justify-between">
-            <dt>TVA {t.replace('.', ',')} %</dt>
-            <dd className="m-0">{eur(m)}</dd>
-          </div>
-        ))}
-        <div className="flex justify-between border-t border-trait pt-1.5 text-lg font-bold">
-          <dt>Total TTC</dt>
-          <dd className="m-0" data-testid="total-ttc-devis">
-            {eur(totaux.ttcCentimes)}
-          </dd>
-        </div>
-        <div className="flex justify-between text-sm text-neutre-700">
-          <dt>Marge HT (visible par vous seul)</dt>
-          <dd className="m-0">{eur(totaux.margeHtCentimes)}</dd>
-        </div>
-      </dl>
+    <div className="grid content-start gap-3">
+      <p className="m-0 flex justify-between text-sm text-neutre-700">
+        <span>Marge HT (visible par vous seul)</span>
+        <span>{eur(totaux.margeHtCentimes)}</span>
+      </p>
       <section aria-labelledby="mentions-titre" className="grid gap-2">
         <h2 id="mentions-titre" className="m-0 flex items-center justify-between text-base">
           Mentions obligatoires
@@ -73,6 +49,6 @@ export function PanneauMentions({
           ))}
         </ul>
       </section>
-    </aside>
+    </div>
   );
 }
