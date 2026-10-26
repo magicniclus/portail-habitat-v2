@@ -31,7 +31,7 @@ export function EnTeteFeuille({
       <div className="grid content-start gap-1 text-sm leading-[1.5] text-neutre-800">
         <Link
           href={routes.proDevisParametres}
-          className="mb-2 flex h-16 w-fit max-w-[200px] items-center rounded-[8px] focus-visible:outline-2 focus-visible:outline-accent"
+          className="mb-2 flex h-16 w-40 items-center rounded-[8px] focus-visible:outline-2 focus-visible:outline-accent"
           title="Changer le logo (Paramètres)"
         >
           {e.logoUrl ? (
@@ -39,7 +39,7 @@ export function EnTeteFeuille({
             <img
               src={e.logoUrl}
               alt={`Logo de ${e.nom}`}
-              className="max-h-16 w-auto object-contain"
+              className="size-full object-contain object-left"
             />
           ) : (
             <span className="grid h-16 w-32 place-items-center rounded-[8px] border border-dashed border-neutre-400 text-xs">
