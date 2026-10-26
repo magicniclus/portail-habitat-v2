@@ -61,8 +61,11 @@ export interface EtatDevis {
   datePrestationLe?: string;
 }
 
+// Préfixe propre au serveur et au navigateur : une ligne créée côté navigateur ne reprend
+// jamais la clé d'une ligne venue du serveur (compteurs repartis de zéro de chaque côté).
+const prefixe = Math.random().toString(36).slice(2, 8);
 let compteur = 0;
-const cle = () => `l${++compteur}`;
+const cle = () => `l${prefixe}${++compteur}`;
 const texteEuros = (c: number) => (c / 100).toFixed(2).replace('.', ',');
 const nombre = (s: string) => {
   const n = Number(s.replace(',', '.').replace(/\s/g, ''));
