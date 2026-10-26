@@ -37,10 +37,21 @@ export function ApplicationPro() {
   const [mode, setMode] = useState<ModeInstallation>(null);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator)
-      navigator.serviceWorker
-        .register(PWA_PRO.serviceWorker, { scope: PWA_PRO.portee })
-        .catch(() => undefined);
+    if ('serviceWorker' in navigator) {
+      if (process.env.NODE_ENV === 'development') {
+        // En développement, les fichiers `/_next/static` gardent leur nom d'une modification à
+        // l'autre : le cache du service worker servirait l'ancien rendu. On le retire donc.
+        void navigator.serviceWorker
+          .getRegistrations()
+          .then((rs) => Promise.all(rs.map((r) => r.unregister())))
+          .then(() => caches.keys())
+          .then((cles) => Promise.all(cles.map((c) => caches.delete(c))))
+          .catch(() => undefined);
+      } else
+        navigator.serviceWorker
+          .register(PWA_PRO.serviceWorker, { scope: PWA_PRO.portee })
+          .catch(() => undefined);
+    }
     if (!lire('visite', 'session')) {
       ecrire('visite', '1', 'session');
       ecrire(CLE_VISITES, String(Number(lire(CLE_VISITES) ?? 0) + 1));
