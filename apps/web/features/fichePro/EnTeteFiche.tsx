@@ -13,7 +13,10 @@ export function EnTeteFiche({
   metiers,
   modifiable,
   banniere,
+  ajoutMetier,
 }: {
+  /** « + » pour ajouter un métier (espace pro, droit de modification). */
+  ajoutMetier?: React.ReactNode;
   artisanId: string;
   nom: string;
   logoUrl?: string;
@@ -53,7 +56,7 @@ export function EnTeteFiche({
             </span>
           </div>
         </div>
-        <ul aria-label="Métiers" className="m-0 flex list-none flex-wrap gap-2 p-0">
+        <ul aria-label="Métiers" className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
           {metiers.map((m) => (
             <li
               key={m}
@@ -62,6 +65,7 @@ export function EnTeteFiche({
               {nomMetier(m) ?? m}
             </li>
           ))}
+          {ajoutMetier ? <li>{ajoutMetier}</li> : null}
         </ul>
       </div>
     </section>

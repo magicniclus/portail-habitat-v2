@@ -106,6 +106,14 @@ export function EditionZone({
     <FeuilleEdition
       titre="Zone d'intervention"
       entree={() => ({ zone: { centre, rayonKm: rayon } })}
+      declencheur={
+        <button
+          type="button"
+          className="min-h-11 cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-accent-700 underline-offset-2 hover:underline"
+        >
+          Modifier ma zone
+        </button>
+      }
     >
       <Combobox
         label="Ville de départ"

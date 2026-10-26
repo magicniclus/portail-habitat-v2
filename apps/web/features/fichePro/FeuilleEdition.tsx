@@ -14,9 +14,12 @@ export function FeuilleEdition({
   titre,
   entree,
   url = '/api/pro/fiche',
+  declencheur,
   children,
 }: {
   titre: string;
+  /** Bouton d'ouverture (crayon « Modifier : … » par défaut). */
+  declencheur?: ReactNode;
   /** Données envoyées (schéma de la route, `entreeModifierFiche` par défaut). */
   entree: () => Record<string, unknown>;
   url?: string;
@@ -45,11 +48,13 @@ export function FeuilleEdition({
       onOpenChange={setOuvert}
       titre={titre}
       declencheur={
-        <IconButton
-          variant="secondaire"
-          aria-label={`Modifier : ${titre}`}
-          icone={<PencilSimpleIcon />}
-        />
+        declencheur ?? (
+          <IconButton
+            variant="secondaire"
+            aria-label={`Modifier : ${titre}`}
+            icone={<PencilSimpleIcon />}
+          />
+        )
       }
       actions={
         <Button type="submit" form={id} disabled={enCours}>

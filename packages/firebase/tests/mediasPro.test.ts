@@ -14,6 +14,7 @@ import {
   enregistrerLogo,
   enregistrerRealisation,
   lireRealisationsPro,
+  publierRealisation,
   retirerBanniere,
   supprimerRealisation,
 } from '../src/serveur/pro';
@@ -80,6 +81,30 @@ describe('enregistrerLogo', () => {
     await expect(enregistrerLogo(s(), ctx('p1'), 'logo.png')).rejects.toMatchObject({
       code: 'ENTREE_INVALIDE',
     });
+  });
+});
+
+describe('publierRealisation', () => {
+  it('« Public » : masque ou republie un projet, complétude ajustée ; collaborateur sans droit refusé', async () => {
+    for (let i = 0; i < 2; i++) await image(fichiers.realisation('a1', RID, `photo${i}.png`));
+    await enregistrerRealisation(s(), ctx('p1'), realisation(2));
+    const avant = (await db.doc(chemins.artisan('a1')).get()).get('completude');
+    await publierRealisation(s(), ctx('p1'), { rid: RID, publie: false });
+    const ref = db.doc(`${chemins.realisations('a1')}/${RID}`);
+    expect((await ref.get()).get('publie')).toBe(false);
+    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBeLessThanOrEqual(
+      avant,
+    );
+    expect((await lireRealisationsPro(db, 'a1'))[0]).toMatchObject({
+      publie: false,
+      ville: 'Mérignac',
+    });
+    await publierRealisation(s(), ctx('p1'), { rid: RID, publie: true });
+    expect((await ref.get()).get('publie')).toBe(true);
+    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBe(avant);
+    await expect(
+      publierRealisation(s(), ctx('x1'), { rid: RID, publie: false }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
   });
 });
 

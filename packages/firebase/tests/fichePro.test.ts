@@ -36,6 +36,18 @@ beforeEach(async () => {
 });
 
 describe('modifierFiche', () => {
+  it('métiers (« + » de Ma fiche) : le métier principal reste en tête, sans doublon', async () => {
+    await db.doc(chemins.artisan('a1')).update({ metierPrincipal: 'couvreur' });
+    await modifierFiche(s(), ctx('p1'), {
+      metiers: ['zingueur', 'couvreur', 'zingueur', 'facadier'],
+    });
+    expect((await db.doc(chemins.artisan('a1')).get()).get('metiers')).toEqual([
+      'couvreur',
+      'zingueur',
+      'facadier',
+    ]);
+  });
+
   it('présentation : enregistrée, complétude recalculée (métiers 20 + téléphone 15 + texte 20)', async () => {
     const r = await modifierFiche(s(), ctx('p1'), { description: 'x'.repeat(80) });
     expect(r.completude).toBe(55);

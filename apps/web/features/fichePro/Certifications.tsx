@@ -8,10 +8,7 @@ import { CarteFiche } from './CarteFiche';
  */
 export function Certifications({ labels, ajout }: { labels: string[]; ajout: boolean }) {
   return (
-    <CarteFiche
-      titre="Certifications & labels"
-      sousTitre="Affichés sur votre fiche après vérification du justificatif par notre équipe."
-    >
+    <CarteFiche titre="Certifications & labels">
       <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
         {labels.map((l) => (
           <li
@@ -35,7 +32,8 @@ export function Certifications({ labels, ajout }: { labels: string[]; ajout: boo
       </ul>
       {labels.length === 0 ? (
         <p className="m-0 text-sm text-neutre-800">
-          Aucune certification vérifiée pour l&apos;instant.
+          Aucune certification vérifiée pour l&apos;instant : déposez le justificatif, notre équipe
+          le vérifie.
         </p>
       ) : null}
     </CarteFiche>

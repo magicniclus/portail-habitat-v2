@@ -1,7 +1,7 @@
 import { peut } from '@ph/core/equipe';
 import { formatNombre } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { encartAffiche, type CleEncart } from '@ph/core/paiements';
+import { droitsDe, encartAffiche, type CleEncart } from '@ph/core/paiements';
 import {
   lireAvisPro,
   lireDocumentsPro,
@@ -16,6 +16,10 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { Documents } from '@/features/fichePro/Documents';
+import { EditionMetiers } from '@/features/fichePro/EditionMetiers';
+import { FormulaireProjet } from '@/features/fichePro/FormulaireProjet';
+import { ActionsEntete } from '@/features/espacePro/ActionsEntete';
+import { groupesMetiers, nomMetier } from '@/features/pro/metiers';
 import { ApercuParticulier } from '@/features/fichePro/ApercuParticulier';
 import { Banniere } from '@/features/fichePro/Banniere';
 import { TexteAPropos } from '@/features/fichePro/APropos';
@@ -75,19 +79,21 @@ export default async function PageMaFiche() {
       <ConfigFirebase />
       {f.completude.pourcent < 100 ? <ProgressionFiche pourcent={f.completude.pourcent} /> : null}
       {f.enLigne ? (
-        <Link
-          href={`/artisans/${f.slug}` as Route}
-          className={bouton({ variant: 'secondaire', className: 'justify-self-end' })}
-        >
-          Voir ma fiche publique
-        </Link>
+        <ActionsEntete>
+          <Link
+            href={`/artisans/${f.slug}` as Route}
+            className={bouton({ variant: 'secondaire', taille: 'sm' })}
+          >
+            Voir ma fiche publique
+          </Link>
+        </ActionsEntete>
       ) : null}
       {edite ? null : (
         <p className="m-0 rounded-md bg-neutre-100 p-3 text-sm">
           Seuls le propriétaire et le gérant peuvent modifier la fiche.
         </p>
       )}
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)]">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
         <div className="grid min-w-0 gap-5">
           <EnTeteFiche
             artisanId={active.artisanId}
@@ -95,6 +101,17 @@ export default async function PageMaFiche() {
             enLigne={f.enLigne}
             metiers={f.metiers}
             modifiable={edite}
+            {...(edite
+              ? {
+                  ajoutMetier: (
+                    <EditionMetiers
+                      metiers={f.metiers}
+                      principal={f.metierPrincipal}
+                      groupes={groupesMetiers()}
+                    />
+                  ),
+                }
+              : {})}
             {...(f.logoUrl ? { logoUrl: f.logoUrl } : {})}
             banniere={
               <Banniere
@@ -120,13 +137,6 @@ export default async function PageMaFiche() {
             labels={f.certifications}
             ajout={peut(active.membre, 'documents.televerser')}
           />
-          <CarteFiche titre="Documents et assurances" id="documents">
-            <Documents
-              artisanId={active.artisanId}
-              documents={documents}
-              peutDeposer={peut(active.membre, 'documents.televerser')}
-            />
-          </CarteFiche>
           <CarteFiche titre="Zone d'intervention">
             <CarteZoneFiche centre={f.zone.centre} rayonKm={f.zone.rayonKm} />
             <div className="flex flex-wrap items-center gap-3">
@@ -144,18 +154,36 @@ export default async function PageMaFiche() {
           />
           <CarteFiche
             titre="Projets réalisés"
-            sousTitre="Vos dernières réalisations, visibles par les particuliers."
+            sousTitre={`Vos dernières réalisations, visibles par les particuliers.${
+              droitsDe(active.artisan.formule).photosIllimitees
+                ? ''
+                : ' 5 projets maximum en Gratuit.'
+            }`}
+            action={
+              peut(active.membre, 'realisations.modifier') ? (
+                <FormulaireProjet artisanId={active.artisanId} />
+              ) : null
+            }
           >
             <Realisations
-              artisanId={active.artisanId}
               realisations={realisations}
               peutModifier={peut(active.membre, 'realisations.modifier')}
+              nomsMetiers={Object.fromEntries(
+                [...new Set(realisations.map((r) => r.metier))].map((m) => [m, nomMetier(m) ?? m]),
+              )}
             />
             {offreRealisations ? (
               <EncartOffre cle="realisations" offre={offreRealisations} />
             ) : null}
           </CarteFiche>
           <DerniersAvis avis={avis} note={note} />
+          <CarteFiche titre="Documents et assurances" id="documents">
+            <Documents
+              artisanId={active.artisanId}
+              documents={documents}
+              peutDeposer={peut(active.membre, 'documents.televerser')}
+            />
+          </CarteFiche>
         </div>
         <ApercuParticulier
           encart={

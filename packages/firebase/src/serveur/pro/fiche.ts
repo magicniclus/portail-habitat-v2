@@ -163,6 +163,12 @@ export async function modifierFiche(
       maj.budgetMin = e.devis.minEuros * 100;
       maj.budgetMax = e.devis.maxEuros * 100;
     }
+    if (e.metiers) {
+      // Le métier principal (choisi à l'inscription) reste en tête ; doublons retirés.
+      const principal =
+        (a.get('metierPrincipal') as string | undefined) ?? (a.get('metiers') as string[])[0]!;
+      maj.metiers = [...new Set([principal, ...e.metiers])];
+    }
     if (e.zone) {
       maj['zoneIntervention.centre'] = e.zone.centre;
       maj['zoneIntervention.geohash'] = encoderGeohash(
@@ -175,6 +181,7 @@ export async function modifierFiche(
     const apres = {
       ...a.data(),
       ...(e.description !== undefined ? { description: e.description } : {}),
+      ...(maj.metiers ? { metiers: maj.metiers } : {}),
     };
     const { pourcent } = await completudeDepuisBase(s.db, ctx.artisanId, apres, t);
     maj.completude = pourcent;

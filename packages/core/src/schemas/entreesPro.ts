@@ -43,6 +43,8 @@ export const entreeModifierFiche = z
       .optional(),
     /** Centre (commune choisie dans la liste) et rayon ; le geohash est calculé par le serveur. */
     zone: z.strictObject({ centre: geo, rayonKm }).optional(),
+    /** Métiers exercés (« + » de Ma fiche) ; le métier principal reste en tête. */
+    metiers: z.array(id).min(1).max(10).optional(),
   })
   .refine((e) => Object.keys(e).length > 0, 'Rien à enregistrer.');
 
@@ -100,6 +102,9 @@ export const entreeRealisation = z.strictObject({
 });
 
 export const entreeSupprimerRealisation = z.strictObject({ rid: idFichier });
+
+/** Interrupteur « Public » d'un projet réalisé (Ma fiche). */
+export const entreePublierRealisation = z.strictObject({ rid: idFichier, publie: z.boolean() });
 
 const canauxNotif = z.strictObject({ email: z.boolean(), sms: z.boolean(), inapp: z.boolean() });
 

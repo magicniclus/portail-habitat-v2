@@ -138,6 +138,10 @@ export interface RealisationPro {
   id: string;
   titre: string;
   ville: string;
+  description: string;
+  metier: string;
+  /** Visible sur la fiche publique (interrupteur « Public »). */
+  publie: boolean;
   photos: { url: string; largeur: number; hauteur: number }[];
 }
 
@@ -150,6 +154,9 @@ export async function lireRealisationsPro(
     id: d.id,
     titre: d.get('titre') as string,
     ville: d.get('ville') as string,
+    description: (d.get('description') as string | undefined) ?? '',
+    metier: (d.get('metier') as string | undefined) ?? '',
+    publie: d.get('publie') !== false,
     photos: (d.get('photos') as RealisationPro['photos']).map(({ url, largeur, hauteur }) => ({
       url,
       largeur,
@@ -200,6 +207,33 @@ export async function enregistrerRealisation(
       publie: true,
       ordre: s.horloge(),
     });
+    t.update(refArtisan, { completude: pourcent, updatedAt: maintenant });
+  });
+}
+
+/** Interrupteur « Public » : le projet reste dans Ma fiche, visible ou non des particuliers. */
+export async function publierRealisation(
+  s: Services,
+  ctx: Contexte,
+  e: { rid: string; publie: boolean },
+): Promise<void> {
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${e.rid}`);
+  await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const r = await t.get(ref);
+    if (!r.exists) throw new ErreurMetier('INTROUVABLE');
+    if ((r.get('publie') !== false) === e.publie) return;
+    const nb = ((r.get('photos') as unknown[] | undefined) ?? []).length;
+    const { ref: refArtisan, donnees } = await majCompletude(t, s, ctx, {});
+    const { pourcent } = await completudeDepuisBase(
+      s.db,
+      ctx.artisanId,
+      donnees,
+      t,
+      e.publie ? nb : -nb,
+    );
+    const maintenant = Timestamp.fromMillis(s.horloge());
+    t.update(ref, { publie: e.publie, updatedAt: maintenant });
     t.update(refArtisan, { completude: pourcent, updatedAt: maintenant });
   });
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { ID_ACTIONS_ENTETE } from './ActionsEntete';
 import { PAGES_COMPTE, type LienPro } from '@ph/core/espace-pro';
 import { IconButton } from '@ph/ui';
 import { SidebarSimpleIcon } from '@phosphor-icons/react';
@@ -57,7 +58,9 @@ export function CadrePro(p: CadreProProps) {
           <div className="ml-auto flex min-w-0 items-center gap-2.5">
             {/* Sélecteur d'entreprise dans l'en-tête, hors de la barre latérale (D63). */}
             {selecteur ? <div className="hidden lg:block">{selecteur}</div> : null}
-            {p.etatFiche}
+            <div id={ID_ACTIONS_ENTETE} className="contents" />
+            {/* Ma fiche affiche son état sous le nom (maquette) : pas de pastille en double. */}
+            {estActif(chemin, 'fiche') ? null : p.etatFiche}
             <span
               aria-hidden="true"
               className="flex size-10 flex-none items-center justify-center rounded-full bg-accent-200 text-sm font-bold text-accent-800"

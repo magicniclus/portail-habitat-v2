@@ -17,9 +17,25 @@ test.describe('Ma fiche', () => {
     await publier.click();
     const projets = page.getByRole('list', { name: 'Projets réalisés' });
     await expect(projets).toContainText(titre, { timeout: 15_000 });
-    await expect(projets).toContainText('3 photos');
+    await expect(projets).toContainText('Mérignac');
+    // Interrupteur « Public » : le projet reste dans Ma fiche, masqué des particuliers.
+    const publicSw = projets.getByRole('switch', { name: `Public : ${titre}` });
+    await expect(publicSw).toHaveAttribute('aria-checked', 'true');
+    await publicSw.click();
+    await expect(publicSw).toHaveAttribute('aria-checked', 'false');
     await projets.getByRole('button', { name: `Retirer ${titre}` }).click();
     await expect(page.getByText(titre)).toHaveCount(0);
+  });
+
+  test('« + » des métiers : un métier ajouté apparaît sous le nom', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    await page.getByRole('button', { name: 'Ajouter un métier' }).click();
+    const d = page.getByRole('dialog', { name: 'Vos métiers' });
+    const c = d.getByRole('checkbox', { checked: false }).first();
+    const nom = (await c.locator('xpath=..').innerText()).trim();
+    await c.check();
+    await d.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(page.getByRole('list', { name: 'Métiers' })).toContainText(nom);
   });
 
   test('le propriétaire ajoute un logo', async ({ page }) => {
