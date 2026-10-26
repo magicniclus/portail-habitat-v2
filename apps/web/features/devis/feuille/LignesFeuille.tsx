@@ -3,17 +3,19 @@
 import type { TauxTva } from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
 import type { PrestationBiblio } from '@ph/firebase/devis';
-import { Button } from '@ph/ui';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { ligneSaisie, ligneTexte, ligneVide, type LigneSaisie } from '../etat';
-import { COLONNES, LigneFeuille } from './LigneFeuille';
+import { AjoutLigne } from './AjoutLigne';
+import { COLONNES } from './CasesFeuille';
+import { LigneFeuille } from './LigneFeuille';
 
-const entete = 'text-xs font-bold tracking-[0.04em] text-neutre-700 uppercase';
+const entete =
+  'flex min-h-10 items-center rounded-[8px] bg-accent-action px-3 text-sm font-semibold text-blanc';
 
 /**
- * Lignes de la feuille : « + Ligne chiffrée », « + Ligne de texte », « + Ligne type » (la
- * bibliothèque), et « Enregistrer comme ligne type » sur chaque ligne, sans quitter le devis.
+ * Lignes de la feuille (captures) : en-tête coloré, « + Ligne simple ▾ » (ligne de texte, lignes
+ * types), et « Enregistrer comme ligne type » sur chaque ligne, sans quitter le devis.
  */
 export function LignesFeuille({
   lignes,
@@ -23,7 +25,10 @@ export function LignesFeuille({
   avecCout,
   onChange,
   onMessage,
+  apresLignes,
 }: {
+  /** Sous les lignes, avant « + Ligne simple » (remise globale). */
+  apresLignes?: ReactNode;
   lignes: LigneSaisie[];
   tvaDefaut: TauxTva;
   bibliotheque: PrestationBiblio[];
@@ -77,24 +82,24 @@ export function LignesFeuille({
   };
 
   return (
-    <section aria-label="Lignes du devis" className="grid">
+    <section aria-label="Lignes du devis" className="grid gap-2">
       <div
         aria-hidden="true"
-        className={`hidden gap-1 border-b-2 border-texte px-1.5 pb-1.5 sm:grid ${rapide ? COLONNES.rapide : COLONNES.complet}`}
+        className={`hidden gap-1.5 sm:grid ${rapide ? COLONNES.rapide : COLONNES.complet}`}
       >
-        <span className={entete}>Désignation</span>
+        <span className={`${entete} col-span-2`}>Désignation</span>
         {rapide ? (
           <>
-            <span className={entete}>TVA</span>
-            <span className={`${entete} text-right`}>Montant HT</span>
+            <span className={`${entete} justify-center`}>TVA</span>
+            <span className={`${entete} justify-end`}>Montant HT</span>
           </>
         ) : (
           <>
-            <span className={`${entete} text-right`}>Qté</span>
-            <span className={entete}>Unité</span>
-            <span className={`${entete} text-right`}>PU HT</span>
-            <span className={entete}>TVA</span>
-            <span className={`${entete} text-right`}>Total HT</span>
+            <span className={`${entete} justify-center`}>Quantité</span>
+            <span className={`${entete} justify-center`}>Unité</span>
+            <span className={`${entete} justify-center`}>Prix unitaire</span>
+            <span className={`${entete} justify-center`}>TVA</span>
+            <span className={`${entete} justify-end`}>Montant HT</span>
           </>
         )}
         <span />
@@ -111,32 +116,13 @@ export function LignesFeuille({
           enregistrerType={() => void enregistrerType(l)}
         />
       ))}
-      <div className="flex flex-wrap items-center gap-2 pt-3 print:hidden">
-        <Button variant="secondaire" onClick={() => onChange([...lignes, ligneVide(tvaDefaut)])}>
-          + Ligne chiffrée
-        </Button>
-        <Button variant="fantome" onClick={() => onChange([...lignes, ligneTexte(tvaDefaut)])}>
-          + Ligne de texte
-        </Button>
-        {biblio.length ? (
-          <select
-            aria-label="Ajouter une ligne type"
-            value=""
-            onChange={(x) => {
-              const p = biblio.find((b) => b.id === x.target.value);
-              if (p) ajouter(ligneSaisie(p));
-            }}
-            className="min-h-11 max-w-full rounded-control border border-trait bg-blanc px-3 text-base font-semibold sm:w-auto"
-          >
-            <option value="">+ Ligne type…</option>
-            {biblio.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.type === 'texte' ? `¶ ${p.designation}` : p.designation}
-              </option>
-            ))}
-          </select>
-        ) : null}
-      </div>
+      {apresLignes}
+      <AjoutLigne
+        ligneSimple={() => onChange([...lignes, ligneVide(tvaDefaut)])}
+        ligneTexte={() => onChange([...lignes, ligneTexte(tvaDefaut)])}
+        lignesTypes={biblio}
+        ligneType={(p) => ajouter(ligneSaisie(p))}
+      />
     </section>
   );
 }

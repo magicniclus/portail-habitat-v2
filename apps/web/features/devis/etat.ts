@@ -61,6 +61,10 @@ export interface EtatDevis {
   datePrestationLe?: string;
 }
 
+/** Conditions d'acceptation proposées sur un nouveau devis (modifiables sur la feuille). */
+export const TEXTE_CONDITIONS_DEFAUT =
+  'Pour être accepté, le devis doit être daté, signé et suivi de la mention manuscrite « Bon pour accord ».';
+
 // Préfixe propre au serveur et au navigateur : une ligne créée côté navigateur ne reprend
 // jamais la clé d'une ligne venue du serveur (compteurs repartis de zéro de chaque côté).
 const prefixe = Math.random().toString(36).slice(2, 8);
@@ -186,6 +190,8 @@ export function etatInitial(o: {
     notes: '',
     signatureElectronique: false,
     tampon: false,
+    conditionsAcceptation: TEXTE_CONDITIONS_DEFAUT,
+    champSignature: true,
   };
 }
 

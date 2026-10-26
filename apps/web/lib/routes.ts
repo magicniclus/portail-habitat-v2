@@ -53,6 +53,8 @@ export const routes = {
   proDevisNouveau: r('/pro/devis/nouveau'),
   proDevisParametres: r('/pro/devis/parametres'),
   proUnDevis: (id: string) => r(`/pro/devis/${encodeURIComponent(id)}`),
+  /** Éditeur pleine page d'un devis en brouillon. */
+  proModifierDevis: (id: string) => r(`/pro/devis/${encodeURIComponent(id)}/modifier`),
   proFactureNouvelle: r('/pro/devis/factures/nouvelle'),
   proFactureClient: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}`),
   proStatistiques: r('/pro/statistiques'),

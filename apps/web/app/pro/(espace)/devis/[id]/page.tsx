@@ -1,29 +1,22 @@
 import { LIBELLES_STATUT_DEVIS, tonStatut } from '@ph/core/devis';
 import { formatDate, formatEuros } from '@ph/core/format';
-import { lireBibliotheque, lireDevisComplet } from '@ph/firebase/devis';
+import { lireDevisComplet } from '@ph/firebase/devis';
 import { Badge } from '@ph/ui';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ActionsDevis } from '@/features/devis/ActionsDevis';
-import { EditeurDevis } from '@/features/devis/EditeurDevis';
-import { etatInitial } from '@/features/devis/etat';
 import { routes } from '@/lib/routes';
-import { accesDevis, dbDevis, entrepriseFeuille, parametresEditeur } from '@/server/pageDevis';
-import { maintenant } from '@/server/temps';
+import { accesDevis, dbDevis } from '@/server/pageDevis';
 
 export const metadata: Metadata = { title: 'Devis', robots: { index: false } };
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
-/** Brouillon : éditeur. Envoyé : récapitulatif figé, PDF et suite (décision, facturation). */
+/** Brouillon : vers l'éditeur pleine page. Envoyé : récapitulatif figé, PDF et suite (décision, facturation). */
 export default async function PageUnDevis({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const acces = await accesDevis(routes.proUnDevis(id));
-  const [d, { p }, biblio] = await Promise.all([
-    lireDevisComplet(dbDevis(), acces.artisanId, id),
-    parametresEditeur(acces.artisanId),
-    lireBibliotheque(dbDevis(), acces.artisanId),
-  ]);
+  const d = await lireDevisComplet(dbDevis(), acces.artisanId, id);
   if (!d) notFound();
   const titre = (
     <div className="flex flex-wrap items-center gap-3">
@@ -33,25 +26,8 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
       </Badge>
     </div>
   );
-  if (d.statut === 'brouillon' && acces.gerer)
-    return (
-      <main>
-        <EditeurDevis
-          entreprise={await entrepriseFeuille(acces.artisanId, p)}
-          aujourdHui={maintenant()}
-          initial={etatInitial({
-            devis: d,
-            acompteDefautPct: 30,
-            validiteJours: 30,
-            tvaDefaut: p.tvaDefaut,
-            aujourdHui: maintenant(),
-          })}
-          parametres={p}
-          tvaDefaut={p.tvaDefaut}
-          bibliotheque={biblio.prestations}
-        />
-      </main>
-    );
+  // Brouillon : éditeur pleine page.
+  if (d.statut === 'brouillon' && acces.gerer) redirect(routes.proModifierDevis(id));
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       {titre}

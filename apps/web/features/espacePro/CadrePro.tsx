@@ -28,9 +28,13 @@ export interface CadreProProps {
 }
 
 /** Cadre de l'espace pro : barre latérale (ordinateur), en-tête, onglets du bas (mobile). */
+/** Éditeurs de devis et de factures : pleine page, sans menu ni barre du haut (maquette). */
+const PLEINE_PAGE = /^\/pro\/devis\/(nouveau|factures\/nouvelle|[^/]+\/modifier)\/?$/;
+
 export function CadrePro(p: CadreProProps) {
   const [ouvert, setOuvert] = useState(true);
   const chemin = usePathname();
+  if (PLEINE_PAGE.test(chemin)) return <div className="min-h-dvh bg-neutre-100">{p.children}</div>;
   const surCompte = PAGES_COMPTE.some((c) => estActif(chemin, c));
   const titre = surCompte
     ? 'Mon compte'

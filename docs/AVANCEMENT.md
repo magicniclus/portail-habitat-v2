@@ -720,6 +720,13 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - **Écart avec la maquette (signalé)** : elle accepte aussi SVG et WebP ; le générateur de PDF ne sait poser que PNG et JPEG, donc seuls ces deux formats sont proposés.
 - Tests : 1 sur émulateur (dépôt, conservation, refus d'un fichier non image, retrait).
 
+**Devis v2 : organisation des captures du propriétaire (26/10/2026)**
+- Éditeur de devis et de facture **pleine page** (sans la barre latérale de l'espace pro) : `/pro/devis/nouveau`, `/pro/devis/{id}/modifier` (brouillons ; la page du devis y renvoie), `/pro/devis/factures/nouvelle`. Barre du haut : fermer, titre, « Options » (panneau à droite refermable sur ordinateur, feuille du bas sur mobile). Actions flottantes centrées en bas : « Créer le devis » / « Enregistrer », « Envoyer au client ».
+- Feuille : logo et entreprise (Paramètres) ; client en cases pointillées (nom, adresse, complément, code postal | ville, pays, email, téléphone) ; adresse de livraison, SIREN, TVA intracommunautaire si cochés ; rangée « Devis », date d'émission, période de validité en jours ; lignes avec en-tête coloré, « Presta/Fourn. », unité « Aucune » ; remise globale ; « + Ligne simple | ▾ » (ligne de texte, lignes types) ; total TTC en pastille ; mention de TVA, conditions d'acceptation (compteur de caractères), champ libre, signature.
+- Panneau Options = **uniquement des cases et des choix** (type de facturation, client, infos complémentaires) qui font apparaître les blocs sur la feuille ; décocher retire la valeur. Nouveau devis : conditions d'acceptation et champ signature cochés par défaut.
+- Liste : recherche (client, objet, numéro), montants HT ou TTC, tableau (date, icône de statut, numéro, client — objet, montant, statut modifiable sur la ligne quand c'est permis, action), 25 par page ; cartes sous 800 px. Mêmes règles de statut côté serveur et écran (`statutsPossibles`, cœur, testé).
+- Pas de changement du modèle de données stocké ; `DevisResume`/`FactureResume` lisent en plus le HT et la date.
+
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :
 - Cœur `packages/core/src/sites/` : schémas (section → ligne → colonne → 16 éléments, réglages par appareil), validation des actions et liens (SITE-09), sous-domaine, formulaire (4 champs figés en gratuit), DNS, site de départ depuis la fiche (sans IA ni chiffre inventé), contrôles SEO, logique de l'éditeur (historique de 80 états, sections, éléments, nouvelles pages).
@@ -877,3 +884,4 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
 - 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
+- 26/10/2026 — Devis v2 : éditeur pleine page organisé comme les captures, options en cases, nouvelle liste (recherche, HT/TTC, statut sur la ligne, pagination). Détail : §26.

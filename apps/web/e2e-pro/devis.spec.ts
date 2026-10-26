@@ -28,11 +28,10 @@ async function parametres(valeurs: Record<string, unknown> | null) {
   else await ref.delete();
 }
 
-/** Panneau Options : à droite sur ordinateur, feuille du bas à ouvrir sur mobile. */
+/** Panneau Options : ouvert à droite sur ordinateur, feuille du bas à ouvrir sur mobile. */
 async function options(page: Page, faire: () => Promise<void>) {
-  const bouton = page.getByRole('button', { name: 'Options', exact: true });
-  const mobile = await bouton.isVisible();
-  if (mobile) await bouton.click();
+  const mobile = !(await page.getByRole('complementary', { name: 'Options' }).isVisible());
+  if (mobile) await page.getByRole('button', { name: 'Options', exact: true }).click();
   await faire();
   if (mobile) await page.keyboard.press('Escape');
 }
@@ -45,14 +44,15 @@ async function remplir(page: Page, o: { email?: string; pro?: string } = {}) {
   const ligne = page.getByRole('group', { name: 'Ligne 1' });
   await ligne.getByLabel('Désignation').fill('Pose receveur extra-plat');
   await ligne.getByLabel('PU HT (€)').fill('690');
-  await options(page, async () => {
-    if (o.pro !== undefined) {
-      await page.getByRole('radio', { name: 'Professionnel', exact: true }).check();
-      await page.getByLabel(/^SIREN du client/).fill(o.pro);
-    }
-    await page.getByLabel('Début des travaux').fill('2026-11-16');
-    await page.getByLabel('Durée estimée').fill('5 jours ouvrés');
-  });
+  await page.getByLabel('Début des travaux').fill('2026-11-16');
+  await page.getByLabel('Durée estimée').fill('5 jours ouvrés');
+  if (o.pro !== undefined) {
+    // Options › Client : la case fait apparaître le SIREN sur la feuille.
+    await options(page, () =>
+      page.getByRole('checkbox', { name: 'SIREN ou SIRET (client professionnel)' }).check(),
+    );
+    await page.getByLabel('SIREN du client').fill(o.pro);
+  }
 }
 
 test.describe('Devis & factures', () => {
@@ -117,6 +117,7 @@ test.describe('Devis & factures', () => {
     await remplir(page, { email });
     await page.getByRole('button', { name: 'Envoyer au client' }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/(?!nouveau)[^/]+$/, { timeout: 20_000 });
+    await expect(page).not.toHaveURL(/\/modifier$/);
     const telecharger = page.getByRole('link', { name: 'Télécharger le PDF' });
     await expect(telecharger).toBeVisible();
     const pro = await page.request.get((await telecharger.getAttribute('href'))!);
@@ -199,21 +200,22 @@ test.describe('Devis & factures', () => {
     await expect(page).toHaveURL(/\/pro\/devis\/nouveau\?modele=mod-e2e/);
     await expect(page.getByLabel('Objet du devis')).toHaveValue('Plomberie d’urgence');
     await expect(page.getByLabel('Désignation').first()).toHaveValue('Recherche de fuite');
-    await page
-      .getByLabel('Ajouter une ligne type')
-      .selectOption({ label: 'Faïence murale, fourniture et pose' });
+    await page.getByRole('button', { name: 'Autres lignes' }).click();
+    await page.getByRole('button', { name: 'Faïence murale, fourniture et pose' }).click();
     await expect(page.getByLabel('Désignation').nth(1)).toHaveValue(
       'Faïence murale, fourniture et pose',
     );
     await expect(page.getByLabel('PU HT (€)').nth(1)).toHaveValue('78,00');
 
     // Ligne de texte (hors totaux) enregistrée comme ligne type sans quitter le devis.
-    await page.getByRole('button', { name: '+ Ligne de texte' }).click();
+    await page.getByRole('button', { name: 'Autres lignes' }).click();
+    await page.getByRole('button', { name: '+ Ligne de texte (titre, précision)' }).click();
     await page.getByLabel('Texte de la ligne').fill(`Préparation ${Date.now()}`);
     await page.getByRole('button', { name: 'Actions de la ligne 3' }).click();
     await page.getByRole('button', { name: 'Enregistrer comme ligne type' }).click();
     await expect(page.getByText(/ajoutée à vos lignes types/)).toBeVisible();
-    await expect(page.getByLabel('Ajouter une ligne type')).toContainText('¶ Préparation');
+    await page.getByRole('button', { name: 'Autres lignes' }).click();
+    await expect(page.getByRole('group', { name: 'Autres lignes' })).toContainText('¶ Préparation');
   });
 
   test('signature en ligne : le client accepte le devis depuis son lien, l’entreprise le voit', async ({

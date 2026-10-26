@@ -4,6 +4,7 @@ import {
   numeroDocument,
   verifierMentionsDevis,
   type LigneDevis,
+  transitionPermise,
 } from '@ph/core/devis';
 import { artisanAAccepte } from '@ph/core/espace';
 import {
@@ -235,12 +236,6 @@ export async function envoyerDevis(
   }
 }
 
-const TRANSITIONS: Record<string, readonly string[]> = {
-  accepte: ['envoye'],
-  refuse: ['envoye'],
-  archive: ['brouillon', 'envoye', 'accepte', 'refuse', 'expire'],
-};
-
 /** Accepté ou refusé (après envoi), archivé à tout moment. */
 export async function changerStatutDevis(
   s: ServicesDevis,
@@ -252,7 +247,7 @@ export async function changerStatutDevis(
     await exiger(s, t, ctx, 'devis.gerer');
     const d = await t.get(ref);
     if (!d.exists) throw new ErreurMetier('INTROUVABLE');
-    if (!TRANSITIONS[e.statut]!.includes(d.get('statut') as string))
+    if (!transitionPermise(d.get('statut') as string, e.statut))
       throw new ErreurMetier('CONFLIT', 'Ce changement de statut n’est pas possible.');
     if (e.statut !== 'archive')
       (

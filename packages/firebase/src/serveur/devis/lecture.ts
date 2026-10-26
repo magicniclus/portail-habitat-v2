@@ -15,6 +15,7 @@ export interface DevisResume {
   statut: string;
   client: string;
   objet: string;
+  htCentimes: number;
   ttcCentimes: number;
   creeLe: number;
   validiteLe?: number;
@@ -27,8 +28,11 @@ export interface FactureResume {
   type: 'facture' | 'acompte' | 'avoir';
   statut: string;
   client: string;
+  objet: string;
   devisNumero?: string;
+  creeLe: number;
   echeanceLe?: number;
+  htCentimes: number;
   ttcCentimes: number;
   resteCentimes: number;
   annulee: boolean;
@@ -47,6 +51,7 @@ export async function lireDevisListe(db: Firestore, artisanId: string): Promise<
     statut: d.get('statut') as string,
     client: (d.get('client.nom') as string | undefined) ?? '',
     objet: (d.get('objet') as string | undefined) ?? '',
+    htCentimes: (d.get('totaux.htCentimes') as number | undefined) ?? 0,
     ttcCentimes: (d.get('totaux.ttcCentimes') as number | undefined) ?? 0,
     creeLe: ms(d.get('createdAt')) ?? 0,
     validiteLe: ms(d.get('validiteLe')),
@@ -70,8 +75,11 @@ export async function lireFacturesListe(
     type: d.get('type') as FactureResume['type'],
     statut: d.get('statut') as string,
     client: (d.get('client.nom') as string | undefined) ?? '',
+    objet: (d.get('objet') as string | undefined) ?? '',
     devisNumero: d.get('devisNumero') as string | undefined,
+    creeLe: ms(d.get('createdAt')) ?? 0,
     echeanceLe: ms(d.get('echeanceLe')),
+    htCentimes: (d.get('totaux.htCentimes') as number | undefined) ?? 0,
     ttcCentimes: (d.get('totaux.ttcCentimes') as number | undefined) ?? 0,
     resteCentimes: (d.get('resteCentimes') as number | undefined) ?? 0,
     annulee: Boolean(d.get('avoirId')),
@@ -203,7 +211,9 @@ export async function lireFactureComplete(
     statut: x.statut,
     client: x.client?.nom ?? '',
     devisNumero: x.devisNumero,
+    creeLe: ms(x.createdAt) ?? 0,
     echeanceLe: ms(x.echeanceLe),
+    htCentimes: x.totaux?.htCentimes ?? 0,
     ttcCentimes: x.totaux?.ttcCentimes ?? 0,
     resteCentimes: x.resteCentimes ?? 0,
     annulee: Boolean(x.avoirId),

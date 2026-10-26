@@ -60,11 +60,6 @@ export default async function PageDevis({
               + Nouvelle facture
             </Link>
           ) : null}
-          {acces.gerer ? (
-            <Link href={routes.proDevisNouveau} className={bouton()}>
-              + Nouveau devis
-            </Link>
-          ) : null}
         </div>
       </div>
       {!saisis ? (
@@ -107,8 +102,31 @@ export default async function PageDevis({
       {onglet === 'devis' && acces.gerer && horsValidite.length ? (
         <ExpirerDevis ids={horsValidite.slice(0, 100)} />
       ) : null}
-      {onglet === 'devis' ? <ListeDevis devis={devis} /> : null}
-      {onglet === 'factures' ? <ListeFactures factures={factures} /> : null}
+      {onglet === 'devis' ? (
+        <ListeDevis
+          devis={devis}
+          peutGerer={acces.gerer}
+          creer={
+            acces.gerer ? (
+              <Link href={routes.proDevisNouveau} className={bouton()}>
+                Créer un devis
+              </Link>
+            ) : null
+          }
+        />
+      ) : null}
+      {onglet === 'factures' ? (
+        <ListeFactures
+          factures={factures}
+          creer={
+            acces.facturer ? (
+              <Link href={routes.proFactureNouvelle} className={bouton()}>
+                Créer une facture
+              </Link>
+            ) : null
+          }
+        />
+      ) : null}
       {biblio ? (
         <div className="grid gap-8">
           <ModelesDevis modeles={biblio.modeles} peutGerer={acces.gerer} />

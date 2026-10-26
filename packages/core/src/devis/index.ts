@@ -6,3 +6,4 @@ export * from './libelles';
 export * from './relances';
 export * from './signature';
 export * from './iban';
+export * from './statuts';

@@ -4,16 +4,18 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 
-/** Haut de l'éditeur : fermer, titre, et « Options » sous 1100 px (panneau en feuille du bas). */
+/** Haut de l'éditeur pleine page : fermer (retour à la liste), titre, bouton « Options ». */
 export function BarreEditeur({
   titre,
   onOptions,
+  optionsOuvertes,
 }: {
   titre: string;
-  onOptions: (() => void) | null;
+  onOptions: () => void;
+  optionsOuvertes: boolean;
 }) {
   return (
-    <header className="flex items-center gap-3 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-2">
+    <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-2">
       <Link
         href={routes.proDevis as Route}
         aria-label="Fermer l’éditeur"
@@ -22,12 +24,10 @@ export function BarreEditeur({
         <XIcon size={20} aria-hidden="true" />
       </Link>
       <h1 className="m-0 min-w-0 flex-1 truncate text-lg">{titre}</h1>
-      {onOptions ? (
-        <Button variant="secondaire" onClick={onOptions}>
-          <SlidersHorizontalIcon size={18} aria-hidden="true" />
-          Options
-        </Button>
-      ) : null}
+      <Button variant="secondaire" onClick={onOptions} aria-expanded={optionsOuvertes}>
+        <SlidersHorizontalIcon size={18} aria-hidden="true" />
+        Options
+      </Button>
     </header>
   );
 }
