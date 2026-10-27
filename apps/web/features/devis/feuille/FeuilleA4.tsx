@@ -2,7 +2,7 @@
 
 import type { TauxTva, Totaux } from '@ph/core/devis';
 import { formatEuros } from '@ph/core/format';
-import type { PrestationBiblio } from '@ph/firebase/devis';
+import type { ClientCarnet, PrestationBiblio } from '@ph/firebase/devis';
 import { cn } from '@ph/ui';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import type { EtatDevis } from '../etat';
@@ -30,6 +30,7 @@ export function FeuilleA4({
   onRegimeTva,
   tvaDefaut,
   bibliotheque,
+  clients,
   aujourdHui,
   onMessage,
   typeDocument = 'devis',
@@ -45,6 +46,7 @@ export function FeuilleA4({
   onRegimeTva: (franchise: boolean) => void;
   tvaDefaut: TauxTva;
   bibliotheque: PrestationBiblio[];
+  clients: ClientCarnet[];
   aujourdHui: number;
   onMessage: (m: { ton: 'succes' | 'danger'; texte: string }) => void;
 }) {
@@ -74,6 +76,7 @@ export function FeuilleA4({
     >
       <EnTeteFeuille
         entreprise={entreprise}
+        clients={clients}
         e={e}
         maj={maj}
         blocs={{

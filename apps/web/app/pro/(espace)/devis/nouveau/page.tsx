@@ -1,4 +1,4 @@
-import { lireBibliotheque, lireDevisDepuisDemande } from '@ph/firebase/devis';
+import { lireBibliotheque, lireClients, lireDevisDepuisDemande } from '@ph/firebase/devis';
 import { Banner } from '@ph/ui';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -24,9 +24,10 @@ export default async function PageNouveauDevis({
   if (!acces.gerer) redirect(routes.proDevis);
   const q = await searchParams;
   const demandeId = q.demande;
-  const [{ p }, biblio, demande] = await Promise.all([
+  const [{ p }, biblio, clients, demande] = await Promise.all([
     parametresEditeur(acces.artisanId),
     lireBibliotheque(dbDevis(), acces.artisanId),
+    lireClients(dbDevis(), acces.artisanId),
     demandeId && /^[A-Za-z0-9_-]{1,128}$/.test(demandeId)
       ? lireDevisDepuisDemande(
           dbDevis(),
@@ -62,6 +63,7 @@ export default async function PageNouveauDevis({
         parametres={p}
         tvaDefaut={p.tvaDefaut}
         bibliotheque={biblio.prestations}
+        clients={clients}
       />
     </main>
   );

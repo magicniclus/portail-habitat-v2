@@ -65,6 +65,10 @@ export interface EtatDevis {
   conditionsAcceptation?: string;
   champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
+  /** Fiche de la base clients choisie (le document garde sa copie du client). */
+  clientId?: string;
+  /** « Enregistrer ce client dans ma base » coché (nouveau client). */
+  enregistrerClient?: boolean;
   /** Facture sans devis : date de la prestation (AAAA-MM-JJ). */
   datePrestationLe?: string;
 }
@@ -131,6 +135,7 @@ export const versRapide = (lignes: readonly LigneSaisie[]): LigneSaisie[] =>
   });
 
 const optionsDe = (d: DevisComplet): Partial<EtatDevis> => ({
+  ...(d.clientId ? { clientId: d.clientId } : {}),
   ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
   ...(d.livraison
     ? { livraison: d.livraison }
@@ -279,6 +284,7 @@ export function versEntree(e: EtatDevis) {
     tampon: e.tampon,
     ...(e.demandeId ? { demandeId: e.demandeId } : {}),
     ...(e.modeleId ? { modeleId: e.modeleId } : {}),
+    ...(e.clientId ? { clientId: e.clientId } : {}),
     ...(e.modeSaisie ? { modeSaisie: e.modeSaisie } : {}),
     ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
@@ -307,6 +313,7 @@ export function versEntreeFacture(e: EtatDevis, cleIdempotence: string) {
     remisePct: d.remisePct,
     datePrestationLe: e.datePrestationLe ?? '',
     ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
+    ...(e.clientId ? { clientId: e.clientId } : {}),
     ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
     ...(d.champLibre ? { champLibre: d.champLibre } : {}),

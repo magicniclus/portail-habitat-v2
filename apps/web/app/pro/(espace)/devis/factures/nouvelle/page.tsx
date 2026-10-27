@@ -1,4 +1,4 @@
-import { lireBibliotheque } from '@ph/firebase/devis';
+import { lireBibliotheque, lireClients } from '@ph/firebase/devis';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { EditeurFacture } from '@/features/devis/EditeurFacture';
@@ -13,9 +13,10 @@ export const metadata: Metadata = { title: 'Nouvelle facture', robots: { index: 
 export default async function PageNouvelleFacture() {
   const acces = await accesDevis(routes.proFactureNouvelle);
   if (!acces.facturer) redirect(routes.proDevis);
-  const [{ p }, biblio] = await Promise.all([
+  const [{ p }, biblio, clients] = await Promise.all([
     parametresEditeur(acces.artisanId),
     lireBibliotheque(dbDevis(), acces.artisanId),
+    lireClients(dbDevis(), acces.artisanId),
   ]);
   const aujourdHui = maintenant();
   return (
@@ -33,6 +34,7 @@ export default async function PageNouvelleFacture() {
         parametres={p}
         tvaDefaut={p.tvaDefaut}
         bibliotheque={biblio.prestations}
+        clients={clients}
         entreprise={await entrepriseFeuille(acces.artisanId, p)}
         aujourdHui={aujourdHui}
       />

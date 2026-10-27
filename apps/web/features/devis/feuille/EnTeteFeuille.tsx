@@ -1,10 +1,12 @@
 import type { AdresseLivraison } from '@ph/core/devis';
+import type { ClientCarnet } from '@ph/firebase/devis';
 import { ArrowLineUpIcon } from '@phosphor-icons/react/ssr';
 import Link from 'next/link';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import { routes } from '@/lib/routes';
 import type { ClientSaisi, EtatDevis } from '../etat';
 import { BlocCases, Case, DeuxCases } from './CasesFeuille';
+import { ChoixClient } from './ChoixClient';
 
 /** Blocs facultatifs de l'en-tête, cochés dans Options › Client. */
 export interface BlocsClient {
@@ -20,11 +22,13 @@ export interface BlocsClient {
  */
 export function EnTeteFeuille({
   entreprise: ent,
+  clients,
   e,
   maj,
   blocs,
 }: {
   entreprise: EntrepriseFeuille;
+  clients: ClientCarnet[];
   e: EtatDevis;
   maj: (patch: Partial<EtatDevis>) => void;
   blocs: BlocsClient;
@@ -105,7 +109,8 @@ export function EnTeteFeuille({
           </div>
         ) : null}
       </div>
-      <div className="grid content-start gap-3 sm:pt-16">
+      <div className="grid content-start gap-3 sm:pt-4">
+        <ChoixClient clients={clients} e={e} maj={maj} />
         <BlocCases>
           {client('nom', 'Nom du client', { principal: true })}
           {client('adresse', 'Adresse du client', { placeholder: 'Adresse postale' })}

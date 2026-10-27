@@ -155,6 +155,28 @@ test.describe('Devis & factures', () => {
     await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();
   });
 
+  test('Base clients : fiche ajoutée dans l’onglet Clients, choisie dans un devis', async ({
+    page,
+  }) => {
+    const nom = `Client e2e ${Date.now()}`;
+    await connecter(page, COMPTES.proprio, '/pro/devis?onglet=clients');
+    await page.getByRole('button', { name: 'Ajouter un client' }).click();
+    const form = page.getByRole('form', { name: 'Nouveau client' });
+    await form.getByLabel('Nom ou raison sociale').fill(nom);
+    await form.getByLabel('Adresse postale').fill('8 allée des Pins');
+    await form.getByLabel('Ville').fill('Talence');
+    await form.getByRole('button', { name: 'Ajouter le client' }).click();
+    await expect(page.getByRole('list', { name: 'Base clients' })).toContainText(nom);
+
+    await page.goto('/pro/devis/nouveau');
+    await page.getByRole('button', { name: 'Choisir dans ma base' }).click();
+    await page.getByLabel('Rechercher dans ma base').fill(nom);
+    await page.getByRole('button', { name: new RegExp(nom) }).click();
+    await expect(page.getByLabel('Nom du client')).toHaveValue(nom);
+    await expect(page.getByLabel('Adresse du client')).toHaveValue('8 allée des Pins');
+    await expect(page.getByText('Client de votre base')).toBeVisible();
+  });
+
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/devis/nouveau');

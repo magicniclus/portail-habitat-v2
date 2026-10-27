@@ -1,9 +1,15 @@
 import { devisAExpirer } from '@ph/core/devis';
-import { lireBibliotheque, lireDevisListe, lireFacturesListe } from '@ph/firebase/devis';
+import {
+  lireBibliotheque,
+  lireClients,
+  lireDevisListe,
+  lireFacturesListe,
+} from '@ph/firebase/devis';
 import { Banner, bouton, cn } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BibliothequePrestations } from '@/features/devis/BibliothequePrestations';
+import { BaseClients } from '@/features/devis/clients/BaseClients';
 import { ExpirerDevis } from '@/features/devis/ExpirerDevis';
 import { ListeDevis, ListeFactures } from '@/features/devis/Listes';
 import { ModelesDevis } from '@/features/devis/ModelesDevis';
@@ -21,11 +27,13 @@ export default async function PageDevis({
 }) {
   const acces = await accesDevis(routes.proDevis);
   const demande = (await searchParams).onglet;
-  const onglet = demande === 'factures' || demande === 'modeles' ? demande : 'devis';
-  const [devis, factures, biblio, { saisis, p }] = await Promise.all([
+  const onglet =
+    demande === 'factures' || demande === 'modeles' || demande === 'clients' ? demande : 'devis';
+  const [devis, factures, biblio, clients, { saisis, p }] = await Promise.all([
     onglet === 'devis' ? lireDevisListe(dbDevis(), acces.artisanId) : [],
     onglet === 'factures' ? lireFacturesListe(dbDevis(), acces.artisanId) : [],
     onglet === 'modeles' ? lireBibliotheque(dbDevis(), acces.artisanId) : null,
+    onglet === 'clients' ? lireClients(dbDevis(), acces.artisanId) : [],
     parametresEditeur(acces.artisanId),
   ]);
   const instant = maintenant();
@@ -76,7 +84,7 @@ export default async function PageDevis({
           est bloqué.
         </Banner>
       ) : null}
-      <nav aria-label="Devis, factures et modèles" className="flex flex-wrap gap-2">
+      <nav aria-label="Devis, factures, modèles et clients" className="flex flex-wrap gap-2">
         <Link
           href={routes.proDevis}
           className={ongletCls(onglet === 'devis')}
@@ -97,6 +105,13 @@ export default async function PageDevis({
           aria-current={onglet === 'modeles' ? 'page' : undefined}
         >
           Modèles
+        </Link>
+        <Link
+          href={`${routes.proDevis}?onglet=clients` as typeof routes.proDevis}
+          className={ongletCls(onglet === 'clients')}
+          aria-current={onglet === 'clients' ? 'page' : undefined}
+        >
+          Clients
         </Link>
       </nav>
       {onglet === 'devis' && acces.gerer && horsValidite.length ? (
@@ -127,6 +142,7 @@ export default async function PageDevis({
           }
         />
       ) : null}
+      {onglet === 'clients' ? <BaseClients clients={clients} peutGerer={acces.gerer} /> : null}
       {biblio ? (
         <div className="grid gap-8">
           <ModelesDevis modeles={biblio.modeles} peutGerer={acces.gerer} />

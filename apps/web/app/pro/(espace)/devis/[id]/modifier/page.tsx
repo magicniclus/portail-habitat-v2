@@ -1,4 +1,4 @@
-import { lireBibliotheque, lireDevisComplet } from '@ph/firebase/devis';
+import { lireBibliotheque, lireClients, lireDevisComplet } from '@ph/firebase/devis';
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { EditeurDevis } from '@/features/devis/EditeurDevis';
@@ -13,10 +13,11 @@ export const metadata: Metadata = { title: 'Modifier le devis', robots: { index:
 export default async function PageModifierDevis({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const acces = await accesDevis(routes.proModifierDevis(id));
-  const [d, { p }, biblio] = await Promise.all([
+  const [d, { p }, biblio, clients] = await Promise.all([
     lireDevisComplet(dbDevis(), acces.artisanId, id),
     parametresEditeur(acces.artisanId),
     lireBibliotheque(dbDevis(), acces.artisanId),
+    lireClients(dbDevis(), acces.artisanId),
   ]);
   if (!d) notFound();
   if (d.statut !== 'brouillon' || !acces.gerer) redirect(routes.proUnDevis(id));
@@ -35,6 +36,7 @@ export default async function PageModifierDevis({ params }: { params: Promise<{ 
         parametres={p}
         tvaDefaut={p.tvaDefaut}
         bibliotheque={biblio.prestations}
+        clients={clients}
       />
     </main>
   );

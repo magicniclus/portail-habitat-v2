@@ -6,7 +6,7 @@ import {
   type ParametresFacturation,
   type TauxTva,
 } from '@ph/core/devis';
-import type { PrestationBiblio } from '@ph/firebase/devis';
+import type { ClientCarnet, PrestationBiblio } from '@ph/firebase/devis';
 import { Button } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
@@ -14,6 +14,7 @@ import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import { lignesCentimes, versEntree, type EtatDevis } from './etat';
+import { enregistrerClientSiDemande } from './clients/enregistrerClient';
 import { useBlocs } from './feuille/blocs';
 import { useRegimeTva } from './feuille/useRegimeTva';
 import { CadreEditeur } from './feuille/CadreEditeur';
@@ -34,6 +35,7 @@ export function EditeurDevis({
   parametres,
   tvaDefaut,
   bibliotheque,
+  clients,
   entreprise,
   aujourdHui,
   bandeau,
@@ -42,6 +44,7 @@ export function EditeurDevis({
   parametres: ParametresFacturation;
   tvaDefaut: TauxTva;
   bibliotheque: PrestationBiblio[];
+  clients: ClientCarnet[];
   entreprise: EntrepriseFeuille;
   aujourdHui: number;
   /** Bandeau au-dessus de la feuille (« En réponse à la demande… »). */
@@ -71,9 +74,16 @@ export function EditeurDevis({
   );
 
   const enregistrer = async (): Promise<string | null> => {
+    const fiche = await enregistrerClientSiDemande(e);
+    if ('erreur' in fiche) {
+      setMessage({ ton: 'danger', texte: fiche.erreur });
+      return null;
+    }
+    if (fiche.clientId && fiche.clientId !== e.clientId)
+      maj({ clientId: fiche.clientId, enregistrerClient: false });
     const r = await posterJson<{ devisId: string; numero: string }>(
       '/api/pro/devis',
-      versEntree(e),
+      versEntree({ ...e, ...fiche }),
     );
     if (!r.ok) {
       setMessage({ ton: 'danger', texte: r.message });
@@ -133,6 +143,7 @@ export function EditeurDevis({
           onRegimeTva={(x) => void regime.changer(x)}
           tvaDefaut={tvaDefaut}
           bibliotheque={bibliotheque}
+          clients={clients}
           aujourdHui={aujourdHui}
           onMessage={setMessage}
         />

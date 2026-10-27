@@ -7,7 +7,7 @@ import {
   type ParametresFacturation,
   type TauxTva,
 } from '@ph/core/devis';
-import type { PrestationBiblio } from '@ph/firebase/devis';
+import type { ClientCarnet, PrestationBiblio } from '@ph/firebase/devis';
 import { Button, ConfirmDialog } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
 import { lignesCentimes, versEntreeFacture, type EtatDevis } from './etat';
+import { enregistrerClientSiDemande } from './clients/enregistrerClient';
 import { useBlocs } from './feuille/blocs';
 import { useRegimeTva } from './feuille/useRegimeTva';
 import { CadreEditeur } from './feuille/CadreEditeur';
@@ -32,6 +33,7 @@ export function EditeurFacture({
   parametres,
   tvaDefaut,
   bibliotheque,
+  clients,
   entreprise,
   aujourdHui,
 }: {
@@ -39,6 +41,7 @@ export function EditeurFacture({
   parametres: ParametresFacturation;
   tvaDefaut: TauxTva;
   bibliotheque: PrestationBiblio[];
+  clients: ClientCarnet[];
   entreprise: EntrepriseFeuille;
   aujourdHui: number;
 }) {
@@ -75,9 +78,14 @@ export function EditeurFacture({
   const emettre = async () => {
     setEnCours(true);
     setMessage(null);
+    const fiche = await enregistrerClientSiDemande(e);
+    if ('erreur' in fiche) {
+      setEnCours(false);
+      return setMessage({ ton: 'danger', texte: fiche.erreur });
+    }
     const r = await posterJson<{ factureId: string }>(
       '/api/pro/factures',
-      versEntreeFacture(e, cle),
+      versEntreeFacture({ ...e, ...fiche }, cle),
     );
     setEnCours(false);
     if (!r.ok) return setMessage({ ton: 'danger', texte: r.message });
@@ -102,6 +110,7 @@ export function EditeurFacture({
           onRegimeTva={(x) => void regime.changer(x)}
           tvaDefaut={tvaDefaut}
           bibliotheque={bibliotheque}
+          clients={clients}
           aujourdHui={aujourdHui}
           onMessage={setMessage}
         />
