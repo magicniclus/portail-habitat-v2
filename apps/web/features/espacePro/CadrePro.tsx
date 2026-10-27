@@ -29,7 +29,7 @@ export interface CadreProProps {
 
 /** Cadre de l'espace pro : barre latérale (ordinateur), en-tête, onglets du bas (mobile). */
 /** Éditeurs de devis et de factures : pleine page, sans menu ni barre du haut (maquette). */
-const PLEINE_PAGE = /^\/pro\/devis\/(nouveau|factures\/nouvelle|[^/]+\/modifier)\/?$/;
+const PLEINE_PAGE = /^\/pro\/devis\/(nouveau|factures\/nouvelle|(factures\/)?[^/]+\/modifier)\/?$/;
 
 export function CadrePro(p: CadreProProps) {
   const [ouvert, setOuvert] = useState(true);

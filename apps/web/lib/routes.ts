@@ -57,6 +57,7 @@ export const routes = {
   proModifierDevis: (id: string) => r(`/pro/devis/${encodeURIComponent(id)}/modifier`),
   proFactureNouvelle: r('/pro/devis/factures/nouvelle'),
   proFactureClient: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}`),
+  proModifierFacture: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}/modifier`),
   proStatistiques: r('/pro/statistiques'),
   proEquipe: r('/pro/equipe'),
   proResiliation: r('/pro/abonnement/resilier'),

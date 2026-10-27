@@ -13,6 +13,8 @@ export {
   type DevisResume,
   type FactureComplete,
   type FactureResume,
+  lireBrouillonFacture,
+  type BrouillonFacture,
 } from './lecture';
 export {
   changerRegimeTva,

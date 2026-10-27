@@ -133,6 +133,8 @@ export default async function PageDevis({
       {onglet === 'factures' ? (
         <ListeFactures
           factures={factures}
+          peutGerer={acces.facturer}
+          aujourdHui={new Date(instant).toISOString().slice(0, 10)}
           creer={
             acces.facturer ? (
               <Link href={routes.proFactureNouvelle} className={bouton()}>

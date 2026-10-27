@@ -38,6 +38,11 @@ export interface FactureResume {
   ttcCentimes: number;
   resteCentimes: number;
   annulee: boolean;
+  aPdf: boolean;
+  /** Avoir : la facture qu'il annule ; facture annulée : son avoir. */
+  factureOrigineId?: string;
+  avoirId?: string;
+  envoyeeLe?: number;
 }
 
 /** Liste « Devis » de l'espace pro : les 300 plus récents. */
@@ -86,6 +91,10 @@ export async function lireFacturesListe(
     ttcCentimes: (d.get('totaux.ttcCentimes') as number | undefined) ?? 0,
     resteCentimes: (d.get('resteCentimes') as number | undefined) ?? 0,
     annulee: Boolean(d.get('avoirId')),
+    aPdf: Boolean(d.get('pdfPath')),
+    factureOrigineId: d.get('factureOrigineId') as string | undefined,
+    avoirId: d.get('avoirId') as string | undefined,
+    envoyeeLe: ms(d.get('envoyeeLe')),
   }));
 }
 
@@ -224,6 +233,8 @@ export async function lireFactureComplete(
     ttcCentimes: x.totaux?.ttcCentimes ?? 0,
     resteCentimes: x.resteCentimes ?? 0,
     annulee: Boolean(x.avoirId),
+    aPdf: Boolean(x.pdfPath),
+    envoyeeLe: ms(x.envoyeeLe),
     objet: x.objet ?? '',
     lignes: x.lignes ?? [],
     totaux: x.totaux,
@@ -292,5 +303,47 @@ export async function lireDevisDepuisDemande(
     },
     objet: nomPrestation(d.get('prestationId') as string),
     precisions: (d.get('precisions') as string | undefined) ?? '',
+  };
+}
+
+/** Brouillon de facture rouvert dans l'éditeur A4 (null s'il est émis ou introuvable). */
+export interface BrouillonFacture {
+  id: string;
+  client: DevisComplet['client'];
+  typeClient: 'particulier' | 'pro';
+  sirenClient?: string;
+  objet: string;
+  lignes: LigneDevis[];
+  remisePct: number;
+  datePrestationLe?: number;
+  modeSaisie?: 'rapide' | 'complet';
+  tvaIntraClient?: string;
+  champLibre?: { titre: string; texte: string };
+  clientId?: string;
+  livraison?: AdresseLivraison;
+}
+
+export async function lireBrouillonFacture(
+  db: Firestore,
+  artisanId: string,
+  factureId: string,
+): Promise<BrouillonFacture | null> {
+  const d = await db.doc(chemins.factureClient(artisanId, factureId)).get();
+  if (!d.exists || d.get('statut') !== 'brouillon') return null;
+  const x = d.data() as DocumentData;
+  return {
+    id: d.id,
+    client: x.client,
+    typeClient: x.typeClient ?? 'particulier',
+    sirenClient: x.sirenClient,
+    objet: x.objet ?? '',
+    lignes: x.lignes ?? [],
+    remisePct: x.remisePct ?? 0,
+    datePrestationLe: ms(x.datePrestationLe),
+    modeSaisie: x.modeSaisie,
+    tvaIntraClient: x.tvaIntraClient,
+    champLibre: x.champLibre,
+    clientId: x.clientId,
+    livraison: x.livraison,
   };
 }

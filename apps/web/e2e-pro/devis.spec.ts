@@ -196,6 +196,38 @@ test.describe('Devis & factures', () => {
     await expect(page.getByText(numero, { exact: true })).toHaveCount(0);
   });
 
+  test('Facture : brouillon enregistré puis émis ; annulée depuis la liste par un avoir', async ({
+    page,
+  }) => {
+    await parametres(PARAMS);
+    await connecter(page, COMPTES.proprio, '/pro/devis/factures/nouvelle');
+    await page.getByLabel('Nom du client').fill('Claire Martin');
+    await page.getByLabel('Adresse du client').fill('3 rue des Lilas, 33700 Mérignac');
+    await page.getByLabel('Objet de la facture').fill('Brouillon e2e');
+    const ligne = page.getByRole('group', { name: 'Ligne 1' });
+    await ligne.getByLabel('Désignation').fill('Réglage chaudière');
+    await ligne.getByLabel('PU HT (€)').fill('90');
+    await page.getByRole('button', { name: 'Enregistrer le brouillon' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+\/modifier$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Brouillon de facture' }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Émettre la facture' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
+    const titre = (await page.getByRole('heading', { level: 1 }).textContent()) ?? '';
+    const numero = /F-\d{4}-\d{4}/.exec(titre)![0];
+
+    await page.goto('/pro/devis?onglet=factures');
+    await page.getByRole('button', { name: `Actions de la facture ${numero}` }).click();
+    await expect(page.getByText('Suppression impossible')).toBeVisible();
+    await page.getByRole('button', { name: 'Annuler la facture' }).click();
+    const dialogue = page.getByRole('dialog');
+    await dialogue.getByLabel(/^Motif/).fill('Erreur de client');
+    await dialogue.getByRole('button', { name: 'Créer l’avoir' }).click();
+    await expect(page.getByText(`avoir annulant la facture ${numero}`)).toBeVisible();
+  });
+
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/devis/nouveau');

@@ -14,7 +14,12 @@ import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import type { EntrepriseFeuille } from '@/server/pageDevis';
-import { lignesCentimes, versEntreeFacture, type EtatDevis } from './etat';
+import {
+  lignesCentimes,
+  versEntreeBrouillonFacture,
+  versEntreeFacture,
+  type EtatDevis,
+} from './etat';
 import { enregistrerClientSiDemande } from './clients/enregistrerClient';
 import { useBlocs } from './feuille/blocs';
 import { useRegimeTva } from './feuille/useRegimeTva';
@@ -92,11 +97,30 @@ export function EditeurFacture({
     router.push(routes.proFactureClient(r.data.factureId));
   };
 
+  const brouillon = async () => {
+    setEnCours(true);
+    setMessage(null);
+    const fiche = await enregistrerClientSiDemande(e);
+    if ('erreur' in fiche) {
+      setEnCours(false);
+      return setMessage({ ton: 'danger', texte: fiche.erreur });
+    }
+    const r = await posterJson<{ factureId: string }>(
+      '/api/pro/factures/brouillon',
+      versEntreeBrouillonFacture({ ...e, ...fiche }),
+    );
+    setEnCours(false);
+    if (!r.ok) return setMessage({ ton: 'danger', texte: r.message });
+    maj({ factureId: r.data.factureId, ...fiche, enregistrerClient: false });
+    setMessage({ ton: 'succes', texte: 'Brouillon enregistré.' });
+    if (!e.factureId) router.replace(routes.proModifierFacture(r.data.factureId));
+  };
+
   const manquantes = mentions.liste.filter((m) => !m.ok).map((m) => m.libelle);
 
   return (
     <CadreEditeur
-      titre="Nouvelle facture"
+      titre={e.factureId ? 'Brouillon de facture' : 'Nouvelle facture'}
       message={message}
       feuille={
         <FeuilleA4
@@ -131,8 +155,13 @@ export function EditeurFacture({
           <span
             className={`max-w-[60ch] px-2 text-sm font-semibold ${mentions.ok ? 'text-succes' : 'text-danger'}`}
           >
-            {mentions.ok ? 'Mentions complètes' : `Il manque : ${manquantes.join(', ')}`}
+            {mentions.ok
+              ? 'Mentions complètes'
+              : `${manquantes.length} mention${manquantes.length > 1 ? 's' : ''} à compléter`}
           </span>
+          <Button variant="secondaire" onClick={brouillon} disabled={enCours}>
+            Enregistrer le brouillon
+          </Button>
           <ConfirmDialog
             titre="Émettre la facture ?"
             libelleConfirmer="Émettre la facture"

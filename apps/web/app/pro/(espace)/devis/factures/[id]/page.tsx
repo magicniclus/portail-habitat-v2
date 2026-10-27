@@ -10,7 +10,7 @@ import { formatDate, formatEuros } from '@ph/core/format';
 import { lireFactureComplete } from '@ph/firebase/devis';
 import { Badge } from '@ph/ui';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ActionsFacture } from '@/features/devis/ActionsFacture';
 import { routes } from '@/lib/routes';
 import { accesDevis, dbDevis } from '@/server/pageDevis';
@@ -26,6 +26,7 @@ export default async function PageFacture({ params }: { params: Promise<{ id: st
   const acces = await accesDevis(routes.proFactureClient(id));
   const f = await lireFactureComplete(dbDevis(), acces.artisanId, id);
   if (!f) notFound();
+  if (f.statut === 'brouillon') redirect(routes.proModifierFacture(id));
   const relancable =
     acces.facturer &&
     f.aEmailClient &&

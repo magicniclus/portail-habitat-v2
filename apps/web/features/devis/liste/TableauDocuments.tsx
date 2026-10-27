@@ -2,10 +2,12 @@
 
 import { formatDate, formatEuros } from '@ph/core/format';
 import { cn, EmptyState, Input, ToastProvider } from '@ph/ui';
-import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
+import { BasculeHtTtc } from './BasculeHtTtc';
+import { Pagination } from './Pagination';
 
 const PAR_PAGE = 25;
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
@@ -35,13 +37,8 @@ export interface LigneTableau {
   menu?: ReactNode;
 }
 
-const bascule = (actif: boolean) =>
-  cn(
-    'min-h-11 min-w-14 rounded-pill px-3 text-sm font-semibold',
-    actif ? 'bg-neutre-900 text-blanc' : 'text-neutre-800 hover:bg-neutre-100',
-  );
 const iconeLien =
-  'grid size-11 place-items-center rounded-full text-neutre-800 hover:bg-accent-100 hover:text-accent-800 focus-visible:outline-2 focus-visible:outline-accent';
+  'grid size-11 place-items-center rounded-full text-neutre-800 hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent';
 
 /**
  * Liste des devis ou des factures (capture du propriétaire) : recherche, montants HT ou TTC,
@@ -92,28 +89,7 @@ export function TableauDocuments({
               className="pl-10"
             />
           </label>
-          <div
-            role="group"
-            aria-label="Montants"
-            className="flex rounded-pill border border-trait bg-blanc p-0.5"
-          >
-            <button
-              type="button"
-              aria-pressed={!ttc}
-              onClick={() => setTtc(false)}
-              className={bascule(!ttc)}
-            >
-              HT
-            </button>
-            <button
-              type="button"
-              aria-pressed={ttc}
-              onClick={() => setTtc(true)}
-              className={bascule(ttc)}
-            >
-              TTC
-            </button>
-          </div>
+          <BasculeHtTtc ttc={ttc} onTtc={setTtc} />
           {creer}
         </div>
         {!lignes.length ? (
@@ -196,35 +172,7 @@ export function TableauDocuments({
             </table>
           </div>
         )}
-        {trouvees.length > PAR_PAGE ? (
-          <nav
-            aria-label="Pages"
-            className="flex items-center justify-end gap-2 text-sm text-neutre-800"
-          >
-            <span>
-              {p * PAR_PAGE + 1} à {Math.min((p + 1) * PAR_PAGE, trouvees.length)} sur{' '}
-              {trouvees.length}
-            </span>
-            <button
-              type="button"
-              aria-label="Page précédente"
-              disabled={p === 0}
-              onClick={() => setPage(p - 1)}
-              className={cn(iconeLien, 'disabled:opacity-40')}
-            >
-              <CaretLeftIcon size={18} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              aria-label="Page suivante"
-              disabled={p >= pages - 1}
-              onClick={() => setPage(p + 1)}
-              className={cn(iconeLien, 'disabled:opacity-40')}
-            >
-              <CaretRightIcon size={18} aria-hidden="true" />
-            </button>
-          </nav>
-        ) : null}
+        <Pagination page={p} parPage={PAR_PAGE} total={trouvees.length} onPage={setPage} />
       </section>
     </ToastProvider>
   );

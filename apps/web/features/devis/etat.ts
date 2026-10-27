@@ -7,7 +7,12 @@ import {
   type TauxTva,
 } from '@ph/core/devis';
 import { parseEuros } from '@ph/core/format';
-import type { DevisComplet, DevisDepuisDemande, ModeleDevisResume } from '@ph/firebase/devis';
+import type {
+  BrouillonFacture,
+  DevisComplet,
+  DevisDepuisDemande,
+  ModeleDevisResume,
+} from '@ph/firebase/devis';
 
 /** Ligne telle que saisie : montants en texte (« 78,50 »), convertis en centimes à l'envoi. */
 export interface LigneSaisie {
@@ -69,6 +74,8 @@ export interface EtatDevis {
   clientId?: string;
   /** « Enregistrer ce client dans ma base » coché (nouveau client). */
   enregistrerClient?: boolean;
+  /** Brouillon de facture rouvert (émis ensuite avec son numéro). */
+  factureId?: string;
   /** Facture sans devis : date de la prestation (AAAA-MM-JJ). */
   datePrestationLe?: string;
 }
@@ -303,20 +310,54 @@ export function versEntree(e: EtatDevis) {
  * intitulé, conditions d'acceptation, signature).
  */
 export function versEntreeFacture(e: EtatDevis, cleIdempotence: string) {
+  return {
+    ...versEntreeBrouillonFacture(e),
+    datePrestationLe: e.datePrestationLe ?? '',
+    cleIdempotence,
+  };
+}
+
+/** Entrée de `POST /api/pro/factures/brouillon` (sans numéro, date de prestation facultative). */
+export function versEntreeBrouillonFacture(e: EtatDevis) {
   const d = versEntree(e);
   return {
+    ...(e.factureId ? { factureId: e.factureId } : {}),
     client: d.client,
     typeClient: d.typeClient,
     ...(e.typeClient === 'pro' ? siRempli('sirenClient', e.sirenClient) : {}),
     objet: d.objet,
     lignes: d.lignes,
     remisePct: d.remisePct,
-    datePrestationLe: e.datePrestationLe ?? '',
+    ...(e.datePrestationLe ? { datePrestationLe: e.datePrestationLe } : {}),
     ...(d.modeSaisie ? { modeSaisie: d.modeSaisie } : {}),
     ...(e.clientId ? { clientId: e.clientId } : {}),
     ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
     ...(d.champLibre ? { champLibre: d.champLibre } : {}),
-    cleIdempotence,
+  };
+}
+
+/** Brouillon de facture → saisie de l'éditeur. */
+export function etatBrouillonFacture(
+  b: BrouillonFacture,
+  o: { tvaDefaut: TauxTva; aujourdHui: number },
+): EtatDevis {
+  return {
+    ...etatInitial({ acompteDefautPct: 0, validiteJours: 0, ...o }),
+    factureId: b.id,
+    client: { ...b.client, email: b.client.email ?? '', tel: b.client.tel ?? '' },
+    typeClient: b.typeClient,
+    sirenClient: b.sirenClient ?? '',
+    objet: b.objet,
+    lignes: b.lignes.length ? b.lignes.map(ligneSaisie) : [ligneVide(o.tvaDefaut)],
+    remisePct: String(b.remisePct),
+    datePrestationLe: b.datePrestationLe
+      ? new Date(b.datePrestationLe).toISOString().slice(0, 10)
+      : '',
+    ...(b.modeSaisie ? { modeSaisie: b.modeSaisie } : {}),
+    ...(b.tvaIntraClient ? { tvaIntraClient: b.tvaIntraClient } : {}),
+    ...(b.champLibre ? { champLibre: b.champLibre } : {}),
+    ...(b.clientId ? { clientId: b.clientId } : {}),
+    ...(b.livraison ? { livraison: b.livraison } : {}),
   };
 }
