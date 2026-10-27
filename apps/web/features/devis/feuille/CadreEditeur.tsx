@@ -2,9 +2,12 @@
 
 import { Banner, Feuille } from '@ph/ui';
 import { XIcon } from '@phosphor-icons/react';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { BarreEditeur } from './BarreEditeur';
+import { QuitterEditeur } from './QuitterEditeur';
 
 /**
  * Cadre pleine page des éditeurs (captures du propriétaire) : barre du haut (fermer, titre,
@@ -18,6 +21,10 @@ export function CadreEditeur({
   feuille,
   options,
   actions,
+  modifie,
+  document,
+  retour,
+  onBrouillon,
 }: {
   titre: string;
   message: { ton: 'succes' | 'danger'; texte: string } | null;
@@ -26,7 +33,17 @@ export function CadreEditeur({
   feuille: ReactNode;
   options: ReactNode;
   actions: ReactNode;
+  /** Saisie non enregistrée : fermer propose « Enregistrer le brouillon » ou « Quitter ». */
+  modifie: boolean;
+  /** « le devis », « la facture ». */
+  document: string;
+  /** Liste où revenir en fermant. */
+  retour: string;
+  onBrouillon: () => Promise<boolean>;
 }) {
+  const router = useRouter();
+  const [quitter, setQuitter] = useState(false);
+  const partir = () => router.push(retour as Route);
   const large = useMediaQuery('(min-width: 1100px)');
   const [ouvert, setOuvert] = useState(true);
   const [feuilleBas, setFeuilleBas] = useState(false);
@@ -35,6 +52,7 @@ export function CadreEditeur({
     <div className="min-h-dvh bg-neutre-100 pb-32">
       <BarreEditeur
         titre={titre}
+        onFermer={() => (modifie ? setQuitter(true) : partir())}
         onOptions={() => (large ? setOuvert((o) => !o) : setFeuilleBas(true))}
         optionsOuvertes={panneauVisible}
       />
@@ -82,6 +100,13 @@ export function CadreEditeur({
           {actions}
         </div>
       </div>
+      <QuitterEditeur
+        ouvert={quitter}
+        onOuvert={setQuitter}
+        document={document}
+        onBrouillon={onBrouillon}
+        onQuitter={partir}
+      />
     </div>
   );
 }

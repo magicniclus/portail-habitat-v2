@@ -228,6 +228,24 @@ test.describe('Devis & factures', () => {
     await expect(page.getByText(`avoir annulant la facture ${numero}`)).toBeVisible();
   });
 
+  test('Fermer un devis modifié : « Enregistrer le brouillon » ou « Quitter » ; menu ⋮ visible', async ({
+    page,
+  }) => {
+    const nom = `Fermeture ${Date.now()}`;
+    await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
+    await page.getByRole('button', { name: 'Fermer l’éditeur' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis$/);
+    await page.goto('/pro/devis/nouveau');
+    await page.getByLabel('Nom du client').fill(nom);
+    await page.getByRole('button', { name: 'Fermer l’éditeur' }).click();
+    const dialogue = page.getByRole('dialog', { name: 'Enregistrer avant de quitter ?' });
+    await dialogue.getByRole('button', { name: 'Enregistrer le brouillon' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis$/);
+    const ligne = page.getByRole('row').filter({ hasText: nom });
+    await ligne.getByRole('button', { name: /^Actions du devis/ }).click();
+    await expect(page.getByRole('button', { name: 'Supprimer le devis' })).toBeVisible();
+  });
+
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/devis/nouveau');

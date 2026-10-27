@@ -6,7 +6,6 @@ import {
   ArchiveIcon,
   CheckCircleIcon,
   ClockIcon,
-  EyeIcon,
   FileTextIcon,
   PaperPlaneTiltIcon,
   PencilSimpleIcon,
@@ -67,15 +66,9 @@ export function ListeDevis({
               peutGerer={peutGerer}
             />
           ),
-          action: `${brouillon ? 'Modifier' : 'Ouvrir'} le devis ${d.numero || 'brouillon'}`,
           menu: peutGerer ? (
             <ActionsLigneDevis devisId={d.id} numero={d.numero} statut={d.statut} aPdf={d.aPdf} />
           ) : null,
-          iconeAction: brouillon ? (
-            <PencilSimpleIcon size={20} aria-hidden="true" />
-          ) : (
-            <EyeIcon size={20} aria-hidden="true" />
-          ),
         };
       })}
     />
@@ -143,12 +136,6 @@ export function ListeFactures({
               peutGerer={peutGerer}
               aujourdHui={aujourdHui}
             />
-          ),
-          action: `${brouillon ? 'Modifier' : 'Ouvrir'} la facture ${f.numero || 'brouillon'}`,
-          iconeAction: brouillon ? (
-            <PencilSimpleIcon size={20} aria-hidden="true" />
-          ) : (
-            <EyeIcon size={20} aria-hidden="true" />
           ),
           menu: peutGerer ? <ActionsLigneFacture f={f} /> : null,
         };

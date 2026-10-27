@@ -54,7 +54,11 @@ export function EditeurDevis({
   const [e, setE] = useState(initial);
   const [enCours, setEnCours] = useState<null | 'enregistrer' | 'envoyer'>(null);
   const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
-  const maj = (patch: Partial<EtatDevis>) => setE((x) => ({ ...x, ...patch }));
+  const [modifie, setModifie] = useState(false);
+  const maj = (patch: Partial<EtatDevis>) => {
+    setE((x) => ({ ...x, ...patch }));
+    setModifie(true);
+  };
   const regime = useRegimeTva(parametres.franchiseTva, setMessage);
   const p = { ...parametres, franchiseTva: regime.franchiseTva };
   const { blocs, basculer } = useBlocs(e, maj);
@@ -89,7 +93,8 @@ export function EditeurDevis({
       setMessage({ ton: 'danger', texte: r.message });
       return null;
     }
-    if (!e.devisId) maj({ devisId: r.data.devisId, numero: r.data.numero });
+    if (!e.devisId) setE((x) => ({ ...x, devisId: r.data.devisId, numero: r.data.numero }));
+    setModifie(false);
     return r.data.devisId;
   };
   const surEnregistrer = async () => {
@@ -129,6 +134,10 @@ export function EditeurDevis({
 
   return (
     <CadreEditeur
+      modifie={modifie}
+      document="le devis"
+      retour={routes.proDevis}
+      onBrouillon={async () => (await enregistrer()) !== null}
       titre={e.numero ? `Devis ${e.numero}` : 'Nouveau devis'}
       message={message}
       avant={bandeau}

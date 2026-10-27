@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate, formatEuros } from '@ph/core/format';
-import { cn, EmptyState, Input, ToastProvider } from '@ph/ui';
+import { EmptyState, Input, ToastProvider } from '@ph/ui';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -30,15 +30,9 @@ export interface LigneTableau {
   /** Avoir : montant précédé de « − ». */
   negatif?: boolean;
   statut: ReactNode;
-  /** Libellé du lien d'action (« Modifier le devis D-2026-0001 »). */
-  action: string;
-  iconeAction: ReactNode;
   /** Menu « ⋮ » selon le statut. */
   menu?: ReactNode;
 }
-
-const iconeLien =
-  'grid size-11 place-items-center rounded-full text-neutre-800 hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent';
 
 /**
  * Liste des devis ou des factures (capture du propriétaire) : recherche, montants HT ou TTC,
@@ -97,10 +91,10 @@ export function TableauDocuments({
         ) : !trouvees.length ? (
           <EmptyState titre="Aucun résultat">Essayez un autre nom, objet ou numéro.</EmptyState>
         ) : (
-          <div className="overflow-hidden rounded-[14px] border border-trait bg-blanc">
+          <div className="rounded-[14px] border border-trait bg-blanc">
             <table className="w-full border-collapse text-[15px]">
               <thead className="max-[799px]:sr-only">
-                <tr className="border-b border-trait bg-neutre-100 text-left text-sm text-neutre-800">
+                <tr className="border-b border-trait bg-neutre-100 text-left text-sm text-neutre-800 [&>th:first-child]:rounded-tl-[13px] [&>th:last-child]:rounded-tr-[13px]">
                   <th scope="col" className="w-32 px-4 py-3 font-semibold">
                     Date
                   </th>
@@ -154,17 +148,7 @@ export function TableauDocuments({
                     </td>
                     <td className="px-3 py-2 max-[799px]:col-span-2 max-[799px]:p-0">{l.statut}</td>
                     <td className="px-3 py-2 text-right max-[799px]:p-0">
-                      <span className="flex items-center justify-end gap-1">
-                        <Link
-                          href={l.href as Route}
-                          aria-label={l.action}
-                          title={l.action}
-                          className={cn(iconeLien, 'ml-auto')}
-                        >
-                          {l.iconeAction}
-                        </Link>
-                        {l.menu}
-                      </span>
+                      <span className="flex items-center justify-end">{l.menu}</span>
                     </td>
                   </tr>
                 ))}
