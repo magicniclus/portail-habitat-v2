@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate, formatEuros } from '@ph/core/format';
-import { cn, EmptyState, Input } from '@ph/ui';
+import { cn, EmptyState, Input, ToastProvider } from '@ph/ui';
 import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -31,6 +31,8 @@ export interface LigneTableau {
   /** Libellé du lien d'action (« Modifier le devis D-2026-0001 »). */
   action: string;
   iconeAction: ReactNode;
+  /** Menu « ⋮ » selon le statut. */
+  menu?: ReactNode;
 }
 
 const bascule = (actif: boolean) =>
@@ -69,156 +71,161 @@ export function TableauDocuments({
   const visibles = trouvees.slice(p * PAR_PAGE, (p + 1) * PAR_PAGE);
 
   return (
-    <section aria-label={libelle} className="grid gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="relative min-w-0 flex-[1_1_260px]">
-          <span className="sr-only">Rechercher</span>
-          <MagnifyingGlassIcon
-            size={18}
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-neutre-700"
-          />
-          <Input
-            type="search"
-            placeholder="Rechercher un client, un objet, un numéro…"
-            value={recherche}
-            onChange={(x) => {
-              setRecherche(x.target.value);
-              setPage(0);
-            }}
-            className="pl-10"
-          />
-        </label>
-        <div
-          role="group"
-          aria-label="Montants"
-          className="flex rounded-pill border border-trait bg-blanc p-0.5"
-        >
-          <button
-            type="button"
-            aria-pressed={!ttc}
-            onClick={() => setTtc(false)}
-            className={bascule(!ttc)}
+    <ToastProvider>
+      <section aria-label={libelle} className="grid gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="relative min-w-0 flex-[1_1_260px]">
+            <span className="sr-only">Rechercher</span>
+            <MagnifyingGlassIcon
+              size={18}
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-neutre-700"
+            />
+            <Input
+              type="search"
+              placeholder="Rechercher un client, un objet, un numéro…"
+              value={recherche}
+              onChange={(x) => {
+                setRecherche(x.target.value);
+                setPage(0);
+              }}
+              className="pl-10"
+            />
+          </label>
+          <div
+            role="group"
+            aria-label="Montants"
+            className="flex rounded-pill border border-trait bg-blanc p-0.5"
           >
-            HT
-          </button>
-          <button
-            type="button"
-            aria-pressed={ttc}
-            onClick={() => setTtc(true)}
-            className={bascule(ttc)}
-          >
-            TTC
-          </button>
+            <button
+              type="button"
+              aria-pressed={!ttc}
+              onClick={() => setTtc(false)}
+              className={bascule(!ttc)}
+            >
+              HT
+            </button>
+            <button
+              type="button"
+              aria-pressed={ttc}
+              onClick={() => setTtc(true)}
+              className={bascule(ttc)}
+            >
+              TTC
+            </button>
+          </div>
+          {creer}
         </div>
-        {creer}
-      </div>
-      {!lignes.length ? (
-        vide
-      ) : !trouvees.length ? (
-        <EmptyState titre="Aucun résultat">Essayez un autre nom, objet ou numéro.</EmptyState>
-      ) : (
-        <div className="overflow-hidden rounded-[14px] border border-trait bg-blanc">
-          <table className="w-full border-collapse text-[15px]">
-            <thead className="max-[799px]:sr-only">
-              <tr className="border-b border-trait bg-neutre-100 text-left text-sm text-neutre-800">
-                <th scope="col" className="w-32 px-4 py-3 font-semibold">
-                  Date
-                </th>
-                <th scope="col" className="w-10 px-1 py-3">
-                  <span className="sr-only">Type de statut</span>
-                </th>
-                <th scope="col" className="w-40 px-3 py-3 font-semibold">
-                  Numéro
-                </th>
-                <th scope="col" className="px-3 py-3 font-semibold">
-                  Client — objet
-                </th>
-                <th scope="col" className="w-40 px-3 py-3 text-right font-semibold">
-                  Montant {ttc ? 'TTC' : 'HT'}
-                </th>
-                <th scope="col" className="w-48 px-3 py-3 font-semibold">
-                  Statut
-                </th>
-                <th scope="col" className="w-24 px-3 py-3 text-right font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibles.map((l) => (
-                <tr
-                  key={l.id}
-                  className="border-b border-trait last:border-b-0 hover:bg-neutre-100/60 max-[799px]:grid max-[799px]:grid-cols-[auto_minmax(0,1fr)_auto] max-[799px]:items-center max-[799px]:gap-x-3 max-[799px]:gap-y-1 max-[799px]:p-3"
-                >
-                  <td className="px-4 py-2 text-neutre-800 tabular-nums max-[799px]:col-span-2 max-[799px]:row-start-1 max-[799px]:p-0 max-[799px]:text-sm">
-                    {formatDate(l.date)}
-                  </td>
-                  <td className="px-1 py-2 text-neutre-700 max-[799px]:hidden">{l.icone}</td>
-                  <td className="px-3 py-2 font-semibold whitespace-nowrap max-[799px]:col-span-2 max-[799px]:p-0">
-                    <Link
-                      href={l.href as Route}
-                      className="text-texte no-underline hover:underline"
-                    >
-                      {l.numero || 'Brouillon'}
-                    </Link>
-                  </td>
-                  <td className="max-w-0 px-3 py-2 max-[799px]:col-span-3 max-[799px]:max-w-none max-[799px]:p-0">
-                    <span className="block truncate">
-                      <strong className="font-semibold">{l.client || 'Client à préciser'}</strong>
-                      <span className="text-neutre-800"> — {l.objet || 'Sans objet'}</span>
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-right font-semibold whitespace-nowrap tabular-nums max-[799px]:col-start-3 max-[799px]:row-start-1 max-[799px]:p-0">
-                    {l.negatif ? '− ' : ''}
-                    {eur(ttc ? l.ttcCentimes : l.htCentimes)}
-                  </td>
-                  <td className="px-3 py-2 max-[799px]:col-span-2 max-[799px]:p-0">{l.statut}</td>
-                  <td className="px-3 py-2 text-right max-[799px]:p-0">
-                    <Link
-                      href={l.href as Route}
-                      aria-label={l.action}
-                      title={l.action}
-                      className={cn(iconeLien, 'ml-auto')}
-                    >
-                      {l.iconeAction}
-                    </Link>
-                  </td>
+        {!lignes.length ? (
+          vide
+        ) : !trouvees.length ? (
+          <EmptyState titre="Aucun résultat">Essayez un autre nom, objet ou numéro.</EmptyState>
+        ) : (
+          <div className="overflow-hidden rounded-[14px] border border-trait bg-blanc">
+            <table className="w-full border-collapse text-[15px]">
+              <thead className="max-[799px]:sr-only">
+                <tr className="border-b border-trait bg-neutre-100 text-left text-sm text-neutre-800">
+                  <th scope="col" className="w-32 px-4 py-3 font-semibold">
+                    Date
+                  </th>
+                  <th scope="col" className="w-10 px-1 py-3">
+                    <span className="sr-only">Type de statut</span>
+                  </th>
+                  <th scope="col" className="w-40 px-3 py-3 font-semibold">
+                    Numéro
+                  </th>
+                  <th scope="col" className="px-3 py-3 font-semibold">
+                    Client — objet
+                  </th>
+                  <th scope="col" className="w-40 px-3 py-3 text-right font-semibold">
+                    Montant {ttc ? 'TTC' : 'HT'}
+                  </th>
+                  <th scope="col" className="w-48 px-3 py-3 font-semibold">
+                    Statut
+                  </th>
+                  <th scope="col" className="w-24 px-3 py-3 text-right font-semibold">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {trouvees.length > PAR_PAGE ? (
-        <nav
-          aria-label="Pages"
-          className="flex items-center justify-end gap-2 text-sm text-neutre-800"
-        >
-          <span>
-            {p * PAR_PAGE + 1} à {Math.min((p + 1) * PAR_PAGE, trouvees.length)} sur{' '}
-            {trouvees.length}
-          </span>
-          <button
-            type="button"
-            aria-label="Page précédente"
-            disabled={p === 0}
-            onClick={() => setPage(p - 1)}
-            className={cn(iconeLien, 'disabled:opacity-40')}
+              </thead>
+              <tbody>
+                {visibles.map((l) => (
+                  <tr
+                    key={l.id}
+                    className="border-b border-trait last:border-b-0 hover:bg-neutre-100/60 max-[799px]:grid max-[799px]:grid-cols-[auto_minmax(0,1fr)_auto] max-[799px]:items-center max-[799px]:gap-x-3 max-[799px]:gap-y-1 max-[799px]:p-3"
+                  >
+                    <td className="px-4 py-2 text-neutre-800 tabular-nums max-[799px]:col-span-2 max-[799px]:row-start-1 max-[799px]:p-0 max-[799px]:text-sm">
+                      {formatDate(l.date)}
+                    </td>
+                    <td className="px-1 py-2 text-neutre-700 max-[799px]:hidden">{l.icone}</td>
+                    <td className="px-3 py-2 font-semibold whitespace-nowrap max-[799px]:col-span-2 max-[799px]:p-0">
+                      <Link
+                        href={l.href as Route}
+                        className="text-texte no-underline hover:underline"
+                      >
+                        {l.numero || 'Brouillon'}
+                      </Link>
+                    </td>
+                    <td className="max-w-0 px-3 py-2 max-[799px]:col-span-3 max-[799px]:max-w-none max-[799px]:p-0">
+                      <span className="block truncate">
+                        <strong className="font-semibold">{l.client || 'Client à préciser'}</strong>
+                        <span className="text-neutre-800"> — {l.objet || 'Sans objet'}</span>
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-right font-semibold whitespace-nowrap tabular-nums max-[799px]:col-start-3 max-[799px]:row-start-1 max-[799px]:p-0">
+                      {l.negatif ? '− ' : ''}
+                      {eur(ttc ? l.ttcCentimes : l.htCentimes)}
+                    </td>
+                    <td className="px-3 py-2 max-[799px]:col-span-2 max-[799px]:p-0">{l.statut}</td>
+                    <td className="px-3 py-2 text-right max-[799px]:p-0">
+                      <span className="flex items-center justify-end gap-1">
+                        <Link
+                          href={l.href as Route}
+                          aria-label={l.action}
+                          title={l.action}
+                          className={cn(iconeLien, 'ml-auto')}
+                        >
+                          {l.iconeAction}
+                        </Link>
+                        {l.menu}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {trouvees.length > PAR_PAGE ? (
+          <nav
+            aria-label="Pages"
+            className="flex items-center justify-end gap-2 text-sm text-neutre-800"
           >
-            <CaretLeftIcon size={18} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label="Page suivante"
-            disabled={p >= pages - 1}
-            onClick={() => setPage(p + 1)}
-            className={cn(iconeLien, 'disabled:opacity-40')}
-          >
-            <CaretRightIcon size={18} aria-hidden="true" />
-          </button>
-        </nav>
-      ) : null}
-    </section>
+            <span>
+              {p * PAR_PAGE + 1} à {Math.min((p + 1) * PAR_PAGE, trouvees.length)} sur{' '}
+              {trouvees.length}
+            </span>
+            <button
+              type="button"
+              aria-label="Page précédente"
+              disabled={p === 0}
+              onClick={() => setPage(p - 1)}
+              className={cn(iconeLien, 'disabled:opacity-40')}
+            >
+              <CaretLeftIcon size={18} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              aria-label="Page suivante"
+              disabled={p >= pages - 1}
+              onClick={() => setPage(p + 1)}
+              className={cn(iconeLien, 'disabled:opacity-40')}
+            >
+              <CaretRightIcon size={18} aria-hidden="true" />
+            </button>
+          </nav>
+        ) : null}
+      </section>
+    </ToastProvider>
   );
 }

@@ -177,6 +177,25 @@ test.describe('Devis & factures', () => {
     await expect(page.getByText('Client de votre base')).toBeVisible();
   });
 
+  test('Liste : dupliquer un devis, supprimer le brouillon ; un devis envoyé ne se supprime pas', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/devis');
+    const premier = page.getByRole('button', { name: /^Actions du devis D-/ }).first();
+    await premier.click();
+    await page.getByRole('button', { name: 'Dupliquer le devis' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/[^/]+\/modifier$/);
+    const numero = (await page.getByRole('heading', { level: 1 }).textContent())!.replace(
+      'Devis ',
+      '',
+    );
+    await page.goto('/pro/devis');
+    await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
+    await page.getByRole('button', { name: 'Supprimer le devis' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Supprimer' }).click();
+    await expect(page.getByText(numero, { exact: true })).toHaveCount(0);
+  });
+
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/devis/nouveau');

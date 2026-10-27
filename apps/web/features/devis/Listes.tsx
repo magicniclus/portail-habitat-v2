@@ -14,6 +14,7 @@ import {
 } from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
 import { routes } from '@/lib/routes';
+import { ActionsLigneDevis } from './liste/ActionsLigneDevis';
 import { StatutDevisListe } from './liste/StatutDevisListe';
 import { TableauDocuments } from './liste/TableauDocuments';
 
@@ -65,6 +66,9 @@ export function ListeDevis({
             />
           ),
           action: `${brouillon ? 'Modifier' : 'Ouvrir'} le devis ${d.numero || 'brouillon'}`,
+          menu: peutGerer ? (
+            <ActionsLigneDevis devisId={d.id} numero={d.numero} statut={d.statut} aPdf={d.aPdf} />
+          ) : null,
           iconeAction: brouillon ? (
             <PencilSimpleIcon size={20} aria-hidden="true" />
           ) : (

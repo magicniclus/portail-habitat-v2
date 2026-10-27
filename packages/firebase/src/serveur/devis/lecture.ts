@@ -20,6 +20,8 @@ export interface DevisResume {
   creeLe: number;
   validiteLe?: number;
   factureId?: string;
+  /** PDF produit à l'envoi (téléchargeable). */
+  aPdf: boolean;
 }
 
 export interface FactureResume {
@@ -56,6 +58,7 @@ export async function lireDevisListe(db: Firestore, artisanId: string): Promise<
     creeLe: ms(d.get('createdAt')) ?? 0,
     validiteLe: ms(d.get('validiteLe')),
     factureId: d.get('factureId') as string | undefined,
+    aPdf: Boolean(d.get('pdfPath')),
   }));
 }
 

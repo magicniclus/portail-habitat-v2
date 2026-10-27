@@ -7,6 +7,9 @@ import { chemins } from '../src/chemins';
 import {
   changerRegimeTva,
   changerStatutDevis,
+  dupliquerDevis,
+  relancerDevis,
+  supprimerDevis,
   creerAvoir,
   enregistrerDevis,
   enregistrerPaiement,
@@ -218,6 +221,50 @@ describe('devis', () => {
     expect(
       (await erreur(changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' }))).code,
     ).toBe('CONFLIT');
+  });
+});
+
+describe('actions sur un devis (liste)', () => {
+  it('dupliquer un devis envoyé : nouveau brouillon, nouveau numéro, contenu repris, jamais le statut', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    await envoyerDevis(s(), proprio, devisId);
+    const { devisId: copie } = await dupliquerDevis(s(), proprio, { devisId });
+    const lire = async (id: string) => (await db.doc(chemins.unDevis('a1', id)).get()).data()!;
+    const [a, b] = [await lire(devisId), await lire(copie)];
+    expect(b.statut).toBe('brouillon');
+    expect(b.numero).not.toBe(a.numero);
+    expect(b.objet).toBe(a.objet);
+    expect(b.lignes).toEqual(a.lignes);
+    expect(b.totaux).toEqual(a.totaux);
+    expect(b).not.toHaveProperty('envoiLe');
+    expect(b).not.toHaveProperty('pdfPath');
+  });
+
+  it('supprimer : brouillon seulement ; un devis envoyé s’archive', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    const { devisId: envoye } = await enregistrerDevis(s(), proprio, entree());
+    await envoyerDevis(s(), proprio, envoye);
+    await supprimerDevis(s(), proprio, { devisId });
+    expect((await db.doc(chemins.unDevis('a1', devisId)).get()).exists).toBe(false);
+    expect((await erreur(supprimerDevis(s(), proprio, { devisId: envoye }))).code).toBe('CONFLIT');
+    expect((await erreur(supprimerDevis(s(), compta, { devisId: envoye }))).code).toBe(
+      'PERMISSION_REFUSEE',
+    );
+  });
+
+  it('relancer à la main : devis envoyé avec email, une fois par jour au plus', async () => {
+    const envois: unknown[] = [];
+    const sr = () => ({ ...s(), notifier: async (n: unknown) => void envois.push(n) });
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    expect((await erreur(relancerDevis(sr(), proprio, { devisId }))).code).toBe('PRECONDITION');
+    await envoyerDevis(s(), proprio, devisId);
+    await relancerDevis(sr(), proprio, { devisId });
+    expect(envois).toHaveLength(1);
+    expect(envois[0]).toMatchObject({
+      modele: 'relance-devis',
+      destinataire: { email: 'claire@test.local' },
+    });
+    expect((await erreur(relancerDevis(sr(), proprio, { devisId }))).code).toBe('PRECONDITION');
   });
 });
 
