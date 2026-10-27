@@ -259,7 +259,7 @@ test.describe('Devis & factures', () => {
     const pdf = page.getByRole('link', { name: 'Télécharger le PDF (brouillon)' });
     const r = await page.request.get((await pdf.getAttribute('href'))!);
     expect(r.headers()['content-type']).toBe('application/pdf');
-    await expect(ligne.getByRole('link', { name: /^Modifier / })).toBeVisible();
+    await expect(ligne.getByRole('link', { name: /^Modifier D-/ })).toBeVisible();
   });
 
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
