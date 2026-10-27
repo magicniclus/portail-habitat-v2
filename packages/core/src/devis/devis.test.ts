@@ -119,20 +119,25 @@ describe('mentions obligatoires du devis (DATABASE §8 ter)', () => {
     expect(r.liste.map((m) => m.cle)).toContain('bon_pour_accord');
   });
 
-  it('DEV-01 : décennale ou client manquant → liste des manques', () => {
+  it('DEV-01 : client manquant → bloquant ; décennale absente → simple conseil', () => {
     const r = verifierMentionsDevis(
       { ...devis, client: { nom: 'Claire Martin', adresse: '' } },
       { ...params, assuranceDecennale: undefined },
     );
     expect(r.ok).toBe(false);
-    expect(r.manquantes).toEqual(['assurance_decennale', 'client']);
+    expect(r.manquantes).toEqual(['client']);
+    expect(r.conseils).toEqual(['assurance_decennale']);
+    expect(r.liste.find((m) => m.cle === 'assurance_decennale')).toMatchObject({
+      ok: false,
+      conseil: true,
+    });
   });
 
-  it('DEV-02 : client professionnel sans SIREN valide → refus', () => {
+  it('DEV-02 : client professionnel sans SIREN valide → conseil, le devis reste validable', () => {
     const pro = { ...devis, typeClient: 'pro' as const };
-    expect(verifierMentionsDevis({ ...pro, sirenClient: '1234' }, params).manquantes).toEqual([
-      'siren_client',
-    ]);
+    const r = verifierMentionsDevis({ ...pro, sirenClient: '1234' }, params);
+    expect(r.ok).toBe(true);
+    expect(r.conseils).toEqual(['siren_client']);
     expect(verifierMentionsDevis({ ...pro, sirenClient: '552 100 554' }, params).ok).toBe(true);
     // Professionnel : pas de médiateur de la consommation exigé.
     expect(
@@ -143,10 +148,10 @@ describe('mentions obligatoires du devis (DATABASE §8 ter)', () => {
     ).toBe(true);
   });
 
-  it('particulier : médiateur obligatoire', () => {
-    expect(verifierMentionsDevis(devis, { ...params, mediateur: undefined }).manquantes).toEqual([
-      'mediateur',
-    ]);
+  it('particulier : médiateur conseillé, jamais bloquant', () => {
+    const r = verifierMentionsDevis(devis, { ...params, mediateur: undefined });
+    expect(r.ok).toBe(true);
+    expect(r.conseils).toEqual(['mediateur']);
   });
 
   it('DEV-03 : signé au domicile → rétractation 14 j ; DEV-04 : taux réduit → attestation', () => {
@@ -182,7 +187,8 @@ describe('mentions obligatoires du devis (DATABASE §8 ter)', () => {
       },
       params,
     );
-    expect(r.manquantes).toEqual(['validite', 'lignes', 'debut_duree']);
+    expect(r.manquantes).toEqual(['validite', 'lignes']);
+    expect(r.conseils).toEqual(['debut_duree']);
   });
 
   it('particulier : la date de début OU la durée suffit ; client pro : facultatives', () => {
@@ -223,6 +229,12 @@ describe('mentions obligatoires de la facture (réforme 2026)', () => {
     expect(r.liste.map((m) => m.cle)).toEqual(
       expect.arrayContaining(['siren_client', 'lieu_execution', 'nature_operation', 'penalites']),
     );
+  });
+
+  it('facture : décennale conseillée seulement', () => {
+    const r = verifierMentionsFacture(facture, { ...params, assuranceDecennale: undefined });
+    expect(r.ok).toBe(true);
+    expect(r.conseils).toEqual(['assurance_decennale']);
   });
 
   it('pro sans SIREN, échéance absente → refus', () => {

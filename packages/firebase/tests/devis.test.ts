@@ -183,28 +183,35 @@ describe('devis', () => {
     expect((await erreur(enregistrerDevis(s(), compta, entree()))).code).toBe('PERMISSION_REFUSEE');
   });
 
-  it('DEV-01 : sans décennale, l’envoi est refusé côté serveur avec la liste', async () => {
-    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+  it('DEV-01 : client sans adresse → refus côté serveur avec la liste ; décennale non exigée', async () => {
     await enregistrerParametresFacturation(s(), proprio, {
       ...PARAMS,
       assuranceDecennale: undefined,
     });
+    const { devisId } = await enregistrerDevis(
+      s(),
+      proprio,
+      entree({ client: { ...brut.client, adresse: '' } }),
+    );
     const e = await erreur(envoyerDevis(s(), proprio, devisId));
     expect(e.code).toBe('PRECONDITION');
-    expect(e.message).toContain('Assurance décennale');
+    expect(e.message).toContain('Client et adresse du chantier');
+    expect(e.message).not.toContain('Assurance décennale');
     expect((await db.doc(chemins.unDevis('a1', devisId)).get()).get('statut')).toBe('brouillon');
+    const { devisId: complet } = await enregistrerDevis(s(), proprio, entree());
+    await envoyerDevis(s(), proprio, complet);
+    expect((await db.doc(chemins.unDevis('a1', complet)).get()).get('statut')).toBe('envoye');
   });
 
-  it('DEV-02 : client professionnel sans SIREN valide → envoi refusé', async () => {
+  it('DEV-02 : client professionnel sans SIREN valide → simple conseil, envoi possible', async () => {
     const { devisId, mentionsManquantes } = await enregistrerDevis(
       s(),
       proprio,
       entree({ typeClient: 'pro', sirenClient: '1234' }),
     );
-    expect(mentionsManquantes).toEqual(['siren_client']);
-    expect((await erreur(envoyerDevis(s(), proprio, devisId))).message).toContain(
-      'SIREN du client',
-    );
+    expect(mentionsManquantes).toEqual([]);
+    await envoyerDevis(s(), proprio, devisId);
+    expect((await db.doc(chemins.unDevis('a1', devisId)).get()).get('statut')).toBe('envoye');
   });
 
   it('envoyé : figé, PDF enregistré ; transitions contrôlées', async () => {

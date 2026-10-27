@@ -94,7 +94,9 @@ export function FormulaireParametres({
         {champ('tvaIntra', 'N° de TVA intracommunautaire', texte(valeurs, 'tvaIntra'))}
       </fieldset>
       <fieldset className="m-0 grid gap-3 border-0 p-0 min-[700px]:grid-cols-3">
-        <legend className="mb-2 text-lg font-bold">Assurance décennale (obligatoire)</legend>
+        <legend className="mb-2 text-lg font-bold">
+          Assurance décennale (si votre métier y est soumis)
+        </legend>
         {champ('assureur', 'Assureur', sous(valeurs, 'assuranceDecennale', 'assureur'))}
         {champ('contrat', 'N° de contrat', sous(valeurs, 'assuranceDecennale', 'contrat'))}
         {champ('zone', 'Couverture géographique', sous(valeurs, 'assuranceDecennale', 'zone'))}

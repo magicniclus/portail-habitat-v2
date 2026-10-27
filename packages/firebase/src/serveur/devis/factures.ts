@@ -145,7 +145,7 @@ export async function creerFacture(
           throw new ErreurMetier(
             'PRECONDITION',
             `Mentions obligatoires manquantes : ${mentions.liste
-              .filter((x) => !x.ok)
+              .filter((x) => !x.ok && !x.conseil)
               .map((x) => x.libelle)
               .join(', ')}.`,
           );
@@ -250,7 +250,7 @@ export async function facturerDevis(
           throw new ErreurMetier(
             'PRECONDITION',
             `Mentions obligatoires manquantes : ${mentions.liste
-              .filter((x) => !x.ok)
+              .filter((x) => !x.ok && !x.conseil)
               .map((x) => x.libelle)
               .join(', ')}.`,
           );

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { BandeauCookies } from '@/features/cookies/BandeauCookies';
-import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
+import { ScriptBandeau } from '@/features/cookies/ScriptBandeau';
 import { AppCheck } from '@/features/firebase/AppCheck';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
@@ -38,7 +38,7 @@ export default function RacineLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: SCRIPT_BANDEAU_COOKIES }} />
+        <ScriptBandeau />
       </head>
       <body>
         {children}

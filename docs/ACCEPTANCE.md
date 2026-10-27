@@ -178,8 +178,8 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **PAY-01** à **PAY-09** : aucun prix avant inscription, ouverture du paiement par `?offre=`, prorata en montée, descente à l'échéance, droits par webhook seulement, appels d'offres au prix admin (−15 % Tout inclus), packs de crédits, grâce de 7 jours, devis/factures/avis sans paiement.
 
 ## Devis et factures (DATABASE §8 bis-ter)
-- **DEV-01** il manque une mention obligatoire → bouton Envoyer refusé avec la liste ; même contrôle côté serveur
-- **DEV-02** client professionnel sans SIREN valide (9 chiffres) → envoi refusé
+- **DEV-01** il manque une mention obligatoire (identité, client, validité, lignes) → « Valider » refusé avec la liste ; même contrôle côté serveur. Décennale, médiateur, SIREN du client (devis), date ou durée des travaux : conseillés, jamais bloquants (décision du propriétaire, 27/10/2026)
+- **DEV-02** client professionnel sans SIREN valide (9 chiffres) → signalé « conseillé » sur le devis ; refusé sur la facture (mention de la réforme)
 - **DEV-03** devis signé au domicile → PDF avec mention de rétractation 14 j et formulaire annexé
 - **DEV-04** ligne à 5,5 % ou 10 % → attestation TVA réduite jointe
 - **DEV-05** aucun aperçu du PDF dans l'éditeur ; « Télécharger le PDF » renvoie le même fichier que celui joint à l'email

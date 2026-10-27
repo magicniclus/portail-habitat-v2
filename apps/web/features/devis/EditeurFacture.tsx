@@ -100,7 +100,7 @@ export function EditeurFacture({
     if (!e.factureId) router.replace(routes.proModifierFacture(id));
   };
 
-  const manquantes = mentions.liste.filter((m) => !m.ok).map((m) => m.libelle);
+  const manquantes = mentions.liste.filter((m) => !m.ok && !m.conseil).map((m) => m.libelle);
 
   return (
     <CadreEditeur

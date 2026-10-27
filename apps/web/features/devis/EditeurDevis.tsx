@@ -109,7 +109,7 @@ export function EditeurDevis({
   /** « Valider » : devis figé et PDF produit ; l'email part ensuite du menu (« Envoyer au client »). */
   const surValider = async () => {
     if (!mentions.ok) {
-      const manquantes = mentions.liste.filter((m) => !m.ok).map((m) => m.libelle);
+      const manquantes = mentions.liste.filter((m) => !m.ok && !m.conseil).map((m) => m.libelle);
       return setMessage({
         ton: 'danger',
         texte: `Validation impossible, il manque : ${manquantes.join(', ')}.`,
@@ -126,7 +126,7 @@ export function EditeurDevis({
     router.refresh();
   };
 
-  const manquantes = mentions.liste.length - mentions.liste.filter((m) => m.ok).length;
+  const manquantes = mentions.manquantes.length;
 
   return (
     <CadreEditeur

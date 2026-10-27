@@ -62,14 +62,25 @@ export function PanneauMentions({
                 aria-hidden="true"
                 className={cn(
                   'flex size-5 flex-none items-center justify-center rounded-full text-xs font-bold',
-                  m.ok ? 'bg-succes-fond text-succes' : 'bg-danger-fond text-danger',
+                  m.ok
+                    ? 'bg-succes-fond text-succes'
+                    : m.conseil
+                      ? 'bg-neutre-100 text-neutre-700'
+                      : 'bg-danger-fond text-danger',
                 )}
               >
-                {m.ok ? '✓' : '!'}
+                {m.ok ? '✓' : m.conseil ? 'i' : '!'}
               </span>
-              <span>
+              <span className={m.ok || !m.conseil ? undefined : 'text-neutre-700'}>
                 {m.libelle}
-                <span className="sr-only">{m.ok ? ' : présente' : ' : manquante'}</span>
+                {!m.ok && m.conseil ? ' · conseillé' : ''}
+                <span className="sr-only">
+                  {m.ok
+                    ? ' : présente'
+                    : m.conseil
+                      ? ' : conseillée, non bloquante'
+                      : ' : manquante'}
+                </span>
               </span>
             </li>
           ))}

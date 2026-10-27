@@ -50,13 +50,17 @@ export interface Mention {
   cle: string;
   libelle: string;
   ok: boolean;
+  /** Conseillée, jamais bloquante (choix du propriétaire, 27/10/2026) : l'artisan reste maître de son document. */
+  conseil?: boolean;
 }
 
 export interface ResultatMentions {
   ok: boolean;
   liste: Mention[];
-  /** Clés des mentions absentes, dans l'ordre de la liste : l'envoi est refusé. */
+  /** Clés des mentions bloquantes absentes, dans l'ordre de la liste : la validation est refusée. */
   manquantes: string[];
+  /** Mentions conseillées absentes (affichées, jamais bloquantes). */
+  conseils: string[];
   /** Pièces jointes au PDF (DEV-03, DEV-04). */
   annexes: ('retractation' | 'attestation_tva_reduite')[];
 }
@@ -86,8 +90,9 @@ const lignesOk = (lignes: readonly LigneDevis[]) =>
 
 function resultat(m: (Mention | null)[], annexes: ResultatMentions['annexes'] = []) {
   const liste = m.filter((x): x is Mention => x !== null);
-  const manquantes = liste.filter((x) => !x.ok).map((x) => x.cle);
-  return { ok: manquantes.length === 0, liste, manquantes, annexes };
+  const manquantes = liste.filter((x) => !x.ok && !x.conseil).map((x) => x.cle);
+  const conseils = liste.filter((x) => !x.ok && x.conseil).map((x) => x.cle);
+  return { ok: manquantes.length === 0, liste, manquantes, conseils, annexes };
 }
 
 /**
@@ -105,14 +110,26 @@ export function verifierMentionsDevis(
   return resultat(
     [
       { cle: 'identite', libelle: 'Identité de l’entreprise', ok: identiteOk(p) },
-      { cle: 'assurance_decennale', libelle: 'Assurance décennale', ok: decennaleOk(p) },
+      {
+        cle: 'assurance_decennale',
+        libelle: 'Assurance décennale (si votre métier y est soumis)',
+        ok: decennaleOk(p),
+        conseil: true,
+      },
       { cle: 'validite', libelle: 'Date et durée de validité', ok: Boolean(d.validiteLe) },
       {
         cle: 'client',
         libelle: 'Client et adresse du chantier',
         ok: rempli(d.client.nom) && rempli(d.client.adresse),
       },
-      pro ? { cle: 'siren_client', libelle: 'SIREN du client', ok: sirenOk(d.sirenClient) } : null,
+      pro
+        ? {
+            cle: 'siren_client',
+            libelle: 'SIREN du client',
+            ok: sirenOk(d.sirenClient),
+            conseil: true,
+          }
+        : null,
       { cle: 'lignes', libelle: 'Détail des prestations', ok: lignesOk(d.lignes) },
       { cle: 'totaux', libelle: 'Totaux HT, TVA et TTC', ok: true },
       // Particulier : date de début ou délai d'exécution (C. conso. L111-1) ; facultatifs entre
@@ -123,6 +140,7 @@ export function verifierMentionsDevis(
             cle: 'debut_duree',
             libelle: 'Date de début ou durée des travaux',
             ok: Boolean(d.debutTravauxLe) || rempli(d.dureeEstimee),
+            conseil: true,
           },
       { cle: 'paiement', libelle: 'Conditions de paiement et pénalités', ok: true },
       { cle: 'gratuite', libelle: 'Devis gratuit ou payant', ok: true },
@@ -132,6 +150,7 @@ export function verifierMentionsDevis(
             cle: 'mediateur',
             libelle: 'Médiateur de la consommation',
             ok: Boolean(p.mediateur && rempli(p.mediateur.nom) && rempli(p.mediateur.adresse)),
+            conseil: true,
           },
       annexes.includes('retractation')
         ? { cle: 'retractation', libelle: 'Droit de rétractation de 14 jours', ok: true }
@@ -160,7 +179,12 @@ export function verifierMentionsFacture(
   const pro = f.typeClient === 'pro';
   return resultat([
     { cle: 'identite', libelle: 'Identité de l’entreprise', ok: identiteOk(p) },
-    { cle: 'assurance_decennale', libelle: 'Assurance décennale', ok: decennaleOk(p) },
+    {
+      cle: 'assurance_decennale',
+      libelle: 'Assurance décennale (si votre métier y est soumis)',
+      ok: decennaleOk(p),
+      conseil: true,
+    },
     { cle: 'numero', libelle: 'Numéro chronologique sans trou', ok: true },
     {
       cle: 'dates',

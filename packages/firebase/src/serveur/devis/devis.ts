@@ -208,7 +208,7 @@ export async function envoyerDevis(
       throw new ErreurMetier(
         'PRECONDITION',
         `Mentions obligatoires manquantes : ${m.liste
-          .filter((x) => !x.ok)
+          .filter((x) => !x.ok && !x.conseil)
           .map((x) => x.libelle)
           .join(', ')}.`,
       );

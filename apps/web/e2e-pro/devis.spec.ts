@@ -76,9 +76,7 @@ test.describe('Devis & factures', () => {
     );
     await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await expect(
-      page.getByText(
-        /Validation impossible, il manque : Identité de l’entreprise, Assurance décennale/,
-      ),
+      page.getByText(/Validation impossible, il manque : Identité de l’entreprise\.$/),
     ).toBeVisible();
     await expect(page).toHaveURL(/\/pro\/devis\/nouveau$/);
     // DEV-05 : aucun aperçu du PDF dans l'éditeur (le cadre invisible de reCAPTCHA est hors de main).
@@ -101,7 +99,9 @@ test.describe('Devis & factures', () => {
     await expect(page.getByText('Paramètres enregistrés.')).toBeVisible();
   });
 
-  test('DEV-02 : client professionnel sans SIREN valide → envoi refusé', async ({ page }) => {
+  test('DEV-02 : client professionnel sans SIREN valide → conseillé, le devis se valide quand même', async ({
+    page,
+  }) => {
     await parametres(PARAMS);
     await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
     await remplir(page, { email: 'achats@sci.test', pro: '1234' });
@@ -109,9 +109,7 @@ test.describe('Devis & factures', () => {
       expect(page.locator('[data-mention="siren_client"]')).toHaveAttribute('data-ok', 'false'),
     );
     await page.getByRole('button', { name: 'Valider', exact: true }).click();
-    await expect(
-      page.getByText(/Validation impossible, il manque : SIREN du client/),
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/pro\/devis\/(?!nouveau)[^/]+$/, { timeout: 20_000 });
   });
 
   test('DEV-05 : envoi, PDF téléchargé = PDF reçu par le client ; facture puis paiement', async ({
