@@ -113,6 +113,7 @@ const optionsPdf = (x: DocumentData) => ({
   ...(x.intitule ? { intitule: x.intitule as string } : {}),
   ...(x.modeSaisie ? { modeSaisie: x.modeSaisie as 'rapide' | 'complet' } : {}),
   ...(x.conditionsAcceptation ? { conditionsAcceptation: x.conditionsAcceptation as string } : {}),
+  ...(x.champSignature === false ? { champSignature: false } : {}),
   ...(x.champLibre ? { champLibre: x.champLibre as { titre: string; texte: string } } : {}),
 });
 

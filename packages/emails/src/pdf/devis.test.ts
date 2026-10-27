@@ -183,4 +183,28 @@ describe('PDF : options de l’éditeur A4', () => {
     expect(t).not.toContain('PU HT');
     expect(t).not.toContain('Qté');
   });
+  it('plusieurs pages : en-tête du tableau répété, « Page x / n » sur chaque page, rien de coupé', async () => {
+    const lignes = Array.from({ length: 70 }, (_, i) => ({
+      designation: `Prestation numéro ${i + 1} avec une désignation assez longue pour tenir sur deux lignes du tableau`,
+      quantite: 1,
+      unite: 'u',
+      puHtCentimes: 1000,
+      tva: 20 as const,
+    }));
+    const pdf = await genererPdf({ ...base, lignes }, { compresser: false });
+    const pages = (pdf.toString('latin1').match(/\/Type \/Page\b/g) ?? []).length;
+    expect(pages).toBeGreaterThanOrEqual(3);
+    const t = texteDuPdf(pdf);
+    expect(t).toContain(`Page 1 / ${pages}`);
+    expect(t).toContain(`Page ${pages} / ${pages}`);
+    expect((t.match(/Désignation/g) ?? []).length).toBeGreaterThanOrEqual(pages - 1);
+    expect(t).toContain('Prestation numéro 70');
+  });
+
+  it('« Champ signature » décoché : pas de cadre « Bon pour accord »', async () => {
+    const t = texteDuPdf(
+      await genererPdf({ ...base, champSignature: false }, { compresser: false }),
+    );
+    expect(t).not.toContain('Bon pour accord');
+  });
 });

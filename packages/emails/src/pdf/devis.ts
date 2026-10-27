@@ -36,6 +36,8 @@ export interface DonneesPdf {
   /** Rapide : désignation, TVA et montant HT, sans quantité ni prix unitaire. */
   modeSaisie?: 'rapide' | 'complet';
   conditionsAcceptation?: string;
+  /** Cadre « Bon pour accord » (devis) ; absent = imprimé (anciens devis). */
+  champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
   lieuExecution?: string;
   objet: string;
@@ -94,6 +96,8 @@ const GRIS = neutres[700];
 const TEXTE = couleurs.texte;
 const TRAIT = neutres[300];
 const MARGE = 46;
+/** Bas utile de la page : le pied « Page x / n » occupe les derniers points. */
+const BAS = 36;
 
 /**
  * PDF A4 du devis ou de la facture, généré côté serveur (DATABASE §8 ter) et enregistré tel quel :
@@ -105,6 +109,7 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     size: 'A4',
     margin: MARGE,
     compress: o.compresser ?? true,
+    bufferPages: true,
     info: {
       Title: `${d.type === 'devis' && d.intitule?.trim() ? d.intitule.trim() : TITRES[d.type]} ${d.numero}`,
       Author: d.entreprise.raisonSociale,
@@ -220,6 +225,14 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
         { titre: 'TVA', l: 45, align: 'right' as const },
         { titre: 'Total HT', l: 80, align: 'right' as const },
       ];
+  const limite = () => doc.page.height - MARGE - BAS;
+  /** Nouvelle page si `hauteur` ne tient plus ; renvoie vrai si une page a été ajoutée. */
+  const place = (hauteur: number) => {
+    if (doc.y + hauteur <= limite()) return false;
+    doc.addPage();
+    doc.x = MARGE;
+    return true;
+  };
   const filet = () => {
     doc
       .moveTo(MARGE, doc.y - 2)
@@ -227,9 +240,24 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       .lineWidth(0.4)
       .strokeColor(TRAIT)
       .stroke();
-    if (doc.y > doc.page.height - 120) doc.addPage();
   };
-  const ligneTableau = (cellules: string[], gras = false) => {
+  const hauteurLigne = (cellules: string[], gras: boolean) => {
+    doc.font(gras ? 'Helvetica-Bold' : 'Helvetica').fontSize(9.5);
+    return (
+      Math.max(
+        ...cellules.map((c, i) => doc.heightOfString(net(c), { width: colonnes[i]!.l - 4 })),
+      ) + 4
+    );
+  };
+  const entete = () =>
+    ligneTableau(
+      colonnes.map((c) => c.titre),
+      true,
+      false,
+    );
+  function ligneTableau(cellules: string[], gras = false, suite = true) {
+    // Une ligne n'est jamais coupée : elle passe entière à la page suivante, sous l'en-tête répété.
+    if (suite && place(hauteurLigne(cellules, gras))) entete();
     const y = doc.y;
     let x = MARGE;
     let bas = y;
@@ -242,13 +270,13 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     });
     doc.y = bas + 4;
     filet();
-  };
-  ligneTableau(
-    colonnes.map((c) => c.titre),
-    true,
-  );
+  }
+  place(60);
+  entete();
   for (const l of d.lignes) {
     if (!estLigneChiffree(l)) {
+      doc.font('Helvetica-Bold').fontSize(10);
+      if (place(doc.heightOfString(net(l.designation), { width: largeur - 4 }) + 8)) entete();
       doc
         .font('Helvetica-Bold')
         .fontSize(10)
@@ -268,8 +296,15 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     );
   }
 
-  // Totaux.
+  // Totaux : le bloc reste entier sur une page.
   doc.moveDown(0.4);
+  place(
+    16 *
+      (3 +
+        Object.keys(d.totaux.tva).length +
+        (d.totaux.remiseCentimes > 0 ? 2 : 0) +
+        (d.acomptesDeduits?.length ?? 0)),
+  );
   const total = (libelle: string, montant: string, gras = false) => {
     const y = doc.y;
     doc.font(gras ? 'Helvetica-Bold' : 'Helvetica').fontSize(gras ? 11 : 10);
@@ -291,7 +326,8 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   doc.x = MARGE;
   doc.moveDown(1);
 
-  // Conditions.
+  // Conditions (le texte passe seul à la page suivante si besoin).
+  place(40);
   doc.font('Helvetica-Bold').fontSize(10).text('Conditions', MARGE, doc.y, { width: largeur });
   doc.font('Helvetica').fontSize(8.5).fillColor(TEXTE);
   for (const c of d.conditions) doc.text(`• ${net(c)}`, { width: largeur });
@@ -317,8 +353,9 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       // Cachet illisible : le PDF part sans lui.
     }
   };
-  if (d.type === 'devis') {
+  if (d.type === 'devis' && d.champSignature !== false) {
     doc.moveDown(0.8);
+    place(80);
     const y = doc.y;
     cachet(MARGE, y);
     doc
@@ -335,6 +372,7 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     doc.y = y + 80;
   } else if (d.tampon) {
     doc.moveDown(0.8);
+    place(80);
     const y = doc.y;
     cachet(MARGE + largeur / 2, y);
     doc.y = y + 80;
@@ -365,6 +403,26 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   if (d.annexes.includes('retractation')) annexe(formulaireRetractation(e));
   if (d.annexes.includes('attestation_tva_reduite')) annexe(attestationTvaReduite(d.client));
 
+  // Pied de chaque page : identité et « Page x / n ».
+  const plage = doc.bufferedPageRange();
+  for (let i = 0; i < plage.count; i++) {
+    doc.switchToPage(plage.start + i);
+    const y = doc.page.height - MARGE - 12;
+    doc.page.margins.bottom = 0;
+    doc
+      .font('Helvetica')
+      .fontSize(7.5)
+      .fillColor(GRIS)
+      .text(net(`${e.raisonSociale} · SIRET ${e.siret}`), MARGE, y, {
+        width: largeur - 80,
+        lineBreak: false,
+      })
+      .text(`Page ${i + 1} / ${plage.count}`, MARGE + largeur - 80, y, {
+        width: 80,
+        align: 'right',
+        lineBreak: false,
+      });
+  }
   doc.end();
   return fin;
 }
