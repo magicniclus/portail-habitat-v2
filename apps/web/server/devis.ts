@@ -83,7 +83,16 @@ async function entreprise(artisanId: string) {
     db().doc(chemins.artisan(artisanId)).get(),
   ]);
   const tel = a.get('telephonePublic') as string | undefined;
-  const { ibanChiffre, ...parametres } = p.data() as ParametresFacturation & {
+  // Paramètres jamais remplis : identité minimale reprise de la fiche (le PDF part quand même).
+  const { ibanChiffre, ...parametres } = {
+    raisonSociale: (a.get('raisonSociale') as string | undefined) ?? '',
+    adresseSiege: '',
+    siret: (a.get('siret') as string | undefined) ?? '',
+    franchiseTva: false,
+    tvaSurDebits: false,
+    delaiPaiementJours: 30,
+    ...p.data(),
+  } as ParametresFacturation & {
     tauxPenalitesAnnuel?: number;
     rcPro?: string;
     ibanChiffre?: string;

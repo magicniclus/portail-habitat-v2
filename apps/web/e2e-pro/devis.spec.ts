@@ -242,6 +242,8 @@ test.describe('Devis & factures', () => {
     page,
   }) => {
     const nom = `Fermeture ${Date.now()}`;
+    // Paramètres de facturation jamais remplis : le PDF du brouillon se télécharge quand même.
+    await parametres(null);
     await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
     await page.getByRole('button', { name: 'Fermer l’éditeur' }).click();
     await expect(page).toHaveURL(/\/pro\/devis$/);

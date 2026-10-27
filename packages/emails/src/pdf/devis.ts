@@ -138,14 +138,18 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       // Logo illisible : le PDF part sans lui.
     }
   }
-  doc.font('Helvetica-Bold').fontSize(13).fillColor(TEXTE).text(net(e.raisonSociale), MARGE);
+  doc
+    .font('Helvetica-Bold')
+    .fontSize(13)
+    .fillColor(TEXTE)
+    .text(net(e.raisonSociale ?? ''), MARGE);
   doc.font('Helvetica').fontSize(9).fillColor(GRIS);
   const identite = [
     [e.formeJuridique, e.capitalSocial ? `au capital de ${e.capitalSocial}` : '']
       .filter(Boolean)
       .join(' '),
     e.adresseSiege,
-    `SIRET ${e.siret}${e.rne ? ` · RNE ${e.rne}` : ''}`,
+    [e.siret ? `SIRET ${e.siret}` : '', e.rne ? `RNE ${e.rne}` : ''].filter(Boolean).join(' · '),
     e.tvaIntra ? `TVA intracommunautaire ${e.tvaIntra}` : '',
     [e.telephone, e.email].filter(Boolean).join(' · '),
   ].filter(Boolean);
@@ -416,10 +420,15 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       .font('Helvetica')
       .fontSize(7.5)
       .fillColor(GRIS)
-      .text(net(`${e.raisonSociale} · SIRET ${e.siret}`), MARGE, y, {
-        width: largeur - 80,
-        lineBreak: false,
-      })
+      .text(
+        net([e.raisonSociale, e.siret ? `SIRET ${e.siret}` : ''].filter(Boolean).join(' · ')),
+        MARGE,
+        y,
+        {
+          width: largeur - 80,
+          lineBreak: false,
+        },
+      )
       .text(`Page ${i + 1} / ${plage.count}`, MARGE + largeur - 80, y, {
         width: 80,
         align: 'right',

@@ -212,4 +212,24 @@ describe('PDF : options de l’éditeur A4', () => {
     expect(t).toContain('BROUILLON');
     expect(t).toContain('Document de travail, non validé');
   });
+  it('paramètres de l’entreprise vides : le PDF se crée quand même, sans ligne « SIRET » vide', async () => {
+    const t = texteDuPdf(
+      await genererPdf(
+        {
+          ...base,
+          entreprise: {
+            raisonSociale: '',
+            adresseSiege: '',
+            siret: '',
+            franchiseTva: false,
+            tvaSurDebits: false,
+            delaiPaiementJours: 30,
+          },
+        },
+        { compresser: false },
+      ),
+    );
+    expect(t).toContain('Claire Martin');
+    expect(t).not.toMatch(/SIRET\s*$/m);
+  });
 });
