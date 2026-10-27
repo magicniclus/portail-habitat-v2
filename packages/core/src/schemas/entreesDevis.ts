@@ -120,7 +120,21 @@ export const entreeCreerFacture = z.strictObject({
   remisePct: pourcent,
   datePrestationLe: jourIso,
   ...optionsDocument,
+  /** Brouillon à émettre (sinon nouvelle facture). */
+  factureId: id.optional(),
   cleIdempotence: z.string().min(8).max(64),
+});
+
+/** Brouillon de facture : sans numéro, modifiable et supprimable jusqu'à l'émission. */
+export const entreeBrouillonFacture = entreeCreerFacture.omit({ cleIdempotence: true }).extend({
+  lignes: z.array(ligneDevis).max(200),
+  datePrestationLe: jourIso.optional(),
+});
+
+/** Menu « ⋮ » d'une facture : dupliquer (en brouillon), supprimer un brouillon, envoyer par email. */
+export const entreeActionFacture = z.strictObject({
+  action: z.enum(['dupliquer', 'supprimer', 'envoyer']),
+  factureId: id,
 });
 
 export const entreeFacturerDevis = z.strictObject({

@@ -33,6 +33,19 @@ interface RelanceFacture {
   lien: string;
 }
 
+/** Facture ou avoir envoyé au client par l'artisan (« Envoyer par email »), avec le PDF. */
+interface EnvoiFacture {
+  entreprise: string;
+  /** « Facture », « Facture d’acompte » ou « Avoir ». */
+  libelle: string;
+  numero: string;
+  objet: string;
+  montant: string;
+  /** Échéance (vide pour un avoir). */
+  echeance: string;
+  lien: string;
+}
+
 /** Devis accepté en ligne par le client (signature électronique simple). */
 interface DevisAccepte {
   numero: string;
@@ -131,6 +144,33 @@ export const modelesDevis = {
       dernier: true,
       penalites: '12,15 %',
       pro: false,
+      lien: 'https://portailtravaux.fr/api/facture-client/exemple',
+    },
+  }),
+  'facture-envoi': modele<EnvoiFacture>({
+    sujet: (d) => `${d.libelle} ${d.numero} de ${d.entreprise}`.slice(0, 59),
+    preheader: (d) => (d.echeance ? `${d.montant} · échéance le ${d.echeance}` : d.montant),
+    blocs: (d) => [
+      titre(`Votre ${d.libelle.toLowerCase()} est disponible`),
+      para(`Bonjour, ${d.entreprise} vous adresse ${d.libelle.toLowerCase()} ${d.numero}.`),
+      recap([
+        [d.libelle, d.numero, true],
+        ['Objet', d.objet],
+        ['Montant', d.montant, true],
+        ...(d.echeance ? ([['Échéance', d.echeance]] as [string, string][]) : []),
+      ]),
+      bouton('Télécharger le PDF', d.lien),
+      note(
+        `Pour toute question, contactez directement ${d.entreprise}. Ce lien est personnel : ne le transférez pas.`,
+      ),
+    ],
+    exemple: {
+      entreprise: 'Bertrand Rénovation',
+      libelle: 'Facture',
+      numero: 'F-2026-0087',
+      objet: 'Rénovation de salle de bain',
+      montant: '2 679,72 € TTC',
+      echeance: '20 novembre 2026',
       lien: 'https://portailtravaux.fr/api/facture-client/exemple',
     },
   }),

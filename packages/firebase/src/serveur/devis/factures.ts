@@ -52,44 +52,92 @@ function lignesAcompte(d: DocumentSnapshot): LigneDevis[] {
   }));
 }
 
+type SaisieFacture = Omit<
+  z.output<typeof entreeCreerFacture>,
+  'cleIdempotence' | 'datePrestationLe'
+> & {
+  datePrestationLe?: string;
+};
+
 /**
- * « Nouvelle facture » sans devis (éditeur A4, `factures.emettre`) : mentions vérifiées puis
- * numéro pris dans la même transaction (sans trou, DEV-06) ; émise et figée d'un coup.
+ * Contenu d'une facture saisie dans l'éditeur (brouillon ou émission) : totaux recalculés, lieu
+ * d'exécution, options de présentation. Jamais de numéro ici.
+ */
+export function contenuFacture(e: SaisieFacture, p: Record<string, unknown>) {
+  const lignes = e.lignes as LigneDevis[];
+  const { margeHtCentimes: _m, ...totaux } = calculerTotaux(
+    { lignes, remisePct: e.remisePct, acomptePct: 0 },
+    { franchiseTva: Boolean(p.franchiseTva) },
+  );
+  const sirenClient = e.typeClient === 'pro' ? e.sirenClient?.replace(/\s/g, '') : undefined;
+  const lieuExecution =
+    (e.livraison ? texteAdresse(e.livraison) : e.adresseChantier) || e.client.adresse;
+  const options = Object.fromEntries(
+    (['modeSaisie', 'tvaIntraClient', 'champLibre', 'clientId', 'livraison'] as const)
+      .map((k) => [k, e[k]])
+      .filter(([, v]) => v !== undefined && v !== ''),
+  );
+  const datePrestationLe = jourEnDate(e.datePrestationLe);
+  return {
+    lignes,
+    totaux,
+    sirenClient,
+    lieuExecution,
+    datePrestationLe,
+    champs: {
+      type: 'facture',
+      client: e.client,
+      typeClient: e.typeClient,
+      ...(sirenClient ? { sirenClient } : {}),
+      lieuExecution,
+      objet: e.objet,
+      lignes: lignes.map((l) =>
+        Object.fromEntries(Object.entries(l).filter(([, v]) => v !== undefined)),
+      ),
+      remisePct: e.remisePct,
+      ...options,
+      totaux,
+      ...(datePrestationLe ? { datePrestationLe } : {}),
+      resteCentimes: totaux.ttcCentimes,
+    },
+  };
+}
+
+/**
+ * « Émettre la facture » (éditeur A4, `factures.emettre`) : nouvelle facture, ou brouillon
+ * existant (`factureId`). Mentions vérifiées puis numéro pris dans la même transaction (sans trou,
+ * DEV-06) ; émise et figée d'un coup.
  */
 export async function creerFacture(
   s: ServicesDevis,
   ctx: ContexteDevis,
   e: z.output<typeof entreeCreerFacture>,
 ): Promise<{ factureId: string; numero: string }> {
-  const ref = s.db.doc(chemins.factureClient(ctx.artisanId, idFacture(e.cleIdempotence, 'libre')));
+  const ref = s.db.doc(
+    chemins.factureClient(ctx.artisanId, e.factureId ?? idFacture(e.cleIdempotence, 'libre')),
+  );
   await exiger(s, null, ctx, 'factures.emettre');
   const p = await lireParametresTx(s, null, ctx.artisanId);
   return avecReprise(() =>
     s.db.runTransaction(
       async (t) => {
         const deja = await t.get(ref);
-        if (deja.exists) return { factureId: ref.id, numero: deja.get('numero') as string };
-        const lignes = e.lignes as LigneDevis[];
-        const { margeHtCentimes: _m, ...totaux } = calculerTotaux(
-          { lignes, remisePct: e.remisePct, acomptePct: 0 },
-          { franchiseTva: p.franchiseTva },
-        );
+        if (deja.exists && deja.get('statut') !== 'brouillon')
+          return { factureId: ref.id, numero: deja.get('numero') as string };
+        if (e.factureId && !deja.exists) throw new ErreurMetier('INTROUVABLE');
+        const c = contenuFacture(e, p);
         const maintenant = s.horloge();
-        const sirenClient = e.typeClient === 'pro' ? e.sirenClient?.replace(/\s/g, '') : undefined;
-        const lieuExecution =
-          (e.livraison ? texteAdresse(e.livraison) : e.adresseChantier) || e.client.adresse;
-        const datePrestationLe = jourEnDate(e.datePrestationLe)!;
         const echeanceLe = new Date(maintenant + (p.delaiPaiementJours as number) * JOUR_MS);
         const mentions = verifierMentionsFacture(
           {
             typeClient: e.typeClient,
-            sirenClient,
+            sirenClient: c.sirenClient,
             client: e.client,
-            lieuExecution,
+            lieuExecution: c.lieuExecution,
             emiseLe: new Date(maintenant),
-            datePrestationLe: datePrestationLe.toDate(),
+            datePrestationLe: c.datePrestationLe!.toDate(),
             echeanceLe,
-            lignes,
+            lignes: c.lignes,
           },
           p,
         );
@@ -103,40 +151,22 @@ export async function creerFacture(
           );
         const numero = await reserverNumero(s, t, ctx.artisanId, 'factures');
         const num = numeroDocument('facture', numero.annee, numero.n);
-        const options = Object.fromEntries(
-          (['modeSaisie', 'tvaIntraClient', 'champLibre', 'clientId'] as const)
-            .map((k) => [k, e[k]])
-            .filter(([, v]) => v !== undefined && v !== ''),
-        );
         numero.ecrire();
         t.set(ref, {
           schemaVersion: 1,
           numero: num,
-          type: 'facture',
           statut: 'emise',
-          client: e.client,
-          typeClient: e.typeClient,
-          ...(sirenClient ? { sirenClient } : {}),
-          lieuExecution,
-          objet: e.objet,
-          lignes: lignes.map((l) =>
-            Object.fromEntries(Object.entries(l).filter(([, v]) => v !== undefined)),
-          ),
-          remisePct: e.remisePct,
-          ...options,
-          totaux,
-          datePrestationLe,
+          ...c.champs,
           echeanceLe: Timestamp.fromDate(echeanceLe),
           paiements: [],
-          resteCentimes: totaux.ttcCentimes,
           penalites: {
             tauxAnnuel: (p.tauxPenalitesAnnuel as number | undefined) ?? 12.15,
             indemnite: INDEMNITE,
           },
           relances: [],
           emiseLe: Timestamp.fromMillis(maintenant),
-          creePar: ctx.uid,
-          createdAt: Timestamp.fromMillis(maintenant),
+          creePar: deja.exists ? (deja.get('creePar') as string) : ctx.uid,
+          createdAt: deja.exists ? deja.get('createdAt') : Timestamp.fromMillis(maintenant),
           updatedAt: Timestamp.fromMillis(maintenant),
         });
         return { factureId: ref.id, numero: num };

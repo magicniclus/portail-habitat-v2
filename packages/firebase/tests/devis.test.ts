@@ -1,5 +1,9 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import { entreeCreerFacture, entreeEnregistrerDevis } from '@ph/core/schemas';
+import {
+  entreeBrouillonFacture,
+  entreeCreerFacture,
+  entreeEnregistrerDevis,
+} from '@ph/core/schemas';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
@@ -7,6 +11,10 @@ import { chemins } from '../src/chemins';
 import {
   changerRegimeTva,
   changerStatutDevis,
+  dupliquerFacture,
+  enregistrerBrouillonFacture,
+  envoyerFactureEmail,
+  supprimerFacture,
   dupliquerDevis,
   relancerDevis,
   supprimerDevis,
@@ -355,6 +363,92 @@ describe('factures', () => {
     expect(
       (await erreur(creerFacture(s(), collab, libre({ cleIdempotence: 'libre-0002' })))).code,
     ).toBe('PERMISSION_REFUSEE');
+  });
+
+  it('brouillon de facture : sans numéro, modifiable, puis émis avec le premier numéro libre', async () => {
+    const { cleIdempotence: _c, ...saisie } = libre();
+    const { factureId } = await enregistrerBrouillonFacture(
+      s(),
+      proprio,
+      entreeBrouillonFacture.parse({ ...saisie, datePrestationLe: undefined }),
+    );
+    let f = (await db.doc(chemins.factureClient('a1', factureId)).get()).data()!;
+    expect(f).toMatchObject({ statut: 'brouillon', type: 'facture', resteCentimes: 13200 });
+    expect(f).not.toHaveProperty('numero');
+    await enregistrerBrouillonFacture(
+      s(),
+      proprio,
+      entreeBrouillonFacture.parse({ ...saisie, factureId, objet: 'Dépannage modifié' }),
+    );
+    const r = await creerFacture(s(), proprio, libre({ factureId, objet: 'Dépannage modifié' }));
+    expect(r).toEqual({ factureId, numero: 'F-2026-0001' });
+    f = (await db.doc(chemins.factureClient('a1', factureId)).get()).data()!;
+    expect(f).toMatchObject({ statut: 'emise', numero: 'F-2026-0001', objet: 'Dépannage modifié' });
+    expect(
+      (
+        await erreur(
+          enregistrerBrouillonFacture(
+            s(),
+            proprio,
+            entreeBrouillonFacture.parse({ ...saisie, factureId }),
+          ),
+        )
+      ).code,
+    ).toBe('CONFLIT');
+  });
+
+  it('supprimer : brouillon seulement ; une facture émise ne se supprime jamais', async () => {
+    const { cleIdempotence: _c, ...saisie } = libre();
+    const { factureId } = await enregistrerBrouillonFacture(
+      s(),
+      proprio,
+      entreeBrouillonFacture.parse(saisie),
+    );
+    await supprimerFacture(s(), proprio, { factureId });
+    expect((await db.doc(chemins.factureClient('a1', factureId)).get()).exists).toBe(false);
+    const emise = await creerFacture(s(), proprio, libre());
+    expect(
+      (await erreur(supprimerFacture(s(), proprio, { factureId: emise.factureId }))).code,
+    ).toBe('CONFLIT');
+  });
+
+  it('dupliquer une facture émise : brouillon sans numéro, mêmes lignes ; un avoir ne se duplique pas', async () => {
+    const emise = await creerFacture(s(), proprio, libre());
+    const { factureId } = await dupliquerFacture(s(), proprio, { factureId: emise.factureId });
+    const [a, b] = [
+      (await db.doc(chemins.factureClient('a1', emise.factureId)).get()).data()!,
+      (await db.doc(chemins.factureClient('a1', factureId)).get()).data()!,
+    ];
+    expect(b).toMatchObject({ statut: 'brouillon', objet: a.objet, lignes: a.lignes });
+    expect(b).not.toHaveProperty('numero');
+    const avoir = await creerAvoir(s(), proprio, {
+      factureId: emise.factureId,
+      motif: 'Erreur de prix',
+      cleIdempotence: 'avoir-dup-1',
+    });
+    expect(
+      (await erreur(dupliquerFacture(s(), proprio, { factureId: avoir.factureId }))).code,
+    ).toBe('PRECONDITION');
+  });
+
+  it('envoyer par email : PDF prêt et email du client ; jamais un brouillon', async () => {
+    const envois: { modele: string; secrets?: { lien?: string } }[] = [];
+    const sr = () => ({
+      ...s(),
+      jeton: () => 'jeton-fixe-0123456789abcdef',
+      notifier: async (n: (typeof envois)[number]) => void envois.push(n),
+    });
+    const emise = await creerFacture(s(), proprio, libre());
+    expect((await erreur(envoyerFactureEmail(sr(), proprio, emise))).code).toBe('PRECONDITION');
+    await db.doc(chemins.factureClient('a1', emise.factureId)).update({ pdfPath: 'x.pdf' });
+    await envoyerFactureEmail(sr(), proprio, emise);
+    expect(envois[0]).toMatchObject({ modele: 'facture-envoi' });
+    expect(envois[0]!.secrets!.lien).toMatch(/^\/api\/facture-client\/a1\./);
+    const f = (await db.doc(chemins.factureClient('a1', emise.factureId)).get()).data()!;
+    expect(f.envoyeeLe).toBeDefined();
+    const { cleIdempotence: _c, ...saisie } = libre();
+    const b = await enregistrerBrouillonFacture(s(), proprio, entreeBrouillonFacture.parse(saisie));
+    expect((await erreur(envoyerFactureEmail(sr(), proprio, b))).code).toBe('PRECONDITION');
   });
 
   it('« Nouvelle facture » : mention manquante (aucune ligne chiffrée) → refus, aucun numéro consommé', async () => {

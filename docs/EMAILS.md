@@ -140,6 +140,7 @@ Légende : **G** = groupé · **D** = différé · **S** = aussi par SMS · **A*
 | `nouveau-message` **G A** | message d'un artisan |
 | `relance-devis` **D** | J+7 après un devis sans réponse du particulier |
 | `facture-relance` | facture d’un artisan (Devis & factures) : J−3, J+1 et J+15 autour de l’échéance, ou bouton « Relancer » ; reste dû, lien personnel vers le PDF ; pénalités rappelées à J+15 |
+| `facture-envoi` | facture, facture d’acompte ou avoir d’un artisan envoyé au client (« Envoyer par email ») : montant, échéance, lien personnel vers le PDF |
 | `demande-avis` **D** | J+30 après la date de chantier si `signee` |
 | `rappel-avis` **D** | J+45, une seule fois |
 | `avis-recu` | dépôt d'un avis : « Publication sous 48 h » |

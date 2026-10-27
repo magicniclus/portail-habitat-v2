@@ -99,6 +99,8 @@ export const MODELES = {
   'relance-devis': { categorie: 'relance', charte: 'particulier', differe: true, complet: true },
   /** Client d'un artisan (Devis & factures) : J−3, J+1, J+15 autour de l'échéance, ou « Relancer ». */
   'facture-relance': { categorie: 'activite', charte: 'particulier', complet: true },
+  /** Client d'un artisan : facture (ou avoir) envoyée par email, lien personnel vers le PDF. */
+  'facture-envoi': { categorie: 'activite', charte: 'particulier', complet: true },
   'demande-avis': { categorie: 'relance', charte: 'particulier', differe: true },
   'rappel-avis': { categorie: 'relance', charte: 'particulier', differe: true },
   'avis-recu': { categorie: 'transactionnel', charte: 'particulier' },

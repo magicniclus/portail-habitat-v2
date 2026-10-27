@@ -1,5 +1,6 @@
 import {
   devisAExpirer,
+  LIBELLES_TYPE_FACTURE,
   passeImpayee,
   relanceDevisDue,
   relanceFactureDue,
@@ -148,6 +149,58 @@ export async function relancerFacture(
       'PRECONDITION',
       'Cette facture ne peut pas être relancée (réglée, annulée ou déjà relancée aujourd’hui).',
     );
+}
+
+/**
+ * « Envoyer par email » une facture, un acompte ou un avoir émis : PDF prêt, client avec email ;
+ * lien de téléchargement neuf (les précédents cessent de marcher), date d'envoi gardée.
+ */
+export async function envoyerFactureEmail(
+  s: ServicesRelances,
+  ctx: ContexteDevis,
+  e: z.output<typeof entreeRelancerFacture>,
+): Promise<void> {
+  const ref = s.db.doc(chemins.factureClient(ctx.artisanId, e.factureId));
+  const maintenant = s.horloge();
+  const jeton = (s.jeton ?? nouveauJeton)();
+  const d = await s.db.runTransaction(async (t) => {
+    await exiger(s, t, ctx, 'factures.emettre');
+    const x = await t.get(ref);
+    if (!x.exists) throw new ErreurMetier('INTROUVABLE');
+    if (x.get('statut') === 'brouillon')
+      throw new ErreurMetier('PRECONDITION', 'Émettez la facture avant de l’envoyer.');
+    if (!x.get('client.email'))
+      throw new ErreurMetier('PRECONDITION', 'Ajoutez l’email du client pour lui envoyer.');
+    if (!x.get('pdfPath'))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Le PDF est en préparation : réessayez dans un instant.',
+      );
+    t.update(ref, {
+      jetonHash: empreinteJeton(jeton),
+      envoyeeLe: Timestamp.fromMillis(maintenant),
+      updatedAt: Timestamp.fromMillis(maintenant),
+    });
+    return x;
+  });
+  const p = await lireParametresTx(s, null, ctx.artisanId);
+  const type = d.get('type') as keyof typeof LIBELLES_TYPE_FACTURE;
+  const echeance = date(d.get('echeanceLe'));
+  await s.notifier({
+    modele: 'facture-envoi',
+    destinataire: { email: d.get('client.email') as string },
+    refObjet: ref.path,
+    variante: `envoi:${maintenant}`,
+    donnees: {
+      entreprise: p.raisonSociale,
+      libelle: LIBELLES_TYPE_FACTURE[type] ?? 'Facture',
+      numero: d.get('numero'),
+      objet: d.get('objet') ?? '',
+      montant: `${type === 'avoir' ? '− ' : ''}${euros(d.get('totaux.ttcCentimes') as number)} TTC`,
+      echeance: type !== 'avoir' && echeance ? formatDate(echeance, 'long') : '',
+    },
+    secrets: { lien: `/api/facture-client/${ctx.artisanId}.${ref.id}.${jeton}` },
+  });
 }
 
 /**

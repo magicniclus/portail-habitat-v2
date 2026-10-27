@@ -22,6 +22,7 @@ export {
 export {
   marquerDevisExpires,
   relancerFacture,
+  envoyerFactureEmail,
   traiterDevisEnvoyes,
   traiterFacturesEcheances,
   type ServicesRelances,
@@ -38,3 +39,8 @@ export { lireLienClient, signerDevis } from './signature';
 export { chiffrer, dechiffrer } from './chiffrement';
 export { gererClient, lireClients, type ClientCarnet } from './clients';
 export { dupliquerDevis, relancerDevis, supprimerDevis } from './actionsDevis';
+export {
+  dupliquerFacture,
+  enregistrerBrouillonFacture,
+  supprimerFacture,
+} from './facturesBrouillons';

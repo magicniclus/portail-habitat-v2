@@ -578,6 +578,38 @@ Mes préférences https://portailtravaux.fr/preferences?t=exemple · Aide https:
 Portail Travaux · Raison sociale · Adresse postale"
 `;
 
+exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > facture-envoi : version texte 1`] = `
+"Facture F-2026-0087 de Bertrand Rénovation
+2 679,72 € TTC · échéance le 20 novembre 2026
+
+PORTAIL TRAVAUX
+
+
+VOTRE FACTURE EST DISPONIBLE
+
+Bonjour, Bertrand Rénovation vous adresse facture F-2026-0087.
+
+Facture : F-2026-0087
+
+Objet : Rénovation de salle de bain
+
+Montant : 2 679,72 € TTC
+
+Échéance : 20 novembre 2026
+
+Télécharger le PDF https://portailtravaux.fr/api/facture-client/exemple
+
+Pour toute question, contactez directement Bertrand Rénovation. Ce lien est personnel : ne le transférez pas.
+
+L’équipe Portail Travaux
+
+Vous recevez cet email car les notifications d’activité sont activées.
+
+Mes préférences https://portailtravaux.fr/preferences?t=exemple · Se désabonner de ces emails https://portailtravaux.fr/api/desabonnement?t=exemple · Aide https://portailtravaux.fr/aide
+
+Portail Travaux · Raison sociale · Adresse postale"
+`;
+
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > facture-relance : version texte 1`] = `
 "Facture F-2026-0087 : paiement en attente
 2 679,72 € à régler · échéance le 20 octobre 2026
