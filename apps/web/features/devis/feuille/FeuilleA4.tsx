@@ -91,6 +91,8 @@ export function FeuilleA4({
         aujourdHui={aujourdHui}
         facture={facture}
         intitule={blocs.intitule}
+        debut={blocs.debut}
+        frais={blocs.frais}
       />
       {facture ? null : (
         <textarea

@@ -30,6 +30,8 @@ export function RangeeDocument({
   aujourdHui,
   facture,
   intitule,
+  debut,
+  frais,
 }: {
   e: EtatDevis;
   maj: (patch: Partial<EtatDevis>) => void;
@@ -37,6 +39,9 @@ export function RangeeDocument({
   facture: boolean;
   /** Options › « Intitulé du document » cochée : l'intitulé se saisit à la place de « Devis ». */
   intitule: boolean;
+  /** Options › « Début et durée des travaux », « Frais de déplacement » cochées. */
+  debut: boolean;
+  frais: boolean;
 }) {
   const jours = e.validiteLe
     ? Math.max(0, Math.round((Date.parse(`${e.validiteLe}T12:00:00Z`) - aujourdHui) / JOUR_MS))
@@ -109,32 +114,47 @@ export function RangeeDocument({
       </BlocCases>
       {facture ? null : (
         <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
-          <CaseEtiquetee libelle="Début des travaux">
-            <input
-              aria-label="Début des travaux"
-              type="date"
-              value={e.debutTravauxLe}
-              onChange={(x) => maj({ debutTravauxLe: x.target.value })}
-              className={champCase}
-            />
-          </CaseEtiquetee>
-          <CaseEtiquetee libelle="Durée estimée">
-            <input
-              aria-label="Durée estimée"
-              placeholder="5 jours ouvrés"
-              value={e.dureeEstimee}
-              onChange={(x) => maj({ dureeEstimee: x.target.value })}
-              className={champCase}
-            />
-          </CaseEtiquetee>
-          <CaseEtiquetee libelle="Frais de déplacement">
-            <input
-              aria-label="Frais de déplacement"
-              value={e.fraisDeplacement}
-              onChange={(x) => maj({ fraisDeplacement: x.target.value })}
-              className={champCase}
-            />
-          </CaseEtiquetee>
+          {debut ? (
+            <>
+              <div className="flex min-h-11 items-center gap-1 rounded-[6px] border border-dashed border-neutre-300 bg-blanc pl-1.5 text-[15px] text-neutre-800">
+                <input
+                  aria-label="Libellé de la date"
+                  placeholder="Début des travaux"
+                  value={e.libelleDebut ?? ''}
+                  onChange={(x) => maj({ libelleDebut: x.target.value })}
+                  className={`${champBase} w-40 flex-none placeholder:not-italic placeholder:text-neutre-800`}
+                />
+                <span aria-hidden="true">:</span>
+                <input
+                  aria-label="Début des travaux"
+                  type="date"
+                  value={e.debutTravauxLe}
+                  onChange={(x) => maj({ debutTravauxLe: x.target.value })}
+                  className={champCase}
+                />
+              </div>
+              <CaseEtiquetee libelle="Durée estimée">
+                <input
+                  aria-label="Durée estimée"
+                  placeholder="5 jours ouvrés"
+                  value={e.dureeEstimee}
+                  onChange={(x) => maj({ dureeEstimee: x.target.value })}
+                  className={champCase}
+                />
+              </CaseEtiquetee>
+            </>
+          ) : null}
+          {frais ? (
+            <CaseEtiquetee libelle="Frais de déplacement">
+              <input
+                aria-label="Frais de déplacement"
+                placeholder="ex. 35 € HT"
+                value={e.fraisDeplacement}
+                onChange={(x) => maj({ fraisDeplacement: x.target.value })}
+                className={champCase}
+              />
+            </CaseEtiquetee>
+          ) : null}
           <CaseEtiquetee libelle="Acompte à la signature">
             <input
               aria-label="Acompte (%)"

@@ -115,12 +115,15 @@ export function verifierMentionsDevis(
       pro ? { cle: 'siren_client', libelle: 'SIREN du client', ok: sirenOk(d.sirenClient) } : null,
       { cle: 'lignes', libelle: 'Détail des prestations', ok: lignesOk(d.lignes) },
       { cle: 'totaux', libelle: 'Totaux HT, TVA et TTC', ok: true },
-      {
-        cle: 'debut_duree',
-        libelle: 'Début et durée des travaux',
-        ok: Boolean(d.debutTravauxLe) && rempli(d.dureeEstimee),
-      },
-      { cle: 'frais_deplacement', libelle: 'Frais de déplacement', ok: rempli(d.fraisDeplacement) },
+      // Particulier : date de début ou délai d'exécution (C. conso. L111-1) ; facultatifs entre
+      // professionnels. Frais de déplacement : imprimés seulement s'il y en a (choix du 27/10/2026).
+      pro
+        ? null
+        : {
+            cle: 'debut_duree',
+            libelle: 'Date de début ou durée des travaux',
+            ok: Boolean(d.debutTravauxLe) || rempli(d.dureeEstimee),
+          },
       { cle: 'paiement', libelle: 'Conditions de paiement et pénalités', ok: true },
       { cle: 'gratuite', libelle: 'Devis gratuit ou payant', ok: true },
       pro

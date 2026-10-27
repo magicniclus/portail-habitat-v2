@@ -170,18 +170,34 @@ describe('mentions obligatoires du devis (DATABASE §8 ter)', () => {
     ).toEqual([]);
   });
 
-  it('lignes incomplètes, dates et frais de déplacement manquants', () => {
+  it('lignes incomplètes, dates manquantes ; frais de déplacement facultatifs', () => {
     const r = verifierMentionsDevis(
       {
         ...devis,
         lignes: [{ ...ligne(0, 1, 20), designation: '' }],
         validiteLe: undefined,
         debutTravauxLe: undefined,
+        dureeEstimee: '',
         fraisDeplacement: '',
       },
       params,
     );
-    expect(r.manquantes).toEqual(['validite', 'lignes', 'debut_duree', 'frais_deplacement']);
+    expect(r.manquantes).toEqual(['validite', 'lignes', 'debut_duree']);
+  });
+
+  it('particulier : la date de début OU la durée suffit ; client pro : facultatives', () => {
+    const sansDate = { ...devis, debutTravauxLe: undefined, dureeEstimee: '5 jours' };
+    expect(verifierMentionsDevis(sansDate, params).manquantes).toEqual([]);
+    const pro = {
+      ...devis,
+      typeClient: 'pro' as const,
+      sirenClient: '552100554',
+      debutTravauxLe: undefined,
+      dureeEstimee: '',
+    };
+    const r = verifierMentionsDevis(pro, params);
+    expect(r.liste.map((m) => m.cle)).not.toContain('debut_duree');
+    expect(r.manquantes).toEqual([]);
   });
 
   it('identité incomplète (SIRET absent) → manquante', () => {
@@ -283,6 +299,22 @@ describe('textes légaux du PDF', () => {
       'rétractation de 14 jours',
     );
     expect(conditionsDevis(base, params).join(' ')).not.toContain('rétractation');
+    expect(conditionsDevis({ ...base, fraisDeplacement: '' }, params).join(' ')).not.toContain(
+      'frais de déplacement',
+    );
+    const avec = conditionsDevis(
+      {
+        ...base,
+        debutTravauxLe: new Date('2026-11-16T12:00:00Z'),
+        dureeEstimee: '3 jours',
+        fraisDeplacement: '35 € HT',
+        libelleDebut: 'Date d’intervention',
+      },
+      params,
+    ).join(' ');
+    expect(avec).toContain(
+      'Date d’intervention : 16/11/2026 · durée estimée : 3 jours · frais de déplacement : 35 € HT.',
+    );
     expect(
       conditionsDevis({ ...base, typeClient: 'pro', horsEtablissement: true }, params).join(' '),
     ).not.toContain('rétractation');
@@ -374,7 +406,8 @@ describe('cas complémentaires', () => {
       },
     ).join(' ');
     expect(t).toContain('payant');
-    expect(t).toContain('à convenir');
+    expect(t).not.toContain('Début des travaux');
+    expect(t).not.toContain('déplacement');
     expect(t).toContain('Paiement à réception');
     expect(t).toContain('Virement ou chèque.');
     expect(t).toContain('293 B');

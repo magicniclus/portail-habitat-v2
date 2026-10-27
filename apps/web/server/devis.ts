@@ -160,6 +160,7 @@ function donneesDevis(
         debutTravauxLe: date(x.debutTravauxLe),
         dureeEstimee: x.dureeEstimee,
         fraisDeplacement: x.fraisDeplacement,
+        libelleDebut: x.libelleDebut,
         acomptePct: x.acomptePct,
         acompteCentimes: x.totaux.acompteCentimes ?? 0,
       },

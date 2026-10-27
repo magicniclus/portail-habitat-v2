@@ -67,6 +67,7 @@ export interface EtatDevis {
   livraison?: AdresseLivraison;
   tvaIntraClient?: string;
   intitule?: string;
+  libelleDebut?: string;
   conditionsAcceptation?: string;
   champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
@@ -151,6 +152,7 @@ const optionsDe = (d: DevisComplet): Partial<EtatDevis> => ({
       : {}),
   ...(d.tvaIntraClient ? { tvaIntraClient: d.tvaIntraClient } : {}),
   ...(d.intitule ? { intitule: d.intitule } : {}),
+  ...(d.libelleDebut ? { libelleDebut: d.libelleDebut } : {}),
   ...(d.conditionsAcceptation ? { conditionsAcceptation: d.conditionsAcceptation } : {}),
   ...(d.champSignature ? { champSignature: true } : {}),
   ...(d.champLibre ? { champLibre: d.champLibre } : {}),
@@ -209,7 +211,7 @@ export function etatInitial(o: {
     validiteLe: new Date(o.aujourdHui + o.validiteJours * 86_400_000).toISOString().slice(0, 10),
     debutTravauxLe: '',
     dureeEstimee: '',
-    fraisDeplacement: 'Inclus',
+    fraisDeplacement: '',
     devisGratuit: true,
     notes: '',
     signatureElectronique: false,
@@ -296,6 +298,7 @@ export function versEntree(e: EtatDevis) {
     ...livraisonEntree(e.livraison),
     ...siRempli('tvaIntraClient', e.tvaIntraClient),
     ...siRempli('intitule', e.intitule),
+    ...siRempli('libelleDebut', e.libelleDebut),
     ...siRempli('conditionsAcceptation', e.conditionsAcceptation),
     ...(e.champSignature ? { champSignature: true } : {}),
     ...(e.champLibre?.texte.trim()

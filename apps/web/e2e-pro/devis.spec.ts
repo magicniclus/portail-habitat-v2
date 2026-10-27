@@ -44,6 +44,9 @@ async function remplir(page: Page, o: { email?: string; pro?: string } = {}) {
   const ligne = page.getByRole('group', { name: 'Ligne 1' });
   await ligne.getByLabel('Désignation').fill('Pose receveur extra-plat');
   await ligne.getByLabel('PU HT (€)').fill('690');
+  await options(page, () =>
+    page.getByRole('checkbox', { name: 'Début et durée des travaux' }).check(),
+  );
   await page.getByLabel('Début des travaux').fill('2026-11-16');
   await page.getByLabel('Durée estimée').fill('5 jours ouvrés');
   if (o.pro !== undefined) {

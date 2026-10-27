@@ -18,6 +18,8 @@ export interface ContexteConditionsDevis {
   debutTravauxLe?: Date;
   dureeEstimee: string;
   fraisDeplacement: string;
+  /** Libellé choisi pour la date (« Début des travaux » par défaut, « Date d’intervention »…). */
+  libelleDebut?: string;
   acomptePct: number;
   acompteCentimes: number;
 }
@@ -39,6 +41,20 @@ export const TEXTE_FRANCHISE = 'TVA non applicable, art. 293 B du CGI.';
 export const TEXTE_BON_POUR_ACCORD =
   'Devis reçu avant l’exécution des travaux. Date, signature et mention manuscrite « Bon pour accord » :';
 
+/** Date, durée et frais de déplacement : seulement ce qui est renseigné (blocs facultatifs). */
+function chantier(c: ContexteConditionsDevis): string | null {
+  const parts = [
+    c.debutTravauxLe
+      ? `${c.libelleDebut?.trim() || 'Début des travaux'} : ${formatDate(c.debutTravauxLe)}`
+      : '',
+    c.dureeEstimee.trim() ? `durée estimée : ${c.dureeEstimee.trim()}` : '',
+    c.fraisDeplacement.trim() ? `frais de déplacement : ${c.fraisDeplacement.trim()}` : '',
+  ].filter(Boolean);
+  if (!parts.length) return null;
+  const t = parts.join(' · ');
+  return `${t.charAt(0).toUpperCase()}${t.slice(1)}.`;
+}
+
 export function conditionsDevis(
   c: ContexteConditionsDevis,
   p: ParametresFacturation & {
@@ -53,13 +69,11 @@ export function conditionsDevis(
     `Devis ${c.devisGratuit ? 'gratuit' : 'payant (montant indiqué dans les lignes)'}${
       c.validiteLe ? `, valable jusqu’au ${formatDate(c.validiteLe)}` : ''
     }.`,
-    `Début des travaux : ${c.debutTravauxLe ? formatDate(c.debutTravauxLe) : 'à convenir'} · durée estimée : ${
-      c.dureeEstimee || 'à préciser'
-    } · frais de déplacement : ${c.fraisDeplacement || 'inclus'}.`,
+    chantier(c),
     c.acomptePct > 0
       ? `Acompte à la signature : ${pct(c.acomptePct)} (${eur(c.acompteCentimes)}), solde à réception de facture.`
       : 'Paiement à réception de facture.',
-  ];
+  ].filter((x): x is string => Boolean(x));
   if (p.conditionsPaiement) l.push(p.conditionsPaiement);
   l.push(penalites(pro, p));
   if (p.franchiseTva) l.push(TEXTE_FRANCHISE);

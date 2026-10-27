@@ -114,6 +114,8 @@ export function PanneauOptions({
         ) : null}
       </Section>
       <Section icone={<ListBulletsIcon size={18} />} titre="Info complémentaires">
+        {facture ? null : caseBloc('debut', 'Début et durée des travaux')}
+        {facture ? null : caseBloc('frais', 'Frais de déplacement')}
         {facture ? null : caseBloc('conditions', 'Conditions d’acceptation')}
         {facture ? null : (
           <Checkbox

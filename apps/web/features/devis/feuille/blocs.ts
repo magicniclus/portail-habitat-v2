@@ -10,6 +10,9 @@ export interface Blocs {
   champLibre: boolean;
   remise: boolean;
   cout: boolean;
+  /** Devis : date de début et durée (facultatives entre pros). */
+  debut: boolean;
+  frais: boolean;
 }
 
 /** Blocs affichés à l'ouverture : ceux qui ont déjà une valeur. */
@@ -21,6 +24,8 @@ const blocsInitiaux = (e: EtatDevis): Blocs => ({
   champLibre: e.champLibre !== undefined,
   remise: Number(e.remisePct.replace(',', '.')) > 0,
   cout: e.lignes.some((l) => l.cout),
+  debut: Boolean(e.debutTravauxLe || e.dureeEstimee.trim()),
+  frais: Boolean(e.fraisDeplacement.trim()),
 });
 
 /** Effet d'une case sur la saisie : décocher retire la valeur (rien d'imprimé). */
@@ -42,6 +47,10 @@ function effetBloc(cle: keyof Blocs, oui: boolean, e: EtatDevis): Partial<EtatDe
       return oui ? {} : { remisePct: '0' };
     case 'cout':
       return {};
+    case 'debut':
+      return oui ? {} : { debutTravauxLe: '', dureeEstimee: '', libelleDebut: undefined };
+    case 'frais':
+      return oui ? {} : { fraisDeplacement: '' };
   }
 }
 

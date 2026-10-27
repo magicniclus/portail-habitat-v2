@@ -80,6 +80,8 @@ export const optionsDocument = {
   tvaIntraClient: z.string().trim().max(20).optional(),
   /** Intitulé du document (« Devis » par défaut, « Proposition commerciale »…). */
   intitule: z.string().trim().max(60).optional(),
+  /** Libellé de la date de début (« Début des travaux » par défaut). */
+  libelleDebut: z.string().trim().max(40).optional(),
   conditionsAcceptation: z.string().trim().max(1000).optional(),
   /** Cadre « Bon pour accord » avec date et signature sur le PDF. */
   champSignature: z.boolean().optional(),

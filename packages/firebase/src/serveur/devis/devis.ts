@@ -150,6 +150,7 @@ export async function enregistrerDevis(
           clientId: e.clientId,
           tvaIntraClient: e.tvaIntraClient || undefined,
           intitule: e.intitule || undefined,
+          libelleDebut: e.libelleDebut || undefined,
           conditionsAcceptation: e.conditionsAcceptation || undefined,
           champSignature: e.champSignature,
           champLibre: e.champLibre?.texte ? e.champLibre : undefined,

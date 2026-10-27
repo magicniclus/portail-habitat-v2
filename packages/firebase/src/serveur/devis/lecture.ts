@@ -121,6 +121,7 @@ export interface DevisComplet {
   clientId?: string;
   tvaIntraClient?: string;
   intitule?: string;
+  libelleDebut?: string;
   conditionsAcceptation?: string;
   champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
@@ -190,6 +191,7 @@ export async function lireDevisComplet(
     clientId: x.clientId,
     tvaIntraClient: x.tvaIntraClient,
     intitule: x.intitule,
+    libelleDebut: x.libelleDebut,
     conditionsAcceptation: x.conditionsAcceptation,
     champSignature: x.champSignature,
     champLibre: x.champLibre,
