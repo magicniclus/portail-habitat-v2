@@ -85,6 +85,8 @@ test.describe('Espace pro : tableau de bord', () => {
       '/pro/hors-ligne',
       '/pro/devis/nouveau',
       '/pro/devis/factures/nouvelle',
+      '/pro/devis?onglet=clients',
+      '/pro/devis?onglet=factures',
     ]) {
       await page.goto(chemin);
       await page.evaluate(() => document.fonts.ready);

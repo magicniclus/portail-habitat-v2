@@ -733,6 +733,12 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - Unité : menu déroulant (`UNITES_LIGNE` : u, forfait, h, jour, m, ml, m², m³, kg, t, l, lot, ens. ; « Aucune ») ; une unité ancienne hors liste reste proposée.
 - Champs sélectionnés : fond blanc (plus de fond orange).
 
+**Base clients, actions des devis et des factures (27/10/2026)**
+- **Base clients** : onglet « Clients » (recherche, ajout, modification, suppression) ; dans l'éditeur, « Choisir dans ma base » remplit le bloc client et « Enregistrer ce client dans ma base » crée la fiche. Choix du propriétaire : ajout et modification par ceux qui font des devis (`devis.gerer`), le comptable lit ; une fiche modifiée ne change pas les documents déjà faits (copie conservée). **Modèle de données (signalé)** : collection `artisans/{id}/clients` (`clientCarnet`, `nomTri`) et `clientId` facultatif sur les devis et factures. **Règle (signalée)** : lecture équipe opérationnelle et comptable, écriture serveur seulement (2 cas de test). Une fiche utilisée par une facture émise ne se supprime pas.
+- **Devis, menu « ⋮ »** : brouillon (modifier, dupliquer, supprimer) ; envoyé (PDF, dupliquer, relancer par email une fois par jour, « Suppression impossible » : il s'archive). Route `/api/pro/devis/action`.
+- **Factures** : **brouillons** (choix du propriétaire) sans numéro, modifiables et supprimables, émis ensuite avec le premier numéro libre (suite sans trou). Menu « ⋮ » : PDF, **envoyer par email** (nouveau modèle `facture-envoi`, lien personnel), relancer, dupliquer (en brouillon), **annuler la facture** (avoir total avec motif) ; jamais de suppression d'une facture numérotée. Statut sur la ligne : « Payée » enregistre le règlement du reste (moyen, date). Avoir et facture annulée se citent l'un l'autre dans la liste.
+- Tests : base clients (4 + 2 règles), actions devis (3), brouillons et actions factures (4), e2e (base clients, duplication et suppression d'un devis, brouillon émis puis annulé).
+
 ## 27. Lot 10b : site internet artisan (14/10/2026, en cours)
 Fait :
 - Cœur `packages/core/src/sites/` : schémas (section → ligne → colonne → 16 éléments, réglages par appareil), validation des actions et liens (SITE-09), sous-domaine, formulaire (4 champs figés en gratuit), DNS, site de départ depuis la fiche (sans IA ni chiffre inventé), contrôles SEO, logique de l'éditeur (historique de 80 états, sections, éléments, nouvelles pages).
@@ -891,3 +897,4 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
 - 26/10/2026 — Devis v2 : éditeur pleine page organisé comme les captures, options en cases, nouvelle liste (recherche, HT/TTC, statut sur la ligne, pagination). Détail : §26.
+- 27/10/2026 — Base clients, menus d'actions des devis et des factures (brouillons, duplication, annulation par avoir, envoi et relance par email, « Payée »). Détail : §26.
