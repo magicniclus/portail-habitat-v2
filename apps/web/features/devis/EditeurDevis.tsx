@@ -106,24 +106,20 @@ export function EditeurDevis({
     setMessage({ ton: 'succes', texte: 'Devis enregistré.' });
     if (!initial.devisId) router.replace(routes.proModifierDevis(id));
   };
-  const surEnvoyer = async () => {
+  /** « Valider » : devis figé et PDF produit ; l'email part ensuite du menu (« Envoyer au client »). */
+  const surValider = async () => {
     if (!mentions.ok) {
       const manquantes = mentions.liste.filter((m) => !m.ok).map((m) => m.libelle);
       return setMessage({
         ton: 'danger',
-        texte: `Envoi impossible, il manque : ${manquantes.join(', ')}.`,
+        texte: `Validation impossible, il manque : ${manquantes.join(', ')}.`,
       });
     }
-    if (!e.client.email.trim())
-      return setMessage({
-        ton: 'danger',
-        texte: 'Indiquez l’email du client pour lui envoyer le devis.',
-      });
     setEnCours('envoyer');
     setMessage(null);
     const id = await enregistrer();
     if (!id) return setEnCours(null);
-    const r = await posterJson<null>('/api/pro/devis/envoyer', { devisId: id });
+    const r = await posterJson<null>('/api/pro/devis/valider', { devisId: id });
     setEnCours(null);
     if (!r.ok) return setMessage({ ton: 'danger', texte: r.message });
     router.push(routes.proUnDevis(id));
@@ -184,8 +180,8 @@ export function EditeurDevis({
                 ? 'Enregistrer'
                 : 'Créer le devis'}
           </Button>
-          <Button onClick={surEnvoyer} disabled={enCours !== null}>
-            {enCours === 'envoyer' ? 'Envoi…' : 'Envoyer au client'}
+          <Button onClick={surValider} disabled={enCours !== null}>
+            {enCours === 'envoyer' ? 'Validation…' : 'Valider'}
           </Button>
         </>
       }

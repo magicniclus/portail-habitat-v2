@@ -16,6 +16,7 @@ import {
   envoyerFactureEmail,
   supprimerFacture,
   dupliquerDevis,
+  envoyerDevisAuClient,
   relancerDevis,
   supprimerDevis,
   creerAvoir,
@@ -273,6 +274,53 @@ describe('actions sur un devis (liste)', () => {
       destinataire: { email: 'claire@test.local' },
     });
     expect((await erreur(relancerDevis(sr(), proprio, { devisId }))).code).toBe('PRECONDITION');
+  });
+});
+
+describe('« Valider » puis « Envoyer au client »', () => {
+  it('valider : mentions vérifiées, devis figé, PDF, aucun email ; envoyer ensuite au client', async () => {
+    const pdfs: string[] = [];
+    const emails: string[] = [];
+    const sv = () => ({
+      ...s(),
+      apresEnvoi: async (_a: string, id: string) => {
+        pdfs.push(id);
+        return { pdfPath: `p/${id}.pdf`, hashPdf: 'h' };
+      },
+      envoyerEmail: async (_a: string, id: string) => {
+        emails.push(id);
+        return { jetonHash: 'j' };
+      },
+    });
+    const { devisId } = await enregistrerDevis(
+      s(),
+      proprio,
+      entree({ client: { ...brut.client, email: undefined } }),
+    );
+    await envoyerDevis(sv(), proprio, devisId, 'valider');
+    let d = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(d).toMatchObject({ statut: 'envoye', pdfPath: `p/${devisId}.pdf` });
+    expect(d.valideLe).toBeDefined();
+    expect(d).not.toHaveProperty('envoiLe');
+    expect(emails).toEqual([]);
+    expect((await erreur(envoyerDevisAuClient(sv(), proprio, { devisId }))).code).toBe(
+      'PRECONDITION',
+    );
+    await db.doc(chemins.unDevis('a1', devisId)).update({ 'client.email': 'claire@test.local' });
+    await envoyerDevisAuClient(sv(), proprio, { devisId });
+    d = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(emails).toEqual([devisId]);
+    expect(d.envoiLe).toBeDefined();
+    expect(d.jetonHash).toBe('j');
+    expect(pdfs).toEqual([devisId]);
+  });
+
+  it('un brouillon ne s’envoie pas par le menu : il se valide d’abord', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    const sv = { ...s(), envoyerEmail: async () => ({ jetonHash: 'j' }) };
+    expect((await erreur(envoyerDevisAuClient(sv, proprio, { devisId }))).code).toBe(
+      'PRECONDITION',
+    );
   });
 });
 

@@ -3,6 +3,7 @@
 import { ConfirmDialog, useToast } from '@ph/ui';
 import {
   CopyIcon,
+  EnvelopeSimpleIcon,
   DownloadSimpleIcon,
   PaperPlaneTiltIcon,
   PencilSimpleIcon,
@@ -23,16 +24,19 @@ export function ActionsLigneDevis({
   numero,
   statut,
   aPdf,
+  envoye,
 }: {
   devisId: string;
   numero: string;
   statut: string;
   aPdf: boolean;
+  /** L'email au client est déjà parti. */
+  envoye: boolean;
 }) {
   const router = useRouter();
   const toast = useToast();
   const [confirmer, setConfirmer] = useState(false);
-  const agir = async (action: 'dupliquer' | 'supprimer' | 'relancer') => {
+  const agir = async (action: 'dupliquer' | 'supprimer' | 'relancer' | 'envoyer') => {
     const r = await posterJson<{ devisId: string } | null>('/api/pro/devis/action', {
       action,
       devisId,
@@ -41,7 +45,12 @@ export function ActionsLigneDevis({
     if (action === 'dupliquer' && r.data)
       return router.push(routes.proModifierDevis(r.data.devisId));
     toast({
-      titre: action === 'relancer' ? 'Relance envoyée au client.' : 'Devis supprimé.',
+      titre:
+        action === 'relancer'
+          ? 'Relance envoyée au client.'
+          : action === 'envoyer'
+            ? 'Devis envoyé au client par email.'
+            : 'Devis supprimé.',
       tone: 'succes',
     });
     router.refresh();
@@ -72,6 +81,15 @@ export function ActionsLigneDevis({
       onClick: () => void agir('dupliquer'),
     },
     ...(statut === 'envoye'
+      ? [
+          {
+            libelle: envoye ? 'Renvoyer au client' : 'Envoyer au client',
+            icone: <EnvelopeSimpleIcon size={20} />,
+            onClick: () => void agir('envoyer'),
+          },
+        ]
+      : []),
+    ...(statut === 'envoye' && envoye
       ? [
           {
             libelle: 'Relancer par email',

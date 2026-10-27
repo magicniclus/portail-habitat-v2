@@ -95,8 +95,11 @@ export async function relancerDevis(
     await exiger(s, t, ctx, 'devis.gerer');
     const x = await t.get(ref);
     if (!x.exists) throw new ErreurMetier('INTROUVABLE');
-    if (x.get('statut') !== 'envoye')
-      throw new ErreurMetier('PRECONDITION', 'Seul un devis envoyé, sans réponse, se relance.');
+    if (x.get('statut') !== 'envoye' || !x.get('envoiLe'))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Seul un devis envoyé au client, sans réponse, se relance.',
+      );
     if (!x.get('client.email'))
       throw new ErreurMetier('PRECONDITION', 'Ajoutez l’email du client pour le relancer.');
     const derniere = ms(x.get('relanceLe'));
@@ -122,5 +125,43 @@ export async function relancerDevis(
       envoye: formatDate(ms(d.get('envoiLe')) ?? maintenant, 'long'),
       validite: validite ? formatDate(validite, 'long') : '',
     },
+  });
+}
+
+/**
+ * « Envoyer au client » (menu ⋮) d'un devis validé : email avec un lien de téléchargement neuf
+ * (le PDF ne change pas, DEV-05). Renvoyable ; la relance J+7 part de la première date d'envoi.
+ */
+export async function envoyerDevisAuClient(
+  s: ServicesDevis & {
+    envoyerEmail: (artisanId: string, devisId: string) => Promise<{ jetonHash: string }>;
+  },
+  ctx: ContexteDevis,
+  e: Cible,
+): Promise<void> {
+  const ref = s.db.doc(chemins.unDevis(ctx.artisanId, e.devisId));
+  const d = await s.db.runTransaction(async (t) => {
+    await exiger(s, t, ctx, 'devis.gerer');
+    const x = await t.get(ref);
+    if (!x.exists) throw new ErreurMetier('INTROUVABLE');
+    if (x.get('statut') === 'brouillon')
+      throw new ErreurMetier('PRECONDITION', 'Validez le devis avant de l’envoyer au client.');
+    if (!x.get('client.email'))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Ajoutez l’email du client pour lui envoyer le devis.',
+      );
+    if (!x.get('pdfPath'))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Le PDF est en préparation : réessayez dans un instant.',
+      );
+    return x;
+  });
+  const { jetonHash } = await s.envoyerEmail(ctx.artisanId, e.devisId);
+  await ref.update({
+    jetonHash,
+    ...(d.get('envoiLe') ? {} : { envoiLe: Timestamp.fromMillis(s.horloge()) }),
+    updatedAt: Timestamp.fromMillis(s.horloge()),
   });
 }

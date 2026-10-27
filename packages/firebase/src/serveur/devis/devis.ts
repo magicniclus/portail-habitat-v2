@@ -170,8 +170,9 @@ export async function enregistrerDevis(
 }
 
 /**
- * Envoi (DEV-01, DEV-02) : les mentions sont revérifiées ici, sur les paramètres du moment ; un
- * devis incomplet est refusé avec la liste. Le PDF et l'email sont produits par `apresEnvoi`.
+ * « Valider » ou envoi (DEV-01, DEV-02) : les mentions sont revérifiées ici, sur les paramètres du
+ * moment ; un devis incomplet est refusé avec la liste. Le devis est figé et son PDF produit par
+ * `apresEnvoi` ; `envoyer` y ajoute l'email au client, `valider` non (il part ensuite du menu).
  */
 export async function envoyerDevis(
   s: ServicesDevis & {
@@ -179,6 +180,7 @@ export async function envoyerDevis(
   },
   ctx: ContexteDevis,
   devisId: string,
+  mode: 'envoyer' | 'valider' = 'envoyer',
 ): Promise<void> {
   const ref = s.db.doc(chemins.unDevis(ctx.artisanId, devisId));
   await s.db.runTransaction(async (t) => {
@@ -210,7 +212,7 @@ export async function envoyerDevis(
           .map((x) => x.libelle)
           .join(', ')}.`,
       );
-    if (!(d.get('client.email') as string | undefined))
+    if (mode === 'envoyer' && !(d.get('client.email') as string | undefined))
       throw new ErreurMetier(
         'PRECONDITION',
         'Indiquez l’email du client pour lui envoyer le devis.',
@@ -221,7 +223,8 @@ export async function envoyerDevis(
       statut: 'envoye',
       mentionsOk: true,
       mentionsManquantes: [],
-      envoiLe: Timestamp.fromMillis(s.horloge()),
+      valideLe: Timestamp.fromMillis(s.horloge()),
+      ...(mode === 'envoyer' ? { envoiLe: Timestamp.fromMillis(s.horloge()) } : {}),
       updatedAt: Timestamp.fromMillis(s.horloge()),
     });
   });
@@ -235,7 +238,7 @@ export async function envoyerDevis(
         devis: {
           montantCentimes: d.get('totaux.ttcCentimes') as number,
           storagePath: pdf.pdfPath,
-          envoyeLe: d.get('envoiLe') as Timestamp,
+          envoyeLe: (d.get('envoiLe') ?? d.get('valideLe')) as Timestamp,
         },
       });
   }

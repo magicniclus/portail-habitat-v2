@@ -8,6 +8,12 @@ export const LIBELLES_STATUT_DEVIS = {
   archive: 'Archivé',
 } as const;
 
+/** Libellé affiché : un devis validé dont l'email n'est pas encore parti est « Validé ». */
+export const libelleStatutDevis = (statut: string, envoyeAuClient: boolean): string =>
+  statut === 'envoye' && !envoyeAuClient
+    ? 'Validé'
+    : (LIBELLES_STATUT_DEVIS[statut as keyof typeof LIBELLES_STATUT_DEVIS] ?? statut);
+
 export const LIBELLES_STATUT_FACTURE = {
   brouillon: 'Brouillon',
   emise: 'Émise',

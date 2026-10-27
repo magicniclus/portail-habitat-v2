@@ -74,9 +74,11 @@ test.describe('Devis & factures', () => {
         'false',
       ),
     );
-    await page.getByRole('button', { name: 'Envoyer au client' }).click();
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await expect(
-      page.getByText(/Envoi impossible, il manque : Identité de l’entreprise, Assurance décennale/),
+      page.getByText(
+        /Validation impossible, il manque : Identité de l’entreprise, Assurance décennale/,
+      ),
     ).toBeVisible();
     await expect(page).toHaveURL(/\/pro\/devis\/nouveau$/);
     // DEV-05 : aucun aperçu du PDF dans l'éditeur (le cadre invisible de reCAPTCHA est hors de main).
@@ -106,8 +108,10 @@ test.describe('Devis & factures', () => {
     await options(page, () =>
       expect(page.locator('[data-mention="siren_client"]')).toHaveAttribute('data-ok', 'false'),
     );
-    await page.getByRole('button', { name: 'Envoyer au client' }).click();
-    await expect(page.getByText(/Envoi impossible, il manque : SIREN du client/)).toBeVisible();
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
+    await expect(
+      page.getByText(/Validation impossible, il manque : SIREN du client/),
+    ).toBeVisible();
   });
 
   test('DEV-05 : envoi, PDF téléchargé = PDF reçu par le client ; facture puis paiement', async ({
@@ -118,9 +122,14 @@ test.describe('Devis & factures', () => {
     const avant = new Set(await liensEnvoyes('/api/devis-client/'));
     await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
     await remplir(page, { email });
-    await page.getByRole('button', { name: 'Envoyer au client' }).click();
+    // « Valider » fige le devis et produit le PDF sans email ; « Envoyer au client » ensuite.
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/(?!nouveau)[^/]+$/, { timeout: 20_000 });
     await expect(page).not.toHaveURL(/\/modifier$/);
+    await expect(page.getByText('Validé', { exact: true })).toBeVisible();
+    expect((await liensEnvoyes('/api/devis-client/')).filter((l) => !avant.has(l))).toEqual([]);
+    await page.getByRole('button', { name: 'Envoyer au client' }).click();
+    await expect(page.getByText('Devis envoyé au client par email.')).toBeVisible();
     const telecharger = page.getByRole('link', { name: 'Télécharger le PDF' });
     await expect(telecharger).toBeVisible();
     const pro = await page.request.get((await telecharger.getAttribute('href'))!);

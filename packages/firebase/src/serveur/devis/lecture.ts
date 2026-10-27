@@ -22,6 +22,8 @@ export interface DevisResume {
   factureId?: string;
   /** PDF produit à l'envoi (téléchargeable). */
   aPdf: boolean;
+  /** L'email au client est parti (sinon « Validé »). */
+  envoye: boolean;
 }
 
 export interface FactureResume {
@@ -64,6 +66,7 @@ export async function lireDevisListe(db: Firestore, artisanId: string): Promise<
     validiteLe: ms(d.get('validiteLe')),
     factureId: d.get('factureId') as string | undefined,
     aPdf: Boolean(d.get('pdfPath')),
+    envoye: Boolean(d.get('envoiLe')),
   }));
 }
 

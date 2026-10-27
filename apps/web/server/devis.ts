@@ -140,7 +140,7 @@ function donneesDevis(
   return {
     type: 'devis',
     numero,
-    date: date(x.envoiLe) ?? date(x.createdAt) ?? new Date(),
+    date: date(x.valideLe) ?? date(x.envoiLe) ?? date(x.createdAt) ?? new Date(),
     validiteLe: date(x.validiteLe),
     client: x.client,
     sirenClient: x.sirenClient,
@@ -172,19 +172,11 @@ function donneesDevis(
   };
 }
 
-/**
- * Après l'envoi (transaction validée) : PDF généré, stocké tel quel dans Storage (le fichier
- * téléchargé sera toujours celui-là, DEV-05), puis email au client avec un lien de téléchargement
- * dont seule l'empreinte est gardée.
- */
-export async function produireEtEnvoyerDevis(
-  artisanId: string,
-  devisId: string,
-): Promise<ResultatEnvoi> {
+/** PDF du devis validé, stocké tel quel dans Storage (le fichier téléchargé sera toujours celui-là, DEV-05). */
+export async function produirePdfDevis(artisanId: string, devisId: string): Promise<ResultatEnvoi> {
   const d = await db().doc(chemins.unDevis(artisanId, devisId)).get();
   const x = d.data() as DocumentData;
-  const e = await entreprise(artisanId);
-  const { logo, tampon, ...ent } = e;
+  const { logo, tampon, ...ent } = await entreprise(artisanId);
   const pdf = await genererPdf({
     ...donneesDevis(x.numero as string, x, ent),
     ...(logo ? { logo } : {}),
@@ -195,11 +187,22 @@ export async function produireEtEnvoyerDevis(
   await bucketFichiers()
     .file(pdfPath)
     .save(pdf, { contentType: 'application/pdf', resumable: false });
+  return { pdfPath, hashPdf: sha256(pdf) };
+}
+
+/** Email « devis reçu » au client avec un lien de téléchargement neuf (seule l'empreinte est gardée). */
+export async function envoyerEmailDevis(
+  artisanId: string,
+  devisId: string,
+): Promise<{ jetonHash: string }> {
+  const x = (await db().doc(chemins.unDevis(artisanId, devisId)).get()).data() as DocumentData;
+  const e = await entreprise(artisanId);
   const jeton = nouveauJeton();
   await servicesComptes().notifier({
     modele: 'devis-recu',
     destinataire: { email: x.client.email as string },
     refObjet: `${chemins.unDevis(artisanId, devisId)}`,
+    variante: `envoi:${Date.now()}`,
     donnees: {
       entreprise: e.raisonSociale,
       numero: x.numero,
@@ -217,7 +220,16 @@ export async function produireEtEnvoyerDevis(
         : {}),
     },
   });
-  return { pdfPath, hashPdf: sha256(pdf), jetonHash: empreinteJeton(jeton) };
+  return { jetonHash: empreinteJeton(jeton) };
+}
+
+/** Validation et envoi d'un coup : PDF puis email au client. */
+export async function produireEtEnvoyerDevis(
+  artisanId: string,
+  devisId: string,
+): Promise<ResultatEnvoi> {
+  const pdf = await produirePdfDevis(artisanId, devisId);
+  return { ...pdf, ...(await envoyerEmailDevis(artisanId, devisId)) };
 }
 
 /** PDF d'une facture, produit une fois à l'émission puis servi tel quel. */

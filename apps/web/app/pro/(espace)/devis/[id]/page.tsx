@@ -1,4 +1,4 @@
-import { LIBELLES_STATUT_DEVIS, tonStatut } from '@ph/core/devis';
+import { libelleStatutDevis, tonStatut } from '@ph/core/devis';
 import { formatDate, formatEuros } from '@ph/core/format';
 import { lireDevisComplet } from '@ph/firebase/devis';
 import { Badge } from '@ph/ui';
@@ -21,9 +21,7 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
   const titre = (
     <div className="flex flex-wrap items-center gap-3">
       <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Devis {d.numero}</h1>
-      <Badge tone={tonStatut(d.statut)}>
-        {LIBELLES_STATUT_DEVIS[d.statut as keyof typeof LIBELLES_STATUT_DEVIS] ?? d.statut}
-      </Badge>
+      <Badge tone={tonStatut(d.statut)}>{libelleStatutDevis(d.statut, Boolean(d.envoiLe))}</Badge>
     </div>
   );
   // Brouillon : éditeur pleine page.
@@ -58,6 +56,7 @@ export default async function PageUnDevis({ params }: { params: Promise<{ id: st
         peutFacturer={acces.facturer}
         peutGerer={acces.gerer}
         objet={d.objet}
+        envoye={Boolean(d.envoiLe)}
       />
     </main>
   );

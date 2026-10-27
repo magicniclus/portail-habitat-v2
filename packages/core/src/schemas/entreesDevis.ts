@@ -44,7 +44,7 @@ export const entreeDevisCible = z.strictObject({ devisId: id });
 
 /** Menu « ⋮ » d'un devis dans la liste : dupliquer, supprimer (brouillon), relancer par email. */
 export const entreeActionDevis = z.strictObject({
-  action: z.enum(['dupliquer', 'supprimer', 'relancer']),
+  action: z.enum(['dupliquer', 'supprimer', 'relancer', 'envoyer']),
   devisId: id,
 });
 

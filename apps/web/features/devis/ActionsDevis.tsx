@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
-/** Actions d'un devis envoyé : PDF, décision du client, facturation (acompte, solde), archivage. */
+/** Actions d'un devis validé : PDF, envoi au client, décision, facturation (acompte, solde), archivage. */
 export function ActionsDevis({
   devisId,
   statut,
@@ -17,6 +17,7 @@ export function ActionsDevis({
   peutFacturer,
   peutGerer,
   objet,
+  envoye,
 }: {
   devisId: string;
   statut: string;
@@ -27,11 +28,14 @@ export function ActionsDevis({
   peutGerer: boolean;
   /** Titre proposé pour « Enregistrer comme modèle ». */
   objet: string;
+  /** L'email au client est déjà parti (sinon le devis est seulement validé). */
+  envoye: boolean;
 }) {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [modele, setModele] = useState(false);
+  const [envoi, setEnvoi] = useState(false);
   const appeler = async (url: string, corps: object, ensuite?: (d: unknown) => void) => {
     setEnCours(true);
     setErreur(null);
@@ -52,6 +56,7 @@ export function ActionsDevis({
   return (
     <div className="grid gap-3">
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+      {envoi ? <Banner tone="succes">Devis envoyé au client par email.</Banner> : null}
       {modele ? (
         <Banner tone="succes">Modèle enregistré : retrouvez-le dans l’onglet Modèles.</Banner>
       ) : null}
@@ -60,6 +65,19 @@ export function ActionsDevis({
           <a href={`/api/pro/devis/${devisId}/pdf`} className={bouton({ variant: 'secondaire' })}>
             Télécharger le PDF
           </a>
+        ) : null}
+        {peutGerer && statut === 'envoye' ? (
+          <Button
+            variant={envoye ? 'secondaire' : 'primaire'}
+            disabled={enCours}
+            onClick={() =>
+              void appeler('/api/pro/devis/action', { action: 'envoyer', devisId }, () =>
+                setEnvoi(true),
+              )
+            }
+          >
+            {envoye ? 'Renvoyer au client' : 'Envoyer au client'}
+          </Button>
         ) : null}
         {peutGerer && statut === 'envoye' ? (
           <>

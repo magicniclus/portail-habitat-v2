@@ -40,7 +40,12 @@ export {
 export { lireLienClient, signerDevis } from './signature';
 export { chiffrer, dechiffrer } from './chiffrement';
 export { gererClient, lireClients, type ClientCarnet } from './clients';
-export { dupliquerDevis, relancerDevis, supprimerDevis } from './actionsDevis';
+export {
+  dupliquerDevis,
+  envoyerDevisAuClient,
+  relancerDevis,
+  supprimerDevis,
+} from './actionsDevis';
 export {
   dupliquerFacture,
   enregistrerBrouillonFacture,

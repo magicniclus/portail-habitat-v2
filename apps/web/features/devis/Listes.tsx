@@ -64,10 +64,17 @@ export function ListeDevis({
               numero={d.numero}
               statut={d.statut}
               peutGerer={peutGerer}
+              envoye={d.envoye}
             />
           ),
           menu: peutGerer ? (
-            <ActionsLigneDevis devisId={d.id} numero={d.numero} statut={d.statut} aPdf={d.aPdf} />
+            <ActionsLigneDevis
+              devisId={d.id}
+              numero={d.numero}
+              statut={d.statut}
+              aPdf={d.aPdf}
+              envoye={d.envoye}
+            />
           ) : null,
         };
       })}

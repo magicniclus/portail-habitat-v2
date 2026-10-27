@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  LIBELLES_STATUT_DEVIS,
+  libelleStatutDevis,
   statutsPossibles,
   tonStatut,
   type StatutDevisManuel,
@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
-const libelle = (s: string) => LIBELLES_STATUT_DEVIS[s as keyof typeof LIBELLES_STATUT_DEVIS] ?? s;
 const TON: Record<ReturnType<typeof tonStatut>, string> = {
   neutre: 'border-trait bg-neutre-100 text-neutre-900',
   info: 'border-info/40 bg-info-fond text-info',
@@ -26,17 +25,20 @@ export function StatutDevisListe({
   numero,
   statut,
   peutGerer,
+  envoye,
 }: {
   devisId: string;
   numero: string;
   statut: string;
   peutGerer: boolean;
+  envoye: boolean;
 }) {
   const router = useRouter();
   const [enCours, setEnCours] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const choix = peutGerer ? statutsPossibles(statut) : [];
-  if (!choix.length) return <Badge tone={tonStatut(statut)}>{libelle(statut)}</Badge>;
+  if (!choix.length)
+    return <Badge tone={tonStatut(statut)}>{libelleStatutDevis(statut, envoye)}</Badge>;
   return (
     <span className="grid gap-0.5">
       <select
@@ -59,10 +61,10 @@ export function StatutDevisListe({
           TON[tonStatut(statut)],
         )}
       >
-        <option value={statut}>{libelle(statut)}</option>
+        <option value={statut}>{libelleStatutDevis(statut, envoye)}</option>
         {choix.map((s) => (
           <option key={s} value={s}>
-            {libelle(s)}
+            {libelleStatutDevis(s, true)}
           </option>
         ))}
       </select>
