@@ -28,14 +28,11 @@ test.describe('Statistiques', () => {
     const offre = page.getByRole('dialog', { name: 'Passer à Fiche Pro' });
     await expect(offre).toContainText('29,00 € HT');
     await expect(offre).toContainText('34,80 €');
-    await offre.getByRole('link', { name: 'Continuer vers le paiement' }).click();
-    // PAY-02 : `?offre=fiche` ouvre la fenêtre de paiement de Fiche Pro, TTC 34,80 €.
-    await expect(page).toHaveURL(/\/pro\/abonnement\?offre=fiche/);
-    const paiement = page.getByRole('dialog', { name: 'Passer à Fiche Pro' });
-    await expect(paiement.getByTestId('total-ttc')).toHaveText(/34,80\s€/);
-    await expect(
-      paiement.getByRole('button', { name: 'Continuer vers le paiement' }),
-    ).toBeDisabled();
+    // Paiement direct (choix du 27/10/2026) : CGV à accepter dans la même fenêtre, puis Stripe.
+    const payer = offre.getByRole('button', { name: 'Continuer vers le paiement' });
+    await expect(payer).toBeDisabled();
+    await offre.getByRole('checkbox', { name: /conditions générales de vente/ }).check();
+    await expect(payer).toBeEnabled();
     await expect(page.locator('input[autocomplete^="cc-"]')).toHaveCount(0);
   });
 });

@@ -132,7 +132,7 @@ export function Banniere({
               className={`${pastille} border-premium bg-premium-fond text-premium-texte hover:bg-premium-fond hover:brightness-95`}
             >
               <CrownIcon size={18} weight="fill" aria-hidden="true" className="text-premium" />
-              Plus de bannières
+              Jusqu’à {BANNIERES_MAX_VISIBILITE} bannières
             </FenetreOffre>
           ) : null}
         </div>

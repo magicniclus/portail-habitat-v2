@@ -2,18 +2,20 @@
 
 import { recapPaiement } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
-import { CONTENU_OFFRES, NOMS_FORMULE, offreUrlDe, type FormulePayante } from '@ph/core/paiements';
-import { bouton, Button, Modal } from '@ph/ui';
+import { CONTENU_OFFRES, NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
+import { Banner, bouton, Button, Checkbox, Modal } from '@ph/ui';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
+import { usePaiement } from '@/features/abonnement/usePaiement';
 import { routes } from '@/lib/routes';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
 /**
  * Fenêtre d'offre (PAIEMENTS §4, PAY-10, maquette Fenetre Offre) : tout clic sur une fonction
- * payante l'ouvre. Raison du blocage, avantages, prix HT, TVA et TTC sans engagement, puis
- * « Continuer vers le paiement » vers `/pro/abonnement?offre=`. Rien ne s'active ici.
+ * payante l'ouvre. Raison du blocage, avantages, prix HT, TVA et TTC sans engagement, CGV à
+ * accepter, puis « Continuer vers le paiement » ouvre directement Stripe (choix du propriétaire,
+ * 27/10/2026). Rien ne s'active sans paiement : les droits viennent du webhook.
  */
 export function FenetreOffre({
   formule,
@@ -29,6 +31,8 @@ export function FenetreOffre({
   className?: string;
 }) {
   const [ouverte, setOuverte] = useState(false);
+  const [cgv, setCgv] = useState(false);
+  const { payer, enCours, erreur } = usePaiement(formule);
   const c = CONTENU_OFFRES[formule];
   const r = recapPaiement(formule);
   const nom = NOMS_FORMULE[formule];
@@ -48,9 +52,9 @@ export function FenetreOffre({
           <Button variant="fantome" onClick={() => setOuverte(false)}>
             Plus tard
           </Button>
-          <Link href={routes.proOffre(offreUrlDe(formule))} className={bouton()}>
-            Continuer vers le paiement
-          </Link>
+          <Button onClick={payer} disabled={!cgv || enCours}>
+            {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
+          </Button>
         </>
       }
     >
@@ -81,8 +85,17 @@ export function FenetreOffre({
           </div>
         </dl>
         <p className="m-0 text-sm text-neutre-700">
-          Sans engagement, résiliable à tout moment.{c.note ? ` ${c.note}` : ''}
+          Sans engagement, résiliable à tout moment.{c.note ? ` ${c.note}` : ''} Paiement sécurisé
+          par Stripe : aucune carte n’est saisie sur Portail Travaux.
         </p>
+        <Checkbox checked={cgv} onChange={(e) => setCgv(e.target.checked)}>
+          J’accepte les{' '}
+          <Link href={routes.legal('pro', 'cgv')} target="_blank">
+            conditions générales de vente
+          </Link>
+          .
+        </Checkbox>
+        {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       </div>
     </Modal>
   );

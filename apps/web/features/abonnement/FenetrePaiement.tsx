@@ -7,13 +7,10 @@ import { Banner, Button, Checkbox, Modal } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
+import { usePaiement } from './usePaiement';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
-
-type Reponse =
-  { mode: 'checkout'; url: string } | { mode: 'montee' | 'descente'; formule: FormulePayante };
 
 /**
  * Fenêtre de paiement ouverte par `?offre=` (PAIEMENTS §4, PAY-02) : récapitulatif HT, TVA, TTC,
@@ -35,27 +32,12 @@ export function FenetrePaiement({
   const router = useRouter();
   const [ouverte, setOuverte] = useState(true);
   const [cgv, setCgv] = useState(false);
-  const [enCours, setEnCours] = useState(false);
-  const [erreur, setErreur] = useState<string | null>(null);
+  const { payer, enCours, erreur } = usePaiement(formule, code?.code);
   const r = recapPaiement(formule);
   const montee = r.montantHt > prixActuelHt;
   const fermer = (o: boolean) => {
     setOuverte(o);
     if (!o) router.replace(routes.proAbonnement, { scroll: false });
-  };
-  const payer = async () => {
-    setEnCours(true);
-    setErreur(null);
-    const res = await posterJson<Reponse>('/api/pro/abonnement/checkout', {
-      produit: formule,
-      ...(code ? { code: code.code } : {}),
-    });
-    if (!res.ok) {
-      setEnCours(false);
-      return setErreur(res.message);
-    }
-    if (res.data.mode === 'checkout') return window.location.assign(res.data.url);
-    router.push(`/pro/abonnement/confirme?produit=${formule}&mode=${res.data.mode}`);
   };
   const note =
     actuelle === 'gratuit'
