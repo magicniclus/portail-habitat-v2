@@ -36,6 +36,8 @@ export interface DonneesPdf {
   /** Rapide : désignation, TVA et montant HT, sans quantité ni prix unitaire. */
   modeSaisie?: 'rapide' | 'complet';
   conditionsAcceptation?: string;
+  /** Brouillon téléchargé depuis la liste : marqué, jamais pris pour le devis validé. */
+  brouillon?: boolean;
   /** Cadre « Bon pour accord » (devis) ; absent = imprimé (anciens devis). */
   champSignature?: boolean;
   champLibre?: { titre: string; texte: string };
@@ -163,6 +165,7 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     d.datePrestationLe ? `Date de la prestation : ${formatDate(d.datePrestationLe)}` : '',
     d.echeanceLe ? `Échéance : ${formatDate(d.echeanceLe)}` : '',
   ].filter(Boolean);
+  if (d.brouillon) droite.unshift('BROUILLON · Document de travail, non validé');
   for (const l of droite) doc.text(net(l), { width: largeur / 2, align: 'right' });
   doc.y = Math.max(doc.y, basGauche) + 14;
   doc.x = MARGE;

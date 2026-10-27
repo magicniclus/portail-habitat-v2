@@ -66,10 +66,10 @@ export function ActionsLigneDevis({
           },
         ]
       : []),
-    ...(aPdf
+    ...(aPdf || brouillon
       ? [
           {
-            libelle: 'Télécharger le PDF',
+            libelle: brouillon ? 'Télécharger le PDF (brouillon)' : 'Télécharger le PDF',
             icone: <DownloadSimpleIcon size={20} />,
             href: `/api/pro/devis/${devisId}/pdf`,
           },

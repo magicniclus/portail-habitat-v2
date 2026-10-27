@@ -191,6 +191,26 @@ export async function produirePdfDevis(artisanId: string, devisId: string): Prom
   return { pdfPath, hashPdf: sha256(pdf) };
 }
 
+/**
+ * PDF d'un brouillon, produit à la demande et jamais stocké : marqué « Brouillon », il ne remplace
+ * pas le PDF figé à la validation (DEV-05).
+ */
+export async function pdfBrouillonDevis(
+  artisanId: string,
+  devisId: string,
+): Promise<Buffer | null> {
+  const d = await db().doc(chemins.unDevis(artisanId, devisId)).get();
+  if (!d.exists || d.get('statut') !== 'brouillon') return null;
+  const x = d.data() as DocumentData;
+  const { logo, tampon, ...ent } = await entreprise(artisanId);
+  return genererPdf({
+    ...donneesDevis(x.numero as string, x, ent),
+    brouillon: true,
+    ...(logo ? { logo } : {}),
+    ...(tampon && x.tampon === true ? { tampon } : {}),
+  });
+}
+
 /** Email « devis reçu » au client avec un lien de téléchargement neuf (seule l'empreinte est gardée). */
 export async function envoyerEmailDevis(
   artisanId: string,

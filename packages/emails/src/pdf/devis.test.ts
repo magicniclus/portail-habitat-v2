@@ -207,4 +207,9 @@ describe('PDF : options de l’éditeur A4', () => {
     );
     expect(t).not.toContain('Bon pour accord');
   });
+  it('brouillon : marqué « Brouillon », jamais pris pour un devis validé', async () => {
+    const t = texteDuPdf(await genererPdf({ ...base, brouillon: true }, { compresser: false }));
+    expect(t).toContain('BROUILLON');
+    expect(t).toContain('Document de travail, non validé');
+  });
 });

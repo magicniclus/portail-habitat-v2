@@ -256,6 +256,10 @@ test.describe('Devis & factures', () => {
     const ligne = page.getByRole('row').filter({ hasText: nom });
     await ligne.getByRole('button', { name: /^Actions du devis/ }).click();
     await expect(page.getByRole('button', { name: 'Supprimer le devis' })).toBeVisible();
+    const pdf = page.getByRole('link', { name: 'Télécharger le PDF (brouillon)' });
+    const r = await page.request.get((await pdf.getAttribute('href'))!);
+    expect(r.headers()['content-type']).toBe('application/pdf');
+    await expect(ligne.getByRole('link', { name: /^Modifier / })).toBeVisible();
   });
 
   test('le comptable ne voit pas l’éditeur de devis', async ({ page }) => {
