@@ -137,7 +137,7 @@ export function TableauDocuments({
                     <td className="px-3 py-2 font-semibold whitespace-nowrap max-[799px]:col-span-2 max-[799px]:p-0">
                       <Link
                         href={l.href as Route}
-                        className="text-texte no-underline hover:underline"
+                        className="inline-flex min-h-11 items-center text-texte no-underline hover:underline"
                       >
                         {l.numero || 'Brouillon'}
                       </Link>
