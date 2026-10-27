@@ -40,7 +40,7 @@ export default async function PageDevis({
   const ongletCls = (actif: boolean) =>
     cn(
       'flex min-h-11 items-center rounded-control px-4 font-semibold no-underline',
-      actif ? 'bg-accent-100 text-accent-800' : 'text-neutre-800',
+      actif ? 'bg-neutre-100 text-texte' : 'text-neutre-700 hover:text-texte',
     );
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">

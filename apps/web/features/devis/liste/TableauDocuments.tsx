@@ -36,7 +36,7 @@ export interface LigneTableau {
 const bascule = (actif: boolean) =>
   cn(
     'min-h-11 min-w-14 rounded-pill px-3 text-sm font-semibold',
-    actif ? 'bg-accent-action text-blanc' : 'text-neutre-800 hover:bg-neutre-100',
+    actif ? 'bg-neutre-900 text-blanc' : 'text-neutre-800 hover:bg-neutre-100',
   );
 const iconeLien =
   'grid size-11 place-items-center rounded-full text-neutre-800 hover:bg-accent-100 hover:text-accent-800 focus-visible:outline-2 focus-visible:outline-accent';

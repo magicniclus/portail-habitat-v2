@@ -61,9 +61,9 @@ export function PiedFeuille({
             <dd className="m-0">{eur(m)}</dd>
           </div>
         ))}
-        <div className="flex items-center justify-between px-3 pt-1 text-xl font-bold text-accent-700">
+        <div className="flex items-center justify-between px-3 pt-1 text-xl font-bold text-texte">
           <dt>Total TTC</dt>
-          <dd className="m-0 rounded-pill bg-accent-100 px-4 py-1.5" data-testid="total-ttc-devis">
+          <dd className="m-0 rounded-pill bg-neutre-100 px-4 py-1.5" data-testid="total-ttc-devis">
             {eur(totaux.ttcCentimes)}
           </dd>
         </div>

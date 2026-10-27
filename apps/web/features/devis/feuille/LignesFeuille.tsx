@@ -11,7 +11,7 @@ import { COLONNES } from './CasesFeuille';
 import { LigneFeuille } from './LigneFeuille';
 
 const entete =
-  'flex min-h-10 items-center rounded-[8px] bg-accent-action px-3 text-sm font-semibold text-blanc';
+  'flex min-h-10 items-center rounded-[8px] bg-neutre-100 px-3 text-sm font-semibold text-neutre-900';
 
 /**
  * Lignes de la feuille (captures) : en-tête coloré, « + Ligne simple ▾ » (ligne de texte, lignes

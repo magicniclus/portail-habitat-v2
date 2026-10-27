@@ -48,7 +48,7 @@ export function AjoutLigne({
         <button
           type="button"
           onClick={ligneSimple}
-          className="flex min-h-11 cursor-pointer items-center gap-2 rounded-l-pill border-0 bg-transparent pr-3 pl-4 text-[15px] font-semibold text-accent-700 hover:bg-accent-100 focus-visible:outline-2 focus-visible:outline-accent"
+          className="flex min-h-11 cursor-pointer items-center gap-2 rounded-l-pill border-0 bg-transparent pr-3 pl-4 text-[15px] font-semibold text-texte hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent"
         >
           <PlusIcon size={18} weight="bold" aria-hidden="true" />
           Ligne simple
@@ -60,7 +60,7 @@ export function AjoutLigne({
           aria-expanded={ouvert}
           aria-controls={id}
           onClick={() => setOuvert((o) => !o)}
-          className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-r-pill border-0 bg-transparent text-accent-700 hover:bg-accent-100 focus-visible:outline-2 focus-visible:outline-accent"
+          className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-r-pill border-0 bg-transparent text-texte hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent"
         >
           <CaretDownIcon size={18} weight="bold" aria-hidden="true" />
         </button>
