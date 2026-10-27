@@ -94,6 +94,8 @@ export function htmlEnTexte(html: string): string {
 }
 
 const ORANGE = rampes.pro[600];
+/** Fond doux de l'accent : pastille du total TTC. */
+const ORANGE_FOND = rampes.pro[100];
 const GRIS = neutres[700];
 const TEXTE = couleurs.texte;
 const TRAIT = neutres[300];
@@ -128,109 +130,126 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   const titre =
     d.type === 'devis' && d.intitule?.trim() ? d.intitule.trim().toUpperCase() : TITRES[d.type];
 
-  // En-tête : entreprise à gauche, type et numéro à droite.
-  const haut = doc.y;
+  const droiteX = MARGE + largeur * 0.55;
+  const droiteL = largeur * 0.45;
+
+  // Logo, puis l'entreprise à gauche ; le client en dessous, à droite (captures du propriétaire).
+  let y0 = doc.y;
   if (d.logo) {
     try {
-      doc.image(d.logo, MARGE, haut, { fit: [160, 50] });
-      doc.moveDown(3.5);
+      doc.image(d.logo, MARGE, y0, { fit: [130, 46] });
+      y0 += 58;
     } catch {
       // Logo illisible : le PDF part sans lui.
     }
   }
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(13)
-    .fillColor(TEXTE)
-    .text(net(e.raisonSociale ?? ''), MARGE);
-  doc.font('Helvetica').fontSize(9).fillColor(GRIS);
-  const identite = [
+  doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
+  const entrepriseLignes = [
+    e.raisonSociale ?? '',
+    e.adresseSiege ?? '',
     [e.formeJuridique, e.capitalSocial ? `au capital de ${e.capitalSocial}` : '']
       .filter(Boolean)
       .join(' '),
-    e.adresseSiege,
     [e.siret ? `SIRET ${e.siret}` : '', e.rne ? `RNE ${e.rne}` : ''].filter(Boolean).join(' · '),
     e.tvaIntra ? `TVA intracommunautaire ${e.tvaIntra}` : '',
     [e.telephone, e.email].filter(Boolean).join(' · '),
   ].filter(Boolean);
-  for (const l of identite) doc.text(net(l), { width: largeur / 2 });
-  const basGauche = doc.y;
+  doc.y = y0;
+  entrepriseLignes.forEach((l, i) =>
+    doc
+      .font(i === 0 ? 'Helvetica-Bold' : 'Helvetica')
+      .fontSize(i === 0 ? 11 : 9.5)
+      .fillColor(i === 0 ? TEXTE : GRIS)
+      .text(net(l), MARGE, doc.y, { width: largeur * 0.5 }),
+  );
+  const basEntreprise = doc.y;
+
+  const clientLignes = [
+    d.client.adresse,
+    d.client.complement ?? '',
+    [d.client.codePostal, d.client.ville].filter(Boolean).join(' '),
+    d.client.pays ?? '',
+    d.client.email ?? '',
+    d.sirenClient ? `SIREN ${d.sirenClient}` : '',
+    d.tvaIntraClient ? `TVA intracommunautaire ${d.tvaIntraClient}` : '',
+  ].filter(Boolean);
+  doc.y = y0 + 34;
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(TEXTE);
+  doc.text(net(d.client.nom), droiteX, doc.y, { width: droiteL });
+  doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
+  for (const l of clientLignes) doc.text(net(l), droiteX, doc.y, { width: droiteL });
+  if (d.lieuExecution && d.lieuExecution !== d.client.adresse) {
+    doc.moveDown(0.3);
+    doc
+      .font('Helvetica')
+      .fontSize(9)
+      .fillColor(GRIS)
+      .text(net(`Lieu d’exécution : ${d.lieuExecution}`), droiteX, doc.y, { width: droiteL });
+  }
+  doc.y = Math.max(doc.y, basEntreprise) + 26;
+
+  // Titre et dates : « DEVIS N° … » à gauche, validité ou échéance à droite.
+  const yTitre = doc.y;
   doc
     .font('Helvetica-Bold')
-    // Un intitulé long (« PROPOSITION COMMERCIALE ») reste sur une ligne.
-    .fontSize(titre.length > 14 ? 13 : 20)
+    .fontSize(9)
     .fillColor(ORANGE)
-    .text(net(titre), MARGE + largeur / 2, haut, { width: largeur / 2, align: 'right' });
-  doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
+    .text(net(titre), MARGE, yTitre, { width: largeur * 0.55, characterSpacing: 1 });
+  doc
+    .font('Helvetica-Bold')
+    .fontSize(13)
+    .fillColor(TEXTE)
+    .text(net(`N° ${d.numero}`), MARGE, doc.y + 1, { width: largeur * 0.55 });
+  doc
+    .font('Helvetica')
+    .fontSize(10)
+    .fillColor(GRIS)
+    .text(net(`Date d’émission : ${formatDate(d.date)}`), MARGE, doc.y + 1, {
+      width: largeur * 0.55,
+    });
+  const basTitre = doc.y;
+  doc.y = yTitre + 13;
   const droite = [
-    `N° ${d.numero}`,
-    `Date : ${formatDate(d.date)}`,
+    d.brouillon ? 'BROUILLON · Document de travail, non validé' : '',
     d.validiteLe ? `Valable jusqu’au ${formatDate(d.validiteLe)}` : '',
     d.datePrestationLe ? `Date de la prestation : ${formatDate(d.datePrestationLe)}` : '',
     d.echeanceLe ? `Échéance : ${formatDate(d.echeanceLe)}` : '',
   ].filter(Boolean);
-  if (d.brouillon) droite.unshift('BROUILLON · Document de travail, non validé');
-  for (const l of droite) doc.text(net(l), { width: largeur / 2, align: 'right' });
-  doc.y = Math.max(doc.y, basGauche) + 14;
+  doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
+  for (const l of droite) doc.text(net(l), droiteX, doc.y, { width: droiteL });
+  doc.y = Math.max(doc.y, basTitre) + 14;
   doc.x = MARGE;
 
-  // Client et chantier.
-  const yBloc = doc.y;
-  const bloc = (titre: string, lignes: string[], x: number) => {
+  if (d.objet) {
     doc
       .font('Helvetica-Bold')
-      .fontSize(9)
-      .fillColor(GRIS)
-      .text(titre, x, yBloc, { width: largeur / 2 - 8 });
-    doc.font('Helvetica').fontSize(10).fillColor(TEXTE);
-    for (const l of lignes.filter(Boolean)) doc.text(net(l), x, doc.y, { width: largeur / 2 - 8 });
-    return doc.y;
-  };
-  const y1 = bloc(
-    'CLIENT',
-    [
-      d.client.nom,
-      d.client.adresse,
-      d.client.complement ?? '',
-      [d.client.codePostal, d.client.ville].filter(Boolean).join(' '),
-      d.client.pays ?? '',
-      d.client.email ?? '',
-      d.sirenClient ? `SIREN ${d.sirenClient}` : '',
-      d.tvaIntraClient ? `TVA intracommunautaire ${d.tvaIntraClient}` : '',
-    ],
-    MARGE,
-  );
-  const y2 = bloc(
-    'ADRESSE DU CHANTIER',
-    [d.lieuExecution || d.client.adresse],
-    MARGE + largeur / 2 + 8,
-  );
-  doc.y = Math.max(y1, y2) + 14;
-  doc.x = MARGE;
-
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(12)
-    .text(net(d.objet || ''), { width: largeur });
+      .fontSize(11)
+      .fillColor(TEXTE)
+      .text(net(d.objet), MARGE, doc.y, { width: largeur });
+  }
   if (d.description)
-    doc.font('Helvetica').fontSize(10).text(net(d.description), { width: largeur });
+    doc
+      .font('Helvetica')
+      .fontSize(10)
+      .fillColor(GRIS)
+      .text(net(d.description), MARGE, doc.y + 2, { width: largeur });
   doc.moveDown(0.8);
 
-  // Lignes (une ligne de texte s'imprime en intertitre, hors totaux).
+  // Lignes : en-tête coloré arrondi, une ligne de texte s'imprime en intertitre (hors totaux).
   const rapide = d.modeSaisie === 'rapide';
   const colonnes = rapide
     ? [
-        { titre: 'Désignation', l: largeur - 140, align: 'left' as const },
-        { titre: 'TVA', l: 50, align: 'right' as const },
-        { titre: 'Montant HT', l: 90, align: 'right' as const },
+        { titre: 'Désignation', l: largeur - 160, align: 'left' as const },
+        { titre: 'TVA', l: 60, align: 'center' as const },
+        { titre: 'Montant HT', l: 100, align: 'right' as const },
       ]
     : [
-        { titre: 'Désignation', l: largeur - 300, align: 'left' as const },
-        { titre: 'Qté', l: 50, align: 'right' as const },
-        { titre: 'Unité', l: 50, align: 'left' as const },
-        { titre: 'PU HT', l: 75, align: 'right' as const },
-        { titre: 'TVA', l: 45, align: 'right' as const },
-        { titre: 'Total HT', l: 80, align: 'right' as const },
+        { titre: 'Désignation', l: largeur - 316, align: 'left' as const },
+        { titre: 'Quantité', l: 56, align: 'right' as const },
+        { titre: 'Unité', l: 50, align: 'center' as const },
+        { titre: 'Prix unitaire', l: 72, align: 'right' as const },
+        { titre: 'TVA', l: 46, align: 'center' as const },
+        { titre: 'Montant HT', l: 92, align: 'right' as const },
       ];
   const limite = () => doc.page.height - MARGE - BAS;
   /** Nouvelle page si `hauteur` ne tient plus ; renvoie vrai si une page a été ajoutée. */
@@ -240,56 +259,73 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     doc.x = MARGE;
     return true;
   };
-  const filet = () => {
-    doc
-      .moveTo(MARGE, doc.y - 2)
-      .lineTo(MARGE + largeur, doc.y - 2)
-      .lineWidth(0.4)
-      .strokeColor(TRAIT)
-      .stroke();
-  };
+  const PAD = 7;
   const hauteurLigne = (cellules: string[], gras: boolean) => {
     doc.font(gras ? 'Helvetica-Bold' : 'Helvetica').fontSize(9.5);
     return (
       Math.max(
-        ...cellules.map((c, i) => doc.heightOfString(net(c), { width: colonnes[i]!.l - 4 })),
-      ) + 4
+        ...cellules.map((c, i) => doc.heightOfString(net(c), { width: colonnes[i]!.l - 2 * PAD })),
+      ) +
+      2 * PAD
     );
   };
-  const entete = () =>
-    ligneTableau(
-      colonnes.map((c) => c.titre),
-      true,
-      false,
-    );
-  function ligneTableau(cellules: string[], gras = false, suite = true) {
+  const entete = () => {
+    const titres = colonnes.map((c) => c.titre);
+    const h = Math.max(26, hauteurLigne(titres, true));
+    const y = doc.y;
+    doc.roundedRect(MARGE, y, largeur, h, 7).fill(ORANGE);
+    let x = MARGE;
+    doc.font('Helvetica-Bold').fontSize(9).fillColor(couleurs.blanc);
+    titres.forEach((t, i) => {
+      const col = colonnes[i]!;
+      const th = doc.heightOfString(t, { width: col.l - 2 * PAD });
+      doc.text(net(t), x + PAD, y + (h - th) / 2, { width: col.l - 2 * PAD, align: col.align });
+      x += col.l;
+    });
+    doc.fillColor(TEXTE);
+    doc.y = y + h + 2;
+  };
+  const filet = () => {
+    doc
+      .moveTo(MARGE + 4, doc.y)
+      .lineTo(MARGE + largeur - 4, doc.y)
+      .lineWidth(0.4)
+      .strokeColor(TRAIT)
+      .stroke();
+  };
+  const ligneTableau = (cellules: string[]) => {
     // Une ligne n'est jamais coupée : elle passe entière à la page suivante, sous l'en-tête répété.
-    if (suite && place(hauteurLigne(cellules, gras))) entete();
+    if (place(hauteurLigne(cellules, false))) entete();
     const y = doc.y;
     let x = MARGE;
     let bas = y;
-    doc.font(gras ? 'Helvetica-Bold' : 'Helvetica').fontSize(9.5);
     cellules.forEach((c, i) => {
       const col = colonnes[i]!;
-      doc.text(net(c), x + 2, y, { width: col.l - 4, align: col.align });
+      const dernier = i === cellules.length - 1;
+      doc
+        .font(dernier ? 'Helvetica-Bold' : 'Helvetica')
+        .fontSize(9.5)
+        .fillColor(TEXTE)
+        .text(net(c), x + PAD, y + PAD, { width: col.l - 2 * PAD, align: col.align });
       bas = Math.max(bas, doc.y);
       x += col.l;
     });
-    doc.y = bas + 4;
+    doc.y = bas + PAD;
     filet();
-  }
-  place(60);
+  };
+  place(70);
   entete();
   for (const l of d.lignes) {
     if (!estLigneChiffree(l)) {
       doc.font('Helvetica-Bold').fontSize(10);
-      if (place(doc.heightOfString(net(l.designation), { width: largeur - 4 }) + 8)) entete();
+      if (place(doc.heightOfString(net(l.designation), { width: largeur - 2 * PAD }) + 2 * PAD))
+        entete();
       doc
         .font('Helvetica-Bold')
         .fontSize(10)
         .fillColor(TEXTE)
-        .text(net(l.designation), MARGE + 2, doc.y + 2, { width: largeur - 4 });
-      doc.y += 4;
+        .text(net(l.designation), MARGE + PAD, doc.y + PAD, { width: largeur - 2 * PAD });
+      doc.y += PAD;
       filet();
       continue;
     }
@@ -303,20 +339,30 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
     );
   }
 
-  // Totaux : le bloc reste entier sur une page.
-  doc.moveDown(0.4);
+  // Totaux à droite, libellés à l'accent ; « Total TTC » dans une pastille (bloc jamais coupé).
+  doc.moveDown(0.8);
   place(
-    16 *
+    20 *
       (3 +
         Object.keys(d.totaux.tva).length +
         (d.totaux.remiseCentimes > 0 ? 2 : 0) +
         (d.acomptesDeduits?.length ?? 0)),
   );
-  const total = (libelle: string, montant: string, gras = false) => {
+  const xTotaux = MARGE + largeur - 250;
+  const total = (libelle: string, montant: string, fort = false) => {
     const y = doc.y;
-    doc.font(gras ? 'Helvetica-Bold' : 'Helvetica').fontSize(gras ? 11 : 10);
-    doc.text(net(libelle), MARGE + largeur - 260, y, { width: 160, align: 'left' });
-    doc.text(net(montant), MARGE + largeur - 100, y, { width: 100, align: 'right' });
+    if (fort) {
+      doc.roundedRect(xTotaux + 130, y - 5, 120, 22, 11).fill(ORANGE_FOND);
+    }
+    doc
+      .font(fort ? 'Helvetica-Bold' : 'Helvetica')
+      .fontSize(fort ? 11 : 10)
+      .fillColor(ORANGE)
+      .text(net(libelle), xTotaux, y, { width: 130, align: 'left' });
+    doc
+      .fillColor(fort ? ORANGE : TEXTE)
+      .text(net(montant), xTotaux + 130, y, { width: 110, align: 'right' });
+    doc.y = y + (fort ? 24 : 18);
   };
   if (d.totaux.remiseCentimes > 0) {
     total('Total HT avant remise', eur(d.totaux.htBrutCentimes));
@@ -331,26 +377,39 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   if (d.resteCentimes !== undefined && (d.acomptesDeduits?.length ?? 0) > 0)
     total('Reste à payer', eur(d.resteCentimes), true);
   doc.x = MARGE;
-  doc.moveDown(1);
+  doc.moveDown(0.6);
 
-  // Conditions (le texte passe seul à la page suivante si besoin).
+  // Conditions sous un filet (le texte passe seul à la page suivante si besoin).
   place(40);
-  doc.font('Helvetica-Bold').fontSize(10).text('Conditions', MARGE, doc.y, { width: largeur });
-  doc.font('Helvetica').fontSize(8.5).fillColor(TEXTE);
-  for (const c of d.conditions) doc.text(`• ${net(c)}`, { width: largeur });
-  if (d.conditionsAcceptation?.trim())
-    doc.text(`• Conditions d’acceptation : ${net(d.conditionsAcceptation.trim())}`, {
+  doc
+    .moveTo(MARGE, doc.y)
+    .lineTo(MARGE + largeur, doc.y)
+    .lineWidth(0.5)
+    .strokeColor(TRAIT)
+    .stroke();
+  doc.moveDown(0.6);
+  doc.font('Helvetica').fontSize(9).fillColor(TEXTE);
+  for (const c of d.conditions) {
+    doc.text(net(c), MARGE, doc.y, { width: largeur });
+    doc.moveDown(0.25);
+  }
+  if (d.conditionsAcceptation?.trim()) {
+    doc.text(net(`Conditions d’acceptation : ${d.conditionsAcceptation.trim()}`), MARGE, doc.y, {
       width: largeur,
     });
+    doc.moveDown(0.25);
+  }
   if (d.notes) {
-    doc.moveDown(0.4);
-    doc.text(net(d.notes), { width: largeur });
+    doc.moveDown(0.3);
+    doc.text(net(d.notes), MARGE, doc.y, { width: largeur });
   }
   if (d.champLibre?.texte.trim()) {
     doc.moveDown(0.4);
     if (d.champLibre.titre.trim())
-      doc.font('Helvetica-Bold').text(net(d.champLibre.titre.trim()), { width: largeur });
-    doc.font('Helvetica').text(net(d.champLibre.texte.trim()), { width: largeur });
+      doc
+        .font('Helvetica-Bold')
+        .text(net(d.champLibre.titre.trim()), MARGE, doc.y, { width: largeur });
+    doc.font('Helvetica').text(net(d.champLibre.texte.trim()), MARGE, doc.y, { width: largeur });
   }
   const cachet = (x: number, y: number) => {
     if (!d.tampon) return;
@@ -362,21 +421,24 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
   };
   if (d.type === 'devis' && d.champSignature !== false) {
     doc.moveDown(0.8);
-    place(80);
+    place(84);
     const y = doc.y;
     cachet(MARGE, y);
     doc
-      .rect(MARGE + largeur / 2, y, largeur / 2, 70)
+      .roundedRect(MARGE + largeur / 2, y, largeur / 2, 76, 8)
       .lineWidth(0.6)
+      .dash(3, { space: 3 })
       .strokeColor(neutres[400])
-      .stroke();
+      .stroke()
+      .undash();
     doc
       .font('Helvetica-Bold')
       .fontSize(9)
-      .text(net(TEXTE_BON_POUR_ACCORD), MARGE + largeur / 2 + 8, y + 8, {
-        width: largeur / 2 - 16,
+      .fillColor(TEXTE)
+      .text(net(TEXTE_BON_POUR_ACCORD), MARGE + largeur / 2 + 10, y + 10, {
+        width: largeur / 2 - 20,
       });
-    doc.y = y + 80;
+    doc.y = y + 86;
   } else if (d.tampon) {
     doc.moveDown(0.8);
     place(80);
@@ -392,6 +454,8 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
       net(
         `Assurance décennale : ${e.assuranceDecennale.assureur}, contrat n° ${e.assuranceDecennale.contrat}, couverture : ${e.assuranceDecennale.zone}.${e.rcPro ? ` ${e.rcPro}.` : ''}`,
       ),
+      MARGE,
+      doc.y,
       { width: largeur },
     );
 
