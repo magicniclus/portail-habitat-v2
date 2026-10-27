@@ -104,7 +104,7 @@ export async function creerFacture(
         const numero = await reserverNumero(s, t, ctx.artisanId, 'factures');
         const num = numeroDocument('facture', numero.annee, numero.n);
         const options = Object.fromEntries(
-          (['modeSaisie', 'tvaIntraClient', 'champLibre'] as const)
+          (['modeSaisie', 'tvaIntraClient', 'champLibre', 'clientId'] as const)
             .map((k) => [k, e[k]])
             .filter(([, v]) => v !== undefined && v !== ''),
         );
@@ -241,7 +241,7 @@ export async function facturerDevis(
           lieuExecution,
           // Options de l'éditeur A4 reprises du devis (présentation du PDF).
           ...Object.fromEntries(
-            (['modeSaisie', 'tvaIntraClient', 'champLibre'] as const)
+            (['modeSaisie', 'tvaIntraClient', 'champLibre', 'clientId'] as const)
               .map((k) => [k, d.get(k) as unknown])
               .filter(([, v]) => v !== undefined),
           ),

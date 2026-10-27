@@ -69,6 +69,7 @@ export const SCHEMAS = {
   'artisans/{}/facturesClients/{}': devis.factureClient,
   'artisans/{}/modelesDevis/{}': devis.modeleDevis,
   'artisans/{}/prestationsBiblio/{}': devis.prestationBiblio,
+  'artisans/{}/clients/{}': devis.clientCarnet,
   'artisans/{}/parametresFacturation/{}': devis.parametresFacturation,
   'artisans/{}/compteurs/{}': devis.compteurDocuments,
   'sites/{}': sites.siteArtisan,

@@ -36,3 +36,4 @@ export {
 } from './bibliotheque';
 export { lireLienClient, signerDevis } from './signature';
 export { chiffrer, dechiffrer } from './chiffrement';
+export { gererClient, lireClients, type ClientCarnet } from './clients';

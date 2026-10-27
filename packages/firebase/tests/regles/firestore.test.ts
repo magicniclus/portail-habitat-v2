@@ -332,6 +332,16 @@ const CAS: Cas[] = [
     autorises: membresA1('p', 'g', 'c'),
   },
   {
+    nom: 'lire la base clients (comptable compris)',
+    op: { get: 'artisans/a1/clients/k1' },
+    autorises: membresA1('p', 'g', 'c', 'x'),
+  },
+  {
+    nom: 'écrire dans la base clients (serveur seulement)',
+    op: { creer: 'artisans/a1/clients/k2', donnees: { nom: 'X', nomTri: 'x' } },
+    autorises: [],
+  },
+  {
     nom: 'lire les paramètres de facturation',
     op: { get: 'artisans/a1/parametresFacturation/actuels' },
     autorises: membresA1('p', 'g', 'c', 'x'),

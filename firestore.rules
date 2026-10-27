@@ -108,6 +108,7 @@ service cloud.firestore {
       match /facturesClients/{f}       { allow read: if isGestion(aid) || entRole(aid) == 'x'; allow write: if false; }
       match /modelesDevis/{m}          { allow read: if isOperationnel(aid); allow write: if false; }
       match /prestationsBiblio/{b}     { allow read: if isOperationnel(aid); allow write: if false; }
+      match /clients/{c}               { allow read: if isOperationnel(aid) || entRole(aid) == 'x'; allow write: if false; }
       match /parametresFacturation/{x} { allow read: if isMembre(aid); allow write: if false; }
       match /compteurs/{c}             { allow read, write: if false; }
     }

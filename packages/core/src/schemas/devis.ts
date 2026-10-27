@@ -60,6 +60,8 @@ export const clientDocument = z.object({
 
 /** Options de l'éditeur A4 (devis et factures), toutes facultatives. */
 export const optionsDocument = {
+  /** Client choisi dans la base clients (le document garde sa propre copie du client). */
+  clientId: id.optional(),
   /** Rapide : désignation, TVA, montant ; complet (défaut) : quantité, unité, prix unitaire. */
   modeSaisie: z.enum(MODES_SAISIE).optional(),
   /** Adresse de livraison ou du chantier, si différente de celle du client. */
@@ -218,6 +220,21 @@ export const prestationBiblio = z.object({
   puHtCentimes: centimesPositifs,
   tva: tauxTva,
   coutHtCentimes: centimesPositifs.optional(),
+});
+
+/**
+ * `artisans/{id}/clients/{clientId}` : base clients des devis et factures. Écrit par le serveur ;
+ * chaque devis ou facture garde sa copie (une fiche modifiée ne change pas les documents faits).
+ */
+export const clientCarnet = clientDocument.extend({
+  ...meta,
+  nom: z.string().trim().min(1).max(120),
+  typeClient: z.enum(['particulier', 'pro']),
+  sirenClient: z.string().trim().max(20).optional(),
+  tvaIntraClient: z.string().trim().max(20).optional(),
+  notes: z.string().trim().max(1000).optional(),
+  /** Nom en minuscules sans accents : tri et recherche. */
+  nomTri: z.string().max(120),
 });
 
 /** `artisans/{id}/parametresFacturation/actuels` (document unique). */

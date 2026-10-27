@@ -137,6 +137,22 @@ export const entreeAvoir = z.strictObject({
   cleIdempotence: z.string().min(8).max(64),
 });
 
+/** Fiche de la base clients : création, modification ou suppression (`devis.gerer`). */
+const saisieClient = clientDocument
+  .extend({
+    nom: z.string().trim().min(1).max(120),
+    typeClient: z.enum(['particulier', 'pro']),
+    sirenClient: z.string().trim().max(20).optional(),
+    tvaIntraClient: z.string().trim().max(20).optional(),
+    notes: z.string().trim().max(1000).optional(),
+  })
+  .strict();
+export const entreeClientCarnet = z.discriminatedUnion('action', [
+  saisieClient.extend({ action: z.literal('creer') }),
+  saisieClient.extend({ action: z.literal('modifier'), id }),
+  z.strictObject({ action: z.literal('supprimer'), id }),
+]);
+
 /** Régime de TVA choisi sur la feuille (« Je suis / ne suis pas soumis à la TVA »). */
 export const entreeRegimeTva = z.strictObject({ franchiseTva: z.boolean() });
 

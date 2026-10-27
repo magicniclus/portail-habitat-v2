@@ -106,6 +106,7 @@ export interface DevisComplet {
   modeSaisie?: 'rapide' | 'complet';
   adresseChantier?: string;
   livraison?: AdresseLivraison;
+  clientId?: string;
   tvaIntraClient?: string;
   intitule?: string;
   conditionsAcceptation?: string;
@@ -174,6 +175,7 @@ export async function lireDevisComplet(
     modeSaisie: x.modeSaisie,
     adresseChantier: x.adresseChantier,
     livraison: x.livraison,
+    clientId: x.clientId,
     tvaIntraClient: x.tvaIntraClient,
     intitule: x.intitule,
     conditionsAcceptation: x.conditionsAcceptation,

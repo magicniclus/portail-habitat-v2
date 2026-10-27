@@ -147,6 +147,7 @@ export async function enregistrerDevis(
           adresseChantier:
             (e.livraison ? texteAdresse(e.livraison) : e.adresseChantier) || undefined,
           livraison: e.livraison,
+          clientId: e.clientId,
           tvaIntraClient: e.tvaIntraClient || undefined,
           intitule: e.intitule || undefined,
           conditionsAcceptation: e.conditionsAcceptation || undefined,
