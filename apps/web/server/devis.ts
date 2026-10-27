@@ -262,12 +262,12 @@ export async function produireEtEnvoyerDevis(
   return { ...pdf, ...(await envoyerEmailDevis(artisanId, devisId)) };
 }
 
-/** PDF d'une facture, produit une fois à l'émission puis servi tel quel. */
-export async function produirePdfFacture(artisanId: string, factureId: string): Promise<void> {
-  const ref = db().doc(chemins.factureClient(artisanId, factureId));
-  const f = await ref.get();
-  const x = f.data() as DocumentData;
-  if (x.pdfPath) return;
+/** Données du PDF d'une facture, d'un acompte ou d'un avoir (émis ou brouillon). */
+async function pdfDeFacture(
+  artisanId: string,
+  x: DocumentData,
+  brouillon = false,
+): Promise<Buffer> {
   const { logo, tampon, ...e } = await entreprise(artisanId);
   const origine = x.factureOrigineId
     ? ((
@@ -276,12 +276,17 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
           .get()
       ).get('numero') as string)
     : undefined;
-  const pdf = await genererPdf({
+  const maintenant = new Date();
+  // Brouillon : ni numéro ni échéance encore ; l'échéance indicative suit le délai des paramètres.
+  const echeance = brouillon
+    ? new Date(maintenant.getTime() + (e.delaiPaiementJours ?? 30) * 86_400_000)
+    : date(x.echeanceLe);
+  return genererPdf({
     type: x.type,
-    numero: x.numero,
-    date: date(x.emiseLe) ?? new Date(),
+    numero: brouillon ? '(attribué à l’émission)' : x.numero,
+    date: brouillon ? maintenant : (date(x.emiseLe) ?? maintenant),
     datePrestationLe: date(x.datePrestationLe),
-    echeanceLe: x.type === 'avoir' ? undefined : date(x.echeanceLe),
+    echeanceLe: x.type === 'avoir' ? undefined : echeance,
     client: x.client,
     sirenClient: x.sirenClient,
     ...optionsPdf(x),
@@ -297,7 +302,7 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
       {
         typeClient: x.typeClient,
         type: x.type,
-        echeanceLe: date(x.echeanceLe),
+        echeanceLe: echeance,
         devisNumero: x.devisNumero,
         factureOrigine: origine,
       },
@@ -305,9 +310,29 @@ export async function produirePdfFacture(artisanId: string, factureId: string): 
     ),
     annexes: [],
     entreprise: e,
+    ...(brouillon ? { brouillon: true } : {}),
     ...(logo ? { logo } : {}),
     ...(tampon ? { tampon } : {}),
   });
+}
+
+/** PDF d'une facture en brouillon, produit à la demande et jamais stocké (marqué « Brouillon »). */
+export async function pdfBrouillonFacture(
+  artisanId: string,
+  factureId: string,
+): Promise<Buffer | null> {
+  const f = await db().doc(chemins.factureClient(artisanId, factureId)).get();
+  if (!f.exists || f.get('statut') !== 'brouillon') return null;
+  return pdfDeFacture(artisanId, f.data() as DocumentData, true);
+}
+
+/** PDF d'une facture, produit une fois à l'émission puis servi tel quel. */
+export async function produirePdfFacture(artisanId: string, factureId: string): Promise<void> {
+  const ref = db().doc(chemins.factureClient(artisanId, factureId));
+  const f = await ref.get();
+  const x = f.data() as DocumentData;
+  if (x.pdfPath) return;
+  const pdf = await pdfDeFacture(artisanId, x);
   const pdfPath = `artisans/${artisanId}/factures/${x.numero as string}.pdf`;
   await bucketFichiers()
     .file(pdfPath)

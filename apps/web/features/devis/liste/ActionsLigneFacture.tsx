@@ -56,6 +56,11 @@ export function ActionsLigneFacture({ f }: { f: FactureLigne }) {
           href: routes.proModifierFacture(f.id),
         },
         {
+          libelle: 'Télécharger le PDF (brouillon)',
+          icone: <DownloadSimpleIcon size={20} />,
+          href: `/api/pro/factures/${f.id}/pdf`,
+        },
+        {
           libelle: 'Supprimer le brouillon',
           icone: <TrashIcon size={20} />,
           onClick: () => setSupprimer(true),

@@ -222,6 +222,10 @@ test.describe('Devis & factures', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Brouillon de facture' }),
     ).toBeVisible();
+    // PDF de travail du brouillon (sans numéro), marqué « Brouillon ».
+    const idBrouillon = /factures\/([^/]+)\/modifier/.exec(page.url())![1]!;
+    const pdfBrouillon = await page.request.get(`/api/pro/factures/${idBrouillon}/pdf`);
+    expect(pdfBrouillon.headers()['content-type']).toBe('application/pdf');
     await page.getByRole('button', { name: 'Émettre la facture' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
