@@ -2,7 +2,7 @@
 
 import { formatDate, formatEuros } from '@ph/core/format';
 import { EmptyState, Input, ToastProvider } from '@ph/ui';
-import { MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { EyeIcon, MagnifyingGlassIcon, PencilSimpleIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
@@ -21,7 +21,8 @@ export interface LigneTableau {
   id: string;
   href: string;
   date: number;
-  icone: ReactNode;
+  /** Brouillon : le lien d'action modifie (crayon), sinon il ouvre (œil). */
+  modifiable: boolean;
   numero: string;
   client: string;
   objet: string;
@@ -98,9 +99,6 @@ export function TableauDocuments({
                   <th scope="col" className="w-32 px-4 py-3 font-semibold">
                     Date
                   </th>
-                  <th scope="col" className="w-10 px-1 py-3">
-                    <span className="sr-only">Type de statut</span>
-                  </th>
                   <th scope="col" className="w-40 px-3 py-3 font-semibold">
                     Numéro
                   </th>
@@ -127,7 +125,6 @@ export function TableauDocuments({
                     <td className="px-4 py-2 text-neutre-800 tabular-nums max-[799px]:col-span-2 max-[799px]:row-start-1 max-[799px]:p-0 max-[799px]:text-sm">
                       {formatDate(l.date)}
                     </td>
-                    <td className="px-1 py-2 text-neutre-700 max-[799px]:hidden">{l.icone}</td>
                     <td className="px-3 py-2 font-semibold whitespace-nowrap max-[799px]:col-span-2 max-[799px]:p-0">
                       <Link
                         href={l.href as Route}
@@ -148,7 +145,21 @@ export function TableauDocuments({
                     </td>
                     <td className="px-3 py-2 max-[799px]:col-span-2 max-[799px]:p-0">{l.statut}</td>
                     <td className="px-3 py-2 text-right max-[799px]:p-0">
-                      <span className="flex items-center justify-end">{l.menu}</span>
+                      <span className="flex items-center justify-end gap-1">
+                        <Link
+                          href={l.href as Route}
+                          aria-label={`${l.modifiable ? 'Modifier' : 'Ouvrir'} ${l.numero || 'le brouillon'}`}
+                          title={l.modifiable ? 'Modifier' : 'Ouvrir'}
+                          className="grid size-11 place-items-center rounded-full text-neutre-800 hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent"
+                        >
+                          {l.modifiable ? (
+                            <PencilSimpleIcon size={20} aria-hidden="true" />
+                          ) : (
+                            <EyeIcon size={20} aria-hidden="true" />
+                          )}
+                        </Link>
+                        {l.menu}
+                      </span>
                     </td>
                   </tr>
                 ))}

@@ -2,15 +2,6 @@ import { LIBELLES_TYPE_FACTURE } from '@ph/core/devis';
 import { formatDate } from '@ph/core/format';
 import type { DevisResume, FactureResume } from '@ph/firebase/devis';
 import { EmptyState } from '@ph/ui';
-import {
-  ArchiveIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  FileTextIcon,
-  PaperPlaneTiltIcon,
-  PencilSimpleIcon,
-  XCircleIcon,
-} from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
 import { routes } from '@/lib/routes';
 import { ActionsLigneDevis } from './liste/ActionsLigneDevis';
@@ -18,15 +9,6 @@ import { ActionsLigneFacture } from './liste/ActionsLigneFacture';
 import { StatutFactureListe } from './liste/StatutFactureListe';
 import { StatutDevisListe } from './liste/StatutDevisListe';
 import { TableauDocuments } from './liste/TableauDocuments';
-
-const ICONES: Record<string, ReactNode> = {
-  brouillon: <PencilSimpleIcon size={20} aria-label="Brouillon" />,
-  envoye: <PaperPlaneTiltIcon size={20} aria-label="Envoyé" />,
-  accepte: <CheckCircleIcon size={20} weight="fill" className="text-succes" aria-label="Accepté" />,
-  refuse: <XCircleIcon size={20} weight="fill" className="text-danger" aria-label="Refusé" />,
-  expire: <ClockIcon size={20} aria-label="Expiré" />,
-  archive: <ArchiveIcon size={20} aria-label="Archivé" />,
-};
 
 export function ListeDevis({
   devis,
@@ -52,7 +34,7 @@ export function ListeDevis({
           id: d.id,
           href: brouillon ? routes.proModifierDevis(d.id) : routes.proUnDevis(d.id),
           date: d.creeLe,
-          icone: ICONES[d.statut] ?? <FileTextIcon size={20} aria-hidden="true" />,
+          modifiable: brouillon,
           numero: d.numero,
           client: d.client,
           objet: d.objet,
@@ -116,7 +98,7 @@ export function ListeFactures({
           id: f.id,
           href: brouillon ? routes.proModifierFacture(f.id) : routes.proFactureClient(f.id),
           date: f.creeLe,
-          icone: <FileTextIcon size={20} aria-label={LIBELLES_TYPE_FACTURE[f.type]} />,
+          modifiable: brouillon,
           numero: f.numero || `${LIBELLES_TYPE_FACTURE[f.type]} (brouillon)`,
           client: f.client,
           objet: [
