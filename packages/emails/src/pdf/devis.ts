@@ -348,20 +348,20 @@ export function genererPdf(d: DonneesPdf, o: { compresser?: boolean } = {}): Pro
         (d.totaux.remiseCentimes > 0 ? 2 : 0) +
         (d.acomptesDeduits?.length ?? 0)),
   );
-  const xTotaux = MARGE + largeur - 250;
+  // Libellés sur une seule ligne (« Acompte facturé F-2026-0001 ») : colonne large, jamais coupée.
+  const LIBELLE = 190;
+  const xTotaux = MARGE + largeur - LIBELLE - 120;
   const total = (libelle: string, montant: string, fort = false) => {
     const y = doc.y;
-    if (fort) {
-      doc.roundedRect(xTotaux + 130, y - 5, 120, 22, 11).fill(ORANGE_FOND);
-    }
+    if (fort) doc.roundedRect(xTotaux + LIBELLE, y - 5, 120, 22, 11).fill(ORANGE_FOND);
     doc
       .font(fort ? 'Helvetica-Bold' : 'Helvetica')
       .fontSize(fort ? 11 : 10)
       .fillColor(ORANGE)
-      .text(net(libelle), xTotaux, y, { width: 130, align: 'left' });
+      .text(net(libelle), xTotaux, y, { width: LIBELLE - 8, align: 'left', lineBreak: false });
     doc
       .fillColor(fort ? ORANGE : TEXTE)
-      .text(net(montant), xTotaux + 130, y, { width: 110, align: 'right' });
+      .text(net(montant), xTotaux + LIBELLE, y, { width: 110, align: 'right', lineBreak: false });
     doc.y = y + (fort ? 24 : 18);
   };
   if (d.totaux.remiseCentimes > 0) {
