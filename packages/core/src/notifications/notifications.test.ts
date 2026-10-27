@@ -7,7 +7,7 @@ describe('catalogue (EMAILS §4)', () => {
     const complets = Object.entries(MODELES)
       .filter(([, d]) => 'complet' in d)
       .map(([n]) => n);
-    expect(complets).toHaveLength(81);
+    expect(complets).toHaveLength(82);
     expect(complets).toContain('reprise-simulateur');
     expect(complets).toContain('recu');
   });

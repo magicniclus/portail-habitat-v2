@@ -203,7 +203,7 @@ describe('devis envoyés', () => {
     expect(envois[0]).toMatchObject({
       modele: 'relance-devis',
       destinataire: { email: 'claire@test.local' },
-      donnees: { numero: 'D-2026-0001', envoye: '14 octobre 2026' },
+      donnees: { numero: (await ref.get()).get('numero'), envoye: '14 octobre 2026' },
     });
     horloge = Date.UTC(2026, 10, 14);
     expect(await traiterDevisEnvoyes(s())).toEqual({ expires: 1, relances: 0 });
