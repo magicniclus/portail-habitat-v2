@@ -133,8 +133,38 @@ describe('rendu des sites publiés', () => {
         },
         { ...ctx, edition },
       );
-    expect(vierge(true)).toMatch(/Page vierge.*data-ed-op="zone".*data-ed-op="contenu"/);
-    expect(vierge(false)).not.toContain('Page vierge');
+    expect(vierge(true)).toMatch(/Commencez votre page.*data-ed-op="zone".*data-ed-op="contenu"/);
+    expect(vierge(false)).not.toContain('Commencez votre page');
+  });
+
+  it('zone et bloc vides : « + » dans l’éditeur seulement ; site sans navigation', () => {
+    const z = structuredClone(s.pages.accueil!.sections[0]!);
+    const bloc = { ...z.rows[0]!, cols: [{ ...z.rows[0]!.cols[0]!, els: [] }] };
+    const page = {
+      ...s.pages.accueil!,
+      sections: [
+        { ...z, id: 'zv', rows: [] },
+        { ...z, rows: [bloc] },
+      ],
+    };
+    const rendu = (edition: boolean, masquee = false) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: { ...s.navigation, masquee },
+          page,
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition },
+      );
+    expect(rendu(true)).toContain('data-ed-op="section" data-ed-cible="zv"');
+    expect(rendu(true)).toContain(`data-ed-op="contenu" data-ed-cible="${bloc.cols[0]!.id}"`);
+    expect(rendu(false)).not.toContain('ed-ajout');
+    expect(rendu(false)).toContain('<header');
+    expect(rendu(false, true)).not.toContain('<header');
   });
 
   it('mention Portail Travaux seulement sur un site gratuit', () => {

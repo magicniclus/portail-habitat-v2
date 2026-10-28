@@ -172,7 +172,7 @@ export function Rail({
   return (
     <nav
       aria-label="Outils de l’éditeur"
-      className="flex gap-1 overflow-x-auto border-b border-trait bg-blanc px-1 py-1.5 min-[900px]:flex-col min-[900px]:items-center min-[900px]:border-r min-[900px]:border-b-0 min-[900px]:px-0 min-[900px]:py-2.5"
+      className="flex gap-1 overflow-x-auto border-b border-trait bg-blanc px-1 py-1.5 min-[900px]:h-full min-[900px]:w-16 min-[900px]:flex-col min-[900px]:items-center min-[900px]:border-r min-[900px]:border-b-0 min-[900px]:px-0 min-[900px]:py-2.5"
     >
       {RAIL.map(([id, titre, court]) => {
         const I = ICONES_RAIL[id];

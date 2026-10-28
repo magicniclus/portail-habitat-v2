@@ -287,6 +287,8 @@ export const navigation = z.object({
   fixe: z.boolean(),
   ombre: z.boolean(),
   transparente: z.boolean(),
+  /** Site sans navigation (ni barre, ni menu mobile) : sur toutes les pages. */
+  masquee: z.boolean().optional(),
   mobile: z.object({
     sens: z.enum(['droite', 'gauche']),
     /** Bouton menu (trois traits) à gauche ou à droite. */

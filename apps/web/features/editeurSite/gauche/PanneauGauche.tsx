@@ -63,6 +63,7 @@ export function PanneauGauche(p: {
         selection={p.selection}
         appareil={p.appareil}
         onChoisir={(id) => p.onChoisir(id, true)}
+        navigationMasquee={Boolean(s.b.navigation.masquee)}
       />
     );
   if (p.panneau === 'ajouter')
@@ -173,7 +174,7 @@ export function PanneauGauche(p: {
   return (
     <aside
       aria-label={TITRES_PANNEAU[p.panneau]}
-      className="grid min-w-0 auto-rows-max content-start gap-3.5 overflow-x-hidden overflow-y-auto border-trait bg-blanc px-3.5 pt-4 pb-8 [grid-template-columns:minmax(0,1fr)] min-[900px]:border-r"
+      className="grid min-w-0 auto-rows-max content-start gap-3.5 overflow-x-hidden overflow-y-auto border-trait bg-blanc px-3.5 pt-4 pb-8 [grid-template-columns:minmax(0,1fr)] min-[900px]:h-full min-[900px]:w-[300px] min-[900px]:border-r"
     >
       <span className="flex items-center justify-between">
         <h2 className="m-0 text-base font-bold">{TITRES_PANNEAU[p.panneau]}</h2>

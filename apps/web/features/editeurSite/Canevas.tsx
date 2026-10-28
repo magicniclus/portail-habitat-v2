@@ -8,7 +8,7 @@ export const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, 
 /** Message venu de l'aperçu (script d'édition, origine opaque). */
 export type MessageApercu =
   | { type: 'choisir'; id: string | null }
-  | { type: 'action'; op: string }
+  | { type: 'action'; op: string; id?: string }
   | { type: 'touche'; key: string; ctrl: boolean; shift: boolean }
   | { type: 'texte'; id: string; html: string; texte: string; simple: boolean }
   | { type: 'edition'; id: string }
@@ -134,7 +134,10 @@ export function Canevas({
 
   return (
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
-      <div className="relative mx-auto h-full" style={{ width: largeur * echelle }}>
+      <div
+        className="relative mx-auto h-full transition-[width] duration-300 ease-out motion-reduce:transition-none"
+        style={{ width: largeur * echelle }}
+      >
         {filigrane ? (
           <div
             aria-hidden="true"
@@ -152,7 +155,7 @@ export function Canevas({
           sandbox="allow-scripts"
           srcDoc={surPlace ? initial : html}
           onLoad={quandPret}
-          className="block border-0 bg-blanc shadow-lg"
+          className="block border-0 bg-blanc shadow-lg transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none"
           style={{
             width: largeur,
             height: `${100 / echelle}%`,

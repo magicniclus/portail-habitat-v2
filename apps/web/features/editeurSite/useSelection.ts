@@ -91,8 +91,11 @@ export function useSelection(o: {
   const recevoir = useCallback(
     (m: MessageApercu) => {
       if (m.type === 'choisir') setSelection(m.id);
-      else if (m.type === 'action') agir(m.op as OpSelection);
-      else if (m.type === 'edition') setSelection(m.id);
+      else if (m.type === 'action') {
+        // « + » d'une zone ou d'un bloc vide : il devient la sélection, puis Ajouter s'ouvre.
+        if (m.id) setSelection(m.id);
+        agir(m.op as OpSelection, m.id);
+      } else if (m.type === 'edition') setSelection(m.id);
       else if (m.type === 'texte') onTexte(m.id, m.html, m.texte, m.simple);
       else if (m.type === 'touche') touche(m);
     },

@@ -1,7 +1,7 @@
 'use client';
 
 import { type Appareil, type OperationIa, type PageSite } from '@ph/core/sites';
-import { Banner } from '@ph/ui';
+import { Banner, cn } from '@ph/ui';
 import { useCallback, useState } from 'react';
 import { BarreEditeur, Rail, type Panneau } from './BarreEditeur';
 import { colonnes } from './disposition';
@@ -31,6 +31,9 @@ export function EditeurSite(props: ProprietesEditeur) {
   const s = useBrouillonSite(props.initial);
   const [pageId, setPageId] = useState(props.pageInitiale);
   const [panneau, setPanneau] = useState<Panneau | null>(props.panneauInitial);
+  // Dernier panneau ouvert : reste affiché pendant que sa colonne se referme.
+  const [panneauAffiche, setPanneauAffiche] = useState(panneau);
+  if (panneau && panneau !== panneauAffiche) setPanneauAffiche(panneau);
   const [ongletAjout, setOngletAjout] = useState<OngletAjout>('contenus');
   const [appareil, setAppareil] = useState<Appareil>('desktop');
   const [apercu, setApercu] = useState(false);
@@ -137,34 +140,46 @@ export function EditeurSite(props: ProprietesEditeur) {
         {...(props.questionnaire ? { questionnaire: props.questionnaire } : {})}
       />
       <div
-        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)] min-[900px]:[grid-template-rows:minmax(0,1fr)]"
+        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)] min-[900px]:[grid-template-rows:minmax(0,1fr)] min-[900px]:transition-[grid-template-columns] min-[900px]:duration-300 min-[900px]:ease-out motion-reduce:transition-none"
         style={{ ['--colonnes' as string]: colonnes(outils, panneau) }}
       >
-        {outils ? (
+        <div
+          className={cn('min-h-0 min-w-0 overflow-hidden', !outils && 'max-[899px]:hidden')}
+          inert={!outils}
+        >
           <Rail actif={panneau} onChoisir={(x) => setPanneau((p) => (p === x ? null : x))} />
-        ) : null}
-        {outils && panneau ? (
-          <PanneauGauche
-            panneau={panneau}
-            onFermer={() => setPanneau(null)}
-            s={s}
-            props={props}
-            pageId={pageId}
-            page={page}
-            selection={sel.selection}
-            onChoisir={sel.choisir}
-            onPageId={changerPage}
-            majPage={majPage}
-            ongletAjout={ongletAjout}
-            onOngletAjout={setOngletAjout}
-            ia={ia}
-            onIa={ouvrirIa}
-            onPanneau={setPanneau}
-            onProposition={setProposition}
-            flash={flash}
-            appareil={appareil}
-          />
-        ) : null}
+        </div>
+        {/* Le panneau fermé garde son contenu le temps de l'animation (inerte, hors de portée). */}
+        <div
+          className={cn(
+            'min-h-0 min-w-0 overflow-hidden',
+            !(outils && panneau) && 'max-[899px]:hidden',
+          )}
+          inert={!(outils && panneau)}
+        >
+          {panneauAffiche ? (
+            <PanneauGauche
+              panneau={panneauAffiche}
+              onFermer={() => setPanneau(null)}
+              s={s}
+              props={props}
+              pageId={pageId}
+              page={page}
+              selection={sel.selection}
+              onChoisir={sel.choisir}
+              onPageId={changerPage}
+              majPage={majPage}
+              ongletAjout={ongletAjout}
+              onOngletAjout={setOngletAjout}
+              ia={ia}
+              onIa={ouvrirIa}
+              onPanneau={setPanneau}
+              onProposition={setProposition}
+              flash={flash}
+              appareil={appareil}
+            />
+          ) : null}
+        </div>
         <main className="min-h-[60vh] min-w-0">
           <Canevas
             html={html}
@@ -180,7 +195,10 @@ export function EditeurSite(props: ProprietesEditeur) {
             {...(apercuIa ? { filigrane: 'Aperçu' } : {})}
           />
         </main>
-        {outils ? (
+        <div
+          className={cn('min-h-0 min-w-0 overflow-hidden', !outils && 'max-[899px]:hidden')}
+          inert={!outils}
+        >
           <ColonneDroite
             s={s}
             page={page}
@@ -193,7 +211,7 @@ export function EditeurSite(props: ProprietesEditeur) {
             executer={executer}
             enCours={enCours}
           />
-        ) : null}
+        </div>
       </div>
       <Toast message={toast} onFin={fermerToast} />
     </div>

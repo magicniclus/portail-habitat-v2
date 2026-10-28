@@ -46,7 +46,7 @@ const SURLIGNAGE =
 
 /** Éditeur : page vierge, invitation à ajouter la première zone, section ou contenu. */
 const PAGE_VIERGE =
-  '<div class="ed-vierge"><strong>Page vierge</strong><p>Partez de zéro : une zone prête, une section de blocs ou un simple contenu.</p><div><button type="button" data-ed-op="zone">+ Zone</button><button type="button" data-ed-op="section">+ Section</button><button type="button" data-ed-op="contenu">+ Contenu</button></div></div>';
+  '<div class="ed-vierge"><button type="button" class="plus" data-ed-op="zone" aria-label="Ajouter une zone">+</button><strong>Commencez votre page</strong><p>Choisissez une zone prête à remplir, une section de colonnes ou un simple contenu.</p><div class="ed-choix"><button type="button" data-ed-op="zone">Zone prête<small>Bandeau, avis, contact…</small></button><button type="button" data-ed-op="section">Section<small>1 à 6 colonnes vides</small></button><button type="button" data-ed-op="contenu">Contenu<small>Titre, texte, image…</small></button></div></div>';
 
 export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string {
   const ctx: ContexteRendu = { ...contexte, theme: d.theme, navigation: d.navigation };
@@ -56,7 +56,10 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
     (d.page.sections.length || !ctx.edition
       ? d.page.sections.map((s) => rendreSection(s, ctx)).join('')
       : PAGE_VIERGE);
-  const nav = d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx, d.page.slug);
+  const nav =
+    d.page.sansNavigation || d.navigation.masquee
+      ? ''
+      : rendreNavigation(d.navigation, ctx, d.page.slug);
   // Un bouton « Formulaire » en fenêtre sur la page : la fenêtre est ajoutée une fois.
   const fenetre = /data-fenetre="formulaire"/.test(sections + nav) ? fenetreFormulaire(ctx) : '';
   const jsonLd = JSON.stringify(

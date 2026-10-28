@@ -38,7 +38,7 @@ export function ColonneDroite({
   return (
     <aside
       aria-label="Réglages de la sélection"
-      className="min-h-0 min-w-0 overflow-x-hidden overflow-y-auto border-trait bg-blanc min-[900px]:border-l"
+      className="min-h-0 min-w-0 overflow-x-hidden overflow-y-auto border-trait bg-blanc min-[900px]:h-full min-[900px]:w-[320px] min-[900px]:border-l"
     >
       <PanneauProprietes
         page={page}

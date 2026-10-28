@@ -8,7 +8,7 @@ import {
   type Section,
   type Theme,
 } from '@ph/core/sites';
-import { marquerEdition } from './edition';
+import { marquerEdition, videEdition } from './edition';
 import { css, masques, parAppareil, rendreElement, type ContexteRendu } from './elements';
 import { esc } from './html';
 
@@ -70,7 +70,7 @@ function rendreBloc(c: Bloc, i: number, r: Ligne, ctx: ContexteRendu, parent: bo
   const cls = ['c', masques(c.p.masque), propre ? (fonce ? 'fonce' : 'clair') : '']
     .filter(Boolean)
     .join(' ');
-  const html = `<div class="${cls}"${c.p.htmlId ? ` id="${esc(c.p.htmlId)}"` : ''} style="${esc(style)}">${c.els.map((e) => rendreElement(e, ctx, fonce)).join('')}</div>`;
+  const html = `<div class="${cls}"${c.p.htmlId ? ` id="${esc(c.p.htmlId)}"` : ''} style="${esc(style)}">${c.els.length || !ctx.edition ? c.els.map((e) => rendreElement(e, ctx, fonce)).join('') : videEdition('contenu', c.id, 'Ajouter un contenu')}</div>`;
   return ctx.edition ? marquerEdition(html, c.id, 'bloc') : html;
 }
 
@@ -100,6 +100,6 @@ export function rendreSection(s: Section, ctx: ContexteRendu): string {
   ]
     .filter(Boolean)
     .join(' ');
-  const zone = `<section class="${classes}"${s.p.ancre ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}"><div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('')}</div></section>`;
+  const zone = `<section class="${classes}"${s.p.ancre ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}"><div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.length || !ctx.edition ? s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('') : videEdition('section', s.id, 'Ajouter une section')}</div></section>`;
   return ctx.edition ? marquerEdition(zone, s.id, 'zone') : zone;
 }

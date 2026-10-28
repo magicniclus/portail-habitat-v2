@@ -22,7 +22,7 @@ var r=d.caretRangeFromPoint?d.caretRangeFromPoint(e.clientX,e.clientY):null,s=ge
 t.addEventListener('blur',finEdition,{once:true});post({type:'edition',id:el.getAttribute('data-ed')});},true);
 d.addEventListener('paste',function(e){if(!ed)return;e.preventDefault();d.execCommand('insertText',false,(e.clipboardData||{getData:function(){return '';}}).getData('text/plain'));},true);
 d.addEventListener('click',function(e){if(ed&&ed.t.contains(e.target)){e.preventDefault();return;}var b=e.target.closest&&e.target.closest('[data-ed-op]');e.preventDefault();e.stopPropagation();
-if(b){post({type:'action',op:b.getAttribute('data-ed-op')});return;}
+if(b){var ci=b.getAttribute('data-ed-cible');post(ci?{type:'action',op:b.getAttribute('data-ed-op'),id:ci}:{type:'action',op:b.getAttribute('data-ed-op')});return;}
 if(e.target.closest&&e.target.closest('[data-burger],[data-fermer]')){h.classList.toggle('ouvert');}
 var c=cible(e.target);post({type:'choisir',id:c?c.getAttribute('data-ed'):null});},true);
 d.addEventListener('submit',function(e){e.preventDefault();},true);
@@ -48,8 +48,26 @@ addEventListener('message',function(e){var m=e.data;if(!m||m.source!=='ph-editeu
 if(m.type==='html'){var n=new DOMParser().parseFromString(m.html,'text/html'),a=d.querySelector('style'),b=n.querySelector('style'),y=scrollY;if(a&&b&&a.textContent!==b.textContent)a.textContent=b.textContent;finEdition();if(calque){calque.remove();calque=null;}sel=null;survol=null;d.body.innerHTML=n.body.innerHTML;scrollTo(0,y);if(m0)marquer(m0);}});
 post({type:'pret'});})();`;
 
+const BLEU = niveauxEditeur.section;
+/**
+ * États vides de l'éditeur (inspirés des éditeurs de pages courants) : page, zone ou bloc vide =
+ * un cadre en pointillés avec un « + » qui ouvre le bon onglet du panneau Ajouter.
+ */
+const STYLE_VIDES = `.ed-vierge{margin:48px auto;max-width:880px;padding:56px 24px;border:2px dashed color-mix(in srgb,${BLEU} 45%,transparent);border-radius:18px;background:color-mix(in srgb,${BLEU} 4%,white);text-align:center;font:15px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.62)}
+.ed-vierge .plus{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border-radius:999px;background:${BLEU};color:white;font:300 40px/1 system-ui,sans-serif}
+.ed-vierge strong{display:block;font-size:22px;color:rgba(0,0,0,.85);margin-bottom:4px}.ed-vierge p{margin:0 0 22px}
+.ed-choix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:640px;margin:0 auto}@media(max-width:640px){.ed-choix{grid-template-columns:1fr}}
+.ed-choix button{display:grid;gap:4px;justify-items:center;min-height:44px;padding:18px 12px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:white;font:600 15px system-ui,sans-serif;color:rgba(0,0,0,.85);cursor:pointer}.ed-choix button:hover{border-color:${BLEU};box-shadow:0 0 0 3px color-mix(in srgb,${BLEU} 18%,transparent)}
+.ed-choix small{font-weight:400;font-size:12px;color:rgba(0,0,0,.55)}
+.ed-ajout{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:72px;padding:12px;border:2px dashed color-mix(in srgb,${BLEU} 40%,transparent);border-radius:10px;background:color-mix(in srgb,${BLEU} 3%,transparent);font:600 14px system-ui,sans-serif;color:${BLEU};cursor:pointer}.ed-ajout:hover{background:color-mix(in srgb,${BLEU} 9%,transparent)}
+.ed-ajout span{display:grid;place-items:center;width:26px;height:26px;border-radius:999px;background:${BLEU};color:white;font-size:18px;line-height:1}`;
+
+/** Bouton « + » d'une zone ou d'un bloc vide (éditeur seulement). */
+export const videEdition = (op: 'section' | 'contenu', cible: string, texte: string) =>
+  `<button type="button" class="ed-ajout" data-ed-op="${op}" data-ed-cible="${cible.replace(/[^\w-]/g, '')}"><span aria-hidden="true">+</span>${texte}</button>`;
+
 /** Survol et contenus sans rendu propre (menu, vidéo sans lien) visibles dans l'éditeur seulement. */
-export const STYLE_EDITION = `.ed-vierge{max-width:560px;margin:72px auto;padding:40px 24px;border:2px dashed rgba(0,0,0,.18);border-radius:16px;text-align:center;font:15px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.65)}.ed-vierge strong{display:block;font-size:20px;color:rgba(0,0,0,.85)}.ed-vierge div{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.ed-vierge button{min-height:44px;padding:0 16px;border:1px solid rgba(0,0,0,.2);border-radius:999px;background:white;font:600 14px system-ui,sans-serif;cursor:pointer}[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}`;
+export const STYLE_EDITION = `${STYLE_VIDES}[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}`;
 
 /**
  * Ajoute `data-ed` (et le niveau) à la balise ouvrante d'un fragment HTML ; `texte` : modifiable

@@ -163,6 +163,8 @@ export function verifierLiensSite(
   nav: {
     liens: { label: string; action: Action }[];
     cta: { visible: boolean; texte: string; action: Action };
+    /** Site sans navigation : ses liens ne sont ni affichés ni vérifiés. */
+    masquee?: boolean;
   },
   fichiers: Set<string> = new Set(),
 ): LienInvalide[] {
@@ -195,6 +197,7 @@ export function verifierLiensSite(
       }
     }
   const accueil = publiees[0]?.[0] ?? '';
+  if (nav.masquee) return erreurs;
   for (const l of nav.liens) noter(accueil, 'Navigation', `Menu « ${l.label} »`, l.action);
   if (nav.cta.visible) noter(accueil, 'Navigation', `Bouton « ${nav.cta.texte} »`, nav.cta.action);
   return erreurs;

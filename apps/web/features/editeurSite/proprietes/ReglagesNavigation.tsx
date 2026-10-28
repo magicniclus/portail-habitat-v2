@@ -8,7 +8,7 @@ import {
 } from '@ph/core/sites';
 import { Button } from '@ph/ui';
 import { ChoixImage } from './ChoixImage';
-import { Action, Curseur, Groupe, Info, Segments } from './controles';
+import { Action, Curseur, Groupe, Info, Interrupteur, Segments } from './controles';
 import { Couleurs } from './Couleurs';
 import { NOMS_APPAREIL, pourAppareil, type ContexteReglages } from './contexte';
 import { BoutonsNavigation } from './BoutonsNavigation';
@@ -41,9 +41,16 @@ export function ReglagesNavigation(p: {
   const avecNav = Object.values(c.pages).filter((x) => !x.sansNavigation).length;
   const global = (
     <Groupe titre="Composant global">
+      <Interrupteur
+        libelle="Navigation sur le site"
+        aide="Désactivée : ni barre ni menu, sur toutes les pages (pages d’atterrissage, site d’une seule page)."
+        actif={!n.masquee}
+        onChange={(v) => maj({ masquee: !v })}
+      />
       <Info>
-        Affichée en haut de {avecNav} pages sur {Object.keys(c.pages).length}. Une modification ici
-        s’applique partout.
+        {n.masquee
+          ? 'Aucune navigation sur le site.'
+          : `Affichée en haut de ${avecNav} pages sur ${Object.keys(c.pages).length}. Une modification ici s’applique partout.`}
       </Info>
       {p.nonEnregistree ? (
         <>

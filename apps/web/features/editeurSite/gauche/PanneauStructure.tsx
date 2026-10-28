@@ -36,11 +36,14 @@ export function PanneauStructure({
   selection,
   appareil,
   onChoisir,
+  navigationMasquee = false,
 }: {
   page: PageSite;
   selection: string | null;
   appareil: Appareil;
   onChoisir: (id: string) => void;
+  /** Site sans navigation : la ligne reste (pour la réactiver), marquée masquée. */
+  navigationMasquee?: boolean;
 }) {
   const chaine = new Set(
     selection && selection !== 'nav'
@@ -53,7 +56,7 @@ export function PanneauStructure({
       label: 'Navigation · globale',
       niveau: 'nav',
       prof: 0,
-      masque: page.sansNavigation,
+      masque: page.sansNavigation || navigationMasquee,
     },
   ];
   for (const z of page.sections) {

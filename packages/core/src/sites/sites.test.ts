@@ -167,6 +167,13 @@ describe('actions et liens (SITE-09)', () => {
     ).toHaveLength(1);
   });
 
+  it('site sans navigation : ses liens ne bloquent pas la publication', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    const { contact: _c, ...sansContact } = s.pages;
+    const nav = { ...s.navigation, masquee: true };
+    expect(verifierLiensSite(sansContact, nav).filter((e) => e.page === 'Navigation')).toEqual([]);
+  });
+
   it('une page en brouillon ne compte pas comme destination', () => {
     const s = siteParDefaut(fiche, PALETTE);
     s.pages.contact!.statut = 'brouillon';
