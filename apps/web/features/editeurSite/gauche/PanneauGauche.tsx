@@ -66,6 +66,7 @@ export function PanneauGauche(p: {
           if (sel) p.onChoisir(sel, true);
         }}
         onMessage={p.flash}
+        palette={s.b.theme.palette}
       />
     );
   if (p.panneau === 'pages')

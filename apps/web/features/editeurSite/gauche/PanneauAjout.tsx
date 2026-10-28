@@ -12,6 +12,7 @@ import {
   type Bloc,
   type Ligne,
   type PageSite,
+  type Palette,
   type Section,
   type TypeElement,
 } from '@ph/core/sites';
@@ -20,6 +21,7 @@ import { niveauxEditeur } from '@ph/ui/tokens';
 import { ICONES_ELEMENT } from '../icones';
 import { MesSections } from '../MesSections';
 import { Onglets } from './Onglets';
+import { Vignette } from './Vignette';
 
 export type OngletAjout = 'zones' | 'sections' | 'contenus';
 const nouvelId = () => Math.random().toString(36).slice(2, 10);
@@ -38,8 +40,11 @@ export function PanneauAjout({
   onOnglet,
   onPage,
   onMessage,
+  palette,
 }: {
   page: PageSite;
+  /** Couleurs du site, pour les vignettes des zones. */
+  palette: Palette;
   selection: string | null;
   onglet: OngletAjout;
   onOnglet: (o: OngletAjout) => void;
@@ -108,14 +113,7 @@ export function PanneauAjout({
           />
           {SECTIONS_PRETES.map((s) => (
             <button key={s.cle} type="button" className={carte} onClick={() => ajouterZone(s.cle)}>
-              <span
-                aria-hidden="true"
-                className="flex h-11 w-16 flex-none gap-[3px] rounded-[6px] border border-trait bg-neutre-100 p-2"
-              >
-                {(s.section.rows[0]?.cols ?? [{ w: 12 }]).map((c, i) => (
-                  <span key={i} className="rounded-[2px] bg-neutre-300" style={{ flex: c.w }} />
-                ))}
-              </span>
+              <Vignette fond={s.vignette.fond} largeurs={s.vignette.largeurs} palette={palette} />
               <span className="grid gap-0.5">
                 <span className="text-sm font-bold">{s.nom}</span>
                 <span className="text-xs text-neutre-700">{s.description}</span>

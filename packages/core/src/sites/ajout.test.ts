@@ -11,9 +11,9 @@ const ids = () => {
 const page = () => nouvellePage('Services', 'services', 1);
 
 describe('sections prêtes (SITE_INTERNET §4.1)', () => {
-  it('12 sections, chacune valide pour le schéma une fois construite', () => {
-    expect(SECTIONS_PRETES).toHaveLength(12);
-    expect(new Set(SECTIONS_PRETES.map((s) => s.cle)).size).toBe(12);
+  it('13 zones de la maquette, chacune valide pour le schéma une fois construite', () => {
+    expect(SECTIONS_PRETES).toHaveLength(13);
+    expect(new Set(SECTIONS_PRETES.map((s) => s.cle)).size).toBe(13);
     for (const s of SECTIONS_PRETES) {
       const r = insererSectionPrete(page(), s.cle, null, ids())!;
       expect(section.safeParse(r.page.sections.at(-1)).success, s.cle).toBe(true);
@@ -22,7 +22,7 @@ describe('sections prêtes (SITE_INTERNET §4.1)', () => {
   });
 
   it('aucun fait inventé : chiffres et avis restent « [à compléter] »', () => {
-    for (const cle of ['chiffres', 'avis']) {
+    for (const cle of ['chiffres', 'avis', 'faq']) {
       const json = JSON.stringify(SECTIONS_PRETES.find((s) => s.cle === cle)!.section);
       expect(json).toContain(A_COMPLETER);
     }
@@ -39,6 +39,12 @@ describe('sections prêtes (SITE_INTERNET §4.1)', () => {
     expect(c.page.sections.at(-1)!.id).toBe(c.id);
     expect(insererSectionPrete(p, 'inconnue', null, ids())).toBeNull();
     expect(p.sections).toHaveLength(1);
+  });
+
+  it('une ancre reste unique : la deuxième zone « contact » n’en a pas', () => {
+    const a = insererSectionPrete(page(), 'contact', null, ids())!;
+    const b = insererSectionPrete(a.page, 'contact', null, ids())!;
+    expect(b.page.sections.map((s) => s.p.ancre).filter(Boolean)).toEqual(['contact']);
   });
 });
 

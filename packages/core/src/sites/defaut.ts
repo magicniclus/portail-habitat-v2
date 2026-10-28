@@ -35,6 +35,9 @@ const FOND = {
   texteCouleur: 'auto' as const,
 };
 const A = (type: Action['type'], o: Partial<Action> = {}): Action => ({ type, ...o });
+/** Élément avec quelques réglages changés (marges, tailles). */
+const avec = (e: Element, p: Record<string, unknown>): Element =>
+  ({ ...e, p: { ...e.p, ...p } }) as Element;
 
 /** Fabrique d'identifiants stables pour un même appel (`s1`, `r2`, `c3`, `e4`…). */
 function fabrique() {
@@ -112,25 +115,39 @@ function fabrique() {
       p: { ...base, mb: 0, bouton: 'Envoyer ma demande' },
     }),
   };
-  const col = (els: Element[], w: number) => ({
+  const col = (
+    els: Element[],
+    w: number,
+    o: Partial<{
+      pad: number;
+      arrondi: number;
+      fond: 'aucun' | 'clair' | 'blanc';
+      valign: 'start' | 'center';
+    }> = {},
+  ) => ({
     id: id('c'),
     w,
     p: {
       pad: 0,
       arrondi: 0,
       ombre: false,
-      valign: 'start' as const,
+      valign: 'start' as 'start' | 'center',
       masque: non(),
-      fond: 'aucun' as const,
       ...FOND,
+      fond: 'aucun' as 'aucun' | 'clair' | 'blanc',
+      ...o,
     },
     els,
   });
-  const ligne = (cols: ReturnType<typeof col>[]) => ({
+  const ligne = (
+    cols: ReturnType<typeof col>[],
+    gap = 32,
+    valign: 'stretch' | 'center' = 'stretch',
+  ) => ({
     id: id('r'),
     p: {
-      gap: 32,
-      valign: 'stretch' as const,
+      gap,
+      valign,
       fond: 'aucun' as const,
       empile: true,
       inverse: false,
@@ -143,9 +160,10 @@ function fabrique() {
     rows: ReturnType<typeof ligne>[],
     fond: Section['p']['fond'] = 'blanc',
     ancre = '',
+    padY = v3(72, 56, 40),
   ): Section => ({
     id: id('s'),
-    p: { nom, ancre, largeur: 'boite', padY: v3(72, 56, 40), masque: non(), fond, ...FOND },
+    p: { nom, ancre, largeur: 'boite', padY, masque: non(), fond, ...FOND },
     rows,
   });
   return { el, col, ligne, section };
@@ -185,40 +203,55 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
   const bandeau = section(
     'Bandeau',
     [
-      ligne([
-        col(
-          [
-            el.surtitre(`${f.metier} · ${f.ville}`),
-            el.titre(`${f.nomCommercial}, ${f.metier.toLowerCase()} à ${f.ville}`, 'h1'),
-            el.texte(accroche),
-            el.bouton('Demander un devis gratuit', devis),
-            ...(tel ? [el.bouton(f.telephone!, tel, 'contour')] : []),
-          ],
-          f.photos[0] ? 6 : 12,
-        ),
-        ...(f.photos[0]
-          ? [col([el.image(f.photos[0], `Chantier réalisé par ${f.nomCommercial}`)], 6)]
-          : []),
-      ]),
+      ligne(
+        [
+          col(
+            [
+              el.surtitre(`${f.metier} · ${f.ville}`),
+              avec(el.titre(`${f.nomCommercial}, ${f.metier.toLowerCase()} à ${f.ville}`, 'h1'), {
+                mb: 20,
+              }),
+              avec(el.texte(accroche), { mb: 24 }),
+              el.bouton('Demander un devis gratuit', devis),
+              ...(tel ? [el.bouton(f.telephone!, tel, 'contour')] : []),
+            ],
+            f.photos[0] ? 6 : 12,
+            { valign: 'center' },
+          ),
+          ...(f.photos[0]
+            ? [col([el.image(f.photos[0], `Chantier réalisé par ${f.nomCommercial}`)], 6)]
+            : []),
+        ],
+        48,
+        'center',
+      ),
     ],
     'clair',
+    '',
+    v3(80, 60, 40),
   );
   const avis =
     f.nbAvis && f.noteMoyenne
       ? [
-          section('Avis clients', [
-            ligne([
-              col(
-                [
-                  el.chiffre(
-                    `${String(f.noteMoyenne).replace('.', ',')}/5`,
-                    `Note moyenne sur ${f.nbAvis} avis vérifiés par Portail Travaux`,
-                  ),
-                ],
-                12,
-              ),
-            ]),
-          ]),
+          section(
+            'Avis clients',
+            [
+              ligne([
+                col(
+                  [
+                    el.chiffre(
+                      `${String(f.noteMoyenne).replace('.', ',')}/5`,
+                      `Note moyenne sur ${f.nbAvis} avis vérifiés par Portail Travaux`,
+                    ),
+                  ],
+                  12,
+                ),
+              ]),
+            ],
+            'blanc',
+            '',
+            v3(56, 44, 32),
+          ),
         ]
       : [];
   const presentation = f.description
@@ -234,13 +267,14 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
           section(
             'Réalisations',
             [
-              ligne([col([el.titre('Nos réalisations')], 12)]),
+              ligne([col([el.titre('Chantiers récents')], 12)]),
               ligne(
                 f.photos
                   .slice(0, 3)
                   .map((p, i) =>
                     col([el.image(p, `Réalisation ${i + 1} de ${f.nomCommercial}`)], 4),
                   ),
+                20,
               ),
             ],
             'clair',
@@ -251,20 +285,48 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     section(
       'Contact et devis',
       [
-        ligne([
-          col(
-            [
-              el.titre('Parlons de votre projet'),
-              el.texte('Devis gratuit et sans engagement.'),
-              ...(f.telephone ? [el.chiffre(f.telephone, 'Par téléphone')] : []),
-            ],
-            5,
-          ),
-          col([el.formulaire()], 7),
-        ]),
+        ligne(
+          [
+            col(
+              [
+                el.titre('Parlons de votre projet'),
+                el.texte('Devis gratuit et sans engagement.'),
+                ...(f.telephone ? [el.chiffre(f.telephone, 'Par téléphone')] : []),
+              ],
+              5,
+            ),
+            col([el.formulaire()], 7, { fond: 'clair', pad: 28, arrondi: 12 }),
+          ],
+          40,
+        ),
       ],
       'blanc',
       'contact',
+    );
+  const pied = () =>
+    section(
+      'Pied de page',
+      [
+        ligne(
+          [
+            [f.nomCommercial, [f.adresse, f.telephone].filter(Boolean).join(' · ') || f.ville],
+            ...(f.decennale ? [['Garanties', `Assurance décennale : ${f.decennale}`]] : []),
+            ['Informations', `${f.metier} à ${f.ville} · devis gratuit`],
+          ].map(([t, x]) =>
+            col(
+              [
+                avec(el.titre(t!, 'h3'), { taille: v3(17, 17, 16), mb: 6 }),
+                avec(el.texte(x!), { taille: v3(15, 15, 14), mb: 0 }),
+              ],
+              f.decennale ? 4 : 6,
+            ),
+          ),
+          24,
+        ),
+      ],
+      'sombre',
+      '',
+      v3(40, 36, 28),
     );
   const mentions = [
     [
@@ -294,7 +356,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
         meta: accroche.slice(0, 320),
         motCle: `${f.metier} ${f.ville}`.toLowerCase(),
       },
-      [bandeau, ...presentation, ...realisations, ...avis, contact()],
+      [bandeau, ...avis, ...presentation, ...realisations, contact(), pied()],
     ),
     contact: page(
       'Contact et devis',
@@ -311,7 +373,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
         meta: `Décrivez votre projet : ${f.nomCommercial} vous répond rapidement. Devis gratuit et sans engagement.`,
         motCle: `devis ${f.metier} ${f.ville}`.toLowerCase(),
       },
-      [contact()],
+      [contact(), pied()],
     ),
     mentions: page(
       'Mentions légales',
@@ -349,7 +411,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     },
     navigation: {
       logo: {
-        mode: 'nom',
+        mode: 'logo-nom',
         image: '',
         initiales: f.nomCommercial
           .split(/\s+/)

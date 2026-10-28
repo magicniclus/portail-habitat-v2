@@ -3,7 +3,7 @@ import { A_COMPLETER, construireSection, type SectionIa } from './ia/operations'
 import type { PageSite, TypeElement } from './schemas';
 
 /**
- * Panneau « Ajouter » de l'éditeur (SITE_INTERNET §4.1) : 12 sections prêtes et les 16 éléments.
+ * Panneau « Ajouter » de l'éditeur (SITE_INTERNET §4.1) : 13 zones prêtes et les 16 éléments.
  * Les textes sont des intitulés à adapter ; tout ce qui serait un fait (chiffre, avis, téléphone)
  * reste « [à compléter] », ce qui bloque la publication tant que l'artisan ne l'a pas rempli.
  */
@@ -11,6 +11,8 @@ export interface SectionPrete {
   cle: string;
   nom: string;
   description: string;
+  /** Vignette du panneau Ajouter : fond et largeurs des blocs. */
+  vignette: { fond: 'blanc' | 'clair' | 'primaire' | 'sombre'; largeurs: number[] };
   section: SectionIa;
 }
 
@@ -21,89 +23,174 @@ const col = (w: number, els: El[], p?: Record<string, unknown>) => ({
   els,
   ...(p ? { p } : {}),
 });
-const section = (
-  nom: string,
-  rows: SectionIa['rows'][number]['cols'][],
-  p: Record<string, unknown> = {},
-): SectionIa => ({ p: { nom, ...p }, rows: rows.map((cols) => ({ cols })) });
+type Ligne = { cols: ReturnType<typeof col>[]; p?: Record<string, unknown> };
+const ligne = (cols: ReturnType<typeof col>[], p?: Record<string, unknown>): Ligne => ({
+  cols,
+  ...(p ? { p } : {}),
+});
+const section = (nom: string, rows: Ligne[], p: Record<string, unknown> = {}): SectionIa => ({
+  p: { nom, fond: 'blanc', padY: t3(72, 56, 40), ...p },
+  rows,
+});
+const t3 = (d: number, t: number, m: number) => ({ desktop: d, tablet: t, mobile: m });
 const devis = { type: 'formulaire', formulaire: 'defiler' } as const;
-const carteService = (titre: string) =>
-  col(
-    4,
-    [
-      el('titre', { texte: titre, niveau: 'h3' }),
-      el('texte', { texte: 'Décrivez ce service en deux phrases.' }),
-    ],
-    {
-      pad: 24,
-      arrondi: 12,
-      fond: 'clair',
-    },
-  );
+const titre3 = (texte: string, mb = 8) =>
+  el('titre', { texte, niveau: 'h3', taille: t3(21, 20, 19), mb });
+/** Titre de zone et phrase d'introduction. */
+const entete = (titre: string, texte: string, align: 'left' | 'center' = 'left') =>
+  ligne([
+    col(12, [el('titre', { texte: titre, mb: 8, align }), el('texte', { texte, mb: 0, align })]),
+  ]);
 
+/** Les 13 zones prêtes de la maquette ; faits (chiffres, avis, réponses) à compléter. */
 export const SECTIONS_PRETES: readonly SectionPrete[] = [
   {
     cle: 'bandeau',
-    nom: 'Bandeau d’accueil',
-    description: 'Grand titre, phrase d’accroche et bouton devis sur une photo.',
+    nom: 'Bandeau',
+    description: 'Titre, accroche, boutons, photo',
+    vignette: { fond: 'clair', largeurs: [6, 6] },
     section: section(
-      'Bandeau d’accueil',
+      'Bandeau',
       [
-        [
+        ligne(
+          [
+            col(
+              6,
+              [
+                el('surtitre', { texte: 'Votre métier · votre ville' }),
+                el('titre', {
+                  texte: 'Votre titre principal',
+                  niveau: 'h1',
+                  taille: t3(48, 40, 30),
+                  mb: 20,
+                }),
+                el('texte', {
+                  texte: 'Une phrase qui dit ce que vous faites et pour qui.',
+                  mb: 24,
+                }),
+                el('bouton', { texte: 'Demander un devis gratuit', action: devis, mb: 0 }),
+              ],
+              { valign: 'center' },
+            ),
+            col(6, [
+              el('image', { legende: 'Photo d’un de vos chantiers', ratio: '4 / 3', mb: 0 }),
+            ]),
+          ],
+          { gap: 48, valign: 'center' },
+        ),
+      ],
+      { fond: 'clair', padY: t3(80, 60, 40) },
+    ),
+  },
+  {
+    cle: 'bandeau-photo',
+    nom: 'Bandeau sur photo',
+    description: 'Image de fond, couleur par-dessus',
+    vignette: { fond: 'primaire', largeurs: [12] },
+    section: section(
+      'Bandeau sur photo',
+      [
+        ligne([
           col(12, [
-            el('surtitre', { texte: 'Votre métier · votre ville' }),
-            el('titre', { texte: 'Votre titre principal', niveau: 'h1' }),
-            el('texte', { texte: 'Une phrase qui dit ce que vous faites et pour qui.' }),
-            el('bouton', { texte: 'Demander un devis', action: devis }),
+            el('surtitre', { texte: 'Votre entreprise', align: 'center', couleur: 'blanc' }),
+            el('titre', {
+              texte: 'Votre titre principal',
+              niveau: 'h1',
+              taille: t3(48, 40, 30),
+              align: 'center',
+              mb: 16,
+            }),
+            el('texte', {
+              texte: 'Une phrase qui donne envie d’aller plus loin.',
+              align: 'center',
+              mb: 24,
+            }),
+            el('bouton', {
+              texte: 'Demander un devis gratuit',
+              action: devis,
+              couleur: 'accent',
+              align: 'center',
+              enLigne: false,
+              mb: 0,
+            }),
           ]),
-        ],
+        ]),
       ],
       {
-        fond: 'sombre',
+        fond: 'primaire',
         fondType: 'image',
-        voileOpacite: 55,
-        padY: { desktop: 120, tablet: 96, mobile: 72 },
+        voile: 'primaire',
+        voileOpacite: 72,
+        padY: t3(110, 80, 56),
       },
     ),
   },
   {
-    cle: 'presentation',
-    nom: 'Présentation',
-    description: 'Texte à gauche, photo à droite.',
-    section: section('Présentation', [
-      [
-        col(6, [
-          el('titre', { texte: 'Qui sommes-nous ?' }),
-          el('texte', {
-            texte: 'Présentez votre entreprise, votre savoir-faire et votre façon de travailler.',
-          }),
-        ]),
-        col(6, [el('image', { legende: '' })]),
-      ],
-    ]),
-  },
-  {
-    cle: 'services',
-    nom: 'Services',
-    description: 'Trois cartes pour vos prestations principales.',
-    section: section('Services', [
-      [col(12, [el('titre', { texte: 'Nos services', align: 'center' })])],
-      [
-        carteService('Premier service'),
-        carteService('Deuxième service'),
-        carteService('Troisième service'),
-      ],
-    ]),
-  },
-  {
     cle: 'chiffres',
     nom: 'Chiffres clés',
-    description: 'Trois chiffres qui rassurent (à compléter avec les vôtres).',
+    description: '4 chiffres qui rassurent',
+    vignette: { fond: 'blanc', largeurs: [3, 3, 3, 3] },
     section: section(
       'Chiffres clés',
       [
-        [1, 2, 3].map(() =>
-          col(4, [el('chiffre', { valeur: A_COMPLETER, label: A_COMPLETER, align: 'center' })]),
+        ligne(
+          [1, 2, 3, 4].map(() =>
+            col(3, [el('chiffre', { valeur: A_COMPLETER, label: A_COMPLETER, mb: 0 })]),
+          ),
+          { gap: 24 },
+        ),
+      ],
+      { padY: t3(56, 44, 32) },
+    ),
+  },
+  {
+    cle: 'prestations',
+    nom: 'Prestations',
+    description: '3 cartes avec bouton',
+    vignette: { fond: 'blanc', largeurs: [4, 4, 4] },
+    section: section('Prestations', [
+      entete('Ce que nous faisons', 'Présentez vos métiers en une phrase.'),
+      ligne(
+        ['Premier service', 'Deuxième service', 'Troisième service'].map((t) =>
+          col(
+            4,
+            [
+              titre3(t),
+              el('texte', {
+                texte: 'Décrivez ce service en deux phrases.',
+                taille: t3(16, 16, 15),
+              }),
+              el('bouton', { texte: 'En savoir plus', variante: 'contour', action: devis, mb: 0 }),
+            ],
+            { fond: 'clair', pad: 24, arrondi: 12 },
+          ),
+        ),
+        { gap: 20 },
+      ),
+    ]),
+  },
+  {
+    cle: 'realisations',
+    nom: 'Réalisations',
+    description: 'Photos de chantiers',
+    vignette: { fond: 'clair', largeurs: [4, 4, 4] },
+    section: section(
+      'Réalisations',
+      [
+        entete('Chantiers récents', 'Photos prises chez vos clients, avec leur accord.'),
+        ligne(
+          [1, 2, 3].map((i) =>
+            col(4, [
+              el('image', { legende: `Chantier ${i}`, mb: 12 }),
+              titre3(`Chantier ${i}`, 4),
+              el('texte', {
+                texte: 'Lieu, durée, travaux réalisés.',
+                taille: t3(15, 15, 15),
+                mb: 0,
+              }),
+            ]),
+          ),
+          { gap: 20 },
         ),
       ],
       { fond: 'clair' },
@@ -112,103 +199,184 @@ export const SECTIONS_PRETES: readonly SectionPrete[] = [
   {
     cle: 'avis',
     nom: 'Avis clients',
-    description: 'Trois avis de vos clients (à recopier depuis vos vrais avis).',
-    section: section('Avis clients', [
-      [col(12, [el('titre', { texte: 'Ils nous ont fait confiance', align: 'center' })])],
-      [1, 2, 3].map(() => col(4, [el('avis', { nom: A_COMPLETER, texte: A_COMPLETER })])),
-    ]),
-  },
-  {
-    cle: 'realisations',
-    nom: 'Réalisations',
-    description: 'Galerie de trois photos de chantiers.',
-    section: section('Réalisations', [
-      [col(12, [el('titre', { texte: 'Nos réalisations' })])],
-      [1, 2, 3].map(() => col(4, [el('image', { ratio: '1/1' })])),
-    ]),
-  },
-  {
-    cle: 'etapes',
-    nom: 'Étapes',
-    description: 'Comment se passe un chantier, en trois étapes.',
-    section: section('Étapes', [
-      [col(12, [el('titre', { texte: 'Comment ça se passe' })])],
-      [
-        ['1. Premier contact', 'Vous décrivez votre projet, nous vous rappelons.'],
-        ['2. Devis', 'Nous passons voir le chantier et vous envoyons un devis détaillé.'],
-        ['3. Travaux', 'Nous réalisons les travaux à la date convenue.'],
-      ].map(([t, x]) =>
-        col(4, [el('titre', { texte: t, niveau: 'h3' }), el('texte', { texte: x })]),
-      ),
-    ]),
-  },
-  {
-    cle: 'atouts',
-    nom: 'Atouts',
-    description: 'Liste de vos points forts avec un bouton.',
-    section: section('Atouts', [
-      [
-        col(6, [
-          el('titre', { texte: 'Pourquoi nous choisir' }),
-          el('liste', { items: ['Premier atout', 'Deuxième atout', 'Troisième atout'] }),
-          el('bouton', { texte: 'Demander un devis', action: devis }),
-        ]),
-        col(6, [el('image')]),
-      ],
-    ]),
-  },
-  {
-    cle: 'appel',
-    nom: 'Appel à l’action',
-    description: 'Bandeau coloré : une phrase et un bouton.',
+    description: 'Synchronisés avec Portail Travaux',
+    vignette: { fond: 'primaire', largeurs: [4, 4, 4] },
     section: section(
-      'Appel à l’action',
+      'Avis clients',
       [
-        [
-          col(12, [
-            el('titre', { texte: 'Un projet ? Parlons-en.', align: 'center' }),
-            el('bouton', { texte: 'Demander un devis', action: devis, align: 'center' }),
-          ]),
-        ],
+        entete(
+          'Ce que disent nos clients',
+          'Avis collectés par Portail Travaux après chaque chantier.',
+          'center',
+        ),
+        ligne(
+          [1, 2, 3].map(() =>
+            col(4, [el('avis', { nom: A_COMPLETER, texte: A_COMPLETER, mb: 0 })], {
+              fond: 'blanc',
+              pad: 24,
+              arrondi: 12,
+            }),
+          ),
+          { gap: 20 },
+        ),
       ],
       { fond: 'primaire' },
     ),
   },
   {
-    cle: 'contact',
-    nom: 'Contact',
-    description: 'Texte et formulaire de demande de devis.',
-    section: section('Contact', [
-      [
-        col(5, [
-          el('titre', { texte: 'Demandez votre devis' }),
-          el('texte', { texte: 'Décrivez votre projet : nous vous répondons rapidement.' }),
-        ]),
-        col(7, [el('formulaire')]),
-      ],
+    cle: 'texte-image',
+    nom: 'Texte et image',
+    description: 'Titre, texte, liste et photo',
+    vignette: { fond: 'blanc', largeurs: [6, 6] },
+    section: section('Texte et image', [
+      ligne(
+        [
+          col(
+            6,
+            [
+              el('titre', { texte: 'Notre engagement' }),
+              el('texte', { texte: 'Expliquez votre façon de travailler.' }),
+              el('liste', {
+                items: ['Premier engagement', 'Deuxième engagement', 'Troisième engagement'],
+                mb: 0,
+              }),
+            ],
+            { valign: 'center' },
+          ),
+          col(6, [el('image', { legende: 'Votre équipe sur un chantier', mb: 0 })]),
+        ],
+        { gap: 48, valign: 'center' },
+      ),
     ]),
   },
   {
-    cle: 'carte',
-    nom: 'Zone d’intervention',
-    description: 'Carte et texte sur les communes desservies.',
-    section: section('Zone d’intervention', [
-      [
-        col(6, [
-          el('titre', { texte: 'Où intervenons-nous ?' }),
-          el('texte', { texte: 'Citez les communes où vous intervenez.' }),
-        ]),
-        col(6, [el('carte')]),
-      ],
+    cle: 'faq',
+    nom: 'Questions fréquentes',
+    description: 'Questions et réponses',
+    vignette: { fond: 'blanc', largeurs: [4, 8] },
+    section: section('Questions fréquentes', [
+      ligne(
+        [
+          col(4, [el('titre', { texte: 'Questions fréquentes' })]),
+          col(
+            8,
+            [
+              'Intervenez-vous le week-end ?',
+              'Le devis est-il payant ?',
+              'Quelles aides pour mes travaux ?',
+            ].flatMap((q) => [
+              titre3(q),
+              el('texte', { texte: A_COMPLETER, taille: t3(16, 16, 15), mb: 24 }),
+            ]),
+          ),
+        ],
+        { gap: 40 },
+      ),
     ]),
+  },
+  {
+    cle: 'contact',
+    nom: 'Contact et devis',
+    description: 'Formulaire relié à « Mes demandes »',
+    vignette: { fond: 'blanc', largeurs: [5, 7] },
+    section: section(
+      'Contact et devis',
+      [
+        ligne(
+          [
+            col(5, [
+              el('titre', { texte: 'Parlons de votre projet' }),
+              el('texte', { texte: 'Devis gratuit et sans engagement.' }),
+              el('carte', { mb: 0 }),
+            ]),
+            col(7, [el('formulaire', { mb: 0 })], { fond: 'clair', pad: 28, arrondi: 12 }),
+          ],
+          { gap: 40 },
+        ),
+      ],
+      { ancre: 'contact' },
+    ),
+  },
+  {
+    cle: 'appel',
+    nom: 'Appel à l’action',
+    description: 'Photo assombrie et bouton',
+    vignette: { fond: 'sombre', largeurs: [12] },
+    section: section(
+      'Appel à l’action',
+      [
+        ligne([
+          col(12, [
+            el('titre', {
+              texte: 'Un projet ? Parlons-en.',
+              align: 'center',
+              taille: t3(36, 32, 26),
+            }),
+            el('texte', { texte: 'Devis gratuit, sans engagement.', align: 'center', mb: 24 }),
+            el('bouton', {
+              texte: 'Demander mon devis',
+              action: devis,
+              couleur: 'accent',
+              align: 'center',
+              enLigne: false,
+              mb: 0,
+            }),
+          ]),
+        ]),
+      ],
+      {
+        fond: 'sombre',
+        fondType: 'image',
+        voile: 'sombre',
+        voileOpacite: 80,
+        padY: t3(80, 60, 44),
+      },
+    ),
+  },
+  {
+    cle: 'pied',
+    nom: 'Pied de page',
+    description: 'Adresse, garanties, mentions',
+    vignette: { fond: 'sombre', largeurs: [4, 4, 4] },
+    section: section(
+      'Pied de page',
+      [
+        ligne(
+          [
+            ['Votre entreprise', 'Adresse · téléphone'],
+            ['Garanties', 'Assurance décennale · certifications'],
+            ['Informations', 'Mentions légales · confidentialité'],
+          ].map(([t, x]) =>
+            col(4, [
+              el('titre', { texte: t, niveau: 'h3', taille: t3(17, 17, 16), mb: 6 }),
+              el('texte', { texte: x, taille: t3(15, 15, 14), mb: 0 }),
+            ]),
+          ),
+          { gap: 24 },
+        ),
+      ],
+      { fond: 'sombre', padY: t3(40, 36, 28) },
+    ),
   },
   {
     cle: 'blog',
     nom: 'Articles du blog',
-    description: 'Vos trois derniers articles.',
+    description: 'Vos derniers articles, mis à jour seuls',
+    vignette: { fond: 'blanc', largeurs: [4, 4, 4] },
     section: section('Articles du blog', [
-      [col(12, [el('titre', { texte: 'Nos conseils' }), el('blog')])],
+      entete(
+        'Nos conseils d’artisan',
+        'Prix, aides, entretien : vos réponses aux questions de vos clients.',
+      ),
+      ligne([col(12, [el('blog', { mb: 0 })])]),
     ]),
+  },
+  {
+    cle: 'vide',
+    nom: 'Zone vide',
+    description: 'Construisez section par section',
+    vignette: { fond: 'blanc', largeurs: [] },
+    section: section('Nouvelle zone', []),
   },
 ];
 
@@ -222,6 +390,8 @@ export function insererSectionPrete(
   const modele = SECTIONS_PRETES.find((s) => s.cle === cle);
   if (!modele) return null;
   const s = construireSection(structuredClone(modele.section), nouvelId);
+  // Une ancre est unique sur la page : la copie d'une zone « contact » n'en reprend pas.
+  if (s.p.ancre && page.sections.some((x) => x.p.ancre === s.p.ancre)) s.p.ancre = '';
   const i = apres === null ? -1 : page.sections.findIndex((x) => x.id === apres);
   const sections = [...page.sections];
   sections.splice(i < 0 ? sections.length : i + 1, 0, s);

@@ -73,7 +73,10 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     const r = appliquerModeleSite(site(), modeleSite('minimal')!, AUTRE, true);
     const acc = r.pages.accueil!.sections;
     expect(acc[0]!.p.padY).toEqual({ desktop: 110, tablet: 80, mobile: 52 });
-    for (const x of acc) expect(x.p.fond).toBe(x.p.nom === 'Avis clients' ? 'clair' : 'blanc');
+    for (const x of acc)
+      expect(x.p.fond).toBe(
+        x.p.nom === 'Pied de page' ? 'sombre' : x.p.nom === 'Avis clients' ? 'clair' : 'blanc',
+      );
   });
 
   it('bandeau sans photo : le modèle photo garde la mise en page', () => {
