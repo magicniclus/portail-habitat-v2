@@ -5,6 +5,7 @@ import { cn } from '@ph/ui';
 import { nuancierEditeur } from '@ph/ui/tokens';
 import { useId, useState } from 'react';
 import { Libelle } from './controles';
+import { ajouterCouleurRecente, useCouleursRecentes } from './couleursRecentes';
 
 const NOMS: Record<string, string> = {
   aucun: 'Aucun',
@@ -53,10 +54,13 @@ export function Couleurs({
   const saisie = brouillon.pour === valeur ? brouillon.texte : affiche(valeur);
   const valider = (v: string) => {
     const r = schemaCouleur.safeParse(v.trim().toLowerCase());
-    if (r.success) onChange(r.data);
-    else setSaisie({ pour: valeur, texte: affiche(valeur) });
+    if (r.success) {
+      onChange(r.data);
+      ajouterCouleurRecente(r.data);
+    } else setSaisie({ pour: valeur, texte: affiche(valeur) });
   };
   const libreActive = !jetons.includes(valeur);
+  const recentes = useCouleursRecentes();
   return (
     <div className="grid gap-1.5">
       <Libelle texte={libelle} droite={NOMS[valeur] ?? valeur} />
@@ -85,6 +89,29 @@ export function Couleurs({
             />
           </button>
         ))}
+        {libre
+          ? recentes.map((r) => (
+              <button
+                key={r}
+                type="button"
+                role="radio"
+                aria-checked={valeur === r}
+                aria-label={`Couleur récente ${r}`}
+                title={`Couleur récente · ${r}`}
+                onClick={() => onChange(r)}
+                className={cn(
+                  'grid size-11 place-items-center rounded-[10px] border',
+                  valeur === r ? 'border-2 border-accent' : 'border-dashed border-trait',
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className="size-7 rounded-full ring-1 ring-black/10"
+                  style={{ background: r }}
+                />
+              </button>
+            ))
+          : null}
         {libre ? (
           <label
             title="Couleur personnalisée"
@@ -105,6 +132,7 @@ export function Couleurs({
               type="color"
               value={versHex(resoudre(valeur, palette))}
               onChange={(e) => onChange(e.target.value)}
+              onBlur={(e) => ajouterCouleurRecente(e.target.value)}
               className="absolute inset-0 cursor-pointer opacity-0"
             />
           </label>

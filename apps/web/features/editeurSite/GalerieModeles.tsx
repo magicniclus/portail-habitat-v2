@@ -5,6 +5,7 @@ import { Banner, Button } from '@ph/ui';
 import { palettesSites } from '@ph/ui/tokens';
 import { useState } from 'react';
 import type { BrouillonSite } from './useBrouillonSite';
+import { VignetteModele } from './VignetteModele';
 
 const POLICE: Record<ModeleSite['polices'], string> = {
   archivo: 'Archivo',
@@ -46,23 +47,25 @@ export function GalerieModeles({
       <h2 id="galerie-modeles" className="m-0 text-lg">
         Modèles de site
       </h2>
-      <ul className="m-0 grid list-none gap-2 p-0">
+      <p className="m-0 text-[13px] text-neutre-700">
+        Chaque modèle reprend vos textes, photos et pages. Cliquez pour voir les options.
+      </p>
+      <ul className="m-0 grid list-none gap-3 p-0">
         {MODELES_SITE.map((m) => {
           const p = paletteDe(m);
           const ouvert = choisi === m.id;
           return (
-            <li key={m.id} className="grid gap-2 rounded-[12px] border border-trait p-3">
+            <li
+              key={m.id}
+              className={`grid gap-2.5 rounded-[10px] bg-blanc p-2 ${ouvert ? 'border-2 border-accent' : 'm-px border border-trait'}`}
+            >
               <button
                 type="button"
                 aria-expanded={ouvert}
                 onClick={() => setChoisi(ouvert ? null : m.id)}
                 className="grid min-h-11 cursor-pointer gap-2 rounded-md border-0 bg-transparent p-0 text-left"
               >
-                <span aria-hidden className="flex h-6 overflow-hidden rounded-sm">
-                  {[p.primaire, p.accent, p.clair, p.sombre].map((c) => (
-                    <span key={c} className="flex-1" style={{ background: c }} />
-                  ))}
-                </span>
+                <VignetteModele m={m} p={p} />
                 <span>
                   <b>{m.nom}</b>
                   <span className="block text-sm text-neutre-700">
@@ -71,13 +74,22 @@ export function GalerieModeles({
                 </span>
               </button>
               {ouvert ? (
-                <div className="flex flex-wrap gap-2">
-                  <Button taille="sm" onClick={() => appliquer(m, true)}>
+                <div className="grid gap-1.5">
+                  <Button taille="sm" pleineLargeur onClick={() => appliquer(m, true)}>
                     Appliquer à tout le site
                   </Button>
-                  <Button taille="sm" variant="secondaire" onClick={() => appliquer(m, false)}>
+                  <Button
+                    taille="sm"
+                    variant="secondaire"
+                    pleineLargeur
+                    onClick={() => appliquer(m, false)}
+                  >
                     Couleurs et polices seulement
                   </Button>
+                  <span className="text-xs text-neutre-600">
+                    « Tout le site » remplace la mise en page de chaque page. Vous pouvez revenir en
+                    arrière.
+                  </span>
                 </div>
               ) : null}
             </li>
