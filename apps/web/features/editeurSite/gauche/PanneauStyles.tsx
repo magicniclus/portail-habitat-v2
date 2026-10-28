@@ -1,9 +1,9 @@
 'use client';
 
-import { couleur as schemaCouleur, type Theme } from '@ph/core/sites';
+import type { Theme } from '@ph/core/sites';
 import { cn } from '@ph/ui';
-import { nuancierEditeur, palettesSites } from '@ph/ui/tokens';
-import { useState } from 'react';
+import { palettesSites } from '@ph/ui/tokens';
+import { CouleurSite } from './CouleurSite';
 
 const POLICES: [Theme['polices'], string, string][] = [
   ['archivo', 'Archivo + Source Sans', 'Archivo, Arial, sans-serif'],
@@ -11,62 +11,21 @@ const POLICES: [Theme['polices'], string, string][] = [
   ['barlow', 'Barlow Condensed + Barlow', '"Barlow Condensed", Arial, sans-serif'],
 ];
 const COULEURS: [keyof Theme['palette'], string][] = [
-  ['primaire', 'Principale'],
-  ['accent', 'Accent'],
+  ['primaire', 'Couleur principale'],
+  ['accent', 'Couleur d’accent'],
   ['clair', 'Fond clair'],
-  ['sombre', 'Texte et fonds sombres'],
+  ['sombre', 'Fond sombre et textes'],
+];
+const LARGEURS: [NonNullable<Theme['largeurContenu']>, string][] = [
+  [960, 'Étroite'],
+  [1120, 'Normale'],
+  [1280, 'Large'],
 ];
 const RAYONS: [Theme['rayonBoutons'], string][] = [
   [2, 'Carrés'],
   [8, 'Arrondis'],
   [999, 'Pilule'],
 ];
-
-function Couleur({
-  libelle,
-  valeur,
-  onChange,
-}: {
-  libelle: string;
-  valeur: string;
-  onChange: (v: string) => void;
-}) {
-  const [saisie, setSaisie] = useState(valeur);
-  const valider = (v: string) => {
-    const r = schemaCouleur.safeParse(v.trim().toLowerCase());
-    if (r.success && /^(#|rgb|hsl)/.test(r.data)) onChange(r.data);
-    else setSaisie(valeur);
-  };
-  return (
-    <div className="flex items-center gap-2.5">
-      <label
-        className="relative size-11 flex-none cursor-pointer overflow-hidden rounded-[10px] border border-trait"
-        title="Ouvrir le nuancier"
-        style={{ background: valeur }}
-      >
-        <span className="sr-only">{libelle} : nuancier</span>
-        <input
-          type="color"
-          value={/^#[0-9a-f]{6}$/i.test(valeur) ? valeur : nuancierEditeur.defaut}
-          onChange={(e) => {
-            setSaisie(e.target.value);
-            onChange(e.target.value);
-          }}
-          className="absolute inset-0 cursor-pointer opacity-0"
-        />
-      </label>
-      <label className="grid min-w-0 flex-1 gap-0.5 text-xs font-semibold text-neutre-700">
-        {libelle}
-        <input
-          value={saisie}
-          onChange={(e) => setSaisie(e.target.value)}
-          onBlur={(e) => valider(e.target.value)}
-          className="min-h-11 rounded-[8px] border border-trait px-3 text-base font-normal text-texte"
-        />
-      </label>
-    </div>
-  );
-}
 
 /** Styles du site (maquette) : palettes, couleurs au nuancier ou en valeur, polices, boutons. */
 export function PanneauStyles({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
@@ -109,7 +68,7 @@ export function PanneauStyles({ theme, onChange }: { theme: Theme; onChange: (t:
           Couleurs du site <span className="font-normal text-neutre-600">· nuancier ou valeur</span>
         </span>
         {COULEURS.map(([k, l]) => (
-          <Couleur
+          <CouleurSite
             key={`${k}-${theme.palette[k]}`}
             libelle={l}
             valeur={theme.palette[k]}
@@ -138,6 +97,37 @@ export function PanneauStyles({ theme, onChange }: { theme: Theme; onChange: (t:
               <span className="text-xs font-semibold text-neutre-700">{nom}</span>
             </button>
           ))}
+        </div>
+      </div>
+      <div className="grid gap-2">
+        <span className={titre}>
+          Largeur maximale du contenu{' '}
+          <span className="font-normal text-neutre-600">· les fonds restent pleine largeur</span>
+        </span>
+        <div
+          role="radiogroup"
+          aria-label="Largeur maximale du contenu"
+          className="flex overflow-hidden rounded-[9px] border border-trait"
+        >
+          {LARGEURS.map(([l, nom]) => {
+            const on = (theme.largeurContenu ?? 1120) === l;
+            return (
+              <button
+                key={l}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => onChange({ ...theme, largeurContenu: l })}
+                className={cn(
+                  'grid min-h-11 flex-1 border-r border-trait py-1 text-[13px] leading-tight font-semibold last:border-r-0',
+                  on ? 'bg-accent text-blanc' : 'bg-blanc text-neutre-800',
+                )}
+              >
+                {nom}
+                <span className="text-[11px] font-normal opacity-80">{l} px</span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="grid gap-2">

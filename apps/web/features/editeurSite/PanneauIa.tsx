@@ -3,13 +3,15 @@
 import { CATEGORIE_MODE, type ModeIaSite, type OperationIa } from '@ph/core/sites';
 import { MODES, texteRestants, type RestantsIa } from './modesIa';
 import { QuestionIa } from './QuestionIa';
+import { BasIa } from './ia/BasIa';
+import { PorteeIa } from './ia/PorteeIa';
+import { QuotaIa } from './ia/QuotaIa';
+import type { SuggestionIa } from './ia/suggestionsIa';
 import { PropositionIa, type Proposition } from './PropositionIa';
-import { Banner, bouton, Button, Field, Select, Textarea } from '@ph/ui';
+import { Banner, Button } from '@ph/ui';
 import { useEffect, useState } from 'react';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
-import Link from 'next/link';
 import { posterJson } from '@/lib/posterJson';
-import { routes } from '@/lib/routes';
 
 /**
  * Panneau IA (IA_SITE §2.3) : la demande part sur le brouillon enregistré ; la proposition est
@@ -25,9 +27,14 @@ export function PanneauIa({
   appliquer,
   onProposition,
   initial,
+  nomSelection,
+  suggestions,
 }: {
   pageId: string;
   selection: string | null;
+  /** Nom de la sélection, affiché sur la portée « Sélection ». */
+  nomSelection?: string;
+  suggestions: SuggestionIa[];
   iaComplete: boolean;
   restantsInitiaux: RestantsIa;
   enregistrer: () => Promise<string | null>;
@@ -35,7 +42,7 @@ export function PanneauIa({
   /** Proposition affichée dans l'aperçu, changements surlignés ; `null` quand elle disparaît. */
   onProposition: (ops: OperationIa[] | null) => void;
   /** Demande préparée depuis un autre panneau (nouvelle page, référencement). */
-  initial?: { mode: ModeIaSite; portee: 'page' | 'site'; demande: string };
+  initial?: { mode: ModeIaSite; portee: 'selection' | 'page' | 'site'; demande: string };
 }) {
   const [mode, setMode] = useState<ModeIaSite | 'auto'>(
     initial?.mode ?? (iaComplete ? 'auto' : 'textes'),
@@ -81,78 +88,8 @@ export function PanneauIa({
   };
 
   return (
-    <div className="grid gap-4">
-      <Link href={routes.proSiteCreationIa} className={bouton({ variant: 'secondaire' })}>
-        Créer tout le site avec l’IA
-      </Link>
-      <Field label="Que voulez-vous faire ?">
-        <Select value={mode} onChange={(e) => setMode(e.target.value as ModeIaSite | 'auto')}>
-          {MODES.map((m) => (
-            <option key={m.mode} value={m.mode}>
-              {!iaComplete && !m.essai ? '🔒 ' : ''}
-              {m.libelle}
-            </option>
-          ))}
-        </Select>
-      </Field>
-      <div role="group" aria-label="Portée" className="flex flex-wrap gap-1">
-        {(['selection', 'page', 'site'] as const).map((p) => (
-          <Button
-            key={p}
-            taille="sm"
-            variant={portee === p ? 'secondaire' : 'fantome'}
-            aria-pressed={portee === p}
-            disabled={p === 'selection' && !selection}
-            onClick={() => setPortee(p)}
-          >
-            {p === 'selection' ? 'Sélection' : p === 'page' ? 'Page' : 'Tout le site'}
-          </Button>
-        ))}
-      </div>
-      {verrou ? (
-        <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-4">
-          <p className="m-0 text-[15px]">
-            Cette action de l’IA est incluse dans Site Pro : sections, pages et couleurs créées en
-            un clic, modifiables ensuite à la main.
-          </p>
-          <div>
-            <FenetreOffre
-              formule="site_pro"
-              raison="L’IA complète du site est incluse dans Site Pro."
-            >
-              Débloquer l’IA
-            </FenetreOffre>
-          </div>
-        </div>
-      ) : (
-        <form
-          className="grid gap-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setProp(null);
-            void envoyer();
-          }}
-        >
-          <Field
-            label="Demandez à l’IA…"
-            aide="Ex. : « Plus court et plus chaleureux », « Mets Mérignac dans le titre »."
-          >
-            <Textarea
-              value={demande}
-              maxLength={1000}
-              onChange={(e) => setDemande(e.target.value)}
-            />
-          </Field>
-          <div>
-            <Button type="submit" disabled={enCours || demande.trim().length < 3}>
-              {enCours ? 'L’IA prépare une proposition…' : 'Proposer'}
-            </Button>
-          </div>
-        </form>
-      )}
-      {!verrou ? (
-        <p className="m-0 text-sm text-neutre-700">{texteRestants(restants, mode)}</p>
-      ) : null}
+    <div className="grid gap-4 [grid-template-columns:minmax(0,1fr)]">
+      <QuotaIa r={restants} />
       {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
       {prop?.question ? (
         <QuestionIa
@@ -182,6 +119,70 @@ export function PanneauIa({
           onAnnuler={() => setProp(null)}
         />
       ) : null}
+      <form
+        className="grid gap-2.5 rounded-[10px] border border-trait p-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setProp(null);
+          void envoyer();
+        }}
+      >
+        <label htmlFor="demande-ia" className="text-[13px] font-bold text-neutre-800">
+          Demandez à l’IA
+        </label>
+        <PorteeIa
+          portee={portee}
+          onChange={setPortee}
+          selection={selection}
+          {...(nomSelection ? { nomSelection } : {})}
+        />
+        <textarea
+          id="demande-ia"
+          rows={3}
+          value={demande}
+          maxLength={1000}
+          onChange={(e) => setDemande(e.target.value)}
+          placeholder="Ex. : « Plus court et plus chaleureux », « Mets Mérignac dans le titre »."
+          className="min-h-24 rounded-[8px] border border-trait px-3 py-2 text-base"
+        />
+        <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
+          Type de demande
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value as ModeIaSite | 'auto')}
+            className="min-h-11 rounded-[8px] border border-trait bg-blanc px-3 text-base font-normal"
+          >
+            {MODES.map((m) => (
+              <option key={m.mode} value={m.mode}>
+                {!iaComplete && !m.essai ? '🔒 ' : ''}
+                {m.libelle}
+              </option>
+            ))}
+          </select>
+        </label>
+        {verrou ? (
+          <div className="grid gap-2 rounded-[8px] bg-accent-100 p-3 text-[13px]">
+            Cette demande est incluse dans Site Pro : sections, pages et couleurs créées en un clic,
+            modifiables ensuite à la main.
+            <div>
+              <FenetreOffre
+                formule="site_pro"
+                raison="L’IA complète du site est incluse dans Site Pro."
+              >
+                Débloquer l’IA
+              </FenetreOffre>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Button type="submit" disabled={enCours || demande.trim().length < 3}>
+              {enCours ? 'L’IA prépare une proposition…' : 'Proposer'}
+            </Button>
+            <span className="text-xs text-neutre-600">{texteRestants(restants, mode)}</span>
+          </>
+        )}
+      </form>
+      <BasIa suggestions={suggestions} />
     </div>
   );
 }

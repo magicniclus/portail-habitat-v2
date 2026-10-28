@@ -4,38 +4,11 @@ import type { Element } from '@ph/core/sites';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { EditeurTexte } from '../texte/EditeurTexte';
+import { Champ } from './Champ';
 import { ChoixImage } from './ChoixImage';
+import { ContenuBlog } from './ContenuBlog';
 import { Info, Interrupteur, Segments } from './controles';
 import type { ContexteReglages } from './contexte';
-
-function Champ({
-  libelle,
-  valeur,
-  onChange,
-  long,
-}: {
-  libelle: string;
-  valeur: string;
-  onChange: (v: string) => void;
-  long?: boolean;
-}) {
-  const cls = 'min-h-11 rounded-[8px] border border-trait px-3 py-2 text-base';
-  return (
-    <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
-      {libelle}
-      {long ? (
-        <textarea
-          rows={4}
-          value={valeur}
-          onChange={(e) => onChange(e.target.value)}
-          className={cls}
-        />
-      ) : (
-        <input value={valeur} onChange={(e) => onChange(e.target.value)} className={cls} />
-      )}
-    </label>
-  );
-}
 
 /** Groupe « Contenu » de l'onglet Général, selon le type de contenu (maquette Editeur de Site). */
 export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) {
@@ -193,53 +166,7 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
     case 'menu':
       return <Info>Ce menu reprend les liens de la navigation.</Info>;
     case 'blog':
-      return (
-        <>
-          <Segments
-            libelle="Affichage"
-            valeur={el.p.affichage}
-            options={[
-              ['grille', 'Grille'],
-              ['liste', 'Liste'],
-              ['une', 'À la une'],
-            ]}
-            onChange={(affichage) => maj({ affichage })}
-          />
-          {el.p.affichage === 'une' ? null : (
-            <Segments
-              libelle="Nombre d’articles"
-              valeur={el.p.nb}
-              options={[
-                [3, '3'],
-                [6, '6'],
-                [9, '9'],
-              ]}
-              onChange={(nb) => maj({ nb })}
-            />
-          )}
-          <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
-            Catégorie
-            <select
-              value={el.p.cat}
-              onChange={(e) => maj({ cat: e.target.value })}
-              className="min-h-11 rounded-[8px] border border-trait bg-blanc px-3 text-base"
-            >
-              <option value="">Toutes</option>
-              {c.categoriesBlog.map((x) => (
-                <option key={x.id} value={x.id}>
-                  {x.nom}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Interrupteur
-            libelle="Afficher le résumé"
-            actif={el.p.extrait}
-            onChange={(extrait) => maj({ extrait })}
-          />
-          <Info>Les articles publiés apparaissent ici tout seuls, sans republier le site.</Info>
-        </>
-      );
+      return <ContenuBlog el={el} c={c} />;
     case 'espace':
       return null;
   }

@@ -5,14 +5,7 @@ import { Button } from '@ph/ui';
 import { apercuGoogle } from '@ph/ui/tokens';
 import { useState } from 'react';
 import { Onglets } from './Onglets';
-
-const AUTOMATIQUE = [
-  'Plan du site (sitemap.xml) et robots.txt à jour à chaque publication',
-  'Adresse canonique sur chaque page',
-  'Données structurées de votre entreprise',
-  'Site sécurisé (HTTPS) et adapté au mobile',
-  'Images en WebP avec texte alternatif',
-];
+import { SeoSite } from './SeoSite';
 
 const enSlug = (t: string) =>
   t
@@ -34,6 +27,7 @@ export function PanneauSeo({
   pages,
   ville,
   hote,
+  nomSite,
   onChange,
   onIa,
   onPage,
@@ -43,6 +37,7 @@ export function PanneauSeo({
   pages: Record<string, PageSite>;
   ville?: string;
   hote: string;
+  nomSite: string;
   onChange: (p: Partial<PageSite>) => void;
   onIa: (portee: 'page' | 'site') => void;
   onPage: (id: string) => void;
@@ -159,48 +154,18 @@ export function PanneauSeo({
           </div>
         </>
       ) : (
-        <>
-          <div className="grid gap-1.5">
-            <strong className="text-[13px]">Automatique</strong>
-            <ul className="m-0 grid list-none gap-1 p-0 text-[13px]">
-              {AUTOMATIQUE.map((t) => (
-                <li key={t} className="flex gap-2">
-                  <span aria-hidden="true" className="text-succes">
-                    ✓
-                  </span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <ul className="m-0 grid list-none gap-1 p-0">
-            {Object.entries(pages)
-              .sort(([, a], [, b]) => a.ordre - b.ordre)
-              .map(([id, p]) => {
-                const s = controlesSeo(p, villeDe(p)).score;
-                return (
-                  <li key={id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onPage(id);
-                        setOnglet('page');
-                      }}
-                      className="flex min-h-11 w-full items-center justify-between gap-2 rounded-[8px] px-2 text-left text-sm hover:bg-neutre-100"
-                    >
-                      <span className="truncate font-semibold">{p.nom}</span>
-                      <span
-                        className={s >= 80 ? 'font-bold text-succes' : 'font-bold text-neutre-800'}
-                      >
-                        {s}/100
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-          </ul>
-          <Button onClick={() => onIa('site')}>Optimiser toutes les pages</Button>
-        </>
+        <SeoSite
+          pages={pages}
+          hote={hote}
+          nomSite={nomSite}
+          {...(ville ? { ville } : {})}
+          score={(p) => controlesSeo(p, villeDe(p)).score}
+          onPage={(id) => {
+            onPage(id);
+            setOnglet('page');
+          }}
+          onIa={() => onIa('site')}
+        />
       )}
     </div>
   );

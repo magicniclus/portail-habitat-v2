@@ -1,28 +1,19 @@
 'use client';
 
-import {
-  ancrerZone,
-  changerDisposition,
-  changerNombreBlocs,
-  majNoeud,
-  trouverNoeud,
-  type Appareil,
-  type Element,
-  type OperationIa,
-  type PageSite,
-} from '@ph/core/sites';
+import { type Appareil, type OperationIa, type PageSite } from '@ph/core/sites';
 import { Banner } from '@ph/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BarreEditeur, Rail, type Panneau } from './BarreEditeur';
+import { colonnes } from './disposition';
 import { Canevas } from './Canevas';
-import { AssistantCreation } from './creation/AssistantCreation';
-import { BandeauCreation } from './creation/BandeauCreation';
+import { Toast, useToast } from './Toast';
+import { useApercuCliquable, useMediatheque } from './useApercuCliquable';
+import { CreationEnCours, useCreation } from './creation/CreationEnCours';
 import { PanneauGauche, type DemandeIa } from './gauche/PanneauGauche';
 import type { OngletAjout } from './gauche/PanneauAjout';
-import { appelSections } from './MesSections';
-import { depuisHtml, liensUtilises } from './texte/texteRiche';
-import { PanneauProprietes } from './proprietes/PanneauProprietes';
-import { ReglagesNavigation } from './proprietes/ReglagesNavigation';
+import { useTexteSurPage } from './texte/useTexteSurPage';
+import { ColonneDroite } from './proprietes/ColonneDroite';
+import { contexteReglages } from './proprietes/contexteReglages';
 import { badgeSelection, infoSelection } from './selection';
 import { useActionsEditeur } from './useActionsEditeur';
 import { useBrouillonSite } from './useBrouillonSite';
@@ -30,8 +21,6 @@ import { useHtmlApercu } from './useHtmlApercu';
 import { useSauvegardeAuto } from './useSauvegardeAuto';
 import { useSelection } from './useSelection';
 import type { ProprietesEditeur } from './proprietes';
-
-const nouvelId = () => Math.random().toString(36).slice(2, 10);
 
 /**
  * Éditeur plein écran (maquette Editeur de Site) : barre du haut, outils à gauche, page
@@ -47,16 +36,11 @@ export function EditeurSite(props: ProprietesEditeur) {
   const [apercu, setApercu] = useState(false);
   const [menuOuvert, setMenuOuvert] = useState(false);
   const [echelle, setEchelle] = useState(1);
-  const [toast, setToast] = useState<string | null>(null);
   const [ia, setIa] = useState<DemandeIa | null>(null);
   const [proposition, setProposition] = useState<OperationIa[] | null>(null);
-  const [medias, setMedias] = useState(props.medias);
-  const [fichiers, setFichiers] = useState(props.fichiers);
-  const [assistant, setAssistant] = useState<'questionnaire' | 'reprise' | null>(
-    props.questionnaire ? 'questionnaire' : props.reprise === 'auto' ? 'reprise' : null,
-  );
-  const [apercuIa, setApercuIa] = useState(props.apercuInitial);
-  const [aReprendre, setAReprendre] = useState(props.reprise === 'proposee');
+  const m = useMediatheque(props.medias, props.fichiers);
+  const cr = useCreation(props);
+  const apercuIa = cr.apercuIa;
   const { message, enCours, executer, publier } = useActionsEditeur(s.enregistrer);
   const sauvegarde = useSauvegardeAuto({ ...s, version: s.b });
   const page = s.b.pages[pageId] ?? s.b.pages.accueil!;
@@ -65,37 +49,12 @@ export function EditeurSite(props: ProprietesEditeur) {
       s.modifier((b) => ({ ...b, pages: { ...b.pages, [pageId]: f(b.pages[pageId]!) } })),
     [s, pageId],
   );
-  const flash = useCallback((m: string) => setToast(m), []);
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 2800);
-    return () => clearTimeout(t);
-  }, [toast]);
+  const { toast, flash, fermerToast } = useToast();
   const ouvrirAjout = useCallback((o: OngletAjout) => {
     setOngletAjout(o);
     setPanneau('ajouter');
   }, []);
-  const onTexte = useCallback(
-    (id: string, html: string, brut: string, simple: boolean) =>
-      majPage((p) => {
-        const el = trouverNoeud(p, id)?.noeud as Element | undefined;
-        if (!el || !('texte' in el.p)) return p;
-        // HTML du cadre isolé relu dans un document inerte : rien ne s'exécute, seules les
-        // balises du texte riche sont gardées.
-        const texte = simple
-          ? brut.replace(/\s+/g, ' ').trim()
-          : depuisHtml(new DOMParser().parseFromString(html, 'text/html').body);
-        if (texte === el.p.texte) return p;
-        return majNoeud(
-          p,
-          id,
-          simple
-            ? { texte }
-            : { texte, liens: liensUtilises(texte, 'liens' in el.p ? el.p.liens : undefined) },
-        );
-      }),
-    [majPage],
-  );
+  const onTexte = useTexteSurPage(majPage);
   const sel = useSelection({
     page,
     majPage,
@@ -106,51 +65,37 @@ export function EditeurSite(props: ProprietesEditeur) {
     onTexte,
   });
   const info = apercu ? null : infoSelection(page, sel.selection);
-  // L'aperçu résout aussi les fichiers à télécharger (`up:` → URL).
-  const mediasApercu = useMemo(
-    () => ({
-      ...medias,
-      ...Object.fromEntries(Object.entries(fichiers).map(([k, f]) => [k, f.url])),
-    }),
-    [medias, fichiers],
-  );
+  const ap = useApercuCliquable(s.b.pages, sel.recevoir, flash, setPageId);
   const html = useHtmlApercu(s.b, pageId, {
     ...props,
-    medias: mediasApercu,
+    medias: m.apercu,
     apercuIa,
     proposition,
     edition: !apercu,
   });
-  const changerPage = (id: string) => {
-    setPageId(id);
-    sel.choisir(null);
-  };
-  const contexte = {
-    pages: s.b.pages,
+  const changerPage = (id: string) => (setPageId(id), sel.choisir(null));
+  const ouvrirIa = useCallback((d: Omit<DemandeIa, 'n'>) => {
+    setIa({ ...d, n: Date.now() });
+    setPanneau('ia');
+  }, []);
+  const demanderIa = useCallback(
+    (demande: string) => ouvrirIa({ mode: 'textes', portee: 'selection', demande }),
+    [ouvrirIa],
+  );
+  const contexte = contexteReglages({
+    s,
     pageId,
-    palette: s.b.theme.palette,
     appareil,
-    medias,
-    artisanId: props.artisanId,
-    onMedia: (cle: string, url: string) => setMedias((m) => ({ ...m, [cle]: url })),
-    fichiers,
-    onFichier: (cle: string, nom: string, url: string) =>
-      setFichiers((f) => ({ ...f, [cle]: { nom, url } })),
-    ancrerZone: (pid: string, zoneId: string) => {
-      const p = s.b.pages[pid];
-      const r = p ? ancrerZone(p, zoneId) : null;
-      if (r && r.page !== p) s.modifier((b) => ({ ...b, pages: { ...b.pages, [pid]: r.page } }));
-      return r?.ancre ?? null;
-    },
-    ...(s.b.navigation.tel.numero ? { telephone: s.b.navigation.tel.numero } : {}),
-    erreurAction: s.erreurAction(pageId, new Set(Object.keys(fichiers))),
-    categoriesBlog: props.blog.classement.categories,
-    maj: (r: Record<string, unknown>) =>
-      sel.selection && majPage((p) => majNoeud(p, sel.selection!, r)),
+    m,
+    props,
+    selection: sel.selection,
+    majPage,
     ouvrirAjout,
-    onAppareil: setAppareil,
+    setAppareil,
     basculerMenu: () => setMenuOuvert((x) => !x),
-  };
+    demanderIa,
+  });
+
   const outils = !apercu;
   return (
     <div className="flex h-dvh min-h-0 flex-col bg-blanc max-[899px]:h-auto max-[899px]:min-h-dvh">
@@ -168,48 +113,32 @@ export function EditeurSite(props: ProprietesEditeur) {
         peutRetablir={s.peutRetablir}
         etat={sauvegarde.texte}
         apercu={apercu}
-        onApercu={() => setApercu((a) => !a)}
+        onApercu={() => {
+          setApercu((a) => !a);
+          ap.setAncre('');
+        }}
         onPublier={publier}
         enCours={enCours}
         publicationBloquee={apercuIa !== null}
-      />
-      <BandeauCreation
-        apercu={apercuIa !== null}
-        aReprendre={aReprendre && !assistant}
-        onFermerApercu={() => setApercuIa(null)}
-        onReprendre={() => {
-          setAReprendre(false);
-          setAssistant('reprise');
-        }}
       />
       {message ? (
         <Banner tone={message.ton} className="m-3">
           {message.texte}
         </Banner>
       ) : null}
-      {assistant ? (
-        <div className="border-b border-trait p-3">
-          <AssistantCreation
-            {...(assistant === 'questionnaire' && props.questionnaire
-              ? { questionnaire: props.questionnaire }
-              : {})}
-            reprise={assistant === 'reprise'}
-            enregistrer={s.enregistrer}
-            appliquer={s.appliquerIa}
-            onApercu={setApercuIa}
-            onFermer={() => setAssistant(null)}
-            theme={s.b.theme}
-            onTheme={(t) => s.modifier((b) => ({ ...b, theme: t }))}
-          />
-        </div>
-      ) : null}
+      <CreationEnCours
+        assistant={cr.assistant}
+        onAssistant={cr.setAssistant}
+        aReprendre={cr.aReprendre}
+        onAReprendre={cr.setAReprendre}
+        apercu={apercuIa !== null}
+        onApercu={cr.setApercuIa}
+        s={s}
+        {...(props.questionnaire ? { questionnaire: props.questionnaire } : {})}
+      />
       <div
         className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)]"
-        style={{
-          ['--colonnes' as string]: outils
-            ? `auto ${panneau ? (panneau === 'seo' ? '340px ' : '300px ') : ''}minmax(0,1fr) 320px`
-            : 'minmax(0,1fr)',
-        }}
+        style={{ ['--colonnes' as string]: colonnes(outils, panneau) }}
       >
         {outils ? (
           <Rail actif={panneau} onChoisir={(x) => setPanneau((p) => (p === x ? null : x))} />
@@ -229,10 +158,7 @@ export function EditeurSite(props: ProprietesEditeur) {
             ongletAjout={ongletAjout}
             onOngletAjout={setOngletAjout}
             ia={ia}
-            onIa={(d) => {
-              setIa({ ...d, n: Date.now() });
-              setPanneau('ia');
-            }}
+            onIa={ouvrirIa}
             onPanneau={setPanneau}
             onProposition={setProposition}
             flash={flash}
@@ -246,70 +172,29 @@ export function EditeurSite(props: ProprietesEditeur) {
             selection={info ? { ...info, badge: badgeSelection(page, info) } : null}
             defiler={sel.defiler}
             menuOuvert={menuOuvert}
-            onMessage={sel.recevoir}
+            key={pageId}
+            onMessage={ap.recevoir}
+            {...(apercu && ap.ancre ? { ancre: ap.ancre } : {})}
             onEchelle={setEchelle}
             {...(apercuIa ? { filigrane: 'Aperçu' } : {})}
           />
         </main>
         {outils ? (
-          <aside
-            aria-label="Réglages de la sélection"
-            className="min-h-0 min-w-0 overflow-x-hidden overflow-y-auto border-trait bg-blanc min-[900px]:border-l"
-          >
-            <PanneauProprietes
-              page={page}
-              info={info}
-              c={contexte}
-              onAction={(op) => sel.agir(op)}
-              onBlocs={(n) =>
-                sel.selection && majPage((p) => changerNombreBlocs(p, sel.selection!, n, nouvelId))
-              }
-              onDisposition={(l) =>
-                sel.selection && majPage((p) => changerDisposition(p, sel.selection!, l, nouvelId))
-              }
-              onEnregistrerZone={async (z) => {
-                const r = await appelSections({
-                  action: 'enregistrer',
-                  nom: z.p.nom || 'Zone',
-                  section: z,
-                });
-                flash(
-                  r.ok
-                    ? `« ${z.p.nom || 'Zone'} » ajoutée à Mes zones (Ajouter › Zones).`
-                    : r.message,
-                );
-              }}
-              navigation={(onglet) => (
-                <ReglagesNavigation
-                  nav={s.b.navigation}
-                  page={page}
-                  onglet={onglet}
-                  c={contexte}
-                  onChange={(n) => s.modifier((b) => ({ ...b, navigation: n }))}
-                  onPage={(r) => majPage((p) => ({ ...p, ...r }))}
-                  nonEnregistree={s.navModifiee}
-                  onEnregistrer={() =>
-                    executer(
-                      s.enregistrerNavigation,
-                      'Navigation enregistrée sur toutes les pages.',
-                    )
-                  }
-                  onAnnuler={s.annulerNavigation}
-                  enCours={enCours}
-                />
-              )}
-            />
-          </aside>
+          <ColonneDroite
+            s={s}
+            page={page}
+            info={info}
+            c={contexte}
+            selection={sel.selection}
+            agir={sel.agir}
+            majPage={majPage}
+            flash={flash}
+            executer={executer}
+            enCours={enCours}
+          />
         ) : null}
       </div>
-      {toast ? (
-        <div
-          role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-[10px] bg-neutre-900 px-4 py-2.5 text-sm text-blanc shadow-lg"
-        >
-          {toast}
-        </div>
-      ) : null}
+      <Toast message={toast} onFin={fermerToast} />
     </div>
   );
 }

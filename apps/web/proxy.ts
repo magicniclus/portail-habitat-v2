@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
 import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
+import { SCRIPT_APERCU } from '@/features/siteArtisan/apercu';
 import { SCRIPT_SITE } from '@/features/siteArtisan/document';
 import { SCRIPT_EDITION } from '@/features/siteArtisan/edition';
 import { hoteSite } from '@/lib/hotesSites';
@@ -19,6 +20,8 @@ const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
 let empreinteE: Promise<string> | undefined;
 /** Script de l'aperçu de l'éditeur de site (cadre `srcdoc`, qui hérite de la CSP de la page). */
 const empreinteEdition = () => (empreinteE ??= sha256(SCRIPT_EDITION));
+let empreinteA: Promise<string> | undefined;
+const empreinteApercu = () => (empreinteA ??= sha256(SCRIPT_APERCU));
 
 /** Domaine de la plateforme (les autres hôtes sont des sites artisans). */
 const plateforme = () => {
@@ -70,7 +73,7 @@ export async function proxy(requete: NextRequest) {
           empreintes: [
             await empreinteBandeau(),
             ...(requete.nextUrl.pathname.startsWith('/pro/site/editeur')
-              ? [await empreinteEdition()]
+              ? [await empreinteEdition(), await empreinteApercu()]
               : []),
           ],
         }

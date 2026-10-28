@@ -4,6 +4,7 @@ export interface RestantsIa {
   type: 'mois' | 'essai';
   textes: number;
   composants: number;
+  max: { textes: number; composants: number };
 }
 
 export const MODES: { mode: ModeIaSite | 'auto'; libelle: string; essai: boolean }[] = [

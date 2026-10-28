@@ -7,11 +7,11 @@ import {
   type PageSite,
 } from '@ph/core/sites';
 import { Button } from '@ph/ui';
-import { ChampAction } from '../ChampAction';
 import { ChoixImage } from './ChoixImage';
-import { Action, Curseur, Groupe, Info, Interrupteur, Segments } from './controles';
+import { Action, Curseur, Groupe, Info, Segments } from './controles';
 import { Couleurs } from './Couleurs';
 import { NOMS_APPAREIL, pourAppareil, type ContexteReglages } from './contexte';
+import { BoutonsNavigation } from './BoutonsNavigation';
 import { LiensMenu } from './LiensMenu';
 import { NavigationAvancee, NavigationMobile } from './NavigationMobile';
 
@@ -138,64 +138,7 @@ export function ReglagesNavigation(p: {
           onChange={(align) => maj({ align })}
         />
       </Groupe>
-      <Groupe titre="Boutons">
-        <Interrupteur
-          libelle="Bouton devis"
-          actif={n.cta.visible}
-          onChange={(visible) => maj({ cta: { ...n.cta, visible } })}
-        />
-        {n.cta.visible ? (
-          <>
-            <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
-              Texte du bouton
-              <input
-                value={n.cta.texte}
-                maxLength={40}
-                onChange={(e) => maj({ cta: { ...n.cta, texte: e.target.value } })}
-                className={champ}
-              />
-            </label>
-            <ChampAction
-              action={n.cta.action}
-              onChange={(action) => maj({ cta: { ...n.cta, action } })}
-              c={c}
-              libelle="Action du bouton"
-            />
-            <Couleurs
-              libelle="Couleur du bouton"
-              valeur={n.cta.couleur}
-              jetons={['primaire', 'accent', 'sombre', 'blanc']}
-              palette={c.palette}
-              onChange={(couleur) => maj({ cta: { ...n.cta, couleur } })}
-            />
-            <Couleurs
-              libelle="Couleur du texte du bouton"
-              valeur={n.cta.texteCouleur}
-              jetons={['auto', 'blanc', 'sombre', 'primaire', 'accent']}
-              palette={c.palette}
-              libre={false}
-              onChange={(texteCouleur) => maj({ cta: { ...n.cta, texteCouleur } })}
-            />
-          </>
-        ) : null}
-        <Interrupteur
-          libelle="Numéro de téléphone"
-          actif={n.tel.visible}
-          onChange={(visible) => maj({ tel: { ...n.tel, visible } })}
-        />
-        {n.tel.visible ? (
-          <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
-            Numéro
-            <input
-              type="tel"
-              value={n.tel.numero}
-              maxLength={30}
-              onChange={(e) => maj({ tel: { ...n.tel, numero: e.target.value } })}
-              className={champ}
-            />
-          </label>
-        ) : null}
-      </Groupe>
+      <BoutonsNavigation n={n} maj={maj} c={c} />
       <Groupe titre="Apparence">
         <Couleurs
           libelle="Fond"

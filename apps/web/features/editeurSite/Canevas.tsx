@@ -11,7 +11,10 @@ export type MessageApercu =
   | { type: 'action'; op: string }
   | { type: 'touche'; key: string; ctrl: boolean; shift: boolean }
   | { type: 'texte'; id: string; html: string; texte: string; simple: boolean }
-  | { type: 'edition'; id: string };
+  | { type: 'edition'; id: string }
+  /** Mode Aperçu : lien vers une autre page du site, ou lien externe (appel, email, site…). */
+  | { type: 'page'; slug: string; ancre: string }
+  | { type: 'lien'; href: string };
 
 /** Ce que l'aperçu doit encadrer : identifiant, niveau, badge, actions, bouton d'ajout. */
 export interface SelectionApercu {
@@ -36,6 +39,7 @@ export function Canevas({
   onEchelle,
   filigrane,
   menuOuvert = false,
+  ancre,
 }: {
   html: string;
   appareil: Appareil;
@@ -47,6 +51,8 @@ export function Canevas({
   filigrane?: string;
   /** Menu mobile ouvert dans l'aperçu (réglages de la navigation). */
   menuOuvert?: boolean;
+  /** Mode Aperçu : zone où arriver après un changement de page. */
+  ancre?: string;
 }) {
   const largeur = LARGEURS[appareil];
   const boite = useRef<HTMLDivElement>(null);
@@ -84,6 +90,10 @@ export function Canevas({
     menu.current = menuOuvert;
     envoyer({ type: 'menu', ouvert: menuOuvert });
   }, [menuOuvert, envoyer]);
+  const ancreRef = useRef(ancre);
+  useEffect(() => {
+    ancreRef.current = ancre;
+  }, [ancre]);
   useEffect(() => {
     const recevoir = (e: MessageEvent) => {
       if (e.source !== cadre.current?.contentWindow) return;
@@ -94,6 +104,7 @@ export function Canevas({
         envoyer({ type: 'defiler', y: y.current });
         envoyer({ type: 'selection', selection: derniere.current });
         if (menu.current) envoyer({ type: 'menu', ouvert: true });
+        if (ancreRef.current) envoyer({ type: 'ancre', ancre: ancreRef.current });
       } else onMessage(m as MessageApercu);
     };
     window.addEventListener('message', recevoir);

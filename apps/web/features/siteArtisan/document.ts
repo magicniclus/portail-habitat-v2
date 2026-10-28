@@ -1,7 +1,9 @@
 import type { Navigation, PageSite, Theme } from '@ph/core/sites';
+import { SCRIPT_APERCU } from './apercu';
 import { STYLE_BLOG } from './blog';
 import { SCRIPT_EDITION, STYLE_EDITION } from './edition';
-import { fenetreFormulaire, type ContexteRendu } from './elements';
+import type { ContexteRendu } from './elements';
+import { fenetreFormulaire } from './formulaire';
 import { esc } from './html';
 import { rendreNavigation, STYLE_NAV } from './navigation';
 import { rendreSection } from './sections';
@@ -62,5 +64,5 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
       ? `<p>Site créé avec <a href="https://portailtravaux.fr/pro/site-internet-artisan" rel="noopener">Portail Travaux</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Travaux</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}<footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${ctx.edition ? SCRIPT_EDITION : SCRIPT_SITE}</script></body></html>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}<footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;
 }

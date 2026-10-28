@@ -59,7 +59,7 @@ export function useHtmlApercu(
         champs: offre === 'site_pro' && champs ? champs : FORMULAIRE_GRATUIT,
         ...(c.ids.length ? { surligner: new Set(c.ids) } : {}),
         ...(blog ? { blog } : {}),
-        ...(edition ? { edition } : {}),
+        ...(edition ? { edition } : { apercu: true }),
       },
     );
   }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition, blog, edition]);

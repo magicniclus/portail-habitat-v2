@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ancrerZone,
   ancresDe,
   annuler,
   appliquer,
@@ -150,9 +151,18 @@ export function useBrouillonSite(initial: BrouillonSite) {
       theme: m.theme ?? x.theme,
     }));
 
+  /** Ancre d'une zone (créée si besoin) pour y mener un lien ; `null` si la zone n'existe plus. */
+  const ancrer = (pageId: string, zoneId: string) => {
+    const p = b.pages[pageId];
+    const r = p ? ancrerZone(p, zoneId) : null;
+    if (r && r.page !== p) modifier((x) => ({ ...x, pages: { ...x.pages, [pageId]: r.page } }));
+    return r?.ancre ?? null;
+  };
+
   return {
     b,
     modifier,
+    ancrerZone: ancrer,
     appliquerIa,
     restaurer,
     ajouterPage,

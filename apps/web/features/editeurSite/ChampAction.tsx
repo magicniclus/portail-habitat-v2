@@ -3,6 +3,7 @@
 import type { Action } from '@ph/core/sites';
 import { lienAction } from '@/features/siteArtisan/actions';
 import { ChoixZone, sansAncre } from './action/ChoixZone';
+import { depart } from './action/depart';
 import { TuilesAction } from './action/TuilesAction';
 import { ImportImage } from './ImportImage';
 import { Info, Interrupteur, Libelle, Segments } from './proprietes/controles';
@@ -10,18 +11,6 @@ import type { ContexteReglages } from './proprietes/contexte';
 
 const champ = 'min-h-11 w-full rounded-[8px] border border-trait bg-blanc px-3 text-base';
 const etiquette = 'grid gap-1.5 text-[13px] font-bold text-neutre-800';
-
-/** Valeurs de départ quand on change de type (numéro du site, page d'accueil…). */
-function depart(t: Action['type'], c: ContexteReglages): Action {
-  if (t === 'page') return { type: 'page', page: 'accueil' };
-  if (t === 'tel' || t === 'sms' || t === 'whatsapp') return { type: t, tel: c.telephone ?? '' };
-  if (t === 'formulaire') return { type: 'formulaire', formulaire: 'defiler' };
-  if (t === 'fichier') {
-    const premier = Object.keys(c.fichiers)[0];
-    return premier ? { type: 'fichier', fichierId: premier } : { type: 'fichier' };
-  }
-  return { type: t };
-}
 
 /**
  * Action au clic d'un bouton, d'une image, d'un lien du menu ou d'un mot lié (maquette Editeur de

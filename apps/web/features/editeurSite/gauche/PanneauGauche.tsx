@@ -1,11 +1,18 @@
 'use client';
 
-import type { ModeIaSite, OperationIa, PageSite } from '@ph/core/sites';
+import {
+  insererSectionPrete,
+  type ModeIaSite,
+  type OperationIa,
+  type PageSite,
+} from '@ph/core/sites';
 import { XIcon } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { TITRES_PANNEAU, type Panneau } from '../BarreEditeur';
 import { PanneauIa } from '../PanneauIa';
 import { PanneauModeles } from '../PanneauModeles';
+import { suggestionsIa } from '../ia/suggestionsIa';
+import { infoSelection } from '../selection';
 import type { ProprietesEditeur } from '../proprietes';
 import type { useBrouillonSite } from '../useBrouillonSite';
 import { PanneauAjout, type OngletAjout } from './PanneauAjout';
@@ -14,9 +21,11 @@ import { PanneauSeo } from './PanneauSeo';
 import { PanneauStructure } from './PanneauStructure';
 import { PanneauStyles } from './PanneauStyles';
 
+const nouvelId = () => Math.random().toString(36).slice(2, 10);
+
 export interface DemandeIa {
   mode: ModeIaSite;
-  portee: 'page' | 'site';
+  portee: 'selection' | 'page' | 'site';
   demande: string;
   /** Change à chaque demande : le panneau IA repart de zéro. */
   n: number;
@@ -44,6 +53,8 @@ export function PanneauGauche(p: {
   appareil: Parameters<typeof PanneauStructure>[0]['appareil'];
 }) {
   const { s, page, pageId } = p;
+  const nomSel =
+    p.selection && p.selection !== 'nav' ? infoSelection(page, p.selection)?.nom : undefined;
   let contenu: ReactNode = null;
   if (p.panneau === 'structure')
     contenu = (
@@ -99,6 +110,7 @@ export function PanneauGauche(p: {
         pageId={pageId}
         pages={s.b.pages}
         hote={p.props.hote}
+        nomSite={s.b.navigation.nom}
         {...(p.props.ville ? { ville: p.props.ville } : {})}
         onChange={(r) => p.majPage((x) => ({ ...x, ...r }))}
         onIa={(portee) =>
@@ -131,6 +143,32 @@ export function PanneauGauche(p: {
         appliquer={s.appliquerIa}
         onProposition={p.onProposition}
         {...(p.ia ? { initial: p.ia } : {})}
+        {...(nomSel ? { nomSelection: nomSel } : {})}
+        suggestions={suggestionsIa(page, {
+          ...(p.props.ville ? { ville: p.props.ville } : {}),
+          ajouterZone: (cle, ou) => {
+            // En fin de page, la zone passe avant le pied de page.
+            const pied = page.sections.findIndex((x) => x.p.nom === 'Pied de page');
+            const apres =
+              ou === 'debut'
+                ? (page.sections[0]?.id ?? null)
+                : pied > 0
+                  ? page.sections[pied - 1]!.id
+                  : null;
+            const r = insererSectionPrete(page, cle, apres, nouvelId);
+            if (!r) return;
+            p.majPage(() => r.page);
+            p.onChoisir(r.id, true);
+            p.flash('Zone ajoutée · Ctrl+Z pour annuler');
+          },
+          pageLocale: (ville) =>
+            p.onIa({
+              mode: 'page',
+              portee: 'site',
+              demande: `Crée une page locale pour ${ville} : mes travaux, la zone desservie et un appel à demander un devis.`,
+            }),
+          referencement: () => p.onPanneau('seo'),
+        })}
       />
     );
   return (

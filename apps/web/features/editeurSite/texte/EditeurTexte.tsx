@@ -1,10 +1,10 @@
 'use client';
 
-import { TUILES_ACTION, retirerLien, type Action } from '@ph/core/sites';
-import { LinkSimpleIcon, XIcon } from '@phosphor-icons/react';
+import { retirerLien, type Action } from '@ph/core/sites';
+import { LinkSimpleIcon } from '@phosphor-icons/react';
 import { useEffect, useId, useRef, useState } from 'react';
-import { ChampAction } from '../ChampAction';
 import type { ContexteReglages } from '../proprietes/contexte';
+import { LiensDuTexte } from './LiensDuTexte';
 import { depuisHtml, liensUtilises, nouveauLien, versHtml } from './texteRiche';
 
 const outil =
@@ -28,7 +28,6 @@ export function EditeurTexte({
   onChange: (p: { texte: string; liens: Record<string, Action> }) => void;
   c: ContexteReglages;
 }) {
-  const { pages, erreurAction } = c;
   const id = useId();
   const zone = useRef<HTMLDivElement>(null);
   const source = useRef<string | null>(null);
@@ -82,16 +81,12 @@ export function EditeurTexte({
     });
     setOuvert(lid);
   };
-  const mots = [...texte.matchAll(/\[([^\]]+)\]\(#(L\d+)\)/g)].map((m) => ({
-    mot: m[1]!,
-    lid: m[2]!,
-  }));
-  const decrire = (a: Action | undefined) =>
-    !a
-      ? 'Aucune action'
-      : a.type === 'page' && a.page
-        ? `Page · ${pages[a.page]?.nom ?? '?'}`
-        : TUILES_ACTION[a.type];
+  const retirer = (lid: string) => {
+    const r = retirerLien(texte, liens, lid);
+    onChange(r);
+    if (zone.current) zone.current.innerHTML = versHtml(r.texte);
+    source.current = r.texte;
+  };
 
   return (
     <div className="grid gap-2">
@@ -179,56 +174,15 @@ export function EditeurTexte({
           {message}
         </p>
       ) : null}
-      {mots.length ? (
-        <div className="grid gap-1.5 [grid-template-columns:minmax(0,1fr)]">
-          <span className="text-xs font-bold text-neutre-700">Liens dans ce texte</span>
-          {mots.map(({ mot, lid }) => {
-            const a = liens[lid];
-            return (
-              <div
-                key={lid}
-                className="grid gap-1.5 rounded-[8px] border border-trait p-2 [grid-template-columns:minmax(0,1fr)]"
-              >
-                <div className="flex items-center gap-1">
-                  <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">
-                    « {mot} »
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={`Retirer le lien « ${mot} »`}
-                    title="Retirer le lien (garder le texte)"
-                    onClick={() => {
-                      const r = retirerLien(texte, liens, lid);
-                      onChange(r);
-                      if (zone.current) zone.current.innerHTML = versHtml(r.texte);
-                      source.current = r.texte;
-                    }}
-                    className="grid size-11 place-items-center rounded-[6px] text-neutre-700 hover:bg-neutre-100"
-                  >
-                    <XIcon size={14} aria-hidden="true" />
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  aria-expanded={ouvert === lid}
-                  onClick={() => setOuvert(ouvert === lid ? null : lid)}
-                  className={`min-h-11 rounded-[6px] border px-2 text-left text-xs ${a && erreurAction(a) ? 'border-danger text-danger' : 'border-trait text-neutre-800'}`}
-                >
-                  {decrire(a)}
-                </button>
-                {ouvert === lid ? (
-                  <ChampAction
-                    libelle={`Lien « ${mot} »`}
-                    action={a ?? { type: 'aucun' }}
-                    onChange={(x) => onChange({ texte, liens: { ...liens, [lid]: x } })}
-                    c={c}
-                  />
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
+      <LiensDuTexte
+        texte={texte}
+        liens={liens}
+        c={c}
+        ouvert={ouvert}
+        onOuvert={setOuvert}
+        onChange={onChange}
+        onRetirer={retirer}
+      />
     </div>
   );
 }

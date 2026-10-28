@@ -295,7 +295,13 @@ async function routerDemande(client: ClientIa, e: DemandeIaSite) {
 export async function lireRestantsIaSite(
   s: Pick<ServicesSites, 'db' | 'horloge'>,
   artisanId: string,
-): Promise<{ type: 'mois' | 'essai'; textes: number; composants: number }> {
+): Promise<{
+  type: 'mois' | 'essai';
+  textes: number;
+  composants: number;
+  /** Total du mois (ou des essais) : barre de consommation du panneau. */
+  max: { textes: number; composants: number };
+}> {
   const artisan = await s.db.doc(chemins.artisan(artisanId)).get();
   const d = droitsLus(artisan.get('droits'));
   const complet = d.iaSite === 'complet';
@@ -304,11 +310,21 @@ export async function lireRestantsIaSite(
     .get();
   const n = (k: string) => (c.get(k) as number | undefined) ?? 0;
   if (!complet)
-    return { type: 'essai', textes: Math.max(0, ESSAIS_TEXTES_A_VIE - n('textes')), composants: 0 };
+    return {
+      type: 'essai',
+      textes: Math.max(0, ESSAIS_TEXTES_A_VIE - n('textes')),
+      composants: 0,
+      max: { textes: ESSAIS_TEXTES_A_VIE, composants: 0 },
+    };
   const m = d.iaMultiplicateur;
+  const max = {
+    textes: QUOTAS_MOIS_SITE_PRO.textes * m,
+    composants: QUOTAS_MOIS_SITE_PRO.composants * m,
+  };
   return {
     type: 'mois',
-    textes: Math.max(0, QUOTAS_MOIS_SITE_PRO.textes * m - n('textes')),
-    composants: Math.max(0, QUOTAS_MOIS_SITE_PRO.composants * m - n('composants')),
+    textes: Math.max(0, max.textes - n('textes')),
+    composants: Math.max(0, max.composants - n('composants')),
+    max,
   };
 }

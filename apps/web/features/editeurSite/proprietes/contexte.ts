@@ -31,6 +31,8 @@ export interface ContexteReglages {
   ouvrirAjout: (onglet: 'zones' | 'sections' | 'contenus') => void;
   /** Change l'appareil de l'aperçu (« Voir l'aperçu mobile »). */
   onAppareil: (a: Appareil) => void;
+  /** Ouvre l'assistant IA sur la sélection avec une demande préparée (mode textes). */
+  demanderIa: (demande: string) => void;
   /** Ouvre ou ferme le menu mobile dans l'aperçu. */
   basculerMenu: () => void;
 }

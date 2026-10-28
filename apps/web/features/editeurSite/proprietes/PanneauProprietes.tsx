@@ -14,7 +14,8 @@ import { useState, type ReactNode } from 'react';
 import { IconeAction } from '../icones';
 import type { InfoSelection, OpSelection } from '../selection';
 import type { ContexteReglages } from './contexte';
-import { ReglagesBloc, ReglagesLigne, ReglagesZone } from './ReglagesConteneurs';
+import { ReglagesBloc } from './ReglagesBloc';
+import { ReglagesLigne, ReglagesZone } from './ReglagesConteneurs';
 import { ReglagesContenu } from './ReglagesContenu';
 
 export type OngletProprietes = 'general' | 'mobile' | 'avance';

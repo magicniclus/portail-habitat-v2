@@ -92,7 +92,7 @@ export function useSelection(o: {
       else if (m.type === 'action') agir(m.op as OpSelection);
       else if (m.type === 'edition') setSelection(m.id);
       else if (m.type === 'texte') onTexte(m.id, m.html, m.texte, m.simple);
-      else touche(m);
+      else if (m.type === 'touche') touche(m);
     },
     [agir, touche, onTexte],
   );

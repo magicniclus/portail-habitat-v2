@@ -193,6 +193,7 @@ describe('IA du site', () => {
       type: 'mois',
       textes: 299,
       composants: 60,
+      max: { textes: 300, composants: 60 },
     });
   });
 
@@ -207,6 +208,7 @@ describe('IA du site', () => {
       type: 'essai',
       textes: 2,
       composants: 0,
+      max: { textes: 3, composants: 0 },
     });
   });
 });
