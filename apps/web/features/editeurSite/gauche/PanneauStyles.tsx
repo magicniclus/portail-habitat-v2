@@ -5,7 +5,7 @@ import { cn } from '@ph/ui';
 import { palettesSites } from '@ph/ui/tokens';
 import { CouleurSite } from './CouleurSite';
 
-const POLICES: [Theme['polices'], string, string][] = [
+export const POLICES: [Theme['polices'], string, string][] = [
   ['archivo', 'Archivo + Source Sans', 'Archivo, Arial, sans-serif'],
   ['dmserif', 'DM Serif + Source Sans', '"DM Serif Display", Georgia, serif'],
   ['barlow', 'Barlow Condensed + Barlow', '"Barlow Condensed", Arial, sans-serif'],
