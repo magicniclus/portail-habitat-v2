@@ -39,7 +39,6 @@ export function PanneauAjout({
   onglet,
   onOnglet,
   onPage,
-  onMessage,
   palette,
 }: {
   page: PageSite;
@@ -50,7 +49,6 @@ export function PanneauAjout({
   onOnglet: (o: OngletAjout) => void;
   /** Nouvelle page et ce qu'il faut sélectionner ensuite. */
   onPage: (p: PageSite, selection: string | null) => void;
-  onMessage: (m: string) => void;
 }) {
   const f = selection && selection !== 'nav' ? trouverNoeud(page, selection) : null;
   const z = f?.chaine[0] as Section | undefined;
@@ -72,23 +70,21 @@ export function PanneauAjout({
       : onglet === 'sections'
         ? z
           ? `Section ajoutée dans la zone « ${zoneNom} ».`
-          : 'Sélectionnez d’abord une zone de la page.'
+          : 'Rien de sélectionné : la section part dans une nouvelle zone en bas de la page.'
         : f
           ? `Ajouté dans : ${lieu}`
-          : 'Sélectionnez d’abord un bloc de la page.';
+          : 'Rien de sélectionné : le contenu part dans une nouvelle zone en bas de la page.';
   const ajouterZone = (cle: string) => {
     const r = insererSectionPrete(page, cle, z?.id ?? null, nouvelId);
     if (r) onPage(r.page, r.id);
   };
   const ajouterSection = (largeurs: readonly number[]) => {
-    const r = ajouterLigne(page, selection, largeurs, nouvelId);
+    const r = ajouterLigne(page, selection === 'nav' ? null : selection, largeurs, nouvelId);
     if (r) onPage(r.page, r.id);
-    else onMessage('Sélectionnez d’abord une zone de la page.');
   };
   const ajouterContenu = (t: TypeElement) => {
-    const r = insererDans(page, selection, t, nouvelId);
+    const r = insererDans(page, selection === 'nav' ? null : selection, t, nouvelId);
     if (r) onPage(r.page, r.id);
-    else onMessage('Sélectionnez d’abord un bloc ou un contenu de la page.');
   };
   return (
     <div className="grid gap-3">

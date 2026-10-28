@@ -76,7 +76,6 @@ export function PanneauGauche(p: {
           p.majPage(() => n);
           if (sel) p.onChoisir(sel, true);
         }}
-        onMessage={p.flash}
         palette={s.b.theme.palette}
       />
     );
@@ -86,7 +85,7 @@ export function PanneauGauche(p: {
         pages={s.b.pages}
         pageId={pageId}
         onChoisir={p.onPageId}
-        onAjouter={(nom) => p.onPageId(s.ajouterPage(nom))}
+        onAjouter={(nom, vierge) => p.onPageId(s.ajouterPage(nom, vierge))}
         onGenerer={(d) =>
           p.onIa({ mode: 'page', portee: 'site', demande: `Crée une page « ${d} »` })
         }

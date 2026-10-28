@@ -1,4 +1,4 @@
-import { DEFAUTS_COLONNE, DEFAUTS_LIGNE, elementDuCatalogue } from './catalogue';
+import { DEFAUTS_COLONNE, DEFAUTS_LIGNE, DEFAUTS_SECTION, elementDuCatalogue } from './catalogue';
 import { slugifier } from '../format/slug';
 import { ancresDe } from './actions';
 import { copieSection } from './edition';
@@ -217,6 +217,13 @@ export function changerDisposition(
 }
 
 /** Nouvelle section (blocs vides aux largeurs données) après celle de la sélection, ou en fin de zone. */
+/** Zone vide (sans section) : point de départ d'une page vierge. */
+const zoneVide = (nouvelId: () => string): Section => ({
+  id: nouvelId(),
+  p: { ...DEFAUTS_SECTION, nom: 'Zone' },
+  rows: [],
+});
+
 export function ajouterLigne(
   p: PageSite,
   cible: string | null,
@@ -224,7 +231,11 @@ export function ajouterLigne(
   nouvelId: () => string,
 ): { page: PageSite; id: string } | null {
   const f = cible ? trouverNoeud(p, cible) : null;
-  if (!f) return null;
+  if (!f) {
+    // Rien de sélectionné (ou page vierge) : la section part dans une zone neuve en bas de page.
+    const z = zoneVide(nouvelId);
+    return ajouterLigne({ ...p, sections: [...p.sections, z] }, z.id, largeurs, nouvelId);
+  }
   const ligne: Ligne = {
     id: nouvelId(),
     p: DEFAUTS_LIGNE,
@@ -239,7 +250,8 @@ export function ajouterLigne(
 
 /**
  * Contenu inséré selon la sélection : après l'élément, à la fin du bloc, du premier bloc de la
- * section, ou du premier bloc de la dernière section de la zone (créée si la zone est vide).
+ * section, ou du premier bloc de la dernière section de la zone (créée si la zone est vide) ;
+ * sans sélection, dans une zone neuve en bas de la page.
  */
 export function insererDans(
   p: PageSite,
@@ -248,7 +260,11 @@ export function insererDans(
   nouvelId: () => string,
 ): { page: PageSite; id: string } | null {
   const f = cible ? trouverNoeud(p, cible) : null;
-  if (!f) return null;
+  if (!f) {
+    // Rien de sélectionné (ou page vierge) : zone neuve en bas de page, puis le contenu.
+    const z = zoneVide(nouvelId);
+    return insererDans({ ...p, sections: [...p.sections, z] }, z.id, type, nouvelId);
+  }
   const nouveau = elementDuCatalogue(type, nouvelId());
   if (f.niveau === 'element') {
     const page = majListe(p, f.noeud.id, (l, i) => [

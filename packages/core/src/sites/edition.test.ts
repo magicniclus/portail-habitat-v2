@@ -107,6 +107,9 @@ describe('opérations de page', () => {
     const n = nouvellePage('Nos tarifs', 'nos-tarifs', 7);
     expect(n).toMatchObject({ statut: 'brouillon', menu: true, ordre: 7, type: 'libre' });
     expect(n.sections).toHaveLength(1);
+    const vierge = nouvellePage('Vierge', 'vierge', 8, true);
+    expect(vierge.sections).toEqual([]);
+    expect(pageSite.safeParse(vierge).success).toBe(true);
     // La page ajoutée dans l'éditeur doit passer le schéma d'enregistrement.
     expect(pageSite.safeParse(n).success).toBe(true);
   });

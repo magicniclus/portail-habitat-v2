@@ -127,9 +127,12 @@ export function slugDePage(nom: string, pages: Record<string, Pick<PageSite, 'sl
   return slug;
 }
 
-/** Page libre en brouillon : un bandeau titre + texte, à compléter dans l'éditeur. */
-export function nouvellePage(nom: string, slug: string, ordre: number): PageSite {
-  return {
+/**
+ * Page libre en brouillon : un bandeau titre + texte à compléter dans l'éditeur, ou page vierge
+ * (aucune zone) à construire de zéro.
+ */
+export function nouvellePage(nom: string, slug: string, ordre: number, vierge = false): PageSite {
+  const page: PageSite = {
     nom,
     court: nom.slice(0, 40),
     slug,
@@ -169,4 +172,5 @@ export function nouvellePage(nom: string, slug: string, ordre: number): PageSite
       },
     ],
   };
+  return vierge ? { ...page, sections: [] } : page;
 }

@@ -373,10 +373,12 @@ test.describe('Site internet artisan', () => {
 
     // Contenu : placé après le contenu sélectionné, ses réglages s'ouvrent à droite.
     await page.getByRole('tab', { name: 'Contenus' }).click();
+    // Sans sélection : le contenu part dans une nouvelle zone en bas de la page.
     await page.getByRole('button', { name: 'Chiffre clé', exact: true }).click();
     await expect(
-      page.getByText('Sélectionnez d’abord un bloc ou un contenu de la page.'),
+      page.getByRole('heading', { name: 'Chiffre clé', level: 2, exact: true }),
     ).toBeVisible();
+    await page.getByRole('button', { name: 'Annuler (Ctrl Z)' }).click();
     await apercu.locator('h1').first().click();
     await page.getByRole('button', { name: 'Chiffre clé', exact: true }).click();
     await expect(

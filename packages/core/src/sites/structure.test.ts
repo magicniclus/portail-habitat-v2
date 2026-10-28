@@ -154,7 +154,13 @@ describe('structure de la page : zone › section › bloc › élément', () =>
     expect(a.page.sections[0]!.rows[1]!.cols.map((c) => c.w)).toEqual([6, 6]);
     const b = ajouterLigne(page(), 'z2', [12], ids())!;
     expect(b.page.sections[1]!.rows.at(-1)!.id).toBe(b.id);
-    expect(ajouterLigne(page(), null, [12], ids())).toBeNull();
+    // Rien de sélectionné (page vierge comprise) : une zone neuve en bas de la page.
+    const vierge = { ...page(), sections: [] };
+    const c = ajouterLigne(vierge, null, [4, 8], ids())!;
+    expect(c.page.sections).toHaveLength(1);
+    expect(c.page.sections[0]!.rows[0]!.id).toBe(c.id);
+    expect(c.page.sections[0]!.rows[0]!.cols.map((x) => x.w)).toEqual([4, 8]);
+    valide(c.page);
     valide(a.page);
   });
 
@@ -171,7 +177,12 @@ describe('structure de la page : zone › section › bloc › élément', () =>
     expect(ligne.page.sections[1]!.rows[0]!.cols[0]!.els.at(-1)!.id).toBe(ligne.id);
     const zone = insererDans(page(), 'z1', 'texte', ids())!;
     expect(zone.page.sections[0]!.rows[0]!.cols[0]!.els.at(-1)!.id).toBe(zone.id);
-    expect(insererDans(page(), null, 'texte', ids())).toBeNull();
+    const bas = insererDans(page(), null, 'texte', ids())!;
+    expect(bas.page.sections).toHaveLength(3);
+    expect(bas.page.sections[2]!.rows[0]!.cols[0]!.els.map((e) => e.id)).toEqual([bas.id]);
+    const vierge = insererDans({ ...page(), sections: [] }, null, 'titre', ids())!;
+    expect(vierge.page.sections[0]!.rows[0]!.cols[0]!.els[0]!.type).toBe('titre');
+    valide(vierge.page);
     valide(apres.page);
   });
 

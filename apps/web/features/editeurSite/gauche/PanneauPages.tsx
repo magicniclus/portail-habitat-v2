@@ -27,7 +27,7 @@ export function PanneauPages({
   pages: Record<string, PageSite>;
   pageId: string;
   onChoisir: (id: string) => void;
-  onAjouter: (nom: string) => void;
+  onAjouter: (nom: string, vierge?: boolean) => void;
   /** « Plombier à Pessac » : demande passée à l'assistant IA (création de page). */
   onGenerer: (demande: string) => void;
   onSupprimer: (id: string) => void;
@@ -65,9 +65,9 @@ export function PanneauPages({
             type="button"
             taille="sm"
             variant="secondaire"
-            onClick={() => onAjouter('Nouvelle page')}
+            onClick={() => onAjouter('Nouvelle page', true)}
           >
-            Page vide
+            Page vierge
           </Button>
         </div>
       </form>

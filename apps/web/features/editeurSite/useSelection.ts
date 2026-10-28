@@ -35,11 +35,11 @@ export function useSelection(o: {
 
   const agir = useCallback(
     (op: OpSelection | 'zone' | 'section' | 'contenu', id = selection) => {
-      if (!id) return;
-      // Ajouter sous la sélection : le panneau Ajouter s'ouvre, l'insertion suit la sélection
-      // (un contenu va à la fin du bloc choisi, ou juste après le contenu choisi).
+      // Ajouter sous la sélection (ou, sans sélection, en bas de la page) : le panneau Ajouter
+      // s'ouvre, l'insertion suit la sélection.
       if (op === 'zone' || op === 'section' || op === 'contenu')
         return ouvrirAjout(op === 'zone' ? 'zones' : op === 'section' ? 'sections' : 'contenus');
+      if (!id) return;
       if (id === 'nav') {
         if (op === 'supprimer')
           flash(

@@ -119,6 +119,24 @@ describe('rendu des sites publiés', () => {
     expect(avecLogo).toContain('<link rel="icon" href="https://storage.googleapis.com/x.webp">');
   });
 
+  it('page vierge : invitation à ajouter dans l’éditeur, rien sur le site publié', () => {
+    const vierge = (edition: boolean) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: s.navigation,
+          page: { ...s.pages.accueil!, sections: [] },
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition },
+      );
+    expect(vierge(true)).toMatch(/Page vierge.*data-ed-op="zone".*data-ed-op="contenu"/);
+    expect(vierge(false)).not.toContain('Page vierge');
+  });
+
   it('mention Portail Travaux seulement sur un site gratuit', () => {
     expect(doc('gratuit')).toContain('Site créé avec');
     expect(doc('site_pro')).not.toContain('Site créé avec');

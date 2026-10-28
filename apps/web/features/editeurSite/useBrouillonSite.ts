@@ -117,13 +117,16 @@ export function useBrouillonSite(initial: BrouillonSite) {
   const annulerNavigation = () => modifier((x) => ({ ...x, navigation: enregistre.navigation }));
 
   /** Nouvelle page en brouillon ; renvoie son identifiant. */
-  const ajouterPage = (nom: string): string => {
+  const ajouterPage = (nom: string, vierge = false): string => {
     const slug = slugDePage(nom, b.pages);
     const base = slug.replace(/-/g, '_').slice(0, 36);
     let id = base;
     for (let n = 2; b.pages[id]; n++) id = `${base}_${n}`;
     const ordre = Math.max(0, ...Object.values(b.pages).map((p) => p.ordre)) + 1;
-    modifier((x) => ({ ...x, pages: { ...x.pages, [id]: nouvellePage(nom, slug, ordre) } }));
+    modifier((x) => ({
+      ...x,
+      pages: { ...x.pages, [id]: nouvellePage(nom, slug, ordre, vierge) },
+    }));
     return id;
   };
   const supprimerPage = (id: string) =>

@@ -44,10 +44,18 @@ export interface DocumentSite {
 const SURLIGNAGE =
   '.ia-modifie{outline:3px dashed var(--accent);outline-offset:3px;scroll-margin:80px}';
 
+/** Éditeur : page vierge, invitation à ajouter la première zone, section ou contenu. */
+const PAGE_VIERGE =
+  '<div class="ed-vierge"><strong>Page vierge</strong><p>Partez de zéro : une zone prête, une section de blocs ou un simple contenu.</p><div><button type="button" data-ed-op="zone">+ Zone</button><button type="button" data-ed-op="section">+ Section</button><button type="button" data-ed-op="contenu">+ Contenu</button></div></div>';
+
 export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string {
   const ctx: ContexteRendu = { ...contexte, theme: d.theme, navigation: d.navigation };
   const canonique = `https://${d.hote}/${d.page.slug}`;
-  const sections = d.contenu ?? d.page.sections.map((s) => rendreSection(s, ctx)).join('');
+  const sections =
+    d.contenu ??
+    (d.page.sections.length || !ctx.edition
+      ? d.page.sections.map((s) => rendreSection(s, ctx)).join('')
+      : PAGE_VIERGE);
   const nav = d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx, d.page.slug);
   // Un bouton « Formulaire » en fenêtre sur la page : la fenêtre est ajoutée une fois.
   const fenetre = /data-fenetre="formulaire"/.test(sections + nav) ? fenetreFormulaire(ctx) : '';

@@ -49,7 +49,7 @@ if(m.type==='html'){var n=new DOMParser().parseFromString(m.html,'text/html'),a=
 post({type:'pret'});})();`;
 
 /** Survol et contenus sans rendu propre (menu, vidéo sans lien) visibles dans l'éditeur seulement. */
-export const STYLE_EDITION = `[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}`;
+export const STYLE_EDITION = `.ed-vierge{max-width:560px;margin:72px auto;padding:40px 24px;border:2px dashed rgba(0,0,0,.18);border-radius:16px;text-align:center;font:15px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.65)}.ed-vierge strong{display:block;font-size:20px;color:rgba(0,0,0,.85)}.ed-vierge div{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.ed-vierge button{min-height:44px;padding:0 16px;border:1px solid rgba(0,0,0,.2);border-radius:999px;background:white;font:600 14px system-ui,sans-serif;cursor:pointer}[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}`;
 
 /**
  * Ajoute `data-ed` (et le niveau) à la balise ouvrante d'un fragment HTML ; `texte` : modifiable
