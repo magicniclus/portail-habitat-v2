@@ -9,7 +9,9 @@ export const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, 
 export type MessageApercu =
   | { type: 'choisir'; id: string | null }
   | { type: 'action'; op: string }
-  | { type: 'touche'; key: string; ctrl: boolean; shift: boolean };
+  | { type: 'touche'; key: string; ctrl: boolean; shift: boolean }
+  | { type: 'texte'; id: string; html: string; texte: string; simple: boolean }
+  | { type: 'edition'; id: string };
 
 /** Ce que l'aperçu doit encadrer : identifiant, niveau, badge, actions, bouton d'ajout. */
 export interface SelectionApercu {

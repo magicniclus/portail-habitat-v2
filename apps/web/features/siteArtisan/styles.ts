@@ -2,7 +2,7 @@ import type { Theme } from '@ph/core/sites';
 import { neutresSites as N } from '@ph/ui/tokens';
 import { css } from './elements';
 
-export const POLICES: Record<Theme['polices'], { titre: string; texte: string; poids: number }> = {
+const POLICES: Record<Theme['polices'], { titre: string; texte: string; poids: number }> = {
   archivo: {
     titre: 'Archivo, Arial, sans-serif',
     texte: '"Source Sans 3", Arial, sans-serif',

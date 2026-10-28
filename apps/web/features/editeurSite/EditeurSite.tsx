@@ -4,7 +4,9 @@ import {
   changerDisposition,
   changerNombreBlocs,
   majNoeud,
+  trouverNoeud,
   type Appareil,
+  type Element,
   type OperationIa,
   type PageSite,
 } from '@ph/core/sites';
@@ -17,6 +19,7 @@ import { BandeauCreation } from './creation/BandeauCreation';
 import { PanneauGauche, type DemandeIa } from './gauche/PanneauGauche';
 import type { OngletAjout } from './gauche/PanneauAjout';
 import { appelSections } from './MesSections';
+import { depuisHtml, liensUtilises } from './texte/texteRiche';
 import { PanneauProprietes } from './proprietes/PanneauProprietes';
 import { ReglagesNavigation } from './proprietes/ReglagesNavigation';
 import { badgeSelection, infoSelection } from './selection';
@@ -70,6 +73,27 @@ export function EditeurSite(props: ProprietesEditeur) {
     setOngletAjout(o);
     setPanneau('ajouter');
   }, []);
+  const onTexte = useCallback(
+    (id: string, html: string, brut: string, simple: boolean) =>
+      majPage((p) => {
+        const el = trouverNoeud(p, id)?.noeud as Element | undefined;
+        if (!el || !('texte' in el.p)) return p;
+        // HTML du cadre isolé relu dans un document inerte : rien ne s'exécute, seules les
+        // balises du texte riche sont gardées.
+        const texte = simple
+          ? brut.replace(/\s+/g, ' ').trim()
+          : depuisHtml(new DOMParser().parseFromString(html, 'text/html').body);
+        if (texte === el.p.texte) return p;
+        return majNoeud(
+          p,
+          id,
+          simple
+            ? { texte }
+            : { texte, liens: liensUtilises(texte, 'liens' in el.p ? el.p.liens : undefined) },
+        );
+      }),
+    [majPage],
+  );
   const sel = useSelection({
     page,
     majPage,
@@ -77,6 +101,7 @@ export function EditeurSite(props: ProprietesEditeur) {
     retablir: s.retablir,
     flash,
     ouvrirAjout,
+    onTexte,
   });
   const info = apercu ? null : infoSelection(page, sel.selection);
   const html = useHtmlApercu(s.b, pageId, {

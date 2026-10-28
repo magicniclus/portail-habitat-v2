@@ -55,7 +55,7 @@ const COTE = { left: '', center: 'ac', right: 'ad' } as const;
 const couleur = (c: Couleur) => (css(c) ? `--col:${css(c)};` : '');
 
 /** Couleurs d'un bouton : fond, texte, contour ; sur fond foncé, « principale » passe en accent. */
-export function couleursBouton(c: Couleur, fonce: boolean, theme?: Theme): string {
+function couleursBouton(c: Couleur, fonce: boolean, theme?: Theme): string {
   const jeton = fonce && c === 'primaire' ? 'accent' : c === 'auto' ? 'primaire' : c;
   const fond = css(jeton) || 'var(--primaire)';
   const reel = theme ? resoudreCouleur(jeton, theme.palette) : null;
@@ -72,10 +72,19 @@ function avecMobile(e: Element, html: string, rendreMobile: (t: string) => strin
 export function rendreElement(e: Element, ctx: ContexteRendu, fonce = false): string {
   const html = rendreBrut(e, ctx, fonce);
   if (!ctx.edition) return html;
+  const texte =
+    e.p.texteMobileOn || !html
+      ? undefined
+      : e.type === 'titre' || e.type === 'texte'
+        ? 'riche'
+        : e.type === 'surtitre' || e.type === 'bouton'
+          ? 'simple'
+          : undefined;
   return marquerEdition(
     html || `<div class="${masques(e.p.masque)} el ed-vide">${LIBELLES_ELEMENT[e.type]}</div>`,
     e.id,
     'element',
+    texte,
   );
 }
 
@@ -85,7 +94,8 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
   const base = `${masques(e.p.masque)} el${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
-  const riche = (t: string) => texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx.pages);
+  const riche = (t: string) =>
+    texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx.pages, ctx.edition);
   switch (e.type) {
     case 'titre':
     case 'texte': {

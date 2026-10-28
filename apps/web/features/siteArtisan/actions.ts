@@ -76,6 +76,8 @@ export function texteRiche(
   texte: string,
   liens: Record<string, Action> | undefined,
   pages: Record<string, Pick<PageSite, 'slug'>>,
+  /** Éditeur : chaque lien garde son identifiant (modification directe sur la page). */
+  edition = false,
 ): string {
   const ouvertes: string[] = [];
   let out = '';
@@ -93,7 +95,8 @@ export function texteRiche(
       }
     } else {
       const a = liens?.[m[4]!];
-      out += a ? balise(a, pages, 'lien', esc(m[3])) : esc(m[3]);
+      const lien = a ? balise(a, pages, 'lien', esc(m[3])) : esc(m[3]);
+      out += edition && a ? lien.replace(/^<(a|span) /, `<$1 data-lid="${m[4]}" `) : lien;
     }
   }
   out += esc(texte.slice(i)).replace(/\n/g, '<br>');

@@ -3,7 +3,7 @@
 import type { Element } from '@ph/core/sites';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
-import { TexteLie } from '../TexteLie';
+import { EditeurTexte } from '../texte/EditeurTexte';
 import { ChoixImage } from './ChoixImage';
 import { Info, Interrupteur, Segments } from './controles';
 import type { ContexteReglages } from './contexte';
@@ -45,7 +45,8 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
     case 'texte':
       return (
         <>
-          <TexteLie
+          <EditeurTexte
+            libelle="Texte"
             texte={el.p.texte}
             {...(el.p.liens ? { liens: el.p.liens } : {})}
             onChange={maj}

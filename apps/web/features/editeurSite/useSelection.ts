@@ -26,8 +26,10 @@ export function useSelection(o: {
   flash: (m: string) => void;
   /** « + Zone » / « + Section » sous la sélection : ouvre Ajouter sur le bon onglet. */
   ouvrirAjout: (onglet: 'zones' | 'sections') => void;
+  /** Texte modifié directement sur la page (double-clic). */
+  onTexte: (id: string, html: string, texte: string, simple: boolean) => void;
 }) {
-  const { page, majPage, annuler, retablir, flash, ouvrirAjout } = o;
+  const { page, majPage, annuler, retablir, flash, ouvrirAjout, onTexte } = o;
   const [selection, setSelection] = useState<string | null>(null);
   const [defiler, setDefiler] = useState(0);
 
@@ -88,9 +90,11 @@ export function useSelection(o: {
     (m: MessageApercu) => {
       if (m.type === 'choisir') setSelection(m.id);
       else if (m.type === 'action') agir(m.op as OpSelection);
+      else if (m.type === 'edition') setSelection(m.id);
+      else if (m.type === 'texte') onTexte(m.id, m.html, m.texte, m.simple);
       else touche(m);
     },
-    [agir, touche],
+    [agir, touche, onTexte],
   );
 
   return {
