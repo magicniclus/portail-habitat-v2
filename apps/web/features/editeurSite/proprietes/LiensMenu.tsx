@@ -29,7 +29,10 @@ export function LiensMenu({
   return (
     <div className="grid gap-2 [grid-template-columns:minmax(0,1fr)]">
       {liens.map((l, i) => (
-        <div key={l.id} className="grid gap-1.5 rounded-[10px] border border-trait p-2 [grid-template-columns:minmax(0,1fr)]">
+        <div
+          key={l.id}
+          className="grid gap-1.5 rounded-[10px] border border-trait p-2 [grid-template-columns:minmax(0,1fr)]"
+        >
           <div className="flex items-center gap-1">
             <label className="sr-only" htmlFor={`lien-${l.id}`}>
               Texte du lien {i + 1}

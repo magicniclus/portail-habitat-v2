@@ -20,6 +20,10 @@ export interface ContexteReglages {
   maj: (reglages: Record<string, unknown>) => void;
   /** Ouvre le panneau Ajouter sur l'onglet voulu. */
   ouvrirAjout: (onglet: 'zones' | 'sections' | 'contenus') => void;
+  /** Change l'appareil de l'aperçu (« Voir l'aperçu mobile »). */
+  onAppareil: (a: Appareil) => void;
+  /** Ouvre ou ferme le menu mobile dans l'aperçu. */
+  basculerMenu: () => void;
 }
 
 /** Valeur par appareil modifiée pour l'appareil affiché seulement (SITE-02). */

@@ -41,6 +41,7 @@ export function EditeurSite(props: ProprietesEditeur) {
   const [ongletAjout, setOngletAjout] = useState<OngletAjout>('contenus');
   const [appareil, setAppareil] = useState<Appareil>('desktop');
   const [apercu, setApercu] = useState(false);
+  const [menuOuvert, setMenuOuvert] = useState(false);
   const [echelle, setEchelle] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
   const [ia, setIa] = useState<DemandeIa | null>(null);
@@ -101,6 +102,8 @@ export function EditeurSite(props: ProprietesEditeur) {
     maj: (r: Record<string, unknown>) =>
       sel.selection && majPage((p) => majNoeud(p, sel.selection!, r)),
     ouvrirAjout,
+    onAppareil: setAppareil,
+    basculerMenu: () => setMenuOuvert((x) => !x),
   };
   const outils = !apercu;
   return (
@@ -196,6 +199,7 @@ export function EditeurSite(props: ProprietesEditeur) {
             appareil={appareil}
             selection={info ? { ...info, badge: badgeSelection(page, info) } : null}
             defiler={sel.defiler}
+            menuOuvert={menuOuvert}
             onMessage={sel.recevoir}
             onEchelle={setEchelle}
             {...(apercuIa ? { filigrane: 'Aperçu' } : {})}

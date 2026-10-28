@@ -33,6 +33,7 @@ export function Canevas({
   onMessage,
   onEchelle,
   filigrane,
+  menuOuvert = false,
 }: {
   html: string;
   appareil: Appareil;
@@ -42,6 +43,8 @@ export function Canevas({
   onMessage: (m: MessageApercu) => void;
   onEchelle: (e: number) => void;
   filigrane?: string;
+  /** Menu mobile ouvert dans l'aperçu (réglages de la navigation). */
+  menuOuvert?: boolean;
 }) {
   const largeur = LARGEURS[appareil];
   const boite = useRef<HTMLDivElement>(null);
@@ -74,6 +77,11 @@ export function Canevas({
         selection: derniere.current ? { ...derniere.current, defiler: true } : null,
       });
   }, [defiler, envoyer]);
+  const menu = useRef(menuOuvert);
+  useEffect(() => {
+    menu.current = menuOuvert;
+    envoyer({ type: 'menu', ouvert: menuOuvert });
+  }, [menuOuvert, envoyer]);
   useEffect(() => {
     const recevoir = (e: MessageEvent) => {
       if (e.source !== cadre.current?.contentWindow) return;
@@ -83,6 +91,7 @@ export function Canevas({
       else if (m.type === 'pret') {
         envoyer({ type: 'defiler', y: y.current });
         envoyer({ type: 'selection', selection: derniere.current });
+        if (menu.current) envoyer({ type: 'menu', ouvert: true });
       } else onMessage(m as MessageApercu);
     };
     window.addEventListener('message', recevoir);
