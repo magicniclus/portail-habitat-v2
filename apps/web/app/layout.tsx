@@ -7,6 +7,7 @@ import { AppCheck } from '@/features/firebase/AppCheck';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
+import { FAVICONS } from '@/lib/favicon';
 import './globals.css';
 
 // Sous-ensemble latin, display: swap (MOBILE.md §10). Source Sans 3 en police variable : un seul fichier
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(URL_SITE),
   title: { default: 'Portail Travaux', template: '%s · Portail Travaux' },
   description: 'Trouvez un artisan vérifié près de chez vous et simulez votre devis.',
+  icons: { icon: FAVICONS },
 };
 
 export const viewport: Viewport = viewportEspace('particulier');
