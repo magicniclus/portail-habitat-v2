@@ -106,25 +106,31 @@ export function Canevas({
   useEffect(() => {
     ancreRef.current = ancre;
   }, [ancre]);
+  // Cadre prêt (message du script, réponse au « ping » ou événement load) : dernier rendu,
+  // position, sélection, menu et ancre.
+  const quandPret = useCallback(() => {
+    pret.current = true;
+    if (surPlace && dernier.current !== initial) envoyer({ type: 'html', html: dernier.current });
+    envoyer({ type: 'defiler', y: y.current });
+    envoyer({ type: 'selection', selection: derniere.current });
+    if (menu.current) envoyer({ type: 'menu', ouvert: true });
+    if (ancreRef.current) envoyer({ type: 'ancre', ancre: ancreRef.current });
+  }, [envoyer, surPlace, initial]);
   useEffect(() => {
     const recevoir = (e: MessageEvent) => {
       if (e.source !== cadre.current?.contentWindow) return;
       const m = e.data as { source?: string; type?: string; y?: number };
       if (m?.source !== 'ph-editeur') return;
       if (m.type === 'defilement') y.current = m.y ?? 0;
-      else if (m.type === 'pret') {
-        pret.current = true;
-        if (surPlace && dernier.current !== initial)
-          envoyer({ type: 'html', html: dernier.current });
-        envoyer({ type: 'defiler', y: y.current });
-        envoyer({ type: 'selection', selection: derniere.current });
-        if (menu.current) envoyer({ type: 'menu', ouvert: true });
-        if (ancreRef.current) envoyer({ type: 'ancre', ancre: ancreRef.current });
-      } else onMessage(m as MessageApercu);
+      else if (m.type === 'pret') quandPret();
+      else onMessage(m as MessageApercu);
     };
     window.addEventListener('message', recevoir);
     return () => window.removeEventListener('message', recevoir);
-  }, [onMessage, envoyer, surPlace, initial]);
+  }, [onMessage, quandPret]);
+  // Le cadre est dans le HTML du serveur : il peut avoir dit « prêt » avant que React écoute.
+  // On le lui redemande une fois l'éditeur monté (il répond s'il est chargé).
+  useEffect(() => envoyer({ type: 'ping' }), [envoyer]);
 
   return (
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
@@ -145,6 +151,7 @@ export function Canevas({
           title="Aperçu de la page"
           sandbox="allow-scripts"
           srcDoc={surPlace ? initial : html}
+          onLoad={quandPret}
           className="block border-0 bg-blanc shadow-lg"
           style={{
             width: largeur,

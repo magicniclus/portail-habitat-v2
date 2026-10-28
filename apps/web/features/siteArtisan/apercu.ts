@@ -18,5 +18,5 @@ if(r.charAt(0)==='/'){var i=r.indexOf('#');post({type:'page',slug:i<0?r.slice(1)
 post({type:'lien',href:r});},true);
 d.querySelectorAll('[data-formulaire]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var s=f.querySelector('.statut');if(s)s.textContent='Aperçu : le formulaire enverra les demandes une fois le site publié.';});});
 var t;addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(function(){post({type:'defilement',y:scrollY});},120);},{passive:true});
-addEventListener('message',function(e){var x=e.data;if(!x||x.source!=='ph-editeur')return;if(x.type==='defiler')scrollTo(0,x.y||0);if(x.type==='ancre')aller(x.ancre);});
+addEventListener('message',function(e){var x=e.data;if(!x||x.source!=='ph-editeur')return;if(x.type==='defiler')scrollTo(0,x.y||0);if(x.type==='ancre')aller(x.ancre);if(x.type==='ping')post({type:'pret'});});
 post({type:'pret'});})();`;
