@@ -49,7 +49,8 @@ export default async function PageMonSite({
   return (
     <main className="grid content-start pb-12">
       <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-3">
-        <h1 className="m-0 text-[17px] leading-tight font-bold">Mon site internet</h1>
+        {/* Titre déjà affiché dans la barre de l’espace pro : gardé pour les lecteurs d’écran. */}
+        <h1 className="sr-only">Mon site internet</h1>
         {t.url ? (
           <span className="flex min-w-0 items-center gap-2 text-sm text-neutre-800">
             <span className="truncate">{t.url.replace('https://', '')}</span>

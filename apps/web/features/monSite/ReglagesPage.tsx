@@ -42,7 +42,12 @@ export function ReglagesPage({ page, children }: { page: LignePage; children: Re
       </button>
       <span className="flex items-center gap-1.5">
         {children}
-        {page.id === 'accueil' ? null : (
+        {page.id === 'accueil' ? (
+          // Même largeur que « Dépublier » : colonnes alignées d'une carte à l'autre.
+          <span aria-hidden="true" className="invisible px-1.5 text-sm font-semibold">
+            Dépublier
+          </span>
+        ) : (
           <button
             type="button"
             disabled={enCours}

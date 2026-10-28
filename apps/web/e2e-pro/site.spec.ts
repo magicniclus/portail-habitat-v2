@@ -289,7 +289,7 @@ test.describe('Site internet artisan', () => {
     await expect(page.getByText(`Question 3 sur ${total}`)).toBeVisible();
     for (let i = 3; i <= total; i++) await page.getByRole('button', { name: 'Passer' }).click();
     await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
-    await page.getByRole('button', { name: 'Fermer' }).click();
+    await page.getByRole('button', { name: 'Fermer', exact: true }).click();
     await expect(page.getByRole('navigation', { name: 'Outils de l’éditeur' })).toBeVisible();
   });
 
@@ -450,7 +450,8 @@ test.describe('Site internet artisan', () => {
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur');
     const structure = page.getByRole('complementary', { name: 'Structure' });
-    await structure.getByRole('button').nth(1).click();
+    // Première zone de la page (la navigation globale est en tête de la liste).
+    await structure.getByRole('listitem').nth(1).getByRole('button').click();
     await page.getByRole('button', { name: '★ Enregistrer comme modèle de zone' }).click();
     const message = page.getByRole('status').filter({ hasText: 'ajoutée à Mes zones' });
     await expect(message).toBeVisible();
