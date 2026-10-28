@@ -10,6 +10,8 @@ export interface ProprietesEditeur {
   pageInitiale: string;
   panneauInitial: Panneau | null;
   medias: Record<string, string>;
+  /** Fichiers PDF à télécharger (`up:{id}` → nom et URL). */
+  fichiers: Record<string, { nom: string; url: string }>;
   /** Entreprise active : dossier Storage de la médiathèque. */
   artisanId: string;
   hote: string;

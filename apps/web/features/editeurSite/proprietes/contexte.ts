@@ -9,11 +9,20 @@ export const NOMS_APPAREIL: Record<Appareil, string> = {
 /** Ce dont les réglages de chaque niveau ont besoin, fourni par l'éditeur. */
 export interface ContexteReglages {
   pages: Record<string, PageSite>;
+  /** Page affichée dans l'éditeur. */
+  pageId: string;
   palette: Theme['palette'];
   appareil: Appareil;
   medias: Record<string, string>;
   artisanId: string;
   onMedia: (cle: string, url: string) => void;
+  /** Fichiers PDF à télécharger du site (`up:{id}` → nom et URL). */
+  fichiers: Record<string, { nom: string; url: string }>;
+  onFichier: (cle: string, nom: string, url: string) => void;
+  /** Donne une ancre à une zone (si besoin) et la renvoie ; `null` si la zone n'existe plus. */
+  ancrerZone: (pageId: string, zoneId: string) => string | null;
+  /** Numéro de la navigation : proposé pour Appel, SMS et WhatsApp. */
+  telephone?: string;
   erreurAction: (a: Action) => string | null;
   categoriesBlog: { id: string; nom: string }[];
   /** Réglages fusionnés dans le nœud sélectionné (`w` pour la largeur d'un bloc). */

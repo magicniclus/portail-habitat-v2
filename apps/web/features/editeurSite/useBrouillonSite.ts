@@ -82,7 +82,10 @@ export function useBrouillonSite(initial: BrouillonSite) {
     }),
     [b.pages],
   );
-  const erreurAction = (pageId: string) => (a: Action) => validerAction(a, contexte, pageId);
+  const erreurAction =
+    (pageId: string, fichiers = contexte.fichiers) =>
+    (a: Action) =>
+      validerAction(a, { ...contexte, fichiers }, pageId);
 
   /** Enregistre pages et thème ; renvoie le message d'erreur éventuel. */
   const enregistrer = async (): Promise<string | null> => {

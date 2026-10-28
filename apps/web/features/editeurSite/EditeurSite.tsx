@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ancrerZone,
   changerDisposition,
   changerNombreBlocs,
   majNoeud,
@@ -11,7 +12,7 @@ import {
   type PageSite,
 } from '@ph/core/sites';
 import { Banner } from '@ph/ui';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BarreEditeur, Rail, type Panneau } from './BarreEditeur';
 import { Canevas } from './Canevas';
 import { AssistantCreation } from './creation/AssistantCreation';
@@ -50,6 +51,7 @@ export function EditeurSite(props: ProprietesEditeur) {
   const [ia, setIa] = useState<DemandeIa | null>(null);
   const [proposition, setProposition] = useState<OperationIa[] | null>(null);
   const [medias, setMedias] = useState(props.medias);
+  const [fichiers, setFichiers] = useState(props.fichiers);
   const [assistant, setAssistant] = useState<'questionnaire' | 'reprise' | null>(
     props.questionnaire ? 'questionnaire' : props.reprise === 'auto' ? 'reprise' : null,
   );
@@ -104,9 +106,17 @@ export function EditeurSite(props: ProprietesEditeur) {
     onTexte,
   });
   const info = apercu ? null : infoSelection(page, sel.selection);
+  // L'aperçu résout aussi les fichiers à télécharger (`up:` → URL).
+  const mediasApercu = useMemo(
+    () => ({
+      ...medias,
+      ...Object.fromEntries(Object.entries(fichiers).map(([k, f]) => [k, f.url])),
+    }),
+    [medias, fichiers],
+  );
   const html = useHtmlApercu(s.b, pageId, {
     ...props,
-    medias,
+    medias: mediasApercu,
     apercuIa,
     proposition,
     edition: !apercu,
@@ -117,12 +127,23 @@ export function EditeurSite(props: ProprietesEditeur) {
   };
   const contexte = {
     pages: s.b.pages,
+    pageId,
     palette: s.b.theme.palette,
     appareil,
     medias,
     artisanId: props.artisanId,
     onMedia: (cle: string, url: string) => setMedias((m) => ({ ...m, [cle]: url })),
-    erreurAction: s.erreurAction(pageId),
+    fichiers,
+    onFichier: (cle: string, nom: string, url: string) =>
+      setFichiers((f) => ({ ...f, [cle]: { nom, url } })),
+    ancrerZone: (pid: string, zoneId: string) => {
+      const p = s.b.pages[pid];
+      const r = p ? ancrerZone(p, zoneId) : null;
+      if (r && r.page !== p) s.modifier((b) => ({ ...b, pages: { ...b.pages, [pid]: r.page } }));
+      return r?.ancre ?? null;
+    },
+    ...(s.b.navigation.tel.numero ? { telephone: s.b.navigation.tel.numero } : {}),
+    erreurAction: s.erreurAction(pageId, new Set(Object.keys(fichiers))),
     categoriesBlog: props.blog.classement.categories,
     maj: (r: Record<string, unknown>) =>
       sel.selection && majPage((p) => majNoeud(p, sel.selection!, r)),

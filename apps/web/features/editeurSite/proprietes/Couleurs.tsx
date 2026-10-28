@@ -10,10 +10,10 @@ const NOMS: Record<string, string> = {
   aucun: 'Aucun',
   auto: 'Automatique',
   blanc: 'Blanc',
-  clair: 'Clair',
-  primaire: 'Principale',
+  clair: 'Fond clair',
+  primaire: 'Couleur principale',
   sombre: 'Sombre',
-  accent: 'Accent',
+  accent: 'Couleur d’accent',
 };
 
 /** Valeur affichable d'un jeton du thème (pastilles et nuancier). */

@@ -1,9 +1,10 @@
 'use client';
 
-import { LIBELLES_ACTION, retirerLien, type Action, type PageSite } from '@ph/core/sites';
+import { TUILES_ACTION, retirerLien, type Action } from '@ph/core/sites';
 import { LinkSimpleIcon, XIcon } from '@phosphor-icons/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChampAction } from '../ChampAction';
+import type { ContexteReglages } from '../proprietes/contexte';
 import { depuisHtml, liensUtilises, nouveauLien, versHtml } from './texteRiche';
 
 const outil =
@@ -19,16 +20,15 @@ export function EditeurTexte({
   texte,
   liens = {},
   onChange,
-  pages,
-  erreurAction,
+  c,
 }: {
   libelle: string;
   texte: string;
   liens?: Record<string, Action>;
   onChange: (p: { texte: string; liens: Record<string, Action> }) => void;
-  pages: Record<string, PageSite>;
-  erreurAction: (a: Action) => string | null;
+  c: ContexteReglages;
 }) {
+  const { pages, erreurAction } = c;
   const id = useId();
   const zone = useRef<HTMLDivElement>(null);
   const source = useRef<string | null>(null);
@@ -91,7 +91,7 @@ export function EditeurTexte({
       ? 'Aucune action'
       : a.type === 'page' && a.page
         ? `Page · ${pages[a.page]?.nom ?? '?'}`
-        : LIBELLES_ACTION[a.type];
+        : TUILES_ACTION[a.type];
 
   return (
     <div className="grid gap-2">
@@ -221,8 +221,7 @@ export function EditeurTexte({
                     libelle={`Lien « ${mot} »`}
                     action={a ?? { type: 'aucun' }}
                     onChange={(x) => onChange({ texte, liens: { ...liens, [lid]: x } })}
-                    pages={pages}
-                    erreur={a ? erreurAction(a) : null}
+                    c={c}
                   />
                 ) : null}
               </div>

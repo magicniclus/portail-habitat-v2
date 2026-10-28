@@ -158,8 +158,7 @@ export function ReglagesNavigation(p: {
             <ChampAction
               action={n.cta.action}
               onChange={(action) => maj({ cta: { ...n.cta, action } })}
-              pages={c.pages}
-              erreur={c.erreurAction(n.cta.action)}
+              c={c}
               libelle="Action du bouton"
             />
             <Couleurs

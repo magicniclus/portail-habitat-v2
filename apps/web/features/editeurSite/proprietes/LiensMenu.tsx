@@ -85,8 +85,7 @@ export function LiensMenu({
             <ChampAction
               action={l.action}
               onChange={(action) => maj(liens.map((x, j) => (j === i ? { ...x, action } : x)))}
-              pages={c.pages}
-              erreur={c.erreurAction(l.action)}
+              c={c}
               libelle="Destination"
             />
           ) : null}

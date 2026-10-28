@@ -6,6 +6,7 @@ import { Identifiant, Visibilite } from './Communs';
 import { ContenuElement } from './ContenuElement';
 import { Curseur, Groupe, Interrupteur, Segments } from './controles';
 import { Couleurs } from './Couleurs';
+import { StyleImage, StyleLiens } from './StylesElement';
 import { NOMS_APPAREIL, pourAppareil, type ContexteReglages } from './contexte';
 
 const ALIGNABLES = new Set([
@@ -92,8 +93,7 @@ export function ReglagesContenu({
           <ChampAction
             action={action}
             onChange={(x) => c.maj({ action: x })}
-            pages={c.pages}
-            erreur={c.erreurAction(action)}
+            c={c}
             libelle="Action"
           />
         </Groupe>
@@ -172,52 +172,9 @@ export function ReglagesContenu({
             />
           </>
         ) : null}
+        {el.type === 'titre' || el.type === 'texte' ? <StyleLiens el={el} c={c} /> : null}
         {el.type === 'image' ? <StyleImage el={el} c={c} /> : null}
       </Groupe>
-    </>
-  );
-}
-
-function StyleImage({ el, c }: { el: Extract<Element, { type: 'image' }>; c: ContexteReglages }) {
-  return (
-    <>
-      <Segments
-        libelle="Format"
-        valeur={el.p.ratio}
-        options={[
-          ['4 / 3', '4:3'],
-          ['16 / 9', '16:9'],
-          ['1 / 1', '1:1'],
-          ['3 / 4', '3:4'],
-        ]}
-        onChange={(ratio) => c.maj({ ratio })}
-      />
-      <Segments
-        libelle="Ajustement"
-        valeur={el.p.ajuste}
-        options={[
-          ['cover', 'Remplir'],
-          ['contain', 'Contenir'],
-        ]}
-        onChange={(ajuste) => c.maj({ ajuste })}
-      />
-      <Segments
-        libelle="Cadrage"
-        valeur={el.p.pos}
-        options={[
-          ['top', 'Haut'],
-          ['center', 'Centre'],
-          ['bottom', 'Bas'],
-        ]}
-        onChange={(pos) => c.maj({ pos })}
-      />
-      <Curseur
-        libelle="Arrondi"
-        valeur={el.p.arrondi}
-        min={0}
-        max={40}
-        onChange={(arrondi) => c.maj({ arrondi })}
-      />
     </>
   );
 }

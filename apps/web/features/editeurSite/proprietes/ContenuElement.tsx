@@ -50,8 +50,7 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
             texte={el.p.texte}
             {...(el.p.liens ? { liens: el.p.liens } : {})}
             onChange={maj}
-            pages={c.pages}
-            erreurAction={c.erreurAction}
+            c={c}
           />
           {el.type === 'titre' ? (
             <Segments
