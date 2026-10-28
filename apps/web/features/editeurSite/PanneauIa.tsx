@@ -146,7 +146,7 @@ export function PanneauIa({
           className="min-h-24 rounded-[8px] border border-trait px-3 py-2 text-base"
         />
         <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
-          Type de demande
+          Que voulez-vous faire ?
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as ModeIaSite | 'auto')}

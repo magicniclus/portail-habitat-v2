@@ -91,13 +91,17 @@ test.describe('Site internet artisan', () => {
     await expect(
       page.getByRole('heading', { name: 'Bouton', level: 2, exact: true }),
     ).toBeVisible();
-    await page.getByLabel('Action', { exact: true }).selectOption('url');
-    await page.getByLabel('Adresse (https://…)').fill('http://exemple.fr');
+    // Action en tuiles (maquette) : Lien web.
+    await page
+      .getByRole('radiogroup', { name: 'Action', exact: true })
+      .getByRole('radio', { name: 'Lien web' })
+      .click();
+    await page.getByLabel('Adresse du site').fill('http://exemple.fr');
     await expect(page.getByText('Adresse https:// obligatoire')).toBeVisible();
     await publier(page);
     await expect(page.getByText(/^Publication impossible/)).toBeVisible();
 
-    await page.getByLabel('Adresse (https://…)').fill('https://exemple.fr');
+    await page.getByLabel('Adresse du site').fill('https://exemple.fr');
     await publier(page);
     await expect(page.getByText(/Site publié/)).toBeVisible();
 
@@ -424,25 +428,66 @@ test.describe('Site internet artisan', () => {
     await expect(apercu.getByRole('heading').first()).toBeVisible();
   });
 
-  test('mots liés : « Lier la sélection » puis une action ; le mot devient un lien dans l’aperçu', async ({
+  test('mots liés : texte sélectionné, bouton Lien puis une action ; le mot devient un lien dans l’aperçu', async ({
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
     await page.frameLocator('iframe[title="Aperçu de la page"]').locator('h1').first().click();
     await page.getByRole('button', { name: 'Texte', exact: true }).click();
-    const zone = page.getByLabel('Texte', { exact: true });
-    await expect(zone).toHaveValue('Votre texte.');
-    await zone.evaluate((z: HTMLTextAreaElement) => z.setSelectionRange(6, 11));
-    await page.getByRole('button', { name: 'Lier la sélection' }).click();
-    await expect(zone).toHaveValue('Votre [texte](#L1).');
-    await page.getByLabel('Lien « texte »').selectOption('tel');
-    await page.getByLabel('Numéro').fill('0556000000');
+    const zone = page.getByRole('textbox', { name: 'Texte', exact: true });
+    await expect(zone).toHaveText('Votre texte.');
+    // Sélection des mots « texte » dans l'éditeur de texte, puis le bouton Lien de sa barre.
+    await zone.evaluate((z) => {
+      const r = document.createRange();
+      r.setStart(z.firstChild!, 6);
+      r.setEnd(z.firstChild!, 11);
+      getSelection()!.removeAllRanges();
+      getSelection()!.addRange(r);
+    });
+    await page
+      .getByRole('toolbar', { name: 'Mise en forme' })
+      .getByRole('button', { name: 'Lien' })
+      .click();
+    await expect(zone.locator('a')).toHaveText('texte');
+    await page
+      .getByRole('radiogroup', { name: 'Lien « texte »' })
+      .getByRole('radio', { name: 'Appel' })
+      .click();
+    await page.getByLabel('Numéro à appeler').fill('0556000000');
     const lien = page.frameLocator('iframe[title="Aperçu de la page"]').locator('a[href^="tel:"]', {
       hasText: 'texte',
     });
     await expect(lien).toBeVisible();
-    await page.getByRole('button', { name: 'Retirer le lien' }).click();
-    await expect(zone).toHaveValue('Votre texte.');
+    await page.getByRole('button', { name: 'Retirer le lien « texte »' }).click();
+    await expect(zone.locator('a')).toHaveCount(0);
+    await expect(zone).toHaveText('Votre texte.');
+  });
+
+  test('aperçu cliquable : un lien du menu change de page ; formulaire en fenêtre', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    // Bouton devis de la navigation : action Formulaire, affichée en fenêtre.
+    await page.getByRole('button', { name: 'Navigation · globale' }).click();
+    const action = page.getByRole('radiogroup', { name: 'Action du bouton' });
+    await action.getByRole('radio', { name: 'Formulaire' }).click();
+    await page
+      .getByRole('radiogroup', { name: 'Affichage' })
+      .getByRole('radio', { name: 'Fenêtre' })
+      .click();
+    await expect(page.getByText('Les demandes arrivent dans « Mes demandes ».')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Aperçu', exact: true }).click();
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await apercu.locator('header a.cta:visible').first().click();
+    await expect(apercu.getByRole('dialog', { name: 'Votre demande de devis' })).toBeVisible();
+    await apercu.getByRole('button', { name: 'Fermer' }).click();
+    await expect(apercu.getByRole('dialog')).toBeHidden();
+
+    await apercu.locator('header a:visible', { hasText: /^Contact$/ }).first().click();
+    await expect(page.getByLabel('Page affichée')).toHaveValue('contact');
+    await page.getByRole('button', { name: 'Quitter l’aperçu' }).click();
+    await page.getByRole('button', { name: 'Annuler les modifications non enregistrées' }).click();
   });
 
   test('Mes zones : une zone enregistrée comme modèle réapparaît dans Ajouter › Zones', async ({
