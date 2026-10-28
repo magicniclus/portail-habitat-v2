@@ -1,119 +1,193 @@
 'use client';
 
-import type { Appareil } from '@ph/core/sites';
-import { bouton, Button, cn } from '@ph/ui';
+import type { Appareil, PageSite } from '@ph/core/sites';
+import {
+  ArrowClockwiseIcon,
+  ArrowCounterClockwiseIcon,
+  CaretLeftIcon,
+  DesktopIcon,
+  DeviceMobileIcon,
+  DeviceTabletIcon,
+  EyeIcon,
+} from '@phosphor-icons/react';
+import { Button, cn } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
+import { LARGEURS } from './Canevas';
+import { ICONES_RAIL } from './icones';
 
-const PANNEAUX = [
-  ['ajouter', 'Ajouter'],
-  ['calques', 'Calques'],
-  ['pages', 'Pages'],
-  ['seo', 'SEO'],
-  ['navigation', 'Navigation'],
-  ['styles', 'Styles'],
-  ['ia', 'IA'],
-  ['modeles', 'Modèles'],
+const APPAREILS = [
+  ['desktop', 'Ordinateur', DesktopIcon],
+  ['tablet', 'Tablette', DeviceTabletIcon],
+  ['mobile', 'Mobile', DeviceMobileIcon],
 ] as const;
-export type Panneau = (typeof PANNEAUX)[number][0];
+const icone =
+  'grid size-11 place-items-center rounded-[8px] border border-trait bg-blanc text-neutre-800 hover:bg-neutre-100 disabled:opacity-40';
 
-const APPAREILS: [Appareil, string][] = [
-  ['desktop', 'Ordinateur'],
-  ['tablet', 'Tablette'],
-  ['mobile', 'Mobile'],
-];
-
-/** Barre du haut : retour, page, appareil, annuler/rétablir, Enregistrer, Publier. */
+/** Barre du haut (maquette) : retour, site et page, appareil et échelle, historique, état, Aperçu, Publier. */
 export function BarreEditeur(p: {
-  nomPage: string;
+  nomSite: string;
+  pages: Record<string, PageSite>;
+  pageId: string;
+  onPage: (id: string) => void;
   appareil: Appareil;
   onAppareil: (a: Appareil) => void;
+  echelle: number;
   onAnnuler: () => void;
   onRetablir: () => void;
   peutAnnuler: boolean;
   peutRetablir: boolean;
-  onEnregistrer: () => void;
-  aEnregistrer: boolean;
+  etat: string;
+  apercu: boolean;
+  onApercu: () => void;
   onPublier: () => void;
   enCours: boolean;
   /** Aperçu gratuit de l'IA affiché : rien à publier (SITE-IA-01). */
   publicationBloquee?: boolean;
 }) {
   return (
-    <header className="flex flex-wrap items-center gap-2 border-b border-trait px-3 py-2">
-      <Link href={routes.proSite} className={bouton({ variant: 'fantome' })}>
-        ← Mon site
+    <header className="flex flex-wrap items-center gap-3 border-b border-trait bg-blanc px-3.5 py-1.5 min-[900px]:h-14 min-[900px]:flex-nowrap">
+      <Link
+        href={routes.proSite}
+        title="Retour au tableau de bord du site"
+        className="flex min-h-11 items-center gap-2 rounded-[8px] border border-trait px-2.5 text-sm font-semibold text-neutre-800 no-underline hover:bg-neutre-100"
+      >
+        <CaretLeftIcon size={16} aria-hidden="true" />
+        Retour
       </Link>
-      <strong className="mr-auto truncate">{p.nomPage}</strong>
-      <div role="group" aria-label="Appareil" className="flex gap-1">
-        {APPAREILS.map(([a, l]) => (
-          <Button
-            key={a}
-            variant={p.appareil === a ? 'secondaire' : 'fantome'}
-            taille="sm"
-            aria-pressed={p.appareil === a}
-            onClick={() => p.onAppareil(a)}
-          >
-            {l}
-          </Button>
-        ))}
+      <span className="grid min-w-0 leading-[1.15]">
+        <span className="truncate text-xs text-neutre-600">{p.nomSite}</span>
+        <label className="sr-only" htmlFor="editeur-page">
+          Page affichée
+        </label>
+        <select
+          id="editeur-page"
+          value={p.pageId}
+          onChange={(e) => p.onPage(e.target.value)}
+          className="max-w-60 cursor-pointer border-0 bg-transparent p-0 text-[15px] font-bold text-texte"
+        >
+          {Object.entries(p.pages)
+            .sort(([, a], [, b]) => a.ordre - b.ordre)
+            .map(([id, x]) => (
+              <option key={id} value={id}>
+                {x.nom}
+              </option>
+            ))}
+        </select>
+      </span>
+      <div className="mx-auto flex items-center gap-2.5">
+        <div
+          role="group"
+          aria-label="Appareil"
+          className="flex overflow-hidden rounded-[9px] border border-trait"
+        >
+          {APPAREILS.map(([a, l, I]) => (
+            <button
+              key={a}
+              type="button"
+              title={l}
+              aria-label={l}
+              aria-pressed={p.appareil === a}
+              onClick={() => p.onAppareil(a)}
+              className={cn(
+                'grid h-11 w-12 place-items-center border-r border-trait last:border-r-0',
+                p.appareil === a
+                  ? 'bg-accent text-blanc'
+                  : 'bg-blanc text-neutre-800 hover:bg-neutre-100',
+              )}
+            >
+              <I size={18} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+        <span className="hidden w-[120px] text-[13px] text-neutre-700 min-[1100px]:inline">
+          {LARGEURS[p.appareil]} px · {Math.round(p.echelle * 100)} %
+        </span>
       </div>
-      <Button
-        variant="fantome"
-        taille="sm"
-        onClick={p.onAnnuler}
-        disabled={!p.peutAnnuler}
-        aria-label="Annuler (Ctrl Z)"
-      >
-        ↶
-      </Button>
-      <Button
-        variant="fantome"
-        taille="sm"
-        onClick={p.onRetablir}
-        disabled={!p.peutRetablir}
-        aria-label="Rétablir (Ctrl ⇧ Z)"
-      >
-        ↷
-      </Button>
-      <Button
-        variant="secondaire"
-        onClick={p.onEnregistrer}
-        disabled={p.enCours || !p.aEnregistrer}
-      >
-        Enregistrer
-      </Button>
-      <Button onClick={p.onPublier} disabled={p.enCours || p.publicationBloquee}>
-        Publier
-      </Button>
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          className={icone}
+          onClick={p.onAnnuler}
+          disabled={!p.peutAnnuler}
+          title="Annuler (Ctrl Z)"
+          aria-label="Annuler (Ctrl Z)"
+        >
+          <ArrowCounterClockwiseIcon size={16} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className={icone}
+          onClick={p.onRetablir}
+          disabled={!p.peutRetablir}
+          title="Rétablir (Ctrl ⇧ Z)"
+          aria-label="Rétablir (Ctrl ⇧ Z)"
+        >
+          <ArrowClockwiseIcon size={16} aria-hidden="true" />
+        </button>
+        <span role="status" className="px-2 text-[13px] whitespace-nowrap text-neutre-600">
+          {p.etat}
+        </span>
+        <Button variant="secondaire" onClick={p.onApercu} aria-pressed={p.apercu}>
+          <EyeIcon size={16} aria-hidden="true" />
+          {p.apercu ? 'Quitter l’aperçu' : 'Aperçu'}
+        </Button>
+        <Button onClick={p.onPublier} disabled={p.enCours || p.publicationBloquee}>
+          Publier
+        </Button>
+      </div>
     </header>
   );
 }
 
-/** Barre de gauche : Calques · Pages · SEO · Navigation · Styles · IA · Modèles. */
-export function NavPanneaux({
+export type Panneau = keyof typeof ICONES_RAIL;
+const RAIL: [Panneau, string, string][] = [
+  ['ajouter', 'Ajouter', 'Ajouter'],
+  ['structure', 'Structure', 'Structure'],
+  ['pages', 'Pages du site', 'Pages'],
+  ['seo', 'Référencement', 'SEO'],
+  ['styles', 'Styles du site', 'Styles'],
+  ['modeles', 'Modèles de site', 'Modèles'],
+  ['ia', 'Assistant IA', 'IA'],
+];
+export const TITRES_PANNEAU = Object.fromEntries(RAIL.map(([p, t]) => [p, t])) as Record<
+  Panneau,
+  string
+>;
+
+/** Barre d'outils de gauche : un clic ouvre le panneau, un second le ferme. */
+export function Rail({
   actif,
   onChoisir,
 }: {
-  actif: Panneau;
+  actif: Panneau | null;
   onChoisir: (p: Panneau) => void;
 }) {
   return (
-    <nav aria-label="Panneaux" className="flex flex-wrap gap-1">
-      {PANNEAUX.map(([p, l]) => (
-        <button
-          key={p}
-          type="button"
-          onClick={() => onChoisir(p)}
-          aria-current={actif === p ? 'true' : undefined}
-          className={cn(
-            'min-h-11 rounded-control px-3 font-semibold',
-            actif === p ? 'bg-accent-100 text-accent-800' : 'text-neutre-800',
-          )}
-        >
-          {l}
-        </button>
-      ))}
+    <nav
+      aria-label="Outils de l’éditeur"
+      className="flex gap-1 overflow-x-auto border-b border-trait bg-blanc px-1 py-1.5 min-[900px]:flex-col min-[900px]:items-center min-[900px]:border-r min-[900px]:border-b-0 min-[900px]:px-0 min-[900px]:py-2.5"
+    >
+      {RAIL.map(([id, titre, court]) => {
+        const I = ICONES_RAIL[id];
+        const on = actif === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            title={titre}
+            aria-pressed={on}
+            onClick={() => onChoisir(id)}
+            className={cn(
+              'grid w-[58px] flex-none justify-items-center gap-[3px] rounded-[10px] pt-2 pb-1.5',
+              on ? 'bg-accent-100 text-accent-800' : 'text-neutre-700 hover:bg-neutre-100',
+            )}
+          >
+            <I size={20} aria-hidden="true" />
+            <span className="text-[11px] font-semibold">{court}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 }

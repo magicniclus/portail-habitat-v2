@@ -28,9 +28,11 @@ export function useHtmlApercu(
     apercuIa: OperationIa[] | null;
     proposition: OperationIa[] | null;
     blog?: ContexteRendu['blog'];
+    /** Page cliquable (sélection) ; faux en mode Aperçu. */
+    edition?: boolean;
   },
 ): string {
-  const { hote, offre, medias, champs, apercuIa, proposition, blog } = o;
+  const { hote, offre, medias, champs, apercuIa, proposition, blog, edition } = o;
   return useMemo(() => {
     const ops = apercuIa ?? proposition;
     let n = 0;
@@ -57,7 +59,8 @@ export function useHtmlApercu(
         champs: offre === 'site_pro' && champs ? champs : FORMULAIRE_GRATUIT,
         ...(c.ids.length ? { surligner: new Set(c.ids) } : {}),
         ...(blog ? { blog } : {}),
+        ...(edition ? { edition } : {}),
       },
     );
-  }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition, blog]);
+  }, [b, pageId, hote, offre, medias, champs, apercuIa, proposition, blog, edition]);
 }

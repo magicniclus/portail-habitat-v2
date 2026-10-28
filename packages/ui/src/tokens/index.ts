@@ -230,3 +230,27 @@ export const palettesSites = [
     sombre: '#0d2340',
   },
 ] as const;
+
+/**
+ * Couleurs des niveaux de l'éditeur de site (maquette Editeur de Site) : puces de la structure,
+ * cadres et badges de la sélection dans l'aperçu.
+ */
+export const niveauxEditeur = {
+  nav: '#201e1d',
+  zone: '#201e1d',
+  section: '#0088b0',
+  bloc: '#d6006c',
+  element: '#e05a10',
+} as const;
+export type NiveauEditeur = keyof typeof niveauxEditeur;
+
+/** Aperçu d'un résultat Google (référencement des sites artisans). */
+export const apercuGoogle = { url: '#202124', titre: '#1a0dab', texte: '#4d5156' } as const;
+
+/** Commandes de couleur de l'éditeur de site : nuancier, transparence, couleur libre. */
+export const nuancierEditeur = {
+  defaut: '#ffffff',
+  texteSelection: '#ffffff',
+  damier: 'repeating-linear-gradient(45deg,#fff 0 4px,#e5e5e5 4px 8px)',
+  arcEnCiel: 'conic-gradient(#f33,#fd3,#3d5,#3cf,#36f,#c3f,#f33)',
+} as const;

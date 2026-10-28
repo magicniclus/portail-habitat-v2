@@ -5,14 +5,11 @@ import {
   annuler,
   appliquer,
   appliquerOperations,
-  deplacer,
-  dupliquerSection,
   elementsDe,
   historique,
   nouvellePage,
   retablir,
   slugDePage,
-  supprimerSection,
   validerAction,
   type Action,
   type ContexteLiens,
@@ -112,6 +109,9 @@ export function useBrouillonSite(initial: BrouillonSite) {
     return null;
   };
 
+  /** Navigation remise comme à son dernier enregistrement. */
+  const annulerNavigation = () => modifier((x) => ({ ...x, navigation: enregistre.navigation }));
+
   /** Nouvelle page en brouillon ; renvoie son identifiant. */
   const ajouterPage = (nom: string): string => {
     const slug = slugDePage(nom, b.pages);
@@ -147,28 +147,9 @@ export function useBrouillonSite(initial: BrouillonSite) {
       theme: m.theme ?? x.theme,
     }));
 
-  /** Section monter, descendre, dupliquer, supprimer. */
-  const operationSection = (
-    pageId: string,
-    id: string,
-    op: 'haut' | 'bas' | 'dupliquer' | 'supprimer',
-  ) =>
-    modifier((x) => {
-      const p = x.pages[pageId]!;
-      const i = p.sections.findIndex((v) => v.id === id);
-      const page =
-        op === 'supprimer'
-          ? supprimerSection(p, id)
-          : op === 'dupliquer'
-            ? dupliquerSection(p, id, () => Math.random().toString(36).slice(2, 10))
-            : { ...p, sections: deplacer(p.sections, i, op === 'haut' ? -1 : 1) };
-      return { ...x, pages: { ...x.pages, [pageId]: page } };
-    });
-
   return {
     b,
     modifier,
-    operationSection,
     appliquerIa,
     restaurer,
     ajouterPage,
@@ -181,6 +162,7 @@ export function useBrouillonSite(initial: BrouillonSite) {
     navModifiee,
     enregistrer,
     enregistrerNavigation,
+    annulerNavigation,
     erreurAction,
   };
 }

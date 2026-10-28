@@ -80,7 +80,7 @@ function rendreSection(s: Section, ctx: ContexteRendu): string {
         .join(' ');
       const cols = r.cols
         .map((c) => {
-          const cs = `--w:${c.w};${c.p.pad ? `padding:${c.p.pad}px;` : ''}${c.p.arrondi ? `border-radius:${c.p.arrondi}px;` : ''}${css(c.p.fond) ? `background:${css(c.p.fond)};` : ''}`;
+          const cs = `--w:${c.w};${c.p.pad ? `padding:${c.p.pad}px;` : ''}${c.p.arrondi ? `border-radius:${c.p.arrondi}px;` : ''}${css(c.p.fond) ? `background:${css(c.p.fond)};` : ''}${c.p.ombre ? 'box-shadow:0 6px 20px rgba(0,0,0,.12);' : ''}${c.p.valign === 'center' || c.p.valign === 'end' ? `align-self:${c.p.valign};` : ''}`;
           const bloc = `<div class="c ${masques(c.p.masque)}"${c.p.htmlId ? ` id="${esc(c.p.htmlId)}"` : ''} style="${esc(cs)}">${c.els.map((e) => rendreElement(e, ctx)).join('')}</div>`;
           return ctx.edition ? marquerEdition(bloc, c.id, 'bloc') : bloc;
         })

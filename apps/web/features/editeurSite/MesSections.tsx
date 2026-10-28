@@ -40,7 +40,7 @@ export function MesSections({
   return (
     <section aria-labelledby="mes-sections" className="grid gap-2">
       <h2 id="mes-sections" className="m-0 text-base">
-        Mes sections
+        Mes zones enregistrées
       </h2>
       {erreur ? <p className="m-0 text-sm text-danger">{erreur}</p> : null}
       {liste === null && !erreur ? (
@@ -48,7 +48,7 @@ export function MesSections({
       ) : null}
       {liste?.length === 0 ? (
         <p className="m-0 text-sm text-neutre-700">
-          Dans Calques, « Enregistrer » garde une section pour la réutiliser ici.
+          Sélectionnez une zone, puis « Enregistrer comme modèle de zone » : elle apparaît ici.
         </p>
       ) : null}
       <ul className="m-0 grid list-none gap-2 p-0">
@@ -60,7 +60,7 @@ export function MesSections({
             <Button
               variant="fantome"
               taille="sm"
-              aria-label={`Supprimer ${s.nom} de Mes sections`}
+              aria-label={`Supprimer ${s.nom} de Mes zones`}
               onClick={() => void appeler({ action: 'supprimer', id: s.id })}
             >
               ×

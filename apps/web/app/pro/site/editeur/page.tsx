@@ -33,9 +33,14 @@ export default async function PageEditeur({
   if (!site.existe || !site.theme || !site.navigation) redirect(routes.proSite);
   const { page, panneau } = q;
   const panneauInitial =
-    panneau === 'seo' || panneau === 'ia' || panneau === 'modeles' || panneau === 'ajouter'
+    panneau === 'seo' ||
+    panneau === 'ia' ||
+    panneau === 'modeles' ||
+    panneau === 'ajouter' ||
+    panneau === 'pages' ||
+    panneau === 'styles'
       ? panneau
-      : 'calques';
+      : 'structure';
   // Création en attente de Site Pro (IA_SITE §4) : aperçu non publiable, ou reprise sans question.
   const enAttente = creation?.statut === 'attente_paiement';
   return (

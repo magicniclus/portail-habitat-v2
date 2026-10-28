@@ -1,0 +1,122 @@
+'use client';
+
+import type { Appareil } from '@ph/core/sites';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+export const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, mobile: 390 };
+
+/** Message venu de l'aperçu (script d'édition, origine opaque). */
+export type MessageApercu =
+  | { type: 'choisir'; id: string | null }
+  | { type: 'action'; op: string }
+  | { type: 'touche'; key: string; ctrl: boolean; shift: boolean };
+
+/** Ce que l'aperçu doit encadrer : identifiant, niveau, badge, actions, bouton d'ajout. */
+export interface SelectionApercu {
+  id: string;
+  niveau: string;
+  badge: string;
+  actions: { op: string; label: string }[];
+  ajout?: { op: string; label: string };
+}
+
+/**
+ * Aperçu de la page à l'échelle de l'appareil (ordinateur 1200 px, tablette 768, mobile 390),
+ * dans un cadre isolé (`allow-scripts` sans `allow-same-origin` : aucun accès à l'espace pro).
+ * Le script d'édition renvoie clics et touches ; la position de défilement survit au rendu.
+ */
+export function Canevas({
+  html,
+  appareil,
+  selection,
+  defiler,
+  onMessage,
+  onEchelle,
+  filigrane,
+}: {
+  html: string;
+  appareil: Appareil;
+  selection: SelectionApercu | null;
+  /** Amène la sélection à l'écran (choix depuis la structure). */
+  defiler: number;
+  onMessage: (m: MessageApercu) => void;
+  onEchelle: (e: number) => void;
+  filigrane?: string;
+}) {
+  const largeur = LARGEURS[appareil];
+  const boite = useRef<HTMLDivElement>(null);
+  const cadre = useRef<HTMLIFrameElement>(null);
+  const y = useRef(0);
+  const [echelle, setEchelle] = useState(1);
+  useEffect(() => {
+    const el = boite.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => {
+      if (e) setEchelle(Math.min(1, (e.contentRect.width - 32) / largeur));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [largeur]);
+  useEffect(() => onEchelle(echelle), [echelle, onEchelle]);
+
+  const envoyer = useCallback((m: object) => {
+    cadre.current?.contentWindow?.postMessage({ ...m, source: 'ph-editeur' }, '*');
+  }, []);
+  const derniere = useRef(selection);
+  useEffect(() => {
+    derniere.current = selection;
+    envoyer({ type: 'selection', selection: selection ? { ...selection, defiler: false } : null });
+  }, [selection, envoyer]);
+  useEffect(() => {
+    if (defiler)
+      envoyer({
+        type: 'selection',
+        selection: derniere.current ? { ...derniere.current, defiler: true } : null,
+      });
+  }, [defiler, envoyer]);
+  useEffect(() => {
+    const recevoir = (e: MessageEvent) => {
+      if (e.source !== cadre.current?.contentWindow) return;
+      const m = e.data as { source?: string; type?: string; y?: number };
+      if (m?.source !== 'ph-editeur') return;
+      if (m.type === 'defilement') y.current = m.y ?? 0;
+      else if (m.type === 'pret') {
+        envoyer({ type: 'defiler', y: y.current });
+        envoyer({ type: 'selection', selection: derniere.current });
+      } else onMessage(m as MessageApercu);
+    };
+    window.addEventListener('message', recevoir);
+    return () => window.removeEventListener('message', recevoir);
+  }, [onMessage, envoyer]);
+
+  return (
+    <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
+      <div className="relative mx-auto h-full" style={{ width: largeur * echelle }}>
+        {filigrane ? (
+          <div
+            aria-hidden="true"
+            data-filigrane
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden"
+          >
+            <span className="-rotate-[24deg] text-[clamp(48px,10vw,120px)] font-extrabold text-neutre-900/15 select-none">
+              {filigrane}
+            </span>
+          </div>
+        ) : null}
+        <iframe
+          ref={cadre}
+          title="Aperçu de la page"
+          sandbox="allow-scripts"
+          srcDoc={html}
+          className="block border-0 bg-blanc shadow-lg"
+          style={{
+            width: largeur,
+            height: `${100 / echelle}%`,
+            transform: `scale(${echelle})`,
+            transformOrigin: '0 0',
+          }}
+        />
+      </div>
+    </div>
+  );
+}

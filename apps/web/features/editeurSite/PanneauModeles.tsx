@@ -4,6 +4,7 @@ import { Banner, Button } from '@ph/ui';
 import { useEffect, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { GalerieModeles } from './GalerieModeles';
+import { Onglets } from './gauche/Onglets';
 import type { BrouillonSite } from './useBrouillonSite';
 
 type Modele = { id: string; nom: string } & Pick<BrouillonSite, 'pages'> &
@@ -22,6 +23,7 @@ export function PanneauModeles({
 }) {
   const [modeles, setModeles] = useState<Modele[] | null>(null);
   const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
+  const [onglet, setOnglet] = useState<'galerie' | 'mes'>('galerie');
   useEffect(() => {
     void posterJson<Modele[]>('/api/pro/site/modeles', {}).then((r) =>
       r.ok ? setModeles(r.data) : setMessage({ ton: 'danger', texte: r.message }),
@@ -29,8 +31,17 @@ export function PanneauModeles({
   }, []);
   return (
     <>
-      <GalerieModeles site={site} onAppliquer={onRestaurer} />
-      <section aria-labelledby="mes-modeles" className="grid gap-3">
+      <Onglets
+        libelle="Modèles"
+        valeur={onglet}
+        options={[
+          ['galerie', 'Modèles'],
+          ['mes', 'Mes modèles'],
+        ]}
+        onChange={setOnglet}
+      />
+      {onglet === 'galerie' ? <GalerieModeles site={site} onAppliquer={onRestaurer} /> : null}
+      <section aria-labelledby="mes-modeles" className={onglet === 'mes' ? 'grid gap-3' : 'hidden'}>
         <h2 id="mes-modeles" className="m-0 text-lg">
           Mes modèles
         </h2>
@@ -58,7 +69,7 @@ export function PanneauModeles({
                   onRestaurer(m);
                   setMessage({
                     ton: 'succes',
-                    texte: `« ${m.nom} » restauré dans l’éditeur. Enregistrez pour le garder, Ctrl Z pour revenir.`,
+                    texte: `« ${m.nom} » restauré dans l’éditeur. Ctrl Z pour revenir.`,
                   });
                 }}
               >

@@ -8,7 +8,7 @@ import type { ArticleRendu, ClassementRendu } from '@/features/siteArtisan/blog'
 export interface ProprietesEditeur {
   initial: BrouillonSite;
   pageInitiale: string;
-  panneauInitial: Panneau;
+  panneauInitial: Panneau | null;
   medias: Record<string, string>;
   /** Entreprise active : dossier Storage de la médiathèque. */
   artisanId: string;

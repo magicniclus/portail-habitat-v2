@@ -24,6 +24,7 @@ export function PanneauIa({
   enregistrer,
   appliquer,
   onProposition,
+  initial,
 }: {
   pageId: string;
   selection: string | null;
@@ -33,13 +34,17 @@ export function PanneauIa({
   appliquer: (ops: OperationIa[]) => string | null;
   /** Proposition affichée dans l'aperçu, changements surlignés ; `null` quand elle disparaît. */
   onProposition: (ops: OperationIa[] | null) => void;
+  /** Demande préparée depuis un autre panneau (nouvelle page, référencement). */
+  initial?: { mode: ModeIaSite; portee: 'page' | 'site'; demande: string };
 }) {
-  const [mode, setMode] = useState<ModeIaSite | 'auto'>(iaComplete ? 'auto' : 'textes');
+  const [mode, setMode] = useState<ModeIaSite | 'auto'>(
+    initial?.mode ?? (iaComplete ? 'auto' : 'textes'),
+  );
   const [restants, setRestants] = useState(restantsInitiaux);
   const [portee, setPortee] = useState<'selection' | 'page' | 'site'>(
-    selection ? 'selection' : 'page',
+    initial?.portee ?? (selection ? 'selection' : 'page'),
   );
-  const [demande, setDemande] = useState('');
+  const [demande, setDemande] = useState(initial?.demande ?? '');
   const [prop, setProp] = useState<Proposition | null>(null);
   const [message, setMessage] = useState<{ ton: 'danger' | 'succes'; texte: string } | null>(null);
   const [enCours, setEnCours] = useState(false);
