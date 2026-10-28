@@ -484,7 +484,10 @@ test.describe('Site internet artisan', () => {
     await apercu.getByRole('button', { name: 'Fermer' }).click();
     await expect(apercu.getByRole('dialog')).toBeHidden();
 
-    await apercu.locator('header a:visible', { hasText: /^Contact$/ }).first().click();
+    await apercu
+      .locator('header a:visible', { hasText: /^Contact$/ })
+      .first()
+      .click();
     await expect(page.getByLabel('Page affichée')).toHaveValue('contact');
     await page.getByRole('button', { name: 'Quitter l’aperçu' }).click();
     await page.getByRole('button', { name: 'Annuler les modifications non enregistrées' }).click();
