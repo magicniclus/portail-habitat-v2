@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  deplacerNoeud,
   insererSectionPrete,
   type ModeIaSite,
   type OperationIa,
@@ -20,8 +21,7 @@ import { PanneauPages } from './PanneauPages';
 import { PanneauSeo } from './PanneauSeo';
 import { PanneauStructure } from './PanneauStructure';
 import { PanneauStyles } from './PanneauStyles';
-
-const nouvelId = () => Math.random().toString(36).slice(2, 10);
+import { nouvelId } from '../ids';
 
 export interface DemandeIa {
   mode: ModeIaSite;
@@ -64,6 +64,13 @@ export function PanneauGauche(p: {
         appareil={p.appareil}
         onChoisir={(id) => p.onChoisir(id, true)}
         navigationMasquee={Boolean(s.b.navigation.masquee)}
+        onDeplacer={(id, cible, position) => {
+          const r = deplacerNoeud(page, id, cible, position);
+          if (!r) return p.flash('Impossible de déposer ici.');
+          p.majPage(() => r);
+          p.onChoisir(id);
+          p.flash('Déplacé · Ctrl+Z pour annuler');
+        }}
       />
     );
   if (p.panneau === 'ajouter')

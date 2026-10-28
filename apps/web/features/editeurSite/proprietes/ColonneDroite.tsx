@@ -8,8 +8,7 @@ import type { useBrouillonSite } from '../useBrouillonSite';
 import type { ContexteReglages } from './contexte';
 import { PanneauProprietes } from './PanneauProprietes';
 import { ReglagesNavigation } from './ReglagesNavigation';
-
-const nouvelId = () => Math.random().toString(36).slice(2, 10);
+import { nouvelId } from '../ids';
 
 /** Colonne de droite de l'éditeur : réglages de la sélection, ou de la navigation (globale). */
 export function ColonneDroite({

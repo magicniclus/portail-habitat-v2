@@ -305,3 +305,102 @@ export function ancrerZone(p: PageSite, id: string): { page: PageSite; ancre: st
   for (let n = 2; prises.has(ancre); n++) ancre = `${base}-${n}`;
   return { page: majNoeud(p, id, { ancre }), ancre };
 }
+
+const niveauDe = (x: Noeud): Niveau =>
+  'rows' in x ? 'zone' : 'cols' in x ? 'section' : 'els' in x ? 'bloc' : 'element';
+
+/** Ajoute `x` à la fin des enfants du conteneur `id` (blocs répartis sur 12 unités). */
+function ajouterEnfant(p: PageSite, id: string, x: Noeud): PageSite | null {
+  const f = trouverNoeud(p, id);
+  if (!f) return null;
+  const c = f.noeud;
+  if ('rows' in c) return majUn(p, id, () => ({ ...c, rows: [...c.rows, x as Ligne] }));
+  if ('cols' in c)
+    return c.cols.length >= BLOCS_MAX
+      ? null
+      : majUn(p, id, () => ({ ...c, cols: repartir([...c.cols, x as Bloc]) }));
+  if ('els' in c) return majUn(p, id, () => ({ ...c, els: [...c.els, x as Element] }));
+  return null;
+}
+
+/** Insère `x` avant ou après son voisin `id` (même niveau). */
+function insererPres(
+  p: PageSite,
+  id: string,
+  x: Noeud,
+  position: 'avant' | 'apres',
+  repartirBlocs: boolean,
+): PageSite | null {
+  return majListe(p, id, (l, i) => {
+    if (repartirBlocs && l.length >= BLOCS_MAX) return null;
+    const r = [...l];
+    r.splice(position === 'avant' ? i : i + 1, 0, x);
+    return repartirBlocs ? repartir(r as Bloc[]) : r;
+  });
+}
+
+/**
+ * Glisser-déposer (panneau Structure) : `id` passe avant ou après un voisin de même niveau, ou à
+ * la fin d'un conteneur du niveau au-dessus (`dans`). Un bloc qui change de section : les deux
+ * sections sont réparties sur 12 unités ; une section garde au moins un bloc. `null` si refusé.
+ */
+export function deplacerNoeud(
+  p: PageSite,
+  id: string,
+  cible: string,
+  position: 'avant' | 'apres' | 'dans',
+): PageSite | null {
+  const a = trouverNoeud(p, id);
+  const b = trouverNoeud(p, cible);
+  if (!a || !b || b.chaine.some((x) => x.id === id)) return null;
+  const na = NIVEAUX.indexOf(a.niveau);
+  const nb = NIVEAUX.indexOf(b.niveau);
+  if (position === 'dans' ? nb !== na - 1 : nb !== na) return null;
+  const bloc = a.niveau === 'bloc';
+  const parentA = a.chaine.at(-2)?.id;
+  const parentB = position === 'dans' ? cible : b.chaine.at(-2)?.id;
+  const autreSection = bloc && parentA !== parentB;
+  if (autreSection && a.n === 1) return null;
+  const sans = majListe(p, id, (l, i) => {
+    const r = l.filter((_, j) => j !== i);
+    return autreSection ? repartir(r as Bloc[]) : r;
+  });
+  if (!sans) return null;
+  return position === 'dans'
+    ? ajouterEnfant(sans, cible, a.noeud)
+    : insererPres(sans, cible, a.noeud, position, autreSection);
+}
+
+/**
+ * Coller (Ctrl V) une copie de `x` (nouveaux identifiants) : après le nœud de même niveau de la
+ * sélection, ou dans le conteneur sélectionné ; sans sélection, une zone ou une section part en
+ * bas de la page. Renvoie la page et l'identifiant de la copie, ou `null` si impossible.
+ */
+export function collerNoeud(
+  p: PageSite,
+  x: Noeud,
+  cible: string | null,
+  nouvelId: () => string,
+): { page: PageSite; id: string } | null {
+  const c = copie(x, nouvelId);
+  const nx = NIVEAUX.indexOf(niveauDe(x));
+  const f = cible ? trouverNoeud(p, cible) : null;
+  if (!f) {
+    if (nx === 0) return { page: { ...p, sections: [...p.sections, c as Section] }, id: c.id };
+    const z = zoneVide(nouvelId);
+    const avecZone = { ...p, sections: [...p.sections, z] };
+    if (nx === 1) return { page: ajouterEnfant(avecZone, z.id, c)!, id: c.id };
+    return null;
+  }
+  const nf = NIVEAUX.indexOf(f.niveau);
+  if (nf >= nx) {
+    const r = insererPres(p, f.chaine[nx]!.id, c, 'apres', nx === 2);
+    return r ? { page: r, id: c.id } : null;
+  }
+  // Conteneur plus haut que le parent : on descend dans sa dernière section, son premier bloc.
+  let conteneur: Noeud | undefined = f.noeud;
+  for (let n = nf; n < nx - 1 && conteneur; n++)
+    conteneur = 'rows' in conteneur ? conteneur.rows.at(-1) : (conteneur as Ligne).cols[0];
+  const r = conteneur ? ajouterEnfant(p, conteneur.id, c) : null;
+  return r ? { page: r, id: c.id } : null;
+}

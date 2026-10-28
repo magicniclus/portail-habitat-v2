@@ -23,6 +23,8 @@ export type OngletProprietes = 'general' | 'mobile' | 'avance';
 const RACCOURCIS = [
   ['Annuler / rétablir', 'Ctrl Z · Ctrl ⇧ Z'],
   ['Dupliquer', 'Ctrl D'],
+  ['Copier · coller (même sur une autre page)', 'Ctrl C · Ctrl V'],
+  ['Déplacer', 'Glisser dans Structure'],
   ['Supprimer', 'Suppr'],
   ['Sélectionner le parent', 'Échap'],
 ] as const;

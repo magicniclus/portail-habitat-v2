@@ -2,17 +2,18 @@
 
 import {
   changerNombreBlocs,
+  collerNoeud,
   operationNoeud,
   parentDe,
   trouverNoeud,
   type Ligne,
+  type Noeud,
   type PageSite,
 } from '@ph/core/sites';
 import { useCallback, useEffect, useState } from 'react';
 import type { MessageApercu } from './Canevas';
 import type { OpSelection } from './selection';
-
-const nouvelId = () => Math.random().toString(36).slice(2, 10);
+import { nouvelId } from './ids';
 
 /**
  * Sélection de l'éditeur : clic dans l'aperçu ou la structure, actions (monter, dupliquer,
@@ -62,16 +63,36 @@ export function useSelection(o: {
     [selection, page, majPage, flash, ouvrirAjout],
   );
 
+  // Presse-papiers de l'éditeur : survit au changement de page (copier sur une page, coller sur
+  // une autre).
+  const [copie, setCopie] = useState<Noeud | null>(null);
+  const copier = useCallback(() => {
+    const f = selection && selection !== 'nav' ? trouverNoeud(page, selection) : null;
+    if (!f) return flash('Sélectionnez d’abord ce qu’il faut copier.');
+    setCopie(f.noeud);
+    flash('Copié · Ctrl V pour coller (ici ou sur une autre page)');
+  }, [selection, page, flash]);
+  const coller = useCallback(() => {
+    if (!copie) return flash('Rien à coller : sélectionnez puis Ctrl C.');
+    const r = collerNoeud(page, copie, selection === 'nav' ? null : selection, nouvelId);
+    if (!r) return flash('Impossible de coller ici : sélectionnez un endroit du même niveau.');
+    majPage(() => r.page);
+    setSelection(r.id);
+    flash('Collé · Ctrl Z pour annuler');
+  }, [copie, page, selection, majPage, flash]);
+
   const touche = useCallback(
     (k: { key: string; ctrl: boolean; shift: boolean }) => {
       const t = k.key.toLowerCase();
+      if (k.ctrl && t === 'c') return copier();
+      if (k.ctrl && t === 'v') return coller();
       if (k.ctrl && (t === 'y' || (t === 'z' && k.shift))) return retablir();
       if (k.ctrl && t === 'z') return annuler();
       if (k.ctrl && t === 'd') return agir('dupliquer');
       if (t === 'escape') return setSelection((s) => (s && s !== 'nav' ? parentDe(page, s) : null));
       if (t === 'delete' || t === 'backspace') agir('supprimer');
     },
-    [agir, annuler, retablir, page],
+    [agir, annuler, retablir, page, copier, coller],
   );
 
   // Raccourcis de la page elle-même (hors champs de saisie ; Ctrl Z est géré par l'historique).
@@ -79,7 +100,14 @@ export function useSelection(o: {
     const clavier = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).closest('input, textarea, select, [contenteditable]')) return;
       const ctrl = e.ctrlKey || e.metaKey;
-      if (e.key === 'Escape' || e.key === 'Delete' || (ctrl && e.key.toLowerCase() === 'd')) {
+      const k = e.key.toLowerCase();
+      // Ctrl C : seulement sans texte sélectionné (copier un texte reste possible).
+      const copieTexte = k === 'c' && !getSelection()?.isCollapsed;
+      if (
+        e.key === 'Escape' ||
+        e.key === 'Delete' ||
+        (ctrl && (k === 'd' || k === 'v' || (k === 'c' && !copieTexte)))
+      ) {
         e.preventDefault();
         touche({ key: e.key, ctrl, shift: e.shiftKey });
       }
@@ -103,6 +131,9 @@ export function useSelection(o: {
   );
 
   return {
+    copier,
+    coller,
+    peutColler: copie !== null,
     selection,
     choisir: (id: string | null, amener = false) => {
       setSelection(id);

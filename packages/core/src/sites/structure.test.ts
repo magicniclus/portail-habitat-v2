@@ -5,6 +5,8 @@ import { pageSite, type PageSite } from './schemas';
 import {
   ajouterLigne,
   ancrerZone,
+  collerNoeud,
+  deplacerNoeud,
   changerDisposition,
   changerNombreBlocs,
   DISPOSITIONS,
@@ -217,5 +219,60 @@ describe('structure de la page : zone › section › bloc › élément', () =>
     const sansNom = majNoeud(page(), 'z2', { nom: '' });
     expect(ancrerZone(sansNom, 'z2')!.ancre).toBe('zone');
     expect(ancrerZone(p, 'r1')).toBeNull();
+  });
+
+  it('glisser-déposer : même niveau avant/après, ou dans le conteneur du dessus', () => {
+    const ordre = (p: PageSite) =>
+      p.sections.map((z) => z.rows.map((r) => r.cols.map((c) => c.els.map((e) => e.id))));
+    // Contenu e3 avant e1 (autre bloc), puis dans le bloc c3 (autre zone).
+    const a = deplacerNoeud(page(), 'e3', 'e1', 'avant')!;
+    expect(ordre(a)).toEqual([[[['e3', 'e1', 'e2'], []]], [[['e4']]]]);
+    const b = deplacerNoeud(page(), 'e1', 'c3', 'dans')!;
+    expect(ordre(b)[1]).toEqual([[['e4', 'e1']]]);
+    // Zones échangées.
+    expect(deplacerNoeud(page(), 'z2', 'z1', 'avant')!.sections.map((z) => z.id)).toEqual([
+      'z2',
+      'z1',
+    ]);
+    // Bloc vers une autre section : largeurs réparties ; la section quittée garde un bloc.
+    const c = deplacerNoeud(page(), 'c2', 'c3', 'apres')!;
+    expect(c.sections[1]!.rows[0]!.cols.map((x) => [x.id, x.w])).toEqual([
+      ['c3', 6],
+      ['c2', 6],
+    ]);
+    expect(c.sections[0]!.rows[0]!.cols.map((x) => x.w)).toEqual([12]);
+    expect(deplacerNoeud(page(), 'c3', 'c1', 'avant')).toBeNull();
+    // Niveaux incompatibles, nœud dans lui-même, inconnu.
+    expect(deplacerNoeud(page(), 'e1', 'z2', 'dans')).toBeNull();
+    expect(deplacerNoeud(page(), 'z1', 'e1', 'avant')).toBeNull();
+    expect(deplacerNoeud(page(), 'r1', 'r1', 'avant')).toBeNull();
+    expect(deplacerNoeud(page(), 'x', 'e1', 'avant')).toBeNull();
+    valide(a);
+    valide(c);
+  });
+
+  it('copier-coller : copie aux nouveaux identifiants, placée selon la sélection', () => {
+    const p = page();
+    const e1 = trouverNoeud(p, 'e1')!.noeud;
+    const apres = collerNoeud(p, e1, 'e3', ids())!;
+    expect(apres.page.sections[0]!.rows[0]!.cols[1]!.els.map((e) => e.id)).toEqual([
+      'e3',
+      apres.id,
+    ]);
+    const dansZone = collerNoeud(p, e1, 'z2', ids())!;
+    expect(dansZone.page.sections[1]!.rows[0]!.cols[0]!.els.at(-1)!.id).toBe(dansZone.id);
+    const zone = trouverNoeud(p, 'z1')!.noeud;
+    const z = collerNoeud(p, zone, 'e4', ids())!;
+    expect(z.page.sections.map((x) => x.id)).toEqual(['z1', 'z2', z.id]);
+    expect(collerNoeud(p, zone, null, ids())!.page.sections).toHaveLength(3);
+    const ligne = trouverNoeud(p, 'r2')!.noeud;
+    const enBas = collerNoeud({ ...p, sections: [] }, ligne, null, ids())!;
+    expect(enBas.page.sections[0]!.rows[0]!.id).toBe(enBas.id);
+    const bloc = trouverNoeud(p, 'c3')!.noeud;
+    expect(collerNoeud(p, bloc, null, ids())).toBeNull();
+    const six = changerNombreBlocs(p, 'r1', 6, ids());
+    expect(collerNoeud(six, bloc, 'r1', ids())).toBeNull();
+    expect(collerNoeud(p, bloc, 'c1', ids())!.page.sections[0]!.rows[0]!.cols).toHaveLength(3);
+    valide(z.page);
   });
 });

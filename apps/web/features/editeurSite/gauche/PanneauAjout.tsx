@@ -22,9 +22,9 @@ import { ICONES_ELEMENT } from '../icones';
 import { MesSections } from '../MesSections';
 import { Onglets } from './Onglets';
 import { Vignette } from './Vignette';
+import { nouvelId } from '../ids';
 
 export type OngletAjout = 'zones' | 'sections' | 'contenus';
-const nouvelId = () => Math.random().toString(36).slice(2, 10);
 const carte =
   'flex min-h-11 w-full items-center gap-3 rounded-[10px] border border-trait bg-blanc p-2 text-left hover:border-accent-300 hover:bg-accent-100';
 

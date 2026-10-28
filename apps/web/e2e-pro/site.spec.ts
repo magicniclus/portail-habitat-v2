@@ -403,6 +403,27 @@ test.describe('Site internet artisan', () => {
     await expect(structure.getByRole('button', { name: zone, exact: true })).toHaveCount(1);
   });
 
+  test('copier-coller (Ctrl C / Ctrl V) et glisser-déposer dans la structure', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    const structure = page.getByRole('complementary', { name: 'Structure' });
+    const zones = structure.getByRole('listitem');
+    const premiere = zones.nth(1);
+    const nom = (await premiere.textContent())!.trim();
+    await premiere.getByRole('button').click();
+    await page.keyboard.press('Control+c');
+    await expect(page.getByRole('status').filter({ hasText: 'Copié' })).toBeVisible();
+    await page.keyboard.press('Control+v');
+    await expect(structure.getByRole('button', { name: nom, exact: true })).toHaveCount(2);
+    // La copie (sélectionnée, juste après) glisse tout en haut : avant la première zone.
+    const n = await zones.count();
+    await zones.nth(2).dragTo(zones.nth(1), { targetPosition: { x: 20, y: 4 } });
+    await expect(page.getByRole('status').filter({ hasText: 'Déplacé' })).toBeVisible();
+    expect(await zones.count()).toBe(n);
+    await page.getByRole('button', { name: 'Annuler (Ctrl Z)' }).click();
+    await page.getByRole('button', { name: 'Annuler (Ctrl Z)' }).click();
+    await expect(structure.getByRole('button', { name: nom, exact: true })).toHaveCount(1);
+  });
+
   test('SITE-02 : un réglage mobile (texte, masquage) est sans effet sur l’ordinateur', async ({
     page,
   }) => {
