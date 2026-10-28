@@ -74,7 +74,7 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
   const actif = (h: string) => (h === `/${slugActif}` ? ' aria-current="page"' : '');
   const liens = n.liens
     .map((l) => {
-      const h = balise(l.action, ctx.pages, '', esc(l.label));
+      const h = balise(l.action, ctx, '', esc(l.label));
       return h.replace(/^<a /, `<a${actif(h.match(/href="([^"]*)"/)?.[1] ?? '')} `);
     })
     .join('');
@@ -83,20 +83,15 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
     n.tel.visible && numero
       ? `<a class="tel" href="tel:${esc(numero)}">${esc(n.tel.numero)}</a>`
       : '';
-  const cta = n.cta.visible ? balise(n.cta.action, ctx.pages, 'cta', esc(n.cta.texte)) : '';
-  const mini = `${n.mobile.cta && n.cta.visible ? balise(n.cta.action, ctx.pages, `cta ctamini on`, esc(n.cta.texte)) : ''}${n.mobile.tel && tel ? `<a class="telmini on" href="tel:${esc(numero)}" aria-label="Appeler le ${esc(n.tel.numero)}">${icone(TEL, 18)}</a>` : ''}`;
+  const cta = n.cta.visible ? balise(n.cta.action, ctx, 'cta', esc(n.cta.texte)) : '';
+  const mini = `${n.mobile.cta && n.cta.visible ? balise(n.cta.action, ctx, `cta ctamini on`, esc(n.cta.texte)) : ''}${n.mobile.tel && tel ? `<a class="telmini on" href="tel:${esc(numero)}" aria-label="Appeler le ${esc(n.tel.numero)}">${icone(TEL, 18)}</a>` : ''}`;
   const tiroirStyle = `--tf:${css(n.mobile.fond) || 'white'};--tt:${tiroirFonce ? 'white' : 'var(--sombre)'};--ts:${tiroirFonce ? 'rgba(255,255,255,.16)' : 'rgba(20,30,40,.1)'};--tz:${n.mobile.taille}px;${n.mobile.sens === 'gauche' ? '--sens:-100%;' : ''}`;
   const liensMobiles = n.liens
     .map((l) =>
-      balise(
-        l.action,
-        ctx.pages,
-        'lm',
-        `<span>${esc(l.label)}</span><span aria-hidden="true">›</span>`,
-      ),
+      balise(l.action, ctx, 'lm', `<span>${esc(l.label)}</span><span aria-hidden="true">›</span>`),
     )
     .join('');
-  const tiroir = `<nav id="menu" class="tiroir${n.mobile.separateurs ? ' sep' : ''}" aria-label="Menu principal" style="${esc(tiroirStyle)}"><div class="haut"><span class="marque">${logo}${nom}</span><button type="button" class="fermer" aria-label="Fermer le menu" data-fermer>${icone(CROIX)}</button></div>${liensMobiles}${n.mobile.ctaMenu && n.cta.visible ? balise(n.cta.action, ctx.pages, 'cta', esc(n.cta.texte)) : ''}${tel ? `<a class="telm" href="tel:${esc(numero)}">Appeler le ${esc(n.tel.numero)}</a>` : ''}</nav>`;
+  const tiroir = `<nav id="menu" class="tiroir${n.mobile.separateurs ? ' sep' : ''}" aria-label="Menu principal" style="${esc(tiroirStyle)}"><div class="haut"><span class="marque">${logo}${nom}</span><button type="button" class="fermer" aria-label="Fermer le menu" data-fermer>${icone(CROIX)}</button></div>${liensMobiles}${n.mobile.ctaMenu && n.cta.visible ? balise(n.cta.action, ctx, 'cta', esc(n.cta.texte)) : ''}${tel ? `<a class="telm" href="tel:${esc(numero)}">Appeler le ${esc(n.tel.numero)}</a>` : ''}</nav>`;
   const classes = [
     'nav',
     n.fixe ? 'fixe' : '',
@@ -108,7 +103,7 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
   const barre = `<header class="${classes}" style="${esc(style)}"><div class="in"><a class="marque" href="/">${logo}${nom}</a><div class="liens">${liens}</div><div class="droite">${tel}${cta}</div>${mini}<button type="button" class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu" data-burger>${icone(BURGER)}</button></div>${tiroir}</header>`;
   const appel =
     n.mobile.barreAppel && (tel || n.cta.visible)
-      ? `<div class="appel on" style="${esc(`--cb:${ctaFond};--ct:${ctaTexte};`)}">${tel ? `<a class="a1" href="tel:${esc(numero)}">${icone(TEL, 18)}Appeler</a>` : ''}${n.cta.visible ? balise(n.cta.action, ctx.pages, 'a2', esc(n.cta.texte)) : ''}</div>`
+      ? `<div class="appel on" style="${esc(`--cb:${ctaFond};--ct:${ctaTexte};`)}">${tel ? `<a class="a1" href="tel:${esc(numero)}">${icone(TEL, 18)}Appeler</a>` : ''}${n.cta.visible ? balise(n.cta.action, ctx, 'a2', esc(n.cta.texte)) : ''}</div>`
       : '';
   return (ctx.edition ? marquerEdition(barre, 'nav', 'nav') : barre) + appel;
 }

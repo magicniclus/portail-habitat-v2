@@ -102,6 +102,16 @@ const CAS: Cas[] = [
     autorises: [],
   },
   {
+    nom: 'déposer un PDF à télécharger sur le site',
+    op: { ecrire: 'sites/a1/medias/{p}.pdf', type: 'application/pdf', taille: 5000 },
+    autorises: ['proprietaire', 'gerant'],
+  },
+  {
+    nom: 'déposer un PDF de plus de 10 Mo sur le site',
+    op: { ecrire: 'sites/a1/medias/gros-{p}.pdf', type: 'application/pdf', taille: 10 * Mo + 1 },
+    autorises: [],
+  },
+  {
     nom: 'remplacer une image existante du site',
     op: { ecrire: 'sites/a1/medias/m.jpg', type: 'image/jpeg', taille: 1000 },
     autorises: [],

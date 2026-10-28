@@ -1,4 +1,6 @@
 import { DEFAUTS_COLONNE, DEFAUTS_LIGNE, elementDuCatalogue } from './catalogue';
+import { slugifier } from '../format/slug';
+import { ancresDe } from './actions';
 import { copieSection } from './edition';
 import type { Element, PageSite, Section, TypeElement } from './schemas';
 
@@ -270,4 +272,20 @@ export function insererDans(
     page: majUn(p, bloc.id, (c) => ({ ...c, els: [...(c as Bloc).els, nouveau] }) as Bloc),
     id: nouveau.id,
   };
+}
+
+/**
+ * Ancre d'une zone, pour y mener un bouton ou un lien (« Arriver directement sur une zone ») :
+ * l'ancre existante, sinon une ancre tirée du nom de la zone, unique sur la page. `null` si `id`
+ * n'est pas une zone.
+ */
+export function ancrerZone(p: PageSite, id: string): { page: PageSite; ancre: string } | null {
+  const zone = p.sections.find((s) => s.id === id);
+  if (!zone) return null;
+  if (zone.p.ancre) return { page: p, ancre: zone.p.ancre };
+  const prises = ancresDe(p.sections);
+  const base = slugifier(zone.p.nom).slice(0, 50) || 'zone';
+  let ancre = base;
+  for (let n = 2; prises.has(ancre); n++) ancre = `${base}-${n}`;
+  return { page: majNoeud(p, id, { ancre }), ancre };
 }

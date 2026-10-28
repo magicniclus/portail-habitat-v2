@@ -1,5 +1,6 @@
 import 'server-only';
 import {
+  fichiersCites,
   FORMULAIRE_GRATUIT,
   hoteCanonique,
   type ChampFormulaire,
@@ -19,7 +20,7 @@ export interface SiteServi extends SitePublie {
   urlFiche?: string;
   champs: ChampFormulaire[];
   photos: Record<string, string[]>;
-  /** Images importées (`up:{id}`) utilisées par les pages publiées. */
+  /** Images et fichiers importés (`up:{id}`) utilisés par les pages publiées. */
   importees: Record<string, string>;
 }
 
@@ -53,6 +54,7 @@ async function charger(hote: string): Promise<SiteServi | null> {
   ]);
   // Seules les réalisations publiées (autorisation du propriétaire du chantier) sont servies.
   const refs = refsPhotos(site.pages);
+  for (const f of fichiersCites(site.pages, site.navigation)) refs.up.add(f);
   const [realisations, medias] = await Promise.all([
     Promise.all(
       [...refs.lib].map((r) =>

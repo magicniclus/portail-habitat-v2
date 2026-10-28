@@ -8,7 +8,13 @@ import { redirect } from 'next/navigation';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { EditeurSite } from '@/features/editeurSite/EditeurSite';
 import { routes } from '@/lib/routes';
-import { accesSite, DOMAINE_BASE, ficheCreation, mediasDuSite, tableauSite } from '@/server/sites';
+import {
+  accesSite,
+  DOMAINE_BASE,
+  ficheCreation,
+  mediathequeDuSite,
+  tableauSite,
+} from '@/server/sites';
 
 export const metadata: Metadata = { title: 'Éditeur du site', robots: { index: false } };
 
@@ -21,9 +27,9 @@ export default async function PageEditeur({
   const acces = await accesSite(routes.proSiteEditeur());
   const db = getFirestore(appAdmin());
   const q = await searchParams;
-  const [site, medias, tableau, creation, fiche, restantsIa, blog] = await Promise.all([
+  const [site, mediatheque, tableau, creation, fiche, restantsIa, blog] = await Promise.all([
     lireSiteEdition(db, acces.artisanId),
-    mediasDuSite(acces.artisanId),
+    mediathequeDuSite(acces.artisanId),
     tableauSite(acces.artisanId),
     lireCreationIa(db, acces.artisanId),
     q.creation === '1' ? ficheCreation(acces.artisanId) : null,
@@ -51,7 +57,8 @@ export default async function PageEditeur({
         initial={{ pages: site.pages, navigation: site.navigation, theme: site.theme }}
         pageInitiale={page && site.pages[page] ? page : 'accueil'}
         panneauInitial={panneauInitial}
-        medias={medias}
+        medias={mediatheque.medias}
+        fichiers={mediatheque.fichiers}
         artisanId={acces.artisanId}
         hote={`${site.sousDomaine}.${DOMAINE_BASE}`}
         offre={site.offre ?? 'gratuit'}

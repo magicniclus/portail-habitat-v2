@@ -37,8 +37,16 @@ export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});
 
-/** Image importée dans la médiathèque du site (déposée dans Storage puis vérifiée ici). */
-export const entreeMediaSite = z.strictObject({ nomFichier });
+/**
+ * Image (ou PDF à télécharger, `usage: 'fichier'`) importée dans la médiathèque du site, déposée
+ * dans Storage puis vérifiée ici.
+ */
+export const entreeMediaSite = z.strictObject({
+  nomFichier,
+  usage: z.enum(['image', 'fichier']).optional(),
+  /** Nom affiché d'un fichier (« Nos tarifs 2026 »). */
+  nom: z.string().trim().min(1).max(120).optional(),
+});
 
 /** « Mes sections » (SITE_INTERNET §4.7) : enregistrer une section, la supprimer, ou les lire. */
 export const entreeSectionEnregistree = z.discriminatedUnion('action', [

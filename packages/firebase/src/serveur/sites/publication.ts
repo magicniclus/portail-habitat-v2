@@ -9,6 +9,7 @@ import {
 import { Timestamp } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import { exigerSite, type ContexteSite, type ServicesSites } from './edition';
+import { fichiersCitables } from './medias';
 
 /** Versions publiées gardées (DATABASE §15 bis). */
 const VERSIONS_GARDEES = 20;
@@ -35,6 +36,8 @@ export async function publierSite(
   ctx: ContexteSite,
 ): Promise<{ version: number }> {
   const refSite = s.db.doc(chemins.site(ctx.artisanId));
+  // Fichiers à télécharger du site (lecture hors transaction : ils ne changent pas ici).
+  const fichiers = await fichiersCitables(s.db, ctx.artisanId);
   const r = await s.db.runTransaction(async (t) => {
     await exigerSite(s, t, ctx);
     const [site, pages, nav] = await Promise.all([
@@ -51,7 +54,7 @@ export async function publierSite(
     );
     const { schemaVersion: _sv, enregistreeLe: _e, ...navigation } = nav.data() ?? {};
     const erreurs = [
-      ...verifierLiensSite(toutes, navigation as Navigation),
+      ...verifierLiensSite(toutes, navigation as Navigation, fichiers),
       // Faits que l'IA n'a pas pu vérifier : à remplir avant la mise en ligne (SITE-IA-05).
       ...textesACompleter(
         Object.fromEntries(Object.entries(toutes).filter(([, p]) => p.statut === 'publiee')),

@@ -95,7 +95,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
   const riche = (t: string) =>
-    texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx.pages, ctx.edition);
+    texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx, ctx.edition);
   switch (e.type) {
     case 'titre':
     case 'texte': {
@@ -110,7 +110,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
     case 'bouton': {
       const lien = balise(
         e.p.action,
-        ctx.pages,
+        ctx,
         `btn${e.p.variante === 'contour' ? ' contour' : ''}${e.p.largeur === 'plein' ? ' large' : ''}`,
         avecMobile(e, esc(e.p.texte), esc),
         couleursBouton(e.p.couleur, fonce, ctx.theme),
@@ -132,7 +132,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
       const img = url
         ? `<img src="${esc(url)}" alt="${esc(e.p.legende)}" loading="lazy" decoding="async">`
         : `<span class="vide" role="img" aria-label="${esc(e.p.legende)}"></span>`;
-      return `<figure${id} class="${base} image" style="${esc(style)}">${balise(e.p.action, ctx.pages, 'img', img)}</figure>`;
+      return `<figure${id} class="${base} image" style="${esc(style)}">${balise(e.p.action, ctx, 'img', img)}</figure>`;
     }
     case 'liste':
       return `<ul${id} class="${base} liste ${COTE[e.p.align]}" style="${esc(`${mb}${couleur(e.p.couleur)}`)}">${e.p.items.map((x) => `<li><span class="puce" aria-hidden="true">${esc(e.p.icone)}</span><span>${esc(x)}</span></li>`).join('')}</ul>`;
@@ -162,7 +162,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
       return `<p${id} class="${base} logo-el" style="${esc(mb)}">${esc(e.p.texte)}</p>`;
     case 'menu': {
       const liens = (ctx.navigation?.liens ?? [])
-        .map((l) => balise(l.action, ctx.pages, '', esc(l.label)))
+        .map((l) => balise(l.action, ctx, '', esc(l.label)))
         .join('');
       return liens
         ? `<nav${id} class="${base} menu-el" aria-label="Menu" style="${esc(`${mb}justify-content:${{ left: 'flex-start', center: 'center', right: 'flex-end' }[e.p.align]};`)}">${liens}</nav>`
@@ -182,9 +182,15 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
 const TYPES_HTML: Record<string, string> = { email: 'email', tel: 'tel', date: 'date', cp: 'text' };
 
 /** Formulaire du site : champs de la configuration, anti-robot Turnstile, envoi sans rechargement. */
-function rendreFormulaire(bouton: string, ctx: ContexteRendu, base: string, mb: string): string {
+function rendreFormulaire(
+  bouton: string,
+  ctx: ContexteRendu,
+  base: string,
+  mb: string,
+  prefixe = 'f',
+): string {
   const champ = (c: ChampFormulaire) => {
-    const id = `f-${esc(c.id)}`;
+    const id = `${prefixe}-${esc(c.id)}`;
     const requis = c.requis ? ' required' : '';
     const etoile = c.requis ? ' <span aria-hidden="true">*</span>' : '';
     const label = `<label for="${id}">${esc(c.libelle)}${etoile}</label>`;
@@ -202,10 +208,19 @@ function rendreFormulaire(bouton: string, ctx: ContexteRendu, base: string, mb: 
             : '';
     return `<p>${label}<input id="${id}" name="${esc(c.id)}" type="${TYPES_HTML[c.type] ?? 'text'}"${extra}${requis}></p>`;
   };
-  return `<form id="formulaire" class="${base} formulaire" style="${esc(mb)}" data-formulaire novalidate>${ctx.champs
+  const idForm = prefixe === 'f' ? 'formulaire' : `${prefixe}-formulaire`;
+  return `<form id="${idForm}" class="${base} formulaire" style="${esc(mb)}" data-formulaire novalidate>${ctx.champs
     .filter((c) => c.type !== 'photos')
     .map(champ)
     .join(
       '',
     )}${ctx.turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(ctx.turnstileSiteKey)}" data-appearance="interaction-only"></div>` : ''}<p class="rgpd">Vos informations servent uniquement à vous recontacter au sujet de votre projet.</p><button type="submit" class="btn">${esc(bouton)}</button><p class="statut" role="status" aria-live="polite"></p></form>`;
+}
+
+/**
+ * Fenêtre du formulaire (action « Formulaire » affichée en fenêtre) : une copie du formulaire du
+ * site, ouverte par le script de la page ; feuille du bas sur mobile.
+ */
+export function fenetreFormulaire(ctx: ContexteRendu): string {
+  return `<dialog class="fenetre" id="fenetre-formulaire" aria-labelledby="ff-titre"><div class="fen"><button type="button" class="ff-fermer" aria-label="Fermer" data-fermer-fenetre>×</button><h2 id="ff-titre">Votre demande de devis</h2>${rendreFormulaire('Envoyer ma demande', ctx, 'el', '', 'ff')}</div></dialog>`;
 }

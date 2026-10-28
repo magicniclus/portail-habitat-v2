@@ -23,10 +23,11 @@ service firebase.storage {
         && firestore.get(/databases/(default)/documents/artisans/$(aid)/membres/$(request.auth.uid)).data.role in roles;
     }
 
-    // Médiathèque du site (SITE_INTERNET §4.2) : images importées, publiques, 8 Mo ; site.gerer.
+    function pdf(maxMo)   { return request.resource.contentType == 'application/pdf' && request.resource.size <= maxMo * 1024 * 1024; }
+    // Médiathèque du site (SITE_INTERNET §4.2) : images (8 Mo) et PDF à télécharger (10 Mo), publics ; site.gerer.
     match /sites/{aid}/medias/{fichier} {
       allow read: if true;
-      allow create: if resource == null && noImp() && isGestion(aid) && image(8) && membreActif(aid, ['proprietaire', 'gerant']);
+      allow create: if resource == null && noImp() && isGestion(aid) && (image(8) || pdf(10)) && membreActif(aid, ['proprietaire', 'gerant']);
       allow update: if false;
       allow delete: if noImp() && isGestion(aid) && membreActif(aid, ['proprietaire', 'gerant']);
     }

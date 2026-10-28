@@ -44,6 +44,20 @@ export const LIBELLES_ELEMENT = {
   blog: 'Articles du blog',
 } as const;
 
+/** Tuiles « Action » de l'éditeur, dans l'ordre de la maquette (nom court). */
+export const TUILES_ACTION = {
+  page: 'Page',
+  ancre: 'Zone',
+  url: 'Lien web',
+  tel: 'Appel',
+  email: 'Email',
+  sms: 'SMS',
+  whatsapp: 'WhatsApp',
+  formulaire: 'Formulaire',
+  fichier: 'Fichier',
+  aucun: 'Aucune',
+} as const;
+
 /** Types d'action proposés dans l'éditeur. */
 export const LIBELLES_ACTION = {
   aucun: 'Aucune action',

@@ -15,6 +15,8 @@ import {
   validerAction,
   validerEnvoi,
   verifierLiensSite,
+  ancresDe,
+  fichiersCites,
   type ContexteLiens,
 } from './index';
 
@@ -67,6 +69,21 @@ describe('actions et liens (SITE-09)', () => {
     fichiers: new Set(['f1']),
     formulaire: true,
   };
+  it('cas valides et ancres des sections, blocs et contenus', () => {
+    expect(validerAction({ type: 'fichier', fichierId: 'f1' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'page', page: 'accueil', ancre: 'contact' }, ctx, 'x')).toBeNull();
+    expect(validerAction({ type: 'ancre' }, ctx, 'accueil')).toBe(
+      'Section introuvable sur la page',
+    );
+    expect(validerAction({ type: 'url' }, ctx, 'accueil')).toBe('Adresse manquante');
+    const s = siteParDefaut(fiche, PALETTE).pages.accueil!.sections;
+    const r = s[0]!.rows[0]!;
+    r.p.htmlId = 'ligne';
+    r.cols[0]!.p.htmlId = 'bloc';
+    r.cols[0]!.els[0]!.p.htmlId = 'titre';
+    expect([...ancresDe(s)]).toEqual(expect.arrayContaining(['ligne', 'bloc', 'titre']));
+  });
+
   it('chaque type d’action', () => {
     expect(validerAction({ type: 'page', page: 'prestations' }, ctx, 'accueil')).toBeNull();
     expect(validerAction({ type: 'page', page: 'inconnue' }, ctx, 'accueil')).toBe(
@@ -123,6 +140,31 @@ describe('actions et liens (SITE-09)', () => {
       ou: 'Bouton « Devis gratuit »',
       erreur: 'Page introuvable',
     });
+  });
+
+  it('fichiers cités par les boutons, images, mots liés et la navigation', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    const f = (id: string) => ({ type: 'fichier' as const, fichierId: id });
+    const el = s.pages.accueil!.sections[0]!.rows[0]!.cols[0]!.els;
+    el.push({
+      ...el.find((e) => e.type === 'bouton')!,
+      id: 'b9',
+      p: { ...el.find((e) => e.type === 'bouton')!.p, action: f('up:f1') },
+    } as never);
+    const texte = el.find((e) => e.type === 'texte' || e.type === 'titre')!;
+    (texte.p as { liens?: object }).liens = { L1: f('up:f2'), L2: f('lib:x/0') };
+    s.navigation.cta.action = f('up:f3');
+    expect([...fichiersCites(s.pages, s.navigation)].sort()).toEqual(['f1', 'f2', 'f3']);
+    // Un fichier inconnu bloque la publication ; connu, il passe.
+    expect(
+      verifierLiensSite(s.pages, s.navigation).some((e) => e.erreur === 'Fichier introuvable'),
+    ).toBe(true);
+    const connus = new Set(['up:f1', 'up:f2', 'up:f3']);
+    expect(
+      verifierLiensSite(s.pages, s.navigation, connus).filter(
+        (e) => e.erreur === 'Fichier introuvable',
+      ),
+    ).toHaveLength(1);
   });
 
   it('une page en brouillon ne compte pas comme destination', () => {

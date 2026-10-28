@@ -12,6 +12,7 @@ import {
   enregistrerPage,
   envoyerFormulaireSite,
   enregistrerMediaSite,
+  fichiersCitables,
   lireMediasSite,
   gererSectionsEnregistrees,
   lireSitePublie,
@@ -331,7 +332,29 @@ describe('médiathèque du site', () => {
     });
     expect(r.cle).toMatch(/^up:/);
     expect(await lireMediasSite(db, 'a1')).toEqual([
-      expect.objectContaining({ cle: r.cle, nom: 'chantier.png', url: r.url }),
+      expect.objectContaining({ cle: r.cle, nom: 'chantier.png', url: r.url, usage: 'image' }),
     ]);
+  });
+
+  it('fichier à télécharger : PDF seulement, nom affiché gardé ; une image n’est pas un fichier', async () => {
+    await bucketFichiers()
+      .file('sites/a1/medias/tarifs.pdf')
+      .save(Buffer.from('%PDF-1.4\n%%EOF'), { contentType: 'application/pdf', resumable: false });
+    const pasImage = await erreur(
+      enregistrerMediaSite({ ...s(), bucket: bucketFichiers() }, proprio, {
+        nomFichier: 'tarifs.pdf',
+      }),
+    );
+    expect(pasImage.code).toBe('ENTREE_INVALIDE');
+    const r = await enregistrerMediaSite({ ...s(), bucket: bucketFichiers() }, proprio, {
+      nomFichier: 'tarifs.pdf',
+      usage: 'fichier',
+      nom: 'Nos tarifs 2026',
+    });
+    const lus = await lireMediasSite(db, 'a1');
+    expect(lus.find((m) => m.cle === r.cle)).toEqual(
+      expect.objectContaining({ nom: 'Nos tarifs 2026', usage: 'fichier' }),
+    );
+    expect(await fichiersCitables(db, 'a1')).toContain(r.cle);
   });
 });

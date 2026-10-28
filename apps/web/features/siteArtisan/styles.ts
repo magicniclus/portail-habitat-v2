@@ -75,6 +75,10 @@ h1,h2,h3{font-family:${p.titre};font-weight:${p.poids};margin:0}p{margin:0}img{m
 .formulaire{display:grid;gap:14px}.formulaire label{display:block;font-size:13px;font-weight:600;margin-bottom:4px;color:var(--txt)}
 .formulaire input,.formulaire select,.formulaire textarea{width:100%;min-height:48px;padding:10px 12px;font:inherit;font-size:16px;border:1px solid ${N.bordChamp};border-radius:8px;background:white;color:var(--sombre)}
 .formulaire .btn{--bb:var(--primaire);--bt:white;width:100%}.rgpd{font-size:13px;color:var(--txt2)}
+.fenetre{border:0;border-radius:16px;padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px);background:white;color:var(--txt);box-shadow:0 24px 64px rgba(0,0,0,.25)}.fenetre::backdrop{background:rgba(0,0,0,.5)}
+.fenetre .fen{position:relative;padding:28px}.fenetre h2{font-family:${p.titre};font-weight:${p.poids};font-size:24px;line-height:1.15;margin:0 48px 18px 0;color:var(--sombre)}
+.ff-fermer{position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;border-radius:999px;background:var(--clair);color:var(--sombre);font-size:24px;line-height:1;cursor:pointer}
+@media (max-width:640px){.fenetre{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:92dvh}.fenetre .fen{padding:22px 20px calc(22px + env(safe-area-inset-bottom))}}
 .carte{aspect-ratio:16/7;border-radius:10px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--primaire);background:repeating-linear-gradient(0deg,${N.trameCarte} 0 1px,transparent 1px 28px),repeating-linear-gradient(90deg,${N.trameCarte} 0 1px,${N.fondCarte} 1px 28px);text-align:center;padding:12px}
 .video iframe,.video .vide{width:100%;aspect-ratio:16/9;border:0;border-radius:12px}.video .vide{display:flex;align-items:center;justify-content:center;background:var(--sombre);color:rgba(255,255,255,.85)}
 hr{height:1px;border:0;margin:0;background:var(--trait)}hr.court{width:64px}hr.ac{margin-inline:auto}hr.ad{margin-left:auto}

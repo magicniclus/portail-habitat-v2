@@ -156,17 +156,32 @@ export async function tableauSite(artisanId: string): Promise<TableauSite> {
   };
 }
 
-/** Médiathèque de l'aperçu : photos des réalisations publiées (`lib:{id}/{i}` → URL). */
-export async function mediasDuSite(artisanId: string): Promise<Record<string, string>> {
-  const [r, importees] = await Promise.all([
+/**
+ * Médiathèque de l'éditeur : photos des réalisations publiées (`lib:{id}/{i}`) et images importées
+ * (`up:{id}`) → URL ; à part, les fichiers PDF à télécharger (`up:{id}` → nom et URL).
+ */
+export async function mediathequeDuSite(artisanId: string): Promise<{
+  medias: Record<string, string>;
+  fichiers: Record<string, { nom: string; url: string }>;
+}> {
+  const [r, importes] = await Promise.all([
     lirePhotosPubliees(db(), artisanId),
     lireMediasSite(db(), artisanId),
   ]);
-  return Object.fromEntries([
-    ...r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])),
-    ...importees.map((m) => [m.cle, m.url]),
-  ]);
+  return {
+    medias: Object.fromEntries([
+      ...r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])),
+      ...importes.filter((m) => m.usage === 'image').map((m) => [m.cle, m.url]),
+    ]),
+    fichiers: Object.fromEntries(
+      importes.filter((m) => m.usage === 'fichier').map((m) => [m.cle, { nom: m.nom, url: m.url }]),
+    ),
+  };
 }
+
+/** Images de l'aperçu (sans les fichiers à télécharger). */
+export const mediasDuSite = async (artisanId: string) =>
+  (await mediathequeDuSite(artisanId)).medias;
 
 /**
  * Onglet Statistiques : 30 derniers jours pour tous ; 12 mois en plus avec Site Pro (12 lectures

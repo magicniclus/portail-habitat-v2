@@ -1,6 +1,6 @@
 import { FORMULAIRE_GRATUIT, siteParDefaut } from '@ph/core/sites';
 import { describe, expect, it } from 'vitest';
-import { lienAction, texteRiche } from './actions';
+import { balise, lienAction, texteRiche } from './actions';
 import { rendreDocument, SCRIPT_SITE } from './document';
 import { SCRIPT_EDITION } from './edition';
 
@@ -110,35 +110,58 @@ describe('rendu des sites publiés', () => {
   });
 
   it('liens : page, téléphone, url externe en nouvel onglet et nofollow', () => {
-    expect(lienAction({ type: 'page', page: 'contact', ancre: 'contact' }, s.pages)).toEqual({
+    expect(
+      lienAction({ type: 'page', page: 'contact', ancre: 'contact' }, { pages: s.pages }),
+    ).toEqual({
       href: '/contact-devis#contact',
       externe: false,
       nofollow: false,
     });
-    expect(lienAction({ type: 'tel', tel: '05 56 12 34 56' }, s.pages)?.href).toBe(
+    expect(lienAction({ type: 'tel', tel: '05 56 12 34 56' }, { pages: s.pages })?.href).toBe(
       'tel:0556123456',
     );
-    expect(lienAction({ type: 'url', url: 'https://www.service-public.fr' }, s.pages)).toEqual({
+    expect(
+      lienAction({ type: 'url', url: 'https://www.service-public.fr' }, { pages: s.pages }),
+    ).toEqual({
       href: 'https://www.service-public.fr',
       externe: true,
       nofollow: true,
     });
-    expect(lienAction({ type: 'url', url: 'javascript:alert(1)' }, s.pages)).toBeNull();
+    expect(lienAction({ type: 'url', url: 'javascript:alert(1)' }, { pages: s.pages })).toBeNull();
     expect(
-      lienAction({ type: 'whatsapp', tel: '06 12 34 56 78', message: 'Bonjour' }, s.pages)?.href,
+      lienAction(
+        { type: 'whatsapp', tel: '06 12 34 56 78', message: 'Bonjour' },
+        { pages: s.pages },
+      )?.href,
     ).toBe('https://wa.me/33612345678?text=Bonjour');
+  });
+
+  it('fichier à télécharger (nouvel onglet) et formulaire en fenêtre', () => {
+    const cible = {
+      pages: s.pages,
+      media: (src: string) => (src === 'up:f1' ? 'https://stockage/tarifs.pdf' : null),
+    };
+    expect(lienAction({ type: 'fichier', fichierId: 'up:f1' }, cible)).toEqual({
+      href: 'https://stockage/tarifs.pdf',
+      externe: true,
+      nofollow: false,
+    });
+    expect(lienAction({ type: 'fichier', fichierId: 'up:inconnu' }, cible)).toBeNull();
+    expect(balise({ type: 'formulaire', formulaire: 'popup' }, cible, 'btn', 'Devis')).toBe(
+      '<a class="btn" href="#formulaire" data-fenetre="formulaire">Devis</a>',
+    );
   });
 
   it('texte riche : gras et mots liés ; balises inconnues échappées', () => {
     const h = texteRiche(
       '<b>Fort</b> <script>x</script> [devis](#L1)',
       { L1: { type: 'page', page: 'contact' } },
-      s.pages,
+      { pages: s.pages },
     );
     expect(h).toBe(
       '<b>Fort</b> &lt;script&gt;x&lt;/script&gt; <a class="lien" href="/contact-devis">devis</a>',
     );
-    expect(texteRiche('<b>non fermé', undefined, s.pages)).toBe('<b>non fermé</b>');
+    expect(texteRiche('<b>non fermé', undefined, { pages: s.pages })).toBe('<b>non fermé</b>');
   });
 
   it('SITE-02 : texte mobile distinct, sans effet sur l’ordinateur', () => {

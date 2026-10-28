@@ -107,6 +107,29 @@ function* elements(sections: readonly Section[]): Generator<Element> {
   for (const s of sections) for (const r of s.rows) for (const c of r.cols) yield* c.els;
 }
 
+/**
+ * Fichiers à télécharger (`up:{id}`) cités par les boutons, images et mots liés des pages, et par
+ * la navigation : le site public ne charge que ceux-là.
+ */
+export function fichiersCites(
+  pages: Record<string, Pick<PageSite, 'sections'>>,
+  nav: { liens: { action: Action }[]; cta: { action: Action } },
+): Set<string> {
+  const ids = new Set<string>();
+  const voir = (a: Action | undefined) => {
+    const m = a?.type === 'fichier' ? /^up:([\w-]+)$/.exec(a.fichierId ?? '') : null;
+    if (m) ids.add(m[1]!);
+  };
+  for (const p of Object.values(pages))
+    for (const e of elements(p.sections)) {
+      if (e.type === 'bouton' || e.type === 'image') voir(e.p.action);
+      if (e.type === 'titre' || e.type === 'texte') Object.values(e.p.liens ?? {}).forEach(voir);
+    }
+  nav.liens.forEach((l) => voir(l.action));
+  voir(nav.cta.action);
+  return ids;
+}
+
 /** Ancres d'une page : sections, lignes, colonnes et éléments avec un identifiant. */
 export function ancresDe(sections: readonly Section[]): Set<string> {
   const a = new Set<string>();

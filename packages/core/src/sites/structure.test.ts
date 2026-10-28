@@ -4,6 +4,7 @@ import { nouvellePage } from './edition';
 import { pageSite, type PageSite } from './schemas';
 import {
   ajouterLigne,
+  ancrerZone,
   changerDisposition,
   changerNombreBlocs,
   DISPOSITIONS,
@@ -193,5 +194,17 @@ describe('structure de la page : zone › section › bloc › élément', () =>
     const vide = { ...page(), sections: [{ ...page().sections[0]!, rows: [] }] };
     const r = insererDans(vide, 'z1', 'titre', ids())!;
     expect(r.page.sections[0]!.rows[0]!.cols[0]!.els.map((e) => e.id)).toEqual([r.id]);
+  });
+
+  it('ancre d’une zone : gardée si elle existe, sinon tirée du nom et rendue unique', () => {
+    const p = majNoeud(page(), 'z1', { ancre: 'contact' });
+    expect(ancrerZone(p, 'z1')).toEqual({ page: p, ancre: 'contact' });
+    const r = ancrerZone(p, 'z2')!;
+    expect(r.ancre).toBe('contact-2');
+    expect(trouverNoeud(r.page, 'z2')!.noeud.p).toMatchObject({ ancre: 'contact-2' });
+    valide(r.page);
+    const sansNom = majNoeud(page(), 'z2', { nom: '' });
+    expect(ancrerZone(sansNom, 'z2')!.ancre).toBe('zone');
+    expect(ancrerZone(p, 'r1')).toBeNull();
   });
 });

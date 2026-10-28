@@ -3,11 +3,17 @@ import { esc } from './html';
 
 const chiffres = (t: string) => t.replace(/[^\d+]/g, '');
 
+/** Ce qu'un lien doit connaître du site : ses pages, et l'URL des fichiers à télécharger. */
+export interface CibleLiens {
+  pages: Record<string, Pick<PageSite, 'slug'>>;
+  media?: (src: string) => string | null;
+}
+
 /** Lien d'une action (bouton, image, menu, mot lié) ; `null` = rien de cliquable. */
 export function lienAction(
   a: Action,
-  pages: Record<string, Pick<PageSite, 'slug'>>,
-): { href: string; externe: boolean; nofollow: boolean } | null {
+  { pages, media }: CibleLiens,
+): { href: string; externe: boolean; nofollow: boolean; popup?: boolean } | null {
   const lien = (href: string, externe = false, nofollow = false) => ({ href, externe, nofollow });
   switch (a.type) {
     case 'page': {
@@ -42,8 +48,13 @@ export function lienAction(
       return lien(`mailto:${a.email}${q ? `?${q}` : ''}`);
     }
     case 'formulaire':
-      return lien('#formulaire');
-    case 'fichier':
+      return a.formulaire === 'popup'
+        ? { ...lien('#formulaire'), popup: true }
+        : lien('#formulaire');
+    case 'fichier': {
+      const url = a.fichierId ? media?.(a.fichierId) : null;
+      return url ? lien(url, true) : null;
+    }
     case 'aucun':
       return null;
   }
@@ -52,18 +63,19 @@ export function lienAction(
 /** `<a …>` d'une action, ou `<span>` si l'action ne mène nulle part. */
 export function balise(
   a: Action,
-  pages: Record<string, Pick<PageSite, 'slug'>>,
+  cible: CibleLiens,
   classe: string,
   contenu: string,
   style = '',
 ): string {
-  const l = lienAction(a, pages);
+  const l = lienAction(a, cible);
   const s = style ? ` style="${esc(style)}"` : '';
   if (!l) return `<span class="${classe}"${s}>${contenu}</span>`;
   const rel = [l.externe ? 'noopener noreferrer' : '', l.nofollow ? 'nofollow' : '']
     .filter(Boolean)
     .join(' ');
-  return `<a class="${classe}" href="${esc(l.href)}"${l.externe ? ' target="_blank"' : ''}${rel ? ` rel="${rel}"` : ''}${s}>${contenu}</a>`;
+  const plus = `${l.externe ? ' target="_blank"' : ''}${rel ? ` rel="${rel}"` : ''}${l.popup ? ' data-fenetre="formulaire"' : ''}`;
+  return `<a class="${classe}" href="${esc(l.href)}"${plus}${s}>${contenu}</a>`;
 }
 
 const RE_RICHE = /<(\/?)([biu])>|\[([^\]]+)\]\(#(L\d+)\)/g;
@@ -75,7 +87,7 @@ const RE_RICHE = /<(\/?)([biu])>|\[([^\]]+)\]\(#(L\d+)\)/g;
 export function texteRiche(
   texte: string,
   liens: Record<string, Action> | undefined,
-  pages: Record<string, Pick<PageSite, 'slug'>>,
+  cible: CibleLiens,
   /** Éditeur : chaque lien garde son identifiant (modification directe sur la page). */
   edition = false,
 ): string {
@@ -95,7 +107,7 @@ export function texteRiche(
       }
     } else {
       const a = liens?.[m[4]!];
-      const lien = a ? balise(a, pages, 'lien', esc(m[3])) : esc(m[3]);
+      const lien = a ? balise(a, cible, 'lien', esc(m[3])) : esc(m[3]);
       out += edition && a ? lien.replace(/^<(a|span) /, `<$1 data-lid="${m[4]}" `) : lien;
     }
   }
