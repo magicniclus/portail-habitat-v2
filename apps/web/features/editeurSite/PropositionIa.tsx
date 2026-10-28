@@ -27,7 +27,7 @@ export function PropositionIa({
   return (
     <section
       aria-labelledby="proposition-ia"
-      className="grid gap-3 rounded-[12px] border border-trait p-3"
+      className="grid gap-3 rounded-[12px] border border-trait p-3 break-words [grid-template-columns:minmax(0,1fr)]"
     >
       <h3 id="proposition-ia" className="m-0 text-lg">
         Proposition

@@ -10,7 +10,7 @@ import type { RestantsIa } from '../modesIa';
 export function QuotaIa({ r }: { r: RestantsIa }) {
   if (r.type === 'essai')
     return (
-      <div className="grid gap-2 rounded-[10px] border border-accent-300 bg-accent-100 p-3">
+      <div className="grid gap-2 rounded-[10px] border border-accent-300 bg-accent-100 p-3 [grid-template-columns:minmax(0,1fr)]">
         <strong className="text-sm">🔒 L’IA complète est incluse dans Site Pro</strong>
         <span className="text-[13px] leading-[18px] text-neutre-800">
           Créer tout le site, ajouter ou refaire des sections, améliorer vos textes.{' '}
@@ -31,7 +31,7 @@ export function QuotaIa({ r }: { r: RestantsIa }) {
   const total = r.max.textes + r.max.composants;
   const reste = r.textes + r.composants;
   return (
-    <div className="grid gap-1.5 rounded-[10px] border border-trait p-3">
+    <div className="grid gap-1.5 rounded-[10px] border border-trait p-3 [grid-template-columns:minmax(0,1fr)]">
       <div className="flex items-baseline justify-between gap-2 text-sm">
         <strong>IA Site Pro</strong>
         <span className="text-[13px] text-neutre-700">

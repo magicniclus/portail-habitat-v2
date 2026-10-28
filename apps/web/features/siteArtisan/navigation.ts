@@ -107,3 +107,21 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
       : '';
   return (ctx.edition ? marquerEdition(barre, 'nav', 'nav') : barre) + appel;
 }
+
+/**
+ * Icône d'onglet du site : le logo de l'artisan, sinon ses initiales sur la couleur du logo
+ * (SVG en `data:`, autorisé par la CSP des sites).
+ */
+export function faviconSite(nav: Navigation, ctx: ContexteRendu): string {
+  const n = navigationComplete(nav);
+  const image = n.logo.image ? ctx.media(n.logo.image) : null;
+  if (image) return `<link rel="icon" href="${esc(image)}">`;
+  const p = ctx.theme?.palette;
+  const fond =
+    (p && (resoudreCouleur(n.logo.fond, p) ?? resoudreCouleur('primaire', p))) || 'black';
+  const texte =
+    texteSur(fond) === 'blanc' ? 'white' : ((p && resoudreCouleur('sombre', p)) ?? 'black');
+  const ini = (n.logo.initiales || n.nom.slice(0, 2)).toUpperCase().slice(0, 3);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${esc(fond)}"/><text x="32" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="${ini.length > 2 ? 21 : 28}" fill="${esc(texte)}">${esc(ini)}</text></svg>`;
+  return `<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(svg)}">`;
+}

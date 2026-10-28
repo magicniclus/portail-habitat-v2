@@ -98,6 +98,27 @@ describe('rendu des sites publiés', () => {
     expect(h).toMatch(/<section class="[^"]*ia-modifie/);
   });
 
+  it('icône d’onglet : initiales de l’artisan (SVG sûr), ou son logo', () => {
+    const icone = doc().match(/<link rel="icon" href="data:image\/svg\+xml,([^"]+)">/);
+    expect(icone).not.toBeNull();
+    const svg = decodeURIComponent(icone![1]!);
+    expect(svg).toMatch(/<text[^>]*>[A-Za-z&;]{1,12}<\/text>/);
+    expect(svg).not.toMatch(/<script|on\w+=/);
+    const avecLogo = rendreDocument(
+      {
+        hote: 'bertrand.portailtravaux.fr',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: { ...s.navigation, logo: { ...s.navigation.logo, image: 'lib:r1/0' } },
+        page: s.pages.accueil!,
+        pages: s.pages,
+        nomEntreprise: 'Bertrand',
+      },
+      ctx,
+    );
+    expect(avecLogo).toContain('<link rel="icon" href="https://storage.googleapis.com/x.webp">');
+  });
+
   it('mention Portail Travaux seulement sur un site gratuit', () => {
     expect(doc('gratuit')).toContain('Site créé avec');
     expect(doc('site_pro')).not.toContain('Site créé avec');

@@ -120,7 +120,7 @@ export function PanneauIa({
         />
       ) : null}
       <form
-        className="grid gap-2.5 rounded-[10px] border border-trait p-3"
+        className="grid gap-2.5 rounded-[10px] border border-trait p-3 [grid-template-columns:minmax(0,1fr)]"
         onSubmit={(e) => {
           e.preventDefault();
           setProp(null);
@@ -143,14 +143,14 @@ export function PanneauIa({
           maxLength={1000}
           onChange={(e) => setDemande(e.target.value)}
           placeholder="Ex. : « Plus court et plus chaleureux », « Mets Mérignac dans le titre »."
-          className="min-h-24 rounded-[8px] border border-trait px-3 py-2 text-base"
+          className="min-h-24 w-full min-w-0 rounded-[8px] border border-trait px-3 py-2 text-base"
         />
-        <label className="grid gap-1.5 text-[13px] font-bold text-neutre-800">
+        <label className="grid min-w-0 gap-1.5 text-[13px] font-bold text-neutre-800">
           Que voulez-vous faire ?
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as ModeIaSite | 'auto')}
-            className="min-h-11 rounded-[8px] border border-trait bg-blanc px-3 text-base font-normal"
+            className="min-h-11 w-full min-w-0 rounded-[8px] border border-trait bg-blanc px-3 text-base font-normal"
           >
             {MODES.map((m) => (
               <option key={m.mode} value={m.mode}>
@@ -175,7 +175,7 @@ export function PanneauIa({
           </div>
         ) : (
           <>
-            <Button type="submit" disabled={enCours || demande.trim().length < 3}>
+            <Button type="submit" pleineLargeur disabled={enCours || demande.trim().length < 3}>
               {enCours ? 'L’IA prépare une proposition…' : 'Proposer'}
             </Button>
             <span className="text-xs text-neutre-600">{texteRestants(restants, mode)}</span>

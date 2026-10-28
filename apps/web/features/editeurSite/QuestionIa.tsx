@@ -18,7 +18,7 @@ export function QuestionIa({
   const [reponse, setReponse] = useState('');
   return (
     <form
-      className="grid gap-3 rounded-[12px] border border-trait p-3"
+      className="grid gap-3 rounded-[12px] border border-trait p-3 break-words [grid-template-columns:minmax(0,1fr)]"
       onSubmit={(e) => {
         e.preventDefault();
         onRepondre(reponse);
@@ -27,7 +27,7 @@ export function QuestionIa({
       <Field label={question}>
         <Textarea value={reponse} maxLength={500} onChange={(e) => setReponse(e.target.value)} />
       </Field>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={enCours || !reponse.trim()}>
           Répondre
         </Button>
