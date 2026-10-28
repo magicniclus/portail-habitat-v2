@@ -48,9 +48,10 @@ export async function proxy(requete: NextRequest) {
   const site = hoteSite(requete.headers.get('host'), plateforme());
   if (site) {
     const chemin = requete.nextUrl.pathname;
-    const reponse = chemin.startsWith('/api/sites/')
-      ? NextResponse.next()
-      : NextResponse.rewrite(new URL(`/s/${site}${chemin === '/' ? '' : chemin}`, requete.url));
+    const reponse =
+      chemin.startsWith('/api/sites/') || chemin.startsWith('/polices-sites/')
+        ? NextResponse.next()
+        : NextResponse.rewrite(new URL(`/s/${site}${chemin === '/' ? '' : chemin}`, requete.url));
     const csp = politiqueSite({ production, empreinte: await empreinteSite() });
     for (const [k, v] of Object.entries(enTetesSecurite({ production, csp, site: true })))
       reponse.headers.set(k, v);

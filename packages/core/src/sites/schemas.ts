@@ -63,6 +63,8 @@ export const action = z.object({
   message: z.string().max(500).optional(),
   formulaire: z.enum(['defiler', 'popup']).optional(),
   fichierId: z.string().max(128).optional(),
+  /** Nom affiché du fichier à télécharger (plaquette, tarifs…). */
+  fichierNom: z.string().max(200).optional(),
 });
 export type Action = z.output<typeof action>;
 
@@ -98,13 +100,23 @@ export const element = z.discriminatedUnion('type', [
   el('titre', {
     texte: texteRiche,
     liens: liens.optional(),
+    lienCouleur: couleur.optional(),
+    lienSouligne: z.boolean().optional(),
     niveau: z.enum(['h1', 'h2', 'h3']),
     taille,
     couleur,
     align: alignement,
   }),
   el('surtitre', { texte: z.string().max(200), taille, couleur, align: alignement }),
-  el('texte', { texte: texteRiche, liens: liens.optional(), taille, couleur, align: alignement }),
+  el('texte', {
+    texte: texteRiche,
+    liens: liens.optional(),
+    lienCouleur: couleur.optional(),
+    lienSouligne: z.boolean().optional(),
+    taille,
+    couleur,
+    align: alignement,
+  }),
   el('bouton', {
     texte: z.string().max(80),
     action,
@@ -250,16 +262,46 @@ export const navigation = z.object({
     mode: z.enum(['logo-nom', 'logo', 'nom']),
     image: media,
     initiales: z.string().max(4),
+    /** Hauteur du logo par appareil (px). */
+    taille: parAppareil(z.number().int().min(20).max(80)).optional(),
+    /** Fond des initiales (sans image). */
+    fond: couleur.optional(),
   }),
   nom: z.string().max(120),
   liens: z.array(z.object({ id: z.string().max(40), label: z.string().max(40), action })).max(12),
-  cta: z.object({ visible: z.boolean(), texte: z.string().max(40), couleur, action }),
+  /** Position des liens dans la barre (ordinateur). */
+  align: z.enum(['gauche', 'centre', 'droite']).optional(),
+  cta: z.object({
+    visible: z.boolean(),
+    texte: z.string().max(40),
+    couleur,
+    action,
+    texteCouleur: couleur.optional(),
+  }),
   tel: z.object({ visible: z.boolean(), numero: z.string().max(30) }),
   fond: couleur,
+  /** Couleur des liens et du nom ; `auto` selon le fond. */
+  texte: couleur.optional(),
+  /** Marge haut et bas de la barre par appareil (px). */
+  hauteur: parAppareil(z.number().int().min(4).max(40)).optional(),
   fixe: z.boolean(),
   ombre: z.boolean(),
   transparente: z.boolean(),
-  mobile: z.object({ sens: z.enum(['droite', 'gauche']) }),
+  mobile: z.object({
+    sens: z.enum(['droite', 'gauche']),
+    /** Bouton menu (trois traits) à gauche ou à droite. */
+    burger: z.enum(['gauche', 'droite']).optional(),
+    traits: couleur.optional(),
+    /** Tablette : bouton devis et icône téléphone dans la barre. */
+    cta: z.boolean().optional(),
+    tel: z.boolean().optional(),
+    fond: couleur.optional(),
+    taille: z.number().int().min(14).max(32).optional(),
+    separateurs: z.boolean().optional(),
+    ctaMenu: z.boolean().optional(),
+    /** Barre « Appeler · Devis gratuit » fixée en bas de l'écran (mobile). */
+    barreAppel: z.boolean().optional(),
+  }),
 });
 export type Navigation = z.output<typeof navigation>;
 
@@ -267,6 +309,8 @@ export const theme = z.object({
   palette: z.object({ primaire: couleur, accent: couleur, clair: couleur, sombre: couleur }),
   polices: z.enum(['archivo', 'dmserif', 'barlow']),
   rayonBoutons: z.union([z.literal(2), z.literal(8), z.literal(999)]),
+  /** Largeur maximale du contenu (px) ; les fonds restent pleine largeur. */
+  largeurContenu: z.union([z.literal(960), z.literal(1120), z.literal(1280)]).optional(),
   ton: z.enum(['pro', 'chaleureux', 'direct']),
 });
 export type Theme = z.output<typeof theme>;

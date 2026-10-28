@@ -20,3 +20,5 @@ export * from './ia/routeur';
 export * from './ajout';
 export * from './modeles';
 export * from './structure';
+export * from './couleurs';
+export * from './navigation';

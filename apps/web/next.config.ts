@@ -25,6 +25,15 @@ const config: NextConfig = {
         has: [{ type: 'query', key: 'apercu' }],
         headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
       },
+      {
+        // Polices des sites artisans : aussi chargées par l'aperçu de l'éditeur (cadre isolé,
+        // origine opaque), d'où l'accès partagé ; fichiers publics et immuables.
+        source: '/polices-sites/:fichier*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
     ];
   },
 };

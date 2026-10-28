@@ -1,10 +1,14 @@
 import {
   LIBELLES_ELEMENT,
+  resoudreCouleur,
+  texteSur,
   type Appareil,
   type ChampFormulaire,
   type Couleur,
   type Element,
+  type Navigation,
   type PageSite,
+  type Theme,
 } from '@ph/core/sites';
 import { balise, texteRiche } from './actions';
 import { esc } from './html';
@@ -23,6 +27,9 @@ export interface ContexteRendu {
   blog?: { articles: readonly ArticleRendu[]; classement: ClassementRendu };
   /** Aperçu de l'éditeur : chaque zone, section, bloc et contenu se sélectionne au clic. */
   edition?: boolean;
+  /** Thème et navigation du site : fournis par `rendreDocument`. */
+  theme?: Theme;
+  navigation?: Navigation;
 }
 
 const JETONS: Record<string, string> = {
@@ -43,8 +50,18 @@ export const parAppareil = (nom: string, v: Record<Appareil, number>, unite = 'p
 export const masques = (m: Record<Appareil, boolean>) =>
   [m.desktop ? 'hd' : '', m.tablet ? 'ht' : '', m.mobile ? 'hm' : ''].filter(Boolean).join(' ');
 
-const alignement = (a: string) =>
-  a === 'center' ? 'text-align:center;' : a === 'right' ? 'text-align:right;' : '';
+const ALIGN = { left: '', center: 'text-align:center;', right: 'text-align:right;' } as const;
+const COTE = { left: '', center: 'ac', right: 'ad' } as const;
+const couleur = (c: Couleur) => (css(c) ? `--col:${css(c)};` : '');
+
+/** Couleurs d'un bouton : fond, texte, contour ; sur fond foncé, « principale » passe en accent. */
+export function couleursBouton(c: Couleur, fonce: boolean, theme?: Theme): string {
+  const jeton = fonce && c === 'primaire' ? 'accent' : c === 'auto' ? 'primaire' : c;
+  const fond = css(jeton) || 'var(--primaire)';
+  const reel = theme ? resoudreCouleur(jeton, theme.palette) : null;
+  const texte = texteSur(reel) === 'blanc' ? 'white' : 'var(--sombre)';
+  return `--bb:${fond};--bt:${texte};--bc:${fonce ? 'white' : fond};`;
+}
 
 /** Texte différent sur mobile : deux versions, une seule visible selon l'appareil. */
 function avecMobile(e: Element, html: string, rendreMobile: (t: string) => string): string {
@@ -52,77 +69,95 @@ function avecMobile(e: Element, html: string, rendreMobile: (t: string) => strin
   return `<span class="nm">${html}</span><span class="om">${rendreMobile(e.p.texteMobile)}</span>`;
 }
 
-export function rendreElement(e: Element, ctx: ContexteRendu): string {
-  const html = rendreBrut(e, ctx);
+export function rendreElement(e: Element, ctx: ContexteRendu, fonce = false): string {
+  const html = rendreBrut(e, ctx, fonce);
   if (!ctx.edition) return html;
   return marquerEdition(
-    html || `<div class="${masques(e.p.masque)} ed-vide">${LIBELLES_ELEMENT[e.type]}</div>`,
+    html || `<div class="${masques(e.p.masque)} el ed-vide">${LIBELLES_ELEMENT[e.type]}</div>`,
     e.id,
     'element',
   );
 }
 
-function rendreBrut(e: Element, ctx: ContexteRendu): string {
+const ratio = (r: string) => r.replace(/[^\d /.]/g, '') || '4 / 3';
+
+function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
   const base = `${masques(e.p.masque)} el${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
+  const riche = (t: string) => texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx.pages);
   switch (e.type) {
-    case 'titre': {
-      const style = `${mb}${parAppareil('f', e.p.taille)}${alignement(e.p.align)}${css(e.p.couleur) ? `color:${css(e.p.couleur)};` : ''}`;
-      const contenu = avecMobile(e, texteRiche(e.p.texte, e.p.liens, ctx.pages), (t) =>
-        texteRiche(t, e.p.liens, ctx.pages),
-      );
-      return `<${e.p.niveau}${id} class="${base} ts" style="${esc(style)}">${contenu}</${e.p.niveau}>`;
+    case 'titre':
+    case 'texte': {
+      const lien = `${e.p.lienCouleur ? `--lc:${css(e.p.lienCouleur) || 'inherit'};` : ''}`;
+      const style = `${mb}${parAppareil('f', e.p.taille)}${ALIGN[e.p.align]}${couleur(e.p.couleur)}${lien}`;
+      const cls = `${base} ts ${e.type === 'titre' ? 't' : `txt${e.p.align === 'center' ? ' ct' : ''}`}${e.p.lienSouligne === false ? ' ns' : ''}`;
+      const balise_ = e.type === 'titre' ? e.p.niveau : 'div';
+      return `<${balise_}${id} class="${cls}" style="${esc(style)}">${avecMobile(e, riche(e.p.texte), riche)}</${balise_}>`;
     }
     case 'surtitre':
-      return `<p${id} class="${base} ts sur" style="${esc(`${mb}${parAppareil('f', e.p.taille)}${alignement(e.p.align)}color:${css(e.p.couleur) || 'var(--accent)'};`)}">${avecMobile(e, esc(e.p.texte), esc)}</p>`;
-    case 'texte':
-      return `<div${id} class="${base} ts txt" style="${esc(`${mb}${parAppareil('f', e.p.taille)}${alignement(e.p.align)}${css(e.p.couleur) ? `color:${css(e.p.couleur)};` : ''}`)}">${avecMobile(e, texteRiche(e.p.texte, e.p.liens, ctx.pages), (t) => texteRiche(t, e.p.liens, ctx.pages))}</div>`;
+      return `<p${id} class="${base} ts sur${e.p.couleur === 'accent' ? ' ac' : ''}" style="${esc(`${mb}${parAppareil('f', e.p.taille)}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}">${avecMobile(e, esc(e.p.texte), esc)}</p>`;
     case 'bouton': {
-      const fond = css(e.p.couleur) || 'var(--primaire)';
-      const style =
-        e.p.variante === 'plein'
-          ? `background:${fond};border-color:${fond};color:white;`
-          : `border-color:${fond};color:${fond};background:transparent;`;
       const lien = balise(
         e.p.action,
         ctx.pages,
-        `btn${e.p.largeur === 'plein' ? ' plein' : ''}`,
+        `btn${e.p.variante === 'contour' ? ' contour' : ''}${e.p.largeur === 'plein' ? ' large' : ''}`,
         avecMobile(e, esc(e.p.texte), esc),
-        style,
+        couleursBouton(e.p.couleur, fonce, ctx.theme),
       );
-      return `<div${id} class="${base} bouton${e.p.enLigne ? ' enligne' : ''}" style="${esc(`${mb}${alignement(e.p.align)}`)}">${lien}</div>`;
+      const cls = `${base} bouton${e.p.enLigne && e.p.largeur !== 'plein' ? ' enligne' : ''}${e.p.largeur === 'plein' ? ' pl' : ''}`;
+      return `<div${id} class="${cls}" style="${esc(`${mb}${ALIGN[e.p.align]}`)}">${lien}</div>`;
     }
     case 'image': {
       const url = ctx.media(e.p.src);
+      const r = ratio(e.p.ratio);
+      const mobile = ['4 / 3', '4/3', '3 / 4', '3/4', '1 / 1', '1/1'].includes(e.p.ratio)
+        ? '16 / 9'
+        : r;
+      const voile =
+        css(e.p.voile) && e.p.voileOpacite
+          ? `--voile:${css(e.p.voile)};--vo:${e.p.voileOpacite / 100};`
+          : '';
+      const style = `${mb}--ar:${r};--arm:${mobile};--ra:${e.p.arrondi}px;--of:${e.p.ajuste};--op:${e.p.pos.replace(/[^a-z %]/g, '')};${voile}`;
       const img = url
-        ? `<img src="${esc(url)}" alt="${esc(e.p.legende)}" loading="lazy" decoding="async" style="${esc(`aspect-ratio:${e.p.ratio.replace(/[^\d /.]/g, '')};object-fit:${e.p.ajuste};object-position:${e.p.pos.replace(/[^a-z %]/g, '')};border-radius:${e.p.arrondi}px;`)}">`
-        : `<span class="vide" role="img" aria-label="${esc(e.p.legende)}" style="aspect-ratio:${esc(e.p.ratio.replace(/[^\d /.]/g, ''))}"></span>`;
-      return `<figure${id} class="${base} image" style="${esc(mb)}">${balise(e.p.action, ctx.pages, 'img', img)}</figure>`;
+        ? `<img src="${esc(url)}" alt="${esc(e.p.legende)}" loading="lazy" decoding="async">`
+        : `<span class="vide" role="img" aria-label="${esc(e.p.legende)}"></span>`;
+      return `<figure${id} class="${base} image" style="${esc(style)}">${balise(e.p.action, ctx.pages, 'img', img)}</figure>`;
     }
     case 'liste':
-      return `<ul${id} class="${base} liste" style="${esc(`${mb}${alignement(e.p.align)}`)}">${e.p.items.map((x) => `<li><span aria-hidden="true">${esc(e.p.icone)}</span> ${esc(x)}</li>`).join('')}</ul>`;
+      return `<ul${id} class="${base} liste ${COTE[e.p.align]}" style="${esc(`${mb}${couleur(e.p.couleur)}`)}">${e.p.items.map((x) => `<li><span class="puce" aria-hidden="true">${esc(e.p.icone)}</span><span>${esc(x)}</span></li>`).join('')}</ul>`;
     case 'avis':
-      return `<blockquote${id} class="${base} avis" style="${esc(mb)}"><p class="etoiles" role="img" aria-label="${e.p.note} étoiles sur 5">${'★'.repeat(e.p.note)}</p><p>${esc(e.p.texte)}</p><footer>${esc(e.p.nom)}</footer></blockquote>`;
+      return `<blockquote${id} class="${base} avis" style="${esc(`${mb}${ALIGN[e.p.align]}`)}"><span class="etoiles" role="img" aria-label="${e.p.note} étoiles sur 5">${'★'.repeat(e.p.note)}${'☆'.repeat(5 - e.p.note)}</span><p>${esc(e.p.texte)}</p><footer>${esc(e.p.nom)}</footer></blockquote>`;
     case 'chiffre':
-      return `<div${id} class="${base} chiffre" style="${esc(`${mb}${alignement(e.p.align)}`)}"><strong class="ts" style="${esc(parAppareil('f', e.p.taille))}">${esc(e.p.valeur)}</strong><span>${esc(e.p.label)}</span></div>`;
+      return `<div${id} class="${base} chiffre" style="${esc(`${mb}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}"><strong class="ts" style="${esc(parAppareil('f', e.p.taille))}">${esc(e.p.valeur)}</strong><span>${esc(e.p.label)}</span></div>`;
     case 'formulaire':
       return rendreFormulaire(e.p.bouton, ctx, base, mb);
-    case 'video':
-      return e.p.url &&
-        /^https:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{6,20}/.test(e.p.url)
-        ? `<div${id} class="${base} video" style="${esc(mb)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(e.p.url.match(/(?:v=|be\/)([\w-]{6,20})/)![1])}" title="${esc(e.p.legende)}" loading="lazy" allowfullscreen></iframe></div>`
+    case 'video': {
+      const v = e.p.url?.match(
+        /^https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,20})/,
+      );
+      if (v)
+        return `<div${id} class="${base} video" style="${esc(mb)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(v[1]!)}" title="${esc(e.p.legende || 'Vidéo')}" loading="lazy" allowfullscreen></iframe></div>`;
+      return ctx.edition
+        ? `<div${id} class="${base} video" style="${esc(mb)}"><span class="vide">▶ ${esc(e.p.legende || 'Collez le lien YouTube dans les réglages')}</span></div>`
         : '';
+    }
     case 'carte':
-      return `<p${id} class="${base} carte" style="${esc(mb)}">${esc(e.p.adresse || e.p.legende)}</p>`;
+      return `<p${id} class="${base} carte" style="${esc(mb)}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>${esc(e.p.adresse || e.p.legende)}</p>`;
     case 'espace':
       return `<div class="${base} espace" style="${esc(parAppareil('h', e.p.hauteur))}" aria-hidden="true"></div>`;
     case 'separateur':
-      return `<hr class="${base}${e.p.largeur === 'court' ? ' court' : ''}" style="${esc(mb)}">`;
+      return `<hr class="${base}${e.p.largeur === 'court' ? ' court' : ''} ${COTE[e.p.align]}" style="${esc(mb)}">`;
     case 'logo':
-      return `<p class="${base} logo-el" style="${esc(mb)}">${esc(e.p.texte)}</p>`;
-    case 'menu':
-      return '';
+      return `<p${id} class="${base} logo-el" style="${esc(mb)}">${esc(e.p.texte)}</p>`;
+    case 'menu': {
+      const liens = (ctx.navigation?.liens ?? [])
+        .map((l) => balise(l.action, ctx.pages, '', esc(l.label)))
+        .join('');
+      return liens
+        ? `<nav${id} class="${base} menu-el" aria-label="Menu" style="${esc(`${mb}justify-content:${{ left: 'flex-start', center: 'center', right: 'flex-end' }[e.p.align]};`)}">${liens}</nav>`
+        : '';
+    }
     case 'blog':
       return ctx.blog
         ? rendreCartesBlog(ctx.blog.articles, e.p, {
@@ -162,5 +197,5 @@ function rendreFormulaire(bouton: string, ctx: ContexteRendu, base: string, mb: 
     .map(champ)
     .join(
       '',
-    )}${ctx.turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(ctx.turnstileSiteKey)}" data-appearance="interaction-only"></div>` : ''}<p class="rgpd">Vos informations servent uniquement à vous recontacter au sujet de votre projet.</p><button type="submit" class="btn plein" style="background:var(--primaire);border-color:var(--primaire);color:white">${esc(bouton)}</button><p class="statut" role="status" aria-live="polite"></p></form>`;
+    )}${ctx.turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(ctx.turnstileSiteKey)}" data-appearance="interaction-only"></div>` : ''}<p class="rgpd">Vos informations servent uniquement à vous recontacter au sujet de votre projet.</p><button type="submit" class="btn">${esc(bouton)}</button><p class="statut" role="status" aria-live="polite"></p></form>`;
 }

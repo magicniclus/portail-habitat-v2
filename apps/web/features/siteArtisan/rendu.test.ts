@@ -160,6 +160,6 @@ describe('rendu des sites publiés', () => {
     );
     expect(h).toContain('<span class="om">Court</span>');
     expect(h).toContain('<span class="nm">');
-    expect(h).toMatch(/@media \(max-width:767px\)\{[^}]*\.ts\{font-size:var\(--fm\)\}/);
+    expect(h).toMatch(/@media \(max-width:767px\)\{:root\{[^}]*\}\.ts\{font-size:var\(--fm\)\}/);
   });
 });

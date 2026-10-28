@@ -254,3 +254,11 @@ export const nuancierEditeur = {
   damier: 'repeating-linear-gradient(45deg,#fff 0 4px,#e5e5e5 4px 8px)',
   arcEnCiel: 'conic-gradient(#f33,#fd3,#3d5,#3cf,#36f,#c3f,#f33)',
 } as const;
+
+/** Neutres du rendu des sites artisans (champs, carte, image absente). */
+export const neutresSites = {
+  imageVide: '#999999',
+  trameCarte: '#e4e8ec',
+  fondCarte: '#f3f5f7',
+  bordChamp: '#cfd5dc',
+} as const;
