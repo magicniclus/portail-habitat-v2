@@ -173,4 +173,25 @@ describe('structure de la page : zone › section › bloc › élément', () =>
     expect(insererDans(page(), null, 'texte', ids())).toBeNull();
     valide(apres.page);
   });
+
+  it('cas limites : nœud inconnu, reste des 12 unités, section dupliquée, zone vide', () => {
+    const n = ids();
+    expect(majNoeud(page(), 'inconnu', { gap: 1 })).toEqual(page());
+    expect(operationNoeud(page(), 'inconnu', 'supprimer', n)).toEqual({
+      page: page(),
+      selection: null,
+    });
+    expect(
+      changerNombreBlocs(page(), 'r1', 5, n).sections[0]!.rows[0]!.cols.map((c) => c.w),
+    ).toEqual([3, 3, 2, 2, 2]);
+    expect(changerNombreBlocs(page(), 'c1', 2, n)).toEqual(page());
+    expect(changerDisposition(page(), 'e1', [6, 6], n)).toEqual(page());
+    const d = operationNoeud(page(), 'r1', 'dupliquer', ids());
+    expect(d.page.sections[0]!.rows).toHaveLength(2);
+    expect(d.selection).toBe(d.page.sections[0]!.rows[1]!.id);
+    valide(d.page);
+    const vide = { ...page(), sections: [{ ...page().sections[0]!, rows: [] }] };
+    const r = insererDans(vide, 'z1', 'titre', ids())!;
+    expect(r.page.sections[0]!.rows[0]!.cols[0]!.els.map((e) => e.id)).toEqual([r.id]);
+  });
 });
