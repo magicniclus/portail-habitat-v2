@@ -17,6 +17,7 @@ import {
   lireSitePublie,
   PublicationRefusee,
   publierSite,
+  reglerPage,
   retablirVersion,
 } from '../src/serveur/sites';
 
@@ -158,6 +159,33 @@ describe('publication', () => {
     expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.navigation.nom).toBe(
       'Bertrand & Fils',
     );
+  });
+
+  it('tableau de bord : menu et mise en ligne d’une page réglés dans le brouillon, jamais l’accueil hors ligne', async () => {
+    const i = initial();
+    await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: i });
+    horloge += 60_000;
+    await reglerPage(s(), proprio, { pageId: 'contact', menu: false, statut: 'brouillon' });
+    const page = await db.doc(chemins.pageSite('a1', 'contact')).get();
+    expect(page.get('menu')).toBe(false);
+    expect(page.get('statut')).toBe('brouillon');
+    expect(page.get('sections')).toEqual(i.pages.contact!.sections);
+    expect((await db.doc(chemins.site('a1')).get()).get('brouillonModifieLe').toMillis()).toBe(
+      horloge,
+    );
+    expect(
+      (await erreur(reglerPage(s(), proprio, { pageId: 'accueil', statut: 'brouillon' }))).code,
+    ).toBe('PRECONDITION');
+    expect((await erreur(reglerPage(s(), proprio, { pageId: 'inconnue', menu: true }))).code).toBe(
+      'INTROUVABLE',
+    );
+    expect(
+      (
+        await erreur(
+          reglerPage(s(), { artisanId: 'a1', uid: 'c1' }, { pageId: 'contact', menu: true }),
+        )
+      ).code,
+    ).toBe('PERMISSION_REFUSEE');
   });
 
   it('adresse de page unique sur le site', async () => {

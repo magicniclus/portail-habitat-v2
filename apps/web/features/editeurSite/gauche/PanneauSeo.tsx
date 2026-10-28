@@ -111,6 +111,7 @@ export function PanneauSeo({
               <input
                 value={page.slug}
                 disabled={pageId === 'accueil'}
+                placeholder="/ (accueil)"
                 onChange={(e) => {
                   const slug = enSlug(e.target.value);
                   setErreurSlug(pris(slug));

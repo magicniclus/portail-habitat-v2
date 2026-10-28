@@ -26,6 +26,11 @@ export const entreeCreerSite = z.object({ sousDomaine });
 export const entreeSousDomaine = z.object({ sousDomaine });
 export const entreePageSite = z.object({ pageId: idPage, page: pageSite });
 export const entreeSupprimerPage = z.object({ pageId: idPage });
+export const entreeReglagePage = z.object({
+  pageId: idPage,
+  menu: z.boolean().optional(),
+  statut: z.enum(['brouillon', 'publiee']).optional(),
+});
 export const entreeNavigationSite = z.object({ navigation });
 export const entreeThemeSite = z.object({ theme });
 export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(1).max(30) });

@@ -11,7 +11,7 @@ import { OngletFormulaire } from '@/features/monSite/OngletFormulaire';
 import { OngletStats } from '@/features/monSite/OngletStats';
 import { routes } from '@/lib/routes';
 import { ongletBlog } from '@/server/blog';
-import { accesSite, DOMAINE_BASE, statsDuSite, tableauSite } from '@/server/sites';
+import { accesSite, DOMAINE_BASE, statsDuSite, tableauSite, visitesDuMois } from '@/server/sites';
 
 export const metadata: Metadata = { title: 'Mon site internet', robots: { index: false } };
 
@@ -41,33 +41,29 @@ export default async function PageMonSite({
   });
   const ongletCls = (actif: boolean) =>
     cn(
-      'flex min-h-11 items-center rounded-control px-4 font-semibold whitespace-nowrap no-underline',
-      actif ? 'bg-accent-100 text-accent-800' : 'text-neutre-800',
+      'flex min-h-11 items-center border-b-[3px] px-3.5 text-[15px] whitespace-nowrap no-underline',
+      actif
+        ? 'border-accent font-bold text-texte'
+        : 'border-transparent font-medium text-neutre-700 hover:text-texte',
     );
   return (
-    <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="grid gap-1.5">
-          <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Mon site internet</h1>
-          {t.url ? (
-            <p className="m-0 flex flex-wrap items-center gap-2 text-base text-neutre-800">
-              <span className="break-all">{t.url.replace('https://', '')}</span>
-              <StatusBadge statut={etat} />
-            </p>
-          ) : (
-            <p className="m-0 text-base text-neutre-800">
-              Un site à votre nom, créé depuis votre fiche, sans cookie et sans engagement.
-            </p>
-          )}
-        </div>
+    <main className="grid content-start pb-12">
+      <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)] py-3">
+        <h1 className="m-0 text-[17px] leading-tight font-bold">Mon site internet</h1>
+        {t.url ? (
+          <span className="flex min-w-0 items-center gap-2 text-sm text-neutre-800">
+            <span className="truncate">{t.url.replace('https://', '')}</span>
+            <StatusBadge statut={etat} />
+          </span>
+        ) : null}
         {t.site.existe ? (
-          <div className="flex flex-wrap items-start gap-3">
+          <span className="ml-auto flex flex-wrap items-center gap-2">
             {t.url && t.site.versionPubliee ? (
               <a
                 href={t.url}
                 target="_blank"
                 rel="noopener"
-                className={bouton({ variant: 'secondaire' })}
+                className={bouton({ variant: 'fantome' })}
               >
                 Voir le site
               </a>
@@ -75,22 +71,27 @@ export default async function PageMonSite({
             <Link href={routes.proSiteEditeur()} className={bouton({ variant: 'secondaire' })}>
               Ouvrir l’éditeur
             </Link>
-            <Link href={routes.proSiteCreationIa} className={bouton({ variant: 'secondaire' })}>
-              Créer avec l’IA
-            </Link>
             {t.modifieDepuisPublication ? (
               <BoutonPublier
-                libelle={t.site.versionPubliee ? 'Publier les modifications' : 'Publier le site'}
+                libelle={t.site.versionPubliee ? 'Publier les modifications' : 'Publier'}
               />
             ) : null}
-          </div>
+          </span>
         ) : null}
       </div>
       {!t.site.existe ? (
-        <CreationSite proposition={t.proposition} domaine={DOMAINE_BASE} />
+        <div className="px-[clamp(16px,3vw,32px)] pt-6">
+          <p className="m-0 mb-4 text-base text-neutre-800">
+            Un site à votre nom, créé depuis votre fiche, sans cookie et sans engagement.
+          </p>
+          <CreationSite proposition={t.proposition} domaine={DOMAINE_BASE} />
+        </div>
       ) : (
         <>
-          <nav aria-label="Rubriques du site" className="-mx-1 flex gap-2 overflow-x-auto px-1">
+          <nav
+            aria-label="Rubriques du site"
+            className="flex gap-1 overflow-x-auto border-b border-trait bg-blanc px-[clamp(16px,3vw,32px)]"
+          >
             {ONGLETS.map((o) => (
               <Link
                 key={o.cle}
@@ -102,29 +103,35 @@ export default async function PageMonSite({
               </Link>
             ))}
           </nav>
-          {onglet === 'pages' ? (
-            <ListePages pages={t.pages} {...(t.url ? { url: t.url } : {})} />
-          ) : null}
-          {onglet === 'blog' ? (
-            <OngletBlog
-              donnees={await ongletBlog(acces.artisanId)}
-              vue={VUES_BLOG.some(([v]) => v === q.vue) ? (q.vue as VueBlog) : 'articles'}
-            />
-          ) : null}
-          {onglet === 'domaine' ? <OngletDomaine site={t.site} domaine={DOMAINE_BASE} /> : null}
-          {onglet === 'stats' ? (
-            <OngletStats
-              stats={await statsDuSite(acces.artisanId, t.site.offre === 'site_pro')}
-              pages={t.pages}
-              sitePro={t.site.offre === 'site_pro'}
-            />
-          ) : null}
-          {onglet === 'formulaire' ? (
-            <OngletFormulaire
-              sitePro={t.site.offre === 'site_pro'}
-              {...(t.champs ? { champs: t.champs } : {})}
-            />
-          ) : null}
+          <div className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)]">
+            {onglet === 'pages' ? (
+              <ListePages
+                pages={t.pages}
+                visites={await visitesDuMois(acces.artisanId)}
+                {...(t.url ? { url: t.url } : {})}
+              />
+            ) : null}
+            {onglet === 'blog' ? (
+              <OngletBlog
+                donnees={await ongletBlog(acces.artisanId)}
+                vue={VUES_BLOG.some(([v]) => v === q.vue) ? (q.vue as VueBlog) : 'articles'}
+              />
+            ) : null}
+            {onglet === 'domaine' ? <OngletDomaine site={t.site} domaine={DOMAINE_BASE} /> : null}
+            {onglet === 'stats' ? (
+              <OngletStats
+                stats={await statsDuSite(acces.artisanId, t.site.offre === 'site_pro')}
+                pages={t.pages}
+                sitePro={t.site.offre === 'site_pro'}
+              />
+            ) : null}
+            {onglet === 'formulaire' ? (
+              <OngletFormulaire
+                sitePro={t.site.offre === 'site_pro'}
+                {...(t.champs ? { champs: t.champs } : {})}
+              />
+            ) : null}
+          </div>
         </>
       )}
     </main>

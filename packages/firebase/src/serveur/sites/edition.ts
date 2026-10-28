@@ -147,6 +147,31 @@ export async function enregistrerPage(
   });
 }
 
+/** Tableau de bord : page dans le menu, en ligne ou en brouillon (effet à la publication). */
+export async function reglerPage(
+  s: ServicesSites,
+  ctx: ContexteSite,
+  e: { pageId: string; menu?: boolean; statut?: PageSite['statut'] },
+): Promise<void> {
+  if (e.pageId === 'accueil' && e.statut === 'brouillon')
+    throw new ErreurMetier('PRECONDITION', 'L’accueil reste toujours en ligne.');
+  await s.db.runTransaction(async (t) => {
+    await exigerSite(s, t, ctx);
+    const ref = s.db.doc(chemins.pageSite(ctx.artisanId, e.pageId));
+    if (!(await t.get(ref)).exists) throw new ErreurMetier('INTROUVABLE');
+    const maintenant = Timestamp.fromMillis(s.horloge());
+    t.update(ref, {
+      ...(e.menu === undefined ? {} : { menu: e.menu }),
+      ...(e.statut ? { statut: e.statut } : {}),
+      updatedAt: maintenant,
+    });
+    t.update(s.db.doc(chemins.site(ctx.artisanId)), {
+      brouillonModifieLe: maintenant,
+      updatedAt: maintenant,
+    });
+  });
+}
+
 /** Suppression d'une page (jamais l'accueil). */
 export async function supprimerPage(
   s: ServicesSites,

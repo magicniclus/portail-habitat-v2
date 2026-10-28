@@ -143,7 +143,10 @@ export function PanneauProprietes({
           ))}
         </div>
       </div>
-      <div role="tabpanel" className="grid gap-[22px] px-4 pt-4 pb-10">
+      <div
+        role="tabpanel"
+        className="grid gap-[22px] px-4 pt-4 pb-10 [grid-template-columns:minmax(0,1fr)]"
+      >
         {info.niveau === 'nav' ? navigation(actif) : null}
         {f?.niveau === 'zone' ? (
           <ReglagesZone

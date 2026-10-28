@@ -29,7 +29,7 @@ sel=d.querySelector('[data-ed="'+m.id.replace(/["\\\\]/g,'')+'"]');if(!sel)retur
 var c=C[m.niveau]||C.element,f='font:700 11px/16px system-ui,sans-serif;color:${nuancierEditeur.texteSelection};background:'+c+';';
 calque=d.createElement('div');calque.setAttribute('data-ed-calque','');
 var badge=d.createElement('span');badge.textContent=m.badge||'';badge.style.cssText='position:absolute;left:0;padding:3px 8px;white-space:nowrap;'+f;calque.appendChild(badge);
-var outils=d.createElement('span');outils.style.cssText='position:absolute;right:0;display:flex;pointer-events:auto;background:'+c;
+var outils=d.createElement('span');outils.style.cssText='position:absolute;right:0;display:flex;pointer-events:auto;'+f;
 (m.actions||[]).forEach(function(a){var b=d.createElement('button');b.type='button';b.title=a.label;b.setAttribute('aria-label',a.label);b.setAttribute('data-ed-op',a.op);b.innerHTML=svg(I[a.op]||I.bloc);b.style.cssText='display:flex;align-items:center;justify-content:center;width:26px;height:22px;border:0;background:none;color:inherit;cursor:pointer;padding:0';outils.appendChild(b);});
 calque.appendChild(outils);
 if(m.ajout){var p=d.createElement('button');p.type='button';p.textContent=m.ajout.label;p.setAttribute('data-ed-op',m.ajout.op);p.style.cssText='position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);pointer-events:auto;border:0;border-radius:999px;padding:3px 10px;cursor:pointer;'+f;calque.appendChild(p);}

@@ -14,6 +14,7 @@ export {
   enregistrerNavigation,
   enregistrerPage,
   enregistrerTheme,
+  reglerPage,
   supprimerPage,
   type ContexteSite,
   type ServicesSites,

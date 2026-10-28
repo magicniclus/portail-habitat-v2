@@ -187,6 +187,12 @@ export async function statsDuSite(artisanId: string, sitePro: boolean) {
 }
 export type StatsDuSite = Awaited<ReturnType<typeof statsDuSite>>;
 
+/** Onglet Pages : visites de chaque page ce mois-ci (un seul compteur lu, COUTS.md). */
+export async function visitesDuMois(artisanId: string): Promise<Record<string, number>> {
+  const [c] = await lireStatsSite(db(), artisanId, 'mois', [periodesParis(Date.now()).mois]);
+  return c?.pages ?? {};
+}
+
 const INTENTIONS = (
   intentions as {
     intentions: { id: string; libelle: string; metier: string; popularite: number }[];

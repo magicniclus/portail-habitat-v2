@@ -158,7 +158,7 @@ export function EditeurSite(props: ProprietesEditeur) {
         className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)]"
         style={{
           ['--colonnes' as string]: outils
-            ? `auto ${panneau ? (panneau === 'seo' ? '340px ' : '300px ') : ''}minmax(0,1fr) 300px`
+            ? `auto ${panneau ? (panneau === 'seo' ? '340px ' : '300px ') : ''}minmax(0,1fr) 320px`
             : 'minmax(0,1fr)',
         }}
       >
@@ -204,7 +204,7 @@ export function EditeurSite(props: ProprietesEditeur) {
         {outils ? (
           <aside
             aria-label="Réglages de la sélection"
-            className="min-h-0 overflow-y-auto border-trait bg-blanc min-[900px]:border-l"
+            className="min-h-0 min-w-0 overflow-x-hidden overflow-y-auto border-trait bg-blanc min-[900px]:border-l"
           >
             <PanneauProprietes
               page={page}

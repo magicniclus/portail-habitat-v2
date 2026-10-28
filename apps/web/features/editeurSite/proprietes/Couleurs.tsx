@@ -48,18 +48,19 @@ export function Couleurs({
 }) {
   const id = useId();
   // Saisie en cours, oubliée dès que la valeur change ailleurs (pastille, nuancier, Ctrl Z).
-  const [brouillon, setSaisie] = useState({ pour: valeur, texte: valeur });
-  const saisie = brouillon.pour === valeur ? brouillon.texte : valeur;
+  const affiche = (v: Couleur) => (jetons.includes(v) ? '' : v);
+  const [brouillon, setSaisie] = useState({ pour: valeur, texte: affiche(valeur) });
+  const saisie = brouillon.pour === valeur ? brouillon.texte : affiche(valeur);
   const valider = (v: string) => {
     const r = schemaCouleur.safeParse(v.trim().toLowerCase());
     if (r.success) onChange(r.data);
-    else setSaisie({ pour: valeur, texte: valeur });
+    else setSaisie({ pour: valeur, texte: affiche(valeur) });
   };
   const libreActive = !jetons.includes(valeur);
   return (
     <div className="grid gap-1.5">
       <Libelle texte={libelle} droite={NOMS[valeur] ?? valeur} />
-      <div role="radiogroup" aria-label={libelle} className="flex flex-wrap items-center gap-1.5">
+      <div role="radiogroup" aria-label={libelle} className="flex flex-wrap items-center gap-1">
         {jetons.map((j) => (
           <button
             key={j}

@@ -10,7 +10,7 @@ import { useId, type ReactNode } from 'react';
 export function Groupe({ titre, children }: { titre: string; children: ReactNode }) {
   const id = useId();
   return (
-    <section aria-labelledby={id} className="grid gap-3">
+    <section aria-labelledby={id} className="grid min-w-0 gap-3">
       <h3 id={id} className="m-0 text-[11px] font-bold tracking-[0.08em] text-neutre-600 uppercase">
         {titre}
       </h3>
@@ -68,7 +68,7 @@ export function Segments<T extends string | number>({
             aria-checked={v === valeur}
             onClick={() => onChange(v)}
             className={cn(
-              'min-h-11 flex-1 border-r border-trait px-2 text-[13px] font-semibold whitespace-nowrap last:border-r-0',
+              'min-h-11 min-w-0 flex-1 border-r border-trait px-1.5 text-[13px] leading-tight font-semibold last:border-r-0',
               v === valeur
                 ? 'bg-accent text-blanc'
                 : 'bg-blanc text-neutre-800 hover:bg-neutre-100',
