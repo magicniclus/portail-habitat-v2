@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
 import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
 import { SCRIPT_SITE } from '@/features/siteArtisan/document';
+import { SCRIPT_EDITION } from '@/features/siteArtisan/edition';
 import { hoteSite } from '@/lib/hotesSites';
 import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from '@/lib/securite';
 import { maintenanceActive } from '@/server/flags';
@@ -15,6 +16,9 @@ let empreinte: Promise<string> | undefined;
 const empreinteBandeau = () => (empreinte ??= sha256(SCRIPT_BANDEAU_COOKIES));
 let empreinteS: Promise<string> | undefined;
 const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
+let empreinteE: Promise<string> | undefined;
+/** Script de l'aperçu de l'éditeur de site (cadre `srcdoc`, qui hérite de la CSP de la page). */
+const empreinteEdition = () => (empreinteE ??= sha256(SCRIPT_EDITION));
 
 /** Domaine de la plateforme (les autres hôtes sont des sites artisans). */
 const plateforme = () => {
@@ -59,7 +63,17 @@ export async function proxy(requete: NextRequest) {
   const csp = politiqueContenu({
     production,
     emulateurs: emulateurs(),
-    ...(nonce ? { nonce, empreintes: [await empreinteBandeau()] } : {}),
+    ...(nonce
+      ? {
+          nonce,
+          empreintes: [
+            await empreinteBandeau(),
+            ...(requete.nextUrl.pathname.startsWith('/pro/site/editeur')
+              ? [await empreinteEdition()]
+              : []),
+          ],
+        }
+      : {}),
   });
   const entetes = enTetesSecurite({ production, csp });
   let reponse: NextResponse;

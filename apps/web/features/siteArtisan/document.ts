@@ -2,6 +2,7 @@ import type { Navigation, PageSite, Section, Theme } from '@ph/core/sites';
 import { balise } from './actions';
 import { css, masques, parAppareil, rendreElement, type ContexteRendu } from './elements';
 import { STYLE_BLOG } from './blog';
+import { marquerEdition, SCRIPT_EDITION, STYLE_EDITION } from './edition';
 import { esc } from './html';
 
 const POLICES: Record<Theme['polices'], { titre: string; texte: string; poids: number }> = {
@@ -80,13 +81,16 @@ function rendreSection(s: Section, ctx: ContexteRendu): string {
       const cols = r.cols
         .map((c) => {
           const cs = `--w:${c.w};${c.p.pad ? `padding:${c.p.pad}px;` : ''}${c.p.arrondi ? `border-radius:${c.p.arrondi}px;` : ''}${css(c.p.fond) ? `background:${css(c.p.fond)};` : ''}`;
-          return `<div class="c ${masques(c.p.masque)}"${c.p.htmlId ? ` id="${esc(c.p.htmlId)}"` : ''} style="${esc(cs)}">${c.els.map((e) => rendreElement(e, ctx)).join('')}</div>`;
+          const bloc = `<div class="c ${masques(c.p.masque)}"${c.p.htmlId ? ` id="${esc(c.p.htmlId)}"` : ''} style="${esc(cs)}">${c.els.map((e) => rendreElement(e, ctx)).join('')}</div>`;
+          return ctx.edition ? marquerEdition(bloc, c.id, 'bloc') : bloc;
         })
         .join('');
-      return `<div class="${cr}"${r.p.htmlId ? ` id="${esc(r.p.htmlId)}"` : ''} style="${esc(`--gap:${r.p.gap}px;--va:${r.p.valign}`)}">${cols}</div>`;
+      const ligne = `<div class="${cr}"${r.p.htmlId ? ` id="${esc(r.p.htmlId)}"` : ''} style="${esc(`--gap:${r.p.gap}px;--va:${r.p.valign}`)}">${cols}</div>`;
+      return ctx.edition ? marquerEdition(ligne, r.id, 'section') : ligne;
     })
     .join('');
-  return `<section class="${classes}"${s.p.ancre ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}"><div class="${s.p.largeur === 'plein' ? 'plein' : 'boite'}">${lignes}</div></section>`;
+  const zone = `<section class="${classes}"${s.p.ancre ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}"><div class="${s.p.largeur === 'plein' ? 'plein' : 'boite'}">${lignes}</div></section>`;
+  return ctx.edition ? marquerEdition(zone, s.id, 'zone') : zone;
 }
 
 function rendreNavigation(n: Navigation, ctx: ContexteRendu): string {
@@ -104,7 +108,8 @@ function rendreNavigation(n: Navigation, ctx: ContexteRendu): string {
     n.tel.visible && n.tel.numero
       ? `<a href="tel:${esc(n.tel.numero.replace(/[^\d+]/g, ''))}">${esc(n.tel.numero)}</a>`
       : '';
-  return `<header class="nav${n.ombre ? ' ombre' : ''}" style="${esc(css(n.fond) ? `--navfond:${css(n.fond)}` : '')}"><div class="boite"><a class="marque" href="/">${esc(n.nom)}</a><button type="button" class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu" data-burger>☰</button><nav id="menu" class="menu" aria-label="Menu principal" style="${n.mobile.sens === 'gauche' ? '--sens:-100%' : ''}"><button type="button" class="fermer" aria-label="Fermer le menu" data-fermer>×</button><div class="liens">${liens}${tel}${cta}</div></nav></div></header>`;
+  const barre = `<header class="nav${n.ombre ? ' ombre' : ''}" style="${esc(css(n.fond) ? `--navfond:${css(n.fond)}` : '')}"><div class="boite"><a class="marque" href="/">${esc(n.nom)}</a><button type="button" class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu" data-burger>☰</button><nav id="menu" class="menu" aria-label="Menu principal" style="${n.mobile.sens === 'gauche' ? '--sens:-100%' : ''}"><button type="button" class="fermer" aria-label="Fermer le menu" data-fermer>×</button><div class="liens">${liens}${tel}${cta}</div></nav></div></header>`;
+  return ctx.edition ? marquerEdition(barre, 'nav', 'nav') : barre;
 }
 
 /**
@@ -157,5 +162,5 @@ export function rendreDocument(d: DocumentSite, ctx: ContexteRendu): string {
       ? `<p>Site créé avec <a href="https://portailtravaux.fr/pro/site-internet-artisan" rel="noopener">Portail Travaux</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Travaux</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${SCRIPT_SITE}</script></body></html>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title><meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${d.page.sansNavigation ? '' : rendreNavigation(d.navigation, ctx)}<main>${sections}</main><footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${ctx.edition ? SCRIPT_EDITION : SCRIPT_SITE}</script></body></html>`;
 }

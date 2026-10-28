@@ -1,7 +1,8 @@
 import { FORMULAIRE_GRATUIT, siteParDefaut } from '@ph/core/sites';
 import { describe, expect, it } from 'vitest';
 import { lienAction, texteRiche } from './actions';
-import { rendreDocument } from './document';
+import { rendreDocument, SCRIPT_SITE } from './document';
+import { SCRIPT_EDITION } from './edition';
 
 const PALETTE = {
   primaire: 'primaire',
@@ -24,7 +25,7 @@ const ctx = {
   media: (src: string) => (src === 'lib:r1/0' ? 'https://storage.googleapis.com/x.webp' : null),
   champs: FORMULAIRE_GRATUIT,
 };
-const doc = (offre: 'gratuit' | 'site_pro' = 'gratuit') =>
+const doc = (offre: 'gratuit' | 'site_pro' = 'gratuit', edition = false) =>
   rendreDocument(
     {
       hote: 'bertrand.portailtravaux.fr',
@@ -35,8 +36,33 @@ const doc = (offre: 'gratuit' | 'site_pro' = 'gratuit') =>
       pages: s.pages,
       nomEntreprise: 'Bertrand',
     },
-    ctx,
+    { ...ctx, edition },
   );
+
+describe('aperçu de l’éditeur (maquette Editeur de Site)', () => {
+  it('chaque zone, section, bloc, contenu et la navigation se sélectionnent au clic', () => {
+    const h = doc('gratuit', true);
+    const accueil = s.pages.accueil!;
+    const z = accueil.sections[0]!;
+    const r = z.rows[0]!;
+    const c = r.cols[0]!;
+    const e = c.els[0]!;
+    expect(h).toContain(`<section data-ed="${z.id}" data-ed-niveau="zone"`);
+    expect(h).toContain(`<div data-ed="${r.id}" data-ed-niveau="section"`);
+    expect(h).toContain(`<div data-ed="${c.id}" data-ed-niveau="bloc"`);
+    expect(h).toContain(`data-ed="${e.id}" data-ed-niveau="element"`);
+    expect(h).toContain('<header data-ed="nav" data-ed-niveau="nav"');
+    // Script de l'éditeur à la place de celui du site : aucune mesure d'audience, aucun envoi.
+    expect(h).toContain(SCRIPT_EDITION);
+    expect(h).not.toContain(SCRIPT_SITE);
+  });
+
+  it('jamais sur un site publié', () => {
+    const h = doc();
+    expect(h).not.toContain('data-ed');
+    expect(h).not.toContain(SCRIPT_EDITION);
+  });
+});
 
 describe('rendu des sites publiés', () => {
   it('HTML complet, canonique, menu mobile et formulaire ; textes de l’artisan échappés', () => {

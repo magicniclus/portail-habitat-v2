@@ -1,7 +1,15 @@
-import type { Appareil, ChampFormulaire, Couleur, Element, PageSite } from '@ph/core/sites';
+import {
+  LIBELLES_ELEMENT,
+  type Appareil,
+  type ChampFormulaire,
+  type Couleur,
+  type Element,
+  type PageSite,
+} from '@ph/core/sites';
 import { balise, texteRiche } from './actions';
 import { esc } from './html';
 import { rendreCartesBlog, type ArticleRendu, type ClassementRendu } from './blog';
+import { marquerEdition } from './edition';
 
 export interface ContexteRendu {
   pages: Record<string, Pick<PageSite, 'slug'>>;
@@ -13,6 +21,8 @@ export interface ContexteRendu {
   surligner?: ReadonlySet<string>;
   /** Articles publiés du site, pour l'élément « Articles du blog » (BLOG §6). */
   blog?: { articles: readonly ArticleRendu[]; classement: ClassementRendu };
+  /** Aperçu de l'éditeur : chaque zone, section, bloc et contenu se sélectionne au clic. */
+  edition?: boolean;
 }
 
 const JETONS: Record<string, string> = {
@@ -43,6 +53,16 @@ function avecMobile(e: Element, html: string, rendreMobile: (t: string) => strin
 }
 
 export function rendreElement(e: Element, ctx: ContexteRendu): string {
+  const html = rendreBrut(e, ctx);
+  if (!ctx.edition) return html;
+  return marquerEdition(
+    html || `<div class="${masques(e.p.masque)} ed-vide">${LIBELLES_ELEMENT[e.type]}</div>`,
+    e.id,
+    'element',
+  );
+}
+
+function rendreBrut(e: Element, ctx: ContexteRendu): string {
   const base = `${masques(e.p.masque)} el${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
