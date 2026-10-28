@@ -28,11 +28,9 @@ test.describe('Statistiques', () => {
     const offre = page.getByRole('dialog', { name: 'Passer à Fiche Pro' });
     await expect(offre).toContainText('29,00 € HT');
     await expect(offre).toContainText('34,80 €');
-    // Paiement direct (choix du 27/10/2026) : CGV à accepter dans la même fenêtre, puis Stripe.
-    const payer = offre.getByRole('button', { name: 'Continuer vers le paiement' });
-    await expect(payer).toBeDisabled();
-    await offre.getByRole('checkbox', { name: /conditions générales de vente/ }).check();
-    await expect(payer).toBeEnabled();
+    // Paiement direct (choix du 27/10/2026) : aucune case ici, CGV et carte sur la page Stripe.
+    await expect(offre.getByRole('checkbox')).toHaveCount(0);
+    await expect(offre.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
     await expect(page.locator('input[autocomplete^="cc-"]')).toHaveCount(0);
   });
 });

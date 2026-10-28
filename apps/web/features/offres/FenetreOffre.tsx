@@ -3,18 +3,16 @@
 import { recapPaiement } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
 import { CONTENU_OFFRES, NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
-import { Banner, bouton, Button, Checkbox, Modal } from '@ph/ui';
-import Link from 'next/link';
+import { Banner, bouton, Button, Modal } from '@ph/ui';
 import { useState, type ReactNode } from 'react';
 import { usePaiement } from '@/features/abonnement/usePaiement';
-import { routes } from '@/lib/routes';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
 /**
  * Fenêtre d'offre (PAIEMENTS §4, PAY-10, maquette Fenetre Offre) : tout clic sur une fonction
- * payante l'ouvre. Raison du blocage, avantages, prix HT, TVA et TTC sans engagement, CGV à
- * accepter, puis « Continuer vers le paiement » ouvre directement Stripe (choix du propriétaire,
+ * payante l'ouvre. Raison du blocage, avantages, prix HT, TVA et TTC sans engagement, puis
+ * « Continuer vers le paiement » ouvre directement Stripe, où les CGV s'acceptent (choix du propriétaire,
  * 27/10/2026). Rien ne s'active sans paiement : les droits viennent du webhook.
  */
 export function FenetreOffre({
@@ -31,7 +29,6 @@ export function FenetreOffre({
   className?: string;
 }) {
   const [ouverte, setOuverte] = useState(false);
-  const [cgv, setCgv] = useState(false);
   const { payer, enCours, erreur } = usePaiement(formule);
   const c = CONTENU_OFFRES[formule];
   const r = recapPaiement(formule);
@@ -52,7 +49,7 @@ export function FenetreOffre({
           <Button variant="fantome" onClick={() => setOuverte(false)}>
             Plus tard
           </Button>
-          <Button onClick={payer} disabled={!cgv || enCours}>
+          <Button onClick={payer} disabled={enCours}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>
@@ -86,15 +83,8 @@ export function FenetreOffre({
         </dl>
         <p className="m-0 text-sm text-neutre-700">
           Sans engagement, résiliable à tout moment.{c.note ? ` ${c.note}` : ''} Paiement sécurisé
-          par Stripe : aucune carte n’est saisie sur Portail Travaux.
+          par Stripe : carte et CGV se valident sur la page Stripe.
         </p>
-        <Checkbox checked={cgv} onChange={(e) => setCgv(e.target.checked)}>
-          J’accepte les{' '}
-          <Link href={routes.legal('pro', 'cgv')} target="_blank">
-            conditions générales de vente
-          </Link>
-          .
-        </Checkbox>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       </div>
     </Modal>

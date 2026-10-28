@@ -211,7 +211,7 @@ test.describe('Site internet artisan', () => {
     await connecter(page, COMPTES.proprio, '/pro/site?onglet=domaine');
     await page.getByRole('button', { name: 'Utiliser mon domaine' }).click();
     await expect(page.getByRole('dialog')).toContainText('Site Pro');
-    await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
 
     // Site Pro (droits écrits par le webhook en production) : connexion d'un domaine existant.
     await offre('site_pro');
@@ -311,7 +311,7 @@ test.describe('Site internet artisan', () => {
       const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
       await expect(apercu.getByRole('heading', { name: 'Accueil IA e2e' })).toBeVisible();
       await page.getByRole('button', { name: 'Activer Site Pro' }).click();
-      await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeDisabled();
+      await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
       await page.getByRole('button', { name: 'Plus tard' }).click();
       // Fermer l'aperçu : le brouillon n'a pas changé, la publication redevient possible.
       await page.getByRole('button', { name: 'Fermer l’aperçu' }).click();

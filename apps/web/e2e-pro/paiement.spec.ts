@@ -19,8 +19,7 @@ test.describe('Paiement', () => {
     const fenetre = page.getByRole('dialog', { name: 'Passer à Tout inclus' });
     await expect(fenetre.getByTestId('total-ttc')).toHaveText(/58,80\s€/);
     const payer = fenetre.getByRole('button', { name: 'Continuer vers le paiement' });
-    await expect(payer).toBeDisabled();
-    await fenetre.getByRole('checkbox', { name: /J’accepte les/ }).check();
+    await expect(fenetre.getByRole('checkbox')).toHaveCount(0);
     await expect(payer).toBeEnabled();
     await page.evaluate(() => document.fonts.ready);
     expect(await defileHorizontalement(page)).toBe(false);

@@ -482,6 +482,33 @@ describe('Checkout et portail client', () => {
       subscription_data: { metadata: { artisanId: 'a1', produit: 'tout_inclus' } },
       allow_promotion_codes: true,
       cancel_url: 'https://ph.test/pro/abonnement',
+      // CGV acceptées sur la page Stripe : aucune case dans notre fenêtre.
+      consent_collection: { terms_of_service: 'required' },
+      custom_text: {
+        terms_of_service_acceptance: {
+          message: 'J’accepte les [conditions générales de vente](https://ph.test/legal/pro/cgv).',
+        },
+      },
+    });
+  });
+
+  it('URL des conditions absente chez Stripe : mention des CGV sous le bouton de paiement', async () => {
+    const s = services();
+    const creer = s.stripe.checkout.sessions.create;
+    s.stripe.checkout.sessions.create = async (p: Record<string, unknown>) => {
+      if (p.consent_collection)
+        throw new Error('You cannot collect consent to your terms of service without a URL.');
+      return creer(p);
+    };
+    const e = { artisanId: 'a1', email: 'p@test.local', produit: 'tout_inclus' as const };
+    expect(await changerFormule(s, e)).toMatchObject({ mode: 'checkout' });
+    const session = appels.find((a) => a.type === 'session')!.p;
+    expect(session.consent_collection).toBeUndefined();
+    expect(session.custom_text).toEqual({
+      submit: {
+        message:
+          'En payant, vous acceptez nos [conditions générales de vente](https://ph.test/legal/pro/cgv).',
+      },
     });
   });
 

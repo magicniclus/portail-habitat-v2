@@ -56,6 +56,31 @@ async function prixStripe(s: ServicesCheckout, cle: string): Promise<string> {
   return prix.id;
 }
 
+/**
+ * CGV acceptées sur la page Stripe (choix du propriétaire, 27/10/2026) : case obligatoire avec
+ * lien vers nos CGV. Stripe l'exige seulement si l'URL des conditions est renseignée dans les
+ * informations publiques du compte ; sinon, on retombe sur une mention sous le bouton de paiement.
+ */
+async function creerSession(
+  s: ServicesCheckout,
+  p: Record<string, unknown>,
+): Promise<{ id: string; url: string | null }> {
+  const cgv = `[conditions générales de vente](${s.urlSite}/legal/pro/cgv)`;
+  try {
+    return await s.stripe.checkout.sessions.create({
+      ...p,
+      consent_collection: { terms_of_service: 'required' },
+      custom_text: { terms_of_service_acceptance: { message: `J’accepte les ${cgv}.` } },
+    });
+  } catch (e) {
+    if (!/terms of service/i.test(e instanceof Error ? e.message : '')) throw e;
+    return s.stripe.checkout.sessions.create({
+      ...p,
+      custom_text: { submit: { message: `En payant, vous acceptez nos ${cgv}.` } },
+    });
+  }
+}
+
 export type ChangementFormule =
   { mode: 'checkout'; url: string } | { mode: 'montee' | 'descente'; formule: ProduitAbonnement };
 
@@ -159,7 +184,7 @@ export async function changerFormule(
     produit: p.produit,
     ...(code ? { codePromo: code.code } : {}),
   };
-  const session = await s.stripe.checkout.sessions.create({
+  const session = await creerSession(s, {
     mode: 'subscription',
     customer,
     client_reference_id: p.artisanId,
@@ -268,7 +293,7 @@ export async function creerCheckoutPaiement(
     retour = '/pro/appels-d-offres';
   }
   const customer = await clientStripe(s, p.artisanId, p.email, nom);
-  const session = await s.stripe.checkout.sessions.create({
+  const session = await creerSession(s, {
     mode: 'payment',
     customer,
     client_reference_id: p.artisanId,

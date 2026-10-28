@@ -37,7 +37,7 @@ Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, 
 - Conversion et séquences d'emails : `docs/CONVERSION.md` · Comportement des visiteurs : `docs/COMPORTEMENT.md` · Assistant IA : `docs/IA_ADMIN.md`
 - **Site internet artisan** : `docs/SITE_INTERNET.md` · **IA du site** (création, composants, textes, monétisation Site Pro) : `docs/IA_SITE.md` — l'IA ne renvoie que des opérations validées, jamais de HTML, et ne publie jamais
 - **Blog artisan** : `docs/BLOG.md` (un blog par artisan, quotas IA 5/15, mode autonome en un clic, pilote automatique, mentions légales lues depuis les paramètres de devis)
-- **Fonction payante cliquée** : toujours la fenêtre d'offre (PAIEMENTS §4), CGV puis Stripe Checkout directement ; jamais d'activation sans paiement
+- **Fonction payante cliquée** : toujours la fenêtre d'offre (PAIEMENTS §4), puis Stripe Checkout directement (CGV acceptées chez Stripe) ; jamais d'activation sans paiement
 - **Coûts** : `docs/COUTS.md` (règles d'économie à respecter dans tout le code)
 - Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `lib/`)
 - Avancement et décisions : `docs/AVANCEMENT.md` (à mettre à jour à la fin de chaque lot)

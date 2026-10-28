@@ -3,8 +3,7 @@
 import { recapPaiement } from '@ph/core/facturation';
 import { formatDate, formatEuros } from '@ph/core/format';
 import { NOMS_FORMULE, type Formule, type FormulePayante } from '@ph/core/paiements';
-import { Banner, Button, Checkbox, Modal } from '@ph/ui';
-import Link from 'next/link';
+import { Banner, Button, Modal } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { routes } from '@/lib/routes';
@@ -14,7 +13,7 @@ const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
 /**
  * Fenêtre de paiement ouverte par `?offre=` (PAIEMENTS §4, PAY-02) : récapitulatif HT, TVA, TTC,
- * CGV à accepter. Aucune carte saisie ici (règle 7) : Stripe Checkout pour un premier abonnement ;
+ * CGV acceptées sur la page Stripe. Aucune carte saisie ici (règle 7) : Stripe Checkout pour un premier abonnement ;
  * sinon Stripe change la formule (montée au prorata, descente à l'échéance) et la page attend le
  * webhook avant d'afficher « activé ».
  */
@@ -31,7 +30,6 @@ export function FenetrePaiement({
 }) {
   const router = useRouter();
   const [ouverte, setOuverte] = useState(true);
-  const [cgv, setCgv] = useState(false);
   const { payer, enCours, erreur } = usePaiement(formule, code?.code);
   const r = recapPaiement(formule);
   const montee = r.montantHt > prixActuelHt;
@@ -55,7 +53,7 @@ export function FenetrePaiement({
           <Button variant="fantome" onClick={() => fermer(false)}>
             Annuler
           </Button>
-          <Button onClick={payer} disabled={!cgv || enCours}>
+          <Button onClick={payer} disabled={enCours}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>
@@ -89,13 +87,6 @@ export function FenetrePaiement({
           Paiement sécurisé par Stripe, 3-D Secure si votre banque le demande. Aucune carte n’est
           saisie sur Portail Travaux.
         </p>
-        <Checkbox checked={cgv} onChange={(e) => setCgv(e.target.checked)}>
-          J’accepte les{' '}
-          <Link href={routes.legal('pro', 'cgv')} target="_blank">
-            conditions générales de vente
-          </Link>
-          .
-        </Checkbox>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       </div>
     </Modal>
