@@ -129,7 +129,7 @@ export function Couleurs({
               if (e.key === 'Enter') valider(e.currentTarget.value);
             }}
             placeholder="rgb(29, 79, 115) ou hexadécimal"
-            className="min-h-11 min-w-0 flex-1 rounded-[8px] border border-trait px-3 text-base"
+            className="min-h-11 w-0 min-w-0 flex-1 rounded-[8px] border border-trait px-3 text-base"
           />
         </div>
       ) : null}

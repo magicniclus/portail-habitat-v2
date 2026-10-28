@@ -31,7 +31,7 @@ export const STYLE_NAV = `.nav{position:relative;z-index:20;background:var(--nf)
 .burger,.telmini,.ctamini{display:none}.burger{width:44px;height:44px;border:0;background:transparent;color:var(--bt,inherit);align-items:center;justify-content:center;cursor:pointer;padding:0;order:var(--bo,4)}
 .telmini{width:44px;height:44px;border-radius:min(var(--rayon),22px);border:1.5px solid currentColor;align-items:center;justify-content:center;color:inherit;order:2}
 .tiroir{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;overflow-y:auto;padding:16px 22px 28px;background:var(--tf);color:var(--tt);transform:translateX(var(--sens,100%));transition:transform .32s cubic-bezier(.2,.8,.2,1);visibility:hidden}
-.ouvert .tiroir{transform:none;visibility:visible}.ouvert{overflow:hidden}.tiroir .haut{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.ouvert .tiroir{transform:none;visibility:visible}.ouvert{overflow:hidden}.tiroir .haut{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.tiroir .marque{order:0;flex:1}.ouvert .appel{display:none!important}
 .tiroir .fermer{width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .tiroir .lm{display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:var(--tz);font-weight:600;color:inherit;text-decoration:none}.tiroir.sep .lm{border-bottom:1px solid var(--ts)}
 .tiroir .cta{margin-top:18px;padding:14px 18px;font-size:16px}.tiroir .telm{display:flex;justify-content:center;padding:12px;margin-top:10px;font-weight:700;border:1.5px solid var(--ts);border-radius:var(--rayon);color:inherit;text-decoration:none}

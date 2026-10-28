@@ -98,7 +98,7 @@ export function PanneauProprietes({
   const og = actif === 'mobile' ? 'general' : actif;
   return (
     <div>
-      <div className="sticky top-0 z-[2] grid gap-2.5 border-b border-trait bg-blanc px-4 pt-3">
+      <div className="sticky top-0 z-[2] grid gap-2.5 border-b border-trait bg-blanc px-4 pt-3 [grid-template-columns:minmax(0,1fr)]">
         <div className="flex items-center gap-1.5">
           <span
             aria-hidden="true"

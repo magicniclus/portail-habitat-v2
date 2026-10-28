@@ -27,9 +27,9 @@ export function LiensMenu({
       ? (c.pages[a.page]?.nom ?? 'Page supprimée')
       : LIBELLES_ACTION[a.type];
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2 [grid-template-columns:minmax(0,1fr)]">
       {liens.map((l, i) => (
-        <div key={l.id} className="grid gap-1.5 rounded-[10px] border border-trait p-2">
+        <div key={l.id} className="grid gap-1.5 rounded-[10px] border border-trait p-2 [grid-template-columns:minmax(0,1fr)]">
           <div className="flex items-center gap-1">
             <label className="sr-only" htmlFor={`lien-${l.id}`}>
               Texte du lien {i + 1}
@@ -41,7 +41,7 @@ export function LiensMenu({
               onChange={(e) =>
                 maj(liens.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))
               }
-              className="min-h-11 min-w-0 flex-1 rounded-[8px] border border-trait px-3 text-base"
+              className="min-h-11 w-0 min-w-0 flex-1 rounded-[8px] border border-trait px-3 text-base"
             />
             <button
               type="button"
