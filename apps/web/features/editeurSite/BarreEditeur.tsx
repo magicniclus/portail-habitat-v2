@@ -150,10 +150,16 @@ const RAIL: [Panneau, string, string][] = [
   ['modeles', 'Modèles de site', 'Modèles'],
   ['ia', 'Assistant IA', 'IA'],
 ];
-export const TITRES_PANNEAU = Object.fromEntries(RAIL.map(([p, t]) => [p, t])) as Record<
-  Panneau,
-  string
->;
+/** Titres des panneaux (maquette) ; le rail garde des infobulles plus longues. */
+export const TITRES_PANNEAU: Record<Panneau, string> = {
+  ajouter: 'Ajouter',
+  structure: 'Structure',
+  pages: 'Pages du site',
+  seo: 'Référencement',
+  styles: 'Styles du site',
+  modeles: 'Modèles',
+  ia: 'Assistant IA',
+};
 
 /** Barre d'outils de gauche : un clic ouvre le panneau, un second le ferme. */
 export function Rail({

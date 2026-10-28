@@ -77,23 +77,21 @@ test.describe('Site internet artisan', () => {
 
     await page.getByRole('link', { name: 'Ouvrir l’éditeur' }).click();
     await expect(page).toHaveURL(/\/pro\/site\/editeur/);
-    await page
-      .getByRole('button', { name: /^Titre/ })
-      .first()
-      .click();
-    await page.getByLabel('Texte', { exact: true }).fill('Votre plombier de confiance e2e');
+    // Maquette Editeur de Site : un clic sur la page sélectionne le contenu, réglé à droite.
     const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await apercu.locator('h1').first().click();
+    await expect(page.getByRole('heading', { name: 'Titre', level: 2, exact: true })).toBeVisible();
+    await page.getByLabel('Texte', { exact: true }).fill('Votre plombier de confiance e2e');
     await expect(
       apercu.getByRole('heading', { name: 'Votre plombier de confiance e2e' }),
     ).toBeVisible();
 
     // SITE-09 : un bouton vers une adresse non https bloque la publication avec un message clair.
-    await page.getByRole('button', { name: '← Calques' }).click();
-    await page
-      .getByRole('button', { name: /^Bouton/ })
-      .first()
-      .click();
-    await page.getByLabel('Au clic').selectOption('url');
+    await apercu.getByRole('link', { name: 'Demander un devis gratuit' }).first().click();
+    await expect(
+      page.getByRole('heading', { name: 'Bouton', level: 2, exact: true }),
+    ).toBeVisible();
+    await page.getByLabel('Action', { exact: true }).selectOption('url');
     await page.getByLabel('Adresse (https://…)').fill('http://exemple.fr');
     await expect(page.getByText('Adresse https:// obligatoire')).toBeVisible();
     await publier(page);
@@ -187,9 +185,10 @@ test.describe('Site internet artisan', () => {
 
   test('SITE-11 : la navigation enregistrée s’applique à toutes les pages', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur');
-    await page.getByRole('button', { name: 'Navigation', exact: true }).click();
+    // Navigation, composant global : sélectionnée depuis la structure.
+    await page.getByRole('button', { name: 'Navigation · globale' }).click();
     await page.getByLabel('Nom affiché').fill('Proprio Nav e2e');
-    await expect(page.getByText('Navigation non enregistrée.')).toBeVisible();
+    await expect(page.getByText('Navigation non enregistrée')).toBeVisible();
     await page.getByRole('button', { name: 'Enregistrer la navigation' }).click();
     await expect(page.getByText(/Navigation enregistrée/)).toBeVisible();
     await publier(page);
@@ -291,7 +290,7 @@ test.describe('Site internet artisan', () => {
     for (let i = 3; i <= total; i++) await page.getByRole('button', { name: 'Passer' }).click();
     await expect(page.getByText('L’assistant du site n’est pas encore disponible.')).toBeVisible();
     await page.getByRole('button', { name: 'Fermer' }).click();
-    await expect(page.getByRole('navigation', { name: 'Panneaux' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Outils de l’éditeur' })).toBeVisible();
   });
 
   test('SITE-IA-01 : aperçu gratuit de l’accueil, filigrane, Publier désactivé, offre Site Pro', async ({
@@ -350,27 +349,52 @@ test.describe('Site internet artisan', () => {
       createdAt: new Date(),
     });
     await page.goto('/pro/site/editeur?panneau=modeles');
+    await page.getByRole('tab', { name: 'Mes modèles' }).click();
     await expect(page.getByRole('heading', { name: 'Mes modèles' })).toBeVisible();
     const ligne = page.getByRole('listitem').filter({ hasText: 'Avant IA – e2e' });
     await ligne.getByRole('button', { name: 'Restaurer' }).click();
     await expect(page.getByText(/« Avant IA – e2e » restauré/)).toBeVisible();
   });
 
-  test('Ajouter : élément placé après la sélection, section prête insérée (une étape d’historique)', async ({
+  test('Ajouter et structure : zone prête (une étape d’historique), contenu dans la sélection, dupliquer et supprimer', async ({
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
     const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await page.getByRole('tab', { name: 'Zones' }).click();
     await page.getByRole('button', { name: /^Appel à l’action/ }).click();
     await expect(apercu.getByRole('heading', { name: 'Un projet ? Parlons-en.' })).toBeVisible();
     await page.getByRole('button', { name: 'Annuler (Ctrl Z)' }).click();
     await expect(apercu.getByRole('heading', { name: 'Un projet ? Parlons-en.' })).toHaveCount(0);
 
-    // Élément sans sélection : nouvelle section en bas ; ses réglages s'ouvrent.
+    // Contenu : placé après le contenu sélectionné, ses réglages s'ouvrent à droite.
+    await page.getByRole('tab', { name: 'Contenus' }).click();
     await page.getByRole('button', { name: 'Chiffre clé', exact: true }).click();
-    await expect(page.getByRole('button', { name: '← Calques' })).toBeVisible();
-    await page.getByRole('button', { name: '← Calques' }).click();
-    await expect(page.getByText('Nouvelle section')).toBeVisible();
+    await expect(
+      page.getByText('Sélectionnez d’abord un bloc ou un contenu de la page.'),
+    ).toBeVisible();
+    await apercu.locator('h1').first().click();
+    await page.getByRole('button', { name: 'Chiffre clé', exact: true }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Chiffre clé', level: 2, exact: true }),
+    ).toBeVisible();
+
+    // Échap remonte au bloc, à la section puis à la zone ; dupliquer puis supprimer la zone.
+    for (const niveau of ['Bloc 1', 'Section 1']) {
+      await page.keyboard.press('Escape');
+      await expect(
+        page.getByRole('heading', { name: niveau, level: 2, exact: true }),
+      ).toBeVisible();
+    }
+    await page.keyboard.press('Escape');
+    const zone = (await page.getByRole('heading', { level: 2 }).last().textContent())!;
+    await page.getByRole('button', { name: 'Structure', exact: true }).click();
+    const structure = page.getByRole('complementary', { name: 'Structure' });
+    await expect(structure.getByRole('button', { name: zone, exact: true })).toHaveCount(1);
+    await page.getByRole('button', { name: 'Dupliquer (Ctrl D)' }).click();
+    await expect(structure.getByRole('button', { name: zone, exact: true })).toHaveCount(2);
+    await page.getByRole('button', { name: 'Supprimer (Suppr)' }).click();
+    await expect(structure.getByRole('button', { name: zone, exact: true })).toHaveCount(1);
   });
 
   test('SITE-02 : un réglage mobile (texte, masquage) est sans effet sur l’ordinateur', async ({
@@ -378,12 +402,10 @@ test.describe('Site internet artisan', () => {
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur');
     const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
-    await page
-      .getByRole('button', { name: /^Titre/ })
-      .first()
-      .click();
-    await page.getByRole('checkbox', { name: 'Texte différent sur mobile' }).check();
-    await page.getByLabel('Texte sur mobile').fill('Titre mobile e2e');
+    await apercu.locator('h1').first().click();
+    await page.getByRole('tab', { name: 'Avancé' }).click();
+    await page.getByRole('switch', { name: 'Texte différent sur mobile' }).click();
+    await page.getByLabel('Texte affiché sur mobile').fill('Titre mobile e2e');
     const mobile = apercu.getByText('Titre mobile e2e');
     await expect(mobile).toBeHidden();
     await page
@@ -393,7 +415,7 @@ test.describe('Site internet artisan', () => {
     await expect(mobile).toBeVisible();
 
     // Masqué sur mobile seulement : toujours là sur ordinateur.
-    await page.getByRole('checkbox', { name: 'mobile', exact: true }).check();
+    await page.getByRole('switch', { name: 'Masquer sur mobile' }).click();
     await expect(mobile).toBeHidden();
     await page
       .getByRole('group', { name: 'Appareil' })
@@ -406,6 +428,7 @@ test.describe('Site internet artisan', () => {
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
+    await page.frameLocator('iframe[title="Aperçu de la page"]').locator('h1').first().click();
     await page.getByRole('button', { name: 'Texte', exact: true }).click();
     const zone = page.getByLabel('Texte', { exact: true });
     await expect(zone).toHaveValue('Votre texte.');
@@ -422,24 +445,21 @@ test.describe('Site internet artisan', () => {
     await expect(zone).toHaveValue('Votre texte.');
   });
 
-  test('Mes sections : une section enregistrée depuis Calques réapparaît dans Ajouter', async ({
+  test('Mes zones : une zone enregistrée comme modèle réapparaît dans Ajouter › Zones', async ({
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur');
-    await page
-      .getByRole('button', { name: /^Enregistrer .* dans Mes sections$/ })
-      .first()
-      .click();
-    const message = page.getByRole('status').filter({ hasText: 'ajoutée à Mes sections' });
+    const structure = page.getByRole('complementary', { name: 'Structure' });
+    await structure.getByRole('button').nth(1).click();
+    await page.getByRole('button', { name: '★ Enregistrer comme modèle de zone' }).click();
+    const message = page.getByRole('status').filter({ hasText: 'ajoutée à Mes zones' });
     await expect(message).toBeVisible();
     const nom = (await message.textContent())!.match(/« (.+) »/)![1]!;
-    await page
-      .getByRole('navigation', { name: 'Panneaux' })
-      .getByRole('button', { name: 'Ajouter' })
-      .click();
-    const mes = page.getByRole('region', { name: 'Mes sections' });
+    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
+    await page.getByRole('tab', { name: 'Zones' }).click();
+    const mes = page.getByRole('region', { name: 'Mes zones enregistrées' });
     await expect(mes.getByRole('button', { name: nom, exact: true })).toBeVisible();
-    await mes.getByRole('button', { name: `Supprimer ${nom} de Mes sections` }).click();
+    await mes.getByRole('button', { name: `Supprimer ${nom} de Mes zones` }).click();
     await expect(mes.getByRole('button', { name: nom, exact: true })).toHaveCount(0);
   });
 
@@ -447,11 +467,12 @@ test.describe('Site internet artisan', () => {
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site/editeur?panneau=ajouter');
+    await page.frameLocator('iframe[title="Aperçu de la page"]').locator('h1').first().click();
     await page.getByRole('button', { name: 'Image', exact: true }).click();
     await page.getByLabel('Importer une image').setInputFiles(png('chantier.png'));
-    const photo = page.getByLabel('Photo', { exact: true });
-    await expect(photo).toHaveValue(/^up:/);
-    await expect(photo.locator('option', { hasText: /^Image importée/ })).toHaveCount(1);
+    const importee = page.getByRole('radio', { name: /^Image importée/ });
+    await expect(importee).toHaveCount(1);
+    await expect(importee).toHaveAttribute('aria-checked', 'true');
     await expect(
       page.frameLocator('iframe[title="Aperçu de la page"]').locator('img[src*="sites%2F"]'),
     ).toHaveCount(1);
@@ -472,5 +493,28 @@ test.describe('Site internet artisan', () => {
     ).toBeVisible();
     await page.getByRole('button', { name: 'Revenir à l’état précédent' }).click();
     await expect(page.getByText('Site d’avant le modèle restauré.')).toBeVisible();
+  });
+
+  test('tableau de bord : une page retirée du menu puis dépubliée attend la publication', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site');
+    const carte = page.getByRole('listitem').filter({ hasText: 'Contact et devis' });
+    const menu = carte.getByRole('switch', { name: /dans le menu/ });
+    const avant = await menu.getAttribute('aria-checked');
+    await menu.click();
+    await expect(menu).toHaveAttribute('aria-checked', avant === 'true' ? 'false' : 'true');
+    await carte.getByRole('button', { name: 'Dépublier' }).click();
+    await expect(carte.getByRole('button', { name: 'Mettre en ligne' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Publier/ })).toBeVisible();
+    // L'accueil reste toujours en ligne : pas de « Dépublier ».
+    await expect(
+      page
+        .getByRole('listitem')
+        .filter({ hasText: /^Accueil/ })
+        .getByRole('button', { name: 'Dépublier' }),
+    ).toHaveCount(0);
+    await carte.getByRole('button', { name: 'Mettre en ligne' }).click();
+    await menu.click();
   });
 });
