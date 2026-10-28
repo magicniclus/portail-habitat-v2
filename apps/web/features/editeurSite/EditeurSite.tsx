@@ -98,7 +98,7 @@ export function EditeurSite(props: ProprietesEditeur) {
 
   const outils = !apercu;
   return (
-    <div className="flex h-dvh min-h-0 flex-col bg-blanc max-[899px]:h-auto max-[899px]:min-h-dvh">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-blanc max-[899px]:h-auto max-[899px]:min-h-dvh max-[899px]:overflow-visible">
       <BarreEditeur
         nomSite={s.b.navigation.nom}
         pages={s.b.pages}
@@ -137,7 +137,7 @@ export function EditeurSite(props: ProprietesEditeur) {
         {...(props.questionnaire ? { questionnaire: props.questionnaire } : {})}
       />
       <div
-        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)]"
+        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)] min-[900px]:[grid-template-rows:minmax(0,1fr)]"
         style={{ ['--colonnes' as string]: colonnes(outils, panneau) }}
       >
         {outils ? (
@@ -172,7 +172,8 @@ export function EditeurSite(props: ProprietesEditeur) {
             selection={info ? { ...info, badge: badgeSelection(page, info) } : null}
             defiler={sel.defiler}
             menuOuvert={menuOuvert}
-            key={pageId}
+            key={`${pageId}-${apercu ? 'apercu' : 'edition'}`}
+            surPlace={!apercu}
             onMessage={ap.recevoir}
             {...(apercu && ap.ancre ? { ancre: ap.ancre } : {})}
             onEchelle={setEchelle}

@@ -25,7 +25,7 @@ export function useSelection(o: {
   retablir: () => void;
   flash: (m: string) => void;
   /** « + Zone » / « + Section » sous la sélection : ouvre Ajouter sur le bon onglet. */
-  ouvrirAjout: (onglet: 'zones' | 'sections') => void;
+  ouvrirAjout: (onglet: 'zones' | 'sections' | 'contenus') => void;
   /** Texte modifié directement sur la page (double-clic). */
   onTexte: (id: string, html: string, texte: string, simple: boolean) => void;
 }) {
@@ -34,10 +34,12 @@ export function useSelection(o: {
   const [defiler, setDefiler] = useState(0);
 
   const agir = useCallback(
-    (op: OpSelection | 'zone' | 'section', id = selection) => {
+    (op: OpSelection | 'zone' | 'section' | 'contenu', id = selection) => {
       if (!id) return;
-      if (op === 'zone' || op === 'section')
-        return ouvrirAjout(op === 'zone' ? 'zones' : 'sections');
+      // Ajouter sous la sélection : le panneau Ajouter s'ouvre, l'insertion suit la sélection
+      // (un contenu va à la fin du bloc choisi, ou juste après le contenu choisi).
+      if (op === 'zone' || op === 'section' || op === 'contenu')
+        return ouvrirAjout(op === 'zone' ? 'zones' : op === 'section' ? 'sections' : 'contenus');
       if (id === 'nav') {
         if (op === 'supprimer')
           flash(

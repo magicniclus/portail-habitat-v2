@@ -40,6 +40,7 @@ export function Canevas({
   filigrane,
   menuOuvert = false,
   ancre,
+  surPlace = false,
 }: {
   html: string;
   appareil: Appareil;
@@ -53,6 +54,8 @@ export function Canevas({
   menuOuvert?: boolean;
   /** Mode Aperçu : zone où arriver après un changement de page. */
   ancre?: string;
+  /** Édition : chaque nouveau rendu remplace la page sur place, sans recharger le cadre. */
+  surPlace?: boolean;
 }) {
   const largeur = LARGEURS[appareil];
   const boite = useRef<HTMLDivElement>(null);
@@ -73,6 +76,15 @@ export function Canevas({
   const envoyer = useCallback((m: object) => {
     cadre.current?.contentWindow?.postMessage({ ...m, source: 'ph-editeur' }, '*');
   }, []);
+  // Document chargé une fois ; les rendus suivants partent par message (pas de rechargement,
+  // donc ni éclair blanc ni saut de défilement).
+  const [initial] = useState(html);
+  const dernier = useRef(html);
+  const pret = useRef(false);
+  useEffect(() => {
+    dernier.current = html;
+    if (surPlace && pret.current) envoyer({ type: 'html', html });
+  }, [html, surPlace, envoyer]);
   const derniere = useRef(selection);
   useEffect(() => {
     derniere.current = selection;
@@ -101,6 +113,9 @@ export function Canevas({
       if (m?.source !== 'ph-editeur') return;
       if (m.type === 'defilement') y.current = m.y ?? 0;
       else if (m.type === 'pret') {
+        pret.current = true;
+        if (surPlace && dernier.current !== initial)
+          envoyer({ type: 'html', html: dernier.current });
         envoyer({ type: 'defiler', y: y.current });
         envoyer({ type: 'selection', selection: derniere.current });
         if (menu.current) envoyer({ type: 'menu', ouvert: true });
@@ -109,7 +124,7 @@ export function Canevas({
     };
     window.addEventListener('message', recevoir);
     return () => window.removeEventListener('message', recevoir);
-  }, [onMessage, envoyer]);
+  }, [onMessage, envoyer, surPlace, initial]);
 
   return (
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
@@ -129,7 +144,7 @@ export function Canevas({
           ref={cadre}
           title="Aperçu de la page"
           sandbox="allow-scripts"
-          srcDoc={html}
+          srcDoc={surPlace ? initial : html}
           className="block border-0 bg-blanc shadow-lg"
           style={{
             width: largeur,

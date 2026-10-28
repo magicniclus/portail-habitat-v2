@@ -129,11 +129,12 @@ export function EditeurTexte({
           <span aria-hidden="true" className="mx-1 h-5 w-px bg-trait" />
           <button
             type="button"
-            className={`${outil} flex gap-1`}
+            className={outil}
             onMouseDown={lier}
             title="Transformer la sélection en lien"
+            aria-label="Lien"
           >
-            <LinkSimpleIcon size={15} aria-hidden="true" /> Lien
+            <LinkSimpleIcon size={17} weight="bold" aria-hidden="true" />
           </button>
           <button
             type="button"

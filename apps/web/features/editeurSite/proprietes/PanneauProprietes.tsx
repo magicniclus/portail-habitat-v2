@@ -111,19 +111,23 @@ export function PanneauProprietes({
             style={{ background: niveauxEditeur[info.niveau] }}
           />
           <h2 className="m-0 min-w-0 flex-1 truncate text-base font-bold">{info.nom}</h2>
-          {info.actions.map((a) => (
-            <button
-              key={a.op}
-              type="button"
-              title={a.label}
-              aria-label={a.label}
-              onClick={() => onAction(a.op)}
-              className="grid size-11 place-items-center rounded-[8px] border border-trait bg-blanc text-neutre-800 hover:bg-neutre-100"
-            >
-              <IconeAction op={a.op} />
-            </button>
-          ))}
         </div>
+        {info.actions.length ? (
+          <div className="flex flex-wrap gap-1.5">
+            {info.actions.map((a) => (
+              <button
+                key={a.op}
+                type="button"
+                title={a.label}
+                aria-label={a.label}
+                onClick={() => onAction(a.op)}
+                className="grid size-11 place-items-center rounded-[8px] border border-trait bg-blanc text-neutre-800 hover:bg-neutre-100"
+              >
+                <IconeAction op={a.op} />
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div role="tablist" aria-label="Réglages" className="flex">
           {onglets.map(([o, l]) => (
             <button

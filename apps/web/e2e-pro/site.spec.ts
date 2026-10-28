@@ -200,7 +200,7 @@ test.describe('Site internet artisan', () => {
     await expect(async () => {
       for (const chemin of ['/', '/contact-devis']) {
         await page.goto(`${URL_SITE}${chemin}`);
-        await expect(page.locator('header .marque')).toHaveText('Proprio Nav e2e', {
+        await expect(page.locator('header a.marque .nom')).toHaveText('Proprio Nav e2e', {
           timeout: 1000,
         });
       }

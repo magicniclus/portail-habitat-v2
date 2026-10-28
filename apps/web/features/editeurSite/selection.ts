@@ -20,8 +20,8 @@ export interface InfoSelection {
   niveau: NiveauEditeur;
   nom: string;
   actions: ActionSelection[];
-  /** Bouton sous la sélection dans l'aperçu (« + Zone », « + Section »). */
-  ajout?: { op: 'zone' | 'section'; label: string };
+  /** Bouton sous la sélection dans l'aperçu (« + Zone », « + Section », « + Contenu »). */
+  ajout?: { op: 'zone' | 'section' | 'contenu'; label: string };
 }
 
 const nomElement = (e: Element) => LIBELLES_ELEMENT[e.type];
@@ -66,7 +66,7 @@ export function infoSelection(page: PageSite, id: string | null): InfoSelection 
       ? { ajout: { op: 'zone', label: '+ Zone' } as const }
       : f.niveau === 'section'
         ? { ajout: { op: 'section', label: '+ Section' } as const }
-        : {}),
+        : { ajout: { op: 'contenu', label: '+ Contenu' } as const }),
   };
 }
 
