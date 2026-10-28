@@ -19,3 +19,4 @@ export * from './ia/moderation';
 export * from './ia/routeur';
 export * from './ajout';
 export * from './modeles';
+export * from './structure';
