@@ -115,3 +115,23 @@ export async function retablirVersion(
     });
   });
 }
+
+/**
+ * Contenu d'une version publiée (historique de l'éditeur) : pages, navigation et thème, pour les
+ * reprendre dans le brouillon. Lecture réservée à qui gère le site.
+ */
+export async function lireVersion(
+  s: ServicesSites,
+  ctx: ContexteSite,
+  n: number,
+): Promise<{ n: number; pages: Record<string, PageSite>; navigation: Navigation; theme: unknown }> {
+  await s.db.runTransaction((t) => exigerSite(s, t, ctx));
+  const v = await s.db.doc(chemins.versionSite(ctx.artisanId, n)).get();
+  if (!v.exists) throw new ErreurMetier('INTROUVABLE', 'Cette version n’existe plus.');
+  return {
+    n,
+    pages: v.get('pages') as Record<string, PageSite>,
+    navigation: v.get('navigation') as Navigation,
+    theme: v.get('theme'),
+  };
+}

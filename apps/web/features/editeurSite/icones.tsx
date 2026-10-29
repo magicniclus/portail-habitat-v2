@@ -2,6 +2,7 @@
 
 import type { TypeElement } from '@ph/core/sites';
 import {
+  ClockCounterClockwiseIcon,
   ArrowDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -59,6 +60,7 @@ export const ICONES_RAIL = {
   seo: MagnifyingGlassIcon,
   styles: PaletteIcon,
   modeles: SquaresFourIcon,
+  versions: ClockCounterClockwiseIcon,
   ia: SparkleIcon,
 } as const;
 

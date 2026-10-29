@@ -44,7 +44,8 @@ export default async function PageEditeur({
     panneau === 'modeles' ||
     panneau === 'ajouter' ||
     panneau === 'pages' ||
-    panneau === 'styles'
+    panneau === 'styles' ||
+    panneau === 'versions'
       ? panneau
       : 'structure';
   // Création en attente de Site Pro (IA_SITE §4) : aperçu non publiable, ou reprise sans question.
@@ -65,6 +66,8 @@ export default async function PageEditeur({
         iaComplete={acces.sitePro}
         restantsIa={restantsIa}
         blog={blog}
+        versions={site.versions}
+        {...(site.versionPubliee ? { versionPubliee: site.versionPubliee } : {})}
         {...(fiche ? { questionnaire: questionsCreation(fiche) } : {})}
         apercuInitial={enAttente && !acces.sitePro ? (creation.apercu ?? null) : null}
         reprise={!enAttente || !acces.sitePro ? 'non' : q.ia === 'reprendre' ? 'auto' : 'proposee'}

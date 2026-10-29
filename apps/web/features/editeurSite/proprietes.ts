@@ -27,6 +27,9 @@ export interface ProprietesEditeur {
   apercuInitial: OperationIa[] | null;
   /** Site Pro actif et création en attente : `auto` si l'artisan revient du paiement. */
   reprise: 'non' | 'proposee' | 'auto';
+  /** Versions publiées (les 20 dernières) et celle en ligne : historique de l'éditeur. */
+  versions: { n: number; publieLe: number }[];
+  versionPubliee?: number;
   /** Articles publiés : aperçu de l'élément « Articles du blog ». */
   blog: { articles: ArticleRendu[]; classement: ClassementRendu };
 }

@@ -12,6 +12,7 @@ import type { ReactNode } from 'react';
 import { TITRES_PANNEAU, type Panneau } from '../BarreEditeur';
 import { PanneauIa } from '../PanneauIa';
 import { PanneauModeles } from '../PanneauModeles';
+import { PanneauVersions } from '../PanneauVersions';
 import { suggestionsIa } from '../ia/suggestionsIa';
 import { infoSelection } from '../selection';
 import type { ProprietesEditeur } from '../proprietes';
@@ -138,6 +139,16 @@ export function PanneauGauche(p: {
       <PanneauStyles theme={s.b.theme} onChange={(t) => s.modifier((b) => ({ ...b, theme: t }))} />
     );
   if (p.panneau === 'modeles') contenu = <PanneauModeles site={s.b} onRestaurer={s.restaurer} />;
+  if (p.panneau === 'versions')
+    contenu = (
+      <PanneauVersions
+        versions={p.props.versions}
+        {...(p.props.versionPubliee ? { enLigne: p.props.versionPubliee } : {})}
+        // Pages de la version à la place des mêmes pages ; celles jamais publiées restent.
+        onReprendre={(v) => s.restaurer({ ...v, pages: { ...s.b.pages, ...v.pages } })}
+        flash={p.flash}
+      />
+    );
   if (p.panneau === 'ia')
     contenu = (
       <PanneauIa

@@ -20,6 +20,7 @@ import {
   PublicationRefusee,
   publierSite,
   reglerPage,
+  lireVersion,
   retablirVersion,
 } from '../src/serveur/sites';
 
@@ -158,6 +159,12 @@ describe('publication', () => {
     const v1 = await lireSitePublie(db, 'bertrand.portailtravaux.fr');
     expect(v1?.version).toBe(1);
     expect(v1?.pages.accueil?.seo.title).not.toBe('Plombier à Bordeaux, nouvelle version');
+    // Historique de l'éditeur : contenu d'une version, pour qui gère le site seulement.
+    const v2 = await lireVersion(s(), proprio, 2);
+    expect(v2.pages.accueil?.seo.title).toBe('Plombier à Bordeaux, nouvelle version');
+    expect(v2.navigation.nom).toBeTruthy();
+    await expect(lireVersion(s(), { artisanId: 'a1', uid: 'intrus' }, 2)).rejects.toThrow();
+    await expect(lireVersion(s(), proprio, 99)).rejects.toMatchObject({ code: 'INTROUVABLE' });
   });
 
   it('SITE-11 : la navigation enregistrée s’applique à toutes les pages sans toucher à leur contenu', async () => {

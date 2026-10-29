@@ -152,6 +152,7 @@ const RAIL: [Panneau, string, string][] = [
   ['seo', 'Référencement', 'SEO'],
   ['styles', 'Styles du site', 'Styles'],
   ['modeles', 'Modèles de site', 'Modèles'],
+  ['versions', 'Historique des versions', 'Versions'],
   ['ia', 'Assistant IA', 'IA'],
 ];
 /** Titres des panneaux (maquette) ; le rail garde des infobulles plus longues. */
@@ -162,6 +163,7 @@ export const TITRES_PANNEAU: Record<Panneau, string> = {
   seo: 'Référencement',
   styles: 'Styles du site',
   modeles: 'Modèles',
+  versions: 'Historique des versions',
   ia: 'Assistant IA',
 };
 
