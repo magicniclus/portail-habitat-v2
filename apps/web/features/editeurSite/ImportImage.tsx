@@ -26,25 +26,16 @@ const TYPES = {
   },
 } as const;
 
-/**
- * « Importer une image » ou « Importer un PDF » (médiathèque du site, SITE_INTERNET §4.2) : dépôt
- * dans Storage, vérifié par le serveur (type, taille), puis choisi pour l'élément ou le bouton.
- */
-export function ImportImage({
-  artisanId,
-  onImportee,
-  usage = 'image',
-}: {
-  artisanId: string;
-  /** Fichier enregistré : sa clé `up:`, son URL et son nom, ajoutés à la médiathèque de l'éditeur. */
-  onImportee: (cle: string, url: string, nom: string) => void;
-  usage?: 'image' | 'fichier';
-}) {
+/** Dépôt d'un fichier dans la médiathèque du site (bouton ou glisser-déposer). */
+export function useImportMedia(
+  artisanId: string,
+  usage: 'image' | 'fichier',
+  onImportee: (cle: string, url: string, nom: string) => void,
+) {
   const t = TYPES[usage];
-  const id = useId();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const choisir = async (f: File | undefined) => {
+  const envoyer = async (f: File | undefined) => {
     if (!f) return;
     const probleme =
       usage === 'fichier' && f.type !== 'application/pdf'
@@ -68,6 +59,26 @@ export function ImportImage({
     }
     setEnCours(false);
   };
+  return { envoyer, enCours, erreur, types: t.types, aide: t.aide };
+}
+
+/**
+ * « Importer une image » ou « Importer un PDF » (médiathèque du site, SITE_INTERNET §4.2) : dépôt
+ * dans Storage, vérifié par le serveur (type, taille), puis choisi pour l'élément ou le bouton.
+ */
+export function ImportImage({
+  artisanId,
+  onImportee,
+  usage = 'image',
+}: {
+  artisanId: string;
+  /** Fichier enregistré : sa clé `up:`, son URL et son nom, ajoutés à la médiathèque de l'éditeur. */
+  onImportee: (cle: string, url: string, nom: string) => void;
+  usage?: 'image' | 'fichier';
+}) {
+  const t = TYPES[usage];
+  const id = useId();
+  const { envoyer, enCours, erreur } = useImportMedia(artisanId, usage, onImportee);
   return (
     <div className="grid gap-1">
       <label
@@ -80,7 +91,7 @@ export function ImportImage({
           type="file"
           accept={t.types.join(',')}
           disabled={enCours}
-          onChange={(e) => void choisir(e.target.files?.[0])}
+          onChange={(e) => void envoyer(e.target.files?.[0])}
           className="sr-only text-base"
         />
       </label>

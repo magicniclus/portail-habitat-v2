@@ -63,6 +63,19 @@ export function useBrouillonSite(initial: BrouillonSite) {
     return () => window.removeEventListener('keydown', clavier);
   }, []);
 
+  // Un fichier lâché à côté d'un emplacement ne doit pas ouvrir l'image et quitter l'éditeur.
+  useEffect(() => {
+    const bloquer = (e: DragEvent) => {
+      if (e.dataTransfer?.types.includes('Files')) e.preventDefault();
+    };
+    window.addEventListener('dragover', bloquer);
+    window.addEventListener('drop', bloquer);
+    return () => {
+      window.removeEventListener('dragover', bloquer);
+      window.removeEventListener('drop', bloquer);
+    };
+  }, []);
+
   useEffect(() => {
     if (!aEnregistrer && !navModifiee) return;
     const avant = (e: BeforeUnloadEvent) => e.preventDefault();

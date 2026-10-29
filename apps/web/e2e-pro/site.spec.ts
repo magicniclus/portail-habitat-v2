@@ -548,6 +548,21 @@ test.describe('Site internet artisan', () => {
     await expect(
       page.frameLocator('iframe[title="Aperçu de la page"]').locator('img[src*="sites%2F"]'),
     ).toHaveCount(1);
+
+    // Glisser-déposer une image depuis l'ordinateur sur l'emplacement : importée et choisie.
+    const fichier = png('depot.png');
+    const transfert = await page.evaluateHandle((b64) => {
+      const d = new DataTransfer();
+      const octets = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      d.items.add(new File([octets], 'depot.png', { type: 'image/png' }));
+      return d;
+    }, fichier.buffer.toString('base64'));
+    await page
+      .getByText(/^Glissez une image/)
+      .locator('xpath=ancestor::label')
+      .dispatchEvent('drop', { dataTransfer: transfert });
+    await expect(importee).toHaveCount(2);
+    await expect(importee.nth(1)).toHaveAttribute('aria-checked', 'true');
   });
 
   test('modèles de site : appliquer « Dépannage 24/7 » à tout le site, puis revenir', async ({
