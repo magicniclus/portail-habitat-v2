@@ -1,6 +1,6 @@
 import { formatNombre } from '@ph/core/format';
 import { EmptyState } from '@ph/ui';
-import { ChartBarIcon, ChartLineUpIcon } from '@phosphor-icons/react/ssr';
+import { ChartBarIcon } from '@phosphor-icons/react/ssr';
 import type { LignePage, StatsDuSite } from '@/server/sites';
 import { BarresVisites } from './BarresVisites';
 import { EnTeteOnglet } from './Mise';
@@ -87,7 +87,7 @@ export function OngletStats({
           titre="Voyez ce qui vous rapporte"
           cta="Voir 12 mois de statistiques"
           raison="Les statistiques sur 12 mois sont incluses dans Site Pro."
-          icone={ChartLineUpIcon}
+          icone="statistiques"
         >
           Avec Site Pro, suivez vos visites sur 12 mois et recevez un SMS à chaque demande.
         </EncartPremium>

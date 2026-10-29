@@ -9,7 +9,6 @@ import { ListeArticles } from './ListeArticles';
 import { PiloteBlog } from './PiloteBlog';
 import { PlusArticles } from './PlusArticles';
 import { EncartPremium } from '@/features/offres/EncartPremium';
-import { NewspaperClippingIcon } from '@phosphor-icons/react';
 
 export const VUES_BLOG = [
   ['articles', 'Articles'],
@@ -78,7 +77,7 @@ export function OngletBlog({ donnees: d, vue }: { donnees: OngletBlogDonnees; vu
           titre="Un blog qui vous amène des clients"
           cta="Passer à Site Pro"
           raison="Le blog est inclus dans Site Pro."
-          icone={NewspaperClippingIcon}
+          icone="blog"
         >
           Écrivez vos conseils, l’IA vous aide : 5 articles rédigés par mois avec Site Pro, 15 avec
           Tout inclus. Contrôle SEO et mentions légales compris.

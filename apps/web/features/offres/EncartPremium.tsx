@@ -6,13 +6,23 @@ import { CONTENU_OFFRES, NOMS_FORMULE, type FormulePayante } from '@ph/core/paie
 import { bouton, Button, cn } from '@ph/ui';
 import {
   ArrowRightIcon,
+  ChartLineUpIcon,
+  ChatCircleTextIcon,
   CheckCircleIcon,
   CrownSimpleIcon,
+  NewspaperClippingIcon,
   SparkleIcon,
-  type Icon,
 } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { FenetreOffre } from './FenetreOffre';
+
+/** Icônes proposées (un nom : l'encart peut être posé depuis une page serveur). */
+const ICONES = {
+  ia: SparkleIcon,
+  statistiques: ChartLineUpIcon,
+  blog: NewspaperClippingIcon,
+  formulaire: ChatCircleTextIcon,
+} as const;
 
 /**
  * Encart d'une fonction payante (PAIEMENTS §4), avec du caractère : icône, badge de l'offre, ce
@@ -25,7 +35,7 @@ export function EncartPremium({
   children,
   cta,
   raison,
-  icone: I = SparkleIcon,
+  icone = 'ia',
   compact = false,
   onPlusTard,
   className,
@@ -37,12 +47,13 @@ export function EncartPremium({
   cta: string;
   /** Phrase en tête de la fenêtre d'offre. */
   raison: string;
-  icone?: Icon;
+  icone?: keyof typeof ICONES;
   /** Panneaux étroits (éditeur) : sans liste d'avantages. */
   compact?: boolean;
   onPlusTard?: () => void;
   className?: string;
 }) {
+  const I = ICONES[icone];
   const r = recapPaiement(formule);
   const avantages = CONTENU_OFFRES[formule].avantages.slice(0, 3);
   return (

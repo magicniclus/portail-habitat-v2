@@ -1,5 +1,4 @@
 import { EncartPremium } from '@/features/offres/EncartPremium';
-import { ChartLineUpIcon } from '@phosphor-icons/react/ssr';
 
 /** PRO-07 : sans Fiche Pro, présentation de l'offre à la place du détail (PAIEMENTS §4). */
 export function OffreStatistiques({ peutSouscrire }: { peutSouscrire: boolean }) {
@@ -9,7 +8,7 @@ export function OffreStatistiques({ peutSouscrire }: { peutSouscrire: boolean })
       titre="Les statistiques détaillées sont incluses dans Fiche Pro"
       cta="Voir l'offre Fiche Pro"
       raison="Les statistiques détaillées sont incluses dans Fiche Pro."
-      icone={ChartLineUpIcon}
+      icone="statistiques"
       className="max-w-[720px]"
     >
       Suivez qui consulte votre fiche, combien de visiteurs vous appellent ou demandent un devis, et

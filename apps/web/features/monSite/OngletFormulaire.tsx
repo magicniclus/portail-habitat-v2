@@ -2,7 +2,6 @@ import { FORMULAIRE_GRATUIT, LIBELLES_TYPE_CHAMP, type ChampFormulaire } from '@
 import { ConstructeurFormulaire } from './ConstructeurFormulaire';
 import { EnTeteOnglet } from './Mise';
 import { EncartPremium } from '@/features/offres/EncartPremium';
-import { ChatCircleTextIcon } from '@phosphor-icons/react';
 
 const REGLAGES = [
   { libelle: 'Email à chaque demande', valeur: 'Activé' },
@@ -37,7 +36,7 @@ export function OngletFormulaire({
             titre="Rappelez avant les autres"
             cta="Personnaliser le formulaire"
             raison="Le formulaire personnalisé est inclus dans Site Pro."
-            icone={ChatCircleTextIcon}
+            icone="formulaire"
           >
             Formulaire standard en Gratuit. Avec Site Pro, ajoutez vos propres questions (budget,
             date souhaitée…), réglez les notifications et recevez un SMS à chaque demande.
