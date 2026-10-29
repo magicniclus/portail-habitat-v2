@@ -3,9 +3,10 @@ import {
   controlerDomaineActif,
   domainesAControler,
   domainesAVerifier,
+  avancerDomaine,
   hebergeurDepuisEnv,
+  registrarDepuisEnv,
   resolveurDoh,
-  verifierDomaineSite,
 } from '@ph/firebase/sites';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
@@ -15,7 +16,8 @@ import { notifier } from '../notifications/configuration';
 
 /**
  * `verifierDomaines` (toutes les 2 min, DOMAINES §4) : domaines dont la vérification est due ;
- * chaque site est vérifié seul (une erreur n'arrête pas les autres). Clés Vercel en secrets.
+ * domaines achetés : commande, zone DNS, puis vérification ; chaque site est traité seul (une
+ * erreur n'arrête pas les autres). Clés Vercel et OVH en secrets.
  */
 const services = () => ({
   db: getFirestore(appAdmin()),
@@ -23,6 +25,7 @@ const services = () => ({
   domaineBase: process.env.DOMAINE_SITES ?? 'portailtravaux.fr',
   hebergeur: hebergeurDepuisEnv(),
   dns: resolveurDoh(),
+  registrar: registrarDepuisEnv(),
   notifier,
 });
 
@@ -33,7 +36,7 @@ export const verifierDomaines = onSchedule(
     const ids = await domainesAVerifier(s);
     const bilan: Record<string, number> = {};
     for (const id of ids) {
-      const statut = await verifierDomaineSite(s, id).catch((e: unknown) => {
+      const statut = await avancerDomaine(s, id).catch((e: unknown) => {
         logger.error('Vérification de domaine', { siteId: id, erreur: String(e) });
         return 'erreur';
       });

@@ -1,7 +1,7 @@
 import { slugifier } from '../format/slug';
 import { estSirenValide } from '../format/siren';
 import type { EnregistrementAttendu } from './dns';
-import type { ConfigHebergeur } from './domaines';
+import { STATUTS_DOMAINE, type ConfigHebergeur, type StatutDomaine } from './domaines';
 
 /** Extensions proposées à l'achat (DOMAINES §3). */
 export const EXTENSIONS_ACHAT = ['fr', 'com', 'eu'] as const;
@@ -85,4 +85,14 @@ export function enregistrementsAchat(h: ConfigHebergeur): EnregistrementAttendu[
     ...h.apex.map((ip) => ({ type: 'A' as const, nom: '@', valeur: ip })),
     { type: 'CNAME', nom: 'www', valeur: h.cname.replace(/\.$/, '') },
   ];
+}
+
+/**
+ * Statut affiché : pour un domaine acheté, l'artisan n'a aucun enregistrement à créer, l'attente
+ * DNS est donc une configuration en cours (propagation de la zone écrite par nous).
+ */
+export function statutDomaineAffiche(statut: StatutDomaine, mode: 'achat' | 'connexion') {
+  if (mode === 'achat' && statut === 'attente_dns')
+    return { libelle: 'Configuration en cours', tone: 'info' } as const;
+  return STATUTS_DOMAINE[statut];
 }

@@ -242,9 +242,10 @@ async function envoyerCodeTransfert(s: ServicesAchatDomaine, siteId: string, nom
       donnees: {
         nomCommercial: (artisan.get('nomCommercial') as string | undefined) ?? '',
         domaine: nom,
-        authCode,
         lien: '/pro/site?onglet=domaine',
       },
+      // Le code ne passe que par la tâche d'envoi, jamais par la file `emails` en base.
+      secrets: { authCode },
     });
   // Le code n'est jamais gardé : seule la date d'envoi l'est.
   await ref.update({

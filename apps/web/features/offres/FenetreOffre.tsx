@@ -20,15 +20,22 @@ export function FenetreOffre({
   raison,
   children,
   className,
+  ouverte: imposee,
+  onOuverte,
 }: {
   formule: FormulePayante;
   /** Phrase courte propre à l'écran (« Le domaine personnel est inclus dans Site Pro. »). */
   raison?: string;
-  /** Libellé du déclencheur. */
-  children: ReactNode;
+  /** Libellé du déclencheur ; absent, la fenêtre s'ouvre seulement par `ouverte`. */
+  children?: ReactNode;
   className?: string;
+  /** Ouverture commandée par l'écran (après une action qui mène au paiement). */
+  ouverte?: boolean;
+  onOuverte?: (o: boolean) => void;
 }) {
-  const [ouverte, setOuverte] = useState(false);
+  const [interne, setInterne] = useState(false);
+  const ouverte = imposee ?? interne;
+  const setOuverte = onOuverte ?? setInterne;
   const { payer, enCours, erreur } = usePaiement(formule);
   const c = CONTENU_OFFRES[formule];
   const r = recapPaiement(formule);
@@ -37,11 +44,15 @@ export function FenetreOffre({
     <Modal
       open={ouverte}
       onOpenChange={setOuverte}
-      declencheur={
-        <button type="button" className={className ?? bouton({ variant: 'secondaire' })}>
-          {children}
-        </button>
-      }
+      {...(children
+        ? {
+            declencheur: (
+              <button type="button" className={className ?? bouton({ variant: 'secondaire' })}>
+                {children}
+              </button>
+            ),
+          }
+        : {})}
       titre={`Passer à ${nom}`}
       description={raison ?? c.raison}
       actions={

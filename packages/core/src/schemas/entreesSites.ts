@@ -63,6 +63,8 @@ export const entreeSectionEnregistree = z.discriminatedUnion('action', [
 ]);
 /** Domaine existant saisi par l'artisan (normalisé ensuite par `normaliserDomaine`). */
 export const entreeDomaineSite = z.object({ domaine: z.string().trim().min(3).max(253) });
+/** Recherche d'un domaine à acheter (DOMAINES §3) : vide → suggestions depuis le nom commercial. */
+export const entreeRechercheDomaine = z.object({ requete: z.string().trim().max(63).optional() });
 
 /** Demande à l'IA du site (IA_SITE §5) ; mode et portée choisis dans le panneau IA. */
 export const entreeIaSite = z.object({

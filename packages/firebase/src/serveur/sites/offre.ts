@@ -31,6 +31,7 @@ export async function synchroniserOffreSite(
     // vérification planifiée. Domaine acheté et Site Pro résilié : code de transfert à envoyer.
     const voulu = site.get('domaineVoulu.nom') as string | undefined;
     const achat = site.get('domaine.mode') === 'achat';
+    const remplacable = !nom || ['echec', 'resilie'].includes(site.get('domaine.statut') as string);
     t.update(ref, {
       offre,
       ...(!sitePro && nom
@@ -39,7 +40,7 @@ export async function synchroniserOffreSite(
             ...(achat ? { 'domaine.prochaineVerifLe': maintenant } : {}),
           }
         : {}),
-      ...(sitePro && voulu && !nom
+      ...(sitePro && voulu && remplacable
         ? { domaine: domaineAchat(voulu, maintenant), domaineVoulu: FieldValue.delete() }
         : {}),
       updatedAt: maintenant,

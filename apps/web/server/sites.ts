@@ -25,7 +25,9 @@ import {
   lireSiteEdition,
   lireStatsSite,
   periodesParis,
+  registrarDepuisEnv,
   resolveurDoh,
+  type ServicesAchatDomaine,
   type ServicesDomaines,
   type ServicesSites,
   type SiteEdition,
@@ -57,6 +59,11 @@ export function servicesDomaines(): ServicesDomaines {
     dns: resolveurDoh(),
     notifier: servicesComptes().notifier,
   };
+}
+
+/** Achat de domaine : bureau d'enregistrement (OVH, ou bureau local hors production). */
+export function servicesAchatDomaine(): ServicesAchatDomaine {
+  return { ...servicesDomaines(), registrar: registrarDepuisEnv() };
 }
 
 /** Palette de départ : la première des palettes proposées (tokens de `@ph/ui`). */

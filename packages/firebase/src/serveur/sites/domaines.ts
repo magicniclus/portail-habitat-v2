@@ -208,9 +208,11 @@ export async function verifierDomaineSite(
         manquants: manquants.map((l) => `${l.type} ${l.nom}`),
       },
     );
-  // Rappel unique après 24 h sans DNS, avec le tableau des enregistrements (DOMAINES §7).
+  // Rappel unique après 24 h sans DNS, avec le tableau des enregistrements (DOMAINES §7) ;
+  // jamais pour un domaine acheté : la zone est écrite par nous, l'artisan n'a rien à faire.
   if (
     statut === 'attente_dns' &&
+    d.mode !== 'achat' &&
     !o.manuel &&
     !d.rappelAttenteLe &&
     maintenant - creeLe >= RAPPEL_ATTENTE

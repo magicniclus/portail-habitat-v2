@@ -70,12 +70,18 @@ export interface SiteEdition {
   navigation?: Navigation;
   versions: { n: number; publieLe: number }[];
   domaine?: DomaineEdition;
+  /** Domaine choisi avant Site Pro : commandé par le webhook après le paiement. */
+  domaineVoulu?: string;
 }
 
 /** Domaine personnel tel que l'écran Domaine l'affiche. */
 export interface DomaineEdition {
   nom: string;
   statut: StatutDomaine;
+  /** `achat` : acheté par Portail Travaux au nom de l'entreprise ; `connexion` : domaine existant. */
+  mode: 'achat' | 'connexion';
+  /** Achat : étape chez le bureau d'enregistrement. */
+  etape?: 'a_commander' | 'commandee' | 'livre';
   enregistrements: {
     type: 'A' | 'CNAME' | 'TXT';
     nom: string;
@@ -118,6 +124,10 @@ export async function lireSiteEdition(db: Firestore, siteId: string): Promise<Si
           domaine: {
             nom: site.get('domaine.nom') as string,
             statut: site.get('domaine.statut') as StatutDomaine,
+            mode: (site.get('domaine.mode') as DomaineEdition['mode'] | undefined) ?? 'connexion',
+            ...(site.get('domaine.registrar.etape')
+              ? { etape: site.get('domaine.registrar.etape') as DomaineEdition['etape'] }
+              : {}),
             enregistrements: (
               (site.get('domaine.enregistrements') as DomaineEdition['enregistrements']) ?? []
             ).map(({ type, nom, valeur, etat, trouve }) => ({
@@ -132,6 +142,9 @@ export async function lireSiteEdition(db: Firestore, siteId: string): Promise<Si
               : {}),
           },
         }
+      : {}),
+    ...(site.get('domaineVoulu.nom')
+      ? { domaineVoulu: site.get('domaineVoulu.nom') as string }
       : {}),
     versions: versions.docs.map((d) => ({
       n: d.get('n') as number,

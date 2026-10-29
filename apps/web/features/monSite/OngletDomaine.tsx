@@ -6,7 +6,6 @@ import {
   LinkSimpleIcon,
   ShieldCheckIcon,
 } from '@phosphor-icons/react/ssr';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { BoutonRetablir } from './ActionsSite';
 import { DomainePerso } from './DomainePerso';
 import { CarteReglage, EnTeteOnglet, Pastille } from './Mise';
@@ -32,26 +31,23 @@ export function OngletDomaine({ site, domaine }: { site: SiteEdition; domaine: s
         icone={<LinkSimpleIcon size={22} weight="bold" />}
         titre="Votre propre domaine"
         etat={
-          <Pastille actif={Boolean(site.domaine)}>
-            {site.domaine ? 'Connecté' : 'Non connecté'}
+          <Pastille actif={site.domaine?.statut === 'actif'}>
+            {site.domaine?.statut === 'actif'
+              ? 'En ligne'
+              : site.domaine
+                ? 'En cours'
+                : 'Aucun domaine'}
           </Pastille>
         }
         description="Un domaine .fr, .com ou .eu à votre nom, ou votre domaine actuel connecté, avec le certificat HTTPS."
       >
-        {site.offre === 'site_pro' ? (
-          <div className="max-w-[520px]">
-            <DomainePerso {...(site.domaine ? { domaine: site.domaine } : {})} />
-          </div>
-        ) : (
-          <div>
-            <FenetreOffre
-              formule="site_pro"
-              raison="Le domaine personnel est inclus dans Site Pro."
-            >
-              Utiliser mon domaine
-            </FenetreOffre>
-          </div>
-        )}
+        <div className="max-w-[560px]">
+          <DomainePerso
+            sitePro={site.offre === 'site_pro'}
+            {...(site.domaine ? { domaine: site.domaine } : {})}
+            {...(site.domaineVoulu ? { voulu: site.domaineVoulu } : {})}
+          />
+        </div>
       </CarteReglage>
       <CarteReglage
         icone={<ShieldCheckIcon size={22} weight="bold" />}

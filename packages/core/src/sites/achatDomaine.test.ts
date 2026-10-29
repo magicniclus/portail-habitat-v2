@@ -3,6 +3,7 @@ import {
   enregistrementsAchat,
   EXTENSIONS_ACHAT,
   suggestionsDomaine,
+  statutDomaineAffiche,
   titulaireDomaine,
 } from './achatDomaine';
 
@@ -71,5 +72,11 @@ describe('achat de domaine (DOMAINES §3)', () => {
       { type: 'A', nom: '@', valeur: '76.76.21.21' },
       { type: 'CNAME', nom: 'www', valeur: 'cname.vercel-dns.com' },
     ]);
+  });
+
+  it('statut affiché : attente DNS d’un domaine acheté = configuration en cours', () => {
+    expect(statutDomaineAffiche('attente_dns', 'achat').libelle).toBe('Configuration en cours');
+    expect(statutDomaineAffiche('attente_dns', 'connexion').tone).toBe('attention');
+    expect(statutDomaineAffiche('actif', 'achat').tone).toBe('succes');
   });
 });

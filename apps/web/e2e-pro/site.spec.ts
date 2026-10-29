@@ -1,5 +1,6 @@
 import { chemins, collections } from '@ph/firebase/chemins';
 import { expect, test, type Page } from '@playwright/test';
+import { FieldValue } from 'firebase-admin/firestore';
 import { admin, COMPTES, connecter, entrepriseDe, png } from './outils';
 
 // docs/SITE_INTERNET.md §8 : SITE-03, SITE-07, SITE-08, SITE-09, SITE-10, SITE-11, SITE-13
@@ -207,19 +208,61 @@ test.describe('Site internet artisan', () => {
     }).toPass({ timeout: 60_000 });
   });
 
-  test('DOM-02 : domaine sans Site Pro → fenêtre d’offre ; DOM-04 : tableau des enregistrements', async ({
+  test('DOM-02 : achat sans Site Pro → mis de côté + fenêtre d’offre ; achat Site Pro ; DOM-04', async ({
     page,
   }) => {
+    const { db } = await admin();
+    const fiche = db.doc(chemins.artisan(await entrepriseDe(COMPTES.proprio)));
     await offre('gratuit');
     await connecter(page, COMPTES.proprio, '/pro/site?onglet=domaine');
-    await page.getByRole('button', { name: 'Utiliser mon domaine' }).click();
-    await expect(page.getByRole('dialog')).toContainText('Site Pro');
-    await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
-
-    // Site Pro (droits écrits par le webhook en production) : connexion d'un domaine existant.
-    await offre('site_pro');
+    // Bureau d'enregistrement local (hors production) : tout est libre sauf « pris ».
+    const rechercher = async (q: string) => {
+      await page.getByLabel(/^Nom de domaine souhaité/).fill(q);
+      await page.getByRole('button', { name: 'Rechercher' }).click();
+    };
+    await rechercher('deja-pris');
+    const resultats = page.getByRole('list', { name: 'Domaines proposés' }).getByRole('listitem');
+    await expect(resultats.first()).toContainText('Déjà pris');
+    await rechercher('proprio-e2e-achat');
+    const fr = resultats.filter({ hasText: 'proprio-e2e-achat.fr' });
+    await expect(fr).toContainText('Disponible');
+    // Fiche sans email de contact : achat au nom de l'entreprise impossible (DOM-03).
+    const email = (await fiche.get()).get('emailContact') as string | undefined;
+    await fiche.update({ emailContact: FieldValue.delete() });
     try {
+      await fr.getByRole('button', { name: 'Choisir' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Continuer' }).click();
+      await expect(page.getByRole('dialog')).toContainText('email de contact');
+      await fiche.update({ emailContact: 'contact@proprio-e2e.test' });
+      await page.getByRole('dialog').getByRole('button', { name: 'Continuer' }).click();
+      // Sans Site Pro : rien n'est commandé, la fenêtre d'offre s'ouvre.
+      await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
+      await page.keyboard.press('Escape');
+      await expect(page.getByText(/est mis de côté pour vous/)).toBeVisible();
+      expect(
+        (await db.doc(chemins.site(await entrepriseDe(COMPTES.proprio))).get()).get('domaine'),
+      ).toBeUndefined();
+
+      // Site Pro (droits écrits par le webhook en production) : achat immédiat en un clic.
+      await db
+        .doc(chemins.site(await entrepriseDe(COMPTES.proprio)))
+        .update({ domaineVoulu: FieldValue.delete() });
+      await offre('site_pro');
       await page.goto('/pro/site?onglet=domaine');
+      await rechercher('proprio-e2e-achat');
+      await fr.getByRole('button', { name: 'Choisir' }).click();
+      await page
+        .getByRole('dialog')
+        .getByRole('button', { name: 'Acheter et mettre en ligne' })
+        .click();
+      await expect(page.getByText('proprio-e2e-achat.fr', { exact: true })).toBeVisible();
+      await expect(page.getByRole('navigation', { name: 'Étapes' })).toBeVisible();
+      await expect(page.getByRole('list', { name: 'Enregistrements DNS' })).toHaveCount(0);
+      await page.getByRole('button', { name: 'Retirer ce domaine' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'Retirer' }).click();
+
+      // Domaine existant : tableau des enregistrements à créer.
+      await page.getByRole('radio', { name: 'J’ai déjà un domaine' }).click();
       await page.getByLabel(/^Votre domaine/).fill('https://www.exemple-e2e.fr/');
       await page.getByRole('button', { name: 'Connecter mon domaine' }).click();
       const lignes = page.getByRole('list', { name: 'Enregistrements DNS' }).getByRole('listitem');
@@ -229,8 +272,9 @@ test.describe('Site internet artisan', () => {
       await expect(lignes.filter({ hasText: 'En attente' })).toHaveCount(3);
       await page.getByRole('button', { name: 'Retirer ce domaine' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'Retirer' }).click();
-      await expect(page.getByRole('button', { name: 'Connecter mon domaine' })).toBeVisible();
+      await expect(page.getByRole('radio', { name: 'Acheter un domaine' })).toBeVisible();
     } finally {
+      await fiche.update({ emailContact: email ?? FieldValue.delete() });
       await offre('gratuit');
     }
   });
