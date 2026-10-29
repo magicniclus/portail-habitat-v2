@@ -321,4 +321,25 @@ describe('rendu des sites publiés', () => {
     expect(h).toContain('margin-bottom:14px;');
     expect(h).toContain('.mg{margin:var(--mgm)}');
   });
+
+  it('animations : attributs sur la zone et le contenu du site, jamais dans l’éditeur', () => {
+    const page = structuredClone(s.pages.accueil!);
+    page.sections[0]!.p.anim = { type: 'fondu', delai: 0 };
+    page.sections[0]!.rows[0]!.cols[0]!.els[0]!.p.anim = { type: 'monter', delai: 300 };
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: s.navigation,
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('<section data-anim="fondu" class="s');
+    expect(site).toMatch(/<[a-z0-9]+ data-anim="monter" data-ad="300"/);
+    expect(site).toContain('(scripting:enabled) and (prefers-reduced-motion:no-preference)');
+    expect(SCRIPT_SITE).toContain('IntersectionObserver');
+    expect(rendreDocument(d, { ...ctx, edition: true })).not.toContain('data-anim="');
+  });
 });

@@ -2,6 +2,7 @@ import {
   LIBELLES_ELEMENT,
   resoudreCouleur,
   texteSur,
+  type Animation,
   type Appareil,
   type ChampFormulaire,
   type Couleur,
@@ -75,8 +76,20 @@ function avecMobile(e: Element, html: string, rendreMobile: (t: string) => strin
   return `<span class="nm">${html}</span><span class="om">${rendreMobile(e.p.texteMobile)}</span>`;
 }
 
+/**
+ * Animation d'apparition : attributs posés sur la balise d'ouverture (aucune enveloppe, la mise en
+ * page ne change pas). Jamais dans l'éditeur, où tout reste visible pour être modifié.
+ */
+export function avecAnimation(html: string, a: Animation | undefined, ctx: ContexteRendu) {
+  if (!a || ctx.edition || !html) return html;
+  return html.replace(
+    /^<([a-z][a-z0-9]*)/,
+    `<$1 data-anim="${a.type}"${a.delai ? ` data-ad="${a.delai}"` : ''}`,
+  );
+}
+
 export function rendreElement(e: Element, ctx: ContexteRendu, fonce = false): string {
-  const html = rendreBrut(e, ctx, fonce);
+  const html = avecAnimation(rendreBrut(e, ctx, fonce), e.p.anim, ctx);
   if (!ctx.edition) return html;
   const texte =
     e.p.texteMobileOn || !html

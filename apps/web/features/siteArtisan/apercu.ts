@@ -17,6 +17,7 @@ if(r.charAt(0)==='#'){aller(r.slice(1));return;}
 if(r.charAt(0)==='/'){var i=r.indexOf('#');post({type:'page',slug:i<0?r.slice(1):r.slice(1,i),ancre:i<0?'':r.slice(i+1)});return;}
 post({type:'lien',href:r});},true);
 d.querySelectorAll('[data-formulaire]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var s=f.querySelector('.statut');if(s)s.textContent='Aperçu : le formulaire enverra les demandes une fois le site publié.';});});
+var A=d.querySelectorAll('[data-anim]');if(A.length){if('IntersectionObserver'in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('vu');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px'});A.forEach(function(x){io.observe(x);});}else A.forEach(function(x){x.classList.add('vu');});}
 var t;addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(function(){post({type:'defilement',y:scrollY});},120);},{passive:true});
 addEventListener('message',function(e){var x=e.data;if(!x||x.source!=='ph-editeur')return;if(x.type==='defiler')scrollTo(0,x.y||0);if(x.type==='ancre')aller(x.ancre);if(x.type==='ping')post({type:'pret'});});
 post({type:'pret'});})();`;

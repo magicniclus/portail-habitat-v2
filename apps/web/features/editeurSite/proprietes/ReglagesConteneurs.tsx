@@ -8,6 +8,7 @@ import { Couleurs } from './Couleurs';
 import { Identifiant, ReglagesFond, Visibilite } from './Communs';
 import { NOMS_APPAREIL, pourAppareil, type ContexteReglages } from './contexte';
 import { ALIGN_V } from './ReglagesBloc';
+import { Animation } from './Animation';
 
 type Onglet = 'general' | 'avance';
 
@@ -24,6 +25,7 @@ export function ReglagesZone(p: {
     return (
       <>
         <Identifiant valeur={z.p.ancre} cle="ancre" ancre dejaPris={p.idPris(z.p.ancre)} c={c} />
+        <Animation anim={z.p.anim} c={c} />
         <Visibilite masque={z.p.masque} appareil={c.appareil} c={c} />
       </>
     );

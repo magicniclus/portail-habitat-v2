@@ -25,6 +25,16 @@ export function etatPublication(e: { versionPubliee?: number; modifie: boolean }
 }
 
 /** Nom des 16 éléments (Ajouter, Calques). */
+/** Noms des animations d'apparition (panneau Avancé). */
+export const LIBELLES_ANIMATION = {
+  fondu: 'Fondu',
+  monter: 'Monter',
+  descendre: 'Descendre',
+  gauche: 'Depuis la gauche',
+  droite: 'Depuis la droite',
+  zoom: 'Zoom',
+} as const;
+
 export const LIBELLES_ELEMENT = {
   titre: 'Titre',
   surtitre: 'Surtitre',

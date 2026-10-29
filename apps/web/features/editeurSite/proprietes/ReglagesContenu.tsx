@@ -3,6 +3,7 @@
 import type { Appareil, Couleur, Element } from '@ph/core/sites';
 import { ChampAction } from '../ChampAction';
 import { Identifiant, Visibilite } from './Communs';
+import { Animation } from './Animation';
 import { Marges } from './Marges';
 import { ContenuElement } from './ContenuElement';
 import { Curseur, Groupe, Interrupteur, Segments } from './controles';
@@ -68,6 +69,7 @@ export function ReglagesContenu({
         ) : null}
         <Identifiant valeur={el.p.htmlId} cle="htmlId" dejaPris={idPris(el.p.htmlId)} c={c} />
         <Marges el={el} c={c} />
+        <Animation anim={el.p.anim} c={c} />
         <Visibilite masque={el.p.masque} appareil={a} c={c} />
       </>
     );

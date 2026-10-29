@@ -80,6 +80,18 @@ const fond = {
 const masque = parAppareil(z.boolean());
 const taille = parAppareil(z.number().int().min(8).max(160));
 const marge = z.number().int().min(0).max(200);
+/** Apparition au défilement (site publié et aperçu ; immobile si le visiteur réduit les animations). */
+export const ANIMATIONS = ['fondu', 'monter', 'descendre', 'gauche', 'droite', 'zoom'] as const;
+export const DELAIS_ANIMATION = [0, 150, 300, 450, 600] as const;
+export const animation = z.object({
+  type: z.enum(ANIMATIONS),
+  /** Millisecondes avant l'apparition (un des `DELAIS_ANIMATION`). */
+  delai: z
+    .number()
+    .int()
+    .refine((d) => (DELAIS_ANIMATION as readonly number[]).includes(d), 'Délai invalide'),
+});
+export type Animation = z.output<typeof animation>;
 /** Marges d'un contenu (px) : haut, bas, gauche, droite. */
 export const marges = z.object({ h: marge, b: marge, g: marge, d: marge });
 export type Marges = z.output<typeof marges>;
@@ -91,6 +103,7 @@ const commun = {
   /** Marge du bas (anciens sites) ; remplacée par `marges` dès qu'elles sont réglées. */
   mb: marge,
   marges: parAppareil(marges).optional(),
+  anim: animation.optional(),
   masque,
   texteMobileOn: z.boolean().optional(),
   texteMobile: z.string().max(2000).optional(),
@@ -225,6 +238,7 @@ export const section = z.object({
     largeur: z.enum(['boite', 'plein']),
     padY: parAppareil(z.number().int().min(0).max(300)),
     masque,
+    anim: animation.optional(),
     ...fond,
   }),
   rows: z.array(ligne).max(20),
