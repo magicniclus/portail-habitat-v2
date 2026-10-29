@@ -1,7 +1,7 @@
 'use client';
 
 import { LIBELLES_STATUT_ARTICLE, type StatutArticle } from '@ph/core/blog';
-import { bouton, Button, Input } from '@ph/ui';
+import { bouton, BoutonAction, Button, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useState } from 'react';
 import { routes } from '@/lib/routes';
@@ -20,9 +20,9 @@ export function BarreArticle(p: {
   bloquants: number;
   enCours: boolean;
   onVoirSeo: () => void;
-  onEnregistrer: () => void;
+  onEnregistrer: () => unknown;
   onPlanifier: (dateIso: string) => void;
-  onPublier: () => void;
+  onPublier: () => unknown;
 }) {
   const [date, setDate] = useState(demain);
   return (
@@ -41,9 +41,9 @@ export function BarreArticle(p: {
           {p.bloquants} point{p.bloquants > 1 ? 's' : ''} à corriger
         </Button>
       ) : null}
-      <Button variant="secondaire" onClick={p.onEnregistrer} disabled={p.enCours}>
+      <BoutonAction variant="secondaire" onClick={p.onEnregistrer} disabled={p.enCours}>
         Enregistrer
-      </Button>
+      </BoutonAction>
       <span className="flex items-center gap-1">
         <Input
           type="date"
@@ -53,7 +53,7 @@ export function BarreArticle(p: {
           onChange={(e) => setDate(e.target.value)}
           className="w-auto"
         />
-        <Button
+        <BoutonAction
           variant="secondaire"
           disabled={p.enCours || !date}
           onClick={() => {
@@ -62,11 +62,14 @@ export function BarreArticle(p: {
           }}
         >
           Planifier
-        </Button>
+        </BoutonAction>
       </span>
-      <Button disabled={p.enCours} onClick={() => (p.bloquants ? p.onVoirSeo() : p.onPublier())}>
+      <BoutonAction
+        disabled={p.enCours}
+        onClick={() => (p.bloquants ? p.onVoirSeo() : p.onPublier())}
+      >
         Publier
-      </Button>
+      </BoutonAction>
     </header>
   );
 }

@@ -1,4 +1,4 @@
-import { Button, CLASSES_CHAMP, PageErreur, classesChip } from '@ph/ui';
+import { BoutonEnvoi, Button, CLASSES_CHAMP, classesChip, PageErreur } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { EnteteErreur, PiedErreur } from './Cadre';
@@ -35,9 +35,7 @@ export function PageIntrouvable({ espace }: { espace: EspacePublic }) {
               enterKeyHint="search"
             />
           </label>
-          <Button type="submit" taille="lg">
-            Rechercher
-          </Button>
+          <BoutonEnvoi taille="lg">Rechercher</BoutonEnvoi>
         </form>
       }
       actions={

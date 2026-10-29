@@ -35,7 +35,7 @@ function Ajout({
         maxLength={max}
         onChange={(e) => setNom(e.target.value)}
       />
-      <Button type="submit" variant="secondaire" disabled={enCours}>
+      <Button chargement={enCours} type="submit" variant="secondaire" disabled={enCours}>
         Ajouter
       </Button>
     </form>

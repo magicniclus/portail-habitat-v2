@@ -1,7 +1,7 @@
 'use client';
 
 import { LIBELLES_TON, TONS_REDACTION, type TypeRedaction } from '@ph/core/ia';
-import { Banner, Button, Select } from '@ph/ui';
+import { Banner, BoutonAction, Button, Select } from '@ph/ui';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
@@ -55,7 +55,7 @@ export function AssistantRedaction({
       <p className="m-0 text-sm font-semibold">Assistant de rédaction</p>
       <div className="flex flex-wrap items-center gap-2">
         {infos ? (
-          <Button
+          <BoutonAction
             type="button"
             variant="secondaire"
             taille="sm"
@@ -63,9 +63,9 @@ export function AssistantRedaction({
             onClick={() => demander('generer')}
           >
             Rédiger à partir des infos
-          </Button>
+          </BoutonAction>
         ) : null}
-        <Button
+        <BoutonAction
           type="button"
           variant="secondaire"
           taille="sm"
@@ -73,7 +73,7 @@ export function AssistantRedaction({
           onClick={() => demander('relire')}
         >
           Relire et corriger
-        </Button>
+        </BoutonAction>
         <label className="flex items-center gap-2 text-sm">
           <span className="sr-only">Ton de la réécriture</span>
           <Select value={ton} onChange={(e) => setTon(e.target.value as typeof ton)}>

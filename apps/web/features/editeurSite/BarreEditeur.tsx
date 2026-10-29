@@ -40,7 +40,7 @@ export function BarreEditeur(p: {
   etat: string;
   apercu: boolean;
   onApercu: () => void;
-  onPublier: () => void;
+  onPublier: () => unknown;
   enCours: boolean;
   /** Aperçu gratuit de l'IA affiché : rien à publier (SITE-IA-01). */
   publicationBloquee?: boolean;

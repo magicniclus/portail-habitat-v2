@@ -3,7 +3,7 @@
 import { TAUX_TVA, type TauxTva } from '@ph/core/devis';
 import { formatEuros, parseEuros } from '@ph/core/format';
 import type { PrestationBiblio } from '@ph/firebase/devis';
-import { Button, Field, Input, Select } from '@ph/ui';
+import { BoutonAction, Button, Field, Input, Select } from '@ph/ui';
 import { useState, type FormEvent } from 'react';
 import { useAppelDevis } from './appelDevis';
 
@@ -90,7 +90,7 @@ export function BibliothequePrestations({
           </Field>
           {invalide ? <p className="m-0 text-sm text-danger">{invalide}</p> : null}
           <div className="flex gap-2 min-[900px]:col-span-5">
-            <Button type="submit" disabled={enCours}>
+            <Button chargement={enCours} type="submit" disabled={enCours}>
               Ajouter
             </Button>
             <Button variant="fantome" onClick={() => setAjout(false)}>
@@ -128,19 +128,19 @@ export function BibliothequePrestations({
                   </td>
                   {peutGerer ? (
                     <td className={cellule}>
-                      <Button
+                      <BoutonAction
                         variant="fantome"
                         disabled={enCours}
                         aria-label={`Supprimer ${p.designation}`}
                         onClick={() =>
-                          void appeler('/api/pro/devis/bibliotheque', {
+                          appeler('/api/pro/devis/bibliotheque', {
                             action: 'supprimer',
                             id: p.id,
                           })
                         }
                       >
                         Supprimer
-                      </Button>
+                      </BoutonAction>
                     </td>
                   ) : null}
                 </tr>

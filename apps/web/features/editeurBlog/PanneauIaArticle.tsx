@@ -7,7 +7,7 @@ import {
   type LongueurArticle,
   type SortieIaBlog,
 } from '@ph/core/blog';
-import { Banner, Button, Checkbox, Chip, ChipGroup, Field, Input } from '@ph/ui';
+import { Banner, BoutonAction, Button, Checkbox, Chip, ChipGroup, Field, Input } from '@ph/ui';
 import { useState } from 'react';
 import { PlusArticles } from '@/features/blog/PlusArticles';
 import { posterJson } from '@/lib/posterJson';
@@ -150,14 +150,14 @@ export function PanneauIaArticle({
               {l}
             </Button>
           ))}
-          <Button
+          <BoutonAction
             taille="sm"
             variant="secondaire"
             disabled={Boolean(enCours)}
-            onClick={() => void demander('idees')}
+            onClick={() => demander('idees')}
           >
             ✦ Idées d’articles
-          </Button>
+          </BoutonAction>
         </div>
       </section>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

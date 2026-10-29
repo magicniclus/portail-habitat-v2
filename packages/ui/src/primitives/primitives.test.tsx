@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { axe } from '../test/setup';
 import { Badge, StatusBadge } from './Badge';
+import { BoutonAction } from './BoutonAction';
 import { Button } from './Button';
 import { Chargeur } from './Chargeur';
 import { ATTRIBUTS_CHAMP } from './champs';
@@ -27,6 +28,21 @@ describe('Logo', () => {
   it('garde le nom lisible quand seule l’icône est visible', () => {
     render(<Logo iconeSeule />);
     expect(screen.getByText('PORTAIL TRAVAUX')).toHaveClass('sr-only');
+  });
+});
+
+describe('BoutonAction', () => {
+  it('chargeur pendant la promesse, puis de nouveau cliquable', async () => {
+    let fin!: () => void;
+    render(
+      <BoutonAction onClick={() => new Promise<void>((r) => (fin = r))}>Accepter</BoutonAction>,
+    );
+    const b = screen.getByRole('button', { name: 'Accepter' });
+    await userEvent.click(b);
+    expect(b).toHaveAttribute('aria-busy', 'true');
+    fin();
+    await vi.waitFor(() => expect(b).not.toHaveAttribute('aria-busy'));
+    expect(b).toBeEnabled();
   });
 });
 

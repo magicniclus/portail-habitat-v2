@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button } from '@ph/ui';
+import { Banner, BoutonAction, Button } from '@ph/ui';
 import { useAppelSite } from './appelSite';
 
 /** « Publier » : liens et boutons vérifiés côté serveur, message clair si la publication est bloquée (SITE-09). */
@@ -21,13 +21,13 @@ export function BoutonRetablir({ version }: { version: number }) {
   const { appeler, erreur, enCours } = useAppelSite();
   return (
     <span className="grid gap-1">
-      <Button
+      <BoutonAction
         variant="secondaire"
-        onClick={() => void appeler('retablir', { version })}
+        onClick={() => appeler('retablir', { version })}
         disabled={enCours}
       >
         Remettre en ligne
-      </Button>
+      </BoutonAction>
       {erreur ? <span className="text-sm text-danger">{erreur}</span> : null}
     </span>
   );

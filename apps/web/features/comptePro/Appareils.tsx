@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button, ConfirmDialog } from '@ph/ui';
+import { Banner, BoutonAction, Button, ConfirmDialog } from '@ph/ui';
 import { useState } from 'react';
 import { LigneReglage } from '@/features/espace/LigneReglage';
 import { authClient } from '@/lib/firebaseClient';
@@ -35,9 +35,9 @@ export function Appareils({ appareil }: { appareil: string }) {
         libelle={appareil}
         valeur="Cet appareil · actif maintenant"
         action={
-          <Button variant="secondaire" taille="sm" onClick={() => deconnecter(false)}>
+          <BoutonAction variant="secondaire" taille="sm" onClick={() => deconnecter(false)}>
             Se déconnecter
-          </Button>
+          </BoutonAction>
         }
       />
       <LigneReglage

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Feuille } from '@ph/ui';
+import { BoutonAction, Button, Feuille } from '@ph/ui';
 import { useState, type ReactNode } from 'react';
 import { routes } from '@/lib/routes';
 
@@ -22,7 +22,9 @@ export function DemanderAvis({ declencheur }: { declencheur?: ReactNode } = {}) 
       declencheur={declencheur ?? <Button variant="secondaire">Demander un avis</Button>}
       description="Envoyez ce lien à votre client : il choisit votre entreprise et laisse son avis, vérifié avant publication."
       actions={
-        <Button onClick={() => void copier()}>{copie ? 'Lien copié' : 'Copier le lien'}</Button>
+        <BoutonAction onClick={() => copier()}>
+          {copie ? 'Lien copié' : 'Copier le lien'}
+        </BoutonAction>
       }
     >
       <p className="m-0 rounded-md bg-neutre-100 p-3 text-sm break-all">

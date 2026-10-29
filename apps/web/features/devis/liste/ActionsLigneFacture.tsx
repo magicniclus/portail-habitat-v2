@@ -77,7 +77,7 @@ export function ActionsLigneFacture({ f }: { f: FactureLigne }) {
               {
                 libelle: 'Envoyer par email',
                 icone: <EnvelopeSimpleIcon size={20} />,
-                onClick: () => void action('envoyer', 'Envoyée au client par email.'),
+                onClick: () => action('envoyer', 'Envoyée au client par email.'),
               },
             ]
           : []),

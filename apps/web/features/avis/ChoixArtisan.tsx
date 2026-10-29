@@ -1,7 +1,7 @@
 'use client';
 
 import { normaliser } from '@ph/core/recherche';
-import { bouton, Field, Input } from '@ph/ui';
+import { bouton, Chargeur, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
@@ -58,9 +58,11 @@ export function ChoixArtisan({ onChoisir }: { onChoisir: (a: ArtisanAvis) => voi
         </p>
       </div>
       <p className="m-0 mb-3.5 text-[14.5px] font-semibold text-neutre-800" aria-live="polite">
-        {artisans === null
-          ? 'Chargement des artisans…'
-          : `${liste.length} artisan${liste.length > 1 ? 's' : ''} trouvé${liste.length > 1 ? 's' : ''}`}
+        {artisans === null ? (
+          <Chargeur taille="sm" message="Chargement des artisans…" />
+        ) : (
+          `${liste.length} artisan${liste.length > 1 ? 's' : ''} trouvé${liste.length > 1 ? 's' : ''}`
+        )}
       </p>
       <ul className="m-0 grid list-none gap-3.5 p-0">
         {liste.map((a) => (

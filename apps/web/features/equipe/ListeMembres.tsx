@@ -3,7 +3,8 @@
 import { LIBELLES_ROLE, peut, peutQuitter, type Membre } from '@ph/core/equipe';
 import { formatRelatif } from '@ph/core/format';
 import type { MembreEquipe } from '@ph/firebase/pro';
-import { Badge, Banner, Button, ConfirmDialog } from '@ph/ui';
+import { Badge, Banner, Button, Chargeur, ConfirmDialog } from '@ph/ui';
+import { useState } from 'react';
 import { useActionEquipe } from './useActionEquipe';
 
 const ROLES_MODIFIABLES = ['gerant', 'collaborateur', 'comptable'] as const;
@@ -24,6 +25,7 @@ export function ListeMembres({
   moiUid: string;
 }) {
   const { appeler, erreur, enCours } = useActionEquipe();
+  const [cible, setCible] = useState<string | null>(null);
   const quittable = peutQuitter(membres, moiUid);
 
   return (
@@ -67,9 +69,14 @@ export function ListeMembres({
                     id={`role-${m.uid}`}
                     value={m.role}
                     disabled={enCours}
-                    onChange={(e) =>
-                      void appeler('modifier', { artisanId, uid: m.uid, role: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setCible(m.uid);
+                      void appeler('modifier', {
+                        artisanId,
+                        uid: m.uid,
+                        role: e.target.value,
+                      }).finally(() => setCible(null));
+                    }}
                     className="min-h-11 cursor-pointer rounded-md border border-trait bg-blanc px-3 text-base"
                   >
                     {ROLES_MODIFIABLES.filter((r) =>
@@ -80,6 +87,7 @@ export function ListeMembres({
                       </option>
                     ))}
                   </select>
+                  {cible === m.uid ? <Chargeur taille="xs" libelle="Changement du rôle…" /> : null}
                   <ConfirmDialog
                     titre={`Retirer ${m.nom} de l'équipe ?`}
                     libelleConfirmer="Retirer"

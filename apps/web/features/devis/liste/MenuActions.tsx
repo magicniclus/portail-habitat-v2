@@ -1,6 +1,7 @@
 'use client';
 
 import { DotsThreeVerticalIcon, InfoIcon } from '@phosphor-icons/react';
+import { Chargeur } from '@ph/ui';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 
 export interface ActionMenu {
@@ -8,7 +9,8 @@ export interface ActionMenu {
   icone: ReactNode;
   /** Lien (téléchargement du PDF) ou action. */
   href?: string;
-  onClick?: () => void;
+  /** Une promesse renvoyée : chargeur à la place du « ⋮ » jusqu'à la fin de l'action. */
+  onClick?: () => unknown;
   /** Action impossible : grisée, avec la raison (« Suppression impossible »). */
   raison?: string;
 }
@@ -22,6 +24,7 @@ const item =
  */
 export function MenuActions({ libelle, actions }: { libelle: string; actions: ActionMenu[] }) {
   const [ouvert, setOuvert] = useState(false);
+  const [occupe, setOccupe] = useState(false);
   const id = useId();
   const racine = useRef<HTMLDivElement>(null);
   const bouton = useRef<HTMLButtonElement>(null);
@@ -54,10 +57,16 @@ export function MenuActions({ libelle, actions }: { libelle: string; actions: Ac
         aria-label={libelle}
         aria-expanded={ouvert}
         aria-controls={id}
+        {...(occupe ? { 'aria-busy': true } : {})}
+        disabled={occupe}
         onClick={() => setOuvert((o) => !o)}
         className="grid size-11 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-neutre-800 hover:bg-neutre-100 focus-visible:outline-2 focus-visible:outline-accent"
       >
-        <DotsThreeVerticalIcon size={22} weight="bold" aria-hidden="true" />
+        {occupe ? (
+          <Chargeur taille="sm" ton="courant" decoratif />
+        ) : (
+          <DotsThreeVerticalIcon size={22} weight="bold" aria-hidden="true" />
+        )}
       </button>
       {ouvert ? (
         <div
@@ -88,7 +97,11 @@ export function MenuActions({ libelle, actions }: { libelle: string; actions: Ac
                 type="button"
                 onClick={() => {
                   fermer();
-                  a.onClick?.();
+                  const r = a.onClick?.();
+                  if (r instanceof Promise) {
+                    setOccupe(true);
+                    void r.finally(() => setOccupe(false));
+                  }
                 }}
                 className={item}
               >

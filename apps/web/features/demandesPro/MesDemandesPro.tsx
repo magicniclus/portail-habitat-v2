@@ -106,7 +106,7 @@ export function MesDemandesPro({
               uid={uid}
               peutDevis={peutDevis}
               enCours={enCours === d.demandeId}
-              agir={(a) => void agir(d, a)}
+              agir={(a) => agir(d, a)}
             />
           ))}
         </ul>

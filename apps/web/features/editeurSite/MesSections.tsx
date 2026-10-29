@@ -1,7 +1,7 @@
 'use client';
 
 import type { SectionEnregistree } from '@ph/firebase/sites';
-import { Button, Chargeur } from '@ph/ui';
+import { BoutonAction, Chargeur } from '@ph/ui';
 import { useEffect, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
@@ -55,14 +55,14 @@ export function MesSections({
             <button type="button" className={`${carte} flex-1`} onClick={() => onInserer(s)}>
               <span className="font-semibold">{s.nom}</span>
             </button>
-            <Button
+            <BoutonAction
               variant="fantome"
               taille="sm"
               aria-label={`Supprimer ${s.nom} de Mes zones`}
-              onClick={() => void appeler({ action: 'supprimer', id: s.id })}
+              onClick={() => appeler({ action: 'supprimer', id: s.id })}
             >
               ×
-            </Button>
+            </BoutonAction>
           </li>
         ))}
       </ul>

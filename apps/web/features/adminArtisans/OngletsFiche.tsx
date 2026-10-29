@@ -2,7 +2,7 @@ import { LIBELLES_PLAN } from '@ph/core/admin';
 import { LIBELLES_TYPE_DOCUMENT } from '@ph/core/espace-pro';
 import { formatDate } from '@ph/core/format';
 import type { FicheArtisanAdmin as Fiche } from '@ph/firebase/admin-serveur';
-import { Button, Field, Textarea } from '@ph/ui';
+import { BoutonEnvoi, Field, Textarea } from '@ph/ui';
 import type { ReactNode } from 'react';
 import { ajouterNote } from './actions';
 import { DecisionDocument } from './DecisionDocument';
@@ -64,9 +64,7 @@ function Notes({ f, peutNoter }: { f: Fiche; peutNoter: boolean }) {
           <Field label="Nouvelle note interne">
             <Textarea name="texte" rows={3} required minLength={2} />
           </Field>
-          <Button type="submit" variant="secondaire">
-            Ajouter la note
-          </Button>
+          <BoutonEnvoi variant="secondaire">Ajouter la note</BoutonEnvoi>
         </form>
       ) : null}
     </>

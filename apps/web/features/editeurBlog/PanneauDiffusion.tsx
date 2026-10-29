@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Chip, ChipGroup } from '@ph/ui';
+import { BoutonAction, Chip, ChipGroup } from '@ph/ui';
 import { useState } from 'react';
 import type { ChampsArticle } from './useArticle';
 
@@ -56,18 +56,18 @@ export function PanneauDiffusion({
         {texte || 'Écrivez d’abord le titre et la description.'}
       </pre>
       <div>
-        <Button
+        <BoutonAction
           variant="secondaire"
           disabled={!c.titre}
           onClick={() =>
-            void navigator.clipboard.writeText(texte).then(() => {
+            navigator.clipboard.writeText(texte).then(() => {
               setCopie(true);
               setTimeout(() => setCopie(false), 2000);
             })
           }
         >
           {copie ? 'Texte copié' : 'Copier le texte'}
-        </Button>
+        </BoutonAction>
       </div>
     </div>
   );

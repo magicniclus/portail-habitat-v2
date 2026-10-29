@@ -1,4 +1,4 @@
-import { Banner, Button } from '@ph/ui';
+import { Banner, BoutonEnvoi } from '@ph/ui';
 import type { Metadata } from 'next';
 import { confirmerTelephone } from '@/features/partenaires/actions';
 
@@ -35,7 +35,7 @@ export default async function ConfirmerTelephone({
             Confirmez que ce numéro est bien le vôtre.
           </p>
           <input type="hidden" name="jeton" value={p.jeton ?? ''} />
-          <Button type="submit">Confirmer mon numéro</Button>
+          <BoutonEnvoi>Confirmer mon numéro</BoutonEnvoi>
         </form>
       )}
     </main>

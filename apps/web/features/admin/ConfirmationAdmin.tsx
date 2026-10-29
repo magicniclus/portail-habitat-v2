@@ -1,7 +1,7 @@
 'use client';
 
 import { MOTIF_MIN } from '@ph/core/admin';
-import { Banner, Button, Checkbox, Feuille, Field, Textarea } from '@ph/ui';
+import { Banner, BoutonAction, Button, Checkbox, Feuille, Field, Textarea } from '@ph/ui';
 import { useState, type ReactNode } from 'react';
 
 /**
@@ -63,13 +63,13 @@ export function ConfirmationAdmin({
         </Button>
       }
       actions={
-        <Button
+        <BoutonAction
           variant={danger ? 'danger' : 'primaire'}
           disabled={!pret || enCours}
-          onClick={() => void confirmer()}
+          onClick={() => confirmer()}
         >
           Confirmer
-        </Button>
+        </BoutonAction>
       }
     >
       <div className="grid gap-4">

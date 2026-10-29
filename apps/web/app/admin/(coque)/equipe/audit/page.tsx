@@ -1,7 +1,7 @@
 import { formatDate } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import { FILTRES_AUDIT, lireJournalAdmin, type FiltreAudit } from '@ph/firebase/admin-serveur';
-import { Button, Field, Input, Select, bouton } from '@ph/ui';
+import { bouton, BoutonEnvoi, Field, Input, Select } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { forbidden } from 'next/navigation';
@@ -48,9 +48,7 @@ export default async function AuditAdmin({ searchParams }: { searchParams: Param
         <Field label="Valeur">
           <Input name="valeur" defaultValue={valeur} placeholder="adminModererAvis, avis/…" />
         </Field>
-        <Button type="submit" variant="secondaire">
-          Filtrer
-        </Button>
+        <BoutonEnvoi variant="secondaire">Filtrer</BoutonEnvoi>
         <a href={exporter} className={bouton({ variant: 'fantome' })}>
           Exporter en CSV
         </a>

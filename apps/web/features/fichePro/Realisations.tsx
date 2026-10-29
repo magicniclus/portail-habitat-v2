@@ -3,6 +3,7 @@
 import type { RealisationPro } from '@ph/firebase/pro';
 import { ImageIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { CarteProjet } from './CarteProjet';
 import { FormulaireProjet } from './FormulaireProjet';
@@ -21,8 +22,11 @@ export function Realisations({
   nomsMetiers: Record<string, string>;
 }) {
   const router = useRouter();
-  const ecrire = async (url: string, corps: object) => {
+  const [occupe, setOccupe] = useState<string | null>(null);
+  const ecrire = async (url: string, corps: { rid: string; publie?: boolean }) => {
+    setOccupe(corps.rid);
     const r = await posterJson<null>(url, corps);
+    setOccupe(null);
     if (r.ok) router.refresh();
   };
   const grille =
@@ -69,6 +73,7 @@ export function Realisations({
           r={r}
           {...(nomsMetiers[r.metier] ? { nomMetier: nomsMetiers[r.metier] } : {})}
           modifiable={peutModifier}
+          occupe={occupe === r.id}
           basculer={(publie) => void ecrire('/api/pro/realisations/publier', { rid: r.id, publie })}
           retirer={() => void ecrire('/api/pro/realisations/supprimer', { rid: r.id })}
         />

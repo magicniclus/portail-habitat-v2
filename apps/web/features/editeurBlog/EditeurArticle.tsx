@@ -67,9 +67,9 @@ export function EditeurArticle({ d, moi }: { d: EditeurArticleDonnees; moi: stri
         bloquants={a.seo.bloquants.length}
         enCours={a.enCours}
         onVoirSeo={voirSeo}
-        onEnregistrer={() => void a.enregistrer()}
+        onEnregistrer={() => a.enregistrer()}
         onPlanifier={(date) => void a.planifier(date)}
-        onPublier={() => void a.publier()}
+        onPublier={() => a.publier()}
       />
       {a.message ? (
         <Banner tone={a.message.ton} className="m-3">

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button, bouton } from '@ph/ui';
+import { Banner, bouton, BoutonAction } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -67,37 +67,39 @@ export function ActionsDevis({
           </a>
         ) : null}
         {peutGerer && statut === 'envoye' ? (
-          <Button
+          <BoutonAction
             variant={envoye ? 'secondaire' : 'primaire'}
             disabled={enCours}
             onClick={() =>
-              void appeler('/api/pro/devis/action', { action: 'envoyer', devisId }, () =>
-                setEnvoi(true),
-              )
+              appeler('/api/pro/devis/action', { action: 'envoyer', devisId }, () => setEnvoi(true))
             }
           >
             {envoye ? 'Renvoyer au client' : 'Envoyer au client'}
-          </Button>
+          </BoutonAction>
         ) : null}
         {peutGerer && statut === 'envoye' ? (
           <>
-            <Button onClick={() => statutDevis('accepte')} disabled={enCours}>
+            <BoutonAction onClick={() => statutDevis('accepte')} disabled={enCours}>
               Le client a accepté
-            </Button>
-            <Button variant="secondaire" onClick={() => statutDevis('refuse')} disabled={enCours}>
+            </BoutonAction>
+            <BoutonAction
+              variant="secondaire"
+              onClick={() => statutDevis('refuse')}
+              disabled={enCours}
+            >
               Le client a refusé
-            </Button>
+            </BoutonAction>
           </>
         ) : null}
         {peutFacturer && acompte && ['envoye', 'accepte'].includes(statut) ? (
-          <Button variant="secondaire" onClick={() => facturer('acompte')} disabled={enCours}>
+          <BoutonAction variant="secondaire" onClick={() => facturer('acompte')} disabled={enCours}>
             Facturer l’acompte
-          </Button>
+          </BoutonAction>
         ) : null}
         {peutFacturer && statut === 'accepte' && !factureId ? (
-          <Button onClick={() => facturer('facture')} disabled={enCours}>
+          <BoutonAction onClick={() => facturer('facture')} disabled={enCours}>
             Transformer en facture
-          </Button>
+          </BoutonAction>
         ) : null}
         {factureId ? (
           <Link
@@ -108,11 +110,11 @@ export function ActionsDevis({
           </Link>
         ) : null}
         {peutGerer && !modele ? (
-          <Button
+          <BoutonAction
             variant="fantome"
             disabled={enCours}
             onClick={() =>
-              void appeler(
+              appeler(
                 '/api/pro/devis/modeles',
                 { action: 'depuisDevis', devisId, titre: (objet || 'Modèle').slice(0, 120) },
                 () => setModele(true),
@@ -120,12 +122,12 @@ export function ActionsDevis({
             }
           >
             Enregistrer comme modèle
-          </Button>
+          </BoutonAction>
         ) : null}
         {peutGerer && statut !== 'archive' ? (
-          <Button variant="fantome" onClick={() => statutDevis('archive')} disabled={enCours}>
+          <BoutonAction variant="fantome" onClick={() => statutDevis('archive')} disabled={enCours}>
             Archiver
-          </Button>
+          </BoutonAction>
         ) : null}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Banner, Button, Card, CardBody, CardHeader, CardTitle, Checkbox } from '@ph/ui';
+import { Banner, BoutonEnvoi, Card, CardBody, CardHeader, CardTitle, Checkbox } from '@ph/ui';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -80,9 +80,7 @@ export default async function Preferences({
                 Les emails de sécurité (connexion, mot de passe) et ceux qui suivent une de vos
                 actions (demande confirmée, facture) sont toujours envoyés.
               </p>
-              <Button type="submit" taille="lg">
-                Enregistrer
-              </Button>
+              <BoutonEnvoi taille="lg">Enregistrer</BoutonEnvoi>
             </form>
           </CardBody>
         </Card>

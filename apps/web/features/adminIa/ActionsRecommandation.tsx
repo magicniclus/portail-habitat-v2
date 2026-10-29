@@ -1,7 +1,7 @@
 'use client';
 
 import { LIBELLES_ACTION_IA } from '@ph/core/ia';
-import { Button } from '@ph/ui';
+import { BoutonAction, Button } from '@ph/ui';
 import { useState, useTransition } from 'react';
 import { agirRecommandation } from './actions';
 
@@ -16,13 +16,13 @@ export function ActionsRecommandation({ id, typeAction }: { id: string; typeActi
     demarrer(async () => setErreur(await agirRecommandation(e)));
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <Button
+      <BoutonAction
         taille="sm"
         disabled={enCours}
         onClick={() => agir({ id, action: typeAction === 'ab_test' ? 'ab_test' : 'tache' })}
       >
         {LIBELLES_ACTION_IA[typeAction] ?? 'Créer la tâche'}
-      </Button>
+      </BoutonAction>
       {typeAction === 'ab_test' ? (
         <button
           type="button"
@@ -65,7 +65,13 @@ export function ActionsRecommandation({ id, typeAction }: { id: string; typeActi
               className="min-h-11 rounded-control border border-trait px-3 text-base"
             />
           </label>
-          <Button taille="sm" variant="secondaire" type="submit" disabled={enCours}>
+          <Button
+            chargement={enCours}
+            taille="sm"
+            variant="secondaire"
+            type="submit"
+            disabled={enCours}
+          >
             Ignorer
           </Button>
         </form>

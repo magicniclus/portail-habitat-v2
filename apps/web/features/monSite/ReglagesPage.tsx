@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@ph/ui';
+import { Chargeur, cn } from '@ph/ui';
 import type { ReactNode } from 'react';
 import type { LignePage } from '@/server/sites';
 import { useAppelSite } from './appelSite';
@@ -40,6 +40,7 @@ export function ReglagesPage({ page, children }: { page: LignePage; children: Re
         </span>
         Menu
       </button>
+      {enCours ? <Chargeur taille="xs" libelle="Enregistrement…" /> : null}
       <span className="flex items-center gap-1.5">
         {children}
         {page.id === 'accueil' ? (

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button, Textarea } from '@ph/ui';
+import { Banner, BoutonAction, Textarea } from '@ph/ui';
 import { useState } from 'react';
 import { marquerPublication } from './actionsFacebook';
 
@@ -38,15 +38,15 @@ export function PublicationFacebook({
     <div className="grid gap-3">
       <Textarea readOnly value={texte} rows={14} aria-label="Texte de la publication" />
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => void copier()}>Copier le texte</Button>
-        <Button
+        <BoutonAction onClick={() => copier()}>Copier le texte</BoutonAction>
+        <BoutonAction
           variant="secondaire"
           disabled={Boolean(desactive)}
           title={desactive}
-          onClick={() => void marquer()}
+          onClick={() => marquer()}
         >
           Marquer comme publiée
-        </Button>
+        </BoutonAction>
       </div>
       {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
     </div>

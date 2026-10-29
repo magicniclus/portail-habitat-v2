@@ -7,7 +7,7 @@ import {
   type TauxTva,
 } from '@ph/core/devis';
 import type { ClientCarnet, PrestationBiblio } from '@ph/firebase/devis';
-import { Button } from '@ph/ui';
+import { BoutonAction, Button } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -173,13 +173,13 @@ export function EditeurDevis({
               ? 'Mentions complètes'
               : `${manquantes} mention${manquantes > 1 ? 's' : ''} à compléter`}
           </span>
-          <Button variant="secondaire" onClick={surEnregistrer} disabled={enCours !== null}>
+          <BoutonAction variant="secondaire" onClick={surEnregistrer} disabled={enCours !== null}>
             {enCours === 'enregistrer'
               ? 'Enregistrement…'
               : e.devisId
                 ? 'Enregistrer'
                 : 'Créer le devis'}
-          </Button>
+          </BoutonAction>
           <Button
             chargement={enCours === 'envoyer'}
             onClick={surValider}

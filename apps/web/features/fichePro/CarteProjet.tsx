@@ -1,7 +1,7 @@
 'use client';
 
 import type { RealisationPro } from '@ph/firebase/pro';
-import { Button } from '@ph/ui';
+import { Button, Chargeur } from '@ph/ui';
 import { ImageIcon, MapPinIcon } from '@phosphor-icons/react';
 
 /**
@@ -14,16 +14,24 @@ export function CarteProjet({
   modifiable,
   basculer,
   retirer,
+  occupe = false,
 }: {
   r: RealisationPro;
   nomMetier?: string;
   modifiable: boolean;
   basculer: (publie: boolean) => void;
   retirer: () => void;
+  /** Écriture en cours sur ce projet : voile et chargeur sur la carte. */
+  occupe?: boolean;
 }) {
   const photo = r.photos[0];
   return (
-    <li className="flex flex-col overflow-hidden rounded-[14px] border border-trait bg-blanc">
+    <li className="relative flex flex-col overflow-hidden rounded-[14px] border border-trait bg-blanc">
+      {occupe ? (
+        <div className="absolute inset-0 z-10 grid animate-[apparaitre-apres_.15s_step-end_both] place-items-center bg-blanc/65 backdrop-blur-[1.5px]">
+          <Chargeur taille="md" />
+        </div>
+      ) : null}
       <div className="relative aspect-[4/3] bg-neutre-200">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element -- photos Storage, dimensions connues

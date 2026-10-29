@@ -8,7 +8,7 @@ import {
 } from '@ph/core/conversion';
 import { NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
 import { formatDate } from '@ph/core/format';
-import { Banner, Button, RadioCard, RadioCardGroup } from '@ph/ui';
+import { Banner, BoutonAction, RadioCard, RadioCardGroup } from '@ph/ui';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
@@ -127,10 +127,10 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
         >
           <h2 className="m-0 text-xl">{OFFRES[alternative.type].titre}</h2>
           <p className="m-0 text-base text-neutre-800">{OFFRES[alternative.type].texte}</p>
-          <Button onClick={() => void accepter()} disabled={enCours}>
+          <BoutonAction onClick={() => accepter()} disabled={enCours}>
             {OFFRES[alternative.type].bouton}
-          </Button>
-          <Button
+          </BoutonAction>
+          <BoutonAction
             variant="secondaire"
             disabled={enCours}
             onClick={async () => {
@@ -139,10 +139,10 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
             }}
           >
             Non merci, résilier en fin de période
-          </Button>
+          </BoutonAction>
         </section>
       ) : (
-        <Button
+        <BoutonAction
           disabled={!raison || enCours}
           onClick={async () => {
             const r = await appeler<{ alternative: AlternativeResiliation }>('proposer');
@@ -150,7 +150,7 @@ export function ParcoursResiliation({ abonnements }: { abonnements: Abonnement[]
           }}
         >
           Continuer
-        </Button>
+        </BoutonAction>
       )}
     </div>
   );

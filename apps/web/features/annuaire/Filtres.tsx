@@ -1,6 +1,6 @@
 'use client';
 
-import { classesChip } from '@ph/ui';
+import { Chargeur, classesChip } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, useTransition, type ReactNode } from 'react';
 import { requeteFiltres } from './requete';
@@ -55,7 +55,7 @@ export function Filtres({
   const router = useRouter();
   const formulaire = useRef<HTMLFormElement>(null);
   const [rayon, setRayon] = useState(valeurs.rayon);
-  const [, demarrer] = useTransition();
+  const [enCours, demarrer] = useTransition();
   const minuterie = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Regroupe les changements rapprochés (curseur du rayon) : une seule navigation.
@@ -84,6 +84,7 @@ export function Filtres({
       aria-label="Filtres"
       className="grid gap-5"
     >
+      {enCours ? <Chargeur taille="sm" message="Mise à jour des résultats…" /> : null}
       <input type="hidden" name="q" value={valeurs.q} />
       <input type="hidden" name="ville" value={valeurs.ville} />
       <input type="hidden" name="tri" value={valeurs.tri} />

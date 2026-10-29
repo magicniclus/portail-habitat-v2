@@ -30,7 +30,7 @@ export function ReglagesNavigation(p: {
   onChange: (n: Navigation) => void;
   onPage: (p: Partial<PageSite>) => void;
   nonEnregistree: boolean;
-  onEnregistrer: () => void;
+  onEnregistrer: () => unknown;
   onAnnuler: () => void;
   enCours: boolean;
 }) {

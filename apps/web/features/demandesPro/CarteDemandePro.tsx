@@ -4,7 +4,7 @@ import { LIBELLES_ETAT_PRO, type EtatPro } from '@ph/core/espace-pro';
 import { formatFourchette, formatRelatif, formatTel, initiales } from '@ph/core/format';
 import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
-import { Badge, Button, bouton, type Tone } from '@ph/ui';
+import { Badge, bouton, BoutonAction, type Tone } from '@ph/ui';
 import Link from 'next/link';
 import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
 import { routes } from '@/lib/routes';
@@ -31,7 +31,7 @@ export function CarteDemandePro({
   uid: string;
   peutDevis: boolean;
   enCours: boolean;
-  agir: (action: ActionCarte) => void;
+  agir: (action: ActionCarte) => unknown;
 }) {
   const aMoi = d.assigneA?.uid === uid;
   return (
@@ -77,12 +77,12 @@ export function CarteDemandePro({
       <div className="flex flex-wrap gap-2">
         {d.etat === 'nouveau' ? (
           <>
-            <Button onClick={() => agir('accepter')} disabled={enCours}>
+            <BoutonAction onClick={() => agir('accepter')} disabled={enCours}>
               Accepter la demande
-            </Button>
-            <Button variant="secondaire" onClick={() => agir('refuser')} disabled={enCours}>
+            </BoutonAction>
+            <BoutonAction variant="secondaire" onClick={() => agir('refuser')} disabled={enCours}>
               Refuser
-            </Button>
+            </BoutonAction>
           </>
         ) : null}
         {d.contact ? (
@@ -109,9 +109,9 @@ export function CarteDemandePro({
           <ContesterAppelOffres appelOffresId={d.contestable.appelOffresId} />
         ) : null}
         {!aMoi && d.etat !== 'perdu' ? (
-          <Button variant="fantome" onClick={() => agir('prendre')} disabled={enCours}>
+          <BoutonAction variant="fantome" onClick={() => agir('prendre')} disabled={enCours}>
             Je m&apos;en occupe
-          </Button>
+          </BoutonAction>
         ) : null}
       </div>
     </li>

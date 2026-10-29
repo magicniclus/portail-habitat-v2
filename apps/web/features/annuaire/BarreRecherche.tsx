@@ -1,5 +1,5 @@
 import type { FiltresAnnuaireUrl } from '@ph/core/schemas';
-import { Button, classesChip } from '@ph/ui';
+import { BoutonEnvoi, classesChip } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 
@@ -59,9 +59,9 @@ export function BarreRecherche({ f }: { f: FiltresAnnuaireUrl }) {
         {Object.entries(conserves).map(([nom, valeur]) =>
           valeur ? <input key={nom} type="hidden" name={nom} value={valeur} /> : null,
         )}
-        <Button type="submit" taille="lg" className="min-h-[52px]">
+        <BoutonEnvoi taille="lg" className="min-h-[52px]">
           Rechercher
-        </Button>
+        </BoutonEnvoi>
       </form>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="text-[13.5px] text-neutre-800">Recherches fréquentes :</span>

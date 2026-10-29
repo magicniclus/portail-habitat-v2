@@ -3,7 +3,7 @@
 import { CATALOGUE_STRIPE } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
 import { choisirMoyen, type CarteAppelOffres } from '@ph/core/leads';
-import { Banner, Button, Feuille, bouton } from '@ph/ui';
+import { Banner, bouton, BoutonAction, Feuille } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -89,30 +89,30 @@ export function FeuilleDeblocage({
                 Payez ce chantier par carte, ou achetez un pack de crédits.
               </Banner>
             ) : (
-              <Button onClick={() => void debloquer('auto')} disabled={enCours}>
+              <BoutonAction onClick={() => debloquer('auto')} disabled={enCours}>
                 Utiliser {pluriel(carte.prix.credits)}
-              </Button>
+              </BoutonAction>
             )}
-            <Button
+            <BoutonAction
               variant={insuffisant ? 'primaire' : 'secondaire'}
-              onClick={() => void debloquer('carte')}
+              onClick={() => debloquer('carte')}
               disabled={enCours}
             >
               Payer {formatEuros(carte.prix.centimes)} HT par carte
-            </Button>
+            </BoutonAction>
             {insuffisant && peutAcheterPack ? (
               <ul aria-label="Packs de crédits" className="m-0 grid list-none gap-2 p-0">
                 {PACKS.map((p) => (
                   <li key={p.cle}>
-                    <Button
+                    <BoutonAction
                       variant="secondaire"
                       className="w-full justify-between"
                       disabled={enCours}
-                      onClick={() => void envoyer('/api/pro/credits/checkout', { cle: p.cle })}
+                      onClick={() => envoyer('/api/pro/credits/checkout', { cle: p.cle })}
                     >
                       <span>{p.nomProduit}</span>
                       <span>{formatEuros(p.montantHt)} HT</span>
-                    </Button>
+                    </BoutonAction>
                   </li>
                 ))}
               </ul>

@@ -2,7 +2,7 @@
 
 import { LIBELLES_MOYEN_PAIEMENT } from '@ph/core/devis';
 import { formatEuros, parseEuros } from '@ph/core/format';
-import { Banner, Button, ConfirmDialog, Field, Input, Select, bouton } from '@ph/ui';
+import { Banner, bouton, BoutonAction, Button, ConfirmDialog, Field, Input, Select } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -86,9 +86,9 @@ export function ActionsFacture({
           </a>
         ) : null}
         {relancable ? (
-          <Button variant="secondaire" disabled={enCours} onClick={() => void relancer()}>
+          <BoutonAction variant="secondaire" disabled={enCours} onClick={() => relancer()}>
             Relancer
-          </Button>
+          </BoutonAction>
         ) : null}
         {annulable ? (
           <Button variant="fantome" onClick={() => setAvoir(true)}>
@@ -130,7 +130,7 @@ export function ActionsFacture({
             </Field>
           </div>
           <div>
-            <Button type="submit" disabled={enCours}>
+            <Button chargement={enCours} type="submit" disabled={enCours}>
               Enregistrer le paiement
             </Button>
           </div>

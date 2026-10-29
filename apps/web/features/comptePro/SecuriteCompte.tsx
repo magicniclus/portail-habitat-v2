@@ -2,7 +2,7 @@
 
 import { resumeDeuxFacteurs } from '@ph/core/espace-pro';
 import type { ComptePro } from '@ph/firebase/pro';
-import { Badge, Banner, Button, ConfirmDialog } from '@ph/ui';
+import { Badge, Banner, BoutonAction, Button, ConfirmDialog } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LigneReglage } from '@/features/espace/LigneReglage';
@@ -62,9 +62,9 @@ function Google({ connexion }: { connexion: ComptePro['connexion'] }) {
       }
       action={
         connexion.google === null ? (
-          <Button variant="secondaire" taille="sm" onClick={() => agir(lierGoogle)}>
+          <BoutonAction variant="secondaire" taille="sm" onClick={() => agir(lierGoogle)}>
             Lier
-          </Button>
+          </BoutonAction>
         ) : connexion.motDePasse ? (
           <ConfirmDialog
             declencheur={

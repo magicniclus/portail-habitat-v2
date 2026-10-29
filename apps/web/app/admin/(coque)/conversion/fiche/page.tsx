@@ -1,4 +1,4 @@
-import { Button, Field, Input } from '@ph/ui';
+import { BoutonEnvoi, Field, Input } from '@ph/ui';
 import type { Metadata, Route } from 'next';
 import { redirect } from 'next/navigation';
 import { CLASSES_PAGE, EnteteConversion } from '@/features/adminConversion/EnteteConversion';
@@ -22,7 +22,7 @@ export default async function RechercheFicheCycle({
         <Field label="Identifiant de l’entreprise" className="grow">
           <Input name="id" required autoComplete="off" />
         </Field>
-        <Button type="submit">Ouvrir</Button>
+        <BoutonEnvoi>Ouvrir</BoutonEnvoi>
       </form>
       <p className="m-0 text-sm text-neutre-700">
         Astuce : le journal et les tâches ouvrent directement la fiche.

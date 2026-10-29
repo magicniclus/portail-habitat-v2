@@ -7,7 +7,7 @@ import type {
   ReponsesCreation,
   Theme,
 } from '@ph/core/sites';
-import { Banner, Button } from '@ph/ui';
+import { Banner, BoutonAction, Button } from '@ph/ui';
 import { useEffect, useRef, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { QuestionnaireCreation } from './QuestionnaireCreation';
@@ -140,9 +140,9 @@ export function AssistantCreation({
           {erreur}
           {suite ? (
             <span className="mt-2 block">
-              <Button taille="sm" onClick={() => void generer(suite.plan, suite.faites)}>
+              <BoutonAction taille="sm" onClick={() => generer(suite.plan, suite.faites)}>
                 Réessayer
-              </Button>
+              </BoutonAction>
             </span>
           ) : null}
         </Banner>

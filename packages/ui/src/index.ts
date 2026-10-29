@@ -19,6 +19,8 @@ export {
 } from './primitives/Badge';
 export { Skeleton } from './primitives/Skeleton';
 export { Chargeur, type ChargeurProps } from './primitives/Chargeur';
+export { BoutonAction, type BoutonActionProps } from './primitives/BoutonAction';
+export { BoutonEnvoi } from './primitives/BoutonEnvoi';
 export { ATTRIBUTS_CHAMP, CLASSES_CHAMP, type TypeChamp } from './primitives/champs';
 export { Field, useChamp, type FieldProps } from './primitives/Field';
 export { Input, Select, Textarea, type InputProps } from './primitives/Input';

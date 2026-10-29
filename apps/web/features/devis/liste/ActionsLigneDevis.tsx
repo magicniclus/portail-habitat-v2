@@ -78,14 +78,14 @@ export function ActionsLigneDevis({
     {
       libelle: 'Dupliquer le devis',
       icone: <CopyIcon size={20} />,
-      onClick: () => void agir('dupliquer'),
+      onClick: () => agir('dupliquer'),
     },
     ...(statut === 'envoye'
       ? [
           {
             libelle: envoye ? 'Renvoyer au client' : 'Envoyer au client',
             icone: <EnvelopeSimpleIcon size={20} />,
-            onClick: () => void agir('envoyer'),
+            onClick: () => agir('envoyer'),
           },
         ]
       : []),
@@ -94,7 +94,7 @@ export function ActionsLigneDevis({
           {
             libelle: 'Relancer par email',
             icone: <PaperPlaneTiltIcon size={20} />,
-            onClick: () => void agir('relancer'),
+            onClick: () => agir('relancer'),
           },
         ]
       : []),

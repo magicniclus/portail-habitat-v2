@@ -6,7 +6,7 @@ import {
   tonStatut,
   type StatutDevisManuel,
 } from '@ph/core/devis';
-import { Badge, cn } from '@ph/ui';
+import { Badge, Chargeur, cn } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -41,33 +41,36 @@ export function StatutDevisListe({
     return <Badge tone={tonStatut(statut)}>{libelleStatutDevis(statut, envoye)}</Badge>;
   return (
     <span className="grid gap-0.5">
-      <select
-        aria-label={`Statut du devis ${numero || 'brouillon'}`}
-        value={statut}
-        disabled={enCours}
-        onChange={async (x) => {
-          setEnCours(true);
-          setErreur(null);
-          const r = await posterJson<null>('/api/pro/devis/statut', {
-            devisId,
-            statut: x.target.value as StatutDevisManuel,
-          });
-          setEnCours(false);
-          if (!r.ok) return setErreur(r.message);
-          router.refresh();
-        }}
-        className={cn(
-          'min-h-11 w-fit cursor-pointer rounded-pill border px-3 text-base font-semibold',
-          TON[tonStatut(statut)],
-        )}
-      >
-        <option value={statut}>{libelleStatutDevis(statut, envoye)}</option>
-        {choix.map((s) => (
-          <option key={s} value={s}>
-            {libelleStatutDevis(s, true)}
-          </option>
-        ))}
-      </select>
+      <span className="flex items-center gap-2">
+        <select
+          aria-label={`Statut du devis ${numero || 'brouillon'}`}
+          value={statut}
+          disabled={enCours}
+          onChange={async (x) => {
+            setEnCours(true);
+            setErreur(null);
+            const r = await posterJson<null>('/api/pro/devis/statut', {
+              devisId,
+              statut: x.target.value as StatutDevisManuel,
+            });
+            setEnCours(false);
+            if (!r.ok) return setErreur(r.message);
+            router.refresh();
+          }}
+          className={cn(
+            'min-h-11 w-fit cursor-pointer rounded-pill border px-3 text-base font-semibold',
+            TON[tonStatut(statut)],
+          )}
+        >
+          <option value={statut}>{libelleStatutDevis(statut, envoye)}</option>
+          {choix.map((s) => (
+            <option key={s} value={s}>
+              {libelleStatutDevis(s, true)}
+            </option>
+          ))}
+        </select>
+        {enCours ? <Chargeur taille="xs" libelle="Changement du statut…" /> : null}
+      </span>
       {erreur ? (
         <span role="alert" className="text-xs text-danger">
           {erreur}

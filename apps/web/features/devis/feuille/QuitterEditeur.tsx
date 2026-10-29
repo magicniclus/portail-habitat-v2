@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, FermerFeuille, Modal } from '@ph/ui';
+import { BoutonAction, Button, FermerFeuille, Modal } from '@ph/ui';
 import { useState } from 'react';
 
 /**
@@ -19,7 +19,7 @@ export function QuitterEditeur({
   /** « le devis », « la facture ». */
   document: string;
   onBrouillon: () => Promise<boolean>;
-  onQuitter: () => void;
+  onQuitter: () => unknown;
 }) {
   const [enCours, setEnCours] = useState(false);
   return (
@@ -33,9 +33,9 @@ export function QuitterEditeur({
           <FermerFeuille asChild>
             <Button variant="secondaire">Continuer</Button>
           </FermerFeuille>
-          <Button variant="secondaire" onClick={onQuitter} disabled={enCours}>
+          <BoutonAction variant="secondaire" onClick={onQuitter} disabled={enCours}>
             Quitter sans enregistrer
-          </Button>
+          </BoutonAction>
           <Button
             chargement={enCours}
             disabled={enCours}

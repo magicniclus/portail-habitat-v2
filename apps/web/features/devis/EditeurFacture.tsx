@@ -2,7 +2,7 @@
 
 import type { ParametresFacturation, TauxTva } from '@ph/core/devis';
 import type { ClientCarnet, PrestationBiblio } from '@ph/firebase/devis';
-import { Button, ConfirmDialog } from '@ph/ui';
+import { BoutonAction, Button, ConfirmDialog } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -147,9 +147,9 @@ export function EditeurFacture({
               ? 'Mentions complètes'
               : `${manquantes.length} mention${manquantes.length > 1 ? 's' : ''} à compléter`}
           </span>
-          <Button variant="secondaire" onClick={brouillon} disabled={enCours}>
+          <BoutonAction variant="secondaire" onClick={brouillon} disabled={enCours}>
             Enregistrer le brouillon
-          </Button>
+          </BoutonAction>
           <ConfirmDialog
             titre="Émettre la facture ?"
             libelleConfirmer="Émettre la facture"

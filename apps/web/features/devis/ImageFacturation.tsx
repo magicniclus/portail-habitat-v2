@@ -1,7 +1,7 @@
 'use client';
 
 import { fichiers } from '@ph/firebase/chemins';
-import { Banner, Button, Chargeur } from '@ph/ui';
+import { Banner, BoutonAction, Chargeur } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { nomFichierSur, nouvelIdFichier, problemeFichier } from '@/features/fichePro/fichiers';
@@ -100,13 +100,13 @@ export function ImageFacturation({
           />
         </label>
         {present ? (
-          <Button
+          <BoutonAction
             variant="fantome"
             disabled={enCours}
-            onClick={() => void appeler({ action: 'retirer' })}
+            onClick={() => appeler({ action: 'retirer' })}
           >
             Retirer
-          </Button>
+          </BoutonAction>
         ) : null}
       </div>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

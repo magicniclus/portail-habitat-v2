@@ -1,7 +1,7 @@
 import { formatDate, formatNombre } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import { lirePublicationFacebook, lireResultatsFacebook } from '@ph/firebase/admin-serveur';
-import { Button, Card, CardBody, CardHeader, CardTitle, Field, Select } from '@ph/ui';
+import { BoutonEnvoi, Card, CardBody, CardHeader, CardTitle, Field, Select } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { NavAppelsOffres } from '@/features/adminAppelsOffres/NavAppelsOffres';
@@ -44,9 +44,7 @@ export default async function FacebookInvendues({
                   ))}
                 </Select>
               </Field>
-              <Button type="submit" variant="secondaire">
-                Afficher
-              </Button>
+              <BoutonEnvoi variant="secondaire">Afficher</BoutonEnvoi>
             </form>
           ) : null}
           {p.texte && p.departement ? (

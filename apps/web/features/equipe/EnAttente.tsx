@@ -3,7 +3,7 @@
 import { formatDate, formatRelatif } from '@ph/core/format';
 import { LIBELLES_ROLE } from '@ph/core/equipe';
 import type { Equipe } from '@ph/firebase/pro';
-import { Badge, Banner, Button } from '@ph/ui';
+import { Badge, Banner, BoutonAction } from '@ph/ui';
 import { useActionEquipe } from './useActionEquipe';
 
 /** Invitations en cours (elles occupent un siège) et demandes pour rejoindre (COMPTES §4.2, §4.4). */
@@ -36,14 +36,14 @@ export function EnAttente({
               </span>
               <span className="flex items-center gap-2">
                 <Badge tone="info">En attente</Badge>
-                <Button
+                <BoutonAction
                   variant="fantome"
                   taille="sm"
                   disabled={enCours}
-                  onClick={() => void appeler('revoquer', { artisanId, invitationId: i.id })}
+                  onClick={() => appeler('revoquer', { artisanId, invitationId: i.id })}
                 >
                   Annuler
-                </Button>
+                </BoutonAction>
               </span>
             </li>
           ))}
@@ -59,11 +59,11 @@ export function EnAttente({
               </span>
               {d.message ? <p className="m-0 text-sm">{d.message}</p> : null}
               <span className="flex flex-wrap gap-2">
-                <Button
+                <BoutonAction
                   taille="sm"
                   disabled={enCours}
                   onClick={() =>
-                    void appeler('demande-acces', {
+                    appeler('demande-acces', {
                       artisanId,
                       demandeId: d.id,
                       accepter: true,
@@ -72,17 +72,17 @@ export function EnAttente({
                   }
                 >
                   Accepter comme collaborateur
-                </Button>
-                <Button
+                </BoutonAction>
+                <BoutonAction
                   variant="secondaire"
                   taille="sm"
                   disabled={enCours}
                   onClick={() =>
-                    void appeler('demande-acces', { artisanId, demandeId: d.id, accepter: false })
+                    appeler('demande-acces', { artisanId, demandeId: d.id, accepter: false })
                   }
                 >
                   Refuser
-                </Button>
+                </BoutonAction>
               </span>
             </li>
           ))}

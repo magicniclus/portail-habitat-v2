@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button, Field, Select, Textarea } from '@ph/ui';
+import { Banner, BoutonAction, Field, Select, Textarea } from '@ph/ui';
 import { useState } from 'react';
 import { ConfirmationAdmin } from '@/features/admin/ConfirmationAdmin';
 import { deciderLitige, envoyerMessageLitige } from './actions';
@@ -35,9 +35,9 @@ export function ActionsLitige({ id, peut }: { id: string; peut: boolean }) {
       </Field>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div className="flex flex-wrap gap-2">
-        <Button onClick={envoyer} disabled={!peut || enCours || texte.trim().length < 5}>
+        <BoutonAction onClick={envoyer} disabled={!peut || enCours || texte.trim().length < 5}>
           Envoyer
-        </Button>
+        </BoutonAction>
         <ConfirmationAdmin
           libelle="Clore le litige"
           titre="Clore le litige"

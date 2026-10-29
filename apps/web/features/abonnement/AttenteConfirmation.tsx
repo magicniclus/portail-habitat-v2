@@ -1,7 +1,7 @@
 'use client';
 
 import { NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
-import { Banner, bouton } from '@ph/ui';
+import { Banner, bouton, Chargeur } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -82,6 +82,7 @@ export function AttenteConfirmation({
     );
   return (
     <div className="grid gap-4" role="status" aria-live="polite">
+      <Chargeur taille="lg" decoratif />
       <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Confirmation du paiement…</h1>
       {etat === 'long' ? (
         <Banner tone="info">

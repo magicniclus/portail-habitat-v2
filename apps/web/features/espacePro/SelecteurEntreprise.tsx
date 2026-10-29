@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner } from '@ph/ui';
+import { Banner, ChargementPage } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState, useTransition } from 'react';
 import { posterJson } from '@/lib/posterJson';
@@ -47,6 +47,10 @@ export function SelecteurEntreprise({
         ))}
       </select>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+      {/* Tout l'espace change d'entreprise : chargement sur toute la page. */}
+      {enCours ? (
+        <ChargementPage pleinEcran transparent message="Changement d’entreprise…" />
+      ) : null}
     </div>
   );
 }

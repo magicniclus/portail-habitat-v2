@@ -2,7 +2,7 @@
 
 import { RYTHMES_PILOTE, type RythmePilote } from '@ph/core/blog';
 import { formatDate } from '@ph/core/format';
-import { Banner, Button, Field, Interrupteur, Select } from '@ph/ui';
+import { Banner, BoutonAction, Field, Interrupteur, Select } from '@ph/ui';
 import { useState } from 'react';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { posterJson } from '@/lib/posterJson';
@@ -95,14 +95,14 @@ export function PiloteBlog({ initial, toutInclus }: { initial: Pilote; toutInclu
                   {x.titre}
                   <span className="block text-sm text-neutre-700">Mot-clé : {x.motCle}</span>
                 </span>
-                <Button
+                <BoutonAction
                   taille="sm"
                   variant="fantome"
                   disabled={enCours}
-                  onClick={() => void appeler({ action: 'autre', index: i })}
+                  onClick={() => appeler({ action: 'autre', index: i })}
                 >
                   Autre sujet
-                </Button>
+                </BoutonAction>
               </li>
             ))}
           </ul>
