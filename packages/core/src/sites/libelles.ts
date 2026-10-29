@@ -65,6 +65,7 @@ export const TUILES_ACTION = {
   whatsapp: 'WhatsApp',
   formulaire: 'Formulaire',
   fichier: 'Fichier',
+  popup: 'Pop-up',
   aucun: 'Aucune',
 } as const;
 
@@ -80,4 +81,5 @@ export const LIBELLES_ACTION = {
   email: 'Envoyer un email',
   formulaire: 'Aller au formulaire',
   fichier: 'Télécharger un fichier',
+  popup: 'Ouvrir une fenêtre pop-up',
 } as const;

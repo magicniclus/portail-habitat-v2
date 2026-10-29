@@ -342,4 +342,42 @@ describe('rendu des sites publiés', () => {
     expect(SCRIPT_SITE).toContain('IntersectionObserver');
     expect(rendreDocument(d, { ...ctx, edition: true })).not.toContain('data-anim="');
   });
+
+  it('fenêtre pop-up : zone hors de la page, ouverte par un bouton ou un délai ; visible dans l’éditeur', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const z = page.sections[1]!;
+    z.p.ancre = 'offre';
+    z.p.popup = { ouverture: 'delai', delai: 8, largeur: 'petite' };
+    page.sections[0]!.rows[0]!.cols[0]!.els.push({
+      id: 'b-pop',
+      type: 'bouton',
+      p: {
+        ...structuredClone(page.sections[0]!.rows[0]!.cols[0]!.els[0]!.p),
+        texte: 'Voir l’offre',
+        action: { type: 'popup', ancre: 'offre' },
+        variante: 'plein',
+        couleur: 'primaire',
+        largeur: 'auto',
+        enLigne: false,
+        align: 'left',
+      },
+    } as never);
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: s.navigation,
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('<dialog class="fenetre pop pl-petite" id="pop-offre"');
+    expect(site).toContain('data-auto="8"');
+    expect(site).toContain('href="#pop-offre" data-pop="offre"');
+    expect(site.indexOf('id="pop-offre"')).toBeGreaterThan(site.indexOf('</main>'));
+    const edition = rendreDocument(d, { ...ctx, edition: true });
+    expect(edition).not.toContain('<dialog class="fenetre pop');
+    expect(edition).toContain('Fenêtre pop-up · après 8 s');
+  });
 });

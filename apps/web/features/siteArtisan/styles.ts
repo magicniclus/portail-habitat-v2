@@ -80,6 +80,7 @@ mark{background:color-mix(in srgb,var(--accent) 28%,transparent);color:inherit;p
 .formulaire .btn{--bb:var(--primaire);--bt:white;width:100%}.rgpd{font-size:13px;color:var(--txt2)}
 .fenetre{border:0;border-radius:16px;padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px);background:white;color:var(--txt);box-shadow:0 24px 64px rgba(0,0,0,.25)}.fenetre::backdrop{background:rgba(0,0,0,.5)}
 .fenetre .fen{position:relative;padding:28px}.fenetre h2{font-family:${p.titre};font-weight:${p.poids};font-size:24px;line-height:1.15;margin:0 48px 18px 0;color:var(--sombre)}
+.pop .fen{padding:0}.pop .s{--px:28px;border-radius:inherit}.pop.pl-petite{width:min(420px,calc(100vw - 32px))}.pop.pl-grande{width:min(880px,calc(100vw - 32px))}.pop .ff-fermer{z-index:3}
 .ff-fermer{position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;border-radius:999px;background:var(--clair);color:var(--sombre);font-size:24px;line-height:1;cursor:pointer}
 @media (max-width:640px){.fenetre{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:92dvh}.fenetre .fen{padding:22px 20px calc(22px + env(safe-area-inset-bottom))}}
 .carte{aspect-ratio:16/7;border-radius:10px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--primaire);background:repeating-linear-gradient(0deg,${N.trameCarte} 0 1px,transparent 1px 28px),repeating-linear-gradient(90deg,${N.trameCarte} 0 1px,${N.fondCarte} 1px 28px);text-align:center;padding:12px}

@@ -19,7 +19,14 @@ export interface CibleLiens {
 export function lienAction(
   a: Action,
   { pages, media }: CibleLiens,
-): { href: string; externe: boolean; nofollow: boolean; popup?: boolean } | null {
+): {
+  href: string;
+  externe: boolean;
+  nofollow: boolean;
+  popup?: boolean;
+  /** Ancre de la zone en fenêtre pop-up à ouvrir. */
+  pop?: string;
+} | null {
   const lien = (href: string, externe = false, nofollow = false) => ({ href, externe, nofollow });
   switch (a.type) {
     case 'page': {
@@ -61,6 +68,8 @@ export function lienAction(
       const url = a.fichierId ? media?.(a.fichierId) : null;
       return url ? lien(url, true) : null;
     }
+    case 'popup':
+      return a.ancre ? { ...lien(`#pop-${a.ancre}`), pop: a.ancre } : null;
     case 'aucun':
       return null;
   }
@@ -80,7 +89,7 @@ export function balise(
   const rel = [l.externe ? 'noopener noreferrer' : '', l.nofollow ? 'nofollow' : '']
     .filter(Boolean)
     .join(' ');
-  const plus = `${l.externe ? ' target="_blank"' : ''}${rel ? ` rel="${rel}"` : ''}${l.popup ? ' data-fenetre="formulaire"' : ''}`;
+  const plus = `${l.externe ? ' target="_blank"' : ''}${rel ? ` rel="${rel}"` : ''}${l.popup ? ' data-fenetre="formulaire"' : ''}${l.pop ? ` data-pop="${esc(l.pop)}"` : ''}`;
   return `<a class="${classe}" href="${esc(l.href)}"${plus}${s}>${contenu}</a>`;
 }
 

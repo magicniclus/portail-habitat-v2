@@ -7,6 +7,8 @@ export interface ContexteLiens {
   fichiers: Set<string>;
   /** Le site a-t-il un formulaire sur la page courante ou ailleurs ? */
   formulaire: boolean;
+  /** pageId → ancres des zones en fenêtre pop-up. */
+  popups?: Record<string, Set<string>>;
 }
 
 const RE_TEL = /^\+?[\d\s.()-]{6,20}$/;
@@ -49,7 +51,16 @@ export function validerAction(a: Action, ctx: ContexteLiens, pageCourante: strin
       return ctx.formulaire ? null : 'Aucun formulaire sur le site';
     case 'fichier':
       return a.fichierId && ctx.fichiers.has(a.fichierId) ? null : 'Fichier introuvable';
+    case 'popup':
+      return a.ancre && ctx.popups?.[pageCourante]?.has(a.ancre)
+        ? null
+        : 'Fenêtre pop-up introuvable sur la page';
   }
+}
+
+/** Ancres des zones en fenêtre pop-up d'une page. */
+export function popupsDe(sections: readonly Section[]): Set<string> {
+  return new Set(sections.filter((s) => s.p.popup && s.p.ancre).map((s) => s.p.ancre));
 }
 
 const RE_MOT_LIE = /\[([^\]]+)\]\(#(L\d+)\)/g;
@@ -175,6 +186,7 @@ export function verifierLiensSite(
     formulaire: publiees.some(([, p]) =>
       [...elements(p.sections)].some((e) => e.type === 'formulaire'),
     ),
+    popups: Object.fromEntries(publiees.map(([id, p]) => [id, popupsDe(p.sections)])),
   };
   const erreurs: LienInvalide[] = [];
   const noter = (pageId: string, page: string, ou: string, a: Action) => {

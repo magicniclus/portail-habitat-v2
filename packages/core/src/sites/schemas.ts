@@ -48,6 +48,7 @@ export const TYPES_ACTION = [
   'whatsapp',
   'formulaire',
   'fichier',
+  'popup',
   'aucun',
 ] as const;
 export const action = z.object({
@@ -239,6 +240,17 @@ export const section = z.object({
     padY: parAppareil(z.number().int().min(0).max(300)),
     masque,
     anim: animation.optional(),
+    /**
+     * Zone affichée en fenêtre pop-up au lieu de la page : ouverte par un bouton (action `popup`
+     * vers son ancre), après un délai, ou quand la souris quitte la page (ordinateur).
+     */
+    popup: z
+      .object({
+        ouverture: z.enum(['clic', 'delai', 'sortie']),
+        delai: z.number().int().min(1).max(60),
+        largeur: z.enum(['petite', 'moyenne', 'grande']),
+      })
+      .optional(),
     ...fond,
   }),
   rows: z.array(ligne).max(20),

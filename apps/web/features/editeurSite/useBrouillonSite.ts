@@ -9,6 +9,7 @@ import {
   elementsDe,
   historique,
   nouvellePage,
+  popupsDe,
   retablir,
   slugDePage,
   validerAction,
@@ -92,6 +93,9 @@ export function useBrouillonSite(initial: BrouillonSite) {
       fichiers: new Set(),
       formulaire: Object.values(b.pages).some((p) =>
         elementsDe(p).some((e) => e.el.type === 'formulaire'),
+      ),
+      popups: Object.fromEntries(
+        Object.entries(b.pages).map(([id, p]) => [id, popupsDe(p.sections)]),
       ),
     }),
     [b.pages],

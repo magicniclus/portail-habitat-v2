@@ -4,6 +4,7 @@ import type { Action } from '@ph/core/sites';
 import { lienAction } from '@/features/siteArtisan/actions';
 import { ChoixZone, sansAncre } from './action/ChoixZone';
 import { depart } from './action/depart';
+import { ChoixPopup } from './action/ChoixPopup';
 import { TuilesAction } from './action/TuilesAction';
 import { ImportImage } from './ImportImage';
 import { Info, Interrupteur, Libelle, Segments } from './proprietes/controles';
@@ -176,6 +177,7 @@ export function ChampAction({
           />
         </>
       ) : null}
+      {a.type === 'popup' ? <ChoixPopup action={a} onChange={onChange} c={c} /> : null}
       {a.type === 'aucun' ? <Info>Rien ne se passe au clic.</Info> : null}
       {erreur ? (
         <p role="alert" className="m-0 text-[13px] font-semibold text-danger">

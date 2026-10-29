@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lierSelection, motsLies, retirerLien } from './actions';
+import { lierSelection, motsLies, retirerLien, validerAction } from './actions';
 
 describe('mots liés dans les textes (SITE_INTERNET §4.3)', () => {
   it('la sélection devient [mot](#Ln), avec le premier numéro libre et une action vide', () => {
@@ -35,5 +35,21 @@ describe('mots liés dans les textes (SITE_INTERNET §4.3)', () => {
     );
     expect(r.texte).toBe('Un mot et [autre](#L2)');
     expect(r.liens).toEqual({ L2: { type: 'tel', tel: '0600000000' } });
+  });
+});
+
+describe('action « Pop-up »', () => {
+  it('valide seulement vers une zone en fenêtre pop-up de la même page', () => {
+    const ctx = {
+      pages: { accueil: new Set(['offre']) },
+      fichiers: new Set<string>(),
+      formulaire: false,
+      popups: { accueil: new Set(['offre']) },
+    };
+    expect(validerAction({ type: 'popup', ancre: 'offre' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'popup', ancre: 'offre' }, ctx, 'contact')).toMatch(/introuvable/);
+    expect(validerAction({ type: 'popup' }, { ...ctx, popups: undefined }, 'accueil')).toMatch(
+      /introuvable/,
+    );
   });
 });

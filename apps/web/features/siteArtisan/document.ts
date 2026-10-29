@@ -1,4 +1,4 @@
-import type { Navigation, PageSite, Theme } from '@ph/core/sites';
+import type { Navigation, PageSite, Section, Theme } from '@ph/core/sites';
 import { SCRIPT_APERCU } from './apercu';
 import { STYLE_BLOG } from './blog';
 import { SCRIPT_EDITION, STYLE_EDITION } from './edition';
@@ -6,7 +6,7 @@ import type { ContexteRendu } from './elements';
 import { fenetreFormulaire } from './formulaire';
 import { esc } from './html';
 import { faviconSite, rendreNavigation, STYLE_NAV } from './navigation';
-import { rendreSection } from './sections';
+import { rendreFenetre, rendreSection } from './sections';
 import { feuilleDeStyle } from './styles';
 import { STYLE_CONSENTEMENT, suiviDocument } from './suivi';
 
@@ -17,6 +17,7 @@ import { STYLE_CONSENTEMENT, suiviDocument } from './suivi';
 export const SCRIPT_SITE = `(function(){try{navigator.sendBeacon('/api/sites/t',JSON.stringify({p:location.pathname}));}catch(e){}var d=document,h=d.documentElement,b=d.querySelector('[data-burger]');function m(o){h.classList.toggle('ouvert',o);b&&b.setAttribute('aria-expanded',String(o));}
 if(b){b.addEventListener('click',function(){m(true);});d.querySelector('[data-fermer]').addEventListener('click',function(){m(false);});d.querySelectorAll('#menu a').forEach(function(a){a.addEventListener('click',function(){m(false);});});d.addEventListener('keydown',function(e){if(e.key==='Escape')m(false);});}
 var A=d.querySelectorAll('[data-anim]');if(A.length){if('IntersectionObserver'in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('vu');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px'});A.forEach(function(x){io.observe(x);});}else A.forEach(function(x){x.classList.add('vu');});}
+d.querySelectorAll('[data-pop]').forEach(function(a){a.addEventListener('click',function(e){var p=d.getElementById('pop-'+a.getAttribute('data-pop'));if(p){e.preventDefault();m(false);p.showModal();}});});d.querySelectorAll('dialog.pop').forEach(function(p){p.querySelector('[data-fermer-pop]').addEventListener('click',function(){p.close();});p.addEventListener('click',function(e){if(e.target===p)p.close();});var t=p.getAttribute('data-auto');function o(){if(!d.querySelector('dialog[open]'))p.showModal();}if(t==='sortie'){var f=function(e){if(!e.relatedTarget&&e.clientY<=0){d.removeEventListener('mouseout',f);o();}};d.addEventListener('mouseout',f);}else if(t){setTimeout(o,Number(t)*1000);}});
 var w=d.getElementById('fenetre-formulaire');if(w){d.querySelectorAll('[data-fenetre]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();m(false);w.showModal();});});w.querySelector('[data-fermer-fenetre]').addEventListener('click',function(){w.close();});w.addEventListener('click',function(e){if(e.target===w)w.close();});}
 d.querySelectorAll('[data-formulaire]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var s=f.querySelector('.statut'),v={},t='';new FormData(f).forEach(function(x,k){if(k==='cf-turnstile-response')t=String(x);else v[k]=String(x);});
 s.textContent='Envoi en cours…';fetch('/api/sites/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valeurs:v,jeton:t,page:location.pathname})}).then(function(r){return r.json();}).then(function(r){if(r&&r.ok){f.reset();s.textContent='Merci, votre demande est envoyée. Nous vous recontactons rapidement.';d.dispatchEvent(new CustomEvent('ph:demande'));}else{s.textContent=(r&&r.erreur&&r.erreur.message)||'Envoi impossible, vérifiez les champs.';}}).catch(function(){s.textContent='Envoi impossible, réessayez.';});});});})();`;
@@ -53,11 +54,22 @@ const PAGE_VIERGE =
 export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string {
   const ctx: ContexteRendu = { ...contexte, theme: d.theme, navigation: d.navigation };
   const canonique = `https://${d.hote}/${d.page.slug}`;
+  // Zones en fenêtre pop-up : hors de la page (sauf dans l'éditeur, pour les modifier).
+  const enFenetre = (s: Section) => Boolean(s.p.popup && s.p.ancre && !ctx.edition);
   const sections =
     d.contenu ??
     (d.page.sections.length || !ctx.edition
-      ? d.page.sections.map((s) => rendreSection(s, ctx)).join('')
+      ? d.page.sections
+          .filter((s) => !enFenetre(s))
+          .map((s) => rendreSection(s, ctx))
+          .join('')
       : PAGE_VIERGE);
+  const fenetres = d.contenu
+    ? ''
+    : d.page.sections
+        .filter(enFenetre)
+        .map((s) => rendreFenetre(s, ctx))
+        .join('');
   const nav =
     d.page.sansNavigation || d.navigation.masquee
       ? ''
@@ -86,5 +98,5 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
     mentions ? `<a href="/${esc(mentions[1].slug)}">Mentions légales</a>` : '',
     suivi.lien ? '<a href="#" data-consentement="choix">Gestion des cookies</a>' : '',
   ].filter(Boolean);
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title>${faviconSite(d.navigation, ctx)}<meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}${suivi.bandeau ? STYLE_CONSENTEMENT : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}<footer class="pied">${liensPied.length ? `<p>${liensPied.join(' · ')}</p>` : ''}${mention}</footer>${suivi.bandeau}<script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title>${faviconSite(d.navigation, ctx)}<meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}${suivi.bandeau ? STYLE_CONSENTEMENT : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}${fenetres}<footer class="pied">${liensPied.length ? `<p>${liensPied.join(' · ')}</p>` : ''}${mention}</footer>${suivi.bandeau}<script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;
 }

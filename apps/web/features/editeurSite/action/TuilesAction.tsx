@@ -2,6 +2,7 @@
 
 import { TUILES_ACTION, type Action } from '@ph/core/sites';
 import {
+  BrowserIcon,
   ChatTextIcon,
   ClipboardTextIcon,
   CrosshairSimpleIcon,
@@ -26,6 +27,7 @@ const ICONES: Record<Action['type'], Icon> = {
   whatsapp: WhatsappLogoIcon,
   formulaire: ClipboardTextIcon,
   fichier: DownloadSimpleIcon,
+  popup: BrowserIcon,
   aucun: ProhibitIcon,
 };
 

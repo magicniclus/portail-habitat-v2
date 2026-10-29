@@ -10,5 +10,9 @@ export function depart(t: Action['type'], c: ContexteReglages): Action {
     const premier = Object.keys(c.fichiers)[0];
     return premier ? { type: 'fichier', fichierId: premier } : { type: 'fichier' };
   }
+  if (t === 'popup') {
+    const premiere = c.pages[c.pageId]?.sections.find((s) => s.p.popup && s.p.ancre);
+    return premiere ? { type: 'popup', ancre: premiere.p.ancre } : { type: 'popup' };
+  }
   return { type: t };
 }

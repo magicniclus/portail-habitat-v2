@@ -107,6 +107,26 @@ export function rendreSection(s: Section, ctx: ContexteRendu): string {
   ]
     .filter(Boolean)
     .join(' ');
-  const zone = `<section class="${classes}"${s.p.ancre ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}"><div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.length || !ctx.edition ? s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('') : videEdition('section', s.id, 'Ajouter une section')}</div></section>`;
+  // Éditeur : la zone en fenêtre pop-up reste dans la page pour être modifiée, avec son étiquette.
+  const etiquette =
+    ctx.edition && s.p.popup
+      ? `<p class="ed-pop">Fenêtre pop-up · ${{ clic: 'ouverte par un bouton', delai: `après ${s.p.popup.delai} s`, sortie: 'quand le visiteur s’apprête à partir' }[s.p.popup.ouverture]}</p>`
+      : '';
+  const zone = `<section class="${classes}${ctx.edition && s.p.popup ? ' ed-zone-pop' : ''}"${s.p.ancre && !(s.p.popup && !ctx.edition) ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}">${etiquette}<div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.length || !ctx.edition ? s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('') : videEdition('section', s.id, 'Ajouter une section')}</div></section>`;
   return ctx.edition ? marquerEdition(zone, s.id, 'zone') : avecAnimation(zone, s.p.anim, ctx);
+}
+
+/**
+ * Zone en fenêtre pop-up (site publié et aperçu) : `<dialog>` fermable (bouton, Échap, clic
+ * dehors), ouverte par un bouton `data-pop`, après un délai ou à la sortie de la page.
+ */
+export function rendreFenetre(s: Section, ctx: ContexteRendu): string {
+  const p = s.p.popup!;
+  const auto =
+    p.ouverture === 'delai'
+      ? ` data-auto="${p.delai}"`
+      : p.ouverture === 'sortie'
+        ? ' data-auto="sortie"'
+        : '';
+  return `<dialog class="fenetre pop pl-${p.largeur}" id="pop-${esc(s.p.ancre)}" aria-label="${esc(s.p.nom || 'Fenêtre')}"${auto}><div class="fen"><button type="button" class="ff-fermer" data-fermer-pop aria-label="Fermer">×</button>${rendreSection(s, ctx)}</div></dialog>`;
 }

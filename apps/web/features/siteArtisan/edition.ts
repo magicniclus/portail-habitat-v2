@@ -67,7 +67,7 @@ export const videEdition = (op: 'section' | 'contenu', cible: string, texte: str
   `<button type="button" class="ed-ajout" data-ed-op="${op}" data-ed-cible="${cible.replace(/[^\w-]/g, '')}"><span aria-hidden="true">+</span>${texte}</button>`;
 
 /** Survol et contenus sans rendu propre (menu, vidéo sans lien) visibles dans l'éditeur seulement. */
-export const STYLE_EDITION = `${STYLE_VIDES}[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}`;
+export const STYLE_EDITION = `${STYLE_VIDES}[data-ed]{cursor:pointer}[contenteditable]{cursor:text;outline:2px dashed currentColor;outline-offset:4px}.ed-survol{outline:1px dashed ${niveauxEditeur.element};outline-offset:-1px}.ed-vide{padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:6px;font:600 13px system-ui,sans-serif;color:rgba(0,0,0,.6);text-align:center}.r:empty,.c:empty{min-height:56px;outline:1px dashed rgba(0,0,0,.18);outline-offset:-1px}.ed-zone-pop{outline:2px dashed ${BLEU};outline-offset:-2px;margin:24px 16px;border-radius:12px}.ed-pop{position:absolute;top:0;left:16px;transform:translateY(-50%);z-index:2;margin:0;padding:4px 10px;border-radius:999px;background:${BLEU};color:white;font:600 12px system-ui,sans-serif}`;
 
 /**
  * Ajoute `data-ed` (et le niveau) à la balise ouvrante d'un fragment HTML ; `texte` : modifiable
