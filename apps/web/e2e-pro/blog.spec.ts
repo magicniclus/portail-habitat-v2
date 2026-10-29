@@ -149,7 +149,9 @@ test.describe('Blog des artisans', () => {
     await artisan.update({ 'droits.formule': 'fiche_pro', 'droits.sitePro': false });
     try {
       await connecter(page, COMPTES.proprio, '/pro/site?onglet=blog');
-      await expect(page.getByText('Le blog est inclus dans Site Pro et Tout inclus')).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Un blog qui vous amène des clients' }),
+      ).toBeVisible();
       await page.getByRole('button', { name: 'Écrire un article' }).click();
       await expect(page.getByRole('dialog')).toContainText('Site Pro');
       await page.getByRole('button', { name: 'Plus tard' }).click();
