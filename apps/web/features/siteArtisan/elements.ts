@@ -8,6 +8,7 @@ import {
   type Element,
   type Navigation,
   type PageSite,
+  type SuiviSite,
   type Theme,
 } from '@ph/core/sites';
 import { balise, texteRiche } from './actions';
@@ -30,6 +31,8 @@ export interface ContexteRendu {
   edition?: boolean;
   /** Mode Aperçu de l'éditeur : liens et fenêtres actifs, rien n'est envoyé ni compté. */
   apercu?: boolean;
+  /** Balise Google et pixel Meta du site publié (derrière le consentement). */
+  suivi?: SuiviSite;
   /** Thème et navigation du site : fournis par `rendreDocument`. */
   theme?: Theme;
   navigation?: Navigation;

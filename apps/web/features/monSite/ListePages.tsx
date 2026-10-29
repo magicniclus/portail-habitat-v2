@@ -4,6 +4,7 @@ import { bouton, cn, StatusBadge } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import type { LignePage } from '@/server/sites';
+import { EnTeteOnglet } from './Mise';
 import { ReglagesPage } from './ReglagesPage';
 
 const COULEUR_SCORE = {
@@ -31,16 +32,11 @@ export function ListePages({
 }) {
   const publiees = pages.filter((p) => p.statut === 'publiee').length;
   return (
-    <section aria-labelledby="pages-site" className="grid max-w-[1100px] gap-6">
-      <div className="grid gap-1.5">
-        <h2 id="pages-site" className="m-0 text-[clamp(26px,3vw,32px)] leading-[1.15]">
-          Pages du site
-        </h2>
-        <p className="m-0 text-base text-neutre-800">
-          {pages.length} page{pages.length > 1 ? 's' : ''} · {publiees} publiée
-          {publiees > 1 ? 's' : ''} · le menu suit l’ordre ci-dessous
-        </p>
-      </div>
+    <section aria-label="Pages du site" className="grid gap-5">
+      <EnTeteOnglet titre="Pages du site">
+        {pages.length} page{pages.length > 1 ? 's' : ''} · {publiees} publiée
+        {publiees > 1 ? 's' : ''} · le menu suit l’ordre ci-dessous
+      </EnTeteOnglet>
       <div className="flex flex-wrap items-center gap-4 rounded-[12px] border border-accent-300 bg-accent-100 px-[18px] py-4">
         <span className="grid flex-[1_1_300px] gap-0.5">
           <span className="text-base font-bold">

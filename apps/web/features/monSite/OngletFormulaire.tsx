@@ -1,6 +1,7 @@
 import { FORMULAIRE_GRATUIT, LIBELLES_TYPE_CHAMP, type ChampFormulaire } from '@ph/core/sites';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { ConstructeurFormulaire } from './ConstructeurFormulaire';
+import { EnTeteOnglet } from './Mise';
 
 const REGLAGES = [
   { libelle: 'Email à chaque demande', valeur: 'Activé' },
@@ -21,16 +22,11 @@ export function OngletFormulaire({
   champs?: ChampFormulaire[];
 }) {
   return (
-    <section aria-labelledby="formulaire" className="grid gap-4">
-      <div>
-        <h2 id="formulaire" className="m-0 text-xl">
-          Formulaire de contact
-        </h2>
-        <p className="m-0 text-[15px] text-neutre-800">
-          Chaque envoi arrive dans « Mes demandes », avec les coordonnées complètes. Il ne vous
-          coûte rien.
-        </p>
-      </div>
+    <section aria-label="Formulaire de contact" className="grid gap-5">
+      <EnTeteOnglet titre="Formulaire de contact">
+        Chaque envoi arrive dans « Mes demandes », avec les coordonnées complètes. Il ne vous coûte
+        rien.
+      </EnTeteOnglet>
       {sitePro ? (
         <ConstructeurFormulaire initial={champs ?? [...FORMULAIRE_GRATUIT]} />
       ) : (
@@ -50,11 +46,14 @@ export function OngletFormulaire({
               </FenetreOffre>
             </div>
           </div>
-          <ol className="m-0 grid list-none gap-2 p-0" aria-label="Champs du formulaire">
+          <ol
+            className="m-0 grid list-none overflow-hidden rounded-[14px] border border-trait bg-blanc p-0"
+            aria-label="Champs du formulaire"
+          >
             {FORMULAIRE_GRATUIT.map((c) => (
               <li
                 key={c.id}
-                className="flex flex-wrap justify-between gap-2 rounded-[12px] border border-trait bg-blanc p-4"
+                className="flex flex-wrap justify-between gap-2 border-t border-trait px-4 py-3 first:border-t-0"
               >
                 <span>
                   <strong>{c.libelle}</strong> · {LIBELLES_TYPE_CHAMP[c.type]}
@@ -63,11 +62,11 @@ export function OngletFormulaire({
               </li>
             ))}
           </ol>
-          <dl className="m-0 grid gap-2">
+          <dl className="m-0 grid overflow-hidden rounded-[14px] border border-trait bg-neutre-100">
             {REGLAGES.map((r) => (
               <div
                 key={r.libelle}
-                className="flex flex-wrap justify-between gap-2 rounded-[12px] border border-trait bg-neutre-100 p-4"
+                className="flex flex-wrap justify-between gap-2 border-t border-trait px-4 py-3 first:border-t-0"
               >
                 <dt>{r.libelle}</dt>
                 <dd className="m-0 font-semibold">{r.valeur} · 🔒</dd>

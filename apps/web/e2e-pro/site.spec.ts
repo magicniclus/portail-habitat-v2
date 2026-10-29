@@ -604,4 +604,38 @@ test.describe('Site internet artisan', () => {
     await carte.getByRole('button', { name: 'Mettre en ligne' }).click();
     await menu.click();
   });
+
+  test('suivi et publicité : balise Google enregistrée → bandeau de consentement sur le site', async ({
+    page,
+    browser,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site?onglet=suivi');
+    const balise = page.getByLabel('Identifiant de la balise');
+    await balise.fill('<script>alert(1)</script>');
+    await expect(page.getByText(/Identifiant Google : G-…/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
+    await balise.fill('g-ab12cd34');
+    await page.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeVisible();
+    await expect(page.getByText('Active', { exact: true })).toBeVisible();
+
+    // Site en ligne, vu par un nouveau visiteur : bandeau, rien de chargé avant « Tout
+    // accepter » ; refuser le referme et ne pose aucun cookie.
+    const visiteur = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const v = await visiteur.newPage();
+    await expect(async () => {
+      await v.goto(`${URL_SITE}/`);
+      await expect(v.getByRole('region', { name: 'Cookies' })).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 60_000 });
+    expect(await v.locator('script[src*="googletagmanager"]').count()).toBe(0);
+    await v.getByRole('button', { name: 'Tout refuser' }).click();
+    await expect(v.getByRole('region', { name: 'Cookies' })).toBeHidden();
+    expect(await visiteur.cookies(URL_SITE)).toEqual([]);
+    await visiteur.close();
+
+    // Retour à l'état initial : le site redevient sans bandeau ni cookie.
+    await page.getByLabel('Identifiant de la balise').fill('');
+    await page.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeVisible();
+  });
 });

@@ -12,6 +12,9 @@ import {
   type FicheCreation,
   type FicheSite,
   type PageSite,
+  type SuiviSite,
+  entreeSuivi,
+  SUIVI_VIDE,
 } from '@ph/core/sites';
 import { appAdmin } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
@@ -123,6 +126,7 @@ export interface TableauSite {
   champs?: ChampFormulaire[];
   /** Ville du siège, pour les contrôles SEO. */
   ville?: string;
+  suivi: SuiviSite;
 }
 
 /** Tableau de bord du site (onglets Pages, Domaine, Formulaire). */
@@ -133,6 +137,7 @@ export async function tableauSite(artisanId: string): Promise<TableauSite> {
     db().doc(chemins.site(artisanId)).get(),
   ]);
   const champs = doc.get('formulaire.champs') as ChampFormulaire[] | undefined;
+  const suivi = entreeSuivi.safeParse(doc.get('suivi'));
   const ville = (fiche.get('adresseSiege.ville') as string | undefined) ?? undefined;
   const pages = Object.entries(site.pages)
     .sort(([, a], [, b]) => a.ordre - b.ordre)
@@ -150,6 +155,7 @@ export async function tableauSite(artisanId: string): Promise<TableauSite> {
     ...(site.sousDomaine ? { url: `https://${site.sousDomaine}.${DOMAINE_BASE}` } : {}),
     proposition: sousDomaineDe((fiche.get('nomCommercial') as string | undefined) ?? ''),
     ...(champs ? { champs } : {}),
+    suivi: suivi.success ? suivi.data : SUIVI_VIDE,
     ...(ville ? { ville } : {}),
     modifieDepuisPublication:
       !site.versionPubliee || (site.brouillonModifieLe ?? 0) > (site.publieLe ?? 0),

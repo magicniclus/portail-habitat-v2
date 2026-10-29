@@ -1,5 +1,5 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import { siteParDefaut } from '@ph/core/sites';
+import { siteParDefaut, SUIVI_VIDE } from '@ph/core/sites';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -12,6 +12,7 @@ import {
   enregistrerPage,
   envoyerFormulaireSite,
   enregistrerMediaSite,
+  enregistrerSuivi,
   fichiersCitables,
   lireMediasSite,
   gererSectionsEnregistrees,
@@ -101,6 +102,16 @@ describe('création et sous-domaine (DOM-01)', () => {
           ),
         )
       ).code,
+    ).toBe('PERMISSION_REFUSEE');
+  });
+
+  it('suivi (balise Google, pixel Meta) : enregistré par le gérant, refusé au collaborateur', async () => {
+    await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: initial() });
+    const suivi = { ...SUIVI_VIDE, google: 'G-AB12CD34', meta: '123456789012345' };
+    await enregistrerSuivi(s(), proprio, suivi);
+    expect((await db.doc(chemins.site('a1')).get()).get('suivi')).toEqual(suivi);
+    expect(
+      (await erreur(enregistrerSuivi(s(), { artisanId: 'a1', uid: 'c1' }, SUIVI_VIDE))).code,
     ).toBe('PERMISSION_REFUSEE');
   });
 

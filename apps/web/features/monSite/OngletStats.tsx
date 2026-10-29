@@ -1,7 +1,10 @@
 import { formatNombre } from '@ph/core/format';
+import { EmptyState } from '@ph/ui';
+import { ChartBarIcon } from '@phosphor-icons/react/ssr';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import type { LignePage, StatsDuSite } from '@/server/sites';
 import { BarresVisites } from './BarresVisites';
+import { EnTeteOnglet } from './Mise';
 
 const jour = (cle: string) =>
   cle
@@ -17,7 +20,7 @@ const mois = (cle: string) =>
 
 function Chiffre({ libelle, valeur, note }: { libelle: string; valeur: string; note: string }) {
   return (
-    <div className="grid gap-1 rounded-[12px] border border-trait bg-blanc p-4">
+    <div className="grid gap-1 rounded-[14px] border border-trait bg-blanc p-5">
       <span className="text-sm text-neutre-800">{libelle}</span>
       <strong className="text-[28px] leading-none tabular-nums">{valeur}</strong>
       <span className="text-sm text-neutre-800">{note}</span>
@@ -38,15 +41,11 @@ export function OngletStats({
   const t = stats.jours.totaux;
   const nom = new Map(pages.map((p) => [p.id, p.nom]));
   return (
-    <section aria-labelledby="stats-site" className="grid gap-5">
-      <div>
-        <h2 id="stats-site" className="m-0 text-xl">
-          Statistiques du site
-        </h2>
-        <p className="m-0 text-[15px] text-neutre-800">
-          Mesure sans cookie : aucun bandeau à afficher à vos visiteurs. 30 derniers jours.
-        </p>
-      </div>
+    <section aria-label="Statistiques du site" className="grid gap-5">
+      <EnTeteOnglet titre="Statistiques du site">
+        30 derniers jours, mesurés sans cookie. Pour Google Analytics ou Meta, voir l’onglet « Suivi
+        et publicité ».
+      </EnTeteOnglet>
       <div className="grid gap-3 min-[640px]:grid-cols-3">
         <Chiffre libelle="Visites" valeur={formatNombre(t.vues)} note="pages vues" />
         <Chiffre libelle="Demandes" valeur={formatNombre(t.demandes)} note="formulaires envoyés" />
@@ -56,7 +55,14 @@ export function OngletStats({
           note="demandes / visites"
         />
       </div>
-      <BarresVisites titre="Visites par jour" serie={stats.jours.serie} libelle={jour} />
+      {t.vues ? (
+        <BarresVisites titre="Visites par jour" serie={stats.jours.serie} libelle={jour} />
+      ) : (
+        <EmptyState icone={<ChartBarIcon size={36} />} titre="Pas encore de visites">
+          Les visites apparaissent ici dès que votre site est en ligne et partagé : fiche Portail
+          Travaux, Google, réseaux sociaux.
+        </EmptyState>
+      )}
       {stats.jours.pages.length ? (
         <div className="grid gap-2">
           <h3 className="m-0 text-lg">Pages les plus vues</h3>
@@ -73,9 +79,9 @@ export function OngletStats({
           </ol>
         </div>
       ) : null}
-      {stats.mois ? (
+      {stats.mois && t.vues ? (
         <BarresVisites titre="Visites par mois (12 mois)" serie={stats.mois.serie} libelle={mois} />
-      ) : sitePro ? null : (
+      ) : sitePro || stats.mois ? null : (
         <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-5">
           <p className="m-0 text-[15px]">
             Avec Site Pro, suivez vos visites sur 12 mois et recevez un SMS à chaque demande.

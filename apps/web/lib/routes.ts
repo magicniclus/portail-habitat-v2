@@ -38,7 +38,7 @@ export const routes = {
   proAvis: r('/pro/avis'),
   /** Mon site (SITE_INTERNET §3) : `?onglet=pages|domaine|stats|formulaire`. */
   proSite: r('/pro/site'),
-  proSiteOnglet: (onglet: 'pages' | 'blog' | 'domaine' | 'stats' | 'formulaire') =>
+  proSiteOnglet: (onglet: 'pages' | 'blog' | 'domaine' | 'stats' | 'formulaire' | 'suivi') =>
     r(`/pro/site?onglet=${onglet}`),
   /** Éditeur plein écran (SITE_INTERNET §4) sur une page. */
   proSiteEditeur: (page?: string) =>

@@ -71,7 +71,13 @@ function document(
       ...(p.jsonLd ? { jsonLd: p.jsonLd } : {}),
       ...(p.noindex ? { noindex: true } : {}),
     },
-    { pages: site.pages, media: resoudreMedia(site), champs: site.champs, blog },
+    {
+      pages: site.pages,
+      media: resoudreMedia(site),
+      champs: site.champs,
+      blog,
+      ...(site.suivi ? { suivi: site.suivi } : {}),
+    },
   );
 }
 

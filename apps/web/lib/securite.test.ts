@@ -63,10 +63,16 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
 
 describe('sites artisans', () => {
   it('n’autorise que le script fixe de la page et Turnstile', () => {
-    const csp = politiqueSite({ production: true, empreinte: 'sha256-abc' });
+    const csp = politiqueSite({
+      production: true,
+      empreinte: 'sha256-abc',
+      empreinteSuivi: 'sha256-def',
+    });
+    // Scripts fixes par empreinte ; Google et Meta seulement par leurs domaines (après consentement).
     expect(directive(csp, 'script-src')).toBe(
-      "script-src 'sha256-abc' https://challenges.cloudflare.com",
+      "script-src 'sha256-abc' 'sha256-def' https://challenges.cloudflare.com https://www.googletagmanager.com https://connect.facebook.net",
     );
+    expect(directive(csp, 'script-src')).not.toContain('unsafe-inline');
     expect(csp).not.toContain('unsafe-eval');
     expect(directive(csp, 'connect-src')).toContain("'self'");
   });

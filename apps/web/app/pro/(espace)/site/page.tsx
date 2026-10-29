@@ -9,6 +9,7 @@ import { ListePages } from '@/features/monSite/ListePages';
 import { OngletDomaine } from '@/features/monSite/OngletDomaine';
 import { OngletFormulaire } from '@/features/monSite/OngletFormulaire';
 import { OngletStats } from '@/features/monSite/OngletStats';
+import { OngletSuivi } from '@/features/monSite/OngletSuivi';
 import { routes } from '@/lib/routes';
 import { ongletBlog } from '@/server/blog';
 import { accesSite, DOMAINE_BASE, statsDuSite, tableauSite, visitesDuMois } from '@/server/sites';
@@ -21,6 +22,7 @@ const ONGLETS = [
   { cle: 'domaine', libelle: 'Domaine' },
   { cle: 'stats', libelle: 'Statistiques' },
   { cle: 'formulaire', libelle: 'Formulaire' },
+  { cle: 'suivi', libelle: 'Suivi et publicité' },
 ] as const;
 type Onglet = (typeof ONGLETS)[number]['cle'];
 
@@ -52,8 +54,8 @@ export default async function PageMonSite({
         {/* Titre déjà affiché dans la barre de l’espace pro : gardé pour les lecteurs d’écran. */}
         <h1 className="sr-only">Mon site internet</h1>
         {t.url ? (
-          <span className="flex min-w-0 items-center gap-2 text-sm text-neutre-800">
-            <span className="truncate">{t.url.replace('https://', '')}</span>
+          <span className="flex min-w-0 flex-wrap items-center gap-2 text-sm text-neutre-800">
+            <span className="max-w-full truncate">{t.url.replace('https://', '')}</span>
             <StatusBadge statut={etat} />
           </span>
         ) : null}
@@ -104,7 +106,7 @@ export default async function PageMonSite({
               </Link>
             ))}
           </nav>
-          <div className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)]">
+          <div className="grid w-full max-w-[1100px] gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)]">
             {onglet === 'pages' ? (
               <ListePages
                 pages={t.pages}
@@ -132,6 +134,7 @@ export default async function PageMonSite({
                 {...(t.champs ? { champs: t.champs } : {})}
               />
             ) : null}
+            {onglet === 'suivi' ? <OngletSuivi initial={t.suivi} /> : null}
           </div>
         </>
       )}

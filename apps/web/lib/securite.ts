@@ -90,20 +90,30 @@ export function politiqueContenu(o: OptionsCsp): string {
 }
 
 /**
- * CSP des sites artisans (SITE_INTERNET §6) : aucun script hors le script fixe de la page
- * (empreinte) et Turnstile ; images de Storage ; vidéos YouTube sans cookie ; envois vers le
- * même domaine seulement.
+ * CSP des sites artisans (SITE_INTERNET §6) : aucun script hors les scripts fixes de la page
+ * (empreintes), Turnstile, et la balise Google / le pixel Meta que l'artisan a configurés (chargés
+ * après consentement) ; images de Storage ; vidéos YouTube sans cookie.
  */
-export function politiqueSite(o: { production: boolean; empreinte: string }): string {
+export function politiqueSite(o: {
+  production: boolean;
+  empreinte: string;
+  /** Script fixe du suivi publicitaire (balise Google, pixel Meta), chargé après consentement. */
+  empreinteSuivi?: string;
+}): string {
   const turnstile = 'https://challenges.cloudflare.com';
+  // Balise Google (Analytics, Ads, Tag Manager) et pixel Meta : appelés seulement après « Tout
+  // accepter », et seulement si l'artisan a saisi un identifiant (sinon aucun script n'existe).
+  const google =
+    'https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://www.google.com https://www.google.fr';
+  const meta = 'https://connect.facebook.net https://www.facebook.com';
   return [
     "default-src 'self'",
-    `script-src '${o.empreinte}' ${turnstile}`,
+    `script-src '${o.empreinte}'${o.empreinteSuivi ? ` '${o.empreinteSuivi}'` : ''} ${turnstile} https://www.googletagmanager.com https://connect.facebook.net`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com",
+    `img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com ${google} https://www.facebook.com`,
     "font-src 'self'",
-    `connect-src 'self' ${turnstile}`,
-    `frame-src ${turnstile} https://www.youtube-nocookie.com`,
+    `connect-src 'self' ${turnstile} ${google} ${meta}`,
+    `frame-src ${turnstile} https://www.youtube-nocookie.com https://www.googletagmanager.com`,
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

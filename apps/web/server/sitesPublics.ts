@@ -1,10 +1,12 @@
 import 'server-only';
 import {
+  entreeSuivi,
   fichiersCites,
   FORMULAIRE_GRATUIT,
   hoteCanonique,
   type ChampFormulaire,
   type PageSite,
+  type SuiviSite,
 } from '@ph/core/sites';
 import { appAdmin, urlPubliqueFichier } from '@ph/firebase/admin';
 import { chemins } from '@ph/firebase/chemins';
@@ -13,6 +15,12 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 const db = () => getFirestore(appAdmin());
 
+/** Suivi enregistré, revalidé (une donnée abîmée ne charge aucun script). */
+export function suiviLu(v: unknown): { suivi?: SuiviSite } {
+  const r = entreeSuivi.safeParse(v);
+  return r.success ? { suivi: r.data } : {};
+}
+
 export interface SiteServi extends SitePublie {
   /** Adresse canonique : domaine actif, sinon le sous-domaine (DOM-05). */
   canonique: string;
@@ -20,6 +28,8 @@ export interface SiteServi extends SitePublie {
   urlFiche?: string;
   champs: ChampFormulaire[];
   photos: Record<string, string[]>;
+  /** Balise Google et pixel Meta (onglet « Suivi et publicité »), relus avec le schéma. */
+  suivi?: SuiviSite;
   /** Images et fichiers importés (`up:{id}`) utilisés par les pages publiées. */
   importees: Record<string, string>;
 }
@@ -92,6 +102,7 @@ async function charger(hote: string): Promise<SiteServi | null> {
           ])
         : [...FORMULAIRE_GRATUIT],
     photos,
+    ...suiviLu(doc.get('suivi')),
     importees: Object.fromEntries(
       medias
         .filter((m) => m.exists)

@@ -1,8 +1,9 @@
-import { FORMULAIRE_GRATUIT, siteParDefaut } from '@ph/core/sites';
+import { FORMULAIRE_GRATUIT, siteParDefaut, SUIVI_VIDE } from '@ph/core/sites';
 import { describe, expect, it } from 'vitest';
 import { balise, lienAction, texteRiche } from './actions';
 import { rendreDocument, SCRIPT_SITE } from './document';
 import { SCRIPT_EDITION } from './edition';
+import { SCRIPT_SUIVI } from './suivi';
 
 const PALETTE = {
   primaire: 'primaire',
@@ -165,6 +166,34 @@ describe('rendu des sites publiés', () => {
     expect(rendu(false)).not.toContain('ed-ajout');
     expect(rendu(false)).toContain('<header');
     expect(rendu(false, true)).not.toContain('<header');
+  });
+
+  it('balise Google et pixel Meta : bandeau de consentement, rien chargé d’office ni dans l’éditeur', () => {
+    const suivi = { ...SUIVI_VIDE, google: 'G-AB12CD34', meta: '123456789012345' };
+    const rendu = (edition: boolean, avec = true) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: s.navigation,
+          page: s.pages.accueil!,
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition, ...(avec ? { suivi } : {}) },
+      );
+    const h = rendu(false);
+    expect(h).toContain('id="ph-bandeau"');
+    expect(h).toMatch(/<div id="ph-bandeau"[^>]* hidden>/);
+    expect(h).toContain('"gtag":"G-AB12CD34"');
+    expect(h).toContain('data-consentement="non">Tout refuser');
+    expect(h).toContain('Gestion des cookies');
+    expect(h).toContain(SCRIPT_SUIVI);
+    // Aucun script externe dans la page : Google et Meta ne se chargent qu'après accord.
+    expect(h.match(/<script src=/g)).toBeNull();
+    expect(rendu(true)).not.toContain('ph-bandeau');
+    expect(rendu(false, false)).not.toMatch(/ph-bandeau|Gestion des cookies|googletagmanager/);
   });
 
   it('mention Portail Travaux seulement sur un site gratuit', () => {

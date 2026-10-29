@@ -1,6 +1,7 @@
 import { reponsesCreation } from '../sites/ia/creation';
 import { MODES_IA_SITE } from '../sites/ia/reglages';
 import { navigation, pageSite, section, theme } from '../sites/schemas';
+import { entreeSuivi } from '../sites/suivi';
 import { z } from '../zod';
 import { nomFichier } from './entreesPro';
 import { champFormulaire } from './sites';
@@ -33,6 +34,8 @@ export const entreeReglagePage = z.object({
 });
 export const entreeNavigationSite = z.object({ navigation });
 export const entreeThemeSite = z.object({ theme });
+/** Balise Google et pixel Meta (onglet « Suivi et publicité »). */
+export const entreeSuiviSite = z.object({ suivi: entreeSuivi });
 export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(1).max(30) });
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});

@@ -22,3 +22,4 @@ export * from './modeles';
 export * from './structure';
 export * from './couleurs';
 export * from './navigation';
+export * from './suivi';

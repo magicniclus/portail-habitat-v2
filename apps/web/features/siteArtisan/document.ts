@@ -8,6 +8,7 @@ import { esc } from './html';
 import { faviconSite, rendreNavigation, STYLE_NAV } from './navigation';
 import { rendreSection } from './sections';
 import { feuilleDeStyle } from './styles';
+import { STYLE_CONSENTEMENT, suiviDocument } from './suivi';
 
 /**
  * Comportements : mesure d'audience sans cookie (une balise par page vue), menu mobile (SITE-10),
@@ -17,7 +18,7 @@ export const SCRIPT_SITE = `(function(){try{navigator.sendBeacon('/api/sites/t',
 if(b){b.addEventListener('click',function(){m(true);});d.querySelector('[data-fermer]').addEventListener('click',function(){m(false);});d.querySelectorAll('#menu a').forEach(function(a){a.addEventListener('click',function(){m(false);});});d.addEventListener('keydown',function(e){if(e.key==='Escape')m(false);});}
 var w=d.getElementById('fenetre-formulaire');if(w){d.querySelectorAll('[data-fenetre]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();m(false);w.showModal();});});w.querySelector('[data-fermer-fenetre]').addEventListener('click',function(){w.close();});w.addEventListener('click',function(e){if(e.target===w)w.close();});}
 d.querySelectorAll('[data-formulaire]').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();var s=f.querySelector('.statut'),v={},t='';new FormData(f).forEach(function(x,k){if(k==='cf-turnstile-response')t=String(x);else v[k]=String(x);});
-s.textContent='Envoi en cours…';fetch('/api/sites/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valeurs:v,jeton:t,page:location.pathname})}).then(function(r){return r.json();}).then(function(r){if(r&&r.ok){f.reset();s.textContent='Merci, votre demande est envoyée. Nous vous recontactons rapidement.';}else{s.textContent=(r&&r.erreur&&r.erreur.message)||'Envoi impossible, vérifiez les champs.';}}).catch(function(){s.textContent='Envoi impossible, réessayez.';});});});})();`;
+s.textContent='Envoi en cours…';fetch('/api/sites/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valeurs:v,jeton:t,page:location.pathname})}).then(function(r){return r.json();}).then(function(r){if(r&&r.ok){f.reset();s.textContent='Merci, votre demande est envoyée. Nous vous recontactons rapidement.';d.dispatchEvent(new CustomEvent('ph:demande'));}else{s.textContent=(r&&r.erreur&&r.erreur.message)||'Envoi impossible, vérifiez les champs.';}}).catch(function(){s.textContent='Envoi impossible, réessayez.';});});});})();`;
 
 export interface DocumentSite {
   hote: string;
@@ -75,5 +76,14 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
       ? `<p>Site créé avec <a href="https://portailtravaux.fr/pro/site-internet-artisan" rel="noopener">Portail Travaux</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Travaux</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title>${faviconSite(d.navigation, ctx)}<meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}<footer class="pied">${mentions ? `<p><a href="/${esc(mentions[1].slug)}">Mentions légales</a></p>` : ''}${mention}</footer><script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;
+  // Suivi publicitaire (site publié seulement, jamais dans l'éditeur ni l'aperçu).
+  const suivi = suiviDocument(
+    ctx.edition || ctx.apercu ? undefined : ctx.suivi,
+    mentions?.[1].slug ?? null,
+  );
+  const liensPied = [
+    mentions ? `<a href="/${esc(mentions[1].slug)}">Mentions légales</a>` : '',
+    suivi.lien ? '<a href="#" data-consentement="choix">Gestion des cookies</a>' : '',
+  ].filter(Boolean);
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title>${faviconSite(d.navigation, ctx)}<meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}${suivi.bandeau ? STYLE_CONSENTEMENT : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}<footer class="pied">${liensPied.length ? `<p>${liensPied.join(' · ')}</p>` : ''}${mention}</footer>${suivi.bandeau}<script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;
 }

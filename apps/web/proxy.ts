@@ -4,6 +4,7 @@ import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
 import { SCRIPT_APERCU } from '@/features/siteArtisan/apercu';
 import { SCRIPT_SITE } from '@/features/siteArtisan/document';
 import { SCRIPT_EDITION } from '@/features/siteArtisan/edition';
+import { SCRIPT_SUIVI } from '@/features/siteArtisan/suivi';
 import { hoteSite } from '@/lib/hotesSites';
 import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from '@/lib/securite';
 import { maintenanceActive } from '@/server/flags';
@@ -17,6 +18,8 @@ let empreinte: Promise<string> | undefined;
 const empreinteBandeau = () => (empreinte ??= sha256(SCRIPT_BANDEAU_COOKIES));
 let empreinteS: Promise<string> | undefined;
 const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
+let empreinteSv: Promise<string> | undefined;
+const empreinteSuivi = () => (empreinteSv ??= sha256(SCRIPT_SUIVI));
 let empreinteE: Promise<string> | undefined;
 /** Script de l'aperçu de l'éditeur de site (cadre `srcdoc`, qui hérite de la CSP de la page). */
 const empreinteEdition = () => (empreinteE ??= sha256(SCRIPT_EDITION));
@@ -55,7 +58,11 @@ export async function proxy(requete: NextRequest) {
       chemin.startsWith('/api/sites/') || chemin.startsWith('/polices-sites/')
         ? NextResponse.next()
         : NextResponse.rewrite(new URL(`/s/${site}${chemin === '/' ? '' : chemin}`, requete.url));
-    const csp = politiqueSite({ production, empreinte: await empreinteSite() });
+    const csp = politiqueSite({
+      production,
+      empreinte: await empreinteSite(),
+      empreinteSuivi: await empreinteSuivi(),
+    });
     for (const [k, v] of Object.entries(enTetesSecurite({ production, csp, site: true })))
       reponse.headers.set(k, v);
     return reponse;

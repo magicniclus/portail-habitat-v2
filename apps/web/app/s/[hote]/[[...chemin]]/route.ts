@@ -61,6 +61,7 @@ export async function GET(
       pages: site.pages,
       media: resoudreMedia(site),
       champs: site.champs,
+      ...(site.suivi ? { suivi: site.suivi } : {}),
       // Articles lus seulement si la page affiche l'élément « Articles du blog » (COUTS.md).
       ...(elementsDe(trouve.page).some((x) => x.el.type === 'blog')
         ? { blog: await blogServi(site.siteId) }
