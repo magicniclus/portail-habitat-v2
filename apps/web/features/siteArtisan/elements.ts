@@ -97,8 +97,15 @@ export function rendreElement(e: Element, ctx: ContexteRendu, fonce = false): st
 const ratio = (r: string) => r.replace(/[^\d /.]/g, '') || '4 / 3';
 
 function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
-  const base = `${masques(e.p.masque)} el${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
-  const mb = `margin-bottom:${e.p.mb}px;`;
+  const m = e.p.marges;
+  const base =
+    `${masques(e.p.masque)} el${m ? ' mg' : ''}${ctx.surligner?.has(e.id) ? ' ia-modifie' : ''}`.trim();
+  // Marges par appareil (variables lues par la feuille de style), sinon la marge du bas.
+  const mb = m
+    ? (['desktop', 'tablet', 'mobile'] as const)
+        .map((a, i) => `--mg${'dtm'[i]}:${m[a].h}px ${m[a].d}px ${m[a].b}px ${m[a].g}px;`)
+        .join('')
+    : `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
   const riche = (t: string) =>
     texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx, ctx.edition, e.type === 'texte');

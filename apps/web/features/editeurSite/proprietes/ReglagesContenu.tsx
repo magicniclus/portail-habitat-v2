@@ -3,6 +3,7 @@
 import type { Appareil, Couleur, Element } from '@ph/core/sites';
 import { ChampAction } from '../ChampAction';
 import { Identifiant, Visibilite } from './Communs';
+import { Marges } from './Marges';
 import { ContenuElement } from './ContenuElement';
 import { Curseur, Groupe, Interrupteur, Segments } from './controles';
 import { Couleurs } from './Couleurs';
@@ -66,16 +67,7 @@ export function ReglagesContenu({
           </Groupe>
         ) : null}
         <Identifiant valeur={el.p.htmlId} cle="htmlId" dejaPris={idPris(el.p.htmlId)} c={c} />
-        <Groupe titre="Espacement">
-          <Curseur
-            libelle="Marge en dessous"
-            valeur={el.p.mb}
-            min={0}
-            max={96}
-            pas={2}
-            onChange={(mb) => c.maj({ mb })}
-          />
-        </Groupe>
+        <Marges el={el} c={c} />
         <Visibilite masque={el.p.masque} appareil={a} c={c} />
       </>
     );

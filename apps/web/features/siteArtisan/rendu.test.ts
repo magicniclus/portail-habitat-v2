@@ -295,4 +295,30 @@ describe('rendu des sites publiés', () => {
     expect(h).toContain('<span class="nm">');
     expect(h).toMatch(/@media \(max-width:767px\)\{:root\{[^}]*\}\.ts\{font-size:var\(--fm\)\}/);
   });
+
+  it('marges par appareil : variables lues selon l’écran ; sans réglage, la marge du bas', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const [a, b] = page.sections[0]!.rows[0]!.cols[0]!.els;
+    a!.p.marges = {
+      desktop: { h: 10, b: 20, g: 0, d: 0 },
+      tablet: { h: 10, b: 20, g: 0, d: 0 },
+      mobile: { h: 4, b: 8, g: 6, d: 6 },
+    };
+    b!.p.mb = 14;
+    const h = rendreDocument(
+      {
+        hote: 'h',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: s.navigation,
+        page,
+        pages: s.pages,
+        nomEntreprise: 'B',
+      },
+      ctx,
+    );
+    expect(h).toContain('--mgd:10px 0px 20px 0px;--mgt:10px 0px 20px 0px;--mgm:4px 6px 8px 6px;');
+    expect(h).toContain('margin-bottom:14px;');
+    expect(h).toContain('.mg{margin:var(--mgm)}');
+  });
 });

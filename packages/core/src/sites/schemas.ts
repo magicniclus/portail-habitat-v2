@@ -79,12 +79,18 @@ const fond = {
 };
 const masque = parAppareil(z.boolean());
 const taille = parAppareil(z.number().int().min(8).max(160));
+const marge = z.number().int().min(0).max(200);
+/** Marges d'un contenu (px) : haut, bas, gauche, droite. */
+export const marges = z.object({ h: marge, b: marge, g: marge, d: marge });
+export type Marges = z.output<typeof marges>;
 const commun = {
   htmlId: z
     .string()
     .max(60)
     .regex(/^[a-z0-9-]*$/),
-  mb: z.number().int().min(0).max(200),
+  /** Marge du bas (anciens sites) ; remplacée par `marges` dès qu'elles sont réglées. */
+  mb: marge,
+  marges: parAppareil(marges).optional(),
   masque,
   texteMobileOn: z.boolean().optional(),
   texteMobile: z.string().max(2000).optional(),
