@@ -128,13 +128,13 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
     case 'titre':
     case 'texte': {
       const lien = `${e.p.lienCouleur ? `--lc:${css(e.p.lienCouleur) || 'inherit'};` : ''}`;
-      const style = `${mb}${parAppareil('f', e.p.taille)}${ALIGN[e.p.align]}${couleur(e.p.couleur)}${lien}`;
+      const style = `${mb}${parAppareil('f', e.p.taille, e.p.unite ?? 'px')}${ALIGN[e.p.align]}${couleur(e.p.couleur)}${lien}`;
       const cls = `${base} ts ${e.type === 'titre' ? 't' : `txt${e.p.align === 'center' ? ' ct' : ''}`}${e.p.lienSouligne === false ? ' ns' : ''}`;
       const balise_ = e.type === 'titre' ? e.p.niveau : 'div';
       return `<${balise_}${id} class="${cls}" style="${esc(style)}">${avecMobile(e, riche(e.p.texte), riche)}</${balise_}>`;
     }
     case 'surtitre':
-      return `<p${id} class="${base} ts sur${e.p.couleur === 'accent' ? ' ac' : ''}" style="${esc(`${mb}${parAppareil('f', e.p.taille)}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}">${avecMobile(e, esc(e.p.texte), esc)}</p>`;
+      return `<p${id} class="${base} ts sur${e.p.couleur === 'accent' ? ' ac' : ''}" style="${esc(`${mb}${parAppareil('f', e.p.taille, e.p.unite ?? 'px')}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}">${avecMobile(e, esc(e.p.texte), esc)}</p>`;
     case 'bouton': {
       const lien = balise(
         e.p.action,
@@ -167,7 +167,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
     case 'avis':
       return `<blockquote${id} class="${base} avis" style="${esc(`${mb}${ALIGN[e.p.align]}`)}"><span class="etoiles" role="img" aria-label="${e.p.note} étoiles sur 5">${'★'.repeat(e.p.note)}${'☆'.repeat(5 - e.p.note)}</span><p>${esc(e.p.texte)}</p><footer>${esc(e.p.nom)}</footer></blockquote>`;
     case 'chiffre':
-      return `<div${id} class="${base} chiffre" style="${esc(`${mb}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}"><strong class="ts" style="${esc(parAppareil('f', e.p.taille))}">${esc(e.p.valeur)}</strong><span>${esc(e.p.label)}</span></div>`;
+      return `<div${id} class="${base} chiffre" style="${esc(`${mb}${ALIGN[e.p.align]}${couleur(e.p.couleur)}`)}"><strong class="ts" style="${esc(parAppareil('f', e.p.taille, e.p.unite ?? 'px'))}">${esc(e.p.valeur)}</strong><span>${esc(e.p.label)}</span></div>`;
     case 'formulaire':
       return rendreFormulaire(e.p.bouton, ctx, base, mb);
     case 'video': {

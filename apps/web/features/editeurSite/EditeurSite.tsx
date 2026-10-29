@@ -66,6 +66,7 @@ export function EditeurSite(props: ProprietesEditeur) {
     flash,
     ouvrirAjout,
     onTexte,
+    menuVisible: s.menuVisible,
   });
   const info = apercu ? null : infoSelection(page, sel.selection);
   const ap = useApercuCliquable(s.b.pages, sel.recevoir, flash, setPageId);

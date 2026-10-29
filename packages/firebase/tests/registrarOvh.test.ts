@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
-import { registrarDepuisEnv, registrarOvh, signatureOvh } from '../src/serveur/sites/registrarOvh';
+import {
+  disponibiliteDns,
+  registrarDepuisEnv,
+  registrarOvh,
+  signatureOvh,
+} from '../src/serveur/sites/registrarOvh';
 
 const reponse = (corps: unknown, status = 200) =>
   new Response(JSON.stringify(corps), { status, headers: { 'content-type': 'application/json' } });
@@ -137,13 +142,22 @@ describe('bureau selon l’environnement', () => {
     await expect(r.disponibilite(['a.fr'])).rejects.toMatchObject({ code: 'INDISPONIBLE' });
   });
 
-  it('local : libre sauf « pris », livré aussitôt', async () => {
+  it('DNS public : libre seulement si le domaine n’existe pas (NXDOMAIN) ; panne : pris', async () => {
+    const f = vi.fn(async (url: URL | string) => {
+      const u = String(url);
+      if (u.includes('panne')) throw new Error('réseau');
+      return reponse({ Status: u.includes('libre') ? 3 : 0 });
+    });
+    expect(await disponibiliteDns(['libre.fr', 'google.fr', 'panne.fr'], f as never)).toEqual([
+      { nom: 'libre.fr', libre: true },
+      { nom: 'google.fr', libre: false },
+      { nom: 'panne.fr', libre: false },
+    ]);
+  });
+
+  it('local : commande livrée aussitôt', async () => {
     const r = registrarDepuisEnv({ NODE_ENV: 'test' });
     expect(r.fournisseur).toBe('local');
-    expect(await r.disponibilite(['libre.fr', 'deja-pris.fr'])).toEqual([
-      { nom: 'libre.fr', libre: true },
-      { nom: 'deja-pris.fr', libre: false },
-    ]);
     expect(await r.etatCommande((await r.commander('libre.fr', titulaire)).commandeId)).toBe(
       'livre',
     );

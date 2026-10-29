@@ -80,6 +80,14 @@ const fond = {
 };
 const masque = parAppareil(z.boolean());
 const taille = parAppareil(z.number().int().min(8).max(160));
+/** Unités proposées pour la taille d'un texte (px par défaut). */
+export const UNITES_TAILLE = ['px', 'em', 'rem', 'vw', '%'] as const;
+export type UniteTaille = (typeof UNITES_TAILLE)[number];
+/** Taille d'un texte par appareil, dans l'unité choisie (`unite`, px si absente). */
+const tailleTexte = {
+  taille: parAppareil(z.number().min(0.1).max(800)),
+  unite: z.enum(UNITES_TAILLE).optional(),
+};
 const marge = z.number().int().min(0).max(200);
 /** Apparition au défilement (site publié et aperçu ; immobile si le visiteur réduit les animations). */
 export const ANIMATIONS = ['fondu', 'monter', 'descendre', 'gauche', 'droite', 'zoom'] as const;
@@ -123,17 +131,17 @@ export const element = z.discriminatedUnion('type', [
     lienCouleur: couleur.optional(),
     lienSouligne: z.boolean().optional(),
     niveau: z.enum(['h1', 'h2', 'h3']),
-    taille,
+    ...tailleTexte,
     couleur,
     align: alignement,
   }),
-  el('surtitre', { texte: z.string().max(200), taille, couleur, align: alignement }),
+  el('surtitre', { texte: z.string().max(200), ...tailleTexte, couleur, align: alignement }),
   el('texte', {
     texte: texteRiche,
     liens: liens.optional(),
     lienCouleur: couleur.optional(),
     lienSouligne: z.boolean().optional(),
-    taille,
+    ...tailleTexte,
     couleur,
     align: alignement,
   }),
@@ -172,7 +180,7 @@ export const element = z.discriminatedUnion('type', [
   el('chiffre', {
     valeur: z.string().max(40),
     label: z.string().max(120),
-    taille,
+    ...tailleTexte,
     couleur,
     align: alignement,
   }),

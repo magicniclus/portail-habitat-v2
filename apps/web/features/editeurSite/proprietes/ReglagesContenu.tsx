@@ -1,10 +1,11 @@
 'use client';
 
-import type { Appareil, Couleur, Element } from '@ph/core/sites';
+import type { Appareil, Couleur, Element, UniteTaille } from '@ph/core/sites';
 import { ChampAction } from '../ChampAction';
 import { Identifiant, Visibilite } from './Communs';
 import { Animation } from './Animation';
 import { Marges } from './Marges';
+import { TailleTexte } from './TailleTexte';
 import { ContenuElement } from './ContenuElement';
 import { Curseur, Groupe, Interrupteur, Segments } from './controles';
 import { Couleurs } from './Couleurs';
@@ -115,15 +116,11 @@ export function ReglagesContenu({
           />
         ) : null}
         {taille ? (
-          <Curseur
-            libelle="Taille"
-            valeur={(p.taille as Record<Appareil, number>)[a]}
-            min={taille[0]}
-            max={taille[1]}
-            suffixe={NOMS_APPAREIL[a]}
-            onChange={(v) =>
-              c.maj({ taille: pourAppareil(p.taille as Record<Appareil, number>, a, v) })
-            }
+          <TailleTexte
+            taille={p.taille as Record<Appareil, number>}
+            {...(p.unite ? { unite: p.unite as UniteTaille } : {})}
+            plage={taille}
+            c={c}
           />
         ) : null}
         {el.type === 'espace' ? (

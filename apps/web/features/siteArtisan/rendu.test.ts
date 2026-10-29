@@ -380,4 +380,53 @@ describe('rendu des sites publiés', () => {
     expect(edition).not.toContain('<dialog class="fenetre pop');
     expect(edition).toContain('Fenêtre pop-up · après 8 s');
   });
+
+  it('taille avec unité, vidéo YouTube (miniature dans l’éditeur), carte placée, menu à remettre', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const cols = page.sections[0]!.rows[0]!.cols[0]!;
+    const titre = cols.els.find((e) => e.type === 'titre')!;
+    if (titre.type === 'titre') {
+      titre.p.unite = 'rem';
+      titre.p.taille = { desktop: 3, tablet: 2.5, mobile: 2 };
+    }
+    const commun = structuredClone(cols.els[0]!.p);
+    cols.els.push(
+      ...([
+        {
+          id: 'v1',
+          type: 'video',
+          p: { ...commun, url: 'https://youtu.be/dQw4w9WgXcQ', legende: 'Chantier' },
+        },
+        {
+          id: 'k1',
+          type: 'carte',
+          p: {
+            ...commun,
+            adresse: '3 Rue X Bordeaux',
+            legende: '',
+            geo: { latitude: 44.84, longitude: -0.57 },
+            zoom: 15,
+          },
+        },
+      ] as never[]),
+    );
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: { ...s.navigation, masquee: true },
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('--fd:3rem;--ft:2.5rem;--fm:2rem;');
+    expect(site).toContain('youtube-nocookie.com/embed/dQw4w9WgXcQ');
+    expect(site).toContain('https://tile.openstreetmap.org/15/');
+    expect(site).toContain('© OpenStreetMap');
+    expect(site).not.toContain('Ajouter le menu du site');
+    const edition = rendreDocument(d, { ...ctx, edition: true });
+    expect(edition).toContain('i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg');
+    expect(edition).toContain('data-ed-op="menu">+ Ajouter le menu du site');
+  });
 });

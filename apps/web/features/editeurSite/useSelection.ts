@@ -27,25 +27,30 @@ export function useSelection(o: {
   flash: (m: string) => void;
   /** « + Zone » / « + Section » sous la sélection : ouvre Ajouter sur le bon onglet. */
   ouvrirAjout: (onglet: 'zones' | 'sections' | 'contenus') => void;
+  /** Menu du site retiré ou remis (toutes les pages, enregistré tout de suite). */
+  menuVisible: (visible: boolean) => void;
   /** Texte modifié directement sur la page (double-clic). */
   onTexte: (id: string, html: string, texte: string, simple: boolean) => void;
 }) {
-  const { page, majPage, annuler, retablir, flash, ouvrirAjout, onTexte } = o;
+  const { page, majPage, annuler, retablir, flash, ouvrirAjout, onTexte, menuVisible } = o;
   const [selection, setSelection] = useState<string | null>(null);
   const [defiler, setDefiler] = useState(0);
 
   const agir = useCallback(
-    (op: OpSelection | 'zone' | 'section' | 'contenu', id = selection) => {
+    (op: OpSelection | 'zone' | 'section' | 'contenu' | 'menu', id = selection) => {
+      // « + Ajouter le menu du site » (page sans menu, dans l'éditeur).
+      if (op === 'menu') return menuVisible(true);
       // Ajouter sous la sélection (ou, sans sélection, en bas de la page) : le panneau Ajouter
       // s'ouvre, l'insertion suit la sélection.
       if (op === 'zone' || op === 'section' || op === 'contenu')
         return ouvrirAjout(op === 'zone' ? 'zones' : op === 'section' ? 'sections' : 'contenus');
       if (!id) return;
       if (id === 'nav') {
-        if (op === 'supprimer')
-          flash(
-            'La navigation est commune à tout le site : masquez-la sur cette page (onglet Avancé).',
-          );
+        if (op === 'supprimer') {
+          menuVisible(false);
+          setSelection(null);
+          flash('Menu retiré de tout le site · « + Ajouter le menu du site » pour le remettre');
+        }
         return;
       }
       if (op === 'bloc') {
@@ -60,7 +65,7 @@ export function useSelection(o: {
       setSelection(r.selection);
       if (sens === 'supprimer') flash('Supprimé · Ctrl Z pour annuler');
     },
-    [selection, page, majPage, flash, ouvrirAjout],
+    [selection, page, majPage, flash, ouvrirAjout, menuVisible],
   );
 
   // Presse-papiers de l'éditeur : survit au changement de page (copier sur une page, coller sur

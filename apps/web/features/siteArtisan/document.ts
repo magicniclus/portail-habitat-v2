@@ -70,9 +70,13 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
         .filter(enFenetre)
         .map((s) => rendreFenetre(s, ctx))
         .join('');
-  const nav =
-    d.page.sansNavigation || d.navigation.masquee
-      ? ''
+  // Éditeur, site sans menu : de quoi le remettre en un clic.
+  const nav = d.page.sansNavigation
+    ? ''
+    : d.navigation.masquee
+      ? ctx.edition
+        ? '<div class="ed-nav-vide"><button type="button" data-ed-op="menu">+ Ajouter le menu du site</button></div>'
+        : ''
       : rendreNavigation(d.navigation, ctx, d.page.slug);
   // Un bouton « Formulaire » en fenêtre sur la page : la fenêtre est ajoutée une fois.
   const fenetre = /data-fenetre="formulaire"/.test(sections + nav) ? fenetreFormulaire(ctx) : '';

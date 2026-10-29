@@ -138,6 +138,18 @@ export function useBrouillonSite(initial: BrouillonSite) {
     return null;
   };
 
+  /**
+   * Menu du site retiré ou remis (toutes les pages) : appliqué et enregistré aussitôt, sans passer
+   * par « Enregistrer la navigation » (Ctrl Z le remet, à réenregistrer).
+   */
+  const menuVisible = (visible: boolean) => {
+    const navigation = { ...b.navigation, masquee: !visible };
+    modifier((x) => ({ ...x, navigation: { ...x.navigation, masquee: !visible } }));
+    void posterJson('/api/pro/site/navigation', { navigation }).then((r) => {
+      if (r.ok) setEnregistre((e) => ({ ...e, navigation }));
+    });
+  };
+
   /** Navigation remise comme à son dernier enregistrement. */
   const annulerNavigation = () => modifier((x) => ({ ...x, navigation: enregistre.navigation }));
 
@@ -204,6 +216,7 @@ export function useBrouillonSite(initial: BrouillonSite) {
     enregistrer,
     enregistrerNavigation,
     annulerNavigation,
+    menuVisible,
     erreurAction,
   };
 }

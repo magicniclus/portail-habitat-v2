@@ -28,11 +28,17 @@ const nomElement = (e: Element) => LIBELLES_ELEMENT[e.type];
 
 /**
  * Nom, niveau et actions de la sélection (maquette Editeur de Site) : les blocs se déplacent à
- * gauche et à droite, une section propose « Ajouter un bloc », la navigation n'a pas d'actions.
+ * gauche et à droite, une section propose « Ajouter un bloc », la navigation se retire du site.
  */
 export function infoSelection(page: PageSite, id: string | null): InfoSelection | null {
   if (!id) return null;
-  if (id === 'nav') return { id, niveau: 'nav', nom: 'Navigation', actions: [] };
+  if (id === 'nav')
+    return {
+      id,
+      niveau: 'nav',
+      nom: 'Navigation',
+      actions: [{ op: 'supprimer', label: 'Retirer le menu du site' }],
+    };
   const f = trouverNoeud(page, id);
   if (!f) return null;
   const niveau: NiveauEditeur = f.niveau;

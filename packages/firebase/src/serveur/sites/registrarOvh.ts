@@ -140,9 +140,31 @@ export function registrarOvh(
 }
 
 /**
+ * Disponibilité vue du DNS public (sans compte revendeur) : un domaine enregistré répond, un
+ * domaine libre n'existe pas (NXDOMAIN). En cas de doute ou de panne : « pris » (jamais un faux
+ * « disponible »).
+ */
+export async function disponibiliteDns(
+  noms: string[],
+  f: Fetch = fetch,
+): Promise<{ nom: string; libre: boolean }[]> {
+  return Promise.all(
+    noms.map(async (nom) => {
+      const r = await f(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(nom)}&type=NS`,
+        { headers: { accept: 'application/dns-json' }, signal: AbortSignal.timeout(DELAI) },
+      ).catch(() => null);
+      const corps = (await r?.json().catch(() => null)) as { Status?: number } | null;
+      return { nom, libre: r?.ok === true && corps?.Status === 3 };
+    }),
+  );
+}
+
+/**
  * Bureau d'enregistrement selon l'environnement : OVH si ses clés sont présentes ; en production
  * sans clés, achat indisponible (message clair) ; ailleurs (émulateurs, e2e), un bureau local :
- * tout domaine est libre sauf s'il contient « pris », la commande est livrée aussitôt.
+ * disponibilité lue dans le DNS public (« pris » dans le nom : indisponible), commande livrée
+ * aussitôt.
  */
 export function registrarDepuisEnv(
   env: Record<string, string | undefined> = process.env,
@@ -170,7 +192,12 @@ export function registrarDepuisEnv(
     };
   return {
     fournisseur: 'local',
-    disponibilite: async (noms) => noms.map((nom) => ({ nom, libre: !nom.includes('pris') })),
+    // Disponibilité réelle (DNS public) ; « pris » dans le nom force l'indisponible (tests).
+    disponibilite: async (noms) =>
+      (await disponibiliteDns(noms)).map((d) => ({
+        ...d,
+        libre: d.libre && !d.nom.includes('pris'),
+      })),
     commander: async (nom) => ({ commandeId: `local-${nom}` }),
     etatCommande: async () => 'livre',
     ecrireZone: async () => undefined,
