@@ -59,6 +59,8 @@ export function politiqueContenu(o: OptionsCsp): string {
         'https://www.google.com',
         // Fond de carte de l'étape 2 de l'inscription pro (tuiles OpenStreetMap, attribution affichée).
         'https://tile.openstreetmap.org',
+        // Miniatures des vidéos YouTube dans l'éditeur de site.
+        'https://i.ytimg.com',
         ...emulateurs.filter((e) => e.startsWith('http')),
       ],
     ],
@@ -110,7 +112,8 @@ export function politiqueSite(o: {
     "default-src 'self'",
     `script-src '${o.empreinte}'${o.empreinteSuivi ? ` '${o.empreinteSuivi}'` : ''} ${turnstile} https://www.googletagmanager.com https://connect.facebook.net`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com ${google} https://www.facebook.com`,
+    // Fond de l'élément Carte (tuiles OpenStreetMap, attribution affichée).
+    `img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com https://tile.openstreetmap.org ${google} https://www.facebook.com`,
     "font-src 'self'",
     `connect-src 'self' ${turnstile} ${google} ${meta}`,
     `frame-src ${turnstile} https://www.youtube-nocookie.com https://www.googletagmanager.com`,

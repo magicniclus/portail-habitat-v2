@@ -63,6 +63,8 @@ export const entreeSectionEnregistree = z.discriminatedUnion('action', [
 ]);
 /** Domaine existant saisi par l'artisan (normalisé ensuite par `normaliserDomaine`). */
 export const entreeDomaineSite = z.object({ domaine: z.string().trim().min(3).max(253) });
+/** Adresse à placer sur la carte d'un site (élément Carte). */
+export const entreeGeocoderSite = z.object({ adresse: z.string().trim().min(3).max(300) });
 /** Recherche d'un domaine à acheter (DOMAINES §3) : vide → suggestions depuis le nom commercial. */
 export const entreeRechercheDomaine = z.object({ requete: z.string().trim().max(63).optional() });
 

@@ -137,7 +137,6 @@ export function PanneauAjout({
             <button
               key={d.cle}
               type="button"
-              disabled={!z}
               onClick={() => ajouterSection(d.largeurs)}
               className="grid min-h-11 gap-2 rounded-[10px] border border-trait bg-blanc p-2.5 hover:border-[color:var(--c)] disabled:opacity-50"
               style={{ ['--c' as string]: niveauxEditeur.section }}

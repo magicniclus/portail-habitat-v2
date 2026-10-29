@@ -5,6 +5,7 @@ import { ImageSquareIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useImportMedia } from '../ImportImage';
 import { Libelle } from './controles';
+import { urlCss } from '@/features/siteArtisan/html';
 
 /**
  * Image (maquette) : emplacement où glisser une image (ou cliquer), retrait, et médiathèque du site
@@ -58,7 +59,7 @@ export function ChoixImage({
             ? 'border-accent bg-accent-100'
             : 'border-neutre-300 bg-neutre-100 hover:border-neutre-500',
         )}
-        style={url && !survol ? { backgroundImage: `url("${encodeURI(url)}")` } : undefined}
+        style={url && !survol ? { backgroundImage: urlCss(url) } : undefined}
       >
         <span
           className={cn(
@@ -119,7 +120,7 @@ export function ChoixImage({
                   'aspect-square min-h-11 rounded-[6px] bg-cover bg-center',
                   src === cle ? 'ring-2 ring-accent' : 'ring-1 ring-trait',
                 )}
-                style={{ backgroundImage: `url("${encodeURI(u)}")` }}
+                style={{ backgroundImage: urlCss(u) }}
               />
             ))}
           </div>

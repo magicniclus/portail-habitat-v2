@@ -58,3 +58,4 @@ export {
   type ServicesAchatDomaine,
 } from './achatDomaine';
 export { registrarDepuisEnv, registrarOvh, signatureOvh } from './registrarOvh';
+export { geocoderAdresse } from './geocodage';

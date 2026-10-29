@@ -178,7 +178,15 @@ export const element = z.discriminatedUnion('type', [
   }),
   el('formulaire', { bouton: z.string().max(60) }),
   el('video', { url: z.string().max(500).optional(), legende: z.string().max(200) }),
-  el('carte', { adresse: z.string().max(300).optional(), legende: z.string().max(200) }),
+  el('carte', {
+    adresse: z.string().max(300).optional(),
+    legende: z.string().max(200),
+    /** Position trouvée pour l'adresse (géocodage public) ; sans elle, un simple encart. */
+    geo: z
+      .object({ latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180) })
+      .optional(),
+    zoom: z.number().int().min(10).max(18).optional(),
+  }),
   el('espace', { hauteur: taille }),
   el('separateur', { largeur: z.enum(['plein', 'court']), align: alignement }),
   el('logo', { texte: z.string().max(120) }),

@@ -7,6 +7,7 @@ import { EditeurTexte } from '../texte/EditeurTexte';
 import { Champ } from './Champ';
 import { ChoixImage } from './ChoixImage';
 import { ContenuBlog } from './ContenuBlog';
+import { ContenuCarte } from './ContenuCarte';
 import { Info, Interrupteur, Segments } from './controles';
 import type { ContexteReglages } from './contexte';
 
@@ -105,11 +106,7 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
           <Segments
             libelle="Note"
             valeur={el.p.note}
-            options={[
-              [3, '3★'],
-              [4, '4★'],
-              [5, '5★'],
-            ]}
+            options={[1, 2, 3, 4, 5].map((n) => [n, `${n}★`] as const)}
             onChange={(note) => maj({ note })}
           />
         </>
@@ -141,13 +138,7 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
         <Champ libelle="Lien YouTube" valeur={el.p.url ?? ''} onChange={(url) => maj({ url })} />
       );
     case 'carte':
-      return (
-        <Champ
-          libelle="Adresse ou zone affichée"
-          valeur={el.p.adresse ?? ''}
-          onChange={(adresse) => maj({ adresse })}
-        />
-      );
+      return <ContenuCarte el={el} c={c} />;
     case 'separateur':
       return (
         <Segments

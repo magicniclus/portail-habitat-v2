@@ -17,7 +17,7 @@ import {
   rendreElement,
   type ContexteRendu,
 } from './elements';
-import { esc } from './html';
+import { esc, urlCss } from './html';
 
 type Fond = Pick<
   Section['p'],
@@ -41,7 +41,7 @@ function fonceDe(p: Fond, image: boolean, parent: boolean, t?: Theme): boolean {
 /** Fond en variables CSS : couleur, ou image et couleur par-dessus. */
 function styleFond(p: Fond, image: string | null | false): string {
   if (image)
-    return `background-image:url("${encodeURI(image)}");--fp:${p.fondPos};--voile:${css(p.voile) || 'black'};--vo:${p.voileOpacite / 100};`;
+    return `background-image:${urlCss(image)};--fp:${p.fondPos};--voile:${css(p.voile) || 'black'};--vo:${p.voileOpacite / 100};`;
   return css(p.fond) ? `--fond:${css(p.fond)};` : '';
 }
 
@@ -69,7 +69,7 @@ function rendreBloc(c: Bloc, i: number, r: Ligne, ctx: ContexteRendu, parent: bo
   const fonce = fonceDe(c.p, Boolean(image), parent, ctx.theme);
   const propre = image || (c.p.fond !== 'aucun' && c.p.fond !== 'auto');
   const fondBloc = image
-    ? `background:linear-gradient(color-mix(in srgb,${css(c.p.voile) || 'black'} ${c.p.voileOpacite}%,transparent),color-mix(in srgb,${css(c.p.voile) || 'black'} ${c.p.voileOpacite}%,transparent)),url("${encodeURI(image)}") ${c.p.fondPos}/cover no-repeat;`
+    ? `background:linear-gradient(color-mix(in srgb,${css(c.p.voile) || 'black'} ${c.p.voileOpacite}%,transparent),color-mix(in srgb,${css(c.p.voile) || 'black'} ${c.p.voileOpacite}%,transparent)),${urlCss(image)} ${c.p.fondPos}/cover no-repeat;`
     : css(c.p.fond)
       ? `background:${css(c.p.fond)};`
       : '';

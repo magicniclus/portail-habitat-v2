@@ -1,4 +1,5 @@
 import {
+  idYoutube,
   LIBELLES_ELEMENT,
   resoudreCouleur,
   texteSur,
@@ -12,6 +13,7 @@ import {
   type SuiviSite,
   type Theme,
 } from '@ph/core/sites';
+import { tuilesCarte } from '@ph/core/onboarding';
 import { balise, texteRiche } from './actions';
 import { esc } from './html';
 import { rendreCartesBlog, type ArticleRendu, type ClassementRendu } from './blog';
@@ -169,17 +171,32 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
     case 'formulaire':
       return rendreFormulaire(e.p.bouton, ctx, base, mb);
     case 'video': {
-      const v = e.p.url?.match(
-        /^https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,20})/,
-      );
+      const v = idYoutube(e.p.url);
+      const titre = esc(e.p.legende || 'Vidéo');
+      // Éditeur et Aperçu (cadre isolé, sans lecteur possible) : la miniature de la vidéo.
+      if (v && (ctx.edition || ctx.apercu))
+        return `<div${id} class="${base} video" style="${esc(mb)}"><span class="mini"><img src="https://i.ytimg.com/vi/${esc(v)}/hqdefault.jpg" alt="${titre}" loading="lazy"><span class="lire" aria-hidden="true">▶</span></span></div>`;
       if (v)
-        return `<div${id} class="${base} video" style="${esc(mb)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(v[1]!)}" title="${esc(e.p.legende || 'Vidéo')}" loading="lazy" allowfullscreen></iframe></div>`;
+        return `<div${id} class="${base} video" style="${esc(mb)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(v)}" title="${titre}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>`;
       return ctx.edition
-        ? `<div${id} class="${base} video" style="${esc(mb)}"><span class="vide">▶ ${esc(e.p.legende || 'Collez le lien YouTube dans les réglages')}</span></div>`
+        ? `<div${id} class="${base} video" style="${esc(mb)}"><span class="vide">▶ ${esc(e.p.url ? 'Lien YouTube non reconnu' : e.p.legende || 'Collez le lien YouTube dans les réglages')}</span></div>`
         : '';
     }
-    case 'carte':
-      return `<p${id} class="${base} carte" style="${esc(mb)}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>${esc(e.p.adresse || e.p.legende)}</p>`;
+    case 'carte': {
+      const g = e.p.geo;
+      const libelle = esc(e.p.adresse || e.p.legende);
+      if (!g)
+        return `<p${id} class="${base} carte" style="${esc(mb)}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>${libelle || (ctx.edition ? 'Saisissez l’adresse dans les réglages' : '')}</p>`;
+      // Fond OpenStreetMap (tuiles fixes, aucun script ni cookie), repère au centre.
+      const tuiles = tuilesCarte(g, e.p.zoom ?? 15, 1024, 512)
+        .map(
+          (t) =>
+            `<img src="${esc(t.url)}" alt="" width="256" height="256" loading="lazy" style="left:${t.x}px;top:${t.y}px">`,
+        )
+        .join('');
+      const itineraire = `https://www.google.com/maps/search/?api=1&query=${g.latitude},${g.longitude}`;
+      return `<figure${id} class="${base} carte-osm" style="${esc(mb)}"><div class="fond" role="img" aria-label="Carte : ${libelle}"><div class="vue">${tuiles}</div><svg class="repere" width="34" height="44" viewBox="0 0 24 31" aria-hidden="true"><path d="M12 30s10-9.4 10-17.5a10 10 0 1 0-20 0C2 20.6 12 30 12 30z" fill="var(--primaire)" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="3.6" fill="white"/></svg><small class="osm">© OpenStreetMap</small></div><figcaption>${libelle} · <a href="${esc(itineraire)}" target="_blank" rel="noopener noreferrer">Itinéraire</a></figcaption></figure>`;
+    }
     case 'espace':
       return `<div class="${base} espace" style="${esc(parAppareil('h', e.p.hauteur))}" aria-hidden="true"></div>`;
     case 'separateur':
