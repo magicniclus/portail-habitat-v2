@@ -2,8 +2,11 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../cn';
 import { Chargeur } from '../primitives/Chargeur';
 
-/** Apparition différée : rien ne clignote quand la réponse arrive vite. */
-const APPARITION = 'motion-safe:animate-[fondu_.2s_ease-out_.15s_both]';
+/**
+ * Apparition différée (masqué 150 ms, puis visible d'un coup) : rien ne clignote quand la réponse
+ * arrive vite, et jamais de texte à moitié transparent (contraste AA).
+ */
+const APPARITION = 'animate-[apparaitre-apres_.15s_step-end_both]';
 
 const VOILES = {
   leger: 'bg-blanc/65 backdrop-blur-[1.5px]',

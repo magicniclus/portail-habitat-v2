@@ -133,3 +133,10 @@
     opacity: 1;
   }
 }
+
+/* Chargements : masqué le temps du délai, puis visible sans fondu. */
+@keyframes apparaitre-apres {
+  from {
+    visibility: hidden;
+  }
+}

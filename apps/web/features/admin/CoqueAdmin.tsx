@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { routes } from '@/lib/routes';
 import { deconnecterAdmin } from './deconnexion';
+import { ChargementLien } from '@/features/navigation/ChargementLien';
 
 export interface LienAdmin {
   id: string;
@@ -104,6 +105,7 @@ export function CoqueAdmin({
     >
       <Icone d={l.icone} />
       <span className={deplie ? '' : 'sr-only'}>{l.libelle}</span>
+      <ChargementLien className="ml-auto" />
     </Link>
   );
 

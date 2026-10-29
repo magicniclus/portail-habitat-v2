@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { estActif, LIENS_PRO } from './liens';
+import { ChargementLien } from '@/features/navigation/ChargementLien';
 
 /** Mobile (MOBILE §6) : barre d'onglets en bas, « Plus » ouvre une feuille avec le reste du menu. */
 export function NavMobilePro({
@@ -58,6 +59,7 @@ export function NavMobilePro({
                   >
                     <Icone size={22} aria-hidden="true" />
                     {l.libelle}
+                    <ChargementLien className="ml-auto" />
                   </Link>
                 </li>
               );

@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { routes } from '@/lib/routes';
 import { estActif, LIENS_PRO } from './liens';
+import { ChargementLien } from '@/features/navigation/ChargementLien';
 
 /** Barre latérale (≥ 1024 px) de la maquette Espace Artisan Dashboard : repliable en icônes seules. */
 export function SidebarPro({
@@ -64,6 +65,7 @@ export function SidebarPro({
                 >
                   <Icone size={20} aria-hidden="true" className="flex-none" />
                   <span className={ouvert ? '' : 'sr-only'}>{l.libelle}</span>
+                  <ChargementLien className={ouvert ? 'ml-auto' : 'absolute top-1 right-1'} />
                   {l.badge ? (
                     <span
                       className={cn(

@@ -5,6 +5,7 @@ import { cn } from '@ph/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { estActif, LIENS_PRO } from './liens';
+import { ChargementLien } from '@/features/navigation/ChargementLien';
 
 /**
  * Onglets de Mon compte (maquettes Mon Compte, Equipe, Mon Abonnement, Aide et Contact ; NAV-01) :
@@ -30,6 +31,7 @@ export function OngletsCompte({ onglets }: { onglets: LienPro[] }) {
             )}
           >
             {o.libelle}
+            <ChargementLien className="ml-2" />
           </Link>
         );
       })}
