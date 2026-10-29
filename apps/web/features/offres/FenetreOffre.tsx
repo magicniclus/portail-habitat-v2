@@ -4,6 +4,12 @@ import { recapPaiement } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
 import { CONTENU_OFFRES, NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
 import { Banner, bouton, Button, Modal } from '@ph/ui';
+import {
+  ArrowCounterClockwiseIcon,
+  CheckCircleIcon,
+  CrownSimpleIcon,
+  LockKeyIcon,
+} from '@phosphor-icons/react';
 import { useState, type ReactNode } from 'react';
 import { usePaiement } from '@/features/abonnement/usePaiement';
 
@@ -67,18 +73,37 @@ export function FenetreOffre({
       }
     >
       <div className="grid gap-4">
-        <p className="m-0 text-base text-neutre-800">{c.accroche}</p>
+        <div className="relative isolate overflow-hidden rounded-[16px] bg-accent-100 p-4">
+          <span
+            aria-hidden="true"
+            className="absolute -top-10 -right-8 -z-10 size-32 rounded-full bg-accent-200 opacity-70"
+          />
+          <span className="inline-flex items-center gap-1 rounded-pill bg-blanc px-2.5 py-0.5 text-xs font-bold tracking-wide text-accent-800 uppercase">
+            <CrownSimpleIcon size={13} weight="fill" aria-hidden="true" />
+            {nom}
+          </span>
+          <p className="m-0 mt-2 text-[17px] leading-snug font-semibold text-texte">{c.accroche}</p>
+          <p className="m-0 mt-3 flex items-baseline gap-1.5">
+            <strong className="text-[32px] leading-none font-extrabold text-accent-800">
+              {eur(r.montantHt)}
+            </strong>
+            <span className="text-sm font-semibold text-neutre-800">HT / mois</span>
+          </p>
+        </div>
         <ul className="m-0 grid list-none gap-2 p-0 text-[15px]">
           {c.avantages.map((a) => (
-            <li key={a} className="flex gap-2">
-              <span aria-hidden="true" className="font-bold text-accent-700">
-                ✓
-              </span>
+            <li key={a} className="flex items-start gap-2">
+              <CheckCircleIcon
+                size={20}
+                weight="fill"
+                aria-hidden="true"
+                className="flex-none text-accent"
+              />
               <span>{a}</span>
             </li>
           ))}
         </ul>
-        <dl className="m-0 grid gap-1 rounded-card bg-neutre-100 p-4 text-[15px]">
+        <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
           <div className="flex justify-between gap-3">
             <dt>{nom} · mensuel</dt>
             <dd className="m-0">{eur(r.montantHt)} HT</dd>
@@ -92,9 +117,18 @@ export function FenetreOffre({
             <dd className="m-0">{eur(r.montantTtc)}</dd>
           </div>
         </dl>
+        <ul className="m-0 grid list-none gap-1.5 p-0 text-sm text-neutre-800 sm:grid-cols-2">
+          <li className="flex items-center gap-1.5">
+            <ArrowCounterClockwiseIcon size={16} aria-hidden="true" className="text-accent-700" />
+            Sans engagement, résiliable à tout moment
+          </li>
+          <li className="flex items-center gap-1.5">
+            <LockKeyIcon size={16} aria-hidden="true" className="text-accent-700" />
+            Paiement sécurisé par Stripe
+          </li>
+        </ul>
         <p className="m-0 text-sm text-neutre-700">
-          Sans engagement, résiliable à tout moment.{c.note ? ` ${c.note}` : ''} Paiement sécurisé
-          par Stripe : carte et CGV se valident sur la page Stripe.
+          {c.note ? `${c.note} ` : ''}Carte et CGV se valident sur la page Stripe.
         </p>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       </div>

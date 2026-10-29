@@ -10,8 +10,8 @@ import type { SuggestionIa } from './ia/suggestionsIa';
 import { PropositionIa, type Proposition } from './PropositionIa';
 import { Banner, Button } from '@ph/ui';
 import { useEffect, useState } from 'react';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { posterJson } from '@/lib/posterJson';
+import { EncartPremium } from '@/features/offres/EncartPremium';
 
 /**
  * Panneau IA (IA_SITE §2.3) : la demande part sur le brouillon enregistré ; la proposition est
@@ -161,18 +161,15 @@ export function PanneauIa({
           </select>
         </label>
         {verrou ? (
-          <div className="grid gap-2 rounded-[8px] bg-accent-100 p-3 text-[13px]">
-            Cette demande est incluse dans Site Pro : sections, pages et couleurs créées en un clic,
-            modifiables ensuite à la main.
-            <div>
-              <FenetreOffre
-                formule="site_pro"
-                raison="L’IA complète du site est incluse dans Site Pro."
-              >
-                Débloquer l’IA
-              </FenetreOffre>
-            </div>
-          </div>
+          <EncartPremium
+            compact
+            formule="site_pro"
+            titre="Laissez l’IA construire pour vous"
+            cta="Débloquer l’IA"
+            raison="L’IA complète du site est incluse dans Site Pro."
+          >
+            Sections, pages et couleurs créées en un clic, modifiables ensuite à la main.
+          </EncartPremium>
         ) : (
           <>
             <Button

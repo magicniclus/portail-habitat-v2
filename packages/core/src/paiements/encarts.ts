@@ -8,15 +8,20 @@ import { inclut, type Formule, type FormulePayante } from './droits';
 export const ENCARTS = {
   realisations: {
     voulue: 'fiche_pro',
+    titre: 'Montrez tous vos chantiers',
     texte: 'Ajoutez autant de chantiers et de photos que vous voulez avec Fiche Pro.',
     raison: 'Les photos et réalisations illimitées sont incluses dans Fiche Pro.',
   },
   coordonnees: {
     voulue: 'fiche_pro',
+    titre: 'Laissez les clients vous appeler',
     texte: 'Votre numéro est masqué sur votre fiche publique : affichez-le avec Fiche Pro.',
     raison: 'Le téléphone et le site visibles sur la fiche sont inclus dans Fiche Pro.',
   },
-} as const satisfies Record<string, { voulue: FormulePayante; texte: string; raison: string }>;
+} as const satisfies Record<
+  string,
+  { voulue: FormulePayante; titre: string; texte: string; raison: string }
+>;
 export type CleEncart = keyof typeof ENCARTS;
 export const CLES_ENCART = Object.keys(ENCARTS) as CleEncart[];
 

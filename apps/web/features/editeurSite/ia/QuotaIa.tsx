@@ -1,7 +1,7 @@
 'use client';
 
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import type { RestantsIa } from '../modesIa';
+import { EncartPremium } from '@/features/offres/EncartPremium';
 
 /**
  * Haut du panneau IA (maquette Editeur de Site) : demandes restantes du mois avec Site Pro, ou
@@ -10,23 +10,18 @@ import type { RestantsIa } from '../modesIa';
 export function QuotaIa({ r }: { r: RestantsIa }) {
   if (r.type === 'essai')
     return (
-      <div className="grid gap-2 rounded-[10px] border border-accent-300 bg-accent-100 p-3 [grid-template-columns:minmax(0,1fr)]">
-        <strong className="text-sm">🔒 L’IA complète est incluse dans Site Pro</strong>
-        <span className="text-[13px] leading-[18px] text-neutre-800">
-          Créer tout le site, ajouter ou refaire des sections, améliorer vos textes.{' '}
-          {r.textes > 0
-            ? `Essai gratuit : ${r.textes} réécriture${r.textes > 1 ? 's' : ''} de texte restante${r.textes > 1 ? 's' : ''}.`
-            : 'Essai gratuit utilisé.'}
-        </span>
-        <div>
-          <FenetreOffre
-            formule="site_pro"
-            raison="L’IA complète du site est incluse dans Site Pro."
-          >
-            Passer à Site Pro
-          </FenetreOffre>
-        </div>
-      </div>
+      <EncartPremium
+        compact
+        formule="site_pro"
+        titre="L’IA complète est incluse dans Site Pro"
+        cta="Passer à Site Pro"
+        raison="L’IA complète du site est incluse dans Site Pro."
+      >
+        Créer tout le site, ajouter ou refaire des sections, améliorer vos textes.{' '}
+        {r.textes > 0
+          ? `Essai gratuit : ${r.textes} réécriture${r.textes > 1 ? 's' : ''} de texte restante${r.textes > 1 ? 's' : ''}.`
+          : 'Essai gratuit utilisé.'}
+      </EncartPremium>
     );
   const total = r.max.textes + r.max.composants;
   const reste = r.textes + r.composants;

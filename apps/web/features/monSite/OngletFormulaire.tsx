@@ -1,7 +1,8 @@
 import { FORMULAIRE_GRATUIT, LIBELLES_TYPE_CHAMP, type ChampFormulaire } from '@ph/core/sites';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { ConstructeurFormulaire } from './ConstructeurFormulaire';
 import { EnTeteOnglet } from './Mise';
+import { EncartPremium } from '@/features/offres/EncartPremium';
+import { ChatCircleTextIcon } from '@phosphor-icons/react';
 
 const REGLAGES = [
   { libelle: 'Email à chaque demande', valeur: 'Activé' },
@@ -31,21 +32,16 @@ export function OngletFormulaire({
         <ConstructeurFormulaire initial={champs ?? [...FORMULAIRE_GRATUIT]} />
       ) : (
         <>
-          <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-5">
-            <strong>🔒 Formulaire standard en Gratuit.</strong>
-            <p className="m-0 text-[15px]">
-              Avec Site Pro, ajoutez vos propres questions (budget, date souhaitée…), réglez les
-              notifications et recevez un SMS à chaque demande : vous rappelez avant les autres.
-            </p>
-            <div>
-              <FenetreOffre
-                formule="site_pro"
-                raison="Le formulaire personnalisé est inclus dans Site Pro."
-              >
-                Personnaliser le formulaire
-              </FenetreOffre>
-            </div>
-          </div>
+          <EncartPremium
+            formule="site_pro"
+            titre="Rappelez avant les autres"
+            cta="Personnaliser le formulaire"
+            raison="Le formulaire personnalisé est inclus dans Site Pro."
+            icone={ChatCircleTextIcon}
+          >
+            Formulaire standard en Gratuit. Avec Site Pro, ajoutez vos propres questions (budget,
+            date souhaitée…), réglez les notifications et recevez un SMS à chaque demande.
+          </EncartPremium>
           <ol
             className="m-0 grid list-none overflow-hidden rounded-[14px] border border-trait bg-blanc p-0"
             aria-label="Champs du formulaire"

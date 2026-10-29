@@ -1,10 +1,10 @@
 import { formatNombre } from '@ph/core/format';
 import { EmptyState } from '@ph/ui';
-import { ChartBarIcon } from '@phosphor-icons/react/ssr';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
+import { ChartBarIcon, ChartLineUpIcon } from '@phosphor-icons/react/ssr';
 import type { LignePage, StatsDuSite } from '@/server/sites';
 import { BarresVisites } from './BarresVisites';
 import { EnTeteOnglet } from './Mise';
+import { EncartPremium } from '@/features/offres/EncartPremium';
 
 const jour = (cle: string) =>
   cle
@@ -82,19 +82,15 @@ export function OngletStats({
       {stats.mois && t.vues ? (
         <BarresVisites titre="Visites par mois (12 mois)" serie={stats.mois.serie} libelle={mois} />
       ) : sitePro || stats.mois ? null : (
-        <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-5">
-          <p className="m-0 text-[15px]">
-            Avec Site Pro, suivez vos visites sur 12 mois et recevez un SMS à chaque demande.
-          </p>
-          <div>
-            <FenetreOffre
-              formule="site_pro"
-              raison="Les statistiques sur 12 mois sont incluses dans Site Pro."
-            >
-              Voir 12 mois de statistiques
-            </FenetreOffre>
-          </div>
-        </div>
+        <EncartPremium
+          formule="site_pro"
+          titre="Voyez ce qui vous rapporte"
+          cta="Voir 12 mois de statistiques"
+          raison="Les statistiques sur 12 mois sont incluses dans Site Pro."
+          icone={ChartLineUpIcon}
+        >
+          Avec Site Pro, suivez vos visites sur 12 mois et recevez un SMS à chaque demande.
+        </EncartPremium>
       )}
     </section>
   );

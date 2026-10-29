@@ -8,6 +8,8 @@ import { ClassementBlog } from './ClassementBlog';
 import { ListeArticles } from './ListeArticles';
 import { PiloteBlog } from './PiloteBlog';
 import { PlusArticles } from './PlusArticles';
+import { EncartPremium } from '@/features/offres/EncartPremium';
+import { NewspaperClippingIcon } from '@phosphor-icons/react';
 
 export const VUES_BLOG = [
   ['articles', 'Articles'],
@@ -71,18 +73,16 @@ export function OngletBlog({ donnees: d, vue }: { donnees: OngletBlogDonnees; vu
         </div>
       ) : null}
       {actif ? null : (
-        <div className="grid gap-3 rounded-2xl border border-accent-300 bg-accent-100 p-4">
-          <strong>Le blog est inclus dans Site Pro et Tout inclus</strong>
-          <p className="m-0 text-[15px]">
-            Écrivez vos conseils, l’IA vous aide : 5 articles rédigés par mois avec Site Pro, 15
-            avec Tout inclus. Contrôle SEO et mentions légales compris.
-          </p>
-          <div>
-            <FenetreOffre formule="site_pro" raison="Le blog est inclus dans Site Pro.">
-              Passer à Site Pro
-            </FenetreOffre>
-          </div>
-        </div>
+        <EncartPremium
+          formule="site_pro"
+          titre="Un blog qui vous amène des clients"
+          cta="Passer à Site Pro"
+          raison="Le blog est inclus dans Site Pro."
+          icone={NewspaperClippingIcon}
+        >
+          Écrivez vos conseils, l’IA vous aide : 5 articles rédigés par mois avec Site Pro, 15 avec
+          Tout inclus. Contrôle SEO et mentions légales compris.
+        </EncartPremium>
       )}
       <nav aria-label="Vues du blog" className="flex flex-wrap gap-2">
         {VUES_BLOG.map(([v, l]) => (
