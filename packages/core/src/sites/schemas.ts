@@ -244,6 +244,11 @@ export const section = z.object({
      * Zone affichée en fenêtre pop-up au lieu de la page : ouverte par un bouton (action `popup`
      * vers son ancre), après un délai, ou quand la souris quitte la page (ordinateur).
      */
+    /** Zone globale : même contenu sur toutes les pages qui portent cet identifiant. */
+    globale: z
+      .string()
+      .regex(/^g[a-z0-9]{4,20}$/)
+      .optional(),
     popup: z
       .object({
         ouverture: z.enum(['clic', 'delai', 'sortie']),

@@ -2,7 +2,7 @@
 
 import {
   deplacerNoeud,
-  insererSectionPrete,
+  zonesGlobales,
   type ModeIaSite,
   type OperationIa,
   type PageSite,
@@ -22,7 +22,7 @@ import { PanneauPages } from './PanneauPages';
 import { PanneauSeo } from './PanneauSeo';
 import { PanneauStructure } from './PanneauStructure';
 import { PanneauStyles } from './PanneauStyles';
-import { nouvelId } from '../ids';
+import { insererZoneSuggeree } from './zoneSuggeree';
 
 export interface DemandeIa {
   mode: ModeIaSite;
@@ -86,6 +86,7 @@ export function PanneauGauche(p: {
           if (sel) p.onChoisir(sel, true);
         }}
         palette={s.b.theme.palette}
+        globales={zonesGlobales(s.b.pages)}
       />
     );
   if (p.panneau === 'pages')
@@ -139,16 +140,7 @@ export function PanneauGauche(p: {
       <PanneauStyles theme={s.b.theme} onChange={(t) => s.modifier((b) => ({ ...b, theme: t }))} />
     );
   if (p.panneau === 'modeles') contenu = <PanneauModeles site={s.b} onRestaurer={s.restaurer} />;
-  if (p.panneau === 'versions')
-    contenu = (
-      <PanneauVersions
-        versions={p.props.versions}
-        {...(p.props.versionPubliee ? { enLigne: p.props.versionPubliee } : {})}
-        // Pages de la version à la place des mêmes pages ; celles jamais publiées restent.
-        onReprendre={(v) => s.restaurer({ ...v, pages: { ...s.b.pages, ...v.pages } })}
-        flash={p.flash}
-      />
-    );
+  if (p.panneau === 'versions') contenu = <PanneauVersions s={s} props={p.props} flash={p.flash} />;
   if (p.panneau === 'ia')
     contenu = (
       <PanneauIa
@@ -165,15 +157,7 @@ export function PanneauGauche(p: {
         suggestions={suggestionsIa(page, {
           ...(p.props.ville ? { ville: p.props.ville } : {}),
           ajouterZone: (cle, ou) => {
-            // En fin de page, la zone passe avant le pied de page.
-            const pied = page.sections.findIndex((x) => x.p.nom === 'Pied de page');
-            const apres =
-              ou === 'debut'
-                ? (page.sections[0]?.id ?? null)
-                : pied > 0
-                  ? page.sections[pied - 1]!.id
-                  : null;
-            const r = insererSectionPrete(page, cle, apres, nouvelId);
+            const r = insererZoneSuggeree(page, cle, ou);
             if (!r) return;
             p.majPage(() => r.page);
             p.onChoisir(r.id, true);

@@ -26,3 +26,4 @@ export * from './suivi';
 export * from './achatDomaine';
 export * from './texteRiche';
 export * from './marges';
+export * from './globales';

@@ -20,6 +20,7 @@ import { cn } from '@ph/ui';
 import { niveauxEditeur } from '@ph/ui/tokens';
 import { ICONES_ELEMENT } from '../icones';
 import { MesSections } from '../MesSections';
+import { ZonesGlobales } from './ZonesGlobales';
 import { Onglets } from './Onglets';
 import { Vignette } from './Vignette';
 import { nouvelId } from '../ids';
@@ -40,8 +41,11 @@ export function PanneauAjout({
   onOnglet,
   onPage,
   palette,
+  globales = [],
 }: {
   page: PageSite;
+  /** Zones globales du site (toutes pages), à réutiliser sur cette page. */
+  globales?: { globale: string; section: Section; pages: number }[];
   /** Couleurs du site, pour les vignettes des zones. */
   palette: Palette;
   selection: string | null;
@@ -101,11 +105,20 @@ export function PanneauAjout({
       <p className="m-0 text-[13px] leading-[18px] text-neutre-700">{contexte}</p>
       {onglet === 'zones' ? (
         <div className="grid gap-2">
+          <ZonesGlobales
+            globales={globales}
+            carte={carte}
+            onInserer={(sec) =>
+              onPage(insererCopieSection(page, sec, z?.id ?? null, nouvelId), null)
+            }
+          />
           <MesSections
             carte={carte}
-            onInserer={(x) =>
-              onPage(insererCopieSection(page, x.section, z?.id ?? null, nouvelId), null)
-            }
+            onInserer={(x) => {
+              // Une zone enregistrée devient une copie indépendante, même si elle était globale.
+              const { globale: _g, ...p } = x.section.p;
+              onPage(insererCopieSection(page, { ...x.section, p }, z?.id ?? null, nouvelId), null);
+            }}
           />
           {SECTIONS_PRETES.map((s) => (
             <button key={s.cle} type="button" className={carte} onClick={() => ajouterZone(s.cle)}>

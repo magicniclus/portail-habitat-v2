@@ -5,7 +5,8 @@ import type { Navigation, PageSite, Theme } from '@ph/core/sites';
 import { Banner, Badge, BoutonAction } from '@ph/ui';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
-import type { BrouillonSite } from './useBrouillonSite';
+import type { ProprietesEditeur } from './proprietes';
+import type { useBrouillonSite } from './useBrouillonSite';
 
 type Contenu = { pages: Record<string, PageSite>; navigation: Navigation; theme: Theme };
 
@@ -15,17 +16,15 @@ type Contenu = { pages: Record<string, PageSite>; navigation: Navigation; theme:
  * remplacent celles du brouillon ; les pages jamais publiées restent ; Ctrl Z annule).
  */
 export function PanneauVersions({
-  versions,
-  enLigne: initiale,
-  onReprendre,
+  s,
+  props: { versions, versionPubliee },
   flash,
 }: {
-  versions: { n: number; publieLe: number }[];
-  enLigne?: number;
-  onReprendre: (b: Pick<BrouillonSite, 'pages'> & Partial<BrouillonSite>) => void;
+  s: ReturnType<typeof useBrouillonSite>;
+  props: Pick<ProprietesEditeur, 'versions' | 'versionPubliee'>;
   flash: (m: string) => void;
 }) {
-  const [enLigne, setEnLigne] = useState(initiale);
+  const [enLigne, setEnLigne] = useState(versionPubliee);
   const [erreur, setErreur] = useState<string | null>(null);
   if (!versions.length)
     return (
@@ -38,7 +37,12 @@ export function PanneauVersions({
     setErreur(null);
     const r = await posterJson<Contenu>('/api/pro/site/version', { version: n });
     if (!r.ok) return setErreur(r.message);
-    onReprendre({ pages: r.data.pages, navigation: r.data.navigation, theme: r.data.theme });
+    // Pages de la version à la place des mêmes pages ; celles jamais publiées restent.
+    s.restaurer({
+      pages: { ...s.b.pages, ...r.data.pages },
+      navigation: r.data.navigation,
+      theme: r.data.theme,
+    });
     flash(`Version ${n} reprise dans l’éditeur · Ctrl+Z pour annuler`);
   };
   const remettre = async (n: number) => {

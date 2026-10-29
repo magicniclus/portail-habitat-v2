@@ -108,11 +108,16 @@ export function rendreSection(s: Section, ctx: ContexteRendu): string {
     .filter(Boolean)
     .join(' ');
   // Éditeur : la zone en fenêtre pop-up reste dans la page pour être modifiée, avec son étiquette.
-  const etiquette =
-    ctx.edition && s.p.popup
-      ? `<p class="ed-pop">Fenêtre pop-up · ${{ clic: 'ouverte par un bouton', delai: `après ${s.p.popup.delai} s`, sortie: 'quand le visiteur s’apprête à partir' }[s.p.popup.ouverture]}</p>`
-      : '';
-  const zone = `<section class="${classes}${ctx.edition && s.p.popup ? ' ed-zone-pop' : ''}"${s.p.ancre && !(s.p.popup && !ctx.edition) ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}">${etiquette}<div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.length || !ctx.edition ? s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('') : videEdition('section', s.id, 'Ajouter une section')}</div></section>`;
+  const etiquettes = ctx.edition
+    ? [
+        s.p.globale ? 'Zone globale · modifiée sur toutes ses pages' : '',
+        s.p.popup
+          ? `Fenêtre pop-up · ${{ clic: 'ouverte par un bouton', delai: `après ${s.p.popup.delai} s`, sortie: 'quand le visiteur s’apprête à partir' }[s.p.popup.ouverture]}`
+          : '',
+      ].filter(Boolean)
+    : [];
+  const etiquette = etiquettes.length ? `<p class="ed-pop">${etiquettes.join(' · ')}</p>` : '';
+  const zone = `<section class="${classes}${etiquette ? ' ed-zone-pop' : ''}"${s.p.ancre && !(s.p.popup && !ctx.edition) ? ` id="${esc(s.p.ancre)}"` : ''} style="${esc(style)}">${etiquette}<div class="in${s.p.largeur === 'plein' ? ' plein' : ''}">${s.rows.length || !ctx.edition ? s.rows.map((r) => rendreLigne(r, ctx, fonce)).join('') : videEdition('section', s.id, 'Ajouter une section')}</div></section>`;
   return ctx.edition ? marquerEdition(zone, s.id, 'zone') : avecAnimation(zone, s.p.anim, ctx);
 }
 

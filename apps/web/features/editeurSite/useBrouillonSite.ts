@@ -10,6 +10,7 @@ import {
   historique,
   nouvellePage,
   popupsDe,
+  propagerGlobales,
   retablir,
   slugDePage,
   validerAction,
@@ -43,7 +44,14 @@ export function useBrouillonSite(initial: BrouillonSite) {
     courant.current = b;
   }, [b]);
   const modifier = useCallback(
-    (f: (b: BrouillonSite) => BrouillonSite) => setH((x) => appliquer(x, f(x.present))),
+    (f: (b: BrouillonSite) => BrouillonSite) =>
+      setH((x) => {
+        const n = f(x.present);
+        // Zone globale modifiée sur une page : recopiée sur les autres, dans la même étape.
+        const pages =
+          n.pages === x.present.pages ? n.pages : propagerGlobales(x.present.pages, n.pages);
+        return appliquer(x, pages === n.pages ? n : { ...n, pages });
+      }),
     [],
   );
   const modifiees = Object.keys(b.pages).filter((id) => b.pages[id] !== enregistre.pages[id]);
