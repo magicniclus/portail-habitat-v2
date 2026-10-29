@@ -682,4 +682,45 @@ test.describe('Site internet artisan', () => {
     await page.getByRole('button', { name: 'Enregistrer' }).click();
     await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeVisible();
   });
+
+  test('éditeur avancé : formats de texte, marges, animation, zone globale, pop-up, versions', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await apercu.locator('h1').first().click();
+    // Formats du titre (pas de liste dans un titre).
+    const barre = page.getByRole('toolbar', { name: 'Mise en forme' });
+    for (const outil of ['Barré', 'Exposant (m², 1er)', 'Surligner', 'Couleur du texte'])
+      await expect(barre.getByRole('button', { name: outil })).toBeVisible();
+    await expect(barre.getByRole('button', { name: 'Liste à puces' })).toHaveCount(0);
+
+    // Marges et animation du contenu.
+    await page.getByRole('tab', { name: 'Avancé' }).click();
+    await page.getByLabel('Marge haut (Ordinateur)').fill('24');
+    await expect(apercu.locator('h1').first()).toHaveAttribute('style', /--mgd:24px/);
+    await page.getByLabel('À l’apparition sur l’écran').selectOption({ label: 'Monter' });
+    await expect(page.getByRole('radiogroup', { name: 'Délai' })).toBeVisible();
+
+    // Zone : globale puis fenêtre pop-up (étiquette dans l'éditeur).
+    for (let i = 0; i < 3; i++) await page.keyboard.press('Escape');
+    await page.getByRole('tab', { name: 'Avancé' }).click();
+    await page.getByRole('button', { name: 'Rendre cette zone globale' }).click();
+    await expect(page.getByText(/Présente sur 1 page/)).toBeVisible();
+    await page.getByRole('switch', { name: 'Afficher cette zone en fenêtre pop-up' }).click();
+    await expect(
+      apercu.getByText(/Zone globale .* Fenêtre pop-up · ouverte par un bouton/),
+    ).toBeVisible();
+
+    // Historique des versions : la version en ligne est marquée.
+    await page.getByRole('button', { name: 'Versions', exact: true }).click();
+    const versions = page.getByRole('list', { name: 'Versions publiées' });
+    await expect(versions.getByText('En ligne')).toBeVisible();
+
+    // Retour à l'état de départ (le brouillon s'enregistre tout seul).
+    const annuler = page.getByRole('button', { name: 'Annuler (Ctrl Z)' });
+    while (await annuler.isEnabled()) await annuler.click();
+    await expect(apercu.getByText(/Fenêtre pop-up ·/)).toHaveCount(0);
+    await expect(apercu.locator('h1').first()).not.toHaveAttribute('style', /--mgd/);
+  });
 });
