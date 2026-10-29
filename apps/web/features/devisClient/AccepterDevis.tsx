@@ -28,7 +28,7 @@ export function AccepterDevis({ lien, numero }: { lien: string; numero: string }
       </Checkbox>
       {etat?.erreur ? <Banner tone="danger">{etat.erreur}</Banner> : null}
       <div>
-        <Button type="submit" disabled={enCours}>
+        <Button chargement={enCours} type="submit" disabled={enCours}>
           {enCours ? 'Enregistrement…' : 'Accepter le devis'}
         </Button>
       </div>

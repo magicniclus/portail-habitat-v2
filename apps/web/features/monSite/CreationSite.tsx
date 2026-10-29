@@ -46,7 +46,11 @@ export function CreationSite({ proposition, domaine }: { proposition: string; do
         </Field>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
         <div>
-          <Button type="submit" disabled={enCours || !slug || Boolean(invalide)}>
+          <Button
+            chargement={enCours}
+            type="submit"
+            disabled={enCours || !slug || Boolean(invalide)}
+          >
             {enCours ? 'Création…' : 'Créer mon site'}
           </Button>
         </div>

@@ -180,7 +180,11 @@ export function EditeurDevis({
                 ? 'Enregistrer'
                 : 'Créer le devis'}
           </Button>
-          <Button onClick={surValider} disabled={enCours !== null}>
+          <Button
+            chargement={enCours === 'envoyer'}
+            onClick={surValider}
+            disabled={enCours !== null}
+          >
             {enCours === 'envoyer' ? 'Validation…' : 'Valider'}
           </Button>
         </>

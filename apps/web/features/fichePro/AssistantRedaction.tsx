@@ -85,6 +85,7 @@ export function AssistantRedaction({
           </Select>
         </label>
         <Button
+          chargement={enCours}
           type="button"
           variant="secondaire"
           taille="sm"

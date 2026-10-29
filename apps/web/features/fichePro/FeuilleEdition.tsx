@@ -57,7 +57,7 @@ export function FeuilleEdition({
         )
       }
       actions={
-        <Button type="submit" form={id} disabled={enCours}>
+        <Button chargement={enCours} type="submit" form={id} disabled={enCours}>
           {enCours ? 'Enregistrement…' : 'Enregistrer'}
         </Button>
       }

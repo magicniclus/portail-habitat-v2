@@ -33,6 +33,7 @@ export function BarreEtape({
           </span>
         </span>
         <Button
+          chargement={enCours}
           type="submit"
           form={formulaire}
           disabled={!complete || enCours}

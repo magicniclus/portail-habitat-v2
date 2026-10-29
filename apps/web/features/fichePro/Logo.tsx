@@ -1,5 +1,6 @@
 'use client';
 
+import { Chargeur } from '@ph/ui';
 import { fichiers } from '@ph/firebase/chemins';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
@@ -73,7 +74,7 @@ export function Logo({
         {...zone}
         className={`${carre} cursor-pointer border-dashed has-focus-visible:outline-2 has-focus-visible:outline-accent ${survol ? 'border-2 border-accent bg-accent-100' : ''}`}
       >
-        {enCours ? <span className="text-xs">Envoi…</span> : contenu}
+        {enCours ? <Chargeur taille="md" libelle="Envoi du logo…" /> : contenu}
         <input
           id={id}
           type="file"

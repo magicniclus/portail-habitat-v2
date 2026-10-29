@@ -93,7 +93,7 @@ export function EditeurCommune({
           {resultat ? (
             <Banner tone={resultat.ok ? 'succes' : 'danger'}>{resultat.message}</Banner>
           ) : null}
-          <Button type="submit" disabled={enCours || motif.trim().length < 5}>
+          <Button chargement={enCours} type="submit" disabled={enCours || motif.trim().length < 5}>
             Publier la nouvelle version
           </Button>
         </>

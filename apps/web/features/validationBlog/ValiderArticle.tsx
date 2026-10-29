@@ -20,7 +20,7 @@ export function ValiderArticle({ lien, date }: { lien: string; date: string }) {
       <input type="hidden" name="lien" value={lien} />
       {etat?.erreur ? <Banner tone="danger">{etat.erreur}</Banner> : null}
       <div>
-        <Button type="submit" disabled={enCours}>
+        <Button chargement={enCours} type="submit" disabled={enCours}>
           {enCours ? 'Validation…' : 'Valider la publication'}
         </Button>
       </div>

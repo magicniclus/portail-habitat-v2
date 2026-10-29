@@ -46,6 +46,7 @@ export function ModelesDevis({
                     Utiliser ce modèle
                   </Link>
                   <Button
+                    chargement={enCours}
                     variant="fantome"
                     disabled={enCours}
                     aria-label={`Supprimer le modèle ${m.titre}`}

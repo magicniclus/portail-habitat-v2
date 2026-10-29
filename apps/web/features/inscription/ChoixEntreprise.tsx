@@ -59,7 +59,13 @@ export function ChoixEntreprise({
             placeholder="552 100 554 ou Bertrand Rénovation"
           />
         </Field>
-        <Button type="button" variant="secondaire" onClick={rechercher} disabled={enCours}>
+        <Button
+          chargement={enCours}
+          type="button"
+          variant="secondaire"
+          onClick={rechercher}
+          disabled={enCours}
+        >
           {enCours ? 'Recherche…' : 'Rechercher'}
         </Button>
       </div>

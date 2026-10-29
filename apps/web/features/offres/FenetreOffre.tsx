@@ -60,7 +60,7 @@ export function FenetreOffre({
           <Button variant="fantome" onClick={() => setOuverte(false)}>
             Plus tard
           </Button>
-          <Button onClick={payer} disabled={enCours}>
+          <Button chargement={enCours} onClick={payer} disabled={enCours}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>

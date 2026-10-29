@@ -175,7 +175,12 @@ export function PanneauIa({
           </div>
         ) : (
           <>
-            <Button type="submit" pleineLargeur disabled={enCours || demande.trim().length < 3}>
+            <Button
+              chargement={enCours}
+              type="submit"
+              pleineLargeur
+              disabled={enCours || demande.trim().length < 3}
+            >
               {enCours ? 'L’IA prépare une proposition…' : 'Proposer'}
             </Button>
             <span className="text-xs text-neutre-600">{texteRestants(restants, mode)}</span>

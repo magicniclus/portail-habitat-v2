@@ -96,7 +96,7 @@ export function FormulaireAnalyse({
       </Checkbox>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={lancer} disabled={enCours || !actif}>
+        <Button chargement={enCours} onClick={lancer} disabled={enCours || !actif}>
           {enCours
             ? 'Analyse en cours…'
             : mode === 'audit'

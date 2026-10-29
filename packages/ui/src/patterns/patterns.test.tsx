@@ -7,6 +7,7 @@ import { axe } from '../test/setup';
 import { Banner } from './Banner';
 import { BottomNav, BottomNavItem } from './BottomNav';
 import { Card, CardBody, CardFooter, CardHeader, CardTitle } from './Card';
+import { ChargementPage, ZoneChargement } from './Chargement';
 import { Combobox, type OptionCombobox } from './Combobox';
 import { ConfirmDialog } from './ConfirmDialog';
 import { EmptyState } from './EmptyState';
@@ -265,5 +266,32 @@ describe('MenuPleinEcran (MOBILE §6, ACC-04)', () => {
     await u.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(bouton).toHaveFocus();
+  });
+});
+
+describe('Chargement', () => {
+  it('zone : contenu inerte et occupé pendant le chargement, rendu normal ensuite', async () => {
+    const { container, rerender } = render(
+      <ZoneChargement chargement message="Enregistrement…">
+        <button type="button">Modifier</button>
+      </ZoneChargement>,
+    );
+    expect(container.firstElementChild).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('status')).toHaveTextContent('Enregistrement…');
+    expect(container.querySelector('[inert]')).not.toBeNull();
+    expect(await axe(container)).toHaveNoViolations();
+    rerender(
+      <ZoneChargement chargement={false}>
+        <button type="button">Modifier</button>
+      </ZoneChargement>,
+    );
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(container.querySelector('[inert]')).toBeNull();
+  });
+  it('page : message annoncé, plein écran par-dessus', async () => {
+    const { container } = render(<ChargementPage pleinEcran message="Ouverture du paiement…" />);
+    expect(screen.getByRole('status')).toHaveTextContent('Ouverture du paiement…');
+    expect(screen.getByRole('status').className).toContain('fixed');
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@ph/ui';
+import { cn, Chargeur } from '@ph/ui';
 import { ImageSquareIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useImportMedia } from '../ImportImage';
@@ -68,7 +68,11 @@ export function ChoixImage({
             (survol || imp.enCours) && 'opacity-100',
           )}
         >
-          <ImageSquareIcon size={20} aria-hidden="true" className="text-neutre-500" />
+          {imp.enCours ? (
+            <Chargeur taille="md" decoratif />
+          ) : (
+            <ImageSquareIcon size={20} aria-hidden="true" className="text-neutre-500" />
+          )}
           {imp.enCours
             ? 'Envoi…'
             : survol

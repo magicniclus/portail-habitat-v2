@@ -53,7 +53,7 @@ export function FenetrePaiement({
           <Button variant="fantome" onClick={() => fermer(false)}>
             Annuler
           </Button>
-          <Button onClick={payer} disabled={enCours}>
+          <Button chargement={enCours} onClick={payer} disabled={enCours}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>

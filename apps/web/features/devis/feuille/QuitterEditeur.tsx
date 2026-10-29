@@ -37,6 +37,7 @@ export function QuitterEditeur({
             Quitter sans enregistrer
           </Button>
           <Button
+            chargement={enCours}
             disabled={enCours}
             onClick={async () => {
               setEnCours(true);

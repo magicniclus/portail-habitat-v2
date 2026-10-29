@@ -115,6 +115,7 @@ export function ListeArticles({
           <span className="font-semibold">{selection.length} sélectionné(s)</span>
           {actions.map(([a, l]) => (
             <Button
+              chargement={enCours}
               key={a}
               taille="sm"
               variant="secondaire"

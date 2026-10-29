@@ -188,7 +188,14 @@ export function EtapeDossier({
             </p>
           ) : null}
         </div>
-        <Button type="submit" taille="lg" pleineLargeur disabled={enCours} className="min-h-[54px]">
+        <Button
+          chargement={enCours}
+          type="submit"
+          taille="lg"
+          pleineLargeur
+          disabled={enCours}
+          className="min-h-[54px]"
+        >
           {enCours ? 'Calcul de votre budget…' : 'Voir mon budget'}
         </Button>
       </form>

@@ -35,6 +35,7 @@ export function SousDomaine({ actuel, domaine }: { actuel: string; domaine: stri
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div>
         <Button
+          chargement={enCours}
           type="submit"
           variant="secondaire"
           disabled={enCours || slug === actuel || Boolean(invalide)}

@@ -120,7 +120,12 @@ export function PanneauIaArticle({
           </p>
         ) : null}
         <div>
-          <Button type="submit" variant="secondaire" disabled={Boolean(enCours) || epuise}>
+          <Button
+            chargement={enCours === 'rediger'}
+            type="submit"
+            variant="secondaire"
+            disabled={Boolean(enCours) || epuise}
+          >
             {enCours === 'rediger' ? 'L’IA rédige l’article…' : '✦ Rédiger l’article'}
           </Button>
         </div>
@@ -135,13 +140,14 @@ export function PanneauIaArticle({
         <div className="flex flex-wrap gap-2">
           {RETOUCHES.map(([a, l]) => (
             <Button
+              chargement={enCours === a}
               key={a}
               taille="sm"
               variant="secondaire"
               disabled={Boolean(enCours)}
               onClick={() => void demander(a)}
             >
-              {enCours === a ? '…' : l}
+              {l}
             </Button>
           ))}
           <Button

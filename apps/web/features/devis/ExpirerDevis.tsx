@@ -26,7 +26,12 @@ export function ExpirerDevis({ ids }: { ids: string[] }) {
       <span className="text-[15px]">
         {ids.length} devis envoyé{ids.length > 1 ? 's' : ''} hors validité.
       </span>
-      <Button variant="secondaire" disabled={enCours} onClick={() => void expirer()}>
+      <Button
+        chargement={enCours}
+        variant="secondaire"
+        disabled={enCours}
+        onClick={() => void expirer()}
+      >
         Marquer expirés
       </Button>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

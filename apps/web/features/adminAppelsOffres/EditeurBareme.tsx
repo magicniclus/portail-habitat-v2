@@ -49,7 +49,7 @@ export function EditeurBareme({
       </form>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div className="flex flex-wrap gap-2">
-        <Button type="button" onClick={simuler} disabled={enCours}>
+        <Button chargement={enCours} type="button" onClick={simuler} disabled={enCours}>
           Simuler sur les 50 derniers leads
         </Button>
         <ConfirmationAdmin

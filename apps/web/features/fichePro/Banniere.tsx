@@ -1,5 +1,6 @@
 'use client';
 
+import { Chargeur } from '@ph/ui';
 import { BANNIERES_MAX_VISIBILITE } from '@ph/core/annuaire';
 import { fichiers } from '@ph/firebase/chemins';
 import { CrownIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react';
@@ -108,13 +109,17 @@ export function Banniere({
         <div className="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
           {pleine ? null : (
             <label htmlFor={id} className={pastille}>
-              {enCours
-                ? 'Envoi…'
-                : max > 1
-                  ? `Ajouter une bannière (${visibles.length}/${max})`
-                  : visibles.length
-                    ? 'Changer la bannière'
-                    : 'Ajouter une bannière'}
+              {enCours ? (
+                <>
+                  <Chargeur taille="sm" ton="courant" decoratif /> Envoi…
+                </>
+              ) : max > 1 ? (
+                `Ajouter une bannière (${visibles.length}/${max})`
+              ) : visibles.length ? (
+                'Changer la bannière'
+              ) : (
+                'Ajouter une bannière'
+              )}
               <input
                 id={id}
                 type="file"

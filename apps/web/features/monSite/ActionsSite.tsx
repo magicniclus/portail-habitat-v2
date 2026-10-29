@@ -8,7 +8,7 @@ export function BoutonPublier({ libelle }: { libelle: string }) {
   const { appeler, erreur, enCours } = useAppelSite();
   return (
     <div className="grid gap-2">
-      <Button onClick={() => void appeler('publier', {})} disabled={enCours}>
+      <Button chargement={enCours} onClick={() => void appeler('publier', {})} disabled={enCours}>
         {enCours ? 'Publication…' : libelle}
       </Button>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

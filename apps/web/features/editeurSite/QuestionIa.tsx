@@ -28,7 +28,7 @@ export function QuestionIa({
         <Textarea value={reponse} maxLength={500} onChange={(e) => setReponse(e.target.value)} />
       </Field>
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={enCours || !reponse.trim()}>
+        <Button chargement={enCours} type="submit" disabled={enCours || !reponse.trim()}>
           Répondre
         </Button>
         <Button variant="fantome" onClick={onPasser}>

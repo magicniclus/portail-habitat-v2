@@ -182,7 +182,7 @@ export function FormulaireParametres({
       </div>
       {modifiable ? (
         <div>
-          <Button type="submit" disabled={enCours}>
+          <Button chargement={enCours} type="submit" disabled={enCours}>
             {enCours ? 'Enregistrement…' : 'Enregistrer les paramètres'}
           </Button>
         </div>

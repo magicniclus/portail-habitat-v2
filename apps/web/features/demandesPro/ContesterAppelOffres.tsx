@@ -66,7 +66,11 @@ export function ContesterAppelOffres({ appelOffresId }: { appelOffresId: string 
               />
             </Field>
             {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
-            <Button onClick={envoyer} disabled={enCours || details.trim().length < 10}>
+            <Button
+              chargement={enCours}
+              onClick={envoyer}
+              disabled={enCours || details.trim().length < 10}
+            >
               Envoyer la contestation
             </Button>
           </>

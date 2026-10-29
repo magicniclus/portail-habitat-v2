@@ -39,6 +39,7 @@ export function ActionsEntreprise({
     <div className="grid gap-2">
       <div className="flex flex-wrap gap-2">
         <Button
+          chargement={enCours}
           variant="secondaire"
           disabled={enCours || !droits.modifier}
           title={requise(droits.modifier, 'artisans.modifier')}

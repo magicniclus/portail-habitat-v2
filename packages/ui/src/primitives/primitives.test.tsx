@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { axe } from '../test/setup';
 import { Badge, StatusBadge } from './Badge';
 import { Button } from './Button';
+import { Chargeur } from './Chargeur';
 import { ATTRIBUTS_CHAMP } from './champs';
 import { Checkbox } from './Checkbox';
 import { Chip, ChipGroup } from './Chip';
@@ -29,7 +30,35 @@ describe('Logo', () => {
   });
 });
 
+describe('Chargeur', () => {
+  it('annoncé « Chargement… », décoratif dans un élément occupé', async () => {
+    const { container } = render(<Chargeur />);
+    expect(screen.getByRole('status')).toHaveTextContent('Chargement…');
+    expect(await axe(container)).toHaveNoViolations();
+    render(<Chargeur decoratif message="Envoi…" />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+  });
+  it('anneau aux petites tailles, maison au-delà', () => {
+    const { container } = render(
+      <>
+        <Chargeur taille="sm" />
+        <Chargeur taille="lg" />
+      </>,
+    );
+    const svgs = container.querySelectorAll('svg');
+    expect(svgs[0]!.querySelector('circle')).not.toBeNull();
+    expect(svgs[1]!.querySelector('rect')).not.toBeNull();
+  });
+});
+
 describe('Button', () => {
+  it('chargement : désactivé, occupé, libellé conservé', async () => {
+    const { container } = render(<Button chargement>Enregistrer</Button>);
+    const b = screen.getByRole('button', { name: 'Enregistrer' });
+    expect(b).toBeDisabled();
+    expect(b).toHaveAttribute('aria-busy', 'true');
+    expect(await axe(container)).toHaveNoViolations();
+  });
   it('est un bouton de type button par défaut, de 44 px minimum', async () => {
     const { container } = render(<Button>Simuler mon devis</Button>);
     const b = screen.getByRole('button', { name: 'Simuler mon devis' });

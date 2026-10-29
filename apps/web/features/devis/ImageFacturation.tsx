@@ -1,7 +1,7 @@
 'use client';
 
 import { fichiers } from '@ph/firebase/chemins';
-import { Banner, Button } from '@ph/ui';
+import { Banner, Button, Chargeur } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { nomFichierSur, nouvelIdFichier, problemeFichier } from '@/features/fichePro/fichiers';
@@ -79,9 +79,17 @@ export function ImageFacturation({
       <div className="flex flex-wrap items-center gap-2">
         <label
           htmlFor={id}
-          className="relative inline-flex min-h-11 cursor-pointer items-center overflow-hidden rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
+          className="relative inline-flex min-h-11 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
         >
-          {enCours ? 'Envoi…' : present ? t.changer : t.ajouter}
+          {enCours ? (
+            <>
+              <Chargeur taille="sm" ton="courant" decoratif /> Envoi…
+            </>
+          ) : present ? (
+            t.changer
+          ) : (
+            t.ajouter
+          )}
           <input
             id={id}
             type="file"

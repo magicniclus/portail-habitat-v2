@@ -132,7 +132,11 @@ export function BarreEditeur(p: {
           <EyeIcon size={16} aria-hidden="true" />
           {p.apercu ? 'Quitter l’aperçu' : 'Aperçu'}
         </Button>
-        <Button onClick={p.onPublier} disabled={p.enCours || p.publicationBloquee}>
+        <Button
+          chargement={p.enCours}
+          onClick={p.onPublier}
+          disabled={p.enCours || p.publicationBloquee}
+        >
           Publier
         </Button>
       </div>

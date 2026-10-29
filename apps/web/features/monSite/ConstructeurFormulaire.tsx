@@ -134,7 +134,11 @@ export function ConstructeurFormulaire({ initial }: { initial: ChampFormulaire[]
       </ol>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div className="sticky bottom-0 border-t border-trait bg-blanc py-3 max-[899px]:bottom-[72px]">
-        <Button onClick={() => void appeler('formulaire', { champs })} disabled={enCours}>
+        <Button
+          chargement={enCours}
+          onClick={() => void appeler('formulaire', { champs })}
+          disabled={enCours}
+        >
           {enCours ? 'Enregistrement…' : 'Enregistrer le formulaire'}
         </Button>
       </div>

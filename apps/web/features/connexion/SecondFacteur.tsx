@@ -84,7 +84,7 @@ export function SecondFacteur({
           <Field label="Code de vérification" requis>
             <Input name="code" champ="codeSms" />
           </Field>
-          <Button type="submit" taille="lg" pleineLargeur disabled={enCours}>
+          <Button chargement={enCours} type="submit" taille="lg" pleineLargeur disabled={enCours}>
             {enCours ? 'Vérification…' : 'Valider'}
           </Button>
         </>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { SectionEnregistree } from '@ph/firebase/sites';
-import { Button } from '@ph/ui';
+import { Button, Chargeur } from '@ph/ui';
 import { useEffect, useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 
@@ -43,9 +43,7 @@ export function MesSections({
         Mes zones enregistrées
       </h2>
       {erreur ? <p className="m-0 text-sm text-danger">{erreur}</p> : null}
-      {liste === null && !erreur ? (
-        <p className="m-0 text-sm text-neutre-700">Chargement…</p>
-      ) : null}
+      {liste === null && !erreur ? <Chargeur taille="sm" message="Chargement…" /> : null}
       {liste?.length === 0 ? (
         <p className="m-0 text-sm text-neutre-700">
           Sélectionnez une zone, puis « Enregistrer comme modèle de zone » : elle apparaît ici.

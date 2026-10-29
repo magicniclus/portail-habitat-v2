@@ -49,7 +49,7 @@ export function PaiementRapide({
         <Field label="Date du paiement">
           <Input type="date" value={le} max={aujourdHui} onChange={(x) => setLe(x.target.value)} />
         </Field>
-        <Button type="submit" disabled={enCours || !le}>
+        <Button chargement={enCours} type="submit" disabled={enCours || !le}>
           {enCours ? 'Enregistrement…' : 'Enregistrer le paiement'}
         </Button>
       </form>

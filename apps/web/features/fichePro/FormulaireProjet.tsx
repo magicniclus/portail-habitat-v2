@@ -82,7 +82,12 @@ export function FormulaireProjet({
       titre="Ajouter un projet"
       declencheur={declencheur ?? <Button>Ajouter un projet</Button>}
       actions={
-        <Button type="submit" form="form-projet" disabled={enCours || !photos.length || !accord}>
+        <Button
+          chargement={enCours}
+          type="submit"
+          form="form-projet"
+          disabled={enCours || !photos.length || !accord}
+        >
           {enCours ? 'Envoi…' : 'Publier le projet'}
         </Button>
       }

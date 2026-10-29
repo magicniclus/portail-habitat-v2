@@ -1,6 +1,7 @@
 'use client';
 
 import type { Appareil } from '@ph/core/sites';
+import { Chargeur } from '@ph/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, mobile: 390 };
@@ -81,6 +82,8 @@ export function Canevas({
   const [initial] = useState(html);
   const dernier = useRef(html);
   const pret = useRef(false);
+  // Chargeur au-dessus du cadre jusqu'au premier « prêt » (page affichée, script en place).
+  const [charge, setCharge] = useState(false);
   useEffect(() => {
     dernier.current = html;
     if (surPlace && pret.current) envoyer({ type: 'html', html });
@@ -110,6 +113,7 @@ export function Canevas({
   // position, sélection, menu et ancre.
   const quandPret = useCallback(() => {
     pret.current = true;
+    setCharge(true);
     if (surPlace && dernier.current !== initial) envoyer({ type: 'html', html: dernier.current });
     envoyer({ type: 'defiler', y: y.current });
     envoyer({ type: 'selection', selection: derniere.current });
@@ -149,6 +153,11 @@ export function Canevas({
             </span>
           </div>
         ) : null}
+        {charge ? null : (
+          <div className="absolute inset-0 z-20 grid place-items-center bg-blanc shadow-lg">
+            <Chargeur message="Chargement de la page…" className="flex-col" />
+          </div>
+        )}
         <iframe
           ref={cadre}
           title="Aperçu de la page"

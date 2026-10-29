@@ -52,6 +52,7 @@ export function SuppressionCompte({
             <Button variant="secondaire">Annuler</Button>
           </FermerFeuille>
           <Button
+            chargement={enCours}
             type="submit"
             form="form-suppression"
             variant="danger"

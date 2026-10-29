@@ -70,7 +70,7 @@ export function DemandeLien() {
         <Input champ="email" name="email" placeholder="camille@email.fr" />
       </Field>
       <input type="text" name="site" tabIndex={-1} autoComplete="off" hidden />
-      <Button type="submit" taille="lg" pleineLargeur disabled={enCours}>
+      <Button chargement={enCours} type="submit" taille="lg" pleineLargeur disabled={enCours}>
         {enCours ? 'Envoi…' : 'Recevoir mon lien de connexion'}
       </Button>
     </form>

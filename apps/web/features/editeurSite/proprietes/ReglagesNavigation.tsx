@@ -54,7 +54,7 @@ export function ReglagesNavigation(p: {
       </Info>
       {p.nonEnregistree ? (
         <>
-          <Button onClick={p.onEnregistrer} disabled={p.enCours}>
+          <Button chargement={p.enCours} onClick={p.onEnregistrer} disabled={p.enCours}>
             Enregistrer la navigation
           </Button>
           <Action onClick={p.onAnnuler}>Annuler les modifications non enregistrées</Action>

@@ -48,7 +48,7 @@ export function PropositionIa({
       ) : null}
       <div className="flex flex-wrap gap-2">
         <Button onClick={onAppliquer}>Appliquer</Button>
-        <Button variant="secondaire" onClick={onAutre} disabled={enCours}>
+        <Button chargement={enCours} variant="secondaire" onClick={onAutre} disabled={enCours}>
           Autre version
         </Button>
         <Button variant="fantome" onClick={onAnnuler}>

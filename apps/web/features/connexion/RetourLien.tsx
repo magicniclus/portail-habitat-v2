@@ -66,7 +66,13 @@ export function RetourLien() {
       <Field label="Votre adresse email" requis>
         <Input champ="email" name="email" placeholder="camille@email.fr" defaultValue="" />
       </Field>
-      <Button type="submit" taille="lg" pleineLargeur disabled={enCours || !oobCode}>
+      <Button
+        chargement={enCours}
+        type="submit"
+        taille="lg"
+        pleineLargeur
+        disabled={enCours || !oobCode}
+      >
         {enCours ? 'Connexion…' : 'Me connecter'}
       </Button>
     </form>

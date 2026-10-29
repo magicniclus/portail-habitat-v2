@@ -277,6 +277,7 @@ export function EtapeCoordonnees({
             ) : null}
           </div>
           <Button
+            chargement={enCours}
             type="submit"
             taille="lg"
             pleineLargeur

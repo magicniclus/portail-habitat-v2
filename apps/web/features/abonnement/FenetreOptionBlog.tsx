@@ -51,7 +51,7 @@ export function FenetreOptionBlog() {
             <Button variant="fantome" onClick={() => fermer(false)}>
               Annuler
             </Button>
-            <Button onClick={ajouter} disabled={!cgv || enCours}>
+            <Button chargement={enCours} onClick={ajouter} disabled={!cgv || enCours}>
               {enCours ? 'Un instant…' : 'Ajouter l’option'}
             </Button>
           </>

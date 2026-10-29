@@ -93,7 +93,7 @@ export function AchatDomaine({ sitePro, voulu }: { sitePro: boolean; voulu?: str
               spellCheck={false}
               className="min-w-0 flex-1"
             />
-            <Button type="submit" disabled={recherche.enCours}>
+            <Button chargement={recherche.enCours} type="submit" disabled={recherche.enCours}>
               {recherche.enCours ? 'Recherche…' : 'Rechercher'}
             </Button>
           </div>
@@ -139,7 +139,11 @@ export function AchatDomaine({ sitePro, voulu }: { sitePro: boolean; voulu?: str
             <Button variant="fantome" onClick={() => setChoix(null)}>
               Annuler
             </Button>
-            <Button onClick={() => choix && void acheter(choix)} disabled={achat.enCours}>
+            <Button
+              chargement={achat.enCours}
+              onClick={() => choix && void acheter(choix)}
+              disabled={achat.enCours}
+            >
               {achat.enCours ? 'Un instant…' : sitePro ? 'Acheter et mettre en ligne' : 'Continuer'}
             </Button>
           </>

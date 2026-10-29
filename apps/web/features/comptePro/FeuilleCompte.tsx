@@ -53,7 +53,7 @@ export function FeuilleCompte({
       description={description}
       declencheur={declencheur}
       actions={
-        <Button type="submit" form={id} disabled={enCours}>
+        <Button chargement={enCours} type="submit" form={id} disabled={enCours}>
           {enCours ? 'Un instant…' : libelleEnvoi}
         </Button>
       }

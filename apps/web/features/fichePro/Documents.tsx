@@ -124,7 +124,7 @@ export function Documents({
           </div>
           {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
           <div>
-            <Button type="submit" disabled={!fichier || enCours}>
+            <Button chargement={enCours} type="submit" disabled={!fichier || enCours}>
               {enCours ? 'Envoi…' : 'Envoyer le document'}
             </Button>
           </div>

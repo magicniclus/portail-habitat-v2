@@ -63,7 +63,12 @@ export function InviterMembre({
       titre="Inviter un membre"
       declencheur={<Button>Inviter</Button>}
       actions={
-        <Button type="submit" form="form-invitation" disabled={enCours || !email.includes('@')}>
+        <Button
+          chargement={enCours}
+          type="submit"
+          form="form-invitation"
+          disabled={enCours || !email.includes('@')}
+        >
           {enCours ? 'Envoi…' : "Envoyer l'invitation"}
         </Button>
       }

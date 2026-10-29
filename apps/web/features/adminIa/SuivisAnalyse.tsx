@@ -67,7 +67,11 @@ export function SuivisAnalyse({
             />
           </Field>
           <div>
-            <Button type="submit" disabled={!actif || enCours || question.trim().length < 3}>
+            <Button
+              chargement={enCours}
+              type="submit"
+              disabled={!actif || enCours || question.trim().length < 3}
+            >
               {enCours ? 'Réponse en cours…' : 'Poser la question'}
             </Button>
           </div>

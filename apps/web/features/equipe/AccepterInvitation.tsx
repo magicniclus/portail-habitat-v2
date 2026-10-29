@@ -36,7 +36,7 @@ export function AccepterInvitation({ jeton, connecte }: { jeton: string; connect
     return (
       <div className="grid gap-3">
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
-        <Button onClick={() => void rejoindre()} disabled={enCours}>
+        <Button chargement={enCours} onClick={() => void rejoindre()} disabled={enCours}>
           {enCours ? 'Patientez…' : "Rejoindre l'équipe"}
         </Button>
       </div>
@@ -56,7 +56,11 @@ export function AccepterInvitation({ jeton, connecte }: { jeton: string; connect
           onChange={(e) => setMotDePasse(e.target.value)}
         />
       </Field>
-      <Button type="submit" disabled={enCours || nom.trim().length < 2 || motDePasse.length < 10}>
+      <Button
+        chargement={enCours}
+        type="submit"
+        disabled={enCours || nom.trim().length < 2 || motDePasse.length < 10}
+      >
         {enCours ? 'Patientez…' : "Créer mon accès et rejoindre l'équipe"}
       </Button>
       <p className="m-0 text-sm text-neutre-800">

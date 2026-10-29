@@ -20,7 +20,7 @@ export function GererAbonnement() {
   };
   return (
     <div className="grid gap-2">
-      <Button variant="secondaire" onClick={ouvrir} disabled={enCours}>
+      <Button chargement={enCours} variant="secondaire" onClick={ouvrir} disabled={enCours}>
         {enCours ? 'Ouverture…' : 'Gérer mon abonnement'}
       </Button>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

@@ -101,7 +101,7 @@ export function ReglagesIa({
         ))}
       </div>
       {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
-      <Button taille="sm" onClick={enregistrer} disabled={enCours}>
+      <Button chargement={enCours} taille="sm" onClick={enregistrer} disabled={enCours}>
         Enregistrer les réglages
       </Button>
     </section>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Chargeur } from '@ph/ui';
 import { fichiers } from '@ph/firebase/chemins';
 import { PlayIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
@@ -48,9 +49,17 @@ export function VideoPresentation({
   const bouton = modifiable ? (
     <label
       htmlFor={id}
-      className="inline-flex min-h-11 cursor-pointer items-center justify-self-center rounded-control border border-trait bg-blanc px-4 text-[15px] font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
+      className="inline-flex min-h-11 cursor-pointer items-center gap-2 justify-self-center rounded-control border border-trait bg-blanc px-4 text-[15px] font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
     >
-      {enCours ? 'Envoi…' : videoUrl ? 'Changer la vidéo' : 'Ajouter une vidéo'}
+      {enCours ? (
+        <>
+          <Chargeur taille="sm" ton="courant" decoratif /> Envoi…
+        </>
+      ) : videoUrl ? (
+        'Changer la vidéo'
+      ) : (
+        'Ajouter une vidéo'
+      )}
       <input
         id={id}
         type="file"

@@ -108,7 +108,7 @@ export function FormulaireClient({
       <Field label="Notes (privées)">
         <Textarea rows={2} value={f.notes ?? ''} onChange={(x) => maj({ notes: x.target.value })} />
       </Field>
-      <Button type="submit" disabled={enCours || !f.nom.trim()}>
+      <Button chargement={enCours} type="submit" disabled={enCours || !f.nom.trim()}>
         {enCours ? 'Enregistrement…' : client ? 'Enregistrer la fiche' : 'Ajouter le client'}
       </Button>
     </form>

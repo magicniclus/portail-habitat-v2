@@ -18,6 +18,7 @@ export {
   type Tone,
 } from './primitives/Badge';
 export { Skeleton } from './primitives/Skeleton';
+export { Chargeur, type ChargeurProps } from './primitives/Chargeur';
 export { ATTRIBUTS_CHAMP, CLASSES_CHAMP, type TypeChamp } from './primitives/champs';
 export { Field, useChamp, type FieldProps } from './primitives/Field';
 export { Input, Select, Textarea, type InputProps } from './primitives/Input';
@@ -44,3 +45,9 @@ export { PageErreur, type PageErreurProps } from './patterns/PageErreur';
 export { MenuPleinEcran, type MenuPleinEcranProps } from './patterns/MenuPleinEcran';
 export { PanneauPleinEcran, type PanneauPleinEcranProps } from './patterns/PanneauPleinEcran';
 export { RepriseParcours, type RepriseParcoursProps } from './patterns/RepriseParcours';
+export {
+  ChargementPage,
+  ZoneChargement,
+  type ChargementPageProps,
+  type ZoneChargementProps,
+} from './patterns/Chargement';

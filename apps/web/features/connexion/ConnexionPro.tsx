@@ -158,7 +158,13 @@ export function ConnexionPro({
           Trop de tentatives : réessayez dans {duree(attente)}.
         </p>
       ) : null}
-      <Button type="submit" taille="lg" pleineLargeur disabled={enCours || attente > 0}>
+      <Button
+        chargement={enCours}
+        type="submit"
+        taille="lg"
+        pleineLargeur
+        disabled={enCours || attente > 0}
+      >
         {enCours ? 'Connexion…' : 'Me connecter'}
       </Button>
       <p className="m-0 text-center text-[14.5px] text-neutre-800">

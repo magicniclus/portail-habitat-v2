@@ -108,3 +108,28 @@
     transform: translateX(104%);
   }
 }
+
+/* Chargeur : le toit se dessine puis s'efface, la porte s'allume au milieu du tracé. */
+@keyframes chargeur-toit {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  50%,
+  60% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1;
+  }
+}
+
+@keyframes chargeur-porte {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50%,
+  60% {
+    opacity: 1;
+  }
+}

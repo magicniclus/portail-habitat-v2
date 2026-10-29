@@ -115,7 +115,7 @@ export function FormulaireContact() {
         </Link>
       </p>
       <div>
-        <Button type="submit" taille="lg" disabled={enCours}>
+        <Button chargement={enCours} type="submit" taille="lg" disabled={enCours}>
           {enCours ? 'Envoi…' : 'Envoyer mon message'}
         </Button>
       </div>

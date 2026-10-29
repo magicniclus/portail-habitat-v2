@@ -128,7 +128,7 @@ export function OngletSuivi({ initial }: { initial: SuiviSite }) {
           </p>
         </CarteReglage>
         <div className="sticky bottom-0 flex flex-wrap items-center gap-3 border-t border-trait bg-blanc py-3 max-[899px]:bottom-[72px]">
-          <Button type="submit" disabled={enCours || !verif.success}>
+          <Button chargement={enCours} type="submit" disabled={enCours || !verif.success}>
             {enCours ? 'Enregistrement…' : 'Enregistrer'}
           </Button>
           {ok ? (

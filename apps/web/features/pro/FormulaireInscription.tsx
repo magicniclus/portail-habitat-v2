@@ -197,6 +197,7 @@ export function FormulaireInscription({
           <p className="m-0 text-sm font-semibold text-danger">{erreurs.cgv}</p>
         ) : null}
         <Button
+          chargement={enCours}
           type="submit"
           pleineLargeur
           className="min-h-12"

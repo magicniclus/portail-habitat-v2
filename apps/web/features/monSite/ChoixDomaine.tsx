@@ -74,7 +74,7 @@ function ConnexionDomaine() {
       </Field>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <div>
-        <Button type="submit" disabled={enCours || saisie.trim().length < 3}>
+        <Button chargement={enCours} type="submit" disabled={enCours || saisie.trim().length < 3}>
           Connecter mon domaine
         </Button>
       </div>

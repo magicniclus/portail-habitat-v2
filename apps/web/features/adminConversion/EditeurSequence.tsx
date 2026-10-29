@@ -77,7 +77,11 @@ export function EditeurSequence({
         </Button>
       }
       actions={
-        <Button disabled={enCours || motif.trim().length < 5} onClick={() => void enregistrer()}>
+        <Button
+          chargement={enCours}
+          disabled={enCours || motif.trim().length < 5}
+          onClick={() => void enregistrer()}
+        >
           Enregistrer
         </Button>
       }

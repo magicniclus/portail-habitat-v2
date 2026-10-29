@@ -16,7 +16,13 @@ export function ActionsTache({ id, aMoi, titre }: { id: string; aMoi: boolean; t
   };
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="secondaire" taille="sm" disabled={enCours} onClick={() => void basculer()}>
+      <Button
+        chargement={enCours}
+        variant="secondaire"
+        taille="sm"
+        disabled={enCours}
+        onClick={() => void basculer()}
+      >
         {aMoi ? 'Rendre' : 'Prendre'}
       </Button>
       <ConfirmationAdmin

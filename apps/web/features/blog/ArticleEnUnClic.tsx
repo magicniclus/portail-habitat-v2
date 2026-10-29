@@ -64,7 +64,7 @@ export function ArticleEnUnClic({ restant }: { restant: number }) {
         />
       </RadioCardGroup>
       <div>
-        <Button onClick={lancer} disabled={enCours || restant <= 0}>
+        <Button chargement={enCours} onClick={lancer} disabled={enCours || restant <= 0}>
           {enCours ? 'Rédaction en cours…' : 'Tout faire en un clic'}
         </Button>
       </div>

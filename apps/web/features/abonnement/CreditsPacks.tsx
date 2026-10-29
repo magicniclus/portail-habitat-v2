@@ -52,6 +52,7 @@ export function CreditsPacks({ solde, peutAcheter }: { solde: number; peutAchete
                   {formatEuros(p.montantHt)} HT{offerts > 0 ? ` · ${offerts} offerts` : ''}
                 </span>
                 <Button
+                  chargement={enCours === p.cle}
                   variant="secondaire"
                   onClick={() => acheter(p.cle)}
                   disabled={enCours !== null}

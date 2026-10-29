@@ -1,5 +1,6 @@
 'use client';
 
+import { Chargeur } from '@ph/ui';
 import { fichiers } from '@ph/firebase/chemins';
 import { useId, useState } from 'react';
 import {
@@ -83,9 +84,15 @@ export function ImportImage({
     <div className="grid gap-1">
       <label
         htmlFor={id}
-        className="relative inline-flex min-h-11 w-fit cursor-pointer items-center overflow-hidden rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
+        className="relative inline-flex min-h-11 w-fit cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-trait bg-blanc px-4 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
       >
-        {enCours ? 'Envoi…' : t.bouton}
+        {enCours ? (
+          <>
+            <Chargeur taille="sm" ton="courant" decoratif /> Envoi…
+          </>
+        ) : (
+          t.bouton
+        )}
         <input
           id={id}
           type="file"

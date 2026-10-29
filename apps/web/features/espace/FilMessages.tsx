@@ -82,7 +82,7 @@ export function FilMessages({
             placeholder="Écrire à l’artisan…"
           />
         </Field>
-        <Button type="submit" disabled={enCours || !brouillon.trim()}>
+        <Button chargement={enCours} type="submit" disabled={enCours || !brouillon.trim()}>
           Envoyer
         </Button>
       </form>

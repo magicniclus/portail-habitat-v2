@@ -40,7 +40,13 @@ export function OptionBlog({ gerer }: { gerer: boolean }) {
         confirmer ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm">Retirer l’option dès maintenant ?</span>
-            <Button variant="danger" taille="sm" disabled={enCours} onClick={retirer}>
+            <Button
+              chargement={enCours}
+              variant="danger"
+              taille="sm"
+              disabled={enCours}
+              onClick={retirer}
+            >
               Oui, retirer
             </Button>
             <Button variant="fantome" taille="sm" onClick={() => setConfirmer(false)}>

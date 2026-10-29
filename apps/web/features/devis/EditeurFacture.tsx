@@ -155,7 +155,7 @@ export function EditeurFacture({
             libelleConfirmer="Émettre la facture"
             onConfirmer={emettre}
             declencheur={
-              <Button disabled={!mentions.ok || enCours}>
+              <Button chargement={enCours} disabled={!mentions.ok || enCours}>
                 {enCours ? 'Émission…' : 'Émettre la facture'}
               </Button>
             }

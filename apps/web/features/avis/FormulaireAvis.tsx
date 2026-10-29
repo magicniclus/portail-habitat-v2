@@ -182,6 +182,7 @@ export function FormulaireAvis({
           </Banner>
         ) : null}
         <Button
+          chargement={enCours}
           type="submit"
           taille="lg"
           pleineLargeur

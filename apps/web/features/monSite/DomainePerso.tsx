@@ -84,6 +84,7 @@ export function DomainePerso({
       <div className="flex flex-wrap gap-3">
         {actif || achete ? null : (
           <Button
+            chargement={enCours}
             variant="secondaire"
             onClick={() => void appeler('domaine/verifier', {})}
             disabled={enCours}

@@ -64,7 +64,11 @@ export function CarteAvisPro({ a, peutRepondre }: { a: AvisPro; peutRepondre: bo
           </Field>
           {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => void envoyer()} disabled={enCours || texte.trim().length < 2}>
+            <Button
+              chargement={enCours}
+              onClick={() => void envoyer()}
+              disabled={enCours || texte.trim().length < 2}
+            >
               Publier la réponse
             </Button>
             <Button variant="fantome" onClick={() => setOuvert(false)}>
