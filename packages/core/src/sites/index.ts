@@ -23,3 +23,4 @@ export * from './structure';
 export * from './couleurs';
 export * from './navigation';
 export * from './suivi';
+export * from './achatDomaine';

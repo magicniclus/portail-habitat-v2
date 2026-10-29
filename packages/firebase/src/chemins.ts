@@ -136,6 +136,8 @@ export const chemins = {
   versionSite: (id: string, n: number) => `sites/${id}/versions/${n}`,
   slugSite: (slug: string) => `sitesSlugs/${slug}`,
   domaineSite: (hote: string) => `sitesDomaines/${hote}`,
+  /** Journal du domaine (achat, configuration, transfert) pour le support (DOMAINES §6). */
+  journalDomaine: (id: string) => `sites/${id}/journalDomaine`,
   attributions: (demandeId: string) => `demandes/${demandeId}/attributions`,
   attribution: (demandeId: string, artisanId: string) =>
     `demandes/${demandeId}/attributions/${artisanId}`,

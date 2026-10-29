@@ -50,3 +50,11 @@ export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from
 export { gererSectionsEnregistrees, type SectionEnregistree } from './sectionsEnregistrees';
 export { enregistrerMediaSite, fichiersCitables, lireMediasSite } from './medias';
 export { enregistrerSuivi } from './suivi';
+export {
+  avancerDomaine,
+  choisirDomaine,
+  rechercherDomaines,
+  type RegistrarDomaines,
+  type ServicesAchatDomaine,
+} from './achatDomaine';
+export { registrarDepuisEnv, registrarOvh, signatureOvh } from './registrarOvh';
