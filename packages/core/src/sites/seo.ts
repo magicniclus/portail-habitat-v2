@@ -1,4 +1,5 @@
 import type { PageSite } from './schemas';
+import { texteSansFormat } from './texteRiche';
 
 export interface ControleSeo {
   cle: 'title' | 'meta' | 'h1' | 'ville' | 'alt';
@@ -6,8 +7,7 @@ export interface ControleSeo {
   ok: boolean;
 }
 
-const sansBalises = (t: string) =>
-  t.replace(/\[([^\]]+)\]\(#L\d+\)/g, '$1').replace(/<\/?[biu]>/g, '');
+const sansBalises = texteSansFormat;
 const normal = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Panneau SEO (SITE_INTERNET §4.5) : contrôles cliquables et score sur 100. */

@@ -101,7 +101,7 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
   const mb = `margin-bottom:${e.p.mb}px;`;
   const id = e.p.htmlId ? ` id="${esc(e.p.htmlId)}"` : '';
   const riche = (t: string) =>
-    texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx, ctx.edition);
+    texteRiche(t, 'liens' in e.p ? e.p.liens : undefined, ctx, ctx.edition, e.type === 'texte');
   switch (e.type) {
     case 'titre':
     case 'texte': {

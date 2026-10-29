@@ -1,4 +1,10 @@
-import type { Action, PageSite } from '@ph/core/sites';
+import {
+  blocsTexte,
+  COULEURS_TEXTE,
+  RE_BALISE_TEXTE,
+  type Action,
+  type PageSite,
+} from '@ph/core/sites';
 import { esc } from './html';
 
 const chiffres = (t: string) => t.replace(/[^\d+]/g, '');
@@ -78,18 +84,18 @@ export function balise(
   return `<a class="${classe}" href="${esc(l.href)}"${plus}${s}>${contenu}</a>`;
 }
 
-const RE_RICHE = /<(\/?)([biu])>|\[([^\]]+)\]\(#(L\d+)\)/g;
+const RE_RICHE = new RegExp(`${RE_BALISE_TEXTE.source}|\\[([^\\]]+)\\]\\(#(L\\d+)\\)`, 'g');
 
-/**
- * Texte riche de l'éditeur (`<b> <i> <u>` + `[mot](#L1)`) → HTML : tout est échappé, seules ces
- * trois balises équilibrées et les liens connus sont rendus.
- */
-export function texteRiche(
+/** Balise HTML d'une balise du texte riche (couleurs : `span` de classe `ka`, `kp`…). */
+const ouvrir = (b: string) => (b in COULEURS_TEXTE ? `<span class="${b}">` : `<${b}>`);
+const fermer = (b: string) => (b in COULEURS_TEXTE ? '</span>' : `</${b}>`);
+
+/** Une ligne ou un paragraphe : tout est échappé, seules les balises équilibrées et les liens connus sont rendus. */
+function enLigne(
   texte: string,
   liens: Record<string, Action> | undefined,
   cible: CibleLiens,
-  /** Éditeur : chaque lien garde son identifiant (modification directe sur la page). */
-  edition = false,
+  edition: boolean,
 ): string {
   const ouvertes: string[] = [];
   let out = '';
@@ -100,10 +106,10 @@ export function texteRiche(
     if (m[2]) {
       if (!m[1]) {
         ouvertes.push(m[2]);
-        out += `<${m[2]}>`;
+        out += ouvrir(m[2]);
       } else if (ouvertes.at(-1) === m[2]) {
         ouvertes.pop();
-        out += `</${m[2]}>`;
+        out += fermer(m[2]);
       }
     } else {
       const a = liens?.[m[4]!];
@@ -112,6 +118,31 @@ export function texteRiche(
     }
   }
   out += esc(texte.slice(i)).replace(/\n/g, '<br>');
-  while (ouvertes.length) out += `</${ouvertes.pop()}>`;
+  while (ouvertes.length) out += fermer(ouvertes.pop()!);
   return out;
+}
+
+/**
+ * Texte riche de l'éditeur (`texteRiche.ts` du cœur) → HTML : gras, italique, souligné, barré,
+ * exposant, surligné, couleurs du thème, mots liés ; listes à puces ou numérotées (textes
+ * seulement : un titre garde ses lignes).
+ */
+export function texteRiche(
+  texte: string,
+  liens: Record<string, Action> | undefined,
+  cible: CibleLiens,
+  /** Éditeur : chaque lien garde son identifiant (modification directe sur la page). */
+  edition = false,
+  listes = true,
+): string {
+  if (!listes) return enLigne(texte, liens, cible, edition);
+  return blocsTexte(texte)
+    .map((b) => {
+      if (b.type === 'texte') return enLigne(b.lignes.join('\n'), liens, cible, edition);
+      const items = b.lignes.map((l) => `<li>${enLigne(l, liens, cible, edition)}</li>`).join('');
+      return b.type === 'puces'
+        ? `<ul class="tl">${items}</ul>`
+        : `<ol class="tl"${b.depart && b.depart > 1 ? ` start="${b.depart}"` : ''}>${items}</ol>`;
+    })
+    .join('');
 }

@@ -24,6 +24,7 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
             {...(el.p.liens ? { liens: el.p.liens } : {})}
             onChange={maj}
             c={c}
+            listes={el.type === 'texte'}
           />
           {el.type === 'titre' ? (
             <Segments

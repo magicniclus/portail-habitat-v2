@@ -1,5 +1,6 @@
 import {
   LIBELLES_ELEMENT,
+  texteSansFormat,
   trouverNoeud,
   type Appareil,
   type Element,
@@ -9,9 +10,7 @@ import type { NiveauEditeur } from '@ph/ui/tokens';
 
 const extrait = (e: Element) => {
   const p = e.p as Record<string, unknown>;
-  const t = String(p.texte ?? p.valeur ?? p.nom ?? p.legende ?? '')
-    .replace(/\[([^\]]+)\]\(#L\d+\)/g, '$1')
-    .replace(/<\/?[biu]>/g, '');
+  const t = texteSansFormat(String(p.texte ?? p.valeur ?? p.nom ?? p.legende ?? ''));
   return t ? ` · ${t}` : '';
 };
 

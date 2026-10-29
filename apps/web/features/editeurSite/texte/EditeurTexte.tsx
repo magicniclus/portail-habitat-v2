@@ -1,14 +1,11 @@
 'use client';
 
 import { retirerLien, type Action } from '@ph/core/sites';
-import { LinkSimpleIcon } from '@phosphor-icons/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ContexteReglages } from '../proprietes/contexte';
+import { BarreTexte } from './BarreTexte';
 import { LiensDuTexte } from './LiensDuTexte';
 import { depuisHtml, liensUtilises, nouveauLien, versHtml } from './texteRiche';
-
-const outil =
-  'grid min-h-11 min-w-11 place-items-center rounded-[6px] px-2 text-[13px] font-bold text-neutre-800 hover:bg-neutre-100';
 
 /**
  * Éditeur de texte (maquette Editeur de Site) : sélectionner des mots puis Gras, Italique,
@@ -21,12 +18,15 @@ export function EditeurTexte({
   liens = {},
   onChange,
   c,
+  listes = true,
 }: {
   libelle: string;
   texte: string;
   liens?: Record<string, Action>;
   onChange: (p: { texte: string; liens: Record<string, Action> }) => void;
   c: ContexteReglages;
+  /** Listes à puces et numérotées (textes ; un titre n'en a pas). */
+  listes?: boolean;
 }) {
   const id = useId();
   const zone = useRef<HTMLDivElement>(null);
@@ -62,6 +62,31 @@ export function EditeurTexte({
     document.execCommand(c);
     sauver();
   };
+  /** Surligné ou couleur : la sélection est enveloppée (aucune couleur libre, seulement le thème). */
+  const envelopper = (e: React.MouseEvent, balise: 'mark' | 'ka' | 'kp' | 'ks' | 'kb') => {
+    e.preventDefault();
+    const s = selectionDedans();
+    if (!s) return setMessage('Sélectionnez d’abord le texte à mettre en forme.');
+    setMessage(null);
+    const r = s.getRangeAt(0);
+    const el = document.createElement(balise === 'mark' ? 'mark' : 'span');
+    if (balise !== 'mark') el.className = balise;
+    el.appendChild(r.extractContents());
+    r.insertNode(el);
+    sauver();
+  };
+  const effacer = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const s = selectionDedans();
+    if (!s) return setMessage('Sélectionnez d’abord le texte à mettre en forme.');
+    setMessage(null);
+    document.execCommand('removeFormat');
+    // Surlignés et couleurs touchés par la sélection : retirés, le texte reste.
+    zone.current?.querySelectorAll('mark,span.ka,span.kp,span.ks,span.kb').forEach((n) => {
+      if (s.containsNode(n, true)) n.replaceWith(...Array.from(n.childNodes));
+    });
+    sauver();
+  };
   const lier = (e: React.MouseEvent) => {
     e.preventDefault();
     const s = selectionDedans();
@@ -94,57 +119,11 @@ export function EditeurTexte({
         {libelle}
       </span>
       <div className="overflow-hidden rounded-[8px] border border-trait focus-within:border-accent">
-        <div
-          role="toolbar"
-          aria-label="Mise en forme"
-          className="flex flex-wrap items-center gap-0.5 border-b border-trait bg-neutre-100 p-0.5"
-        >
-          <button
-            type="button"
-            className={outil}
-            onMouseDown={(e) => commande(e, 'bold')}
-            title="Gras (Ctrl B)"
-            aria-label="Gras"
-          >
-            B
-          </button>
-          <button
-            type="button"
-            className={`${outil} italic`}
-            onMouseDown={(e) => commande(e, 'italic')}
-            title="Italique (Ctrl I)"
-            aria-label="Italique"
-          >
-            I
-          </button>
-          <button
-            type="button"
-            className={`${outil} underline`}
-            onMouseDown={(e) => commande(e, 'underline')}
-            title="Souligné (Ctrl U)"
-            aria-label="Souligné"
-          >
-            U
-          </button>
-          <span aria-hidden="true" className="mx-1 h-5 w-px bg-trait" />
-          <button
-            type="button"
-            className={outil}
-            onMouseDown={lier}
-            title="Transformer la sélection en lien"
-            aria-label="Lien"
-          >
-            <LinkSimpleIcon size={17} weight="bold" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={outil}
-            onMouseDown={(e) => commande(e, 'removeFormat')}
-            title="Retirer gras, italique et souligné"
-          >
-            Effacer
-          </button>
-        </div>
+        <BarreTexte
+          a={{ commande, envelopper, effacer, lier }}
+          listes={listes}
+          palette={c.palette}
+        />
         <div
           ref={zone}
           role="textbox"
@@ -154,7 +133,12 @@ export function EditeurTexte({
           suppressContentEditableWarning
           onInput={sauver}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            // Dans une liste, Entrée crée la puce suivante (comportement du navigateur).
+            const noeud = window.getSelection()?.anchorNode;
+            const dansListe = (noeud instanceof Element ? noeud : noeud?.parentElement)?.closest(
+              'li',
+            );
+            if (e.key === 'Enter' && !dansListe) {
               e.preventDefault();
               document.execCommand('insertLineBreak');
               sauver();
@@ -164,11 +148,11 @@ export function EditeurTexte({
             e.preventDefault();
             document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
           }}
-          className="min-h-24 px-3 py-2 text-base leading-6 outline-none [&_a]:text-accent-700 [&_a]:underline"
+          className="min-h-24 px-3 py-2 text-base leading-6 outline-none [&_a]:text-accent-700 [&_a]:underline [&_mark]:bg-accent-100 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_.ka]:text-accent-700 [&_.kp]:text-accent-800"
         />
       </div>
       <span className="text-xs text-neutre-600">
-        Sélectionnez des mots, puis Gras, Italique, Souligné ou Lien.
+        Sélectionnez des mots, puis choisissez une mise en forme ou Lien.
       </span>
       {message ? (
         <p role="status" className="m-0 text-xs font-semibold text-danger">

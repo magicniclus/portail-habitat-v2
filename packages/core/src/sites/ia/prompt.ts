@@ -5,7 +5,7 @@ export const VERSION_PROMPT_IA_SITE = 'site.v2';
 
 const CATALOGUE = `Éléments (champ "type", réglages dans "p") :
 - titre { texte, niveau: h1|h2|h3, align: left|center|right }
-- surtitre { texte } · texte { texte } (texte riche : <b> <i> <u> seulement)
+- surtitre { texte } · texte { texte } (texte riche : <b> <i> <u> <s> <mark> seulement ; « • » en début de ligne pour une puce)
 - bouton { texte, action, variante: plein|contour, largeur: auto|plein }
 - image { src: "" (emplacement vide) ou une référence "lib:…" listée dans le site, legende (texte alternatif) }
 - liste { items: [textes] } · avis { nom, texte, note 1-5 } (seulement des avis existants)

@@ -262,6 +262,18 @@ describe('rendu des sites publiés', () => {
     expect(texteRiche('<b>non fermé', undefined, { pages: s.pages })).toBe('<b>non fermé</b>');
   });
 
+  it('texte riche : barré, exposant, surligné, couleurs du thème et listes ; titre sans liste', () => {
+    const c = { pages: s.pages };
+    expect(texteRiche('<s>a</s><sup>2</sup><mark>b</mark><kp>c</kp>', undefined, c)).toBe(
+      '<s>a</s><sup>2</sup><mark>b</mark><span class="kp">c</span>',
+    );
+    expect(texteRiche('Inclus :\n• pose\n• <b>dépose</b>\n2. fin', undefined, c)).toBe(
+      'Inclus :<ul class="tl"><li>pose</li><li><b>dépose</b></li></ul><ol class="tl" start="2"><li>fin</li></ol>',
+    );
+    expect(texteRiche('• pas de liste', undefined, c, false, false)).toBe('• pas de liste');
+    expect(texteRiche('<span class="x">', undefined, c)).toBe('&lt;span class=&quot;x&quot;&gt;');
+  });
+
   it('SITE-02 : texte mobile distinct, sans effet sur l’ordinateur', () => {
     const page = structuredClone(s.pages.accueil!);
     const titre = page.sections[0]!.rows[0]!.cols[0]!.els.find((e) => e.type === 'titre')!;

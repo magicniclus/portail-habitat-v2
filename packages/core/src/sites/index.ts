@@ -24,3 +24,4 @@ export * from './couleurs';
 export * from './navigation';
 export * from './suivi';
 export * from './achatDomaine';
+export * from './texteRiche';

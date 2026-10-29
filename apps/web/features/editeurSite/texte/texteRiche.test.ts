@@ -49,6 +49,24 @@ describe('texte riche de l’éditeur', () => {
     );
   });
 
+  it('formats avancés : barré, exposant, surligné, couleur, listes (aller et retour)', () => {
+    expect(
+      versHtml('<s>a</s> <sup>2</sup> <mark>b</mark> <ka>c</ka>\n• un\n• deux\n3. trois'),
+    ).toBe(
+      '<s>a</s> <sup>2</sup> <mark>b</mark> <span class="ka">c</span><ul><li>un</li><li>deux</li></ul><ol start="3"><li>trois</li></ol>',
+    );
+    const racine = e('div', [
+      t('Avant'),
+      e('ul', [e('li', [e('strike', [t('un')])]), e('li', [t('deux')])]),
+      t('Après '),
+      e('span', [t('rouge')], { class: 'ka' }),
+      e('ol', [e('li', [e('mark', [t('x')])])], { start: '2' }),
+    ]);
+    expect(depuisHtml(racine)).toBe(
+      'Avant\n• <s>un</s>\n• deux\nAprès <ka>rouge</ka>\n2. <mark>x</mark>',
+    );
+  });
+
   it('aller-retour sans perte', () => {
     const texte = 'A <b>B</b> [C](#L3)\nD';
     // Le HTML produit, relu par un vrai navigateur, redonne le même texte (vérifié en e2e) ;
