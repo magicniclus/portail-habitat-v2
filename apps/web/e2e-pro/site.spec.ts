@@ -703,9 +703,14 @@ test.describe('Site internet artisan', () => {
     await expect(page.getByRole('radiogroup', { name: 'Délai' })).toBeVisible();
 
     // Zone : globale puis fenêtre pop-up (étiquette dans l'éditeur).
-    for (let i = 0; i < 3; i++) await page.keyboard.press('Escape');
-    await page.getByRole('tab', { name: 'Avancé' }).click();
-    await page.getByRole('button', { name: 'Rendre cette zone globale' }).click();
+    // Échap remonte niveau par niveau jusqu'à la zone (sa profondeur dépend du contenu).
+    const rendreGlobale = page.getByRole('button', { name: 'Rendre cette zone globale' });
+    for (let i = 0; i < 4 && !(await rendreGlobale.isVisible()); i++) {
+      await page.keyboard.press('Escape');
+      const avance = page.getByRole('tab', { name: 'Avancé' });
+      if (await avance.isVisible()) await avance.click();
+    }
+    await rendreGlobale.click();
     await expect(page.getByText(/Présente sur 1 page/)).toBeVisible();
     await page.getByRole('switch', { name: 'Afficher cette zone en fenêtre pop-up' }).click();
     await expect(

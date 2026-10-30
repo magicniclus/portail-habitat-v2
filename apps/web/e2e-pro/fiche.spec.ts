@@ -44,6 +44,21 @@ test.describe('Ma fiche', () => {
     await expect(page.getByRole('img', { name: /^Logo de / })).toBeVisible({ timeout: 15_000 });
   });
 
+  test('vidéo de présentation : lien YouTube lu sans cookie, puis retirée', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    const video = page.getByRole('region', { name: 'Vidéo de présentation' });
+    await video.getByLabel(/^Lien de la vidéo YouTube/).fill('pas une vidéo');
+    await expect(video.getByText('Ce lien n’est pas une vidéo YouTube.')).toBeVisible();
+    await video.getByLabel(/^Lien de la vidéo YouTube/).fill('https://youtu.be/dQw4w9WgXcQ?t=30');
+    await video.getByRole('button', { name: 'Enregistrer la vidéo' }).click();
+    await expect(video.locator('iframe')).toHaveAttribute(
+      'src',
+      'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1&start=30',
+    );
+    await video.getByRole('button', { name: 'Retirer la vidéo' }).click();
+    await expect(video.locator('iframe')).toHaveCount(0);
+  });
+
   test('le propriétaire modifie la présentation et le devis moyen', async ({ page }, info) => {
     const accroche = `Couverture et zinguerie (${info.project.name} ${Date.now()})`;
     await connecter(page, COMPTES.proprio, '/pro/fiche');

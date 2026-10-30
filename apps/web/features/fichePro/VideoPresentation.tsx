@@ -1,100 +1,116 @@
 'use client';
 
-import { Chargeur } from '@ph/ui';
-import { fichiers } from '@ph/firebase/chemins';
-import { PlayIcon } from '@phosphor-icons/react';
+import { idYoutube } from '@ph/core/sites';
+import { Banner, BoutonAction, Button, Field, Input } from '@ph/ui';
+import { YoutubeLogoIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
-import { useId, useState } from 'react';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { useState } from 'react';
+import { LecteurVideo } from '@/features/fiche/LecteurVideo';
 import { posterJson } from '@/lib/posterJson';
-import { nomFichierSur, problemeFichier } from './fichiers';
 
-const TYPES_VIDEO = ['video/mp4', 'video/webm', 'video/ogg'];
-
-/** Vidéo de présentation (maquette Ma fiche) : MP4, WebM ou OGG, 50 Mo ; lue sur la fiche publique. */
+/**
+ * Vidéo de présentation (maquette Ma fiche) : un lien YouTube suffit (aucun import, aucune limite
+ * de taille), lu sans cookie sur la fiche publique. Changer ou retirer en un clic.
+ */
 export function VideoPresentation({
-  artisanId,
   videoUrl,
   modifiable,
 }: {
-  artisanId: string;
   videoUrl?: string;
   modifiable: boolean;
 }) {
   const router = useRouter();
-  const id = useId();
+  const [lien, setLien] = useState('');
+  const [modifier, setModifier] = useState(!videoUrl);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [enCours, setEnCours] = useState(false);
+  const valide = idYoutube(lien) !== null;
 
-  const choisir = async (f: File | undefined) => {
-    if (!f) return;
-    if (!TYPES_VIDEO.includes(f.type)) return setErreur('Vidéo MP4, WebM ou OGG uniquement.');
-    const probleme = problemeFichier(f, TYPES_VIDEO, 50);
-    if (probleme) return setErreur(probleme);
-    setEnCours(true);
+  const envoyer = async (
+    corps: { lien: string } | Record<string, never>,
+    methode: 'POST' | 'DELETE',
+  ) => {
     setErreur(null);
-    const nomFichier = nomFichierSur(f);
-    try {
-      await deposerFichier(fichiers.video(artisanId, nomFichier), f);
-      const r = await posterJson<{ videoUrl: string }>('/api/pro/video', { nomFichier });
-      if (!r.ok) setErreur(r.message);
-      else router.refresh();
-    } catch {
-      setErreur("L'envoi de la vidéo n'a pas abouti. Réessayez.");
-    }
-    setEnCours(false);
+    const r = await posterJson<{ videoUrl: string | null }>('/api/pro/video', corps, methode);
+    if (!r.ok) return setErreur(r.message);
+    setLien('');
+    setModifier(methode === 'DELETE');
+    router.refresh();
   };
 
   if (!videoUrl && !modifiable) return null;
-  const bouton = modifiable ? (
-    <label
-      htmlFor={id}
-      className="inline-flex min-h-11 cursor-pointer items-center gap-2 justify-self-center rounded-control border border-trait bg-blanc px-4 text-[15px] font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent"
-    >
-      {enCours ? (
-        <>
-          <Chargeur taille="sm" ton="courant" decoratif /> Envoi…
-        </>
-      ) : videoUrl ? (
-        'Changer la vidéo'
-      ) : (
-        'Ajouter une vidéo'
-      )}
-      <input
-        id={id}
-        type="file"
-        accept={TYPES_VIDEO.join(',')}
-        disabled={enCours}
-        onChange={(e) => void choisir(e.target.files?.[0])}
-        className="sr-only text-base"
-      />
-    </label>
-  ) : null;
   return (
     <section
       aria-label="Vidéo de présentation"
-      className={`grid justify-items-center gap-3 rounded-[16px] p-6 text-center ${
-        videoUrl ? 'border border-trait' : 'border border-dashed border-neutre-400'
-      }`}
+      className={`grid gap-3 rounded-[16px] p-5 ${videoUrl ? 'border border-trait' : 'border border-dashed border-neutre-400'}`}
     >
       {videoUrl ? (
-        <video src={videoUrl} controls preload="metadata" className="w-full rounded-[12px]" />
+        <LecteurVideo url={videoUrl} titre="Vidéo de présentation" />
       ) : (
-        <>
+        <div className="grid justify-items-center gap-2 text-center">
           <span
             aria-hidden="true"
             className="flex size-12 items-center justify-center rounded-full bg-accent-100 text-accent-700"
           >
-            <PlayIcon size={22} weight="fill" />
+            <YoutubeLogoIcon size={24} weight="fill" />
           </span>
           <h2 className="m-0 text-lg">Ajoutez une vidéo de présentation</h2>
-          <p className="m-0 text-[15px] text-neutre-800">
-            Présentez votre entreprise et vos chantiers en vidéo. MP4, WebM ou OGG · 50 Mo max.
+          <p className="m-0 max-w-[48ch] text-[15px] text-neutre-800">
+            Présentez votre entreprise et vos chantiers : mettez la vidéo sur YouTube, puis collez
+            son lien ici.
           </p>
-        </>
+        </div>
       )}
-      {bouton}
-      {erreur ? <p className="m-0 text-sm text-danger">{erreur}</p> : null}
+      {modifiable && modifier ? (
+        <form
+          className="grid gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <Field
+            label="Lien de la vidéo YouTube"
+            aide="Par exemple https://youtu.be/… ; ajoutez ?t=30 pour démarrer à 30 secondes."
+          >
+            <Input
+              value={lien}
+              onChange={(e) => setLien(e.target.value)}
+              inputMode="url"
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder="https://www.youtube.com/watch?v=…"
+            />
+          </Field>
+          {lien && !valide ? (
+            <p className="m-0 text-sm text-danger">Ce lien n’est pas une vidéo YouTube.</p>
+          ) : null}
+          <div className="flex flex-wrap gap-2">
+            <BoutonAction disabled={!valide} onClick={() => envoyer({ lien }, 'POST')}>
+              Enregistrer la vidéo
+            </BoutonAction>
+            {videoUrl ? (
+              <Button variant="fantome" onClick={() => setModifier(false)}>
+                Annuler
+              </Button>
+            ) : null}
+          </div>
+        </form>
+      ) : modifiable ? (
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondaire" onClick={() => setModifier(true)}>
+            Changer la vidéo
+          </Button>
+          <BoutonAction variant="fantome" onClick={() => envoyer({}, 'DELETE')}>
+            Retirer la vidéo
+          </BoutonAction>
+        </div>
+      ) : null}
+      {modifiable ? (
+        <p className="m-0 text-xs text-neutre-700">
+          Lue sans cookie, avec seulement vos propres vidéos en suggestion. Aucune publicité si
+          votre chaîne YouTube n’est pas monétisée (c’est le cas par défaut).
+        </p>
+      ) : null}
+      {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
     </section>
   );
 }

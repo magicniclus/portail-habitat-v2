@@ -9,7 +9,7 @@ import {
   problemeFichier,
   TYPES_IMAGE,
 } from '@/features/fichePro/fichiers';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 
 const TYPES = {
@@ -55,8 +55,8 @@ export function useImportMedia(
       });
       if (!r.ok) setErreur(r.message);
       else onImportee(r.data.cle, r.data.url, nom);
-    } catch {
-      setErreur("L'envoi n'a pas abouti. Réessayez.");
+    } catch (e) {
+      setErreur(e instanceof EnvoiImpossible ? e.message : "L'envoi n'a pas abouti. Réessayez.");
     }
     setEnCours(false);
   };

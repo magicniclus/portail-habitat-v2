@@ -4,7 +4,7 @@ import { Chargeur } from '@ph/ui';
 import { fichiers } from '@ph/firebase/chemins';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { useGlisserDeposer } from './useGlisserDeposer';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
@@ -41,8 +41,10 @@ export function Logo({
       const r = await posterJson<{ logoUrl: string }>('/api/pro/logo', { nomFichier });
       if (!r.ok) setErreur(r.message);
       else router.refresh();
-    } catch {
-      setErreur("L'envoi du logo n'a pas abouti. Réessayez.");
+    } catch (e) {
+      setErreur(
+        e instanceof EnvoiImpossible ? e.message : "L'envoi du logo n'a pas abouti. Réessayez.",
+      );
     }
     setEnCours(false);
   };

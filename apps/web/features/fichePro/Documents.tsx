@@ -12,7 +12,7 @@ import type { DocumentPro } from '@ph/firebase/pro';
 import { Badge, Banner, Button, Field, Select, type Tone } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { nomFichierSur, nouvelIdFichier, problemeFichier, TYPES_PIECE } from './fichiers';
 
@@ -70,8 +70,14 @@ export function Documents({
         setFichier(null);
         router.refresh();
       }
-    } catch {
-      setMessage({ ton: 'danger', texte: "L'envoi du fichier n'a pas abouti. Réessayez." });
+    } catch (e) {
+      setMessage({
+        ton: 'danger',
+        texte:
+          e instanceof EnvoiImpossible
+            ? e.message
+            : "L'envoi du fichier n'a pas abouti. Réessayez.",
+      });
     }
     setEnCours(false);
   };

@@ -5,7 +5,7 @@ import { LIMITES_REDACTION } from '@ph/core/ia';
 import { Banner, Button, Checkbox, Feuille, Field, Input, Textarea } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { AssistantRedaction } from './AssistantRedaction';
 import {
@@ -69,8 +69,10 @@ export function FormulaireProjet({
         setAccord(false);
         router.refresh();
       }
-    } catch {
-      setErreur("L'envoi des photos n'a pas abouti. Réessayez.");
+    } catch (e) {
+      setErreur(
+        e instanceof EnvoiImpossible ? e.message : "L'envoi des photos n'a pas abouti. Réessayez.",
+      );
     }
     setEnCours(false);
   };

@@ -18,6 +18,7 @@ import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { lireFiche } from '@/server/annuaire';
 import { nomMetier } from '@/server/metiers';
+import { LecteurVideo } from '@/features/fiche/LecteurVideo';
 
 // Fiches générées à la première visite puis régénérées toutes les heures (ISR, README).
 export const revalidate = 3600;
@@ -137,11 +138,9 @@ export default async function PageFiche({ params }: { params: Params }) {
             </Bloc>
             {f.videoUrl ? (
               <Bloc titre="Vidéo de présentation" id="video">
-                <video
-                  src={f.videoUrl}
-                  controls
-                  preload="metadata"
-                  className="w-full rounded-[12px]"
+                <LecteurVideo
+                  url={f.videoUrl}
+                  titre={`Vidéo de présentation de ${f.nomCommercial}`}
                 />
               </Bloc>
             ) : null}

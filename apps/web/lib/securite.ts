@@ -76,7 +76,16 @@ export function politiqueContenu(o: OptionsCsp): string {
     ],
     ['font-src', ["'self'"]],
     ['connect-src', ["'self'", ...CONNEXIONS, ...emulateurs]],
-    ['frame-src', ["'self'", 'https://www.google.com', 'https://*.firebaseapp.com']],
+    // Vidéos de présentation des fiches (lecteur YouTube sans cookie).
+    [
+      'frame-src',
+      [
+        "'self'",
+        'https://www.google.com',
+        'https://*.firebaseapp.com',
+        'https://www.youtube-nocookie.com',
+      ],
+    ],
     ['worker-src', ["'self'", 'blob:']],
     ['manifest-src', ["'self'"]],
     ['object-src', ["'none'"]],

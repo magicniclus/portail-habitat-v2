@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 import { useGlisserDeposer } from './useGlisserDeposer';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
@@ -56,8 +56,12 @@ export function Banniere({
       const r = await posterJson<{ bannieres: string[] }>('/api/pro/banniere', { nomFichier });
       if (!r.ok) setErreur(r.message);
       else router.refresh();
-    } catch {
-      setErreur("L'envoi de la bannière n'a pas abouti. Réessayez.");
+    } catch (e) {
+      setErreur(
+        e instanceof EnvoiImpossible
+          ? e.message
+          : "L'envoi de la bannière n'a pas abouti. Réessayez.",
+      );
     }
     setEnCours(false);
   };

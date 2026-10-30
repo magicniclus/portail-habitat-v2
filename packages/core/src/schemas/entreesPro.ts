@@ -3,6 +3,7 @@ import { FLAGS, type NomFlag } from '../flags';
 import { z } from '../zod';
 import { rayonKm, TYPES_DOCUMENT } from './artisans';
 import { email, geo, id, telephoneFr } from './commun';
+import { idYoutube } from '../sites/video';
 
 /** « Mes demandes » (PRO-02) : ouvrir, accepter ou refuser une demande reçue. */
 export const entreeReponseDemande = z.strictObject({
@@ -77,7 +78,14 @@ export const entreeBanniere = z.strictObject({ nomFichier });
 export const entreeRetraitBanniere = z.strictObject({ url: z.url().max(1000) });
 
 /** Vidéo de présentation déposée dans Storage (`artisans/{id}/video/{nomFichier}`). */
-export const entreeVideo = z.strictObject({ nomFichier });
+/** Vidéo de présentation de la fiche : lien YouTube (lu sans cookie sur la fiche publique). */
+export const entreeVideo = z.strictObject({
+  lien: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((l) => idYoutube(l) !== null, 'Collez le lien d’une vidéo YouTube.'),
+});
 
 /**
  * Réalisation (photos déjà dans `artisans/{id}/realisations/{rid}/`) : publiée seulement avec

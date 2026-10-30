@@ -5,7 +5,7 @@ import { Banner, BoutonAction, Chargeur } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { nomFichierSur, nouvelIdFichier, problemeFichier } from '@/features/fichePro/fichiers';
-import { deposerFichier } from '@/lib/firebaseClient';
+import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
 
 /** PNG ou JPEG seulement : les seuls formats que le PDF sait poser. */
@@ -65,8 +65,8 @@ export function ImageFacturation({
     try {
       await deposerFichier(fichiers[quoi](artisanId, nomFichier), f);
       await appeler({ action: 'enregistrer', nomFichier });
-    } catch {
-      setErreur(t.echec);
+    } catch (e) {
+      setErreur(e instanceof EnvoiImpossible ? e.message : t.echec);
     }
     setEnCours(false);
   };

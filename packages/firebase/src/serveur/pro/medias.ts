@@ -3,7 +3,8 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
 import type { entreeRealisation } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
-import { Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { debutYoutube, idYoutube, lienYoutube } from '@ph/core/sites';
+import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { cheminDepuisUrlPublique, urlPubliqueFichier, type bucketFichiers } from '../../admin';
 import { chemins, fichiers } from '../../chemins';
 import { completudeDepuisBase } from './fiche';
@@ -112,22 +113,22 @@ export async function retirerBanniere(s: Services, ctx: Contexte, url: string) {
   return { bannieres };
 }
 
-const VIDEOS = /^video\/(mp4|webm|ogg)$/;
-
-/** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo) : URL publique, lue sur la fiche publique. */
-export async function enregistrerVideo(s: Services, ctx: Contexte, nomFichier: string) {
-  const chemin = fichiers.video(ctx.artisanId, nomFichier);
-  const fichier = s.bucket.file(chemin);
-  const [existe] = await fichier.exists();
-  if (!existe) throw new ErreurMetier('INTROUVABLE', 'Vidéo introuvable : renvoyez-la.');
-  const [meta] = await fichier.getMetadata();
-  if (!VIDEOS.test(meta.contentType ?? '') || Number(meta.size) > 50 * 1024 * 1024)
-    throw new ErreurMetier('ENTREE_INVALIDE', 'Vidéo MP4, WebM ou OGG de 50 Mo au plus.');
-  const videoUrl = urlPubliqueFichier(chemin);
+/**
+ * Vidéo de présentation : lien YouTube (enregistré sous sa forme canonique, début compris), lu
+ * sans cookie sur la fiche publique. `null` : vidéo retirée.
+ */
+export async function enregistrerVideo(
+  s: Pick<Services, 'db' | 'horloge'>,
+  ctx: Contexte,
+  lien: string | null,
+) {
+  const id = lien ? idYoutube(lien) : null;
+  if (lien && !id) throw new ErreurMetier('ENTREE_INVALIDE', 'Collez le lien d’une vidéo YouTube.');
+  const videoUrl = id ? lienYoutube(id, debutYoutube(lien!)) : null;
   return s.db.runTransaction(async (t) => {
-    await exiger(t, s, ctx, 'fiche.modifier');
+    await exiger(t, s as Services, ctx, 'fiche.modifier');
     t.update(s.db.doc(chemins.artisan(ctx.artisanId)), {
-      videoUrl,
+      videoUrl: videoUrl ?? FieldValue.delete(),
       updatedAt: Timestamp.fromMillis(s.horloge()),
     });
     return { videoUrl };

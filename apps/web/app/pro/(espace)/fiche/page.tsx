@@ -147,11 +147,7 @@ export default async function PageMaFiche() {
               {edite ? <EditionZone zone={f.zone} /> : null}
             </div>
           </CarteFiche>
-          <VideoPresentation
-            artisanId={active.artisanId}
-            modifiable={edite}
-            {...(f.videoUrl ? { videoUrl: f.videoUrl } : {})}
-          />
+          <VideoPresentation modifiable={edite} {...(f.videoUrl ? { videoUrl: f.videoUrl } : {})} />
           <CarteFiche
             titre="Projets réalisés"
             sousTitre={`Vos dernières réalisations, visibles par les particuliers.${

@@ -69,11 +69,46 @@ function stockageClient(): Promise<FirebaseStorage> {
   return stockageP;
 }
 
-/** Dépose un fichier dans Storage (règles : membre de l'entreprise, type et taille). */
-export async function deposerFichier(chemin: string, fichier: File): Promise<void> {
+/** Échec d'un envoi, avec un message compréhensible (affiché tel quel à l'artisan). */
+export class EnvoiImpossible extends Error {}
+
+const MESSAGES_ENVOI: Record<string, string> = {
+  'storage/unauthorized':
+    'Envoi refusé : votre compte n’a pas le droit de modifier cette fiche (reconnectez-vous ; seuls le propriétaire et le gérant peuvent).',
+  'storage/unauthenticated': 'Session expirée : reconnectez-vous puis réessayez.',
+  'storage/quota-exceeded': 'Espace de stockage plein : contactez le support.',
+  'storage/retry-limit-exceeded':
+    'Le serveur de fichiers ne répond pas : réessayez dans un instant.',
+  'storage/canceled': 'Envoi annulé.',
+};
+
+/**
+ * Dépose un fichier dans Storage (règles : membre de l'entreprise, type et taille). Jamais
+ * d'attente sans fin : au bout de `delaiMs`, l'envoi est annulé avec un message clair ; un refus
+ * des règles ou une session expirée donnent leur vraie raison.
+ */
+export async function deposerFichier(
+  chemin: string,
+  fichier: File,
+  delaiMs = 120_000,
+): Promise<void> {
   await authClient().then((a) => a.authStateReady());
   const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
-  await m.uploadBytes(m.ref(st, chemin), fichier, { contentType: fichier.type });
+  const tache = m.uploadBytesResumable(m.ref(st, chemin), fichier, { contentType: fichier.type });
+  const minuterie = setTimeout(() => tache.cancel(), delaiMs);
+  try {
+    await tache;
+  } catch (e) {
+    const code = (e as { code?: string }).code ?? '';
+    throw new EnvoiImpossible(
+      code === 'storage/canceled'
+        ? 'Le serveur de fichiers ne répond pas (envoi trop long). Vérifiez votre connexion ou que le stockage est démarré, puis réessayez.'
+        : (MESSAGES_ENVOI[code] ??
+            `L’envoi n’a pas abouti (${code || 'erreur inconnue'}). Réessayez.`),
+    );
+  } finally {
+    clearTimeout(minuterie);
+  }
 }
 
 /**
