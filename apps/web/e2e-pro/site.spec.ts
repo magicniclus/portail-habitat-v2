@@ -720,7 +720,7 @@ test.describe('Site internet artisan', () => {
     // Historique des versions : la version en ligne est marquée.
     await page.getByRole('button', { name: 'Versions', exact: true }).click();
     const versions = page.getByRole('list', { name: 'Versions publiées' });
-    await expect(versions.getByText('En ligne')).toBeVisible();
+    await expect(versions.getByText('En ligne', { exact: true })).toBeVisible();
 
     // Retour à l'état de départ (le brouillon s'enregistre tout seul).
     const annuler = page.getByRole('button', { name: 'Annuler (Ctrl Z)' });

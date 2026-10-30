@@ -162,18 +162,19 @@ describe('enregistrerBanniere', () => {
 });
 
 describe('enregistrerVideo', () => {
-  it('URL publique enregistrée ; collaborateur refusé ; image refusée', async () => {
-    await image(fichiers.video('a1', 'v.mp4'), 'video/mp4');
-    await expect(enregistrerVideo(s(), ctx('c1'), 'v.mp4')).rejects.toMatchObject({
+  it('lien YouTube canonique ; collaborateur refusé ; lien invalide refusé ; retrait', async () => {
+    const lien = 'https://youtu.be/dQw4w9WgXcQ';
+    await expect(enregistrerVideo(s(), ctx('c1'), lien)).rejects.toMatchObject({
       code: 'PERMISSION_REFUSEE',
     });
-    const r = await enregistrerVideo(s(), ctx('p1'), 'v.mp4');
-    expect(r.videoUrl).toContain(encodeURIComponent('artisans/a1/video/v.mp4'));
+    const r = await enregistrerVideo(s(), ctx('p1'), lien);
+    expect(r.videoUrl).toContain('dQw4w9WgXcQ');
     expect((await db.doc(chemins.artisan('a1')).get()).get('videoUrl')).toBe(r.videoUrl);
-    await image(fichiers.video('a1', 'x.png'));
-    await expect(enregistrerVideo(s(), ctx('p1'), 'x.png')).rejects.toMatchObject({
-      code: 'ENTREE_INVALIDE',
-    });
+    await expect(
+      enregistrerVideo(s(), ctx('p1'), 'https://ailleurs.test/v.mp4'),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    expect((await enregistrerVideo(s(), ctx('p1'), null)).videoUrl).toBeNull();
+    expect((await db.doc(chemins.artisan('a1')).get()).get('videoUrl')).toBeUndefined();
   });
 });
 
