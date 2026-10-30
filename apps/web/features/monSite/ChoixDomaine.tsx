@@ -2,7 +2,7 @@
 
 import { Banner, Button, Field, Input, cn } from '@ph/ui';
 import { useState } from 'react';
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
+import { EncartPremium } from '@/features/offres/EncartPremium';
 import { AchatDomaine } from './AchatDomaine';
 import { useAppelSite } from './appelSite';
 
@@ -40,11 +40,17 @@ export function ChoixDomaine({ sitePro, voulu }: { sitePro: boolean; voulu?: str
       ) : sitePro ? (
         <ConnexionDomaine />
       ) : (
-        <div>
-          <FenetreOffre formule="site_pro" raison="Le domaine personnel est inclus dans Site Pro.">
-            Connecter mon domaine
-          </FenetreOffre>
-        </div>
+        <EncartPremium
+          compact
+          formule="site_pro"
+          titre="Votre domaine, votre marque"
+          cta="Connecter mon domaine"
+          raison="Le domaine personnel est inclus dans Site Pro."
+          icone="domaine"
+        >
+          Une adresse à votre nom inspire confiance et se retient : connectez le domaine que vous
+          avez déjà, ou achetez-en un, inclus dans Site Pro.
+        </EncartPremium>
       )}
     </div>
   );

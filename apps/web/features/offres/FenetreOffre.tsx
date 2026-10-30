@@ -4,14 +4,10 @@ import { recapPaiement } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
 import { CONTENU_OFFRES, NOMS_FORMULE, type FormulePayante } from '@ph/core/paiements';
 import { Banner, bouton, Button, Modal } from '@ph/ui';
-import {
-  ArrowCounterClockwiseIcon,
-  CheckCircleIcon,
-  CrownSimpleIcon,
-  LockKeyIcon,
-} from '@phosphor-icons/react';
+import { ArrowCounterClockwiseIcon, CrownSimpleIcon, LockKeyIcon } from '@phosphor-icons/react';
 import { useState, type ReactNode } from 'react';
 import { usePaiement } from '@/features/abonnement/usePaiement';
+import { BandeauOffre } from './BandeauOffre';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
@@ -54,6 +50,15 @@ export function FenetreOffre({
         ? {
             declencheur: (
               <button type="button" className={className ?? bouton({ variant: 'secondaire' })}>
+                {/* Déclencheur par défaut : la couronne signale la fonction payante. */}
+                {className ? null : (
+                  <CrownSimpleIcon
+                    size={16}
+                    weight="fill"
+                    aria-hidden="true"
+                    className="text-premium"
+                  />
+                )}
                 {children}
               </button>
             ),
@@ -73,36 +78,7 @@ export function FenetreOffre({
       }
     >
       <div className="grid gap-4">
-        <div className="relative isolate overflow-hidden rounded-[16px] bg-accent-100 p-4">
-          <span
-            aria-hidden="true"
-            className="absolute -top-10 -right-8 -z-10 size-32 rounded-full bg-accent-200 opacity-70"
-          />
-          <span className="inline-flex items-center gap-1 rounded-pill bg-blanc px-2.5 py-0.5 text-xs font-bold tracking-wide text-accent-800 uppercase">
-            <CrownSimpleIcon size={13} weight="fill" aria-hidden="true" />
-            {nom}
-          </span>
-          <p className="m-0 mt-2 text-[17px] leading-snug font-semibold text-texte">{c.accroche}</p>
-          <p className="m-0 mt-3 flex items-baseline gap-1.5">
-            <strong className="text-[32px] leading-none font-extrabold text-accent-800">
-              {eur(r.montantHt)}
-            </strong>
-            <span className="text-sm font-semibold text-neutre-800">HT / mois</span>
-          </p>
-        </div>
-        <ul className="m-0 grid list-none gap-2 p-0 text-[15px]">
-          {c.avantages.map((a) => (
-            <li key={a} className="flex items-start gap-2">
-              <CheckCircleIcon
-                size={20}
-                weight="fill"
-                aria-hidden="true"
-                className="flex-none text-accent"
-              />
-              <span>{a}</span>
-            </li>
-          ))}
-        </ul>
+        <BandeauOffre formule={formule} />
         <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
           <div className="flex justify-between gap-3">
             <dt>{nom} · mensuel</dt>

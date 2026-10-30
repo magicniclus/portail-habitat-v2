@@ -1,6 +1,6 @@
 'use client';
 
-import { FenetreOffre } from '@/features/offres/FenetreOffre';
+import { EncartPremium } from '@/features/offres/EncartPremium';
 import type { AppelsOffresPro as Donnees } from '@ph/firebase/matching';
 import { Banner, EmptyState, bouton } from '@ph/ui';
 import Link from 'next/link';
@@ -29,23 +29,17 @@ export function AppelsOffresPro({
   return (
     <div className="grid gap-5">
       {!d.premium && d.nbReserves > 0 ? (
-        <Banner
-          tone="premium"
+        <EncartPremium
+          formule="tout_inclus"
           titre="Avec Tout inclus, vous voyez ces chantiers 12 h avant les autres"
-          action={
-            <FenetreOffre
-              formule="tout_inclus"
-              raison="L’accès anticipé aux appels d’offres est inclus dans Tout inclus."
-              className={bouton({})}
-            >
-              Voir Tout inclus
-            </FenetreOffre>
-          }
+          cta="Voir Tout inclus"
+          raison="L’accès anticipé aux appels d’offres est inclus dans Tout inclus."
+          icone="chantiers"
         >
           Sur les {d.cartes.length} appels d’offres de votre zone, {d.nbReserves}{' '}
-          {d.nbReserves > 1 ? 'sont encore réservés' : 'est encore réservé'} aux comptes Tout
-          inclus.
-        </Banner>
+          {d.nbReserves > 1 ? 'sont encore réservés' : 'est encore réservé'} aux comptes Tout inclus
+          : répondez avant que les places partent.
+        </EncartPremium>
       ) : null}
       {!paiementsOuverts ? (
         <Banner tone="info">

@@ -10,6 +10,8 @@ import {
   ChatCircleTextIcon,
   CheckCircleIcon,
   CrownSimpleIcon,
+  GlobeHemisphereWestIcon,
+  HammerIcon,
   NewspaperClippingIcon,
   SparkleIcon,
 } from '@phosphor-icons/react';
@@ -22,6 +24,8 @@ const ICONES = {
   statistiques: ChartLineUpIcon,
   blog: NewspaperClippingIcon,
   formulaire: ChatCircleTextIcon,
+  domaine: GlobeHemisphereWestIcon,
+  chantiers: HammerIcon,
 } as const;
 
 /**
@@ -38,6 +42,7 @@ export function EncartPremium({
   icone = 'ia',
   compact = false,
   onPlusTard,
+  libellePlusTard = 'Plus tard',
   className,
 }: {
   formule: FormulePayante;
@@ -51,6 +56,8 @@ export function EncartPremium({
   /** Panneaux étroits (éditeur) : sans liste d'avantages. */
   compact?: boolean;
   onPlusTard?: () => void;
+  /** Libellé du bouton secondaire (« Plus tard » par défaut). */
+  libellePlusTard?: string;
   className?: string;
 }) {
   const I = ICONES[icone];
@@ -122,7 +129,7 @@ export function EncartPremium({
         </span>
         {onPlusTard ? (
           <Button variant="fantome" taille="sm" onClick={onPlusTard} className="ml-auto">
-            Plus tard
+            {libellePlusTard}
           </Button>
         ) : null}
       </div>

@@ -7,6 +7,7 @@ import { Banner, Button, Modal } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { routes } from '@/lib/routes';
+import { BandeauOffre } from '@/features/offres/BandeauOffre';
 import { usePaiement } from './usePaiement';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
@@ -60,7 +61,8 @@ export function FenetrePaiement({
       }
     >
       <div className="grid gap-4">
-        <dl className="m-0 grid gap-1 text-[15px]">
+        <BandeauOffre formule={formule} />
+        <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
           <div className="flex justify-between gap-3">
             <dt>{NOMS_FORMULE[formule]} · mensuel</dt>
             <dd className="m-0">{eur(r.montantHt)} HT</dd>

@@ -4,6 +4,7 @@ import { ARTICLES_IA_MOIS } from '@ph/core/blog';
 import { recapPaiement } from '@ph/core/facturation';
 import { formatEuros } from '@ph/core/format';
 import { Banner, Button, Checkbox, Modal } from '@ph/ui';
+import { NewspaperClippingIcon } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -59,10 +60,18 @@ export function FenetreOptionBlog() {
       }
     >
       <div className="grid gap-4">
-        <p className="m-0 text-[15px]">
-          {ARTICLES_IA_MOIS.optionBlog} articles rédigés par l’IA en plus chaque mois, soit{' '}
-          {ARTICLES_IA_MOIS.sitePro + ARTICLES_IA_MOIS.optionBlog} au total.
-        </p>
+        <div className="grid gap-1.5 rounded-card border border-premium bg-premium-fond p-4">
+          <p className="m-0 flex items-center gap-2 text-xs font-bold tracking-[0.04em] text-premium-texte uppercase">
+            <NewspaperClippingIcon size={16} weight="fill" aria-hidden="true" />
+            Option Blog
+          </p>
+          <p className="m-0 text-lg font-bold">Publiez plus souvent, sans écrire plus</p>
+          <p className="m-0 text-[15px]">
+            {ARTICLES_IA_MOIS.optionBlog} articles rédigés par l’IA en plus chaque mois, soit{' '}
+            {ARTICLES_IA_MOIS.sitePro + ARTICLES_IA_MOIS.optionBlog} au total : de quoi garder un
+            blog vivant toute l’année, sur les travaux que vous voulez mettre en avant.
+          </p>
+        </div>
         <dl className="m-0 grid gap-1 text-[15px]">
           <div className="flex justify-between gap-3">
             <dt>Option Blog · mensuel</dt>
