@@ -39,7 +39,7 @@ export function GalerieModeles({
     onAppliquer(appliquerModeleSite(base, m, paletteDe(m), tout));
     setChoisi(null);
     setMessage(
-      `Modèle « ${m.nom} » appliqué${tout ? ` à ${Object.keys(base.pages).length} pages` : ' (couleurs et polices)'}. Vos textes et photos sont conservés.`,
+      `Modèle « ${m.nom} » appliqué${tout ? ` à ${Object.keys(base.pages).length} pages` : ' (couleurs et polices)'}. Vos textes et photos sont conservés. Cliquez sur « Publier » pour le mettre en ligne.`,
     );
   };
   return (

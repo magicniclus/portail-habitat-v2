@@ -1,3 +1,4 @@
+import { DEFAUTS_COLONNE, elementDuCatalogue } from './catalogue';
 import type { Navigation, PageSite, Section, Theme } from './schemas';
 
 /** Mise en page du bandeau d'accueil propre à chaque modèle. */
@@ -84,36 +85,100 @@ export const modeleSite = (id: string) => MODELES_SITE.find((m) => m.id === id);
 const BANDEAU = 'Bandeau';
 const AVIS = 'Avis clients';
 const PIED = 'Pied de page';
+const PAD_BANDEAU = { desktop: 80, tablet: 60, mobile: 40 };
+const PAD_PHOTO = { desktop: 130, tablet: 96, mobile: 64 };
+const PAD_MINIMAL = { desktop: 110, tablet: 80, mobile: 52 };
 
-/** Variante de mise en page d'une section selon le modèle (logique `varianter` de la maquette). */
-function varianter(s: Section, hero: Hero): Section {
+type Element = Section['rows'][number]['cols'][number]['els'][number];
+const elements = (x: Section) => x.rows.flatMap((l) => l.cols.flatMap((c) => c.els));
+
+/**
+ * Bandeau : nommé ainsi, ou première zone de la page avec le titre principal (h1) et un bouton
+ * (une page de texte, comme les mentions légales, n'a pas de bandeau).
+ */
+const estBandeau = (x: Section, i: number) => {
+  if (x.p.nom === BANDEAU) return true;
+  const els = elements(x);
+  return (
+    i === 0 &&
+    els.some((e) => e.type === 'titre' && e.p.niveau === 'h1') &&
+    els.some((e) => e.type === 'bouton')
+  );
+};
+const estAvis = (x: Section) => x.p.nom === AVIS || elements(x).some((e) => e.type === 'avis');
+
+const MASQUE = { desktop: true, tablet: true, mobile: true };
+const VISIBLE = { desktop: false, tablet: false, mobile: false };
+const aImage = (c: Section['rows'][number]['cols'][number]) =>
+  c.els.some((e) => e.type === 'image');
+
+/**
+ * Bandeau remis en « photo à droite » : la colonne photo masquée par un modèle photo réapparaît
+ * (ou est recréée pour un bandeau photo d'avant). Rend chaque modèle indépendant du précédent.
+ */
+function bandeauScinde(x: Section) {
+  const r = x.rows[0];
+  const photo = x.p.fondType === 'image' ? x.p.fondImage : '';
+  x.p = { ...x.p, fondType: 'couleur', fondImage: '', voileOpacite: 0 };
+  if (!r) return;
+  const colPhoto = r.cols.find(aImage);
+  const texte = r.cols.find((c) => !aImage(c)) ?? r.cols[0]!;
+  if (colPhoto) {
+    if (!colPhoto.p.masque.desktop) return;
+    r.cols = r.cols.map((c) =>
+      c === colPhoto
+        ? { ...c, w: 6, p: { ...c.p, masque: VISIBLE } }
+        : c === texte
+          ? { ...c, w: 6 }
+          : c,
+    );
+    return;
+  }
+  if (!photo) return;
+  const image = elementDuCatalogue('image', `${texte.id}-photo`, { src: photo }) as Element;
+  r.cols = [
+    { ...texte, w: 6 },
+    { id: `${texte.id}-p`, w: 6, p: { ...DEFAUTS_COLONNE }, els: [image] },
+  ];
+}
+
+/** Variante de mise en page d'une zone selon le modèle (logique `varianter` de la maquette). */
+function varianter(s: Section, i: number, hero: Hero): Section {
   const x: Section = structuredClone(s);
   const r = x.rows[0];
-  if (x.p.nom === BANDEAU && r) {
-    const image = r.cols[1]?.els.find((e) => e.type === 'image');
-    if (hero === 'photo' && image?.type === 'image' && image.p.src) {
+  if (estBandeau(x, i) && r) {
+    const image = r.cols.flatMap((c) => c.els).find((e) => e.type === 'image' && e.p.src);
+    const photo =
+      image?.type === 'image' ? image.p.src : x.p.fondType === 'image' ? x.p.fondImage : '';
+    if (hero === 'photo' && photo) {
       x.p = {
         ...x.p,
+        fond: 'clair',
         fondType: 'image',
-        fondImage: image.p.src,
+        fondImage: photo,
         voile: 'sombre',
         voileOpacite: 62,
-        padY: { desktop: 130, tablet: 96, mobile: 64 },
+        padY: PAD_PHOTO,
       };
-      r.cols = [{ ...r.cols[0]!, w: 8 }];
+      // Photo en fond : sa colonne est masquée (pas supprimée), un autre modèle la remet.
+      r.cols = r.cols.map((c) =>
+        aImage(c) ? { ...c, p: { ...c.p, masque: MASQUE } } : { ...c, w: 8 },
+      );
+    } else {
+      bandeauScinde(x);
+      x.p.fond = hero === 'sombre' ? 'sombre' : hero === 'minimal' ? 'blanc' : 'clair';
+      x.p.padY = hero === 'minimal' ? PAD_MINIMAL : PAD_BANDEAU;
     }
-    if (hero === 'sombre') x.p.fond = 'sombre';
-    if (hero === 'minimal')
-      x.p = { ...x.p, fond: 'blanc', padY: { desktop: 110, tablet: 80, mobile: 52 } };
+  } else if (estAvis(x)) {
+    x.p.fond = hero === 'sombre' ? 'sombre' : hero === 'minimal' ? 'clair' : 'blanc';
+  } else if (hero === 'minimal' && x.p.nom !== PIED) {
+    x.p = { ...x.p, fond: 'blanc', fondType: 'couleur' };
   }
-  if (hero === 'minimal' && x.p.nom !== PIED)
-    x.p = { ...x.p, fond: x.p.nom === AVIS ? 'clair' : 'blanc', fondType: 'couleur' };
-  if (hero === 'sombre' && x.p.nom === AVIS) x.p.fond = 'sombre';
-  if (hero === 'sombre')
-    for (const l of x.rows)
-      for (const c of l.cols)
-        for (const e of c.els)
-          if (e.type === 'bouton' && e.p.variante === 'plein') e.p.couleur = 'accent';
+  // Boutons pleins : accent pour « Dépannage 24/7 », couleur principale pour les autres modèles.
+  for (const e of elements(x))
+    if (e.type === 'bouton' && e.p.variante === 'plein')
+      e.p.couleur =
+        hero === 'sombre' ? 'accent' : e.p.couleur === 'accent' ? 'primaire' : e.p.couleur;
   return x;
 }
 
@@ -126,11 +191,11 @@ export function appliquerModeleSite<
   S extends { theme: Theme; navigation: Navigation; pages: Record<string, PageSite> },
 >(site: S, m: ModeleSite, palette: Theme['palette'], tout: boolean): S {
   const theme: Theme = { palette, polices: m.polices, rayonBoutons: m.rayonBoutons, ton: m.ton };
-  if (!tout || m.hero === 'split') return { ...site, theme };
+  if (!tout) return { ...site, theme };
   const pages = Object.fromEntries(
     Object.entries(site.pages).map(([id, p]) => [
       id,
-      { ...p, sections: p.sections.map((s) => varianter(s, m.hero)) },
+      { ...p, sections: p.sections.map((s, i) => varianter(s, i, m.hero)) },
     ]),
   );
   return { ...site, theme, pages };

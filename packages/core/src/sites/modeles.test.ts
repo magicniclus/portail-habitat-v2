@@ -49,8 +49,9 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     const r = appliquerModeleSite(s, modeleSite('franc')!, AUTRE, true);
     const b = bandeau(r);
     expect(b.p).toMatchObject({ fondType: 'image', fondImage: 'lib:r1/0', voileOpacite: 62 });
-    expect(b.rows[0]!.cols).toHaveLength(1);
-    expect(b.rows[0]!.cols[0]!.w).toBe(8);
+    const visibles = b.rows[0]!.cols.filter((c) => !c.p.masque.desktop);
+    expect(visibles).toHaveLength(1);
+    expect(visibles[0]!.w).toBe(8);
     expect(JSON.stringify(b)).toContain('Bertrand Rénovation, plombier à Bordeaux');
     // Le site de départ n'est pas modifié.
     expect(bandeau(s).rows[0]!.cols).toHaveLength(2);
@@ -91,5 +92,48 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     const r = appliquerModeleSite(s, modeleSite('chaleureux')!, AUTRE, true);
     expect(r.pages).toEqual(s.pages);
     expect(r.theme.ton).toBe('chaleureux');
+  });
+
+  // Sans les identifiants (une colonne recréée en reçoit un nouveau).
+  const forme = (x: ReturnType<typeof site>) =>
+    JSON.parse(JSON.stringify(x.pages, (k, v) => (k === 'id' ? undefined : v))) as unknown;
+
+  it('un modèle ne dépend pas du précédent, même après un rechargement (sans « avant »)', () => {
+    for (const a of MODELES_SITE)
+      for (const b of MODELES_SITE) {
+        const direct = appliquerModeleSite(site(), b, AUTRE, true);
+        const enchaine = appliquerModeleSite(
+          appliquerModeleSite(site(), a, PALETTE, true),
+          b,
+          AUTRE,
+          true,
+        );
+        // « Minimal » blanchit toutes les zones : seuls le bandeau et les avis se retrouvent.
+        if (a.id === 'minimal')
+          for (const i of [0, 1])
+            expect(enchaine.pages.accueil!.sections[i]!.p, `${a.id} puis ${b.id}`).toEqual(
+              direct.pages.accueil!.sections[i]!.p,
+            );
+        else expect(forme(enchaine), `${a.id} puis ${b.id}`).toEqual(forme(direct));
+        expect(enchaine.theme).toEqual(direct.theme);
+      }
+  });
+
+  it('classique après un ancien bandeau photo (colonne supprimée) : la photo revient à droite', () => {
+    const photo = appliquerModeleSite(site(), modeleSite('franc')!, AUTRE, true);
+    const r0 = bandeau(photo).rows[0]!;
+    r0.cols = r0.cols.filter((c) => !c.p.masque.desktop);
+    const r = appliquerModeleSite(photo, modeleSite('classique')!, PALETTE, true);
+    const b = bandeau(r);
+    expect(b.p).toMatchObject({ fondType: 'couleur', fondImage: '', fond: 'clair' });
+    expect(b.rows[0]!.cols.map((c) => c.w)).toEqual([6, 6]);
+    expect(b.rows[0]!.cols[1]!.els[0]).toMatchObject({ type: 'image', p: { src: 'lib:r1/0' } });
+  });
+
+  it('bandeau renommé : reconnu comme première zone portant le titre principal', () => {
+    const s = site();
+    bandeau(s).p.nom = 'Haut de page';
+    const r = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, true);
+    expect(bandeau(r).p.fond).toBe('sombre');
   });
 });

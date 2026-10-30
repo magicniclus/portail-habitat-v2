@@ -617,6 +617,11 @@ test.describe('Site internet artisan', () => {
     await page.getByRole('button', { name: /^Dépannage 24\/7/ }).click();
     await page.getByRole('button', { name: 'Appliquer à tout le site' }).click();
     await expect(page.getByText(/Modèle « Dépannage 24\/7 » appliqué à \d+ pages/)).toBeVisible();
+    // L'aperçu suit : police du modèle (Barlow) et bandeau sombre.
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await expect
+      .poll(() => apercu.locator('body').evaluate((b) => getComputedStyle(b).fontFamily))
+      .toMatch(/^Barlow/);
     await page.getByRole('button', { name: /^Minimal/ }).click();
     await page.getByRole('button', { name: 'Couleurs et polices seulement' }).click();
     await expect(
