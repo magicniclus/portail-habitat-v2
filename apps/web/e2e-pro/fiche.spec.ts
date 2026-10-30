@@ -44,6 +44,25 @@ test.describe('Ma fiche', () => {
     await expect(page.getByRole('img', { name: /^Logo de / })).toBeVisible({ timeout: 15_000 });
   });
 
+  test('le propriétaire ajoute une bannière, affichée et chargée, puis la retire', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    await page
+      .getByLabel(/bannière/i)
+      .first()
+      .setInputFiles(png('banniere.png'));
+    const retirer = page.getByRole('button', { name: /^Retirer la bannière/ }).first();
+    await expect(retirer).toBeVisible({ timeout: 15_000 });
+    // L'image doit réellement se charger (adresse Storage lisible), pas seulement exister.
+    const image = page.locator('li:has(button[aria-label^="Retirer la bannière"]) img').first();
+    await expect
+      .poll(() => image.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0))
+      .toBe(true);
+    await retirer.click();
+    await expect(page.getByRole('button', { name: /^Retirer la bannière/ })).toHaveCount(0);
+  });
+
   test('vidéo de présentation : lien YouTube lu sans cookie, puis retirée', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
     const video = page.getByRole('region', { name: 'Vidéo de présentation' });
