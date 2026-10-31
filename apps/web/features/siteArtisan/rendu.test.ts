@@ -1,0 +1,432 @@
+import { FORMULAIRE_GRATUIT, siteParDefaut, SUIVI_VIDE } from '@ph/core/sites';
+import { describe, expect, it } from 'vitest';
+import { balise, lienAction, texteRiche } from './actions';
+import { rendreDocument, SCRIPT_SITE } from './document';
+import { SCRIPT_EDITION } from './edition';
+import { SCRIPT_SUIVI } from './suivi';
+
+const PALETTE = {
+  primaire: 'primaire',
+  accent: 'accent',
+  clair: 'clair',
+  sombre: 'sombre',
+} as const;
+const s = siteParDefaut(
+  {
+    nomCommercial: 'Bertrand <Rénovation>',
+    metier: 'Plombier',
+    ville: 'Bordeaux',
+    telephone: '05 56 12 34 56',
+    photos: ['lib:r1/0'],
+  },
+  PALETTE,
+);
+const ctx = {
+  pages: s.pages,
+  media: (src: string) => (src === 'lib:r1/0' ? 'https://storage.googleapis.com/x.webp' : null),
+  champs: FORMULAIRE_GRATUIT,
+};
+const doc = (offre: 'gratuit' | 'site_pro' = 'gratuit', edition = false) =>
+  rendreDocument(
+    {
+      hote: 'bertrand.portailtravaux.fr',
+      offre,
+      theme: s.theme,
+      navigation: s.navigation,
+      page: s.pages.accueil!,
+      pages: s.pages,
+      nomEntreprise: 'Bertrand',
+    },
+    { ...ctx, edition },
+  );
+
+describe('aperçu de l’éditeur (maquette Editeur de Site)', () => {
+  it('chaque zone, section, bloc, contenu et la navigation se sélectionnent au clic', () => {
+    const h = doc('gratuit', true);
+    const accueil = s.pages.accueil!;
+    const z = accueil.sections[0]!;
+    const r = z.rows[0]!;
+    const c = r.cols[0]!;
+    const e = c.els[0]!;
+    expect(h).toContain(`<section data-ed="${z.id}" data-ed-niveau="zone"`);
+    expect(h).toContain(`<div data-ed="${r.id}" data-ed-niveau="section"`);
+    expect(h).toContain(`<div data-ed="${c.id}" data-ed-niveau="bloc"`);
+    expect(h).toContain(`data-ed="${e.id}" data-ed-niveau="element"`);
+    expect(h).toContain('<header data-ed="nav" data-ed-niveau="nav"');
+    // Script de l'éditeur à la place de celui du site : aucune mesure d'audience, aucun envoi.
+    expect(h).toContain(SCRIPT_EDITION);
+    expect(h).not.toContain(SCRIPT_SITE);
+  });
+
+  it('jamais sur un site publié', () => {
+    const h = doc();
+    expect(h).not.toContain('data-ed');
+    expect(h).not.toContain(SCRIPT_EDITION);
+  });
+});
+
+describe('rendu des sites publiés', () => {
+  it('HTML complet, canonique, menu mobile et formulaire ; textes de l’artisan échappés', () => {
+    const h = doc();
+    expect(h.startsWith('<!doctype html>')).toBe(true);
+    expect(h).toContain('<link rel="canonical" href="https://bertrand.portailtravaux.fr/">');
+    expect(h).toContain('aria-label="Ouvrir le menu"');
+    expect(h).toContain('aria-label="Fermer le menu"');
+    expect(h).toContain('data-formulaire');
+    expect(h).toContain('Bertrand &lt;Rénovation&gt;');
+    expect(h).not.toContain('Bertrand <Rénovation>');
+    expect(h).toContain('src="https://storage.googleapis.com/x.webp"');
+  });
+
+  it('surlignage des changements de l’IA : éditeur seulement, jamais sur le site publié', () => {
+    expect(doc()).not.toContain('ia-modifie');
+    const section = s.pages.accueil!.sections[0]!;
+    const el = section.rows[0]!.cols[0]!.els[0]!;
+    const h = rendreDocument(
+      {
+        hote: 'bertrand.portailtravaux.fr',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: s.navigation,
+        page: s.pages.accueil!,
+        pages: s.pages,
+        nomEntreprise: 'Bertrand',
+      },
+      { ...ctx, surligner: new Set([section.id, el.id]) },
+    );
+    expect(h).toContain('.ia-modifie{');
+    expect(h.match(/ia-modifie"/g)?.length ?? 0).toBeGreaterThanOrEqual(1);
+    expect(h).toMatch(/<section class="[^"]*ia-modifie/);
+  });
+
+  it('icône d’onglet : initiales de l’artisan (SVG sûr), ou son logo', () => {
+    const icone = doc().match(/<link rel="icon" href="data:image\/svg\+xml,([^"]+)">/);
+    expect(icone).not.toBeNull();
+    const svg = decodeURIComponent(icone![1]!);
+    expect(svg).toMatch(/<text[^>]*>[A-Za-z&;]{1,12}<\/text>/);
+    expect(svg).not.toMatch(/<script|on\w+=/);
+    const avecLogo = rendreDocument(
+      {
+        hote: 'bertrand.portailtravaux.fr',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: { ...s.navigation, logo: { ...s.navigation.logo, image: 'lib:r1/0' } },
+        page: s.pages.accueil!,
+        pages: s.pages,
+        nomEntreprise: 'Bertrand',
+      },
+      ctx,
+    );
+    expect(avecLogo).toContain('<link rel="icon" href="https://storage.googleapis.com/x.webp">');
+  });
+
+  it('page vierge : invitation à ajouter dans l’éditeur, rien sur le site publié', () => {
+    const vierge = (edition: boolean) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: s.navigation,
+          page: { ...s.pages.accueil!, sections: [] },
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition },
+      );
+    expect(vierge(true)).toMatch(/Commencez votre page.*data-ed-op="zone".*data-ed-op="contenu"/);
+    expect(vierge(false)).not.toContain('Commencez votre page');
+  });
+
+  it('zone et bloc vides : « + » dans l’éditeur seulement ; site sans navigation', () => {
+    const z = structuredClone(s.pages.accueil!.sections[0]!);
+    const bloc = { ...z.rows[0]!, cols: [{ ...z.rows[0]!.cols[0]!, els: [] }] };
+    const page = {
+      ...s.pages.accueil!,
+      sections: [
+        { ...z, id: 'zv', rows: [] },
+        { ...z, rows: [bloc] },
+      ],
+    };
+    const rendu = (edition: boolean, masquee = false) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: { ...s.navigation, masquee },
+          page,
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition },
+      );
+    expect(rendu(true)).toContain('data-ed-op="section" data-ed-cible="zv"');
+    expect(rendu(true)).toContain(`data-ed-op="contenu" data-ed-cible="${bloc.cols[0]!.id}"`);
+    expect(rendu(false)).not.toContain('ed-ajout');
+    expect(rendu(false)).toContain('<header');
+    expect(rendu(false, true)).not.toContain('<header');
+  });
+
+  it('balise Google et pixel Meta : bandeau de consentement, rien chargé d’office ni dans l’éditeur', () => {
+    const suivi = { ...SUIVI_VIDE, google: 'G-AB12CD34', meta: '123456789012345' };
+    const rendu = (edition: boolean, avec = true) =>
+      rendreDocument(
+        {
+          hote: 'bertrand.portailtravaux.fr',
+          offre: 'gratuit',
+          theme: s.theme,
+          navigation: s.navigation,
+          page: s.pages.accueil!,
+          pages: s.pages,
+          nomEntreprise: 'Bertrand',
+        },
+        { ...ctx, edition, ...(avec ? { suivi } : {}) },
+      );
+    const h = rendu(false);
+    expect(h).toContain('id="ph-bandeau"');
+    expect(h).toMatch(/<div id="ph-bandeau"[^>]* hidden>/);
+    expect(h).toContain('"gtag":"G-AB12CD34"');
+    expect(h).toContain('data-consentement="non">Tout refuser');
+    expect(h).toContain('Gestion des cookies');
+    expect(h).toContain(SCRIPT_SUIVI);
+    // Aucun script externe dans la page : Google et Meta ne se chargent qu'après accord.
+    expect(h.match(/<script src=/g)).toBeNull();
+    expect(rendu(true)).not.toContain('ph-bandeau');
+    expect(rendu(false, false)).not.toMatch(/ph-bandeau|Gestion des cookies|googletagmanager/);
+  });
+
+  it('mention Portail Travaux seulement sur un site gratuit', () => {
+    expect(doc('gratuit')).toContain('Site créé avec');
+    expect(doc('site_pro')).not.toContain('Site créé avec');
+  });
+
+  it('SITE-07 : aucun cookie ni script tiers (hors Turnstile configuré)', () => {
+    const h = doc();
+    expect(h).not.toMatch(/document\.cookie|googletagmanager|gtag\(/);
+    expect(h.match(/<script src=/g)).toBeNull();
+  });
+
+  it('liens : page, téléphone, url externe en nouvel onglet et nofollow', () => {
+    expect(
+      lienAction({ type: 'page', page: 'contact', ancre: 'contact' }, { pages: s.pages }),
+    ).toEqual({
+      href: '/contact-devis#contact',
+      externe: false,
+      nofollow: false,
+    });
+    expect(lienAction({ type: 'tel', tel: '05 56 12 34 56' }, { pages: s.pages })?.href).toBe(
+      'tel:0556123456',
+    );
+    expect(
+      lienAction({ type: 'url', url: 'https://www.service-public.fr' }, { pages: s.pages }),
+    ).toEqual({
+      href: 'https://www.service-public.fr',
+      externe: true,
+      nofollow: true,
+    });
+    expect(lienAction({ type: 'url', url: 'javascript:alert(1)' }, { pages: s.pages })).toBeNull();
+    expect(
+      lienAction(
+        { type: 'whatsapp', tel: '06 12 34 56 78', message: 'Bonjour' },
+        { pages: s.pages },
+      )?.href,
+    ).toBe('https://wa.me/33612345678?text=Bonjour');
+  });
+
+  it('fichier à télécharger (nouvel onglet) et formulaire en fenêtre', () => {
+    const cible = {
+      pages: s.pages,
+      media: (src: string) => (src === 'up:f1' ? 'https://stockage/tarifs.pdf' : null),
+    };
+    expect(lienAction({ type: 'fichier', fichierId: 'up:f1' }, cible)).toEqual({
+      href: 'https://stockage/tarifs.pdf',
+      externe: true,
+      nofollow: false,
+    });
+    expect(lienAction({ type: 'fichier', fichierId: 'up:inconnu' }, cible)).toBeNull();
+    expect(balise({ type: 'formulaire', formulaire: 'popup' }, cible, 'btn', 'Devis')).toBe(
+      '<a class="btn" href="#formulaire" data-fenetre="formulaire">Devis</a>',
+    );
+  });
+
+  it('texte riche : gras et mots liés ; balises inconnues échappées', () => {
+    const h = texteRiche(
+      '<b>Fort</b> <script>x</script> [devis](#L1)',
+      { L1: { type: 'page', page: 'contact' } },
+      { pages: s.pages },
+    );
+    expect(h).toBe(
+      '<b>Fort</b> &lt;script&gt;x&lt;/script&gt; <a class="lien" href="/contact-devis">devis</a>',
+    );
+    expect(texteRiche('<b>non fermé', undefined, { pages: s.pages })).toBe('<b>non fermé</b>');
+  });
+
+  it('texte riche : barré, exposant, surligné, couleurs du thème et listes ; titre sans liste', () => {
+    const c = { pages: s.pages };
+    expect(texteRiche('<s>a</s><sup>2</sup><mark>b</mark><kp>c</kp>', undefined, c)).toBe(
+      '<s>a</s><sup>2</sup><mark>b</mark><span class="kp">c</span>',
+    );
+    expect(texteRiche('Inclus :\n• pose\n• <b>dépose</b>\n2. fin', undefined, c)).toBe(
+      'Inclus :<ul class="tl"><li>pose</li><li><b>dépose</b></li></ul><ol class="tl" start="2"><li>fin</li></ol>',
+    );
+    expect(texteRiche('• pas de liste', undefined, c, false, false)).toBe('• pas de liste');
+    expect(texteRiche('<span class="x">', undefined, c)).toBe('&lt;span class=&quot;x&quot;&gt;');
+  });
+
+  it('SITE-02 : texte mobile distinct, sans effet sur l’ordinateur', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const titre = page.sections[0]!.rows[0]!.cols[0]!.els.find((e) => e.type === 'titre')!;
+    titre.p.texteMobileOn = true;
+    titre.p.texteMobile = 'Court';
+    const h = rendreDocument(
+      {
+        hote: 'h',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: s.navigation,
+        page,
+        pages: s.pages,
+        nomEntreprise: 'B',
+      },
+      ctx,
+    );
+    expect(h).toContain('<span class="om">Court</span>');
+    expect(h).toContain('<span class="nm">');
+    expect(h).toMatch(/@media \(max-width:767px\)\{:root\{[^}]*\}\.ts\{font-size:var\(--fm\)\}/);
+  });
+
+  it('marges par appareil : variables lues selon l’écran ; sans réglage, la marge du bas', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const [a, b] = page.sections[0]!.rows[0]!.cols[0]!.els;
+    a!.p.marges = {
+      desktop: { h: 10, b: 20, g: 0, d: 0 },
+      tablet: { h: 10, b: 20, g: 0, d: 0 },
+      mobile: { h: 4, b: 8, g: 6, d: 6 },
+    };
+    b!.p.mb = 14;
+    const h = rendreDocument(
+      {
+        hote: 'h',
+        offre: 'gratuit',
+        theme: s.theme,
+        navigation: s.navigation,
+        page,
+        pages: s.pages,
+        nomEntreprise: 'B',
+      },
+      ctx,
+    );
+    expect(h).toContain('--mgd:10px 0px 20px 0px;--mgt:10px 0px 20px 0px;--mgm:4px 6px 8px 6px;');
+    expect(h).toContain('margin-bottom:14px;');
+    expect(h).toContain('.mg{margin:var(--mgm)}');
+  });
+
+  it('animations : attributs sur la zone et le contenu du site, jamais dans l’éditeur', () => {
+    const page = structuredClone(s.pages.accueil!);
+    page.sections[0]!.p.anim = { type: 'fondu', delai: 0 };
+    page.sections[0]!.rows[0]!.cols[0]!.els[0]!.p.anim = { type: 'monter', delai: 300 };
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: s.navigation,
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('<section data-anim="fondu" class="s');
+    expect(site).toMatch(/<[a-z0-9]+ data-anim="monter" data-ad="300"/);
+    expect(site).toContain('(scripting:enabled) and (prefers-reduced-motion:no-preference)');
+    expect(SCRIPT_SITE).toContain('IntersectionObserver');
+    expect(rendreDocument(d, { ...ctx, edition: true })).not.toContain('data-anim="');
+  });
+
+  it('fenêtre pop-up : zone hors de la page, ouverte par un bouton ou un délai ; visible dans l’éditeur', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const z = page.sections[1]!;
+    z.p.ancre = 'offre';
+    z.p.popup = { ouverture: 'delai', delai: 8, largeur: 'petite' };
+    page.sections[0]!.rows[0]!.cols[0]!.els.push({
+      id: 'b-pop',
+      type: 'bouton',
+      p: {
+        ...structuredClone(page.sections[0]!.rows[0]!.cols[0]!.els[0]!.p),
+        texte: 'Voir l’offre',
+        action: { type: 'popup', ancre: 'offre' },
+        variante: 'plein',
+        couleur: 'primaire',
+        largeur: 'auto',
+        enLigne: false,
+        align: 'left',
+      },
+    } as never);
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: s.navigation,
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('<dialog class="fenetre pop pl-petite" id="pop-offre"');
+    expect(site).toContain('data-auto="8"');
+    expect(site).toContain('href="#pop-offre" data-pop="offre"');
+    expect(site.indexOf('id="pop-offre"')).toBeGreaterThan(site.indexOf('</main>'));
+    const edition = rendreDocument(d, { ...ctx, edition: true });
+    expect(edition).not.toContain('<dialog class="fenetre pop');
+    expect(edition).toContain('Fenêtre pop-up · après 8 s');
+  });
+
+  it('taille avec unité, vidéo YouTube (miniature dans l’éditeur), carte placée, menu à remettre', () => {
+    const page = structuredClone(s.pages.accueil!);
+    const cols = page.sections[0]!.rows[0]!.cols[0]!;
+    const titre = cols.els.find((e) => e.type === 'titre')!;
+    if (titre.type === 'titre') {
+      titre.p.unite = 'rem';
+      titre.p.taille = { desktop: 3, tablet: 2.5, mobile: 2 };
+    }
+    const commun = structuredClone(cols.els[0]!.p);
+    cols.els.push(
+      ...([
+        {
+          id: 'v1',
+          type: 'video',
+          p: { ...commun, url: 'https://youtu.be/dQw4w9WgXcQ', legende: 'Chantier' },
+        },
+        {
+          id: 'k1',
+          type: 'carte',
+          p: {
+            ...commun,
+            adresse: '3 Rue X Bordeaux',
+            legende: '',
+            geo: { latitude: 44.84, longitude: -0.57 },
+            zoom: 15,
+          },
+        },
+      ] as never[]),
+    );
+    const d = {
+      hote: 'h',
+      offre: 'gratuit' as const,
+      theme: s.theme,
+      navigation: { ...s.navigation, masquee: true },
+      page,
+      pages: s.pages,
+      nomEntreprise: 'B',
+    };
+    const site = rendreDocument(d, ctx);
+    expect(site).toContain('--fd:3rem;--ft:2.5rem;--fm:2rem;');
+    expect(site).toContain('youtube-nocookie.com/embed/dQw4w9WgXcQ');
+    expect(site).toContain('https://tile.openstreetmap.org/15/');
+    expect(site).toContain('© OpenStreetMap');
+    expect(site).not.toContain('Ajouter le menu du site');
+    const edition = rendreDocument(d, { ...ctx, edition: true });
+    expect(edition).toContain('i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg');
+    expect(edition).toContain('data-ed-op="menu">+ Ajouter le menu du site');
+  });
+});

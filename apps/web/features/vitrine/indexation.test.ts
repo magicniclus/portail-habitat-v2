@@ -1,0 +1,41 @@
+import { describe, expect, it } from 'vitest';
+import { pagesDuSitemap, reglesRobots } from './indexation';
+
+describe('SEO : sitemap et robots', () => {
+  const pages = pagesDuSitemap(new Date('2026-09-28'));
+  const chemins = pages.map((p) => new URL(p.url).pathname);
+  it('accueil, landings, annuaire, 11 communes, aide et 12 documents légaux ; adresses uniques', () => {
+    expect(pages).toHaveLength(4 + 11 + 1 + 12);
+    expect(new Set(chemins).size).toBe(pages.length);
+    expect(chemins).toContain('/diagnostic-immobilier/cenon');
+    expect(chemins).toContain('/legal/pro/securite');
+  });
+  it('fiches des artisans en ligne', () => {
+    const avecFiches = pagesDuSitemap(new Date('2026-09-28'), [
+      'bertrand-renovation',
+      'atelier-lumiere',
+    ]);
+    expect(avecFiches.map((p) => new URL(p.url).pathname)).toContain('/artisans/atelier-lumiere');
+    expect(avecFiches).toHaveLength(pages.length + 2);
+  });
+  it('aucune page privée dans le sitemap', () => {
+    expect(chemins.filter((c) => /^\/(admin|api|mon-espace|pro\/)/.test(c))).toEqual([]);
+  });
+  it('landings par outil ouvertes : dans le sitemap et autorisées malgré /pro/', () => {
+    const avec = pagesDuSitemap(new Date('2026-09-28'), [], ['/pro/trouver-des-chantiers']);
+    expect(avec.map((p) => new URL(p.url).pathname)).toContain('/pro/trouver-des-chantiers');
+    expect(reglesRobots(true).rules).toEqual([
+      expect.objectContaining({
+        allow: expect.arrayContaining(['/pro/trouver-des-chantiers', '/pro/site-internet-artisan']),
+      }),
+    ]);
+  });
+  it('production : espaces privés exclus, sitemap déclaré ; sinon tout est bloqué', () => {
+    const r = reglesRobots(true);
+    expect(r.sitemap).toMatch(/\/sitemap\.xml$/);
+    expect(r.rules).toEqual([
+      expect.objectContaining({ disallow: expect.arrayContaining(['/admin', '/pro/']) }),
+    ]);
+    expect(reglesRobots(false).rules).toEqual([{ userAgent: '*', disallow: '/' }]);
+  });
+});

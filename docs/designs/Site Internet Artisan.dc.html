@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Archivo:wght@600;800&amp;family=DM+Serif+Display&amp;family=Barlow+Condensed:wght@600;700&amp;family=Barlow:wght@400;600&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.btn-ghost, .btn-ghost:hover, .btn-ghost:active { color: var(--color-accent-800); }
+.btn-secondary, .btn-secondary:hover, .btn-secondary:active { color: var(--color-text); }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+input, textarea, select { font: inherit; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+
+  <aside style="{{ styleAside }}">
+    <a href="Espace Artisan Dashboard.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 18px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}">
+        <span style="white-space:nowrap">
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span>
+        </span>
+      </sc-if>
+    </a>
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="10">
+      <a href="{{ item.href }}" title="{{ item.label }}" style="{{ item.style }}">
+        <sc-if value="{{ item.estTitre }}" hint-placeholder-val="{{ false }}"><span>{{ item.label }}</span></sc-if>
+        <sc-if value="{{ item.estLien }}" hint-placeholder-val="{{ true }}">
+          <span style="display:flex;align-items:center;gap:12px;width:100%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+            <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="white-space: nowrap; position: relative">{{ item.label }}</span></sc-if>
+            <sc-if value="{{ item.badgeVisible }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px">{{ item.badge }}</span></sc-if>
+          </span>
+        </sc-if>
+      </a>
+    </sc-for>
+    <a href="Mon Compte.dc.html" title="Mon compte" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:var(--color-text);border:1px solid var(--color-divider);background:#fff" style-hover="border-color:var(--color-accent-300)">
+      <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">JB</span>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="display:grid;line-height:1.25;min-width:0"><span style="font-size:14.5px;font-weight:700;white-space:nowrap">Mon compte</span><span style="font-size:12.5px;font-weight:500;color:var(--color-neutral-700);white-space:nowrap">Équipe · Abonnement · Aide</span></span></sc-if>
+    </a>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <button type="button" onClick="{{ basculerMenu }}" aria-label="Replier le menu" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--color-divider);background:#fff;border-radius:8px;cursor:pointer;color:var(--color-neutral-800);flex:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path></svg>
+      </button>
+      <p style="margin:0;font-size:17px;font-weight:700">Mon site internet</p>
+      <span style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--color-neutral-800);min-width:0">
+        <span style="{{ stylePastille }}"></span>
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ urlSite }}</span>
+        <span style="font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--color-neutral-100);color:var(--color-neutral-800);white-space:nowrap">{{ libelleStatut }}</span>
+      </span>
+      <span style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <button type="button" class="btn btn-ghost" onClick="{{ voirSite }}" style="font-size:14px;padding:8px 12px">Voir le site</button>
+        <a href="{{ lienEditeur }}" class="btn btn-secondary" style="font-size:14px;padding:8px 14px;text-decoration:none;color:var(--color-text)">Ouvrir l'éditeur</a>
+        <button type="button" class="btn btn-primary" onClick="{{ publier }}" style="font-size:14px;padding:8px 16px">{{ libellePublier }}</button>
+        <span style="width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+      </span>
+    </header>
+
+    <nav style="display:flex;gap:4px;padding:0 clamp(16px,3vw,32px);border-bottom:1px solid var(--color-divider);overflow-x:auto;background:#fff">
+      <sc-for list="{{ onglets }}" as="o" hint-placeholder-count="7">
+        <button type="button" onClick="{{ o.aller }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </nav>
+
+    <!-- ========== PAGES ========== -->
+    <sc-if value="{{ isPages }}" hint-placeholder-val="{{ false }}">
+      <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px;max-width:1100px">
+        <div style="display:grid;gap:6px">
+          <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Pages du site</h1>
+          <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">{{ resumePages }}</p>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:16px 18px;border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:12px">
+          <span style="display:grid;gap:2px;flex:1 1 300px">
+            <span style="font-size:16px;font-weight:700">Création, mise en page et référencement se font dans l'éditeur</span>
+            <span style="font-size:14px;color:var(--color-neutral-800)">L'IA peut recréer tout le site depuis votre fiche, ou générer une seule page (ex. « Plombier à Pessac »).</span>
+          </span>
+          <a href="{{ lienCreation }}" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">Créer avec l'IA</a>
+          <a href="{{ lienNouvelle }}" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">Nouvelle page</a>
+          <a href="{{ lienModeles }}" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">Modèles de site</a>
+        </div>
+        <div style="display:grid;gap:10px">
+          <sc-for list="{{ listePages }}" as="pg" hint-placeholder-count="7">
+            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--color-divider);border-radius:12px">
+              <span style="display:grid;gap:3px;flex:1 1 240px;min-width:0">
+                <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                  <span style="font-size:16px;font-weight:700">{{ pg.nom }}</span>
+                  <span style="{{ pg.styleStatut }}">{{ pg.statut }}</span>
+                </span>
+                <span style="font-size:13px;color:var(--color-neutral-700)">{{ pg.url }}</span>
+              </span>
+              <span style="display:grid;gap:2px;width:112px"><span style="font-size:12px;color:var(--color-neutral-600)">SEO</span><span style="{{ pg.styleScore }}">{{ pg.scoreTexte }}</span><span style="{{ pg.styleScoreLabel }}">{{ pg.scoreLabel }}</span></span>
+              <span style="display:grid;gap:2px;width:80px"><span style="font-size:12px;color:var(--color-neutral-600)">Visites</span><span style="font-size:15px;font-weight:700">{{ pg.vues }}</span></span>
+              <button type="button" onClick="{{ pg.basculerMenu }}" style="display:flex;gap:8px;align-items:center;border:0;background:none;cursor:pointer;font-size:14px;color:var(--color-neutral-800);padding:0">
+                <span style="{{ pg.styleInter }}"><span style="{{ pg.styleInterRond }}"></span></span>Menu
+              </button>
+              <span style="display:flex;gap:6px">
+                <a href="{{ pg.lienEditeur }}" class="btn btn-secondary" style="font-size:14px;padding:7px 12px;text-decoration:none;color:var(--color-text)">Modifier</a>
+                <a href="{{ pg.lienSeo }}" style="font-size:14px;font-weight:600;padding:7px 6px;color:var(--color-accent-800);text-decoration:none" style-hover="text-decoration:underline">SEO</a>
+                <button type="button" onClick="{{ pg.publier }}" style="font-size:14px;font-weight:600;padding:7px 6px;border:0;background:none;cursor:pointer;color:var(--color-accent-800)" style-hover="text-decoration:underline">{{ pg.actionStatut }}</button>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </main>
+    </sc-if>
+
+    <!-- ========== BLOG ========== -->
+    <sc-if value="{{ isBlog }}" hint-placeholder-val="{{ false }}">
+      <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:22px;max-width:1200px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+          <div style="display:grid;gap:6px">
+            <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Blog</h1>
+            <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">{{ resumeBlog }}</p>
+          </div>
+          <span style="display:flex;gap:8px;flex-wrap:wrap">
+            <a href="Editeur de Site.dc.html?panneau=ajouter&amp;ajout=sections" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">Afficher sur mon site</a>
+            <a href="{{ lienNouvelArticle }}" onClick="{{ gardeBlog }}" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">Écrire un article</a>
+            <a href="{{ lienAuto }}" onClick="{{ gardeBlog }}" class="btn btn-secondary" style="font-size:15px;padding:10px 16px;text-decoration:none;color:var(--color-text)">✦ Article en un clic</a>
+          </span>
+        </div>
+
+        <sc-if value="{{ blogVerrouille }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;padding:16px 18px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300)">
+            <span style="display:grid;gap:3px;flex:1 1 320px"><span style="font-size:16px;font-weight:700">Le blog est inclus dans Site Pro et Tout inclus</span><span style="font-size:14.5px;line-height:21px;color:var(--color-neutral-800)">Écrivez vos conseils, l'IA vous aide : 5 articles rédigés par mois avec Site Pro, 15 avec Tout inclus. Mots-clés, SEO et textes pour les réseaux sociaux compris.</span></span>
+            <button type="button" class="btn btn-secondary" onClick="{{ passerPro }}" style="font-size:15px;padding:10px 16px">Passer à Site Pro · 9,90 €</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ blogActif }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:14px 24px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-radius:12px;border:1px solid var(--color-divider)">
+            <span style="display:grid;gap:6px;flex:1 1 300px">
+              <span style="display:flex;justify-content:space-between;gap:10px;font-size:14.5px"><span style="font-weight:700">Articles rédigés par l'IA en octobre</span><span style="font-weight:700">{{ quotaBlog }}</span></span>
+              <span style="height:8px;border-radius:999px;background:var(--color-neutral-100);overflow:hidden;display:block"><span style="{{ styleQuotaBlog }}"></span></span>
+              <span style="font-size:13px;color:var(--color-neutral-700)">{{ noteQuotaBlog }}</span>
+            </span>
+            <sc-if value="{{ peutPasserTout }}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-secondary" onClick="{{ passerTout }}" style="font-size:14px;padding:9px 14px">Tout inclus : 15 articles / mois</button></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ blogActif }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;gap:14px;padding:16px 18px;border-radius:12px;border:1px solid var(--color-accent-300);background:var(--color-accent-100)">
+            <div style="display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap">
+              <button type="button" onClick="{{ basculerPilote }}" style="display:flex;gap:10px;align-items:center;border:0;background:none;cursor:pointer;padding:0;font-size:17px;font-weight:700;color:var(--color-text)"><span style="{{ piloteInter.style }}"><span style="{{ piloteInter.rond }}"></span></span>✦ Pilote automatique</button>
+              <span style="font-size:14.5px;line-height:20px;color:var(--color-neutral-800);flex:1 1 320px">{{ piloteResume }}</span>
+            </div>
+            <sc-if value="{{ piloteOn }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:10px 24px;flex-wrap:wrap;align-items:center">
+                <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px;font-weight:700;margin-right:4px">Rythme</span><sc-for list="{{ rythmes }}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{ r.choisir }}" style="{{ r.style }}">{{ r.label }}</button></sc-for></span>
+                <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px;font-weight:700;margin-right:4px">Avant publication</span><sc-for list="{{ validations }}" as="r" hint-placeholder-count="2"><button type="button" onClick="{{ r.choisir }}" style="{{ r.style }}">{{ r.label }}</button></sc-for></span>
+              </div>
+              <div style="display:grid;gap:6px">
+                <span style="font-size:13.5px;font-weight:700">Prochains articles prévus par l'IA</span>
+                <sc-for list="{{ prochains }}" as="p" hint-placeholder-count="3">
+                  <div style="display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:#fff">
+                    <span style="font-size:13.5px;font-weight:700;width:96px;color:var(--color-accent-800)">{{ p.date }}</span>
+                    <span style="display:grid;gap:1px;flex:1 1 260px;min-width:0"><span style="font-size:14.5px;font-weight:600">{{ p.titre }}</span><span style="font-size:12.5px;color:var(--color-neutral-700)">{{ p.mot }}</span></span>
+                    <button type="button" onClick="{{ p.changer }}" class="btn btn-ghost" style="font-size:13px;padding:5px 9px">Autre sujet</button>
+                  </div>
+                </sc-for>
+                <span style="font-size:12.5px;line-height:17px;color:var(--color-neutral-700)">{{ piloteNote }}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <span style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ vuesBlog }}" as="v" hint-placeholder-count="3"><button type="button" onClick="{{ v.choisir }}" style="{{ v.style }}">{{ v.label }}</button></sc-for></span>
+          <sc-if value="{{ vueArticles }}" hint-placeholder-val="{{ true }}">
+            <span style="margin-left:auto;display:flex;gap:8px;align-items:center;flex:0 1 380px;min-width:220px">
+              <input value="{{ rechercheBlog }}" onChange="{{ setRechercheBlog }}" placeholder="Rechercher un article, un tag…" style="flex:1;min-width:0;padding:8px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px">
+              <button type="button" class="btn btn-ghost" onClick="{{ exporterCsv }}" style="font-size:14px;padding:8px 10px">Export CSV</button>
+            </span>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ vueArticles }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;gap:12px">
+            <sc-if value="{{ aSelectionBlog }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:10px;background:var(--color-text);color:#fff">
+                <span style="font-size:14.5px;font-weight:700;margin-right:6px">{{ libelleSelection }}</span>
+                <sc-for list="{{ actionsGroupees }}" as="a" hint-placeholder-count="5"><button type="button" onClick="{{ a.faire }}" style="{{ a.style }}">{{ a.label }}</button></sc-for>
+                <button type="button" onClick="{{ viderSelection }}" style="margin-left:auto;border:0;background:none;color:#fff;cursor:pointer;font-size:14px;text-decoration:underline">Annuler</button>
+              </div>
+            </sc-if>
+            <div style="overflow-x:auto;min-width:0"><table class="table" style="font-size:14px;width:100%">
+              <thead><tr>
+                <th style="width:34px"><button type="button" onClick="{{ toutSelectionner }}" aria-label="Tout sélectionner" style="{{ styleCaseTout }}">✓</button></th>
+                <th>Article</th><th>Statut</th><th>Date</th><th style="text-align:right">Vues</th><th>Auteur</th><th></th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ articlesBlog }}" as="a" hint-placeholder-count="6">
+                  <tr>
+                    <td><button type="button" onClick="{{ a.basculer }}" aria-label="Sélectionner" style="{{ a.styleCase }}">✓</button></td>
+                    <td style="min-width:200px"><span style="display:grid;gap:4px"><a href="{{ a.lien }}" style="font-size:15px;font-weight:700;color:var(--color-text);text-decoration:none" style-hover="text-decoration:underline">{{ a.titre }}</a><span style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--color-neutral-700)"><span style="font-weight:700;color:var(--color-accent-800)">{{ a.cat }}</span><sc-for list="{{ a.tags }}" as="t" hint-placeholder-count="2"><span style="padding:1px 7px;border-radius:999px;background:var(--color-neutral-100)">{{ t }}</span></sc-for><sc-if value="{{ a.ia }}" hint-placeholder-val="{{ false }}"><span style="color:var(--color-neutral-600)">✦ rédigé avec l'IA</span></sc-if></span></span></td>
+                    <td><span style="{{ a.styleStatut }}">{{ a.statut }}</span></td>
+                    <td style="white-space:nowrap">{{ a.date }}</td>
+                    <td style="text-align:right;font-weight:700">{{ a.vues }}</td>
+                    <td style="white-space:nowrap">{{ a.auteur }}</td>
+                    <td style="text-align:right"><a href="{{ a.lien }}" class="btn btn-secondary" style="font-size:13px;padding:6px 11px;text-decoration:none;color:var(--color-text)">Modifier</a></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+            <sc-if value="{{ aucunArticle }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;color:var(--color-neutral-700);padding:12px 0">Aucun article ne correspond.</span></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ vueCategories }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;align-items:start">
+            <section style="display:grid;gap:10px">
+              <span style="display:grid;gap:2px"><span style="font-size:17px;font-weight:700">Catégories</span><span style="font-size:13.5px;color:var(--color-neutral-700)">Une par article. L'ordre est celui des onglets sur votre site.</span></span>
+              <sc-for list="{{ categoriesBlog }}" as="c" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto 32px;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--color-divider);border-radius:10px">
+                  <span style="display:grid;justify-items:center"><button type="button" onClick="{{ c.monter }}" aria-label="Monter" style="border:0;background:none;cursor:pointer;font-size:10px;color:var(--color-neutral-600);padding:3px 6px">▲</button><button type="button" onClick="{{ c.descendre }}" aria-label="Descendre" style="border:0;background:none;cursor:pointer;font-size:10px;color:var(--color-neutral-600);padding:3px 6px">▼</button></span>
+                  <input value="{{ c.nom }}" onChange="{{ c.renommer }}" style="width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px;font-weight:600">
+                  <span style="font-size:13px;color:var(--color-neutral-700);white-space:nowrap">{{ c.nb }}</span>
+                  <button type="button" onClick="{{ c.supprimer }}" aria-label="Supprimer" style="width:30px;height:30px;border:0;background:none;cursor:pointer;font-size:18px;color:var(--color-neutral-700)">×</button>
+                </div>
+              </sc-for>
+              <form onSubmit="{{ ajouterCat }}" style="display:flex;gap:8px"><input value="{{ nouvelleCat }}" onChange="{{ setNouvelleCat }}" placeholder="Nouvelle catégorie" style="flex:1;min-width:0;padding:9px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px"><button type="submit" class="btn btn-secondary" style="font-size:14px;padding:9px 14px">Ajouter</button></form>
+            </section>
+            <section style="display:grid;gap:10px">
+              <span style="display:grid;gap:2px"><span style="font-size:17px;font-weight:700">Tags</span><span style="font-size:13.5px;color:var(--color-neutral-700)">Plusieurs par article. L'IA en propose à partir du texte.</span></span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <sc-for list="{{ tagsBlog }}" as="t" hint-placeholder-count="8"><span style="display:flex;align-items:center;gap:4px;font-size:14px;font-weight:600;padding:5px 6px 5px 12px;border-radius:999px;background:var(--color-neutral-100)">{{ t.nom }} <span style="font-weight:400;color:var(--color-neutral-700)">{{ t.nb }}</span><button type="button" onClick="{{ t.supprimer }}" aria-label="Supprimer" style="border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px">×</button></span></sc-for>
+              </div>
+              <form onSubmit="{{ ajouterTagBlog }}" style="display:flex;gap:8px"><input value="{{ nouveauTag }}" onChange="{{ setNouveauTag }}" placeholder="Nouveau tag" style="flex:1;min-width:0;padding:9px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px"><button type="submit" class="btn btn-secondary" style="font-size:14px;padding:9px 14px">Ajouter</button></form>
+            </section>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ vueStatsBlog }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px">
+              <sc-for list="{{ kpisBlog }}" as="k" hint-placeholder-count="4">
+                <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;padding:16px 18px;display:grid;gap:4px"><span style="font-size:14px;font-weight:700;color:var(--color-accent-800)">{{ k.label }}</span><span style="font-size:28px;line-height:1.1;font-weight:700">{{ k.valeur }}</span><span style="font-size:13px;color:var(--color-neutral-800)">{{ k.note }}</span></div>
+              </sc-for>
+            </div>
+            <div style="display:grid;gap:8px">
+              <span style="font-size:17px;font-weight:700">Par article · 30 jours</span>
+              <div style="overflow-x:auto;min-width:0"><table class="table" style="font-size:14px;width:100%">
+                <thead><tr><th>Article</th><th style="text-align:right">Vues</th><th style="text-align:right">Lecteurs uniques</th><th style="text-align:right">Rebond</th><th style="text-align:right">Temps moyen</th><th>Source principale</th><th style="text-align:right">Demandes</th></tr></thead>
+                <tbody><sc-for list="{{ statsArticles }}" as="r" hint-placeholder-count="4"><tr><td style="font-weight:600">{{ r.titre }}</td><td style="text-align:right;font-weight:700">{{ r.vues }}</td><td style="text-align:right">{{ r.uniques }}</td><td style="text-align:right">{{ r.rebond }}</td><td style="text-align:right">{{ r.temps }}</td><td>{{ r.source }}</td><td style="text-align:right;font-weight:700">{{ r.demandes }}</td></tr></sc-for></tbody>
+              </table></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+              <sc-for list="{{ blocsBlog }}" as="b" hint-placeholder-count="3">
+                <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:12px;align-content:start">
+                  <span style="font-size:17px;font-weight:700">{{ b.titre }}</span>
+                  <sc-for list="{{ b.lignes }}" as="l" hint-placeholder-count="4">
+                    <div style="display:grid;gap:4px"><span style="display:flex;justify-content:space-between;gap:10px;font-size:14px"><span>{{ l.label }}</span><span style="font-weight:700">{{ l.valeur }}</span></span><span style="height:6px;border-radius:999px;background:var(--color-neutral-100);overflow:hidden;display:block"><span style="{{ l.styleBarre }}"></span></span></div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:13px;color:var(--color-neutral-700)">« Demandes » : formulaires envoyés depuis votre site dans les 30 minutes suivant la lecture de l'article. Positions Google issues de Search Console.</span>
+          </div>
+        </sc-if>
+      </main>
+    </sc-if>
+
+    <!-- ========== DOMAINE ========== -->
+    <sc-if value="{{ isDomaine }}" hint-placeholder-val="{{ false }}">
+      <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:32px;max-width:1000px">
+        <div style="display:grid;gap:6px">
+          <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Adresse du site</h1>
+          <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">Gratuit sur portailtravaux.fr, ou votre propre nom de domaine avec Site Pro.</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+          <sc-for list="{{ offres }}" as="of" hint-placeholder-count="2">
+            <div style="{{ of.style }}">
+              <span style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:18px;font-weight:700">{{ of.nom }}</span><sc-if value="{{ of.actuelle }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--color-neutral-100)">Votre offre</span></sc-if></span>
+              <span style="font-size:28px;font-weight:700">{{ of.prix }}</span>
+              <ul style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px;line-height:21px"><sc-for list="{{ of.points }}" as="pt" hint-placeholder-count="4"><li>{{ pt }}</li></sc-for></ul>
+              <sc-if value="{{ of.peutPrendre }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ passerPro }}" style="font-size:15px;padding:10px 16px;align-self:flex-start;margin-top:auto">Passer à Site Pro</button></sc-if><sc-if value="{{ of.estGratuit }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-secondary" onClick="{{ voirSite }}" style="font-size:15px;padding:10px 16px;align-self:flex-start;margin-top:auto">Voir mon site gratuit</button></sc-if>
+            </div>
+          </sc-for>
+        </div>
+
+        <section style="display:grid;gap:10px">
+          <span style="font-size:17px;font-weight:700">Adresse gratuite</span>
+          <div style="display:flex;align-items:center;border:1px solid var(--color-divider);border-radius:10px;overflow:hidden;max-width:620px">
+            <span style="padding:10px 12px;font-size:16px;color:var(--color-neutral-700);background:var(--color-neutral-100)">https://</span>
+            <input value="{{ sousDomaine }}" onChange="{{ setSousDomaine }}" style="flex:1;min-width:0;padding:10px 12px;border:0;font-size:16px">
+            <span style="padding:10px 12px;font-size:16px;color:var(--color-neutral-700);background:var(--color-neutral-100)">.portailtravaux.fr</span>
+          </div>
+          <span style="{{ styleDispoSousDomaine }}">{{ dispoSousDomaine }}</span>
+        </section>
+
+        <section style="display:grid;gap:14px">
+          <span style="font-size:17px;font-weight:700">Votre propre domaine</span>
+          <div style="display:flex;border:1px solid var(--color-divider);border-radius:9px;overflow:hidden;justify-self:start">
+            <sc-for list="{{ modesDomaine }}" as="md" hint-placeholder-count="2"><button type="button" onClick="{{ md.choisir }}" style="{{ md.style }}">{{ md.label }}</button></sc-for>
+          </div>
+
+          <sc-if value="{{ modeAcheter }}" hint-placeholder-val="{{ true }}">
+            <form onSubmit="{{ chercherDomaine }}" style="display:flex;gap:8px;max-width:620px;flex-wrap:wrap">
+              <input value="{{ recherche }}" onChange="{{ setRecherche }}" placeholder="bertrand-renovation" style="flex:1 1 260px;min-width:0;padding:10px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:16px">
+              <button type="submit" class="btn btn-secondary" style="font-size:15px;padding:10px 16px">Rechercher</button>
+            </form>
+            <div style="display:grid;gap:8px;max-width:780px">
+              <span style="font-size:14px;font-weight:600;color:var(--color-neutral-800)">Inclus dans Site Pro · 9,90 €/mois</span>
+              <sc-for list="{{ resultatsDomaine }}" as="rd" hint-placeholder-count="5">
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--color-divider);border-radius:10px">
+                  <span style="flex:1 1 220px;font-size:16px;font-weight:700">{{ rd.nom }}</span>
+                  <span style="{{ rd.styleDispo }}">{{ rd.dispo }}</span>
+                  <sc-if value="{{ rd.libre }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ rd.choisir }}" class="btn btn-secondary" style="font-size:14px;padding:7px 12px">{{ rd.action }}</button></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:13px;color:var(--color-neutral-700);max-width:70ch">Domaine enregistré à votre nom (vous en restez propriétaire), renouvelé tant que Site Pro est actif. Certificat HTTPS et emails de redirection inclus.</span>
+          </sc-if>
+
+          <sc-if value="{{ modeConnecter }}" hint-placeholder-val="{{ false }}">
+            <form onSubmit="{{ connecterDomaine }}" style="display:flex;gap:8px;max-width:620px;flex-wrap:wrap">
+              <input value="{{ domaineExistant }}" onChange="{{ setDomaineExistant }}" placeholder="www.mon-entreprise.fr" style="flex:1 1 260px;min-width:0;padding:10px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:16px">
+              <button type="submit" class="btn btn-secondary" style="font-size:15px;padding:10px 16px">Connecter</button>
+            </form>
+            <sc-if value="{{ dnsVisible }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:15px;line-height:22px;max-width:70ch">Ajoutez ces enregistrements chez votre hébergeur actuel (OVH, Gandi, IONOS…). La vérification se fait automatiquement toutes les 10 minutes pendant 72 h.</p>
+              <table class="table" style="max-width:860px;font-size:14px">
+                <thead><tr><th>Type</th><th>Nom</th><th>Valeur</th><th>État</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ dns }}" as="r" hint-placeholder-count="3">
+                    <tr><td style="font-weight:700">{{ r.type }}</td><td>{{ r.nom }}</td><td style="font-family:ui-monospace,monospace;font-size:13px;word-break:break-all">{{ r.valeur }}</td><td><span style="{{ r.styleEtat }}">{{ r.etat }}</span></td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-secondary" onClick="{{ verifierDns }}" style="font-size:14px;padding:9px 14px;justify-self:start">Vérifier maintenant</button>
+            </sc-if>
+          </sc-if>
+
+        </section>
+
+        <section style="display:grid;gap:14px">
+          <div style="display:grid;gap:4px">
+            <span style="font-size:17px;font-weight:700">Hébergement et sécurité</span>
+            <span style="font-size:14px;color:var(--color-neutral-700);max-width:70ch">Votre site est hébergé et protégé par Portail Travaux, sur un réseau mondial. Rien à installer ni à configurer, y compris avec votre propre domaine.</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+            <sc-for list="{{ hebCartes }}" as="c" hint-placeholder-count="4">
+              <div style="display:grid;gap:6px;align-content:start;padding:14px 16px;border:1px solid var(--color-divider);border-radius:12px">
+                <span style="display:flex;gap:8px;align-items:center"><span style="{{ c.stylePastille }}"></span><span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">{{ c.titre }}</span></span>
+                <span style="font-size:16px;font-weight:700">{{ c.valeur }}</span>
+                <span style="font-size:13px;line-height:18px;color:var(--color-neutral-700)">{{ c.detail }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;gap:8px">
+            <span style="font-size:15px;font-weight:700">Publications</span>
+            <table class="table" style="font-size:14px;max-width:860px">
+              <thead><tr><th>Version</th><th>Date</th><th>Par</th><th>État</th><th></th></tr></thead>
+              <tbody>
+                <sc-for list="{{ hebVersions }}" as="v" hint-placeholder-count="3">
+                  <tr><td style="font-weight:700">{{ v.num }}</td><td>{{ v.date }}</td><td>{{ v.par }}</td><td><span style="{{ v.styleEtat }}">{{ v.etat }}</span></td><td><sc-if value="{{ v.restaurable }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ v.restaurer }}" class="btn btn-ghost" style="font-size:13px;padding:5px 10px">Remettre en ligne</button></sc-if></td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <span style="font-size:13px;color:var(--color-neutral-700)">Remettre une ancienne version en ligne prend moins de 10 secondes. Vos modifications en cours dans l'éditeur ne sont pas touchées.</span>
+          </div>
+        </section>
+      </main>
+    </sc-if>
+
+    <!-- ========== STATISTIQUES ========== -->
+    <sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+      <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:24px;max-width:1200px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+          <div style="display:grid;gap:6px">
+            <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Statistiques du site</h1>
+            <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">Mesure sans cookie : aucun bandeau à afficher à vos visiteurs.</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ periodes }}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{ p.choisir }}" style="{{ p.style }}">{{ p.label }}</button></sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="border:1px solid var(--color-accent-300);background:var(--color-accent-100);border-radius:14px;padding:16px 18px;display:grid;gap:4px">
+              <span style="font-size:14px;font-weight:700;color:var(--color-accent-800)">{{ k.label }}</span>
+              <span style="font-size:30px;line-height:1.1;font-weight:700">{{ k.valeur }}</span>
+              <span style="font-size:13px;color:var(--color-neutral-800)">{{ k.note }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+            <span style="font-size:17px;font-weight:700">Visites par jour</span>
+            <span style="display:flex;gap:16px;font-size:13px;color:var(--color-neutral-700)">
+              <span style="display:flex;gap:6px;align-items:center"><span style="width:12px;height:12px;border-radius:3px;background:var(--color-accent-200)"></span>Jours précédents</span>
+              <span style="display:flex;gap:6px;align-items:center"><span style="width:12px;height:12px;border-radius:3px;background:var(--color-accent)"></span>Aujourd'hui</span>
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px">
+            <div style="position:relative;height:150px">
+              <sc-for list="{{ axeY }}" as="y" hint-placeholder-count="3"><span style="{{ y.style }}">{{ y.label }}</span></sc-for>
+            </div>
+            <div style="display:grid;gap:6px;min-width:0">
+              <div onMouseLeave="{{ quitterBarre }}" style="position:relative;height:150px;display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid var(--color-neutral-300);background:linear-gradient(var(--color-neutral-200),var(--color-neutral-200)) 0 0 / 100% 1px no-repeat,linear-gradient(var(--color-neutral-200),var(--color-neutral-200)) 0 50% / 100% 1px no-repeat">
+                <sc-for list="{{ jours }}" as="j" hint-placeholder-count="30"><span onMouseEnter="{{ j.survoler }}" aria-label="{{ j.titre }}" style="{{ j.style }}"></span></sc-for>
+                <sc-if value="{{ infobulleVisible }}" hint-placeholder-val="{{ false }}"><span style="{{ styleInfobulle }}">{{ infobulle }}</span></sc-if>
+              </div>
+              <div style="position:relative;height:18px">
+                <sc-for list="{{ axeX }}" as="x" hint-placeholder-count="5"><span style="{{ x.style }}">{{ x.label }}</span></sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+          <sc-for list="{{ blocsStats }}" as="b" hint-placeholder-count="3">
+            <div style="border:1px solid var(--color-divider);border-radius:16px;padding:20px;display:grid;gap:12px;align-content:start">
+              <span style="font-size:17px;font-weight:700">{{ b.titre }}</span>
+              <sc-for list="{{ b.lignes }}" as="l" hint-placeholder-count="5">
+                <div style="display:grid;gap:4px">
+                  <span style="display:flex;justify-content:space-between;gap:10px;font-size:14px"><span>{{ l.label }}</span><span style="font-weight:700">{{ l.valeur }}</span></span>
+                  <span style="height:6px;border-radius:999px;background:var(--color-neutral-100);overflow:hidden;display:block"><span style="{{ l.styleBarre }}"></span></span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </main>
+    </sc-if>
+
+    <!-- ========== FORMULAIRE ========== -->
+    <sc-if value="{{ isFormulaire }}" hint-placeholder-val="{{ false }}">
+      <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start;max-width:1240px">
+        <section style="flex:3 1 460px;display:grid;gap:18px;min-width:0">
+          <div style="display:grid;gap:6px">
+            <h1 style="font-size:clamp(26px,3vw,32px);line-height:1.15;margin:0">Formulaire de contact</h1>
+            <p style="margin:0;font-size:16px;color:var(--color-neutral-800)">Chaque envoi arrive dans « Mes demandes », avec les coordonnées complètes. Il ne vous coûte rien.</p>
+          </div>
+          <sc-if value="{{ formGratuit }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:14px 16px;border-radius:12px;background:var(--color-accent-100);font-size:14.5px;line-height:21px;color:var(--color-accent-900)">
+              <span style="flex:1 1 260px"><strong>🔒 Formulaire standard en Gratuit.</strong> Avec Site Pro, ajoutez vos propres questions (photos, budget, date souhaitée…), réglez les notifications et recevez un SMS à chaque demande : vous rappelez avant les autres.</span>
+              <button type="button" class="btn btn-secondary" onClick="{{ passerPro }}" style="font-size:14px;padding:9px 16px">Passer en Site Pro · 9,90 €</button>
+            </div>
+          </sc-if>
+          <fieldset disabled="{{ formGratuit }}" style="{{ styleZoneChamps }}">
+          <div style="display:grid;gap:8px">
+            <sc-for list="{{ champs }}" as="c" hint-placeholder-count="7">
+              <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto 36px;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--color-divider);border-radius:12px;background:#fff">
+                <span style="display:grid;justify-items:center;gap:0">
+                  <button type="button" onClick="{{ c.monter }}" aria-label="Monter" style="border:0;background:none;cursor:pointer;font-size:10px;line-height:1;color:var(--color-neutral-600);padding:3px 6px">▲</button>
+                  <button type="button" onClick="{{ c.descendre }}" aria-label="Descendre" style="border:0;background:none;cursor:pointer;font-size:10px;line-height:1;color:var(--color-neutral-600);padding:3px 6px">▼</button>
+                </span>
+                <span style="display:grid;gap:4px;min-width:0">
+                  <input value="{{ c.libelle }}" onChange="{{ c.renommer }}" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px;font-weight:600">
+                  <span style="font-size:12px;color:var(--color-neutral-600);padding-left:2px">{{ c.typeNom }}</span>
+                </span>
+                <button type="button" onClick="{{ c.basculerRequis }}" style="display:flex;gap:8px;align-items:center;border:0;background:none;cursor:pointer;font-size:14px;color:var(--color-neutral-800);padding:0;white-space:nowrap">
+                  <span style="{{ c.styleInter }}"><span style="{{ c.styleInterRond }}"></span></span>Obligatoire
+                </button>
+                <button type="button" onClick="{{ c.supprimer }}" disabled="{{ c.verrouille }}" aria-label="{{ c.titreSupprimer }}" title="{{ c.titreSupprimer }}" style="{{ c.styleSupprimer }}">×</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;gap:8px">
+            <span style="font-size:14px;font-weight:700">Ajouter un champ</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ typesChamps }}" as="t" hint-placeholder-count="8"><button type="button" onClick="{{ t.ajouter }}" style="font-size:14px;font-weight:600;padding:7px 12px;border:1px dashed var(--color-neutral-400);border-radius:999px;background:#fff;cursor:pointer;color:var(--color-neutral-800)">+ {{ t.nom }}</button></sc-for>
+            </div>
+          </div>
+          </fieldset>
+          <div style="display:grid;gap:10px">
+            <span style="font-size:14px;font-weight:700">Réglages</span>
+            <sc-for list="{{ reglagesForm }}" as="rf" hint-placeholder-count="4">
+              <button type="button" onClick="{{ rf.basculer }}" style="{{ rf.styleLigne }}">
+                <span style="{{ rf.styleInter }}"><span style="{{ rf.styleInterRond }}"></span></span>
+                <span style="display:grid;gap:2px"><span style="font-size:15px;font-weight:600">{{ rf.label }}<sc-if value="{{ rf.verrou }}" hint-placeholder-val="{{ false }}"> 🔒</sc-if></span><span style="font-size:13px;color:var(--color-neutral-700)">{{ rf.aide }}</span></span>
+              </button>
+            </sc-for>
+          </div>
+        </section>
+        <section style="flex:2 1 340px;display:grid;gap:10px;min-width:0;position:sticky;top:78px;align-self:flex-start;max-height:calc(100vh - 96px);overflow:auto">
+          <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-600);font-weight:600">Aperçu sur votre site</span>
+          <div style="{{ styleApercuForm }}">
+            <span style="{{ styleApercuTitre }}">Demandez votre devis</span>
+            <sc-for list="{{ champsTous }}" as="c" hint-placeholder-count="6">
+              <span style="display:grid;gap:4px">
+                <span style="font-size:14px;font-weight:600">{{ c.libelleAff }}</span>
+                <span style="{{ c.styleChampSite }}">{{ c.aide }}</span>
+              </span>
+            </sc-for>
+            <span style="font-size:12px;line-height:17px;color:#5b6570">Vos données servent uniquement à vous recontacter pour ce projet. Bertrand Rénovation · mentions légales.</span>
+            <span style="{{ styleApercuBtn }}">Envoyer ma demande</span>
+          </div>
+        </section>
+      </main>
+    </sc-if>
+
+  </div>
+</div>
+
+<sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:80;background:var(--color-text);color:#fff;padding:12px 18px;border-radius:10px;font-size:15px;box-shadow:var(--shadow-lg);max-width:90vw">{{ toast }}</div>
+</sc-if>
+<dc-import name="Fenetre Offre" hint-size="0px,0px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;ongletInitial&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;pages&quot;,&quot;blog&quot;,&quot;domaine&quot;,&quot;stats&quot;,&quot;formulaire&quot;],&quot;default&quot;:&quot;pages&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;plan&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;gratuit&quot;,&quot;pro&quot;,&quot;tout&quot;],&quot;default&quot;:&quot;gratuit&quot;,&quot;tsType&quot;:&quot;'gratuit' | 'pro' | 'tout'&quot;}}">
+const IC = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5", fiche: "M4 5h16v14H4zM8 9h8M8 13h5", demandes: "M4 6h16v10H9l-5 3V6z",
+  avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z", stats: "M5 20V10M12 20V4M19 20v-7",
+  support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01",
+  site: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z",
+  desktop: "M3 5h18v11H3zM9 20h6M12 16v4", tablet: "M6 3h12v18H6zM11 18h2", mobile: "M8 3h8v18H8zM11 18h2",
+};
+const PALETTES = [
+  { nom: "Extraite du logo", desc: "Bleu ardoise et cuivre", primaire: "#1d4f73", accent: "#c97a2b", clair: "#f2ede4", sombre: "#14222e" },
+  { nom: "Plus contrastée", desc: "Bleu nuit et orange vif", primaire: "#16324f", accent: "#e0681c", clair: "#eef2f6", sombre: "#0d1b2a" },
+  { nom: "Plus chaleureuse", desc: "Vert sapin et sable", primaire: "#2f5d50", accent: "#b9853f", clair: "#f4efe6", sombre: "#1c2b26" },
+];
+const POLICES = [
+  { id: "archivo", nom: "Archivo + Source Sans", titre: "'Archivo', sans-serif", poids: 800, texte: "'Source Sans 3', sans-serif" },
+  { id: "dmserif", nom: "DM Serif + Source Sans", titre: "'DM Serif Display', serif", poids: 400, texte: "'Source Sans 3', sans-serif" },
+  { id: "barlow", nom: "Barlow Condensed + Barlow", titre: "'Barlow Condensed', sans-serif", poids: 700, texte: "'Barlow', sans-serif" },
+];
+const DEV = [["desktop", "Ordinateur", "100 %"], ["tablet", "Tablette", "768 px"], ["mobile", "Mobile", "390 px"]];
+const v3 = (d, t, m) => ({ desktop: d, tablet: t, mobile: m });
+const ITEMS = {
+  prestations: [
+    { titre: "Salle de bain clé en main", texte: "Douche à l'italienne, PMR, carrelage : un seul interlocuteur du devis à la réception." },
+    { titre: "Chauffage et pompe à chaleur", texte: "Installation et entretien, RGE QualiPAC : vous touchez MaPrimeRénov'." },
+    { titre: "Dépannage plomberie", texte: "Fuite, chauffe-eau, canalisation bouchée : intervention sous 24 h à Bordeaux." },
+  ],
+  realisations: [
+    { photo: "Photo chantier 1", titre: "Douche à l'italienne · Caudéran", texte: "6 m², 9 jours de travaux" },
+    { photo: "Photo chantier 2", titre: "Pompe à chaleur · Mérignac", texte: "Remplacement d'une chaudière fioul" },
+    { photo: "Photo chantier 3", titre: "Salle de bain PMR · Talence", texte: "Accès de plain-pied, barres d'appui" },
+  ],
+  avis: [
+    { titre: "Sophie L. · Bordeaux", texte: "« Chantier propre, délais tenus, et un vrai conseil sur le choix des matériaux. »" },
+    { titre: "Marc D. · Pessac", texte: "« Intervention le jour même pour une fuite. Prix annoncé, prix payé. »" },
+    { titre: "Nadia B. · Talence", texte: "« Notre salle de bain est méconnaissable. Merci à toute l'équipe. »" },
+  ],
+  texte: [{ titre: "Notre engagement", texte: "Devis détaillé sous 48 h, prix ferme, chantier protégé et nettoyé chaque soir." }],
+};
+const SECTIONS0 = [
+  { id: "nav", type: "nav", nom: "En-tête", titre: "Bertrand Rénovation", texte: "Devis gratuit", cols: v3(1, 1, 1), pad: v3(18, 16, 14), marge: v3(0, 0, 0), taille: v3(20, 18, 17), align: v3("left", "left", "left"), fond: "blanc", masque: v3(false, false, false) },
+  { id: "hero", type: "hero", nom: "Bandeau d'accueil", kicker: "Plombier chauffagiste · Bordeaux", titre: "Votre salle de bain refaite en 10 jours, sans mauvaise surprise", texte: "Depuis 2009, Bertrand Rénovation rénove salles de bain et chauffages à Bordeaux et dans un rayon de 30 km. Note 4,8/5 sur 14 avis vérifiés.", cols: v3(2, 1, 1), pad: v3(80, 60, 40), marge: v3(0, 0, 0), taille: v3(48, 40, 30), align: v3("left", "left", "left"), fond: "clair", masque: v3(false, false, false) },
+  { id: "presta", type: "prestations", nom: "Prestations", titre: "Ce que nous faisons", texte: "Trois métiers, une seule équipe qualifiée et assurée.", cols: v3(3, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "blanc", masque: v3(false, false, false) },
+  { id: "real", type: "realisations", nom: "Réalisations", titre: "Chantiers récents", texte: "Photos prises chez nos clients, avec leur accord.", cols: v3(3, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "clair", masque: v3(false, false, false) },
+  { id: "avis", type: "avis", nom: "Avis clients", titre: "4,8 / 5 sur 14 avis vérifiés", texte: "Avis collectés par Portail Travaux après chaque chantier.", cols: v3(3, 1, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("center", "center", "left"), fond: "primaire", masque: v3(false, false, false) },
+  { id: "contact", type: "contact", nom: "Contact et devis", titre: "Parlons de votre projet", texte: "Réponse sous 24 h ouvrées. Devis gratuit et sans engagement.", cols: v3(2, 2, 1), pad: v3(72, 56, 40), marge: v3(0, 0, 0), taille: v3(34, 30, 26), align: v3("left", "left", "left"), fond: "blanc", masque: v3(false, false, false) },
+  { id: "footer", type: "footer", nom: "Pied de page", titre: "", texte: "", cols: v3(3, 3, 1), pad: v3(40, 36, 28), marge: v3(0, 0, 0), taille: v3(16, 16, 15), align: v3("left", "left", "left"), fond: "sombre", masque: v3(false, false, false) },
+];
+const REECRITURES = [
+  "Plombier chauffagiste à Bordeaux depuis 2009 : salles de bain, pompes à chaleur et dépannages, avec un devis ferme sous 48 h.",
+  "Une équipe de 4 artisans qualifiés RGE, assurés en décennale, qui tient ses délais. 14 clients en témoignent : 4,8/5.",
+  "De la fuite urgente à la salle de bain complète, nous intervenons à Bordeaux et 30 km autour. Prix annoncé, prix payé.",
+];
+const PAGES0 = [
+  { id: "accueil", nom: "Accueil", court: "Accueil", slug: "", statut: "publiee", menu: true, vues: 412, motCle: "plombier Bordeaux", title: "Plombier chauffagiste à Bordeaux | Bertrand Rénovation", meta: "Plombier et chauffagiste à Bordeaux depuis 2009 : salle de bain clé en main, pompe à chaleur RGE et dépannage sous 24 h. Devis gratuit." },
+  { id: "prestations", nom: "Prestations", court: "Prestations", slug: "prestations", statut: "publiee", menu: true, vues: 186, motCle: "rénovation salle de bain Bordeaux", title: "Salle de bain, chauffage, dépannage à Bordeaux | Bertrand Rénovation", meta: "Rénovation de salle de bain, installation de pompe à chaleur et dépannage plomberie à Bordeaux. Artisan RGE, décennale, devis sous 48 h." },
+  { id: "realisations", nom: "Réalisations", court: "Réalisations", slug: "realisations", statut: "publiee", menu: true, vues: 141, motCle: "réalisations salle de bain Bordeaux", title: "Nos chantiers en Gironde | Bertrand Rénovation", meta: "Photos de salles de bain et chauffages réalisés à Bordeaux, Mérignac, Talence et Pessac." },
+  { id: "avis", nom: "Avis clients", court: "Avis", slug: "avis-clients", statut: "publiee", menu: true, vues: 77, motCle: "avis plombier Bordeaux", title: "Avis clients : 4,8/5 sur 14 avis | Bertrand Rénovation", meta: "Les avis vérifiés de nos clients à Bordeaux, collectés par Portail Travaux après chaque chantier." },
+  { id: "contact", nom: "Contact et devis", court: "Contact", slug: "contact-devis", statut: "publiee", menu: true, vues: 98, motCle: "devis plombier Bordeaux", title: "Devis gratuit plombier Bordeaux | Bertrand Rénovation", meta: "Décrivez votre projet : réponse sous 24 h ouvrées, devis gratuit et sans engagement." },
+  { id: "merignac", nom: "Plombier à Mérignac", court: "Mérignac", slug: "plombier-merignac", statut: "brouillon", menu: false, vues: 0, motCle: "plombier Mérignac", title: "Plombier à Mérignac : salle de bain et dépannage | Bertrand Rénovation", meta: "Votre plombier à Mérignac, à 15 minutes : dépannage sous 24 h, salle de bain clé en main, pompe à chaleur RGE." },
+  { id: "mentions", nom: "Mentions légales", court: "Mentions", slug: "mentions-legales", statut: "publiee", menu: false, vues: 9, motCle: "", title: "Mentions légales | Bertrand Rénovation", meta: "Éditeur, hébergeur, assurance décennale et traitement des données personnelles." },
+];
+const TYPES = [["texte", "Texte court"], ["email", "Email"], ["tel", "Téléphone"], ["cp", "Code postal"], ["liste", "Liste"], ["choix", "Choix multiples"], ["zone", "Texte long"], ["date", "Date"], ["photos", "Photos"], ["budget", "Budget"]];
+const AIDES = { texte: "Jean Dupont", email: "nom@exemple.fr", tel: "06 00 00 00 00", cp: "33000", liste: "Choisir…", choix: "☐ Option 1   ☐ Option 2", zone: "Décrivez votre projet…", date: "jj/mm/aaaa", photos: "Ajouter des photos (5 max)", budget: "Choisir une fourchette…" };
+const CHAMPS0 = [
+  { id: 1, type: "texte", libelle: "Nom et prénom", requis: true, verrou: true },
+  { id: 2, type: "tel", libelle: "Téléphone", requis: true, verrou: true },
+  { id: 3, type: "email", libelle: "Email", requis: false },
+  { id: 4, type: "cp", libelle: "Code postal du chantier", requis: true },
+  { id: 5, type: "liste", libelle: "Type de travaux", requis: true },
+  { id: 6, type: "zone", libelle: "Votre projet", requis: false },
+  { id: 7, type: "photos", libelle: "Photos", requis: false },
+];
+const ONGLETS = [["pages", "Pages"], ["blog", "Blog"], ["domaine", "Domaine"], ["stats", "Statistiques"], ["formulaire", "Formulaire"]];
+const ARTICLES0 = [
+  { id: "a4", titre: "Salle de bain PMR : les normes à connaître en 2026", cat: "Salle de bain", tags: ["PMR", "normes"], statut: "brouillon", date: "", vues: 0, auteur: "Jean Bertrand", ia: false },
+  { id: "a5", titre: "Entretien de pompe à chaleur : obligatoire ou pas ?", cat: "Chauffage", tags: ["pompe à chaleur", "entretien"], statut: "planifie", date: "2026-10-22", vues: 0, auteur: "Léa Bertrand", ia: true },
+  { id: "a1", titre: "Douche à l'italienne : combien coûte-t-elle à Bordeaux en 2026 ?", cat: "Salle de bain", tags: ["douche italienne", "prix"], statut: "publie", date: "2026-09-18", vues: 612, auteur: "Jean Bertrand", ia: true },
+  { id: "a2", titre: "MaPrimeRénov' 2026 : quelles aides pour une pompe à chaleur ?", cat: "Chauffage", tags: ["aides", "pompe à chaleur"], statut: "publie", date: "2026-09-02", vues: 488, auteur: "Léa Bertrand", ia: true },
+  { id: "a3", titre: "Fuite sous l'évier : les 5 gestes avant l'arrivée du plombier", cat: "Dépannage", tags: ["fuite", "urgence"], statut: "publie", date: "2026-08-21", vues: 931, auteur: "Jean Bertrand", ia: false },
+  { id: "a6", titre: "Chauffe-eau thermodynamique ou électrique : notre comparatif", cat: "Chauffage", tags: ["chauffe-eau"], statut: "archive", date: "2026-03-10", vues: 204, auteur: "Jean Bertrand", ia: false },
+];
+const STATUTS_BLOG = { brouillon: ["Brouillon", "var(--color-neutral-100)", "var(--color-neutral-800)"], planifie: ["Planifié", "#fbf0d9", "#7a4d00"], publie: ["Publié", "#e6f4ec", "#1f7a4d"], archive: ["Archivé", "#eceff2", "#5b6570"] };
+const slugify = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\.[a-z]+$/, "").replace(/^www\./, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const clone = (o) => JSON.parse(JSON.stringify(o));
+
+class Component extends DCLogic {
+  state = {
+    ouvert: true, tab: null, etape: 1, gen: 0, palette: 0, police: "archivo", exclus: {}, distinction: "Équipe de 4, chantier protégé et nettoyé chaque soir, devis ferme sous 48 h.",
+    structureOff: {}, locales: { "Mérignac": true, "Pessac": true }, pages: clone(PAGES0), pageEditee: "accueil",
+    seoSel: "accueil", siteNom: "Bertrand Rénovation", gsc: false, plan: null, publie: false,
+    sousDomaine: "bertrand-renovation", modeDomaine: "acheter", recherche: "bertrand-renovation", rechercheFaite: "bertrand-renovation",
+    domaine: null, domaineExistant: "", dnsVisible: false, dnsOk: false, periode: "30 jours", barreSurvol: null,
+    nl: { connecte: false, modeSite: "nouveau", nomSite: "bertrand-renovation", siteExistant: "vitrine-bertrand", domaine: "www.bertrand-renovation.fr", autres: [], autreSaisie: "", opts: { auto: true, redir: true, apercus: false }, etape: -1, historique: [] },
+    articles: clone(ARTICLES0), selBlog: {}, filtreBlog: "tous", rechercheBlog: "", vueBlog: "articles", catsBlog: ["Salle de bain", "Chauffage", "Dépannage", "Conseils et aides"], tagsBlog: ["PMR", "normes", "pompe à chaleur", "entretien", "douche italienne", "prix", "aides", "fuite", "urgence", "chauffe-eau"], nouvelleCat: "", nouveauTag: "", quotaBlog: 2, pilote: false, rythme: "semaine", validation: "relire", sujetsDecal: 0,
+    champs: clone(CHAMPS0), regForm: { notif: true, sms: false, antispam: true, rgpd: true }, demandeIA: "", nouvellePage: "", reecr: 0, toast: "",
+  };
+
+  componentDidMount() {
+    let p = {};
+    try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    if (p.onglet) this.setState({ tab: ["creation", "seo", "editeur"].includes(p.onglet) ? "pages" : p.onglet });
+  }
+  componentWillUnmount() { clearInterval(this.timer); clearInterval(this.nlTimer); clearTimeout(this.tt); }
+  majNl(o) { this.setState((s) => ({ nl: { ...s.nl, ...(typeof o === "function" ? o(s.nl) : o) } })); }
+
+  offre(id, raison) { if (window.PH_offre) window.PH_offre(id, raison); }
+  flash(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: "" }), 2600); }
+  lancerGeneration() {
+    clearInterval(this.timer);
+    this.setState({ gen: 0 });
+    this.timer = setInterval(() => this.setState((s) => { if (s.gen >= 6) { clearInterval(this.timer); return null; } return { gen: s.gen + 1 }; }), 650);
+  }
+  majPage(id, fn) { this.setState((s) => ({ pages: s.pages.map((p) => (p.id === id ? fn({ ...p }) : p)) })); }
+  majChamps(fn) { this.setState((s) => ({ champs: fn(s.champs.slice()) })); }
+
+  renderVals() {
+    const s = this.state;
+    const planBrut = s.plan || this.props.plan || "gratuit";
+    const toutInclus = planBrut === "tout";
+    const plan = toutInclus ? "pro" : planBrut;
+    const tab = s.tab || this.props.ongletInitial || "pages";
+    const pal = PALETTES[s.palette];
+    const pol = POLICES.find((f) => f.id === s.police) || POLICES[0];
+    const ouvert = s.ouvert;
+    const inter = (on) => ({ style: { width: "36px", height: "20px", borderRadius: "999px", background: on ? "var(--color-accent)" : "var(--color-neutral-300)", position: "relative", flex: "none", display: "inline-block", transition: "background .15s" }, rond: { position: "absolute", top: "2px", left: on ? "18px" : "2px", width: "16px", height: "16px", borderRadius: "50%", background: "#fff", transition: "left .15s", boxShadow: "0 1px 2px rgba(0,0,0,.2)" } });
+    const seg = (on) => ({ font: "inherit", fontSize: "14px", fontWeight: 600, padding: "8px 12px", border: 0, borderRight: "1px solid var(--color-divider)", cursor: "pointer", background: on ? "var(--color-accent)" : "#fff", color: on ? "#fff" : "var(--color-neutral-800)", flex: 1, display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" });
+    const chip = (on) => ({ font: "inherit", fontSize: "14px", fontWeight: 600, cursor: "pointer", padding: "7px 13px", borderRadius: "999px", whiteSpace: "nowrap", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-divider)"), background: on ? "var(--color-accent)" : "#fff", color: on ? "#fff" : "var(--color-neutral-800)" });
+    const carteChoix = (on) => ({ display: "grid", gap: "10px", padding: "14px", borderRadius: "12px", cursor: "pointer", background: "#fff", font: "inherit", color: "var(--color-text)", border: on ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)", margin: on ? 0 : "1px", textAlign: "left" });
+    const caseSt = (on) => ({ width: "22px", height: "22px", borderRadius: "6px", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: on ? "#fff" : "transparent", background: on ? "var(--color-accent)" : "#fff", border: on ? "1px solid var(--color-accent)" : "1px solid var(--color-neutral-400)" });
+    const ligneChoix = (on) => ({ display: "flex", gap: "12px", alignItems: "flex-start", padding: "12px 14px", borderRadius: "12px", cursor: "pointer", background: on ? "#fff" : "var(--color-neutral-100)", font: "inherit", color: "var(--color-text)", border: "1px solid " + (on ? "var(--color-accent-300)" : "var(--color-divider)"), opacity: on ? 1 : 0.7, width: "100%" });
+
+    // --- menu latéral
+    const lienStyle = (actif) => ({ display: "flex", alignItems: "center", padding: ouvert ? "10px 12px" : "10px", borderRadius: "10px", textDecoration: "none", fontSize: "15px", fontWeight: actif ? 700 : 500, color: actif ? "var(--color-accent-800)" : "var(--color-neutral-800)", background: actif ? "var(--color-accent-100)" : "transparent", border: actif ? "1px solid var(--color-accent-300)" : "1px solid transparent" });
+    const titreM = (label) => ({ key: label, label, estTitre: true, estLien: false, href: "#", d: "", style: { display: ouvert ? "block" : "none", padding: "18px 12px 6px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-600)", textDecoration: "none", fontWeight: 600 } });
+    const lien = (label, d, actif, badge, href) => ({ key: label, label, d, estTitre: false, estLien: true, href, style: lienStyle(actif), badge: badge || "", badgeVisible: !!badge && ouvert });
+
+    // --- onboarding
+    const DONNEES = [
+      ["nom", "Raison sociale", "Bertrand Rénovation", "Fiche · vérifié Kbis"], ["metier", "Métiers", "Plombier, chauffagiste", "Fiche"],
+      ["zone", "Zone d'intervention", "Bordeaux + 30 km", "Fiche · rayon accepté"], ["tel", "Téléphone", "05 56 12 34 56", "Compte"],
+      ["avis", "Avis", "4,8/5 · 14 avis vérifiés", "Mis à jour automatiquement"], ["photos", "Réalisations", "9 photos, 3 chantiers", "Autorisation propriétaire ✓"],
+      ["labels", "Labels", "RGE QualiPAC", "Document vérifié"], ["legal", "Mentions légales", "SIRET, décennale MAAF", "Généré automatiquement"],
+    ];
+    const STRUCT = [
+      ["accueil", "Accueil", "/", "Bandeau, prestations, réalisations, avis, contact", "Indispensable"],
+      ["prestations", "Prestations", "/prestations", "Une section par métier, tarifs indicatifs, aides possibles", "SEO"],
+      ["realisations", "Réalisations", "/realisations", "Vos 3 chantiers, avant/après", "Confiance"],
+      ["avis", "Avis clients", "/avis-clients", "Synchronisée avec vos avis Portail Travaux", "Confiance"],
+      ["contact", "Contact et devis", "/contact-devis", "Formulaire, horaires, carte de la zone", "Indispensable"],
+      ["mentions", "Mentions légales", "/mentions-legales", "Générées depuis vos documents vérifiés", "Obligatoire"],
+    ];
+    const TACHES = ["Rédaction des textes des 6 pages", "Pages locales : " + (Object.keys(s.locales).filter((k) => s.locales[k]).join(", ") || "aucune"), "Titres, descriptions et données structurées", "Optimisation des 9 photos (WebP, textes alternatifs)", "Formulaire de contact relié à « Mes demandes »", "Mise en ligne sur " + s.sousDomaine + ".portailtravaux.fr"];
+    const genFinie = s.gen >= 6;
+
+    const champsSite = (list) => list.map((c) => ({ key: c.id, libelle: c.libelle, libelleAff: c.libelle + (c.requis ? " *" : ""), aide: AIDES[c.type] || "", styleChampSite: { display: "block", padding: c.type === "zone" ? "10px 12px 34px" : "10px 12px", borderRadius: "8px", border: "1px solid #cfd5dc", background: "#fff", fontSize: "14px", color: "#7a8591", fontFamily: pol.texte } }));
+    const lienEd = (id) => "Editeur de Site.dc.html?page=" + id + "&palette=" + s.palette + "&police=" + s.police;
+
+    // --- SEO
+    const sp = s.pages.find((p) => p.id === s.seoSel) || s.pages[0];
+    const base = s.domaine && plan === "pro" ? s.domaine : s.sousDomaine + ".portailtravaux.fr";
+    const verifs = [
+      [sp.title.length >= 30 && sp.title.length <= 60, "Titre entre 30 et 60 caractères"],
+      [sp.meta.length >= 110 && sp.meta.length <= 155, "Méta-description entre 110 et 155 caractères"],
+      [!!sp.motCle && sp.title.toLowerCase().includes((sp.motCle.split(" ").pop() || "").toLowerCase()), "Ville du mot-clé présente dans le titre"],
+      [true, "Un seul titre principal (H1) sur la page"],
+      [true, "Toutes les images ont un texte alternatif"],
+      [sp.statut === "publiee", "Page publiée et présente dans le sitemap"],
+    ];
+    const scoreDe = (p) => {
+      if (p.id === "accueil") return 91;
+      let n = 40;
+      if (p.title.length >= 30 && p.title.length <= 60) n += 20;
+      if (p.meta.length >= 110 && p.meta.length <= 155) n += 20;
+      if (p.motCle) n += 10;
+      if (p.statut === "publiee") n += 10;
+      return n;
+    };
+    const couleurScore = (n) => ({ fontSize: "15px", fontWeight: 700, color: n >= 85 ? "#1f7a4d" : n >= 65 ? "#8a5a00" : "#b3261e" });
+    const compte = (n, lo, hi) => ({ color: n > hi ? "#b3261e" : n < lo ? "#9a6400" : "#1f7a4d", fontWeight: 600 });
+
+    // --- domaine
+    const q = slugify(s.rechercheFaite) || "bertrand-renovation";
+    const RES = [[q + ".fr", true, "Inclus dans Site Pro"], [q + ".com", true, "Inclus dans Site Pro"], [q + "-bordeaux.fr", true, "Inclus dans Site Pro"], [q + ".net", false, ""], [q + ".eu", true, "Inclus dans Site Pro"]];
+    const domaineCible = slugify(s.domaineExistant) ? s.domaineExistant.replace(/^https?:\/\//, "") : "";
+    const sdOk = /^[a-z0-9-]{3,40}$/.test(s.sousDomaine) && !["plombier", "admin", "www"].includes(s.sousDomaine);
+
+    // --- stats
+    const fac = s.periode === "7 jours" ? 0.24 : s.periode === "12 mois" ? 11.2 : 1;
+    const vals = [21, 18, 26, 31, 24, 12, 9, 28, 33, 30, 27, 35, 14, 11, 32, 38, 29, 36, 41, 17, 13, 39, 44, 37, 42, 46, 19, 15, 48, 51];
+    const mx = Math.max.apply(null, vals);
+    const fmt = (n) => Math.round(n).toLocaleString("fr-FR");
+    const bloc = (titre, lignes) => {
+      const m = Math.max.apply(null, lignes.map((l) => l[1]));
+      return { key: titre, titre, lignes: lignes.map((l) => ({ key: l[0], label: l[0], valeur: l[2] || fmt(l[1] * fac), styleBarre: { display: "block", height: "100%", width: Math.max(4, (l[1] / m) * 100) + "%", background: "var(--color-accent)", borderRadius: "999px" } })) };
+    };
+
+    const totalFaits = s.pages.filter((p) => p.statut === "publiee").length;
+
+    return {
+      menuOuvert: ouvert, basculerMenu: () => this.setState((x) => ({ ouvert: !x.ouvert })),
+      styleAside: { width: ouvert ? "252px" : "76px", transition: "width .18s ease", borderRight: "1px solid var(--color-divider)", padding: "18px 14px", display: "flex", flexDirection: "column", gap: "2px", position: "sticky", top: 0, height: "100vh", overflowY: "auto", background: "#fff", boxSizing: "border-box" },
+      menu: [
+        titreM("Vue d'ensemble"),
+        lien("Tableau de bord", IC.dashboard, false, "", "Espace Artisan Dashboard.dc.html"),
+        lien("Ma fiche", IC.fiche, false, "", "Ma Fiche.dc.html"),
+        lien("Mes demandes", IC.demandes, false, "3", "Mes Demandes.dc.html"),
+        lien("Devis & factures", "M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5", false, "2", "Devis et Factures.dc.html"),
+        titreM("Gestion"),
+        lien("Appels d'offres", IC.zone, false, "12", "Appels d Offres.dc.html"),
+        lien("Mes avis", IC.avis, false, "", "Mes Avis.dc.html"),
+        lien("Mon site internet", IC.site, true, "", "Site Internet Artisan.dc.html"),
+        lien("Statistiques", IC.stats, false, "", "Statistiques.dc.html"),
+      ],
+      urlSite: base,
+      stylePastille: { width: "8px", height: "8px", borderRadius: "50%", background: s.publie ? "#1f9d55" : "var(--color-neutral-400)", flex: "none" },
+      libelleStatut: s.publie ? "En ligne" : "Brouillon",
+      libellePublier: "Publier",
+      publier: () => { this.setState({ publie: true }); this.flash("Site en ligne sur " + base + " · sitemap envoyé à Google"); },
+      voirSite: () => this.flash("Aperçu ouvert dans un nouvel onglet : " + base),
+
+      onglets: ONGLETS.map(([id, label]) => ({ key: id, label, aller: () => this.setState({ tab: id }), style: { font: "inherit", fontSize: "15px", fontWeight: tab === id ? 700 : 500, padding: "12px 14px", border: 0, borderBottom: "3px solid " + (tab === id ? "var(--color-accent)" : "transparent"), background: "none", cursor: "pointer", whiteSpace: "nowrap", color: tab === id ? "var(--color-text)" : "var(--color-neutral-700)" } })),
+      isBlog: tab === "blog",
+      ...(() => {
+        const limite = toutInclus ? 15 : 5, actif = plan === "pro";
+        const q = s.rechercheBlog.toLowerCase();
+        const visibles = s.articles.filter((a) => (s.filtreBlog === "tous" || a.statut === s.filtreBlog) && (!q || (a.titre + " " + a.tags.join(" ") + " " + a.cat).toLowerCase().includes(q)));
+        const selIds = Object.keys(s.selBlog).filter((k) => s.selBlog[k]);
+        const caseB = (on) => ({ width: "20px", height: "20px", borderRadius: "5px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, cursor: "pointer", padding: 0, color: on ? "#fff" : "transparent", background: on ? "var(--color-accent)" : "#fff", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-neutral-400)") });
+        const dateFr = (d) => d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—";
+        const groupe = (statut, msg) => () => { this.setState((x) => ({ articles: x.articles.map((a) => selIds.includes(a.id) ? { ...a, statut, date: statut === "publie" && !a.date ? "2026-10-11" : statut === "planifie" ? "2026-10-22" : a.date } : a), selBlog: {} })); this.flash(selIds.length + " article" + (selIds.length > 1 ? "s " : " ") + msg); };
+        const barre = (lignes) => { const m = Math.max.apply(null, lignes.map((l) => l[1])); return lignes.map(([label, v, aff]) => ({ key: label, label, valeur: aff || fmt(v), styleBarre: { display: "block", height: "100%", width: Math.max(4, (v / m) * 100) + "%", background: "var(--color-accent)", borderRadius: "999px" } })); };
+        const pub = s.articles.filter((a) => a.statut === "publie").length;
+        return {
+          resumeBlog: s.articles.length + " articles · " + pub + " publiés · visibles uniquement sur votre site",
+          lienAuto: actif ? "Editeur de Blog.dc.html?nouveau=1&auto=1&plan=" + (toutInclus ? "tout_inclus" : "site_pro") : "#",
+          ...(() => {
+            const iv = inter(s.pilote), parMois = { mois2: 2, semaine: 4, semaine2: 8 }[s.rythme];
+            const SUJ = [["Entretien pompe à chaleur : obligation, prix et fréquence", "entretien pompe à chaleur · 2 900 recherches/mois · facile"], ["Canalisations gelées : comment les protéger cet hiver", "canalisation gelée · 1 300/mois · pic en décembre"], ["Chauffe-eau qui fuit : réparer ou remplacer ?", "chauffe eau qui fuit · 1 900/mois · facile"], ["Remplacer sa baignoire par une douche en 3 jours", "remplacer baignoire par douche · 2 400/mois"], ["MaPrimeAdapt' 2026 : qui y a droit ?", "maprimeadapt · 1 300/mois · facile"]];
+            const pas = s.rythme === "mois2" ? 14 : s.rythme === "semaine2" ? 3.5 : 7;
+            const trop = parMois > limite;
+            return {
+              piloteOn: s.pilote, piloteInter: { style: iv.style, rond: iv.rond },
+              basculerPilote: () => { this.setState((x) => ({ pilote: !x.pilote })); this.flash(s.pilote ? "Pilote automatique désactivé" : "Pilote automatique activé · premier article mercredi 14 octobre"); },
+              piloteResume: s.pilote ? "L'IA choisit les sujets, rédige, optimise le SEO et " + (s.validation === "publier" ? "publie seule" : "vous envoie chaque article à valider") + ", au meilleur moment pour Google." : "Activez-le : l'IA écrit, optimise et publie vos articles toute seule, sans que vous ayez rien à faire.",
+              rythmes: [["mois2", "2 par mois"], ["semaine", "1 par semaine"], ["semaine2", "2 par semaine"]].map(([id, label]) => ({ key: id, label, choisir: () => { if ({ mois2: 2, semaine: 4, semaine2: 8 }[id] > limite) return this.offre("tout", "2 articles par semaine en pilote automatique"); this.setState({ rythme: id }); }, style: { ...chip(s.rythme === id), fontSize: "13px", padding: "6px 12px" } })),
+              validations: [["relire", "Je valide d'abord"], ["publier", "Publier sans moi"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ validation: id }), style: { ...chip(s.validation === id), fontSize: "13px", padding: "6px 12px" } })),
+              prochains: [0, 1, 2].map((i) => { const d = new Date(2026, 9, 14); d.setDate(d.getDate() + Math.round(i * pas)); const sj = SUJ[(i + s.sujetsDecal) % SUJ.length];
+                return { key: i, date: d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }), titre: sj[0], mot: sj[1], changer: () => this.setState((x) => ({ sujetsDecal: x.sujetsDecal + 1 })) }; }),
+              piloteNote: (trop ? "" : parMois + " articles par mois sur votre quota de " + limite + ". ") + (s.validation === "publier" ? "Chaque article passe le contrôle SEO avant publication ; un email vous prévient après coup." : "Vous recevez un email avec l'article 48 h avant : un clic pour valider. Sans réponse, rien n'est publié."),
+            };
+          })(),
+          lienNouvelArticle: actif ? "Editeur de Blog.dc.html?nouveau=1&plan=" + (toutInclus ? "tout_inclus" : "site_pro") : "#",
+          gardeBlog: (e) => { if (!actif) { e.preventDefault(); this.offre("site", "Le blog est inclus dans Site Pro"); } },
+          blogVerrouille: !actif, blogActif: actif,
+          quotaBlog: s.quotaBlog + " / " + limite, styleQuotaBlog: { display: "block", height: "100%", width: (s.quotaBlog / limite) * 100 + "%", background: "var(--color-accent)", borderRadius: "999px" },
+          noteQuotaBlog: (toutInclus ? "Tout inclus" : "Site Pro") + " · " + (limite - s.quotaBlog) + " restants · remis à zéro le 1er novembre. Titres, descriptions, tags et idées : illimités.",
+          peutPasserTout: actif && !toutInclus,
+          passerTout: () => this.offre("tout", "15 articles par mois au lieu de 5"),
+          vuesBlog: [["articles", "Articles"], ["categories", "Catégories et tags"], ["stats", "Statistiques"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ vueBlog: id }), style: chip(s.vueBlog === id) })),
+          vueArticles: s.vueBlog === "articles", vueCategories: s.vueBlog === "categories", vueStatsBlog: s.vueBlog === "stats",
+          filtresBlog: [["tous", "Tous"], ["brouillon", "Brouillons"], ["planifie", "Planifiés"], ["publie", "Publiés"], ["archive", "Archivés"]].map(([id, label]) => ({ key: id, label: label + " " + (id === "tous" ? s.articles.length : s.articles.filter((a) => a.statut === id).length), choisir: () => this.setState({ filtreBlog: id }), style: { ...seg(s.filtreBlog === id), flex: "none", padding: "8px 12px" } })),
+          rechercheBlog: s.rechercheBlog, setRechercheBlog: (e) => this.setState({ rechercheBlog: e.target.value }),
+          exporterCsv: () => { const lignes = [["Titre", "Catégorie", "Tags", "Statut", "Date", "Vues", "Auteur"]].concat((selIds.length ? s.articles.filter((a) => selIds.includes(a.id)) : visibles).map((a) => [a.titre, a.cat, a.tags.join(" | "), STATUTS_BLOG[a.statut][0], a.date, a.vues, a.auteur]));
+            try { const b = new Blob(["\ufeff" + lignes.map((l) => l.map((c) => '"' + String(c).replace(/"/g, '""') + '"').join(";")).join("\n")], { type: "text/csv" }); const u = URL.createObjectURL(b); const el = document.createElement("a"); el.href = u; el.download = "blog-articles.csv"; el.click(); } catch (er) {}
+            this.flash((lignes.length - 1) + " articles exportés en CSV"); },
+          aSelectionBlog: selIds.length > 0, libelleSelection: selIds.length + " sélectionné" + (selIds.length > 1 ? "s" : ""),
+          actionsGroupees: [["Publier", groupe("publie", "publié(s)")], ["Planifier au 22 oct.", groupe("planifie", "planifié(s)")], ["Archiver", groupe("archive", "archivé(s)")], ["Remettre en brouillon", groupe("brouillon", "remis en brouillon")], ["Supprimer", () => { this.setState((x) => ({ articles: x.articles.filter((a) => !selIds.includes(a.id)), selBlog: {} })); this.flash(selIds.length + " article(s) supprimé(s) · récupérables 30 jours"); }]].map(([label, faire]) => ({ key: label, label, faire, style: { font: "inherit", whiteSpace: "nowrap", fontSize: "13.5px", fontWeight: 600, padding: "6px 12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,.35)", background: "transparent", color: label === "Supprimer" ? "#ffb4a8" : "#fff", cursor: "pointer" } })),
+          viderSelection: () => this.setState({ selBlog: {} }),
+          styleCaseTout: caseB(visibles.length > 0 && visibles.every((a) => s.selBlog[a.id])),
+          toutSelectionner: () => { const tous = visibles.every((a) => s.selBlog[a.id]); this.setState({ selBlog: tous ? {} : Object.fromEntries(visibles.map((a) => [a.id, true])) }); },
+          articlesBlog: visibles.map((a) => { const st = STATUTS_BLOG[a.statut]; return { key: a.id, titre: a.titre, cat: a.cat, tags: a.tags, ia: a.ia, statut: st[0], date: dateFr(a.date), vues: a.vues ? fmt(a.vues) : "—", auteur: a.auteur,
+            lien: "Editeur de Blog.dc.html?id=" + a.id + "&plan=" + (toutInclus ? "tout_inclus" : "site_pro"),
+            styleStatut: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: st[1], color: st[2], whiteSpace: "nowrap" },
+            styleCase: caseB(!!s.selBlog[a.id]), basculer: () => this.setState((x) => ({ selBlog: { ...x.selBlog, [a.id]: !x.selBlog[a.id] } })) }; }),
+          aucunArticle: visibles.length === 0,
+          categoriesBlog: s.catsBlog.map((c, i) => { const n = s.articles.filter((a) => a.cat === c).length; return { key: c + i, nom: c, nb: n + " article" + (n > 1 ? "s" : ""),
+            renommer: (e) => { const v = e.target.value; this.setState((x) => ({ catsBlog: x.catsBlog.map((y, j) => j === i ? v : y), articles: x.articles.map((a) => a.cat === c ? { ...a, cat: v } : a) })); },
+            monter: () => this.setState((x) => { const l = x.catsBlog.slice(); if (i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]]; return { catsBlog: l }; }),
+            descendre: () => this.setState((x) => { const l = x.catsBlog.slice(); if (i < l.length - 1) [l[i + 1], l[i]] = [l[i], l[i + 1]]; return { catsBlog: l }; }),
+            supprimer: () => { if (n) return this.flash("« " + c + " » contient " + n + " article(s) : déplacez-les d'abord"); this.setState((x) => ({ catsBlog: x.catsBlog.filter((_, j) => j !== i) })); } }; }),
+          nouvelleCat: s.nouvelleCat, setNouvelleCat: (e) => this.setState({ nouvelleCat: e.target.value }),
+          ajouterCat: (e) => { e.preventDefault(); const v = s.nouvelleCat.trim(); if (v && !s.catsBlog.includes(v)) this.setState((x) => ({ catsBlog: x.catsBlog.concat([v]), nouvelleCat: "" })); },
+          tagsBlog: s.tagsBlog.map((t) => ({ key: t, nom: t, nb: String(s.articles.filter((a) => a.tags.includes(t)).length), supprimer: () => this.setState((x) => ({ tagsBlog: x.tagsBlog.filter((y) => y !== t), articles: x.articles.map((a) => ({ ...a, tags: a.tags.filter((y) => y !== t) })) })) })),
+          nouveauTag: s.nouveauTag, setNouveauTag: (e) => this.setState({ nouveauTag: e.target.value }),
+          ajouterTagBlog: (e) => { e.preventDefault(); const v = s.nouveauTag.trim(); if (v && !s.tagsBlog.includes(v)) this.setState((x) => ({ tagsBlog: x.tagsBlog.concat([v]), nouveauTag: "" })); },
+          kpisBlog: [["Vues", "2 235", "+31 % vs septembre"], ["Lecteurs uniques", "1 742", "71 % sur mobile"], ["Taux de rebond", "48 %", "Moyenne des sites artisans : 61 %"], ["Temps moyen", "2 min 50", "Sur les articles publiés"]].map(([label, valeur, note]) => ({ key: label, label, valeur, note })),
+          statsArticles: [["Fuite sous l'évier : les 5 gestes…", "931", "804", "39 %", "2 min 10", "Google · pos. 4", "5"], ["Douche à l'italienne : combien coûte…", "612", "488", "44 %", "3 min 40", "Google · pos. 7", "3"], ["MaPrimeRénov' 2026 : quelles aides…", "488", "351", "52 %", "3 min 05", "Facebook", "2"], ["Chauffe-eau thermodynamique…", "204", "99", "66 %", "1 min 30", "Accès direct", "0"]].map((r) => ({ key: r[0], titre: r[0], vues: r[1], uniques: r[2], rebond: r[3], temps: r[4], source: r[5], demandes: r[6] })),
+          blocsBlog: [
+            { key: "src", titre: "Sources de trafic", lignes: barre([["Recherche Google", 1388, "62 %"], ["Réseaux sociaux", 402, "18 %"], ["Accès direct", 268, "12 %"], ["Sites référents", 177, "8 %"]]) },
+            { key: "cat", titre: "Lecture par catégorie", lignes: barre([["Dépannage", 931], ["Salle de bain", 612], ["Chauffage", 692]]) },
+            { key: "aut", titre: "Par auteur", lignes: barre([["Jean Bertrand", 1747, "1 747 vues · 8 demandes"], ["Léa Bertrand", 488, "488 vues · 2 demandes"]]) },
+            { key: "kw", titre: "Positions Google", lignes: barre([["fuite sous évier que faire", 90, "4e · ↑ 3"], ["prix douche italienne bordeaux", 70, "7e · ↑ 5"], ["maprimerénov pompe à chaleur 2026", 30, "18e · nouveau"]]) },
+          ],
+        };
+      })(),
+      isPages: tab === "pages", isDomaine: tab === "domaine", isStats: tab === "stats", isFormulaire: tab === "formulaire",
+
+      // création
+      etapes: [["Vos informations", "Reprises de votre fiche"], ["Identité visuelle", "Couleurs et polices"], ["Structure", "Pages et pages locales"], ["Génération", "Textes et SEO par l'IA"]].map(([t, so], i) => {
+        const n = i + 1, on = s.etape === n, fait = s.etape > n;
+        return { key: n, num: fait ? "✓" : String(n), titre: t, sous: so, aller: () => { this.setState({ etape: n }); if (n === 4) this.lancerGeneration(); },
+          style: { display: "flex", gap: "12px", alignItems: "center", width: "100%", padding: "12px", borderRadius: "12px", border: "1px solid " + (on ? "var(--color-accent-300)" : "transparent"), background: on ? "var(--color-accent-100)" : "transparent", cursor: "pointer", font: "inherit", color: "var(--color-text)" },
+          styleNum: { width: "30px", height: "30px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 700, background: on || fait ? "var(--color-accent)" : "var(--color-neutral-100)", color: on || fait ? "#fff" : "var(--color-neutral-700)" } };
+      }),
+      etape1: s.etape === 1, etape2: s.etape === 2, etape3: s.etape === 3, etape4: s.etape === 4,
+      navEtapesVisible: s.etape < 4, premiereEtape: s.etape === 1,
+      libelleSuivant: s.etape === 3 ? "Générer mon site" : "Continuer",
+      etapePrec: () => this.setState((x) => ({ etape: Math.max(1, x.etape - 1) })),
+      etapeSuiv: () => { const n = Math.min(4, s.etape + 1); this.setState({ etape: n }); if (n === 4) this.lancerGeneration(); },
+      donnees: DONNEES.map(([id, label, valeur, source]) => { const on = !s.exclus[id]; return { key: id, label, valeur, source, style: ligneChoix(on), styleCase: caseSt(on), basculer: () => this.setState((x) => ({ exclus: { ...x.exclus, [id]: !x.exclus[id] } })) }; }),
+      distinction: s.distinction, setDistinction: (e) => this.setState({ distinction: e.target.value }),
+      styleLogo: { width: "72px", height: "72px", borderRadius: "14px", background: pal.primaire, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "26px", fontWeight: 800, fontFamily: pol.titre, boxShadow: "inset 0 -8px 0 " + pal.accent },
+      palettes: PALETTES.map((p, i) => ({ key: i, nom: p.nom, desc: p.desc, choisir: () => this.setState({ palette: i }), style: carteChoix(s.palette === i),
+        nuances: [p.primaire, p.accent, p.clair, p.sombre].map((c, j) => ({ key: j, style: { flex: 1, background: c } })),
+        styleMini: { width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", background: "linear-gradient(135deg," + p.primaire + " 50%," + p.accent + " 50%)", border: s.palette === i ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)", outline: s.palette === i ? "2px solid #fff" : "none", outlineOffset: "-4px" } })),
+      polices: POLICES.map((f) => ({ key: f.id, id: f.id, nom: f.nom, choisir: () => this.setState({ police: f.id }), style: carteChoix(s.police === f.id),
+        styleTitre: { fontFamily: f.titre, fontWeight: f.poids, fontSize: "24px", lineHeight: 1.1, textAlign: "left" }, styleTexte: { fontFamily: f.texte, fontSize: "15px", lineHeight: 1.45, color: "#4a5562", textAlign: "left" } })),
+      structure: STRUCT.map(([id, nom, slug, sections, tag]) => { const on = !s.structureOff[id]; const oblig = id === "accueil" || id === "mentions"; return { key: id, nom, slug, sections, tag, style: ligneChoix(on), styleCase: caseSt(on), basculer: () => { if (oblig) return this.flash(nom + " ne peut pas être retirée"); this.setState((x) => ({ structureOff: { ...x.structureOff, [id]: !x.structureOff[id] } })); } }; }),
+      locales: ["Mérignac", "Pessac", "Talence", "Bègles", "Le Bouscat", "Cenon", "Villenave-d'Ornon"].map((v) => ({ key: v, label: (s.locales[v] ? "✓ " : "+ ") + "Plombier à " + v, style: chip(!!s.locales[v]), basculer: () => this.setState((x) => ({ locales: { ...x.locales, [v]: !x.locales[v] } })) })),
+      titreGeneration: genFinie ? "Votre site est prêt" : "L'IA construit votre site…",
+      sousGeneration: genFinie ? "Tout est modifiable. Relisez vos textes dans l'éditeur, puis mettez en ligne." : "Environ 40 secondes. Vous pouvez quitter la page, nous vous prévenons par email.",
+      styleProgression: { display: "block", height: "100%", width: Math.round((s.gen / 6) * 100) + "%", background: "var(--color-accent)", transition: "width .5s ease" },
+      taches: TACHES.map((t, i) => { const fait = s.gen > i, enCours = s.gen === i; return { key: i, label: t, icone: fait ? "✓" : enCours ? "…" : "", styleIcone: { width: "24px", height: "24px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, background: fait ? "#1f9d55" : enCours ? "var(--color-accent-200)" : "var(--color-neutral-100)", color: fait ? "#fff" : "var(--color-accent-800)" }, styleTexte: { color: fait || enCours ? "var(--color-text)" : "var(--color-neutral-600)", fontWeight: enCours ? 700 : 400 } }; }),
+      generationFinie: genFinie,
+      lienEditeur: lienEd("accueil"), lienCreation: "Editeur de Site.dc.html?creation=1", lienNouvelle: "Editeur de Site.dc.html?nouvelle=1", lienModeles: "Editeur de Site.dc.html?panneau=modeles",
+
+      // pages
+      resumePages: s.pages.length + " pages · " + totalFaits + " publiées · le menu suit l'ordre ci-dessous",
+      nouvellePage: s.nouvellePage, setNouvellePage: (e) => this.setState({ nouvellePage: e.target.value }),
+      creerPage: (e) => { e.preventDefault(); const t = s.nouvellePage.trim(); if (!t) return; const nom = t.length > 40 ? t.slice(0, 40) + "…" : t; const id = "p" + Date.now();
+        this.setState((x) => ({ nouvellePage: "", pages: x.pages.slice(0, -1).concat([{ id, nom, court: nom.split(" ").slice(0, 2).join(" "), slug: slugify(t).slice(0, 50), statut: "brouillon", menu: false, vues: 0, motCle: t.toLowerCase().slice(0, 40), title: nom + " | Bertrand Rénovation", meta: "Bertrand Rénovation : " + t + ". Artisan RGE assuré en décennale, devis gratuit sous 48 h, intervention dans un rayon de 30 km." }], x.pages.slice(-1)) }));
+        this.flash("Page générée : textes, titre et description rédigés"); },
+      creerPageVide: () => { const id = "p" + Date.now(); this.setState((x) => ({ pages: x.pages.slice(0, -1).concat([{ id, nom: "Nouvelle page", court: "Nouvelle", slug: "nouvelle-page", statut: "brouillon", menu: false, vues: 0, motCle: "", title: "Nouvelle page | Bertrand Rénovation", meta: "" }], x.pages.slice(-1)) })); },
+      listePages: s.pages.map((p) => { const sc = scoreDe(p), pub = p.statut === "publiee", iv = inter(p.menu); return {
+        key: p.id, nom: p.nom, url: base + "/" + p.slug, statut: pub ? "Publiée" : "Brouillon", vues: fmt(p.vues), score: sc, styleScore: couleurScore(sc), scoreTexte: (sc >= 85 ? "✓ " : "! ") + sc + "/100", scoreLabel: sc >= 85 ? "Bon" : "À améliorer", styleScoreLabel: { fontSize: "12px", fontWeight: 600, color: sc >= 85 ? "#1f7a4d" : sc >= 65 ? "#8a5a00" : "#b3261e" },
+        styleStatut: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: pub ? "#e6f4ec" : "var(--color-neutral-100)", color: pub ? "#1f7a4d" : "var(--color-neutral-800)" },
+        styleInter: iv.style, styleInterRond: iv.rond, actionStatut: pub ? "Dépublier" : "Publier",
+        basculerMenu: () => this.majPage(p.id, (x) => ({ ...x, menu: !x.menu })),
+        publier: () => this.majPage(p.id, (x) => ({ ...x, statut: pub ? "brouillon" : "publiee" })),
+        lienEditeur: lienEd(p.id), lienSeo: lienEd(p.id) + "&panneau=seo" }; }),
+
+      // seo
+      seoGlobal: [
+        ["Nom du site", s.siteNom, (v) => this.setState({ siteNom: v }), "Ajouté à la fin de chaque titre de page"],
+        ["Activité principale", "Plombier chauffagiste", null, "Utilisée pour les données structurées (LocalBusiness / Plumber)"],
+        ["Zone desservie", "Bordeaux et 30 km autour", null, "Reprise de votre fiche ; modifiez-la dans « Ma fiche »"],
+        ["Image de partage", "photo-salle-de-bain-cauderan.webp", null, "Affichée quand le site est partagé (Facebook, WhatsApp)"],
+      ].map(([label, valeur, f, aide]) => ({ key: label, label, valeur, aide, changer: (e) => f && f(e.target.value) })),
+      seoAuto: ["Sitemap XML et robots.txt mis à jour à chaque publication", "Données structurées : entreprise, avis (note 4,8), zone, horaires", "Adresse canonique sur le domaine principal, redirection 301 du sous-domaine", "Images converties en WebP, chargement différé", "Lien réciproque avec votre fiche Portail Travaux"],
+      libelleGsc: s.gsc ? "Google Search Console connectée ✓" : "Connecter Google Search Console",
+      connecterGsc: () => { this.setState({ gsc: true }); this.flash("Propriété vérifiée automatiquement (enregistrement TXT)"); },
+      ongletsSeoPages: s.pages.map((p) => ({ key: p.id, nom: p.court, choisir: () => this.setState({ seoSel: p.id }), style: chip(s.seoSel === p.id) })),
+      seoPage: { title: sp.title, meta: sp.meta, slug: sp.slug, motCle: sp.motCle },
+      seoUrl: base + (sp.slug ? " › " + sp.slug : ""),
+      seoTitreCoupe: sp.title.length > 60 ? sp.title.slice(0, 58) + "…" : sp.title,
+      seoMetaCoupe: sp.meta.length > 155 ? sp.meta.slice(0, 152) + "…" : sp.meta || "Aucune description : Google choisira un extrait de la page.",
+      compteTitre: sp.title.length, styleCompteTitre: compte(sp.title.length, 30, 60),
+      compteMeta: sp.meta.length, styleCompteMeta: compte(sp.meta.length, 110, 155),
+      setSeoTitle: (e) => { const v = e.target.value; this.majPage(sp.id, (x) => ({ ...x, title: v })); },
+      setSeoMeta: (e) => { const v = e.target.value; this.majPage(sp.id, (x) => ({ ...x, meta: v })); },
+      setSeoSlug: (e) => { const v = slugify(e.target.value); this.majPage(sp.id, (x) => ({ ...x, slug: v })); },
+      setSeoMotCle: (e) => { const v = e.target.value; this.majPage(sp.id, (x) => ({ ...x, motCle: v })); },
+      regenererSeo: () => { const o = PAGES0.find((p) => p.id === sp.id); if (o) this.majPage(sp.id, (x) => ({ ...x, title: o.title, meta: o.meta })); this.flash("Titre et description régénérés pour « " + sp.motCle + " »"); },
+      regenererTout: () => this.flash("7 pages analysées · 2 descriptions raccourcies · 1 page locale à publier"),
+      scoreSeo: scoreDe(sp), styleScoreSeo: couleurScore(scoreDe(sp)),
+      verifsSeo: verifs.map(([ok, label], i) => ({ key: i, label, icone: ok ? "✓" : "!", styleIcone: { fontWeight: 700, color: ok ? "#1f7a4d" : "#b3261e", width: "14px" } })),
+
+      // domaine
+      offres: [
+        { key: "g", nom: "Gratuit", prix: "0 €", actuelle: plan === "gratuit", peutPrendre: false, points: ["Adresse " + s.sousDomaine + ".portailtravaux.fr", "Toutes les pages et l'éditeur", "Aperçu IA de votre accueil (1 essai)", "Formulaire relié à vos demandes", "Mention « Site créé avec Portail Travaux »"] },
+        { key: "p", nom: "Site Pro", prix: "9,90 € / mois", actuelle: plan === "pro", peutPrendre: plan !== "pro", points: ["IA complète : création du site, sections, pages, textes et SEO", "Votre nom de domaine inclus (.fr, .com ou .eu)", "Sous-domaine gardé en secours, redirigé", "Sans mention Portail Travaux", "Statistiques sur 12 mois et Search Console"] },
+      ].map((o) => ({ ...o, estGratuit: o.key === "g", style: { display: "flex", flexDirection: "column", gap: "12px", padding: "20px", borderRadius: "16px", border: o.actuelle ? "2px solid var(--color-accent)" : "1px solid var(--color-divider)", background: o.key === "p" ? "var(--color-accent-100)" : "#fff" } })),
+      passerPro: () => this.offre("site", tab === "formulaire" ? "Formulaire sur mesure et SMS" : tab === "blog" ? "Le blog est inclus dans Site Pro" : "Votre nom de domaine inclus"),
+      
+      sousDomaine: s.sousDomaine, setSousDomaine: (e) => this.setState({ sousDomaine: slugify(e.target.value) || e.target.value.toLowerCase() }),
+      dispoSousDomaine: sdOk ? "✓ Disponible · " + s.sousDomaine + ".portailtravaux.fr" : "Indisponible ou invalide (3 à 40 caractères : lettres, chiffres, tirets)",
+      styleDispoSousDomaine: { fontSize: "14px", fontWeight: 600, color: sdOk ? "#1f7a4d" : "#b3261e" },
+      modesDomaine: [["acheter", "Trouver un domaine"], ["connecter", "J'ai déjà un domaine"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ modeDomaine: id }), style: { ...seg(s.modeDomaine === id), padding: "9px 16px" } })),
+      modeAcheter: s.modeDomaine === "acheter", modeConnecter: s.modeDomaine === "connecter",
+      ...(() => {
+        const dom = s.domaine && plan === "pro" ? s.domaine : null;
+        const pt = (c) => ({ width: "9px", height: "9px", borderRadius: "50%", background: c, flex: "none" });
+        const vEnLigne = s.versionEnLigne || 14;
+        const VERS = [[14, "Aujourd'hui, 09:42", "Jean Bertrand"], [13, "Hier, 18:05", "Jean Bertrand"], [12, "3 oct., 11:20", "Création assistée"]];
+        return {
+          hebCartes: [
+            ["Hébergement", "Actif", "Servi depuis le serveur le plus proche de chaque visiteur", "#1f9d55"],
+            ["Adresse", dom ? "https://" + (dom.indexOf("www.") === 0 ? dom : "www." + dom) : "https://" + s.sousDomaine + ".portailtravaux.fr", dom ? "Domaine sans www redirigé automatiquement · certificat HTTPS actif" : "Certificat HTTPS actif · passez à Site Pro pour votre domaine", "#1f9d55"],
+            ["Protection", "Pare-feu et anti-robots", "Attaques par saturation bloquées, robots filtrés, formulaire protégé sans captcha", "#1f9d55"],
+            ["Formulaire et statistiques", "Reliés à Portail Travaux", "Les demandes arrivent dans « Mes demandes » ; mesure sans cookie", "#1f9d55"],
+          ].map(([titre, valeur, detail, c]) => ({ key: titre, titre, valeur, detail, stylePastille: pt(c) })),
+          hebVersions: VERS.map(([n, date, par]) => { const on = n === vEnLigne; return { key: n, num: "v" + n, date, par, etat: on ? "En ligne" : "Archivée", restaurable: !on,
+            restaurer: () => { this.setState({ versionEnLigne: n }); this.flash("Version v" + n + " remise en ligne en quelques secondes"); },
+            styleEtat: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: on ? "#e6f4ec" : "var(--color-neutral-100)", color: on ? "#1f7a4d" : "var(--color-neutral-800)" } }; }),
+        };
+      })(),
+      recherche: s.recherche, setRecherche: (e) => this.setState({ recherche: e.target.value }),
+      chercherDomaine: (e) => { e.preventDefault(); this.setState({ rechercheFaite: s.recherche }); },
+      resultatsDomaine: RES.map(([nom, libre, prix]) => { const choisi = s.domaine === nom; return { key: nom, nom, libre, prix: libre ? prix : "", dispo: choisi ? "Votre domaine" : libre ? "Disponible" : "Déjà pris",
+        styleDispo: { fontSize: "13px", fontWeight: 700, width: "110px", color: choisi ? "var(--color-accent-800)" : libre ? "#1f7a4d" : "var(--color-neutral-600)" }, action: choisi ? "Choisi ✓" : "Choisir",
+        choisir: () => { if (plan !== "pro") return this.offre("site", nom + " est disponible"); this.setState({ domaine: nom }); this.flash(nom + " enregistré à votre nom · HTTPS actif sous 15 min"); } }; }),
+      domaineExistant: s.domaineExistant, setDomaineExistant: (e) => this.setState({ domaineExistant: e.target.value, dnsVisible: false, dnsOk: false }),
+      connecterDomaine: (e) => { e.preventDefault(); if (!domaineCible) return this.flash("Saisissez votre domaine, par exemple www.mon-entreprise.fr"); this.setState({ dnsVisible: true, dnsOk: false }); },
+      dnsVisible: s.dnsVisible,
+      dns: [["A", "@", "76.76.21.21"], ["CNAME", "www", "cname.vercel-dns.com."], ["TXT", "_portailtravaux", "ph-verif=7f3a9c21-" + slugify(domaineCible).slice(0, 12)]].map(([type, nom, valeur], i) => { const ok = s.dnsOk || i === 2; return { key: type, type, nom, valeur, etat: ok ? "Détecté" : "En attente", styleEtat: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: ok ? "#e6f4ec" : "var(--color-neutral-100)", color: ok ? "#1f7a4d" : "var(--color-neutral-800)" } }; }),
+      verifierDns: () => { if (plan !== "pro") return this.offre("site", "Connecter votre propre domaine"); this.setState({ dnsOk: true, domaine: domaineCible }); this.flash(domaineCible + " connecté · certificat HTTPS en cours d'émission"); },
+
+      // stats
+      periodes: ["7 jours", "30 jours", "12 mois"].map((l) => ({ key: l, label: l, choisir: () => this.setState({ periode: l }), style: { ...chip(s.periode === l), fontSize: "13px", padding: "8px 14px" } })),
+      kpis: [["Visites", fmt(853 * fac), "+18 % vs période précédente"], ["Visiteurs uniques", fmt(611 * fac), "62 % sur mobile"], ["Demandes via le formulaire", fmt(Math.max(1, 14 * fac)), "1,6 % des visites"], ["Clics sur le téléphone", fmt(Math.max(1, 31 * fac)), "3,6 % des visites"]].map(([label, valeur, note]) => ({ key: label, label, valeur, note })),
+      ...(() => {
+        const n = vals.length, haut = Math.ceil(mx / 10) * 10, auj = new Date();
+        const dateDe = (i) => { if (i === n - 1) return "Aujourd'hui"; const d = new Date(auj); d.setDate(d.getDate() - (n - 1 - i)); return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); };
+        const sv = s.barreSurvol;
+        return {
+          jours: vals.map((v, i) => ({ key: i, titre: dateDe(i) + " : " + v + " visites", survoler: () => this.setState({ barreSurvol: i }),
+            style: { flex: 1, height: Math.round((v / haut) * 150) + "px", borderRadius: "4px 4px 0 0", cursor: "default", background: i === n - 1 ? "var(--color-accent)" : sv === i ? "var(--color-accent-400)" : "var(--color-accent-200)" } })),
+          quitterBarre: () => this.setState({ barreSurvol: null }),
+          infobulleVisible: sv !== null && sv !== undefined,
+          infobulle: sv !== null && sv !== undefined ? dateDe(sv) + " · " + vals[sv] + " visites" : "",
+          styleInfobulle: { position: "absolute", left: (((sv || 0) + 0.5) / n) * 100 + "%", bottom: Math.round((vals[sv || 0] / haut) * 150) + 8 + "px", transform: "translateX(" + (sv > n - 4 ? "-90%" : sv < 3 ? "-10%" : "-50%") + ")", background: "var(--color-text)", color: "#fff", fontSize: "12px", fontWeight: 600, padding: "5px 9px", borderRadius: "6px", whiteSpace: "nowrap", pointerEvents: "none", boxShadow: "var(--shadow-md)" },
+          axeY: [0, haut / 2, haut].map((v) => ({ key: v, label: String(v), style: { position: "absolute", right: 0, bottom: (v / haut) * 100 + "%", transform: "translateY(50%)", fontSize: "12px", color: "var(--color-neutral-700)" } })),
+          axeX: [0, 7, 14, 21, n - 1].map((i) => ({ key: i, label: dateDe(i), style: { position: "absolute", left: ((i + 0.5) / n) * 100 + "%", transform: i === n - 1 ? "translateX(-80%)" : i === 0 ? "translateX(-20%)" : "translateX(-50%)", fontSize: "12px", whiteSpace: "nowrap", color: i === n - 1 ? "var(--color-accent-800)" : "var(--color-neutral-700)", fontWeight: i === n - 1 ? 700 : 400 } })),
+        };
+      })(),
+      blocsStats: [
+        bloc("D'où viennent vos visiteurs", [["Google (recherche)", 468], ["Votre fiche Portail Travaux", 197], ["Accès direct", 121], ["Réseaux sociaux", 47], ["Google Maps", 20]]),
+        bloc("Pages les plus vues", s.pages.filter((p) => p.vues > 0).slice(0, 5).map((p) => [p.nom, p.vues])),
+        bloc("Recherches Google qui vous trouvent", [["plombier bordeaux", 212, "212 · pos. 9"], ["salle de bain bordeaux", 141, "141 · pos. 14"], ["bertrand renovation", 88, "88 · pos. 1"], ["pompe à chaleur mérignac", 54, "54 · pos. 21"], ["plombier caudéran", 31, "31 · pos. 6"]]),
+      ],
+
+      // formulaire
+      champs: s.champs.map((c, i) => { const iv = inter(c.requis); return { key: c.id, libelle: c.libelle, typeNom: (TYPES.find((t) => t[0] === c.type) || [0, c.type])[1], verrouille: !!c.verrou, titreSupprimer: c.verrou ? "Champ obligatoire, non supprimable" : "Supprimer le champ", styleSupprimer: { width: "32px", height: "32px", border: 0, borderRadius: "8px", background: "none", cursor: c.verrou ? "not-allowed" : "pointer", fontSize: "18px", color: "var(--color-neutral-700)", opacity: c.verrou ? 0.3 : 1 }, styleInter: iv.style, styleInterRond: iv.rond,
+        renommer: (e) => { const v = e.target.value; this.majChamps((l) => { l[i] = { ...l[i], libelle: v }; return l; }); },
+        basculerRequis: () => { if (c.verrou) return this.flash("Le nom et le téléphone sont toujours obligatoires"); this.majChamps((l) => { l[i] = { ...l[i], requis: !l[i].requis }; return l; }); },
+        monter: () => this.majChamps((l) => { if (i > 0) { [l[i - 1], l[i]] = [l[i], l[i - 1]]; } return l; }),
+        descendre: () => this.majChamps((l) => { if (i < l.length - 1) { [l[i + 1], l[i]] = [l[i], l[i + 1]]; } return l; }),
+        supprimer: () => this.majChamps((l) => l.filter((x) => x.id !== c.id)) }; }).filter((x) => plan === "pro" || x.key <= 4),
+      typesChamps: TYPES.map(([type, nom]) => ({ key: type, nom, ajouter: () => this.majChamps((l) => l.concat([{ id: Date.now(), type, libelle: nom, requis: false }])) })),
+      reglagesForm: [["notif", "Email à chaque demande", "contact@bertrand-renovation.fr"], ["sms", "SMS à chaque demande", plan === "pro" ? "06 12 34 56 78" : "Réservé à Site Pro : soyez prévenu en plein chantier"], ["antispam", "Protection anti-robots Turnstile", "Invisible pour vos visiteurs : ni captcha, ni cookie publicitaire"], ["rgpd", "Mention RGPD sous le formulaire", "Obligatoire si vous collectez un email"]].map(([k, label, aide]) => { const verrou = plan !== "pro"; const iv = inter(verrou && k === "sms" ? false : s.regForm[k]); return { key: k, label, aide, verrou, styleLigne: { display: "flex", gap: "12px", alignItems: "flex-start", border: 0, background: "none", cursor: "pointer", padding: 0, textAlign: "left", color: "var(--color-text)", opacity: verrou ? 0.55 : 1 }, styleInter: iv.style, styleInterRond: iv.rond, basculer: () => { if (verrou) return this.offre("site", k === "sms" ? "SMS à chaque demande" : "Réglages du formulaire"); if (k === "rgpd") return this.flash("Mention obligatoire : elle reste affichée"); this.setState((x) => ({ regForm: { ...x.regForm, [k]: !x.regForm[k] } })); } }; }),
+      formGratuit: plan !== "pro",
+      styleZoneChamps: { border: 0, padding: 0, margin: 0, minWidth: 0, display: "grid", gap: "18px", opacity: plan !== "pro" ? 0.5 : 1, pointerEvents: plan !== "pro" ? "none" : "auto" },
+      champsTous: champsSite(plan === "pro" ? s.champs : s.champs.filter((c) => c.id <= 4)),
+      styleApercuForm: { display: "grid", gap: "14px", padding: "22px", borderRadius: "14px", background: pal.clair, fontFamily: pol.texte, color: "#1c2430", boxShadow: "var(--shadow-sm)" },
+      styleApercuTitre: { fontFamily: pol.titre, fontWeight: pol.poids, fontSize: "26px", lineHeight: 1.15 },
+      styleApercuBtn: { display: "flex", justifyContent: "center", padding: "13px 18px", borderRadius: "8px", background: pal.primaire, color: "#fff", fontWeight: 700, fontSize: "16px" },
+
+      toast: s.toast, toastVisible: !!s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

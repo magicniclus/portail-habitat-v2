@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+ignoredBuiltDependencies:
+  - '@firebase/util'
+
+onlyBuiltDependencies:
+  - '@sentry/cli'
+  - esbuild
+  - protobufjs
+  - re2
+  - sharp
+  - unrs-resolver

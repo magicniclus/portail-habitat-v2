@@ -1,0 +1,54 @@
+import type { Route } from 'next';
+import type { EnTetePublicProps } from '@/features/vitrine/EnTetePublic';
+import type { ColonnePied } from '@/features/vitrine/PiedPublic';
+import { routes } from '@/lib/routes';
+
+const ancre = (id: string) => `${routes.pro}#${id}` as Route;
+
+export const enTetePro: EnTetePublicProps = {
+  bandeau:
+    'Des particuliers vous contactent gratuitement dans votre zone · Inscription gratuite · 0 % de commission',
+  accueil: routes.pro,
+  variantLogo: 'pro',
+  acquisition: true,
+  liens: [
+    { libelle: 'Votre espace', href: ancre('espace'), menuSeul: true },
+    { libelle: 'Questions fréquentes', href: ancre('faq'), menuSeul: true },
+    { libelle: 'Je suis un particulier', href: routes.accueil },
+  ],
+  secondaire: { libelle: 'Espace pro', href: routes.connexionPro },
+  principal: { libelle: 'Inscription gratuite', href: ancre('inscription') },
+  principalCourt: "S'inscrire",
+};
+
+export const piedPro: { accroche: string; colonnes: ColonnePied[] } = {
+  accroche: 'La plateforme des artisans du bâtiment et de leurs clients.',
+  colonnes: [
+    {
+      titre: 'Portail Travaux Pro',
+      liens: [
+        { libelle: 'Inscription gratuite', href: ancre('inscription') },
+        { libelle: 'Votre espace', href: ancre('espace') },
+        { libelle: 'Questions fréquentes', href: ancre('faq') },
+      ],
+    },
+    {
+      titre: 'Mon compte',
+      liens: [
+        { libelle: 'Connexion Pro', href: routes.connexionPro },
+        { libelle: 'Application mobile', href: ancre('application') },
+        { libelle: 'Aide', href: routes.aideSujet('pro') },
+      ],
+    },
+    {
+      titre: 'Légal',
+      liens: [
+        { libelle: 'CGV professionnels', href: routes.legal('pro', 'cgv') },
+        { libelle: 'Charte de bonne conduite', href: routes.legal('pro', 'charte') },
+        { libelle: 'Mentions légales', href: routes.legal('pro', 'mentions') },
+        { libelle: 'Confidentialité', href: routes.legal('pro', 'confidentialite') },
+        { libelle: 'Sécurité du compte', href: routes.legal('pro', 'securite') },
+      ],
+    },
+  ],
+};

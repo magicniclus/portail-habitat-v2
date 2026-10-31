@@ -1,0 +1,387 @@
+import { describe, expect, it } from 'vitest';
+import {
+  controlesSeo,
+  couleur,
+  elementsDe,
+  erreurSousDomaine,
+  etatEnregistrement,
+  FORMULAIRE_GRATUIT,
+  liensOrphelins,
+  normaliserDomaine,
+  pageSite,
+  navigation,
+  prochaineVerification,
+  siteParDefaut,
+  sousDomaineDe,
+  textesACompleter,
+  validerAction,
+  validerEnvoi,
+  verifierLiensSite,
+  ancresDe,
+  fichiersCites,
+  type ContexteLiens,
+} from './index';
+
+// Palette passée par l'appelant (les couleurs vivent dans @ph/ui/tokens).
+const PALETTE = {
+  primaire: 'primaire',
+  accent: 'accent',
+  clair: 'clair',
+  sombre: 'sombre',
+} as const;
+const fiche = {
+  nomCommercial: 'Bertrand Rénovation',
+  metier: 'Plombier',
+  ville: 'Bordeaux',
+  telephone: '05 56 12 34 56',
+  pitch: 'Salle de bain clé en main et dépannage sous 24 h.',
+  noteMoyenne: 4.8,
+  nbAvis: 14,
+  raisonSociale: 'Bertrand Rénovation SARL',
+  siret: '81234567800021',
+  decennale: 'MAAF, contrat 4521-88',
+  photos: ['lib:r1/0', 'lib:r1/1', 'lib:r2/0'],
+};
+
+describe('site de départ depuis la fiche (sans IA)', () => {
+  const s = siteParDefaut(fiche, PALETTE);
+
+  it('accueil, contact et mentions valides contre les schémas ; navigation valide', () => {
+    expect(Object.keys(s.pages)).toEqual(['accueil', 'contact', 'mentions']);
+    for (const p of Object.values(s.pages)) expect(pageSite.safeParse(p).success).toBe(true);
+    expect(navigation.safeParse(s.navigation).success).toBe(true);
+  });
+
+  it('aucun lien cassé au départ (publiable tel quel)', () => {
+    expect(verifierLiensSite(s.pages, s.navigation)).toEqual([]);
+  });
+
+  it('accueil de conversion : formulaire dans le bandeau, avis, présentation, prestations, réalisations', () => {
+    const accueil = s.pages.accueil!;
+    expect(accueil.sections.map((x) => x.p.nom)).toEqual([
+      'Bandeau',
+      'Avis clients',
+      'Présentation',
+      'Prestations',
+      'Réalisations',
+      'Appel à l’action',
+      'Pied de page',
+    ]);
+    const bandeau = JSON.stringify(accueil.sections[0]);
+    expect(bandeau).toContain('"type":"formulaire"');
+    expect(bandeau).toContain('4,8/5');
+    expect(JSON.stringify(accueil.sections[2])).toContain('"type":"image"');
+  });
+
+  it('avis : les vrais d’abord, complétés jusqu’à 4 par des cartes « [à compléter] »', () => {
+    const avec = siteParDefaut(
+      { ...fiche, avis: [{ nom: 'Julie M.', note: 5, texte: 'Chantier impeccable.' }] },
+      PALETTE,
+    );
+    const avis = elementsDe(avec.pages.accueil!)
+      .map((e) => e.el)
+      .filter((e) => e.type === 'avis');
+    expect(avis).toHaveLength(4);
+    expect(avis[0]!.p).toMatchObject({ nom: 'Julie M.', note: 5, texte: 'Chantier impeccable.' });
+    expect(textesACompleter(avec.pages)).toHaveLength(3);
+    const complet = siteParDefaut(
+      {
+        ...fiche,
+        avis: Array.from({ length: 5 }, (_, i) => ({
+          nom: `Client ${i}`,
+          note: 4,
+          texte: 'Bien.',
+        })),
+      },
+      PALETTE,
+    );
+    expect(textesACompleter(complet.pages)).toEqual([]);
+  });
+
+  it('rien d’inventé : sans photos, pas de bloc réalisations ni d’image vide', () => {
+    const vide = siteParDefaut({ ...fiche, nbAvis: 0, noteMoyenne: 0, photos: [] }, PALETTE);
+    const accueil = vide.pages.accueil!;
+    expect(accueil.sections.map((x) => x.p.nom)).not.toContain('Réalisations');
+    expect(JSON.stringify(accueil)).not.toContain('"type":"image"');
+    expect(JSON.stringify(accueil)).not.toContain('/5 ·');
+  });
+});
+
+describe('actions et liens (SITE-09)', () => {
+  const ctx: ContexteLiens = {
+    pages: { accueil: new Set(['contact']), prestations: new Set() },
+    fichiers: new Set(['f1']),
+    formulaire: true,
+  };
+  it('cas valides et ancres des sections, blocs et contenus', () => {
+    expect(validerAction({ type: 'fichier', fichierId: 'f1' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'page', page: 'accueil', ancre: 'contact' }, ctx, 'x')).toBeNull();
+    expect(validerAction({ type: 'ancre' }, ctx, 'accueil')).toBe(
+      'Section introuvable sur la page',
+    );
+    expect(validerAction({ type: 'url' }, ctx, 'accueil')).toBe('Adresse manquante');
+    const s = siteParDefaut(fiche, PALETTE).pages.accueil!.sections;
+    const r = s[0]!.rows[0]!;
+    r.p.htmlId = 'ligne';
+    r.cols[0]!.p.htmlId = 'bloc';
+    r.cols[0]!.els[0]!.p.htmlId = 'titre';
+    expect([...ancresDe(s)]).toEqual(expect.arrayContaining(['ligne', 'bloc', 'titre']));
+  });
+
+  it('chaque type d’action', () => {
+    expect(validerAction({ type: 'page', page: 'prestations' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'page', page: 'inconnue' }, ctx, 'accueil')).toBe(
+      'Page introuvable',
+    );
+    expect(validerAction({ type: 'page', page: 'accueil', ancre: 'zz' }, ctx, 'accueil')).toBe(
+      'Section introuvable sur la page',
+    );
+    expect(validerAction({ type: 'ancre', ancre: 'contact' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'url', url: 'http://exemple.fr' }, ctx, 'accueil')).toBe(
+      'Adresse https:// obligatoire',
+    );
+    expect(validerAction({ type: 'url', url: 'pas une url' }, ctx, 'accueil')).toBe(
+      'Adresse invalide',
+    );
+    expect(
+      validerAction({ type: 'url', url: 'https://www.service-public.fr' }, ctx, 'accueil'),
+    ).toBeNull();
+    expect(validerAction({ type: 'tel', tel: '05 56 12 34 56' }, ctx, 'accueil')).toBeNull();
+    expect(validerAction({ type: 'whatsapp', tel: 'abc' }, ctx, 'accueil')).toBe(
+      'Numéro de téléphone invalide',
+    );
+    expect(validerAction({ type: 'email', email: 'a@b' }, ctx, 'accueil')).toBe(
+      'Adresse email invalide',
+    );
+    expect(validerAction({ type: 'formulaire' }, { ...ctx, formulaire: false }, 'accueil')).toBe(
+      'Aucun formulaire sur le site',
+    );
+    expect(validerAction({ type: 'fichier', fichierId: 'f2' }, ctx, 'accueil')).toBe(
+      'Fichier introuvable',
+    );
+    expect(validerAction({ type: 'aucun' }, ctx, 'accueil')).toBeNull();
+  });
+
+  it('mot lié sans destination', () => {
+    expect(
+      liensOrphelins('Voir [nos aides](#L1) et [contact](#L2)', { L1: { type: 'aucun' } }),
+    ).toEqual(['contact']);
+  });
+
+  it('un bouton vers une page supprimée bloque la publication avec un message clair', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    const { contact: _c, ...sansContact } = s.pages;
+    const erreurs = verifierLiensSite(sansContact, s.navigation);
+    expect(erreurs).toContainEqual({
+      pageId: 'accueil',
+      page: 'Navigation',
+      ou: 'Menu « Contact »',
+      erreur: 'Page introuvable',
+    });
+    expect(erreurs).toContainEqual({
+      pageId: 'accueil',
+      page: 'Navigation',
+      ou: 'Bouton « Devis gratuit »',
+      erreur: 'Page introuvable',
+    });
+  });
+
+  it('fichiers cités par les boutons, images, mots liés et la navigation', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    const f = (id: string) => ({ type: 'fichier' as const, fichierId: id });
+    const el = s.pages.accueil!.sections[0]!.rows[0]!.cols[0]!.els;
+    el.push({
+      ...el.find((e) => e.type === 'bouton')!,
+      id: 'b9',
+      p: { ...el.find((e) => e.type === 'bouton')!.p, action: f('up:f1') },
+    } as never);
+    const texte = el.find((e) => e.type === 'texte' || e.type === 'titre')!;
+    (texte.p as { liens?: object }).liens = { L1: f('up:f2'), L2: f('lib:x/0') };
+    s.navigation.cta.action = f('up:f3');
+    expect([...fichiersCites(s.pages, s.navigation)].sort()).toEqual(['f1', 'f2', 'f3']);
+    // Un fichier inconnu bloque la publication ; connu, il passe.
+    expect(
+      verifierLiensSite(s.pages, s.navigation).some((e) => e.erreur === 'Fichier introuvable'),
+    ).toBe(true);
+    const connus = new Set(['up:f1', 'up:f2', 'up:f3']);
+    expect(
+      verifierLiensSite(s.pages, s.navigation, connus).filter(
+        (e) => e.erreur === 'Fichier introuvable',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('site sans navigation : ses liens ne bloquent pas la publication', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    const { contact: _c, ...sansContact } = s.pages;
+    const nav = { ...s.navigation, masquee: true };
+    expect(verifierLiensSite(sansContact, nav).filter((e) => e.page === 'Navigation')).toEqual([]);
+  });
+
+  it('une page en brouillon ne compte pas comme destination', () => {
+    const s = siteParDefaut(fiche, PALETTE);
+    s.pages.contact!.statut = 'brouillon';
+    expect(verifierLiensSite(s.pages, s.navigation).length).toBeGreaterThan(0);
+  });
+});
+
+describe('couleurs sûres', () => {
+  it('jetons, #hex, rgb(), hsl() ; rien d’autre', () => {
+    for (const c of [
+      'primaire',
+      '#1d4f73',
+      '#fff',
+      'rgb(29, 79, 115)',
+      'rgba(0,0,0,.5)',
+      'hsl(210, 60%, 28%)',
+    ])
+      expect(couleur.safeParse(c).success).toBe(true);
+    for (const c of [
+      'red; background:url(x)',
+      'url(javascript:x)',
+      'expression(alert(1))',
+      '#12345g',
+    ])
+      expect(couleur.safeParse(c).success).toBe(false);
+  });
+});
+
+describe('sous-domaine (DOM-01)', () => {
+  it('format, tirets et noms réservés', () => {
+    expect(erreurSousDomaine('bertrand-renovation')).toBeNull();
+    expect(erreurSousDomaine('ab')).toBe('Entre 3 et 40 caractères.');
+    expect(erreurSousDomaine('Bertrand')).toBe('Lettres minuscules, chiffres et tirets seulement.');
+    expect(erreurSousDomaine('-bertrand')).toBe('Pas de tiret au début ni à la fin.');
+    expect(erreurSousDomaine('a--b')).toBe('Pas deux tirets à la suite.');
+    expect(erreurSousDomaine('admin')).toBe('Ce nom est réservé, choisissez-en un autre.');
+    expect(erreurSousDomaine('plombier')).toBe('Ce nom est réservé, choisissez-en un autre.');
+  });
+  it('proposition depuis le nom commercial', () => {
+    expect(sousDomaineDe('Bertrand Rénovation')).toBe('bertrand-renovation');
+    expect(sousDomaineDe('AB')).toBe('ab-artisan');
+    expect(erreurSousDomaine(sousDomaineDe('L’Atelier de Léa & Fils'))).toBeNull();
+  });
+});
+
+describe('formulaire du site', () => {
+  const ok = {
+    nom: 'Claire Martin',
+    telephone: '06 12 34 56 78',
+    email: 'claire@test.fr',
+    codePostal: '33700',
+  };
+  it('SITE-13 : site gratuit, champ supplémentaire rejeté', () => {
+    expect(validerEnvoi([], 'gratuit', ok)).toEqual({ ok: true, valeurs: ok });
+    expect(validerEnvoi([], 'gratuit', { ...ok, budget: '10 000 €' })).toEqual({
+      ok: false,
+      erreurs: { budget: 'Champ non accepté' },
+    });
+    expect(FORMULAIRE_GRATUIT.map((c) => c.id)).toEqual([
+      'nom',
+      'telephone',
+      'email',
+      'codePostal',
+    ]);
+  });
+  it('Site Pro : champs configurés, requis, types et options', () => {
+    const champs = [
+      ...FORMULAIRE_GRATUIT,
+      {
+        id: 'projet',
+        type: 'liste' as const,
+        libelle: 'Projet',
+        requis: true,
+        options: ['Salle de bain', 'Chauffage'],
+      },
+      { id: 'quand', type: 'date' as const, libelle: 'Quand', requis: false },
+    ];
+    expect(validerEnvoi(champs, 'site_pro', { ...ok, projet: 'Salle de bain' }).ok).toBe(true);
+    expect(validerEnvoi(champs, 'site_pro', { ...ok, projet: 'Piscine', quand: '14/10' })).toEqual({
+      ok: false,
+      erreurs: { projet: 'Choix invalide', quand: 'Valeur invalide' },
+    });
+    expect(validerEnvoi(champs, 'site_pro', { ...ok, codePostal: '' })).toEqual({
+      ok: false,
+      erreurs: { codePostal: 'Champ obligatoire', projet: 'Champ obligatoire' },
+    });
+  });
+});
+
+describe('DNS du domaine existant (DOM-04)', () => {
+  it('chaque ligne jugée seule ; valeur erronée → incorrect avec la valeur trouvée', () => {
+    expect(etatEnregistrement({ type: 'A', nom: '@', valeur: '76.76.21.21' }, [])).toEqual({
+      etat: 'en_attente',
+    });
+    expect(
+      etatEnregistrement({ type: 'A', nom: '@', valeur: '76.76.21.21' }, ['76.76.21.21']),
+    ).toEqual({ etat: 'ok' });
+    expect(
+      etatEnregistrement({ type: 'A', nom: '@', valeur: '76.76.21.21' }, [
+        '76.76.21.21',
+        '1.2.3.4',
+      ]),
+    ).toEqual({ etat: 'incorrect', trouve: '76.76.21.21, 1.2.3.4' });
+    expect(
+      etatEnregistrement({ type: 'CNAME', nom: 'www', valeur: 'cname.vercel-dns.com.' }, [
+        'CNAME.vercel-dns.com',
+      ]),
+    ).toEqual({ etat: 'ok' });
+    expect(
+      etatEnregistrement({ type: 'CNAME', nom: 'www', valeur: 'cname.vercel-dns.com.' }, [
+        'ghs.google.com.',
+      ]),
+    ).toEqual({ etat: 'incorrect', trouve: 'ghs.google.com' });
+    expect(
+      etatEnregistrement({ type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=abc' }, [
+        '"v=spf1 -all"',
+        '"ph-verif=abc"',
+      ]),
+    ).toEqual({ etat: 'ok' });
+    expect(
+      etatEnregistrement({ type: 'TXT', nom: '_portailtravaux', valeur: 'ph-verif=abc' }, [
+        'ph-verif=ABC',
+      ]),
+    ).toEqual({ etat: 'incorrect', trouve: 'ph-verif=ABC' });
+  });
+  it('rythme : 2 min pendant 1 h, 30 min jusqu’à 72 h, puis arrêt', () => {
+    expect(prochaineVerification(10 * 60_000)).toBe(120_000);
+    expect(prochaineVerification(5 * 3_600_000)).toBe(1_800_000);
+    expect(prochaineVerification(73 * 3_600_000)).toBeNull();
+  });
+  it('domaine saisi normalisé ; le nôtre refusé', () => {
+    expect(normaliserDomaine(' https://WWW.Bertrand-Renovation.fr/accueil ')).toBe(
+      'bertrand-renovation.fr',
+    );
+    expect(normaliserDomaine('bertrand')).toBeNull();
+    expect(normaliserDomaine('x.portailtravaux.fr')).toBeNull();
+  });
+});
+
+describe('SEO de page', () => {
+  it('contrôles et score', () => {
+    const p = siteParDefaut(fiche, PALETTE).pages.accueil!;
+    const r = controlesSeo(p, 'Bordeaux');
+    expect(r.controles.find((c) => c.cle === 'h1')?.ok).toBe(true);
+    expect(r.controles.find((c) => c.cle === 'ville')?.ok).toBe(true);
+    expect(r.controles.find((c) => c.cle === 'alt')?.ok).toBe(true);
+    expect(
+      controlesSeo({ ...p, seo: { ...p.seo, title: 'Court' } }).controles.find(
+        (c) => c.cle === 'title',
+      )?.ok,
+    ).toBe(false);
+    expect(r.score).toBeGreaterThanOrEqual(60);
+  });
+});
+
+describe('libellés du site', () => {
+  it('score SEO et état de publication', async () => {
+    const { libelleScoreSeo, etatPublication, STATUTS_PAGE } = await import('./libelles');
+    expect(libelleScoreSeo(100).tone).toBe('succes');
+    expect(libelleScoreSeo(60).tone).toBe('attention');
+    expect(libelleScoreSeo(20).tone).toBe('danger');
+    expect(etatPublication({ modifie: true }).libelle).toBe('Pas encore publié');
+    expect(etatPublication({ versionPubliee: 2, modifie: true }).tone).toBe('attention');
+    expect(etatPublication({ versionPubliee: 2, modifie: false }).libelle).toBe('En ligne');
+    expect(STATUTS_PAGE.publiee.tone).toBe('succes');
+  });
+});

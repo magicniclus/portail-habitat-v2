@@ -1,4 +1,4 @@
-# Portail Habitat — règles du projet
+# Portail Travaux — règles du projet
 
 > À copier à la racine du dépôt. Claude Code relit ce fichier à chaque session : il doit rester court.
 
@@ -29,9 +29,15 @@ Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, 
 - Recherche « Quel est votre projet ? » : `docs/RECHERCHE.md` + `docs/data/recherche-intentions.json`
 - Parcours en plusieurs étapes et reprise : `docs/REPRISE_PARCOURS.md`
 - Emails, SMS, notifications : `docs/EMAILS.md` (tout envoi passe par `notifier()`)
+- **Devis et factures** (gratuit) : `docs/DATABASE.md` §8 bis-ter — mentions obligatoires vérifiées par `verifierMentions()` côté client ET serveur ; PDF uniquement téléchargeable ; facturation électronique 2027
+- **Navigation espace artisan** : outils dans la barre latérale, « Mon compte » épinglé en bas (onglets Profil · Équipe · Abonnement · Aide)
+- **Offres, prix, droits, paiements : `docs/PAIEMENTS.md` (fait foi ; aucun prix avant l'inscription)**
 - Stripe, Functions, SEO, RGPD : `docs/INTEGRATIONS.md`
 - Back-office : `docs/ADMIN.md` · Algorithme : `docs/MATCHING.md` · Demandes partenaires : `docs/IMPORT_LEADS.md` (contrat du webhook) + `docs/DATABASE.md` §4 bis
 - Conversion et séquences d'emails : `docs/CONVERSION.md` · Comportement des visiteurs : `docs/COMPORTEMENT.md` · Assistant IA : `docs/IA_ADMIN.md`
+- **Site internet artisan** : `docs/SITE_INTERNET.md` · **IA du site** (création, composants, textes, monétisation Site Pro) : `docs/IA_SITE.md` — l'IA ne renvoie que des opérations validées, jamais de HTML, et ne publie jamais
+- **Blog artisan** : `docs/BLOG.md` (un blog par artisan, quotas IA 5/15, mode autonome en un clic, pilote automatique, mentions légales lues depuis les paramètres de devis)
+- **Fonction payante cliquée** : toujours la fenêtre d'offre (PAIEMENTS §4), puis Stripe Checkout directement (CGV acceptées chez Stripe) ; jamais d'activation sans paiement
 - **Coûts** : `docs/COUTS.md` (règles d'économie à respecter dans tout le code)
 - Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `lib/`)
 - Avancement et décisions : `docs/AVANCEMENT.md` (à mettre à jour à la fin de chaque lot)
@@ -76,3 +82,14 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - À la fin de chaque lot (et avant toute pause longue) : mets à jour `docs/PROGRESSION.md` (statut, date, tests passés, ce qui reste), puis commite.
 - Commits petits et fréquents : une fonctionnalité qui passe ses tests = un commit. Une session interrompue ne doit jamais perdre plus d'une heure de travail.
 - Ne déploie jamais en production sans le « go » explicite du propriétaire.
+
+- **Landings par outil** : `docs/LANDINGS.md` (gabarit `Landing Outil`, source enregistrée sur le compte, onboarding selon la source ; jamais d'avis fictif ni de chiffre non sourcé en production)
+- **Domaines / DNS / HTTPS** : `docs/DOMAINES.md` (sous-domaine gratuit, achat OVH au nom de l'artisan, connexion domaine existant, vérification, valeurs DNS lues depuis l'API Vercel)
+
+## Règles locales (conservées de l'ancien CLAUDE.md, priment en cas de conflit)
+- Stack réelle du dépôt : **Next.js 16** (avec `proxy.ts`), **TypeScript 6** strict, monorepo pnpm + turbo (`apps/*`, `packages/*`).
+- Commandes complètes : `pnpm dev` demande Java (émulateurs) ; `pnpm test:unit` lance les tests sans émulateur ; `pnpm knip` et `pnpm format` font partie des vérifications.
+- Schémas Zod dans `packages/core/src/schemas` (et non `lib/schemas`) ; `z` s'importe de `@ph/core/zod` (messages en français), jamais de `zod`.
+- La logique de `renderVals()` et les constantes des maquettes s'extraient dans `packages/core/` (et non `lib/`).
+- Branche : en session web, la branche imposée par la session.
+- Suivi : `docs/AVANCEMENT.md` reste le seul fichier de suivi détaillé (lots 0 à 14 déjà faits) ; `docs/PROGRESSION.md` est tenu à jour en résumé.
