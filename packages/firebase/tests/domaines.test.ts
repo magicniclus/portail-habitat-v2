@@ -21,6 +21,10 @@ import {
 } from '../src/serveur/sites';
 import { synchroniserOffreSite } from '../src/serveur/sites/offre';
 
+/** Vrais avis : le site de départ n'a aucune carte « [à compléter] » et se publie tel quel. */
+const avisDeTest = () =>
+  Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' }));
+
 // DOMAINES.md §8 : DOM-04, DOM-06 (échec après 72 h), DOM-07, DOM-08 ; domaine unique (§6).
 let db: Firestore;
 let horloge = Date.UTC(2026, 9, 14, 10);
@@ -90,7 +94,13 @@ beforeEach(async () => {
   await creerSite(s(), proprio, {
     sousDomaine: 'bertrand',
     initial: siteParDefaut(
-      { nomCommercial: 'Bertrand', metier: 'Plombier', ville: 'Bordeaux', photos: [] },
+      {
+        nomCommercial: 'Bertrand',
+        metier: 'Plombier',
+        ville: 'Bordeaux',
+        photos: [],
+        avis: avisDeTest(),
+      },
       PALETTE,
     ),
   });

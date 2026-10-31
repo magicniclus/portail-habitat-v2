@@ -1,6 +1,6 @@
 import type { Navigation, PageSite, StatutDomaine, Theme } from '@ph/core/sites';
 import type { DocumentData, Firestore } from 'firebase-admin/firestore';
-import { chemins } from '../../chemins';
+import { chemins, collections } from '../../chemins';
 
 export interface SitePublie {
   siteId: string;
@@ -168,4 +168,26 @@ export async function lirePhotosPubliees(
     id: d.id,
     urls: ((d.get('photos') as { url: string }[] | undefined) ?? []).map((p) => p.url),
   }));
+}
+
+/** Derniers avis publiés sur Portail Travaux (site de départ, modèles) : nom affiché, note, texte. */
+export async function lireAvisPublies(
+  db: Firestore,
+  artisanId: string,
+  limite = 4,
+): Promise<{ nom: string; note: number; texte: string }[]> {
+  const r = await db
+    .collection(collections.avis)
+    .where('artisanId', '==', artisanId)
+    .where('statut', '==', 'publie')
+    .orderBy('publieLe', 'desc')
+    .limit(limite)
+    .get();
+  return r.docs
+    .map((d) => ({
+      nom: String(d.get('nomAffiche') ?? ''),
+      note: Number(d.get('note')),
+      texte: String(d.get('texte') ?? ''),
+    }))
+    .filter((a) => a.texte && a.note >= 1 && a.note <= 5);
 }

@@ -14,6 +14,10 @@ import {
   type ServicesIaSite,
 } from '../src/serveur/sites';
 
+/** Vrais avis : le site de départ n'a aucune carte « [à compléter] » et se publie tel quel. */
+const avisDeTest = () =>
+  Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' }));
+
 // IA_SITE.md §7 : SITE-IA-03, 04, 05, 08, 10 (06 : tests du cœur, 01/02/07/09 : création assistée).
 let db: Firestore;
 let reponses: (string | Error)[] = [];
@@ -40,7 +44,13 @@ const PALETTE = {
   sombre: 'sombre',
 } as const;
 const initial = siteParDefaut(
-  { nomCommercial: 'Durand Plomberie', metier: 'Plombier', ville: 'Pessac', photos: [] },
+  {
+    nomCommercial: 'Durand Plomberie',
+    metier: 'Plombier',
+    ville: 'Pessac',
+    photos: [],
+    avis: avisDeTest(),
+  },
   PALETTE,
 );
 const titreId = elementsDe(initial.pages.accueil!).find((e) => e.el.type === 'titre')!.el.id;

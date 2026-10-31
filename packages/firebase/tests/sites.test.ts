@@ -43,6 +43,12 @@ const initial = () =>
       ville: 'Bordeaux',
       telephone: '05 56 12 34 56',
       photos: [],
+      // Vrais avis : aucune carte « [à compléter] », le site se publie tel quel.
+      avis: Array.from({ length: 4 }, (_, i) => ({
+        nom: `Client ${i}`,
+        note: 5,
+        texte: 'Parfait.',
+      })),
     },
     PALETTE,
   );
@@ -140,7 +146,7 @@ describe('publication', () => {
       page: 'Accueil',
       erreur: 'Page introuvable',
     });
-    expect(e.message).toContain('Bouton « Demander un devis gratuit » : Page introuvable');
+    expect(e.message).toContain('Bouton « 05 56 12 34 56 » : Page introuvable');
     expect(await lireSitePublie(db, 'bertrand.portailtravaux.fr')).toBeNull();
   });
 

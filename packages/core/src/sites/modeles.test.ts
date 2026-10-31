@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAUTS_ELEMENT } from './catalogue';
 import { siteParDefaut, type FicheSite } from './defaut';
 import { appliquerModeleSite, MODELES_SITE, modeleSite } from './modeles';
 
@@ -16,6 +17,31 @@ const PALETTE = { primaire: '#1d4f73', accent: '#c97a2b', clair: '#f2ede4', somb
 const AUTRE = { primaire: '#6e1f2f', accent: '#b88536', clair: '#f6f0e6', sombre: '#2a1015' };
 const site = () => siteParDefaut(FICHE, PALETTE);
 const bandeau = (s: ReturnType<typeof site>) => s.pages.accueil!.sections[0]!;
+/** Ancien bandeau (sites créés avant le formulaire dans le bandeau) : texte, photo à droite. */
+const ancien = (photo = true) => {
+  const s = site();
+  const b = bandeau(s);
+  const texte = b.rows[0]!.cols[0]!;
+  b.p.fondImage = '';
+  b.rows[0]!.cols = photo
+    ? [
+        { ...texte, w: 6 },
+        {
+          id: 'c-photo',
+          w: 6,
+          p: { ...texte.p, pad: 0, ombre: false, fond: 'aucun' },
+          els: [
+            {
+              id: 'e-photo',
+              type: 'image',
+              p: { ...DEFAUTS_ELEMENT.image, src: 'lib:r1/0', legende: 'Chantier' },
+            },
+          ],
+        },
+      ]
+    : [{ ...texte, w: 12 }];
+  return s;
+};
 
 describe('modèles de site (SITE_INTERNET §4.7)', () => {
   it('6 modèles fournis, palettes de 0 à 5', () => {
@@ -44,8 +70,8 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     expect(r.navigation).toBe(s.navigation);
   });
 
-  it('photo plein écran : la photo du bandeau passe en fond voilé, textes gardés', () => {
-    const s = site();
+  it('photo plein écran (ancien bandeau) : la photo passe en fond voilé, textes gardés', () => {
+    const s = ancien();
     const r = appliquerModeleSite(s, modeleSite('franc')!, AUTRE, true);
     const b = bandeau(r);
     expect(b.p).toMatchObject({ fondType: 'image', fondImage: 'lib:r1/0', voileOpacite: 62 });
@@ -82,7 +108,7 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
   });
 
   it('bandeau sans photo : le modèle photo garde un grand bandeau centré, sur la couleur principale', () => {
-    const s = siteParDefaut({ ...FICHE, photos: [] }, PALETTE);
+    const s = ancien(false);
     const r = appliquerModeleSite(s, modeleSite('premium')!, AUTRE, true);
     expect(bandeau(r).p).toMatchObject({
       fondType: 'couleur',
@@ -95,11 +121,11 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     });
     const boutons = (x: typeof r) =>
       bandeau(x).rows[0]!.cols[0]!.els.flatMap((e) => (e.type === 'bouton' ? [e.p.enLigne] : []));
-    expect(boutons(r)).toEqual([false, false]);
+    expect(boutons(r)).toEqual([false]);
     // Classique ensuite : de nouveau aligné à gauche, fond clair, boutons côte à côte.
     const c = appliquerModeleSite(r, modeleSite('classique')!, PALETTE, true);
     expect(bandeau(c).p.fond).toBe('clair');
-    expect(boutons(c)).toEqual([true, true]);
+    expect(boutons(c)).toEqual([true]);
     expect(bandeau(c).rows[0]!.cols[0]!.els.find((e) => e.type === 'titre')!.p).toMatchObject({
       align: 'left',
     });
@@ -116,12 +142,15 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
   const forme = (x: ReturnType<typeof site>) =>
     JSON.parse(JSON.stringify(x.pages, (k, v) => (k === 'id' ? undefined : v))) as unknown;
 
-  it('un modèle ne dépend pas du précédent, même après un rechargement (sans « avant »)', () => {
+  it.each([
+    ['bandeau avec formulaire', site],
+    ['ancien bandeau photo', () => ancien()],
+  ])('un modèle ne dépend pas du précédent (%s), même après un rechargement', (_, depart) => {
     for (const a of MODELES_SITE)
       for (const b of MODELES_SITE) {
-        const direct = appliquerModeleSite(site(), b, AUTRE, true);
+        const direct = appliquerModeleSite(depart(), b, AUTRE, true);
         const enchaine = appliquerModeleSite(
-          appliquerModeleSite(site(), a, PALETTE, true),
+          appliquerModeleSite(depart(), a, PALETTE, true),
           b,
           AUTRE,
           true,
@@ -138,12 +167,12 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
   });
 
   it('classique après un ancien bandeau photo (colonne supprimée) : la photo revient à droite', () => {
-    const photo = appliquerModeleSite(site(), modeleSite('franc')!, AUTRE, true);
+    const photo = appliquerModeleSite(ancien(), modeleSite('franc')!, AUTRE, true);
     const r0 = bandeau(photo).rows[0]!;
     r0.cols = r0.cols.filter((c) => !c.p.masque.desktop);
     const r = appliquerModeleSite(photo, modeleSite('classique')!, PALETTE, true);
     const b = bandeau(r);
-    expect(b.p).toMatchObject({ fondType: 'couleur', fondImage: '', fond: 'clair' });
+    expect(b.p).toMatchObject({ fondType: 'couleur', fond: 'clair' });
     expect(b.rows[0]!.cols.map((c) => c.w)).toEqual([6, 6]);
     expect(b.rows[0]!.cols[1]!.els[0]).toMatchObject({ type: 'image', p: { src: 'lib:r1/0' } });
   });
@@ -176,5 +205,27 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     // Sans la fiche : les pages existantes sont seulement variées.
     const sansFiche = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, true);
     expect(sansFiche.pages.accueil!.sections[0]!.p.nom).toBe('Ma zone');
+  });
+
+  it('bandeau avec formulaire : deux colonnes gardées, photo de la fiche en fond ou couleur principale', () => {
+    const r = appliquerModeleSite(site(), modeleSite('premium')!, AUTRE, true);
+    const b = bandeau(r);
+    expect(b.p).toMatchObject({ fondType: 'image', fondImage: 'lib:r1/0', voileOpacite: 62 });
+    expect(b.rows[0]!.cols.map((c) => [c.w, c.p.masque.desktop])).toEqual([
+      [7, false],
+      [5, false],
+    ]);
+    expect(JSON.stringify(b)).toContain('"type":"formulaire"');
+    const sans = appliquerModeleSite(
+      siteParDefaut({ ...FICHE, photos: [] }, PALETTE),
+      modeleSite('franc')!,
+      AUTRE,
+      true,
+    );
+    expect(bandeau(sans).p).toMatchObject({ fondType: 'couleur', fond: 'primaire' });
+    // L'ordre des zones ne change jamais.
+    const ordre = (x: ReturnType<typeof site>) => x.pages.accueil!.sections.map((z) => z.p.nom);
+    for (const m of MODELES_SITE)
+      expect(ordre(appliquerModeleSite(site(), m, AUTRE, true))).toEqual(ordre(site()));
   });
 });

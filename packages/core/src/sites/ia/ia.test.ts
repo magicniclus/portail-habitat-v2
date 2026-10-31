@@ -24,6 +24,8 @@ const site = siteParDefaut(
     ville: 'Pessac',
     telephone: '05 56 12 34 56',
     photos: [],
+    // Vrais avis : aucune carte « [à compléter] » dans le site de départ.
+    avis: Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' })),
   },
   palette,
 );

@@ -16,7 +16,14 @@ export interface FicheSite {
   decennale?: string;
   /** `lib:{realisationId}/{index}` des photos publiées. */
   photos: string[];
+  /** Derniers avis publiés sur Portail Travaux (les plus récents d'abord). */
+  avis?: { nom: string; note: number; texte: string }[];
+  /** Noms des métiers de l'entreprise (prestations). */
+  prestations?: string[];
 }
+
+/** Nombre d'avis du bandeau d'avis ; complété par des cartes à remplir (jamais d'avis inventé). */
+export const AVIS_ACCUEIL = 4;
 
 export interface SiteInitial {
   theme: Theme;
@@ -109,6 +116,19 @@ function fabrique() {
       type: 'chiffre',
       p: { ...base, valeur, label, taille: v3(40, 36, 32), couleur: 'auto', align: 'left' },
     }),
+    avis: (nom: string, note: number, texte: string): Element => ({
+      id: id('e'),
+      type: 'avis',
+      p: {
+        ...base,
+        mb: 0,
+        // Ordre des clés du schéma (comparaisons de l'aperçu IA).
+        nom,
+        texte,
+        note: Math.min(5, Math.max(1, Math.round(note))),
+        align: 'left',
+      },
+    }),
     formulaire: (): Element => ({
       id: id('e'),
       type: 'formulaire',
@@ -121,6 +141,7 @@ function fabrique() {
     o: Partial<{
       pad: number;
       arrondi: number;
+      ombre: boolean;
       fond: 'aucun' | 'clair' | 'blanc';
       valign: 'start' | 'center';
     }> = {},
@@ -193,13 +214,16 @@ const page = (
 
 /**
  * Site de départ, sans IA, à partir de la fiche (modèle « Artisan classique ») : accueil, contact
- * et mentions légales. La palette vient des tokens (`palettesSites` de `@ph/ui/tokens`). Aucun chiffre ni avis inventé : un bloc sans donnée réelle n'est pas créé.
+ * et mentions légales. La palette vient des tokens (`palettesSites` de `@ph/ui/tokens`). Aucun chiffre
+ * ni avis inventé : les cartes d'avis sans avis réel sont « [à compléter] » (publication bloquée).
  */
 export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInitial {
   const { el, col, ligne, section } = fabrique();
   const devis = A('formulaire', { formulaire: 'defiler' });
   const tel = f.telephone ? A('tel', { tel: f.telephone }) : null;
   const accroche = f.pitch || `${f.metier} à ${f.ville} : devis gratuit et sans engagement.`;
+  // Accueil orienté conversion : formulaire dans le bandeau, avis, présentation avec photo,
+  // prestations, réalisations. Les modèles changent le style, jamais cet ordre.
   const bandeau = section(
     'Bandeau',
     [
@@ -212,75 +236,130 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
                 mb: 20,
               }),
               avec(el.texte(accroche), { mb: 24 }),
-              el.bouton('Demander un devis gratuit', devis),
+              ...(f.noteMoyenne && f.nbAvis
+                ? [
+                    avec(
+                      el.texte(
+                        `★ ${String(f.noteMoyenne).replace('.', ',')}/5 · ${f.nbAvis} avis vérifiés par Portail Travaux`,
+                      ),
+                      { mb: 20, taille: v3(16, 16, 15) },
+                    ),
+                  ]
+                : []),
               ...(tel ? [el.bouton(f.telephone!, tel, 'contour')] : []),
             ],
-            f.photos[0] ? 6 : 12,
+            7,
             { valign: 'center' },
           ),
-          ...(f.photos[0]
-            ? [col([el.image(f.photos[0], `Chantier réalisé par ${f.nomCommercial}`)], 6)]
-            : []),
+          col([avec(el.titre('Votre devis gratuit', 'h3'), { mb: 12 }), el.formulaire()], 5, {
+            fond: 'blanc',
+            pad: 28,
+            arrondi: 16,
+            ombre: true,
+          }),
         ],
         48,
         'center',
       ),
     ],
     'clair',
-    '',
+    'devis',
     v3(80, 60, 40),
   );
-  const avis =
-    f.nbAvis && f.noteMoyenne
-      ? [
-          section(
-            'Avis clients',
+  // Photo gardée pour les modèles « photo plein écran » (fond activé par le modèle).
+  bandeau.p.fondImage = (f.photos[0] ?? '') as typeof bandeau.p.fondImage;
+  const vrais = (f.avis ?? []).slice(0, AVIS_ACCUEIL);
+  const cartesAvis = [
+    ...vrais.map((a) => el.avis(a.nom, a.note, a.texte)),
+    // À remplir avant la publication (« [à compléter] » la bloque) : aucun avis n'est inventé.
+    ...Array.from({ length: AVIS_ACCUEIL - vrais.length }, () =>
+      el.avis(
+        'Prénom du client [à compléter]',
+        5,
+        '[à compléter] Collez ici l’avis d’un de vos clients, ou retirez cette carte.',
+      ),
+    ),
+  ];
+  const avis = section(
+    'Avis clients',
+    [
+      ligne([col([el.titre('Ils nous ont fait confiance')], 12)], 0),
+      ligne(
+        cartesAvis.map((a) => col([a], 3, { fond: 'blanc', pad: 24, arrondi: 12, ombre: true })),
+        20,
+      ),
+    ],
+    'clair',
+  );
+  const photoPresentation = f.photos[1] ?? f.photos[0];
+  const presentation = section('Présentation', [
+    ligne(
+      [
+        col(
+          [
+            el.titre('Qui sommes-nous ?'),
+            avec(
+              el.texte(
+                f.description ||
+                  f.pitch ||
+                  `${f.nomCommercial}, ${f.metier.toLowerCase()} à ${f.ville}.`,
+              ),
+              { mb: 24 },
+            ),
+            el.bouton('Demander un devis gratuit', devis),
+          ],
+          photoPresentation ? 6 : 12,
+          { valign: 'center' },
+        ),
+        ...(photoPresentation
+          ? [col([el.image(photoPresentation, `L’équipe de ${f.nomCommercial} au travail`)], 6)]
+          : []),
+      ],
+      48,
+      'center',
+    ),
+  ]);
+  const metiers = f.prestations?.length ? f.prestations.slice(0, 6) : [f.metier];
+  const prestations = section(
+    'Prestations',
+    [
+      ligne([col([el.titre('Nos prestations')], 12)], 0),
+      ligne(
+        metiers.map((m) =>
+          col(
             [
-              ligne([
-                col(
-                  [
-                    el.chiffre(
-                      `${String(f.noteMoyenne).replace('.', ',')}/5`,
-                      `Note moyenne sur ${f.nbAvis} avis vérifiés par Portail Travaux`,
-                    ),
-                  ],
-                  12,
-                ),
-              ]),
+              avec(el.titre(m, 'h3'), { mb: 8 }),
+              avec(el.texte(`Votre projet de ${m.toLowerCase()} à ${f.ville} et alentours.`), {
+                mb: 20,
+              }),
+              el.bouton('Demander un devis', devis, 'contour'),
             ],
-            'blanc',
-            '',
-            v3(56, 44, 32),
+            metiers.length === 1 ? 12 : metiers.length === 2 ? 6 : 4,
+            { fond: 'clair', pad: 24, arrondi: 12 },
           ),
-        ]
-      : [];
-  const presentation = f.description
+        ),
+        20,
+      ),
+    ],
+    'blanc',
+  );
+  const realisations = f.photos.length
     ? [
-        section('Présentation', [
-          ligne([col([el.titre('Qui sommes-nous ?'), el.texte(f.description)], 12)]),
-        ]),
+        section(
+          'Réalisations',
+          [
+            ligne([col([el.titre('Nos réalisations')], 12)], 0),
+            ligne(
+              f.photos
+                .slice(0, 6)
+                .map((p, i) => col([el.image(p, `Réalisation ${i + 1} de ${f.nomCommercial}`)], 4)),
+              20,
+            ),
+          ],
+          'clair',
+        ),
       ]
     : [];
-  const realisations =
-    f.photos.length > 1
-      ? [
-          section(
-            'Réalisations',
-            [
-              ligne([col([el.titre('Chantiers récents')], 12)]),
-              ligne(
-                f.photos
-                  .slice(0, 3)
-                  .map((p, i) =>
-                    col([el.image(p, `Réalisation ${i + 1} de ${f.nomCommercial}`)], 4),
-                  ),
-                20,
-              ),
-            ],
-            'clair',
-          ),
-        ]
-      : [];
   const contact = () =>
     section(
       'Contact et devis',
@@ -356,7 +435,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
         meta: accroche.slice(0, 320),
         motCle: `${f.metier} ${f.ville}`.toLowerCase(),
       },
-      [bandeau, ...avis, ...presentation, ...realisations, contact(), pied()],
+      [bandeau, avis, presentation, prestations, ...realisations, pied()],
     ),
     contact: page(
       'Contact et devis',

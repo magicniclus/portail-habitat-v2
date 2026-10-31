@@ -3,6 +3,7 @@ import { peut } from '@ph/core/equipe';
 import { formatTel } from '@ph/core/format';
 import { droitsDe } from '@ph/core/paiements';
 import {
+  AVIS_ACCUEIL,
   controlesSeo,
   joursPrecedents,
   moisPrecedents,
@@ -21,6 +22,7 @@ import { chemins } from '@ph/firebase/chemins';
 import {
   hebergeurDepuisEnv,
   lireMediasSite,
+  lireAvisPublies,
   lirePhotosPubliees,
   lireSiteEdition,
   lireStatsSite,
@@ -82,11 +84,12 @@ export async function accesSite(suite: Route) {
 
 /** Données de la fiche reprises dans le site de départ ; ce qui manque reste vide (pas d'invention). */
 export async function ficheDuSite(artisanId: string): Promise<FicheSite> {
-  const [artisan, publique, param, realisations] = await Promise.all([
+  const [artisan, publique, param, realisations, avis] = await Promise.all([
     db().doc(chemins.artisan(artisanId)).get(),
     db().doc(chemins.artisanPublic(artisanId)).get(),
     db().doc(chemins.parametresFacturation(artisanId)).get(),
     lirePhotosPubliees(db(), artisanId, 12),
+    lireAvisPublies(db(), artisanId, AVIS_ACCUEIL),
   ]);
   const a = (k: string) => artisan.get(k) as string | undefined;
   const pub = (k: string) => publique.get(k) as string | number | undefined;
@@ -110,6 +113,10 @@ export async function ficheDuSite(artisanId: string): Promise<FicheSite> {
     ...(siege ? { adresse: `${siege.ligne1}, ${siege.codePostal} ${siege.ville}` } : {}),
     ...(decennale ? { decennale: `${decennale.assureur}, contrat ${decennale.contrat}` } : {}),
     photos: realisations.flatMap((r) => r.urls.slice(0, 3).map((_, i) => `lib:${r.id}/${i}`)),
+    ...(avis.length ? { avis } : {}),
+    prestations: ((artisan.get('metiers') as string[] | undefined) ?? [])
+      .map(nomMetier)
+      .filter(Boolean),
   };
 }
 

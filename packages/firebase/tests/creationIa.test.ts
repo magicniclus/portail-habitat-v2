@@ -16,6 +16,10 @@ import {
   type ServicesIaSite,
 } from '../src/serveur/sites';
 
+/** Vrais avis : le site de départ n'a aucune carte « [à compléter] » et se publie tel quel. */
+const avisDeTest = () =>
+  Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' }));
+
 // IA_SITE.md §7 : SITE-IA-01, 02, 09, 10 (07 : tests du cœur).
 let db: Firestore;
 let reponses: string[] = [];
@@ -92,7 +96,13 @@ beforeEach(async () => {
   await creerSite(s(), proprio, {
     sousDomaine: 'durand',
     initial: siteParDefaut(
-      { nomCommercial: 'Durand', metier: 'Plombier', ville: 'Pessac', photos: [] },
+      {
+        nomCommercial: 'Durand',
+        metier: 'Plombier',
+        ville: 'Pessac',
+        photos: [],
+        avis: avisDeTest(),
+      },
       PALETTE,
     ),
   });

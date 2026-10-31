@@ -22,6 +22,10 @@ import {
 import type { AppelIa, ReponseIa } from '../src/serveur/ia';
 import { creerSite } from '../src/serveur/sites';
 
+/** Vrais avis : le site de départ n'a aucune carte « [à compléter] » et se publie tel quel. */
+const avisDeTest = () =>
+  Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' }));
+
 // BLOG §2 bis, D70 : BLOG-10 à BLOG-13 (pilote toujours validé par l'artisan).
 let db: Firestore;
 let maintenant = Date.UTC(2026, 9, 17, 10);
@@ -114,7 +118,13 @@ beforeEach(async () => {
   await creerSite({ db, horloge: () => maintenant, domaineBase: 'portailtravaux.fr' }, ctx, {
     sousDomaine: 'site-a1',
     initial: siteParDefaut(
-      { nomCommercial: 'Durand', metier: 'Plombier', ville: 'Pessac', photos: [] },
+      {
+        nomCommercial: 'Durand',
+        metier: 'Plombier',
+        ville: 'Pessac',
+        photos: [],
+        avis: avisDeTest(),
+      },
       { primaire: 'primaire', accent: 'accent', clair: 'clair', sombre: 'sombre' },
     ),
   });

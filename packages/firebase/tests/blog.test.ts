@@ -23,6 +23,10 @@ import {
 import type { AppelIa, ReponseIa } from '../src/serveur/ia';
 import { creerSite } from '../src/serveur/sites';
 
+/** Vrais avis : le site de départ n'a aucune carte « [à compléter] » et se publie tel quel. */
+const avisDeTest = () =>
+  Array.from({ length: 4 }, (_, i) => ({ nom: `Client ${i}`, note: 5, texte: 'Parfait.' }));
+
 // BLOG.md §8 : BLOG-01, 04, 05, 06, 07, 09 (02, 03, 14 : IA, tranche 3 ; 08 : export CSV du cœur).
 let db: Firestore;
 let maintenant = Date.UTC(2026, 9, 16, 10);
@@ -68,7 +72,13 @@ async function preparer(aid: string, uid: string, formule: 'site_pro' | 'gratuit
   await db.doc(chemins.artisan(aid)).set({ droits: droitsDe(formule) });
   await db.doc(chemins.parametresFacturation(aid)).set(PARAMS);
   const initial = siteParDefaut(
-    { nomCommercial: 'Durand', metier: 'Plombier', ville: 'Pessac', photos: [] },
+    {
+      nomCommercial: 'Durand',
+      metier: 'Plombier',
+      ville: 'Pessac',
+      photos: [],
+      avis: avisDeTest(),
+    },
     { primaire: 'primaire', accent: 'accent', clair: 'clair', sombre: 'sombre' },
   );
   await creerSite(

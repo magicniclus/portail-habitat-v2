@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   controlesSeo,
   couleur,
+  elementsDe,
   erreurSousDomaine,
   etatEnregistrement,
   FORMULAIRE_GRATUIT,
@@ -12,6 +13,7 @@ import {
   prochaineVerification,
   siteParDefaut,
   sousDomaineDe,
+  textesACompleter,
   validerAction,
   validerEnvoi,
   verifierLiensSite,
@@ -54,12 +56,53 @@ describe('site de départ depuis la fiche (sans IA)', () => {
     expect(verifierLiensSite(s.pages, s.navigation)).toEqual([]);
   });
 
-  it('rien d’inventé : sans avis ni photos, pas de bloc avis ni réalisations', () => {
+  it('accueil de conversion : formulaire dans le bandeau, avis, présentation, prestations, réalisations', () => {
+    const accueil = s.pages.accueil!;
+    expect(accueil.sections.map((x) => x.p.nom)).toEqual([
+      'Bandeau',
+      'Avis clients',
+      'Présentation',
+      'Prestations',
+      'Réalisations',
+      'Pied de page',
+    ]);
+    const bandeau = JSON.stringify(accueil.sections[0]);
+    expect(bandeau).toContain('"type":"formulaire"');
+    expect(bandeau).toContain('4,8/5');
+    expect(JSON.stringify(accueil.sections[2])).toContain('"type":"image"');
+  });
+
+  it('avis : les vrais d’abord, complétés jusqu’à 4 par des cartes « [à compléter] »', () => {
+    const avec = siteParDefaut(
+      { ...fiche, avis: [{ nom: 'Julie M.', note: 5, texte: 'Chantier impeccable.' }] },
+      PALETTE,
+    );
+    const avis = elementsDe(avec.pages.accueil!)
+      .map((e) => e.el)
+      .filter((e) => e.type === 'avis');
+    expect(avis).toHaveLength(4);
+    expect(avis[0]!.p).toMatchObject({ nom: 'Julie M.', note: 5, texte: 'Chantier impeccable.' });
+    expect(textesACompleter(avec.pages)).toHaveLength(3);
+    const complet = siteParDefaut(
+      {
+        ...fiche,
+        avis: Array.from({ length: 5 }, (_, i) => ({
+          nom: `Client ${i}`,
+          note: 4,
+          texte: 'Bien.',
+        })),
+      },
+      PALETTE,
+    );
+    expect(textesACompleter(complet.pages)).toEqual([]);
+  });
+
+  it('rien d’inventé : sans photos, pas de bloc réalisations ni d’image vide', () => {
     const vide = siteParDefaut({ ...fiche, nbAvis: 0, noteMoyenne: 0, photos: [] }, PALETTE);
-    const noms = vide.pages.accueil!.sections.map((x) => x.p.nom);
-    expect(noms).not.toContain('Avis clients');
-    expect(noms).not.toContain('Réalisations');
-    expect(JSON.stringify(siteParDefaut(fiche, PALETTE).pages.accueil)).toContain('4,8/5');
+    const accueil = vide.pages.accueil!;
+    expect(accueil.sections.map((x) => x.p.nom)).not.toContain('Réalisations');
+    expect(JSON.stringify(accueil)).not.toContain('"type":"image"');
+    expect(JSON.stringify(accueil)).not.toContain('/5 ·');
   });
 });
 

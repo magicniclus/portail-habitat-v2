@@ -124,11 +124,14 @@ const aImage = (c: Section['rows'][number]['cols'][number]) =>
 function bandeauScinde(x: Section) {
   const r = x.rows[0];
   const photo = x.p.fondType === 'image' ? x.p.fondImage : '';
-  x.p = { ...x.p, fondType: 'couleur', fondImage: '', voileOpacite: 0 };
+  // La photo de fond reste gardée (inactive) pour un prochain modèle photo.
+  x.p = { ...x.p, fondType: 'couleur', voileOpacite: 0 };
   if (!r) return;
   const colPhoto = r.cols.find(aImage);
   const texte = r.cols.find((c) => !aImage(c)) ?? r.cols[0]!;
   if (colPhoto) {
+    // La photo vit dans sa colonne : pas de fond gardé en double.
+    x.p.fondImage = '';
     if (!colPhoto.p.masque.desktop) return;
     r.cols = r.cols.map((c) =>
       c === colPhoto
@@ -139,7 +142,8 @@ function bandeauScinde(x: Section) {
     );
     return;
   }
-  if (!photo) return;
+  // Bandeau avec formulaire : la photo n'est qu'un fond, jamais une colonne.
+  if (!photo || elements(x).some((e) => e.type === 'formulaire')) return;
   const image = elementDuCatalogue('image', `${texte.id}-photo`, { src: photo }) as Element;
   r.cols = [
     { ...texte, w: 6 },
@@ -153,11 +157,12 @@ function varianter(s: Section, i: number, hero: Hero): Section {
   const r = x.rows[0];
   if (estBandeau(x, i) && r) {
     const image = r.cols.flatMap((c) => c.els).find((e) => e.type === 'image' && e.p.src);
-    const photo =
-      image?.type === 'image' ? image.p.src : x.p.fondType === 'image' ? x.p.fondImage : '';
+    const photo = image?.type === 'image' ? image.p.src : x.p.fondImage;
     bandeauScinde(x);
-    // Photo et minimal : texte centré sur toute la largeur (vignettes de la galerie).
-    const centre = hero === 'photo' || hero === 'minimal';
+    // Photo et minimal : texte centré sur toute la largeur (vignettes de la galerie) ; un bandeau
+    // avec formulaire garde ses deux colonnes, seul son style change.
+    const formulaire = elements(x).some((e) => e.type === 'formulaire');
+    const centre = !formulaire && (hero === 'photo' || hero === 'minimal');
     if (centre)
       r.cols = r.cols.map((c) =>
         aImage(c) ? { ...c, p: { ...c.p, masque: MASQUE } } : { ...c, w: 12 },
@@ -183,7 +188,7 @@ function varianter(s: Section, i: number, hero: Hero): Section {
       if (e.type === 'bouton') e.p.enLigne = !centre;
     }
   } else if (estAvis(x)) {
-    x.p.fond = hero === 'sombre' ? 'sombre' : hero === 'minimal' ? 'clair' : 'blanc';
+    x.p.fond = hero === 'sombre' ? 'sombre' : 'clair';
   } else if (hero === 'minimal' && x.p.nom !== PIED) {
     x.p = { ...x.p, fond: 'blanc', fondType: 'couleur' };
   }
