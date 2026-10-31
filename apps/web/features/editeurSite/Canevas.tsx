@@ -2,7 +2,7 @@
 
 import type { Appareil } from '@ph/core/sites';
 import { Chargeur } from '@ph/ui';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 export const LARGEURS: Record<Appareil, number> = { desktop: 1200, tablet: 768, mobile: 390 };
 
@@ -42,6 +42,7 @@ export function Canevas({
   menuOuvert = false,
   ancre,
   surPlace = false,
+  pageId,
 }: {
   html: string;
   appareil: Appareil;
@@ -57,20 +58,30 @@ export function Canevas({
   ancre?: string;
   /** Édition : chaque nouveau rendu remplace la page sur place, sans recharger le cadre. */
   surPlace?: boolean;
+  /** Page affichée : en changer remonte en haut, sans recharger le cadre ni l'animer. */
+  pageId?: string;
 }) {
   const largeur = LARGEURS[appareil];
   const boite = useRef<HTMLDivElement>(null);
   const cadre = useRef<HTMLIFrameElement>(null);
   const y = useRef(0);
   const [echelle, setEchelle] = useState(1);
-  useEffect(() => {
+  // Pas d'animation avant la première mesure : sinon la page « rétrécit » à chaque affichage.
+  const [mesure, setMesure] = useState(false);
+  useLayoutEffect(() => {
     const el = boite.current;
     if (!el) return;
+    const calculer = (w: number) => setEchelle(Math.min(1, (w - 32) / largeur));
+    calculer(el.getBoundingClientRect().width);
     const ro = new ResizeObserver(([e]) => {
-      if (e) setEchelle(Math.min(1, (e.contentRect.width - 32) / largeur));
+      if (e) calculer(e.contentRect.width);
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    const t = requestAnimationFrame(() => setMesure(true));
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(t);
+    };
   }, [largeur]);
   useEffect(() => onEchelle(echelle), [echelle, onEchelle]);
 
@@ -88,6 +99,14 @@ export function Canevas({
     dernier.current = html;
     if (surPlace && pret.current) envoyer({ type: 'html', html });
   }, [html, surPlace, envoyer]);
+  // Autre page : en haut de la nouvelle page (le rendu ci-dessus l'a déjà remplacée).
+  const pagePrecedente = useRef(pageId);
+  useEffect(() => {
+    if (pagePrecedente.current === pageId) return;
+    pagePrecedente.current = pageId;
+    y.current = 0;
+    envoyer({ type: 'defiler', y: 0 });
+  }, [pageId, envoyer]);
   const derniere = useRef(selection);
   useEffect(() => {
     derniere.current = selection;
@@ -139,7 +158,7 @@ export function Canevas({
   return (
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
       <div
-        className="relative mx-auto h-full transition-[width] duration-300 ease-out motion-reduce:transition-none"
+        className={`relative mx-auto h-full ${mesure ? 'transition-[width] duration-300 ease-out motion-reduce:transition-none' : ''}`}
         style={{ width: largeur * echelle }}
       >
         {filigrane ? (
@@ -164,7 +183,7 @@ export function Canevas({
           sandbox="allow-scripts"
           srcDoc={surPlace ? initial : html}
           onLoad={quandPret}
-          className="block border-0 bg-blanc shadow-lg transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none"
+          className={`block border-0 bg-blanc shadow-lg ${mesure ? 'transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none' : ''}`}
           style={{
             width: largeur,
             height: `${100 / echelle}%`,

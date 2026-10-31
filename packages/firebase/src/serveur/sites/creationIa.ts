@@ -26,7 +26,7 @@ import {
 import { FieldValue, Timestamp, type DocumentData } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import { exigerSite, type ContexteSite } from './edition';
-import { garderFaitsOperation, type ServicesIaSite } from './ia';
+import { garderFaitsOperation, IA_ABSENTE, type ServicesIaSite } from './ia';
 import { lireSiteEdition } from './lecture';
 
 /** État de la création assistée : `sites/{id}/iaCreation/courante`. */
@@ -100,8 +100,7 @@ export async function demarrerCreationIa(
 ): Promise<{ statut: StatutCreation; plan: PagePlanifiee[] }> {
   const moderation = modererDemandeIa(e.reponses.autre ?? '');
   if (!moderation.ok) throw new ErreurMetier('ENTREE_INVALIDE', moderation.message);
-  if (!s.client)
-    throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
+  if (!s.client) throw new ErreurMetier('INDISPONIBLE', IA_ABSENTE);
   const artisan = await s.db.doc(chemins.artisan(ctx.artisanId)).get();
   const { complet, mult } = iaComplete(artisan.get('droits'));
   await reserver(s, ctx, complet, mult);
@@ -131,8 +130,7 @@ export async function genererPageCreation(
   ctx: ContexteSite,
   cle: string,
 ): Promise<{ operations: OperationIa[]; avertissements: string[]; apercu: boolean }> {
-  if (!s.client)
-    throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
+  if (!s.client) throw new ErreurMetier('INDISPONIBLE', IA_ABSENTE);
   const refCreation = s.db.doc(chemins.creationIaSite(ctx.artisanId));
   const c = (await refCreation.get()).data() as DocumentData | undefined;
   if (!c || !['en_cours', 'apercu'].includes(c.statut as string))
@@ -210,8 +208,7 @@ export async function reprendreCreationIa(
   s: ServicesIaSite,
   ctx: ContexteSite,
 ): Promise<{ plan: PagePlanifiee[]; accueil: OperationIa[] }> {
-  if (!s.client)
-    throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
+  if (!s.client) throw new ErreurMetier('INDISPONIBLE', IA_ABSENTE);
   const refCreation = s.db.doc(chemins.creationIaSite(ctx.artisanId));
   const c = (await refCreation.get()).data() as DocumentData | undefined;
   if (c?.statut !== 'attente_paiement')

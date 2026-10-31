@@ -62,6 +62,12 @@ export interface PropositionIaSite {
 const moisParis = (ms: number) =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(ms).slice(0, 7);
 
+/** Sans clé Anthropic sur le serveur ; en développement, le message dit quoi faire. */
+export const IA_ABSENTE =
+  process.env.NODE_ENV === 'development'
+    ? 'Assistant indisponible : ANTHROPIC_API_KEY est absente du serveur. Ajoutez-la dans .env.local puis relancez pnpm dev.'
+    : 'L’assistant du site n’est pas encore disponible.';
+
 /** Droits écrits par le webhook Stripe ; repli sur ceux de la formule (jamais lus du client). */
 function droitsLus(
   d: Partial<DroitsFormule> | undefined,
@@ -160,8 +166,7 @@ export async function demanderIaSite(
   // Filtre avant tout appel et tout crédit (IA_SITE §5).
   const moderation = modererDemandeIa(`${e.demande}\n${e.reponse ?? ''}`);
   if (!moderation.ok) throw new ErreurMetier('ENTREE_INVALIDE', moderation.message);
-  if (!s.client)
-    throw new ErreurMetier('INDISPONIBLE', 'L’assistant du site n’est pas encore disponible.');
+  if (!s.client) throw new ErreurMetier('INDISPONIBLE', IA_ABSENTE);
   const client = s.client;
   const maintenant = s.horloge();
   const artisan = await s.db.doc(chemins.artisan(ctx.artisanId)).get();

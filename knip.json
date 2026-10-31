@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": ["docs/**"],
+  "ignoreBinaries": ["stripe"],
   "workspaces": {
     "apps/web": {
       "entry": ["server/**/*.ts", "playwright.pro.config.ts", "e2e-pro/**/*.ts"],

@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { routes } from '@/lib/routes';
 import { BandeauOffre } from '@/features/offres/BandeauOffre';
+import { ChoixFormule } from '@/features/offres/ChoixFormule';
 import { usePaiement } from './usePaiement';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
@@ -31,8 +32,11 @@ export function FenetrePaiement({
 }) {
   const router = useRouter();
   const [ouverte, setOuverte] = useState(true);
-  const { payer, enCours, erreur } = usePaiement(formule, code?.code);
-  const r = recapPaiement(formule);
+  // Offre complète proposée à côté (sauf avec un code promo, propre à la formule demandée, ou si
+  // l'artisan l'a déjà).
+  const [choisie, setChoisie] = useState(formule);
+  const { payer, enCours, erreur } = usePaiement(choisie, code?.code);
+  const r = recapPaiement(choisie);
   const montee = r.montantHt > prixActuelHt;
   const fermer = (o: boolean) => {
     setOuverte(o);
@@ -48,7 +52,7 @@ export function FenetrePaiement({
     <Modal
       open={ouverte}
       onOpenChange={fermer}
-      titre={`Passer à ${NOMS_FORMULE[formule]}`}
+      titre={`Passer à ${NOMS_FORMULE[choisie]}`}
       actions={
         <>
           <Button variant="fantome" onClick={() => fermer(false)}>
@@ -61,10 +65,13 @@ export function FenetrePaiement({
       }
     >
       <div className="grid gap-4">
-        <BandeauOffre formule={formule} />
+        <BandeauOffre formule={choisie} />
+        {code || actuelle === 'tout_inclus' ? null : (
+          <ChoixFormule demandee={formule} valeur={choisie} onChange={setChoisie} />
+        )}
         <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
           <div className="flex justify-between gap-3">
-            <dt>{NOMS_FORMULE[formule]} · mensuel</dt>
+            <dt>{NOMS_FORMULE[choisie]} · mensuel</dt>
             <dd className="m-0">{eur(r.montantHt)} HT</dd>
           </div>
           <div className="flex justify-between gap-3">

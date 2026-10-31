@@ -9,6 +9,8 @@ import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
 const INTERVALLE_MS = 2000;
+/** En développement, Stripe ne joint pas l'ordinateur sans `stripe listen` : l'aide l'explique. */
+const LOCAL = process.env.NODE_ENV === 'development';
 const ESSAIS_MAX = 45;
 
 /**
@@ -84,6 +86,7 @@ export function AttenteConfirmation({
     <div className="grid gap-4" role="status" aria-live="polite">
       <Chargeur taille="lg" decoratif />
       <h1 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.1]">Confirmation du paiement…</h1>
+      {LOCAL && etat === 'attente' ? <AideLocale /> : null}
       {etat === 'long' ? (
         <Banner tone="info">
           La confirmation de Stripe prend plus de temps que prévu. Votre offre s&apos;activera
@@ -95,5 +98,23 @@ export function AttenteConfirmation({
         </p>
       )}
     </div>
+  );
+}
+
+/** Aide affichée seulement avec `pnpm dev`, après 10 s d'attente. */
+function AideLocale() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 10_000);
+    return () => clearTimeout(t);
+  }, []);
+  if (!visible) return null;
+  return (
+    <Banner tone="info">
+      En local, Stripe ne peut pas prévenir votre ordinateur tout seul. Dans un autre terminal,
+      lancez <code>pnpm stripe:webhooks</code>, copiez la clé <code>whsec_…</code> affichée dans{' '}
+      <code>STRIPE_WEBHOOK_SECRET</code> de <code>.env.local</code>, relancez <code>pnpm dev</code>{' '}
+      puis refaites le paiement.
+    </Banner>
   );
 }

@@ -8,6 +8,7 @@ import { ArrowCounterClockwiseIcon, CrownSimpleIcon, LockKeyIcon } from '@phosph
 import { useState, type ReactNode } from 'react';
 import { usePaiement } from '@/features/abonnement/usePaiement';
 import { BandeauOffre } from './BandeauOffre';
+import { ChoixFormule } from './ChoixFormule';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
@@ -38,10 +39,12 @@ export function FenetreOffre({
   const [interne, setInterne] = useState(false);
   const ouverte = imposee ?? interne;
   const setOuverte = onOuverte ?? setInterne;
-  const { payer, enCours, erreur } = usePaiement(formule);
-  const c = CONTENU_OFFRES[formule];
-  const r = recapPaiement(formule);
-  const nom = NOMS_FORMULE[formule];
+  // Formule payée : celle demandée par défaut, ou l'offre complète si l'artisan la choisit.
+  const [choisie, setChoisie] = useState(formule);
+  const { payer, enCours, erreur } = usePaiement(choisie);
+  const c = CONTENU_OFFRES[choisie];
+  const r = recapPaiement(choisie);
+  const nom = NOMS_FORMULE[choisie];
   return (
     <Modal
       open={ouverte}
@@ -65,7 +68,7 @@ export function FenetreOffre({
           }
         : {})}
       titre={`Passer à ${nom}`}
-      description={raison ?? c.raison}
+      description={raison ?? CONTENU_OFFRES[formule].raison}
       actions={
         <>
           <Button variant="fantome" onClick={() => setOuverte(false)}>
@@ -78,7 +81,8 @@ export function FenetreOffre({
       }
     >
       <div className="grid gap-4">
-        <BandeauOffre formule={formule} />
+        <BandeauOffre formule={choisie} />
+        <ChoixFormule demandee={formule} valeur={choisie} onChange={setChoisie} />
         <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
           <div className="flex justify-between gap-3">
             <dt>{nom} · mensuel</dt>
