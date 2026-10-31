@@ -42,6 +42,11 @@ const FOND = {
   texteCouleur: 'auto' as const,
 };
 const A = (type: Action['type'], o: Partial<Action> = {}): Action => ({ type, ...o });
+/** Texte avec des mots liés : `liens` juste après `texte` (ordre des clés du schéma). */
+const avecLiens = (e: Element, liens: Record<string, Action>): Element => {
+  const { taille, couleur, align, ...debut } = e.p as Record<string, unknown>;
+  return { ...e, p: { ...debut, liens, taille, couleur, align } } as Element;
+};
 /** Élément avec quelques réglages changés (marges, tailles). */
 const avec = (e: Element, p: Record<string, unknown>): Element =>
   ({ ...e, p: { ...e.p, ...p } }) as Element;
@@ -415,30 +420,62 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
       'blanc',
       'contact',
     );
+  // Pied de page : l'entreprise à gauche, coordonnées et informations sur la moitié droite ;
+  // le lien vers les mentions légales y figure (obligatoire), pas en double sous le pied.
   const pied = () =>
     section(
       'Pied de page',
       [
         ligne(
           [
-            [f.nomCommercial, [f.adresse, f.telephone].filter(Boolean).join(' · ') || f.ville],
-            ...(f.decennale ? [['Garanties', `Assurance décennale : ${f.decennale}`]] : []),
-            ['Informations', `${f.metier} à ${f.ville} · devis gratuit`],
-          ].map(([t, x]) =>
             col(
               [
-                avec(el.titre(t!, 'h3'), { taille: v3(17, 17, 16), mb: 6 }),
-                avec(el.texte(x!), { taille: v3(15, 15, 14), mb: 0 }),
+                avec(el.titre(f.nomCommercial, 'h3'), { taille: v3(22, 21, 20), mb: 8 }),
+                avec(el.texte(accroche), { taille: v3(15, 15, 14), mb: tel ? 16 : 0 }),
+                ...(tel ? [el.bouton(f.telephone!, tel, 'contour')] : []),
               ],
-              f.decennale ? 4 : 6,
+              5,
             ),
-          ),
-          24,
+            col(
+              [
+                avec(el.titre('Contact', 'h3'), { taille: v3(16, 16, 15), mb: 8 }),
+                avec(
+                  el.texte(
+                    [f.adresse || f.ville, f.telephone, 'Devis gratuit et sans engagement']
+                      .filter(Boolean)
+                      .join('\n'),
+                  ),
+                  { taille: v3(15, 15, 14), mb: 0 },
+                ),
+              ],
+              4,
+            ),
+            col(
+              [
+                avec(el.titre('Informations', 'h3'), { taille: v3(16, 16, 15), mb: 8 }),
+                avecLiens(
+                  avec(
+                    el.texte(
+                      [
+                        `${f.metier} à ${f.ville}`,
+                        ...(f.decennale ? [`Assurance décennale : ${f.decennale}`] : []),
+                        '[Mentions légales](#L1)',
+                      ].join('\n'),
+                    ),
+                    { taille: v3(15, 15, 14), mb: 0 },
+                  ),
+                  { L1: A('page', { page: 'mentions' }) },
+                ),
+              ],
+              3,
+            ),
+          ],
+          40,
         ),
       ],
       'sombre',
       '',
-      v3(40, 36, 28),
+      v3(56, 44, 32),
     );
   const mentions = [
     [

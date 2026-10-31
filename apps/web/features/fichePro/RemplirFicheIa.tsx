@@ -72,25 +72,13 @@ export function RemplirFicheIa({ vide }: { vide: boolean }) {
       open={ouverte}
       onOpenChange={setOuverte}
       declencheur={
-        vide ? (
-          <button
-            type="button"
-            className="flex w-full cursor-pointer items-center gap-3 rounded-card border border-accent-200 bg-accent-100 p-4 text-left"
-          >
-            <SparkleIcon size={28} weight="fill" aria-hidden="true" className="text-accent-700" />
-            <span className="grid gap-0.5">
-              <strong className="text-[16px]">Remplir ma fiche avec l’IA, en un clic</strong>
-              <span className="text-sm text-neutre-800">
-                Accroche et présentation rédigées à partir de vos informations. Gratuit.
-              </span>
-            </span>
-          </button>
-        ) : (
-          <button type="button" className={bouton({ variant: 'secondaire', taille: 'sm' })}>
-            <SparkleIcon size={16} aria-hidden="true" />
-            Réécrire ma fiche avec l’IA
-          </button>
-        )
+        <button
+          type="button"
+          className={bouton({ variant: vide ? 'primaire' : 'secondaire', taille: 'sm' })}
+        >
+          <SparkleIcon size={16} weight="fill" aria-hidden="true" />
+          {vide ? 'Remplir ma fiche avec l’IA' : 'Réécrire ma fiche avec l’IA'}
+        </button>
       }
       titre="Remplir ma fiche avec l’IA"
       description="Nous partons de votre nom, de vos métiers, de votre ville et de l’année de création de votre entreprise (SIRET). Deux réponses rapides suffisent."

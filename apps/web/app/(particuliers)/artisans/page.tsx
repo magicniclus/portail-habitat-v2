@@ -93,7 +93,8 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
           <BarreRecherche f={f} />
         </div>
       </div>
-      <main className="mx-auto w-full max-w-[1320px] px-[clamp(18px,4vw,44px)] py-[clamp(20px,2.6vw,32px)] pb-[clamp(40px,5vw,64px)]">
+      {/* overflow-clip : les filtres collants ne dépassent pas sous le pied de page (peu de résultats). */}
+      <main className="mx-auto w-full max-w-[1320px] overflow-clip px-[clamp(18px,4vw,44px)] py-[clamp(20px,2.6vw,32px)] pb-[clamp(40px,5vw,64px)]">
         <div className="mb-4 lg:hidden">
           <PanneauFiltres key={cle} valeurs={f} options={options} nbActifs={nbActifs} />
         </div>

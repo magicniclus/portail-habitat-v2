@@ -78,7 +78,12 @@ export default async function PageMaFiche() {
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <ConfigFirebase />
-      {f.completude.pourcent < 100 ? <ProgressionFiche pourcent={f.completude.pourcent} /> : null}
+      {f.completude.pourcent < 100 ? (
+        <ProgressionFiche
+          pourcent={f.completude.pourcent}
+          {...(edite ? { action: <RemplirFicheIa vide={!f.description && !f.pitch} /> } : {})}
+        />
+      ) : null}
       {f.enLigne ? (
         <ActionsEntete>
           <Link
@@ -124,7 +129,7 @@ export default async function PageMaFiche() {
               />
             }
           />
-          {edite ? <RemplirFicheIa vide={!f.description && !f.pitch} /> : null}
+          {edite && f.completude.pourcent >= 100 ? <RemplirFicheIa vide={false} /> : null}
           <ResumeAvis note={note} nombre={avis.length} />
           <CarteFiche
             titre="À propos"

@@ -98,8 +98,11 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
     ctx.edition || ctx.apercu ? undefined : ctx.suivi,
     mentions?.[1].slug ?? null,
   );
+  // Mentions légales déjà liées dans la page (pied de page des modèles) : pas en double dessous.
+  const mentionsLiees =
+    mentions !== undefined && JSON.stringify(d.page.sections).includes(`"page":"${mentions[0]}"`);
   const liensPied = [
-    mentions ? `<a href="/${esc(mentions[1].slug)}">Mentions légales</a>` : '',
+    mentions && !mentionsLiees ? `<a href="/${esc(mentions[1].slug)}">Mentions légales</a>` : '',
     suivi.lien ? '<a href="#" data-consentement="choix">Gestion des cookies</a>' : '',
   ].filter(Boolean);
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.page.seo.title || d.page.nom)}</title>${faviconSite(d.navigation, ctx)}<meta name="description" content="${esc(d.page.seo.meta)}"><link rel="canonical" href="${esc(canonique)}">${d.noindex ? '<meta name="robots" content="noindex">' : ''}<meta property="og:title" content="${esc(d.page.seo.title || d.page.nom)}"><meta property="og:description" content="${esc(d.page.seo.meta)}"><meta property="og:url" content="${esc(canonique)}"><style>${feuilleDeStyle(d.theme)}${STYLE_NAV}${STYLE_BLOG}${ctx.surligner?.size ? SURLIGNAGE : ''}${ctx.edition ? STYLE_EDITION : ''}${suivi.bandeau ? STYLE_CONSENTEMENT : ''}</style><script type="application/ld+json">${jsonLd}</script>${ctx.turnstileSiteKey ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}</head><body>${nav}<main>${sections}</main>${fenetre}${fenetres}<footer class="pied">${liensPied.length ? `<p>${liensPied.join(' · ')}</p>` : ''}${mention}</footer>${suivi.bandeau}<script>${ctx.edition ? SCRIPT_EDITION : ctx.apercu ? SCRIPT_APERCU : SCRIPT_SITE}</script></body></html>`;

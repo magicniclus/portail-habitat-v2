@@ -159,7 +159,9 @@ export function Canevas({
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
       <div
         className={`relative mx-auto h-full ${mesure ? 'transition-[width] duration-300 ease-out motion-reduce:transition-none' : ''}`}
-        style={{ width: largeur * echelle }}
+        // Avant la première mesure (rendu serveur, chargement) : la largeur de la colonne, jamais
+        // 1200 px, pour ne pas élargir la page le temps du chargement.
+        style={{ width: mesure ? largeur * echelle : '100%' }}
       >
         {filigrane ? (
           <div
@@ -183,7 +185,7 @@ export function Canevas({
           sandbox="allow-scripts"
           srcDoc={surPlace ? initial : html}
           onLoad={quandPret}
-          className={`block border-0 bg-blanc shadow-lg ${mesure ? 'transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none' : ''}`}
+          className={`block border-0 bg-blanc shadow-lg ${mesure ? 'transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none' : 'invisible'}`}
           style={{
             width: largeur,
             height: `${100 / echelle}%`,
