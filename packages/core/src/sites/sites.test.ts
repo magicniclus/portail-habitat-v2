@@ -64,6 +64,7 @@ describe('site de départ depuis la fiche (sans IA)', () => {
       'Présentation',
       'Prestations',
       'Réalisations',
+      'Appel à l’action',
       'Pied de page',
     ]);
     const bandeau = JSON.stringify(accueil.sections[0]);

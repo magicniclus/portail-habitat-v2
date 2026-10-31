@@ -188,7 +188,7 @@ export function EditeurSite(props: ProprietesEditeur) {
             selection={info ? { ...info, badge: badgeSelection(page, info) } : null}
             defiler={sel.defiler}
             menuOuvert={menuOuvert}
-            key={apercu ? `${pageId}-apercu` : 'edition'}
+            key={apercu ? `${pageId}-apercu` : `edition-${s.generation}`}
             surPlace={!apercu}
             pageId={pageId}
             onMessage={ap.recevoir}

@@ -89,6 +89,16 @@ const REFAITES: readonly PageSite['type'][] = ['accueil', 'contact', 'mentions']
 const BANDEAU = 'Bandeau';
 const AVIS = 'Avis clients';
 const PIED = 'Pied de page';
+const APPEL = 'Appel à l’action';
+
+/** Fond de chaque zone de l'accueil selon le modèle : alternances propres à chaque style. */
+const FONDS: Record<string, Record<Hero, Section['p']['fond']>> = {
+  [AVIS]: { split: 'clair', photo: 'clair', sombre: 'sombre', minimal: 'clair' },
+  Présentation: { split: 'blanc', photo: 'blanc', sombre: 'blanc', minimal: 'blanc' },
+  Prestations: { split: 'clair', photo: 'blanc', sombre: 'clair', minimal: 'blanc' },
+  Réalisations: { split: 'blanc', photo: 'sombre', sombre: 'sombre', minimal: 'blanc' },
+  [APPEL]: { split: 'primaire', photo: 'primaire', sombre: 'accent', minimal: 'clair' },
+};
 const PAD_BANDEAU = { desktop: 80, tablet: 60, mobile: 40 };
 const PAD_PHOTO = { desktop: 130, tablet: 96, mobile: 64 };
 const PAD_MINIMAL = { desktop: 110, tablet: 80, mobile: 52 };
@@ -187,16 +197,38 @@ function varianter(s: Section, i: number, hero: Hero): Section {
       // Centré : un bouton par ligne (comme la zone « Bandeau sur photo ») ; sinon côte à côte.
       if (e.type === 'bouton') e.p.enLigne = !centre;
     }
-  } else if (estAvis(x)) {
-    x.p.fond = hero === 'sombre' ? 'sombre' : 'clair';
+  } else if (estAvis(x) || FONDS[x.p.nom]) {
+    const nom = estAvis(x) ? AVIS : x.p.nom;
+    const fond = FONDS[nom]![hero];
+    // Photo de fond (appel à l'action) seulement pour les modèles photo, si la fiche en a une.
+    const photo = hero === 'photo' && nom === APPEL && Boolean(x.p.fondImage);
+    x.p = {
+      ...x.p,
+      fond,
+      fondType: photo ? 'image' : 'couleur',
+      voile: 'sombre',
+      voileOpacite: photo ? 62 : 0,
+    };
+    // Cartes (blocs avec fond) : blanches sur fond coloré, claires sur fond blanc ; à plat en minimal.
+    for (const l of x.rows)
+      for (const c of l.cols)
+        if (c.p.pad > 0 && (c.p.fond === 'blanc' || c.p.fond === 'clair'))
+          c.p = { ...c.p, fond: fond === 'blanc' ? 'clair' : 'blanc', ombre: hero !== 'minimal' };
   } else if (hero === 'minimal' && x.p.nom !== PIED) {
     x.p = { ...x.p, fond: 'blanc', fondType: 'couleur' };
   }
-  // Boutons pleins : accent pour « Dépannage 24/7 », couleur principale pour les autres modèles.
+  // Boutons pleins : accent pour « Dépannage 24/7 », couleur principale pour les autres modèles ;
+  // sombres sur un fond accent, pour rester visibles.
   for (const e of elements(x))
     if (e.type === 'bouton' && e.p.variante === 'plein')
       e.p.couleur =
-        hero === 'sombre' ? 'accent' : e.p.couleur === 'accent' ? 'primaire' : e.p.couleur;
+        x.p.fond === 'accent'
+          ? 'sombre'
+          : hero === 'sombre'
+            ? 'accent'
+            : e.p.couleur === 'accent' || e.p.couleur === 'sombre'
+              ? 'primaire'
+              : e.p.couleur;
   return x;
 }
 

@@ -84,12 +84,13 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     expect(bandeau(s).rows[0]!.cols).toHaveLength(2);
   });
 
-  it('dépannage 24/7 : bandeau et avis sombres, boutons pleins en accent', () => {
+  it('dépannage 24/7 : bandeau et avis sombres, boutons pleins en accent (hors fond accent)', () => {
     const r = appliquerModeleSite(site(), modeleSite('urgence')!, AUTRE, true);
     const acc = r.pages.accueil!.sections;
     expect(acc[0]!.p.fond).toBe('sombre');
     expect(acc.find((x) => x.p.nom === 'Avis clients')!.p.fond).toBe('sombre');
     const boutons = acc
+      .filter((x) => x.p.fond !== 'accent')
       .flatMap((x) => x.rows.flatMap((l) => l.cols.flatMap((c) => c.els)))
       .filter((e) => e.type === 'bouton');
     expect(boutons.length).toBeGreaterThan(0);
@@ -97,14 +98,30 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       expect(e.p.couleur).toBe(e.p.variante === 'plein' ? 'accent' : 'primaire');
   });
 
-  it('minimal : fonds blancs (avis en clair), bandeau aéré', () => {
+  it('minimal : fonds blancs (avis et appel à l’action en clair), cartes à plat, bandeau aéré', () => {
     const r = appliquerModeleSite(site(), modeleSite('minimal')!, AUTRE, true);
     const acc = r.pages.accueil!.sections;
     expect(acc[0]!.p.padY).toEqual({ desktop: 110, tablet: 80, mobile: 52 });
+    const clairs = ['Avis clients', 'Appel à l’action'];
     for (const x of acc)
       expect(x.p.fond).toBe(
-        x.p.nom === 'Pied de page' ? 'sombre' : x.p.nom === 'Avis clients' ? 'clair' : 'blanc',
+        x.p.nom === 'Pied de page' ? 'sombre' : clairs.includes(x.p.nom) ? 'clair' : 'blanc',
       );
+    const prestations = acc.find((x) => x.p.nom === 'Prestations')!;
+    for (const c of prestations.rows[1]!.cols)
+      expect(c.p).toMatchObject({ fond: 'clair', ombre: false });
+  });
+
+  it('chaque modèle a ses fonds : réalisations sombres et appel sur photo en « Premium photo »', () => {
+    const r = appliquerModeleSite(site(), modeleSite('premium')!, AUTRE, true);
+    const zone = (nom: string) => r.pages.accueil!.sections.find((x) => x.p.nom === nom)!;
+    expect(zone('Réalisations').p.fond).toBe('sombre');
+    expect(zone('Appel à l’action').p).toMatchObject({ fondType: 'image', voileOpacite: 62 });
+    const u = appliquerModeleSite(site(), modeleSite('urgence')!, AUTRE, true);
+    const appel = u.pages.accueil!.sections.find((x) => x.p.nom === 'Appel à l’action')!;
+    expect(appel.p).toMatchObject({ fond: 'accent', fondType: 'couleur' });
+    // Bouton visible sur le fond accent.
+    expect(JSON.stringify(appel)).toContain('"couleur":"sombre"');
   });
 
   it('bandeau sans photo : le modèle photo garde un grand bandeau centré, sur la couleur principale', () => {

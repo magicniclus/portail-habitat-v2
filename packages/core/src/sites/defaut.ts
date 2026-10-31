@@ -116,6 +116,11 @@ function fabrique() {
       type: 'chiffre',
       p: { ...base, valeur, label, taille: v3(40, 36, 32), couleur: 'auto', align: 'left' },
     }),
+    liste: (items: string[]): Element => ({
+      id: id('e'),
+      type: 'liste',
+      p: { ...base, items, icone: '✓', couleur: 'auto', align: 'left' },
+    }),
     avis: (nom: string, note: number, texte: string): Element => ({
       id: id('e'),
       type: 'avis',
@@ -235,7 +240,15 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
               avec(el.titre(`${f.nomCommercial}, ${f.metier.toLowerCase()} à ${f.ville}`, 'h1'), {
                 mb: 20,
               }),
-              avec(el.texte(accroche), { mb: 24 }),
+              avec(el.texte(accroche), { mb: 20 }),
+              avec(
+                el.liste([
+                  'Devis gratuit et sans engagement',
+                  ...(f.decennale ? ['Assurance décennale'] : []),
+                  `Intervention à ${f.ville} et alentours`,
+                ]),
+                { mb: 20 },
+              ),
               ...(f.noteMoyenne && f.nbAvis
                 ? [
                     avec(
@@ -335,13 +348,13 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
               el.bouton('Demander un devis', devis, 'contour'),
             ],
             metiers.length === 1 ? 12 : metiers.length === 2 ? 6 : 4,
-            { fond: 'clair', pad: 24, arrondi: 12 },
+            { fond: 'blanc', pad: 24, arrondi: 12, ombre: true },
           ),
         ),
         20,
       ),
     ],
-    'blanc',
+    'clair',
   );
   const realisations = f.photos.length
     ? [
@@ -356,10 +369,30 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
               20,
             ),
           ],
-          'clair',
+          'blanc',
         ),
       ]
     : [];
+  // Dernier appel à l'action avant le pied de page : ramène au formulaire du bandeau.
+  const appel = section(
+    'Appel à l’action',
+    [
+      ligne([
+        col(
+          [
+            avec(el.titre(`Un projet à ${f.ville} ?`, 'h2', 'center'), { mb: 12 }),
+            avec(el.texte('Recevez votre devis gratuit et sans engagement.', 'center'), { mb: 24 }),
+            avec(el.bouton('Demander mon devis', devis), { align: 'center', enLigne: false }),
+          ],
+          12,
+        ),
+      ]),
+    ],
+    'primaire',
+    '',
+    v3(72, 56, 44),
+  );
+  appel.p.fondImage = (f.photos[1] ?? f.photos[0] ?? '') as typeof appel.p.fondImage;
   const contact = () =>
     section(
       'Contact et devis',
@@ -435,7 +468,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
         meta: accroche.slice(0, 320),
         motCle: `${f.metier} ${f.ville}`.toLowerCase(),
       },
-      [bandeau, avis, presentation, prestations, ...realisations, pied()],
+      [bandeau, avis, presentation, prestations, ...realisations, appel, pied()],
     ),
     contact: page(
       'Contact et devis',

@@ -183,13 +183,17 @@ export function useBrouillonSite(initial: BrouillonSite) {
     return null;
   };
 
+  // Site remplacé d'un bloc (modèle appliqué ou restauré) : l'aperçu est rechargé en entier.
+  const [generation, setGeneration] = useState(0);
   /** Modèle enregistré (dont « Avant IA ») restauré en une étape d'historique (SITE-IA-09). */
-  const restaurer = (m: Partial<BrouillonSite> & { pages: BrouillonSite['pages'] }) =>
+  const restaurer = (m: Partial<BrouillonSite> & { pages: BrouillonSite['pages'] }) => {
     modifier((x) => ({
       pages: m.pages,
       navigation: m.navigation ?? x.navigation,
       theme: m.theme ?? x.theme,
     }));
+    setGeneration((g) => g + 1);
+  };
 
   /** Ancre d'une zone (créée si besoin) pour y mener un lien ; `null` si la zone n'existe plus. */
   const ancrer = (pageId: string, zoneId: string) => {
@@ -205,6 +209,7 @@ export function useBrouillonSite(initial: BrouillonSite) {
     ancrerZone: ancrer,
     appliquerIa,
     restaurer,
+    generation,
     ajouterPage,
     supprimerPage,
     annuler: () => setH(annuler),
