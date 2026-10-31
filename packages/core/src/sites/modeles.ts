@@ -1,4 +1,5 @@
 import { DEFAUTS_COLONNE, elementDuCatalogue } from './catalogue';
+import { siteParDefaut, type FicheSite } from './defaut';
 import type { Navigation, PageSite, Section, Theme } from './schemas';
 
 /** Mise en page du bandeau d'accueil propre à chaque modèle. */
@@ -82,6 +83,9 @@ export const MODELES_SITE: readonly ModeleSite[] = [
 
 export const modeleSite = (id: string) => MODELES_SITE.find((m) => m.id === id);
 
+/** Pages que le site de départ sait construire à partir de la fiche. */
+const REFAITES: readonly PageSite['type'][] = ['accueil', 'contact', 'mentions'];
+
 const BANDEAU = 'Bandeau';
 const AVIS = 'Avis clients';
 const PIED = 'Pied de page';
@@ -113,8 +117,9 @@ const aImage = (c: Section['rows'][number]['cols'][number]) =>
   c.els.some((e) => e.type === 'image');
 
 /**
- * Bandeau remis en « photo à droite » : la colonne photo masquée par un modèle photo réapparaît
- * (ou est recréée pour un bandeau photo d'avant). Rend chaque modèle indépendant du précédent.
+ * Bandeau remis en « photo à droite » : la colonne photo masquée par un modèle photo ou minimal
+ * réapparaît (ou est recréée pour un bandeau photo d'avant). Rend chaque modèle indépendant du
+ * précédent.
  */
 function bandeauScinde(x: Section) {
   const r = x.rows[0];
@@ -150,7 +155,14 @@ function varianter(s: Section, i: number, hero: Hero): Section {
     const image = r.cols.flatMap((c) => c.els).find((e) => e.type === 'image' && e.p.src);
     const photo =
       image?.type === 'image' ? image.p.src : x.p.fondType === 'image' ? x.p.fondImage : '';
-    if (hero === 'photo' && photo) {
+    bandeauScinde(x);
+    // Photo et minimal : texte centré sur toute la largeur (vignettes de la galerie).
+    const centre = hero === 'photo' || hero === 'minimal';
+    if (centre)
+      r.cols = r.cols.map((c) =>
+        aImage(c) ? { ...c, p: { ...c.p, masque: MASQUE } } : { ...c, w: 12 },
+      );
+    if (hero === 'photo' && photo)
       x.p = {
         ...x.p,
         fond: 'clair',
@@ -160,14 +172,15 @@ function varianter(s: Section, i: number, hero: Hero): Section {
         voileOpacite: 62,
         padY: PAD_PHOTO,
       };
-      // Photo en fond : sa colonne est masquée (pas supprimée), un autre modèle la remet.
-      r.cols = r.cols.map((c) =>
-        aImage(c) ? { ...c, p: { ...c.p, masque: MASQUE } } : { ...c, w: 8 },
-      );
-    } else {
-      bandeauScinde(x);
-      x.p.fond = hero === 'sombre' ? 'sombre' : hero === 'minimal' ? 'blanc' : 'clair';
-      x.p.padY = hero === 'minimal' ? PAD_MINIMAL : PAD_BANDEAU;
+    else {
+      // Sans photo, le modèle photo garde son grand bandeau, sur la couleur principale.
+      x.p.fond = { split: 'clair', photo: 'primaire', sombre: 'sombre', minimal: 'blanc' }[hero];
+      x.p.padY = hero === 'photo' ? PAD_PHOTO : hero === 'minimal' ? PAD_MINIMAL : PAD_BANDEAU;
+    }
+    for (const e of elements(x)) {
+      if ('align' in e.p && e.type !== 'image') e.p.align = centre ? 'center' : 'left';
+      // Centré : un bouton par ligne (comme la zone « Bandeau sur photo ») ; sinon côte à côte.
+      if (e.type === 'bouton') e.p.enLigne = !centre;
     }
   } else if (estAvis(x)) {
     x.p.fond = hero === 'sombre' ? 'sombre' : hero === 'minimal' ? 'clair' : 'blanc';
@@ -183,20 +196,24 @@ function varianter(s: Section, i: number, hero: Hero): Section {
 }
 
 /**
- * « Appliquer à tout le site » (thème + mise en page de chaque page, textes et photos gardés) ou
- * « Couleurs et polices seulement » (`tout` faux : le thème seul). Le site reçu n'est pas modifié ;
- * l'appelant applique un modèle au site d'avant le premier modèle, pour ne pas cumuler les variantes.
+ * « Appliquer à tout le site » (SITE_INTERNET §4.7 : refait la mise en page, garde les données de
+ * la fiche) ou « Couleurs et polices seulement » (`tout` faux : le thème seul). Avec la fiche,
+ * l'accueil, le contact et les mentions sont reconstruits comme le site de départ, puis mis au
+ * style du modèle ; les autres pages gardent leurs zones, mises au style du modèle. Le nom, l'adresse
+ * et le référencement de chaque page sont gardés. Le site reçu n'est pas modifié.
  */
 export function appliquerModeleSite<
   S extends { theme: Theme; navigation: Navigation; pages: Record<string, PageSite> },
->(site: S, m: ModeleSite, palette: Theme['palette'], tout: boolean): S {
+>(site: S, m: ModeleSite, palette: Theme['palette'], tout: boolean, fiche?: FicheSite): S {
   const theme: Theme = { palette, polices: m.polices, rayonBoutons: m.rayonBoutons, ton: m.ton };
   if (!tout) return { ...site, theme };
+  const depart = fiche ? Object.values(siteParDefaut(fiche, palette).pages) : [];
   const pages = Object.fromEntries(
-    Object.entries(site.pages).map(([id, p]) => [
-      id,
-      { ...p, sections: p.sections.map((s, i) => varianter(s, i, m.hero)) },
-    ]),
+    Object.entries(site.pages).map(([id, p]) => {
+      const refaite = depart.find((d) => d.type === p.type && REFAITES.includes(p.type));
+      const sections = refaite ? structuredClone(refaite.sections) : p.sections;
+      return [id, { ...p, sections: sections.map((s, i) => varianter(s, i, m.hero)) }];
+    }),
   );
   return { ...site, theme, pages };
 }

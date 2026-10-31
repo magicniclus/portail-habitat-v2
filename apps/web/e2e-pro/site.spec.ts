@@ -616,7 +616,11 @@ test.describe('Site internet artisan', () => {
     await expect(page.getByRole('heading', { name: 'Modèles de site' })).toBeVisible();
     await page.getByRole('button', { name: /^Dépannage 24\/7/ }).click();
     await page.getByRole('button', { name: 'Appliquer à tout le site' }).click();
-    await expect(page.getByText(/Modèle « Dépannage 24\/7 » appliqué à \d+ pages/)).toBeVisible();
+    await expect(
+      page.getByText(
+        /Modèle « Dépannage 24\/7 » appliqué à \d+ pages : accueil, contact et mentions refaits/,
+      ),
+    ).toBeVisible();
     // L'aperçu suit : police du modèle (Barlow) et bandeau sombre.
     const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
     await expect

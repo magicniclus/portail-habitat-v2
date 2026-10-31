@@ -51,7 +51,8 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     expect(b.p).toMatchObject({ fondType: 'image', fondImage: 'lib:r1/0', voileOpacite: 62 });
     const visibles = b.rows[0]!.cols.filter((c) => !c.p.masque.desktop);
     expect(visibles).toHaveLength(1);
-    expect(visibles[0]!.w).toBe(8);
+    expect(visibles[0]!.w).toBe(12);
+    expect(visibles[0]!.els.find((e) => e.type === 'titre')!.p).toMatchObject({ align: 'center' });
     expect(JSON.stringify(b)).toContain('Bertrand Rénovation, plombier à Bordeaux');
     // Le site de départ n'est pas modifié.
     expect(bandeau(s).rows[0]!.cols).toHaveLength(2);
@@ -80,11 +81,28 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       );
   });
 
-  it('bandeau sans photo : le modèle photo garde la mise en page', () => {
+  it('bandeau sans photo : le modèle photo garde un grand bandeau centré, sur la couleur principale', () => {
     const s = siteParDefaut({ ...FICHE, photos: [] }, PALETTE);
     const r = appliquerModeleSite(s, modeleSite('premium')!, AUTRE, true);
-    expect(bandeau(r).p.fondType).toBe('couleur');
+    expect(bandeau(r).p).toMatchObject({
+      fondType: 'couleur',
+      fond: 'primaire',
+      padY: { desktop: 130 },
+    });
     expect(bandeau(r).rows[0]!.cols).toHaveLength(1);
+    expect(bandeau(r).rows[0]!.cols[0]!.els.find((e) => e.type === 'titre')!.p).toMatchObject({
+      align: 'center',
+    });
+    const boutons = (x: typeof r) =>
+      bandeau(x).rows[0]!.cols[0]!.els.flatMap((e) => (e.type === 'bouton' ? [e.p.enLigne] : []));
+    expect(boutons(r)).toEqual([false, false]);
+    // Classique ensuite : de nouveau aligné à gauche, fond clair, boutons côte à côte.
+    const c = appliquerModeleSite(r, modeleSite('classique')!, PALETTE, true);
+    expect(bandeau(c).p.fond).toBe('clair');
+    expect(boutons(c)).toEqual([true, true]);
+    expect(bandeau(c).rows[0]!.cols[0]!.els.find((e) => e.type === 'titre')!.p).toMatchObject({
+      align: 'left',
+    });
   });
 
   it('classique et chaleureux : mise en page inchangée, thème appliqué', () => {
@@ -135,5 +153,28 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     bandeau(s).p.nom = 'Haut de page';
     const r = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, true);
     expect(bandeau(r).p.fond).toBe('sombre');
+  });
+
+  it('« tout le site » avec la fiche : accueil, contact et mentions refaits, autres pages variées', () => {
+    const s = site();
+    // Accueil bricolé : une seule zone vide, sans bandeau.
+    s.pages.accueil!.sections = [
+      { ...bandeau(s), p: { ...bandeau(s).p, nom: 'Ma zone' }, rows: [] },
+    ];
+    s.pages.accueil!.seo = { ...s.pages.accueil!.seo, title: 'Mon titre SEO' };
+    const libre = { ...s.pages.contact!, nom: 'Libre', type: 'libre' as const };
+    s.pages.libre = libre;
+    const r = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, true, FICHE);
+    const acc = r.pages.accueil!;
+    expect(acc.seo.title).toBe('Mon titre SEO');
+    expect(acc.sections[0]!.p).toMatchObject({ nom: 'Bandeau', fond: 'sombre' });
+    expect(JSON.stringify(acc)).toContain('Bertrand Rénovation, plombier à Bordeaux');
+    expect(r.pages.contact!.sections.map((x) => x.p.nom)).toEqual(
+      siteParDefaut(FICHE, AUTRE).pages.contact!.sections.map((x) => x.p.nom),
+    );
+    expect(r.pages.libre!.sections).toHaveLength(libre.sections.length);
+    // Sans la fiche : les pages existantes sont seulement variées.
+    const sansFiche = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, true);
+    expect(sansFiche.pages.accueil!.sections[0]!.p.nom).toBe('Ma zone');
   });
 });

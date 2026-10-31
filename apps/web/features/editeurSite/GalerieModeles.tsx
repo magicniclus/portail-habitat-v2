@@ -1,9 +1,10 @@
 'use client';
 
-import { appliquerModeleSite, MODELES_SITE, type ModeleSite } from '@ph/core/sites';
+import { appliquerModeleSite, MODELES_SITE, type FicheSite, type ModeleSite } from '@ph/core/sites';
 import { Banner, Button } from '@ph/ui';
 import { palettesSites } from '@ph/ui/tokens';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { posterJson } from '@/lib/posterJson';
 import type { BrouillonSite } from './useBrouillonSite';
 import { VignetteModele } from './VignetteModele';
 
@@ -19,8 +20,8 @@ const paletteDe = (m: ModeleSite) => {
 };
 
 /**
- * Les 6 modèles fournis (SITE_INTERNET §4.7) : « Appliquer à tout le site » (thème et mise en
- * page, textes et photos gardés) ou « Couleurs et polices seulement ». Chaque modèle part du site
+ * Les 6 modèles fournis (SITE_INTERNET §4.7) : « Appliquer à tout le site » (thème, et mise en
+ * page refaite à partir de la fiche) ou « Couleurs et polices seulement ». Chaque modèle part du site
  * d'avant le premier modèle appliqué, que « Revenir à l'état précédent » restaure.
  */
 export function GalerieModeles({
@@ -33,13 +34,21 @@ export function GalerieModeles({
   const [choisi, setChoisi] = useState<string | null>(null);
   const [avant, setAvant] = useState<BrouillonSite | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  // Fiche lue à l'ouverture : « tout le site » refait l'accueil, le contact et les mentions avec.
+  // `undefined` pendant la lecture ; `null` si elle échoue (les pages sont alors seulement variées).
+  const [fiche, setFiche] = useState<FicheSite | null | undefined>();
+  useEffect(() => {
+    void posterJson<FicheSite>('/api/pro/site/fiche', {}).then((r) =>
+      setFiche(r.ok ? r.data : null),
+    );
+  }, []);
   const appliquer = (m: ModeleSite, tout: boolean) => {
     const base = avant ?? site;
     setAvant(base);
-    onAppliquer(appliquerModeleSite(base, m, paletteDe(m), tout));
+    onAppliquer(appliquerModeleSite(base, m, paletteDe(m), tout, fiche ?? undefined));
     setChoisi(null);
     setMessage(
-      `Modèle « ${m.nom} » appliqué${tout ? ` à ${Object.keys(base.pages).length} pages` : ' (couleurs et polices)'}. Vos textes et photos sont conservés. Cliquez sur « Publier » pour le mettre en ligne.`,
+      `Modèle « ${m.nom} » appliqué${tout ? ` à ${Object.keys(base.pages).length} pages${fiche ? ' : accueil, contact et mentions refaits à partir de votre fiche' : ''}` : ' (couleurs et polices)'}. Cliquez sur « Publier » pour le mettre en ligne.`,
     );
   };
   return (
@@ -48,7 +57,7 @@ export function GalerieModeles({
         Modèles de site
       </h2>
       <p className="m-0 text-[13px] text-neutre-700">
-        Chaque modèle reprend vos textes, photos et pages. Cliquez pour voir les options.
+        Chaque modèle reprend les données de votre fiche. Cliquez pour voir les options.
       </p>
       <ul className="m-0 grid list-none gap-3 p-0">
         {MODELES_SITE.map((m) => {
@@ -75,7 +84,13 @@ export function GalerieModeles({
               </button>
               {ouvert ? (
                 <div className="grid gap-1.5">
-                  <Button taille="sm" pleineLargeur onClick={() => appliquer(m, true)}>
+                  <Button
+                    taille="sm"
+                    pleineLargeur
+                    chargement={fiche === undefined}
+                    disabled={fiche === undefined}
+                    onClick={() => appliquer(m, true)}
+                  >
                     Appliquer à tout le site
                   </Button>
                   <Button
@@ -87,7 +102,8 @@ export function GalerieModeles({
                     Couleurs et polices seulement
                   </Button>
                   <span className="text-xs text-neutre-600">
-                    « Tout le site » remplace la mise en page de chaque page. Vous pouvez revenir en
+                    « Tout le site » refait l’accueil, le contact et les mentions à partir de votre
+                    fiche, et met vos autres pages au style du modèle. Vous pouvez revenir en
                     arrière.
                   </span>
                 </div>
