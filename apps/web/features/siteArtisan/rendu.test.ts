@@ -197,8 +197,8 @@ describe('rendu des sites publiés', () => {
   });
 
   it('mention Portail Travaux seulement sur un site gratuit', () => {
-    expect(doc('gratuit')).toContain('Site créé avec');
-    expect(doc('site_pro')).not.toContain('Site créé avec');
+    expect(doc('gratuit')).toContain('Propulsé par');
+    expect(doc('site_pro')).not.toContain('Propulsé par');
   });
 
   it('SITE-07 : aucun cookie ni script tiers (hors Turnstile configuré)', () => {

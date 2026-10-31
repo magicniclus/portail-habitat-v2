@@ -9,7 +9,7 @@ import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
 const INTERVALLE_MS = 2000;
-/** En développement, Stripe ne joint pas l'ordinateur sans `stripe listen` : l'aide l'explique. */
+/** En développement, Stripe ne joint pas l'ordinateur : les événements sont relus chez Stripe. */
 const LOCAL = process.env.NODE_ENV === 'development';
 const ESSAIS_MAX = 45;
 
@@ -36,6 +36,8 @@ export function AttenteConfirmation({
     let essais = 0;
     let fini = false;
     const verifier = async () => {
+      // En local, les événements Stripe sont relus chez Stripe (aucun webhook ne peut arriver).
+      if (LOCAL) await posterJson('/api/pro/abonnement/relais-local', {});
       const r = await posterJson<{ actif: boolean }>('/api/pro/abonnement/etat', { produit });
       if (fini) return;
       if (r.ok && r.data.actif) return setEtat('confirme');
@@ -101,20 +103,19 @@ export function AttenteConfirmation({
   );
 }
 
-/** Aide affichée seulement avec `pnpm dev`, après 10 s d'attente. */
+/** Aide affichée seulement avec `pnpm dev`, si la confirmation tarde (20 s). */
 function AideLocale() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 10_000);
+    const t = setTimeout(() => setVisible(true), 20_000);
     return () => clearTimeout(t);
   }, []);
   if (!visible) return null;
   return (
     <Banner tone="info">
-      En local, Stripe ne peut pas prévenir votre ordinateur tout seul. Dans un autre terminal,
-      lancez <code>pnpm stripe:webhooks</code>, copiez la clé <code>whsec_…</code> affichée dans{' '}
-      <code>STRIPE_WEBHOOK_SECRET</code> de <code>.env.local</code>, relancez <code>pnpm dev</code>{' '}
-      puis refaites le paiement.
+      En local, le paiement est relu chez Stripe toutes les 2 s. S’il ne se confirme pas, vérifiez
+      que <code>STRIPE_SECRET_KEY</code> (clé de test) est bien dans <code>.env.local</code>, puis
+      relancez <code>pnpm dev</code>. Autre possibilité : <code>pnpm stripe:webhooks</code>.
     </Banner>
   );
 }

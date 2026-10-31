@@ -39,7 +39,7 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
       'IA complète : pages, textes et référencement créés pour vous',
       'Blog : 5 articles par mois, en un clic ou en pilote automatique',
       'Formulaire sur mesure et SMS à chaque demande : rappelez le premier',
-      'Votre marque seule, sans la mention « Site créé avec Portail Travaux »',
+      'Votre marque seule, sans la mention « Propulsé par Portail Travaux »',
       'Statistiques sur 12 mois et Search Console',
     ],
     raison: 'Fonction incluse dans Site Pro.',

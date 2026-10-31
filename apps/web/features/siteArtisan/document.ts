@@ -90,7 +90,7 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
   ).replace(/</g, '\\u003c');
   const mention =
     d.offre === 'gratuit'
-      ? `<p>Site créé avec <a href="https://portailtravaux.fr/pro/site-internet-artisan" rel="noopener">Portail Travaux</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Travaux</a>` : ''}</p>`
+      ? `<p class="propulse">Propulsé par <a href="https://portailtravaux.fr/pro/site-internet-artisan" rel="noopener">Portail Travaux</a>${d.urlFiche ? ` · <a href="${esc(d.urlFiche)}">Voir la fiche Portail Travaux</a>` : ''}</p>`
       : '';
   const mentions = Object.entries(d.pages).find(([, p]) => p.type === 'mentions');
   // Suivi publicitaire (site publié seulement, jamais dans l'éditeur ni l'aperçu).

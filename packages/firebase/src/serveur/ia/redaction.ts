@@ -67,6 +67,9 @@ export async function redigerIa(
     metiers: ((a.metiers as string[] | undefined) ?? []).map((m) => s.nomMetier(m) ?? m),
     ville: (a.adresseSiege as { ville?: string } | undefined)?.ville ?? '',
     labels,
+    ...(a.dateCreationEntreprise instanceof Timestamp
+      ? { creation: a.dateCreationEntreprise.toDate().getFullYear() }
+      : {}),
   });
   let tokens = 0;
   let cout = 0;

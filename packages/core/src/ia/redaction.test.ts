@@ -46,6 +46,30 @@ describe('promptRedaction', () => {
     expect(g.contexte).toContain('non précisés');
   });
 
+  it('fiche remplie en un clic : accroche et présentation générées, année de création du SIRET', () => {
+    const fiche = {
+      nom: 'Martin Plomberie',
+      metiers: ['Plombier'],
+      ville: 'Bordeaux',
+      labels: [],
+      creation: 2009,
+    };
+    const a = promptRedaction({ type: 'accroche', action: 'generer', texte: '' }, fiche);
+    expect(a.demande).toContain('accroche');
+    expect(a.demande).toContain('280 caractères au plus');
+    expect(a.demande).toContain('une seule phrase');
+    expect(a.contexte).toContain('créée en 2009');
+    const p = promptRedaction(
+      { type: 'apropos', action: 'generer', texte: '', infos: { notes: 'Salles de bain' } },
+      fiche,
+    );
+    expect(p.demande).toContain('présentation de l’entreprise');
+    expect(p.demande).not.toContain('ce chantier');
+    expect(controlerRedaction('x'.repeat(281), { type: 'accroche', texte: '' }, [])).toHaveLength(
+      1,
+    );
+  });
+
   it('valide la sortie', () => {
     expect(sortieRedaction.parse({ texte: 'Bonjour.' }).changements).toEqual([]);
   });

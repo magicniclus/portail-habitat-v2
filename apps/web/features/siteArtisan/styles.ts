@@ -92,7 +92,7 @@ mark{background:color-mix(in srgb,var(--accent) 28%,transparent);color:inherit;p
 hr{height:1px;border:0;margin:0;background:var(--trait)}hr.court{width:64px}hr.ac{margin-inline:auto}hr.ad{margin-left:auto}
 .logo-el{display:flex;align-items:center;gap:10px;font-family:${p.titre};font-weight:${p.poids};font-size:19px}.menu-el{display:flex;flex-wrap:wrap;gap:22px;font-size:15px}.menu-el a{color:inherit;text-decoration:none}
 .ini{display:inline-flex;align-items:center;justify-content:center;flex:none;font-family:${p.titre};font-weight:800;font-size:14px}
-.pied{padding:24px var(--px);text-align:center;font-size:14px;color:color-mix(in srgb,var(--sombre) 75%,white)}.pied a{color:inherit}
+.pied{padding:24px var(--px);text-align:center;font-size:14px;color:color-mix(in srgb,var(--sombre) 75%,white)}.pied a{color:inherit}.pied .propulse{margin:8px 0 0;font-size:12px;opacity:.8}
 .om{display:none}
 @media (max-width:1023px){:root{--px:32px}.ts{font-size:var(--ft)}.espace{height:var(--ht)}.mg{margin:var(--mgt)}.s{padding:var(--pt) var(--px)}.r{grid-template-columns:var(--ct);gap:var(--gt)}}
 @media (min-width:768px) and (max-width:1023px){.ht{display:none!important}}@media (min-width:1024px){.hd{display:none!important}}

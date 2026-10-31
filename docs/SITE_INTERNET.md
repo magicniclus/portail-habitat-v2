@@ -7,7 +7,7 @@ Maquettes :
 ## 1. Offres
 | Offre | Prix | Contenu |
 |---|---|---|
-| Gratuit | 0 € | `{slug}.portailtravaux.fr`, toutes les pages, éditeur, modèles, **aperçu IA de l'accueil (1 fois, non publiable)**, formulaire, stats 30 jours, mention « Site créé avec Portail Travaux » |
+| Gratuit | 0 € | `{slug}.portailtravaux.fr`, toutes les pages, éditeur, modèles, **aperçu IA de l'accueil (1 fois, non publiable)**, formulaire, stats 30 jours, mention « Propulsé par Portail Travaux » |
 | **Site Pro** | **9,90 € HT/mois**, sans engagement (Stripe, produit `site_pro`) ; inclus dans Fiche + Site et Tout inclus | **IA complète** (création du site, composants, pages, textes, SEO ; quotas IA_SITE §4) ; 1 domaine inclus (.fr, .com ou .eu, acheté par nous **au nom de l'artisan**) ou domaine existant connecté ; sous-domaine conservé et redirigé en 301 ; sans mention ; stats 12 mois ; Search Console ; SMS à chaque demande |
 
 Résiliation : le site repasse sur le sous-domaine ; le domaine acheté reste la propriété de l'artisan (code de transfert envoyé, renouvellement à sa charge).

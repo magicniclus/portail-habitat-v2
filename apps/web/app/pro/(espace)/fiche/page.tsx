@@ -30,6 +30,7 @@ import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
 import { InfosFiche } from '@/features/fichePro/InfosFiche';
 import { ProgressionFiche } from '@/features/fichePro/ProgressionFiche';
+import { RemplirFicheIa } from '@/features/fichePro/RemplirFicheIa';
 import { ResumeAvis } from '@/features/fichePro/ResumeAvis';
 import { VideoPresentation } from '@/features/fichePro/VideoPresentation';
 import { Realisations } from '@/features/fichePro/Realisations';
@@ -123,6 +124,7 @@ export default async function PageMaFiche() {
               />
             }
           />
+          {edite ? <RemplirFicheIa vide={!f.description && !f.pitch} /> : null}
           <ResumeAvis note={note} nombre={avis.length} />
           <CarteFiche
             titre="À propos"

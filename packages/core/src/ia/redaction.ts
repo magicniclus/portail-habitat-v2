@@ -5,7 +5,7 @@ import { z } from '../zod';
  * chantier à partir des infos. Même objectif que l'audit : que les particuliers contactent
  * l'artisan, sans jamais inventer un fait absent du texte ou de la fiche.
  */
-export const TYPES_REDACTION = ['apropos', 'projet'] as const;
+export const TYPES_REDACTION = ['apropos', 'projet', 'accroche'] as const;
 export const ACTIONS_REDACTION = ['relire', 'reecrire', 'generer'] as const;
 export const TONS_REDACTION = ['professionnel', 'chaleureux', 'court', 'convaincant'] as const;
 export type TypeRedaction = (typeof TYPES_REDACTION)[number];
@@ -13,6 +13,7 @@ export type TypeRedaction = (typeof TYPES_REDACTION)[number];
 export const LIMITES_REDACTION: Readonly<Record<TypeRedaction, number>> = {
   apropos: 1200,
   projet: 400,
+  accroche: 280,
 };
 export const QUOTA_REDACTION_JOUR = 20;
 export const LIBELLES_TON: Readonly<Record<(typeof TONS_REDACTION)[number], string>> = {
@@ -60,9 +61,21 @@ const CONSIGNES_ACTION = {
     'Corrige l’orthographe, la grammaire, la ponctuation et la typographie française (espaces insécables, guillemets « », apostrophes typographiques) sans changer le sens ni le style.',
   reecrire:
     'Réécris le texte dans le ton demandé : ce que fait l’artisan, pour qui et où, pourquoi le choisir, et une invitation à demander un devis.',
-  generer:
-    'Rédige 2 à 4 phrases présentant ce chantier à partir du titre, du métier, de la ville et des notes de l’artisan.',
+  generer: {
+    projet:
+      'Rédige 2 à 4 phrases présentant ce chantier à partir du titre, du métier, de la ville et des notes de l’artisan.',
+    apropos:
+      'Rédige une présentation de l’entreprise en 4 à 6 phrases : ce qu’elle fait, pour qui et où, ce qui la distingue (uniquement d’après les informations fournies), puis une invitation à demander un devis.',
+    accroche:
+      'Rédige une seule phrase d’accroche pour l’annuaire : le métier, la ville et ce qui donne envie d’appeler (uniquement d’après les informations fournies).',
+  },
 } as const;
+
+const NOMS_TYPE: Readonly<Record<TypeRedaction, string>> = {
+  apropos: 'présentation « À propos »',
+  projet: 'description d’un chantier',
+  accroche: 'accroche de l’annuaire',
+};
 
 /** Prompt système (stable), fiche de l'entreprise (contexte) et demande d'une rédaction. */
 export function promptRedaction(
@@ -73,17 +86,24 @@ export function promptRedaction(
     texte: string;
     infos?: { titre?: string; ville?: string; notes?: string };
   },
-  fiche: { nom: string; metiers: readonly string[]; ville: string; labels: readonly string[] },
+  fiche: {
+    nom: string;
+    metiers: readonly string[];
+    ville: string;
+    labels: readonly string[];
+    /** Année de création de l'entreprise (registre Sirene), un fait vérifié. */
+    creation?: number;
+  },
 ) {
   const systeme = [
     'Tu aides un artisan du bâtiment à rédiger le texte de sa fiche sur Portail Travaux, pour que des particuliers lui demandent un devis.',
     'Règles impératives : n’invente aucun fait absent du texte ou des informations fournies (années d’expérience, chiffres, certifications, marques, garanties, prix). Écris en français, à la première personne du pluriel si le texte est déjà écrit ainsi, sinon à la première personne. N’écris jamais « lead ».',
     'Réponds en JSON : { "texte": la proposition, "changements": liste courte de ce que tu as modifié }.',
   ].join('\n');
-  const contexte = `Entreprise : ${fiche.nom} · métiers : ${fiche.metiers.join(', ') || 'non précisés'} · ville : ${fiche.ville || 'non précisée'} · labels vérifiés : ${fiche.labels.join(', ') || 'aucun'}.`;
+  const contexte = `Entreprise : ${fiche.nom}${fiche.creation ? ` (créée en ${fiche.creation}, registre Sirene)` : ''} · métiers : ${fiche.metiers.join(', ') || 'non précisés'} · ville : ${fiche.ville || 'non précisée'} · labels vérifiés : ${fiche.labels.join(', ') || 'aucun'}.`;
   const demande = [
-    `Type : ${e.type === 'apropos' ? 'présentation « À propos »' : 'description d’un chantier'} (${LIMITES_REDACTION[e.type]} caractères au plus).`,
-    CONSIGNES_ACTION[e.action],
+    `Type : ${NOMS_TYPE[e.type]} (${LIMITES_REDACTION[e.type]} caractères au plus).`,
+    e.action === 'generer' ? CONSIGNES_ACTION.generer[e.type] : CONSIGNES_ACTION[e.action],
     ...(e.ton ? [`Ton demandé : ${LIBELLES_TON[e.ton]}.`] : []),
     ...(e.infos ? [`Informations : ${JSON.stringify(e.infos)}`] : []),
     `Texte de l’artisan :\n${e.texte || '(vide)'}`,

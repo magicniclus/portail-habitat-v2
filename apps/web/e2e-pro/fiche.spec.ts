@@ -111,6 +111,19 @@ test.describe('Ma fiche', () => {
     await expect(apropos).toHaveValue('Couvreur a Bordeaux, on fait les toitures.');
   });
 
+  test('fiche remplie par l’IA en un clic (sans abonnement) : sans clé, message clair', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    await page.getByRole('button', { name: /ma fiche avec l’IA/ }).click();
+    const f = page.getByRole('dialog', { name: 'Remplir ma fiche avec l’IA' });
+    await f.getByLabel(/^Vos spécialités/).fill('Salles de bain');
+    await f.getByRole('button', { name: 'Créer le contenu de ma fiche' }).click();
+    await expect(
+      f.getByText('L’assistant de rédaction n’est pas encore disponible.'),
+    ).toBeVisible();
+  });
+
   test('projet : « Rédiger à partir des infos » demande d’abord un titre', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
     await page.getByRole('button', { name: 'Ajouter un projet', exact: true }).click();
