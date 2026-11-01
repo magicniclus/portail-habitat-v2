@@ -1033,3 +1033,15 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **Côté particulier**, la recherche de l'annuaire propose maintenant les communes pendant la saisie (`ChampVille`, API Découpage administratif). La commune choisie envoie sa position (`lat`, `lon` dans l'adresse, `filtresAnnuaireUrl`). Elle est gardée par les filtres et « Tout effacer », et l'annuaire calcule les distances depuis ce point exact plutôt que de géocoder le nom (homonymes). Sans choix dans la liste, la ville saisie est géocodée comme avant.
   - Le champ « Ville » des projets propose aussi les communes.
   - Le simulateur demande un code postal, déjà converti en coordonnées par le serveur.
+- 01/11/2026 — **Annuaire toujours vide (zone centrée ailleurs), villes, articles des liens, avis** :
+  - **Cause de l'annuaire vide chez le propriétaire** : le centre de sa zone d'intervention (choisi à l'inscription) est près de Toulouse, alors que son siège est à Carignan-de-Bordeaux. Les « communes voisines » du bas de fiche l'ont révélé. Ma fiche affichait la ville du siège à côté du rayon, ce qui masquait l'erreur.
+    - Ma fiche affiche désormais « Centrée sur <commune réelle du centre> » (retrouvée par la position, API Découpage administratif, mise en cache 1 jour).
+    - Une alerte apparaît si la zone ne couvre pas le siège, avec la distance et « Modifier ma zone » (`communeDuPoint`, `centreCommune`).
+    - La fiche publique parle de la zone réelle : « autour de … », liens « près de … ».
+  - **Villes en capitales du SIRET** : `casseVille` (« CARIGNAN-DE-BORDEAUX » → « Carignan-de-Bordeaux ») dans la projection publique, l'en-tête de la fiche et les cartes de l'annuaire.
+  - **Les 3 blocs du bas de fiche** deviennent des cartes, chacune avec une icône et une action : « Comparer les artisans », « Lire les avis », « Demander un devis ».
+  - **Un vrai texte pour chaque lien du bas de fiche** (`articleAnnuaire`, `@ph/core`, sans IA ni chiffre inventé), affiché sous la liste des artisans :
+    - pages « métier à une ville » : nombre d'artisans trouvés, travaux du métier (prestations du simulateur), conseils ;
+    - pages « travaux à une ville » (les liens « Travaux souvent demandés » mènent maintenant à la recherche de l'annuaire) : présentation, prix repère du simulateur présenté comme estimation indicative, bouton « Estimer mon projet ».
+    - Ces pages travaux × ville sont indexables, avec leur propre titre et leur canonique ; les autres recherches restent en noindex.
+  - **Avis publiés absents** : leur lecture exige l'index composé `avis (artisanId, statut, publieLe desc)` de `firestore.indexes.json`. Il est à déployer sur le projet du propriétaire (`firebase deploy --only firestore:indexes`). La modération (publier, refuser, suspendre) recalcule aussi tout de suite la fiche publique (note, nombre d'avis) sans attendre le déclencheur.

@@ -47,7 +47,12 @@ describe('seoFiche (bas de fiche publique)', () => {
       'Électricien à Carignan-de-Bordeaux',
     ]);
     expect(s.services.liens).toEqual([
-      { libelle: 'Douche à l’italienne', prestation: 'sdb-douche' },
+      {
+        libelle: 'Douche à l’italienne à Carignan-de-Bordeaux',
+        prestation: 'sdb-douche',
+        nom: 'Douche à l’italienne',
+        ville: 'Carignan-de-Bordeaux',
+      },
     ]);
   });
 });

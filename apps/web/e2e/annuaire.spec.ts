@@ -125,6 +125,15 @@ test('recherche par ville : suggestions, la commune choisie envoie sa position',
   );
 });
 
+test('page « métier à une ville » : texte rédigé sous la liste des artisans', async ({ page }) => {
+  await page.goto('/artisans?metier=plombier&ville=Bordeaux');
+  const article = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Trouver un plombier à Bordeaux' }),
+  });
+  await expect(article).toBeVisible();
+  await expect(article).toContainText('Avant de choisir, comparez au moins deux devis');
+});
+
 test.describe('Fiche publique', () => {
   test('FIC-01 : seuls les labels vérifiés', async ({ page }) => {
     await page.goto('/artisans/bertrand-renovation-bordeaux');

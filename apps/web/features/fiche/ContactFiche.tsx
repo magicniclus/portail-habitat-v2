@@ -64,6 +64,7 @@ export function ContactFiche({
   if (envoyee)
     return (
       <aside
+        id="contact"
         aria-label="Demander un devis"
         className="grid content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5 lg:sticky lg:top-5"
       >
@@ -78,6 +79,7 @@ export function ContactFiche({
 
   return (
     <aside
+      id="contact"
       aria-label="Demander un devis"
       className="grid content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5 lg:sticky lg:top-5"
     >

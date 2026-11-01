@@ -115,7 +115,7 @@ const TRANSITIONS: Record<ActionAvis, { de: string[]; vers: string }> = {
 export async function modererAvisAdmin(
   s: { db: Firestore; horloge: () => number; notifier: Notifier },
   e: { acteurUid: string; avisId: string; action: ActionAvis; motif: string; motifRefus?: string },
-): Promise<void> {
+): Promise<{ artisanId: string }> {
   if (e.action === 'refuser' && !e.motifRefus)
     throw new ErreurMetier('ENTREE_INVALIDE', 'Choisissez le motif envoyé à l’auteur.');
   const ref = s.db.doc(chemins.avis(e.avisId));
@@ -213,6 +213,7 @@ export async function modererAvisAdmin(
       },
       titreInApp: 'Nouvel avis',
     });
+  return { artisanId: r.artisanId };
 }
 
 /** Suppression définitive (`avis.supprimer`) : avis, auteur et signalements ; note recalculée. */

@@ -2,6 +2,7 @@ import type { artisan, artisanPublic } from '../schemas/artisans';
 import type { z } from '../zod';
 import { bannieresMax } from './bannieres';
 import { scoreClassement } from './classement';
+import { casseVille } from '../format/ville';
 
 type Artisan = z.output<typeof artisan>;
 type ArtisanPublic = z.input<typeof artisanPublic>;
@@ -66,7 +67,7 @@ export function projeterArtisanPublic(
     pitch: a.pitch,
     description: a.description,
     ...Object.fromEntries(Object.entries(optionnels).filter(([, v]) => v !== undefined)),
-    ville,
+    ville: casseVille(ville),
     geo: a.zoneIntervention.centre,
     geohash: a.zoneIntervention.geohash,
     rayonKm: a.zoneIntervention.rayonKm,

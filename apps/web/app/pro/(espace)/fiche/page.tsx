@@ -1,5 +1,6 @@
 import { peut } from '@ph/core/equipe';
-import { formatNombre } from '@ph/core/format';
+import { casseVille, formatNombre } from '@ph/core/format';
+import { distanceKm } from '@ph/core/matching';
 import { appAdmin } from '@ph/firebase/admin';
 import { assurerFichePublique } from '@ph/firebase/annuaire';
 import { droitsDe, encartAffiche, type CleEncart } from '@ph/core/paiements';
@@ -38,6 +39,7 @@ import { Realisations } from '@/features/fichePro/Realisations';
 import { EncartOffre } from '@/features/offres/EncartOffre';
 import { EditionPresentation, EditionZone } from '@/features/fichePro/EditionsFiche';
 import { routes } from '@/lib/routes';
+import { centreCommune, communeDuPoint } from '@/server/communesProches';
 import { servicesDemandesPro } from '@/server/demandesPro';
 import { sessionPro } from '@/server/sessionPro';
 import { maintenant } from '@/server/temps';
@@ -58,6 +60,13 @@ export default async function PageMaFiche() {
     lireAvisPro(db, active.artisanId, 50),
   ]);
   if (!f) redirect(routes.proTableauDeBord);
+  // Zone d'intervention : commune réelle de son centre, et siège hors de la zone signalé
+  // (une zone centrée ailleurs rend la fiche introuvable dans l'annuaire autour du siège).
+  const [communeZone, siege] = await Promise.all([
+    communeDuPoint(f.zone.centre),
+    centreCommune(f.ville, f.codePostal),
+  ]);
+  const ecartSiegeKm = siege ? Math.round(distanceKm(siege, f.zone.centre)) : 0;
   // En ligne : la fiche publique doit exister (recalculée sinon), ou l'artisan voit pourquoi.
   const publique = f.enLigne
     ? await assurerFichePublique(servicesDemandesPro(), active.artisanId)
@@ -162,11 +171,18 @@ export default async function PageMaFiche() {
             <CarteZoneFiche centre={f.zone.centre} rayonKm={f.zone.rayonKm} />
             <div className="flex flex-wrap items-center gap-3">
               <span className="rounded-pill border border-trait px-3.5 py-1.5 text-sm font-semibold">
-                {f.ville ? `${f.ville}, ` : ''}
+                {communeZone ? `Centrée sur ${communeZone}, ` : ''}
                 {f.zone.rayonKm} km
               </span>
               {edite ? <EditionZone zone={f.zone} /> : null}
             </div>
+            {ecartSiegeKm > f.zone.rayonKm ? (
+              <Banner tone="attention" titre="Votre zone ne couvre pas votre siège">
+                Elle est centrée sur {communeZone ?? 'une autre commune'}, à {ecartSiegeKm} km de{' '}
+                {casseVille(f.ville)}. Les particuliers qui cherchent autour de{' '}
+                {casseVille(f.ville)} ne vous trouvent pas : utilisez « Modifier ma zone ».
+              </Banner>
+            ) : null}
           </CarteFiche>
           <VideoPresentation modifiable={edite} {...(f.videoUrl ? { videoUrl: f.videoUrl } : {})} />
           <CarteFiche

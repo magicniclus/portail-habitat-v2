@@ -2,7 +2,7 @@ import { assuranceVerifiee, positionBanniere, seoFiche } from '@ph/core/annuaire
 import { AssuranceNonVerifiee } from '@/features/annuaire/AssuranceNonVerifiee';
 import { LabelPremium } from '@/features/annuaire/LabelPremium';
 import { jsonLdArtisan } from '@ph/core/annuaire';
-import { formatFourchette } from '@ph/core/format';
+import { casseVille, formatFourchette } from '@ph/core/format';
 import { NoteMoyenne } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ import { MesureFiche } from '@/features/fiche/MesureFiche';
 import { ContactFiche } from '@/features/fiche/ContactFiche';
 import { MenuSectionsFiche } from '@/features/fiche/MenuSectionsFiche';
 import { SeoFiche } from '@/features/fiche/SeoFiche';
-import { communesProches } from '@/server/communesProches';
+import { communeDuPoint, communesProches } from '@/server/communesProches';
 import { DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
 import { CarteFiche } from '@/features/fichePro/CarteFiche';
 import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
@@ -58,14 +58,18 @@ export default async function PageFiche({ params }: { params: Params }) {
   const metier = nomMetier(f.metierPrincipal);
   // Vidéo en bannière et images qui défilent : fiches mises en avant (Premium).
   const videoBanniere = f.misEnAvant ? f.videoUrl : undefined;
-  const [villesProches, prestations] = await Promise.all([
+  const villeSiege = casseVille(f.ville);
+  const [villesProches, prestations, communeZone] = await Promise.all([
     communesProches(f.geo, f.rayonKm),
     prestationsDuMetier(f.metierPrincipal),
+    communeDuPoint(f.geo),
   ]);
+  // Liens et textes autour de la zone réellement couverte (son centre), pas du seul siège.
+  const villeZone = communeZone ?? villeSiege;
   const seo = seoFiche({
     nom: f.nomCommercial,
     metier: { id: f.metierPrincipal, nom: metier },
-    ville: f.ville,
+    ville: villeZone,
     nbAvis: f.nbAvis,
     note: f.noteMoyenne,
     villesProches,
@@ -137,7 +141,7 @@ export default async function PageFiche({ params }: { params: Params }) {
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                   {f.badgeRecommande ? <LabelPremium /> : null}
                   <span className="text-[15px] text-neutre-800">
-                    {metier} · {f.ville}
+                    {metier} · {villeSiege}
                     {f.anneesActivite ? ` · ${f.anneesActivite} ans d’activité` : ''}
                   </span>
                   <NoteMoyenne note={f.noteMoyenne} nbAvis={f.nbAvis} className="text-[15px]" />
@@ -160,7 +164,7 @@ export default async function PageFiche({ params }: { params: Params }) {
             ) : null}
             <CarteFiche titre="Zone d’intervention" id="zone">
               <p className="m-0 text-[15px] text-neutre-800">
-                Intervient jusqu&apos;à {f.rayonKm} km autour de {f.ville}.
+                Intervient jusqu&apos;à {f.rayonKm} km autour de {villeZone}.
               </p>
               <CarteZoneFiche centre={f.geo} rayonKm={f.rayonKm} />
             </CarteFiche>
@@ -192,7 +196,7 @@ export default async function PageFiche({ params }: { params: Params }) {
           </div>
           <ContactFiche artisanId={id} nom={f.nomCommercial} telephone={f.telephone} />
         </div>
-        <SeoFiche seo={seo} />
+        <SeoFiche seo={seo} metier={f.metierPrincipal} />
       </main>
       <MesureFiche artisanId={id} />
       <PiedPublic {...piedParticuliers} />

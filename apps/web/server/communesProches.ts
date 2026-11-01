@@ -48,3 +48,50 @@ export async function communesProches(
     return [];
   }
 }
+
+const options = () => ({ next: { revalidate: 86_400 }, signal: AbortSignal.timeout(2000) });
+
+/** Commune où se trouve un point (centre de la zone d'intervention) ; `null` si inconnue. */
+export async function communeDuPoint(p: {
+  latitude: number;
+  longitude: number;
+}): Promise<string | null> {
+  try {
+    const r = await fetch(
+      `${API}/communes?lat=${p.latitude}&lon=${p.longitude}&fields=nom`,
+      options(),
+    );
+    if (!r.ok) return null;
+    const [c] = (await r.json()) as { nom: string }[];
+    return c?.nom ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Centre d'une commune (siège de l'entreprise) par son code postal et son nom. */
+export async function centreCommune(
+  nom: string,
+  codePostal: string,
+): Promise<{ latitude: number; longitude: number } | null> {
+  if (!/^\d{5}$/.test(codePostal)) return null;
+  try {
+    const r = await fetch(`${API}/communes?codePostal=${codePostal}&fields=nom,centre`, options());
+    if (!r.ok) return null;
+    const communes = (await r.json()) as {
+      nom: string;
+      centre?: { coordinates: [number, number] };
+    }[];
+    const simple = (s: string) =>
+      s
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z]/g, '');
+    const c = communes.find((x) => simple(x.nom) === simple(nom)) ?? communes[0];
+    const p = c?.centre?.coordinates;
+    return p ? { latitude: p[1], longitude: p[0] } : null;
+  } catch {
+    return null;
+  }
+}

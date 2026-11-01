@@ -8,6 +8,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
 import { servicesComptes } from '@/server/espace';
+import { republierFiche } from '@/server/republierFiche';
 
 const services = () => ({
   db: getFirestore(appAdmin()),
@@ -19,13 +20,17 @@ const moderer = actionAdmin(
   { schema: entreeModererAvis, nom: 'adminModererAvis', permission: 'avis.moderer' },
   async (e, ctx) => {
     if (e.action === 'supprimer') throw new Error('action inattendue');
-    return modererAvisAdmin(services(), {
+    const r = await modererAvisAdmin(services(), {
       acteurUid: ctx.uid!,
       avisId: e.avisId,
       action: e.action,
       motif: e.motif,
       ...(e.motifRefus ? { motifRefus: e.motifRefus } : {}),
     });
+    // Note et nombre d'avis de la fiche publique à jour tout de suite (sans attendre le
+    // déclencheur `projeterArtisan`).
+    await republierFiche(r.artisanId);
+    return null;
   },
 );
 const supprimer = actionAdmin(

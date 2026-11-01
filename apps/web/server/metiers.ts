@@ -37,3 +37,16 @@ export async function prestationsDuMetier(id: string): Promise<{ id: string; nom
     .filter((p) => p.famille === famille)
     .map(({ id: pid, nom }) => ({ id: pid, nom }));
 }
+
+/** Prestation du simulateur dont le nom est exactement la recherche (pages « travaux à … »). */
+export async function prestationParNom(
+  q: string,
+): Promise<{ id: string; nom: string; pitch: string; repere: string } | null> {
+  const cle = q.trim().toLowerCase();
+  if (!cle) return null;
+  const { default: catalogue } = await import('../../../docs/data/prestations-catalogue.json');
+  const p = (
+    catalogue.prestations as { id: string; nom: string; pitch: string; repere: string }[]
+  ).find((x) => x.nom.toLowerCase() === cle);
+  return p ? { id: p.id, nom: p.nom, pitch: p.pitch, repere: p.repere } : null;
+}

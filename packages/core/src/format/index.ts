@@ -13,3 +13,4 @@ export { slugifier } from './slug';
 export { formatNombre, nombreArrondi } from './nombres';
 export { initiales } from './initiales';
 export { versCsv } from './csv';
+export { casseVille } from './ville';

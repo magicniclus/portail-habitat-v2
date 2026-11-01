@@ -1,4 +1,5 @@
 import {
+  articleAnnuaire,
   BUDGETS_ANNUAIRE,
   chipsFiltres,
   DISPOS_ANNUAIRE,
@@ -9,7 +10,7 @@ import {
 } from '@ph/core/annuaire';
 import { trierResultats } from '@ph/firebase/annuaire';
 import { bouton } from '@ph/ui';
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { BarreRecherche } from '@/features/annuaire/BarreRecherche';
@@ -22,7 +23,8 @@ import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigat
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { routes } from '@/lib/routes';
 import { artisansAutour, compterRecherche, idsTexte, resoudreLieu } from '@/server/annuaire';
-import { metiersFiltre, nomMetier } from '@/server/metiers';
+import { metiersFiltre, nomMetier, prestationParNom, prestationsDuMetier } from '@/server/metiers';
+import { ArticleAnnuaire } from '@/features/annuaire/ArticleAnnuaire';
 
 type Params = Promise<Record<string, string | string[] | undefined>>;
 
@@ -33,22 +35,29 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const f = lireFiltresAnnuaire(await searchParams);
   const metier = f.metier.length === 1 ? nomMetier(f.metier[0]!) : null;
-  const titre = `${metier ? `${metier}s` : 'Artisans vérifiés'}${f.ville ? ` à ${f.ville}` : ' en Gironde'}`;
+  const prestation = f.q ? await prestationParNom(f.q) : null;
+  const titre = prestation
+    ? `${prestation.nom}${f.ville ? ` à ${f.ville}` : ''} : artisans vérifiés`
+    : `${metier ? `${metier}s` : 'Artisans vérifiés'}${f.ville ? ` à ${f.ville}` : ' en Gironde'}`;
   return {
     title: titre,
     description:
       'Artisans vérifiés près de chez vous : SIRET et avis contrôlés, assurance vérifiée signalée sur chaque fiche. Comparez les notes, les disponibilités et demandez un devis gratuit.',
-    // Une page par métier et par ville ; les combinaisons de filtres ne sont pas indexées.
+    // Une page par métier et par ville, et par travaux du simulateur et par ville (avec leur
+    // texte) ; les autres recherches et combinaisons de filtres ne sont pas indexées.
     alternates: {
       canonical: routes.annuaire(
         ecrireFiltresAnnuaire({
           ...lireFiltresAnnuaire({}),
-          metier: f.metier.slice(0, 1),
+          ...(prestation ? { q: prestation.nom } : { metier: f.metier.slice(0, 1) }),
           ville: f.ville,
         }),
       ),
     },
-    robots: chipsFiltres(f, String).length > 1 || f.q ? { index: false, follow: true } : undefined,
+    robots:
+      chipsFiltres(f, String).length > 1 || (f.q && !prestation)
+        ? { index: false, follow: true }
+        : undefined,
   };
 }
 
@@ -65,6 +74,23 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
     idsTexte(f.q, lieu, f.rayon),
   ]);
   const r = trierResultats(fiches, f, ordre);
+  // Pages « métier à une ville » et « travaux à une ville » : un vrai texte sous la liste.
+  const prestation = f.q ? await prestationParNom(f.q) : null;
+  const metierSeul = f.metier.length === 1 && !f.q ? f.metier[0]! : null;
+  const article = articleAnnuaire({
+    ville: f.ville ? lieu.nom : '',
+    rayonKm: f.rayon,
+    nbArtisans: r.premium.length + r.standards.length,
+    ...(prestation ? { prestation } : {}),
+    ...(metierSeul
+      ? {
+          metier: {
+            nom: nomMetier(metierSeul),
+            prestations: (await prestationsDuMetier(metierSeul)).map((p) => p.nom),
+          },
+        }
+      : {}),
+  });
   if (f.metier.length === 1 && f.ville)
     compterRecherche(
       { metier: f.metier[0]!, lieu, userAgent: (await headers()).get('user-agent') ?? '' },
@@ -131,6 +157,14 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
           </aside>
           <Resultats f={f} r={r} nomMetier={nomMetier} />
         </div>
+        {article ? (
+          <ArticleAnnuaire
+            article={article}
+            {...(prestation
+              ? { simulateur: `${routes.simulateur}?prestation=${prestation.id}` as Route }
+              : {})}
+          />
+        ) : null}
       </main>
       <Traceur page="annuaire" />
       <PiedPublic {...piedParticuliers} />

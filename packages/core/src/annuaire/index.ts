@@ -8,6 +8,7 @@ export {
 } from './bannieres';
 export { scoreClassement, type EntreeClassement } from './classement';
 export { seoFiche, type EntreeSeoFiche } from './seoFiche';
+export { articleAnnuaire, type EntreeArticle } from './articleAnnuaire';
 export {
   BUDGETS_ANNUAIRE,
   chipsFiltres,

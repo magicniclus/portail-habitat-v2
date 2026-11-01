@@ -6,7 +6,7 @@ import {
   LIBELLES_LABELS,
   libelleDisponibilite,
 } from '@ph/core/annuaire';
-import { formatFourchette, formatNombre, formatTel } from '@ph/core/format';
+import { casseVille, formatFourchette, formatNombre, formatTel } from '@ph/core/format';
 import type { ArtisanAnnuaire } from '@ph/firebase/annuaire';
 import { bouton, NoteMoyenne } from '@ph/ui';
 import Link from 'next/link';
@@ -54,7 +54,7 @@ function Logo({ a, taille }: { a: ArtisanAnnuaire; taille: 'grand' | 'petit' }) 
 export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: string }) {
   const dispo = libelleDisponibilite(a.delaiJ);
   const devis = routes.simulateurArtisan(a.id);
-  const lieu = `${nomMetier} · ${a.ville} · ${formatNombre(a.km, 1)} km`;
+  const lieu = `${nomMetier} · ${casseVille(a.ville)} · ${formatNombre(a.km, 1)} km`;
   const profil = routes.ficheArtisan(a.slug);
 
   if (a.premium)
