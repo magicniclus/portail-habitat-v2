@@ -631,7 +631,8 @@ export const OUTILS_INCLUS: { id: string; titre: string; icone: IconeLanding; te
     id: 'fiche',
     titre: 'Fiche pro',
     icone: 'fiche',
-    texte: 'Vos métiers, votre zone, vos réalisations et vos garanties.',
+    texte:
+      'Vos métiers, vos réalisations, vos avis : les particuliers vous contactent directement depuis votre fiche, gratuitement.',
   },
   {
     id: 'site',

@@ -14,8 +14,9 @@ export const ENCARTS = {
   },
   coordonnees: {
     voulue: 'fiche_pro',
-    titre: 'Laissez les clients vous appeler',
-    texte: 'Votre numéro est masqué sur votre fiche publique : affichez-le avec Fiche Pro.',
+    titre: 'Laissez aussi les clients vous appeler',
+    texte:
+      'Les particuliers vous contactent déjà gratuitement par le formulaire de votre fiche. Avec Fiche Pro, votre numéro s’affiche aussi : ils peuvent vous appeler.',
     raison: 'Le téléphone et le site visibles sur la fiche sont inclus dans Fiche Pro.',
   },
 } as const satisfies Record<

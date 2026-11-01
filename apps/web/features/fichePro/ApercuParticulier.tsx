@@ -37,7 +37,8 @@ export function ApercuParticulier({ encart }: { encart: ReactNode }) {
         </span>
       </div>
       <p className="m-0 text-[13px] leading-5 text-neutre-800">
-        C&apos;est le formulaire que voient les particuliers sur votre fiche.
+        C&apos;est le formulaire que voient les particuliers sur votre fiche : leurs demandes vous
+        arrivent directement, gratuitement, quelle que soit votre formule.
       </p>
       {encart}
     </aside>

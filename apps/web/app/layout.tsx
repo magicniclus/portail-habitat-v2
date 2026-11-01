@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
+import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
 import { BandeauCookies } from '@/features/cookies/BandeauCookies';
 import { ScriptBandeau } from '@/features/cookies/ScriptBandeau';
@@ -10,19 +10,25 @@ import { routes } from '@/lib/routes';
 import { FAVICONS } from '@/lib/favicon';
 import './globals.css';
 
-// Sous-ensemble latin, display: swap (MOBILE.md §10). Source Sans 3 en police variable : un seul fichier
-// pour les graisses 400 à 700 ; la serif italique ne sert qu'au mot mis en avant des titres.
-const sans = Source_Sans_3({
-  subsets: ['latin'],
+// Polices auto-hébergées (sous-ensemble latin, licence OFL) : aucun appel à Google Fonts, au build
+// comme en développement (un poste sans accès à fonts.gstatic.com ne bloque plus `pnpm dev`).
+// display: swap (MOBILE.md §10) ; Source Sans 3 variable : un seul fichier pour toutes les graisses ;
+// la serif italique ne sert qu'au mot mis en avant des titres.
+const sans = localFont({
+  src: './polices/source-sans-3-latin-variable.woff2',
+  weight: '200 900',
+  style: 'normal',
   variable: '--police-sans',
   display: 'swap',
+  fallback: ['system-ui', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
 });
-const serif = Source_Serif_4({
-  subsets: ['latin'],
+const serif = localFont({
+  src: './polices/source-serif-4-latin-600-italic.woff2',
   weight: '600',
   style: 'italic',
   variable: '--police-serif',
   display: 'swap',
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
   // Deux mots en italique par page : pas de préchargement, la bande passante va au texte principal.
   preload: false,
 });

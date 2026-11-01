@@ -1050,3 +1050,10 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **Aucun artisan dans le secteur** : la page montre quand même « Les artisans les plus proches de … » (`plusProches`, `artisansAlentour`). Recherche jusqu'à 150 km puis 500 km, sans exiger que le lieu soit dans la zone de l'artisan, et lue seulement dans ce cas. Ordre : partenaires, premium, puis les autres, chacun du plus proche au plus loin. Même métier ou même texte d'abord, sinon tous métiers.
   - **Le nom de l'artisan ouvre sa fiche** dans les cartes de l'annuaire (zone de clic de 44 px).
   - **Avis laissés par les clients** : ils restent « en attente » jusqu'à leur validation dans `/admin/avis` (règle : vérifiés avant publication). Ma fiche et Mes avis indiquent maintenant « N avis en cours de vérification » (`compterAvisEnAttente`).
+- 01/11/2026 — **Polices locales, argumentaire « contact gratuit »** :
+  - **Erreur `Can't resolve '@vercel/turbopack-next/internal/font/google/font'`** en développement : la police était téléchargée depuis Google Fonts au démarrage, ce qui échoue sur un poste sans accès à fonts.gstatic.com. Source Sans 3 (variable) et Source Serif 4 (600 italique) sont maintenant **auto-hébergées** (`next/font/local`, `apps/web/app/polices/`, sous-ensemble latin, licence OFL). Aucun appel à Google Fonts, préchargement et `display: swap` conservés.
+  - **Argumentaire** (décision du propriétaire) : le formulaire de la fiche est gratuit, et le marketing repose sur le fait que l'artisan peut être contacté directement sans payer. Tous les textes qui laissaient entendre l'inverse sont corrigés :
+    - Fiche Pro : « votre numéro s'affiche en plus du formulaire de demande, qui reste gratuit pour tous » ; « on peut aussi vous appeler » ;
+    - encart du numéro masqué : « Les particuliers vous contactent déjà gratuitement par le formulaire de votre fiche » ;
+    - carte « Fiche pro » des landings ;
+    - aperçu côté particulier dans Ma fiche.

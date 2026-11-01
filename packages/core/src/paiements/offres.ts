@@ -22,11 +22,11 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
   fiche_pro: {
     promesse: 'Soyez l’artisan qu’on appelle en premier',
     accroche:
-      'Votre fiche passe devant dans votre secteur et votre numéro s’affiche : les particuliers vous contactent directement, sans intermédiaire.',
+      'Votre fiche passe devant dans votre secteur et votre numéro s’affiche en plus du formulaire de demande, qui reste gratuit pour tous : plus de visibilité, plus d’appels.',
     avantages: [
       'Mis en avant sur Portail Travaux : en tête de votre secteur',
       `Label « ${LABEL_PREMIUM} » sur votre fiche et dans l’annuaire`,
-      'Votre téléphone et votre site visibles : on vous appelle directement',
+      'Votre téléphone et votre site affichés : on peut aussi vous appeler',
       'Photos et réalisations illimitées pour montrer votre travail',
       'Statistiques détaillées : vues, appels et demandes de devis',
     ],
@@ -69,7 +69,7 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
     avantages: [
       'Mis en avant sur Portail Travaux : en tête de votre secteur',
       `Label « ${LABEL_PREMIUM} » sur votre fiche et dans l’annuaire`,
-      'Votre téléphone et votre site visibles : on vous appelle directement',
+      'Votre téléphone et votre site affichés : on peut aussi vous appeler',
       'Site internet optimisé pour Google par l’IA, nom de domaine inclus',
       'Appels d’offres visibles 12 h avant les autres artisans',
       '−15 % sur chaque appel d’offres',
