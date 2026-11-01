@@ -1,6 +1,7 @@
 import type { FiltresAnnuaireUrl } from '@ph/core/schemas';
 import { BoutonEnvoi, classesChip } from '@ph/ui';
 import Link from 'next/link';
+import { ChampVille } from '@/features/lieux/ChampVille';
 import { routes } from '@/lib/routes';
 
 const RACCOURCIS = [
@@ -45,17 +46,15 @@ export function BarreRecherche({ f }: { f: FiltresAnnuaireUrl }) {
             className="min-h-11 min-w-0 flex-1 border-0 bg-transparent text-base outline-none"
           />
         </label>
-        <label className={`${champ} flex-[1_1_180px]`}>
-          <span className="sr-only">Ville ou code postal</span>
-          <input
-            type="text"
-            name="ville"
-            defaultValue={f.ville}
-            autoComplete="address-level2"
-            placeholder="Ville ou code postal"
-            className="min-h-11 min-w-0 flex-1 border-0 bg-transparent text-base outline-none"
+        <div className={`${champ} relative flex-[1_1_180px] [&>div]:flex-1`}>
+          <ChampVille
+            valeurInitiale={f.ville}
+            {...(f.lat !== undefined && f.lon !== undefined
+              ? { positionInitiale: { latitude: f.lat, longitude: f.lon } }
+              : {})}
+            classeChamp="min-h-11 w-full min-w-0 border-0 bg-transparent text-base outline-none"
           />
-        </label>
+        </div>
         {Object.entries(conserves).map(([nom, valeur]) =>
           valeur ? <input key={nom} type="hidden" name={nom} value={valeur} /> : null,
         )}

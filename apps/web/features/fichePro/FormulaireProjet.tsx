@@ -3,11 +3,12 @@
 import { fichiers } from '@ph/firebase/chemins';
 import { LIMITES_REDACTION } from '@ph/core/ia';
 import type { RealisationPro } from '@ph/firebase/pro';
-import { Banner, Button, Checkbox, Feuille, Field, Input, Textarea } from '@ph/ui';
+import { Banner, Button, Checkbox, Combobox, Feuille, Field, Input, Textarea } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
+import { useLieux } from '@/features/inscription/useLieux';
 import { AssistantRedaction } from './AssistantRedaction';
 import { ChampPhotosProjet, PhotosGardees } from './PhotosGardees';
 import {
@@ -38,6 +39,7 @@ export function FormulaireProjet({
   const [ouvert, setOuvert] = useState(false);
   const [titre, setTitre] = useState(projet?.titre ?? '');
   const [ville, setVille] = useState(projet?.ville ?? '');
+  const lieux = useLieux(ville, undefined);
   const [description, setDescription] = useState(projet?.description ?? '');
   const [conservees, setConservees] = useState(
     () => projet?.photos.map((p) => p.storagePath) ?? [],
@@ -85,16 +87,10 @@ export function FormulaireProjet({
             autorisationProprietaire: accord,
           });
       if (!r.ok) setErreur(r.message);
-      else if (projet) {
+      else {
+        // Nouveau projet : formulaire vidé ; modification : rechargé à la prochaine ouverture.
+        if (!projet) [setTitre, setVille, setDescription].forEach((f) => f(''));
         setOuvert(false);
-        setPhotos([]);
-        setAccord(false);
-        router.refresh();
-      } else {
-        setOuvert(false);
-        setTitre('');
-        setVille('');
-        setDescription('');
         setPhotos([]);
         setAccord(false);
         router.refresh();
@@ -146,9 +142,18 @@ export function FormulaireProjet({
         <Field label="Titre du chantier" requis>
           <Input value={titre} onChange={(e) => setTitre(e.target.value)} maxLength={120} />
         </Field>
-        <Field label="Ville" requis>
-          <Input value={ville} onChange={(e) => setVille(e.target.value)} maxLength={80} />
-        </Field>
+        <Combobox
+          label="Ville"
+          valeur={ville}
+          onValeurChange={(v) => setVille(v.slice(0, 80))}
+          options={lieux.map((l) => ({
+            id: `${l.nom}-${l.codePostal}`,
+            libelle: l.nom,
+            complement: l.codePostal,
+          }))}
+          onSelection={(o) => setVille(o.libelle)}
+          vide="Aucune commune trouvée : votre saisie est gardée telle quelle."
+        />
         <Field
           label="Description du chantier"
           aide={`Facultatif (${description.length}/${LIMITES_REDACTION.projet}).`}

@@ -22,6 +22,11 @@ export interface ComboboxProps {
   /** Message quand la saisie ne donne rien. */
   vide?: ReactNode;
   className?: string;
+  /** Nom du champ dans un formulaire envoyé sans JavaScript (GET). */
+  name?: string;
+  /** Classes du champ, à la place du style par défaut (barres de recherche). */
+  classeChamp?: string;
+  autoComplete?: string;
 }
 
 /**
@@ -38,6 +43,9 @@ export function Combobox({
   placeholder,
   vide,
   className,
+  name,
+  classeChamp,
+  autoComplete = 'off',
 }: ComboboxProps) {
   const id = useId();
   const idListe = `${id}-liste`;
@@ -77,7 +85,8 @@ export function Combobox({
         id={id}
         role="combobox"
         type="text"
-        autoComplete="off"
+        name={name}
+        autoComplete={autoComplete}
         aria-autocomplete="list"
         aria-expanded={visible}
         aria-controls={idListe}
@@ -92,7 +101,7 @@ export function Combobox({
         onKeyDown={clavier}
         onFocus={() => setOuvert(true)}
         onBlur={() => setOuvert(false)}
-        className={classesControle}
+        className={classeChamp ?? classesControle}
       />
       <ul
         id={idListe}

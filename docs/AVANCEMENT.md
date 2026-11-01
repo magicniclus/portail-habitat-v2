@@ -1028,3 +1028,8 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - « Autres artisans à la ville » ;
     - « Travaux souvent demandés » : prestations du simulateur de sa famille de métiers.
     - Les liens sont des pastilles de 44 px.
+- 01/11/2026 — **Villes : suggestions et latitude / longitude partout** :
+  - Côté artisan, c'était déjà fait (inscription, « Modifier ma zone » : `/api/lieux` puis `Combobox`, centre de la commune enregistré).
+  - **Côté particulier**, la recherche de l'annuaire propose maintenant les communes pendant la saisie (`ChampVille`, API Découpage administratif). La commune choisie envoie sa position (`lat`, `lon` dans l'adresse, `filtresAnnuaireUrl`). Elle est gardée par les filtres et « Tout effacer », et l'annuaire calcule les distances depuis ce point exact plutôt que de géocoder le nom (homonymes). Sans choix dans la liste, la ville saisie est géocodée comme avant.
+  - Le champ « Ville » des projets propose aussi les communes.
+  - Le simulateur demande un code postal, déjà converti en coordonnées par le serveur.

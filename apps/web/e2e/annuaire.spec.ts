@@ -90,6 +90,41 @@ test.describe('Annuaire', () => {
   });
 });
 
+test('recherche par ville : suggestions, la commune choisie envoie sa position', async ({
+  page,
+}) => {
+  await page.route('**/api/lieux?*', (r) =>
+    r.fulfill({
+      json: {
+        lieux: [
+          {
+            nom: 'Carignan-de-Bordeaux',
+            codePostal: '33360',
+            centre: { latitude: 44.81, longitude: -0.48 },
+          },
+        ],
+      },
+    }),
+  );
+  await page.goto('/artisans');
+  const ville = page.getByRole('combobox', { name: 'Ville ou code postal' });
+  await expect(async () => {
+    await ville.fill('');
+    await ville.pressSequentially('Carig');
+    await expect(page.getByRole('option', { name: /Carignan-de-Bordeaux/ })).toBeVisible({
+      timeout: 2000,
+    });
+  }).toPass({ timeout: 15_000 });
+  await page.getByRole('option', { name: /Carignan-de-Bordeaux/ }).click();
+  await expect(ville).toHaveValue('Carignan-de-Bordeaux');
+  await page.getByRole('search').getByRole('button', { name: 'Rechercher' }).click();
+  await expect(page).toHaveURL(/ville=Carignan-de-Bordeaux&lat=44\.81000&lon=-0\.48000/);
+  // La position reste dans les liens des filtres.
+  await expect(page.getByRole('combobox', { name: 'Ville ou code postal' })).toHaveValue(
+    'Carignan-de-Bordeaux',
+  );
+});
+
 test.describe('Fiche publique', () => {
   test('FIC-01 : seuls les labels vérifiés', async ({ page }) => {
     await page.goto('/artisans/bertrand-renovation-bordeaux');

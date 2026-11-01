@@ -16,6 +16,9 @@ export interface OptionsFiltres {
 export interface ValeursFiltres {
   q: string;
   ville: string;
+  /** Position de la commune choisie dans les suggestions (distances exactes). */
+  lat?: number | undefined;
+  lon?: number | undefined;
   tri: string;
   metier: string[];
   rayon: number;
@@ -87,6 +90,12 @@ export function Filtres({
       {enCours ? <Chargeur taille="sm" message="Mise à jour des résultats…" /> : null}
       <input type="hidden" name="q" value={valeurs.q} />
       <input type="hidden" name="ville" value={valeurs.ville} />
+      {valeurs.ville && valeurs.lat !== undefined && valeurs.lon !== undefined ? (
+        <>
+          <input type="hidden" name="lat" value={valeurs.lat} />
+          <input type="hidden" name="lon" value={valeurs.lon} />
+        </>
+      ) : null}
       <input type="hidden" name="tri" value={valeurs.tri} />
       <Groupe titre="Métier">
         {options.metiers.map((m) => (

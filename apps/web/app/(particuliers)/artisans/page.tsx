@@ -55,7 +55,11 @@ export async function generateMetadata({
 /** Maquette Annuaire Artisans : page serveur, tout l'état est dans l'URL (ANN-01). */
 export default async function PageAnnuaire({ searchParams }: { searchParams: Params }) {
   const f = lireFiltresAnnuaire(await searchParams);
-  const lieu = await resoudreLieu(f.ville);
+  // Commune choisie dans les suggestions : sa position exacte ; sinon, la ville est géocodée.
+  const lieu =
+    f.ville && f.lat !== undefined && f.lon !== undefined
+      ? { nom: f.ville, latitude: f.lat, longitude: f.lon }
+      : await resoudreLieu(f.ville);
   const [fiches, ordre] = await Promise.all([
     artisansAutour(lieu, f.rayon),
     idsTexte(f.q, lieu, f.rayon),

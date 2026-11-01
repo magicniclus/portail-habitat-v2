@@ -11,7 +11,7 @@ test.describe('Ma fiche', () => {
     await page.getByRole('button', { name: 'Ajouter un projet', exact: true }).click();
     const f = page.getByRole('dialog', { name: 'Ajouter un projet' });
     await f.getByLabel(/^Titre du chantier/).fill(titre);
-    await f.getByLabel(/^Ville/).fill('Mérignac');
+    await f.getByRole('combobox', { name: 'Ville' }).fill('Mérignac');
     await f.getByLabel(/^Photos/).setInputFiles([png('a.png'), png('b.png'), png('c.png')]);
     const publier = f.getByRole('button', { name: 'Publier le projet' });
     await expect(publier).toBeDisabled();

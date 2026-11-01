@@ -64,6 +64,10 @@ export function ecrireFiltresAnnuaire(f: FiltresAnnuaireUrl): string {
   const p = new URLSearchParams();
   if (f.q) p.set('q', f.q);
   if (f.ville) p.set('ville', f.ville);
+  if (f.ville && f.lat !== undefined && f.lon !== undefined) {
+    p.set('lat', String(f.lat));
+    p.set('lon', String(f.lon));
+  }
   if (f.metier.length) p.set('metier', f.metier.join(','));
   if (f.rayon !== DEFAUTS_ANNUAIRE.rayon) p.set('rayon', String(f.rayon));
   if (f.note) p.set('note', String(f.note));
@@ -132,6 +136,7 @@ export function chipsFiltres(
 export const sansFiltres = (f: FiltresAnnuaireUrl): FiltresAnnuaireUrl => ({
   ...DEFAUTS_ANNUAIRE,
   ville: f.ville,
+  ...(f.lat !== undefined && f.lon !== undefined ? { lat: f.lat, lon: f.lon } : {}),
   tri: f.tri,
 });
 

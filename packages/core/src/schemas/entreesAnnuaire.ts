@@ -26,6 +26,9 @@ const liste = (valeurs?: readonly string[]) =>
 export const filtresAnnuaireUrl = z.object({
   q: z.string().trim().max(80).catch('').default(''),
   ville: z.string().trim().max(60).catch('').default(''),
+  /** Commune choisie dans les suggestions : position exacte (sinon, la ville est géocodée). */
+  lat: z.coerce.number().min(-90).max(90).optional().catch(undefined),
+  lon: z.coerce.number().min(-180).max(180).optional().catch(undefined),
   rayon: z.coerce.number().int().min(5).max(60).multipleOf(5).catch(20).default(20),
   metier: liste().catch([]).default([]),
   note: z.coerce

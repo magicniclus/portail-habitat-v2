@@ -150,6 +150,16 @@ describe('filtres dans l’URL (ANN-01, ANN-02)', () => {
     expect(lireFiltresAnnuaire(new URLSearchParams(ecrireFiltresAnnuaire(f).slice(1)))).toEqual(f);
   });
 
+  it('position de la commune choisie conservée avec la ville (aller-retour, « Tout effacer »)', () => {
+    const f = lireFiltresAnnuaire({ ville: 'Carignan-de-Bordeaux', lat: '44.81', lon: '-0.48' });
+    const url = ecrireFiltresAnnuaire(f);
+    expect(url).toContain('lat=44.81');
+    expect(lireFiltresAnnuaire(new URLSearchParams(url.slice(1)))).toEqual(f);
+    expect(sansFiltres({ ...f, rayon: 40 })).toMatchObject({ lat: 44.81, lon: -0.48, rayon: 20 });
+    // Sans ville, une position seule n'est pas écrite.
+    expect(ecrireFiltresAnnuaire({ ...f, ville: '' })).not.toContain('lat=');
+  });
+
   it('valeurs inconnues ignorées, jamais d’erreur', () => {
     const f = lireFiltresAnnuaire({
       rayon: '999',
