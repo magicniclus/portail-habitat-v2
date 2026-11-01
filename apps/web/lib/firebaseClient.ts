@@ -95,11 +95,8 @@ export async function deposerFichier(
 ): Promise<void> {
   const auth = await authClient();
   await auth.authStateReady();
-  // Session des fichiers absente (connexion ouverte seulement côté serveur) : message clair.
-  if (!auth.currentUser)
-    throw new EnvoiImpossible(
-      'Votre connexion aux fichiers a expiré : déconnectez-vous puis reconnectez-vous, et réessayez.',
-    );
+  // Session des fichiers absente (connexion ouverte seulement côté serveur) : dépôt par le serveur.
+  if (!auth.currentUser) return deposerParServeur(chemin, fichier);
   try {
     await envoyer(chemin, fichier, delaiMs);
   } catch (e) {
@@ -111,9 +108,32 @@ export async function deposerFichier(
     try {
       await envoyer(chemin, fichier, delaiMs);
     } catch (e2) {
-      throw versMessage(e2);
+      if ((e2 as { code?: string }).code !== 'storage/unauthorized') throw versMessage(e2);
+      // Toujours refusé (règles croisées Storage → Firestore indisponibles, émulateur…) : le
+      // serveur vérifie lui-même le droit, le type et la taille, puis dépose le fichier.
+      await deposerParServeur(chemin, fichier);
     }
   }
+}
+
+async function deposerParServeur(chemin: string, fichier: File) {
+  const corps = new FormData();
+  corps.set('chemin', chemin);
+  corps.set('fichier', fichier);
+  let r: Response;
+  try {
+    r = await fetch('/api/pro/fichiers', { method: 'POST', body: corps });
+  } catch {
+    throw new EnvoiImpossible('Le serveur ne répond pas : vérifiez votre connexion et réessayez.');
+  }
+  if (r.status === 413) throw new EnvoiImpossible('Fichier trop lourd pour être envoyé.');
+  const res = (await r.json().catch(() => null)) as { ok: boolean; message?: string } | null;
+  if (!res?.ok)
+    throw new EnvoiImpossible(
+      r.status === 401 || r.status === 403
+        ? 'Envoi refusé : reconnectez-vous puis réessayez (seuls le propriétaire et le gérant peuvent modifier la fiche).'
+        : (res?.message ?? 'L’envoi n’a pas abouti. Réessayez.'),
+    );
 }
 
 async function envoyer(chemin: string, fichier: File, delaiMs: number) {

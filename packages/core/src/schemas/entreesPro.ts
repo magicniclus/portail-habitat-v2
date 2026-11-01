@@ -68,6 +68,21 @@ export const entreeDocument = z.strictObject({
   nomFichier,
 });
 
+/**
+ * Fichier déposé par le serveur (secours quand Storage refuse l'envoi direct) : chemin Storage
+ * vérifié par `regleDepot()`, contenu de 10 Mo au plus dont la signature est relue.
+ */
+export const entreeDepotFichier = z.strictObject({
+  chemin: z.string().min(1).max(400),
+  type: z.string().min(1).max(100),
+  contenu: z
+    .instanceof(Uint8Array)
+    .refine(
+      (o) => o.byteLength > 0 && o.byteLength <= 10 * 1024 * 1024,
+      'Fichier de 10 Mo au plus.',
+    ),
+});
+
 /** Logo déposé dans Storage (`artisans/{id}/logo/{nomFichier}`), public une fois enregistré. */
 export const entreeLogo = z.strictObject({ nomFichier });
 

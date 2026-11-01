@@ -741,4 +741,23 @@ test.describe('Site internet artisan', () => {
     await expect(apercu.getByText(/Fenêtre pop-up ·/)).toHaveCount(0);
     await expect(apercu.locator('h1').first()).not.toHaveAttribute('style', /--mgd/);
   });
+
+  test('éditeur : enregistrement à la demande, confirmation avant de quitter', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site/editeur');
+    const etat = page.getByRole('status').filter({ hasText: /registr/ });
+    await expect(etat).toHaveText('Enregistré');
+    await expect(page.getByRole('button', { name: 'Enregistrer', exact: true })).toBeDisabled();
+    const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
+    await apercu.locator('h1').first().click();
+    await page.getByRole('tab', { name: 'Avancé' }).click();
+    await page.getByLabel('Marge haut (Ordinateur)').fill('12');
+    // Rien n'est écrit en base à chaque modification.
+    await page.waitForTimeout(3500);
+    await expect(etat).toHaveText('Modifications non enregistrées');
+    await page.getByRole('link', { name: 'Retour' }).click();
+    const fenetre = page.getByRole('dialog', { name: 'Enregistrer vos modifications ?' });
+    await expect(fenetre).toBeVisible();
+    await fenetre.getByRole('button', { name: 'Quitter sans enregistrer' }).click();
+    await expect(page).toHaveURL(/\/pro\/site$/);
+  });
 });

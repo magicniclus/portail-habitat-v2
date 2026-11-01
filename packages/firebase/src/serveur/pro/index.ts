@@ -36,3 +36,4 @@ export {
   type FacteurPro,
 } from './compte';
 export { lireEncartsMasques, masquerEncart } from './encarts';
+export { deposerFichierServeur } from './depot';

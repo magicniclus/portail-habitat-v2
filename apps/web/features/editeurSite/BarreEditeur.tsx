@@ -24,7 +24,10 @@ const APPAREILS = [
 const icone =
   'grid size-11 place-items-center rounded-[8px] border border-trait bg-blanc text-neutre-800 hover:bg-neutre-100 disabled:opacity-40';
 
-/** Barre du haut (maquette) : retour, site et page, appareil et échelle, historique, état, Aperçu, Publier. */
+/**
+ * Barre du haut (maquette) : retour, site et page, appareil et échelle, historique, état,
+ * Enregistrer, Aperçu, Publier.
+ */
 export function BarreEditeur(p: {
   nomSite: string;
   pages: Record<string, PageSite>;
@@ -38,6 +41,11 @@ export function BarreEditeur(p: {
   peutAnnuler: boolean;
   peutRetablir: boolean;
   etat: string;
+  /** Modifications à enregistrer : bouton actif, et confirmation avant de quitter. */
+  nonEnregistre: boolean;
+  enregistrement: boolean;
+  onEnregistrer: () => unknown;
+  onQuitter: () => void;
   apercu: boolean;
   onApercu: () => void;
   onPublier: () => unknown;
@@ -50,6 +58,11 @@ export function BarreEditeur(p: {
       <Link
         href={routes.proSite}
         title="Retour au tableau de bord du site"
+        onClick={(e) => {
+          if (!p.nonEnregistre) return;
+          e.preventDefault();
+          p.onQuitter();
+        }}
         className="flex min-h-11 items-center gap-2 rounded-[8px] border border-trait px-2.5 text-sm font-semibold text-neutre-800 no-underline hover:bg-neutre-100"
       >
         <CaretLeftIcon size={16} aria-hidden="true" />
@@ -104,7 +117,7 @@ export function BarreEditeur(p: {
           {LARGEURS[p.appareil]} px · {Math.round(p.echelle * 100)} %
         </span>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <button
           type="button"
           className={icone}
@@ -128,6 +141,15 @@ export function BarreEditeur(p: {
         <span role="status" className="px-2 text-[13px] whitespace-nowrap text-neutre-600">
           {p.etat}
         </span>
+        <Button
+          variant="secondaire"
+          chargement={p.enregistrement}
+          onClick={p.onEnregistrer}
+          disabled={!p.nonEnregistre || p.enregistrement}
+          title="Enregistrer (Ctrl S)"
+        >
+          Enregistrer
+        </Button>
         <Button variant="secondaire" onClick={p.onApercu} aria-pressed={p.apercu}>
           <EyeIcon size={16} aria-hidden="true" />
           {p.apercu ? 'Quitter l’aperçu' : 'Aperçu'}

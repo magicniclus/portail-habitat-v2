@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import { BarreEditeur, Rail, type Panneau } from './BarreEditeur';
 import { colonnes } from './disposition';
 import { Canevas } from './Canevas';
+import { ConfirmerQuitter } from './ConfirmerQuitter';
 import { Toast, useToast } from './Toast';
 import { useApercuCliquable, useMediatheque } from './useApercuCliquable';
 import { CreationEnCours, useCreation } from './creation/CreationEnCours';
@@ -18,14 +19,15 @@ import { badgeSelection, infoSelection } from './selection';
 import { useActionsEditeur } from './useActionsEditeur';
 import { useBrouillonSite } from './useBrouillonSite';
 import { useHtmlApercu } from './useHtmlApercu';
-import { useSauvegardeAuto } from './useSauvegardeAuto';
+import { useEnregistrement } from './useEnregistrement';
+import { useFenetreBloquee } from './useFenetreBloquee';
 import { useSelection } from './useSelection';
 import type { ProprietesEditeur } from './proprietes';
 
 /**
  * Éditeur plein écran (maquette Editeur de Site) : barre du haut, outils à gauche, page
- * cliquable au centre, réglages de la sélection à droite. Enregistrement automatique du
- * brouillon ; rien n'est en ligne avant « Publier ».
+ * cliquable au centre, réglages de la sélection à droite. Enregistrement à la demande
+ * (bouton, Ctrl S, confirmation en quittant) ; rien n'est en ligne avant « Publier ».
  */
 export function EditeurSite(props: ProprietesEditeur) {
   const s = useBrouillonSite(props.initial);
@@ -45,7 +47,9 @@ export function EditeurSite(props: ProprietesEditeur) {
   const cr = useCreation(props);
   const apercuIa = cr.apercuIa;
   const { message, enCours, executer, publier } = useActionsEditeur(s.enregistrer);
-  const sauvegarde = useSauvegardeAuto({ ...s, version: s.b });
+  const sauvegarde = useEnregistrement(s);
+  const [quitter, setQuitter] = useState(false);
+  useFenetreBloquee();
   const page = s.b.pages[pageId] ?? s.b.pages.accueil!;
   const majPage = useCallback(
     (f: (p: PageSite) => PageSite) =>
@@ -102,7 +106,7 @@ export function EditeurSite(props: ProprietesEditeur) {
 
   const outils = !apercu;
   return (
-    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-blanc max-[899px]:h-auto max-[899px]:min-h-dvh max-[899px]:overflow-visible">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-blanc min-[900px]:fixed min-[900px]:inset-0 min-[900px]:z-10 max-[899px]:h-auto max-[899px]:min-h-dvh max-[899px]:overflow-visible">
       <BarreEditeur
         nomSite={s.b.navigation.nom}
         pages={s.b.pages}
@@ -116,6 +120,10 @@ export function EditeurSite(props: ProprietesEditeur) {
         peutAnnuler={s.peutAnnuler}
         peutRetablir={s.peutRetablir}
         etat={sauvegarde.texte}
+        nonEnregistre={sauvegarde.nonEnregistre}
+        enregistrement={sauvegarde.enCours}
+        onEnregistrer={() => void sauvegarde.enregistrer()}
+        onQuitter={() => setQuitter(true)}
         apercu={apercu}
         onApercu={() => {
           setApercu((a) => !a);
@@ -124,6 +132,11 @@ export function EditeurSite(props: ProprietesEditeur) {
         onPublier={publier}
         enCours={enCours}
         publicationBloquee={apercuIa !== null}
+      />
+      <ConfirmerQuitter
+        ouverte={quitter}
+        onFermer={() => setQuitter(false)}
+        enregistrer={sauvegarde.enregistrer}
       />
       {message ? (
         <Banner tone={message.ton} className="m-3">

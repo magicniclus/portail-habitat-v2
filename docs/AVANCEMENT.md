@@ -993,3 +993,14 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **Logo** : sans logo choisi dans l'éditeur, le menu du site affiche le logo de la fiche (`fiche:logo`, résolu par l'éditeur et le site publié ; sans changement du modèle de données).
   - **Assurance facultative** (décision du propriétaire : tous les métiers n'ont pas de décennale) : la fiche est en ligne dès que l'entreprise est identifiée (SIREN vérifié à l'inscription, ou Kbis). L'échéance d'une assurance retire seulement son label. Sans décennale ni RC Pro vérifiée, la fiche et l'annuaire affichent « Assurance non vérifiée ». **Signalé (données)** : label `rc_pro` ajouté (ouvert par la validation d'une RC Pro) ; à l'inscription, `enLigne` vaut `true`. ONB-06b à mettre à jour dans ACCEPTANCE.
 - 01/11/2026 — **Éditeur sans animations saccadées** : les colonnes ne glissent plus quand on ouvre ou ferme un panneau, et l'aperçu ne s'anime plus quand il change de taille. Avant, à chaque image du glissement des colonnes (300 ms), l'aperçu mis à l'échelle recalculait sa taille avec sa propre animation par-dessus. Le redimensionnement est maintenant instantané, et la page reste masquée jusqu'à sa première mesure. Sur la fiche et dans l'éditeur, « choisir une image » est un lien souligné dans la phrase.
+- 01/11/2026 — **Envoi des images fiable, éditeur enregistré à la demande** :
+  - **« Envoi refusé » sur la bannière** : la cause probable est la règle Storage croisée avec Firestore (`membreActif`, `firestore.get`). Si Firestore ne lui répond pas (émulateur derrière un proxy, droit IAM absent en production), Storage refuse même au propriétaire. Après le refus et le nouvel essai avec les droits recalculés, l'envoi passe maintenant **par le serveur** : `POST /api/pro/fichiers`, enveloppe `action()`, limite de débit `medias`.
+    - Le serveur applique les mêmes chemins, types et tailles que `storage.rules` (`regleDepot()` dans `@ph/core/espace-pro`, avec ses tests).
+    - Il relit le droit du membre en base (`peut()`) et vérifie le vrai type du fichier par sa signature (`typeReel()`).
+    - Il n'écrase jamais un fichier en création seule.
+    - Il sert aussi quand la session Firebase du navigateur manque.
+    - **Signalé (sécurité)** : nouvelle route d'écriture Storage par l'Admin SDK. Les règles Storage ne changent pas. Sur Vercel, un corps de plus de 4,5 Mo est refusé (413) : le secours couvre les images courantes, pas une bannière de 5 Mo.
+  - **Éditeur du site** : plus d'enregistrement automatique (une écriture toutes les 2,5 s de saisie).
+    - On enregistre avec le bouton « Enregistrer » (ou Ctrl S), et « Publier » enregistre avant de publier.
+    - « Retour » avec des modifications non enregistrées ouvre une fenêtre : « Enregistrer et quitter » ou « Quitter sans enregistrer ». Fermer l'onglet garde l'alerte du navigateur.
+    - Sur ordinateur, la fenêtre ne défile plus sous l'éditeur : l'éditeur est fixé à l'écran et la page bloquée.
