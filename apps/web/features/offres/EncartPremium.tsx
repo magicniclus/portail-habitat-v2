@@ -66,7 +66,8 @@ export function EncartPremium({
   return (
     <section
       className={cn(
-        'relative isolate grid gap-3 overflow-hidden rounded-[18px] border border-accent-200 bg-blanc shadow-[0_14px_36px_-20px_var(--accent)]',
+        // Conteneur : la mise en page suit la largeur de l'encart (colonne étroite ou pleine page).
+        '@container relative isolate grid gap-3 overflow-hidden rounded-[18px] border border-accent-200 bg-blanc shadow-[0_14px_36px_-20px_var(--accent)]',
         compact ? 'p-4' : 'p-5 sm:p-6',
         className,
       )}
@@ -80,7 +81,7 @@ export function EncartPremium({
         aria-hidden="true"
         className="absolute -bottom-24 -left-12 -z-10 size-44 rounded-full bg-accent-100 opacity-60"
       />
-      <div className="flex items-start gap-3.5">
+      <div className="flex flex-col items-start gap-3 @[24rem]:flex-row @[24rem]:gap-3.5">
         <span
           aria-hidden="true"
           className={cn(
@@ -102,7 +103,7 @@ export function EncartPremium({
         </div>
       </div>
       {compact ? null : (
-        <ul className="m-0 grid list-none gap-1.5 p-0 sm:grid-cols-3">
+        <ul className="m-0 grid list-none gap-2 p-0 @[36rem]:grid-cols-3">
           {avantages.map((a) => (
             <li key={a} className="flex items-start gap-1.5 text-sm font-semibold text-neutre-800">
               <CheckCircleIcon
@@ -128,7 +129,7 @@ export function EncartPremium({
           / mois · sans engagement
         </span>
         {onPlusTard ? (
-          <Button variant="fantome" taille="sm" onClick={onPlusTard} className="ml-auto">
+          <Button variant="fantome" taille="sm" onClick={onPlusTard} className="@[24rem]:ml-auto">
             {libellePlusTard}
           </Button>
         ) : null}

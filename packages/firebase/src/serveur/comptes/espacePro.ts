@@ -14,6 +14,8 @@ export interface ResumeArtisan {
   nomCommercial: string;
   /** Adresse de la fiche publique (lien de demande d'avis). */
   slug: string;
+  /** Logo, description et bannière faits : la fiche peut être mise en ligne. */
+  complete: boolean;
   logoUrl?: string;
   enLigne: boolean;
   /** Formule active (`droits.formule`, PAIEMENTS §5) : affichage seulement. */
@@ -33,6 +35,7 @@ export interface EspacePro {
 const resume = (d: FirebaseFirestore.DocumentData): ResumeArtisan => ({
   nomCommercial: d.nomCommercial ?? '',
   slug: d.slug ?? '',
+  complete: completudeFiche(contenuFiche(d)).pourcent >= 100,
   ...(d.logoUrl ? { logoUrl: d.logoUrl as string } : {}),
   enLigne: d.enLigne === true,
   formule: (d.droits?.formule as Formule | undefined) ?? 'gratuit',

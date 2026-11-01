@@ -1,4 +1,4 @@
-/** Mise en ligne automatique de la fiche (COMPTES §3 « Mise en ligne dans l'annuaire », ONB-06b). */
+/** Mise en ligne de la fiche (COMPTES §3 « Mise en ligne dans l'annuaire ») et pièces envoyées. */
 
 export type StatutDocument = 'en_attente' | 'valide' | 'refuse' | 'expire';
 
@@ -11,22 +11,18 @@ export function derniersStatutsDocuments(
   return Object.fromEntries(Object.entries(r).map(([t, d]) => [t, d!.statut]));
 }
 
-/** Envoyé : en attente de vérification (vérifiée ensuite sous 48 h) ou déjà validé. */
-const envoye = (s?: StatutDocument) => s === 'en_attente' || s === 'valide';
-
 /**
- * La fiche passe en ligne dès que l'entreprise est identifiée (SIREN vérifié, ou Kbis envoyé).
- * Aucune assurance n'est exigée (décision du propriétaire, 01/11/2026 : tous les métiers n'ont pas
- * de décennale) : sans décennale ni RC Pro vérifiée, la fiche affiche « Assurance non vérifiée ».
+ * Mise en ligne automatique de la fiche (décision du propriétaire, 01/11/2026) : dès que le
+ * minimum est fait (logo, description, bannière : complétude 100 %), sauf si l'artisan l'a
+ * mise hors ligne lui-même (interrupteur « En ligne ») ; jamais une entreprise suspendue.
  */
 export function doitPasserEnLigne(a: {
   enLigne: boolean;
   statut: string;
-  sirenVerifie: boolean;
-  documents: Partial<Record<string, StatutDocument>>;
+  completude: number;
+  horsLigneVolontaire: boolean;
 }): boolean {
-  if (a.enLigne || a.statut !== 'actif') return false;
-  return a.sirenVerifie || envoye(a.documents.kbis);
+  return !a.enLigne && a.statut === 'actif' && a.completude >= 100 && !a.horsLigneVolontaire;
 }
 
 /** Libellés des pièces (TYPES_DOCUMENT) et de leur vérification, pour Ma fiche. */

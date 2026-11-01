@@ -29,7 +29,6 @@ import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
 import { DerniersAvis } from '@/features/fichePro/DerniersAvis';
 import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
 import { InfosFiche } from '@/features/fichePro/InfosFiche';
-import { MiseEnLigneFiche } from '@/features/fichePro/MiseEnLigneFiche';
 import { ProgressionFiche } from '@/features/fichePro/ProgressionFiche';
 import { RemplirFicheIa } from '@/features/fichePro/RemplirFicheIa';
 import { ResumeAvis } from '@/features/fichePro/ResumeAvis';
@@ -85,8 +84,6 @@ export default async function PageMaFiche() {
           manquants={f.completude.criteres.filter((c) => !c.fait).map((c) => c.libelle)}
           {...(edite ? { action: <RemplirFicheIa vide={!f.description && !f.pitch} /> } : {})}
         />
-      ) : !f.enLigne && edite ? (
-        <MiseEnLigneFiche />
       ) : null}
       {f.enLigne ? (
         <ActionsEntete>

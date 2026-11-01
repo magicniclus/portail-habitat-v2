@@ -1,3 +1,4 @@
+import { peut } from '@ph/core/equipe';
 import { menuPro, ongletsCompte } from '@ph/core/espace-pro';
 import { initiales } from '@ph/core/format';
 import type { ReactNode } from 'react';
@@ -18,12 +19,16 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
   const membre = active?.membre ?? null;
   return (
     <CadrePro
-      // Pastille incitative tant que la fiche n'est pas en ligne (documents à envoyer).
+      // Pastille incitative tant que la fiche n'est pas en ligne (logo, description, bannière).
       menu={menuPro(membre, {}, active && !active.artisan.enLigne ? { fiche: 'À compléter' } : {})}
       ongletsCompte={ongletsCompte(membre)}
       entreprises={s.espace.entreprises}
       activeId={active?.artisanId ?? null}
-      etatFiche={active ? <EtatFiche artisan={active.artisan} /> : null}
+      etatFiche={
+        active ? (
+          <EtatFiche artisan={active.artisan} modifiable={peut(active.membre, 'fiche.modifier')} />
+        ) : null
+      }
       initiales={initiales(s.nomAffiche) || '?'}
     >
       {s.impersonation ? <BandeauImpersonation /> : null}

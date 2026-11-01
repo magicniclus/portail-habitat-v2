@@ -1,6 +1,6 @@
 import { bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
-import { completudeFiche, contenuFiche } from '@ph/core/espace-pro';
+import { completudeFiche, contenuFiche, doitPasserEnLigne } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
 import { normaliserTel } from '@ph/core/format';
 import { encoderGeohash } from '@ph/core/geo';
@@ -10,7 +10,25 @@ import { FieldValue, Timestamp, type DocumentData, type Firestore } from 'fireba
 import { chemins } from '../../chemins';
 
 /** Complétude d'après le document de l'entreprise : logo, description, bannière. */
-export const completudeDepuisBase = (a: DocumentData) => completudeFiche(contenuFiche(a));
+const completudeDepuisBase = (a: DocumentData) => completudeFiche(contenuFiche(a));
+
+/**
+ * Champs à écrire après un changement de la fiche : complétude recalculée et, dès que le minimum
+ * est fait (100 %), mise en ligne automatique, sauf fiche mise hors ligne par l'artisan.
+ */
+export function completudeEtMiseEnLigne(a: DocumentData): {
+  completude: number;
+  enLigne?: true;
+} {
+  const { pourcent } = completudeDepuisBase(a);
+  const auto = doitPasserEnLigne({
+    enLigne: a.enLigne === true,
+    statut: String(a.statut ?? ''),
+    completude: pourcent,
+    horsLigneVolontaire: a.horsLigneVolontaire === true,
+  });
+  return { completude: pourcent, ...(auto ? { enLigne: true as const } : {}) };
+}
 
 /** Ma fiche telle que l'artisan la modifie (champs publics et zone). */
 export interface FichePro {
@@ -147,21 +165,23 @@ export async function modifierFiche(
       ...(e.description !== undefined ? { description: e.description } : {}),
       ...(maj.metiers ? { metiers: maj.metiers } : {}),
     };
-    const { pourcent } = completudeDepuisBase(apres);
-    maj.completude = pourcent;
+    const c = completudeEtMiseEnLigne(apres);
+    Object.assign(maj, c);
     t.update(ref, maj);
-    return { completude: pourcent };
+    return { completude: c.completude };
   });
 }
 
 /**
- * « Mettre ma fiche en ligne » (droit `fiche.modifier`) : seulement une fiche complète (logo,
- * description, bannière), complétude recalculée ici ; jamais une entreprise suspendue ou fermée.
+ * Interrupteur « En ligne » de Ma fiche (droit `fiche.modifier`). Allumer exige une fiche complète
+ * (logo, description, bannière) et une entreprise active ; éteindre arrête aussi la mise en ligne
+ * automatique jusqu'à ce que l'artisan rallume.
  */
-export async function mettreFicheEnLigne(
+export async function changerMiseEnLigne(
   s: { db: Firestore; horloge: () => number },
   ctx: { artisanId: string; uid: string },
-): Promise<{ enLigne: true }> {
+  enLigne: boolean,
+): Promise<{ enLigne: boolean }> {
   const ref = s.db.doc(chemins.artisan(ctx.artisanId));
   return s.db.runTransaction(async (t) => {
     const [m, a] = await Promise.all([
@@ -170,7 +190,13 @@ export async function mettreFicheEnLigne(
     ]);
     if (!peut(m.data() as Membre | undefined, 'fiche.modifier'))
       throw new ErreurMetier('PERMISSION_REFUSEE');
-    if (!a.exists || a.get('statut') !== 'actif') throw new ErreurMetier('PRECONDITION');
+    if (!a.exists) throw new ErreurMetier('INTROUVABLE');
+    const maintenant = Timestamp.fromMillis(s.horloge());
+    if (!enLigne) {
+      t.update(ref, { enLigne: false, horsLigneVolontaire: true, updatedAt: maintenant });
+      return { enLigne: false };
+    }
+    if (a.get('statut') !== 'actif') throw new ErreurMetier('PRECONDITION');
     const c = completudeDepuisBase(a.data()!);
     if (c.pourcent < 100)
       throw new ErreurMetier(
@@ -182,9 +208,10 @@ export async function mettreFicheEnLigne(
       );
     t.update(ref, {
       enLigne: true,
+      horsLigneVolontaire: false,
       completude: c.pourcent,
-      updatedAt: Timestamp.fromMillis(s.horloge()),
+      updatedAt: maintenant,
     });
-    return { enLigne: true as const };
+    return { enLigne: true };
   });
 }

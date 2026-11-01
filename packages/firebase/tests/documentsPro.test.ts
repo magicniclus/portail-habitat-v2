@@ -40,7 +40,7 @@ beforeEach(async () => {
 });
 
 describe('enregistrerDocument (ONB-06b)', () => {
-  it('décennale envoyée : document en attente, empreinte, fiche mise en ligne', async () => {
+  it('décennale envoyée : document en attente, empreinte ; la fiche ne se met en ligne qu’avec logo, description et bannière', async () => {
     const docId = nouvelId();
     await deposer(docId);
     expect(
@@ -49,15 +49,15 @@ describe('enregistrerDocument (ONB-06b)', () => {
         type: 'decennale',
         nomFichier: 'attestation.pdf',
       }),
-    ).toEqual({ enLigne: true });
+    ).toEqual({ enLigne: false });
     const [d] = await lireDocumentsPro(db, 'a1');
     expect(d).toMatchObject({ id: docId, type: 'decennale', statut: 'en_attente' });
     const brut = (await db.doc(`${chemins.documents('a1')}/${docId}`).get()).data()!;
     expect(brut.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect((await db.doc(chemins.artisan('a1')).get()).get('enLigne')).toBe(true);
+    expect((await db.doc(chemins.artisan('a1')).get()).get('enLigne')).toBe(false);
   });
 
-  it('SIREN non vérifié : une RC Pro seule laisse la fiche hors ligne (Kbis exigé)', async () => {
+  it('SIREN non vérifié : une RC Pro seule laisse la fiche hors ligne', async () => {
     await db.doc(chemins.artisan('a1')).update({ origine: 'prospect' });
     const docId = nouvelId();
     await deposer(docId);

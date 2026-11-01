@@ -7,7 +7,7 @@ import { debutYoutube, idYoutube, lienYoutube } from '@ph/core/sites';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { cheminDepuisUrlPublique, urlPubliqueAvecJeton, type bucketFichiers } from '../../admin';
 import { chemins, fichiers } from '../../chemins';
-import { completudeDepuisBase } from './fiche';
+import { completudeEtMiseEnLigne } from './fiche';
 
 type Services = { db: Firestore; bucket: ReturnType<typeof bucketFichiers>; horloge: () => number };
 type Contexte = { artisanId: string; uid: string };
@@ -59,8 +59,8 @@ export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: st
   return s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
     const { ref, donnees } = await majCompletude(t, s, ctx, { logoUrl });
-    const { pourcent } = completudeDepuisBase(donnees);
-    t.update(ref, { logoUrl, completude: pourcent, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    const c = completudeEtMiseEnLigne(donnees);
+    t.update(ref, { logoUrl, ...c, updatedAt: Timestamp.fromMillis(s.horloge()) });
     return { logoUrl };
   });
 }
@@ -95,7 +95,7 @@ export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier
       throw new ErreurMetier('PRECONDITION', `${max} bannières au plus : retirez-en une d'abord.`);
     t.update(ref, {
       bannieres: liste,
-      completude: completudeDepuisBase({ ...a.data(), bannieres: liste }).pourcent,
+      ...completudeEtMiseEnLigne({ ...a.data(), bannieres: liste }),
       updatedAt: Timestamp.fromMillis(s.horloge()),
     });
     return { bannieres: liste, retirees: actuelles.filter((u) => !liste.includes(u)) };
@@ -126,7 +126,8 @@ export async function retirerBanniere(s: Services, ctx: Contexte, url: string) {
     const liste = actuelles.filter((u) => u !== url);
     t.update(ref, {
       bannieres: liste,
-      completude: completudeDepuisBase({ ...a.data(), bannieres: liste }).pourcent,
+      // Bannière retirée : complétude en baisse, la fiche reste en ligne (jamais retirée sans prévenir).
+      completude: completudeEtMiseEnLigne({ ...a.data(), bannieres: liste }).completude,
       updatedAt: Timestamp.fromMillis(s.horloge()),
     });
     return liste;

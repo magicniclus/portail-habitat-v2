@@ -1,10 +1,6 @@
 import { createHash } from 'node:crypto';
 import { ErreurMetier } from '@ph/core/erreurs';
-import {
-  derniersStatutsDocuments,
-  doitPasserEnLigne,
-  type StatutDocument,
-} from '@ph/core/espace-pro';
+import type { StatutDocument } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
 import type { entreeDocument } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
@@ -101,23 +97,6 @@ export async function enregistrerDocument(
         permissionRequise: 'documents.valider',
       },
     );
-    const documents = derniersStatutsDocuments([
-      ...docs.docs.map((d) => ({
-        type: d.get('type') as string,
-        statut: d.get('statut') as StatutDocument,
-        le: (d.get('createdAt') as Timestamp).toMillis(),
-      })),
-      { type: e.type, statut: 'en_attente', le: maintenant },
-    ]);
-    const enLigne = doitPasserEnLigne({
-      enLigne: a.get('enLigne') === true,
-      statut: a.get('statut') as string,
-      // SIREN vérifié à l'inscription (API Recherche d'entreprises) ou par un modérateur.
-      sirenVerifie: a.get('origine') === 'onboarding' || a.get('verification.statut') === 'verifie',
-      documents,
-    });
-    if (enLigne)
-      t.update(refArtisan, { enLigne: true, updatedAt: Timestamp.fromMillis(maintenant) });
-    return { enLigne: enLigne || a.get('enLigne') === true };
+    return { enLigne: a.get('enLigne') === true };
   });
 }

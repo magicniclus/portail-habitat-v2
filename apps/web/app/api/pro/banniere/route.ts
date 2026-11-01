@@ -2,8 +2,9 @@ import { entreeBanniere, entreeCadrageBanniere, entreeRetraitBanniere } from '@p
 import { bucketFichiers } from '@ph/firebase/admin';
 import { cadrerBanniere, enregistrerBanniere, retirerBanniere } from '@ph/firebase/pro';
 import { action } from '@/server/action';
-import { entrepriseAutorisee, servicesDemandesPro } from '@/server/demandesPro';
+import { servicesDemandesPro } from '@/server/demandesPro';
 import { routeJson } from '@/server/json';
+import { ecrireFiche } from '@/server/republierFiche';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,10 +15,8 @@ const enregistrer = action(
     rateLimit: { cle: 'medias', max: 60, fenetre: '1h' },
   },
   async (e, ctx) =>
-    enregistrerBanniere(
-      { ...servicesDemandesPro(), bucket: bucketFichiers() },
-      { artisanId: await entrepriseAutorisee(ctx.uid!, 'fiche.modifier'), uid: ctx.uid! },
-      e.nomFichier,
+    ecrireFiche(ctx.uid!, (c) =>
+      enregistrerBanniere({ ...servicesDemandesPro(), bucket: bucketFichiers() }, c, e.nomFichier),
     ),
 );
 
@@ -28,10 +27,8 @@ const retirer = action(
     rateLimit: { cle: 'medias', max: 60, fenetre: '1h' },
   },
   async (e, ctx) =>
-    retirerBanniere(
-      { ...servicesDemandesPro(), bucket: bucketFichiers() },
-      { artisanId: await entrepriseAutorisee(ctx.uid!, 'fiche.modifier'), uid: ctx.uid! },
-      e.url,
+    ecrireFiche(ctx.uid!, (c) =>
+      retirerBanniere({ ...servicesDemandesPro(), bucket: bucketFichiers() }, c, e.url),
     ),
 );
 
@@ -42,10 +39,8 @@ const cadrer = action(
     rateLimit: { cle: 'medias', max: 60, fenetre: '1h' },
   },
   async (e, ctx) =>
-    cadrerBanniere(
-      { ...servicesDemandesPro(), bucket: bucketFichiers() },
-      { artisanId: await entrepriseAutorisee(ctx.uid!, 'fiche.modifier'), uid: ctx.uid! },
-      e.cadrage,
+    ecrireFiche(ctx.uid!, (c) =>
+      cadrerBanniere({ ...servicesDemandesPro(), bucket: bucketFichiers() }, c, e.cadrage),
     ),
 );
 

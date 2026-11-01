@@ -2,8 +2,9 @@ import { entreeVideo } from '@ph/core/schemas';
 import { z } from '@ph/core/zod';
 import { enregistrerVideo } from '@ph/firebase/pro';
 import { action } from '@/server/action';
-import { entrepriseAutorisee, servicesDemandesPro } from '@/server/demandesPro';
+import { servicesDemandesPro } from '@/server/demandesPro';
 import { routeJson } from '@/server/json';
+import { ecrireFiche } from '@/server/republierFiche';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,21 +13,12 @@ const options = { rateLimit: { cle: 'medias', max: 60, fenetre: '1h' } } as cons
 const enregistrer = action(
   { schema: entreeVideo, nom: 'enregistrerVideo', ...options },
   async (e, ctx) =>
-    enregistrerVideo(
-      servicesDemandesPro(),
-      { artisanId: await entrepriseAutorisee(ctx.uid!, 'fiche.modifier'), uid: ctx.uid! },
-      e.lien,
-    ),
+    ecrireFiche(ctx.uid!, (c) => enregistrerVideo(servicesDemandesPro(), c, e.lien)),
 );
 
 const retirer = action(
   { schema: z.strictObject({}), nom: 'retirerVideo', ...options },
-  async (_e, ctx) =>
-    enregistrerVideo(
-      servicesDemandesPro(),
-      { artisanId: await entrepriseAutorisee(ctx.uid!, 'fiche.modifier'), uid: ctx.uid! },
-      null,
-    ),
+  async (_e, ctx) => ecrireFiche(ctx.uid!, (c) => enregistrerVideo(servicesDemandesPro(), c, null)),
 );
 
 /** Vidéo de présentation : lien YouTube (Ma fiche). */

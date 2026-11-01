@@ -22,8 +22,8 @@ export const entreeReponseAvis = z.strictObject({
   texte: z.string().trim().min(2, 'Écrivez votre réponse').max(1200),
 });
 
-/** « Mettre ma fiche en ligne » : aucune donnée, le serveur vérifie que la fiche est complète. */
-export const entreeMiseEnLigneFiche = z.strictObject({});
+/** Interrupteur « En ligne » de la fiche ; allumer : le serveur vérifie que la fiche est complète. */
+export const entreeMiseEnLigneFiche = z.strictObject({ enLigne: z.boolean() });
 
 /**
  * Ma fiche (maquette Ma Fiche) : chaque section s'enregistre seule. Chaîne vide = champ retiré.

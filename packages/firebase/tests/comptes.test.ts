@@ -125,7 +125,7 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
       droits: { ...droitsInitiaux('gratuit', new Date(0)), majLe: expect.anything() },
       siegesMax: 1,
       nbMembres: 1,
-      enLigne: true,
+      enLigne: false,
       proprietaireUid: uid,
       verification: { statut: 'en_cours' },
       metierPrincipal: 'plombier',

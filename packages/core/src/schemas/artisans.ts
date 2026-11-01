@@ -119,6 +119,8 @@ export const artisan = z
     logoUrl: z.string().optional(),
     /** Bannières de la fiche (1600 × 500), URL Storage publiques : 5 avec la visibilité payante, 1 sinon. */
     bannieres: z.array(z.string()).max(5).default([]),
+    /** Mise hors ligne par l'artisan (interrupteur « En ligne ») : plus de mise en ligne automatique. */
+    horsLigneVolontaire: z.boolean().optional(),
     /** Partie gardée visible des bannières rognées (centre si absent). */
     cadrageBanniere: z.enum(CADRAGES_BANNIERE).optional(),
     /** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo), URL Storage publique. */

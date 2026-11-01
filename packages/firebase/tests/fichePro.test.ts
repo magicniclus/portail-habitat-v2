@@ -2,7 +2,7 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
-import { mettreFicheEnLigne, modifierFiche } from '../src/serveur/pro';
+import { changerMiseEnLigne, modifierFiche } from '../src/serveur/pro';
 
 let db: Firestore;
 const T = Date.UTC(2026, 8, 29, 8);
@@ -81,34 +81,49 @@ describe('modifierFiche', () => {
   });
 });
 
-describe('mettreFicheEnLigne', () => {
-  it('refusée tant que logo, description ou bannière manquent ; collaborateur refusé', async () => {
+describe('mise en ligne de la fiche', () => {
+  const complete = {
+    statut: 'actif',
+    logoUrl: 'l',
+    bannieres: ['b'],
+  };
+  const lire = async () => (await db.doc(chemins.artisan('a1')).get()).data()!;
+
+  it('automatique dès que le minimum est fait (ici : la description)', async () => {
+    await db.doc(chemins.artisan('a1')).update({ ...complete, enLigne: false });
+    await modifierFiche(s(), ctx('p1'), {
+      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
+    });
+    expect(await lire()).toMatchObject({ enLigne: true, completude: 100 });
+  });
+
+  it('éteinte par l’artisan : plus de mise en ligne automatique, rallumable', async () => {
+    await db.doc(chemins.artisan('a1')).update({ ...complete, enLigne: true });
+    await expect(changerMiseEnLigne(s(), ctx('c1'), false)).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await changerMiseEnLigne(s(), ctx('p1'), false);
+    expect(await lire()).toMatchObject({ enLigne: false, horsLigneVolontaire: true });
+    await modifierFiche(s(), ctx('p1'), {
+      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
+    });
+    expect((await lire()).enLigne).toBe(false);
+    await changerMiseEnLigne(s(), ctx('p1'), true);
+    expect(await lire()).toMatchObject({ enLigne: true, horsLigneVolontaire: false });
+  });
+
+  it('allumer : refusé si logo, description ou bannière manquent, ou entreprise suspendue', async () => {
     await db.doc(chemins.artisan('a1')).update({ statut: 'actif', logoUrl: 'l' });
-    await expect(mettreFicheEnLigne(s(), ctx('p1'))).rejects.toMatchObject({
+    await expect(changerMiseEnLigne(s(), ctx('p1'), true)).rejects.toMatchObject({
       code: 'PRECONDITION',
       message: expect.stringContaining('ajouter une bannière'),
     });
     await db.doc(chemins.artisan('a1')).update({
-      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
-      bannieres: ['b'],
-    });
-    await expect(mettreFicheEnLigne(s(), ctx('c1'))).rejects.toMatchObject({
-      code: 'PERMISSION_REFUSEE',
-    });
-    await mettreFicheEnLigne(s(), ctx('p1'));
-    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
-    expect(a.enLigne).toBe(true);
-    expect(a.completude).toBe(100);
-  });
-
-  it('jamais pour une entreprise suspendue', async () => {
-    await db.doc(chemins.artisan('a1')).update({
+      ...complete,
       statut: 'suspendu',
-      logoUrl: 'l',
       description: 'Couvreur zingueur à Bordeaux depuis 1998.',
-      bannieres: ['b'],
     });
-    await expect(mettreFicheEnLigne(s(), ctx('p1'))).rejects.toMatchObject({
+    await expect(changerMiseEnLigne(s(), ctx('p1'), true)).rejects.toMatchObject({
       code: 'PRECONDITION',
     });
   });

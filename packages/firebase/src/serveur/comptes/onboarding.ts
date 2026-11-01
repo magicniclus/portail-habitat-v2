@@ -87,8 +87,8 @@ export async function finaliserOnboarding(
       quotaDemandesMois: 0,
       demandesRecuesMois: 0,
       completude: 0,
-      // SIREN vérifié à l'inscription : en ligne tout de suite, décennale facultative.
-      enLigne: true,
+      // En ligne automatiquement dès le minimum fait (logo, description, bannière).
+      enLigne: false,
       avertissements: 0,
       statut: 'actif',
       onboarding: { etape: 3, termineLe: maintenant },
