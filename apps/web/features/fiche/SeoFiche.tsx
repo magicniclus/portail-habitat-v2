@@ -9,15 +9,12 @@ import {
 } from '@phosphor-icons/react/ssr';
 import { routes } from '@/lib/routes';
 
-type Seo = ReturnType<typeof seoFiche>;
-
 /** Action de chaque carte : comparer les artisans, lire les avis, demander un devis. */
 const ACTIONS = [
   {
     Icone: MagnifyingGlassIcon,
     libelle: 'Comparer les artisans',
-    lien: (s: Seo, metier: string) =>
-      routes.artisansFiltres({ metier, ville: s.metiers.liens[0]?.ville ?? '' }),
+    lien: (metier: string, ville: string) => routes.metierVille(metier, ville),
   },
   { Icone: StarIcon, libelle: 'Lire les avis', lien: () => '#avis' as Route },
   { Icone: ChatCircleTextIcon, libelle: 'Demander un devis', lien: () => '#contact' as Route },
@@ -27,7 +24,16 @@ const ACTIONS = [
  * Bas de fiche publique (référencement) : trois paragraphes propres à l'artisan, puis les liens
  * vers les communes voisines, les autres métiers de sa ville et les travaux souvent demandés.
  */
-export function SeoFiche({ seo, metier }: { seo: ReturnType<typeof seoFiche>; metier: string }) {
+export function SeoFiche({
+  seo,
+  metier,
+  ville,
+}: {
+  seo: ReturnType<typeof seoFiche>;
+  metier: string;
+  /** Commune de la fiche (page « métier à cette ville » du lien « Comparer les artisans »). */
+  ville: string;
+}) {
   const liste = 'm-0 flex list-none flex-wrap gap-2 p-0 text-sm text-neutre-800';
   // Pastilles neutres de 44 px (cibles tactiles, MOBILE).
   const lien =
@@ -54,7 +60,7 @@ export function SeoFiche({ seo, metier }: { seo: ReturnType<typeof seoFiche>; me
               <h2 className="m-0 text-[17px] leading-snug font-bold text-texte">{p.titre}</h2>
               <p className="m-0 flex-1 text-[15px] leading-6">{p.texte}</p>
               <Link
-                href={a.lien(seo, metier)}
+                href={a.lien(metier, ville)}
                 className="inline-flex min-h-11 items-center gap-1.5 self-start font-semibold text-texte underline-offset-4 hover:underline"
               >
                 {a.libelle}
@@ -70,10 +76,7 @@ export function SeoFiche({ seo, metier }: { seo: ReturnType<typeof seoFiche>; me
           <ul className={liste}>
             {seo.villes.liens.map((l) => (
               <li key={l.ville}>
-                <Link
-                  href={routes.artisansFiltres({ metier: l.metier, ville: l.ville })}
-                  className={lien}
-                >
+                <Link href={routes.metierVille(l.metier, l.ville)} className={lien}>
                   {l.libelle}
                 </Link>
               </li>
@@ -87,10 +90,7 @@ export function SeoFiche({ seo, metier }: { seo: ReturnType<typeof seoFiche>; me
           <ul className={liste}>
             {seo.metiers.liens.map((l) => (
               <li key={l.metier}>
-                <Link
-                  href={routes.artisansFiltres({ metier: l.metier, ville: l.ville })}
-                  className={lien}
-                >
+                <Link href={routes.metierVille(l.metier, l.ville)} className={lien}>
                   {l.libelle}
                 </Link>
               </li>
@@ -104,10 +104,7 @@ export function SeoFiche({ seo, metier }: { seo: ReturnType<typeof seoFiche>; me
           <ul className={liste}>
             {seo.services.liens.map((l) => (
               <li key={l.prestation}>
-                <Link
-                  href={routes.annuaire(`?${new URLSearchParams({ q: l.nom, ville: l.ville })}`)}
-                  className={lien}
-                >
+                <Link href={routes.travauxVille(l.prestation, l.ville)} className={lien}>
                   {l.libelle}
                 </Link>
               </li>

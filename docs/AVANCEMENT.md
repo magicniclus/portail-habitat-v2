@@ -1057,3 +1057,12 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - encart du numéro masqué : « Les particuliers vous contactent déjà gratuitement par le formulaire de votre fiche » ;
     - carte « Fiche pro » des landings ;
     - aperçu côté particulier dans Ma fiche.
+- 01/11/2026 — **Pages SEO permanentes métier × ville et travaux × ville** :
+  - Nouvelles adresses : `/metiers` (tous les métiers), `/metiers/[metier]` (communes desservies, générées au build), `/metiers/[metier]/[ville]` (« Plombier à Bordeaux ») et `/travaux/[prestation]/[ville]` (« Douche à l'italienne à Bordeaux »).
+  - Chaque page est rendue côté serveur à la première visite puis mise en cache (ISR, une heure). Elle a son titre, sa description, sa canonique et son Open Graph, et un H1 suivi d'un texte rédigé depuis les données (aucune IA, aucun chiffre inventé ; seul le prix repère du simulateur est cité, présenté comme estimation).
+  - Elle montre les artisans du secteur (20 km), ou à défaut les plus proches (partenaires puis premium d'abord), une FAQ visible et des liens vers les communes voisines, les travaux similaires et les autres métiers.
+  - Données structurées : fil d'Ariane, FAQPage, ItemList des artisans.
+  - Un métier, une prestation ou une commune inconnus donnent une vraie 404. En cas de panne de l'API des communes, la page renvoie une erreur et non une 404, pour qu'aucune 404 ne soit mise en cache par erreur.
+  - Les liens du bas de chaque fiche (communes voisines, autres métiers, travaux, « Comparer les artisans ») mènent à ces pages au lieu de la recherche. Le lien « Métiers » de l'en-tête mène à `/metiers`.
+  - Plan du site : index, 60 métiers, 8 métiers courants × Bordeaux et la rive droite, toutes les prestations × Bordeaux. Les autres combinaisons sont découvertes par le maillage interne.
+  - Tests : `e2e/pagesLocales.spec.ts`, sitemap, `faqAnnuaire`.

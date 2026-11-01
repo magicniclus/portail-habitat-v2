@@ -1,3 +1,4 @@
+import { slugifier } from '@ph/core/format';
 import type { Route } from 'next';
 
 /**
@@ -5,10 +6,18 @@ import type { Route } from 'next';
  * ultérieurs : le transtypage évite de désactiver les routes typées d'ici là.
  */
 const r = (chemin: string) => chemin as Route;
+/** « Carignan-de-Bordeaux » → « carignan-de-bordeaux » (segment d'adresse des pages locales). */
+const slugVille = (ville: string) => slugifier(ville);
 
 export const routes = {
   accueil: r('/'),
   artisans: r('/artisans'),
+  /** Pages permanentes de référencement local (métier ou travaux, à une ville). */
+  metiers: r('/metiers'),
+  metier: (metier: string) => r(`/metiers/${metier}`),
+  metierVille: (metier: string, ville: string) => r(`/metiers/${metier}/${slugVille(ville)}`),
+  travauxVille: (prestation: string, ville: string) =>
+    r(`/travaux/${prestation}/${slugVille(ville)}`),
   /** Annuaire avec une chaîne de requête déjà formée (`?metier=…`, `ecrireFiltresAnnuaire`). */
   annuaire: (requete: string) => r(`/artisans${requete}`),
   artisansFiltres: (filtre: { metier?: string; ville?: string }) =>

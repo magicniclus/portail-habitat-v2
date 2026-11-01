@@ -10,12 +10,13 @@ const ROUTES_LANDINGS = OUTILS_LANDING.map((o) => LANDINGS[o].route);
 
 /**
  * Pages publiques indexables : vitrine, annuaire, fiches des artisans en ligne (`slugs`) et
- * landings ouvertes (`landings`, selon leurs flags).
+ * landings ouvertes (`landings`, selon leurs flags), pages locales métier ou travaux (`locales`).
  */
 export function pagesDuSitemap(
   maintenant: Date,
   slugs: readonly string[] = [],
   landings: readonly string[] = [],
+  locales: readonly string[] = [],
 ): MetadataRoute.Sitemap {
   const page = (
     chemin: string,
@@ -33,6 +34,7 @@ export function pagesDuSitemap(
     ...landings.map((l) => page(l, 0.8, 'weekly')),
     page(routes.artisans, 0.9, 'daily'),
     ...slugs.map((slug) => page(routes.ficheArtisan(slug), 0.7, 'weekly')),
+    ...locales.map((l) => page(l, 0.6, 'weekly')),
     page(routes.diagnostic, 0.9, 'weekly'),
     ...COMMUNES.map((c) => page(routes.diagnosticCommune(c.slug), 0.8, 'monthly')),
     page(routes.aide, 0.5, 'monthly'),

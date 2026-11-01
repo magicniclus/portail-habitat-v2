@@ -196,7 +196,7 @@ export default async function PageFiche({ params }: { params: Params }) {
           </div>
           <ContactFiche artisanId={id} nom={f.nomCommercial} telephone={f.telephone} />
         </div>
-        <SeoFiche seo={seo} metier={f.metierPrincipal} />
+        <SeoFiche seo={seo} metier={f.metierPrincipal} ville={villeZone} />
       </main>
       <MesureFiche artisanId={id} />
       <PiedPublic {...piedParticuliers} />

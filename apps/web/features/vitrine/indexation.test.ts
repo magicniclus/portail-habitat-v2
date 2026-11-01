@@ -30,6 +30,10 @@ describe('SEO : sitemap et robots', () => {
       }),
     ]);
   });
+  it('pages locales métier ou travaux : dans le sitemap', () => {
+    const avec = pagesDuSitemap(new Date('2026-09-28'), [], [], ['/metiers/plombier/bordeaux']);
+    expect(avec.map((p) => new URL(p.url).pathname)).toContain('/metiers/plombier/bordeaux');
+  });
   it('production : espaces privés exclus, sitemap déclaré ; sinon tout est bloqué', () => {
     const r = reglesRobots(true);
     expect(r.sitemap).toMatch(/\/sitemap\.xml$/);

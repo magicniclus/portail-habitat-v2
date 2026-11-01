@@ -51,3 +51,40 @@ export function articleAnnuaire(e: EntreeArticle): { titre: string; paragraphes:
     ],
   };
 }
+
+/**
+ * Questions fréquentes d'une page « métier à une ville » ou « travaux à une ville » (affichées et
+ * déclarées en FAQPage). Seul chiffre cité : le prix repère du simulateur, présenté comme estimation.
+ */
+export function faqAnnuaire(
+  e: Pick<EntreeArticle, 'ville' | 'metier' | 'prestation'>,
+): { q: string; r: string }[] {
+  const sujet = e.prestation
+    ? `des travaux « ${minuscule(e.prestation.nom)} »`
+    : avecArticle(e.metier?.nom ?? 'artisan');
+  const gratuit = {
+    q: `Contacter ${e.prestation ? 'un artisan' : avecArticle(e.metier?.nom ?? 'artisan')} sur Portail Travaux est-il gratuit ?`,
+    r: 'Oui. Laisser vos coordonnées sur la fiche d’un artisan, lui demander un devis ou utiliser le simulateur est gratuit et sans engagement ; vous choisissez ensuite librement.',
+  };
+  const aucun = {
+    q: 'Que faire si aucun artisan ne correspond à mon projet ?',
+    r: `Élargissez le rayon de recherche ou déposez votre projet : il est transmis aux artisans vérifiés qui interviennent autour de ${e.ville}.`,
+  };
+  if (e.prestation)
+    return [
+      {
+        q: `Combien coûte « ${minuscule(e.prestation.nom)} » à ${e.ville} ?`,
+        r: `Notre simulateur donne un prix repère ${e.prestation.repere} pour ${sujet}. C’est une estimation indicative : le prix réel dépend de votre logement et se confirme par un devis détaillé.`,
+      },
+      gratuit,
+      aucun,
+    ];
+  return [
+    {
+      q: `Comment choisir ${sujet} à ${e.ville} ?`,
+      r: CONSEILS,
+    },
+    gratuit,
+    aucun,
+  ];
+}

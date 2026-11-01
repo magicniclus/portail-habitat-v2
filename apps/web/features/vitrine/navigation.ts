@@ -7,7 +7,7 @@ export const enTeteParticuliers: EnTetePublicProps = {
   bandeau: 'Devis gratuits et sans engagement · Artisans vérifiés près de chez vous',
   accueil: routes.accueil,
   liens: [
-    { libelle: 'Métiers', href: routes.artisans },
+    { libelle: 'Métiers', href: routes.metiers },
     { libelle: 'Artisans', href: routes.artisans },
     { libelle: 'Avis', href: routes.avis },
   ],
