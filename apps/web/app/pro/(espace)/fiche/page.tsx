@@ -1,6 +1,7 @@
 import { peut } from '@ph/core/equipe';
 import { formatNombre } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
+import { assurerFichePublique } from '@ph/firebase/annuaire';
 import { droitsDe, encartAffiche, type CleEncart } from '@ph/core/paiements';
 import {
   lireAvisPro,
@@ -9,7 +10,7 @@ import {
   lireFichePro,
   lireRealisationsPro,
 } from '@ph/firebase/pro';
-import { bouton } from '@ph/ui';
+import { Banner, bouton } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
@@ -37,6 +38,7 @@ import { Realisations } from '@/features/fichePro/Realisations';
 import { EncartOffre } from '@/features/offres/EncartOffre';
 import { EditionPresentation, EditionZone } from '@/features/fichePro/EditionsFiche';
 import { routes } from '@/lib/routes';
+import { servicesDemandesPro } from '@/server/demandesPro';
 import { sessionPro } from '@/server/sessionPro';
 import { maintenant } from '@/server/temps';
 
@@ -56,6 +58,10 @@ export default async function PageMaFiche() {
     lireAvisPro(db, active.artisanId, 50),
   ]);
   if (!f) redirect(routes.proTableauDeBord);
+  // En ligne : la fiche publique doit exister (recalculée sinon), ou l'artisan voit pourquoi.
+  const publique = f.enLigne
+    ? await assurerFichePublique(servicesDemandesPro(), active.artisanId)
+    : null;
   const edite = peut(active.membre, 'fiche.modifier');
   const instant = maintenant();
   // Un seul encart d'offre par écran (PAIEMENTS §4) : numéro masqué d'abord, puis 5 projets.
@@ -94,6 +100,12 @@ export default async function PageMaFiche() {
             Voir ma fiche publique
           </Link>
         </ActionsEntete>
+      ) : null}
+      {publique && !publique.ok ? (
+        <Banner tone="danger" titre="Votre fiche n’apparaît pas encore dans l’annuaire">
+          Elle est en ligne mais n’a pas pu être publiée : {publique.erreur}. Corrigez ce point puis
+          rechargez la page.
+        </Banner>
       ) : null}
       {edite ? null : (
         <p className="m-0 rounded-md bg-neutre-100 p-3 text-sm">

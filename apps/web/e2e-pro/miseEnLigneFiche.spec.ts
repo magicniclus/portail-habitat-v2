@@ -46,6 +46,16 @@ test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche
     expect((await artisan.get()).get('horsLigneVolontaire')).toBe(true);
     await interrupteur.click();
     await expect(interrupteur).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 });
+
+    // Fiche publique manquante (déclencheur absent) : recréée à l'ouverture de Ma fiche.
+    const publique = db.doc(chemins.artisanPublic(artisan.id));
+    await publique.delete();
+    await page.reload();
+    await expect(page.getByRole('switch', { name: 'Fiche en ligne' })).toBeVisible();
+    expect((await publique.get()).exists).toBe(true);
+    await expect(page.getByText('Votre fiche n’apparaît pas encore dans l’annuaire')).toHaveCount(
+      0,
+    );
   } finally {
     await artisan.update({
       enLigne: avant.enLigne ?? false,

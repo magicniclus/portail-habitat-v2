@@ -27,7 +27,11 @@ export async function publierFiche(
     return { statut: 'retiree' };
   }
   const a = artisan.safeParse(depuisFirestore(snap.data()));
-  if (!a.success) return { statut: 'invalide', erreur: a.error.issues[0]?.message ?? 'invalide' };
+  if (!a.success) {
+    const i = a.error.issues[0];
+    const champ = i?.path.length ? `« ${i.path.join('.')} »` : 'fiche';
+    return { statut: 'invalide', erreur: `${champ} : ${i?.message ?? 'invalide'}` };
+  }
   const p = projeterArtisanPublic(a.data, new Date(s.horloge()), a.data.adresseSiege.ville);
   if (!p) {
     await fiches.ref(artisanId).delete();
@@ -35,4 +39,25 @@ export async function publierFiche(
   }
   await fiches.ecrire(artisanId, p);
   return { statut: 'publiee', fiche: artisanPublic.parse(p) };
+}
+
+/**
+ * Ma fiche en ligne : la fiche publique existe-t-elle ? Sinon elle est recalculée tout de suite
+ * (déclencheur absent ou en retard) ; si elle ne peut pas l'être, la raison est rendue pour être
+ * affichée à l'artisan (champ invalide, entreprise inactive).
+ */
+export async function assurerFichePublique(
+  s: { db: Firestore; horloge: () => number },
+  artisanId: string,
+): Promise<{ ok: true } | { ok: false; erreur: string }> {
+  if ((await s.db.doc(chemins.artisanPublic(artisanId)).get()).exists) return { ok: true };
+  const r = await publierFiche(s, artisanId);
+  if (r.statut === 'publiee') return { ok: true };
+  return {
+    ok: false,
+    erreur:
+      r.statut === 'invalide'
+        ? `donnée refusée, ${r.erreur}`
+        : 'l’entreprise n’est pas active (suspendue ou fermée)',
+  };
 }

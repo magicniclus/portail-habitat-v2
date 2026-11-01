@@ -10,6 +10,7 @@ import { versFirestore } from '../src/conversion';
 import {
   fichesAutour,
   lireFichePublique,
+  assurerFichePublique,
   publierFiche,
   trierResultats,
 } from '../src/serveur/annuaire';
@@ -101,6 +102,19 @@ describe('publierFiche (déclencheur projeterArtisan)', () => {
     await db.doc(chemins.artisan('x')).set({ nomCommercial: 'X' });
     expect((await publierFiche({ db, horloge: () => T }, 'x')).statut).toBe('invalide');
     expect((await db.doc(chemins.artisanPublic('x')).get()).exists).toBe(false);
+  });
+});
+
+describe('assurerFichePublique (Ma fiche)', () => {
+  it('fiche publique absente : recalculée ; invalide : raison avec le champ', async () => {
+    await creerArtisan('a1');
+    await db.doc(chemins.artisanPublic('a1')).delete();
+    expect(await assurerFichePublique({ db, horloge: () => T }, 'a1')).toEqual({ ok: true });
+    expect((await db.doc(chemins.artisanPublic('a1')).get()).exists).toBe(true);
+    await db.doc(chemins.artisanPublic('a1')).delete();
+    await db.doc(chemins.artisan('a1')).update({ siteWeb: 'pas une adresse' });
+    const r = await assurerFichePublique({ db, horloge: () => T }, 'a1');
+    expect(r).toMatchObject({ ok: false, erreur: expect.stringContaining('« siteWeb »') });
   });
 });
 

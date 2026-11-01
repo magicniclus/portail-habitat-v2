@@ -5,7 +5,7 @@ export {
   type FichePublique,
   type RealisationFiche,
 } from './fiche';
-export { publierFiche, type ResultatPublication } from './publication';
+export { assurerFichePublique, publierFiche, type ResultatPublication } from './publication';
 export {
   carteAnnuaire,
   fichesAutour,
