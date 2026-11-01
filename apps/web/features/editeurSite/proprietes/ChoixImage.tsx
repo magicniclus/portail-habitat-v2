@@ -1,7 +1,7 @@
 'use client';
 
 import { cn, Chargeur } from '@ph/ui';
-import { FolderOpenIcon, ImageSquareIcon } from '@phosphor-icons/react';
+import { ImageSquareIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useImportMedia } from '../ImportImage';
 import { Libelle } from './controles';
@@ -74,17 +74,18 @@ export function ChoixImage({
           ) : (
             <ImageSquareIcon size={20} aria-hidden="true" className="text-neutre-500" />
           )}
-          {imp.enCours
-            ? 'Envoi…'
-            : survol
-              ? 'Déposez l’image ici'
-              : url
-                ? 'Glissez une image ou cliquez pour la remplacer'
-                : 'Glissez une image ici ou'}
-          {imp.enCours || survol ? null : (
-            <span className="mt-1 inline-flex min-h-9 items-center gap-1.5 rounded-control border border-trait bg-blanc px-3 text-[13px] font-semibold text-texte shadow-sm">
-              <FolderOpenIcon size={16} aria-hidden="true" />
-              Parcourir mes fichiers
+          {imp.enCours ? (
+            'Envoi…'
+          ) : survol ? (
+            'Déposez l’image ici'
+          ) : url ? (
+            'Glissez une image ou cliquez pour la remplacer'
+          ) : (
+            <span>
+              Glissez une image ici ou{' '}
+              <span className="font-semibold text-accent-700 underline underline-offset-2">
+                parcourez vos fichiers
+              </span>
             </span>
           )}
         </span>
