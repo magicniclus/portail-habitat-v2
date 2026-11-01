@@ -2,7 +2,7 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
-import { lireAvisPro, repondreAvis } from '../src/serveur/pro';
+import { compterAvisEnAttente, lireAvisPro, repondreAvis } from '../src/serveur/pro';
 
 let db: Firestore;
 const T = Date.UTC(2026, 8, 29, 8);
@@ -41,6 +41,11 @@ beforeEach(async () => {
 describe('lireAvisPro', () => {
   it('avis publiés de l’entreprise, plus récents d’abord', async () => {
     expect((await lireAvisPro(db, 'a1')).map((a) => a.id)).toEqual(['v1', 'v2']);
+  });
+
+  it('avis en cours de vérification comptés à part (jamais listés)', async () => {
+    expect(await compterAvisEnAttente(db, 'a1')).toBe(1);
+    expect(await compterAvisEnAttente(db, 'a2')).toBe(0);
   });
 });
 

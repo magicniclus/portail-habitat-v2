@@ -6,7 +6,7 @@ import {
   TRIS,
 } from '@ph/core/annuaire';
 import type { FiltresAnnuaireUrl } from '@ph/core/schemas';
-import type { ResultatsAnnuaire } from '@ph/firebase/annuaire';
+import type { ArtisanAnnuaire, ResultatsAnnuaire } from '@ph/firebase/annuaire';
 import { bouton } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
@@ -21,10 +21,15 @@ const MENTION_L111_7 =
 export function Resultats({
   f,
   r,
+  proches = [],
+  lieu,
   nomMetier,
 }: {
   f: FiltresAnnuaireUrl;
   r: ResultatsAnnuaire;
+  /** Aucun résultat dans le secteur : artisans les plus proches (partenaires, premium, autres). */
+  proches?: ArtisanAnnuaire[];
+  lieu?: string;
   nomMetier: (id: string) => string;
 }) {
   const total = r.premium.length + r.standards.length;
@@ -100,7 +105,28 @@ export function Resultats({
         ))}
       </div>
 
-      {total === 0 ? (
+      {total === 0 && proches.length ? (
+        <section aria-labelledby="titre-proches" className="grid gap-3.5">
+          <div>
+            <h2 id="titre-proches" className="m-0 mb-1 text-lg">
+              Les artisans les plus proches{lieu ? ` de ${lieu}` : ''}
+            </h2>
+            <p className="m-0 text-[14.5px] leading-[22px] text-neutre-800">
+              Aucun artisan n’indique encore intervenir exactement dans ce secteur : voici ceux qui
+              en sont le plus près. Contactez-les pour savoir s’ils se déplacent, ou{' '}
+              <Link href={routes.simulateur} prefetch={false} className="font-semibold">
+                déposez votre projet
+              </Link>
+              .
+            </p>
+          </div>
+          {proches.map((a) => (
+            <CarteArtisan key={a.id} a={a} nomMetier={nomMetier(a.metierPrincipal)} />
+          ))}
+        </section>
+      ) : null}
+
+      {total === 0 && !proches.length ? (
         <div className="rounded-[14px] border border-dashed border-neutre-400 p-7.5 text-center">
           <p className="m-0 mb-2 text-[17px] font-bold">
             Aucun artisan ne correspond à ces critères

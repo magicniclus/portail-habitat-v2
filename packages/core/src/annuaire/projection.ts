@@ -76,6 +76,8 @@ export function projeterArtisanPublic(
     nbAvis: a.nbAvis,
     notesCriteres: a.notesCriteres,
     misEnAvant: a.droits.ficheMiseEnAvant,
+    // Formule Tout inclus : « partenaire », en tête des artisans à la une (décision du 01/11/2026).
+    partenaire: a.droits.formule === 'tout_inclus',
     badgeRecommande: a.droits.badgeRecommande,
     telephone: telephoneAffiche(a),
     scoreClassement: scoreClassement({ ...a, anneesActivite }),

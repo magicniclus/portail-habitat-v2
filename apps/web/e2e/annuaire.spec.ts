@@ -67,13 +67,23 @@ test.describe('Annuaire', () => {
     await expect(page.getByRole('heading', { name: 'Atelier Lumière' })).toHaveCount(0);
   });
 
-  test('ANN-05 : aucun résultat → proposition de déposer un projet', async ({ page }) => {
+  test('ANN-05 : aucun résultat dans le secteur → les plus proches, et déposer un projet', async ({
+    page,
+  }) => {
     await page.goto('/artisans?q=zzzzqqq');
-    await expect(page.getByText('Aucun artisan ne correspond à ces critères')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Déposer mon projet' }).last()).toHaveAttribute(
+    const proches = page.getByRole('region', { name: /^Les artisans les plus proches/ });
+    await expect(proches).toBeVisible();
+    await expect(proches.getByRole('article').first()).toBeVisible();
+    await expect(proches.getByRole('link', { name: 'déposez votre projet' })).toHaveAttribute(
       'href',
       '/simulateur',
     );
+  });
+
+  test('le nom de l’artisan ouvre sa fiche', async ({ page }) => {
+    await page.goto('/artisans');
+    await page.getByRole('link', { name: 'Bertrand Rénovation', exact: true }).first().click();
+    await expect(page).toHaveURL(/\/artisans\/bertrand-renovation-bordeaux/);
   });
 
   test('ANN-06 : téléphone seulement avec Fiche Pro (ou une formule qui l’inclut)', async ({

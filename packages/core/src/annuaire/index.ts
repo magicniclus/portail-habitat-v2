@@ -37,6 +37,7 @@ export {
   pertinence,
   resultatsAnnuaire,
   trierAnnuaire,
+  plusProches,
   TRIS,
   type FicheAnnuaire,
   type FiltresAnnuaire,

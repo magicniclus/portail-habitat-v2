@@ -365,6 +365,8 @@ export const artisanPublic = z
     dispoLabel: z.string().optional(),
     /** Priorité d'affichage dans le secteur et label « Premium Portail Travaux » (Fiche Pro). */
     misEnAvant: z.boolean(),
+    /** Formule Tout inclus (en tête des artisans à la une) ; absent : non. */
+    partenaire: z.boolean().optional(),
     badgeRecommande: z.boolean(),
     argumentPremium: z.string().max(140).optional(),
     telephone: telephoneE164.nullable(),

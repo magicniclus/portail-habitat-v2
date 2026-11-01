@@ -13,9 +13,12 @@ export function ResumeAvis({
   nombre,
   slug,
   nom,
+  enAttente = 0,
 }: {
   note: string | null;
   nombre: number;
+  /** Avis déposés par des clients, en cours de vérification (pas encore publiés). */
+  enAttente?: number;
   slug: string;
   nom: string;
 }) {
@@ -32,6 +35,13 @@ export function ResumeAvis({
         />
       }
     >
+      {enAttente ? (
+        <p className="m-0 text-sm text-neutre-800">
+          {enAttente} avis en cours de vérification :{' '}
+          {enAttente > 1 ? 'ils seront publiés' : 'il sera publié'} sur votre fiche une fois validé
+          {enAttente > 1 ? 's' : ''} par notre équipe.
+        </p>
+      ) : null}
       {note ? (
         <p className="m-0 flex flex-wrap items-center gap-2">
           <Etoiles />

@@ -1,5 +1,6 @@
 import {
   articleAnnuaire,
+  plusProches,
   BUDGETS_ANNUAIRE,
   chipsFiltres,
   DISPOS_ANNUAIRE,
@@ -22,7 +23,13 @@ import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { routes } from '@/lib/routes';
-import { artisansAutour, compterRecherche, idsTexte, resoudreLieu } from '@/server/annuaire';
+import {
+  artisansAlentour,
+  artisansAutour,
+  compterRecherche,
+  idsTexte,
+  resoudreLieu,
+} from '@/server/annuaire';
 import { metiersFiltre, nomMetier, prestationParNom, prestationsDuMetier } from '@/server/metiers';
 import { ArticleAnnuaire } from '@/features/annuaire/ArticleAnnuaire';
 
@@ -74,6 +81,11 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
     idsTexte(f.q, lieu, f.rayon),
   ]);
   const r = trierResultats(fiches, f, ordre);
+  // Jamais de page vide : sans artisan dans le secteur, les plus proches (partenaires d'abord).
+  const proches =
+    r.premium.length + r.standards.length === 0
+      ? plusProches(await artisansAlentour(lieu), { metiers: f.metier, q: f.q })
+      : [];
   // Pages « métier à une ville » et « travaux à une ville » : un vrai texte sous la liste.
   const prestation = f.q ? await prestationParNom(f.q) : null;
   const metierSeul = f.metier.length === 1 && !f.q ? f.metier[0]! : null;
@@ -155,7 +167,7 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
               </Link>
             </div>
           </aside>
-          <Resultats f={f} r={r} nomMetier={nomMetier} />
+          <Resultats f={f} r={r} proches={proches} lieu={lieu.nom} nomMetier={nomMetier} />
         </div>
         {article ? (
           <ArticleAnnuaire

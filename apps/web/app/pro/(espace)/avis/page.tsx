@@ -1,6 +1,6 @@
 import { peut } from '@ph/core/equipe';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireAvisPro } from '@ph/firebase/pro';
+import { compterAvisEnAttente, lireAvisPro } from '@ph/firebase/pro';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -17,7 +17,11 @@ export default async function PageMesAvis() {
   const s = await sessionPro(routes.proAvis);
   const active = s.espace.active;
   if (!active || active.membre.role === 'comptable') redirect(routes.proTableauDeBord);
-  const avis = await lireAvisPro(getFirestore(appAdmin()), active.artisanId);
+  const db = getFirestore(appAdmin());
+  const [avis, enAttente] = await Promise.all([
+    lireAvisPro(db, active.artisanId),
+    compterAvisEnAttente(db, active.artisanId).catch(() => 0),
+  ]);
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -26,6 +30,12 @@ export default async function PageMesAvis() {
           <p className="m-0 text-base text-neutre-800">
             Les avis vérifiés de vos clients, publiés sur votre fiche.
           </p>
+          {enAttente ? (
+            <p className="m-0 mt-1.5 text-sm font-semibold text-neutre-800">
+              {enAttente} avis en cours de vérification (publication après validation par notre
+              équipe).
+            </p>
+          ) : null}
         </div>
         <DemanderAvis slug={active.artisan.slug} nom={active.artisan.nomCommercial} />
       </div>

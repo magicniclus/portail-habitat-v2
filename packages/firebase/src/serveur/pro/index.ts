@@ -9,7 +9,7 @@ export {
 export { lireStatsJours } from './statistiques';
 export { verifierAssurances } from './assurances';
 export { envoyerRapportsHebdo } from './rapportHebdo';
-export { lireAvisPro, repondreAvis, type AvisPro } from './avis';
+export { compterAvisEnAttente, lireAvisPro, repondreAvis, type AvisPro } from './avis';
 export { changerMiseEnLigne, lireFichePro, modifierFiche, type FichePro } from './fiche';
 export { enregistrerDocument, lireDocumentsPro, type DocumentPro } from './documents';
 export { lireEquipe, type Equipe, type MembreEquipe } from './equipe';

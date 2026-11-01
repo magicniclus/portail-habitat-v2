@@ -39,9 +39,9 @@ const fiches = () =>
 
 /** Source de l'annuaire en mode démonstration (tests de bout en bout, `ANNUAIRE_DEMO=1`). */
 export const sourceDemo = {
-  async autour(lieu: { latitude: number; longitude: number }, rayonKm: number) {
+  async autour(lieu: { latitude: number; longitude: number }, rayonKm: number, horsZone = false) {
     return fiches().flatMap(({ id, fiche }) => {
-      const c = carteAnnuaire(id, fiche, lieu, rayonKm);
+      const c = carteAnnuaire(id, fiche, lieu, rayonKm, horsZone);
       return c ? [c] : [];
     });
   },

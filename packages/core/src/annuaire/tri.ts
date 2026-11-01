@@ -16,6 +16,8 @@ export interface FicheAnnuaire {
   note: number;
   avis: number;
   premium: boolean;
+  /** Formule Tout inclus : en tête des artisans à la une. */
+  partenaire?: boolean;
   labels: readonly string[];
   /** Délai de disponibilité en jours. */
   delaiJ: number;
@@ -95,5 +97,30 @@ export function resultatsAnnuaire<T extends FicheAnnuaire>(
   tri: Tri,
 ): { premium: T[]; standards: T[] } {
   const r = trierAnnuaire(filtrerAnnuaire(liste, f), tri);
-  return { premium: r.filter((a) => a.premium), standards: r.filter((a) => !a.premium) };
+  return {
+    premium: [
+      ...r.filter((a) => a.premium && a.partenaire),
+      ...r.filter((a) => a.premium && !a.partenaire),
+    ],
+    standards: r.filter((a) => !a.premium),
+  };
+}
+
+/** Rang de mise en avant : partenaire (Tout inclus), puis premium, puis les autres. */
+const rang = (a: FicheAnnuaire) => (a.partenaire ? 0 : a.premium ? 1 : 2);
+
+/**
+ * Aucun artisan dans le secteur : on montre quand même les plus proches, jamais une page vide.
+ * Même métier d'abord (le texte recherché aussi), sinon tous métiers confondus ; partenaires,
+ * puis premium, puis les autres, chacun du plus proche au plus loin.
+ */
+export function plusProches<T extends FicheAnnuaire>(
+  liste: readonly T[],
+  f: Pick<FiltresAnnuaire, 'metiers' | 'q'>,
+  max = 12,
+): T[] {
+  const ordre = (l: readonly T[]) =>
+    [...l].sort((a, b) => rang(a) - rang(b) || a.km - b.km).slice(0, max);
+  const memeSujet = filtrerAnnuaire(liste, { ...f, rayonKm: Number.POSITIVE_INFINITY });
+  return ordre(memeSujet.length ? memeSujet : liste);
 }

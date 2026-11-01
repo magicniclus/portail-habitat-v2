@@ -35,9 +35,11 @@ export function carteAnnuaire(
   a: z.output<typeof artisanPublic>,
   lieu: { latitude: number; longitude: number },
   rayonKm: number,
+  /** Repli « artisans les plus proches » : la zone de l'artisan n'est pas exigée. */
+  horsZone = false,
 ): ArtisanAnnuaire | null {
   const km = distanceKm(lieu, a.geo);
-  if (!a.enLigne || km > rayonKm || km > a.rayonKm) return null;
+  if (!a.enLigne || km > rayonKm || (!horsZone && km > a.rayonKm)) return null;
   return {
     id,
     slug: a.slug,
@@ -51,6 +53,7 @@ export function carteAnnuaire(
     note: a.noteMoyenne,
     avis: a.nbAvis,
     premium: a.misEnAvant,
+    ...(a.partenaire ? { partenaire: true } : {}),
     labels: a.labels,
     delaiJ: a.delaiDispoJours ?? 99,
     score: a.scoreClassement,
@@ -72,6 +75,7 @@ export async function fichesAutour(
   db: Firestore,
   lieu: { latitude: number; longitude: number },
   rayonKm: number,
+  horsZone = false,
 ): Promise<ArtisanAnnuaire[]> {
   const fiches = depot(db, collections.artisansPublic, artisanPublic).reference;
   const lots = await Promise.all(
@@ -84,7 +88,7 @@ export async function fichesAutour(
   for (const d of lots.flatMap((l) => l.docs)) {
     if (vus.has(d.id)) continue;
     vus.add(d.id);
-    const carte = carteAnnuaire(d.id, d.data(), lieu, rayonKm);
+    const carte = carteAnnuaire(d.id, d.data(), lieu, rayonKm, horsZone);
     if (carte) resultat.push(carte);
   }
   return resultat;

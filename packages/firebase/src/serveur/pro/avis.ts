@@ -67,3 +67,14 @@ export async function repondreAvis(
     });
   });
 }
+
+/** Avis déposés par des clients et pas encore vérifiés (affichés à l'artisan, jamais publiés). */
+export async function compterAvisEnAttente(db: Firestore, artisanId: string): Promise<number> {
+  const r = await db
+    .collection(collections.avis)
+    .where('artisanId', '==', artisanId)
+    .where('statut', '==', 'en_attente')
+    .count()
+    .get();
+  return r.data().count;
+}

@@ -5,6 +5,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { assurerFichePublique } from '@ph/firebase/annuaire';
 import { droitsDe, encartAffiche, type CleEncart } from '@ph/core/paiements';
 import {
+  compterAvisEnAttente,
   lireAvisPro,
   lireDocumentsPro,
   lireEncartsMasques,
@@ -52,12 +53,13 @@ export default async function PageMaFiche() {
   const active = s.espace.active;
   if (!active || active.membre.role === 'comptable') redirect(routes.proTableauDeBord);
   const db = getFirestore(appAdmin());
-  const [f, documents, realisations, masques, avis] = await Promise.all([
+  const [f, documents, realisations, masques, avis, avisEnAttente] = await Promise.all([
     lireFichePro(db, active.artisanId),
     lireDocumentsPro(db, active.artisanId),
     lireRealisationsPro(db, active.artisanId),
     lireEncartsMasques(db, s.uid),
     lireAvisPro(db, active.artisanId, 50),
+    compterAvisEnAttente(db, active.artisanId).catch(() => 0),
   ]);
   if (!f) redirect(routes.proTableauDeBord);
   // Zone d'intervention : commune réelle de son centre, et siège hors de la zone signalé
@@ -153,7 +155,13 @@ export default async function PageMaFiche() {
             }
           />
           {edite && f.completude.pourcent >= 100 ? <RemplirFicheIa vide={false} /> : null}
-          <ResumeAvis note={note} nombre={avis.length} slug={f.slug} nom={f.nomCommercial} />
+          <ResumeAvis
+            note={note}
+            nombre={avis.length}
+            enAttente={avisEnAttente}
+            slug={f.slug}
+            nom={f.nomCommercial}
+          />
           <CarteFiche
             titre="À propos"
             action={

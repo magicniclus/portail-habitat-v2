@@ -25,7 +25,7 @@ export interface Lieu {
 }
 
 interface SourceAnnuaire {
-  autour(lieu: Lieu, rayonKm: number): Promise<ArtisanAnnuaire[]>;
+  autour(lieu: Lieu, rayonKm: number, horsZone?: boolean): Promise<ArtisanAnnuaire[]>;
   fiche(slug: string): Promise<FichePublique | null>;
   slugs(): Promise<string[]>;
   lieu(ville: string): Promise<Lieu | null>;
@@ -63,8 +63,8 @@ async function geocoder(ville: string): Promise<Lieu | null> {
 }
 
 const firestore: SourceAnnuaire = {
-  autour: async (lieu, rayon) =>
-    (await lire('annuaire', () => fichesAutour(db(), lieu, rayon))) ?? [],
+  autour: async (lieu, rayon, horsZone = false) =>
+    (await lire('annuaire', () => fichesAutour(db(), lieu, rayon, horsZone))) ?? [],
   fiche: async (slug) => lire('fiche', () => lireFichePublique(db(), slug)),
   slugs: async () => (await lire('slugs', () => slugsEnLigne(db()))) ?? [],
   lieu: geocoder,
@@ -83,6 +83,19 @@ export const resoudreLieu = cache(async (ville: string): Promise<Lieu> => {
 export const artisansAutour = cache(async (lieu: Lieu, rayonKm: number) =>
   (await source()).autour(lieu, rayonKm),
 );
+
+/**
+ * Repli quand le secteur ne donne aucun artisan : fiches en ligne jusqu'à 150 km, puis 500 km,
+ * sans exiger que le lieu soit dans leur zone. Lu seulement dans ce cas (coût borné, COUTS).
+ */
+export const artisansAlentour = cache(async (lieu: Lieu) => {
+  const s = await source();
+  for (const rayon of [150, 500]) {
+    const r = await s.autour(lieu, rayon, true);
+    if (r.length) return r;
+  }
+  return [];
+});
 
 export const lireFiche = cache(async (slug: string) => (await source()).fiche(slug));
 

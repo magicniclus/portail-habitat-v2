@@ -78,7 +78,12 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 id={`nom-${a.id}`} className="m-0 mb-1 text-xl">
-                  {a.nom}
+                  <Link
+                    href={profil}
+                    className="-my-3 inline-block py-3 text-texte no-underline hover:underline focus-visible:underline"
+                  >
+                    {a.nom}
+                  </Link>
                 </h2>
                 <p className="m-0 text-[14.5px] text-neutre-800">{lieu}</p>
               </div>
@@ -122,7 +127,12 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 id={`nom-${a.id}`} className="m-0 mb-0.5 text-[17.5px]">
-              {a.nom}
+              <Link
+                href={profil}
+                className="-my-3 inline-block py-3 text-texte no-underline hover:underline focus-visible:underline"
+              >
+                {a.nom}
+              </Link>
             </h2>
             <p className="m-0 text-sm text-neutre-800">{lieu}</p>
           </div>
