@@ -87,7 +87,7 @@ export function ContactFiche({
       </p>
       <form onSubmit={envoyer} noValidate className="grid gap-3">
         {message ? <Banner tone="danger">{message}</Banner> : null}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 min-[400px]:grid-cols-2 [&_input]:min-w-0">
           <Field label="Prénom" requis erreur={erreurs.prenom}>
             <Input autoComplete="given-name" {...champ('prenom')} />
           </Field>

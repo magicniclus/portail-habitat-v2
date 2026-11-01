@@ -110,7 +110,7 @@ export default async function PageFiche({ params }: { params: Params }) {
           <span aria-current="page">{f.nomCommercial}</span>
         </nav>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)] [&>*]:min-w-0">
           <div className="grid min-w-0 gap-5">
             <EnTeteFiche
               artisanId={id}
