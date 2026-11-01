@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { debutYoutube, idYoutube, integrationYoutube, lienYoutube } from './video';
+import {
+  debutYoutube,
+  idYoutube,
+  integrationYoutube,
+  lienYoutube,
+  miniatureYoutube,
+  videoBanniereYoutube,
+} from './video';
 
 describe('liens YouTube', () => {
   it('toutes les formes courantes donnent l’identifiant', () => {
@@ -39,5 +46,27 @@ describe('liens YouTube', () => {
       'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1',
     );
     expect(integrationYoutube('dQw4w9WgXcQ', 5)).toContain('&start=5');
+  });
+});
+
+describe('vidéo en bannière (fiche Premium) et miniature', () => {
+  it('lecture automatique sans son, en boucle, sans commandes', () => {
+    const u = new URL(videoBanniereYoutube('dQw4w9WgXcQ', 12));
+    expect(u.origin + u.pathname).toBe('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ');
+    expect(Object.fromEntries(u.searchParams)).toMatchObject({
+      autoplay: '1',
+      mute: '1',
+      loop: '1',
+      playlist: 'dQw4w9WgXcQ',
+      controls: '0',
+      playsinline: '1',
+      start: '12',
+    });
+  });
+
+  it('miniature de la vidéo (annuaire)', () => {
+    expect(miniatureYoutube('dQw4w9WgXcQ')).toBe(
+      'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+    );
   });
 });

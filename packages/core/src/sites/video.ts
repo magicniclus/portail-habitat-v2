@@ -47,3 +47,23 @@ export const lienYoutube = (id: string, debut = 0) =>
  */
 export const integrationYoutube = (id: string, debut = 0) =>
   `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&playsinline=1${debut > 0 ? `&start=${debut}` : ''}`;
+
+/**
+ * Vidéo en bannière d'une fiche Premium : lecture automatique **sans son** (seule permise par les
+ * navigateurs), en boucle, sans commandes ni suggestions, sans cookie.
+ */
+export const videoBanniereYoutube = (id: string, debut = 0) =>
+  `https://www.youtube-nocookie.com/embed/${id}?${new URLSearchParams({
+    autoplay: '1',
+    mute: '1',
+    loop: '1',
+    playlist: id,
+    controls: '0',
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1',
+    ...(debut > 0 ? { start: String(debut) } : {}),
+  })}`;
+
+/** Miniature d'une vidéo YouTube (480 × 360), chargée avant la vidéo elle-même. */
+export const miniatureYoutube = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;

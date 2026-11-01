@@ -1,23 +1,8 @@
 import { LIBELLES_LABELS } from '@ph/core/annuaire';
 import { formatDate } from '@ph/core/format';
 import type { AvisFiche, RealisationFiche } from '@ph/firebase/annuaire';
-import type { ReactNode } from 'react';
 
 type Label = keyof typeof LIBELLES_LABELS;
-
-export function Bloc({ titre, id, children }: { titre: string; id: string; children: ReactNode }) {
-  return (
-    <section
-      aria-labelledby={id}
-      className="rounded-[16px] border border-trait bg-blanc p-[clamp(18px,2.4vw,26px)]"
-    >
-      <h2 id={id} className="m-0 mb-3 text-xl">
-        {titre}
-      </h2>
-      {children}
-    </section>
-  );
-}
 
 /** Labels vérifiés seulement (FIC-01) : la projection publique a déjà écarté les autres. */
 export function Labels({ labels }: { labels: string[] }) {

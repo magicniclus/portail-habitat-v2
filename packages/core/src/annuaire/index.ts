@@ -7,6 +7,7 @@ export {
   type CadrageBanniere,
 } from './bannieres';
 export { scoreClassement, type EntreeClassement } from './classement';
+export { seoFiche, type EntreeSeoFiche } from './seoFiche';
 export {
   BUDGETS_ANNUAIRE,
   chipsFiltres,

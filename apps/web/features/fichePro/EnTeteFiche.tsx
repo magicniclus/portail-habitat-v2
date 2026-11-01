@@ -14,13 +14,17 @@ export function EnTeteFiche({
   modifiable,
   banniere,
   ajoutMetier,
+  complement,
 }: {
+  /** Sous le nom (fiche publique : label Premium, note moyenne). */
+  complement?: React.ReactNode;
   /** « + » pour ajouter un métier (espace pro, droit de modification). */
   ajoutMetier?: React.ReactNode;
   artisanId: string;
   nom: string;
   logoUrl?: string;
-  enLigne: boolean;
+  /** Espace pro : pastille « Fiche en ligne / hors ligne » (absente sur la fiche publique). */
+  enLigne?: boolean;
   metiers: string[];
   modifiable: boolean;
   banniere: React.ReactNode;
@@ -41,21 +45,24 @@ export function EnTeteFiche({
           />
           <div className="flex min-w-0 flex-wrap items-center gap-3 pb-1">
             <h1 className="m-0 text-[clamp(24px,2.6vw,30px)] leading-tight">{nom}</h1>
-            <span
-              className={`inline-flex items-center gap-2 rounded-pill border px-3 py-1 text-[13px] font-semibold ${
-                enLigne
-                  ? 'border-accent-300 bg-accent-100 text-accent-800'
-                  : 'border-trait bg-neutre-100 text-neutre-800'
-              }`}
-            >
+            {enLigne === undefined ? null : (
               <span
-                aria-hidden="true"
-                className={`size-2 rounded-full ${enLigne ? 'bg-accent' : 'bg-neutre-500'}`}
-              />
-              {enLigne ? 'Fiche en ligne' : 'Fiche hors ligne'}
-            </span>
+                className={`inline-flex items-center gap-2 rounded-pill border px-3 py-1 text-[13px] font-semibold ${
+                  enLigne
+                    ? 'border-accent-300 bg-accent-100 text-accent-800'
+                    : 'border-trait bg-neutre-100 text-neutre-800'
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`size-2 rounded-full ${enLigne ? 'bg-accent' : 'bg-neutre-500'}`}
+                />
+                {enLigne ? 'Fiche en ligne' : 'Fiche hors ligne'}
+              </span>
+            )}
           </div>
         </div>
+        {complement}
         <ul aria-label="Métiers" className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
           {metiers.map((m) => (
             <li

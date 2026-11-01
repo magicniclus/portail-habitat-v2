@@ -22,3 +22,18 @@ export const metiersFiltre = (choisis: readonly string[]) =>
   [...new Set([...PROPOSES, ...choisis])]
     .filter((id) => METIERS[id])
     .map((id) => ({ id, nom: METIERS[id]!.nom }));
+
+const FAMILLES_METIERS = donnees.metiers as Record<string, { famille?: string }>;
+
+/** Métiers les plus recherchés (liens « Autres artisans à … » du bas de fiche). */
+export const metiersPopulaires = () => metiersFiltre([]);
+
+/** Prestations du simulateur de la famille du métier (« Travaux souvent demandés »). */
+export async function prestationsDuMetier(id: string): Promise<{ id: string; nom: string }[]> {
+  const famille = FAMILLES_METIERS[id]?.famille;
+  if (!famille) return [];
+  const { default: catalogue } = await import('../../../docs/data/prestations-catalogue.json');
+  return (catalogue.prestations as { id: string; nom: string; famille: string }[])
+    .filter((p) => p.famille === famille)
+    .map(({ id: pid, nom }) => ({ id: pid, nom }));
+}

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 // Statistiques des fiches (DATABASE §5, statsJour) : une vue par onglet, le clic « Demander un devis ».
-test('la fiche signale sa vue une fois par onglet, puis le clic sur « Demander un devis »', async ({
+test('la fiche signale sa vue une fois par onglet, puis le clic sur « Envoyer ma demande »', async ({
   page,
 }) => {
   const envois: string[] = [];
@@ -13,6 +13,7 @@ test('la fiche signale sa vue une fois par onglet, puis le clic sur « Demander 
   await page.reload();
   await page.waitForTimeout(1000);
   expect(envois).toHaveLength(1);
-  await page.getByRole('link', { name: 'Demander un devis' }).first().click();
+  // Clic sur « Envoyer ma demande » (marqué « devis »), même sans envoi valide.
+  await page.getByRole('button', { name: 'Envoyer ma demande' }).click();
   await expect.poll(() => envois.length).toBe(2);
 });

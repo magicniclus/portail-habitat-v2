@@ -1,18 +1,24 @@
-import { assuranceVerifiee, positionBanniere } from '@ph/core/annuaire';
+import { assuranceVerifiee, positionBanniere, seoFiche } from '@ph/core/annuaire';
 import { AssuranceNonVerifiee } from '@/features/annuaire/AssuranceNonVerifiee';
 import { LabelPremium } from '@/features/annuaire/LabelPremium';
 import { jsonLdArtisan } from '@ph/core/annuaire';
-import { formatFourchette, formatTel } from '@ph/core/format';
-import { bouton, NoteMoyenne } from '@ph/ui';
+import { formatFourchette } from '@ph/core/format';
+import { NoteMoyenne } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { initiales } from '@ph/core/format';
 import { BandeauApercu } from '@/features/fiche/BandeauApercu';
 import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
 import { MesureFiche } from '@/features/fiche/MesureFiche';
-import { Bloc, DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
+import { ContactFiche } from '@/features/fiche/ContactFiche';
+import { MenuSectionsFiche } from '@/features/fiche/MenuSectionsFiche';
+import { SeoFiche } from '@/features/fiche/SeoFiche';
+import { communesProches } from '@/server/communesProches';
+import { DerniersAvis, Labels, Realisations } from '@/features/fiche/SectionsFiche';
+import { CarteFiche } from '@/features/fichePro/CarteFiche';
+import { CarteZoneFiche } from '@/features/fichePro/CarteZoneFiche';
+import { EnTeteFiche } from '@/features/fichePro/EnTeteFiche';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigation';
@@ -20,7 +26,7 @@ import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
 import { lireFiche } from '@/server/annuaire';
-import { nomMetier } from '@/server/metiers';
+import { metiersPopulaires, nomMetier, prestationsDuMetier } from '@/server/metiers';
 import { LecteurVideo } from '@/features/fiche/LecteurVideo';
 
 // Fiches générées à la première visite puis régénérées toutes les heures (ISR, README).
@@ -40,19 +46,49 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-/** Fiche publique (vue publique de la maquette Ma Fiche) ; hors ligne ou inconnue : 404 (FIC-02). */
+/**
+ * Fiche publique : même contenu et même mise en page que Ma fiche (en-tête avec bannière et logo,
+ * avis, à propos, zone sur la carte, devis moyen, projets), et à droite le formulaire pour
+ * laisser ses coordonnées directement à l'artisan. Hors ligne ou inconnue : 404 (FIC-02).
+ */
 export default async function PageFiche({ params }: { params: Params }) {
   const donnees = await lireFiche((await params).slug);
   if (!donnees) notFound();
   const { id, fiche: f, avis, realisations } = donnees;
   const metier = nomMetier(f.metierPrincipal);
-  const devis = routes.simulateurArtisan(id);
+  // Vidéo en bannière et images qui défilent : fiches mises en avant (Premium).
+  const videoBanniere = f.misEnAvant ? f.videoUrl : undefined;
+  const [villesProches, prestations] = await Promise.all([
+    communesProches(f.geo, f.rayonKm),
+    prestationsDuMetier(f.metierPrincipal),
+  ]);
+  const seo = seoFiche({
+    nom: f.nomCommercial,
+    metier: { id: f.metierPrincipal, nom: metier },
+    ville: f.ville,
+    nbAvis: f.nbAvis,
+    note: f.noteMoyenne,
+    villesProches,
+    autresMetiers: metiersPopulaires(),
+    prestations,
+  });
+  const sections = [
+    { id: 'a-propos', libelle: 'À propos' },
+    ...(realisations.length ? [{ id: 'projets', libelle: 'Réalisations' }] : []),
+    { id: 'zone', libelle: 'Zone d’intervention' },
+    { id: 'avis', libelle: 'Avis' },
+    { id: 'labels', libelle: 'Certifications' },
+    ...(f.budgetMin !== undefined && f.budgetMax !== undefined
+      ? [{ id: 'budget', libelle: 'Devis moyen' }]
+      : []),
+    ...(f.videoUrl ? [{ id: 'video', libelle: 'Vidéo' }] : []),
+  ];
 
   return (
     <>
       <JsonLd donnees={jsonLdArtisan(f, URL_SITE)} />
       <EnTetePublic {...enTeteParticuliers} />
-      <main className="mx-auto grid w-full max-w-[1180px] gap-5 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
+      <main className="mx-auto grid w-full max-w-[1240px] gap-5 px-[clamp(18px,4vw,44px)] py-[clamp(20px,3vw,36px)] pb-16">
         <Suspense>
           <BandeauApercu />
         </Suspense>
@@ -73,115 +109,90 @@ export default async function PageFiche({ params }: { params: Params }) {
           <span aria-hidden="true">›</span>
           <span aria-current="page">{f.nomCommercial}</span>
         </nav>
-        {f.bannieres?.length ? (
-          <CarrouselBannieres
-            urls={f.bannieres}
-            position={positionBanniere(f.cadrageBanniere)}
-            className="aspect-[16/5] w-full overflow-hidden rounded-[18px]"
-          />
-        ) : null}
-        <header className="flex flex-wrap items-center gap-4.5 rounded-[18px] bg-accent-100 p-[clamp(18px,3vw,30px)]">
-          {f.logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- logo Storage, taille fixe
-            <img
-              src={f.logoUrl}
-              alt=""
-              width={96}
-              height={96}
-              className="size-24 rounded-[16px] bg-blanc object-contain"
-            />
-          ) : (
-            <span
-              aria-hidden="true"
-              className="grid size-24 place-items-center rounded-[16px] bg-blanc text-3xl font-bold text-accent-700"
-            >
-              {initiales(f.nomCommercial)}
-            </span>
-          )}
-          <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-1.5">
-            {f.badgeRecommande ? <LabelPremium /> : null}
-            <h1 className="m-0 text-[clamp(26px,3.4vw,38px)] leading-[1.1]">{f.nomCommercial}</h1>
-            <p className="m-0 text-base text-neutre-800">
-              {metier} · {f.ville}
-              {f.anneesActivite ? ` · ${f.anneesActivite} ans d’activité` : ''}
-            </p>
-            <NoteMoyenne note={f.noteMoyenne} nbAvis={f.nbAvis} className="text-[15px]" />
-          </div>
-          <div className="flex flex-wrap gap-2.5">
-            <Link
-              href={devis}
-              prefetch={false}
-              className={bouton({ taille: 'lg' })}
-              data-ph-fiche="devis"
-            >
-              Demander un devis
-            </Link>
-            {f.telephone ? (
-              <a
-                href={`tel:${f.telephone}`}
-                data-ph-fiche="tel"
-                className={bouton({ variant: 'secondaire', taille: 'lg' })}
-              >
-                <span className="sr-only">Appeler au </span>
-                {formatTel(f.telephone)}
-              </a>
-            ) : null}
-          </div>
-        </header>
 
-        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          <div className="grid gap-5">
-            <Bloc titre="À propos" id="a-propos">
-              <p className="m-0 text-base leading-[26px] whitespace-pre-line text-neutre-800">
-                {f.description || f.pitch}
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
+          <div className="grid min-w-0 gap-5">
+            <EnTeteFiche
+              artisanId={id}
+              nom={f.nomCommercial}
+              metiers={f.metiers}
+              modifiable={false}
+              {...(f.logoUrl ? { logoUrl: f.logoUrl } : {})}
+              banniere={
+                f.bannieres?.length || videoBanniere ? (
+                  <div className="h-[clamp(150px,24vw,280px)] overflow-hidden bg-neutre-100">
+                    <CarrouselBannieres
+                      urls={f.bannieres ?? []}
+                      position={positionBanniere(f.cadrageBanniere)}
+                      className="size-full"
+                      auto={Boolean(f.misEnAvant)}
+                      {...(videoBanniere ? { video: videoBanniere } : {})}
+                    />
+                  </div>
+                ) : (
+                  <div className="h-16 bg-neutre-100" />
+                )
+              }
+              complement={
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  {f.badgeRecommande ? <LabelPremium /> : null}
+                  <span className="text-[15px] text-neutre-800">
+                    {metier} · {f.ville}
+                    {f.anneesActivite ? ` · ${f.anneesActivite} ans d’activité` : ''}
+                  </span>
+                  <NoteMoyenne note={f.noteMoyenne} nbAvis={f.nbAvis} className="text-[15px]" />
+                </div>
+              }
+            />
+            <CarteFiche titre="À propos" id="a-propos">
+              {f.pitch ? <p className="m-0 text-[17px] font-semibold">{f.pitch}</p> : null}
+              {f.description ? (
+                <p className="m-0 text-base leading-[26px] whitespace-pre-line text-neutre-800">
+                  {f.description}
+                </p>
+              ) : null}
+            </CarteFiche>
+            <MenuSectionsFiche sections={sections} />
+            {realisations.length ? (
+              <CarteFiche titre="Projets réalisés" id="projets">
+                <Realisations liste={realisations} />
+              </CarteFiche>
+            ) : null}
+            <CarteFiche titre="Zone d’intervention" id="zone">
+              <p className="m-0 text-[15px] text-neutre-800">
+                Intervient jusqu&apos;à {f.rayonKm} km autour de {f.ville}.
               </p>
-            </Bloc>
+              <CarteZoneFiche centre={f.geo} rayonKm={f.rayonKm} />
+            </CarteFiche>
+            <CarteFiche
+              titre={f.nbAvis ? `Derniers avis (${f.nbAvis})` : 'Derniers avis'}
+              id="avis"
+            >
+              <DerniersAvis avis={avis} />
+            </CarteFiche>
+            <CarteFiche titre="Certifications et assurance" id="labels">
+              <Labels labels={f.labels} />
+              {assuranceVerifiee(f.labels) ? null : <AssuranceNonVerifiee />}
+            </CarteFiche>
+            {f.budgetMin !== undefined && f.budgetMax !== undefined ? (
+              <CarteFiche titre="Devis moyen" id="budget">
+                <p className="m-0 text-lg font-bold">
+                  {formatFourchette(f.budgetMin, f.budgetMax)}
+                </p>
+              </CarteFiche>
+            ) : null}
             {f.videoUrl ? (
-              <Bloc titre="Vidéo de présentation" id="video">
+              <CarteFiche titre="Vidéo de présentation" id="video">
                 <LecteurVideo
                   url={f.videoUrl}
                   titre={`Vidéo de présentation de ${f.nomCommercial}`}
                 />
-              </Bloc>
+              </CarteFiche>
             ) : null}
-            {realisations.length ? (
-              <Bloc titre="Projets réalisés" id="projets">
-                <Realisations liste={realisations} />
-              </Bloc>
-            ) : null}
-            <Bloc titre={f.nbAvis ? `Derniers avis (${f.nbAvis})` : 'Derniers avis'} id="avis">
-              <DerniersAvis avis={avis} />
-            </Bloc>
           </div>
-          <aside className="grid gap-5 lg:sticky lg:top-5">
-            <Bloc titre="Certifications et labels" id="labels">
-              <Labels labels={f.labels} />
-              {assuranceVerifiee(f.labels) ? null : <AssuranceNonVerifiee />}
-            </Bloc>
-            <Bloc titre="Zone d'intervention" id="zone">
-              <p className="m-0 text-[15px] text-neutre-800">
-                Intervient jusqu&apos;à {f.rayonKm} km autour de {f.ville}.
-              </p>
-            </Bloc>
-            {f.budgetMin !== undefined && f.budgetMax !== undefined ? (
-              <Bloc titre="Devis moyen" id="budget">
-                <p className="m-0 text-lg font-bold">
-                  {formatFourchette(f.budgetMin, f.budgetMax)}
-                </p>
-              </Bloc>
-            ) : null}
-            <div className="rounded-[16px] bg-accent-2-100 p-5">
-              <p className="m-0 mb-1.5 text-base font-bold">Un projet avec {f.nomCommercial} ?</p>
-              <p className="m-0 mb-3 text-sm leading-[22px] text-neutre-800">
-                Décrivez vos travaux en 2 minutes : l&apos;artisan reçoit votre demande et vous
-                répond.
-              </p>
-              <Link href={devis} prefetch={false} className={bouton()} data-ph-fiche="devis">
-                Demander un devis
-              </Link>
-            </div>
-          </aside>
+          <ContactFiche artisanId={id} nom={f.nomCommercial} telephone={f.telephone} />
         </div>
+        <SeoFiche seo={seo} />
       </main>
       <MesureFiche artisanId={id} />
       <PiedPublic {...piedParticuliers} />

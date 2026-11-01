@@ -120,9 +120,16 @@ test.describe('Fiche publique', () => {
     });
   });
 
-  test('« Demander un devis » cible l’artisan dans le simulateur', async ({ page }) => {
+  test('formulaire « Demander un devis » sur la fiche ; le simulateur cible l’artisan', async ({
+    page,
+  }) => {
     await page.goto('/artisans/bertrand-renovation-bordeaux');
-    await expect(page.getByRole('link', { name: 'Demander un devis' }).first()).toHaveAttribute(
+    const contact = page.getByRole('complementary', { name: 'Demander un devis' });
+    await expect(contact.getByRole('button', { name: 'Envoyer ma demande' })).toBeVisible();
+    // Validation côté client : rien n'est envoyé sans coordonnées ni accord.
+    await contact.getByRole('button', { name: 'Envoyer ma demande' }).click();
+    await expect(contact.getByText('Indiquez votre prénom')).toBeVisible();
+    await expect(contact.getByRole('link', { name: 'Simuler mon devis' })).toHaveAttribute(
       'href',
       '/simulateur?artisan=seed-a-00',
     );

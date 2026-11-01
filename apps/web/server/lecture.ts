@@ -5,14 +5,18 @@ import { estEmulateur } from '@ph/firebase/admin';
 const DELAI_MS = 2500;
 
 /**
- * Firestore n'est lu que s'il est joignable (émulateur, identifiants de service ou Google Cloud) :
- * au build CI, les pages sont générées sans données puis régénérées toutes les heures (ISR).
+ * Firestore n'est lu que s'il est joignable (émulateur, identifiants de service, identifiants
+ * Google par défaut ou Google Cloud) : au build CI, les pages sont générées sans données puis
+ * régénérées toutes les heures (ISR). En développement, on essaie toujours : l'espace pro lit la
+ * base directement, l'annuaire et les fiches publiques ne doivent pas rester vides en silence.
  */
 export function firestoreConfigure(env = process.env): boolean {
   return (
     estEmulateur(env) ||
     Boolean(env.FIREBASE_ADMIN_CLIENT_EMAIL && env.FIREBASE_ADMIN_PRIVATE_KEY) ||
-    Boolean(env.K_SERVICE || env.FIREBASE_CONFIG)
+    Boolean(env.GOOGLE_APPLICATION_CREDENTIALS) ||
+    Boolean(env.K_SERVICE || env.FIREBASE_CONFIG) ||
+    env.NODE_ENV === 'development'
   );
 }
 

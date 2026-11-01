@@ -1,4 +1,5 @@
 import { LABELS } from './artisans';
+import { codePostal, email, id, telephoneFr } from './commun';
 import { z } from '../zod';
 
 const TRIS_ANNUAIRE = ['pertinence', 'note', 'proximite', 'delai', 'avis'] as const;
@@ -39,3 +40,19 @@ export const filtresAnnuaireUrl = z.object({
 });
 
 export type FiltresAnnuaireUrl = z.output<typeof filtresAnnuaireUrl>;
+
+/**
+ * « Laisser mes coordonnées à l'artisan » (fiche publique) : demande attribuée directement à cet
+ * artisan, gratuite pour lui (PAIEMENTS). Accord de mise en relation exigé.
+ */
+export const entreeContactFiche = z.strictObject({
+  artisanId: id,
+  prenom: z.string().trim().min(1, 'Indiquez votre prénom').max(60),
+  nom: z.string().trim().min(1, 'Indiquez votre nom').max(80),
+  email,
+  telephone: telephoneFr,
+  codePostal,
+  description: z.string().trim().max(2000).default(''),
+  miseEnRelation: z.literal(true, 'Acceptez d’être recontacté par l’artisan'),
+  cleIdempotence: z.string().min(8).max(64),
+});

@@ -13,6 +13,8 @@ export interface ArtisanAnnuaire extends FicheAnnuaire {
   ville: string;
   metierPrincipal: string;
   logoUrl?: string;
+  /** Vidéo de présentation, montrée dans l'annuaire pour les fiches mises en avant seulement. */
+  videoUrl?: string;
   telephone: string | null;
   anneesActivite?: number;
   budgetMin?: number;
@@ -55,6 +57,7 @@ export function carteAnnuaire(
     telephone: a.telephone,
     ...(a.budgetCle ? { budgetCle: a.budgetCle } : {}),
     ...(a.logoUrl ? { logoUrl: a.logoUrl } : {}),
+    ...(a.misEnAvant && a.videoUrl ? { videoUrl: a.videoUrl } : {}),
     ...(a.anneesActivite !== undefined ? { anneesActivite: a.anneesActivite } : {}),
     ...(a.budgetMin !== undefined ? { budgetMin: a.budgetMin } : {}),
     ...(a.budgetMax !== undefined ? { budgetMax: a.budgetMax } : {}),

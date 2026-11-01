@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { initiales } from '@ph/core/format';
 import { routes } from '@/lib/routes';
 import { AssuranceNonVerifiee } from './AssuranceNonVerifiee';
+import { VideoCarte } from './VideoCarte';
 
 type Label = keyof typeof LIBELLES_LABELS;
 
@@ -66,6 +67,11 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
           <SealCheckIcon size={15} weight="fill" aria-hidden="true" className="text-premium" />
           {LABEL_PREMIUM} · vérifié
         </p>
+        {a.videoUrl ? (
+          <div className="px-4.5 pt-4.5">
+            <VideoCarte url={a.videoUrl} nom={a.nom} />
+          </div>
+        ) : null}
         <div className="flex flex-wrap items-start gap-4.5 p-4.5">
           <Logo a={a} taille="grand" />
           <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-2">
