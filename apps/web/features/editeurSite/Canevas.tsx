@@ -66,7 +66,8 @@ export function Canevas({
   const cadre = useRef<HTMLIFrameElement>(null);
   const y = useRef(0);
   const [echelle, setEchelle] = useState(1);
-  // Pas d'animation avant la première mesure : sinon la page « rétrécit » à chaque affichage.
+  // Aucune animation de taille (panneaux, appareil, page) : le redimensionnement d'un cadre mis à
+  // l'échelle est saccadé ; la page est masquée jusqu'à la première mesure.
   const [mesure, setMesure] = useState(false);
   useLayoutEffect(() => {
     const el = boite.current;
@@ -158,7 +159,7 @@ export function Canevas({
   return (
     <div ref={boite} className="h-full min-h-[60vh] overflow-hidden bg-neutre-200 p-4">
       <div
-        className={`relative mx-auto h-full ${mesure ? 'transition-[width] duration-300 ease-out motion-reduce:transition-none' : ''}`}
+        className="relative mx-auto h-full"
         // Avant la première mesure (rendu serveur, chargement) : la largeur de la colonne, jamais
         // 1200 px, pour ne pas élargir la page le temps du chargement.
         style={{ width: mesure ? largeur * echelle : '100%' }}
@@ -185,7 +186,7 @@ export function Canevas({
           sandbox="allow-scripts"
           srcDoc={surPlace ? initial : html}
           onLoad={quandPret}
-          className={`block border-0 bg-blanc shadow-lg ${mesure ? 'transition-[width,height,transform] duration-300 ease-out motion-reduce:transition-none' : 'invisible'}`}
+          className={`block border-0 bg-blanc shadow-lg ${mesure ? '' : 'invisible'}`}
           style={{
             width: largeur,
             height: `${100 / echelle}%`,

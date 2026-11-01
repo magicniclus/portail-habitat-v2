@@ -141,7 +141,7 @@ export function EditeurSite(props: ProprietesEditeur) {
         {...(props.questionnaire ? { questionnaire: props.questionnaire } : {})}
       />
       <div
-        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)] min-[900px]:[grid-template-rows:minmax(0,1fr)] min-[900px]:transition-[grid-template-columns] min-[900px]:duration-300 min-[900px]:ease-out motion-reduce:transition-none"
+        className="grid min-h-0 flex-1 grid-cols-1 min-[900px]:[grid-template-columns:var(--colonnes)] min-[900px]:[grid-template-rows:minmax(0,1fr)]"
         style={{ ['--colonnes' as string]: colonnes(outils, panneau) }}
       >
         <div
