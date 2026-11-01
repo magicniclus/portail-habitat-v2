@@ -1,54 +1,16 @@
 import { bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
-import { completudeFiche } from '@ph/core/espace-pro';
+import { completudeFiche, contenuFiche } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
 import { normaliserTel } from '@ph/core/format';
 import { encoderGeohash } from '@ph/core/geo';
 import type { entreeModifierFiche } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
-import {
-  FieldValue,
-  Timestamp,
-  type DocumentData,
-  type Firestore,
-  type Transaction,
-} from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type DocumentData, type Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
-/**
- * Complétude de la fiche (`artisans.completude`) à partir du document et des réalisations publiées ;
- * « coordonnées vérifiées » : téléphone vérifié du compte propriétaire.
- */
-export async function completudeDepuisBase(
-  db: Firestore,
-  artisanId: string,
-  a: DocumentData,
-  t?: Transaction,
-  /** Photos publiées ajoutées (+) ou retirées (−) par l'écriture en cours de la transaction. */
-  ajustementPhotos = 0,
-) {
-  const requete = db.collection(chemins.realisations(artisanId)).where('publie', '==', true);
-  const refProprietaire = a.proprietaireUid
-    ? db.doc(chemins.user(a.proprietaireUid as string))
-    : null;
-  const [realisations, proprietaire] = await Promise.all([
-    t ? t.get(requete) : requete.get(),
-    refProprietaire ? (t ? t.get(refProprietaire) : refProprietaire.get()) : null,
-  ]);
-  return completudeFiche({
-    metiers: (a.metiers as string[] | undefined) ?? [],
-    zoneDefinie: Boolean(a.zoneIntervention?.rayonKm),
-    telephoneVerifie: proprietaire?.get('telephoneVerifie') === true,
-    description: (a.description as string | undefined) ?? '',
-    logo: Boolean(a.logoUrl),
-    nbPhotos:
-      realisations.docs.reduce(
-        (t, r) => t + ((r.get('photos') as unknown[] | undefined)?.length ?? 0),
-        0,
-      ) + ajustementPhotos,
-    nbCertifications: ((a.labels as string[] | undefined) ?? []).length,
-  });
-}
+/** Complétude d'après le document de l'entreprise : logo, description, bannière. */
+export const completudeDepuisBase = (a: DocumentData) => completudeFiche(contenuFiche(a));
 
 /** Ma fiche telle que l'artisan la modifie (champs publics et zone). */
 export interface FichePro {
@@ -76,7 +38,7 @@ export interface FichePro {
   certifications: string[];
   devis?: { minCentimes: number; maxCentimes: number };
   zone: { centre: { latitude: number; longitude: number }; rayonKm: number };
-  completude: Awaited<ReturnType<typeof completudeDepuisBase>>;
+  completude: ReturnType<typeof completudeDepuisBase>;
 }
 
 export async function lireFichePro(db: Firestore, artisanId: string): Promise<FichePro | null> {
@@ -123,7 +85,7 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
       },
       rayonKm: a.zoneIntervention.rayonKm,
     },
-    completude: await completudeDepuisBase(db, artisanId, a),
+    completude: completudeDepuisBase(a),
   };
 }
 
@@ -185,9 +147,44 @@ export async function modifierFiche(
       ...(e.description !== undefined ? { description: e.description } : {}),
       ...(maj.metiers ? { metiers: maj.metiers } : {}),
     };
-    const { pourcent } = await completudeDepuisBase(s.db, ctx.artisanId, apres, t);
+    const { pourcent } = completudeDepuisBase(apres);
     maj.completude = pourcent;
     t.update(ref, maj);
     return { completude: pourcent };
+  });
+}
+
+/**
+ * « Mettre ma fiche en ligne » (droit `fiche.modifier`) : seulement une fiche complète (logo,
+ * description, bannière), complétude recalculée ici ; jamais une entreprise suspendue ou fermée.
+ */
+export async function mettreFicheEnLigne(
+  s: { db: Firestore; horloge: () => number },
+  ctx: { artisanId: string; uid: string },
+): Promise<{ enLigne: true }> {
+  const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+  return s.db.runTransaction(async (t) => {
+    const [m, a] = await Promise.all([
+      t.get(s.db.doc(chemins.membre(ctx.artisanId, ctx.uid))),
+      t.get(ref),
+    ]);
+    if (!peut(m.data() as Membre | undefined, 'fiche.modifier'))
+      throw new ErreurMetier('PERMISSION_REFUSEE');
+    if (!a.exists || a.get('statut') !== 'actif') throw new ErreurMetier('PRECONDITION');
+    const c = completudeDepuisBase(a.data()!);
+    if (c.pourcent < 100)
+      throw new ErreurMetier(
+        'PRECONDITION',
+        `Pour mettre la fiche en ligne, il manque : ${c.criteres
+          .filter((x) => !x.fait)
+          .map((x) => x.libelle.toLowerCase())
+          .join(', ')}.`,
+      );
+    t.update(ref, {
+      enLigne: true,
+      completude: c.pourcent,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return { enLigne: true as const };
   });
 }

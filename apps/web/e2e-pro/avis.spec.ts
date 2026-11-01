@@ -15,7 +15,7 @@ test.describe('Mes avis', () => {
     await expect(carte.getByRole('button', { name: 'Répondre' })).toHaveCount(0);
   });
 
-  test('filtre « Sans réponse » et lien à partager', async ({ page }) => {
+  test('filtre « Sans réponse » et lien direct à partager (copie, email)', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/avis');
     await page.getByRole('button', { name: 'Sans réponse' }).click();
     await expect(page.getByRole('button', { name: 'Sans réponse' })).toHaveAttribute(
@@ -23,6 +23,17 @@ test.describe('Mes avis', () => {
       'true',
     );
     await page.getByRole('button', { name: 'Demander un avis' }).click();
-    await expect(page.getByRole('dialog', { name: 'Demander un avis' })).toContainText('/avis');
+    const fenetre = page.getByRole('dialog', { name: 'Demander un avis' });
+    // Lien direct vers le formulaire d'avis de l'entreprise, copiable et envoyable par email.
+    const lien = fenetre.getByText(/\/avis\?entreprise=/);
+    await expect(lien).toBeVisible();
+    await expect(fenetre.getByRole('button', { name: 'Copier' })).toBeVisible();
+    const email = fenetre.getByRole('link', { name: 'Envoyer par email' });
+    await expect(email).toHaveAttribute('href', /^mailto:\?subject=Votre%20avis%20sur/);
+    await expect(email).toHaveAttribute('href', /entreprise%3D/);
+    const url = (await lien.textContent())!;
+    await page.goto(url);
+    await expect(page.getByRole('heading', { name: /^Votre avis sur / }).first()).toBeVisible();
+    await expect(page.getByRole('searchbox')).toHaveCount(0);
   });
 });

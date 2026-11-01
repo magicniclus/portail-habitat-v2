@@ -8,14 +8,28 @@ import { CarteFiche } from './CarteFiche';
  * Carte « Avis clients » (maquette Ma fiche) : note moyenne et nombre d'avis ; sans avis, 5 étoiles
  * vides qui ouvrent, comme le bouton, le lien à envoyer au client.
  */
-export function ResumeAvis({ note, nombre }: { note: string | null; nombre: number }) {
+export function ResumeAvis({
+  note,
+  nombre,
+  slug,
+  nom,
+}: {
+  note: string | null;
+  nombre: number;
+  slug: string;
+  nom: string;
+}) {
   return (
     <CarteFiche
       titre="Avis clients"
       sousTitre="Les retours de vos clients, visibles sur votre fiche."
       className="border-accent-200 bg-accent-100"
       action={
-        <DemanderAvis declencheur={<Button variant="secondaire">Demander des avis</Button>} />
+        <DemanderAvis
+          slug={slug}
+          nom={nom}
+          declencheur={<Button variant="secondaire">Demander des avis</Button>}
+        />
       }
     >
       {note ? (
@@ -26,6 +40,8 @@ export function ResumeAvis({ note, nombre }: { note: string | null; nombre: numb
         </p>
       ) : (
         <DemanderAvis
+          slug={slug}
+          nom={nom}
           declencheur={
             <button
               type="button"

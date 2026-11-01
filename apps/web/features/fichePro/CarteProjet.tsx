@@ -3,6 +3,7 @@
 import type { RealisationPro } from '@ph/firebase/pro';
 import { Button, Chargeur } from '@ph/ui';
 import { ImageIcon, MapPinIcon } from '@phosphor-icons/react';
+import type { ReactNode } from 'react';
 
 /**
  * Carte d'un projet réalisé (maquette Ma fiche) : photo 4:3, interrupteur « Public », titre,
@@ -14,6 +15,7 @@ export function CarteProjet({
   modifiable,
   basculer,
   retirer,
+  modifier,
   occupe = false,
 }: {
   r: RealisationPro;
@@ -21,6 +23,8 @@ export function CarteProjet({
   modifiable: boolean;
   basculer: (publie: boolean) => void;
   retirer: () => void;
+  /** Bouton « Modifier » (fenêtre du projet), à côté de « Retirer ». */
+  modifier?: ReactNode;
   /** Écriture en cours sur ce projet : voile et chargeur sur la carte. */
   occupe?: boolean;
 }) {
@@ -87,15 +91,18 @@ export function CarteProjet({
           {r.ville}
         </span>
         {modifiable ? (
-          <Button
-            variant="fantome"
-            taille="sm"
-            onClick={retirer}
-            aria-label={`Retirer ${r.titre}`}
-            className="justify-self-start px-0"
-          >
-            Retirer
-          </Button>
+          <span className="flex flex-wrap gap-4">
+            {modifier}
+            <Button
+              variant="fantome"
+              taille="sm"
+              onClick={retirer}
+              aria-label={`Retirer ${r.titre}`}
+              className="px-0"
+            >
+              Retirer
+            </Button>
+          </span>
         ) : null}
       </div>
     </li>

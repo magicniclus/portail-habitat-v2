@@ -3,7 +3,9 @@ import { COMPTES, connecter, PDF, png } from './outils';
 
 // Maquette Ma Fiche : modification section par section (droit fiche.modifier).
 test.describe('Ma fiche', () => {
-  test('projet réalisé : photos, accord du propriétaire, puis retrait', async ({ page }, info) => {
+  test('projet réalisé : photos, accord du propriétaire, modification, puis retrait', async ({
+    page,
+  }, info) => {
     const titre = `Toiture ${info.project.name} ${Date.now()}`;
     await connecter(page, COMPTES.collab, '/pro/fiche');
     await page.getByRole('button', { name: 'Ajouter un projet', exact: true }).click();
@@ -23,8 +25,29 @@ test.describe('Ma fiche', () => {
     await expect(publicSw).toHaveAttribute('aria-checked', 'true');
     await publicSw.click();
     await expect(publicSw).toHaveAttribute('aria-checked', 'false');
-    await projets.getByRole('button', { name: `Retirer ${titre}` }).click();
-    await expect(page.getByText(titre)).toHaveCount(0);
+    // Modification : texte, une photo retirée, une ajoutée (accord redemandé pour elle seule).
+    const titre2 = `${titre} (zinguerie)`;
+    await projets.getByRole('button', { name: `Modifier ${titre}` }).click();
+    const m = page.getByRole('dialog', { name: 'Modifier le projet' });
+    await expect(m.getByLabel(/^Titre du chantier/)).toHaveValue(titre);
+    await m.getByLabel(/^Titre du chantier/).fill(titre2);
+    await m.getByRole('button', { name: 'Retirer la photo 3' }).click();
+    const enregistrer = m.getByRole('button', { name: 'Enregistrer' });
+    await expect(enregistrer).toBeEnabled();
+    await m.getByLabel(/^Ajouter des photos/).setInputFiles([png('d.png')]);
+    await expect(enregistrer).toBeDisabled();
+    await m.getByRole('checkbox', { name: /propriétaire du chantier/ }).check();
+    await enregistrer.click();
+    await expect(projets).toContainText(titre2, { timeout: 15_000 });
+    await projets.getByRole('button', { name: `Modifier ${titre2}` }).click();
+    await expect(
+      page.getByRole('dialog', { name: 'Modifier le projet' }).getByRole('button', {
+        name: /^Retirer la photo/,
+      }),
+    ).toHaveCount(3);
+    await page.keyboard.press('Escape');
+    await projets.getByRole('button', { name: `Retirer ${titre2}` }).click();
+    await expect(page.getByText(titre2)).toHaveCount(0);
   });
 
   test('« + » des métiers : un métier ajouté apparaît sous le nom', async ({ page }) => {

@@ -22,6 +22,9 @@ export const entreeReponseAvis = z.strictObject({
   texte: z.string().trim().min(2, 'Écrivez votre réponse').max(1200),
 });
 
+/** « Mettre ma fiche en ligne » : aucune donnée, le serveur vérifie que la fiche est complète. */
+export const entreeMiseEnLigneFiche = z.strictObject({});
+
 /**
  * Ma fiche (maquette Ma Fiche) : chaque section s'enregistre seule. Chaîne vide = champ retiré.
  * Montants saisis en euros entiers, convertis en centimes par le serveur.
@@ -127,6 +130,40 @@ export const entreeRealisation = z.strictObject({
     .max(20),
   autorisationProprietaire: z.literal(true, "Confirmez l'accord du propriétaire du chantier"),
 });
+
+const photoEnvoyee = z.strictObject({
+  nomFichier,
+  largeur: z.number().int().min(1).max(20_000),
+  hauteur: z.number().int().min(1).max(20_000),
+});
+
+/**
+ * Projet modifié (Ma fiche) : texte, photos gardées (chemins Storage du projet, revérifiés par
+ * le serveur) et nouvelles photos déjà déposées ; l'accord du propriétaire du chantier n'est
+ * redemandé que pour de nouvelles photos.
+ */
+export const entreeModifierRealisation = z
+  .strictObject({
+    rid: idFichier,
+    titre: z.string().trim().min(2, 'Donnez un titre au chantier').max(120),
+    ville: z.string().trim().min(2).max(80),
+    description: z.string().trim().max(2000).default(''),
+    conservees: z.array(z.string().min(1).max(400)).max(20),
+    nouvelles: z.array(photoEnvoyee).max(20),
+    autorisationProprietaire: z.literal(true).optional(),
+  })
+  .refine((e) => e.conservees.length + e.nouvelles.length >= 1, {
+    message: 'Gardez ou ajoutez au moins une photo',
+    path: ['nouvelles'],
+  })
+  .refine((e) => e.conservees.length + e.nouvelles.length <= 20, {
+    message: '20 photos au plus',
+    path: ['nouvelles'],
+  })
+  .refine((e) => !e.nouvelles.length || e.autorisationProprietaire === true, {
+    message: "Confirmez l'accord du propriétaire du chantier",
+    path: ['autorisationProprietaire'],
+  });
 
 export const entreeSupprimerRealisation = z.strictObject({ rid: idFichier });
 

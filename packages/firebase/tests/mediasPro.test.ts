@@ -13,6 +13,7 @@ import {
   enregistrerVideo,
   enregistrerLogo,
   enregistrerRealisation,
+  modifierRealisation,
   lireRealisationsPro,
   publierRealisation,
   retirerBanniere,
@@ -66,7 +67,7 @@ const realisation = (nbPhotos: number) => ({
 });
 
 describe('enregistrerLogo', () => {
-  it('URL publique, complétude +10 ; collaborateur refusé', async () => {
+  it('URL publique, complétude du logo (30) ; collaborateur refusé', async () => {
     await image(fichiers.logo('a1', 'logo.png'));
     await expect(enregistrerLogo(s(), ctx('c1'), 'logo.png')).rejects.toMatchObject({
       code: 'PERMISSION_REFUSEE',
@@ -85,23 +86,18 @@ describe('enregistrerLogo', () => {
 });
 
 describe('publierRealisation', () => {
-  it('« Public » : masque ou republie un projet, complétude ajustée ; collaborateur sans droit refusé', async () => {
+  it('« Public » : masque ou republie un projet ; collaborateur sans droit refusé', async () => {
     for (let i = 0; i < 2; i++) await image(fichiers.realisation('a1', RID, `photo${i}.png`));
     await enregistrerRealisation(s(), ctx('p1'), realisation(2));
-    const avant = (await db.doc(chemins.artisan('a1')).get()).get('completude');
     await publierRealisation(s(), ctx('p1'), { rid: RID, publie: false });
     const ref = db.doc(`${chemins.realisations('a1')}/${RID}`);
     expect((await ref.get()).get('publie')).toBe(false);
-    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBeLessThanOrEqual(
-      avant,
-    );
     expect((await lireRealisationsPro(db, 'a1'))[0]).toMatchObject({
       publie: false,
       ville: 'Mérignac',
     });
     await publierRealisation(s(), ctx('p1'), { rid: RID, publie: true });
     expect((await ref.get()).get('publie')).toBe(true);
-    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBe(avant);
     await expect(
       publierRealisation(s(), ctx('x1'), { rid: RID, publie: false }),
     ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
@@ -185,22 +181,87 @@ describe('enregistrerVideo', () => {
 });
 
 describe('réalisations', () => {
-  it('3 photos publiées comptent dans la complétude ; suppression la retire', async () => {
+  it('projet de 3 photos enregistré puis supprimé (photos comprises)', async () => {
     for (let i = 0; i < 3; i++) await image(fichiers.realisation('a1', RID, `photo${i}.png`));
     await enregistrerRealisation(s(), ctx('c1'), realisation(3));
     const [r] = await lireRealisationsPro(db, 'a1');
     expect(r).toMatchObject({ id: RID, titre: 'Toiture à Mérignac' });
     expect(r!.photos).toHaveLength(3);
-    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBe(40);
     await supprimerRealisation(s(), ctx('c1'), RID);
     expect(await lireRealisationsPro(db, 'a1')).toEqual([]);
-    expect((await db.doc(chemins.artisan('a1')).get()).get('completude')).toBe(20);
+    expect(
+      (
+        await bucketFichiers()
+          .file(fichiers.realisation('a1', RID, 'photo0.png'))
+          .exists()
+      )[0],
+    ).toBe(false);
   });
 
   it('photo manquante : refusée', async () => {
     await expect(enregistrerRealisation(s(), ctx('p1'), realisation(1))).rejects.toMatchObject({
       code: 'INTROUVABLE',
     });
+  });
+});
+
+describe('modifierRealisation', () => {
+  const existe = async (nom: string) =>
+    (
+      await bucketFichiers()
+        .file(fichiers.realisation('a1', RID, nom))
+        .exists()
+    )[0];
+
+  it('texte modifié, une photo remplacée (l’ancienne supprimée) ; collaborateur autorisé', async () => {
+    for (let i = 0; i < 2; i++) await image(fichiers.realisation('a1', RID, `photo${i}.png`));
+    await enregistrerRealisation(s(), ctx('p1'), realisation(2));
+    await image(fichiers.realisation('a1', RID, 'neuve.png'));
+    await modifierRealisation(s(), ctx('c1'), {
+      rid: RID,
+      titre: 'Toiture et zinguerie à Mérignac',
+      ville: 'Mérignac',
+      description: 'Réfection complète.',
+      conservees: [fichiers.realisation('a1', RID, 'photo0.png')],
+      nouvelles: [{ nomFichier: 'neuve.png', largeur: 800, hauteur: 600 }],
+      autorisationProprietaire: true,
+    });
+    const [r] = await lireRealisationsPro(db, 'a1');
+    expect(r).toMatchObject({
+      titre: 'Toiture et zinguerie à Mérignac',
+      description: 'Réfection complète.',
+    });
+    expect(r!.photos.map((p) => p.storagePath)).toEqual([
+      fichiers.realisation('a1', RID, 'photo0.png'),
+      fichiers.realisation('a1', RID, 'neuve.png'),
+    ]);
+    expect(await existe('photo1.png')).toBe(false);
+    expect(await existe('photo0.png')).toBe(true);
+  });
+
+  it('photo d’un autre projet ou projet inconnu : refusés ; sans droit : refusé', async () => {
+    await image(fichiers.realisation('a1', RID, 'photo0.png'));
+    await enregistrerRealisation(s(), ctx('p1'), realisation(1));
+    const e = {
+      rid: RID,
+      titre: 'Toiture',
+      ville: 'Mérignac',
+      description: '',
+      conservees: ['artisans/a2/realisations/x/photo.png'],
+      nouvelles: [],
+    };
+    await expect(modifierRealisation(s(), ctx('p1'), e)).rejects.toMatchObject({
+      code: 'ENTREE_INVALIDE',
+    });
+    await expect(
+      modifierRealisation(s(), ctx('p1'), { ...e, rid: 'inconnue0000000000001', conservees: [] }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    await expect(
+      modifierRealisation(s(), ctx('x1'), {
+        ...e,
+        conservees: [fichiers.realisation('a1', RID, 'photo0.png')],
+      }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
   });
 });
 

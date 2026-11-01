@@ -101,25 +101,22 @@ describe('choisirEntrepriseActive (COMPTES §4.5)', () => {
 });
 
 describe('tableauDeBordPro', () => {
-  it('fiche neuve : 20 %, 3 étapes restantes', async () => {
+  it('fiche neuve : 0 %, 3 étapes restantes', async () => {
     const t = await tableauDeBordPro(db, 'a1', 'u1');
-    expect(t.completude.pourcent).toBe(20);
+    expect(t.completude.pourcent).toBe(0);
     expect(t.miseEnLigne.restantes).toBe(3);
   });
 
-  it('décennale envoyée, photos de réalisations publiées, téléphone vérifié', async () => {
+  it('décennale envoyée, téléphone vérifié ; logo et bannière comptés dans la complétude', async () => {
     await db.doc(chemins.user('u1')).update({ telephoneVerifie: true });
     await db
       .collection(chemins.documents('a1'))
       .add({ type: 'decennale', statut: 'en_attente', createdAt: T });
-    const photo = { url: 'x', storagePath: 'x', largeur: 1, hauteur: 1 };
-    await db.collection(chemins.realisations('a1')).add({ publie: true, photos: [photo, photo] });
-    await db.collection(chemins.realisations('a1')).add({ publie: true, photos: [photo] });
-    await db.collection(chemins.realisations('a1')).add({ publie: false, photos: [photo] });
+    await db.doc(chemins.artisan('a1')).update({ logoUrl: 'l', bannieres: ['b'] });
     const t = await tableauDeBordPro(db, 'a1', 'u1');
-    expect(t.miseEnLigne.etapes.map((e) => e.fait)).toEqual([true, true, false]);
-    expect(t.completude.criteres.find((c) => c.cle === 'photos')?.fait).toBe(true);
-    expect(t.completude.pourcent).toBe(55);
+    expect(t.miseEnLigne.etapes.map((e) => e.fait)).toEqual([true, true, true]);
+    expect(t.completude.criteres.find((c) => c.cle === 'banniere')?.fait).toBe(true);
+    expect(t.completude.pourcent).toBe(65);
   });
 
   it('la décennale la plus récente fait foi (refusée puis renvoyée)', async () => {

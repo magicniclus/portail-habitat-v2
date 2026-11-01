@@ -18,9 +18,12 @@ type Vue =
 
 const ETAPES = ['Choisir l’artisan', 'Votre avis', 'Publication'];
 
-/** Maquette « Laisser un avis » : choix de l'artisan, formulaire, confirmation. */
-export function LaisserAvis() {
-  const [vue, setVue] = useState<Vue>({ nom: 'choix' });
+/**
+ * Maquette « Laisser un avis » : choix de l'artisan, formulaire, confirmation. `artisan` : lien
+ * envoyé par l'entreprise, le formulaire s'ouvre directement sur elle.
+ */
+export function LaisserAvis({ artisan }: { artisan?: ArtisanAvis } = {}) {
+  const [vue, setVue] = useState<Vue>(artisan ? { nom: 'formulaire', artisan } : { nom: 'choix' });
   const aller = (v: Vue) => {
     setVue(v);
     window.scrollTo(0, 0);

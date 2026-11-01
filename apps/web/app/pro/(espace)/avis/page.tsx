@@ -27,7 +27,7 @@ export default async function PageMesAvis() {
             Les avis vérifiés de vos clients, publiés sur votre fiche.
           </p>
         </div>
-        <DemanderAvis />
+        <DemanderAvis slug={active.artisan.slug} nom={active.artisan.nomCommercial} />
       </div>
       <MesAvisPro
         avis={avis}

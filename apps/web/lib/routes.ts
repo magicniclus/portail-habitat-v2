@@ -74,6 +74,8 @@ export const routes = {
   simulateurArtisan: (artisanId: string) =>
     r(`/simulateur?artisan=${encodeURIComponent(artisanId)}`),
   avis: r('/avis'),
+  /** Lien de demande d'avis d'une entreprise : le formulaire s'ouvre directement sur elle. */
+  avisEntreprise: (slug: string) => r(`/avis?entreprise=${encodeURIComponent(slug)}`),
   aide: r('/aide'),
   aideSujet: (sujet: string) => r(`/aide?sujet=${sujet}`),
   legal: (public_: 'particuliers' | 'pro', doc: string) => r(`/legal/${public_}/${doc}`),

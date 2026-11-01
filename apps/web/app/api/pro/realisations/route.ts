@@ -1,6 +1,6 @@
-import { entreeRealisation } from '@ph/core/schemas';
+import { entreeModifierRealisation, entreeRealisation } from '@ph/core/schemas';
 import { bucketFichiers } from '@ph/firebase/admin';
-import { enregistrerRealisation } from '@ph/firebase/pro';
+import { enregistrerRealisation, modifierRealisation } from '@ph/firebase/pro';
 import { action } from '@/server/action';
 import { entrepriseAutorisee, servicesDemandesPro } from '@/server/demandesPro';
 import { routeJson } from '@/server/json';
@@ -23,5 +23,24 @@ const enregistrer = action(
   },
 );
 
+const modifier = action(
+  {
+    schema: entreeModifierRealisation,
+    nom: 'modifierRealisation',
+    rateLimit: { cle: 'medias', max: 60, fenetre: '1h' },
+  },
+  async (e, ctx) => {
+    await modifierRealisation(
+      { ...servicesDemandesPro(), bucket: bucketFichiers() },
+      { artisanId: await entrepriseAutorisee(ctx.uid!, 'realisations.modifier'), uid: ctx.uid! },
+      e,
+    );
+    return null;
+  },
+);
+
 /** Réalisation publiée depuis Ma fiche (accord du propriétaire du chantier, CGV §9). */
 export const POST = (requete: Request) => routeJson(requete, enregistrer);
+
+/** Projet modifié : texte, photos gardées, retirées ou ajoutées (Ma fiche). */
+export const PATCH = (requete: Request) => routeJson(requete, modifier);

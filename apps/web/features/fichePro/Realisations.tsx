@@ -1,6 +1,7 @@
 'use client';
 
 import type { RealisationPro } from '@ph/firebase/pro';
+import { Button } from '@ph/ui';
 import { ImageIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -76,6 +77,22 @@ export function Realisations({
           occupe={occupe === r.id}
           basculer={(publie) => void ecrire('/api/pro/realisations/publier', { rid: r.id, publie })}
           retirer={() => void ecrire('/api/pro/realisations/supprimer', { rid: r.id })}
+          modifier={
+            <FormulaireProjet
+              artisanId={artisanId}
+              projet={r}
+              declencheur={
+                <Button
+                  variant="fantome"
+                  taille="sm"
+                  aria-label={`Modifier ${r.titre}`}
+                  className="px-0"
+                >
+                  Modifier
+                </Button>
+              }
+            />
+          }
         />
       ))}
     </ul>

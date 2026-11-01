@@ -1,12 +1,19 @@
 import type { Formule } from '@ph/core/paiements';
 import { ErreurMetier } from '@ph/core/erreurs';
-import { completudeFiche, etapesMiseEnLigne, type EtatDecennale } from '@ph/core/espace-pro';
+import {
+  completudeFiche,
+  contenuFiche,
+  etapesMiseEnLigne,
+  type EtatDecennale,
+} from '@ph/core/espace-pro';
 import type { Membre } from '@ph/core/equipe';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
 export interface ResumeArtisan {
   nomCommercial: string;
+  /** Adresse de la fiche publique (lien de demande d'avis). */
+  slug: string;
   logoUrl?: string;
   enLigne: boolean;
   /** Formule active (`droits.formule`, PAIEMENTS §5) : affichage seulement. */
@@ -25,6 +32,7 @@ export interface EspacePro {
 
 const resume = (d: FirebaseFirestore.DocumentData): ResumeArtisan => ({
   nomCommercial: d.nomCommercial ?? '',
+  slug: d.slug ?? '',
   ...(d.logoUrl ? { logoUrl: d.logoUrl as string } : {}),
   enLigne: d.enLigne === true,
   formule: (d.droits?.formule as Formule | undefined) ?? 'gratuit',
@@ -78,29 +86,17 @@ const ETATS: Record<string, EtatDecennale> = {
 
 /** Tableau de bord (maquette Espace Artisan Dashboard) : indicateurs, complétude, mise en ligne. */
 export async function tableauDeBordPro(db: Firestore, artisanId: string, uid: string) {
-  const [artisan, user, decennales, realisations] = await Promise.all([
+  const [artisan, user, decennales] = await Promise.all([
     db.doc(chemins.artisan(artisanId)).get(),
     db.doc(chemins.user(uid)).get(),
     db.collection(chemins.documents(artisanId)).where('type', '==', 'decennale').get(),
-    db.collection(chemins.realisations(artisanId)).where('publie', '==', true).get(),
   ]);
   const a = artisan.data() ?? {};
   const derniere = decennales.docs
     .map((d) => d.data())
     .sort((x, y) => y.createdAt.toMillis() - x.createdAt.toMillis())[0];
   const telephoneVerifie = user.get('telephoneVerifie') === true;
-  const completude = completudeFiche({
-    metiers: (a.metiers as string[] | undefined) ?? [],
-    zoneDefinie: Boolean(a.zoneIntervention?.rayonKm),
-    telephoneVerifie,
-    description: (a.description as string | undefined) ?? '',
-    logo: Boolean(a.logoUrl),
-    nbPhotos: realisations.docs.reduce(
-      (t, r) => t + ((r.get('photos') as unknown[])?.length ?? 0),
-      0,
-    ),
-    nbCertifications: ((a.labels as string[] | undefined) ?? []).length,
-  });
+  const completude = completudeFiche(contenuFiche(a));
   return {
     enLigne: a.enLigne === true,
     indicateurs: {

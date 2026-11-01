@@ -1,7 +1,7 @@
 import { ajouterBanniere, bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
-import type { entreeRealisation } from '@ph/core/schemas';
+import type { entreeModifierRealisation, entreeRealisation } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { debutYoutube, idYoutube, lienYoutube } from '@ph/core/sites';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -39,7 +39,7 @@ async function exiger(
   if (!peut(m.data() as Membre | undefined, action)) throw new ErreurMetier('PERMISSION_REFUSEE');
 }
 
-/** Complétude recalculée après un changement de logo ou de réalisations. */
+/** Document de l'entreprise relu dans la transaction, avec les changements à venir. */
 async function majCompletude(
   t: FirebaseFirestore.Transaction,
   s: Services,
@@ -59,7 +59,7 @@ export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: st
   return s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
     const { ref, donnees } = await majCompletude(t, s, ctx, { logoUrl });
-    const { pourcent } = await completudeDepuisBase(s.db, ctx.artisanId, donnees, t);
+    const { pourcent } = completudeDepuisBase(donnees);
     t.update(ref, { logoUrl, completude: pourcent, updatedAt: Timestamp.fromMillis(s.horloge()) });
     return { logoUrl };
   });
@@ -93,7 +93,11 @@ export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier
     const liste = ajouterBanniere(actuelles, url, max);
     if (!liste)
       throw new ErreurMetier('PRECONDITION', `${max} bannières au plus : retirez-en une d'abord.`);
-    t.update(ref, { bannieres: liste, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    t.update(ref, {
+      bannieres: liste,
+      completude: completudeDepuisBase({ ...a.data(), bannieres: liste }).pourcent,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
     return { bannieres: liste, retirees: actuelles.filter((u) => !liste.includes(u)) };
   });
   await supprimerBannieres(s, ctx, retirees);
@@ -116,10 +120,15 @@ export async function retirerBanniere(s: Services, ctx: Contexte, url: string) {
   const bannieres = await s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
     const ref = s.db.doc(chemins.artisan(ctx.artisanId));
-    const actuelles = ((await t.get(ref)).get('bannieres') as string[] | undefined) ?? [];
+    const a = await t.get(ref);
+    const actuelles = (a.get('bannieres') as string[] | undefined) ?? [];
     if (!actuelles.includes(url)) throw new ErreurMetier('INTROUVABLE');
     const liste = actuelles.filter((u) => u !== url);
-    t.update(ref, { bannieres: liste, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    t.update(ref, {
+      bannieres: liste,
+      completude: completudeDepuisBase({ ...a.data(), bannieres: liste }).pourcent,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
     return liste;
   });
   await supprimerBannieres(s, ctx, [url]);
@@ -156,7 +165,7 @@ export interface RealisationPro {
   metier: string;
   /** Visible sur la fiche publique (interrupteur « Public »). */
   publie: boolean;
-  photos: { url: string; largeur: number; hauteur: number }[];
+  photos: { url: string; storagePath: string; largeur: number; hauteur: number }[];
 }
 
 export async function lireRealisationsPro(
@@ -171,11 +180,9 @@ export async function lireRealisationsPro(
     description: (d.get('description') as string | undefined) ?? '',
     metier: (d.get('metier') as string | undefined) ?? '',
     publie: d.get('publie') !== false,
-    photos: (d.get('photos') as RealisationPro['photos']).map(({ url, largeur, hauteur }) => ({
-      url,
-      largeur,
-      hauteur,
-    })),
+    photos: (d.get('photos') as RealisationPro['photos']).map(
+      ({ url, storagePath, largeur, hauteur }) => ({ url, storagePath, largeur, hauteur }),
+    ),
   }));
 }
 
@@ -206,7 +213,6 @@ export async function enregistrerRealisation(
     if ((await t.get(ref)).exists)
       throw new ErreurMetier('CONFLIT', 'Réalisation déjà enregistrée.');
     const maintenant = Timestamp.fromMillis(s.horloge());
-    const { pourcent } = await completudeDepuisBase(s.db, ctx.artisanId, donnees, t, photos.length);
     t.create(ref, {
       schemaVersion: 1,
       createdAt: maintenant,
@@ -220,8 +226,58 @@ export async function enregistrerRealisation(
       publie: true,
       ordre: s.horloge(),
     });
-    t.update(refArtisan, { completude: pourcent, updatedAt: maintenant });
+    t.update(refArtisan, { updatedAt: maintenant });
   });
+}
+
+type PhotoProjet = { url: string; storagePath: string; largeur: number; hauteur: number };
+
+/**
+ * Projet modifié (droit `realisations.modifier`) : titre, ville, description ; photos gardées
+ * (parmi celles du projet seulement), nouvelles photos vérifiées dans Storage ; les photos
+ * retirées sont supprimées.
+ */
+export async function modifierRealisation(
+  s: Services,
+  ctx: Contexte,
+  e: z.output<typeof entreeModifierRealisation>,
+): Promise<void> {
+  const nouvelles: PhotoProjet[] = await Promise.all(
+    e.nouvelles.map(async (p) => {
+      const chemin = fichiers.realisation(ctx.artisanId, e.rid, p.nomFichier);
+      return {
+        url: await verifierImage(s, chemin, 8),
+        storagePath: chemin,
+        largeur: p.largeur,
+        hauteur: p.hauteur,
+      };
+    }),
+  );
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${e.rid}`);
+  const retirees = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const r = await t.get(ref);
+    if (!r.exists) throw new ErreurMetier('INTROUVABLE');
+    const actuelles = (r.get('photos') as PhotoProjet[] | undefined) ?? [];
+    if (e.conservees.some((c) => !actuelles.some((p) => p.storagePath === c)))
+      throw new ErreurMetier('ENTREE_INVALIDE', 'Photo inconnue : rechargez la page.');
+    const gardees = actuelles.filter((p) => e.conservees.includes(p.storagePath));
+    const nouveaux = new Set(nouvelles.map((p) => p.storagePath));
+    t.update(ref, {
+      titre: e.titre,
+      ville: e.ville,
+      description: e.description,
+      photos: [...gardees.filter((p) => !nouveaux.has(p.storagePath)), ...nouvelles],
+      ...(nouvelles.length ? { autorisationProprietaire: true } : {}),
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return actuelles.filter(
+      (p) => !e.conservees.includes(p.storagePath) && !nouveaux.has(p.storagePath),
+    );
+  });
+  await Promise.all(
+    retirees.map((p) => s.bucket.file(p.storagePath).delete({ ignoreNotFound: true })),
+  );
 }
 
 /** Interrupteur « Public » : le projet reste dans Ma fiche, visible ou non des particuliers. */
@@ -236,18 +292,7 @@ export async function publierRealisation(
     const r = await t.get(ref);
     if (!r.exists) throw new ErreurMetier('INTROUVABLE');
     if ((r.get('publie') !== false) === e.publie) return;
-    const nb = ((r.get('photos') as unknown[] | undefined) ?? []).length;
-    const { ref: refArtisan, donnees } = await majCompletude(t, s, ctx, {});
-    const { pourcent } = await completudeDepuisBase(
-      s.db,
-      ctx.artisanId,
-      donnees,
-      t,
-      e.publie ? nb : -nb,
-    );
-    const maintenant = Timestamp.fromMillis(s.horloge());
-    t.update(ref, { publie: e.publie, updatedAt: maintenant });
-    t.update(refArtisan, { completude: pourcent, updatedAt: maintenant });
+    t.update(ref, { publie: e.publie, updatedAt: Timestamp.fromMillis(s.horloge()) });
   });
 }
 
@@ -259,11 +304,7 @@ export async function supprimerRealisation(s: Services, ctx: Contexte, rid: stri
     const r = await t.get(ref);
     if (!r.exists) throw new ErreurMetier('INTROUVABLE');
     const liste = (r.get('photos') as { storagePath: string }[] | undefined) ?? [];
-    const { ref: refArtisan, donnees } = await majCompletude(t, s, ctx, {});
-    const retirees = r.get('publie') === true ? liste.length : 0;
-    const { pourcent } = await completudeDepuisBase(s.db, ctx.artisanId, donnees, t, -retirees);
     t.delete(ref);
-    t.update(refArtisan, { completude: pourcent, updatedAt: Timestamp.fromMillis(s.horloge()) });
     return liste;
   });
   await Promise.all(

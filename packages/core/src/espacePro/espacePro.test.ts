@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   accueilPro,
   completudeFiche,
+  contenuFiche,
   etapesMiseEnLigne,
   menuPro,
   ongletsCompte,
   ongletsMobiles,
   PAGES_COMPTE,
-  SEUIL_FICHE_EN_LIGNE,
 } from './index';
 
 const membre = (role: 'proprietaire' | 'gerant' | 'collaborateur' | 'comptable') => ({
@@ -84,48 +84,35 @@ describe('accueilPro', () => {
   });
 });
 
-const vide = {
-  metiers: [],
-  zoneDefinie: false,
-  telephoneVerifie: false,
-  description: '',
-  logo: false,
-  nbPhotos: 0,
-  nbCertifications: 0,
-};
+const vide = { description: '', logo: false, banniere: false };
 
-describe('completudeFiche', () => {
-  it('0 % pour une fiche vide, 100 % pour une fiche complète', () => {
+describe('completudeFiche (logo, description, bannière)', () => {
+  it('0 % pour une fiche vide, 100 % avec logo, description et bannière', () => {
     expect(completudeFiche(vide).pourcent).toBe(0);
     expect(
-      completudeFiche({
-        metiers: ['couvreur'],
-        zoneDefinie: true,
-        telephoneVerifie: true,
-        description: 'x'.repeat(60),
-        logo: true,
-        nbPhotos: 3,
-        nbCertifications: 1,
-      }).pourcent,
+      completudeFiche({ description: 'x'.repeat(20), logo: true, banniere: true }).pourcent,
     ).toBe(100);
   });
 
-  it('après l’inscription (métiers et zone) : 20 %, sous le seuil de mise en ligne', () => {
-    const c = completudeFiche({ ...vide, metiers: ['couvreur'], zoneDefinie: true });
-    expect(c.pourcent).toBe(20);
-    expect(c.pourcent).toBeLessThan(SEUIL_FICHE_EN_LIGNE);
-    expect(c.criteres.filter((x) => !x.fait).map((x) => x.cle)).toEqual([
-      'coordonnees',
-      'description',
-      'logo',
-      'photos',
-      'certifications',
-    ]);
+  it('chaque élément fait avancer la barre ; il manque le reste', () => {
+    expect(completudeFiche({ ...vide, logo: true }).pourcent).toBe(30);
+    expect(completudeFiche({ ...vide, banniere: true }).pourcent).toBe(35);
+    const c = completudeFiche({ ...vide, description: 'Couvreur depuis 1998 à Bordeaux.' });
+    expect(c.pourcent).toBe(35);
+    expect(c.criteres.filter((x) => !x.fait).map((x) => x.cle)).toEqual(['logo', 'banniere']);
   });
 
-  it('une description de moins de 60 caractères ou 2 photos ne comptent pas', () => {
-    const c = completudeFiche({ ...vide, description: 'x'.repeat(59), nbPhotos: 2 });
-    expect(c.pourcent).toBe(0);
+  it('contenuFiche : lu depuis le document de l’entreprise', () => {
+    expect(contenuFiche({})).toEqual(vide);
+    expect(contenuFiche({ description: 'd', logoUrl: 'l', bannieres: ['b'] })).toEqual({
+      description: 'd',
+      logo: true,
+      banniere: true,
+    });
+  });
+
+  it('une description de moins de 20 caractères ne compte pas', () => {
+    expect(completudeFiche({ ...vide, description: '  court  ' }).pourcent).toBe(0);
   });
 });
 

@@ -119,55 +119,44 @@ export const accueilPro = (membre: Membre | null | undefined): PagePro =>
 
 /** Complétude minimale pour être mis en ligne (EMAILS `bienvenue-pro`, `fiche-incomplete`). */
 export const SEUIL_FICHE_EN_LIGNE = 60;
-const DESCRIPTION_MIN = 60;
-const PHOTOS_MIN = 3;
+const DESCRIPTION_MIN = 20;
 
+/** Ce qui rend la fiche « complète » (décision du propriétaire, 01/11/2026). */
 export interface ContenuFiche {
-  metiers: readonly string[];
-  zoneDefinie: boolean;
-  telephoneVerifie: boolean;
   description: string;
   logo: boolean;
-  nbPhotos: number;
-  nbCertifications: number;
+  banniere: boolean;
 }
 
 /**
- * Complétude de la fiche (DATABASE `completude`, 0–100), d'après les éléments de la maquette
- * « Complétez votre fiche ». Pondération retenue au lot 10 (à valider, AVANCEMENT).
+ * Complétude de la fiche (DATABASE `completude`, 0–100) : logo, description et bannière. À
+ * 100 %, la barre de progression disparaît et la fiche peut être mise en ligne.
  */
 export function completudeFiche(f: ContenuFiche) {
   const criteres = [
     {
-      cle: 'metiers',
-      libelle: "Métiers et zone d'intervention",
-      poids: 20,
-      fait: f.metiers.length > 0 && f.zoneDefinie,
-    },
-    { cle: 'coordonnees', libelle: 'Coordonnées vérifiées', poids: 15, fait: f.telephoneVerifie },
-    {
       cle: 'description',
       libelle: 'Présenter votre entreprise',
-      poids: 20,
+      poids: 35,
       fait: f.description.trim().length >= DESCRIPTION_MIN,
     },
-    { cle: 'logo', libelle: 'Ajouter votre logo', poids: 10, fait: f.logo },
-    {
-      cle: 'photos',
-      libelle: `Ajouter ${PHOTOS_MIN} photos de chantier`,
-      poids: 20,
-      fait: f.nbPhotos >= PHOTOS_MIN,
-    },
-    {
-      cle: 'certifications',
-      libelle: 'Renseigner vos certifications (RGE, Qualibat)',
-      poids: 15,
-      fait: f.nbCertifications > 0,
-    },
+    { cle: 'logo', libelle: 'Ajouter votre logo', poids: 30, fait: f.logo },
+    { cle: 'banniere', libelle: 'Ajouter une bannière', poids: 35, fait: f.banniere },
   ] as const;
   const pourcent = criteres.reduce((t, c) => t + (c.fait ? c.poids : 0), 0);
   return { pourcent, criteres: criteres.map(({ cle, libelle, fait }) => ({ cle, libelle, fait })) };
 }
+
+/** Données d'une fiche (document `artisans/{id}`) → éléments comptés dans la complétude. */
+export const contenuFiche = (a: {
+  description?: string;
+  logoUrl?: string;
+  bannieres?: readonly string[];
+}): ContenuFiche => ({
+  description: a.description ?? '',
+  logo: Boolean(a.logoUrl),
+  banniere: (a.bannieres?.length ?? 0) > 0,
+});
 
 export type EtatDecennale = 'absente' | 'envoyee' | 'validee' | 'refusee';
 
