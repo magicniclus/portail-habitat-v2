@@ -59,14 +59,12 @@ export function seoFiche(e: EntreeSeoFiche) {
     },
     services: {
       titre: 'Travaux souvent demandés',
-      liens: e.prestations
-        .slice(0, MAX_LIENS)
-        .map((p) => ({
-          libelle: `${p.nom} à ${e.ville}`,
-          prestation: p.id,
-          nom: p.nom,
-          ville: e.ville,
-        })),
+      liens: e.prestations.slice(0, MAX_LIENS).map((p) => ({
+        libelle: `${p.nom} à ${e.ville}`,
+        prestation: p.id,
+        nom: p.nom,
+        ville: e.ville,
+      })),
     },
   };
 }
