@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { droitsDe } from '../paiements';
-import { ajouterBanniere, bannieresMax, BANNIERES_MAX_VISIBILITE } from './bannieres';
+import {
+  ajouterBanniere,
+  bannieresMax,
+  BANNIERES_MAX_VISIBILITE,
+  positionBanniere,
+} from './bannieres';
 
 describe('bannières de la fiche', () => {
   it('1 bannière sans visibilité payante, 5 avec (Fiche Pro, Fiche + Site, Tout inclus)', () => {
@@ -27,5 +32,14 @@ describe('bannières de la fiche', () => {
 
   it('après une résiliation, une liste trop longue garde ses premières bannières', () => {
     expect(ajouterBanniere(['a', 'b', 'c'], 'd', 1)).toEqual(['d']);
+  });
+});
+
+describe('positionBanniere', () => {
+  it('centre par défaut, haut et bas sinon', () => {
+    expect(positionBanniere(undefined)).toBe('center');
+    expect(positionBanniere('centre')).toBe('center');
+    expect(positionBanniere('haut')).toBe('top');
+    expect(positionBanniere('bas')).toBe('bottom');
   });
 });

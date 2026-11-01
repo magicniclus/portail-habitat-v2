@@ -59,6 +59,27 @@ test.describe('Ma fiche', () => {
     await expect
       .poll(() => image.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0))
       .toBe(true);
+    // Cadrage : centre par défaut, haut gardé après rechargement.
+    const cadrage = page.getByRole('radiogroup', { name: 'Cadrage de la bannière' });
+    await expect(cadrage.getByRole('radio', { name: 'Centre' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    await cadrage.getByRole('radio', { name: 'Haut' }).click();
+    await expect(image).toHaveCSS('object-position', '50% 0%');
+    await expect(async () => {
+      await page.reload();
+      await expect(
+        page
+          .getByRole('radiogroup', { name: 'Cadrage de la bannière' })
+          .getByRole('radio', { name: 'Haut' }),
+      ).toHaveAttribute('aria-checked', 'true', { timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+    await page
+      .getByRole('radiogroup', { name: 'Cadrage de la bannière' })
+      .getByRole('radio', { name: 'Centre' })
+      .click();
+    await expect(image).toHaveCSS('object-position', '50% 50%');
     await retirer.click();
     await expect(page.getByRole('button', { name: /^Retirer la bannière/ })).toHaveCount(0);
   });

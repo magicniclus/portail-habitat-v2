@@ -1,4 +1,11 @@
-export { ajouterBanniere, BANNIERES_MAX_VISIBILITE, bannieresMax } from './bannieres';
+export {
+  ajouterBanniere,
+  BANNIERES_MAX_VISIBILITE,
+  bannieresMax,
+  CADRAGES_BANNIERE,
+  positionBanniere,
+  type CadrageBanniere,
+} from './bannieres';
 export { scoreClassement, type EntreeClassement } from './classement';
 export {
   BUDGETS_ANNUAIRE,

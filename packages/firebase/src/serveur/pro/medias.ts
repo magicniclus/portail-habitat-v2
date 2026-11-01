@@ -1,4 +1,4 @@
-import { ajouterBanniere, bannieresMax } from '@ph/core/annuaire';
+import { ajouterBanniere, bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
 import type { entreeRealisation } from '@ph/core/schemas';
@@ -96,6 +96,17 @@ export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier
   });
   await supprimerBannieres(s, ctx, retirees);
   return { bannieres };
+}
+
+/** Cadrage des bannières (partie gardée visible quand elles sont rognées : haut, centre, bas). */
+export async function cadrerBanniere(s: Services, ctx: Contexte, cadrage: CadrageBanniere) {
+  await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    if (!(await t.get(ref)).exists) throw new ErreurMetier('INTROUVABLE');
+    t.update(ref, { cadrageBanniere: cadrage, updatedAt: Timestamp.fromMillis(s.horloge()) });
+  });
+  return { cadrage };
 }
 
 /** Retire une bannière de la fiche et supprime son fichier. */

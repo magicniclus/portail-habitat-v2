@@ -123,6 +123,7 @@ export default async function PageMaFiche() {
               <Banniere
                 artisanId={active.artisanId}
                 bannieres={f.bannieres}
+                cadrage={f.cadrageBanniere}
                 max={f.bannieresMax}
                 modifiable={edite}
                 offre={peut(active.membre, 'abonnement.gerer')}

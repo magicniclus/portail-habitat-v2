@@ -5,7 +5,7 @@ import type { Resultat } from '@ph/core/resultat';
 export async function posterJson<R>(
   url: string,
   corps: unknown,
-  methode: 'POST' | 'DELETE' = 'POST',
+  methode: 'POST' | 'PATCH' | 'DELETE' = 'POST',
 ): Promise<Resultat<R>> {
   try {
     const r = await fetch(url, {

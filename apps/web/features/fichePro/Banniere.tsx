@@ -1,7 +1,11 @@
 'use client';
 
 import { Chargeur } from '@ph/ui';
-import { BANNIERES_MAX_VISIBILITE } from '@ph/core/annuaire';
+import {
+  BANNIERES_MAX_VISIBILITE,
+  positionBanniere,
+  type CadrageBanniere as Cadrage,
+} from '@ph/core/annuaire';
 import { fichiers } from '@ph/firebase/chemins';
 import { CrownIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
@@ -10,6 +14,7 @@ import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
 import { FenetreOffre } from '@/features/offres/FenetreOffre';
 import { deposerFichier, EnvoiImpossible } from '@/lib/firebaseClient';
 import { posterJson } from '@/lib/posterJson';
+import { CadrageBanniere } from './CadrageBanniere';
 import { useGlisserDeposer } from './useGlisserDeposer';
 import { nomFichierSur, problemeFichier, TYPES_IMAGE } from './fichiers';
 
@@ -25,12 +30,15 @@ const pastille =
 export function Banniere({
   artisanId,
   bannieres,
+  cadrage: cadrageInitial = 'centre',
   max,
   modifiable,
   offre,
 }: {
   artisanId: string;
   bannieres: string[];
+  /** Partie gardée visible des bannières rognées (haut, centre, bas). */
+  cadrage?: Cadrage;
   max: number;
   modifiable: boolean;
   /** Le membre peut souscrire (fenêtre d'offre affichée quand une seule bannière est permise). */
@@ -40,6 +48,17 @@ export function Banniere({
   const id = useId();
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
+  const [cadrage, setCadrage] = useState(cadrageInitial);
+  const cadrer = async (c: Cadrage) => {
+    const avant = cadrage;
+    setCadrage(c);
+    setErreur(null);
+    const r = await posterJson('/api/pro/banniere', { cadrage: c }, 'PATCH');
+    if (!r.ok) {
+      setCadrage(avant);
+      setErreur(r.message);
+    }
+  };
   const visibles = bannieres.slice(0, max);
   const pleine = max > 1 && visibles.length >= max;
 
@@ -86,6 +105,7 @@ export function Banniere({
       {visibles.length ? (
         <CarrouselBannieres
           urls={visibles}
+          position={positionBanniere(cadrage)}
           className="size-full"
           {...(modifiable
             ? {
@@ -155,10 +175,15 @@ export function Banniere({
           ) : null}
         </div>
       ) : null}
+      {modifiable && visibles.length ? (
+        <div className="absolute right-3 bottom-3">
+          <CadrageBanniere valeur={cadrage} onChange={(c) => void cadrer(c)} desactive={enCours} />
+        </div>
+      ) : null}
       {erreur ? (
         <p
           role="alert"
-          className="absolute right-3 bottom-3 m-0 rounded-control bg-blanc px-3 py-1.5 text-sm text-danger"
+          className="absolute right-3 bottom-17 m-0 rounded-control bg-blanc px-3 py-1.5 text-sm text-danger"
         >
           {erreur}
         </p>

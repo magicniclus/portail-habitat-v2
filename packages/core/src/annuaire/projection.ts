@@ -47,6 +47,7 @@ export function projeterArtisanPublic(
     logoUrl: a.logoUrl,
     // Après une résiliation, seules les premières bannières permises restent visibles.
     bannieres: a.bannieres.length ? a.bannieres.slice(0, bannieresMax(a.droits)) : undefined,
+    cadrageBanniere: a.bannieres.length ? a.cadrageBanniere : undefined,
     videoUrl: a.videoUrl,
     anneesActivite,
     budgetMin: a.budgetMin,

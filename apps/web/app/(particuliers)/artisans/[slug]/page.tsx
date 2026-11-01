@@ -1,4 +1,4 @@
-import { assuranceVerifiee } from '@ph/core/annuaire';
+import { assuranceVerifiee, positionBanniere } from '@ph/core/annuaire';
 import { AssuranceNonVerifiee } from '@/features/annuaire/AssuranceNonVerifiee';
 import { LabelPremium } from '@/features/annuaire/LabelPremium';
 import { jsonLdArtisan } from '@ph/core/annuaire';
@@ -76,6 +76,7 @@ export default async function PageFiche({ params }: { params: Params }) {
         {f.bannieres?.length ? (
           <CarrouselBannieres
             urls={f.bannieres}
+            position={positionBanniere(f.cadrageBanniere)}
             className="aspect-[16/5] w-full overflow-hidden rounded-[18px]"
           />
         ) : null}

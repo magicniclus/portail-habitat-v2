@@ -17,6 +17,7 @@ export {
   enregistrerBanniere,
   publierRealisation,
   retirerBanniere,
+  cadrerBanniere,
   enregistrerVideo,
   enregistrerLogo,
   enregistrerRealisation,

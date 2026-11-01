@@ -16,3 +16,11 @@ export function ajouterBanniere(actuelles: string[], url: string, max: number): 
   if (actuelles.includes(url)) return actuelles;
   return actuelles.length >= max ? null : [...actuelles, url];
 }
+
+/** Partie de la bannière gardée visible quand elle est rognée : centre par défaut. */
+export const CADRAGES_BANNIERE = ['haut', 'centre', 'bas'] as const;
+export type CadrageBanniere = (typeof CADRAGES_BANNIERE)[number];
+const POSITIONS = { haut: 'top', centre: 'center', bas: 'bottom' } as const;
+
+/** Valeur CSS `object-position` du cadrage choisi. */
+export const positionBanniere = (c: CadrageBanniere | undefined) => POSITIONS[c ?? 'centre'];

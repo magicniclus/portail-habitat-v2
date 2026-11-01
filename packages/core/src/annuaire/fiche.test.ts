@@ -99,6 +99,14 @@ describe('projeterArtisanPublic', () => {
     expect(projeterArtisanPublic(pro, T, 'M')!.bannieres).toEqual(cinq);
   });
 
+  it('cadrage des bannières : publié seulement avec des bannières', () => {
+    const haut = { ...base, cadrageBanniere: 'haut' as const };
+    expect(projeterArtisanPublic(haut, T, 'M')).not.toHaveProperty('cadrageBanniere');
+    expect(projeterArtisanPublic({ ...haut, bannieres: ['a'] }, T, 'M')!.cadrageBanniere).toBe(
+      'haut',
+    );
+  });
+
   it('FIC-02 : hors ligne ou suspendu → pas de fiche publique', () => {
     expect(projeterArtisanPublic({ ...base, enLigne: false }, T, 'M')).toBeNull();
     expect(projeterArtisanPublic({ ...base, statut: 'suspendu' }, T, 'M')).toBeNull();

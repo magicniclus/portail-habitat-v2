@@ -1,3 +1,4 @@
+import { CADRAGES_BANNIERE } from '../annuaire/bannieres';
 import { FORMULES_PAYANTES } from '../paiements/droits';
 import { FLAGS, type NomFlag } from '../flags';
 import { z } from '../zod';
@@ -88,6 +89,9 @@ export const entreeLogo = z.strictObject({ nomFichier });
 
 /** Bannière déposée dans Storage (`artisans/{id}/banniere/{nomFichier}`), publique une fois enregistrée. */
 export const entreeBanniere = z.strictObject({ nomFichier });
+
+/** Cadrage des bannières de la fiche (haut, centre ou bas). */
+export const entreeCadrageBanniere = z.strictObject({ cadrage: z.enum(CADRAGES_BANNIERE) });
 
 /** Bannière à retirer de la fiche (son URL publique, telle qu'enregistrée). */
 export const entreeRetraitBanniere = z.strictObject({ url: z.url().max(1000) });

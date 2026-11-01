@@ -1,3 +1,4 @@
+import { CADRAGES_BANNIERE } from '../annuaire/bannieres';
 import { ROLES_MEMBRE } from '../equipe/permissions';
 import { FORMULES } from '../paiements/droits';
 import { z } from '../zod';
@@ -118,6 +119,8 @@ export const artisan = z
     logoUrl: z.string().optional(),
     /** Bannières de la fiche (1600 × 500), URL Storage publiques : 5 avec la visibilité payante, 1 sinon. */
     bannieres: z.array(z.string()).max(5).default([]),
+    /** Partie gardée visible des bannières rognées (centre si absent). */
+    cadrageBanniere: z.enum(CADRAGES_BANNIERE).optional(),
     /** Vidéo de présentation (MP4, WebM ou OGG, 50 Mo), URL Storage publique. */
     videoUrl: z.string().optional(),
     labels: z.array(z.enum(LABELS)).default([]),
@@ -335,6 +338,7 @@ export const artisanPublic = z
     description: z.string(),
     logoUrl: z.string().optional(),
     bannieres: z.array(z.string()).max(5).optional(),
+    cadrageBanniere: z.enum(CADRAGES_BANNIERE).optional(),
     videoUrl: z.string().optional(),
     ville: z.string(),
     geo,

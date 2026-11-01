@@ -15,9 +15,12 @@ export function CarrouselBannieres({
   urls,
   className,
   surImage,
+  position = 'center',
 }: {
   urls: string[];
   className?: string;
+  /** `object-position` des images rognées (cadrage choisi par l'artisan). */
+  position?: string;
   surImage?: (url: string, i: number) => ReactNode;
 }) {
   const piste = useRef<HTMLUListElement>(null);
@@ -55,7 +58,12 @@ export function CarrouselBannieres({
               : {})}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- bannière Storage (1600 × 500) */}
-            <img src={u} alt="" className="size-full object-cover" />
+            <img
+              src={u}
+              alt=""
+              className="size-full object-cover"
+              style={{ objectPosition: position }}
+            />
             {surImage?.(u, i)}
           </li>
         ))}
