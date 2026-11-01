@@ -41,7 +41,7 @@ const artisan = (id: string, expireLe: number) =>
   });
 
 describe('verifierAssurances', () => {
-  it('J-30 puis J-7 puis J0 : un rappel par palier, puis la fiche est retirée', async () => {
+  it('J-30 puis J-7 puis J0 : un rappel par palier, puis le label tombe (fiche gardée en ligne)', async () => {
     const fin = T + 30 * J;
     await artisan('a1', fin);
     await artisan('loin', T + 90 * J);
@@ -50,7 +50,8 @@ describe('verifierAssurances', () => {
     expect(await verifierAssurances(s(fin - 7 * J))).toEqual({ rappels: 1, retirees: 0 });
     expect(await verifierAssurances(s(fin))).toEqual({ rappels: 1, retirees: 1 });
     const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
-    expect(a.enLigne).toBe(false);
+    // Décennale facultative (01/11/2026) : « non vérifiée » sur la fiche, qui reste en ligne.
+    expect(a.enLigne).toBe(true);
     expect(a.labelsVerifies.decennale).toBeUndefined();
     expect(envois.map((e) => e.modele)).toEqual([
       'assurance-expire',

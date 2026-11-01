@@ -37,7 +37,7 @@ export async function generateMetadata({
   return {
     title: titre,
     description:
-      'Artisans vérifiés près de chez vous : SIRET, assurance décennale et avis contrôlés. Comparez les notes, les disponibilités et demandez un devis gratuit.',
+      'Artisans vérifiés près de chez vous : SIRET et avis contrôlés, assurance vérifiée signalée sur chaque fiche. Comparez les notes, les disponibilités et demandez un devis gratuit.',
     // Une page par métier et par ville ; les combinaisons de filtres ne sont pas indexées.
     alternates: {
       canonical: routes.annuaire(
@@ -85,7 +85,8 @@ export default async function PageAnnuaire({ searchParams }: { searchParams: Par
             Trouver un artisan vérifié près de chez vous
           </h1>
           <p className="m-0 mb-4.5 max-w-[58ch] text-[16.5px] leading-[25px] text-neutre-800">
-            SIRET, assurance décennale et avis contrôlés avant publication de la fiche.
+            SIRET et avis contrôlés ; l’assurance vérifiée (décennale ou RC Pro) est signalée sur
+            chaque fiche.
             {lieu.inconnu
               ? ` Lieu « ${f.ville} » introuvable : résultats autour de ${lieu.nom}.`
               : ''}

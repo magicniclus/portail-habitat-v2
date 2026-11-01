@@ -1,3 +1,4 @@
+import { LOGO_FICHE } from '@/features/siteArtisan/medias';
 import 'server-only';
 import {
   entreeSuivi,
@@ -32,6 +33,8 @@ export interface SiteServi extends SitePublie {
   suivi?: SuiviSite;
   /** Images et fichiers importés (`up:{id}`) utilisés par les pages publiées. */
   importees: Record<string, string>;
+  /** Logo de la fiche (`fiche:logo`), affiché quand le site n'a pas choisi le sien. */
+  logoFiche?: string;
 }
 
 /** 30 s de cache par instance : une publication est visible en moins d'une minute (SITE-08). */
@@ -102,6 +105,7 @@ async function charger(hote: string): Promise<SiteServi | null> {
           ])
         : [...FORMULAIRE_GRATUIT],
     photos,
+    ...(artisan.get('logoUrl') ? { logoFiche: artisan.get('logoUrl') as string } : {}),
     ...suiviLu(doc.get('suivi')),
     importees: Object.fromEntries(
       medias
@@ -123,9 +127,10 @@ export async function siteServi(hote: string, maintenant = Date.now()): Promise<
 
 /**
  * `lib:{realisationId}/{i}` → URL de la photo si la réalisation est publiée ; `up:{id}` → URL de
- * l'image importée dans la médiathèque du site.
+ * l'image importée dans la médiathèque du site ; `fiche:logo` → logo de la fiche.
  */
 export const resoudreMedia = (site: SiteServi) => (src: string) => {
+  if (src === LOGO_FICHE) return site.logoFiche ?? null;
   const up = /^up:([\w-]+)$/.exec(src);
   if (up) return site.importees[up[1]!] ?? null;
   const m = /^lib:([\w-]+)\/(\d+)$/.exec(src);

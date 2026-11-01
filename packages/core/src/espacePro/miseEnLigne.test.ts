@@ -4,23 +4,17 @@ import { derniersStatutsDocuments, doitPasserEnLigne } from './miseEnLigne';
 const base = { enLigne: false, statut: 'actif', sirenVerifie: true, documents: {} };
 
 describe('doitPasserEnLigne (COMPTES §3, ONB-06b)', () => {
-  it('SIREN vérifié + décennale envoyée (en attente de vérification) → en ligne', () => {
+  it('SIREN vérifié → en ligne, avec ou sans décennale (signalée « non vérifiée » sinon)', () => {
+    expect(doitPasserEnLigne(base)).toBe(true);
     expect(doitPasserEnLigne({ ...base, documents: { decennale: 'en_attente' } })).toBe(true);
-    expect(doitPasserEnLigne({ ...base, documents: { decennale: 'valide' } })).toBe(true);
+    expect(doitPasserEnLigne({ ...base, documents: { decennale: 'refuse' } })).toBe(true);
   });
 
   it('sans SIREN vérifié, le Kbis est exigé', () => {
     const e = { ...base, sirenVerifie: false };
     expect(doitPasserEnLigne({ ...e, documents: { decennale: 'en_attente' } })).toBe(false);
-    expect(
-      doitPasserEnLigne({ ...e, documents: { decennale: 'en_attente', kbis: 'en_attente' } }),
-    ).toBe(true);
-  });
-
-  it('décennale absente, refusée ou expirée → reste hors ligne', () => {
-    expect(doitPasserEnLigne(base)).toBe(false);
-    expect(doitPasserEnLigne({ ...base, documents: { decennale: 'refuse' } })).toBe(false);
-    expect(doitPasserEnLigne({ ...base, documents: { decennale: 'expire' } })).toBe(false);
+    expect(doitPasserEnLigne({ ...e, documents: { kbis: 'en_attente' } })).toBe(true);
+    expect(doitPasserEnLigne({ ...e, documents: { kbis: 'refuse' } })).toBe(false);
   });
 
   it('déjà en ligne, suspendue ou supprimée : rien à faire', () => {

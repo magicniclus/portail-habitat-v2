@@ -13,7 +13,12 @@ import { auditerAdmin } from './audit';
  */
 
 /** Documents qui ouvrent un label vérifié (`labelsVerifies.<cle>`). */
-const LABELS: Record<string, string> = { decennale: 'decennale', rge: 'rge', qualibat: 'qualibat' };
+const LABELS: Record<string, string> = {
+  decennale: 'decennale',
+  rc_pro: 'rc_pro',
+  rge: 'rge',
+  qualibat: 'qualibat',
+};
 
 export const idTacheDocument = (artisanId: string, documentId: string) =>
   `document-${artisanId}-${documentId}`;
@@ -58,6 +63,8 @@ export async function deciderDocumentAdmin(
           docId: e.documentId,
           ...(fin ? { expireLe: fin } : {}),
         },
+        // Le label vérifié s'affiche aussi s'il n'avait pas été déclaré (RC Pro, par exemple).
+        labels: FieldValue.arrayUnion(label),
         ...(type === 'rge'
           ? {
               'rge.verifie': true,

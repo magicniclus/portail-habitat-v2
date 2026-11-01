@@ -13,6 +13,13 @@ export const telephoneAffiche = (a: Pick<Artisan, 'droits' | 'telephonePublic'>)
   a.droits.coordonneesVisibles && a.telephonePublic ? a.telephonePublic : null;
 
 /** Labels affichés : seulement ceux qui ont une preuve vérifiée et non expirée (FIC-01). */
+/**
+ * Assurance vérifiée (décennale ou RC Pro) : tous les métiers n'ont pas besoin d'une décennale ;
+ * sans l'une ou l'autre, la fiche affiche « Assurance non vérifiée ».
+ */
+export const assuranceVerifiee = (labels: readonly string[]) =>
+  labels.includes('decennale') || labels.includes('rc_pro');
+
 export function labelsVerifies(a: Pick<Artisan, 'labels' | 'labelsVerifies'>, maintenant: Date) {
   return a.labels.filter((l) => {
     const v = a.labelsVerifies[l];

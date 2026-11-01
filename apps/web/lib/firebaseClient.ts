@@ -4,6 +4,7 @@ import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import type { FirebaseStorage } from 'firebase/storage';
+import { posterJson } from './posterJson';
 
 interface ConfigPage {
   config: Record<string, string>;
@@ -92,23 +93,48 @@ export async function deposerFichier(
   fichier: File,
   delaiMs = 120_000,
 ): Promise<void> {
-  await authClient().then((a) => a.authStateReady());
+  const auth = await authClient();
+  await auth.authStateReady();
+  // Session des fichiers absente (connexion ouverte seulement côté serveur) : message clair.
+  if (!auth.currentUser)
+    throw new EnvoiImpossible(
+      'Votre connexion aux fichiers a expiré : déconnectez-vous puis reconnectez-vous, et réessayez.',
+    );
+  try {
+    await envoyer(chemin, fichier, delaiMs);
+  } catch (e) {
+    if ((e as { code?: string }).code !== 'storage/unauthorized') throw versMessage(e);
+    // Droits de la session périmés (entreprise créée ou rôle changé depuis la connexion) :
+    // recalculés côté serveur, session renouvelée, puis un seul nouvel essai.
+    await posterJson('/api/pro/compte/droits', {}).catch(() => undefined);
+    await auth.currentUser.getIdToken(true).catch(() => undefined);
+    try {
+      await envoyer(chemin, fichier, delaiMs);
+    } catch (e2) {
+      throw versMessage(e2);
+    }
+  }
+}
+
+async function envoyer(chemin: string, fichier: File, delaiMs: number) {
   const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
   const tache = m.uploadBytesResumable(m.ref(st, chemin), fichier, { contentType: fichier.type });
   const minuterie = setTimeout(() => tache.cancel(), delaiMs);
   try {
     await tache;
-  } catch (e) {
-    const code = (e as { code?: string }).code ?? '';
-    throw new EnvoiImpossible(
-      code === 'storage/canceled'
-        ? 'Le serveur de fichiers ne répond pas (envoi trop long). Vérifiez votre connexion ou que le stockage est démarré, puis réessayez.'
-        : (MESSAGES_ENVOI[code] ??
-            `L’envoi n’a pas abouti (${code || 'erreur inconnue'}). Réessayez.`),
-    );
   } finally {
     clearTimeout(minuterie);
   }
+}
+
+function versMessage(e: unknown): EnvoiImpossible {
+  const code = (e as { code?: string }).code ?? '';
+  return new EnvoiImpossible(
+    code === 'storage/canceled'
+      ? 'Le serveur de fichiers ne répond pas (envoi trop long). Vérifiez votre connexion ou que le stockage est démarré, puis réessayez.'
+      : (MESSAGES_ENVOI[code] ??
+          `L’envoi n’a pas abouti (${code || 'erreur inconnue'}). Réessayez.`),
+  );
 }
 
 /**

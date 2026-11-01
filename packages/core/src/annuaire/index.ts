@@ -17,7 +17,12 @@ export {
   type ChipFiltre,
 } from './filtres';
 export { jsonLdArtisan, type FicheJsonLd } from './jsonld';
-export { labelsVerifies, projeterArtisanPublic, telephoneAffiche } from './projection';
+export {
+  assuranceVerifiee,
+  labelsVerifies,
+  projeterArtisanPublic,
+  telephoneAffiche,
+} from './projection';
 export {
   filtrerAnnuaire,
   pertinence,

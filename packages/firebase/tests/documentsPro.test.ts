@@ -57,7 +57,8 @@ describe('enregistrerDocument (ONB-06b)', () => {
     expect((await db.doc(chemins.artisan('a1')).get()).get('enLigne')).toBe(true);
   });
 
-  it('RC Pro seule : reste hors ligne', async () => {
+  it('SIREN non vérifié : une RC Pro seule laisse la fiche hors ligne (Kbis exigé)', async () => {
+    await db.doc(chemins.artisan('a1')).update({ origine: 'prospect' });
     const docId = nouvelId();
     await deposer(docId);
     expect(

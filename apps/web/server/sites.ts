@@ -41,6 +41,7 @@ import { redirect } from 'next/navigation';
 import { routes } from '@/lib/routes';
 import { servicesComptes } from './espace';
 import intentions from '../../../docs/data/recherche-intentions.json';
+import { LOGO_FICHE } from '@/features/siteArtisan/medias';
 import { nomMetier } from './metiers';
 import { sessionPro } from './sessionPro';
 
@@ -184,12 +185,15 @@ export async function mediathequeDuSite(artisanId: string): Promise<{
   medias: Record<string, string>;
   fichiers: Record<string, { nom: string; url: string }>;
 }> {
-  const [r, importes] = await Promise.all([
+  const [r, importes, artisan] = await Promise.all([
     lirePhotosPubliees(db(), artisanId),
     lireMediasSite(db(), artisanId),
+    db().doc(chemins.artisan(artisanId)).get(),
   ]);
+  const logo = artisan.get('logoUrl') as string | undefined;
   return {
     medias: Object.fromEntries([
+      ...(logo ? [[LOGO_FICHE, logo]] : []),
       ...r.flatMap((x) => x.urls.map((u, i) => [`lib:${x.id}/${i}`, u])),
       ...importes.filter((m) => m.usage === 'image').map((m) => [m.cle, m.url]),
     ]),

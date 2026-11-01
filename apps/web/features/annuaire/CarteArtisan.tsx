@@ -1,12 +1,18 @@
 import { LABEL_PREMIUM } from '@ph/core/paiements';
 import { SealCheckIcon } from '@phosphor-icons/react/ssr';
-import { BUDGETS_ANNUAIRE, LIBELLES_LABELS, libelleDisponibilite } from '@ph/core/annuaire';
+import {
+  assuranceVerifiee,
+  BUDGETS_ANNUAIRE,
+  LIBELLES_LABELS,
+  libelleDisponibilite,
+} from '@ph/core/annuaire';
 import { formatFourchette, formatNombre, formatTel } from '@ph/core/format';
 import type { ArtisanAnnuaire } from '@ph/firebase/annuaire';
 import { bouton, NoteMoyenne } from '@ph/ui';
 import Link from 'next/link';
 import { initiales } from '@ph/core/format';
 import { routes } from '@/lib/routes';
+import { AssuranceNonVerifiee } from './AssuranceNonVerifiee';
 
 type Label = keyof typeof LIBELLES_LABELS;
 
@@ -75,6 +81,7 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
             <p className="m-0 text-[14.5px] leading-[23px] text-neutre-800">{a.pitch}</p>
             <p className="m-0 flex flex-wrap gap-x-4 gap-y-1 text-[13.5px] text-neutre-800">
               {dispo ? <span>{dispo}</span> : null}
+              {assuranceVerifiee(a.labels) ? null : <span>Assurance non vérifiée</span>}
               {a.labels.length ? (
                 <span>{a.labels.map((l) => LIBELLES_LABELS[l as Label]).join(' · ')}</span>
               ) : null}
@@ -128,6 +135,7 @@ export function CarteArtisan({ a, nomMetier }: { a: ArtisanAnnuaire; nomMetier: 
             ))}
           </ul>
         ) : null}
+        {assuranceVerifiee(a.labels) ? null : <AssuranceNonVerifiee />}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="m-0 flex flex-wrap gap-x-3.5 text-[13px] text-neutre-800">
             {dispo ? <span>{dispo}</span> : null}

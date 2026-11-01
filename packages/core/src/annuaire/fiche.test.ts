@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { droitsInitiaux } from '../paiements/droits';
 import { artisan, artisanPublic } from '../schemas/artisans';
 import {
+  assuranceVerifiee,
   chipsFiltres,
   documentArtisanTypesense,
   ecrireFiltresAnnuaire,
@@ -256,5 +257,14 @@ describe('libelleDisponibilite', () => {
     expect(libelleDisponibilite(5)).toBe('Disponible sous 5 jours');
     expect(libelleDisponibilite(undefined)).toBeNull();
     expect(libelleDisponibilite(99)).toBeNull();
+  });
+});
+
+describe('assuranceVerifiee', () => {
+  it('décennale ou RC Pro vérifiée ; sinon « Assurance non vérifiée »', () => {
+    expect(assuranceVerifiee(['decennale'])).toBe(true);
+    expect(assuranceVerifiee(['rc_pro', 'rge'])).toBe(true);
+    expect(assuranceVerifiee(['rge', 'qualibat'])).toBe(false);
+    expect(assuranceVerifiee([])).toBe(false);
   });
 });

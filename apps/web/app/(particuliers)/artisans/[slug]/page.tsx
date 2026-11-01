@@ -1,3 +1,5 @@
+import { assuranceVerifiee } from '@ph/core/annuaire';
+import { AssuranceNonVerifiee } from '@/features/annuaire/AssuranceNonVerifiee';
 import { LabelPremium } from '@/features/annuaire/LabelPremium';
 import { jsonLdArtisan } from '@ph/core/annuaire';
 import { formatFourchette, formatTel } from '@ph/core/format';
@@ -153,6 +155,7 @@ export default async function PageFiche({ params }: { params: Params }) {
           <aside className="grid gap-5 lg:sticky lg:top-5">
             <Bloc titre="Certifications et labels" id="labels">
               <Labels labels={f.labels} />
+              {assuranceVerifiee(f.labels) ? null : <AssuranceNonVerifiee />}
             </Bloc>
             <Bloc titre="Zone d'intervention" id="zone">
               <p className="m-0 text-[15px] text-neutre-800">

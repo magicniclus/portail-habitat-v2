@@ -15,8 +15,9 @@ export function derniersStatutsDocuments(
 const envoye = (s?: StatutDocument) => s === 'en_attente' || s === 'valide';
 
 /**
- * La fiche passe en ligne dès que le Kbis (ou un SIREN vérifié) et l'attestation décennale sont
- * envoyés ; la vérification par un modérateur vient ensuite (un refus retire la fiche).
+ * La fiche passe en ligne dès que l'entreprise est identifiée (SIREN vérifié, ou Kbis envoyé).
+ * Aucune assurance n'est exigée (décision du propriétaire, 01/11/2026 : tous les métiers n'ont pas
+ * de décennale) : sans décennale ni RC Pro vérifiée, la fiche affiche « Assurance non vérifiée ».
  */
 export function doitPasserEnLigne(a: {
   enLigne: boolean;
@@ -25,7 +26,7 @@ export function doitPasserEnLigne(a: {
   documents: Partial<Record<string, StatutDocument>>;
 }): boolean {
   if (a.enLigne || a.statut !== 'actif') return false;
-  return (a.sirenVerifie || envoye(a.documents.kbis)) && envoye(a.documents.decennale);
+  return a.sirenVerifie || envoye(a.documents.kbis);
 }
 
 /** Libellés des pièces (TYPES_DOCUMENT) et de leur vérification, pour Ma fiche. */

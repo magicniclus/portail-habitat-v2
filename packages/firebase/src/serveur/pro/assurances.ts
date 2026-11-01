@@ -43,7 +43,8 @@ export async function verifierAssurances(s: {
     await a.ref.update({
       relancesDecennale: { ...envoyes, pour: Timestamp.fromMillis(expireLe), [e.palier]: t },
       ...(e.suspendre
-        ? { enLigne: false, 'labelsVerifies.decennale': FieldValue.delete(), updatedAt: t }
+        ? // Décennale expirée : le label tombe (« non vérifiée »), la fiche reste en ligne.
+          { 'labelsVerifies.decennale': FieldValue.delete(), updatedAt: t }
         : {}),
     });
     const proprietaire = a.get('proprietaireUid') as string | undefined;

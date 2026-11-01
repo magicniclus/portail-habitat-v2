@@ -25,7 +25,8 @@ const TONS: Record<StatutDocument, Tone> = {
 
 /**
  * Documents de l'entreprise (COMPTES §3) : dépôt dans Storage puis enregistrement vérifié par le
- * serveur ; la fiche passe en ligne dès que le Kbis (ou SIREN vérifié) et la décennale sont envoyés.
+ * serveur ; la fiche est en ligne dès que l'entreprise est identifiée (SIREN vérifié ou Kbis) ; la
+ * assurance (décennale ou RC Pro) est facultative, signalée « non vérifiée » sans l'une ou l'autre.
  */
 export function Documents({
   artisanId,
@@ -101,7 +102,9 @@ export function Documents({
         </ul>
       ) : (
         <p className="m-0 text-sm text-neutre-800">
-          Envoyez votre attestation décennale pour mettre votre fiche en ligne.
+          Votre fiche affiche « Assurance non vérifiée ». Envoyez votre attestation d’assurance
+          (décennale ou RC Pro, selon votre métier) pour rassurer les particuliers : elle est
+          vérifiée sous 48 h.
         </p>
       )}
       {peutDeposer ? (

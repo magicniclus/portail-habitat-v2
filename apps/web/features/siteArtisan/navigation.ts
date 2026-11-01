@@ -1,3 +1,4 @@
+import { LOGO_FICHE } from './medias';
 import {
   navigationComplete,
   resoudreCouleur,
@@ -63,7 +64,8 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
     parAppareil('nh', n.hauteur) +
     parAppareil('lt', n.logo.taille) +
     `--bt:${css(n.mobile.traits) || 'inherit'};--bo:${n.mobile.burger === 'gauche' ? 0 : 4};`;
-  const image = n.logo.image ? ctx.media(n.logo.image) : null;
+  // Sans logo choisi dans l'éditeur : le logo de la fiche Portail Travaux (`fiche:logo`), s'il existe.
+  const image = ctx.media(n.logo.image || LOGO_FICHE);
   const logo =
     n.logo.mode === 'nom'
       ? ''
@@ -114,7 +116,8 @@ export function rendreNavigation(nav: Navigation, ctx: ContexteRendu, slugActif:
  */
 export function faviconSite(nav: Navigation, ctx: ContexteRendu): string {
   const n = navigationComplete(nav);
-  const image = n.logo.image ? ctx.media(n.logo.image) : null;
+  // Sans logo choisi dans l'éditeur : le logo de la fiche Portail Travaux (`fiche:logo`), s'il existe.
+  const image = ctx.media(n.logo.image || LOGO_FICHE);
   if (image) return `<link rel="icon" href="${esc(image)}">`;
   const p = ctx.theme?.palette;
   const fond =

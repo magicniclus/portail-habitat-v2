@@ -26,6 +26,7 @@ export const BUDGETS_ANNUAIRE = [
 ] as const;
 export const LIBELLES_LABELS: Record<Label, string> = {
   decennale: 'Décennale vérifiée',
+  rc_pro: 'RC Pro vérifiée',
   rge: 'Certifié RGE',
   qualibat: 'Qualibat',
   local: 'Artisan local',

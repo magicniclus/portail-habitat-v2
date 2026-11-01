@@ -109,9 +109,9 @@ test.describe('Inscription pro', () => {
     await expect(activer).toBeEnabled();
     await activer.click();
     await expect(page).toHaveURL(/\/pro\/tableau-de-bord/, { timeout: 15_000 });
-    // ONB-06 : propriétaire, fiche hors ligne, étapes de mise en ligne.
+    // ONB-06 : propriétaire ; SIREN vérifié à l'inscription → fiche en ligne tout de suite
+    // (décennale facultative depuis le 01/11/2026).
     await expect(page.getByText('Votre espace est créé')).toBeVisible();
-    await expect(page.getByRole('heading', { name: '3 étapes pour être en ligne' })).toBeVisible();
     // Propriétaire : Mon compte (abonnement, équipe, aide) figure dans « Plus » (onglets mobiles).
     await page
       .getByRole('navigation', { name: 'Espace pro' })
@@ -121,19 +121,18 @@ test.describe('Inscription pro', () => {
       page.getByRole('dialog', { name: 'Plus' }).getByRole('link', { name: 'Mon compte' }),
     ).toBeVisible();
 
-    // ONB-06b : SIREN vérifié à l'inscription + décennale envoyée → fiche en ligne.
+    // ONB-06b : en ligne sans décennale ; l'attestation envoyée passe en vérification.
     await page.goto('/pro/fiche');
     await expect(
-      page.getByRole('region', { name: 'En-tête de la fiche' }).getByText('Fiche hors ligne'),
+      page.getByRole('region', { name: 'En-tête de la fiche' }).getByText('Fiche en ligne'),
     ).toBeVisible();
+    await expect(page.getByText(/Assurance non vérifiée/).first()).toBeVisible();
     await page.getByLabel('Type de document').selectOption('decennale');
     await page.getByLabel(/^Fichier/).setInputFiles(PDF);
     await page.getByRole('button', { name: 'Envoyer le document' }).click();
-    await expect(page.getByText(/Votre fiche est en ligne/).first()).toBeVisible({
-      timeout: 15_000,
-    });
     await expect(page.getByRole('list', { name: 'Documents envoyés' })).toContainText(
       'En cours de vérification',
+      { timeout: 15_000 },
     );
   });
 

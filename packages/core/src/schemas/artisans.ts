@@ -21,6 +21,7 @@ import {
 
 export const LABELS = [
   'decennale',
+  'rc_pro',
   'rge',
   'qualibat',
   'local',

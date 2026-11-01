@@ -3,7 +3,7 @@
 import { Chargeur } from '@ph/ui';
 import { BANNIERES_MAX_VISIBILITE } from '@ph/core/annuaire';
 import { fichiers } from '@ph/firebase/chemins';
-import { CrownIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react';
+import { CrownIcon, FolderOpenIcon, ImageIcon, TrashIcon } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 import { CarrouselBannieres } from '@/features/fiche/CarrouselBannieres';
@@ -104,9 +104,14 @@ export function Banniere({
             : {})}
         />
       ) : modifiable ? (
-        <span className="flex size-full flex-col items-center justify-center gap-1 text-sm text-neutre-800">
+        <span className="flex size-full flex-col items-center justify-center gap-2 text-sm text-neutre-800">
           <ImageIcon size={26} aria-hidden="true" />
-          Bannière (1600 × 500 px) : glissez une image ici
+          Bannière (1600 × 500 px) : glissez une image ici, ou
+          {/* Même champ fichier que « Ajouter une bannière » : ouvre l'explorateur de fichiers. */}
+          <label htmlFor={id} className={pastille}>
+            <FolderOpenIcon size={18} aria-hidden="true" />
+            Choisir une image sur mon ordinateur
+          </label>
         </span>
       ) : null}
       {modifiable ? (
