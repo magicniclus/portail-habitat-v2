@@ -83,7 +83,7 @@ export function Resultats({
             </span>{' '}
             Artisans à la une
             <span className="text-[13px] font-normal text-neutre-700">
-              — artisans recommandés et vérifiés
+              — artisans Premium Portail Travaux, vérifiés
             </span>
           </h2>
           <div className="grid gap-3.5">

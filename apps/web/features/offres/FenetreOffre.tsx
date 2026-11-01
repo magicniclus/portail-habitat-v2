@@ -8,7 +8,7 @@ import { ArrowCounterClockwiseIcon, CrownSimpleIcon, LockKeyIcon } from '@phosph
 import { useState, type ReactNode } from 'react';
 import { usePaiement } from '@/features/abonnement/usePaiement';
 import { BandeauOffre } from './BandeauOffre';
-import { ChoixFormule } from './ChoixFormule';
+import { avecOffreComplete, ChoixFormule } from './ChoixFormule';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
 
@@ -39,12 +39,14 @@ export function FenetreOffre({
   const [interne, setInterne] = useState(false);
   const ouverte = imposee ?? interne;
   const setOuverte = onOuverte ?? setInterne;
-  // Formule payée : celle demandée par défaut, ou l'offre complète si l'artisan la choisit.
-  const [choisie, setChoisie] = useState(formule);
-  const { payer, enCours, erreur } = usePaiement(choisie);
-  const c = CONTENU_OFFRES[choisie];
-  const r = recapPaiement(choisie);
-  const nom = NOMS_FORMULE[choisie];
+  // Avec l'offre complète à côté, rien n'est coché d'avance : l'artisan choisit sa formule.
+  const choix = avecOffreComplete(formule);
+  const [choisie, setChoisie] = useState<FormulePayante | null>(choix ? null : formule);
+  const payee = choisie ?? formule;
+  const { payer, enCours, erreur } = usePaiement(payee);
+  const c = CONTENU_OFFRES[payee];
+  const r = recapPaiement(payee);
+  const nom = NOMS_FORMULE[payee];
   return (
     <Modal
       open={ouverte}
@@ -67,36 +69,42 @@ export function FenetreOffre({
             ),
           }
         : {})}
-      titre={`Passer à ${nom}`}
+      titre={`Passer à ${NOMS_FORMULE[formule]}`}
+      {...(choix ? { className: 'sm:w-[min(880px,calc(100vw-32px))]' } : {})}
       description={raison ?? CONTENU_OFFRES[formule].raison}
       actions={
         <>
           <Button variant="fantome" onClick={() => setOuverte(false)}>
             Plus tard
           </Button>
-          <Button chargement={enCours} onClick={payer} disabled={enCours}>
+          <Button chargement={enCours} onClick={payer} disabled={enCours || !choisie}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>
       }
     >
       <div className="grid gap-4">
-        <BandeauOffre formule={choisie} />
-        <ChoixFormule demandee={formule} valeur={choisie} onChange={setChoisie} />
-        <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
-          <div className="flex justify-between gap-3">
-            <dt>{nom} · mensuel</dt>
-            <dd className="m-0">{eur(r.montantHt)} HT</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt>TVA 20 %</dt>
-            <dd className="m-0">{eur(r.tva)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-t border-trait pt-1.5 font-bold">
-            <dt>Total TTC</dt>
-            <dd className="m-0">{eur(r.montantTtc)}</dd>
-          </div>
-        </dl>
+        {choix ? (
+          <ChoixFormule demandee={formule} valeur={choisie} onChange={setChoisie} />
+        ) : (
+          <BandeauOffre formule={formule} />
+        )}
+        {choisie ? (
+          <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
+            <div className="flex justify-between gap-3">
+              <dt>{nom} · mensuel</dt>
+              <dd className="m-0">{eur(r.montantHt)} HT</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt>TVA 20 %</dt>
+              <dd className="m-0">{eur(r.tva)}</dd>
+            </div>
+            <div className="flex justify-between gap-3 border-t border-trait pt-1.5 font-bold">
+              <dt>Total TTC</dt>
+              <dd className="m-0">{eur(r.montantTtc)}</dd>
+            </div>
+          </dl>
+        ) : null}
         <ul className="m-0 grid list-none gap-1.5 p-0 text-sm text-neutre-800 sm:grid-cols-2">
           <li className="flex items-center gap-1.5">
             <ArrowCounterClockwiseIcon size={16} aria-hidden="true" className="text-accent-700" />

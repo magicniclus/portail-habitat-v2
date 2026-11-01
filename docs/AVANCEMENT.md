@@ -983,3 +983,7 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **Annuaire** : plus d'espace blanc sous le pied de page sans résultat (les filtres collants dépassaient : `overflow-clip` sur le contenu).
   - **Éditeur** : avant la première mesure, l'aperçu prend la largeur de sa colonne (il occupait 1200 px et élargissait la page le temps du chargement).
   - **Ma fiche** : le bouton « Remplir / Réécrire ma fiche avec l'IA » est à gauche de la barre de progression (seul s'il n'y a plus de barre).
+- 01/11/2026 — **Choix de l'offre et label Premium** :
+  - Fenêtre d'offre et fenêtre de paiement : la formule demandée et « Tout inclus » **côte à côte** (l'une sous l'autre sur mobile), chacune avec ses avantages détaillés en colonne. **Aucune n'est cochée d'avance** (le propriétaire laissait le choix entre « la plus haute » et « aucune » : pré-cocher la plus chère serait un piège) ; le récapitulatif HT, TVA et TTC et « Continuer vers le paiement » suivent le choix.
+  - Avantages réécrits : mise en avant sur Portail Travaux, label Premium, site optimisé pour Google par l'IA, appels d'offres 12 h avant les autres… Le « 10 fois plus d'opportunités » demandé n'est pas affiché : aucun chiffre non sourcé en production.
+  - **Label « Premium Portail Travaux »** (`LABEL_PREMIUM`), à la place de « Artisan recommandé », sur la fiche publique et les cartes de l'annuaire. Même droit qu'avant : `badgeRecommande`, écrit seulement par le webhook (formules avec Fiche Pro).

@@ -235,8 +235,11 @@ test.describe('Site internet artisan', () => {
       await expect(page.getByRole('dialog')).toContainText('email de contact');
       await fiche.update({ emailContact: 'contact@proprio-e2e.test' });
       await page.getByRole('dialog').getByRole('button', { name: 'Continuer' }).click();
-      // Sans Site Pro : rien n'est commandé, la fenêtre d'offre s'ouvre.
-      await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
+      // Sans Site Pro : rien n'est commandé, la fenêtre d'offre s'ouvre (aucune formule cochée).
+      const payer = page.getByRole('button', { name: 'Continuer vers le paiement' });
+      await expect(payer).toBeDisabled();
+      await page.getByRole('radio', { name: /^Site Pro/ }).check();
+      await expect(payer).toBeEnabled();
       await page.keyboard.press('Escape');
       await expect(page.getByText(/est mis de côté pour vous/)).toBeVisible();
       expect(
@@ -358,6 +361,7 @@ test.describe('Site internet artisan', () => {
       const apercu = page.frameLocator('iframe[title="Aperçu de la page"]');
       await expect(apercu.getByRole('heading', { name: 'Accueil IA e2e' })).toBeVisible();
       await page.getByRole('button', { name: 'Activer Site Pro' }).click();
+      await page.getByRole('radio', { name: /Tout inclus/ }).check();
       await expect(page.getByRole('button', { name: 'Continuer vers le paiement' })).toBeEnabled();
       await page.getByRole('button', { name: 'Plus tard' }).click();
       // Fermer l'aperçu : le brouillon n'a pas changé, la publication redevient possible.

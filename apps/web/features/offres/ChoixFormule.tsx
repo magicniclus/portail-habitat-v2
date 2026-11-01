@@ -8,15 +8,18 @@ import {
   type FormulePayante,
 } from '@ph/core/paiements';
 import { cn } from '@ph/ui';
-import { CrownSimpleIcon } from '@phosphor-icons/react';
+import { CheckCircleIcon, CrownSimpleIcon } from '@phosphor-icons/react';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
-const COMPLETE: FormulePayante = 'tout_inclus';
+const OFFRE_COMPLETE: FormulePayante = 'tout_inclus';
+
+/** L'offre complète est proposée à côté de la formule demandée (sauf si c'est elle). */
+export const avecOffreComplete = (f: FormulePayante) => f !== OFFRE_COMPLETE;
 
 /**
- * Choix avant Stripe (fenêtre d'offre) : la formule demandée, cochée par défaut, et l'offre
- * complète « Tout inclus » mise en avant avec la différence de prix. Rien n'est pré-coché à la
- * place de l'artisan.
+ * Choix avant Stripe (fenêtre d'offre, fenêtre de paiement) : la formule demandée et l'offre
+ * complète « Tout inclus », côte à côte, chacune avec ses avantages en colonne. Aucune n'est
+ * cochée d'avance : l'artisan choisit, puis le récapitulatif et le paiement suivent.
  */
 export function ChoixFormule({
   demandee,
@@ -24,59 +27,71 @@ export function ChoixFormule({
   onChange,
 }: {
   demandee: FormulePayante;
-  valeur: FormulePayante;
+  valeur: FormulePayante | null;
   onChange: (f: FormulePayante) => void;
 }) {
-  if (demandee === COMPLETE) return null;
-  const ecart = PRIX_FORMULES_HT[COMPLETE] - PRIX_FORMULES_HT[demandee];
-  const options: { f: FormulePayante; titre: string; detail: string }[] = [
-    {
-      f: demandee,
-      titre: NOMS_FORMULE[demandee],
-      detail: `${eur(PRIX_FORMULES_HT[demandee])} HT / mois`,
-    },
-    {
-      f: COMPLETE,
-      titre: NOMS_FORMULE[COMPLETE],
-      detail: `${eur(PRIX_FORMULES_HT[COMPLETE])} HT / mois · seulement ${eur(ecart)} de plus`,
-    },
-  ];
+  if (!avecOffreComplete(demandee)) return null;
+  const ecart = PRIX_FORMULES_HT[OFFRE_COMPLETE] - PRIX_FORMULES_HT[demandee];
   return (
-    <fieldset className="m-0 grid gap-2 border-0 p-0">
-      <legend className="mb-2 p-0 text-[15px] font-bold">Votre formule</legend>
-      {options.map(({ f, titre, detail }) => {
-        const complete = f === COMPLETE;
+    <fieldset className="m-0 grid min-w-0 gap-3 border-0 p-0 sm:grid-cols-2">
+      <legend className="mb-3 p-0 text-[15px] font-bold">Choisissez votre formule</legend>
+      {[demandee, OFFRE_COMPLETE].map((f) => {
+        const complete = f === OFFRE_COMPLETE;
         const choisie = valeur === f;
+        const c = CONTENU_OFFRES[f];
         return (
           <label
             key={f}
             className={cn(
-              'relative grid min-h-11 cursor-pointer grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1 rounded-card border p-3.5 has-focus-visible:outline-2 has-focus-visible:outline-accent',
-              choisie ? 'border-2 border-accent bg-accent-100' : 'border-trait bg-blanc',
+              'relative flex cursor-pointer flex-col gap-3 rounded-card border-2 p-4 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent',
+              choisie
+                ? 'border-accent bg-accent-100'
+                : complete
+                  ? 'border-premium bg-blanc'
+                  : 'border-trait bg-blanc',
             )}
           >
-            <input
-              type="radio"
-              name="formule-offre"
-              checked={choisie}
-              onChange={() => onChange(f)}
-              className="mt-1 size-5 accent-accent-action"
-            />
-            <span className="grid gap-0.5">
-              <span className="flex flex-wrap items-center gap-2 font-bold">
-                {titre}
-                {complete ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-premium bg-premium-fond px-2 py-0.5 text-xs text-premium-texte">
-                    <CrownSimpleIcon size={12} weight="fill" aria-hidden="true" />
-                    Recommandé
-                  </span>
-                ) : null}
+            {complete ? (
+              <span className="absolute -top-3 left-4 inline-flex items-center gap-1 rounded-full border border-premium bg-premium-fond px-2.5 py-0.5 text-xs font-bold text-premium-texte">
+                <CrownSimpleIcon size={12} weight="fill" aria-hidden="true" />
+                Recommandé
               </span>
-              <span className="text-sm text-neutre-800">{detail}</span>
+            ) : null}
+            <span className="flex items-start gap-2.5">
+              <input
+                type="radio"
+                name="formule-offre"
+                checked={choisie}
+                onChange={() => onChange(f)}
+                className="mt-1 size-5 flex-none accent-accent-action"
+              />
+              <span className="grid gap-0.5">
+                <strong className="text-[17px]">{NOMS_FORMULE[f]}</strong>
+                <span className="text-sm text-neutre-800">{c.promesse}</span>
+              </span>
+            </span>
+            <span className="flex flex-wrap items-baseline gap-x-1.5">
+              <strong className="text-2xl text-accent-800">{eur(PRIX_FORMULES_HT[f])}</strong>
+              <span className="text-sm text-neutre-800">HT / mois</span>
               {complete ? (
-                <span className="text-sm text-neutre-700">{CONTENU_OFFRES[COMPLETE].accroche}</span>
+                <span className="basis-full text-sm font-semibold text-premium-texte">
+                  seulement {eur(ecart)} de plus par mois
+                </span>
               ) : null}
             </span>
+            <ul className="m-0 grid list-none gap-2 p-0 text-sm leading-[20px]">
+              {c.avantages.map((a) => (
+                <li key={a} className="flex gap-2">
+                  <CheckCircleIcon
+                    size={18}
+                    weight="fill"
+                    aria-hidden="true"
+                    className="mt-px flex-none text-accent-action"
+                  />
+                  {a}
+                </li>
+              ))}
+            </ul>
           </label>
         );
       })}

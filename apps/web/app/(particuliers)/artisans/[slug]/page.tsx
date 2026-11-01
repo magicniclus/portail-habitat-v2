@@ -1,3 +1,4 @@
+import { LabelPremium } from '@/features/annuaire/LabelPremium';
 import { jsonLdArtisan } from '@ph/core/annuaire';
 import { formatFourchette, formatTel } from '@ph/core/format';
 import { bouton, NoteMoyenne } from '@ph/ui';
@@ -95,11 +96,7 @@ export default async function PageFiche({ params }: { params: Params }) {
             </span>
           )}
           <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-1.5">
-            {f.badgeRecommande ? (
-              <span className="w-fit rounded-pill bg-premium-fond px-2.5 py-0.5 text-xs font-bold tracking-[0.04em] text-premium-texte uppercase">
-                Artisan recommandé
-              </span>
-            ) : null}
+            {f.badgeRecommande ? <LabelPremium /> : null}
             <h1 className="m-0 text-[clamp(26px,3.4vw,38px)] leading-[1.1]">{f.nomCommercial}</h1>
             <p className="m-0 text-base text-neutre-800">
               {metier} · {f.ville}

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { routes } from '@/lib/routes';
 import { BandeauOffre } from '@/features/offres/BandeauOffre';
-import { ChoixFormule } from '@/features/offres/ChoixFormule';
+import { avecOffreComplete, ChoixFormule } from '@/features/offres/ChoixFormule';
 import { usePaiement } from './usePaiement';
 
 const eur = (c: number) => formatEuros(c, { decimales: 'toujours' });
@@ -34,9 +34,12 @@ export function FenetrePaiement({
   const [ouverte, setOuverte] = useState(true);
   // Offre complète proposée à côté (sauf avec un code promo, propre à la formule demandée, ou si
   // l'artisan l'a déjà).
-  const [choisie, setChoisie] = useState(formule);
-  const { payer, enCours, erreur } = usePaiement(choisie, code?.code);
-  const r = recapPaiement(choisie);
+  // Rien n'est coché d'avance quand les deux formules sont proposées.
+  const choix = !code && actuelle !== 'tout_inclus' && avecOffreComplete(formule);
+  const [choisie, setChoisie] = useState<FormulePayante | null>(choix ? null : formule);
+  const payee = choisie ?? formule;
+  const { payer, enCours, erreur } = usePaiement(payee, code?.code);
+  const r = recapPaiement(payee);
   const montee = r.montantHt > prixActuelHt;
   const fermer = (o: boolean) => {
     setOuverte(o);
@@ -52,46 +55,50 @@ export function FenetrePaiement({
     <Modal
       open={ouverte}
       onOpenChange={fermer}
-      titre={`Passer à ${NOMS_FORMULE[choisie]}`}
+      titre={`Passer à ${NOMS_FORMULE[formule]}`}
+      {...(choix ? { className: 'sm:w-[min(880px,calc(100vw-32px))]' } : {})}
       actions={
         <>
           <Button variant="fantome" onClick={() => fermer(false)}>
             Annuler
           </Button>
-          <Button chargement={enCours} onClick={payer} disabled={enCours}>
+          <Button chargement={enCours} onClick={payer} disabled={enCours || !choisie}>
             {enCours ? 'Un instant…' : 'Continuer vers le paiement'}
           </Button>
         </>
       }
     >
       <div className="grid gap-4">
-        <BandeauOffre formule={choisie} />
-        {code || actuelle === 'tout_inclus' ? null : (
+        {choix ? (
           <ChoixFormule demandee={formule} valeur={choisie} onChange={setChoisie} />
+        ) : (
+          <BandeauOffre formule={formule} />
         )}
-        <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
-          <div className="flex justify-between gap-3">
-            <dt>{NOMS_FORMULE[choisie]} · mensuel</dt>
-            <dd className="m-0">{eur(r.montantHt)} HT</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt>TVA 20 %</dt>
-            <dd className="m-0">{eur(r.tva)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-t border-trait pt-1.5 font-bold">
-            <dt>Total TTC</dt>
-            <dd className="m-0" data-testid="total-ttc">
-              {eur(r.montantTtc)}
-            </dd>
-          </div>
-        </dl>
+        {choisie ? (
+          <dl className="m-0 grid gap-1 rounded-card border border-trait p-4 text-[15px]">
+            <div className="flex justify-between gap-3">
+              <dt>{NOMS_FORMULE[payee]} · mensuel</dt>
+              <dd className="m-0">{eur(r.montantHt)} HT</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt>TVA 20 %</dt>
+              <dd className="m-0">{eur(r.tva)}</dd>
+            </div>
+            <div className="flex justify-between gap-3 border-t border-trait pt-1.5 font-bold">
+              <dt>Total TTC</dt>
+              <dd className="m-0" data-testid="total-ttc">
+                {eur(r.montantTtc)}
+              </dd>
+            </div>
+          </dl>
+        ) : null}
         {code ? (
           <Banner tone="succes">
             Code {code.code} : −{code.pourcentage} % appliqué au paiement, valable jusqu’au{' '}
             {formatDate(code.expireLe, 'long')}.
           </Banner>
         ) : null}
-        <p className="m-0 text-sm text-neutre-700">{note} Sans engagement.</p>
+        {choisie ? <p className="m-0 text-sm text-neutre-700">{note} Sans engagement.</p> : null}
         <p className="m-0 text-sm text-neutre-700">
           Paiement sécurisé par Stripe, 3-D Secure si votre banque le demande. Aucune carte n’est
           saisie sur Portail Travaux.

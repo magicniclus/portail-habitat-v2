@@ -26,6 +26,9 @@ test.describe('Statistiques', () => {
     // PAY-10 : la fonction payante ouvre la fenêtre d'offre (HT, TVA, TTC), rien ne s'active.
     await page.getByRole('button', { name: "Voir l'offre Fiche Pro" }).click();
     const offre = page.getByRole('dialog', { name: 'Passer à Fiche Pro' });
+    // Fiche Pro et Tout inclus côte à côte, aucune cochée ; le récapitulatif suit le choix.
+    await expect(offre.getByRole('button', { name: 'Continuer vers le paiement' })).toBeDisabled();
+    await offre.getByRole('radio', { name: /^Fiche Pro/ }).check();
     await expect(offre).toContainText('29,00 € HT');
     await expect(offre).toContainText('34,80 €');
     // Paiement direct (choix du 27/10/2026) : aucune case ici, CGV et carte sur la page Stripe.

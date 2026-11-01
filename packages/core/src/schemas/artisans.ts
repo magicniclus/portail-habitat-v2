@@ -356,7 +356,7 @@ export const artisanPublic = z
     budgetCle: z.enum(['petit', 'moyen', 'grand']).optional(),
     delaiDispoJours: z.number().int().nonnegative().optional(),
     dispoLabel: z.string().optional(),
-    /** Priorité d'affichage dans le secteur et badge « Artisan recommandé » (Fiche Pro). */
+    /** Priorité d'affichage dans le secteur et label « Premium Portail Travaux » (Fiche Pro). */
     misEnAvant: z.boolean(),
     badgeRecommande: z.boolean(),
     argumentPremium: z.string().max(140).optional(),

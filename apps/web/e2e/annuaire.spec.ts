@@ -45,7 +45,7 @@ test.describe('Annuaire', () => {
   }) => {
     await page.goto('/artisans');
     const une = page.getByRole('region', { name: /Artisans à la une/ });
-    await expect(une.locator('article').first()).toContainText('Artisan recommandé');
+    await expect(une.locator('article').first()).toContainText('Premium Portail Travaux');
     const premiers = await page
       .locator('#resultats article')
       .evaluateAll((els) =>

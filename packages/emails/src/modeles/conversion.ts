@@ -266,7 +266,7 @@ export const modelesConversion = {
           ]
         : [
             para(
-              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Fiche Pro, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et le badge « Artisan recommandé ».',
+              'Les particuliers contactent d’abord les artisans qu’ils voient en premier. Avec Fiche Pro, votre fiche passe en tête de votre secteur, avec votre téléphone affiché et le label « Premium Portail Travaux ».',
             ),
             offreVisibilite,
             bouton('Passer en tête de mon secteur', d.lien),

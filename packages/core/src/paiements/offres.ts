@@ -15,15 +15,18 @@ export interface ContenuOffre {
   note?: string;
 }
 
+/** Label des entreprises qui ont la visibilité Fiche Pro (`droits.badgeRecommande`, webhook). */
+export const LABEL_PREMIUM = 'Premium Portail Travaux';
+
 export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
   fiche_pro: {
     promesse: 'Soyez l’artisan qu’on appelle en premier',
     accroche:
       'Votre fiche passe devant dans votre secteur et votre numéro s’affiche : les particuliers vous contactent directement, sans intermédiaire.',
     avantages: [
-      'Priorité d’affichage dans votre secteur',
-      'Badge « Artisan recommandé » qui rassure au premier coup d’œil',
-      'Téléphone et site visibles : on vous appelle directement',
+      'Mis en avant sur Portail Travaux : en tête de votre secteur',
+      `Label « ${LABEL_PREMIUM} » sur votre fiche et dans l’annuaire`,
+      'Votre téléphone et votre site visibles : on vous appelle directement',
       'Photos et réalisations illimitées pour montrer votre travail',
       'Statistiques détaillées : vues, appels et demandes de devis',
     ],
@@ -35,8 +38,8 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
     accroche:
       'Votre nom de domaine, un site qui inspire confiance, et l’IA qui écrit à votre place : vous gardez votre temps pour vos chantiers.',
     avantages: [
+      'Site internet créé et optimisé pour Google par l’IA : pages, textes, référencement',
       'Votre nom de domaine inclus (.fr, .com ou .eu), à votre nom',
-      'IA complète : pages, textes et référencement créés pour vous',
       'Blog : 5 articles par mois, en un clic ou en pilote automatique',
       'Formulaire sur mesure et SMS à chaque demande : rappelez le premier',
       'Votre marque seule, sans la mention « Propulsé par Portail Travaux »',
@@ -50,8 +53,10 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
     accroche:
       'Votre fiche en tête de votre secteur et votre site à votre nom, réunis : 4 € de moins par mois que séparément.',
     avantages: [
-      'Tout Fiche Pro : priorité d’affichage, badge, téléphone visible',
-      'Tout Site Pro : nom de domaine, IA du site, sans mention',
+      'Mis en avant sur Portail Travaux : en tête de votre secteur',
+      `Label « ${LABEL_PREMIUM} » sur votre fiche et dans l’annuaire`,
+      'Votre téléphone et votre site visibles',
+      'Site internet optimisé pour Google par l’IA, nom de domaine inclus',
       'Blog : 5 articles rédigés par l’IA chaque mois',
       'Statistiques détaillées de la fiche et du site',
     ],
@@ -60,14 +65,16 @@ export const CONTENU_OFFRES: Record<FormulePayante, ContenuOffre> = {
   tout_inclus: {
     promesse: 'Tout Portail Travaux, avec une longueur d’avance',
     accroche:
-      'Fiche, site, blog et appels d’offres : vous voyez les chantiers 12 h avant les autres et l’IA travaille deux fois plus pour vous.',
+      'Le maximum d’occasions de chantiers : en tête de votre secteur, un site optimisé par l’IA et les appels d’offres avant les autres.',
     avantages: [
-      'Fiche Pro et Site Pro réunis',
-      'Appels d’offres visibles 12 h avant les autres',
-      '−15 % sur les appels d’offres',
-      'Blog : 15 articles IA par mois, pilote jusqu’à 2 articles par semaine',
-      'Quotas IA doublés sur le site et la fiche',
-      'Support prioritaire',
+      'Mis en avant sur Portail Travaux : en tête de votre secteur',
+      `Label « ${LABEL_PREMIUM} » sur votre fiche et dans l’annuaire`,
+      'Votre téléphone et votre site visibles : on vous appelle directement',
+      'Site internet optimisé pour Google par l’IA, nom de domaine inclus',
+      'Appels d’offres visibles 12 h avant les autres artisans',
+      '−15 % sur chaque appel d’offres',
+      'Blog : 15 articles IA par mois, en pilote automatique',
+      'Quotas IA doublés et support prioritaire',
     ],
     raison: 'Fonction incluse dans Tout inclus.',
   },
