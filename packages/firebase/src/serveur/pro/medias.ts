@@ -5,7 +5,7 @@ import type { entreeRealisation } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { debutYoutube, idYoutube, lienYoutube } from '@ph/core/sites';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { cheminDepuisUrlPublique, urlPubliqueFichier, type bucketFichiers } from '../../admin';
+import { cheminDepuisUrlPublique, urlPubliqueAvecJeton, type bucketFichiers } from '../../admin';
 import { chemins, fichiers } from '../../chemins';
 import { completudeDepuisBase } from './fiche';
 
@@ -14,7 +14,10 @@ type Contexte = { artisanId: string; uid: string };
 
 const IMAGES = /^image\/(jpeg|png|webp|avif)$/;
 
-/** Le fichier existe dans Storage, est une image et respecte la taille de storage.rules. */
+/**
+ * Le fichier existe dans Storage, est une image et respecte la taille de storage.rules ; renvoie
+ * son adresse publique (avec jeton de téléchargement).
+ */
 async function verifierImage(s: Services, chemin: string, maxMo: number) {
   const fichier = s.bucket.file(chemin);
   const [existe] = await fichier.exists();
@@ -22,6 +25,7 @@ async function verifierImage(s: Services, chemin: string, maxMo: number) {
   const [meta] = await fichier.getMetadata();
   if (!IMAGES.test(meta.contentType ?? '') || Number(meta.size) > maxMo * 1024 * 1024)
     throw new ErreurMetier('ENTREE_INVALIDE', `Image JPEG, PNG ou WebP de ${maxMo} Mo au plus.`);
+  return urlPubliqueAvecJeton(fichier);
 }
 
 /** Membre relu dans la transaction : droit demandé, sinon refus. */
@@ -51,8 +55,7 @@ async function majCompletude(
 /** Logo de l'entreprise (propriétaire ou gérant : `fiche.modifier`), lisible publiquement. */
 export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: string) {
   const chemin = fichiers.logo(ctx.artisanId, nomFichier);
-  await verifierImage(s, chemin, 2);
-  const logoUrl = urlPubliqueFichier(chemin);
+  const logoUrl = await verifierImage(s, chemin, 2);
   return s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
     const { ref, donnees } = await majCompletude(t, s, ctx, { logoUrl });
@@ -79,8 +82,7 @@ async function supprimerBannieres(s: Services, ctx: Contexte, urls: string[]) {
  */
 export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier: string) {
   const chemin = fichiers.banniere(ctx.artisanId, nomFichier);
-  await verifierImage(s, chemin, 5);
-  const url = urlPubliqueFichier(chemin);
+  const url = await verifierImage(s, chemin, 5);
   const { bannieres, retirees } = await s.db.runTransaction(async (t) => {
     await exiger(t, s, ctx, 'fiche.modifier');
     const ref = s.db.doc(chemins.artisan(ctx.artisanId));
@@ -189,9 +191,8 @@ export async function enregistrerRealisation(
   const photos = await Promise.all(
     e.photos.map(async (p) => {
       const chemin = fichiers.realisation(ctx.artisanId, e.rid, p.nomFichier);
-      await verifierImage(s, chemin, 8);
       return {
-        url: urlPubliqueFichier(chemin),
+        url: await verifierImage(s, chemin, 8),
         storagePath: chemin,
         largeur: p.largeur,
         hauteur: p.hauteur,

@@ -2,7 +2,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import type { entreeMediaSite } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { urlPubliqueFichier, type bucketFichiers } from '../../admin';
+import { urlPubliqueAvecJeton, urlPubliqueFichier, type bucketFichiers } from '../../admin';
 import { chemins, fichiers } from '../../chemins';
 import { exigerSite, type ContexteSite, type ServicesSites } from './edition';
 
@@ -33,6 +33,8 @@ export async function enregistrerMediaSite(
   const l = LIMITES[usage];
   if (!l.type.test(meta.contentType ?? '') || Number(meta.size) > l.mo * 1024 * 1024)
     throw new ErreurMetier('ENTREE_INVALIDE', `${l.message} de ${l.mo} Mo au plus.`);
+  // Adresse avec jeton : lisible même si les règles Storage du projet ne sont pas déployées.
+  const url = await urlPubliqueAvecJeton(fichier);
   const ref = s.db.collection(chemins.mediasSite(ctx.artisanId)).doc();
   await s.db.runTransaction(async (t) => {
     await exigerSite(s, t, ctx);
@@ -40,13 +42,14 @@ export async function enregistrerMediaSite(
       schemaVersion: 1,
       nom: e.nom ?? e.nomFichier,
       storagePath: chemin,
+      url,
       mime: meta.contentType,
       tailleOctets: Number(meta.size),
       usage,
       createdAt: Timestamp.fromMillis(s.horloge()),
     });
   });
-  return { cle: `up:${ref.id}`, url: urlPubliqueFichier(chemin) };
+  return { cle: `up:${ref.id}`, url };
 }
 
 /** Médias importés du site (images et fichiers) : clé `up:{id}` → URL publique. */
@@ -62,7 +65,7 @@ export async function lireMediasSite(
   return r.docs.map((d) => ({
     cle: `up:${d.id}`,
     nom: d.get('nom') as string,
-    url: urlPubliqueFichier(d.get('storagePath') as string),
+    url: (d.get('url') as string | undefined) ?? urlPubliqueFichier(d.get('storagePath') as string),
     usage: d.get('usage') === 'fichier' ? 'fichier' : 'image',
   }));
 }

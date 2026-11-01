@@ -110,7 +110,11 @@ async function charger(hote: string): Promise<SiteServi | null> {
     importees: Object.fromEntries(
       medias
         .filter((m) => m.exists)
-        .map((m) => [m.id, urlPubliqueFichier(m.get('storagePath') as string)]),
+        .map((m) => [
+          m.id,
+          (m.get('url') as string | undefined) ??
+            urlPubliqueFichier(m.get('storagePath') as string),
+        ]),
     ),
   };
 }

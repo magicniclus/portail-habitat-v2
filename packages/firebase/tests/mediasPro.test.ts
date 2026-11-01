@@ -132,7 +132,13 @@ describe('enregistrerBanniere', () => {
     await image(fichiers.banniere('a1', 'b2.png'));
     await enregistrerBanniere(s(), ctx('p1'), 'b1.png');
     const r = await enregistrerBanniere(s(), ctx('p1'), 'b2.png');
-    expect(r.bannieres).toEqual([urlPubliqueFichier(fichiers.banniere('a1', 'b2.png'))]);
+    // Adresse avec jeton de téléchargement : lisible sans dépendre des règles déployées.
+    expect(r.bannieres).toHaveLength(1);
+    expect(r.bannieres[0]).toMatch(/&token=[\w-]+$/);
+    expect(r.bannieres[0]!.startsWith(urlPubliqueFichier(fichiers.banniere('a1', 'b2.png')))).toBe(
+      true,
+    );
+    expect(cheminDepuisUrlPublique(r.bannieres[0]!)).toBe(fichiers.banniere('a1', 'b2.png'));
     expect(await existe('b1.png')).toBe(false);
   });
 

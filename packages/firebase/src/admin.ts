@@ -1,6 +1,7 @@
 import { cert, getApp, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAppCheck } from 'firebase-admin/app-check';
 import { getStorage } from 'firebase-admin/storage';
+import { randomUUID } from 'node:crypto';
 
 /** Projet utilisé par les émulateurs : le préfixe « demo- » interdit tout appel à un vrai projet. */
 export const PROJET_EMULATEUR = 'demo-portail-travaux';
@@ -60,7 +61,7 @@ export function bucketReplays(env: NodeJS.ProcessEnv = process.env) {
 /** Adresse de lecture d'un fichier PUBLIC selon storage.rules (logo, photos de réalisations). */
 /** Chemin Storage d'une URL produite par `urlPubliqueFichier` ; `null` si elle n'en vient pas. */
 export function cheminDepuisUrlPublique(url: string): string | null {
-  const m = /\/o\/([^?]+)\?alt=media$/.exec(url);
+  const m = /\/o\/([^?]+)\?alt=media(?:&token=[\w-]+)?$/.exec(url);
   if (!m) return null;
   try {
     return decodeURIComponent(m[1]!);
@@ -74,4 +75,24 @@ export function urlPubliqueFichier(chemin: string, env: NodeJS.ProcessEnv = proc
     ? `http://${env.FIREBASE_STORAGE_EMULATOR_HOST}`
     : 'https://firebasestorage.googleapis.com';
   return `${hote}/v0/b/${nomBucket(env)}/o/${encodeURIComponent(chemin)}?alt=media`;
+}
+
+type FichierStockage = ReturnType<ReturnType<typeof bucketFichiers>['file']>;
+
+/**
+ * Adresse publique avec jeton de téléchargement (comme `getDownloadURL`) : l'image se lit sans
+ * dépendre des règles Storage déployées (projet de développement sans `storage.rules`, règles
+ * croisées indisponibles). Réservé aux fichiers PUBLICS ; le jeton est créé s'il manque.
+ */
+export async function urlPubliqueAvecJeton(
+  fichier: FichierStockage,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<string> {
+  const [meta] = await fichier.getMetadata();
+  let jeton = String(meta.metadata?.firebaseStorageDownloadTokens ?? '').split(',')[0] ?? '';
+  if (!/^[\w-]+$/.test(jeton)) {
+    jeton = randomUUID();
+    await fichier.setMetadata({ metadata: { firebaseStorageDownloadTokens: jeton } });
+  }
+  return `${urlPubliqueFichier(fichier.name, env)}&token=${jeton}`;
 }
