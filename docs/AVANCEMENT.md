@@ -1066,3 +1066,10 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Les liens du bas de chaque fiche (communes voisines, autres métiers, travaux, « Comparer les artisans ») mènent à ces pages au lieu de la recherche. Le lien « Métiers » de l'en-tête mène à `/metiers`.
   - Plan du site : index, 60 métiers, 8 métiers courants × Bordeaux et la rive droite, toutes les prestations × Bordeaux. Les autres combinaisons sont découvertes par le maillage interne.
   - Tests : `e2e/pagesLocales.spec.ts`, sitemap, `faqAnnuaire`.
+- 02/11/2026 — **Interrupteur « Fiche en ligne » et devis → facture** :
+  - L'interrupteur « Fiche en ligne » n'apparaît plus que sur Ma fiche (décision du propriétaire).
+  - **Transformer un devis en facture**, sans changer les règles serveur :
+    - dans le menu ⋮ de chaque devis de la liste, et plus seulement sur la page du devis ;
+    - dès que le devis est envoyé : un clic le marque accepté puis émet la facture (numéro sans trou, mentions vérifiées) ;
+    - « Voir la facture » apparaît ensuite dans le menu.
+  - Test e2e ajouté.

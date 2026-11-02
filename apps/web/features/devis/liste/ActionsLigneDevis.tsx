@@ -3,6 +3,8 @@
 import { ConfirmDialog, useToast } from '@ph/ui';
 import {
   CopyIcon,
+  FileTextIcon,
+  ReceiptIcon,
   EnvelopeSimpleIcon,
   DownloadSimpleIcon,
   PaperPlaneTiltIcon,
@@ -13,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
+import { peutDevenirFacture, transformerEnFacture } from '../facturation';
 import { MenuActions, type ActionMenu } from './MenuActions';
 
 /**
@@ -25,6 +28,8 @@ export function ActionsLigneDevis({
   statut,
   aPdf,
   envoye,
+  factureId,
+  peutFacturer,
 }: {
   devisId: string;
   numero: string;
@@ -32,6 +37,10 @@ export function ActionsLigneDevis({
   aPdf: boolean;
   /** L'email au client est déjà parti. */
   envoye: boolean;
+  /** Facture déjà émise depuis ce devis. */
+  factureId?: string;
+  /** Droit `factures.emettre`. */
+  peutFacturer: boolean;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -55,8 +64,31 @@ export function ActionsLigneDevis({
     });
     router.refresh();
   };
+  const versFacture = async () => {
+    const r = await transformerEnFacture(devisId, statut);
+    if (!r.ok) return toast({ titre: r.message, tone: 'danger' });
+    router.push(routes.proFactureClient(r.factureId));
+  };
   const brouillon = statut === 'brouillon';
   const actions: ActionMenu[] = [
+    ...(peutFacturer && peutDevenirFacture(statut, factureId)
+      ? [
+          {
+            libelle: 'Transformer en facture',
+            icone: <ReceiptIcon size={20} />,
+            onClick: versFacture,
+          },
+        ]
+      : []),
+    ...(factureId
+      ? [
+          {
+            libelle: 'Voir la facture',
+            icone: <FileTextIcon size={20} />,
+            href: routes.proFactureClient(factureId),
+          },
+        ]
+      : []),
     ...(brouillon
       ? [
           {

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
+import { peutDevenirFacture, transformerEnFacture } from './facturation';
 
 /** Actions d'un devis validé : PDF, envoi au client, décision, facturation (acompte, solde), archivage. */
 export function ActionsDevis({
@@ -47,6 +48,14 @@ export function ActionsDevis({
   };
   const statutDevis = (s: 'accepte' | 'refuse' | 'archive') =>
     appeler('/api/pro/devis/statut', { devisId, statut: s });
+  const versFacture = async () => {
+    setEnCours(true);
+    setErreur(null);
+    const r = await transformerEnFacture(devisId, statut);
+    setEnCours(false);
+    if (!r.ok) return setErreur(r.message);
+    router.push(routes.proFactureClient(r.factureId));
+  };
   const facturer = (type: 'facture' | 'acompte') =>
     appeler(
       '/api/pro/devis/facturer',
@@ -96,8 +105,10 @@ export function ActionsDevis({
             Facturer l’acompte
           </BoutonAction>
         ) : null}
-        {peutFacturer && statut === 'accepte' && !factureId ? (
-          <BoutonAction onClick={() => facturer('facture')} disabled={enCours}>
+        {peutFacturer &&
+        peutDevenirFacture(statut, factureId) &&
+        (statut === 'accepte' || peutGerer) ? (
+          <BoutonAction onClick={versFacture} disabled={enCours}>
             Transformer en facture
           </BoutonAction>
         ) : null}

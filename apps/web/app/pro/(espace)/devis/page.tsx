@@ -121,6 +121,7 @@ export default async function PageDevis({
         <ListeDevis
           devis={devis}
           peutGerer={acces.gerer}
+          peutFacturer={acces.facturer}
           creer={
             acces.gerer ? (
               <Link href={routes.proDevisNouveau} className={bouton()}>

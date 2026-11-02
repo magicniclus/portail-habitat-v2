@@ -146,6 +146,30 @@ test.describe('Devis & factures', () => {
     await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();
   });
 
+  test('Liste : un devis envoyé passe en facture en un clic depuis le menu', async ({
+    page,
+  }, info) => {
+    await parametres(PARAMS);
+    await connecter(page, COMPTES.proprio, '/pro/devis/nouveau');
+    await remplir(page, { email: `facture-${info.project.name}-${Date.now()}@test.local` });
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/(?!nouveau)[^/]+$/, { timeout: 20_000 });
+    const numero = (await page.getByRole('heading', { level: 1 }).textContent())!.replace(
+      'Devis ',
+      '',
+    );
+    await page.getByRole('button', { name: 'Envoyer au client' }).click();
+    await expect(page.getByText('Devis envoyé au client par email.')).toBeVisible();
+    await page.goto('/pro/devis');
+    await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
+    await page.getByRole('button', { name: 'Transformer en facture' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\//, { timeout: 20_000 });
+    await page.goto('/pro/devis');
+    await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
+    await expect(page.getByRole('link', { name: 'Voir la facture' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Transformer en facture' })).toHaveCount(0);
+  });
+
   test('« Nouvelle facture » sans devis : même feuille, émise après confirmation, PDF prêt', async ({
     page,
   }) => {

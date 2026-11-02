@@ -13,10 +13,13 @@ import { TableauDocuments } from './liste/TableauDocuments';
 export function ListeDevis({
   devis,
   peutGerer,
+  peutFacturer = false,
   creer,
 }: {
   devis: DevisResume[];
   peutGerer: boolean;
+  /** Droit `factures.emettre` (« Transformer en facture » dans le menu). */
+  peutFacturer?: boolean;
   creer?: ReactNode;
 }) {
   return (
@@ -56,6 +59,8 @@ export function ListeDevis({
               statut={d.statut}
               aPdf={d.aPdf}
               envoye={d.envoye}
+              {...(d.factureId ? { factureId: d.factureId } : {})}
+              peutFacturer={peutFacturer}
             />
           ) : null,
         };
