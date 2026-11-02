@@ -2,16 +2,19 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { artisanAAccepte, masquerCoordonnees } from '@ph/core/espace';
 import {
   etatPro,
+  etapeSuivi,
   STATUTS_ATTRIBUTION,
   transitionAttribution,
   type ActionAttribution,
+  type EtapeChoisie,
+  type EtapeSuivi,
   type EtatPro,
   type StatutAttributionPro,
 } from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
 import { DELAI_CONTESTATION_MS } from '@ph/core/leads';
 import { texteAides, type NiveauPartenaire } from '@ph/core/partenaires';
-import { Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
 
 export interface ServicesDemandesPro {
@@ -33,6 +36,8 @@ export interface DemandePro {
   details: { question: string; reponse: string }[];
   /** Demande laissée directement sur la fiche ou le site de l'artisan (sans estimation). */
   origine?: 'fiche' | 'site';
+  /** Suivi façon CRM : étape (choisie ou déduite du statut), note privée, date de relance (ms). */
+  suivi: { etape: EtapeSuivi; note: string; relanceLe?: number };
   /** `null` : pas d'estimation (demande directe). */
   estimation: { minCentimes: number; maxCentimes: number } | null;
   proposeeLe: number;
@@ -106,6 +111,12 @@ export async function lireDemandesPro(
       question: r.question,
       reponse: accepte ? r.reponse : masquerCoordonnees(r.reponse).texte,
     }));
+    const relance = (a.get('suivi.relanceLe') as Timestamp | undefined)?.toMillis();
+    const suivi = {
+      etape: etapeSuivi(statut, a.get('suivi.etape') as EtapeChoisie | undefined),
+      note: accepte ? ((a.get('suivi.note') as string | undefined) ?? '') : '',
+      ...(accepte && relance !== undefined ? { relanceLe: relance } : {}),
+    };
     const min = (d.get('estimation.minCentimes') as number | undefined) ?? 0;
     const max = (d.get('estimation.maxCentimes') as number | undefined) ?? 0;
     const adresse = d.get('adresseChantier') as { ville: string; codePostal: string };
@@ -126,6 +137,7 @@ export async function lireDemandesPro(
         codePostal: adresse.codePostal,
         precisions,
         details,
+        suivi,
         ...(origine ? { origine } : {}),
         estimation: max > 0 ? { minCentimes: min, maxCentimes: max } : null,
         proposeeLe: (a.get('proposeeLe') as Timestamp).toMillis(),
@@ -184,6 +196,40 @@ export async function repondreDemande(
     });
     return { statut: apres };
   });
+}
+
+/**
+ * Suivi façon CRM d'une demande acceptée (droit `demandes.repondre`) : étape, note privée, date de
+ * relance. Le statut de la mise en relation (facturation, devis) n'est jamais modifié ici.
+ */
+export async function majSuiviDemande(
+  s: { db: Firestore; horloge: () => number },
+  ctx: { artisanId: string; uid: string },
+  e: { demandeId: string; etape: EtapeChoisie; note?: string; relanceLe?: string },
+): Promise<null> {
+  const ref = s.db.doc(chemins.attribution(e.demandeId, ctx.artisanId));
+  await s.db.runTransaction(async (t) => {
+    await membreActif(t, s.db, ctx.artisanId, ctx.uid);
+    const a = await t.get(ref);
+    if (!a.exists) throw new ErreurMetier('INTROUVABLE');
+    if (!artisanAAccepte(a.get('statut') as StatutAttributionPro))
+      throw new ErreurMetier('PRECONDITION', 'Acceptez la demande avant de la suivre.');
+    t.update(ref, {
+      'suivi.etape': e.etape,
+      'suivi.majLe': Timestamp.fromMillis(s.horloge()),
+      'suivi.majPar': ctx.uid,
+      ...(e.note !== undefined ? { 'suivi.note': e.note || FieldValue.delete() } : {}),
+      ...(e.relanceLe !== undefined
+        ? {
+            // Midi UTC : la date ne change jamais de jour, quel que soit le fuseau.
+            'suivi.relanceLe': e.relanceLe
+              ? Timestamp.fromDate(new Date(`${e.relanceLe}T12:00:00Z`))
+              : FieldValue.delete(),
+          }
+        : {}),
+    });
+  });
+  return null;
 }
 
 /**

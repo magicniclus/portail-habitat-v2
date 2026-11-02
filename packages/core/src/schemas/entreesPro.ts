@@ -5,12 +5,26 @@ import { z } from '../zod';
 import { rayonKm, TYPES_DOCUMENT } from './artisans';
 import { codePostal, email, geo, id, telephoneFr } from './commun';
 import { idYoutube } from '../sites/video';
+import { ETAPES_CHOISIES } from '../espacePro/suivi';
 
 /** « Mes demandes » (PRO-02) : ouvrir, accepter ou refuser une demande reçue. */
 export const entreeReponseDemande = z.strictObject({
   demandeId: id,
   action: z.enum(['voir', 'accepter', 'refuser']),
   motif: z.string().trim().max(300).optional(),
+});
+
+/**
+ * Suivi façon CRM d'une demande acceptée : étape, note privée, date de relance (`AAAA-MM-JJ`).
+ * Chaîne vide : note ou relance retirée.
+ */
+export const entreeSuiviDemande = z.strictObject({
+  demandeId: id,
+  etape: z.enum(ETAPES_CHOISIES),
+  note: z.string().trim().max(2000).optional(),
+  relanceLe: z
+    .union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date invalide'), z.literal('')])
+    .optional(),
 });
 
 /** « Je m'en occupe » (PRO-03). */

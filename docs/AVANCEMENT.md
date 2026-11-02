@@ -1122,3 +1122,11 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Demande laissée sur la fiche ou le site : badge « Via votre fiche » ou « Via votre site » et titre explicite, sans estimation fictive (« 0 € – 0 € » retiré).
   - Recherche : elle porte aussi sur ces détails.
   - Tests : `demandesPro.test.ts` ; e2e `contactFiche.spec.ts` (la description apparaît côté artisan).
+- 02/11/2026 — **Mes demandes façon CRM** (demande du propriétaire) :
+  - **Étape de suivi** choisie sur chaque demande acceptée : À appeler, Appelé, Rendez-vous, Devis à faire, Devis envoyé, Gagné, Perdu. Le choix est enregistré tout de suite.
+  - **Note privée** (visible de l'équipe seulement) et **date de relance**.
+  - **Filtres** par étape, avec le nombre de demandes, plus un filtre « À relancer » (relance du jour ou passée). Les étapes vides sont masquées. Ils remplacent le menu « État » ; les 4 compteurs restent.
+  - **Étape par défaut** déduite du statut : acceptée → À appeler, devis envoyé → Devis envoyé, devis accepté → Gagné, refusée ou expirée → Perdu, non acceptée → Nouvelle.
+  - Couche privée : sans effet sur le statut de la mise en relation, la facturation ou les statistiques.
+  - **Signalé, modèle de données** : champ `suivi` sur `attributions` (DATABASE §4), écrit par le serveur seulement (`majSuiviDemande`, transaction, droit `demandes.repondre`). Route `/api/pro/demandes/suivi`. Aucune règle de sécurité modifiée.
+  - Tests : `suivi.test.ts` (core), `demandesPro.test.ts`, e2e `demandes.spec.ts`.

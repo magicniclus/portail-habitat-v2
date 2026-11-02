@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
 import { routes } from '@/lib/routes';
 import { ContesterAppelOffres } from './ContesterAppelOffres';
+import { SuiviDemande } from './SuiviDemande';
 
 const TONS: Record<EtatPro, Tone> = {
   nouveau: 'accent',
@@ -26,12 +27,15 @@ export function CarteDemandePro({
   peutDevis,
   enCours,
   agir,
+  recharger,
 }: {
   d: DemandePro;
   uid: string;
   peutDevis: boolean;
   enCours: boolean;
   agir: (action: ActionCarte) => unknown;
+  /** Relecture de la liste après une mise à jour du suivi. */
+  recharger: () => unknown;
 }) {
   const aMoi = d.assigneA?.uid === uid;
   return (
@@ -102,6 +106,7 @@ export function CarteDemandePro({
           ) : null}
         </div>
       </div>
+      {d.contact ? <SuiviDemande d={d} recharger={recharger} /> : null}
       <div className="flex flex-wrap gap-2">
         {d.etat === 'nouveau' ? (
           <>

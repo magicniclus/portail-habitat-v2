@@ -1,14 +1,17 @@
 'use client';
 
 import {
+  aRelancer,
   compterDemandesPro,
-  ETATS_PRO,
+  compterEtapes,
+  ETAPES_SUIVI,
   filtrerDemandesPro,
-  LIBELLES_ETAT_PRO,
+  LIBELLES_ETAPE,
+  type EtapeSuivi,
   type EtatPro,
 } from '@ph/core/espace-pro';
 import type { DemandePro } from '@ph/firebase/pro';
-import { Banner, EmptyState, Field, Input, Select } from '@ph/ui';
+import { Banner, cn, EmptyState, Field, Input } from '@ph/ui';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { CarteDemandePro, type ActionCarte } from './CarteDemandePro';
@@ -36,11 +39,21 @@ export function MesDemandesPro({
 }) {
   const { liste, recharger } = useDemandesPro(initiales, artisanId);
   const [q, setQ] = useState('');
-  const [etat, setEtat] = useState<EtatPro | ''>('');
+  const [etape, setEtape] = useState<EtapeSuivi | 'relance' | ''>('');
+  // Heure figée au premier rendu (relances « du jour ») : pas d'appel à Date.now pendant le rendu.
+  const [maintenant] = useState(() => Date.now());
   const [enCours, setEnCours] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const compte = compterDemandesPro(liste);
-  const affichees = filtrerDemandesPro(liste, { q, ...(etat ? { etat } : {}) });
+  const etapes = compterEtapes(liste, maintenant);
+  const affichees = filtrerDemandesPro(liste, { q }).filter((d) =>
+    etape === 'relance' ? aRelancer(d, maintenant) : !etape || d.suivi.etape === etape,
+  );
+  const filtres: { cle: EtapeSuivi | 'relance' | ''; libelle: string; n: number }[] = [
+    { cle: '', libelle: 'Toutes', n: liste.length },
+    { cle: 'relance', libelle: 'À relancer', n: etapes.relance },
+    ...ETAPES_SUIVI.map((e) => ({ cle: e, libelle: LIBELLES_ETAPE[e], n: etapes[e] })),
+  ];
 
   const agir = async (d: DemandePro, action: ActionCarte) => {
     setEnCours(d.demandeId);
@@ -72,25 +85,40 @@ export function MesDemandesPro({
           </li>
         ))}
       </ul>
-      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
-        <Field label="Rechercher">
-          <Input
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Nom, projet, ville…"
-          />
-        </Field>
-        <Field label="État">
-          <Select value={etat} onChange={(e) => setEtat(e.target.value as EtatPro | '')}>
-            <option value="">Tous les états</option>
-            {ETATS_PRO.map((e) => (
-              <option key={e} value={e}>
-                {LIBELLES_ETAT_PRO[e]}
-              </option>
-            ))}
-          </Select>
-        </Field>
+      <Field label="Rechercher">
+        <Input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Nom, projet, ville…"
+        />
+      </Field>
+      {/* Filtre par étape du suivi (façon CRM), avec le nombre de demandes de chaque étape. */}
+      <div role="group" aria-label="Étapes du suivi" className="flex flex-wrap gap-2">
+        {filtres
+          .filter((f) => f.cle === '' || f.cle === etape || f.n > 0)
+          .map((f) => (
+            <button
+              key={f.cle || 'toutes'}
+              type="button"
+              aria-pressed={etape === f.cle}
+              onClick={() => setEtape(f.cle)}
+              className={cn(
+                'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-pill border px-3.5 text-sm font-semibold',
+                etape === f.cle
+                  ? 'border-accent bg-accent text-blanc'
+                  : f.cle === 'relance'
+                    ? 'border-accent-300 bg-accent-100 text-accent-800'
+                    : 'border-trait bg-blanc text-neutre-800 hover:border-neutre-500',
+              )}
+            >
+              {f.libelle}
+              <span aria-hidden="true" className="tabular-nums opacity-80">
+                {f.n}
+              </span>
+              <span className="sr-only">({f.n})</span>
+            </button>
+          ))}
       </div>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       <p className="m-0 text-sm text-neutre-800" aria-live="polite">
@@ -107,13 +135,14 @@ export function MesDemandesPro({
               peutDevis={peutDevis}
               enCours={enCours === d.demandeId}
               agir={(a) => agir(d, a)}
+              recharger={recharger}
             />
           ))}
         </ul>
       ) : (
         <EmptyState titre={liste.length ? 'Aucune demande ne correspond' : 'Pas encore de demande'}>
           {liste.length
-            ? 'Modifiez la recherche ou le filtre.'
+            ? 'Modifiez la recherche ou l’étape choisie.'
             : 'Les demandes des particuliers de votre zone apparaîtront ici dès leur arrivée, sans recharger la page.'}
         </EmptyState>
       )}

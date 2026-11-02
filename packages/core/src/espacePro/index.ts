@@ -217,3 +217,4 @@ export * from './assurance';
 export * from './rapportHebdo';
 export * from './compte';
 export * from './depotFichier';
+export * from './suivi';

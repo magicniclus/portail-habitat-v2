@@ -2,11 +2,22 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
-import { lireDemandesPro, prendreEnCharge, repondreDemande } from '../src/serveur/pro';
+import {
+  lireDemandesPro,
+  majSuiviDemande,
+  prendreEnCharge,
+  repondreDemande,
+} from '../src/serveur/pro';
 
 let db: Firestore;
 const T = Date.UTC(2026, 8, 29, 8);
 const s = () => ({ db, horloge: () => T, nomPrestation: (id: string) => `Nom ${id}` });
+
+const erreurDe = (p: Promise<unknown>) =>
+  p.then(
+    () => ({ code: 'AUCUNE' }),
+    (e: { code?: string }) => ({ code: e.code }),
+  );
 
 beforeAll(() => {
   db = getFirestore(appAdmin());
@@ -115,6 +126,55 @@ describe('lireDemandesPro', () => {
   it('seulement les demandes de l’entreprise', async () => {
     await demande('d1', 1);
     expect(await lireDemandesPro(s(), 'autre')).toEqual([]);
+  });
+});
+
+describe('majSuiviDemande (suivi façon CRM)', () => {
+  const ctx = (uid: string) => ({ artisanId: 'a1', uid });
+
+  it('étape, note et relance enregistrées, relues dans Mes demandes ; statut inchangé', async () => {
+    await demande('d1', 1, 'acceptee');
+    await majSuiviDemande(s(), ctx('c1'), {
+      demandeId: 'd1',
+      etape: 'rdv',
+      note: 'Visite mardi 14 h',
+      relanceLe: '2026-10-01',
+    });
+    const a = (await db.doc(chemins.attribution('d1', 'a1')).get()).data()!;
+    expect(a.statut).toBe('acceptee');
+    expect(a.suivi).toMatchObject({ etape: 'rdv', note: 'Visite mardi 14 h', majPar: 'c1' });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.suivi).toEqual({
+      etape: 'rdv',
+      note: 'Visite mardi 14 h',
+      relanceLe: Date.UTC(2026, 9, 1, 12),
+    });
+    // Chaîne vide : note et relance retirées.
+    await majSuiviDemande(s(), ctx('c1'), {
+      demandeId: 'd1',
+      etape: 'appele',
+      note: '',
+      relanceLe: '',
+    });
+    const [apres] = await lireDemandesPro(s(), 'a1');
+    expect(apres!.suivi).toEqual({ etape: 'appele', note: '' });
+  });
+
+  it('refusé avant acceptation, et pour un membre sans le droit de répondre', async () => {
+    await demande('d1', 1);
+    expect(
+      (await erreurDe(majSuiviDemande(s(), ctx('p1'), { demandeId: 'd1', etape: 'appele' }))).code,
+    ).toBe('PRECONDITION');
+    await db.doc(chemins.attribution('d1', 'a1')).update({ statut: 'acceptee' });
+    expect(
+      (await erreurDe(majSuiviDemande(s(), ctx('x1'), { demandeId: 'd1', etape: 'appele' }))).code,
+    ).toBe('PERMISSION_REFUSEE');
+  });
+
+  it('sans choix : étape déduite du statut', async () => {
+    await demande('d1', 1, 'devis_envoye');
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.suivi).toEqual({ etape: 'devis_envoye', note: '' });
   });
 });
 

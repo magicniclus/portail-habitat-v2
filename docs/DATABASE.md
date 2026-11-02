@@ -269,7 +269,8 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 7. Invendue après 24 h → demande offerte (CONVERSION §3 bis) ; après 72 h → archivée, jamais revendue.
 
 ### `demandes/{id}/attributions/{artisanId}`
-`artisanId` (copie de l'identifiant du document, **obligatoire** pour les requêtes collection group), `demandeId`, `assigneA?`, `statut` (`proposee`, `vue`, `acceptee`, `refusee`, `devis_envoye`, `devis_accepte`, `devis_refuse`, `expiree`), `proposeeLe`, `vueLe`, `reponduLe`, `devis: { montantCentimes, storagePath, envoyeLe }?`, `motifRefus`, `coordonneesDebloquees: bool`, `scoreMatching`.
+`artisanId` (copie de l'identifiant du document, **obligatoire** pour les requêtes collection group), `demandeId`, `assigneA?`, `statut` (`proposee`, `vue`, `acceptee`, `refusee`, `devis_envoye`, `devis_accepte`, `devis_refuse`, `expiree`), `proposeeLe`, `vueLe`, `reponduLe`, `devis: { montantCentimes, storagePath, envoyeLe }?`, `motifRefus`, `coordonneesDebloquees: bool`, `scoreMatching`, `suivi?: { etape, note?, relanceLe?, majLe, majPar }`.
+> `suivi` : suivi façon CRM de « Mes demandes », écrit par le serveur (`majSuiviDemande`, droit `demandes.repondre`) une fois la demande acceptée. `etape` ∈ `a_appeler`, `appele`, `rdv`, `devis_a_faire`, `devis_envoye`, `gagne`, `perdu`. Note privée à l'entreprise. Sans effet sur `statut`, la facturation ou les statistiques.
 > Les coordonnées complètes du particulier ne sont lisibles par l'artisan **qu'une fois `acceptee`**, via une Function qui renvoie une vue filtrée. Elles ne sont jamais exposées par les règles de sécurité.
 
 ### `demandes/{id}/messages/{id}`

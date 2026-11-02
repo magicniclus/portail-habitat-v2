@@ -30,6 +30,35 @@ test.describe('Mes demandes', () => {
     expect(erreurs.filter((e) => /abort/i.test(e))).toEqual([]);
   });
 
+  test('suivi façon CRM : étape, note, relance du jour et filtres par étape', async ({ page }) => {
+    const { reference } = await proposerDemande(await entrepriseDe(COMPTES.proprio));
+    await connecter(page, COMPTES.proprio, '/pro/demandes');
+    const carte = page.getByRole('listitem').filter({ hasText: reference });
+    await carte.getByRole('button', { name: 'Accepter la demande' }).click();
+    const etape = carte.getByLabel('Étape du suivi');
+    await expect(etape).toHaveValue('a_appeler');
+    await etape.selectOption('rdv');
+    await expect(carte.getByLabel('Étape du suivi')).toHaveValue('rdv');
+    await carte.getByText('Ajouter une note ou une relance').click();
+    await carte.getByLabel(/^Note privée/).fill('Visite mardi 14 h');
+    const aujourdhui = new Date().toISOString().slice(0, 10);
+    await carte.getByLabel(/^Date de relance/).fill(aujourdhui);
+    await carte.getByRole('button', { name: 'Enregistrer le suivi' }).click();
+    await expect(carte).toContainText('Visite mardi 14 h');
+    await expect(carte).toContainText('Relance le');
+    // Filtres : « À relancer » et « Rendez-vous » la montrent, « Gagné » non.
+    const filtres = page.getByRole('group', { name: 'Étapes du suivi' });
+    await filtres.getByRole('button', { name: /^À relancer/ }).click();
+    await expect(carte).toBeVisible();
+    await filtres.getByRole('button', { name: /^Rendez-vous/ }).click();
+    await expect(carte).toBeVisible();
+    await etape.selectOption('gagne');
+    await expect(carte).toHaveCount(0);
+    await filtres.getByRole('button', { name: /^Gagné/ }).click();
+    await expect(carte).toBeVisible();
+    await expect(carte.getByLabel('Étape du suivi')).toHaveValue('gagne');
+  });
+
   test('PRO-03 : « Je m’en occupe » ; les autres voient qui traite la demande', async ({
     page,
     browser,
