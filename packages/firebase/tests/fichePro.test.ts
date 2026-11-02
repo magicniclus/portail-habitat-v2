@@ -86,6 +86,22 @@ describe('modifierFiche', () => {
     });
   });
 
+  it('adresse du siège sans rue : ville et code postal seuls, ancienne rue retirée', async () => {
+    await db.doc(chemins.artisan('a1')).update({
+      adresseSiege: {
+        ligne1: '1 rue Ancienne',
+        codePostal: '33000',
+        ville: 'Bordeaux',
+        pays: 'FR',
+      },
+    });
+    await modifierFiche(s(), ctx('p1'), {
+      adresse: { ligne1: '', codePostal: '33600', ville: 'Pessac' },
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.adresseSiege).toEqual({ codePostal: '33600', ville: 'Pessac', pays: 'FR' });
+  });
+
   it('devis en euros → centimes ; zone : geohash recalculé', async () => {
     await modifierFiche(s(), ctx('p1'), {
       devis: { minEuros: 1000, maxEuros: 20000 },

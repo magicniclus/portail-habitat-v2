@@ -166,6 +166,13 @@ test.describe('Ma fiche', () => {
     await f.getByRole('button', { name: 'Enregistrer' }).click();
     await expect(f).toBeHidden();
     await expect(infos).toContainText('3 rue des Lilas, 33600 Pessac');
+    // Rue facultative : ville et code postal suffisent.
+    f = await ouvrir();
+    await f.getByLabel(/^Adresse/).fill('');
+    await f.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(f).toBeHidden();
+    await expect(infos).toContainText('33600 Pessac');
+    await expect(infos).not.toContainText('rue des Lilas');
     // Remise en état pour les autres tests.
     f = await ouvrir();
     await f.getByLabel(/^Adresse/).fill(avant.rue);

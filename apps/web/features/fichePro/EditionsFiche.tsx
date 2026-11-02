@@ -50,7 +50,8 @@ export function EditionCoordonnees(p: {
     <FeuilleEdition
       titre="Informations"
       entree={() => ({
-        // Adresse envoyée seulement si l'un de ses champs est rempli (elle se remplace d'un bloc).
+        // Adresse envoyée seulement si l'un de ses champs est rempli (elle se remplace d'un bloc) ;
+        // rue vide = retirée, ville et code postal suffisent.
         ...(adresseSaisie
           ? { adresse: { ligne1: rue.trim(), codePostal: cp.trim(), ville: ville.trim() } }
           : {}),
@@ -61,7 +62,7 @@ export function EditionCoordonnees(p: {
     >
       <Field
         label="Adresse"
-        aide="Numéro et rue du siège. Seule la ville est visible sur votre fiche."
+        aide="Facultatif : numéro et rue du siège. Seule la ville est visible sur votre fiche."
       >
         <Input champ="adresse" value={rue} onChange={(e) => setRue(e.target.value)} />
       </Field>

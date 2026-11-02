@@ -106,7 +106,8 @@ export const artisan = z
     tvaIntra: z.string().optional(),
     codeNaf: z.string().optional(),
     dateCreationEntreprise: horodatage.optional(),
-    adresseSiege: adresse,
+    // Rue facultative : l'artisan peut n'indiquer que sa ville et son code postal (Ma fiche).
+    adresseSiege: adresse.extend({ ligne1: z.string().min(1).optional() }),
     telephonePublic: telephoneE164.optional(),
     emailContact: email.optional(),
     siteWeb: z.url().optional(),

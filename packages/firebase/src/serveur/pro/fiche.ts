@@ -149,7 +149,7 @@ export async function modifierFiche(
     }
     if (e.adresse) {
       // Position de l'ancienne adresse retirée : elle ne correspond plus.
-      maj['adresseSiege.ligne1'] = e.adresse.ligne1;
+      maj['adresseSiege.ligne1'] = e.adresse.ligne1 || FieldValue.delete();
       maj['adresseSiege.codePostal'] = e.adresse.codePostal;
       maj['adresseSiege.ville'] = e.adresse.ville;
       maj['adresseSiege.pays'] = 'FR';

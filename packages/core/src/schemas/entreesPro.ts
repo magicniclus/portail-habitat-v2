@@ -36,10 +36,13 @@ export const entreeModifierFiche = z
     telephonePublic: z.union([telephoneFr, z.literal('')]).optional(),
     emailContact: z.union([email, z.literal('')]).optional(),
     siteWeb: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).optional(),
-    /** Adresse du siège (« Informations ») : seule la ville est publique, la rue reste privée. */
+    /**
+     * Adresse du siège (« Informations ») : ville et code postal obligatoires, rue facultative
+     * (chaîne vide = retirée). Seule la ville est publique, la rue reste privée.
+     */
     adresse: z
       .strictObject({
-        ligne1: z.string().trim().min(1, 'Indiquez le numéro et la rue').max(200),
+        ligne1: z.string().trim().max(200).optional(),
         codePostal,
         ville: z.string().trim().min(1, 'Indiquez la ville').max(100),
       })
