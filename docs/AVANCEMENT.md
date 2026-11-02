@@ -1107,3 +1107,8 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **Simulateur** rendu par le serveur à chaque visite (aucune lecture en base) : l'étape demandée par l'adresse est dans le HTML. Les tests attendent le marqueur `data-simulateur-pret` avant d'interagir.
   - **Page 404**, préchargée par Next sur toutes les pages : bouton « Rechercher » natif, même style, sans tailwind-merge. `cn()` crée tailwind-merge au premier appel.
   - Lighthouse local : le budget de taille du JavaScript passe. Le temps de blocage (TBT) dépend de la machine : il dépasse ici même sur `/maintenance`, alors qu'il passait en CI.
+- 02/11/2026 — **Adresse du siège modifiable dans Ma fiche › Informations** :
+  - Champs Adresse (numéro et rue), Code postal et Ville, en plus du téléphone, de l'email et du site.
+  - `entreeModifierFiche.adresse` remplace l'adresse d'un bloc : pays conservé, ligne 2 et position de l'ancienne adresse retirées.
+  - Seule la ville est publique (fiche republiée) ; la rue reste privée.
+  - Tests : schéma, `fichePro.test.ts`, e2e `fiche.spec.ts`.

@@ -32,22 +32,51 @@ export function EditionPresentation({
 }
 
 export function EditionCoordonnees(p: {
+  rue?: string;
+  codePostal?: string;
+  ville?: string;
   telephonePublic?: string;
   emailContact?: string;
   siteWeb?: string;
 }) {
+  const [rue, setRue] = useState(p.rue ?? '');
+  const [cp, setCp] = useState(p.codePostal ?? '');
+  const [ville, setVille] = useState(p.ville ?? '');
   const [tel, setTel] = useState(p.telephonePublic ?? '');
   const [email, setEmail] = useState(p.emailContact ?? '');
   const [site, setSite] = useState(p.siteWeb ?? '');
+  const adresseSaisie = [rue, cp, ville].some((v) => v.trim());
   return (
     <FeuilleEdition
       titre="Informations"
       entree={() => ({
+        // Adresse envoyée seulement si l'un de ses champs est rempli (elle se remplace d'un bloc).
+        ...(adresseSaisie
+          ? { adresse: { ligne1: rue.trim(), codePostal: cp.trim(), ville: ville.trim() } }
+          : {}),
         telephonePublic: tel.trim(),
         emailContact: email.trim(),
         siteWeb: site.trim(),
       })}
     >
+      <Field
+        label="Adresse"
+        aide="Numéro et rue du siège. Seule la ville est visible sur votre fiche."
+      >
+        <Input champ="adresse" value={rue} onChange={(e) => setRue(e.target.value)} />
+      </Field>
+      <div className="grid gap-3 min-[400px]:grid-cols-[minmax(0,8rem)_minmax(0,1fr)]">
+        <Field label="Code postal">
+          <Input champ="codePostal" value={cp} onChange={(e) => setCp(e.target.value)} />
+        </Field>
+        <Field label="Ville">
+          <Input
+            autoComplete="address-level2"
+            value={ville}
+            onChange={(e) => setVille(e.target.value)}
+          />
+        </Field>
+      </div>
       <Field
         label="Téléphone affiché"
         aide="Visible avec Fiche Pro (ou une formule qui l’inclut). Laissez vide pour le retirer."

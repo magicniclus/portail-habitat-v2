@@ -63,6 +63,29 @@ describe('modifierFiche', () => {
     expect(a.siteWeb).toBeUndefined();
   });
 
+  it('adresse du siège : remplacée, position périmée retirée, pays conservé', async () => {
+    await db.doc(chemins.artisan('a1')).update({
+      adresseSiege: {
+        ligne1: '1 rue Ancienne',
+        codePostal: '33000',
+        ville: 'Bordeaux',
+        pays: 'FR',
+        geo: { latitude: 44.83, longitude: -0.57 },
+        geohash: 'ezzzzzzzzz',
+      },
+    });
+    await modifierFiche(s(), ctx('p1'), {
+      adresse: { ligne1: '3 rue des Lilas', codePostal: '33600', ville: 'Pessac' },
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.adresseSiege).toEqual({
+      ligne1: '3 rue des Lilas',
+      codePostal: '33600',
+      ville: 'Pessac',
+      pays: 'FR',
+    });
+  });
+
   it('devis en euros → centimes ; zone : geohash recalculé', async () => {
     await modifierFiche(s(), ctx('p1'), {
       devis: { minEuros: 1000, maxEuros: 20000 },

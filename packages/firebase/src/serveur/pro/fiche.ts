@@ -42,6 +42,8 @@ export interface FichePro {
   codePostal: string;
   /** Adresse du siège affichée dans « Informations » (« 3 rue des Lilas, 33600 Pessac »). */
   adresse: string;
+  /** Numéro et rue du siège (modifiables dans « Informations »). */
+  rue: string;
   enLigne: boolean;
   pitch: string;
   description: string;
@@ -73,6 +75,7 @@ export async function lireFichePro(db: Firestore, artisanId: string): Promise<Fi
     metiers: (a.metiers as string[] | undefined) ?? [a.metierPrincipal],
     ville: a.adresseSiege?.ville ?? '',
     codePostal: a.adresseSiege?.codePostal ?? '',
+    rue: a.adresseSiege?.ligne1 ?? '',
     adresse: [
       a.adresseSiege?.ligne1,
       [a.adresseSiege?.codePostal, a.adresseSiege?.ville].filter(Boolean).join(' '),
@@ -143,6 +146,16 @@ export async function modifierFiche(
         if (!tel) throw new ErreurMetier('ENTREE_INVALIDE', 'Numéro de téléphone invalide.');
         maj[cle] = tel;
       }
+    }
+    if (e.adresse) {
+      // Position de l'ancienne adresse retirée : elle ne correspond plus.
+      maj['adresseSiege.ligne1'] = e.adresse.ligne1;
+      maj['adresseSiege.codePostal'] = e.adresse.codePostal;
+      maj['adresseSiege.ville'] = e.adresse.ville;
+      maj['adresseSiege.pays'] = 'FR';
+      maj['adresseSiege.ligne2'] = FieldValue.delete();
+      maj['adresseSiege.geo'] = FieldValue.delete();
+      maj['adresseSiege.geohash'] = FieldValue.delete();
     }
     if (e.devis) {
       maj.budgetMin = e.devis.minEuros * 100;

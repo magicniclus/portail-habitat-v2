@@ -3,7 +3,7 @@ import { FORMULES_PAYANTES } from '../paiements/droits';
 import { FLAGS, type NomFlag } from '../flags';
 import { z } from '../zod';
 import { rayonKm, TYPES_DOCUMENT } from './artisans';
-import { email, geo, id, telephoneFr } from './commun';
+import { codePostal, email, geo, id, telephoneFr } from './commun';
 import { idYoutube } from '../sites/video';
 
 /** « Mes demandes » (PRO-02) : ouvrir, accepter ou refuser une demande reçue. */
@@ -36,6 +36,14 @@ export const entreeModifierFiche = z
     telephonePublic: z.union([telephoneFr, z.literal('')]).optional(),
     emailContact: z.union([email, z.literal('')]).optional(),
     siteWeb: z.union([z.url({ protocol: /^https?$/ }), z.literal('')]).optional(),
+    /** Adresse du siège (« Informations ») : seule la ville est publique, la rue reste privée. */
+    adresse: z
+      .strictObject({
+        ligne1: z.string().trim().min(1, 'Indiquez le numéro et la rue').max(200),
+        codePostal,
+        ville: z.string().trim().min(1, 'Indiquez la ville').max(100),
+      })
+      .optional(),
     devis: z
       .strictObject({
         minEuros: z.number().int().min(0).max(10_000_000),

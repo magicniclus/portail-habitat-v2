@@ -8,6 +8,17 @@ describe('entreeModifierFiche', () => {
     expect(entreeModifierFiche.safeParse({ telephonePublic: '06 12 34 56 78' }).success).toBe(true);
   });
 
+  it('adresse du siège : rue, code postal à 5 chiffres et ville obligatoires', () => {
+    const adresse = { ligne1: '3 rue des Lilas', codePostal: '33600', ville: 'Pessac' };
+    expect(entreeModifierFiche.safeParse({ adresse }).success).toBe(true);
+    expect(
+      entreeModifierFiche.safeParse({ adresse: { ...adresse, codePostal: '336' } }).success,
+    ).toBe(false);
+    expect(entreeModifierFiche.safeParse({ adresse: { ...adresse, ligne1: ' ' } }).success).toBe(
+      false,
+    );
+  });
+
   it('refuse un envoi vide, un site non http, un devis inversé, un rayon hors 10–100 km', () => {
     expect(entreeModifierFiche.safeParse({}).success).toBe(false);
     expect(entreeModifierFiche.safeParse({ siteWeb: 'javascript:alert(1)' }).success).toBe(false);

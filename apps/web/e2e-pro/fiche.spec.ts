@@ -142,6 +142,39 @@ test.describe('Ma fiche', () => {
     await expect(devis).toContainText(/1\s000\s–\s20\s000\s€/);
   });
 
+  test('le propriétaire modifie l’adresse du siège dans « Informations »', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/fiche');
+    const infos = page.getByRole('region', { name: 'Informations' });
+    const ouvrir = async () => {
+      await infos.getByRole('button', { name: 'Modifier : Informations' }).click();
+      return page.getByRole('dialog', { name: 'Informations' });
+    };
+    let f = await ouvrir();
+    const avant = {
+      rue: await f.getByLabel(/^Adresse/).inputValue(),
+      cp: await f.getByLabel(/^Code postal/).inputValue(),
+      ville: await f.getByLabel(/^Ville/).inputValue(),
+    };
+    await f.getByLabel(/^Code postal/).fill('336');
+    await f.getByRole('button', { name: 'Enregistrer' }).click();
+    // Code postal incomplet : refusé par le navigateur, rien n'est envoyé.
+    await expect(f.getByLabel(/^Code postal/)).toHaveJSProperty('validity.valid', false);
+    await expect(f).toBeVisible();
+    await f.getByLabel(/^Adresse/).fill('3 rue des Lilas');
+    await f.getByLabel(/^Code postal/).fill('33600');
+    await f.getByLabel(/^Ville/).fill('Pessac');
+    await f.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(f).toBeHidden();
+    await expect(infos).toContainText('3 rue des Lilas, 33600 Pessac');
+    // Remise en état pour les autres tests.
+    f = await ouvrir();
+    await f.getByLabel(/^Adresse/).fill(avant.rue);
+    await f.getByLabel(/^Code postal/).fill(avant.cp);
+    await f.getByLabel(/^Ville/).fill(avant.ville);
+    await f.getByRole('button', { name: 'Enregistrer' }).click();
+    await expect(f).toBeHidden();
+  });
+
   test('assistant de rédaction : sans clé, message clair et texte intact', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/fiche');
     await page.getByRole('button', { name: 'Modifier : À propos' }).click();
