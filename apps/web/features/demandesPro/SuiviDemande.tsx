@@ -41,7 +41,7 @@ async function enregistrerSuivi(d: DemandePro, corps: Record<string, string>) {
 
 /**
  * Pastille d'étape du suivi (façon CRM) : liste native compacte, enregistrée dès le choix.
- * Police de 16 px sur téléphone (pas de zoom à la sélection, MOBILE §5).
+ * Police de 16 px (pas de zoom à la sélection, MOBILE §5).
  */
 export function EtapeDemande({ d, recharger }: { d: DemandePro; recharger: () => unknown }) {
   const [enCours, setEnCours] = useState(false);
@@ -59,7 +59,7 @@ export function EtapeDemande({ d, recharger }: { d: DemandePro; recharger: () =>
           setEnCours(false);
         }}
         className={cn(
-          'min-h-11 cursor-pointer appearance-none rounded-pill border py-1 pr-9 pl-4 text-base font-semibold sm:text-sm',
+          'min-h-11 cursor-pointer appearance-none rounded-pill border py-1 pr-9 pl-4 text-base font-semibold',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60',
           COULEURS[etape],
         )}
