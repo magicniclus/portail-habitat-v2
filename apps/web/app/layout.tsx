@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { BandeauCookies } from '@/features/cookies/BandeauCookies';
 import { ScriptBandeau } from '@/features/cookies/ScriptBandeau';
 import { AppCheck } from '@/features/firebase/AppCheck';
+import { ScriptCoupures } from '@/features/firebase/ScriptCoupures';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
 import { routes } from '@/lib/routes';
@@ -47,6 +48,7 @@ export default function RacineLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
+        <ScriptCoupures />
         <ScriptBandeau />
       </head>
       <body>

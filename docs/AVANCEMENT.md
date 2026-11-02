@@ -1112,3 +1112,6 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - `entreeModifierFiche.adresse` remplace l'adresse d'un bloc : pays conservé, ligne 2 et position de l'ancienne adresse retirées.
   - Seule la ville est publique (fiche republiée) ; la rue reste privée.
   - Tests : schéma, `fichePro.test.ts`, e2e `fiche.spec.ts`.
+- 02/11/2026 — **AbortError Firestore (suite)** : le filet posé dans `firebaseClient` ne suffisait pas. L'écouteur `unhandledrejection` de Next.js (fenêtre rouge en développement) est posé avant le nôtre et ignore `preventDefault()`.
+  - Correctif : script en ligne `SCRIPT_COUPURES_FIRESTORE` dans `<head>` (avant le code de Next), autorisé dans la CSP par son empreinte. Il arrête seulement `AbortError: signal is aborted without reason` (notre code n'interrompt jamais une requête sans raison ; délais = `TimeoutError`).
+  - Vérifié sous `next dev` : la coupure n'affiche plus d'erreur, une autre erreur reste affichée, aucune violation CSP.

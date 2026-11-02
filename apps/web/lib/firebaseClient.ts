@@ -51,7 +51,6 @@ export function authClient(): Promise<Auth> {
  */
 export function firestoreClient(): Promise<Firestore> {
   dbP ??= Promise.all([application(), import('firebase/firestore')]).then(([a, m]) => {
-    ignorerCoupuresWebChannel();
     let db: Firestore;
     try {
       db = m.initializeFirestore(a, { experimentalForceLongPolling: true });
@@ -67,21 +66,6 @@ export function firestoreClient(): Promise<Firestore> {
     return db;
   });
   return dbP;
-}
-
-/**
- * Filet de sécurité : une coupure volontaire de la connexion Firestore (écoute fermée, onglet
- * quitté) ne doit jamais remonter comme « erreur non rattrapée ». Seules les AbortError venues
- * du transport du SDK (webchannel) sont ignorées ; toute autre erreur reste visible.
- */
-let filetInstalle = false;
-function ignorerCoupuresWebChannel() {
-  if (filetInstalle || typeof window === 'undefined') return;
-  filetInstalle = true;
-  window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
-    const r = e.reason as { name?: string; stack?: string } | null;
-    if (r?.name === 'AbortError' && /webchannel/i.test(r.stack ?? '')) e.preventDefault();
-  });
 }
 
 /** Storage (documents, logo, réalisations) : la session Firebase du navigateur porte les droits. */

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { SCRIPT_BANDEAU_COOKIES } from '@/features/cookies/scriptBandeau';
+import { SCRIPT_COUPURES_FIRESTORE } from '@/features/firebase/scriptCoupures';
 import { doitAfficherMaintenance } from '@/features/erreurs/maintenance';
 import { SCRIPT_APERCU } from '@/features/siteArtisan/apercu';
 import { SCRIPT_SITE } from '@/features/siteArtisan/document';
@@ -16,6 +17,8 @@ const sha256 = (texte: string) =>
 let empreinte: Promise<string> | undefined;
 /** Empreinte du script en ligne du bandeau cookies (seul script fixe des espaces stricts). */
 const empreinteBandeau = () => (empreinte ??= sha256(SCRIPT_BANDEAU_COOKIES));
+let empreinteC: Promise<string> | undefined;
+const empreinteCoupures = () => (empreinteC ??= sha256(SCRIPT_COUPURES_FIRESTORE));
 let empreinteS: Promise<string> | undefined;
 const empreinteSite = () => (empreinteS ??= sha256(SCRIPT_SITE));
 let empreinteSv: Promise<string> | undefined;
@@ -79,6 +82,7 @@ export async function proxy(requete: NextRequest) {
           nonce,
           empreintes: [
             await empreinteBandeau(),
+            await empreinteCoupures(),
             ...(requete.nextUrl.pathname.startsWith('/pro/site/editeur')
               ? [await empreinteEdition(), await empreinteApercu()]
               : []),
