@@ -12,8 +12,19 @@ export const metadata: Metadata = {
   alternates: { canonical: '/simulateur' },
 };
 
-/** Maquette Simulateur de Devis : en-tête sobre (parcours), étapes, puis résultat. */
-export default function PageSimulateur() {
+/**
+ * Maquette Simulateur de Devis : en-tête sobre (parcours), étapes, puis résultat.
+ * Rendu par le serveur à chaque visite (lecture de `searchParams`) : l'étape demandée par l'adresse
+ * est dans le HTML dès le premier affichage. En page statique, le simulateur (qui lit l'adresse)
+ * n'apparaissait qu'une fois tout le JavaScript exécuté (≈ 3,3 s sur mobile, budget 2,5 s).
+ * Aucune lecture en base : le coût serveur reste négligeable.
+ */
+export default async function PageSimulateur({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  await searchParams;
   return (
     <PageParcours titre="Simulateur de devis" mention="Gratuit · sans engagement">
       <Suspense>

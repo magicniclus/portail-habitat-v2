@@ -1,13 +1,8 @@
 'use client';
 
-import { useGSAP } from '@gsap/react';
 import { evenementLanding, type OutilLanding } from '@ph/core/landings';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect } from 'react';
 import { pousserEvenement } from '@/lib/dataLayer';
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /**
  * Comportements de page des landings : `landing_site_view`, `pricing_section_viewed` (section
@@ -41,21 +36,44 @@ export function SuiviLanding({ outil }: { outil: OutilLanding }) {
     };
   }, [outil]);
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia();
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.utils.toArray<HTMLElement>('main section h2').forEach((h) => {
-        if (h.closest('[data-scrolly], [data-formulaire-landing]')) return;
-        gsap.from(h, {
-          y: 28,
-          autoAlpha: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: h, start: 'top 88%', once: true },
-        });
-      });
-    });
-    return () => mm.revert();
-  });
+  // Apparition des titres de section (y: 28 → 0, opacité 0 → 1, 0,8 s, courbe « power3.out »),
+  // une fois, quand le titre atteint 88 % de l'écran : animation native, sans bibliothèque.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+    const titres = Array.from(document.querySelectorAll<HTMLElement>('main section h2')).filter(
+      (h) => !h.closest('[data-scrolly], [data-formulaire-landing]'),
+    );
+    const vus = new Set<Element>();
+    const io = new IntersectionObserver(
+      (es) => {
+        for (const e of es) {
+          if (!e.isIntersecting || vus.has(e.target)) continue;
+          vus.add(e.target);
+          io.unobserve(e.target);
+          const h = e.target as HTMLElement;
+          h.style.visibility = '';
+          h.animate(
+            [
+              { transform: 'translateY(28px)', opacity: 0 },
+              { transform: 'none', opacity: 1 },
+            ],
+            { duration: 800, easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)' },
+          );
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    for (const h of titres) {
+      // Déjà passés (page rechargée plus bas) : laissés tels quels.
+      if (h.getBoundingClientRect().top < window.innerHeight * 0.88) continue;
+      h.style.visibility = 'hidden';
+      io.observe(h);
+    }
+    return () => {
+      io.disconnect();
+      for (const h of titres) h.style.visibility = '';
+    };
+  }, []);
   return null;
 }

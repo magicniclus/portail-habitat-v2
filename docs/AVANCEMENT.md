@@ -1083,3 +1083,27 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Cause : les 100 transactions se bloquaient mutuellement sur le compteur unique de numéros (verrous de l'émulateur), et leurs reprises s'allongeaient.
   - Correctif : `avecReprise(cle, …)` fait passer l'une après l'autre, dans un même serveur, les transactions d'un même compteur (`artisan:factures`, `artisan:devis`). Entre serveurs, la transaction garantit toujours numéros sans trou ni doublon.
   - Résultat : le fichier `devis.test.ts` passe en 12 s au lieu de plus de 15 minutes. Le test DEV-06 reste identique (100 appels simultanés, numéros 1 à 100) ; seule sa limite de temps passe de 15 à 2 minutes.
+- 02/11/2026 — **Allègement des pages (budget EXPLOITATION §1), sans changer le design ni le contenu** :
+  - Mesures sur mobile ralenti (JavaScript transféré, avant → après) :
+    - accueil 167 → 155 Ko ;
+    - `/pro` 275 → 177 Ko ;
+    - landing chantiers 335 → 190 Ko ;
+    - simulateur 299 → 260 Ko ;
+    - fiche artisan 286 → 188 Ko ;
+    - métier × ville 172 → 160 Ko.
+  - Décalage de mise en page de `/pro` : 0,33 → 0. Affichage du simulateur : 3,3 s → 1,4 à 1,8 s.
+  - **Zod** : il embarquait ses ~50 langues dans chaque page qui valide un formulaire, via les espaces de noms `z.locales` et `z.core.locales`.
+    - `patches/zod@4.6.5.patch` (pnpm patch) retire ces deux exports, inutilisés.
+    - La langue française est importée seule (`zod/v4/locales/fr.js`).
+    - **Signalé : dépendance patchée.**
+  - **Validation à l'envoi** (inscription pro, contact de la fiche, coordonnées du simulateur) :
+    - les schémas sont chargés au premier focus dans le formulaire (`prechargerValidation`), puis utilisés à l'envoi ;
+    - la validation côté navigateur et côté serveur est inchangée (règle n° 2).
+  - **Landings** :
+    - GSAP n'est chargé que sur ordinateur, pour les étapes animées ;
+    - l'apparition des titres (y 28 → 0, 0,8 s, `power3.out`) passe en animation native ;
+    - `@gsap/react` est retiré (**signalé : dépendance retirée**).
+  - **Police serif** (mot en italique des titres) préchargée : son arrivée tardive décalait toute la page `/pro`.
+  - **Simulateur** rendu par le serveur à chaque visite (aucune lecture en base) : l'étape demandée par l'adresse est dans le HTML. Les tests attendent le marqueur `data-simulateur-pret` avant d'interagir.
+  - **Page 404**, préchargée par Next sur toutes les pages : bouton « Rechercher » natif, même style, sans tailwind-merge. `cn()` crée tailwind-merge au premier appel.
+  - Lighthouse local : le budget de taille du JavaScript passe. Le temps de blocage (TBT) dépend de la machine : il dépasse ici même sur `/maintenance`, alors qu'il passait en CI.

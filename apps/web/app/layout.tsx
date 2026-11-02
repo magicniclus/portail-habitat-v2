@@ -29,8 +29,8 @@ const serif = localFont({
   variable: '--police-serif',
   display: 'swap',
   fallback: ['Georgia', 'Times New Roman', 'serif'],
-  // Deux mots en italique par page : pas de préchargement, la bande passante va au texte principal.
-  preload: false,
+  // Préchargée : arrivée après l'affichage, elle changeait la hauteur des titres et décalait toute
+  // la page (CLS 0,33 sur /pro, budget 0,05 ; EXPLOITATION §1). 21 Ko, mis en cache.
 });
 
 export const metadata: Metadata = {

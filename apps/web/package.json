@@ -13,7 +13,6 @@
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
-    "@gsap/react": "2.1.1",
     "@ph/core": "workspace:*",
     "@ph/emails": "workspace:*",
     "@ph/firebase": "workspace:*",

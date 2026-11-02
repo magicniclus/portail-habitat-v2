@@ -1,4 +1,4 @@
-import { BoutonEnvoi, Button, CLASSES_CHAMP, classesChip, PageErreur } from '@ph/ui';
+import { bouton, Button, CLASSES_CHAMP, classesChip, PageErreur } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { EnteteErreur, PiedErreur } from './Cadre';
@@ -35,7 +35,10 @@ export function PageIntrouvable({ espace }: { espace: EspacePublic }) {
               enterKeyHint="search"
             />
           </label>
-          <BoutonEnvoi taille="lg">Rechercher</BoutonEnvoi>
+          {/* Bouton natif, même style : BoutonEnvoi est un composant client (tailwind-merge). */}
+          <button type="submit" className={bouton({ taille: 'lg' })}>
+            Rechercher
+          </button>
         </form>
       }
       actions={

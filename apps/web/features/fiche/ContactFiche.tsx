@@ -1,12 +1,12 @@
 'use client';
 
 import { formatTel } from '@ph/core/format';
-import { entreeContactFiche } from '@ph/core/schemas';
 import { Banner, Button, Checkbox, Field, Input, Textarea } from '@ph/ui';
 import { CheckCircleIcon, PhoneIcon } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { posterJson } from '@/lib/posterJson';
+import { prechargerValidation } from '@/lib/prechargerValidation';
 import { routes } from '@/lib/routes';
 
 const VIDE = { prenom: '', nom: '', email: '', telephone: '', codePostal: '', description: '' };
@@ -43,6 +43,8 @@ export function ContactFiche({
   const envoyer = async (ev: FormEvent) => {
     ev.preventDefault();
     const corps = { artisanId, ...v, miseEnRelation: accord, cleIdempotence: cle };
+    // Validation chargée à l'envoi : Zod (≈ 50 Ko) hors du premier chargement de la fiche.
+    const { entreeContactFiche } = await import('@ph/core/schemas');
     const p = entreeContactFiche.safeParse(corps);
     if (!p.success) {
       const e: typeof erreurs = {};
@@ -87,7 +89,7 @@ export function ContactFiche({
       <p className="m-0 text-sm text-neutre-800">
         Laissez vos coordonnées : {nom} vous recontacte directement.
       </p>
-      <form onSubmit={envoyer} noValidate className="grid gap-3">
+      <form onFocus={prechargerValidation} onSubmit={envoyer} noValidate className="grid gap-3">
         {message ? <Banner tone="danger">{message}</Banner> : null}
         <div className="grid gap-3 min-[400px]:grid-cols-2 [&_input]:min-w-0">
           <Field label="Prénom" requis erreur={erreurs.prenom}>

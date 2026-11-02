@@ -1,7 +1,7 @@
 'use client';
 
 import { evenementLanding, type OutilLanding } from '@ph/core/landings';
-import { entreeInscriptionEtape1, type SourceAcquisition } from '@ph/core/schemas';
+import type { SourceAcquisition } from '@ph/core/schemas';
 import { Banner, Button, Checkbox, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { signalerConversion } from '@ph/tracker';
 import { pousserEvenement } from '@/lib/dataLayer';
 import { posterJson } from '@/lib/posterJson';
+import { prechargerValidation } from '@/lib/prechargerValidation';
 import { routes } from '@/lib/routes';
 import { ChoixMetiers } from './ChoixMetiers';
 import type { ChantierMetier, GroupeMetiers } from './metiers';
@@ -65,6 +66,7 @@ export function FormulaireInscription({
   const formulaire = useRef<HTMLFormElement>(null);
   const commence = useRef(false);
   const commencer = () => {
+    prechargerValidation();
     if (commence.current || !landing) return;
     commence.current = true;
     pousserEvenement(evenementLanding('hero_form_started', landing));
@@ -89,6 +91,8 @@ export function FormulaireInscription({
       site: t('site') || undefined,
       acquisition: acquisitionDe(source),
     };
+    // Validation chargée à l'envoi : Zod (≈ 50 Ko) hors du premier chargement de la page.
+    const { entreeInscriptionEtape1 } = await import('@ph/core/schemas');
     const v = entreeInscriptionEtape1.safeParse(brut);
     if (!v.success) {
       const r: Partial<Record<Champ, string>> = {};

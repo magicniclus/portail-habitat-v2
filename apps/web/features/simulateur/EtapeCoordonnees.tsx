@@ -1,10 +1,10 @@
 'use client';
 
 import type { DemandeCreee } from '@ph/core/demandes';
-import { entreeDemande } from '@ph/core/schemas';
 import { Banner, Button, Checkbox, Field, Input, Textarea } from '@ph/ui';
 import Link from 'next/link';
 import { useRef, useState, type FormEvent } from 'react';
+import { prechargerValidation } from '@/lib/prechargerValidation';
 import { routes } from '@/lib/routes';
 import { envoyerDemande } from './envoi';
 import { Recapitulatif } from './Recapitulatif';
@@ -112,6 +112,8 @@ export function EtapeCoordonnees({
       ...(brouillonId ? { brouillonId } : {}),
       accepteConfidentialite: f.get('accepteConfidentialite') === 'on',
     };
+    // Validation chargée à l'envoi : Zod (≈ 50 Ko) hors du premier chargement de la page.
+    const { entreeDemande } = await import('@ph/core/schemas');
     const verif = entreeDemande.safeParse(brut);
     if (!verif.success) {
       const champs: Record<string, string[]> = {};
@@ -172,6 +174,7 @@ export function EtapeCoordonnees({
         </ul>
 
         <form
+          onFocus={prechargerValidation}
           ref={formulaire}
           onSubmit={envoyer}
           noValidate

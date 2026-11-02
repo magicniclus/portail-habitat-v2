@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { ouvrirSimulateur } from './simulateurPret';
 
 // docs/REPRISE_PARCOURS.md §7 : SIM-06a à SIM-06f, SIM-06i et SIM-06j (niveau 1, brouillon local).
 const CLE = 'ph:parcours:simulateur';
@@ -38,7 +39,7 @@ test.describe('Reprise du simulateur', () => {
   test('SIM-06a et SIM-06b : quitter à l’étape 3, revenir, reprendre avec les mêmes réponses', async ({
     page,
   }) => {
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByLabel('Surface à peindre').focus();
     await page.keyboard.press('ArrowRight');
     await page.getByRole('button', { name: 'Continuer' }).click();
@@ -46,7 +47,7 @@ test.describe('Reprise du simulateur', () => {
     await expect.poll(() => lireStockage(page)).toContain('"etape":3');
 
     await page.goto('/');
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await expect(encart(page)).toContainText('Peinture · 50 m²');
     await expect(encart(page)).toContainText(/Étape 3 sur 5 · commencée/);
     await encart(page).getByRole('button', { name: 'Reprendre à l’étape 3' }).click();
@@ -57,7 +58,7 @@ test.describe('Reprise du simulateur', () => {
 
   test('SIM-06c : « Recommencer » efface, « Annuler » restaure', async ({ page }) => {
     await deposer(page, brouillon({ reponses: { surface: 60 } }));
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await encart(page).getByRole('button', { name: 'Recommencer' }).click();
     await expect(encart(page)).toBeHidden();
     expect(await lireStockage(page)).toBeNull();
@@ -67,7 +68,7 @@ test.describe('Reprise du simulateur', () => {
   });
 
   test('SIM-06d : aucune donnée de contact dans le stockage local', async ({ page }) => {
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByLabel('Code postal du chantier').fill('33000');
@@ -103,7 +104,7 @@ test.describe('Reprise du simulateur', () => {
         },
       }),
     );
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await encart(page).getByRole('button', { name: 'Reprendre à l’étape 3' }).click();
     await expect(page).toHaveURL(/etape=3/);
     await expect(page.getByText(/Certaines réponses ont été retirées/)).toBeVisible();
@@ -133,7 +134,7 @@ test.describe('Reprise du simulateur', () => {
         },
       }),
     );
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByLabel('Code postal du chantier').fill('33000');
@@ -146,7 +147,7 @@ test.describe('Reprise du simulateur', () => {
     await page.getByRole('button', { name: 'Voir mon estimation' }).click();
     await expect(page.locator('[data-test="reference"]')).toBeVisible();
     await expect.poll(() => lireStockage(page)).toBeNull();
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Quel type de travaux');
     await expect(encart(page)).toHaveCount(0);
   });
@@ -164,7 +165,7 @@ test.describe('Reprise du simulateur', () => {
       Storage.prototype.setItem = refus;
       Storage.prototype.removeItem = refus;
     });
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByLabel('Surface à peindre').focus();
     await page.keyboard.press('ArrowRight');
     await page.getByRole('button', { name: 'Continuer' }).click();
@@ -177,7 +178,7 @@ test.describe('Reprise du simulateur', () => {
     page,
   }) => {
     await deposer(page, brouillon({ prestationId: 'sdb', etape: 3 }));
-    await page.goto('/simulateur?prestation=peinture');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Votre projet en détail');
     await expect(
       page.getByText('Vous aviez aussi commencé une estimation salle de bain.'),
@@ -199,7 +200,7 @@ test.describe('Reprise du simulateur', () => {
       demande = r.request().postDataJSON() as Record<string, unknown>;
       return r.fulfill({ status: 500, json: { ok: false, code: 'INTERNE', message: 'x' } });
     });
-    await page.goto('/simulateur?prestation=peinture&etape=4');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=4');
     await page.getByLabel('Code postal du chantier').fill('33000');
     await page.getByRole('button', { name: 'Dernière étape' }).click();
     await page.getByLabel(/^Email/).fill('camille@test.local');
@@ -229,7 +230,7 @@ test.describe('Reprise du simulateur', () => {
       appels++;
       return r.fulfill({ json: { ok: true, data: { brouillonId: 'x' } } });
     });
-    await page.goto('/simulateur?prestation=peinture&etape=5');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=5');
     await page.getByLabel(/^Email/).fill('camille@test.local');
     await page.getByLabel(/^Prénom/).fill('Camille');
     await page.waitForTimeout(500);
@@ -268,7 +269,7 @@ test.describe('Reprise du simulateur', () => {
         },
       });
     });
-    await page.goto('/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
+    await ouvrirSimulateur(page, '/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
     await expect(page).toHaveURL(/prestation=peinture&etape=4/);
     await expect(page.getByText(/Estimation reprise/)).toBeVisible();
     await expect(encart(page)).toHaveCount(0);
@@ -276,7 +277,7 @@ test.describe('Reprise du simulateur', () => {
     await expect(page.getByRole('complementary').getByText('70 m²')).toBeVisible();
     await expect.poll(() => lireStockage(page)).toContain('"surface":70');
 
-    await page.goto('/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
+    await ouvrirSimulateur(page, '/simulateur?reprise=jeton-de-test-abcdefghijklmnopqrstuvwxyz');
     await expect(
       page.getByText('Ce lien a expiré, votre estimation n’a pas pu être retrouvée.'),
     ).toBeVisible();
@@ -300,7 +301,7 @@ test.describe('Reprise pour une personne connectée (REPRISE_PARCOURS §5, nivea
         },
       });
     });
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await expect(encart(page)).toContainText('Peinture · 70 m²');
   });
 
@@ -311,7 +312,7 @@ test.describe('Reprise pour une personne connectée (REPRISE_PARCOURS §5, nivea
       envois.push(r.request().postDataJSON() as (typeof envois)[number]);
       return r.fulfill({ json: { ok: true, data: null } });
     });
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByLabel('Surface à peindre').focus();
     await page.keyboard.press('ArrowRight');
     await page.getByRole('button', { name: 'Continuer' }).click();
@@ -326,7 +327,7 @@ test.describe('Reprise pour une personne connectée (REPRISE_PARCOURS §5, nivea
       appels++;
       return r.fulfill({ json: { ok: true, data: null } });
     });
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
     await expect(page).toHaveURL(/etape=3/);
     expect(appels).toBe(0);

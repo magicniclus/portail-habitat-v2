@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { ouvrirSimulateur } from './simulateurPret';
 
 // docs/ACCEPTANCE.md SIM-01 à SIM-08. Le calcul lui-même (prix privés, région, aides) est testé
 // côté serveur sur émulateur (packages/firebase/tests/demandes.test.ts) et dans packages/core.
@@ -29,7 +30,7 @@ const REPONSE = {
 const montantEuros = new RegExp('\\d[\\d\\s\\u202f\\u00a0]*€');
 
 async function jusquAuxCoordonnees(page: Page, cp = '75011') {
-  await page.goto('/simulateur?prestation=peinture');
+  await ouvrirSimulateur(page, '/simulateur?prestation=peinture');
   await expect(page).toHaveURL(/etape=2|prestation=peinture$/);
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(page).toHaveURL(/etape=3/);
@@ -50,7 +51,7 @@ async function remplirCoordonnees(page: Page) {
 
 test.describe('Simulateur de devis', () => {
   test('étape 1 : recherche et familles, puis démarrage des questions', async ({ page }) => {
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Quel type de travaux');
     await expect(page.getByText(/112 types de travaux estimables/)).toBeVisible();
     await page.getByLabel('Rechercher un type de travaux ou un métier').fill('peinture');
@@ -87,7 +88,7 @@ test.describe('Simulateur de devis', () => {
       const corps = await r.text().catch(() => '');
       if (/minCentimes|maxCentimes|prixCentimes|unitaire/.test(corps)) montantsReseau.push(r.url());
     });
-    await page.goto('/simulateur');
+    await ouvrirSimulateur(page, '/simulateur');
     await expect(page.locator('main')).not.toContainText(montantEuros);
     await jusquAuxCoordonnees(page);
     await expect(page.locator('main')).not.toContainText(montantEuros);
@@ -97,7 +98,7 @@ test.describe('Simulateur de devis', () => {
   test('SIM-02 : l’étape est dans l’URL, le retour du navigateur revient à l’étape précédente', async ({
     page,
   }) => {
-    await page.goto('/simulateur?prestation=peinture&etape=2');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
     await expect(page).toHaveURL(/etape=3/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Options et finitions');
@@ -107,7 +108,7 @@ test.describe('Simulateur de devis', () => {
   });
 
   test('SIM-03 : code postal vide → blocage et message lié au champ', async ({ page }) => {
-    await page.goto('/simulateur?prestation=peinture&etape=4');
+    await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=4');
     await page.getByRole('button', { name: 'Dernière étape' }).click();
     await expect(page).toHaveURL(/etape=4/);
     const cp = page.getByLabel('Code postal du chantier');
@@ -171,7 +172,10 @@ test.describe('Simulateur de devis', () => {
       corps = r.request().postDataJSON() as Record<string, unknown>;
       return r.fulfill({ status: 201, json: REPONSE });
     });
-    await page.goto('/simulateur?prestation=peinture&intention=peinture-murs&cp=33000&delai=1mois');
+    await ouvrirSimulateur(
+      page,
+      '/simulateur?prestation=peinture&intention=peinture-murs&cp=33000&delai=1mois',
+    );
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByRole('button', { name: 'Continuer' }).click();
     await expect(page.getByLabel('Code postal du chantier')).toHaveValue('33000');

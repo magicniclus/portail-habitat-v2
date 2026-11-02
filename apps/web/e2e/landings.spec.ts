@@ -120,14 +120,22 @@ test.describe('Landings par outil', () => {
   }) => {
     await suivreDataLayer(page);
     await page.goto(URL_LANDING);
-    await page.locator('[data-section-gratuit]').scrollIntoViewIfNeeded();
-    await page.getByText('Prenez-vous une commission sur mes chantiers ?').click();
-    await page.locator('[data-cta-final]').click();
-    await expect
-      .poll(async () => (await evenements(page)).map((e) => e.event))
-      .toEqual(
-        expect.arrayContaining(['pricing_section_viewed', 'faq_opened', 'final_cta_clicked']),
-      );
+    // Gestes refaits tant que l'événement manque : un geste fait avant l'hydratation (écouteurs
+    // pas encore posés) n'est pas compté, comme sur un téléphone lent.
+    const vus = async () => (await evenements(page)).map((e) => e.event);
+    await expect(async () => {
+      await page.locator('[data-section-gratuit]').scrollIntoViewIfNeeded();
+      expect(await vus()).toContain('pricing_section_viewed');
+    }).toPass({ timeout: 15_000 });
+    const question = page.getByText('Prenez-vous une commission sur mes chantiers ?');
+    await expect(async () => {
+      await question.click();
+      expect(await vus()).toContain('faq_opened');
+    }).toPass({ timeout: 15_000 });
+    await expect(async () => {
+      await page.locator('[data-cta-final]').click();
+      expect(await vus()).toContain('final_cta_clicked');
+    }).toPass({ timeout: 15_000 });
     for (const e of await evenements(page)) expect(e.landing).toBe('chantiers');
   });
 

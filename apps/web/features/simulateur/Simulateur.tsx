@@ -40,6 +40,14 @@ const DUREE_ANNULATION_MS = 8000;
 export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
   const router = useRouter();
   const params = useSearchParams();
+  // Rendu par le serveur, le simulateur est visible avant d'être interactif : ce marqueur dit qu'il
+  // est prêt (tests de bout en bout ; aucun effet visible).
+  useEffect(() => {
+    document.documentElement.dataset.simulateurPret = '';
+    return () => {
+      delete document.documentElement.dataset.simulateurPret;
+    };
+  }, []);
   const prestation = catalogue.prestations.find((p) => p.id === params.get('prestation')) ?? null;
   const etape = etapeDepuisUrl(params.get('etape'), prestation?.champs ?? null);
 

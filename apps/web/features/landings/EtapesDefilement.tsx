@@ -1,15 +1,11 @@
 'use client';
 
-import { useGSAP } from '@gsap/react';
 import type { Benefice } from '@ph/core/landings';
 import { cn } from '@ph/ui';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useRef, useState } from 'react';
 import { CaptureEcran } from './CaptureEcran';
+import { chargerGsap } from './gsap';
 import { IconeLanding } from './IconeLanding';
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const DERNIERE = 2;
 const borner = (v: number) => Math.max(0, Math.min(DERNIERE, v));
@@ -28,8 +24,16 @@ export function EtapesDefilement({ benefices }: { benefices: Benefice[] }) {
   const [anime, setAnime] = useState(false);
   const geo = useRef({ pas: 0, haut: 44, cible: null as number | null });
 
-  useGSAP(
-    () => {
+  const rafraichir = useRef<(() => void) | null>(null);
+
+  // GSAP n'est chargé que sur ordinateur, animations permises (sinon liste simple, sans lui).
+  useEffect(() => {
+    if (!window.matchMedia(MEDIA).matches) return;
+    let annule = false;
+    let revert: (() => void) | undefined;
+    void chargerGsap().then(({ gsap, ScrollTrigger }) => {
+      if (annule) return;
+      rafraichir.current = () => ScrollTrigger.refresh();
       const mm = gsap.matchMedia();
       mm.add(MEDIA, () => {
         const z = zone.current!;
@@ -73,14 +77,17 @@ export function EtapesDefilement({ benefices }: { benefices: Benefice[] }) {
           setAnime(false);
         };
       });
-      return () => mm.revert();
-    },
-    { scope: zone },
-  );
+      revert = () => mm.revert();
+    });
+    return () => {
+      annule = true;
+      revert?.();
+    };
+  }, []);
 
   // Le panneau change de mise en page en passant en mode animé : on remesure une fois rendu.
   useEffect(() => {
-    if (anime) ScrollTrigger.refresh();
+    if (anime) rafraichir.current?.();
   }, [anime]);
 
   const aller = (i: number) => {

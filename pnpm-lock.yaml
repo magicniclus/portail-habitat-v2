@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  zod@4.6.5:
+    hash: 1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12
+    path: patches/zod@4.6.5.patch
+
 importers:
 
   .:
@@ -111,9 +116,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@gsap/react':
-        specifier: 2.1.1
-        version: 2.1.1
       '@ph/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -210,7 +212,7 @@ importers:
     dependencies:
       zod:
         specifier: ^4.6.5
-        version: 4.6.5
+        version: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
     devDependencies:
       '@ph/config':
         specifier: workspace:*
@@ -284,7 +286,7 @@ importers:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: ^0.131.0
-        version: 0.131.0(zod@4.6.5)
+        version: 0.131.0(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))
       '@ph/core':
         specifier: workspace:*
         version: link:../core
@@ -1341,9 +1343,6 @@ packages:
     resolution: {integrity: sha512-wtF6h+DY6M3YaDBPAmvuuA6jV8Sif9MjtOI5euKFWRgCDl5PeDpPsHR9u2l6St5ceY8AZgoNDww5+HvEsXFsGg==}
     engines: {node: '>=6'}
     hasBin: true
-
-  '@gsap/react@2.1.1':
-    resolution: {integrity: sha512-apGPRrmpqxvl1T6Io1KgT8tFU+IuACI6z4zmT7t8+PASserJeLVRFJdSNUFA2Xb/eVkZI1noE8LIrY/w/oJECw==}
 
   '@hono/node-server@2.1.1':
     resolution: {integrity: sha512-ELuehkj5VCBdgEw9zs+ivkKwyzzUCSQuE96YmiPvn1ECBoZCczbFXJLeEGMTYjphP6gydh4pHMqEYPVMYUVgQg==}
@@ -6797,8 +6796,8 @@ packages:
   leac@0.6.0:
     resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
 
-  legacy-javascript@0.0.3:
-    resolution: {integrity: sha512-1r6MT4dVaJyXt4G07Cm2cQ0AUaLJdefiEp4SmIAylA++gnEQ82YvmzE58RkM5EP0fk5hROLCslUPGnwIYdZQVA==}
+  legacy-javascript@0.0.4:
+    resolution: {integrity: sha512-UTmeKBVxnfJcpmpOvzzNnLsQT99BXHpPlc/ZKddIRmWmrR0fw6335I3lq4+sJoP60UTbBNaYsGYVPc65YB1x3A==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -9304,12 +9303,12 @@ snapshots:
 
   '@alloc/quick-lru@5.3.0': {}
 
-  '@anthropic-ai/sdk@0.131.0(zod@4.6.5)':
+  '@anthropic-ai/sdk@0.131.0(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
     optionalDependencies:
-      zod: 4.6.5
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
 
   '@apidevtools/json-schema-ref-parser@9.1.2':
     dependencies:
@@ -10288,11 +10287,6 @@ snapshots:
       protobufjs: 7.6.6
       yargs: 17.7.3
 
-  '@gsap/react@2.1.1':
-    dependencies:
-      gsap: 3.12.5
-      react: 19.3.0
-
   '@hono/node-server@2.1.1(hono@4.13.9)':
     dependencies:
       hono: 4.13.9
@@ -10665,7 +10659,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@modelcontextprotocol/sdk@1.30.1(zod@4.6.5)':
+  '@modelcontextprotocol/sdk@1.30.1(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))':
     dependencies:
       '@hono/node-server': 2.1.1(hono@4.13.9)
       ajv: 8.20.0
@@ -10682,8 +10676,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.6.5
-      zod-to-json-schema: 3.25.2(zod@4.6.5)
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
+      zod-to-json-schema: 3.25.2(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))
     transitivePeerDependencies:
       - supports-color
 
@@ -11115,7 +11109,7 @@ snapshots:
 
   '@paulirish/trace_engine@0.0.53':
     dependencies:
-      legacy-javascript: 0.0.3
+      legacy-javascript: 0.0.4
       third-party-web: 0.30.0
 
   '@phosphor-icons/react@2.1.10(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
@@ -14313,14 +14307,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(jiti@2.7.0)):
+  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.70.1(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3)
       eslint: 9.39.5(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.5(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -14350,7 +14344,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.5(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(jiti@2.7.0))
+      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.70.1(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5(jiti@2.7.0))
       hasown: 2.0.4
       is-core-module: 2.17.0
       is-glob: 4.0.3
@@ -14393,8 +14387,8 @@ snapshots:
       '@babel/parser': 7.29.9
       eslint: 9.39.5(jiti@2.7.0)
       hermes-parser: 0.25.1
-      zod: 4.6.5
-      zod-validation-error: 4.0.2(zod@4.6.5)
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
+      zod-validation-error: 4.0.2(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))
     transitivePeerDependencies:
       - supports-color
 
@@ -14823,7 +14817,7 @@ snapshots:
       '@google-cloud/cloud-sql-connector': 1.12.0
       '@google-cloud/pubsub': 5.3.1
       '@inquirer/prompts': 7.10.1(@types/node@22.20.4)
-      '@modelcontextprotocol/sdk': 1.30.1(zod@4.6.5)
+      '@modelcontextprotocol/sdk': 1.30.1(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12))
       abort-controller: 3.0.0
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
@@ -14886,7 +14880,7 @@ snapshots:
       winston-transport: 4.9.0
       ws: 8.22.0
       yaml: 2.9.1
-      zod: 4.6.5
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - '@types/node'
@@ -15957,7 +15951,7 @@ snapshots:
       tinyglobby: 0.2.17
       unbash: 4.0.11
       yaml: 2.9.1
-      zod: 4.6.5
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
 
   kuler@2.0.0: {}
 
@@ -15973,7 +15967,7 @@ snapshots:
 
   leac@0.6.0: {}
 
-  legacy-javascript@0.0.3: {}
+  legacy-javascript@0.0.4: {}
 
   levn@0.4.1:
     dependencies:
@@ -18841,14 +18835,14 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-to-json-schema@3.25.2(zod@4.6.5):
+  zod-to-json-schema@3.25.2(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)):
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
 
-  zod-validation-error@4.0.2(zod@4.6.5):
+  zod-validation-error@4.0.2(zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)):
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12)
 
   zod@3.25.76: {}
 
-  zod@4.6.5: {}
+  zod@4.6.5(patch_hash=1b2be026e95292d0fa7a517d0ccb61d5a7e12e9f1ef97e6afe9ff98d67703e12): {}
