@@ -12,7 +12,7 @@ import {
 } from '@ph/core/espace-pro';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Banner, cn, EmptyState, Field, Input } from '@ph/ui';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { CarteDemandePro, type ActionCarte } from './CarteDemandePro';
 import { useDemandesPro } from './useDemandesPro';
@@ -23,6 +23,10 @@ const CARTES: { cle: 'total' | EtatPro; libelle: string; note: string }[] = [
   { cle: 'contacte', libelle: 'Contactées', note: "en cours d'échange" },
   { cle: 'converti', libelle: 'Converties', note: 'clients signés' },
 ];
+
+const sAbonner = () => () => {};
+let instant: number | undefined;
+const lireInstant = () => (instant ??= Date.now());
 
 /** Maquette Mes Demandes : compteurs, recherche, filtre d'état, liste en temps réel (PRO-01 à 03). */
 export function MesDemandesPro({
@@ -40,8 +44,9 @@ export function MesDemandesPro({
   const { liste, recharger } = useDemandesPro(initiales, artisanId);
   const [q, setQ] = useState('');
   const [etape, setEtape] = useState<EtapeSuivi | 'relance' | ''>('');
-  // Heure figée au premier rendu (relances « du jour ») : pas d'appel à Date.now pendant le rendu.
-  const [maintenant] = useState(() => Date.now());
+  // Heure lue dans le navigateur seulement (relances « du jour ») : au rendu serveur et à
+  // l'hydratation, aucune relance n'est comptée, sinon le texte différerait (erreur React 418).
+  const maintenant = useSyncExternalStore(sAbonner, lireInstant, () => 0);
   const [enCours, setEnCours] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const compte = compterDemandesPro(liste);
@@ -106,14 +111,14 @@ export function MesDemandesPro({
               className={cn(
                 'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-pill border px-3.5 text-sm font-semibold',
                 etape === f.cle
-                  ? 'border-accent bg-accent text-blanc'
+                  ? 'border-accent-action bg-accent-action text-blanc'
                   : f.cle === 'relance'
                     ? 'border-accent-300 bg-accent-100 text-accent-800'
                     : 'border-trait bg-blanc text-neutre-800 hover:border-neutre-500',
               )}
             >
               {f.libelle}
-              <span aria-hidden="true" className="tabular-nums opacity-80">
+              <span aria-hidden="true" className="tabular-nums">
                 {f.n}
               </span>
               <span className="sr-only">({f.n})</span>
