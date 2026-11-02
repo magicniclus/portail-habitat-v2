@@ -19,7 +19,7 @@ export interface CadreProProps {
   ongletsCompte: LienPro[];
   entreprises: { artisanId: string; nomCommercial: string }[];
   activeId: string | null;
-  /** Pastille d'état de la fiche (« Fiche en ligne · Mérignac · 30 km »). */
+  /** Pastille d'état de la fiche (« Fiche en ligne · Mérignac · 30 km »), affichée sur Ma fiche. */
   etatFiche: ReactNode;
   initiales: string;
   /** Encart du bas de la barre latérale (offre contextuelle, PAIEMENTS §4), facultatif. */
@@ -63,8 +63,8 @@ export function CadrePro(p: CadreProProps) {
             {/* Sélecteur d'entreprise dans l'en-tête, hors de la barre latérale (D63). */}
             {selecteur ? <div className="hidden lg:block">{selecteur}</div> : null}
             <div id={ID_ACTIONS_ENTETE} className="contents" />
-            {/* Interrupteur « En ligne » sur toutes les pages, Ma fiche comprise. */}
-            {p.etatFiche}
+            {/* Interrupteur « En ligne » : seulement sur Ma fiche (demande du propriétaire). */}
+            {estActif(chemin, 'fiche') ? p.etatFiche : null}
             <span
               aria-hidden="true"
               className="flex size-10 flex-none items-center justify-center rounded-full bg-accent-200 text-sm font-bold text-accent-800"

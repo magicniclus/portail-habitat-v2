@@ -56,6 +56,10 @@ test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche
     await expect(page.getByText('Votre fiche n’apparaît pas encore dans l’annuaire')).toHaveCount(
       0,
     );
+    // L'interrupteur n'existe que sur Ma fiche (décision du propriétaire, 02/11/2026).
+    await page.goto('/pro/tableau-de-bord');
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
+    await expect(page.getByRole('switch', { name: 'Fiche en ligne' })).toHaveCount(0);
   } finally {
     await artisan.update({
       enLigne: avant.enLigne ?? false,

@@ -8,7 +8,7 @@ import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
 /**
- * Interrupteur « En ligne » de l'en-tête (ville · rayon quand la fiche est en ligne). La fiche
+ * Interrupteur « En ligne » de l'en-tête de Ma fiche (ville · rayon quand la fiche est en ligne). La fiche
  * passe en ligne d'elle-même dès que logo, description et bannière sont faits ; l'éteindre la
  * retire de l'annuaire jusqu'à ce que l'artisan la rallume. Sans droit `fiche.modifier` :
  * simple pastille d'état.
