@@ -42,10 +42,23 @@ export function authClient(): Promise<Auth> {
   return authP;
 }
 
-/** Firestore temps réel de l'espace pro (Mes demandes, PRO-01). */
+/**
+ * Firestore temps réel de l'espace pro (Mes demandes, PRO-01). Connexion en « long polling »
+ * (requêtes XHR) plutôt qu'en flux `fetch` : à la fermeture d'une écoute (changement de page,
+ * rechargement), le flux `fetch` était interrompu sans que le SDK rattrape l'erreur
+ * (« Uncaught (in promise) AbortError: signal is aborted without reason », webchannel_blob).
+ * Même rendu pour l'utilisateur ; les écoutes de l'espace pro sont rares et peu volumineuses.
+ */
 export function firestoreClient(): Promise<Firestore> {
   dbP ??= Promise.all([application(), import('firebase/firestore')]).then(([a, m]) => {
-    const db = m.getFirestore(a);
+    ignorerCoupuresWebChannel();
+    let db: Firestore;
+    try {
+      db = m.initializeFirestore(a, { experimentalForceLongPolling: true });
+    } catch {
+      // Déjà initialisé (rechargement à chaud en développement) : on reprend l'instance.
+      db = m.getFirestore(a);
+    }
     const e = config().emulateurs?.firestore;
     if (e) {
       const [hote, port] = e.split(':');
@@ -54,6 +67,21 @@ export function firestoreClient(): Promise<Firestore> {
     return db;
   });
   return dbP;
+}
+
+/**
+ * Filet de sécurité : une coupure volontaire de la connexion Firestore (écoute fermée, onglet
+ * quitté) ne doit jamais remonter comme « erreur non rattrapée ». Seules les AbortError venues
+ * du transport du SDK (webchannel) sont ignorées ; toute autre erreur reste visible.
+ */
+let filetInstalle = false;
+function ignorerCoupuresWebChannel() {
+  if (filetInstalle || typeof window === 'undefined') return;
+  filetInstalle = true;
+  window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
+    const r = e.reason as { name?: string; stack?: string } | null;
+    if (r?.name === 'AbortError' && /webchannel/i.test(r.stack ?? '')) e.preventDefault();
+  });
 }
 
 /** Storage (documents, logo, réalisations) : la session Firebase du navigateur porte les droits. */

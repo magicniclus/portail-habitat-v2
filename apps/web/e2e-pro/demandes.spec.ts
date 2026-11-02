@@ -6,6 +6,9 @@ test.describe('Mes demandes', () => {
   test('PRO-01 et PRO-02 : arrivée en temps réel, coordonnées après acceptation', async ({
     page,
   }) => {
+    // Écoute fermée en quittant la page : aucune erreur non rattrapée (AbortError du SDK).
+    const erreurs: string[] = [];
+    page.on('pageerror', (e) => erreurs.push(`${e.name}: ${e.message}`));
     await connecter(page, COMPTES.proprio, '/pro/demandes');
     await expect(page.getByRole('heading', { level: 1, name: 'Mes demandes' })).toBeVisible();
     // Laisse l'écoute s'installer avant l'arrivée de la demande.
@@ -23,6 +26,8 @@ test.describe('Mes demandes', () => {
     await expect(page).toHaveURL(/\/pro\/devis\/nouveau\?demande=/);
     await expect(page.getByLabel(/^Nom du client/)).toHaveValue('Hélène Marty');
     await expect(page.getByText(/^En réponse à la demande/)).toBeVisible();
+    await page.waitForTimeout(1000);
+    expect(erreurs.filter((e) => /abort/i.test(e))).toEqual([]);
   });
 
   test('PRO-03 : « Je m’en occupe » ; les autres voient qui traite la demande', async ({

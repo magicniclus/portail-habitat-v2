@@ -1073,3 +1073,9 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - dès que le devis est envoyé : un clic le marque accepté puis émet la facture (numéro sans trou, mentions vérifiées) ;
     - « Voir la facture » apparaît ensuite dans le menu.
   - Test e2e ajouté.
+- 02/11/2026 — **« Uncaught (in promise) AbortError: signal is aborted without reason » (webchannel_blob)** dans l'espace pro :
+  - Cause : la connexion temps réel de Firestore (Mes demandes, journal admin) est coupée volontairement quand on quitte la page ou qu'une écoute se ferme. Le transport en flux `fetch` du SDK ne rattrapait pas cette coupure.
+  - Correctif :
+    - Firestore est initialisé en « long polling » (requêtes XHR, sans `AbortController`) ;
+    - un filet de sécurité ignore uniquement les AbortError venues du transport du SDK (toute autre erreur reste visible).
+  - Test e2e : aucune erreur non rattrapée en quittant Mes demandes.
