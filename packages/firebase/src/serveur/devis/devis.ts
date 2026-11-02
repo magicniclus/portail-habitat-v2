@@ -86,7 +86,7 @@ export async function enregistrerDevis(
       );
   }
   const p = await lireParametresTx(s, null, ctx.artisanId);
-  const r = await avecReprise(() =>
+  const r = await avecReprise(`${ctx.artisanId}:devis`, () =>
     s.db.runTransaction(
       async (t) => {
         const existant = e.devisId ? await t.get(ref) : null;

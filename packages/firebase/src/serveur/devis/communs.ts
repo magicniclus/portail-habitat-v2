@@ -98,12 +98,30 @@ const contention = (e: unknown) => {
   return x.code === 10 || /ABORTED|maximum number of retries|lock timeout/i.test(String(x.message));
 };
 
+/** Dernière transaction numérotée lancée par compteur (« artisan:factures ») dans ce processus. */
+const files = new Map<string, Promise<unknown>>();
+
 /**
  * Transaction qui prend un numéro : le compteur est un document unique, très disputé quand
- * plusieurs factures partent en même temps. Après les tentatives du SDK, on retente avec une
- * attente aléatoire croissante ; un échec n'écrit rien, donc jamais de trou dans la suite.
+ * plusieurs factures partent en même temps.
+ * - Dans un même serveur, les transactions d'un même compteur passent l'une après l'autre (`cle`) :
+ *   100 transactions lancées ensemble se bloquaient mutuellement sur le compteur et leurs reprises
+ *   duraient plus de 15 minutes.
+ * - Entre serveurs, la transaction garantit toujours l'absence de trou et de doublon ; après les
+ *   tentatives du SDK, on retente avec une attente aléatoire croissante (un échec n'écrit rien).
  */
-export async function avecReprise<T>(f: () => Promise<T>, essais = 8): Promise<T> {
+export async function avecReprise<T>(cle: string, f: () => Promise<T>, essais = 8): Promise<T> {
+  const avant = files.get(cle) ?? Promise.resolve();
+  const tour = avant.catch(() => undefined).then(() => reprendre(f, essais));
+  files.set(cle, tour);
+  try {
+    return await tour;
+  } finally {
+    if (files.get(cle) === tour) files.delete(cle);
+  }
+}
+
+async function reprendre<T>(f: () => Promise<T>, essais: number): Promise<T> {
   for (let i = 1; ; i++) {
     try {
       return await f();

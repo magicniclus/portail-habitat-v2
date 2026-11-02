@@ -118,7 +118,7 @@ export async function creerFacture(
   );
   await exiger(s, null, ctx, 'factures.emettre');
   const p = await lireParametresTx(s, null, ctx.artisanId);
-  return avecReprise(() =>
+  return avecReprise(`${ctx.artisanId}:factures`, () =>
     s.db.runTransaction(
       async (t) => {
         const deja = await t.get(ref);
@@ -201,7 +201,7 @@ export async function facturerDevis(
           .get()
       : null,
   ]);
-  return avecReprise(() =>
+  return avecReprise(`${ctx.artisanId}:factures`, () =>
     s.db.runTransaction(
       async (t) => {
         const [d, deja] = await Promise.all([t.get(refDevis), t.get(ref)]);
@@ -351,7 +351,7 @@ export async function creerAvoir(
     chemins.factureClient(ctx.artisanId, idFacture(e.cleIdempotence, e.factureId)),
   );
   await exiger(s, null, ctx, 'factures.emettre');
-  return avecReprise(() =>
+  return avecReprise(`${ctx.artisanId}:factures`, () =>
     s.db.runTransaction(
       async (t) => {
         const [o, deja] = await Promise.all([t.get(refOrigine), t.get(ref)]);

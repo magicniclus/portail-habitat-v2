@@ -714,7 +714,7 @@ describe('factures', () => {
     expect((await db.doc(chemins.compteurDocuments('a1', 'factures')).get()).get('dernier')).toBe(
       100,
     );
-    // Émulateur : les 100 transactions se disputent un seul compteur (verrous pessimistes,
-    // ~150 s sur un poste, davantage sur les machines de CI).
-  }, 900_000);
+    // Les 100 transactions d'un même compteur passent l'une après l'autre dans le processus
+    // (`avecReprise`) : quelques secondes au lieu de plus de 15 minutes de reprises.
+  }, 120_000);
 });

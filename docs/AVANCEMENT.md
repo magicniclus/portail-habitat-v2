@@ -1079,3 +1079,7 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - Firestore est initialisé en « long polling » (requêtes XHR, sans `AbortController`) ;
     - un filet de sécurité ignore uniquement les AbortError venues du transport du SDK (toute autre erreur reste visible).
   - Test e2e : aucune erreur non rattrapée en quittant Mes demandes.
+- 02/11/2026 — **CI : DEV-06 (100 factures simultanées) dépassait 15 minutes** :
+  - Cause : les 100 transactions se bloquaient mutuellement sur le compteur unique de numéros (verrous de l'émulateur), et leurs reprises s'allongeaient.
+  - Correctif : `avecReprise(cle, …)` fait passer l'une après l'autre, dans un même serveur, les transactions d'un même compteur (`artisan:factures`, `artisan:devis`). Entre serveurs, la transaction garantit toujours numéros sans trou ni doublon.
+  - Résultat : le fichier `devis.test.ts` passe en 12 s au lieu de plus de 15 minutes. Le test DEV-06 reste identique (100 appels simultanés, numéros 1 à 100) ; seule sa limite de temps passe de 15 à 2 minutes.
