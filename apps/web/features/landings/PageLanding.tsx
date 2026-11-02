@@ -28,6 +28,7 @@ import {
   Vitrine,
 } from './Sections';
 import { SuiviLanding } from './SuiviLanding';
+import { styleSerifTitres } from '@/features/vitrine/serifTitres';
 
 /**
  * Gabarit unique des landings par outil (maquette `Landing Outil`, LANDINGS §3) : seuls les textes,
@@ -46,7 +47,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
       <JsonLd donnees={faqPage(c.faq)} />
       <Traceur page={`landing-${outil}`} />
       <EnTeteLanding />
-      <main className="pb-[76px] md:pb-0">
+      <main className="pb-[76px] md:pb-0" style={styleSerifTitres}>
         <section
           className={cn(
             conteneur,

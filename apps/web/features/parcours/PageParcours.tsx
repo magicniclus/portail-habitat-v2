@@ -2,6 +2,7 @@ import { Logo, type LogoProps } from '@ph/ui';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { routes } from '@/lib/routes';
+import { styleSerifTitres } from '@/features/vitrine/serifTitres';
 
 const CONTENEUR_PARCOURS = 'mx-auto w-full max-w-[1180px] px-[clamp(18px,4vw,44px)]';
 
@@ -48,7 +49,10 @@ export function PageParcours({
           </span>
         </div>
       </header>
-      <main className="flex-1 bg-accent-100 py-[clamp(24px,3.5vw,48px)] pb-[clamp(40px,5vw,72px)]">
+      <main
+        style={styleSerifTitres}
+        className="flex-1 bg-accent-100 py-[clamp(24px,3.5vw,48px)] pb-[clamp(40px,5vw,72px)]"
+      >
         <div className={CONTENEUR_PARCOURS}>{children}</div>
       </main>
     </div>

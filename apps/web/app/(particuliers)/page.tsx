@@ -22,6 +22,7 @@ import { enTeteParticuliers, piedParticuliers } from '@/features/vitrine/navigat
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage, organisation } from '@/features/vitrine/seo';
 import { lireArtisansVedette, lireAvisRecents, lireStatsPublic } from '@/server/vitrine';
+import { styleSerifTitres } from '@/features/vitrine/serifTitres';
 
 // Chiffres et avis régénérés toutes les heures (ISR) : stats/public n'est recalculé que la nuit.
 export const revalidate = 3600;
@@ -45,7 +46,7 @@ export default async function Accueil() {
       <JsonLd donnees={organisation()} />
       <JsonLd donnees={faqPage(FAQ_ACCUEIL)} />
       <EnTetePublic {...enTeteParticuliers} />
-      <main>
+      <main style={styleSerifTitres}>
         <Zone id="hero">
           <Hero chiffres={chiffres} />
         </Zone>
