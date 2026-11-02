@@ -1117,3 +1117,8 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Vérifié sous `next dev` : la coupure n'affiche plus d'erreur, une autre erreur reste affichée, aucune violation CSP.
 - 02/11/2026 — **Adresse du siège : rue facultative** (demande du propriétaire). Ville et code postal suffisent ; rue vide = retirée.
   - **Signalé, modèle de données** : `adresseSiege.ligne1` devient facultatif (schéma `artisans`). Les autres adresses (facturation, clients) restent inchangées.
+- 02/11/2026 — **Mes demandes : tous les détails de la demande**.
+  - Les réponses du formulaire (`reponsesLisibles` : réponses du simulateur, description laissée sur la fiche) s'affichent dans un encadré « Détails du projet ». Avant acceptation, les numéros et emails y sont masqués, comme dans les précisions.
+  - Demande laissée sur la fiche ou le site : badge « Via votre fiche » ou « Via votre site » et titre explicite, sans estimation fictive (« 0 € – 0 € » retiré).
+  - Recherche : elle porte aussi sur ces détails.
+  - Tests : `demandesPro.test.ts` ; e2e `contactFiche.spec.ts` (la description apparaît côté artisan).

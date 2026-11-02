@@ -29,7 +29,12 @@ export interface DemandePro {
   ville: string;
   codePostal: string;
   precisions: string;
-  estimation: { minCentimes: number; maxCentimes: number };
+  /** Réponses du formulaire (simulateur, description laissée sur la fiche), masquées avant acceptation. */
+  details: { question: string; reponse: string }[];
+  /** Demande laissée directement sur la fiche ou le site de l'artisan (sans estimation). */
+  origine?: 'fiche' | 'site';
+  /** `null` : pas d'estimation (demande directe). */
+  estimation: { minCentimes: number; maxCentimes: number } | null;
   proposeeLe: number;
   statut: StatutAttributionPro;
   etat: EtatPro;
@@ -89,7 +94,20 @@ export async function lireDemandesPro(
       : `${c.prenom}${c.nom ? ` ${c.nom[0]}.` : ''}`;
     const brut = (d.get('precisions') as string | undefined) ?? '';
     const precisions = accepte ? brut : masquerCoordonnees(brut).texte;
-    const titre = s.nomPrestation(d.get('prestationId'));
+    const source = d.get('source') as string | undefined;
+    const origine =
+      source === 'fiche_artisan' ? 'fiche' : source === 'site_artisan' ? 'site' : undefined;
+    const titre = origine
+      ? `Demande depuis votre ${origine === 'fiche' ? 'fiche' : 'site'}`
+      : s.nomPrestation(d.get('prestationId'));
+    const details = (
+      (d.get('reponsesLisibles') as { question: string; reponse: string }[] | undefined) ?? []
+    ).map((r) => ({
+      question: r.question,
+      reponse: accepte ? r.reponse : masquerCoordonnees(r.reponse).texte,
+    }));
+    const min = (d.get('estimation.minCentimes') as number | undefined) ?? 0;
+    const max = (d.get('estimation.maxCentimes') as number | undefined) ?? 0;
     const adresse = d.get('adresseChantier') as { ville: string; codePostal: string };
     const assigne = a.get('assigneA') as string | undefined;
     const niveau = d.get('qualification.niveau') as NiveauPartenaire | undefined;
@@ -107,10 +125,9 @@ export async function lireDemandesPro(
         ville: adresse.ville,
         codePostal: adresse.codePostal,
         precisions,
-        estimation: {
-          minCentimes: d.get('estimation.minCentimes'),
-          maxCentimes: d.get('estimation.maxCentimes'),
-        },
+        details,
+        ...(origine ? { origine } : {}),
+        estimation: max > 0 ? { minCentimes: min, maxCentimes: max } : null,
         proposeeLe: (a.get('proposeeLe') as Timestamp).toMillis(),
         statut,
         etat: etatPro(statut),
@@ -120,7 +137,7 @@ export async function lireDemandesPro(
         ...(niveau ? { niveau } : {}),
         ...(texte ? { aides: texte } : {}),
         ...(contestable ? { contestable } : {}),
-        recherche: `${particulier} ${titre} ${adresse.ville} ${adresse.codePostal} ${precisions}`,
+        recherche: `${particulier} ${titre} ${adresse.ville} ${adresse.codePostal} ${precisions} ${details.map((x) => x.reponse).join(' ')}`,
       },
     ];
   });

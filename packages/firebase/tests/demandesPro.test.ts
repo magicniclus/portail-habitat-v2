@@ -79,6 +79,39 @@ describe('lireDemandesPro', () => {
     expect(JSON.stringify(d1)).not.toContain('helene@test.local');
   });
 
+  it('détails du projet : réponses du simulateur, masquées comme les précisions', async () => {
+    await demande('d1', 1);
+    await db.doc(chemins.demande('d1')).update({
+      reponsesLisibles: [
+        { question: 'Surface', reponse: '90 m²' },
+        { question: 'Commentaire', reponse: 'Joignable au 06 12 34 56 78' },
+      ],
+    });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.details).toEqual([
+      { question: 'Surface', reponse: '90 m²' },
+      { question: 'Commentaire', reponse: expect.stringContaining('[numéro masqué]') },
+    ]);
+  });
+
+  it('demande laissée sur la fiche : origine, description visible, pas de fausse estimation', async () => {
+    await demande('d1', 1, 'acceptee');
+    await db.doc(chemins.demande('d1')).update({
+      source: 'fiche_artisan',
+      prestationId: 'contact_fiche',
+      precisions: '',
+      reponsesLisibles: [{ question: 'Description du projet', reponse: 'Fuite sous l’évier' }],
+      estimation: { minCentimes: 0, maxCentimes: 0 },
+    });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1).toMatchObject({
+      origine: 'fiche',
+      titre: 'Demande depuis votre fiche',
+      details: [{ question: 'Description du projet', reponse: 'Fuite sous l’évier' }],
+    });
+    expect(d1!.estimation).toBeNull();
+  });
+
   it('seulement les demandes de l’entreprise', async () => {
     await demande('d1', 1);
     expect(await lireDemandesPro(s(), 'autre')).toEqual([]);

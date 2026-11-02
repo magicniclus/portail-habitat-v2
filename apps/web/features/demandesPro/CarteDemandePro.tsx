@@ -47,6 +47,11 @@ export function CarteDemandePro({
           <p className="m-0 flex flex-wrap items-center gap-2">
             <strong className="text-[15px]">{d.particulier}</strong>
             <Badge tone={TONS[d.etat]}>{LIBELLES_ETAT_PRO[d.etat]}</Badge>
+            {d.origine ? (
+              <Badge tone="info">
+                {d.origine === 'fiche' ? 'Via votre fiche' : 'Via votre site'}
+              </Badge>
+            ) : null}
           </p>
           <h3 className="m-0 text-base">{d.titre}</h3>
           {d.niveau ? (
@@ -62,10 +67,33 @@ export function CarteDemandePro({
             </p>
           ) : null}
           {d.precisions ? <p className="m-0 text-sm text-neutre-800">{d.precisions}</p> : null}
+          {d.details.length ? (
+            <dl
+              aria-label="Détails du projet"
+              className="m-0 grid gap-1.5 rounded-md bg-neutre-100 px-3 py-2.5 text-sm"
+            >
+              {d.details.map((x) => (
+                <div
+                  key={x.question}
+                  className="grid gap-0.5 sm:grid-cols-[minmax(0,12rem)_1fr] sm:gap-3"
+                >
+                  <dt className="font-semibold text-neutre-800">{x.question}</dt>
+                  <dd className="m-0 whitespace-pre-line text-texte">{x.reponse}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
           <p className="m-0 text-[13px] text-neutre-700">
-            {d.ville} ({d.codePostal}) ·{' '}
-            {formatFourchette(d.estimation.minCentimes, d.estimation.maxCentimes)} ·{' '}
-            {formatRelatif(d.proposeeLe)} · {d.reference}
+            {[
+              d.codePostal ? `${d.ville ? `${d.ville} ` : ''}(${d.codePostal})` : d.ville,
+              d.estimation
+                ? formatFourchette(d.estimation.minCentimes, d.estimation.maxCentimes)
+                : null,
+              formatRelatif(d.proposeeLe),
+              d.reference,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </p>
           {d.assigneA ? (
             <p className="m-0 text-[13px] font-semibold text-accent-800">

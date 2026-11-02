@@ -1,6 +1,6 @@
 import { chemins } from '@ph/firebase/chemins';
 import { expect, test } from '@playwright/test';
-import { admin, COMPTES, entrepriseDe } from './outils';
+import { admin, COMPTES, connecter, entrepriseDe } from './outils';
 
 // Fiche publique : coordonnées laissées directement à l'artisan → demande attribuée, gratuite.
 test('fiche publique : mise en page de Ma fiche, carte, formulaire de contact direct', async ({
@@ -37,4 +37,12 @@ test('fiche publique : mise en page de Ma fiche, carte, formulaire de contact di
     statut: 'attribuee',
     artisanCibleId: id,
   });
+
+  // Côté artisan : la demande, son origine et la description du projet dans « Mes demandes ».
+  const reference = d.docs[0]!.get('reference') as string;
+  await connecter(page, COMPTES.proprio, '/pro/demandes');
+  const carte = page.getByRole('listitem').filter({ hasText: reference });
+  await expect(carte).toContainText('Via votre fiche', { timeout: 15_000 });
+  await expect(carte.getByRole('definition')).toContainText('Isolation des combles.');
+  await expect(carte).not.toContainText('0 €');
 });
