@@ -1103,7 +1103,7 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - GSAP n'est chargé que sur ordinateur, pour les étapes animées ;
     - l'apparition des titres (y 28 → 0, 0,8 s, `power3.out`) passe en animation native ;
     - `@gsap/react` est retiré (**signalé : dépendance retirée**).
-  - **Police serif** (mot en italique des titres) préchargée : son arrivée tardive décalait toute la page `/pro`.
+  - **Police serif** (mot en italique des titres) préchargée sur `/pro` seulement (`app/pro/policeHero.ts`, `--font-serif` redéfini sur `<main>`) : son arrivée tardive décalait toute la page. Préchargée partout, elle retardait l'affichage des autres pages (`/maintenance` à 2,50 s en CI).
   - **Simulateur** rendu par le serveur à chaque visite (aucune lecture en base) : l'étape demandée par l'adresse est dans le HTML. Les tests attendent le marqueur `data-simulateur-pret` avant d'interagir.
   - **Page 404**, préchargée par Next sur toutes les pages : bouton « Rechercher » natif, même style, sans tailwind-merge. `cn()` crée tailwind-merge au premier appel.
   - Lighthouse local : le budget de taille du JavaScript passe. Le temps de blocage (TBT) dépend de la machine : il dépasse ici même sur `/maintenance`, alors qu'il passait en CI.

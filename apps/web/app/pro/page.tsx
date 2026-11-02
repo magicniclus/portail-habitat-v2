@@ -1,5 +1,6 @@
 import { contenuLanding, preuveHeroPro } from '@ph/core/landings';
 import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { Traceur } from '@/features/comportement/Traceur';
 import { Zone } from '@/features/comportement/Zone';
@@ -24,6 +25,7 @@ import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
+import { serifHero } from './policeHero';
 import { preuvesMarketingActives } from '@/server/flags';
 import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 
@@ -52,7 +54,10 @@ export default async function AcquisitionArtisans() {
     <>
       <JsonLd donnees={faqPage(FAQ_PRO)} />
       <EnTetePublic {...enTetePro} />
-      <main>
+      {/* --font-serif est calculé à la racine : redéfini ici pour utiliser la serif préchargée. */}
+      <main
+        style={{ '--font-serif': `${serifHero.style.fontFamily}, Georgia, serif` } as CSSProperties}
+      >
         <section
           data-ph-section="hero"
           className={`${conteneurPro} grid items-start gap-x-[clamp(28px,4vw,64px)] gap-y-9 pt-[clamp(24px,4vw,48px)] pb-[clamp(48px,6vw,80px)] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] min-[900px]:grid-rows-[auto_1fr]`}
