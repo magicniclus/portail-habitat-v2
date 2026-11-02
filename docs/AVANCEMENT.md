@@ -1130,3 +1130,11 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Couche privée : sans effet sur le statut de la mise en relation, la facturation ou les statistiques.
   - **Signalé, modèle de données** : champ `suivi` sur `attributions` (DATABASE §4), écrit par le serveur seulement (`majSuiviDemande`, transaction, droit `demandes.repondre`). Route `/api/pro/demandes/suivi`. Aucune règle de sécurité modifiée.
   - Tests : `suivi.test.ts` (core), `demandesPro.test.ts`, e2e `demandes.spec.ts`.
+- 02/11/2026 — **Devis → facture : relue et modifiable avant émission** (demande du propriétaire) :
+  - « Transformer en facture » (page du devis ou menu ⋮) prépare un **brouillon de facture pré-rempli** depuis le devis : client, lignes, remise, options, adresse, date de prestation du jour.
+  - Le brouillon s'ouvre dans l'éditeur A4 (« Facture du devis D-… »). Tout y est modifiable (lignes, remise, travaux en plus ou en moins), puis « Émettre la facture » en un clic, après confirmation.
+  - **Légal** : un brouillon n'a pas de numéro ; le numéro F-aaaa-nnnn (sans trou) n'est pris qu'à l'émission, et la facture émise est figée (correction = avoir). Une facture peut différer du devis accepté (travaux réellement réalisés). Elle garde la référence du devis.
+  - **À l'émission** : devis revérifié (pas déjà facturé), acomptes émis déduits du reste à payer, `devis.factureId` posé.
+  - Second clic sur « Transformer en facture » : rouvre le même brouillon.
+  - **Signalé, modèle de données** : `devis.factureBrouillonId?` ; `devisId` et `devisNumero` posés dès le brouillon (DATABASE §8 bis).
+  - Tests : `devis.test.ts` (brouillon, modification, émission avec acompte déduit, refus si non accepté) ; e2e `devis.spec.ts`.

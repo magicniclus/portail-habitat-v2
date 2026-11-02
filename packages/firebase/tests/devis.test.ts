@@ -13,6 +13,7 @@ import {
   changerStatutDevis,
   dupliquerFacture,
   enregistrerBrouillonFacture,
+  preparerFactureDevis,
   envoyerFactureEmail,
   supprimerFacture,
   dupliquerDevis,
@@ -621,6 +622,68 @@ describe('factures', () => {
     ]);
     expect(f.resteCentimes).toBe(178860 - fa.totaux.ttcCentimes);
     expect(solde.numero).toBe('F-2026-0002');
+  });
+
+  it('devis → brouillon de facture pré-rempli, modifiable, puis émis : acompte déduit, devis lié', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    await envoyerDevis(s(), proprio, devisId);
+    const a = await facturerDevis(s(), proprio, {
+      devisId,
+      type: 'acompte',
+      cleIdempotence: 'acompte-b',
+    });
+    await changerStatutDevis(s(), proprio, { devisId, statut: 'accepte' });
+    const { factureId } = await preparerFactureDevis(s(), proprio, { devisId });
+    // Idempotent : un second clic rouvre le même brouillon.
+    expect((await preparerFactureDevis(s(), proprio, { devisId })).factureId).toBe(factureId);
+    const b = (await db.doc(chemins.factureClient('a1', factureId)).get()).data()!;
+    const devis = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(b).toMatchObject({ statut: 'brouillon', devisId, devisNumero: devis.numero });
+    expect(b.numero).toBeUndefined();
+    expect(b.lignes).toEqual(devis.lignes);
+    expect(b.datePrestationLe).toBeDefined();
+    // L'artisan ajoute une remise de 10 % dans l'éditeur, puis émet la facture.
+    const saisie = {
+      client: b.client,
+      typeClient: b.typeClient,
+      objet: b.objet,
+      lignes: b.lignes,
+      remisePct: 10,
+      datePrestationLe: '2026-10-15',
+    };
+    await enregistrerBrouillonFacture(
+      s(),
+      proprio,
+      entreeBrouillonFacture.parse({ ...saisie, factureId }),
+    );
+    expect((await db.doc(chemins.factureClient('a1', factureId)).get()).get('devisId')).toBe(
+      devisId,
+    );
+    const emise = await creerFacture(
+      s(),
+      proprio,
+      entreeCreerFacture.parse({ ...saisie, factureId, cleIdempotence: 'emission-b' }),
+    );
+    const f = (await db.doc(chemins.factureClient('a1', factureId)).get()).data()!;
+    const fa = (await db.doc(chemins.factureClient('a1', a.factureId)).get()).data()!;
+    expect(emise.numero).toBe('F-2026-0002');
+    expect(f).toMatchObject({ statut: 'emise', devisId, remisePct: 10 });
+    expect(f.acomptesDeduits).toEqual([
+      { factureId: a.factureId, numero: 'F-2026-0001', ttcCentimes: fa.totaux.ttcCentimes },
+    ]);
+    expect(f.resteCentimes).toBe(f.totaux.ttcCentimes - fa.totaux.ttcCentimes);
+    const apres = (await db.doc(chemins.unDevis('a1', devisId)).get()).data()!;
+    expect(apres.factureId).toBe(factureId);
+    expect(apres.factureBrouillonId).toBeUndefined();
+    // Le devis a sa facture : plus de nouveau brouillon.
+    expect((await erreur(preparerFactureDevis(s(), proprio, { devisId }))).code).toBe('CONFLIT');
+  });
+
+  it('brouillon depuis un devis non accepté : refusé', async () => {
+    const { devisId } = await enregistrerDevis(s(), proprio, entree());
+    expect((await erreur(preparerFactureDevis(s(), proprio, { devisId }))).code).toBe(
+      'PRECONDITION',
+    );
   });
 
   it('paiements partiels puis complet ; trop-perçu refusé', async () => {

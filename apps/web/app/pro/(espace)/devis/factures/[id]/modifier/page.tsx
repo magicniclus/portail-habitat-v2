@@ -32,6 +32,7 @@ export default async function PageModifierFacture({ params }: { params: Promise<
         clients={clients}
         entreprise={await entrepriseFeuille(acces.artisanId, p)}
         aujourdHui={aujourdHui}
+        {...(b.devisNumero ? { devisNumero: b.devisNumero } : {})}
       />
     </main>
   );

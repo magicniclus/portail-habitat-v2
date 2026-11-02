@@ -139,14 +139,22 @@ test.describe('Devis & factures', () => {
 
     await page.getByRole('button', { name: 'Le client a accepté' }).click();
     await page.getByRole('button', { name: 'Transformer en facture' }).click();
-    await expect(page).toHaveURL(/\/pro\/devis\/factures\//, { timeout: 20_000 });
+    // Brouillon pré-rempli depuis le devis, relu (et modifiable) avant l'émission.
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+\/modifier$/, { timeout: 20_000 });
+    await expect(
+      page.getByRole('heading', { level: 1, name: /^Facture du devis D-/ }),
+    ).toBeVisible();
+    await expect(page.getByTestId('total-ttc-devis')).toHaveText(/759,00/);
+    await page.getByRole('button', { name: 'Émettre la facture' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
     await expect(page.getByTestId('reste-a-payer')).toHaveText(/759,00/);
     await page.getByRole('button', { name: 'Enregistrer le paiement' }).click();
     await expect(page.getByText('Payée')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();
   });
 
-  test('Liste : un devis envoyé passe en facture en un clic depuis le menu', async ({
+  test('Liste : un devis envoyé s’ouvre en facture pré-remplie depuis le menu, puis s’émet', async ({
     page,
   }, info) => {
     await parametres(PARAMS);
@@ -163,7 +171,10 @@ test.describe('Devis & factures', () => {
     await page.goto('/pro/devis');
     await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
     await page.getByRole('button', { name: 'Transformer en facture' }).click();
-    await expect(page).toHaveURL(/\/pro\/devis\/factures\//, { timeout: 20_000 });
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+\/modifier$/, { timeout: 20_000 });
+    await page.getByRole('button', { name: 'Émettre la facture' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
+    await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
     await page.goto('/pro/devis');
     await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
     await expect(page.getByRole('link', { name: 'Voir la facture' })).toBeVisible();

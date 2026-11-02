@@ -326,6 +326,8 @@ export interface BrouillonFacture {
   champLibre?: { titre: string; texte: string };
   clientId?: string;
   livraison?: AdresseLivraison;
+  /** Brouillon préparé depuis un devis (« Transformer en facture »). */
+  devisNumero?: string;
 }
 
 export async function lireBrouillonFacture(
@@ -350,5 +352,6 @@ export async function lireBrouillonFacture(
     champLibre: x.champLibre,
     clientId: x.clientId,
     livraison: x.livraison,
+    ...(x.devisNumero ? { devisNumero: x.devisNumero as string } : {}),
   };
 }

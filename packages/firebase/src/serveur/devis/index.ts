@@ -49,5 +49,6 @@ export {
 export {
   dupliquerFacture,
   enregistrerBrouillonFacture,
+  preparerFactureDevis,
   supprimerFacture,
 } from './facturesBrouillons';

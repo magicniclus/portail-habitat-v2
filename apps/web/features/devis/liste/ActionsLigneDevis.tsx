@@ -67,7 +67,7 @@ export function ActionsLigneDevis({
   const versFacture = async () => {
     const r = await transformerEnFacture(devisId, statut);
     if (!r.ok) return toast({ titre: r.message, tone: 'danger' });
-    router.push(routes.proFactureClient(r.factureId));
+    router.push(routes.proModifierFacture(r.factureId));
   };
   const brouillon = statut === 'brouillon';
   const actions: ActionMenu[] = [

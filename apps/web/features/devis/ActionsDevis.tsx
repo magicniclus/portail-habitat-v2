@@ -54,7 +54,7 @@ export function ActionsDevis({
     const r = await transformerEnFacture(devisId, statut);
     setEnCours(false);
     if (!r.ok) return setErreur(r.message);
-    router.push(routes.proFactureClient(r.factureId));
+    router.push(routes.proModifierFacture(r.factureId));
   };
   const facturer = (type: 'facture' | 'acompte') =>
     appeler(

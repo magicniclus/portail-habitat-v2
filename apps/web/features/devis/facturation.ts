@@ -6,7 +6,8 @@ export const peutDevenirFacture = (statut: string, factureId?: string) =>
 
 /**
  * « Transformer en facture » : un devis envoyé est d'abord marqué accepté (le client a dit oui),
- * puis la facture est émise côté serveur (numéro sans trou, mentions vérifiées, PDF figé).
+ * puis un brouillon de facture pré-rempli est préparé ; il s'ouvre dans l'éditeur pour être relu
+ * et modifié (remise, lignes…) avant l'émission, qui prend le numéro.
  */
 export async function transformerEnFacture(
   devisId: string,
@@ -16,10 +17,8 @@ export async function transformerEnFacture(
   // rafraîchie) n'arrête rien : l'émission de la facture revérifie le statut côté serveur.
   if (statut === 'envoye')
     await posterJson('/api/pro/devis/statut', { devisId, statut: 'accepte' });
-  const r = await posterJson<{ factureId: string }>('/api/pro/devis/facturer', {
+  const r = await posterJson<{ factureId: string }>('/api/pro/devis/facture-brouillon', {
     devisId,
-    type: 'facture',
-    cleIdempotence: `facture-${devisId}-${Date.now()}`,
   });
   return r.ok ? { ok: true, factureId: r.data.factureId } : { ok: false, message: r.message };
 }

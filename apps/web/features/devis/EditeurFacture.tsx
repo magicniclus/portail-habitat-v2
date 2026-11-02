@@ -29,6 +29,7 @@ export function EditeurFacture({
   clients,
   entreprise,
   aujourdHui,
+  devisNumero,
 }: {
   initial: EtatDevis;
   parametres: ParametresFacturation;
@@ -37,6 +38,8 @@ export function EditeurFacture({
   clients: ClientCarnet[];
   entreprise: EntrepriseFeuille;
   aujourdHui: number;
+  /** Brouillon préparé depuis ce devis : rappelé dans le titre, acomptes déduits à l'émission. */
+  devisNumero?: string;
 }) {
   const router = useRouter();
   const [e, setE] = useState(initial);
@@ -108,7 +111,13 @@ export function EditeurFacture({
       document="la facture"
       retour={`${routes.proDevis}?onglet=factures`}
       onBrouillon={async () => (await enregistrerBrouillon()) !== null}
-      titre={e.factureId ? 'Brouillon de facture' : 'Nouvelle facture'}
+      titre={
+        devisNumero
+          ? `Facture du devis ${devisNumero}`
+          : e.factureId
+            ? 'Brouillon de facture'
+            : 'Nouvelle facture'
+      }
       message={message}
       feuille={
         <FeuilleA4
@@ -161,6 +170,9 @@ export function EditeurFacture({
             }
           >
             Elle reçoit son numéro et ne se modifie plus : toute correction passera par un avoir.
+            {devisNumero
+              ? ` Les acomptes déjà facturés sur le devis ${devisNumero} seront déduits du reste à payer.`
+              : ''}
             Échéance à {parametres.delaiPaiementJours} jours (réglée dans Paramètres). Le PDF est
             prêt juste après.
           </ConfirmDialog>

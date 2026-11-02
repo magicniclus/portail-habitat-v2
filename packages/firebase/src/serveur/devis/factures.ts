@@ -14,7 +14,7 @@ import type {
   entreePaiementFacture,
 } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
-import { Timestamp, type DocumentSnapshot } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type DocumentSnapshot } from 'firebase-admin/firestore';
 import { createHash } from 'node:crypto';
 import { chemins } from '../../chemins';
 import {
@@ -125,6 +125,30 @@ export async function creerFacture(
         if (deja.exists && deja.get('statut') !== 'brouillon')
           return { factureId: ref.id, numero: deja.get('numero') as string };
         if (e.factureId && !deja.exists) throw new ErreurMetier('INTROUVABLE');
+        // Brouillon issu d'un devis : devis encore à facturer, acomptes émis déduits.
+        const devisId = deja.exists ? (deja.get('devisId') as string | undefined) : undefined;
+        const refDevis = devisId ? s.db.doc(chemins.unDevis(ctx.artisanId, devisId)) : null;
+        const [devis, acomptes] = refDevis
+          ? await Promise.all([
+              t.get(refDevis),
+              t.get(
+                s.db
+                  .collection(chemins.facturesClients(ctx.artisanId))
+                  .where('devisId', '==', devisId)
+                  .where('type', '==', 'acompte'),
+              ),
+            ])
+          : [null, null];
+        if (devis && !devis.exists) throw new ErreurMetier('INTROUVABLE');
+        if (devis?.get('factureId'))
+          throw new ErreurMetier('CONFLIT', 'Ce devis a déjà sa facture.');
+        const deduits = (acomptes?.docs ?? [])
+          .filter((a) => !a.get('avoirId') && a.get('statut') !== 'brouillon')
+          .map((a) => ({
+            factureId: a.id,
+            numero: a.get('numero') as string,
+            ttcCentimes: a.get('totaux.ttcCentimes') as number,
+          }));
         const c = contenuFacture(e, p);
         const maintenant = s.horloge();
         const echeanceLe = new Date(maintenant + (p.delaiPaiementJours as number) * JOUR_MS);
@@ -164,11 +188,28 @@ export async function creerFacture(
             indemnite: INDEMNITE,
           },
           relances: [],
+          ...(devis
+            ? {
+                devisId,
+                devisNumero: devis.get('numero') as string,
+                ...(deduits.length ? { acomptesDeduits: deduits } : {}),
+                resteCentimes: Math.max(
+                  0,
+                  c.totaux.ttcCentimes - deduits.reduce((x, a) => x + a.ttcCentimes, 0),
+                ),
+              }
+            : {}),
           emiseLe: Timestamp.fromMillis(maintenant),
           creePar: deja.exists ? (deja.get('creePar') as string) : ctx.uid,
           createdAt: deja.exists ? deja.get('createdAt') : Timestamp.fromMillis(maintenant),
           updatedAt: Timestamp.fromMillis(maintenant),
         });
+        if (refDevis)
+          t.update(refDevis, {
+            factureId: ref.id,
+            factureBrouillonId: FieldValue.delete(),
+            updatedAt: Timestamp.fromMillis(maintenant),
+          });
         return { factureId: ref.id, numero: num };
       },
       { maxAttempts: 30 },
