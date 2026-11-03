@@ -14,19 +14,14 @@ import { lirePreuveSociale, lireStatsPublic } from '@/server/vitrine';
 import { BarreMobile } from './BarreMobile';
 import { EtapesDefilement } from './EtapesDefilement';
 import { FaqLanding } from './FaqLanding';
-import {
-  AppelFinal,
-  AvisDefilants,
-  bande,
-  CommentCaMarche,
-  conteneur,
-  EnTeteLanding,
-  OutilsInclus,
-  PreuveSociale,
-  SousTitre,
-  titre2,
-  Vitrine,
-} from './Sections';
+import { AppelFinal } from './AppelFinal';
+import { AvisDefilants } from './AvisDefilants';
+import { CommentCaMarche } from './CommentCaMarche';
+import { OutilsInclus } from './OutilsInclus';
+import { EnTeteLanding, PreuveSociale, SousTitre } from './Sections';
+import { DemoCreation, VraiSite } from './SectionsSite';
+import { bande, coche, conteneur, titre2 } from './styles';
+import { Vitrine } from './Vitrine';
 import { SuiviLanding } from './SuiviLanding';
 import { styleSerifTitres } from '@/features/vitrine/serifTitres';
 
@@ -63,10 +58,10 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
             </h1>
             <SousTitre texte={c.sousTitre} />
             {c.points.length ? (
-              <ul className="m-0 mb-5 grid list-none gap-2 p-0 text-[16px]">
+              <ul className="m-0 mb-5 flex list-none flex-col flex-wrap gap-x-[22px] gap-y-2.5 p-0 text-base leading-[22px] font-semibold min-[761px]:flex-row">
                 {c.points.map((p) => (
-                  <li key={p} className="flex gap-2">
-                    <span aria-hidden="true" className="font-bold text-accent-700">
+                  <li key={p} className="flex items-center gap-2">
+                    <span aria-hidden="true" className={coche}>
                       ✓
                     </span>
                     {p}
@@ -78,7 +73,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
               {c.badges.map((b) => (
                 <li
                   key={b}
-                  className="rounded-pill border border-accent-200 bg-accent-100 px-3 py-1.5 text-[13px] font-semibold text-accent-800"
+                  className="rounded-pill border border-accent-300 bg-accent-100 px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap text-accent-800"
                 >
                   {b}
                 </li>
@@ -97,28 +92,26 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
             />
           </div>
         </section>
+        {outil === 'site' ? <DemoCreation /> : null}
         <Zone id="benefices">
-          <section className={bande}>
-            <div className={conteneur}>
-              <span className="mb-2 block text-[13px] font-bold uppercase tracking-wide text-accent-700">
-                {c.outilNom} · gratuit
-              </span>
-              <h2 className={titre2}>{c.beneficesTitre}</h2>
-              <p className="m-0 mb-8 max-w-[60ch] text-[17px] leading-[27px] text-neutre-800">
-                {c.beneficesIntro}
-              </p>
-              <EtapesDefilement benefices={c.benefices} />
-            </div>
-          </section>
+          <EtapesDefilement
+            benefices={c.benefices}
+            surtitre={`${c.outilNom} · gratuit`}
+            titre={c.beneficesTitre}
+            intro={c.beneficesIntro}
+          />
         </Zone>
         <Vitrine v={c.vitrine} />
         <CommentCaMarche etapes={c.etapes} />
-        <OutilsInclus eco={c.eco} />
+        {outil === 'site' ? <VraiSite /> : null}
+        <OutilsInclus outil={outil} eco={c.eco} points={c.benefices.map((b) => b.titre)} />
         <PreuveSociale p={preuveSociale(donneesPreuve)} />
         <Zone id="faq">
           <section id="faq" className={bande}>
-            <div className={cn(conteneur, 'max-w-[880px]')}>
-              <h2 className={titre2}>Les questions qu’on nous pose avant de s’inscrire</h2>
+            <div className={conteneur}>
+              <h2 className={cn(titre2, 'mb-6 text-[clamp(26px,3vw,34px)] leading-[1.14]')}>
+                Les questions qu’on nous pose avant de s’inscrire
+              </h2>
               <FaqLanding outil={outil} faq={c.faq} />
             </div>
           </section>

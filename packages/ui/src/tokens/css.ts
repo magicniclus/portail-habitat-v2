@@ -66,6 +66,7 @@ export function genererThemeTailwind(): string {
     dangerFond: 'danger-fond',
     info: 'info',
     infoFond: 'info-fond',
+    nuit: 'nuit',
   };
   for (const [cle, nom] of Object.entries(noms))
     l.push(`  --color-${nom}: ${couleurs[cle as keyof typeof couleurs]};`);

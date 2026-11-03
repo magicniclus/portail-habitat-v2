@@ -10,11 +10,14 @@ export function CaptureEcran({
   capture,
   cadre,
   prioritaire = false,
+  legende = true,
   className,
 }: {
   capture: CaptureLanding;
   cadre: 'navigateur' | 'telephone';
   prioritaire?: boolean;
+  /** Légende sous le cadre (la scène des étapes la pose elle-même). */
+  legende?: boolean;
   className?: string;
 }) {
   const tel = cadre === 'telephone';
@@ -64,7 +67,9 @@ export function CaptureEcran({
           />
         )}
       </div>
-      <figcaption className="mt-2 text-[13px] text-neutre-700">{capture.legende}</figcaption>
+      {legende ? (
+        <figcaption className="mt-2 text-[13px] text-neutre-700">{capture.legende}</figcaption>
+      ) : null}
     </figure>
   );
 }

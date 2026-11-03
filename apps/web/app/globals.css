@@ -9,6 +9,13 @@
     transform: translateX(calc(-50% - 8px));
   }
 }
+/* Texte de l'étape active des landings (maquette : entrée de 14 px en fondu). */
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
 @keyframes defiler-droite {
   from {
     transform: translateX(calc(-50% - 8px));

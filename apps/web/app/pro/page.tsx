@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { Traceur } from '@/features/comportement/Traceur';
 import { Zone } from '@/features/comportement/Zone';
-import { AvisDefilants } from '@/features/landings/Sections';
+import { AvisDefilants } from '@/features/landings/AvisDefilants';
 import { FAQ_PRO } from '@/features/pro/contenu';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';

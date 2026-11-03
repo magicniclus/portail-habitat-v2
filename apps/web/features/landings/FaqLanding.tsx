@@ -12,7 +12,7 @@ export function FaqLanding({
   faq: readonly { q: string; r: string }[];
 }) {
   return (
-    <div>
+    <div className="max-w-[74ch]">
       {faq.map((f, i) => (
         <details
           key={f.q}
@@ -23,7 +23,7 @@ export function FaqLanding({
           }}
           className="group border-b border-trait py-4"
         >
-          <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-4 text-[17px] font-semibold">
+          <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-4 text-[17px] font-bold">
             {f.q}
             <span aria-hidden="true" className="text-xl text-accent-700 group-open:rotate-45">
               +

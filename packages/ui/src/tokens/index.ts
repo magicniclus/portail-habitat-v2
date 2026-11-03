@@ -115,6 +115,8 @@ export const couleurs = {
   dangerFond: '#fef3f2',
   info: '#14508a',
   infoFond: '#eef4fa',
+  /** Fond bleu nuit du bloc final des landings (maquette `Landing Outil`). */
+  nuit: '#173a55',
 } as const;
 
 /**
