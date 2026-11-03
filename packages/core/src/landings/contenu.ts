@@ -242,7 +242,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Vos photos de chantier réutilisées',
         ],
         capture: capture(
-          null,
+          'site-creation',
           'portailtravaux.fr/pro/site/editeur',
           'La création assistée : l’IA reprend votre fiche.',
         ),
@@ -258,7 +258,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Aperçu par appareil',
         ],
         capture: capture(
-          null,
+          'site-editeur',
           'portailtravaux.fr/pro/site/editeur',
           'L’éditeur : structure à gauche, réglages à droite.',
         ),
@@ -275,7 +275,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Suivi directement depuis Portail Travaux',
         ],
         capture: capture(
-          null,
+          'site-formulaire',
           'portailtravaux.fr/pro/site',
           '« Mon site internet » : le formulaire relié à vos demandes.',
         ),
@@ -292,11 +292,11 @@ const CONTENU: Record<OutilLanding, Brut> = {
         'Tout reste modifiable après publication',
       ],
       grand: capture(
-        null,
+        'site-publie',
         'bertrand-renovation.portailtravaux.fr',
         'Le site publié, version ordinateur.',
       ),
-      tel: capture(null, '', 'Le même site sur téléphone.'),
+      tel: capture('site-publie', '', 'Le même site sur téléphone.'),
     },
     etapes: [
       {
@@ -388,7 +388,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Logo et coordonnées sur chaque PDF',
         ],
         capture: capture(
-          null,
+          'devis-liste',
           'portailtravaux.fr/pro/devis',
           '« Devis & factures » : vos documents et leur statut.',
         ),
@@ -404,7 +404,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'PDF téléchargeable à tout moment',
         ],
         capture: capture(
-          null,
+          'devis-editeur',
           'portailtravaux.fr/pro/devis/nouveau',
           'L’éditeur de devis et le contrôle des mentions.',
         ),
@@ -420,7 +420,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
           'Facture électronique : en cours de mise en conformité',
         ],
         capture: capture(
-          null,
+          'devis-factures',
           'portailtravaux.fr/pro/devis?onglet=factures',
           'Les factures : paiements, relances et export.',
         ),
@@ -437,11 +437,11 @@ const CONTENU: Record<OutilLanding, Brut> = {
         'Statut mis à jour à la signature',
       ],
       grand: capture(
-        null,
+        'devis-editeur',
         'portailtravaux.fr/pro/devis/nouveau',
         'Le devis en cours de rédaction.',
       ),
-      tel: capture(null, '', '« Devis & factures » sur téléphone.'),
+      tel: capture('devis-liste', '', '« Devis & factures » sur téléphone.'),
     },
     etapes: [
       {

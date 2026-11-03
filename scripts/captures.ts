@@ -29,8 +29,10 @@ interface Ecran {
 }
 
 /**
- * Maquette → route réelle de l'application. `null` : l'écran n'existe pas encore dans l'app
- * (lots 10b, 10d, 11b) ; il est signalé et sauté, jamais dessiné à la main.
+ * Maquette → route réelle de l'application. `null` : écran capturé ailleurs ou pas encore construit,
+ * jamais dessiné à la main. Site internet et Devis & factures demandent de vraies données (site
+ * publié, devis à plusieurs stades) : `apps/web/e2e-pro/captures-landings.spec.ts` les prépare par
+ * l'interface puis les capture (`site-*`, `devis-*`).
  */
 const ROUTES: Record<string, string | null> = {
   'Ma Fiche': '/pro/fiche',
