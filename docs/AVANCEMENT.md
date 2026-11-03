@@ -1138,3 +1138,8 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - Second clic sur « Transformer en facture » : rouvre le même brouillon.
   - **Signalé, modèle de données** : `devis.factureBrouillonId?` ; `devisId` et `devisNumero` posés dès le brouillon (DATABASE §8 bis).
   - Tests : `devis.test.ts` (brouillon, modification, émission avec acompte déduit, refus si non accepté) ; e2e `devis.spec.ts`.
+- 03/11/2026 — **Tour de l'admin** (demande du propriétaire) :
+  - Les 27 pages admin ont été chargées avec le compte admin du jeu de test, en production (`next start`) et en développement (`next dev`) : statut 200, titre affiché, aucune erreur console ni React, aucune erreur réseau.
+  - Les tests e2e admin passent en CI.
+  - Audit des requêtes Firestore (les émulateurs n'exigent pas d'index, la vraie base si) : toutes les requêtes admin ont leur index composite.
+  - Deux index manquaient ailleurs, sur `invitations` (`artisanId, statut, expireLe` et `statut, expireLe`) : places d'équipe et expiration des invitations. Ils sont ajoutés à `firestore.indexes.json` et restent à déployer sur le projet.
