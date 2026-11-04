@@ -10,6 +10,7 @@ import { BandeauMetier } from '@/features/pro/BandeauMetier';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { enTetePro, piedPro } from '@/features/pro/navigation';
 import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
+import { VslPro } from '@/features/pro/VslPro';
 import {
   AppelFinalPro,
   ApplicationPro,
@@ -70,7 +71,12 @@ export default async function AcquisitionArtisans() {
               demandesMois={chiffres?.demandes ?? null}
             />
           </div>
-          <PhotoHeroPro className="min-[900px]:col-start-1 min-[900px]:row-start-2" />
+          {/* VSL en démonstration (dev, aperçus, flag) : elle cite un chiffre à prouver (LANDINGS §7). */}
+          {preuves ? (
+            <VslPro className="min-[900px]:col-start-1 min-[900px]:row-start-2" />
+          ) : (
+            <PhotoHeroPro className="min-[900px]:col-start-1 min-[900px]:row-start-2" />
+          )}
         </section>
         <Zone id="exemples">
           <ExemplesDemandes />
