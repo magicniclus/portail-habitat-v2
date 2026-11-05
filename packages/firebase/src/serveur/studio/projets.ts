@@ -465,3 +465,39 @@ export async function relancerStudio(s: ServicesStudio, e: { projetId: string })
   }
   return enregistrerPlan(s, p, p.plan, 'relance');
 }
+
+/**
+ * Chaque nuit : prises brutes (écran, caméra, voix) de plus de 30 jours supprimées (STUDIO.md §7).
+ * Les vidéos finies restent ; sans prise, une nouvelle retouche demande une nouvelle prise.
+ */
+export async function purgerPrisesStudio(
+  db: Firestore,
+  maintenant: number,
+  supprimer: (chemin: string) => Promise<void>,
+): Promise<{ prises: number }> {
+  let prises = 0;
+  for (;;) {
+    const r = await db
+      .collection(collections.studioProjets)
+      .where('prisesExpirentLe', '<=', Timestamp.fromMillis(maintenant))
+      .limit(100)
+      .get();
+    if (r.empty) break;
+    for (const d of r.docs) {
+      const f = (d.get('prise') as { fichiers?: FichiersPrise } | null)?.fichiers ?? {};
+      await Promise.all(
+        Object.values(f)
+          .filter(Boolean)
+          .map((c) => supprimer(c as string)),
+      );
+      await d.ref.update({
+        prise: null,
+        mots: [],
+        prisesExpirentLe: FieldValue.delete(),
+        prisesSupprimeesLe: Timestamp.fromMillis(maintenant),
+      });
+      prises++;
+    }
+  }
+  return { prises };
+}

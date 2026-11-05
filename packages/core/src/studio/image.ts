@@ -70,7 +70,7 @@ export function dessinerSurcouche(
         {
           type: 'texte',
           texte: x.carton,
-          style: 'titre',
+          style: 'accroche',
           position: 'centre',
           debut: 0,
           fin: x.source.fin - x.source.debut,

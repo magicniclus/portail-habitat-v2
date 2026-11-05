@@ -81,3 +81,12 @@ export function srt(lignes: readonly LigneSousTitre[]): string {
     )
     .join('\n');
 }
+
+/** Lignes courtes en vertical (lisibles sur téléphone), plus longues en horizontal. */
+export function reglagesSousTitres(format: 'vertical' | 'horizontal' | 'carre') {
+  return format === 'vertical'
+    ? { motsMax: 3, caracteresMax: 18 }
+    : format === 'carre'
+      ? { motsMax: 4, caracteresMax: 22 }
+      : { motsMax: 5, caracteresMax: 34 };
+}

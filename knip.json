@@ -19,6 +19,15 @@
     },
     "packages/emails": {
       "entry": ["src/apercus/*.tsx"]
+    },
+    "apps/studio": {
+      "entry": [
+        "src/index.ts",
+        "src/demo/preparer.ts",
+        "src/navigateur/surcouche.ts",
+        "essais/*.ts"
+      ],
+      "ignoreDependencies": ["@anthropic-ai/sdk"]
     }
   }
 }

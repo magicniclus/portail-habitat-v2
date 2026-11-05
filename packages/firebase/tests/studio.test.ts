@@ -381,3 +381,34 @@ describe('accès au Studio', () => {
     );
   });
 });
+
+describe('conservation des prises', () => {
+  it('supprime les prises de plus de 30 jours, garde la vidéo finie', async () => {
+    const { purgerPrisesStudio } = await import('../src/serveur/studio');
+    const id = await projet();
+    await priseEnregistreeStudio(services(), {
+      projetId: id,
+      auteurUid: 'sa',
+      priseId: 'pr1',
+      fichiers: { ecran: 'studio/sa/pr1/ecran.webm', voix: 'studio/sa/pr1/voix.webm' },
+      dureeMs: 20_000,
+    });
+    await renduTermineStudio(services(), {
+      projetId: id,
+      fichiers: {
+        video: 'studioRendus/x/v.mp4',
+        srt: 'studioRendus/x/v.srt',
+        miniature: 'studioRendus/x/v.jpg',
+      },
+      dureeMs: 14_000,
+    });
+    const supprimes: string[] = [];
+    const sup = async (c: string) => void supprimes.push(c);
+    expect(await purgerPrisesStudio(db, T + 29 * 86_400_000, sup)).toEqual({ prises: 0 });
+    expect(await purgerPrisesStudio(db, T + 31 * 86_400_000, sup)).toEqual({ prises: 1 });
+    expect(supprimes.sort()).toEqual(['studio/sa/pr1/ecran.webm', 'studio/sa/pr1/voix.webm']);
+    const p = await lireProjetStudio(db, id);
+    expect(p?.prise).toBeNull();
+    expect(p?.rendu?.video).toBe('studioRendus/x/v.mp4');
+  });
+});

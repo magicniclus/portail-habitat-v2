@@ -182,6 +182,21 @@ function dessinerUn(
       ctx.shadowBlur = 0;
       ctx.fillStyle = th.accent;
       pastille(ctx, zone.x + marge + 30 * k, y + 40 * k, 110 * k, 110 * k, 26 * k);
+      // Maison stylisée (logo) dans la pastille.
+      ctx.strokeStyle = th.accentTexte;
+      ctx.lineWidth = 9 * k;
+      ctx.lineJoin = 'round';
+      const ix = zone.x + marge + 85 * k;
+      const iy = y + 95 * k;
+      ctx.beginPath();
+      ctx.moveTo(ix - 32 * k, iy - 2 * k);
+      ctx.lineTo(ix, iy - 30 * k);
+      ctx.lineTo(ix + 32 * k, iy - 2 * k);
+      ctx.moveTo(ix - 22 * k, iy - 8 * k);
+      ctx.lineTo(ix - 22 * k, iy + 28 * k);
+      ctx.lineTo(ix + 22 * k, iy + 28 * k);
+      ctx.lineTo(ix + 22 * k, iy - 8 * k);
+      ctx.stroke();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
       ctx.fillStyle = th.sombre;
@@ -312,18 +327,27 @@ export function dessinerSousTitre(
   if (!ligne || t < ligne.debut || t > ligne.fin + 120) return;
   const { largeur } = FORMATS_STUDIO[format];
   const k = Math.min(largeur, FORMATS_STUDIO[format].hauteur) / 1080;
-  const taille = 70 * k;
+  const textes = ligne.mots.map((m) => m.texte.toUpperCase());
   ctx.save();
-  ctx.font = `900 ${taille}px ${theme.police}`;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.lineJoin = 'round';
-  ctx.lineWidth = 16 * k;
   ctx.strokeStyle = theme.sombre;
-  const textes = ligne.mots.map((m) => m.texte.toUpperCase());
-  const espace = ctx.measureText(' ').width;
-  const total =
-    textes.reduce((n, x) => n + ctx.measureText(x).width, 0) + espace * (textes.length - 1);
+  // Taille réduite si la ligne dépasse 90 % de la largeur : jamais de mot coupé au bord.
+  let taille = 70 * k;
+  const mesurer = () => {
+    ctx.font = `900 ${taille}px ${theme.police}`;
+    const espace = Math.max(ctx.measureText(' ').width, taille * 0.28);
+    const total =
+      textes.reduce((n, x) => n + ctx.measureText(x).width, 0) + espace * (textes.length - 1);
+    return { espace, total };
+  };
+  let { espace, total } = mesurer();
+  if (total > largeur * 0.9) {
+    taille *= (largeur * 0.9) / total;
+    ({ espace, total } = mesurer());
+  }
+  ctx.lineWidth = taille * 0.22;
   let x = (largeur - total) / 2;
   const y = basZone - 90 * k;
   ligne.mots.forEach((m, i) => {

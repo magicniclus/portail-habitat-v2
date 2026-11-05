@@ -5,6 +5,7 @@ import {
   FORMATS_STUDIO,
   lignesSousTitres,
   motsSortie,
+  reglagesSousTitres,
   type ContexteImage,
   type MotTranscrit,
   type PlanMontage,
@@ -39,7 +40,10 @@ export function ApercuMontage({
   const camera = useRef<HTMLVideoElement>(null);
   const l = useLectureMontage(plan);
   const [urls, setUrls] = useState<Record<string, string>>({});
-  const lignes = useMemo(() => lignesSousTitres(motsSortie(plan, mots)), [plan, mots]);
+  const lignes = useMemo(
+    () => lignesSousTitres(motsSortie(plan, mots), reglagesSousTitres(plan.format)),
+    [plan, mots],
+  );
 
   useEffect(() => {
     const voulues: Record<string, string> = { ...prise };

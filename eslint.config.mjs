@@ -68,6 +68,7 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/.next/**',
       'apps/functions/lib/**',
+      'apps/studio/dist/**',
       '**/coverage/**',
       '**/next-env.d.ts',
       '**/playwright-report/**',

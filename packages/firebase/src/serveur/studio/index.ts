@@ -15,6 +15,7 @@ export {
   listerProjetsStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
+  purgerPrisesStudio,
   proposerSujetsStudio,
   relancerStudio,
   renduTermineStudio,
