@@ -80,7 +80,8 @@ export const versionSite = z.object({
   pages: z.record(z.string(), pageSite),
   publiePar: id,
   publieLe: horodatage,
-  liensVerifies: z.literal(true),
+  /** Vrai si aucun lien, bouton ou texte « [à compléter] » n'était à corriger à la publication. */
+  liensVerifies: z.boolean(),
 });
 
 /** `sitesSlugs/{slug}` et `sitesDomaines/{hote}` : index d'unicité → site. */

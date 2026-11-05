@@ -836,7 +836,7 @@ Limite : 900 Ko par document (contrôlée à l'enregistrement ; au-delà, décou
 `nom`, `description`, `paletteId`, `polices`, `rayonBoutons`, `ton`, `variante` (`split`,`photo`,`sombre`,`minimal`), `vignette`, `actif`, `ordre`.
 
 ### `sites/{id}/versions/{n}` (ajout seul, 20 dernières gardées)
-Instantané publié : `navigation`, `theme`, `pages`, `r2Prefix` (`sites/{siteId}/v{n}/`), `publiePar`, `publieLe`, `liensVerifies: bool`. Retour arrière = repointer la clé KV.
+Instantané publié : `navigation`, `theme`, `pages`, `r2Prefix` (`sites/{siteId}/v{n}/`), `publiePar`, `publieLe`, `liensVerifies: bool` (faux si des liens, boutons ou textes « [à compléter] » étaient à revoir : la publication n'est jamais bloquée). Retour arrière = repointer la clé KV.
 
 ### `sites/{id}/formulaire` (document unique)
 `champs: [{ id, type (texte, email, tel, cp, liste, choix, zone, date, photos, budget), libelle, requis, options? }]`, `notifEmail`, `notifSms`, `antispam: { turnstile: true, siteKeyId }`, `mentionRgpd: true`. Envoi → `demandes/{id}` avec `source: 'site_artisan'`, `siteId`, `turnstileOk: true`, attribution directe `acceptee` à l'artisan, **hors matching et jamais facturée**.

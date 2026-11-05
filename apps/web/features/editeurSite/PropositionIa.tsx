@@ -41,7 +41,7 @@ export function PropositionIa({
           ))}
       </ul>
       {p.avertissements.length ? (
-        <Banner tone="attention" titre="À compléter avant de publier">
+        <Banner tone="attention" titre="À compléter">
           L’IA n’a pas trouvé ces informations dans votre fiche : {p.avertissements.join(', ')}.
           Remplacez « [à compléter] » par la bonne valeur.
         </Banner>

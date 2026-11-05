@@ -5,7 +5,7 @@ import type { PageSite, TypeElement } from './schemas';
 /**
  * Panneau « Ajouter » de l'éditeur (SITE_INTERNET §4.1) : 13 zones prêtes et les 16 éléments.
  * Les textes sont des intitulés à adapter ; tout ce qui serait un fait (chiffre, avis, téléphone)
- * reste « [à compléter] », ce qui bloque la publication tant que l'artisan ne l'a pas rempli.
+ * reste « [à compléter] », signalé à la publication tant que l'artisan ne l'a pas rempli.
  */
 export interface SectionPrete {
   cle: string;

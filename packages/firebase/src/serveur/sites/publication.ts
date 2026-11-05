@@ -14,27 +14,20 @@ import { fichiersCitables } from './medias';
 /** Versions publiées gardées (DATABASE §15 bis). */
 const VERSIONS_GARDEES = 20;
 
-export class PublicationRefusee extends ErreurMetier {
-  constructor(readonly liens: LienInvalide[]) {
-    super(
-      'PRECONDITION',
-      `Publication impossible : ${liens.length} lien(s) ou bouton(s) à corriger (${liens
-        .slice(0, 3)
-        .map((l) => `${l.page}, ${l.ou} : ${l.erreur}`)
-        .join(' ; ')}).`,
-    );
-  }
-}
+/** Points signalés après publication : au plus 20 (le message en cite les premiers). */
+const POINTS_MAX = 20;
 
 /**
- * Publication (SITE-08, SITE-09) : liens et boutons vérifiés sur les pages publiées et la
- * navigation enregistrée ; instantané `versions/{n}` puis bascule de `versionPubliee` (le rendu
- * public lit cette version : visible dès la requête suivante). Les 20 dernières versions restent.
+ * Publication (SITE-08, SITE-09) : l'artisan publie quand il le décide et reste responsable de son
+ * contenu. Liens, boutons et textes « [à compléter] » sont vérifiés sur les pages publiées et la
+ * navigation, puis signalés à corriger sans bloquer ; au rendu, un lien invalide n'est pas
+ * cliquable (rien d'exécutable n'est publié). Instantané `versions/{n}` puis bascule de
+ * `versionPubliee` (visible dès la requête suivante). Les 20 dernières versions restent.
  */
 export async function publierSite(
   s: ServicesSites,
   ctx: ContexteSite,
-): Promise<{ version: number }> {
+): Promise<{ version: number; aVerifier: LienInvalide[] }> {
   const refSite = s.db.doc(chemins.site(ctx.artisanId));
   // Fichiers à télécharger du site (lecture hors transaction : ils ne changent pas ici).
   const fichiers = await fichiersCitables(s.db, ctx.artisanId);
@@ -53,9 +46,9 @@ export async function publierSite(
       }),
     );
     const { schemaVersion: _sv, enregistreeLe: _e, ...navigation } = nav.data() ?? {};
-    const erreurs = [
+    const aVerifier: LienInvalide[] = [
       ...verifierLiensSite(toutes, navigation as Navigation, fichiers),
-      // Faits que l'IA n'a pas pu vérifier : à remplir avant la mise en ligne (SITE-IA-05).
+      // Faits que l'IA n'a pas pu vérifier : signalés à l'artisan (SITE-IA-05).
       ...textesACompleter(
         Object.fromEntries(Object.entries(toutes).filter(([, p]) => p.statut === 'publiee')),
       ).map((t) => ({
@@ -65,7 +58,6 @@ export async function publierSite(
         erreur: 'texte « [à compléter] » à remplir',
       })),
     ];
-    if (erreurs.length) throw new PublicationRefusee(erreurs);
     const publiees = Object.fromEntries(
       Object.entries(toutes).filter(([, p]) => p.statut === 'publiee'),
     );
@@ -81,7 +73,7 @@ export async function publierSite(
       pages: publiees,
       publiePar: ctx.uid,
       publieLe: maintenant,
-      liensVerifies: true,
+      liensVerifies: aVerifier.length === 0,
     });
     t.update(refSite, {
       versionPubliee: n,
@@ -89,14 +81,14 @@ export async function publierSite(
       publieLe: maintenant,
       updatedAt: maintenant,
     });
-    return n;
+    return { n, aVerifier: aVerifier.slice(0, POINTS_MAX) };
   });
   const anciennes = await s.db
     .collection(chemins.versionsSite(ctx.artisanId))
-    .where('n', '<=', r - VERSIONS_GARDEES)
+    .where('n', '<=', r.n - VERSIONS_GARDEES)
     .get();
   await Promise.all(anciennes.docs.map((d) => d.ref.delete()));
-  return { version: r };
+  return { version: r.n, aVerifier: r.aVerifier };
 }
 
 /** Retour à une version précédente (SITE-08) : seul le pointeur change, effet immédiat. */

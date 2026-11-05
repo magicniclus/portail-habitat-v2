@@ -57,7 +57,7 @@ type OperationIA =
 - L'éditeur affiche une **proposition** : liste lisible des changements (« Bandeau d'accueil : titre réécrit », « + Section FAQ (5 questions) ») et aperçu en direct dans le canevas, surligné.
 - Boutons **Appliquer** / **Annuler** ; pour les textes : **Remplacer** / **Garder le mien** / **Autre version**.
 - Appliquer = **une seule étape d'historique** (Ctrl Z annule toute la proposition).
-- **Rien n'est publié par l'IA.** La publication reste un clic de l'artisan (contrôles SITE-09).
+- **Rien n'est publié par l'IA.** La publication reste un clic de l'artisan (points à revoir signalés, SITE-09).
 - Création complète : l'ancien site est sauvegardé en modèle automatique « Avant IA – {date} » (récupérable dans Modèles › Mes modèles).
 
 ---
@@ -145,7 +145,7 @@ Création complète (Sonnet, ≈ 20 k entrée + 15 k sortie) ≈ 0,25 € · com
 - **SITE-IA-02** paiement Site Pro depuis l'aperçu → retour dans l'éditeur, génération complète reprise **sans reposer de question**
 - **SITE-IA-03** appel direct de la Function par un compte gratuit hors essai → `permission-denied`, aucun appel Anthropic
 - **SITE-IA-04** toute sortie hors schéma ou avec un id inexistant est rejetée ; rien n'est appliqué
-- **SITE-IA-05** une certification ou un chiffre absent de la fiche apparaît comme `[à compléter]` et bloque la publication tant qu'il n'est pas rempli
+- **SITE-IA-05** une certification ou un chiffre absent de la fiche apparaît comme `[à compléter]` ; il est signalé à la publication, sans la bloquer (décision du propriétaire, 05/11/2026 : l'artisan est responsable de son contenu)
 - **SITE-IA-06** « Appliquer » puis Ctrl Z restaure exactement l'état précédent
 - **SITE-IA-07** questionnaire : aucune information présente dans la fiche n'est redemandée ; 6 questions maximum
 - **SITE-IA-08** quota épuisé : message, crédit non consommé en cas d'échec technique, édition manuelle intacte

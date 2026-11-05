@@ -1,17 +1,29 @@
 'use client';
 
 import { Banner, BoutonAction, Button } from '@ph/ui';
+import { useState } from 'react';
 import { useAppelSite } from './appelSite';
+import { messagePublication, type ResultatPublication } from './publication';
 
-/** « Publier » : liens et boutons vérifiés côté serveur, message clair si la publication est bloquée (SITE-09). */
+/**
+ * « Publier » : le site part en ligne quand l'artisan le décide (SITE-09) ; les liens, boutons et
+ * textes « [à compléter] » à revoir sont signalés ensuite, sans bloquer.
+ */
 export function BoutonPublier({ libelle }: { libelle: string }) {
   const { appeler, erreur, enCours } = useAppelSite();
+  const [resultat, setResultat] = useState<ResultatPublication | null>(null);
+  const publier = async () => {
+    setResultat(null);
+    setResultat(await appeler<ResultatPublication>('publier', {}));
+  };
+  const m = resultat ? messagePublication(resultat) : null;
   return (
     <div className="grid gap-2">
-      <Button chargement={enCours} onClick={() => void appeler('publier', {})} disabled={enCours}>
+      <Button chargement={enCours} onClick={() => void publier()} disabled={enCours}>
         {enCours ? 'Publication…' : libelle}
       </Button>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+      {m ? <Banner tone={m.ton}>{m.texte}</Banner> : null}
     </div>
   );
 }

@@ -87,7 +87,7 @@ test.describe('Site internet artisan', () => {
       apercu.getByRole('heading', { name: 'Votre plombier de confiance e2e' }),
     ).toBeVisible();
 
-    // SITE-09 : un bouton vers une adresse non https bloque la publication avec un message clair.
+    // SITE-09 : un bouton vers une adresse non https ne bloque pas la publication ; il est signalé.
     await apercu.getByRole('link', { name: 'Demander un devis gratuit' }).first().click();
     await expect(
       page.getByRole('heading', { name: 'Bouton', level: 2, exact: true }),
@@ -100,7 +100,9 @@ test.describe('Site internet artisan', () => {
     await page.getByLabel('Adresse du site').fill('http://exemple.fr');
     await expect(page.getByText('Adresse https:// obligatoire')).toBeVisible();
     await publier(page);
-    await expect(page.getByText(/^Publication impossible/)).toBeVisible();
+    await expect(
+      page.getByText(/Site publié .* 1 point à revoir .*Adresse https:\/\/ obligatoire/),
+    ).toBeVisible();
 
     await page.getByLabel('Adresse du site').fill('https://exemple.fr');
     await publier(page);

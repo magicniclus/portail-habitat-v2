@@ -17,7 +17,6 @@ import {
   lireMediasSite,
   gererSectionsEnregistrees,
   lireSitePublie,
-  PublicationRefusee,
   publierSite,
   reglerPage,
   lireVersion,
@@ -133,31 +132,33 @@ describe('création et sous-domaine (DOM-01)', () => {
 });
 
 describe('publication', () => {
-  it('SITE-09 : un bouton vers une page absente bloque la publication avec un message clair', async () => {
+  it('SITE-09 : un bouton vers une page absente ne bloque pas la publication, il est signalé', async () => {
     const i = initial();
     await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: i });
     const accueil = i.pages.accueil!;
     const bouton = accueil.sections[0]!.rows[0]!.cols[0]!.els.find((x) => x.type === 'bouton')!;
     if (bouton.type === 'bouton') bouton.p.action = { type: 'page', page: 'prestations' };
     await enregistrerPage(s(), proprio, { pageId: 'accueil', page: accueil });
-    const e = await erreur(publierSite(s(), proprio));
-    expect(e).toBeInstanceOf(PublicationRefusee);
-    expect((e as PublicationRefusee).liens[0]).toMatchObject({
+    const r = await publierSite(s(), proprio);
+    expect(r.version).toBe(1);
+    expect(r.aVerifier[0]).toMatchObject({
       page: 'Accueil',
+      ou: 'Bouton « 05 56 12 34 56 »',
       erreur: 'Page introuvable',
     });
-    expect(e.message).toContain('Bouton « 05 56 12 34 56 » : Page introuvable');
-    expect(await lireSitePublie(db, 'bertrand.portailtravaux.fr')).toBeNull();
+    // L'artisan est responsable de son contenu : le site est en ligne malgré le point à revoir.
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.version).toBe(1);
+    expect((await db.doc(chemins.versionSite('a1', 1)).get()).get('liensVerifies')).toBe(false);
   });
 
   it('SITE-08 : publiée puis retour immédiat à la version précédente', async () => {
     const i = initial();
     await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: i });
-    expect(await publierSite(s(), proprio)).toEqual({ version: 1 });
+    expect(await publierSite(s(), proprio)).toEqual({ version: 1, aVerifier: [] });
     const accueil = i.pages.accueil!;
     accueil.seo.title = 'Plombier à Bordeaux, nouvelle version';
     await enregistrerPage(s(), proprio, { pageId: 'accueil', page: accueil });
-    expect(await publierSite(s(), proprio)).toEqual({ version: 2 });
+    expect(await publierSite(s(), proprio)).toEqual({ version: 2, aVerifier: [] });
     expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.pages.accueil?.seo.title).toBe(
       'Plombier à Bordeaux, nouvelle version',
     );
