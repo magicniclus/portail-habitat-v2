@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   DUREE_MAX_MS,
   DUREE_MIN_MS,
+  avecCamera,
+  couverture,
   disposition,
   dureePlan,
   FORMAT_DEFAUT,
@@ -237,5 +239,67 @@ describe('sous-titres', () => {
     expect(srt(lignes)).toBe(
       '1\n00:00:00,100 --> 00:00:01,200\nRecevez des demandes\n\n2\n00:00:06,200 --> 00:00:07,000\ngratuitement\n',
     );
+  });
+});
+
+describe('recadrage', () => {
+  it('écran 16:9 dans une vidéo verticale : bande centrale', () => {
+    expect(couverture({ largeur: 1920, hauteur: 1080 }, { largeur: 1080, hauteur: 1280 })).toEqual({
+      x: 504,
+      y: 0,
+      largeur: 911,
+      hauteur: 1080,
+    });
+  });
+  it('même rapport : toute la source', () => {
+    expect(couverture({ largeur: 1920, hauteur: 1080 }, { largeur: 1920, hauteur: 1080 })).toEqual({
+      x: 0,
+      y: 0,
+      largeur: 1920,
+      hauteur: 1080,
+    });
+  });
+  it('zoom sur une zone de l’écran', () => {
+    const r = couverture(
+      { largeur: 1920, hauteur: 1080 },
+      { largeur: 1080, hauteur: 1280 },
+      { x: 0.5, y: 0.2, largeur: 0.25 },
+    );
+    expect(r.x).toBeGreaterThanOrEqual(960);
+    expect(r.y).toBe(216);
+    expect(r.largeur / r.hauteur).toBeCloseTo(1080 / 1280, 1);
+  });
+});
+
+describe('afficher ou masquer la caméra', () => {
+  it('masquée : plus aucune caméra, l’écran remplace la face caméra', () => {
+    const p = avecCamera(base(), false, { ecran: true });
+    expect(p.plans.map((x) => [x.visuel, x.camera])).toEqual([
+      ['ecran', 'cachee'],
+      ['capture', 'cachee'],
+    ]);
+    expect(verifierPlan(p, { dureePriseMs: 20_000, camera: false })).toEqual([]);
+  });
+  it('sans écran : un carton', () => {
+    const p = avecCamera(
+      base({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 12_000 },
+            visuel: 'camera',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+      }),
+      false,
+      { ecran: false },
+    );
+    expect(p.plans[0]).toMatchObject({ visuel: 'carton', carton: 'Test' });
+  });
+  it('affichée : en bas des plans qui n’en avaient pas', () => {
+    const p = avecCamera(base(), true, { ecran: true });
+    expect(p.plans.map((x) => x.camera)).toEqual(['bas', 'bas']);
   });
 });

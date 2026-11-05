@@ -126,3 +126,65 @@ export function disposition(
     camera: { x: L - largeur - marge, y: H - hauteur - marge * 4, largeur, hauteur },
   };
 }
+
+/**
+ * Partie de la source à afficher pour remplir `cadre` sans déformer (recadrage « cover »),
+ * éventuellement resserrée sur une zone (`zoom`, en fractions de la source). Pixels entiers.
+ */
+export function couverture(
+  source: { largeur: number; hauteur: number },
+  cadre: { largeur: number; hauteur: number },
+  zoom?: { x: number; y: number; largeur: number },
+): { x: number; y: number; largeur: number; hauteur: number } {
+  const zx = zoom ? zoom.x * source.largeur : 0;
+  const zy = zoom ? zoom.y * source.hauteur : 0;
+  const zl = zoom ? Math.max(16, zoom.largeur * source.largeur) : source.largeur;
+  const zh = zoom
+    ? Math.min(source.hauteur - zy, (zl * cadre.hauteur) / cadre.largeur)
+    : source.hauteur;
+  const ratio = cadre.largeur / cadre.hauteur;
+  let largeur = zl;
+  let hauteur = zl / ratio;
+  if (hauteur > zh) {
+    hauteur = zh;
+    largeur = zh * ratio;
+  }
+  const x = zx + (zl - largeur) / 2;
+  const y = zoom ? zy : (source.hauteur - hauteur) / 2;
+  const borne = (v: number, max: number) => Math.max(0, Math.min(Math.round(v), max));
+  return {
+    x: borne(x, source.largeur - 1),
+    y: borne(y, source.hauteur - 1),
+    largeur: borne(largeur, source.largeur),
+    hauteur: borne(hauteur, source.hauteur),
+  };
+}
+
+/**
+ * Afficher ou masquer l'auteur sur toute la vidéo, sans repasser par Claude. Masqué : les plans
+ * « face caméra » montrent l'écran (ou un carton s'il n'y a pas d'écran). Affiché : la caméra
+ * revient en bas des plans qui n'en avaient pas.
+ */
+export function avecCamera(
+  plan: PlanMontage,
+  afficher: boolean,
+  o: { ecran: boolean },
+): PlanMontage {
+  return {
+    ...plan,
+    plans: plan.plans.map((x) => {
+      if (!afficher) {
+        if (x.visuel !== 'camera') return { ...x, camera: 'cachee' };
+        return o.ecran
+          ? { ...x, visuel: 'ecran', camera: 'cachee' }
+          : {
+              ...x,
+              visuel: 'carton',
+              carton: x.carton ?? plan.titre.slice(0, 80),
+              camera: 'cachee',
+            };
+      }
+      return x.visuel === 'camera' || x.camera !== 'cachee' ? x : { ...x, camera: 'bas' };
+    }),
+  };
+}

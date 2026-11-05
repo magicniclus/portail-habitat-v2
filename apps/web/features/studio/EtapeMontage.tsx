@@ -1,0 +1,35 @@
+'use client';
+
+import type { MotTranscrit, PlanMontage } from '@ph/core/studio';
+import { ApercuMontage } from './ApercuMontage';
+import { ReglagesMontage } from './ReglagesMontage';
+
+/** Étape 4 : aperçu du montage, réglages directs et retouches demandées à Claude. */
+export function EtapeMontage(p: {
+  projetId: string;
+  plan: PlanMontage;
+  prise: { ecran?: string; camera?: string; voix: string };
+  captures: Record<string, string>;
+  mots: MotTranscrit[];
+  camera: boolean;
+}) {
+  return (
+    <section
+      aria-labelledby="montage-studio"
+      className="grid gap-3 rounded-card border border-trait bg-blanc p-4"
+    >
+      <h2 id="montage-studio" className="m-0 text-lg">
+        4. Montage · {p.plan.titre}
+      </h2>
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)]">
+        <ApercuMontage plan={p.plan} prise={p.prise} captures={p.captures} mots={p.mots} />
+        <ReglagesMontage
+          projetId={p.projetId}
+          plan={p.plan}
+          camera={p.camera}
+          ecran={Boolean(p.prise.ecran)}
+        />
+      </div>
+    </section>
+  );
+}

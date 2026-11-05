@@ -154,3 +154,54 @@ describe('calques 2D', () => {
     expect(ctx.textes).toEqual(['GRATUIT']);
   });
 });
+
+describe('image complète', () => {
+  it('carton, calque et sous-titre au bon moment ; écran posé dans son cadre', async () => {
+    const { dessinerImage, basSousTitres } = await import('./image');
+    const plan = {
+      format: 'vertical' as const,
+      titre: 't',
+      plans: [
+        {
+          id: 'a',
+          source: { debut: 0, fin: 2000 },
+          visuel: 'carton' as const,
+          carton: 'Stop !',
+          camera: 'cachee' as const,
+          calques: [],
+        },
+        {
+          id: 'b',
+          source: { debut: 3000, fin: 9000 },
+          visuel: 'ecran' as const,
+          camera: 'bas' as const,
+          calques: [],
+        },
+      ],
+      captures: [],
+      artisan: null,
+      sousTitres: true,
+      musique: false,
+    };
+    const images: unknown[][] = [];
+    const ctx = Object.assign(faux(), { drawImage: (...a: unknown[]) => void images.push(a) });
+    const lignes = [
+      { debut: 2500, fin: 3500, mots: [{ texte: 'gratuit', debut: 2500, fin: 3500 }] },
+    ];
+    const th = { ...theme, fond: 'f' };
+    dessinerImage(ctx, plan, 1000, { captures: {} }, lignes, th);
+    expect(ctx.textes).toContain('Stop !');
+    dessinerImage(
+      ctx,
+      plan,
+      3000,
+      { ecran: { image: 'E', largeur: 1920, hauteur: 1080 }, captures: {} },
+      lignes,
+      th,
+    );
+    expect(images.at(-1)?.slice(0, 1)).toEqual(['E']);
+    expect(images.at(-1)?.slice(5)).toEqual([0, 0, 1080, 1280]);
+    expect(ctx.textes).toContain('GRATUIT');
+    expect(basSousTitres(plan, 3000)).toBe(1280);
+  });
+});

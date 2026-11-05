@@ -264,3 +264,20 @@ export const neutresSites = {
   fondCarte: '#f3f5f7',
   bordChamp: '#cfd5dc',
 } as const;
+
+/**
+ * Studio vidéo (STUDIO.md) : couleurs et police des calques incrustés (accroches, compteurs,
+ * sous-titres). Mêmes valeurs dans l'aperçu de l'admin et dans le rendu final.
+ */
+export const themeStudio = {
+  accent: rampes.pro.base,
+  accentTexte: couleurs.blanc,
+  sombre: neutres[900],
+  clair: couleurs.blanc,
+  succes: couleurs.succes,
+  police: '"Archivo", "Source Sans 3", sans-serif',
+  /** Fichier de la police grasse (servi par apps/web/public, embarqué par le robot de rendu). */
+  fichierPolice: '/polices-sites/archivo-latin-800.woff2',
+  /** Fond des cartons. */
+  fond: couleurs.nuit,
+} as const;

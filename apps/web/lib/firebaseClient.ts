@@ -189,3 +189,55 @@ export async function jetonPush(
   if (supprimer) await m.deleteToken(messaging);
   return jeton;
 }
+
+/**
+ * Prise du Studio (vidéo ou voix, jusqu'à 100 Mo) envoyée directement dans Storage, avec
+ * l'avancement. Droits périmés (permission Studio ajoutée depuis la connexion) : la session est
+ * renouvelée puis un seul nouvel essai. Pas de dépôt par le serveur : fichiers trop lourds.
+ */
+export async function deposerPrise(
+  chemin: string,
+  fichier: Blob,
+  avancement: (fraction: number) => void,
+): Promise<void> {
+  const auth = await authClient();
+  await auth.authStateReady();
+  if (!auth.currentUser)
+    throw new EnvoiImpossible(
+      'Session expirée : déconnectez-vous puis reconnectez-vous à l’admin.',
+    );
+  const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
+  const essai = () =>
+    new Promise<void>((ok, ko) => {
+      const tache = m.uploadBytesResumable(m.ref(st, chemin), fichier, {
+        contentType: fichier.type.split(';')[0] || 'video/webm',
+      });
+      tache.on(
+        'state_changed',
+        (s) => avancement(s.totalBytes ? s.bytesTransferred / s.totalBytes : 0),
+        ko,
+        () => ok(),
+      );
+    });
+  try {
+    await essai();
+  } catch (e) {
+    if ((e as { code?: string }).code !== 'storage/unauthorized') throw versMessage(e);
+    await auth.currentUser.getIdToken(true).catch(() => undefined);
+    try {
+      await essai();
+    } catch (e2) {
+      if ((e2 as { code?: string }).code === 'storage/unauthorized')
+        throw new EnvoiImpossible(
+          'Envoi refusé : la permission Studio n’est pas encore dans votre session. Lancez « pnpm admin:permissions », puis reconnectez-vous.',
+        );
+      throw versMessage(e2);
+    }
+  }
+}
+
+/** Adresse de lecture d'un fichier du Studio (règles : section Studio). */
+export async function urlFichierStudio(chemin: string): Promise<string> {
+  const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
+  return m.getDownloadURL(m.ref(st, chemin));
+}

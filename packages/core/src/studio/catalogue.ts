@@ -86,3 +86,16 @@ export const LIBELLES_CAMERA: Readonly<Record<PlacementCamera, string>> = {
   coin: 'Dans le coin',
   plein: 'Plein écran',
 };
+
+/** Étapes d'un projet, dans l'ordre (libellés affichés dans l'admin). */
+export const LIBELLES_STATUT_STUDIO = {
+  sujet: 'Choix du sujet',
+  enregistrement: 'Enregistrement',
+  transcription: 'Transcription de la voix',
+  montage: 'Montage par Claude',
+  captures: 'Captures Portail Travaux',
+  rendu: 'Fabrication de la vidéo',
+  pret: 'Vidéo prête',
+  erreur: 'À relancer',
+} as const;
+export type StatutProjetStudio = keyof typeof LIBELLES_STATUT_STUDIO;
