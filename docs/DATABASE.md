@@ -889,6 +889,12 @@ Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
 
 ---
 
+## 15 quinquies. Studio vidéo (voir STUDIO.md)
+
+- `studioProjets/{id}` : `auteurUid`, `titre`, `statut` (sujet → enregistrement → transcription → montage → captures → rendu → pret | erreur), `format`, `camera`, `theme`, `sujets[]`, `sujet`, `prise { id, fichiers { voix, ecran?, camera? }, dureeMs }`, `mots[]` (Whisper), `plan` (`planMontage`), `version`, `captures { "id:scene": chemin }`, `rendu { video, srt, miniature, dureeMs, le }`, `erreur`, `coutCentimes`, `prisesExpirentLe` (30 jours). Sous-collection `versions/{n}` (plan, auteur, date). Lecture : section `std` ; écriture : serveur uniquement.
+- `studioTendances/{recherche}` : vidéos YouTube d'une recherche, gardées 24 h (`expireLe` à 7 jours). Admin SDK uniquement.
+- Storage : `studio/{uid}/{prise}/…` (prises, 100 Mo max, création par l'auteur de la section Studio, jamais écrasées, supprimées à 30 jours) ; `studioRendus/{projet}/…` (captures et vidéos, écrites par le robot).
+
 ## 16. Index de toutes les collections (liste de contrôle)
 
 À cocher au lot 2 : chaque collection a un schéma Zod, ses règles, ses index et sa durée de conservation.

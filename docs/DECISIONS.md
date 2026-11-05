@@ -138,3 +138,13 @@ Quand vous tranchez une question : changez le statut en ✅, corrigez la proposi
 **25/10/2026 (propriétaire)** : Ma fiche — plus de liste « ce qu'il reste à compléter », seulement une barre de progression fixée en haut tant que la fiche n'est pas à 100 % ; bloc « Derniers avis · 0 avis » quand il n'y a aucun avis ; logo et bannière en glisser-déposer. **Bannières : jusqu'à 5 avec la visibilité payante** (Fiche Pro, Fiche + Site, Tout inclus), 1 sinon (remplacée à chaque envoi, « Plus de bannières » ouvre la fenêtre d'offre). Modèle de données : `artisans.banniereUrl` devient `bannieres: string[]` (≤ 5), projeté dans `artisansPublic` limité au nombre permis (après une résiliation, seules les premières restent visibles) ; carrousel sans défilement automatique sur la fiche publique.
 
 **25/10/2026 (propriétaire)** : Devis et factures en « feuille A4 » (captures du propriétaire, à nos couleurs) : la feuille se saisit directement, panneau Options à droite (feuille du bas sur mobile). Langue : français seulement. Type de document : Rapide (désignation, TVA, montant) ou Complet ; « Format électronique » (Factur-X) affiché grisé « Bientôt » tant que la plateforme agréée n'est pas branchée (D62). Mention de TVA lue dans Paramètres (jamais choisie devis par devis). Lignes de texte (hors totaux), nature prestation/fourniture, « Enregistrer comme ligne type » depuis l'éditeur. « Nouvelle facture » sans devis : même écran, émise d'un coup après confirmation (numéro sans trou, figée).
+
+**05/11/2026 (propriétaire)** : **Studio vidéo** dans l'admin (STUDIO.md).
+- Format paramétrable, vertical par défaut.
+- Caméra enregistrée mais facultative au montage.
+- Transcription par **Whisper en local** dans le robot de rendu.
+- Accès décidé par le propriétaire dans l'admin (permission `studio.utiliser`).
+- Prises brutes gardées 30 jours.
+- Robot de rendu sur **Cloud Run** du projet Google (déploiement par le propriétaire uniquement).
+
+Outils ajoutés : API YouTube Data v3 (clé gratuite), faster-whisper (dans l'image du robot), Claude Opus 5.5 pour les scripts et le montage. Aucune nouvelle dépendance npm : les calques sont dessinés dans le Chromium de Playwright, déjà présent.

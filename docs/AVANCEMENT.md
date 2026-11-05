@@ -1150,3 +1150,22 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - 03/11/2026 — **Captures réelles des outils Site internet et Devis & factures** pour les landings : `apps/web/e2e-pro/captures-landings.spec.ts` (lancement manuel, `CAPTURES=1`) crée sur le compte de démo du jeu de test un site publié et trois devis à des stades différents (accepté puis facturé, envoyé, brouillon), puis capture 9 écrans (`site-creation`, `site-editeur`, `site-formulaire`, `site-publie` ordinateur et téléphone, `devis-liste` ordinateur et téléphone, `devis-editeur`, `devis-factures`). L'adresse de test `*.localhost` est affichée comme en production. Les cadres vides des landings site et devis montrent maintenant ces écrans.
 - 04/11/2026 — **VSL sur `/pro` (démonstration)** : vidéo de présentation de 38 s dans le hero (à la place de la photo, colonne de gauche, à côté du formulaire) : affiche WebP, rien de téléchargé avant le clic (`preload="none"`), lecture avec le son, sous-titres WebVTT, événement `vsl_play`. Affichée seulement avec les preuves marketing (dev, aperçus, flag `preuvesMarketing`) : elle cite « jusqu'à 10 demandes par mois », chiffre à prouver avant la production (LANDINGS §7) ; sinon la photo reste. Voix de synthèse provisoire, à remplacer par la voix du propriétaire. Fichiers : `public/landing/videos/vsl-pro.{mp4,webp,vtt}` (3 Mo), `features/pro/VslPro.tsx`.
 - 05/11/2026 — **Publication du site jamais bloquée** (décision du propriétaire : l'artisan est responsable de son contenu). « Publier » met le site en ligne même s'il reste des textes « [à compléter] » ou des liens incomplets ; ces points (20 au plus) sont renvoyés par `publierSite` (`aVerifier`) et affichés après la publication, sur « Mon site internet » et dans l'éditeur. Sécurité inchangée : au rendu, un lien invalide n'est pas cliquable (seules les adresses `https://` et les cibles connues deviennent des liens). `versions/{n}.liensVerifies` passe à `false` dans ce cas. SITE-09 et SITE-IA-05 mis à jour.
+- 05/11/2026 — **Studio vidéo** dans l'admin (demande du propriétaire, STUDIO.md) :
+  - **Pages** : `/admin/studio`.
+  - **Sujet** : sujets et scripts par Claude Opus 5.5, à partir des Shorts YouTube qui marchent.
+  - **Enregistrement** : écran + voix (micro au choix) + caméra facultative, prompteur.
+  - **Robot** : transcription Whisper en local, montage par Claude (plan validé, retouches), captures de 10 écrans sur une copie isolée avec l'artisan d'exemple, rendu ffmpeg + calques 2D dessinés comme l'aperçu.
+  - **Sortie** : MP4, SRT, miniature, légende. Prises brutes supprimées à 30 jours.
+  - **Signalé** :
+    - nouvelles collections `studioProjets` (+ `versions`) et `studioTendances` ;
+    - règles Firestore et Storage (avec leurs tests) ;
+    - permission `studio.utiliser` ;
+    - nouvelle app `apps/studio` (aucune nouvelle dépendance npm) ;
+    - faster-whisper dans l'image Docker ;
+    - API YouTube.
+  - **Tests** : `packages/core/src/studio/*.test.ts` (36 + 6), `packages/firebase/tests/studio.test.ts` (18), règles, e2e `adminStudio.spec.ts`. Essais réels du rendu (vertical et horizontal) et des 10 captures sur émulateurs.
+  - **Reste** :
+    - déployer le robot (`scripts/deployerStudio.sh`, par le propriétaire) ;
+    - créer les clés `YOUTUBE_API_KEY` et `STUDIO_RENDU_CLE` ;
+    - Whisper n'a pas pu être essayé ici (installation refusée dans cette session) ; il sera vérifié au premier passage dans l'image Docker.
+

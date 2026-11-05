@@ -14,6 +14,7 @@ Hypothèse de départ : **30 000 pages vues par mois** sur les pages publiques, 
 | Assistant de rédaction (artisans) | ~3 000 utilisations Haiku (≈ 1 500 tokens chacune) | 2 à 4 € |
 | Blog des artisans (si 300 abonnés × 8 articles) | 2 400 articles Sonnet + retouches Haiku | 120 à 240 € (≈ 0,05 à 0,10 € / article) |
 | Données mots-clés et SERP (API, cache 30 j / 14 j) | ~3 000 requêtes | 30 à 60 € |
+| Studio vidéo (STUDIO.md §9, si 30 vidéos par jour) | Claude Opus 5.5 + robot Cloud Run | 300 à 570 € (≈ 0,35 à 0,65 € / vidéo) |
 | Cloud Functions / Scheduler | quelques milliers d'invocations | dans le quota gratuit |
 | **Total comportement + conversion + IA** | | **moins de 10 € par mois** |
 | Emails (Resend, hors périmètre ci-dessus) | 10 000 à 50 000 emails | 0 à 20 € selon l'offre |
