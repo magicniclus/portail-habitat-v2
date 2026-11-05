@@ -2,6 +2,7 @@
 // Prérequis : projet passé à Identity Platform (Console Firebase → Authentication → Paramètres).
 // La console ne propose pas TOTP : seuls l'Admin SDK ou l'API REST l'activent. Le SMS n'est pas touché.
 // Projet cible : celui des identifiants Admin SDK (FIREBASE_ADMIN_* dans .env.local).
+import './env';
 import { appAdmin } from '@ph/firebase/admin';
 import { getAuth } from 'firebase-admin/auth';
 

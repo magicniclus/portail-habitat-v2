@@ -1,6 +1,7 @@
 // Premier super-administrateur : pnpm admin:creer <email> "<Prénom Nom>"
 // Projet cible : celui des identifiants Admin SDK (émulateurs si les variables d'émulateur sont définies).
 // Le lien affiché permet de choisir le mot de passe ; la double authentification est demandée ensuite.
+import './env';
 import { appAdmin } from '@ph/firebase/admin';
 import { creerSuperAdmin } from '@ph/firebase/admin-serveur';
 import { getAuth } from 'firebase-admin/auth';
