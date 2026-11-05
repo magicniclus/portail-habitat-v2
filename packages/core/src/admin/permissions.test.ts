@@ -38,7 +38,7 @@ describe('permissions admin (ADMIN.md §1)', () => {
       'avi',
       'fin',
     ]);
-    expect(sectionsLecture(permissionsEffectives({ role: 'superadmin' }))).toHaveLength(14);
+    expect(sectionsLecture(permissionsEffectives({ role: 'superadmin' }))).toHaveLength(15);
   });
   it('6 rôles système', () => {
     expect(ROLES_ADMIN_SYSTEME).toHaveLength(6);

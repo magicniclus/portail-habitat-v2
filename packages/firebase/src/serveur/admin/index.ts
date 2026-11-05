@@ -4,6 +4,7 @@ export {
   listerEquipeAdmin,
   modifierMembreEquipeAdmin,
   type MembreEquipeAdmin,
+  recalculerPermissionsEquipe,
 } from './equipe';
 export { verifierSessionAdmin, type EtatSessionAdmin, type ProfilAdminSession } from './session';
 export { auditerAdmin, type EntreeAuditAdmin } from './audit';

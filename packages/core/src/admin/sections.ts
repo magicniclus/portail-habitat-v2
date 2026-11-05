@@ -33,6 +33,13 @@ export const SECTIONS_ADMIN: readonly SectionAdmin[] = [
       'M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.5 2.5M15.2 15.2l2.5 2.5M6.3 17.7l2.5-2.5M15.2 8.8l2.5-2.5',
   },
   {
+    id: 'studio',
+    libelle: 'Studio',
+    chemin: 'studio',
+    lecture: ['studio.utiliser'],
+    icone: 'M3 7h12v10H3zM15 10.5 21 7v10l-6-3.5',
+  },
+  {
     id: 'file',
     libelle: 'File de travail',
     chemin: 'file',

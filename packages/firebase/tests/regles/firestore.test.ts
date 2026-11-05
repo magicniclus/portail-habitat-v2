@@ -616,6 +616,18 @@ const CAS: Cas[] = [
     autorises: staffAvec('ia'),
   },
   { nom: 'lire les réglages IA', op: { get: 'config/ia' }, autorises: staffAvec('ia') },
+  { nom: 'lire un projet Studio', op: { get: 'studioProjets/st1' }, autorises: staffAvec('std') },
+  {
+    nom: 'lire une version de montage',
+    op: { get: 'studioProjets/st1/versions/1' },
+    autorises: staffAvec('std'),
+  },
+  { nom: 'lire le cache des tendances', op: { get: 'studioTendances/t1' }, autorises: [] },
+  {
+    nom: 'modifier un projet Studio',
+    op: { maj: 'studioProjets/st1', donnees: { titre: 'x' } },
+    autorises: [],
+  },
 
   // ----- avis -----
   { nom: 'lire un avis publié', op: { get: 'avis/publie' }, autorises: TOUS },

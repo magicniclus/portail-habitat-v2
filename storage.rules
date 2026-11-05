@@ -84,6 +84,19 @@ service firebase.storage {
       allow create: if resource == null && signedIn() && request.auth.uid == uid && noImp() && image(8);
       allow update, delete: if false;
     }
+    // Studio (STUDIO.md) : prises (écran, caméra, voix) envoyées par l'auteur, 100 Mo au plus par
+    // fichier, jamais écrasées ; lisibles par l'équipe Studio. Rendus écrits par l'Admin SDK.
+    match /studio/{uid}/{priseId}/{fichier} {
+      allow read: if lit('std');
+      allow create: if resource == null && noImp() && lit('std') && request.auth.uid == uid
+        && request.resource.contentType.matches('(video|audio)/(webm|mp4|ogg)(;.*)?')
+        && request.resource.size <= 100 * 1024 * 1024;
+      allow update, delete: if false;
+    }
+    match /studioRendus/{p=**} {
+      allow read: if lit('std');
+      allow write: if false;
+    }
     // Tout le reste (photos et devis des demandes, replays) : Admin SDK et URL signées uniquement.
     match /{chemin=**} {
       allow read, write: if false;

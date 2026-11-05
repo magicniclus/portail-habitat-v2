@@ -194,3 +194,4 @@ export * from './entreesAnnuaire';
 export * from './entreesInscription';
 export * from './entreesPro';
 export * from './entreesConversion';
+export * from './entreesStudio';

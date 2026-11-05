@@ -178,6 +178,46 @@ const CAS: Cas[] = [
     autorises: PROFILS.filter((p) => p !== 'anonyme' && p !== 'impersonation'),
   },
   {
+    nom: 'envoyer une prise Studio',
+    op: { ecrire: 'studio/{uid}/prise1/{p}.webm', type: 'video/webm;codecs=vp9', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'envoyer la voix d’une prise Studio',
+    op: { ecrire: 'studio/{uid}/prise1/{p}-voix.webm', type: 'audio/webm', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'envoyer une prise Studio dans l’espace d’un autre',
+    op: { ecrire: 'studio/sa/prise2/{p}.webm', type: 'video/webm', taille: 1000 },
+    autorises: ['superadmin'],
+  },
+  {
+    nom: 'envoyer autre chose qu’une vidéo comme prise',
+    op: { ecrire: 'studio/{uid}/prise1/{p}.png', type: 'image/png', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'envoyer une prise de plus de 100 Mo',
+    op: { ecrire: 'studio/{uid}/prise1/gros-{p}.webm', type: 'video/webm', taille: 100 * Mo + 1 },
+    autorises: [],
+  },
+  {
+    nom: 'écraser une prise Studio',
+    op: { ecrire: 'studio/sa/prise1/existant.webm', type: 'video/webm', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'lire une prise Studio',
+    op: { lire: 'studio/sa/prise1/existant.webm' },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'lire un rendu Studio',
+    op: { lire: 'studioRendus/st1/video.mp4' },
+    autorises: staffAvec('std'),
+  },
+  {
     nom: 'écraser un fichier déjà téléversé',
     op: { ecrire: 'televersements/part1/existant.jpg', type: 'image/jpeg', taille: 1000 },
     autorises: [],
@@ -211,6 +251,8 @@ const FICHIERS = [
   'demandes/dem1/photos/photo.jpg',
   'demandes/dem1/devis/a1/devis.pdf',
   'televersements/part1/existant.jpg',
+  'studio/sa/prise1/existant.webm',
+  'studioRendus/st1/video.mp4',
 ];
 
 let env: RulesTestEnvironment;

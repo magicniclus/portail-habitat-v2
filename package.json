@@ -28,6 +28,7 @@
     "partenaire:source": "tsx scripts/sourcePartenaire.ts",
     "admin:creer": "tsx scripts/creerAdmin.ts",
     "admin:totp": "tsx scripts/activerTotp.ts",
+    "admin:permissions": "tsx scripts/recalculerPermissions.ts",
     "migrer": "tsx scripts/migrer.ts",
     "captures": "tsx scripts/captures.ts"
   },

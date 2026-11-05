@@ -190,6 +190,12 @@ service cloud.firestore {
     match /abTests/{id}              { allow read: if lit('cmp'); allow write: if false; }
     match /iaAnalyses/{id}           { allow read: if lit('ia'); allow write: if false; }
     match /iaRecommandations/{id}    { allow read: if lit('ia'); allow write: if false; }
+    // Studio vidéo : projets écrits par les Server Actions uniquement.
+    match /studioProjets/{id} {
+      allow read: if lit('std');
+      allow write: if false;
+      match /versions/{n} { allow read: if lit('std'); allow write: if false; }
+    }
 
     // ---------- avis ----------
     match /avis/{id} {
@@ -223,6 +229,6 @@ service cloud.firestore {
     // Tout le reste est réservé à l'Admin SDK (règle par défaut : refus) :
     // brouillons, brouillonsOnboarding, contacts, litiges, emails, suppressions, evenements, stripeEvents,
     // rateLimits, idempotence, sirenIndex, cacheSirene, simulations, migrations, config/flags,
-    // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur.
+    // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur, studioTendances.
   }
 }

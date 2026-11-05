@@ -65,6 +65,8 @@ export const collections = {
   iaRecommandations: 'iaRecommandations',
   iaQuotas: 'iaQuotas',
   iaRedactions: 'iaRedactions',
+  studioProjets: 'studioProjets',
+  studioTendances: 'studioTendances',
   brouillons: 'brouillons',
   brouillonsOnboarding: 'brouillonsOnboarding',
   simulations: 'simulations',
@@ -175,6 +177,8 @@ export const chemins = {
   configCycle: () => 'config/cycle',
   configComportement: () => 'config/comportement',
   configIa: () => 'config/ia',
+  projetStudio: (id: string) => `studioProjets/${id}`,
+  versionStudio: (id: string, n: number) => `studioProjets/${id}/versions/${n}`,
   versionsSequence: (id: string) => `sequences/${id}/versions`,
 } as const;
 

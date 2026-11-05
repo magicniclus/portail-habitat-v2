@@ -29,7 +29,8 @@
     "./cycle": "./src/serveur/cycle/index.ts",
     "./comportement": "./src/serveur/comportement/index.ts",
     "./ia": "./src/serveur/ia/index.ts",
-    "./migrations": "./src/serveur/migrations/index.ts"
+    "./migrations": "./src/serveur/migrations/index.ts",
+    "./studio": "./src/serveur/studio/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

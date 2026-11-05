@@ -47,6 +47,7 @@ export const PERMISSIONS_ADMIN = [
   'comportement.configurer',
   'ia.utiliser',
   'ia.configurer',
+  'studio.utiliser',
 ] as const;
 export type PermissionAdmin = (typeof PERMISSIONS_ADMIN)[number];
 
@@ -103,6 +104,7 @@ const SECTION: Partial<Record<PermissionAdmin, string>> = {
   'conversion.lire': 'cnv',
   'comportement.lire': 'cmp',
   'ia.utiliser': 'ia',
+  'studio.utiliser': 'std',
   'referentiels.lire': 'ref',
   'matching.lire': 'mat',
   'audit.lire': 'aud',

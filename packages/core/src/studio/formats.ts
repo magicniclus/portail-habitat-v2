@@ -21,5 +21,10 @@ export const IMAGES_PAR_SECONDE = 30;
 /** Prises brutes (écran, voix, caméra) supprimées après 30 jours ; les vidéos finies restent. */
 export const CONSERVATION_PRISES_JOURS = 30;
 
-/** Une prise d'enregistrement dure au plus 10 min (limite d'envoi et de transcription). */
-export const PRISE_MAX_MS = 10 * 60_000;
+/**
+ * Une prise dure au plus 8 min : à ces débits, chaque fichier reste sous les 100 Mo acceptés par
+ * les règles Storage (écran ≈ 90 Mo, caméra ≈ 50 Mo, voix ≈ 8 Mo).
+ */
+export const PRISE_MAX_MS = 8 * 60_000;
+export const FICHIER_PRISE_MAX_OCTETS = 100 * 1024 * 1024;
+export const DEBITS_PRISE = { ecran: 1_500_000, camera: 800_000, voix: 128_000 } as const;
