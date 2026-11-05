@@ -11,7 +11,8 @@ export interface FinancesAdmin {
   mrr: number;
   /** Abonnés actifs par formule (PAIEMENTS §6). */
   abonnes: Record<FormulePayante, number>;
-  appelsOffres30j: { ht: number; deblocages: number };
+  /** `null` si le total n'a pas pu être calculé (index en cours de création…). */
+  appelsOffres30j: { ht: number; deblocages: number } | null;
   factures: {
     id: string;
     numero: string;
@@ -47,7 +48,15 @@ export async function lireFinancesAdmin(db: Firestore, maintenant: number): Prom
   const achats = db.collection(collections.achatsLeads).where('createdAt', '>=', depuis);
   const [abos, ao, factures, remb, promos] = await Promise.all([
     db.collection(collections.abonnements).where('statut', 'in', ACTIFS).get(),
-    achats.aggregate({ ht: AggregateField.sum('prixHtCentimes'), n: AggregateField.count() }).get(),
+    // Un total indisponible (index en cours de création…) n'empêche pas la page de s'afficher.
+    achats
+      .aggregate({ ht: AggregateField.sum('prixHtCentimes'), n: AggregateField.count() })
+      .get()
+      .then((r) => ({ ht: r.data().ht ?? 0, deblocages: r.data().n }))
+      .catch((err: unknown) => {
+        console.warn('finances admin : total des appels d’offres indisponible', err);
+        return null;
+      }),
     db.collection(collections.factures).orderBy('createdAt', 'desc').limit(30).get(),
     db
       .collection(collections.remboursementsLeads)
@@ -73,7 +82,7 @@ export async function lireFinancesAdmin(db: Firestore, maintenant: number): Prom
       FormulePayante,
       number
     >,
-    appelsOffres30j: { ht: ao.data().ht ?? 0, deblocages: ao.data().n },
+    appelsOffres30j: ao,
     factures: factures.docs.map((f) => ({
       id: f.id,
       numero: f.get('numero') as string,

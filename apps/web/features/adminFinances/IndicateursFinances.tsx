@@ -13,8 +13,10 @@ export function IndicateursFinances({ f }: { f: FinancesAdmin }) {
     ],
     [
       'Appels d’offres (30 j)',
-      formatEuros(f.appelsOffres30j.ht, { suffixe: 'HT' }),
-      `${f.appelsOffres30j.deblocages} déblocages`,
+      f.appelsOffres30j ? formatEuros(f.appelsOffres30j.ht, { suffixe: 'HT' }) : '—',
+      f.appelsOffres30j
+        ? `${f.appelsOffres30j.deblocages} déblocages`
+        : 'indisponible pour le moment',
     ],
   ];
   return (

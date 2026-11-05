@@ -79,7 +79,7 @@ export async function lireTableauDeBordAdmin(
           ])
             .then(([a, b]) => a + b)
             .catch((err: unknown) => {
-              console.error('tableau admin : chiffre d’affaires indisponible', err);
+              console.warn('tableau admin : chiffre d’affaires indisponible', err);
               return null;
             })
         : Promise.resolve(null),
