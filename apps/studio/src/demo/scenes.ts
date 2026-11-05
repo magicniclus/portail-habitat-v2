@@ -39,9 +39,6 @@ async function remplirDevis(page: Page) {
     await l.getByLabel('Quantité').fill(q!);
     await taper(page, l.getByLabel('PU HT (€)'), pu!, 40);
   }
-  await page.getByRole('checkbox', { name: 'Début et durée des travaux' }).check();
-  await page.getByLabel('Début des travaux').fill('2026-11-16');
-  await page.getByLabel('Durée estimée').fill('5 jours ouvrés');
 }
 
 export const SCENES: Record<

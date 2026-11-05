@@ -93,6 +93,13 @@ export async function capturer(p: ProjetStudio): Promise<Record<string, string>>
           });
         } catch (e) {
           // Une scène ratée n'arrête pas les autres ; l'erreur est remontée à la fin.
+          if (process.env.STUDIO_CAPTURE_ERREUR)
+            await page
+              .screenshot({
+                path: join(process.env.STUDIO_CAPTURE_ERREUR, `${c.scene}.png`),
+                fullPage: true,
+              })
+              .catch(() => undefined);
           echecs.push(
             `${c.scene} (${e instanceof Error ? (e.message.split('\n')[0] ?? '') : String(e)})`,
           );

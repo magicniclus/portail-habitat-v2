@@ -34,21 +34,16 @@ export async function taper(page: Page, cible: Locator, texte: string, delai = 4
 }
 
 export async function defiler(page: Page, px: number, ms = 2500) {
-  await page.evaluate(
-    ([px, ms]) =>
-      new Promise<void>((ok) => {
-        const y0 = scrollY;
-        const t0 = performance.now();
-        const pas = (t: number) => {
-          const k = Math.min(1, (t - t0) / ms);
-          scrollTo(0, y0 + px * (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2));
-          if (k < 1) requestAnimationFrame(pas);
-          else ok();
-        };
-        requestAnimationFrame(pas);
-      }),
-    [px, ms] as const,
-  );
+  // Code en texte : rien d'injecté par la compilation dans la page.
+  await page.evaluate(`new Promise((ok) => {
+    const y0 = scrollY, t0 = performance.now();
+    const pas = (t) => {
+      const k = Math.min(1, (t - t0) / ${ms});
+      scrollTo(0, y0 + ${px} * (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2));
+      if (k < 1) requestAnimationFrame(pas); else ok();
+    };
+    requestAnimationFrame(pas);
+  })`);
 }
 
 /** Carte de la zone : tuiles chargées (sinon on continue sans elle). */
