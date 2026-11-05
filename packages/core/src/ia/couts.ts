@@ -6,6 +6,7 @@ export const MODELES_IA = {
   'claude-haiku-4-5': { entree: 1, sortie: 5 },
   'claude-haiku-5-5': { entree: 0.1, sortie: 0.5 },
   'claude-sonnet-5-5': { entree: 2, sortie: 10 },
+  'claude-opus-5-5': { entree: 4, sortie: 20 },
 } as const;
 export type ModeleIa = keyof typeof MODELES_IA;
 export const MODELE_DEFAUT: ModeleIa = 'claude-haiku-4-5';
