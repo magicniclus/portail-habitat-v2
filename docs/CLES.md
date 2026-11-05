@@ -13,7 +13,7 @@
 | `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, `NEXT_PUBLIC_FIREBASE_APP_ID`, `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Console Firebase → ⚙️ Paramètres du projet → *Vos applications* → application Web → « Configuration » | Vercel |
 | `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY` | Console Firebase → ⚙️ → *Comptes de service* → « Générer une nouvelle clé privée » (fichier JSON : `client_email` et `private_key`) | Vercel (la clé privée entière, avec les `\n`) |
 | `NEXT_PUBLIC_SITE_URL` | l'adresse du site (ex. `https://portail-travaux.vercel.app` en recette) | Vercel **et** secret Functions |
-| **Identity Platform** (pas une clé) | Console Firebase → *Authentication* → *Paramètres* → passer à Identity Platform, puis *Authentification multifacteur* → activer **TOTP** | — |
+| **Identity Platform** (pas une clé) | Console Firebase → *Authentication* → *Paramètres* → passer à Identity Platform. **TOTP** ne s'active pas dans la console : lancer `pnpm admin:totp` (Admin SDK, identifiants de `.env.local`) | — |
 
 ## 2. Paiements (lot 11, Stripe en mode **test**)
 
