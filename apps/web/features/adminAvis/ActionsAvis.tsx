@@ -31,7 +31,8 @@ export function ActionsAvis({
           titre={`Publier : ${titre}`}
           description="L’avis apparaît sur la fiche ; l’auteur et l’artisan sont prévenus."
           desactive={moderer}
-          onConfirmer={(motif) => decisionAvis({ avisId: id, action: 'publier', motif })}
+          sansMotif
+          onConfirmer={() => decisionAvis({ avisId: id, action: 'publier' })}
         />
       ) : null}
       {statut === 'en_attente' ? (

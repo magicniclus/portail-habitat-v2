@@ -14,6 +14,7 @@ export function ConfirmationAdmin({
   description,
   danger = false,
   desactive,
+  sansMotif = false,
   children,
   onConfirmer,
 }: {
@@ -23,6 +24,8 @@ export function ConfirmationAdmin({
   danger?: boolean;
   /** Infobulle « Permission requise : x.y » quand la permission manque (ADMIN §1). */
   desactive?: string | undefined;
+  /** Action courante et réversible (publier un avis conforme) : un clic, sans motif ni case. */
+  sansMotif?: boolean;
   /** Champs propres à l'action (nombre de crédits…), avant le motif. */
   children?: ReactNode;
   onConfirmer: (motif: string) => Promise<string | null>;
@@ -32,7 +35,7 @@ export function ConfirmationAdmin({
   const [certain, setCertain] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const pret = motif.trim().length >= MOTIF_MIN && certain;
+  const pret = sansMotif || (motif.trim().length >= MOTIF_MIN && certain);
 
   const confirmer = async () => {
     setEnCours(true);
@@ -74,12 +77,16 @@ export function ConfirmationAdmin({
     >
       <div className="grid gap-4">
         {children}
-        <Field label="Motif (obligatoire)">
-          <Textarea value={motif} onChange={(e) => setMotif(e.target.value)} rows={3} />
-        </Field>
-        <Checkbox checked={certain} onChange={(e) => setCertain(e.target.checked)}>
-          Je confirme cette action
-        </Checkbox>
+        {sansMotif ? null : (
+          <>
+            <Field label="Motif (obligatoire)">
+              <Textarea value={motif} onChange={(e) => setMotif(e.target.value)} rows={3} />
+            </Field>
+            <Checkbox checked={certain} onChange={(e) => setCertain(e.target.checked)}>
+              Je confirme cette action
+            </Checkbox>
+          </>
+        )}
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
       </div>
     </Feuille>

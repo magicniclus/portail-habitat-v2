@@ -71,11 +71,17 @@ export async function lireTableauDeBordAdmin(
           .where('nbDeblocages', '==', 0)
           .where('ouvertLe', '<=', ts(e.maintenant - 2 * JOUR_MS)),
       ),
+      // Un compteur indisponible (index en cours de création…) n'empêche pas la page de s'afficher.
       e.finances
         ? Promise.all([
             somme(collections.factures, 'montantHtCentimes', 'paid'),
             somme(collections.achatsLeads, 'prixHtCentimes'),
-          ]).then(([a, b]) => a + b)
+          ])
+            .then(([a, b]) => a + b)
+            .catch((err: unknown) => {
+              console.error('tableau admin : chiffre d’affaires indisponible', err);
+              return null;
+            })
         : Promise.resolve(null),
       db.collection(collections.stripeEvents).orderBy('traiteLe', 'desc').limit(1).get(),
       compter(db.collection(collections.stripeEvents).where('ok', '==', false)),

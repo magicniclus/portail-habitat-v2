@@ -395,19 +395,25 @@ export const entreeSourceAdmin = z.strictObject({
 });
 
 /** Back-office › Avis : décision sans modification du texte (ADMIN §2.6). */
-export const entreeModererAvis = z.strictObject({
-  avisId: id,
-  action: z.enum(['publier', 'refuser', 'preuve', 'suspendre', 'supprimer']),
-  motif: motifAdmin,
-  motifRefus: z
-    .enum([
-      'Sans lien avec une prestation',
-      'Propos injurieux ou diffamatoires',
-      'Conflit d’intérêts',
-      'Doublon',
-    ])
-    .optional(),
-});
+/** Publier un avis conforme ne demande pas de motif ; refuser, suspendre ou supprimer, si. */
+export const entreeModererAvis = z
+  .strictObject({
+    avisId: id,
+    action: z.enum(['publier', 'refuser', 'preuve', 'suspendre', 'supprimer']),
+    motif: motifAdmin.optional(),
+    motifRefus: z
+      .enum([
+        'Sans lien avec une prestation',
+        'Propos injurieux ou diffamatoires',
+        'Conflit d’intérêts',
+        'Doublon',
+      ])
+      .optional(),
+  })
+  .refine((e) => e.action === 'publier' || Boolean(e.motif), {
+    message: 'Indiquez le motif.',
+    path: ['motif'],
+  });
 
 /** Back-office › Litiges : message du médiateur, décision (ADMIN §2.7). */
 export const entreeMessageLitige = z.strictObject({

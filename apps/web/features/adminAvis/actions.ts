@@ -24,7 +24,7 @@ const moderer = actionAdmin(
       acteurUid: ctx.uid!,
       avisId: e.avisId,
       action: e.action,
-      motif: e.motif,
+      motif: e.motif ?? 'Avis conforme, publié',
       ...(e.motifRefus ? { motifRefus: e.motifRefus } : {}),
     });
     // Note et nombre d'avis de la fiche publique à jour tout de suite (sans attendre le
@@ -36,7 +36,7 @@ const moderer = actionAdmin(
 const supprimer = actionAdmin(
   { schema: entreeModererAvis, nom: 'adminSupprimerAvis', permission: 'avis.supprimer' },
   async (e, ctx) =>
-    supprimerAvisAdmin(services(), { acteurUid: ctx.uid!, avisId: e.avisId, motif: e.motif }),
+    supprimerAvisAdmin(services(), { acteurUid: ctx.uid!, avisId: e.avisId, motif: e.motif! }),
 );
 
 /** Publier, refuser (motif prédéfini), demander une preuve, suspendre ou supprimer un avis. */

@@ -122,7 +122,8 @@ export function CoqueAdmin({
         className="sticky top-0 hidden h-dvh w-[72px] flex-none flex-col gap-1 overflow-y-auto bg-accent-700 px-3 py-4 transition-[width] duration-200 motion-reduce:transition-none data-[deplie=true]:w-[252px] md:flex"
       >
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
-          {deplie ? <Logo variant="admin" taille={28} inverse /> : null}
+          {/* Sur deux lignes : « PORTAIL TRAVAUX ADMIN » ne tient pas dans 252 px avec le bouton. */}
+          {deplie ? <Logo variant="admin" taille={28} inverse empile className="min-w-0" /> : null}
           <button
             type="button"
             onClick={basculer}

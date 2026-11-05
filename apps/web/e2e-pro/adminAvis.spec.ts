@@ -27,8 +27,8 @@ test('avis : score de risque affiché, refus avec motif prédéfini, publication
   const a2 = page.getByRole('listitem').filter({ hasText: publie });
   await a2.getByRole('button', { name: 'Publier' }).click();
   const d2 = page.getByRole('dialog', { name: `Publier : avis de ${publie} sur ${nom}` });
-  await d2.getByLabel('Motif (obligatoire)').fill('Chantier vérifié');
-  await d2.getByText('Je confirme cette action').click();
+  // Publier un avis conforme : ni motif ni case à cocher.
+  await expect(d2.getByLabel('Motif (obligatoire)')).toHaveCount(0);
   await d2.getByRole('button', { name: 'Confirmer' }).click();
   await expect(d2).toBeHidden();
   await page.goto('/admin/avis?f=publies');
