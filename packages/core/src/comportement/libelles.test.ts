@@ -24,5 +24,7 @@ describe('formatDureeVisite', () => {
   it('affiche des secondes puis des minutes', () => {
     expect(formatDureeVisite(45_000)).toBe('45 s');
     expect(formatDureeVisite(65_000)).toBe('1 min 05');
+    expect(formatDureeVisite(3_600_000)).toBe('1 h 00');
+    expect(formatDureeVisite(85_301_000)).toBe('23 h 41');
   });
 });

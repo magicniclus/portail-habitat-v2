@@ -120,7 +120,11 @@ export async function lireReplay(
     'replayPath',
   ) as string | undefined;
   if (!chemin) throw new ErreurMetier('INTROUVABLE');
-  const contenu = JSON.parse(gunzipSync(await s.telecharger(chemin)).toString()) as ReplayLu;
+  const brut = await s.telecharger(chemin);
+  // Déposé en gzip avec `Content-Encoding: gzip` : Cloud Storage le rend souvent déjà décompressé
+  // (transcodage), l'émulateur non. On ne décompresse que si l'en-tête gzip est présent.
+  const gzip = brut[0] === 0x1f && brut[1] === 0x8b;
+  const contenu = JSON.parse((gzip ? gunzipSync(brut) : brut).toString()) as ReplayLu;
   await auditerAdmin(
     s.db,
     {

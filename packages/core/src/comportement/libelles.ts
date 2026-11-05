@@ -75,7 +75,10 @@ const pct = formatPart;
 /** Durée de visite : « 45 s », « 1 min 05 ». */
 export function formatDureeVisite(ms: number) {
   const s = Math.round(ms / 1000);
-  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')}`;
+  if (s < 60) return `${s} s`;
+  const min = Math.floor(s / 60);
+  if (min < 60) return `${min} min ${String(s % 60).padStart(2, '0')}`;
+  return `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}`;
 }
 
 /** Phrase d'explication d'une alerte, avec ses chiffres. */

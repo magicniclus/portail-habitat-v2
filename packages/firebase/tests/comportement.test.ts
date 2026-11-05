@@ -1,8 +1,9 @@
-import { gunzipSync } from 'node:zlib';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import type { ResumeVisite } from '@ph/core/schemas';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { lireReplay } from '../src/serveur/admin';
 import { collections } from '../src/chemins';
 import { enregistrerVisite, lireConfigComportement } from '../src/serveur/comportement';
 import { dependancesEnveloppe } from '../src/serveur/enveloppe';
@@ -136,5 +137,32 @@ describe('enregistrerVisite', () => {
     expect(await lireConfigComportement(db)).toEqual({ actif: true, echantillon: 1 });
     await db.doc('config/comportement').set({ actif: false, echantillon: 0.5 });
     expect(await lireConfigComportement(db)).toEqual({ actif: false, echantillon: 0.5 });
+  });
+});
+
+describe('lireReplay', () => {
+  const contenu = {
+    appareil: 'ordinateur',
+    largeur: 1440,
+    hauteur: 900,
+    evenements: [[0, 'm', 1, 2]],
+  };
+  const preparer = () =>
+    db.collection(collections.comportementSessions).doc('vue0000000000001').set({
+      replayPath: 'replays/accueil/2026-11-02/vue0000000000001.json.gz',
+    });
+
+  it('lit un replay compressé (émulateur) ou déjà décompressé par Cloud Storage', async () => {
+    await preparer();
+    for (const fichier of [
+      gzipSync(JSON.stringify(contenu)),
+      Buffer.from(JSON.stringify(contenu)),
+    ]) {
+      const r = await lireReplay(
+        { db, horloge: () => 1, telecharger: async () => fichier },
+        { acteurUid: 'admin1', vueId: 'vue0000000000001' },
+      );
+      expect(r).toEqual(contenu);
+    }
   });
 });
