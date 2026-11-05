@@ -1,7 +1,12 @@
 import 'server-only';
 import { peutLireSection, SECTIONS_ADMIN } from '@ph/core/admin';
 import { appAdmin } from '@ph/firebase/admin';
-import { verifierSessionAdmin, type ProfilAdminSession } from '@ph/firebase/admin-serveur';
+import {
+  recalculerPermissionsMembre,
+  verifierSessionAdmin,
+  type ProfilAdminSession,
+} from '@ph/firebase/admin-serveur';
+import { getAuth } from 'firebase-admin/auth';
 import { COOKIE_SESSION, contexteDepuisJeton, lireSession } from '@ph/firebase/serveur';
 import { getFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
@@ -34,12 +39,25 @@ export const lireSessionAdmin = cache(async (): Promise<Lecture> => {
   if (!jeton) return { etat: 'sans_session' };
   const ctx = contexteDepuisJeton(jeton);
   if (ctx.impersonation) return { etat: 'pas_admin' };
-  const r = await verifierSessionAdmin(getFirestore(appAdmin()), {
-    uid: jeton.uid,
-    authentifieLe: ctx.authentifieLe ?? 0,
-    maintenant: Date.now(),
-  });
+  const db = getFirestore(appAdmin());
+  const lire = () =>
+    verifierSessionAdmin(db, {
+      uid: jeton.uid,
+      authentifieLe: ctx.authentifieLe ?? 0,
+      maintenant: Date.now(),
+    });
+  let r = await lire();
   if (r.etat !== 'ok') return { etat: r.etat };
+  // Une permission a été ajoutée au rôle depuis (ex. Studio) : mise à jour tout de suite, claims
+  // compris, sans commande à lancer.
+  if (!r.profil.permissionsAJour) {
+    await recalculerPermissionsMembre(
+      { db, auth: getAuth(appAdmin()), horloge: Date.now },
+      jeton.uid,
+    ).catch((e: unknown) => console.warn('admin : permissions non recalculées', e));
+    r = await lire();
+    if (r.etat !== 'ok') return { etat: r.etat };
+  }
   return {
     etat: 'ok',
     session: { ...r.profil, secondFacteur: ctx.secondFacteur ?? false },

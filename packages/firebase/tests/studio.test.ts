@@ -412,3 +412,31 @@ describe('conservation des prises', () => {
     expect(p?.rendu?.video).toBe('studioRendus/x/v.mp4');
   });
 });
+
+describe('accès au Studio sans commande', () => {
+  it('la session admin signale des permissions périmées, recalculées pour ce seul membre', async () => {
+    const { getAuth } = await import('firebase-admin/auth');
+    const { recalculerPermissionsMembre, verifierSessionAdmin } =
+      await import('../src/serveur/admin');
+    const auth = getAuth(appAdmin());
+    await auth.deleteUser('sa-perime').catch(() => undefined);
+    await auth.createUser({ uid: 'sa-perime', email: 'sa-perime@exemple.fr' });
+    await db.doc(`${collections.admins}/sa-perime`).set({
+      role: 'superadmin',
+      actif: true,
+      nom: 'SA',
+      email: 'sa-perime@exemple.fr',
+      permissionsEffectives: ['avis.lire'],
+    });
+    const lire = () =>
+      verifierSessionAdmin(db, { uid: 'sa-perime', authentifieLe: T, maintenant: T + 1000 });
+    const avant = await lire();
+    expect(avant.etat === 'ok' && avant.profil.permissionsAJour).toBe(false);
+    expect(await recalculerPermissionsMembre({ db, auth, horloge: () => T }, 'sa-perime')).toBe(
+      true,
+    );
+    const apres = await lire();
+    expect(apres.etat === 'ok' && apres.profil.permissionsAJour).toBe(true);
+    expect(apres.etat === 'ok' && apres.profil.permissions).toContain('studio.utiliser');
+  });
+});

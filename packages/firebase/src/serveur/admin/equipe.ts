@@ -203,39 +203,47 @@ export async function modifierMembreEquipeAdmin(
   if (!e.actif) await s.auth.revokeRefreshTokens(e.uid);
 }
 
+type ServicesPermissions = { db: Firestore; auth: Auth; horloge: () => number };
+
+/** Un membre : permissions effectives et claims recalculés s'ils ont changé ; `true` si mis à jour. */
+export async function recalculerPermissionsMembre(
+  s: ServicesPermissions,
+  uid: string,
+): Promise<boolean> {
+  const d = await s.db.doc(chemins.admin(uid)).get();
+  if (!d.exists) return false;
+  const role = d.get('role') as string;
+  const perso = await s.db.collection(collections.rolesAdmin).doc(role).get();
+  const profil = {
+    role,
+    ...(perso.exists ? { permissionsRole: (perso.get('permissions') as string[]) ?? [] } : {}),
+    permissionsPlus: (d.get('permissionsPlus') as string[] | undefined) ?? [],
+    permissionsMoins: (d.get('permissionsMoins') as string[] | undefined) ?? [],
+  };
+  const nouvelles = permissionsEffectives(profil);
+  const actuelles = (d.get('permissionsEffectives') as string[] | undefined) ?? [];
+  if (nouvelles.join() === [...actuelles].sort().join()) return false;
+  await d.ref.update({
+    permissionsEffectives: nouvelles,
+    updatedAt: Timestamp.fromMillis(s.horloge()),
+  });
+  await synchroniserClaims(
+    { db: s.db, auth: s.auth, horloge: s.horloge, notifier: async () => undefined },
+    uid,
+  );
+  return true;
+}
+
 /**
  * Après l'ajout d'une permission (ex. `studio.utiliser`), recalcule les permissions effectives et
- * les claims de toute l'équipe : rôle + plus − moins (rôle personnalisé lu dans `rolesAdmin`).
- * Idempotent : un membre déjà à jour n'est pas réécrit. `pnpm admin:permissions`.
+ * les claims de toute l'équipe. Idempotent. `pnpm admin:permissions` (fait aussi tout seul à
+ * l'ouverture de l'admin, voir `verifierSessionAdmin`).
  */
-export async function recalculerPermissionsEquipe(s: {
-  db: Firestore;
-  auth: Auth;
-  horloge: () => number;
-}): Promise<{ lus: number; modifies: string[] }> {
+export async function recalculerPermissionsEquipe(
+  s: ServicesPermissions,
+): Promise<{ lus: number; modifies: string[] }> {
   const admins = await s.db.collection(collections.admins).get();
   const modifies: string[] = [];
-  for (const d of admins.docs) {
-    const role = d.get('role') as string;
-    const perso = await s.db.collection(collections.rolesAdmin).doc(role).get();
-    const profil = {
-      role,
-      ...(perso.exists ? { permissionsRole: (perso.get('permissions') as string[]) ?? [] } : {}),
-      permissionsPlus: (d.get('permissionsPlus') as string[] | undefined) ?? [],
-      permissionsMoins: (d.get('permissionsMoins') as string[] | undefined) ?? [],
-    };
-    const nouvelles = permissionsEffectives(profil);
-    const actuelles = (d.get('permissionsEffectives') as string[] | undefined) ?? [];
-    if (nouvelles.join() === [...actuelles].sort().join()) continue;
-    await d.ref.update({
-      permissionsEffectives: nouvelles,
-      updatedAt: Timestamp.fromMillis(s.horloge()),
-    });
-    await synchroniserClaims(
-      { db: s.db, auth: s.auth, horloge: s.horloge, notifier: async () => undefined },
-      d.id,
-    );
-    modifies.push(d.id);
-  }
+  for (const d of admins.docs) if (await recalculerPermissionsMembre(s, d.id)) modifies.push(d.id);
   return { lus: admins.size, modifies };
 }

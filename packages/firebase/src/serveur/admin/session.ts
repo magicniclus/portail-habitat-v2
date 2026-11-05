@@ -1,4 +1,9 @@
-import { DUREE_SESSION_ADMIN_MS, INACTIVITE_ADMIN_MS } from '@ph/core/admin';
+import {
+  DUREE_SESSION_ADMIN_MS,
+  INACTIVITE_ADMIN_MS,
+  permissionsEffectives,
+  ROLES_ADMIN_SYSTEME,
+} from '@ph/core/admin';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 
@@ -10,6 +15,11 @@ export interface ProfilAdminSession {
   permissions: string[];
   /** Le rôle `lecture` ne voit jamais les données personnelles. */
   pii: boolean;
+  /**
+   * `false` quand le rôle donne aujourd'hui d'autres permissions que celles enregistrées (une
+   * permission ajoutée depuis, ex. Studio) : l'appelant les recalcule (`recalculerPermissionsMembre`).
+   */
+  permissionsAJour: boolean;
 }
 
 export type EtatSessionAdmin =
@@ -39,6 +49,16 @@ export async function verifierSessionAdmin(
     return { etat: 'inactivite' };
   if (e.maintenant - dernier > PAS_ACCES_MS)
     await ref.update({ dernierAcces: Timestamp.fromMillis(e.maintenant) });
+  const enregistrees = (a.get('permissionsEffectives') as string[] | undefined) ?? [];
+  const role = a.get('role') as string;
+  // Rôles système seulement : un rôle personnalisé se recalcule quand il est modifié.
+  const aJour =
+    !(ROLES_ADMIN_SYSTEME as readonly string[]).includes(role) ||
+    permissionsEffectives({
+      role,
+      permissionsPlus: (a.get('permissionsPlus') as string[] | undefined) ?? [],
+      permissionsMoins: (a.get('permissionsMoins') as string[] | undefined) ?? [],
+    }).join() === [...enregistrees].sort().join();
   return {
     etat: 'ok',
     profil: {
@@ -46,8 +66,9 @@ export async function verifierSessionAdmin(
       nom: a.get('nom') as string,
       email: a.get('email') as string,
       role: a.get('role') as string,
-      permissions: (a.get('permissionsEffectives') as string[] | undefined) ?? [],
+      permissions: enregistrees,
       pii: a.get('role') !== 'lecture',
+      permissionsAJour: aJour,
     },
   };
 }
