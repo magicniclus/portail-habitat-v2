@@ -147,4 +147,6 @@ Quand vous tranchez une question : changez le statut en ✅, corrigez la proposi
 - Prises brutes gardées 30 jours.
 - Robot de rendu sur **Cloud Run** du projet Google (déploiement par le propriétaire uniquement).
 
+**06/11/2026 (propriétaire)** : Studio — voix seule (fichier audio ou enregistrement sans écran ni caméra) et **voix de synthèse ElevenLabs** au besoin (nouveau service externe demandé par le propriétaire, clé `ELEVENLABS_API_KEY`, facultative). Idées de vidéos enregistrables et supprimables, réutilisables sans rappeler l'IA.
+
 Outils ajoutés : API YouTube Data v3 (clé gratuite), faster-whisper (dans l'image du robot), Claude Opus 5.5 pour les scripts et le montage. Aucune nouvelle dépendance npm : les calques sont dessinés dans le Chromium de Playwright, déjà présent.

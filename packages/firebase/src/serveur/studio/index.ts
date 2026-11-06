@@ -4,6 +4,12 @@ export {
   type ClientStudio,
   type ReponseStudio,
 } from './claude';
+export {
+  clientElevenLabs,
+  dureeMp3Ms,
+  type ClientElevenLabs,
+  type VoixElevenLabs,
+} from './elevenlabs';
 export { rechercheYoutube, type RechercheYoutube } from './youtube';
 export {
   capturesTermineesStudio,
@@ -21,6 +27,8 @@ export {
   relancerStudio,
   renduTermineStudio,
   transcriptionRecueStudio,
+  voixDisponiblesStudio,
+  voixSyntheseStudio,
   type FichiersPrise,
   type ProjetStudio,
   type ServicesStudio,

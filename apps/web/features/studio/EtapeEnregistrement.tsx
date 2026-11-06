@@ -2,12 +2,14 @@
 
 import { PRISE_MAX_MS, type SujetStudio } from '@ph/core/studio';
 import { Banner, Button, Checkbox, Field, Select } from '@ph/ui';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { envoyerPrise } from './envoiPrise';
 import { ImportVideo } from './ImportVideo';
+import { ImportVoix } from './ImportVoix';
 import { NiveauMicro } from './NiveauMicro';
 import { Prompteur } from './Prompteur';
 import { useEnregistrement } from './useEnregistrement';
+import { VoixSynthese } from './VoixSynthese';
 
 const minutes = (ms: number) =>
   `${Math.floor(ms / 60_000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
@@ -87,6 +89,9 @@ function EnregistrementIci({
         >
           Enregistrer mon écran (le navigateur demande quoi partager)
         </Checkbox>
+        <p className="m-0 text-sm text-neutre-700">
+          Sans écran ni caméra : voix seule, le montage montre Portail Travaux et des animations.
+        </p>
         {e.erreur ? <Banner tone="danger">{e.erreur}</Banner> : null}
         {message ? <Banner tone="danger">{message}</Banner> : null}
         <div className="flex flex-wrap items-center gap-3">
@@ -143,9 +148,17 @@ function EnregistrementIci({
   );
 }
 
+const MODES = [
+  ['ici', '● Enregistrer ici'],
+  ['import', '↑ Vidéo du téléphone'],
+  ['voix', '🎙 Voix seule (fichier audio)'],
+  ['synthese', '✦ Voix ElevenLabs'],
+] as const;
+type Mode = (typeof MODES)[number][0];
+
 /**
- * Étape 2 : enregistrer ici (écran, voix, caméra au choix) ou importer une vidéo du téléphone avec
- * son son. Les deux mènent au même montage.
+ * Étape 2 : enregistrer ici (écran, voix, caméra au choix), importer une vidéo du téléphone ou une
+ * voix seule, ou faire lire le script par ElevenLabs. Tout mène au même montage.
  */
 export function EtapeEnregistrement({
   projetId,
@@ -154,10 +167,15 @@ export function EtapeEnregistrement({
 }: {
   projetId: string;
   script: SujetStudio['script'];
-  cameraPrevue: boolean;
   dejaEnregistre: boolean;
 }) {
-  const [mode, setMode] = useState<'ici' | 'import'>('ici');
+  const [mode, setMode] = useState<Mode>('ici');
+  const aCote = (contenu: ReactNode) => (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
+      {contenu}
+      <Prompteur script={script} />
+    </div>
+  );
   return (
     <details open={!dejaEnregistre} className="rounded-card border border-trait bg-blanc p-4">
       <summary className="min-h-11 cursor-pointer text-lg font-bold">
@@ -165,12 +183,7 @@ export function EtapeEnregistrement({
       </summary>
       <div className="mt-3 grid gap-4">
         <div role="tablist" aria-label="Façon de tourner" className="flex flex-wrap gap-2">
-          {(
-            [
-              ['ici', '● Enregistrer ici'],
-              ['import', '↑ Importer une vidéo du téléphone'],
-            ] as const
-          ).map(([v, l]) => (
+          {MODES.map(([v, l]) => (
             <Button
               key={v}
               role="tab"
@@ -182,14 +195,10 @@ export function EtapeEnregistrement({
             </Button>
           ))}
         </div>
-        {mode === 'ici' ? (
-          <EnregistrementIci projetId={projetId} script={script} />
-        ) : (
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
-            <ImportVideo projetId={projetId} />
-            <Prompteur script={script} />
-          </div>
-        )}
+        {mode === 'ici' ? <EnregistrementIci projetId={projetId} script={script} /> : null}
+        {mode === 'import' ? aCote(<ImportVideo projetId={projetId} />) : null}
+        {mode === 'voix' ? aCote(<ImportVoix projetId={projetId} />) : null}
+        {mode === 'synthese' ? <VoixSynthese projetId={projetId} script={script} /> : null}
       </div>
     </details>
   );

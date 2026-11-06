@@ -179,17 +179,17 @@ const CAS: Cas[] = [
   },
   {
     nom: 'envoyer une prise Studio',
-    op: { ecrire: 'studio/{uid}/prise1/{p}.webm', type: 'video/webm;codecs=vp9', taille: 1000 },
+    op: { ecrire: 'studio/{uid}/prise12/ecran.webm', type: 'video/webm;codecs=vp9', taille: 1000 },
     autorises: staffAvec('std'),
   },
   {
     nom: 'envoyer la voix d’une prise Studio',
-    op: { ecrire: 'studio/{uid}/prise1/{p}-voix.webm', type: 'audio/webm', taille: 1000 },
+    op: { ecrire: 'studio/{uid}/prise9/voix.webm', type: 'audio/webm', taille: 1000 },
     autorises: staffAvec('std'),
   },
   {
     nom: 'envoyer une prise Studio dans l’espace d’un autre',
-    op: { ecrire: 'studio/sa/prise2/{p}.webm', type: 'video/webm', taille: 1000 },
+    op: { ecrire: 'studio/sa/prise2/ecran.webm', type: 'video/webm', taille: 1000 },
     autorises: ['superadmin'],
   },
   {
@@ -201,6 +201,26 @@ const CAS: Cas[] = [
     nom: 'importer une vidéo du téléphone (.mp4)',
     op: { ecrire: 'studio/{uid}/prise4/import.mp4', type: 'video/mp4', taille: 1000 },
     autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer une voix seule (.m4a)',
+    op: { ecrire: 'studio/{uid}/prise6/voix-import.m4a', type: 'audio/x-m4a', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer une voix seule (.mp3)',
+    op: { ecrire: 'studio/{uid}/prise7/voix-import.mp3', type: 'audio/mpeg', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer une voix qui n’est pas un son',
+    op: { ecrire: 'studio/{uid}/prise8/voix-import.mp3', type: 'video/mp4', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'envoyer une prise sous un nom libre',
+    op: { ecrire: 'studio/{uid}/prise11/{p}.webm', type: 'video/webm', taille: 1000 },
+    autorises: [],
   },
   {
     nom: 'envoyer un .mov qui n’est pas une importation',
@@ -219,17 +239,17 @@ const CAS: Cas[] = [
   },
   {
     nom: 'envoyer une prise de plus de 100 Mo',
-    op: { ecrire: 'studio/{uid}/prise1/gros-{p}.webm', type: 'video/webm', taille: 100 * Mo + 1 },
+    op: { ecrire: 'studio/{uid}/prise10/camera.webm', type: 'video/webm', taille: 100 * Mo + 1 },
     autorises: [],
   },
   {
     nom: 'écraser une prise Studio',
-    op: { ecrire: 'studio/sa/prise1/existant.webm', type: 'video/webm', taille: 1000 },
+    op: { ecrire: 'studio/sa/prise1/ecran.webm', type: 'video/webm', taille: 1000 },
     autorises: [],
   },
   {
     nom: 'lire une prise Studio',
-    op: { lire: 'studio/sa/prise1/existant.webm' },
+    op: { lire: 'studio/sa/prise1/ecran.webm' },
     autorises: staffAvec('std'),
   },
   {
@@ -271,7 +291,7 @@ const FICHIERS = [
   'demandes/dem1/photos/photo.jpg',
   'demandes/dem1/devis/a1/devis.pdf',
   'televersements/part1/existant.jpg',
-  'studio/sa/prise1/existant.webm',
+  'studio/sa/prise1/ecran.webm',
   'studioRendus/st1/video.mp4',
 ];
 

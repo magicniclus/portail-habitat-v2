@@ -1,7 +1,8 @@
 import 'server-only';
-import { appAdmin } from '@ph/firebase/admin';
+import { appAdmin, bucketFichiers } from '@ph/firebase/admin';
 import {
   clientClaudeStudio,
+  clientElevenLabs,
   echecStudio,
   rechercheYoutube,
   type ServicesStudio,
@@ -10,8 +11,8 @@ import {
 import { getFirestore } from 'firebase-admin/firestore';
 
 /**
- * Services du Studio côté site : Claude (ANTHROPIC_API_KEY), YouTube (YOUTUBE_API_KEY) et le
- * robot de rendu (STUDIO_RENDU_URL + STUDIO_RENDU_CLE). Clés côté serveur uniquement.
+ * Services du Studio côté site : Claude (ANTHROPIC_API_KEY), YouTube (YOUTUBE_API_KEY), ElevenLabs
+ * (ELEVENLABS_API_KEY, voix de synthèse) et le robot de rendu (STUDIO_RENDU_URL + STUDIO_RENDU_CLE). Clés côté serveur uniquement.
  */
 export function servicesStudio(env: NodeJS.ProcessEnv = process.env): ServicesStudio {
   const db = getFirestore(appAdmin());
@@ -20,6 +21,9 @@ export function servicesStudio(env: NodeJS.ProcessEnv = process.env): ServicesSt
     horloge: Date.now,
     claude: env.ANTHROPIC_API_KEY ? clientClaudeStudio(env.ANTHROPIC_API_KEY) : null,
     youtube: env.YOUTUBE_API_KEY ? rechercheYoutube(env.YOUTUBE_API_KEY) : null,
+    elevenlabs: env.ELEVENLABS_API_KEY ? clientElevenLabs(env.ELEVENLABS_API_KEY) : null,
+    deposer: async (chemin, octets, type) =>
+      bucketFichiers(env).file(chemin).save(Buffer.from(octets), { contentType: type }),
     lancerTravail: async (type, projetId) => {
       const echec = (message: string) => echecStudio(s, { projetId, etape: type, message });
       if (!env.STUDIO_RENDU_URL || !env.STUDIO_RENDU_CLE)

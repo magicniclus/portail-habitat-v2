@@ -9,6 +9,7 @@ import {
   entreeProjetStudio,
   entreeRetoucheStudio,
   entreeSujetsStudio,
+  entreeVoixSyntheseStudio,
 } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import {
@@ -20,6 +21,8 @@ import {
   priseEnregistreeStudio,
   proposerSujetsStudio,
   relancerStudio,
+  voixDisponiblesStudio,
+  voixSyntheseStudio,
 } from '@ph/firebase/studio';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
@@ -90,3 +93,20 @@ const declinaison = actionAdmin(
 );
 export const declinerSujet = async (e: z.input<typeof entreeDeclinaisonStudio>) =>
   fin(await declinaison(e));
+
+const synthese = actionAdmin(
+  { schema: entreeVoixSyntheseStudio, nom: 'adminStudioVoixSynthese', permission: P },
+  async (e, ctx) => voixSyntheseStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const voixSynthese = async (e: z.input<typeof entreeVoixSyntheseStudio>) =>
+  fin(await synthese(e), e.projetId);
+
+const listeVoix = actionAdmin(
+  { schema: entreeProjetStudio, nom: 'adminStudioVoix', permission: P },
+  async () => voixDisponiblesStudio(servicesStudio()),
+);
+/** Voix ElevenLabs proposées (vide si la clé manque). Lecture seule : rien à revalider. */
+export const listerVoix = async (e: z.input<typeof entreeProjetStudio>) => {
+  const r = await listeVoix(e);
+  return r.ok ? r.data : [];
+};

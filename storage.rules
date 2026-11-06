@@ -90,12 +90,17 @@ service firebase.storage {
       allow read: if lit('std');
       allow create: if resource == null && noImp() && lit('std') && request.auth.uid == uid && (
         // Enregistrée dans le navigateur : 100 Mo par fichier.
-        (request.resource.contentType.matches('(video|audio)/(webm|mp4|ogg)(;.*)?')
+        (fichier.matches('(ecran|camera|voix)[.](webm|mp4|ogg)')
+          && request.resource.contentType.matches('(video|audio)/(webm|mp4|ogg)(;.*)?')
           && request.resource.size <= 100 * 1024 * 1024)
         // Importée depuis un téléphone (son compris, .mov de l'iPhone) : 1 Go.
         || (fichier.matches('import[.](mp4|mov|m4v|webm)')
           && request.resource.contentType.matches('video/(mp4|quicktime|webm|x-m4v)')
-          && request.resource.size <= 1024 * 1024 * 1024));
+          && request.resource.size <= 1024 * 1024 * 1024)
+        // Voix seule enregistrée ailleurs (dictaphone, téléphone) : 200 Mo.
+        || (fichier.matches('voix-import[.](mp3|m4a|wav|aac|ogg|webm)')
+          && request.resource.contentType.matches('audio/(mpeg|mp3|mp4|x-m4a|aac|wav|x-wav|wave|ogg|webm)')
+          && request.resource.size <= 200 * 1024 * 1024));
       allow update, delete: if false;
     }
     match /studioRendus/{p=**} {

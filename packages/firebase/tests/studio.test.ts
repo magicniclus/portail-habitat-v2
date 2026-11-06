@@ -13,6 +13,8 @@ import {
   listerProjetsStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
+  voixSyntheseStudio,
+  dureeMp3Ms,
   proposerSujetsStudio,
   renduTermineStudio,
   transcriptionRecueStudio,
@@ -496,5 +498,69 @@ describe('accès au Studio sans commande', () => {
     const apres = await lire();
     expect(apres.etat === 'ok' && apres.profil.permissionsAJour).toBe(true);
     expect(apres.etat === 'ok' && apres.profil.permissions).toContain('studio.utiliser');
+  });
+});
+
+describe('voix de synthèse ElevenLabs', () => {
+  it('sans clé : message clair', async () => {
+    const id = await projet(false);
+    await expect(
+      voixSyntheseStudio(services(), {
+        projetId: id,
+        auteurUid: 'sa',
+        texte: 'Bonjour',
+        voixId: 'v1',
+      }),
+    ).rejects.toThrow(/ELEVENLABS_API_KEY/);
+  });
+
+  it('le MP3 devient la voix de la prise, sans écran ni caméra, puis transcription', async () => {
+    const id = await projet(true);
+    const depots: { chemin: string; type: string; taille: number }[] = [];
+    const lus: string[] = [];
+    await voixSyntheseStudio(
+      {
+        ...services(),
+        elevenlabs: {
+          voix: async () => [],
+          parler: async (texte, voixId) => {
+            lus.push(`${voixId}:${texte}`);
+            return new Uint8Array(320_000); // 20 s à 128 kbit/s
+          },
+        },
+        deposer: async (chemin, octets, type) =>
+          void depots.push({ chemin, type, taille: octets.byteLength }),
+      },
+      { projetId: id, auteurUid: 'sa', texte: 'Artisans, écoutez.', voixId: 'v1' },
+    );
+    expect(lus).toEqual(['v1:Artisans, écoutez.']);
+    expect(depots).toHaveLength(1);
+    expect(depots[0]).toMatchObject({ type: 'audio/mpeg', taille: 320_000 });
+    expect(depots[0]!.chemin).toMatch(/^studio\/sa\/v[a-z0-9]+\/voix\.mp3$/);
+    const p = await lireProjetStudio(db, id);
+    expect(p?.statut).toBe('transcription');
+    expect(p?.camera).toBe(false);
+    expect(p?.prise?.fichiers).toEqual({ voix: depots[0]!.chemin });
+    expect(p?.prise?.dureeMs).toBe(20_000);
+    expect(dureeMp3Ms(16_000)).toBe(1_000);
+  });
+
+  it('ElevenLabs en panne : message lisible', async () => {
+    const id = await projet(false);
+    await expect(
+      voixSyntheseStudio(
+        {
+          ...services(),
+          elevenlabs: {
+            voix: async () => [],
+            parler: async () => {
+              throw new Error('500');
+            },
+          },
+          deposer: async () => undefined,
+        },
+        { projetId: id, auteurUid: 'sa', texte: 'Bonjour', voixId: 'v1' },
+      ),
+    ).rejects.toThrow(/Réessayez/);
   });
 });

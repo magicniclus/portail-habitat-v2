@@ -256,6 +256,8 @@ export const SCHEMA_JSON_PLAN: Record<string, unknown> = objet({
 export function promptMontage(e: {
   format: FormatStudio;
   camera: boolean;
+  /** Un écran a été enregistré (absent : voix seule ou vidéo face caméra). */
+  ecran?: boolean;
   dureePriseMs: number;
   transcription: string;
   segments: readonly { debut: number; fin: number }[];
@@ -298,7 +300,7 @@ export function promptMontage(e: {
   ].join('\n\n');
   const lignes = [
     `Format : ${e.format} (${FORMATS_STUDIO[e.format].largeur}×${FORMATS_STUDIO[e.format].hauteur}).`,
-    `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}.`,
+    `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}. Écran enregistré : ${e.ecran === false ? 'non (aucun visuel « ecran » : montre les captures Portail Travaux, des cartons et des calques sur toute la vidéo)' : 'oui'}.`,
     ...(e.sujet
       ? [
           `Sujet : ${e.sujet.titre}\nAngle : ${e.sujet.angle}\nScript prévu :\n${e.sujet.script.map((s) => `- ${s.voix} [${s.aEcran}]`).join('\n')}`,

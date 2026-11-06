@@ -1,3 +1,4 @@
+import { dureeMp3Ms, type ClientElevenLabs } from './elevenlabs';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { coutCentimes } from '@ph/core/ia';
 import {
@@ -84,6 +85,10 @@ export interface ServicesStudio {
   claude: ClientStudio | null;
   youtube: RechercheYoutube | null;
   lancerTravail: (type: TravailStudio, projetId: string) => Promise<void>;
+  /** Voix de synthèse (ELEVENLABS_API_KEY) ; absente : le bouton explique quoi configurer. */
+  elevenlabs?: ClientElevenLabs | null;
+  /** Dépôt d'un fichier produit côté serveur (voix de synthèse) dans le bucket. */
+  deposer?: (chemin: string, octets: Uint8Array, type: string) => Promise<void>;
 }
 
 const ms = (t: unknown) => (t as Timestamp | undefined)?.toMillis() ?? 0;
@@ -374,6 +379,54 @@ export async function priseEnregistreeStudio(
   await s.lancerTravail('transcrire', e.projetId);
 }
 
+/**
+ * Voix de synthèse : ElevenLabs lit le texte (le script par défaut), le MP3 devient la voix de la
+ * prise, sans écran ni caméra. La suite est celle d'une prise ordinaire (transcription, montage).
+ */
+export async function voixSyntheseStudio(
+  s: ServicesStudio,
+  e: { projetId: string; auteurUid: string; texte: string; voixId: string },
+): Promise<void> {
+  if (!s.elevenlabs || !s.deposer)
+    throw new ErreurMetier(
+      'INDISPONIBLE',
+      'ElevenLabs n’est pas configuré : ajoutez ELEVENLABS_API_KEY dans .env.local.',
+    );
+  await exiger(s, e.projetId);
+  let octets: Uint8Array;
+  try {
+    octets = await s.elevenlabs.parler(e.texte, e.voixId);
+  } catch {
+    throw new ErreurMetier(
+      'INDISPONIBLE',
+      'ElevenLabs n’a pas répondu. Réessayez dans un instant.',
+    );
+  }
+  const dureeMs = dureeMp3Ms(octets.byteLength);
+  if (dureeMs < 1_000)
+    throw new ErreurMetier('ENTREE_INVALIDE', 'Texte trop court pour une vidéo.');
+  const priseId = `v${s.horloge().toString(36)}`;
+  const chemin = `studio/${e.auteurUid}/${priseId}/voix.mp3`;
+  await s.deposer(chemin, octets, 'audio/mpeg');
+  await priseEnregistreeStudio(s, {
+    projetId: e.projetId,
+    auteurUid: e.auteurUid,
+    priseId,
+    fichiers: { voix: chemin },
+    dureeMs,
+  });
+}
+
+/** Voix proposées par ElevenLabs (liste vide si non configuré ou injoignable). */
+export async function voixDisponiblesStudio(s: ServicesStudio) {
+  if (!s.elevenlabs) return [];
+  try {
+    return await s.elevenlabs.voix();
+  } catch {
+    return [];
+  }
+}
+
 /** Retour du robot : transcription mot à mot, puis montage par Claude. */
 export async function transcriptionRecueStudio(
   s: ServicesStudio,
@@ -430,12 +483,17 @@ export async function genererMontageStudio(
   const p = await exiger(s, e.projetId);
   if (!p.prise) throw new ErreurMetier('PRECONDITION', 'Enregistrez d’abord une prise.');
   if (e.retouche && !p.plan) throw new ErreurMetier('PRECONDITION', 'Aucun montage à retoucher.');
-  const contexte = { dureePriseMs: p.prise.dureeMs, camera: p.camera };
+  const contexte = {
+    dureePriseMs: p.prise.dureeMs,
+    camera: p.camera,
+    ecran: Boolean(p.prise.fichiers.ecran),
+  };
   let erreurs: string[] = [];
   for (let essai = 0; essai < 2; essai++) {
     const prompt = promptMontage({
       format: p.format,
       camera: p.camera,
+      ecran: contexte.ecran,
       dureePriseMs: p.prise.dureeMs,
       transcription: transcriptionHorodatee(p.mots),
       segments: segmentsParoles(p.mots, {}),
@@ -482,7 +540,11 @@ export async function modifierPlanStudio(
 ): Promise<void> {
   const p = await exiger(s, e.projetId);
   if (!p.prise) throw new ErreurMetier('PRECONDITION', 'Enregistrez d’abord une prise.');
-  const erreurs = verifierPlan(e.plan, { dureePriseMs: p.prise.dureeMs, camera: p.camera });
+  const erreurs = verifierPlan(e.plan, {
+    dureePriseMs: p.prise.dureeMs,
+    camera: p.camera,
+    ecran: Boolean(p.prise.fichiers.ecran),
+  });
   if (erreurs.length) throw new ErreurMetier('ENTREE_INVALIDE', erreurs.slice(0, 3).join(' '));
   await enregistrerPlan(s, p, planMontage.parse(e.plan), 'manuel');
 }

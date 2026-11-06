@@ -28,7 +28,12 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
 - **Caméra** : facultative, 720p. Au montage, l'auteur choisit de s'afficher ou non.
 - **Trois fichiers** démarrés ensemble : `voix`, `ecran`, `camera`. Prompteur avec le script (flèches du clavier). Durée maximale de 8 min.
 - **Envoi** : directement dans Storage, `studio/{uid}/{prise}/{voix|ecran|camera}.webm`, avec l'avancement.
-  - Règles : section Studio, propriétaire du dossier, vidéo ou audio, 100 Mo au plus par fichier, jamais écrasé.
+  - Règles : section Studio, propriétaire du dossier, noms `voix`, `ecran` ou `camera` seulement, vidéo ou audio, 100 Mo au plus par fichier, jamais écrasé.
+- **Autres façons de tourner** (onglets de l'étape 2) :
+  - **Vidéo du téléphone** : `import.(mp4|mov|m4v|webm)`, 1 Go et 15 min au plus ; elle donne l'image (face caméra ou écran) et la voix.
+  - **Voix seule** : fichier audio `voix-import.(mp3|m4a|wav|aac|ogg|webm)`, 200 Mo et 15 min au plus. On peut aussi enregistrer ici sans écran ni caméra.
+  - **Voix ElevenLabs** : une voix de synthèse lit le texte (le script par défaut, 5 000 caractères au plus). Le serveur dépose `voix.mp3` (MP3 à 128 kbit/s, durée = taille × 8 / 128) puis lance la suite comme pour une prise.
+  - Sans écran enregistré, `verifierPlan` refuse le visuel « ecran » et Claude est prévenu : la vidéo montre les captures Portail Travaux, des cartons et des calques.
 
 ## 3. Transcription
 
@@ -96,6 +101,7 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 |---|---|---|
 | `ANTHROPIC_API_KEY` | site + robot | Claude (sujets, montage, retouches) |
 | `YOUTUBE_API_KEY` | site | tendances YouTube (console Google Cloud → API YouTube Data v3 → identifiants) |
+| `ELEVENLABS_API_KEY` | site | voix de synthèse, facultative (elevenlabs.io → profil → clés API) |
 | `STUDIO_RENDU_URL` | site | adresse du robot de rendu |
 | `STUDIO_RENDU_CLE` | site + robot | clé partagée (longue chaîne aléatoire) |
 
@@ -107,6 +113,7 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 | Robot Cloud Run (environ 5 min de calcul) | environ 0,03 € | environ 30 € |
 | Storage (prises gardées 30 jours, vidéos) | négligeable | quelques euros |
 | YouTube Data API | gratuit (quota) | 0 € |
+| ElevenLabs (seulement si utilisé) | facturé au caractère selon l'offre choisie : à lire sur elevenlabs.io | — |
 
 Leviers si besoin :
 - passer les sujets en Sonnet 5.5 (deux fois moins cher), décision du propriétaire ;

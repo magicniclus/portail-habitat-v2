@@ -63,7 +63,6 @@ export default async function ProjetStudioPage({
         <EtapeEnregistrement
           projetId={p.id}
           script={p.sujet?.script ?? []}
-          cameraPrevue={p.camera}
           dejaEnregistre={Boolean(p.prise)}
         />
       ) : null}

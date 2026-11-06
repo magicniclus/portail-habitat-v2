@@ -56,7 +56,8 @@ const sec = (ms: number) => `${Math.round(ms / 100) / 10} s`;
  */
 export function verifierPlan(
   brut: unknown,
-  contexte: { dureePriseMs: number; camera: boolean },
+  /** `ecran` : un écran a été enregistré (absent : voix seule, vidéo du téléphone…). */
+  contexte: { dureePriseMs: number; camera: boolean; ecran?: boolean },
 ): string[] {
   const r = planMontage.safeParse(brut);
   if (!r.success) return r.error.issues.map((i) => `${i.path.join('.') || 'plan'} : ${i.message}`);
@@ -81,6 +82,10 @@ export function verifierPlan(
     if (x.visuel === 'capture' && (!x.captureId || !captures.has(x.captureId)))
       erreurs.push(`${nom} : capture « ${x.captureId ?? '?'} » absente de la liste des captures.`);
     if (x.visuel === 'carton' && !x.carton) erreurs.push(`${nom} : texte du carton manquant.`);
+    if (contexte.ecran === false && x.visuel === 'ecran')
+      erreurs.push(
+        `${nom} : aucun écran enregistré, utilisez une capture, un carton ou la caméra.`,
+      );
     if (!contexte.camera && (x.visuel === 'camera' || x.camera !== 'cachee'))
       erreurs.push(`${nom} : la prise est sans caméra, utilisez « cachee ».`);
     for (const c of x.calques) {

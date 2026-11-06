@@ -54,9 +54,9 @@ export async function envoyerPrise(
 /** Vidéo importée du téléphone (son compris) : 1 Go au plus. */
 const IMPORT_MAX_OCTETS = 1024 * 1024 * 1024;
 
-const dureeVideo = (f: File) =>
+const dureeMedia = (f: File, balise: 'video' | 'audio') =>
   new Promise<number>((ok) => {
-    const v = document.createElement('video');
+    const v = document.createElement(balise);
     const url = URL.createObjectURL(f);
     v.preload = 'metadata';
     v.onloadedmetadata = () => {
@@ -83,7 +83,7 @@ export async function envoyerImport(
   const type = fichier.type || (ext === 'mov' ? 'video/quicktime' : 'video/mp4');
   if (!ext || !/^video\/(mp4|quicktime|webm|x-m4v)$/.test(type))
     return 'Format non pris en charge : choisissez une vidéo .mp4 ou .mov.';
-  const dureeMs = await dureeVideo(fichier);
+  const dureeMs = await dureeMedia(fichier, 'video');
   if (dureeMs < 1_000)
     return 'Impossible de lire la durée de cette vidéo. Essayez une autre vidéo.';
   if (dureeMs > 15 * 60_000) return 'Vidéo trop longue : 15 minutes au plus.';
@@ -105,5 +105,47 @@ export async function envoyerImport(
       role === 'camera' ? { camera: chemin, voix: chemin } : { ecran: chemin, voix: chemin },
     dureeMs,
   });
+  return r.ok ? null : r.message;
+}
+
+/** Voix seule enregistrée ailleurs (dictaphone, téléphone) : 200 Mo au plus. */
+const VOIX_MAX_OCTETS = 200 * 1024 * 1024;
+const TYPES_VOIX: Record<string, string> = {
+  mp3: 'audio/mpeg',
+  m4a: 'audio/x-m4a',
+  aac: 'audio/aac',
+  wav: 'audio/wav',
+  ogg: 'audio/ogg',
+  webm: 'audio/webm',
+};
+
+/**
+ * Importe une voix seule : pas d'écran ni de caméra, le montage montre les captures de Portail
+ * Travaux, des cartons et des animations sur toute la vidéo.
+ */
+export async function envoyerVoix(
+  projetId: string,
+  fichier: File,
+  avancement: (fraction: number) => void,
+): Promise<string | null> {
+  if (fichier.size > VOIX_MAX_OCTETS) return 'Fichier trop lourd (plus de 200 Mo).';
+  const ext = (/\.(mp3|m4a|aac|wav|ogg|webm)$/i.exec(fichier.name)?.[1] ?? '').toLowerCase();
+  const type = TYPES_VOIX[ext];
+  if (!type) return 'Format non pris en charge : choisissez un fichier .mp3, .m4a ou .wav.';
+  const dureeMs = await dureeMedia(fichier, 'audio');
+  if (dureeMs < 1_000) return 'Impossible de lire la durée de ce son. Essayez un autre fichier.';
+  if (dureeMs > 15 * 60_000) return 'Voix trop longue : 15 minutes au plus.';
+  const auth = await authClient();
+  await auth.authStateReady();
+  const uid = auth.currentUser?.uid;
+  if (!uid) return 'Session expirée : déconnectez-vous puis reconnectez-vous à l’admin.';
+  const priseId = `p${Date.now().toString(36)}`;
+  const chemin = `studio/${uid}/${priseId}/voix-import.${ext}`;
+  try {
+    await deposerPrise(chemin, new Blob([fichier], { type }), avancement);
+  } catch (e) {
+    return e instanceof EnvoiImpossible ? e.message : 'L’envoi n’a pas abouti. Réessayez.';
+  }
+  const r = await enregistrerPrise({ projetId, priseId, fichiers: { voix: chemin }, dureeMs });
   return r.ok ? null : r.message;
 }

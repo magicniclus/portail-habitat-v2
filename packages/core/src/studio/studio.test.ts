@@ -320,3 +320,20 @@ describe('miniature du plan', () => {
     ).toMatch(/Miniature/);
   });
 });
+
+describe('voix seule', () => {
+  it('sans écran enregistré, pas de visuel « écran »', () => {
+    const e = verifierPlan(base(), { dureePriseMs: 20_000, camera: true, ecran: false });
+    expect(e.join(' ')).toMatch(/aucun écran enregistré/);
+    const sansEcran = base({
+      plans: base().plans.map((x) =>
+        x.visuel === 'ecran'
+          ? { ...x, visuel: 'carton' as const, carton: 'Stop', camera: 'cachee' as const }
+          : x,
+      ),
+    });
+    expect(verifierPlan(sansEcran, { dureePriseMs: 20_000, camera: false, ecran: false })).toEqual(
+      [],
+    );
+  });
+});

@@ -7,7 +7,7 @@ const id = z.string().regex(/^[A-Za-z0-9_-]{1,40}$/);
 const chemin = z
   .string()
   .regex(
-    /^studio\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9_-]{1,40}\/[a-z0-9_-]{1,40}\.(webm|mp4|ogg|mov|m4v)$/,
+    /^studio\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9_-]{1,40}\/[a-z0-9_-]{1,40}\.(webm|mp4|ogg|mov|m4v|mp3|m4a|wav|aac)$/,
   );
 
 /** Sans titre ni idée : Claude cherche lui-même les meilleures vidéos à faire. */
@@ -54,4 +54,11 @@ export const entreeDeclinaisonStudio = z.strictObject({
   projetId: id,
   index: z.number().int().min(0).max(7),
   nombre: z.number().int().min(1).max(5),
+});
+
+/** Voix de synthèse ElevenLabs : le texte lu (le script par défaut) et la voix choisie. */
+export const entreeVoixSyntheseStudio = z.strictObject({
+  projetId: id,
+  texte: z.string().trim().min(10).max(5_000),
+  voixId: z.string().regex(/^[A-Za-z0-9]{1,64}$/),
 });
