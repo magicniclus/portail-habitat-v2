@@ -5,6 +5,9 @@ import { formatNombre } from '@ph/core/format';
 import { Badge, Button, Select } from '@ph/ui';
 import { useState } from 'react';
 
+/** Mot comparé sans casse ni ponctuation (« RIEN ? » = « rien »). */
+const simple = (m: string) => m.toLowerCase().replace(/[^\p{L}\p{N}€]/gu, '');
+
 const ecran = (x: string) =>
   x === 'camera'
     ? 'Face caméra'
@@ -13,7 +16,7 @@ const ecran = (x: string) =>
       : (SCENES_CAPTURE[x as SceneCapture]?.libelle ?? x);
 
 /**
- * Une vidéo proposée : la miniature et l'essentiel d'abord, un seul choix (« Choisir cette
+ * Une vidéo proposée, sur une ligne (miniature à gauche, l'essentiel à droite) : un seul choix (« Choisir cette
  * vidéo »). Le détail (script, accroches, inspirations, versions) est replié.
  */
 export function CarteSujet({
@@ -42,24 +45,27 @@ export function CarteSujet({
 }) {
   const [nombre, setNombre] = useState(1);
   const potentiel = sujet.potentielViral ?? null;
+  // Mot(s) mis en avant : « 2 minutes » met en avant « 2 » et « minutes ».
+  const motsAccent = new Set(
+    (sujet.miniature?.accent ?? '').split(/\s+/).map(simple).filter(Boolean),
+  );
   return (
     <li
-      className={`flex flex-col overflow-hidden rounded-card border bg-blanc transition-opacity ${
+      className={`grid overflow-hidden rounded-card border bg-blanc transition-opacity md:grid-cols-[240px_minmax(0,1fr)] ${
         choisi ? 'border-accent ring-2 ring-accent' : 'border-trait'
       } ${autreChoisi ? 'opacity-60 hover:opacity-100' : ''}`}
     >
-      <div className="relative grid min-h-40 place-items-center bg-neutre-900 px-6 pb-6 pt-12 text-center">
-        <p className="m-0 text-2xl font-black uppercase leading-tight text-blanc">
+      <div className="relative grid min-h-40 place-items-center bg-neutre-900 px-5 pb-6 pt-12 text-center md:min-h-full">
+        <p className="m-0 text-xl font-black uppercase leading-tight text-blanc">
           {(sujet.miniature?.texte ?? sujet.titre).split(/\s+/).map((m, i) => (
-            <span
-              key={i}
-              className={
-                sujet.miniature && m.toLowerCase() === sujet.miniature.accent.toLowerCase()
-                  ? 'text-attention-fond'
-                  : ''
-              }
-            >
-              {m}{' '}
+            <span key={i}>
+              <span
+                className={
+                  motsAccent.has(simple(m)) ? 'rounded bg-attention-fond px-1 text-texte' : ''
+                }
+              >
+                {m}
+              </span>{' '}
             </span>
           ))}
         </p>
@@ -83,7 +89,7 @@ export function CarteSujet({
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4 md:p-5">
         <h3 className="m-0 text-lg leading-snug">{sujet.titre}</h3>
         <p className="m-0 text-sm text-neutre-700">
           {sujet.vuesVisees
@@ -91,7 +97,7 @@ export function CarteSujet({
             : ''}
           {sujet.dureeCibleS} s
         </p>
-        <p className="m-0 line-clamp-3 text-sm">{sujet.angle}</p>
+        <p className="m-0 text-sm">{sujet.angle}</p>
         {sujet.accroches[0] ? (
           <p className="m-0 border-l-4 border-accent pl-3 text-sm font-semibold">
             « {sujet.accroches[0]} »
@@ -185,8 +191,7 @@ export function CarteSujet({
         </details>
 
         <Button
-          className="mt-auto"
-          pleineLargeur
+          className="mt-auto w-full md:w-auto md:self-end"
           taille="lg"
           variant={choisi ? 'secondaire' : 'primaire'}
           disabled={desactive || choisi}

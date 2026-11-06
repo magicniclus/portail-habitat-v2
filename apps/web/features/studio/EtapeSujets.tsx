@@ -97,7 +97,7 @@ export function EtapeSujets({
             Choisissez <strong>une</strong> vidéo à tourner. ☆ garde une idée pour plus tard.
           </p>
         ) : null}
-        <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="m-0 grid list-none gap-4 p-0">
           {sujets.map((s, i) => (
             <CarteSujet
               key={`${i}-${s.titre}`}
