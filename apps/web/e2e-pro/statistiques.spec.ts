@@ -6,6 +6,7 @@ test.describe('Statistiques', () => {
   test('PRO-07 : Tout inclus voit ses statistiques, période dans l’URL', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/statistiques');
     await expect(page.getByRole('heading', { name: 'Évolution sur 30 jours' })).toBeVisible();
+    await expect(page.getByText('1 contact pour', { exact: true })).toBeVisible();
     await expect(page.getByRole('table', { name: 'Vues de la fiche' })).toBeAttached();
     await expect(page.getByRole('table', { name: 'Appels' })).toBeAttached();
     await expect(page.getByRole('table', { name: 'Demandes de devis' })).toBeAttached();

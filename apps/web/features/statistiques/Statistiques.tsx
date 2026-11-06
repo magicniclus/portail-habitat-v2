@@ -12,12 +12,12 @@ import { routes } from '@/lib/routes';
 import { Histogramme } from './Histogramme';
 
 type Stats = ReturnType<typeof statistiquesPro>;
-const pourcent = (t: number) => `${formatNombre(t * 100, 1)} %`;
-/** « 1 contact pour 12 vues » : plus parlant qu'un pourcentage qui peut dépasser 100 %. */
-const pourVues = (contacts: number, vues: number) =>
-  contacts
-    ? `1 contact (appel ou demande) pour ${formatNombre(Math.max(1, Math.round(vues / contacts)))} vues`
-    : `${formatNombre(vues)} vues, pas encore de contact`;
+/**
+ * « 1 contact pour 6 vues » : plus parlant qu'un pourcentage, qui dépasse 100 % quand on appelle
+ * plus souvent qu'on ne regarde la fiche (appel depuis la page de recherche, par exemple).
+ */
+const vuesParContact = (contacts: number, vues: number) =>
+  contacts ? `${formatNombre(Math.max(1, Math.round(vues / contacts)))} vues` : '—';
 
 /** Statistiques de la fiche : période dans l'URL, résumé, puis vues, appels et demandes en graphiques. */
 export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }) {
@@ -25,7 +25,11 @@ export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }
     { cle: 'vues', libelle: 'Vues de la fiche', valeur: formatNombre(s.resume.vues) },
     { cle: 'appels', libelle: 'Appels', valeur: formatNombre(s.resume.appels) },
     { cle: 'devis', libelle: 'Demandes de devis', valeur: formatNombre(s.resume.devis) },
-    { cle: 'taux', libelle: "Taux d'engagement", valeur: pourcent(s.resume.tauxEngagement) },
+    {
+      cle: 'contact',
+      libelle: '1 contact pour',
+      valeur: vuesParContact(s.resume.appels + s.resume.devis, s.resume.vues),
+    },
   ];
   return (
     <div className="grid gap-6">
@@ -62,9 +66,9 @@ export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }
           </h2>
           <p className="m-0 mt-1 text-sm text-neutre-800">
             {s.resume.vues
-              ? `${pourVues(s.resume.appels + s.resume.devis, s.resume.vues)}`
+              ? 'Un contact = un appel ou une demande de devis.'
               : 'Aucune visite sur la période pour l’instant.'}
-            {s.derniereVue ? ` · dernière visite le ${formatDate(s.derniereVue, 'long')}` : ''}
+            {s.derniereVue ? ` Dernière visite le ${formatDate(s.derniereVue, 'long')}.` : ''}
           </p>
         </div>
         <div className="grid gap-3 lg:grid-cols-3">
