@@ -9,3 +9,4 @@ export * from './prompts';
 export * from './tendances';
 export * from './image';
 export * from './rythme';
+export * from './reseaux';

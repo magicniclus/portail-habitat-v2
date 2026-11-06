@@ -230,6 +230,6 @@ service cloud.firestore {
     // brouillons, brouillonsOnboarding, contacts, litiges, emails, suppressions, evenements, stripeEvents,
     // rateLimits, idempotence, sirenIndex, cacheSirene, simulations, migrations, config/flags,
     // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur, studioTendances,
-    // studioIdees.
+    // studioIdees, studioComptes, studioPublications, studioSeries.
   }
 }

@@ -1,4 +1,4 @@
-import { NOMS_FORMATS, planMontage, type FormatStudio } from '../studio';
+import { NOMS_FORMATS, NOMS_RESEAUX, planMontage, type FormatStudio } from '../studio';
 import { z } from '../zod';
 
 /** Entrées des Server Actions du Studio (STUDIO.md), vérifiées côté client et serveur. */
@@ -76,3 +76,13 @@ export const entreeTournerIdeeStudio = z.strictObject({
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
   camera: z.boolean(),
 });
+
+const reseau = z.enum(NOMS_RESEAUX);
+
+/** Retour d'autorisation d'un réseau (le code OAuth n'est jamais journalisé en clair). */
+export const entreeConnexionReseauStudio = z.strictObject({
+  reseau,
+  code: z.string().min(4).max(2_000),
+});
+
+export const entreeReseauStudio = z.strictObject({ reseau });

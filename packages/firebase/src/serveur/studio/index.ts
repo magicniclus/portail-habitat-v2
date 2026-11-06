@@ -44,3 +44,13 @@ export {
   tournerIdeeStudio,
   type IdeeStudio,
 } from './idees';
+export {
+  configReseaux,
+  connecterReseauStudio,
+  deconnecterReseauStudio,
+  jetonReseauStudio,
+  listerComptesStudio,
+  redirectionReseau,
+  type CompteReseau,
+  type ConfigReseaux,
+} from './comptes';

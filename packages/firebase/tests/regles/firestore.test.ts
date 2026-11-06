@@ -625,6 +625,13 @@ const CAS: Cas[] = [
   { nom: 'lire le cache des tendances', op: { get: 'studioTendances/t1' }, autorises: [] },
   { nom: 'lire les idées gardées du Studio', op: { get: 'studioIdees/i1' }, autorises: [] },
   {
+    nom: 'lire les comptes réseaux du Studio (jetons)',
+    op: { get: 'studioComptes/youtube' },
+    autorises: [],
+  },
+  { nom: 'lire les publications du Studio', op: { get: 'studioPublications/p1' }, autorises: [] },
+  { nom: 'lire les séries du Studio', op: { get: 'studioSeries/s1' }, autorises: [] },
+  {
     nom: 'modifier un projet Studio',
     op: { maj: 'studioProjets/st1', donnees: { titre: 'x' } },
     autorises: [],

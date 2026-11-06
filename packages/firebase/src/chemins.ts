@@ -68,6 +68,9 @@ export const collections = {
   studioProjets: 'studioProjets',
   studioTendances: 'studioTendances',
   studioIdees: 'studioIdees',
+  studioComptes: 'studioComptes',
+  studioPublications: 'studioPublications',
+  studioSeries: 'studioSeries',
   brouillons: 'brouillons',
   brouillonsOnboarding: 'brouillonsOnboarding',
   simulations: 'simulations',
@@ -181,6 +184,9 @@ export const chemins = {
   projetStudio: (id: string) => `studioProjets/${id}`,
   versionStudio: (id: string, n: number) => `studioProjets/${id}/versions/${n}`,
   ideeStudio: (id: string) => `studioIdees/${id}`,
+  compteStudio: (reseau: string) => `studioComptes/${reseau}`,
+  publicationStudio: (id: string) => `studioPublications/${id}`,
+  serieStudio: (id: string) => `studioSeries/${id}`,
   versionsSequence: (id: string) => `sequences/${id}/versions`,
 } as const;
 
