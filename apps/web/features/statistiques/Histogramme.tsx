@@ -82,17 +82,20 @@ export function Histogramme({
           </span>
         ))}
       </div>
-      <table className="sr-only">
-        <caption>{titre}</caption>
-        <tbody>
-          {points.map((p) => (
-            <tr key={p.debut}>
-              <th scope="row">{periode(p)}</th>
-              <td>{p.valeur}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Le div porte le masquage : sur un <table>, la hauteur n'est pas limitée et la page s'allongeait. */}
+      <div className="sr-only">
+        <table>
+          <caption>{titre}</caption>
+          <tbody>
+            {points.map((p) => (
+              <tr key={p.debut}>
+                <th scope="row">{periode(p)}</th>
+                <td>{p.valeur}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }

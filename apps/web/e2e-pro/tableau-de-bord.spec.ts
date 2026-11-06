@@ -96,4 +96,22 @@ test.describe('Espace pro : tableau de bord', () => {
       expect(await champsTropPetits(page), chemin).toEqual([]);
     }
   });
+
+  test('le menu reste en place au défilement (graphiques compris)', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Menu latéral : ordinateur seulement');
+    await page.setViewportSize({ width: 1536, height: 760 });
+    await connecter(page, COMPTES.proprio, '/pro/tableau-de-bord');
+    await page.mouse.wheel(0, 3000);
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.getElementById('menu-pro')!.getBoundingClientRect().top),
+      )
+      .toBeGreaterThanOrEqual(-1);
+    // Les tableaux masqués des graphiques n'allongent plus la page.
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollHeight - document.body.getBoundingClientRect().height,
+      ),
+    ).toBeLessThanOrEqual(1);
+  });
 });

@@ -25,17 +25,19 @@ export function BarresDemandes({ jours }: { jours: { jour: number; n: number }[]
           </div>
         ))}
       </div>
-      <table className="sr-only">
-        <caption>Demandes reçues par jour</caption>
-        <tbody>
-          {jours.map((j) => (
-            <tr key={j.jour}>
-              <th scope="row">{formatDate(j.jour)}</th>
-              <td>{j.n}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="sr-only">
+        <table>
+          <caption>Demandes reçues par jour</caption>
+          <tbody>
+            {jours.map((j) => (
+              <tr key={j.jour}>
+                <th scope="row">{formatDate(j.jour)}</th>
+                <td>{j.n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
