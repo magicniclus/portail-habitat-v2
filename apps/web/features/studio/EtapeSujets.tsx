@@ -7,7 +7,7 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { choisirSujet, declinerSujet, garderIdee, proposerSujets } from './actions';
-import { CarteSujet } from './CarteSujet';
+import { CarteSujet, cleTitre } from './CarteSujet';
 import { ListeReels } from './ListeReels';
 import { TableTendances } from './TableTendances';
 
@@ -36,7 +36,9 @@ export function EtapeSujets({
   titresGardes: string[];
 }) {
   const router = useRouter();
-  const liens = new Map(tendances.flatMap((t) => (t.lien ? [[t.titre, t.lien] as const] : [])));
+  const liens = new Map(
+    tendances.flatMap((t) => (t.lien ? [[cleTitre(t.titre), t.lien] as const] : [])),
+  );
   const [succes, setSucces] = useState<string | null>(null);
   const [theme, setTheme] = useState(themeInitial);
   const [erreur, setErreur] = useState<string | null>(null);

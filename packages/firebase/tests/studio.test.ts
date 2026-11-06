@@ -722,3 +722,23 @@ describe('vidéo sans voix ni image', () => {
     expect(travaux.map((t) => t.type)).not.toContain('transcrire');
   });
 });
+
+describe('créativité et apprentissage', () => {
+  it('cherche aussi hors bâtiment et retient les idées choisies ou ignorées', async () => {
+    const a = await projet();
+    reponses = [{ sujets: [sujet, { ...sujet, titre: 'Idée ignorée' }] }];
+    recherches = [];
+    await proposerSujetsStudio(services(), { projetId: a });
+    // 4 recherches du métier + 2 hors bâtiment (puis gardées 24 h).
+    expect(recherches).toHaveLength(6);
+    await choisirSujetStudio(services(), { projetId: a, index: 0 });
+    const b = await projet();
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: b });
+    const d = appels.at(-1)!.demande;
+    expect(d).toContain('Hors bâtiment');
+    expect(d).toContain(`Idées choisies : « ${sujet.titre} »`);
+    expect(d).toContain('ignorées : « Idée ignorée »');
+    expect(appels.at(-1)!.contexte).toContain('Catalogue de formats viraux');
+  });
+});

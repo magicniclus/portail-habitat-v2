@@ -36,7 +36,10 @@ export function TableTendances({ tendances }: { tendances: TendanceAffichee[] })
                   ) : (
                     <span className="line-clamp-2">{t.titre}</span>
                   )}
-                  <span className="text-xs text-neutre-700">{t.chaine}</span>
+                  <span className="text-xs text-neutre-700">
+                    {t.chaine}
+                    {t.externe ? ' · hors bâtiment, concept à reprendre' : ''}
+                  </span>
                 </td>
                 <td className="px-2 py-2">
                   <Badge

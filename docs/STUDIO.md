@@ -18,6 +18,8 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
   - pas de faux avis ni de faux témoignage ;
   - les chiffres d'un **artisan d'exemple** sont permis, l'auteur précisant à l'oral qu'il est fictif.
 - L'auteur peut aussi enregistrer sans sujet.
+- **Créativité** : en plus des recherches du métier, deux recherches **hors bâtiment** par jour (défi 24 h, combien je gagne, avant/après…, tirées dans `RECHERCHES_EXTERIEURES`) et un catalogue de 20 formats viraux (`FORMATS_VIRAUX`). Au moins la moitié des idées transpose un concept venu d'ailleurs ; chaque idée indique son `concept` (format, vidéo source avec son lien, transposition). Idées banales interdites.
+- **Apprentissage** : Claude reçoit les idées que l'auteur a choisies, gardées ou ignorées (40 dernières vidéos), en plus des résultats réels des vidéos publiées.
 - **Idées gardées** : « ☆ Garder » met une proposition de côté (`studioIdees`, une seule fois par titre, avec les liens des vidéos d'inspiration). Sur l'accueil du Studio, « Tourner cette vidéo » crée une vidéo prête à tourner **sans rappeler l'IA** (format et caméra au choix) ; « Supprimer » l'efface.
 
 ## 2. Enregistrement (navigateur)

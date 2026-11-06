@@ -1,4 +1,5 @@
 import { RYTHME_MAX_MS } from './rythme';
+import { FORMATS_VIRAUX } from './formatsViraux';
 import type { ReelInstagram } from './tendances';
 import { z } from '../zod';
 import { ANIMATIONS, LIBELLES_CAMERA, LIBELLES_VISUEL, SCENES_CAPTURE } from './catalogue';
@@ -17,6 +18,8 @@ export const MODELE_STUDIO = 'claude-opus-5-5';
 export interface VideoTendance {
   /** Identifiant YouTube (lien : `lienVideo`) ; absent des anciens caches. */
   id?: string;
+  /** Vidéo du bâtiment ou d'ailleurs (concept à transposer) ; absent : bâtiment. */
+  niche?: 'batiment' | 'externe';
   titre: string;
   chaine: string;
   vues: number;
@@ -70,12 +73,18 @@ export function promptSujets(e: {
   serie?: SerieVideo | null | undefined;
   /** Reels Instagram populaires (sans vues : Instagram ne les donne pas). */
   reels?: readonly (ReelInstagram & { interactionsParJour: number })[] | undefined;
+  /** Ce que l'auteur a fait des idées précédentes : il apprend de ses choix. */
+  gouts?:
+    | { choisis: readonly string[]; gardes: readonly string[]; ignores: readonly string[] }
+    | undefined;
   /** Commentaires reçus sous nos vidéos (texte seul, jamais l'auteur). */
   commentaires?: readonly { texte: string; likes: number; video: string }[] | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
-    'Tu es le meilleur scénariste de vidéos courtes (TikTok, Reels, Shorts) pour le marketing B2B auprès des artisans.',
-    'Ton objectif unique : un maximum de vues et d’inscriptions d’artisans sur Portail Travaux.',
+    'Tu es directeur de création de vidéos courtes (TikTok, Reels, Shorts), connu pour des idées qui sortent du lot. Tu fais du marketing auprès des artisans du bâtiment.',
+    'Ton objectif unique : un maximum de vues et d’inscriptions d’artisans sur Portail Travaux. Une idée banale (« découvrez notre plateforme », « 3 conseils pour… ») est un échec : surprends, fais rire, provoque une émotion, crée une tension.',
+    'Va chercher loin : au moins la moitié des idées reprend un concept qui marche HORS du bâtiment (vidéos « hors bâtiment » fournies, ou un format du catalogue) et le transpose au quotidien d’un artisan. Dis lequel dans `concept` : `format` (nom du mécanisme), `source` (titre EXACT d’une vidéo fournie qui l’illustre, sinon chaîne vide), `transposition` (comment il devient une vidéo Portail Travaux, en une ou deux phrases).',
+    'Mélange les registres d’une idée à l’autre (humour, défi, émotion, révélation, chiffres) ; pas deux idées sur le même mécanisme.',
     REGLES_COMMUNES,
     'Méthode : repère dans les vidéos fournies ce qui marche (formats, accroches, promesses, durées, vues par jour), puis transpose-le à Portail Travaux. Ne copie aucune vidéo.',
     'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair. Relance l’attention toutes les 3 à 5 secondes.',
@@ -83,26 +92,50 @@ export function promptSujets(e: {
     'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
     'Commentaires : si des commentaires sont donnés, chaque sujet est une réponse en vidéo à une vraie question ou objection (la plus aimée ou la plus fréquente d’abord) ; l’accroche reprend la question telle qu’écrite.',
     'Série : si une série est donnée, chaque sujet est l’épisode suivant (même promesse, nouvel angle, jamais un épisode déjà fait), et le script finit en donnant envie de voir l’épisode suivant et de s’abonner pour ne pas le rater.',
-    'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres des vidéos qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
+    'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres EXACTS (copiés tels quels) des vidéos fournies qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
   ].join('\n');
   const contexte = [
     `Faits sur le produit :\n${FAITS_PRODUIT}`,
+    `Catalogue de formats viraux (mécanismes à transposer, jamais de contenu copié) :\n${FORMATS_VIRAUX.map((f) => `- ${f.nom} : ${f.mecanique}`).join('\n')}`,
     `Scènes que le robot sait filmer sur un artisan d’exemple :\n${Object.entries(SCENES_CAPTURE)
       .map(([id, s]) => `- ${id} : ${s.libelle}`)
       .join('\n')}`,
   ].join('\n\n');
-  const videos = e.videos
-    .slice(0, 40)
-    .map(
-      (v, i) =>
-        `${i + 1}. « ${v.titre} » (${v.chaine}) · score viral ${v.scoreViral}/100 · ${v.vues} vues · ${Math.round(v.vuesParJour)} vues/jour${v.multiplicateur !== null ? ` · ×${v.multiplicateur.toFixed(1)} abonnés` : ''}${v.engagement !== null ? ` · engagement ${(v.engagement * 100).toFixed(1)} %` : ''} · ${v.dureeS} s${v.description ? `\n   ${v.description.slice(0, 200)}` : ''}`,
-    )
-    .join('\n');
+  const ligne = (v: VideoTendance, i: number) =>
+    `${i + 1}. « ${v.titre} » (${v.chaine}) · score viral ${v.scoreViral}/100 · ${v.vues} vues · ${Math.round(v.vuesParJour)} vues/jour${v.multiplicateur !== null ? ` · ×${v.multiplicateur.toFixed(1)} abonnés` : ''}${v.engagement !== null ? ` · engagement ${(v.engagement * 100).toFixed(1)} %` : ''} · ${v.dureeS} s${v.description ? `\n   ${v.description.slice(0, 200)}` : ''}`;
+  const metier = e.videos.filter((v) => v.niche !== 'externe').slice(0, 30);
+  const ailleurs = e.videos.filter((v) => v.niche === 'externe').slice(0, 20);
+  const videos = [
+    metier.length ? `Bâtiment et artisans :\n${metier.map(ligne).join('\n')}` : '',
+    ailleurs.length
+      ? `Hors bâtiment (concepts à reprendre et transposer) :\n${ailleurs.map(ligne).join('\n')}`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
   const demande = [
     e.theme
       ? `Thème souhaité par l’auteur : ${e.theme}`
       : 'Thème libre, dans l’intérêt des artisans.',
     `Vidéos courtes qui marchent en ce moment :\n${videos || '(aucune donnée disponible : appuie-toi sur ton expérience des formats courts)'}`,
+    ...(e.gouts && (e.gouts.choisis.length || e.gouts.gardes.length || e.gouts.ignores.length)
+      ? [
+          [
+            'Goûts de l’auteur, appris de ses choix précédents (propose dans l’esprit de ce qu’il choisit, évite ce qu’il ignore) :',
+            e.gouts.choisis.length
+              ? `- Idées choisies : ${e.gouts.choisis.map((t) => `« ${t} »`).join(', ')}`
+              : '',
+            e.gouts.gardes.length
+              ? `- Idées gardées pour plus tard : ${e.gouts.gardes.map((t) => `« ${t} »`).join(', ')}`
+              : '',
+            e.gouts.ignores.length
+              ? `- Idées proposées mais ignorées : ${e.gouts.ignores.map((t) => `« ${t} »`).join(', ')}`
+              : '',
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        ]
+      : []),
     ...(e.commentaires?.length
       ? [
           `Commentaires reçus sous nos vidéos (questions et objections du public) :\n${e.commentaires
@@ -171,6 +204,14 @@ export const sujetStudio = z.strictObject({
   inspirations: z.array(z.string().trim().min(1).max(160)).max(5),
   /** Texte de la miniature (image de couverture) : court, un mot mis en avant. */
   miniature: miniatureSujet,
+  /** Concept repris et transposé (format, vidéo source, adaptation) ; absent des anciennes idées. */
+  concept: z
+    .strictObject({
+      format: z.string().trim().min(1).max(80),
+      source: z.string().trim().max(160),
+      transposition: z.string().trim().min(1).max(400),
+    })
+    .optional(),
 });
 export type SujetStudio = z.infer<typeof sujetStudio>;
 export const sortieSujets = z.strictObject({ sujets: z.array(sujetStudio).min(1).max(8) });
@@ -202,6 +243,7 @@ export const SCHEMA_JSON_SUJETS: Record<string, unknown> = objet({
       abonnesVises: entier,
       inspirations: { type: 'array', items: chaine },
       miniature: objet({ texte: chaine, accent: chaine }),
+      concept: objet({ format: chaine, source: chaine, transposition: chaine }),
     }),
   },
 });

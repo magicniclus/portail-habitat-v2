@@ -105,3 +105,20 @@ export function classerReels(
     })
     .sort((a, b) => b.interactionsParJour - a.interactionsParJour);
 }
+
+/**
+ * Recherches hors bâtiment : les formats qui explosent ailleurs (argent, cuisine, sport,
+ * entrepreneuriat, humour) pour en reprendre le mécanisme. Deux par analyse, tirées au sort.
+ */
+export const RECHERCHES_EXTERIEURES = [
+  'défi 24h',
+  'combien je gagne par mois',
+  'je teste pendant 30 jours',
+  'avant après transformation',
+  'erreur à ne pas faire',
+  'ce que personne ne vous dit',
+  'pov au travail',
+  'storytime client',
+  'astuce que personne ne connaît',
+  'mythe ou réalité',
+] as const;

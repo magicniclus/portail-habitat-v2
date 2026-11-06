@@ -15,6 +15,7 @@ import {
   lienVideo,
   promptDeclinaisons,
   promptSujets,
+  RECHERCHES_EXTERIEURES,
   RECHERCHES_PAR_DEFAUT,
   classerReels,
   HASHTAGS_INSTAGRAM,
@@ -253,6 +254,32 @@ async function videosRecherche(s: ServicesStudio, q: string) {
   return videos;
 }
 
+/**
+ * Ce que l'auteur a fait des idées précédentes (40 dernières vidéos) : choisies, ignorées à côté
+ * d'une idée choisie, gardées pour plus tard. Claude s'en sert pour viser ses goûts.
+ */
+async function goutsPourClaude(db: Firestore, sauf: string) {
+  const [projets, idees] = await Promise.all([
+    db.collection(collections.studioProjets).orderBy('createdAt', 'desc').limit(40).get(),
+    db.collection(collections.studioIdees).orderBy('gardeeLe', 'desc').limit(15).get(),
+  ]);
+  const choisis: string[] = [];
+  const ignores: string[] = [];
+  for (const d of projets.docs) {
+    if (d.id === sauf) continue;
+    const choisi = d.get('sujet.titre') as string | undefined;
+    if (!choisi) continue;
+    choisis.push(choisi);
+    for (const x of (d.get('sujets') as { titre: string }[] | undefined) ?? [])
+      if (x.titre !== choisi) ignores.push(x.titre);
+  }
+  return {
+    choisis: choisis.slice(0, 15),
+    gardes: idees.docs.map((d) => d.get('sujet.titre') as string),
+    ignores: ignores.slice(0, 20),
+  };
+}
+
 /** Reels des hashtags suivis, gardés 7 jours (Instagram limite à 30 hashtags par 7 jours). */
 async function reelsInstagram(s: ServicesStudio) {
   if (!s.instagram) return [];
@@ -284,15 +311,23 @@ async function reelsInstagram(s: ServicesStudio) {
 
 async function tendances(s: ServicesStudio, theme: string | undefined): Promise<VideoTendance[]> {
   if (!s.youtube) return [];
-  const recherches = [...(theme ? [theme] : []), ...RECHERCHES_PAR_DEFAUT].slice(0, theme ? 3 : 5);
-  const lots = await Promise.all(
-    recherches.map((q) =>
-      videosRecherche(s, q).catch((err: unknown) => {
+  const recherches = [...(theme ? [theme] : []), ...RECHERCHES_PAR_DEFAUT].slice(0, theme ? 3 : 4);
+  // Deux recherches hors bâtiment, qui changent chaque jour (même tirage dans la journée : cache).
+  const jour = Math.floor(s.horloge() / JOUR);
+  const ailleurs = [0, 1].map(
+    (k) => RECHERCHES_EXTERIEURES[(jour * 2 + k) % RECHERCHES_EXTERIEURES.length]!,
+  );
+  const chercher = (q: string, niche: 'batiment' | 'externe') =>
+    videosRecherche(s, q)
+      .then((l) => l.map((v) => ({ ...v, niche })))
+      .catch((err: unknown) => {
         console.warn('studio : recherche YouTube indisponible', err);
         return [];
-      }),
-    ),
-  );
+      });
+  const lots = await Promise.all([
+    ...recherches.map((q) => chercher(q, 'batiment' as const)),
+    ...ailleurs.map((q) => chercher(q, 'externe' as const)),
+  ]);
   const vus = new Set<string>();
   const uniques = lots.flat().filter((v) => !vus.has(v.titre) && vus.add(v.titre));
   return classerTendances(uniques, s.horloge());
@@ -302,6 +337,8 @@ async function tendances(s: ServicesStudio, theme: string | undefined): Promise<
 export interface TendanceAffichee {
   /** Lien pour regarder la vidéo ; `null` si l'identifiant manque (ancien cache). */
   lien: string | null;
+  /** Vidéo hors bâtiment : concept à transposer. */
+  externe?: boolean;
   titre: string;
   chaine: string;
   vues: number;
@@ -313,6 +350,7 @@ export interface TendanceAffichee {
 }
 const resumeTendance = (v: VideoTendance): TendanceAffichee => ({
   lien: v.id ? lienVideo(v.id) : null,
+  ...(v.niche === 'externe' ? { externe: true } : {}),
   titre: v.titre,
   chaine: v.chaine,
   vues: v.vues,
@@ -343,6 +381,7 @@ export async function proposerSujetsStudio(
   const vosVideos = await resultatsPourClaudeStudio(s.db, s.horloge()).catch(() => '');
   const serie = await contexteSerieStudio(s.db, p);
   const reels = await reelsInstagram(s);
+  const gouts = await goutsPourClaude(s.db, e.projetId).catch(() => undefined);
   const prompt = promptSujets({
     videos,
     theme,
@@ -351,6 +390,7 @@ export async function proposerSujetsStudio(
     serie,
     reels,
     commentaires: e.commentaires,
+    gouts,
   });
   const r = await claude({
     modele: MODELE_STUDIO,
@@ -369,7 +409,7 @@ export async function proposerSujetsStudio(
   await maj(s, e.projetId, {
     sujets,
     theme: theme ?? null,
-    tendances: videos.slice(0, 12).map(resumeTendance),
+    tendances: videos.slice(0, 20).map(resumeTendance),
     reels: reels.slice(0, 8).map((x) => ({
       lien: x.lien,
       legende: x.legende.slice(0, 120),
