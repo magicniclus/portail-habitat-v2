@@ -17,7 +17,7 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle vidéo' })).toBeVisible();
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
-  await page.getByRole('button', { name: 'Enregistrer sans sujet (j’improvise)' }).click();
+  await page.getByRole('button', { name: 'Tourner sans sujet (j’improvise) →' }).click();
   await expect(page.getByText('2. Tournage')).toBeVisible();
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
@@ -52,9 +52,10 @@ test('studio : refusé sans la permission', async ({ page }) => {
 test('studio : réseaux, calendrier, résultats et séries', async ({ page }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
   await expect(page.getByRole('heading', { name: 'Séries' })).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: /Idées tirées de vos commentaires/ }),
-  ).toBeVisible();
+  // Sans compte connecté, pas de lecture des commentaires.
+  await expect(page.getByRole('button', { name: /Idées tirées de vos commentaires/ })).toHaveCount(
+    0,
+  );
   await page.getByRole('link', { name: 'Réseaux' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Réseaux' })).toBeVisible();
   for (const r of ['YouTube Shorts', 'Instagram Reels', 'TikTok'])

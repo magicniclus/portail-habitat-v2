@@ -92,12 +92,18 @@ export function EtapeSujets({
         {succes ? <Banner tone="succes">{succes}</Banner> : null}
         {tendances.length ? <TableTendances tendances={tendances} /> : null}
         {reels.length ? <ListeReels reels={reels} /> : null}
-        <ul className="m-0 grid list-none gap-3 p-0 xl:grid-cols-3">
+        {sujets.length ? (
+          <p className="m-0 text-sm text-neutre-700">
+            Choisissez <strong>une</strong> vidéo à tourner. ☆ garde une idée pour plus tard.
+          </p>
+        ) : null}
+        <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2 xl:grid-cols-3">
           {sujets.map((s, i) => (
             <CarteSujet
               key={`${i}-${s.titre}`}
               sujet={s}
               choisi={choisi?.titre === s.titre}
+              autreChoisi={Boolean(choisi) && choisi?.titre !== s.titre}
               desactive={enCours}
               liens={liens}
               onChoisir={() => agir(() => choisirSujet({ projetId, index: i }))}
@@ -123,11 +129,11 @@ export function EtapeSujets({
         </ul>
         <div>
           <Button
-            variant="secondaire"
+            variant="fantome"
             disabled={enCours}
             onClick={() => agir(() => choisirSujet({ projetId, index: null }))}
           >
-            Enregistrer sans sujet (j’improvise)
+            Tourner sans sujet (j’improvise) →
           </Button>
         </div>
       </div>
