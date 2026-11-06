@@ -1,58 +1,22 @@
 'use client';
 
-import { refProjetStudio } from '@ph/firebase/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { authClient, firestoreClient } from '@/lib/firebaseClient';
+
+/** Étapes pendant lesquelles Claude ou le robot de rendu travaillent. */
+const EN_COURS = new Set(['transcription', 'montage', 'captures', 'rendu']);
 
 /**
- * Suit le projet en direct (robot de rendu, Claude) : à chaque changement du document, la page
- * est relue côté serveur. Droits du navigateur périmés (permission Studio ajoutée depuis la
- * connexion) : session renouvelée puis un nouvel essai ; sinon, relecture toutes les 10 s.
+ * Suit le projet pendant que le robot ou Claude travaillent : la page est relue côté serveur
+ * toutes les 5 s (aucune écoute Firestore dans le navigateur, donc aucun droit à y avoir), et
+ * plus du tout une fois l'étape terminée.
  */
-export function EcouteProjet({ projetId }: { projetId: string }) {
+export function EcouteProjet({ statut }: { statut: string }) {
   const router = useRouter();
   useEffect(() => {
-    let actif = true;
-    let arreter: (() => void) | undefined;
-    const sondage = () => {
-      const minuterie = setInterval(() => router.refresh(), 10_000);
-      arreter = () => clearInterval(minuterie);
-    };
-    void (async () => {
-      const auth = await authClient();
-      await auth.authStateReady();
-      if (!actif) return;
-      const user = auth.currentUser;
-      if (!user) return sondage();
-      const [db, m] = await Promise.all([firestoreClient(), import('firebase/firestore')]);
-      const ecouter = (nouvelEssai: boolean) => {
-        if (!actif) return;
-        let premier = true;
-        arreter = m.onSnapshot(
-          refProjetStudio(m, db, projetId),
-          () => {
-            if (premier) premier = false;
-            else router.refresh();
-          },
-          () => {
-            arreter?.();
-            if (!actif) return;
-            if (nouvelEssai)
-              void user
-                .getIdToken(true)
-                .then(() => ecouter(false))
-                .catch(sondage);
-            else sondage();
-          },
-        );
-      };
-      ecouter(true);
-    })();
-    return () => {
-      actif = false;
-      arreter?.();
-    };
-  }, [router, projetId]);
+    if (!EN_COURS.has(statut)) return;
+    const minuterie = setInterval(() => router.refresh(), 5_000);
+    return () => clearInterval(minuterie);
+  }, [router, statut]);
   return null;
 }

@@ -37,7 +37,7 @@ export default async function ProjetStudioPage({
   return (
     <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
       <ConfigFirebase />
-      <EcouteProjet projetId={p.id} />
+      <EcouteProjet statut={p.statut} />
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <Link href={'/admin/studio' as Route} className="text-sm">

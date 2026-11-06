@@ -18,7 +18,3 @@ export const requeteAttributionsPro = (m: typeof F, db: F.Firestore, artisanId: 
 /** Dernière trace du moteur de conversion (journal admin en direct ; règles : lecture `cnv`). */
 export const requeteDerniereTraceCycle = (m: typeof F, db: F.Firestore) =>
   m.query(m.collection(db, collections.cycleTraces), m.orderBy('createdAt', 'desc'), m.limit(1));
-
-/** Projet du Studio, écouté pour suivre le robot de rendu en direct (règle : section Studio). */
-export const refProjetStudio = (m: typeof F, db: F.Firestore, id: string) =>
-  m.doc(db, collections.studioProjets, id);
