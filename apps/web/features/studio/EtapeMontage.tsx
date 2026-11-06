@@ -9,7 +9,7 @@ import { ReglagesMontage } from './ReglagesMontage';
 export function EtapeMontage(p: {
   projetId: string;
   plan: PlanMontage;
-  prise: { ecran?: string; camera?: string; voix: string };
+  prise: { ecran?: string; camera?: string; voix?: string };
   captures: Record<string, string>;
   mots: MotTranscrit[];
   camera: boolean;

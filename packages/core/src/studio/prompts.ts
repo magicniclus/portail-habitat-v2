@@ -318,6 +318,8 @@ export function promptMontage(e: {
   camera: boolean;
   /** Un écran a été enregistré (absent : voix seule ou vidéo face caméra). */
   ecran?: boolean;
+  /** Une voix a été enregistrée (false : vidéo sans voix ni image, tout passe par l'écran). */
+  voix?: boolean;
   dureePriseMs: number;
   transcription: string;
   segments: readonly { debut: number; fin: number }[];
@@ -365,6 +367,11 @@ export function promptMontage(e: {
   const lignes = [
     `Format : ${e.format} (${FORMATS_STUDIO[e.format].largeur}×${FORMATS_STUDIO[e.format].hauteur}).`,
     `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}. Écran enregistré : ${e.ecran === false ? 'non (aucun visuel « ecran » : montre les captures Portail Travaux, des cartons et des calques sur toute la vidéo)' : 'oui'}.`,
+    ...(e.voix === false
+      ? [
+          `Voix : aucune. La vidéo se comprend sans le son : chaque idée du script devient un carton ou un texte « titre » ou « chiffre » bien lisible, enchaînés sur les captures Portail Travaux ; plans pris dans 0 à ${e.dureePriseMs} ms comme une simple durée (aucune parole à respecter) ; sousTitres = false, musique = true.`,
+        ]
+      : []),
     ...(e.serie
       ? [
           `Épisode d’une série : affiche « ${e.serie.nom} · épisode ${e.serie.numero} » en texte « note » en haut pendant les 2 premières secondes, et termine par un texte « Épisode ${e.serie.numero + 1} bientôt : abonne-toi » sur le dernier plan.`,

@@ -17,8 +17,11 @@ export async function transcrire(p: ProjetStudio): Promise<{
 }> {
   if (!p.prise) throw new Error('aucune prise');
   const prise = p.prise;
+  const fichierVoix = prise.fichiers.voix;
+  // Vidéo sans voix : rien à transcrire (le site ne lance pas ce travail, sécurité en plus).
+  if (!fichierVoix) return { mots: [], images: [] };
   return dansDossier(async (d) => {
-    const voix = await telecharger(prise.fichiers.voix, d, 'voix.webm');
+    const voix = await telecharger(fichierVoix, d, 'voix.webm');
     const wav = join(d, 'voix.wav');
     await executer('ffmpeg', ['-y', '-i', voix, '-ac', '1', '-ar', '16000', wav]);
     const sortie = await executer(process.env.PYTHON ?? 'python3', [

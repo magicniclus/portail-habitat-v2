@@ -32,6 +32,10 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   // ElevenLabs : sans clé, le message dit quoi ajouter.
   await page.getByRole('tab', { name: /Voix ElevenLabs/ }).click();
   await expect(page.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
+  // Sans voix ni vidéo : rien à enregistrer, seulement une durée.
+  await page.getByRole('tab', { name: /Sans voix ni vidéo/ }).click();
+  await expect(page.getByLabel('Durée')).toHaveValue('30');
+  await expect(page.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
 });
 
 test('studio : partir de son idée', async ({ page }) => {

@@ -77,6 +77,7 @@ export default async function ProjetStudioPage({
         <EtapeEnregistrement
           projetId={p.id}
           script={p.sujet?.script ?? []}
+          dureeCibleS={p.sujet?.dureeCibleS ?? 30}
           dejaEnregistre={Boolean(p.prise)}
         />
       ) : null}

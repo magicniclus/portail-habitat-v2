@@ -157,3 +157,9 @@ export const entreeChiffresManuelsStudio = z.strictObject({
   publicationId: id,
   ...chiffresManuels,
 });
+
+/** Vidéo sans voix ni image : seulement sa durée (10 s à 3 min). */
+export const entreeSansPriseStudio = z.strictObject({
+  projetId: id,
+  dureeMs: z.number().int().min(10_000).max(180_000),
+});

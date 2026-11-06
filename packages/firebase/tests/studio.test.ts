@@ -14,6 +14,7 @@ import {
   modifierPlanStudio,
   priseEnregistreeStudio,
   voixSyntheseStudio,
+  sansPriseStudio,
   creerSerieStudio,
   episodeSuivantStudio,
   listerSeriesStudio,
@@ -683,5 +684,41 @@ describe('tendances Instagram', () => {
     reponses = [{ sujets: [sujet] }];
     await proposerSujetsStudio(avecInstagram(), { projetId: id });
     expect(demandes).toHaveLength(5);
+  });
+});
+
+describe('vidéo sans voix ni image', () => {
+  it('pas de transcription : Claude monte directement avec cartons et captures', async () => {
+    const id = await projet(false);
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 6_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+          {
+            id: 'p2',
+            source: { debut: 6_000, fin: 20_000 },
+            visuel: 'capture',
+            captureId: 'c1',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+        sousTitres: false,
+        musique: true,
+      }),
+    ];
+    await sansPriseStudio(services(), { projetId: id, dureeMs: 20_000 });
+    expect(appels[0]!.demande).toContain('Voix : aucune');
+    const p = await lireProjetStudio(db, id);
+    expect(p?.prise?.fichiers).toEqual({});
+    expect(p?.plan?.plans).toHaveLength(2);
+    expect(travaux.map((t) => t.type)).not.toContain('transcrire');
   });
 });

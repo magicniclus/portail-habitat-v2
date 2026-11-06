@@ -34,6 +34,7 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
   - **Vidéo du téléphone** : `import.(mp4|mov|m4v|webm)`, 1 Go et 15 min au plus ; elle donne l'image (face caméra ou écran) et la voix.
   - **Voix seule** : fichier audio `voix-import.(mp3|m4a|wav|aac|ogg|webm)`, 200 Mo et 15 min au plus. On peut aussi enregistrer ici sans écran ni caméra.
   - **Voix ElevenLabs** : une voix de synthèse lit le texte (le script par défaut, 5 000 caractères au plus). Le serveur dépose `voix.mp3` (MP3 à 128 kbit/s, durée = taille × 8 / 128) puis lance la suite comme pour une prise.
+  - **Sans voix ni vidéo** : rien à enregistrer, seulement une durée (15 à 90 s). Pas de transcription : Claude monte directement des cartons et des textes sur les captures Portail Travaux, avec la musique et sans sous-titres ; le robot pose une piste muette de la durée choisie.
   - Sans écran enregistré, `verifierPlan` refuse le visuel « ecran » et Claude est prévenu : la vidéo montre les captures Portail Travaux, des cartons et des calques.
 
 ## 3. Transcription

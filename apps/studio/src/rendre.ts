@@ -161,6 +161,20 @@ function filtreVoix(plan: PlanMontage, musique: boolean): string {
   ].join(';');
 }
 
+async function silence(dureeMs: number, sortie: string): Promise<string> {
+  await executer('ffmpeg', [
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'anullsrc=r=48000:cl=stereo',
+    '-t',
+    (dureeMs / 1000).toFixed(3),
+    sortie,
+  ]);
+  return sortie;
+}
+
 export async function rendre(
   p: ProjetStudio,
   /** Variante d'accroche : rendue dans son propre dossier. */
@@ -194,7 +208,10 @@ export async function rendre(
           join(d, `capture-${c.id}.mp4`),
         );
     }
-    const voix = await telecharger(prise.fichiers.voix, d, 'voix.webm');
+    // Sans voix : piste muette de la durée de la prise (la musique se pose dessus).
+    const voix = prise.fichiers.voix
+      ? await telecharger(prise.fichiers.voix, d, 'voix.webm')
+      : await silence(prise.dureeMs, join(d, 'silence.wav'));
     const liste: string[] = [];
     for (const [i, x] of plan.plans.entries()) {
       const f = join(d, `clip-${i}.mp4`);

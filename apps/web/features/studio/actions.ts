@@ -12,6 +12,7 @@ import {
   entreePriseStudio,
   entreeProjetStudio,
   entreeRetoucheStudio,
+  entreeSansPriseStudio,
   entreeSujetsStudio,
   entreeVoixSyntheseStudio,
 } from '@ph/core/schemas';
@@ -28,6 +29,7 @@ import {
   priseEnregistreeStudio,
   proposerSujetsStudio,
   relancerStudio,
+  sansPriseStudio,
   sujetsDepuisCommentairesStudio,
   voixDisponiblesStudio,
   voixSyntheseStudio,
@@ -151,3 +153,11 @@ const depuisCommentaires = actionAdmin(
 );
 /** Les questions des commentaires de vos vidéos deviennent des sujets (nouveau projet). */
 export const sujetsDepuisCommentaires = async () => fin(await depuisCommentaires({}));
+
+const sansPrise = actionAdmin(
+  { schema: entreeSansPriseStudio, nom: 'adminStudioSansPrise', permission: P },
+  async (e) => sansPriseStudio(servicesStudio(), e),
+);
+/** Vidéo sans voix ni image : Claude monte directement cartons, captures et musique. */
+export const videoSansPrise = async (e: z.input<typeof entreeSansPriseStudio>) =>
+  fin(await sansPrise(e), e.projetId);

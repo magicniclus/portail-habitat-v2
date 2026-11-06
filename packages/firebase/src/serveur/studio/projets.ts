@@ -59,7 +59,8 @@ export type TravailStudio = 'transcrire' | 'capturer' | 'rendre';
 export interface FichiersPrise {
   ecran?: string;
   camera?: string;
-  voix: string;
+  /** Absente : vidéo sans voix ni image (cartons, captures, musique). */
+  voix?: string;
 }
 
 export interface ProjetStudio {
@@ -540,6 +541,26 @@ export async function voixDisponiblesStudio(s: ServicesStudio) {
   }
 }
 
+/**
+ * Vidéo sans voix ni image : pas de prise à enregistrer ni à transcrire, Claude monte directement
+ * une vidéo de `dureeMs` avec les captures, des cartons, des textes et la musique.
+ */
+export async function sansPriseStudio(
+  s: ServicesStudio,
+  e: { projetId: string; dureeMs: number },
+): Promise<void> {
+  exigerClaude(s);
+  await exiger(s, e.projetId);
+  await maj(s, e.projetId, {
+    prise: { id: `m${s.horloge().toString(36)}`, fichiers: {}, dureeMs: e.dureeMs },
+    camera: false,
+    statut: 'montage',
+    mots: [],
+    erreur: null,
+  });
+  await genererMontageStudio(s, { projetId: e.projetId });
+}
+
 /** Retour du robot : transcription mot à mot, puis montage par Claude. */
 export async function transcriptionRecueStudio(
   s: ServicesStudio,
@@ -607,6 +628,7 @@ export async function genererMontageStudio(
       format: p.format,
       camera: p.camera,
       ecran: contexte.ecran,
+      voix: Boolean(p.prise.fichiers.voix),
       dureePriseMs: p.prise.dureeMs,
       transcription: transcriptionHorodatee(p.mots),
       segments: segmentsParoles(p.mots, {}),

@@ -31,7 +31,7 @@ export function ApercuMontage({
   mots,
 }: {
   plan: PlanMontage;
-  prise: { ecran?: string; camera?: string; voix: string };
+  prise: { ecran?: string; camera?: string; voix?: string };
   captures: Record<string, string>;
   mots: MotTranscrit[];
 }) {

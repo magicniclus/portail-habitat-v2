@@ -283,3 +283,21 @@ describe('commentaires', () => {
     expect(p.systeme).toContain('réponse en vidéo');
   });
 });
+
+describe('vidéo sans voix ni image', () => {
+  it('Claude est prévenu : textes à l’écran, musique, pas de sous-titres', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: false,
+      ecran: false,
+      voix: false,
+      dureePriseMs: 30_000,
+      transcription: '',
+      segments: [],
+      sujet: null,
+    });
+    expect(p.demande).toContain('Voix : aucune');
+    expect(p.demande).toMatch(/sousTitres.*false/);
+    expect(p.demande).toMatch(/musique.*true/);
+  });
+});

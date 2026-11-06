@@ -8,6 +8,7 @@ import { ImportVideo } from './ImportVideo';
 import { ImportVoix } from './ImportVoix';
 import { NiveauMicro } from './NiveauMicro';
 import { Prompteur } from './Prompteur';
+import { SansPrise } from './SansPrise';
 import { useEnregistrement } from './useEnregistrement';
 import { VoixSynthese } from './VoixSynthese';
 
@@ -153,6 +154,7 @@ const MODES = [
   ['import', '↑ Vidéo du téléphone'],
   ['voix', '🎙 Voix seule (fichier audio)'],
   ['synthese', '✦ Voix ElevenLabs'],
+  ['muet', '▢ Sans voix ni vidéo'],
 ] as const;
 type Mode = (typeof MODES)[number][0];
 
@@ -163,10 +165,13 @@ type Mode = (typeof MODES)[number][0];
 export function EtapeEnregistrement({
   projetId,
   script,
+  dureeCibleS,
   dejaEnregistre,
 }: {
   projetId: string;
   script: SujetStudio['script'];
+  /** Durée visée du sujet choisi (30 s sans sujet). */
+  dureeCibleS: number;
   dejaEnregistre: boolean;
 }) {
   const [mode, setMode] = useState<Mode>('ici');
@@ -199,6 +204,7 @@ export function EtapeEnregistrement({
         {mode === 'import' ? aCote(<ImportVideo projetId={projetId} />) : null}
         {mode === 'voix' ? aCote(<ImportVoix projetId={projetId} />) : null}
         {mode === 'synthese' ? <VoixSynthese projetId={projetId} script={script} /> : null}
+        {mode === 'muet' ? <SansPrise projetId={projetId} dureeCibleS={dureeCibleS} /> : null}
       </div>
     </details>
   );
