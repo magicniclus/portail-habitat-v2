@@ -6,6 +6,7 @@ import { Badge, Banner, EmptyState } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
+import { BoutonCommentaires } from '@/features/studio/BoutonCommentaires';
 import { IdeesGardees } from '@/features/studio/IdeesGardees';
 import { NouveauProjet } from '@/features/studio/NouveauProjet';
 import { Series } from '@/features/studio/Series';
@@ -14,6 +15,8 @@ import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
 
 export const metadata: Metadata = { title: 'Studio' };
+/** Idées tirées des commentaires ou épisode suivant : un appel à Claude peut durer plusieurs minutes. */
+export const maxDuration = 300;
 
 /** Back-office › Studio (STUDIO.md) : produire des vidéos courtes pour les réseaux sociaux. */
 export default async function Studio() {
@@ -73,6 +76,7 @@ export default async function Studio() {
         </Banner>
       ) : null}
       <NouveauProjet />
+      <BoutonCommentaires />
       <Series series={series} />
       {idees.length ? <IdeesGardees idees={idees} /> : null}
       <section aria-labelledby="projets-studio" className="grid gap-2">

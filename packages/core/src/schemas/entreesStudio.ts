@@ -121,3 +121,6 @@ export const entreeEpisodeStudio = z.strictObject({
 });
 
 export const entreeSerieStudio = z.strictObject({ serieId: id });
+
+/** Sujets tirés des commentaires : aucune entrée, tout est relu côté serveur. */
+export const entreeCommentairesStudio = z.strictObject({});

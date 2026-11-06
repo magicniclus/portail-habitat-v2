@@ -266,3 +266,20 @@ describe('séries', () => {
     expect(p.demande + p.systeme).toContain('« Les erreurs de devis · épisode 3 »');
   });
 });
+
+describe('commentaires', () => {
+  it('les questions des commentaires deviennent des sujets « réponse en vidéo »', () => {
+    const p = promptSujets({
+      videos: [],
+      nombre: 3,
+      commentaires: [
+        { texte: 'Et pour les plombiers ça marche ?', likes: 12, video: 'Demandes gratuites' },
+      ],
+    });
+    expect(p.demande).toContain('Commentaires reçus sous nos vidéos');
+    expect(p.demande).toContain(
+      '« Et pour les plombiers ça marche ? » (12 j’aime, sous « Demandes gratuites »)',
+    );
+    expect(p.systeme).toContain('réponse en vidéo');
+  });
+});

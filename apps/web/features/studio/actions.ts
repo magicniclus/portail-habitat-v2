@@ -2,6 +2,7 @@
 
 import {
   entreeChoixSujetStudio,
+  entreeCommentairesStudio,
   entreeCreerProjetStudio,
   entreeDeclinaisonStudio,
   entreeGarderIdeeStudio,
@@ -27,8 +28,10 @@ import {
   priseEnregistreeStudio,
   proposerSujetsStudio,
   relancerStudio,
+  sujetsDepuisCommentairesStudio,
   voixDisponiblesStudio,
   voixSyntheseStudio,
+  configReseaux,
 } from '@ph/firebase/studio';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
@@ -137,3 +140,14 @@ const tourner = actionAdmin(
 );
 export const tournerIdee = async (e: z.input<typeof entreeTournerIdeeStudio>) =>
   fin(await tourner(e));
+
+const depuisCommentaires = actionAdmin(
+  { schema: entreeCommentairesStudio, nom: 'adminStudioCommentaires', permission: P },
+  async (_, ctx) =>
+    sujetsDepuisCommentairesStudio(
+      { ...servicesStudio(), reseaux: configReseaux(process.env), fetch },
+      { auteurUid: ctx.uid! },
+    ),
+);
+/** Les questions des commentaires de vos vidéos deviennent des sujets (nouveau projet). */
+export const sujetsDepuisCommentaires = async () => fin(await depuisCommentaires({}));

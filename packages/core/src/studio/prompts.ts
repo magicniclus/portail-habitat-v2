@@ -70,6 +70,8 @@ export function promptSujets(e: {
   serie?: SerieVideo | null | undefined;
   /** Reels Instagram populaires (sans vues : Instagram ne les donne pas). */
   reels?: readonly (ReelInstagram & { interactionsParJour: number })[] | undefined;
+  /** Commentaires reçus sous nos vidéos (texte seul, jamais l'auteur). */
+  commentaires?: readonly { texte: string; likes: number; video: string }[] | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es le meilleur scénariste de vidéos courtes (TikTok, Reels, Shorts) pour le marketing B2B auprès des artisans.',
@@ -79,6 +81,7 @@ export function promptSujets(e: {
     'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair. Relance l’attention toutes les 3 à 5 secondes.',
     'Pour chaque phrase du script, indique ce qu’on voit à l’écran : « camera » (l’auteur face caméra), « ecran » (son écran enregistré) ou une scène filmée par le robot parmi celles listées.',
     'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
+    'Commentaires : si des commentaires sont donnés, chaque sujet est une réponse en vidéo à une vraie question ou objection (la plus aimée ou la plus fréquente d’abord) ; l’accroche reprend la question telle qu’écrite.',
     'Série : si une série est donnée, chaque sujet est l’épisode suivant (même promesse, nouvel angle, jamais un épisode déjà fait), et le script finit en donnant envie de voir l’épisode suivant et de s’abonner pour ne pas le rater.',
     'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres des vidéos qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
   ].join('\n');
@@ -100,6 +103,17 @@ export function promptSujets(e: {
       ? `Thème souhaité par l’auteur : ${e.theme}`
       : 'Thème libre, dans l’intérêt des artisans.',
     `Vidéos courtes qui marchent en ce moment :\n${videos || '(aucune donnée disponible : appuie-toi sur ton expérience des formats courts)'}`,
+    ...(e.commentaires?.length
+      ? [
+          `Commentaires reçus sous nos vidéos (questions et objections du public) :\n${e.commentaires
+            .slice(0, 80)
+            .map(
+              (c) =>
+                `- « ${c.texte.replace(/\s+/g, ' ').slice(0, 300)} » (${c.likes} j’aime, sous « ${c.video} »)`,
+            )
+            .join('\n')}`,
+        ]
+      : []),
     ...(e.reels?.length
       ? [
           `Reels Instagram populaires en ce moment (Instagram ne donne pas leurs vues, seulement les interactions) :\n${e.reels

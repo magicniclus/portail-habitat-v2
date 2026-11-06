@@ -1,4 +1,6 @@
 import { dureeMp3Ms, type ClientElevenLabs } from './elevenlabs';
+import { commentairesRecents, exigerCommentaires } from './commentaires';
+import type { ConfigReseaux } from './comptes';
 import type { RechercheInstagram } from './instagram';
 import { contexteSerieStudio } from './series';
 import { resultatsPourClaudeStudio } from './stats';
@@ -326,7 +328,12 @@ const cout = (usage: Parameters<typeof coutCentimes>[1]) =>
 /** Étape 1 : analyse des vidéos qui marchent, puis sujets proposés par Claude avec leur script. */
 export async function proposerSujetsStudio(
   s: ServicesStudio,
-  e: { projetId: string; theme?: string; nombre?: number },
+  e: {
+    projetId: string;
+    theme?: string;
+    nombre?: number;
+    commentaires?: readonly { texte: string; likes: number; video: string }[];
+  },
 ): Promise<SujetStudio[]> {
   const claude = exigerClaude(s);
   const p = await exiger(s, e.projetId);
@@ -335,7 +342,15 @@ export async function proposerSujetsStudio(
   const vosVideos = await resultatsPourClaudeStudio(s.db, s.horloge()).catch(() => '');
   const serie = await contexteSerieStudio(s.db, p);
   const reels = await reelsInstagram(s);
-  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos, serie, reels });
+  const prompt = promptSujets({
+    videos,
+    theme,
+    nombre: e.nombre ?? 3,
+    vosVideos,
+    serie,
+    reels,
+    commentaires: e.commentaires,
+  });
   const r = await claude({
     modele: MODELE_STUDIO,
     ...prompt,
@@ -743,4 +758,27 @@ export async function purgerPrisesStudio(
     }
   }
   return { prises };
+}
+
+/**
+ * Vidéos « réponse aux commentaires » : les vraies questions de votre public deviennent des
+ * sujets (un nouveau projet, à garder ou tourner comme les autres).
+ */
+export async function sujetsDepuisCommentairesStudio(
+  s: ServicesStudio & { reseaux: ConfigReseaux | null; fetch: typeof fetch },
+  e: { auteurUid: string },
+): Promise<string> {
+  exigerClaude(s);
+  if (!s.reseaux) throw new ErreurMetier('INDISPONIBLE', 'STUDIO_CHIFFREMENT_CLE manquante.');
+  const commentaires = exigerCommentaires(
+    await commentairesRecents(s.db, s.reseaux, s.fetch, s.horloge()),
+  );
+  const id = await creerProjetStudio(s, {
+    auteurUid: e.auteurUid,
+    format: 'vertical',
+    camera: false,
+    theme: 'Répondre aux questions de nos commentaires',
+  });
+  await proposerSujetsStudio(s, { projetId: id, nombre: 5, commentaires });
+  return id;
 }

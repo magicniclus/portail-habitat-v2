@@ -28,6 +28,7 @@ export {
   proposerSujetsStudio,
   relancerStudio,
   renduTermineStudio,
+  sujetsDepuisCommentairesStudio,
   transcriptionRecueStudio,
   voixDisponiblesStudio,
   voixSyntheseStudio,

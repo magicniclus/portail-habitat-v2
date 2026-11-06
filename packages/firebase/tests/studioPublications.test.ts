@@ -13,6 +13,8 @@ import {
   meilleuresHeuresStudio,
   releverStatsStudio,
   resultatsPourClaudeStudio,
+  sujetsDepuisCommentairesStudio,
+  lireProjetStudio,
   type ConfigReseaux,
   type ServicesPublication,
 } from '../src/serveur/studio';
@@ -332,5 +334,90 @@ describe('statistiques de vos vidéos', () => {
       /^- « Recevez des demandes gratuites » \(YouTube Shorts\) : 12.000 vues, 70 % regardé, \+35 abonnés$/,
     );
     expect(resume.split('\n')).toHaveLength(3);
+  });
+});
+
+describe('commentaires en idées de vidéos', () => {
+  it('les questions de YouTube et Instagram deviennent des sujets, sans l’auteur', async () => {
+    await programmer(maintenant);
+    await publierDuesStudio(services());
+    routes.unshift(
+      [
+        /commentThreads/,
+        () => ({
+          items: [
+            {
+              snippet: {
+                topLevelComment: {
+                  snippet: {
+                    textDisplay: 'Ça marche pour les plombiers ?',
+                    likeCount: 9,
+                    authorDisplayName: 'Jean Dupont',
+                  },
+                },
+              },
+            },
+            {
+              snippet: {
+                topLevelComment: { snippet: { textDisplay: 'Super vidéo', likeCount: 50 } },
+              },
+            },
+          ],
+        }),
+      ],
+      [
+        /ig-pub\/comments/,
+        () => ({ data: [{ text: 'C’est vraiment gratuit ?', like_count: 3, username: 'marie' }] }),
+      ],
+    );
+    const demandes: string[] = [];
+    const id = await sujetsDepuisCommentairesStudio(
+      {
+        db,
+        horloge: () => maintenant,
+        youtube: null,
+        lancerTravail: async () => undefined,
+        reseaux: config(),
+        fetch: faux,
+        claude: async (a) => {
+          demandes.push(a.demande);
+          return {
+            texte: JSON.stringify({
+              sujets: [
+                {
+                  titre: 'Ça marche pour les plombiers ?',
+                  angle: 'Réponse',
+                  pourquoi: 'Question la plus aimée',
+                  accroches: ['Ça marche pour les plombiers ?'],
+                  dureeCibleS: 30,
+                  script: [
+                    { voix: 'Oui.', aEcran: 'camera', texteEcran: '' },
+                    { voix: 'Voici pourquoi.', aEcran: 'ecran', texteEcran: '' },
+                  ],
+                  legende: 'Réponse',
+                  hashtags: ['#artisan'],
+                  potentielViral: 6,
+                  vuesVisees: { min: 1_000, max: 5_000 },
+                  abonnesVises: 20,
+                  inspirations: [],
+                  miniature: { texte: 'Plombiers ?', accent: 'Plombiers' },
+                },
+              ],
+            }),
+            refus: false,
+            usage: { entree: 1, sortie: 1, cacheEcrit: 0, cacheLu: 0 },
+          };
+        },
+      },
+      { auteurUid: 'sa' },
+    );
+    expect(demandes[0]).toContain('« Ça marche pour les plombiers ? » (9 j’aime');
+    expect(demandes[0]).toContain('« C’est vraiment gratuit ? »');
+    expect(demandes[0]).not.toContain('Super vidéo');
+    expect(demandes[0]).not.toContain('Jean Dupont');
+    expect(demandes[0]).not.toContain('marie');
+    expect((await lireProjetStudio(db, id))?.theme).toBe(
+      'Répondre aux questions de nos commentaires',
+    );
   });
 });
