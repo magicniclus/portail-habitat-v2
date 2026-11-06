@@ -19,7 +19,7 @@ describe('droitsDe (PAIEMENTS §5)', () => {
       badgeRecommande: false,
       photosIllimitees: false,
       coordonneesVisibles: false,
-      statsDetaillees: false,
+      statsDetaillees: true,
       sitePro: false,
       iaSite: 'essai',
       iaMultiplicateur: 1,

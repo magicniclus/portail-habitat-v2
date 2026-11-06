@@ -82,7 +82,8 @@ export function droitsDe(formule: Formule, optionBlog = false): DroitsFormule {
     badgeRecommande: fiche,
     photosIllimitees: fiche,
     coordonneesVisibles: fiche,
-    statsDetaillees: fiche,
+    // Statistiques de la fiche ouvertes à tous, même sans abonnement (propriétaire, 06/11/2026).
+    statsDetaillees: true,
     sitePro: site,
     iaSite: site ? 'complet' : 'essai',
     iaMultiplicateur: tout ? 2 : 1,

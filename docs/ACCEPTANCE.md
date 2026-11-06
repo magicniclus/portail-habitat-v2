@@ -98,7 +98,7 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **PRO-04** : un collaborateur sans droit de dépense ne voit pas le bouton « Débloquer »
 - **PRO-05** : débloquer avec des crédits insuffisants propose le paiement par carte ou l'achat d'un pack
 - **PRO-06** : 10 artisans débloquent la dernière place au même moment : un seul réussit, les autres reçoivent « Complet » sans être débités
-- **PRO-07** : la page Statistiques est réservée aux Premium (les autres voient une présentation de l'offre)
+- **PRO-07** : la page Statistiques est ouverte à tous les artisans, abonnés ou non (décision du 06/11/2026) ; vues, appels et demandes de devis en graphiques sur la période choisie
 
 ### Équipe `/pro/equipe`
 - **EQU-01** : le propriétaire invite un collaborateur ; l'invitation apparaît « en attente » avec le compteur de sièges mis à jour

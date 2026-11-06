@@ -9,12 +9,17 @@ import { bouton, cn } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
-import { VuesParSemaine } from './VuesParSemaine';
+import { Histogramme } from './Histogramme';
 
 type Stats = ReturnType<typeof statistiquesPro>;
 const pourcent = (t: number) => `${formatNombre(t * 100, 1)} %`;
+/** « 1 contact pour 12 vues » : plus parlant qu'un pourcentage qui peut dépasser 100 %. */
+const pourVues = (contacts: number, vues: number) =>
+  contacts
+    ? `1 contact (appel ou demande) pour ${formatNombre(Math.max(1, Math.round(vues / contacts)))} vues`
+    : `${formatNombre(vues)} vues, pas encore de contact`;
 
-/** Maquette Statistiques : période dans l'URL, résumé, conversions, vues par semaine. */
+/** Statistiques de la fiche : période dans l'URL, résumé, puis vues, appels et demandes en graphiques. */
 export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }) {
   const tuiles = [
     { cle: 'vues', libelle: 'Vues de la fiche', valeur: formatNombre(s.resume.vues) },
@@ -50,48 +55,39 @@ export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }
           </li>
         ))}
       </ul>
-      <section
-        aria-labelledby="titre-conversion"
-        className="grid gap-4 rounded-2xl border border-trait p-5"
-      >
-        <h2 id="titre-conversion" className="m-0 text-xl">
-          Performance de conversion
-        </h2>
-        {s.conversions.map((c) => (
-          <div key={c.cle} className="grid gap-1.5">
-            <p className="m-0 flex justify-between gap-3 text-[15px] font-semibold">
-              <span>{c.libelle}</span>
-              <span>{pourcent(c.taux)}</span>
-            </p>
-            <span
-              aria-hidden="true"
-              className="block h-2 overflow-hidden rounded-pill bg-neutre-200"
-            >
-              <span
-                className="block h-full min-w-2 rounded-pill bg-accent"
-                style={{ width: `${Math.min(100, c.taux * 100)}%` }}
-              />
-            </span>
-            <span className="text-[13px] text-neutre-800">
-              {formatNombre(c.actions)} sur {formatNombre(c.vues)} vues
-            </span>
-          </div>
-        ))}
-      </section>
-      <section
-        aria-labelledby="titre-semaines"
-        className="grid gap-4 rounded-2xl border border-trait p-5"
-      >
+      <section aria-labelledby="titre-evolution" className="grid gap-3">
         <div>
-          <h2 id="titre-semaines" className="m-0 text-xl">
-            Vues par semaine
+          <h2 id="titre-evolution" className="m-0 text-xl">
+            Évolution sur {LIBELLES_PERIODE[periode]}
           </h2>
           <p className="m-0 mt-1 text-sm text-neutre-800">
-            Consultations de votre fiche sur les 8 dernières semaines
-            {s.derniereVue ? ` · dernière vue le ${formatDate(s.derniereVue, 'long')}` : ''}
+            {s.resume.vues
+              ? `${pourVues(s.resume.appels + s.resume.devis, s.resume.vues)}`
+              : 'Aucune visite sur la période pour l’instant.'}
+            {s.derniereVue ? ` · dernière visite le ${formatDate(s.derniereVue, 'long')}` : ''}
           </p>
         </div>
-        <VuesParSemaine semaines={s.semaines} />
+        <div className="grid gap-3 lg:grid-cols-3">
+          {(
+            [
+              ['vues', 'Vues de la fiche', 'vues'],
+              ['appels', 'Appels', 'appels'],
+              ['devis', 'Demandes de devis', 'demandes'],
+            ] as const
+          ).map(([cle, titre, unite]) => (
+            <Histogramme
+              key={cle}
+              titre={titre}
+              unite={unite}
+              pas={s.evolution.pas}
+              points={s.evolution.points.map((p) => ({
+                debut: p.debut,
+                fin: p.fin,
+                valeur: p[cle],
+              }))}
+            />
+          ))}
+        </div>
       </section>
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-accent-100 p-5">
         <div>

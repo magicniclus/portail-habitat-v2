@@ -1,12 +1,15 @@
 const FUSEAU = 'Europe/Paris';
 
 export type DateEntree = Date | number | string | { toDate(): Date };
-export type StyleDate = 'court' | 'long' | 'moisAnnee' | 'dateHeure';
+/** `moisCourt` : « sept. » ; `jourMois` : « 29 sept. » (axes des graphiques). */
+export type StyleDate = 'court' | 'long' | 'moisAnnee' | 'moisCourt' | 'jourMois' | 'dateHeure';
 
 const formateurs: Record<Exclude<StyleDate, 'dateHeure'> | 'heure', Intl.DateTimeFormat> = {
   court: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, dateStyle: 'short' }),
   long: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, dateStyle: 'long' }),
   moisAnnee: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, month: 'long', year: 'numeric' }),
+  moisCourt: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, month: 'short' }),
+  jourMois: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, day: 'numeric', month: 'short' }),
   heure: new Intl.DateTimeFormat('fr-FR', { timeZone: FUSEAU, hour: '2-digit', minute: '2-digit' }),
 };
 const relatif = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });

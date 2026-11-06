@@ -56,3 +56,11 @@ describe('jourIso', () => {
     expect(jourIso(new Date('2026-01-15T10:00:00Z'))).toBe('2026-01-15');
   });
 });
+
+describe('formats courts des graphiques', () => {
+  it('mois court et jour + mois', () => {
+    const d = new Date(Date.UTC(2026, 8, 27, 12));
+    expect(formatDate(d, 'moisCourt')).toBe('sept.');
+    expect(formatDate(d, 'jourMois')).toBe('27 sept.');
+  });
+});

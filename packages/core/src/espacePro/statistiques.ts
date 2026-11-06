@@ -40,6 +40,34 @@ const somme = (jours: readonly JourStats[], debut: string, fin: string) =>
       { vues: 0, appels: 0, devis: 0 },
     );
 
+/**
+ * Évolution sur la période, pour les graphiques : un point par jour (7 et 30 jours) ou par mois
+ * calendaire (12 mois, le mois en cours s'arrête aujourd'hui). Le plus ancien d'abord.
+ */
+function evolutionPeriode(jours: readonly JourStats[], periode: PeriodeStats, aujourdhui: string) {
+  if (periode !== '12m') {
+    const n = periode === '7j' ? 7 : 30;
+    return {
+      pas: 'jour' as const,
+      points: Array.from({ length: n }, (_, i) => {
+        const j = versJour(versMs(aujourdhui) - (n - 1 - i) * JOUR_MS);
+        return { debut: j, fin: j, ...somme(jours, j, j) };
+      }),
+    };
+  }
+  const [a, m] = aujourdhui.split('-').map(Number) as [number, number];
+  return {
+    pas: 'mois' as const,
+    points: Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(Date.UTC(a, m - 1 - (11 - i), 1));
+      const debut = versJour(d.getTime());
+      const finMois = versJour(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0));
+      const fin = finMois > aujourdhui ? aujourdhui : finMois;
+      return { debut, fin, ...somme(jours, debut, fin) };
+    }),
+  };
+}
+
 const taux = (actions: number, vues: number) => (vues ? actions / vues : 0);
 
 export function statistiquesPro(
@@ -53,6 +81,7 @@ export function statistiquesPro(
     const debut = versJour(versMs(fin) - 6 * JOUR_MS);
     return { debut, fin, vues: somme(jours, debut, fin).vues };
   });
+  const evolution = evolutionPeriode(jours, periode, aujourdhui);
   const vus = jours.filter((j) => j.vuesFiche > 0 && j.jour <= aujourdhui).map((j) => j.jour);
   return {
     resume: { ...t, tauxEngagement: taux(t.appels + t.devis, t.vues) },
@@ -62,6 +91,7 @@ export function statistiquesPro(
       { cle: 'total', libelle: 'Engagement total', actions: t.appels + t.devis, vues: t.vues },
     ].map((c) => ({ ...c, taux: taux(c.actions, c.vues) })),
     semaines,
+    evolution,
     derniereVue: vus.length ? vus.sort().at(-1)! : null,
   };
 }

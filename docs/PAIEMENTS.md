@@ -9,7 +9,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 | Offre | Prix HT/mois | Contenu | Produit Stripe |
 |---|---|---|---|
 | **Gratuit** | 0 € | Fiche, demandes depuis la fiche, **avis clients**, **devis et factures**, appels d'offres à l'unité, site sur `{slug}.portailtravaux.fr` + aperçu IA | — |
-| **Fiche Pro** | **29 €** | Priorité d'affichage dans le secteur, badge « Artisan recommandé », photos et réalisations illimitées, téléphone et site visibles, statistiques détaillées | `fiche_pro` |
+| **Fiche Pro** | **29 €** | Priorité d'affichage dans le secteur, badge « Artisan recommandé », photos et réalisations illimitées, téléphone et site visibles | `fiche_pro` |
 | **Site Pro** | **9,90 €** | Domaine inclus, IA du site (IA_SITE §4), **blog avec 5 articles IA/mois** (BLOG.md), sans mention, stats 12 mois, Search Console | `site_pro` |
 | **Fiche + Site** | **34,90 €** | Fiche Pro + Site Pro (−4 €) | `pack_fiche_site` |
 | **Tout inclus** | **49 €** | Fiche Pro + Site Pro + **IA quotas doublés** (pas illimités) + **blog avec 15 articles IA/mois** + **−15 % sur les appels d'offres** + **accès 12 h avant** aux appels d'offres + support prioritaire | `tout_inclus` |
@@ -56,7 +56,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 `artisans/{id}.droits` (écrit **uniquement** par le webhook Stripe) :
 ```ts
 { formule: 'gratuit'|'fiche_pro'|'site_pro'|'pack_fiche_site'|'tout_inclus',
-  ficheMiseEnAvant: bool, badgeRecommande: bool, photosIllimitees: bool, coordonneesVisibles: bool, statsDetaillees: bool,
+  ficheMiseEnAvant: bool, badgeRecommande: bool, photosIllimitees: bool, coordonneesVisibles: bool, statsDetaillees: bool /* toujours vrai depuis le 06/11/2026 : statistiques de la fiche pour tous */,
   sitePro: bool, iaSite: 'essai'|'complet', iaMultiplicateur: 1|2,
   remiseAppelsOffres: 0|0.15, avanceAppelsOffresH: 0|12, supportPrioritaire: bool,
   statut: 'actif'|'past_due'|'grace'|'resilie_fin_periode', finPeriode, majLe }
