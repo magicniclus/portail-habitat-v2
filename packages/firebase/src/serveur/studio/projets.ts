@@ -598,11 +598,17 @@ export async function renduTermineStudio(
     projetId: string;
     fichiers: { video: string; srt: string; miniature: string };
     dureeMs: number;
+    variantes?: Record<string, { video: string; miniature: string; accroche: string }>;
   },
 ): Promise<void> {
   await maj(s, e.projetId, {
     statut: 'pret',
-    rendu: { ...e.fichiers, dureeMs: e.dureeMs, le: Timestamp.fromMillis(s.horloge()) },
+    rendu: {
+      ...e.fichiers,
+      dureeMs: e.dureeMs,
+      le: Timestamp.fromMillis(s.horloge()),
+      variantes: e.variantes ?? {},
+    },
     erreur: null,
   });
 }

@@ -12,3 +12,4 @@ export * from './rythme';
 export * from './reseaux';
 export * from './calendrier';
 export * from './resultats';
+export * from './variantes';

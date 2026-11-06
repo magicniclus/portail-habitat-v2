@@ -135,6 +135,25 @@ export const planMontage = z.strictObject({
   sousTitres: z.boolean(),
   /** Fond musical discret sous la voix. */
   musique: z.boolean(),
+  /**
+   * Autres accroches à tester (A/B) : chacune change le texte de la première image (et la
+   * miniature) ; le robot rend une vidéo par variante, on garde celle qui marche.
+   */
+  variantes: z
+    .array(
+      z.strictObject({
+        id: z.string().regex(/^[a-z0-9_-]{1,24}$/),
+        accroche: texteCourt,
+        miniature: z
+          .strictObject({
+            texte: z.string().trim().min(1).max(40),
+            accent: z.string().trim().max(20),
+          })
+          .optional(),
+      }),
+    )
+    .max(3)
+    .optional(),
   /** Miniature (image de couverture) : image de la vidéo à `tempsMs`, texte court, mot en avant. */
   miniature: z
     .strictObject({

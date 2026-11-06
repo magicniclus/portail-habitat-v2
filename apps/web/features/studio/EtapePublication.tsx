@@ -6,6 +6,7 @@ import { Banner, Button, Checkbox, Field, Input, Textarea } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
+import { ComparaisonAccroches } from './ComparaisonAccroches';
 import { ListePublications } from './ListePublications';
 import { programmerPublication } from './publication';
 
@@ -164,6 +165,9 @@ export function EtapePublication({
             Publier maintenant
           </Button>
         </div>
+      ) : null}
+      {variantes.length ? (
+        <ComparaisonAccroches publications={publications} variantes={variantes} />
       ) : null}
       {publications.length ? <ListePublications publications={publications} /> : null}
     </section>

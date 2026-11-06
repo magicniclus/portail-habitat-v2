@@ -259,6 +259,15 @@ export const SCHEMA_JSON_PLAN: Record<string, unknown> = objet({
   },
   sousTitres: { type: 'boolean' },
   musique: { type: 'boolean' },
+  miniature: objet({ texte: chaine, accent: chaine, tempsMs: entier }),
+  variantes: {
+    type: 'array',
+    items: objet({
+      id: chaine,
+      accroche: chaine,
+      miniature: objet({ texte: chaine, accent: chaine }),
+    }),
+  },
 });
 
 export function promptMontage(e: {
@@ -292,6 +301,7 @@ export function promptMontage(e: {
     `- Durée totale entre ${DUREE_MIN_MS / 1000} s et ${DUREE_MAX_MS / 1000} s. Temps en millisecondes entières. Les temps des calques sont relatifs au début de leur plan.`,
     '- Identifiants : lettres minuscules, chiffres, « _ » ou « - ».',
     '- Miniature : choisis l’image la plus forte (visage expressif ou écran parlant) avec `tempsMs` dans la vidéo finale, un texte de 2 à 5 mots qui donne envie de cliquer et le mot à mettre en avant.',
+    '- Variantes : 2 autres accroches vraiment différentes (angle, promesse ou question), chacune avec sa miniature, pour les tester l’une contre l’autre. Courtes (80 caractères au plus).',
   ].join('\n');
   const contexte = [
     `Faits sur le produit :\n${FAITS_PRODUIT}`,

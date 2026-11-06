@@ -68,6 +68,9 @@ export function verifierPlan(
     erreurs.push(`La vidéo dure ${sec(duree)} : elle doit durer entre 10 s et 3 min.`);
   if (p.miniature && p.miniature.tempsMs > duree)
     erreurs.push(`Miniature : ${sec(p.miniature.tempsMs)} est après la fin de la vidéo.`);
+  const variantes = (p.variantes ?? []).map((v) => v.id);
+  if (new Set(variantes).size !== variantes.length)
+    erreurs.push('Variantes : identifiant en double.');
   const captures = new Set(p.captures.map((c) => c.id));
   const ids = new Set<string>();
   for (const x of p.plans) {

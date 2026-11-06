@@ -1,3 +1,4 @@
+import { appliquerVariante } from '@ph/core/studio';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   capturesTermineesStudio,
@@ -45,10 +46,17 @@ async function executerTravail(type: TravailStudio, projetId: string) {
       await capturesTermineesStudio(s, { projetId, captures: await capturer(p) });
     } else {
       const r = await rendre(p);
+      // Variantes d'accroche (tests A/B) : même montage, autre première image et miniature.
+      const variantes: Record<string, { video: string; miniature: string; accroche: string }> = {};
+      for (const v of p.plan?.variantes ?? []) {
+        const rv = await rendre({ ...p, plan: appliquerVariante(p.plan!, v) }, v.id);
+        variantes[v.id] = { video: rv.video, miniature: rv.miniature, accroche: v.accroche };
+      }
       await renduTermineStudio(s, {
         projetId,
         fichiers: { video: r.video, srt: r.srt, miniature: r.miniature },
         dureeMs: r.dureeMs,
+        variantes,
       });
     }
   } catch (e) {

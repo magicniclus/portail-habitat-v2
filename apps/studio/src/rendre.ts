@@ -163,6 +163,8 @@ function filtreVoix(plan: PlanMontage, musique: boolean): string {
 
 export async function rendre(
   p: ProjetStudio,
+  /** Variante d'accroche : rendue dans son propre dossier. */
+  nom?: string,
 ): Promise<{ video: string; srt: string; miniature: string; dureeMs: number }> {
   if (!p.plan || !p.prise) throw new Error('plan ou prise manquant');
   const plan = p.plan;
@@ -283,7 +285,7 @@ export async function rendre(
     );
     const fichierSrt = join(d, 'sous-titres.srt');
     await writeFile(fichierSrt, srt(lignes));
-    const dossier = `studioRendus/${p.id}/v${p.version}`;
+    const dossier = `studioRendus/${p.id}/v${p.version}${nom ? `-${nom}` : ''}`;
     return {
       video: await deposer(video, `${dossier}/video.mp4`, 'video/mp4'),
       srt: await deposer(fichierSrt, `${dossier}/sous-titres.srt`, 'application/x-subrip'),

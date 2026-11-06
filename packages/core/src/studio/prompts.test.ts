@@ -133,6 +133,8 @@ describe('consignes Claude', () => {
       'artisan',
       'sousTitres',
       'musique',
+      'miniature',
+      'variantes',
     ]);
   });
 });
