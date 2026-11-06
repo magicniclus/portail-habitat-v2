@@ -14,7 +14,9 @@ import {
 } from '@/features/espacePro/BlocsTableauDeBord';
 import { ADRESSES_PRO } from '@/features/espacePro/adresses';
 import { routes } from '@/lib/routes';
+import { ApercuStatistiques } from '@/features/statistiques/ApercuStatistiques';
 import { sessionPro } from '@/server/sessionPro';
+import { statistiquesFiche } from '@/server/statistiques';
 
 export const metadata: Metadata = { title: 'Tableau de bord', robots: { index: false } };
 
@@ -45,9 +47,15 @@ export default async function PageTableauDeBord({
   const accueil = accueilPro(active.membre);
   if (accueil !== 'tableauDeBord') redirect(ADRESSES_PRO[accueil]);
 
-  const t = await tableauDeBordPro(getFirestore(appAdmin()), active.artisanId, s.uid);
+  // Statistiques pour tous les artisans, abonnés ou non (décision du 06/11/2026).
+  const voitStats = peut(active.membre, 'statistiques.voir');
+  const [t, stats] = await Promise.all([
+    tableauDeBordPro(getFirestore(appAdmin()), active.artisanId, s.uid),
+    voitStats ? statistiquesFiche(active.artisanId, '30j') : null,
+  ]);
   const { bienvenue } = await searchParams;
-  const prenom = s.nomAffiche.split(' ')[0];
+  // Pas d'adresse email en guise de prénom (compte sans nom renseigné).
+  const prenom = s.nomAffiche.includes('@') ? '' : s.nomAffiche.split(' ')[0];
   return (
     <main className="grid gap-6 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       {bienvenue ? (
@@ -57,7 +65,9 @@ export default async function PageTableauDeBord({
       ) : null}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="m-0 mb-1.5 text-[clamp(26px,3vw,34px)] leading-[1.1]">Bonjour {prenom}</h1>
+          <h1 className="m-0 mb-1.5 text-[clamp(26px,3vw,34px)] leading-[1.1]">
+            Bonjour{prenom ? ` ${prenom}` : ''}
+          </h1>
           <p className="m-0 text-base text-neutre-800">
             Voici l&apos;activité de {active.artisan.nomCommercial} sur Portail Travaux.
           </p>
@@ -70,7 +80,9 @@ export default async function PageTableauDeBord({
       </div>
       {t.enLigne ? null : <EtapesEnLigne m={t.miseEnLigne} />}
       <Indicateurs i={t.indicateurs} completude={t.completude.pourcent} />
-      <CarteCompletude c={t.completude} />
+      {/* Fiche complète : plus de barre de progression, les graphiques prennent sa place. */}
+      {t.completude.pourcent < 100 ? <CarteCompletude c={t.completude} /> : null}
+      {stats ? <ApercuStatistiques s={stats} /> : null}
     </main>
   );
 }

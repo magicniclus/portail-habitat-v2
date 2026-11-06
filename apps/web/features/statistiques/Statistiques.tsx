@@ -9,7 +9,7 @@ import { bouton, cn } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
-import { Histogramme } from './Histogramme';
+import { GraphiquesFiche } from './ApercuStatistiques';
 
 type Stats = ReturnType<typeof statistiquesPro>;
 /**
@@ -71,27 +71,7 @@ export function Statistiques({ s, periode }: { s: Stats; periode: PeriodeStats }
             {s.derniereVue ? ` Dernière visite le ${formatDate(s.derniereVue, 'long')}.` : ''}
           </p>
         </div>
-        <div className="grid gap-3 lg:grid-cols-3">
-          {(
-            [
-              ['vues', 'Vues de la fiche', 'vues'],
-              ['appels', 'Appels', 'appels'],
-              ['devis', 'Demandes de devis', 'demandes'],
-            ] as const
-          ).map(([cle, titre, unite]) => (
-            <Histogramme
-              key={cle}
-              titre={titre}
-              unite={unite}
-              pas={s.evolution.pas}
-              points={s.evolution.points.map((p) => ({
-                debut: p.debut,
-                fin: p.fin,
-                valeur: p[cle],
-              }))}
-            />
-          ))}
-        </div>
+        <GraphiquesFiche s={s} />
       </section>
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-accent-100 p-5">
         <div>
