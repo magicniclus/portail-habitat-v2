@@ -229,6 +229,7 @@ service cloud.firestore {
     // Tout le reste est réservé à l'Admin SDK (règle par défaut : refus) :
     // brouillons, brouillonsOnboarding, contacts, litiges, emails, suppressions, evenements, stripeEvents,
     // rateLimits, idempotence, sirenIndex, cacheSirene, simulations, migrations, config/flags,
-    // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur, studioTendances.
+    // comportementSessions, iaContexte, iaQuotas, iaRedactions, recherchesSecteur, studioTendances,
+    // studioIdees.
   }
 }

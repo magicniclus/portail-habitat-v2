@@ -22,9 +22,16 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
   await expect(page.getByLabel('Caméra')).toHaveValue('aucune');
-  await page.getByRole('tab', { name: /Importer une vidéo du téléphone/ }).click();
+  await page.getByRole('tab', { name: /Vidéo du téléphone/ }).click();
   await expect(page.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
+  // Voix seule : un fichier audio suffit.
+  await page.getByRole('tab', { name: /Voix seule/ }).click();
+  await expect(page.getByText(/Choisir un fichier audio/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Envoyer cette voix' })).toBeDisabled();
+  // ElevenLabs : sans clé, le message dit quoi ajouter.
+  await page.getByRole('tab', { name: /Voix ElevenLabs/ }).click();
+  await expect(page.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
 });
 
 test('studio : partir de son idée', async ({ page }) => {

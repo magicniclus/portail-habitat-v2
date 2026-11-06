@@ -6,7 +6,7 @@ import { Banner, Button, Chargeur, Field, Input } from '@ph/ui';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { choisirSujet, declinerSujet, proposerSujets } from './actions';
+import { choisirSujet, declinerSujet, garderIdee, proposerSujets } from './actions';
 import { CarteSujet } from './CarteSujet';
 import { TableTendances } from './TableTendances';
 
@@ -19,6 +19,7 @@ export function EtapeSujets({
   replie,
   auto = false,
   tendances,
+  titresGardes,
 }: {
   projetId: string;
   sujets: SujetStudio[];
@@ -28,6 +29,8 @@ export function EtapeSujets({
   /** Arrivée depuis « Trouver les meilleures vidéos » : l'analyse part toute seule. */
   auto?: boolean;
   tendances: TendanceAffichee[];
+  /** Titres des idées déjà gardées (en minuscules). */
+  titresGardes: string[];
 }) {
   const router = useRouter();
   const liens = new Map(tendances.flatMap((t) => (t.lien ? [[t.titre, t.lien] as const] : [])));
@@ -94,6 +97,8 @@ export function EtapeSujets({
               desactive={enCours}
               liens={liens}
               onChoisir={() => agir(() => choisirSujet({ projetId, index: i }))}
+              gardee={titresGardes.includes(s.titre.trim().toLowerCase())}
+              onGarder={() => agir(() => garderIdee({ projetId, index: i }))}
               onDecliner={(nombre) =>
                 agir(async () => {
                   setSucces(null);

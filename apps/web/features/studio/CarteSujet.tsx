@@ -19,6 +19,8 @@ export function CarteSujet({
   desactive,
   onChoisir,
   onDecliner,
+  onGarder,
+  gardee,
   liens,
 }: {
   sujet: SujetStudio;
@@ -26,6 +28,9 @@ export function CarteSujet({
   desactive: boolean;
   onChoisir: () => void;
   onDecliner: (nombre: number) => void;
+  /** Mettre l'idée de côté pour la tourner plus tard, sans rappeler l'IA. */
+  onGarder: () => void;
+  gardee: boolean;
   /** Titre d'une vidéo analysée → lien pour la regarder. */
   liens: ReadonlyMap<string, string>;
 }) {
@@ -37,11 +42,23 @@ export function CarteSujet({
     >
       <div className="flex items-start justify-between gap-2">
         <strong className="text-lg leading-tight">{sujet.titre}</strong>
-        {potentiel !== null ? (
-          <Badge tone={potentiel >= 7 ? 'succes' : potentiel >= 4 ? 'attention' : 'neutre'}>
-            Viral {potentiel}/10
-          </Badge>
-        ) : null}
+        <span className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="fantome"
+            taille="sm"
+            disabled={desactive || gardee}
+            onClick={onGarder}
+            aria-label={gardee ? 'Idée gardée' : 'Garder cette idée'}
+            title={gardee ? 'Idée gardée' : 'Garder cette idée pour plus tard'}
+          >
+            {gardee ? '★ Gardée' : '☆ Garder'}
+          </Button>
+          {potentiel !== null ? (
+            <Badge tone={potentiel >= 7 ? 'succes' : potentiel >= 4 ? 'attention' : 'neutre'}>
+              Viral {potentiel}/10
+            </Badge>
+          ) : null}
+        </span>
       </div>
       {sujet.vuesVisees ? (
         <dl className="m-0 grid grid-cols-3 gap-2 text-center">

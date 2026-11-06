@@ -623,6 +623,7 @@ const CAS: Cas[] = [
     autorises: staffAvec('std'),
   },
   { nom: 'lire le cache des tendances', op: { get: 'studioTendances/t1' }, autorises: [] },
+  { nom: 'lire les idées gardées du Studio', op: { get: 'studioIdees/i1' }, autorises: [] },
   {
     nom: 'modifier un projet Studio',
     op: { maj: 'studioProjets/st1', donnees: { titre: 'x' } },

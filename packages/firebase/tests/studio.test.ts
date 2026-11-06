@@ -14,6 +14,10 @@ import {
   modifierPlanStudio,
   priseEnregistreeStudio,
   voixSyntheseStudio,
+  garderIdeeStudio,
+  listerIdeesStudio,
+  supprimerIdeeStudio,
+  tournerIdeeStudio,
   dureeMp3Ms,
   proposerSujetsStudio,
   renduTermineStudio,
@@ -562,5 +566,41 @@ describe('voix de synthèse ElevenLabs', () => {
         { projetId: id, auteurUid: 'sa', texte: 'Bonjour', voixId: 'v1' },
       ),
     ).rejects.toThrow(/Réessayez/);
+  });
+});
+
+describe('idées gardées', () => {
+  it('garder, retrouver sans Claude, tourner, supprimer', async () => {
+    const id = await projet();
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    const p = await lireProjetStudio(db, id);
+    const ideeId = await garderIdeeStudio(services(), { projetId: id, index: 0, auteurUid: 'sa' });
+    // Deux fois la même idée : une seule fiche.
+    expect(await garderIdeeStudio(services(), { projetId: id, index: 0, auteurUid: 'sa' })).toBe(
+      ideeId,
+    );
+    const idees = (await listerIdeesStudio(db)).filter((x) => x.id === ideeId);
+    expect(idees).toHaveLength(1);
+    expect(idees[0]!.sujet.titre).toBe(p!.sujets[0]!.titre);
+
+    const avant = appels.length;
+    const nouveau = await tournerIdeeStudio(services({ claude: false }), {
+      ideeId,
+      auteurUid: 'sa',
+      format: 'carre',
+      camera: false,
+    });
+    expect(appels.length).toBe(avant);
+    const v = await lireProjetStudio(db, nouveau);
+    expect(v).toMatchObject({ statut: 'enregistrement', format: 'carre', camera: false });
+    expect(v?.sujet?.titre).toBe(p!.sujets[0]!.titre);
+    expect((await listerIdeesStudio(db)).find((x) => x.id === ideeId)?.utilisations).toBe(1);
+
+    await supprimerIdeeStudio(services(), { ideeId });
+    expect((await listerIdeesStudio(db)).some((x) => x.id === ideeId)).toBe(false);
+    await expect(
+      tournerIdeeStudio(services(), { ideeId, auteurUid: 'sa', format: 'vertical', camera: false }),
+    ).rejects.toThrow(/supprimée/);
   });
 });

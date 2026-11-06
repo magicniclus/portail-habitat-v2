@@ -1,7 +1,7 @@
 import { LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireProjetStudio } from '@ph/firebase/studio';
+import { lireProjetStudio, listerIdeesStudio } from '@ph/firebase/studio';
 import { Badge } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
@@ -31,7 +31,8 @@ export default async function ProjetStudioPage({
   const { id } = await params;
   const analyse = (await searchParams).analyse === '1';
   await pageAdmin(`/admin/studio/${id}`, 'studio');
-  const p = await lireProjetStudio(getFirestore(appAdmin()), id);
+  const db = getFirestore(appAdmin());
+  const [p, idees] = await Promise.all([lireProjetStudio(db, id), listerIdeesStudio(db)]);
   if (!p) notFound();
   const apresSujet = p.statut !== 'sujet';
   return (
@@ -58,6 +59,7 @@ export default async function ProjetStudioPage({
         replie={apresSujet}
         auto={analyse && p.statut === 'sujet'}
         tendances={p.tendances}
+        titresGardes={idees.map((i) => i.sujet.titre.trim().toLowerCase())}
       />
       {apresSujet ? (
         <EtapeEnregistrement

@@ -1,11 +1,12 @@
 import { FORMATS_STUDIO, LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros, formatRelatif } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { listerProjetsStudio } from '@ph/firebase/studio';
+import { listerIdeesStudio, listerProjetsStudio } from '@ph/firebase/studio';
 import { Badge, Banner, EmptyState } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
+import { IdeesGardees } from '@/features/studio/IdeesGardees';
 import { NouveauProjet } from '@/features/studio/NouveauProjet';
 import { TONS_STATUT } from '@/features/studio/tons';
 import { maintenantServeur } from '@/server/adminLectures';
@@ -16,7 +17,8 @@ export const metadata: Metadata = { title: 'Studio' };
 /** Back-office › Studio (STUDIO.md) : produire des vidéos courtes pour les réseaux sociaux. */
 export default async function Studio() {
   await pageAdmin('/admin/studio', 'studio');
-  const projets = await listerProjetsStudio(getFirestore(appAdmin()));
+  const db = getFirestore(appAdmin());
+  const [projets, idees] = await Promise.all([listerProjetsStudio(db), listerIdeesStudio(db)]);
   const maintenant = maintenantServeur();
   const manque = [
     ...(process.env.ANTHROPIC_API_KEY ? [] : [['Claude', 'ANTHROPIC_API_KEY']]),
@@ -49,6 +51,7 @@ export default async function Studio() {
         </Banner>
       ) : null}
       <NouveauProjet />
+      {idees.length ? <IdeesGardees idees={idees} /> : null}
       <section aria-labelledby="projets-studio" className="grid gap-2">
         <h2 id="projets-studio" className="m-0 text-lg">
           Vos vidéos

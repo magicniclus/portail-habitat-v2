@@ -336,18 +336,41 @@ export async function declinerSujetStudio(
     throw new ErreurMetier('INDISPONIBLE', 'La proposition de Claude était illisible. Réessayez.');
   }
   const ids: string[] = [];
-  for (const d of derives) {
-    const id = await creerProjetStudio(s, {
-      auteurUid: e.auteurUid,
-      titre: d.titre.slice(0, 100),
-      format: p.format,
-      camera: p.camera,
-      ...(p.theme ? { theme: p.theme } : {}),
-    });
-    await maj(s, id, { sujets: [d], sujet: d, statut: 'enregistrement', declineDe: p.id });
-    ids.push(id);
-  }
+  for (const d of derives)
+    ids.push(
+      await projetAvecSujetStudio(s, {
+        auteurUid: e.auteurUid,
+        sujet: d,
+        format: p.format,
+        camera: p.camera,
+        theme: p.theme,
+        origine: { declineDe: p.id },
+      }),
+    );
   return ids;
+}
+
+/** Une vidéo dont le sujet est déjà choisi (déclinaison, idée gardée) : prête à tourner. */
+export async function projetAvecSujetStudio(
+  s: ServicesStudio,
+  e: {
+    auteurUid: string;
+    sujet: SujetStudio;
+    format: FormatStudio;
+    camera: boolean;
+    theme: string | null;
+    origine: Record<string, string>;
+  },
+): Promise<string> {
+  const id = await creerProjetStudio(s, {
+    auteurUid: e.auteurUid,
+    titre: e.sujet.titre.slice(0, 100),
+    format: e.format,
+    camera: e.camera,
+    ...(e.theme ? { theme: e.theme } : {}),
+  });
+  await maj(s, id, { sujets: [e.sujet], sujet: e.sujet, statut: 'enregistrement', ...e.origine });
+  return id;
 }
 
 /** Étape 3 : la prise est envoyée (Storage), le robot la transcrit (Whisper). */

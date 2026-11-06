@@ -62,3 +62,17 @@ export const entreeVoixSyntheseStudio = z.strictObject({
   texte: z.string().trim().min(10).max(5_000),
   voixId: z.string().regex(/^[A-Za-z0-9]{1,64}$/),
 });
+
+/** Garder une idée proposée pour la tourner plus tard, sans rappeler l'IA. */
+export const entreeGarderIdeeStudio = z.strictObject({
+  projetId: id,
+  index: z.number().int().min(0).max(7),
+});
+
+export const entreeIdeeStudio = z.strictObject({ ideeId: z.string().regex(/^[a-f0-9]{24}$/) });
+
+export const entreeTournerIdeeStudio = z.strictObject({
+  ideeId: z.string().regex(/^[a-f0-9]{24}$/),
+  format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
+  camera: z.boolean(),
+});

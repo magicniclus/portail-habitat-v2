@@ -4,6 +4,9 @@ import {
   entreeChoixSujetStudio,
   entreeCreerProjetStudio,
   entreeDeclinaisonStudio,
+  entreeGarderIdeeStudio,
+  entreeIdeeStudio,
+  entreeTournerIdeeStudio,
   entreeModifierPlanStudio,
   entreePriseStudio,
   entreeProjetStudio,
@@ -16,6 +19,9 @@ import {
   choisirSujetStudio,
   creerProjetStudio,
   declinerSujetStudio,
+  garderIdeeStudio,
+  supprimerIdeeStudio,
+  tournerIdeeStudio,
   genererMontageStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
@@ -110,3 +116,24 @@ export const listerVoix = async (e: z.input<typeof entreeProjetStudio>) => {
   const r = await listeVoix(e);
   return r.ok ? r.data : [];
 };
+
+const garder = actionAdmin(
+  { schema: entreeGarderIdeeStudio, nom: 'adminStudioGarderIdee', permission: P },
+  async (e, ctx) => garderIdeeStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const garderIdee = async (e: z.input<typeof entreeGarderIdeeStudio>) =>
+  fin(await garder(e), e.projetId);
+
+const supprimerI = actionAdmin(
+  { schema: entreeIdeeStudio, nom: 'adminStudioSupprimerIdee', permission: P },
+  async (e) => supprimerIdeeStudio(servicesStudio(), e),
+);
+export const supprimerIdee = async (e: z.input<typeof entreeIdeeStudio>) =>
+  fin(await supprimerI(e));
+
+const tourner = actionAdmin(
+  { schema: entreeTournerIdeeStudio, nom: 'adminStudioTournerIdee', permission: P },
+  async (e, ctx) => tournerIdeeStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const tournerIdee = async (e: z.input<typeof entreeTournerIdeeStudio>) =>
+  fin(await tourner(e));

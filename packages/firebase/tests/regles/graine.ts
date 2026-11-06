@@ -132,6 +132,7 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   'studioProjets/st1': { ...v, titre: 'Vidéo test' },
   'studioProjets/st1/versions/1': { ...v, n: 1 },
   'studioTendances/t1': { ...v, recherche: 'artisan' },
+  'studioIdees/i1': { ...v, auteurUid: 'sa' },
   'iaRecommandations/rec1': { ...v, titre: 'Raccourcir le formulaire' },
   'config/comportement': { ...v, actif: true },
   'config/ia': { ...v, actif: true },

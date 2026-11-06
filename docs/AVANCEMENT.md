@@ -1168,4 +1168,4 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
     - déployer le robot (`scripts/deployerStudio.sh`, par le propriétaire) ;
     - créer les clés `YOUTUBE_API_KEY` et `STUDIO_RENDU_CLE` ;
     - Whisper n'a pas pu être essayé ici (installation refusée dans cette session) ; il sera vérifié au premier passage dans l'image Docker.
-
+  - **06/11/2026** : voix seule (fichier audio ou enregistrement sans écran ni caméra), voix de synthèse ElevenLabs (facultative, `ELEVENLABS_API_KEY`), idées gardées réutilisables sans IA. Tests : studio (firebase 26), règles (3 088), core (4 308, couverture 95,1 %), e2e adminStudio (3).

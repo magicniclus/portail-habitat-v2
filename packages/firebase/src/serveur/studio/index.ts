@@ -22,6 +22,7 @@ export {
   listerProjetsStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
+  projetAvecSujetStudio,
   purgerPrisesStudio,
   proposerSujetsStudio,
   relancerStudio,
@@ -36,3 +37,10 @@ export {
   type TendanceAffichee,
   type TravailStudio,
 } from './projets';
+export {
+  garderIdeeStudio,
+  listerIdeesStudio,
+  supprimerIdeeStudio,
+  tournerIdeeStudio,
+  type IdeeStudio,
+} from './idees';

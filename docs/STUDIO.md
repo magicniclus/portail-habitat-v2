@@ -18,6 +18,7 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
   - pas de faux avis ni de faux témoignage ;
   - les chiffres d'un **artisan d'exemple** sont permis, l'auteur précisant à l'oral qu'il est fictif.
 - L'auteur peut aussi enregistrer sans sujet.
+- **Idées gardées** : « ☆ Garder » met une proposition de côté (`studioIdees`, une seule fois par titre, avec les liens des vidéos d'inspiration). Sur l'accueil du Studio, « Tourner cette vidéo » crée une vidéo prête à tourner **sans rappeler l'IA** (format et caméra au choix) ; « Supprimer » l'efface.
 
 ## 2. Enregistrement (navigateur)
 
