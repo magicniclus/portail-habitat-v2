@@ -1,13 +1,14 @@
 import { FORMATS_STUDIO, LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros, formatRelatif } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { listerIdeesStudio, listerProjetsStudio } from '@ph/firebase/studio';
+import { listerIdeesStudio, listerProjetsStudio, listerSeriesStudio } from '@ph/firebase/studio';
 import { Badge, Banner, EmptyState } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { IdeesGardees } from '@/features/studio/IdeesGardees';
 import { NouveauProjet } from '@/features/studio/NouveauProjet';
+import { Series } from '@/features/studio/Series';
 import { TONS_STATUT } from '@/features/studio/tons';
 import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
@@ -18,7 +19,11 @@ export const metadata: Metadata = { title: 'Studio' };
 export default async function Studio() {
   await pageAdmin('/admin/studio', 'studio');
   const db = getFirestore(appAdmin());
-  const [projets, idees] = await Promise.all([listerProjetsStudio(db), listerIdeesStudio(db)]);
+  const [projets, idees, series] = await Promise.all([
+    listerProjetsStudio(db),
+    listerIdeesStudio(db),
+    listerSeriesStudio(db),
+  ]);
   const maintenant = maintenantServeur();
   const manque = [
     ...(process.env.ANTHROPIC_API_KEY ? [] : [['Claude', 'ANTHROPIC_API_KEY']]),
@@ -68,6 +73,7 @@ export default async function Studio() {
         </Banner>
       ) : null}
       <NouveauProjet />
+      <Series series={series} />
       {idees.length ? <IdeesGardees idees={idees} /> : null}
       <section aria-labelledby="projets-studio" className="grid gap-2">
         <h2 id="projets-studio" className="m-0 text-lg">

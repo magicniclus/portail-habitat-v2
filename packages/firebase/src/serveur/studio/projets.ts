@@ -1,4 +1,5 @@
 import { dureeMp3Ms, type ClientElevenLabs } from './elevenlabs';
+import { contexteSerieStudio } from './series';
 import { resultatsPourClaudeStudio } from './stats';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { coutCentimes } from '@ph/core/ia';
@@ -63,6 +64,8 @@ export interface ProjetStudio {
   format: FormatStudio;
   camera: boolean;
   theme: string | null;
+  /** Épisode d'une série (STUDIO.md §13). */
+  serie: { id: string; nom: string; numero: number } | null;
   sujets: SujetStudio[];
   sujet: SujetStudio | null;
   /** Vidéos analysées pour les dernières propositions, de la plus virale à la moins virale. */
@@ -112,6 +115,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     format: d.format as FormatStudio,
     camera: d.camera === true,
     theme: (d.theme as string | null | undefined) ?? null,
+    serie: (d.serie as ProjetStudio['serie'] | undefined) ?? null,
     sujets: (d.sujets as SujetStudio[] | undefined) ?? [],
     sujet: (d.sujet as SujetStudio | null | undefined) ?? null,
     tendances: (d.tendances as TendanceAffichee[] | undefined) ?? [],
@@ -159,7 +163,14 @@ const maj = (s: ServicesStudio, id: string, champs: Record<string, unknown>) =>
 
 export async function creerProjetStudio(
   s: ServicesStudio,
-  e: { auteurUid: string; titre?: string; format: FormatStudio; camera: boolean; theme?: string },
+  e: {
+    auteurUid: string;
+    titre?: string;
+    format: FormatStudio;
+    camera: boolean;
+    theme?: string;
+    serie?: ProjetStudio['serie'];
+  },
 ): Promise<string> {
   const ref = s.db.collection(collections.studioProjets).doc();
   const t = Timestamp.fromMillis(s.horloge());
@@ -173,6 +184,7 @@ export async function creerProjetStudio(
     format: e.format,
     camera: e.camera,
     theme: e.theme ?? null,
+    serie: e.serie ?? null,
     sujets: [],
     sujet: null,
     prise: null,
@@ -277,7 +289,8 @@ export async function proposerSujetsStudio(
   const theme = e.theme ?? p.theme ?? undefined;
   const videos = await tendances(s, theme);
   const vosVideos = await resultatsPourClaudeStudio(s.db, s.horloge()).catch(() => '');
-  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos });
+  const serie = await contexteSerieStudio(s.db, p);
+  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos, serie });
   const r = await claude({
     modele: MODELE_STUDIO,
     ...prompt,
@@ -531,6 +544,7 @@ export async function genererMontageStudio(
       transcription: transcriptionHorodatee(p.mots),
       segments: segmentsParoles(p.mots, {}),
       sujet: p.sujet,
+      serie: await contexteSerieStudio(s.db, p),
       ...(e.retouche && p.plan ? { retouche: { plan: p.plan, demande: e.retouche } } : {}),
       erreurs,
     });

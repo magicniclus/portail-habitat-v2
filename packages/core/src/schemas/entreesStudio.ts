@@ -107,3 +107,17 @@ export const entreeProgrammerStudio = z.strictObject({
 });
 
 export const entreePublicationStudio = z.strictObject({ publicationId: id });
+
+/** Série d'épisodes : un nom et la promesse tenue à chaque épisode. */
+export const entreeCreerSerieStudio = z.strictObject({
+  nom: z.string().trim().min(2).max(60),
+  promesse: z.string().trim().min(5).max(200),
+});
+
+export const entreeEpisodeStudio = z.strictObject({
+  serieId: id,
+  format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
+  camera: z.boolean(),
+});
+
+export const entreeSerieStudio = z.strictObject({ serieId: id });

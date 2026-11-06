@@ -52,12 +52,21 @@ const REGLES_COMMUNES = [
   'Les chiffres d’un artisan d’exemple sont permis : l’auteur précise lui-même à l’oral qu’il s’agit d’un exemple fictif. Pas de faux avis, pas de faux témoignage de client.',
 ].join('\n');
 
+/** Série d'épisodes (STUDIO.md §13) : même promesse, un nouvel angle par épisode. */
+export interface SerieVideo {
+  nom: string;
+  promesse: string;
+  numero: number;
+  precedents: readonly string[];
+}
+
 export function promptSujets(e: {
   videos: readonly VideoTendance[];
   theme?: string | undefined;
   nombre: number;
   /** Résultats réels de vos vidéos publiées (`resumeVosVideos`), s'il y en a. */
   vosVideos?: string | undefined;
+  serie?: SerieVideo | null | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es le meilleur scénariste de vidéos courtes (TikTok, Reels, Shorts) pour le marketing B2B auprès des artisans.',
@@ -67,6 +76,7 @@ export function promptSujets(e: {
     'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair. Relance l’attention toutes les 3 à 5 secondes.',
     'Pour chaque phrase du script, indique ce qu’on voit à l’écran : « camera » (l’auteur face caméra), « ecran » (son écran enregistré) ou une scène filmée par le robot parmi celles listées.',
     'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
+    'Série : si une série est donnée, chaque sujet est l’épisode suivant (même promesse, nouvel angle, jamais un épisode déjà fait), et le script finit en donnant envie de voir l’épisode suivant et de s’abonner pour ne pas le rater.',
     'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres des vidéos qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
   ].join('\n');
   const contexte = [
@@ -87,6 +97,11 @@ export function promptSujets(e: {
       ? `Thème souhaité par l’auteur : ${e.theme}`
       : 'Thème libre, dans l’intérêt des artisans.',
     `Vidéos courtes qui marchent en ce moment :\n${videos || '(aucune donnée disponible : appuie-toi sur ton expérience des formats courts)'}`,
+    ...(e.serie
+      ? [
+          `Série « ${e.serie.nom} » : épisode ${e.serie.numero}. Promesse de la série : ${e.serie.promesse}.\nÉpisodes déjà faits :\n${e.serie.precedents.map((t) => `- ${t}`).join('\n') || '(aucun)'}`,
+        ]
+      : []),
     ...(e.vosVideos
       ? [
           `Résultats réels de NOS vidéos déjà publiées (le signal le plus fiable : refais ce qui a marché pour notre audience, évite ce qui a échoué, ajuste les vues visées à ces chiffres) :\n${e.vosVideos}`,
@@ -285,6 +300,7 @@ export function promptMontage(e: {
   retouche?: { plan: PlanMontage; demande: string } | undefined;
   /** Erreurs de validation du plan précédent, à corriger. */
   erreurs?: readonly string[] | undefined;
+  serie?: SerieVideo | null | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es un monteur de vidéos courtes virales. Tu ne produis qu’un plan de montage en JSON, jamais de code.',
@@ -321,6 +337,11 @@ export function promptMontage(e: {
   const lignes = [
     `Format : ${e.format} (${FORMATS_STUDIO[e.format].largeur}×${FORMATS_STUDIO[e.format].hauteur}).`,
     `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}. Écran enregistré : ${e.ecran === false ? 'non (aucun visuel « ecran » : montre les captures Portail Travaux, des cartons et des calques sur toute la vidéo)' : 'oui'}.`,
+    ...(e.serie
+      ? [
+          `Épisode d’une série : affiche « ${e.serie.nom} · épisode ${e.serie.numero} » en texte « note » en haut pendant les 2 premières secondes, et termine par un texte « Épisode ${e.serie.numero + 1} bientôt : abonne-toi » sur le dernier plan.`,
+        ]
+      : []),
     ...(e.sujet
       ? [
           `Sujet : ${e.sujet.titre}\nAngle : ${e.sujet.angle}\nScript prévu :\n${e.sujet.script.map((s) => `- ${s.voix} [${s.aEcran}]`).join('\n')}`,

@@ -14,6 +14,9 @@ import {
   modifierPlanStudio,
   priseEnregistreeStudio,
   voixSyntheseStudio,
+  creerSerieStudio,
+  episodeSuivantStudio,
+  listerSeriesStudio,
   garderIdeeStudio,
   listerIdeesStudio,
   supprimerIdeeStudio,
@@ -602,5 +605,43 @@ describe('idées gardées', () => {
     await expect(
       tournerIdeeStudio(services(), { ideeId, auteurUid: 'sa', format: 'vertical', camera: false }),
     ).rejects.toThrow(/supprimée/);
+  });
+});
+
+describe('séries d’épisodes', () => {
+  it('épisodes numérotés ; Claude connaît la promesse et les épisodes déjà faits', async () => {
+    const serieId = await creerSerieStudio(services(), {
+      nom: 'Les erreurs de devis',
+      promesse: 'Une erreur qui coûte cher par épisode',
+      auteurUid: 'sa',
+    });
+    const e1 = await episodeSuivantStudio(services(), {
+      serieId,
+      auteurUid: 'sa',
+      format: 'vertical',
+      camera: false,
+    });
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: e1 });
+    await choisirSujetStudio(services(), { projetId: e1, index: 0 });
+    const e2 = await episodeSuivantStudio(services(), {
+      serieId,
+      auteurUid: 'sa',
+      format: 'vertical',
+      camera: false,
+    });
+    expect(await lireProjetStudio(db, e2)).toMatchObject({
+      titre: 'Les erreurs de devis · épisode 2',
+      serie: { id: serieId, numero: 2 },
+    });
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: e2 });
+    const demande = appels.at(-1)!.demande;
+    expect(demande).toContain('Série « Les erreurs de devis » : épisode 2');
+    expect(demande).toContain(`- ${sujet.titre}`);
+    expect((await listerSeriesStudio(db))[0]).toMatchObject({
+      nom: 'Les erreurs de devis',
+      episodes: 2,
+    });
   });
 });

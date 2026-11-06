@@ -239,3 +239,30 @@ describe('sujets nourris par vos résultats', () => {
     expect(promptSujets({ videos: [], nombre: 3 }).demande).not.toContain('NOS vidéos');
   });
 });
+
+describe('séries', () => {
+  const serie = {
+    nom: 'Les erreurs de devis',
+    promesse: 'Une erreur qui coûte cher, par épisode',
+    numero: 3,
+    precedents: ['Oublier la TVA', 'Pas d’acompte'],
+  };
+  it('sujets : épisode suivant, sans refaire les précédents, appel à suivre la série', () => {
+    const p = promptSujets({ videos: [], nombre: 3, serie });
+    expect(p.demande).toContain('Série « Les erreurs de devis » : épisode 3');
+    expect(p.demande).toContain('- Oublier la TVA');
+    expect(p.systeme).toContain('épisode suivant');
+  });
+  it('montage : repère d’épisode au début et appel à s’abonner à la fin', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: false,
+      dureePriseMs: 20_000,
+      transcription: '',
+      segments: [],
+      sujet: null,
+      serie,
+    });
+    expect(p.demande + p.systeme).toContain('« Les erreurs de devis · épisode 3 »');
+  });
+});

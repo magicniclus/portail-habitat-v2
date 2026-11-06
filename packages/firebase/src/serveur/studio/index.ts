@@ -74,3 +74,10 @@ export {
   resultatsStudio,
   type ServicesStats,
 } from './stats';
+export {
+  creerSerieStudio,
+  episodeSuivantStudio,
+  listerSeriesStudio,
+  supprimerSerieStudio,
+  type SerieStudio,
+} from './series';
