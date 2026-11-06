@@ -37,7 +37,8 @@ test.describe('Invitation', () => {
       await p.getByLabel(/^Choisissez un mot de passe/).fill('MotDePasse-invite-1');
       await p.getByRole('button', { name: "Créer mon accès et rejoindre l'équipe" }).click();
       await expect(p).toHaveURL(/\/pro\/tableau-de-bord/, { timeout: 15_000 });
-      await expect(p.getByRole('heading', { level: 1, name: /^Bonjour / })).toBeVisible();
+      // Compte sans nom renseigné : « Bonjour » seul, jamais l'adresse email.
+      await expect(p.getByRole('heading', { level: 1, name: /^Bonjour/ })).toBeVisible();
       await invite.close();
     } finally {
       await remettre();

@@ -51,6 +51,7 @@ export function Histogramme({
             return (
               <div
                 key={p.debut}
+                role="img"
                 tabIndex={0}
                 aria-label={`${periode(p)} : ${formatNombre(p.valeur)} ${unite}`}
                 className="group relative flex h-full flex-1 flex-col items-center justify-end outline-offset-2"
