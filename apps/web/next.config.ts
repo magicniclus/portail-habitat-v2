@@ -6,14 +6,15 @@ import type { NextConfig } from 'next';
 /**
  * `.env.local` de la racine du dépôt (README : `cp .env.example .env.local`) : Next.js, lancé dans
  * `apps/web`, ne lit que celui de `apps/web`. Ses valeurs complètent l'environnement sans jamais
- * écraser une variable déjà définie (Vercel, `apps/web/.env.local`, terminal).
+ * écraser une variable déjà définie (Vercel, `apps/web/.env.local`, terminal) ; une variable vide
+ * (`CLE=` recopiée de `.env.example`) ne compte pas comme définie.
  */
 function envRacine() {
   const fichier = resolve(process.cwd(), '../../.env.local');
   if (!existsSync(fichier)) return;
   for (const ligne of readFileSync(fichier, 'utf8').split(/\r?\n/)) {
     const m = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/.exec(ligne);
-    if (!m || process.env[m[1]!] !== undefined) continue;
+    if (!m || process.env[m[1]!]) continue;
     process.env[m[1]!] = m[2]!.replace(/^(['"])(.*)\1$/, '$2');
   }
 }
