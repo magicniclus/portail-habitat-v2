@@ -77,7 +77,7 @@ export default async function ComportementAdmin({ searchParams }: { searchParams
     );
   }
   return (
-    <main className="flex min-w-0 flex-col gap-4">
+    <main className="flex min-w-0 flex-col gap-4 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
       <EnteteComportement f={f} replays={replays} />
       {contenu}
     </main>

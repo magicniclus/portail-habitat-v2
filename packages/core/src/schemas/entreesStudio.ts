@@ -8,8 +8,9 @@ const chemin = z
   .string()
   .regex(/^studio\/[A-Za-z0-9_-]{1,128}\/[A-Za-z0-9_-]{1,40}\/[a-z0-9_-]{1,40}\.(webm|mp4|ogg)$/);
 
+/** Sans titre ni idée : Claude cherche lui-même les meilleures vidéos à faire. */
 export const entreeCreerProjetStudio = z.strictObject({
-  titre: z.string().trim().min(2).max(100),
+  titre: z.string().trim().min(2).max(100).optional(),
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
   camera: z.boolean(),
   theme: z.string().trim().max(200).optional(),

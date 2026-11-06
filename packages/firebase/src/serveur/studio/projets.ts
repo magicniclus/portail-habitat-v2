@@ -139,14 +139,16 @@ const maj = (s: ServicesStudio, id: string, champs: Record<string, unknown>) =>
 
 export async function creerProjetStudio(
   s: ServicesStudio,
-  e: { auteurUid: string; titre: string; format: FormatStudio; camera: boolean; theme?: string },
+  e: { auteurUid: string; titre?: string; format: FormatStudio; camera: boolean; theme?: string },
 ): Promise<string> {
   const ref = s.db.collection(collections.studioProjets).doc();
   const t = Timestamp.fromMillis(s.horloge());
   await ref.set({
     schemaVersion: 1,
     auteurUid: e.auteurUid,
-    titre: e.titre,
+    // Sans titre : celui de la vidéo choisie parmi les propositions de Claude.
+    titre: e.titre ?? (e.theme ? e.theme.slice(0, 100) : 'Nouvelle vidéo'),
+    titreAuto: !e.titre,
     statut: 'sujet',
     format: e.format,
     camera: e.camera,
@@ -263,8 +265,10 @@ export async function choisirSujetStudio(
   const p = await exiger(s, e.projetId);
   const sujet = e.index === null ? null : p.sujets[e.index];
   if (sujet === undefined) throw new ErreurMetier('INTROUVABLE', 'Ce sujet n’existe plus.');
+  const auto = (await s.db.doc(chemins.projetStudio(e.projetId)).get()).get('titreAuto') === true;
   await maj(s, e.projetId, {
     sujet,
+    ...(auto && sujet ? { titre: sujet.titre.slice(0, 100) } : {}),
     ...(p.statut === 'sujet' ? { statut: 'enregistrement' } : {}),
   });
 }

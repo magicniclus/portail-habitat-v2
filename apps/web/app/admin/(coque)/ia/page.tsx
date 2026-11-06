@@ -46,7 +46,7 @@ export default async function AssistantIa({ searchParams }: { searchParams: Para
   const epuise = budget.depenseCentimes >= budget.budgetCentimes;
   const euros = (c: number) => formatEuros(c, { decimales: 'toujours' });
   return (
-    <main className="grid min-w-0 gap-4">
+    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="m-0 text-[clamp(26px,3vw,30px)]">Assistant IA</h1>

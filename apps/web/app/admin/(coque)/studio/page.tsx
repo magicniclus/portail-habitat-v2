@@ -1,4 +1,4 @@
-import { LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
+import { FORMATS_STUDIO, LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros, formatRelatif } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
 import { listerProjetsStudio } from '@ph/firebase/studio';
@@ -19,25 +19,33 @@ export default async function Studio() {
   const projets = await listerProjetsStudio(getFirestore(appAdmin()));
   const maintenant = maintenantServeur();
   const manque = [
-    ...(process.env.ANTHROPIC_API_KEY ? [] : ['ANTHROPIC_API_KEY (Claude)']),
-    ...(process.env.YOUTUBE_API_KEY ? [] : ['YOUTUBE_API_KEY (tendances)']),
-    ...(process.env.STUDIO_RENDU_URL
+    ...(process.env.ANTHROPIC_API_KEY ? [] : [['Claude', 'ANTHROPIC_API_KEY']]),
+    ...(process.env.YOUTUBE_API_KEY ? [] : [['les tendances YouTube', 'YOUTUBE_API_KEY']]),
+    ...(process.env.STUDIO_RENDU_URL && process.env.STUDIO_RENDU_CLE
       ? []
-      : ['STUDIO_RENDU_URL et STUDIO_RENDU_CLE (robot de rendu)']),
+      : [['le robot de rendu', 'STUDIO_RENDU_URL, STUDIO_RENDU_CLE']]),
   ];
   return (
-    <main className="grid min-w-0 gap-4">
-      <header>
-        <h1 className="m-0 text-[clamp(26px,3vw,30px)]">Studio</h1>
-        <p className="m-0 mt-1 max-w-[70ch] text-neutre-800">
-          Des vidéos courtes qui font des vues : Claude analyse ce qui marche, vous propose un sujet
-          et son script, vous enregistrez votre écran et votre voix, il monte la vidéo avec les
-          captures de Portail Travaux. Vous téléchargez le résultat.
-        </p>
+    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="m-0 text-[clamp(26px,3vw,30px)]">Studio</h1>
+          <p className="m-0 mt-1 text-neutre-700">
+            Idées, tournage, montage : des vidéos courtes prêtes à publier.
+          </p>
+        </div>
+        <ol className="m-0 flex list-none flex-wrap gap-2 p-0 text-sm" aria-label="Étapes">
+          {['Idées', 'Tournage', 'Montage', 'Export'].map((x, i) => (
+            <li key={x} className="rounded-full bg-neutre-100 px-3 py-1.5 text-neutre-800">
+              {i + 1}. {x}
+            </li>
+          ))}
+        </ol>
       </header>
       {manque.length ? (
-        <Banner tone="attention" titre="Configuration à compléter">
-          À ajouter dans les variables d’environnement : {manque.join(', ')}.
+        <Banner tone="attention" titre="À brancher pour fabriquer les vidéos">
+          Il manque {manque.map(([nom]) => nom).join(', ')}. Variables à ajouter dans{' '}
+          <code>.env.local</code> : {manque.map(([, v]) => v).join(', ')}.
         </Banner>
       ) : null}
       <NouveauProjet />
@@ -47,7 +55,7 @@ export default async function Studio() {
         </h2>
         {projets.length === 0 ? (
           <EmptyState titre="Aucune vidéo pour l’instant">
-            Créez votre première vidéo ci-dessus.
+            Cliquez sur « Trouver les meilleures vidéos à faire » : Claude s’occupe du reste.
           </EmptyState>
         ) : (
           <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2 xl:grid-cols-3">
@@ -62,7 +70,7 @@ export default async function Studio() {
                     <Badge tone={TONS_STATUT[p.statut]}>{LIBELLES_STATUT_STUDIO[p.statut]}</Badge>
                   </span>
                   <span className="text-sm text-neutre-700">
-                    {p.sujet?.titre ?? 'Sans sujet choisi'} · {p.format} ·{' '}
+                    {FORMATS_STUDIO[p.format].libelle.split(' (')[0]} ·{' '}
                     {formatRelatif(p.createdAt, maintenant)} ·{' '}
                     {formatEuros(p.coutCentimes, { decimales: 'toujours' })} de Claude
                   </span>

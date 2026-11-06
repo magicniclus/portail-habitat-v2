@@ -171,6 +171,19 @@ describe('sujets', () => {
     ).rejects.toThrow(/ANTHROPIC_API_KEY/);
   });
 
+  it('sans titre : celui de la vidéo choisie', async () => {
+    const id = await creerProjetStudio(services(), {
+      auteurUid: 'sa',
+      format: 'vertical',
+      camera: true,
+    });
+    expect((await lireProjetStudio(db, id))?.titre).toBe('Nouvelle vidéo');
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    await choisirSujetStudio(services(), { projetId: id, index: 0 });
+    expect((await lireProjetStudio(db, id))?.titre).toBe(sujet.titre);
+  });
+
   it('choisir un sujet ou partir sans', async () => {
     const id = await projet();
     reponses = [{ sujets: [sujet] }];

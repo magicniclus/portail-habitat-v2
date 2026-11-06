@@ -1,8 +1,8 @@
 'use client';
 
 import type { SujetStudio } from '@ph/core/studio';
-import { Banner, Button, Field, Input } from '@ph/ui';
-import { useState, useTransition } from 'react';
+import { Banner, Button, Chargeur, Field, Input } from '@ph/ui';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { choisirSujet, proposerSujets } from './actions';
 import { CarteSujet } from './CarteSujet';
 
@@ -13,12 +13,15 @@ export function EtapeSujets({
   choisi,
   themeInitial,
   replie,
+  auto = false,
 }: {
   projetId: string;
   sujets: SujetStudio[];
   choisi: SujetStudio | null;
   themeInitial: string;
   replie: boolean;
+  /** Arrivée depuis « Trouver les meilleures vidéos » : l'analyse part toute seule. */
+  auto?: boolean;
 }) {
   const [theme, setTheme] = useState(themeInitial);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -29,14 +32,21 @@ export function EtapeSujets({
       const r = await f();
       if (!r.ok) setErreur(r.message ?? 'Action impossible.');
     });
+  const lance = useRef(false);
+  useEffect(() => {
+    if (!auto || sujets.length || lance.current) return;
+    lance.current = true;
+    agir(() => proposerSujets({ projetId, theme: themeInitial || undefined }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- une seule fois à l'arrivée
+  }, []);
   return (
     <details open={!replie} className="rounded-card border border-trait bg-blanc p-4">
       <summary className="min-h-11 cursor-pointer text-lg font-bold">
-        1. Sujet et script {choisi ? `· ${choisi.titre}` : ''}
+        1. Idées de vidéos {choisi ? `· ${choisi.titre}` : ''}
       </summary>
       <div className="mt-3 grid gap-3">
         <div className="grid items-end gap-3 md:grid-cols-[1fr_auto]">
-          <Field label="Thème (facultatif)">
+          <Field label="Orienter vers un thème (facultatif)">
             <Input
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
@@ -57,9 +67,10 @@ export function EtapeSujets({
           </Button>
         </div>
         {enCours ? (
-          <p className="m-0 text-sm text-neutre-700" aria-live="polite">
-            Recherche des vidéos courtes qui font le plus de vues, puis écriture des scripts : une à
-            deux minutes.
+          <p className="m-0 flex items-center gap-2 text-sm text-neutre-700" aria-live="polite">
+            <Chargeur taille="sm" />
+            Claude regarde les vidéos courtes qui font le plus de vues en ce moment, puis écrit
+            trois propositions : une à deux minutes.
           </p>
         ) : null}
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

@@ -21,14 +21,21 @@ export const metadata: Metadata = { title: 'Studio · vidéo' };
 /** Proposer des sujets ou retoucher un montage : un appel à Claude peut durer plusieurs minutes. */
 export const maxDuration = 300;
 
-export default async function ProjetStudioPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProjetStudioPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
+  const analyse = (await searchParams).analyse === '1';
   await pageAdmin(`/admin/studio/${id}`, 'studio');
   const p = await lireProjetStudio(getFirestore(appAdmin()), id);
   if (!p) notFound();
   const apresSujet = p.statut !== 'sujet';
   return (
-    <main className="grid min-w-0 gap-4">
+    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
       <ConfigFirebase />
       <EcouteProjet projetId={p.id} />
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -49,6 +56,7 @@ export default async function ProjetStudioPage({ params }: { params: Promise<{ i
         choisi={p.sujet}
         themeInitial={p.theme ?? ''}
         replie={apresSujet}
+        auto={analyse && p.statut === 'sujet'}
       />
       {apresSujet ? (
         <EtapeEnregistrement
