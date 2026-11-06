@@ -894,6 +894,10 @@ Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
 - `studioProjets/{id}` : `auteurUid`, `titre`, `statut` (sujet → enregistrement → transcription → montage → captures → rendu → pret | erreur), `format`, `camera`, `theme`, `sujets[]`, `sujet`, `prise { id, fichiers { voix, ecran?, camera? }, dureeMs }`, `mots[]` (Whisper), `plan` (`planMontage`), `version`, `captures { "id:scene": chemin }`, `rendu { video, srt, miniature, dureeMs, le }`, `erreur`, `coutCentimes`, `prisesExpirentLe` (30 jours). Sous-collection `versions/{n}` (plan, auteur, date). Lecture : section `std` ; écriture : serveur uniquement.
 - `studioTendances/{recherche}` : vidéos YouTube d'une recherche, gardées 24 h (`expireLe` à 7 jours). Admin SDK uniquement.
 - `studioIdees/{id}` : idées de vidéos gardées (`sujet`, `theme`, `liens` des vidéos d'inspiration, `auteurUid`, `gardeeLe`, `utilisations`). `id` = empreinte du titre (une idée n'est gardée qu'une fois). Écrites et lues par les Server Actions du Studio, Admin SDK uniquement.
+- `studioComptes/{reseau}` : compte YouTube, Instagram ou TikTok connecté (`compteId`, `nom`, `acces` et `rafraichissement` **chiffrés**, `expireLe`, `connectePar`, `connecteLe`). Admin SDK uniquement, jamais lu par le navigateur.
+- `studioPublications/{id}` : une vidéo sur un réseau (`projetId`, `reseau`, `video`, `variante`, `titre`, `legende`, `programmeeLe`, `statut` programmee|en_cours|publiee|echec|annulee, `idExterne`, `lien`, `prive`, `erreur`, `publieeLe`, `stats`, `statsLe`). Index : `statut` + `programmeeLe`. Admin SDK uniquement.
+- `studioSeries/{id}` : série d'épisodes (`nom`, `promesse`, `episodes`). Les projets portent `serie {id, nom, numero}`. Admin SDK uniquement.
+- `studioProjets` gagne `serie`, `reels` (Reels analysés, sans auteur) et `rendu.variantes` (vidéos des variantes d'accroche).
 - Storage : `studio/{uid}/{prise}/…` (prises, 100 Mo max, création par l'auteur de la section Studio, jamais écrasées, supprimées à 30 jours) ; `studioRendus/{projet}/…` (captures et vidéos, écrites par le robot).
 
 ## 16. Index de toutes les collections (liste de contrôle)

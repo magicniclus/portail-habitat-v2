@@ -105,6 +105,11 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 | `ELEVENLABS_API_KEY` | site | voix de synthèse, facultative (elevenlabs.io → profil → clés API) |
 | `STUDIO_RENDU_URL` | site | adresse du robot de rendu |
 | `STUDIO_RENDU_CLE` | site + robot | clé partagée (longue chaîne aléatoire) |
+| `STUDIO_CHIFFREMENT_CLE` | site + Functions | 32 octets en base64 (`openssl rand -base64 32`) : chiffre les accès aux réseaux |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | site + Functions | publier sur YouTube et lire les statistiques (§10) |
+| `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` | site + Functions | publier sur Instagram et lire les statistiques (§10) |
+| `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET` | site + Functions | publier sur TikTok et lire les vues (§10) |
+| `INSTAGRAM_TENDANCES_JETON`, `INSTAGRAM_TENDANCES_COMPTE` | site | Reels populaires par hashtag (§1), facultatif |
 
 ## 9. Coûts (estimation, à vérifier sur la facture)
 
@@ -119,3 +124,44 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 Leviers si besoin :
 - passer les sujets en Sonnet 5.5 (deux fois moins cher), décision du propriétaire ;
 - garder les tendances 24 h (déjà fait).
+
+## 10. Réseaux connectés (Studio › Réseaux)
+
+- Un compte par réseau pour l'entreprise : YouTube, Instagram (compte professionnel), TikTok.
+- Connexion OAuth : `/api/studio/reseaux/{reseau}` part chez le réseau ; le retour `/api/studio/reseaux/{reseau}/retour` vérifie l'état (cookie de 10 min, comparaison à temps constant), puis échange le code par une action admin journalisée.
+- Adresse de retour à déclarer chez chaque réseau : `{NEXT_PUBLIC_SITE_URL}/api/studio/reseaux/{reseau}/retour` (affichée sur la page).
+- Jetons chiffrés AES-256-GCM dans `studioComptes/{reseau}`, jamais envoyés au navigateur ni journalisés. Renouvelés seuls : 5 min avant la fin (YouTube, TikTok), 7 jours avant pour Instagram (jeton de 60 jours).
+- TikTok : tant que TikTok n'a pas validé l'application, les vidéos partent en **privé** (le Studio le détecte et l'affiche).
+- Adresses et droits des API à revérifier au premier branchement réel (testés ici avec de faux serveurs).
+
+## 11. Publication et calendrier
+
+- Étape 6 d'une vidéo prête : réseaux, accroche (version principale ou variante), titre, légende, hashtags (3 au plus sur YouTube, 30 sur Instagram), date et heure. « Publier maintenant » ou « Programmer ».
+- `studioPublications` : une publication par vidéo et par réseau. La Function `studioPublier` (toutes les 10 min) réserve chaque publication en transaction, puis envoie :
+  - YouTube : envoi reprenable, en public ;
+  - Instagram : conteneur Reels à partir d'une adresse signée de 6 h (le compte de service des Functions doit pouvoir signer : rôle « Créateur de jetons du compte de service »), attente, publication ;
+  - TikTok : envoi du fichier (morceaux de 20 Mo au-delà de 64 Mo), puis suivi.
+- Échec : message lisible, bouton « Relancer ». Annulation tant que ce n'est pas parti.
+- Calendrier (Studio › Calendrier) : 14 jours, objectif par jour (1 à 30), créneaux conseillés. Sans statistiques : répartition régulière de 8 h à 21 h ; ensuite, les heures où vos vidéos ont fait le plus de vues (au moins 2 vidéos par heure) passent devant.
+
+## 12. Résultats de vos vidéos
+
+- La Function `studioStats` relève toutes les 6 h, pendant 30 jours après la publication :
+  - YouTube : vues, j'aime, commentaires, partages, durée moyenne, part regardée, abonnés gagnés, courbe de rétention ;
+  - Instagram : vues, j'aime, commentaires, partages, durée moyenne regardée ;
+  - TikTok : vues, j'aime, commentaires, partages (pas de rétention ouverte).
+- Studio › Résultats : chiffres, courbe avec la plus forte chute, conseils (accroche qui ne retient pas, milieu trop long, aucun abonné).
+- Claude reçoit le résumé réel de vos meilleures et moins bonnes vidéos (90 jours) à chaque proposition de sujets.
+- Rythme au montage : un changement visuel au moins toutes les 3 s, texte dès la première image, fin qui reboucle. Avertissements affichés au montage (non bloquants).
+
+## 13. Variantes d'accroche et séries
+
+- Claude propose 2 autres accroches avec leur miniature. Le robot rend une vidéo par variante (`studioRendus/{projet}/v{n}-{variante}/`). On publie chaque version (un réseau chacune, ou des jours différents) ; le tableau « Test des accroches » marque la gagnante (★) dès que toutes ont des résultats.
+- Séries (`studioSeries`) : un nom et une promesse. « Épisode N » crée la vidéo ; Claude reçoit les épisodes déjà faits, ajoute « Série · épisode N » au début et « Épisode N+1 bientôt : abonne-toi » à la fin.
+
+## 14. Idées tirées des commentaires et tendances Instagram
+
+- « Idées tirées de vos commentaires » : questions et objections sous vos vidéos YouTube et Instagram (60 jours) → 5 sujets « réponse en vidéo ». Seul le texte est lu ; ni nom ni identifiant de l'auteur, rien n'est enregistré. TikTok n'ouvre pas ses commentaires aux applications.
+- Reels Instagram populaires : hashtags suivis (#artisan, #artisanfrancais, #renovation, #btp, #chantier), gardés 7 jours. Il faut l'API Instagram **avec connexion Facebook** et la fonctionnalité « Instagram Public Content Access » validée par Meta. Instagram ne donne que j'aime et commentaires (pas les vues), et 30 hashtags par 7 jours.
+- TikTok n'a pas d'API publique de tendances (la « Research API » est réservée aux chercheurs) : les tendances viennent de YouTube et d'Instagram.
+

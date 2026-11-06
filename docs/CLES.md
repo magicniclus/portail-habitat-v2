@@ -51,6 +51,11 @@
 | `ANTHROPIC_API_KEY` | assistant IA du back-office (lot 13c), Studio vidéo | console.anthropic.com | secret Functions, robot Studio |
 | `YOUTUBE_API_KEY` | Studio : tendances YouTube | console Google Cloud → API YouTube Data v3 | Vercel |
 | `ELEVENLABS_API_KEY` | Studio : voix de synthèse (facultative) | elevenlabs.io → profil → clés API | Vercel |
+| `STUDIO_CHIFFREMENT_CLE` | Studio : chiffre les accès aux réseaux | `openssl rand -base64 32` | Vercel + Functions |
+| `GOOGLE_OAUTH_CLIENT_ID` / `_SECRET` | Studio : YouTube (publier, statistiques) | console Google Cloud → identifiants OAuth « Application Web » | Vercel + Functions |
+| `INSTAGRAM_APP_ID` / `_SECRET` | Studio : Instagram (publier, statistiques) | developers.facebook.com → application → API Instagram avec connexion Instagram | Vercel + Functions |
+| `TIKTOK_CLIENT_KEY` / `_SECRET` | Studio : TikTok (publier, vues) | developers.tiktok.com → application | Vercel + Functions |
+| `INSTAGRAM_TENDANCES_JETON` / `_COMPTE` | Studio : Reels par hashtag (facultatif) | application Meta avec connexion Facebook + « Instagram Public Content Access » | Vercel |
 | `STUDIO_RENDU_URL` / `STUDIO_RENDU_CLE` | Studio : robot de rendu (STUDIO.md §6) | `scripts/deployerStudio.sh` / chaîne aléatoire | Vercel + Secret Manager |
 | `PARTENAIRE_API_KEYS` | import de demandes partenaires (lot 12b) | à générer par source | secret Functions |
 | `COMPORTEMENT_SALT_SECRET` | anonymisation du suivi des visites (lot 13c) | à inventer (32 caractères aléatoires) | secret Functions |
