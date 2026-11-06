@@ -1,3 +1,4 @@
+import { RYTHME_MAX_MS } from './rythme';
 import { z } from '../zod';
 import { ANIMATIONS, LIBELLES_CAMERA, LIBELLES_VISUEL, SCENES_CAPTURE } from './catalogue';
 import { DUREE_MAX_MS, DUREE_MIN_MS, FORMATS_STUDIO, type FormatStudio } from './formats';
@@ -275,7 +276,9 @@ export function promptMontage(e: {
     'Règles de montage :',
     '- Garde seulement les meilleurs passages de la voix : coupe les silences, hésitations, répétitions et prises ratées (garde la dernière bonne prise d’une phrase répétée).',
     '- Ne coupe jamais au milieu d’un mot : appuie-toi sur les horodatages de la transcription.',
-    '- Accroche dans les 2 premières secondes, avec un texte « accroche » à l’écran. Change de visuel ou ajoute un calque toutes les 2 à 4 secondes.',
+    '- Accroche : un texte « accroche » posé à 0 ms sur le premier plan (visible dès la première image), la promesse dite dans les 2 premières secondes.',
+    `- Rythme : un changement visuel (nouveau plan, calque ou zoom) au moins toutes les ${RYTHME_MAX_MS / 1000} secondes, idéalement toutes les 2 secondes.`,
+    '- Fin qui reboucle : la dernière phrase gardée doit s’enchaîner naturellement avec la première, pour que la vidéo soit revue en boucle ; pas de « au revoir ».',
     '- Les chiffres importants deviennent un « compteur » ou un texte « chiffre ». Une notification « Nouvelle demande » quand on parle de demandes reçues.',
     '- Les captures montrent le produit : utilise-les quand la voix en parle. L’artisan d’exemple doit être cohérent avec ce que dit la voix.',
     '- Pas d’effet gadget : des coupes nettes, des calques lisibles, au plus 2 calques en même temps.',
