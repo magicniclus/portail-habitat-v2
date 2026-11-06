@@ -220,3 +220,11 @@ describe('déclinaisons d’un sujet', () => {
     expect(p.demande).toMatch(/aucune donnée disponible/);
   });
 });
+
+describe('liens des vidéos', () => {
+  it('format Shorts, identifiant encodé', async () => {
+    const { lienVideo } = await import('./tendances');
+    expect(lienVideo('abc123')).toBe('https://www.youtube.com/shorts/abc123');
+    expect(lienVideo('a/b')).toBe('https://www.youtube.com/shorts/a%2Fb');
+  });
+});

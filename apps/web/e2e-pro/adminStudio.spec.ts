@@ -18,8 +18,13 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
   await page.getByRole('button', { name: 'Enregistrer sans sujet (j’improvise)' }).click();
-  await expect(page.getByText('2. Enregistrement')).toBeVisible();
+  await expect(page.getByText('2. Tournage')).toBeVisible();
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
+  // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
+  await expect(page.getByLabel('Caméra')).toHaveValue('aucune');
+  await page.getByRole('tab', { name: /Importer une vidéo du téléphone/ }).click();
+  await expect(page.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
 });
 
 test('studio : partir de son idée', async ({ page }) => {

@@ -12,6 +12,7 @@ interface ReponseRecherche {
 }
 interface ReponseVideos {
   items?: {
+    id?: string;
     snippet?: {
       title?: string;
       channelId?: string;
@@ -80,6 +81,7 @@ export function rechercheYoutube(cle: string, f: typeof fetch = fetch): Recherch
             );
     }
     return items.map((i) => ({
+      ...(i.id ? { id: i.id } : {}),
       titre: i.snippet?.title ?? '',
       chaine: i.snippet?.channelTitle ?? '',
       publieeLe: i.snippet?.publishedAt ?? new Date(maintenant).toISOString(),

@@ -30,6 +30,7 @@ export function EtapeSujets({
   tendances: TendanceAffichee[];
 }) {
   const router = useRouter();
+  const liens = new Map(tendances.flatMap((t) => (t.lien ? [[t.titre, t.lien] as const] : [])));
   const [succes, setSucces] = useState<string | null>(null);
   const [theme, setTheme] = useState(themeInitial);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -91,13 +92,18 @@ export function EtapeSujets({
               sujet={s}
               choisi={choisi?.titre === s.titre}
               desactive={enCours}
+              liens={liens}
               onChoisir={() => agir(() => choisirSujet({ projetId, index: i }))}
               onDecliner={(nombre) =>
                 agir(async () => {
                   setSucces(null);
                   const r = await declinerSujet({ projetId, index: i, nombre });
                   if (r.ok) {
-                    setSucces(`${r.data.length} vidéos créées, prêtes à tourner.`);
+                    setSucces(
+                      r.data.length > 1
+                        ? `${r.data.length} vidéos créées, prêtes à tourner.`
+                        : 'Variante créée, prête à tourner.',
+                    );
                     router.push('/admin/studio' as Route);
                   }
                   return r;

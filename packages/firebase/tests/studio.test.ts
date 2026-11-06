@@ -105,6 +105,7 @@ const services = (o: { claude?: boolean; youtube?: boolean } = {}): ServicesStud
           recherches.push(q);
           return [
             {
+              id: `yt-${q.replace(/\W/g, '')}`,
               titre: `Vidéo ${q}`,
               chaine: 'Chaîne',
               vues: 90_000,
@@ -162,6 +163,7 @@ describe('sujets', () => {
     await proposerSujetsStudio(services(), { projetId: id, theme: 'devis' });
     const t = (await lireProjetStudio(db, id))!.tendances[0]!;
     expect(t).toMatchObject({ vues: 90_000, multiplicateur: 45, engagement: 0.011 });
+    expect(t.lien).toBe('https://www.youtube.com/shorts/yt-devis');
     expect(t.scoreViral).toBeGreaterThan(50);
     expect(appels[0]!.demande).toMatch(/×45\.0 abonnés/);
   });

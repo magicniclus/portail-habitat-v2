@@ -50,3 +50,60 @@ export async function envoyerPrise(
   });
   return r.ok ? null : r.message;
 }
+
+/** Vidéo importée du téléphone (son compris) : 1 Go au plus. */
+const IMPORT_MAX_OCTETS = 1024 * 1024 * 1024;
+
+const dureeVideo = (f: File) =>
+  new Promise<number>((ok) => {
+    const v = document.createElement('video');
+    const url = URL.createObjectURL(f);
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      ok(Number.isFinite(v.duration) ? Math.round(v.duration * 1000) : 0);
+    };
+    v.onerror = () => ok(0);
+    v.src = url;
+  });
+
+/**
+ * Importe une vidéo tournée au téléphone : elle donne à la fois l'image (face caméra ou écran) et
+ * la voix. Envoyée dans Storage (`import.<ext>`), puis le serveur lance la transcription.
+ */
+export async function envoyerImport(
+  projetId: string,
+  fichier: File,
+  role: 'camera' | 'ecran',
+  avancement: (fraction: number) => void,
+): Promise<string | null> {
+  if (fichier.size > IMPORT_MAX_OCTETS)
+    return 'Vidéo trop lourde (plus de 1 Go) : exportez-la en 1080p depuis votre téléphone.';
+  const ext = (/\.(mp4|mov|m4v|webm)$/i.exec(fichier.name)?.[1] ?? '').toLowerCase();
+  const type = fichier.type || (ext === 'mov' ? 'video/quicktime' : 'video/mp4');
+  if (!ext || !/^video\/(mp4|quicktime|webm|x-m4v)$/.test(type))
+    return 'Format non pris en charge : choisissez une vidéo .mp4 ou .mov.';
+  const dureeMs = await dureeVideo(fichier);
+  if (dureeMs < 1_000)
+    return 'Impossible de lire la durée de cette vidéo. Essayez une autre vidéo.';
+  if (dureeMs > 15 * 60_000) return 'Vidéo trop longue : 15 minutes au plus.';
+  const auth = await authClient();
+  await auth.authStateReady();
+  const uid = auth.currentUser?.uid;
+  if (!uid) return 'Session expirée : déconnectez-vous puis reconnectez-vous à l’admin.';
+  const priseId = `p${Date.now().toString(36)}`;
+  const chemin = `studio/${uid}/${priseId}/import.${ext}`;
+  try {
+    await deposerPrise(chemin, new Blob([fichier], { type }), avancement);
+  } catch (e) {
+    return e instanceof EnvoiImpossible ? e.message : 'L’envoi n’a pas abouti. Réessayez.';
+  }
+  const r = await enregistrerPrise({
+    projetId,
+    priseId,
+    fichiers:
+      role === 'camera' ? { camera: chemin, voix: chemin } : { ecran: chemin, voix: chemin },
+    dureeMs,
+  });
+  return r.ok ? null : r.message;
+}

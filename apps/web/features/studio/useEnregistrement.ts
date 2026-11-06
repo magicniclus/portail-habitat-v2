@@ -116,7 +116,9 @@ export function useEnregistrement(o: {
         await lister();
       })
       .catch(() =>
-        setErreur('Caméra inaccessible : autorisez la caméra ou choisissez « Sans caméra ».'),
+        setErreur(
+          'Pas de caméra disponible sur cet ordinateur : choisissez « Sans caméra », ou importez une vidéo de votre téléphone.',
+        ),
       );
     return () => {
       actif = false;

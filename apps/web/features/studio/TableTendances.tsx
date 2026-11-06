@@ -7,7 +7,7 @@ export function TableTendances({ tendances }: { tendances: TendanceAffichee[] })
   return (
     <details className="rounded-card bg-neutre-100 px-4 py-1 open:pb-4">
       <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">
-        Ce qui marche en ce moment ({tendances.length} vidéos analysées)
+        Ce qui marche en ce moment ({tendances.length} vidéos analysées, cliquez pour les regarder)
       </summary>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-sm">
@@ -24,7 +24,18 @@ export function TableTendances({ tendances }: { tendances: TendanceAffichee[] })
             {tendances.map((t) => (
               <tr key={`${t.chaine}-${t.titre}`} className="border-t border-trait">
                 <td className="max-w-[340px] px-2 py-2">
-                  <span className="line-clamp-2">{t.titre}</span>
+                  {t.lien ? (
+                    <a
+                      href={t.lien}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="line-clamp-2"
+                    >
+                      {t.titre} ↗
+                    </a>
+                  ) : (
+                    <span className="line-clamp-2">{t.titre}</span>
+                  )}
                   <span className="text-xs text-neutre-700">{t.chaine}</span>
                 </td>
                 <td className="px-2 py-2">

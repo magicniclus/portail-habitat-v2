@@ -193,6 +193,26 @@ const CAS: Cas[] = [
     autorises: ['superadmin'],
   },
   {
+    nom: 'importer une vidéo du téléphone (.mov)',
+    op: { ecrire: 'studio/{uid}/prise3/import.mov', type: 'video/quicktime', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer une vidéo du téléphone (.mp4)',
+    op: { ecrire: 'studio/{uid}/prise4/import.mp4', type: 'video/mp4', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'envoyer un .mov qui n’est pas une importation',
+    op: { ecrire: 'studio/{uid}/prise1/{p}.mov', type: 'video/quicktime', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'importer autre chose qu’une vidéo',
+    op: { ecrire: 'studio/{uid}/prise5/import.mp4', type: 'image/png', taille: 1000 },
+    autorises: [],
+  },
+  {
     nom: 'envoyer autre chose qu’une vidéo comme prise',
     op: { ecrire: 'studio/{uid}/prise1/{p}.png', type: 'image/png', taille: 1000 },
     autorises: [],

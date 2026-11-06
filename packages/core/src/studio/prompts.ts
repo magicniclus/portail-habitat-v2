@@ -13,6 +13,8 @@ export const MODELE_STUDIO = 'claude-opus-5-5';
 
 /** Vidéo courte relevée sur YouTube (API officielle), sans donnée personnelle. */
 export interface VideoTendance {
+  /** Identifiant YouTube (lien : `lienVideo`) ; absent des anciens caches. */
+  id?: string;
   titre: string;
   chaine: string;
   vues: number;

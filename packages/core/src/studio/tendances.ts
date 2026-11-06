@@ -57,6 +57,9 @@ export function classerTendances(
     .sort((a, b) => b.scoreViral - a.scoreViral || b.vuesParJour - a.vuesParJour);
 }
 
+/** Lien pour regarder la vidéo (format Shorts de YouTube). */
+export const lienVideo = (id: string) => `https://www.youtube.com/shorts/${encodeURIComponent(id)}`;
+
 /** Recherches lancées sur YouTube quand l'auteur ne donne pas de thème. */
 export const RECHERCHES_PAR_DEFAUT = [
   'artisan trouver des clients',

@@ -19,12 +19,15 @@ export function CarteSujet({
   desactive,
   onChoisir,
   onDecliner,
+  liens,
 }: {
   sujet: SujetStudio;
   choisi: boolean;
   desactive: boolean;
   onChoisir: () => void;
   onDecliner: (nombre: number) => void;
+  /** Titre d'une vidéo analysée → lien pour la regarder. */
+  liens: ReadonlyMap<string, string>;
 }) {
   const [nombre, setNombre] = useState(3);
   const potentiel = sujet.potentielViral ?? null;
@@ -79,9 +82,25 @@ export function CarteSujet({
         <strong>Pourquoi ça peut marcher :</strong> {sujet.pourquoi}
       </p>
       {sujet.inspirations?.length ? (
-        <p className="m-0 text-xs text-neutre-700">
-          Inspiré de : {sujet.inspirations.map((t) => `« ${t} »`).join(', ')}
-        </p>
+        <div className="text-xs text-neutre-700">
+          <p className="m-0 font-semibold">Inspiré de :</p>
+          <ul className="m-0 pl-4">
+            {sujet.inspirations.map((t) => {
+              const lien = liens.get(t);
+              return (
+                <li key={t}>
+                  {lien ? (
+                    <a href={lien} target="_blank" rel="noopener noreferrer">
+                      {t} ↗
+                    </a>
+                  ) : (
+                    `« ${t} »`
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
       <div>
         <p className="m-0 text-sm font-semibold">Accroches</p>
@@ -125,14 +144,14 @@ export function CarteSujet({
             onChange={(e) => setNombre(Number(e.target.value))}
             className="w-auto"
           >
-            {[2, 3, 4, 5].map((n) => (
+            {[1, 2, 3, 4, 5].map((n) => (
               <option key={n} value={n}>
-                {n} vidéos
+                {n} {n > 1 ? 'vidéos' : 'vidéo'}
               </option>
             ))}
           </Select>
           <Button variant="secondaire" disabled={desactive} onClick={() => onDecliner(nombre)}>
-            Décliner
+            {nombre > 1 ? 'Décliner' : 'Créer une variante'}
           </Button>
         </span>
       </div>

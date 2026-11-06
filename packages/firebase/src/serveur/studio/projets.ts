@@ -6,6 +6,7 @@ import {
   MODELE_STUDIO,
   planMontage,
   promptMontage,
+  lienVideo,
   promptDeclinaisons,
   promptSujets,
   RECHERCHES_PAR_DEFAUT,
@@ -226,6 +227,8 @@ async function tendances(s: ServicesStudio, theme: string | undefined): Promise<
 
 /** Ce qu'on garde d'une vidéo analysée pour l'afficher (sans la description). */
 export interface TendanceAffichee {
+  /** Lien pour regarder la vidéo ; `null` si l'identifiant manque (ancien cache). */
+  lien: string | null;
   titre: string;
   chaine: string;
   vues: number;
@@ -236,6 +239,7 @@ export interface TendanceAffichee {
   scoreViral: number;
 }
 const resumeTendance = (v: VideoTendance): TendanceAffichee => ({
+  lien: v.id ? lienVideo(v.id) : null,
   titre: v.titre,
   chaine: v.chaine,
   vues: v.vues,
