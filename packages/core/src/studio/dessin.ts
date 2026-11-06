@@ -366,3 +366,63 @@ export function dessinerSousTitre(
   });
   ctx.restore();
 }
+
+/**
+ * Miniature (image de couverture) : par-dessus l'image choisie, un dégradé sombre en bas et le
+ * texte en très gros, le mot mis en avant en couleur d'accent.
+ */
+export function dessinerMiniature(
+  ctx: Contexte2D,
+  m: { texte: string; accent: string },
+  format: FormatStudio,
+  theme: ThemeStudio,
+) {
+  const { largeur, hauteur } = FORMATS_STUDIO[format];
+  const k = Math.min(largeur, hauteur) / 1080;
+  ctx.save();
+  const bandes = 24;
+  for (let i = 0; i < bandes; i++) {
+    ctx.globalAlpha = (i / bandes) * 0.85;
+    ctx.fillStyle = theme.sombre;
+    ctx.fillRect(
+      0,
+      hauteur * 0.45 + (i * hauteur * 0.55) / bandes,
+      largeur,
+      (hauteur * 0.55) / bandes + 1,
+    );
+  }
+  ctx.globalAlpha = 1;
+  let taille = 150 * k;
+  ctx.font = `900 ${taille}px ${theme.police}`;
+  const mots = m.texte.toUpperCase().split(/\s+/);
+  let ls = lignes(ctx, mots.join(' '), largeur * 0.88);
+  while (ls.length > 3 && taille > 70 * k) {
+    taille -= 10 * k;
+    ctx.font = `900 ${taille}px ${theme.police}`;
+    ls = lignes(ctx, mots.join(' '), largeur * 0.88);
+  }
+  const accent = m.accent.toUpperCase();
+  const interligne = taille * 1.02;
+  const y0 = hauteur * 0.9 - ls.length * interligne;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = taille * 0.16;
+  ctx.strokeStyle = theme.sombre;
+  ls.forEach((ligne, i) => {
+    const largeurLigne = ctx.measureText(ligne).width;
+    let x = (largeur - largeurLigne) / 2;
+    const y = y0 + i * interligne;
+    for (const mot of ligne.split(' ')) {
+      const l = ctx.measureText(mot).width;
+      ctx.strokeText(mot, x, y);
+      ctx.fillStyle =
+        accent && mot.replace(/[^\p{L}\p{N}]/gu, '') === accent.replace(/[^\p{L}\p{N}]/gu, '')
+          ? theme.accent
+          : theme.clair;
+      ctx.fillText(mot, x, y);
+      x += l + ctx.measureText(' ').width;
+    }
+  });
+  ctx.restore();
+}

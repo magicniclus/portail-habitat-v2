@@ -216,7 +216,7 @@ export async function rendre(
     const lignes = lignesSousTitres(motsSortie(plan, p.mots), reglagesSousTitres(plan.format));
     const dossierImages = join(d, 'surcouche');
     await mkdir(dossierImages);
-    const { motif } = await imagesSurcouche(plan, lignes, dossierImages);
+    const { motif, miniature: texteMiniature } = await imagesSurcouche(plan, lignes, dossierImages);
     const video = join(d, 'video.mp4');
     await executer('ffmpeg', [
       '-y',
@@ -258,18 +258,29 @@ export async function rendre(
       video,
     ]);
     const miniature = join(d, 'miniature.jpg');
-    await executer('ffmpeg', [
-      '-y',
-      '-ss',
-      '1.2',
-      '-i',
-      video,
-      '-frames:v',
-      '1',
-      '-q:v',
-      '3',
-      miniature,
-    ]);
+    // Miniature : l'image choisie par Claude, sous le texte de couverture (même rendu que l'aperçu).
+    const instant = ((plan.miniature?.tempsMs ?? 1200) / 1000).toFixed(2);
+    await executer(
+      'ffmpeg',
+      texteMiniature
+        ? [
+            '-y',
+            '-ss',
+            instant,
+            '-i',
+            base,
+            '-i',
+            texteMiniature,
+            '-filter_complex',
+            '[0:v][1:v]overlay=0:0',
+            '-frames:v',
+            '1',
+            '-q:v',
+            '3',
+            miniature,
+          ]
+        : ['-y', '-ss', instant, '-i', video, '-frames:v', '1', '-q:v', '3', miniature],
+    );
     const fichierSrt = join(d, 'sous-titres.srt');
     await writeFile(fichierSrt, srt(lignes));
     const dossier = `studioRendus/${p.id}/v${p.version}`;

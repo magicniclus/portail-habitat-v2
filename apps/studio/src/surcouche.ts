@@ -16,10 +16,11 @@ export async function imagesSurcouche(
   plan: PlanMontage,
   lignes: LigneSousTitre[],
   dossier: string,
-): Promise<{ motif: string; images: number }> {
+): Promise<{ motif: string; images: number; miniature: string | null }> {
   const { largeur, hauteur } = FORMATS_STUDIO[plan.format];
   const images = Math.round((dureePlan(plan) * IMAGES_PAR_SECONDE) / 1000);
   const navigateur = await chromium.launch();
+  let texteMiniature: string | null = null;
   try {
     const page = await navigateur.newPage({ viewport: { width: 400, height: 400 } });
     await page.setContent(
@@ -37,6 +38,12 @@ export async function imagesSurcouche(
       largeur,
       hauteur,
     });
+    // Texte de la miniature (image de couverture), dessiné par le même code que l'aperçu.
+    if (plan.miniature) {
+      const url = await page.evaluate((m) => window.miniatureStudio(m), plan.miniature);
+      texteMiniature = join(dossier, 'miniature-texte.png');
+      await writeFile(texteMiniature, Buffer.from(url.split(',')[1]!, 'base64'));
+    }
     for (let n = 0; n < images; n++) {
       const url = await page.evaluate(
         (t) => window.imageStudio(t),
@@ -50,5 +57,5 @@ export async function imagesSurcouche(
   } finally {
     await navigateur.close();
   }
-  return { motif: join(dossier, '%06d.png'), images };
+  return { motif: join(dossier, '%06d.png'), images, miniature: texteMiniature };
 }

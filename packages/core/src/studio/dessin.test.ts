@@ -205,3 +205,34 @@ describe('image complète', () => {
     expect(basSousTitres(plan, 3000)).toBe(1280);
   });
 });
+
+describe('miniature', () => {
+  it('texte en majuscules, mot mis en avant en couleur d’accent', async () => {
+    const { dessinerMiniature } = await import('./dessin');
+    const couleurs: unknown[] = [];
+    const ctx = faux();
+    const f = ctx.fillText;
+    ctx.fillText = (t: string, x: number, y: number) => {
+      couleurs.push([t, ctx.fillStyle]);
+      f(t, x, y);
+    };
+    dessinerMiniature(ctx, { texte: '10 clients gratuits', accent: 'gratuits' }, 'vertical', theme);
+    expect(couleurs).toEqual([
+      ['10', 'd'],
+      ['CLIENTS', 'd'],
+      ['GRATUITS', 'a'],
+    ]);
+  });
+
+  it('texte trop long : plus petit, 3 lignes au plus', async () => {
+    const { dessinerMiniature } = await import('./dessin');
+    const ctx = faux();
+    dessinerMiniature(
+      ctx,
+      { texte: 'un deux trois quatre cinq six sept huit neuf dix', accent: '' },
+      'carre',
+      theme,
+    );
+    expect(ctx.textes.length).toBe(10);
+  });
+});

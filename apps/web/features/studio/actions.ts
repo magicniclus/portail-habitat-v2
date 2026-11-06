@@ -3,6 +3,7 @@
 import {
   entreeChoixSujetStudio,
   entreeCreerProjetStudio,
+  entreeDeclinaisonStudio,
   entreeModifierPlanStudio,
   entreePriseStudio,
   entreeProjetStudio,
@@ -13,6 +14,7 @@ import type { z } from '@ph/core/zod';
 import {
   choisirSujetStudio,
   creerProjetStudio,
+  declinerSujetStudio,
   genererMontageStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
@@ -81,3 +83,10 @@ const relance = actionAdmin(
 );
 export const relancer = async (e: z.input<typeof entreeProjetStudio>) =>
   fin(await relance(e), e.projetId);
+
+const declinaison = actionAdmin(
+  { schema: entreeDeclinaisonStudio, nom: 'adminStudioDeclinaison', permission: P },
+  async (e, ctx) => declinerSujetStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const declinerSujet = async (e: z.input<typeof entreeDeclinaisonStudio>) =>
+  fin(await declinaison(e));

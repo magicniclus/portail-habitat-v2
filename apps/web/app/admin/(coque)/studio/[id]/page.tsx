@@ -57,6 +57,7 @@ export default async function ProjetStudioPage({
         themeInitial={p.theme ?? ''}
         replie={apresSujet}
         auto={analyse && p.statut === 'sujet'}
+        tendances={p.tendances}
       />
       {apresSujet ? (
         <EtapeEnregistrement

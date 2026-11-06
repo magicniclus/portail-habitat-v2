@@ -1,10 +1,14 @@
 'use client';
 
 import type { SujetStudio } from '@ph/core/studio';
+import type { TendanceAffichee } from '@ph/firebase/studio';
 import { Banner, Button, Chargeur, Field, Input } from '@ph/ui';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { choisirSujet, proposerSujets } from './actions';
+import { choisirSujet, declinerSujet, proposerSujets } from './actions';
 import { CarteSujet } from './CarteSujet';
+import { TableTendances } from './TableTendances';
 
 /** Étape 1 : Claude analyse les vidéos courtes qui marchent et propose des sujets avec script. */
 export function EtapeSujets({
@@ -14,6 +18,7 @@ export function EtapeSujets({
   themeInitial,
   replie,
   auto = false,
+  tendances,
 }: {
   projetId: string;
   sujets: SujetStudio[];
@@ -22,7 +27,10 @@ export function EtapeSujets({
   replie: boolean;
   /** Arrivée depuis « Trouver les meilleures vidéos » : l'analyse part toute seule. */
   auto?: boolean;
+  tendances: TendanceAffichee[];
 }) {
+  const router = useRouter();
+  const [succes, setSucces] = useState<string | null>(null);
   const [theme, setTheme] = useState(themeInitial);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, demarrer] = useTransition();
@@ -69,11 +77,13 @@ export function EtapeSujets({
         {enCours ? (
           <p className="m-0 flex items-center gap-2 text-sm text-neutre-700" aria-live="polite">
             <Chargeur taille="sm" />
-            Claude regarde les vidéos courtes qui font le plus de vues en ce moment, puis écrit
-            trois propositions : une à deux minutes.
+            Claude analyse les vidéos courtes qui percent en ce moment (vues, engagement, vues par
+            rapport aux abonnés), puis écrit ses propositions : une à deux minutes.
           </p>
         ) : null}
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
+        {succes ? <Banner tone="succes">{succes}</Banner> : null}
+        {tendances.length ? <TableTendances tendances={tendances} /> : null}
         <ul className="m-0 grid list-none gap-3 p-0 xl:grid-cols-3">
           {sujets.map((s, i) => (
             <CarteSujet
@@ -82,6 +92,17 @@ export function EtapeSujets({
               choisi={choisi?.titre === s.titre}
               desactive={enCours}
               onChoisir={() => agir(() => choisirSujet({ projetId, index: i }))}
+              onDecliner={(nombre) =>
+                agir(async () => {
+                  setSucces(null);
+                  const r = await declinerSujet({ projetId, index: i, nombre });
+                  if (r.ok) {
+                    setSucces(`${r.data.length} vidéos créées, prêtes à tourner.`);
+                    router.push('/admin/studio' as Route);
+                  }
+                  return r;
+                })
+              }
             />
           ))}
         </ul>

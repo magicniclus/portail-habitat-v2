@@ -1,4 +1,5 @@
 import {
+  dessinerMiniature,
   dessinerSurcouche,
   type Contexte2D,
   type LigneSousTitre,
@@ -21,6 +22,7 @@ declare global {
       hauteur: number;
     }) => Promise<void>;
     imageStudio: (t: number) => string;
+    miniatureStudio: (m: { texte: string; accent: string }) => string;
   }
 }
 
@@ -45,5 +47,12 @@ window.imageStudio = (t) => {
   if (!etat || !ctx || !canevas) throw new Error('surcouche non préparée');
   ctx.clearRect(0, 0, canevas.width, canevas.height);
   dessinerSurcouche(ctx as unknown as Contexte2D, etat.plan, t, etat.lignes, etat.theme);
+  return canevas.toDataURL('image/png');
+};
+
+window.miniatureStudio = (m) => {
+  if (!etat || !ctx || !canevas) throw new Error('surcouche non préparée');
+  ctx.clearRect(0, 0, canevas.width, canevas.height);
+  dessinerMiniature(ctx as unknown as Contexte2D, m, etat.plan.format, etat.theme);
   return canevas.toDataURL('image/png');
 };

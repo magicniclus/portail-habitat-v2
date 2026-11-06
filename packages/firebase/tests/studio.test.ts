@@ -6,6 +6,7 @@ import { collections } from '../src/chemins';
 import {
   choisirSujetStudio,
   creerProjetStudio,
+  declinerSujetStudio,
   echecStudio,
   genererMontageStudio,
   lireProjetStudio,
@@ -44,6 +45,11 @@ const sujet: SujetStudio = {
   ],
   legende: 'Des clients sans commission.',
   hashtags: ['#artisan'],
+  potentielViral: 8,
+  vuesVisees: { min: 5_000, max: 40_000 },
+  abonnesVises: 250,
+  inspirations: ['Vidéo demandes gratuites'],
+  miniature: { texte: '10 demandes gratuites', accent: 'gratuites' },
 };
 
 const plan = (surcharge: Partial<PlanMontage> = {}): PlanMontage => ({
@@ -107,6 +113,7 @@ const services = (o: { claude?: boolean; youtube?: boolean } = {}): ServicesStud
               dureeS: 40,
               publieeLe: '2026-11-01T00:00:00Z',
               description: '',
+              abonnes: 2_000,
             },
           ];
         },
@@ -147,6 +154,42 @@ describe('sujets', () => {
     const p = await lireProjetStudio(db, id);
     expect(p?.sujets).toEqual([sujet]);
     expect(p?.coutCentimes).toBeGreaterThan(0);
+  });
+
+  it('les vidéos analysées sont gardées avec leurs indicateurs viraux', async () => {
+    const id = await projet();
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id, theme: 'devis' });
+    const t = (await lireProjetStudio(db, id))!.tendances[0]!;
+    expect(t).toMatchObject({ vues: 90_000, multiplicateur: 45, engagement: 0.011 });
+    expect(t.scoreViral).toBeGreaterThan(50);
+    expect(appels[0]!.demande).toMatch(/×45\.0 abonnés/);
+  });
+
+  it('décline un sujet en plusieurs vidéos prêtes à tourner', async () => {
+    const id = await projet();
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    const derive = (titre: string) => ({ ...sujet, titre });
+    reponses = [
+      { sujets: [derive('Erreur n°1'), derive('Avant / après'), derive('Chiffre choc')] },
+    ];
+    const ids = await declinerSujetStudio(services(), {
+      projetId: id,
+      index: 0,
+      nombre: 3,
+      auteurUid: 'sa',
+    });
+    expect(ids).toHaveLength(3);
+    expect(appels[1]!.demande).toMatch(/Décline-le en 3 vidéos/);
+    const p = await lireProjetStudio(db, ids[1]!);
+    expect(p).toMatchObject({
+      titre: 'Avant / après',
+      statut: 'enregistrement',
+      format: 'vertical',
+    });
+    expect(p?.sujet?.titre).toBe('Avant / après');
+    expect(await listerProjetsStudio(db)).toHaveLength(4);
   });
 
   it('les recherches YouTube sont gardées 24 h', async () => {

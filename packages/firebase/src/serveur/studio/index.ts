@@ -9,6 +9,7 @@ export {
   capturesTermineesStudio,
   choisirSujetStudio,
   creerProjetStudio,
+  declinerSujetStudio,
   echecStudio,
   genererMontageStudio,
   lireProjetStudio,
@@ -24,5 +25,6 @@ export {
   type ProjetStudio,
   type ServicesStudio,
   type StatutStudio,
+  type TendanceAffichee,
   type TravailStudio,
 } from './projets';

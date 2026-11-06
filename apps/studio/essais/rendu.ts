@@ -81,6 +81,7 @@ const plan: PlanMontage = {
   artisan: null,
   sousTitres: true,
   musique: true,
+  miniature: { texte: '10 demandes gratuites', accent: 'gratuites', tempsMs: 4_500 },
 };
 const mots = [
   ['Artisans,', 200, 800],

@@ -21,8 +21,16 @@ export interface VideoTendance {
   dureeS: number;
   publieeLe: string;
   description: string;
+  /** Abonnés de la chaîne (masqués par certaines chaînes : `null`). */
+  abonnes: number | null;
   /** Vues par jour depuis la publication : la vraie mesure de l'élan. */
   vuesParJour: number;
+  /** (j'aime + commentaires) / vues ; `null` sans compteurs publics. */
+  engagement: number | null;
+  /** Vues / abonnés : au-dessus de 1, la vidéo a dépassé l'audience de la chaîne (elle a « percé »). */
+  multiplicateur: number | null;
+  /** Potentiel viral de 0 à 100 (élan, engagement, dépassement de l'audience). */
+  scoreViral: number;
 }
 
 /** Ce qui est vrai sur le produit : rien d'autre ne doit être affirmé sur Portail Travaux. */
@@ -53,6 +61,8 @@ export function promptSujets(e: {
     'Méthode : repère dans les vidéos fournies ce qui marche (formats, accroches, promesses, durées, vues par jour), puis transpose-le à Portail Travaux. Ne copie aucune vidéo.',
     'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair. Relance l’attention toutes les 3 à 5 secondes.',
     'Pour chaque phrase du script, indique ce qu’on voit à l’écran : « camera » (l’auteur face caméra), « ecran » (son écran enregistré) ou une scène filmée par le robot parmi celles listées.',
+    'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
+    'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres des vidéos qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
   ].join('\n');
   const contexte = [
     `Faits sur le produit :\n${FAITS_PRODUIT}`,
@@ -64,7 +74,7 @@ export function promptSujets(e: {
     .slice(0, 40)
     .map(
       (v, i) =>
-        `${i + 1}. « ${v.titre} » (${v.chaine}) · ${v.vues} vues · ${Math.round(v.vuesParJour)} vues/jour · ${v.dureeS} s${v.likes !== null ? ` · ${v.likes} j’aime` : ''}${v.description ? `\n   ${v.description.slice(0, 200)}` : ''}`,
+        `${i + 1}. « ${v.titre} » (${v.chaine}) · score viral ${v.scoreViral}/100 · ${v.vues} vues · ${Math.round(v.vuesParJour)} vues/jour${v.multiplicateur !== null ? ` · ×${v.multiplicateur.toFixed(1)} abonnés` : ''}${v.engagement !== null ? ` · engagement ${(v.engagement * 100).toFixed(1)} %` : ''} · ${v.dureeS} s${v.description ? `\n   ${v.description.slice(0, 200)}` : ''}`,
     )
     .join('\n');
   const demande = [
@@ -76,6 +86,11 @@ export function promptSujets(e: {
   ].join('\n\n');
   return { systeme, contexte, demande };
 }
+
+const miniatureSujet = z.strictObject({
+  texte: z.string().trim().min(1).max(40),
+  accent: z.string().trim().max(20),
+});
 
 const phraseScript = z.strictObject({
   voix: z.string().trim().min(1).max(400),
@@ -91,6 +106,18 @@ export const sujetStudio = z.strictObject({
   script: z.array(phraseScript).min(2).max(40),
   legende: z.string().trim().min(1).max(600),
   hashtags: z.array(z.string().trim().min(1).max(40)).max(10),
+  /** Potentiel viral estimé par Claude, de 1 à 10, au regard des vidéos analysées. */
+  potentielViral: z.number().int().min(1).max(10),
+  /** Vues visées sur 30 jours (fourchette) et abonnés à gagner : objectifs affichés. */
+  vuesVisees: z.strictObject({
+    min: z.number().int().min(0).max(100_000_000),
+    max: z.number().int().min(0).max(100_000_000),
+  }),
+  abonnesVises: z.number().int().min(0).max(10_000_000),
+  /** Vidéos analysées dont l'idée s'inspire (titres). */
+  inspirations: z.array(z.string().trim().min(1).max(160)).max(5),
+  /** Texte de la miniature (image de couverture) : court, un mot mis en avant. */
+  miniature: miniatureSujet,
 });
 export type SujetStudio = z.infer<typeof sujetStudio>;
 export const sortieSujets = z.strictObject({ sujets: z.array(sujetStudio).min(1).max(8) });
@@ -117,6 +144,11 @@ export const SCHEMA_JSON_SUJETS: Record<string, unknown> = objet({
       script: { type: 'array', items: objet({ voix: chaine, aEcran: chaine, texteEcran: chaine }) },
       legende: chaine,
       hashtags: { type: 'array', items: chaine },
+      potentielViral: entier,
+      vuesVisees: objet({ min: entier, max: entier }),
+      abonnesVises: entier,
+      inspirations: { type: 'array', items: chaine },
+      miniature: objet({ texte: chaine, accent: chaine }),
     }),
   },
 });
@@ -245,6 +277,7 @@ export function promptMontage(e: {
     '- Pas d’effet gadget : des coupes nettes, des calques lisibles, au plus 2 calques en même temps.',
     `- Durée totale entre ${DUREE_MIN_MS / 1000} s et ${DUREE_MAX_MS / 1000} s. Temps en millisecondes entières. Les temps des calques sont relatifs au début de leur plan.`,
     '- Identifiants : lettres minuscules, chiffres, « _ » ou « - ».',
+    '- Miniature : choisis l’image la plus forte (visage expressif ou écran parlant) avec `tempsMs` dans la vidéo finale, un texte de 2 à 5 mots qui donne envie de cliquer et le mot à mettre en avant.',
   ].join('\n');
   const contexte = [
     `Faits sur le produit :\n${FAITS_PRODUIT}`,
@@ -285,4 +318,24 @@ export function promptMontage(e: {
       : []),
   ];
   return { systeme, contexte, demande: lignes.join('\n\n') };
+}
+
+/**
+ * Déclinaisons d'un sujet qui marche : même thème, angles et accroches différents, pour tourner
+ * plusieurs vidéos à la suite (séries, tests d'accroches).
+ */
+export function promptDeclinaisons(e: {
+  sujet: SujetStudio;
+  nombre: number;
+  videos: readonly VideoTendance[];
+}): { systeme: string; contexte: string; demande: string } {
+  const base = promptSujets({ videos: e.videos, theme: e.sujet.titre, nombre: e.nombre });
+  return {
+    ...base,
+    demande: [
+      `Sujet de départ (il plaît à l’auteur) :\n${JSON.stringify({ titre: e.sujet.titre, angle: e.sujet.angle, accroches: e.sujet.accroches })}`,
+      `Décline-le en ${e.nombre} vidéos différentes sur le même thème : chacune avec un angle, une accroche, un script et une miniature qui lui sont propres (ex. erreur à éviter, chiffre choc, avant/après, coulisses, réponse à une objection). Pas deux fois la même accroche.`,
+      base.demande.split('\n\n').slice(1, 2).join(''),
+    ].join('\n\n'),
+  };
 }

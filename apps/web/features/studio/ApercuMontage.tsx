@@ -2,6 +2,7 @@
 
 import {
   dessinerImage,
+  dessinerMiniature,
   FORMATS_STUDIO,
   lignesSousTitres,
   motsSortie,
@@ -40,6 +41,7 @@ export function ApercuMontage({
   const camera = useRef<HTMLVideoElement>(null);
   const l = useLectureMontage(plan);
   const [urls, setUrls] = useState<Record<string, string>>({});
+  const [voirMiniature, setVoirMiniature] = useState(false);
   const lignes = useMemo(
     () => lignesSousTitres(motsSortie(plan, mots), reglagesSousTitres(plan.format)),
     [plan, mots],
@@ -91,10 +93,17 @@ export function ApercuMontage({
         lignes,
         themeStudio,
       );
+      if (voirMiniature && plan.miniature)
+        dessinerMiniature(
+          ctx as unknown as ContexteImage,
+          plan.miniature,
+          plan.format,
+          themeStudio,
+        );
       raf = requestAnimationFrame(image);
     });
     return () => cancelAnimationFrame(raf);
-  }, [plan, lignes, l.t, l.captures]);
+  }, [plan, lignes, l.t, l.captures, voirMiniature]);
 
   return (
     <div className="grid justify-items-center gap-2">
@@ -158,6 +167,23 @@ export function ApercuMontage({
           {sec(l.affiche)} / {sec(l.duree)}
         </span>
       </div>
+      {plan.miniature ? (
+        <Button
+          taille="sm"
+          variant="secondaire"
+          aria-pressed={voirMiniature}
+          onClick={() => {
+            const voir = !voirMiniature;
+            setVoirMiniature(voir);
+            if (voir && plan.miniature) {
+              l.setLecture(false);
+              l.aller(plan.miniature.tempsMs);
+            }
+          }}
+        >
+          {voirMiniature ? 'Revenir à la vidéo' : 'Voir la miniature'}
+        </Button>
+      ) : null}
       {!plan.captures.every((c) => urls[`capture:${c.id}`]) ? (
         <p className="m-0 text-xs text-neutre-700">
           Les captures Portail Travaux apparaîtront ici dès que le robot les aura filmées.

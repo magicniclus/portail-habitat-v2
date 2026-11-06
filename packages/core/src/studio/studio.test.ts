@@ -303,3 +303,20 @@ describe('afficher ou masquer la caméra', () => {
     expect(p.plans.map((x) => x.camera)).toEqual(['bas', 'bas']);
   });
 });
+
+describe('miniature du plan', () => {
+  it('doit tomber dans la vidéo', () => {
+    expect(
+      verifierPlan(base({ miniature: { texte: 'x', accent: '', tempsMs: 1_000 } }), {
+        dureePriseMs: 20_000,
+        camera: true,
+      }),
+    ).toEqual([]);
+    expect(
+      verifierPlan(base({ miniature: { texte: 'x', accent: '', tempsMs: 60_000 } }), {
+        dureePriseMs: 20_000,
+        camera: true,
+      })[0],
+    ).toMatch(/Miniature/);
+  });
+});

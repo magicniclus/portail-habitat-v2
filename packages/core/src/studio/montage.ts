@@ -65,6 +65,8 @@ export function verifierPlan(
   const duree = dureePlan(p);
   if (duree < DUREE_MIN_MS || duree > DUREE_MAX_MS)
     erreurs.push(`La vidéo dure ${sec(duree)} : elle doit durer entre 10 s et 3 min.`);
+  if (p.miniature && p.miniature.tempsMs > duree)
+    erreurs.push(`Miniature : ${sec(p.miniature.tempsMs)} est après la fin de la vidéo.`);
   const captures = new Set(p.captures.map((c) => c.id));
   const ids = new Set<string>();
   for (const x of p.plans) {

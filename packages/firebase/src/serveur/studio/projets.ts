@@ -6,6 +6,7 @@ import {
   MODELE_STUDIO,
   planMontage,
   promptMontage,
+  promptDeclinaisons,
   promptSujets,
   RECHERCHES_PAR_DEFAUT,
   SCHEMA_JSON_PLAN,
@@ -18,6 +19,7 @@ import {
   type MotTranscrit,
   type PlanMontage,
   type SujetStudio,
+  type VideoBrute,
   type VideoTendance,
 } from '@ph/core/studio';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -60,6 +62,8 @@ export interface ProjetStudio {
   theme: string | null;
   sujets: SujetStudio[];
   sujet: SujetStudio | null;
+  /** Vidéos analysées pour les dernières propositions, de la plus virale à la moins virale. */
+  tendances: TendanceAffichee[];
   prise: { id: string; fichiers: FichiersPrise; dureeMs: number } | null;
   mots: MotTranscrit[];
   plan: PlanMontage | null;
@@ -95,6 +99,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     theme: (d.theme as string | null | undefined) ?? null,
     sujets: (d.sujets as SujetStudio[] | undefined) ?? [],
     sujet: (d.sujet as SujetStudio | null | undefined) ?? null,
+    tendances: (d.tendances as TendanceAffichee[] | undefined) ?? [],
     prise: (d.prise as ProjetStudio['prise'] | undefined) ?? null,
     mots: (d.mots as MotTranscrit[] | undefined) ?? [],
     plan: (d.plan as PlanMontage | null | undefined) ?? null,
@@ -191,7 +196,7 @@ async function videosRecherche(s: ServicesStudio, q: string) {
   const cache = await ref.get();
   const maintenant = s.horloge();
   if (cache.exists && maintenant - ms(cache.get('le')) < JOUR)
-    return cache.get('videos') as Omit<VideoTendance, 'vuesParJour'>[];
+    return cache.get('videos') as VideoBrute[];
   const videos = await s.youtube!(q, maintenant);
   await ref.set({
     schemaVersion: 1,
@@ -218,6 +223,28 @@ async function tendances(s: ServicesStudio, theme: string | undefined): Promise<
   const uniques = lots.flat().filter((v) => !vus.has(v.titre) && vus.add(v.titre));
   return classerTendances(uniques, s.horloge());
 }
+
+/** Ce qu'on garde d'une vidéo analysée pour l'afficher (sans la description). */
+export interface TendanceAffichee {
+  titre: string;
+  chaine: string;
+  vues: number;
+  likes: number | null;
+  vuesParJour: number;
+  engagement: number | null;
+  multiplicateur: number | null;
+  scoreViral: number;
+}
+const resumeTendance = (v: VideoTendance): TendanceAffichee => ({
+  titre: v.titre,
+  chaine: v.chaine,
+  vues: v.vues,
+  likes: v.likes,
+  vuesParJour: Math.round(v.vuesParJour),
+  engagement: v.engagement === null ? null : Math.round(v.engagement * 1000) / 1000,
+  multiplicateur: v.multiplicateur === null ? null : Math.round(v.multiplicateur * 10) / 10,
+  scoreViral: v.scoreViral,
+});
 
 const cout = (usage: Parameters<typeof coutCentimes>[1]) =>
   FieldValue.increment(coutCentimes(MODELE_STUDIO, usage));
@@ -249,9 +276,7 @@ export async function proposerSujetsStudio(
   await maj(s, e.projetId, {
     sujets,
     theme: theme ?? null,
-    tendances: videos
-      .slice(0, 10)
-      .map((v) => ({ titre: v.titre, vues: v.vues, vuesParJour: Math.round(v.vuesParJour) })),
+    tendances: videos.slice(0, 12).map(resumeTendance),
     coutCentimes: cout(r.usage),
   });
   return sujets;
@@ -271,6 +296,49 @@ export async function choisirSujetStudio(
     ...(auto && sujet ? { titre: sujet.titre.slice(0, 100) } : {}),
     ...(p.statut === 'sujet' ? { statut: 'enregistrement' } : {}),
   });
+}
+
+/**
+ * Plusieurs vidéos d'un coup à partir d'un sujet qui plaît : Claude le décline (angles, accroches,
+ * miniatures différents) et chaque déclinaison devient une vidéo prête à tourner.
+ */
+export async function declinerSujetStudio(
+  s: ServicesStudio,
+  e: { projetId: string; index: number; nombre: number; auteurUid: string },
+): Promise<string[]> {
+  const claude = exigerClaude(s);
+  const p = await exiger(s, e.projetId);
+  const sujet = p.sujets[e.index];
+  if (!sujet) throw new ErreurMetier('INTROUVABLE', 'Ce sujet n’existe plus.');
+  const videos = await tendances(s, sujet.titre);
+  const r = await claude({
+    modele: MODELE_STUDIO,
+    ...promptDeclinaisons({ sujet, nombre: e.nombre, videos }),
+    schema: SCHEMA_JSON_SUJETS,
+    maxTokens: 48_000,
+  });
+  await maj(s, p.id, { coutCentimes: cout(r.usage) });
+  if (r.refus)
+    throw new ErreurMetier('INDISPONIBLE', 'Claude n’a pas décliné ce sujet. Réessayez.');
+  let derives: SujetStudio[];
+  try {
+    derives = sortieSujets.parse(JSON.parse(r.texte)).sujets.slice(0, e.nombre);
+  } catch {
+    throw new ErreurMetier('INDISPONIBLE', 'La proposition de Claude était illisible. Réessayez.');
+  }
+  const ids: string[] = [];
+  for (const d of derives) {
+    const id = await creerProjetStudio(s, {
+      auteurUid: e.auteurUid,
+      titre: d.titre.slice(0, 100),
+      format: p.format,
+      camera: p.camera,
+      ...(p.theme ? { theme: p.theme } : {}),
+    });
+    await maj(s, id, { sujets: [d], sujet: d, statut: 'enregistrement', declineDe: p.id });
+    ids.push(id);
+  }
+  return ids;
 }
 
 /** Étape 3 : la prise est envoyée (Storage), le robot la transcrit (Whisper). */

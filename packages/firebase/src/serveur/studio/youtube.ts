@@ -1,23 +1,33 @@
-import { dureeIso, type VideoTendance } from '@ph/core/studio';
+import { dureeIso, type VideoBrute } from '@ph/core/studio';
 
 /**
  * Vidéos courtes qui marchent sur YouTube (API YouTube Data v3, clé gratuite) : recherche en
- * France et en français, triée par vues, sur les 60 derniers jours. Coût : 101 unités par
- * recherche sur 10 000 par jour ; le résultat est gardé 24 h (COUTS.md).
+ * France et en français, triée par vues, sur les 60 derniers jours, avec les abonnés de chaque
+ * chaîne. Coût : 102 unités par recherche sur 10 000 par jour ; résultat gardé 24 h (COUTS.md).
  */
-export type RechercheYoutube = (
-  recherche: string,
-  maintenant: number,
-) => Promise<Omit<VideoTendance, 'vuesParJour'>[]>;
+export type RechercheYoutube = (recherche: string, maintenant: number) => Promise<VideoBrute[]>;
 
 interface ReponseRecherche {
   items?: { id?: { videoId?: string } }[];
 }
 interface ReponseVideos {
   items?: {
-    snippet?: { title?: string; channelTitle?: string; publishedAt?: string; description?: string };
+    snippet?: {
+      title?: string;
+      channelId?: string;
+      channelTitle?: string;
+      publishedAt?: string;
+      description?: string;
+    };
     statistics?: { viewCount?: string; likeCount?: string; commentCount?: string };
     contentDetails?: { duration?: string };
+  }[];
+}
+
+interface ReponseChaines {
+  items?: {
+    id?: string;
+    statistics?: { subscriberCount?: string; hiddenSubscriberCount?: boolean };
   }[];
 }
 
@@ -50,7 +60,26 @@ export function rechercheYoutube(cle: string, f: typeof fetch = fetch): Recherch
       { signal: AbortSignal.timeout(10_000) },
     );
     if (!v.ok) throw new Error(`YouTube : détails refusés (${v.status}).`);
-    return (((await v.json()) as ReponseVideos).items ?? []).map((i) => ({
+    const items = ((await v.json()) as ReponseVideos).items ?? [];
+    // Abonnés des chaînes (1 unité) : une vidéo qui dépasse son audience a « percé ».
+    const chaines = [
+      ...new Set(items.map((i) => i.snippet?.channelId).filter((x): x is string => Boolean(x))),
+    ];
+    const abonnes = new Map<string, number | null>();
+    if (chaines.length) {
+      const c = await f(
+        `${API}/channels?${new URLSearchParams({ part: 'statistics', id: chaines.join(','), key: cle })}`,
+        { signal: AbortSignal.timeout(10_000) },
+      );
+      if (c.ok)
+        for (const ch of ((await c.json()) as ReponseChaines).items ?? [])
+          if (ch.id)
+            abonnes.set(
+              ch.id,
+              ch.statistics?.hiddenSubscriberCount ? null : entier(ch.statistics?.subscriberCount),
+            );
+    }
+    return items.map((i) => ({
       titre: i.snippet?.title ?? '',
       chaine: i.snippet?.channelTitle ?? '',
       publieeLe: i.snippet?.publishedAt ?? new Date(maintenant).toISOString(),
@@ -59,6 +88,7 @@ export function rechercheYoutube(cle: string, f: typeof fetch = fetch): Recherch
       likes: entier(i.statistics?.likeCount),
       commentaires: entier(i.statistics?.commentCount),
       dureeS: dureeIso(i.contentDetails?.duration ?? '') ?? 0,
+      abonnes: abonnes.get(i.snippet?.channelId ?? '') ?? null,
     }));
   };
 }

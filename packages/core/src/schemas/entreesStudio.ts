@@ -45,3 +45,10 @@ export const entreeRetoucheStudio = z.strictObject({
 export const entreeModifierPlanStudio = z.strictObject({ projetId: id, plan: planMontage });
 
 export const entreeProjetStudio = z.strictObject({ projetId: id });
+
+/** Décliner un sujet en 2 à 5 vidéos d'un coup. */
+export const entreeDeclinaisonStudio = z.strictObject({
+  projetId: id,
+  index: z.number().int().min(0).max(7),
+  nombre: z.number().int().min(2).max(5),
+});

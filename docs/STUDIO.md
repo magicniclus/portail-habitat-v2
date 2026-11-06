@@ -9,7 +9,9 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
 - **Tendances** : API YouTube Data v3, avec une clé gratuite `YOUTUBE_API_KEY`. On cherche des Shorts en France, en français, sur les 60 derniers jours, triés par vues. Ils sont ensuite classés par **vues par jour**. Cinq recherches par défaut, ou le thème donné par l'auteur.
   - Cache de 24 h dans `studioTendances`. Une recherche coûte 101 unités sur 10 000 par jour.
   - TikTok et Instagram n'ont pas d'API publique pour les vidéos des autres. Ce n'est donc pas branché.
-- **Claude** (`claude-opus-5-5`, réflexion adaptative, effort élevé, sortie JSON imposée) propose 3 sujets. Chacun a un angle, des accroches et un « pourquoi ça peut marcher » tiré des données. Il a aussi un script phrase par phrase avec ce qu'on voit à l'écran, une légende et des hashtags.
+- **Indicateurs de chaque vidéo analysée** : vues par jour, engagement ((j'aime + commentaires) / vues), **×abonnés** (vues / abonnés de la chaîne : au-dessus de 1, la vidéo a percé au-delà de son audience) et **score viral** sur 100 (`scoreViral`). Les vidéos sont classées par score ; le tableau « Ce qui marche en ce moment » les affiche.
+- **Claude** (`claude-opus-5-5`, réflexion adaptative, effort élevé, sortie JSON imposée) propose 3 sujets. Chacun affiche aussi son **potentiel viral sur 10**, les **vues visées** sur 30 jours, l'**objectif d'abonnés**, les vidéos qui l'inspirent et le texte de sa **miniature**.
+- **Déclinaisons** : « Décliner » transforme un sujet qui plaît en 2 à 5 vidéos (angles, accroches et miniatures différents), chacune créée prête à tourner. Chacun a un angle, des accroches et un « pourquoi ça peut marcher » tiré des données. Il a aussi un script phrase par phrase avec ce qu'on voit à l'écran, une légende et des hashtags.
 - **Règles données à Claude** :
   - vouvoiement ; jamais « lead » ;
   - rien d'affirmé sur le produit en dehors des faits listés dans `packages/core/src/studio/prompts.ts` ;
@@ -61,6 +63,7 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 - **Découpe proposée à Claude** (`segmentsParoles`) : silences de plus de 0,7 s et « euh » retirés. Claude garde les meilleures prises.
 - **Aperçu de l'admin** : image par image, avec les mêmes fonctions de dessin que le rendu (`dessinerImage`, `disposition`, `couverture`).
 - **Réglages directs**, sans Claude : format (vertical par défaut, horizontal, carré), m'afficher ou non, sous-titres.
+- **Miniature** (image de couverture) : Claude choisit l'image (`tempsMs`), un texte de 2 à 5 mots et le mot mis en avant ; visible dans l'aperçu (« Voir la miniature ») et dessinée par le robot avec le même code.
 - **Retouche** « Revoir avec Claude » : Claude reçoit le plan actuel et la demande. Chaque plan accepté est une version (`studioProjets/{id}/versions/{n}`).
 
 ## 6. Rendu (robot Cloud Run, `apps/studio`)

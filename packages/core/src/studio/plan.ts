@@ -135,6 +135,14 @@ export const planMontage = z.strictObject({
   sousTitres: z.boolean(),
   /** Fond musical discret sous la voix. */
   musique: z.boolean(),
+  /** Miniature (image de couverture) : image de la vidéo à `tempsMs`, texte court, mot en avant. */
+  miniature: z
+    .strictObject({
+      texte: z.string().trim().min(1).max(40),
+      accent: z.string().trim().max(20),
+      tempsMs: ms,
+    })
+    .optional(),
 });
 export type PlanMontage = z.infer<typeof planMontage>;
 
