@@ -48,3 +48,22 @@ test('studio : refusé sans la permission', async ({ page }) => {
   await connecter(page, 'moderateur@test.local', '/admin/studio', 'admin');
   await expect(page.getByRole('heading', { level: 1, name: 'Studio' })).toHaveCount(0);
 });
+
+test('studio : réseaux, calendrier, résultats et séries', async ({ page }) => {
+  await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
+  await expect(page.getByRole('heading', { name: 'Séries' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /Idées tirées de vos commentaires/ }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Réseaux' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Réseaux' })).toBeVisible();
+  for (const r of ['YouTube Shorts', 'Instagram Reels', 'TikTok'])
+    await expect(page.getByText(r, { exact: true })).toBeVisible();
+  await page.goto('/admin/studio/calendrier');
+  await expect(page.getByRole('heading', { level: 1, name: 'Calendrier' })).toBeVisible();
+  await expect(page.getByText(/Créneaux conseillés : 14 h 30/)).toBeVisible();
+  await page.getByLabel('Objectif par jour').selectOption('3');
+  await expect(page).toHaveURL(/parJour=3/);
+  await page.goto('/admin/studio/resultats');
+  await expect(page.getByText('Pas encore de résultats')).toBeVisible();
+});
