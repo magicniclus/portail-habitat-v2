@@ -27,13 +27,14 @@ export default async function ResultatsStudio() {
         </Link>
         <h1 className="m-0 mt-1 text-[clamp(24px,3vw,30px)]">Résultats</h1>
         <p className="m-0 mt-1 text-neutre-700">
-          Relevés toutes les 6 heures pendant 30 jours. Claude s’en sert pour ses prochaines
-          propositions.
+          Relevés toutes les 6 heures pendant 30 jours (comptes connectés) ou notés à la main («
+          J’ai publié moi-même »). Claude s’en sert pour ses prochaines propositions.
         </p>
       </header>
       {l.length === 0 ? (
         <EmptyState titre="Pas encore de résultats">
-          Publiez une vidéo depuis le Studio : ses vues apparaissent ici après le premier relevé.
+          Publiez une vidéo depuis le Studio, ou notez-la dans « 6. Publier › J’ai publié moi-même
+          ».
         </EmptyState>
       ) : (
         <ul className="m-0 grid list-none gap-3 p-0">

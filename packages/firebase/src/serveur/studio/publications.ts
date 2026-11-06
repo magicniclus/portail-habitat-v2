@@ -40,6 +40,8 @@ export interface PublicationStudio {
   lien: string | null;
   idExterne: string | null;
   prive: boolean;
+  /** Publiée à la main : chiffres saisis par l'auteur. */
+  manuelle: boolean;
   erreur: string | null;
   publieeLe: number | null;
   stats: StatsPublication | null;
@@ -77,6 +79,7 @@ export function versPublication(id: string, d: FirebaseFirestore.DocumentData): 
     lien: (d.lien as string | null) ?? null,
     idExterne: (d.idExterne as string | null) ?? null,
     prive: d.prive === true,
+    manuelle: d.manuelle === true,
     erreur: (d.erreur as string | null) ?? null,
     publieeLe: ms(d.publieeLe),
     stats: (d.stats as StatsPublication | null) ?? null,
@@ -251,4 +254,82 @@ export async function relancerPublicationStudio(
     erreur: null,
     programmeeLe: Timestamp.fromMillis(s.horloge()),
   });
+}
+
+interface ChiffresManuels {
+  vues: number;
+  likes: number | null;
+  commentaires: number | null;
+  partages: number | null;
+  abonnesGagnes: number | null;
+  retentionPourcent: number | null;
+}
+
+const statsManuelles = (c: ChiffresManuels): StatsPublication => ({
+  vues: c.vues,
+  likes: c.likes,
+  commentaires: c.commentaires,
+  partages: c.partages,
+  dureeMoyenneS: null,
+  retention: c.retentionPourcent === null ? null : c.retentionPourcent / 100,
+  abonnesGagnes: c.abonnesGagnes,
+  courbe: null,
+});
+
+/**
+ * Vidéo publiée à la main (sans compte connecté) : on note ses chiffres pour que le calendrier,
+ * les résultats et Claude en profitent. Jamais relevée automatiquement (`manuelle`).
+ */
+export async function publicationManuelleStudio(
+  s: Pick<ServicesPublication, 'db' | 'horloge'>,
+  e: ChiffresManuels & {
+    projetId: string;
+    reseau: Reseau;
+    variante: string | null;
+    publieeLe: number;
+    lien: string | null;
+    auteurUid: string;
+  },
+): Promise<string> {
+  const p = await lireProjetStudio(s.db, e.projetId);
+  if (!p) throw new ErreurMetier('INTROUVABLE', 'Ce projet n’existe plus.');
+  const maintenant = s.horloge();
+  if (e.publieeLe > maintenant + 60_000)
+    throw new ErreurMetier('ENTREE_INVALIDE', 'La date de publication est dans le futur.');
+  const ref = s.db.collection(collections.studioPublications).doc();
+  await ref.set({
+    schemaVersion: 1,
+    projetId: e.projetId,
+    reseau: e.reseau,
+    titre: p.titre,
+    legende: '',
+    video: p.rendu?.video ?? '',
+    variante: e.variante,
+    programmeeLe: Timestamp.fromMillis(e.publieeLe),
+    statut: 'publiee',
+    manuelle: true,
+    lien: e.lien,
+    idExterne: null,
+    prive: false,
+    erreur: null,
+    publieeLe: Timestamp.fromMillis(e.publieeLe),
+    stats: statsManuelles(e),
+    statsLe: Timestamp.fromMillis(maintenant),
+    auteurUid: e.auteurUid,
+    creeLe: Timestamp.fromMillis(maintenant),
+  });
+  return ref.id;
+}
+
+/** Nouveaux chiffres d'une vidéo publiée à la main. */
+export async function chiffresManuelsStudio(
+  s: Pick<ServicesPublication, 'db' | 'horloge'>,
+  e: ChiffresManuels & { publicationId: string },
+) {
+  const ref = s.db.doc(chemins.publicationStudio(e.publicationId));
+  const d = await ref.get();
+  if (!d.exists) throw new ErreurMetier('INTROUVABLE', 'Cette publication n’existe plus.');
+  if (d.get('manuelle') !== true)
+    throw new ErreurMetier('PRECONDITION', 'Ces chiffres sont relevés automatiquement.');
+  await ref.update({ stats: statsManuelles(e), statsLe: Timestamp.fromMillis(s.horloge()) });
 }

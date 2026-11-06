@@ -14,6 +14,8 @@ import {
   releverStatsStudio,
   resultatsPourClaudeStudio,
   sujetsDepuisCommentairesStudio,
+  publicationManuelleStudio,
+  chiffresManuelsStudio,
   lireProjetStudio,
   type ConfigReseaux,
   type ServicesPublication,
@@ -419,5 +421,81 @@ describe('commentaires en idées de vidéos', () => {
     expect((await lireProjetStudio(db, id))?.theme).toBe(
       'Répondre aux questions de nos commentaires',
     );
+  });
+});
+
+describe('publication à la main (sans compte connecté)', () => {
+  it('chiffres saisis, utilisés par les résultats et Claude, jamais relevés automatiquement', async () => {
+    const id = await publicationManuelleStudio(services(), {
+      projetId: 'v1',
+      reseau: 'tiktok',
+      variante: null,
+      publieeLe: maintenant - 86_400_000,
+      lien: 'https://www.tiktok.com/@pt/video/1',
+      vues: 4_200,
+      likes: 300,
+      commentaires: null,
+      partages: null,
+      abonnesGagnes: 12,
+      retentionPourcent: 45,
+      auteurUid: 'sa',
+    });
+    const [p] = await listerPublicationsStudio(db, { depuis: 0, jusqua: maintenant });
+    expect(p).toMatchObject({
+      statut: 'publiee',
+      manuelle: true,
+      stats: { vues: 4_200, retention: 0.45, abonnesGagnes: 12 },
+    });
+    expect(await resultatsPourClaudeStudio(db, maintenant)).toMatch(
+      /4.200 vues, 45 % regardé, \+12 abonnés/,
+    );
+    requetes = [];
+    maintenant += 7 * 3_600_000;
+    expect(
+      await releverStatsStudio({ db, horloge: () => maintenant, reseaux: config(), fetch: faux }),
+    ).toEqual({ relevees: 0, erreurs: 0 });
+    expect(requetes).toEqual([]);
+    await chiffresManuelsStudio(services(), {
+      publicationId: id,
+      vues: 9_000,
+      likes: 500,
+      commentaires: 40,
+      partages: 8,
+      abonnesGagnes: 30,
+      retentionPourcent: null,
+    });
+    const [q] = await listerPublicationsStudio(db, { depuis: 0, jusqua: maintenant });
+    expect(q!.stats).toMatchObject({ vues: 9_000, retention: null, partages: 8 });
+    await expect(
+      publicationManuelleStudio(services(), {
+        projetId: 'v1',
+        reseau: 'youtube',
+        variante: null,
+        publieeLe: maintenant + 86_400_000,
+        lien: null,
+        auteurUid: 'sa',
+        vues: 1,
+        likes: null,
+        commentaires: null,
+        partages: null,
+        abonnesGagnes: null,
+        retentionPourcent: null,
+      }),
+    ).rejects.toThrow(/futur/);
+  });
+
+  it('une publication automatique ne se corrige pas à la main', async () => {
+    const [pid] = await programmer(maintenant);
+    await expect(
+      chiffresManuelsStudio(services(), {
+        publicationId: pid!,
+        vues: 1,
+        likes: null,
+        commentaires: null,
+        partages: null,
+        abonnesGagnes: null,
+        retentionPourcent: null,
+      }),
+    ).rejects.toThrow(/automatiquement/);
   });
 });

@@ -124,3 +124,36 @@ export const entreeSerieStudio = z.strictObject({ serieId: id });
 
 /** Sujets tirés des commentaires : aucune entrée, tout est relu côté serveur. */
 export const entreeCommentairesStudio = z.strictObject({});
+
+const compte = z.number().int().min(0).max(1_000_000_000);
+/** Chiffres relevés à la main sur l'appli du réseau (en attendant la connexion des comptes). */
+const chiffresManuels = {
+  vues: compte,
+  likes: compte.nullable(),
+  commentaires: compte.nullable(),
+  partages: compte.nullable(),
+  abonnesGagnes: compte.nullable(),
+  /** Part de la vidéo regardée en moyenne, en %. */
+  retentionPourcent: z.number().int().min(0).max(100).nullable(),
+};
+
+export const entreePublicationManuelleStudio = z.strictObject({
+  projetId: id,
+  reseau,
+  variante: id.nullable(),
+  /** Heure de publication (ms). */
+  publieeLe: z.number().int().min(0),
+  lien: z
+    .string()
+    .trim()
+    .url()
+    .max(300)
+    .regex(/^https:\/\//)
+    .nullable(),
+  ...chiffresManuels,
+});
+
+export const entreeChiffresManuelsStudio = z.strictObject({
+  publicationId: id,
+  ...chiffresManuels,
+});

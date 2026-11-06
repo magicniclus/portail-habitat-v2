@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { ComparaisonAccroches } from './ComparaisonAccroches';
 import { ListePublications } from './ListePublications';
+import { SaisieManuelle } from './SaisieManuelle';
 import { programmerPublication } from './publication';
 
 /** Valeur d'un champ date-heure local : dans une heure, au quart d'heure. */
@@ -82,7 +83,8 @@ export function EtapePublication({
       </div>
       {connectes.length === 0 ? (
         <Banner tone="info">
-          Aucun réseau connecté.{' '}
+          Aucun réseau connecté : téléchargez la vidéo, publiez-la depuis votre téléphone, puis
+          notez-la ci-dessous. Pour publier d’ici :{' '}
           <Link href={'/admin/studio/reseaux' as Route}>
             Connecter YouTube, Instagram ou TikTok
           </Link>
@@ -169,6 +171,7 @@ export function EtapePublication({
       {variantes.length ? (
         <ComparaisonAccroches publications={publications} variantes={variantes} />
       ) : null}
+      <SaisieManuelle projetId={projetId} variantes={variantes} />
       {publications.length ? <ListePublications publications={publications} /> : null}
     </section>
   );

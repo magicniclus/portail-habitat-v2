@@ -1,7 +1,12 @@
 import { FORMATS_STUDIO, LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros, formatRelatif } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { listerIdeesStudio, listerProjetsStudio, listerSeriesStudio } from '@ph/firebase/studio';
+import {
+  listerComptesStudio,
+  listerIdeesStudio,
+  listerProjetsStudio,
+  listerSeriesStudio,
+} from '@ph/firebase/studio';
 import { Badge, Banner, EmptyState } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
@@ -22,10 +27,11 @@ export const maxDuration = 300;
 export default async function Studio() {
   await pageAdmin('/admin/studio', 'studio');
   const db = getFirestore(appAdmin());
-  const [projets, idees, series] = await Promise.all([
+  const [projets, idees, series, comptes] = await Promise.all([
     listerProjetsStudio(db),
     listerIdeesStudio(db),
     listerSeriesStudio(db),
+    listerComptesStudio(db),
   ]);
   const maintenant = maintenantServeur();
   const manque = [
@@ -76,7 +82,8 @@ export default async function Studio() {
         </Banner>
       ) : null}
       <NouveauProjet />
-      <BoutonCommentaires />
+      {/* Les commentaires se lisent par les comptes connectés (Studio › Réseaux). */}
+      {comptes.some((c) => c.reseau !== 'tiktok') ? <BoutonCommentaires /> : null}
       <Series series={series} />
       {idees.length ? <IdeesGardees idees={idees} /> : null}
       <section aria-labelledby="projets-studio" className="grid gap-2">

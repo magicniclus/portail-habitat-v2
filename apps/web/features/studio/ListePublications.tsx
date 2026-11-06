@@ -5,6 +5,7 @@ import { formatDate, formatNombre } from '@ph/core/format';
 import type { PublicationStudio, StatutPublication } from '@ph/firebase/studio';
 import { Badge, Button } from '@ph/ui';
 import { useTransition } from 'react';
+import { MajChiffres } from './MajChiffres';
 import { annulerPublication, relancerPublication } from './publication';
 
 const STATUTS: Record<
@@ -41,7 +42,9 @@ export function ListePublications({
               {formatDate(p.programmeeLe, 'dateHeure')}
             </span>
             {avecTitre ? <span className="min-w-0 flex-1 truncate">{p.titre}</span> : null}
-            <Badge tone={ton}>{p.prive ? `${libelle} (privée)` : libelle}</Badge>
+            <Badge tone={ton}>
+              {p.prive ? `${libelle} (privée)` : p.manuelle ? `${libelle} (à la main)` : libelle}
+            </Badge>
             {p.stats ? (
               <span className="tabular-nums">
                 {formatNombre(p.stats.vues)} vues
@@ -56,6 +59,7 @@ export function ListePublications({
               </a>
             ) : null}
             {p.erreur ? <span className="w-full text-danger">{p.erreur}</span> : null}
+            {p.manuelle ? <MajChiffres publication={p} /> : null}
             {p.statut === 'programmee' ? (
               <Button
                 variant="fantome"

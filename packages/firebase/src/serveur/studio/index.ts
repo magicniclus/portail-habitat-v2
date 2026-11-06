@@ -58,6 +58,8 @@ export {
 } from './comptes';
 export {
   annulerPublicationStudio,
+  chiffresManuelsStudio,
+  publicationManuelleStudio,
   listerPublicationsStudio,
   programmerPublicationStudio,
   publicationsProjetStudio,

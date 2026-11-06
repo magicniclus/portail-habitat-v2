@@ -1,10 +1,17 @@
 'use server';
 
-import { entreeProgrammerStudio, entreePublicationStudio } from '@ph/core/schemas';
+import {
+  entreeChiffresManuelsStudio,
+  entreeProgrammerStudio,
+  entreePublicationManuelleStudio,
+  entreePublicationStudio,
+} from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { appAdmin } from '@ph/firebase/admin';
 import {
   annulerPublicationStudio,
+  chiffresManuelsStudio,
+  publicationManuelleStudio,
   programmerPublicationStudio,
   relancerPublicationStudio,
 } from '@ph/firebase/studio';
@@ -40,3 +47,19 @@ const relancer = actionAdmin(
 );
 export const relancerPublication = async (e: z.input<typeof entreePublicationStudio>) =>
   fin(await relancer(e));
+
+const manuelle = actionAdmin(
+  { schema: entreePublicationManuelleStudio, nom: 'adminStudioPublicationManuelle', permission: P },
+  async (e, ctx) => publicationManuelleStudio(s(), { ...e, auteurUid: ctx.uid! }),
+);
+/** Vidéo publiée soi-même : ses chiffres servent au calendrier, aux résultats et à Claude. */
+export const noterPublicationManuelle = async (
+  e: z.input<typeof entreePublicationManuelleStudio>,
+) => fin(await manuelle(e));
+
+const chiffres = actionAdmin(
+  { schema: entreeChiffresManuelsStudio, nom: 'adminStudioChiffresManuels', permission: P },
+  async (e) => chiffresManuelsStudio(s(), e),
+);
+export const noterChiffres = async (e: z.input<typeof entreeChiffresManuelsStudio>) =>
+  fin(await chiffres(e));
