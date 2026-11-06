@@ -56,6 +56,8 @@ export function promptSujets(e: {
   videos: readonly VideoTendance[];
   theme?: string | undefined;
   nombre: number;
+  /** Résultats réels de vos vidéos publiées (`resumeVosVideos`), s'il y en a. */
+  vosVideos?: string | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es le meilleur scénariste de vidéos courtes (TikTok, Reels, Shorts) pour le marketing B2B auprès des artisans.',
@@ -85,6 +87,11 @@ export function promptSujets(e: {
       ? `Thème souhaité par l’auteur : ${e.theme}`
       : 'Thème libre, dans l’intérêt des artisans.',
     `Vidéos courtes qui marchent en ce moment :\n${videos || '(aucune donnée disponible : appuie-toi sur ton expérience des formats courts)'}`,
+    ...(e.vosVideos
+      ? [
+          `Résultats réels de NOS vidéos déjà publiées (le signal le plus fiable : refais ce qui a marché pour notre audience, évite ce qui a échoué, ajuste les vues visées à ces chiffres) :\n${e.vosVideos}`,
+        ]
+      : []),
     `Propose ${e.nombre} sujets différents, du plus prometteur au moins prometteur. Durée entre 15 et 90 secondes.`,
   ].join('\n\n');
   return { systeme, contexte, demande };

@@ -1445,6 +1445,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "studioPublications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "statut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "programmeeLe",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

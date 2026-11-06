@@ -25,6 +25,7 @@ export { comportementAgreger } from './comportement/planifiees';
 export { controlerDomaines, verifierDomaines } from './sites/planifiees';
 export { piloteBlog, publierArticlesBlog, viderCorbeilleBlogNuit } from './blog/planifiees';
 export { echeancesDevisFactures } from './devis/planifiees';
+export { studioPublier, studioStats } from './studio/planifiees';
 export { iaContexteNuit, iaSyntheseHebdo } from './ia/planifiees';
 export {
   assurancesNuit,

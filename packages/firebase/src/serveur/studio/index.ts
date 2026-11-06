@@ -54,3 +54,23 @@ export {
   type CompteReseau,
   type ConfigReseaux,
 } from './comptes';
+export {
+  annulerPublicationStudio,
+  listerPublicationsStudio,
+  programmerPublicationStudio,
+  publicationsProjetStudio,
+  publierDuesStudio,
+  relancerPublicationStudio,
+  type PublicationStudio,
+  type ServicesPublication,
+  type StatsPublication,
+  type StatutPublication,
+} from './publications';
+export { morceauxTiktok, publierSurReseau, type OutilsPublication } from './publieurs';
+export {
+  meilleuresHeuresStudio,
+  releverStatsStudio,
+  resultatsPourClaudeStudio,
+  resultatsStudio,
+  type ServicesStats,
+} from './stats';

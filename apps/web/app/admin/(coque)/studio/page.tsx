@@ -36,6 +36,23 @@ export default async function Studio() {
             Idées, tournage, montage : des vidéos courtes prêtes à publier.
           </p>
         </div>
+        <nav aria-label="Studio" className="flex flex-wrap gap-2 text-sm">
+          {(
+            [
+              ['/admin/studio/calendrier', 'Calendrier'],
+              ['/admin/studio/resultats', 'Résultats'],
+              ['/admin/studio/reseaux', 'Réseaux'],
+            ] as const
+          ).map(([href, l]) => (
+            <Link
+              key={href}
+              href={href as Route}
+              className="inline-flex min-h-11 items-center rounded-control border border-trait bg-blanc px-3 font-semibold no-underline"
+            >
+              {l}
+            </Link>
+          ))}
+        </nav>
         <ol className="m-0 flex list-none flex-wrap gap-2 p-0 text-sm" aria-label="Étapes">
           {['Idées', 'Tournage', 'Montage', 'Export'].map((x, i) => (
             <li key={x} className="rounded-full bg-neutre-100 px-3 py-1.5 text-neutre-800">

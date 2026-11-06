@@ -10,3 +10,5 @@ export * from './tendances';
 export * from './image';
 export * from './rythme';
 export * from './reseaux';
+export * from './calendrier';
+export * from './resultats';

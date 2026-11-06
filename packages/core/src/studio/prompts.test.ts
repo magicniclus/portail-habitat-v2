@@ -228,3 +228,12 @@ describe('liens des vidéos', () => {
     expect(lienVideo('a/b')).toBe('https://www.youtube.com/shorts/a%2Fb');
   });
 });
+
+describe('sujets nourris par vos résultats', () => {
+  it('les résultats réels de vos vidéos passent dans la demande', () => {
+    const p = promptSujets({ videos: [], nombre: 3, vosVideos: '- « A » (youtube) : 12 vues' });
+    expect(p.demande).toContain('Résultats réels de NOS vidéos');
+    expect(p.demande).toContain('« A »');
+    expect(promptSujets({ videos: [], nombre: 3 }).demande).not.toContain('NOS vidéos');
+  });
+});

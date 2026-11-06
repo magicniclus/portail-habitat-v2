@@ -1,4 +1,5 @@
 import { dureeMp3Ms, type ClientElevenLabs } from './elevenlabs';
+import { resultatsPourClaudeStudio } from './stats';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { coutCentimes } from '@ph/core/ia';
 import {
@@ -72,7 +73,15 @@ export interface ProjetStudio {
   version: number;
   /** Captures filmées : identifiant de capture → fichier. */
   captures: Record<string, string>;
-  rendu: { video: string; srt: string; miniature: string; dureeMs: number; le: number } | null;
+  rendu: {
+    video: string;
+    srt: string;
+    miniature: string;
+    dureeMs: number;
+    le: number;
+    /** Variantes d'accroche rendues en plus (tests A/B), par identifiant. */
+    variantes?: Record<string, { video: string; miniature: string; accroche: string }>;
+  } | null;
   erreur: string | null;
   coutCentimes: number;
   createdAt: number;
@@ -267,7 +276,8 @@ export async function proposerSujetsStudio(
   const p = await exiger(s, e.projetId);
   const theme = e.theme ?? p.theme ?? undefined;
   const videos = await tendances(s, theme);
-  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3 });
+  const vosVideos = await resultatsPourClaudeStudio(s.db, s.horloge()).catch(() => '');
+  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos });
   const r = await claude({
     modele: MODELE_STUDIO,
     ...prompt,

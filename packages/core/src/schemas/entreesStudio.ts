@@ -86,3 +86,24 @@ export const entreeConnexionReseauStudio = z.strictObject({
 });
 
 export const entreeReseauStudio = z.strictObject({ reseau });
+
+/** Programmer la vidéo finie (ou une variante) sur un ou plusieurs réseaux. */
+export const entreeProgrammerStudio = z.strictObject({
+  projetId: id,
+  reseaux: z.array(reseau).min(1).max(3),
+  /** Heure de publication (ms) ; maintenant = tout de suite. */
+  quand: z.number().int().min(0),
+  titre: z.string().trim().min(2).max(100),
+  texte: z.string().trim().max(2_000),
+  hashtags: z
+    .array(
+      z
+        .string()
+        .trim()
+        .regex(/^#?[\p{L}\p{N}_]{1,50}$/u),
+    )
+    .max(30),
+  variante: id.nullable().optional(),
+});
+
+export const entreePublicationStudio = z.strictObject({ publicationId: id });

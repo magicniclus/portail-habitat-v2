@@ -1,7 +1,12 @@
 import { LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import { formatEuros } from '@ph/core/format';
 import { appAdmin } from '@ph/firebase/admin';
-import { lireProjetStudio, listerIdeesStudio } from '@ph/firebase/studio';
+import {
+  lireProjetStudio,
+  listerComptesStudio,
+  listerIdeesStudio,
+  publicationsProjetStudio,
+} from '@ph/firebase/studio';
 import { Badge } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
@@ -12,6 +17,7 @@ import { EcouteProjet } from '@/features/studio/EcouteProjet';
 import { EtapeEnregistrement } from '@/features/studio/EtapeEnregistrement';
 import { EtapeExport } from '@/features/studio/EtapeExport';
 import { EtapeMontage } from '@/features/studio/EtapeMontage';
+import { EtapePublication } from '@/features/studio/EtapePublication';
 import { EtapeSujets } from '@/features/studio/EtapeSujets';
 import { SuiviTravail } from '@/features/studio/SuiviTravail';
 import { TONS_STATUT } from '@/features/studio/tons';
@@ -32,7 +38,12 @@ export default async function ProjetStudioPage({
   const analyse = (await searchParams).analyse === '1';
   await pageAdmin(`/admin/studio/${id}`, 'studio');
   const db = getFirestore(appAdmin());
-  const [p, idees] = await Promise.all([lireProjetStudio(db, id), listerIdeesStudio(db)]);
+  const [p, idees, comptes, publications] = await Promise.all([
+    lireProjetStudio(db, id),
+    listerIdeesStudio(db),
+    listerComptesStudio(db),
+    publicationsProjetStudio(db, id),
+  ]);
   if (!p) notFound();
   const apresSujet = p.statut !== 'sujet';
   return (
@@ -80,6 +91,19 @@ export default async function ProjetStudioPage({
         />
       ) : null}
       {p.rendu ? <EtapeExport rendu={p.rendu} sujet={p.sujet} /> : null}
+      {p.rendu ? (
+        <EtapePublication
+          projetId={p.id}
+          sujet={p.sujet}
+          titre={p.titre}
+          comptes={comptes}
+          publications={publications}
+          variantes={Object.entries(p.rendu.variantes ?? {}).map(([vid, v]) => ({
+            id: vid,
+            accroche: v.accroche,
+          }))}
+        />
+      ) : null}
     </main>
   );
 }
