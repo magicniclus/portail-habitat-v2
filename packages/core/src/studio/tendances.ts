@@ -68,3 +68,40 @@ export const RECHERCHES_PAR_DEFAUT = [
   'devis artisan',
   'rénovation avant après',
 ] as const;
+
+/**
+ * Reels Instagram les plus populaires d'un hashtag (API Instagram avec connexion Facebook) :
+ * Instagram ne donne pas les vues des autres comptes, seulement j'aime et commentaires.
+ */
+export interface ReelInstagram {
+  lien: string;
+  legende: string;
+  likes: number | null;
+  commentaires: number;
+  publieeLe: string;
+  hashtag: string;
+}
+
+/** Hashtags suivis (30 hashtags différents par 7 jours au plus chez Instagram ; gardés 7 jours). */
+export const HASHTAGS_INSTAGRAM = [
+  'artisan',
+  'artisanfrancais',
+  'renovation',
+  'btp',
+  'chantier',
+] as const;
+
+/** Classés par interactions par jour (j'aime + commentaires × 3, un commentaire vaut plus). */
+export function classerReels(
+  reels: readonly ReelInstagram[],
+  maintenant: number,
+): (ReelInstagram & { interactionsParJour: number })[] {
+  const vus = new Set<string>();
+  return reels
+    .filter((r) => !vus.has(r.lien) && vus.add(r.lien))
+    .map((r) => {
+      const jours = Math.max(1, (maintenant - Date.parse(r.publieeLe)) / 86_400_000);
+      return { ...r, interactionsParJour: ((r.likes ?? 0) + r.commentaires * 3) / jours };
+    })
+    .sort((a, b) => b.interactionsParJour - a.interactionsParJour);
+}

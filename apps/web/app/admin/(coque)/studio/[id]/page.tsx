@@ -70,6 +70,7 @@ export default async function ProjetStudioPage({
         replie={apresSujet}
         auto={analyse && p.statut === 'sujet'}
         tendances={p.tendances}
+        reels={p.reels}
         titresGardes={idees.map((i) => i.sujet.titre.trim().toLowerCase())}
       />
       {apresSujet ? (

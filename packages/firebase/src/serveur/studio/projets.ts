@@ -1,4 +1,5 @@
 import { dureeMp3Ms, type ClientElevenLabs } from './elevenlabs';
+import type { RechercheInstagram } from './instagram';
 import { contexteSerieStudio } from './series';
 import { resultatsPourClaudeStudio } from './stats';
 import { ErreurMetier } from '@ph/core/erreurs';
@@ -13,6 +14,8 @@ import {
   promptDeclinaisons,
   promptSujets,
   RECHERCHES_PAR_DEFAUT,
+  classerReels,
+  HASHTAGS_INSTAGRAM,
   SCHEMA_JSON_PLAN,
   SCHEMA_JSON_SUJETS,
   segmentsParoles,
@@ -22,6 +25,7 @@ import {
   type FormatStudio,
   type MotTranscrit,
   type PlanMontage,
+  type ReelInstagram,
   type SujetStudio,
   type VideoBrute,
   type VideoTendance,
@@ -70,6 +74,14 @@ export interface ProjetStudio {
   sujet: SujetStudio | null;
   /** Vidéos analysées pour les dernières propositions, de la plus virale à la moins virale. */
   tendances: TendanceAffichee[];
+  /** Reels Instagram analysés (sans vues : Instagram ne les donne pas). */
+  reels: {
+    lien: string;
+    legende: string;
+    likes: number | null;
+    commentaires: number;
+    hashtag: string;
+  }[];
   prise: { id: string; fichiers: FichiersPrise; dureeMs: number } | null;
   mots: MotTranscrit[];
   plan: PlanMontage | null;
@@ -96,6 +108,8 @@ export interface ServicesStudio {
   horloge: () => number;
   claude: ClientStudio | null;
   youtube: RechercheYoutube | null;
+  /** Reels Instagram populaires (facultatif : connexion Facebook et validation Meta). */
+  instagram?: RechercheInstagram | null;
   lancerTravail: (type: TravailStudio, projetId: string) => Promise<void>;
   /** Voix de synthèse (ELEVENLABS_API_KEY) ; absente : le bouton explique quoi configurer. */
   elevenlabs?: ClientElevenLabs | null;
@@ -119,6 +133,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     sujets: (d.sujets as SujetStudio[] | undefined) ?? [],
     sujet: (d.sujet as SujetStudio | null | undefined) ?? null,
     tendances: (d.tendances as TendanceAffichee[] | undefined) ?? [],
+    reels: (d.reels as ProjetStudio['reels'] | undefined) ?? [],
     prise: (d.prise as ProjetStudio['prise'] | undefined) ?? null,
     mots: (d.mots as MotTranscrit[] | undefined) ?? [],
     plan: (d.plan as PlanMontage | null | undefined) ?? null,
@@ -235,6 +250,35 @@ async function videosRecherche(s: ServicesStudio, q: string) {
   return videos;
 }
 
+/** Reels des hashtags suivis, gardés 7 jours (Instagram limite à 30 hashtags par 7 jours). */
+async function reelsInstagram(s: ServicesStudio) {
+  if (!s.instagram) return [];
+  const maintenant = s.horloge();
+  const lots = await Promise.all(
+    HASHTAGS_INSTAGRAM.map(async (h) => {
+      const ref = s.db.collection(collections.studioTendances).doc(`ig-${h}`);
+      const cache = await ref.get();
+      if (cache.exists && maintenant - ms(cache.get('le')) < 7 * JOUR)
+        return cache.get('reels') as ReelInstagram[];
+      try {
+        const reels = await s.instagram!(h);
+        await ref.set({
+          schemaVersion: 1,
+          recherche: `#${h}`,
+          reels,
+          le: Timestamp.fromMillis(maintenant),
+          expireLe: Timestamp.fromMillis(maintenant + 14 * JOUR),
+        });
+        return reels;
+      } catch (err) {
+        console.warn('studio : recherche Instagram indisponible', err);
+        return [];
+      }
+    }),
+  );
+  return classerReels(lots.flat(), maintenant);
+}
+
 async function tendances(s: ServicesStudio, theme: string | undefined): Promise<VideoTendance[]> {
   if (!s.youtube) return [];
   const recherches = [...(theme ? [theme] : []), ...RECHERCHES_PAR_DEFAUT].slice(0, theme ? 3 : 5);
@@ -290,7 +334,8 @@ export async function proposerSujetsStudio(
   const videos = await tendances(s, theme);
   const vosVideos = await resultatsPourClaudeStudio(s.db, s.horloge()).catch(() => '');
   const serie = await contexteSerieStudio(s.db, p);
-  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos, serie });
+  const reels = await reelsInstagram(s);
+  const prompt = promptSujets({ videos, theme, nombre: e.nombre ?? 3, vosVideos, serie, reels });
   const r = await claude({
     modele: MODELE_STUDIO,
     ...prompt,
@@ -309,6 +354,13 @@ export async function proposerSujetsStudio(
     sujets,
     theme: theme ?? null,
     tendances: videos.slice(0, 12).map(resumeTendance),
+    reels: reels.slice(0, 8).map((x) => ({
+      lien: x.lien,
+      legende: x.legende.slice(0, 120),
+      likes: x.likes,
+      commentaires: x.commentaires,
+      hashtag: x.hashtag,
+    })),
     coutCentimes: cout(r.usage),
   });
   return sujets;

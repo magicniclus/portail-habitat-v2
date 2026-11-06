@@ -1,13 +1,14 @@
 'use client';
 
 import type { SujetStudio } from '@ph/core/studio';
-import type { TendanceAffichee } from '@ph/firebase/studio';
+import type { ProjetStudio, TendanceAffichee } from '@ph/firebase/studio';
 import { Banner, Button, Chargeur, Field, Input } from '@ph/ui';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { choisirSujet, declinerSujet, garderIdee, proposerSujets } from './actions';
 import { CarteSujet } from './CarteSujet';
+import { ListeReels } from './ListeReels';
 import { TableTendances } from './TableTendances';
 
 /** Étape 1 : Claude analyse les vidéos courtes qui marchent et propose des sujets avec script. */
@@ -19,6 +20,7 @@ export function EtapeSujets({
   replie,
   auto = false,
   tendances,
+  reels,
   titresGardes,
 }: {
   projetId: string;
@@ -29,6 +31,7 @@ export function EtapeSujets({
   /** Arrivée depuis « Trouver les meilleures vidéos » : l'analyse part toute seule. */
   auto?: boolean;
   tendances: TendanceAffichee[];
+  reels: ProjetStudio['reels'];
   /** Titres des idées déjà gardées (en minuscules). */
   titresGardes: string[];
 }) {
@@ -88,6 +91,7 @@ export function EtapeSujets({
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
         {succes ? <Banner tone="succes">{succes}</Banner> : null}
         {tendances.length ? <TableTendances tendances={tendances} /> : null}
+        {reels.length ? <ListeReels reels={reels} /> : null}
         <ul className="m-0 grid list-none gap-3 p-0 xl:grid-cols-3">
           {sujets.map((s, i) => (
             <CarteSujet

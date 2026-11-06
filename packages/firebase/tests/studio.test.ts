@@ -645,3 +645,43 @@ describe('séries d’épisodes', () => {
     });
   });
 });
+
+describe('tendances Instagram', () => {
+  it('Reels des hashtags suivis, gardés 7 jours, donnés à Claude et affichés', async () => {
+    const id = await projet();
+    const demandes: string[] = [];
+    const avecInstagram = (): ServicesStudio => ({
+      ...services(),
+      instagram: async (h) => {
+        demandes.push(h);
+        return [
+          {
+            lien: `https://www.instagram.com/reel/${h}/`,
+            legende: `Chantier #${h}`,
+            likes: 900,
+            commentaires: 30,
+            publieeLe: '2026-11-03T09:00:00Z',
+            hashtag: h,
+          },
+        ];
+      },
+    });
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(avecInstagram(), { projetId: id });
+    expect([...demandes].sort()).toEqual([
+      'artisan',
+      'artisanfrancais',
+      'btp',
+      'chantier',
+      'renovation',
+    ]);
+    expect(appels.at(-1)!.demande).toContain('Reels Instagram populaires');
+    expect((await lireProjetStudio(db, id))?.reels[0]).toMatchObject({
+      likes: 900,
+      commentaires: 30,
+    });
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(avecInstagram(), { projetId: id });
+    expect(demandes).toHaveLength(5);
+  });
+});

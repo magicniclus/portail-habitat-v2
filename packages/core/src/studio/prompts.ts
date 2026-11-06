@@ -1,4 +1,5 @@
 import { RYTHME_MAX_MS } from './rythme';
+import type { ReelInstagram } from './tendances';
 import { z } from '../zod';
 import { ANIMATIONS, LIBELLES_CAMERA, LIBELLES_VISUEL, SCENES_CAPTURE } from './catalogue';
 import { DUREE_MAX_MS, DUREE_MIN_MS, FORMATS_STUDIO, type FormatStudio } from './formats';
@@ -67,6 +68,8 @@ export function promptSujets(e: {
   /** Résultats réels de vos vidéos publiées (`resumeVosVideos`), s'il y en a. */
   vosVideos?: string | undefined;
   serie?: SerieVideo | null | undefined;
+  /** Reels Instagram populaires (sans vues : Instagram ne les donne pas). */
+  reels?: readonly (ReelInstagram & { interactionsParJour: number })[] | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es le meilleur scénariste de vidéos courtes (TikTok, Reels, Shorts) pour le marketing B2B auprès des artisans.',
@@ -97,6 +100,17 @@ export function promptSujets(e: {
       ? `Thème souhaité par l’auteur : ${e.theme}`
       : 'Thème libre, dans l’intérêt des artisans.',
     `Vidéos courtes qui marchent en ce moment :\n${videos || '(aucune donnée disponible : appuie-toi sur ton expérience des formats courts)'}`,
+    ...(e.reels?.length
+      ? [
+          `Reels Instagram populaires en ce moment (Instagram ne donne pas leurs vues, seulement les interactions) :\n${e.reels
+            .slice(0, 20)
+            .map(
+              (r, i) =>
+                `${i + 1}. #${r.hashtag} · ${r.likes ?? '?'} j’aime · ${r.commentaires} commentaires · ${Math.round(r.interactionsParJour)} interactions/jour\n   ${r.legende.replace(/\s+/g, ' ').slice(0, 200)}`,
+            )
+            .join('\n')}`,
+        ]
+      : []),
     ...(e.serie
       ? [
           `Série « ${e.serie.nom} » : épisode ${e.serie.numero}. Promesse de la série : ${e.serie.promesse}.\nÉpisodes déjà faits :\n${e.serie.precedents.map((t) => `- ${t}`).join('\n') || '(aucun)'}`,

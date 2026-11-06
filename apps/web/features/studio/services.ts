@@ -3,6 +3,7 @@ import { appAdmin, bucketFichiers } from '@ph/firebase/admin';
 import {
   clientClaudeStudio,
   clientElevenLabs,
+  rechercheInstagram,
   echecStudio,
   rechercheYoutube,
   type ServicesStudio,
@@ -21,6 +22,10 @@ export function servicesStudio(env: NodeJS.ProcessEnv = process.env): ServicesSt
     horloge: Date.now,
     claude: env.ANTHROPIC_API_KEY ? clientClaudeStudio(env.ANTHROPIC_API_KEY) : null,
     youtube: env.YOUTUBE_API_KEY ? rechercheYoutube(env.YOUTUBE_API_KEY) : null,
+    instagram:
+      env.INSTAGRAM_TENDANCES_JETON && env.INSTAGRAM_TENDANCES_COMPTE
+        ? rechercheInstagram(env.INSTAGRAM_TENDANCES_JETON, env.INSTAGRAM_TENDANCES_COMPTE)
+        : null,
     elevenlabs: env.ELEVENLABS_API_KEY ? clientElevenLabs(env.ELEVENLABS_API_KEY) : null,
     deposer: async (chemin, octets, type) =>
       bucketFichiers(env).file(chemin).save(Buffer.from(octets), { contentType: type }),

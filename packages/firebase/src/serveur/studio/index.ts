@@ -11,6 +11,7 @@ export {
   type VoixElevenLabs,
 } from './elevenlabs';
 export { rechercheYoutube, type RechercheYoutube } from './youtube';
+export { rechercheInstagram, type RechercheInstagram } from './instagram';
 export {
   capturesTermineesStudio,
   choisirSujetStudio,
