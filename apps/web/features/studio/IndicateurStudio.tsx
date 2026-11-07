@@ -76,7 +76,7 @@ export function IndicateurStudio({ initial }: { initial: VideoEnCours[] }) {
   }, [direct, enCours.length, router]);
 
   const visibles = [...enCours.slice(0, 2), ...finies.slice(0, 2)].filter(
-    (v) => chemin !== routes.adminStudioProjet(v.id),
+    (v) => chemin !== routes.adminSection(`studio/${v.id}`),
   );
   if (!visibles.length) return null;
   return (
@@ -98,7 +98,7 @@ export function IndicateurStudio({ initial }: { initial: VideoEnCours[] }) {
               />
             )}
             <Link
-              href={routes.adminStudioProjet(v.id)}
+              href={routes.adminSection(`studio/${v.id}`)}
               className="min-w-0 truncate py-2 font-semibold text-texte no-underline hover:underline"
             >
               {v.statut === 'pret'

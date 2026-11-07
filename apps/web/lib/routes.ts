@@ -32,7 +32,6 @@ export const routes = {
   admin: r('/admin'),
   adminSection: (chemin: string) => r(chemin ? `/admin/${chemin}` : '/admin'),
   adminSecurite: r('/admin/securite'),
-  adminStudioProjet: (id: string) => r(`/admin/studio/${id}`),
   connexionAdminSuite: (suite: string, raison?: 'inactivite' | 'expiree') =>
     r(
       `/connexion?espace=admin&suite=${encodeURIComponent(suite)}${raison ? `&raison=${raison}` : ''}`,
