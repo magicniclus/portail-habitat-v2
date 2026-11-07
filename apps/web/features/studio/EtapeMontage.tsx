@@ -23,7 +23,7 @@ export function EtapeMontage(p: {
       className="grid gap-3 rounded-card border border-trait bg-blanc p-4"
     >
       <h2 id="montage-studio" className="m-0 text-lg">
-        4. Montage · {p.plan.titre}
+        Montage · {p.plan.titre}
       </h2>
       {rythme.messages.length ? (
         <Banner tone="attention" titre="Pour garder l’attention">

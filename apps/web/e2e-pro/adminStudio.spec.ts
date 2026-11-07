@@ -13,12 +13,22 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   await expect(page.getByLabel('Format')).toHaveValue('vertical');
   await expect(page.getByLabel(/Titre/)).toHaveCount(0);
   await page.getByRole('button', { name: /Trouver les meilleures vidéos à faire/ }).click();
-  await expect(page).toHaveURL(/\/admin\/studio\/[^/?]+\?analyse=1/);
+  await expect(page).toHaveURL(/\/admin\/studio\/[^/?]+\/idees\?analyse=1/);
   await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle vidéo' })).toBeVisible();
+  // Une page par étape : les suivantes restent fermées tant que l'idée n'est pas choisie.
+  const etapes = page.getByRole('navigation', { name: 'Étapes de la vidéo' });
+  await expect(etapes.getByRole('link', { name: /Idée et script/ })).toHaveAttribute(
+    'aria-current',
+    'step',
+  );
+  await expect(etapes.getByRole('link', { name: /Tournage/ })).toHaveCount(0);
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
   await page.getByRole('button', { name: 'Tourner sans sujet (j’improvise) →' }).click();
-  await expect(page.getByText('2. Tournage')).toBeVisible();
+  // Idée choisie : on passe tout seul à la page du tournage.
+  await expect(page).toHaveURL(/\/tournage$/);
+  await expect(page.getByRole('heading', { level: 2, name: /^Tournage/ })).toBeVisible();
+  await expect(etapes.getByRole('link', { name: /Idée et script/ })).toBeVisible();
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
   await expect(page.getByLabel('Caméra')).toHaveValue('aucune');

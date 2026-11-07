@@ -74,7 +74,7 @@ export function EtapePublication({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="publication-studio" className="m-0 text-lg">
-          6. Publier
+          Publier
         </h2>
         <span className="flex gap-3 text-sm">
           <Link href={'/admin/studio/calendrier' as Route}>Calendrier</Link>

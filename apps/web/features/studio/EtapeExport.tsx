@@ -28,7 +28,7 @@ export function EtapeExport({
       className="grid gap-3 rounded-card border border-succes bg-succes-fond p-4"
     >
       <h2 id="export-studio" className="m-0 text-lg">
-        5. Vidéo prête · {Math.round(rendu.dureeMs / 1000)} s
+        Vidéo prête · {Math.round(rendu.dureeMs / 1000)} s
       </h2>
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,420px)_1fr]">
         {urls.video ? (

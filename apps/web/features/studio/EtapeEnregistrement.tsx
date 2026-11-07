@@ -182,10 +182,13 @@ export function EtapeEnregistrement({
     </div>
   );
   return (
-    <details open={!dejaEnregistre} className="rounded-card border border-trait bg-blanc p-4">
-      <summary className="min-h-11 cursor-pointer text-lg font-bold">
-        2. Tournage {dejaEnregistre ? '· vidéo envoyée (vous pouvez la refaire)' : ''}
-      </summary>
+    <section
+      aria-labelledby="etape-tournage"
+      className="rounded-card border border-trait bg-blanc p-4"
+    >
+      <h2 id="etape-tournage" className="m-0 text-lg">
+        Tournage {dejaEnregistre ? '· vidéo envoyée (vous pouvez la refaire)' : ''}
+      </h2>
       <div className="mt-3 grid gap-4">
         <div role="tablist" aria-label="Façon de tourner" className="flex flex-wrap gap-2">
           {MODES.map(([v, l]) => (
@@ -208,6 +211,6 @@ export function EtapeEnregistrement({
           <SansPrise projetId={projetId} dureeCibleS={dureeCibleS} script={script} />
         ) : null}
       </div>
-    </details>
+    </section>
   );
 }

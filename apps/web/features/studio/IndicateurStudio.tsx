@@ -75,9 +75,11 @@ export function IndicateurStudio({ initial }: { initial: VideoEnCours[] }) {
     return () => clearInterval(t);
   }, [direct, enCours.length, router]);
 
-  const visibles = [...enCours.slice(0, 2), ...finies.slice(0, 2)].filter(
-    (v) => chemin !== routes.adminSection(`studio/${v.id}`),
-  );
+  const visibles = [...enCours.slice(0, 2), ...finies.slice(0, 2)].filter((v) => {
+    // Déjà sur une page de ce projet : la barre d'étapes et le suivi suffisent.
+    const base = routes.adminSection(`studio/${v.id}`);
+    return chemin !== base && !chemin.startsWith(`${base}/`);
+  });
   if (!visibles.length) return null;
   return (
     <div

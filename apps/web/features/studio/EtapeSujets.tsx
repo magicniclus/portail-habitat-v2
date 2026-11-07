@@ -17,7 +17,6 @@ export function EtapeSujets({
   sujets,
   choisi,
   themeInitial,
-  replie,
   auto = false,
   tendances,
   reels,
@@ -27,7 +26,6 @@ export function EtapeSujets({
   sujets: SujetStudio[];
   choisi: SujetStudio | null;
   themeInitial: string;
-  replie: boolean;
   /** Arrivée depuis « Trouver les meilleures vidéos » : l'analyse part toute seule. */
   auto?: boolean;
   tendances: TendanceAffichee[];
@@ -57,10 +55,13 @@ export function EtapeSujets({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- une seule fois à l'arrivée
   }, []);
   return (
-    <details open={!replie} className="rounded-card border border-trait bg-blanc p-4">
-      <summary className="min-h-11 cursor-pointer text-lg font-bold">
-        1. Idées de vidéos {choisi ? `· ${choisi.titre}` : ''}
-      </summary>
+    <section
+      aria-labelledby="etape-idees"
+      className="rounded-card border border-trait bg-blanc p-4"
+    >
+      <h2 id="etape-idees" className="m-0 text-lg">
+        Idées de vidéos {choisi ? `· ${choisi.titre}` : ''}
+      </h2>
       <div className="mt-3 grid gap-3">
         <div className="grid items-end gap-3 md:grid-cols-[1fr_auto]">
           <Field label="Orienter vers un thème (facultatif)">
@@ -139,6 +140,6 @@ export function EtapeSujets({
           </Button>
         </div>
       </div>
-    </details>
+    </section>
   );
 }

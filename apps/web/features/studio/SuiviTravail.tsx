@@ -71,7 +71,7 @@ export function SuiviTravail({
       className="grid gap-3 rounded-card border border-trait bg-blanc p-4"
     >
       <h2 id="suivi-studio" className="m-0 text-lg">
-        3. Fabrication
+        Fabrication
       </h2>
       <ol className="m-0 flex list-none flex-wrap gap-2 p-0">
         {etapes.map((e, i) => (

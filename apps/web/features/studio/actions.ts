@@ -41,7 +41,9 @@ import { servicesStudio } from './services';
 
 /** Back-office › Studio (STUDIO.md) : chaque action exige `studio.utiliser` et est journalisée. */
 const P = 'studio.utiliser' as const;
-const page = (id?: string) => revalidatePath(id ? `/admin/studio/${id}` : '/admin/studio');
+// « layout » : toutes les pages d'étape du projet sont relues.
+const page = (id?: string) =>
+  id ? revalidatePath(`/admin/studio/${id}`, 'layout') : revalidatePath('/admin/studio');
 type Res<T = null> = { ok: true; data: T } | { ok: false; message: string };
 const fin = <T>(r: { ok: true; data: T } | { ok: false; message: string }, id?: string): Res<T> => {
   page(id);

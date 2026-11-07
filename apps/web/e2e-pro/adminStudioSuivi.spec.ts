@@ -34,7 +34,7 @@ test('STUDIO-SUIVI : montage en cours visible partout, relance si bloqué', asyn
   const pastille = page.getByRole('link', { name: 'Vidéo en création · Montage par Claude' });
   await expect(pastille).toBeVisible();
   await pastille.click();
-  await expect(page).toHaveURL(/\/admin\/studio\/e2e-suivi$/);
+  await expect(page).toHaveURL(/\/admin\/studio\/e2e-suivi\/montage$/);
 
   // Sur le projet : ce qui se passe, et pourquoi les captures viennent après.
   await expect(page.getByText('Montage par Claude en cours')).toBeVisible();

@@ -16,3 +16,4 @@ export * from './variantes';
 export * from './formatsViraux';
 export * from './edition';
 export * from './suivi';
+export * from './etapesProjet';
