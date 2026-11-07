@@ -861,7 +861,8 @@ describe('montage en arrière-plan', () => {
     await taches[0]!();
     const p = await lireProjetStudio(db, id);
     expect(p?.statut).toBe('erreur');
-    expect(p?.erreur).toMatch(/Relancer/);
+    // La vraie raison est montrée (ici le message de l'erreur).
+    expect(p?.erreur).toBe('Claude n’a pas pu faire le montage : API indisponible');
     expect(await videosEnCoursStudio(db, T)).toEqual([
       expect.objectContaining({ id, statut: 'erreur' }),
     ]);

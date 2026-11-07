@@ -62,3 +62,24 @@ export function clientClaudeStudio(apiKey: string): ClientStudio {
     };
   };
 }
+
+/**
+ * Raison lisible d'un échec d'appel à Claude, à montrer dans le projet (« À relancer ») et dans
+ * les journaux : code HTTP et message de l'API (jamais de donnée personnelle), 300 caractères.
+ */
+export function raisonEchecClaude(err: unknown): string {
+  if (err instanceof Anthropic.APIError) {
+    const corps = err.error as { error?: { message?: string } } | undefined;
+    const message = corps?.error?.message ?? err.message;
+    const indice =
+      err.status === 401
+        ? ' (clé ANTHROPIC_API_KEY refusée)'
+        : err.status === 429
+          ? ' (trop de demandes ou crédit épuisé)'
+          : err.status === 529
+            ? ' (Claude surchargé, réessayez)'
+            : '';
+    return `${err.status ?? 'réseau'}${indice} : ${message}`.slice(0, 300);
+  }
+  return (err instanceof Error ? err.message : String(err)).slice(0, 300);
+}

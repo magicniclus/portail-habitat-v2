@@ -39,7 +39,7 @@ import {
 } from '@ph/core/studio';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
-import type { ClientStudio } from './claude';
+import { raisonEchecClaude, type ClientStudio } from './claude';
 import type { RechercheYoutube } from './youtube';
 
 /**
@@ -678,12 +678,12 @@ export async function lancerMontageStudio(
   if (!s.enArrierePlan) return genererMontageStudio(s, e);
   s.enArrierePlan(() =>
     genererMontageStudio(s, e).catch(async (err: unknown) => {
+      const raison = err instanceof ErreurMetier ? err.message : raisonEchecClaude(err);
+      console.error(`[studio] montage ${e.projetId} : ${raison}`);
       await maj(s, e.projetId, {
         statut: 'erreur',
         erreur:
-          err instanceof ErreurMetier
-            ? err.message
-            : 'Claude n’a pas pu faire le montage. Réessayez avec « Relancer ».',
+          err instanceof ErreurMetier ? raison : `Claude n’a pas pu faire le montage : ${raison}`,
       });
     }),
   );
