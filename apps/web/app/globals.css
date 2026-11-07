@@ -16,6 +16,15 @@
     transform: translateY(14px);
   }
 }
+/* Barre « en cours » du Studio (durée inconnue) : un segment qui va et vient. */
+@keyframes va-et-vient {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
 @keyframes defiler-droite {
   from {
     transform: translateX(calc(-50% - 8px));

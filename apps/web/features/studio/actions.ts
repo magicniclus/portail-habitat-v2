@@ -24,7 +24,7 @@ import {
   garderIdeeStudio,
   supprimerIdeeStudio,
   tournerIdeeStudio,
-  genererMontageStudio,
+  lancerMontageStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
   proposerSujetsStudio,
@@ -78,8 +78,7 @@ export const enregistrerPrise = async (e: z.input<typeof entreePriseStudio>) =>
 
 const retouche = actionAdmin(
   { schema: entreeRetoucheStudio, nom: 'adminStudioRetouche', permission: P },
-  async (e) =>
-    genererMontageStudio(servicesStudio(), { projetId: e.projetId, retouche: e.demande }),
+  async (e) => lancerMontageStudio(servicesStudio(), { projetId: e.projetId, retouche: e.demande }),
 );
 export const retoucher = async (e: z.input<typeof entreeRetoucheStudio>) =>
   fin(await retouche(e), e.projetId);

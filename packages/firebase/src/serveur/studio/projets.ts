@@ -13,6 +13,9 @@ import {
   planMontage,
   promptMontage,
   lienVideo,
+  estEtapeSuivie,
+  etapesFabrication,
+  etapeBloquee,
   motsDepuisTexte,
   promptDeclinaisons,
   promptSujets,
@@ -120,6 +123,11 @@ export interface ServicesStudio {
   elevenlabs?: ClientElevenLabs | null;
   /** Dépôt d'un fichier produit côté serveur (voix de synthèse) dans le bucket. */
   deposer?: (chemin: string, octets: Uint8Array, type: string) => Promise<void>;
+  /**
+   * Fait tourner une tâche longue (montage par Claude) après la réponse, pour que l'auteur
+   * continue à naviguer. Absent (tests, robot) : la tâche est attendue.
+   */
+  enArrierePlan?: (tache: () => Promise<void>) => void;
 }
 
 const ms = (t: unknown) => (t as Timestamp | undefined)?.toMillis() ?? 0;
@@ -574,7 +582,7 @@ export async function voixSyntheseStudio(
     erreur: null,
     prisesExpirentLe: Timestamp.fromMillis(s.horloge() + CONSERVATION_PRISES_JOURS * JOUR),
   });
-  await genererMontageStudio(s, {
+  await lancerMontageStudio(s, {
     projetId: e.projetId,
     ...(e.sousTitres === undefined ? {} : { sousTitres: e.sousTitres }),
   });
@@ -610,7 +618,7 @@ export async function sansPriseStudio(
     mots,
     erreur: null,
   });
-  await genererMontageStudio(s, { projetId: e.projetId, sousTitres: mots.length > 0 });
+  await lancerMontageStudio(s, { projetId: e.projetId, sousTitres: mots.length > 0 });
 }
 
 /** Retour du robot : transcription mot à mot, puis montage par Claude. */
@@ -651,6 +659,34 @@ async function enregistrerPlan(
     erreur: null,
   });
   await s.lancerTravail(suite, p.id);
+}
+
+/**
+ * Lance le montage par Claude : l'étape passe à « montage » tout de suite (visible partout), les
+ * préalables sont vérifiés, puis Claude travaille en arrière-plan si le site le permet. Une panne
+ * de Claude met le projet « À relancer » au lieu de le laisser bloqué.
+ */
+export async function lancerMontageStudio(
+  s: ServicesStudio,
+  e: Parameters<typeof genererMontageStudio>[1],
+): Promise<void> {
+  exigerClaude(s);
+  const p = await exiger(s, e.projetId);
+  if (!p.prise) throw new ErreurMetier('PRECONDITION', 'Enregistrez d’abord une prise.');
+  if (e.retouche && !p.plan) throw new ErreurMetier('PRECONDITION', 'Aucun montage à retoucher.');
+  await maj(s, e.projetId, { statut: 'montage', erreur: null });
+  if (!s.enArrierePlan) return genererMontageStudio(s, e);
+  s.enArrierePlan(() =>
+    genererMontageStudio(s, e).catch(async (err: unknown) => {
+      await maj(s, e.projetId, {
+        statut: 'erreur',
+        erreur:
+          err instanceof ErreurMetier
+            ? err.message
+            : 'Claude n’a pas pu faire le montage. Réessayez avec « Relancer ».',
+      });
+    }),
+  );
 }
 
 /**
@@ -793,15 +829,55 @@ export async function echecStudio(
 export async function relancerStudio(s: ServicesStudio, e: { projetId: string }): Promise<void> {
   const p = await exiger(s, e.projetId);
   if (!p.prise) throw new ErreurMetier('PRECONDITION', 'Enregistrez d’abord une prise.');
-  if (!p.mots.length && !p.plan) {
+  // Une étape qui tourne encore dans les temps n'est pas relancée (pas de double appel à Claude).
+  if (estEtapeSuivie(p.statut) && !etapeBloquee(p.statut, p.updatedAt, s.horloge()))
+    throw new ErreurMetier(
+      'PRECONDITION',
+      'Cette étape est encore en cours : attendez qu’elle finisse ou qu’elle dépasse sa durée habituelle.',
+    );
+  // Seule une voix enregistrée se transcrit ; voix IA et « Claude fait tout » ont déjà leurs mots.
+  if (!p.mots.length && !p.plan && etapesFabrication(p.prise.id).includes('transcription')) {
     await maj(s, p.id, { statut: 'transcription', erreur: null });
     return s.lancerTravail('transcrire', p.id);
   }
-  if (!p.plan) {
-    await maj(s, p.id, { statut: 'montage', erreur: null });
-    return genererMontageStudio(s, { projetId: p.id });
-  }
+  if (!p.plan) return lancerMontageStudio(s, { projetId: p.id });
   return enregistrerPlan(s, p, p.plan, 'relance');
+}
+
+/** Vidéo signalée par l'indicateur de la coque admin. */
+export interface VideoEnCours {
+  id: string;
+  titre: string;
+  statut: StatutStudio;
+  depuis: number;
+}
+
+/**
+ * Indicateur « Vidéo en création » de la coque admin : les projets en fabrication, puis ceux
+ * finis (prêts ou à relancer) depuis moins de 2 minutes, pour l'annoncer en naviguant.
+ */
+export async function videosEnCoursStudio(
+  db: Firestore,
+  maintenant: number = Date.now(),
+): Promise<VideoEnCours[]> {
+  const col = db.collection(collections.studioProjets);
+  const [enCours, recents] = await Promise.all([
+    col.where('statut', 'in', ['transcription', 'montage', 'captures', 'rendu']).limit(5).get(),
+    col
+      .where('updatedAt', '>=', Timestamp.fromMillis(maintenant - 2 * 60_000))
+      .limit(10)
+      .get(),
+  ]);
+  const vers = (d: FirebaseFirestore.QueryDocumentSnapshot): VideoEnCours => ({
+    id: d.id,
+    titre: d.get('titre') as string,
+    statut: d.get('statut') as StatutStudio,
+    depuis: ms(d.get('updatedAt')),
+  });
+  return [
+    ...enCours.docs.map(vers),
+    ...recents.docs.map(vers).filter((v) => v.statut === 'pret' || v.statut === 'erreur'),
+  ];
 }
 
 /**

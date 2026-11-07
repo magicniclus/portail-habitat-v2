@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import 'server-only';
 import { appAdmin, bucketFichiers } from '@ph/firebase/admin';
 import {
@@ -27,6 +28,8 @@ export function servicesStudio(env: NodeJS.ProcessEnv = process.env): ServicesSt
         ? rechercheInstagram(env.INSTAGRAM_TENDANCES_JETON, env.INSTAGRAM_TENDANCES_COMPTE)
         : null,
     elevenlabs: env.ELEVENLABS_API_KEY ? clientElevenLabs(env.ELEVENLABS_API_KEY) : null,
+    // Montage par Claude après la réponse : l'auteur continue à naviguer (indicateur dans la coque).
+    enArrierePlan: (tache) => after(tache),
     deposer: async (chemin, octets, type) =>
       bucketFichiers(env).file(chemin).save(Buffer.from(octets), { contentType: type }),
     lancerTravail: async (type, projetId) => {

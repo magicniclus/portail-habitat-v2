@@ -81,7 +81,15 @@ export default async function ProjetStudioPage({
           dejaEnregistre={Boolean(p.prise)}
         />
       ) : null}
-      {p.prise ? <SuiviTravail projetId={p.id} statut={p.statut} erreur={p.erreur} /> : null}
+      {p.prise ? (
+        <SuiviTravail
+          projetId={p.id}
+          priseId={p.prise.id}
+          statut={p.statut}
+          depuis={p.updatedAt}
+          erreur={p.erreur}
+        />
+      ) : null}
       {p.plan && p.prise ? (
         <EtapeMontage
           projetId={p.id}

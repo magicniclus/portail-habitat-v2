@@ -1,5 +1,5 @@
 import type { PlanMontage, SujetStudio } from '@ph/core/studio';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
 import { collections } from '../src/chemins';
@@ -15,6 +15,9 @@ import {
   priseEnregistreeStudio,
   voixSyntheseStudio,
   sansPriseStudio,
+  relancerStudio,
+  lancerMontageStudio,
+  videosEnCoursStudio,
   creerSerieStudio,
   episodeSuivantStudio,
   listerSeriesStudio,
@@ -798,5 +801,73 @@ describe('créativité et apprentissage', () => {
     expect(d).toContain(`Idées choisies : « ${sujet.titre} »`);
     expect(d).toContain('ignorées : « Idée ignorée »');
     expect(appels.at(-1)!.contexte).toContain('Catalogue de formats viraux');
+  });
+});
+
+describe('relancer une étape', () => {
+  it('refusé tant que l’étape tourne dans les temps, accepté une fois bloquée', async () => {
+    const id = await projet(false);
+    await db.doc(`studioProjets/${id}`).update({
+      prise: { id: 'mx', fichiers: {}, dureeMs: 20_000 },
+      statut: 'montage',
+      updatedAt: Timestamp.fromMillis(T - 60_000),
+    });
+    await expect(relancerStudio(services(), { projetId: id })).rejects.toThrow(/encore en cours/);
+    await db.doc(`studioProjets/${id}`).update({
+      updatedAt: Timestamp.fromMillis(T - 13 * 60_000),
+    });
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 12_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+      }),
+    ];
+    await relancerStudio(services(), { projetId: id });
+    const apres = await lireProjetStudio(db, id);
+    expect(apres?.erreur ?? null).toBeNull();
+    expect(apres?.plan?.plans).toHaveLength(1);
+  });
+});
+
+describe('montage en arrière-plan', () => {
+  it('l’étape passe à « montage » tout de suite ; une panne de Claude met « À relancer »', async () => {
+    const id = await projet(false);
+    await db.doc(`studioProjets/${id}`).update({
+      prise: { id: 'mx', fichiers: {}, dureeMs: 20_000 },
+      statut: 'erreur',
+    });
+    const taches: (() => Promise<void>)[] = [];
+    const s = {
+      ...services(),
+      enArrierePlan: (t: () => Promise<void>) => void taches.push(t),
+      claude: async () => {
+        throw new Error('API indisponible');
+      },
+    };
+    await lancerMontageStudio(s, { projetId: id });
+    expect((await lireProjetStudio(db, id))?.statut).toBe('montage');
+    expect(await videosEnCoursStudio(db, T)).toEqual([
+      { id, titre: 'Demandes gratuites', statut: 'montage', depuis: T },
+    ]);
+    expect(taches).toHaveLength(1);
+    await taches[0]!();
+    const p = await lireProjetStudio(db, id);
+    expect(p?.statut).toBe('erreur');
+    expect(p?.erreur).toMatch(/Relancer/);
+    expect(await videosEnCoursStudio(db, T)).toEqual([
+      expect.objectContaining({ id, statut: 'erreur' }),
+    ]);
+    // Préalables vérifiés avant de rendre la main : pas de retouche sans montage.
+    await expect(lancerMontageStudio(s, { projetId: id, retouche: 'plus court' })).rejects.toThrow(
+      /Aucun montage/,
+    );
   });
 });

@@ -18,3 +18,7 @@ export const requeteAttributionsPro = (m: typeof F, db: F.Firestore, artisanId: 
 /** Dernière trace du moteur de conversion (journal admin en direct ; règles : lecture `cnv`). */
 export const requeteDerniereTraceCycle = (m: typeof F, db: F.Firestore) =>
   m.query(m.collection(db, collections.cycleTraces), m.orderBy('createdAt', 'desc'), m.limit(1));
+
+/** Indicateur « Vidéo en création » : les 5 projets Studio touchés le plus récemment. */
+export const requeteProjetsStudioRecents = (m: typeof F, db: F.Firestore) =>
+  m.query(m.collection(db, collections.studioProjets), m.orderBy('updatedAt', 'desc'), m.limit(5));

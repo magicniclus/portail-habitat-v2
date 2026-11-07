@@ -15,3 +15,4 @@ export * from './resultats';
 export * from './variantes';
 export * from './formatsViraux';
 export * from './edition';
+export * from './suivi';

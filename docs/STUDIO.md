@@ -82,6 +82,10 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 
 ## 6. Rendu (robot Cloud Run, `apps/studio`)
 
+- **Ordre des étapes** : transcription (voix enregistrée seulement) → montage par Claude → captures → rendu. Le montage vient avant les captures parce que c'est lui qui choisit les écrans de Portail Travaux à filmer ; le robot ne filme que ceux-là.
+- **Suivi** (`ETAPES_SUIVI`, `etapesFabrication`, `etapeBloquee`) : l'étape en cours est expliquée, avec le temps écoulé et la durée habituelle ; la page se relit toutes les 5 s. Au-delà de la durée maximale (montage 12 min, transcription et captures 20 min, rendu 30 min), « Relancer cette étape » apparaît ; le serveur refuse une relance plus tôt (pas de double appel à Claude).
+- **Montage en arrière-plan** (`lancerMontageStudio`) : l'étape passe à « montage » tout de suite, puis Claude travaille après la réponse (`after()` de Next, durée maximale de la page) ; une panne met le projet « À relancer ». On peut naviguer : une pastille « Vidéo en création » en bas à droite de tout le back-office suit la vidéo (écoute Firestore en direct des 5 projets les plus récents, sinon relecture toutes les 30 s) et annonce « Vidéo prête » ou « à relancer ».
+
 - **Entrée** : `POST /travail { type: transcrire | capturer | rendre, projetId }`, avec l'en-tête `x-studio-cle` (`STUDIO_RENDU_CLE`). Réponse immédiate 202. Les travaux passent un par un ; chaque étape enchaîne la suivante.
 - **Images** : chaque plan est composé par ffmpeg aux rectangles de `disposition` et `couverture`. Les sources sont d'abord remises à 30 images/s constantes, puis les plans sont mis bout à bout.
 - **Surcouche** : calques et sous-titres karaoké sont dessinés dans Chromium par le code de l'aperçu, puis posés par-dessus.
