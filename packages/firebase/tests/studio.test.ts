@@ -522,10 +522,29 @@ describe('voix de synthèse ElevenLabs', () => {
     ).rejects.toThrow(/ELEVENLABS_API_KEY/);
   });
 
-  it('le MP3 devient la voix de la prise, sans écran ni caméra, puis transcription', async () => {
+  it('le MP3 devient la voix de la prise, mots horodatés : montage direct, sans transcription', async () => {
     const id = await projet(true);
     const depots: { chemin: string; type: string; taille: number }[] = [];
     const lus: string[] = [];
+    const mots = [
+      { texte: 'Artisans,', debut: 0, fin: 600 },
+      { texte: 'écoutez.', debut: 700, fin: 1_400 },
+    ];
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 12_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+        sousTitres: false,
+      }),
+    ];
     await voixSyntheseStudio(
       {
         ...services(),
@@ -533,23 +552,33 @@ describe('voix de synthèse ElevenLabs', () => {
           voix: async () => [],
           parler: async (texte, voixId) => {
             lus.push(`${voixId}:${texte}`);
-            return new Uint8Array(320_000); // 20 s à 128 kbit/s
+            return { audio: new Uint8Array(320_000), mots }; // 20 s à 128 kbit/s
           },
         },
         deposer: async (chemin, octets, type) =>
           void depots.push({ chemin, type, taille: octets.byteLength }),
       },
-      { projetId: id, auteurUid: 'sa', texte: 'Artisans, écoutez.', voixId: 'v1' },
+      {
+        projetId: id,
+        auteurUid: 'sa',
+        texte: 'Artisans, écoutez.',
+        voixId: 'v1',
+        sousTitres: true,
+      },
     );
     expect(lus).toEqual(['v1:Artisans, écoutez.']);
     expect(depots).toHaveLength(1);
     expect(depots[0]).toMatchObject({ type: 'audio/mpeg', taille: 320_000 });
     expect(depots[0]!.chemin).toMatch(/^studio\/sa\/v[a-z0-9]+\/voix\.mp3$/);
     const p = await lireProjetStudio(db, id);
-    expect(p?.statut).toBe('transcription');
     expect(p?.camera).toBe(false);
     expect(p?.prise?.fichiers).toEqual({ voix: depots[0]!.chemin });
     expect(p?.prise?.dureeMs).toBe(20_000);
+    expect(p?.mots).toEqual(mots);
+    expect(appels[0]!.demande).toContain('[0');
+    // Le choix de l'auteur l'emporte sur celui de Claude.
+    expect(p?.plan?.sousTitres).toBe(true);
+    expect(travaux.map((t) => t.type)).not.toContain('transcrire');
     expect(dureeMp3Ms(16_000)).toBe(1_000);
   });
 
@@ -719,7 +748,36 @@ describe('vidéo sans voix ni image', () => {
     const p = await lireProjetStudio(db, id);
     expect(p?.prise?.fichiers).toEqual({});
     expect(p?.plan?.plans).toHaveLength(2);
+    expect(p?.mots).toEqual([]);
     expect(travaux.map((t) => t.type)).not.toContain('transcrire');
+  });
+
+  it('sous-titres : le texte du script défile sur la durée, imposé au plan', async () => {
+    const id = await projet(false);
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    await choisirSujetStudio(services(), { projetId: id, index: 0 });
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 20_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+        sousTitres: false,
+      }),
+    ];
+    await sansPriseStudio(services(), { projetId: id, dureeMs: 20_000, sousTitres: true });
+    expect(appels.at(-1)!.demande).toContain('sousTitres = true');
+    const p = await lireProjetStudio(db, id);
+    expect(p?.mots[0]).toMatchObject({ texte: 'Artisans,', debut: 0 });
+    expect(p?.mots.at(-1)?.fin).toBe(20_000);
+    expect(p?.plan?.sousTitres).toBe(true);
   });
 });
 

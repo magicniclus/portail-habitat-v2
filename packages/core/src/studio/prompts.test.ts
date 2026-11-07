@@ -300,4 +300,20 @@ describe('vidéo sans voix ni image', () => {
     expect(p.demande).toMatch(/sousTitres.*false/);
     expect(p.demande).toMatch(/musique.*true/);
   });
+
+  it('avec sous-titres : le script défile, plans dans l’ordre sans retour en arrière', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: false,
+      ecran: false,
+      voix: false,
+      sousTitres: true,
+      dureePriseMs: 30_000,
+      transcription: '[0] Bonjour',
+      segments: [],
+      sujet: null,
+    });
+    expect(p.demande).toMatch(/sousTitres = true/);
+    expect(p.demande).toContain('dans l’ordre');
+  });
 });

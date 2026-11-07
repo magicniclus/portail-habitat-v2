@@ -154,7 +154,7 @@ const MODES = [
   ['import', '↑ Vidéo du téléphone'],
   ['voix', '🎙 Voix seule (fichier audio)'],
   ['synthese', '✦ Voix ElevenLabs'],
-  ['muet', '▢ Sans voix ni vidéo'],
+  ['muet', '✦ Claude fait tout (rien à tourner)'],
 ] as const;
 type Mode = (typeof MODES)[number][0];
 
@@ -204,7 +204,9 @@ export function EtapeEnregistrement({
         {mode === 'import' ? aCote(<ImportVideo projetId={projetId} />) : null}
         {mode === 'voix' ? aCote(<ImportVoix projetId={projetId} />) : null}
         {mode === 'synthese' ? <VoixSynthese projetId={projetId} script={script} /> : null}
-        {mode === 'muet' ? <SansPrise projetId={projetId} dureeCibleS={dureeCibleS} /> : null}
+        {mode === 'muet' ? (
+          <SansPrise projetId={projetId} dureeCibleS={dureeCibleS} script={script} />
+        ) : null}
       </div>
     </details>
   );

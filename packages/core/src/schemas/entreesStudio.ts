@@ -61,6 +61,8 @@ export const entreeVoixSyntheseStudio = z.strictObject({
   projetId: id,
   texte: z.string().trim().min(10).max(5_000),
   voixId: z.string().regex(/^[A-Za-z0-9]{1,64}$/),
+  /** Sous-titres voulus par l'auteur (absent : Claude décide). */
+  sousTitres: z.boolean().optional(),
 });
 
 /** Garder une idée proposée pour la tourner plus tard, sans rappeler l'IA. */
@@ -158,8 +160,9 @@ export const entreeChiffresManuelsStudio = z.strictObject({
   ...chiffresManuels,
 });
 
-/** Vidéo sans voix ni image : seulement sa durée (10 s à 3 min). */
+/** Vidéo sans voix ni image : sa durée (10 s à 3 min) et, au choix, le script en sous-titres. */
 export const entreeSansPriseStudio = z.strictObject({
   projetId: id,
   dureeMs: z.number().int().min(10_000).max(180_000),
+  sousTitres: z.boolean().optional(),
 });

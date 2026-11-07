@@ -3,10 +3,12 @@ import {
   ajouterCalque,
   ajouterCapture,
   calqueParDefaut,
+  motsDepuisAlignement,
   couperPlan,
   deplacerCalque,
   deplacerPlan,
   modifierCalque,
+  modifierPlanVideo,
   motsDepuisTexte,
   rognerPlan,
   supprimerCalque,
@@ -128,5 +130,40 @@ describe('édition du plan de montage', () => {
     expect(m.at(-1)!.fin).toBe(4_000);
     expect(m.every((x, i) => i === 0 || x.debut >= m[i - 1]!.fin)).toBe(true);
     expect(motsDepuisTexte('', 4_000)).toEqual([]);
+  });
+
+  it('voix de synthèse : les temps des lettres deviennent des mots', () => {
+    const texte = 'Un  devis\nfacile';
+    const debuts = [...texte].map((_, i) => i * 0.1);
+    const fins = debuts.map((d) => d + 0.1);
+    expect(motsDepuisAlignement([...texte], debuts, fins)).toEqual([
+      { texte: 'Un', debut: 0, fin: 200 },
+      { texte: 'devis', debut: 400, fin: 900 },
+      { texte: 'facile', debut: 1000, fin: 1600 },
+    ]);
+    expect(motsDepuisAlignement([], [], [])).toEqual([]);
+  });
+
+  it('garde-fous : indices hors plan, plan trop court, temps manquants', () => {
+    const p = plan();
+    expect(deplacerPlan(p, 9, 0)).toBe(p);
+    expect(couperPlan(p, 9, 1_000)).toBe(p);
+    expect(rognerPlan(p, 9, { fin: 1 }, 20_000)).toBe(p);
+    expect(supprimerPlan(p, 9)).toBe(p);
+    expect(modifierPlanVideo(p, 9, { carton: 'x' })).toBe(p);
+    expect(ajouterCalque(p, 9, calqueParDefaut('fleche', 1_000))).toBe(p);
+    expect(modifierCalque(p, 0, 9, { debut: 0 })).toBe(p);
+    expect(deplacerCalque(p, 9, 0, 0)).toBe(p);
+    expect(supprimerCalque(p, 9, 0)).toBe(p);
+    // Fin ramenée trop près du début : on garde la durée minimale, côté du bord tiré.
+    const d0 = p.plans[0]!.source.debut;
+    const f = rognerPlan(p, 0, { fin: d0 + 10 }, 20_000).plans[0]!.source;
+    expect(f.fin - f.debut).toBe(400);
+    const e = p.plans[0]!.source.fin;
+    const g = rognerPlan(p, 0, { debut: e - 10 }, 20_000).plans[0]!.source;
+    expect(g.fin - g.debut).toBe(400);
+    expect(motsDepuisAlignement(['a', 'b', ' '], [], [])).toEqual([
+      { texte: 'ab', debut: 0, fin: 0 },
+    ]);
   });
 });

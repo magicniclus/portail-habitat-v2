@@ -1,7 +1,10 @@
+import { motsDepuisAlignement, type MotTranscrit } from '@ph/core/studio';
+
 /**
  * Voix de synthèse ElevenLabs (clé `ELEVENLABS_API_KEY`, côté serveur uniquement) : lit le script
  * quand l'auteur ne veut pas enregistrer sa voix. Sortie MP3 44,1 kHz à 128 kbit/s constants, ce
- * qui donne la durée sans décoder le fichier.
+ * qui donne la durée sans décoder le fichier. Le temps de chaque lettre revient avec le son
+ * (`with-timestamps`) : les mots sont horodatés sans transcription.
  */
 export interface VoixElevenLabs {
   id: string;
@@ -10,7 +13,7 @@ export interface VoixElevenLabs {
 
 export interface ClientElevenLabs {
   voix: () => Promise<VoixElevenLabs[]>;
-  parler: (texte: string, voixId: string) => Promise<Uint8Array>;
+  parler: (texte: string, voixId: string) => Promise<{ audio: Uint8Array; mots: MotTranscrit[] }>;
 }
 
 const API = 'https://api.elevenlabs.io/v1';
@@ -37,16 +40,35 @@ export function clientElevenLabs(cle: string, f: typeof fetch = fetch): ClientEl
     },
     parler: async (texte, voixId) => {
       const r = await f(
-        `${API}/text-to-speech/${encodeURIComponent(voixId)}?output_format=mp3_44100_${DEBIT_KBPS}`,
+        `${API}/text-to-speech/${encodeURIComponent(voixId)}/with-timestamps?output_format=mp3_44100_${DEBIT_KBPS}`,
         {
           method: 'POST',
-          headers: { ...entetes, 'content-type': 'application/json', accept: 'audio/mpeg' },
+          headers: { ...entetes, 'content-type': 'application/json' },
           body: JSON.stringify({ text: texte, model_id: MODELE }),
           signal: AbortSignal.timeout(120_000),
         },
       );
       if (!r.ok) throw new Error(`ElevenLabs : voix refusée (${r.status}).`);
-      return new Uint8Array(await r.arrayBuffer());
+      const d = (await r.json()) as {
+        audio_base64?: string;
+        alignment?: {
+          characters?: string[];
+          character_start_times_seconds?: number[];
+          character_end_times_seconds?: number[];
+        } | null;
+      };
+      if (!d.audio_base64) throw new Error('ElevenLabs : aucun son reçu.');
+      const a = d.alignment;
+      return {
+        audio: new Uint8Array(Buffer.from(d.audio_base64, 'base64')),
+        mots: a
+          ? motsDepuisAlignement(
+              a.characters ?? [],
+              a.character_start_times_seconds ?? [],
+              a.character_end_times_seconds ?? [],
+            )
+          : [],
+      };
     },
   };
 }

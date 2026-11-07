@@ -362,6 +362,8 @@ export function promptMontage(e: {
   ecran?: boolean;
   /** Une voix a été enregistrée (false : vidéo sans voix ni image, tout passe par l'écran). */
   voix?: boolean;
+  /** Sans voix : l'auteur veut le texte du script en sous-titres (déjà réparti dans `transcription`). */
+  sousTitres?: boolean;
   dureePriseMs: number;
   transcription: string;
   segments: readonly { debut: number; fin: number }[];
@@ -411,7 +413,11 @@ export function promptMontage(e: {
     `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}. Écran enregistré : ${e.ecran === false ? 'non (aucun visuel « ecran » : montre les captures Portail Travaux, des cartons et des calques sur toute la vidéo)' : 'oui'}.`,
     ...(e.voix === false
       ? [
-          `Voix : aucune. La vidéo se comprend sans le son : chaque idée du script devient un carton ou un texte « titre » ou « chiffre » bien lisible, enchaînés sur les captures Portail Travaux ; plans pris dans 0 à ${e.dureePriseMs} ms comme une simple durée (aucune parole à respecter) ; sousTitres = false, musique = true.`,
+          `Voix : aucune. La vidéo se comprend sans le son : chaque idée du script devient un carton ou un texte « titre » ou « chiffre » bien lisible, enchaînés sur les captures Portail Travaux ; plans pris dans 0 à ${e.dureePriseMs} ms comme une simple durée (aucune parole à respecter) ; ${
+            e.sousTitres
+              ? 'sousTitres = true : le texte du script défile en sous-titres selon la transcription ; prends les plans dans l’ordre, de 0 à la fin, sans trou ni retour en arrière, et ne répète pas le sous-titre dans les cartons (cartons très courts : un mot ou un chiffre)'
+              : 'sousTitres = false'
+          }, musique = true.`,
         ]
       : []),
     ...(e.serie

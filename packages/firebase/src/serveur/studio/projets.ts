@@ -13,6 +13,7 @@ import {
   planMontage,
   promptMontage,
   lienVideo,
+  motsDepuisTexte,
   promptDeclinaisons,
   promptSujets,
   RECHERCHES_EXTERIEURES,
@@ -535,39 +536,47 @@ export async function priseEnregistreeStudio(
 
 /**
  * Voix de synthèse : ElevenLabs lit le texte (le script par défaut), le MP3 devient la voix de la
- * prise, sans écran ni caméra. La suite est celle d'une prise ordinaire (transcription, montage).
+ * prise, sans écran ni caméra. Les mots arrivent horodatés avec le son : pas de transcription,
+ * Claude monte tout de suite. `sousTitres` impose le choix de l'auteur au montage.
  */
 export async function voixSyntheseStudio(
   s: ServicesStudio,
-  e: { projetId: string; auteurUid: string; texte: string; voixId: string },
+  e: { projetId: string; auteurUid: string; texte: string; voixId: string; sousTitres?: boolean },
 ): Promise<void> {
   if (!s.elevenlabs || !s.deposer)
     throw new ErreurMetier(
       'INDISPONIBLE',
       'ElevenLabs n’est pas configuré : ajoutez ELEVENLABS_API_KEY dans .env.local.',
     );
+  exigerClaude(s);
   await exiger(s, e.projetId);
-  let octets: Uint8Array;
+  let voix: { audio: Uint8Array; mots: MotTranscrit[] };
   try {
-    octets = await s.elevenlabs.parler(e.texte, e.voixId);
+    voix = await s.elevenlabs.parler(e.texte, e.voixId);
   } catch {
     throw new ErreurMetier(
       'INDISPONIBLE',
       'ElevenLabs n’a pas répondu. Réessayez dans un instant.',
     );
   }
-  const dureeMs = dureeMp3Ms(octets.byteLength);
+  const dureeMs = dureeMp3Ms(voix.audio.byteLength);
   if (dureeMs < 1_000)
     throw new ErreurMetier('ENTREE_INVALIDE', 'Texte trop court pour une vidéo.');
   const priseId = `v${s.horloge().toString(36)}`;
   const chemin = `studio/${e.auteurUid}/${priseId}/voix.mp3`;
-  await s.deposer(chemin, octets, 'audio/mpeg');
-  await priseEnregistreeStudio(s, {
+  await s.deposer(chemin, voix.audio, 'audio/mpeg');
+  await maj(s, e.projetId, {
+    prise: { id: priseId, fichiers: { voix: chemin }, dureeMs },
+    camera: false,
+    statut: 'montage',
+    // Sans horodatage (ancienne réponse), le texte est réparti sur la durée.
+    mots: voix.mots.length ? voix.mots : motsDepuisTexte(e.texte, dureeMs),
+    erreur: null,
+    prisesExpirentLe: Timestamp.fromMillis(s.horloge() + CONSERVATION_PRISES_JOURS * JOUR),
+  });
+  await genererMontageStudio(s, {
     projetId: e.projetId,
-    auteurUid: e.auteurUid,
-    priseId,
-    fichiers: { voix: chemin },
-    dureeMs,
+    ...(e.sousTitres === undefined ? {} : { sousTitres: e.sousTitres }),
   });
 }
 
@@ -587,18 +596,21 @@ export async function voixDisponiblesStudio(s: ServicesStudio) {
  */
 export async function sansPriseStudio(
   s: ServicesStudio,
-  e: { projetId: string; dureeMs: number },
+  e: { projetId: string; dureeMs: number; sousTitres?: boolean },
 ): Promise<void> {
   exigerClaude(s);
-  await exiger(s, e.projetId);
+  const p = await exiger(s, e.projetId);
+  // Sous-titres sans voix : le texte du script réparti sur la durée.
+  const script = (p.sujet?.script ?? []).map((x) => x.voix).join(' ');
+  const mots = e.sousTitres ? motsDepuisTexte(script, e.dureeMs) : [];
   await maj(s, e.projetId, {
     prise: { id: `m${s.horloge().toString(36)}`, fichiers: {}, dureeMs: e.dureeMs },
     camera: false,
     statut: 'montage',
-    mots: [],
+    mots,
     erreur: null,
   });
-  await genererMontageStudio(s, { projetId: e.projetId });
+  await genererMontageStudio(s, { projetId: e.projetId, sousTitres: mots.length > 0 });
 }
 
 /** Retour du robot : transcription mot à mot, puis montage par Claude. */
@@ -651,6 +663,8 @@ export async function genererMontageStudio(
     projetId: string;
     retouche?: string;
     images?: readonly { type: 'image/jpeg'; base64: string }[];
+    /** Choix de l'auteur, imposé au plan (sinon Claude décide, ou garde celui du plan actuel). */
+    sousTitres?: boolean;
   },
 ): Promise<void> {
   const claude = exigerClaude(s);
@@ -669,6 +683,7 @@ export async function genererMontageStudio(
       camera: p.camera,
       ecran: contexte.ecran,
       voix: Boolean(p.prise.fichiers.voix),
+      sousTitres: (e.sousTitres ?? p.plan?.sousTitres ?? false) && p.mots.length > 0,
       dureePriseMs: p.prise.dureeMs,
       transcription: transcriptionHorodatee(p.mots),
       segments: segmentsParoles(p.mots, {}),
@@ -694,10 +709,13 @@ export async function genererMontageStudio(
     }
     erreurs = r.refus ? ['Réponse déclinée.'] : verifierPlan(brut, contexte);
     if (!erreurs.length) {
+      const plan = planMontage.parse(brut);
       await enregistrerPlan(
         s,
         p,
-        planMontage.parse(brut),
+        e.sousTitres === undefined
+          ? plan
+          : { ...plan, sousTitres: e.sousTitres && p.mots.length > 0 },
         e.retouche ? 'claude-retouche' : 'claude',
       );
       return;

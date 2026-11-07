@@ -35,8 +35,8 @@ Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le prop
 - **Autres façons de tourner** (onglets de l'étape 2) :
   - **Vidéo du téléphone** : `import.(mp4|mov|m4v|webm)`, 1 Go et 15 min au plus ; elle donne l'image (face caméra ou écran) et la voix.
   - **Voix seule** : fichier audio `voix-import.(mp3|m4a|wav|aac|ogg|webm)`, 200 Mo et 15 min au plus. On peut aussi enregistrer ici sans écran ni caméra.
-  - **Voix ElevenLabs** : une voix de synthèse lit le texte (le script par défaut, 5 000 caractères au plus). Le serveur dépose `voix.mp3` (MP3 à 128 kbit/s, durée = taille × 8 / 128) puis lance la suite comme pour une prise.
-  - **Sans voix ni vidéo** : rien à enregistrer, seulement une durée (15 à 90 s). Pas de transcription : Claude monte directement des cartons et des textes sur les captures Portail Travaux, avec la musique et sans sous-titres ; le robot pose une piste muette de la durée choisie.
+  - **Voix ElevenLabs** : une voix de synthèse lit le texte (le script par défaut, 5 000 caractères au plus). Le serveur dépose `voix.mp3` (MP3 à 128 kbit/s, durée = taille × 8 / 128). ElevenLabs renvoie le temps de chaque lettre (`with-timestamps`) : les mots sont horodatés (`motsDepuisAlignement`), pas de transcription, Claude monte tout de suite. Case « Sous-titres » : le choix de l'auteur est imposé au plan.
+  - **Claude fait tout (rien à tourner)** : voix au choix (aucune, ou une voix IA ElevenLabs qui lit le script et fixe la durée) ; sans voix, une durée (15 à 90 s). Claude monte des cartons et des textes sur les captures Portail Travaux, avec la musique ; le robot pose une piste muette de la durée choisie. Case « Sous-titres » (cochée par défaut) : sans voix, le texte du script est réparti sur la durée (`motsDepuisTexte`) et Claude prend les plans dans l'ordre pour que les sous-titres suivent.
   - Sans écran enregistré, `verifierPlan` refuse le visuel « ecran » et Claude est prévenu : la vidéo montre les captures Portail Travaux, des cartons et des calques.
 
 ## 3. Transcription

@@ -219,3 +219,31 @@ export function motsDepuisTexte(texte: string, dureeMs: number): MotTranscrit[] 
     return { texte: m, debut, fin: i === mots.length - 1 ? dureeMs : Math.round(t) };
   });
 }
+
+/**
+ * Voix de synthèse : ElevenLabs donne le temps de chaque lettre (en secondes) ; on regroupe les
+ * lettres en mots (début de la première, fin de la dernière), en millisecondes entières. Pas
+ * besoin de transcrire une voix dont on connaît déjà le texte.
+ */
+export function motsDepuisAlignement(
+  lettres: readonly string[],
+  debuts: readonly number[],
+  fins: readonly number[],
+): MotTranscrit[] {
+  const mots: MotTranscrit[] = [];
+  let courant: MotTranscrit | null = null;
+  lettres.forEach((l, i) => {
+    if (/\s/.test(l)) {
+      if (courant) mots.push(courant);
+      courant = null;
+      return;
+    }
+    const fin = Math.round((fins[i] ?? 0) * 1000);
+    if (courant) {
+      courant.texte += l;
+      courant.fin = fin;
+    } else courant = { texte: l, debut: Math.round((debuts[i] ?? 0) * 1000), fin };
+  });
+  if (courant) mots.push(courant);
+  return mots;
+}

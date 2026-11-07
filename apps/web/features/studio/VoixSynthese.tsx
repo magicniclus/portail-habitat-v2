@@ -1,7 +1,7 @@
 'use client';
 
 import type { SujetStudio } from '@ph/core/studio';
-import { Banner, Button, Field, Select, Textarea } from '@ph/ui';
+import { Banner, Button, Checkbox, Field, Select, Textarea } from '@ph/ui';
 import { useEffect, useState } from 'react';
 import { listerVoix, voixSynthese } from './actions';
 
@@ -16,6 +16,7 @@ export function VoixSynthese({
   const [voix, setVoix] = useState<{ id: string; nom: string }[] | null>(null);
   const [voixId, setVoixId] = useState('');
   const [texte, setTexte] = useState(() => script.map((s) => s.voix).join('\n'));
+  const [sousTitres, setSousTitres] = useState(true);
   const [envoi, setEnvoi] = useState(false);
   const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
   useEffect(() => {
@@ -32,11 +33,11 @@ export function VoixSynthese({
   const generer = async () => {
     setMessage(null);
     setEnvoi(true);
-    const r = await voixSynthese({ projetId, texte, voixId });
+    const r = await voixSynthese({ projetId, texte, voixId, sousTitres });
     setEnvoi(false);
     setMessage(
       r.ok
-        ? { ton: 'succes', texte: 'Voix créée : la transcription et le montage commencent.' }
+        ? { ton: 'succes', texte: 'Voix créée : Claude monte la vidéo.' }
         : { ton: 'danger', texte: r.message },
     );
   };
@@ -67,6 +68,9 @@ export function VoixSynthese({
           onChange={(e) => setTexte(e.target.value)}
         />
       </Field>
+      <Checkbox checked={sousTitres} onChange={(e) => setSousTitres(e.target.checked)}>
+        Sous-titres (le texte lu en bas de l’image)
+      </Checkbox>
       {message ? <Banner tone={message.ton}>{message.texte}</Banner> : null}
       <div>
         <Button
