@@ -14,3 +14,4 @@ export * from './calendrier';
 export * from './resultats';
 export * from './variantes';
 export * from './formatsViraux';
+export * from './edition';
