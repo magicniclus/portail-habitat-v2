@@ -1,0 +1,252 @@
+import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { chemins } from '../src/chemins';
+import {
+  lireDemandesPro,
+  majSuiviDemande,
+  prendreEnCharge,
+  repondreDemande,
+} from '../src/serveur/pro';
+
+let db: Firestore;
+const T = Date.UTC(2026, 8, 29, 8);
+const s = () => ({ db, horloge: () => T, nomPrestation: (id: string) => `Nom ${id}` });
+
+const erreurDe = (p: Promise<unknown>) =>
+  p.then(
+    () => ({ code: 'AUCUNE' }),
+    (e: { code?: string }) => ({ code: e.code }),
+  );
+
+beforeAll(() => {
+  db = getFirestore(appAdmin());
+});
+
+const membre = (role: string, statut = 'actif') => ({
+  schemaVersion: 1,
+  role,
+  statut,
+  notifs: { demandes: true, avis: true, factures: true },
+  ajouteLe: Timestamp.fromMillis(T),
+  ajoutePar: 'p1',
+});
+
+async function demande(id: string, minutes: number, statut = 'proposee') {
+  await db.doc(chemins.demande(id)).set({
+    reference: `PT-${id.toUpperCase().padEnd(6, 'X')}`,
+    prestationId: 'toiture',
+    contact: {
+      prenom: 'Hélène',
+      nom: 'Marty',
+      email: 'helene@test.local',
+      telephone: '+33612345678',
+    },
+    adresseChantier: { ville: 'Floirac', codePostal: '33270' },
+    precisions: 'Appelez-moi au 06 12 34 56 78, toiture de 90 m²',
+    estimation: { minCentimes: 900_000, maxCentimes: 1_400_000 },
+  });
+  await db.doc(chemins.attribution(id, 'a1')).set({
+    schemaVersion: 1,
+    artisanId: 'a1',
+    demandeId: id,
+    statut,
+    exclusive: false,
+    proposeeLe: Timestamp.fromMillis(T - minutes * 60_000),
+    coordonneesDebloquees: false,
+    scoreMatching: 80,
+  });
+}
+
+beforeEach(async () => {
+  await fetch(
+    `http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${PROJET_EMULATEUR}/databases/(default)/documents`,
+    { method: 'DELETE' },
+  );
+  await Promise.all([
+    db.doc(chemins.membre('a1', 'p1')).set(membre('proprietaire')),
+    db.doc(chemins.membre('a1', 'c1')).set(membre('collaborateur')),
+    db.doc(chemins.membre('a1', 'c2')).set(membre('collaborateur')),
+    db.doc(chemins.membre('a1', 'x1')).set(membre('comptable')),
+    db.doc(chemins.membre('a1', 'r1')).set(membre('collaborateur', 'suspendu')),
+    db.doc(chemins.user('c1')).set({ nomAffiche: 'Camille Dubois' }),
+  ]);
+});
+
+describe('lireDemandesPro', () => {
+  it('plus récentes d’abord ; coordonnées masquées avant acceptation (PRO-02)', async () => {
+    await demande('d1', 60);
+    await demande('d2', 5, 'acceptee');
+    const [d2, d1] = await lireDemandesPro(s(), 'a1');
+    expect(d2).toMatchObject({
+      demandeId: 'd2',
+      particulier: 'Hélène Marty',
+      contact: { email: 'helene@test.local', telephone: '+33612345678' },
+      etat: 'contacte',
+    });
+    expect(d1).toMatchObject({ demandeId: 'd1', particulier: 'Hélène M.', etat: 'nouveau' });
+    expect(d1!.contact).toBeUndefined();
+    expect(d1!.precisions).toContain('[numéro masqué]');
+    expect(JSON.stringify(d1)).not.toContain('helene@test.local');
+  });
+
+  it('détails du projet : réponses du simulateur, masquées comme les précisions', async () => {
+    await demande('d1', 1);
+    await db.doc(chemins.demande('d1')).update({
+      reponsesLisibles: [
+        { question: 'Surface', reponse: '90 m²' },
+        { question: 'Commentaire', reponse: 'Joignable au 06 12 34 56 78' },
+      ],
+    });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.details).toEqual([
+      { question: 'Surface', reponse: '90 m²' },
+      { question: 'Commentaire', reponse: expect.stringContaining('[numéro masqué]') },
+    ]);
+  });
+
+  it('demande laissée sur la fiche : origine, description visible, pas de fausse estimation', async () => {
+    await demande('d1', 1, 'acceptee');
+    await db.doc(chemins.demande('d1')).update({
+      source: 'fiche_artisan',
+      prestationId: 'contact_fiche',
+      precisions: '',
+      reponsesLisibles: [{ question: 'Description du projet', reponse: 'Fuite sous l’évier' }],
+      estimation: { minCentimes: 0, maxCentimes: 0 },
+    });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1).toMatchObject({
+      origine: 'fiche',
+      titre: 'Demande depuis votre fiche',
+      details: [{ question: 'Description du projet', reponse: 'Fuite sous l’évier' }],
+    });
+    expect(d1!.estimation).toBeNull();
+  });
+
+  it('seulement les demandes de l’entreprise', async () => {
+    await demande('d1', 1);
+    expect(await lireDemandesPro(s(), 'autre')).toEqual([]);
+  });
+});
+
+describe('majSuiviDemande (suivi façon CRM)', () => {
+  const ctx = (uid: string) => ({ artisanId: 'a1', uid });
+
+  it('étape, note et relance enregistrées, relues dans Mes demandes ; statut inchangé', async () => {
+    await demande('d1', 1, 'acceptee');
+    await majSuiviDemande(s(), ctx('c1'), {
+      demandeId: 'd1',
+      etape: 'rdv',
+      note: 'Visite mardi 14 h',
+      relanceLe: '2026-10-01',
+    });
+    const a = (await db.doc(chemins.attribution('d1', 'a1')).get()).data()!;
+    expect(a.statut).toBe('acceptee');
+    expect(a.suivi).toMatchObject({ etape: 'rdv', note: 'Visite mardi 14 h', majPar: 'c1' });
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.suivi).toEqual({
+      etape: 'rdv',
+      note: 'Visite mardi 14 h',
+      relanceLe: Date.UTC(2026, 9, 1, 12),
+    });
+    // Chaîne vide : note et relance retirées.
+    await majSuiviDemande(s(), ctx('c1'), {
+      demandeId: 'd1',
+      etape: 'appele',
+      note: '',
+      relanceLe: '',
+    });
+    const [apres] = await lireDemandesPro(s(), 'a1');
+    expect(apres!.suivi).toEqual({ etape: 'appele', note: '' });
+  });
+
+  it('refusé avant acceptation, et pour un membre sans le droit de répondre', async () => {
+    await demande('d1', 1);
+    expect(
+      (await erreurDe(majSuiviDemande(s(), ctx('p1'), { demandeId: 'd1', etape: 'appele' }))).code,
+    ).toBe('PRECONDITION');
+    await db.doc(chemins.attribution('d1', 'a1')).update({ statut: 'acceptee' });
+    expect(
+      (await erreurDe(majSuiviDemande(s(), ctx('x1'), { demandeId: 'd1', etape: 'appele' }))).code,
+    ).toBe('PERMISSION_REFUSEE');
+  });
+
+  it('sans choix : étape déduite du statut', async () => {
+    await demande('d1', 1, 'devis_envoye');
+    const [d1] = await lireDemandesPro(s(), 'a1');
+    expect(d1!.suivi).toEqual({ etape: 'devis_envoye', note: '' });
+  });
+});
+
+describe('repondreDemande', () => {
+  it('accepter débloque les coordonnées', async () => {
+    await demande('d1', 1);
+    expect(
+      await repondreDemande(
+        s(),
+        { artisanId: 'a1', uid: 'c1' },
+        { demandeId: 'd1', action: 'accepter' },
+      ),
+    ).toEqual({ statut: 'acceptee' });
+    const a = await db.doc(chemins.attribution('d1', 'a1')).get();
+    expect(a.get('coordonneesDebloquees')).toBe(true);
+    expect((await lireDemandesPro(s(), 'a1'))[0]!.contact).toBeDefined();
+  });
+
+  it('ouvrir marque vue ; répondre deux fois est refusé', async () => {
+    await demande('d1', 1);
+    await repondreDemande(s(), { artisanId: 'a1', uid: 'p1' }, { demandeId: 'd1', action: 'voir' });
+    expect((await db.doc(chemins.attribution('d1', 'a1')).get()).get('statut')).toBe('vue');
+    await repondreDemande(
+      s(),
+      { artisanId: 'a1', uid: 'p1' },
+      { demandeId: 'd1', action: 'refuser', motif: 'Trop loin' },
+    );
+    await expect(
+      repondreDemande(s(), { artisanId: 'a1', uid: 'p1' }, { demandeId: 'd1', action: 'accepter' }),
+    ).rejects.toMatchObject({ code: 'CONFLIT' });
+  });
+
+  it('comptable, membre suspendu ou étranger : refusé', async () => {
+    await demande('d1', 1);
+    for (const uid of ['x1', 'r1', 'inconnu'])
+      await expect(
+        repondreDemande(s(), { artisanId: 'a1', uid }, { demandeId: 'd1', action: 'accepter' }),
+      ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+  });
+});
+
+describe('prendreEnCharge (PRO-03)', () => {
+  it('assigne la demande ; les autres voient qui la traite', async () => {
+    await demande('d1', 1);
+    await prendreEnCharge(s(), { artisanId: 'a1', uid: 'c1' }, 'd1');
+    expect((await lireDemandesPro(s(), 'a1'))[0]!.assigneA).toEqual({
+      uid: 'c1',
+      nom: 'Camille Dubois',
+    });
+  });
+
+  it('un autre collaborateur ne peut pas la reprendre ; le propriétaire si', async () => {
+    await demande('d1', 1);
+    await prendreEnCharge(s(), { artisanId: 'a1', uid: 'c1' }, 'd1');
+    await expect(prendreEnCharge(s(), { artisanId: 'a1', uid: 'c2' }, 'd1')).rejects.toMatchObject({
+      code: 'CONFLIT',
+    });
+    await prendreEnCharge(s(), { artisanId: 'a1', uid: 'p1' }, 'd1');
+    expect((await db.doc(chemins.attribution('d1', 'a1')).get()).get('assigneA')).toBe('p1');
+  });
+});
+
+describe('lireStatsJours', () => {
+  it('jours à partir de la date donnée seulement', async () => {
+    const { lireStatsJours } = await import('../src/serveur/pro');
+    for (const [jour, vues] of [
+      ['2026-09-01', 3],
+      ['2026-08-31', 9],
+    ] as const)
+      await db.doc(chemins.statsJour('a1', jour)).set({ vuesFiche: vues, clicsTelephone: 1 });
+    expect(await lireStatsJours(db, 'a1', '2026-09-01')).toEqual([
+      { jour: '2026-09-01', vuesFiche: 3, clicsTelephone: 1, clicsDevis: 0 },
+    ]);
+  });
+});

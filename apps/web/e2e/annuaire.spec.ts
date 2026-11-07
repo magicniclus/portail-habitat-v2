@@ -1,0 +1,191 @@
+import { expect, test, type Page } from '@playwright/test';
+
+// docs/ACCEPTANCE.md ANN-01 à ANN-06 et FIC-01 à FIC-03. Données : jeu de test en mémoire
+// (ANNUAIRE_DEMO=1, voir playwright.config.ts), autour de Bordeaux.
+const formulaire = (page: Page) => page.getByRole('form', { name: 'Filtres' });
+
+async function filtres(page: Page) {
+  const bouton = page.getByRole('button', { name: /^Filtres/ });
+  if (await bouton.isVisible()) await bouton.click();
+  return formulaire(page);
+}
+
+test.describe('Annuaire', () => {
+  test('ANN-01 : filtres dans l’URL, conservés au rechargement', async ({ page }) => {
+    await page.goto('/artisans?metier=plombier&rayon=30');
+    await expect(page.getByRole('heading', { name: 'Bertrand Rénovation' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Atelier Lumière' })).toHaveCount(0);
+    const f = await filtres(page);
+    await expect(f.getByRole('checkbox', { name: 'Plombier' })).toBeChecked();
+    await f.getByText('Électricien', { exact: true }).click();
+    await expect(page).toHaveURL(/metier=plombier%2Celectricien/);
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'Atelier Lumière' })).toBeVisible();
+    await expect(
+      (await filtres(page)).getByRole('checkbox', { name: 'Électricien' }),
+    ).toBeChecked();
+  });
+
+  test('ANN-02 : chips retirables et « Tout effacer »', async ({ page }) => {
+    await page.goto('/artisans?metier=plombier,electricien&note=4');
+    const chips = page.getByRole('list', { name: 'Filtres actifs' });
+    await expect(chips.getByRole('link')).toHaveCount(4);
+    await chips.getByRole('link', { name: /^Plombier/ }).click();
+    await expect(page).toHaveURL(/metier=electricien&note=4$/);
+    await page
+      .getByRole('list', { name: 'Filtres actifs' })
+      .getByRole('link', { name: 'Tout effacer' })
+      .click();
+    await expect(page).toHaveURL(/\/artisans$/);
+    await expect(page.getByRole('list', { name: 'Filtres actifs' })).toHaveCount(0);
+  });
+
+  test('ANN-03 : artisans recommandés en tête et signalés, mention L111-7 visible', async ({
+    page,
+  }) => {
+    await page.goto('/artisans');
+    const une = page.getByRole('region', { name: /Artisans à la une/ });
+    await expect(une.locator('article').first()).toContainText('Premium Portail Travaux');
+    const premiers = await page
+      .locator('#resultats article')
+      .evaluateAll((els) =>
+        els.map((e) => e.closest('section[aria-labelledby="titre-une"]') !== null),
+      );
+    expect(premiers.indexOf(false)).toBeGreaterThan(0);
+    expect(premiers.slice(premiers.indexOf(false)).every((x) => !x)).toBe(true);
+    await expect(
+      page.getByText(/option payante de mise en avant : ils apparaissent en tête de liste/),
+    ).toBeVisible();
+  });
+
+  test('ANN-04 : « douche italienne » trouve l’artisan qui a ce mot-clé', async ({ page }) => {
+    await page.goto('/artisans');
+    await page.getByRole('searchbox', { name: /Métier, entreprise/ }).fill('douche italienne');
+    await page.getByRole('button', { name: 'Rechercher' }).click();
+    await expect(page).toHaveURL(/q=douche\+italienne/);
+    await expect(page.getByRole('heading', { name: 'Bertrand Rénovation' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Atelier Lumière' })).toHaveCount(0);
+  });
+
+  test('ANN-05 : aucun résultat dans le secteur → les plus proches, et déposer un projet', async ({
+    page,
+  }) => {
+    await page.goto('/artisans?q=zzzzqqq');
+    const proches = page.getByRole('region', { name: /^Les artisans les plus proches/ });
+    await expect(proches).toBeVisible();
+    await expect(proches.getByRole('article').first()).toBeVisible();
+    await expect(proches.getByRole('link', { name: 'déposez votre projet' })).toHaveAttribute(
+      'href',
+      '/simulateur',
+    );
+  });
+
+  test('le nom de l’artisan ouvre sa fiche', async ({ page }) => {
+    await page.goto('/artisans');
+    await page.getByRole('link', { name: 'Bertrand Rénovation', exact: true }).first().click();
+    await expect(page).toHaveURL(/\/artisans\/bertrand-renovation-bordeaux/);
+  });
+
+  test('ANN-06 : téléphone seulement avec Fiche Pro (ou une formule qui l’inclut)', async ({
+    page,
+  }) => {
+    await page.goto('/artisans?metier=menuisier,plombier&rayon=40');
+    const carte = (nom: string) =>
+      page.locator('article', { has: page.getByRole('heading', { name: nom }) });
+    await expect(
+      carte('Bertrand Rénovation').getByRole('link', { name: /^Appeler/ }),
+    ).toBeVisible();
+    await expect(carte('Menuiserie Latour')).toBeVisible();
+    await expect(carte('Menuiserie Latour').getByRole('link', { name: /^Appeler/ })).toHaveCount(0);
+  });
+});
+
+test('recherche par ville : suggestions, la commune choisie envoie sa position', async ({
+  page,
+}) => {
+  await page.route('**/api/lieux?*', (r) =>
+    r.fulfill({
+      json: {
+        lieux: [
+          {
+            nom: 'Carignan-de-Bordeaux',
+            codePostal: '33360',
+            centre: { latitude: 44.81, longitude: -0.48 },
+          },
+        ],
+      },
+    }),
+  );
+  await page.goto('/artisans');
+  const ville = page.getByRole('combobox', { name: 'Ville ou code postal' });
+  await expect(async () => {
+    await ville.fill('');
+    await ville.pressSequentially('Carig');
+    await expect(page.getByRole('option', { name: /Carignan-de-Bordeaux/ })).toBeVisible({
+      timeout: 2000,
+    });
+  }).toPass({ timeout: 15_000 });
+  await page.getByRole('option', { name: /Carignan-de-Bordeaux/ }).click();
+  await expect(ville).toHaveValue('Carignan-de-Bordeaux');
+  await page.getByRole('search').getByRole('button', { name: 'Rechercher' }).click();
+  await expect(page).toHaveURL(/ville=Carignan-de-Bordeaux&lat=44\.81000&lon=-0\.48000/);
+  // La position reste dans les liens des filtres.
+  await expect(page.getByRole('combobox', { name: 'Ville ou code postal' })).toHaveValue(
+    'Carignan-de-Bordeaux',
+  );
+});
+
+test('page « métier à une ville » : texte rédigé sous la liste des artisans', async ({ page }) => {
+  await page.goto('/artisans?metier=plombier&ville=Bordeaux');
+  const article = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Trouver un plombier à Bordeaux' }),
+  });
+  await expect(article).toBeVisible();
+  await expect(article).toContainText('Avant de choisir, comparez au moins deux devis');
+});
+
+test.describe('Fiche publique', () => {
+  test('FIC-01 : seuls les labels vérifiés', async ({ page }) => {
+    await page.goto('/artisans/bertrand-renovation-bordeaux');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Bertrand Rénovation' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('list', { name: 'Labels vérifiés' }).getByRole('listitem'),
+    ).toHaveText([/Décennale vérifiée/, /Qualibat/, /Répond sous 24 h/, /Réalisations photos/]);
+  });
+
+  test('FIC-02 : fiche hors ligne ou inconnue → 404', async ({ page }) => {
+    for (const slug of ['maison-faure-52-carbon-blanc', 'fiche-qui-n-existe-pas']) {
+      const r = await page.goto(`/artisans/${slug}`);
+      expect(r?.status()).toBe(404);
+    }
+  });
+
+  test('FIC-03 : JSON-LD LocalBusiness avec la note et le nombre d’avis', async ({ page }) => {
+    await page.goto('/artisans/bertrand-renovation-bordeaux');
+    const blocs = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const ld = blocs
+      .map((b) => JSON.parse(b) as Record<string, unknown>)
+      .find((b) => b['@type'] === 'LocalBusiness');
+    expect(ld).toMatchObject({
+      name: 'Bertrand Rénovation',
+      aggregateRating: { '@type': 'AggregateRating', reviewCount: 4 },
+    });
+  });
+
+  test('formulaire « Demander un devis » sur la fiche ; le simulateur cible l’artisan', async ({
+    page,
+  }) => {
+    await page.goto('/artisans/bertrand-renovation-bordeaux');
+    const contact = page.getByRole('complementary', { name: 'Demander un devis' });
+    await expect(contact.getByRole('button', { name: 'Envoyer ma demande' })).toBeVisible();
+    // Validation côté client : rien n'est envoyé sans coordonnées ni accord.
+    await contact.getByRole('button', { name: 'Envoyer ma demande' }).click();
+    await expect(contact.getByText('Indiquez votre prénom')).toBeVisible();
+    await expect(contact.getByRole('link', { name: 'Simuler mon devis' })).toHaveAttribute(
+      'href',
+      '/simulateur?artisan=seed-a-00',
+    );
+  });
+});

@@ -1,0 +1,11 @@
+docs/
+.claude/
+CLAUDE.md
+pnpm-lock.yaml
+.next/
+apps/functions/lib/
+coverage/
+packages/ui/src/styles/theme.css
+packages/ui/src/styles/themes.css
+storybook-static/
+.lighthouseci/

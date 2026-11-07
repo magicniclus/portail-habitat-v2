@@ -1,0 +1,31 @@
+{
+  "_source": "MATCHING.md §2 (matchingConfig/actif), valeurs initiales importées par le seed",
+  "config": {
+    "version": 7,
+    "nbCibles": 3,
+    "nbPropositionsInitiales": 3,
+    "vagueSupplementaire": 2,
+    "delaiAcceptationH": 24,
+    "delaiAcceptationUrgentH": 4,
+    "rayonMaxKm": 60,
+    "poids": {
+      "competence": 0.25,
+      "distance": 0.2,
+      "qualite": 0.2,
+      "reactivite": 0.15,
+      "disponibilite": 0.1,
+      "adequationBudget": 0.05,
+      "completude": 0.05
+    },
+    "bonusPremium": 12,
+    "bonusVisibilite": 4,
+    "quotaPremiumMax": 2,
+    "garantirUnNonPremium": true,
+    "penaliteSaturation": { "seuilDemandes7j": 8, "points": 10 },
+    "penaliteRefus": { "tauxSeuil": 0.5, "points": 8 },
+    "nouvelArtisanBoost": { "joursMax": 30, "points": 6 },
+    "scoreMin": 35,
+    "convertirEnAppelOffres": true,
+    "delaiAvantAppelOffresH": 24
+  }
+}

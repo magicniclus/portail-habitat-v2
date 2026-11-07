@@ -1,0 +1,8 @@
+/* Point d'entrée des styles : importé une fois par le site et par Storybook. */
+@import 'tailwindcss';
+@import './theme.css';
+@import './themes.css';
+@import './base.css';
+
+/* Les classes utilisées par les composants de @ph/ui. */
+@source '../';

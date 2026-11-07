@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+ignoredBuiltDependencies:
+  - '@firebase/util'
+
+onlyBuiltDependencies:
+  - '@sentry/cli'
+  - esbuild
+  - protobufjs
+  - re2
+  - sharp
+  - unrs-resolver
+patchedDependencies:
+  zod@4.6.5: patches/zod@4.6.5.patch

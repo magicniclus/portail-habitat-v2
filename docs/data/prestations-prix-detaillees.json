@@ -1,0 +1,131 @@
+{
+  "_source": "docs/designs/Simulateur de Devis.dc.html (fonction calculer, coefRegion et renderVals)",
+  "_note": "Paramètres de prix des 9 prestations détaillées et coefficients communs, en CENTIMES TTC (paires [min, max]) et en coefficients. Seed de referentiel/prestations/prix/{id} (serveur uniquement). Les formules sont dans packages/core/src/simulateur/formules.ts ; les prix du catalogue générique sont dans prestations-catalogue.json (tarif, en euros, convertis en centimes au seed).",
+  "version": "2026-09",
+  "coefficients": {
+    "regions": [
+      { "departements": ["75", "92", "93", "94", "78", "91", "95", "77"], "coef": 1.16, "note": "Île-de-France : main-d'œuvre majorée d'environ 16 % par rapport à la moyenne nationale." },
+      { "departements": ["06", "13", "69", "74", "83"], "coef": 1.09, "note": "Zone tendue : les tarifs relevés sont environ 9 % au-dessus de la moyenne nationale." },
+      { "departements": ["33", "31", "34", "44", "35", "59", "67"], "coef": 1.03, "note": "Grande métropole régionale : tarifs légèrement au-dessus de la moyenne." }
+    ],
+    "autreDepartement": { "coef": 0.96, "note": "Hors zone tendue : les tarifs relevés sont environ 4 % sous la moyenne nationale." },
+    "sansCodePostal": { "coef": 1, "note": "Renseignez votre code postal pour ajuster l'estimation aux tarifs de votre département." },
+    "acces": { "facile": 1, "etage": 1.06, "difficile": 1.12 }
+  },
+  "prestations": {
+    "peinture": {
+      "gamme": { "eco": 0.82, "std": 1, "premium": 1.45 },
+      "hauteur": { "std": 1, "haut": 1.08, "tres": 1.18 },
+      "etat": { "bon": 1, "moyen": 1.15, "abime": 1.35 },
+      "preparationM2": [400, 750],
+      "mursM2": [1500, 2300],
+      "plafonds": { "ratioSurface": 0.45, "m2": [1300, 1900] },
+      "boiseriesPiece": [9500, 17500],
+      "fissuresM2": [400, 800],
+      "radiateursPiece": [5500, 9500],
+      "nettoyage": { "base": [9000, 16000], "parPiece": [2500, 4500] }
+    },
+    "sdb": {
+      "gamme": { "eco": 0.82, "std": 1, "premium": 1.45 },
+      "depose": { "base": [35000, 65000], "m2": [2500, 4500] },
+      "plomberie": { "base": [85000, 140000], "m2": [4000, 7000] },
+      "reseauPartiel": [60000, 110000],
+      "reseauTotal": [140000, 240000],
+      "electricite": [38000, 78000],
+      "carrelageM2": [8500, 14500],
+      "equipements": {
+        "italienne": [120000, 240000],
+        "baignoire": [70000, 160000],
+        "doubleVasque": [65000, 150000],
+        "wc": [55000, 110000],
+        "seche": [28000, 70000],
+        "meuble": [40000, 110000]
+      },
+      "pmr": [70000, 180000],
+      "vmc": [35000, 75000],
+      "fenetre": [55000, 120000],
+      "finitions": [25000, 52000],
+      "creation": { "min": 1.15, "max": 1.2 }
+    },
+    "cuisine": {
+      "gamme": { "eco": 0.82, "std": 1, "premium": 1.45 },
+      "forme": { "lin": 1, "l": 1.1, "u": 1.18, "ilot": 1.25 },
+      "meublesMl": [85000, 160000],
+      "poseMl": [18000, 28000],
+      "planMl": [22000, 55000],
+      "credence": [22000, 70000],
+      "electromenager": [180000, 420000],
+      "eclairage": [18000, 52000],
+      "solMl": [12000, 24000],
+      "reseaux": { "existant": [15000, 35000], "ajust": [55000, 110000], "refonte": [130000, 260000] },
+      "alimentationIlot": [45000, 110000]
+    },
+    "elec": {
+      "encastre": 1.35,
+      "tableau": { "garde": [0, 0], "remplace": [90000, 150000], "normes": [150000, 290000] },
+      "prise": [7000, 12000],
+      "interrupteur": [6500, 11500],
+      "cablageM2": [1400, 2600],
+      "saigneesM2": [600, 1200],
+      "rj45": [40000, 95000],
+      "spots": [55000, 140000],
+      "borne": [120000, 210000],
+      "domotique": [150000, 420000],
+      "consuel": [18000, 26000]
+    },
+    "plomberie": {
+      "encastre": 1.35,
+      "intervention": { "depannage": [14000, 32000], "remplacement": [28000, 60000], "creation": [65000, 130000] },
+      "point": { "depannage": [9000, 20000], "remplacement": [28000, 62000], "creation": [42000, 90000] },
+      "chauffeEau": [75000, 190000],
+      "adoucisseur": [90000, 220000],
+      "evacuation": [35000, 90000],
+      "colonne": [28000, 85000],
+      "urgence": { "planifie": 1, "rapide": 1.15, "urgence": 1.35 }
+    },
+    "carrelage": {
+      "format": { "std": 1, "grand": 1.3, "mosaique": 1.5 },
+      "fournitureM2": { "eco": [1500, 2500], "std": [3000, 5000], "premium": [6000, 11000] },
+      "poseSolM2": [4200, 6800],
+      "poseMurM2": [5200, 8500],
+      "deposeM2": [1400, 2600],
+      "ragreageM2": [1200, 2400],
+      "etancheiteM2": [1800, 3200],
+      "chauffantM2": [7000, 11500],
+      "jointsM2": [800, 1400]
+    },
+    "isolation": {
+      "zoneM2": { "combles": [2500, 4500], "rampants": [4500, 7500], "murs": [5000, 9000], "ite": [12000, 19000] },
+      "materiau": { "minerale": 1, "biosource": 1.25, "pu": 1.35 },
+      "deposeM2": [800, 1600],
+      "parevapeurM2": [600, 1200],
+      "placoM2": [3500, 6000],
+      "echafaudage": [90000, 240000],
+      "etude": [18000, 45000],
+      "aides": { "plafondRatio": 0.4, "parM2": 2200 }
+    },
+    "toiture": {
+      "travauxM2": { "nettoyage": [1500, 3000], "partielle": [7000, 12000], "complete": [12000, 22000] },
+      "materiau": { "tuile": 1, "ardoise": 1.35, "zinc": 1.5 },
+      "penteComplexe": 1.2,
+      "echafaudage": { "base": [90000, 220000], "m2": [400, 800] },
+      "zinguerie": [90000, 240000],
+      "isolationM2": [3800, 7000],
+      "velux": [90000, 190000],
+      "charpenteM2": [1800, 3400],
+      "evacuation": [25000, 70000]
+    },
+    "menuiserie": {
+      "materiau": { "pvc": 1, "alu": 1.35, "bois": 1.5 },
+      "vitrage": { "double": 1, "doubleRenf": 1.12, "triple": 1.25 },
+      "depose": 1.3,
+      "fournitureFenetre": [42000, 88000],
+      "poseFenetre": [24000, 42000],
+      "voletsFenetre": [42000, 78000],
+      "porte": [120000, 300000],
+      "baie": [180000, 420000],
+      "moustiquaireFenetre": [9000, 19000],
+      "evacuation": [15000, 40000]
+    }
+  }
+}

@@ -1,0 +1,314 @@
+import { ajouterBanniere, bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
+import { ErreurMetier } from '@ph/core/erreurs';
+import { peut, type ActionEquipe, type Membre } from '@ph/core/equipe';
+import type { entreeModifierRealisation, entreeRealisation } from '@ph/core/schemas';
+import type { z } from '@ph/core/zod';
+import { debutYoutube, idYoutube, lienYoutube } from '@ph/core/sites';
+import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { cheminDepuisUrlPublique, urlPubliqueAvecJeton, type bucketFichiers } from '../../admin';
+import { chemins, fichiers } from '../../chemins';
+import { completudeEtMiseEnLigne } from './fiche';
+
+type Services = { db: Firestore; bucket: ReturnType<typeof bucketFichiers>; horloge: () => number };
+type Contexte = { artisanId: string; uid: string };
+
+const IMAGES = /^image\/(jpeg|png|webp|avif)$/;
+
+/**
+ * Le fichier existe dans Storage, est une image et respecte la taille de storage.rules ; renvoie
+ * son adresse publique (avec jeton de téléchargement).
+ */
+async function verifierImage(s: Services, chemin: string, maxMo: number) {
+  const fichier = s.bucket.file(chemin);
+  const [existe] = await fichier.exists();
+  if (!existe) throw new ErreurMetier('INTROUVABLE', 'Image introuvable : renvoyez-la.');
+  const [meta] = await fichier.getMetadata();
+  if (!IMAGES.test(meta.contentType ?? '') || Number(meta.size) > maxMo * 1024 * 1024)
+    throw new ErreurMetier('ENTREE_INVALIDE', `Image JPEG, PNG ou WebP de ${maxMo} Mo au plus.`);
+  return urlPubliqueAvecJeton(fichier);
+}
+
+/** Membre relu dans la transaction : droit demandé, sinon refus. */
+async function exiger(
+  t: FirebaseFirestore.Transaction,
+  s: Services,
+  ctx: Contexte,
+  action: ActionEquipe,
+) {
+  const m = await t.get(s.db.doc(chemins.membre(ctx.artisanId, ctx.uid)));
+  if (!peut(m.data() as Membre | undefined, action)) throw new ErreurMetier('PERMISSION_REFUSEE');
+}
+
+/** Document de l'entreprise relu dans la transaction, avec les changements à venir. */
+async function majCompletude(
+  t: FirebaseFirestore.Transaction,
+  s: Services,
+  ctx: Contexte,
+  apres: Record<string, unknown>,
+) {
+  const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+  const a = await t.get(ref);
+  if (!a.exists) throw new ErreurMetier('INTROUVABLE');
+  return { ref, donnees: { ...a.data(), ...apres } };
+}
+
+/** Logo de l'entreprise (propriétaire ou gérant : `fiche.modifier`), lisible publiquement. */
+export async function enregistrerLogo(s: Services, ctx: Contexte, nomFichier: string) {
+  const chemin = fichiers.logo(ctx.artisanId, nomFichier);
+  const logoUrl = await verifierImage(s, chemin, 2);
+  return s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const { ref, donnees } = await majCompletude(t, s, ctx, { logoUrl });
+    const c = completudeEtMiseEnLigne(donnees);
+    t.update(ref, { logoUrl, ...c, updatedAt: Timestamp.fromMillis(s.horloge()) });
+    return { logoUrl };
+  });
+}
+
+/** Supprime de Storage les bannières retirées de la liste (fichiers de cette entreprise seulement). */
+async function supprimerBannieres(s: Services, ctx: Contexte, urls: string[]) {
+  const prefixe = fichiers.banniere(ctx.artisanId, '');
+  await Promise.all(
+    urls
+      .map(cheminDepuisUrlPublique)
+      .filter((c): c is string => c !== null && c.startsWith(prefixe))
+      .map((c) => s.bucket.file(c).delete({ ignoreNotFound: true })),
+  );
+}
+
+/**
+ * Bannière de la fiche (5 Mo) : 5 avec la visibilité payante (droits relus dans la transaction),
+ * sinon une seule, remplacée à chaque envoi.
+ */
+export async function enregistrerBanniere(s: Services, ctx: Contexte, nomFichier: string) {
+  const chemin = fichiers.banniere(ctx.artisanId, nomFichier);
+  const url = await verifierImage(s, chemin, 5);
+  const { bannieres, retirees } = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    const a = await t.get(ref);
+    if (!a.exists) throw new ErreurMetier('INTROUVABLE');
+    const actuelles = (a.get('bannieres') as string[] | undefined) ?? [];
+    const max = bannieresMax({ ficheMiseEnAvant: a.get('droits.ficheMiseEnAvant') === true });
+    const liste = ajouterBanniere(actuelles, url, max);
+    if (!liste)
+      throw new ErreurMetier('PRECONDITION', `${max} bannières au plus : retirez-en une d'abord.`);
+    t.update(ref, {
+      bannieres: liste,
+      ...completudeEtMiseEnLigne({ ...a.data(), bannieres: liste }),
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return { bannieres: liste, retirees: actuelles.filter((u) => !liste.includes(u)) };
+  });
+  await supprimerBannieres(s, ctx, retirees);
+  return { bannieres };
+}
+
+/** Cadrage des bannières (partie gardée visible quand elles sont rognées : haut, centre, bas). */
+export async function cadrerBanniere(s: Services, ctx: Contexte, cadrage: CadrageBanniere) {
+  await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    if (!(await t.get(ref)).exists) throw new ErreurMetier('INTROUVABLE');
+    t.update(ref, { cadrageBanniere: cadrage, updatedAt: Timestamp.fromMillis(s.horloge()) });
+  });
+  return { cadrage };
+}
+
+/** Retire une bannière de la fiche et supprime son fichier. */
+export async function retirerBanniere(s: Services, ctx: Contexte, url: string) {
+  const bannieres = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'fiche.modifier');
+    const ref = s.db.doc(chemins.artisan(ctx.artisanId));
+    const a = await t.get(ref);
+    const actuelles = (a.get('bannieres') as string[] | undefined) ?? [];
+    if (!actuelles.includes(url)) throw new ErreurMetier('INTROUVABLE');
+    const liste = actuelles.filter((u) => u !== url);
+    t.update(ref, {
+      bannieres: liste,
+      // Bannière retirée : complétude en baisse, la fiche reste en ligne (jamais retirée sans prévenir).
+      completude: completudeEtMiseEnLigne({ ...a.data(), bannieres: liste }).completude,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return liste;
+  });
+  await supprimerBannieres(s, ctx, [url]);
+  return { bannieres };
+}
+
+/**
+ * Vidéo de présentation : lien YouTube (enregistré sous sa forme canonique, début compris), lu
+ * sans cookie sur la fiche publique. `null` : vidéo retirée.
+ */
+export async function enregistrerVideo(
+  s: Pick<Services, 'db' | 'horloge'>,
+  ctx: Contexte,
+  lien: string | null,
+) {
+  const id = lien ? idYoutube(lien) : null;
+  if (lien && !id) throw new ErreurMetier('ENTREE_INVALIDE', 'Collez le lien d’une vidéo YouTube.');
+  const videoUrl = id ? lienYoutube(id, debutYoutube(lien!)) : null;
+  return s.db.runTransaction(async (t) => {
+    await exiger(t, s as Services, ctx, 'fiche.modifier');
+    t.update(s.db.doc(chemins.artisan(ctx.artisanId)), {
+      videoUrl: videoUrl ?? FieldValue.delete(),
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return { videoUrl };
+  });
+}
+
+export interface RealisationPro {
+  id: string;
+  titre: string;
+  ville: string;
+  description: string;
+  metier: string;
+  /** Visible sur la fiche publique (interrupteur « Public »). */
+  publie: boolean;
+  photos: { url: string; storagePath: string; largeur: number; hauteur: number }[];
+}
+
+export async function lireRealisationsPro(
+  db: Firestore,
+  artisanId: string,
+): Promise<RealisationPro[]> {
+  const r = await db.collection(chemins.realisations(artisanId)).orderBy('ordre', 'desc').get();
+  return r.docs.map((d) => ({
+    id: d.id,
+    titre: d.get('titre') as string,
+    ville: d.get('ville') as string,
+    description: (d.get('description') as string | undefined) ?? '',
+    metier: (d.get('metier') as string | undefined) ?? '',
+    publie: d.get('publie') !== false,
+    photos: (d.get('photos') as RealisationPro['photos']).map(
+      ({ url, storagePath, largeur, hauteur }) => ({ url, storagePath, largeur, hauteur }),
+    ),
+  }));
+}
+
+/**
+ * Réalisation publiée (droit `realisations.modifier`) : photos vérifiées dans Storage, accord du
+ * propriétaire du chantier exigé par le schéma (CGV §9).
+ */
+export async function enregistrerRealisation(
+  s: Services,
+  ctx: Contexte,
+  e: z.output<typeof entreeRealisation>,
+): Promise<void> {
+  const photos = await Promise.all(
+    e.photos.map(async (p) => {
+      const chemin = fichiers.realisation(ctx.artisanId, e.rid, p.nomFichier);
+      return {
+        url: await verifierImage(s, chemin, 8),
+        storagePath: chemin,
+        largeur: p.largeur,
+        hauteur: p.hauteur,
+      };
+    }),
+  );
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${e.rid}`);
+  await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const { ref: refArtisan, donnees } = await majCompletude(t, s, ctx, {});
+    if ((await t.get(ref)).exists)
+      throw new ErreurMetier('CONFLIT', 'Réalisation déjà enregistrée.');
+    const maintenant = Timestamp.fromMillis(s.horloge());
+    t.create(ref, {
+      schemaVersion: 1,
+      createdAt: maintenant,
+      updatedAt: maintenant,
+      titre: e.titre,
+      description: e.description,
+      metier: donnees.metierPrincipal as string,
+      ville: e.ville,
+      photos,
+      autorisationProprietaire: true,
+      publie: true,
+      ordre: s.horloge(),
+    });
+    t.update(refArtisan, { updatedAt: maintenant });
+  });
+}
+
+type PhotoProjet = { url: string; storagePath: string; largeur: number; hauteur: number };
+
+/**
+ * Projet modifié (droit `realisations.modifier`) : titre, ville, description ; photos gardées
+ * (parmi celles du projet seulement), nouvelles photos vérifiées dans Storage ; les photos
+ * retirées sont supprimées.
+ */
+export async function modifierRealisation(
+  s: Services,
+  ctx: Contexte,
+  e: z.output<typeof entreeModifierRealisation>,
+): Promise<void> {
+  const nouvelles: PhotoProjet[] = await Promise.all(
+    e.nouvelles.map(async (p) => {
+      const chemin = fichiers.realisation(ctx.artisanId, e.rid, p.nomFichier);
+      return {
+        url: await verifierImage(s, chemin, 8),
+        storagePath: chemin,
+        largeur: p.largeur,
+        hauteur: p.hauteur,
+      };
+    }),
+  );
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${e.rid}`);
+  const retirees = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const r = await t.get(ref);
+    if (!r.exists) throw new ErreurMetier('INTROUVABLE');
+    const actuelles = (r.get('photos') as PhotoProjet[] | undefined) ?? [];
+    if (e.conservees.some((c) => !actuelles.some((p) => p.storagePath === c)))
+      throw new ErreurMetier('ENTREE_INVALIDE', 'Photo inconnue : rechargez la page.');
+    const gardees = actuelles.filter((p) => e.conservees.includes(p.storagePath));
+    const nouveaux = new Set(nouvelles.map((p) => p.storagePath));
+    t.update(ref, {
+      titre: e.titre,
+      ville: e.ville,
+      description: e.description,
+      photos: [...gardees.filter((p) => !nouveaux.has(p.storagePath)), ...nouvelles],
+      ...(nouvelles.length ? { autorisationProprietaire: true } : {}),
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+    return actuelles.filter(
+      (p) => !e.conservees.includes(p.storagePath) && !nouveaux.has(p.storagePath),
+    );
+  });
+  await Promise.all(
+    retirees.map((p) => s.bucket.file(p.storagePath).delete({ ignoreNotFound: true })),
+  );
+}
+
+/** Interrupteur « Public » : le projet reste dans Ma fiche, visible ou non des particuliers. */
+export async function publierRealisation(
+  s: Services,
+  ctx: Contexte,
+  e: { rid: string; publie: boolean },
+): Promise<void> {
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${e.rid}`);
+  await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const r = await t.get(ref);
+    if (!r.exists) throw new ErreurMetier('INTROUVABLE');
+    if ((r.get('publie') !== false) === e.publie) return;
+    t.update(ref, { publie: e.publie, updatedAt: Timestamp.fromMillis(s.horloge()) });
+  });
+}
+
+/** Retire une réalisation (et ses photos). */
+export async function supprimerRealisation(s: Services, ctx: Contexte, rid: string): Promise<void> {
+  const ref = s.db.doc(`${chemins.realisations(ctx.artisanId)}/${rid}`);
+  const photos = await s.db.runTransaction(async (t) => {
+    await exiger(t, s, ctx, 'realisations.modifier');
+    const r = await t.get(ref);
+    if (!r.exists) throw new ErreurMetier('INTROUVABLE');
+    const liste = (r.get('photos') as { storagePath: string }[] | undefined) ?? [];
+    t.delete(ref);
+    return liste;
+  });
+  await Promise.all(
+    photos.map((p) => s.bucket.file(p.storagePath).delete({ ignoreNotFound: true })),
+  );
+}

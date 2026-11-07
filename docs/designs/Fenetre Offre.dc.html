@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<sc-if value="{{ ouverte }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ fermer }}" style="position:fixed;inset:0;z-index:95;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;font-family:'Source Sans 3',system-ui,sans-serif">
+    <div onClick="{{ stop }}" role="dialog" aria-modal="true" aria-label="{{ o.titre }}" style="background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);width:min(500px,100%);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;padding:24px;display:grid;gap:14px;color:var(--color-text);text-align:left">
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <h2 style="font-size:21px;margin:0;font-weight:700">{{ o.titre }}</h2>
+        <button type="button" onClick="{{ fermer }}" aria-label="Fermer" style="border:0;background:none;cursor:pointer;font-size:22px;color:var(--color-neutral-700)">×</button>
+      </div>
+      <p style="margin:0;font-size:15px;line-height:22px;color:var(--color-neutral-800)"><strong>{{ o.raison }}</strong> {{ o.accroche }}</p>
+      <ul style="list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:15px;line-height:21px">
+        <sc-for list="{{ o.avantages }}" as="a" hint-placeholder-count="5"><li style="display:flex;gap:8px"><span style="color:var(--color-accent);font-weight:700;flex:none">✓</span><span>{{ a }}</span></li></sc-for>
+      </ul>
+      <div style="display:grid;gap:6px;font-size:15px">
+        <sc-for list="{{ o.lignes }}" as="l" hint-placeholder-count="3"><div style="{{ l.style }}"><span>{{ l.label }}</span><span>{{ l.v }}</span></div></sc-for>
+      </div>
+      <span style="font-size:13.5px;line-height:20px;color:var(--color-neutral-700)">{{ o.note }}</span>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost" onClick="{{ fermer }}">Plus tard</button>
+        <a href="{{ o.lien }}" data-direct="1" class="btn btn-primary" style="text-decoration:none;color:#fff">Continuer vers le paiement</a>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const OFFRES = {
+  fiche: { nom: "Fiche Pro", ht: 29, accroche: "Votre fiche passe devant dans votre secteur et les particuliers vous appellent directement.",
+    avantages: ["Priorité d'affichage dans votre secteur", "Badge « Artisan recommandé »", "Photos et réalisations illimitées", "Téléphone et site visibles sur votre fiche", "Statistiques détaillées"], note: "Vous voulez aussi Site Pro ? Fiche + Site regroupe les deux à 34,90 € HT." },
+  site: { nom: "Site Pro", ht: 9.9, accroche: "Votre site à votre nom, et l'IA fait le travail à votre place.",
+    avantages: ["Votre nom de domaine inclus (.fr, .com ou .eu)", "IA complète : création du site, pages, textes et référencement", "Blog : 5 articles par mois, en un clic ou en pilote automatique", "Formulaire sur mesure et SMS à chaque demande", "Sans la mention « Site créé avec Portail Travaux »", "Statistiques sur 12 mois et Search Console"], note: "Vous avez déjà Fiche Pro ? Fiche + Site regroupe les deux à 34,90 € HT." },
+  pack: { nom: "Fiche + Site", ht: 34.9, accroche: "Fiche Pro et Site Pro réunis, 4 € moins cher que séparément.",
+    avantages: ["Tout Fiche Pro : priorité, badge, téléphone visible", "Tout Site Pro : domaine, IA du site, sans mention", "Blog : 5 articles IA par mois", "Statistiques détaillées fiche et site"], note: "" },
+  tout: { nom: "Tout inclus", ht: 49, accroche: "Tout Portail Travaux, avec des quotas IA doublés.",
+    avantages: ["Fiche Pro et Site Pro réunis", "Blog : 15 articles IA par mois, pilote jusqu'à 2 articles par semaine", "Quotas IA doublés sur le site et la fiche", "−15 % sur les appels d'offres", "Appels d'offres visibles 12 h avant les autres", "Support prioritaire"], note: "" },
+};
+const RAISONS = { fiche: "Option payante.", site: "Fonction incluse dans Site Pro.", pack: "Option payante.", tout: "Fonction incluse dans Tout inclus." };
+const eu = (n) => n.toFixed(2).replace(".", ",") + " €";
+
+class Component extends DCLogic {
+  state = { id: null, raison: "" };
+  componentDidMount() {
+    window.PH_offre = (id, raison) => { if (OFFRES[id]) this.setState({ id, raison: raison || "" }); };
+    this.onClic = (e) => {
+      const a = e.target && e.target.closest && e.target.closest('a[href*="Mon Abonnement.dc.html?offre="]');
+      if (!a || a.getAttribute("data-direct")) return;
+      const m = /offre=([a-z_]+)/.exec(a.getAttribute("href") || ""); if (!m || !OFFRES[m[1]]) return;
+      e.preventDefault(); e.stopPropagation();
+      this.setState({ id: m[1], raison: a.getAttribute("data-raison") || "" });
+    };
+    this.onKey = (e) => { if (e.key === "Escape" && this.state.id) this.setState({ id: null }); };
+    document.addEventListener("click", this.onClic, true);
+    document.addEventListener("keydown", this.onKey);
+  }
+  componentWillUnmount() { document.removeEventListener("click", this.onClic, true); document.removeEventListener("keydown", this.onKey); if (window.PH_offre) delete window.PH_offre; }
+  renderVals() {
+    const s = this.state, O = OFFRES[s.id];
+    const fermer = () => this.setState({ id: null });
+    if (!O) return { ouverte: false, fermer, stop: () => {}, o: { avantages: [], lignes: [] } };
+    const r = (s.raison || RAISONS[s.id]).trim();
+    return {
+      ouverte: true, fermer, stop: (e) => e.stopPropagation(),
+      o: { titre: "Passer à " + O.nom, raison: /[.!?]$/.test(r) ? r : r + ".", accroche: O.accroche, avantages: O.avantages, lien: "Mon Abonnement.dc.html?offre=" + s.id,
+        note: ("Prélevé aujourd'hui, puis " + eu(O.ht * 1.2) + " TTC chaque mois. Sans engagement. " + (O.note || "")).trim(),
+        lignes: [[O.nom + " · mensuel", eu(O.ht) + " HT"], ["TVA 20 %", eu(O.ht * 0.2)], ["Total TTC", eu(O.ht * 1.2)]].map(([label, v], i) => ({ key: i, label, v,
+          style: { display: "flex", justifyContent: "space-between", gap: "12px", fontWeight: i === 2 ? 700 : 400, paddingTop: i === 2 ? "6px" : 0, borderTop: i === 2 ? "1px solid var(--color-divider)" : 0 } })) },
+    };
+  }
+}
+</script>
+</body>
+</html>

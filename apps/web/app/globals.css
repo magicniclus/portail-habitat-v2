@@ -1,0 +1,35 @@
+@import '@ph/ui/styles.css';
+
+/* Classes utilisées dans les pages et features du site. */
+@source '../';
+
+/* Bandeau d'avis des landings (LANDINGS §3.10) : deux lignes en sens opposés, arrêt si mouvement réduit. */
+@keyframes defiler-gauche {
+  to {
+    transform: translateX(calc(-50% - 8px));
+  }
+}
+/* Texte de l'étape active des landings (maquette : entrée de 14 px en fondu). */
+@keyframes apparaitre {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+/* Barre « en cours » du Studio (durée inconnue) : un segment qui va et vient. */
+@keyframes va-et-vient {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+@keyframes defiler-droite {
+  from {
+    transform: translateX(calc(-50% - 8px));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
