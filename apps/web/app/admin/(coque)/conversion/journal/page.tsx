@@ -9,7 +9,6 @@ import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { CLASSES_PAGE, EnteteConversion } from '@/features/adminConversion/EnteteConversion';
 import { JournalEnDirect } from '@/features/adminConversion/JournalEnDirect';
-import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { TableTraces } from '@/features/adminConversion/TableTraces';
 import { pageAdmin } from '@/server/sessionAdmin';
 
@@ -38,7 +37,6 @@ export default async function JournalConversion({
   const traces = await lireJournalCycle(getFirestore(appAdmin()), { filtre });
   return (
     <main className={CLASSES_PAGE}>
-      <ConfigFirebase />
       <EnteteConversion actif="/admin/conversion/journal" />
       <nav aria-label="Filtres du journal" className="flex flex-wrap gap-2">
         {(Object.keys(NOMS) as FiltreJournalCycle[]).map((f) => (

@@ -12,7 +12,6 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { EcouteProjet } from '@/features/studio/EcouteProjet';
 import { EtapeEnregistrement } from '@/features/studio/EtapeEnregistrement';
 import { EtapeExport } from '@/features/studio/EtapeExport';
@@ -48,7 +47,6 @@ export default async function ProjetStudioPage({
   const apresSujet = p.statut !== 'sujet';
   return (
     <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
-      <ConfigFirebase />
       <EcouteProjet statut={p.statut} />
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">

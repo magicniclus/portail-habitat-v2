@@ -4,6 +4,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { videosEnCoursStudio } from '@ph/firebase/studio';
 import { getFirestore } from 'firebase-admin/firestore';
 import { CoqueAdmin } from '@/features/admin/CoqueAdmin';
+import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
 import { IndicateurStudio } from '@/features/studio/IndicateurStudio';
 import { lireSessionAdmin } from '@/server/sessionAdmin';
 
@@ -27,6 +28,8 @@ export default async function LayoutCoqueAdmin({ children }: { children: ReactNo
       nom={r.session.nom}
       role={LIBELLES_ROLE_ADMIN[r.session.role] ?? r.session.role}
     >
+      {/* Une seule fois pour tout le back-office : journal en direct, Studio, pastille. */}
+      <ConfigFirebase />
       {children}
       {studio ? <IndicateurStudio initial={studio} /> : null}
     </CoqueAdmin>

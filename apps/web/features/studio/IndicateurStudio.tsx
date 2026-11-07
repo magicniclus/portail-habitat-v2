@@ -28,7 +28,10 @@ export function IndicateurStudio({ initial }: { initial: VideoEnCours[] }) {
   const [ecartees, setEcartees] = useState<string[]>([]);
   // Vidéos vues en fabrication : seules celles-là sont annoncées une fois finies.
   const [suivies, setSuivies] = useState(() => idsEnCours(initial));
+  // Le SDK Firebase n'est chargé que s'il y a une vidéo à suivre (budget JavaScript).
+  const aSuivre = suivies.length > 0 || idsEnCours(initial).length > 0;
   useEffect(() => {
+    if (!aSuivre) return;
     let actif = true;
     let arreter: (() => void) | undefined;
     void (async () => {
@@ -56,7 +59,7 @@ export function IndicateurStudio({ initial }: { initial: VideoEnCours[] }) {
       actif = false;
       arreter?.();
     };
-  }, []);
+  }, [aSuivre]);
 
   const enCours = videos.filter((v) => estEtapeSuivie(v.statut));
   const finies = videos.filter(
