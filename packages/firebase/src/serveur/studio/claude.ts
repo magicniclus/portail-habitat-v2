@@ -11,7 +11,8 @@ export interface AppelStudio {
   systeme: string;
   contexte: string;
   demande: string;
-  schema: Record<string, unknown>;
+  /** Sortie structurée imposée ; absente : JSON décrit dans le prompt (schémas trop gros). */
+  schema?: Record<string, unknown>;
   images?: readonly { type: 'image/jpeg' | 'image/png'; base64: string }[];
   maxTokens?: number;
 }
@@ -47,7 +48,10 @@ export function clientClaudeStudio(apiKey: string): ClientStudio {
           ],
         },
       ],
-      output_config: { effort: 'high', format: { type: 'json_schema', schema: a.schema } },
+      output_config: {
+        effort: 'high',
+        ...(a.schema ? { format: { type: 'json_schema' as const, schema: a.schema } } : {}),
+      },
     });
     const r = await flux.finalMessage();
     return {

@@ -5,6 +5,7 @@ import {
   promptMontage,
   promptSujets,
   SCHEMA_JSON_PLAN,
+  extraireJson,
   SCHEMA_JSON_SUJETS,
   sortieSujets,
 } from './index';
@@ -315,5 +316,23 @@ describe('vidéo sans voix ni image', () => {
     });
     expect(p.demande).toMatch(/sousTitres = true/);
     expect(p.demande).toContain('dans l’ordre');
+  });
+});
+
+describe('montage sans sortie structurée', () => {
+  it('le schéma du plan est dans le contexte (mis en cache), le JSON est extrait du texte', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: false,
+      dureePriseMs: 30_000,
+      transcription: '',
+      segments: [],
+      sujet: null,
+    });
+    expect(p.contexte).toContain('Réponds uniquement par un objet JSON');
+    expect(p.contexte).toContain('"calques"');
+    expect(extraireJson('Voici :\n```json\n{"a":{"b":1}}\n```')).toBe('{"a":{"b":1}}');
+    expect(extraireJson('{"a":1}')).toBe('{"a":1}');
+    expect(extraireJson('  rien  ')).toBe('rien');
   });
 });

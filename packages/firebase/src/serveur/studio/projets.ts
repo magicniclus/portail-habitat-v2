@@ -23,7 +23,7 @@ import {
   RECHERCHES_PAR_DEFAUT,
   classerReels,
   HASHTAGS_INSTAGRAM,
-  SCHEMA_JSON_PLAN,
+  extraireJson,
   SCHEMA_JSON_SUJETS,
   segmentsParoles,
   sortieSujets,
@@ -731,16 +731,15 @@ export async function genererMontageStudio(
     const r = await claude({
       modele: MODELE_STUDIO,
       ...prompt,
-      schema: SCHEMA_JSON_PLAN,
       ...(e.images?.length && essai === 0 ? { images: e.images } : {}),
       maxTokens: 64_000,
     });
     await maj(s, p.id, { coutCentimes: cout(r.usage) });
     let brut: unknown = null;
     try {
-      brut = JSON.parse(r.texte);
+      brut = JSON.parse(extraireJson(r.texte));
     } catch {
-      erreurs = ['La réponse n’était pas un JSON valide.'];
+      erreurs = ['La réponse n’était pas un JSON valide : réponds uniquement par l’objet JSON.'];
       continue;
     }
     erreurs = r.refus ? ['Réponse déclinée.'] : verifierPlan(brut, contexte);

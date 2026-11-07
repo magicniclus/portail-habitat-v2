@@ -748,6 +748,9 @@ describe('vidéo sans voix ni image', () => {
     ];
     await sansPriseStudio(services(), { projetId: id, dureeMs: 20_000 });
     expect(appels[0]!.demande).toContain('Voix : aucune');
+    // Plan trop gros pour la sortie structurée : décrit dans le contexte, pas imposé.
+    expect(appels[0]!.schema).toBeUndefined();
+    expect(appels[0]!.contexte).toContain('Réponds uniquement par un objet JSON');
     const p = await lireProjetStudio(db, id);
     expect(p?.prise?.fichiers).toEqual({});
     expect(p?.plan?.plans).toHaveLength(2);

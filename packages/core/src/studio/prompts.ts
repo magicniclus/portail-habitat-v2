@@ -407,6 +407,9 @@ export function promptMontage(e: {
     `Calques :\n${Object.entries(ANIMATIONS)
       .map(([id, s]) => `- ${id} : ${s}`)
       .join('\n')}`,
+    // Trop gros pour la sortie structurée (grammaire refusée par l'API) : décrit ici, vérifié
+    // ensuite par Zod et verifierPlan, avec une correction si besoin.
+    `Réponds uniquement par un objet JSON (sans texte autour) conforme à ce schéma JSON :\n${JSON.stringify(SCHEMA_JSON_PLAN)}`,
   ].join('\n\n');
   const lignes = [
     `Format : ${e.format} (${FORMATS_STUDIO[e.format].largeur}×${FORMATS_STUDIO[e.format].hauteur}).`,
@@ -466,4 +469,14 @@ export function promptDeclinaisons(e: {
       base.demande.split('\n\n').slice(1, 2).join(''),
     ].join('\n\n'),
   };
+}
+
+/**
+ * JSON d'une réponse de Claude sans sortie structurée : retire un éventuel bloc ```json et le
+ * texte autour (du premier « { » au dernier « } »).
+ */
+export function extraireJson(texte: string): string {
+  const debut = texte.indexOf('{');
+  const fin = texte.lastIndexOf('}');
+  return debut === -1 || fin < debut ? texte.trim() : texte.slice(debut, fin + 1);
 }
