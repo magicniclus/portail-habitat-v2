@@ -90,6 +90,8 @@ export default async function ProjetStudioPage({
           captures={p.captures}
           mots={p.mots}
           camera={p.camera}
+          dureePriseMs={p.prise.dureeMs}
+          version={p.version}
         />
       ) : null}
       {p.rendu ? <EtapeExport rendu={p.rendu} sujet={p.sujet} /> : null}

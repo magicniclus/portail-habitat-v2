@@ -71,3 +71,5 @@ export function useLectureMontage(plan: PlanMontage) {
 
   return { duree, lecture, setLecture, t, affiche, aller, prise, captures, voix };
 }
+
+export type Lecture = ReturnType<typeof useLectureMontage>;

@@ -16,7 +16,7 @@ import { Button } from '@ph/ui';
 import { themeStudio } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { urlFichierStudio } from '@/lib/firebaseClient';
-import { useLectureMontage } from './useLectureMontage';
+import type { Lecture } from './useLectureMontage';
 
 const ECHELLE = 0.5;
 const source = (v: HTMLVideoElement | undefined): SourceImage | undefined =>
@@ -29,17 +29,20 @@ export function ApercuMontage({
   prise,
   captures,
   mots,
+  lecture,
 }: {
   plan: PlanMontage;
   prise: { ecran?: string; camera?: string; voix?: string };
   captures: Record<string, string>;
   mots: MotTranscrit[];
+  /** Horloge partagée avec la frise de l'éditeur. */
+  lecture: Lecture;
 }) {
   const { largeur, hauteur } = FORMATS_STUDIO[plan.format];
   const canevas = useRef<HTMLCanvasElement>(null);
   const ecran = useRef<HTMLVideoElement>(null);
   const camera = useRef<HTMLVideoElement>(null);
-  const l = useLectureMontage(plan);
+  const l = lecture;
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [voirMiniature, setVoirMiniature] = useState(false);
   const lignes = useMemo(
@@ -84,7 +87,9 @@ export function ApercuMontage({
       dessinerImage(
         ctx as unknown as ContexteImage,
         plan,
-        l.t.current,
+        // À l'arrêt tout au début, les textes sont encore transparents (entrée en fondu) : on
+        // montre l'image où ils sont lisibles, sinon l'aperçu paraît vide.
+        l.t.current === 0 && !l.lecture ? 300 : l.t.current,
         {
           ...(source(ecran.current ?? undefined) ? { ecran: source(ecran.current!)! } : {}),
           ...(source(camera.current ?? undefined) ? { camera: source(camera.current!)! } : {}),
@@ -103,7 +108,7 @@ export function ApercuMontage({
       raf = requestAnimationFrame(image);
     });
     return () => cancelAnimationFrame(raf);
-  }, [plan, lignes, l.t, l.captures, voirMiniature]);
+  }, [plan, lignes, l.t, l.captures, l.lecture, voirMiniature]);
 
   return (
     <div className="grid justify-items-center gap-2">
@@ -111,7 +116,7 @@ export function ApercuMontage({
         ref={canevas}
         width={largeur * ECHELLE}
         height={hauteur * ECHELLE}
-        className="h-auto max-h-[70vh] w-auto max-w-full rounded-card bg-neutre-900"
+        className="h-auto max-h-[48vh] w-auto max-w-full rounded-card bg-neutre-900"
         aria-label="Aperçu du montage"
       />
       {urls.ecran ? (

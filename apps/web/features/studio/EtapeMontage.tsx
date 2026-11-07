@@ -2,10 +2,9 @@
 
 import { verifierRythme, type MotTranscrit, type PlanMontage } from '@ph/core/studio';
 import { Banner } from '@ph/ui';
-import { ApercuMontage } from './ApercuMontage';
-import { ReglagesMontage } from './ReglagesMontage';
+import { EditeurMontage } from './EditeurMontage';
 
-/** Étape 4 : aperçu du montage, réglages directs et retouches demandées à Claude. */
+/** Étape 4 : l'éditeur de montage (frise, aperçu, réglages) et les retouches par Claude. */
 export function EtapeMontage(p: {
   projetId: string;
   plan: PlanMontage;
@@ -13,6 +12,9 @@ export function EtapeMontage(p: {
   captures: Record<string, string>;
   mots: MotTranscrit[];
   camera: boolean;
+  dureePriseMs: number;
+  /** Version du plan : une nouvelle version repart d'un brouillon propre. */
+  version: number;
 }) {
   const rythme = verifierRythme(p.plan);
   return (
@@ -30,18 +32,11 @@ export function EtapeMontage(p: {
               <li key={m}>{m}</li>
             ))}
           </ul>
-          Demandez à Claude : « resserre le rythme » dans les retouches.
+          Ajoutez une coupe ou une animation dans la frise, ou demandez à Claude « resserre le
+          rythme ».
         </Banner>
       ) : null}
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,400px)]">
-        <ApercuMontage plan={p.plan} prise={p.prise} captures={p.captures} mots={p.mots} />
-        <ReglagesMontage
-          projetId={p.projetId}
-          plan={p.plan}
-          camera={p.camera}
-          ecran={Boolean(p.prise.ecran)}
-        />
-      </div>
+      <EditeurMontage key={p.version} {...p} />
     </section>
   );
 }

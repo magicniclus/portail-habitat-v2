@@ -72,6 +72,11 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 - **Découpe proposée à Claude** (`segmentsParoles`) : silences de plus de 0,7 s et « euh » retirés. Claude garde les meilleures prises.
 - **Aperçu de l'admin** : image par image, avec les mêmes fonctions de dessin que le rendu (`dessinerImage`, `disposition`, `couverture`).
 - **Réglages directs**, sans Claude : format (vertical par défaut, horizontal, carré), m'afficher ou non, sous-titres.
+- **Éditeur de montage** (façon logiciel de montage, sans Claude) : aperçu, panneau de l'élément choisi, frise.
+  - **Frise** : règle et tête de lecture ; glisser un plan le déplace, ses bords le raccourcissent ; glisser une animation la décale, son bord droit règle sa durée.
+  - **+ Ajouter** à la tête de lecture : texte, chiffre animé, notification, liste, barre, flèche, surlignage ; nouveau plan carton ou capture (le plan courant est coupé).
+  - **Couper ici**, **Annuler / Rétablir** (Ctrl+Z, Ctrl+Y, 50 pas), zoom de la frise.
+  - Tout se fait sur un brouillon vérifié en direct (`verifierPlan`) ; « Enregistrer et refaire la vidéo » le revalide côté serveur. Opérations pures dans `packages/core/src/studio/edition.ts`.
 - **Miniature** (image de couverture) : Claude choisit l'image (`tempsMs`), un texte de 2 à 5 mots et le mot mis en avant ; visible dans l'aperçu (« Voir la miniature ») et dessinée par le robot avec le même code.
 - **Retouche** « Revoir avec Claude » : Claude reçoit le plan actuel et la demande. Chaque plan accepté est une version (`studioProjets/{id}/versions/{n}`).
 
