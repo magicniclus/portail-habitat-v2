@@ -1,3 +1,4 @@
+import { LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EtapeMontage } from '@/features/studio/EtapeMontage';
@@ -31,6 +32,13 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
           camera={p.camera}
           dureePriseMs={p.prise.dureeMs}
           version={p.version}
+          etat={
+            p.statut === 'pret'
+              ? null
+              : p.statut === 'erreur'
+                ? `À relancer : ${p.erreur ?? ''}`
+                : `${LIBELLES_STATUT_STUDIO[p.statut]} en cours…`
+          }
         />
       ) : null}
     </div>

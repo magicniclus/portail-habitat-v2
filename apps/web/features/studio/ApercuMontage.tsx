@@ -12,7 +12,6 @@ import {
   type PlanMontage,
   type SourceImage,
 } from '@ph/core/studio';
-import { Button } from '@ph/ui';
 import { themeStudio } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { urlFichierStudio } from '@/lib/firebaseClient';
@@ -21,7 +20,6 @@ import type { Lecture } from './useLectureMontage';
 const ECHELLE = 0.5;
 const source = (v: HTMLVideoElement | undefined): SourceImage | undefined =>
   v && v.readyState >= 2 ? { image: v, largeur: v.videoWidth, hauteur: v.videoHeight } : undefined;
-const sec = (ms: number) => `${Math.floor(ms / 1000)} s`;
 
 /** Aperçu du montage, image par image, avec les mêmes calques que la vidéo finale. */
 export function ApercuMontage({
@@ -30,6 +28,7 @@ export function ApercuMontage({
   captures,
   mots,
   lecture,
+  miniature: voirMiniature = false,
 }: {
   plan: PlanMontage;
   prise: { ecran?: string; camera?: string; voix?: string };
@@ -37,6 +36,8 @@ export function ApercuMontage({
   mots: MotTranscrit[];
   /** Horloge partagée avec la frise de l'éditeur. */
   lecture: Lecture;
+  /** Montrer l'image de couverture (miniature) au lieu de la vidéo. */
+  miniature?: boolean;
 }) {
   const { largeur, hauteur } = FORMATS_STUDIO[plan.format];
   const canevas = useRef<HTMLCanvasElement>(null);
@@ -44,7 +45,6 @@ export function ApercuMontage({
   const camera = useRef<HTMLVideoElement>(null);
   const l = lecture;
   const [urls, setUrls] = useState<Record<string, string>>({});
-  const [voirMiniature, setVoirMiniature] = useState(false);
   const lignes = useMemo(
     () => lignesSousTitres(motsSortie(plan, mots), reglagesSousTitres(plan.format)),
     [plan, mots],
@@ -111,12 +111,13 @@ export function ApercuMontage({
   }, [plan, lignes, l.t, l.captures, l.lecture, voirMiniature]);
 
   return (
-    <div className="grid justify-items-center gap-2">
+    <div className="flex h-full min-h-0 w-full items-center justify-center">
       <canvas
         ref={canevas}
         width={largeur * ECHELLE}
         height={hauteur * ECHELLE}
-        className="h-auto max-h-[48vh] w-auto max-w-full rounded-card bg-neutre-900"
+        className="block max-h-full max-w-full rounded-[4px] bg-neutre-900 object-contain"
+        style={{ aspectRatio: `${largeur} / ${hauteur}`, height: '100%' }}
         aria-label="Aperçu du montage"
       />
       {urls.ecran ? (
@@ -149,51 +150,6 @@ export function ApercuMontage({
           />
         ) : null,
       )}
-      <div className="flex w-full max-w-[540px] items-center gap-3">
-        <Button
-          taille="sm"
-          onClick={() =>
-            l.affiche >= l.duree ? (l.aller(0), l.setLecture(true)) : l.setLecture(!l.lecture)
-          }
-        >
-          {l.lecture ? 'Pause' : 'Lire'}
-        </Button>
-        <input
-          type="range"
-          min={0}
-          max={l.duree}
-          step={100}
-          value={Math.round(l.affiche)}
-          onChange={(e) => l.aller(Number(e.target.value))}
-          className="min-h-11 flex-1"
-          aria-label="Position dans la vidéo"
-        />
-        <span className="text-sm tabular-nums">
-          {sec(l.affiche)} / {sec(l.duree)}
-        </span>
-      </div>
-      {plan.miniature ? (
-        <Button
-          taille="sm"
-          variant="secondaire"
-          aria-pressed={voirMiniature}
-          onClick={() => {
-            const voir = !voirMiniature;
-            setVoirMiniature(voir);
-            if (voir && plan.miniature) {
-              l.setLecture(false);
-              l.aller(plan.miniature.tempsMs);
-            }
-          }}
-        >
-          {voirMiniature ? 'Revenir à la vidéo' : 'Voir la miniature'}
-        </Button>
-      ) : null}
-      {!plan.captures.every((c) => urls[`capture:${c.id}`]) ? (
-        <p className="m-0 text-xs text-neutre-700">
-          Les captures Portail Travaux apparaîtront ici dès que le robot les aura filmées.
-        </p>
-      ) : null}
     </div>
   );
 }

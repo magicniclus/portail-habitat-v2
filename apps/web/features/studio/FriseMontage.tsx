@@ -1,25 +1,29 @@
 'use client';
 
 import {
+  aimanter,
   debutsPlans,
   deplacerPlan,
   dureePlan,
   rognerPlan,
   SCENES_CAPTURE,
+  tempsMontage,
+  type MotTranscrit,
   type PlanMontage,
   type PlanVideo,
 } from '@ph/core/studio';
+import { FilmStripIcon, SparkleIcon } from '@phosphor-icons/react';
 import type { PointerEvent as EvtPointeur } from 'react';
 import { useGlisser } from './glisserFrise';
+import { LARGEUR_ETIQUETTE, LigneFrise } from './LigneFrise';
 import { PisteAnimations } from './PisteAnimations';
+import { PistesSon } from './PistesSon';
 import type { Lecture } from './useLectureMontage';
 
 export type Selection =
   { type: 'plan'; i: number } | { type: 'calque'; i: number; k: number } | null;
 
-const LARGEUR_MS = 0.06; // px par ms au zoom 1 (60 px par seconde)
 const sec = (ms: number) => `${Math.round(ms / 100) / 10} s`;
-
 function nomPlan(x: PlanVideo, p: PlanMontage): string {
   if (x.visuel === 'carton') return x.carton ?? 'Carton';
   if (x.visuel === 'capture') {
@@ -28,48 +32,42 @@ function nomPlan(x: PlanVideo, p: PlanMontage): string {
   }
   return x.visuel === 'ecran' ? 'Mon écran' : 'Face caméra';
 }
-
 const TEINTE: Record<PlanVideo['visuel'], string> = {
-  ecran: 'bg-info-fond',
-  camera: 'bg-succes-fond',
-  capture: 'bg-accent-100',
-  carton: 'bg-neutre-200',
+  ecran: 'bg-montage-piste-ecran',
+  camera: 'bg-montage-piste-camera',
+  capture: 'bg-montage-piste-capture',
+  carton: 'bg-montage-piste-carton',
 };
+const POIGNEE =
+  'absolute inset-y-0 z-10 w-2.5 cursor-ew-resize bg-montage-tete/0 group-hover:bg-montage-tete/70 group-aria-pressed:bg-montage-tete';
 
 /**
- * Frise façon logiciel de montage : règle et tête de lecture, piste des plans (glisser pour
- * déplacer, bords pour raccourcir), piste des animations (glisser pour décaler, bords pour la
- * durée). Chaque geste part d'une copie du plan (`onDebut`), puis met à jour le brouillon.
+ * Pistes de la frise (vidéo finale, de gauche à droite) : règle et tête de lecture, plans
+ * (glisser pour déplacer, bords pour couper), effets, sous-titres, voix et musique.
  */
-export function FriseMontage({
-  plan,
-  dureePriseMs,
-  lecture,
-  zoom,
-  selection,
-  onSelection,
-  onDebut,
-  onChange,
-}: {
+export function FriseMontage(p: {
   plan: PlanMontage;
   dureePriseMs: number;
   lecture: Lecture;
-  zoom: number;
+  /** Pixels par milliseconde (zoom). */
+  px: number;
+  aimant: boolean;
+  /** Largeur visible : la frise remplit au moins l'écran. */
+  largeurVisible: number;
+  mots: MotTranscrit[];
+  voix: boolean;
   selection: Selection;
   onSelection: (s: Selection) => void;
-  /** Début d'un geste : l'éditeur garde l'état d'avant pour « Annuler ». */
   onDebut: () => void;
   onChange: (p: PlanMontage) => void;
 }) {
-  const px = LARGEUR_MS * zoom;
+  const { plan, px, lecture } = p;
   const duree = dureePlan(plan);
   const debuts = debutsPlans(plan);
-  const largeur = Math.max(320, duree * px + 24);
+  const largeur = Math.max(p.largeurVisible - LARGEUR_ETIQUETTE, duree * px + 80);
+  const glisser = useGlisser(px, plan, p.onDebut, p.onChange);
+  const seuil = p.aimant ? 8 / px : 0;
 
-  /** Glisser : `appliquer(dxMs, départ)` rend le plan modifié. */
-  const glisser = useGlisser(px, plan, onDebut, onChange);
-
-  /** Déplacer un plan : il passe devant le premier plan dont le milieu est dépassé. */
   const reordonner = (i: number) => (dx: number, depart: PlanMontage) => {
     const d0 = debutsPlans(depart);
     const x = depart.plans[i]!;
@@ -81,19 +79,19 @@ export function FriseMontage({
     else if (cible > i) cible -= 1;
     return deplacerPlan(depart, i, cible);
   };
-
   const allerA = (e: EvtPointeur<HTMLElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    lecture.aller((e.clientX - r.left) / px);
+    lecture.aller(aimanter((e.clientX - r.left) / px, debuts, seuil));
   };
-  const graduations = Array.from({ length: Math.floor(duree / 1000) + 1 }, (_, s) => s);
+  // Une graduation lisible : au moins ~40 px entre deux repères.
+  const pas = px * 1000 >= 40 ? 1 : px * 1000 >= 10 ? 5 : 10;
+  const graduations = Array.from({ length: Math.floor(duree / 1000 / pas) + 2 }, (_, n) => n * pas);
 
   return (
-    <div className="overflow-x-auto rounded-card border border-trait bg-neutre-100">
-      <div className="relative select-none" style={{ width: largeur }}>
-        {/* Règle : cliquer ou glisser déplace la tête de lecture. */}
+    <div className="relative min-w-max select-none">
+      <LigneFrise libelle={tempsMontage(lecture.affiche)} hauteur={28} largeur={largeur}>
         <div
-          className="relative h-7 cursor-pointer border-b border-trait bg-blanc"
+          className="absolute inset-0 cursor-pointer"
           onPointerDown={(e) => {
             allerA(e);
             e.currentTarget.setPointerCapture(e.pointerId);
@@ -105,83 +103,94 @@ export function FriseMontage({
           aria-valuemin={0}
           aria-valuemax={Math.round(duree / 1000)}
           aria-valuenow={Math.round(lecture.affiche / 1000)}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowRight') lecture.aller(lecture.affiche + 500);
-            if (e.key === 'ArrowLeft') lecture.aller(lecture.affiche - 500);
-          }}
+          aria-valuetext={tempsMontage(lecture.affiche)}
         >
           {graduations.map((s) => (
             <span
               key={s}
-              className="absolute bottom-0 border-l border-neutre-400 pl-0.5 text-[10px] text-neutre-700"
-              style={{ left: s * 1000 * px, height: s % 5 === 0 ? 14 : 6 }}
+              className="absolute bottom-0 h-2.5 border-l border-montage-texte-doux/60 pl-1 text-[10px] leading-none text-montage-texte-doux"
+              style={{ left: s * 1000 * px }}
             >
-              {s % 5 === 0 && zoom >= 0.75 ? `${s}s` : s % 5 === 0 ? s : ''}
+              <span className="absolute -top-3.5 left-1">{s}s</span>
             </span>
           ))}
         </div>
+      </LigneFrise>
 
-        {/* Piste des plans. */}
-        <div className="relative h-16 border-b border-trait">
-          {plan.plans.map((x, i) => {
-            const d = x.source.fin - x.source.debut;
-            const choisi = selection?.type === 'plan' && selection.i === i;
-            const bord = 'absolute inset-y-0 w-2.5 cursor-ew-resize bg-texte/25 hover:bg-texte/50';
-            return (
-              <div
-                key={x.id}
-                role="button"
-                tabIndex={0}
-                aria-pressed={choisi}
-                aria-label={`Plan ${i + 1} : ${nomPlan(x, plan)}, ${sec(d)}`}
-                onClick={() => onSelection({ type: 'plan', i })}
-                onKeyDown={(e) =>
-                  e.key === 'Enter' ? onSelection({ type: 'plan', i }) : undefined
-                }
-                onPointerDown={glisser(reordonner(i), () => onSelection({ type: 'plan', i }))}
-                className={`absolute top-1.5 bottom-1.5 cursor-grab overflow-hidden rounded-[6px] border px-3 py-1 text-xs ${TEINTE[x.visuel]} ${choisi ? 'border-accent ring-2 ring-accent' : 'border-trait'}`}
-                style={{ left: debuts[i]! * px + 1, width: Math.max(8, d * px - 2) }}
-              >
-                <span className="block truncate font-semibold">{nomPlan(x, plan)}</span>
-                <span className="block text-neutre-700">{sec(d)}</span>
-                <span
-                  aria-hidden="true"
-                  className={`${bord} left-0`}
-                  onPointerDown={glisser((dx, depart) =>
-                    rognerPlan(
-                      depart,
-                      i,
-                      { debut: depart.plans[i]!.source.debut + dx },
-                      dureePriseMs,
-                    ),
-                  )}
-                />
-                <span
-                  aria-hidden="true"
-                  className={`${bord} right-0`}
-                  onPointerDown={glisser((dx, depart) =>
-                    rognerPlan(depart, i, { fin: depart.plans[i]!.source.fin + dx }, dureePriseMs),
-                  )}
-                />
-              </div>
-            );
-          })}
-        </div>
+      <LigneFrise
+        libelle="Vidéo"
+        icone={<FilmStripIcon size={16} aria-hidden="true" />}
+        hauteur={64}
+        largeur={largeur}
+      >
+        {plan.plans.map((x, i) => {
+          const d = x.source.fin - x.source.debut;
+          const choisi = p.selection?.type === 'plan' && p.selection.i === i;
+          return (
+            <div
+              key={x.id}
+              role="button"
+              tabIndex={0}
+              aria-pressed={choisi}
+              aria-label={`Plan ${i + 1} : ${nomPlan(x, plan)}, ${sec(d)}`}
+              onClick={() => p.onSelection({ type: 'plan', i })}
+              onKeyDown={(e) =>
+                e.key === 'Enter' ? p.onSelection({ type: 'plan', i }) : undefined
+              }
+              onPointerDown={glisser(reordonner(i), () => p.onSelection({ type: 'plan', i }))}
+              className={`group absolute top-1.5 bottom-1.5 cursor-grab overflow-hidden rounded-[6px] border-2 px-3 py-1 text-xs text-montage-texte active:cursor-grabbing ${TEINTE[x.visuel]} ${choisi ? 'border-montage-selection' : 'border-transparent'}`}
+              style={{ left: debuts[i]! * px + 1, width: Math.max(8, d * px - 2) }}
+            >
+              <span className="block truncate font-semibold">{nomPlan(x, plan)}</span>
+              <span className="block text-montage-texte-doux">{sec(d)}</span>
+              <span
+                aria-hidden="true"
+                className={`${POIGNEE} left-0`}
+                onPointerDown={glisser((dx, depart) =>
+                  rognerPlan(
+                    depart,
+                    i,
+                    { debut: depart.plans[i]!.source.debut + dx },
+                    p.dureePriseMs,
+                  ),
+                )}
+              />
+              <span
+                aria-hidden="true"
+                className={`${POIGNEE} right-0`}
+                onPointerDown={glisser((dx, depart) =>
+                  rognerPlan(depart, i, { fin: depart.plans[i]!.source.fin + dx }, p.dureePriseMs),
+                )}
+              />
+            </div>
+          );
+        })}
+      </LigneFrise>
 
+      <LigneFrise
+        libelle="Effets"
+        icone={<SparkleIcon size={16} aria-hidden="true" />}
+        largeur={largeur}
+      >
         <PisteAnimations
           plan={plan}
           px={px}
-          selection={selection}
-          onSelection={onSelection}
+          tete={lecture.affiche}
+          aimant={p.aimant}
+          selection={p.selection}
+          onSelection={p.onSelection}
           glisser={glisser}
         />
+      </LigneFrise>
+      <PistesSon plan={plan} mots={p.mots} voix={p.voix} px={px} largeur={largeur} />
 
-        {/* Tête de lecture. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-0 bottom-0 w-0.5 bg-danger"
-          style={{ left: lecture.affiche * px }}
-        />
+      {/* Tête de lecture : poignée dans la règle, trait sur toutes les pistes. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 bottom-0 z-30 w-0.5 bg-montage-tete"
+        style={{ left: LARGEUR_ETIQUETTE + lecture.affiche * px - 1 }}
+      >
+        <span className="absolute -top-0 left-1/2 h-3.5 w-3 -translate-x-1/2 rounded-b-[3px] bg-montage-tete" />
       </div>
     </div>
   );

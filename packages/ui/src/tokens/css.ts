@@ -2,6 +2,7 @@ import {
   THEMES,
   actions,
   couleurs,
+  montage,
   neutres,
   ombres,
   rampes,
@@ -30,6 +31,33 @@ export function genererThemesCss(): string {
   const pro = rampes.pro;
   const commun = `:root {\n  --pro: ${pro.base};\n  --pro-100: ${pro[100]};\n  --pro-700: ${pro[700]};\n}`;
   return `${ENTETE}\n${[commun, ...blocs].join('\n\n')}\n`;
+}
+
+/**
+ * Ambiance sombre (`data-ambiance="sombre"`, éditeur de montage) : les composants clairs de
+ * @ph/ui gardent leurs classes ; ces règles hors couche passent devant les utilitaires.
+ */
+export function genererAmbianceCss(): string {
+  const m = montage;
+  const s = "[data-ambiance='sombre']";
+  const regles: [string, string][] = [
+    [s, `color-scheme: dark; background-color: ${m.fond}; color: ${m.texte};`],
+    [`${s} :is(.bg-blanc, .bg-fond, .bg-surface)`, `background-color: ${m.panneau};`],
+    [`${s} :is(.bg-neutre-100, .hover\\:bg-neutre-100:hover)`, `background-color: ${m.surface};`],
+    [`${s} :is(.bg-neutre-200, .hover\\:bg-neutre-200:hover)`, `background-color: ${m.survol};`],
+    [`${s} :is(.text-texte, .text-neutre-900, .text-neutre-800)`, `color: ${m.texte};`],
+    [`${s} :is(.text-neutre-700, .text-neutre-600)`, `color: ${m.texteDoux};`],
+    [
+      `${s} :is(.border-trait, .border-neutre-200, .border-neutre-300)`,
+      `border-color: ${m.trait};`,
+    ],
+    [
+      `${s} :is(input:not([type='range'], [type='checkbox'], [type='radio']), select, textarea)`,
+      `background-color: ${m.surface}; color: ${m.texte}; border-color: ${m.trait};`,
+    ],
+  ];
+  return `${ENTETE}
+${regles.map(([sel, decl]) => `${sel} {\n  ${decl}\n}`).join('\n\n')}\n`;
 }
 
 /** Thème Tailwind 4 : utilitaires `bg-accent`, `text-neutre-700`, `rounded-control`… */
@@ -71,6 +99,8 @@ export function genererThemeTailwind(): string {
   for (const [cle, nom] of Object.entries(noms))
     l.push(`  --color-${nom}: ${couleurs[cle as keyof typeof couleurs]};`);
   l.push(`  --color-trait: ${trait};`);
+  for (const [cle, v] of Object.entries(montage))
+    l.push(`  --color-montage-${cle.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}: ${v};`);
   for (const [nom, v] of Object.entries(rayons)) l.push(`  --radius-${nom}: ${v}px;`);
   for (const [nom, v] of Object.entries(ombres)) l.push(`  --shadow-${nom}: ${v};`);
   l.push(

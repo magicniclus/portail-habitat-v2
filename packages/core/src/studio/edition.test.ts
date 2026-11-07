@@ -4,6 +4,8 @@ import {
   ajouterCapture,
   calqueParDefaut,
   motsDepuisAlignement,
+  aimanter,
+  tempsMontage,
   couperPlan,
   deplacerCalque,
   deplacerPlan,
@@ -165,5 +167,19 @@ describe('édition du plan de montage', () => {
     expect(motsDepuisAlignement(['a', 'b', ' '], [], [])).toEqual([
       { texte: 'ab', debut: 0, fin: 0 },
     ]);
+  });
+
+  it('aimant : se cale sur le repère le plus proche sous le seuil', () => {
+    expect(aimanter(1_030, [0, 1_000, 2_000], 50)).toBe(1_000);
+    expect(aimanter(1_100, [0, 1_000, 2_000], 50)).toBe(1_100);
+    expect(aimanter(1_960, [1_000, 2_000, 1_990], 50)).toBe(1_990);
+    expect(aimanter(500, [], 50)).toBe(500);
+  });
+
+  it('temps affiché comme dans un logiciel de montage', () => {
+    expect(tempsMontage(0)).toBe('00:00.00');
+    expect(tempsMontage(4_250)).toBe('00:04.25');
+    expect(tempsMontage(83_009)).toBe('01:23.00');
+    expect(tempsMontage(-5)).toBe('00:00.00');
   });
 });

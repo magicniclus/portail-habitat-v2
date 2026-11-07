@@ -247,3 +247,25 @@ export function motsDepuisAlignement(
   if (courant) mots.push(courant);
   return mots;
 }
+
+/** Aimant de la frise : `t` se cale sur le repère le plus proche à moins de `seuil` ms. */
+export function aimanter(t: number, reperes: readonly number[], seuil: number): number {
+  let meilleur = t;
+  let ecart = seuil;
+  for (const r of reperes) {
+    const d = Math.abs(r - t);
+    if (d < ecart) {
+      ecart = d;
+      meilleur = r;
+    }
+  }
+  return meilleur;
+}
+
+/** « mm:ss.cc », comme le compteur d'un logiciel de montage. */
+export function tempsMontage(ms: number): string {
+  const c = Math.max(0, Math.floor(ms / 10));
+  const mm = String(Math.floor(c / 6000)).padStart(2, '0');
+  const ss = String(Math.floor((c % 6000) / 100)).padStart(2, '0');
+  return `${mm}:${ss}.${String(c % 100).padStart(2, '0')}`;
+}

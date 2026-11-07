@@ -72,11 +72,13 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 - **Découpe proposée à Claude** (`segmentsParoles`) : silences de plus de 0,7 s et « euh » retirés. Claude garde les meilleures prises.
 - **Aperçu de l'admin** : image par image, avec les mêmes fonctions de dessin que le rendu (`dessinerImage`, `disposition`, `couverture`).
 - **Réglages directs**, sans Claude : format (vertical par défaut, horizontal, carré), m'afficher ou non, sous-titres.
-- **Éditeur de montage** (façon logiciel de montage, sans Claude) : aperçu, panneau de l'élément choisi, frise.
-  - **Frise** : règle et tête de lecture ; glisser un plan le déplace, ses bords le raccourcissent ; glisser une animation la décale, son bord droit règle sa durée.
-  - **+ Ajouter** à la tête de lecture : texte, chiffre animé, notification, liste, barre, flèche, surlignage ; nouveau plan carton ou capture (le plan courant est coupé).
-  - **Couper ici**, **Annuler / Rétablir** (Ctrl+Z, Ctrl+Y, 50 pas), zoom de la frise.
-  - Tout se fait sur un brouillon vérifié en direct (`verifierPlan`) ; « Enregistrer et refaire la vidéo » le revalide côté serveur. Opérations pures dans `packages/core/src/studio/edition.ts`.
+- **Pages du projet** : une page par étape (`/admin/studio/{id}/idees|tournage|montage|publication`, barre d'étapes, `etapeProjet`, `etapesAccessibles`) ; on ouvre un projet sur l'étape en cours et l'on y passe tout seul quand le projet avance.
+- **Éditeur de montage plein écran** (organisation des logiciels de montage, ambiance sombre `data-ambiance="sombre"`, palette `montage` de @ph/ui) : tout tient dans l'écran, sans défiler.
+  - Barre du haut : fermer (confirmation si non enregistré), titre et état du projet, annuler / rétablir, « À corriger » et « Rythme » en listes dépliantes, « Enregistrer et fabriquer ».
+  - À gauche, bibliothèque (Médias, Texte, Effets, Cartons) : un clic pose l'élément à la tête de lecture. Au centre, l'aperçu (adapté à la place) et le compteur, lecture, miniature, plein écran. À droite, les réglages de l'élément choisi ou de toute la vidéo (et la retouche par Claude).
+  - En bas, la frise sur toute la largeur, hauteur réglable : pistes nommées (Vidéo, Effets, Sous-titres, Voix, Musique), règle et tête de lecture, plans à glisser et à couper par les bords, effets à décaler et à allonger, aimant (`aimanter` : coupes, tête de lecture, autres effets), zoom (curseur, Ctrl + molette, ajuster à la largeur), scinder, supprimer.
+  - Raccourcis : Espace (lecture), S (scinder), Suppr (supprimer), ← → (0,1 s ; 1 s avec Maj), Ctrl+Z / Ctrl+Y.
+  - Tout se fait sur un brouillon vérifié en direct (`verifierPlan`), revalidé côté serveur à l'enregistrement. Opérations pures dans `packages/core/src/studio/edition.ts`.
 - **Miniature** (image de couverture) : Claude choisit l'image (`tempsMs`), un texte de 2 à 5 mots et le mot mis en avant ; visible dans l'aperçu (« Voir la miniature ») et dessinée par le robot avec le même code.
 - **Retouche** « Revoir avec Claude » : Claude reçoit le plan actuel et la demande. Chaque plan accepté est une version (`studioProjets/{id}/versions/{n}`).
 

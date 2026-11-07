@@ -7,5 +7,6 @@ apps/functions/lib/
 coverage/
 packages/ui/src/styles/theme.css
 packages/ui/src/styles/themes.css
+packages/ui/src/styles/ambiance.css
 storybook-static/
 .lighthouseci/

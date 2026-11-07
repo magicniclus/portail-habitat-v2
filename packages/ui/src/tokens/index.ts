@@ -120,6 +120,29 @@ export const couleurs = {
 } as const;
 
 /**
+ * Éditeur de montage du Studio (ambiance sombre des logiciels de montage) : fonds, traits,
+ * textes (AA sur `panneau`), et teintes des pistes de la frise.
+ */
+export const montage = {
+  fond: '#0f0f11',
+  panneau: '#1a1a1d',
+  surface: '#242428',
+  survol: '#2f2f34',
+  trait: '#35353b',
+  texte: '#ededf0',
+  texteDoux: '#a7a7b0',
+  tete: '#f2f2f5',
+  selection: '#4fd1c5',
+  pisteEcran: '#2c5282',
+  pisteCamera: '#276749',
+  pisteCapture: '#2b6c76',
+  pisteCarton: '#553c9a',
+  pisteAnimation: '#9c4221',
+  pisteSousTitres: '#4a4a52',
+  pisteAudio: '#22543d',
+} as const;
+
+/**
  * Cartes de chaleur de l'admin › Comportement : échelle du froid (peu) au chaud (beaucoup),
  * et repères des frictions (clic mort, rage, section qui fait partir).
  */

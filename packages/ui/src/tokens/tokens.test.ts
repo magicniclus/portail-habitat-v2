@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { genererThemeTailwind, genererThemesCss } from './css';
+import { genererAmbianceCss, genererThemeTailwind, genererThemesCss } from './css';
 import { THEMES, actions, couleurs, neutres, rampes } from './index';
 
 const lire = (f: string) => readFileSync(resolve(__dirname, '../styles', f), 'utf8');
@@ -23,6 +23,7 @@ describe('tokens', () => {
   it('les CSS générés sont à jour (sinon : pnpm --filter @ph/ui tokens)', () => {
     expect(lire('themes.css')).toBe(genererThemesCss());
     expect(lire('theme.css')).toBe(genererThemeTailwind());
+    expect(lire('ambiance.css')).toBe(genererAmbianceCss());
   });
 
   it('chaque thème a une rampe complète', () => {

@@ -1,10 +1,14 @@
 'use client';
 
-import { verifierRythme, type MotTranscrit, type PlanMontage } from '@ph/core/studio';
-import { Banner } from '@ph/ui';
+import type { MotTranscrit, PlanMontage } from '@ph/core/studio';
+import { Button } from '@ph/ui';
+import { useState } from 'react';
 import { EditeurMontage } from './EditeurMontage';
 
-/** Étape 4 : l'éditeur de montage (frise, aperçu, réglages) et les retouches par Claude. */
+/**
+ * Montage : l'éditeur s'ouvre en plein écran dès qu'un montage existe. Fermé, on retrouve la
+ * page de l'étape (suivi de la fabrication) avec de quoi le rouvrir.
+ */
 export function EtapeMontage(p: {
   projetId: string;
   plan: PlanMontage;
@@ -15,28 +19,25 @@ export function EtapeMontage(p: {
   dureePriseMs: number;
   /** Version du plan : une nouvelle version repart d'un brouillon propre. */
   version: number;
+  /** Où en est le projet (fabrication en cours…), affiché dans la barre de l'éditeur. */
+  etat: string | null;
 }) {
-  const rythme = verifierRythme(p.plan);
+  const [ouvert, setOuvert] = useState(true);
   return (
     <section
       aria-labelledby="montage-studio"
-      className="grid gap-3 rounded-card border border-trait bg-blanc p-4"
+      className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-trait bg-blanc p-4"
     >
-      <h2 id="montage-studio" className="m-0 text-lg">
-        Montage · {p.plan.titre}
-      </h2>
-      {rythme.messages.length ? (
-        <Banner tone="attention" titre="Pour garder l’attention">
-          <ul className="m-0 pl-5">
-            {rythme.messages.slice(0, 4).map((m) => (
-              <li key={m}>{m}</li>
-            ))}
-          </ul>
-          Ajoutez une coupe ou une animation dans la frise, ou demandez à Claude « resserre le
-          rythme ».
-        </Banner>
-      ) : null}
-      <EditeurMontage key={p.version} {...p} />
+      <div className="min-w-0">
+        <h2 id="montage-studio" className="m-0 text-lg">
+          Montage · {p.plan.titre}
+        </h2>
+        <p className="m-0 text-sm text-neutre-700">
+          {p.plan.plans.length} plans · éditeur plein écran (frise, effets, sous-titres).
+        </p>
+      </div>
+      <Button onClick={() => setOuvert(true)}>Ouvrir l’éditeur</Button>
+      {ouvert ? <EditeurMontage key={p.version} {...p} onFermer={() => setOuvert(false)} /> : null}
     </section>
   );
 }

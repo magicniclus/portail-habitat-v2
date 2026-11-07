@@ -3,6 +3,7 @@
 @import './theme.css';
 @import './themes.css';
 @import './base.css';
+@import './ambiance.css';
 
 /* Les classes utilisées par les composants de @ph/ui. */
 @source '../';
