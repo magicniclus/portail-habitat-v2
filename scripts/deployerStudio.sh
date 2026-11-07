@@ -19,6 +19,13 @@ for s in STUDIO_RENDU_CLE ANTHROPIC_API_KEY; do
   }
 done
 
+# Le robot (compte de service par défaut de Cloud Run) doit pouvoir lire ses deux secrets.
+COMPTE="$(gcloud projects describe "$PROJET" --format 'value(projectNumber)')-compute@developer.gserviceaccount.com"
+for s in STUDIO_RENDU_CLE ANTHROPIC_API_KEY; do
+  gcloud secrets add-iam-policy-binding "$s" --project "$PROJET" \
+    --member "serviceAccount:$COMPTE" --role roles/secretmanager.secretAccessor >/dev/null
+done
+
 gcloud builds submit --project "$PROJET" --region "$REGION" \
   --config /dev/stdin . <<YAML
 steps:
