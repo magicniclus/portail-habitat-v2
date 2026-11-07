@@ -336,3 +336,21 @@ describe('montage sans sortie structurée', () => {
     expect(extraireJson('  rien  ')).toBe('rien');
   });
 });
+
+describe('montage après les captures', () => {
+  it('Claude réutilise les captures filmées et l’artisan déjà à l’écran', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: false,
+      dureePriseMs: 30_000,
+      transcription: '',
+      segments: [],
+      sujet: null,
+      capturesFilmees: [{ id: 'c1', scene: 'fiche_publique' }],
+      artisan: { nom: 'Martin Plomberie', metier: 'plombier', ville: 'Bordeaux' },
+    });
+    expect(p.demande).toContain('Captures déjà filmées');
+    expect(p.demande).toContain('c1 = fiche_publique');
+    expect(p.demande).toContain('Martin Plomberie');
+  });
+});

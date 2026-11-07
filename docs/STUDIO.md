@@ -47,6 +47,14 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 
 ## 4. Captures de Portail Travaux (artisan d'exemple)
 
+- **Avant le montage** (page « Captures », entre l'idée et le tournage) :
+  - **Préparation** (`preparerCapturesStudio`, `promptPreparation`, sortie structurée `SCHEMA_JSON_PREPARATION`) : à partir du script, Claude crée l'artisan d'exemple fictif (nom inventé, chiffres cohérents avec la voix, montants en centimes) et choisit 1 à 4 écrans (colonne « à l'écran » du script). Lancée toute seule en arrivant sur la page s'il y a un script ; sans script, l'artisan d'exemple par défaut (`ARTISAN_EXEMPLE`) est proposé.
+  - **Relecture** : l'auteur corrige l'artisan et coche les écrans (6 au plus), puis « Filmer ces écrans » (`filmerCapturesStudio`, statut `captures`). Chaque vidéo filmée se regarde sur la page et peut être refaite (`refaire`).
+  - **Montage ensuite** : Claude reçoit les captures filmées (`c1 = fiche_publique`…) et l'artisan ; le plan reprend leurs identifiants (`alignerCaptures`, rien n'est refilmé) et l'artisan préparé est imposé.
+  - **Enchaînement** : captures finies sans prise → retour au tournage ; avec une prise prête (voix IA, « Claude fait tout », voix transcrite) → montage lancé.
+  - **Sans captures** : « Monter sans captures » (`ignorerCapturesStudio`, préparation `ignoree`) ; aussi le recours quand le robot n'est pas branché.
+  - Le robot filme la préparation tant qu'il n'y a pas de montage, puis les captures du montage (`capturesAFilmer`).
+
 - **Copie isolée** : le robot filme une copie de Portail Travaux qui tourne dans son conteneur (émulateurs Firebase, jeu de test, site compilé).
 - **Artisan d'exemple** : le compte de démonstration prend son nom, sa note, son nombre d'avis et ses mentions de devis.
 - **Jamais dans le vrai projet** : rien n'est écrit dans le vrai projet, le faux artisan n'apparaît jamais dans l'annuaire réel.

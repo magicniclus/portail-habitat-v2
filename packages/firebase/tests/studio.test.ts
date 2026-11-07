@@ -16,6 +16,11 @@ import {
   voixSyntheseStudio,
   sansPriseStudio,
   relancerStudio,
+  preparerCapturesStudio,
+  modifierPreparationStudio,
+  ignorerCapturesStudio,
+  filmerCapturesStudio,
+  capturesTermineesStudio,
   lancerMontageStudio,
   videosEnCoursStudio,
   creerSerieStudio,
@@ -873,5 +878,109 @@ describe('montage en arrière-plan', () => {
     await expect(lancerMontageStudio(s, { projetId: id, retouche: 'plus court' })).rejects.toThrow(
       /Aucun montage/,
     );
+  });
+});
+
+describe('captures avant le montage', () => {
+  const artisan = {
+    nom: 'Martin Plomberie',
+    metier: 'plombier',
+    ville: 'Bordeaux',
+    demandesParMois: 10,
+    chiffreAffairesCentimes: 4_500_000,
+    devisEnvoyes: 12,
+    noteMoyenne: 4.8,
+    nombreAvis: 37,
+  };
+
+  it('Claude prépare l’artisan et les écrans, l’auteur corrige, le robot filme', async () => {
+    const id = await projet(false);
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    await choisirSujetStudio(services(), { projetId: id, index: 0 });
+    reponses = [{ artisan, scenes: ['fiche_publique', 'demandes_recues'] }];
+    await preparerCapturesStudio(services(), { projetId: id });
+    expect(appels.at(-1)!.demande).toContain(sujet.script[0]!.voix);
+    expect(appels.at(-1)!.schema).toBeDefined();
+    let p = await lireProjetStudio(db, id);
+    expect(p?.preparation).toEqual({ artisan, scenes: ['fiche_publique', 'demandes_recues'] });
+    expect(p?.coutCentimes).toBeGreaterThan(0);
+
+    await modifierPreparationStudio(services(), {
+      projetId: id,
+      preparation: { artisan: { ...artisan, ville: 'Mérignac' }, scenes: ['fiche_publique'] },
+    });
+    await filmerCapturesStudio(services(), { projetId: id });
+    p = await lireProjetStudio(db, id);
+    expect(p?.statut).toBe('captures');
+    expect(travaux.at(-1)).toMatchObject({ type: 'capturer', projetId: id });
+    await expect(filmerCapturesStudio(services(), { projetId: id })).rejects.toThrow(/déjà/);
+    await expect(
+      modifierPreparationStudio(services(), { projetId: id, preparation: p!.preparation! }),
+    ).rejects.toThrow(/filme/);
+
+    // Filmées sans prise : on attend le tournage.
+    await capturesTermineesStudio(services(), {
+      projetId: id,
+      captures: { 'c1:fiche_publique': 'studio/x/c1.webm' },
+    });
+    p = await lireProjetStudio(db, id);
+    expect(p?.statut).toBe('enregistrement');
+    expect(p?.captures).toEqual({ 'c1:fiche_publique': 'studio/x/c1.webm' });
+
+    // Refaire une capture : l'ancienne vidéo est oubliée, le robot repart.
+    await filmerCapturesStudio(services(), { projetId: id, refaire: 'fiche_publique' });
+    expect((await lireProjetStudio(db, id))?.captures).toEqual({});
+  });
+
+  it('le montage réutilise la capture filmée et l’artisan préparé', async () => {
+    const id = await projet(false);
+    await db.doc(`studioProjets/${id}`).update({
+      statut: 'captures',
+      prise: { id: 'mx', fichiers: {}, dureeMs: 20_000 },
+      preparation: { artisan, scenes: ['fiche_publique'] },
+    });
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 12_000 },
+            visuel: 'capture',
+            captureId: 'zz',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+        captures: [{ id: 'zz', scene: 'fiche_publique' }],
+        artisan: { nom: 'Autre', metier: 'maçon', ville: 'Lyon' },
+      }),
+    ];
+    // « Claude fait tout » : les captures finies lancent le montage.
+    await capturesTermineesStudio(services(), {
+      projetId: id,
+      captures: { 'c1:fiche_publique': 'studio/x/c1.webm' },
+    });
+    expect(appels.at(-1)!.demande).toContain('c1 = fiche_publique');
+    expect(appels.at(-1)!.demande).toContain('Martin Plomberie');
+    const p = await lireProjetStudio(db, id);
+    expect(p?.plan?.captures).toEqual([{ id: 'c1', scene: 'fiche_publique' }]);
+    expect(p?.plan?.plans[0]!.captureId).toBe('c1');
+    expect(p?.plan?.artisan).toEqual(artisan);
+    // Rien à refilmer : on passe directement au rendu.
+    expect(travaux.at(-1)).toMatchObject({ type: 'rendre' });
+  });
+
+  it('monter sans captures, et pas de préparation sans script', async () => {
+    const id = await projet(false);
+    await expect(preparerCapturesStudio(services(), { projetId: id })).rejects.toThrow(/script/);
+    // Tournage des captures raté : s'en passer efface l'erreur.
+    await db.doc(`studioProjets/${id}`).update({ statut: 'erreur', erreur: 'robot absent' });
+    await ignorerCapturesStudio(services(), { projetId: id });
+    const p = await lireProjetStudio(db, id);
+    expect(p?.statut).toBe('enregistrement');
+    expect(p?.erreur).toBeNull();
+    expect(p?.preparation).toMatchObject({ scenes: [], ignoree: true });
+    await expect(filmerCapturesStudio(services(), { projetId: id })).rejects.toThrow(/écran/);
   });
 });

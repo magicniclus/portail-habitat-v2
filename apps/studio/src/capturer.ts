@@ -1,5 +1,10 @@
 import { COOKIE_CONSENTEMENT, ecrireConsentement } from '@ph/core/consentement';
-import { FORMATS_STUDIO, type FormatStudio } from '@ph/core/studio';
+import {
+  ARTISAN_EXEMPLE,
+  capturesAFilmer,
+  FORMATS_STUDIO,
+  type FormatStudio,
+} from '@ph/core/studio';
 import type { ProjetStudio } from '@ph/firebase/studio';
 import { chromium, type Browser } from '@playwright/test';
 import { join } from 'node:path';
@@ -32,23 +37,19 @@ async function sessionPro(navigateur: Browser, fichier: string) {
 }
 
 /**
- * Captures demandées par le plan et pas encore filmées (clé `id:scene`), sur la copie isolée,
- * avec le nom de l'artisan d'exemple. Chaque vidéo commence quand la page est prête.
+ * Captures pas encore filmées (clé `id:scene`) : celles du montage, ou avant le montage celles de
+ * la préparation (STUDIO.md §4). Sur la copie isolée, avec l'artisan d'exemple ; chaque vidéo
+ * commence quand la page est prête.
  */
 export async function capturer(p: ProjetStudio): Promise<Record<string, string>> {
-  if (!p.plan) throw new Error('aucun plan');
-  const plan = p.plan;
+  const plan = capturesAFilmer(p);
+  if (!plan.captures.length) throw new Error('aucune capture à filmer');
   const manquantes = plan.captures.filter((c) => !p.captures[`${c.id}:${c.scene}`]);
   if (!manquantes.length) return {};
   await environnementDemo();
   const sortie = await executer(
     'node',
-    [
-      join(DEPOT, 'apps/studio/dist/preparer.js'),
-      JSON.stringify(
-        plan.artisan ?? { nom: 'Bertrand Rénovation', metier: 'Plombier', ville: 'Bordeaux' },
-      ),
-    ],
+    [join(DEPOT, 'apps/studio/dist/preparer.js'), JSON.stringify(plan.artisan ?? ARTISAN_EXEMPLE)],
     { env: envDemo() },
   );
   const { slug } = JSON.parse(sortie) as { slug: string };

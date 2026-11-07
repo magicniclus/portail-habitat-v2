@@ -13,6 +13,8 @@ import {
   entreeProjetStudio,
   entreeRetoucheStudio,
   entreeSansPriseStudio,
+  entreePreparationStudio,
+  entreeFilmerStudio,
   entreeSujetsStudio,
   entreeVoixSyntheseStudio,
 } from '@ph/core/schemas';
@@ -34,6 +36,10 @@ import {
   voixDisponiblesStudio,
   voixSyntheseStudio,
   configReseaux,
+  preparerCapturesStudio,
+  modifierPreparationStudio,
+  ignorerCapturesStudio,
+  filmerCapturesStudio,
 } from '@ph/firebase/studio';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
@@ -162,3 +168,32 @@ const sansPrise = actionAdmin(
 /** Vidéo sans voix ni image : Claude monte directement cartons, captures et musique. */
 export const videoSansPrise = async (e: z.input<typeof entreeSansPriseStudio>) =>
   fin(await sansPrise(e), e.projetId);
+
+// Captures avant le montage (STUDIO.md §4) : préparer, corriger, filmer, ou s'en passer.
+const preparation = actionAdmin(
+  { schema: entreeProjetStudio, nom: 'adminStudioPreparerCaptures', permission: P },
+  async (e) => preparerCapturesStudio(servicesStudio(), e),
+);
+export const preparerCaptures = async (e: z.input<typeof entreeProjetStudio>) =>
+  fin(await preparation(e), e.projetId);
+
+const correction = actionAdmin(
+  { schema: entreePreparationStudio, nom: 'adminStudioModifierPreparation', permission: P },
+  async (e) => modifierPreparationStudio(servicesStudio(), e),
+);
+export const modifierPreparation = async (e: z.input<typeof entreePreparationStudio>) =>
+  fin(await correction(e), e.projetId);
+
+const sansCaptures = actionAdmin(
+  { schema: entreeProjetStudio, nom: 'adminStudioSansCaptures', permission: P },
+  async (e) => ignorerCapturesStudio(servicesStudio(), e),
+);
+export const ignorerCaptures = async (e: z.input<typeof entreeProjetStudio>) =>
+  fin(await sansCaptures(e), e.projetId);
+
+const filmer = actionAdmin(
+  { schema: entreeFilmerStudio, nom: 'adminStudioFilmerCaptures', permission: P },
+  async (e) => filmerCapturesStudio(servicesStudio(), e),
+);
+export const filmerCaptures = async (e: z.input<typeof entreeFilmerStudio>) =>
+  fin(await filmer(e), e.projetId);

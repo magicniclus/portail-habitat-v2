@@ -898,6 +898,7 @@ Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
 - `studioPublications/{id}` : une vidéo sur un réseau (`projetId`, `reseau`, `video`, `variante`, `titre`, `legende`, `programmeeLe`, `statut` programmee|en_cours|publiee|echec|annulee, `idExterne`, `lien`, `prive`, `erreur`, `publieeLe`, `stats`, `statsLe`). Index : `statut` + `programmeeLe`. Admin SDK uniquement.
 - `studioSeries/{id}` : série d'épisodes (`nom`, `promesse`, `episodes`). Les projets portent `serie {id, nom, numero}`. Admin SDK uniquement.
 - `studioProjets` gagne `serie`, `reels` (Reels analysés, sans auteur) et `rendu.variantes` (vidéos des variantes d'accroche).
+- `studioProjets` gagne `preparation { artisan (artisanFictif), scenes[] (6 au plus), ignoree? }` : artisan d'exemple et écrans filmés avant le montage (STUDIO.md §4). Écriture : serveur uniquement (règles inchangées).
 - Storage : `studio/{uid}/{prise}/…` (prises, 100 Mo max, création par l'auteur de la section Studio, jamais écrasées, supprimées à 30 jours) ; `studioRendus/{projet}/…` (captures et vidéos, écrites par le robot).
 
 ## 16. Index de toutes les collections (liste de contrôle)

@@ -25,7 +25,11 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
   await page.getByRole('button', { name: 'Tourner sans sujet (j’improvise) →' }).click();
-  // Idée choisie : on passe tout seul à la page du tournage.
+  // Idée choisie : d'abord les captures. Sans script, l'artisan d'exemple est proposé, à
+  // corriger ; on peut aussi monter sans captures, et l'on passe alors au tournage.
+  await expect(page).toHaveURL(/\/captures$/);
+  await expect(page.getByLabel('Nom de l’entreprise')).toHaveValue('Bertrand Rénovation');
+  await page.getByRole('button', { name: 'Monter sans captures' }).click();
   await expect(page).toHaveURL(/\/tournage$/);
   await expect(page.getByRole('heading', { level: 2, name: /^Tournage/ })).toBeVisible();
   await expect(etapes.getByRole('link', { name: /Idée et script/ })).toBeVisible();

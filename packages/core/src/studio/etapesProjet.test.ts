@@ -1,19 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { etapeProjet, etapesAccessibles } from './index';
+import { etapeProjet, etapesAccessibles, type EtapeProjet } from './index';
 
-const p = (
-  statut: Parameters<typeof etapeProjet>[0]['statut'],
-  o: { prise?: boolean; rendu?: boolean } = {},
-) => ({
+type Etat = Parameters<typeof etapeProjet>[0];
+const p = (statut: Etat['statut'], o: Partial<Omit<Etat, 'statut'>> = {}): Etat => ({
   statut,
-  prise: o.prise ?? false,
-  rendu: o.rendu ?? false,
+  prise: false,
+  rendu: false,
+  captures: 'filmee',
+  ...o,
 });
 
 describe('pages d’un projet Studio', () => {
   it('on arrive sur l’étape en cours', () => {
-    expect(etapeProjet(p('sujet'))).toBe('idees');
-    expect(etapeProjet(p('enregistrement'))).toBe('tournage');
+    expect(etapeProjet(p('sujet', { captures: 'a_preparer' }))).toBe('idees');
+    // Idée choisie : d'abord les captures (artisan d'exemple et écrans), puis le tournage.
+    expect(etapeProjet(p('enregistrement', { captures: 'a_preparer' }))).toBe('captures');
+    expect(etapeProjet(p('enregistrement', { captures: 'preparee' }))).toBe('captures');
+    expect(etapeProjet(p('captures', { captures: 'preparee' }))).toBe('captures');
+    expect(etapeProjet(p('erreur', { captures: 'preparee' }))).toBe('captures');
+    expect(etapeProjet(p('enregistrement', { captures: 'filmee' }))).toBe('tournage');
+    expect(etapeProjet(p('enregistrement', { captures: 'ignoree' }))).toBe('tournage');
     for (const s of ['transcription', 'montage', 'captures', 'rendu', 'erreur'] as const)
       expect(etapeProjet(p(s, { prise: true }))).toBe('montage');
     expect(etapeProjet(p('pret', { prise: true, rendu: true }))).toBe('publication');
@@ -22,18 +28,10 @@ describe('pages d’un projet Studio', () => {
   });
 
   it('les étapes suivantes s’ouvrent au fur et à mesure', () => {
+    const toutes: EtapeProjet[] = ['idees', 'captures', 'tournage', 'montage', 'publication'];
     expect(etapesAccessibles(p('sujet'))).toEqual(['idees']);
-    expect(etapesAccessibles(p('enregistrement'))).toEqual(['idees', 'tournage']);
-    expect(etapesAccessibles(p('montage', { prise: true }))).toEqual([
-      'idees',
-      'tournage',
-      'montage',
-    ]);
-    expect(etapesAccessibles(p('pret', { prise: true, rendu: true }))).toEqual([
-      'idees',
-      'tournage',
-      'montage',
-      'publication',
-    ]);
+    expect(etapesAccessibles(p('enregistrement'))).toEqual(toutes.slice(0, 3));
+    expect(etapesAccessibles(p('montage', { prise: true }))).toEqual(toutes.slice(0, 4));
+    expect(etapesAccessibles(p('pret', { prise: true, rendu: true }))).toEqual(toutes);
   });
 });

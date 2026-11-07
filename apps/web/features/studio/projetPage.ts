@@ -1,5 +1,6 @@
 import 'server-only';
 import { appAdmin } from '@ph/firebase/admin';
+import { etatCaptures } from '@ph/core/studio';
 import { lireProjetStudio } from '@ph/firebase/studio';
 import { getFirestore } from 'firebase-admin/firestore';
 import { notFound } from 'next/navigation';
@@ -22,4 +23,5 @@ export const etatEtapes = (p: Awaited<ReturnType<typeof projetStudioPage>>) => (
   statut: p.statut,
   prise: Boolean(p.prise),
   rendu: Boolean(p.rendu),
+  captures: etatCaptures(p),
 });

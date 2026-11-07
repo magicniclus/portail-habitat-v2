@@ -1,4 +1,12 @@
-import { NOMS_FORMATS, NOMS_RESEAUX, planMontage, type FormatStudio } from '../studio';
+import {
+  NOMS_FORMATS,
+  NOMS_RESEAUX,
+  NOMS_SCENES,
+  planMontage,
+  preparationCaptures,
+  type FormatStudio,
+  type SceneCapture,
+} from '../studio';
 import { z } from '../zod';
 
 /** Entrées des Server Actions du Studio (STUDIO.md), vérifiées côté client et serveur. */
@@ -165,4 +173,16 @@ export const entreeSansPriseStudio = z.strictObject({
   projetId: id,
   dureeMs: z.number().int().min(10_000).max(180_000),
   sousTitres: z.boolean().optional(),
+});
+
+/** Captures avant le montage : artisan d'exemple et écrans corrigés par l'auteur. */
+export const entreePreparationStudio = z.strictObject({
+  projetId: id,
+  preparation: preparationCaptures,
+});
+
+/** Filmer les écrans préparés ; `refaire` refilme une seule scène. */
+export const entreeFilmerStudio = z.strictObject({
+  projetId: id,
+  refaire: z.enum(NOMS_SCENES as [SceneCapture, ...SceneCapture[]]).optional(),
 });

@@ -4,7 +4,7 @@ import type { ReelInstagram } from './tendances';
 import { z } from '../zod';
 import { ANIMATIONS, LIBELLES_CAMERA, LIBELLES_VISUEL, SCENES_CAPTURE } from './catalogue';
 import { DUREE_MAX_MS, DUREE_MIN_MS, FORMATS_STUDIO, type FormatStudio } from './formats';
-import type { PlanMontage } from './plan';
+import type { ArtisanFictif, PlanMontage } from './plan';
 
 /**
  * Consignes données à Claude pour le Studio (STUDIO.md §1 et §5). Le préfixe (système + contexte
@@ -41,7 +41,7 @@ export interface VideoTendance {
 }
 
 /** Ce qui est vrai sur le produit : rien d'autre ne doit être affirmé sur Portail Travaux. */
-const FAITS_PRODUIT = [
+export const FAITS_PRODUIT = [
   'Portail Travaux met en relation des particuliers qui ont un projet de travaux avec des artisans de leur secteur.',
   'Pour l’artisan, la fiche est gratuite ; les demandes reçues via sa fiche et son site sont gratuites, jusqu’à 10 par mois, sans commission.',
   'Outils gratuits pour l’artisan : fiche pro, site internet (créé en 2 minutes avec l’IA), devis et factures conformes, suivi des clients.',
@@ -49,7 +49,7 @@ const FAITS_PRODUIT = [
   'Adresse : portailtravaux.fr/pro.',
 ].join('\n');
 
-const REGLES_COMMUNES = [
+export const REGLES_COMMUNES = [
   'Tu écris en français, pour des artisans du bâtiment (plombiers, électriciens, maçons, peintres…).',
   'Vouvoiement. Phrases courtes, concrètes, orales. Jamais le mot « lead » : on dit « demandes », « clients », « chantiers ».',
   'N’affirme rien sur Portail Travaux en dehors des faits fournis. Ne présente jamais Portail Travaux comme nouveau.',
@@ -375,6 +375,10 @@ export function promptMontage(e: {
   /** Erreurs de validation du plan précédent, à corriger. */
   erreurs?: readonly string[] | undefined;
   serie?: SerieVideo | null | undefined;
+  /** Captures filmées avant le montage (à réutiliser telles quelles). */
+  capturesFilmees?: readonly { id: string; scene: string }[];
+  /** Artisan d'exemple déjà visible dans ces captures. */
+  artisan?: ArtisanFictif | null;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es un monteur de vidéos courtes virales. Tu ne produis qu’un plan de montage en JSON, jamais de code.',
@@ -421,6 +425,16 @@ export function promptMontage(e: {
               ? 'sousTitres = true : le texte du script défile en sous-titres selon la transcription ; prends les plans dans l’ordre, de 0 à la fin, sans trou ni retour en arrière, et ne répète pas le sous-titre dans les cartons (cartons très courts : un mot ou un chiffre)'
               : 'sousTitres = false'
           }, musique = true.`,
+        ]
+      : []),
+    ...(e.capturesFilmees?.length
+      ? [
+          `Captures déjà filmées et validées par l’auteur : ${e.capturesFilmees.map((c) => `${c.id} = ${c.scene}`).join(', ')}. Montre-les en priorité avec exactement ces identifiants ; n’en ajoute une autre que si elle est indispensable.`,
+        ]
+      : []),
+    ...(e.artisan
+      ? [
+          `Artisan d’exemple (déjà à l’écran dans les captures, recopie-le tel quel dans « artisan ») : ${JSON.stringify(e.artisan)}.`,
         ]
       : []),
     ...(e.serie

@@ -13,6 +13,7 @@ import {
   planMontage,
   promptMontage,
   lienVideo,
+  alignerCaptures,
   estEtapeSuivie,
   etapesFabrication,
   etapeBloquee,
@@ -31,6 +32,7 @@ import {
   verifierPlan,
   type FormatStudio,
   type MotTranscrit,
+  type PreparationCaptures,
   type PlanMontage,
   type ReelInstagram,
   type SujetStudio,
@@ -96,6 +98,8 @@ export interface ProjetStudio {
   version: number;
   /** Captures filmées : identifiant de capture → fichier. */
   captures: Record<string, string>;
+  /** Artisan d'exemple et écrans à filmer avant le montage (STUDIO.md §4). */
+  preparation: PreparationCaptures | null;
   rendu: {
     video: string;
     srt: string;
@@ -152,6 +156,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     plan: (d.plan as PlanMontage | null | undefined) ?? null,
     version: (d.version as number | undefined) ?? 0,
     captures: (d.captures as Record<string, string> | undefined) ?? {},
+    preparation: (d.preparation as PreparationCaptures | null | undefined) ?? null,
     rendu: d.rendu
       ? { ...(d.rendu as Omit<NonNullable<ProjetStudio['rendu']>, 'le'>), le: ms(d.rendu.le) }
       : null,
@@ -177,13 +182,13 @@ export async function listerProjetsStudio(db: Firestore): Promise<ProjetStudio[]
   return r.docs.map((d) => ({ ...versProjet(d.id, d.data()), mots: [] }));
 }
 
-async function exiger(s: ServicesStudio, id: string): Promise<ProjetStudio> {
+export async function exiger(s: ServicesStudio, id: string): Promise<ProjetStudio> {
   const p = await lireProjetStudio(s.db, id);
   if (!p) throw new ErreurMetier('INTROUVABLE', 'Ce projet n’existe plus.');
   return p;
 }
 
-const maj = (s: ServicesStudio, id: string, champs: Record<string, unknown>) =>
+export const maj = (s: ServicesStudio, id: string, champs: Record<string, unknown>) =>
   s.db.doc(chemins.projetStudio(id)).update({
     ...champs,
     updatedAt: Timestamp.fromMillis(s.horloge()),
@@ -228,7 +233,7 @@ export async function creerProjetStudio(
   return ref.id;
 }
 
-function exigerClaude(s: ServicesStudio): ClientStudio {
+export function exigerClaude(s: ServicesStudio): ClientStudio {
   if (!s.claude)
     throw new ErreurMetier(
       'INDISPONIBLE',
@@ -370,7 +375,7 @@ const resumeTendance = (v: VideoTendance): TendanceAffichee => ({
   scoreViral: v.scoreViral,
 });
 
-const cout = (usage: Parameters<typeof coutCentimes>[1]) =>
+export const cout = (usage: Parameters<typeof coutCentimes>[1]) =>
   FieldValue.increment(coutCentimes(MODELE_STUDIO, usage));
 
 /** Étape 1 : analyse des vidéos qui marchent, puis sujets proposés par Claude avec leur script. */
@@ -725,6 +730,11 @@ export async function genererMontageStudio(
       segments: segmentsParoles(p.mots, {}),
       sujet: p.sujet,
       serie: await contexteSerieStudio(s.db, p),
+      capturesFilmees: Object.keys(p.captures).map((cle) => {
+        const [id, scene] = cle.split(':');
+        return { id: id!, scene: scene! };
+      }),
+      artisan: p.preparation && !p.preparation.ignoree ? p.preparation.artisan : null,
       ...(e.retouche && p.plan ? { retouche: { plan: p.plan, demande: e.retouche } } : {}),
       erreurs,
     });
@@ -744,7 +754,10 @@ export async function genererMontageStudio(
     }
     erreurs = r.refus ? ['Réponse déclinée.'] : verifierPlan(brut, contexte);
     if (!erreurs.length) {
-      const plan = planMontage.parse(brut);
+      // Captures déjà filmées réutilisées, artisan de la préparation imposé (il est à l'écran).
+      const lu = alignerCaptures(planMontage.parse(brut), p.captures);
+      const plan =
+        p.preparation && !p.preparation.ignoree ? { ...lu, artisan: p.preparation.artisan } : lu;
       await enregistrerPlan(
         s,
         p,
@@ -784,8 +797,20 @@ export async function capturesTermineesStudio(
   e: { projetId: string; captures: Record<string, string> },
 ): Promise<void> {
   const p = await exiger(s, e.projetId);
-  await maj(s, e.projetId, { captures: { ...p.captures, ...e.captures }, statut: 'rendu' });
-  await s.lancerTravail('rendre', e.projetId);
+  const captures = { ...p.captures, ...e.captures };
+  if (p.plan) {
+    await maj(s, e.projetId, { captures, statut: 'rendu' });
+    return s.lancerTravail('rendre', e.projetId);
+  }
+  // Filmées avant le montage : on monte si la prise est prête, sinon on attend le tournage.
+  if (!p.prise) {
+    await maj(s, e.projetId, { captures, statut: 'enregistrement', erreur: null });
+    return;
+  }
+  await maj(s, e.projetId, { captures });
+  // Voix enregistrée pas encore transcrite : la transcription lancera le montage.
+  const transcrire = etapesFabrication(p.prise.id).includes('transcription');
+  if (!transcrire || p.mots.length) await lancerMontageStudio(s, { projetId: e.projetId });
 }
 
 export async function renduTermineStudio(
