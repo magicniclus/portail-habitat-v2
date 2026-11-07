@@ -9,7 +9,7 @@ RUN apt-get update \
 
 # Whisper en local (pas de fournisseur ni de prix à la minute) ; modèle téléchargé à la construction.
 RUN python3 -m venv /opt/whisper-venv \
-  && /opt/whisper-venv/bin/pip install --no-cache-dir faster-whisper==1.1.1 \
+  && /opt/whisper-venv/bin/pip install --no-cache-dir faster-whisper==1.1.1 'huggingface-hub>=0.23,<1' requests \
   && /opt/whisper-venv/bin/python -c "from faster_whisper import WhisperModel; WhisperModel('small', device='cpu', compute_type='int8', download_root='/opt/whisper')"
 
 RUN corepack enable
