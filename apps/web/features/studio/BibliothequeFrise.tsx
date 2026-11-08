@@ -59,9 +59,12 @@ export function BibliothequeFrise(p: {
   /** Panneau IA : idée, tournage, voix, fabrication par Claude. */
   ia: ReactNode;
   ongletInitial?: Onglet;
+  /** Claude ou le robot travaillent : seul le panneau IA reste ouvert, le reste est grisé. */
+  verrou?: boolean;
   onRetouche: (r: RetoucheGlissee) => void;
 }) {
-  const [onglet, setOnglet] = useState<Onglet>(p.ongletInitial ?? 'medias');
+  const [choisi, setOnglet] = useState<Onglet>(p.ongletInitial ?? 'medias');
+  const onglet: Onglet = p.verrou ? 'ia' : choisi;
   return (
     <div className="grid h-full min-h-0 grid-cols-[64px_minmax(0,1fr)]">
       <div
@@ -76,8 +79,9 @@ export function BibliothequeFrise(p: {
             type="button"
             role="tab"
             aria-selected={onglet === o.id}
+            disabled={p.verrou && o.id !== 'ia'}
             onClick={() => setOnglet(o.id)}
-            className="grid min-h-14 content-center justify-items-center gap-0.5 rounded-[8px] text-[11px] text-montage-texte-doux hover:bg-montage-survol aria-selected:bg-montage-survol aria-selected:text-montage-selection"
+            className="grid min-h-14 content-center justify-items-center gap-0.5 rounded-[8px] text-[11px] text-montage-texte-doux hover:bg-montage-survol aria-selected:bg-montage-survol aria-selected:text-montage-selection disabled:pointer-events-none disabled:opacity-35 disabled:grayscale"
           >
             {o.icone}
             {o.libelle}

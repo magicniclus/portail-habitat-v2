@@ -5,6 +5,7 @@ import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ApercuFrise } from './ApercuFrise';
 import { AssistantIA, type ProjetIA } from './AssistantIA';
 import { BarreHautMontage } from './BarreHautMontage';
+import { BandeauOccupe, OCCUPE } from './BandeauOccupe';
 import { BibliothequeFrise } from './BibliothequeFrise';
 import { CommandesLecture } from './CommandesLecture';
 import { EcransPortail } from './EcransPortail';
@@ -44,7 +45,9 @@ export function EditeurFrise(p: {
   projets: readonly { id: string; titre: string }[];
   onFermer: () => void;
 }) {
-  const h = useHistorique(p.frise);
+  // Claude ou le robot travaillent : outils grisés et inutilisables jusqu'à la fin.
+  const occupe = OCCUPE.has(p.projet.statut);
+  const h = useHistorique(p.frise, occupe);
   const { brouillon, changer } = h;
   const [selection, setSelection] = useState<string | null>(null);
   const [miniature, setMiniature] = useState(false);
@@ -71,7 +74,12 @@ export function EditeurFrise(p: {
     erreur: (texte) => setMessage({ ton: 'danger', texte }),
     filmes: p.fichiers.captures,
   });
-  useRaccourcisMontage({ lecture, onScinder: a.scinder, onSupprimer: a.supprimer });
+  useRaccourcisMontage({
+    lecture,
+    onScinder: occupe ? () => undefined : a.scinder,
+    onSupprimer: occupe ? undefined : a.supprimer,
+  });
+  const grise = occupe ? 'pointer-events-none opacity-40 grayscale select-none' : '';
 
   return (
     <div
@@ -90,12 +98,14 @@ export function EditeurFrise(p: {
         rythme={[]}
         modifie={brouillon !== e.enregistre}
         onFermer={p.onFermer}
-        onAnnuler={h.annuler}
-        onRetablir={h.retablir}
-        enregistrable={erreurs.length === 0 && !enCours}
+        onAnnuler={occupe ? undefined : h.annuler}
+        onRetablir={occupe ? undefined : h.retablir}
+        enregistrable={erreurs.length === 0 && !enCours && !occupe}
         enCours={enCours}
         onEnregistrer={() => e.fabriquer(brouillon)}
-        secondaire={{ libelle: 'Enregistrer', onClick: () => e.enregistrer(brouillon) }}
+        secondaire={
+          occupe ? undefined : { libelle: 'Enregistrer', onClick: () => e.enregistrer(brouillon) }
+        }
         menu={
           <MenuProjets
             projets={p.projets}
@@ -119,6 +129,7 @@ export function EditeurFrise(p: {
           className="order-last min-h-0 border-t border-montage-trait bg-montage-panneau lg:order-none lg:border-t-0"
         >
           <BibliothequeFrise
+            verrou={occupe}
             frise={brouillon}
             ongletInitial={pistesVides || p.projet.statut !== 'enregistrement' ? 'ia' : 'medias'}
             envois={imports.envois}
@@ -158,15 +169,17 @@ export function EditeurFrise(p: {
               lecture={lecture}
               miniature={miniature}
             >
-              <ManipulationApercu
-                frise={brouillon}
-                t={tete === 0 && !lecture.lecture ? 300 : tete}
-                lignes={brouillon.sousTitres ? lignes : []}
-                selection={selection}
-                onSelection={setSelection}
-                onDebut={h.memoriser}
-                onChange={h.remplacer}
-              />
+              {occupe ? null : (
+                <ManipulationApercu
+                  frise={brouillon}
+                  t={tete === 0 && !lecture.lecture ? 300 : tete}
+                  lignes={brouillon.sousTitres ? lignes : []}
+                  selection={selection}
+                  onSelection={setSelection}
+                  onDebut={h.memoriser}
+                  onChange={h.remplacer}
+                />
+              )}
             </ApercuFrise>
           </div>
           <CommandesLecture
@@ -180,7 +193,8 @@ export function EditeurFrise(p: {
         <SeparateurPanneau cote="droite" largeurs={largeurs} />
         <aside
           aria-label="Réglages"
-          className="hidden min-h-0 overflow-y-auto bg-montage-panneau p-3 lg:block"
+          inert={occupe}
+          className={`hidden min-h-0 overflow-y-auto bg-montage-panneau p-3 lg:block ${grise}`}
         >
           <InspecteurFrise
             frise={brouillon}
@@ -199,21 +213,26 @@ export function EditeurFrise(p: {
         onPointerDown={hauteur.tirer}
         className="cursor-row-resize bg-montage-trait hover:bg-montage-selection"
       />
-      <ZoneFrise
-        frise={brouillon}
-        tete={tete}
-        selection={selection}
-        onSelection={setSelection}
-        onTete={lecture.aller}
-        onDebut={h.memoriser}
-        onChange={h.remplacer}
-        changer={changer}
-        lignes={lignes}
-        onDepot={(c, pisteId, debut) => a.poser(c, pisteId, debut)}
-        onRetouche={(r, clipId) => a.retoucher(r, clipId)}
-        onFichiers={(f, pisteId, debut) => void imports.importer(f, { pisteId, debut })}
-        onScinder={a.scinder}
-      />
+      <div className="relative grid min-h-0">
+        <div inert={occupe} className={`grid min-h-0 ${grise}`}>
+          <ZoneFrise
+            frise={brouillon}
+            tete={tete}
+            selection={selection}
+            onSelection={setSelection}
+            onTete={lecture.aller}
+            onDebut={h.memoriser}
+            onChange={h.remplacer}
+            changer={changer}
+            lignes={lignes}
+            onDepot={(c, pisteId, debut) => a.poser(c, pisteId, debut)}
+            onRetouche={(r, clipId) => a.retoucher(r, clipId)}
+            onFichiers={(f, pisteId, debut) => void imports.importer(f, { pisteId, debut })}
+            onScinder={a.scinder}
+          />
+        </div>
+        {occupe ? <BandeauOccupe statut={p.projet.statut} /> : null}
+      </div>
     </div>
   );
 }

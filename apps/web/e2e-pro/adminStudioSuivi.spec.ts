@@ -44,6 +44,10 @@ test('STUDIO-SUIVI : montage en cours visible partout, relance si bloqué', asyn
   await expect(suivi.getByText(/d’habitude 1 à 4 min/)).toBeVisible();
   await expect(suivi.getByRole('listitem').filter({ hasText: 'Transcription' })).toHaveCount(0);
   await expect(suivi.getByRole('button', { name: /Relancer/ })).toHaveCount(0);
+  // Pendant que Claude monte : outils grisés et inutilisables, seul le panneau IA reste ouvert.
+  await expect(page.getByText(/les outils reviennent dès que c’est fini/)).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Médias' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Enregistrer et fabriquer' })).toBeDisabled();
 
   // Bloqué depuis 13 min : on peut relancer.
   await doc.update({ updatedAt: Timestamp.fromMillis(Date.now() - 13 * 60_000) });

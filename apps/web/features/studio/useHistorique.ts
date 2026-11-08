@@ -5,9 +5,9 @@ import { useCallback, useEffect, useState } from 'react';
 /**
  * Brouillon du montage avec historique (50 pas) : `changer` mémorise puis remplace,
  * `memoriser` + `remplacer` servent aux gestes continus (un seul pas pour tout le glisser).
- * Ctrl+Z annule, Ctrl+Y ou Ctrl+Maj+Z rétablit (hors champs de saisie).
+ * Ctrl+Z annule, Ctrl+Y ou Ctrl+Maj+Z rétablit (hors champs de saisie ; rien quand `bloque`).
  */
-export function useHistorique<T>(initial: T) {
+export function useHistorique<T>(initial: T, bloque = false) {
   const [brouillon, remplacer] = useState(initial);
   const [passe, setPasse] = useState<T[]>([]);
   const [futur, setFutur] = useState<T[]>([]);
@@ -37,7 +37,11 @@ export function useHistorique<T>(initial: T) {
 
   useEffect(() => {
     const touche = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || (e.target as HTMLElement).closest('input,textarea,select'))
+      if (
+        bloque ||
+        !(e.ctrlKey || e.metaKey) ||
+        (e.target as HTMLElement).closest('input,textarea,select')
+      )
         return;
       if (e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
