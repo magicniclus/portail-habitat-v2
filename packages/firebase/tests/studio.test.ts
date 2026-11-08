@@ -19,6 +19,7 @@ import {
   creerMontageLibreStudio,
   ouvrirStudioStudio,
   choisirStyleStudio,
+  ideesSessionStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -782,6 +783,43 @@ describe('bouton « Studio » : tout se fait dans l’éditeur', () => {
     expect(p?.libre).toBe(false);
     expect(friseActive(p!)).toBe(false);
     expect(friseDuProjet(p!).pistes.flatMap((x) => x.clips).length).toBeGreaterThan(0);
+  });
+});
+
+describe('session de tournage', () => {
+  it('un seul appel à Claude, une vidéo prête à tourner par idée', async () => {
+    reponses = [
+      {
+        sujets: [
+          sujet,
+          { ...sujet, titre: 'Deuxième idée' },
+          { ...sujet, titre: 'Troisième idée' },
+        ],
+      },
+    ];
+    const avant = appels.length;
+    const ids = await ideesSessionStudio(services(), {
+      auteurUid: 'sa',
+      nombre: 3,
+      format: 'vertical',
+      theme: 'devis',
+    });
+    expect(appels.length - avant).toBe(1);
+    expect(ids).toHaveLength(3);
+    const projets = await Promise.all(ids.map((id) => lireProjetStudio(db, id)));
+    expect(projets.map((p) => p?.sujet?.titre)).toEqual([
+      sujet.titre,
+      'Deuxième idée',
+      'Troisième idée',
+    ]);
+    expect(projets.every((p) => p?.statut === 'enregistrement' && !p.prise)).toBe(true);
+    await expect(
+      ideesSessionStudio(services({ claude: false }), {
+        auteurUid: 'sa',
+        nombre: 3,
+        format: 'vertical',
+      }),
+    ).rejects.toThrow();
   });
 });
 

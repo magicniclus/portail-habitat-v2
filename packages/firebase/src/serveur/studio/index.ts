@@ -32,6 +32,7 @@ export { rechercheInstagram, type RechercheInstagram } from './instagram';
 export {
   capturesTermineesStudio,
   choisirStyleStudio,
+  ideesSessionStudio,
   choisirSujetStudio,
   creerProjetStudio,
   declinerSujetStudio,

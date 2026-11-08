@@ -7,6 +7,7 @@ import { BoutonStudio } from './BoutonStudio';
 
 const ONGLETS = [
   ['/admin/studio', 'Vidéos'],
+  ['/admin/studio/tournage', 'Tournage'],
   ['/admin/studio/idees', 'Idées'],
   ['/admin/studio/calendrier', 'Calendrier'],
   ['/admin/studio/resultats', 'Résultats'],

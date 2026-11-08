@@ -13,6 +13,7 @@ import {
   entreeSansPriseStudio,
   entreeOuvrirStudio,
   entreeStyleStudio,
+  entreeSessionStudio,
   entreeMediaStudio,
   entreeFilmerEcransStudio,
   entreeFriseStudio,
@@ -38,6 +39,7 @@ import {
   configReseaux,
   ouvrirStudioStudio,
   choisirStyleStudio,
+  ideesSessionStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -157,6 +159,13 @@ const sansPrise = actionAdmin(
 /** Vidéo sans voix ni image : Claude monte directement cartons, captures et musique. */
 export const videoSansPrise = async (e: z.input<typeof entreeSansPriseStudio>) =>
   fin(await sansPrise(e), e.projetId);
+
+// Session de tournage : plusieurs idées d'un coup, chacune devient une vidéo prête à tourner.
+const session = actionAdmin(
+  { schema: entreeSessionStudio, nom: 'adminStudioSession', permission: P },
+  async (e, ctx) => ideesSessionStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const ideesSession = async (e: z.input<typeof entreeSessionStudio>) => fin(await session(e));
 
 const style = actionAdmin(
   { schema: entreeStyleStudio, nom: 'adminStudioStyle', permission: P },

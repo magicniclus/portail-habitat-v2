@@ -477,6 +477,42 @@ export async function choisirSujetStudio(
 }
 
 /**
+ * Session de tournage : Claude propose `nombre` idées d'un coup (un seul appel), chacune devient
+ * une vidéo prête à tourner (script en prompteur). Renvoie les vidéos créées, dans l'ordre.
+ */
+export async function ideesSessionStudio(
+  s: ServicesStudio,
+  e: { auteurUid: string; nombre: number; format: FormatStudio; theme?: string },
+): Promise<string[]> {
+  exigerClaude(s);
+  const premier = await creerProjetStudio(s, {
+    auteurUid: e.auteurUid,
+    format: e.format,
+    camera: true,
+    ...(e.theme ? { theme: e.theme } : {}),
+  });
+  const sujets = await proposerSujetsStudio(s, {
+    projetId: premier,
+    nombre: e.nombre,
+    ...(e.theme ? { theme: e.theme } : {}),
+  });
+  await choisirSujetStudio(s, { projetId: premier, index: 0 });
+  const autres: string[] = [];
+  for (const sujet of sujets.slice(1))
+    autres.push(
+      await projetAvecSujetStudio(s, {
+        auteurUid: e.auteurUid,
+        sujet,
+        format: e.format,
+        camera: true,
+        theme: e.theme ?? null,
+        origine: { sessionDe: premier },
+      }),
+    );
+  return [premier, ...autres];
+}
+
+/**
  * Plusieurs vidéos d'un coup à partir d'un sujet qui plaît : Claude le décline (angles, accroches,
  * miniatures différents) et chaque déclinaison devient une vidéo prête à tourner.
  */

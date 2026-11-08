@@ -219,3 +219,10 @@ export const entreeStyleStudio = z.strictObject({
   projetId: id,
   style: z.enum(STYLES_MONTAGE),
 });
+
+/** Session de tournage : plusieurs idées d'un coup, chacune devient une vidéo à tourner. */
+export const entreeSessionStudio = z.strictObject({
+  nombre: z.number().int().min(2).max(8),
+  format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
+  theme: z.string().trim().max(200).optional(),
+});

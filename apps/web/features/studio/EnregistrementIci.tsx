@@ -20,12 +20,17 @@ export function EnregistrementIci({
   script,
   cameraInitiale = null,
   ecranInitial = false,
+  onEnvoye,
+  libelleEnvoi = 'Envoyer cette prise',
 }: {
   projetId: string;
   script: SujetStudio['script'];
   /** `''` : caméra par défaut ; `null` : sans caméra. */
   cameraInitiale?: string | null;
   ecranInitial?: boolean;
+  /** Prise envoyée (session de tournage : on passe à la vidéo suivante). */
+  onEnvoye?: () => void;
+  libelleEnvoi?: string;
 }) {
   const [micro, setMicro] = useState('');
   // Caméra choisie par l'auteur : rien n'est demandé au navigateur tant qu'il n'en veut pas.
@@ -48,7 +53,10 @@ export function EnregistrementIci({
     const erreur = await envoyerPrise(projetId, e.prise, setEnvoi);
     setEnvoi(null);
     if (erreur) setMessage(erreur);
-    else e.recommencer();
+    else {
+      e.recommencer();
+      onEnvoye?.();
+    }
   };
   const libre = e.etat === 'pret';
   return (
@@ -124,7 +132,7 @@ export function EnregistrementIci({
             {e.etat === 'termine' && e.prise ? (
               <>
                 <Button disabled={envoi !== null} onClick={() => void envoyer()}>
-                  {envoi !== null ? `Envoi… ${Math.round(envoi * 100)} %` : 'Envoyer cette prise'}
+                  {envoi !== null ? `Envoi… ${Math.round(envoi * 100)} %` : libelleEnvoi}
                 </Button>
                 <Button variant="secondaire" disabled={envoi !== null} onClick={e.recommencer}>
                   Refaire
@@ -148,7 +156,7 @@ export function EnregistrementIci({
               aria-label="Aperçu de la caméra"
             />
           ) : null}
-          <Prompteur script={script} />
+          <Prompteur key={projetId} script={script} />
         </div>
       </div>
     </div>
