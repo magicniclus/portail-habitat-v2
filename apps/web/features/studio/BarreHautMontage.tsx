@@ -57,8 +57,8 @@ export function BarreHautMontage(p: {
   enregistrable: boolean;
   enCours: boolean;
   onEnregistrer: () => void;
-  /** Libellé du bouton d'enregistrement (« Enregistrer et fabriquer » par défaut). */
-  libelleEnregistrer?: string;
+  /** Bouton à côté (« Enregistrer » sans fabriquer). */
+  secondaire?: { libelle: string; onClick: () => void };
 }) {
   return (
     <header className="flex min-w-0 items-center gap-2 border-b border-montage-trait bg-montage-panneau px-2">
@@ -113,14 +113,24 @@ export function BarreHautMontage(p: {
         ) : null}
         <Alerte libelle="À corriger" ton="danger" lignes={p.erreurs} />
         <Alerte libelle="Rythme" ton="conseil" lignes={p.rythme} />
+        {p.secondaire ? (
+          <button
+            type="button"
+            disabled={!p.enregistrable || !p.modifie}
+            onClick={p.secondaire.onClick}
+            className="flex min-h-10 items-center rounded-[8px] bg-montage-surface px-4 text-sm font-semibold hover:bg-montage-survol disabled:opacity-40"
+          >
+            {p.secondaire.libelle}
+          </button>
+        ) : null}
         <button
           type="button"
-          disabled={!p.enregistrable || !p.modifie}
+          disabled={!p.enregistrable || (!p.modifie && !p.secondaire)}
           onClick={p.onEnregistrer}
           className="flex min-h-10 items-center gap-2 rounded-[8px] bg-montage-selection px-4 text-sm font-bold text-montage-fond disabled:opacity-40"
         >
           <FloppyDiskIcon size={18} aria-hidden="true" />
-          {p.enCours ? 'Enregistrement…' : (p.libelleEnregistrer ?? 'Enregistrer et fabriquer')}
+          {p.enCours ? 'Enregistrement…' : 'Enregistrer et fabriquer'}
         </button>
       </div>
     </header>

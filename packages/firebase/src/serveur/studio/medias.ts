@@ -119,12 +119,11 @@ export async function enregistrerFriseStudio(
   if (lu.data.medias.some((m) => connus.get(m.id)?.chemin !== m.chemin))
     throw new ErreurMetier('ENTREE_INVALIDE', 'Média inconnu dans le montage.');
   const medias = lu.data.medias.map((m) => connus.get(m.id)!);
-  await maj(s, p.id, {
-    frise: { ...lu.data, medias },
-    friseVersion: p.version,
-    format: lu.data.format,
-  });
-  return { ...p, frise: { ...lu.data, medias }, friseVersion: p.version };
+  // Réglages retirés dans l'éditeur (filtres, cadre, miniature) : champs `undefined`, refusés
+  // par Firestore ; l'aller-retour JSON les enlève.
+  const frise = JSON.parse(JSON.stringify({ ...lu.data, medias })) as Frise;
+  await maj(s, p.id, { frise, friseVersion: p.version, format: frise.format });
+  return { ...p, frise, friseVersion: p.version };
 }
 
 /**

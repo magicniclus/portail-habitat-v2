@@ -214,3 +214,21 @@ export function supprimerPoint(
 
 /** Retrouve un clip et sa piste. */
 export const clipParId = trouver;
+
+/**
+ * Écran de Portail Travaux demandé dans la frise : la capture existante de cette scène est
+ * réutilisée, sinon une nouvelle est ajoutée (12 au plus ; `null` au-delà).
+ */
+export function captureDeScene(
+  f: Frise,
+  scene: Frise['captures'][number]['scene'],
+): { frise: Frise; captureId: string } | null {
+  const deja = f.captures.find((c) => c.scene === scene);
+  if (deja) return { frise: f, captureId: deja.id };
+  if (f.captures.length >= 12) return null;
+  const captureId = nouvelIdFrise(
+    'c',
+    f.captures.map((c) => c.id),
+  );
+  return { frise: { ...f, captures: [...f.captures, { id: captureId, scene }] }, captureId };
+}

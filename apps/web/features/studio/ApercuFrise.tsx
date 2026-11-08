@@ -4,13 +4,18 @@ import {
   clipsActifs,
   cleSource,
   dessinerFrise,
+  dessinerMiniature,
   FORMATS_STUDIO,
+  lignesSousTitres,
+  motsFrise,
+  reglagesSousTitres,
   type ContexteImage,
   type Frise,
+  type MotTranscrit,
   type SourceImage,
 } from '@ph/core/studio';
 import { themeStudio } from '@ph/ui/tokens';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { lecteurDuClip, useUrlsStudio, type FichiersProjet } from './sourcesFrise';
 import type { LectureFrise } from './useLectureFrise';
 
@@ -23,11 +28,16 @@ const ECHELLE = 0.5;
 export function ApercuFrise({
   frise,
   fichiers,
+  mots,
   lecture: l,
+  miniature = false,
 }: {
   frise: Frise;
   fichiers: FichiersProjet;
+  mots: readonly MotTranscrit[];
   lecture: LectureFrise;
+  /** Montrer le texte de la miniature par-dessus l'image. */
+  miniature?: boolean;
 }) {
   const { largeur, hauteur } = FORMATS_STUDIO[frise.format];
   const canevas = useRef<HTMLCanvasElement>(null);
@@ -38,6 +48,13 @@ export function ApercuFrise({
       const x = lecteurDuClip(frise, c, fichiers);
       return x ? [{ clip: c.id, ...x }] : [];
     }),
+  );
+  const lignes = useMemo(
+    () =>
+      frise.sousTitres
+        ? lignesSousTitres(motsFrise(frise, mots), reglagesSousTitres(frise.format))
+        : [],
+    [frise, mots],
   );
   const images = frise.medias.filter((m) => m.type === 'image');
   const urls = useUrlsStudio([...lecteurs.map((x) => x.chemin), ...images.map((m) => m.chemin)]);
@@ -72,13 +89,20 @@ export function ApercuFrise({
         frise,
         l.t.current,
         sources,
-        [],
+        lignes,
         themeStudio,
       );
+      if (miniature && frise.miniature)
+        dessinerMiniature(
+          ctx as unknown as ContexteImage,
+          frise.miniature,
+          frise.format,
+          themeStudio,
+        );
       raf = requestAnimationFrame(image);
     });
     return () => cancelAnimationFrame(raf);
-  }, [frise, l.t, l.medias, l.images]);
+  }, [frise, lignes, miniature, l.t, l.medias, l.images]);
 
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center">

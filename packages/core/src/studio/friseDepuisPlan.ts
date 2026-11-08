@@ -88,5 +88,6 @@ export function friseDepuisPlan(
     sousTitres: plan.sousTitres,
     musique: plan.musique,
     dureePriseMs: prise.dureePriseMs,
+    ...(plan.miniature ? { miniature: plan.miniature } : {}),
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { SCENES_CAPTURE, tempsMontage, type Frise } from '@ph/core/studio';
+import { tempsMontage, type Frise } from '@ph/core/studio';
 import {
   ImageIcon,
   MusicNotesIcon,
@@ -43,7 +43,7 @@ export function Tuile(p: {
   );
 }
 
-/** Onglet Médias : zone d'import (glisser ou bouton), envois en cours, médias et captures. */
+/** Onglet Médias : zone d'import (glisser ou bouton), envois en cours, médias importés. */
 export function MediasFrise(p: {
   frise: Frise;
   envois: { nom: string; avancement: number }[];
@@ -117,19 +117,6 @@ export function MediasFrise(p: {
           <span className="text-montage-texte-doux">
             {m.type === 'image' ? 'Image' : tempsMontage(m.dureeMs)}
           </span>
-        </Tuile>
-      ))}
-      {p.frise.captures.map((c) => (
-        <Tuile
-          key={c.id}
-          onPoser={p.onPoser}
-          clip={{
-            source: { type: 'capture', captureId: c.id, debutSource: 0 },
-            duree: 4_000,
-          }}
-        >
-          <span className="font-semibold">{SCENES_CAPTURE[c.scene].libelle}</span>
-          <span className="text-montage-texte-doux">Capture de Portail Travaux</span>
         </Tuile>
       ))}
     </>

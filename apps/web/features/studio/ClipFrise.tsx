@@ -1,6 +1,12 @@
 'use client';
 
-import { LIBELLES_CALQUE, type Clip, type Frise, type Piste } from '@ph/core/studio';
+import {
+  LIBELLES_CALQUE,
+  SCENES_CAPTURE,
+  type Clip,
+  type Frise,
+  type Piste,
+} from '@ph/core/studio';
 import type { PointerEvent as EvtPointeur } from 'react';
 
 const COULEURS: Record<Clip['source']['type'] | 'audio', string> = {
@@ -18,7 +24,10 @@ export function nomClip(f: Pick<Frise, 'medias' | 'captures'>, c: Clip): string 
   if (s.type === 'media') return f.medias.find((m) => m.id === s.mediaId)?.nom ?? 'Média absent';
   if (s.type === 'prise')
     return { ecran: 'Écran', camera: 'Caméra', voix: 'Voix' }[s.fichier] ?? 'Prise';
-  if (s.type === 'capture') return `Capture ${s.captureId}`;
+  if (s.type === 'capture') {
+    const c = f.captures.find((x) => x.id === s.captureId);
+    return c ? SCENES_CAPTURE[c.scene].libelle : 'Écran absent';
+  }
   if (s.type === 'carton') return s.texte;
   return LIBELLES_CALQUE[s.calque.type];
 }

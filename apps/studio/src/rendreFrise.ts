@@ -12,11 +12,11 @@ import {
 } from '@ph/core/studio';
 import { friseDuProjet, type ProjetStudio } from '@ph/firebase/studio';
 import { themeStudio } from '@ph/ui/tokens';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { dansDossier, executer, sonderFlux } from './outils';
 import { deposer, telecharger } from './stockage';
-import { avecPageDessin, ecrirePng } from './surcouche';
+import { dessinsFrise } from './dessinsFrise';
 
 /**
  * Rendu de la frise multipistes (STUDIO.md §5 bis) : fichiers téléchargés une fois, cartons et
@@ -52,35 +52,7 @@ export async function rendreFrise(
     const lignes = f.sousTitres
       ? lignesSousTitres(motsFrise(f, p.mots), reglagesSousTitres(f.format))
       : [];
-    const effets = f.pistes.some((x) => x.type === 'texte' && !x.muet && x.clips.length);
-    const cartons = new Map<string, string>();
-    const dossierImages = join(d, 'surcouche');
-    await mkdir(dossierImages);
-    const images = Math.ceil((D * FPS) / 1000);
-    await avecPageDessin(async (page, police) => {
-      await page.evaluate((e) => window.preparerFrise(e), {
-        frise: f,
-        lignes,
-        theme: themeStudio,
-        police,
-      });
-      for (const piste of f.pistes)
-        for (const c of piste.clips) {
-          if (c.source.type !== 'carton') continue;
-          const fichier = join(d, `carton-${c.id}.png`);
-          await ecrirePng(
-            fichier,
-            await page.evaluate((t) => window.cartonFrise(t), c.source.texte),
-          );
-          cartons.set(c.id, fichier);
-        }
-      if (!effets && !lignes.length) return;
-      for (let n = 0; n < images; n++)
-        await ecrirePng(
-          join(dossierImages, `${String(n).padStart(6, '0')}.png`),
-          await page.evaluate((t) => window.imageFrise(t), (n * 1000) / FPS),
-        );
-    });
+    const { cartons, texteMiniature, surcouche: motif } = await dessinsFrise(f, lignes, d);
 
     const args = [
       '-y',
@@ -122,8 +94,8 @@ export async function rendreFrise(
         };
       }
     let surcouche: number | null = null;
-    if (effets || lignes.length) {
-      args.push('-framerate', String(FPS), '-i', join(dossierImages, '%06d.png'));
+    if (motif) {
+      args.push('-framerate', String(FPS), '-i', motif);
       surcouche = index++;
     }
     let musique: number | null = null;
@@ -171,12 +143,15 @@ export async function rendreFrise(
       video,
     ]);
     const miniature = join(d, 'miniature.jpg');
+    // Miniature : l'image choisie (1,2 s par défaut), sous le texte de couverture s'il y en a un.
+    const instant = sec(Math.max(0, Math.min(f.miniature?.tempsMs ?? 1_200, D - 100)));
     await executer('ffmpeg', [
       '-y',
       '-ss',
-      sec(Math.min(1_200, D / 2)),
+      instant,
       '-i',
       video,
+      ...(texteMiniature ? ['-i', texteMiniature, '-filter_complex', '[0:v][1:v]overlay=0:0'] : []),
       '-frames:v',
       '1',
       '-q:v',

@@ -1067,7 +1067,8 @@ describe('montage libre et bibliothèque de médias', () => {
           : x,
       ),
     };
-    await enregistrerFriseStudio(s, { projetId: id, frise });
+    // Un réglage retiré arrive en `undefined` : il est enlevé avant l'écriture.
+    await enregistrerFriseStudio(s, { projetId: id, frise: { ...frise, miniature: undefined } });
     expect(
       (await lireProjetStudio(db, id))?.frise?.pistes.find((x) => x.id === v1.id)?.clips,
     ).toHaveLength(1);

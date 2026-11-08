@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  captureDeScene,
   couperClip,
   clipParId,
   nouvelIdFrise,
@@ -8,16 +9,20 @@ import {
   supprimerClip,
   verifierFrise,
   type Frise,
+  type MotTranscrit,
+  type SceneCapture,
 } from '@ph/core/studio';
-import { useRef, useState, useTransition } from 'react';
-import { enregistrerFrise } from './actions';
+import { useRef, useState } from 'react';
 import { ApercuFrise } from './ApercuFrise';
 import { BarreHautMontage } from './BarreHautMontage';
 import { BibliothequeFrise } from './BibliothequeFrise';
 import { CommandesLecture } from './CommandesLecture';
+import { EcransPortail } from './EcransPortail';
 import { InspecteurFrise } from './InspecteurFrise';
+import { PanneauIA } from './PanneauIA';
 import type { ClipGlisse } from './PistesFrise';
 import type { FichiersProjet } from './sourcesFrise';
+import { useEnregistrementFrise } from './useEnregistrementFrise';
 import { useHauteurFrise } from './useHauteurFrise';
 import { useHistorique } from './useHistorique';
 import { useImportMedias } from './useImportMedias';
@@ -35,16 +40,20 @@ export function EditeurFrise(p: {
   projetId: string;
   frise: Frise;
   fichiers: FichiersProjet;
+  /** Mots de la voix enregistrée (sous-titres). */
+  mots: MotTranscrit[];
+  /** Claude peut revoir ce montage (prise et plan existants). */
+  retouche: boolean;
   etat: string | null;
   onFermer: () => void;
 }) {
   const h = useHistorique(p.frise);
   const { brouillon, changer } = h;
-  const [enregistre, setEnregistre] = useState(p.frise);
   const [selection, setSelection] = useState<string | null>(null);
+  const [miniature, setMiniature] = useState(false);
   const hauteur = useHauteurFrise(320);
-  const [message, setMessage] = useState<{ ton: 'succes' | 'danger'; texte: string } | null>(null);
-  const [enCours, demarrer] = useTransition();
+  const e = useEnregistrementFrise(p.projetId, p.frise);
+  const { message, setMessage, enCours } = e;
   const apercu = useRef<HTMLDivElement>(null);
   const lecture = useLectureFrise(brouillon);
   const tete = lecture.affiche;
@@ -76,17 +85,20 @@ export function EditeurFrise(p: {
     : undefined;
   useRaccourcisMontage({ lecture, onScinder: scinder, onSupprimer: supprimer });
 
-  const enregistrer = () =>
-    demarrer(async () => {
-      setMessage(null);
-      const r = await enregistrerFrise({ projetId: p.projetId, frise: brouillon });
-      if (r.ok) setEnregistre(brouillon);
-      setMessage(
-        r.ok
-          ? { ton: 'succes', texte: 'Montage enregistré.' }
-          : { ton: 'danger', texte: r.message },
-      );
-    });
+  const ecran = (scene: SceneCapture) => {
+    const r = captureDeScene(brouillon, scene);
+    if (!r) return setMessage({ ton: 'danger', texte: '12 écrans au plus par vidéo.' });
+    const id = nouvelIdFrise(
+      'c',
+      r.frise.pistes.flatMap((x) => x.clips.map((y) => y.id)),
+    );
+    const source = { type: 'capture' as const, captureId: r.captureId, debutSource: 0 };
+    changer(poserClip(r.frise, '', { id, debut: Math.round(tete), duree: 4_000, source }));
+    setSelection(id);
+  };
+  const filmees = new Set(
+    brouillon.captures.filter((c) => p.fichiers.captures[`${c.id}:${c.scene}`]).map((c) => c.scene),
+  );
 
   return (
     <div
@@ -103,14 +115,14 @@ export function EditeurFrise(p: {
         message={message}
         erreurs={erreurs}
         rythme={[]}
-        modifie={brouillon !== enregistre}
+        modifie={brouillon !== e.enregistre}
         onFermer={p.onFermer}
         onAnnuler={h.annuler}
         onRetablir={h.retablir}
         enregistrable={erreurs.length === 0 && !enCours}
         enCours={enCours}
-        onEnregistrer={enregistrer}
-        libelleEnregistrer="Enregistrer"
+        onEnregistrer={() => e.fabriquer(brouillon)}
+        secondaire={{ libelle: 'Enregistrer', onClick: () => e.enregistrer(brouillon) }}
       />
       <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] gap-px bg-montage-fond lg:grid-cols-[300px_minmax(0,1fr)_340px]">
         <aside aria-label="Bibliothèque" className="hidden min-h-0 bg-montage-panneau lg:block">
@@ -119,17 +131,25 @@ export function EditeurFrise(p: {
             envois={imports.envois}
             onPoser={(c) => poser(c)}
             onFichiers={(f) => void imports.importer(f)}
+            ecrans={<EcransPortail filmees={filmees} onEcran={ecran} />}
+            ia={<PanneauIA retouche={p.retouche} enCours={enCours} onRetouche={e.retoucher} />}
           />
         </aside>
         <section aria-label="Aperçu" className="grid min-h-0 grid-rows-[minmax(0,1fr)_56px]">
           <div ref={apercu} className="min-h-0 p-3">
-            <ApercuFrise frise={brouillon} fichiers={p.fichiers} lecture={lecture} />
+            <ApercuFrise
+              frise={brouillon}
+              fichiers={p.fichiers}
+              mots={p.mots}
+              lecture={lecture}
+              miniature={miniature}
+            />
           </div>
           <CommandesLecture
             lecture={lecture}
-            miniature={false}
-            onMiniature={() => undefined}
-            avecMiniature={false}
+            miniature={miniature}
+            onMiniature={setMiniature}
+            avecMiniature={Boolean(brouillon.miniature)}
             onPleinEcran={() => void apercu.current?.requestFullscreen?.()}
           />
         </section>

@@ -1,15 +1,13 @@
 'use client';
 
-import { ajouterPiste, clipParId, FORMATS_STUDIO, type Frise } from '@ph/core/studio';
+import { clipParId, type Frise } from '@ph/core/studio';
 import { useState } from 'react';
 import { nomClip } from './ClipFrise';
-import { Interrupteur } from './Curseur';
 import { ReglagesClip } from './ReglagesClip';
 import { ReglagesImage, ReglagesSon } from './ReglagesFiltres';
+import { ReglagesProjet } from './ReglagesProjet';
 
 type Onglet = 'clip' | 'son' | 'image';
-const AJOUT =
-  'min-h-10 rounded-[8px] bg-montage-surface px-3 text-sm font-semibold hover:bg-montage-survol';
 
 /**
  * Panneau de droite : sans sélection, les réglages du projet et l'ajout de pistes ; avec un clip
@@ -24,58 +22,7 @@ export function InspecteurFrise(p: {
 }) {
   const [onglet, setOnglet] = useState<Onglet>('clip');
   const r = p.selection ? clipParId(p.frise, p.selection) : null;
-  if (!r) {
-    const f = p.frise;
-    return (
-      <div className="grid gap-4">
-        <div>
-          <h3 className="m-0 text-sm font-semibold">Projet</h3>
-          <p className="m-0 text-xs text-montage-texte-doux">
-            {f.titre} · {FORMATS_STUDIO[f.format].libelle}
-          </p>
-        </div>
-        <Interrupteur
-          libelle="Sous-titres automatiques"
-          coche={f.sousTitres}
-          onChange={(v) => p.changer({ ...f, sousTitres: v })}
-        />
-        <Interrupteur
-          libelle="Nappe musicale du robot"
-          coche={f.musique}
-          onChange={(v) => p.changer({ ...f, musique: v })}
-        />
-        <div className="grid gap-2">
-          <h3 className="m-0 text-sm font-semibold">Ajouter une piste</h3>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className={AJOUT}
-              onClick={() => p.changer(ajouterPiste(f, 'video'))}
-            >
-              + Vidéo
-            </button>
-            <button
-              type="button"
-              className={AJOUT}
-              onClick={() => p.changer(ajouterPiste(f, 'audio'))}
-            >
-              + Audio
-            </button>
-            <button
-              type="button"
-              className={AJOUT}
-              onClick={() => p.changer(ajouterPiste(f, 'texte'))}
-            >
-              + Effets
-            </button>
-          </div>
-          <p className="m-0 text-xs text-montage-texte-doux">
-            Entre deux pistes vidéo, celle du haut passe devant. 16 pistes au plus.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (!r) return <ReglagesProjet frise={p.frise} tete={p.tete} changer={p.changer} />;
   const { piste, clip } = r;
   const s = clip.source;
   const media = s.type === 'media' ? p.frise.medias.find((m) => m.id === s.mediaId) : undefined;

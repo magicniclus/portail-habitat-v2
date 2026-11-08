@@ -8,7 +8,6 @@ import {
   entreeGarderIdeeStudio,
   entreeIdeeStudio,
   entreeTournerIdeeStudio,
-  entreeModifierPlanStudio,
   entreePriseStudio,
   entreeProjetStudio,
   entreeRetoucheStudio,
@@ -30,7 +29,6 @@ import {
   supprimerIdeeStudio,
   tournerIdeeStudio,
   lancerMontageStudio,
-  modifierPlanStudio,
   priseEnregistreeStudio,
   proposerSujetsStudio,
   relancerStudio,
@@ -46,6 +44,7 @@ import {
   creerMontageLibreStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
+  fabriquerFriseStudio,
   supprimerProjetStudio,
 } from '@ph/firebase/studio';
 import { revalidatePath } from 'next/cache';
@@ -97,13 +96,6 @@ const retouche = actionAdmin(
 );
 export const retoucher = async (e: z.input<typeof entreeRetoucheStudio>) =>
   fin(await retouche(e), e.projetId);
-
-const modifier = actionAdmin(
-  { schema: entreeModifierPlanStudio, nom: 'adminStudioModifierPlan', permission: P },
-  async (e) => modifierPlanStudio(servicesStudio(), e),
-);
-export const modifierPlan = async (e: z.input<typeof entreeModifierPlanStudio>) =>
-  fin(await modifier(e), e.projetId);
 
 const relance = actionAdmin(
   { schema: entreeProjetStudio, nom: 'adminStudioRelance', permission: P },
@@ -233,3 +225,10 @@ const suppression = actionAdmin(
 );
 export const supprimerProjet = async (e: z.input<typeof entreeProjetStudio>) =>
   fin(await suppression(e));
+
+const fabrication = actionAdmin(
+  { schema: entreeFriseStudio, nom: 'adminStudioFabriquerFrise', permission: P },
+  async (e) => fabriquerFriseStudio(servicesStudio(), e),
+);
+export const fabriquerFrise = async (e: z.input<typeof entreeFriseStudio>) =>
+  fin(await fabrication(e), e.projetId);

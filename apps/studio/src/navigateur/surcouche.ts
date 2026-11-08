@@ -36,6 +36,7 @@ declare global {
     }) => Promise<void>;
     imageFrise: (t: number) => string;
     cartonFrise: (texte: string) => string;
+    miniatureFrise: (m: { texte: string; accent: string }) => string;
   }
 }
 
@@ -112,5 +113,13 @@ window.cartonFrise = (texte) => {
     { x: 0, y: 0, largeur: canevas.width, hauteur: canevas.height },
     frise.theme,
   );
+  return canevas.toDataURL('image/png');
+};
+
+/** Texte de la miniature au format de la frise. */
+window.miniatureFrise = (m) => {
+  if (!frise || !ctx || !canevas) throw new Error('surcouche non préparée');
+  ctx.clearRect(0, 0, canevas.width, canevas.height);
+  dessinerMiniature(ctx as unknown as Contexte2D, m, frise.frise.format, frise.theme);
   return canevas.toDataURL('image/png');
 };

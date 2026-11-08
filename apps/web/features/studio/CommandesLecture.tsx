@@ -8,7 +8,10 @@ import {
   PlayIcon,
   SkipBackIcon,
 } from '@phosphor-icons/react';
-import type { Horloge } from './useLectureMontage';
+import type { LectureFrise } from './useLectureFrise';
+
+/** Ce que les commandes et raccourcis lisent de l'horloge de lecture. */
+export type Horloge = Pick<LectureFrise, 'duree' | 'lecture' | 'setLecture' | 'affiche' | 'aller'>;
 
 const BOUTON =
   'flex size-11 items-center justify-center rounded-[8px] text-montage-texte hover:bg-montage-survol aria-pressed:bg-montage-survol aria-pressed:text-montage-selection';

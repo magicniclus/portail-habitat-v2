@@ -8,17 +8,24 @@ import {
   type Calque,
   type Frise,
 } from '@ph/core/studio';
-import { CardsIcon, FilmStripIcon, SparkleIcon, TextTIcon } from '@phosphor-icons/react';
+import {
+  CardsIcon,
+  FilmStripIcon,
+  MagicWandIcon,
+  SparkleIcon,
+  TextTIcon,
+} from '@phosphor-icons/react';
 import { useState, type ReactNode } from 'react';
 import { DUREE_FIXE, MediasFrise, Tuile } from './MediasFrise';
 import type { ClipGlisse } from './PistesFrise';
 
-type Onglet = 'medias' | 'texte' | 'effets' | 'cartons';
+type Onglet = 'medias' | 'texte' | 'effets' | 'cartons' | 'ia';
 const ONGLETS: { id: Onglet; libelle: string; icone: ReactNode }[] = [
   { id: 'medias', libelle: 'Médias', icone: <FilmStripIcon size={20} aria-hidden="true" /> },
   { id: 'texte', libelle: 'Texte', icone: <TextTIcon size={20} aria-hidden="true" /> },
   { id: 'effets', libelle: 'Effets', icone: <SparkleIcon size={20} aria-hidden="true" /> },
   { id: 'cartons', libelle: 'Cartons', icone: <CardsIcon size={20} aria-hidden="true" /> },
+  { id: 'ia', libelle: 'IA', icone: <MagicWandIcon size={20} aria-hidden="true" /> },
 ];
 
 const effet = (calque: Calque): ClipGlisse => ({
@@ -36,6 +43,10 @@ export function BibliothequeFrise(p: {
   envois: { nom: string; avancement: number }[];
   onPoser: (c: ClipGlisse) => void;
   onFichiers: (fichiers: File[]) => void;
+  /** Écrans de Portail Travaux (sous les médias). */
+  ecrans: ReactNode;
+  /** Contenu de l'onglet IA. */
+  ia: ReactNode;
 }) {
   const [onglet, setOnglet] = useState<Onglet>('medias');
   return (
@@ -65,16 +76,23 @@ export function BibliothequeFrise(p: {
         aria-label={`Bibliothèque : ${ONGLETS.find((o) => o.id === onglet)!.libelle}`}
         className="grid min-h-0 content-start gap-2 overflow-y-auto p-3"
       >
-        <p className="m-0 text-xs text-montage-texte-doux">
-          Glissez sur une piste, ou cliquez pour poser à la tête de lecture.
-        </p>
+        {onglet === 'ia' ? (
+          p.ia
+        ) : (
+          <p className="m-0 text-xs text-montage-texte-doux">
+            Glissez sur une piste, ou cliquez pour poser à la tête de lecture.
+          </p>
+        )}
         {onglet === 'medias' ? (
-          <MediasFrise
-            frise={p.frise}
-            envois={p.envois}
-            onPoser={p.onPoser}
-            onFichiers={p.onFichiers}
-          />
+          <>
+            <MediasFrise
+              frise={p.frise}
+              envois={p.envois}
+              onPoser={p.onPoser}
+              onFichiers={p.onFichiers}
+            />
+            {p.ecrans}
+          </>
         ) : null}
         {onglet === 'texte' ? (
           <div className="grid grid-cols-2 gap-2">

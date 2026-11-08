@@ -47,6 +47,11 @@ const plan: PlanMontage = {
 describe('un montage de Claude devient une frise multipistes', () => {
   it('plans sur « Vidéo 1 », caméra en incrustation au-dessus, voix sur « Audio 1 », effets en haut', () => {
     const f = friseDepuisPlan(plan, { voix: true, dureePriseMs: 20_000 });
+    expect(f.miniature).toBeUndefined();
+    const m = { texte: 'Zéro commission', accent: 'Zéro', tempsMs: 800 };
+    expect(
+      friseDepuisPlan({ ...plan, miniature: m }, { voix: true, dureePriseMs: 20_000 }).miniature,
+    ).toEqual(m);
     expect(schemaFrise.parse(f)).toEqual(f);
     expect(verifierFrise(f)).toEqual([]);
     expect(f.pistes.map((p) => p.nom)).toEqual(['Effets', 'Vidéo 2', 'Vidéo 1', 'Audio 1']);

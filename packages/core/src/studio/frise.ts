@@ -1,6 +1,6 @@
 import { z } from '../zod';
 import { NOMS_FORMATS, type FormatStudio } from './formats';
-import { artisanFictif, calque, capture } from './plan';
+import { artisanFictif, calque, capture, planMontage } from './plan';
 
 /**
  * Frise multipistes du Studio (STUDIO.md §5 bis) : le montage « comme dans un logiciel de
@@ -132,6 +132,8 @@ export const frise = z.strictObject({
   musique: z.boolean(),
   /** Durée de la prise enregistrée (limite des clips « prise »), si elle existe. */
   dureePriseMs: ms.optional(),
+  /** Miniature (image de couverture) : image à `tempsMs`, texte court, mot en avant. */
+  miniature: planMontage.shape.miniature,
 });
 export type Frise = z.infer<typeof frise>;
 

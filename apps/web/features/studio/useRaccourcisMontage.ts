@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { Horloge } from './useLectureMontage';
+import type { Horloge } from './CommandesLecture';
 
 /**
  * Raccourcis de l'éditeur (hors champs de saisie) : Espace lit ou met en pause, S scinde,

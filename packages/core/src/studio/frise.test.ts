@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  captureDeScene,
   ajouterPiste,
   ajouterPoint,
   couperClip,
@@ -329,5 +330,24 @@ describe('garde-fous', () => {
       ),
     };
     expect(verifierFrise(long)).toEqual(['La vidéo dépasse 3 minutes.']);
+  });
+});
+
+describe('captureDeScene', () => {
+  it('réutilise la capture de la scène, en ajoute une sinon, 12 au plus', () => {
+    const f = creerFrise('vertical', 'x');
+    const a = captureDeScene(f, 'fiche_publique')!;
+    expect(a.captureId).toBe('c1');
+    expect(a.frise.captures).toEqual([{ id: 'c1', scene: 'fiche_publique' }]);
+    expect(captureDeScene(a.frise, 'fiche_publique')).toEqual({ frise: a.frise, captureId: 'c1' });
+    expect(captureDeScene(a.frise, 'demandes_recues')!.captureId).toBe('c2');
+    const plein = {
+      ...f,
+      captures: Array.from({ length: 12 }, (_, i) => ({
+        id: `c${i + 1}`,
+        scene: 'fiche_publique' as const,
+      })),
+    };
+    expect(captureDeScene(plein, 'demandes_recues')).toBeNull();
   });
 });
