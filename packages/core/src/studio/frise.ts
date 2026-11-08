@@ -1,5 +1,6 @@
 import { z } from '../zod';
 import { NOMS_FORMATS, type FormatStudio } from './formats';
+import { EFFETS_VIDEO, TRANSITIONS } from './effetsFrise';
 import { artisanFictif, calque, capture, planMontage } from './plan';
 
 /**
@@ -51,6 +52,11 @@ const source = z.discriminatedUnion('type', [
 export type SourceClip = z.infer<typeof source>;
 
 const point = z.strictObject({ t: ms, v: z.number().min(0).max(2) });
+/** Décalage sur l'image (fraction de la largeur et de la hauteur) : effets et sous-titres. */
+const decalage = z.strictObject({ x: z.number().min(-1).max(1), y: z.number().min(-1).max(1) });
+export type Decalage = z.infer<typeof decalage>;
+const effets = z.array(z.enum(EFFETS_VIDEO)).max(5);
+const mot = z.strictObject({ texte: z.string().trim().min(1).max(40), debut: ms, fin: ms });
 export type PointAutomation = z.infer<typeof point>;
 
 export const filtresImage = z.strictObject({
@@ -102,6 +108,13 @@ export const clip = z.strictObject({
       opacite: z.array(point).max(64).optional(),
     })
     .optional(),
+  /** Transition d'entrée, depuis la séquence d'avant sur la même piste. */
+  transition: z
+    .strictObject({ type: z.enum(TRANSITIONS), duree: z.number().int().min(100).max(3_000) })
+    .optional(),
+  effets: effets.optional(),
+  /** Effet animé déplacé sur l'image. */
+  decalage: decalage.optional(),
 });
 export type Clip = z.infer<typeof clip>;
 
@@ -116,6 +129,8 @@ export const piste = z.strictObject({
   verrou: z.boolean(),
   volume: z.number().min(0).max(2),
   clips: z.array(clip).max(300),
+  /** Effets vidéo de toute la piste. */
+  effets: effets.optional(),
 });
 export type Piste = z.infer<typeof piste>;
 
@@ -134,6 +149,9 @@ export const frise = z.strictObject({
   dureePriseMs: ms.optional(),
   /** Miniature (image de couverture) : image à `tempsMs`, texte court, mot en avant. */
   miniature: planMontage.shape.miniature,
+  /** Sous-titres corrigés à la main (mots placés sur la frise) ; sinon ceux de la voix. */
+  motsEdites: z.array(mot).max(3_000).optional(),
+  decalageSousTitres: decalage.optional(),
 });
 export type Frise = z.infer<typeof frise>;
 

@@ -4,9 +4,7 @@ import {
   FORMATS_STUDIO,
   grapheFrise,
   IMAGES_PAR_SECONDE,
-  lignesSousTitres,
-  motsFrise,
-  reglagesSousTitres,
+  lignesFrise,
   srt,
   type EntreeClip,
 } from '@ph/core/studio';
@@ -49,9 +47,7 @@ export async function rendreFrise(
         locaux.set(x.chemin, { local, ...(await sonderFlux(local)) });
       }
 
-    const lignes = f.sousTitres
-      ? lignesSousTitres(motsFrise(f, p.mots), reglagesSousTitres(f.format))
-      : [];
+    const lignes = f.sousTitres ? lignesFrise(f, p.mots) : [];
     const { cartons, texteMiniature, surcouche: motif } = await dessinsFrise(f, lignes, d);
 
     const args = [

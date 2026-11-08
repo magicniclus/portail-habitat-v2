@@ -6,9 +6,8 @@ import {
   dessinerFrise,
   dessinerMiniature,
   FORMATS_STUDIO,
-  lignesSousTitres,
-  motsFrise,
-  reglagesSousTitres,
+  lignesFrise,
+  type ContexteFrise,
   type ContexteImage,
   type Frise,
   type MotTranscrit,
@@ -49,13 +48,7 @@ export function ApercuFrise({
       return x ? [{ clip: c.id, ...x }] : [];
     }),
   );
-  const lignes = useMemo(
-    () =>
-      frise.sousTitres
-        ? lignesSousTitres(motsFrise(frise, mots), reglagesSousTitres(frise.format))
-        : [],
-    [frise, mots],
-  );
+  const lignes = useMemo(() => (frise.sousTitres ? lignesFrise(frise, mots) : []), [frise, mots]);
   const images = frise.medias.filter((m) => m.type === 'image');
   const urls = useUrlsStudio([...lecteurs.map((x) => x.chemin), ...images.map((m) => m.chemin)]);
 
@@ -85,7 +78,7 @@ export function ApercuFrise({
         }
       }
       dessinerFrise(
-        ctx as unknown as ContexteImage & { filter: string },
+        ctx as unknown as ContexteFrise,
         frise,
         l.t.current,
         sources,

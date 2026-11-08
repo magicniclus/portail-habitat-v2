@@ -1,6 +1,8 @@
 import { dessinerCalques, dessinerSousTitre, type ThemeStudio } from './dessin';
 import { FORMATS_STUDIO } from './formats';
+import { effetsDe, etatTransition, filtreCssEffets, mouvementEffets } from './effetsFrise';
 import { opaciteClip, type Clip, type Frise, type Piste, type SourceClip } from './frise';
+import { prolongement } from './operationsFrise';
 import type { ContexteImage, SourceImage } from './image';
 import { couverture, type Rectangle } from './montage';
 import type { MotTranscrit } from './plan';
@@ -61,8 +63,34 @@ export function rectangleClip(format: Frise['format'], clip: Pick<Clip, 'cadre'>
     : { x: 0, y: 0, largeur: L, hauteur: H };
 }
 
+/** Contexte de l'aperçu : filtres CSS et, si le navigateur les a, découpe (balayage). */
+export type ContexteFrise = ContexteImage & {
+  filter: string;
+  rect?: (x: number, y: number, l: number, h: number) => void;
+  clip?: () => void;
+};
+
+/**
+ * Clips vidéo à l'image à `t`, du fond vers l'avant : pistes de bas en haut, et sur une piste
+ * la séquence d'avant (prolongée sous la transition) puis la nouvelle.
+ */
+export function clipsVideoVisibles(
+  f: Pick<Frise, 'pistes'>,
+  t: number,
+): { piste: Piste; clip: Clip; local: number }[] {
+  return [...f.pistes]
+    .reverse()
+    .flatMap((piste) =>
+      piste.type !== 'video' || piste.muet
+        ? []
+        : piste.clips
+            .filter((c) => t >= c.debut && t < c.debut + c.duree + prolongement(piste, c))
+            .map((clip) => ({ piste, clip, local: t - clip.debut })),
+    );
+}
+
 export function dessinerFrise(
-  ctx: ContexteImage & { filter: string },
+  ctx: ContexteFrise,
   f: Frise,
   t: number,
   sources: Readonly<Record<string, SourceImage>>,
@@ -72,38 +100,83 @@ export function dessinerFrise(
   const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
   ctx.fillStyle = theme.sombre;
   ctx.fillRect(0, 0, L, H);
-  const actifs = clipsActifs(f, t);
-  // De bas en haut : la dernière piste vidéo d'abord, la première par-dessus.
-  for (const { piste, clip } of [...actifs].reverse()) {
-    if (piste.type !== 'video' || piste.muet) continue;
-    const local = t - clip.debut;
-    const r = rectangleClip(f.format, clip);
+  for (const { piste, clip, local } of clipsVideoVisibles(f, t)) {
+    const base = rectangleClip(f.format, clip);
+    const effets = effetsDe(piste, clip);
+    const tr = etatTransition(clip.transition, local);
+    const mv = mouvementEffets(effets, local);
+    const echelle = tr.echelle * mv.echelle;
+    const r: Rectangle = {
+      x: base.x + tr.dx * L + mv.dx - (base.largeur * (echelle - 1)) / 2,
+      y: base.y + tr.dy * H + mv.dy - (base.hauteur * (echelle - 1)) / 2,
+      largeur: base.largeur * echelle,
+      hauteur: base.hauteur * echelle,
+    };
+    const dans = Math.min(local, clip.duree);
     const fondu = clip.fondus;
-    const entree = fondu?.entree ? Math.min(1, local / fondu.entree) : 1;
-    const sortie = fondu?.sortie ? Math.min(1, (clip.duree - local) / fondu.sortie) : 1;
+    const entree = fondu?.entree ? Math.min(1, dans / fondu.entree) : 1;
+    const sortie = fondu?.sortie ? Math.min(1, (clip.duree - dans) / fondu.sortie) : 1;
     ctx.save();
-    ctx.globalAlpha = Math.max(0, opaciteClip(clip, local) * entree * sortie);
-    ctx.filter = filtreCss(clip.filtres);
+    if (tr.revele < 1 && ctx.rect && ctx.clip) {
+      ctx.beginPath();
+      ctx.rect(r.x, r.y, r.largeur * tr.revele, r.hauteur);
+      ctx.clip();
+    }
+    ctx.globalAlpha = Math.max(0, opaciteClip(clip, dans) * entree * sortie * tr.alpha);
+    const css = [filtreCss(clip.filtres), ...filtreCssEffets(effets)].filter((x) => x !== 'none');
+    if (tr.flou) css.push(`blur(${tr.flou}px)`);
+    ctx.filter = css.length ? css.join(' ') : 'none';
+    if (effets.includes('miroir')) {
+      ctx.translate(2 * r.x + r.largeur, 0);
+      ctx.scale(-1, 1);
+    }
     if (clip.source.type === 'carton') {
       ctx.filter = 'none';
-      dessinerCarton(ctx, f.format, clip.source.texte, local, clip.duree, r, theme);
+      dessinerCarton(ctx, f.format, clip.source.texte, dans, clip.duree, r, theme);
     } else {
       const cle = cleSource(clip.source);
       const s = cle ? sources[cle] : undefined;
       if (s?.largeur && s.hauteur) {
-        const c = couverture(s, r);
-        ctx.drawImage(
-          s.image as never,
-          c.x,
-          c.y,
-          c.largeur,
-          c.hauteur,
-          r.x,
-          r.y,
-          r.largeur,
-          r.hauteur,
-        );
+        const c = couverture(s, base);
+        const dessiner = (dx: number) =>
+          ctx.drawImage(
+            s.image as never,
+            c.x,
+            c.y,
+            c.largeur,
+            c.hauteur,
+            r.x + dx,
+            r.y,
+            r.largeur,
+            r.hauteur,
+          );
+        dessiner(0);
+        if (effets.includes('rgb')) {
+          // Décalage RGB (aperçu) : deux fantômes de part et d'autre.
+          ctx.globalAlpha *= 0.3;
+          dessiner(-8);
+          dessiner(8);
+        }
       }
+    }
+    ctx.filter = 'none';
+    ctx.globalAlpha = 1;
+    if (effets.includes('vignette')) {
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(r.x, r.y, r.largeur, r.hauteur * 0.08);
+      ctx.fillRect(r.x, r.y + r.hauteur * 0.92, r.largeur, r.hauteur * 0.08);
+    }
+    if (effets.includes('grain')) {
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      for (let i = 0; i < 60; i++) {
+        const k = (i * 7919 + Math.floor(t / 40) * 104729) % 10007;
+        ctx.fillRect(r.x + (k % 97) * (r.largeur / 97), r.y + (k % 89) * (r.hauteur / 89), 3, 3);
+      }
+    }
+    if (tr.voile) {
+      ctx.fillStyle = tr.voile.couleur === 'noir' ? theme.sombre : theme.clair;
+      ctx.globalAlpha = tr.voile.alpha;
+      ctx.fillRect(base.x, base.y, base.largeur, base.hauteur);
     }
     ctx.restore();
   }
@@ -148,6 +221,8 @@ export function dessinerSurcoucheFrise(
   const tout: Rectangle = { x: 0, y: 0, largeur: L, hauteur: H };
   for (const { piste, clip } of [...clipsActifs(f, t)].reverse()) {
     if (piste.type !== 'texte' || piste.muet || clip.source.type !== 'effet') continue;
+    ctx.save();
+    ctx.translate((clip.decalage?.x ?? 0) * L, (clip.decalage?.y ?? 0) * H);
     dessinerCalques(
       ctx,
       [{ ...clip.source.calque, debut: 0, fin: clip.duree }],
@@ -156,10 +231,14 @@ export function dessinerSurcoucheFrise(
       tout,
       theme,
     );
+    ctx.restore();
   }
   if (f.sousTitres) {
     const ligne = lignes.find((l) => t >= l.debut && t <= l.fin + 120);
+    ctx.save();
+    ctx.translate((f.decalageSousTitres?.x ?? 0) * L, (f.decalageSousTitres?.y ?? 0) * H);
     dessinerSousTitre(ctx, ligne, t, f.format, Math.round(H * 0.82), theme);
+    ctx.restore();
   }
 }
 

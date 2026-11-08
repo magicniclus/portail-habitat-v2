@@ -1,7 +1,9 @@
+import { effetsDe, effetsVideoFfmpeg, transitionFfmpeg } from './effetsFrise';
 import { IMAGES_PAR_SECONDE } from './formats';
 import { dureeFrise, type Clip, type Frise, type Piste, type PointAutomation } from './frise';
 import { rectangleClip } from './imageFrise';
 import { couverture } from './montage';
+import { prolongement } from './operationsFrise';
 
 /**
  * Rendu de la frise par ffmpeg (STUDIO.md §5 bis, robot `apps/studio`) : construction pure du
@@ -130,12 +132,15 @@ export function grapheFrise(
   let n = 0;
   const pistesVideo = f.pistes.filter((p) => p.type === 'video' && !p.muet).reverse();
   for (const p of pistesVideo)
-    for (const c of p.clips) {
+    for (const c of [...p.clips].sort((a, b) => a.debut - b.debut)) {
       const e = entrees[c.id];
       if (!e?.largeur) continue;
       const r = rectangleClip(f.format, c);
       const k = couverture(e, r);
       const v = c.vitesse ?? 1;
+      const effets = effetsDe(p, c);
+      const prolonge = prolongement(p, c);
+      const tr = transitionFfmpeg(c.transition, { debut: c.debut, ...r });
       const chaine = [
         e.fixe ? 'setpts=PTS-STARTPTS' : `setpts=(PTS-STARTPTS)/${nb(v)}`,
         `fps=${IMAGES_PAR_SECONDE}`,
@@ -143,8 +148,11 @@ export function grapheFrise(
         `scale=${r.largeur}:${r.hauteur}`,
         'setsar=1',
         ...filtresImageFfmpeg(c.filtres),
+        ...effetsVideoFfmpeg(effets),
         'format=yuva420p',
       ];
+      if (prolonge) chaine.push(`tpad=stop_mode=clone:stop_duration=${sec(prolonge)}`);
+      chaine.push(...tr.filtres);
       if (c.fondus?.entree) chaine.push(`fade=t=in:st=0:d=${sec(c.fondus.entree)}:alpha=1`);
       if (c.fondus?.sortie)
         chaine.push(
@@ -156,11 +164,30 @@ export function grapheFrise(
         chaine.push(
           `geq=lum='lum(X,Y)':cb='cb(X,Y)':cr='cr(X,Y)':a='alpha(X,Y)*(${expressionPoints(c.automations.opacite, 1, 'T')})'`,
         );
-      chaine.push(`trim=duration=${sec(c.duree)}`, `setpts=PTS-STARTPTS+${sec(c.debut)}/TB`);
+      let x = tr.x;
+      let y = tr.y;
+      if (effets.includes('pulsation') && c.transition?.type !== 'zoom') {
+        const pulse = `(1+0.04*sin(2*PI*t/0.6))`;
+        chaine.push(
+          `scale=w='trunc(${r.largeur}*${pulse}/2)*2':h='trunc(${r.hauteur}*${pulse}/2)*2':eval=frame`,
+        );
+        x = `${x}+(${r.largeur}-overlay_w)/2`;
+        y = `${y}+(${r.hauteur}-overlay_h)/2`;
+      }
+      if (effets.includes('tremblement')) {
+        x = `${x}+10*sin((t-${sec(c.debut)})*90)`;
+        y = `${y}+8*cos((t-${sec(c.debut)})*130)`;
+      }
+      const fin = c.debut + c.duree + prolonge;
+      chaine.push(
+        `trim=duration=${sec(c.duree + prolonge)}`,
+        `setpts=PTS-STARTPTS+${sec(c.debut)}/TB`,
+      );
       n++;
       parties.push(`[${e.index}:v]${chaine.join(',')}[c${n}]`);
+      const place = x === String(r.x) && y === String(r.y) ? `${r.x}:${r.y}` : `x='${x}':y='${y}'`;
       parties.push(
-        `[${fond}][c${n}]overlay=${r.x}:${r.y}:eof_action=pass:enable='between(t,${sec(c.debut)},${sec(c.debut + c.duree)})'[o${n}]`,
+        `[${fond}][c${n}]overlay=${place}:eof_action=pass:enable='between(t,${sec(c.debut)},${sec(fin)})'[o${n}]`,
       );
       fond = `o${n}`;
     }

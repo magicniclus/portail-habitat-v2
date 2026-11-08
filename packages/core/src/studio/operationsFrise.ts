@@ -1,3 +1,4 @@
+import { transitionEnchainee } from './effetsFrise';
 import {
   finClip,
   nouvelIdFrise,
@@ -231,4 +232,41 @@ export function captureDeScene(
     f.captures.map((c) => c.id),
   );
   return { frise: { ...f, captures: [...f.captures, { id: captureId, scene }] }, captureId };
+}
+
+/**
+ * Glisser-déposer « comme dans un logiciel de montage » : le clip est posé à `debut` sur la
+ * piste visée (même type, non verrouillée ; sinon il reste sur la sienne) ; s'il tombe au
+ * milieu d'un clip, il se place juste après ; les clips suivants glissent vers la droite
+ * juste ce qu'il faut pour lui faire de la place.
+ */
+export function insererClip(f: Frise, clipId: string, pisteId: string, debut: number): Frise {
+  const r = trouver(f, clipId);
+  if (!r || r.piste.verrou) return f;
+  const type = r.piste.type;
+  const visee = f.pistes.find((p) => p.id === pisteId && p.type === type && !p.verrou);
+  const cible = visee ?? r.piste;
+  const sans = avecPiste(f, { ...r.piste, clips: r.piste.clips.filter((c) => c.id !== clipId) });
+  const autres = trier(sans.pistes.find((p) => p.id === cible.id)!.clips);
+  let t = Math.max(0, Math.round(debut));
+  const couvert = autres.find((c) => c.debut < t && finClip(c) > t);
+  if (couvert) t = finClip(couvert);
+  const pose = { ...r.clip, debut: t };
+  let curseur = finClip(pose);
+  const suite = autres.map((c) => {
+    if (c.debut < t) return c;
+    const n = c.debut < curseur ? { ...c, debut: curseur } : c;
+    curseur = Math.max(curseur, finClip(n));
+    return n;
+  });
+  const p = sans.pistes.find((x) => x.id === cible.id)!;
+  return avecPiste(sans, { ...p, clips: trier([...suite, pose]) });
+}
+
+/** Durée pendant laquelle un clip reste visible après sa fin : sous la transition du suivant. */
+export function prolongement(p: Piste, c: Clip): number {
+  const suivant = p.clips.find((x) => x.id !== c.id && x.debut === finClip(c));
+  return suivant?.transition && transitionEnchainee(suivant.transition.type)
+    ? Math.min(suivant.transition.duree, suivant.duree)
+    : 0;
 }

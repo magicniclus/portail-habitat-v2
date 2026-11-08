@@ -24,3 +24,5 @@ export * from './verifierFrise';
 export * from './friseDepuisPlan';
 export * from './imageFrise';
 export * from './renduFrise';
+export * from './effetsFrise';
+export * from './sousTitresFrise';
