@@ -2,7 +2,7 @@
 
 import { FICHIER_PRISE_MAX_OCTETS } from '@ph/core/studio';
 import { authClient, deposerPrise, EnvoiImpossible } from '@/lib/firebaseClient';
-import { enregistrerPrise } from './actions';
+import { enregistrerPrise, envoyerPriseSession } from './actions';
 import type { Prise } from './useEnregistrement';
 
 const extension = (b: Blob) => (b.type.includes('mp4') ? 'mp4' : 'webm');
@@ -67,16 +67,11 @@ export const dureeMedia = (f: File, balise: 'video' | 'audio') =>
     v.src = url;
   });
 
-/**
- * Importe une vidéo tournée au téléphone : elle donne à la fois l'image (face caméra ou écran) et
- * la voix. Envoyée dans Storage (`import.<ext>`), puis le serveur lance la transcription.
- */
-export async function envoyerImport(
-  projetId: string,
+/** Vidéo du téléphone vérifiée puis déposée dans Storage (`import.<ext>`) ; sinon le message. */
+async function deposerImport(
   fichier: File,
-  role: 'camera' | 'ecran',
   avancement: (fraction: number) => void,
-): Promise<string | null> {
+): Promise<{ priseId: string; chemin: string; dureeMs: number } | string> {
   if (fichier.size > IMPORT_MAX_OCTETS)
     return 'Vidéo trop lourde (plus de 1 Go) : exportez-la en 1080p depuis votre téléphone.';
   const ext = (/\.(mp4|mov|m4v|webm)$/i.exec(fichier.name)?.[1] ?? '').toLowerCase();
@@ -98,12 +93,49 @@ export async function envoyerImport(
   } catch (e) {
     return e instanceof EnvoiImpossible ? e.message : 'L’envoi n’a pas abouti. Réessayez.';
   }
+  return { priseId, chemin, dureeMs };
+}
+
+/**
+ * Importe une vidéo tournée au téléphone : elle donne à la fois l'image (face caméra ou écran) et
+ * la voix. Envoyée dans Storage, puis le serveur lance la transcription.
+ */
+export async function envoyerImport(
+  projetId: string,
+  fichier: File,
+  role: 'camera' | 'ecran',
+  avancement: (fraction: number) => void,
+): Promise<string | null> {
+  const d = await deposerImport(fichier, avancement);
+  if (typeof d === 'string') return d;
   const r = await enregistrerPrise({
     projetId,
-    priseId,
+    priseId: d.priseId,
     fichiers:
-      role === 'camera' ? { camera: chemin, voix: chemin } : { ecran: chemin, voix: chemin },
-    dureeMs,
+      role === 'camera'
+        ? { camera: d.chemin, voix: d.chemin }
+        : { ecran: d.chemin, voix: d.chemin },
+    dureeMs: d.dureeMs,
+  });
+  return r.ok ? null : r.message;
+}
+
+/**
+ * Session tournée d'une traite au téléphone (face caméra) : une seule vidéo pour toutes les
+ * vidéos de la liste ; le serveur la découpe script par script et Claude monte chacune.
+ */
+export async function envoyerImportSession(
+  projetIds: string[],
+  fichier: File,
+  avancement: (fraction: number) => void,
+): Promise<string | null> {
+  const d = await deposerImport(fichier, avancement);
+  if (typeof d === 'string') return d;
+  const r = await envoyerPriseSession({
+    projetIds,
+    priseId: d.priseId,
+    fichiers: { camera: d.chemin, voix: d.chemin },
+    dureeMs: d.dureeMs,
   });
   return r.ok ? null : r.message;
 }

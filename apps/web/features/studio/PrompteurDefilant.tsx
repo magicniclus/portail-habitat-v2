@@ -13,7 +13,15 @@ const VITESSES = [
  * Prompteur qui défile tout seul, en très gros, sur fond noir : à poser devant soi (ordinateur
  * ou tablette) pendant qu'on se filme au téléphone. Plein écran, vitesse réglable, pause.
  */
-export function PrompteurDefilant({ script }: { script: SujetStudio['script'] }) {
+export function PrompteurDefilant({
+  script,
+  parties,
+}: {
+  script?: SujetStudio['script'];
+  /** Session d'une traite : les scripts à la suite, séparés par le titre de chaque vidéo. */
+  parties?: { titre: string; script: SujetStudio['script'] }[];
+}) {
+  const blocs = parties ?? [{ titre: '', script: script ?? [] }];
   const zone = useRef<HTMLDivElement>(null);
   const [lecture, setLecture] = useState(false);
   const [vitesse, setVitesse] = useState<number>(40);
@@ -36,17 +44,26 @@ export function PrompteurDefilant({ script }: { script: SujetStudio['script'] })
   // Nouveau script : on repart du début, à l'arrêt.
   useEffect(() => {
     if (zone.current) zone.current.scrollTop = 0;
-  }, [script]);
+  }, [script, parties]);
   return (
     <section aria-label="Prompteur défilant" className="grid gap-2">
       <div
         ref={zone}
         className="h-[60vh] overflow-y-auto rounded-card bg-neutre-900 px-6 py-[30vh] text-center text-blanc [&:fullscreen]:h-screen"
       >
-        {script.map((x, i) => (
-          <p key={i} className="m-0 mb-10 text-[clamp(30px,5vw,64px)] leading-tight font-bold">
-            {x.voix}
-          </p>
+        {blocs.map((b, k) => (
+          <div key={k}>
+            {b.titre ? (
+              <p className="m-0 mb-10 text-[clamp(18px,2.5vw,28px)] font-semibold text-neutre-400">
+                — Vidéo {k + 1} · {b.titre} —
+              </p>
+            ) : null}
+            {b.script.map((x, i) => (
+              <p key={i} className="m-0 mb-10 text-[clamp(30px,5vw,64px)] leading-tight font-bold">
+                {x.voix}
+              </p>
+            ))}
+          </div>
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-2">

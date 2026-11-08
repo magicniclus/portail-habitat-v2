@@ -53,24 +53,32 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   // Sans clé Claude : le message le dit.
   await page.getByRole('button', { name: /Trouver les idées/ }).click();
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
-  // Les deux vidéos sont cochées ; on n'en garde qu'une puis on lance.
+  // Les deux vidéos sont cochées.
   await expect(page.getByRole('checkbox', { name: /Première à tourner/ })).toBeChecked();
-  await page.getByRole('checkbox', { name: /Deuxième à tourner/ }).uncheck();
-  await page.getByRole('button', { name: /Commencer la session \(1 vidéo\)/ }).click();
-  await expect(page.getByText('Vidéo 1 sur 1')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Première à tourner' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /Deuxième à tourner/ })).toBeChecked();
+  await page.getByRole('button', { name: /Commencer la session \(2 vidéos\)/ }).click();
+  await expect(page.getByText('Vidéo 1 sur 2')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /(Première|Deuxième) à tourner/ })).toBeVisible();
   await expect(page.getByLabel('Prompteur')).toContainText('vos clients vous cherchent');
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
-  // Je filme avec mon téléphone : prompteur qui défile en gros + envoi de la vidéo du téléphone.
-  await page
-    .getByRole('radiogroup', { name: 'Je filme avec' })
-    .getByRole('radio', { name: 'Mon téléphone' })
-    .click();
+  const modes = page.getByRole('radiogroup', { name: 'Je filme avec' });
   const defilant = page.getByRole('region', { name: 'Prompteur défilant' });
+  // Tout d'une traite : les deux scripts défilent à la suite, une seule vidéo à envoyer.
+  await modes.getByRole('radio', { name: 'Tout d’une traite au téléphone' }).click();
+  await expect(defilant).toContainText(/Vidéo 1 · (Première|Deuxième) à tourner/);
+  await expect(defilant).toContainText(/Vidéo 2 · (Première|Deuxième) à tourner/);
+  await expect(page.getByText(/lisez les 2 scripts à la suite/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
+  // Je filme avec mon téléphone, vidéo par vidéo : prompteur qui défile + envoi de la vidéo.
+  await modes.getByRole('radio', { name: /Mon téléphone/ }).click();
   await expect(defilant).toContainText('vos clients vous cherchent');
+  await expect(defilant).not.toContainText('Vidéo 2 ·');
   await expect(defilant.getByRole('button', { name: '▶ Lancer le défilement' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
-  // Passer : fin de session.
+  // Passer : à la dernière vidéo, plus de « tout d'une traite » (une seule reste).
+  await page.getByRole('button', { name: 'Passer cette vidéo' }).click();
+  await expect(page.getByText('Vidéo 2 sur 2')).toBeVisible();
+  await expect(modes.getByRole('radio', { name: 'Tout d’une traite au téléphone' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Passer cette vidéo' }).click();
   await expect(page.getByRole('heading', { name: /Session terminée : 0 vidéo/ })).toBeVisible();
   for (const id of ['e2e-session-1', 'e2e-session-2']) await db.doc(`studioProjets/${id}`).delete();

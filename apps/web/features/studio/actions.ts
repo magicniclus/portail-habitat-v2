@@ -8,6 +8,7 @@ import {
   entreeIdeeStudio,
   entreeTournerIdeeStudio,
   entreePriseStudio,
+  entreePriseSessionStudio,
   entreeProjetStudio,
   entreeRetoucheStudio,
   entreeSansPriseStudio,
@@ -30,6 +31,7 @@ import {
   tournerIdeeStudio,
   lancerMontageStudio,
   priseEnregistreeStudio,
+  priseSessionStudio,
   proposerSujetsStudio,
   relancerStudio,
   sansPriseStudio,
@@ -81,6 +83,13 @@ const prise = actionAdmin(
 );
 export const enregistrerPrise = async (e: z.input<typeof entreePriseStudio>) =>
   fin(await prise(e), e.projetId);
+
+const priseSession = actionAdmin(
+  { schema: entreePriseSessionStudio, nom: 'adminStudioPriseSession', permission: P },
+  async (e, ctx) => priseSessionStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const envoyerPriseSession = async (e: z.input<typeof entreePriseSessionStudio>) =>
+  fin(await priseSession(e));
 
 const retouche = actionAdmin(
   { schema: entreeRetoucheStudio, nom: 'adminStudioRetouche', permission: P },

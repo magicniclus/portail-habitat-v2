@@ -2,14 +2,17 @@
 
 import { Banner, Button } from '@ph/ui';
 import { useState } from 'react';
-import { envoyerImport } from './envoiPrise';
+import { envoyerImport, envoyerImportSession } from './envoiPrise';
 
 /** Importer une vidéo tournée au téléphone (image + son), au lieu d'enregistrer ici. */
 export function ImportVideo({
   projetId,
+  session,
   onEnvoye,
 }: {
   projetId: string;
+  /** Session tournée d'une traite : la vidéo contient toutes ces vidéos (face caméra). */
+  session?: string[];
   /** Vidéo envoyée (session de tournage : on passe à la suivante). */
   onEnvoye?: () => void;
 }) {
@@ -21,12 +24,19 @@ export function ImportVideo({
     if (!fichier) return;
     setMessage(null);
     setEnvoi(0);
-    const erreur = await envoyerImport(projetId, fichier, role, setEnvoi);
+    const erreur = session
+      ? await envoyerImportSession(session, fichier, setEnvoi)
+      : await envoyerImport(projetId, fichier, role, setEnvoi);
     setEnvoi(null);
     setMessage(
       erreur
         ? { ton: 'danger', texte: erreur }
-        : { ton: 'succes', texte: 'Vidéo envoyée : la transcription et le montage commencent.' },
+        : {
+            ton: 'succes',
+            texte: session
+              ? 'Vidéo envoyée : elle est découpée vidéo par vidéo, puis Claude monte chacune.'
+              : 'Vidéo envoyée : la transcription et le montage commencent.',
+          },
     );
     if (!erreur) {
       setFichier(null);
@@ -51,7 +61,7 @@ export function ImportVideo({
           onChange={(e) => setFichier(e.target.files?.[0] ?? null)}
         />
       </label>
-      <fieldset className="m-0 flex flex-wrap gap-4 border-0 p-0">
+      <fieldset hidden={Boolean(session)} className="m-0 flex flex-wrap gap-4 border-0 p-0">
         <legend className="mb-1 text-sm font-semibold">Cette vidéo, c’est…</legend>
         {(
           [

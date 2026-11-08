@@ -51,6 +51,18 @@ export const entreePriseStudio = z.strictObject({
     .max(15 * 60_000),
 });
 
+/** Session tournée d'une traite : une prise pour 2 à 10 vidéos, découpée par le serveur. */
+export const entreePriseSessionStudio = z.strictObject({
+  projetIds: z.array(id).min(2).max(10),
+  priseId: id,
+  fichiers: z.strictObject({ camera: chemin.optional(), voix: chemin }),
+  dureeMs: z
+    .number()
+    .int()
+    .min(1_000)
+    .max(15 * 60_000),
+});
+
 export const entreeRetoucheStudio = z.strictObject({
   projetId: id,
   demande: z.string().trim().min(3).max(1_000),

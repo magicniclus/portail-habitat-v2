@@ -809,7 +809,9 @@ async function decouperSessionStudio(
     });
   }
   // L'une après l'autre (coût et débit de Claude maîtrisés) ; un échec n'arrête pas les autres.
-  for (const p of aMonter) {
+  for (const [n, p] of aMonter.entries()) {
+    // Celles qui attendent leur tour restent « en cours » (pas vues comme bloquées).
+    for (const q of aMonter.slice(n + 1)) await maj(s, q.id, { statut: 'montage' });
     try {
       await genererMontageStudio(s, { projetId: p.id, ...(e.images ? { images: e.images } : {}) });
     } catch (err) {

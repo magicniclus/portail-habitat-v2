@@ -9,6 +9,7 @@ import { EnregistrementIci } from './EnregistrementIci';
 import { ImportVideo } from './ImportVideo';
 import { PrompteurDefilant } from './PrompteurDefilant';
 import { PreparerSession } from './PreparerSession';
+import { SessionUnePrise } from './SessionUnePrise';
 
 /** Une vidéo prête à tourner : son script (prompteur). */
 export interface VideoATourner {
@@ -29,7 +30,7 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
   const [file, setFile] = useState<VideoATourner[] | null>(null);
   const [i, setI] = useState(0);
   const [envoyees, setEnvoyees] = useState<VideoATourner[]>([]);
-  const [telephone, setTelephone] = useState(false);
+  const [mode, setMode] = useState<'ordinateur' | 'telephone' | 'traite'>('ordinateur');
   if (!file) return <PreparerSession {...p} onCommencer={(v) => (setFile(v), setI(0))} />;
   const v = file[i];
   if (!v)
@@ -43,8 +44,8 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
           {envoyees.length > 1 ? 's' : ''}
         </h2>
         <p className="m-0 text-sm text-neutre-700">
-          Claude monte chaque vidéo (quelques minutes). Ouvrez-les dans le Studio pour retoucher et
-          fabriquer.
+          Claude monte chaque vidéo (quelques minutes, une après l’autre pour une prise d’une
+          traite). Ouvrez-les dans le Studio pour retoucher et fabriquer.
         </p>
         <ul className="m-0 grid list-none gap-2 p-0">
           {envoyees.map((x) => (
@@ -90,23 +91,35 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
       <div role="radiogroup" aria-label="Je filme avec" className="flex flex-wrap gap-2">
         {(
           [
-            [false, 'La caméra de cet ordinateur'],
-            [true, 'Mon téléphone'],
+            ['ordinateur', 'La caméra de cet ordinateur'],
+            ['telephone', 'Mon téléphone, vidéo par vidéo'],
+            // Une seule prise pour toutes les vidéos qui restent (au moins deux).
+            ...(file.length - i > 1
+              ? ([['traite', 'Tout d’une traite au téléphone']] as const)
+              : []),
           ] as const
         ).map(([v, l]) => (
           <button
             key={l}
             type="button"
             role="radio"
-            aria-checked={telephone === v}
-            onClick={() => setTelephone(v)}
+            aria-checked={mode === v}
+            onClick={() => setMode(v)}
             className="inline-flex min-h-11 items-center rounded-full border border-trait px-4 text-sm font-semibold aria-checked:border-neutre-900 aria-checked:bg-neutre-900 aria-checked:text-blanc"
           >
             {l}
           </button>
         ))}
       </div>
-      {telephone ? (
+      {mode === 'traite' && file.length - i > 1 ? (
+        <SessionUnePrise
+          videos={file.slice(i)}
+          onEnvoye={() => {
+            setEnvoyees((x) => [...x, ...file.slice(i)]);
+            setI(file.length);
+          }}
+        />
+      ) : mode === 'telephone' ? (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
           <PrompteurDefilant script={v.script} />
           <div className="grid content-start gap-2">
