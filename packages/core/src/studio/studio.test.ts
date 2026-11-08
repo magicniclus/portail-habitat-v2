@@ -85,6 +85,24 @@ describe('plan de montage', () => {
     expect(verifierPlan(base(), { dureePriseMs: 20_000, camera: true })).toEqual([]);
   });
 
+  it('session tournée d’une traite : seuls les passages de la vidéo sont permis', () => {
+    // base() : plans de 0 à 6 s et de 8 à 14 s.
+    expect(
+      verifierPlan(base(), {
+        dureePriseMs: 20_000,
+        camera: true,
+        plage: { debut: 0, fin: 14_000 },
+      }),
+    ).toEqual([]);
+    expect(
+      verifierPlan(base(), {
+        dureePriseMs: 20_000,
+        camera: true,
+        plage: { debut: 1_000, fin: 20_000 },
+      }).join(' | '),
+    ).toMatch(/hors du passage de cette vidéo/);
+  });
+
   it('durée entre 10 s et 3 min', () => {
     expect(DUREE_MIN_MS).toBe(10_000);
     expect(DUREE_MAX_MS).toBe(180_000);

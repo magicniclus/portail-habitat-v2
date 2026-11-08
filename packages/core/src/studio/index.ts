@@ -29,3 +29,4 @@ export * from './sousTitresFrise';
 export * from './mentionsFictives';
 export * from './appareil';
 export * from './stylePlan';
+export * from './decoupeSession';

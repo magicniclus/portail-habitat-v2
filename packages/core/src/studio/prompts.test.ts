@@ -266,6 +266,18 @@ describe('séries', () => {
     });
     expect(p.demande + p.systeme).toContain('« Les erreurs de devis · épisode 3 »');
   });
+  it('montage d’une session tournée d’une traite : seulement son passage', () => {
+    const p = promptMontage({
+      format: 'vertical',
+      camera: true,
+      dureePriseMs: 600_000,
+      plage: { debut: 60_000, fin: 95_000 },
+      transcription: '',
+      segments: [],
+      sujet: null,
+    });
+    expect(p.demande).toContain('QUE le passage de 60000 à 95000 ms');
+  });
 });
 
 describe('commentaires', () => {

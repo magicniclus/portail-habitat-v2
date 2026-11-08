@@ -387,6 +387,8 @@ export function promptMontage(e: {
   /** Sans voix : l'auteur veut le texte du script en sous-titres (déjà réparti dans `transcription`). */
   sousTitres?: boolean;
   dureePriseMs: number;
+  /** Session tournée d'une traite : passage de la prise qui appartient à cette vidéo. */
+  plage?: { debut: number; fin: number } | undefined;
   transcription: string;
   segments: readonly { debut: number; fin: number }[];
   sujet: SujetStudio | null;
@@ -467,6 +469,11 @@ export function promptMontage(e: {
   const lignes = [
     `Format : ${e.format} (${FORMATS_STUDIO[e.format].largeur}×${FORMATS_STUDIO[e.format].hauteur}).`,
     `Prise : ${e.dureePriseMs} ms. Caméra enregistrée : ${e.camera ? 'oui' : 'non (camera « cachee » partout, pas de visuel « camera »)'}. Écran enregistré : ${e.ecran === false ? 'non (aucun visuel « ecran » : montre les captures Portail Travaux, des cartons et des calques sur toute la vidéo)' : 'oui'}.`,
+    ...(e.plage
+      ? [
+          `Session tournée d’une traite : plusieurs vidéos dans la même prise. Celle-ci n’utilise QUE le passage de ${e.plage.debut} à ${e.plage.fin} ms (source.debut et source.fin dans cet intervalle) ; s’il y a plusieurs essais du même script, garde le meilleur et coupe les hésitations.`,
+        ]
+      : []),
     ...(e.voix === false
       ? [
           `Voix : aucune. La vidéo se comprend sans le son : chaque idée du script devient un carton ou un texte « titre » ou « chiffre » bien lisible, enchaînés sur les captures Portail Travaux ; plans pris dans 0 à ${e.dureePriseMs} ms comme une simple durée (aucune parole à respecter) ; ${

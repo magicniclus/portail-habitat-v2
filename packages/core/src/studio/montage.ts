@@ -62,7 +62,13 @@ const sec = (ms: number) => `${Math.round(ms / 100) / 10} s`;
 export function verifierPlan(
   brut: unknown,
   /** `ecran` : un écran a été enregistré (absent : voix seule, vidéo du téléphone…). */
-  contexte: { dureePriseMs: number; camera: boolean; ecran?: boolean },
+  contexte: {
+    dureePriseMs: number;
+    camera: boolean;
+    ecran?: boolean;
+    /** Session tournée d'une traite : seul ce passage de la prise appartient à la vidéo. */
+    plage?: { debut: number; fin: number };
+  },
 ): string[] {
   const r = planMontage.safeParse(brut);
   if (!r.success) return r.error.issues.map((i) => `${i.path.join('.') || 'plan'} : ${i.message}`);
@@ -87,6 +93,9 @@ export function verifierPlan(
     else if (d < PLAN_MIN_MS) erreurs.push(`${nom} : trop court (${sec(d)}).`);
     if (x.source.fin > contexte.dureePriseMs)
       erreurs.push(`${nom} : dépasse la fin de la prise (${sec(contexte.dureePriseMs)}).`);
+    const pl = contexte.plage;
+    if (pl && (x.source.debut < pl.debut || x.source.fin > pl.fin))
+      erreurs.push(`${nom} : hors du passage de cette vidéo (${sec(pl.debut)} à ${sec(pl.fin)}).`);
     if (x.visuel === 'capture' && (!x.captureId || !captures.has(x.captureId)))
       erreurs.push(`${nom} : capture « ${x.captureId ?? '?'} » absente de la liste des captures.`);
     if (x.visuel === 'carton' && !x.carton) erreurs.push(`${nom} : texte du carton manquant.`);
