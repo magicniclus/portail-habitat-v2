@@ -23,3 +23,4 @@ export * from './operationsFrise';
 export * from './verifierFrise';
 export * from './friseDepuisPlan';
 export * from './imageFrise';
+export * from './renduFrise';

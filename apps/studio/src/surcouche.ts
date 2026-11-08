@@ -1,7 +1,7 @@
 import type { LigneSousTitre, PlanMontage } from '@ph/core/studio';
 import { dureePlan, FORMATS_STUDIO, IMAGES_PAR_SECONDE } from '@ph/core/studio';
 import { themeStudio } from '@ph/ui/tokens';
-import { chromium } from '@playwright/test';
+import { chromium, type Page } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DEPOT } from './demo/environnement';
@@ -19,17 +19,8 @@ export async function imagesSurcouche(
 ): Promise<{ motif: string; images: number; miniature: string | null }> {
   const { largeur, hauteur } = FORMATS_STUDIO[plan.format];
   const images = Math.round((dureePlan(plan) * IMAGES_PAR_SECONDE) / 1000);
-  const navigateur = await chromium.launch();
   let texteMiniature: string | null = null;
-  try {
-    const page = await navigateur.newPage({ viewport: { width: 400, height: 400 } });
-    await page.setContent(
-      '<!doctype html><html><body style="margin:0;background:transparent"></body></html>',
-    );
-    await page.addScriptTag({ content: await readFile(join(RACINE, 'dist/surcouche.js'), 'utf8') });
-    const police = (
-      await readFile(join(DEPOT, 'apps/web/public', themeStudio.fichierPolice))
-    ).toString('base64');
+  await avecPageDessin(async (page, police) => {
     await page.evaluate((e) => window.preparerStudio(e), {
       plan,
       lignes,
@@ -42,20 +33,40 @@ export async function imagesSurcouche(
     if (plan.miniature) {
       const url = await page.evaluate((m) => window.miniatureStudio(m), plan.miniature);
       texteMiniature = join(dossier, 'miniature-texte.png');
-      await writeFile(texteMiniature, Buffer.from(url.split(',')[1]!, 'base64'));
+      await ecrirePng(texteMiniature, url);
     }
     for (let n = 0; n < images; n++) {
       const url = await page.evaluate(
         (t) => window.imageStudio(t),
         (n * 1000) / IMAGES_PAR_SECONDE,
       );
-      await writeFile(
-        join(dossier, `${String(n).padStart(6, '0')}.png`),
-        Buffer.from(url.split(',')[1]!, 'base64'),
-      );
+      await ecrirePng(join(dossier, `${String(n).padStart(6, '0')}.png`), url);
     }
+  });
+  return { motif: join(dossier, '%06d.png'), images, miniature: texteMiniature };
+}
+
+/** Image `data:` du canevas enregistrée en PNG. */
+export const ecrirePng = (fichier: string, url: string) =>
+  writeFile(fichier, Buffer.from(url.split(',')[1]!, 'base64'));
+
+/**
+ * Page Chromium chargée avec le code de dessin de l'aperçu (`dist/surcouche.js`) et la police
+ * des vidéos (base64), fermée à la fin.
+ */
+export async function avecPageDessin(f: (page: Page, police: string) => Promise<void>) {
+  const navigateur = await chromium.launch();
+  try {
+    const page = await navigateur.newPage({ viewport: { width: 400, height: 400 } });
+    await page.setContent(
+      '<!doctype html><html><body style="margin:0;background:transparent"></body></html>',
+    );
+    await page.addScriptTag({ content: await readFile(join(RACINE, 'dist/surcouche.js'), 'utf8') });
+    const police = (
+      await readFile(join(DEPOT, 'apps/web/public', themeStudio.fichierPolice))
+    ).toString('base64');
+    await f(page, police);
   } finally {
     await navigateur.close();
   }
-  return { motif: join(dossier, '%06d.png'), images, miniature: texteMiniature };
 }

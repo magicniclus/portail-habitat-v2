@@ -59,3 +59,27 @@ export async function sonder(
     dureeMs: Math.round(Number(j.format?.duration ?? 0) * 1000),
   };
 }
+
+/** Image (dimensions) et son d'un fichier média (ffprobe). */
+export async function sonderFlux(
+  fichier: string,
+): Promise<{ largeur: number; hauteur: number; son: boolean }> {
+  const s = await executer('ffprobe', [
+    '-v',
+    'error',
+    '-show_entries',
+    'stream=codec_type,width,height',
+    '-of',
+    'json',
+    fichier,
+  ]);
+  const flux =
+    (JSON.parse(s) as { streams?: { codec_type?: string; width?: number; height?: number }[] })
+      .streams ?? [];
+  const v = flux.find((x) => x.codec_type === 'video');
+  return {
+    largeur: v?.width ?? 0,
+    hauteur: v?.height ?? 0,
+    son: flux.some((x) => x.codec_type === 'audio'),
+  };
+}

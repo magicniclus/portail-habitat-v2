@@ -1,3 +1,4 @@
+import type { Frise } from './frise';
 import { z } from '../zod';
 import { NOMS_SCENES, SCENES_CAPTURE, type SceneCapture } from './catalogue';
 import type { FormatStudio } from './formats';
@@ -83,8 +84,11 @@ export function capturesAFilmer(p: {
   format: FormatStudio;
   plan: PlanMontage | null;
   preparation: PreparationCaptures | null;
+  /** Frise montée dans l'éditeur multipistes : ce sont ses captures qui comptent. */
+  frise?: Pick<Frise, 'format' | 'artisan' | 'captures'> | null;
 }): { format: FormatStudio; artisan: ArtisanFictif | null; captures: PlanMontage['captures'] } {
-  const artisan = p.preparation?.artisan ?? p.plan?.artisan ?? null;
+  const artisan = p.preparation?.artisan ?? p.frise?.artisan ?? p.plan?.artisan ?? null;
+  if (p.frise) return { format: p.frise.format, artisan, captures: p.frise.captures };
   if (p.plan) return { format: p.plan.format, artisan, captures: p.plan.captures };
   return {
     format: p.format,

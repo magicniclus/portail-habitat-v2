@@ -105,6 +105,8 @@ export interface ProjetStudio {
   libre: boolean;
   /** Frise multipistes (STUDIO.md §5 bis) ; absente : montage encore au format « plan ». */
   frise: Frise | null;
+  /** Version du plan sur laquelle la frise a été montée (un nouveau plan de Claude la remplace). */
+  friseVersion: number | null;
   rendu: {
     video: string;
     srt: string;
@@ -168,6 +170,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     preparation: (d.preparation as PreparationCaptures | null | undefined) ?? null,
     libre: d.libre === true,
     frise: (d.frise as Frise | null | undefined) ?? null,
+    friseVersion: typeof d.friseVersion === 'number' ? d.friseVersion : null,
     rendu: d.rendu
       ? { ...(d.rendu as Omit<NonNullable<ProjetStudio['rendu']>, 'le'>), le: ms(d.rendu.le) }
       : null,
@@ -809,7 +812,7 @@ export async function capturesTermineesStudio(
 ): Promise<void> {
   const p = await exiger(s, e.projetId);
   const captures = { ...p.captures, ...e.captures };
-  if (p.plan) {
+  if (p.plan || p.libre) {
     await maj(s, e.projetId, { captures, statut: 'rendu' });
     return s.lancerTravail('rendre', e.projetId);
   }

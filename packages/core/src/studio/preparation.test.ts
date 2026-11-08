@@ -101,6 +101,15 @@ describe('captures avant le montage', () => {
     expect(capturesAFilmer({ format: 'vertical', plan: null, preparation: null }).captures).toEqual(
       [],
     );
+    // Frise de l'éditeur multipistes : ses captures et son artisan priment sur le plan.
+    expect(
+      capturesAFilmer({
+        format: 'carre',
+        plan: p,
+        preparation: null,
+        frise: { format: 'horizontal', artisan, captures: [{ id: 'f1', scene: 'fiche_publique' }] },
+      }),
+    ).toEqual({ format: 'horizontal', artisan, captures: [{ id: 'f1', scene: 'fiche_publique' }] });
   });
 
   it('le montage réutilise les captures déjà filmées (pas de double tournage)', () => {

@@ -1,6 +1,7 @@
 import { ErreurMetier } from '@ph/core/erreurs';
 import {
   creerFrise,
+  friseDepuisPlan,
   frise as schemaFrise,
   LIMITES_MEDIAS,
   media as schemaMedia,
@@ -11,7 +12,7 @@ import {
 } from '@ph/core/studio';
 import { Timestamp } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
-import { exiger, maj, type ServicesStudio } from './projets';
+import { exiger, maj, type ProjetStudio, type ServicesStudio } from './projets';
 
 /**
  * Montage libre (STUDIO.md §5 bis) : un projet qui s'ouvre directement dans l'éditeur, sans idée
@@ -51,8 +52,28 @@ export async function creerMontageLibreStudio(
 }
 
 /** Frise du projet : la sienne, ou une frise vide au format du projet. */
-const friseDe = (p: Awaited<ReturnType<typeof exiger>>): Frise =>
-  p.frise ?? creerFrise(p.format, p.titre);
+/**
+ * La frise sert de montage quand le projet est libre, ou quand elle a été montée sur le plan
+ * actuel ; sinon (nouveau plan de Claude) le robot rend le plan.
+ */
+export const friseActive = (p: ProjetStudio): boolean =>
+  p.libre || (p.frise !== null && p.friseVersion === p.version);
+
+/**
+ * Frise à ouvrir dans l'éditeur : celle enregistrée si elle est active, sinon le plan de Claude
+ * converti (les médias déjà importés sont gardés), sinon une frise vide.
+ */
+export function friseDuProjet(p: ProjetStudio): Frise {
+  if (p.frise && friseActive(p)) return p.frise;
+  const base = p.plan
+    ? friseDepuisPlan(p.plan, {
+        voix: Boolean(p.prise?.fichiers.voix),
+        dureePriseMs: p.prise?.dureeMs ?? 0,
+      })
+    : creerFrise(p.format, p.titre);
+  return { ...base, medias: p.frise?.medias ?? [] };
+}
+const friseDe = friseDuProjet;
 
 /**
  * Média envoyé dans le bucket par le navigateur : la taille et le type sont relus côté serveur
@@ -87,7 +108,7 @@ export async function ajouterMediaStudio(
 export async function enregistrerFriseStudio(
   s: ServicesStudio,
   e: { projetId: string; frise: unknown },
-): Promise<void> {
+): Promise<ProjetStudio> {
   const p = await exiger(s, e.projetId);
   const lu = schemaFrise.safeParse(e.frise);
   if (!lu.success) throw new ErreurMetier('ENTREE_INVALIDE', 'Montage invalide.');
@@ -98,7 +119,29 @@ export async function enregistrerFriseStudio(
   if (lu.data.medias.some((m) => connus.get(m.id)?.chemin !== m.chemin))
     throw new ErreurMetier('ENTREE_INVALIDE', 'Média inconnu dans le montage.');
   const medias = lu.data.medias.map((m) => connus.get(m.id)!);
-  await maj(s, p.id, { frise: { ...lu.data, medias }, format: lu.data.format });
+  await maj(s, p.id, {
+    frise: { ...lu.data, medias },
+    friseVersion: p.version,
+    format: lu.data.format,
+  });
+  return { ...p, frise: { ...lu.data, medias }, friseVersion: p.version };
+}
+
+/**
+ * « Enregistrer et fabriquer » depuis l'éditeur multipistes : la frise est enregistrée, puis
+ * le robot filme les captures qui manquent et rend la vidéo.
+ */
+export async function fabriquerFriseStudio(
+  s: ServicesStudio,
+  e: { projetId: string; frise: unknown },
+): Promise<void> {
+  const p = await enregistrerFriseStudio(s, e);
+  const f = p.frise!;
+  if (f.pistes.every((x) => !x.clips.length))
+    throw new ErreurMetier('PRECONDITION', 'La frise est vide : ajoutez au moins un clip.');
+  const manquantes = f.captures.some((c) => !p.captures[`${c.id}:${c.scene}`]);
+  await maj(s, p.id, { statut: manquantes ? 'captures' : 'rendu', erreur: null });
+  await s.lancerTravail(manquantes ? 'capturer' : 'rendre', p.id);
 }
 
 /**

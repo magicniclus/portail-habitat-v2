@@ -5,7 +5,7 @@ import {
   FORMATS_STUDIO,
   type FormatStudio,
 } from '@ph/core/studio';
-import type { ProjetStudio } from '@ph/firebase/studio';
+import { friseActive, friseDuProjet, type ProjetStudio } from '@ph/firebase/studio';
 import { chromium, type Browser } from '@playwright/test';
 import { join } from 'node:path';
 import { BASE_DEMO, DEPOT, envDemo, environnementDemo } from './demo/environnement';
@@ -42,7 +42,7 @@ async function sessionPro(navigateur: Browser, fichier: string) {
  * commence quand la page est prête.
  */
 export async function capturer(p: ProjetStudio): Promise<Record<string, string>> {
-  const plan = capturesAFilmer(p);
+  const plan = capturesAFilmer({ ...p, frise: friseActive(p) ? friseDuProjet(p) : null });
   if (!plan.captures.length) throw new Error('aucune capture à filmer');
   const manquantes = plan.captures.filter((c) => !p.captures[`${c.id}:${c.scene}`]);
   if (!manquantes.length) return {};
@@ -127,6 +127,9 @@ export async function capturer(p: ProjetStudio): Promise<Record<string, string>>
           '18',
           '-pix_fmt',
           'yuv420p',
+          // Lecture immédiate dans l'aperçu de l'éditeur (index en tête du fichier).
+          '-movflags',
+          '+faststart',
           net,
         ]);
         resultat[`${c.id}:${c.scene}`] = await deposer(

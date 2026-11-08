@@ -3,6 +3,7 @@ import { FORMATS_STUDIO } from './formats';
 import { opaciteClip, type Clip, type Frise, type Piste, type SourceClip } from './frise';
 import type { ContexteImage, SourceImage } from './image';
 import { couverture, type Rectangle } from './montage';
+import type { MotTranscrit } from './plan';
 import type { LigneSousTitre } from './sousTitres';
 
 /**
@@ -47,6 +48,19 @@ export function filtreCss(f: Clip['filtres']): string {
   return p.length ? p.join(' ') : 'none';
 }
 
+/** Place d'un clip dans l'image (pixels) : son cadre, sinon toute l'image. */
+export function rectangleClip(format: Frise['format'], clip: Pick<Clip, 'cadre'>): Rectangle {
+  const { largeur: L, hauteur: H } = FORMATS_STUDIO[format];
+  return clip.cadre
+    ? {
+        x: Math.round(clip.cadre.x * L),
+        y: Math.round(clip.cadre.y * H),
+        largeur: Math.round(clip.cadre.largeur * L),
+        hauteur: Math.round(clip.cadre.hauteur * H),
+      }
+    : { x: 0, y: 0, largeur: L, hauteur: H };
+}
+
 export function dessinerFrise(
   ctx: ContexteImage & { filter: string },
   f: Frise,
@@ -56,7 +70,6 @@ export function dessinerFrise(
   theme: ThemeStudio & { fond: string },
 ) {
   const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
-  const tout: Rectangle = { x: 0, y: 0, largeur: L, hauteur: H };
   ctx.fillStyle = theme.sombre;
   ctx.fillRect(0, 0, L, H);
   const actifs = clipsActifs(f, t);
@@ -64,14 +77,7 @@ export function dessinerFrise(
   for (const { piste, clip } of [...actifs].reverse()) {
     if (piste.type !== 'video' || piste.muet) continue;
     const local = t - clip.debut;
-    const r: Rectangle = clip.cadre
-      ? {
-          x: Math.round(clip.cadre.x * L),
-          y: Math.round(clip.cadre.y * H),
-          largeur: Math.round(clip.cadre.largeur * L),
-          hauteur: Math.round(clip.cadre.hauteur * H),
-        }
-      : tout;
+    const r = rectangleClip(f.format, clip);
     const fondu = clip.fondus;
     const entree = fondu?.entree ? Math.min(1, local / fondu.entree) : 1;
     const sortie = fondu?.sortie ? Math.min(1, (clip.duree - local) / fondu.sortie) : 1;
@@ -79,26 +85,8 @@ export function dessinerFrise(
     ctx.globalAlpha = Math.max(0, opaciteClip(clip, local) * entree * sortie);
     ctx.filter = filtreCss(clip.filtres);
     if (clip.source.type === 'carton') {
-      ctx.fillStyle = theme.fond;
-      ctx.fillRect(r.x, r.y, r.largeur, r.hauteur);
       ctx.filter = 'none';
-      dessinerCalques(
-        ctx,
-        [
-          {
-            type: 'texte',
-            texte: clip.source.texte,
-            style: 'accroche',
-            position: 'centre',
-            debut: 0,
-            fin: clip.duree,
-          },
-        ],
-        local,
-        f.format,
-        r,
-        theme,
-      );
+      dessinerCarton(ctx, f.format, clip.source.texte, local, clip.duree, r, theme);
     } else {
       const cle = cleSource(clip.source);
       const s = cle ? sources[cle] : undefined;
@@ -120,7 +108,45 @@ export function dessinerFrise(
     ctx.restore();
   }
   ctx.filter = 'none';
-  for (const { piste, clip } of [...actifs].reverse()) {
+  dessinerSurcoucheFrise(ctx, f, t, lignes, theme);
+}
+
+/** Carton plein cadre : fond et texte centré (aperçu, et image fixe du rendu). */
+export function dessinerCarton(
+  ctx: ContexteImage,
+  format: Frise['format'],
+  texte: string,
+  local: number,
+  duree: number,
+  r: Rectangle,
+  theme: ThemeStudio & { fond: string },
+) {
+  ctx.fillStyle = theme.fond;
+  ctx.fillRect(r.x, r.y, r.largeur, r.hauteur);
+  dessinerCalques(
+    ctx,
+    [{ type: 'texte', texte, style: 'accroche', position: 'centre', debut: 0, fin: duree }],
+    local,
+    format,
+    r,
+    theme,
+  );
+}
+
+/**
+ * Ce qui passe devant toutes les pistes vidéo : effets animés des pistes d'effets et
+ * sous-titres. Le robot le dessine seul, sur fond transparent, image par image.
+ */
+export function dessinerSurcoucheFrise(
+  ctx: ContexteImage,
+  f: Frise,
+  t: number,
+  lignes: readonly LigneSousTitre[],
+  theme: ThemeStudio,
+) {
+  const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
+  const tout: Rectangle = { x: 0, y: 0, largeur: L, hauteur: H };
+  for (const { piste, clip } of [...clipsActifs(f, t)].reverse()) {
     if (piste.type !== 'texte' || piste.muet || clip.source.type !== 'effet') continue;
     dessinerCalques(
       ctx,
@@ -135,4 +161,31 @@ export function dessinerFrise(
     const ligne = lignes.find((l) => t >= l.debut && t <= l.fin + 120);
     dessinerSousTitre(ctx, ligne, t, f.format, Math.round(H * 0.82), theme);
   }
+}
+
+/**
+ * Mots prononcés replacés sur la frise : ceux de la voix enregistrée, par les clips qui la
+ * font entendre (début de source, vitesse) ; base des sous-titres.
+ */
+export function motsFrise(f: Pick<Frise, 'pistes'>, mots: readonly MotTranscrit[]): MotTranscrit[] {
+  const r: MotTranscrit[] = [];
+  for (const p of f.pistes) {
+    if (p.muet) continue;
+    for (const c of p.clips) {
+      if (c.source.type !== 'prise' || c.source.fichier !== 'voix' || c.muet) continue;
+      const v = c.vitesse ?? 1;
+      const de = c.source.debutSource;
+      const a = de + c.duree * v;
+      for (const m of mots) {
+        const milieu = (m.debut + m.fin) / 2;
+        if (milieu < de || milieu >= a) continue;
+        r.push({
+          texte: m.texte,
+          debut: Math.round(c.debut + (Math.max(m.debut, de) - de) / v),
+          fin: Math.round(c.debut + (Math.min(m.fin, a) - de) / v),
+        });
+      }
+    }
+  }
+  return r.sort((x, y) => x.debut - y.debut);
 }

@@ -4,6 +4,7 @@ import {
   capturesTermineesStudio,
   clientClaudeStudio,
   echecStudio,
+  friseActive,
   lireProjetStudio,
   renduTermineStudio,
   transcriptionRecueStudio,
@@ -13,6 +14,7 @@ import {
 import { getFirestore } from 'firebase-admin/firestore';
 import { capturer } from './capturer';
 import { rendre } from './rendre';
+import { rendreFrise } from './rendreFrise';
 import { transcrire } from './transcrire';
 
 /**
@@ -44,6 +46,14 @@ async function executerTravail(type: TravailStudio, projetId: string) {
       await transcriptionRecueStudio(s, { projetId, mots, images });
     } else if (type === 'capturer') {
       await capturesTermineesStudio(s, { projetId, captures: await capturer(p) });
+    } else if (friseActive(p)) {
+      // Montage de l'éditeur multipistes : rendu de la frise (pas de variantes d'accroche).
+      const r = await rendreFrise(p);
+      await renduTermineStudio(s, {
+        projetId,
+        fichiers: { video: r.video, srt: r.srt, miniature: r.miniature },
+        dureeMs: r.dureeMs,
+      });
     } else {
       const r = await rendre(p);
       // Variantes d'accroche (tests A/B) : même montage, autre première image et miniature.

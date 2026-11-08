@@ -15,6 +15,9 @@ export {
   ajouterMediaStudio,
   creerMontageLibreStudio,
   enregistrerFriseStudio,
+  fabriquerFriseStudio,
+  friseActive,
+  friseDuProjet,
   supprimerProjetStudio,
 } from './medias';
 export {

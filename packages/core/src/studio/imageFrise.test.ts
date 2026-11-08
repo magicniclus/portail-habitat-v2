@@ -3,7 +3,11 @@ import {
   clipsActifs,
   cleSource,
   creerFrise,
+  dessinerCarton,
   dessinerFrise,
+  dessinerSurcoucheFrise,
+  motsFrise,
+  rectangleClip,
   filtreCss,
   poserClip,
   modifierPiste,
@@ -169,5 +173,96 @@ describe('image d’une frise multipistes', () => {
     const g = faux();
     dessinerFrise(g.ctx, f, 3_500, {}, [], theme);
     expect(g.appels.filter((a) => a.startsWith('image'))).toEqual([]);
+  });
+});
+
+describe('motsFrise', () => {
+  it('replace les mots de la voix sur la frise (début de source, vitesse), clips muets ignorés', () => {
+    let f = creerFrise('vertical', 'x');
+    const voix = (id: string, debut: number, debutSource: number, x: Partial<Clip> = {}): Clip => ({
+      id,
+      debut,
+      duree: 1_000,
+      source: { type: 'prise', fichier: 'voix', debutSource },
+      ...x,
+    });
+    f = poserClip(f, 'a1', voix('v1', 0, 2_000));
+    f = poserClip(f, 'a1', voix('v2', 3_000, 0, { vitesse: 2 }));
+    f = poserClip(f, 'a1', voix('v3', 6_000, 0, { muet: true }));
+    f = poserClip(f, 'a1', {
+      id: 'k',
+      debut: 8_000,
+      duree: 1_000,
+      source: { type: 'prise', fichier: 'ecran', debutSource: 0 },
+    } as Clip);
+    const mots = [
+      { texte: 'avant', debut: 0, fin: 400 },
+      { texte: 'bonjour', debut: 1_900, fin: 2_400 },
+      { texte: 'hors', debut: 3_500, fin: 3_800 },
+    ];
+    expect(motsFrise(f, mots)).toEqual(
+      [
+        { texte: 'avant', debut: 3_000, fin: 3_200 },
+        { texte: 'bonjour', debut: 0, fin: 400 },
+      ].sort((a, b) => a.debut - b.debut),
+    );
+    expect(motsFrise(modifierPiste(f, 'a1', { muet: true }), mots)).toEqual([]);
+  });
+});
+
+describe('surcouche et carton de la frise', () => {
+  it('effets et sous-titres seuls ; carton dessiné plein cadre', () => {
+    let f = { ...creerFrise('vertical', 'x'), sousTitres: true };
+    f = poserClip(f, 't1', {
+      id: 'e1',
+      debut: 0,
+      duree: 2_000,
+      source: {
+        type: 'effet',
+        calque: {
+          type: 'texte',
+          texte: 'Effet',
+          style: 'titre',
+          position: 'haut',
+          debut: 0,
+          fin: 2_000,
+        },
+      },
+    });
+    const { ctx, appels } = faux();
+    dessinerSurcoucheFrise(
+      ctx,
+      f,
+      1_000,
+      [{ debut: 900, fin: 1_500, mots: [{ texte: 'salut', debut: 900, fin: 1_200 }] }],
+      theme,
+    );
+    expect(appels).toContain('texte Effet');
+    expect(appels.some((a) => a.includes('SALUT'))).toBe(true);
+    const sansSousTitres = faux();
+    dessinerSurcoucheFrise(sansSousTitres.ctx, { ...f, sousTitres: false }, 1_000, [], theme);
+    expect(sansSousTitres.appels.some((a) => a.includes('SALUT'))).toBe(false);
+    const masque = faux();
+    dessinerSurcoucheFrise(masque.ctx, modifierPiste(f, 't1', { muet: true }), 1_000, [], theme);
+    expect(masque.appels).not.toContain('texte Effet');
+    const carton = faux();
+    dessinerCarton(
+      carton.ctx,
+      'vertical',
+      'Bonjour',
+      1_500,
+      3_000,
+      rectangleClip('vertical', {}),
+      theme,
+    );
+    expect(carton.appels).toContain('texte Bonjour');
+    expect(
+      rectangleClip('carre', { cadre: { x: 0.5, y: 0, largeur: 0.5, hauteur: 1, opacite: 1 } }),
+    ).toEqual({
+      x: 540,
+      y: 0,
+      largeur: 540,
+      hauteur: 1080,
+    });
   });
 });

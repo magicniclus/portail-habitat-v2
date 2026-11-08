@@ -1,6 +1,11 @@
 import {
+  dessinerCarton,
   dessinerMiniature,
   dessinerSurcouche,
+  dessinerSurcoucheFrise,
+  FORMATS_STUDIO,
+  type ContexteImage,
+  type Frise,
   type Contexte2D,
   type LigneSousTitre,
   type PlanMontage,
@@ -23,6 +28,14 @@ declare global {
     }) => Promise<void>;
     imageStudio: (t: number) => string;
     miniatureStudio: (m: { texte: string; accent: string }) => string;
+    preparerFrise: (e: {
+      frise: Frise;
+      lignes: LigneSousTitre[];
+      theme: ThemeStudio & { fond: string };
+      police: string;
+    }) => Promise<void>;
+    imageFrise: (t: number) => string;
+    cartonFrise: (texte: string) => string;
   }
 }
 
@@ -54,5 +67,50 @@ window.miniatureStudio = (m) => {
   if (!etat || !ctx || !canevas) throw new Error('surcouche non préparée');
   ctx.clearRect(0, 0, canevas.width, canevas.height);
   dessinerMiniature(ctx as unknown as Contexte2D, m, etat.plan.format, etat.theme);
+  return canevas.toDataURL('image/png');
+};
+
+let frise: Parameters<Window['preparerFrise']>[0] | null = null;
+
+window.preparerFrise = async (e) => {
+  frise = e;
+  const { largeur, hauteur } = FORMATS_STUDIO[e.frise.format];
+  await window.preparerStudio({
+    plan: null as never,
+    lignes: e.lignes,
+    theme: e.theme,
+    police: e.police,
+    largeur,
+    hauteur,
+  });
+};
+
+/** Effets et sous-titres de la frise à l'instant `t`, sur fond transparent. */
+window.imageFrise = (t) => {
+  if (!frise || !ctx || !canevas) throw new Error('surcouche non préparée');
+  ctx.clearRect(0, 0, canevas.width, canevas.height);
+  dessinerSurcoucheFrise(
+    ctx as unknown as ContexteImage,
+    frise.frise,
+    t,
+    frise.lignes,
+    frise.theme,
+  );
+  return canevas.toDataURL('image/png');
+};
+
+/** Carton plein cadre, texte posé (image fixe bouclée par ffmpeg). */
+window.cartonFrise = (texte) => {
+  if (!frise || !ctx || !canevas) throw new Error('surcouche non préparée');
+  ctx.clearRect(0, 0, canevas.width, canevas.height);
+  dessinerCarton(
+    ctx as unknown as ContexteImage,
+    frise.frise.format,
+    texte,
+    1_500,
+    60_000,
+    { x: 0, y: 0, largeur: canevas.width, hauteur: canevas.height },
+    frise.theme,
+  );
   return canevas.toDataURL('image/png');
 };
