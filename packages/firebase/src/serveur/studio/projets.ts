@@ -33,6 +33,7 @@ import {
   type FormatStudio,
   type MotTranscrit,
   type PreparationCaptures,
+  type Frise,
   type PlanMontage,
   type ReelInstagram,
   type SujetStudio,
@@ -100,6 +101,10 @@ export interface ProjetStudio {
   captures: Record<string, string>;
   /** Artisan d'exemple et écrans à filmer avant le montage (STUDIO.md §4). */
   preparation: PreparationCaptures | null;
+  /** Montage libre (sans génération) : ouvert directement dans l'éditeur. */
+  libre: boolean;
+  /** Frise multipistes (STUDIO.md §5 bis) ; absente : montage encore au format « plan ». */
+  frise: Frise | null;
   rendu: {
     video: string;
     srt: string;
@@ -132,6 +137,10 @@ export interface ServicesStudio {
    * continue à naviguer. Absent (tests, robot) : la tâche est attendue.
    */
   enArrierePlan?: (tache: () => Promise<void>) => void;
+  /** Taille et type réels d'un fichier du bucket (null s'il n'existe pas). */
+  infoFichier?: (chemin: string) => Promise<{ taille: number; type: string } | null>;
+  /** Suppression d'un fichier du bucket (médias d'un projet supprimé). */
+  supprimerFichier?: (chemin: string) => Promise<void>;
 }
 
 const ms = (t: unknown) => (t as Timestamp | undefined)?.toMillis() ?? 0;
@@ -157,6 +166,8 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     version: (d.version as number | undefined) ?? 0,
     captures: (d.captures as Record<string, string> | undefined) ?? {},
     preparation: (d.preparation as PreparationCaptures | null | undefined) ?? null,
+    libre: d.libre === true,
+    frise: (d.frise as Frise | null | undefined) ?? null,
     rendu: d.rendu
       ? { ...(d.rendu as Omit<NonNullable<ProjetStudio['rendu']>, 'le'>), le: ms(d.rendu.le) }
       : null,

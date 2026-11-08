@@ -16,6 +16,10 @@ import {
   voixSyntheseStudio,
   sansPriseStudio,
   relancerStudio,
+  creerMontageLibreStudio,
+  ajouterMediaStudio,
+  enregistrerFriseStudio,
+  supprimerProjetStudio,
   preparerCapturesStudio,
   modifierPreparationStudio,
   ignorerCapturesStudio,
@@ -982,5 +986,107 @@ describe('captures avant le montage', () => {
     expect(p?.erreur).toBeNull();
     expect(p?.preparation).toMatchObject({ scenes: [], ignoree: true });
     await expect(filmerCapturesStudio(services(), { projetId: id })).rejects.toThrow(/écran/);
+  });
+});
+
+describe('montage libre et bibliothèque de médias', () => {
+  const media = {
+    id: 'm1',
+    type: 'video' as const,
+    chemin: 'studio/sa/medias/m1.mp4',
+    nom: 'chantier.mp4',
+    dureeMs: 8_000,
+    taille: 1,
+  };
+
+  it('nouveau montage sans génération, média vérifié par le serveur, frise enregistrée', async () => {
+    const fichiers = new Map([
+      ['studio/sa/medias/m1.mp4', { taille: 5_000_000, type: 'video/mp4' }],
+    ]);
+    const supprimes: string[] = [];
+    const s = {
+      ...services(),
+      infoFichier: async (c: string) => fichiers.get(c) ?? null,
+      supprimerFichier: async (c: string) => void supprimes.push(c),
+    };
+    const id = await creerMontageLibreStudio(s, {
+      auteurUid: 'sa',
+      titre: 'Chantier',
+      format: 'carre',
+    });
+    let p = await lireProjetStudio(db, id);
+    expect(p).toMatchObject({ libre: true, sujet: null, format: 'carre' });
+    expect(p?.frise?.pistes.map((x) => x.nom)).toEqual(['Effets', 'Vidéo 1', 'Audio 1']);
+
+    // Taille et type relus côté serveur (la taille annoncée par le navigateur est ignorée).
+    const lu = await ajouterMediaStudio(s, { projetId: id, auteurUid: 'sa', media });
+    expect(lu.taille).toBe(5_000_000);
+    await expect(ajouterMediaStudio(s, { projetId: id, auteurUid: 'sa', media })).rejects.toThrow(
+      /déjà/,
+    );
+    await expect(
+      ajouterMediaStudio(s, { projetId: id, auteurUid: 'autre', media }),
+    ).rejects.toThrow(/invalide/);
+    await expect(
+      ajouterMediaStudio(s, {
+        projetId: id,
+        auteurUid: 'sa',
+        media: { ...media, id: 'm2', chemin: 'studio/sa/medias/m2.mp4' },
+      }),
+    ).rejects.toThrow(/pas arrivé/);
+    fichiers.set('studio/sa/medias/m3.mp3', { taille: 10, type: 'video/mp4' });
+    await expect(
+      ajouterMediaStudio(s, {
+        projetId: id,
+        auteurUid: 'sa',
+        media: { ...media, id: 'm3', type: 'audio', chemin: 'studio/sa/medias/m3.mp3' },
+      }),
+    ).rejects.toThrow(/inattendu/);
+
+    p = await lireProjetStudio(db, id);
+    const f = p!.frise!;
+    const v1 = f.pistes.find((x) => x.type === 'video')!;
+    const frise = {
+      ...f,
+      pistes: f.pistes.map((x) =>
+        x.id === v1.id
+          ? {
+              ...x,
+              clips: [
+                {
+                  id: 'k1',
+                  debut: 0,
+                  duree: 4_000,
+                  source: { type: 'media', mediaId: 'm1', debutSource: 0 },
+                },
+              ],
+            }
+          : x,
+      ),
+    };
+    await enregistrerFriseStudio(s, { projetId: id, frise });
+    expect(
+      (await lireProjetStudio(db, id))?.frise?.pistes.find((x) => x.id === v1.id)?.clips,
+    ).toHaveLength(1);
+    // Un média inventé ou grossi par le navigateur est refusé ; la taille du serveur est gardée.
+    await expect(
+      enregistrerFriseStudio(s, {
+        projetId: id,
+        frise: { ...frise, medias: [{ ...media, chemin: 'studio/sa/medias/x.mp4' }] },
+      }),
+    ).rejects.toThrow(/inconnu/);
+    await enregistrerFriseStudio(s, {
+      projetId: id,
+      frise: { ...frise, medias: [{ ...lu, taille: 1 }] },
+    });
+    expect((await lireProjetStudio(db, id))?.frise?.medias[0]?.taille).toBe(5_000_000);
+    await expect(enregistrerFriseStudio(s, { projetId: id, frise: { titre: '' } })).rejects.toThrow(
+      /invalide/,
+    );
+
+    // Supprimer le projet supprime ses médias.
+    await supprimerProjetStudio(s, { projetId: id });
+    expect(await lireProjetStudio(db, id)).toBeNull();
+    expect(supprimes).toEqual(['studio/sa/medias/m1.mp4']);
   });
 });

@@ -253,6 +253,48 @@ const CAS: Cas[] = [
     autorises: staffAvec('std'),
   },
   {
+    nom: 'importer une vidéo dans la bibliothèque du Studio',
+    op: { ecrire: 'studio/{uid}/medias/{p}.mp4', type: 'video/mp4', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer un son dans la bibliothèque du Studio',
+    op: { ecrire: 'studio/{uid}/medias/{p}.mp3', type: 'audio/mpeg', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer une image dans la bibliothèque du Studio',
+    op: { ecrire: 'studio/{uid}/medias/{p}.png', type: 'image/png', taille: 1000 },
+    autorises: staffAvec('std'),
+  },
+  {
+    nom: 'importer dans la bibliothèque d’un autre',
+    op: { ecrire: 'studio/sa/medias/autre-{p}.mp4', type: 'video/mp4', taille: 1000 },
+    autorises: ['superadmin'],
+  },
+  // Limites de 1 Go (vidéo) et 200 Mo (son) : même forme de règle que l'image ci-dessous (de tels
+  // envois épuiseraient la mémoire de la machine de test).
+  {
+    nom: 'importer une image de plus de 20 Mo',
+    op: { ecrire: 'studio/{uid}/medias/{p}.jpg', type: 'image/jpeg', taille: 20 * Mo + 1 },
+    autorises: [],
+  },
+  {
+    nom: 'importer une image déguisée en vidéo',
+    op: { ecrire: 'studio/{uid}/medias/{p}.mp4', type: 'image/png', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'importer un fichier qui n’est ni vidéo, ni son, ni image',
+    op: { ecrire: 'studio/{uid}/medias/{p}.pdf', type: 'application/pdf', taille: 1000 },
+    autorises: [],
+  },
+  {
+    nom: 'lire un média de la bibliothèque du Studio',
+    op: { lire: 'studio/sa/medias/m1.mp4' },
+    autorises: staffAvec('std'),
+  },
+  {
     nom: 'lire un rendu Studio',
     op: { lire: 'studioRendus/st1/video.mp4' },
     autorises: staffAvec('std'),
@@ -292,6 +334,7 @@ const FICHIERS = [
   'demandes/dem1/devis/a1/devis.pdf',
   'televersements/part1/existant.jpg',
   'studio/sa/prise1/ecran.webm',
+  'studio/sa/medias/m1.mp4',
   'studioRendus/st1/video.mp4',
 ];
 

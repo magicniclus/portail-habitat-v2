@@ -30,6 +30,16 @@ export function servicesStudio(env: NodeJS.ProcessEnv = process.env): ServicesSt
     elevenlabs: env.ELEVENLABS_API_KEY ? clientElevenLabs(env.ELEVENLABS_API_KEY) : null,
     // Montage par Claude après la réponse : l'auteur continue à naviguer (indicateur dans la coque).
     enArrierePlan: (tache) => after(tache),
+    // Bibliothèque de médias : taille et type relus dans le bucket, suppression avec le projet.
+    infoFichier: async (chemin) => {
+      const [existe] = await bucketFichiers(env).file(chemin).exists();
+      if (!existe) return null;
+      const [m] = await bucketFichiers(env).file(chemin).getMetadata();
+      return { taille: Number(m.size ?? 0), type: String(m.contentType ?? '') };
+    },
+    supprimerFichier: async (chemin) => {
+      await bucketFichiers(env).file(chemin).delete({ ignoreNotFound: true });
+    },
     deposer: async (chemin, octets, type) =>
       bucketFichiers(env).file(chemin).save(Buffer.from(octets), { contentType: type }),
     lancerTravail: async (type, projetId) => {

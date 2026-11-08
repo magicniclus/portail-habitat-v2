@@ -12,6 +12,12 @@ export {
 } from './elevenlabs';
 export { rechercheYoutube, type RechercheYoutube } from './youtube';
 export {
+  ajouterMediaStudio,
+  creerMontageLibreStudio,
+  enregistrerFriseStudio,
+  supprimerProjetStudio,
+} from './medias';
+export {
   filmerCapturesStudio,
   ignorerCapturesStudio,
   modifierPreparationStudio,

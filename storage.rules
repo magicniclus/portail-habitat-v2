@@ -103,6 +103,22 @@ service firebase.storage {
           && request.resource.size <= 200 * 1024 * 1024));
       allow update, delete: if false;
     }
+    // Bibliothèque du Studio (montage libre) : vidéos 1 Go, sons 200 Mo, images 20 Mo ; gardées
+    // tant que le projet existe (supprimées par le serveur avec lui).
+    match /studio/{uid}/medias/{fichier} {
+      allow read: if lit('std');
+      allow create: if resource == null && noImp() && lit('std') && request.auth.uid == uid && (
+        (fichier.matches('[A-Za-z0-9_-]{1,40}[.](mp4|mov|m4v|webm)')
+          && request.resource.contentType.matches('video/(mp4|quicktime|webm|x-m4v)(;.*)?')
+          && request.resource.size <= 1024 * 1024 * 1024)
+        || (fichier.matches('[A-Za-z0-9_-]{1,40}[.](mp3|m4a|wav|aac|ogg)')
+          && request.resource.contentType.matches('audio/(mpeg|mp3|mp4|x-m4a|aac|wav|x-wav|wave|ogg)(;.*)?')
+          && request.resource.size <= 200 * 1024 * 1024)
+        || (fichier.matches('[A-Za-z0-9_-]{1,40}[.](png|jpg|jpeg|webp)')
+          && request.resource.contentType.matches('image/(png|jpeg|webp)')
+          && request.resource.size <= 20 * 1024 * 1024));
+      allow update, delete: if false;
+    }
     match /studioRendus/{p=**} {
       allow read: if lit('std');
       allow write: if false;

@@ -24,4 +24,5 @@ export const etatEtapes = (p: Awaited<ReturnType<typeof projetStudioPage>>) => (
   prise: Boolean(p.prise),
   rendu: Boolean(p.rendu),
   captures: etatCaptures(p),
+  libre: p.libre,
 });

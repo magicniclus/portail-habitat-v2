@@ -34,4 +34,15 @@ describe('pages d’un projet Studio', () => {
     expect(etapesAccessibles(p('montage', { prise: true }))).toEqual(toutes.slice(0, 4));
     expect(etapesAccessibles(p('pret', { prise: true, rendu: true }))).toEqual(toutes);
   });
+
+  it('montage libre : directement au montage, sans idée, captures ni tournage', () => {
+    const libre = p('enregistrement', { captures: 'a_preparer', libre: true });
+    expect(etapeProjet(libre)).toBe('montage');
+    expect(etapesAccessibles(libre)).toEqual(['montage']);
+    expect(etapeProjet({ ...libre, statut: 'pret', rendu: true })).toBe('publication');
+    expect(etapesAccessibles({ ...libre, statut: 'pret', rendu: true })).toEqual([
+      'montage',
+      'publication',
+    ]);
+  });
 });

@@ -24,9 +24,12 @@ interface EtatProjet {
   rendu: boolean;
   /** Captures d'écran préparées et filmées avant le tournage. */
   captures: EtatCaptures;
+  /** Montage libre : ouvert directement dans l'éditeur, sans génération. */
+  libre?: boolean;
 }
 
 export function etapeProjet(p: EtatProjet): EtapeProjet {
+  if (p.libre) return p.statut === 'pret' && p.rendu ? 'publication' : 'montage';
   if (p.statut === 'sujet') return 'idees';
   if (!p.prise) {
     const aFaire = p.captures === 'a_preparer' || p.captures === 'preparee';
@@ -36,6 +39,7 @@ export function etapeProjet(p: EtatProjet): EtapeProjet {
 }
 
 export function etapesAccessibles(p: EtatProjet): EtapeProjet[] {
+  if (p.libre) return p.rendu ? ['montage', 'publication'] : ['montage'];
   return ETAPES_PROJET.filter(
     (e) =>
       e === 'idees' ||
