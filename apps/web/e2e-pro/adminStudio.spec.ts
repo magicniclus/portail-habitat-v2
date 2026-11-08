@@ -4,80 +4,81 @@ import { connecter } from './outils';
 // docs/STUDIO.md, sur émulateurs (sans clés Claude ni YouTube : messages clairs).
 test.skip(({ isMobile }) => isMobile, 'Back-office : vérifié sur ordinateur');
 
-test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par défaut', async ({
+test('studio : le bouton « Studio » ouvre l’éditeur ; tout se fait dans le panneau IA', async ({
   page,
 }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  // En-tête du Studio : onglets, « Nouvelle vidéo » et « Studio » en haut à droite.
+  // En-tête du Studio : onglets et « Studio » en haut à droite.
   await expect(page.getByRole('heading', { level: 1, name: 'Vidéos' })).toBeVisible();
   const sections = page.getByRole('navigation', { name: 'Sections du Studio' });
   await expect(sections.getByRole('link', { name: 'Vidéos' })).toHaveAttribute(
     'aria-current',
     'page',
   );
-  await expect(
-    page.getByRole('main').getByRole('link', { name: 'Studio', exact: true }),
-  ).toBeVisible();
-  // « Nouvelle vidéo » : trois façons de commencer ; vertical par défaut.
-  await page.getByRole('button', { name: 'Nouvelle vidéo' }).click();
-  const nouvelle = page.getByRole('dialog', { name: 'Nouvelle vidéo' });
-  await expect(nouvelle.getByLabel('Format')).toHaveValue('vertical');
-  for (const t of ['Trouver une idée avec Claude', 'Partir de mon idée', 'Monter moi-même'])
-    await expect(nouvelle.getByRole('heading', { name: t })).toBeVisible();
-  await nouvelle.getByRole('button', { name: /Trouver les meilleures vidéos à faire/ }).click();
-  await expect(page).toHaveURL(/\/admin\/studio\/[^/?]+\/idees\?analyse=1/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle vidéo' })).toBeVisible();
-  // Une page par étape : les suivantes restent fermées tant que l'idée n'est pas choisie.
-  const etapes = page.getByRole('navigation', { name: 'Étapes de la vidéo' });
-  await expect(etapes.getByRole('link', { name: /Idée et script/ })).toHaveAttribute(
-    'aria-current',
-    'step',
+  await page.getByRole('main').getByRole('button', { name: 'Studio', exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/studio\/[^/]+\/montage$/);
+  const url = page.url();
+  const editeur = page.getByRole('dialog', { name: /Éditeur de montage : Nouvelle vidéo/ });
+  // Vidéo vide : le panneau IA est ouvert d'office.
+  await expect(editeur.getByRole('tab', { name: 'IA', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
   );
-  await expect(etapes.getByRole('link', { name: /Tournage/ })).toHaveCount(0);
-  // L'analyse part toute seule ; sans clé Claude, le message le dit.
-  await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
-  await page.getByRole('button', { name: 'Aller au Studio sans idée (j’improvise) →' }).click();
-  // Idée choisie : on arrive dans le Studio. Tournage : enregistrer ici, ou tourner avec le
-  // script en prompteur et laisser Claude monter.
-  await expect(page).toHaveURL(/\/montage$/);
-  await expect(etapes.getByRole('link', { name: /Idée et script/ })).toBeVisible();
-  const editeur = page.getByRole('dialog', { name: /Éditeur de montage/ });
-  await editeur.getByRole('tab', { name: 'Tournage' }).click();
-  await expect(editeur.getByRole('button', { name: /Enregistrer ici/ })).toBeVisible();
-  await editeur.getByRole('button', { name: /Tourner, Claude monte/ }).click();
-  const tournage = page.getByRole('dialog', { name: 'Tourner, Claude monte' });
-  await expect(tournage.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
-  // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
-  await expect(tournage.getByLabel('Caméra')).toHaveValue('aucune');
-  await tournage.getByRole('tab', { name: /Vidéo du téléphone/ }).click();
-  await expect(tournage.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
-  await expect(tournage.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
-  // Voix seule : un fichier audio suffit.
-  await tournage.getByRole('tab', { name: /Voix seule/ }).click();
-  await expect(tournage.getByText(/Choisir un fichier audio/)).toBeVisible();
-  await expect(tournage.getByRole('button', { name: 'Envoyer cette voix' })).toBeDisabled();
+  // ① L'idée : sans clé Claude, le message le dit.
+  await editeur.getByLabel('Thème de la vidéo (facultatif)').fill('les demandes gratuites');
+  await editeur.getByRole('button', { name: /Trouver des idées avec Claude/ }).click();
+  await expect(editeur.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
+  // ② À partir de quoi : chaque choix s'ouvre sur place.
+  const sources = editeur.getByRole('radiogroup', { name: 'À partir de quoi faire la vidéo' });
+  await sources.getByRole('radio', { name: /Me filmer/ }).click();
+  await expect(editeur.getByLabel('Caméra')).toHaveValue('');
+  await expect(editeur.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
+  await sources.getByRole('radio', { name: /Ma voix seulement/ }).click();
+  // Caméra jamais demandée d'office pour la voix seule.
+  await expect(editeur.getByLabel('Caméra')).toHaveValue('aucune');
+  await sources.getByRole('radio', { name: /Une vidéo déjà tournée/ }).click();
+  await expect(editeur.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
+  await expect(editeur.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
+  await sources.getByRole('radio', { name: /Un audio déjà enregistré/ }).click();
+  await expect(editeur.getByText(/Choisir un fichier audio/)).toBeVisible();
+  await expect(editeur.getByRole('button', { name: 'Envoyer cette voix' })).toBeDisabled();
   // ElevenLabs : sans clé, le message dit quoi ajouter.
-  await tournage.getByRole('tab', { name: /Voix ElevenLabs/ }).click();
-  await expect(tournage.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
-  // Claude fait tout : rien à tourner, une durée, voix IA au choix, sous-titres cochés.
-  await tournage.getByRole('tab', { name: /Claude fait tout/ }).click();
-  await expect(tournage.getByLabel('Voix')).toHaveValue('');
-  await expect(tournage.getByLabel('Durée')).toHaveValue('30');
-  await expect(tournage.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
-  await expect(tournage.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
+  await sources.getByRole('radio', { name: /Voix IA/ }).click();
+  await expect(editeur.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
+  // Sans rien : une durée, voix IA au choix, sous-titres cochés.
+  await sources.getByRole('radio', { name: /Sans rien/ }).click();
+  await expect(editeur.getByLabel('Durée')).toHaveValue('30');
+  await expect(editeur.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
+  await expect(editeur.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
+  // ③ Monter soi-même : l'enregistreur des pistes s'ouvre sur place.
+  await editeur.getByRole('button', { name: 'Enregistrer sur les pistes' }).click();
+  await expect(editeur.getByRole('button', { name: 'Fermer l’enregistreur' })).toBeVisible();
+
+  // Largeurs des panneaux réglables au clavier (et gardées).
+  const separateur = editeur.getByRole('separator', { name: 'Largeur de la bibliothèque' });
+  const avant = Number(await separateur.getAttribute('aria-valuenow'));
+  await separateur.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(separateur).toHaveAttribute('aria-valuenow', String(avant + 16));
+
+  // Fermer : retour aux vidéos ; la vidéo encore vide est reprise au prochain clic.
+  await editeur.getByRole('button', { name: 'Fermer l’éditeur' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vidéos' })).toBeVisible();
+  await page.getByRole('main').getByRole('button', { name: 'Studio', exact: true }).click();
+  await expect(page).toHaveURL(url);
 });
 
-test('studio : partir de son idée', async ({ page }) => {
+test('studio : supprimer une vidéo depuis la grille', async ({ page }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  await page.getByRole('button', { name: 'Nouvelle vidéo' }).click();
-  const nouvelle = page.getByRole('dialog', { name: 'Nouvelle vidéo' });
-  await nouvelle
-    .getByLabel('Votre idée, en quelques mots')
-    .fill('Les demandes gratuites de la fiche');
-  await nouvelle.getByRole('button', { name: 'Partir de mon idée' }).click();
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Les demandes gratuites de la fiche' }),
-  ).toBeVisible();
+  await page.getByRole('main').getByRole('button', { name: 'Studio', exact: true }).click();
+  await expect(page).toHaveURL(/\/montage$/);
+  await page.goto('/admin/studio');
+  const corbeilles = page.getByRole('button', { name: /^Supprimer « / });
+  const n = await corbeilles.count();
+  expect(n).toBeGreaterThan(0);
+  page.once('dialog', (d) => void d.accept());
+  await corbeilles.first().click();
+  await expect(corbeilles).toHaveCount(n - 1);
 });
 
 test('studio : refusé sans la permission', async ({ page }) => {

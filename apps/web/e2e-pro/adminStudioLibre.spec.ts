@@ -10,14 +10,11 @@ test('STUDIO-LIBRE : nouveau montage, carton, pistes muet / solo, enregistrer', 
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  // Bouton « Studio » en haut à droite : nouveau montage ou projet existant.
-  await page.getByRole('main').getByRole('link', { name: 'Studio', exact: true }).click();
-  await expect(page).toHaveURL(/\/admin\/studio\/monter$/);
-  await page.getByLabel('Titre du montage').fill('Montage maison');
-  await page.getByRole('button', { name: 'Nouveau montage' }).click();
+  // Bouton « Studio » en haut à droite : l'éditeur s'ouvre directement sur une vidéo neuve.
+  await page.getByRole('main').getByRole('button', { name: 'Studio', exact: true }).click();
   await page.waitForURL(/\/admin\/studio\/[^/]+\/montage/);
   const id = page.url().split('/').at(-2)!;
-  const editeur = page.getByRole('dialog', { name: /Éditeur de montage : Montage maison/ });
+  const editeur = page.getByRole('dialog', { name: /Éditeur de montage : Nouvelle vidéo/ });
   await expect(editeur).toBeVisible();
   for (const piste of ['Effets', 'Vidéo 1', 'Audio 1'])
     await expect(editeur.getByLabel(`Piste ${piste}`)).toBeVisible();

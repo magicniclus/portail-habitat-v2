@@ -1,8 +1,9 @@
 'use client';
 
 import { lignesFrise, verifierFrise, type Frise, type MotTranscrit } from '@ph/core/studio';
-import { useMemo, useRef, useState, type ComponentProps } from 'react';
+import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ApercuFrise } from './ApercuFrise';
+import { AssistantIA, type ProjetIA } from './AssistantIA';
 import { BarreHautMontage } from './BarreHautMontage';
 import { BibliothequeFrise } from './BibliothequeFrise';
 import { CommandesLecture } from './CommandesLecture';
@@ -10,14 +11,14 @@ import { EcransPortail } from './EcransPortail';
 import { InspecteurFrise } from './InspecteurFrise';
 import { ManipulationApercu } from './ManipulationApercu';
 import { MenuProjets } from './MenuProjets';
-import { PanneauTournage } from './PanneauTournage';
-import { PanneauIA } from './PanneauIA';
 import type { FichiersProjet } from './sourcesFrise';
 import { useActionsFrise } from './useActionsFrise';
 import { useEnregistrementFrise } from './useEnregistrementFrise';
 import { useHauteurFrise } from './useHauteurFrise';
 import { useHistorique } from './useHistorique';
 import { useImportMedias } from './useImportMedias';
+import { SeparateurPanneau } from './SeparateurPanneau';
+import { useLargeursPanneaux } from './useLargeursPanneaux';
 import { useLectureFrise } from './useLectureFrise';
 import { useRaccourcisMontage } from './useRaccourcisMontage';
 import { ZoneFrise } from './ZoneFrise';
@@ -34,11 +35,9 @@ export function EditeurFrise(p: {
   fichiers: FichiersProjet;
   /** Mots de la voix enregistrée (sous-titres). */
   mots: MotTranscrit[];
-  /** Claude peut revoir ce montage (prise et plan existants). */
-  retouche: boolean;
   etat: string | null;
-  /** Idée et script : tournage « Claude monte » (null : montage libre). */
-  tournage: ComponentProps<typeof PanneauTournage>['claude'];
+  /** Idée, tournage et fabrication par Claude (panneau IA). */
+  projet: ProjetIA;
   /** Le robot filme les écrans. */
   filmage: boolean;
   /** Autres projets à ouvrir (menu « Projets »). */
@@ -50,6 +49,7 @@ export function EditeurFrise(p: {
   const [selection, setSelection] = useState<string | null>(null);
   const [miniature, setMiniature] = useState(false);
   const hauteur = useHauteurFrise(320);
+  const largeurs = useLargeursPanneaux();
   const e = useEnregistrementFrise(p.projetId, p.frise);
   const { message, setMessage, enCours } = e;
   const apercu = useRef<HTMLDivElement>(null);
@@ -60,6 +60,7 @@ export function EditeurFrise(p: {
     setMessage({ ton: 'danger', texte }),
   );
 
+  const pistesVides = brouillon.pistes.every((x) => !x.clips.length);
   const lignes = useMemo(() => lignesFrise(brouillon, p.mots), [brouillon, p.mots]);
   const a = useActionsFrise({
     frise: brouillon,
@@ -103,10 +104,19 @@ export function EditeurFrise(p: {
           />
         }
       />
-      <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] gap-px bg-montage-fond lg:grid-cols-[300px_minmax(0,1fr)_340px]">
+      <div
+        className="grid min-h-0 grid-cols-[minmax(0,1fr)] bg-montage-fond lg:grid-cols-[var(--gauche)_6px_minmax(0,1fr)_6px_var(--droite)]"
+        style={
+          {
+            '--gauche': `${largeurs.gauche}px`,
+            '--droite': `${largeurs.droite}px`,
+          } as CSSProperties
+        }
+      >
         <aside aria-label="Bibliothèque" className="hidden min-h-0 bg-montage-panneau lg:block">
           <BibliothequeFrise
             frise={brouillon}
+            ongletInitial={pistesVides || p.projet.statut !== 'enregistrement' ? 'ia' : 'medias'}
             envois={imports.envois}
             onPoser={(c) => a.poser(c)}
             onRetouche={(r) => a.retoucher(r)}
@@ -122,12 +132,19 @@ export function EditeurFrise(p: {
                 changer={changer}
               />
             }
-            tournage={
-              <PanneauTournage projetId={p.projetId} claude={p.tournage} onPrise={a.poserPrise} />
+            ia={
+              <AssistantIA
+                projetId={p.projetId}
+                projet={p.projet}
+                pistesRemplies={!pistesVides}
+                enCours={enCours}
+                onRetouche={e.retoucher}
+                onPrise={a.poserPrise}
+              />
             }
-            ia={<PanneauIA retouche={p.retouche} enCours={enCours} onRetouche={e.retoucher} />}
           />
         </aside>
+        <SeparateurPanneau cote="gauche" largeurs={largeurs} />
         <section aria-label="Aperçu" className="grid min-h-0 grid-rows-[minmax(0,1fr)_56px]">
           <div ref={apercu} className="min-h-0 p-3">
             <ApercuFrise
@@ -156,6 +173,7 @@ export function EditeurFrise(p: {
             onPleinEcran={() => void apercu.current?.requestFullscreen?.()}
           />
         </section>
+        <SeparateurPanneau cote="droite" largeurs={largeurs} />
         <aside
           aria-label="Réglages"
           className="hidden min-h-0 overflow-y-auto bg-montage-panneau p-3 lg:block"

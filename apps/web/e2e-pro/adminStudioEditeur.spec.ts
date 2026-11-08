@@ -129,10 +129,10 @@ test('STUDIO-EDIT : montage de Claude dans l’éditeur multipistes, écrans, IA
     .poll(async () => (await db.doc('studioProjets/e2e-editeur').get()).get('erreur'))
     .toMatch(/robot de rendu n’est pas configuré/);
 
-  // Fermer, puis rouvrir depuis la page de l'étape.
+  // Fermer : retour aux vidéos ; un clic sur la carte rouvre directement le Studio.
   await editeur.getByRole('button', { name: 'Fermer l’éditeur' }).click();
-  await expect(editeur).toBeHidden();
-  await page.getByRole('button', { name: 'Ouvrir l’éditeur' }).click();
+  await expect(page).toHaveURL(/\/admin\/studio$/);
+  await page.locator('a[href="/admin/studio/e2e-editeur/montage"]').click();
   await expect(page.getByRole('dialog', { name: /Éditeur de montage/ })).toBeVisible();
   await page.screenshot({ path: process.env.CAPTURE_EDITEUR ?? 'test-results/editeur.png' });
 });

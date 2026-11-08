@@ -3,7 +3,6 @@
 import {
   entreeChoixSujetStudio,
   entreeCommentairesStudio,
-  entreeCreerProjetStudio,
   entreeDeclinaisonStudio,
   entreeGarderIdeeStudio,
   entreeIdeeStudio,
@@ -12,17 +11,17 @@ import {
   entreeProjetStudio,
   entreeRetoucheStudio,
   entreeSansPriseStudio,
-  entreeMontageLibreStudio,
+  entreeOuvrirStudio,
   entreeMediaStudio,
   entreeFilmerEcransStudio,
   entreeFriseStudio,
   entreeSujetsStudio,
   entreeVoixSyntheseStudio,
 } from '@ph/core/schemas';
+import { FORMAT_DEFAUT } from '@ph/core/studio';
 import type { z } from '@ph/core/zod';
 import {
   choisirSujetStudio,
-  creerProjetStudio,
   declinerSujetStudio,
   garderIdeeStudio,
   supprimerIdeeStudio,
@@ -36,7 +35,7 @@ import {
   voixDisponiblesStudio,
   voixSyntheseStudio,
   configReseaux,
-  creerMontageLibreStudio,
+  ouvrirStudioStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -57,13 +56,6 @@ const fin = <T>(r: { ok: true; data: T } | { ok: false; message: string }, id?: 
   page(id);
   return r.ok ? { ok: true, data: r.data } : { ok: false, message: r.message };
 };
-
-const creer = actionAdmin(
-  { schema: entreeCreerProjetStudio, nom: 'adminStudioCreer', permission: P },
-  async (e, ctx) => creerProjetStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
-);
-export const creerProjet = async (e: z.input<typeof entreeCreerProjetStudio>) =>
-  fin(await creer(e));
 
 const sujets = actionAdmin(
   { schema: entreeSujetsStudio, nom: 'adminStudioSujets', permission: P },
@@ -164,13 +156,17 @@ const sansPrise = actionAdmin(
 export const videoSansPrise = async (e: z.input<typeof entreeSansPriseStudio>) =>
   fin(await sansPrise(e), e.projetId);
 
-// Montage libre (STUDIO.md §5 bis) : sans génération, médias importés, frise multipistes.
-const montageLibre = actionAdmin(
-  { schema: entreeMontageLibreStudio, nom: 'adminStudioMontageLibre', permission: P },
-  async (e, ctx) => creerMontageLibreStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+// Bouton « Studio » (STUDIO.md §5 bis) : l'éditeur s'ouvre sur une vidéo neuve, où tout se fait.
+const ouvrir = actionAdmin(
+  { schema: entreeOuvrirStudio, nom: 'adminStudioOuvrir', permission: P },
+  async (e, ctx) =>
+    ouvrirStudioStudio(servicesStudio(), {
+      auteurUid: ctx.uid!,
+      format: e.format ?? FORMAT_DEFAUT,
+    }),
 );
-export const creerMontageLibre = async (e: z.input<typeof entreeMontageLibreStudio>) =>
-  fin(await montageLibre(e));
+export const ouvrirStudio = async (e: z.input<typeof entreeOuvrirStudio> = {}) =>
+  fin(await ouvrir(e));
 
 const media = actionAdmin(
   { schema: entreeMediaStudio, nom: 'adminStudioMedia', permission: P },

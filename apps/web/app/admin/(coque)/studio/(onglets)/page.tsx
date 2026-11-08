@@ -9,8 +9,6 @@ import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
 
 export const metadata: Metadata = { title: 'Studio' };
-/** Créer une vidéo (« Nouvelle vidéo ») peut lancer Claude : plusieurs minutes possibles. */
-export const maxDuration = 300;
 
 const FILTRES = {
   toutes: ['Toutes', () => true],
@@ -54,8 +52,7 @@ export default async function Studio({
       </div>
       {visibles.length === 0 ? (
         <EmptyState titre={projets.length ? 'Aucune vidéo ici' : 'Aucune vidéo pour l’instant'}>
-          Cliquez sur « Nouvelle vidéo » en haut à droite : Claude trouve l’idée, ou vous montez
-          vous-même dans le Studio.
+          Cliquez sur « Studio » en haut à droite : tout se fait dedans, avec Claude ou vous-même.
         </EmptyState>
       ) : (
         <ul className="m-0 grid list-none grid-cols-2 gap-x-4 gap-y-6 p-0 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7">

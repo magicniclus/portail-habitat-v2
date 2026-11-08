@@ -207,3 +207,8 @@ export const entreeFilmerEcransStudio = z.strictObject({
   frise,
   refaire: z.boolean().optional(),
 });
+
+/** Bouton « Studio » : l'éditeur s'ouvre sur une vidéo neuve (format au choix, sinon par défaut). */
+export const entreeOuvrirStudio = z.strictObject({
+  format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]).optional(),
+});

@@ -14,6 +14,7 @@ export { rechercheYoutube, type RechercheYoutube } from './youtube';
 export {
   ajouterMediaStudio,
   creerMontageLibreStudio,
+  ouvrirStudioStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
   filmerEcransStudio,

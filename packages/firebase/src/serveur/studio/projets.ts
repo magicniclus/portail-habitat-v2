@@ -556,6 +556,8 @@ export async function priseEnregistreeStudio(
   const maintenant = s.horloge();
   await maj(s, e.projetId, {
     prise: { id: e.priseId, fichiers: e.fichiers, dureeMs: e.dureeMs },
+    // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
+    libre: false,
     camera: Boolean(e.fichiers.camera),
     statut: 'transcription',
     mots: [],
@@ -599,6 +601,8 @@ export async function voixSyntheseStudio(
   await s.deposer(chemin, voix.audio, 'audio/mpeg');
   await maj(s, e.projetId, {
     prise: { id: priseId, fichiers: { voix: chemin }, dureeMs },
+    // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
+    libre: false,
     camera: false,
     statut: 'montage',
     // Sans horodatage (ancienne réponse), le texte est réparti sur la durée.
@@ -637,6 +641,8 @@ export async function sansPriseStudio(
   const mots = e.sousTitres ? motsDepuisTexte(script, e.dureeMs) : [];
   await maj(s, e.projetId, {
     prise: { id: `m${s.horloge().toString(36)}`, fichiers: {}, dureeMs: e.dureeMs },
+    // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
+    libre: false,
     camera: false,
     statut: 'montage',
     mots,

@@ -15,7 +15,13 @@ import {
 } from '@ph/core/studio';
 import { Timestamp } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
-import { exiger, maj, type ProjetStudio, type ServicesStudio } from './projets';
+import {
+  exiger,
+  listerProjetsStudio,
+  maj,
+  type ProjetStudio,
+  type ServicesStudio,
+} from './projets';
 
 /**
  * Montage libre (STUDIO.md §5 bis) : un projet qui s'ouvre directement dans l'éditeur, sans idée
@@ -23,7 +29,7 @@ import { exiger, maj, type ProjetStudio, type ServicesStudio } from './projets';
  */
 export async function creerMontageLibreStudio(
   s: ServicesStudio,
-  e: { auteurUid: string; titre: string; format: FormatStudio },
+  e: { auteurUid: string; titre: string; format: FormatStudio; titreAuto?: boolean },
 ): Promise<string> {
   const ref = s.db.collection(collections.studioProjets).doc();
   const t = Timestamp.fromMillis(s.horloge());
@@ -31,7 +37,8 @@ export async function creerMontageLibreStudio(
     schemaVersion: 1,
     auteurUid: e.auteurUid,
     titre: e.titre,
-    titreAuto: false,
+    // Titre provisoire (« Nouvelle vidéo ») : remplacé par celui de l'idée choisie.
+    titreAuto: e.titreAuto ?? false,
     statut: 'enregistrement',
     libre: true,
     frise: creerFrise(e.format, e.titre),
@@ -52,6 +59,28 @@ export async function creerMontageLibreStudio(
     updatedAt: t,
   });
   return ref.id;
+}
+
+/**
+ * Bouton « Studio » : ouvre l'éditeur sur une vidéo neuve. Une vidéo neuve laissée vide (aucun
+ * clip, média, idée ni prise) est reprise plutôt que d'en créer une de plus à chaque clic.
+ */
+export async function ouvrirStudioStudio(
+  s: ServicesStudio,
+  e: { auteurUid: string; format: FormatStudio },
+): Promise<string> {
+  const vide = (await listerProjetsStudio(s.db)).find(
+    (p) =>
+      p.libre &&
+      p.auteurUid === e.auteurUid &&
+      p.statut === 'enregistrement' &&
+      !p.prise &&
+      !p.sujets.length &&
+      !p.frise?.medias.length &&
+      (p.frise?.pistes ?? []).every((x) => !x.clips.length),
+  );
+  if (vide) return vide.id;
+  return creerMontageLibreStudio(s, { ...e, titre: 'Nouvelle vidéo', titreAuto: true });
 }
 
 /** Frise du projet : la sienne, ou une frise vide au format du projet. */

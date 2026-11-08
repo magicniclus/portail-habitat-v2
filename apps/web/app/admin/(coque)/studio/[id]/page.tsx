@@ -1,21 +1,10 @@
-import { etapeProjet } from '@ph/core/studio';
 import type { Route } from 'next';
 import { redirect } from 'next/navigation';
-import { etatEtapes, projetStudioPage } from '@/features/studio/projetPage';
+import { projetStudioPage } from '@/features/studio/projetPage';
 
-/** Ouvrir un projet : on arrive sur l'étape en cours (« analyse=1 » lance la recherche d'idées). */
-export default async function ProjetStudioPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+/** Ouvrir une vidéo : on arrive directement dans le Studio (idée, tournage, montage). */
+export default async function ProjetStudioPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const analyse = (await searchParams).analyse === '1';
-  const p = await projetStudioPage(id);
-  const etape = etapeProjet(etatEtapes(p));
-  redirect(
-    `/admin/studio/${id}/${etape}${analyse && etape === 'idees' ? '?analyse=1' : ''}` as Route,
-  );
+  await projetStudioPage(id);
+  redirect(`/admin/studio/${id}/montage` as Route);
 }

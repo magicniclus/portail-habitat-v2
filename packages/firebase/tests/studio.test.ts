@@ -17,6 +17,7 @@ import {
   sansPriseStudio,
   relancerStudio,
   creerMontageLibreStudio,
+  ouvrirStudioStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -729,6 +730,57 @@ describe('tendances Instagram', () => {
     reponses = [{ sujets: [sujet] }];
     await proposerSujetsStudio(avecInstagram(), { projetId: id });
     expect(demandes).toHaveLength(5);
+  });
+});
+
+describe('bouton « Studio » : tout se fait dans l’éditeur', () => {
+  it('reprend la vidéo neuve restée vide, sinon en crée une', async () => {
+    const id = await ouvrirStudioStudio(services(), { auteurUid: 'sa', format: 'vertical' });
+    expect(await lireProjetStudio(db, id)).toMatchObject({
+      libre: true,
+      titre: 'Nouvelle vidéo',
+      statut: 'enregistrement',
+    });
+    expect(await ouvrirStudioStudio(services(), { auteurUid: 'sa', format: 'vertical' })).toBe(id);
+    // Un autre auteur a sa propre vidéo neuve.
+    expect(await ouvrirStudioStudio(services(), { auteurUid: 'sb', format: 'vertical' })).not.toBe(
+      id,
+    );
+    // Des idées demandées : la vidéo n'est plus vide, le bouton en ouvre une autre.
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    expect(await ouvrirStudioStudio(services(), { auteurUid: 'sa', format: 'vertical' })).not.toBe(
+      id,
+    );
+  });
+
+  it('idée choisie puis Claude monte : titre de l’idée, et son plan remplace les pistes', async () => {
+    const id = await ouvrirStudioStudio(services(), { auteurUid: 'sa', format: 'vertical' });
+    reponses = [{ sujets: [sujet] }];
+    await proposerSujetsStudio(services(), { projetId: id });
+    await choisirSujetStudio(services(), { projetId: id, index: 0 });
+    let p = await lireProjetStudio(db, id);
+    expect(p?.titre).toBe(sujet.titre);
+    expect(friseActive(p!)).toBe(true);
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 20_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+      }),
+    ];
+    await sansPriseStudio(services(), { projetId: id, dureeMs: 20_000 });
+    p = await lireProjetStudio(db, id);
+    expect(p?.libre).toBe(false);
+    expect(friseActive(p!)).toBe(false);
+    expect(friseDuProjet(p!).pistes.flatMap((x) => x.clips).length).toBeGreaterThan(0);
   });
 });
 

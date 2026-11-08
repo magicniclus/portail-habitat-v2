@@ -3,24 +3,18 @@
 import { useState } from 'react';
 
 /**
- * Onglet IA de l'éditeur : demander à Claude de revoir le montage (projets montés par Claude).
+ * Panneau IA, « Revoir avec Claude » : refaire le montage à partir de la prise (vidéos montées
+ * par Claude).
  * Le nouveau montage remplace la frise ; les médias importés restent dans la bibliothèque.
  */
-export function PanneauIA(p: {
+export function RetoucheIA(p: {
   /** Retouche possible : le projet a une prise et un montage de Claude. */
   retouche: boolean;
   enCours: boolean;
   onRetouche: (demande: string) => void;
 }) {
   const [demande, setDemande] = useState('');
-  if (!p.retouche)
-    return (
-      <p className="m-0 text-sm text-montage-texte-doux">
-        Claude monte les vidéos tournées dans le Studio (idée, script, tournage). Ici, vous montez
-        vous-même : importez vos médias, ajoutez les écrans de Portail Travaux, cochez les
-        sous-titres dans les réglages du projet.
-      </p>
-    );
+  if (!p.retouche) return null;
   return (
     <div className="grid gap-2">
       <label className="grid gap-1 text-sm">

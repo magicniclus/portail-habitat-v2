@@ -11,7 +11,6 @@ import {
 import {
   ArrowsLeftRightIcon,
   MonitorIcon,
-  VideoCameraIcon,
   CardsIcon,
   FilmStripIcon,
   MagicWandIcon,
@@ -24,19 +23,10 @@ import { DUREE_FIXE, MediasFrise, Tuile } from './MediasFrise';
 import type { ClipGlisse, RetoucheGlissee } from './glisserFrise';
 import { RetouchesBibliotheque } from './RetouchesBibliotheque';
 
-type Onglet =
-  | 'medias'
-  | 'tournage'
-  | 'ecrans'
-  | 'texte'
-  | 'effets'
-  | 'transitions'
-  | 'video'
-  | 'cartons'
-  | 'ia';
+type Onglet = 'medias' | 'ecrans' | 'texte' | 'effets' | 'transitions' | 'video' | 'cartons' | 'ia';
 const ONGLETS: { id: Onglet; libelle: string; icone: ReactNode }[] = [
+  { id: 'ia', libelle: 'IA', icone: <RobotIcon size={20} aria-hidden="true" /> },
   { id: 'medias', libelle: 'Médias', icone: <FilmStripIcon size={20} aria-hidden="true" /> },
-  { id: 'tournage', libelle: 'Tournage', icone: <VideoCameraIcon size={20} aria-hidden="true" /> },
   { id: 'ecrans', libelle: 'Écrans', icone: <MonitorIcon size={20} aria-hidden="true" /> },
   { id: 'texte', libelle: 'Texte', icone: <TextTIcon size={20} aria-hidden="true" /> },
   { id: 'effets', libelle: 'Animations', icone: <SparkleIcon size={20} aria-hidden="true" /> },
@@ -47,7 +37,6 @@ const ONGLETS: { id: Onglet; libelle: string; icone: ReactNode }[] = [
   },
   { id: 'video', libelle: 'Effets', icone: <MagicWandIcon size={20} aria-hidden="true" /> },
   { id: 'cartons', libelle: 'Cartons', icone: <CardsIcon size={20} aria-hidden="true" /> },
-  { id: 'ia', libelle: 'IA', icone: <RobotIcon size={20} aria-hidden="true" /> },
 ];
 
 const effet = (calque: Calque): ClipGlisse => ({
@@ -56,7 +45,7 @@ const effet = (calque: Calque): ClipGlisse => ({
 });
 
 /**
- * Bibliothèque de l'éditeur libre : médias importés (glisser depuis l'ordinateur ou bouton
+ * Bibliothèque de l'éditeur : panneau IA (en premier), médias importés (glisser depuis l'ordinateur ou bouton
  * « Importer »), captures filmées, textes, effets animés et cartons. Glisser une tuile sur une
  * piste, ou cliquer pour la poser à la tête de lecture.
  */
@@ -67,13 +56,12 @@ export function BibliothequeFrise(p: {
   onFichiers: (fichiers: File[]) => void;
   /** Onglet Écrans de Portail Travaux. */
   ecrans: ReactNode;
-  /** Onglet Tournage. */
-  tournage: ReactNode;
-  /** Contenu de l'onglet IA. */
+  /** Panneau IA : idée, tournage, voix, fabrication par Claude. */
   ia: ReactNode;
+  ongletInitial?: Onglet;
   onRetouche: (r: RetoucheGlissee) => void;
 }) {
-  const [onglet, setOnglet] = useState<Onglet>('medias');
+  const [onglet, setOnglet] = useState<Onglet>(p.ongletInitial ?? 'medias');
   return (
     <div className="grid h-full min-h-0 grid-cols-[64px_minmax(0,1fr)]">
       <div
@@ -99,12 +87,10 @@ export function BibliothequeFrise(p: {
       <div
         role="tabpanel"
         aria-label={`Bibliothèque : ${ONGLETS.find((o) => o.id === onglet)!.libelle}`}
-        className="grid min-h-0 content-start gap-2 overflow-y-auto p-3"
+        className="@container grid min-h-0 content-start gap-2 overflow-y-auto p-3"
       >
         {onglet === 'ia' ? (
           p.ia
-        ) : onglet === 'tournage' ? (
-          p.tournage
         ) : onglet === 'ecrans' ? (
           p.ecrans
         ) : onglet === 'transitions' || onglet === 'video' ? null : (

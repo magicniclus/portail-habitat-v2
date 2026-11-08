@@ -1,10 +1,9 @@
 'use client';
 
-import { FilmSlateIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { NouvelleVideo } from './NouvelleVideo';
+import { BoutonStudio } from './BoutonStudio';
 
 const ONGLETS = [
   ['/admin/studio', 'Vidéos'],
@@ -16,7 +15,7 @@ const ONGLETS = [
 
 /**
  * En-tête commun des pages du Studio (organisation inspirée de CapCut et Descript) : le nom,
- * les onglets, et en haut à droite « + Nouvelle vidéo » et « Studio » (l'éditeur de montage).
+ * les onglets, et en haut à droite « Studio » : l'éditeur, où toute vidéo se crée et se monte.
  */
 export function EnTeteStudio() {
   const chemin = usePathname();
@@ -24,16 +23,7 @@ export function EnTeteStudio() {
     <header className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="m-0 text-[clamp(26px,3vw,32px)] font-bold tracking-tight">Studio</p>
-        <div className="flex flex-wrap items-center gap-2">
-          <NouvelleVideo />
-          <Link
-            href={'/admin/studio/monter' as Route}
-            className="inline-flex min-h-11 items-center gap-2 rounded-control bg-neutre-900 px-5 font-bold text-blanc no-underline hover:bg-neutre-800 hover:text-blanc"
-          >
-            <FilmSlateIcon size={20} aria-hidden="true" />
-            Studio
-          </Link>
-        </div>
+        <BoutonStudio />
       </div>
       <nav
         aria-label="Sections du Studio"
