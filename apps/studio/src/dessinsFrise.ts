@@ -19,6 +19,9 @@ export async function dessinsFrise(f: Frise, lignes: LigneSousTitre[], d: string
   await mkdir(dossierImages);
   // Écrans posés dans un appareil : un « dessous » animé remplace le fond uni.
   const decor = f.pistes.some((x) => x.type === 'video' && x.clips.some((c) => c.appareil));
+  const telephone = f.pistes.some(
+    (x) => x.type === 'video' && x.clips.some((c) => c.appareil === 'telephone'),
+  );
   const dossierDessous = join(d, 'dessous');
   await mkdir(dossierDessous);
   await avecPageDessin(async (page, police) => {
@@ -54,7 +57,8 @@ export async function dessinsFrise(f: Frise, lignes: LigneSousTitre[], d: string
         else await copyFile(uni, fichier);
       }
     }
-    if (!effets && !lignes.length) return;
+    // Coins arrondis de l'écran du téléphone : dessinés dans la surcouche, au-dessus de l'image.
+    if (!effets && !lignes.length && !telephone) return;
     for (let n = 0; n < images; n++)
       await ecrirePng(
         join(dossierImages, `${String(n).padStart(6, '0')}.png`),
@@ -64,7 +68,7 @@ export async function dessinsFrise(f: Frise, lignes: LigneSousTitre[], d: string
   return {
     cartons,
     texteMiniature,
-    surcouche: effets || lignes.length ? join(dossierImages, '%06d.png') : null,
+    surcouche: effets || lignes.length || telephone ? join(dossierImages, '%06d.png') : null,
     dessous: decor ? join(dossierDessous, '%06d.png') : null,
   };
 }

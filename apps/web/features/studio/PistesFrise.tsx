@@ -47,6 +47,8 @@ export function PistesFrise(p: {
   onTete: (ms: number) => void;
   onDebut: () => void;
   onChange: (f: Frise) => void;
+  /** Largeur visible des pistes (px), à remplir au moins. */
+  largeurMin?: number;
   changer: (f: Frise) => void;
   onDepot: (c: ClipGlisse, pisteId: string, debut: number) => void;
   onRetouche: (r: RetoucheGlissee, clipId: string) => void;
@@ -55,7 +57,8 @@ export function PistesFrise(p: {
   const { frise: f, px } = p;
   const [rognage, setRognage] = useState(false);
   const glisser = useGlisser(px, f, p.onDebut, p.onChange);
-  const largeur = Math.max(30_000, dureeFrise(f) + 10_000) * px;
+  // Toujours au moins la largeur visible : la frise remplit l'écran quel que soit le zoom.
+  const largeur = Math.max(Math.max(30_000, dureeFrise(f) + 10_000) * px, p.largeurMin ?? 0);
   const hauts = f.pistes.map((x) => HAUTEURS_PISTE[x.type]);
   const reperes = (sauf: string) => [
     p.tete,

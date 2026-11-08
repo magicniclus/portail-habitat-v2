@@ -1,4 +1,4 @@
-import { dessinerAppareil, dessinerFond, ecranAppareil } from './appareil';
+import { dessinerAppareil, dessinerCoinsEcran, dessinerFond, ecranAppareil } from './appareil';
 import { SCENES_CAPTURE, type Appareil } from './catalogue';
 import { dessinerCalques, dessinerSousTitre, type ThemeStudio } from './dessin';
 import { FORMATS_STUDIO } from './formats';
@@ -286,6 +286,7 @@ export function dessinerSurcoucheFrise(
   lignes: readonly LigneSousTitre[],
   theme: ThemeStudio,
 ) {
+  if (appareilsVisibles(f, t).includes('telephone')) dessinerCoinsEcran(ctx, f.format, theme);
   for (const { piste, clip } of [...clipsActifs(f, t)].reverse())
     if (piste.type === 'texte' && !piste.muet) dessinerEffet(ctx, f, clip, t, theme);
   if (f.sousTitres) dessinerSousTitresFrise(ctx, f, t, lignes, theme);

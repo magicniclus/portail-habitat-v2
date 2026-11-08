@@ -123,3 +123,36 @@ export function dessinerAppareil(
   }
   ctx.restore();
 }
+
+/** Rayon des coins de l'écran du téléphone (l'écran épouse la forme du corps). */
+export const rayonEcran = (format: FormatStudio) =>
+  Math.round(ecranAppareil(format, 'telephone').largeur * 0.085);
+
+/**
+ * Coins arrondis de l'écran du téléphone, dessinés par-dessus l'image (dans la couleur du corps) :
+ * le site filmé suit la forme de l'écran, dans l'aperçu comme dans la vidéo finale.
+ */
+export function dessinerCoinsEcran(ctx: Contexte2D, format: FormatStudio, th: ThemeStudio) {
+  const e = ecranAppareil(format, 'telephone');
+  const r = rayonEcran(format);
+  const coins: [number, number, number][] = [
+    [e.x, e.y, Math.PI],
+    [e.x + e.largeur, e.y, -Math.PI / 2],
+    [e.x + e.largeur, e.y + e.hauteur, 0],
+    [e.x, e.y + e.hauteur, Math.PI / 2],
+  ];
+  ctx.save();
+  ctx.fillStyle = th.sombre;
+  for (const [x, y, a] of coins) {
+    // Centre de l'arc à l'intérieur de l'écran, puis le coin carré refermé sur l'arc.
+    const cx = x + (x === e.x ? r : -r);
+    const cy = y + (y === e.y ? r : -r);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+    ctx.arc(cx, cy, r, a, a + Math.PI / 2);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}

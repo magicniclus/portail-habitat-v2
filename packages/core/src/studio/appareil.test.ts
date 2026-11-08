@@ -4,6 +4,8 @@ import {
   appareilsVisibles,
   creerFrise,
   dessinerDessousFrise,
+  dessinerSurcoucheFrise,
+  rayonEcran,
   ecranAppareil,
   friseDepuisPlan,
   FORMATS_STUDIO,
@@ -107,6 +109,27 @@ describe('écran dans un appareil', () => {
       theme,
     );
     expect(tel.appels.filter((a) => a.startsWith('lineTo #000')).length).toBe(4);
+  });
+
+  it('écran du téléphone : coins arrondis dessinés dans la surcouche, couleur du corps', () => {
+    let f = creerFrise('vertical', 'T');
+    const v = f.pistes.find((p) => p.type === 'video')!.id;
+    f = poserClip(f, v, {
+      id: 'k',
+      debut: 0,
+      duree: 4_000,
+      source: { type: 'capture', captureId: 'c1', debutSource: 0 },
+      appareil: 'telephone',
+    });
+    const avec = faux();
+    dessinerSurcoucheFrise(avec.ctx, f, 1_000, [], theme);
+    // 4 coins : chacun un arc dans la couleur sombre du corps.
+    expect(avec.appels.filter((a) => a.startsWith('arc #000')).length).toBe(4);
+    const e = ecranAppareil('vertical', 'telephone');
+    expect(avec.appels).toContain(`lineTo #000 ${e.x},${e.y + rayonEcran('vertical')}`);
+    const sans = faux();
+    dessinerSurcoucheFrise(sans.ctx, f, 5_000, [], theme);
+    expect(sans.appels).toEqual([]);
   });
 
   it('un plan de Claude garde l’appareil de ses captures (pas pour un carton)', () => {

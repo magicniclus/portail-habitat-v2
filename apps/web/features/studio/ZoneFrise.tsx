@@ -7,7 +7,8 @@ import {
   ScissorsIcon,
   WaveSineIcon,
 } from '@phosphor-icons/react';
-import { useState, type ComponentProps } from 'react';
+import { useEffect, useRef, useState, type ComponentProps } from 'react';
+import { LARGEUR_EN_TETE } from './EnTetePiste';
 import { PistesFrise } from './PistesFrise';
 
 const ZOOMS = [0.01, 0.02, 0.04, 0.08, 0.15, 0.3] as const;
@@ -25,13 +26,22 @@ const PISTES: [TypePiste, string][] = [
  * dans les deux sens).
  */
 export function ZoneFrise(
-  p: Omit<ComponentProps<typeof PistesFrise>, 'px' | 'automation'> & {
+  p: Omit<ComponentProps<typeof PistesFrise>, 'px' | 'automation' | 'largeurMin'> & {
     /** Couper le clip choisi à la tête de lecture. */
     onScinder: () => void;
   },
 ) {
   const { onScinder, ...pistes } = p;
   const [zoom, setZoom] = useState(3);
+  const defilement = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(0);
+  useEffect(() => {
+    const el = defilement.current;
+    if (!el) return;
+    const o = new ResizeObserver(() => setVisible(el.clientWidth));
+    o.observe(el);
+    return () => o.disconnect();
+  }, []);
   const choisi = p.selection ? clipParId(p.frise, p.selection)?.clip : undefined;
   const coupable = Boolean(choisi && p.tete > choisi.debut && p.tete < choisi.debut + choisi.duree);
   const [automation, setAutomation] = useState(false);
@@ -97,8 +107,13 @@ export function ZoneFrise(
           Glissez vos fichiers sur une piste · S coupe le clip choisi · Suppr l’efface
         </p>
       </div>
-      <div className="min-h-0 overflow-auto">
-        <PistesFrise {...pistes} px={px} automation={automation} />
+      <div ref={defilement} className="min-h-0 overflow-auto">
+        <PistesFrise
+          {...pistes}
+          px={px}
+          automation={automation}
+          largeurMin={Math.max(0, visible - LARGEUR_EN_TETE)}
+        />
       </div>
     </section>
   );
