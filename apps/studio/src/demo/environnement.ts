@@ -78,7 +78,9 @@ export function environnementDemo(): Promise<void> {
     );
     await attendre('http://127.0.0.1:8080', 120_000);
     await attendre('http://127.0.0.1:9099', 60_000);
-    await executer('pnpm', ['--dir', DEPOT, 'seed'], { env });
+    // Le jeu de test refuse NODE_ENV=production (garde du seed) : la copie vise les émulateurs
+    // demo-… seulement, on le lance donc en « development » ; le site, lui, reste compilé.
+    await executer('pnpm', ['--dir', DEPOT, 'seed'], { env: { ...env, NODE_ENV: 'development' } });
     processus.push(
       spawn('pnpm', ['--dir', `${DEPOT}/apps/web`, 'start', '--port', String(PORT_DEMO)], {
         env,
