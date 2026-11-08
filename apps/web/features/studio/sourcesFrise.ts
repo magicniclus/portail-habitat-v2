@@ -34,18 +34,35 @@ export function lecteurDuClip(
   return null;
 }
 
-/** Adresses de lecture des fichiers Storage (résolues une fois, gardées). */
-export function useUrlsStudio(chemins: readonly string[]): Record<string, string> {
+/**
+ * Adresses de lecture des fichiers Storage (résolues une fois, gardées). Un fichier refusé ou
+ * absent a une adresse vide et son code d'erreur dans `erreurs` (ex. `storage/unauthorized`).
+ */
+export function useUrlsStudio(chemins: readonly string[]): {
+  urls: Record<string, string>;
+  erreurs: Record<string, string>;
+} {
   const [urls, setUrls] = useState<Record<string, string>>({});
+  const [erreurs, setErreurs] = useState<Record<string, string>>({});
   const cle = [...new Set(chemins)].sort().join('|');
   useEffect(() => {
     const manquants = cle ? cle.split('|').filter((c) => !(c in urls)) : [];
     if (!manquants.length) return;
     let actif = true;
     void Promise.all(
-      manquants.map(async (c) => [c, await urlFichierStudio(c).catch(() => '')] as const),
+      manquants.map(async (c) => {
+        try {
+          return [c, await urlFichierStudio(c), null] as const;
+        } catch (e) {
+          const code = (e as { code?: string }).code ?? 'inconnue';
+          return [c, '', code] as const;
+        }
+      }),
     ).then((r) => {
-      if (actif) setUrls((u) => ({ ...u, ...Object.fromEntries(r) }));
+      if (!actif) return;
+      setUrls((u) => ({ ...u, ...Object.fromEntries(r.map(([c, u2]) => [c, u2])) }));
+      const ko = r.filter(([, , e]) => e).map(([c, , e]) => [c, e!] as const);
+      if (ko.length) setErreurs((x) => ({ ...x, ...Object.fromEntries(ko) }));
     });
     return () => {
       actif = false;
@@ -53,5 +70,5 @@ export function useUrlsStudio(chemins: readonly string[]): Record<string, string
     // `urls` est lu pour éviter de résoudre deux fois ; seule la liste des chemins compte.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cle]);
-  return urls;
+  return { urls, erreurs };
 }

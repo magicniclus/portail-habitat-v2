@@ -14,6 +14,7 @@ import {
 } from '@ph/core/studio';
 import { themeStudio } from '@ph/ui/tokens';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { EtatEcrans } from './EtatEcrans';
 import { lecteurDuClip, useUrlsStudio, type FichiersProjet } from './sourcesFrise';
 import type { LectureFrise } from './useLectureFrise';
 
@@ -51,7 +52,12 @@ export function ApercuFrise({
     }),
   );
   const images = frise.medias.filter((m) => m.type === 'image');
-  const urls = useUrlsStudio([...lecteurs.map((x) => x.chemin), ...images.map((m) => m.chemin)]);
+  const { urls, erreurs } = useUrlsStudio([
+    ...lecteurs.map((x) => x.chemin),
+    ...images.map((m) => m.chemin),
+  ]);
+  // Fichiers qui ne se lisent pas, même sans CORS.
+  const [illisibles, setIllisibles] = useState<ReadonlySet<string>>(new Set());
 
   useEffect(() => {
     void new FontFace('Archivo', `url(${themeStudio.fichierPolice})`, { weight: '800' })
@@ -108,6 +114,14 @@ export function ApercuFrise({
           className="block size-full rounded-[4px] bg-neutre-900"
           aria-label="Aperçu du montage"
         />
+        <EtatEcrans
+          frise={frise}
+          t={l.affiche}
+          fichiers={fichiers}
+          urls={urls}
+          erreurs={erreurs}
+          illisibles={illisibles}
+        />
         {children}
       </div>
       {lecteurs.map(({ clip, chemin, balise }) => {
@@ -123,7 +137,11 @@ export function ApercuFrise({
             }}
             src={src}
             crossOrigin={sansCors.has(chemin) ? undefined : 'anonymous'}
-            onError={() => setSansCors((s) => (s.has(chemin) ? s : new Set(s).add(chemin)))}
+            onError={() =>
+              sansCors.has(chemin)
+                ? setIllisibles((s) => (s.has(chemin) ? s : new Set(s).add(chemin)))
+                : setSansCors((s) => new Set(s).add(chemin))
+            }
             onLoadedData={() => l.aller(l.t.current)}
             playsInline
             preload="auto"
