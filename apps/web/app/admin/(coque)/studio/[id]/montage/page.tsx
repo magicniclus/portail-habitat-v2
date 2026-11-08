@@ -19,9 +19,9 @@ export const maxDuration = 300;
 export default async function MontagePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const p = await projetStudioPage(id, 'montage');
-  if (!p.libre && !p.prise) notFound();
+  if (!p.libre && p.statut === 'sujet') notFound();
   const projets = (await listerProjetsStudio(getFirestore(appAdmin())))
-    .filter((x) => x.libre || x.plan)
+    .filter((x) => x.libre || x.statut !== 'sujet')
     .map((x) => ({ id: x.id, titre: x.titre }));
   const etat =
     p.statut === 'pret' || p.statut === 'enregistrement'
@@ -40,7 +40,7 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
           erreur={p.erreur}
         />
       ) : null}
-      {p.libre || p.plan ? (
+      {
         <EtapeMontage
           key={p.version}
           projetId={p.id}
@@ -50,8 +50,19 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
           retouche={Boolean(p.plan && p.prise)}
           etat={etat}
           projets={projets}
+          tournage={
+            p.libre
+              ? null
+              : {
+                  script: p.sujet?.script ?? [],
+                  dureeCibleS: p.sujet?.dureeCibleS ?? 30,
+                  dejaEnregistre: Boolean(p.prise),
+                }
+          }
+          filmage={p.statut === 'captures'}
+          claudeTravaille={p.statut === 'montage' || p.statut === 'transcription'}
         />
-      ) : null}
+      }
     </div>
   );
 }

@@ -10,6 +10,8 @@ import {
 } from '@ph/core/studio';
 import {
   ArrowsLeftRightIcon,
+  MonitorIcon,
+  VideoCameraIcon,
   CardsIcon,
   FilmStripIcon,
   MagicWandIcon,
@@ -22,9 +24,20 @@ import { DUREE_FIXE, MediasFrise, Tuile } from './MediasFrise';
 import type { ClipGlisse, RetoucheGlissee } from './glisserFrise';
 import { RetouchesBibliotheque } from './RetouchesBibliotheque';
 
-type Onglet = 'medias' | 'texte' | 'effets' | 'transitions' | 'video' | 'cartons' | 'ia';
+type Onglet =
+  | 'medias'
+  | 'tournage'
+  | 'ecrans'
+  | 'texte'
+  | 'effets'
+  | 'transitions'
+  | 'video'
+  | 'cartons'
+  | 'ia';
 const ONGLETS: { id: Onglet; libelle: string; icone: ReactNode }[] = [
   { id: 'medias', libelle: 'Médias', icone: <FilmStripIcon size={20} aria-hidden="true" /> },
+  { id: 'tournage', libelle: 'Tournage', icone: <VideoCameraIcon size={20} aria-hidden="true" /> },
+  { id: 'ecrans', libelle: 'Écrans', icone: <MonitorIcon size={20} aria-hidden="true" /> },
   { id: 'texte', libelle: 'Texte', icone: <TextTIcon size={20} aria-hidden="true" /> },
   { id: 'effets', libelle: 'Animations', icone: <SparkleIcon size={20} aria-hidden="true" /> },
   {
@@ -52,8 +65,10 @@ export function BibliothequeFrise(p: {
   envois: { nom: string; avancement: number }[];
   onPoser: (c: ClipGlisse) => void;
   onFichiers: (fichiers: File[]) => void;
-  /** Écrans de Portail Travaux (sous les médias). */
+  /** Onglet Écrans de Portail Travaux. */
   ecrans: ReactNode;
+  /** Onglet Tournage. */
+  tournage: ReactNode;
   /** Contenu de l'onglet IA. */
   ia: ReactNode;
   onRetouche: (r: RetoucheGlissee) => void;
@@ -88,6 +103,10 @@ export function BibliothequeFrise(p: {
       >
         {onglet === 'ia' ? (
           p.ia
+        ) : onglet === 'tournage' ? (
+          p.tournage
+        ) : onglet === 'ecrans' ? (
+          p.ecrans
         ) : onglet === 'transitions' || onglet === 'video' ? null : (
           <p className="m-0 text-xs text-montage-texte-doux">
             Glissez sur une piste, ou cliquez pour poser à la tête de lecture.
@@ -101,7 +120,6 @@ export function BibliothequeFrise(p: {
               onPoser={p.onPoser}
               onFichiers={p.onFichiers}
             />
-            {p.ecrans}
           </>
         ) : null}
         {onglet === 'texte' ? (

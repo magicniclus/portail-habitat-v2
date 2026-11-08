@@ -1,7 +1,10 @@
 import { ErreurMetier } from '@ph/core/erreurs';
 import {
+  capturesAFilmer,
   creerFrise,
   friseDepuisPlan,
+  friseSansMentionFictive,
+  separerChevauchements,
   frise as schemaFrise,
   LIMITES_MEDIAS,
   media as schemaMedia,
@@ -64,13 +67,19 @@ export const friseActive = (p: ProjetStudio): boolean =>
  * converti (les médias déjà importés sont gardés), sinon une frise vide.
  */
 export function friseDuProjet(p: ProjetStudio): Frise {
-  if (p.frise && friseActive(p)) return p.frise;
+  if (p.frise && friseActive(p)) return friseSansMentionFictive(separerChevauchements(p.frise));
   const base = p.plan
     ? friseDepuisPlan(p.plan, {
         voix: Boolean(p.prise?.fichiers.voix),
         dureePriseMs: p.prise?.dureeMs ?? 0,
       })
-    : creerFrise(p.format, p.titre);
+    : {
+        ...creerFrise(p.format, p.titre),
+        // Écrans préparés pour l'idée (filmés ou non) : déjà dans la bibliothèque du Studio.
+        captures: capturesAFilmer({ format: p.format, plan: null, preparation: p.preparation })
+          .captures,
+        artisan: p.preparation?.artisan ?? null,
+      };
   return { ...base, medias: p.frise?.medias ?? [] };
 }
 const friseDe = friseDuProjet;
@@ -158,4 +167,23 @@ export async function supprimerProjetStudio(
     );
   const ref = s.db.doc(chemins.projetStudio(p.id));
   await s.db.recursiveDelete(ref);
+}
+
+/**
+ * « Filmer maintenant » depuis le Studio : la frise est enregistrée, puis le robot filme les
+ * écrans qui manquent ; le projet revient ensuite à son état (rien n'est fabriqué).
+ */
+export async function filmerEcransStudio(
+  s: ServicesStudio,
+  e: { projetId: string; frise: unknown },
+): Promise<void> {
+  const avant = await exiger(s, e.projetId);
+  if (avant.statut === 'captures')
+    throw new ErreurMetier('PRECONDITION', 'Le robot filme déjà les écrans.');
+  const p = await enregistrerFriseStudio(s, e);
+  const manquantes = p.frise!.captures.filter((c) => !p.captures[`${c.id}:${c.scene}`]);
+  if (!manquantes.length)
+    throw new ErreurMetier('PRECONDITION', 'Tous les écrans de la vidéo sont déjà filmés.');
+  await maj(s, p.id, { statut: 'captures', apresCaptures: avant.statut, erreur: null });
+  await s.lancerTravail('capturer', p.id);
 }

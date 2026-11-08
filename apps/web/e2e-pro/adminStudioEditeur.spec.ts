@@ -88,9 +88,10 @@ test('STUDIO-EDIT : montage de Claude dans l’éditeur multipistes, écrans, IA
     await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1),
   ).toBe(true);
 
-  // Médias › écrans de Portail Travaux : un clic pose l'écran à la tête de lecture.
+  // Onglet Écrans : un clic pose l'écran de Portail Travaux à la tête de lecture.
+  await editeur.getByRole('tab', { name: 'Écrans' }).click();
   await editeur
-    .getByRole('button', { name: /La fiche de l’artisan.*Filmée à la fabrication/ })
+    .getByRole('button', { name: /La fiche de l’artisan.*Dans la vidéo, à filmer/ })
     .click();
   await expect(
     editeur.getByRole('button', { name: 'Clip La fiche de l’artisan, vue par un particulier' }),

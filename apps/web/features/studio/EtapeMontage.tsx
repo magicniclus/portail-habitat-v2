@@ -2,7 +2,7 @@
 
 import type { Frise, MotTranscrit } from '@ph/core/studio';
 import { Button } from '@ph/ui';
-import { useState } from 'react';
+import { useState, type ComponentProps } from 'react';
 import { EditeurFrise } from './EditeurFrise';
 import type { FichiersProjet } from './sourcesFrise';
 
@@ -19,8 +19,12 @@ export function EtapeMontage(p: {
   retouche: boolean;
   etat: string | null;
   projets: readonly { id: string; titre: string }[];
+  tournage: ComponentProps<typeof EditeurFrise>['tournage'];
+  filmage: boolean;
+  /** Claude travaille (transcription, montage) : on montre d'abord le suivi. */
+  claudeTravaille: boolean;
 }) {
-  const [ouvert, setOuvert] = useState(true);
+  const [ouvert, setOuvert] = useState(!p.claudeTravaille);
   const clips = p.frise.pistes.reduce((n, x) => n + x.clips.length, 0);
   return (
     <section

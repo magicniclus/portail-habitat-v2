@@ -1,7 +1,7 @@
 'use client';
 
 import { lignesFrise, verifierFrise, type Frise, type MotTranscrit } from '@ph/core/studio';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ComponentProps } from 'react';
 import { ApercuFrise } from './ApercuFrise';
 import { BarreHautMontage } from './BarreHautMontage';
 import { BibliothequeFrise } from './BibliothequeFrise';
@@ -10,6 +10,7 @@ import { EcransPortail } from './EcransPortail';
 import { InspecteurFrise } from './InspecteurFrise';
 import { ManipulationApercu } from './ManipulationApercu';
 import { MenuProjets } from './MenuProjets';
+import { PanneauTournage } from './PanneauTournage';
 import { PanneauIA } from './PanneauIA';
 import type { FichiersProjet } from './sourcesFrise';
 import { useActionsFrise } from './useActionsFrise';
@@ -36,6 +37,10 @@ export function EditeurFrise(p: {
   /** Claude peut revoir ce montage (prise et plan existants). */
   retouche: boolean;
   etat: string | null;
+  /** Idée et script : tournage « Claude monte » (null : montage libre). */
+  tournage: ComponentProps<typeof PanneauTournage>['claude'];
+  /** Le robot filme les écrans. */
+  filmage: boolean;
   /** Autres projets à ouvrir (menu « Projets »). */
   projets: readonly { id: string; titre: string }[];
   onFermer: () => void;
@@ -63,11 +68,9 @@ export function EditeurFrise(p: {
     selection,
     setSelection,
     erreur: (texte) => setMessage({ ton: 'danger', texte }),
+    filmes: p.fichiers.captures,
   });
   useRaccourcisMontage({ lecture, onScinder: a.scinder, onSupprimer: a.supprimer });
-  const filmees = new Set(
-    brouillon.captures.filter((c) => p.fichiers.captures[`${c.id}:${c.scene}`]).map((c) => c.scene),
-  );
 
   return (
     <div
@@ -108,7 +111,20 @@ export function EditeurFrise(p: {
             onPoser={(c) => a.poser(c)}
             onRetouche={(r) => a.retoucher(r)}
             onFichiers={(f) => void imports.importer(f)}
-            ecrans={<EcransPortail filmees={filmees} onEcran={a.ecran} />}
+            ecrans={
+              <EcransPortail
+                frise={brouillon}
+                captures={p.fichiers.captures}
+                filmage={p.filmage}
+                enCours={enCours}
+                onEcran={a.ecran}
+                onFilmer={() => e.filmer(brouillon)}
+                changer={changer}
+              />
+            }
+            tournage={
+              <PanneauTournage projetId={p.projetId} claude={p.tournage} onPrise={a.poserPrise} />
+            }
             ia={<PanneauIA retouche={p.retouche} enCours={enCours} onRetouche={e.retoucher} />}
           />
         </aside>

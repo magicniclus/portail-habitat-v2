@@ -87,7 +87,7 @@ export function capturesAFilmer(p: {
   /** Frise montée dans l'éditeur multipistes : ce sont ses captures qui comptent. */
   frise?: Pick<Frise, 'format' | 'artisan' | 'captures'> | null;
 }): { format: FormatStudio; artisan: ArtisanFictif | null; captures: PlanMontage['captures'] } {
-  const artisan = p.preparation?.artisan ?? p.frise?.artisan ?? p.plan?.artisan ?? null;
+  const artisan = p.frise?.artisan ?? p.preparation?.artisan ?? p.plan?.artisan ?? null;
   if (p.frise) return { format: p.frise.format, artisan, captures: p.frise.captures };
   if (p.plan) return { format: p.plan.format, artisan, captures: p.plan.captures };
   return {

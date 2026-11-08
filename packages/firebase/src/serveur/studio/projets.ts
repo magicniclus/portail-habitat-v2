@@ -34,7 +34,9 @@ import {
   type MotTranscrit,
   type PreparationCaptures,
   type Frise,
+  planSansMentionFictive,
   type PlanMontage,
+  type StatutProjetStudio,
   type ReelInstagram,
   type SujetStudio,
   type VideoBrute,
@@ -107,6 +109,8 @@ export interface ProjetStudio {
   frise: Frise | null;
   /** Version du plan sur laquelle la frise a été montée (un nouveau plan de Claude la remplace). */
   friseVersion: number | null;
+  /** Écrans filmés depuis le Studio (« Filmer maintenant ») : on revient ensuite à cet état. */
+  apresCaptures: StatutProjetStudio | null;
   rendu: {
     video: string;
     srt: string;
@@ -171,6 +175,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     libre: d.libre === true,
     frise: (d.frise as Frise | null | undefined) ?? null,
     friseVersion: typeof d.friseVersion === 'number' ? d.friseVersion : null,
+    apresCaptures: (d.apresCaptures as StatutProjetStudio | null | undefined) ?? null,
     rendu: d.rendu
       ? { ...(d.rendu as Omit<NonNullable<ProjetStudio['rendu']>, 'le'>), le: ms(d.rendu.le) }
       : null,
@@ -660,9 +665,11 @@ export async function transcriptionRecueStudio(
 async function enregistrerPlan(
   s: ServicesStudio,
   p: ProjetStudio,
-  plan: PlanMontage,
+  brut: PlanMontage,
   auteur: string,
 ) {
+  // Jamais « exemple fictif » à l'image : cela se dit à l'oral.
+  const plan = planSansMentionFictive(brut);
   const version = p.version + 1;
   const t = Timestamp.fromMillis(s.horloge());
   await s.db
@@ -812,6 +819,16 @@ export async function capturesTermineesStudio(
 ): Promise<void> {
   const p = await exiger(s, e.projetId);
   const captures = { ...p.captures, ...e.captures };
+  // Filmés depuis le Studio sans fabriquer : on garde le montage en cours tel quel.
+  if (p.apresCaptures) {
+    await maj(s, e.projetId, {
+      captures,
+      statut: p.apresCaptures,
+      apresCaptures: null,
+      erreur: null,
+    });
+    return;
+  }
   if (p.plan || p.libre) {
     await maj(s, e.projetId, { captures, statut: 'rendu' });
     return s.lancerTravail('rendre', e.projetId);

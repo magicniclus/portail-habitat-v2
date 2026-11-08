@@ -53,7 +53,7 @@ export const REGLES_COMMUNES = [
   'Tu écris en français, pour des artisans du bâtiment (plombiers, électriciens, maçons, peintres…).',
   'Vouvoiement. Phrases courtes, concrètes, orales. Jamais le mot « lead » : on dit « demandes », « clients », « chantiers ».',
   'N’affirme rien sur Portail Travaux en dehors des faits fournis. Ne présente jamais Portail Travaux comme nouveau.',
-  'Les chiffres d’un artisan d’exemple sont permis : l’auteur précise lui-même à l’oral qu’il s’agit d’un exemple fictif. Pas de faux avis, pas de faux témoignage de client.',
+  'Les chiffres d’un artisan d’exemple sont permis : l’auteur précise lui-même à l’oral qu’il s’agit d’un exemple fictif. N’écris jamais « exemple », « fictif » ni « exemple fictif » à l’image (textes, cartons, notifications, miniature) : cela se dit seulement à l’oral. Pas de faux avis, pas de faux témoignage de client.',
 ].join('\n');
 
 /** Série d'épisodes (STUDIO.md §13) : même promesse, un nouvel angle par épisode. */

@@ -1,21 +1,62 @@
 'use client';
 
-import { NOMS_SCENES, SCENES_CAPTURE, type SceneCapture } from '@ph/core/studio';
+import {
+  ARTISAN_EXEMPLE,
+  captureDeScene,
+  NOMS_SCENES,
+  SCENES_CAPTURE,
+  type Frise,
+  type SceneCapture,
+} from '@ph/core/studio';
+import { Feuille } from '@ph/ui';
+import { useState } from 'react';
+import { FormulairePreparation } from './FormulairePreparation';
+
+const BOUTON =
+  'min-h-10 rounded-[8px] bg-montage-surface px-3 text-sm font-semibold hover:bg-montage-survol disabled:opacity-40';
+
+/** Scènes déjà filmées pour ce projet (clés `id:scene` des captures). */
+const scenesFilmees = (captures: Record<string, string>) =>
+  new Set(Object.keys(captures).map((k) => k.split(':')[1] as SceneCapture));
 
 /**
- * Écrans de Portail Travaux filmés par le robot sur la copie isolée (artisan d'exemple) : un
- * clic pose l'écran à la tête de lecture ; s'il n'est pas encore filmé, il le sera à la
- * fabrication.
+ * Onglet Écrans du Studio : les écrans de Portail Travaux filmés par le robot sur la copie
+ * isolée, avec l'artisan d'exemple. Un clic pose l'écran à la tête de lecture ; « Filmer
+ * maintenant » fait filmer ceux de la vidéo qui manquent, sans fabriquer la vidéo.
  */
 export function EcransPortail(p: {
-  filmees: ReadonlySet<SceneCapture>;
+  frise: Frise;
+  captures: Record<string, string>;
+  /** Le robot est en train de filmer. */
+  filmage: boolean;
+  enCours: boolean;
   onEcran: (scene: SceneCapture) => void;
+  onFilmer: () => void;
+  changer: (f: Frise) => void;
 }) {
+  const [artisan, setArtisan] = useState(false);
+  const filmees = scenesFilmees(p.captures);
+  const aFilmer = p.frise.captures.filter((c) => !p.captures[`${c.id}:${c.scene}`]);
+  const dansLaVideo = new Set(p.frise.captures.map((c) => c.scene));
   return (
     <div className="grid gap-2">
-      <h3 className="m-0 mt-2 text-xs font-semibold text-montage-texte-doux">
-        Écrans de Portail Travaux
-      </h3>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={`${BOUTON} bg-montage-selection text-montage-fond hover:bg-montage-selection`}
+          disabled={p.filmage || p.enCours || !aFilmer.length}
+          onClick={p.onFilmer}
+        >
+          {p.filmage
+            ? 'Le robot filme…'
+            : aFilmer.length
+              ? `Filmer maintenant (${aFilmer.length})`
+              : 'Tout est filmé'}
+        </button>
+        <button type="button" className={BOUTON} onClick={() => setArtisan(true)}>
+          Artisan d’exemple
+        </button>
+      </div>
       {NOMS_SCENES.map((s) => (
         <button
           key={s}
@@ -25,10 +66,42 @@ export function EcransPortail(p: {
         >
           <span className="font-semibold">{SCENES_CAPTURE[s].libelle}</span>
           <span className="text-montage-texte-doux">
-            {p.filmees.has(s) ? 'Filmée' : 'Filmée à la fabrication'}
+            {filmees.has(s)
+              ? 'Filmé'
+              : dansLaVideo.has(s)
+                ? 'Dans la vidéo, à filmer'
+                : 'Filmé quand vous l’ajoutez'}
           </span>
         </button>
       ))}
+      <Feuille open={artisan} onOpenChange={setArtisan} titre="Artisan d’exemple">
+        <p className="m-0 mb-3 text-sm text-neutre-700">
+          Fictif, filmé sur une copie isolée du site (jamais dans le vrai annuaire) : dites à l’oral
+          que c’est un exemple.
+        </p>
+        <FormulairePreparation
+          desactive={p.filmage}
+          valeur={{
+            artisan: p.frise.artisan ?? ARTISAN_EXEMPLE,
+            scenes: p.frise.captures.map((c) => c.scene),
+          }}
+          onChange={(v) => {
+            let f: Frise = { ...p.frise, artisan: v.artisan };
+            for (const scene of v.scenes) f = captureDeScene(f, scene)?.frise ?? f;
+            // Un écran décoché quitte la liste s'il n'est utilisé par aucun clip.
+            const utilises = new Set(
+              f.pistes.flatMap((x) =>
+                x.clips.flatMap((c) => (c.source.type === 'capture' ? [c.source.captureId] : [])),
+              ),
+            );
+            f = {
+              ...f,
+              captures: f.captures.filter((c) => v.scenes.includes(c.scene) || utilises.has(c.id)),
+            };
+            p.changer(f);
+          }}
+        />
+      </Feuille>
     </div>
   );
 }

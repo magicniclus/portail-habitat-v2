@@ -29,33 +29,34 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
   await page.getByRole('button', { name: 'Tourner sans sujet (j’improvise) →' }).click();
-  // Idée choisie : d'abord les captures. Sans script, l'artisan d'exemple est proposé, à
-  // corriger ; on peut aussi monter sans captures, et l'on passe alors au tournage.
-  await expect(page).toHaveURL(/\/captures$/);
-  await expect(page.getByLabel('Nom de l’entreprise')).toHaveValue('Bertrand Rénovation');
-  await page.getByRole('button', { name: 'Monter sans captures' }).click();
-  await expect(page).toHaveURL(/\/tournage$/);
-  await expect(page.getByRole('heading', { level: 2, name: /^Tournage/ })).toBeVisible();
+  // Idée choisie : on arrive dans le Studio. Tournage : enregistrer ici, ou tourner avec le
+  // script en prompteur et laisser Claude monter.
+  await expect(page).toHaveURL(/\/montage$/);
   await expect(etapes.getByRole('link', { name: /Idée et script/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
+  const editeur = page.getByRole('dialog', { name: /Éditeur de montage/ });
+  await editeur.getByRole('tab', { name: 'Tournage' }).click();
+  await expect(editeur.getByRole('button', { name: /Enregistrer ici/ })).toBeVisible();
+  await editeur.getByRole('button', { name: /Tourner, Claude monte/ }).click();
+  const tournage = page.getByRole('dialog', { name: 'Tourner, Claude monte' });
+  await expect(tournage.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   // Caméra jamais demandée d'office ; importer une vidéo du téléphone reste possible.
-  await expect(page.getByLabel('Caméra')).toHaveValue('aucune');
-  await page.getByRole('tab', { name: /Vidéo du téléphone/ }).click();
-  await expect(page.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
+  await expect(tournage.getByLabel('Caméra')).toHaveValue('aucune');
+  await tournage.getByRole('tab', { name: /Vidéo du téléphone/ }).click();
+  await expect(tournage.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
+  await expect(tournage.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
   // Voix seule : un fichier audio suffit.
-  await page.getByRole('tab', { name: /Voix seule/ }).click();
-  await expect(page.getByText(/Choisir un fichier audio/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Envoyer cette voix' })).toBeDisabled();
+  await tournage.getByRole('tab', { name: /Voix seule/ }).click();
+  await expect(tournage.getByText(/Choisir un fichier audio/)).toBeVisible();
+  await expect(tournage.getByRole('button', { name: 'Envoyer cette voix' })).toBeDisabled();
   // ElevenLabs : sans clé, le message dit quoi ajouter.
-  await page.getByRole('tab', { name: /Voix ElevenLabs/ }).click();
-  await expect(page.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
+  await tournage.getByRole('tab', { name: /Voix ElevenLabs/ }).click();
+  await expect(tournage.getByText(/ELEVENLABS_API_KEY/)).toBeVisible();
   // Claude fait tout : rien à tourner, une durée, voix IA au choix, sous-titres cochés.
-  await page.getByRole('tab', { name: /Claude fait tout/ }).click();
-  await expect(page.getByLabel('Voix')).toHaveValue('');
-  await expect(page.getByLabel('Durée')).toHaveValue('30');
-  await expect(page.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
-  await expect(page.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
+  await tournage.getByRole('tab', { name: /Claude fait tout/ }).click();
+  await expect(tournage.getByLabel('Voix')).toHaveValue('');
+  await expect(tournage.getByLabel('Durée')).toHaveValue('30');
+  await expect(tournage.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
+  await expect(tournage.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
 });
 
 test('studio : partir de son idée', async ({ page }) => {

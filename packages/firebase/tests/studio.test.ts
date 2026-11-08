@@ -20,6 +20,7 @@ import {
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
+  filmerEcransStudio,
   friseActive,
   friseDuProjet,
   supprimerProjetStudio,
@@ -1105,6 +1106,33 @@ describe('montage libre et bibliothèque de médias', () => {
       captures: { 'c1:fiche_publique': 'studioRendus/x/c1.mp4' },
     });
     expect(travaux.at(-1)).toEqual({ type: 'rendre', projetId: id });
+    // « Filmer maintenant » depuis le Studio : le robot filme, puis on revient à l'état d'avant.
+    await db.doc(`${collections.studioProjets}/${id}`).update({ statut: 'enregistrement' });
+    travaux.length = 0;
+    await filmerEcransStudio(s, {
+      projetId: id,
+      frise: { ...frise, medias: [lu], captures: [{ id: 'c2', scene: 'demandes_recues' }] },
+    });
+    expect(travaux).toEqual([{ type: 'capturer', projetId: id }]);
+    expect((await lireProjetStudio(db, id))?.statut).toBe('captures');
+    await expect(
+      filmerEcransStudio(s, { projetId: id, frise: { ...frise, medias: [lu] } }),
+    ).rejects.toThrow(/déjà/);
+    await capturesTermineesStudio(s, {
+      projetId: id,
+      captures: { 'c2:demandes_recues': 'studioRendus/x/c2.mp4' },
+    });
+    expect(travaux).toHaveLength(1);
+    expect(await lireProjetStudio(db, id)).toMatchObject({
+      statut: 'enregistrement',
+      apresCaptures: null,
+    });
+    await expect(
+      filmerEcransStudio(s, {
+        projetId: id,
+        frise: { ...frise, medias: [lu], captures: [{ id: 'c2', scene: 'demandes_recues' }] },
+      }),
+    ).rejects.toThrow(/déjà filmés/);
     const vide = { ...frise, medias: [lu], pistes: frise.pistes.map((x) => ({ ...x, clips: [] })) };
     await expect(fabriquerFriseStudio(s, { projetId: id, frise: vide })).rejects.toThrow(/vide/);
 
@@ -1122,7 +1150,7 @@ describe('montage libre et bibliothèque de médias', () => {
     expect(friseDuProjet(genere).medias).toEqual([lu]);
     expect(friseDuProjet(genere).pistes.some((x) => x.clips.length)).toBe(true);
     expect(friseActive({ ...genere, friseVersion: 2 })).toBe(true);
-    expect(friseDuProjet({ ...genere, friseVersion: 2 })).toBe(genere.frise);
+    expect(friseDuProjet({ ...genere, friseVersion: 2 })).toEqual(genere.frise);
     expect(friseDuProjet({ ...genere, plan: null, frise: null }).pistes).toHaveLength(3);
 
     // Supprimer le projet supprime ses médias.

@@ -11,6 +11,7 @@ import {
   type Frise,
   type SceneCapture,
 } from '@ph/core/studio';
+import type { PriseImportee } from './EnregistreurPistes';
 import type { ClipGlisse, RetoucheGlissee } from './glisserFrise';
 
 const ids = (f: Frise) => f.pistes.flatMap((x) => x.clips.map((y) => y.id));
@@ -26,6 +27,8 @@ export function useActionsFrise(o: {
   selection: string | null;
   setSelection: (id: string | null) => void;
   erreur: (texte: string) => void;
+  /** Écrans déjà filmés pour ce projet (`id:scene` → fichier). */
+  filmes: Record<string, string>;
 }) {
   const f = o.frise;
   const poser = (c: ClipGlisse, pisteId = '', debut = o.tete) => {
@@ -36,7 +39,12 @@ export function useActionsFrise(o: {
     o.setSelection(id);
   };
   const ecran = (scene: SceneCapture) => {
-    const r = captureDeScene(f, scene);
+    // Écran déjà filmé pour ce projet : on reprend sa vidéo (même identifiant).
+    const dejaFilme = Object.keys(o.filmes)
+      .map((k) => k.split(':'))
+      .find(([id, s]) => s === scene && !f.captures.some((c) => c.id === id || c.scene === scene));
+    const base = dejaFilme ? { ...f, captures: [...f.captures, { id: dejaFilme[0]!, scene }] } : f;
+    const r = captureDeScene(base, scene);
     if (!r) return o.erreur('12 écrans au plus par vidéo.');
     const id = nouvelIdFrise('c', ids(r.frise));
     const source = { type: 'capture' as const, captureId: r.captureId, debutSource: 0 };
@@ -74,5 +82,23 @@ export function useActionsFrise(o: {
     }
     o.setSelection(c.id);
   };
-  return { poser, ecran, scinder, supprimer, retoucher };
+  /** Prise enregistrée dans le Studio : voix sur l'audio, écran sur la vidéo, caméra par-dessus. */
+  const poserPrise = (prise: PriseImportee, dureeMs: number) => {
+    let suite: Frise = { ...f, medias: [...f.medias, ...prise.map((x) => x.media)] };
+    const debut = Math.round(o.tete);
+    for (const { role, media } of prise) {
+      const id = nouvelIdFrise('c', ids(suite));
+      suite = poserClip(suite, '', {
+        id,
+        debut,
+        duree: Math.max(100, media.dureeMs || dureeMs),
+        source: { type: 'media', mediaId: media.id, debutSource: 0 },
+        ...(role === 'camera'
+          ? { cadre: { x: 0.62, y: 0.66, largeur: 0.34, hauteur: 0.3, opacite: 1 } }
+          : {}),
+      });
+    }
+    o.changer(suite);
+  };
+  return { poser, ecran, scinder, supprimer, retoucher, poserPrise };
 }

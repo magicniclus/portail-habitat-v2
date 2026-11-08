@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  separerChevauchements,
   captureDeScene,
   ajouterPiste,
   ajouterPoint,
@@ -349,5 +350,39 @@ describe('captureDeScene', () => {
       })),
     };
     expect(captureDeScene(plein, 'demandes_recues')).toBeNull();
+  });
+});
+
+describe('separerChevauchements', () => {
+  it('un clip qui en recouvre un autre passe sur une piste du même type en dessous', () => {
+    const f = creerFrise('vertical', 'x');
+    const effet = (id: string, debut: number) => ({
+      id,
+      debut,
+      duree: 1_000,
+      source: {
+        type: 'effet' as const,
+        calque: {
+          type: 'texte' as const,
+          texte: 'T',
+          style: 'titre' as const,
+          position: 'haut' as const,
+          debut: 0,
+          fin: 1_000,
+        },
+      },
+    });
+    const g = {
+      ...f,
+      pistes: f.pistes.map((p) =>
+        p.id === 't1' ? { ...p, clips: [effet('a', 0), effet('b', 500), effet('c', 1_000)] } : p,
+      ),
+    };
+    const r = separerChevauchements(g);
+    expect(r.pistes.map((p) => p.nom)).toEqual(['Effets', 'Effets bis', 'Vidéo 1', 'Audio 1']);
+    expect(r.pistes[0]!.clips.map((c) => c.id)).toEqual(['a', 'c']);
+    expect(r.pistes[1]!.clips.map((c) => c.id)).toEqual(['b']);
+    expect(verifierFrise(r)).toEqual([]);
+    expect(separerChevauchements(f)).toBe(f);
   });
 });

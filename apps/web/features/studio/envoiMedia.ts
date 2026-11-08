@@ -25,6 +25,8 @@ export async function importerMedia(
   projetId: string,
   fichier: File,
   avancement: (fraction: number) => void,
+  /** Durée connue (prise enregistrée ici : le navigateur ne la lit pas toujours). */
+  dureeConnueMs?: number,
 ): Promise<Media | string> {
   const type = typeMedia(fichier);
   if (!type) return `« ${fichier.name} » n’est ni une vidéo, ni un son, ni une image.`;
@@ -37,7 +39,7 @@ export async function importerMedia(
   const ext = fichier.name.split('.').pop()!.toLowerCase();
   const id = `m${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   const chemin = `studio/${uid}/medias/${id}.${ext}`;
-  const dureeMs = type === 'image' ? 0 : await dureeMedia(fichier, type);
+  const dureeMs = type === 'image' ? 0 : (dureeConnueMs ?? (await dureeMedia(fichier, type)));
   try {
     await deposerPrise(chemin, fichier, avancement);
   } catch (e) {

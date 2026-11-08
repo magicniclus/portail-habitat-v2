@@ -16,6 +16,7 @@ export {
   creerMontageLibreStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
+  filmerEcransStudio,
   friseActive,
   friseDuProjet,
   supprimerProjetStudio,

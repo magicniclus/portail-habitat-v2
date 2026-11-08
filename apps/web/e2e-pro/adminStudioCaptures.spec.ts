@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { admin, connecter } from './outils';
 
-// Captures avant le montage (STUDIO.md §4) : artisan d'exemple et écrans relus, corrigés, puis
-// filmés par le robot. Ici sans robot branché : le message le dit et l'on peut s'en passer.
+// Écrans de Portail Travaux dans le Studio (STUDIO.md §4) : artisan d'exemple relu, corrigé,
+// écrans filmés par le robot. Ici sans robot branché : la raison est donnée.
 test.skip(({ isMobile }) => isMobile, 'Back-office : vérifié sur ordinateur');
 
-test('STUDIO-CAPTURES : relire l’artisan et les écrans, filmer, sinon monter sans', async ({
+test('STUDIO-CAPTURES : écrans et artisan d’exemple dans le Studio, filmer maintenant', async ({
   page,
 }) => {
   const { db, Timestamp } = await admin();
@@ -41,23 +41,32 @@ test('STUDIO-CAPTURES : relire l’artisan et les écrans, filmer, sinon monter 
     updatedAt: t,
   });
   await connecter(page, 'admin@test.local', '/admin/studio/e2e-captures', 'admin');
-  // Captures préparées mais pas filmées : on arrive sur leur page.
-  await expect(page).toHaveURL(/\/captures$/);
-  await expect(page.getByLabel('Nom de l’entreprise')).toHaveValue('Martin Plomberie');
-  await expect(page.getByLabel('Demandes par mois')).toHaveValue('10');
-  await expect(page.getByRole('checkbox', { name: /La fiche de l’artisan/ })).toBeChecked();
+  // Idée choisie : on arrive dans le Studio ; les écrans préparés y sont déjà.
+  await expect(page).toHaveURL(/\/montage$/);
+  const editeur = page.getByRole('dialog', { name: /Éditeur de montage/ });
+  await editeur.getByRole('tab', { name: 'Écrans' }).click();
+  await expect(
+    editeur.getByRole('button', { name: /La fiche de l’artisan.*Dans la vidéo, à filmer/ }),
+  ).toBeVisible();
 
-  // Correction puis tournage par le robot (absent ici : message clair, rien de perdu).
-  await page.getByLabel('Ville', { exact: true }).fill('Mérignac');
-  await page.getByRole('checkbox', { name: /Les demandes reçues/ }).check();
-  await page.getByRole('button', { name: 'Filmer ces écrans' }).click();
-  await expect(page.getByText('Les captures n’ont pas pu être filmées')).toBeVisible();
-  await expect(page.getByText(/robot de rendu n’est pas configuré/)).toBeVisible();
-  const lu = (await db.doc('studioProjets/e2e-captures').get()).get('preparation');
-  expect(lu).toMatchObject({ artisan: { ville: 'Mérignac' } });
-  expect(lu.scenes).toEqual(['fiche_publique', 'demandes_recues']);
+  // Artisan d'exemple relu et corrigé dans le Studio.
+  await editeur.getByRole('button', { name: 'Artisan d’exemple' }).click();
+  const fenetre = page.getByRole('dialog', { name: 'Artisan d’exemple' });
+  await expect(fenetre.getByLabel('Nom de l’entreprise')).toHaveValue('Martin Plomberie');
+  await expect(fenetre.getByLabel('Demandes par mois')).toHaveValue('10');
+  await fenetre.getByLabel('Ville', { exact: true }).fill('Mérignac');
+  await page.keyboard.press('Escape');
 
-  await page.getByRole('button', { name: 'Monter sans captures' }).click();
-  await expect(page).toHaveURL(/\/tournage$/);
+  // « Filmer maintenant » : frise enregistrée, robot appelé (absent ici : raison donnée).
+  await editeur.getByRole('button', { name: 'Filmer maintenant (1)' }).click();
+  await expect(
+    editeur.getByRole('status').filter({ hasText: /Le robot filme les écrans/ }),
+  ).toBeVisible();
+  await expect
+    .poll(async () => (await db.doc('studioProjets/e2e-captures').get()).get('erreur'))
+    .toMatch(/robot de rendu n’est pas configuré/);
+  const f = (await db.doc('studioProjets/e2e-captures').get()).get('frise');
+  expect(f.artisan).toMatchObject({ nom: 'Martin Plomberie', ville: 'Mérignac' });
+  expect(f.captures).toEqual([{ id: 'c1', scene: 'fiche_publique' }]);
   await db.doc('studioProjets/e2e-captures').delete();
 });

@@ -1,3 +1,5 @@
+import { friseSansMentionFictive } from './mentionsFictives';
+import { separerChevauchements } from './operationsFrise';
 import { FORMATS_STUDIO } from './formats';
 import { creerFrise, type Clip, type Frise } from './frise';
 import { debutsPlans, disposition, type Rectangle } from './montage';
@@ -80,14 +82,16 @@ export function friseDepuisPlan(
     { ...piste('video'), clips: video },
     { ...piste('audio'), clips: voix },
   ];
-  return {
-    ...vide,
-    pistes,
-    captures: plan.captures,
-    artisan: plan.artisan,
-    sousTitres: plan.sousTitres,
-    musique: plan.musique,
-    dureePriseMs: prise.dureePriseMs,
-    ...(plan.miniature ? { miniature: plan.miniature } : {}),
-  };
+  return friseSansMentionFictive(
+    separerChevauchements({
+      ...vide,
+      pistes,
+      captures: plan.captures,
+      artisan: plan.artisan,
+      sousTitres: plan.sousTitres,
+      musique: plan.musique,
+      dureePriseMs: prise.dureePriseMs,
+      ...(plan.miniature ? { miniature: plan.miniature } : {}),
+    }),
+  );
 }

@@ -26,3 +26,4 @@ export * from './imageFrise';
 export * from './renduFrise';
 export * from './effetsFrise';
 export * from './sousTitresFrise';
+export * from './mentionsFictives';

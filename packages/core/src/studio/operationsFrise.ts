@@ -270,3 +270,27 @@ export function prolongement(p: Piste, c: Clip): number {
     ? Math.min(suivant.transition.duree, suivant.duree)
     : 0;
 }
+
+/**
+ * Plus aucun chevauchement : sur chaque piste, un clip qui en recouvre un autre passe sur une
+ * nouvelle piste du même type, juste en dessous (montages anciens ou convertis d'un plan).
+ */
+export function separerChevauchements(f: Frise): Frise {
+  const pistes: Piste[] = [];
+  const pris = new Set(f.pistes.map((p) => p.id));
+  for (const p of f.pistes) {
+    const voies: Clip[][] = [];
+    for (const c of trier(p.clips)) {
+      const voie = voies.find((v) => finClip(v.at(-1)!) <= c.debut);
+      if (voie) voie.push(c);
+      else voies.push([c]);
+    }
+    pistes.push({ ...p, clips: voies[0] ?? [] });
+    for (const v of voies.slice(1)) {
+      const id = nouvelIdFrise(p.type[0]!, pris);
+      pris.add(id);
+      pistes.push({ ...p, id, nom: `${p.nom} bis`.slice(0, 40), solo: false, clips: v });
+    }
+  }
+  return pistes.length === f.pistes.length ? f : { ...f, pistes: pistes.slice(0, 16) };
+}

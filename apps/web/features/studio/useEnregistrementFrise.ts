@@ -2,7 +2,7 @@
 
 import type { Frise } from '@ph/core/studio';
 import { useState, useTransition } from 'react';
-import { enregistrerFrise, fabriquerFrise, retoucher } from './actions';
+import { enregistrerFrise, fabriquerFrise, filmerEcrans, retoucher } from './actions';
 
 type Message = { ton: 'succes' | 'danger'; texte: string } | null;
 
@@ -41,6 +41,12 @@ export function useEnregistrementFrise(projetId: string, initiale: Frise) {
       agir(
         () => fabriquerFrise({ projetId, frise }),
         'Enregistré : la vidéo est en fabrication.',
+        () => setEnregistre(frise),
+      ),
+    filmer: (frise: Frise) =>
+      agir(
+        () => filmerEcrans({ projetId, frise }),
+        'Le robot filme les écrans : ils apparaîtront ici dans quelques minutes.',
         () => setEnregistre(frise),
       ),
     retoucher: (demande: string) =>

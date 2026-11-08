@@ -72,7 +72,9 @@ export async function capturer(p: ProjetStudio): Promise<Record<string, string>>
           isMobile: fenetre.mobile,
           hasTouch: fenetre.mobile,
           ...(scene.pro ? { storageState: etat } : {}),
-          recordVideo: { dir: d, size: { width: largeur, height: hauteur } },
+          // Playwright n'agrandit pas l'image (il la place en haut à gauche) : on enregistre à la
+          // taille de la fenêtre, ffmpeg la met ensuite au format de la vidéo.
+          recordVideo: { dir: d, size: { width: fenetre.width, height: fenetre.height } },
         });
         await ctx.addCookies([
           {
@@ -119,6 +121,8 @@ export async function capturer(p: ProjetStudio): Promise<Record<string, string>>
           '-i',
           brut,
           '-an',
+          '-vf',
+          `scale=${largeur}:${hauteur}:flags=lanczos,setsar=1`,
           '-c:v',
           'libx264',
           '-preset',
