@@ -6,6 +6,8 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { useState } from 'react';
 import { EnregistrementIci } from './EnregistrementIci';
+import { ImportVideo } from './ImportVideo';
+import { PrompteurDefilant } from './PrompteurDefilant';
 import { PreparerSession } from './PreparerSession';
 
 /** Une vidéo prête à tourner : son script (prompteur). */
@@ -27,6 +29,7 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
   const [file, setFile] = useState<VideoATourner[] | null>(null);
   const [i, setI] = useState(0);
   const [envoyees, setEnvoyees] = useState<VideoATourner[]>([]);
+  const [telephone, setTelephone] = useState(false);
   if (!file) return <PreparerSession {...p} onCommencer={(v) => (setFile(v), setI(0))} />;
   const v = file[i];
   if (!v)
@@ -84,19 +87,59 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
       <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-neutre-200">
         <div className="h-full bg-accent" style={{ width: `${(i / file.length) * 100}%` }} />
       </div>
-      {/* Gardé monté d'une vidéo à l'autre : la caméra et le micro restent ouverts. */}
-      <EnregistrementIci
-        projetId={v.id}
-        script={v.script}
-        cameraInitiale=""
-        libelleEnvoi={
-          i + 1 < file.length ? 'Envoyer et passer à la suivante' : 'Envoyer la dernière'
-        }
-        onEnvoye={() => {
-          setEnvoyees((x) => [...x, v]);
-          suivante();
-        }}
-      />
+      <div role="radiogroup" aria-label="Je filme avec" className="flex flex-wrap gap-2">
+        {(
+          [
+            [false, 'La caméra de cet ordinateur'],
+            [true, 'Mon téléphone'],
+          ] as const
+        ).map(([v, l]) => (
+          <button
+            key={l}
+            type="button"
+            role="radio"
+            aria-checked={telephone === v}
+            onClick={() => setTelephone(v)}
+            className="inline-flex min-h-11 items-center rounded-full border border-trait px-4 text-sm font-semibold aria-checked:border-neutre-900 aria-checked:bg-neutre-900 aria-checked:text-blanc"
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+      {telephone ? (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(280px,2fr)]">
+          <PrompteurDefilant script={v.script} />
+          <div className="grid content-start gap-2">
+            <p className="m-0 text-sm text-neutre-700">
+              Posez le téléphone sous l’écran, objectif à hauteur des yeux, filmez en vertical avec
+              l’appareil photo, lancez le défilement et lisez. Puis envoyez la vidéo ici (depuis le
+              téléphone, ou après l’avoir transférée sur l’ordinateur).
+            </p>
+            <ImportVideo
+              key={v.id}
+              projetId={v.id}
+              onEnvoye={() => {
+                setEnvoyees((x) => [...x, v]);
+                suivante();
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        /* Gardé monté d'une vidéo à l'autre : la caméra et le micro restent ouverts. */
+        <EnregistrementIci
+          projetId={v.id}
+          script={v.script}
+          cameraInitiale=""
+          libelleEnvoi={
+            i + 1 < file.length ? 'Envoyer et passer à la suivante' : 'Envoyer la dernière'
+          }
+          onEnvoye={() => {
+            setEnvoyees((x) => [...x, v]);
+            suivante();
+          }}
+        />
+      )}
     </section>
   );
 }

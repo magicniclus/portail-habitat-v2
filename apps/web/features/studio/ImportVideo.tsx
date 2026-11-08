@@ -5,7 +5,14 @@ import { useState } from 'react';
 import { envoyerImport } from './envoiPrise';
 
 /** Importer une vidéo tournée au téléphone (image + son), au lieu d'enregistrer ici. */
-export function ImportVideo({ projetId }: { projetId: string }) {
+export function ImportVideo({
+  projetId,
+  onEnvoye,
+}: {
+  projetId: string;
+  /** Vidéo envoyée (session de tournage : on passe à la suivante). */
+  onEnvoye?: () => void;
+}) {
   const [fichier, setFichier] = useState<File | null>(null);
   const [role, setRole] = useState<'camera' | 'ecran'>('camera');
   const [envoi, setEnvoi] = useState<number | null>(null);
@@ -21,7 +28,10 @@ export function ImportVideo({ projetId }: { projetId: string }) {
         ? { ton: 'danger', texte: erreur }
         : { ton: 'succes', texte: 'Vidéo envoyée : la transcription et le montage commencent.' },
     );
-    if (!erreur) setFichier(null);
+    if (!erreur) {
+      setFichier(null);
+      onEnvoye?.();
+    }
   };
   return (
     <div className="grid content-start gap-3">

@@ -3,6 +3,19 @@
 import { DEBITS_PRISE, PRISE_MAX_MS } from '@ph/core/studio';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const nomErreur = (e: unknown) => (e instanceof DOMException ? e.name : '');
+
+/** Ce qui empêche d'ouvrir la caméra, dit simplement, avec la solution. */
+function messageCamera(nom: string): string {
+  if (nom === 'NotAllowedError' || nom === 'SecurityError')
+    return 'Accès à la caméra refusé : cliquez sur le cadenas à gauche de l’adresse › Caméra › Autoriser, puis rechargez la page.';
+  if (nom === 'NotReadableError' || nom === 'AbortError')
+    return 'Caméra déjà utilisée par une autre application (Teams, Zoom, Appareil photo, un autre onglet…) : fermez-la, puis choisissez à nouveau la caméra.';
+  if (nom === 'NotFoundError' || nom === 'OverconstrainedError')
+    return 'Aucune caméra trouvée : branchez-la, ou filmez avec votre téléphone (mode « Je filme avec mon téléphone »).';
+  return 'La caméra ne s’ouvre pas : rechargez la page, ou filmez avec votre téléphone (mode « Je filme avec mon téléphone »).';
+}
+
 /**
  * Enregistrement du Studio dans le navigateur : écran (partage), voix (micro choisi, intégré ou
  * externe) et caméra (facultative), en trois fichiers démarrés ensemble. Rien ne part avant que
@@ -85,9 +98,11 @@ export function useEnregistrement(o: {
         setFluxMicro(f);
         await lister();
       })
-      .catch(() =>
+      .catch((e: unknown) =>
         setErreur(
-          'Micro inaccessible : autorisez le micro dans le navigateur, puis rechargez la page.',
+          nomErreur(e) === 'NotReadableError'
+            ? 'Micro déjà utilisé par une autre application (Teams, Zoom, un autre onglet…) : fermez-la puis rechargez la page.'
+            : 'Micro inaccessible : cliquez sur le cadenas à gauche de l’adresse › Micro › Autoriser, puis rechargez la page.',
         ),
       );
     return () => {
@@ -100,26 +115,30 @@ export function useEnregistrement(o: {
     if (o.camera === null) return;
     let flux: MediaStream | null = null;
     let actif = true;
-    void navigator.mediaDevices
+    const md = navigator.mediaDevices;
+    // Réglages souhaités d'abord ; si la caméra les refuse, on la prend telle qu'elle est.
+    void md
       .getUserMedia({
         video: {
-          ...(o.camera ? { deviceId: { exact: o.camera } } : {}),
-          width: 1280,
-          height: 720,
-          frameRate: 30,
+          ...(o.camera ? { deviceId: { exact: o.camera } } : { facingMode: 'user' }),
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 },
         },
       })
+      .catch((e: unknown) =>
+        nomErreur(e) === 'NotAllowedError' || nomErreur(e) === 'SecurityError'
+          ? Promise.reject(e)
+          : md.getUserMedia({ video: o.camera ? { deviceId: o.camera } : true }),
+      )
       .then(async (f) => {
+        setErreur(null);
         if (!actif) return f.getTracks().forEach((t) => t.stop());
         flux = f;
         setFluxCamera(f);
         await lister();
       })
-      .catch(() =>
-        setErreur(
-          'Pas de caméra disponible sur cet ordinateur : choisissez « Sans caméra », ou importez une vidéo de votre téléphone.',
-        ),
-      );
+      .catch((e: unknown) => setErreur(messageCamera(nomErreur(e))));
     return () => {
       actif = false;
       flux?.getTracks().forEach((t) => t.stop());

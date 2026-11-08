@@ -61,6 +61,15 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   await expect(page.getByRole('heading', { name: 'Première à tourner' })).toBeVisible();
   await expect(page.getByLabel('Prompteur')).toContainText('vos clients vous cherchent');
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
+  // Je filme avec mon téléphone : prompteur qui défile en gros + envoi de la vidéo du téléphone.
+  await page
+    .getByRole('radiogroup', { name: 'Je filme avec' })
+    .getByRole('radio', { name: 'Mon téléphone' })
+    .click();
+  const defilant = page.getByRole('region', { name: 'Prompteur défilant' });
+  await expect(defilant).toContainText('vos clients vous cherchent');
+  await expect(defilant.getByRole('button', { name: '▶ Lancer le défilement' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
   // Passer : fin de session.
   await page.getByRole('button', { name: 'Passer cette vidéo' }).click();
   await expect(page.getByRole('heading', { name: /Session terminée : 0 vidéo/ })).toBeVisible();
