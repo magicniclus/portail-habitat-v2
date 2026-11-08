@@ -44,7 +44,7 @@ export function NouveauMontageLibre() {
           </Field>
         </div>
         <div className="min-w-[200px]">
-          <Field label="Format du montage">
+          <Field label="Taille de la vidéo">
             <Select value={format} onChange={(e) => setFormat(e.target.value as FormatStudio)}>
               {NOMS_FORMATS.map((f) => (
                 <option key={f} value={f}>

@@ -11,7 +11,11 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   await expect(page.getByRole('heading', { level: 1, name: 'Studio' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Studio' })).toBeVisible();
   await expect(page.getByLabel('Format')).toHaveValue('vertical');
-  await expect(page.getByLabel(/Titre/)).toHaveCount(0);
+  // Génération : pas de titre à écrire (il vient de la vidéo choisie). Seul « Monter moi-même »
+  // en demande un.
+  await expect(
+    page.getByRole('region', { name: 'Quelle vidéo faire aujourd’hui ?' }).getByLabel(/Titre/),
+  ).toHaveCount(0);
   await page.getByRole('button', { name: /Trouver les meilleures vidéos à faire/ }).click();
   await expect(page).toHaveURL(/\/admin\/studio\/[^/?]+\/idees\?analyse=1/);
   await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle vidéo' })).toBeVisible();

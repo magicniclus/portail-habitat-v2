@@ -90,6 +90,19 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 - **Miniature** (image de couverture) : Claude choisit l'image (`tempsMs`), un texte de 2 à 5 mots et le mot mis en avant ; visible dans l'aperçu (« Voir la miniature ») et dessinée par le robot avec le même code.
 - **Retouche** « Revoir avec Claude » : Claude reçoit le plan actuel et la demande. Chaque plan accepté est une version (`studioProjets/{id}/versions/{n}`).
 
+## 5 bis. Montage libre (éditeur multipistes, sans génération)
+
+- **Départ** : Studio › « Monter moi-même » (titre et taille de la vidéo) crée un projet `libre` qui s'ouvre directement sur l'étape Montage, avec une frise vide (Effets, Vidéo 1, Audio 1). « Supprimer le projet » (en-tête du projet) efface aussi tous ses médias.
+- **Modèle** (`packages/core/src/studio/frise.ts`, `operationsFrise.ts`, `verifierFrise.ts`, `imageFrise.ts`) : pistes vidéo, audio et d'effets (16 au plus, de haut en bas ; entre pistes vidéo, la plus haute passe devant) ; clips (média importé, passage de la prise, capture, carton, effet) avec volume (jusqu'à 200 %), muet, vitesse (0,25× à 4×), fondus, place dans l'image et opacité, filtres image (luminosité, contraste, saturation, chaleur, flou, noir et blanc), filtres son (graves, médiums, aigus, voix claire, réduction de bruit) et automations (points de volume ou d'opacité). Temps en ms entières. Un plan généré par Claude se convertit en frise (`friseDepuisPlan`).
+- **Médias** : vidéos, sons et images glissés depuis l'ordinateur (ou « Importer ») vers `studio/{uid}/medias/{id}.{ext}` ; le serveur relit taille et type (`ajouterMediaStudio`). Limites : vidéo 1 Go, son 200 Mo, image 20 Mo, 5 Go par projet. Gardés tant que le projet existe.
+- **Éditeur** (`EditeurFrise`, plein écran, même organisation que l'éditeur des plans) :
+  - bibliothèque : Médias (zone d'import, envois en cours, médias et captures à glisser), Texte, Effets, Cartons ; glisser sur une piste ou cliquer pour poser à la tête de lecture ;
+  - en-têtes de pistes : nom, masquer / couper le son, solo, verrou, volume de la piste, supprimer ; « + Vidéo / + Audio / + Effets » dans les réglages du projet ;
+  - clips à glisser dans le temps et d'une piste à l'autre (aimant), à rogner par les bords, couper (S), dupliquer, supprimer ; fondus et courbe d'automation visibles sur le clip ;
+  - réglages du clip en onglets Clip, Son et Image ; « Poser un point » d'automation à la tête de lecture ;
+  - aperçu image par image (`dessinerFrise`) et son mixé en direct par WebAudio (`useLectureFrise` : volume, fondus, automations, solo, égaliseur). Un fichier lu sans CORS garde l'image mais perd les filtres son (volume limité à 100 %) : régler le CORS du bucket pour la production.
+- **Enregistrer** (`enregistrerFriseStudio`) : schéma et `verifierFrise` refaits côté serveur ; les médias doivent être ceux du serveur (tailles comprises). Le rendu de la frise par le robot arrive au lot E ; l'onglet IA (script, voix, sous-titres, captures, monter avec Claude) au lot D.
+
 ## 6. Rendu (robot Cloud Run, `apps/studio`)
 
 - **Ordre des étapes** : transcription (voix enregistrée seulement) → montage par Claude → captures → rendu. Le montage vient avant les captures parce que c'est lui qui choisit les écrans de Portail Travaux à filmer ; le robot ne filme que ceux-là.

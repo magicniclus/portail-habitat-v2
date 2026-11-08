@@ -899,6 +899,7 @@ Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
 - `studioSeries/{id}` : série d'épisodes (`nom`, `promesse`, `episodes`). Les projets portent `serie {id, nom, numero}`. Admin SDK uniquement.
 - `studioProjets` gagne `serie`, `reels` (Reels analysés, sans auteur) et `rendu.variantes` (vidéos des variantes d'accroche).
 - `studioProjets` gagne `preparation { artisan (artisanFictif), scenes[] (6 au plus), ignoree? }` : artisan d'exemple et écrans filmés avant le montage (STUDIO.md §4). Écriture : serveur uniquement (règles inchangées).
+- `studioProjets` gagne `libre` (montage sans génération) et `frise` (`frise` de `packages/core/src/studio/frise.ts` : pistes, clips, médias importés). Médias dans Storage `studio/{uid}/medias/{id}.{ext}` (vidéo 1 Go, son 200 Mo, image 20 Mo ; création par l'auteur seulement, section `std`), supprimés avec le projet (STUDIO.md §5 bis). Écriture du document : serveur uniquement.
 - Storage : `studio/{uid}/{prise}/…` (prises, 100 Mo max, création par l'auteur de la section Studio, jamais écrasées, supprimées à 30 jours) ; `studioRendus/{projet}/…` (captures et vidéos, écrites par le robot).
 
 ## 16. Index de toutes les collections (liste de contrôle)
