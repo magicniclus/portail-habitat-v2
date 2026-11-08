@@ -15,9 +15,14 @@ export interface ContexteScene {
 const metier = (c: ContexteScene) => c.artisan?.metier ?? 'Plombier';
 const ville = (c: ContexteScene) => c.artisan?.ville ?? 'Bordeaux';
 
-async function charger(page: Page, url: string, c: ContexteScene) {
+/**
+ * Ouvre la page et ne commence la vidéo (`pret`) qu'une fois tout affiché : `avant` attend ce qui
+ * arrive en retard (carte), pour ne jamais filmer une attente.
+ */
+async function charger(page: Page, url: string, c: ContexteScene, avant?: () => Promise<void>) {
   await page.goto(url);
   await page.waitForLoadState('load');
+  if (avant) await avant();
   await page.waitForTimeout(700);
   await page.mouse.move(200, 300);
   c.pret();
@@ -68,8 +73,7 @@ export const SCENES: Record<
   fiche_publique: {
     pro: false,
     jouer: async (page, c) => {
-      await charger(page, `/artisans/${c.slug}`, c);
-      await carteChargee(page);
+      await charger(page, `/artisans/${c.slug}`, c, () => carteChargee(page));
       await page.waitForTimeout(800);
       await defiler(page, 900, 3500);
       await defiler(page, 900, 3500);

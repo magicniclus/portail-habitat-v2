@@ -306,3 +306,17 @@ export const themeStudio = {
   /** Fond des cartons. */
   fond: couleurs.nuit,
 } as const;
+
+/**
+ * Copie de démonstration du robot de rendu (STUDIO.md §4) : teintes des images dessinées pour la
+ * fiche de l'artisan d'exemple (bannière, photos de réalisations), sans texte ni photo réelle.
+ */
+export const demoStudio = {
+  banniere: ['#e9d8c7', '#b9cfd6'],
+  joint: '#d9d4cc',
+  realisations: [
+    ['#cfd8dc', '#b0bec5'],
+    ['#e8dcc8', '#d7c4a3'],
+    ['#dfe6e0', '#c5d3c8'],
+  ],
+} as const;

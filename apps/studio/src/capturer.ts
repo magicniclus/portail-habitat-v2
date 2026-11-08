@@ -53,6 +53,10 @@ export async function capturer(p: ProjetStudio): Promise<Record<string, string>>
     { env: envDemo() },
   );
   const { slug } = JSON.parse(sortie) as { slug: string };
+  // Fiche de démonstration tout juste préparée : son cache est vidé avant de la filmer.
+  await fetch(`${BASE_DEMO}/api/studio/demo-fiche?slug=${encodeURIComponent(slug)}`, {
+    method: 'POST',
+  }).catch(() => undefined);
   const fenetre = FENETRES[plan.format];
   const { largeur, hauteur } = FORMATS_STUDIO[plan.format];
   return dansDossier(async (d) => {

@@ -66,7 +66,7 @@ export async function carteChargee(page: Page) {
         return t.length > 0 && t.every((i) => i.complete && i.naturalWidth > 0);
       },
       null,
-      { timeout: 15_000 },
+      { timeout: 8_000 },
     )
     .catch(() => undefined);
 }
