@@ -140,6 +140,8 @@ export const montage = {
   pisteAnimation: '#9c4221',
   pisteSousTitres: '#4a4a52',
   pisteAudio: '#22543d',
+  /** Transition entre deux séquences (bande bleutée sur la frise). */
+  transition: '#63b3ed',
 } as const;
 
 /**

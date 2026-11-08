@@ -20,7 +20,12 @@ export interface ProjetIA {
   theme: string;
   /** Claude peut revoir son montage (prise et plan existants). */
   retouche: boolean;
+  /** Vidéo fabriquée (chemin du fichier), une fois prête. */
+  video: string | null;
 }
+
+const LIEN =
+  'inline-flex min-h-11 items-center rounded-[8px] border border-montage-trait px-3 text-sm font-bold text-montage-texte no-underline hover:bg-montage-survol hover:text-montage-texte';
 
 function Etape(p: { n: number | '✦'; titre: string; texte?: string; children: ReactNode }) {
   const id = `etape-ia-${p.n === '✦' ? 'retouche' : p.n}`;
@@ -45,7 +50,7 @@ function Etape(p: { n: number | '✦'; titre: string; texte?: string; children: 
  * Panneau IA du Studio (à gauche) : tout se fait ici, sans quitter l'éditeur. ① une idée
  * (facultatif), ② à partir de quoi Claude fabrique la vidéo (me filmer, ma voix, voix IA, une
  * vidéo ou un audio déjà tournés, ou rien), puis l'avancement avec chargeur ; ou ③ s'enregistrer
- * sur les pistes et monter soi-même. Une fois montée : « Revoir avec Claude ».
+ * sur les pistes et monter soi-même. Une fois montée : d’autres instructions pour Claude.
  */
 export function AssistantIA(p: {
   projetId: string;
@@ -69,8 +74,33 @@ export function AssistantIA(p: {
           erreur={x.erreur}
         />
       ) : null}
+      {x.statut === 'pret' && x.video ? (
+        <section
+          aria-label="Vidéo prête"
+          className="grid gap-2 rounded-[10px] border border-montage-selection/50 bg-montage-surface p-3"
+        >
+          <p className="m-0 font-semibold text-montage-selection">✓ Vidéo prête</p>
+          <p className="m-0 text-xs text-montage-texte-doux">
+            Vous restez dans le Studio : retouchez à la main, ou donnez d’autres instructions à
+            Claude ci-dessous.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`/api/studio/fichier?c=${encodeURIComponent(x.video)}`}
+              target="_blank"
+              rel="noopener"
+              className={LIEN}
+            >
+              Regarder la vidéo
+            </a>
+            <a href={`/admin/studio/${p.projetId}/publication`} className={LIEN}>
+              Publier…
+            </a>
+          </div>
+        </section>
+      ) : null}
       {x.retouche && !fabrique ? (
-        <Etape n="✦" titre="Revoir le montage avec Claude">
+        <Etape n="✦" titre="D’autres instructions pour Claude">
           <RetoucheIA retouche enCours={p.enCours} onRetouche={p.onRetouche} />
         </Etape>
       ) : null}

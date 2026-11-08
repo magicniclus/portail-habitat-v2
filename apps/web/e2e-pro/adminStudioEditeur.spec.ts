@@ -97,9 +97,9 @@ test('STUDIO-EDIT : montage de Claude dans l’éditeur multipistes, écrans, IA
     editeur.getByRole('button', { name: 'Clip La fiche de l’artisan, vue par un particulier' }),
   ).toHaveCount(2);
 
-  // Onglet IA : la retouche par Claude est proposée pour un montage de Claude.
+  // Onglet IA : d'autres instructions à Claude pour un montage de Claude.
   await editeur.getByRole('tab', { name: 'IA', exact: true }).click();
-  await expect(editeur.getByLabel('Revoir avec Claude')).toBeVisible();
+  await expect(editeur.getByLabel('Vos instructions à Claude')).toBeVisible();
 
   // Couper le premier carton avec S (tête à 2 s), annuler, enregistrer.
   await editeur.getByRole('button', { name: 'Clip 24 h. 0 €. 3 chantiers.' }).click();

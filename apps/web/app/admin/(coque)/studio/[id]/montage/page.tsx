@@ -45,6 +45,7 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
         choisi: p.sujet,
         theme: p.theme ?? '',
         retouche: Boolean(p.plan && p.prise),
+        video: p.rendu?.video ?? null,
       }}
       filmage={p.statut === 'captures'}
       projets={projets}

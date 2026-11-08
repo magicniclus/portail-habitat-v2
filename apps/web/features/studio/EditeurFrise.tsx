@@ -212,6 +212,7 @@ export function EditeurFrise(p: {
         onDepot={(c, pisteId, debut) => a.poser(c, pisteId, debut)}
         onRetouche={(r, clipId) => a.retoucher(r, clipId)}
         onFichiers={(f, pisteId, debut) => void imports.importer(f, { pisteId, debut })}
+        onScinder={a.scinder}
       />
     </div>
   );

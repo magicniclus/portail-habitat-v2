@@ -1,7 +1,13 @@
 import { couleurs, rampes } from '@ph/ui/tokens';
 import type { Locator, Page } from '@playwright/test';
 
-/** Gestes « humains » pour les captures : curseur visible, frappe lente, défilement doux. */
+/**
+ * Gestes « humains » pour les captures : curseur visible, frappe lente, défilement doux. Tout est
+ * volontairement posé (public : des artisans) : `CALME` allonge les mouvements et les pauses.
+ */
+const CALME = 1.8;
+/** Pause après un geste, le temps de lire ce qui vient de changer. */
+const LECTURE_MS = 900;
 
 export const CURSEUR = `
 addEventListener('DOMContentLoaded', () => {
@@ -18,22 +24,24 @@ addEventListener('DOMContentLoaded', () => {
 export async function viser(page: Page, cible: Locator) {
   await cible.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
   const b = await cible.boundingBox();
-  if (b) await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 24 });
-  await page.waitForTimeout(200);
+  if (b) await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 60 });
+  await page.waitForTimeout(500);
 }
 
 export async function cliquer(page: Page, cible: Locator) {
   await viser(page, cible);
   await cible.click();
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(LECTURE_MS);
 }
 
 export async function taper(page: Page, cible: Locator, texte: string, delai = 40) {
   await cliquer(page, cible);
-  await cible.pressSequentially(texte, { delay: delai });
+  await cible.pressSequentially(texte, { delay: Math.round(delai * CALME) });
+  await page.waitForTimeout(LECTURE_MS / 2);
 }
 
-export async function defiler(page: Page, px: number, ms = 2500) {
+export async function defiler(page: Page, px: number, duree = 2500) {
+  const ms = Math.round(duree * CALME);
   // Code en texte : rien d'injecté par la compilation dans la page.
   await page.evaluate(`new Promise((ok) => {
     const y0 = scrollY, t0 = performance.now();
@@ -44,6 +52,7 @@ export async function defiler(page: Page, px: number, ms = 2500) {
     };
     requestAnimationFrame(pas);
   })`);
+  await page.waitForTimeout(LECTURE_MS);
 }
 
 /** Carte de la zone : tuiles chargées (sinon on continue sans elle). */

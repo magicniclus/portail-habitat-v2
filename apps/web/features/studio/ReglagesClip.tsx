@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  couperClip,
   dupliquerClip,
   modifierClip,
   supprimerClip,
@@ -35,7 +34,6 @@ export function ReglagesClip({
   frise,
   clip: c,
   image,
-  tete,
   changer,
   onSupprime,
 }: {
@@ -43,13 +41,11 @@ export function ReglagesClip({
   clip: Clip;
   /** Le clip est sur une piste vidéo (cadre et opacité). */
   image: boolean;
-  tete: number;
   changer: (f: Frise) => void;
   onSupprime: () => void;
 }) {
   const m = (champs: Partial<Omit<Clip, 'id'>>) => changer(modifierClip(frise, c.id, champs));
   const fondus = c.fondus ?? { entree: 0, sortie: 0 };
-  const dansClip = tete > c.debut && tete < c.debut + c.duree;
   const s = c.source;
   return (
     <div className="grid gap-3">
@@ -57,14 +53,6 @@ export function ReglagesClip({
         De {tempsMontage(c.debut)} à {tempsMontage(c.debut + c.duree)} ({secondes(c.duree)})
       </p>
       <div className="flex gap-2">
-        <button
-          type="button"
-          className={ACTION}
-          disabled={!dansClip}
-          onClick={() => changer(couperClip(frise, c.id, tete))}
-        >
-          Couper (S)
-        </button>
         <button
           type="button"
           className={ACTION}

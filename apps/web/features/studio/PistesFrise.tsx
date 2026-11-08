@@ -6,6 +6,7 @@ import {
   dureeFrise,
   finClip,
   modifierPiste,
+  modifierClip,
   rognerClip,
   supprimerPiste,
   supprimerPoint,
@@ -159,6 +160,18 @@ export function PistesFrise(p: {
                     rognerClip(depart, c.id, {
                       fin: aimanter(finClip(c) + dx, reperes(c.id), 8 / px),
                     }),
+                  )}
+                  onTransition={rogner((dx, depart) =>
+                    c.transition
+                      ? modifierClip(depart, c.id, {
+                          transition: {
+                            ...c.transition,
+                            duree: Math.round(
+                              Math.min(Math.max(100, c.transition.duree + dx), 3_000, c.duree),
+                            ),
+                          },
+                        })
+                      : depart,
                   )}
                   automation={
                     choisi && p.automation && piste.type !== 'texte' && !piste.verrou ? (

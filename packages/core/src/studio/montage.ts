@@ -47,6 +47,11 @@ export function debutsPlans(p: Pick<PlanMontage, 'plans'>): number[] {
   return r;
 }
 
+/** Écrans de Portail Travaux différents dans une vidéo, au plus. */
+export const CAPTURES_MAX = 3;
+/** Temps minimal d'un écran à l'image (d'affilée), pour avoir le temps de le lire. */
+export const CAPTURE_MIN_MS = 4_000;
+
 const sec = (ms: number) => `${Math.round(ms / 100) / 10} s`;
 
 /**
@@ -95,6 +100,24 @@ export function verifierPlan(
       if (c.fin <= c.debut || c.fin > Math.max(0, d))
         erreurs.push(`${nom} : un calque « ${c.type} » sort du plan (0 à ${sec(d)}).`);
     }
+  }
+  // Écrans de Portail Travaux : peu nombreux et lisibles (le public, ce sont des artisans).
+  const montrees = new Set(p.plans.flatMap((x) => (x.visuel === 'capture' ? [x.captureId] : [])));
+  if (montrees.size > CAPTURES_MAX)
+    erreurs.push(
+      `${montrees.size} écrans de Portail Travaux : montre-en ${CAPTURES_MAX} au plus, chacun plus longtemps.`,
+    );
+  // Plans consécutifs sur le même écran : une seule apparition.
+  for (let i = 0; i < p.plans.length; i++) {
+    const x = p.plans[i]!;
+    if (x.visuel !== 'capture' || p.plans[i - 1]?.captureId === x.captureId) continue;
+    let total = 0;
+    for (let j = i; p.plans[j]?.visuel === 'capture' && p.plans[j]!.captureId === x.captureId; j++)
+      total += Math.max(0, p.plans[j]!.source.fin - p.plans[j]!.source.debut);
+    if (total < CAPTURE_MIN_MS)
+      erreurs.push(
+        `Plan « ${x.id} » : l’écran « ${x.captureId} » ne reste que ${sec(total)} ; laisse-le au moins ${sec(CAPTURE_MIN_MS)} pour qu’on ait le temps de lire.`,
+      );
   }
   return erreurs;
 }

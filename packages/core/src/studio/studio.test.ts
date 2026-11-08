@@ -131,6 +131,43 @@ describe('plan de montage', () => {
     expect(erreurs.join(' | ')).toMatch(/sans caméra/);
   });
 
+  it('écrans de Portail Travaux : 3 au plus, et 4 s d’affilée au moins', () => {
+    const capture = (id: string, captureId: string, debut: number, fin: number) => ({
+      id,
+      source: { debut, fin },
+      visuel: 'capture' as const,
+      captureId,
+      camera: 'cachee' as const,
+      calques: [],
+    });
+    const captures = ['c1', 'c2', 'c3', 'c4'].map((id) => ({
+      id,
+      scene: 'demandes_recues' as const,
+    }));
+    const quatre = base({
+      captures,
+      plans: ['c1', 'c2', 'c3', 'c4'].map((c, i) =>
+        capture(`p${i}`, c, i * 5_000, i * 5_000 + 5_000),
+      ),
+    });
+    expect(verifierPlan(quatre, { dureePriseMs: 20_000, camera: true })).toEqual([
+      expect.stringMatching(/4 écrans de Portail Travaux : montre-en 3 au plus/),
+    ]);
+    // Deux plans d'affilée sur le même écran comptent ensemble ; un écran seul 2 s : refusé.
+    const court = base({
+      captures,
+      plans: [
+        capture('a', 'c1', 0, 2_500),
+        capture('b', 'c1', 2_500, 5_000),
+        capture('c', 'c2', 5_000, 7_000),
+        capture('d', 'c3', 7_000, 12_000),
+      ],
+    });
+    expect(verifierPlan(court, { dureePriseMs: 20_000, camera: true })).toEqual([
+      expect.stringMatching(/Plan « c » : l’écran « c2 » ne reste que 2 s/),
+    ]);
+  });
+
   it('un calque doit rester dans son plan', () => {
     const p = base();
     p.plans[0]!.calques.push({

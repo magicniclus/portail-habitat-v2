@@ -232,6 +232,17 @@ test('STUDIO-LIBRE-CAPCUT : glisser qui pousse, transition, effet, automation, m
   await editeur.getByRole('tab', { name: 'Effets', exact: true }).click();
   await editeur.getByRole('button', { name: 'Sépia' }).click();
   await expect(editeur.getByLabel('Transition d’entrée')).toHaveValue('fondu');
+  // Sur la frise : bande bleutée au début du clip ; tirer son bord l'allonge.
+  const poignee = editeur
+    .getByRole('region', { name: 'Frise' })
+    .getByRole('slider', { name: /Durée de la transition/ });
+  await expect(poignee).toHaveAttribute('aria-valuenow', '500');
+  const h = (await poignee.boundingBox())!;
+  await page.mouse.move(h.x + h.width / 2, h.y + h.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(h.x + h.width / 2 + 40, h.y + h.height / 2, { steps: 5 });
+  await page.mouse.up();
+  await expect(poignee).not.toHaveAttribute('aria-valuenow', '500');
 
   // Place dans l'image : glisser le cadre du clip sur l'aperçu.
   const cadre = editeur.getByRole('group', { name: /Place du clip dans l’image/ });
@@ -278,7 +289,8 @@ test('STUDIO-LIBRE-CAPCUT : glisser qui pousse, transition, effet, automation, m
     'c1@4000',
   ]);
   const c2 = v1.clips[0];
-  expect(c2.transition).toEqual({ type: 'fondu', duree: 500 });
+  expect(c2.transition.type).toBe('fondu');
+  expect(c2.transition.duree).toBeGreaterThan(500);
   expect(c2.effets).toEqual(['sepia']);
   expect(c2.cadre.x).toBeGreaterThan(0.1);
   expect(c2.automations.opacite).toHaveLength(1);

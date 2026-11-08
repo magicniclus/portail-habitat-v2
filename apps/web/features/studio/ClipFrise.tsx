@@ -84,6 +84,7 @@ export function ClipFrise({
   onDeplacer,
   onRognerDebut,
   onRognerFin,
+  onTransition,
   deplacement,
   anime,
   automation,
@@ -97,6 +98,8 @@ export function ClipFrise({
   onDeplacer: (e: EvtPointeur<HTMLElement>) => void;
   onRognerDebut: (e: EvtPointeur<HTMLElement>) => void;
   onRognerFin: (e: EvtPointeur<HTMLElement>) => void;
+  /** Tirer le bord de la transition d'entrée pour changer sa durée. */
+  onTransition: (e: EvtPointeur<HTMLElement>) => void;
   /** Le clip suit le curseur (décalage en px) pendant qu'on le glisse. */
   deplacement?: { dx: number; dy: number } | undefined;
   /** Glissement animé quand le clip change de place (pas pendant un rognage). */
@@ -141,9 +144,35 @@ export function ClipFrise({
           style={{ width: c.fondus.sortie * px }}
         />
       ) : null}
+      {c.transition ? (
+        <span
+          title={`Transition : ${(c.transition.duree / 1000).toLocaleString('fr-FR')} s (tirer le bord pour la changer)`}
+          className="absolute inset-y-0 left-0 z-10 border-r-2 border-montage-transition bg-montage-transition/40 bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgb(255_255_255/0.12)_6px_12px)]"
+          style={{ width: Math.max(8, c.transition.duree * px) }}
+        >
+          {piste.verrou ? null : (
+            <span
+              role="slider"
+              tabIndex={-1}
+              aria-label={`Durée de la transition de ${nom}`}
+              aria-valuemin={100}
+              aria-valuemax={3_000}
+              aria-valuenow={c.transition.duree}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                onSelection();
+                onTransition(e);
+              }}
+              className="absolute inset-y-0 -right-1.5 w-3 cursor-ew-resize"
+            />
+          )}
+        </span>
+      ) : null}
       {automation ?? <Courbe clip={c} param={audio ? 'volume' : 'opacite'} />}
-      <span className="pointer-events-none relative block truncate px-2 pt-1">
-        {c.transition ? '⇄ ' : ''}
+      <span
+        className="pointer-events-none relative block truncate px-2 pt-1"
+        style={c.transition ? { paddingLeft: Math.max(8, c.transition.duree * px) + 6 } : undefined}
+      >
         {c.effets?.length ? 'fx · ' : ''}
         {c.vitesse && c.vitesse !== 1 ? `${c.vitesse}× · ` : ''}
         {nom}

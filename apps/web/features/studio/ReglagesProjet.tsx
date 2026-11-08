@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  ajouterPiste,
   FORMATS_STUDIO,
   NOMS_FORMATS,
   tempsMontage,
@@ -95,23 +94,6 @@ export function ReglagesProjet({
           </>
         ) : null}
       </fieldset>
-      <div className="grid gap-2">
-        <h3 className="m-0 text-sm font-semibold">Ajouter une piste</h3>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" className={AJOUT} onClick={() => changer(ajouterPiste(f, 'video'))}>
-            + Vidéo
-          </button>
-          <button type="button" className={AJOUT} onClick={() => changer(ajouterPiste(f, 'audio'))}>
-            + Audio
-          </button>
-          <button type="button" className={AJOUT} onClick={() => changer(ajouterPiste(f, 'texte'))}>
-            + Effets
-          </button>
-        </div>
-        <p className="m-0 text-xs text-montage-texte-doux">
-          Entre deux pistes vidéo, celle du haut passe devant. 16 pistes au plus.
-        </p>
-      </div>
     </div>
   );
 }

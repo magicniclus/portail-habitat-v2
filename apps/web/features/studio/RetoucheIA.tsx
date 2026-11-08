@@ -1,9 +1,10 @@
 'use client';
 
+import { Chargeur } from '@ph/ui';
 import { useState } from 'react';
 
 /**
- * Panneau IA, « Revoir avec Claude » : refaire le montage à partir de la prise (vidéos montées
+ * Panneau IA, « D’autres instructions pour Claude » : refaire le montage à partir de la prise (vidéos montées
  * par Claude).
  * Le nouveau montage remplace la frise ; les médias importés restent dans la bibliothèque.
  */
@@ -18,7 +19,7 @@ export function RetoucheIA(p: {
   return (
     <div className="grid gap-2">
       <label className="grid gap-1 text-sm">
-        <span className="font-semibold">Revoir avec Claude</span>
+        <span className="font-semibold">Vos instructions à Claude</span>
         <textarea
           value={demande}
           rows={5}
@@ -29,7 +30,8 @@ export function RetoucheIA(p: {
         />
       </label>
       <p className="m-0 text-xs text-montage-texte-doux">
-        Claude refait le montage à partir de la prise : vos retouches à la main seront remplacées.
+        Claude refait le montage à partir de la prise, autant de fois que vous voulez ; vos
+        retouches à la main seront remplacées.
       </p>
       <button
         type="button"
@@ -38,9 +40,10 @@ export function RetoucheIA(p: {
           if (window.confirm('Remplacer le montage actuel par celui de Claude ?'))
             p.onRetouche(demande.trim());
         }}
-        className="min-h-11 rounded-[8px] bg-montage-selection px-3 text-sm font-bold text-montage-fond disabled:opacity-40"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] bg-montage-selection px-3 text-sm font-bold text-montage-fond disabled:opacity-40"
       >
-        Lancer la retouche
+        {p.enCours ? <Chargeur taille="xs" ton="courant" decoratif /> : null}
+        Envoyer à Claude
       </button>
     </div>
   );
