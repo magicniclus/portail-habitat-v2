@@ -105,7 +105,7 @@ export function EditeurFrise(p: {
         }
       />
       <div
-        className="grid min-h-0 grid-cols-[minmax(0,1fr)] bg-montage-fond lg:grid-cols-[var(--gauche)_6px_minmax(0,1fr)_6px_var(--droite)]"
+        className="grid min-h-0 grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,2fr)_minmax(0,3fr)] bg-montage-fond lg:grid-cols-[var(--gauche)_6px_minmax(0,1fr)_6px_var(--droite)] lg:grid-rows-1"
         style={
           {
             '--gauche': `${largeurs.gauche}px`,
@@ -113,7 +113,11 @@ export function EditeurFrise(p: {
           } as CSSProperties
         }
       >
-        <aside aria-label="Bibliothèque" className="hidden min-h-0 bg-montage-panneau lg:block">
+        {/* Petit écran : aperçu en haut, bibliothèque (et panneau IA) dessous. */}
+        <aside
+          aria-label="Bibliothèque"
+          className="order-last min-h-0 border-t border-montage-trait bg-montage-panneau lg:order-none lg:border-t-0"
+        >
           <BibliothequeFrise
             frise={brouillon}
             ongletInitial={pistesVides || p.projet.statut !== 'enregistrement' ? 'ia' : 'medias'}
