@@ -175,12 +175,19 @@ export async function supprimerProjetStudio(
  */
 export async function filmerEcransStudio(
   s: ServicesStudio,
-  e: { projetId: string; frise: unknown },
+  e: { projetId: string; frise: unknown; refaire?: boolean },
 ): Promise<void> {
   const avant = await exiger(s, e.projetId);
   if (avant.statut === 'captures')
     throw new ErreurMetier('PRECONDITION', 'Le robot filme déjà les écrans.');
-  const p = await enregistrerFriseStudio(s, e);
+  const enregistre = await enregistrerFriseStudio(s, { projetId: e.projetId, frise: e.frise });
+  // Tout refilmer : les écrans de la vidéo sont oubliés, le robot les refait.
+  const scenes = new Set(enregistre.frise!.captures.map((c) => `${c.id}:${c.scene}`));
+  const captures = e.refaire
+    ? Object.fromEntries(Object.entries(enregistre.captures).filter(([k]) => !scenes.has(k)))
+    : enregistre.captures;
+  const p = { ...enregistre, captures };
+  if (e.refaire) await maj(s, p.id, { captures });
   const manquantes = p.frise!.captures.filter((c) => !p.captures[`${c.id}:${c.scene}`]);
   if (!manquantes.length)
     throw new ErreurMetier('PRECONDITION', 'Tous les écrans de la vidéo sont déjà filmés.');

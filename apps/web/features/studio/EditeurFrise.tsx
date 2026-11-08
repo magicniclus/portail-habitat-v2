@@ -118,7 +118,7 @@ export function EditeurFrise(p: {
                 filmage={p.filmage}
                 enCours={enCours}
                 onEcran={a.ecran}
-                onFilmer={() => e.filmer(brouillon)}
+                onFilmer={(refaire) => e.filmer(brouillon, refaire)}
                 changer={changer}
               />
             }

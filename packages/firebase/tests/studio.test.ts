@@ -1133,6 +1133,18 @@ describe('montage libre et bibliothèque de médias', () => {
         frise: { ...frise, medias: [lu], captures: [{ id: 'c2', scene: 'demandes_recues' }] },
       }),
     ).rejects.toThrow(/déjà filmés/);
+    // « Refilmer tous les écrans » : les vidéos de la frise sont oubliées puis refaites.
+    await filmerEcransStudio(s, {
+      projetId: id,
+      frise: { ...frise, medias: [lu], captures: [{ id: 'c2', scene: 'demandes_recues' }] },
+      refaire: true,
+    });
+    expect(travaux.at(-1)).toEqual({ type: 'capturer', projetId: id });
+    expect((await lireProjetStudio(db, id))?.captures['c2:demandes_recues']).toBeUndefined();
+    await capturesTermineesStudio(s, {
+      projetId: id,
+      captures: { 'c2:demandes_recues': 'studioRendus/x/c2b.mp4' },
+    });
     const vide = { ...frise, medias: [lu], pistes: frise.pistes.map((x) => ({ ...x, clips: [] })) };
     await expect(fabriquerFriseStudio(s, { projetId: id, frise: vide })).rejects.toThrow(/vide/);
 

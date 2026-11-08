@@ -31,7 +31,7 @@ export function EcransPortail(p: {
   filmage: boolean;
   enCours: boolean;
   onEcran: (scene: SceneCapture) => void;
-  onFilmer: () => void;
+  onFilmer: (refaire: boolean) => void;
   changer: (f: Frise) => void;
 }) {
   const [artisan, setArtisan] = useState(false);
@@ -45,7 +45,7 @@ export function EcransPortail(p: {
           type="button"
           className={`${BOUTON} bg-montage-selection text-montage-fond hover:bg-montage-selection`}
           disabled={p.filmage || p.enCours || !aFilmer.length}
-          onClick={p.onFilmer}
+          onClick={() => p.onFilmer(false)}
         >
           {p.filmage
             ? 'Le robot filme…'
@@ -56,6 +56,23 @@ export function EcransPortail(p: {
         <button type="button" className={BOUTON} onClick={() => setArtisan(true)}>
           Artisan d’exemple
         </button>
+        {p.frise.captures.length > aFilmer.length ? (
+          <button
+            type="button"
+            className={BOUTON}
+            disabled={p.filmage || p.enCours}
+            onClick={() => {
+              if (
+                window.confirm(
+                  'Refilmer tous les écrans de cette vidéo ? Les vidéos actuelles seront remplacées.',
+                )
+              )
+                p.onFilmer(true);
+            }}
+          >
+            Refilmer tous les écrans
+          </button>
+        ) : null}
       </div>
       {NOMS_SCENES.map((s) => (
         <button

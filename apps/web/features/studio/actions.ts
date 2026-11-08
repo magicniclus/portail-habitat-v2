@@ -14,6 +14,7 @@ import {
   entreeSansPriseStudio,
   entreeMontageLibreStudio,
   entreeMediaStudio,
+  entreeFilmerEcransStudio,
   entreeFriseStudio,
   entreeSujetsStudio,
   entreeVoixSyntheseStudio,
@@ -200,8 +201,8 @@ export const fabriquerFrise = async (e: z.input<typeof entreeFriseStudio>) =>
   fin(await fabrication(e), e.projetId);
 
 const filmage = actionAdmin(
-  { schema: entreeFriseStudio, nom: 'adminStudioFilmerEcrans', permission: P },
+  { schema: entreeFilmerEcransStudio, nom: 'adminStudioFilmerEcrans', permission: P },
   async (e) => filmerEcransStudio(servicesStudio(), e),
 );
-export const filmerEcrans = async (e: z.input<typeof entreeFriseStudio>) =>
+export const filmerEcrans = async (e: z.input<typeof entreeFilmerEcransStudio>) =>
   fin(await filmage(e), e.projetId);

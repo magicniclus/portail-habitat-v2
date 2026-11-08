@@ -43,9 +43,9 @@ export function useEnregistrementFrise(projetId: string, initiale: Frise) {
         'Enregistré : la vidéo est en fabrication.',
         () => setEnregistre(frise),
       ),
-    filmer: (frise: Frise) =>
+    filmer: (frise: Frise, refaire = false) =>
       agir(
-        () => filmerEcrans({ projetId, frise }),
+        () => filmerEcrans({ projetId, frise, refaire }),
         'Le robot filme les écrans : ils apparaîtront ici dans quelques minutes.',
         () => setEnregistre(frise),
       ),

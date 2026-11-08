@@ -200,3 +200,10 @@ export const entreeMediaStudio = z.strictObject({ projetId: id, media });
 
 /** Frise multipistes enregistrée depuis l'éditeur. */
 export const entreeFriseStudio = z.strictObject({ projetId: id, frise });
+
+/** « Filmer maintenant » : les écrans qui manquent, ou tous de nouveau (`refaire`). */
+export const entreeFilmerEcransStudio = z.strictObject({
+  projetId: id,
+  frise,
+  refaire: z.boolean().optional(),
+});
