@@ -44,6 +44,12 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
     .getByRole('link', { name: 'Tournage' })
     .click();
   await expect(page.getByRole('heading', { level: 1, name: 'Session de tournage' })).toBeVisible();
+  // Plusieurs thèmes, jusqu'à 10 vidéos chacun (accroches différentes).
+  await page.getByLabel('Thème 1 (facultatif)').fill('les demandes gratuites');
+  await page.getByLabel('Vidéos du thème 1').selectOption('10');
+  await page.getByRole('button', { name: '+ Ajouter un thème' }).click();
+  await page.getByLabel('Thème 2', { exact: true }).fill('le devis en 2 minutes');
+  await expect(page.getByRole('button', { name: /Trouver les idées \(15 vidéos\)/ })).toBeVisible();
   // Sans clé Claude : le message le dit.
   await page.getByRole('button', { name: /Trouver les idées/ }).click();
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();

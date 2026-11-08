@@ -178,6 +178,11 @@ export function promptSujets(e: {
         ]
       : []),
     `Propose ${e.nombre} sujets différents, du plus prometteur au moins prometteur. Durée entre 15 et 90 secondes.`,
+    ...(e.nombre > 3
+      ? [
+          `Série de ${e.nombre} vidéos sur le même thème : chacune a une accroche vraiment différente (question, chiffre choc, erreur à éviter, avant / après, témoignage, idée reçue…) et un angle à elle ; aucune accroche ni aucun titre ne se ressemblent.`,
+        ]
+      : []),
   ].join('\n\n');
   return { systeme, contexte, demande };
 }
@@ -223,7 +228,7 @@ export const sujetStudio = z.strictObject({
     .optional(),
 });
 export type SujetStudio = z.infer<typeof sujetStudio>;
-export const sortieSujets = z.strictObject({ sujets: z.array(sujetStudio).min(1).max(8) });
+export const sortieSujets = z.strictObject({ sujets: z.array(sujetStudio).min(1).max(10) });
 
 const chaine = { type: 'string' };
 const entier = { type: 'integer' };

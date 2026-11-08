@@ -36,7 +36,7 @@ export const entreeSujetsStudio = z.strictObject({
 
 export const entreeChoixSujetStudio = z.strictObject({
   projetId: id,
-  index: z.number().int().min(0).max(7).nullable(),
+  index: z.number().int().min(0).max(9).nullable(),
 });
 
 export const entreePriseStudio = z.strictObject({
@@ -63,7 +63,7 @@ export const entreeProjetStudio = z.strictObject({ projetId: id });
 /** Décliner un sujet en 1 à 5 vidéos d'un coup. */
 export const entreeDeclinaisonStudio = z.strictObject({
   projetId: id,
-  index: z.number().int().min(0).max(7),
+  index: z.number().int().min(0).max(9),
   nombre: z.number().int().min(1).max(5),
 });
 
@@ -79,7 +79,7 @@ export const entreeVoixSyntheseStudio = z.strictObject({
 /** Garder une idée proposée pour la tourner plus tard, sans rappeler l'IA. */
 export const entreeGarderIdeeStudio = z.strictObject({
   projetId: id,
-  index: z.number().int().min(0).max(7),
+  index: z.number().int().min(0).max(9),
 });
 
 export const entreeIdeeStudio = z.strictObject({ ideeId: z.string().regex(/^[a-f0-9]{24}$/) });
@@ -220,9 +220,12 @@ export const entreeStyleStudio = z.strictObject({
   style: z.enum(STYLES_MONTAGE),
 });
 
-/** Session de tournage : plusieurs idées d'un coup, chacune devient une vidéo à tourner. */
+/**
+ * Session de tournage : jusqu'à 10 idées d'un coup sur un thème (accroches toutes différentes),
+ * chacune devient une vidéo à tourner ; plusieurs thèmes = un appel par thème.
+ */
 export const entreeSessionStudio = z.strictObject({
-  nombre: z.number().int().min(2).max(8),
+  nombre: z.number().int().min(1).max(10),
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
   theme: z.string().trim().max(200).optional(),
 });

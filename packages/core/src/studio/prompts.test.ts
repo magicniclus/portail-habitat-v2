@@ -378,3 +378,13 @@ describe('style de montage', () => {
     expect(promptMontage({ ...base, style: 'dynamique' }).systeme).toContain('Style DYNAMIQUE');
   });
 });
+
+describe('série de vidéos sur un thème', () => {
+  it('au-delà de 3 idées : accroches toutes différentes exigées', () => {
+    const base = { videos: [], nombre: 10 };
+    expect(promptSujets(base).demande).toContain('accroche vraiment différente');
+    expect(promptSujets({ ...base, nombre: 3 }).demande).not.toContain(
+      'accroche vraiment différente',
+    );
+  });
+});

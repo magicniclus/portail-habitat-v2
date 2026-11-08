@@ -1,11 +1,12 @@
 'use client';
 
 import type { IdeeStudio } from '@ph/firebase/studio';
-import { Banner, Button, Chargeur, Checkbox, Field, Input, Select } from '@ph/ui';
+import { Banner, Button, Chargeur, Checkbox } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { ideesSession, tournerIdee } from './actions';
 import type { VideoATourner } from './SessionTournage';
+import { ThemesSession, type ThemeSession } from './ThemesSession';
 
 /**
  * Préparer une session de tournage : des idées de Claude d'un coup (un seul appel), ou les idées
@@ -17,8 +18,9 @@ export function PreparerSession(p: {
   onCommencer: (videos: VideoATourner[]) => void;
 }) {
   const router = useRouter();
-  const [theme, setTheme] = useState('');
-  const [nombre, setNombre] = useState(5);
+  const [themes, setThemes] = useState<ThemeSession[]>([{ theme: '', nombre: 5 }]);
+  const [progression, setProgression] = useState<string | null>(null);
+  const total = themes.reduce((n, x) => n + x.nombre, 0);
   const [exclues, setExclues] = useState<ReadonlySet<string>>(new Set());
   const [erreur, setErreur] = useState<string | null>(null);
   const [action, setAction] = useState<string | null>(null);
@@ -42,40 +44,45 @@ export function PreparerSession(p: {
         <h2 id="session-idees" className="m-0 text-lg">
           1. Des idées à tourner
         </h2>
-        <div className="grid items-end gap-3 md:grid-cols-[1fr_160px_auto]">
-          <Field label="Thème (facultatif)">
-            <Input
-              value={theme}
-              maxLength={200}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder="Ex. les demandes gratuites, le devis en 2 minutes"
-            />
-          </Field>
-          <Field label="Combien">
-            <Select value={nombre} onChange={(e) => setNombre(Number(e.target.value))}>
-              {[3, 5, 8].map((n) => (
-                <option key={n} value={n}>
-                  {n} idées
-                </option>
-              ))}
-            </Select>
-          </Field>
+        <ThemesSession themes={themes} onChange={setThemes} desactive={enCours} />
+        <div className="flex flex-wrap items-center gap-3">
           <Button
-            disabled={enCours}
+            disabled={enCours || !total}
             aria-busy={enCours && action === 'idees'}
-            onClick={() =>
-              agir('idees', () =>
-                ideesSession({ nombre, format: 'vertical', theme: theme.trim() || undefined }),
-              )
-            }
+            onClick={() => {
+              setAction('idees');
+              demarrer(async () => {
+                setErreur(null);
+                // Un appel à Claude par thème, l'un après l'autre (progression affichée).
+                for (const [k, x] of themes.entries()) {
+                  setProgression(`Thème ${k + 1} sur ${themes.length} : Claude écrit les scripts…`);
+                  const r = await ideesSession({
+                    nombre: x.nombre,
+                    format: 'vertical',
+                    theme: x.theme.trim() || undefined,
+                  });
+                  if (!r.ok) {
+                    setErreur(r.message);
+                    break;
+                  }
+                }
+                setProgression(null);
+                router.refresh();
+              });
+            }}
           >
             {enCours && action === 'idees' ? <Chargeur taille="xs" ton="courant" decoratif /> : '✦'}
-            {enCours && action === 'idees' ? 'Claude écrit les scripts…' : 'Trouver les idées'}
+            Trouver les idées ({total} vidéo{total > 1 ? 's' : ''})
           </Button>
+          {progression ? (
+            <span className="text-sm text-neutre-700" aria-live="polite">
+              {progression}
+            </span>
+          ) : null}
         </div>
         <p className="m-0 text-sm text-neutre-700">
-          Un seul appel à Claude pour toutes les idées : chacune devient une vidéo avec son script
-          en prompteur.
+          Un appel à Claude par thème, jusqu’à 10 vidéos chacun, chacune avec une accroche
+          différente ; chaque idée devient une vidéo avec son script en prompteur.
         </p>
         {p.idees.length ? (
           <details className="text-sm">
