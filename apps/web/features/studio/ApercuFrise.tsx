@@ -1,0 +1,131 @@
+'use client';
+
+import {
+  clipsActifs,
+  cleSource,
+  dessinerFrise,
+  FORMATS_STUDIO,
+  type ContexteImage,
+  type Frise,
+  type SourceImage,
+} from '@ph/core/studio';
+import { themeStudio } from '@ph/ui/tokens';
+import { useEffect, useRef, useState } from 'react';
+import { lecteurDuClip, useUrlsStudio, type FichiersProjet } from './sourcesFrise';
+import type { LectureFrise } from './useLectureFrise';
+
+const ECHELLE = 0.5;
+
+/**
+ * Aperçu de la frise image par image (même composition que la vidéo finale) : un élément média
+ * caché par clip, une image par média image ; le son est mixé par `useLectureFrise`.
+ */
+export function ApercuFrise({
+  frise,
+  fichiers,
+  lecture: l,
+}: {
+  frise: Frise;
+  fichiers: FichiersProjet;
+  lecture: LectureFrise;
+}) {
+  const { largeur, hauteur } = FORMATS_STUDIO[frise.format];
+  const canevas = useRef<HTMLCanvasElement>(null);
+  // Fichiers refusés en CORS : relus sans (image visible, son sans WebAudio).
+  const [sansCors, setSansCors] = useState<ReadonlySet<string>>(new Set());
+  const lecteurs = frise.pistes.flatMap((p) =>
+    p.clips.flatMap((c) => {
+      const x = lecteurDuClip(frise, c, fichiers);
+      return x ? [{ clip: c.id, ...x }] : [];
+    }),
+  );
+  const images = frise.medias.filter((m) => m.type === 'image');
+  const urls = useUrlsStudio([...lecteurs.map((x) => x.chemin), ...images.map((m) => m.chemin)]);
+
+  useEffect(() => {
+    void new FontFace('Archivo', `url(${themeStudio.fichierPolice})`, { weight: '800' })
+      .load()
+      .then((f) => document.fonts.add(f))
+      .catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const ctx = canevas.current?.getContext('2d');
+    if (!ctx) return;
+    let raf = requestAnimationFrame(function image() {
+      ctx.setTransform(ECHELLE, 0, 0, ECHELLE, 0, 0);
+      const sources: Record<string, SourceImage> = {};
+      for (const { clip } of clipsActifs(frise, l.t.current)) {
+        const cle = cleSource(clip.source);
+        if (!cle) continue;
+        const el = l.medias.current[clip.id];
+        if (el instanceof HTMLVideoElement && el.readyState >= 2)
+          sources[cle] = { image: el, largeur: el.videoWidth, hauteur: el.videoHeight };
+        if (clip.source.type === 'media') {
+          const img = l.images.current[clip.source.mediaId];
+          if (img?.complete && img.naturalWidth)
+            sources[cle] = { image: img, largeur: img.naturalWidth, hauteur: img.naturalHeight };
+        }
+      }
+      dessinerFrise(
+        ctx as unknown as ContexteImage & { filter: string },
+        frise,
+        l.t.current,
+        sources,
+        [],
+        themeStudio,
+      );
+      raf = requestAnimationFrame(image);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [frise, l.t, l.medias, l.images]);
+
+  return (
+    <div className="flex h-full min-h-0 w-full items-center justify-center">
+      <canvas
+        ref={canevas}
+        width={largeur * ECHELLE}
+        height={hauteur * ECHELLE}
+        className="block max-h-full max-w-full rounded-[4px] bg-neutre-900 object-contain"
+        style={{ aspectRatio: `${largeur} / ${hauteur}`, height: '100%' }}
+        aria-label="Aperçu du montage"
+      />
+      {lecteurs.map(({ clip, chemin, balise }) => {
+        const src = urls[chemin];
+        if (!src) return null;
+        const Balise = balise;
+        return (
+          <Balise
+            key={`${clip}:${sansCors.has(chemin) ? 'n' : 'c'}`}
+            ref={(el: HTMLMediaElement | null) => {
+              if (el) l.medias.current[clip] = el;
+              else delete l.medias.current[clip];
+            }}
+            src={src}
+            crossOrigin={sansCors.has(chemin) ? undefined : 'anonymous'}
+            onError={() => setSansCors((s) => (s.has(chemin) ? s : new Set(s).add(chemin)))}
+            onLoadedData={() => l.aller(l.t.current)}
+            playsInline
+            preload="auto"
+            className="hidden"
+          />
+        );
+      })}
+      {images.map((m) =>
+        urls[m.chemin] ? (
+          // eslint-disable-next-line @next/next/no-img-element -- dessinée dans le canevas
+          <img
+            key={m.id}
+            ref={(el) => {
+              if (el) l.images.current[m.id] = el;
+              else delete l.images.current[m.id];
+            }}
+            src={urls[m.chemin]}
+            alt=""
+            className="hidden"
+          />
+        ) : null,
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,38 @@
+'use client';
+
+import type { Frise } from '@ph/core/studio';
+import { Button } from '@ph/ui';
+import { useState } from 'react';
+import { EditeurFrise } from './EditeurFrise';
+import type { FichiersProjet } from './sourcesFrise';
+
+/**
+ * Montage libre : l'éditeur multipistes s'ouvre en plein écran ; fermé, la page de l'étape
+ * permet de le rouvrir.
+ */
+export function EtapeMontageLibre(p: {
+  projetId: string;
+  frise: Frise;
+  fichiers: FichiersProjet;
+  etat: string | null;
+}) {
+  const [ouvert, setOuvert] = useState(true);
+  const clips = p.frise.pistes.reduce((n, x) => n + x.clips.length, 0);
+  return (
+    <section
+      aria-labelledby="montage-libre"
+      className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-trait bg-blanc p-4"
+    >
+      <div className="min-w-0">
+        <h2 id="montage-libre" className="m-0 text-lg">
+          Montage · {p.frise.titre}
+        </h2>
+        <p className="m-0 text-sm text-neutre-700">
+          {p.frise.pistes.length} pistes · {clips} clips · {p.frise.medias.length} médias
+        </p>
+      </div>
+      <Button onClick={() => setOuvert(true)}>Ouvrir l’éditeur</Button>
+      {ouvert ? <EditeurFrise {...p} onFermer={() => setOuvert(false)} /> : null}
+    </section>
+  );
+}

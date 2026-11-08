@@ -8,7 +8,7 @@ import {
   PlayIcon,
   SkipBackIcon,
 } from '@phosphor-icons/react';
-import type { Lecture } from './useLectureMontage';
+import type { Horloge } from './useLectureMontage';
 
 const BOUTON =
   'flex size-11 items-center justify-center rounded-[8px] text-montage-texte hover:bg-montage-survol aria-pressed:bg-montage-survol aria-pressed:text-montage-selection';
@@ -21,7 +21,7 @@ export function CommandesLecture({
   avecMiniature,
   onPleinEcran,
 }: {
-  lecture: Lecture;
+  lecture: Horloge;
   miniature: boolean;
   onMiniature: (voir: boolean) => void;
   avecMiniature: boolean;

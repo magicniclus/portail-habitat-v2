@@ -4,6 +4,7 @@ import { Badge } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { BoutonSupprimerProjet } from '@/features/studio/BoutonSupprimerProjet';
 import { EcouteProjet } from '@/features/studio/EcouteProjet';
 import { EtapesProjet } from '@/features/studio/EtapesProjet';
 import { etatEtapes, projetStudioPage } from '@/features/studio/projetPage';
@@ -33,6 +34,7 @@ export default async function LayoutProjetStudio({
         <p className="m-0 flex items-center gap-2 text-sm text-neutre-700">
           <Badge tone={TONS_STATUT[p.statut]}>{LIBELLES_STATUT_STUDIO[p.statut]}</Badge>
           {formatEuros(p.coutCentimes, { decimales: 'toujours' })} de Claude
+          <BoutonSupprimerProjet projetId={p.id} titre={p.titre} />
         </p>
       </header>
       <EtapesProjet

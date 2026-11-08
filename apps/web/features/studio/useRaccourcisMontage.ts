@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { Lecture } from './useLectureMontage';
+import type { Horloge } from './useLectureMontage';
 
 /**
  * Raccourcis de l'éditeur (hors champs de saisie) : Espace lit ou met en pause, S scinde,
  * Suppr efface la sélection, ← → avancent la tête de 0,1 s (1 s avec Maj).
  */
 export function useRaccourcisMontage(a: {
-  lecture: Lecture;
+  lecture: Horloge;
   onScinder: () => void;
   onSupprimer: (() => void) | undefined;
 }) {

@@ -49,7 +49,7 @@ export function PisteAnimations({
   aimant: boolean;
   selection: Selection;
   onSelection: (s: Selection) => void;
-  glisser: ReturnType<typeof useGlisser>;
+  glisser: ReturnType<typeof useGlisser<PlanMontage>>;
 }) {
   const debuts = debutsPlans(plan);
   const voies = voiesAnimations(plan);

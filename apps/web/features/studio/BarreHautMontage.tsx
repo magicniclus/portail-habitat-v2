@@ -57,6 +57,8 @@ export function BarreHautMontage(p: {
   enregistrable: boolean;
   enCours: boolean;
   onEnregistrer: () => void;
+  /** Libellé du bouton d'enregistrement (« Enregistrer et fabriquer » par défaut). */
+  libelleEnregistrer?: string;
 }) {
   return (
     <header className="flex min-w-0 items-center gap-2 border-b border-montage-trait bg-montage-panneau px-2">
@@ -118,7 +120,7 @@ export function BarreHautMontage(p: {
           className="flex min-h-10 items-center gap-2 rounded-[8px] bg-montage-selection px-4 text-sm font-bold text-montage-fond disabled:opacity-40"
         >
           <FloppyDiskIcon size={18} aria-hidden="true" />
-          {p.enCours ? 'Enregistrement…' : 'Enregistrer et fabriquer'}
+          {p.enCours ? 'Enregistrement…' : (p.libelleEnregistrer ?? 'Enregistrer et fabriquer')}
         </button>
       </div>
     </header>

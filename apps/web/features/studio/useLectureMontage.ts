@@ -73,3 +73,6 @@ export function useLectureMontage(plan: PlanMontage) {
 }
 
 export type Lecture = ReturnType<typeof useLectureMontage>;
+
+/** Ce que les commandes et raccourcis lisent de l'horloge (éditeur des plans ou de la frise). */
+export type Horloge = Pick<Lecture, 'duree' | 'lecture' | 'setLecture' | 'affiche' | 'aller'>;

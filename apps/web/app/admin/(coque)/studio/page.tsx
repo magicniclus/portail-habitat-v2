@@ -13,6 +13,7 @@ import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { BoutonCommentaires } from '@/features/studio/BoutonCommentaires';
 import { IdeesGardees } from '@/features/studio/IdeesGardees';
+import { NouveauMontageLibre } from '@/features/studio/NouveauMontageLibre';
 import { NouveauProjet } from '@/features/studio/NouveauProjet';
 import { Series } from '@/features/studio/Series';
 import { TONS_STATUT } from '@/features/studio/tons';
@@ -82,6 +83,7 @@ export default async function Studio() {
         </Banner>
       ) : null}
       <NouveauProjet />
+      <NouveauMontageLibre />
       {/* Les commentaires se lisent par les comptes connectés (Studio › Réseaux). */}
       {comptes.some((c) => c.reseau !== 'tiktok') ? <BoutonCommentaires /> : null}
       <Series series={series} />

@@ -10,7 +10,7 @@ const LIBELLES = { video: 'Vidéo', audio: 'Son', image: 'Image' } as const;
 const PLAFOND = { video: '1 Go', audio: '200 Mo', image: '20 Mo' } as const;
 
 /** Type de média d'un fichier glissé (ou null : ni vidéo, ni son, ni image). */
-export function typeMedia(f: File): Media['type'] | null {
+function typeMedia(f: File): Media['type'] | null {
   if (!EXTENSIONS.test(f.name)) return null;
   const t = f.type.split('/')[0];
   return t === 'video' || t === 'audio' || t === 'image' ? t : null;
