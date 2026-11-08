@@ -236,8 +236,11 @@ export async function deposerPrise(
   }
 }
 
-/** Adresse de lecture d'un fichier du Studio (règles : section Studio). */
+/**
+ * Adresse de lecture d'un fichier du Studio : servi par notre serveur (session admin et
+ * permission Studio vérifiées, Admin SDK), donc indépendant des règles Storage du projet et du
+ * CORS du bucket (son de l'aperçu par WebAudio compris).
+ */
 export async function urlFichierStudio(chemin: string): Promise<string> {
-  const [st, m] = await Promise.all([stockageClient(), import('firebase/storage')]);
-  return m.getDownloadURL(m.ref(st, chemin));
+  return `/api/studio/fichier?c=${encodeURIComponent(chemin)}`;
 }

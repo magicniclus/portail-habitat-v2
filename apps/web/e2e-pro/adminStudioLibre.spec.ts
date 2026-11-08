@@ -289,3 +289,42 @@ test('STUDIO-LIBRE-CAPCUT : glisser qui pousse, transition, effet, automation, m
   expect(f.sousTitres).toBe(true);
   expect(f.pistes.find((x: { id: string }) => x.id === 'a1').muet).toBe(true);
 });
+
+test('STUDIO-FICHIER : vidéos du Studio servies par le serveur (morceaux), refusées sans droit', async ({
+  page,
+  browser,
+}) => {
+  const { getStorage } = await import('firebase-admin/storage');
+  const chemin = 'studioRendus/e2e-fichier/captures/c1-fiche_publique.mp4';
+  await getStorage()
+    .bucket('demo-portail-travaux.appspot.com')
+    .file(chemin)
+    .save(Buffer.alloc(1000, 7), { contentType: 'video/mp4' });
+  await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
+  const lire = (c: string, range?: string, p = page) =>
+    p.evaluate(
+      async ([c2, r]) => {
+        const rep = await fetch(`/api/studio/fichier?c=${encodeURIComponent(c2!)}`, {
+          headers: r ? { range: r } : {},
+        });
+        return {
+          statut: rep.status,
+          plage: rep.headers.get('content-range'),
+          taille: (await rep.arrayBuffer()).byteLength,
+        };
+      },
+      [c, range] as const,
+    );
+  expect(await lire(chemin)).toEqual({ statut: 200, plage: null, taille: 1000 });
+  expect(await lire(chemin, 'bytes=100-199')).toEqual({
+    statut: 206,
+    plage: 'bytes 100-199/1000',
+    taille: 100,
+  });
+  expect((await lire('studioRendus/absent.mp4')).statut).toBe(404);
+  expect((await lire('artisans/x/../secret.pdf')).statut).toBe(400);
+  // Sans la permission Studio (autre navigateur, modérateur) : refusé.
+  const autre = await (await browser.newContext()).newPage();
+  await connecter(autre, 'moderateur@test.local', '/admin', 'admin');
+  expect((await lire(chemin, undefined, autre)).statut).toBe(403);
+});

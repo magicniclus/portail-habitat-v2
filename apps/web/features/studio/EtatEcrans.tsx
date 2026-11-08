@@ -35,7 +35,9 @@ export function EtatEcrans(p: {
     const code = p.erreurs[chemin];
     if (code) return [`« ${nom} » : ${RAISONS[code] ?? `vidéo inaccessible (${code})`}.`];
     if (p.illisibles.has(chemin))
-      return [`« ${nom} » : la vidéo filmée ne se lit pas ; refilmez l’écran.`];
+      return [
+        `« ${nom} » : la vidéo ne se charge pas (fichier absent, ou session expirée : reconnectez-vous). Sinon, refilmez l’écran.`,
+      ];
     if (p.urls[chemin] === undefined) return [`« ${nom} » : chargement…`];
     return [];
   });
