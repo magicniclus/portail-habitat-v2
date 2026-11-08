@@ -8,6 +8,7 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import { coutCentimes } from '@ph/core/ia';
 import {
   CONSERVATION_PRISES_JOURS,
+  decouperSession,
   classerTendances,
   MODELE_STUDIO,
   planMontage,
@@ -98,6 +99,12 @@ export interface ProjetStudio {
     hashtag: string;
   }[];
   prise: { id: string; fichiers: FichiersPrise; dureeMs: number } | null;
+  /** Session tournée d'une traite : vidéos de la prise, dans l'ordre (sur la première seulement). */
+  session: string[] | null;
+  /** Session : la vidéo qui porte la transcription commune (sur les suivantes). */
+  sessionDe: string | null;
+  /** Session tournée d'une traite : passage de la prise qui revient à cette vidéo. */
+  plage: { debut: number; fin: number } | null;
   mots: MotTranscrit[];
   plan: PlanMontage | null;
   version: number;
@@ -171,6 +178,9 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     tendances: (d.tendances as TendanceAffichee[] | undefined) ?? [],
     reels: (d.reels as ProjetStudio['reels'] | undefined) ?? [],
     prise: (d.prise as ProjetStudio['prise'] | undefined) ?? null,
+    session: (d.session as string[] | null | undefined) ?? null,
+    sessionDe: (d.sessionDe as string | null | undefined) ?? null,
+    plage: (d.plage as ProjetStudio['plage'] | undefined) ?? null,
     mots: (d.mots as MotTranscrit[] | undefined) ?? [],
     plan: (d.plan as PlanMontage | null | undefined) ?? null,
     version: (d.version as number | undefined) ?? 0,
@@ -590,23 +600,65 @@ export async function priseEnregistreeStudio(
   },
 ): Promise<void> {
   await exiger(s, e.projetId);
+  verifierFichiersPrise(e);
+  await maj(s, e.projetId, { ...champsPrise(s, e), session: null, sessionDe: null, plage: null });
+  await s.lancerTravail('transcrire', e.projetId);
+}
+
+const voixDuScript = (p: ProjetStudio) => (p.sujet?.script ?? []).map((x) => x.voix).join(' ');
+
+function verifierFichiersPrise(e: { auteurUid: string; priseId: string; fichiers: FichiersPrise }) {
   const prefixe = `studio/${e.auteurUid}/${e.priseId}/`;
   const chemins = Object.values(e.fichiers).filter((x): x is string => Boolean(x));
   if (!chemins.every((c) => c.startsWith(prefixe) && !c.includes('..')))
     throw new ErreurMetier('ENTREE_INVALIDE', 'Fichier de prise invalide.');
-  const maintenant = s.horloge();
-  await maj(s, e.projetId, {
-    prise: { id: e.priseId, fichiers: e.fichiers, dureeMs: e.dureeMs },
-    // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
-    libre: false,
-    camera: Boolean(e.fichiers.camera),
-    statut: 'transcription',
-    mots: [],
-    erreur: null,
-    // Les prises brutes partent après 30 jours (règle de cycle de vie du bucket + ce repère).
-    prisesExpirentLe: Timestamp.fromMillis(maintenant + CONSERVATION_PRISES_JOURS * JOUR),
-  });
-  await s.lancerTravail('transcrire', e.projetId);
+}
+
+const champsPrise = (
+  s: ServicesStudio,
+  e: { priseId: string; fichiers: FichiersPrise; dureeMs: number },
+) => ({
+  prise: { id: e.priseId, fichiers: e.fichiers, dureeMs: e.dureeMs },
+  // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
+  libre: false,
+  camera: Boolean(e.fichiers.camera),
+  statut: 'transcription',
+  mots: [],
+  erreur: null,
+  // Les prises brutes partent après 30 jours (règle de cycle de vie du bucket + ce repère).
+  prisesExpirentLe: Timestamp.fromMillis(s.horloge() + CONSERVATION_PRISES_JOURS * JOUR),
+});
+
+/**
+ * Session tournée d'une traite (en voiture, au calme…) : une seule longue prise où l'auteur lit
+ * les scripts de plusieurs vidéos à la suite. Chaque vidéo reçoit la même prise ; une seule
+ * transcription, puis la découpe trouve le passage de chacune et Claude les monte une à une.
+ */
+export async function priseSessionStudio(
+  s: ServicesStudio,
+  e: {
+    projetIds: string[];
+    auteurUid: string;
+    priseId: string;
+    fichiers: FichiersPrise;
+    dureeMs: number;
+  },
+): Promise<void> {
+  if (new Set(e.projetIds).size !== e.projetIds.length)
+    throw new ErreurMetier('ENTREE_INVALIDE', 'Vidéo en double dans la session.');
+  const projets = await Promise.all(e.projetIds.map((id) => exiger(s, id)));
+  if (projets.some((p) => !voixDuScript(p).trim()))
+    throw new ErreurMetier('PRECONDITION', 'Chaque vidéo de la session doit avoir son script.');
+  verifierFichiersPrise(e);
+  const [premier] = e.projetIds;
+  for (const id of e.projetIds)
+    await maj(s, id, {
+      ...champsPrise(s, e),
+      session: id === premier ? e.projetIds : null,
+      sessionDe: id === premier ? null : premier,
+      plage: null,
+    });
+  await s.lancerTravail('transcrire', premier!);
 }
 
 /**
@@ -644,6 +696,9 @@ export async function voixSyntheseStudio(
     prise: { id: priseId, fichiers: { voix: chemin }, dureeMs },
     // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
     libre: false,
+    session: null,
+    sessionDe: null,
+    plage: null,
     camera: false,
     statut: 'montage',
     // Sans horodatage (ancienne réponse), le texte est réparti sur la durée.
@@ -684,6 +739,9 @@ export async function sansPriseStudio(
     prise: { id: `m${s.horloge().toString(36)}`, fichiers: {}, dureeMs: e.dureeMs },
     // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
     libre: false,
+    session: null,
+    sessionDe: null,
+    plage: null,
     camera: false,
     statut: 'montage',
     mots,
@@ -710,11 +768,60 @@ export async function transcriptionRecueStudio(
     images?: readonly { type: 'image/jpeg'; base64: string }[];
   },
 ): Promise<void> {
+  const p = await exiger(s, e.projetId);
+  if (p.session?.length) return decouperSessionStudio(s, p, e);
   await maj(s, e.projetId, { mots: e.mots, statut: 'montage' });
   await genererMontageStudio(s, {
     projetId: e.projetId,
     ...(e.images ? { images: e.images } : {}),
   });
+}
+
+/** Session : la transcription est coupée par script, puis chaque vidéo est montée à son tour. */
+async function decouperSessionStudio(
+  s: ServicesStudio,
+  premier: ProjetStudio,
+  e: { mots: MotTranscrit[]; images?: readonly { type: 'image/jpeg'; base64: string }[] },
+) {
+  const projets = await Promise.all(premier.session!.map((id) => lireProjetStudio(s.db, id)));
+  const presents = projets.filter((p): p is ProjetStudio => Boolean(p));
+  const morceaux = decouperSession(
+    e.mots,
+    presents.map((p) => voixDuScript(p) || p.titre),
+  );
+  if (!morceaux) {
+    for (const p of presents)
+      await maj(s, p.id, {
+        statut: 'erreur',
+        erreur: 'La prise est trop courte pour toutes les vidéos de la session.',
+      });
+    return;
+  }
+  // Relance d'une session : les vidéos déjà montées ne repassent pas chez Claude.
+  const aMonter = presents.filter((p) => !p.plan);
+  for (const [k, p] of presents.entries()) {
+    if (p.plan) continue;
+    const m = morceaux[k]!;
+    await maj(s, p.id, {
+      mots: m.mots,
+      plage: { debut: m.debut, fin: m.fin },
+      statut: 'montage',
+    });
+  }
+  // L'une après l'autre (coût et débit de Claude maîtrisés) ; un échec n'arrête pas les autres.
+  for (const p of aMonter) {
+    try {
+      await genererMontageStudio(s, { projetId: p.id, ...(e.images ? { images: e.images } : {}) });
+    } catch (err) {
+      await maj(s, p.id, {
+        statut: 'erreur',
+        erreur:
+          err instanceof ErreurMetier
+            ? err.message
+            : `Claude n’a pas pu faire le montage : ${raisonEchecClaude(err)}`,
+      });
+    }
+  }
 }
 
 /** Plan accepté : nouvelle version, puis captures manquantes ou rendu direct. */
@@ -793,6 +900,7 @@ export async function genererMontageStudio(
     dureePriseMs: p.prise.dureeMs,
     camera: p.camera,
     ecran: Boolean(p.prise.fichiers.ecran),
+    ...(p.plage ? { plage: p.plage } : {}),
   };
   let erreurs: string[] = [];
   for (let essai = 0; essai < 2; essai++) {
@@ -803,6 +911,7 @@ export async function genererMontageStudio(
       voix: Boolean(p.prise.fichiers.voix),
       sousTitres: (e.sousTitres ?? p.plan?.sousTitres ?? false) && p.mots.length > 0,
       dureePriseMs: p.prise.dureeMs,
+      plage: p.plage ?? undefined,
       transcription: transcriptionHorodatee(p.mots),
       segments: segmentsParoles(p.mots, {}),
       sujet: p.sujet,
@@ -932,10 +1041,14 @@ export async function echecStudio(
     capturer: 'Les captures',
     rendre: 'Le rendu',
   };
-  await maj(s, e.projetId, {
-    statut: 'erreur',
-    erreur: `${etapes[e.etape]} a échoué : ${e.message.slice(0, 300)}`,
-  });
+  const erreur = `${etapes[e.etape]} a échoué : ${e.message.slice(0, 300)}`;
+  // Transcription commune d'une session : toutes ses vidéos attendaient, toutes sont prévenues.
+  const p = e.etape === 'transcrire' ? await lireProjetStudio(s.db, e.projetId) : null;
+  const ids = p?.session?.length ? p.session : [e.projetId];
+  for (const id of ids) {
+    const q = id === e.projetId ? p : await lireProjetStudio(s.db, id);
+    if (id === e.projetId || (q && !q.plan)) await maj(s, id, { statut: 'erreur', erreur });
+  }
 }
 
 /** Relance de l'étape en échec (même travail). */
@@ -950,8 +1063,11 @@ export async function relancerStudio(s: ServicesStudio, e: { projetId: string })
     );
   // Seule une voix enregistrée se transcrit ; voix IA et « Claude fait tout » ont déjà leurs mots.
   if (!p.mots.length && !p.plan && etapesFabrication(p.prise.id).includes('transcription')) {
+    // Session : la transcription commune est refaite par la première vidéo.
+    const porteur = p.sessionDe ?? p.id;
     await maj(s, p.id, { statut: 'transcription', erreur: null });
-    return s.lancerTravail('transcrire', p.id);
+    if (porteur !== p.id) await maj(s, porteur, { statut: 'transcription', erreur: null });
+    return s.lancerTravail('transcrire', porteur);
   }
   if (!p.plan) return lancerMontageStudio(s, { projetId: p.id });
   return enregistrerPlan(s, p, p.plan, 'relance');

@@ -45,6 +45,7 @@ export {
   listerProjetsStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
+  priseSessionStudio,
   projetAvecSujetStudio,
   purgerPrisesStudio,
   proposerSujetsStudio,

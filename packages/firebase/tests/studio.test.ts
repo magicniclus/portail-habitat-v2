@@ -13,6 +13,7 @@ import {
   listerProjetsStudio,
   modifierPlanStudio,
   priseEnregistreeStudio,
+  priseSessionStudio,
   voixSyntheseStudio,
   sansPriseStudio,
   relancerStudio,
@@ -820,6 +821,117 @@ describe('session de tournage', () => {
         format: 'vertical',
       }),
     ).rejects.toThrow();
+  });
+});
+
+describe('session tournée d’une traite', () => {
+  it('une seule prise, une transcription, puis chaque vidéo montée sur son passage', async () => {
+    const deuxieme: SujetStudio = {
+      ...sujet,
+      titre: 'Devis en deux minutes',
+      script: [
+        {
+          voix: 'Un devis propre en deux minutes avec les mentions obligatoires vérifiées',
+          aEcran: 'camera',
+          texteEcran: 'Devis',
+        },
+        { voix: 'pour chaque chantier sans logiciel payant.', aEcran: 'camera', texteEcran: '0 €' },
+      ],
+    };
+    reponses = [{ sujets: [sujet, deuxieme] }];
+    const ids = await ideesSessionStudio(services(), {
+      auteurUid: 'sa',
+      nombre: 2,
+      format: 'vertical',
+    });
+    travaux.length = 0;
+    const prise = {
+      projetIds: ids,
+      auteurUid: 'sa',
+      priseId: 'psess1',
+      fichiers: { camera: 'studio/sa/psess1/import.mp4', voix: 'studio/sa/psess1/import.mp4' },
+      dureeMs: 35_000,
+    };
+    await expect(
+      priseSessionStudio(services(), { ...prise, fichiers: { voix: 'studio/autre/x.mp4' } }),
+    ).rejects.toThrow();
+    await expect(
+      priseSessionStudio(services(), { ...prise, projetIds: [ids[0]!, ids[0]!] }),
+    ).rejects.toThrow();
+    await priseSessionStudio(services(), prise);
+    // Une seule transcription pour toute la session.
+    expect(travaux).toEqual([{ type: 'transcrire', projetId: ids[0] }]);
+    const [a, b] = await Promise.all(ids.map((id) => lireProjetStudio(db, id)));
+    expect(a?.session).toEqual(ids);
+    expect(b?.sessionDe).toBe(ids[0]);
+    expect([a?.statut, b?.statut]).toEqual(['transcription', 'transcription']);
+    expect(b?.prise?.fichiers.camera).toBe('studio/sa/psess1/import.mp4');
+
+    // Les deux scripts lus à la suite, un mot par seconde.
+    const parle = [...sujet.script, ...deuxieme.script].map((x) => x.voix).join(' ');
+    const mots = parle
+      .split(' ')
+      .map((t, i) => ({ texte: t, debut: i * 1000, fin: i * 1000 + 400 }));
+    const n1 = sujet.script
+      .map((x) => x.voix)
+      .join(' ')
+      .split(' ').length;
+    const camera = (id: string, debut: number, fin: number) => ({
+      id,
+      source: { debut, fin },
+      visuel: 'camera' as const,
+      camera: 'cachee' as const,
+      calques: [],
+    });
+    reponses = [
+      plan({ plans: [camera('p1', 0, 6_000), camera('p2', 6_500, 13_000)], captures: [] }),
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: n1 * 1000 + 500, fin: n1 * 1000 + 7_000 },
+            visuel: 'camera',
+            camera: 'cachee',
+            calques: [],
+          },
+          {
+            id: 'p2',
+            source: { debut: n1 * 1000 + 7_500, fin: n1 * 1000 + 15_000 },
+            visuel: 'camera',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+        captures: [],
+      }),
+    ];
+    const avant = appels.length;
+    await transcriptionRecueStudio(services(), { projetId: ids[0]!, mots });
+    expect(appels.length - avant).toBe(2);
+    expect(appels.at(-1)!.demande).toContain('QUE le passage');
+    const [a2, b2] = await Promise.all(ids.map((id) => lireProjetStudio(db, id)));
+    expect(a2?.mots).toHaveLength(n1);
+    expect(b2?.mots[0]?.texte).toBe('Un');
+    expect(a2!.plage!.fin).toBeLessThanOrEqual(b2!.plage!.debut);
+    expect(a2?.plan).not.toBeNull();
+    expect(b2?.plan).not.toBeNull();
+    expect([a2?.statut, b2?.statut]).toEqual(['rendu', 'rendu']);
+
+    // Panne du robot pendant la transcription commune : toute la session est prévenue, et la
+    // relance d'une vidéo suivante refait la transcription de la première.
+    reponses = [{ sujets: [sujet, deuxieme] }];
+    const ids2 = await ideesSessionStudio(services(), {
+      auteurUid: 'sa',
+      nombre: 2,
+      format: 'vertical',
+    });
+    await priseSessionStudio(services(), { ...prise, projetIds: ids2 });
+    await echecStudio(services(), { projetId: ids2[0]!, etape: 'transcrire', message: 'panne' });
+    const b3 = await lireProjetStudio(db, ids2[1]!);
+    expect(b3?.statut).toBe('erreur');
+    travaux.length = 0;
+    await relancerStudio(services(), { projetId: ids2[1]! });
+    expect(travaux).toEqual([{ type: 'transcrire', projetId: ids2[0] }]);
   });
 });
 
