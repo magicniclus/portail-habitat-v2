@@ -6,15 +6,14 @@ import {
   dessinerFrise,
   dessinerMiniature,
   FORMATS_STUDIO,
-  lignesFrise,
   type ContexteFrise,
   type ContexteImage,
   type Frise,
-  type MotTranscrit,
+  type LigneSousTitre,
   type SourceImage,
 } from '@ph/core/studio';
 import { themeStudio } from '@ph/ui/tokens';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { lecteurDuClip, useUrlsStudio, type FichiersProjet } from './sourcesFrise';
 import type { LectureFrise } from './useLectureFrise';
 
@@ -27,16 +26,19 @@ const ECHELLE = 0.5;
 export function ApercuFrise({
   frise,
   fichiers,
-  mots,
+  lignes,
   lecture: l,
   miniature = false,
+  children,
 }: {
   frise: Frise;
   fichiers: FichiersProjet;
-  mots: readonly MotTranscrit[];
+  lignes: readonly LigneSousTitre[];
   lecture: LectureFrise;
   /** Montrer le texte de la miniature par-dessus l'image. */
   miniature?: boolean;
+  /** Poignées posées sur l'image (déplacer l'élément choisi). */
+  children?: ReactNode;
 }) {
   const { largeur, hauteur } = FORMATS_STUDIO[frise.format];
   const canevas = useRef<HTMLCanvasElement>(null);
@@ -48,7 +50,6 @@ export function ApercuFrise({
       return x ? [{ clip: c.id, ...x }] : [];
     }),
   );
-  const lignes = useMemo(() => (frise.sousTitres ? lignesFrise(frise, mots) : []), [frise, mots]);
   const images = frise.medias.filter((m) => m.type === 'image');
   const urls = useUrlsStudio([...lecteurs.map((x) => x.chemin), ...images.map((m) => m.chemin)]);
 
@@ -65,7 +66,10 @@ export function ApercuFrise({
     let raf = requestAnimationFrame(function image() {
       ctx.setTransform(ECHELLE, 0, 0, ECHELLE, 0, 0);
       const sources: Record<string, SourceImage> = {};
-      for (const { clip } of clipsActifs(frise, l.t.current)) {
+      // À l'arrêt tout au début, les textes entrent encore en fondu : on montre l'image où ils
+      // sont lisibles, sinon l'aperçu paraît vide.
+      const t = l.t.current === 0 && !l.lecture ? 300 : l.t.current;
+      for (const { clip } of clipsActifs(frise, t)) {
         const cle = cleSource(clip.source);
         if (!cle) continue;
         const el = l.medias.current[clip.id];
@@ -77,14 +81,7 @@ export function ApercuFrise({
             sources[cle] = { image: img, largeur: img.naturalWidth, hauteur: img.naturalHeight };
         }
       }
-      dessinerFrise(
-        ctx as unknown as ContexteFrise,
-        frise,
-        l.t.current,
-        sources,
-        lignes,
-        themeStudio,
-      );
+      dessinerFrise(ctx as unknown as ContexteFrise, frise, t, sources, lignes, themeStudio);
       if (miniature && frise.miniature)
         dessinerMiniature(
           ctx as unknown as ContexteImage,
@@ -95,18 +92,24 @@ export function ApercuFrise({
       raf = requestAnimationFrame(image);
     });
     return () => cancelAnimationFrame(raf);
-  }, [frise, lignes, miniature, l.t, l.medias, l.images]);
+  }, [frise, lignes, miniature, l.t, l.lecture, l.medias, l.images]);
 
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center">
-      <canvas
-        ref={canevas}
-        width={largeur * ECHELLE}
-        height={hauteur * ECHELLE}
-        className="block max-h-full max-w-full rounded-[4px] bg-neutre-900 object-contain"
+      <div
+        data-apercu
+        className="relative max-h-full max-w-full"
         style={{ aspectRatio: `${largeur} / ${hauteur}`, height: '100%' }}
-        aria-label="Aperçu du montage"
-      />
+      >
+        <canvas
+          ref={canevas}
+          width={largeur * ECHELLE}
+          height={hauteur * ECHELLE}
+          className="block size-full rounded-[4px] bg-neutre-900"
+          aria-label="Aperçu du montage"
+        />
+        {children}
+      </div>
       {lecteurs.map(({ clip, chemin, balise }) => {
         const src = urls[chemin];
         if (!src) return null;

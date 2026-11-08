@@ -1,6 +1,18 @@
 'use client';
 
+import type { EffetVideo, SourceClip, Transition } from '@ph/core/studio';
 import { useRef, type PointerEvent as EvtPointeur } from 'react';
+
+/** Type glissé depuis la bibliothèque : une source de clip et sa durée. */
+export const GLISSE_STUDIO = 'application/x-studio-clip';
+export interface ClipGlisse {
+  source: SourceClip;
+  duree: number;
+}
+/** Transition ou effet vidéo glissé depuis la bibliothèque sur un clip. */
+export const GLISSE_RETOUCHE = 'application/x-studio-retouche';
+export type RetoucheGlissee =
+  { genre: 'transition'; type: Transition } | { genre: 'effet'; type: EffetVideo };
 
 /**
  * Geste de glisser dans la frise : part d'une copie du montage (plan ou frise), convertit le déplacement en ms et

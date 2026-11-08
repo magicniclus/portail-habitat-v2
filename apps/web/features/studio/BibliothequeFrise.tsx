@@ -9,23 +9,32 @@ import {
   type Frise,
 } from '@ph/core/studio';
 import {
+  ArrowsLeftRightIcon,
   CardsIcon,
   FilmStripIcon,
   MagicWandIcon,
+  RobotIcon,
   SparkleIcon,
   TextTIcon,
 } from '@phosphor-icons/react';
 import { useState, type ReactNode } from 'react';
 import { DUREE_FIXE, MediasFrise, Tuile } from './MediasFrise';
-import type { ClipGlisse } from './PistesFrise';
+import type { ClipGlisse, RetoucheGlissee } from './glisserFrise';
+import { RetouchesBibliotheque } from './RetouchesBibliotheque';
 
-type Onglet = 'medias' | 'texte' | 'effets' | 'cartons' | 'ia';
+type Onglet = 'medias' | 'texte' | 'effets' | 'transitions' | 'video' | 'cartons' | 'ia';
 const ONGLETS: { id: Onglet; libelle: string; icone: ReactNode }[] = [
   { id: 'medias', libelle: 'Médias', icone: <FilmStripIcon size={20} aria-hidden="true" /> },
   { id: 'texte', libelle: 'Texte', icone: <TextTIcon size={20} aria-hidden="true" /> },
-  { id: 'effets', libelle: 'Effets', icone: <SparkleIcon size={20} aria-hidden="true" /> },
+  { id: 'effets', libelle: 'Animations', icone: <SparkleIcon size={20} aria-hidden="true" /> },
+  {
+    id: 'transitions',
+    libelle: 'Transitions',
+    icone: <ArrowsLeftRightIcon size={20} aria-hidden="true" />,
+  },
+  { id: 'video', libelle: 'Effets', icone: <MagicWandIcon size={20} aria-hidden="true" /> },
   { id: 'cartons', libelle: 'Cartons', icone: <CardsIcon size={20} aria-hidden="true" /> },
-  { id: 'ia', libelle: 'IA', icone: <MagicWandIcon size={20} aria-hidden="true" /> },
+  { id: 'ia', libelle: 'IA', icone: <RobotIcon size={20} aria-hidden="true" /> },
 ];
 
 const effet = (calque: Calque): ClipGlisse => ({
@@ -47,6 +56,7 @@ export function BibliothequeFrise(p: {
   ecrans: ReactNode;
   /** Contenu de l'onglet IA. */
   ia: ReactNode;
+  onRetouche: (r: RetoucheGlissee) => void;
 }) {
   const [onglet, setOnglet] = useState<Onglet>('medias');
   return (
@@ -55,7 +65,7 @@ export function BibliothequeFrise(p: {
         role="tablist"
         aria-label="Bibliothèque"
         aria-orientation="vertical"
-        className="grid content-start gap-1 border-r border-montage-trait p-1.5"
+        className="grid min-h-0 content-start gap-1 overflow-y-auto border-r border-montage-trait p-1.5"
       >
         {ONGLETS.map((o) => (
           <button
@@ -78,7 +88,7 @@ export function BibliothequeFrise(p: {
       >
         {onglet === 'ia' ? (
           p.ia
-        ) : (
+        ) : onglet === 'transitions' || onglet === 'video' ? null : (
           <p className="m-0 text-xs text-montage-texte-doux">
             Glissez sur une piste, ou cliquez pour poser à la tête de lecture.
           </p>
@@ -124,6 +134,12 @@ export function BibliothequeFrise(p: {
               </Tuile>
             ))}
           </div>
+        ) : null}
+        {onglet === 'transitions' || onglet === 'video' ? (
+          <RetouchesBibliotheque
+            genre={onglet === 'transitions' ? 'transition' : 'effet'}
+            onRetouche={p.onRetouche}
+          />
         ) : null}
         {onglet === 'cartons' ? (
           <Tuile

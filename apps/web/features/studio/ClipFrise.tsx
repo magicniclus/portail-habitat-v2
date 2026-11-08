@@ -7,7 +7,7 @@ import {
   type Frise,
   type Piste,
 } from '@ph/core/studio';
-import type { PointerEvent as EvtPointeur } from 'react';
+import type { PointerEvent as EvtPointeur, ReactNode } from 'react';
 
 const COULEURS: Record<Clip['source']['type'] | 'audio', string> = {
   media: 'bg-montage-piste-ecran',
@@ -84,6 +84,9 @@ export function ClipFrise({
   onDeplacer,
   onRognerDebut,
   onRognerFin,
+  deplacement,
+  anime,
+  automation,
 }: {
   frise: Frise;
   piste: Piste;
@@ -94,6 +97,12 @@ export function ClipFrise({
   onDeplacer: (e: EvtPointeur<HTMLElement>) => void;
   onRognerDebut: (e: EvtPointeur<HTMLElement>) => void;
   onRognerFin: (e: EvtPointeur<HTMLElement>) => void;
+  /** Le clip suit le curseur (décalage en px) pendant qu'on le glisse. */
+  deplacement?: { dx: number; dy: number } | undefined;
+  /** Glissement animé quand le clip change de place (pas pendant un rognage). */
+  anime: boolean;
+  /** Courbe d'automation modifiable, affichée sur le clip choisi. */
+  automation?: ReactNode;
 }) {
   const audio = piste.type === 'audio';
   const nom = nomClip(frise, c);
@@ -109,8 +118,14 @@ export function ClipFrise({
         if (!piste.verrou) onDeplacer(e);
       }}
       onKeyDown={(e) => (e.key === 'Enter' ? onSelection() : undefined)}
-      className={`absolute top-1 bottom-1 overflow-hidden rounded-[6px] text-[11px] font-semibold text-blanc outline-none select-none ${COULEURS[audio ? 'audio' : c.source.type]} ${selectionne ? 'ring-2 ring-montage-selection' : 'ring-1 ring-black/30'} ${piste.verrou ? 'cursor-not-allowed opacity-70' : 'cursor-grab'} ${piste.muet || c.muet ? 'opacity-40' : ''}`}
-      style={{ left: c.debut * px, width: largeur }}
+      className={`absolute top-1 bottom-1 overflow-hidden rounded-[6px] text-[11px] font-semibold text-blanc outline-none select-none ${COULEURS[audio ? 'audio' : c.source.type]} ${selectionne ? 'ring-2 ring-montage-selection' : 'ring-1 ring-black/30'} ${piste.verrou ? 'cursor-not-allowed opacity-70' : 'cursor-grab'} ${piste.muet || c.muet ? 'opacity-40' : ''} ${deplacement ? 'z-50 cursor-grabbing shadow-2xl' : ''} ${anime && !deplacement ? 'transition-[left,width] duration-200 ease-out motion-reduce:transition-none' : ''}`}
+      style={{
+        left: c.debut * px,
+        width: largeur,
+        ...(deplacement
+          ? { transform: `translate(${deplacement.dx}px, ${deplacement.dy}px)`, opacity: 0.9 }
+          : {}),
+      }}
     >
       {c.fondus?.entree ? (
         <span
@@ -126,8 +141,10 @@ export function ClipFrise({
           style={{ width: c.fondus.sortie * px }}
         />
       ) : null}
-      <Courbe clip={c} param={audio ? 'volume' : 'opacite'} />
-      <span className="relative block truncate px-2 pt-1">
+      {automation ?? <Courbe clip={c} param={audio ? 'volume' : 'opacite'} />}
+      <span className="pointer-events-none relative block truncate px-2 pt-1">
+        {c.transition ? '⇄ ' : ''}
+        {c.effets?.length ? 'fx · ' : ''}
         {c.vitesse && c.vitesse !== 1 ? `${c.vitesse}× · ` : ''}
         {nom}
       </span>

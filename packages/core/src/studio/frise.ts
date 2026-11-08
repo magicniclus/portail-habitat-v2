@@ -228,7 +228,7 @@ export function supprimerPiste(f: Frise, pisteId: string): Frise {
 export function modifierPiste(
   f: Frise,
   pisteId: string,
-  champs: Partial<Pick<Piste, 'nom' | 'muet' | 'solo' | 'verrou' | 'volume'>>,
+  champs: Partial<Pick<Piste, 'nom' | 'muet' | 'solo' | 'verrou' | 'volume' | 'effets'>>,
 ): Frise {
   return { ...f, pistes: f.pistes.map((p) => (p.id === pisteId ? { ...p, ...champs } : p)) };
 }

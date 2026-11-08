@@ -2,29 +2,33 @@
 
 import {
   aimanter,
-  deplacerClip,
+  ajouterPoint,
   dureeFrise,
   finClip,
   modifierPiste,
   rognerClip,
   supprimerPiste,
+  supprimerPoint,
   type Frise,
-  type SourceClip,
+  type LigneSousTitre,
   type TypePiste,
 } from '@ph/core/studio';
-import type { DragEvent } from 'react';
+import { useState, type DragEvent } from 'react';
+import { AutomationClip } from './AutomationClip';
 import { ClipFrise } from './ClipFrise';
 import { EnTetePiste, LARGEUR_EN_TETE } from './EnTetePiste';
-import { useGlisser } from './glisserFrise';
+import {
+  GLISSE_RETOUCHE,
+  GLISSE_STUDIO,
+  useGlisser,
+  type ClipGlisse,
+  type RetoucheGlissee,
+} from './glisserFrise';
+import { LigneSousTitres, SELECTION_SOUS_TITRES } from './LigneSousTitres';
+import { RegleFrise } from './RegleFrise';
+import { useDeplacementClip } from './useDeplacementClip';
 
 const HAUTEURS_PISTE: Record<TypePiste, number> = { video: 64, audio: 56, texte: 44 };
-/** Type glissé depuis la bibliothèque : une source de clip et sa durée. */
-export const GLISSE_STUDIO = 'application/x-studio-clip';
-export interface ClipGlisse {
-  source: SourceClip;
-  duree: number;
-}
-
 /**
  * Frise multipistes : règle (clic = déplacer la tête), une ligne par piste avec son en-tête,
  * clips à glisser (dans le temps et d'une piste à l'autre, aimantés aux bords et à la tête),
@@ -35,15 +39,20 @@ export function PistesFrise(p: {
   px: number;
   tete: number;
   selection: string | null;
-  onSelection: (clipId: string | null) => void;
+  /** Courbes d'automation modifiables sur le clip choisi. */
+  automation: boolean;
+  lignes: readonly LigneSousTitre[];
+  onSelection: (id: string | null) => void;
   onTete: (ms: number) => void;
   onDebut: () => void;
   onChange: (f: Frise) => void;
   changer: (f: Frise) => void;
   onDepot: (c: ClipGlisse, pisteId: string, debut: number) => void;
+  onRetouche: (r: RetoucheGlissee, clipId: string) => void;
   onFichiers: (fichiers: File[], pisteId: string, debut: number) => void;
 }) {
   const { frise: f, px } = p;
+  const [rognage, setRognage] = useState(false);
   const glisser = useGlisser(px, f, p.onDebut, p.onChange);
   const largeur = Math.max(30_000, dureeFrise(f) + 10_000) * px;
   const hauts = f.pistes.map((x) => HAUTEURS_PISTE[x.type]);
@@ -53,55 +62,45 @@ export function PistesFrise(p: {
       x.clips.filter((c) => c.id !== sauf).flatMap((c) => [c.debut, finClip(c)]),
     ),
   ];
-  const pisteSous = (depart: number, dy: number) => {
-    let i = depart;
-    let reste = dy;
-    while (reste > hauts[i]! / 2 && i < hauts.length - 1) reste -= hauts[i++]!;
-    while (reste < -hauts[i]! / 2 && i > 0) reste += hauts[--i]!;
-    return f.pistes[i]!;
+  const { deplacement, demarrer } = useDeplacementClip({
+    frise: f,
+    px,
+    hauteurs: hauts,
+    reperes,
+    changer: p.changer,
+  });
+  const rogner = (applique: Parameters<typeof glisser>[0]) => {
+    const g = glisser(applique);
+    return (e: Parameters<typeof g>[0]) => {
+      setRognage(true);
+      window.addEventListener('pointerup', () => setRognage(false), { once: true });
+      g(e);
+    };
   };
-  const tempsDepot = (e: DragEvent<HTMLElement>) =>
-    Math.max(0, Math.round((e.clientX - e.currentTarget.getBoundingClientRect().left) / px));
   const deposer = (pisteId: string) => (e: DragEvent<HTMLElement>) => {
     e.preventDefault();
-    const t = tempsDepot(e);
+    const t = Math.max(
+      0,
+      Math.round((e.clientX - e.currentTarget.getBoundingClientRect().left) / px),
+    );
     if (e.dataTransfer.files.length) return p.onFichiers([...e.dataTransfer.files], pisteId, t);
+    const retouche = e.dataTransfer.getData(GLISSE_RETOUCHE);
+    if (retouche) {
+      const piste = f.pistes.find((x) => x.id === pisteId)!;
+      const c = piste.clips.find((x) => t >= x.debut && t < finClip(x));
+      if (c) p.onRetouche(JSON.parse(retouche) as RetoucheGlissee, c.id);
+      return;
+    }
     const brut = e.dataTransfer.getData(GLISSE_STUDIO);
     if (brut) p.onDepot(JSON.parse(brut) as ClipGlisse, pisteId, t);
   };
-  const pas = px > 0.08 ? 1_000 : px > 0.02 ? 5_000 : 10_000;
+  const glisse = deplacement
+    ? f.pistes.flatMap((x) => x.clips).find((c) => c.id === deplacement.clipId)
+    : undefined;
 
   return (
     <div className="relative" style={{ width: LARGEUR_EN_TETE + largeur }}>
-      <div className="sticky top-0 z-30 flex h-6 border-b border-montage-trait bg-montage-panneau">
-        <div
-          className="sticky left-0 z-10 shrink-0 bg-montage-panneau"
-          style={{ width: LARGEUR_EN_TETE }}
-        />
-        <div
-          role="slider"
-          tabIndex={0}
-          aria-label="Position de lecture"
-          aria-valuemin={0}
-          aria-valuemax={Math.round(largeur / px)}
-          aria-valuenow={Math.round(p.tete)}
-          className="relative cursor-pointer"
-          style={{ width: largeur }}
-          onPointerDown={(e) =>
-            p.onTete((e.clientX - e.currentTarget.getBoundingClientRect().left) / px)
-          }
-        >
-          {Array.from({ length: Math.ceil(largeur / px / pas) }, (_, i) => (
-            <span
-              key={i}
-              className="absolute top-0 h-full border-l border-montage-trait pl-1 text-[10px] text-montage-texte-doux"
-              style={{ left: i * pas * px }}
-            >
-              {(i * pas) / 1000}s
-            </span>
-          ))}
-        </div>
-      </div>
+      <RegleFrise largeur={largeur} px={px} tete={p.tete} onTete={p.onTete} />
       {f.pistes.map((piste, i) => (
         <div
           key={piste.id}
@@ -123,46 +122,73 @@ export function PistesFrise(p: {
           <div
             data-piste={piste.id}
             aria-label={`Piste ${piste.nom}`}
-            className="relative bg-montage-fond/60"
+            className={`relative ${deplacement?.pisteId === piste.id ? 'bg-montage-survol' : 'bg-montage-fond/60'}`}
             style={{ width: largeur }}
             onPointerDown={() => p.onSelection(null)}
             onDragOver={(e) => e.preventDefault()}
             onDrop={deposer(piste.id)}
           >
-            {piste.clips.map((c) => (
-              <ClipFrise
-                key={c.id}
-                frise={f}
-                piste={piste}
-                clip={c}
-                px={px}
-                selectionne={p.selection === c.id}
-                onSelection={() => p.onSelection(c.id)}
-                onDeplacer={(e) => {
-                  e.stopPropagation();
-                  glisser((dx, depart, dy) => {
-                    const cible = pisteSous(i, dy);
-                    const debut = aimanter(c.debut + dx, reperes(c.id), 8 / px);
-                    const r = deplacerClip(depart, c.id, cible.id, debut);
-                    // Pendant le geste on ne crée pas de piste : la place doit être libre.
-                    return r.pistes.length === depart.pistes.length ? r : depart;
-                  })(e);
-                }}
-                onRognerDebut={glisser((dx, depart) =>
-                  rognerClip(depart, c.id, {
-                    debut: aimanter(c.debut + dx, reperes(c.id), 8 / px),
-                  }),
-                )}
-                onRognerFin={glisser((dx, depart) =>
-                  rognerClip(depart, c.id, {
-                    fin: aimanter(finClip(c) + dx, reperes(c.id), 8 / px),
-                  }),
-                )}
+            {deplacement?.pisteId === piste.id && glisse ? (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1 bottom-1 rounded-[6px] border-2 border-dashed border-montage-selection"
+                style={{ left: deplacement.debut * px, width: glisse.duree * px }}
               />
-            ))}
+            ) : null}
+            {piste.clips.map((c) => {
+              const choisi = p.selection === c.id;
+              const param = piste.type === 'audio' ? 'volume' : 'opacite';
+              return (
+                <ClipFrise
+                  key={c.id}
+                  frise={f}
+                  piste={piste}
+                  clip={c}
+                  px={px}
+                  selectionne={choisi}
+                  anime={!rognage && !deplacement}
+                  deplacement={deplacement?.clipId === c.id ? deplacement : undefined}
+                  onSelection={() => p.onSelection(c.id)}
+                  onDeplacer={(e) => demarrer(e, c, i)}
+                  onRognerDebut={rogner((dx, depart) =>
+                    rognerClip(depart, c.id, {
+                      debut: aimanter(c.debut + dx, reperes(c.id), 8 / px),
+                    }),
+                  )}
+                  onRognerFin={rogner((dx, depart) =>
+                    rognerClip(depart, c.id, {
+                      fin: aimanter(finClip(c) + dx, reperes(c.id), 8 / px),
+                    }),
+                  )}
+                  automation={
+                    choisi && p.automation && piste.type !== 'texte' && !piste.verrou ? (
+                      <AutomationClip
+                        clip={c}
+                        param={param}
+                        onDebut={p.onDebut}
+                        onPoint={(pt, ancien) => {
+                          const sans =
+                            ancien === undefined ? f : supprimerPoint(f, c.id, param, ancien);
+                          p.onChange(ajouterPoint(sans, c.id, param, pt));
+                        }}
+                        onRetirer={(t) => p.changer(supprimerPoint(f, c.id, param, t))}
+                      />
+                    ) : undefined
+                  }
+                />
+              );
+            })}
           </div>
         </div>
       ))}
+      <LigneSousTitres
+        lignes={p.lignes}
+        actifs={f.sousTitres}
+        px={px}
+        largeur={largeur}
+        selectionne={p.selection === SELECTION_SOUS_TITRES}
+        onSelection={() => p.onSelection(SELECTION_SOUS_TITRES)}
+      />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute top-0 bottom-0 z-40 w-px bg-montage-selection"

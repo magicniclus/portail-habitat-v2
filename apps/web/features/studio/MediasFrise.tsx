@@ -8,7 +8,7 @@ import {
   VideoCameraIcon,
 } from '@phosphor-icons/react';
 import { useRef, useState, type DragEvent, type ReactNode } from 'react';
-import { GLISSE_STUDIO, type ClipGlisse } from './PistesFrise';
+import { GLISSE_STUDIO, type ClipGlisse } from './glisserFrise';
 
 const ICONES = {
   video: <VideoCameraIcon size={18} aria-hidden="true" />,

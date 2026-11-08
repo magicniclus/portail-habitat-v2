@@ -1,27 +1,17 @@
 'use client';
 
-import {
-  captureDeScene,
-  couperClip,
-  clipParId,
-  nouvelIdFrise,
-  poserClip,
-  supprimerClip,
-  verifierFrise,
-  type Frise,
-  type MotTranscrit,
-  type SceneCapture,
-} from '@ph/core/studio';
-import { useRef, useState } from 'react';
+import { lignesFrise, verifierFrise, type Frise, type MotTranscrit } from '@ph/core/studio';
+import { useMemo, useRef, useState } from 'react';
 import { ApercuFrise } from './ApercuFrise';
 import { BarreHautMontage } from './BarreHautMontage';
 import { BibliothequeFrise } from './BibliothequeFrise';
 import { CommandesLecture } from './CommandesLecture';
 import { EcransPortail } from './EcransPortail';
 import { InspecteurFrise } from './InspecteurFrise';
+import { ManipulationApercu } from './ManipulationApercu';
 import { PanneauIA } from './PanneauIA';
-import type { ClipGlisse } from './PistesFrise';
 import type { FichiersProjet } from './sourcesFrise';
+import { useActionsFrise } from './useActionsFrise';
 import { useEnregistrementFrise } from './useEnregistrementFrise';
 import { useHauteurFrise } from './useHauteurFrise';
 import { useHistorique } from './useHistorique';
@@ -62,40 +52,16 @@ export function EditeurFrise(p: {
     setMessage({ ton: 'danger', texte }),
   );
 
-  const poser = (c: ClipGlisse, pisteId = '', debut = tete) => {
-    const id = nouvelIdFrise(
-      'c',
-      brouillon.pistes.flatMap((x) => x.clips.map((y) => y.id)),
-    );
-    const f = poserClip(brouillon, pisteId, { id, debut: Math.round(debut), ...c });
-    if (f === brouillon)
-      return setMessage({ ton: 'danger', texte: 'Plus de place : 16 pistes au plus.' });
-    changer(f);
-    setSelection(id);
-  };
-  const scinder = () => {
-    const r = selection ? clipParId(brouillon, selection) : null;
-    if (r) changer(couperClip(brouillon, r.clip.id, tete));
-  };
-  const supprimer = selection
-    ? () => {
-        changer(supprimerClip(brouillon, selection));
-        setSelection(null);
-      }
-    : undefined;
-  useRaccourcisMontage({ lecture, onScinder: scinder, onSupprimer: supprimer });
-
-  const ecran = (scene: SceneCapture) => {
-    const r = captureDeScene(brouillon, scene);
-    if (!r) return setMessage({ ton: 'danger', texte: '12 écrans au plus par vidéo.' });
-    const id = nouvelIdFrise(
-      'c',
-      r.frise.pistes.flatMap((x) => x.clips.map((y) => y.id)),
-    );
-    const source = { type: 'capture' as const, captureId: r.captureId, debutSource: 0 };
-    changer(poserClip(r.frise, '', { id, debut: Math.round(tete), duree: 4_000, source }));
-    setSelection(id);
-  };
+  const lignes = useMemo(() => lignesFrise(brouillon, p.mots), [brouillon, p.mots]);
+  const a = useActionsFrise({
+    frise: brouillon,
+    changer,
+    tete,
+    selection,
+    setSelection,
+    erreur: (texte) => setMessage({ ton: 'danger', texte }),
+  });
+  useRaccourcisMontage({ lecture, onScinder: a.scinder, onSupprimer: a.supprimer });
   const filmees = new Set(
     brouillon.captures.filter((c) => p.fichiers.captures[`${c.id}:${c.scene}`]).map((c) => c.scene),
   );
@@ -129,9 +95,10 @@ export function EditeurFrise(p: {
           <BibliothequeFrise
             frise={brouillon}
             envois={imports.envois}
-            onPoser={(c) => poser(c)}
+            onPoser={(c) => a.poser(c)}
+            onRetouche={(r) => a.retoucher(r)}
             onFichiers={(f) => void imports.importer(f)}
-            ecrans={<EcransPortail filmees={filmees} onEcran={ecran} />}
+            ecrans={<EcransPortail filmees={filmees} onEcran={a.ecran} />}
             ia={<PanneauIA retouche={p.retouche} enCours={enCours} onRetouche={e.retoucher} />}
           />
         </aside>
@@ -140,10 +107,17 @@ export function EditeurFrise(p: {
             <ApercuFrise
               frise={brouillon}
               fichiers={p.fichiers}
-              mots={p.mots}
+              lignes={brouillon.sousTitres ? lignes : []}
               lecture={lecture}
               miniature={miniature}
-            />
+            >
+              <ManipulationApercu
+                frise={brouillon}
+                selection={selection}
+                onDebut={h.memoriser}
+                onChange={h.remplacer}
+              />
+            </ApercuFrise>
           </div>
           <CommandesLecture
             lecture={lecture}
@@ -159,6 +133,7 @@ export function EditeurFrise(p: {
         >
           <InspecteurFrise
             frise={brouillon}
+            mots={p.mots}
             selection={selection}
             tete={tete}
             changer={changer}
@@ -182,7 +157,9 @@ export function EditeurFrise(p: {
         onDebut={h.memoriser}
         onChange={h.remplacer}
         changer={changer}
-        onDepot={(c, pisteId, debut) => poser(c, pisteId, debut)}
+        lignes={lignes}
+        onDepot={(c, pisteId, debut) => a.poser(c, pisteId, debut)}
+        onRetouche={(r, clipId) => a.retoucher(r, clipId)}
         onFichiers={(f, pisteId, debut) => void imports.importer(f, { pisteId, debut })}
       />
     </div>

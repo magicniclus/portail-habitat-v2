@@ -1,11 +1,14 @@
 'use client';
 
-import { clipParId, type Frise } from '@ph/core/studio';
+import { clipParId, type Frise, type MotTranscrit } from '@ph/core/studio';
 import { useState } from 'react';
 import { nomClip } from './ClipFrise';
 import { ReglagesClip } from './ReglagesClip';
+import { EffetsVideo, ReglageTransition } from './ReglagesEffets';
 import { ReglagesImage, ReglagesSon } from './ReglagesFiltres';
-import { ReglagesProjet } from './ReglagesProjet';
+import { SELECTION_SOUS_TITRES } from './LigneSousTitres';
+import { PanneauVideo } from './PanneauVideo';
+import { ReglagesSousTitres } from './ReglagesSousTitres';
 
 type Onglet = 'clip' | 'son' | 'image';
 
@@ -15,6 +18,7 @@ type Onglet = 'clip' | 'son' | 'image';
  */
 export function InspecteurFrise(p: {
   frise: Frise;
+  mots: readonly MotTranscrit[];
   selection: string | null;
   tete: number;
   changer: (f: Frise) => void;
@@ -22,7 +26,9 @@ export function InspecteurFrise(p: {
 }) {
   const [onglet, setOnglet] = useState<Onglet>('clip');
   const r = p.selection ? clipParId(p.frise, p.selection) : null;
-  if (!r) return <ReglagesProjet frise={p.frise} tete={p.tete} changer={p.changer} />;
+  if (p.selection === SELECTION_SOUS_TITRES)
+    return <ReglagesSousTitres frise={p.frise} mots={p.mots} changer={p.changer} />;
+  if (!r) return <PanneauVideo frise={p.frise} tete={p.tete} changer={p.changer} />;
   const { piste, clip } = r;
   const s = clip.source;
   const media = s.type === 'media' ? p.frise.medias.find((m) => m.id === s.mediaId) : undefined;
@@ -63,13 +69,23 @@ export function InspecteurFrise(p: {
           </button>
         ))}
       </div>
-      <div role="tabpanel" aria-label={onglets.find((o) => o.id === actif)!.libelle}>
+      <div
+        role="tabpanel"
+        aria-label={onglets.find((o) => o.id === actif)!.libelle}
+        className="grid gap-3"
+      >
         {actif === 'clip' ? (
-          <ReglagesClip {...commun} image={aImage} onSupprime={() => p.onSelection(null)} />
+          <>
+            <ReglagesClip {...commun} image={aImage} onSupprime={() => p.onSelection(null)} />
+            {aImage ? <ReglageTransition {...commun} /> : null}
+          </>
         ) : actif === 'son' ? (
           <ReglagesSon {...commun} />
         ) : (
-          <ReglagesImage {...commun} />
+          <>
+            <EffetsVideo {...commun} piste={piste} />
+            <ReglagesImage {...commun} />
+          </>
         )}
       </div>
     </div>
