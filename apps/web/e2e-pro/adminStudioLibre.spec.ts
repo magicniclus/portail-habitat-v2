@@ -10,8 +10,8 @@ test('STUDIO-LIBRE : nouveau montage, carton, pistes muet / solo, enregistrer', 
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  // Studio › « Ouvrir le studio de montage » : nouveau montage ou projet existant.
-  await page.getByRole('link', { name: /Ouvrir le studio de montage/ }).click();
+  // Bouton « Studio » en haut à droite : nouveau montage ou projet existant.
+  await page.getByRole('main').getByRole('link', { name: 'Studio', exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/studio\/monter$/);
   await page.getByLabel('Titre du montage').fill('Montage maison');
   await page.getByRole('button', { name: 'Nouveau montage' }).click();

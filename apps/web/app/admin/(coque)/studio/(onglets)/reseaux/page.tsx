@@ -4,8 +4,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { configReseaux, listerComptesStudio, redirectionReseau } from '@ph/firebase/studio';
 import { Badge, Banner } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
-import type { Metadata, Route } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { BoutonDeconnexionReseau } from '@/features/studio/BoutonDeconnexionReseau';
 import { maintenantServeur } from '@/server/adminLectures';
 import { pageAdmin } from '@/server/sessionAdmin';
@@ -37,12 +36,9 @@ export default async function ReseauxStudio({
       : [];
   });
   return (
-    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
+    <div className="grid min-w-0 content-start gap-5">
       <header>
-        <Link href={'/admin/studio' as Route} className="text-sm">
-          ← Studio
-        </Link>
-        <h1 className="m-0 mt-1 text-[clamp(24px,3vw,30px)]">Réseaux</h1>
+        <h1 className="m-0 text-xl">Réseaux</h1>
         <p className="m-0 mt-1 text-neutre-700">
           Connectez vos comptes pour publier, programmer et lire les statistiques de vos vidéos.
         </p>
@@ -109,6 +105,6 @@ export default async function ReseauxStudio({
           );
         })}
       </ul>
-    </main>
+    </div>
   );
 }

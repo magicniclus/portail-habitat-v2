@@ -4,8 +4,7 @@ import { appAdmin } from '@ph/firebase/admin';
 import { listerPublicationsStudio, meilleuresHeuresStudio } from '@ph/firebase/studio';
 import { EmptyState } from '@ph/ui';
 import { getFirestore } from 'firebase-admin/firestore';
-import type { Metadata, Route } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ListePublications } from '@/features/studio/ListePublications';
 import { ObjectifJour } from '@/features/studio/ObjectifJour';
 import { maintenantServeur } from '@/server/adminLectures';
@@ -51,13 +50,10 @@ export default async function CalendrierStudio({
   const jours = Array.from({ length: 16 }, (_, i) => jourParis(depuis + i * JOUR));
   const actives = publications.filter((p) => p.statut !== 'annulee');
   return (
-    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
+    <div className="grid min-w-0 content-start gap-5">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Link href={'/admin/studio' as Route} className="text-sm">
-            ← Studio
-          </Link>
-          <h1 className="m-0 mt-1 text-[clamp(24px,3vw,30px)]">Calendrier</h1>
+          <h1 className="m-0 text-xl">Calendrier</h1>
           <p className="m-0 mt-1 text-neutre-700">
             Créneaux conseillés : {creneaux.map(heure).join(', ')}
             {heures.length
@@ -105,6 +101,6 @@ export default async function CalendrierStudio({
           );
         })}
       </ol>
-    </main>
+    </div>
   );
 }

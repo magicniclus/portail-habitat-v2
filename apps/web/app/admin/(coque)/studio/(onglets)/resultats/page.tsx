@@ -20,12 +20,9 @@ export default async function ResultatsStudio() {
   await pageAdmin('/admin/studio/resultats', 'studio');
   const l = await resultatsStudio(getFirestore(appAdmin()), maintenantServeur());
   return (
-    <main className="grid min-w-0 content-start gap-5 px-[clamp(16px,3vw,32px)] py-[clamp(20px,3vw,32px)]">
+    <div className="grid min-w-0 content-start gap-5">
       <header>
-        <Link href={'/admin/studio' as Route} className="text-sm">
-          ← Studio
-        </Link>
-        <h1 className="m-0 mt-1 text-[clamp(24px,3vw,30px)]">Résultats</h1>
+        <h1 className="m-0 text-xl">Résultats</h1>
         <p className="m-0 mt-1 text-neutre-700">
           Relevés toutes les 6 heures pendant 30 jours (comptes connectés) ou notés à la main («
           J’ai publié moi-même »). Claude s’en sert pour ses prochaines propositions.
@@ -106,6 +103,6 @@ export default async function ResultatsStudio() {
           })}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

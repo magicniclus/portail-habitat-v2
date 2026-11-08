@@ -8,15 +8,23 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   page,
 }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  await expect(page.getByRole('heading', { level: 1, name: 'Studio' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
-  await expect(page.getByLabel('Format')).toHaveValue('vertical');
-  // Génération : pas de titre à écrire (il vient de la vidéo choisie). Seul « Monter moi-même »
-  // en demande un.
+  // En-tête du Studio : onglets, « Nouvelle vidéo » et « Studio » en haut à droite.
+  await expect(page.getByRole('heading', { level: 1, name: 'Vidéos' })).toBeVisible();
+  const sections = page.getByRole('navigation', { name: 'Sections du Studio' });
+  await expect(sections.getByRole('link', { name: 'Vidéos' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   await expect(
-    page.getByRole('region', { name: 'Quelle vidéo faire aujourd’hui ?' }).getByLabel(/Titre/),
-  ).toHaveCount(0);
-  await page.getByRole('button', { name: /Trouver les meilleures vidéos à faire/ }).click();
+    page.getByRole('main').getByRole('link', { name: 'Studio', exact: true }),
+  ).toBeVisible();
+  // « Nouvelle vidéo » : trois façons de commencer ; vertical par défaut.
+  await page.getByRole('button', { name: 'Nouvelle vidéo' }).click();
+  const nouvelle = page.getByRole('dialog', { name: 'Nouvelle vidéo' });
+  await expect(nouvelle.getByLabel('Format')).toHaveValue('vertical');
+  for (const t of ['Trouver une idée avec Claude', 'Partir de mon idée', 'Monter moi-même'])
+    await expect(nouvelle.getByRole('heading', { name: t })).toBeVisible();
+  await nouvelle.getByRole('button', { name: /Trouver les meilleures vidéos à faire/ }).click();
   await expect(page).toHaveURL(/\/admin\/studio\/[^/?]+\/idees\?analyse=1/);
   await expect(page.getByRole('heading', { level: 1, name: 'Nouvelle vidéo' })).toBeVisible();
   // Une page par étape : les suivantes restent fermées tant que l'idée n'est pas choisie.
@@ -28,7 +36,7 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
   await expect(etapes.getByRole('link', { name: /Tournage/ })).toHaveCount(0);
   // L'analyse part toute seule ; sans clé Claude, le message le dit.
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
-  await page.getByRole('button', { name: 'Tourner sans sujet (j’improvise) →' }).click();
+  await page.getByRole('button', { name: 'Aller au Studio sans idée (j’improvise) →' }).click();
   // Idée choisie : on arrive dans le Studio. Tournage : enregistrer ici, ou tourner avec le
   // script en prompteur et laisser Claude monter.
   await expect(page).toHaveURL(/\/montage$/);
@@ -61,9 +69,12 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
 
 test('studio : partir de son idée', async ({ page }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
-  await page.getByText('J’ai déjà une idée').click();
-  await page.getByLabel('Votre idée, en quelques mots').fill('Les demandes gratuites de la fiche');
-  await page.getByRole('button', { name: 'Partir de mon idée' }).click();
+  await page.getByRole('button', { name: 'Nouvelle vidéo' }).click();
+  const nouvelle = page.getByRole('dialog', { name: 'Nouvelle vidéo' });
+  await nouvelle
+    .getByLabel('Votre idée, en quelques mots')
+    .fill('Les demandes gratuites de la fiche');
+  await nouvelle.getByRole('button', { name: 'Partir de mon idée' }).click();
   await expect(
     page.getByRole('heading', { level: 1, name: 'Les demandes gratuites de la fiche' }),
   ).toBeVisible();
@@ -71,17 +82,20 @@ test('studio : partir de son idée', async ({ page }) => {
 
 test('studio : refusé sans la permission', async ({ page }) => {
   await connecter(page, 'moderateur@test.local', '/admin/studio', 'admin');
-  await expect(page.getByRole('heading', { level: 1, name: 'Studio' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1, name: 'Vidéos' })).toHaveCount(0);
 });
 
 test('studio : réseaux, calendrier, résultats et séries', async ({ page }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
+  const sections = page.getByRole('navigation', { name: 'Sections du Studio' });
+  await sections.getByRole('link', { name: 'Idées' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Idées' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Séries' })).toBeVisible();
   // Sans compte connecté, pas de lecture des commentaires.
   await expect(page.getByRole('button', { name: /Idées tirées de vos commentaires/ })).toHaveCount(
     0,
   );
-  await page.getByRole('link', { name: 'Réseaux' }).click();
+  await sections.getByRole('link', { name: 'Réseaux' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Réseaux' })).toBeVisible();
   for (const r of ['YouTube Shorts', 'Instagram Reels', 'TikTok'])
     await expect(page.getByText(r, { exact: true })).toBeVisible();
