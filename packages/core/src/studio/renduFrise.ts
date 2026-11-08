@@ -151,7 +151,10 @@ export function grapheFrise(
         ...effetsVideoFfmpeg(effets),
         'format=yuva420p',
       ];
-      if (prolonge) chaine.push(`tpad=stop_mode=clone:stop_duration=${sec(prolonge)}`);
+      // Un écran filmé plus court que son clip reste sur sa dernière image (pas de trou noir).
+      const fige = c.source.type === 'capture' ? c.duree : 0;
+      if (prolonge || fige)
+        chaine.push(`tpad=stop_mode=clone:stop_duration=${sec(prolonge + fige)}`);
       chaine.push(...tr.filtres);
       if (c.fondus?.entree) chaine.push(`fade=t=in:st=0:d=${sec(c.fondus.entree)}:alpha=1`);
       if (c.fondus?.sortie)

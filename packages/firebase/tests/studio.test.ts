@@ -786,9 +786,9 @@ describe('bouton « Studio » : tout se fait dans l’éditeur', () => {
 });
 
 describe('style de montage', () => {
-  it('posé par défaut ; le style choisi est donné à Claude', async () => {
+  it('écran filmé par défaut ; le style choisi est donné à Claude', async () => {
     const id = await projet(false);
-    expect((await lireProjetStudio(db, id))?.style).toBe('pose');
+    expect((await lireProjetStudio(db, id))?.style).toBe('ecran');
     await choisirStyleStudio(services(), { projetId: id, style: 'dynamique' });
     expect((await lireProjetStudio(db, id))?.style).toBe('dynamique');
     reponses = [

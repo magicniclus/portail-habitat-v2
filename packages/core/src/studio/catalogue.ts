@@ -72,12 +72,17 @@ export const LIBELLES_ENTREE: Readonly<Record<EntreeAnimee, string>> = {
   tampon: 'Tampon',
 };
 
-/** Style de montage demandé à Claude : posé (par défaut, public d'artisans) ou dynamique. */
-export const STYLES_MONTAGE = ['pose', 'dynamique'] as const;
+/**
+ * Style de montage demandé à Claude. Par défaut, « écran » : l'écran de Portail Travaux filmé
+ * comme par une personne (fiche, devis… selon le thème), une intro, une fin, des textes pour
+ * souligner, rien d'autre. « pose » et « dynamique » ajoutent scènes animées et appareils.
+ */
+export const STYLES_MONTAGE = ['ecran', 'pose', 'dynamique'] as const;
 export type StyleMontage = (typeof STYLES_MONTAGE)[number];
 export const LIBELLES_STYLE_MONTAGE: Readonly<Record<StyleMontage, string>> = {
-  pose: 'Posé (artisans)',
-  dynamique: 'Dynamique',
+  ecran: 'Écran filmé',
+  pose: 'Animé posé',
+  dynamique: 'Animé rythmé',
 };
 
 /** Ce qui occupe l'image principale d'un plan. */

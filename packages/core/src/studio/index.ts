@@ -28,3 +28,4 @@ export * from './effetsFrise';
 export * from './sousTitresFrise';
 export * from './mentionsFictives';
 export * from './appareil';
+export * from './stylePlan';

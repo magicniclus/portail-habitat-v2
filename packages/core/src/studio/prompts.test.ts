@@ -299,7 +299,7 @@ describe('vidéo sans voix ni image', () => {
     });
     expect(p.demande).toContain('Voix : aucune');
     expect(p.demande).toMatch(/sousTitres.*false/);
-    expect(p.demande).toMatch(/musique.*true/);
+    expect(p.demande).toMatch(/musique = false/);
   });
 
   it('avec sous-titres : le script défile, plans dans l’ordre sans retour en arrière', () => {
@@ -364,8 +364,13 @@ describe('style de montage', () => {
     segments: [{ debut: 0, fin: 900 }],
     sujet: null,
   };
-  it('posé par défaut, dynamique sur demande ; scènes animées et appareils décrits', () => {
-    const pose = promptMontage(base);
+  it('écran filmé par défaut, sans musique ; styles animés sur demande', () => {
+    const ecran = promptMontage(base);
+    expect(ecran.systeme).toContain('Style ÉCRAN FILMÉ');
+    expect(ecran.systeme).toContain('Musique : aucune');
+    expect(ecran.systeme).not.toContain('Style POSÉ');
+    expect(ecran.systeme).not.toContain('Scènes animées');
+    const pose = promptMontage({ ...base, style: 'pose' });
     expect(pose.systeme).toContain('Style POSÉ');
     expect(pose.systeme).toContain('« demandes »');
     expect(pose.systeme).toContain('appareil');

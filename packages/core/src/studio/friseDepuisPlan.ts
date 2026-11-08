@@ -29,8 +29,14 @@ export function friseDepuisPlan(
   const camera: Clip[] = [];
   const voix: Clip[] = [];
   const effets: Clip[] = [];
+  // Un même écran sur des plans qui se suivent continue (il ne recommence pas au début).
+  let suiteEcran = 0;
   plan.plans.forEach((x, i) => {
     const debut = debuts[i]!;
+    const avant = plan.plans[i - 1];
+    const continue_ =
+      x.visuel === 'capture' && avant?.visuel === 'capture' && avant.captureId === x.captureId;
+    suiteEcran = continue_ ? suiteEcran + (avant.source.fin - avant.source.debut) : 0;
     const duree = x.source.fin - x.source.debut;
     const d = disposition(plan.format, x.visuel, x.camera);
     const base = { debut, duree };
@@ -38,7 +44,7 @@ export function friseDepuisPlan(
       x.visuel === 'carton'
         ? { type: 'carton', texte: x.carton ?? ' ' }
         : x.visuel === 'capture' && x.captureId
-          ? { type: 'capture', captureId: x.captureId, debutSource: 0 }
+          ? { type: 'capture', captureId: x.captureId, debutSource: suiteEcran }
           : x.visuel === 'ecran'
             ? { type: 'prise', fichier: 'ecran', debutSource: x.source.debut }
             : null;

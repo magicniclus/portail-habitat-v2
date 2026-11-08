@@ -11,6 +11,7 @@ import {
   classerTendances,
   MODELE_STUDIO,
   planMontage,
+  planSelonStyle,
   promptMontage,
   lienVideo,
   alignerCaptures,
@@ -106,7 +107,7 @@ export interface ProjetStudio {
   preparation: PreparationCaptures | null;
   /** Montage libre (sans génération) : ouvert directement dans l'éditeur. */
   libre: boolean;
-  /** Style de montage demandé à Claude (posé par défaut). */
+  /** Style de montage demandé à Claude (écran filmé par défaut). */
   style: StyleMontage;
   /** Frise multipistes (STUDIO.md §5 bis) ; absente : montage encore au format « plan ». */
   frise: Frise | null;
@@ -176,7 +177,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     captures: (d.captures as Record<string, string> | undefined) ?? {},
     preparation: (d.preparation as PreparationCaptures | null | undefined) ?? null,
     libre: d.libre === true,
-    style: d.style === 'dynamique' ? 'dynamique' : 'pose',
+    style: d.style === 'dynamique' || d.style === 'pose' ? d.style : 'ecran',
     frise: (d.frise as Frise | null | undefined) ?? null,
     friseVersion: typeof d.friseVersion === 'number' ? d.friseVersion : null,
     apresCaptures: (d.apresCaptures as StatutProjetStudio | null | undefined) ?? null,
@@ -796,7 +797,8 @@ export async function genererMontageStudio(
     erreurs = r.refus ? ['Réponse déclinée.'] : verifierPlan(brut, contexte);
     if (!erreurs.length) {
       // Captures déjà filmées réutilisées, artisan de la préparation imposé (il est à l'écran).
-      const lu = alignerCaptures(planMontage.parse(brut), p.captures);
+      // Style voulu imposé quoi que Claude ait répondu (jamais de musique, écran filmé simple).
+      const lu = alignerCaptures(planSelonStyle(planMontage.parse(brut), p.style), p.captures);
       const plan =
         p.preparation && !p.preparation.ignoree ? { ...lu, artisan: p.preparation.artisan } : lu;
       await enregistrerPlan(

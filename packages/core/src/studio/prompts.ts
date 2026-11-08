@@ -399,24 +399,41 @@ export function promptMontage(e: {
   /** Style voulu par l'auteur (posé par défaut). */
   style?: StyleMontage;
 }): { systeme: string; contexte: string; demande: string } {
-  const style = e.style ?? 'pose';
+  const style = e.style ?? 'ecran';
+  const anime = style !== 'ecran';
   const systeme = [
     'Tu es un monteur de vidéos courtes virales. Tu ne produis qu’un plan de montage en JSON, jamais de code.',
     REGLES_COMMUNES,
     'Règles de montage :',
     '- Garde seulement les meilleurs passages de la voix : coupe les silences, hésitations, répétitions et prises ratées (garde la dernière bonne prise d’une phrase répétée).',
     '- Ne coupe jamais au milieu d’un mot : appuie-toi sur les horodatages de la transcription.',
-    '- Accroche : un texte « accroche » posé à 0 ms sur le premier plan (visible dès la première image), la promesse dite dans les 2 premières secondes.',
-    `- Rythme : un changement visuel (texte, zoom doux ou nouveau plan) au moins toutes les ${RYTHME_MAX_MS / 1000} secondes ; un texte ou un zoom suffit, inutile de changer d’écran.`,
-    '- Fin qui reboucle : la dernière phrase gardée doit s’enchaîner naturellement avec la première, pour que la vidéo soit revue en boucle ; pas de « au revoir ».',
-    '- Les chiffres importants deviennent un « compteur » ou un texte « chiffre ». Une notification « Nouvelle demande » quand on parle de demandes reçues.',
+    anime
+      ? '- Accroche : un texte « accroche » posé à 0 ms sur le premier plan (visible dès la première image), la promesse dite dans les 2 premières secondes.'
+      : '- Accroche : le carton d’intro porte la promesse, dite dans les 2 premières secondes.',
+    anime
+      ? `- Rythme : un changement visuel (texte, zoom doux ou nouveau plan) au moins toutes les ${RYTHME_MAX_MS / 1000} secondes ; un texte ou un zoom suffit, inutile de changer d’écran.`
+      : '- Rythme : c’est l’écran filmé qui fait vivre la vidéo ; un texte de temps en temps (toutes les 4 à 8 s) pour souligner ce qui compte, jamais plus d’un texte à la fois.',
+    anime
+      ? '- Fin qui reboucle : la dernière phrase gardée doit s’enchaîner naturellement avec la première, pour que la vidéo soit revue en boucle ; pas de « au revoir ».'
+      : '- Fin : l’appel à l’action, pas de « au revoir ».',
+    anime
+      ? '- Les chiffres importants deviennent un « compteur » ou un texte « chiffre ». Une notification « Nouvelle demande » quand on parle de demandes reçues.'
+      : '- Les chiffres importants deviennent un texte « chiffre ».',
     '- Les captures montrent le produit : utilise-les quand la voix en parle. L’artisan d’exemple doit être cohérent avec ce que dit la voix.',
     `- Public : des artisans du bâtiment, pas un public de jeux vidéo. Ton clair et concret.`,
-    '- Scènes animées (comme un film de présentation soigné) : « demandes » quand la voix parle de clients ou de demandes reçues, « outils » pour les outils gratuits (fiche, site, devis…), « tampon » pour un mot fort (« GRATUIT », « 0 € de commission »), « comparaison » pour un avant / après, « fin » sur les 2 à 3 dernières secondes (phrase d’appel à l’action et bouton « portail-travaux.fr »). Une scène occupe le centre : pas d’autre calque au centre en même temps.',
-    style === 'pose'
-      ? '- Style POSÉ : montage calme et lisible. Peu de coupes (un plan dure 3 à 8 s), entrées « monte » ou « fondu » sur les textes et les scènes, au moins 3 scènes animées dans la vidéo, captures dans un appareil, aucun effet brusque.'
-      : '- Style DYNAMIQUE : plus de rythme. Plans de 2 à 4 s, entrées « zoom », « glisse » ou « tampon », chiffres et tampons fréquents, au moins 3 scènes animées ; reste lisible (jamais deux scènes en même temps).',
-    `- Habillage : pose chaque capture dans un appareil (« appareil » : ${'« telephone » en vertical, « ordinateur » sinon'}) ; elle apparaît alors sur un fond animé aux couleurs de Portail Travaux, plus soigné qu’une capture plein écran. Les textes vont au-dessus ou en dessous de l’appareil (position « haut » ou « bas »).`,
+    ...(anime
+      ? [
+          '- Scènes animées (comme un film de présentation soigné) : « demandes » quand la voix parle de clients ou de demandes reçues, « outils » pour les outils gratuits (fiche, site, devis…), « tampon » pour un mot fort (« GRATUIT », « 0 € de commission »), « comparaison » pour un avant / après, « fin » sur les 2 à 3 dernières secondes (phrase d’appel à l’action et bouton « portail-travaux.fr »). Une scène occupe le centre : pas d’autre calque au centre en même temps.',
+          style === 'pose'
+            ? '- Style POSÉ : montage calme et lisible. Peu de coupes (un plan dure 3 à 8 s), entrées « monte » ou « fondu » sur les textes et les scènes, au moins 3 scènes animées dans la vidéo, captures dans un appareil, aucun effet brusque.'
+            : '- Style DYNAMIQUE : plus de rythme. Plans de 2 à 4 s, entrées « zoom », « glisse » ou « tampon », chiffres et tampons fréquents, au moins 3 scènes animées ; reste lisible (jamais deux scènes en même temps).',
+        ]
+      : [
+          '- Style ÉCRAN FILMÉ (le plus important) : la vidéo est l’écran de Portail Travaux filmé comme par une personne, rien de plus. Structure : 1) une intro courte (2 à 3 s) : un plan « carton » avec l’accroche ; 2) l’écran du thème (la fiche, le devis, les demandes…) en capture plein écran, sur un ou plusieurs plans qui se suivent, sans changer d’écran (2 écrans au plus si le thème l’exige) ; 3) une fin (2 à 3 s) : un calque « fin » (phrase d’appel à l’action, bouton « portail-travaux.fr ») sur le dernier plan.',
+          '- Style ÉCRAN FILMÉ : seuls calques permis : « texte » (titre, chiffre ou note, position « haut » ou « bas ») pour souligner ce qui compte à l’écran, et le « fin » final. Aucun appareil (pas de champ « appareil »), aucune autre animation, pas de zoom.',
+        ]),
+    `- Musique : aucune (« musique » = false), la voix et l’écran suffisent.`,
+    `- Habillage (styles animés seulement) : pose chaque capture dans un appareil (« appareil » : ${'« telephone » en vertical, « ordinateur » sinon'}) ; elle apparaît alors sur un fond animé aux couleurs de Portail Travaux, plus soigné qu’une capture plein écran. Les textes vont au-dessus ou en dessous de l’appareil (position « haut » ou « bas »).`,
     `- Captures : ${CAPTURES_MAX} écrans de Portail Travaux différents au plus (2 suffisent souvent), chacun à l’image au moins ${CAPTURE_MIN_MS / 1000} secondes d’affilée (idéalement 6 à 10 s) pour qu’on ait le temps de lire ; ne saute pas d’un écran à l’autre. Pour relancer l’attention pendant une capture, ajoute un texte ou un zoom doux plutôt qu’un nouvel écran.`,
     '- Pas d’effet gadget : des coupes nettes, des calques lisibles, au plus 2 calques en même temps.',
     `- Durée totale entre ${DUREE_MIN_MS / 1000} s et ${DUREE_MAX_MS / 1000} s. Temps en millisecondes entières. Les temps des calques sont relatifs au début de leur plan.`,
@@ -451,7 +468,7 @@ export function promptMontage(e: {
             e.sousTitres
               ? 'sousTitres = true : le texte du script défile en sous-titres selon la transcription ; prends les plans dans l’ordre, de 0 à la fin, sans trou ni retour en arrière, et ne répète pas le sous-titre dans les cartons (cartons très courts : un mot ou un chiffre)'
               : 'sousTitres = false'
-          }, musique = true.`,
+          }, musique = false.`,
         ]
       : []),
     ...(e.capturesFilmees?.length

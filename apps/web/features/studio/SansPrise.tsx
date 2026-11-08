@@ -9,8 +9,8 @@ const DUREES = [15, 20, 30, 45, 60, 90] as const;
 const SANS_VOIX = '';
 
 /**
- * Rien à tourner soi-même : Claude monte la vidéo avec les captures de Portail Travaux, des
- * cartons, des textes animés et la musique, à partir du script. Au choix, une voix IA
+ * Rien à tourner soi-même : Claude monte la vidéo avec les captures de Portail Travaux, une
+ * intro, une fin et des textes, à partir du script (jamais de musique). Au choix, une voix IA
  * (ElevenLabs) lit le script, et le texte s'affiche en sous-titres.
  */
 export function SansPrise({
@@ -53,9 +53,9 @@ export function SansPrise({
   return (
     <div className="grid content-start gap-3">
       <p className="m-0 text-sm text-neutre-700">
-        Vous ne tournez rien : Claude monte la vidéo avec les captures de Portail Travaux, des
-        textes animés et une musique de fond, à partir du script. Vous pourrez tout retoucher
-        ensuite dans le montage.
+        Vous ne tournez rien : Claude monte la vidéo avec l’écran de Portail Travaux filmé, une
+        intro, une fin et quelques textes, à partir du script (sans musique). Vous pourrez tout
+        retoucher ensuite dans le montage.
       </p>
       <Field
         label="Voix"
