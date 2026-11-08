@@ -257,3 +257,39 @@ describe('sous-titres de la frise', () => {
     expect(sousTitresDeLaVoix(e).motsEdites).toBeUndefined();
   });
 });
+
+describe('écran pas encore filmé', () => {
+  it('l’aperçu montre une carte avec le nom de l’écran au lieu d’un vide', () => {
+    const textes: string[] = [];
+    const ctx = new Proxy({ globalAlpha: 1, filter: 'none' } as Record<string, unknown>, {
+      get(cible, cle: string) {
+        if (cle in cible) return cible[cle];
+        if (cle === 'measureText') return () => ({ width: 10 });
+        return (...a: unknown[]) => {
+          if (cle === 'fillText') textes.push(String(a[0]));
+        };
+      },
+    }) as unknown as ContexteFrise;
+    let f: Frise = { ...base(), captures: [{ id: 'k1', scene: 'fiche_publique' }] };
+    f = poserClip(f, 'v1', {
+      id: 'x',
+      debut: 0,
+      duree: 2_000,
+      source: { type: 'capture', captureId: 'k1', debutSource: 0 },
+    });
+    const theme = {
+      accent: '#f00',
+      accentTexte: '#fff',
+      sombre: '#000',
+      clair: '#fff',
+      succes: '#0f0',
+      police: 'x',
+      fond: '#111',
+    };
+    dessinerFrise(ctx, f, 500, {}, [], theme);
+    expect(textes.join(' ')).toContain('robot');
+    textes.length = 0;
+    dessinerFrise(ctx, { ...f, captures: [] }, 500, {}, [], theme);
+    expect(textes.join(' ')).toContain('Écran de Portail Travaux');
+  });
+});

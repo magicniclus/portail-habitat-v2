@@ -9,6 +9,7 @@ import { CommandesLecture } from './CommandesLecture';
 import { EcransPortail } from './EcransPortail';
 import { InspecteurFrise } from './InspecteurFrise';
 import { ManipulationApercu } from './ManipulationApercu';
+import { MenuProjets } from './MenuProjets';
 import { PanneauIA } from './PanneauIA';
 import type { FichiersProjet } from './sourcesFrise';
 import { useActionsFrise } from './useActionsFrise';
@@ -35,6 +36,8 @@ export function EditeurFrise(p: {
   /** Claude peut revoir ce montage (prise et plan existants). */
   retouche: boolean;
   etat: string | null;
+  /** Autres projets à ouvrir (menu « Projets »). */
+  projets: readonly { id: string; titre: string }[];
   onFermer: () => void;
 }) {
   const h = useHistorique(p.frise);
@@ -89,6 +92,13 @@ export function EditeurFrise(p: {
         enCours={enCours}
         onEnregistrer={() => e.fabriquer(brouillon)}
         secondaire={{ libelle: 'Enregistrer', onClick: () => e.enregistrer(brouillon) }}
+        menu={
+          <MenuProjets
+            projets={p.projets}
+            actuel={p.projetId}
+            modifie={brouillon !== e.enregistre}
+          />
+        }
       />
       <div className="grid min-h-0 grid-cols-[minmax(0,1fr)] gap-px bg-montage-fond lg:grid-cols-[300px_minmax(0,1fr)_340px]">
         <aside aria-label="Bibliothèque" className="hidden min-h-0 bg-montage-panneau lg:block">
@@ -113,7 +123,10 @@ export function EditeurFrise(p: {
             >
               <ManipulationApercu
                 frise={brouillon}
+                t={tete === 0 && !lecture.lecture ? 300 : tete}
+                lignes={brouillon.sousTitres ? lignes : []}
                 selection={selection}
+                onSelection={setSelection}
                 onDebut={h.memoriser}
                 onChange={h.remplacer}
               />

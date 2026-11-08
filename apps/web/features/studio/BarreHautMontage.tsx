@@ -7,6 +7,7 @@ import {
   WarningIcon,
   XIcon,
 } from '@phosphor-icons/react';
+import type { ReactNode } from 'react';
 
 const OUTIL =
   'flex size-10 items-center justify-center rounded-[8px] text-montage-texte hover:bg-montage-survol disabled:opacity-40 disabled:hover:bg-transparent';
@@ -57,6 +58,8 @@ export function BarreHautMontage(p: {
   enregistrable: boolean;
   enCours: boolean;
   onEnregistrer: () => void;
+  /** Menu à côté du titre (projets). */
+  menu?: ReactNode;
   /** Bouton à côté (« Enregistrer » sans fabriquer). */
   secondaire?: { libelle: string; onClick: () => void };
 }) {
@@ -81,6 +84,7 @@ export function BarreHautMontage(p: {
         <h2 className="m-0 truncate text-sm font-semibold">{p.titre}</h2>
         {p.etat ? <p className="m-0 truncate text-xs text-montage-texte-doux">{p.etat}</p> : null}
       </div>
+      {p.menu}
       <span aria-hidden="true" className="mx-1 h-6 w-px bg-montage-trait" />
       <button
         type="button"

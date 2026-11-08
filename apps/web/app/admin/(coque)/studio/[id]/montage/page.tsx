@@ -1,5 +1,7 @@
 import { LIBELLES_STATUT_STUDIO } from '@ph/core/studio';
-import { friseDuProjet } from '@ph/firebase/studio';
+import { appAdmin } from '@ph/firebase/admin';
+import { friseDuProjet, listerProjetsStudio } from '@ph/firebase/studio';
+import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EtapeMontage } from '@/features/studio/EtapeMontage';
@@ -18,6 +20,9 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const p = await projetStudioPage(id, 'montage');
   if (!p.libre && !p.prise) notFound();
+  const projets = (await listerProjetsStudio(getFirestore(appAdmin())))
+    .filter((x) => x.libre || x.plan)
+    .map((x) => ({ id: x.id, titre: x.titre }));
   const etat =
     p.statut === 'pret' || p.statut === 'enregistrement'
       ? null
@@ -44,6 +49,7 @@ export default async function MontagePage({ params }: { params: Promise<{ id: st
           mots={p.mots}
           retouche={Boolean(p.plan && p.prise)}
           etat={etat}
+          projets={projets}
         />
       ) : null}
     </div>

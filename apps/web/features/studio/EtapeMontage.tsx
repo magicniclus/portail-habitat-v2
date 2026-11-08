@@ -18,6 +18,7 @@ export function EtapeMontage(p: {
   mots: MotTranscrit[];
   retouche: boolean;
   etat: string | null;
+  projets: readonly { id: string; titre: string }[];
 }) {
   const [ouvert, setOuvert] = useState(true);
   const clips = p.frise.pistes.reduce((n, x) => n + x.clips.length, 0);

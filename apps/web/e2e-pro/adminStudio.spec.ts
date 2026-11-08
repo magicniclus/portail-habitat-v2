@@ -9,7 +9,7 @@ test('studio : sans titre, Claude cherche les vidéos à faire ; vertical par d�
 }) => {
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
   await expect(page.getByRole('heading', { level: 1, name: 'Studio' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Studio' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Studio', exact: true })).toBeVisible();
   await expect(page.getByLabel('Format')).toHaveValue('vertical');
   // Génération : pas de titre à écrire (il vient de la vidéo choisie). Seul « Monter moi-même »
   // en demande un.

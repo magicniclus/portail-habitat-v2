@@ -13,7 +13,6 @@ import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { BoutonCommentaires } from '@/features/studio/BoutonCommentaires';
 import { IdeesGardees } from '@/features/studio/IdeesGardees';
-import { NouveauMontageLibre } from '@/features/studio/NouveauMontageLibre';
 import { NouveauProjet } from '@/features/studio/NouveauProjet';
 import { Series } from '@/features/studio/Series';
 import { TONS_STATUT } from '@/features/studio/tons';
@@ -82,8 +81,21 @@ export default async function Studio() {
           <code>.env.local</code> : {manque.map(([, v]) => v).join(', ')}.
         </Banner>
       ) : null}
+      <Link
+        href={'/admin/studio/monter' as Route}
+        className="flex min-h-14 items-center justify-between gap-3 rounded-card border border-trait bg-blanc px-4 py-3 no-underline hover:border-neutre-500"
+      >
+        <span className="grid">
+          <strong className="text-texte">Ouvrir le studio de montage</strong>
+          <span className="text-sm text-neutre-700">
+            Monter vous-même, sans génération : nouveau montage ou un projet existant.
+          </span>
+        </span>
+        <span aria-hidden="true" className="text-xl">
+          →
+        </span>
+      </Link>
       <NouveauProjet />
-      <NouveauMontageLibre />
       {/* Les commentaires se lisent par les comptes connectés (Studio › Réseaux). */}
       {comptes.some((c) => c.reseau !== 'tiktok') ? <BoutonCommentaires /> : null}
       <Series series={series} />

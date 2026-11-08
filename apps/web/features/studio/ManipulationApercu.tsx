@@ -1,36 +1,67 @@
 'use client';
 
-import { clipParId, modifierClip, type Clip, type Frise } from '@ph/core/studio';
-import type { PointerEvent as EvtPointeur } from 'react';
+import {
+  clipParId,
+  modifierClip,
+  type Clip,
+  type Frise,
+  type LigneSousTitre,
+} from '@ph/core/studio';
+import { useMemo, type PointerEvent as EvtPointeur } from 'react';
 import { SELECTION_SOUS_TITRES } from './LigneSousTitres';
+import { boiteDessin, dessinElement, elementSous } from './toucherApercu';
 
 const borne = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const PLEIN = { x: 0, y: 0, largeur: 1, hauteur: 1, opacite: 1 };
+const pct = (v: number) => `${v * 100}%`;
+
+/** Ce que fait un glisser sur l'élément `id` (décalage en fractions de l'image). */
+function deplacer(id: string, dx: number, dy: number, depart: Frise): Frise {
+  if (id === SELECTION_SOUS_TITRES) {
+    const o = depart.decalageSousTitres ?? { x: 0, y: 0 };
+    return {
+      ...depart,
+      decalageSousTitres: { x: borne(o.x + dx, -1, 1), y: borne(o.y + dy, -1, 1) },
+    };
+  }
+  const r = clipParId(depart, id);
+  if (!r || r.piste.verrou) return depart;
+  if (r.clip.source.type === 'effet') {
+    const o = r.clip.decalage ?? { x: 0, y: 0 };
+    return modifierClip(depart, id, {
+      decalage: { x: borne(o.x + dx, -1, 1), y: borne(o.y + dy, -1, 1) },
+    });
+  }
+  const k = r.clip.cadre ?? PLEIN;
+  return modifierClip(depart, id, {
+    cadre: { ...k, x: borne(k.x + dx, -1, 2), y: borne(k.y + dy, -1, 2) },
+  });
+}
 
 /**
- * Sur l'aperçu, l'élément choisi se déplace à la souris : un clip vidéo (cadre, et sa taille par
- * le coin), un effet animé ou les sous-titres (décalage). Un seul pas d'annulation par geste.
+ * Sur l'aperçu, on clique directement sur un élément (texte, effet, sous-titres, vidéo
+ * incrustée) pour le choisir, et on le glisse pour le déplacer ; le coin d'une vidéo change sa
+ * taille. Un seul pas d'annulation par geste.
  */
 export function ManipulationApercu(p: {
   frise: Frise;
+  t: number;
+  lignes: readonly LigneSousTitre[];
   selection: string | null;
+  onSelection: (id: string | null) => void;
   onDebut: () => void;
   onChange: (f: Frise) => void;
 }) {
   const f = p.frise;
-  const r = p.selection ? clipParId(f, p.selection) : null;
   const geste =
     (appliquer: (dx: number, dy: number, depart: Frise) => Frise) =>
-    (e: EvtPointeur<HTMLElement>) => {
-      e.stopPropagation();
-      const zone = (
-        e.currentTarget.closest('[data-apercu]') as HTMLElement
-      ).getBoundingClientRect();
+    (e: EvtPointeur<HTMLElement>, zone: DOMRect) => {
       const x0 = e.clientX;
       const y0 = e.clientY;
       const depart = f;
       let commence = false;
       const bouger = (m: PointerEvent) => {
+        if (!commence && Math.hypot(m.clientX - x0, m.clientY - y0) < 3) return;
         if (!commence) p.onDebut();
         commence = true;
         p.onChange(
@@ -44,94 +75,77 @@ export function ManipulationApercu(p: {
       window.addEventListener('pointermove', bouger);
       window.addEventListener('pointerup', fin);
     };
+  const choisi = p.selection ? clipParId(f, p.selection) : null;
+  const boite = useMemo(() => {
+    if (!p.selection) return null;
+    const dessin = dessinElement(f, p.selection, p.t, p.lignes);
+    return dessin ? boiteDessin(f, dessin) : null;
+  }, [f, p.selection, p.t, p.lignes]);
+  const cadre =
+    choisi && choisi.piste.type === 'video' && choisi.clip.source.type !== 'effet'
+      ? (choisi.clip.cadre ?? PLEIN)
+      : null;
+  const zoneDe = (el: HTMLElement) =>
+    (el.closest('[data-apercu]') as HTMLElement).getBoundingClientRect();
+  const cadreDe = (depart: Frise): NonNullable<Clip['cadre']> =>
+    clipParId(depart, p.selection!)!.clip.cadre ?? PLEIN;
 
-  if (p.selection === SELECTION_SOUS_TITRES) {
-    const d = f.decalageSousTitres ?? { x: 0, y: 0 };
-    return (
-      <Poignee
-        libelle="Déplacer les sous-titres"
-        x={0.5 + d.x}
-        y={0.82 + d.y}
-        onPointerDown={geste((dx, dy, depart) => {
-          const o = depart.decalageSousTitres ?? { x: 0, y: 0 };
-          return {
-            ...depart,
-            decalageSousTitres: { x: borne(o.x + dx, -1, 1), y: borne(o.y + dy, -1, 1) },
-          };
-        })}
-      />
-    );
-  }
-  if (!r || r.piste.verrou) return null;
-  const c = r.clip;
-  if (c.source.type === 'effet') {
-    const d = c.decalage ?? { x: 0, y: 0 };
-    return (
-      <Poignee
-        libelle="Déplacer l’effet"
-        x={0.5 + d.x}
-        y={0.5 + d.y}
-        onPointerDown={geste((dx, dy, depart) => {
-          const o = clipParId(depart, c.id)!.clip.decalage ?? { x: 0, y: 0 };
-          return modifierClip(depart, c.id, {
-            decalage: { x: borne(o.x + dx, -1, 1), y: borne(o.y + dy, -1, 1) },
-          });
-        })}
-      />
-    );
-  }
-  if (r.piste.type !== 'video') return null;
-  const k = c.cadre ?? PLEIN;
-  const cadre = (depart: Frise) => clipParId(depart, c.id)!.clip.cadre ?? PLEIN;
-  const changerCadre = (depart: Frise, champs: Partial<NonNullable<Clip['cadre']>>) =>
-    modifierClip(depart, c.id, { cadre: { ...cadre(depart), ...champs } });
   return (
     <div
-      role="group"
-      aria-label="Place du clip dans l’image : glisser pour déplacer, coin pour la taille"
-      className="absolute cursor-move border-2 border-montage-selection"
-      style={{
-        left: `${k.x * 100}%`,
-        top: `${k.y * 100}%`,
-        width: `${k.largeur * 100}%`,
-        height: `${k.hauteur * 100}%`,
+      aria-label="Aperçu : cliquez sur un élément pour le choisir, glissez-le pour le déplacer"
+      className="absolute inset-0 cursor-pointer"
+      onPointerDown={(e) => {
+        const zone = zoneDe(e.currentTarget);
+        const fx = (e.clientX - zone.left) / zone.width;
+        const fy = (e.clientY - zone.top) / zone.height;
+        const id = elementSous(f, p.t, fx, fy, p.lignes);
+        p.onSelection(id);
+        if (id) geste((dx, dy, depart) => deplacer(id, dx, dy, depart))(e, zone);
       }}
-      onPointerDown={geste((dx, dy, depart) => {
-        const o = cadre(depart);
-        return changerCadre(depart, { x: borne(o.x + dx, -1, 2), y: borne(o.y + dy, -1, 2) });
-      })}
     >
-      <span
-        aria-hidden="true"
-        className="absolute -right-2 -bottom-2 size-4 cursor-nwse-resize rounded-[3px] bg-montage-selection"
-        onPointerDown={geste((dx, dy, depart) => {
-          const o = cadre(depart);
-          return changerCadre(depart, {
-            largeur: borne(o.largeur + dx, 0.05, 2),
-            hauteur: borne(o.hauteur + dy, 0.05, 2),
-          });
-        })}
-      />
+      {boite ? (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute border-2 border-dashed border-montage-selection"
+          style={{
+            left: pct(boite.x),
+            top: pct(boite.y),
+            width: pct(boite.largeur),
+            height: pct(boite.hauteur),
+          }}
+        />
+      ) : null}
+      {cadre ? (
+        <span
+          role="group"
+          aria-label="Place du clip dans l’image : glisser pour déplacer, coin pour la taille"
+          className="pointer-events-none absolute border-2 border-montage-selection"
+          style={{
+            left: pct(cadre.x),
+            top: pct(cadre.y),
+            width: pct(cadre.largeur),
+            height: pct(cadre.hauteur),
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-auto absolute -right-2 -bottom-2 size-4 cursor-nwse-resize rounded-[3px] bg-montage-selection"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              geste((dx, dy, depart) => {
+                const o = cadreDe(depart);
+                return modifierClip(depart, p.selection!, {
+                  cadre: {
+                    ...o,
+                    largeur: borne(o.largeur + dx, 0.05, 2),
+                    hauteur: borne(o.hauteur + dy, 0.05, 2),
+                  },
+                });
+              })(e, zoneDe(e.currentTarget));
+            }}
+          />
+        </span>
+      ) : null}
     </div>
-  );
-}
-
-function Poignee(p: {
-  libelle: string;
-  x: number;
-  y: number;
-  onPointerDown: (e: EvtPointeur<HTMLElement>) => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={p.libelle}
-      title={p.libelle}
-      onPointerDown={p.onPointerDown}
-      className="absolute flex size-11 -translate-x-1/2 -translate-y-1/2 cursor-move items-center justify-center rounded-full border-2 border-montage-selection bg-montage-fond/60 text-lg text-montage-selection"
-      style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%` }}
-    >
-      ✥
-    </button>
   );
 }

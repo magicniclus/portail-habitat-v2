@@ -1,3 +1,4 @@
+import { SCENES_CAPTURE } from './catalogue';
 import { dessinerCalques, dessinerSousTitre, type ThemeStudio } from './dessin';
 import { FORMATS_STUDIO } from './formats';
 import { effetsDe, etatTransition, filtreCssEffets, mouvementEffets } from './effetsFrise';
@@ -136,6 +137,40 @@ export function dessinerFrise(
     } else {
       const cle = cleSource(clip.source);
       const s = cle ? sources[cle] : undefined;
+      const src = clip.source;
+      if (!s?.largeur && src.type === 'capture') {
+        // Écran pas encore filmé (ou en chargement) : une carte le dit, au lieu d'un vide.
+        const cap = f.captures.find((x) => x.id === src.captureId);
+        ctx.fillStyle = theme.fond;
+        ctx.fillRect(r.x, r.y, r.largeur, r.hauteur);
+        dessinerCalques(
+          ctx,
+          [
+            {
+              type: 'texte',
+              texte: cap
+                ? SCENES_CAPTURE[cap.scene].libelle.slice(0, 80)
+                : 'Écran de Portail Travaux',
+              style: 'titre',
+              position: 'centre',
+              debut: 0,
+              fin: 60_000,
+            },
+            {
+              type: 'texte',
+              texte: 'Écran filmé par le robot à la fabrication',
+              style: 'note',
+              position: 'bas',
+              debut: 0,
+              fin: 60_000,
+            },
+          ],
+          1_500,
+          f.format,
+          r,
+          theme,
+        );
+      }
       if (s?.largeur && s.hauteur) {
         const c = couverture(s, base);
         const dessiner = (dx: number) =>
@@ -217,29 +252,48 @@ export function dessinerSurcoucheFrise(
   lignes: readonly LigneSousTitre[],
   theme: ThemeStudio,
 ) {
+  for (const { piste, clip } of [...clipsActifs(f, t)].reverse())
+    if (piste.type === 'texte' && !piste.muet) dessinerEffet(ctx, f, clip, t, theme);
+  if (f.sousTitres) dessinerSousTitresFrise(ctx, f, t, lignes, theme);
+}
+
+/** Un effet animé (clip d'une piste d'effets) à sa place, décalage compris. */
+export function dessinerEffet(
+  ctx: ContexteImage,
+  f: Pick<Frise, 'format'>,
+  clip: Clip,
+  t: number,
+  theme: ThemeStudio,
+) {
+  if (clip.source.type !== 'effet') return;
   const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
-  const tout: Rectangle = { x: 0, y: 0, largeur: L, hauteur: H };
-  for (const { piste, clip } of [...clipsActifs(f, t)].reverse()) {
-    if (piste.type !== 'texte' || piste.muet || clip.source.type !== 'effet') continue;
-    ctx.save();
-    ctx.translate((clip.decalage?.x ?? 0) * L, (clip.decalage?.y ?? 0) * H);
-    dessinerCalques(
-      ctx,
-      [{ ...clip.source.calque, debut: 0, fin: clip.duree }],
-      t - clip.debut,
-      f.format,
-      tout,
-      theme,
-    );
-    ctx.restore();
-  }
-  if (f.sousTitres) {
-    const ligne = lignes.find((l) => t >= l.debut && t <= l.fin + 120);
-    ctx.save();
-    ctx.translate((f.decalageSousTitres?.x ?? 0) * L, (f.decalageSousTitres?.y ?? 0) * H);
-    dessinerSousTitre(ctx, ligne, t, f.format, Math.round(H * 0.82), theme);
-    ctx.restore();
-  }
+  ctx.save();
+  ctx.translate((clip.decalage?.x ?? 0) * L, (clip.decalage?.y ?? 0) * H);
+  dessinerCalques(
+    ctx,
+    [{ ...clip.source.calque, debut: 0, fin: clip.duree }],
+    t - clip.debut,
+    f.format,
+    { x: 0, y: 0, largeur: L, hauteur: H },
+    theme,
+  );
+  ctx.restore();
+}
+
+/** La ligne de sous-titres en cours, à sa place (décalage compris). */
+export function dessinerSousTitresFrise(
+  ctx: ContexteImage,
+  f: Pick<Frise, 'format' | 'decalageSousTitres'>,
+  t: number,
+  lignes: readonly LigneSousTitre[],
+  theme: ThemeStudio,
+) {
+  const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
+  const ligne = lignes.find((l) => t >= l.debut && t <= l.fin + 120);
+  ctx.save();
+  ctx.translate((f.decalageSousTitres?.x ?? 0) * L, (f.decalageSousTitres?.y ?? 0) * H);
+  dessinerSousTitre(ctx, ligne, t, f.format, Math.round(H * 0.82), theme);
+  ctx.restore();
 }
 
 /**

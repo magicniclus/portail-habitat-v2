@@ -10,6 +10,9 @@ test('STUDIO-LIBRE : nouveau montage, carton, pistes muet / solo, enregistrer', 
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await connecter(page, 'admin@test.local', '/admin/studio', 'admin');
+  // Studio › « Ouvrir le studio de montage » : nouveau montage ou projet existant.
+  await page.getByRole('link', { name: /Ouvrir le studio de montage/ }).click();
+  await expect(page).toHaveURL(/\/admin\/studio\/monter$/);
   await page.getByLabel('Titre du montage').fill('Montage maison');
   await page.getByRole('button', { name: 'Nouveau montage' }).click();
   await page.waitForURL(/\/admin\/studio\/[^/]+\/montage/);
@@ -255,6 +258,12 @@ test('STUDIO-LIBRE-CAPCUT : glisser qui pousse, transition, effet, automation, m
   await editeur.getByRole('button', { name: 'Placer ce texte' }).click();
   await editeur.getByLabel('Ligne 1 des sous-titres').fill('Regardez bien');
   await editeur.getByLabel('Ligne 1 des sous-titres').press('Enter');
+
+  // Un clic directement sur les sous-titres dans l'aperçu les choisit.
+  await editeur.getByRole('button', { name: 'Clip Avant.png' }).first().click();
+  const apercu = (await editeur.getByLabel('Aperçu du montage').boundingBox())!;
+  await page.mouse.click(apercu.x + apercu.width / 2, apercu.y + apercu.height * 0.76);
+  await expect(editeur.getByRole('heading', { name: 'Sous-titres' })).toBeVisible();
 
   // Mixage : la vidéo entière (aucun clip choisi), onglet Mixage.
   await editeur.getByLabel('Piste Audio 1').click({ position: { x: 900, y: 20 } });
