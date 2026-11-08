@@ -18,3 +18,7 @@ export * from './edition';
 export * from './suivi';
 export * from './etapesProjet';
 export * from './preparation';
+export * from './frise';
+export * from './operationsFrise';
+export * from './verifierFrise';
+export * from './friseDepuisPlan';
