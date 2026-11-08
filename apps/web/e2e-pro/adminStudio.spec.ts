@@ -31,11 +31,11 @@ test('studio : le bouton « Studio » ouvre l’éditeur ; tout se fait dans le 
   // ② À partir de quoi : chaque choix s'ouvre sur place.
   const sources = editeur.getByRole('radiogroup', { name: 'À partir de quoi faire la vidéo' });
   await sources.getByRole('radio', { name: /Me filmer/ }).click();
-  await expect(editeur.getByLabel('Caméra')).toHaveValue('');
+  await expect(editeur.getByLabel('Caméra', { exact: true })).toHaveValue('');
   await expect(editeur.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   await sources.getByRole('radio', { name: /Ma voix seulement/ }).click();
   // Caméra jamais demandée d'office pour la voix seule.
-  await expect(editeur.getByLabel('Caméra')).toHaveValue('aucune');
+  await expect(editeur.getByLabel('Caméra', { exact: true })).toHaveValue('aucune');
   await sources.getByRole('radio', { name: /Une vidéo déjà tournée/ }).click();
   await expect(editeur.getByText(/Choisir une vidéo \(.mp4 ou .mov/)).toBeVisible();
   await expect(editeur.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
@@ -48,7 +48,8 @@ test('studio : le bouton « Studio » ouvre l’éditeur ; tout se fait dans le 
   // Sans rien : une durée, voix IA au choix, sous-titres cochés.
   await sources.getByRole('radio', { name: /Sans rien/ }).click();
   await expect(editeur.getByLabel('Durée')).toHaveValue('30');
-  await expect(editeur.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
+  const ia = editeur.getByRole('tabpanel', { name: 'Bibliothèque : IA' });
+  await expect(ia.getByRole('checkbox', { name: /Sous-titres/ })).toBeChecked();
   await expect(editeur.getByRole('button', { name: 'Créer la vidéo' })).toBeEnabled();
   // ③ Monter soi-même : l'enregistreur des pistes s'ouvre sur place.
   await editeur.getByRole('button', { name: 'Enregistrer sur les pistes' }).click();

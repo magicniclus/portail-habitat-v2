@@ -36,17 +36,19 @@ test('STUDIO-SUIVI : montage en cours visible partout, relance si bloqué', asyn
   await pastille.click();
   await expect(page).toHaveURL(/\/admin\/studio\/e2e-suivi\/montage$/);
 
-  // Sur le projet : ce qui se passe, et pourquoi les captures viennent après.
-  await expect(page.getByText('Montage par Claude en cours')).toBeVisible();
-  await expect(page.getByText(/le robot ne filme que les écrans choisis ici/)).toBeVisible();
-  await expect(page.getByText(/d’habitude 1 à 4 min/)).toBeVisible();
-  await expect(page.getByRole('listitem').filter({ hasText: 'Transcription' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /Relancer/ })).toHaveCount(0);
+  // Dans le Studio, panneau IA ouvert d'office : ce qui se passe (chargeur), et pourquoi les
+  // captures viennent après.
+  const suivi = page.getByRole('region', { name: 'Fabrication par Claude' });
+  await expect(suivi.getByText('Montage par Claude en cours…')).toBeVisible();
+  await expect(suivi.getByText(/le robot ne filme que les écrans choisis ici/)).toBeVisible();
+  await expect(suivi.getByText(/d’habitude 1 à 4 min/)).toBeVisible();
+  await expect(suivi.getByRole('listitem').filter({ hasText: 'Transcription' })).toHaveCount(0);
+  await expect(suivi.getByRole('button', { name: /Relancer/ })).toHaveCount(0);
 
   // Bloqué depuis 13 min : on peut relancer.
   await doc.update({ updatedAt: Timestamp.fromMillis(Date.now() - 13 * 60_000) });
   await page.reload();
-  await expect(page.getByText('C’est plus long que d’habitude')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Relancer cette étape' })).toBeVisible();
+  await expect(suivi.getByText(/C’est plus long que d’habitude/)).toBeVisible();
+  await expect(suivi.getByRole('button', { name: 'Relancer cette étape' })).toBeVisible();
   await doc.delete();
 });
