@@ -54,7 +54,7 @@ export async function envoyerPrise(
 /** Vidéo importée du téléphone (son compris) : 1 Go au plus. */
 const IMPORT_MAX_OCTETS = 1024 * 1024 * 1024;
 
-const dureeMedia = (f: File, balise: 'video' | 'audio') =>
+export const dureeMedia = (f: File, balise: 'video' | 'audio') =>
   new Promise<number>((ok) => {
     const v = document.createElement(balise);
     const url = URL.createObjectURL(f);

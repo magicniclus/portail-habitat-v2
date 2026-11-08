@@ -1,6 +1,5 @@
 'use client';
 
-import type { PlanMontage } from '@ph/core/studio';
 import { useCallback, useEffect, useState } from 'react';
 
 /**
@@ -8,16 +7,16 @@ import { useCallback, useEffect, useState } from 'react';
  * `memoriser` + `remplacer` servent aux gestes continus (un seul pas pour tout le glisser).
  * Ctrl+Z annule, Ctrl+Y ou Ctrl+Maj+Z rétablit (hors champs de saisie).
  */
-export function useHistorique(initial: PlanMontage) {
+export function useHistorique<T>(initial: T) {
   const [brouillon, remplacer] = useState(initial);
-  const [passe, setPasse] = useState<PlanMontage[]>([]);
-  const [futur, setFutur] = useState<PlanMontage[]>([]);
+  const [passe, setPasse] = useState<T[]>([]);
+  const [futur, setFutur] = useState<T[]>([]);
 
   const memoriser = useCallback(() => {
     setPasse((h) => [...h.slice(-49), brouillon]);
     setFutur([]);
   }, [brouillon]);
-  const changer = (suivant: PlanMontage) => {
+  const changer = (suivant: T) => {
     memoriser();
     remplacer(suivant);
   };

@@ -4,6 +4,8 @@ import {
   NOMS_SCENES,
   planMontage,
   preparationCaptures,
+  frise,
+  media,
   type FormatStudio,
   type SceneCapture,
 } from '../studio';
@@ -186,3 +188,15 @@ export const entreeFilmerStudio = z.strictObject({
   projetId: id,
   refaire: z.enum(NOMS_SCENES as [SceneCapture, ...SceneCapture[]]).optional(),
 });
+
+/** Montage libre : un titre et un format, rien d'autre (pas d'idée ni de script). */
+export const entreeMontageLibreStudio = z.strictObject({
+  titre: z.string().trim().min(1).max(100),
+  format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
+});
+
+/** Média envoyé dans le bucket : rejoint la bibliothèque (taille relue côté serveur). */
+export const entreeMediaStudio = z.strictObject({ projetId: id, media });
+
+/** Frise multipistes enregistrée depuis l'éditeur. */
+export const entreeFriseStudio = z.strictObject({ projetId: id, frise });

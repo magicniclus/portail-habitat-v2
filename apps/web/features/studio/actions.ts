@@ -15,6 +15,9 @@ import {
   entreeSansPriseStudio,
   entreePreparationStudio,
   entreeFilmerStudio,
+  entreeMontageLibreStudio,
+  entreeMediaStudio,
+  entreeFriseStudio,
   entreeSujetsStudio,
   entreeVoixSyntheseStudio,
 } from '@ph/core/schemas';
@@ -40,6 +43,10 @@ import {
   modifierPreparationStudio,
   ignorerCapturesStudio,
   filmerCapturesStudio,
+  creerMontageLibreStudio,
+  ajouterMediaStudio,
+  enregistrerFriseStudio,
+  supprimerProjetStudio,
 } from '@ph/firebase/studio';
 import { revalidatePath } from 'next/cache';
 import { actionAdmin } from '@/server/actionAdmin';
@@ -197,3 +204,32 @@ const filmer = actionAdmin(
 );
 export const filmerCaptures = async (e: z.input<typeof entreeFilmerStudio>) =>
   fin(await filmer(e), e.projetId);
+
+// Montage libre (STUDIO.md §5 bis) : sans génération, médias importés, frise multipistes.
+const montageLibre = actionAdmin(
+  { schema: entreeMontageLibreStudio, nom: 'adminStudioMontageLibre', permission: P },
+  async (e, ctx) => creerMontageLibreStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const creerMontageLibre = async (e: z.input<typeof entreeMontageLibreStudio>) =>
+  fin(await montageLibre(e));
+
+const media = actionAdmin(
+  { schema: entreeMediaStudio, nom: 'adminStudioMedia', permission: P },
+  async (e, ctx) => ajouterMediaStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const ajouterMedia = async (e: z.input<typeof entreeMediaStudio>) =>
+  fin(await media(e), e.projetId);
+
+const friseEnregistree = actionAdmin(
+  { schema: entreeFriseStudio, nom: 'adminStudioFrise', permission: P },
+  async (e) => enregistrerFriseStudio(servicesStudio(), e),
+);
+export const enregistrerFrise = async (e: z.input<typeof entreeFriseStudio>) =>
+  fin(await friseEnregistree(e), e.projetId);
+
+const suppression = actionAdmin(
+  { schema: entreeProjetStudio, nom: 'adminStudioSupprimerProjet', permission: P },
+  async (e) => supprimerProjetStudio(servicesStudio(), e),
+);
+export const supprimerProjet = async (e: z.input<typeof entreeProjetStudio>) =>
+  fin(await suppression(e));
