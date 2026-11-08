@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   ajouterCalque,
   ajouterCapture,
+  calque,
   calqueParDefaut,
+  LIBELLES_CALQUE,
+  TYPES_CALQUE,
   motsDepuisAlignement,
   aimanter,
   tempsMontage,
@@ -181,5 +184,17 @@ describe('édition du plan de montage', () => {
     expect(tempsMontage(4_250)).toBe('00:04.25');
     expect(tempsMontage(83_009)).toBe('01:23.00');
     expect(tempsMontage(-5)).toBe('00:00.00');
+  });
+});
+
+describe('animations prêtes à poser', () => {
+  it('chaque type a un réglage par défaut valide, borné par la durée du plan', () => {
+    for (const type of TYPES_CALQUE) {
+      const c = calqueParDefaut(type, 10_000);
+      expect(calque.safeParse(c).success).toBe(true);
+      expect(calqueParDefaut(type, 50).fin).toBe(100);
+    }
+    expect(calqueParDefaut('demandes', 10_000).fin).toBe(4_000);
+    expect(LIBELLES_CALQUE.fin).toBe('Fin avec logo');
   });
 });

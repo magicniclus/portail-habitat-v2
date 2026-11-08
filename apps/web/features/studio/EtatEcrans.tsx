@@ -6,7 +6,7 @@ import type { FichiersProjet } from './sourcesFrise';
 const RAISONS: Record<string, string> = {
   'storage/unauthorized':
     'accès refusé : les règles Storage ne sont pas déployées sur le projet Firebase (firebase deploy --only storage)',
-  'storage/object-not-found': 'fichier introuvable : refilmez l’écran (page Captures)',
+  'storage/object-not-found': 'fichier introuvable : refilmez l’écran (onglet Écrans)',
   'storage/unauthenticated': 'session expirée : reconnectez-vous à l’admin',
 };
 
@@ -30,7 +30,7 @@ export function EtatEcrans(p: {
     const chemin = cap ? p.fichiers.captures[`${cap.id}:${cap.scene}`] : undefined;
     if (!chemin)
       return [
-        `« ${nom} » : pas encore filmé. Le robot le filme à « Enregistrer et fabriquer » (ou page Captures).`,
+        `« ${nom} » : pas encore filmé. Le robot le filme à « Enregistrer et fabriquer » (ou onglet Écrans › Filmer maintenant).`,
       ];
     const code = p.erreurs[chemin];
     if (code) return [`« ${nom} » : ${RAISONS[code] ?? `vidéo inaccessible (${code})`}.`];

@@ -1,4 +1,5 @@
-import { SCENES_CAPTURE } from './catalogue';
+import { dessinerAppareil, dessinerFond, ecranAppareil } from './appareil';
+import { SCENES_CAPTURE, type Appareil } from './catalogue';
 import { dessinerCalques, dessinerSousTitre, type ThemeStudio } from './dessin';
 import { FORMATS_STUDIO } from './formats';
 import { effetsDe, etatTransition, filtreCssEffets, mouvementEffets } from './effetsFrise';
@@ -51,9 +52,13 @@ export function filtreCss(f: Clip['filtres']): string {
   return p.length ? p.join(' ') : 'none';
 }
 
-/** Place d'un clip dans l'image (pixels) : son cadre, sinon toute l'image. */
-export function rectangleClip(format: Frise['format'], clip: Pick<Clip, 'cadre'>): Rectangle {
+/** Place d'un clip dans l'image (pixels) : l'écran de son appareil, son cadre, ou toute l'image. */
+export function rectangleClip(
+  format: Frise['format'],
+  clip: Pick<Clip, 'cadre' | 'appareil'>,
+): Rectangle {
   const { largeur: L, hauteur: H } = FORMATS_STUDIO[format];
+  if (clip.appareil) return ecranAppareil(format, clip.appareil);
   return clip.cadre
     ? {
         x: Math.round(clip.cadre.x * L),
@@ -99,8 +104,7 @@ export function dessinerFrise(
   theme: ThemeStudio & { fond: string },
 ) {
   const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
-  ctx.fillStyle = theme.sombre;
-  ctx.fillRect(0, 0, L, H);
+  dessinerDessousFrise(ctx, f, t, theme);
   for (const { piste, clip, local } of clipsVideoVisibles(f, t)) {
     const base = rectangleClip(f.format, clip);
     const effets = effetsDe(piste, clip);
@@ -217,6 +221,36 @@ export function dessinerFrise(
   }
   ctx.filter = 'none';
   dessinerSurcoucheFrise(ctx, f, t, lignes, theme);
+}
+
+/** Appareils à l'image à `t` (vide : pas de décor, fond uni). */
+export function appareilsVisibles(f: Pick<Frise, 'pistes'>, t: number): Appareil[] {
+  return [
+    ...new Set(
+      clipsVideoVisibles(f, t).flatMap(({ clip }) => (clip.appareil ? [clip.appareil] : [])),
+    ),
+  ];
+}
+
+/**
+ * Dessous de toutes les pistes vidéo : fond uni, ou, quand un écran est posé dans un appareil,
+ * le fond animé et le corps de l'appareil. Le robot le dessine image par image (entrée 0).
+ */
+export function dessinerDessousFrise(
+  ctx: ContexteImage,
+  f: Pick<Frise, 'pistes' | 'format'>,
+  t: number,
+  theme: ThemeStudio & { fond: string },
+) {
+  const { largeur: L, hauteur: H } = FORMATS_STUDIO[f.format];
+  const appareils = appareilsVisibles(f, t);
+  if (!appareils.length) {
+    ctx.fillStyle = theme.sombre;
+    ctx.fillRect(0, 0, L, H);
+    return;
+  }
+  dessinerFond(ctx, f.format, t, theme);
+  for (const a of appareils) dessinerAppareil(ctx, f.format, a, theme);
 }
 
 /** Carton plein cadre : fond et texte centré (aperçu, et image fixe du rendu). */

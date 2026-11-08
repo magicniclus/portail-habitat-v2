@@ -28,6 +28,17 @@ test('studio : le bouton « Studio » ouvre l’éditeur ; tout se fait dans le 
   await editeur.getByLabel('Thème de la vidéo (facultatif)').fill('les demandes gratuites');
   await editeur.getByRole('button', { name: /Trouver des idées avec Claude/ }).click();
   await expect(editeur.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
+  // Style du montage : posé par défaut, dynamique au choix (gardé sur la vidéo).
+  const style = editeur.getByRole('radiogroup', { name: 'Style du montage' });
+  await expect(style.getByRole('radio', { name: 'Posé (artisans)' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await style.getByRole('radio', { name: 'Dynamique' }).click();
+  await expect(style.getByRole('radio', { name: 'Dynamique' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
   // ② À partir de quoi : chaque choix s'ouvre sur place.
   const sources = editeur.getByRole('radiogroup', { name: 'À partir de quoi faire la vidéo' });
   await sources.getByRole('radio', { name: /Me filmer/ }).click();

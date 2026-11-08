@@ -1,5 +1,6 @@
 import { z } from '../zod';
 import { NOMS_FORMATS, type FormatStudio } from './formats';
+import { APPAREILS } from './catalogue';
 import { EFFETS_VIDEO, TRANSITIONS } from './effetsFrise';
 import { artisanFictif, calque, capture, planMontage } from './plan';
 
@@ -108,6 +109,8 @@ export const clip = z.strictObject({
       opacite: z.array(point).max(64).optional(),
     })
     .optional(),
+  /** Écran posé dans un appareil sur fond animé (le cadre est alors ignoré). */
+  appareil: z.enum(APPAREILS).optional(),
   /** Transition d'entrée, depuis la séquence d'avant sur la même piste. */
   transition: z
     .strictObject({ type: z.enum(TRANSITIONS), duree: z.number().int().min(100).max(3_000) })

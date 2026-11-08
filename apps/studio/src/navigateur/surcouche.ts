@@ -1,5 +1,7 @@
 import {
+  appareilsVisibles,
   dessinerCarton,
+  dessinerDessousFrise,
   dessinerMiniature,
   dessinerSurcouche,
   dessinerSurcoucheFrise,
@@ -35,6 +37,8 @@ declare global {
       police: string;
     }) => Promise<void>;
     imageFrise: (t: number) => string;
+    dessousFrise: (t: number) => string;
+    fondUniFrise: () => string;
     cartonFrise: (texte: string) => string;
     miniatureFrise: (m: { texte: string; accent: string }) => string;
   }
@@ -97,6 +101,25 @@ window.imageFrise = (t) => {
     frise.lignes,
     frise.theme,
   );
+  return canevas.toDataURL('image/png');
+};
+
+/**
+ * Dessous des pistes vidéo à l'instant `t` (fond animé et appareil), opaque ; chaîne vide quand
+ * aucun écran n'est dans un appareil (le robot reprend alors une image de fond uni).
+ */
+window.dessousFrise = (t) => {
+  if (!frise || !ctx || !canevas) throw new Error('surcouche non préparée');
+  if (!appareilsVisibles(frise.frise, t).length) return '';
+  dessinerDessousFrise(ctx as unknown as ContexteImage, frise.frise, t, frise.theme);
+  return canevas.toDataURL('image/png');
+};
+
+/** Image de fond uni (le dessous quand aucun appareil n'est à l'image). */
+window.fondUniFrise = () => {
+  if (!frise || !ctx || !canevas) throw new Error('surcouche non préparée');
+  ctx.fillStyle = frise.theme.sombre;
+  ctx.fillRect(0, 0, canevas.width, canevas.height);
   return canevas.toDataURL('image/png');
 };
 

@@ -82,7 +82,11 @@ export function ManipulationApercu(p: {
     return dessin ? boiteDessin(f, dessin) : null;
   }, [f, p.selection, p.t, p.lignes]);
   const cadre =
-    choisi && choisi.piste.type === 'video' && choisi.clip.source.type !== 'effet'
+    // Écran dans un appareil : sa place est fixée par l'appareil, rien à déplacer.
+    choisi &&
+    choisi.piste.type === 'video' &&
+    choisi.clip.source.type !== 'effet' &&
+    !choisi.clip.appareil
       ? (choisi.clip.cadre ?? PLEIN)
       : null;
   const zoneDe = (el: HTMLElement) =>

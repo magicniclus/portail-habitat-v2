@@ -47,7 +47,11 @@ export function friseDepuisPlan(
         id: `${x.id}-v`,
         ...base,
         source: principal,
-        ...(plein(d.principal) ? {} : { cadre: fraction(d.principal) }),
+        ...(x.appareil && principal.type !== 'carton'
+          ? { appareil: x.appareil }
+          : plein(d.principal)
+            ? {}
+            : { cadre: fraction(d.principal) }),
       });
     if (d.camera) {
       const clip: Clip = {

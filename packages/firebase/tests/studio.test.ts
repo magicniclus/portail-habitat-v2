@@ -18,6 +18,7 @@ import {
   relancerStudio,
   creerMontageLibreStudio,
   ouvrirStudioStudio,
+  choisirStyleStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -781,6 +782,31 @@ describe('bouton « Studio » : tout se fait dans l’éditeur', () => {
     expect(p?.libre).toBe(false);
     expect(friseActive(p!)).toBe(false);
     expect(friseDuProjet(p!).pistes.flatMap((x) => x.clips).length).toBeGreaterThan(0);
+  });
+});
+
+describe('style de montage', () => {
+  it('posé par défaut ; le style choisi est donné à Claude', async () => {
+    const id = await projet(false);
+    expect((await lireProjetStudio(db, id))?.style).toBe('pose');
+    await choisirStyleStudio(services(), { projetId: id, style: 'dynamique' });
+    expect((await lireProjetStudio(db, id))?.style).toBe('dynamique');
+    reponses = [
+      plan({
+        plans: [
+          {
+            id: 'p1',
+            source: { debut: 0, fin: 20_000 },
+            visuel: 'carton',
+            carton: 'Stop',
+            camera: 'cachee',
+            calques: [],
+          },
+        ],
+      }),
+    ];
+    await sansPriseStudio(services(), { projetId: id, dureeMs: 20_000 });
+    expect(appels.at(-1)!.systeme).toContain('Style DYNAMIQUE');
   });
 });
 

@@ -1,12 +1,13 @@
 'use client';
 
-import type { StatutProjetStudio, SujetStudio } from '@ph/core/studio';
+import type { StatutProjetStudio, StyleMontage, SujetStudio } from '@ph/core/studio';
 import { useState, type ReactNode } from 'react';
 import { EnregistreurPistes, type PriseImportee } from './EnregistreurPistes';
 import { FabricationIA } from './FabricationIA';
 import { IdeeIA } from './IdeeIA';
 import { RetoucheIA } from './RetoucheIA';
 import { SourceIA } from './SourceIA';
+import { StyleIA } from './StyleIA';
 
 /** Ce que le panneau IA sait de la vidéo (relu côté serveur à chaque rafraîchissement). */
 export interface ProjetIA {
@@ -22,6 +23,7 @@ export interface ProjetIA {
   retouche: boolean;
   /** Vidéo fabriquée (chemin du fichier), une fois prête. */
   video: string | null;
+  style: StyleMontage;
 }
 
 const LIEN =
@@ -116,6 +118,7 @@ export function AssistantIA(p: {
             : 'Sans idée, Claude monte à partir de ce que vous dites.'
         }
       >
+        <StyleIA projetId={p.projetId} style={x.style} />
         {fabrique && x.statut !== 'erreur' ? (
           <p className="m-0 text-sm text-montage-texte-doux">
             Claude travaille sur la vidéo : attendez la fin pour en refaire une.

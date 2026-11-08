@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { dessinerCalques, dessinerSousTitre, progression, type Contexte2D } from './dessin';
+import { ENTREES } from './catalogue';
+import {
+  dessinerCalques,
+  dessinerSousTitre,
+  entreeAnimee,
+  progression,
+  type Contexte2D,
+} from './dessin';
 import type { Calque } from './plan';
 
 /** Faux canevas : garde les textes écrits. */
@@ -22,6 +29,7 @@ function faux(): Contexte2D & { textes: string[] } {
     restore: rien,
     translate: rien,
     scale: rien,
+    rotate: rien,
     beginPath: rien,
     moveTo: rien,
     lineTo: rien,
@@ -152,6 +160,97 @@ describe('calques 2D', () => {
     expect(ctx.textes).toEqual([]);
     dessinerSousTitre(ctx, ligne, 500, 'vertical', 1280, theme);
     expect(ctx.textes).toEqual(['GRATUIT']);
+  });
+});
+
+describe('scènes animées et entrées', () => {
+  const scenes: Calque[] = [
+    {
+      type: 'demandes',
+      elements: [
+        { titre: 'Salle de bain', ville: 'Mérignac' },
+        { titre: 'Toiture', ville: 'Talence' },
+      ],
+      position: 'centre',
+      debut: 0,
+      fin: 4_000,
+    },
+    {
+      type: 'outils',
+      elements: ['Fiche pro', 'Devis et factures en un clic'],
+      position: 'centre',
+      debut: 0,
+      fin: 4_000,
+    },
+    { type: 'tampon', texte: 'gratuit', position: 'centre', debut: 0, fin: 3_000 },
+    {
+      type: 'comparaison',
+      avant: 'Des commissions',
+      apres: '0 € de commission',
+      debut: 0,
+      fin: 4_000,
+    },
+    { type: 'fin', titre: 'Inscrivez-vous', bouton: 'portail-travaux.fr', debut: 0, fin: 3_000 },
+  ];
+
+  it('chaque scène arrive puis montre tous ses textes', () => {
+    for (const largeur of [1080, 1920]) {
+      const z = { x: 0, y: 0, largeur, hauteur: 1080 };
+      const tot = faux();
+      dessinerCalques(tot, scenes, 10, 'vertical', z, theme);
+      // Au tout début, les éléments en file d'attente ne sont pas encore là.
+      expect(tot.textes).not.toContain('Toiture');
+      const ctx = faux();
+      dessinerCalques(ctx, scenes, 2_900, 'vertical', z, theme);
+      for (const t of [
+        'NOUVELLE DEMANDE',
+        'Salle de bain',
+        'Toiture',
+        'Mérignac',
+        'Fiche pro',
+        'GRATUIT',
+        'AVANT',
+        'APRÈS',
+        'Inscrivez-vous',
+        'portail-travaux.fr',
+      ])
+        expect(ctx.textes).toContain(t);
+    }
+  });
+
+  it('entrées : chaque type part d’un état et arrive à l’image normale', () => {
+    for (const e of ENTREES) {
+      const debut = entreeAnimee(e, 0);
+      const fin = entreeAnimee(e, 2_000);
+      expect(fin).toEqual({ dx: 0, dy: 0, echelle: 1, angle: 0, alpha: 1 });
+      expect(debut.dx !== 0 || debut.dy !== 0 || debut.echelle !== 1 || debut.alpha < 1).toBe(true);
+    }
+    expect(entreeAnimee('monte', 0).dy).toBe(90);
+    expect(entreeAnimee('tampon', 0).echelle).toBeCloseTo(2.2);
+    // Un calque avec une entrée choisie se dessine (et tourne pour le tampon).
+    let tours = 0;
+    const ctx = { ...faux(), rotate: () => void tours++ };
+    dessinerCalques(
+      ctx,
+      [
+        {
+          type: 'texte',
+          texte: 'Bonjour',
+          style: 'titre',
+          position: 'haut',
+          debut: 0,
+          fin: 2_000,
+          entree: 'tampon',
+        },
+        { type: 'tampon', texte: 'ok', position: 'bas', debut: 0, fin: 2_000, entree: 'glisse' },
+      ],
+      100,
+      'vertical',
+      zone,
+      theme,
+    );
+    expect(ctx.textes).toEqual(expect.arrayContaining(['Bonjour', 'OK']));
+    expect(tours).toBe(2);
   });
 });
 

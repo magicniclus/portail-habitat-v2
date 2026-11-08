@@ -118,3 +118,51 @@ describe('jamais « exemple fictif » à l’image', () => {
     expect(g.pistes.find((p) => p.id === 't1')!.clips).toEqual([]);
   });
 });
+
+describe('scènes animées sans mention fictive', () => {
+  const t = { debut: 0, fin: 2_000 };
+  it('demandes, outils, tampon, avant / après et fin nettoyés', () => {
+    expect(
+      calqueSansMention({
+        type: 'demandes',
+        elements: [
+          { titre: 'Exemple fictif', ville: 'Pessac' },
+          { titre: 'Toiture (exemple)', ville: 'Talence' },
+        ],
+        position: 'centre',
+        ...t,
+      }),
+    ).toMatchObject({ elements: [{ titre: 'Toiture', ville: 'Talence' }] });
+    expect(
+      calqueSansMention({
+        type: 'demandes',
+        elements: [{ titre: 'fictif', ville: 'Pessac' }],
+        position: 'centre',
+        ...t,
+      }),
+    ).toBeNull();
+    expect(
+      calqueSansMention({
+        type: 'outils',
+        elements: ['Fiche', 'exemple'],
+        position: 'centre',
+        ...t,
+      }),
+    ).toBeNull();
+    expect(
+      calqueSansMention({ type: 'outils', elements: ['Fiche', 'Devis'], position: 'centre', ...t }),
+    ).toMatchObject({ elements: ['Fiche', 'Devis'] });
+    expect(
+      calqueSansMention({ type: 'tampon', texte: 'fictif', position: 'centre', ...t }),
+    ).toBeNull();
+    expect(
+      calqueSansMention({ type: 'tampon', texte: 'Gratuit (exemple)', position: 'centre', ...t }),
+    ).toMatchObject({ texte: 'Gratuit' });
+    expect(
+      calqueSansMention({ type: 'comparaison', avant: 'exemple', apres: 'Gratuit fictif', ...t }),
+    ).toMatchObject({ avant: 'exemple', apres: 'Gratuit' });
+    expect(calqueSansMention({ type: 'fin', titre: 'fictif', bouton: 'Go', ...t })).toMatchObject({
+      titre: 'Portail Travaux',
+    });
+  });
+});

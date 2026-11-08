@@ -3,6 +3,7 @@ import {
   NOMS_RESEAUX,
   NOMS_SCENES,
   planMontage,
+  STYLES_MONTAGE,
   preparationCaptures,
   frise,
   media,
@@ -211,4 +212,10 @@ export const entreeFilmerEcransStudio = z.strictObject({
 /** Bouton « Studio » : l'éditeur s'ouvre sur une vidéo neuve (format au choix, sinon par défaut). */
 export const entreeOuvrirStudio = z.strictObject({
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]).optional(),
+});
+
+/** Style de montage (posé ou dynamique) suivi par Claude. */
+export const entreeStyleStudio = z.strictObject({
+  projetId: id,
+  style: z.enum(STYLES_MONTAGE),
 });

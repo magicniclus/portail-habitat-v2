@@ -1,5 +1,7 @@
 import { z } from '../zod';
 import {
+  APPAREILS,
+  ENTREES,
   NOMS_SCENES,
   PLACEMENTS_CAMERA,
   POSITIONS,
@@ -20,7 +22,9 @@ const ms = z.number().int().min(0).max(3_600_000);
 const fraction = z.number().min(0).max(1);
 const texteCourt = z.string().trim().min(1).max(80);
 
-const temps = { debut: ms, fin: ms };
+/** Entrée animée d'un élément (absente : l'animation propre à l'élément). */
+const entree = z.enum(ENTREES).optional();
+const temps = { debut: ms, fin: ms, entree };
 
 const calqueTexte = z.strictObject({
   type: z.literal('texte'),
@@ -74,6 +78,41 @@ const calqueSurlignage = z.strictObject({
   ...temps,
 });
 
+/** Scènes animées (comme les films de présentation) : demandes qui arrivent, outils, tampon… */
+const calqueDemandes = z.strictObject({
+  type: z.literal('demandes'),
+  elements: z
+    .array(z.strictObject({ titre: texteCourt, ville: texteCourt }))
+    .min(1)
+    .max(4),
+  position: z.enum(POSITIONS),
+  ...temps,
+});
+const calqueOutils = z.strictObject({
+  type: z.literal('outils'),
+  elements: z.array(texteCourt).min(2).max(6),
+  position: z.enum(POSITIONS),
+  ...temps,
+});
+const calqueTampon = z.strictObject({
+  type: z.literal('tampon'),
+  texte: z.string().trim().min(1).max(40),
+  position: z.enum(POSITIONS),
+  ...temps,
+});
+const calqueComparaison = z.strictObject({
+  type: z.literal('comparaison'),
+  avant: texteCourt,
+  apres: texteCourt,
+  ...temps,
+});
+const calqueFin = z.strictObject({
+  type: z.literal('fin'),
+  titre: texteCourt,
+  bouton: z.string().trim().min(1).max(40),
+  ...temps,
+});
+
 export const calque = z.discriminatedUnion('type', [
   calqueTexte,
   calqueCompteur,
@@ -82,6 +121,11 @@ export const calque = z.discriminatedUnion('type', [
   calqueBarre,
   calqueFleche,
   calqueSurlignage,
+  calqueDemandes,
+  calqueOutils,
+  calqueTampon,
+  calqueComparaison,
+  calqueFin,
 ]);
 export type Calque = z.infer<typeof calque>;
 
@@ -95,6 +139,8 @@ export const planVideo = z.strictObject({
     .regex(/^[a-z0-9_-]{1,24}$/)
     .optional(),
   camera: z.enum(PLACEMENTS_CAMERA),
+  /** Capture ou écran posé dans un ordinateur ou un téléphone, sur fond animé. */
+  appareil: z.enum(APPAREILS).optional(),
   /** Zone de l'écran agrandie (fractions), pour montrer un détail. */
   zoom: z.strictObject({ x: fraction, y: fraction, largeur: fraction }).optional(),
   /** Texte du carton (visuel « carton »). */

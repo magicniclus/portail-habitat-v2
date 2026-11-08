@@ -48,14 +48,19 @@ export async function rendreFrise(
       }
 
     const lignes = f.sousTitres ? lignesFrise(f, p.mots) : [];
-    const { cartons, texteMiniature, surcouche: motif } = await dessinsFrise(f, lignes, d);
+    const { cartons, texteMiniature, surcouche: motif, dessous } = await dessinsFrise(f, lignes, d);
 
     const args = [
       '-y',
-      '-f',
-      'lavfi',
-      '-i',
-      `color=c=0x${themeStudio.sombre.replace('#', '')}:s=${L}x${H}:r=${FPS}:d=${sec(D)}`,
+      // Entrée 0 : le dessous animé (écrans dans un appareil), sinon un fond uni.
+      ...(dessous
+        ? ['-framerate', String(FPS), '-i', dessous]
+        : [
+            '-f',
+            'lavfi',
+            '-i',
+            `color=c=0x${themeStudio.sombre.replace('#', '')}:s=${L}x${H}:r=${FPS}:d=${sec(D)}`,
+          ]),
       '-f',
       'lavfi',
       '-i',

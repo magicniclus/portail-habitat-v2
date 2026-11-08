@@ -31,6 +31,28 @@ export function calqueSansMention(c: Calque): Calque | null {
       const elements = c.elements.map(sansMentionFictive).filter(Boolean);
       return elements.length ? { ...c, elements } : null;
     }
+    case 'demandes': {
+      const elements = c.elements.filter((e) => sansMentionFictive(e.titre));
+      return elements.length
+        ? { ...c, elements: elements.map((e) => ({ ...e, titre: sansMentionFictive(e.titre) })) }
+        : null;
+    }
+    case 'outils': {
+      const elements = c.elements.map(sansMentionFictive).filter(Boolean);
+      return elements.length >= 2 ? { ...c, elements } : null;
+    }
+    case 'tampon': {
+      const texte = sansMentionFictive(c.texte);
+      return texte ? { ...c, texte } : null;
+    }
+    case 'comparaison':
+      return {
+        ...c,
+        avant: sansMentionFictive(c.avant) || c.avant,
+        apres: sansMentionFictive(c.apres) || c.apres,
+      };
+    case 'fin':
+      return { ...c, titre: sansMentionFictive(c.titre) || 'Portail Travaux' };
     case 'compteur':
     case 'barre':
       return { ...c, libelle: sansMentionFictive(c.libelle) || c.libelle };

@@ -13,7 +13,6 @@ import {
 } from '@ph/firebase/studio';
 import { getFirestore } from 'firebase-admin/firestore';
 import { capturer } from './capturer';
-import { rendre } from './rendre';
 import { rendreFrise } from './rendreFrise';
 import { transcrire } from './transcrire';
 
@@ -46,22 +45,17 @@ async function executerTravail(type: TravailStudio, projetId: string) {
       await transcriptionRecueStudio(s, { projetId, mots, images });
     } else if (type === 'capturer') {
       await capturesTermineesStudio(s, { projetId, captures: await capturer(p) });
-    } else if (friseActive(p)) {
-      // Montage de l'éditeur multipistes : rendu de la frise (pas de variantes d'accroche).
-      const r = await rendreFrise(p);
-      await renduTermineStudio(s, {
-        projetId,
-        fichiers: { video: r.video, srt: r.srt, miniature: r.miniature },
-        dureeMs: r.dureeMs,
-      });
     } else {
-      const r = await rendre(p);
-      // Variantes d'accroche (tests A/B) : même montage, autre première image et miniature.
+      // Toujours la frise (montage de l'éditeur, ou plan de Claude converti) : la vidéo est
+      // exactement l'aperçu du Studio (appareils, fond animé, scènes).
+      const r = await rendreFrise(p);
+      // Variantes d'accroche (tests A/B) d'un montage de Claude pas retouché à la main.
       const variantes: Record<string, { video: string; miniature: string; accroche: string }> = {};
-      for (const v of p.plan?.variantes ?? []) {
-        const rv = await rendre({ ...p, plan: appliquerVariante(p.plan!, v) }, v.id);
-        variantes[v.id] = { video: rv.video, miniature: rv.miniature, accroche: v.accroche };
-      }
+      if (!friseActive(p))
+        for (const v of p.plan?.variantes ?? []) {
+          const rv = await rendreFrise({ ...p, plan: appliquerVariante(p.plan!, v) });
+          variantes[v.id] = { video: rv.video, miniature: rv.miniature, accroche: v.accroche };
+        }
       await renduTermineStudio(s, {
         projetId,
         fichiers: { video: r.video, srt: r.srt, miniature: r.miniature },

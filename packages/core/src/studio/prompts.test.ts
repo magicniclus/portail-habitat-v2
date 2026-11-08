@@ -354,3 +354,22 @@ describe('montage après les captures', () => {
     expect(p.demande).toContain('Martin Plomberie');
   });
 });
+
+describe('style de montage', () => {
+  const base = {
+    format: 'vertical' as const,
+    camera: false,
+    dureePriseMs: 20_000,
+    transcription: '[0-900] Bonjour.',
+    segments: [{ debut: 0, fin: 900 }],
+    sujet: null,
+  };
+  it('posé par défaut, dynamique sur demande ; scènes animées et appareils décrits', () => {
+    const pose = promptMontage(base);
+    expect(pose.systeme).toContain('Style POSÉ');
+    expect(pose.systeme).toContain('« demandes »');
+    expect(pose.systeme).toContain('appareil');
+    expect(pose.contexte).toContain('tampon');
+    expect(promptMontage({ ...base, style: 'dynamique' }).systeme).toContain('Style DYNAMIQUE');
+  });
+});

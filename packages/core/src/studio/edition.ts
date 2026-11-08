@@ -170,6 +170,11 @@ export const TYPES_CALQUE = [
   'barre',
   'fleche',
   'surlignage',
+  'demandes',
+  'outils',
+  'tampon',
+  'comparaison',
+  'fin',
 ] as const satisfies readonly Calque['type'][];
 
 export const LIBELLES_CALQUE: Readonly<Record<Calque['type'], string>> = {
@@ -180,6 +185,11 @@ export const LIBELLES_CALQUE: Readonly<Record<Calque['type'], string>> = {
   barre: 'Barre de progression',
   fleche: 'Flèche',
   surlignage: 'Surlignage',
+  demandes: 'Demandes qui arrivent',
+  outils: 'Grille d’outils',
+  tampon: 'Tampon',
+  comparaison: 'Avant / après',
+  fin: 'Fin avec logo',
 };
 
 /** Animation prête à poser, 2,5 s au début du plan (moins si le plan est court). */
@@ -200,6 +210,37 @@ export function calqueParDefaut(type: Calque['type'], dureePlanMs: number): Calq
       return { type, x: 0.5, y: 0.5, ...t };
     case 'surlignage':
       return { type, x: 0.2, y: 0.4, largeur: 0.6, hauteur: 0.15, ...t };
+    case 'demandes':
+      return {
+        type,
+        elements: [
+          { titre: 'Salle de bain', ville: 'Mérignac' },
+          { titre: 'Isolation des combles', ville: 'Pessac' },
+          { titre: 'Réfection toiture', ville: 'Talence' },
+        ],
+        position: 'centre',
+        ...t,
+        fin: Math.max(100, Math.min(4_000, dureePlanMs)),
+      };
+    case 'outils':
+      return {
+        type,
+        elements: ['Fiche pro', 'Demandes', 'Site internet', 'Devis et factures'],
+        position: 'centre',
+        ...t,
+        fin: Math.max(100, Math.min(4_000, dureePlanMs)),
+      };
+    case 'tampon':
+      return { type, texte: 'GRATUIT', position: 'centre', ...t };
+    case 'comparaison':
+      return {
+        type,
+        avant: 'Des commissions sur chaque chantier',
+        apres: '0 € de commission',
+        ...t,
+      };
+    case 'fin':
+      return { type, titre: 'Inscrivez-vous gratuitement', bouton: 'portail-travaux.fr', ...t };
   }
 }
 

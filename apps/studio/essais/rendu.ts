@@ -4,7 +4,7 @@ import { bucketFichiers } from '@ph/firebase/admin';
 import type { ProjetStudio } from '@ph/firebase/studio';
 import type { PlanMontage } from '@ph/core/studio';
 import { join } from 'node:path';
-import { rendre } from '../src/rendre';
+import { rendreFrise } from '../src/rendreFrise';
 
 const dossier = process.argv[2]!;
 const plan: PlanMontage = {
@@ -17,13 +17,14 @@ const plan: PlanMontage = {
       visuel: 'carton',
       carton: 'Artisans : stop !',
       camera: 'cachee',
-      calques: [],
+      calques: [{ type: 'tampon', texte: 'Gratuit', position: 'bas', debut: 800, fin: 3_000 }],
     },
     {
       id: 'p2',
       source: { debut: 3_500, fin: 8_000 },
       visuel: 'ecran',
-      camera: 'bas',
+      appareil: process.env.FORMAT === 'horizontal' ? 'ordinateur' : 'telephone',
+      camera: 'cachee',
       calques: [
         {
           type: 'texte',
@@ -51,11 +52,15 @@ const plan: PlanMontage = {
       camera: 'cachee',
       calques: [
         {
-          type: 'notification',
-          titre: 'Nouvelle demande',
-          texte: 'Salle de bain à Mérignac',
+          type: 'demandes',
+          elements: [
+            { titre: 'Salle de bain', ville: 'Mérignac' },
+            { titre: 'Isolation des combles', ville: 'Pessac' },
+          ],
+          position: 'centre',
+          entree: 'monte',
           debut: 300,
-          fin: 3_500,
+          fin: 3_800,
         },
       ],
     },
@@ -71,9 +76,15 @@ const plan: PlanMontage = {
           elements: ['Fiche gratuite', 'Site internet', 'Devis et factures'],
           position: 'centre',
           debut: 0,
-          fin: 4_500,
+          fin: 2_700,
         },
-        { type: 'fleche', x: 0.5, y: 0.3, debut: 3_000, fin: 4_900 },
+        {
+          type: 'fin',
+          titre: 'Inscrivez-vous gratuitement',
+          bouton: 'portail-travaux.fr',
+          debut: 2_800,
+          fin: 5_000,
+        },
       ],
     },
   ],
@@ -145,7 +156,7 @@ async function main() {
     updatedAt: 0,
   };
   const t0 = Date.now();
-  const r = await rendre(p);
+  const r = await rendreFrise(p);
   console.log('rendu en', Math.round((Date.now() - t0) / 1000), 's', r);
   await b.file(r.video).download({ destination: join(dossier, `sortie-${plan.format}.mp4`) });
   await b.file(r.srt).download({ destination: join(dossier, 'sortie.srt') });

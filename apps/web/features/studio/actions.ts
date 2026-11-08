@@ -12,6 +12,7 @@ import {
   entreeRetoucheStudio,
   entreeSansPriseStudio,
   entreeOuvrirStudio,
+  entreeStyleStudio,
   entreeMediaStudio,
   entreeFilmerEcransStudio,
   entreeFriseStudio,
@@ -36,6 +37,7 @@ import {
   voixSyntheseStudio,
   configReseaux,
   ouvrirStudioStudio,
+  choisirStyleStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -155,6 +157,13 @@ const sansPrise = actionAdmin(
 /** Vidéo sans voix ni image : Claude monte directement cartons, captures et musique. */
 export const videoSansPrise = async (e: z.input<typeof entreeSansPriseStudio>) =>
   fin(await sansPrise(e), e.projetId);
+
+const style = actionAdmin(
+  { schema: entreeStyleStudio, nom: 'adminStudioStyle', permission: P },
+  async (e) => choisirStyleStudio(servicesStudio(), e),
+);
+export const choisirStyle = async (e: z.input<typeof entreeStyleStudio>) =>
+  fin(await style(e), e.projetId);
 
 // Bouton « Studio » (STUDIO.md §5 bis) : l'éditeur s'ouvre sur une vidéo neuve, où tout se fait.
 const ouvrir = actionAdmin(

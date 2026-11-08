@@ -3,7 +3,15 @@ import { RYTHME_MAX_MS } from './rythme';
 import { FORMATS_VIRAUX } from './formatsViraux';
 import type { ReelInstagram } from './tendances';
 import { z } from '../zod';
-import { ANIMATIONS, LIBELLES_CAMERA, LIBELLES_VISUEL, SCENES_CAPTURE } from './catalogue';
+import {
+  ANIMATIONS,
+  APPAREILS,
+  ENTREES,
+  LIBELLES_CAMERA,
+  type StyleMontage,
+  LIBELLES_VISUEL,
+  SCENES_CAPTURE,
+} from './catalogue';
 import { DUREE_MAX_MS, DUREE_MIN_MS, FORMATS_STUDIO, type FormatStudio } from './formats';
 import type { ArtisanFictif, PlanMontage } from './plan';
 
@@ -253,6 +261,10 @@ const enumeration = (valeurs: readonly string[]) => ({ type: 'string', enum: [..
 const position = enumeration(['haut', 'centre', 'bas']);
 const temps = { debut: entier, fin: entier };
 
+/** Un calque : ses champs, ses temps et son entrée animée (facultative). */
+const calqueJson = (proprietes: Record<string, unknown>, facultatifs: string[] = []) =>
+  objet({ ...proprietes, ...temps, entree: enumeration([...ENTREES]) }, [...facultatifs, 'entree']);
+
 /** Schéma JSON du plan de montage (sortie structurée) ; la validation fine reste dans Zod. */
 export const SCHEMA_JSON_PLAN: Record<string, unknown> = objet({
   format: enumeration(Object.keys(FORMATS_STUDIO)),
@@ -267,19 +279,19 @@ export const SCHEMA_JSON_PLAN: Record<string, unknown> = objet({
         captureId: chaine,
         camera: enumeration(Object.keys(LIBELLES_CAMERA)),
         zoom: objet({ x: nombre, y: nombre, largeur: nombre }),
+        appareil: enumeration([...APPAREILS]),
         carton: chaine,
         calques: {
           type: 'array',
           items: {
             anyOf: [
-              objet({
+              calqueJson({
                 type: { const: 'texte' },
                 texte: chaine,
                 style: enumeration(['accroche', 'titre', 'chiffre', 'note']),
                 position,
-                ...temps,
               }),
-              objet(
+              calqueJson(
                 {
                   type: { const: 'compteur' },
                   de: entier,
@@ -287,38 +299,42 @@ export const SCHEMA_JSON_PLAN: Record<string, unknown> = objet({
                   euros: { type: 'boolean' },
                   libelle: chaine,
                   position,
-                  ...temps,
                 },
                 ['euros'],
               ),
-              objet({ type: { const: 'notification' }, titre: chaine, texte: chaine, ...temps }),
-              objet({
+              calqueJson({ type: { const: 'notification' }, titre: chaine, texte: chaine }),
+              calqueJson({
                 type: { const: 'liste' },
                 elements: { type: 'array', items: chaine },
                 position,
-                ...temps,
               }),
-              objet({
-                type: { const: 'barre' },
-                libelle: chaine,
-                valeur: entier,
-                position,
-                ...temps,
-              }),
-              objet({ type: { const: 'fleche' }, x: nombre, y: nombre, ...temps }),
-              objet({
+              calqueJson({ type: { const: 'barre' }, libelle: chaine, valeur: entier, position }),
+              calqueJson({ type: { const: 'fleche' }, x: nombre, y: nombre }),
+              calqueJson({
                 type: { const: 'surlignage' },
                 x: nombre,
                 y: nombre,
                 largeur: nombre,
                 hauteur: nombre,
-                ...temps,
               }),
+              calqueJson({
+                type: { const: 'demandes' },
+                elements: { type: 'array', items: objet({ titre: chaine, ville: chaine }) },
+                position,
+              }),
+              calqueJson({
+                type: { const: 'outils' },
+                elements: { type: 'array', items: chaine },
+                position,
+              }),
+              calqueJson({ type: { const: 'tampon' }, texte: chaine, position }),
+              calqueJson({ type: { const: 'comparaison' }, avant: chaine, apres: chaine }),
+              calqueJson({ type: { const: 'fin' }, titre: chaine, bouton: chaine }),
             ],
           },
         },
       },
-      ['captureId', 'zoom', 'carton'],
+      ['captureId', 'zoom', 'carton', 'appareil'],
     ),
   },
   captures: {
@@ -380,7 +396,10 @@ export function promptMontage(e: {
   capturesFilmees?: readonly { id: string; scene: string }[];
   /** Artisan d'exemple déjà visible dans ces captures. */
   artisan?: ArtisanFictif | null;
+  /** Style voulu par l'auteur (posé par défaut). */
+  style?: StyleMontage;
 }): { systeme: string; contexte: string; demande: string } {
+  const style = e.style ?? 'pose';
   const systeme = [
     'Tu es un monteur de vidéos courtes virales. Tu ne produis qu’un plan de montage en JSON, jamais de code.',
     REGLES_COMMUNES,
@@ -392,7 +411,12 @@ export function promptMontage(e: {
     '- Fin qui reboucle : la dernière phrase gardée doit s’enchaîner naturellement avec la première, pour que la vidéo soit revue en boucle ; pas de « au revoir ».',
     '- Les chiffres importants deviennent un « compteur » ou un texte « chiffre ». Une notification « Nouvelle demande » quand on parle de demandes reçues.',
     '- Les captures montrent le produit : utilise-les quand la voix en parle. L’artisan d’exemple doit être cohérent avec ce que dit la voix.',
-    `- Public : des artisans du bâtiment, pas un public de jeux vidéo. Ton posé, clair et concret ; montage calme, sans effet nerveux.`,
+    `- Public : des artisans du bâtiment, pas un public de jeux vidéo. Ton clair et concret.`,
+    '- Scènes animées (comme un film de présentation soigné) : « demandes » quand la voix parle de clients ou de demandes reçues, « outils » pour les outils gratuits (fiche, site, devis…), « tampon » pour un mot fort (« GRATUIT », « 0 € de commission »), « comparaison » pour un avant / après, « fin » sur les 2 à 3 dernières secondes (phrase d’appel à l’action et bouton « portail-travaux.fr »). Une scène occupe le centre : pas d’autre calque au centre en même temps.',
+    style === 'pose'
+      ? '- Style POSÉ : montage calme et lisible. Peu de coupes (un plan dure 3 à 8 s), entrées « monte » ou « fondu » sur les textes et les scènes, au moins 3 scènes animées dans la vidéo, captures dans un appareil, aucun effet brusque.'
+      : '- Style DYNAMIQUE : plus de rythme. Plans de 2 à 4 s, entrées « zoom », « glisse » ou « tampon », chiffres et tampons fréquents, au moins 3 scènes animées ; reste lisible (jamais deux scènes en même temps).',
+    `- Habillage : pose chaque capture dans un appareil (« appareil » : ${'« telephone » en vertical, « ordinateur » sinon'}) ; elle apparaît alors sur un fond animé aux couleurs de Portail Travaux, plus soigné qu’une capture plein écran. Les textes vont au-dessus ou en dessous de l’appareil (position « haut » ou « bas »).`,
     `- Captures : ${CAPTURES_MAX} écrans de Portail Travaux différents au plus (2 suffisent souvent), chacun à l’image au moins ${CAPTURE_MIN_MS / 1000} secondes d’affilée (idéalement 6 à 10 s) pour qu’on ait le temps de lire ; ne saute pas d’un écran à l’autre. Pour relancer l’attention pendant une capture, ajoute un texte ou un zoom doux plutôt qu’un nouvel écran.`,
     '- Pas d’effet gadget : des coupes nettes, des calques lisibles, au plus 2 calques en même temps.',
     `- Durée totale entre ${DUREE_MIN_MS / 1000} s et ${DUREE_MAX_MS / 1000} s. Temps en millisecondes entières. Les temps des calques sont relatifs au début de leur plan.`,

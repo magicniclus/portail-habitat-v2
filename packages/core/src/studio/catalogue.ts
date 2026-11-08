@@ -50,6 +50,36 @@ export const SCENES_CAPTURE = {
 export type SceneCapture = keyof typeof SCENES_CAPTURE;
 export const NOMS_SCENES = Object.keys(SCENES_CAPTURE) as SceneCapture[];
 
+/**
+ * Habillage d'un écran (capture, vidéo) : posé dans un ordinateur ou un téléphone, sur un fond
+ * animé, au lieu de remplir toute l'image.
+ */
+export const APPAREILS = ['ordinateur', 'telephone'] as const;
+export type Appareil = (typeof APPAREILS)[number];
+export const LIBELLES_APPAREIL: Readonly<Record<Appareil, string>> = {
+  ordinateur: 'Dans un ordinateur',
+  telephone: 'Dans un téléphone',
+};
+
+/** Entrées animées d'un élément (texte, scène) : façon d'arriver à l'image. */
+export const ENTREES = ['monte', 'zoom', 'glisse', 'fondu', 'tampon'] as const;
+export type EntreeAnimee = (typeof ENTREES)[number];
+export const LIBELLES_ENTREE: Readonly<Record<EntreeAnimee, string>> = {
+  monte: 'Monte doucement',
+  zoom: 'Apparaît (zoom)',
+  glisse: 'Glisse de côté',
+  fondu: 'Fondu',
+  tampon: 'Tampon',
+};
+
+/** Style de montage demandé à Claude : posé (par défaut, public d'artisans) ou dynamique. */
+export const STYLES_MONTAGE = ['pose', 'dynamique'] as const;
+export type StyleMontage = (typeof STYLES_MONTAGE)[number];
+export const LIBELLES_STYLE_MONTAGE: Readonly<Record<StyleMontage, string>> = {
+  pose: 'Posé (artisans)',
+  dynamique: 'Dynamique',
+};
+
 /** Ce qui occupe l'image principale d'un plan. */
 export const VISUELS = ['ecran', 'camera', 'capture', 'carton'] as const;
 export type Visuel = (typeof VISUELS)[number];
@@ -70,6 +100,11 @@ export const ANIMATIONS = {
   barre: 'Barre de progression qui se remplit',
   fleche: 'Flèche qui pointe un endroit de l’écran',
   surlignage: 'Cadre qui entoure une zone de l’écran',
+  demandes: 'Cartes « Nouvelle demande » qui arrivent l’une après l’autre (titre, ville)',
+  outils: 'Grille de tuiles qui apparaissent une à une (les outils gratuits)',
+  tampon: 'Tampon qui s’écrase à l’image (« GRATUIT », « 0 € de commission »)',
+  comparaison: 'Avant / après : deux cartes côte à côte, l’avant barré',
+  fin: 'Fin : logo Portail Travaux, phrase et bouton d’appel à l’action, sur fond de marque',
 } as const;
 export type TypeCalque = keyof typeof ANIMATIONS;
 

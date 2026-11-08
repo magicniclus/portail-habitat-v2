@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  appareilDuFormat,
   captureDeScene,
   clipParId,
   couperClip,
@@ -48,7 +49,16 @@ export function useActionsFrise(o: {
     if (!r) return o.erreur('12 écrans au plus par vidéo.');
     const id = nouvelIdFrise('c', ids(r.frise));
     const source = { type: 'capture' as const, captureId: r.captureId, debutSource: 0 };
-    o.changer(poserClip(r.frise, '', { id, debut: Math.round(o.tete), duree: 4_000, source }));
+    // Posé dans un appareil sur fond animé, et assez long pour être lu (6 s).
+    o.changer(
+      poserClip(r.frise, '', {
+        id,
+        debut: Math.round(o.tete),
+        duree: 6_000,
+        source,
+        appareil: appareilDuFormat(f.format),
+      }),
+    );
     o.setSelection(id);
   };
   const scinder = () => {

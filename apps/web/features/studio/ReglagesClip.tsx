@@ -10,6 +10,8 @@ import {
   type Frise,
 } from '@ph/core/studio';
 import { ChampsCalque } from './ChampsCalque';
+import { ChampsScene } from './ChampsScene';
+import { PresentationClip } from './PresentationClip';
 import { Curseur, pourcent, secondes } from './Curseur';
 
 const VITESSES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4] as const;
@@ -92,6 +94,12 @@ export function ReglagesClip({
               m({ source: { ...s, calque: { ...s.calque, ...champs } as Calque } })
             }
           />
+          <ChampsScene
+            calque={s.calque}
+            onChange={(champs) =>
+              m({ source: { ...s, calque: { ...s.calque, ...champs } as Calque } })
+            }
+          />
         </div>
       ) : null}
       {'debutSource' in s ? (
@@ -130,7 +138,10 @@ export function ReglagesClip({
         affichage={secondes}
         onChange={(v) => m({ fondus: { ...fondus, sortie: v } })}
       />
-      {image && s.type !== 'effet' ? (
+      {image && s.type !== 'effet' && s.type !== 'carton' ? (
+        <PresentationClip appareil={c.appareil} onChange={(appareil) => m({ appareil })} />
+      ) : null}
+      {image && s.type !== 'effet' && !c.appareil ? (
         <>
           <label className="grid gap-1 text-xs">
             <span className="text-montage-texte-doux">Place dans l’image</span>

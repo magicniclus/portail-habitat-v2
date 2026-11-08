@@ -31,6 +31,7 @@ import {
   transcriptionHorodatee,
   verifierPlan,
   type FormatStudio,
+  type StyleMontage,
   type MotTranscrit,
   type PreparationCaptures,
   type Frise,
@@ -105,6 +106,8 @@ export interface ProjetStudio {
   preparation: PreparationCaptures | null;
   /** Montage libre (sans génération) : ouvert directement dans l'éditeur. */
   libre: boolean;
+  /** Style de montage demandé à Claude (posé par défaut). */
+  style: StyleMontage;
   /** Frise multipistes (STUDIO.md §5 bis) ; absente : montage encore au format « plan ». */
   frise: Frise | null;
   /** Version du plan sur laquelle la frise a été montée (un nouveau plan de Claude la remplace). */
@@ -173,6 +176,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     captures: (d.captures as Record<string, string> | undefined) ?? {},
     preparation: (d.preparation as PreparationCaptures | null | undefined) ?? null,
     libre: d.libre === true,
+    style: d.style === 'dynamique' ? 'dynamique' : 'pose',
     frise: (d.frise as Frise | null | undefined) ?? null,
     friseVersion: typeof d.friseVersion === 'number' ? d.friseVersion : null,
     apresCaptures: (d.apresCaptures as StatutProjetStudio | null | undefined) ?? null,
@@ -651,6 +655,15 @@ export async function sansPriseStudio(
   await lancerMontageStudio(s, { projetId: e.projetId, sousTitres: mots.length > 0 });
 }
 
+/** Style de montage voulu pour les prochains montages de Claude. */
+export async function choisirStyleStudio(
+  s: ServicesStudio,
+  e: { projetId: string; style: StyleMontage },
+): Promise<void> {
+  await exiger(s, e.projetId);
+  await maj(s, e.projetId, { style: e.style });
+}
+
 /** Retour du robot : transcription mot à mot, puis montage par Claude. */
 export async function transcriptionRecueStudio(
   s: ServicesStudio,
@@ -762,6 +775,7 @@ export async function genererMontageStudio(
         return { id: id!, scene: scene! };
       }),
       artisan: p.preparation && !p.preparation.ignoree ? p.preparation.artisan : null,
+      style: p.style,
       ...(e.retouche && p.plan ? { retouche: { plan: p.plan, demande: e.retouche } } : {}),
       erreurs,
     });
