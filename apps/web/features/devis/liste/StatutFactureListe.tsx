@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { PaiementRapide } from './PaiementRapide';
+import { TON_STATUT } from './tonsStatut';
 
 const libelle = (s: string) =>
   LIBELLES_STATUT_FACTURE[s as keyof typeof LIBELLES_STATUT_FACTURE] ?? s;
@@ -46,8 +47,10 @@ export function StatutFactureListe({
         aria-label={`Statut de la facture ${numero}`}
         value={statut}
         onChange={(x) => x.target.value === 'payee' && setOuvert(true)}
+        // Même pastille de couleur que le statut des devis.
         className={cn(
-          'min-h-11 w-fit cursor-pointer rounded-pill border border-trait bg-blanc px-3 text-base font-semibold text-texte',
+          'min-h-11 w-fit cursor-pointer rounded-pill border px-3 text-base font-semibold',
+          TON_STATUT[tonStatut(statut)],
         )}
       >
         <option value={statut}>{libelle(statut)}</option>

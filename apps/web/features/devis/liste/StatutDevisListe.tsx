@@ -10,14 +10,7 @@ import { Badge, Chargeur, cn } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { posterJson } from '@/lib/posterJson';
-
-const TON: Record<ReturnType<typeof tonStatut>, string> = {
-  neutre: 'border-trait bg-neutre-100 text-neutre-900',
-  info: 'border-info/40 bg-info-fond text-info',
-  succes: 'border-succes/40 bg-succes-fond text-succes',
-  danger: 'border-danger/40 bg-danger-fond text-danger',
-  attention: 'border-attention/40 bg-attention-fond text-attention',
-};
+import { TON_STATUT } from './tonsStatut';
 
 /** Statut d'un devis dans la liste (capture) : menu natif quand un changement est possible. */
 export function StatutDevisListe({
@@ -59,7 +52,7 @@ export function StatutDevisListe({
           }}
           className={cn(
             'min-h-11 w-fit cursor-pointer rounded-pill border px-3 text-base font-semibold',
-            TON[tonStatut(statut)],
+            TON_STATUT[tonStatut(statut)],
           )}
         >
           <option value={statut}>{libelleStatutDevis(statut, envoye)}</option>

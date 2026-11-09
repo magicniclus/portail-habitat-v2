@@ -149,6 +149,10 @@ test.describe('Devis & factures', () => {
     await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
     await expect(page.getByTestId('reste-a-payer')).toHaveText(/759,00/);
+    // Présentée comme le devis : objet, adresse du client, date d'émission.
+    await expect(page.getByText('Rénovation salle de bain')).toBeVisible();
+    await expect(page.getByText(/Claire Martin · .+Mérignac/)).toBeVisible();
+    await expect(page.getByText('Émise le')).toBeVisible();
     await page.getByRole('button', { name: 'Enregistrer le paiement' }).click();
     await expect(page.getByText('Payée')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Télécharger le PDF' })).toBeVisible();

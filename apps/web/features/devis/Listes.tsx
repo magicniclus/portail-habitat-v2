@@ -107,7 +107,8 @@ export function ListeFactures({
           numero: f.numero || `${LIBELLES_TYPE_FACTURE[f.type]} (brouillon)`,
           client: f.client,
           objet: [
-            LIBELLES_TYPE_FACTURE[f.type],
+            // Comme les devis : l'objet d'abord ; le type seulement quand ce n'est pas une facture.
+            f.type === 'facture' ? '' : LIBELLES_TYPE_FACTURE[f.type],
             f.objet,
             lien(f),
             f.echeanceLe && f.type !== 'avoir' && !f.annulee

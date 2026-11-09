@@ -181,7 +181,8 @@ export async function lireDevisComplet(
     signatureElectronique: x.signatureElectronique,
     tampon: x.tampon,
     totaux: x.totaux,
-    margeHtCentimes: x.margeHtCentimes,
+    // Devis importés ou anciens sans marge enregistrée : la page s'affiche quand même.
+    margeHtCentimes: x.margeHtCentimes ?? 0,
     mentionsManquantes: x.mentionsManquantes ?? [],
     envoiLe: ms(x.envoiLe),
     pdfPath: x.pdfPath,
@@ -203,6 +204,8 @@ export async function lireDevisComplet(
 
 export interface FactureComplete extends FactureResume {
   objet: string;
+  /** Adresse du client, affichée comme sur le devis. */
+  clientAdresse: string;
   lignes: LigneDevis[];
   totaux: { htCentimes: number; ttcCentimes: number; tva: Record<string, number> };
   paiements: { montantCentimes: number; moyen: string; le: number; ref?: string }[];
@@ -241,6 +244,7 @@ export async function lireFactureComplete(
     aPdf: Boolean(x.pdfPath),
     envoyeeLe: ms(x.envoyeeLe),
     objet: x.objet ?? '',
+    clientAdresse: x.client?.adresse ?? '',
     lignes: x.lignes ?? [],
     totaux: x.totaux,
     paiements: ((x.paiements ?? []) as DocumentData[]).map((p) => ({

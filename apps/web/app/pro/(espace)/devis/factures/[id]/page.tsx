@@ -54,8 +54,15 @@ export default async function PageFacture({ params }: { params: Promise<{ id: st
         </Badge>
       </div>
       <dl className="m-0 grid max-w-[720px] gap-2 text-[15px] min-[700px]:grid-cols-[200px_1fr]">
+        {/* Même présentation que le devis : client, objet, montants, dates. */}
         <dt className="font-semibold">Client</dt>
-        <dd className="m-0">{f.client}</dd>
+        <dd className="m-0">{[f.client, f.clientAdresse].filter(Boolean).join(' · ')}</dd>
+        {f.objet ? (
+          <>
+            <dt className="font-semibold">Objet</dt>
+            <dd className="m-0">{f.objet}</dd>
+          </>
+        ) : null}
         {f.devisNumero ? (
           <>
             <dt className="font-semibold">Devis</dt>
@@ -76,6 +83,12 @@ export default async function PageFacture({ params }: { params: Promise<{ id: st
             <dd className="m-0" data-testid="reste-a-payer">
               {eur(f.resteCentimes)}
             </dd>
+          </>
+        ) : null}
+        {f.emiseLe ? (
+          <>
+            <dt className="font-semibold">Émise le</dt>
+            <dd className="m-0">{formatDate(f.emiseLe)}</dd>
           </>
         ) : null}
         {f.echeanceLe && f.type !== 'avoir' ? (
