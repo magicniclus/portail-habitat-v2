@@ -100,9 +100,9 @@ test.describe('Site internet artisan', () => {
     await page.getByLabel('Adresse du site').fill('http://exemple.fr');
     await expect(page.getByText('Adresse https:// obligatoire')).toBeVisible();
     await publier(page);
-    await expect(
-      page.getByText(/Site publié .* 1 point à revoir .*Adresse https:\/\/ obligatoire/),
-    ).toBeVisible();
+    // Une confirmation claire, sans liste d'erreurs techniques.
+    await expect(page.getByText(/Site publié/)).toBeVisible();
+    await expect(page.getByText(/point à revoir/)).toHaveCount(0);
 
     await page.getByLabel('Adresse du site').fill('https://exemple.fr');
     await publier(page);
@@ -662,6 +662,31 @@ test.describe('Site internet artisan', () => {
     ).toHaveCount(0);
     await carte.getByRole('button', { name: 'Mettre en ligne' }).click();
     await menu.click();
+  });
+
+  test('site en ligne : maintenance puis retrait, chacun confirmé, et remise en ligne', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/site');
+    await page.getByRole('button', { name: 'Mettre en maintenance' }).click();
+    const dialogue = page.getByRole('dialog');
+    await expect(dialogue).toContainText('revenez bientôt');
+    await dialogue.getByRole('button', { name: 'Mettre en maintenance' }).click();
+    await expect(page.getByText('En maintenance', { exact: true })).toBeVisible();
+    // Les visiteurs voient la page d'attente (cache des sites publiés : 30 s).
+    await expect(async () => {
+      const r = await page.goto(`${URL_SITE}/`);
+      expect(r?.status()).toBe(503);
+      await expect(page.getByText('Site en maintenance')).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 60_000 });
+    await page.goto('/pro/site');
+    await page.getByRole('button', { name: 'Retirer le site' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Retirer le site' }).click();
+    await expect(page.getByText('Retiré d’Internet', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Voir le site' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Remettre en ligne' }).click();
+    await expect(page.getByRole('button', { name: 'Mettre en maintenance' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Voir le site' })).toBeVisible();
   });
 
   test('suivi et publicité : balise Google enregistrée → bandeau de consentement sur le site', async ({

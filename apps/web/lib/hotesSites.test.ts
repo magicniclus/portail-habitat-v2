@@ -19,4 +19,9 @@ describe('aiguillage des sites artisans par hôte', () => {
     expect(hoteSite('WWW.Bertrand-Renovation.fr:443', p)).toBe('www.bertrand-renovation.fr');
     expect(hoteSite('évil".fr', p)).toBeNull();
   });
+  it('poste local : sous-domaine.localhost sert le sous-domaine gratuit', () => {
+    expect(hoteSite('bertrand.localhost:3000', p, 'portailtravaux.fr')).toBe(
+      'bertrand.portailtravaux.fr',
+    );
+  });
 });

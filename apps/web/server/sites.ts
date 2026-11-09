@@ -50,6 +50,25 @@ const db = () => getFirestore(appAdmin());
 /** Domaine des sous-domaines gratuits (`{slug}.portailtravaux.fr`, DOMAINES §2). */
 export const DOMAINE_BASE = process.env.DOMAINE_SITES ?? 'portailtravaux.fr';
 
+/**
+ * Adresse pour « Voir le site » : la vraie en ligne ; sur le poste local (pnpm dev), le
+ * sous-domaine sous « localhost », que le navigateur résout seul (le DNS du vrai sous-domaine
+ * n'existe qu'une fois la plateforme en production).
+ */
+function urlVisite(sousDomaine: string): string {
+  let plateforme: URL | null = null;
+  try {
+    plateforme = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '');
+  } catch {
+    plateforme = null;
+  }
+  const local = plateforme?.hostname === 'localhost' || process.env.NODE_ENV === 'development';
+  if (!local) return `https://${sousDomaine}.${DOMAINE_BASE}`;
+  const port =
+    plateforme?.hostname === 'localhost' ? plateforme.port : (process.env.PORT ?? '3000');
+  return `http://${sousDomaine}.localhost${port ? `:${port}` : ''}`;
+}
+
 export function servicesSites(): ServicesSites {
   return { db: db(), horloge: Date.now, domaineBase: DOMAINE_BASE };
 }
@@ -135,6 +154,10 @@ export interface TableauSite {
   pages: LignePage[];
   /** Adresse publique (sous-domaine) et proposition de sous-domaine avant création. */
   url?: string;
+  /** Adresse ouverte par « Voir le site » (locale sur le poste de développement). */
+  urlVisite?: string;
+  /** Site publié : en ligne, en maintenance ou retiré par l'artisan. */
+  etatLigne: 'en_ligne' | 'maintenance' | 'retire';
   proposition: string;
   modifieDepuisPublication: boolean;
   /** Champs du formulaire enregistrés (Site Pro). */
@@ -164,10 +187,17 @@ export async function tableauSite(artisanId: string): Promise<TableauSite> {
       menu: p.menu,
       score: controlesSeo(p, p.type === 'mentions' ? undefined : ville).score,
     }));
+  const etatLigne = doc.get('etatLigne') as string | undefined;
   return {
     site,
     pages,
-    ...(site.sousDomaine ? { url: `https://${site.sousDomaine}.${DOMAINE_BASE}` } : {}),
+    etatLigne: etatLigne === 'maintenance' || etatLigne === 'retire' ? etatLigne : 'en_ligne',
+    ...(site.sousDomaine
+      ? {
+          url: `https://${site.sousDomaine}.${DOMAINE_BASE}`,
+          urlVisite: urlVisite(site.sousDomaine),
+        }
+      : {}),
     proposition: sousDomaineDe((fiche.get('nomCommercial') as string | undefined) ?? ''),
     ...(champs ? { champs } : {}),
     suivi: suivi.success ? suivi.data : SUIVI_VIDE,

@@ -1,29 +1,30 @@
 'use client';
 
 import { Banner, BoutonAction, Button } from '@ph/ui';
-import { useState } from 'react';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
+import { routes } from '@/lib/routes';
 import { useAppelSite } from './appelSite';
-import { messagePublication, type ResultatPublication } from './publication';
+import type { ResultatPublication } from './publication';
 
 /**
- * « Publier » : le site part en ligne quand l'artisan le décide (SITE-09) ; les liens, boutons et
- * textes « [à compléter] » à revoir sont signalés ensuite, sans bloquer.
+ * « Publier » : le site part en ligne quand l'artisan le décide (SITE-09). Une seule confirmation
+ * claire, qui reste affichée (`?publie=1`) ; les liens incomplets ne sont simplement pas
+ * cliquables sur le site, sans liste d'erreurs techniques.
  */
 export function BoutonPublier({ libelle }: { libelle: string }) {
+  const router = useRouter();
   const { appeler, erreur, enCours } = useAppelSite();
-  const [resultat, setResultat] = useState<ResultatPublication | null>(null);
   const publier = async () => {
-    setResultat(null);
-    setResultat(await appeler<ResultatPublication>('publier', {}));
+    const r = await appeler<ResultatPublication>('publier', {});
+    if (r) router.replace(`${routes.proSite}?publie=1` as Route);
   };
-  const m = resultat ? messagePublication(resultat) : null;
   return (
     <div className="grid gap-2">
       <Button chargement={enCours} onClick={() => void publier()} disabled={enCours}>
         {enCours ? 'Publication…' : libelle}
       </Button>
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
-      {m ? <Banner tone={m.ton}>{m.texte}</Banner> : null}
     </div>
   );
 }

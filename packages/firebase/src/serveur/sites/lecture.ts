@@ -12,6 +12,8 @@ export interface SitePublie {
   theme: Theme;
   navigation: Navigation;
   pages: Record<string, PageSite>;
+  /** Choisi par l'artisan : absent = en ligne. */
+  etatLigne?: 'maintenance' | 'retire';
 }
 
 /**
@@ -44,6 +46,9 @@ export async function lireSitePublie(db: Firestore, hote: string): Promise<SiteP
     theme: v.theme,
     navigation: v.navigation,
     pages: v.pages,
+    ...(site.get('etatLigne') === 'maintenance' || site.get('etatLigne') === 'retire'
+      ? { etatLigne: site.get('etatLigne') as 'maintenance' | 'retire' }
+      : {}),
   };
 }
 

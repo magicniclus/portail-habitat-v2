@@ -6,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { appAdmin, bucketFichiers, PROJET_EMULATEUR } from '../src/admin';
 import { chemins } from '../src/chemins';
 import {
+  changerEtatLigneSite,
   changerSousDomaine,
   creerSite,
   enregistrerNavigation,
@@ -172,6 +173,30 @@ describe('publication', () => {
     expect(v2.navigation.nom).toBeTruthy();
     await expect(lireVersion(s(), { artisanId: 'a1', uid: 'intrus' }, 2)).rejects.toThrow();
     await expect(lireVersion(s(), proprio, 99)).rejects.toMatchObject({ code: 'INTROUVABLE' });
+  });
+
+  it('maintenance puis retrait du site, remis en ligne d’un clic ou en republiant', async () => {
+    const i = initial();
+    await creerSite(s(), proprio, { sousDomaine: 'bertrand', initial: i });
+    // Rien de publié : pas d'état à changer.
+    await expect(changerEtatLigneSite(s(), proprio, 'maintenance')).rejects.toMatchObject({
+      code: 'PRECONDITION',
+    });
+    await publierSite(s(), proprio);
+    await changerEtatLigneSite(s(), proprio, 'maintenance');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.etatLigne).toBe('maintenance');
+    await changerEtatLigneSite(s(), proprio, 'retire');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.etatLigne).toBe('retire');
+    await changerEtatLigneSite(s(), proprio, 'en_ligne');
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.etatLigne).toBeUndefined();
+    // Republier remet aussi en ligne.
+    await changerEtatLigneSite(s(), proprio, 'retire');
+    await publierSite(s(), proprio);
+    expect((await lireSitePublie(db, 'bertrand.portailtravaux.fr'))?.etatLigne).toBeUndefined();
+    // Seul qui gère le site peut le faire.
+    await expect(
+      changerEtatLigneSite(s(), { artisanId: 'a1', uid: 'intrus' }, 'retire'),
+    ).rejects.toThrow();
   });
 
   it('SITE-11 : la navigation enregistrée s’applique à toutes les pages sans toucher à leur contenu', async () => {

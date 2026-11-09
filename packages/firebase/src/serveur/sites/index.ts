@@ -46,7 +46,7 @@ export {
   type SiteEdition,
   type SitePublie,
 } from './lecture';
-export { lireVersion, publierSite, retablirVersion } from './publication';
+export { changerEtatLigneSite, lireVersion, publierSite, retablirVersion } from './publication';
 export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from './stats';
 export { gererSectionsEnregistrees, type SectionEnregistree } from './sectionsEnregistrees';
 export { enregistrerMediaSite, fichiersCitables, lireMediasSite } from './medias';

@@ -9,6 +9,12 @@ export const dynamic = 'force-dynamic';
 const PAGE_404 =
   '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Page introuvable</title><meta name="robots" content="noindex"></head><body style="font-family:Arial,sans-serif;text-align:center;padding:64px 20px"><h1>Page introuvable</h1><p><a href="/">Retour à l’accueil</a></p></body></html>';
 
+const echapper = (t: string) => t.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+/** Site mis en maintenance par l'artisan : une page simple, son nom, sans référencement. */
+const pageMaintenance = (nom: string) =>
+  `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${echapper(nom)} · maintenance</title><meta name="robots" content="noindex"></head><body style="font-family:Arial,sans-serif;text-align:center;padding:64px 20px"><h1>${echapper(nom)}</h1><p>Site en maintenance : revenez très bientôt.</p></body></html>`;
+
 const html = (corps: string, status: number, cache: string) =>
   new Response(corps, {
     status,
@@ -27,6 +33,13 @@ export async function GET(
   const segments = (chemin ?? []).map(decodeURIComponent);
   const site = await siteServi(decodeURIComponent(hote));
   if (!site) return html(PAGE_404, 404, 'public, s-maxage=30');
+  // Retiré d'Internet par l'artisan : introuvable ; en maintenance : page d'attente en 503.
+  if (site.etatLigne === 'retire') return html(PAGE_404, 404, 'public, s-maxage=30');
+  if (site.etatLigne === 'maintenance') {
+    const r = html(pageMaintenance(site.nomEntreprise), 503, 'public, s-maxage=30');
+    r.headers.set('Retry-After', '3600');
+    return r;
+  }
   // Une seule adresse canonique (DOM-05) : sous-domaine ou variante www/nu → 301.
   if (site.canonique !== decodeURIComponent(hote))
     return new Response(null, {

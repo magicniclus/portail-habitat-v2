@@ -6,7 +6,7 @@ import {
   type Navigation,
   type PageSite,
 } from '@ph/core/sites';
-import { Timestamp } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { chemins } from '../../chemins';
 import { exigerSite, type ContexteSite, type ServicesSites } from './edition';
 import { fichiersCitables } from './medias';
@@ -80,6 +80,8 @@ export async function publierSite(
       derniereVersion: n,
       publieLe: maintenant,
       updatedAt: maintenant,
+      // Publier, c'est vouloir être en ligne : fin d'une maintenance ou d'un retrait.
+      etatLigne: FieldValue.delete(),
     });
     return { n, aVerifier: aVerifier.slice(0, POINTS_MAX) };
   });
@@ -89,6 +91,28 @@ export async function publierSite(
     .get();
   await Promise.all(anciennes.docs.map((d) => d.ref.delete()));
   return { version: r.n, aVerifier: r.aVerifier };
+}
+
+/**
+ * En ligne, en maintenance (page « revenez bientôt », en 503) ou retiré d'Internet (introuvable) :
+ * effet en moins d'une minute, rien n'est effacé ; « en ligne » remet la version publiée.
+ */
+export async function changerEtatLigneSite(
+  s: ServicesSites,
+  ctx: ContexteSite,
+  etat: 'en_ligne' | 'maintenance' | 'retire',
+): Promise<void> {
+  await s.db.runTransaction(async (t) => {
+    await exigerSite(s, t, ctx);
+    const ref = s.db.doc(chemins.site(ctx.artisanId));
+    const site = await t.get(ref);
+    if (!site.get('versionPubliee'))
+      throw new ErreurMetier('PRECONDITION', 'Publiez d’abord votre site.');
+    t.update(ref, {
+      etatLigne: etat === 'en_ligne' ? FieldValue.delete() : etat,
+      updatedAt: Timestamp.fromMillis(s.horloge()),
+    });
+  });
 }
 
 /** Retour à une version précédente (SITE-08) : seul le pointeur change, effet immédiat. */

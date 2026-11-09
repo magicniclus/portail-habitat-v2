@@ -40,6 +40,11 @@ export const entreeChampsSite = z.object({ champs: z.array(champFormulaire).min(
 export const entreeVersionSite = z.object({ version: z.number().int().positive() });
 export const entreePublierSite = z.object({});
 
+/** État du site publié choisi par l'artisan : en ligne, en maintenance, ou retiré d'Internet. */
+export const ETATS_LIGNE_SITE = ['en_ligne', 'maintenance', 'retire'] as const;
+export type EtatLigneSite = (typeof ETATS_LIGNE_SITE)[number];
+export const entreeEtatLigneSite = z.object({ etat: z.enum(ETATS_LIGNE_SITE) });
+
 /**
  * Image (ou PDF à télécharger, `usage: 'fichier'`) importée dans la médiathèque du site, déposée
  * dans Storage puis vérifiée ici.

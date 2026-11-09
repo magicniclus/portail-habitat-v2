@@ -1,9 +1,10 @@
 import { etatPublication } from '@ph/core/sites';
-import { bouton, cn, StatusBadge } from '@ph/ui';
+import { Banner, bouton, cn, StatusBadge } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { OngletBlog, VUES_BLOG, type VueBlog } from '@/features/blog/OngletBlog';
 import { BoutonPublier } from '@/features/monSite/ActionsSite';
+import { EtatEnLigne } from '@/features/monSite/EtatEnLigne';
 import { CreationSite } from '@/features/monSite/CreationSite';
 import { ListePages } from '@/features/monSite/ListePages';
 import { OngletDomaine } from '@/features/monSite/OngletDomaine';
@@ -30,7 +31,7 @@ type Onglet = (typeof ONGLETS)[number]['cle'];
 export default async function PageMonSite({
   searchParams,
 }: {
-  searchParams: Promise<{ onglet?: string; vue?: string }>;
+  searchParams: Promise<{ onglet?: string; vue?: string; publie?: string }>;
 }) {
   const acces = await accesSite(routes.proSite);
   const q = await searchParams;
@@ -56,14 +57,23 @@ export default async function PageMonSite({
         {t.url ? (
           <span className="flex min-w-0 flex-wrap items-center gap-2 text-sm text-neutre-800">
             <span className="max-w-full truncate">{t.url.replace('https://', '')}</span>
-            <StatusBadge statut={etat} />
+            <StatusBadge
+              statut={
+                t.site.versionPubliee && t.etatLigne === 'maintenance'
+                  ? { libelle: 'En maintenance', tone: 'attention' }
+                  : t.site.versionPubliee && t.etatLigne === 'retire'
+                    ? { libelle: 'Retiré d’Internet', tone: 'neutre' }
+                    : etat
+              }
+            />
           </span>
         ) : null}
         {t.site.existe ? (
           <span className="ml-auto flex flex-wrap items-center gap-2">
-            {t.url && t.site.versionPubliee ? (
+            {t.site.versionPubliee ? <EtatEnLigne etat={t.etatLigne} /> : null}
+            {t.url && t.site.versionPubliee && t.etatLigne !== 'retire' ? (
               <a
-                href={t.url}
+                href={t.urlVisite ?? t.url}
                 target="_blank"
                 rel="noopener"
                 className={bouton({ variant: 'fantome' })}
@@ -82,6 +92,13 @@ export default async function PageMonSite({
           </span>
         ) : null}
       </div>
+      {q.publie === '1' && t.site.versionPubliee && !t.modifieDepuisPublication ? (
+        <div className="px-[clamp(16px,3vw,32px)] pt-4">
+          <Banner tone="succes" titre="Votre site est en ligne">
+            Il est visible sur son adresse en moins d’une minute.
+          </Banner>
+        </div>
+      ) : null}
       {!t.site.existe ? (
         <div className="px-[clamp(16px,3vw,32px)] pt-6">
           <p className="m-0 mb-4 text-base text-neutre-800">

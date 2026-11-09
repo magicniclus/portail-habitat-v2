@@ -15,5 +15,9 @@ export function hoteSite(
   if (!h || h === plateforme || h === base || h === `www.${base}`) return null;
   if (h === 'localhost' || /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.endsWith('.vercel.app'))
     return null;
+  // Poste local : « bertrand.localhost » (résolu par le navigateur) sert le sous-domaine
+  // « bertrand.<base> », pour voir son site publié sans DNS ni mise en production.
+  const local = /^([a-z0-9-]+)\.localhost$/.exec(h);
+  if (local) return `${local[1]}.${base}`;
   return /^[a-z0-9.-]+$/.test(h) ? h : null;
 }
