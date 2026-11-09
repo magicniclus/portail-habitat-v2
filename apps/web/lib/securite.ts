@@ -170,6 +170,13 @@ const PRO_STATIQUES = [
   '/pro/logiciel-devis-factures',
 ];
 
+/**
+ * Scripts de l'aperçu de l'éditeur de site autorisés sur tout l'espace pro, pas seulement sur
+ * l'éditeur : on y arrive sans recharger la page (lien « Ouvrir l'éditeur »), et le document garde
+ * la politique de la page de départ. Sans eux, l'aperçu ne réagit qu'après un rafraîchissement.
+ */
+export const autoriseScriptsEditeur = (chemin: string) => chemin.startsWith('/pro/');
+
 export function espaceStrict(chemin: string): boolean {
   if (chemin.startsWith('/admin') || chemin.startsWith('/mon-espace')) return true;
   if (!chemin.startsWith('/pro/')) return false;

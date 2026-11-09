@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from './securite';
+import {
+  autoriseScriptsEditeur,
+  enTetesSecurite,
+  espaceStrict,
+  politiqueContenu,
+  politiqueSite,
+} from './securite';
 
 const directive = (csp: string, nom: string) =>
   csp
@@ -81,5 +87,15 @@ describe('sites artisans', () => {
     const h = enTetesSecurite({ production: true, csp: 'x', site: true });
     expect(h['Strict-Transport-Security']).toBe('max-age=31536000');
     expect(h['X-Frame-Options']).toBeUndefined();
+  });
+});
+
+describe('aperçu de l’éditeur de site', () => {
+  it('scripts autorisés dans tout l’espace pro (arrivée sans rechargement)', () => {
+    expect(autoriseScriptsEditeur('/pro/site')).toBe(true);
+    expect(autoriseScriptsEditeur('/pro/tableau-de-bord')).toBe(true);
+    expect(autoriseScriptsEditeur('/pro/site/editeur')).toBe(true);
+    expect(autoriseScriptsEditeur('/admin')).toBe(false);
+    expect(autoriseScriptsEditeur('/mon-espace')).toBe(false);
   });
 });

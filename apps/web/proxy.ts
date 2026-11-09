@@ -7,7 +7,13 @@ import { SCRIPT_SITE } from '@/features/siteArtisan/document';
 import { SCRIPT_EDITION } from '@/features/siteArtisan/edition';
 import { SCRIPT_SUIVI } from '@/features/siteArtisan/suivi';
 import { hoteSite } from '@/lib/hotesSites';
-import { enTetesSecurite, espaceStrict, politiqueContenu, politiqueSite } from '@/lib/securite';
+import {
+  autoriseScriptsEditeur,
+  enTetesSecurite,
+  espaceStrict,
+  politiqueContenu,
+  politiqueSite,
+} from '@/lib/securite';
 import { maintenanceActive } from '@/server/flags';
 
 const sha256 = (texte: string) =>
@@ -83,7 +89,7 @@ export async function proxy(requete: NextRequest) {
           empreintes: [
             await empreinteBandeau(),
             await empreinteCoupures(),
-            ...(requete.nextUrl.pathname.startsWith('/pro/site/editeur')
+            ...(autoriseScriptsEditeur(requete.nextUrl.pathname)
               ? [await empreinteEdition(), await empreinteApercu()]
               : []),
           ],
