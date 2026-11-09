@@ -65,6 +65,23 @@ export const REGLES_COMMUNES = [
   'Les chiffres d’un artisan d’exemple sont permis : l’auteur précise lui-même à l’oral qu’il s’agit d’un exemple fictif. N’écris jamais « exemple », « fictif » ni « exemple fictif » à l’image (textes, cartons, notifications, miniature) : cela se dit seulement à l’oral. Pas de faux avis, pas de faux témoignage de client.',
 ].join('\n');
 
+/**
+ * Écriture des scripts, au niveau des meilleurs créateurs de vidéos courtes : on parle comme
+ * dans la vraie vie, chaque phrase tient en un souffle, rien ne ralentit. Le script est lu au
+ * prompteur : il doit être léger à lire et à dire.
+ */
+export const REGLES_SCRIPT = [
+  'Écriture du script, au niveau des meilleurs créateurs français de vidéos courtes :',
+  '- La première phrase EST l’accroche : elle tape tout de suite (chiffre choc, affirmation qui dérange, question qui pique, situation que l’artisan a vécue). Jamais d’introduction ni de présentation avant.',
+  '- Une phrase = un souffle : 12 mots au plus, souvent 4 à 8. Pas de subordonnées en cascade, pas de parenthèses, pas d’énumération de plus de 3 éléments.',
+  '- Langue parlée, directe, concrète : des situations de chantier, des sommes en euros, des durées, des gestes. Aucun jargon marketing.',
+  '- Rythme : une relance toutes les 3 à 5 secondes (rupture, chiffre, « sauf que… », « et c’est là que… »), une boucle ouverte au début refermée à la fin.',
+  '- Fin courte et nette : une phrase d’action de 8 mots au plus, ou une chute qui donne envie de revoir.',
+  '- 60 à 120 mots en tout pour une vidéo de 20 à 45 secondes ; si une phrase n’apporte rien, supprime-la.',
+  '- Chaque vidéo se suffit à elle-même : elle ne parle jamais d’autres vidéos.',
+  '- Mots et tournures interdits dans la voix, les textes à l’écran et les titres : « série », « série de vidéos », « épisode », « partie 1 / 2 », « dans cette vidéo », « aujourd’hui je vais vous », « salut tout le monde », « bienvenue », « n’oubliez pas de », « n’hésitez pas », « découvrez », « plateforme », « solution », « révolutionnaire », « incroyable », « dans un monde où », « vous l’aurez compris ».',
+].join('\n');
+
 /** Série d'épisodes (STUDIO.md §13) : même promesse, un nouvel angle par épisode. */
 export interface SerieVideo {
   nom: string;
@@ -96,11 +113,12 @@ export function promptSujets(e: {
     'Mélange les registres d’une idée à l’autre (humour, défi, émotion, révélation, chiffres) ; pas deux idées sur le même mécanisme.',
     REGLES_COMMUNES,
     'Méthode : repère dans les vidéos fournies ce qui marche (formats, accroches, promesses, durées, vues par jour), puis transpose-le à Portail Travaux. Ne copie aucune vidéo.',
-    'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair. Relance l’attention toutes les 3 à 5 secondes.',
+    'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair.',
+    REGLES_SCRIPT,
     'Pour chaque phrase du script, indique ce qu’on voit à l’écran : « camera » (l’auteur face caméra), « ecran » (son écran enregistré) ou une scène filmée par le robot parmi celles listées.',
     'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
     'Commentaires : si des commentaires sont donnés, chaque sujet est une réponse en vidéo à une vraie question ou objection (la plus aimée ou la plus fréquente d’abord) ; l’accroche reprend la question telle qu’écrite.',
-    'Série : si une série est donnée, chaque sujet est l’épisode suivant (même promesse, nouvel angle, jamais un épisode déjà fait), et le script finit en donnant envie de voir l’épisode suivant et de s’abonner pour ne pas le rater.',
+    'Série : si une série est donnée, chaque sujet est l’épisode suivant (même promesse, nouvel angle, jamais un épisode déjà fait), et le script finit sur une chute qui donne envie de voir la suite, sans prononcer les mots interdits.',
     'Pour chaque sujet : potentiel viral de 1 à 10 (honnête, comparé aux vidéos analysées), vues visées sur 30 jours (fourchette réaliste pour un compte qui démarre), abonnés à gagner, les titres EXACTS (copiés tels quels) des vidéos fournies qui t’inspirent, et la miniature (texte de 2 à 5 mots qui donne envie de cliquer, avec un mot à mettre en avant).',
   ].join('\n');
   const contexte = [
@@ -177,10 +195,10 @@ export function promptSujets(e: {
           `Résultats réels de NOS vidéos déjà publiées (le signal le plus fiable : refais ce qui a marché pour notre audience, évite ce qui a échoué, ajuste les vues visées à ces chiffres) :\n${e.vosVideos}`,
         ]
       : []),
-    `Propose ${e.nombre} sujets différents, du plus prometteur au moins prometteur. Durée entre 15 et 90 secondes.`,
+    `Propose ${e.nombre} sujets différents, du plus prometteur au moins prometteur. Durée entre 20 et 45 secondes (60 secondes au plus si le sujet l’exige).`,
     ...(e.nombre > 3
       ? [
-          `Série de ${e.nombre} vidéos sur le même thème : chacune a une accroche vraiment différente (question, chiffre choc, erreur à éviter, avant / après, témoignage, idée reçue…) et un angle à elle ; aucune accroche ni aucun titre ne se ressemblent.`,
+          `${e.nombre} vidéos sur le même thème, chacune autonome : une accroche vraiment différente (question, chiffre choc, erreur à éviter, avant / après, idée reçue, coulisses…) et un angle à elle ; aucune accroche ni aucun titre ne se ressemblent, et aucune ne parle des autres.`,
         ]
       : []),
   ].join('\n\n');

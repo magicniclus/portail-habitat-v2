@@ -10,7 +10,7 @@ const VITESSES = [
 ] as const;
 
 /**
- * Prompteur qui défile tout seul, en très gros, sur fond noir : à poser devant soi (ordinateur
+ * Prompteur qui défile tout seul, en gros mais léger, sur fond noir : à poser devant soi (ordinateur
  * ou tablette) pendant qu'on se filme au téléphone. Plein écran, vitesse réglable, pause.
  */
 export function PrompteurDefilant({
@@ -52,14 +52,17 @@ export function PrompteurDefilant({
         className="h-[60vh] overflow-y-auto rounded-card bg-neutre-900 px-6 py-[30vh] text-center text-blanc [&:fullscreen]:h-screen"
       >
         {blocs.map((b, k) => (
-          <div key={k}>
+          <div key={k} className="mx-auto max-w-3xl">
             {b.titre ? (
-              <p className="m-0 mb-10 text-[clamp(18px,2.5vw,28px)] font-semibold text-neutre-400">
+              <p className="m-0 mb-6 text-[clamp(14px,1.6vw,18px)] tracking-wide text-neutre-400 uppercase">
                 — Vidéo {k + 1} · {b.titre} —
               </p>
             ) : null}
             {b.script.map((x, i) => (
-              <p key={i} className="m-0 mb-10 text-[clamp(30px,5vw,64px)] leading-tight font-bold">
+              <p
+                key={i}
+                className="m-0 mb-6 text-[clamp(22px,3.4vw,40px)] leading-snug font-medium"
+              >
                 {x.voix}
               </p>
             ))}

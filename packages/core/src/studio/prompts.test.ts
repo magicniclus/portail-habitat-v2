@@ -253,6 +253,7 @@ describe('séries', () => {
     expect(p.demande).toContain('Série « Les erreurs de devis » : épisode 3');
     expect(p.demande).toContain('- Oublier la TVA');
     expect(p.systeme).toContain('épisode suivant');
+    expect(p.systeme).toContain('donne envie de voir la suite');
   });
   it('montage : repère d’épisode au début et appel à s’abonner à la fin', () => {
     const p = promptMontage({
@@ -391,7 +392,20 @@ describe('style de montage', () => {
   });
 });
 
-describe('série de vidéos sur un thème', () => {
+describe('écriture des scripts', () => {
+  it('scripts légers et percutants, sans mots qui font amateur', () => {
+    const p = promptSujets({ videos: [], nombre: 10 });
+    expect(p.systeme).toContain('La première phrase EST l’accroche');
+    expect(p.systeme).toContain('12 mots au plus');
+    expect(p.systeme).toContain('« série de vidéos »');
+    expect(p.systeme).toContain('« dans cette vidéo »');
+    // Le lot de 10 vidéos n'est jamais présenté comme une « série ».
+    expect(p.demande).not.toMatch(/Série de/);
+    expect(p.demande).toContain('aucune ne parle des autres');
+  });
+});
+
+describe('plusieurs vidéos sur un thème', () => {
   it('au-delà de 3 idées : accroches toutes différentes exigées', () => {
     const base = { videos: [], nombre: 10 };
     expect(promptSujets(base).demande).toContain('accroche vraiment différente');
