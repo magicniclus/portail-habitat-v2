@@ -17,6 +17,8 @@ export interface VideoATourner {
   id: string;
   titre: string;
   script: SujetStudio['script'];
+  /** Vidéo qui a déjà marché, prise pour modèle. */
+  modele?: { titre: string; vues: number | null };
 }
 
 const BOUTON =
@@ -31,6 +33,7 @@ export function SessionTournage(p: {
   aTourner: VideoATourner[];
   idees: IdeeStudio[];
   themes: ThemeEnregistre[];
+  voix: string;
 }) {
   const [file, setFile] = useState<VideoATourner[] | null>(null);
   const [i, setI] = useState(0);

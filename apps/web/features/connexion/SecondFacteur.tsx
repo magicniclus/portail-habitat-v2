@@ -82,7 +82,8 @@ export function SecondFacteur({
       ) : (
         <>
           <Field label="Code de vérification" requis>
-            <Input name="code" champ="codeSms" />
+            {/* Le champ est prêt à la saisie dès l'arrivée : pas besoin de cliquer dedans. */}
+            <Input name="code" champ="codeSms" autoFocus />
           </Field>
           <Button chargement={enCours} type="submit" taille="lg" pleineLargeur disabled={enCours}>
             {enCours ? 'Vérification…' : 'Valider'}

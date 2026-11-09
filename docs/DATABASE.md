@@ -897,7 +897,7 @@ Index : `iaSessions` (`statut` ASC, `createdAt` DESC).
 - `studioComptes/{reseau}` : compte YouTube, Instagram ou TikTok connecté (`compteId`, `nom`, `acces` et `rafraichissement` **chiffrés**, `expireLe`, `connectePar`, `connecteLe`). Admin SDK uniquement, jamais lu par le navigateur.
 - `studioPublications/{id}` : une vidéo sur un réseau (`projetId`, `reseau`, `video`, `variante`, `titre`, `legende`, `programmeeLe`, `statut` programmee|en_cours|publiee|echec|annulee, `idExterne`, `lien`, `prive`, `erreur`, `publieeLe`, `stats`, `statsLe`). Index : `statut` + `programmeeLe`. Admin SDK uniquement.
 - `studioSeries/{id}` : série d'épisodes (`nom`, `promesse`, `episodes`). Les projets portent `serie {id, nom, numero}`. Admin SDK uniquement.
-- `studioReglages/{uid}` : réglages du Studio par auteur (`themes [{theme, nombre}]` de la session de tournage). Admin SDK uniquement.
+- `studioReglages/{uid}` : réglages du Studio par auteur (`themes [{theme, nombre}]` de la session de tournage, `voix` façon de parler, `exemples` 5 derniers scripts réécrits). Admin SDK uniquement.
 - Projets Studio, session tournée d'une traite : `session` (ids des vidéos de la prise, sur la première), `priseDe` (sur les suivantes), `plage {debut, fin}` (passage de la prise propre à la vidéo).
 - `studioProjets` gagne `serie`, `reels` (Reels analysés, sans auteur) et `rendu.variantes` (vidéos des variantes d'accroche).
 - `studioProjets` gagne `preparation { artisan (artisanFictif), scenes[] (6 au plus), ignoree? }` : artisan d'exemple et écrans filmés avant le montage (STUDIO.md §4). Écriture : serveur uniquement (règles inchangées).

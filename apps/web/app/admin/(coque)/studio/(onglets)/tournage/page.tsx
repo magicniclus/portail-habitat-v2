@@ -1,5 +1,10 @@
 import { appAdmin } from '@ph/firebase/admin';
-import { listerIdeesStudio, listerProjetsStudio, lireThemesStudio } from '@ph/firebase/studio';
+import {
+  listerIdeesStudio,
+  listerProjetsStudio,
+  lireThemesStudio,
+  lireVoixStudio,
+} from '@ph/firebase/studio';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { Metadata } from 'next';
 import { SessionTournage } from '@/features/studio/SessionTournage';
@@ -16,14 +21,27 @@ export const maxDuration = 300;
 export default async function TournageStudio() {
   const session = await pageAdmin('/admin/studio/tournage', 'studio');
   const db = getFirestore(appAdmin());
-  const [projets, idees, themes] = await Promise.all([
+  const [projets, idees, themes, voix] = await Promise.all([
     listerProjetsStudio(db),
     listerIdeesStudio(db),
     lireThemesStudio(db, session.uid),
+    lireVoixStudio(db, session.uid),
   ]);
   const aTourner = projets
     .filter((p) => p.statut === 'enregistrement' && !p.prise && (p.sujet?.script.length ?? 0) > 0)
-    .map((p) => ({ id: p.id, titre: p.titre, script: p.sujet!.script }));
+    .map((p) => {
+      // Vidéo qui a déjà marché, prise pour modèle par Claude (titre exact), avec ses vues.
+      // Anciennes idées : sans inspirations enregistrées.
+      const inspirations = (p.sujet!.inspirations as string[] | undefined) ?? [];
+      const titre = p.sujet!.concept?.source || inspirations[0] || '';
+      const t = titre ? p.tendances.find((x) => x.titre === titre) : undefined;
+      return {
+        id: p.id,
+        titre: p.titre,
+        script: p.sujet!.script,
+        ...(titre ? { modele: { titre, vues: t?.vues ?? null } } : {}),
+      };
+    });
   return (
     <div className="grid gap-4">
       <div>
@@ -32,7 +50,7 @@ export default async function TournageStudio() {
           Tournez plusieurs vidéos d’affilée : Claude les monte pendant que vous enchaînez.
         </p>
       </div>
-      <SessionTournage aTourner={aTourner} idees={idees} themes={themes} />
+      <SessionTournage aTourner={aTourner} idees={idees} themes={themes} voix={voix.voix} />
     </div>
   );
 }

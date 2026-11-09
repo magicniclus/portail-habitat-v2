@@ -405,6 +405,28 @@ describe('écriture des scripts', () => {
   });
 });
 
+describe('scripts à la façon de l’auteur', () => {
+  it('ton franc, sans pub, calqué sur une vidéo qui a marché', () => {
+    const p = promptSujets({ videos: [], nombre: 3 });
+    expect(p.systeme).toContain('franc, cash, vécu');
+    expect(p.systeme).toContain('« Avant : … Après : … »');
+    expect(p.systeme).toContain('Chaque sujet a un MODÈLE');
+    expect(p.demande).not.toContain('Façon de parler');
+  });
+  it('façon de parler et scripts réécrits de l’auteur donnés à Claude', () => {
+    const p = promptSujets({
+      videos: [],
+      nombre: 3,
+      voixAuteur: 'Je tutoie, je suis cash.',
+      exemplesAuteur: ['Trois devis refusés. Tu sais pourquoi ?'],
+    });
+    expect(p.demande).toContain(
+      'Façon de parler de l’auteur (écris exactement comme ça) : Je tutoie',
+    );
+    expect(p.demande).toContain('- « Trois devis refusés. Tu sais pourquoi ? »');
+  });
+});
+
 describe('plusieurs vidéos sur un thème', () => {
   it('au-delà de 3 idées : accroches toutes différentes exigées', () => {
     const base = { videos: [], nombre: 10 };

@@ -4,7 +4,8 @@ import type { IdeeStudio, ThemeEnregistre } from '@ph/firebase/studio';
 import { Banner, Button, Chargeur } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { enregistrerThemes, ideesSession, tournerIdee } from './actions';
+import { enregistrerThemes, ideesSession, supprimerIdee, tournerIdee } from './actions';
+import { FaconDeParler } from './FaconDeParler';
 import { ListeATourner } from './ListeATourner';
 import type { VideoATourner } from './SessionTournage';
 import { ThemesSession, type ThemeSession } from './ThemesSession';
@@ -17,6 +18,7 @@ export function PreparerSession(p: {
   aTourner: VideoATourner[];
   idees: IdeeStudio[];
   themes: ThemeEnregistre[];
+  voix: string;
   onCommencer: (videos: VideoATourner[]) => void;
 }) {
   const router = useRouter();
@@ -50,6 +52,7 @@ export function PreparerSession(p: {
         <h2 id="session-idees" className="m-0 text-lg">
           1. Des idées à tourner
         </h2>
+        <FaconDeParler initiale={p.voix} />
         <ThemesSession
           themes={themes}
           onChange={(t) => (setThemes(t), setThemesGardes(false))}
@@ -126,18 +129,29 @@ export function PreparerSession(p: {
               {p.idees.map((i) => (
                 <li key={i.id} className="flex flex-wrap items-center justify-between gap-2">
                   <span>{i.sujet.titre}</span>
-                  <Button
-                    variant="secondaire"
-                    taille="sm"
-                    disabled={enCours}
-                    onClick={() =>
-                      agir(i.id, () =>
-                        tournerIdee({ ideeId: i.id, format: 'vertical', camera: true }),
-                      )
-                    }
-                  >
-                    {enCours && action === i.id ? 'Ajout…' : 'Ajouter à la session'}
-                  </Button>
+                  <span className="flex flex-wrap gap-2">
+                    <Button
+                      variant="secondaire"
+                      taille="sm"
+                      disabled={enCours}
+                      onClick={() =>
+                        agir(i.id, () =>
+                          tournerIdee({ ideeId: i.id, format: 'vertical', camera: true }),
+                        )
+                      }
+                    >
+                      {enCours && action === i.id ? 'Ajout…' : 'Ajouter à la session'}
+                    </Button>
+                    <Button
+                      variant="secondaire"
+                      taille="sm"
+                      disabled={enCours}
+                      aria-label={`Supprimer l’idée « ${i.sujet.titre} »`}
+                      onClick={() => agir(`x${i.id}`, () => supprimerIdee({ ideeId: i.id }))}
+                    >
+                      {enCours && action === `x${i.id}` ? 'Suppression…' : 'Supprimer'}
+                    </Button>
+                  </span>
                 </li>
               ))}
             </ul>

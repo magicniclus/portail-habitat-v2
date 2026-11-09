@@ -14,11 +14,16 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
     { voix: 'Votre fiche est gratuite.', aEcran: 'fiche', texteEcran: '' },
   ];
   const sujet = { titre: 'Session : la fiche gratuite', angle: 'a', dureeCibleS: 30, script };
-  for (const id of ['e2e-session-1', 'e2e-session-2'])
+  for (const id of ['e2e-session-1', 'e2e-session-2', 'e2e-session-3'])
     await db.doc(`studioProjets/${id}`).set({
       schemaVersion: 1,
       auteurUid: 'x',
-      titre: id === 'e2e-session-1' ? 'Première à tourner' : 'Deuxième à tourner',
+      titre:
+        id === 'e2e-session-1'
+          ? 'Première à tourner'
+          : id === 'e2e-session-2'
+            ? 'Deuxième à tourner'
+            : 'Idée à jeter',
       titreAuto: false,
       statut: 'enregistrement',
       format: 'vertical',
@@ -53,11 +58,23 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   // Sans clé Claude : le message le dit.
   await page.getByRole('button', { name: /Trouver les idées/ }).click();
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
+  // Ma façon de parler : gardée, donnée à Claude pour les prochaines idées.
+  await page.getByLabel('Ma façon de parler').fill('Franc, direct, je raconte du vécu.');
+  await page.getByRole('button', { name: 'Enregistrer ma façon de parler' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Enregistrée' })).toBeVisible();
+  // Une idée de script qui ne plaît pas : supprimée (après confirmation).
+  await page.getByRole('button', { name: 'Supprimer « Idée à jeter »' }).click();
+  await page.getByRole('button', { name: 'Confirmer la suppression' }).click();
+  await expect(page.getByRole('checkbox', { name: /Idée à jeter/ })).toHaveCount(0);
+  expect((await db.doc('studioProjets/e2e-session-3').get()).exists).toBe(false);
   // Thèmes enregistrés : ils reviennent à la prochaine visite.
   await page.getByRole('button', { name: 'Enregistrer ces thèmes' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Thèmes enregistrés' })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel('Thème 2', { exact: true })).toHaveValue('le devis en 2 minutes');
+  await expect(page.getByLabel('Ma façon de parler')).toHaveValue(
+    'Franc, direct, je raconte du vécu.',
+  );
   await expect(page.getByLabel('Vidéos du thème 1')).toHaveValue('10');
   // Script modifié avant de commencer.
   await page.getByRole('button', { name: 'Modifier le script de « Première à tourner »' }).click();

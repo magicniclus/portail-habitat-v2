@@ -17,6 +17,8 @@ import {
   modifierScriptStudio,
   enregistrerThemesStudio,
   lireThemesStudio,
+  enregistrerVoixStudio,
+  lireVoixStudio,
   voixSyntheseStudio,
   sansPriseStudio,
   relancerStudio,
@@ -972,6 +974,26 @@ describe('avant le tournage', () => {
     ];
     await enregistrerThemesStudio(services(), { auteurUid: 'theme-uid', themes });
     expect(await lireThemesStudio(db, 'theme-uid')).toEqual(themes);
+  });
+
+  it('façon de parler et scripts réécrits : donnés à Claude pour les idées suivantes', async () => {
+    reponses = [{ sujets: [sujet, { ...sujet, titre: 'Autre' }] }];
+    const [id] = await ideesSessionStudio(services(), {
+      auteurUid: 'voix-uid',
+      nombre: 2,
+      format: 'vertical',
+    });
+    await enregistrerVoixStudio(services(), { auteurUid: 'voix-uid', voix: 'Je suis cash.' });
+    const script = [{ voix: 'Trois devis refusés.', aEcran: 'camera', texteEcran: '' }];
+    await modifierScriptStudio(services(), { projetId: id!, script, auteurUid: 'voix-uid' });
+    expect(await lireVoixStudio(db, 'voix-uid')).toEqual({
+      voix: 'Je suis cash.',
+      exemples: ['Trois devis refusés.'],
+    });
+    reponses = [{ sujets: [sujet, { ...sujet, titre: 'Encore' }] }];
+    await ideesSessionStudio(services(), { auteurUid: 'voix-uid', nombre: 2, format: 'vertical' });
+    expect(appels.at(-1)!.demande).toContain('Je suis cash.');
+    expect(appels.at(-1)!.demande).toContain('« Trois devis refusés. »');
   });
 });
 

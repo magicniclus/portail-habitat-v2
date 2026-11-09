@@ -110,4 +110,10 @@ export {
   supprimerSerieStudio,
   type SerieStudio,
 } from './series';
-export { enregistrerThemesStudio, lireThemesStudio, type ThemeEnregistre } from './reglages';
+export {
+  enregistrerThemesStudio,
+  enregistrerVoixStudio,
+  lireThemesStudio,
+  lireVoixStudio,
+  type ThemeEnregistre,
+} from './reglages';

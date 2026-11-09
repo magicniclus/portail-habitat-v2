@@ -79,7 +79,11 @@ export const REGLES_SCRIPT = [
   '- Fin courte et nette : une phrase d’action de 8 mots au plus, ou une chute qui donne envie de revoir.',
   '- 60 à 120 mots en tout pour une vidéo de 20 à 45 secondes ; si une phrase n’apporte rien, supprime-la.',
   '- Chaque vidéo se suffit à elle-même : elle ne parle jamais d’autres vidéos.',
-  '- Mots et tournures interdits dans la voix, les textes à l’écran et les titres : « série », « série de vidéos », « épisode », « partie 1 / 2 », « dans cette vidéo », « aujourd’hui je vais vous », « salut tout le monde », « bienvenue », « n’oubliez pas de », « n’hésitez pas », « découvrez », « plateforme », « solution », « révolutionnaire », « incroyable », « dans un monde où », « vous l’aurez compris ».',
+  '- Ton de l’auteur : franc, cash, vécu. Il parle comme à un collègue sur un chantier, dit les choses telles qu’elles sont (même ce qui fâche), raconte du réel (ce qu’il a vu, ce que les artisans vivent vraiment), donne son avis. Zéro ton publicitaire.',
+  '- Pas de structure de pub : ni « Avant : … Après : … », ni slogan, ni liste d’avantages du produit (« gratuit, sans carte bancaire, sur portailtravaux.fr/pro »), ni adresse web lue à l’oral. Portail Travaux arrive comme une évidence dans l’histoire, en une phrase simple, pas comme une réclame.',
+  '- Fin naturelle, comme on finit une vraie conversation : un avis tranché, une question au public, ou « le lien est en bio » au plus.',
+  '- Mots et tournures interdits dans la voix, les textes à l’écran et les titres : « série », « série de vidéos », « épisode », « partie 1 / 2 », « dans cette vidéo », « aujourd’hui je vais vous », « salut tout le monde », « bienvenue », « n’oubliez pas de », « n’hésitez pas », « découvrez », « plateforme », « solution », « révolutionnaire », « incroyable », « dans un monde où », « vous l’aurez compris », « Avant : », « Après : », « mis en valeur », « avec votre nom dessus », « en quelques clics », « sans carte bancaire ».',
+  '- La façon de parler de l’auteur et ses scripts réécrits, s’ils sont donnés, priment sur ces consignes de ton (tutoiement compris s’il le demande).',
 ].join('\n');
 
 /** Série d'épisodes (STUDIO.md §13) : même promesse, un nouvel angle par épisode. */
@@ -105,6 +109,10 @@ export function promptSujets(e: {
     | undefined;
   /** Commentaires reçus sous nos vidéos (texte seul, jamais l'auteur). */
   commentaires?: readonly { texte: string; likes: number; video: string }[] | undefined;
+  /** Comment l'auteur parle, dit par lui-même (STUDIO.md, session de tournage). */
+  voixAuteur?: string | undefined;
+  /** Derniers scripts réécrits à la main par l'auteur : son vrai ton. */
+  exemplesAuteur?: readonly string[] | undefined;
 }): { systeme: string; contexte: string; demande: string } {
   const systeme = [
     'Tu es directeur de création de vidéos courtes (TikTok, Reels, Shorts), connu pour des idées qui sortent du lot. Tu fais du marketing auprès des artisans du bâtiment.',
@@ -113,7 +121,8 @@ export function promptSujets(e: {
     'Mélange les registres d’une idée à l’autre (humour, défi, émotion, révélation, chiffres) ; pas deux idées sur le même mécanisme.',
     REGLES_COMMUNES,
     'Méthode : repère dans les vidéos fournies ce qui marche (formats, accroches, promesses, durées, vues par jour), puis transpose-le à Portail Travaux. Ne copie aucune vidéo.',
-    'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, un appel à l’action clair.',
+    'Chaque sujet a un MODÈLE : une vidéo fournie qui a déjà marché (fort ×abonnés ou score viral). Son titre EXACT va dans `concept.source` et en premier dans `inspirations` ; dans `pourquoi`, dis ce qui l’a fait marcher (type d’accroche, structure, durée, émotion, chiffres) et comment ton script reprend cette structure, phrase par phrase. Deux sujets n’ont pas le même modèle. Sans vidéo fournie seulement, `concept.source` reste vide.',
+    'Chaque script : une accroche qui arrête le pouce en moins de 2 secondes, une tension (problème vécu par l’artisan), la démonstration à l’écran, une fin nette.',
     REGLES_SCRIPT,
     'Pour chaque phrase du script, indique ce qu’on voit à l’écran : « camera » (l’auteur face caméra), « ecran » (son écran enregistré) ou une scène filmée par le robot parmi celles listées.',
     'Données de chaque vidéo : vues/jour (élan), engagement (j’aime + commentaires / vues ; au-dessus de 4 % c’est fort), ×abonnés (vues / abonnés de la chaîne : au-dessus de 1 la vidéo a percé au-delà de son audience, c’est le meilleur signal viral), score viral sur 100. Appuie-toi d’abord sur les vidéos au plus fort ×abonnés et au plus fort score.',
@@ -193,6 +202,14 @@ export function promptSujets(e: {
     ...(e.vosVideos
       ? [
           `Résultats réels de NOS vidéos déjà publiées (le signal le plus fiable : refais ce qui a marché pour notre audience, évite ce qui a échoué, ajuste les vues visées à ces chiffres) :\n${e.vosVideos}`,
+        ]
+      : []),
+    ...(e.voixAuteur?.trim()
+      ? [`Façon de parler de l’auteur (écris exactement comme ça) : ${e.voixAuteur.trim()}`]
+      : []),
+    ...(e.exemplesAuteur?.length
+      ? [
+          `Scripts réécrits à la main par l’auteur (son vrai ton : imite le vocabulaire, la longueur des phrases, la franchise) :\n${e.exemplesAuteur.map((x) => `- « ${x} »`).join('\n')}`,
         ]
       : []),
     `Propose ${e.nombre} sujets différents, du plus prometteur au moins prometteur. Durée entre 20 et 45 secondes (60 secondes au plus si le sujet l’exige).`,

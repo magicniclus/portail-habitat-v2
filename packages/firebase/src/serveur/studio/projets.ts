@@ -3,6 +3,7 @@ import { commentairesRecents, exigerCommentaires } from './commentaires';
 import type { ConfigReseaux } from './comptes';
 import type { RechercheInstagram } from './instagram';
 import { contexteSerieStudio } from './series';
+import { ajouterExempleStudio, lireVoixStudio } from './reglages';
 import { resultatsPourClaudeStudio } from './stats';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { coutCentimes } from '@ph/core/ia';
@@ -430,6 +431,7 @@ export async function proposerSujetsStudio(
   const serie = await contexteSerieStudio(s.db, p);
   const reels = await reelsInstagram(s);
   const gouts = await goutsPourClaude(s.db, e.projetId).catch(() => undefined);
+  const auteur = await lireVoixStudio(s.db, p.auteurUid).catch(() => null);
   const prompt = promptSujets({
     videos,
     theme,
@@ -439,6 +441,8 @@ export async function proposerSujetsStudio(
     reels,
     commentaires: e.commentaires,
     gouts,
+    voixAuteur: auteur?.voix,
+    exemplesAuteur: auteur?.exemples,
   });
   const r = await claude({
     modele: MODELE_STUDIO,
@@ -757,7 +761,7 @@ export async function sansPriseStudio(
  */
 export async function modifierScriptStudio(
   s: ServicesStudio,
-  e: { projetId: string; script: SujetStudio['script'] },
+  e: { projetId: string; script: SujetStudio['script']; auteurUid?: string },
 ): Promise<void> {
   const p = await exiger(s, e.projetId);
   if (!p.sujet) throw new ErreurMetier('PRECONDITION', 'Cette vidéo n’a pas de script.');
@@ -768,6 +772,12 @@ export async function modifierScriptStudio(
     sujet,
     sujets: p.sujets.map((x) => (x.titre === p.sujet!.titre ? sujet : x)),
   });
+  // Réécrit par l'auteur : son vrai ton, réutilisé pour les prochaines idées.
+  if (e.auteurUid)
+    await ajouterExempleStudio(s, {
+      auteurUid: e.auteurUid,
+      texte: e.script.map((x) => x.voix).join(' '),
+    });
 }
 
 export async function choisirStyleStudio(

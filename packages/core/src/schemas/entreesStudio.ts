@@ -256,6 +256,9 @@ export const entreeThemesStudio = z.strictObject({
     .max(5),
 });
 
+/** Comment l'auteur parle (ton des scripts), dit par lui-même. */
+export const entreeVoixStudio = z.strictObject({ voix: z.string().trim().max(1_000) });
+
 export const entreeSessionStudio = z.strictObject({
   nombre: z.number().int().min(1).max(10),
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),
