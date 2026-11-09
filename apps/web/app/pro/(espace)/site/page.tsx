@@ -70,16 +70,12 @@ export default async function PageMonSite({
         ) : null}
         {t.site.existe ? (
           <span className="ml-auto flex flex-wrap items-center gap-2">
-            {t.site.versionPubliee ? <EtatEnLigne etat={t.etatLigne} /> : null}
-            {t.url && t.site.versionPubliee && t.etatLigne !== 'retire' ? (
-              <a
-                href={t.urlVisite ?? t.url}
-                target="_blank"
-                rel="noopener"
-                className={bouton({ variant: 'fantome' })}
-              >
-                Voir le site
-              </a>
+            {/* Voir le site, maintenance, retrait : regroupés dans un seul bouton qui s'ouvre. */}
+            {t.site.versionPubliee ? (
+              <EtatEnLigne
+                etat={t.etatLigne}
+                {...(t.urlVisite || t.url ? { urlVisite: t.urlVisite ?? t.url } : {})}
+              />
             ) : null}
             <Link href={routes.proSiteEditeur()} className={bouton({ variant: 'secondaire' })}>
               Ouvrir l’éditeur

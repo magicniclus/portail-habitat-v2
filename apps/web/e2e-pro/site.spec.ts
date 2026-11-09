@@ -668,6 +668,10 @@ test.describe('Site internet artisan', () => {
     page,
   }) => {
     await connecter(page, COMPTES.proprio, '/pro/site');
+    // Un seul bouton « Gérer le site » regroupe Voir le site, maintenance et retrait.
+    const gerer = page.getByRole('button', { name: 'Gérer le site' });
+    await gerer.click();
+    await expect(page.getByRole('link', { name: 'Voir le site' })).toBeVisible();
     await page.getByRole('button', { name: 'Mettre en maintenance' }).click();
     const dialogue = page.getByRole('dialog');
     await expect(dialogue).toContainText('revenez bientôt');
@@ -680,11 +684,15 @@ test.describe('Site internet artisan', () => {
       await expect(page.getByText('Site en maintenance')).toBeVisible({ timeout: 1000 });
     }).toPass({ timeout: 60_000 });
     await page.goto('/pro/site');
+    await gerer.click();
     await page.getByRole('button', { name: 'Retirer le site' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Retirer le site' }).click();
     await expect(page.getByText('Retiré d’Internet', { exact: true })).toBeVisible();
+    await gerer.click();
     await expect(page.getByRole('link', { name: 'Voir le site' })).toHaveCount(0);
     await page.getByRole('button', { name: 'Remettre en ligne' }).click();
+    await expect(page.getByText('En ligne', { exact: true }).first()).toBeVisible();
+    await gerer.click();
     await expect(page.getByRole('button', { name: 'Mettre en maintenance' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Voir le site' })).toBeVisible();
   });
