@@ -10,8 +10,8 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   const { db, Timestamp } = await admin();
   const t = Timestamp.now();
   const script = [
-    { voix: 'Artisans, vos clients vous cherchent en ligne.', ecran: 'fiche' },
-    { voix: 'Votre fiche est gratuite.', ecran: 'fiche' },
+    { voix: 'Artisans, vos clients vous cherchent en ligne.', aEcran: 'fiche', texteEcran: '' },
+    { voix: 'Votre fiche est gratuite.', aEcran: 'fiche', texteEcran: '' },
   ];
   const sujet = { titre: 'Session : la fiche gratuite', angle: 'a', dureeCibleS: 30, script };
   for (const id of ['e2e-session-1', 'e2e-session-2'])
@@ -53,13 +53,27 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   // Sans clé Claude : le message le dit.
   await page.getByRole('button', { name: /Trouver les idées/ }).click();
   await expect(page.getByText(/ANTHROPIC_API_KEY/)).toBeVisible();
+  // Thèmes enregistrés : ils reviennent à la prochaine visite.
+  await page.getByRole('button', { name: 'Enregistrer ces thèmes' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Thèmes enregistrés' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel('Thème 2', { exact: true })).toHaveValue('le devis en 2 minutes');
+  await expect(page.getByLabel('Vidéos du thème 1')).toHaveValue('10');
+  // Script modifié avant de commencer.
+  await page.getByRole('button', { name: 'Modifier le script de « Première à tourner »' }).click();
+  const editeur = page.getByRole('region', { name: 'Modifier le script' });
+  await editeur.getByLabel('Phrase 1', { exact: true }).fill('Trois devis refusés cette semaine ?');
+  await editeur.getByRole('button', { name: 'Enregistrer le script' }).click();
+  await expect(editeur).toHaveCount(0);
   // Les deux vidéos sont cochées.
   await expect(page.getByRole('checkbox', { name: /Première à tourner/ })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: /Deuxième à tourner/ })).toBeChecked();
   await page.getByRole('button', { name: /Commencer la session \(2 vidéos\)/ }).click();
   await expect(page.getByText('Vidéo 1 sur 2')).toBeVisible();
   await expect(page.getByRole('heading', { name: /(Première|Deuxième) à tourner/ })).toBeVisible();
-  await expect(page.getByLabel('Prompteur')).toContainText('vos clients vous cherchent');
+  await expect(page.getByLabel('Prompteur', { exact: true })).toContainText(
+    /Trois devis refusés cette semaine|vos clients vous cherchent/,
+  );
   await expect(page.getByRole('button', { name: '● Démarrer l’enregistrement' })).toBeVisible();
   const modes = page.getByRole('radiogroup', { name: 'Je filme avec' });
   const defilant = page.getByRole('region', { name: 'Prompteur défilant' });
@@ -74,6 +88,19 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   await expect(defilant).toContainText('vos clients vous cherchent');
   await expect(defilant).not.toContainText('Vidéo 2 ·');
   await expect(defilant.getByRole('button', { name: '▶ Lancer le défilement' })).toBeVisible();
+  // Vitesse réglable finement, gardée sur cet appareil.
+  await defilant.getByRole('button', { name: 'Plus rapide' }).click();
+  await expect(defilant.getByRole('slider', { name: 'Vitesse' })).toHaveValue('45');
+  await defilant.getByRole('slider', { name: 'Vitesse' }).fill('72');
+  await expect(defilant.locator('output')).toHaveText('72');
+  // Script modifié pendant la session : le prompteur suit.
+  await page.getByRole('button', { name: 'Modifier le script', exact: true }).click();
+  await page
+    .getByRole('region', { name: 'Modifier le script' })
+    .getByLabel('Phrase 1', { exact: true })
+    .fill('Un chantier perdu, ça coûte combien ?');
+  await page.getByRole('button', { name: 'Enregistrer le script' }).click();
+  await expect(defilant).toContainText('Un chantier perdu, ça coûte combien ?');
   await expect(page.getByRole('button', { name: 'Envoyer cette vidéo' })).toBeDisabled();
   // Passer : à la dernière vidéo, plus de « tout d'une traite » (une seule reste).
   await page.getByRole('button', { name: 'Passer cette vidéo' }).click();
@@ -81,5 +108,10 @@ test('STUDIO-SESSION : vidéos à tourner à la suite, prompteur, idées sans cl
   await expect(modes.getByRole('radio', { name: 'Tout d’une traite au téléphone' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Passer cette vidéo' }).click();
   await expect(page.getByRole('heading', { name: /Session terminée : 0 vidéo/ })).toBeVisible();
+  // Script bien enregistré dans la vidéo.
+  const premiere = await db.doc('studioProjets/e2e-session-1').get();
+  expect((premiere.get('sujet') as { script: { voix: string }[] }).script[0]?.voix).toMatch(
+    /Trois devis refusés|Un chantier perdu/,
+  );
   for (const id of ['e2e-session-1', 'e2e-session-2']) await db.doc(`studioProjets/${id}`).delete();
 });

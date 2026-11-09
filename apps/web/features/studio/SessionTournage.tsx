@@ -1,10 +1,11 @@
 'use client';
 
-import type { IdeeStudio } from '@ph/firebase/studio';
+import type { IdeeStudio, ThemeEnregistre } from '@ph/firebase/studio';
 import type { SujetStudio } from '@ph/core/studio';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useState } from 'react';
+import { EditeurScript } from './EditeurScript';
 import { EnregistrementIci } from './EnregistrementIci';
 import { ImportVideo } from './ImportVideo';
 import { PrompteurDefilant } from './PrompteurDefilant';
@@ -26,10 +27,15 @@ const BOUTON =
  * micro restent ouverts ; chaque prise envoyée part dans sa vidéo (Claude la monte) et le prompteur
  * passe au script suivant.
  */
-export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudio[] }) {
+export function SessionTournage(p: {
+  aTourner: VideoATourner[];
+  idees: IdeeStudio[];
+  themes: ThemeEnregistre[];
+}) {
   const [file, setFile] = useState<VideoATourner[] | null>(null);
   const [i, setI] = useState(0);
   const [envoyees, setEnvoyees] = useState<VideoATourner[]>([]);
+  const [edition, setEdition] = useState(false);
   const [mode, setMode] = useState<'ordinateur' | 'telephone' | 'traite'>('ordinateur');
   if (!file) return <PreparerSession {...p} onCommencer={(v) => (setFile(v), setI(0))} />;
   const v = file[i];
@@ -61,7 +67,7 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
         </div>
       </section>
     );
-  const suivante = () => setI((n) => n + 1);
+  const suivante = () => (setEdition(false), setI((n) => n + 1));
   return (
     <section
       aria-labelledby="session-video"
@@ -77,6 +83,14 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
           </h2>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={BOUTON}
+            aria-expanded={edition}
+            onClick={() => setEdition(!edition)}
+          >
+            Modifier le script
+          </button>
           <button type="button" className={BOUTON} onClick={suivante}>
             Passer cette vidéo
           </button>
@@ -88,6 +102,18 @@ export function SessionTournage(p: { aTourner: VideoATourner[]; idees: IdeeStudi
       <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-neutre-200">
         <div className="h-full bg-accent" style={{ width: `${(i / file.length) * 100}%` }} />
       </div>
+      {edition ? (
+        <EditeurScript
+          key={v.id}
+          projetId={v.id}
+          script={v.script}
+          onAnnuler={() => setEdition(false)}
+          onEnregistre={(script) => {
+            setFile((f) => f && f.map((x) => (x.id === v.id ? { ...x, script } : x)));
+            setEdition(false);
+          }}
+        />
+      ) : null}
       <div role="radiogroup" aria-label="Je filme avec" className="flex flex-wrap gap-2">
         {(
           [

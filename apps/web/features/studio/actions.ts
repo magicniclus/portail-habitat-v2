@@ -15,6 +15,8 @@ import {
   entreeOuvrirStudio,
   entreeStyleStudio,
   entreeSessionStudio,
+  entreeScriptStudio,
+  entreeThemesStudio,
   entreeMediaStudio,
   entreeFilmerEcransStudio,
   entreeFriseStudio,
@@ -42,6 +44,8 @@ import {
   ouvrirStudioStudio,
   choisirStyleStudio,
   ideesSessionStudio,
+  modifierScriptStudio,
+  enregistrerThemesStudio,
   ajouterMediaStudio,
   enregistrerFriseStudio,
   fabriquerFriseStudio,
@@ -175,6 +179,20 @@ const session = actionAdmin(
   async (e, ctx) => ideesSessionStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
 );
 export const ideesSession = async (e: z.input<typeof entreeSessionStudio>) => fin(await session(e));
+
+const script = actionAdmin(
+  { schema: entreeScriptStudio, nom: 'adminStudioScript', permission: P },
+  async (e) => modifierScriptStudio(servicesStudio(), e),
+);
+export const modifierScript = async (e: z.input<typeof entreeScriptStudio>) =>
+  fin(await script(e), e.projetId);
+
+const themes = actionAdmin(
+  { schema: entreeThemesStudio, nom: 'adminStudioThemes', permission: P },
+  async (e, ctx) => enregistrerThemesStudio(servicesStudio(), { ...e, auteurUid: ctx.uid! }),
+);
+export const enregistrerThemes = async (e: z.input<typeof entreeThemesStudio>) =>
+  fin(await themes(e));
 
 const style = actionAdmin(
   { schema: entreeStyleStudio, nom: 'adminStudioStyle', permission: P },

@@ -1,10 +1,11 @@
 'use client';
 
-import type { IdeeStudio } from '@ph/firebase/studio';
-import { Banner, Button, Chargeur, Checkbox } from '@ph/ui';
+import type { IdeeStudio, ThemeEnregistre } from '@ph/firebase/studio';
+import { Banner, Button, Chargeur } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { ideesSession, tournerIdee } from './actions';
+import { enregistrerThemes, ideesSession, tournerIdee } from './actions';
+import { ListeATourner } from './ListeATourner';
 import type { VideoATourner } from './SessionTournage';
 import { ThemesSession, type ThemeSession } from './ThemesSession';
 
@@ -15,10 +16,15 @@ import { ThemesSession, type ThemeSession } from './ThemesSession';
 export function PreparerSession(p: {
   aTourner: VideoATourner[];
   idees: IdeeStudio[];
+  themes: ThemeEnregistre[];
   onCommencer: (videos: VideoATourner[]) => void;
 }) {
   const router = useRouter();
-  const [themes, setThemes] = useState<ThemeSession[]>([{ theme: '', nombre: 5 }]);
+  // Thèmes enregistrés la dernière fois, sinon un thème vide.
+  const [themes, setThemes] = useState<ThemeSession[]>(
+    p.themes.length ? p.themes : [{ theme: '', nombre: 5 }],
+  );
+  const [themesGardes, setThemesGardes] = useState(false);
   const [progression, setProgression] = useState<string | null>(null);
   const total = themes.reduce((n, x) => n + x.nombre, 0);
   const [exclues, setExclues] = useState<ReadonlySet<string>>(new Set());
@@ -44,7 +50,34 @@ export function PreparerSession(p: {
         <h2 id="session-idees" className="m-0 text-lg">
           1. Des idées à tourner
         </h2>
-        <ThemesSession themes={themes} onChange={setThemes} desactive={enCours} />
+        <ThemesSession
+          themes={themes}
+          onChange={(t) => (setThemes(t), setThemesGardes(false))}
+          desactive={enCours}
+        />
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant="secondaire"
+            disabled={enCours}
+            onClick={() =>
+              demarrer(async () => {
+                setErreur(null);
+                const r = await enregistrerThemes({
+                  themes: themes.map((x) => ({ ...x, theme: x.theme.trim() })),
+                });
+                if (r.ok) setThemesGardes(true);
+                else setErreur(r.message);
+              })
+            }
+          >
+            Enregistrer ces thèmes
+          </Button>
+          {themesGardes ? (
+            <span className="text-sm text-neutre-700" role="status">
+              Thèmes enregistrés : ils seront là la prochaine fois.
+            </span>
+          ) : null}
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <Button
             disabled={enCours || !total}
@@ -121,25 +154,18 @@ export function PreparerSession(p: {
           2. Vidéos à tourner
         </h2>
         {p.aTourner.length ? (
-          <ul className="m-0 grid list-none gap-1 p-0">
-            {p.aTourner.map((v) => (
-              <li key={v.id}>
-                <Checkbox
-                  checked={!exclues.has(v.id)}
-                  onChange={(e) =>
-                    setExclues((x) => {
-                      const n = new Set(x);
-                      if (e.target.checked) n.delete(v.id);
-                      else n.add(v.id);
-                      return n;
-                    })
-                  }
-                >
-                  {v.titre} · {v.script.length} phrases
-                </Checkbox>
-              </li>
-            ))}
-          </ul>
+          <ListeATourner
+            videos={p.aTourner}
+            exclues={exclues}
+            onExclure={(id, exclue) =>
+              setExclues((x) => {
+                const n = new Set(x);
+                if (exclue) n.add(id);
+                else n.delete(id);
+                return n;
+              })
+            }
+          />
         ) : (
           <p className="m-0 text-sm text-neutre-700">
             Aucune vidéo à tourner : trouvez des idées ci-dessus.
