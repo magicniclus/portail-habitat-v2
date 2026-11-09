@@ -210,7 +210,7 @@ const miniatureSujet = z.strictObject({
   accent: z.string().trim().max(20),
 });
 
-const phraseScript = z.strictObject({
+export const phraseScript = z.strictObject({
   voix: z.string().trim().min(1).max(400),
   aEcran: z.string().trim().min(1).max(40),
   texteEcran: z.string().trim().max(80),

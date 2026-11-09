@@ -71,6 +71,7 @@ export const collections = {
   studioComptes: 'studioComptes',
   studioPublications: 'studioPublications',
   studioSeries: 'studioSeries',
+  studioReglages: 'studioReglages',
   brouillons: 'brouillons',
   brouillonsOnboarding: 'brouillonsOnboarding',
   simulations: 'simulations',
@@ -187,6 +188,7 @@ export const chemins = {
   compteStudio: (reseau: string) => `studioComptes/${reseau}`,
   publicationStudio: (id: string) => `studioPublications/${id}`,
   serieStudio: (id: string) => `studioSeries/${id}`,
+  reglagesStudio: (uid: string) => `studioReglages/${uid}`,
   versionsSequence: (id: string) => `sequences/${id}/versions`,
 } as const;
 

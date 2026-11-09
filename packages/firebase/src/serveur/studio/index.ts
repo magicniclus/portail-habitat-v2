@@ -32,6 +32,7 @@ export { rechercheInstagram, type RechercheInstagram } from './instagram';
 export {
   capturesTermineesStudio,
   choisirStyleStudio,
+  modifierScriptStudio,
   ideesSessionStudio,
   choisirSujetStudio,
   creerProjetStudio,
@@ -109,3 +110,4 @@ export {
   supprimerSerieStudio,
   type SerieStudio,
 } from './series';
+export { enregistrerThemesStudio, lireThemesStudio, type ThemeEnregistre } from './reglages';

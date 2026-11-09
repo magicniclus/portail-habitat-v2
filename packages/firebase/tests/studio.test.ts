@@ -14,6 +14,9 @@ import {
   modifierPlanStudio,
   priseEnregistreeStudio,
   priseSessionStudio,
+  modifierScriptStudio,
+  enregistrerThemesStudio,
+  lireThemesStudio,
   voixSyntheseStudio,
   sansPriseStudio,
   relancerStudio,
@@ -863,7 +866,7 @@ describe('session tournée d’une traite', () => {
     expect(travaux).toEqual([{ type: 'transcrire', projetId: ids[0] }]);
     const [a, b] = await Promise.all(ids.map((id) => lireProjetStudio(db, id)));
     expect(a?.session).toEqual(ids);
-    expect(b?.sessionDe).toBe(ids[0]);
+    expect(b?.priseDe).toBe(ids[0]);
     expect([a?.statut, b?.statut]).toEqual(['transcription', 'transcription']);
     expect(b?.prise?.fichiers.camera).toBe('studio/sa/psess1/import.mp4');
 
@@ -932,6 +935,43 @@ describe('session tournée d’une traite', () => {
     travaux.length = 0;
     await relancerStudio(services(), { projetId: ids2[1]! });
     expect(travaux).toEqual([{ type: 'transcrire', projetId: ids2[0] }]);
+  });
+});
+
+describe('avant le tournage', () => {
+  it('le script se modifie tant que rien n’est tourné', async () => {
+    reponses = [{ sujets: [sujet, { ...sujet, titre: 'Autre' }] }];
+    const [id] = await ideesSessionStudio(services(), {
+      auteurUid: 'sa',
+      nombre: 2,
+      format: 'vertical',
+    });
+    const script = [{ voix: 'Trois devis refusés. Pourquoi ?', aEcran: 'camera', texteEcran: '' }];
+    await modifierScriptStudio(services(), { projetId: id!, script });
+    const p = await lireProjetStudio(db, id!);
+    expect(p?.sujet?.script).toEqual(script);
+    expect(p?.sujet?.titre).toBe(sujet.titre);
+    expect(p?.sujets.find((x) => x.titre === sujet.titre)?.script).toEqual(script);
+    await priseEnregistreeStudio(services(), {
+      projetId: id!,
+      auteurUid: 'sa',
+      priseId: 'pscript',
+      fichiers: { voix: 'studio/sa/pscript/voix.webm' },
+      dureeMs: 20_000,
+    });
+    await expect(modifierScriptStudio(services(), { projetId: id!, script })).rejects.toThrow(
+      /déjà tournée/,
+    );
+  });
+
+  it('les thèmes de la session sont gardés pour la prochaine fois', async () => {
+    expect(await lireThemesStudio(db, 'theme-uid')).toEqual([]);
+    const themes = [
+      { theme: 'les demandes gratuites', nombre: 10 },
+      { theme: 'le devis en 2 minutes', nombre: 5 },
+    ];
+    await enregistrerThemesStudio(services(), { auteurUid: 'theme-uid', themes });
+    expect(await lireThemesStudio(db, 'theme-uid')).toEqual(themes);
   });
 });
 

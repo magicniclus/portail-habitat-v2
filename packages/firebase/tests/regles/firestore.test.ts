@@ -631,6 +631,7 @@ const CAS: Cas[] = [
   },
   { nom: 'lire les publications du Studio', op: { get: 'studioPublications/p1' }, autorises: [] },
   { nom: 'lire les séries du Studio', op: { get: 'studioSeries/s1' }, autorises: [] },
+  { nom: 'lire les réglages du Studio', op: { get: 'studioReglages/u1' }, autorises: [] },
   {
     nom: 'modifier un projet Studio',
     op: { maj: 'studioProjets/st1', donnees: { titre: 'x' } },

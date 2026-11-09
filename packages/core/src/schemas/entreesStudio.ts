@@ -3,6 +3,7 @@ import {
   NOMS_RESEAUX,
   NOMS_SCENES,
   planMontage,
+  phraseScript,
   STYLES_MONTAGE,
   preparationCaptures,
   frise,
@@ -236,6 +237,25 @@ export const entreeStyleStudio = z.strictObject({
  * Session de tournage : jusqu'à 10 idées d'un coup sur un thème (accroches toutes différentes),
  * chacune devient une vidéo à tourner ; plusieurs thèmes = un appel par thème.
  */
+/** Script modifié à la main avant le tournage (prompteur). */
+export const entreeScriptStudio = z.strictObject({
+  projetId: id,
+  script: z.array(phraseScript).min(1).max(40),
+});
+
+/** Thèmes de la session de tournage, enregistrés pour la prochaine fois. */
+export const entreeThemesStudio = z.strictObject({
+  themes: z
+    .array(
+      z.strictObject({
+        theme: z.string().trim().max(200),
+        nombre: z.number().int().min(1).max(10),
+      }),
+    )
+    .min(1)
+    .max(5),
+});
+
 export const entreeSessionStudio = z.strictObject({
   nombre: z.number().int().min(1).max(10),
   format: z.enum(NOMS_FORMATS as [FormatStudio, ...FormatStudio[]]),

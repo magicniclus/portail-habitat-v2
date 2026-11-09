@@ -136,6 +136,7 @@ const DOCUMENTS: Record<string, Record<string, unknown>> = {
   'studioComptes/youtube': { ...v, reseau: 'youtube' },
   'studioPublications/p1': { ...v, reseau: 'youtube' },
   'studioSeries/s1': { ...v, nom: 'Série' },
+  'studioReglages/u1': { ...v, themes: [] },
   'iaRecommandations/rec1': { ...v, titre: 'Raccourcir le formulaire' },
   'config/comportement': { ...v, actif: true },
   'config/ia': { ...v, actif: true },

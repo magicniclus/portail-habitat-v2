@@ -102,7 +102,7 @@ export interface ProjetStudio {
   /** Session tournée d'une traite : vidéos de la prise, dans l'ordre (sur la première seulement). */
   session: string[] | null;
   /** Session : la vidéo qui porte la transcription commune (sur les suivantes). */
-  sessionDe: string | null;
+  priseDe: string | null;
   /** Session tournée d'une traite : passage de la prise qui revient à cette vidéo. */
   plage: { debut: number; fin: number } | null;
   mots: MotTranscrit[];
@@ -179,7 +179,7 @@ function versProjet(id: string, d: FirebaseFirestore.DocumentData): ProjetStudio
     reels: (d.reels as ProjetStudio['reels'] | undefined) ?? [],
     prise: (d.prise as ProjetStudio['prise'] | undefined) ?? null,
     session: (d.session as string[] | null | undefined) ?? null,
-    sessionDe: (d.sessionDe as string | null | undefined) ?? null,
+    priseDe: (d.priseDe as string | null | undefined) ?? null,
     plage: (d.plage as ProjetStudio['plage'] | undefined) ?? null,
     mots: (d.mots as MotTranscrit[] | undefined) ?? [],
     plan: (d.plan as PlanMontage | null | undefined) ?? null,
@@ -601,7 +601,7 @@ export async function priseEnregistreeStudio(
 ): Promise<void> {
   await exiger(s, e.projetId);
   verifierFichiersPrise(e);
-  await maj(s, e.projetId, { ...champsPrise(s, e), session: null, sessionDe: null, plage: null });
+  await maj(s, e.projetId, { ...champsPrise(s, e), session: null, priseDe: null, plage: null });
   await s.lancerTravail('transcrire', e.projetId);
 }
 
@@ -655,7 +655,7 @@ export async function priseSessionStudio(
     await maj(s, id, {
       ...champsPrise(s, e),
       session: id === premier ? e.projetIds : null,
-      sessionDe: id === premier ? null : premier,
+      priseDe: id === premier ? null : premier,
       plage: null,
     });
   await s.lancerTravail('transcrire', premier!);
@@ -697,7 +697,7 @@ export async function voixSyntheseStudio(
     // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
     libre: false,
     session: null,
-    sessionDe: null,
+    priseDe: null,
     plage: null,
     camera: false,
     statut: 'montage',
@@ -740,7 +740,7 @@ export async function sansPriseStudio(
     // Claude monte : son plan remplacera les pistes (vidéo partie du Studio vide).
     libre: false,
     session: null,
-    sessionDe: null,
+    priseDe: null,
     plage: null,
     camera: false,
     statut: 'montage',
@@ -751,6 +751,25 @@ export async function sansPriseStudio(
 }
 
 /** Style de montage voulu pour les prochains montages de Claude. */
+/**
+ * Script retouché à la main avant le tournage (prompteur) : tant que rien n'est tourné. Le sujet
+ * garde ses autres champs ; la voix est ce que l'auteur dira.
+ */
+export async function modifierScriptStudio(
+  s: ServicesStudio,
+  e: { projetId: string; script: SujetStudio['script'] },
+): Promise<void> {
+  const p = await exiger(s, e.projetId);
+  if (!p.sujet) throw new ErreurMetier('PRECONDITION', 'Cette vidéo n’a pas de script.');
+  if (p.prise)
+    throw new ErreurMetier('PRECONDITION', 'Vidéo déjà tournée : son script ne se modifie plus.');
+  const sujet = { ...p.sujet, script: e.script };
+  await maj(s, p.id, {
+    sujet,
+    sujets: p.sujets.map((x) => (x.titre === p.sujet!.titre ? sujet : x)),
+  });
+}
+
 export async function choisirStyleStudio(
   s: ServicesStudio,
   e: { projetId: string; style: StyleMontage },
@@ -1066,7 +1085,7 @@ export async function relancerStudio(s: ServicesStudio, e: { projetId: string })
   // Seule une voix enregistrée se transcrit ; voix IA et « Claude fait tout » ont déjà leurs mots.
   if (!p.mots.length && !p.plan && etapesFabrication(p.prise.id).includes('transcription')) {
     // Session : la transcription commune est refaite par la première vidéo.
-    const porteur = p.sessionDe ?? p.id;
+    const porteur = p.priseDe ?? p.id;
     await maj(s, p.id, { statut: 'transcription', erreur: null });
     if (porteur !== p.id) await maj(s, porteur, { statut: 'transcription', erreur: null });
     return s.lancerTravail('transcrire', porteur);
