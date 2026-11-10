@@ -273,7 +273,7 @@ test.describe('Reprise du simulateur', () => {
     await expect(page).toHaveURL(/prestation=peinture&etape=4/);
     await expect(page.getByText(/Estimation reprise/)).toBeVisible();
     await expect(encart(page)).toHaveCount(0);
-    await expect(page.getByLabel('Code postal du chantier')).toHaveValue('33000');
+    await expect(page.getByText('33000', { exact: true }).first()).toBeVisible();
     await expect(page.getByRole('complementary').getByText('70 m²')).toBeVisible();
     await expect.poll(() => lireStockage(page)).toContain('"surface":70');
 

@@ -46,10 +46,13 @@ export function EtapeQuestions({
   onChanger: () => void;
 }) {
   const [erreurCp, setErreurCp] = useState<string | null>(null);
+  // Code postal déjà donné (page d'accueil, reprise) : affiché, pas redemandé ; « Modifier » rouvre.
+  const [saisieCp, setSaisieCp] = useState(() => !/^\d{5}$/.test(chantier.codePostal));
   const champCp = useRef<HTMLInputElement>(null);
   const suivant = () => {
     if (etape === 4 && !/^\d{5}$/.test(chantier.codePostal)) {
       setErreurCp('Renseignez un code postal à 5 chiffres.');
+      setSaisieCp(true);
       champCp.current?.focus();
       return;
     }
@@ -84,22 +87,38 @@ export function EtapeQuestions({
             ))}
           {etape === 4 ? (
             <div className="grid gap-3.5 sm:grid-cols-2">
-              <Field label="Code postal du chantier" requis erreur={erreurCp}>
-                <Input
-                  ref={champCp}
-                  champ="codePostal"
-                  placeholder="33000"
-                  value={chantier.codePostal}
-                  onChange={(e) => {
-                    setErreurCp(null);
-                    onChantier({
-                      ...chantier,
-                      codePostal: e.target.value.replace(/\D/g, '').slice(0, 5),
-                    });
-                  }}
-                  className="min-h-12"
-                />
-              </Field>
+              {!saisieCp ? (
+                <div className="grid content-start gap-1.5">
+                  <p className="m-0 text-sm font-semibold">Code postal du chantier</p>
+                  <p className="m-0 flex min-h-12 flex-wrap items-center gap-3 text-base">
+                    <strong>{chantier.codePostal}</strong>
+                    <button
+                      type="button"
+                      onClick={() => setSaisieCp(true)}
+                      className="inline-flex min-h-11 cursor-pointer items-center border-0 bg-transparent p-0 text-[14.5px] font-semibold text-accent-700 underline"
+                    >
+                      Modifier
+                    </button>
+                  </p>
+                </div>
+              ) : (
+                <Field label="Code postal du chantier" requis erreur={erreurCp}>
+                  <Input
+                    ref={champCp}
+                    champ="codePostal"
+                    placeholder="33000"
+                    value={chantier.codePostal}
+                    onChange={(e) => {
+                      setErreurCp(null);
+                      onChantier({
+                        ...chantier,
+                        codePostal: e.target.value.replace(/\D/g, '').slice(0, 5),
+                      });
+                    }}
+                    className="min-h-12"
+                  />
+                </Field>
+              )}
               <Field label="Accès au logement">
                 <Select
                   value={chantier.acces}

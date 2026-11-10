@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { ApplicationPro } from '@/features/pwa/ApplicationPro';
 import { estActif } from './liens';
+import { MenuCompte } from './MenuCompte';
 import { NavMobilePro } from './NavMobilePro';
 import { OngletsCompte } from './OngletsCompte';
 import { SelecteurEntreprise } from './SelecteurEntreprise';
@@ -22,6 +23,8 @@ export interface CadreProProps {
   /** Pastille d'état de la fiche (« Fiche en ligne · Mérignac · 30 km »), affichée sur Ma fiche. */
   etatFiche: ReactNode;
   initiales: string;
+  nom: string;
+  email: string;
   /** Encart du bas de la barre latérale (offre contextuelle, PAIEMENTS §4), facultatif. */
   encart?: ReactNode;
   children: ReactNode;
@@ -65,12 +68,12 @@ export function CadrePro(p: CadreProProps) {
             <div id={ID_ACTIONS_ENTETE} className="contents" />
             {/* Interrupteur « En ligne » : seulement sur Ma fiche (demande du propriétaire). */}
             {estActif(chemin, 'fiche') ? p.etatFiche : null}
-            <span
-              aria-hidden="true"
-              className="flex size-10 flex-none items-center justify-center rounded-full bg-accent-200 text-sm font-bold text-accent-800"
-            >
-              {p.initiales}
-            </span>
+            <MenuCompte
+              initiales={p.initiales}
+              nom={p.nom}
+              email={p.email}
+              onglets={p.ongletsCompte}
+            />
           </div>
         </header>
         <ApplicationPro />

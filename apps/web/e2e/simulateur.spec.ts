@@ -178,6 +178,10 @@ test.describe('Simulateur de devis', () => {
     );
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.getByRole('button', { name: 'Continuer' }).click();
+    // Code postal déjà donné sur l'accueil : affiché, pas redemandé ; « Modifier » rouvre le champ.
+    await expect(page.getByLabel('Code postal du chantier')).toHaveCount(0);
+    await expect(page.getByText('33000', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Modifier', exact: true }).click();
     await expect(page.getByLabel('Code postal du chantier')).toHaveValue('33000');
     await page.getByRole('button', { name: 'Dernière étape' }).click();
     await remplirCoordonnees(page);

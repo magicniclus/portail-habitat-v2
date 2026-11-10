@@ -50,4 +50,20 @@ test.describe('Connexion pro', () => {
     await page.goto('/pro/abonnement');
     await expect(page).toHaveURL(/\/connexion\?espace=pro&suite=%2Fpro%2Fabonnement/);
   });
+
+  test('menu du compte sous les initiales : onglets du compte puis « Se déconnecter »', async ({
+    page,
+    context,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/demandes');
+    await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
+    const menu = page.getByRole('group', { name: 'Mon compte' });
+    await expect(menu.getByRole('link', { name: 'Abonnement' })).toBeVisible();
+    await menu.getByRole('button', { name: 'Se déconnecter' }).click();
+    await expect(page).toHaveURL(/\/connexion\?espace=pro/);
+    expect((await context.cookies()).some((c) => c.name === '__session')).toBe(false);
+    // Plus de session : l'espace pro renvoie à la connexion.
+    await page.goto('/pro/demandes');
+    await expect(page).toHaveURL(/\/connexion\?espace=pro/);
+  });
 });

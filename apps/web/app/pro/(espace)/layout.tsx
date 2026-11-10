@@ -30,6 +30,8 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
         ) : null
       }
       initiales={initiales(s.nomAffiche) || '?'}
+      nom={s.nomAffiche}
+      email={s.email}
     >
       {s.impersonation ? <BandeauImpersonation /> : null}
       <BandeauAnnonces public_="pros" />
