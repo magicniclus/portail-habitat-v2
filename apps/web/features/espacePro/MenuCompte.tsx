@@ -5,7 +5,6 @@ import { SignOutIcon } from '@phosphor-icons/react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
-import { authClient } from '@/lib/firebaseClient';
 import { routes } from '@/lib/routes';
 import { LIENS_PRO } from './liens';
 
@@ -47,6 +46,8 @@ export function MenuCompte(p: {
   const deconnecter = async () => {
     setSortie(true);
     await fetch('/api/session', { method: 'DELETE' }).catch(() => undefined);
+    // Firebase n'est chargé qu'à la déconnexion : jamais sur chaque page de l'espace pro.
+    const { authClient } = await import('@/lib/firebaseClient');
     await (await authClient()).signOut().catch(() => undefined);
     window.location.assign(routes.connexionPro);
   };

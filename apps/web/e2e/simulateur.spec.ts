@@ -177,7 +177,9 @@ test.describe('Simulateur de devis', () => {
       '/simulateur?prestation=peinture&intention=peinture-murs&cp=33000&delai=1mois',
     );
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=3/);
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=4/);
     // Code postal déjà donné sur l'accueil : affiché, pas redemandé ; « Modifier » rouvre le champ.
     await expect(page.getByLabel('Code postal du chantier')).toHaveCount(0);
     await expect(page.getByText('33000', { exact: true })).toBeVisible();

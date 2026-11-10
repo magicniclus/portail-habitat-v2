@@ -70,7 +70,9 @@ test.describe('Reprise du simulateur', () => {
   test('SIM-06d : aucune donnée de contact dans le stockage local', async ({ page }) => {
     await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=3/);
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=4/);
     await page.getByLabel('Code postal du chantier').fill('33000');
     await page.getByRole('button', { name: 'Dernière étape' }).click();
     await page.getByLabel(/^Prénom/).fill('Camille');
@@ -136,7 +138,9 @@ test.describe('Reprise du simulateur', () => {
     );
     await ouvrirSimulateur(page, '/simulateur?prestation=peinture&etape=2');
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=3/);
     await page.getByRole('button', { name: 'Continuer' }).click();
+    await expect(page).toHaveURL(/etape=4/);
     await page.getByLabel('Code postal du chantier').fill('33000');
     await page.getByRole('button', { name: 'Dernière étape' }).click();
     await page.getByLabel(/^Prénom/).fill('Camille');

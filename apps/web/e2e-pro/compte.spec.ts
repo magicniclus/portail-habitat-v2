@@ -37,10 +37,14 @@ test.describe('Mon compte', () => {
 
     const actus = page.getByRole('switch', { name: 'Actualités par email' });
     await expect(actus).toHaveAttribute('aria-checked', 'false');
+    // Recharger seulement une fois l'enregistrement confirmé par le serveur (pas « networkidle »).
+    const enregistre = page.waitForResponse(
+      (r) => r.url().endsWith('/api/pro/compte/notifications') && r.ok(),
+    );
     await actus.click();
     await expect(actus).toHaveAttribute('aria-checked', 'true');
+    await enregistre;
     await expect(page.getByRole('switch', { name: 'Sécurité par email' })).toBeDisabled();
-    await page.waitForLoadState('networkidle');
     await page.reload();
     await expect(page.getByRole('switch', { name: 'Actualités par email' })).toHaveAttribute(
       'aria-checked',
