@@ -118,5 +118,5 @@
 - [ ] Alertes budget Google Cloud (20 €) et IA (10 €) actives
 - [ ] Test de charge des imports : 200 demandes/heure, import → proposition en moins de 5 min
 - [ ] Sauvegardes Firestore quotidiennes et restauration testée
-- [ ] Compte Gandi (solde prépayé) + jeton `GANDI_TOKEN` ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` vers Vercel
+- [ ] Clés API OVH (compte ordinaire, moyen de paiement enregistré) ou jeton Gandi ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` vers Vercel
 - [ ] Tous les critères d'ACCEPTANCE.md passent en CI

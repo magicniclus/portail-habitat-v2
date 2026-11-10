@@ -20,7 +20,8 @@ Commencer par l'environnement de **recette** (staging) : clés de test partout, 
 | 10 | **Sentry** (région UE) | Créer l'organisation et le projet | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | suivi des erreurs |
 | 11 | **Anthropic** | Compte API, plafond de dépense mensuel | `ANTHROPIC_API_KEY` (site **et** Functions) | IA du site, du blog, assistant admin |
 | 12 | **Cloudflare** | Turnstile (anti-spam des formulaires de sites, D46) | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` | formulaires des sites artisans |
-| 13 | **Gandi** (D42, gratuit) | Créer un compte (organisation au nom de la société), créditer le solde prépayé, créer un jeton d'accès personnel (droits domaines + LiveDNS) ; essayer d'abord avec le bac à sable | `GANDI_TOKEN` (+ `GANDI_BAC_A_SABLE=1` en recette) | achat de domaine par l'artisan |
+| 13 | **OVHcloud, compte client ordinaire** (D42, gratuit, conseillé) | Créer les clés API (createToken, droits `/order/*`, `/me/*`, `/domain/*`) et enregistrer un moyen de paiement | `OVH_APP_KEY`, `OVH_APP_SECRET`, `OVH_CONSUMER_KEY` | achat de domaine par l'artisan |
+| 13 bis | **Gandi** (D42, secours, plus cher au renouvellement) | Créer un compte (organisation au nom de la société), créditer le solde prépayé, créer un jeton d'accès personnel (droits domaines + LiveDNS) ; essayer d'abord avec le bac à sable | `GANDI_TOKEN` (+ `GANDI_BAC_A_SABLE=1` en recette) | achat de domaine par l'artisan |
 | 14 | **DataForSEO** (D68) | Compte API, crédit prépayé | identifiant et mot de passe API (je branche ensuite) | volumes de mots-clés du blog |
 | 15 | **Plateforme agréée** (D62) | Choisir la plateforme, signer le contrat « éditeur » | clés API de la plateforme | factures électroniques |
 | 16 | **Google Search Console** | Propriété du domaine | accès API (je branche ensuite) | statistiques SEO des sites et du blog |

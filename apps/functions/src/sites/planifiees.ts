@@ -17,7 +17,7 @@ import { notifier } from '../notifications/configuration';
 /**
  * `verifierDomaines` (toutes les 2 min, DOMAINES §4) : domaines dont la vérification est due ;
  * domaines achetés : commande, zone DNS, puis vérification ; chaque site est traité seul (une
- * erreur n'arrête pas les autres). Clés Vercel et jeton Gandi en secrets.
+ * erreur n'arrête pas les autres). Clés Vercel et du registrar (OVH ou Gandi) en secrets.
  */
 const services = () => ({
   db: getFirestore(appAdmin()),

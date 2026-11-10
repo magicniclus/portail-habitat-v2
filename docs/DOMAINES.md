@@ -1,6 +1,6 @@
 # Domaines, DNS et HTTPS des sites artisans
 
-Maquette : `designs/Site Internet Artisan.dc.html?onglet=domaine`. Hébergement : Vercel (projet unique « sites-artisans », multi-tenant). Registrar : **Gandi** (API gratuite, sans abonnement ; jeton `GANDI_TOKEN`, bac à sable `GANDI_BAC_A_SABLE=1` ; payé par le solde prépayé du compte Portail Travaux). Paiement : Stripe `site_pro` 9,90 € HT/mois.
+Maquette : `designs/Site Internet Artisan.dc.html?onglet=domaine`. Hébergement : Vercel (projet unique « sites-artisans », multi-tenant). Registrar : **OVHcloud, compte client ordinaire** (API gratuite, aucun programme revendeur ; clés `OVH_APP_KEY`, `OVH_APP_SECRET`, `OVH_CONSUMER_KEY` ; commande payée par le moyen de paiement enregistré sur le compte), prioritaire ; **Gandi** en secours (`GANDI_TOKEN`, bac à sable `GANDI_BAC_A_SABLE=1`). Paiement : Stripe `site_pro` 9,90 € HT/mois.
 
 ## 1. Trois cas
 | Cas | Offre | Qui gère le DNS | Résultat |
