@@ -173,3 +173,29 @@ describe('écriture sur l’émulateur', () => {
     // Tous les comptes du jeu sont créés deux fois : lent sur une machine chargée.
   }, 30_000);
 });
+
+describe('import du référentiel réel (pnpm referentiel:importer)', () => {
+  it('crée prestations et prix, sans aucun compte ; ne remplace rien sans --ecraser', async () => {
+    const { importerReferentiel } = await import('../src/seed/importReferentiel');
+    const { documentsReferentiel } = await import('../src/seed/referentiel');
+    const { chemins } = await import('../src/chemins');
+    const db = getFirestore(appAdmin());
+    const ref = documentsReferentiel(fichiers, MAINTENANT);
+    // Le simulateur doit retrouver la salle de bain, ses prix et les coefficients.
+    expect(ref.has(chemins.prestationItem('sdb'))).toBe(true);
+    expect(ref.has(chemins.prestationPrix('sdb'))).toBe(true);
+    expect(ref.has(chemins.prestationPrix('_coefficients'))).toBe(true);
+    // Aucun compte, aucun artisan ni demande de test.
+    expect([...ref.keys()].some((c) => /^(utilisateurs|artisans|demandes)\//.test(c))).toBe(false);
+    // Un prix modifié dans l'admin est gardé, sauf demande explicite.
+    await db.doc(chemins.prestationPrix('sdb')).set({ schemaVersion: 1, modifieAdmin: true });
+    const r = await importerReferentiel(db, ref);
+    expect(r.ecrases).toBe(0);
+    expect((await db.doc(chemins.prestationPrix('sdb')).get()).get('modifieAdmin')).toBe(true);
+    expect((await db.doc(chemins.prestationItem('sdb')).get()).get('actif')).toBe(true);
+    const r2 = await importerReferentiel(db, ref, { ecraser: true });
+    expect(r2.crees).toBe(0);
+    expect(r2.ecrases).toBe(ref.size);
+    expect((await db.doc(chemins.prestationPrix('sdb')).get()).get('modifieAdmin')).toBeUndefined();
+  });
+});

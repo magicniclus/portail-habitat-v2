@@ -43,6 +43,7 @@ Liste complète des variables : INTEGRATIONS.md §Variables et EMAILS.md §9. Cl
 - [ ] Tous les tests d'ACCEPTANCE.md verts en staging
 - [ ] Règles Firestore et Storage déployées en prod, tests de règles verts
 - [ ] Index Firestore et TTL déployés
+- [ ] Référentiel réel importé : `pnpm referentiel:importer <id-du-projet>` (prestations, prix, recherche, communes ; sans compte de test ; rien n'est remplacé sans `--ecraser`). Sans lui, le simulateur répond « L'élément demandé est introuvable ».
 - [ ] Sauvegarde quotidienne Firestore activée (export planifié vers un bucket `europe-west1`)
 - [ ] Webhooks Stripe et Resend pointés sur la prod, secrets en place
 - [ ] Budget Google Cloud avec alertes à 50 / 80 / 100 %
