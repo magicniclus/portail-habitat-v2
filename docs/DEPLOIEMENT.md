@@ -31,6 +31,7 @@ Noms seulement : les valeurs vont dans les secrets Vercel (site) ou Google Secre
 | `COMPORTEMENT_SALT_SECRET` | sel quotidien des empreintes d'IP |
 | `REPLAYS_BUCKET` | bucket des replays (UE, cycle de vie 30 jours) |
 | `ANTHROPIC_API_KEY` | assistant IA (facultatif : coupé sans) |
+| `GANDI_TOKEN` | achat de domaine par l'artisan (Gandi, D42 ; facultatif : achat « bientôt » sans) ; `GANDI_BAC_A_SABLE=1` en recette |
 | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | erreurs et sourcemaps |
 | `MAINTENANCE` | `1` pour la maintenance (RUNBOOK §1) |
 | `RATE_LIMIT_FACTEUR` | facultatif : entier ≥ 1 qui multiplie les limites de débit (recette, pic) ; sous `pnpm dev`, aucune limite |

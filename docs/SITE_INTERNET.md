@@ -14,7 +14,7 @@ Résiliation : le site repasse sur le sous-domaine ; le domaine acheté reste la
 
 ## 2. Décisions (DECISIONS D40-D53)
 - **Génération IA** : toutes les pages d'un coup + pages locales « Plombier à {commune} ». **Toute la logique IA est dans `IA_SITE.md`** (opérations validées, questionnaire, monétisation, pipeline).
-- **Registrar** : **OVHcloud API**, domaine au nom de l'artisan.
+- **Registrar** : **Gandi** (API gratuite), domaine au nom de l'artisan.
 - **Hébergement** (D45) : **Cloudflare for SaaS** sur le compte Portail Travaux. L'artisan ne voit ni ne connecte aucun hébergeur.
 - **Anti-spam** (D46) : **Cloudflare Turnstile** invisible sur tous les formulaires, sans cookie publicitaire.
 - **Statistiques** : mesure maison **sans cookie**, agrégée par jour + Search Console.
@@ -22,7 +22,7 @@ Résiliation : le site repasse sur le sous-domaine ; le domaine acheté reste la
 
 ## 3. Tableau de bord du site (`/pro/site`)
 - **Pages** : liste, statut, menu, score SEO, visites. Boutons « Créer avec l'IA » (`?creation=1`), « Nouvelle page », « Modèles de site » (`?panneau=modeles`), « Modifier » et « SEO » (ouvrent l'éditeur sur la page).
-- **Domaine** : sous-domaine gratuit ; achat OVH ; connexion d'un domaine existant ; état d'hébergement (« Hébergé et protégé par Portail Travaux »).
+- **Domaine** : sous-domaine gratuit ; achat chez Gandi ; connexion d'un domaine existant ; état d'hébergement (« Hébergé et protégé par Portail Travaux »).
 - **Statistiques** et **Formulaire** (constructeur de champs, notifications, anti-spam, RGPD).
 - **Formulaire en Gratuit** : formulaire **standard figé** à 4 champs (Nom et prénom, Téléphone, Email, Code postal du chantier) ; constructeur de champs et **tous les réglages** (email, SMS, anti-spam, RGPD) visibles mais verrouillés 🔒, avec un seul encart Site Pro. Valeurs par défaut appliquées : email activé, Turnstile activé, mention RGPD affichée, SMS désactivé. Contrôlé côté serveur : un site gratuit qui envoie d'autres champs voit sa requête rejetée.
 
@@ -81,11 +81,11 @@ Statistiques ──▶ /api/sites/{id}/t (sans cookie) ──▶ sites/{id}/stat
 
 ## 6. Domaines
 - Sous-domaine : 3-40 caractères `[a-z0-9-]`, liste réservée, unique (`sitesSlugs/{slug}`).
-- Achat : recherche OVH (`/domain/check`), commande au nom de l'artisan, DNS chez OVH avec CNAME `www` → `sites.portailtravaux.fr` et redirection de l'apex.
+- Achat : recherche Gandi (`/v5/domain/check`), commande au nom de l'artisan, DNS LiveDNS chez Gandi avec CNAME `www` → `sites.portailtravaux.fr` et redirection de l'apex.
 - Domaine existant : l'artisan ajoute le CNAME `www` et le TXT de validation Cloudflare ; vérification toutes les 10 min pendant 72 h.
 
 ## 7. Coûts (COUTS.md, à revérifier avant lancement)
-IA : voir IA_SITE §6 (création complète ≈ 0,25 €, composant ≈ 0,02 €, texte ≈ 0,002 € ; quotas Site Pro 5 / 60 / 300 par mois). Domaine OVH ≈ 7-12 € HT/an. Cloudflare for SaaS : 100 domaines inclus puis ≈ 0,10 $/domaine/mois ; R2 et Workers : quelques euros par mois à 2 000 sites.
+IA : voir IA_SITE §6 (création complète ≈ 0,25 €, composant ≈ 0,02 €, texte ≈ 0,002 € ; quotas Site Pro 5 / 60 / 300 par mois). Domaine (Gandi) : prix public du registrar, à vérifier sur sa grille. Cloudflare for SaaS : 100 domaines inclus puis ≈ 0,10 $/domaine/mois ; R2 et Workers : quelques euros par mois à 2 000 sites.
 
 ## 8. Critères d'acceptation (préfixe SITE-)
 SITE-01 génération des pages + locales en < 90 s · SITE-02 réglage mobile sans effet sur ordinateur · SITE-03 envoi formulaire → « Mes demandes » en < 10 s · SITE-04 Lighthouse mobile ≥ 90 · SITE-05 domaine connecté → HTTPS < 30 min · SITE-06 résiliation → retour au sous-domaine · SITE-07 aucun cookie sur un site publié · **SITE-08** publication visible en < 60 s, retour à la version précédente en < 10 s · **SITE-09** « Publier » met toujours le site en ligne (l'artisan est responsable de son contenu) ; une seule confirmation « Votre site est en ligne », sans liste d'erreurs techniques (les champs à revoir sont signalés dans l'éditeur, là où on les modifie) et un lien invalide n'est pas cliquable sur le site · **En ligne / maintenance / retiré** : depuis « Mon site internet », chaque changement confirmé, effet en moins d'une minute, rien n'est effacé ; republier remet en ligne · **Poste local** : « Voir le site » ouvre `sous-domaine.localhost:port` (le vrai sous-domaine n'a de DNS qu'une fois la plateforme en production) · **SITE-10** menu mobile : ouverture plein écran, défilement bloqué, fermeture par la croix · **SITE-11** enregistrer la navigation l'applique à toutes les pages, sans toucher au contenu des pages · **SITE-12** formulaire soumis par un robot (Turnstile refusé) → aucune demande créée · **SITE-IA-01 à 10** : voir IA_SITE §7.

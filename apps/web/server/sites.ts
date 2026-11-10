@@ -83,7 +83,7 @@ export function servicesDomaines(): ServicesDomaines {
   };
 }
 
-/** Achat de domaine : bureau d'enregistrement (OVH, ou bureau local hors production). */
+/** Achat de domaine : bureau d'enregistrement (Gandi, ou bureau local hors production). */
 export function servicesAchatDomaine(): ServicesAchatDomaine {
   return { ...servicesDomaines(), registrar: registrarDepuisEnv() };
 }

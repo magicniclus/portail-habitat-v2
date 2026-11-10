@@ -1,12 +1,12 @@
 # Domaines, DNS et HTTPS des sites artisans
 
-Maquette : `designs/Site Internet Artisan.dc.html?onglet=domaine`. Hébergement : Vercel (projet unique « sites-artisans », multi-tenant). Registrar : OVHcloud (compte revendeur, API). Paiement : Stripe `site_pro` 9,90 € HT/mois.
+Maquette : `designs/Site Internet Artisan.dc.html?onglet=domaine`. Hébergement : Vercel (projet unique « sites-artisans », multi-tenant). Registrar : **Gandi** (API gratuite, sans abonnement ; jeton `GANDI_TOKEN`, bac à sable `GANDI_BAC_A_SABLE=1` ; payé par le solde prépayé du compte Portail Travaux). Paiement : Stripe `site_pro` 9,90 € HT/mois.
 
 ## 1. Trois cas
 | Cas | Offre | Qui gère le DNS | Résultat |
 |---|---|---|---|
 | A. Sous-domaine `{slug}.portailtravaux.fr` | Gratuit | Nous (wildcard) | En ligne immédiatement |
-| B. Domaine acheté chez nous | Site Pro | Nous (zone OVH créée par API) | En ligne < 15 min, rien à faire pour l'artisan |
+| B. Domaine acheté chez nous | Site Pro | Nous (zone LiveDNS Gandi créée par API) | En ligne < 15 min, rien à faire pour l'artisan |
 | C. Domaine existant de l'artisan | Site Pro | L'artisan, chez son registrar | En ligne après ajout de 3 enregistrements |
 Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le domaine principal.
 
@@ -16,10 +16,10 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
 - Le middleware Next.js lit l'en-tête `Host`, retrouve `sites/{siteId}` via `domainesIndex/{host}`, rend le site.
 
 ## 3. Cas B — achat de domaine (Site Pro)
-1. Recherche : Function `domaineDisponibilite(q)` → API OVH `/order/cart` + `/domain/...`, extensions proposées `.fr .com .eu` (+ variante `-ville.fr`). Cache 10 min.
+1. Recherche : Function `domaineDisponibilite(q)` → API Gandi `GET /v5/domain/check` (seul le statut `available` de la création compte), extensions proposées `.fr .com .eu` (+ variante `-ville.fr`). Cache 10 min.
 2. Clic sur un domaine sans Site Pro → **fenêtre d'offre** (PAIEMENTS §4), jamais d'achat direct.
-3. Après paiement Stripe confirmé (webhook) : commande OVH **au nom de l'entreprise de l'artisan** (contact propriétaire = raison sociale, SIREN, adresse de la fiche vérifiée ; Portail Travaux = contact technique). Pour `.fr` : éligibilité AFNIC vérifiée avec le SIREN.
-4. Zone DNS créée par API OVH :
+3. Après paiement Stripe confirmé (webhook) : commande Gandi (`POST /v5/domain/domains`, titulaire de type société avec SIREN) **au nom de l'entreprise de l'artisan** (contact propriétaire = raison sociale, SIREN, adresse de la fiche vérifiée ; Portail Travaux = contact technique). Pour `.fr` : éligibilité AFNIC vérifiée avec le SIREN.
+4. Zone DNS écrite par l'API LiveDNS de Gandi (A, AAAA et CNAME de `@` et `www` remplacés, MX jamais touchés ; renouvellement automatique activé à la livraison) :
    - `@  A  76.76.21.21`
    - `www  CNAME  cname.vercel-dns.com.`
    - MX / SPF : aucun par défaut (on ne touche pas aux emails) ; option future.
@@ -62,8 +62,8 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
 
 ## 6. Règles et sécurité
 - Un domaine ne peut être relié qu'à un seul site ; tentative sur un domaine déjà actif ailleurs → refus sans révéler le site.
-- Toutes les opérations (achat, ajout Vercel, vérif) côté Functions ; le client n'appelle jamais OVH ni Vercel.
-- Clés API OVH / Vercel dans Secret Manager.
+- Toutes les opérations (achat, ajout Vercel, vérif) côté Functions ; le client n'appelle jamais Gandi ni Vercel.
+- Jeton Gandi / clés Vercel dans Secret Manager.
 - Journal `sites/{id}/journalDomaine` (action, résultat, date) pour le support.
 - SEO : une seule URL canonique (domaine principal), 301 depuis le sous-domaine et la variante www/apex, sitemap régénéré au changement de domaine, Search Console : propriété re-vérifiée (TXT) automatiquement.
 
@@ -72,7 +72,7 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
 
 ## 8. Critères d'acceptation
 - **DOM-01** sous-domaine indisponible ou réservé refusé avec message clair ; disponible → site servi en < 5 s
-- **DOM-02** achat sans Site Pro → fenêtre d'offre ; aucun appel OVH avant paiement confirmé
+- **DOM-02** achat sans Site Pro → fenêtre d'offre ; aucun appel au registrar avant paiement confirmé
 - **DOM-03** domaine acheté : titulaire = entreprise de l'artisan (vérifié dans le WHOIS/RDAP)
 - **DOM-04** cas C : chaque ligne passe `ok` indépendamment ; valeur erronée → état `incorrect` + valeur trouvée
 - **DOM-05** HTTPS valide sur domaine, www et sous-domaine ; 301 vers l'URL canonique

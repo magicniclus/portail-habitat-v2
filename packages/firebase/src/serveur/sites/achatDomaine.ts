@@ -14,7 +14,7 @@ import { verifierDomaineSite, type ServicesDomaines } from './domaines';
 import { exigerSite, type ContexteSite } from './edition';
 
 /**
- * Bureau d'enregistrement (OVHcloud, compte revendeur) : seul le serveur l'appelle (DOMAINES §6).
+ * Bureau d'enregistrement (Gandi, API gratuite) : seul le serveur l'appelle (DOMAINES §6).
  * Aucune commande avant le paiement de Site Pro confirmé (DOM-02).
  */
 export interface RegistrarDomaines {

@@ -49,6 +49,7 @@
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | App Check (anti-robots) | Console Firebase → *App Check* → reCAPTCHA Enterprise | Vercel |
 | `INSEE_API_KEY` | vérification SIREN renforcée | portail-api.insee.fr | Vercel |
 | `ANTHROPIC_API_KEY` | assistant IA du back-office (lot 13c), Studio vidéo | console.anthropic.com | secret Functions, robot Studio |
+| `GANDI_TOKEN` | achat de domaine par l'artisan (D42) ; `GANDI_BAC_A_SABLE=1` pour la recette | admin.gandi.net › Organisation › Partage › Créer un jeton (droits domaines + LiveDNS) | Vercel + secret Functions |
 | `YOUTUBE_API_KEY` | Studio : tendances YouTube | console Google Cloud → API YouTube Data v3 | Vercel |
 | `ELEVENLABS_API_KEY` | Studio : voix de synthèse (facultative) | elevenlabs.io → profil → clés API | Vercel |
 | `STUDIO_CHIFFREMENT_CLE` | Studio : chiffre les accès aux réseaux | `openssl rand -base64 32` | Vercel + Functions |

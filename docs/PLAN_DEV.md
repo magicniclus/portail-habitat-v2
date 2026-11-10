@@ -62,7 +62,7 @@
 | 8 | Parcours particuliers et espace particulier | COMPTES §2, REPRISE_PARCOURS | ESP-*, DIA-* |
 | 9 | Annuaire et fiche publique | README | ANN-*, FIC-* |
 | 10 | Espace artisan, équipes, **rayon 10-100 km** accepté à l'inscription | COMPTES §3-4 | ACQ-*, ONB-*, PRO-* |
-| **10b** | **Site internet artisan** : création IA, éditeur par appareil, pages, SEO, sous-domaine + domaines (OVHcloud), stats sans cookie, formulaire → demandes ; Stripe `site_pro` 9,90 € | SITE_INTERNET, DATABASE §15 bis | SITE-* |
+| **10b** | **Site internet artisan** : création IA, éditeur par appareil, pages, SEO, sous-domaine + domaines (Gandi), stats sans cookie, formulaire → demandes ; Stripe `site_pro` 9,90 € | SITE_INTERNET, DATABASE §15 bis | SITE-* |
 | **10c** | **IA du site** : Function `iaSite` (routeur, outils, opérations validées, garde-fou des faits), questionnaire de création, panneau IA, propositions Appliquer/Annuler, droits `sites.droits.ia` par webhook, quotas, aperçu gratuit → paiement Site Pro → reprise | IA_SITE, DATABASE §15 ter, SITE_INTERNET §4.6 | SITE-IA-* |
 | **10d** | **Blog** : articles, éditeur, mots-clés, contrôle SEO bloquant, **mode autonome en un clic**, **pilote automatique**, mentions légales lues depuis Devis & factures, élément « Articles du blog » dans l'éditeur de site, quotas 5/15 | BLOG, DATABASE §15 quater, IA_SITE §4 bis | BLOG-* |
 | **10e** | **Landings par outil** : gabarit unique, source enregistrée sur le compte, onboarding selon la source, scrollytelling, analytics | LANDINGS | LAND-* |
@@ -118,5 +118,5 @@
 - [ ] Alertes budget Google Cloud (20 €) et IA (10 €) actives
 - [ ] Test de charge des imports : 200 demandes/heure, import → proposition en moins de 5 min
 - [ ] Sauvegardes Firestore quotidiennes et restauration testée
-- [ ] Compte revendeur OVHcloud + clés API ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` vers Vercel
+- [ ] Compte Gandi (solde prépayé) + jeton `GANDI_TOKEN` ; produit Stripe `site_pro` (9,90 € HT/mois) ; DNS wildcard `*.portailtravaux.fr` vers Vercel
 - [ ] Tous les critères d'ACCEPTANCE.md passent en CI

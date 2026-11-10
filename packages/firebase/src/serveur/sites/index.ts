@@ -58,5 +58,5 @@ export {
   type RegistrarDomaines,
   type ServicesAchatDomaine,
 } from './achatDomaine';
-export { disponibiliteDns, registrarDepuisEnv, registrarOvh, signatureOvh } from './registrarOvh';
+export { disponibiliteDns, registrarDepuisEnv, registrarGandi } from './registrar';
 export { geocoderAdresse } from './geocodage';

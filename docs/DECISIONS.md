@@ -75,7 +75,7 @@ Légende : ✅ décidé · ⏳ à confirmer (la proposition s'applique en attend
 | D71 | Blog : prix | **Option Blog 9,90 € HT/mois : +20 articles IA par mois (5 + 20 = 25)**, ajoutable à Site Pro et Fiche + Site, pas à Tout inclus (validé le 17/10/2026) | ✅ |
 | D61 | Paiement en ligne des factures clients | **Pas en v1** : virement seulement (IBAN sur la facture) ; Stripe Connect plus tard (validé le 17/10/2026) | ✅ |
 | D41 | Site artisan : génération IA | Toutes les pages d'un coup + pages locales par commune (validé en bloc le 17/10/2026) | ✅ |
-| D42 | Registrar | **OVHcloud API** (revendeur), domaine au nom de l'artisan (validé en bloc le 17/10/2026) | ✅ |
+| D42 | Registrar | **Gandi** (API gratuite, sans abonnement, vend les `.fr`), domaine au nom de l'artisan ; remplace OVHcloud revendeur (abonnement payant) à la demande du propriétaire le 10/11/2026 | ✅ |
 | D43 | Stats des sites artisans | Mesure maison sans cookie, agrégée par jour + Search Console (validé en bloc le 17/10/2026) | ✅ |
 | D44 | Formulaire des sites | Multi-champs, envois = demandes directes gratuites, hors matching (validé en bloc le 17/10/2026) | ✅ |
 | D45 | Hébergement des sites artisans | **Cloudflare for SaaS** (Worker unique + R2 + KV) sur le compte Portail Travaux ; domaines nus redirigés vers `www.` par OVH ; plateforme et sites isolés (validé en bloc le 17/10/2026) | ✅ |
