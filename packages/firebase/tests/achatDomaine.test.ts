@@ -26,6 +26,7 @@ let dnsActuel: Record<string, string[]> = {};
 const envois: { modele: string; secrets?: Record<string, string> }[] = [];
 const commandes: { nom: string; organisation: string; siren: string }[] = [];
 const zones: { nom: string; lignes: { type: string }[] }[] = [];
+const arretes: string[] = [];
 const registrar: RegistrarDomaines = {
   fournisseur: 'test',
   disponibilite: async (noms) => noms.map((nom) => ({ nom, libre: !nom.includes('pris') })),
@@ -36,6 +37,7 @@ const registrar: RegistrarDomaines = {
   etatCommande: async () => livraison,
   ecrireZone: async (nom, lignes) => void zones.push({ nom, lignes }),
   codeTransfert: async () => 'AUTH-TEST',
+  arreterRenouvellement: async (nom) => void arretes.push(nom),
 };
 const s = (): ServicesAchatDomaine => ({
   db,
@@ -201,6 +203,8 @@ describe('achat de domaine (cas B)', () => {
     const t = envois.filter((e) => e.modele === 'site-domaine-transfert');
     expect(t).toHaveLength(1);
     expect(t[0]!.secrets?.authCode).toBe('AUTH-TEST');
+    // Plus de renouvellement payé par Portail Travaux, pour ce domaine seulement.
+    expect(arretes).toEqual(['bertrand-fin.fr']);
     expect(JSON.stringify(await site())).not.toContain('AUTH-TEST');
   });
 });

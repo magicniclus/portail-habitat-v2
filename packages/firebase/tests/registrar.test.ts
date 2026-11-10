@@ -130,6 +130,14 @@ describe('bureau d’enregistrement Gandi (DOMAINES §3)', () => {
     ]);
   });
 
+  it('résiliation : renouvellement automatique coupé', async () => {
+    const f = vi.fn(async () => reponse({ message: 'ok' }, 201));
+    await registrarGandi({ jeton: 'pat' }, f as never).arreterRenouvellement('dupont.fr');
+    const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://api.gandi.net/v5/domain/domains/dupont.fr/autorenew');
+    expect(JSON.parse(String(init.body))).toEqual({ enabled: false });
+  });
+
   it('code de transfert lu sur la fiche du domaine', async () => {
     const f = vi.fn(async () => reponse({ fqdn: 'dupont.fr', authinfo: 'AUTH-123' }));
     expect(await registrarGandi({ jeton: 'pat' }, f as never).codeTransfert('dupont.fr')).toBe(
@@ -244,6 +252,15 @@ describe('bureau d’enregistrement OVH (DOMAINES §3)', () => {
     expect(appels.at(-1)).toBe('POST /refresh');
     // Renouvellement automatique activé avant d'écrire la zone (OVH le laisse en manuel).
     expect(appels[0]).toBe('PUT https://eu.api.ovh.com/1.0/domain/dupont.fr/serviceInfos');
+  });
+
+  it('résiliation : renouvellement automatique arrêté pour ce domaine seulement', async () => {
+    const f = vi.fn(async () => reponse(null));
+    await registrarOvh(cles, f as never).arreterRenouvellement('dupont.fr');
+    const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://eu.api.ovh.com/1.0/domain/dupont.fr/serviceInfos');
+    expect(init.method).toBe('PUT');
+    expect(JSON.parse(String(init.body))).toMatchObject({ renew: { automatic: false } });
   });
 
   it('code de transfert : domaine déverrouillé puis code lu', async () => {

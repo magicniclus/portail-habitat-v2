@@ -27,6 +27,11 @@ export interface RegistrarDomaines {
   ecrireZone(nom: string, enregistrements: EnregistrementAttendu[]): Promise<void>;
   /** Code de transfert (AuthCode), envoyé à l'artisan à la résiliation (DOM-07). */
   codeTransfert(nom: string): Promise<string>;
+  /**
+   * Résiliation : plus aucun renouvellement payé par Portail Travaux pour ce domaine. Il reste
+   * à l'artisan jusqu'à son échéance ; il le transfère avec son code s'il veut le garder.
+   */
+  arreterRenouvellement(nom: string): Promise<void>;
 }
 
 export interface ServicesAchatDomaine extends ServicesDomaines {
@@ -227,9 +232,14 @@ export async function avancerDomaine(
   return verifierDomaineSite(s, siteId);
 }
 
-/** DOM-07 : Site Pro résilié, le domaine reste à l'artisan ; son code de transfert lui est envoyé. */
+/**
+ * DOM-07 : Site Pro résilié, le renouvellement payé par Portail Travaux s'arrête ; le domaine reste
+ * à l'artisan jusqu'à son échéance et son code de transfert lui est envoyé.
+ */
 async function envoyerCodeTransfert(s: ServicesAchatDomaine, siteId: string, nom: string) {
   const ref = s.db.doc(chemins.site(siteId));
+  await s.registrar.arreterRenouvellement(nom);
+  await journal(s, siteId, 'renouvellement', `${nom} : renouvellement automatique arrêté`);
   const authCode = await s.registrar.codeTransfert(nom);
   const artisan = await s.db.doc(chemins.artisan(siteId)).get();
   const uid = artisan.get('proprietaireUid') as string | undefined;

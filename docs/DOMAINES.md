@@ -77,5 +77,5 @@ Le sous-domaine reste actif dans les cas B et C et **redirige en 301** vers le d
 - **DOM-04** cas C : chaque ligne passe `ok` indépendamment ; valeur erronée → état `incorrect` + valeur trouvée
 - **DOM-05** HTTPS valide sur domaine, www et sous-domaine ; 301 vers l'URL canonique
 - **DOM-06** DNS retiré 3 jours → statut `casse`, email, sous-domaine toujours en ligne
-- **DOM-07** résiliation Site Pro : domaine conservé jusqu'à échéance, AuthCode envoyé, site repasse sur le sous-domaine
+- **DOM-07** résiliation Site Pro : **renouvellement automatique arrêté** pour ce domaine (Portail Travaux ne le paie plus), domaine conservé par l'artisan jusqu'à échéance, AuthCode envoyé, site repasse sur le sous-domaine. Le renouvellement automatique n'est jamais activé que sur les domaines achetés pour un artisan : les autres domaines du compte du registrar ne sont pas touchés.
 - **DOM-08** aucun MX modifié, ni en achat ni en connexion

@@ -140,6 +140,12 @@ export function registrarOvh(
         });
       await api('POST', `${zone}/refresh`);
     },
+    async arreterRenouvellement(nom) {
+      // Seul ce domaine (acheté pour l'artisan) : les autres domaines du compte ne sont pas touchés.
+      await api('PUT', `/domain/${encodeURIComponent(nom)}/serviceInfos`, {
+        renew: { automatic: false, deleteAtExpiration: false, forced: false, period: 12 },
+      });
+    },
     async codeTransfert(nom) {
       await api('PUT', `/domain/${encodeURIComponent(nom)}`, { transferLockStatus: 'unlocked' });
       return api<string>('GET', `/domain/${encodeURIComponent(nom)}/authInfo`);
@@ -252,6 +258,9 @@ export function registrarGandi(
       for (const [cle, valeurs] of groupes)
         await api('PUT', `${zone}/${cle}`, { rrset_values: valeurs, rrset_ttl: 3600 });
     },
+    async arreterRenouvellement(nom) {
+      await api('PATCH', `${domaine(nom)}/autorenew`, { enabled: false });
+    },
     async codeTransfert(nom) {
       const d = await api<{ authinfo?: string }>('GET', domaine(nom));
       if (!d?.authinfo)
@@ -318,6 +327,7 @@ export function registrarDepuisEnv(
       etatCommande: indisponible,
       ecrireZone: indisponible,
       codeTransfert: indisponible,
+      arreterRenouvellement: indisponible,
     };
   return {
     fournisseur: 'local',
@@ -331,5 +341,6 @@ export function registrarDepuisEnv(
     etatCommande: async () => 'livre',
     ecrireZone: async () => undefined,
     codeTransfert: async () => 'CODE-LOCAL-TRANSFERT',
+    arreterRenouvellement: async () => undefined,
   };
 }
