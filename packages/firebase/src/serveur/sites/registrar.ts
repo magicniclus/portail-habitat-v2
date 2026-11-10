@@ -116,6 +116,11 @@ export function registrarOvh(
       return s === 'cancelled' || s === 'notPaid' ? 'echec' : 'en_cours';
     },
     async ecrireZone(nom, lignes: EnregistrementAttendu[]) {
+      // Domaine livré : OVH le laisse en renouvellement manuel ; on le passe en automatique
+      // (payé par le moyen de paiement du compte) pour qu'il n'expire jamais sans prévenir.
+      await api('PUT', `/domain/${encodeURIComponent(nom)}/serviceInfos`, {
+        renew: { automatic: true, deleteAtExpiration: false, forced: false, period: 12 },
+      });
       const zone = `/domain/zone/${encodeURIComponent(nom)}`;
       // Anciennes cibles du domaine nu et de www (page d'attente OVH) : A, AAAA, CNAME seulement.
       for (const sous of ['', 'www']) {

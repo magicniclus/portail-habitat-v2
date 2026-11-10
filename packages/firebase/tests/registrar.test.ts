@@ -242,6 +242,8 @@ describe('bureau d’enregistrement OVH (DOMAINES §3)', () => {
       { fieldType: 'CNAME', subDomain: 'www', target: 'cname.vercel-dns.com.', ttl: 3600 },
     ]);
     expect(appels.at(-1)).toBe('POST /refresh');
+    // Renouvellement automatique activé avant d'écrire la zone (OVH le laisse en manuel).
+    expect(appels[0]).toBe('PUT https://eu.api.ovh.com/1.0/domain/dupont.fr/serviceInfos');
   });
 
   it('code de transfert : domaine déverrouillé puis code lu', async () => {
