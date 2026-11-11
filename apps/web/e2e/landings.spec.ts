@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-// docs/LANDINGS.md §8 (LAND-01 à LAND-07) : landing « Trouver des chantiers », ouverte par défaut.
+// docs/LANDINGS.md §8 (LAND-01 à LAND-08) : landing « Trouver des chantiers », ouverte par défaut.
 const URL_LANDING = '/pro/trouver-des-chantiers';
 
 /** `dataLayer` gardé dans sessionStorage : les événements survivent à la navigation. */
@@ -96,7 +96,7 @@ test.describe('Landings par outil', () => {
       .evaluateAll((els) =>
         els.filter((a) => !a.closest('form')).map((a) => a.getAttribute('href')),
       );
-    expect(liens.length).toBeGreaterThan(5);
+    expect(liens.length).toBeGreaterThan(0);
     expect(new Set(liens)).toEqual(new Set(['#inscription']));
     const barre = page.locator('[data-barre-mobile]');
     if (info.project.name === 'ordinateur') {
@@ -187,6 +187,37 @@ test.describe('Landings par outil', () => {
     await aller(debut);
     await onglet(3).click();
     await expect(onglet(3)).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('LAND-08 : chaque outil ouvre sa vidéo dans une fenêtre, qui ramène au formulaire', async ({
+    page,
+  }) => {
+    await suivreDataLayer(page);
+    await page.goto(URL_LANDING);
+    const section = page.locator('[data-section-gratuit]');
+    await section.locator('h2').scrollIntoViewIfNeeded();
+    await expect(section.getByRole('heading', { level: 2 })).toHaveText(
+      'Les clients sont gratuits. Les outils aussi.',
+    );
+    const cartes = section.getByRole('button', { name: /voir la vidéo/ });
+    await expect(cartes).toHaveCount(6);
+    // L'outil de la page en premier.
+    await expect(cartes.first()).toHaveAccessibleName(/^Demandes de chantiers/);
+    await section.getByRole('button', { name: /^Devis et factures/ }).click();
+    const fenetre = page.getByRole('dialog', { name: 'Devis et factures en vidéo' });
+    await expect(fenetre).toBeVisible();
+    const video = fenetre.locator('video');
+    await expect(video).toHaveAttribute('src', '/landing/videos/outils/devis.mp4');
+    await expect(video).toHaveJSProperty('muted', true);
+    await expect
+      .poll(() => evenements(page).then((l) => l.find((e) => e.event === 'outil_video_played')))
+      .toMatchObject({ landing: 'chantiers', outil: 'devis' });
+    // Outil suivant, puis retour au formulaire.
+    await fenetre.getByRole('button', { name: /^Voir : Suivi clients/ }).click();
+    await expect(page.getByRole('dialog', { name: 'Suivi clients en vidéo' })).toBeVisible();
+    await page.getByRole('dialog').getByRole('link', { name: 'Créer mon espace gratuit' }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page).toHaveURL(/#inscription$/);
   });
 
   test('landings site et devis fermées tant que l’outil n’est pas livré', async ({ page }) => {

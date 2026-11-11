@@ -88,6 +88,16 @@ const capture = (image: string | null, url: string, legende: string): CaptureLan
 
 const BADGES = ['Gratuit pour commencer', 'Sans abonnement', '0 % de commission'];
 
+/**
+ * Section « tout est gratuit » : les clients sont gratuits, les outils aussi ; chaque outil s'ouvre
+ * sur sa vidéo de présentation.
+ */
+const ECO = {
+  titre: 'Les clients sont gratuits. Les outils aussi.',
+  texte:
+    'Chez Portail Travaux, les demandes de particuliers vous arrivent gratuitement, et tous les outils pour les transformer en chantiers sont gratuits eux aussi. Touchez un outil pour le voir en vidéo.',
+};
+
 const CONTENU: Record<OutilLanding, Brut> = {
   chantiers: {
     surtitre: 'Demandes de travaux près de chez vous',
@@ -205,10 +215,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     ],
     ctaTitre: 'Voyez les demandes près de chez vous.',
     barreMobile: 'Créer mon espace gratuit',
-    eco: {
-      titre: 'Votre espace gratuit inclut aussi',
-      texte: 'Tous les outils au même endroit. Rien à installer, rien à payer pour commencer.',
-    },
+    eco: ECO,
   },
   site: {
     surtitre: 'Site internet pour artisans du bâtiment',
@@ -357,11 +364,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     ],
     ctaTitre: 'Vos concurrents ont un site. Vous aussi, dès aujourd’hui.',
     barreMobile: 'Créer mon site gratuitement',
-    eco: {
-      titre: 'Et ce n’est que le début',
-      texte:
-        'Le même compte gratuit vous donne aussi vos devis, vos factures, vos avis et les demandes de travaux près de chez vous. Vous ne payez toujours rien.',
-    },
+    eco: ECO,
   },
   devis: {
     surtitre: 'Devis et factures pour le bâtiment',
@@ -479,10 +482,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     ],
     ctaTitre: 'Votre premier devis, en quelques minutes.',
     barreMobile: 'Créer mon espace gratuit',
-    eco: {
-      titre: 'Votre espace gratuit inclut aussi',
-      texte: 'Tous les outils au même endroit. Rien à installer, rien à payer pour commencer.',
-    },
+    eco: ECO,
   },
 };
 

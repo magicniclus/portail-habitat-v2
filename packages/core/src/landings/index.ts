@@ -23,6 +23,7 @@ export const EVENEMENTS_LANDING = [
   'hero_form_started',
   'hero_form_submitted',
   'demo_played',
+  'outil_video_played',
   'pricing_section_viewed',
   'site_example_clicked',
   'faq_opened',

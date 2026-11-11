@@ -122,12 +122,13 @@ describe('LAND-04 : preuve sociale', () => {
 });
 
 describe('LAND-06 : événements analytics', () => {
-  it('les 9 événements, toujours avec `landing`', () => {
+  it('les 10 événements, toujours avec `landing`', () => {
     expect(EVENEMENTS_LANDING).toEqual([
       'landing_site_view',
       'hero_form_started',
       'hero_form_submitted',
       'demo_played',
+      'outil_video_played',
       'pricing_section_viewed',
       'site_example_clicked',
       'faq_opened',
