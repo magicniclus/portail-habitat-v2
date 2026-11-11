@@ -71,6 +71,7 @@ export async function proxy(requete: NextRequest) {
       production,
       empreinte: await empreinteSite(),
       empreinteSuivi: await empreinteSuivi(),
+      emulateurs: emulateurs(),
     });
     for (const [k, v] of Object.entries(enTetesSecurite({ production, csp, site: true })))
       reponse.headers.set(k, v);

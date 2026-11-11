@@ -83,6 +83,21 @@ describe('sites artisans', () => {
     expect(directive(csp, 'connect-src')).toContain("'self'");
   });
 
+  it('images du Storage local (émulateur) autorisées hors production seulement', () => {
+    const local = politiqueSite({
+      production: false,
+      empreinte: 'sha256-abc',
+      emulateurs: ['127.0.0.1:9199'],
+    });
+    expect(directive(local, 'img-src')).toContain('http://127.0.0.1:9199');
+    const prod = politiqueSite({
+      production: true,
+      empreinte: 'sha256-abc',
+      emulateurs: ['127.0.0.1:9199'],
+    });
+    expect(prod).not.toContain('127.0.0.1');
+  });
+
   it('HSTS sans sous-domaines sur le domaine de l’artisan, cadre autorisé pour l’aperçu', () => {
     const h = enTetesSecurite({ production: true, csp: 'x', site: true });
     expect(h['Strict-Transport-Security']).toBe('max-age=31536000');

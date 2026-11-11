@@ -110,7 +110,10 @@ export function politiqueSite(o: {
   empreinte: string;
   /** Script fixe du suivi publicitaire (balise Google, pixel Meta), chargé après consentement. */
   empreinteSuivi?: string;
+  /** Émulateurs Firebase (hôte:port) : images du Storage local, hors production seulement. */
+  emulateurs?: string[];
 }): string {
+  const storageLocal = o.production ? '' : (o.emulateurs ?? []).map((h) => ` http://${h}`).join('');
   const turnstile = 'https://challenges.cloudflare.com';
   // Balise Google (Analytics, Ads, Tag Manager) et pixel Meta : appelés seulement après « Tout
   // accepter », et seulement si l'artisan a saisi un identifiant (sinon aucun script n'existe).
@@ -122,7 +125,7 @@ export function politiqueSite(o: {
     `script-src '${o.empreinte}'${o.empreinteSuivi ? ` '${o.empreinteSuivi}'` : ''} ${turnstile} https://www.googletagmanager.com https://connect.facebook.net`,
     "style-src 'self' 'unsafe-inline'",
     // Fond de l'élément Carte (tuiles OpenStreetMap, attribution affichée).
-    `img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com https://tile.openstreetmap.org ${google} https://www.facebook.com`,
+    `img-src 'self' data: https://firebasestorage.googleapis.com https://storage.googleapis.com https://tile.openstreetmap.org ${google} https://www.facebook.com${storageLocal}`,
     "font-src 'self'",
     `connect-src 'self' ${turnstile} ${google} ${meta}`,
     `frame-src ${turnstile} https://www.youtube-nocookie.com https://www.googletagmanager.com`,
