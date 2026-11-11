@@ -18,6 +18,10 @@ export function brancherGestes(o: {
   debut: () => number;
   pas: () => number;
   derniere: number;
+  /** Appelé dès le début d'une glissade : l'animation part tout de suite, sans attendre la page. */
+  surEtape: (i: number) => void;
+  /** Durée commune de la glissade et de la transition (s). */
+  duree: number;
 }) {
   const proxy = { y: 0 };
   let animation = false;
@@ -29,11 +33,12 @@ export function brancherGestes(o: {
   const position = (i: number) => Math.round(o.debut() + i * o.pas());
   const aller = (i: number) => {
     animation = true;
+    o.surEtape(i);
     proxy.y = window.scrollY;
     o.gsap.killTweensOf(proxy);
     o.gsap.to(proxy, {
       y: position(i),
-      duration: 0.75,
+      duration: o.duree,
       ease: 'power2.inOut',
       onUpdate: () => window.scrollTo(0, proxy.y),
       onComplete: () => {
@@ -125,6 +130,8 @@ export function brancherGestes(o: {
   window.addEventListener('keydown', clavier);
   return {
     aller,
+    /** Vrai pendant une glissade : la position de la page ne décide pas de l'étape. */
+    enCours: () => animation,
     arreter: () => {
       o.gsap.killTweensOf(proxy);
       window.removeEventListener('wheel', molette);
