@@ -1,5 +1,6 @@
 import { decouperGras, type preuveSociale } from '@ph/core/landings';
-import { bouton, cn, Logo } from '@ph/ui';
+import { UserCircleIcon } from '@phosphor-icons/react/ssr';
+import { cn, Logo } from '@ph/ui';
 import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { bande, conteneur, titre2 } from './styles';
@@ -8,8 +9,19 @@ import { bande, conteneur, titre2 } from './styles';
 export function EnTeteLanding() {
   return (
     <>
-      <p className="m-0 bg-accent-900 px-5 py-[9px] text-center text-[13.5px] font-semibold text-blanc">
-        100 % gratuit · Sans carte bancaire
+      <p className="m-0 flex items-center justify-center gap-x-4 gap-y-1 border-b border-accent-300 bg-accent-100 px-5 py-[9px] text-center text-[13.5px] font-semibold text-accent-800">
+        <span className="inline-flex items-center gap-1.5">
+          <span aria-hidden="true" className="font-bold text-accent">
+            ✓
+          </span>
+          100 % gratuit
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span aria-hidden="true" className="font-bold text-accent">
+            ✓
+          </span>
+          Sans carte bancaire
+        </span>
       </p>
       <header className="border-b border-trait bg-fond">
         <div className={cn(conteneur, 'flex min-h-14 items-center justify-between py-2')}>
@@ -18,8 +30,9 @@ export function EnTeteLanding() {
           </Link>
           <Link
             href={routes.connexionPro}
-            className={bouton({ variant: 'secondaire', className: 'text-[15px]' })}
+            className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-accent-300 bg-accent-100 px-4 text-[15px] font-semibold text-accent-800 no-underline transition-colors hover:border-accent hover:bg-accent-100/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
+            <UserCircleIcon size={20} weight="bold" aria-hidden="true" />
             Espace pro
           </Link>
         </div>

@@ -17,7 +17,7 @@ import { cheminVideoOutil, dureeVideo, VIDEOS_OUTILS } from './videosOutils';
 const BADGES = ['Sans abonnement', 'Sans carte bancaire', 'Sans commission'];
 
 /**
- * « Les clients sont gratuits. Les outils aussi. » (LANDINGS §3.7) : chaque outil est une carte
+ * « Les clients sont gratuits. Les outils aussi. » (LANDINGS §3.7, fond clair) : chaque outil est une carte
  * vidéo qui s'ouvre dans une fenêtre sur son film de présentation ; l'outil de la page en premier.
  * Aucun lien vers une autre landing : la fenêtre ramène au formulaire.
  */
@@ -38,30 +38,30 @@ export function OutilsGratuits({
   return (
     <section
       data-section-gratuit
-      className="relative overflow-clip bg-texte py-[clamp(56px,7vw,104px)] text-blanc"
+      className="relative overflow-clip bg-neutre-100 py-[clamp(56px,7vw,104px)] text-texte"
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_85%_0%,color-mix(in_srgb,var(--accent)_28%,transparent),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_85%_0%,color-mix(in_srgb,var(--accent)_12%,transparent),transparent_70%)]"
       />
       <div className={cn(conteneur, 'relative grid gap-[clamp(28px,4vw,48px)]')}>
         <div className="grid max-w-[760px] gap-4">
-          <span className="w-fit rounded-pill border border-blanc/20 bg-blanc/10 px-3 py-1 text-[13px] font-bold tracking-[0.06em] text-accent-300 uppercase">
+          <span className="w-fit rounded-pill border border-accent-300 bg-accent-100 px-3 py-1 text-[13px] font-bold tracking-[0.06em] text-accent-800 uppercase">
             100 % gratuit
           </span>
           <h2 className="m-0 text-[clamp(30px,4.2vw,52px)] leading-[1.06] tracking-[-0.02em]">
-            {debut} <span className="text-accent-400">{fin}</span>
+            {debut} <span className="text-accent-700">{fin}</span>
           </h2>
-          <p className="m-0 text-[clamp(16px,1.7vw,18.5px)] leading-[1.6] text-blanc/80">
+          <p className="m-0 text-[clamp(16px,1.7vw,18.5px)] leading-[1.6] text-neutre-800">
             {eco.texte}
           </p>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
             {BADGES.map((b) => (
               <li
                 key={b}
-                className="inline-flex items-center gap-2 rounded-pill border border-blanc/15 bg-blanc/5 px-3.5 py-2 text-[14.5px] font-semibold"
+                className="inline-flex items-center gap-2 rounded-pill border border-accent-300 bg-blanc px-3.5 py-2 text-[14.5px] font-semibold"
               >
-                <span aria-hidden="true" className="font-bold text-accent-400">
+                <span aria-hidden="true" className="font-bold text-accent">
                   ✓
                 </span>
                 {b}
@@ -115,9 +115,9 @@ function CarteOutil(p: {
       onClick={p.onOuvrir}
       aria-haspopup="dialog"
       aria-label={`${p.titre} : voir la vidéo${duree ? ` (${dureeVideo(duree)})` : ''}`}
-      className="group grid h-full w-full cursor-pointer content-start gap-0 overflow-hidden rounded-[18px] border border-blanc/10 bg-blanc/[0.04] p-0 text-left font-[inherit] text-blanc transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-accent-400/60 hover:bg-blanc/[0.07] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-400 max-sm:grid-cols-[minmax(0,42%)_minmax(0,1fr)] max-sm:items-center"
+      className="group grid h-full w-full cursor-pointer content-start gap-0 overflow-hidden rounded-[18px] border border-trait bg-blanc p-0 text-left font-[inherit] text-texte shadow-sm transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-accent-300 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent max-sm:grid-cols-[minmax(0,42%)_minmax(0,1fr)] max-sm:items-center"
     >
-      <span className="relative block aspect-video overflow-hidden bg-neutre-900">
+      <span className="relative block aspect-video overflow-hidden bg-accent-100">
         {/* eslint-disable-next-line @next/next/no-img-element -- affiche WebP déjà légère (800 px), sans coût d'optimisation */}
         <img
           src={`${cheminVideoOutil(p.id)}.webp`}
@@ -128,7 +128,7 @@ function CarteOutil(p: {
         />
         <span
           aria-hidden="true"
-          className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,color-mix(in_srgb,var(--color-texte)_70%,transparent))]"
+          className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,color-mix(in_srgb,var(--color-texte)_35%,transparent))]"
         />
         <span
           aria-hidden="true"
@@ -139,24 +139,24 @@ function CarteOutil(p: {
           </svg>
         </span>
         {duree ? (
-          <span className="absolute right-2.5 bottom-2.5 rounded-[6px] bg-texte/80 px-1.5 py-0.5 text-xs font-bold tabular-nums max-sm:hidden">
+          <span className="absolute right-2.5 bottom-2.5 rounded-[6px] bg-texte/80 px-1.5 py-0.5 text-xs font-bold text-blanc tabular-nums max-sm:hidden">
             {dureeVideo(duree)}
           </span>
         ) : null}
         {p.actif ? (
-          <span className="absolute top-2.5 left-2.5 rounded-pill bg-accent px-2.5 py-1 text-xs font-bold max-sm:hidden">
+          <span className="absolute top-2.5 left-2.5 rounded-pill bg-accent px-2.5 py-1 text-xs font-bold text-blanc max-sm:hidden">
             Sur cette page
           </span>
         ) : null}
       </span>
       <span className="grid gap-1.5 p-[clamp(14px,1.8vw,20px)]">
         <span className="flex items-center gap-2.5 text-[clamp(16px,1.6vw,18px)] leading-tight font-bold">
-          <span className="text-accent-400">
+          <span className="text-accent-700">
             <IconeLanding nom={p.icone} taille={20} />
           </span>
           {p.titre}
         </span>
-        <span className="text-[14.5px] leading-[21px] text-blanc/70 max-sm:line-clamp-2">
+        <span className="text-[14.5px] leading-[21px] text-neutre-800 max-sm:line-clamp-2">
           {p.texte}
         </span>
       </span>
