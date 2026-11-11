@@ -181,10 +181,21 @@ test.describe('Landings par outil', () => {
     await expect.poll(y).toBeLessThan(debut + 4);
     expect(await y()).toBeGreaterThan(debut - 4);
     await page.waitForTimeout(400);
-    for (let k = 0; k < 25; k++) {
-      await page.mouse.wheel(0, 120); // rafale continue
-      await page.waitForTimeout(30);
-    }
+    // Rafale continue (élan du pavé tactile : un événement toutes les 16 ms), émise dans la page
+    // pour ne pas dépendre de la vitesse de la machine de test.
+    await page.evaluate(
+      () =>
+        new Promise<void>((fini) => {
+          let n = 0;
+          const id = setInterval(() => {
+            window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120, cancelable: true }));
+            if (++n >= 25) {
+              clearInterval(id);
+              fini();
+            }
+          }, 16);
+        }),
+    );
     await calme(debut + pas);
     await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
     await page.keyboard.press('ArrowDown');
