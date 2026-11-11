@@ -1,5 +1,4 @@
 import { cn, Logo } from '@ph/ui';
-import { LienNePlusMesurer } from '@/features/comportement/LienNePlusMesurer';
 import { LienGererCookies } from '@/features/cookies/BandeauCookies';
 import Link from 'next/link';
 import type { LienNav } from './EnTetePublic';
@@ -11,7 +10,7 @@ export interface ColonnePied {
 
 /**
  * Pied de page public : marque et accroche à gauche, colonnes de liens titrées, barre du bas
- * (copyright à gauche, cookies et mesure à droite). `clair` (pages pro : landing, acquisition) :
+ * (copyright à gauche, cookies à droite). `clair` (pages pro : landing, acquisition) :
  * fond blanc dans la continuité des pages ; sinon fond accent-900 (pages particuliers).
  */
 export function PiedPublic({
@@ -85,7 +84,6 @@ export function PiedPublic({
           </span>
           <span className="flex flex-wrap items-center gap-x-5">
             <LienGererCookies className={lienBas} />
-            <LienNePlusMesurer className={lienBas} />
           </span>
         </p>
       </div>

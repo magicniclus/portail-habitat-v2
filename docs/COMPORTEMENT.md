@@ -133,7 +133,7 @@ Replays : Cloud Storage `replays/` (gzip, cycle de vie 30 j). BigQuery uniquemen
 - Mesure **soumise au consentement** : catégorie « Mesure d'audience détaillée » dans le bandeau, refusable aussi simplement qu'acceptable. La politique cookies liste la finalité, la durée (35 jours pour les résumés de visite, 13 mois pour les agrégats anonymes, 30 jours pour les replays) et le fait que tout est hébergé en UE.
 - Aucune donnée saisie, aucun contenu, aucune IP en clair (hachage salé, rotation quotidienne du sel), aucun identifiant de compte dans les événements.
 - Les replays ne montrent **ni texte saisi, ni données personnelles affichées** : les pages publiques ne contiennent pas de données personnelles, et les espaces connectés ne sont **pas suivis**.
-- Droit d'opposition : lien « Ne plus mesurer ma visite » dans le pied de page.
+- Droit d'opposition : « Gérer les cookies » dans le pied de page rouvre le choix (« Tout refuser » coupe la mesure). Le lien « Ne plus mesurer ma visite » a été retiré à la demande du propriétaire (11/11/2026).
 
 ## 8. Variables et coûts
 ```

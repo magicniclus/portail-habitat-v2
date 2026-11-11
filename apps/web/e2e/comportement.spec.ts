@@ -52,12 +52,18 @@ test.describe('Mesure du comportement', () => {
     expect(JSON.parse(corps)).toMatchObject({ page: 'acquisition-artisans', app: 'pro', v: 1 });
   });
 
-  test('« Ne plus mesurer ma visite » coupe la mesure', async ({ page }) => {
+  test('« Gérer les cookies » (pied de page) permet de retirer son accord et coupe la mesure', async ({
+    page,
+  }) => {
     const envois = await capter(page);
     await page.goto('/');
     await choisir(page, 'Tout accepter');
-    await page.getByRole('button', { name: 'Ne plus mesurer ma visite' }).click();
-    await expect(page.getByRole('status').filter({ hasText: /plus mesurée/ })).toBeVisible();
+    await page.locator('footer').getByRole('button', { name: 'Gérer les cookies' }).click();
+    const fenetre = page.getByRole('dialog', { name: 'Gérer les cookies' });
+    await fenetre.getByRole('checkbox', { name: /Mesure d.audience détaillée/ }).uncheck();
+    await fenetre.getByRole('button', { name: 'Enregistrer mes choix' }).click();
+    await expect(fenetre).toHaveCount(0);
+    envois.length = 0;
     await page.goto('/aide');
     await page.waitForTimeout(300);
     expect(envois).toHaveLength(0);
