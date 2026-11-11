@@ -18,7 +18,7 @@ Seuls varient : surtitre, H1, sous-titre (gras via `**…**`), bénéfices + cap
 1. Bandeau « 100 % gratuit · Sans carte bancaire » · header
 2. Hero : surtitre, H1, sous-titre, points (site : 4 points), formulaire 4 champs (CTA site : « Créer mon espace et mon site »)
 3. Site uniquement : démo `SiteGenerationDemo` (6 étapes animées, remplaçable par vidéo via props `demoVideo` / `demoPoster`, WebM + MP4)
-4. Trois étapes « scrollytelling » : panneau `position:sticky` ; **GSAP 3.12 + ScrollTrigger** : un trigger sur la zone, transitions jouées dans le temps (0,85 s, opacité et transformations seulement, décor fixe) lancées dès le début du geste ; molette, doigt et clavier interceptés dans la zone (`gesteEtapes.ts`) : un geste = une étape, jamais deux, quelle que soit sa force, élan ignoré ; `snap` seulement après un glissé de la barre, durée 0,35–0,7 s `power3.inOut`, sortie libre après la 3e / avant la 1re. `html { scroll-behavior: auto }` obligatoire (le smooth CSS casse le snap GSAP). Titres de section : apparition `y:28 → 0` une fois, désactivée si `prefers-reduced-motion`. En production : `npm i gsap`, `useGSAP` + `gsap.context` pour le nettoyage.
+4. Trois étapes « scrollytelling » : panneau `position:sticky` ; **GSAP 3.12 + ScrollTrigger** : un trigger sur la zone, animation liée au défilement (`scrub` 0,35), dans les deux sens, défilement libre sans aimantation ; opacité et transformations seulement, décor fixe, sortie libre après la 3e / avant la 1re. `html { scroll-behavior: auto }` obligatoire (le smooth CSS se bat avec ScrollTrigger). Titres de section : apparition `y:28 → 0` une fois, désactivée si `prefers-reduced-motion`. En production : `npm i gsap`, `useGSAP` + `gsap.context` pour le nettoyage.
 5. Comment ça marche (3 étapes) · vitrine (site publié ordinateur + téléphone)
 6. Site uniquement : « Un vrai site », exemples par métier (emplacements à remplacer par de vrais sites), section demandes
 7. Outils inclus (cartes → formulaire, jamais vers une autre landing)
@@ -50,7 +50,7 @@ Captures produit chargées à l'approche (lazy), dimensions fixées (pas de CLS)
 ## 8. Critères d'acceptation
 - **LAND-01** chaque landing transmet sa `source` et elle est visible sur le compte créé
 - **LAND-02** une seule action primaire orange par écran ; aucun prix dans le hero
-- **LAND-03** étapes : un geste de défilement = une étape, sortie libre après la 3e (et avant la 1re en remontant), aucun saut ni blocage, OK souris, pavé tactile, doigt, clavier
+- **LAND-03** étapes : l’animation suit le défilement dans les deux sens (pas d’aimantation), sortie libre après la 3e (et avant la 1re en remontant), aucun saut ni blocage, OK souris, pavé tactile, doigt, clavier
 - **LAND-04** preuve sociale absente si aucune donnée réelle
 - **LAND-05** barre mobile absente quand un formulaire est visible ; tous les CTA mènent au formulaire
 - **LAND-06** les 9 événements analytics remontent avec `landing`

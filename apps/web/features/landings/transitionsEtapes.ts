@@ -1,9 +1,13 @@
 import type { gsap as Gsap } from 'gsap';
 
+/** Part de chaque tranche de défilement où l'étape reste immobile, avant et après le passage. */
+const PALIER = 0.12;
+
 /**
- * Chorégraphie des passages d'étape, sur une frise en pause : l'étiquette `i` (temps i) montre
- * l'étape i, le passage i → i+1 occupe [i, i+1]. Seules l'opacité et les transformations bougent
- * (animées par la carte graphique) : aucune couleur, ombre ou taille recalculée pendant le passage.
+ * Chorégraphie des passages d'étape, liée au défilement : le temps i correspond à l'étape i
+ * affichée ; le passage i → i+1 occupe [i + PALIER, i + 1 - PALIER], et chaque étape reste
+ * immobile un instant de part et d'autre. Seules l'opacité et les transformations bougent
+ * (animées par la carte graphique) : rien n'est recalculé pendant le défilement.
  */
 export function construireTransitions(gsap: typeof Gsap, racine: HTMLElement, derniere: number) {
   const tous = (sel: string) => [...racine.querySelectorAll<HTMLElement>(sel)];
@@ -11,56 +15,58 @@ export function construireTransitions(gsap: typeof Gsap, racine: HTMLElement, de
   const textes = tous('[data-texte]');
   const ligne = racine.querySelector<HTMLElement>('[data-ligne]');
   const tl = gsap.timeline({ paused: true });
+  const d = 1 - 2 * PALIER; // durée d'un passage
   for (let i = 0; i < derniere; i++) {
+    const t = i + PALIER;
     const [scA, scB, txA, txB] = [scenes[i], scenes[i + 1], textes[i], textes[i + 1]];
-    const details = (sc: HTMLElement) => sc.querySelectorAll('[data-puce], [data-legende]');
-    // Sortie : pastilles et légende s'effacent tout de suite ; la capture recule et s'éteint
-    // pendant que la suivante, opaque, glisse par-dessus (jamais deux images floues mêlées).
+    // Sortie : pastilles et légende partent d'abord ; la capture recule et s'éteint pendant que
+    // la suivante, opaque, glisse par-dessus (jamais deux images floues mêlées).
     if (scA) {
-      tl.to(details(scA), { autoAlpha: 0, y: -8, duration: 0.18, ease: 'power1.in' }, i);
-      tl.to(scA, { autoAlpha: 0, y: -28, scale: 0.92, duration: 0.8, ease: 'power2.inOut' }, i);
+      tl.to(
+        scA.querySelectorAll('[data-puce], [data-legende]'),
+        { autoAlpha: 0, y: -10, duration: d * 0.25, stagger: d * 0.03, ease: 'none' },
+        t,
+      );
+      tl.to(scA, { autoAlpha: 0, y: -40, scale: 0.9, duration: d, ease: 'power1.inOut' }, t);
     }
     if (scB) {
+      tl.fromTo(scB, { y: 220 }, { y: 0, duration: d * 0.8, ease: 'power2.out' }, t + d * 0.08);
       tl.fromTo(
         scB,
-        { y: 150, scale: 1 },
-        { y: 0, scale: 1, duration: 0.78, ease: 'power3.out' },
-        i + 0.04,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: d * 0.15, ease: 'none' },
+        t + d * 0.08,
       );
-      tl.fromTo(scB, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.16, ease: 'none' }, i + 0.04);
-      const [puces, legende] = [
-        scB.querySelectorAll('[data-puce]'),
-        scB.querySelector('[data-legende]'),
-      ];
       tl.fromTo(
-        puces,
-        { autoAlpha: 0, y: 14, scale: 0.92 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.34, stagger: 0.07, ease: 'back.out(1.7)' },
-        i + 0.5,
+        scB.querySelectorAll('[data-puce]'),
+        { autoAlpha: 0, y: 18, scale: 0.9 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: d * 0.3, stagger: d * 0.08, ease: 'power2.out' },
+        t + d * 0.6,
       );
+      const legende = scB.querySelector('[data-legende]');
       if (legende)
         tl.fromTo(
           legende,
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.3, ease: 'none' },
-          i + 0.55,
+          { autoAlpha: 1, duration: d * 0.2, ease: 'none' },
+          t + d * 0.75,
         );
     }
     // Textes : l'un sort, puis l'autre entre (jamais superposés).
-    if (txA) tl.to(txA, { autoAlpha: 0, y: -12, duration: 0.24, ease: 'power1.in' }, i);
+    if (txA) tl.to(txA, { autoAlpha: 0, y: -16, duration: d * 0.3, ease: 'power1.in' }, t);
     if (txB)
       tl.fromTo(
         txB,
-        { autoAlpha: 0, y: 14 },
-        { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' },
-        i + 0.26,
+        { autoAlpha: 0, y: 18 },
+        { autoAlpha: 1, y: 0, duration: d * 0.45, ease: 'power2.out' },
+        t + d * 0.35,
       );
-    // Ligne de progression : elle avance d'un cran à chaque étape, sans à-coup.
+    // Ligne de progression : elle suit exactement le défilement.
     if (ligne)
       tl.fromTo(
         ligne,
         { scaleY: i / derniere },
-        { scaleY: (i + 1) / derniere, duration: 0.9, ease: 'power2.inOut', immediateRender: false },
+        { scaleY: (i + 1) / derniere, duration: 1, ease: 'none', immediateRender: false },
         i,
       );
   }

@@ -4,7 +4,6 @@ import type { Benefice } from '@ph/core/landings';
 import { cn } from '@ph/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CaptureEcran } from './CaptureEcran';
-import { brancherGestes } from './gesteEtapes';
 import { chargerGsap } from './gsap';
 import { IconeLanding } from './IconeLanding';
 import { ListeEtapes } from './ListeEtapes';
@@ -16,16 +15,13 @@ const DERNIERE = 2;
 /** Ordinateur et animations permises : sinon, les trois étapes s'empilent simplement. */
 const MEDIA = '(min-width: 900px) and (prefers-reduced-motion: no-preference)';
 /** Défilement consacré à chaque étape (part de la hauteur de fenêtre). */
-const PAS_VH = 0.75;
-/** Durée d'un passage d'étape (s) : glissade de la page et transition ensemble. */
-const DUREE = 0.85;
+const PAS_VH = 0.9;
 
 /**
- * Trois étapes (LANDINGS §3.4, LAND-03) : panneau collant ; chaque passage d'étape est une
- * transition jouée dans le temps, lancée dès le début du geste pendant que la page glisse avec
- * elle. Un geste (molette douce ou forte, doigt, clavier) = une étape, comme les pages produit
- * Apple (`brancherGestes`) ; avant la 1re et après la 3e, défilement libre. Sur téléphone ou avec
- * `prefers-reduced-motion`, liste simple sans animation.
+ * Trois étapes (LANDINGS §3.4, LAND-03) : panneau collant, et l'animation change au fur et à
+ * mesure du défilement, dans les deux sens (la capture suivante glisse par-dessus, les pastilles
+ * se posent, le texte change, la ligne avance). Défilement libre, sans aimantation. Sur
+ * téléphone ou avec `prefers-reduced-motion`, liste simple sans animation.
  */
 export function EtapesDefilement({
   benefices,
@@ -74,48 +70,32 @@ export function EtapesDefilement({
       };
       mesurer();
 
-      let actuelle = 0;
-      let gestes: ReturnType<typeof brancherGestes> | undefined;
       let st: ScrollTrigger | undefined;
       const ctx = gsap.context(() => {
         const tl = construireTransitions(gsap, s, DERNIERE);
-        const montrer = (i: number) => {
-          if (i === actuelle) return;
-          actuelle = i;
-          setEtape(i);
-          tl.tweenTo(i, {
-            duration: DUREE * Math.abs(i - tl.time()),
-            ease: 'none',
-            overwrite: true,
-          });
-        };
         animerEntree(gsap, s);
-        // La position de la page ne décide de l'étape que pour un défilement libre (barre).
+        // L'animation avance et recule exactement avec le défilement (lissage léger pour la
+        // molette, qui avance par crans). Aucune aimantation : la page reste où on la laisse.
         st = ScrollTrigger.create({
           trigger: z,
           start: () => `top ${geo.haut}px`,
           end: () => `+=${DERNIERE * geo.pas}`,
-          invalidateOnRefresh: true,
+          animation: tl,
+          scrub: 0.35,
           onRefreshInit: mesurer,
-          onUpdate: (self) => {
-            if (!gestes?.enCours()) montrer(Math.round(self.progress * DERNIERE));
-          },
-        });
-        gestes = brancherGestes({
-          gsap,
-          debut: () => st?.start ?? 0,
-          pas: () => geo.pas,
-          derniere: DERNIERE,
-          surEtape: montrer,
-          duree: DUREE,
+          onUpdate: (self) =>
+            setEtape(Math.min(DERNIERE, Math.floor(self.progress * DERNIERE + 0.5))),
         });
       }, s);
-      allerA.current = gestes?.aller ?? null;
+      // Clic sur une étape : la page défile en douceur jusqu'à elle.
+      allerA.current = (i) => {
+        if (!st) return;
+        window.scrollTo({ top: Math.round(st.start + i * geo.pas), behavior: 'smooth' });
+      };
       // Les images arrivent après la mesure : on remesure quand tout est chargé.
       const remesurer = () => ScrollTrigger.refresh();
       window.addEventListener('load', remesurer);
       nettoyer = () => {
-        gestes?.arreter();
         allerA.current = null;
         window.removeEventListener('load', remesurer);
         ctx.revert();
