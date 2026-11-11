@@ -117,7 +117,7 @@ function CarteOutil(p: {
       aria-label={`${p.titre} : voir la vidéo${duree ? ` (${dureeVideo(duree)})` : ''}`}
       className="group grid h-full w-full cursor-pointer content-start gap-0 overflow-hidden rounded-[18px] border border-blanc/10 bg-blanc/[0.04] p-0 text-left font-[inherit] text-blanc transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-accent-400/60 hover:bg-blanc/[0.07] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-400 max-sm:grid-cols-[minmax(0,42%)_minmax(0,1fr)] max-sm:items-center"
     >
-      <span className="relative block aspect-[16/10] overflow-hidden bg-neutre-900">
+      <span className="relative block aspect-video overflow-hidden bg-neutre-900">
         {/* eslint-disable-next-line @next/next/no-img-element -- affiche WebP déjà légère (800 px), sans coût d'optimisation */}
         <img
           src={`${cheminVideoOutil(p.id)}.webp`}

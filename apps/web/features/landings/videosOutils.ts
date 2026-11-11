@@ -1,14 +1,15 @@
 /**
- * Films de présentation des outils (sans voix, sous-titres incrustés, vraies captures de l'espace) :
+ * Vidéos de présentation des outils, façon VSL (sans voix) : accroche, problème, solution, vraies
+ * captures de l'espace animées, preuves chiffrées, appel à l'action, sous-titres mot à mot :
  * `public/landing/videos/outils/{id}.mp4` et son affiche `{id}.webp`. Durées en secondes.
  */
 export const VIDEOS_OUTILS: Record<string, { duree: number }> = {
-  chantiers: { duree: 37 },
-  fiche: { duree: 57 },
-  site: { duree: 60 },
-  devis: { duree: 65 },
-  suivi: { duree: 40 },
-  avis: { duree: 43 },
+  chantiers: { duree: 40 },
+  fiche: { duree: 42 },
+  site: { duree: 46 },
+  devis: { duree: 40 },
+  suivi: { duree: 45 },
+  avis: { duree: 41 },
 };
 
 export const cheminVideoOutil = (id: string) => `/landing/videos/outils/${id}`;

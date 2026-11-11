@@ -54,7 +54,7 @@ export function FenetreVideoOutil({
       {outil ? (
         <video
           key={outil.id}
-          className="block aspect-[16/10] w-full rounded-[12px] bg-neutre-900"
+          className="block aspect-video w-full rounded-[12px] bg-neutre-900"
           src={`${cheminVideoOutil(outil.id)}.mp4`}
           poster={`${cheminVideoOutil(outil.id)}.webp`}
           autoPlay
