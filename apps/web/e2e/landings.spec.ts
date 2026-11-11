@@ -139,7 +139,7 @@ test.describe('Landings par outil', () => {
     for (const e of await evenements(page)) expect(e.landing).toBe('chantiers');
   });
 
-  test('LAND-03 : étapes au défilement, aimantées, sortie libre après la 3e', async ({
+  test('LAND-03 : un geste = une étape (doux ou fort), sortie libre après la 3e', async ({
     page,
   }, info) => {
     test.skip(info.project.name !== 'ordinateur', 'Étapes animées sur ordinateur');
@@ -164,17 +164,33 @@ test.describe('Landings par outil', () => {
     // En remontant, l'animation recule avec le défilement.
     await aller(debut + pas);
     await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
-    // Aimantation : un petit défilement vers le bas se cale sur l'étape suivante.
+    // Un geste = une étape, qu'il soit doux, très fort ou prolongé (élan du pavé tactile).
     await page.mouse.move(400, 400);
+    const y = () => page.evaluate(() => window.scrollY);
+    const calme = async (cible: number) => {
+      await expect.poll(y).toBeGreaterThan(cible - 4);
+      expect(await y()).toBeLessThan(cible + 4);
+      await page.waitForTimeout(400); // fin du geste
+    };
     await aller(debut);
-    await expect(onglet(1)).toHaveAttribute('aria-selected', 'true');
-    await page.waitForTimeout(500);
-    await page.mouse.wheel(0, Math.round(pas * 0.25));
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(debut + pas - 8);
-    expect(await page.evaluate(() => window.scrollY)).toBeLessThan(debut + pas + 8);
+    await page.waitForTimeout(300);
+    await page.mouse.wheel(0, 30); // doux
+    await calme(debut + pas);
     await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
+    await page.mouse.wheel(0, -4000); // très fort vers le haut
+    await expect.poll(y).toBeLessThan(debut + 4);
+    expect(await y()).toBeGreaterThan(debut - 4);
+    await page.waitForTimeout(400);
+    for (let k = 0; k < 25; k++) {
+      await page.mouse.wheel(0, 120); // rafale continue
+      await page.waitForTimeout(30);
+    }
+    await calme(debut + pas);
+    await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('ArrowDown');
+    await calme(debut + 2 * pas);
+    await expect(onglet(3)).toHaveAttribute('aria-selected', 'true');
     // Sortie libre après la 3e : le défilement continue vers la section suivante.
-    await aller(debut + 2 * pas);
     const avant = await page.evaluate(() => window.scrollY);
     await page.mouse.wheel(0, 600);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(avant + 300);

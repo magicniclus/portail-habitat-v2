@@ -4,6 +4,7 @@ import type { Benefice } from '@ph/core/landings';
 import { cn } from '@ph/ui';
 import { useEffect, useRef, useState } from 'react';
 import { CaptureEcran } from './CaptureEcran';
+import { brancherGestes } from './gesteEtapes';
 import { chargerGsap } from './gsap';
 import { IconeLanding } from './IconeLanding';
 import { Decor, POSITIONS_HALOS, Scene } from './ScenesEtapes';
@@ -18,8 +19,8 @@ const PAS_VH = 0.75;
 /**
  * Trois étapes « scrollytelling » (LANDINGS §3.4, LAND-03) : panneau collant, et tout suit la
  * molette (`scrub`) : captures, textes, pastilles, ligne de progression, fond et décor avancent et
- * reculent avec le défilement, puis la page s'aimante sur l'étape la plus proche dans le sens
- * du geste (comme les pages produit Apple) ; arrivé à la 3e, on continue librement. Sur téléphone ou avec
+ * reculent avec le défilement. Un geste (molette forte ou douce, doigt, clavier) = une étape,
+ * comme les pages produit Apple (`brancherGestes`) ; arrivé à la 3e, on continue librement. Sur téléphone ou avec
  * `prefers-reduced-motion`, liste simple sans animation.
  */
 export function EtapesDefilement({
@@ -39,6 +40,7 @@ export function EtapesDefilement({
   const [etape, setEtape] = useState(0);
   const [anime, setAnime] = useState(false);
   const geo = useRef({ pas: 0, haut: 0 });
+  const allerA = useRef<((i: number) => void) | null>(null);
 
   // On passe en mode animé dès que le média le permet ; GSAP n'est chargé que dans ce cas.
   useEffect(() => {
@@ -76,23 +78,25 @@ export function EtapesDefilement({
       };
       mesurer();
 
+      let tl: gsap.core.Timeline | undefined;
       const ctx = gsap.context(() => {
         // Une unité de temps = un passage d'étape ; le passage occupe le milieu de chaque tranche,
         // chaque étape reste lisible un moment avant et après (pas d'état « entre deux »).
-        const tl = gsap.timeline({
+        tl = gsap.timeline({
           defaults: { ease: 'power1.inOut', duration: 0.6 },
           scrollTrigger: {
             trigger: z,
             start: () => `top ${geo.current.haut}px`,
             end: () => `+=${DERNIERE * geo.current.pas}`,
             scrub: 0.6,
-            // Aimantation douce, dans le sens du geste ; après la 3e, le défilement sort librement.
+            // Molette, doigt et clavier passent par brancherGestes ; l'aimantation ne sert
+            // plus qu'après un glissé de la barre de défilement.
             snap: {
               snapTo: 1 / DERNIERE,
-              directional: true,
-              inertia: false, // jamais deux étapes d'un coup
+              directional: false,
+              inertia: false,
               duration: { min: 0.3, max: 0.7 },
-              delay: 0.06,
+              delay: 0.15,
               ease: 'power2.inOut',
             },
             invalidateOnRefresh: true,
@@ -135,7 +139,16 @@ export function EtapesDefilement({
       // Les images arrivent après la mesure : on remesure quand tout est chargé.
       const remesurer = () => ScrollTrigger.refresh();
       window.addEventListener('load', remesurer);
+      const gestes = brancherGestes({
+        gsap,
+        debut: () => tl?.scrollTrigger?.start ?? 0,
+        pas: () => geo.current.pas,
+        derniere: DERNIERE,
+      });
+      allerA.current = gestes.aller;
       nettoyer = () => {
+        gestes.arreter();
+        allerA.current = null;
         window.removeEventListener('load', remesurer);
         ctx.revert();
         z.style.height = '';
@@ -149,12 +162,7 @@ export function EtapesDefilement({
   }, [anime]);
 
   // Clic sur une étape : on défile jusqu'à elle (le défilement fait le reste).
-  const aller = (i: number) => {
-    const z = zone.current;
-    if (!anime || !z) return setEtape(i);
-    const haut = window.scrollY + z.getBoundingClientRect().top - geo.current.haut;
-    window.scrollTo({ top: Math.round(haut + i * geo.current.pas), behavior: 'smooth' });
-  };
+  const aller = (i: number) => (anime && allerA.current ? allerA.current(i) : setEtape(i));
 
   const e = anime ? etape : 0;
   const fonce = e === 2;
