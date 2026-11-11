@@ -168,3 +168,12 @@ describe('hero de /pro : note, avis et artisans (maquette Acquisition v2, D72)',
     });
   });
 });
+
+describe('Chiffres du réseau sous le hero', () => {
+  it('seulement avec les preuves marketing (jamais de chiffre non sourcé sinon)', () => {
+    expect(contenuLanding('chantiers', { preuves: false }).chiffres).toEqual([]);
+    const c = contenuLanding('chantiers', { preuves: true }).chiffres;
+    expect(c.map((x) => x.valeur)).toEqual([6000, 7000, 100]);
+    expect(c[0]!.libelle).toBe('demandes de travaux par mois');
+  });
+});

@@ -63,7 +63,24 @@ export interface ContenuLanding {
   barreMobile: string;
   eco: { titre: string; texte: string };
   avis: AvisLanding[];
+  /** Chiffres du réseau sous le hero : seulement avec les preuves marketing (LANDINGS §7). */
+  chiffres: ChiffreLanding[];
 }
+
+/** Un chiffre animé : `avant` en petit, `valeur` comptée de 0, `apres` collé au nombre. */
+export interface ChiffreLanding {
+  avant?: string;
+  valeur: number;
+  apres?: string;
+  libelle: string;
+}
+
+/** Chiffres du réseau annoncés par le propriétaire (11/11/2026), à dater avant la production. */
+export const CHIFFRES_RESEAU: ChiffreLanding[] = [
+  { avant: 'Plus de', valeur: 6000, libelle: 'demandes de travaux par mois' },
+  { avant: 'Plus de', valeur: 7000, libelle: 'artisans connectés au réseau' },
+  { valeur: 100, apres: ' %', libelle: 'des outils accessibles gratuitement' },
+];
 
 export interface AvisLanding {
   nom: string;
@@ -71,7 +88,7 @@ export interface AvisLanding {
   texte: string;
 }
 
-type Brut = Omit<ContenuLanding, 'surtitre' | 'points' | 'avis' | 'beneficesIntro'> & {
+type Brut = Omit<ContenuLanding, 'surtitre' | 'points' | 'avis' | 'beneficesIntro' | 'chiffres'> & {
   surtitre: string;
   /** Remplace `surtitre` seulement avec une preuve chiffrée datée. */
   surtitrePreuve?: string;
@@ -608,6 +625,7 @@ export function contenuLanding(outil: OutilLanding, o: { preuves: boolean }): Co
     points: o.preuves && pointsPreuve ? [...c.points, ...pointsPreuve] : c.points,
     faq: outil === 'site' ? c.faq : [PIEGE, ...c.faq],
     avis: o.preuves ? AVIS_MAQUETTE : [],
+    chiffres: o.preuves ? CHIFFRES_RESEAU : [],
   };
 }
 

@@ -17,6 +17,7 @@ import { EtapesDefilement } from './EtapesDefilement';
 import { FaqLanding } from './FaqLanding';
 import { AppelFinal } from './AppelFinal';
 import { AvisDefilants } from './AvisDefilants';
+import { ChiffresReseau } from './ChiffresReseau';
 import { CommentCaMarche } from './CommentCaMarche';
 import { OutilsGratuits } from './OutilsGratuits';
 import { EnTeteLanding, PreuveSociale, SousTitre } from './Sections';
@@ -97,6 +98,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
             />
           </div>
         </section>
+        <ChiffresReseau chiffres={c.chiffres} />
         {outil === 'site' ? <DemoCreation /> : null}
         <Zone id="benefices">
           <EtapesDefilement
