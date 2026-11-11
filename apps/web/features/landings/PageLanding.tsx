@@ -7,6 +7,7 @@ import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { piedPro } from '@/features/pro/navigation';
 import { JsonLd } from '@/features/vitrine/JsonLd';
+import { VslPro } from '@/features/pro/VslPro';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
 import { preuvesMarketingActives } from '@/server/flags';
@@ -17,7 +18,7 @@ import { FaqLanding } from './FaqLanding';
 import { AppelFinal } from './AppelFinal';
 import { AvisDefilants } from './AvisDefilants';
 import { CommentCaMarche } from './CommentCaMarche';
-import { OutilsInclus } from './OutilsInclus';
+import { OutilsGratuits } from './OutilsGratuits';
 import { EnTeteLanding, PreuveSociale, SousTitre } from './Sections';
 import { DemoCreation, VraiSite } from './SectionsSite';
 import { bande, coche, conteneur, titre2 } from './styles';
@@ -79,6 +80,10 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
                 </li>
               ))}
             </ul>
+            {/* VSL en démonstration (dev, aperçus, flag) : elle cite un chiffre à prouver (LANDINGS §7). */}
+            {preuves ? (
+              <VslPro className="mt-[clamp(24px,3vw,36px)]" page={`landing-${outil}`} />
+            ) : null}
           </div>
           <div data-formulaire-landing>
             <FormulaireInscription
@@ -104,7 +109,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
         <Vitrine v={c.vitrine} />
         <CommentCaMarche etapes={c.etapes} />
         {outil === 'site' ? <VraiSite /> : null}
-        <OutilsInclus outil={outil} eco={c.eco} points={c.benefices.map((b) => b.titre)} />
+        <OutilsGratuits outil={outil} eco={c.eco} />
         <PreuveSociale p={preuveSociale(donneesPreuve)} />
         <Zone id="faq">
           <section id="faq" className={bande}>

@@ -10,12 +10,19 @@ const BASE = '/landing/videos/vsl-pro';
  * (`preload="none"`), lecture avec le son, sous-titres disponibles. Démonstration seulement : la
  * vidéo cite un chiffre à prouver avant la production (LANDINGS §7).
  */
-export function VslPro({ className }: { className?: string }) {
+export function VslPro({
+  className,
+  page = 'acquisition-artisans',
+}: {
+  className?: string;
+  /** Page d'origine, pour la mesure (`vsl_play`). */
+  page?: string;
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const [lancee, setLancee] = useState(false);
   const lancer = () => {
     setLancee(true);
-    pousserEvenement({ event: 'vsl_play', page: 'acquisition-artisans' });
+    pousserEvenement({ event: 'vsl_play', page });
     void video.current?.play();
   };
   return (
