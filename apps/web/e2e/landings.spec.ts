@@ -139,36 +139,49 @@ test.describe('Landings par outil', () => {
     for (const e of await evenements(page)) expect(e.landing).toBe('chantiers');
   });
 
-  test('LAND-03 : un geste de défilement = une étape, sortie libre après la 3e et avant la 1re', async ({
+  test('LAND-03 : étapes au défilement, aimantées, sortie libre après la 3e', async ({
     page,
   }, info) => {
-    test.skip(info.project.name !== 'ordinateur', 'Aimantation des étapes sur ordinateur');
+    test.skip(info.project.name !== 'ordinateur', 'Étapes animées sur ordinateur');
     await page.goto(URL_LANDING);
     const onglet = (n: number) => page.getByRole('tab', { name: new RegExp(`Étape ${n}`) });
     const zone = page.locator('[data-scrolly]');
     await zone.scrollIntoViewIfNeeded();
-    await page.evaluate(() => {
+    // Début de la zone, puis un passage d'étape par tranche de défilement (75 % de la fenêtre).
+    const debut = await page.evaluate(() => {
       const z = document.querySelector('[data-scrolly]')!;
-      window.scrollTo(0, window.scrollY + z.getBoundingClientRect().top - 44);
+      const p = z.firstElementChild as HTMLElement;
+      return window.scrollY + z.getBoundingClientRect().top - parseFloat(p.style.top || '0');
     });
+    const pas = await page.evaluate(() => Math.round(window.innerHeight * 0.75));
+    const aller = (y: number) => page.evaluate((v) => window.scrollTo(0, v), y);
+    await aller(debut);
     await expect(onglet(1)).toHaveAttribute('aria-selected', 'true');
-    // Fin du défilement programmé (et d'une éventuelle aimantation) avant le premier geste.
-    await page.waitForTimeout(900);
+    await aller(debut + pas);
+    await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
+    await aller(debut + 2 * pas);
+    await expect(onglet(3)).toHaveAttribute('aria-selected', 'true');
+    // En remontant, l'animation recule avec le défilement.
+    await aller(debut + pas);
+    await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
+    // Aimantation : un petit défilement vers le bas se cale sur l'étape suivante.
     await page.mouse.move(400, 400);
-    for (const n of [2, 3]) {
-      await page.mouse.wheel(0, 120);
-      await expect(onglet(n)).toHaveAttribute('aria-selected', 'true');
-      await page.waitForTimeout(900);
-      await expect(onglet(n)).toHaveAttribute('aria-selected', 'true');
-    }
+    await aller(debut);
+    await expect(onglet(1)).toHaveAttribute('aria-selected', 'true');
+    await page.waitForTimeout(500);
+    await page.mouse.wheel(0, Math.round(pas * 0.25));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(debut + pas - 8);
+    expect(await page.evaluate(() => window.scrollY)).toBeLessThan(debut + pas + 8);
+    await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
     // Sortie libre après la 3e : le défilement continue vers la section suivante.
+    await aller(debut + 2 * pas);
     const avant = await page.evaluate(() => window.scrollY);
     await page.mouse.wheel(0, 600);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(avant + 300);
-    // Clavier : un onglet amène à son étape.
-    await zone.scrollIntoViewIfNeeded();
-    await onglet(2).click();
-    await expect(onglet(2)).toHaveAttribute('aria-selected', 'true');
+    // Clic sur une étape : la page défile jusqu'à elle.
+    await aller(debut);
+    await onglet(3).click();
+    await expect(onglet(3)).toHaveAttribute('aria-selected', 'true');
   });
 
   test('landings site et devis fermées tant que l’outil n’est pas livré', async ({ page }) => {

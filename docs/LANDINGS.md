@@ -18,7 +18,7 @@ Seuls varient : surtitre, H1, sous-titre (gras via `**…**`), bénéfices + cap
 1. Bandeau « 100 % gratuit · Sans carte bancaire » · header
 2. Hero : surtitre, H1, sous-titre, points (site : 4 points), formulaire 4 champs (CTA site : « Créer mon espace et mon site »)
 3. Site uniquement : démo `SiteGenerationDemo` (6 étapes animées, remplaçable par vidéo via props `demoVideo` / `demoPoster`, WebM + MP4)
-4. Trois étapes « scrollytelling » : panneau `position:sticky` ; **GSAP 3.12 + ScrollTrigger** : un trigger sur la zone, `snap` directionnel (un geste = une étape, jamais deux), durée 0,35–0,7 s `power3.inOut`, sortie libre après la 3e / avant la 1re. `html { scroll-behavior: auto }` obligatoire (le smooth CSS casse le snap GSAP). Titres de section : apparition `y:28 → 0` une fois, désactivée si `prefers-reduced-motion`. En production : `npm i gsap`, `useGSAP` + `gsap.context` pour le nettoyage.
+4. Trois étapes « scrollytelling » : panneau `position:sticky` ; **GSAP 3.12 + ScrollTrigger** : un trigger sur la zone, animations liées au défilement (`scrub`) et `snap` directionnel (un geste = une étape, jamais deux), durée 0,35–0,7 s `power3.inOut`, sortie libre après la 3e / avant la 1re. `html { scroll-behavior: auto }` obligatoire (le smooth CSS casse le snap GSAP). Titres de section : apparition `y:28 → 0` une fois, désactivée si `prefers-reduced-motion`. En production : `npm i gsap`, `useGSAP` + `gsap.context` pour le nettoyage.
 5. Comment ça marche (3 étapes) · vitrine (site publié ordinateur + téléphone)
 6. Site uniquement : « Un vrai site », exemples par métier (emplacements à remplacer par de vrais sites), section demandes
 7. Outils inclus (cartes → formulaire, jamais vers une autre landing)
