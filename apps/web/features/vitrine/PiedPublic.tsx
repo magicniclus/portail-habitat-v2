@@ -63,7 +63,7 @@ export function PiedPublic({
                       href={l.href}
                       prefetch={l.prefetch}
                       className={cn(
-                        'inline-flex min-h-11 items-center text-[14.5px] no-underline transition-colors',
+                        'inline-flex min-h-11 min-w-11 items-center text-[14.5px] no-underline transition-colors',
                         lien,
                       )}
                     >
