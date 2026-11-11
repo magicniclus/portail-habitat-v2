@@ -4,7 +4,7 @@
  */
 export const VIDEOS_OUTILS: Record<string, { duree: number }> = {
   chantiers: { duree: 37 },
-  fiche: { duree: 46 },
+  fiche: { duree: 57 },
   site: { duree: 60 },
   devis: { duree: 65 },
   suivi: { duree: 40 },
