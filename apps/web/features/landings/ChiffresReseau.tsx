@@ -9,20 +9,26 @@ const DUREE_MS = 1600;
 
 /**
  * Section « chiffres du réseau », juste sous le hero : trois colonnes, chaque nombre compte de 0
- * à sa valeur quand la section arrive à l'écran (une fois). Rendu serveur avec les valeurs finales
- * (sans JavaScript et pour les moteurs) ; `prefers-reduced-motion` : pas de comptage.
+ * à sa valeur dès que la section s'affiche, une seule fois (jamais rejoué). Valeurs finales toujours
+ * lisibles par les lecteurs d'écran ; `prefers-reduced-motion` : valeurs directes, sans comptage.
  */
 export function ChiffresReseau({ chiffres }: { chiffres: ChiffreLanding[] }) {
   const zone = useRef<HTMLElement>(null);
-  const [k, setK] = useState(1);
+  // Les nombres partent de 0 (y compris au rendu serveur, pour ne jamais montrer la valeur finale
+  // puis revenir à 0) ; les lecteurs d'écran et les moteurs lisent toujours la valeur finale.
+  const [k, setK] = useState(0);
   useEffect(() => {
     const el = zone.current;
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (typeof IntersectionObserver === 'undefined') return;
-    // Déjà visible au chargement ou plus bas : on laisse les valeurs finales.
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.85) return;
-    setK(0);
+    if (
+      !el ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      typeof IntersectionObserver === 'undefined'
+    ) {
+      setK(1);
+      return;
+    }
     let id = 0;
+    // Une seule fois : dès que la section est à l'écran (même visible dès le chargement).
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e?.isIntersecting) return;
@@ -35,7 +41,7 @@ export function ChiffresReseau({ chiffres }: { chiffres: ChiffreLanding[] }) {
         };
         id = requestAnimationFrame(pas);
       },
-      { rootMargin: '0px 0px -15% 0px' },
+      { threshold: 0.35 },
     );
     io.observe(el);
     return () => {
