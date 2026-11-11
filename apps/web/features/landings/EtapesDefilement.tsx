@@ -2,7 +2,7 @@
 
 import type { Benefice } from '@ph/core/landings';
 import { cn } from '@ph/ui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CaptureEcran } from './CaptureEcran';
 import { brancherGestes } from './gesteEtapes';
 import { chargerGsap } from './gsap';
@@ -129,6 +129,11 @@ export function EtapesDefilement({
     };
   }, [anime]);
 
+  // Les captures ne sont jamais re-rendues par React pendant un passage (seul GSAP les anime).
+  const scenes = useMemo(
+    () => benefices.map((b, i) => <Scene key={b.titre} b={b} i={i} />),
+    [benefices],
+  );
   const aller = (i: number) => (allerA.current ? allerA.current(i) : setEtape(i));
   const e = anime ? etape : 0;
   return (
@@ -208,11 +213,7 @@ export function EtapesDefilement({
               <div data-plaque className="relative min-w-0 pt-6 pr-6 pb-2 pl-3" aria-hidden="true">
                 {/* Plaque immobile : les captures se relaient dessus. */}
                 <span className="absolute top-0 right-0 bottom-10 left-8 rounded-[24px] border border-accent-300 bg-blanc/60" />
-                <div className="relative grid">
-                  {benefices.map((b, i) => (
-                    <Scene key={b.titre} b={b} i={i} />
-                  ))}
-                </div>
+                <div className="relative grid">{scenes}</div>
               </div>
             ) : null}
           </div>

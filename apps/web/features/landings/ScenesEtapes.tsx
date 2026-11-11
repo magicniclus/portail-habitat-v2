@@ -4,22 +4,27 @@ import { CaptureEcran } from './CaptureEcran';
 
 const mix = (c: string, p: number) => `color-mix(in srgb, ${c} ${p}%, transparent)`;
 
-/** Décor fixe (rien n'y bouge : l'animation reste légère) : lueur douce et grille de points. */
+/**
+ * Décor collé à la fenêtre (il ne glisse pas pendant que la page avance d'une étape à l'autre) :
+ * lueur douce et grille de points, sur une couche à part.
+ */
 export function Decor() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-accent-100">
-      <span
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(60% 50% at 78% 40%, ${mix('var(--accent-400)', 28)} 0%, transparent 70%), radial-gradient(45% 40% at 10% 85%, ${mix('var(--accent)', 12)} 0%, transparent 70%)`,
-        }}
-      />
-      <span
-        className="absolute inset-0 bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_70%_60%_at_60%_50%,#000_20%,transparent_75%)]"
-        style={{
-          backgroundImage: `radial-gradient(${mix('var(--color-texte)', 10)} 1px, transparent 1.2px)`,
-        }}
-      />
+      <div className="sticky top-0 h-screen overflow-hidden [transform:translateZ(0)]">
+        <span
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(60% 50% at 78% 40%, ${mix('var(--accent-400)', 28)} 0%, transparent 70%), radial-gradient(45% 40% at 10% 85%, ${mix('var(--accent)', 12)} 0%, transparent 70%)`,
+          }}
+        />
+        <span
+          className="absolute inset-0 bg-[size:22px_22px] opacity-70"
+          style={{
+            backgroundImage: `radial-gradient(${mix('var(--color-texte)', 10)} 1px, transparent 1.2px)`,
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -82,7 +87,7 @@ export function Scene({ b, i }: { b: Benefice; i: number }) {
           </div>
         ) : null,
       )}
-      <p className="m-0 mt-7 max-w-[52%] text-[13px] leading-[18px] text-neutre-700">
+      <p data-legende className="m-0 mt-7 max-w-[52%] text-[13px] leading-[18px] text-neutre-700">
         {b.capture.legende}
       </p>
     </div>

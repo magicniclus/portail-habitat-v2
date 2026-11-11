@@ -13,38 +13,47 @@ export function construireTransitions(gsap: typeof Gsap, racine: HTMLElement, de
   const tl = gsap.timeline({ paused: true });
   for (let i = 0; i < derniere; i++) {
     const [scA, scB, txA, txB] = [scenes[i], scenes[i + 1], textes[i], textes[i + 1]];
-    // Sortie : l'étape courante recule et s'efface.
-    if (scA)
-      tl.to(scA, { autoAlpha: 0, y: -36, scale: 0.97, duration: 0.42, ease: 'power2.in' }, i);
-    if (txA) tl.to(txA, { autoAlpha: 0, y: -14, duration: 0.32, ease: 'power2.in' }, i);
-    // Entrée : la suivante monte et se pose, puis ses pastilles apparaissent une à une.
+    const details = (sc: HTMLElement) => sc.querySelectorAll('[data-puce], [data-legende]');
+    // Sortie : pastilles et légende s'effacent tout de suite ; la capture recule et s'éteint
+    // pendant que la suivante, opaque, glisse par-dessus (jamais deux images floues mêlées).
+    if (scA) {
+      tl.to(details(scA), { autoAlpha: 0, y: -8, duration: 0.18, ease: 'power1.in' }, i);
+      tl.to(scA, { autoAlpha: 0, y: -28, scale: 0.92, duration: 0.8, ease: 'power2.inOut' }, i);
+    }
     if (scB) {
       tl.fromTo(
         scB,
-        { autoAlpha: 0, y: 64, scale: 0.97 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.62, ease: 'power3.out' },
-        i + 0.3,
+        { y: 150, scale: 1 },
+        { y: 0, scale: 1, duration: 0.78, ease: 'power3.out' },
+        i + 0.04,
       );
-      tl.fromTo(
+      tl.fromTo(scB, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.16, ease: 'none' }, i + 0.04);
+      const [puces, legende] = [
         scB.querySelectorAll('[data-puce]'),
+        scB.querySelector('[data-legende]'),
+      ];
+      tl.fromTo(
+        puces,
         { autoAlpha: 0, y: 14, scale: 0.92 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.36,
-          stagger: 0.07,
-          ease: 'back.out(1.7)',
-        },
-        i + 0.55,
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.34, stagger: 0.07, ease: 'back.out(1.7)' },
+        i + 0.5,
       );
+      if (legende)
+        tl.fromTo(
+          legende,
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.3, ease: 'none' },
+          i + 0.55,
+        );
     }
+    // Textes : l'un sort, puis l'autre entre (jamais superposés).
+    if (txA) tl.to(txA, { autoAlpha: 0, y: -12, duration: 0.24, ease: 'power1.in' }, i);
     if (txB)
       tl.fromTo(
         txB,
-        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 0, y: 14 },
         { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' },
-        i + 0.36,
+        i + 0.26,
       );
     // Ligne de progression : elle avance d'un cran à chaque étape, sans à-coup.
     if (ligne)
