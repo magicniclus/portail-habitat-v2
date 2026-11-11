@@ -3,7 +3,7 @@ import { cn } from '@ph/ui';
 import { CaptureEcran } from './CaptureEcran';
 
 /** Fonds des trois étapes, superposés : leur opacité suit le défilement (aucun saut de couleur). */
-export const FONDS = ['bg-accent-100', 'bg-neutre-100', 'bg-texte'];
+const FONDS = ['bg-accent-100', 'bg-neutre-100', 'bg-texte'];
 const mix = (c: string, p: number) => `color-mix(in srgb, ${c} ${p}%, transparent)`;
 /** Positions des deux halos à chaque étape (x1, y1, x2, y2), interpolées au défilement. */
 export const POSITIONS_HALOS = [
