@@ -43,7 +43,7 @@ Captures produit chargées à l'approche (lazy), dimensions fixées (pas de CLS)
 
 ## 7. À valider avant mise en ligne (bloquant)
 - **Avis du bandeau défilant : fictifs** → remplacer par de vrais avis (nom, métier, ville, photo, accord écrit) ou retirer. Faux avis = pratique commerciale trompeuse.
-- « Premier réseau d'artisans de France » et « Plus de 300 demandes de travaux chaque jour sur le réseau » : preuve chiffrée datée requise, sinon retirer.
+- « Premier réseau d'artisans de France » et « Plus de 200 demandes de travaux chaque jour sur le réseau » : preuve chiffrée datée requise, sinon retirer.
 - « En ligne en 5 minutes », « 3 questions » : conformes au parcours réel de création.
 - « Plusieurs centaines d'euros » (prix agence) : estimation à sourcer ou reformuler.
 - Facture électronique : toujours « en cours de mise en conformité ».

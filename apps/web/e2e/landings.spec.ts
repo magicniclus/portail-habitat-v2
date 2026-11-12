@@ -77,7 +77,7 @@ test.describe('Landings par outil', () => {
       );
     expect(orangesVisibles).toBeLessThanOrEqual(1);
     const texte = await page.locator('body').innerText();
-    expect(texte).not.toMatch(/300 demandes|premier réseau|centaines d.euros/i);
+    expect(texte).not.toMatch(/200 demandes|300 demandes|premier réseau|centaines d.euros/i);
     await expect(page.getByRole('region', { name: 'Avis d’artisans' })).toHaveCount(0);
   });
 

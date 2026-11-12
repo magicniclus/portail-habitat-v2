@@ -50,14 +50,16 @@ describe('landings par outil (LANDINGS §1)', () => {
     for (const o of OUTILS_LANDING) {
       const c = contenuLanding(o, { preuves: false });
       const tout = textes(c).join(' ');
-      expect(tout).not.toMatch(/300|premier réseau|centaines d’euros|centaines d'euros/iu);
+      expect(tout).not.toMatch(
+        /200 demandes|300|premier réseau|centaines d’euros|centaines d'euros/iu,
+      );
       expect(c.avis).toEqual([]);
     }
   });
 
   it('avec preuves activées (config.marketing.preuves) : surtitre chiffré et bandeau d’avis', () => {
     const c = contenuLanding('site', { preuves: true });
-    expect(c.surtitre).toMatch(/300/u);
+    expect(c.surtitre).toMatch(/200 demandes/u);
     expect(c.points).toContain('Premier réseau de France');
     expect(c.avis.length).toBe(20);
   });

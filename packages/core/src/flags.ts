@@ -35,7 +35,7 @@ export const FLAGS = {
   preuvesMarketing: {
     defaut: false,
     description:
-      'config.marketing.preuves : avis de la maquette, « premier réseau », « 300+ demandes/jour » (LANDINGS §7, preuve datée exigée)',
+      'config.marketing.preuves : avis de la maquette, « premier réseau », « 200+ demandes/jour » (LANDINGS §7, preuve datée exigée)',
     retraitPrevu: '2099-12',
   },
   landingSite: {

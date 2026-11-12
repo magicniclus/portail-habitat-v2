@@ -118,7 +118,7 @@ const ECO = {
 const CONTENU: Record<OutilLanding, Brut> = {
   chantiers: {
     surtitre: 'Demandes de travaux près de chez vous',
-    surtitrePreuve: 'Plus de 300 demandes de travaux chaque jour sur le réseau',
+    surtitrePreuve: 'Plus de 200 demandes de travaux chaque jour sur le réseau',
     h1a: 'Trouvez des chantiers',
     h1b: 'gratuitement',
     sousTitre:
@@ -236,7 +236,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
   },
   site: {
     surtitre: 'Site internet pour artisans du bâtiment',
-    surtitrePreuve: 'Plus de 300 demandes de travaux chaque jour sur le réseau',
+    surtitrePreuve: 'Plus de 200 demandes de travaux chaque jour sur le réseau',
     h1a: 'Créez votre site internet d’artisan',
     h1b: 'gratuitement',
     sousTitre:

@@ -630,7 +630,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 - Barre mobile masquée quand un formulaire est visible ; tous les CTA vont au formulaire ; en-tête sans bouton orange (LAND-02).
 - Événements `dataLayer` avec `landing` (`lib/dataLayer.ts`) ; aucun gestionnaire de balises n'est chargé pour l'instant.
 - Preuve sociale lue dans `config/preuveSociale` (nouveau schéma) : masquée sans donnée réelle ; un témoignage sans `accordLe` n'est jamais affiché.
-- Flag `preuvesMarketing` (= `config.marketing.preuves`, désactivé) : seul lui affiche les avis fictifs du bandeau défilant, « Plus de 300 demandes… » et « Premier réseau de France ».
+- Flag `preuvesMarketing` (= `config.marketing.preuves`, désactivé) : seul lui affiche les avis fictifs du bandeau défilant, « Plus de 200 demandes… » (200 par jour, 6 000 par mois : chiffres du propriétaire, 12/11/2026) et « Premier réseau de France ».
 - Landings dans le sitemap et autorisées dans robots.txt malgré `/pro/` ; ajoutées aux pages pro statiques (CSP sans nonce).
 - Tests : `landings.test.ts` (core), LAND-01 sur émulateur (brouillon et compte), `e2e/landings.spec.ts` (LAND-01 à LAND-07 sur 4 appareils).
 
