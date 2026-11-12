@@ -220,10 +220,13 @@ test.describe('Landings par outil', () => {
     await expect(page).toHaveURL(/#inscription$/);
   });
 
-  test('landings site et devis fermées tant que l’outil n’est pas livré', async ({ page }) => {
+  test('landings site et devis ouvertes, avec leur formulaire', async ({ page }) => {
     for (const url of ['/pro/site-internet-artisan', '/pro/logiciel-devis-factures']) {
       const r = await page.goto(url);
-      expect(r?.status()).toBe(404);
+      expect(r?.status()).toBe(200);
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      await expect(page.locator('[data-formulaire-landing]').first()).toBeVisible();
+      await expect(page.locator('[data-section-gratuit]')).toHaveCount(1);
     }
   });
 });

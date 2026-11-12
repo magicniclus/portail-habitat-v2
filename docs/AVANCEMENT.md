@@ -623,7 +623,7 @@ Encarts contextuels (16/10/2026) : règle commune dans `@ph/core/paiements` (jam
 ## 25. Lot 10e : landings par outil (14/10/2026)
 
 **Fait**
-- `/pro/trouver-des-chantiers` en ligne ; `/pro/site-internet-artisan` et `/pro/logiciel-devis-factures` construites mais fermées (404) derrière les flags `landingSite` et `landingDevis` tant que le site artisan (10b) et les devis (11b) ne sont pas livrés : on ne vante pas un outil absent.
+- `/pro/trouver-des-chantiers` en ligne ; `/pro/site-internet-artisan` et `/pro/logiciel-devis-factures` ouvertes le 12/11/2026 (flags `landingSite` et `landingDevis` à vrai par défaut, site artisan et devis livrés) ; refermables depuis l'admin (`config/flags`).
 - Gabarit unique `features/landings/PageLanding` ; contenu dans `@ph/core/landings` (`contenuLanding`, à migrer dans le CMS).
 - Source d'acquisition (LAND-01) : le formulaire envoie `acquisition {source, utm_*}` ; gardée dans le brouillon (la première landing l'emporte), écrite dans `artisans.acquisition` à la création du compte (`pro` par défaut) ; l'URL de l'étape 2 porte `?source=`.
 - Étapes « scrollytelling » avec GSAP 3.12 + ScrollTrigger (`useGSAP`, `gsap.matchMedia`) : un geste = une étape, sortie libre ; liste simple sur téléphone et avec `prefers-reduced-motion`.

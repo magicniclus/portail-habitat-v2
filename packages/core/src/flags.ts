@@ -39,13 +39,13 @@ export const FLAGS = {
     retraitPrevu: '2099-12',
   },
   landingSite: {
-    defaut: false,
-    description: 'Landing /pro/site-internet-artisan (à ouvrir avec le site artisan, lot 10b)',
+    defaut: true,
+    description: 'Landing /pro/site-internet-artisan (ouverte le 12/11/2026, site artisan livré)',
     retraitPrevu: '2027-06',
   },
   landingDevis: {
-    defaut: false,
-    description: 'Landing /pro/logiciel-devis-factures (à ouvrir avec les devis, lot 11b)',
+    defaut: true,
+    description: 'Landing /pro/logiciel-devis-factures (ouverte le 12/11/2026, devis livrés)',
     retraitPrevu: '2027-06',
   },
   maintenance: {
