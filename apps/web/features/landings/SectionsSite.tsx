@@ -60,52 +60,53 @@ const ATOUTS = [
   ],
 ];
 
-/** Site uniquement (LANDINGS §3.6) : « Pas une fiche annuaire. Un vrai site, à votre nom. » */
-export function VraiSite() {
+/**
+ * Site uniquement (LANDINGS §3.6) : les atouts du site, sous « Ce que vos clients verront » (une seule
+ * section pour le résultat, au lieu de deux).
+ */
+export function AtoutsSite() {
   return (
-    <section className="bg-blanc py-[clamp(56px,7vw,96px)]">
-      <div className={cn(conteneur, 'grid gap-[clamp(24px,3vw,36px)]')}>
-        <h2 className={cn(titreFort, 'm-0 max-w-[20ch]')}>
-          Pas une fiche annuaire. Un vrai site, à votre nom.
-        </h2>
-        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-[clamp(20px,3vw,40px)] gap-y-[clamp(20px,3vw,32px)] p-0">
-          {ATOUTS.map(([t, l, d]) => (
-            <li key={t} className="grid grid-cols-[44px_minmax(0,1fr)] items-start gap-3.5">
-              <span className="flex size-11 items-center justify-center rounded-[12px] border border-accent-300 bg-accent-100 text-accent-700">
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d={d} />
-                </svg>
-              </span>
-              <span className="grid gap-1">
-                <strong className="text-[17px] leading-[1.25]">{t}</strong>
-                <span className="text-[15px] leading-[22px] text-neutre-700">{l}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-          <p className="m-0 text-[17px] leading-[26px] font-semibold">
-            Laissez l’IA tout faire, ou reprenez la main sur chaque détail. Dans les deux cas, c’est
-            gratuit.
-          </p>
-          <a
-            href="#inscription"
-            className="inline-flex min-h-12 items-center rounded-[10px] border-[1.5px] border-accent px-5 text-base font-bold text-accent-800 no-underline hover:bg-accent-100"
-          >
-            Créer gratuitement mon site
-          </a>
-        </div>
+    <div className="grid w-full gap-[clamp(24px,3vw,36px)] text-left">
+      <h3 className="m-0 text-[clamp(20px,2.2vw,26px)] leading-tight">
+        Pas une fiche annuaire. Un vrai site, à votre nom.
+      </h3>
+      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-[clamp(20px,3vw,40px)] gap-y-[clamp(20px,3vw,32px)] p-0">
+        {ATOUTS.map(([t, l, d]) => (
+          <li key={t} className="grid grid-cols-[44px_minmax(0,1fr)] items-start gap-3.5">
+            <span className="flex size-11 items-center justify-center rounded-[12px] border border-accent-300 bg-accent-100 text-accent-700">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d={d} />
+              </svg>
+            </span>
+            <span className="grid gap-1">
+              <strong className="text-[17px] leading-[1.25]">{t}</strong>
+              <span className="text-[15px] leading-[22px] text-neutre-700">{l}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+        <p className="m-0 text-[17px] leading-[26px] font-semibold">
+          Laissez l’IA tout faire, ou reprenez la main sur chaque détail. Dans les deux cas, c’est
+          gratuit.
+        </p>
+        <a
+          href="#inscription"
+          className="inline-flex min-h-12 items-center rounded-[10px] border-[1.5px] border-accent px-5 text-base font-bold text-accent-800 no-underline hover:bg-accent-100"
+        >
+          Créer gratuitement mon site
+        </a>
       </div>
-    </section>
+    </div>
   );
 }

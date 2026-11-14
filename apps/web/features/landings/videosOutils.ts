@@ -14,6 +14,9 @@ export const VIDEOS_OUTILS: Record<string, { duree: number }> = {
 
 export const cheminVideoOutil = (id: string) => `/landing/videos/outils/${id}`;
 
-/** 42 → « 0:42 ». */
+/**
+ * 42 → « 0:42 ».
+ * @public Utilisé par la section des outils gratuits, gardée en réserve (hors landings).
+ */
 export const dureeVideo = (s: number) =>
   `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;

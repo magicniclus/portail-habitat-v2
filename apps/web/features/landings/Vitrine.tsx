@@ -1,5 +1,6 @@
 import type { ContenuLanding } from '@ph/core/landings';
 import { cn } from '@ph/ui';
+import type { ReactNode } from 'react';
 import { CaptureEcran } from './CaptureEcran';
 import { pastille, titreFort } from './styles';
 
@@ -7,7 +8,7 @@ import { pastille, titreFort } from './styles';
  * « Sur le chantier » / « Le résultat » (maquette) : titre centré sur fond blanc → accent, grand écran
  * d'ordinateur et téléphone posé devant, en bas à droite.
  */
-export function Vitrine({ v }: { v: ContenuLanding['vitrine'] }) {
+export function Vitrine({ v, apres }: { v: ContenuLanding['vitrine']; apres?: ReactNode }) {
   return (
     <section className="bg-[linear-gradient(180deg,var(--color-blanc)_0%,var(--accent-100)_100%)] px-[clamp(20px,4vw,48px)] py-[clamp(56px,7vw,96px)]">
       <div className="mx-auto grid max-w-[1100px] justify-items-center gap-[clamp(24px,4vw,40px)]">
@@ -29,6 +30,7 @@ export function Vitrine({ v }: { v: ContenuLanding['vitrine'] }) {
             className="absolute right-[-1%] bottom-0 z-[2] w-[21%] min-w-[96px]"
           />
         </div>
+        {apres}
       </div>
     </section>
   );

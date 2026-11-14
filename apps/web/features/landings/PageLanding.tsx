@@ -6,6 +6,7 @@ import { Zone } from '@/features/comportement/Zone';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { piedPro } from '@/features/pro/navigation';
+import { ApplicationPro } from '@/features/pro/Sections';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { VslPro, type VideoVsl } from '@/features/pro/VslPro';
 import { cheminVideoOutil, VIDEOS_OUTILS } from './videosOutils';
@@ -20,9 +21,8 @@ import { AppelFinal } from './AppelFinal';
 import { AvisDefilants } from './AvisDefilants';
 import { ChiffresReseau } from './ChiffresReseau';
 import { CommentCaMarche } from './CommentCaMarche';
-import { OutilsGratuits } from './OutilsGratuits';
 import { EnTeteLanding, PreuveSociale, SousTitre } from './Sections';
-import { DemoCreation, VraiSite } from './SectionsSite';
+import { AtoutsSite, DemoCreation } from './SectionsSite';
 import { bande, coche, conteneur, titre2 } from './styles';
 import { Vitrine } from './Vitrine';
 import { SuiviLanding } from './SuiviLanding';
@@ -72,16 +72,6 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
                 ))}
               </ul>
             ) : null}
-            <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-2.5 p-0">
-              {c.badges.map((b) => (
-                <li
-                  key={b}
-                  className="rounded-pill border border-accent-300 bg-accent-100 px-3 py-1.5 text-[13px] font-semibold whitespace-nowrap text-accent-800"
-                >
-                  {b}
-                </li>
-              ))}
-            </ul>
             {/* VSL en démonstration (dev, aperçus, flag) : elle cite un chiffre à prouver (LANDINGS §7). */}
             {preuves ? (
               <VslPro
@@ -105,18 +95,23 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
         </section>
         <ChiffresReseau chiffres={c.chiffres} />
         {outil === 'site' ? <DemoCreation /> : null}
-        <Zone id="benefices">
-          <EtapesDefilement
-            benefices={c.benefices}
-            surtitre={`${c.outilNom} · gratuit`}
-            titre={c.beneficesTitre}
-            intro={c.beneficesIntro}
-          />
-        </Zone>
-        <Vitrine v={c.vitrine} />
-        <CommentCaMarche etapes={c.etapes} />
-        {outil === 'site' ? <VraiSite /> : null}
-        <OutilsGratuits outil={outil} eco={c.eco} />
+        {/* Site : le déroulé est déjà dans les 4 vidéos ; pas de deuxième récit. */}
+        {outil === 'site' ? null : (
+          <Zone id="benefices">
+            <EtapesDefilement
+              benefices={c.benefices}
+              surtitre={`${c.outilNom} · gratuit`}
+              titre={c.beneficesTitre}
+              intro={c.beneficesIntro}
+            />
+          </Zone>
+        )}
+        <Vitrine v={c.vitrine} apres={outil === 'site' ? <AtoutsSite /> : undefined} />
+        {outil === 'site' ? null : <CommentCaMarche etapes={c.etapes} />}
+        {/* L'app (même section que /pro) : tous les outils au même endroit, une seule fois. */}
+        <div data-section-gratuit>
+          <ApplicationPro />
+        </div>
         <PreuveSociale p={preuveSociale(donneesPreuve)} />
         <Zone id="faq">
           <section id="faq" className={bande}>
