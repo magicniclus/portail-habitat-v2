@@ -1,5 +1,5 @@
 import { cn } from '@ph/ui';
-import { DemoSite } from './DemoSite';
+import { DemoSiteVideos } from './DemoSiteVideos';
 import { conteneur, titreFort } from './styles';
 
 /** Site uniquement (LANDINGS §3.3) : « Regardez votre site se construire tout seul ». */
@@ -12,11 +12,12 @@ export function DemoCreation() {
             Regardez votre site se construire tout seul
           </h2>
           <p className="m-0 text-[17px] leading-[27px] text-neutre-700">
-            L’IA reprend votre fiche, écrit vos pages et vous montre le résultat. Vous n’avez plus
-            qu’à cliquer sur « Publier ».
+            L’IA crée votre site, vous le retouchez, vous le publiez, et les demandes de vos clients
+            arrivent dans votre espace. Faites défiler pour voir chaque étape, filmée dans Portail
+            Travaux.
           </p>
         </div>
-        <DemoSite />
+        <DemoSiteVideos />
         <p className="m-0 mx-auto max-w-[60ch] text-[15.5px] leading-6 text-neutre-700">
           Rien n’est figé : textes, photos, couleurs, pages, tout se change en un clic, quand vous
           voulez.

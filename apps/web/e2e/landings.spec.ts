@@ -229,4 +229,23 @@ test.describe('Landings par outil', () => {
       await expect(page.locator('[data-section-gratuit]')).toHaveCount(1);
     }
   });
+  test('LAND-09 : démo du site en 4 vidéos, l’étape suit le défilement dans les deux sens', async ({
+    page,
+  }) => {
+    await page.goto('/pro/site-internet-artisan');
+    const z = page.locator('[data-demo-site]');
+    await z.waitFor();
+    const etapeA = async (f: number) => {
+      await z.evaluate((e, k) => {
+        const haut = e.getBoundingClientRect().top + scrollY;
+        scrollTo(0, haut + (e.offsetHeight - innerHeight) * k);
+      }, f);
+      await page.waitForTimeout(400);
+      return z.locator('video:not([aria-hidden="true"])').getAttribute('src');
+    };
+    expect(await etapeA(0.05)).toMatch(/ia\.mp4$/);
+    expect(await etapeA(0.6)).toMatch(/en-ligne\.mp4$/);
+    expect(await etapeA(0.9)).toMatch(/clients\.mp4$/);
+    expect(await etapeA(0.3)).toMatch(/modifier\.mp4$/);
+  });
 });
