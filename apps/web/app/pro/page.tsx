@@ -11,9 +11,9 @@ import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { enTetePro, piedPro } from '@/features/pro/navigation';
 import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
 import { VslPro } from '@/features/pro/VslPro';
+import { ApplicationPro } from '@/features/pro/SectionApplication';
 import {
   AppelFinalPro,
-  ApplicationPro,
   conteneurPro,
   EspaceArtisan,
   EtapesPro,

@@ -6,7 +6,7 @@ import { Zone } from '@/features/comportement/Zone';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { piedPro } from '@/features/pro/navigation';
-import { ApplicationPro } from '@/features/pro/Sections';
+import { ApplicationPro } from '@/features/pro/SectionApplication';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { VslPro, type VideoVsl } from '@/features/pro/VslPro';
 import { cheminVideoOutil, VIDEOS_OUTILS } from './videosOutils';
@@ -124,7 +124,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
           </section>
         </Zone>
         <AvisDefilants avis={c.avis} />
-        <AppelFinal titre={c.ctaTitre} cta={c.barreMobile} />
+        <AppelFinal titre={c.ctaTitre} cta={c.barreMobile} outil={outil} />
       </main>
       <PiedPublic {...piedPro} variantLogo="pro" clair />
       {/* Place de la barre mobile fixe : le bas du pied de page reste visible. */}

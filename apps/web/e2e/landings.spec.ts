@@ -231,4 +231,38 @@ test.describe('Landings par outil', () => {
     expect(await etapeA(0.9)).toMatch(/clients\.mp4$/);
     expect(await etapeA(0.3)).toMatch(/modifier\.mp4$/);
   });
+  test('LAND-10 : bloc final, chaque outil a son bouton lecture qui ouvre sa vidéo', async ({
+    page,
+  }) => {
+    await suivreDataLayer(page);
+    await page.goto('/pro/site-internet-artisan');
+    const lire = page.getByRole('button', { name: 'Voir la vidéo : Site internet' });
+    await expect(page.getByRole('button', { name: /^Voir la vidéo : / })).toHaveCount(6);
+    await lire.scrollIntoViewIfNeeded();
+    await lire.click();
+    const fenetre = page.getByRole('dialog');
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /outils\/site\.mp4$/);
+    await expect
+      .poll(() => evenements(page).then((l) => l.find((e) => e.event === 'outil_video_played')))
+      .toMatchObject({ outil: 'site', landing: 'site' });
+    await fenetre.getByRole('button', { name: /^Voir : / }).click();
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /outils\/avis\.mp4$/);
+  });
+
+  test('ancres : un bouton vers une ancre fait défiler jusqu’à elle (défilement doux)', async ({
+    page,
+  }) => {
+    await page.goto('/pro/site-internet-artisan');
+    const lien = page.locator('[data-section-gratuit] a[href="#inscription"]');
+    await lien.scrollIntoViewIfNeeded();
+    await lien.click();
+    await expect(page).toHaveURL(/#inscription$/);
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          Math.round(document.getElementById('inscription')!.getBoundingClientRect().top),
+        ),
+      )
+      .toBeLessThan(200);
+  });
 });

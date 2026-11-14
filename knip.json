@@ -1,10 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": [
-    "docs/**",
-    "apps/web/features/landings/OutilsGratuits.tsx",
-    "apps/web/features/landings/FenetreVideoOutil.tsx"
-  ],
+  "ignore": ["docs/**", "apps/web/features/landings/OutilsGratuits.tsx"],
   "ignoreBinaries": ["stripe"],
   "workspaces": {
     "apps/web": {

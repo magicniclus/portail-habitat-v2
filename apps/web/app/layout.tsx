@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { BandeauCookies } from '@/features/cookies/BandeauCookies';
 import { ScriptBandeau } from '@/features/cookies/ScriptBandeau';
 import { AppCheck } from '@/features/firebase/AppCheck';
+import { AncresDouces } from '@/features/navigation/AncresDouces';
 import { ScriptCoupures } from '@/features/firebase/ScriptCoupures';
 import { viewportEspace } from '@/features/theme/viewport';
 import { URL_SITE } from '@/features/vitrine/seo';
@@ -55,6 +56,7 @@ export default function RacineLayout({ children }: { children: ReactNode }) {
         {children}
         <BandeauCookies politique={routes.legal('particuliers', 'cookies')} />
         <AppCheck />
+        <AncresDouces />
       </body>
     </html>
   );

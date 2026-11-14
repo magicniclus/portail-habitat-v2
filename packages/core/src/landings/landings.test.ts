@@ -72,7 +72,7 @@ describe('landings par outil (LANDINGS §1)', () => {
       expect(c.faq.length).toBeGreaterThanOrEqual(4);
       expect(c.ctaTitre.length).toBeGreaterThan(5);
     }
-    expect(contenuLanding('site', { preuves: false }).faq).toHaveLength(10);
+    expect(contenuLanding('site', { preuves: false }).faq).toHaveLength(11);
   });
 });
 

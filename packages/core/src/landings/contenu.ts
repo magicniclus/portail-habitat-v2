@@ -355,6 +355,10 @@ const CONTENU: Record<OutilLanding, Brut> = {
         r: 'Oui, avec Site Pro. Le domaine est inclus et votre adresse Portail Travaux est conservée et redirigée.',
       },
       {
+        q: 'J’ai déjà un nom de domaine, puis-je l’utiliser ?',
+        r: 'Oui, on l’intègre à votre site avec Site Pro. Vous gardez votre domaine chez votre hébergeur actuel : nous vous donnons 3 réglages à ajouter, la vérification est automatique et votre site passe sur votre adresse. Vous restez propriétaire de votre domaine.',
+      },
+      {
         q: 'Portail Travaux prend-il une commission sur les demandes reçues via mon site ?',
         r: 'Non. Les demandes envoyées depuis votre propre site arrivent gratuitement dans votre espace, sans commission.',
       },
