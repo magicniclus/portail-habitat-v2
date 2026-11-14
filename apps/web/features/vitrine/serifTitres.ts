@@ -2,17 +2,19 @@ import localFont from 'next/font/local';
 import type { CSSProperties } from 'react';
 
 /**
- * Serif italique des grands titres (mot mis en avant), préchargée seulement sur les pages dont le
- * titre principal l'utilise (accueil, /pro, landings, parcours) : arrivée après l'affichage, elle
- * redessinait le titre (affichage du contenu principal retardé, décalage de 0,33 sur /pro ;
- * EXPLOITATION §1). Préchargée partout, elle retardait les autres pages. Même fichier que la police
- * du site (`app/layout.tsx`).
+ * Serif italique des grands titres (mot mis en avant) sur l'accueil, /pro, les landings et les
+ * parcours. `display: optional`, sans préchargement : si elle n'est pas là au premier affichage, le
+ * mot reste en Georgia (jamais redessiné, aucun décalage) et elle sert dès la page suivante. En
+ * `swap` préchargée, elle prenait la bande passante du texte principal et le Lighthouse mobile
+ * dépassait 2,5 s d'affichage du contenu principal (EXPLOITATION §1, 14/11/2026). Même fichier que
+ * la police du site (`app/layout.tsx`).
  */
 const serifTitres = localFont({
   src: '../../app/polices/source-serif-4-latin-600-italic.woff2',
   weight: '600',
   style: 'italic',
-  display: 'swap',
+  display: 'optional',
+  preload: false,
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 

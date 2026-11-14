@@ -25,6 +25,8 @@ const globales = cache(lireGlobales);
 
 let maintenance: { valeur: boolean; lueLe: number } | undefined;
 let relecture: Promise<void> | undefined;
+/** La première lecture n'est attendue qu'une fois par instance, même si Firestore ne répond pas. */
+let attendu = false;
 /** 30 s en production ; 2 s sur émulateurs, pour que les tests ne gardent pas la maintenance. */
 const RELECTURE_MS = process.env.FIRESTORE_EMULATOR_HOST ? 2000 : 30_000;
 /** Première lecture d'une instance : jamais plus de 300 ms d'attente pour une page. */
@@ -50,7 +52,10 @@ export async function maintenanceActive(maintenant = Date.now()): Promise<boolea
   if (process.env.MAINTENANCE === '1') return true;
   if (!maintenance || maintenant - maintenance.lueLe > RELECTURE_MS) {
     const r = relire(maintenant);
-    if (!maintenance) await Promise.race([r, new Promise((ok) => setTimeout(ok, ATTENTE_MAX_MS))]);
+    if (!maintenance && !attendu) {
+      attendu = true;
+      await Promise.race([r, new Promise((ok) => setTimeout(ok, ATTENTE_MAX_MS))]);
+    }
   }
   return maintenance?.valeur ?? false;
 }
