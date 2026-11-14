@@ -3,7 +3,7 @@
 import { Banner, bouton, BoutonAction } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 import { peutDevenirFacture, transformerEnFacture } from './facturation';
@@ -34,25 +34,30 @@ export function ActionsDevis({
 }) {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
-  const [enCours, setEnCours] = useState(false);
+  const [appel, setAppel] = useState(false);
+  // Rechargement de la page après une action : boutons coupés jusqu'au bout, sinon un clic rapide
+  // (« Le client a accepté » puis « Transformer en facture ») voit sa navigation annulée par ce
+  // rechargement.
+  const [rafraichit, demarrer] = useTransition();
+  const enCours = appel || rafraichit;
   const [modele, setModele] = useState(false);
   const [envoi, setEnvoi] = useState(false);
   const appeler = async (url: string, corps: object, ensuite?: (d: unknown) => void) => {
-    setEnCours(true);
+    setAppel(true);
     setErreur(null);
     const r = await posterJson<unknown>(url, corps);
-    setEnCours(false);
+    setAppel(false);
     if (!r.ok) return setErreur(r.message);
     ensuite?.(r.data);
-    router.refresh();
+    demarrer(() => router.refresh());
   };
   const statutDevis = (s: 'accepte' | 'refuse' | 'archive') =>
     appeler('/api/pro/devis/statut', { devisId, statut: s });
   const versFacture = async () => {
-    setEnCours(true);
+    setAppel(true);
     setErreur(null);
     const r = await transformerEnFacture(devisId, statut);
-    setEnCours(false);
+    setAppel(false);
     if (!r.ok) return setErreur(r.message);
     router.push(routes.proModifierFacture(r.factureId));
   };
