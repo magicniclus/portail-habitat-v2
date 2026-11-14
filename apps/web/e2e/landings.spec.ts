@@ -195,9 +195,8 @@ test.describe('Landings par outil', () => {
     await page.goto(URL_LANDING);
     const app = page.locator('[data-section-gratuit]');
     await expect(app).toHaveCount(1);
-    // Les titres apparaissent à l'arrivée dans l'écran (SuiviLanding) : on y va d'abord.
-    await app.scrollIntoViewIfNeeded();
-    await expect(app.getByRole('heading', { level: 2 })).toContainText('notification');
+    // Titre lu dans le DOM : son apparition animée (SuiviLanding) dépend du défilement.
+    await expect(app.locator('h2')).toContainText('notification');
     await expect(app.getByRole('link', { name: 'Créer mon compte gratuit' })).toHaveAttribute(
       'href',
       '#inscription',
