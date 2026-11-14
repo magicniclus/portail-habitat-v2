@@ -57,7 +57,8 @@ export interface ContenuLanding {
     grand: CaptureLanding;
     tel: CaptureLanding;
   };
-  etapes: { titre: string; texte: string }[];
+  /** `ecran` : capture téléphone de l'étape (`public/landing/captures/{ecran}-mobile`). */
+  etapes: { titre: string; texte: string; ecran?: string }[];
   faq: { q: string; r: string }[];
   ctaTitre: string;
   barreMobile: string;
@@ -201,15 +202,18 @@ const CONTENU: Record<OutilLanding, Brut> = {
       {
         titre: 'Vous créez votre espace',
         texte: 'Métier, téléphone et code postal : votre fiche est prête en quelques minutes.',
+        ecran: 'etape-inscription',
       },
       {
         titre: 'Vous réglez votre zone',
         texte:
           'Communes, rayon et chantiers acceptés. Vous voyez les demandes proches de chez vous.',
+        ecran: 'appels-d-offres',
       },
       {
         titre: 'Vous répondez',
         texte: 'Un appel ou un message au client, puis le devis, depuis votre téléphone si besoin.',
+        ecran: 'etape-repondre',
       },
     ],
     faq: [
@@ -472,15 +476,18 @@ const CONTENU: Record<OutilLanding, Brut> = {
         titre: 'Vous créez votre espace',
         texte:
           'Métier, téléphone et code postal : vos informations remplissent l’en-tête de vos documents.',
+        ecran: 'etape-inscription',
       },
       {
         titre: 'Vous faites votre premier devis',
         texte: 'À partir d’un modèle prêt pour votre métier. Vous ajustez les lignes et les prix.',
+        ecran: 'etape-devis',
       },
       {
         titre: 'Vous l’envoyez',
         texte:
           'Le client reçoit un PDF à votre logo et le signe en ligne. Vous le transformez en facture.',
+        ecran: 'etape-envoyer',
       },
     ],
     faq: [
