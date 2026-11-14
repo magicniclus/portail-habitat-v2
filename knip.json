@@ -1,0 +1,33 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": ["docs/**", "apps/web/features/landings/OutilsGratuits.tsx"],
+  "ignoreBinaries": ["stripe"],
+  "workspaces": {
+    "apps/web": {
+      "entry": ["server/**/*.ts", "playwright.pro.config.ts", "e2e-pro/**/*.ts"],
+      "ignoreDependencies": ["pdfkit"]
+    },
+    "apps/functions": {
+      "entry": ["src/index.ts"],
+      "ignoreDependencies": ["react", "react-dom", "@react-email/components", "@react-email/render"]
+    },
+    "packages/ui": {
+      "ignoreDependencies": ["serve"]
+    },
+    "packages/core": {
+      "entry": ["scripts/*.mjs", "scripts/*.ts"]
+    },
+    "packages/emails": {
+      "entry": ["src/apercus/*.tsx"]
+    },
+    "apps/studio": {
+      "entry": [
+        "src/index.ts",
+        "src/demo/preparer.ts",
+        "src/navigateur/surcouche.ts",
+        "essais/*.ts"
+      ],
+      "ignoreDependencies": ["@anthropic-ai/sdk"]
+    }
+  }
+}

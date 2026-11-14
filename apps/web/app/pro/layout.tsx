@@ -1,0 +1,20 @@
+import type { Metadata, Viewport } from 'next';
+import type { ReactNode } from 'react';
+import { PWA_PRO } from '@/features/pwa/manifest';
+import { EspaceTheme } from '@/features/theme/Theme';
+import { viewportEspace } from '@/features/theme/viewport';
+import { FAVICONS } from '@/lib/favicon';
+
+export const metadata: Metadata = {
+  title: { default: 'Portail Travaux Pro', template: '%s · Portail Travaux Pro' },
+  // Application installable (MOBILE §9, MOB-06).
+  manifest: PWA_PRO.manifest,
+  appleWebApp: { capable: true, title: 'PT Pro', statusBarStyle: 'default' },
+  icons: { icon: FAVICONS, apple: PWA_PRO.icone('apple') },
+};
+
+export const viewport: Viewport = viewportEspace('pro');
+
+export default function ProLayout({ children }: { children: ReactNode }) {
+  return <EspaceTheme theme="pro">{children}</EspaceTheme>;
+}

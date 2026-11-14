@@ -1,0 +1,8 @@
+{
+  "_source": "docs/designs/Parcours Diagnostic.dc.html (analyse, renderVals)",
+  "_note": "Paramètres réglementaires et tarifaires du diagnostic, à revoir au 1er janvier de chaque année (README). Seed de referentiel/diagnostics/prix (serveur uniquement), avec les prix de diagnostics.json convertis en centimes.",
+  "version": "2026-01",
+  "anneeReference": 2026,
+  "invalideAvantAnnee": { "dpe": 2021, "amiante": 2013 },
+  "pack": { "seuil": 4, "coefMin": 0.88, "coefMax": 0.92 }
+}

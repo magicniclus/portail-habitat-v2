@@ -1,0 +1,3086 @@
+{
+  "_source": "Annuaire Artisans.dc.html (filtrer, trier)",
+  "artisans": [
+    {
+      "id": "a1",
+      "nom": "Bertrand Rénovation",
+      "metier": "Plomberie",
+      "metiers": ["Plomberie", "Carrelage"],
+      "ville": "Bordeaux",
+      "km": 4,
+      "note": 4.9,
+      "avis": 37,
+      "premium": true,
+      "argument": "Répond en moyenne en 2 h",
+      "delaiJ": 5,
+      "dispo": "Disponible sous 5 jours",
+      "anciennete": "12 ans d'activité",
+      "budget": "3 000 – 25 000 €",
+      "budgetCle": "moyen",
+      "labels": ["decennale", "qualibat", "rapide", "photos"],
+      "tel": "05 56 XX XX 12",
+      "pitch": "Rénovation complète de salles de bain et douches à l'italienne, clés en main. Une équipe de 4 compagnons, chantiers tenus en 5 à 10 jours.",
+      "tags": ["douche italienne", "salle de bain", "carrelage", "sanitaires"]
+    },
+    {
+      "id": "a2",
+      "nom": "Atelier Lumière",
+      "metier": "Électricité",
+      "metiers": ["Électricité"],
+      "ville": "Mérignac",
+      "km": 9,
+      "note": 4.8,
+      "avis": 52,
+      "premium": true,
+      "argument": "Devis détaillé sous 48 h",
+      "delaiJ": 8,
+      "dispo": "Disponible sous 8 jours",
+      "anciennete": "8 ans d'activité",
+      "budget": "400 – 12 000 €",
+      "budgetCle": "petit",
+      "labels": ["decennale", "rge", "devis48", "recommande"],
+      "tel": "05 56 XX XX 45",
+      "pitch": "Mise aux normes de tableaux, éclairage encastré, bornes de recharge et domotique. Attestation Consuel fournie systématiquement.",
+      "tags": ["tableau électrique", "consuel", "borne de recharge", "domotique"]
+    },
+    {
+      "id": "a3",
+      "nom": "Toitures Girondines",
+      "metier": "Couverture",
+      "metiers": ["Couverture", "Maçonnerie"],
+      "ville": "Pessac",
+      "km": 12,
+      "note": 4.7,
+      "avis": 41,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 21,
+      "dispo": "Disponible sous 3 semaines",
+      "anciennete": "15 ans d'activité",
+      "budget": "5 000 – 60 000 €",
+      "budgetCle": "grand",
+      "labels": ["decennale", "qualibat"],
+      "tel": "05 56 XX XX 77",
+      "pitch": "Réfection de toitures en tuiles et ardoises, zinguerie et traitement de charpente sur toute la Gironde.",
+      "tags": ["toiture", "zinguerie", "charpente", "démoussage"]
+    },
+    {
+      "id": "a4",
+      "nom": "Peintures Delmas",
+      "metier": "Peinture",
+      "metiers": ["Peinture"],
+      "ville": "Cenon",
+      "km": 3,
+      "note": 4.6,
+      "avis": 28,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 4,
+      "dispo": "Disponible cette semaine",
+      "anciennete": "6 ans d'activité",
+      "budget": "800 – 9 000 €",
+      "budgetCle": "petit",
+      "labels": ["decennale", "local"],
+      "tel": "05 56 XX XX 31",
+      "pitch": "Peinture intérieure et décoration, enduits de rattrapage et pose de papier peint. Interventions rapides sur la rive droite.",
+      "tags": ["peinture", "enduit", "papier peint", "plafond"]
+    },
+    {
+      "id": "a5",
+      "nom": "Carrelage Aquitaine",
+      "metier": "Carrelage",
+      "metiers": ["Carrelage"],
+      "ville": "Lormont",
+      "km": 5,
+      "note": 4.5,
+      "avis": 34,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 10,
+      "dispo": "Disponible sous 10 jours",
+      "anciennete": "9 ans d'activité",
+      "budget": "1 500 – 18 000 €",
+      "budgetCle": "moyen",
+      "labels": ["decennale", "photos"],
+      "tel": "05 56 XX XX 58",
+      "pitch": "Pose de grands formats, mosaïque et plancher chauffant. Étanchéité de pièces humides selon la norme.",
+      "tags": ["carrelage", "grand format", "plancher chauffant", "faïence"]
+    },
+    {
+      "id": "a6",
+      "nom": "Menuiserie Latour",
+      "metier": "Menuiserie",
+      "metiers": ["Menuiserie"],
+      "ville": "Floirac",
+      "km": 6,
+      "note": 4.9,
+      "avis": 19,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 14,
+      "dispo": "Disponible sous 2 semaines",
+      "anciennete": "22 ans d'activité",
+      "budget": "1 200 – 30 000 €",
+      "budgetCle": "moyen",
+      "labels": ["decennale", "rge", "local"],
+      "tel": "05 56 XX XX 04",
+      "pitch": "Fenêtres bois et aluminium sur mesure, portes d'entrée, volets roulants et escaliers d'intérieur.",
+      "tags": ["fenêtre", "menuiserie", "volets", "porte d'entrée"]
+    },
+    {
+      "id": "a7",
+      "nom": "Confort Thermique 33",
+      "metier": "Chauffage",
+      "metiers": ["Chauffage", "Plomberie"],
+      "ville": "Bègles",
+      "km": 8,
+      "note": 4.7,
+      "avis": 46,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 7,
+      "dispo": "Disponible sous 7 jours",
+      "anciennete": "11 ans d'activité",
+      "budget": "2 500 – 22 000 €",
+      "budgetCle": "moyen",
+      "labels": ["decennale", "rge", "recommande"],
+      "tel": "05 56 XX XX 66",
+      "pitch": "Pompes à chaleur, chaudières à condensation et plancher chauffant. Accompagnement complet sur les aides MaPrimeRénov'.",
+      "tags": ["pompe à chaleur", "chaudière", "chauffage", "MaPrimeRénov"]
+    },
+    {
+      "id": "a8",
+      "nom": "Bâti Pierre & Chaux",
+      "metier": "Maçonnerie",
+      "metiers": ["Maçonnerie"],
+      "ville": "Bouliac",
+      "km": 11,
+      "note": 4.4,
+      "avis": 23,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 28,
+      "dispo": "Disponible sous 1 mois",
+      "anciennete": "18 ans d'activité",
+      "budget": "4 000 – 80 000 €",
+      "budgetCle": "grand",
+      "labels": ["decennale", "qualibat"],
+      "tel": "05 56 XX XX 89",
+      "pitch": "Maçonnerie traditionnelle, reprise de pierre, ouverture de murs porteurs et extensions.",
+      "tags": ["maçonnerie", "pierre", "mur porteur", "extension"]
+    },
+    {
+      "id": "a9",
+      "nom": "Elec Habitat Rive Droite",
+      "metier": "Électricité",
+      "metiers": ["Électricité"],
+      "ville": "Bassens",
+      "km": 7,
+      "note": 4.3,
+      "avis": 15,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 3,
+      "dispo": "Disponible cette semaine",
+      "anciennete": "4 ans d'activité",
+      "budget": "300 – 8 000 €",
+      "budgetCle": "petit",
+      "labels": ["decennale", "local"],
+      "tel": "05 56 XX XX 23",
+      "pitch": "Dépannage, remplacement de tableau et création de prises. Intervention rapide sur la rive droite.",
+      "tags": ["dépannage", "prises", "tableau", "électricité"]
+    },
+    {
+      "id": "a10",
+      "nom": "Aqua Services Gironde",
+      "metier": "Plomberie",
+      "metiers": ["Plomberie"],
+      "ville": "Ambarès-et-Lagrave",
+      "km": 14,
+      "note": 4.2,
+      "avis": 31,
+      "premium": false,
+      "argument": "",
+      "delaiJ": 2,
+      "dispo": "Disponible sous 48 h",
+      "anciennete": "7 ans d'activité",
+      "budget": "150 – 6 000 €",
+      "budgetCle": "petit",
+      "labels": ["decennale"],
+      "tel": "05 56 XX XX 90",
+      "pitch": "Dépannage de fuites, remplacement de chauffe-eau et création de réseaux. Urgences traitées sous 24 h.",
+      "tags": ["fuite", "chauffe-eau", "dépannage", "plomberie"]
+    },
+    {
+      "id": "g0",
+      "nom": "Entreprise 0",
+      "metiers": ["Électricité"],
+      "pitch": "Dépannage rapide",
+      "tags": ["toiture"],
+      "km": 51,
+      "note": 4.8,
+      "avis": 30,
+      "premium": false,
+      "labels": ["photos"],
+      "delaiJ": 16,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g1",
+      "nom": "Entreprise 1",
+      "metiers": ["Menuiserie", "Menuiserie"],
+      "pitch": "Rénovation complète",
+      "tags": ["peinture"],
+      "km": 20,
+      "note": 3.8,
+      "avis": 30,
+      "premium": false,
+      "labels": ["rapide", "photos", "rge", "devis48"],
+      "delaiJ": 30,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g2",
+      "nom": "Entreprise 2",
+      "metiers": ["Plomberie", "Peinture"],
+      "pitch": "Travaux soignés",
+      "tags": ["carrelage"],
+      "km": 27,
+      "note": 4.2,
+      "avis": 12,
+      "premium": true,
+      "labels": ["decennale", "rapide", "photos", "devis48", "local"],
+      "delaiJ": 8,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g3",
+      "nom": "Entreprise 3",
+      "metiers": ["Électricité", "Couverture"],
+      "pitch": "Travaux soignés",
+      "tags": ["peinture"],
+      "km": 59,
+      "note": 4.5,
+      "avis": 80,
+      "premium": true,
+      "labels": ["decennale", "rapide", "photos", "rge", "devis48"],
+      "delaiJ": 5,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g4",
+      "nom": "Entreprise 4",
+      "metiers": ["Carrelage", "Peinture"],
+      "pitch": "Dépannage rapide",
+      "tags": ["peinture"],
+      "km": 23,
+      "note": 4,
+      "avis": 30,
+      "premium": false,
+      "labels": [],
+      "delaiJ": 8,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g5",
+      "nom": "Entreprise 5",
+      "metiers": ["Chauffage"],
+      "pitch": "Travaux soignés",
+      "tags": ["toiture"],
+      "km": 17,
+      "note": 4.5,
+      "avis": 30,
+      "premium": false,
+      "labels": ["recommande"],
+      "delaiJ": 1,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g6",
+      "nom": "Entreprise 6",
+      "metiers": ["Électricité", "Couverture"],
+      "pitch": "Rénovation complète",
+      "tags": ["carrelage"],
+      "km": 26,
+      "note": 4.2,
+      "avis": 30,
+      "premium": false,
+      "labels": ["local"],
+      "delaiJ": 8,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g7",
+      "nom": "Entreprise 7",
+      "metiers": ["Menuiserie", "Électricité"],
+      "pitch": "Dépannage rapide",
+      "tags": ["toiture"],
+      "km": 8,
+      "note": 4.2,
+      "avis": 30,
+      "premium": true,
+      "labels": ["photos", "devis48"],
+      "delaiJ": 1,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g8",
+      "nom": "Entreprise 8",
+      "metiers": ["Plomberie", "Plomberie"],
+      "pitch": "Dépannage rapide",
+      "tags": ["peinture"],
+      "km": 5,
+      "note": 3.8,
+      "avis": 30,
+      "premium": false,
+      "labels": [],
+      "delaiJ": 7,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g9",
+      "nom": "Entreprise 9",
+      "metiers": ["Carrelage"],
+      "pitch": "Rénovation complète",
+      "tags": ["toiture"],
+      "km": 43,
+      "note": 4.2,
+      "avis": 30,
+      "premium": false,
+      "labels": ["qualibat"],
+      "delaiJ": 15,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g10",
+      "nom": "Entreprise 10",
+      "metiers": ["Plomberie"],
+      "pitch": "Rénovation complète",
+      "tags": ["carrelage"],
+      "km": 17,
+      "note": 4.8,
+      "avis": 12,
+      "premium": false,
+      "labels": ["qualibat", "photos", "rge", "recommande"],
+      "delaiJ": 5,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g11",
+      "nom": "Entreprise 11",
+      "metiers": ["Carrelage"],
+      "pitch": "Travaux soignés",
+      "tags": ["fuite"],
+      "km": 50,
+      "note": 4.5,
+      "avis": 30,
+      "premium": false,
+      "labels": ["decennale", "rapide", "recommande"],
+      "delaiJ": 30,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g12",
+      "nom": "Entreprise 12",
+      "metiers": ["Électricité"],
+      "pitch": "Dépannage rapide",
+      "tags": ["fuite"],
+      "km": 19,
+      "note": 4.5,
+      "avis": 12,
+      "premium": true,
+      "labels": [],
+      "delaiJ": 5,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g13",
+      "nom": "Entreprise 13",
+      "metiers": ["Couverture"],
+      "pitch": "Dépannage rapide",
+      "tags": ["toiture"],
+      "km": 31,
+      "note": 5,
+      "avis": 5,
+      "premium": false,
+      "labels": ["rge", "devis48"],
+      "delaiJ": 5,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g14",
+      "nom": "Entreprise 14",
+      "metiers": ["Couverture", "Menuiserie"],
+      "pitch": "Travaux soignés",
+      "tags": ["fuite"],
+      "km": 22,
+      "note": 4.5,
+      "avis": 30,
+      "premium": false,
+      "labels": ["decennale", "rapide", "rge"],
+      "delaiJ": 16,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g15",
+      "nom": "Entreprise 15",
+      "metiers": ["Menuiserie"],
+      "pitch": "Dépannage rapide",
+      "tags": ["carrelage"],
+      "km": 7,
+      "note": 5,
+      "avis": 5,
+      "premium": true,
+      "labels": ["decennale", "rapide"],
+      "delaiJ": 30,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g16",
+      "nom": "Entreprise 16",
+      "metiers": ["Électricité", "Plomberie"],
+      "pitch": "Travaux soignés",
+      "tags": ["carrelage"],
+      "km": 49,
+      "note": 4.5,
+      "avis": 30,
+      "premium": true,
+      "labels": [],
+      "delaiJ": 1,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g17",
+      "nom": "Entreprise 17",
+      "metiers": ["Peinture", "Électricité"],
+      "pitch": "Rénovation complète",
+      "tags": ["toiture"],
+      "km": 7,
+      "note": 4.5,
+      "avis": 0,
+      "premium": false,
+      "labels": ["qualibat", "rge"],
+      "delaiJ": 15,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g18",
+      "nom": "Entreprise 18",
+      "metiers": ["Plomberie"],
+      "pitch": "Travaux soignés",
+      "tags": ["fuite"],
+      "km": 47,
+      "note": 4.2,
+      "avis": 80,
+      "premium": false,
+      "labels": ["decennale", "photos", "rge", "local"],
+      "delaiJ": 8,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g19",
+      "nom": "Entreprise 19",
+      "metiers": ["Chauffage"],
+      "pitch": "Travaux soignés",
+      "tags": ["carrelage"],
+      "km": 24,
+      "note": 5,
+      "avis": 30,
+      "premium": false,
+      "labels": ["decennale", "photos", "rge", "devis48"],
+      "delaiJ": 7,
+      "budgetCle": "petit"
+    },
+    {
+      "id": "g20",
+      "nom": "Entreprise 20",
+      "metiers": ["Plomberie"],
+      "pitch": "Travaux soignés",
+      "tags": ["peinture"],
+      "km": 14,
+      "note": 4.8,
+      "avis": 0,
+      "premium": false,
+      "labels": ["rge", "devis48", "local"],
+      "delaiJ": 16,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g21",
+      "nom": "Entreprise 21",
+      "metiers": ["Peinture", "Maçonnerie"],
+      "pitch": "Travaux soignés",
+      "tags": ["carrelage"],
+      "km": 56,
+      "note": 4.2,
+      "avis": 5,
+      "premium": false,
+      "labels": ["rapide", "photos"],
+      "delaiJ": 5,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g22",
+      "nom": "Entreprise 22",
+      "metiers": ["Couverture", "Couverture"],
+      "pitch": "Dépannage rapide",
+      "tags": ["peinture"],
+      "km": 3,
+      "note": 4.2,
+      "avis": 30,
+      "premium": false,
+      "labels": ["rge"],
+      "delaiJ": 1,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g23",
+      "nom": "Entreprise 23",
+      "metiers": ["Plomberie"],
+      "pitch": "Dépannage rapide",
+      "tags": ["peinture"],
+      "km": 18,
+      "note": 4.2,
+      "avis": 0,
+      "premium": false,
+      "labels": ["rapide", "rge", "recommande"],
+      "delaiJ": 5,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g24",
+      "nom": "Entreprise 24",
+      "metiers": ["Carrelage"],
+      "pitch": "Dépannage rapide",
+      "tags": ["toiture"],
+      "km": 15,
+      "note": 4.8,
+      "avis": 30,
+      "premium": false,
+      "labels": ["decennale", "devis48"],
+      "delaiJ": 15,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g25",
+      "nom": "Entreprise 25",
+      "metiers": ["Maçonnerie"],
+      "pitch": "Travaux soignés",
+      "tags": ["toiture"],
+      "km": 32,
+      "note": 4,
+      "avis": 30,
+      "premium": true,
+      "labels": ["qualibat", "recommande", "local"],
+      "delaiJ": 7,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g26",
+      "nom": "Entreprise 26",
+      "metiers": ["Menuiserie"],
+      "pitch": "Travaux soignés",
+      "tags": ["toiture"],
+      "km": 50,
+      "note": 4.2,
+      "avis": 30,
+      "premium": false,
+      "labels": ["qualibat", "photos", "rge", "recommande", "local"],
+      "delaiJ": 15,
+      "budgetCle": "grand"
+    },
+    {
+      "id": "g27",
+      "nom": "Entreprise 27",
+      "metiers": ["Électricité"],
+      "pitch": "Travaux soignés",
+      "tags": ["fuite"],
+      "km": 2,
+      "note": 4.2,
+      "avis": 5,
+      "premium": false,
+      "labels": ["qualibat", "rge"],
+      "delaiJ": 7,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g28",
+      "nom": "Entreprise 28",
+      "metiers": ["Chauffage", "Électricité"],
+      "pitch": "Rénovation complète",
+      "tags": ["fuite"],
+      "km": 39,
+      "note": 5,
+      "avis": 5,
+      "premium": true,
+      "labels": ["recommande", "local"],
+      "delaiJ": 15,
+      "budgetCle": "moyen"
+    },
+    {
+      "id": "g29",
+      "nom": "Entreprise 29",
+      "metiers": ["Peinture"],
+      "pitch": "Travaux soignés",
+      "tags": ["fuite"],
+      "km": 16,
+      "note": 4,
+      "avis": 5,
+      "premium": false,
+      "labels": ["decennale", "rapide", "recommande", "local"],
+      "delaiJ": 8,
+      "budgetCle": "petit"
+    }
+  ],
+  "cas": [
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": ["g27", "g22", "a1", "a5", "g8", "a6", "a7", "g10", "g12"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g24", "g5"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "proximite"
+      },
+      "attendu": ["a4", "a9", "g17", "a2", "a10", "g29", "g19", "g6", "g2"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": ["recommande"],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g5"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "delai"
+      },
+      "attendu": ["g22", "a1", "g10", "g12", "a7", "g8", "g27"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["g27", "a4", "g22", "a1", "a5", "g8", "a6", "a9", "g17", "a7", "g7", "a2"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["g7", "g22", "a10", "a9", "g12", "g23"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Carrelage"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": ["Maçonnerie"],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": ["local"],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": [
+        "g3",
+        "g18",
+        "a2",
+        "a7",
+        "a3",
+        "a1",
+        "a5",
+        "a10",
+        "g0",
+        "g4",
+        "g5",
+        "g6",
+        "g7",
+        "g9",
+        "g11",
+        "g14",
+        "g16",
+        "g19",
+        "g22",
+        "g24",
+        "g25",
+        "g26",
+        "a4",
+        "a8",
+        "a6",
+        "a9",
+        "g2",
+        "g10",
+        "g12",
+        "g13",
+        "g15",
+        "g21",
+        "g27",
+        "g28",
+        "g29",
+        "g17",
+        "g20",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": [
+        "g15",
+        "a1",
+        "a6",
+        "a2",
+        "g10",
+        "g20",
+        "g24",
+        "a3",
+        "a7",
+        "a4",
+        "a5",
+        "g5",
+        "g12",
+        "g17",
+        "a8",
+        "a9",
+        "a10",
+        "g7",
+        "g22",
+        "g23",
+        "g27",
+        "g29"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": [
+        "g13",
+        "g19",
+        "g28",
+        "a1",
+        "a6",
+        "a2",
+        "g10",
+        "g24",
+        "a7",
+        "a4",
+        "a5",
+        "g3",
+        "g5",
+        "g12",
+        "g16",
+        "g17",
+        "a9",
+        "a10",
+        "g2",
+        "g6",
+        "g7",
+        "g9",
+        "g18",
+        "g21",
+        "g22",
+        "g23",
+        "g26",
+        "g27",
+        "g4",
+        "g25",
+        "g29",
+        "g8"
+      ]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["a1", "g10"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "a7", "g8", "a10", "g10", "g23", "g16"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": ["Menuiserie"],
+        "rayon": 10,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g7"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g23"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": [
+        "g27",
+        "a4",
+        "g22",
+        "a1",
+        "a5",
+        "g8",
+        "a6",
+        "a9",
+        "g17",
+        "a7",
+        "g7",
+        "a2",
+        "a10",
+        "g24",
+        "g29",
+        "g5",
+        "g10",
+        "g23",
+        "g12"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": [
+        "g3",
+        "g18",
+        "a2",
+        "a7",
+        "a3",
+        "a1",
+        "a5",
+        "a10",
+        "g0",
+        "g4",
+        "g5",
+        "g6",
+        "g7",
+        "g9",
+        "g11",
+        "g14",
+        "g16",
+        "g19",
+        "g22",
+        "g24",
+        "g25",
+        "g26",
+        "a4",
+        "a8",
+        "a6",
+        "a9",
+        "g2",
+        "g10",
+        "g12",
+        "g13",
+        "g15",
+        "g21",
+        "g27",
+        "g28",
+        "g29",
+        "g17",
+        "g20",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": ["Électricité"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["g12", "a9", "g7"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": ["a9", "a4"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Maçonnerie"],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": ["local"],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "note"
+      },
+      "attendu": ["a1", "g10", "a7", "g12", "g22", "g27", "g8"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "avis"
+      },
+      "attendu": ["a3", "g5", "g24"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": ["Chauffage"],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.8,
+        "labels": ["local"],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["a6", "g20"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": ["a2", "a1", "a6", "g15"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Peinture"],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": [
+        "a2",
+        "a7",
+        "a1",
+        "a5",
+        "a10",
+        "g5",
+        "g7",
+        "g22",
+        "g24",
+        "a4",
+        "a6",
+        "a9",
+        "g10",
+        "g12",
+        "g27",
+        "g29",
+        "g17",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["a1", "a7", "g8"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Chauffage"],
+        "rayon": 60,
+        "note": 4,
+        "labels": ["photos"],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["a1", "a7", "a4", "a9", "g7", "g22", "g27", "g8"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": ["g7"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Menuiserie"],
+        "rayon": 20,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["g7"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "avis"
+      },
+      "attendu": ["g7"]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "g10", "g17", "g6", "g28", "g9"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "moyen",
+        "tri": "avis"
+      },
+      "attendu": ["a7", "a1", "g8"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "pertinence"
+      },
+      "attendu": ["g17"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["a2", "a1", "a6"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Couverture"],
+        "rayon": 60,
+        "note": 4.8,
+        "labels": ["devis48"],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["g13"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": ["Chauffage"],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["g22", "g8", "a9", "g15", "g7", "a10", "g24", "g23", "g12", "g4", "g13", "g0"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "delai"
+      },
+      "attendu": ["g5"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": ["a9"]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": ["Couverture"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["g6"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Chauffage"],
+        "rayon": 10,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["a7"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": [
+        "a4",
+        "a1",
+        "a5",
+        "a6",
+        "g17",
+        "a7",
+        "a2",
+        "g24",
+        "g5",
+        "g10",
+        "g12",
+        "g19",
+        "g13",
+        "g28",
+        "g16",
+        "g3"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "delai"
+      },
+      "attendu": ["g5", "g7", "g23", "g4", "g24", "g14", "a3", "a8"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": [
+        "a2",
+        "a7",
+        "a1",
+        "a5",
+        "a10",
+        "g4",
+        "g5",
+        "g6",
+        "g7",
+        "g19",
+        "g22",
+        "g24",
+        "a4",
+        "a6",
+        "a9",
+        "g2",
+        "g10",
+        "g12",
+        "g27",
+        "g29",
+        "g17",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["g17", "g7", "a3", "g24", "g5", "g13", "g25", "g9", "g26", "g0"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": [
+        "g5",
+        "g7",
+        "g16",
+        "g22",
+        "a10",
+        "a9",
+        "a4",
+        "a1",
+        "g3",
+        "g10",
+        "g12",
+        "g13",
+        "g21",
+        "g23",
+        "a7",
+        "g8",
+        "g19",
+        "g25",
+        "g27",
+        "a2",
+        "g2",
+        "g4",
+        "g6",
+        "g18",
+        "g29",
+        "a5",
+        "a6",
+        "g9",
+        "g17",
+        "g24",
+        "g26",
+        "g28"
+      ]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "g10", "g17"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "moyen",
+        "tri": "avis"
+      },
+      "attendu": ["a7", "a1", "a5", "g8", "g22", "a6", "g10", "g12", "g27"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "a3", "g5", "g14", "a8", "g7", "g23", "g4"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.5,
+        "labels": ["rge"],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "a3", "g5", "g14", "a8", "g7", "g23", "g4"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "delai"
+      },
+      "attendu": ["g5", "g7", "g23"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "pertinence"
+      },
+      "attendu": ["a2", "a4", "g19", "g17"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["g13", "g5", "g7", "g25"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": ["a1", "a7", "g10"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Couverture"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": ["g13", "g6"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "delai"
+      },
+      "attendu": ["a1", "g10", "g12", "a7", "a5", "a6", "g20", "g15"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["g13", "g19", "g28", "a1", "a6", "a2", "g10", "g24"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Électricité"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": ["g27", "g12", "g28", "g16", "g0"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "a3", "g3", "g5", "g14"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": [
+        "g27",
+        "g22",
+        "a1",
+        "a5",
+        "g8",
+        "a6",
+        "g15",
+        "a7",
+        "g20",
+        "g10",
+        "g12",
+        "g1",
+        "g25",
+        "g28",
+        "g18",
+        "g16",
+        "g11",
+        "g0",
+        "g21"
+      ]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["a1", "g10", "a7"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": [
+        "a2",
+        "a1",
+        "a7",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "g22",
+        "g24",
+        "g15",
+        "g7",
+        "g19",
+        "g5",
+        "a8",
+        "g8",
+        "a10",
+        "g18",
+        "a9",
+        "g14",
+        "g10",
+        "g27",
+        "g3",
+        "g17",
+        "g20",
+        "g12",
+        "g6",
+        "g4",
+        "g1",
+        "g13",
+        "g25",
+        "g29",
+        "g23",
+        "g0",
+        "g2",
+        "g28",
+        "g9",
+        "g16",
+        "g11",
+        "g26",
+        "g21"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "avis"
+      },
+      "attendu": ["g5", "g7", "g23"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": ["a2", "g19", "a4", "g13", "g17"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "pertinence"
+      },
+      "attendu": ["g17"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": ["a10"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": ["a3", "g5", "g7", "g24", "g17"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": [
+        "a1",
+        "a7",
+        "a5",
+        "a6",
+        "g22",
+        "g15",
+        "g8",
+        "g18",
+        "g10",
+        "g27",
+        "g20",
+        "g12",
+        "g1",
+        "g25",
+        "g0",
+        "g28",
+        "g16",
+        "g11",
+        "g21"
+      ]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["a1", "g10", "g20", "a7", "a10", "g2", "g23"]
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Maçonnerie"],
+        "rayon": 30,
+        "note": 4,
+        "labels": ["local"],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["a4", "a1", "a7", "a2", "a5", "a6", "g17"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": ["rge"],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": ["Couverture"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["g22", "g13"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": ["g15"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "a3", "g3", "g5", "g14"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": ["a2", "g19", "a4", "g13", "g17"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["g7", "g22", "a10", "a9", "g12", "g13", "g23", "g8", "g4", "g24"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": [
+        "g3",
+        "a7",
+        "a1",
+        "a10",
+        "g5",
+        "g7",
+        "g16",
+        "g19",
+        "g22",
+        "g25",
+        "a4",
+        "a9",
+        "g10",
+        "g12",
+        "g13",
+        "g21",
+        "g27",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": ["Menuiserie"],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": ["g19", "a4", "a9", "a10"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": ["a2"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g5"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": ["a9", "a10"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": ["Carrelage"],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "note"
+      },
+      "attendu": ["a1"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": [
+        "g27",
+        "a4",
+        "g22",
+        "a1",
+        "a5",
+        "g8",
+        "a6",
+        "a9",
+        "g15",
+        "g17",
+        "a7",
+        "g7",
+        "a2",
+        "a8",
+        "a3",
+        "a10",
+        "g20",
+        "g24",
+        "g29",
+        "g5",
+        "g10",
+        "g23",
+        "g12",
+        "g1",
+        "g14",
+        "g4",
+        "g19",
+        "g6",
+        "g2"
+      ]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": ["Électricité"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Chauffage"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "petit",
+        "tri": "delai"
+      },
+      "attendu": ["g19"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": ["g27", "g22", "a1", "a5", "g8", "a6", "g15", "a7", "g20", "g10", "g12", "g1"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["a1", "g10", "g17", "g6"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": ["g13", "g19", "a2", "a4", "g17", "a9", "a10", "g2", "g6", "g9", "g29"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "a7", "g22", "g8", "g10", "g27", "g12"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["a1", "g20", "g10"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g23"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": [
+        "a2",
+        "a1",
+        "a7",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "g22",
+        "g24",
+        "g15",
+        "g7",
+        "g5",
+        "a8",
+        "g8",
+        "a10",
+        "a9",
+        "g10",
+        "g27",
+        "g17",
+        "g20",
+        "g12",
+        "g1",
+        "g29",
+        "g23"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "delai"
+      },
+      "attendu": ["g24"]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": ["Maçonnerie"],
+        "rayon": 10,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Électricité"],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "proximite"
+      },
+      "attendu": ["g17", "a2"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": [
+        "a1",
+        "a7",
+        "a5",
+        "a6",
+        "g22",
+        "g15",
+        "g18",
+        "g10",
+        "g27",
+        "g20",
+        "g12",
+        "g25",
+        "g0",
+        "g28",
+        "g16",
+        "g11",
+        "g21"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "avis"
+      },
+      "attendu": ["g24"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "a3", "g3", "g5", "g14"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "a7", "a5", "a6", "g15", "g10", "g20", "g12", "g0", "g28", "g16", "g11"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "proximite"
+      },
+      "attendu": ["a4", "a9", "g17", "a2", "a10", "g29", "g19", "g6", "g2", "g13", "g9"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": ["Peinture"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": ["Chauffage"],
+        "rayon": 60,
+        "note": 0,
+        "labels": ["recommande"],
+        "dispo": "quinze",
+        "budget": "grand",
+        "tri": "delai"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": ["rge"],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g3", "g14", "g23", "g26"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Couverture"],
+        "rayon": 60,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "avis"
+      },
+      "attendu": ["g13"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["a1", "a6", "g15", "a2", "g20", "g24", "g10", "g19"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "avis"
+      },
+      "attendu": ["a2", "g19", "a4", "g13", "g17"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": ["g24", "g5"]
+    },
+    {
+      "etat": {
+        "q": "dépannage",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "petit",
+        "tri": "proximite"
+      },
+      "attendu": ["a9", "a10", "g13"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "note"
+      },
+      "attendu": ["g15", "a1", "a6", "g10", "g20", "a7", "a5", "g12"]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": [],
+        "rayon": 10,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": [
+        "a2",
+        "a1",
+        "a7",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "g22",
+        "g24",
+        "g15",
+        "g7",
+        "g19",
+        "g5",
+        "a8",
+        "g8",
+        "a10",
+        "g18",
+        "a9",
+        "g14",
+        "g10",
+        "g27",
+        "g3",
+        "g17",
+        "g20",
+        "g12",
+        "g6",
+        "g4",
+        "g1",
+        "g13",
+        "g25",
+        "g29",
+        "g23",
+        "g0",
+        "g2",
+        "g28",
+        "g9",
+        "g16",
+        "g11",
+        "g26",
+        "g21"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g7", "g5", "g23"]
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": ["Couverture"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Maçonnerie"],
+        "rayon": 60,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": ["rge"],
+        "dispo": "quinze",
+        "budget": "moyen",
+        "tri": "avis"
+      },
+      "attendu": ["a7", "a6", "g10"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "petit",
+        "tri": "note"
+      },
+      "attendu": ["g19", "a2", "a4", "g17", "a9", "a10", "g2", "g6", "g29"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 4,
+        "labels": ["photos"],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "pertinence"
+      },
+      "attendu": ["a1", "a5", "g7", "g19", "g18", "g10", "g3", "g2", "g26", "g21"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Plomberie"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": ["g16", "a10", "a1", "g10", "g23", "a7", "g8", "g2", "g18", "g20"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Plomberie"],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": ["a1", "g8", "a7", "a10", "g10", "g23", "g2", "g18", "g16"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 20,
+        "note": 4,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": [
+        "a1",
+        "a6",
+        "a2",
+        "g10",
+        "g24",
+        "a7",
+        "a4",
+        "a5",
+        "g5",
+        "g12",
+        "g17",
+        "a9",
+        "a10",
+        "g7",
+        "g22",
+        "g23",
+        "g27",
+        "g29"
+      ]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "moyen",
+        "tri": "avis"
+      },
+      "attendu": ["a7", "a1", "g10", "g12"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 0,
+        "labels": ["qualibat"],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "avis"
+      },
+      "attendu": ["a3", "a8"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 60,
+        "note": 0,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": [
+        "g13",
+        "g19",
+        "a1",
+        "g10",
+        "a7",
+        "a4",
+        "g3",
+        "g5",
+        "g12",
+        "g16",
+        "a9",
+        "a10",
+        "g7",
+        "g21",
+        "g22",
+        "g23",
+        "g27",
+        "g25",
+        "g8"
+      ]
+    },
+    {
+      "etat": {
+        "q": "plomberie",
+        "metiers": ["Maçonnerie"],
+        "rayon": 60,
+        "note": 0,
+        "labels": ["photos"],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "delai"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": ["Électricité"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "tous",
+        "tri": "note"
+      },
+      "attendu": ["g17", "g6"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": [],
+        "rayon": 30,
+        "note": 4.5,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "moyen",
+        "tri": "proximite"
+      },
+      "attendu": ["a1", "a5", "a6", "g15", "a7", "g20", "g10", "g12"]
+    },
+    {
+      "etat": {
+        "q": "",
+        "metiers": ["Électricité"],
+        "rayon": 20,
+        "note": 4,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "pertinence"
+      },
+      "attendu": ["g7"]
+    },
+    {
+      "etat": {
+        "q": "Rénovation",
+        "metiers": ["Peinture"],
+        "rayon": 30,
+        "note": 4.8,
+        "labels": [],
+        "dispo": "semaine",
+        "budget": "grand",
+        "tri": "note"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "zzz",
+        "metiers": ["Chauffage"],
+        "rayon": 30,
+        "note": 0,
+        "labels": [],
+        "dispo": "quinze",
+        "budget": "tous",
+        "tri": "proximite"
+      },
+      "attendu": []
+    },
+    {
+      "etat": {
+        "q": "toiture",
+        "metiers": ["Plomberie"],
+        "rayon": 20,
+        "note": 0,
+        "labels": [],
+        "dispo": "tous",
+        "budget": "grand",
+        "tri": "proximite"
+      },
+      "attendu": []
+    }
+  ]
+}

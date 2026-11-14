@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<script src="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/_ds_bundle.js"></script>
+<script src="image-slot.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.btn-ghost, .btn-ghost:hover, .btn-ghost:active { color: var(--color-accent-800); }
+.btn-secondary, .btn-secondary:hover, .btn-secondary:active { color: var(--color-text); }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+input, textarea, select, button { font: inherit; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+
+  <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:10px clamp(14px,2.5vw,24px);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <a href="Site Internet Artisan.dc.html?onglet=blog" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--color-neutral-800);font-size:15px;font-weight:600;padding:6px 8px;border-radius:8px" style-hover="background:var(--color-neutral-100)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>Blog
+    </a>
+    <span style="display:flex;align-items:center;gap:10px;min-width:0">
+      <span style="font-size:16px;font-weight:700;white-space:nowrap">{{ titreEntete }}</span>
+      <span style="{{ styleStatut }}">{{ libelleStatut }}</span>
+      <span style="font-size:13px;color:var(--color-neutral-700);white-space:nowrap">{{ enregistreTexte }}</span>
+    </span>
+    <span style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <sc-if value="{{ aBloquants }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ voirSeo }}" style="font-size:13px;font-weight:700;border:0;border-radius:999px;padding:5px 11px;background:#fdecea;color:#8f1f12;cursor:pointer">{{ libelleBloquants }}</button>
+      </sc-if>
+      <button type="button" class="btn btn-ghost" onClick="{{ apercu }}" style="font-size:14px;padding:8px 12px">Aperçu</button>
+      <button type="button" class="btn btn-secondary" onClick="{{ enregistrer }}" style="font-size:14px;padding:8px 14px">Enregistrer</button>
+      <span style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);border-radius:8px;padding:3px 3px 3px 10px">
+        <span style="font-size:13px;color:var(--color-neutral-700)">Le</span>
+        <input type="date" value="{{ datePub }}" onChange="{{ setDatePub }}" style="border:0;font-size:14px;padding:4px;background:none">
+        <button type="button" class="btn btn-secondary" onClick="{{ planifier }}" style="font-size:14px;padding:6px 12px">Planifier</button>
+      </span>
+      <button type="button" class="btn btn-primary" onClick="{{ publier }}" style="{{ stylePublier }}">Publier</button>
+    </span>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-start;min-width:0">
+
+    <main style="flex:3 1 560px;min-width:0;padding:clamp(18px,3vw,36px) clamp(16px,4vw,56px) 64px;display:grid;gap:22px;max-width:860px;box-sizing:border-box">
+
+      <section style="display:grid;gap:8px">
+        <div style="aspect-ratio:16/7;border-radius:12px;overflow:hidden;background:var(--color-neutral-100)">
+          <image-slot id="blog-article-une" shape="rect" radius="0" placeholder="Image à la une : glissez une photo de chantier"></image-slot>
+        </div>
+        <label style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:var(--color-neutral-800);white-space:nowrap">Texte alternatif</span>
+          <input value="{{ alt }}" onChange="{{ setAlt }}" placeholder="Décrivez la photo : « Salle de bain PMR avec douche de plain-pied à Talence »" style="{{ styleAlt }}">
+          <button type="button" class="btn btn-ghost" onClick="{{ altIA }}" style="font-size:13px;padding:6px 10px">✦ Rédiger</button>
+        </label>
+      </section>
+
+      <section style="display:grid;gap:6px">
+        <textarea value="{{ titre }}" onChange="{{ setTitre }}" rows="2" placeholder="Titre de l'article" style="width:100%;box-sizing:border-box;border:0;resize:none;font-size:clamp(28px,3.4vw,38px);line-height:1.15;font-weight:700;letter-spacing:-0.015em;padding:0;color:var(--color-text);background:none;outline-offset:6px"></textarea>
+        <input value="{{ sousTitre }}" onChange="{{ setSousTitre }}" placeholder="Sous-titre (facultatif) : la promesse de l'article en une phrase" style="width:100%;box-sizing:border-box;border:0;font-size:19px;line-height:1.4;color:var(--color-neutral-800);padding:0;background:none;outline-offset:6px">
+        <div style="display:flex;gap:8px 14px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--color-neutral-700);padding-top:4px">
+          <span style="{{ styleCompteTitre }}">{{ compteTitre }} caractères</span>
+          <span style="display:flex;align-items:center;gap:0;border:1px solid var(--color-divider);border-radius:8px;overflow:hidden;min-width:0;flex:1 1 320px">
+            <span style="padding:6px 8px;background:var(--color-neutral-100);white-space:nowrap">bertrand-renovation.fr/blog/</span>
+            <input value="{{ slug }}" onChange="{{ setSlug }}" style="flex:1;min-width:0;border:0;padding:6px 8px;font-size:13.5px">
+          </span>
+          <button type="button" onClick="{{ basculerSlugAuto }}" style="display:flex;gap:7px;align-items:center;border:0;background:none;cursor:pointer;font-size:13.5px;color:var(--color-neutral-800);padding:0">
+            <span style="{{ slugInter.style }}"><span style="{{ slugInter.rond }}"></span></span>Suit le titre
+          </button>
+        </div>
+      </section>
+
+      <section style="display:grid;gap:0;border:1px solid var(--color-divider);border-radius:12px">
+        <div style="position:sticky;top:61px;z-index:5;display:flex;gap:2px;align-items:center;flex-wrap:wrap;padding:6px;border-bottom:1px solid var(--color-divider);background:#fff;border-radius:12px 12px 0 0">
+          <sc-for list="{{ outils }}" as="o" hint-placeholder-count="11">
+            <sc-if value="{{ o.sep }}" hint-placeholder-val="{{ false }}"><span style="width:1px;height:22px;background:var(--color-divider);margin:0 4px"></span></sc-if>
+            <sc-if value="{{ o.bouton }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onMouseDown="{{ o.faire }}" title="{{ o.titre }}" aria-label="{{ o.titre }}" style="{{ o.style }}" style-hover="background:var(--color-neutral-100)">{{ o.label }}</button>
+            </sc-if>
+          </sc-for>
+          <span style="margin-left:auto;font-size:13px;color:var(--color-neutral-700);padding-right:6px">{{ compteMots }} mots</span>
+        </div>
+        <sc-if value="{{ lienOuvert }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ insererLien }}" style="display:grid;gap:8px;padding:10px 12px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-divider)">
+            <span style="display:flex;gap:8px;flex-wrap:wrap">
+              <input value="{{ lienUrl }}" onChange="{{ setLienUrl }}" placeholder="/prestations ou https://…" style="flex:1 1 240px;min-width:0;padding:8px 10px;border:1px solid var(--color-divider);border-radius:8px;font-size:14px;background:#fff">
+              <button type="submit" class="btn btn-primary" style="font-size:14px;padding:8px 14px">Insérer le lien</button>
+              <button type="button" class="btn btn-ghost" onClick="{{ fermerLien }}" style="font-size:14px;padding:8px 10px">Annuler</button>
+            </span>
+            <span style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:12.5px;color:var(--color-neutral-700)">Vos pages :</span>
+              <sc-for list="{{ ciblesLien }}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{ c.choisir }}" style="font-size:12.5px;font-weight:600;padding:4px 9px;border:1px solid var(--color-divider);border-radius:999px;background:#fff;cursor:pointer;color:var(--color-neutral-800)">{{ c.label }}</button></sc-for>
+            </span>
+          </form>
+        </sc-if>
+        <div ref="{{ refCorps }}" contentEditable="true" suppressContentEditableWarning="{{ true }}" onInput="{{ syncCorps }}" onBlur="{{ syncCorps }}" style="min-height:360px;padding:18px 22px 28px;font-size:17px;line-height:1.65;outline:none;color:var(--color-text)"></div>
+      </section>
+
+      <section style="display:grid;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-size:16px;font-weight:700">Méta-description</span>
+          <span style="display:flex;gap:12px;align-items:center"><span style="{{ styleCompteMeta }}">{{ compteMeta }} / 160</span><button type="button" class="btn btn-ghost" onClick="{{ metaIA }}" style="font-size:13px;padding:5px 10px">✦ Rédiger avec l'IA</button></span>
+        </div>
+        <textarea value="{{ meta }}" onChange="{{ setMeta }}" rows="3" placeholder="Ce que Google affiche sous le titre. 120 à 160 caractères, avec le mot-clé principal." style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-divider);border-radius:10px;font-size:15px;line-height:1.45;resize:vertical"></textarea>
+      </section>
+
+      <section style="display:grid;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-size:16px;font-weight:700">Classement</span>
+          <button type="button" class="btn btn-ghost" onClick="{{ tagsIA }}" style="font-size:13px;padding:5px 10px">✦ Suggérer catégorie et tags</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <label style="display:grid;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Catégorie</span>
+            <select value="{{ cat }}" onChange="{{ setCat }}" style="padding:9px 10px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px;background:#fff">
+              <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4"><option value="{{ c.v }}">{{ c.label }}</option></sc-for>
+            </select>
+          </label>
+          <label style="display:grid;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Auteur</span>
+            <select value="{{ auteur }}" onChange="{{ setAuteur }}" style="padding:9px 10px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px;background:#fff">
+              <sc-for list="{{ auteurs }}" as="a" hint-placeholder-count="2"><option value="{{ a }}">{{ a }}</option></sc-for>
+            </select>
+          </label>
+        </div>
+        <div style="display:grid;gap:6px">
+          <span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Tags</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <sc-for list="{{ tags }}" as="t" hint-placeholder-count="3">
+              <span style="display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;padding:4px 6px 4px 11px;border-radius:999px;background:var(--color-accent-100);color:var(--color-accent-800)">{{ t.label }}<button type="button" onClick="{{ t.retirer }}" aria-label="Retirer" style="border:0;background:none;cursor:pointer;color:var(--color-accent-800);font-size:15px;line-height:1;padding:0 4px">×</button></span>
+            </sc-for>
+            <sc-for list="{{ tagsSuggeres }}" as="t" hint-placeholder-count="0">
+              <button type="button" onClick="{{ t.ajouter }}" style="font-size:13.5px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px dashed var(--color-accent-400);background:#fff;color:var(--color-accent-800);cursor:pointer">✦ + {{ t.label }}</button>
+            </sc-for>
+            <form onSubmit="{{ ajouterTag }}" style="display:flex"><input value="{{ tagSaisie }}" onChange="{{ setTagSaisie }}" placeholder="+ Ajouter un tag" style="width:150px;padding:5px 10px;border:1px solid var(--color-divider);border-radius:999px;font-size:13.5px"></form>
+          </div>
+        </div>
+      </section>
+
+      <section style="display:grid;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="display:grid;gap:2px"><span style="font-size:16px;font-weight:700">Mentions légales sous l'article</span><span style="font-size:13.5px;color:var(--color-neutral-700)">Les mêmes que sur vos devis et factures : modifiées une fois, à jour partout.</span></span>
+          <a href="Devis et Factures.dc.html?onglet=parametres" style="font-size:14px;font-weight:600;text-decoration:none">Modifier dans Devis & factures › Paramètres</a>
+        </div>
+        <div style="padding:16px 18px;border-radius:12px;background:var(--color-neutral-100);display:grid;gap:8px;font-size:13.5px;line-height:20px;color:var(--color-neutral-800)">
+          <sc-for list="{{ mentions }}" as="m" hint-placeholder-count="5">
+            <span style="display:flex;gap:9px;align-items:flex-start"><span style="{{ m.styleIcone }}">{{ m.icone }}</span><span><strong style="color:var(--color-text)">{{ m.label }}</strong> · {{ m.valeur }}</span></span>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+
+    <aside style="flex:2 1 360px;min-width:0;max-width:520px;position:sticky;top:61px;height:calc(100vh - 61px);overflow:auto;border-left:1px solid var(--color-divider);background:#fff;box-sizing:border-box;display:flex;flex-direction:column">
+      <nav style="display:flex;gap:2px;padding:0 14px;border-bottom:1px solid var(--color-divider);position:sticky;top:0;background:#fff;z-index:2">
+        <sc-for list="{{ ongletsPanneau }}" as="o" hint-placeholder-count="4">
+          <button type="button" onClick="{{ o.aller }}" style="{{ o.style }}">{{ o.label }}<sc-if value="{{ o.aBadge }}" hint-placeholder-val="{{ false }}"><span style="{{ o.styleBadge }}">{{ o.badge }}</span></sc-if></button>
+        </sc-for>
+      </nav>
+
+      <!-- IA -->
+      <sc-if value="{{ pIA }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:18px;display:grid;gap:20px">
+          <div style="display:grid;gap:12px;padding:16px;border-radius:14px;background:var(--color-text);color:#fff">
+            <span style="display:grid;gap:4px"><span style="font-size:17px;font-weight:700">✦ Mode autonome</span><span style="font-size:13.5px;line-height:19px;color:#dedad7">L'IA choisit le mot-clé, rédige, optimise le SEO, ajoute liens, image, tags et textes pour les réseaux. Un clic, vous relisez.</span></span>
+            <input value="{{ sujetAuto }}" onChange="{{ setSujetAuto }}" placeholder="Sujet (facultatif) : vide, l'IA choisit" style="padding:10px 12px;border:0;border-radius:8px;font-size:15px;color:var(--color-text)">
+            <span style="display:flex;border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.25)"><sc-for list="{{ finsAuto }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.choisir }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></span>
+            <sc-if value="{{ autoEnCours }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:7px">
+                <sc-for list="{{ etapesAuto }}" as="e" hint-placeholder-count="9"><span style="display:flex;gap:9px;align-items:center;font-size:13.5px"><span style="{{ e.styleIcone }}">{{ e.icone }}</span><span style="{{ e.styleTexte }}">{{ e.label }}</span></span></sc-for>
+              </div>
+            </sc-if>
+            <button type="button" onClick="{{ toutFaire }}" disabled="{{ autoDesactive }}" class="btn btn-secondary" style="font-size:16px;padding:12px 16px;background:#fff;color:var(--color-text);border-color:#fff">{{ libelleAuto }}</button>
+          </div>
+          <div style="display:grid;gap:8px;padding:14px 16px;border-radius:12px;background:var(--color-accent-100);border:1px solid var(--color-accent-300)">
+            <span style="display:flex;justify-content:space-between;gap:10px;align-items:baseline"><span style="font-size:14px;font-weight:700;color:var(--color-accent-800)">Articles rédigés par l'IA ce mois-ci</span><span style="font-size:15px;font-weight:700">{{ quotaTexte }}</span></span>
+            <span style="height:8px;border-radius:999px;background:#fff;overflow:hidden;display:block"><span style="{{ styleQuota }}"></span></span>
+            <span style="font-size:13px;line-height:18px;color:var(--color-neutral-800)">{{ quotaNote }}</span>
+            <sc-if value="{{ estSitePro }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ passerTout }}" style="justify-self:start;border:0;background:none;padding:0;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--color-accent-800);text-decoration:underline">Passer à Tout inclus : 15 articles par mois</button></sc-if>
+          </div>
+
+          <form onSubmit="{{ rediger }}" style="display:grid;gap:12px">
+            <span style="font-size:16px;font-weight:700">Ou guider l'IA vous-même</span>
+            <label style="display:grid;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Sujet ou mot-clé</span>
+              <input value="{{ sujet }}" onChange="{{ setSujet }}" placeholder="ex. prix d'une pompe à chaleur à Bordeaux" style="padding:10px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px">
+            </label>
+            <span style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Type d'article</span>
+              <span style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ typesArticle }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.choisir }}" style="{{ t.style }}">{{ t.label }}</button></sc-for></span>
+            </span>
+            <span style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Longueur</span>
+              <span style="display:flex;border:1px solid var(--color-divider);border-radius:9px;overflow:hidden"><sc-for list="{{ longueurs }}" as="l" hint-placeholder-count="3"><button type="button" onClick="{{ l.choisir }}" style="{{ l.style }}">{{ l.label }}</button></sc-for></span>
+            </span>
+            <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:19px;cursor:pointer"><input type="checkbox" checked="{{ avecChantiers }}" onChange="{{ basculerChantiers }}" style="margin-top:2px;accent-color:var(--color-accent)"><span>Citer mes chantiers et mes avis (repris de « Ma fiche »)</span></label>
+            <sc-if value="{{ generationEnCours }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:8px;padding:12px 14px;border:1px solid var(--color-divider);border-radius:10px">
+                <sc-for list="{{ etapesGen }}" as="e" hint-placeholder-count="5"><span style="display:flex;gap:9px;align-items:center;font-size:14px"><span style="{{ e.styleIcone }}">{{ e.icone }}</span><span style="{{ e.styleTexte }}">{{ e.label }}</span></span></sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ quotaAtteint }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:13.5px;line-height:19px;padding:10px 12px;border-radius:10px;background:#fdecea;color:#8f1f12">Quota du mois atteint. Vous pouvez toujours écrire vous-même ; titres, descriptions et tags restent disponibles.</span>
+            </sc-if>
+            <button type="submit" class="btn btn-secondary" disabled="{{ redigerDesactive }}" style="font-size:15px;padding:11px 16px">{{ libelleRediger }}</button>
+            <span style="font-size:12.5px;line-height:17px;color:var(--color-neutral-700)">Seule la rédaction complète compte dans le quota. Remplace le texte actuel : l'ancien reste dans l'historique (Ctrl Z).</span>
+          </form>
+
+          <div style="display:grid;gap:10px">
+            <span style="display:grid;gap:2px"><span style="font-size:16px;font-weight:700">Retoucher l'article</span><span style="font-size:13px;color:var(--color-neutral-700)">Illimité, ne compte pas dans le quota.</span></span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ retouches }}" as="r" hint-placeholder-count="4"><button type="button" onClick="{{ r.faire }}" class="btn btn-secondary" style="font-size:13.5px;padding:7px 11px">{{ r.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ aPropositions }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;gap:8px">
+                <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">{{ titrePropositions }}</span>
+                <sc-for list="{{ propositions }}" as="p" hint-placeholder-count="3">
+                  <div style="display:grid;gap:8px;padding:12px 14px;border:1px solid var(--color-divider);border-radius:10px">
+                    <span style="font-size:14.5px;line-height:20px">{{ p.texte }}</span>
+                    <span style="display:flex;gap:10px;align-items:center"><button type="button" onClick="{{ p.utiliser }}" class="btn btn-secondary" style="font-size:13px;padding:5px 11px">Utiliser</button><span style="font-size:12px;color:var(--color-neutral-600)">{{ p.info }}</span></span>
+                  </div>
+                </sc-for>
+                <button type="button" onClick="{{ autresPropositions }}" class="btn btn-ghost" style="font-size:13.5px;padding:6px 10px;justify-self:start">↻ Autres versions</button>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="display:grid;gap:10px">
+            <span style="display:grid;gap:2px"><span style="font-size:16px;font-weight:700">Idées d'articles</span><span style="font-size:13px;color:var(--color-neutral-700)">Tirées de vos métiers, de la saison et des recherches locales.</span></span>
+            <sc-if value="{{ pasIdees }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ proposerIdees }}" class="btn btn-secondary" style="font-size:14px;padding:9px 14px;justify-self:start">✦ Proposer 5 idées</button></sc-if>
+            <sc-for list="{{ idees }}" as="i" hint-placeholder-count="0">
+              <button type="button" onClick="{{ i.basculer }}" style="{{ i.style }}">
+                <span style="{{ i.styleCase }}">✓</span>
+                <span style="display:grid;gap:2px;text-align:left"><span style="font-size:14.5px;font-weight:600;line-height:19px">{{ i.titre }}</span><span style="font-size:12.5px;color:var(--color-neutral-700)">{{ i.info }}</span></span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ aIdees }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ redigerIdees }}" class="btn btn-secondary" disabled="{{ ideesDesactive }}" style="font-size:14px;padding:9px 14px;justify-self:start">{{ libelleIdees }}</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- MOTS-CLÉS -->
+      <sc-if value="{{ pMots }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px;display:grid;gap:18px">
+          <div style="display:grid;gap:6px">
+            <span style="font-size:13px;font-weight:700;color:var(--color-neutral-700)">Mot-clé principal de l'article</span>
+            <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-size:16px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--color-accent);color:#fff">{{ motCle }}</span>
+              <sc-for list="{{ motsSecondaires }}" as="m" hint-placeholder-count="2"><span style="display:flex;align-items:center;gap:2px;font-size:13.5px;font-weight:600;padding:4px 6px 4px 11px;border-radius:999px;background:var(--color-neutral-100)">{{ m.label }}<button type="button" onClick="{{ m.retirer }}" aria-label="Retirer" style="border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px">×</button></span></sc-for>
+            </span>
+          </div>
+          <form onSubmit="{{ chercherMot }}" style="display:flex;gap:8px">
+            <input value="{{ motSaisie }}" onChange="{{ setMotSaisie }}" placeholder="Rechercher un mot-clé" style="flex:1;min-width:0;padding:10px 12px;border:1px solid var(--color-divider);border-radius:8px;font-size:15px">
+            <button type="submit" class="btn btn-secondary" style="font-size:14px;padding:9px 14px">Analyser</button>
+          </form>
+          <div style="display:grid;gap:14px;padding:16px;border:1px solid var(--color-divider);border-radius:12px">
+            <span style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font-size:18px;font-weight:700">{{ kw.mot }}</span><sc-if value="{{ kw.estAutre }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ utiliserMot }}" class="btn btn-secondary" style="font-size:13px;padding:5px 11px">Utiliser comme principal</button></sc-if></span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <span style="display:grid;gap:2px"><span style="font-size:12.5px;color:var(--color-neutral-700)">Recherches / mois · Gironde</span><span style="font-size:26px;font-weight:700;line-height:1.1">{{ kw.volume }}</span></span>
+              <span style="display:grid;gap:4px"><span style="font-size:12.5px;color:var(--color-neutral-700)">Difficulté</span><span style="display:flex;align-items:baseline;gap:8px"><span style="font-size:26px;font-weight:700;line-height:1.1">{{ kw.diff }}</span><span style="{{ kw.styleDiff }}">{{ kw.diffLabel }}</span></span><span style="height:6px;border-radius:999px;background:var(--color-neutral-100);overflow:hidden;display:block"><span style="{{ kw.styleDiffBarre }}"></span></span></span>
+            </div>
+            <div style="display:grid;gap:6px">
+              <span style="font-size:12.5px;color:var(--color-neutral-700)">Tendance sur 12 mois</span>
+              <div style="display:flex;align-items:flex-end;gap:4px;height:64px;border-bottom:1px solid var(--color-neutral-300)">
+                <sc-for list="{{ kw.mois }}" as="m" hint-placeholder-count="12"><span title="{{ m.titre }}" style="{{ m.style }}"></span></sc-for>
+              </div>
+              <div style="display:flex;gap:4px"><sc-for list="{{ kw.mois }}" as="m" hint-placeholder-count="12"><span style="flex:1;text-align:center;font-size:11px;color:var(--color-neutral-700)">{{ m.l }}</span></sc-for></div>
+              <span style="font-size:13.5px;line-height:19px;font-weight:600;color:var(--color-accent-800)">{{ kw.conseil }}</span>
+            </div>
+          </div>
+          <div style="display:grid;gap:6px">
+            <span style="font-size:15px;font-weight:700">Mots-clés associés</span>
+            <sc-for list="{{ kw.associes }}" as="a" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 64px 70px 30px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--color-neutral-200);font-size:14px">
+                <button type="button" onClick="{{ a.analyser }}" style="border:0;background:none;padding:0;text-align:left;cursor:pointer;font-size:14px;color:var(--color-text)" style-hover="text-decoration:underline">{{ a.mot }}</button>
+                <span style="text-align:right;font-weight:600">{{ a.volume }}</span>
+                <span style="{{ a.styleDiff }}">{{ a.diffLabel }}</span>
+                <button type="button" onClick="{{ a.ajouter }}" title="Ajouter comme mot-clé secondaire" style="{{ a.styleAjout }}">{{ a.ajoutLabel }}</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;gap:8px">
+            <span style="font-size:15px;font-weight:700">✦ Proposés par l'IA pour cet article</span>
+            <span style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ motsIA }}" as="m" hint-placeholder-count="4"><button type="button" onClick="{{ m.analyser }}" style="font-size:13.5px;font-weight:600;padding:5px 11px;border:1px dashed var(--color-accent-400);border-radius:999px;background:#fff;cursor:pointer;color:var(--color-accent-800)">{{ m.label }}</button></sc-for></span>
+          </div>
+          <span style="font-size:12.5px;line-height:17px;color:var(--color-neutral-700)">Maquette : volumes et tendances simulés. En production : données d'un fournisseur de mots-clés (décision D68), filtrées sur la zone de la fiche.</span>
+        </div>
+      </sc-if>
+
+      <!-- SEO -->
+      <sc-if value="{{ pSeo }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px;display:grid;gap:18px">
+          <div style="display:flex;gap:16px;align-items:center">
+            <span style="{{ styleScore }}">{{ score }}</span>
+            <span style="display:grid;gap:2px"><span style="font-size:17px;font-weight:700">{{ scoreTitre }}</span><span style="font-size:13.5px;color:var(--color-neutral-700)">{{ scoreSous }}</span></span>
+          </div>
+          <div style="display:grid;gap:3px;padding:14px 16px;border:1px solid var(--color-divider);border-radius:12px;font-family:Arial,sans-serif">
+            <span style="font-size:12px;color:#4d5156">bertrand-renovation.fr › blog › {{ slug }}</span>
+            <span style="font-size:18px;line-height:23px;color:#1a0dab">{{ titreGoogle }}</span>
+            <span style="font-size:13.5px;line-height:20px;color:#4d5156">{{ metaGoogle }}</span>
+          </div>
+          <sc-for list="{{ groupesVerifs }}" as="g" hint-placeholder-count="2">
+            <div style="display:grid;gap:8px">
+              <span style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--color-neutral-700)">{{ g.titre }}</span>
+              <sc-for list="{{ g.items }}" as="v" hint-placeholder-count="6">
+                <div style="display:flex;gap:10px;align-items:flex-start">
+                  <span style="{{ v.styleIcone }}">{{ v.icone }}</span>
+                  <span style="display:grid;gap:1px;flex:1"><span style="font-size:14.5px;line-height:19px;font-weight:600">{{ v.label }}</span><span style="font-size:12.5px;color:var(--color-neutral-700)">{{ v.detail }}</span></span>
+                  <sc-if value="{{ v.aAction }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ v.action }}" class="btn btn-ghost" style="font-size:12.5px;padding:4px 8px">{{ v.actionLabel }}</button></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="display:grid;gap:8px">
+            <span style="display:grid;gap:2px"><span style="font-size:15px;font-weight:700">✦ Liens internes suggérés</span><span style="font-size:13px;color:var(--color-neutral-700)">L'IA repère les passages qui peuvent pointer vers vos pages et vos autres articles.</span></span>
+            <sc-for list="{{ liensSuggeres }}" as="l" hint-placeholder-count="3">
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--color-divider);border-radius:10px">
+                <span style="display:grid;gap:2px;flex:1;min-width:0"><span style="font-size:14px">« {{ l.ancre }} »</span><span style="font-size:12.5px;color:var(--color-neutral-700)">→ {{ l.cible }}</span></span>
+                <button type="button" onClick="{{ l.inserer }}" disabled="{{ l.fait }}" class="btn btn-secondary" style="font-size:13px;padding:5px 11px">{{ l.label }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- DIFFUSION -->
+      <sc-if value="{{ pDiff }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px;display:grid;gap:16px">
+          <span style="display:grid;gap:2px"><span style="font-size:16px;font-weight:700">Partager l'article</span><span style="font-size:13.5px;color:var(--color-neutral-700)">Textes rédigés par l'IA pour chaque réseau. Copiez, collez, publiez.</span></span>
+          <span style="display:flex;border:1px solid var(--color-divider);border-radius:9px;overflow:hidden"><sc-for list="{{ reseaux }}" as="r" hint-placeholder-count="4"><button type="button" onClick="{{ r.choisir }}" style="{{ r.style }}">{{ r.label }}</button></sc-for></span>
+          <div style="border:1px solid var(--color-divider);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm)">
+            <div style="display:flex;gap:10px;align-items:center;padding:12px 14px">
+              <span style="width:38px;height:38px;border-radius:50%;background:#1d4f73;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none">BR</span>
+              <span style="display:grid;line-height:1.25"><span style="font-size:14.5px;font-weight:700">Bertrand Rénovation</span><span style="font-size:12.5px;color:var(--color-neutral-700)">{{ post.sousTitre }}</span></span>
+            </div>
+            <p style="margin:0;padding:0 14px 12px;font-size:14.5px;line-height:21px;white-space:pre-line">{{ post.texte }}</p>
+            <div style="aspect-ratio:1.91/1;background:var(--color-neutral-100);display:flex;align-items:flex-end">
+              <span style="display:grid;gap:2px;padding:10px 14px;background:#fff;width:100%;border-top:1px solid var(--color-divider)"><span style="font-size:11.5px;text-transform:uppercase;color:var(--color-neutral-700)">bertrand-renovation.fr</span><span style="font-size:14.5px;font-weight:700;line-height:19px">{{ titreGoogle }}</span></span>
+            </div>
+          </div>
+          <div style="display:grid;gap:6px">
+            <span style="font-size:13px;font-weight:700;color:var(--color-neutral-800)">Hashtags</span>
+            <span style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ post.hashtags }}" as="h" hint-placeholder-count="5"><span style="font-size:13.5px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--color-neutral-100)">{{ h }}</span></sc-for></span>
+          </div>
+          <span style="font-size:13.5px;line-height:19px;color:var(--color-neutral-800)"><strong>Image conseillée :</strong> {{ post.image }}</span>
+          <span style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" onClick="{{ copierPost }}" class="btn btn-secondary" style="font-size:14px;padding:9px 14px">Copier le texte</button>
+            <button type="button" onClick="{{ autrePost }}" class="btn btn-secondary" style="font-size:14px;padding:9px 14px">↻ Autre version</button>
+          </span>
+        </div>
+      </sc-if>
+    </aside>
+  </div>
+</div>
+
+<sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:80;background:var(--color-text);color:#fff;padding:12px 18px;border-radius:10px;font-size:15px;box-shadow:var(--shadow-lg);max-width:90vw">{{ toast }}</div>
+</sc-if>
+<dc-import name="Fenetre Offre" hint-size="0px,0px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;plan&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;site_pro&quot;,&quot;tout_inclus&quot;],&quot;default&quot;:&quot;site_pro&quot;,&quot;tsType&quot;:&quot;'site_pro' | 'tout_inclus'&quot;}}">
+const ENT = { nom: "Bertrand Rénovation", forme: "SARL", capital: "10 000 €", adresse: "14 rue des Faures, 33800 Bordeaux", siret: "812 345 678 00021", rne: "812 345 678", tva: "FR42812345678", tel: "05 56 12 34 56", email: "contact@bertrand-renovation.fr", assureur: "MAAF Assurances", contrat: "0045821", zone: "France métropolitaine", mediateur: "CM2C, 14 rue Saint-Jean, 75017 Paris · www.cm2c.net", directeur: "Jean Bertrand" };
+const CATS = ["Salle de bain", "Chauffage", "Dépannage", "Conseils et aides"];
+const AUTEURS = ["Jean Bertrand", "Léa Bertrand"];
+const slugify = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70);
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const MOIS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+const MOIS_LONG = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+const HTML0 = "<p>Adapter une salle de bain à une personne à mobilité réduite, ce n'est pas seulement poser une barre d'appui. Pour qu'une <strong>salle de bain PMR</strong> soit vraiment utilisable au quotidien, quelques règles de dimensions et d'équipement font toute la différence. Voici ce que nous appliquons sur nos chantiers à Bordeaux et en Gironde.</p>"
+  + "<h2>Les dimensions à respecter</h2><p>La norme de référence prévoit un espace de manœuvre de 1,50 m de diamètre, libre de tout obstacle, pour permettre à un fauteuil de faire demi-tour. La porte doit offrir un passage d'au moins 90 cm. Le lavabo est posé à 80 cm du sol au maximum, sans meuble dessous, pour glisser les genoux.</p>"
+  + "<ul><li>Douche de plain-pied, sans ressaut, avec un siège rabattable</li><li>Barres d'appui fixées dans un mur porteur ou renforcé</li><li>Robinetterie thermostatique, facile à manœuvrer</li><li>Sol antidérapant, classé PN18 au minimum</li></ul>"
+  + "<h2>Combien de temps durent les travaux ?</h2><p>Pour une salle de bain de 5 à 6 m², comptez en général 8 à 10 jours de chantier. Sur notre dernière <a href=\"/realisations\">salle de bain PMR à Talence</a>, la douche a été prête au bout d'une semaine : la famille a pu l'utiliser avant la pose des derniers meubles.</p>"
+  + "<p>Le budget dépend surtout de l'état des canalisations et du sol existant. Un devis détaillé, poste par poste, vous permet de comparer sereinement.</p>";
+
+function genHtml(k, chantiers) {
+  const K = cap(k);
+  return "<p><strong>" + K + "</strong> : c'est une question qu'on nous pose presque chaque semaine sur nos chantiers à Bordeaux. Voici ce qu'il faut savoir avant de vous lancer, avec des repères de prix constatés sur le terrain et les aides auxquelles vous pouvez prétendre.</p>"
+    + "<h2>Ce qu'il faut vérifier avant de commencer</h2><p>Avant tout devis, nous regardons trois choses : l'état de l'installation existante, l'accès au chantier et vos contraintes de calendrier. Ces trois points expliquent l'essentiel des écarts de prix d'un logement à l'autre. Un artisan sérieux vient sur place avant de chiffrer : méfiez-vous des prix donnés au téléphone.</p>"
+    + "<ul><li>Un diagnostic de l'existant, photos à l'appui</li><li>Un devis détaillé poste par poste, avec les marques proposées</li><li>Un planning écrit, avec la date de fin de chantier</li></ul>"
+    + "<h2>Les aides possibles en 2026</h2><p>Selon vos revenus et la nature des travaux, une partie du coût peut être prise en charge : MaPrimeRénov', MaPrimeAdapt', TVA à taux réduit, éco-prêt à taux zéro. Ces aides exigent souvent un artisan qualifié RGE et un devis signé <em>avant</em> le début des travaux. Nous montons le dossier avec vous ; retrouvez le détail sur notre page <a href=\"/prestations\">prestations</a>.</p>"
+    + (chantiers ? "<h2>Un exemple concret</h2><p>Sur un chantier récent à Mérignac, nous avons réalisé ce type de travaux en moins de deux semaines. Le client en parle mieux que nous : « Prix annoncé, prix payé, et un chantier nettoyé chaque soir. » Vous pouvez voir les photos dans nos <a href=\"/realisations\">réalisations</a>.</p>" : "")
+    + "<h2>Notre conseil</h2><p>Demandez au moins deux devis, comparez les postes un par un plutôt que le total, et vérifiez l'attestation d'assurance décennale. Pour " + k + " à Bordeaux et dans un rayon de 30 km, nous vous répondons sous 24 h ouvrées, devis gratuit et sans engagement.</p>";
+}
+
+const KW = {
+  "salle de bain pmr": { v: 1900, d: 34, t: [62, 70, 88, 80, 72, 60, 48, 44, 78, 92, 84, 58], a: [["salle de bain pmr normes", 480, 22], ["douche pmr", 2400, 41], ["salle de bain pmr prix", 720, 28], ["maprimeadapt salle de bain", 1300, 19], ["barre d'appui salle de bain", 880, 15], ["wc pmr dimensions", 1600, 30]] },
+  "pompe à chaleur aides": { v: 3600, d: 58, t: [70, 66, 60, 50, 42, 36, 30, 34, 62, 88, 96, 80], a: [["maprimerénov pompe à chaleur", 5400, 61], ["prix pompe à chaleur air eau", 4400, 55], ["pompe à chaleur bordeaux", 590, 38], ["entretien pompe à chaleur", 2900, 33], ["pompe à chaleur rge", 720, 29], ["cee pompe à chaleur", 1300, 44]] },
+  "entretien pompe à chaleur": { v: 2900, d: 33, t: [58, 50, 44, 40, 36, 34, 32, 40, 78, 96, 88, 66], a: [["entretien pompe à chaleur prix", 1300, 26], ["contrat entretien pompe à chaleur", 590, 21], ["entretien pompe à chaleur obligatoire", 880, 18], ["entretien pac air eau", 720, 24], ["pompe à chaleur bordeaux", 590, 38]] },
+  "douche italienne prix": { v: 2900, d: 41, t: [78, 82, 94, 90, 80, 64, 52, 50, 74, 80, 70, 56], a: [["douche à l'italienne", 9900, 63], ["prix pose douche italienne", 1000, 31], ["remplacer baignoire par douche", 2400, 36], ["douche italienne petite salle de bain", 1600, 27], ["receveur extra-plat", 1900, 24], ["douche italienne bordeaux", 210, 18]] },
+};
+function kwData(q) {
+  const k = q.toLowerCase().trim();
+  if (KW[k]) return KW[k];
+  let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) % 9973;
+  const v = [140, 260, 390, 590, 880, 1300, 1900][h % 7], d = 12 + (h % 55);
+  const t = MOIS.map((_, i) => 40 + ((h >> (i % 8)) % 50) + (i === 2 || i === 9 ? 20 : 0));
+  return { v, d, t, a: [[k + " prix", Math.round(v * 0.6), Math.max(8, d - 8)], [k + " bordeaux", Math.round(v * 0.12), Math.max(6, d - 18)], ["devis " + k, Math.round(v * 0.2), Math.max(8, d - 12)], [k + " aides", Math.round(v * 0.3), d + 4], [k + " avis", Math.round(v * 0.15), Math.max(6, d - 14)]] };
+}
+const diffInfo = (d) => d < 30 ? ["Facile", "#1f7a4d", "#e6f4ec"] : d < 55 ? ["Moyenne", "#8a5a00", "#fbf0d9"] : ["Difficile", "#8f1f12", "#fdecea"];
+
+const AUTO_K = "entretien pompe à chaleur";
+const AUTO_HTML = "<p>L'<strong>entretien pompe à chaleur</strong> est une question qui revient à chaque début d'automne chez nos clients de Bordeaux. Faut-il le faire chaque année ? Est-ce obligatoire ? Combien ça coûte ? Voici les réponses, avec ce que nous constatons sur le terrain.</p>"
+  + "<h2>Est-ce obligatoire ?</h2><p>Oui pour la plupart des installations. Les pompes à chaleur dont la puissance est comprise entre 4 et 70 kW doivent être vérifiées au moins tous les deux ans par un professionnel qualifié. Le technicien vous remet une attestation : gardez-la, votre assureur peut la demander en cas de sinistre, et elle rassure un acheteur lors de la vente du logement.</p>"
+  + "<h2>Ce que comprend une visite</h2><ul><li>Contrôle de l'étanchéité du circuit frigorifique</li><li>Nettoyage de l'unité extérieure et des filtres</li><li>Vérification des pressions, des sondes et de la régulation</li><li>Purge et contrôle du circuit de chauffage</li></ul><p>Comptez environ une heure et demie sur place. Une machine bien réglée consomme moins : sur nos derniers contrôles, nous avons souvent retrouvé 10 à 15 % de rendement perdu à cause de filtres encrassés. Le technicien note aussi l'état des raccords et du support de l'unité extérieure : un appareil qui vibre s'use plus vite et fait du bruit chez les voisins. À la fin de la visite, il vous explique les réglages conseillés pour votre maison et vous laisse un compte rendu écrit, photos à l'appui, que vous pourrez montrer au prochain intervenant.</p>"
+  + "<h2>Combien ça coûte à Bordeaux ?</h2><p>Une visite coûte en général entre 150 et 250 € selon le modèle et l'accès à l'unité extérieure. Un contrat annuel revient moins cher et vous donne la priorité en cas de panne en plein hiver. Le détail de nos formules est sur notre page <a href=\"/prestations\">chauffage et pompe à chaleur</a>.</p><p>Si votre installation a bénéficié de MaPrimeRénov', un entretien régulier protège aussi la garantie du fabricant. Nous l'expliquons dans notre article sur <a href=\"/blog/maprimerenov-2026-aides-pompe-a-chaleur\">les aides 2026</a>.</p>"
+  + "<h2>Notre conseil</h2><p>Programmez l'entretien pompe à chaleur en septembre ou en octobre, avant la saison froide : les délais sont plus courts et vous partez tranquille pour l'hiver. Nous intervenons à Bordeaux et dans un rayon de 30 km, devis gratuit sous 24 h : <a href=\"/contact-devis\">demandez votre visite</a>.</p>";
+const AUTO_ETAPES = ["Choix du mot-clé : volume, difficulté, saison", "Analyse des 10 premiers résultats Google", "Plan de l'article et intertitres", "Rédaction à partir de votre fiche et de vos chantiers", "Titre, sous-titre, adresse et méta-description", "Image à la une et texte alternatif", "Catégorie, tags et liens internes", "Contrôle SEO et corrections automatiques", "Textes pour Facebook, Instagram, LinkedIn et Google"];
+const IDEES = [
+  ["Chauffe-eau qui fuit : réparer ou remplacer ?", "Dépannage · pic de recherches en novembre"],
+  ["Pompe à chaleur : les 5 erreurs qui font grimper la facture", "Chauffage · 2 900 recherches/mois"],
+  ["Remplacer sa baignoire par une douche en 3 jours : c'est possible", "Salle de bain · fort intérêt local"],
+  ["MaPrimeAdapt' 2026 : qui y a droit et pour quels travaux ?", "Conseils et aides · difficulté faible"],
+  ["Canalisations gelées : comment les protéger cet hiver", "Dépannage · saisonnier, à publier en novembre"],
+];
+
+class Component extends DCLogic {
+  refCorps = React.createRef();
+  state = {
+    titre: "Salle de bain PMR : les normes à connaître en 2026", sousTitre: "Dimensions, équipements et durée des travaux, expliqués par un artisan bordelais.",
+    slug: "salle-de-bain-pmr-normes-2026", slugAuto: true, meta: "", alt: "", motCle: "salle de bain pmr", secondaires: ["salle de bain pmr normes"],
+    cat: "Salle de bain", tags: ["PMR", "normes"], tagSugg: [], tagSaisie: "", auteur: "Jean Bertrand", datePub: "2026-10-15", statut: "brouillon",
+    html: HTML0, texte: "", onglet: "ia", quota: 2, gen: null, sujet: "", typeArt: "conseil", longueur: "standard", chantiers: true,
+    props: null, propsVersion: 0, idees: null, ideesSel: {}, motSaisie: "", kwMot: "salle de bain pmr", liensFaits: {}, reseau: "facebook", postV: 0,
+    lienOuvert: false, lienUrl: "", enregistre: "10:42", toast: "", plan: null, sujetAuto: "", finAuto: "planifier", auto: null,
+  };
+  componentDidMount() {
+    let p = {}; try { p = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+    const el = this.refCorps.current;
+    if (p.nouveau) { this.setState({ titre: "", sousTitre: "", slug: "", meta: "", alt: "", tags: [], html: "", onglet: "ia", secondaires: [] }); if (el) el.innerHTML = ""; }
+    else if (el) el.innerHTML = HTML0;
+    if (p.onglet) this.setState({ onglet: p.onglet });
+    if (p.plan === "tout_inclus" || p.plan === "site_pro") this.setState({ plan: p.plan });
+    if (p.auto === "1") setTimeout(() => this.toutFaire(), 300);
+    this.sync();
+  }
+  componentWillUnmount() { clearInterval(this.timer); clearInterval(this.autoT); clearTimeout(this.tt); }
+  toutFaire() {
+    clearInterval(this.autoT); this.setState({ auto: 0 });
+    this.autoT = setInterval(() => {
+      const s = this.state;
+      if (s.auto < AUTO_ETAPES.length - 1) return this.setState({ auto: s.auto + 1 });
+      clearInterval(this.autoT);
+      const libre = s.sujetAuto.trim(), k = libre ? libre.toLowerCase() : AUTO_K, K = cap(k);
+      const cat = /chauff|pompe|chaudi|pac/.test(k) ? "Chauffage" : /fuite|panne|bouch|gel/.test(k) ? "Dépannage" : /aide|prime|tva/.test(k) ? "Conseils et aides" : "Salle de bain";
+      const titre = libre ? (K + " : prix, aides et conseils").slice(0, 65) : "Entretien pompe à chaleur : obligation, prix et fréquence";
+      let meta = libre ? K + " à Bordeaux : ce qu'il faut vérifier, les prix constatés, les aides 2026 et nos conseils d'artisan RGE. Devis gratuit sous 24 h." : "Entretien pompe à chaleur à Bordeaux : obligation légale, contenu de la visite, prix constatés et bon moment pour la faire. Devis gratuit sous 24 h.";
+      if (meta.length > 160) meta = meta.slice(0, 157) + "…";
+      const fin = s.finAuto, statut = fin === "publier" ? "publie" : fin === "planifier" ? "planifie" : "brouillon";
+      this.setCorps(libre ? genHtml(k, true) : AUTO_HTML);
+      this.setState({ auto: null, quota: s.quota + 1, titre, slug: slugify(titre), slugAuto: true, motCle: k, kwMot: k, meta, cat, statut, datePub: "2026-10-14", onglet: "seo",
+        sousTitre: libre ? "Prix constatés, aides 2026 et conseils de chantier, par l'équipe de Bertrand Rénovation." : "Ce que dit la loi, ce que vérifie le technicien et combien prévoir, par un artisan RGE de Bordeaux.",
+        alt: libre ? K + " réalisé par Bertrand Rénovation en Gironde" : "Technicien Bertrand Rénovation contrôlant l'unité extérieure d'une pompe à chaleur à Mérignac",
+        tags: libre ? [k.split(" ").slice(0, 3).join(" "), cat.toLowerCase()] : ["pompe à chaleur", "entretien", "chauffage"],
+        secondaires: libre ? [k + " prix"] : ["entretien pompe à chaleur prix", "contrat entretien pompe à chaleur"], liensFaits: { 0: true, 1: true, 2: true }, liensMode: libre ? "libre" : "auto", tagSugg: [] });
+      this.flash(fin === "publier" ? "Article publié · partage prêt dans l'onglet Diffusion" : fin === "planifier" ? "Article prêt et planifié le mercredi 14 octobre à 8 h (meilleur moment pour ce mot-clé)" : "Article prêt · relisez puis publiez");
+    }, 520);
+  }
+  offre(id, raison) { if (window.PH_offre) window.PH_offre(id, raison); }
+  flash(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: "" }), 2800); }
+  sync = () => { const el = this.refCorps.current; if (el) this.setState({ html: el.innerHTML, texte: el.innerText || "" }); };
+  setCorps(h) { const el = this.refCorps.current; if (el) el.innerHTML = h; this.sync(); }
+  majTitre(v) { this.setState((s) => ({ titre: v, slug: s.slugAuto ? slugify(v) : s.slug })); }
+  lancer(k, n) {
+    clearInterval(this.timer); this.setState({ gen: 0 });
+    this.timer = setInterval(() => this.setState((s) => {
+      if (s.gen === null) { clearInterval(this.timer); return null; }
+      if (s.gen < 4) return { gen: s.gen + 1 };
+      clearInterval(this.timer);
+      const K = cap(k), t = K + " : le guide d'un artisan à Bordeaux";
+      setTimeout(() => { this.setCorps(genHtml(k, s.chantiers)); this.flash("Article rédigé · relisez-le avant de publier"); }, 0);
+      return { gen: null, quota: s.quota + n, titre: t, slug: s.slugAuto ? slugify(t) : s.slug, motCle: k.toLowerCase(), kwMot: k.toLowerCase(),
+        sousTitre: "Prix constatés, aides 2026 et conseils de chantier, par l'équipe de Bertrand Rénovation.",
+        meta: (K + " à Bordeaux : ce qu'il faut vérifier, les aides 2026 et nos conseils d'artisan RGE. Devis gratuit sous 24 h.").slice(0, 160),
+        alt: s.alt || K + " réalisé par Bertrand Rénovation en Gironde" };
+    }), 650);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const plan = s.plan || this.props.plan || "site_pro";
+    const limite = plan === "tout_inclus" ? 15 : 5;
+    const restant = Math.max(0, limite - s.quota);
+    const texte = s.texte || "";
+    const mots = texte.split(/\s+/).filter(Boolean);
+    const low = texte.toLowerCase(), k = s.motCle.toLowerCase();
+    const occ = k ? low.split(k).length - 1 : 0;
+    const densite = mots.length ? (occ * k.split(" ").length / mots.length) * 100 : 0;
+    const debut = mots.slice(0, 100).join(" ").toLowerCase().includes(k);
+    const nbLiens = (s.html.match(/<a /g) || []).length, nbH2 = (s.html.match(/<h2/g) || []).length;
+    const tl = s.titre.length, ml = s.meta.length;
+    const ico = (ok, warn) => ({ width: "22px", height: "22px", flex: "none", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fff", background: ok ? "#1f9d55" : warn ? "#c98a00" : "#c0392b" });
+    const bloq = [
+      [tl >= 10 && tl <= 70, "Titre renseigné, 70 caractères maximum", tl + " caractères"],
+      [ml >= 120 && ml <= 160, "Méta-description de 120 à 160 caractères", ml ? ml + " caractères" : "Vide : Google prendra un extrait au hasard", "Rédiger", () => this.metaIA()],
+      [!!k && s.titre.toLowerCase().includes(k), "Mot-clé principal dans le titre", "« " + s.motCle + " »"],
+      [s.alt.trim().length >= 10, "Texte alternatif sur l'image à la une", s.alt ? "« " + s.alt.slice(0, 40) + (s.alt.length > 40 ? "…" : "") + " »" : "Obligatoire pour l'accessibilité et Google Images", "Rédiger", () => this.altIA()],
+      [!!s.cat, "Catégorie choisie", s.cat],
+      [true, "Mentions légales complètes", "Reprises de Devis & factures › Paramètres"],
+    ];
+    const reco = [
+      [tl >= 50 && tl <= 60, "Titre idéal : 50 à 60 caractères", tl + " caractères"],
+      [debut, "Mot-clé dans les 100 premiers mots", debut ? "Présent dans l'introduction" : "Absent de l'introduction"],
+      [densite >= 0.5 && densite <= 2.5, "Densité du mot-clé entre 0,5 et 2,5 %", densite.toFixed(1).replace(".", ",") + " % · " + occ + " occurrence" + (occ > 1 ? "s" : "")],
+      [nbLiens >= 2, "Au moins 2 liens internes", nbLiens + " lien" + (nbLiens > 1 ? "s" : "") + " · voir les suggestions ci-dessous"],
+      [mots.length >= 300, "Au moins 300 mots", mots.length + " mots"],
+      [nbH2 >= 2, "Au moins 2 intertitres", nbH2 + " intertitre" + (nbH2 > 1 ? "s" : "")],
+    ];
+    const nbBloq = bloq.filter((b) => !b[0]).length, nbReco = reco.filter((b) => !b[0]).length;
+    const score = Math.round(((bloq.length - nbBloq) * 10 + (reco.length - nbReco) * 6.67));
+    const grp = (titre, L, warn) => ({ key: titre, titre, items: L.map(([ok, label, detail, al, af], i) => ({ key: i, label, detail, icone: ok ? "✓" : "!", styleIcone: ico(ok, warn), aAction: !ok && !!af, actionLabel: al || "", action: af || (() => {}) })) });
+
+    const chip = (on) => ({ fontSize: "13.5px", fontWeight: 600, cursor: "pointer", padding: "6px 12px", borderRadius: "999px", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-divider)"), background: on ? "var(--color-accent)" : "#fff", color: on ? "#fff" : "var(--color-neutral-800)" });
+    const seg = (on) => ({ fontSize: "13.5px", fontWeight: 600, padding: "8px 10px", border: 0, borderRight: "1px solid var(--color-divider)", cursor: "pointer", background: on ? "var(--color-accent)" : "#fff", color: on ? "#fff" : "var(--color-neutral-800)", flex: 1 });
+    const inter = (on) => ({ style: { width: "32px", height: "18px", borderRadius: "999px", background: on ? "var(--color-accent)" : "var(--color-neutral-300)", position: "relative", flex: "none", display: "inline-block" }, rond: { position: "absolute", top: "2px", left: on ? "16px" : "2px", width: "14px", height: "14px", borderRadius: "50%", background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,.2)" } });
+    const exec = (cmd, val) => (e) => { e.preventDefault(); document.execCommand(cmd, false, val); this.sync(); };
+    const OUT = [["B", "Gras", exec("bold"), { fontWeight: 800 }], ["I", "Italique", exec("italic"), { fontStyle: "italic" }], ["U", "Souligné", exec("underline"), { textDecoration: "underline" }], "|",
+      ["H2", "Intertitre", exec("formatBlock", "<h2>")], ["H3", "Sous-intertitre", exec("formatBlock", "<h3>")], ["¶", "Paragraphe", exec("formatBlock", "<p>")], "|",
+      ["•", "Liste à puces", exec("insertUnorderedList")], ["1.", "Liste numérotée", exec("insertOrderedList")], ["❝", "Citation", exec("formatBlock", "<blockquote>")], "|",
+      ["🔗", "Lien", (e) => { e.preventDefault(); const sel = window.getSelection(); this.range = sel && sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null; this.setState({ lienOuvert: true, lienUrl: "" }); }],
+      ["↶", "Annuler", exec("undo")]];
+    const outils = OUT.map((o, i) => o === "|" ? { key: i, sep: true, bouton: false } : { key: i, sep: false, bouton: true, label: o[0], titre: o[1], faire: o[2], style: Object.assign({ minWidth: "34px", height: "32px", border: 0, borderRadius: "6px", background: "none", cursor: "pointer", fontSize: "14.5px", fontWeight: 700, color: "var(--color-neutral-800)", padding: "0 8px" }, o[3] || {}) });
+
+    const kd = kwData(s.kwMot), di = diffInfo(kd.d), mx = Math.max.apply(null, kd.t);
+    const pic = kd.t.indexOf(mx), avant = (pic + 11) % 12;
+    const fmt = (n) => n.toLocaleString("fr-FR");
+
+    const LIENS = s.liensMode === "auto" ? [["chauffage et pompe à chaleur", "Prestations › Chauffage et pompe à chaleur", "/prestations"], ["les aides 2026", "Article : MaPrimeRénov' 2026, quelles aides ?", "/blog/maprimerenov-2026-aides-pompe-a-chaleur"], ["demandez votre visite", "Contact et devis", "/contact-devis"]]
+      : s.liensMode === "libre" ? [["prestations", "Prestations", "/prestations"], ["réalisations", "Réalisations", "/realisations"]]
+      : [["douche de plain-pied", "Prestations › Salle de bain clé en main", "/prestations#salle-de-bain"], ["devis détaillé", "Contact et devis", "/contact-devis"], ["MaPrimeAdapt'", "Article : MaPrimeRénov' 2026, quelles aides ?", "/blog/maprimerenov-2026-aides-pompe-a-chaleur"]];
+    const RES = {
+      facebook: ["Facebook · Page professionnelle", ["🛁 " + s.titre + "\n\nPorte de 90 cm, espace de 1,50 m, douche sans ressaut : on vous explique tout, avec l'exemple de notre dernier chantier à Talence.\n\n👉 L'article complet sur notre site.", "Vous pensez adapter votre salle de bain pour un proche ? Avant de demander des devis, lisez ces quelques règles simples. Elles évitent les mauvaises surprises.\n\n👉 " + s.titre],
+        ["#salledebain", "#PMR", "#Bordeaux", "#renovation", "#maprimeadapt"], "Photo avant/après de la salle de bain PMR de Talence (Réalisations)"],
+      instagram: ["Instagram · @bertrand.renovation", ["Une salle de bain PMR, ça se prépare 📐\n1,50 m pour tourner en fauteuil, 90 cm de porte, zéro ressaut dans la douche.\nOn vous dit tout dans notre nouvel article : lien en bio.", "Avant / après à Talence ✨ Une douche de plain-pied prête en 7 jours. Les normes à connaître : lien en bio."],
+        ["#salledebainpmr", "#douchedeplainpied", "#artisanbordeaux", "#renovationsalledebain", "#accessibilite", "#gironde"], "Carrousel de 3 photos du chantier de Talence, format carré"],
+      linkedin: ["LinkedIn · Jean Bertrand", ["Ergothérapeutes, aides à domicile, agences : vos clients vous demandent comment adapter une salle de bain ? Nous avons résumé les normes PMR et les délais réels de chantier dans un article clair.", "Adapter un logement, c'est souvent la condition pour rester chez soi. Retour d'expérience sur nos salles de bain PMR en Gironde."],
+        ["#accessibilite", "#maintienadomicile", "#BTP", "#Bordeaux"], "Photo de l'équipe sur le chantier de Talence"],
+      google: ["Fiche Google · Actualité", ["Nouvel article : " + s.titre + ". Dimensions, équipements, durée des travaux : tout ce qu'il faut savoir avant votre projet.", "Salle de bain PMR à Bordeaux : nos conseils d'artisan, avec un exemple de chantier à Talence."],
+        [], "Photo de la douche de plain-pied (format 4:3)"],
+    };
+    const r = RES[s.reseau];
+
+    const PROPS = {
+      titres: ["3 titres proposés", [["Salle de bain PMR : les 6 normes à respecter en 2026", "54 caractères"], ["Salle de bain PMR à Bordeaux : normes, délais et aides", "53 caractères"], ["Adapter sa salle de bain PMR : le guide de l'artisan", "52 caractères"]], [["Salle de bain PMR : dimensions et équipements obligatoires", "57 caractères"], ["Normes salle de bain PMR : ce que l'artisan vérifie", "51 caractères"], ["Salle de bain PMR en 10 jours : normes et conseils", "50 caractères"]], "titre"],
+      soustitres: ["Sous-titres proposés", [["Dimensions, équipements et durée des travaux, expliqués par un artisan bordelais.", ""], ["Tout ce qu'il faut savoir avant de demander un devis, avec un exemple à Talence.", ""]], [["Les règles simples qui rendent une salle de bain vraiment utilisable au quotidien.", ""], ["Espace, porte, douche, aides : le point complet avant vos travaux.", ""]], "sousTitre"],
+      meta: ["Méta-descriptions proposées", [["Salle de bain PMR : dimensions, équipements et durée des travaux à Bordeaux. Conseils d'artisan RGE et exemple à Talence. Devis gratuit sous 24 h.", ""], ["Les normes d'une salle de bain PMR expliquées simplement : espace de 1,50 m, porte de 90 cm, douche sans ressaut. Bertrand Rénovation, Bordeaux.", ""]], [["Adapter sa salle de bain PMR en Gironde : normes 2026, aides MaPrimeAdapt' et délais réels de chantier. Artisan à Bordeaux, devis sous 24 h.", ""], ["Douche de plain-pied, barres d'appui, lavabo adapté : les règles d'une salle de bain PMR, par un artisan de Bordeaux. Devis gratuit et rapide.", ""]], "meta"],
+    };
+    const pr = s.props ? PROPS[s.props] : null;
+    const prList = pr ? (s.propsVersion % 2 ? pr[2] : pr[1]) : [];
+
+    const ent = (on) => ({ fontSize: "14.5px", fontWeight: on ? 700 : 500, padding: "12px 10px", border: 0, borderBottom: "3px solid " + (on ? "var(--color-accent)" : "transparent"), background: "none", cursor: "pointer", whiteSpace: "nowrap", color: on ? "var(--color-text)" : "var(--color-neutral-700)", display: "flex", gap: "6px", alignItems: "center" });
+    const statuts = { brouillon: ["Brouillon", "var(--color-neutral-100)", "var(--color-neutral-800)"], planifie: ["Planifié le " + new Date(s.datePub).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }), "#fbf0d9", "#7a4d00"], publie: ["Publié", "#e6f4ec", "#1f7a4d"] };
+    const st = statuts[s.statut];
+    const genEtapes = ["Analyse du mot-clé et des recherches associées", "Plan de l'article et intertitres", "Rédaction à partir de votre fiche" + (s.chantiers ? " et de vos chantiers" : ""), "Titre, sous-titre et méta-description", "Contrôle SEO et liens internes"];
+    const nbSel = Object.keys(s.ideesSel).filter((x) => s.ideesSel[x]).length;
+
+    return {
+      titreEntete: s.titre ? (s.titre.length > 42 ? s.titre.slice(0, 40) + "…" : s.titre) : "Nouvel article",
+      libelleStatut: st[0], styleStatut: { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "2px 9px", background: st[1], color: st[2], whiteSpace: "nowrap" },
+      enregistreTexte: "Enregistré à " + s.enregistre,
+      aBloquants: nbBloq > 0, libelleBloquants: nbBloq + " point" + (nbBloq > 1 ? "s" : "") + " bloquant" + (nbBloq > 1 ? "s" : ""),
+      voirSeo: () => this.setState({ onglet: "seo" }),
+      stylePublier: { fontSize: "14px", padding: "8px 16px", opacity: nbBloq ? 0.5 : 1 },
+      apercu: () => this.flash("Aperçu ouvert : bertrand-renovation.fr/blog/" + (s.slug || "nouvel-article")),
+      enregistrer: () => { const d = new Date(); this.setState({ enregistre: d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0") }); this.flash("Brouillon enregistré"); },
+      datePub: s.datePub, setDatePub: (e) => this.setState({ datePub: e.target.value }),
+      planifier: () => { if (nbBloq) { this.setState({ onglet: "seo" }); return this.flash("Corrigez les " + nbBloq + " points bloquants avant de planifier"); } this.setState({ statut: "planifie" }); this.flash("Publication planifiée · partage proposé le jour J"); },
+      publier: () => { if (nbBloq) { this.setState({ onglet: "seo" }); return this.flash("Publication impossible : " + nbBloq + " point" + (nbBloq > 1 ? "s" : "") + " bloquant" + (nbBloq > 1 ? "s" : "")); } this.setState({ statut: "publie", onglet: "diffusion" }); this.flash("Article en ligne · ajouté au sitemap et aux sections Blog de votre site"); },
+
+      alt: s.alt, setAlt: (e) => this.setState({ alt: e.target.value }),
+      styleAlt: { flex: "1 1 280px", minWidth: 0, padding: "7px 10px", border: "1px solid " + (s.alt.trim().length >= 10 ? "var(--color-divider)" : "#e7a39b"), borderRadius: "8px", fontSize: "14px" },
+      altIA: () => this.altIA(),
+      titre: s.titre, setTitre: (e) => this.majTitre(e.target.value),
+      sousTitre: s.sousTitre, setSousTitre: (e) => this.setState({ sousTitre: e.target.value }),
+      compteTitre: tl, styleCompteTitre: { fontWeight: 600, color: tl > 70 ? "#b3261e" : tl >= 50 && tl <= 60 ? "#1f7a4d" : "#8a5a00" },
+      slug: s.slug, setSlug: (e) => this.setState({ slug: slugify(e.target.value), slugAuto: false }),
+      slugInter: inter(s.slugAuto), basculerSlugAuto: () => this.setState((x) => ({ slugAuto: !x.slugAuto, slug: !x.slugAuto ? slugify(x.titre) : x.slug })),
+      outils, compteMots: mots.length, refCorps: this.refCorps, syncCorps: this.sync,
+      lienOuvert: s.lienOuvert, lienUrl: s.lienUrl, setLienUrl: (e) => this.setState({ lienUrl: e.target.value }), fermerLien: () => this.setState({ lienOuvert: false }),
+      ciblesLien: [["Prestations", "/prestations"], ["Réalisations", "/realisations"], ["Contact et devis", "/contact-devis"], ["Avis clients", "/avis-clients"], ["Article : aides PAC 2026", "/blog/maprimerenov-2026-aides-pompe-a-chaleur"]].map(([label, u]) => ({ key: u, label, choisir: () => this.setState({ lienUrl: u }) })),
+      insererLien: (e) => { e.preventDefault(); if (!s.lienUrl) return; const sel = window.getSelection(); if (this.range) { sel.removeAllRanges(); sel.addRange(this.range); }
+        if (this.range && !this.range.collapsed) document.execCommand("createLink", false, s.lienUrl); else document.execCommand("insertHTML", false, "<a href=\"" + s.lienUrl + "\">" + s.lienUrl + "</a>");
+        this.setState({ lienOuvert: false }); this.sync(); },
+      meta: s.meta, setMeta: (e) => this.setState({ meta: e.target.value }), compteMeta: ml, styleCompteMeta: { fontSize: "13px", fontWeight: 700, color: ml > 160 ? "#b3261e" : ml >= 120 ? "#1f7a4d" : "#8a5a00" },
+      metaIA: () => this.metaIA(),
+      tagsIA: () => { this.setState({ cat: s.cat || "Salle de bain", tagSugg: ["accessibilité", "douche de plain-pied", "MaPrimeAdapt'"].filter((t) => !s.tags.includes(t)) }); this.flash("Catégorie confirmée : Salle de bain · 3 tags proposés"); },
+      cat: s.cat, setCat: (e) => this.setState({ cat: e.target.value }),
+      categories: [{ v: "", label: "Choisir…" }].concat(CATS.map((c) => ({ v: c, label: c }))),
+      auteur: s.auteur, setAuteur: (e) => this.setState({ auteur: e.target.value }), auteurs: AUTEURS,
+      tags: s.tags.map((t) => ({ key: t, label: t, retirer: () => this.setState((x) => ({ tags: x.tags.filter((y) => y !== t) })) })),
+      tagsSuggeres: s.tagSugg.map((t) => ({ key: t, label: t, ajouter: () => this.setState((x) => ({ tags: x.tags.concat([t]), tagSugg: x.tagSugg.filter((y) => y !== t) })) })),
+      tagSaisie: s.tagSaisie, setTagSaisie: (e) => this.setState({ tagSaisie: e.target.value }),
+      ajouterTag: (e) => { e.preventDefault(); const t = s.tagSaisie.trim(); if (t && !s.tags.includes(t)) this.setState({ tags: s.tags.concat([t]), tagSaisie: "" }); },
+      mentions: [["Éditeur", ENT.nom + ", " + ENT.forme + " au capital de " + ENT.capital + " · " + ENT.adresse], ["Immatriculation", "SIRET " + ENT.siret + " · RNE " + ENT.rne + " · TVA " + ENT.tva], ["Assurance décennale", ENT.assureur + ", contrat n° " + ENT.contrat + " · couverture " + ENT.zone], ["Médiateur de la consommation", ENT.mediateur], ["Directeur de la publication", ENT.directeur + " · " + ENT.tel + " · " + ENT.email], ["Hébergement", "Portail Travaux, pour le compte de l'éditeur (détail dans la page Mentions légales du site)"]].map(([label, valeur], i) => ({ key: i, label, valeur, icone: "✓", styleIcone: ico(true) })),
+
+      ongletsPanneau: [["ia", "✦ IA", ""], ["mots", "Mots-clés", ""], ["seo", "SEO", nbBloq ? String(nbBloq) : "✓"], ["diffusion", "Diffusion", ""]].map(([id, label, badge]) => ({ key: id, label, aller: () => this.setState({ onglet: id }), style: ent(s.onglet === id), aBadge: !!badge, badge,
+        styleBadge: { fontSize: "11.5px", fontWeight: 700, borderRadius: "999px", padding: "1px 7px", background: nbBloq ? "#c0392b" : "#1f9d55", color: "#fff" } })),
+      pIA: s.onglet === "ia", pMots: s.onglet === "mots", pSeo: s.onglet === "seo", pDiff: s.onglet === "diffusion",
+
+      sujetAuto: s.sujetAuto, setSujetAuto: (e) => this.setState({ sujetAuto: e.target.value }),
+      finsAuto: [["relire", "Je relis"], ["planifier", "Planifier seul"], ["publier", "Publier seul"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ finAuto: id }),
+        style: { flex: 1, fontSize: "13.5px", fontWeight: 600, padding: "8px 6px", border: 0, cursor: "pointer", background: s.finAuto === id ? "#fff" : "transparent", color: s.finAuto === id ? "var(--color-text)" : "#fff" } })),
+      autoEnCours: s.auto !== null,
+      etapesAuto: AUTO_ETAPES.map((l, i) => { const fa = s.auto > i, c = s.auto === i; return { key: i, label: l, icone: fa ? "✓" : c ? "…" : "", styleIcone: { width: "18px", height: "18px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, background: fa ? "#1f9d55" : c ? "var(--color-accent)" : "rgba(255,255,255,.15)", color: "#fff" }, styleTexte: { color: fa || c ? "#fff" : "#a9a4a0", fontWeight: c ? 700 : 400 } }; }),
+      autoDesactive: s.auto !== null || s.gen !== null,
+      libelleAuto: s.auto !== null ? "L'IA travaille… " + (s.auto + 1) + " / " + AUTO_ETAPES.length : restant === 0 ? (plan === "tout_inclus" ? "Quota du mois atteint" : "Quota atteint · voir Tout inclus") : "✦ Tout faire en un clic · 1 article sur " + restant,
+      toutFaire: () => { if (restant === 0) return plan === "tout_inclus" ? this.flash("Quota de 15 articles atteint · remis à zéro le 1er novembre") : this.offre("tout", "Quota du mois atteint"); this.toutFaire(); },
+      quotaTexte: s.quota + " / " + limite, estSitePro: plan === "site_pro",
+      styleQuota: { display: "block", height: "100%", width: Math.min(100, (s.quota / limite) * 100) + "%", background: "var(--color-accent)", borderRadius: "999px" },
+      quotaNote: (plan === "tout_inclus" ? "Tout inclus" : "Site Pro") + " · " + restant + " article" + (restant > 1 ? "s" : "") + " restant" + (restant > 1 ? "s" : "") + " · remis à zéro le 1er novembre.",
+      passerTout: () => this.offre("tout", "15 articles par mois au lieu de 5"),
+      
+      sujet: s.sujet, setSujet: (e) => this.setState({ sujet: e.target.value }),
+      typesArticle: [["conseil", "Conseil"], ["prix", "Guide des prix"], ["chantier", "Retour de chantier"], ["aides", "Aides et réglementation"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ typeArt: id }), style: chip(s.typeArt === id) })),
+      longueurs: [["court", "Court · 500 mots"], ["standard", "Standard · 900"], ["long", "Long · 1 500"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ longueur: id }), style: seg(s.longueur === id) })),
+      avecChantiers: s.chantiers, basculerChantiers: () => this.setState((x) => ({ chantiers: !x.chantiers })),
+      generationEnCours: s.gen !== null,
+      etapesGen: genEtapes.map((l, i) => { const f = s.gen > i, c = s.gen === i; return { key: i, label: l, icone: f ? "✓" : c ? "…" : "", styleIcone: { width: "20px", height: "20px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, background: f ? "#1f9d55" : c ? "var(--color-accent-200)" : "var(--color-neutral-100)", color: f ? "#fff" : "var(--color-accent-800)" }, styleTexte: { color: f || c ? "var(--color-text)" : "var(--color-neutral-600)", fontWeight: c ? 700 : 400 } }; }),
+      quotaAtteint: restant === 0, redigerDesactive: restant === 0 || s.gen !== null,
+      libelleRediger: s.gen !== null ? "Rédaction en cours…" : "✦ Rédiger l'article · 1 sur " + restant + " restant" + (restant > 1 ? "s" : ""),
+      rediger: (e) => { e.preventDefault(); if (restant === 0) return; this.lancer(s.sujet.trim() || s.motCle, 1); },
+      retouches: [["Proposer 3 titres", "titres"], ["Sous-titre", "soustitres"], ["Méta-description", "meta"]].map(([label, id]) => ({ key: id, label, faire: () => this.setState({ props: id, propsVersion: 0 }) })).concat([{ key: "tags", label: "Catégorie et tags", faire: () => { this.setState({ tagSugg: ["accessibilité", "douche de plain-pied", "MaPrimeAdapt'"].filter((t) => !s.tags.includes(t)) }); this.flash("3 tags proposés sous « Classement »"); } }]),
+      aPropositions: !!pr, titrePropositions: pr ? pr[0] : "",
+      propositions: prList.map(([t, info], i) => ({ key: i, texte: t, info: info || t.length + " caractères", utiliser: () => { if (pr[3] === "titre") this.majTitre(t); else this.setState({ [pr[3]]: t }); this.setState({ props: null }); this.flash("Remplacé · Ctrl Z dans le champ pour revenir"); } })),
+      autresPropositions: () => this.setState((x) => ({ propsVersion: x.propsVersion + 1 })),
+      pasIdees: !s.idees, aIdees: !!s.idees,
+      proposerIdees: () => this.setState({ idees: IDEES, ideesSel: {} }),
+      idees: (s.idees || []).map(([titre, info], i) => { const on = !!s.ideesSel[i]; return { key: i, titre, info, basculer: () => this.setState((x) => ({ ideesSel: { ...x.ideesSel, [i]: !x.ideesSel[i] } })),
+        style: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px 12px", borderRadius: "10px", cursor: "pointer", background: on ? "var(--color-accent-100)" : "#fff", border: "1px solid " + (on ? "var(--color-accent-300)" : "var(--color-divider)"), width: "100%", color: "var(--color-text)" },
+        styleCase: { width: "20px", height: "20px", borderRadius: "5px", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: on ? "#fff" : "transparent", background: on ? "var(--color-accent)" : "#fff", border: "1px solid " + (on ? "var(--color-accent)" : "var(--color-neutral-400)") } }; }),
+      ideesDesactive: nbSel === 0 || nbSel > restant,
+      libelleIdees: nbSel > restant ? "Quota insuffisant : " + restant + " restant" + (restant > 1 ? "s" : "") : nbSel ? "✦ Rédiger " + nbSel + " brouillon" + (nbSel > 1 ? "s" : "") + " · " + nbSel + " sur " + restant : "Cochez les idées à rédiger",
+      redigerIdees: () => { this.setState((x) => ({ quota: x.quota + nbSel, idees: null, ideesSel: {} })); this.flash(nbSel + " brouillon" + (nbSel > 1 ? "s" : "") + " créé" + (nbSel > 1 ? "s" : "") + " dans Blog › Articles, à relire avant publication"); },
+
+      motCle: s.motCle,
+      motsSecondaires: s.secondaires.map((m) => ({ key: m, label: m, retirer: () => this.setState((x) => ({ secondaires: x.secondaires.filter((y) => y !== m) })) })),
+      motSaisie: s.motSaisie, setMotSaisie: (e) => this.setState({ motSaisie: e.target.value }),
+      chercherMot: (e) => { e.preventDefault(); if (s.motSaisie.trim()) this.setState({ kwMot: s.motSaisie.trim().toLowerCase() }); },
+      utiliserMot: () => { this.setState({ motCle: s.kwMot }); this.flash("Mot-clé principal : « " + s.kwMot + " »"); },
+      kw: { mot: s.kwMot, estAutre: s.kwMot !== s.motCle, volume: fmt(kd.v), diff: kd.d, diffLabel: di[0], styleDiff: { fontSize: "12.5px", fontWeight: 700, padding: "2px 8px", borderRadius: "999px", background: di[2], color: di[1] },
+        styleDiffBarre: { display: "block", height: "100%", width: kd.d + "%", background: di[1], borderRadius: "999px" },
+        mois: kd.t.map((v, i) => ({ key: i, l: MOIS[i], titre: cap(MOIS_LONG[i]) + " : " + fmt(Math.round(kd.v * v / 70)) + " recherches", style: { flex: 1, height: Math.round((v / mx) * 100) + "%", borderRadius: "3px 3px 0 0", background: i === pic ? "var(--color-accent)" : "var(--color-accent-200)" } })),
+        conseil: "Pic de recherches en " + MOIS_LONG[pic] + " : publiez en " + MOIS_LONG[avant] + " pour être indexé à temps.",
+        associes: kd.a.map(([m, v, d]) => { const dd = diffInfo(d), ajoute = s.secondaires.includes(m) || m === s.motCle; return { key: m, mot: m, volume: fmt(v), diffLabel: dd[0], styleDiff: { fontSize: "12px", fontWeight: 700, padding: "2px 7px", borderRadius: "999px", background: dd[2], color: dd[1], textAlign: "center" },
+          analyser: () => this.setState({ kwMot: m }), ajoutLabel: ajoute ? "✓" : "+",
+          styleAjout: { width: "28px", height: "28px", borderRadius: "8px", border: "1px solid var(--color-divider)", background: ajoute ? "var(--color-accent-100)" : "#fff", cursor: "pointer", fontWeight: 700, color: "var(--color-accent-800)" },
+          ajouter: () => { if (!ajoute) this.setState((x) => ({ secondaires: x.secondaires.concat([m]) })); } }; }) },
+      motsIA: ["douche pmr", "maprimeadapt salle de bain", "salle de bain pmr prix", "wc pmr dimensions"].map((m) => ({ key: m, label: m, analyser: () => this.setState({ kwMot: m }) })),
+
+      score, styleScore: { width: "64px", height: "64px", borderRadius: "50%", flex: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", fontWeight: 700, color: "#fff", background: nbBloq ? "#c0392b" : score >= 85 ? "#1f9d55" : "#c98a00" },
+      scoreTitre: nbBloq ? "Publication bloquée" : nbReco ? "Publiable, à améliorer" : "Prêt à publier",
+      scoreSous: nbBloq ? nbBloq + " point" + (nbBloq > 1 ? "s" : "") + " obligatoire" + (nbBloq > 1 ? "s" : "") + " à corriger" : nbReco + " recommandation" + (nbReco > 1 ? "s" : "") + " restante" + (nbReco > 1 ? "s" : ""),
+      titreGoogle: (s.titre || "Titre de l'article").length > 60 ? s.titre.slice(0, 58) + "…" : (s.titre || "Titre de l'article") + " | Bertrand Rénovation",
+      metaGoogle: s.meta || (texte.slice(0, 150) + "…"),
+      groupesVerifs: [grp("Obligatoire pour publier", bloq, false), grp("Recommandé", reco, true)],
+      liensSuggeres: LIENS.map(([ancre, cible, url], i) => { const fait = !!s.liensFaits[i]; return { key: i, ancre, cible, fait, label: fait ? "Inséré ✓" : "Insérer",
+        inserer: () => { const el = this.refCorps.current; if (!el) return; const h = el.innerHTML; const idx = h.indexOf(ancre);
+          if (idx >= 0) el.innerHTML = h.slice(0, idx) + "<a href=\"" + url + "\">" + ancre + "</a>" + h.slice(idx + ancre.length);
+          else el.innerHTML = h + "<p>À lire aussi : <a href=\"" + url + "\">" + cible.replace(/^Article : /, "") + "</a></p>";
+          this.setState((x) => ({ liensFaits: { ...x.liensFaits, [i]: true } })); this.sync(); this.flash("Lien inséré vers " + cible); } }; }),
+
+      reseaux: [["facebook", "Facebook"], ["instagram", "Instagram"], ["linkedin", "LinkedIn"], ["google", "Fiche Google"]].map(([id, label]) => ({ key: id, label, choisir: () => this.setState({ reseau: id, postV: 0 }), style: seg(s.reseau === id) })),
+      post: { sousTitre: r[0], texte: r[1][s.postV % 2], hashtags: r[2].length ? r[2] : ["Pas de hashtag sur la fiche Google"], image: r[3] },
+      copierPost: () => { try { navigator.clipboard.writeText(r[1][s.postV % 2] + "\n\n" + r[2].join(" ")); } catch (e) {} this.flash("Texte et hashtags copiés"); },
+      autrePost: () => this.setState((x) => ({ postV: x.postV + 1 })),
+
+      toast: s.toast, toastVisible: !!s.toast,
+    };
+  }
+  metaIA() { this.setState({ meta: "Salle de bain PMR : dimensions, équipements et durée des travaux à Bordeaux. Conseils d'artisan RGE et exemple à Talence. Devis gratuit sous 24 h." }); this.flash("Méta-description rédigée · 149 caractères"); }
+  altIA() { this.setState({ alt: "Salle de bain PMR avec douche de plain-pied et barres d'appui, chantier à Talence" }); this.flash("Texte alternatif rédigé à partir de la photo"); }
+}
+</script>
+</body>
+</html>

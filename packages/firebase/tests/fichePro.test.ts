@@ -1,0 +1,169 @@
+import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { appAdmin, PROJET_EMULATEUR } from '../src/admin';
+import { chemins } from '../src/chemins';
+import { changerMiseEnLigne, modifierFiche } from '../src/serveur/pro';
+
+let db: Firestore;
+const T = Date.UTC(2026, 8, 29, 8);
+const s = () => ({ db, horloge: () => T });
+const ctx = (uid: string) => ({ artisanId: 'a1', uid });
+
+beforeAll(() => {
+  db = getFirestore(appAdmin());
+});
+
+beforeEach(async () => {
+  await fetch(
+    `http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${PROJET_EMULATEUR}/databases/(default)/documents`,
+    { method: 'DELETE' },
+  );
+  const m = (role: string) => ({ role, statut: 'actif' });
+  await Promise.all([
+    db.doc(chemins.membre('a1', 'p1')).set(m('proprietaire')),
+    db.doc(chemins.membre('a1', 'c1')).set(m('collaborateur')),
+    db.doc(chemins.user('p1')).set({ telephoneVerifie: true }),
+    db.doc(chemins.artisan('a1')).set({
+      nomCommercial: 'Bertrand Toiture',
+      metiers: ['couvreur'],
+      zoneIntervention: { rayonKm: 30, centre: { latitude: 44.8, longitude: -0.6 } },
+      description: '',
+      siteWeb: 'https://ancien.example',
+      labels: [],
+      proprietaireUid: 'p1',
+    }),
+  ]);
+});
+
+describe('modifierFiche', () => {
+  it('métiers (« + » de Ma fiche) : le métier principal reste en tête, sans doublon', async () => {
+    await db.doc(chemins.artisan('a1')).update({ metierPrincipal: 'couvreur' });
+    await modifierFiche(s(), ctx('p1'), {
+      metiers: ['zingueur', 'couvreur', 'zingueur', 'facadier'],
+    });
+    expect((await db.doc(chemins.artisan('a1')).get()).get('metiers')).toEqual([
+      'couvreur',
+      'zingueur',
+      'facadier',
+    ]);
+  });
+
+  it('présentation : enregistrée, complétude recalculée (description 35)', async () => {
+    const r = await modifierFiche(s(), ctx('p1'), { description: 'x'.repeat(80) });
+    expect(r.completude).toBe(35);
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.description).toHaveLength(80);
+    expect(a.completude).toBe(35);
+  });
+
+  it('coordonnées : téléphone normalisé, chaîne vide = champ retiré', async () => {
+    await modifierFiche(s(), ctx('p1'), { telephonePublic: '06 12 34 56 78', siteWeb: '' });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.telephonePublic).toBe('+33612345678');
+    expect(a.siteWeb).toBeUndefined();
+  });
+
+  it('adresse du siège : remplacée, position périmée retirée, pays conservé', async () => {
+    await db.doc(chemins.artisan('a1')).update({
+      adresseSiege: {
+        ligne1: '1 rue Ancienne',
+        codePostal: '33000',
+        ville: 'Bordeaux',
+        pays: 'FR',
+        geo: { latitude: 44.83, longitude: -0.57 },
+        geohash: 'ezzzzzzzzz',
+      },
+    });
+    await modifierFiche(s(), ctx('p1'), {
+      adresse: { ligne1: '3 rue des Lilas', codePostal: '33600', ville: 'Pessac' },
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.adresseSiege).toEqual({
+      ligne1: '3 rue des Lilas',
+      codePostal: '33600',
+      ville: 'Pessac',
+      pays: 'FR',
+    });
+  });
+
+  it('adresse du siège sans rue : ville et code postal seuls, ancienne rue retirée', async () => {
+    await db.doc(chemins.artisan('a1')).update({
+      adresseSiege: {
+        ligne1: '1 rue Ancienne',
+        codePostal: '33000',
+        ville: 'Bordeaux',
+        pays: 'FR',
+      },
+    });
+    await modifierFiche(s(), ctx('p1'), {
+      adresse: { ligne1: '', codePostal: '33600', ville: 'Pessac' },
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.adresseSiege).toEqual({ codePostal: '33600', ville: 'Pessac', pays: 'FR' });
+  });
+
+  it('devis en euros → centimes ; zone : geohash recalculé', async () => {
+    await modifierFiche(s(), ctx('p1'), {
+      devis: { minEuros: 1000, maxEuros: 20000 },
+      zone: { centre: { latitude: 44.84, longitude: -0.64 }, rayonKm: 50 },
+    });
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect([a.budgetMin, a.budgetMax]).toEqual([100_000, 2_000_000]);
+    expect(a.zoneIntervention.rayonKm).toBe(50);
+    expect(a.zoneIntervention.geohash).toMatch(/^[0-9b-hjkmnp-z]{10}$/);
+  });
+
+  it('collaborateur (sans fiche.modifier) : refusé', async () => {
+    await expect(modifierFiche(s(), ctx('c1'), { pitch: 'x' })).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+  });
+});
+
+describe('mise en ligne de la fiche', () => {
+  const complete = {
+    statut: 'actif',
+    logoUrl: 'l',
+    bannieres: ['b'],
+  };
+  const lire = async () => (await db.doc(chemins.artisan('a1')).get()).data()!;
+
+  it('automatique dès que le minimum est fait (ici : la description)', async () => {
+    await db.doc(chemins.artisan('a1')).update({ ...complete, enLigne: false });
+    await modifierFiche(s(), ctx('p1'), {
+      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
+    });
+    expect(await lire()).toMatchObject({ enLigne: true, completude: 100 });
+  });
+
+  it('éteinte par l’artisan : plus de mise en ligne automatique, rallumable', async () => {
+    await db.doc(chemins.artisan('a1')).update({ ...complete, enLigne: true });
+    await expect(changerMiseEnLigne(s(), ctx('c1'), false)).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await changerMiseEnLigne(s(), ctx('p1'), false);
+    expect(await lire()).toMatchObject({ enLigne: false, horsLigneVolontaire: true });
+    await modifierFiche(s(), ctx('p1'), {
+      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
+    });
+    expect((await lire()).enLigne).toBe(false);
+    await changerMiseEnLigne(s(), ctx('p1'), true);
+    expect(await lire()).toMatchObject({ enLigne: true, horsLigneVolontaire: false });
+  });
+
+  it('allumer : refusé si logo, description ou bannière manquent, ou entreprise suspendue', async () => {
+    await db.doc(chemins.artisan('a1')).update({ statut: 'actif', logoUrl: 'l' });
+    await expect(changerMiseEnLigne(s(), ctx('p1'), true)).rejects.toMatchObject({
+      code: 'PRECONDITION',
+      message: expect.stringContaining('ajouter une bannière'),
+    });
+    await db.doc(chemins.artisan('a1')).update({
+      ...complete,
+      statut: 'suspendu',
+      description: 'Couvreur zingueur à Bordeaux depuis 1998.',
+    });
+    await expect(changerMiseEnLigne(s(), ctx('p1'), true)).rejects.toMatchObject({
+      code: 'PRECONDITION',
+    });
+  });
+});
