@@ -3,7 +3,22 @@
 import { useRef, useState } from 'react';
 import { pousserEvenement } from '@/lib/dataLayer';
 
-const BASE = '/landing/videos/vsl-pro';
+/** Vidéo générale (clients + outils gratuits), avec son et sous-titres en piste. */
+const GENERALE: VideoVsl = {
+  base: '/landing/videos/vsl-pro',
+  duree: 38,
+  accroche: 'Des clients et des outils gratuits',
+  piste: true,
+};
+
+export interface VideoVsl {
+  /** Chemin sans extension (`.mp4` et affiche `.webp`). */
+  base: string;
+  duree: number;
+  accroche: string;
+  /** Sous-titres en piste `.vtt` (sinon incrustés dans l'image). */
+  piste?: boolean;
+}
 
 /**
  * Vidéo de présentation (VSL) du hero `/pro` : affiche légère, rien n'est téléchargé avant le clic
@@ -13,17 +28,20 @@ const BASE = '/landing/videos/vsl-pro';
 export function VslPro({
   className,
   page = 'acquisition-artisans',
+  video = GENERALE,
 }: {
   className?: string;
+  /** Vidéo propre à l'outil de la landing ; par défaut, la vidéo générale. */
+  video?: VideoVsl;
   /** Page d'origine, pour la mesure (`vsl_play`). */
   page?: string;
 }) {
-  const video = useRef<HTMLVideoElement>(null);
+  const lecteur = useRef<HTMLVideoElement>(null);
   const [lancee, setLancee] = useState(false);
   const lancer = () => {
     setLancee(true);
     pousserEvenement({ event: 'vsl_play', page });
-    void video.current?.play();
+    void lecteur.current?.play();
   };
   return (
     <figure
@@ -31,16 +49,18 @@ export function VslPro({
       className={`relative m-0 aspect-video w-full overflow-hidden rounded-[16px] bg-neutre-900 shadow-lg ${className ?? ''}`}
     >
       <video
-        ref={video}
+        ref={lecteur}
         className="block size-full object-cover"
-        poster={`${BASE}.webp`}
+        poster={`${video.base}.webp`}
         preload="none"
         playsInline
         controls={lancee}
-        aria-label="Présentation de Portail Travaux Pro en 38 secondes"
+        aria-label={`${video.accroche} : présentation en ${video.duree} secondes`}
       >
-        <source src={`${BASE}.mp4`} type="video/mp4" />
-        <track kind="captions" src={`${BASE}.vtt`} srcLang="fr" label="Français" />
+        <source src={`${video.base}.mp4`} type="video/mp4" />
+        {video.piste ? (
+          <track kind="captions" src={`${video.base}.vtt`} srcLang="fr" label="Français" />
+        ) : null}
       </video>
       {lancee ? null : (
         <button
@@ -65,7 +85,9 @@ export function VslPro({
             </span>
             <span className="grid">
               <strong className="text-lg leading-tight">Voir la vidéo</strong>
-              <span className="text-sm opacity-90">Des clients et des outils gratuits · 38 s</span>
+              <span className="text-sm opacity-90">
+                {video.accroche} · {video.duree} s
+              </span>
             </span>
           </span>
         </button>

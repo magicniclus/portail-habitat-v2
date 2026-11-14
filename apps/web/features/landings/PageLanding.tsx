@@ -7,7 +7,8 @@ import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { piedPro } from '@/features/pro/navigation';
 import { JsonLd } from '@/features/vitrine/JsonLd';
-import { VslPro } from '@/features/pro/VslPro';
+import { VslPro, type VideoVsl } from '@/features/pro/VslPro';
+import { cheminVideoOutil, VIDEOS_OUTILS } from './videosOutils';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
 import { preuvesMarketingActives } from '@/server/flags';
@@ -83,7 +84,11 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
             </ul>
             {/* VSL en démonstration (dev, aperçus, flag) : elle cite un chiffre à prouver (LANDINGS §7). */}
             {preuves ? (
-              <VslPro className="mt-[clamp(24px,3vw,36px)]" page={`landing-${outil}`} />
+              <VslPro
+                className="mt-[clamp(24px,3vw,36px)]"
+                page={`landing-${outil}`}
+                video={videoHero(outil)}
+              />
             ) : null}
           </div>
           <div data-formulaire-landing>
@@ -133,4 +138,17 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
       <SuiviLanding outil={outil} />
     </>
   );
+}
+
+/** Site et devis : le film de l'outil (sous-titres incrustés) ; chantiers : la vidéo générale. */
+function videoHero(outil: OutilLanding): VideoVsl | undefined {
+  if (outil === 'chantiers') return undefined;
+  return {
+    base: cheminVideoOutil(outil),
+    duree: VIDEOS_OUTILS[outil]?.duree ?? 0,
+    accroche:
+      outil === 'site'
+        ? 'Votre site internet d’artisan, gratuit'
+        : 'Vos devis et factures, gratuits',
+  };
 }
