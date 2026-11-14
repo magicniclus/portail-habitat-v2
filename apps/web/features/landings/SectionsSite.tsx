@@ -1,4 +1,5 @@
 import { cn } from '@ph/ui';
+import { BlocDomaine } from './BlocDomaine';
 import { DemoSiteVideos } from './DemoSiteVideos';
 import { conteneur, titreFort } from './styles';
 
@@ -93,23 +94,7 @@ export function AtoutsSite() {
           </li>
         ))}
       </ul>
-      <div className="grid gap-4 rounded-[16px] border border-accent-300 bg-accent-100 p-[clamp(18px,2.4vw,28px)] min-[760px]:grid-cols-2">
-        <div className="grid content-start gap-1.5">
-          <strong className="text-[19px] leading-tight">Votre propre nom de domaine</strong>
-          <span className="text-[15.5px] leading-[23px] text-neutre-800">
-            Une adresse à votre nom, comme <b>bertrand-renovation.fr</b>, au lieu de l’adresse
-            Portail Travaux. Le domaine est enregistré au nom de votre entreprise : il vous
-            appartient.
-          </span>
-        </div>
-        <div className="grid content-start gap-1.5">
-          <strong className="text-[19px] leading-tight">Vous avez déjà un nom de domaine ?</strong>
-          <span className="text-[15.5px] leading-[23px] text-neutre-800">
-            On l’intègre à votre site. Vous le gardez chez votre hébergeur actuel, vous ajoutez 3
-            réglages que nous vous donnons, et la vérification se fait toute seule.
-          </span>
-        </div>
-      </div>
+      <BlocDomaine />
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
         <p className="m-0 text-[17px] leading-[26px] font-semibold">
           Laissez l’IA tout faire, ou reprenez la main sur chaque détail. Dans les deux cas, c’est
