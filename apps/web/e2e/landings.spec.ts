@@ -265,4 +265,24 @@ test.describe('Landings par outil', () => {
       )
       .toBeLessThan(200);
   });
+  test('LAND-11 : chantiers, de la fiche à la demande, l’étape suit le défilement', async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'ordinateur', 'Étapes cliquables sur ordinateur');
+    await page.goto(URL_LANDING);
+    const z = page.locator('[data-histoire-fiche]');
+    const aller = (f: number) =>
+      z.evaluate((e, k) => {
+        const haut = e.getBoundingClientRect().top + scrollY;
+        scrollTo(0, haut + ((e as HTMLElement).offsetHeight - innerHeight) * k);
+      }, f);
+    const actuelle = () => z.locator('[aria-current="step"]');
+    await aller(0.05);
+    await expect(actuelle()).toContainText('Vous complétez votre fiche');
+    await aller(0.9);
+    await expect(actuelle()).toContainText('Ils vous envoient leur demande');
+    await expect(z.getByText('Demandes gratuites ce mois')).toBeVisible();
+    await aller(0.45);
+    await expect(actuelle()).toContainText('Les clients vous trouvent sur le portail');
+  });
 });

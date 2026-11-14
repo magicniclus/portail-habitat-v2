@@ -21,6 +21,7 @@ import { AppelFinal } from './AppelFinal';
 import { AvisDefilants } from './AvisDefilants';
 import { ChiffresReseau } from './ChiffresReseau';
 import { CommentCaMarche } from './CommentCaMarche';
+import { HistoireFiche } from './HistoireFiche';
 import { EnTeteLanding, PreuveSociale, SousTitre } from './Sections';
 import { AtoutsSite, DemoCreation } from './SectionsSite';
 import { bande, coche, conteneur, titre2 } from './styles';
@@ -107,7 +108,11 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
           </Zone>
         )}
         <Vitrine v={c.vitrine} apres={outil === 'site' ? <AtoutsSite /> : undefined} />
-        {outil === 'site' ? null : <CommentCaMarche etapes={c.etapes} />}
+        {outil === 'chantiers' ? (
+          <HistoireFiche />
+        ) : outil === 'site' ? null : (
+          <CommentCaMarche etapes={c.etapes} />
+        )}
         {/* L'app (même section que /pro) : tous les outils au même endroit, une seule fois. */}
         <div data-section-gratuit>
           <ApplicationPro />
