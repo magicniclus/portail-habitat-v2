@@ -238,7 +238,7 @@ test.describe('Landings par outil', () => {
     const etapeA = async (f: number) => {
       await z.evaluate((e, k) => {
         const haut = e.getBoundingClientRect().top + scrollY;
-        scrollTo(0, haut + (e.offsetHeight - innerHeight) * k);
+        scrollTo(0, haut + ((e as HTMLElement).offsetHeight - innerHeight) * k);
       }, f);
       await page.waitForTimeout(400);
       return z.locator('video:not([aria-hidden="true"])').getAttribute('src');
