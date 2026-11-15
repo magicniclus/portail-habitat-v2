@@ -34,17 +34,17 @@
     {
       "id": "p09",
       "acte": 3,
-      "texte": "Et pour trouver ses prochains clients, on lui demande de payer : chaque contact, chaque mois, chaque logiciel."
+      "texte": "Il n'a pas le temps de se faire connaître. Alors on lui vend de la visibilité : chaque contact, chaque abonnement. Et ses logiciels en plus."
     },
     {
       "id": "p10",
       "acte": 3,
-      "texte": "Résultat : ceux qui travaillent le mieux ne sont pas toujours ceux qu'on trouve."
+      "texte": "Résultat : ceux qu'on trouve en premier sont ceux qui paient le plus. Pas toujours ceux qui travaillent le mieux."
     },
     {
       "id": "p11",
       "acte": 3,
-      "texte": "Alors on a construit l'inverse : un portail où l'artisan est visible, équipé, et où il ne paie pas pour commencer."
+      "texte": "Alors on a construit l'inverse : un portail où l'artisan est visible, équipé des meilleurs outils de gestion et de marketing. Le tout, gratuitement."
     },
     {
       "id": "p12",
@@ -54,12 +54,12 @@
     {
       "id": "p13",
       "acte": 4,
-      "texte": "Ici, vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : jusqu'à dix par mois."
+      "texte": "Ici, vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, jusqu'à dix par mois."
     },
     {
       "id": "p14",
       "acte": 4,
-      "texte": "Zéro euro à l'inscription. Zéro pour cent de commission sur vos chantiers."
+      "texte": "Zéro euro. Zéro pour cent de commission sur vos chantiers."
     },
     {
       "id": "p15",
@@ -107,7 +107,7 @@
       "acte": 8,
       "texte": "Vos avis clients : vous en demandez un après chaque chantier."
     },
-    { "id": "p22e", "acte": 8, "texte": "Vos devis et factures, avec des modèles par métier." },
+    { "id": "p22e", "acte": 8, "texte": "Vos devis et factures, entièrement conformes." },
     {
       "id": "p22f",
       "acte": 8,

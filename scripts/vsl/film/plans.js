@@ -41,7 +41,7 @@
   FN.eloigne = (_el, lt, sc) => {
     const g = seg('p05c');
     const k = doux(((lt + sc.debut - g.debut) / g.duree) * 1.1);
-    return { x: k * 210, y: k * 30, s: 1 - 0.5 * k };
+    return { x: k * 150, y: -k * 46, s: 1 - 0.45 * k };
   };
   // Plan 6 : les trois « oui » se rejoignent, la flèche part vers la droite.
   FN.converge = (el, lt) => {
@@ -55,10 +55,19 @@
   FN.glisse = (_el, lt) => ({ x: Math.max(0, lt - 0.75) * 70 });
   // Plan 8 : le soleil descend entre « chantier » et « le soir ».
   FN.soleil = (_el, lt, sc) => {
-    const a = sc.rep('@chantier');
-    const p = borne((lt - a) / (sc.rep('@soir') + 0.3 - a));
-    return { y: p * p * 620, x: p * 110, o: 1 - borne((p - 0.7) / 0.3) };
+    const p = borne((lt - 0.2) / sc.rep('@soir'));
+    return {
+      x: p * 560,
+      y: -Math.sin(p * PI * 0.85) * 90 + p * p * 560,
+      o: 1 - borne((p - 0.82) / 0.18),
+    };
   };
+  // Le chantier s'assombrit, le bureau s'éclaire sur « le soir ».
+  FN.crepuscule = (_el, lt, sc) => ({ o: doux((lt - sc.rep('@soir') + 0.4) / 0.8) });
+  FN.reveil = (_el, lt, sc) => ({ o: 0.62 * (1 - doux((lt - sc.rep('@soir') + 0.2) / 0.5)) });
+  FN.monteCharge = (_el, lt) => ({ y: 610 - 150 * Math.sin(lt * 1.3) });
+  FN.derive = (_el, lt) => ({ x: lt * 16 });
+  FN.vapeur = (_el, lt) => ({ y: -((lt * 12) % 10), o: 0.55 + 0.45 * Math.sin(lt * 3) });
   // Plan 11 : la ligne à l'étoile remonte en tête, les autres descendent d'un cran.
   FN.descend = (_el, lt, sc) => ({ y: 120 * doux((lt - sc.rep('@inverse')) / 0.6) });
   FN.grimpe = (_el, lt, sc) => ({ y: 600 * (1 - doux((lt - sc.rep('@inverse')) / 0.6)) });

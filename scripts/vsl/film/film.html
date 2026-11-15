@@ -5,9 +5,15 @@
 <title>VSL Portail Travaux Pro</title>
 <link rel="stylesheet" href="film.css" />
 <style>
-  .rang { width: 900px; display: flex; align-items: baseline; gap: 28px; padding: 16px 30px; border-radius: 16px; background: rgba(255, 255, 255, 0.09); font-size: 42px; font-weight: 700; }
-  .rang .sur { width: 190px; font-size: 24px; }
-  .rang i { position: absolute; inset: 0; border-radius: 16px; background: var(--accent); z-index: -1; }
+  .rang { width: 900px; display: flex; align-items: baseline; gap: 28px; padding: 16px 30px 16px 40px; border-radius: 16px; background: #fff; color: var(--texte); font-size: 42px; font-weight: 700; overflow: hidden; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22); }
+  .rang .sur, .rang b { position: relative; z-index: 1; }
+  .rang .sur { width: 190px; font-size: 24px; color: var(--bouton); }
+  .rang i { position: absolute; inset: 0; background: linear-gradient(90deg, #ffe0cd, #fff2ea); border-left: 12px solid var(--accent); }
+  svg { overflow: visible; }
+  .centre > span.logo { display: inline-flex; vertical-align: middle; }
+  .logo svg { flex: none; }
+  .logo b { margin-left: -6px; }
+  .gris em { margin-left: auto; font-style: normal; font-weight: 800; font-size: 32px; letter-spacing: 0.06em; color: #fff; background: var(--accent); border-radius: 99px; padding: 6px 22px; }
   .centre > span { display: inline-block; }
   .gris { background: #fff; border-radius: 22px; box-shadow: 0 6px 18px rgba(45, 43, 43, 0.1); display: flex; align-items: center; gap: 26px; padding: 0 30px; }
   .gris u { flex: none; width: 62px; height: 62px; border-radius: 50%; background: #d7d3d3; }
@@ -42,9 +48,9 @@
     <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
     <span class="badge">0 €</span>
   </div>
-  <div class="rang" style="left:510px;top:520px" data-in="haut" data-t="@chantier-0.25" data-sfx="tic" data-st="@chantier"><span class="sur">Chantier</span>Salle de bain complète<i data-in="balaye" data-t="@chantier"></i></div>
-  <div class="rang" style="left:510px;top:620px" data-in="haut" data-t="@ville-0.25" data-sfx="tic" data-st="@ville"><span class="sur">Ville</span>Mérignac (33700)<i data-in="balaye" data-t="@ville"></i></div>
-  <div class="rang" style="left:510px;top:720px" data-in="haut" data-t="@budget-0.25" data-sfx="tic" data-st="@budget"><span class="sur">Budget</span>6 000 – 8 000 €<i data-in="balaye" data-t="@budget"></i></div>
+  <div class="rang" style="left:510px;top:520px" data-in="haut" data-t="@chantier-0.25" data-sfx="tic" data-st="@chantier"><i data-in="balaye" data-t="@chantier"></i><span class="sur">Chantier</span><b>Salle de bain complète</b></div>
+  <div class="rang" style="left:510px;top:620px" data-in="haut" data-t="@ville-0.25" data-sfx="tic" data-st="@ville"><i data-in="balaye" data-t="@ville"></i><span class="sur">Ville</span><b>Mérignac (33700)</b></div>
+  <div class="rang" style="left:510px;top:720px" data-in="haut" data-t="@budget-0.25" data-sfx="tic" data-st="@budget"><i data-in="balaye" data-t="@budget"></i><span class="sur">Budget</span><b>6 000 – 8 000 €</b></div>
 </section>
 
 <!-- PLAN 3 -->
@@ -68,7 +74,7 @@
   <div class="centre titre" style="top:300px" data-mots="@trouver-0.2" data-sfx="whoosh" data-st="@simple">Trouvez des chantiers</div>
   <div class="centre" style="top:440px"><span class="ital" style="font-size:170px;line-height:1.1" data-in="masque" data-t="@simple">gratuitement</span></div>
   <svg style="left:610px;top:770px" width="560" height="20" data-in="balaye" data-t="@gratuit-0.9" data-d="0.9"><line x1="6" y1="10" x2="560" y2="10" stroke="#e05a10" stroke-width="9" stroke-dasharray="1 26" stroke-linecap="round"/></svg>
-  <svg class="picto" style="left:1200px;top:690px" width="100" height="174" viewBox="0 0 150 260" stroke="#173a55" stroke-width="12" data-fn="vibre" data-t="@gratuit" data-sfx="ding"><rect x="10" y="10" width="130" height="240" rx="24"/><path d="M58 30h34" stroke="#e05a10"/><circle cx="75" cy="222" r="7" stroke="#e05a10"/></svg>
+  <svg class="picto" style="left:1200px;top:690px" width="100" height="174" viewBox="0 0 150 260" stroke="#173a55" stroke-width="12" data-in="pop" data-t="@gratuit-0.05" data-sfx="ding"><rect x="10" y="10" width="130" height="240" rx="24"/><path d="M58 30h34" stroke="#e05a10"/><circle cx="75" cy="222" r="7" stroke="#e05a10"/></svg>
 </section>
 
 <!-- ACTE 2 — PLAN 5 : trois questions -->
@@ -80,8 +86,8 @@
   <div class="abs" data-vis="p05b" data-fn="page" data-n="0" style="left:1420px;top:560px;width:70px;height:86px;border-radius:10px;border:8px solid #e05a10;background:#fff"></div>
   <div class="abs" data-vis="p05b" data-fn="page" data-n="1" style="left:1540px;top:560px;width:70px;height:86px;border-radius:10px;border:8px solid #173a55;background:#fff"></div>
   <div class="gros" style="left:150px;top:290px;width:1050px" data-vis="p05c" data-mots="@p05c">Reçu une demande à cent kilomètres de chez vous ?</div>
-  <svg class="picto" data-vis="p05c" style="left:1260px;top:260px" width="520" height="380" viewBox="0 0 260 190" stroke="#173a55"><path d="M16 172V132h48v40z"/><path d="M8 136 40 108l32 28" stroke="#e05a10"/><path d="M34 172v-18h12v18"/><path d="M88 168h150" stroke-dasharray="1 16"/></svg>
-  <svg class="picto" data-vis="p05c" data-fn="eloigne" style="left:1500px;top:330px" width="120" height="160" viewBox="0 0 60 80" stroke="#e05a10" stroke-width="7"><path d="M30 74S6 48 6 28a24 24 0 0 1 48 0c0 20-24 46-24 46z"/><circle cx="30" cy="28" r="8"/></svg>
+  <svg class="picto" data-vis="p05c" style="left:1180px;top:215px" width="650" height="475" viewBox="0 0 520 380" stroke="#173a55" stroke-width="9"><path d="M20 310h480"/><rect x="48" y="214" width="124" height="96" rx="6" fill="#fff"/><path d="M30 222 110 150l80 72" stroke="#e05a10" stroke-width="12"/><rect x="94" y="254" width="32" height="56" rx="4" fill="#e05a10" stroke="none"/><path d="M196 200Q320 70 446 176" stroke-dasharray="1 20"/></svg>
+  <svg class="picto" data-vis="p05c" data-fn="eloigne" style="left:1689px;top:300px;transform-origin:50% 100%" width="100" height="134" viewBox="0 0 60 80" stroke="#e05a10" stroke-width="7" fill="#fff"><path d="M30 74S6 48 6 28a24 24 0 0 1 48 0c0 20-24 46-24 46z"/><circle cx="30" cy="28" r="8"/></svg>
   <div class="ligne" style="left:150px;top:760px;font-size:54px" data-in="pop" data-t="@p05a$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
   <div class="ligne" style="left:420px;top:760px;font-size:54px" data-in="pop" data-t="@p05b$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
   <div class="ligne" style="left:690px;top:760px;font-size:54px" data-in="pop" data-t="@p05c$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
@@ -106,44 +112,58 @@
 <section data-scene="p08">
   <div class="creme" style="left:0;top:0;width:960px;height:1080px"></div>
   <div class="nuit" style="left:960px;top:0;width:960px;height:1080px"></div>
-  <div class="abs" style="left:640px;top:150px;width:150px;height:150px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 26px rgba(224,90,16,.16)" data-fn="soleil"></div>
-  <svg class="picto" style="left:170px;top:400px" width="620" height="460" viewBox="0 0 310 230" stroke="#173a55" stroke-width="7" data-in="haut" data-t="0.15"><path d="M12 216h286"/><path d="M50 216V118l80-62 80 62v98"/><path d="M50 118 130 56l80 62" stroke="#e05a10"/><path d="M112 216v-58h36v58"/><path d="M236 216 262 70M276 216 262 70M243 176h26M248 140h18M254 104h11" /></svg>
-  <svg class="picto" style="left:1090px;top:400px" width="700" height="460" viewBox="0 0 350 230" stroke="#fff" stroke-width="7" data-in="haut" data-t="0.35"><path d="M20 190h310M50 190v30M300 190v30"/><path d="M92 190v-14h54v14" /><path d="M119 176V96l56-38" /><path d="M150 44l52 26-18 36-52-26z" stroke="#ff9857"/><path d="M214 190v-12h84v12M222 178v-12h70v12M230 166v-12h60v12" stroke="#ff9857"/></svg>
-  <div class="abs" style="left:1280px;top:470px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,193,156,.5),transparent)" data-in="fondu" data-t="@soir"></div>
+  <div class="abs" style="left:150px;top:210px;width:150px;height:150px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 26px rgba(224,90,16,.16),0 0 0 56px rgba(224,90,16,.07)" data-fn="soleil"></div>
+  <svg class="abs" style="left:500px;top:150px" width="220" height="90" viewBox="0 0 220 90" data-fn="derive"><path d="M40 78a30 30 0 0 1 6-59 44 44 0 0 1 84-6 36 36 0 0 1 48 65z" fill="#fff" stroke="#173a55" stroke-width="7" stroke-linejoin="round"/></svg>
+  <svg class="abs" style="left:0;top:0" width="960" height="1080" viewBox="0 0 960 1080" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 800h820" stroke="#173a55" stroke-width="10"/>
+    <g stroke="#173a55" stroke-width="8"><path d="M690 800V400M830 800V400M670 690h180M670 560h180M670 430h180"/><path d="M690 690 830 560M830 690 690 560" stroke-width="5" opacity=".5"/></g>
+    <g data-decor="mur"></g>
+    <path d="M176 524 410 372l234 152" stroke="#e05a10" stroke-width="14" data-in="haut" data-t="1.7"/>
+    <rect x="712" y="0" width="96" height="40" rx="6" fill="#ffe0cd" stroke="#e05a10" stroke-width="7" data-fn="monteCharge"/>
+  </svg>
+  <div class="abs" style="left:0;top:0;width:960px;height:1080px;background:linear-gradient(180deg,rgba(23,58,85,.8),rgba(23,58,85,.5))" data-fn="crepuscule"></div>
+  <svg class="abs" style="left:960px;top:0" width="960" height="1080" viewBox="960 0 960 1080" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="1090" y="170" width="240" height="250" rx="14" stroke="rgba(255,255,255,.45)" stroke-width="8"/><path d="M1210 170v250M1090 295h240" stroke="rgba(255,255,255,.45)" stroke-width="6"/>
+    <path d="M1270 214a34 34 0 1 0 30 50 28 28 0 0 1-30-50z" fill="#ff9857" data-in="pop" data-t="@soir" style="transform-origin:1275px 245px"/>
+    <circle cx="1140" cy="225" r="6" fill="#fff" data-in="pop" data-t="@soir+0.2" style="transform-origin:1140px 225px"/><circle cx="1180" cy="350" r="5" fill="#fff" data-in="pop" data-t="@soir+0.35" style="transform-origin:1180px 350px"/><circle cx="1290" cy="360" r="6" fill="#fff" data-in="pop" data-t="@soir+0.5" style="transform-origin:1290px 360px"/>
+  </svg>
+  <i data-decor="bureau-anime:0"></i>
+  <div class="abs" style="left:960px;top:0;width:960px;height:1080px;background:#173a55" data-fn="reveil"></div>
 </section>
 
-<!-- PLAN 9 : la pile de ce qu'on lui demande de payer -->
+<!-- PLAN 9 : on lui vend de la visibilité -->
 <section class="nuit" data-scene="p09">
-  <svg class="picto" style="left:610px;top:560px" width="700" height="330" viewBox="0 0 350 165" stroke="#fff" stroke-width="7"><path d="M20 125h310M50 125v30M300 125v30"/></svg>
-  <div class="piece" style="left:720px;top:716px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
-  <div class="piece" style="left:760px;top:626px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@mois" data-sfx="impact">Abonnements</div>
-  <div class="piece" style="left:740px;top:536px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@logiciel" data-sfx="impact">Logiciels</div>
+  <i data-decor="bureau:-420"></i>
+  <div class="piece" style="left:885px;top:566px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
+  <div class="piece" style="left:905px;top:476px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@abonnement" data-sfx="impact">Abonnements</div>
+  <div class="piece" style="left:925px;top:386px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@logiciels" data-sfx="impact">Logiciels</div>
 </section>
 
-<!-- PLAN 10 : le meilleur n'est pas en tête -->
+<!-- PLAN 10 : on trouve d'abord ceux qui paient le plus -->
 <section class="creme" data-scene="p10" data-st="118">
-  <div class="gris" style="left:460px;top:120px;width:1000px;height:120px" data-in="haut" data-t="0.1"><u></u><s style="width:420px"></s><s style="width:160px;margin-left:auto"></s></div>
-  <div class="gris" style="left:460px;top:265px;width:1000px;height:120px" data-in="haut" data-t="0.2"><u></u><s style="width:360px"></s><s style="width:160px;margin-left:auto"></s></div>
-  <div class="gris" style="left:460px;top:410px;width:1000px;height:120px" data-in="haut" data-t="0.3"><u></u><s style="width:460px"></s><s style="width:160px;margin-left:auto"></s></div>
-  <div class="gris" style="left:460px;top:555px;width:1000px;height:120px" data-in="haut" data-t="0.4"><u></u><s style="width:330px"></s><s style="width:160px;margin-left:auto"></s></div>
-  <div class="gris" style="left:460px;top:700px;width:1000px;height:120px" data-in="haut" data-t="0.5"><u></u><s style="width:400px"></s><s style="width:160px;margin-left:auto"></s></div>
-  <div class="gris etoile" style="left:460px;top:1010px;width:1000px;height:120px" data-in="haut" data-t="0.7" data-pulse="@mieux,@trouve"><u>★</u><s style="width:440px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris" style="left:460px;top:120px;width:1000px;height:120px" data-in="haut" data-t="0.1"><u></u><s style="width:380px"></s><em data-pulse="@paient">€€€</em></div>
+  <div class="gris" style="left:460px;top:265px;width:1000px;height:120px" data-in="haut" data-t="0.2"><u></u><s style="width:380px"></s><em data-pulse="@paient">€€€</em></div>
+  <div class="gris" style="left:460px;top:410px;width:1000px;height:120px" data-in="haut" data-t="0.3"><u></u><s style="width:380px"></s><em data-pulse="@paient">€€</em></div>
+  <div class="gris" style="left:460px;top:555px;width:1000px;height:120px" data-in="haut" data-t="0.4"><u></u><s style="width:380px"></s><em data-pulse="@paient">€€</em></div>
+  <div class="gris" style="left:460px;top:700px;width:1000px;height:120px" data-in="haut" data-t="0.5"><u></u><s style="width:380px"></s><em data-pulse="@paient">€</em></div>
+  <div class="gris etoile" style="left:460px;top:1010px;width:1000px;height:120px" data-in="haut" data-t="0.7" data-pulse="@travaillent,@mieux"><u>★</u><s style="width:440px"></s></div>
 </section>
 
 <!-- PLAN 11 : l'inverse -->
 <section class="creme" data-scene="p11" data-sfx="relance" data-st="@inverse">
-  <div class="gris" style="left:120px;top:100px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:300px"></s></div>
-  <div class="gris" style="left:120px;top:220px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:260px"></s></div>
-  <div class="gris" style="left:120px;top:340px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:340px"></s></div>
-  <div class="gris" style="left:120px;top:460px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:240px"></s></div>
-  <div class="gris" style="left:120px;top:580px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:300px"></s></div>
-  <div class="gris etoile" style="left:120px;top:100px;width:760px;height:100px" data-fn="grimpe"><u>★</u><s style="width:330px"></s></div>
-  <div class="piece" style="left:1000px;top:150px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@inverse-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Contacts payants</div>
-  <div class="piece" style="left:1310px;top:150px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@inverse-0.25">Abonnements</div>
-  <div class="piece" style="left:1570px;top:150px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@inverse-0.15" data-sens="-1">Logiciels</div>
-  <div class="ligne" style="left:1000px;top:330px;font-size:88px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
-  <div class="ligne" style="left:1000px;top:480px;font-size:88px" data-in="haut" data-t="@équipé" data-sfx="tic"><span class="coche">✓</span>Équipé</div>
-  <div class="ligne" style="left:1000px;top:630px;font-size:72px" data-in="haut" data-t="@paie" data-sfx="tic"><span class="coche">✓</span>0 € pour commencer</div>
+  <div class="gris" style="left:100px;top:100px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€€</em></div>
+  <div class="gris" style="left:100px;top:220px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€€</em></div>
+  <div class="gris" style="left:100px;top:340px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€</em></div>
+  <div class="gris" style="left:100px;top:460px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€</em></div>
+  <div class="gris" style="left:100px;top:580px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€</em></div>
+  <div class="gris etoile" style="left:100px;top:100px;width:620px;height:100px" data-fn="grimpe"><u>★</u><s style="width:260px"></s></div>
+  <div class="piece" style="left:820px;top:110px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@inverse-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Contacts payants</div>
+  <div class="piece" style="left:1130px;top:110px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@inverse-0.25">Abonnements</div>
+  <div class="piece" style="left:1390px;top:110px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@inverse-0.15" data-sens="-1">Logiciels</div>
+  <div class="ligne" style="left:820px;top:270px;font-size:88px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
+  <div class="ligne" style="left:820px;top:410px;font-size:88px" data-in="haut" data-t="@équipé" data-sfx="tic"><span class="coche">✓</span>Équipé</div>
+  <div class="txt" style="left:936px;top:522px;font-size:42px;color:var(--doux)" data-in="haut" data-t="@meilleurs">des meilleurs outils de gestion et de marketing</div>
+  <div class="ligne" style="left:820px;top:630px;font-size:88px" data-in="haut" data-t="@gratuitement" data-sfx="tic"><span class="coche">✓</span>Gratuitement</div>
 </section>
 
 <!-- ACTE 4 — PLAN 12 : idée reçue n° 1 -->
@@ -159,21 +179,20 @@
   </div>
   <div class="etq" style="left:1310px;top:330px" data-in="pop" data-t="@fiche" data-flotte data-out="coupe" data-o="@demandes-0.15" data-sfx="tic"><span class="sur">Inclus</span><span>Fiche gratuite</span></div>
   <div style="left:150px;top:120px;width:1120px;transform:perspective(2400px) rotateY(4deg)">
-    <div class="nav" data-in="fondu" data-t="@demandes-0.15" data-out="coupe" data-o="@jusqu-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c2-bureau" data-de="1.6" data-vitesse="1.2" data-ct="@demandes-0.15" /></div>
+    <div class="nav" data-in="fondu" data-t="@demandes-0.15" data-out="coupe" data-o="@moyenne-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c2-bureau" data-de="1.6" data-vitesse="1.2" data-ct="@demandes-0.15" /></div>
   </div>
-  <div class="badge" style="left:1380px;top:290px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.2" data-pulse="@gratuites" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
-  <div class="badge" style="left:1470px;top:440px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.4" data-pulse="@gratuites+0.1" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
-  <div class="badge" style="left:1380px;top:590px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.6" data-pulse="@gratuites+0.2" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
-  <div class="centre sur" style="top:150px;font-size:46px" data-in="haut" data-t="@jusqu-0.2">Jusqu'à</div>
-  <div class="centre chiffre" style="top:215px;color:var(--accent)" data-in="fondu" data-t="@jusqu-0.2" data-compte="0,10" data-sfx="impact" data-st="@dix">0</div>
-  <div class="centre moyen" style="top:540px" data-in="haut" data-t="@jusqu">demandes gratuites par mois</div>
-  <div class="centre txt" style="top:640px;font-size:50px;color:var(--doux)" data-in="haut" data-t="@jusqu+0.1">selon votre secteur et votre métier</div>
+  <div class="badge" style="left:1380px;top:290px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.2" data-pulse="@gratuites" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
+  <div class="badge" style="left:1470px;top:440px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.4" data-pulse="@gratuites+0.1" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
+  <div class="badge" style="left:1380px;top:590px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.6" data-pulse="@gratuites+0.2" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
+  <div class="centre sur" style="top:150px;font-size:46px" data-in="haut" data-t="@moyenne-0.2">En moyenne, jusqu'à</div>
+  <div class="centre chiffre" style="top:215px;color:var(--accent)" data-in="fondu" data-t="@jusqu-0.15" data-compte="0,10" data-sfx="impact" data-st="@dix">0</div>
+  <div class="centre moyen" style="top:540px" data-in="haut" data-t="@moyenne">demandes gratuites par mois</div>
+  <div class="centre txt" style="top:640px;font-size:50px;color:var(--doux)" data-in="haut" data-t="@moyenne+0.1">selon votre secteur et votre métier</div>
 </section>
 
 <!-- PLAN 14 -->
 <section class="creme" data-scene="p14">
   <div class="chiffre" style="left:0;top:250px;width:960px;text-align:center" data-in="pop" data-t="@zéro" data-sfx="impact">0 €</div>
-  <div class="moyen" style="left:0;top:580px;width:960px;text-align:center;color:var(--doux)" data-in="haut" data-t="@inscription-0.2">à l'inscription</div>
   <div class="filet" style="left:959px;top:240px;height:470px" data-in="fondu" data-t="0.1"></div>
   <div class="chiffre" style="left:960px;top:250px;width:960px;text-align:center" data-in="pop" data-t="@2:zéro" data-sfx="impact">0 %</div>
   <div class="moyen" style="left:960px;top:580px;width:960px;text-align:center;color:var(--doux)" data-in="haut" data-t="@commission-0.2">de commission</div>
@@ -299,7 +318,7 @@
 
 <!-- ACTE 10 — PLAN 25 -->
 <section class="creme" data-scene="p25">
-  <div class="ligne" style="left:520px;top:270px;font-size:84px" data-in="haut" data-t="0.25" data-sfx="tic"><span class="coche">✓</span>0 € à l'inscription</div>
+  <div class="ligne" style="left:520px;top:270px;font-size:84px" data-in="haut" data-t="0.25" data-sfx="tic"><span class="coche">✓</span>0 €</div>
   <div class="ligne" style="left:520px;top:420px;font-size:84px" data-in="haut" data-t="@pas" data-sfx="tic"><span class="coche">✓</span>Sans engagement</div>
   <div class="ligne" style="left:520px;top:570px;font-size:84px" data-in="haut" data-t="@2:pas" data-sfx="tic"><span class="coche">✓</span>0 % de commission</div>
 </section>
@@ -330,11 +349,12 @@
   <div class="centre titre" style="top:250px;font-size:116px" data-mots="0.3">Créez votre espace gratuit</div>
   <div class="centre" style="top:460px"><span class="btn" style="position:relative" data-in="pop" data-t="@regardez-0.2" data-fn="bouton">Voir les demandes près de chez moi<i data-fn="reflet"></i></span></div>
   <svg style="left:910px;top:640px" width="100" height="130" viewBox="0 0 50 65" fill="none" stroke="#e05a10" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" data-in="pop" data-t="@juste-0.1" data-fn="rebondit" data-sfx="tic"><path d="M25 6v50M6 38l19 19 19-19"/></svg>
-  <div class="centre txt" style="top:800px;font-size:40px" data-in="haut" data-t="@deux-0.2"><span class="coche">✓</span>0 € à l'inscription &nbsp;·&nbsp; <span class="coche">✓</span>Sans engagement &nbsp;·&nbsp; <span class="coche">✓</span>0 % de commission</div>
+  <div class="centre txt" style="top:800px;font-size:40px" data-in="haut" data-t="@deux-0.2"><span class="coche">✓</span>0 € &nbsp;·&nbsp; <span class="coche">✓</span>Sans engagement &nbsp;·&nbsp; <span class="coche">✓</span>0 % de commission</div>
 </section>
 
 <div id="st"></div>
 </div>
+<script src="decors.js"></script>
 <script src="moteur.js"></script>
 <script src="plans.js"></script>
 </body>
