@@ -174,7 +174,17 @@ async function main() {
     const instants = arg('--instants')?.split(',').map(Number);
     const cibles = instants
       ? instants.map((t) => ({ nom: `t${t.toFixed(1).padStart(6, '0')}`, t }))
-      : chrono.segments.map((s) => ({ nom: s.id, t: s.debut + s.duree * 0.78 }));
+      : drapeau('--revue')
+        ? // Revue complète : chaque segment au milieu et juste avant sa fin (`r-NN-id-a|b`).
+          chrono.segments.flatMap((s, n) =>
+            (arg('--seul') ? arg('--seul')!.split(',').includes(s.id) : true)
+              ? [
+                  { nom: `r-${String(n).padStart(2, '0')}-${s.id}-a`, t: s.debut + s.duree * 0.45 },
+                  { nom: `r-${String(n).padStart(2, '0')}-${s.id}-b`, t: s.debut + s.duree - 0.2 },
+                ]
+              : [],
+          )
+        : chrono.segments.map((s) => ({ nom: s.id, t: s.debut + s.duree * 0.78 }));
     for (const c of cibles) {
       await aller(Math.round(c.t * IPS));
       writeFileSync(join(sortie, 'planches', `${c.nom}.jpg`), await photo(88));

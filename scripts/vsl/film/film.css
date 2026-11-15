@@ -433,6 +433,19 @@ section > *,
   z-index: 50;
   white-space: nowrap;
 }
+#st .bande {
+  display: inline-block;
+}
+/* Sur fond clair : bandeau bleu nuit, sans contour (bien plus lisible que du blanc cerné). */
+#st.clair {
+  -webkit-text-stroke: 0;
+}
+#st.clair .bande {
+  background: var(--nuit);
+  padding: 8px 30px 14px;
+  border-radius: 20px;
+  box-shadow: 0 10px 26px rgba(23, 58, 85, 0.28);
+}
 #st span {
   display: inline-block;
   margin: 0 0.14em;

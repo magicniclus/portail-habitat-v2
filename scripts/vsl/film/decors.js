@@ -33,7 +33,7 @@
     const feuilles = [0, 1, 2, 3]
       .map(
         (i) =>
-          `<g${t(`@soir+${(0.5 + i * 0.4).toFixed(1)}`)}><rect x="${1420 + (i % 2 ? 10 : -6)}" y="${746 - i * 30}" width="250" height="24" rx="6" fill="#fff"/><rect x="${1420 + (i % 2 ? 10 : -6)}" y="${746 - i * 30}" width="34" height="24" rx="6" fill="${CLAIR}"/></g>`,
+          `<g${t(`@soir+${(0.3 + i * 0.3).toFixed(1)}`)}><rect x="${1420 + (i % 2 ? 10 : -6)}" y="${746 - i * 30}" width="250" height="24" rx="6" fill="#fff"/><rect x="${1420 + (i % 2 ? 10 : -6)}" y="${746 - i * 30}" width="34" height="24" rx="6" fill="${CLAIR}"/></g>`,
       )
       .join('');
     return `<svg class="abs" style="left:${dx}px;top:0" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" stroke-linecap="round" stroke-linejoin="round">

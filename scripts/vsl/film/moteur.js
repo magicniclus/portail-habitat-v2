@@ -277,19 +277,23 @@
     if (l !== ligneAffichee) {
       ligneAffichee = l;
       st.textContent = '';
+      const bande = document.createElement('div');
+      bande.className = 'bande';
+      if (l) st.appendChild(bande);
       for (const m of l ?? []) {
         const s = document.createElement('span');
         s.textContent = m.texte;
         if (FORTS.some((f) => f.test(sansAccent(m.texte)))) s.classList.add('fort');
-        st.appendChild(s);
+        bande.appendChild(s);
       }
     }
     (l ?? []).forEach((m, n) =>
-      st.children[n].classList.toggle(
+      st.firstChild.children[n].classList.toggle(
         'dit',
         t >= m.t - 0.04 && t < (l[n + 1]?.t ?? m.f + 0.3) - 0.04,
       ),
     );
+    st.classList.toggle('clair', stage.dataset.fond === 'clair');
     st.style.bottom = `${stage.dataset.st ?? 64}px`;
   }
 
@@ -303,6 +307,7 @@
       if (!actif) continue;
       const lt = t - sc.debut;
       stage.dataset.st = sc.el.dataset.st ?? 64;
+      stage.dataset.fond = sc.el.classList.contains('nuit') ? 'nuit' : 'clair';
       for (const el of sc.el.querySelectorAll(
         '[data-in],[data-out],[data-mots],[data-barre],[data-compte],[data-cap],[data-fn],[data-flotte],[data-pulse],[data-vis]',
       )) {

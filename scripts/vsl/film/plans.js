@@ -10,11 +10,11 @@
   // Plan 1 : ondes derrière la carte, après le « ding ».
   FN.anneau = (el, lt) => {
     const k = lt < 0.6 ? -1 : ((lt - 0.6 + Number(el.dataset.n) * 1.2) % 2.4) / 2.4;
-    const r = 320 + Math.max(0, k) * 700;
+    const r = 300 + Math.max(0, k) * 560;
     Object.assign(el.style, {
       width: `${r * 2}px`,
-      height: `${r}px`,
-      margin: `${-r / 2}px 0 0 ${-r}px`,
+      height: `${r * 2}px`,
+      margin: `${-r}px 0 0 ${-r}px`,
       borderRadius: '50%',
       border: `3px solid rgba(255,152,87,${k < 0 ? 0 : (1 - k) * 0.45})`,
     });
@@ -32,7 +32,22 @@
     const force = Math.sin(lt * 5) > -0.2 ? 1 : 0;
     return { x: Math.sin(lt * 64) * 6 * force, r: Math.sin(lt * 64 + 1) * 3 * force };
   };
-  // Plan 5 : pages du calendrier qui tombent, épingle qui s'éloigne.
+  // Plan 5 : ondes de la sonnerie, pièces qui tombent du calendrier.
+  FN.ondes = (_el, lt) => ({
+    o: 0.35 + 0.65 * Math.abs(Math.sin(lt * 5)),
+    s: 1 + 0.05 * Math.sin(lt * 10),
+  });
+  FN.pieceTombe = (el, lt, sc) => {
+    const g = seg('p05b');
+    const n = Number(el.dataset.n);
+    const k = ((((lt + sc.debut - g.debut) * 0.75 + n * 0.37) % 1) + 1) % 1;
+    return {
+      y: k * k * 130,
+      o: k < 0.1 ? k * 10 : 1 - Math.max(0, (k - 0.6) / 0.4),
+      r: (n % 2 ? -1 : 1) * k * 30,
+    };
+  };
+  // Ancien dessin du plan 5 (pages qui tombent, épingle qui s'éloigne), gardé pour mémoire.
   FN.page = (el, lt, sc) => {
     const g = seg('p05b');
     const k = ((((lt + sc.debut - g.debut) * 0.8 + Number(el.dataset.n) * 0.5) % 1) + 1) % 1;
@@ -47,8 +62,8 @@
   FN.converge = (el, lt) => {
     const p = doux((lt - 0.1) / 0.55);
     return {
-      x: ([150, 420, 690][Number(el.dataset.n)] - 870) * (1 - p),
-      y: 290 * (1 - p),
+      x: ([150, 420, 690][Number(el.dataset.n)] - 850) * (1 - p),
+      y: 310 * (1 - p),
       o: 1 - borne((lt - 0.7) / 0.15),
     };
   };
@@ -57,9 +72,9 @@
   FN.soleil = (_el, lt, sc) => {
     const p = borne((lt - 0.2) / sc.rep('@soir'));
     return {
-      x: p * 560,
-      y: -Math.sin(p * PI * 0.85) * 90 + p * p * 560,
-      o: 1 - borne((p - 0.82) / 0.18),
+      x: p * 640,
+      y: -Math.sin(p * PI * 0.8) * 150 + p ** 3 * 430,
+      o: 1 - borne((p - 0.8) / 0.2),
     };
   };
   // Le chantier s'assombrit, le bureau s'éclaire sur « le soir ».
@@ -104,7 +119,7 @@
   FN.centre = (el, lt, sc) => {
     const p = doux((lt - sc.rep('@p22g')) / 0.6);
     el.style.borderStyle = p > 0.5 ? 'solid' : 'dashed';
-    return { x: -600 * p, s: 1 + 0.18 * p };
+    return { x: -635 * p, y: -100 * p };
   };
   // Plan 24 : les options s'effacent, le gratuit grandit.
   FN.grandit = (_el, lt, sc) => ({ s: 1 + 0.1 * doux((lt - sc.rep('@personne')) / 0.5) });
