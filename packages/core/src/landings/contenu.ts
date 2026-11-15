@@ -399,7 +399,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
     ],
     ctaTitre: 'Vos concurrents ont un site. Vous aussi, dès aujourd’hui.',
-    bandeau: 'Votre site créé par l’IA et mis en ligne gratuitement',
+    bandeau: 'Votre site internet d’artisan, en ligne gratuitement',
     appelTexte:
       'L’IA écrit votre site, vous le modifiez en un clic et il est en ligne à votre nom, sans rien payer. Il est préparé pour Google, vos clients vous contactent depuis votre site, et tous les autres outils sont gratuits, eux aussi :',
     barreMobile: 'Créer mon site gratuitement',

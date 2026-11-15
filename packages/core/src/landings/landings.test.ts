@@ -80,6 +80,7 @@ describe('landings par outil (LANDINGS §1)', () => {
     const chantiers = contenuLanding('chantiers', { preuves: false });
     expect(chantiers.bandeau).toContain('exclusives');
     expect(site.bandeau).toContain('site');
+    expect(site.bandeau).not.toMatch(/\bIA\b/);
     expect(site.appelTexte).not.toBe(chantiers.appelTexte);
   });
 });
