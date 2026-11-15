@@ -120,15 +120,13 @@ export function Encarts({ etape }: { etape: number }) {
           apparait(etape === 2),
         )}
       >
-        <span className="text-[12px] font-bold tracking-[0.04em] text-neutre-700 uppercase">
-          Demandes gratuites ce mois
-        </span>
-        <span className="flex items-baseline gap-1.5">
-          <b className="text-[30px] leading-none text-accent-700">1</b>
-          <span className="text-[15px] font-semibold text-neutre-800">/ 10</span>
-        </span>
-        <span className="h-1.5 overflow-hidden rounded-pill bg-neutre-200">
-          <span className="block h-full w-[10%] rounded-pill bg-accent" />
+        <span className="flex items-center gap-3">
+          <b className="text-[34px] leading-none text-accent-700">6</b>
+          <span className="text-[13.5px] leading-tight font-semibold text-neutre-800">
+            demandes gratuites
+            <br />
+            reçues ce mois-ci
+          </span>
         </span>
       </div>
     </>

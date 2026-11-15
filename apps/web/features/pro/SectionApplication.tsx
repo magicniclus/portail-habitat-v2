@@ -89,20 +89,23 @@ export function ApplicationPro() {
             Créer mon compte gratuit
           </a>
         </div>
-        <div aria-hidden="true" className="relative mx-auto w-full max-w-[520px] pt-6 pb-2">
-          <CaptureEcran
-            capture={DEVIS}
-            cadre="telephone"
-            legende={false}
-            className="absolute top-14 right-0 w-[46%] rotate-[4deg] opacity-95"
-          />
-          <CaptureEcran
-            capture={DEMANDES}
-            cadre="telephone"
-            legende={false}
-            className="relative z-[2] ml-[6%] w-[52%]"
-          />
-          <div className="absolute top-0 left-[30%] z-[3] flex max-w-[300px] items-center gap-3 rounded-[16px] border border-trait bg-blanc/95 px-4 py-3 shadow-lg backdrop-blur">
+        <div aria-hidden="true" className="relative mx-auto w-full max-w-[520px] pt-10">
+          {/* Deux téléphones de même taille, bas alignés, le second légèrement en retrait. */}
+          <div className="flex items-end justify-center">
+            <CaptureEcran
+              capture={DEMANDES}
+              cadre="telephone"
+              legende={false}
+              className="relative z-[2] w-[48%]"
+            />
+            <CaptureEcran
+              capture={DEVIS}
+              cadre="telephone"
+              legende={false}
+              className="relative z-[1] -ml-[6%] w-[48%]"
+            />
+          </div>
+          <div className="absolute top-0 left-1/2 z-[3] flex -translate-x-1/2 whitespace-nowrap items-center gap-3 rounded-[16px] border border-trait bg-blanc/95 px-4 py-3 shadow-lg backdrop-blur">
             <span className="flex size-10 flex-none items-center justify-center rounded-[10px] bg-accent text-blanc">
               <BellRingingIcon size={22} weight="fill" />
             </span>

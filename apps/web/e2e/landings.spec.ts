@@ -281,7 +281,7 @@ test.describe('Landings par outil', () => {
     await expect(actuelle()).toContainText('Vous complétez votre fiche');
     await aller(0.9);
     await expect(actuelle()).toContainText('Ils vous envoient leur demande');
-    await expect(z.getByText('Demandes gratuites ce mois')).toBeVisible();
+    await expect(z.getByText('reçues ce mois-ci')).toBeVisible();
     await aller(0.45);
     await expect(actuelle()).toContainText('Les clients vous trouvent sur le portail');
   });
