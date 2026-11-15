@@ -19,7 +19,7 @@
   .outil.v .ico { width: 60px; height: 60px; border-radius: 14px; }
   .outil.v .ico svg { width: 32px; height: 32px; }
   .apercu { width: 760px; height: 472px; border-radius: 22px; border: 2px dashed rgba(255, 255, 255, 0.22); }
-  .nav.cadre { height: 652px; }
+  .nav.cadre { height: 764px; }
   .opt { font-size: 46px; }
   .centre > span.logo { display: inline-flex; vertical-align: middle; }
   .logo svg { flex: none; }
@@ -180,7 +180,7 @@
   <div class="gratuit" style="left:1010px;top:150px;width:760px;height:660px" data-in="droite" data-t="@portail-0.3" data-sfx="ding" data-st="@zéro">
     <span class="logo" style="font-size:30px;color:#fff"><svg width="54" height="54" viewBox="0 0 40 40" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5 20 7l15 12.5" stroke="#ff9857"/><path d="M9 21.5V33h22V21.5" stroke="#fff"/><rect x="17" y="25" width="6" height="8" rx="1" fill="#ff9857"/></svg>PORTAIL TRAVAUX<b>PRO</b></span>
     <div class="chiffre" style="font-size:280px;margin-top:40px" data-in="pop" data-t="@zéro">0 €</div>
-    <div class="moyen" style="font-size:44px;opacity:.85">par mois</div>
+    <div class="moyen" style="font-size:64px" data-in="haut" data-t="@zéro+0.3">pour tout ça !</div>
     <div class="plus" data-in="pop" data-t="@performance-0.2" data-sfx="tic">+ de performance</div>
   </div>
 </section>
@@ -213,10 +213,11 @@
   <div class="piece" style="left:820px;top:110px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@construit-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Visibilité payante</div>
   <div class="piece" style="left:1160px;top:110px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@construit-0.25">Contacts payants</div>
   <div class="piece" style="left:1480px;top:110px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@construit-0.15" data-sens="-1">Outils payants</div>
-  <div class="ligne" style="left:820px;top:270px;font-size:88px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
-  <div class="ligne" style="left:820px;top:410px;font-size:88px" data-in="haut" data-t="@équipé" data-sfx="tic"><span class="coche">✓</span>Équipé</div>
-  <div class="txt" style="left:936px;top:522px;font-size:42px;color:var(--doux)" data-in="haut" data-t="@meilleurs">des meilleurs outils de gestion et de marketing</div>
-  <div class="ligne" style="left:820px;top:630px;font-size:88px" data-in="haut" data-t="@gratuitement" data-sfx="tic"><span class="coche">✓</span>Gratuitement</div>
+  <div class="ligne" style="left:820px;top:240px;font-size:72px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
+  <div class="ligne" style="left:820px;top:360px;font-size:72px" data-in="haut" data-t="@reçoit" data-sfx="tic"><span class="coche">✓</span>Reçoit des demandes</div>
+  <div class="ligne" style="left:820px;top:480px;font-size:72px" data-in="haut" data-t="@dispose" data-sfx="tic"><span class="coche">✓</span>Équipé des meilleurs outils</div>
+  <div class="txt" style="left:926px;top:584px;font-size:42px;color:var(--doux)" data-in="haut" data-t="@gestion">de gestion et de marketing</div>
+  <div class="ligne" style="left:820px;top:680px;font-size:72px" data-in="haut" data-t="@gratuitement" data-sfx="tic"><span class="coche">✓</span>Gratuitement</div>
 </section>
 
 <!-- ACTE 4 — PLAN 12 : idée reçue n° 1 -->
@@ -225,7 +226,7 @@
   <div class="centre" style="top:440px"><span class="gros orange" data-barre="fin-1.0" data-sfx="rature" data-st="fin-1.0"><span data-mots="@les-0.15">« Les plateformes, on paie pour rien. »</span></span></div>
 </section>
 
-<!-- PLAN 13 : fiche gratuite, demandes gratuites, jusqu'à dix -->
+<!-- PLAN 13 : fiche gratuite, demandes gratuites, dix par mois en moyenne -->
 <section class="creme" data-scene="p13">
   <div style="left:150px;top:120px;width:1120px;transform:perspective(2400px) rotateY(4deg)">
     <div class="nav" data-in="pop" data-t="0.1" data-out="coupe" data-o="@demandes-0.15"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c8-bureau" data-de="0.2" data-vitesse="0.9" /></div>
@@ -237,8 +238,8 @@
   <div class="badge" style="left:1380px;top:290px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.2" data-pulse="@gratuites" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
   <div class="badge" style="left:1470px;top:440px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.4" data-pulse="@gratuites+0.1" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
   <div class="badge" style="left:1380px;top:590px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.6" data-pulse="@gratuites+0.2" data-out="coupe" data-o="@moyenne-0.25">0 €</div>
-  <div class="centre sur" style="top:220px;font-size:46px" data-in="haut" data-t="@moyenne-0.2">En moyenne, jusqu'à</div>
-  <div class="centre chiffre" style="top:285px;color:var(--accent)" data-in="fondu" data-t="@jusqu-0.15" data-compte="0,10" data-sfx="impact" data-st="@dix">0</div>
+  <div class="centre sur" style="top:220px;font-size:46px" data-in="haut" data-t="@moyenne-0.2">En moyenne</div>
+  <div class="centre chiffre" style="top:285px;color:var(--accent)" data-in="fondu" data-t="@dix-0.6" data-compte="0,10" data-sfx="impact" data-st="@dix">0</div>
   <div class="centre moyen" style="top:610px" data-in="haut" data-t="@moyenne">demandes gratuites par mois</div>
   <div class="centre txt" style="top:710px;font-size:50px;color:var(--doux)" data-in="haut" data-t="@moyenne+0.1">selon votre secteur et votre métier</div>
 </section>
@@ -260,8 +261,8 @@
 
 <!-- PLAN 16 : cinq champs, deux minutes -->
 <section class="creme" data-scene="p16">
-  <div style="left:100px;top:120px;width:1080px;transform:perspective(2400px) rotateY(4deg)">
-    <div class="nav cadre" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img style="width:190%;max-width:none;margin-left:-90%;margin-top:-6%" data-cap="c1-bureau" data-de="0.4" data-vitesse="2.3" data-sfx="clavier" data-st="0.3" /></div>
+  <div style="left:330px;top:100px;width:640px;transform:perspective(2400px) rotateY(4deg)">
+    <div class="nav cadre" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img style="width:256%;max-width:none;margin-left:-143.5%;margin-top:-30%" data-cap="c1-bureau" data-de="0.4" data-vitesse="1.9" data-jusqua="9.5" data-sfx="clavier" data-st="0.3" /></div>
   </div>
   <svg style="left:1260px;top:110px" width="250" height="250" viewBox="0 0 250 250" fill="none" stroke-linecap="round"><circle cx="125" cy="125" r="104" stroke="#ffe0cd" stroke-width="20"/><g transform="rotate(-90 125 125)"><circle cx="125" cy="125" r="104" stroke="#e05a10" stroke-width="20" stroke-dasharray="654" data-fn="arc"/></g></svg>
   <div class="gros" style="left:1540px;top:160px;font-size:112px;color:var(--accent)" data-in="pop" data-t="@minutes-0.15" data-sfx="ding">2 min</div>
