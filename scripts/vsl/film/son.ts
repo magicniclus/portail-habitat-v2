@@ -336,8 +336,23 @@ function main() {
     ],
     '-filter_complex',
     `[1:a]volume=${gainMusique.toFixed(2)}dB[m];[2:a]volume=-5dB[b];[0:a][m][b]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[a]`,
-    ...['-map', '[a]', '-t', String(chrono.duree), '-c:a', 'pcm_s16le', join(film, 'son.wav')],
+    ...['-map', '[a]', '-t', String(chrono.duree), '-c:a', 'pcm_s16le', join(film, 'son-brut.wav')],
   ]);
+  // Une voix très dynamique laisse loudnorm sous la cible : on rattrape l'écart, crêtes limitées à -1,5 dB.
+  let rattrapage = 0;
+  for (let passe = 0; passe < 3; passe++) {
+    lancer([
+      ...['-i', join(film, 'son-brut.wav')],
+      ...[
+        '-af',
+        `volume=${rattrapage.toFixed(2)}dB,alimiter=limit=0.84:level=disabled:attack=3:release=60`,
+      ],
+      ...['-ar', '48000', '-c:a', 'pcm_s16le', join(film, 'son.wav')],
+    ]);
+    const ecart = -14 - lufs(join(film, 'son.wav'));
+    if (Math.abs(ecart) < 0.3) break;
+    rattrapage += ecart;
+  }
   writeFileSync(
     join(film, 'mixage.txt'),
     `voix ${lv} LUFS · musique ${lm} LUFS (gain ${gainMusique.toFixed(1)} dB) · final ${lufs(join(film, 'son.wav'))} LUFS\n`,
