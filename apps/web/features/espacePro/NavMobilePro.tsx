@@ -9,6 +9,12 @@ import { useState, type ReactNode } from 'react';
 import { estActif, LIENS_PRO } from './liens';
 import { ChargementLien } from '@/features/navigation/ChargementLien';
 
+/** « Mes demandes » → « Demandes » : libellé court de la barre du bas, avec sa majuscule. */
+const court = (l: string) => {
+  const s = l.replace(/^(Mes|Ma|Mon) /, '');
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
 /** Mobile (MOBILE §6) : barre d'onglets en bas, « Plus » ouvre une feuille avec le reste du menu. */
 export function NavMobilePro({
   menu,
@@ -29,7 +35,7 @@ export function NavMobilePro({
           <BottomNavItem
             key={l.cle}
             icone={<Icone />}
-            libelle={l.libelle.replace(/^Mes |^Ma /, '')}
+            libelle={court(l.libelle)}
             actif={estActif(chemin, l.cle)}
             {...(l.badge ? { badge: l.badge } : {})}
             {...(l.alerte ? { alerte: l.alerte } : {})}

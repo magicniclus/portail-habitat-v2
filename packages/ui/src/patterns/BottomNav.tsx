@@ -42,15 +42,16 @@ export function BottomNavItem({
       <Slot.Root
         aria-current={actif ? 'page' : undefined}
         className={cn(
-          'relative flex min-h-14 w-full flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold no-underline',
+          'relative flex min-h-14 w-full flex-col items-center justify-start gap-1 px-0.5 pt-2 pb-1.5 text-center text-[11.5px] leading-[1.15] font-semibold no-underline',
           actif ? 'text-accent-700' : 'text-neutre-700 hover:text-texte',
         )}
       >
         <Slot.Slottable>{children}</Slot.Slottable>
-        <span aria-hidden="true" className="text-[24px] leading-none">
+        {/* Icônes toutes sur la même ligne ; libellé dessous, deux lignes au plus. */}
+        <span aria-hidden="true" className="flex h-6 items-center text-[24px] leading-none">
           {icone}
         </span>
-        <span>{libelle}</span>
+        <span className="line-clamp-2 max-w-full">{libelle}</span>
         {badge ? (
           <span className="absolute top-1.5 left-[calc(50%+6px)] min-w-5 rounded-pill bg-accent-action px-1.5 text-[11px] leading-5 text-blanc">
             {badge}

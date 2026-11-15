@@ -14,13 +14,7 @@ export function EnTeteLanding() {
           <span aria-hidden="true" className="font-bold text-accent">
             ✓
           </span>
-          100 % gratuit
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span aria-hidden="true" className="font-bold text-accent">
-            ✓
-          </span>
-          Sans carte bancaire
+          Jusqu’à 10 demandes gratuites et exclusives par mois
         </span>
       </p>
       <header className="border-b border-trait bg-fond">
