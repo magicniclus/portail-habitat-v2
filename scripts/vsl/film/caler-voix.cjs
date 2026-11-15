@@ -124,7 +124,8 @@ segs.forEach((s, k) => {
   const debut = Math.max(0, avant[1] - Math.min(0.1, (avant[1] - avant[0]) / 2));
   const fin = apres[0] + Math.min(0.2, (apres[1] - apres[0]) / 2);
   const r = spawnSync(FFMPEG, [
-    ...['-y', '-loglevel', 'error', '-i', audio, '-ss', debut.toFixed(3), '-to', fin.toFixed(3)],
+    // Coupe à la lecture (avant -i) : les fondus comptent alors depuis le début du segment.
+    ...['-y', '-loglevel', 'error', '-ss', debut.toFixed(3), '-to', fin.toFixed(3), '-i', audio],
     ...['-af', `afade=t=in:d=0.02,afade=t=out:st=${(fin - debut - 0.03).toFixed(3)}:d=0.03`],
     ...['-c:a', 'libmp3lame', '-b:a', '192k', join(sortie, `${s.id}.mp3`)],
   ]);
