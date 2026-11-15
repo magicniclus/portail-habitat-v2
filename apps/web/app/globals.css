@@ -23,6 +23,22 @@
     transform: translateY(-16px) scale(0.98);
   }
 }
+/* Notification du téléphone de /pro : descend, reste, remonte. */
+@keyframes notif {
+  0% {
+    opacity: 0;
+    transform: translateY(-130%);
+  }
+  12%,
+  78% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-130%);
+  }
+}
 /* Barre « en cours » du Studio (durée inconnue) : un segment qui va et vient. */
 @keyframes va-et-vient {
   from {

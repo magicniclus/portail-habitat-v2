@@ -1,155 +1,98 @@
-import { formatEuros, formatFourchette } from '@ph/core/format';
 import { bouton } from '@ph/ui';
+import { CaptureEcran } from '@/features/landings/CaptureEcran';
 import { ListeFaq } from '@/features/vitrine/Section';
-import { ATOUTS_ESPACE, ETAPES_PRO, FAQ_PRO } from './contenu';
+import { ATOUTS_ESPACE, FAQ_PRO } from './contenu';
 
 export const conteneurPro = 'mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,44px)]';
 const titre2 = 'm-0 mb-3 text-[clamp(28px,3.4vw,38px)] leading-[1.12]';
 const bande = 'py-[clamp(48px,6vw,80px)]';
 
-export function EtapesPro() {
-  return (
-    <section className={`bg-neutre-100 pb-[clamp(48px,6vw,80px)]`}>
-      <div className={conteneurPro}>
-        <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="m-0 mb-2 text-[13px] tracking-[0.08em] text-accent-700 uppercase">
-              En 3 minutes chrono
-            </p>
-            <h2 className="m-0 text-[clamp(28px,3.4vw,38px)] leading-[1.12]">Comment ça marche</h2>
-          </div>
-          <a href="#inscription" className={bouton({ className: 'text-base' })}>
-            Je commence maintenant
-          </a>
-        </div>
-        <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-[18px] p-0">
-          {ETAPES_PRO.map((e, i) => (
-            <li key={e.titre} className="rounded-card border border-trait bg-blanc p-6">
-              <span
-                aria-hidden="true"
-                className="mb-4 flex size-11 items-center justify-center rounded-full bg-accent-action text-lg font-bold text-blanc"
-              >
-                {i + 1}
-              </span>
-              <h3 className="m-0 mb-2 text-[21px]">{e.titre}</h3>
-              <p className="m-0 mb-3 text-[15.5px] leading-[25px] text-neutre-800">{e.texte}</p>
-              <p className="m-0 text-[13px] font-semibold text-accent-700">{e.delai}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
+const ECRAN_DEMANDES = { image: 'mes-demandes', url: '', legende: 'Mes demandes, sur téléphone.' };
 
+/**
+ * « Votre espace artisan » : le vrai tableau de bord dans un navigateur, « Mes demandes » sur un
+ * téléphone posé devant, puis les 4 atouts en cartes. Aucune mention des appels d'offres : /pro
+ * parle des demandes gratuites reçues depuis la fiche.
+ */
 export function EspaceArtisan() {
   return (
-    <section id="espace" className={`scroll-mt-20 ${bande}`}>
-      <div
-        className={`${conteneurPro} grid items-center gap-x-[clamp(28px,4vw,60px)] gap-y-9 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]`}
-      >
-        <div>
-          <h2 className={titre2}>Votre espace artisan : tout est au même endroit</h2>
-          <p className="m-0 mb-6 text-[17px] leading-[27px] text-neutre-800">
-            Pas besoin d&apos;un logiciel de plus. Vos demandes, vos relances, vos devis et vos avis
-            clients sont dans le même espace, accessible depuis l&apos;ordinateur ou le téléphone.
+    <section
+      id="espace"
+      className={`scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,var(--color-blanc)_0%,var(--color-neutre-100)_100%)] ${bande}`}
+    >
+      <div className={`${conteneurPro} grid gap-[clamp(32px,5vw,56px)]`}>
+        <div className="mx-auto grid max-w-[680px] justify-items-center text-center">
+          <p className="m-0 mb-3 text-[13px] font-bold tracking-[0.08em] text-accent-700 uppercase">
+            Votre espace artisan
           </p>
-          <ul className="m-0 grid list-none gap-[18px] p-0">
-            {ATOUTS_ESPACE.map((a) => (
-              <li key={a.titre} className="flex items-start gap-3.5">
-                <span className="flex size-10 flex-none items-center justify-center rounded-control bg-accent-100">
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--accent-700)"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d={a.icone} />
-                  </svg>
-                </span>
-                <span>
-                  <strong className="text-base">{a.titre}</strong>
-                  <br />
-                  <span className="text-[15px] leading-6 text-neutre-800">{a.texte}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          <h2 className={titre2}>Tout est au même endroit, et c’est gratuit</h2>
+          <p className="m-0 max-w-[54ch] text-[17px] leading-[27px] text-neutre-800">
+            Pas besoin d&apos;un logiciel de plus. Vos demandes, vos devis, vos factures et vos avis
+            clients sont dans le même espace, sur l&apos;ordinateur comme sur le téléphone.
+          </p>
         </div>
-        <figure className="m-0">
-          <div
-            aria-hidden="true"
-            className="overflow-hidden rounded-[16px] border border-trait bg-blanc shadow-lg"
-          >
-            <div className="flex items-center gap-2 border-b border-trait bg-surface px-4 py-3">
-              {[0, 1, 2].map((i) => (
-                <span key={i} className="size-2.5 rounded-full bg-neutre-400" />
-              ))}
-              <span className="ml-2.5 text-xs text-neutre-700">
-                portailtravaux.fr/pro/appels-d-offres
+        <div
+          aria-hidden="true"
+          className="relative mx-auto w-full max-w-[1000px] pr-[12%] max-md:pr-0"
+        >
+          <div className="overflow-hidden rounded-[14px] border border-trait bg-blanc shadow-2xl">
+            <div className="flex items-center gap-3 border-b border-trait bg-neutre-100/70 px-3.5 py-2">
+              <span className="flex flex-none gap-1.5">
+                {[0, 1, 2].map((i) => (
+                  <span key={i} className="size-2.5 rounded-full bg-neutre-200" />
+                ))}
+              </span>
+              <span className="min-w-0 flex-1 truncate rounded-[8px] bg-blanc px-3 py-1 text-[13px] text-neutre-700">
+                portailtravaux.fr/pro/tableau-de-bord
               </span>
             </div>
-            <div className="grid gap-3.5 p-[18px]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <strong className="text-[17px]">Appels d&apos;offres · Gironde</strong>
-                <span className="rounded-pill bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-800">
-                  3 artisans maximum
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs">
-                {['Tous (12)', 'Couverture', 'Isolation', 'Moins de 30 km'].map((c, i) => (
-                  <span
-                    key={c}
-                    className={`rounded-pill px-2.5 py-[5px] ${i === 0 ? 'bg-accent-action text-blanc' : 'bg-neutre-100'}`}
-                  >
-                    {c}
-                  </span>
-                ))}
-              </div>
-              <div className="rounded-[12px] border border-accent bg-accent-100 p-3.5 text-[13px]">
-                <div className="flex justify-between gap-2.5">
-                  <strong className="text-[15px]">Réfection toiture 90 m² · Pessac</strong>
-                  <span className="text-xs font-semibold whitespace-nowrap text-accent-700">
-                    Visible 24 h avant
-                  </span>
-                </div>
-                <div className="mt-1 flex justify-between gap-2.5">
-                  <span>{formatFourchette(900_000, 1_400_000)} · démarrage urgent</span>
-                  <span>3 réponses max</span>
-                </div>
-              </div>
-              {[
-                [
-                  'Isolation combles perdus · Mérignac',
-                  'Ouvre dans 6 h',
-                  formatFourchette(400_000, 650_000) + ' · sous 2 mois',
-                ],
-                [
-                  'Bardage bois maison · Talence',
-                  'Ouvre demain',
-                  formatFourchette(700_000, 1_000_000) + ' · 1 à 3 mois',
-                ],
-              ].map(([t, o, d]) => (
-                <div key={t} className="rounded-[12px] border border-trait p-3.5 text-[13px]">
-                  <div className="flex justify-between gap-2.5">
-                    <strong className="text-[15px]">{t}</strong>
-                    <span className="text-xs whitespace-nowrap text-neutre-700">{o}</span>
-                  </div>
-                  <div className="mt-1 text-neutre-800">{d}</div>
-                </div>
-              ))}
-            </div>
+            <picture>
+              <source
+                srcSet="/landing/captures/espace-artisan-dashboard-desktop.avif"
+                type="image/avif"
+              />
+              <img
+                src="/landing/captures/espace-artisan-dashboard-desktop.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="block aspect-[16/10] w-full object-cover object-top"
+              />
+            </picture>
           </div>
-          <figcaption className="mt-2.5 text-[13px] text-neutre-800">
-            L&apos;espace appels d&apos;offres : les projets de votre zone, ouverts à 3 artisans au
-            maximum.
-          </figcaption>
-        </figure>
+          <CaptureEcran
+            capture={ECRAN_DEMANDES}
+            cadre="telephone"
+            legende={false}
+            className="absolute right-0 -bottom-[6%] w-[24%] drop-shadow-2xl max-md:hidden"
+          />
+        </div>
+        <ul className="m-0 grid list-none gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
+          {ATOUTS_ESPACE.map((a) => (
+            <li
+              key={a.titre}
+              className="grid content-start gap-2.5 rounded-card border border-trait bg-blanc p-5 shadow-sm"
+            >
+              <span className="flex size-11 items-center justify-center rounded-[12px] bg-accent-100">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--accent-700)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d={a.icone} />
+                </svg>
+              </span>
+              <strong className="text-[17px]">{a.titre}</strong>
+              <span className="text-[15px] leading-6 text-neutre-800">{a.texte}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -209,59 +152,6 @@ export function FaqPro() {
       </h2>
       <div className="max-w-[74ch]">
         <ListeFaq faq={FAQ_PRO} />
-      </div>
-    </section>
-  );
-}
-
-const CALCUL = [
-  {
-    titre: 'Ce que ça vous coûte',
-    valeur: formatEuros(0),
-    texte: 'Pas de carte bancaire à l’inscription, et pas de commission sur vos chantiers.',
-  },
-  {
-    titre: 'Ce que vous risquez',
-    valeur: 'Rien',
-    texte: 'Sans engagement : vous mettez votre fiche en pause ou vous partez quand vous voulez.',
-  },
-  {
-    titre: 'Ce que vous pouvez y gagner',
-    valeur: 'Des chantiers',
-    texte:
-      'Des particuliers de votre secteur, qui vous écrivent avec leur projet, leur budget et leur délai.',
-  },
-] as const;
-
-/** « Le calcul est vite fait » : coût nul, risque nul, gain possible. Aucun chiffre inventé. */
-export function CalculPro() {
-  return (
-    <section className={bande}>
-      <div className={conteneurPro}>
-        <h2 className={`${titre2} text-center`}>Le calcul est vite fait</h2>
-        <p className="m-0 mx-auto mb-8 max-w-[52ch] text-center text-[17px] leading-[27px] text-neutre-800">
-          Vous ne payez rien pour recevoir des clients. Ne pas s’inscrire, c’est laisser ces
-          demandes à un autre artisan de votre secteur.
-        </p>
-        <ul className="m-0 grid list-none gap-[18px] p-0 md:grid-cols-3">
-          {CALCUL.map((c, i) => (
-            <li
-              key={c.titre}
-              className={`grid content-start gap-2 rounded-card border p-6 ${i === 2 ? 'border-accent bg-accent-100' : 'border-trait bg-blanc'}`}
-            >
-              <span className="text-[14px] font-semibold text-neutre-700">{c.titre}</span>
-              <b className="text-[clamp(30px,3.4vw,40px)] leading-none text-accent-700">
-                {c.valeur}
-              </b>
-              <span className="text-[15.5px] leading-[24px] text-neutre-800">{c.texte}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 flex justify-center">
-          <a href="#inscription" className={bouton({ taille: 'lg', className: 'min-h-[50px]' })}>
-            Créer ma fiche gratuitement
-          </a>
-        </div>
       </div>
     </section>
   );

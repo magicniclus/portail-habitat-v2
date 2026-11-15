@@ -43,27 +43,27 @@ export const EXEMPLES_DEMANDES = [
 export const ETAPES_PRO = [
   {
     titre: 'Vous créez votre fiche',
+    ecran: 'etape-inscription',
     texte:
-      'Métiers, communes, photos de réalisations, certifications. Gratuit, sans carte bancaire.',
-    delai: '≈ 3 minutes',
+      'Métiers, communes, photos de réalisations, certifications : environ 3 minutes. Gratuit, sans carte bancaire.',
   },
   {
     titre: 'Vous recevez les demandes',
+    ecran: 'mes-demandes',
     texte:
-      'Jusqu’à 10 demandes gratuites et exclusives par mois depuis votre fiche, plus les appels d’offres de votre zone.',
-    delai: 'Dès le premier jour',
+      'Dès le premier jour, les particuliers de votre secteur vous écrivent depuis votre fiche : jusqu’à 10 demandes gratuites et exclusives par mois.',
   },
   {
     titre: 'Vous répondez et vous signez',
+    ecran: 'devis-liste',
     texte:
-      "Notification sur l'appli, un appel ou un message, et le devis part — depuis le chantier s'il le faut.",
-    delai: 'Mise en relation directe',
+      "Notification sur l'appli, vous appelez le client directement, et le devis part, depuis le chantier s'il le faut.",
   },
 ] as const;
 
 export const ATOUTS_ESPACE = [
   {
-    titre: 'Un CRM simple',
+    titre: 'Vos demandes suivies',
     texte: 'Chaque demande devient une fiche à suivre : à rappeler, devis envoyé, chantier signé.',
     icone: 'M4 5h16v14H4zM4 10h16M9 5v14',
   },
@@ -74,8 +74,9 @@ export const ATOUTS_ESPACE = [
       'M12 21s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0C5.5 15 12 21 12 21ZM12 12.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z',
   },
   {
-    titre: "Les appels d'offres",
-    texte: 'Répondez aux projets déposés par les particuliers directement depuis votre espace.',
+    titre: 'Vos devis et factures',
+    texte:
+      'Modèles par métier et mentions obligatoires vérifiées : le devis part en quelques minutes.',
     icone: 'M6 4h9l3 3v13H6zM9 11h6M9 15h6',
   },
   {
@@ -100,7 +101,7 @@ export const FAQ_PRO: QuestionFaq[] = [
   },
   {
     q: 'Est-ce que je partage le client avec d’autres artisans ?',
-    r: 'Non pour les demandes envoyées depuis votre fiche : elles sont pour vous seul. Les appels d’offres de votre zone sont ouverts à 3 artisans maximum.',
+    r: 'Non. Une demande envoyée depuis votre fiche est pour vous seul : le client vous a choisi, vous.',
   },
   {
     q: 'Pourquoi vérifiez-vous mon SIREN et mon assurance ?',

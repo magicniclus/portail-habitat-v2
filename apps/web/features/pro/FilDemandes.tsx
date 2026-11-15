@@ -62,7 +62,7 @@ export function FilDemandes() {
         'grid w-full items-center gap-x-[clamp(28px,5vw,80px)] gap-y-5 md:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]',
       )}
     >
-      <div className="grid content-center justify-items-start gap-3 md:gap-5">
+      <div className="grid content-center justify-items-start gap-2 md:gap-5">
         <p className="m-0 text-[13px] font-bold tracking-[0.08em] text-accent-700 uppercase max-md:hidden">
           Votre téléphone, une fois inscrit
         </p>
@@ -75,10 +75,10 @@ export function FilDemandes() {
           sont pour vous seul, et gratuites.
         </p>
         <p className="m-0 flex items-center gap-3" aria-live="polite">
-          <b className="text-[clamp(40px,5vw,64px)] leading-none text-accent-700 tabular-nums">
+          <b className="text-[clamp(34px,5vw,64px)] leading-none text-accent-700 tabular-nums">
             {n}
           </b>
-          <span className="text-[15px] leading-tight font-semibold text-neutre-800">
+          <span className="text-[14px] leading-tight font-semibold text-neutre-800 md:text-[15px]">
             demande{n > 1 ? 's' : ''} gratuite{n > 1 ? 's' : ''}
             <br />
             reçue{n > 1 ? 's' : ''} cette semaine
@@ -104,12 +104,12 @@ export function FilDemandes() {
         {/* Téléphone : le message final se pose sur l'écran (pas de place à côté). */}
         <p
           className={cn(
-            'absolute inset-x-3 bottom-3 z-[3] m-0 rounded-[14px] bg-accent-700 px-4 py-3 text-[14px] leading-5 font-semibold text-blanc shadow-lg transition-[opacity,transform] duration-500 md:hidden',
+            'absolute inset-x-3 bottom-3 z-[3] m-0 rounded-[14px] bg-accent-700 px-4 py-3 text-[13.5px] leading-5 font-semibold text-blanc shadow-lg transition-[opacity,transform] duration-500 md:hidden',
             final ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
           )}
         >
-          Sans fiche, ces clients appellent un autre artisan. L’inscription est gratuite : ce serait
-          dommage de les laisser passer.
+          Sans fiche, ces clients appellent un autre artisan. Ce serait dommage de les laisser
+          passer.
         </p>
       </TelephoneDemandes>
     </div>
@@ -124,7 +124,9 @@ export function FilDemandes() {
         <div className="py-[clamp(48px,6vw,80px)]">{contenu}</div>
       ) : (
         <div ref={zone} data-fil-demandes className="relative h-[330vh]">
-          <div className="sticky top-0 flex h-svh items-center pt-16 pb-3 md:py-4">{contenu}</div>
+          <div className="sticky top-0 flex h-svh items-center pt-[60px] pb-2 md:py-4">
+            {contenu}
+          </div>
         </div>
       )}
     </section>

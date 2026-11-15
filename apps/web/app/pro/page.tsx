@@ -4,7 +4,8 @@ import { chiffresVitrine } from '@/features/accueil/vitrine';
 import { Traceur } from '@/features/comportement/Traceur';
 import { Zone } from '@/features/comportement/Zone';
 import { AvisDefilants } from '@/features/landings/AvisDefilants';
-import { FAQ_PRO } from '@/features/pro/contenu';
+import { ETAPES_PRO, FAQ_PRO } from '@/features/pro/contenu';
+import { CommentCaMarche } from '@/features/landings/CommentCaMarche';
 import { FormulaireInscription } from '@/features/pro/FormulaireInscription';
 import { BandeauMetier } from '@/features/pro/BandeauMetier';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
@@ -12,15 +13,9 @@ import { enTetePro, piedPro } from '@/features/pro/navigation';
 import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
 import { VslPro } from '@/features/pro/VslPro';
 import { ApplicationPro } from '@/features/pro/SectionApplication';
-import {
-  CalculPro,
-  conteneurPro,
-  EspaceArtisan,
-  EtapesPro,
-  FaqPro,
-  FichePro,
-} from '@/features/pro/Sections';
+import { conteneurPro, EspaceArtisan, FaqPro, FichePro } from '@/features/pro/Sections';
 import { FilDemandes } from '@/features/pro/FilDemandes';
+import { CalculPro } from '@/features/pro/CalculPro';
 import { AppelFinal } from '@/features/landings/AppelFinal';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
@@ -83,7 +78,9 @@ export default async function AcquisitionArtisans() {
           <FilDemandes />
         </Zone>
         <Zone id="etapes">
-          <EtapesPro />
+          <CommentCaMarche
+            etapes={ETAPES_PRO.map(({ titre, texte, ecran }) => ({ titre, texte, ecran }))}
+          />
         </Zone>
         <Zone id="espace">
           <EspaceArtisan />

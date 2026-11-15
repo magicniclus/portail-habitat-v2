@@ -20,7 +20,12 @@ export function CommentCaMarche({ etapes }: { etapes: ContenuLanding['etapes'] }
             téléphone ou votre ordinateur.
           </p>
         </div>
-        <ol className="m-0 -mx-[clamp(18px,4vw,44px)] flex list-none snap-x snap-mandatory gap-5 overflow-x-auto px-[clamp(18px,4vw,44px)] pb-3 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:gap-[clamp(20px,3vw,40px)] md:overflow-visible md:px-0 md:pb-0">
+        {/* Défilement horizontal sur téléphone : la liste reçoit le focus pour le clavier. */}
+        <ol
+          tabIndex={0}
+          aria-label="Les 3 étapes"
+          className="m-0 -mx-[clamp(18px,4vw,44px)] flex list-none snap-x snap-mandatory gap-5 overflow-x-auto px-[clamp(18px,4vw,44px)] pb-3 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:gap-[clamp(20px,3vw,40px)] md:overflow-visible md:px-0 md:pb-0 focus-visible:outline-2 focus-visible:outline-accent"
+        >
           {etapes.map((e, i) => (
             <li
               key={e.titre}
