@@ -6,7 +6,11 @@
       "acte": 1,
       "texte": "En ce moment, près de chez vous, un particulier cherche un artisan."
     },
-    { "id": "p02", "acte": 1, "texte": "Il a décrit son chantier, sa ville, son budget." },
+    {
+      "id": "p02",
+      "acte": 1,
+      "texte": "Il a décrit son chantier, sa ville, son budget."
+    },
     {
       "id": "p03",
       "acte": 1,
@@ -22,10 +26,26 @@
       "acte": 2,
       "texte": "Vous avez déjà payé pour un contact qui n'a jamais décroché ?"
     },
-    { "id": "p05b", "acte": 2, "texte": "Pris un abonnement qui n'a rien rapporté ?" },
-    { "id": "p05c", "acte": 2, "texte": "Reçu une demande à cent kilomètres de chez vous ?" },
-    { "id": "p06", "acte": 2, "texte": "Alors la suite va vous intéresser." },
-    { "id": "p07", "acte": 3, "texte": "Portail Travaux est parti d'un constat simple." },
+    {
+      "id": "p05b",
+      "acte": 2,
+      "texte": "Pris un abonnement qui n'a rien rapporté ?"
+    },
+    {
+      "id": "p05c",
+      "acte": 2,
+      "texte": "Reçu une demande à cent kilomètres de chez vous ?"
+    },
+    {
+      "id": "p06",
+      "acte": 2,
+      "texte": "Alors la suite va vous intéresser."
+    },
+    {
+      "id": "p07",
+      "acte": 3,
+      "texte": "Portail Travaux est parti d'un constat simple."
+    },
     {
       "id": "p08",
       "acte": 3,
@@ -34,7 +54,7 @@
     {
       "id": "p09",
       "acte": 3,
-      "texte": "Il n'a pas le temps de se faire connaître. Alors on lui vend de la visibilité : chaque contact, chaque abonnement. Et ses logiciels en plus."
+      "texte": "On lui vend la visibilité. On lui vend chaque contact. Et en plus de tout ça, il doit payer chaque outil."
     },
     {
       "id": "p10",
@@ -42,9 +62,14 @@
       "texte": "Résultat : ceux qu'on trouve en premier sont ceux qui paient le plus. Pas toujours ceux qui travaillent le mieux."
     },
     {
+      "id": "p10b",
+      "acte": 3,
+      "texte": "Et si tout ça était gratuit, et réuni dans une seule plateforme ?"
+    },
+    {
       "id": "p11",
       "acte": 3,
-      "texte": "Alors on a construit l'inverse : un portail où l'artisan est visible, équipé des meilleurs outils de gestion et de marketing. Le tout, gratuitement."
+      "texte": "C'est ce qu'on a construit : un portail où l'artisan est visible, équipé des meilleurs outils de gestion et de marketing. Le tout, gratuitement."
     },
     {
       "id": "p12",
@@ -54,7 +79,7 @@
     {
       "id": "p13",
       "acte": 4,
-      "texte": "Ici, vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, jusqu'à dix par mois."
+      "texte": "C'est peut-être vrai pour les autres. Mais chez Portail Travaux, vous créez votre fiche gratuitement. Les particuliers de votre secteur vous trouvent, et les demandes qui arrivent par votre fiche sont gratuites : en moyenne, jusqu'à dix par mois."
     },
     {
       "id": "p14",
@@ -94,20 +119,28 @@
     {
       "id": "p22a",
       "acte": 8,
-      "texte": "Les demandes de travaux de votre secteur : vous voyez le chantier avant d'appeler."
+      "texte": "Les demandes de chantier dans votre secteur géographique et technique : la ville et le type de chantier vous sont détaillés avant d'appeler."
     },
     {
       "id": "p22b",
       "acte": 8,
       "texte": "Votre fiche sur le portail : on vous trouve quand on cherche votre métier près de chez soi."
     },
-    { "id": "p22c", "acte": 8, "texte": "Votre site internet, à votre nom." },
+    {
+      "id": "p22c",
+      "acte": 8,
+      "texte": "Votre site internet, à votre nom."
+    },
     {
       "id": "p22d",
       "acte": 8,
       "texte": "Vos avis clients : vous en demandez un après chaque chantier."
     },
-    { "id": "p22e", "acte": 8, "texte": "Vos devis et factures, entièrement conformes." },
+    {
+      "id": "p22e",
+      "acte": 8,
+      "texte": "Vos devis et factures, entièrement conformes."
+    },
     {
       "id": "p22f",
       "acte": 8,

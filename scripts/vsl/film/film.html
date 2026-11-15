@@ -15,7 +15,7 @@
   .piece-euro { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 38px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(224, 90, 16, 0.35); }
   .distance { background: var(--nuit); color: #fff; font-weight: 800; font-size: 36px; padding: 6px 22px 8px; border-radius: 99px; box-shadow: 0 6px 16px rgba(23, 58, 85, 0.3); white-space: nowrap; }
   .oui { display: flex; align-items: center; background: #fff; border-radius: 99px; padding: 12px 34px 14px 20px; font-weight: 700; font-size: 50px; box-shadow: 0 8px 22px rgba(45, 43, 43, 0.14); white-space: nowrap; }
-  .outil.v { width: 430px; height: 104px; font-size: 30px; gap: 20px; padding: 0 24px; white-space: nowrap; }
+  .outil.v { width: 480px; height: 104px; font-size: 30px; gap: 20px; padding: 0 24px; white-space: nowrap; }
   .outil.v .ico { width: 60px; height: 60px; border-radius: 14px; }
   .outil.v .ico svg { width: 32px; height: 32px; }
   .apercu { width: 760px; height: 472px; border-radius: 22px; border: 2px dashed rgba(255, 255, 255, 0.22); }
@@ -156,12 +156,12 @@
   <div class="abs" style="left:960px;top:0;width:960px;height:1080px;background:#173a55" data-fn="reveil"></div>
 </section>
 
-<!-- PLAN 9 : on lui vend de la visibilité -->
+<!-- PLAN 9 : on lui vend tout -->
 <section class="nuit" data-scene="p09">
   <i data-decor="bureau:-420"></i>
-  <div class="piece" style="left:885px;top:566px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
-  <div class="piece" style="left:905px;top:476px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@abonnement" data-sfx="impact">Abonnements</div>
-  <div class="piece" style="left:925px;top:386px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@logiciels" data-sfx="impact">Logiciels</div>
+  <div class="piece" style="left:885px;top:566px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@visibilité" data-sfx="impact">Visibilité payante</div>
+  <div class="piece" style="left:905px;top:476px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
+  <div class="piece" style="left:925px;top:386px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@outil" data-sfx="impact">Outils payants</div>
 </section>
 
 <!-- PLAN 10 : on trouve d'abord ceux qui paient le plus -->
@@ -174,17 +174,24 @@
   <div class="gris etoile" style="left:460px;top:1010px;width:1000px;height:120px" data-in="haut" data-t="0.7" data-pulse="@travaillent,@mieux"><u>★</u><s style="width:440px"></s></div>
 </section>
 
+<!-- PLAN 10 bis : et si tout ça était gratuit ? -->
+<section class="creme" data-scene="p10b">
+  <div class="centre titre" style="top:230px;font-size:112px" data-mots="@et-0.1">Et si tout ça était</div>
+  <div class="centre" style="top:360px"><span class="ital" style="font-size:200px;line-height:1.1" data-in="masque" data-t="@gratuit-0.1" data-sfx="whoosh">gratuit</span></div>
+  <div class="centre gros" style="top:650px;font-size:84px" data-mots="@réuni-0.2">et réuni dans une seule plateforme ?</div>
+</section>
+
 <!-- PLAN 11 : l'inverse -->
-<section class="creme" data-scene="p11" data-sfx="relance" data-st="@inverse">
-  <div class="gris" style="left:100px;top:100px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€€</em></div>
-  <div class="gris" style="left:100px;top:220px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€€</em></div>
-  <div class="gris" style="left:100px;top:340px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€</em></div>
-  <div class="gris" style="left:100px;top:460px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€€</em></div>
-  <div class="gris" style="left:100px;top:580px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@inverse">€</em></div>
+<section class="creme" data-scene="p11" data-sfx="relance" data-st="@construit">
+  <div class="gris" style="left:100px;top:100px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@construit">€€€</em></div>
+  <div class="gris" style="left:100px;top:220px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@construit">€€€</em></div>
+  <div class="gris" style="left:100px;top:340px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@construit">€€</em></div>
+  <div class="gris" style="left:100px;top:460px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@construit">€€</em></div>
+  <div class="gris" style="left:100px;top:580px;width:620px;height:100px" data-fn="descend"><u></u><s style="width:220px"></s><em data-out="fondu" data-o="@construit">€</em></div>
   <div class="gris etoile" style="left:100px;top:100px;width:620px;height:100px" data-fn="grimpe"><u>★</u><s style="width:260px"></s></div>
-  <div class="piece" style="left:820px;top:110px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@inverse-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Contacts payants</div>
-  <div class="piece" style="left:1130px;top:110px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@inverse-0.25">Abonnements</div>
-  <div class="piece" style="left:1390px;top:110px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@inverse-0.15" data-sens="-1">Logiciels</div>
+  <div class="piece" style="left:820px;top:110px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@construit-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Visibilité payante</div>
+  <div class="piece" style="left:1160px;top:110px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@construit-0.25">Contacts payants</div>
+  <div class="piece" style="left:1480px;top:110px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@construit-0.15" data-sens="-1">Outils payants</div>
   <div class="ligne" style="left:820px;top:270px;font-size:88px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
   <div class="ligne" style="left:820px;top:410px;font-size:88px" data-in="haut" data-t="@équipé" data-sfx="tic"><span class="coche">✓</span>Équipé</div>
   <div class="txt" style="left:936px;top:522px;font-size:42px;color:var(--doux)" data-in="haut" data-t="@meilleurs">des meilleurs outils de gestion et de marketing</div>
@@ -276,43 +283,33 @@
   <div class="centre moyen" style="top:500px;padding:0 280px" data-mots="@réservé">SIREN et attestation décennale vérifiés pour chaque fiche</div>
 </section>
 
-<!-- ACTE 7 — PLAN 21 : les six outils à gauche, l'aperçu au centre, « Votre espace » à droite -->
+<!-- ACTE 7 — PLAN 21 : les six outils à gauche, le grand aperçu à droite -->
 <section class="nuit" data-scene="p21" data-sfx="montee" data-st="0.4">
-  <div class="outil v" style="left:100px;top:150px" data-in="pop" data-t="0.20"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de travaux</div>
+  <div class="outil v" style="left:100px;top:150px" data-in="pop" data-t="0.20"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de chantier</div>
   <div class="outil v" style="left:100px;top:268px" data-in="pop" data-t="0.33"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span>Fiche sur le portail</div>
   <div class="outil v" style="left:100px;top:386px" data-in="pop" data-t="0.46"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>Site internet</div>
   <div class="outil v" style="left:100px;top:504px" data-in="pop" data-t="0.59"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"/></svg></span>Avis clients</div>
   <div class="outil v" style="left:100px;top:622px" data-in="pop" data-t="0.72"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>Devis et factures</div>
   <div class="outil v" style="left:100px;top:740px" data-in="pop" data-t="0.85"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg></span>Suivi clients</div>
-  <div class="apercu" style="left:575px;top:262px" data-in="fondu" data-t="0.5"></div>
-  <div class="colonne" style="left:1350px;top:150px;width:490px;height:694px" data-in="fondu" data-t="0.6"><span class="sur">Votre espace</span></div>
+  <div class="apercu" style="left:670px;top:150px;width:1100px;height:663px" data-in="fondu" data-t="0.5"></div>
 </section>
 
-<!-- ACTE 8 — PLAN 22 : l'offre empilée -->
+<!-- ACTE 8 — PLAN 22 : l'offre empilée (la coche se pose sur la carte de l'outil, sans liste en double) -->
 <section class="nuit" data-scene="p22a p22b p22c p22d p22e p22f p22g">
-  <div class="outil v" style="left:100px;top:150px" data-fn="outil" data-seg="p22a" data-out="fondu" data-o="@p22g" data-sfx="n1" data-st="@p22a-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de travaux</div>
-  <div class="outil v" style="left:100px;top:268px" data-fn="outil" data-seg="p22b" data-out="fondu" data-o="@p22g" data-sfx="n2" data-st="@p22b-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span>Fiche sur le portail</div>
-  <div class="outil v" style="left:100px;top:386px" data-fn="outil" data-seg="p22c" data-out="fondu" data-o="@p22g" data-sfx="n3" data-st="@p22c-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>Site internet</div>
-  <div class="outil v" style="left:100px;top:504px" data-fn="outil" data-seg="p22d" data-out="fondu" data-o="@p22g" data-sfx="n4" data-st="@p22d-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"/></svg></span>Avis clients</div>
-  <div class="outil v" style="left:100px;top:622px" data-fn="outil" data-seg="p22e" data-out="fondu" data-o="@p22g" data-sfx="n5" data-st="@p22e-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>Devis et factures</div>
-  <div class="outil v" style="left:100px;top:740px" data-fn="outil" data-seg="p22f" data-out="fondu" data-o="@p22g" data-sfx="n6" data-st="@p22f-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg></span>Suivi clients</div>
-  <div class="apercu" style="left:575px;top:262px" data-out="fondu" data-o="@p22g"></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22a" data-in="pop" data-t="@p22a+0.3" data-out="pop" data-o="@p22a$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c3-bureau" data-de="0.6" data-ct="@p22a+0.3" /></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22b" data-in="pop" data-t="@p22b+0.3" data-out="pop" data-o="@p22b$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c8-bureau" data-de="0.3" data-ct="@p22b+0.3" /></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22c" data-in="pop" data-t="@p22c+0.3" data-out="pop" data-o="@p22c$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c6-bureau" data-de="0.2" data-vitesse="0.6" data-jusqua="1.9" data-ct="@p22c+0.3" /></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22d" data-in="pop" data-t="@p22d+0.3" data-out="pop" data-o="@p22d$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-avis-bureau" data-de="0.2" data-ct="@p22d+0.3" /></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22e" data-in="pop" data-t="@p22e+0.3" data-out="pop" data-o="@p22e$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c5-bureau" data-de="5.2" data-vitesse="1.6" data-ct="@p22e+0.3" /></div>
-  <div class="nav" style="left:575px;top:262px;width:760px" data-vis="p22f" data-in="pop" data-t="@p22f+0.3" data-out="pop" data-o="@p22f$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-suivi-bureau" data-de="0.8" data-ct="@p22f+0.3" /></div>
-  <div class="colonne" style="left:1350px;top:150px;width:490px;height:694px;transform-origin:50% 50%" data-fn="centre">
-    <span class="sur">Votre espace</span>
-    <div class="ligne abs" style="left:38px;top:104px;font-size:34px;height:auto" data-in="bas" data-t="@p22a$-0.9"><span class="coche">✓</span>Demandes de travaux</div>
-    <div class="ligne abs" style="left:38px;top:196px;font-size:34px;height:auto" data-in="bas" data-t="@p22b$-0.9"><span class="coche">✓</span>Fiche sur le portail</div>
-    <div class="ligne abs" style="left:38px;top:288px;font-size:34px;height:auto" data-in="bas" data-t="@p22c$-0.9"><span class="coche">✓</span>Site internet</div>
-    <div class="ligne abs" style="left:38px;top:380px;font-size:34px;height:auto" data-in="bas" data-t="@p22d$-0.9"><span class="coche">✓</span>Avis clients</div>
-    <div class="ligne abs" style="left:38px;top:472px;font-size:34px;height:auto" data-in="bas" data-t="@p22e$-0.9"><span class="coche">✓</span>Devis et factures</div>
-    <div class="ligne abs" style="left:38px;top:564px;font-size:34px;height:auto" data-in="bas" data-t="@p22f$-0.9"><span class="coche">✓</span>Suivi clients</div>
-  </div>
-  <div class="centre" style="top:752px"><span class="tampon" style="font-size:92px" data-r="-5" data-in="tampon" data-t="@gratuitement" data-sfx="impact">GRATUITEMENT</span></div>
+  <div class="outil v" style="left:100px;top:150px" data-fn="outil" data-seg="p22a" data-sfx="n1" data-st="@p22a-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de chantier<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22a$-0.9">✓</span></div>
+  <div class="outil v" style="left:100px;top:268px" data-fn="outil" data-seg="p22b" data-sfx="n2" data-st="@p22b-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span>Fiche sur le portail<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22b$-0.9">✓</span></div>
+  <div class="outil v" style="left:100px;top:386px" data-fn="outil" data-seg="p22c" data-sfx="n3" data-st="@p22c-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>Site internet<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22c$-0.9">✓</span></div>
+  <div class="outil v" style="left:100px;top:504px" data-fn="outil" data-seg="p22d" data-sfx="n4" data-st="@p22d-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"/></svg></span>Avis clients<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22d$-0.9">✓</span></div>
+  <div class="outil v" style="left:100px;top:622px" data-fn="outil" data-seg="p22e" data-sfx="n5" data-st="@p22e-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>Devis et factures<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22e$-0.9">✓</span></div>
+  <div class="outil v" style="left:100px;top:740px" data-fn="outil" data-seg="p22f" data-sfx="n6" data-st="@p22f-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg></span>Suivi clients<span class="coche" style="margin:0 0 0 auto;font-size:26px" data-in="pop" data-t="@p22f$-0.9">✓</span></div>
+  <div class="apercu" style="left:670px;top:150px;width:1100px;height:663px" data-out="fondu" data-o="@p22g"></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22a" data-in="pop" data-t="@p22a+0.3" data-out="pop" data-o="@p22a$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c3-bureau" data-de="0.6" data-ct="@p22a+0.3" /></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22b" data-in="pop" data-t="@p22b+0.3" data-out="pop" data-o="@p22b$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c8-bureau" data-de="0.3" data-ct="@p22b+0.3" /></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22c" data-in="pop" data-t="@p22c+0.3" data-out="pop" data-o="@p22c$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c6-bureau" data-de="0.2" data-vitesse="0.6" data-jusqua="1.9" data-ct="@p22c+0.3" /></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22d" data-in="pop" data-t="@p22d+0.3" data-out="pop" data-o="@p22d$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-avis-bureau" data-de="0.2" data-ct="@p22d+0.3" /></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22e" data-in="pop" data-t="@p22e+0.3" data-out="pop" data-o="@p22e$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c5-bureau" data-de="5.2" data-vitesse="1.6" data-ct="@p22e+0.3" /></div>
+  <div class="nav" style="left:670px;top:150px;width:1100px" data-vis="p22f" data-in="pop" data-t="@p22f+0.3" data-out="pop" data-o="@p22f$-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-suivi-bureau" data-de="0.8" data-ct="@p22f+0.3" /></div>
+  <div class="centre" style="top:738px"><span class="tampon" style="font-size:92px" data-r="-5" data-in="tampon" data-t="@gratuitement" data-sfx="impact">GRATUITEMENT</span></div>
 </section>
 
 <!-- ACTE 9 — PLAN 23 -->
@@ -325,7 +322,7 @@
 <section class="creme" data-scene="p24">
   <div style="left:170px;top:170px;width:760px;height:660px;transform-origin:0 50%" data-fn="grandit">
     <div class="sur abs" style="left:0;top:0;font-size:44px">Gratuit</div>
-    <div class="ligne abs" style="left:0;top:100px;font-size:52px" data-in="haut" data-t="0.2"><span class="coche">✓</span>Demandes de travaux</div>
+    <div class="ligne abs" style="left:0;top:100px;font-size:52px" data-in="haut" data-t="0.2"><span class="coche">✓</span>Demandes de chantier</div>
     <div class="ligne abs" style="left:0;top:192px;font-size:52px" data-in="haut" data-t="0.3"><span class="coche">✓</span>Fiche sur le portail</div>
     <div class="ligne abs" style="left:0;top:284px;font-size:52px" data-in="haut" data-t="0.4"><span class="coche">✓</span>Site internet</div>
     <div class="ligne abs" style="left:0;top:376px;font-size:52px" data-in="haut" data-t="0.5"><span class="coche">✓</span>Avis clients</div>

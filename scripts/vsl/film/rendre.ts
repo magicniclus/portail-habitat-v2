@@ -49,6 +49,7 @@ const APRES: Record<string, number> = {
   p15: 1.3,
   p17: 1.3,
   p06: 0.7,
+  p10b: 0.8,
   p13: 0.9,
   p14: 0.7,
   p22g: 1.0,

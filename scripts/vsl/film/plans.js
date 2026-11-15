@@ -84,8 +84,8 @@
   FN.derive = (_el, lt) => ({ x: lt * 16 });
   FN.vapeur = (_el, lt) => ({ y: -((lt * 12) % 10), o: 0.55 + 0.45 * Math.sin(lt * 3) });
   // Plan 11 : la ligne à l'étoile remonte en tête, les autres descendent d'un cran.
-  FN.descend = (_el, lt, sc) => ({ y: 120 * doux((lt - sc.rep('@inverse')) / 0.6) });
-  FN.grimpe = (_el, lt, sc) => ({ y: 600 * (1 - doux((lt - sc.rep('@inverse')) / 0.6)) });
+  FN.descend = (_el, lt, sc) => ({ y: 120 * doux((lt - sc.rep('@construit')) / 0.6) });
+  FN.grimpe = (_el, lt, sc) => ({ y: 600 * (1 - doux((lt - sc.rep('@construit')) / 0.6)) });
   // Plan 16 : le chronomètre file jusqu'à « deux minutes ».
   FN.arc = (el, lt, sc) => {
     el.style.strokeDashoffset = 654 * (1 - borne((lt - 0.3) / (sc.rep('@minutes') - 0.3)));
@@ -114,7 +114,13 @@
     const actif = k >= 0 && k < g.duree;
     el.style.background = `rgba(255,255,255,${actif ? 0.18 : k >= 0 ? 0.1 : 0.05})`;
     el.style.borderColor = actif ? '#ff9857' : `rgba(255,255,255,${k >= 0 ? 0.32 : 0.15})`;
-    return { s: k > 0 && k < 0.4 ? 1 + 0.08 * Math.sin((k / 0.4) * PI) : 1 };
+    // Conclusion : les six cartes, toutes cochées, viennent au centre sous le tampon.
+    const p = doux((lt - sc.rep('@p22g')) / 0.6);
+    return {
+      s: k > 0 && k < 0.4 ? 1 + 0.08 * Math.sin((k / 0.4) * PI) : 1,
+      x: 620 * p,
+      y: -120 * p,
+    };
   };
   FN.centre = (el, lt, sc) => {
     const p = doux((lt - sc.rep('@p22g')) / 0.6);
