@@ -1,7 +1,18 @@
 import { bouton, cn } from '@ph/ui';
 import type { OutilLanding } from '@ph/core/landings';
+import { CheckIcon } from '@phosphor-icons/react/ssr';
 import { conteneur } from './styles';
 import { TuilesOutils } from './TuilesOutils';
+
+/** Tous les outils, gratuits (même ordre que les tuiles). */
+const OUTILS_GRATUITS = [
+  'Demandes de travaux',
+  'Fiche sur le portail',
+  'Site internet à votre nom',
+  'Avis clients',
+  'Devis et factures',
+  'Suivi clients',
+];
 
 /**
  * Bloc final Portail Travaux (maquette : fond bleu nuit) : appel vers le formulaire et tous les
@@ -41,10 +52,24 @@ export function AppelFinal({
             {titre}
           </h2>
           <p className="m-0 max-w-[44ch] text-[clamp(17px,1.6vw,19px)] leading-[1.55] text-blanc/90">
-            Portail Travaux met en relation les particuliers et les artisans du bâtiment. En
-            rejoignant le réseau, vous recevez des demandes de travaux et vous avez tous les outils
-            pour en faire des chantiers : fiche sur le portail, site internet, avis, devis et
-            factures, suivi clients. Gratuitement. Touchez ▶ pour voir chaque outil en vidéo.
+            Les particuliers vous envoient leurs demandes sans que vous payiez rien. Et tous les
+            outils pour en faire des chantiers sont gratuits, eux aussi :
+          </p>
+          <ul className="m-0 grid list-none gap-x-6 gap-y-2 p-0 text-[16px] leading-6 font-semibold text-blanc sm:grid-cols-2">
+            {OUTILS_GRATUITS.map((o) => (
+              <li key={o} className="flex items-start gap-2.5">
+                <CheckIcon
+                  size={18}
+                  weight="bold"
+                  aria-hidden="true"
+                  className="mt-[3px] flex-none text-accent-300"
+                />
+                {o}
+              </li>
+            ))}
+          </ul>
+          <p className="m-0 text-[15px] text-blanc/75">
+            Touchez ▶ pour voir chaque outil en vidéo.
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-5 gap-y-3.5">
             <a

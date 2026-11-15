@@ -234,7 +234,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
         r: 'Pour que les particuliers ne croisent que des entreprises immatriculées et assurées. Ils vous font confiance plus vite.',
       },
     ],
-    ctaTitre: 'Voyez les demandes près de chez vous.',
+    ctaTitre: 'Des clients vous contactent gratuitement. Mais pas que.',
     barreMobile: 'Créer mon espace gratuit',
     eco: ECO,
   },
