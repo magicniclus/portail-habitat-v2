@@ -20,10 +20,12 @@ const OUTILS_GRATUITS = [
  */
 export function AppelFinal({
   titre,
+  texte,
   cta,
   outil,
 }: {
   titre: string;
+  texte: string;
   cta: string;
   outil: OutilLanding;
 }) {
@@ -52,8 +54,7 @@ export function AppelFinal({
             {titre}
           </h2>
           <p className="m-0 max-w-[44ch] text-[clamp(17px,1.6vw,19px)] leading-[1.55] text-blanc/90">
-            Les particuliers vous envoient leurs demandes sans que vous payiez rien. Et tous les
-            outils pour en faire des chantiers sont gratuits, eux aussi :
+            {texte}
           </p>
           <ul className="m-0 grid list-none gap-x-6 gap-y-2 p-0 text-[16px] leading-6 font-semibold text-blanc sm:grid-cols-2">
             {OUTILS_GRATUITS.map((o) => (

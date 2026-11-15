@@ -74,6 +74,14 @@ describe('landings par outil (LANDINGS §1)', () => {
     }
     expect(contenuLanding('site', { preuves: false }).faq).toHaveLength(11);
   });
+
+  it('bandeau et texte final : propres au site, demandes exclusives ailleurs', () => {
+    const site = contenuLanding('site', { preuves: false });
+    const chantiers = contenuLanding('chantiers', { preuves: false });
+    expect(chantiers.bandeau).toContain('exclusives');
+    expect(site.bandeau).toContain('site');
+    expect(site.appelTexte).not.toBe(chantiers.appelTexte);
+  });
 });
 
 describe('sous-titre en gras', () => {

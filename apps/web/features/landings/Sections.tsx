@@ -6,7 +6,7 @@ import { routes } from '@/lib/routes';
 import { bande, conteneur, titre2 } from './styles';
 
 /** En-tête des landings : bandeau, logo et « Espace pro » ; aucun bouton orange (LAND-02). */
-export function EnTeteLanding() {
+export function EnTeteLanding({ bandeau }: { bandeau: string }) {
   return (
     <>
       <p className="m-0 flex items-center justify-center gap-x-4 gap-y-1 border-b border-accent-300 bg-accent-100 px-5 py-[9px] text-center text-[13.5px] font-semibold text-accent-800">
@@ -14,7 +14,7 @@ export function EnTeteLanding() {
           <span aria-hidden="true" className="font-bold text-accent">
             ✓
           </span>
-          Jusqu’à 10 demandes gratuites et exclusives par mois
+          {bandeau}
         </span>
       </p>
       <header className="border-b border-trait bg-fond">

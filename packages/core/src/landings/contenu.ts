@@ -61,6 +61,10 @@ export interface ContenuLanding {
   etapes: { titre: string; texte: string; ecran?: string }[];
   faq: { q: string; r: string }[];
   ctaTitre: string;
+  /** Bandeau orange tout en haut de la page. */
+  bandeau: string;
+  /** Texte du bloc final, juste avant la liste des outils gratuits. */
+  appelTexte: string;
   barreMobile: string;
   eco: { titre: string; texte: string };
   avis: AvisLanding[];
@@ -110,6 +114,11 @@ const BADGES = ['Gratuit pour commencer', 'Sans abonnement', '0 % de commission'
  * Section « tout est gratuit » : les clients sont gratuits, les outils aussi ; chaque outil s'ouvre
  * sur sa vidéo de présentation.
  */
+/** Bandeau et texte final par défaut : les demandes reçues depuis la fiche (gratuites, exclusives). */
+const BANDEAU_DEMANDES = 'Jusqu’à 10 demandes gratuites et exclusives par mois';
+const TEXTE_DEMANDES =
+  'Les particuliers vous envoient leurs demandes sans que vous payiez rien. Et tous les outils pour en faire des chantiers sont gratuits, eux aussi :';
+
 const ECO = {
   titre: 'Les clients sont gratuits. Les outils aussi.',
   texte:
@@ -235,6 +244,8 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
     ],
     ctaTitre: 'Des clients vous contactent gratuitement. Mais pas que.',
+    bandeau: BANDEAU_DEMANDES,
+    appelTexte: TEXTE_DEMANDES,
     barreMobile: 'Créer mon espace gratuit',
     eco: ECO,
   },
@@ -388,6 +399,9 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
     ],
     ctaTitre: 'Vos concurrents ont un site. Vous aussi, dès aujourd’hui.',
+    bandeau: 'Votre site créé par l’IA et mis en ligne gratuitement',
+    appelTexte:
+      'L’IA écrit votre site, vous le modifiez en un clic et il est en ligne à votre nom, sans rien payer. Il est préparé pour Google, vos clients vous contactent depuis votre site, et tous les autres outils sont gratuits, eux aussi :',
     barreMobile: 'Créer mon site gratuitement',
     eco: ECO,
   },
@@ -509,6 +523,8 @@ const CONTENU: Record<OutilLanding, Brut> = {
       },
     ],
     ctaTitre: 'Votre premier devis, en quelques minutes.',
+    bandeau: BANDEAU_DEMANDES,
+    appelTexte: TEXTE_DEMANDES,
     barreMobile: 'Créer mon espace gratuit',
     eco: ECO,
   },

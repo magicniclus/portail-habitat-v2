@@ -45,7 +45,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
     <>
       <JsonLd donnees={faqPage(c.faq)} />
       <Traceur page={`landing-${outil}`} />
-      <EnTeteLanding />
+      <EnTeteLanding bandeau={c.bandeau} />
       <main style={styleSerifTitres}>
         <section
           className={cn(
@@ -129,7 +129,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
           </section>
         </Zone>
         <AvisDefilants avis={c.avis} />
-        <AppelFinal titre={c.ctaTitre} cta={c.barreMobile} outil={outil} />
+        <AppelFinal titre={c.ctaTitre} texte={c.appelTexte} cta={c.barreMobile} outil={outil} />
       </main>
       <PiedPublic {...piedPro} variantLogo="pro" clair />
       {/* Place de la barre mobile fixe : le bas du pied de page reste visible. */}
