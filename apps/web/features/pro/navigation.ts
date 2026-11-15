@@ -7,7 +7,7 @@ const ancre = (id: string) => `${routes.pro}#${id}` as Route;
 
 export const enTetePro: EnTetePublicProps = {
   bandeau:
-    'Des particuliers vous contactent gratuitement dans votre zone · Inscription gratuite · 0 % de commission',
+    'Jusqu’à 10 demandes gratuites et exclusives par mois · Inscription gratuite · 0 % de commission',
   accueil: routes.pro,
   variantLogo: 'pro',
   acquisition: true,

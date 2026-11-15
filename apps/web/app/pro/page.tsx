@@ -13,14 +13,15 @@ import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
 import { VslPro } from '@/features/pro/VslPro';
 import { ApplicationPro } from '@/features/pro/SectionApplication';
 import {
-  AppelFinalPro,
+  CalculPro,
   conteneurPro,
   EspaceArtisan,
   EtapesPro,
-  ExemplesDemandes,
   FaqPro,
   FichePro,
 } from '@/features/pro/Sections';
+import { FilDemandes } from '@/features/pro/FilDemandes';
+import { AppelFinal } from '@/features/landings/AppelFinal';
 import { EnTetePublic } from '@/features/vitrine/EnTetePublic';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     absolute: 'Artisans : recevez les demandes de travaux de votre secteur · Portail Travaux Pro',
   },
   description:
-    'Inscription gratuite, 0 % de commission : créez votre fiche, choisissez vos métiers et vos communes, et répondez aux demandes des particuliers près de chez vous.',
+    'Inscription gratuite, 0 % de commission : jusqu’à 10 demandes gratuites et exclusives par mois depuis votre fiche, et tous les outils pour gérer vos chantiers offerts.',
   alternates: { canonical: '/pro' },
 };
 
@@ -79,7 +80,7 @@ export default async function AcquisitionArtisans() {
           )}
         </section>
         <Zone id="exemples">
-          <ExemplesDemandes />
+          <FilDemandes />
         </Zone>
         <Zone id="etapes">
           <EtapesPro />
@@ -90,6 +91,9 @@ export default async function AcquisitionArtisans() {
         <Zone id="fiche">
           <FichePro />
         </Zone>
+        <Zone id="calcul">
+          <CalculPro />
+        </Zone>
         <Zone id="application">
           <ApplicationPro />
         </Zone>
@@ -98,7 +102,13 @@ export default async function AcquisitionArtisans() {
         </Zone>
         <AvisDefilants avis={avis} />
         <Zone id="appel-final">
-          <AppelFinalPro />
+          <AppelFinal
+            titre="Des clients vous contactent gratuitement. Mais pas que."
+            texte="Les particuliers vous envoient leurs demandes sans que vous payiez rien. Et tous les outils pour en faire des chantiers sont gratuits, eux aussi :"
+            cta="Créer mon compte gratuit"
+            outil="pro"
+            rassurance="Sans engagement · Sans carte bancaire"
+          />
         </Zone>
       </main>
       <Traceur page="acquisition-artisans" />

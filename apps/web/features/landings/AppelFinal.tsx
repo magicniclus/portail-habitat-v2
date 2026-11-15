@@ -23,11 +23,14 @@ export function AppelFinal({
   texte,
   cta,
   outil,
+  rassurance = 'Sans abonnement · Sans carte bancaire',
 }: {
   titre: string;
   texte: string;
   cta: string;
-  outil: OutilLanding;
+  outil: OutilLanding | 'pro';
+  /** Sous le bouton ; /pro ne parle jamais d'abonnement (PAY-01). */
+  rassurance?: string;
 }) {
   return (
     <section
@@ -80,7 +83,7 @@ export function AppelFinal({
             >
               {cta}
             </a>
-            <span className="text-sm text-blanc/80">Sans abonnement · Sans carte bancaire</span>
+            <span className="text-sm text-blanc/80">{rassurance}</span>
           </div>
         </div>
         <TuilesOutils outil={outil} />

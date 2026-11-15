@@ -16,6 +16,13 @@
     transform: translateY(14px);
   }
 }
+/* Demande qui arrive sur le téléphone de /pro : glisse depuis le haut en fondu. */
+@keyframes arrivee {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
 /* Barre « en cours » du Studio (durée inconnue) : un segment qui va et vient. */
 @keyframes va-et-vient {
   from {

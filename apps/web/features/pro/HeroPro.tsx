@@ -4,6 +4,7 @@ import { Etoiles } from '@/features/vitrine/Etoiles';
 
 const ARGUMENTS = [
   "0 € à l'inscription",
+  'Jusqu’à 10 demandes gratuites par mois',
   '0 % de commission',
   'Sans engagement',
   'Visible en 3 minutes',
@@ -27,14 +28,14 @@ export function AccrochePro({
     <div>
       {bandeau}
       <h1 className="m-0 mb-5 text-[clamp(34px,4.6vw,56px)] leading-[1.08] tracking-[-0.02em]">
-        Recevez les <span className="accent-editorial">demandes</span> de travaux de{' '}
-        <span className="accent-editorial">votre secteur</span>. Inscription{' '}
-        <span className="accent-editorial">gratuite</span>.
+        Des <span className="accent-editorial">clients</span> près de chez vous vous contactent.{' '}
+        <span className="accent-editorial">Gratuitement</span>.
       </h1>
       <p className="m-0 mb-6 max-w-[56ch] text-lg leading-[29px] text-texte">
-        Des particuliers déposent chaque jour leur projet près de chez vous. Créez votre fiche,
-        choisissez vos métiers et vos communes, et répondez aux demandes qui vous intéressent. Pas
-        de commission, pas d&apos;engagement.
+        Créez votre fiche en 3 minutes : les particuliers de votre secteur vous envoient leur
+        projet, jusqu&apos;à 10 demandes gratuites et exclusives par mois. Vous rappelez ceux qui
+        vous intéressent et vous signez. Pas de commission, pas d&apos;engagement, et tous les
+        outils pour gérer vos chantiers sont offerts.
       </p>
       <ul className="m-0 mb-6 flex list-none flex-wrap gap-x-3 gap-y-2.5 p-0">
         {ARGUMENTS.map((a) => (

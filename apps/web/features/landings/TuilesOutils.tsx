@@ -54,7 +54,7 @@ const outils = TUILES.map((t) => OUTILS_INCLUS.find((o) => o.id === t.id)!);
  * Tuiles des outils (bloc final des landings, fond nuit) : un bouton lecture en haut à droite de
  * chaque carte ouvre le film de l'outil dans une fenêtre (LAND-10), qui propose l'outil suivant.
  */
-export function TuilesOutils({ outil }: { outil: OutilLanding }) {
+export function TuilesOutils({ outil }: { outil: OutilLanding | 'pro' }) {
   const [ouvert, setOuvert] = useState<number | null>(null);
   const ouvrir = (i: number) => {
     setOuvert(i);

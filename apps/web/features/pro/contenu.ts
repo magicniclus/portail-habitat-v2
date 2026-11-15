@@ -3,6 +3,7 @@ import type { QuestionFaq } from '@/features/vitrine/seo';
 /** Exemples de demandes (illustration, budgets en centimes). */
 export const EXEMPLES_DEMANDES = [
   {
+    client: 'Claire M.',
     etiquette: 'Nouveau · il y a 2 h',
     vif: true,
     titre: 'Rénovation complète salle de bain',
@@ -11,6 +12,7 @@ export const EXEMPLES_DEMANDES = [
     delai: 'Démarrage sous 1 mois',
   },
   {
+    client: 'Thomas L.',
     etiquette: 'Il y a 6 h',
     vif: false,
     titre: 'Isolation des combles perdus',
@@ -19,6 +21,7 @@ export const EXEMPLES_DEMANDES = [
     delai: 'Sous 2 mois',
   },
   {
+    client: 'Nadia B.',
     etiquette: 'Urgent',
     vif: true,
     titre: 'Réfection de toiture après fuite',
@@ -27,6 +30,7 @@ export const EXEMPLES_DEMANDES = [
     delai: 'Dès que possible',
   },
   {
+    client: 'Marc D.',
     etiquette: 'Hier',
     vif: false,
     titre: "Pose d'une cuisine complète",
@@ -46,7 +50,7 @@ export const ETAPES_PRO = [
   {
     titre: 'Vous recevez les demandes',
     texte:
-      'Les particuliers vous contactent depuis votre fiche, et les projets de votre zone arrivent dans votre espace.',
+      'Jusqu’à 10 demandes gratuites et exclusives par mois depuis votre fiche, plus les appels d’offres de votre zone.',
     delai: 'Dès le premier jour',
   },
   {

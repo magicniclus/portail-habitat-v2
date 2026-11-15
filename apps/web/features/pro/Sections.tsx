@@ -1,49 +1,11 @@
 import { formatEuros, formatFourchette } from '@ph/core/format';
 import { bouton } from '@ph/ui';
 import { ListeFaq } from '@/features/vitrine/Section';
-import { Visuel } from '@/features/vitrine/Visuel';
-import { ATOUTS_ESPACE, ETAPES_PRO, EXEMPLES_DEMANDES, FAQ_PRO } from './contenu';
+import { ATOUTS_ESPACE, ETAPES_PRO, FAQ_PRO } from './contenu';
 
 export const conteneurPro = 'mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,44px)]';
 const titre2 = 'm-0 mb-3 text-[clamp(28px,3.4vw,38px)] leading-[1.12]';
 const bande = 'py-[clamp(48px,6vw,80px)]';
-
-export function ExemplesDemandes() {
-  return (
-    <section id="demandes" className={`bg-neutre-100 ${bande}`}>
-      <div className={conteneurPro}>
-        <h2 className={titre2}>Voilà le type de demandes que vous recevrez</h2>
-        <p className="m-0 mb-7 max-w-[60ch] text-[17px] leading-[27px] text-neutre-800">
-          Chaque demande indique le chantier, la ville, le budget annoncé et le délai. Vous répondez
-          à celles qui vous vont, vous ignorez les autres.
-        </p>
-        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))] gap-[18px] p-0">
-          {EXEMPLES_DEMANDES.map((d) => (
-            <li key={d.titre} className="overflow-hidden rounded-card bg-blanc shadow-sm">
-              <div className="aspect-[4/3]">
-                <Visuel />
-              </div>
-              <div className="flex flex-col gap-2 px-[18px] pt-4 pb-[18px]">
-                <span
-                  className={`self-start rounded-pill px-2.5 py-1 text-xs font-semibold ${d.vif ? 'bg-accent-100 text-accent-800' : 'bg-neutre-200 text-neutre-800'}`}
-                >
-                  {d.etiquette}
-                </span>
-                <h3 className="m-0 text-[19px]">{d.titre}</h3>
-                <p className="m-0 text-sm leading-[22px] text-neutre-800">
-                  {d.ville} · Budget {formatFourchette(d.budget[0], d.budget[1])} · {d.delai}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <p className="m-0 mt-4 text-sm text-neutre-800">
-          Exemples de demandes, à titre d&apos;illustration.
-        </p>
-      </div>
-    </section>
-  );
-}
 
 export function EtapesPro() {
   return (
@@ -198,8 +160,27 @@ export function FichePro() {
     <section
       className={`${conteneurPro} grid items-center gap-x-[clamp(28px,4vw,60px)] gap-y-8 pb-[clamp(48px,6vw,80px)] min-[900px]:grid-cols-2`}
     >
-      <figure className="m-0 aspect-[4/3] overflow-hidden rounded-[16px]">
-        <Visuel />
+      <figure className="m-0 overflow-hidden rounded-[16px] border border-trait bg-blanc shadow-lg">
+        <div className="flex items-center gap-3 border-b border-trait bg-neutre-100/60 px-3.5 py-2">
+          <span aria-hidden="true" className="flex flex-none gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="size-2.5 rounded-full bg-neutre-200" />
+            ))}
+          </span>
+          <span className="min-w-0 flex-1 truncate rounded-[8px] bg-blanc px-3 py-1 text-[13px] text-neutre-700">
+            portailtravaux.fr/artisans/bertrand-renovation
+          </span>
+        </div>
+        <picture>
+          <source srcSet="/landing/captures/histoire-client-desktop.avif" type="image/avif" />
+          <img
+            src="/landing/captures/histoire-client-desktop.webp"
+            alt="Fiche d’un artisan sur Portail Travaux, avec le formulaire de demande du client"
+            loading="lazy"
+            decoding="async"
+            className="block aspect-[16/10] w-full object-cover object-top"
+          />
+        </picture>
       </figure>
       <div>
         <h2 className="m-0 mb-3.5 text-[clamp(26px,3vw,34px)] leading-[1.14]">
@@ -207,8 +188,9 @@ export function FichePro() {
         </h2>
         <p className="m-0 mb-6 text-base leading-[27px] text-neutre-800">
           Photos de vos réalisations, description de votre savoir-faire, zone d&apos;intervention,
-          garanties et avis clients. Un particulier qui a vu votre travail appelle avec un projet
-          sérieux.
+          garanties et avis clients. Un particulier qui a vu votre travail vous écrit avec un projet
+          sérieux, depuis votre fiche : cette demande est pour vous seul, et elle ne vous coûte
+          rien.
         </p>
         <a href="#inscription" className={bouton({ className: 'text-base' })}>
           Créer ma fiche gratuitement
@@ -232,46 +214,53 @@ export function FaqPro() {
   );
 }
 
-export function AppelFinalPro() {
+const CALCUL = [
+  {
+    titre: 'Ce que ça vous coûte',
+    valeur: formatEuros(0),
+    texte: 'Pas de carte bancaire à l’inscription, et pas de commission sur vos chantiers.',
+  },
+  {
+    titre: 'Ce que vous risquez',
+    valeur: 'Rien',
+    texte: 'Sans engagement : vous mettez votre fiche en pause ou vous partez quand vous voulez.',
+  },
+  {
+    titre: 'Ce que vous pouvez y gagner',
+    valeur: 'Des chantiers',
+    texte:
+      'Des particuliers de votre secteur, qui vous écrivent avec leur projet, leur budget et leur délai.',
+  },
+] as const;
+
+/** « Le calcul est vite fait » : coût nul, risque nul, gain possible. Aucun chiffre inventé. */
+export function CalculPro() {
   return (
-    <section
-      aria-labelledby="appel-final-pro"
-      className={`relative overflow-hidden bg-surface ${bande}`}
-    >
-      {/* Maison décorative de la maquette (opacité 13 %). */}
-      <svg
-        viewBox="0 0 600 420"
-        aria-hidden="true"
-        preserveAspectRatio="xMidYMid meet"
-        className="pointer-events-none absolute right-[clamp(-20px,2vw,40px)] bottom-0 w-[min(42%,460px)] opacity-[0.13]"
-      >
-        <path d="M430 60h48v86l-48-38z" fill="var(--accent)" />
-        <path d="M30 230 300 30l270 200v190H30z" fill="var(--accent)" />
-        <path d="M300 30 570 230v190H300z" fill="var(--color-texte)" opacity="0.3" />
-      </svg>
-      <div className={`relative ${conteneurPro}`}>
-        <div className="max-w-[640px]">
-          <h2 id="appel-final-pro" className="m-0 mb-3.5 text-[clamp(30px,4vw,46px)] leading-[1.1]">
-            Votre prochain client cherche un artisan aujourd&apos;hui.
-          </h2>
-          <p className="m-0 mb-6 max-w-[52ch] text-[17px] leading-[27px] text-neutre-800">
-            3 minutes pour créer votre fiche. {formatEuros(0)}, sans engagement, et votre fiche en
-            ligne dès la première connexion.
-          </p>
-          <div className="flex flex-wrap items-center gap-3.5">
-            <a
-              href="#inscription"
-              className={bouton({ taille: 'lg', className: 'min-h-[50px] px-[26px]' })}
+    <section className={bande}>
+      <div className={conteneurPro}>
+        <h2 className={`${titre2} text-center`}>Le calcul est vite fait</h2>
+        <p className="m-0 mx-auto mb-8 max-w-[52ch] text-center text-[17px] leading-[27px] text-neutre-800">
+          Vous ne payez rien pour recevoir des clients. Ne pas s’inscrire, c’est laisser ces
+          demandes à un autre artisan de votre secteur.
+        </p>
+        <ul className="m-0 grid list-none gap-[18px] p-0 md:grid-cols-3">
+          {CALCUL.map((c, i) => (
+            <li
+              key={c.titre}
+              className={`grid content-start gap-2 rounded-card border p-6 ${i === 2 ? 'border-accent bg-accent-100' : 'border-trait bg-blanc'}`}
             >
-              Créer mon compte gratuit
-            </a>
-            <a
-              href="#espace"
-              className={bouton({ variant: 'fantome', taille: 'lg', className: 'min-h-[50px]' })}
-            >
-              Voir votre futur espace
-            </a>
-          </div>
+              <span className="text-[14px] font-semibold text-neutre-700">{c.titre}</span>
+              <b className="text-[clamp(30px,3.4vw,40px)] leading-none text-accent-700">
+                {c.valeur}
+              </b>
+              <span className="text-[15.5px] leading-[24px] text-neutre-800">{c.texte}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 flex justify-center">
+          <a href="#inscription" className={bouton({ taille: 'lg', className: 'min-h-[50px]' })}>
+            Créer ma fiche gratuitement
+          </a>
         </div>
       </div>
     </section>
