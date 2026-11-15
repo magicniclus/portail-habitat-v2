@@ -24,6 +24,17 @@
   .centre > span.logo { display: inline-flex; vertical-align: middle; }
   .logo svg { flex: none; }
   .logo b { margin-left: -6px; }
+  .badge.budget { font-size: 34px; padding: 10px 24px 12px; display: flex; flex-direction: column; align-items: center; line-height: 1.05; border-radius: 22px; }
+  .badge.budget small { font-size: 17px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+  .ticket { background: #fff; color: var(--texte); border-radius: 30px; padding: 46px 54px 40px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3); }
+  .rang-prix, .total { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 50px; padding: 26px 0; border-bottom: 3px dashed #d7d3d3; }
+  .rang-prix b { color: var(--bouton); font-weight: 800; }
+  .total { border-bottom: 0; font-size: 46px; padding-top: 34px; }
+  .total b { font-size: 92px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .total i { font-style: normal; display: inline-block; }
+  .note { font-size: 26px; color: var(--doux); margin-top: 10px; }
+  .gratuit { border-radius: 30px; border: 3px solid var(--clair); background: rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .plus { margin-top: 36px; background: var(--vert); color: #fff; font-weight: 800; font-size: 46px; padding: 12px 40px 16px; border-radius: 99px; }
   .gris em { margin-left: auto; font-style: normal; font-weight: 800; font-size: 32px; letter-spacing: 0.06em; color: #fff; background: var(--accent); border-radius: 99px; padding: 6px 22px; }
   .centre > span { display: inline-block; }
   .gris { background: #fff; border-radius: 22px; box-shadow: 0 6px 18px rgba(45, 43, 43, 0.1); display: flex; align-items: center; gap: 26px; padding: 0 30px; }
@@ -48,7 +59,7 @@
   <div class="carte" style="left:510px;top:450px" data-in="droite" data-t="0.55" data-flotte data-sfx="ding">
     <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
     <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
-    <span class="badge" data-in="pop" data-t="0.7">0 €</span>
+    <span class="badge budget" data-in="pop" data-t="0.7"><small>Budget</small>6 000 €</span>
   </div>
 </section>
 
@@ -57,11 +68,11 @@
   <div class="carte" style="left:510px;top:450px" data-fn="monte">
     <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
     <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
-    <span class="badge">0 €</span>
+    <span class="badge budget"><small>Budget</small>6 000 €</span>
   </div>
   <div class="rang" style="left:510px;top:520px" data-in="haut" data-t="@chantier-0.25" data-sfx="tic" data-st="@chantier"><i data-in="balaye" data-t="@chantier"></i><span class="sur">Chantier</span><b>Salle de bain complète</b></div>
   <div class="rang" style="left:510px;top:620px" data-in="haut" data-t="@ville-0.25" data-sfx="tic" data-st="@ville"><i data-in="balaye" data-t="@ville"></i><span class="sur">Ville</span><b>Mérignac (33700)</b></div>
-  <div class="rang" style="left:510px;top:720px" data-in="haut" data-t="@budget-0.25" data-sfx="tic" data-st="@budget"><i data-in="balaye" data-t="@budget"></i><span class="sur">Budget</span><b>6 000 – 8 000 €</b></div>
+  <div class="rang" style="left:510px;top:720px" data-in="haut" data-t="@budget-0.25" data-sfx="tic" data-st="@budget"><i data-in="balaye" data-t="@budget"></i><span class="sur">Budget</span><b>6 000 €</b></div>
 </section>
 
 <!-- PLAN 3 -->
@@ -70,7 +81,7 @@
     <div class="carte">
       <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
       <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
-      <span class="badge">0 €</span>
+      <span class="badge budget"><small>Budget</small>6 000 €</span>
     </div>
   </div>
   <svg style="left:740px;top:440px" width="640" height="20" data-in="balaye" data-t="0.3" data-d="1.3"><line x1="6" y1="10" x2="640" y2="10" stroke="#e05a10" stroke-width="9" stroke-dasharray="1 26" stroke-linecap="round"/></svg>
@@ -104,13 +115,13 @@
     <div class="piece-euro abs" style="left:326px;top:268px" data-fn="pieceTombe" data-n="2">€</div>
   </div>
 
-  <div class="gros" style="left:150px;top:290px;width:1000px" data-vis="p05c" data-mots="@p05c">Reçu une demande à cent kilomètres de chez vous ?</div>
+  <div class="gros" style="left:150px;top:290px;width:1000px" data-vis="p05c" data-mots="@p05c">Reçu une demande à 200 km de chez vous ?</div>
   <div class="dessin carte-plan" style="left:1260px;top:250px" data-vis="p05c">
     <svg class="abs" style="left:0;top:0" width="540" height="440" viewBox="0 0 540 440" fill="none" stroke-linecap="round"><path d="M-20 300C80 260 170 290 260 230S430 120 560 96M70 -20c30 130 90 190 190 250s130 150 150 230" stroke="#fff" stroke-width="12"/><path d="M-10 40c50 60 50 170 16 250S16 400 50 460" stroke="#b9d3e6" stroke-width="40"/></svg>
     <svg class="abs" style="left:0;top:0" width="540" height="440" viewBox="0 0 540 440" fill="none" stroke-linecap="round" data-in="balaye" data-t="@p05c+0.2" data-d="1.3"><path d="M132 322C230 318 240 210 322 196S410 176 432 152" stroke="#173a55" stroke-width="9" stroke-dasharray="1 22"/></svg>
     <svg class="abs" style="left:46px;top:290px" width="92" height="92" viewBox="0 0 92 92" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="46" cy="46" r="42" fill="#fff" stroke="#173a55" stroke-width="7"/><path d="M26 48 46 30l20 18" stroke="#e05a10" stroke-width="7"/><path d="M32 50v16h28V50" stroke="#173a55" stroke-width="7"/></svg>
-    <svg class="abs" style="left:392px;top:46px;transform-origin:50% 100%" width="80" height="106" viewBox="0 0 60 80" fill="#fff" stroke="#e05a10" stroke-width="7" stroke-linejoin="round" data-in="pop" data-t="@cent+0.25"><path d="M30 74S6 48 6 28a24 24 0 0 1 48 0c0 20-24 46-24 46z"/><circle cx="30" cy="28" r="8"/></svg>
-    <div class="distance abs" style="left:196px;top:232px" data-in="pop" data-t="@cent">100 km</div>
+    <svg class="abs" style="left:392px;top:46px;transform-origin:50% 100%" width="80" height="106" viewBox="0 0 60 80" fill="#fff" stroke="#e05a10" stroke-width="7" stroke-linejoin="round" data-in="pop" data-t="@deux+0.35"><path d="M30 74S6 48 6 28a24 24 0 0 1 48 0c0 20-24 46-24 46z"/><circle cx="30" cy="28" r="8"/></svg>
+    <div class="distance abs" style="left:196px;top:232px" data-in="pop" data-t="@deux">200 km</div>
   </div>
 
   <div class="oui" style="left:150px;top:780px" data-in="pop" data-t="@p05a$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
@@ -156,12 +167,22 @@
   <div class="abs" style="left:960px;top:0;width:960px;height:1080px;background:#173a55" data-fn="reveil"></div>
 </section>
 
-<!-- PLAN 9 : on lui vend tout -->
+<!-- PLAN 9 : ce qu'on lui vend, le coût moyen estimé, puis Portail Travaux à 0 € -->
 <section class="nuit" data-scene="p09">
-  <i data-decor="bureau:-420"></i>
-  <div class="piece" style="left:885px;top:566px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@visibilité" data-sfx="impact">Visibilité payante</div>
-  <div class="piece" style="left:905px;top:476px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
-  <div class="piece" style="left:925px;top:386px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@outil" data-sfx="impact">Outils payants</div>
+  <div class="ticket" style="left:150px;top:150px;width:780px">
+    <span class="sur" style="color:var(--bouton);font-size:28px">Ailleurs, chaque mois</span>
+    <div class="rang-prix" data-in="haut" data-t="@visibilité" data-sfx="impact"><span>Visibilité</span><b>≈ 150 €</b></div>
+    <div class="rang-prix" data-in="haut" data-t="@contact" data-sfx="impact"><span>10 contacts</span><b>≈ 300 €</b></div>
+    <div class="rang-prix" data-in="haut" data-t="@outil" data-sfx="impact"><span>Outils</span><b>≈ 30 €</b></div>
+    <div class="total" data-in="haut" data-t="@moyenne-0.2" data-sfx="tic"><span>En moyenne</span><b>≈ <i data-compte="0,480" data-t="@moyenne-0.2">0</i> €</b></div>
+    <p class="note">Estimation à partir de tarifs publics relevés en novembre 2026.</p>
+  </div>
+  <div class="gratuit" style="left:1010px;top:150px;width:760px;height:660px" data-in="droite" data-t="@portail-0.3" data-sfx="ding" data-st="@zéro">
+    <span class="logo" style="font-size:30px;color:#fff"><svg width="54" height="54" viewBox="0 0 40 40" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5 20 7l15 12.5" stroke="#ff9857"/><path d="M9 21.5V33h22V21.5" stroke="#fff"/><rect x="17" y="25" width="6" height="8" rx="1" fill="#ff9857"/></svg>PORTAIL TRAVAUX<b>PRO</b></span>
+    <div class="chiffre" style="font-size:280px;margin-top:40px" data-in="pop" data-t="@zéro">0 €</div>
+    <div class="moyen" style="font-size:44px;opacity:.85">par mois</div>
+    <div class="plus" data-in="pop" data-t="@performance-0.2" data-sfx="tic">+ de performance</div>
+  </div>
 </section>
 
 <!-- PLAN 10 : on trouve d'abord ceux qui paient le plus -->

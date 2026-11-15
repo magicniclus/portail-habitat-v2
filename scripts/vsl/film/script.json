@@ -1,5 +1,5 @@
 {
-  "note": "Voix off de la VSL longue, découpage validé le 15/11/2026. Un segment = un fichier de voix. Plan 16 : variante « cinq champs » (pas de remplissage automatique par SIRET dans le parcours). Plan 18 non tourné (les 3 artisans maximum ne valent que pour les appels d'offres).",
+  "note": "Voix off de la VSL longue, découpage validé le 15/11/2026. Un segment = un fichier de voix. Plan 16 : variante « cinq champs » (pas de remplissage automatique par SIRET dans le parcours). Plan 18 non tourné (les 3 artisans maximum ne valent que pour les appels d'offres). Plan 9 : coût moyen estimé (≈ 480 € par mois) à partir de tarifs publics relevés en novembre 2026 : visibilité 110 à 249 € HT par mois, contact partagé 15 à 50 €, logiciel de devis 15 à 37 € HT par mois ; hypothèse de 10 contacts par mois.",
   "segments": [
     {
       "id": "p01",
@@ -34,7 +34,7 @@
     {
       "id": "p05c",
       "acte": 2,
-      "texte": "Reçu une demande à cent kilomètres de chez vous ?"
+      "texte": "Reçu une demande à deux cents kilomètres de chez vous ?"
     },
     {
       "id": "p06",
@@ -54,7 +54,7 @@
     {
       "id": "p09",
       "acte": 3,
-      "texte": "On lui vend la visibilité. On lui vend chaque contact. Et en plus de tout ça, il doit payer chaque outil."
+      "texte": "On lui vend la visibilité. On lui vend chaque contact. Et en plus de tout ça, il doit payer chaque outil. En moyenne, près de cinq cents euros par mois. Sur Portail Travaux : zéro euro, pour plus de performance."
     },
     {
       "id": "p10",
