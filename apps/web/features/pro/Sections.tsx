@@ -1,4 +1,3 @@
-import { bouton } from '@ph/ui';
 import { CaptureEcran } from '@/features/landings/CaptureEcran';
 import { ListeFaq } from '@/features/vitrine/Section';
 import { ATOUTS_ESPACE, FAQ_PRO } from './contenu';
@@ -93,51 +92,6 @@ export function EspaceArtisan() {
             </li>
           ))}
         </ul>
-      </div>
-    </section>
-  );
-}
-
-export function FichePro() {
-  return (
-    <section
-      className={`${conteneurPro} grid items-center gap-x-[clamp(28px,4vw,60px)] gap-y-8 pb-[clamp(48px,6vw,80px)] min-[900px]:grid-cols-2`}
-    >
-      <figure className="m-0 overflow-hidden rounded-[16px] border border-trait bg-blanc shadow-lg">
-        <div className="flex items-center gap-3 border-b border-trait bg-neutre-100/60 px-3.5 py-2">
-          <span aria-hidden="true" className="flex flex-none gap-1.5">
-            {[0, 1, 2].map((i) => (
-              <span key={i} className="size-2.5 rounded-full bg-neutre-200" />
-            ))}
-          </span>
-          <span className="min-w-0 flex-1 truncate rounded-[8px] bg-blanc px-3 py-1 text-[13px] text-neutre-700">
-            portailtravaux.fr/artisans/bertrand-renovation
-          </span>
-        </div>
-        <picture>
-          <source srcSet="/landing/captures/histoire-client-desktop.avif" type="image/avif" />
-          <img
-            src="/landing/captures/histoire-client-desktop.webp"
-            alt="Fiche d’un artisan sur Portail Travaux, avec le formulaire de demande du client"
-            loading="lazy"
-            decoding="async"
-            className="block aspect-[16/10] w-full object-cover object-top"
-          />
-        </picture>
-      </figure>
-      <div>
-        <h2 className="m-0 mb-3.5 text-[clamp(26px,3vw,34px)] leading-[1.14]">
-          Votre fiche travaille pendant que vous êtes sur le chantier
-        </h2>
-        <p className="m-0 mb-6 text-base leading-[27px] text-neutre-800">
-          Photos de vos réalisations, description de votre savoir-faire, zone d&apos;intervention,
-          garanties et avis clients. Un particulier qui a vu votre travail vous écrit avec un projet
-          sérieux, depuis votre fiche : cette demande est pour vous seul, et elle ne vous coûte
-          rien.
-        </p>
-        <a href="#inscription" className={bouton({ className: 'text-base' })}>
-          Créer ma fiche gratuitement
-        </a>
       </div>
     </section>
   );
