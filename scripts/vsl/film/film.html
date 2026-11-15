@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>VSL Portail Travaux Pro</title>
+<link rel="stylesheet" href="film.css" />
+<style>
+  .rang { width: 900px; display: flex; align-items: baseline; gap: 28px; padding: 16px 30px; border-radius: 16px; background: rgba(255, 255, 255, 0.09); font-size: 42px; font-weight: 700; }
+  .rang .sur { width: 190px; font-size: 24px; }
+  .rang i { position: absolute; inset: 0; border-radius: 16px; background: var(--accent); z-index: -1; }
+  .centre > span { display: inline-block; }
+  .gris { background: #fff; border-radius: 22px; box-shadow: 0 6px 18px rgba(45, 43, 43, 0.1); display: flex; align-items: center; gap: 26px; padding: 0 30px; }
+  .gris u { flex: none; width: 62px; height: 62px; border-radius: 50%; background: #d7d3d3; }
+  .gris s { height: 20px; border-radius: 10px; background: #d7d3d3; }
+  .gris.etoile { border: 4px solid var(--accent); }
+  .gris.etoile u { background: var(--accent); color: #fff; font-size: 38px; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+  .gris.etoile s { background: #ffc19c; }
+  .picto { stroke-width: 9; }
+  .pin { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: 5px solid #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
+  .opt { font-weight: 700; font-size: 40px; white-space: nowrap; display: flex; align-items: center; }
+  .opt::before { content: '+'; display: inline-flex; width: 1.25em; height: 1.25em; margin-right: 0.45em; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid #9b9797; color: #7d7979; font-size: 0.8em; }
+</style>
+</head>
+<body>
+<div id="scene">
+
+<!-- ACTE 1 — PLAN 1 -->
+<section class="nuit" data-scene="p01">
+  <div class="abs" style="left:960px;top:540px;width:0;height:0" data-fn="anneau" data-n="0"></div>
+  <div class="abs" style="left:960px;top:540px;width:0;height:0" data-fn="anneau" data-n="1"></div>
+  <div class="carte" style="left:510px;top:450px" data-in="droite" data-t="0.55" data-flotte data-sfx="ding">
+    <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
+    <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
+    <span class="badge" data-in="pop" data-t="0.7">0 €</span>
+  </div>
+</section>
+
+<!-- PLAN 2 -->
+<section class="nuit" data-scene="p02">
+  <div class="carte" style="left:510px;top:450px" data-fn="monte">
+    <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
+    <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
+    <span class="badge">0 €</span>
+  </div>
+  <div class="rang" style="left:510px;top:520px" data-in="haut" data-t="@chantier-0.25" data-sfx="tic" data-st="@chantier"><span class="sur">Chantier</span>Salle de bain complète<i data-in="balaye" data-t="@chantier"></i></div>
+  <div class="rang" style="left:510px;top:620px" data-in="haut" data-t="@ville-0.25" data-sfx="tic" data-st="@ville"><span class="sur">Ville</span>Mérignac (33700)<i data-in="balaye" data-t="@ville"></i></div>
+  <div class="rang" style="left:510px;top:720px" data-in="haut" data-t="@budget-0.25" data-sfx="tic" data-st="@budget"><span class="sur">Budget</span>6 000 – 8 000 €<i data-in="balaye" data-t="@budget"></i></div>
+</section>
+
+<!-- PLAN 3 -->
+<section class="nuit" data-scene="p03">
+  <div style="left:150px;top:400px;transform:scale(.62);transform-origin:0 0">
+    <div class="carte">
+      <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
+      <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700) · il y a 2 min</div></span>
+      <span class="badge">0 €</span>
+    </div>
+  </div>
+  <svg style="left:740px;top:440px" width="640" height="20" data-in="balaye" data-t="0.3" data-d="1.3"><line x1="6" y1="10" x2="640" y2="10" stroke="#e05a10" stroke-width="9" stroke-dasharray="1 26" stroke-linecap="round"/></svg>
+  <div class="titre" style="left:1400px;top:370px;color:var(--clair)" data-in="pop" data-t="@chez-0.1" data-sfx="tic">?</div>
+  <svg class="picto" style="left:1560px;top:320px" width="150" height="260" viewBox="0 0 150 260" stroke="#fff"><rect x="10" y="10" width="130" height="240" rx="24"/><path d="M58 30h34" stroke="#ff9857"/><circle cx="75" cy="222" r="7" stroke="#ff9857"/></svg>
+  <div class="centre gros" style="top:700px" data-mots="@chez">Chez vous ?</div>
+</section>
+
+<!-- PLAN 4 -->
+<section class="creme" data-scene="p04">
+  <div class="centre" style="top:120px" data-in="fondu" data-t="0.1"><span class="logo"><svg width="64" height="64" viewBox="0 0 40 40" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5 20 7l15 12.5" stroke="#e05a10"/><path d="M9 21.5V33h22V21.5" stroke="#201e1d"/><rect x="17" y="25" width="6" height="8" rx="1" fill="#e05a10"/></svg>PORTAIL TRAVAUX<b>PRO</b></span></div>
+  <div class="centre titre" style="top:300px" data-mots="@trouver-0.2" data-sfx="whoosh" data-st="@simple">Trouvez des chantiers</div>
+  <div class="centre" style="top:440px"><span class="ital" style="font-size:170px;line-height:1.1" data-in="masque" data-t="@simple">gratuitement</span></div>
+  <svg style="left:610px;top:770px" width="560" height="20" data-in="balaye" data-t="@gratuit-0.9" data-d="0.9"><line x1="6" y1="10" x2="560" y2="10" stroke="#e05a10" stroke-width="9" stroke-dasharray="1 26" stroke-linecap="round"/></svg>
+  <svg class="picto" style="left:1200px;top:690px" width="100" height="174" viewBox="0 0 150 260" stroke="#173a55" stroke-width="12" data-fn="vibre" data-t="@gratuit" data-sfx="ding"><rect x="10" y="10" width="130" height="240" rx="24"/><path d="M58 30h34" stroke="#e05a10"/><circle cx="75" cy="222" r="7" stroke="#e05a10"/></svg>
+</section>
+
+<!-- ACTE 2 — PLAN 5 : trois questions -->
+<section class="creme" data-scene="p05a p05b p05c">
+  <div class="gros" style="left:150px;top:230px;width:1050px" data-vis="p05a" data-mots="@p05a">Vous avez déjà payé pour un contact qui n'a jamais décroché ?</div>
+  <svg class="picto" data-vis="p05a" data-fn="sonne" style="left:1330px;top:250px" width="380" height="380" viewBox="0 0 200 200" stroke="#173a55"><rect x="62" y="22" width="76" height="156" rx="16"/><path d="M88 38h24" stroke="#e05a10"/><path d="M36 70a44 44 0 0 0 0 60M164 70a44 44 0 0 1 0 60M18 54a70 70 0 0 0 0 92M182 54a70 70 0 0 1 0 92" stroke="#e05a10"/></svg>
+  <div class="gros" style="left:150px;top:290px;width:1050px" data-vis="p05b" data-mots="@p05b">Pris un abonnement qui n'a rien rapporté ?</div>
+  <svg class="picto" data-vis="p05b" style="left:1330px;top:230px" width="380" height="380" viewBox="0 0 200 200" stroke="#173a55"><rect x="30" y="40" width="140" height="130" rx="14"/><path d="M30 76h140M66 26v28M134 26v28" /><path d="M62 108h20M96 108h20M130 108h14M62 138h20M96 138h20" stroke="#e05a10"/></svg>
+  <div class="abs" data-vis="p05b" data-fn="page" data-n="0" style="left:1420px;top:560px;width:70px;height:86px;border-radius:10px;border:8px solid #e05a10;background:#fff"></div>
+  <div class="abs" data-vis="p05b" data-fn="page" data-n="1" style="left:1540px;top:560px;width:70px;height:86px;border-radius:10px;border:8px solid #173a55;background:#fff"></div>
+  <div class="gros" style="left:150px;top:290px;width:1050px" data-vis="p05c" data-mots="@p05c">Reçu une demande à cent kilomètres de chez vous ?</div>
+  <svg class="picto" data-vis="p05c" style="left:1260px;top:260px" width="520" height="380" viewBox="0 0 260 190" stroke="#173a55"><path d="M16 172V132h48v40z"/><path d="M8 136 40 108l32 28" stroke="#e05a10"/><path d="M34 172v-18h12v18"/><path d="M88 168h150" stroke-dasharray="1 16"/></svg>
+  <svg class="picto" data-vis="p05c" data-fn="eloigne" style="left:1500px;top:330px" width="120" height="160" viewBox="0 0 60 80" stroke="#e05a10" stroke-width="7"><path d="M30 74S6 48 6 28a24 24 0 0 1 48 0c0 20-24 46-24 46z"/><circle cx="30" cy="28" r="8"/></svg>
+  <div class="ligne" style="left:150px;top:760px;font-size:54px" data-in="pop" data-t="@p05a$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
+  <div class="ligne" style="left:420px;top:760px;font-size:54px" data-in="pop" data-t="@p05b$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
+  <div class="ligne" style="left:690px;top:760px;font-size:54px" data-in="pop" data-t="@p05c$-0.55" data-sfx="tic"><span class="coche">✓</span>oui</div>
+</section>
+
+<!-- PLAN 6 -->
+<section class="creme" data-scene="p06">
+  <div class="ligne" style="left:870px;top:470px;font-size:54px" data-fn="converge" data-n="0"><span class="coche">✓</span>oui</div>
+  <div class="ligne" style="left:870px;top:470px;font-size:54px" data-fn="converge" data-n="1"><span class="coche">✓</span>oui</div>
+  <div class="ligne" style="left:870px;top:470px;font-size:54px" data-fn="converge" data-n="2"><span class="coche">✓</span>oui</div>
+  <svg style="left:760px;top:400px" width="400" height="220" viewBox="0 0 200 110" fill="none" stroke="#e05a10" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" data-in="pop" data-t="0.75" data-fn="glisse" data-sfx="montee" data-st="0.3"><path d="M14 55h160M124 16l50 39-50 39"/></svg>
+</section>
+
+<!-- ACTE 3 — PLAN 7 -->
+<section class="nuit" data-scene="p07">
+  <div class="centre" style="top:330px" data-in="fondu" data-t="0.1"><span class="logo" style="font-size:28px;color:#fff"><svg width="52" height="52" viewBox="0 0 40 40" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5 20 7l15 12.5" stroke="#ff9857"/><path d="M9 21.5V33h22V21.5" stroke="#fff"/><rect x="17" y="25" width="6" height="8" rx="1" fill="#ff9857"/></svg>PORTAIL TRAVAUX<b>PRO</b></span></div>
+  <div class="centre sur" style="top:440px;font-size:84px;letter-spacing:.2em" data-mots="0.3">Le constat</div>
+  <div class="abs" style="left:810px;top:580px;width:300px;height:8px;border-radius:9px;background:var(--accent)" data-in="balaye" data-t="0.7" data-d="0.6"></div>
+</section>
+
+<!-- PLAN 8 : le jour sur le chantier, le soir aux devis -->
+<section data-scene="p08">
+  <div class="creme" style="left:0;top:0;width:960px;height:1080px"></div>
+  <div class="nuit" style="left:960px;top:0;width:960px;height:1080px"></div>
+  <div class="abs" style="left:640px;top:150px;width:150px;height:150px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 26px rgba(224,90,16,.16)" data-fn="soleil"></div>
+  <svg class="picto" style="left:170px;top:400px" width="620" height="460" viewBox="0 0 310 230" stroke="#173a55" stroke-width="7" data-in="haut" data-t="0.15"><path d="M12 216h286"/><path d="M50 216V118l80-62 80 62v98"/><path d="M50 118 130 56l80 62" stroke="#e05a10"/><path d="M112 216v-58h36v58"/><path d="M236 216 262 70M276 216 262 70M243 176h26M248 140h18M254 104h11" /></svg>
+  <svg class="picto" style="left:1090px;top:400px" width="700" height="460" viewBox="0 0 350 230" stroke="#fff" stroke-width="7" data-in="haut" data-t="0.35"><path d="M20 190h310M50 190v30M300 190v30"/><path d="M92 190v-14h54v14" /><path d="M119 176V96l56-38" /><path d="M150 44l52 26-18 36-52-26z" stroke="#ff9857"/><path d="M214 190v-12h84v12M222 178v-12h70v12M230 166v-12h60v12" stroke="#ff9857"/></svg>
+  <div class="abs" style="left:1280px;top:470px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,193,156,.5),transparent)" data-in="fondu" data-t="@soir"></div>
+</section>
+
+<!-- PLAN 9 : la pile de ce qu'on lui demande de payer -->
+<section class="nuit" data-scene="p09">
+  <svg class="picto" style="left:610px;top:560px" width="700" height="330" viewBox="0 0 350 165" stroke="#fff" stroke-width="7"><path d="M20 125h310M50 125v30M300 125v30"/></svg>
+  <div class="piece" style="left:720px;top:716px;width:480px;text-align:center" data-r="-2" data-in="tombe" data-t="@contact" data-sfx="impact">Contacts payants</div>
+  <div class="piece" style="left:760px;top:626px;width:440px;text-align:center" data-r="4" data-in="tombe" data-t="@mois" data-sfx="impact">Abonnements</div>
+  <div class="piece" style="left:740px;top:536px;width:400px;text-align:center" data-r="-7" data-in="tombe" data-t="@logiciel" data-sfx="impact">Logiciels</div>
+</section>
+
+<!-- PLAN 10 : le meilleur n'est pas en tête -->
+<section class="creme" data-scene="p10" data-st="118">
+  <div class="gris" style="left:460px;top:120px;width:1000px;height:120px" data-in="haut" data-t="0.1"><u></u><s style="width:420px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris" style="left:460px;top:265px;width:1000px;height:120px" data-in="haut" data-t="0.2"><u></u><s style="width:360px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris" style="left:460px;top:410px;width:1000px;height:120px" data-in="haut" data-t="0.3"><u></u><s style="width:460px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris" style="left:460px;top:555px;width:1000px;height:120px" data-in="haut" data-t="0.4"><u></u><s style="width:330px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris" style="left:460px;top:700px;width:1000px;height:120px" data-in="haut" data-t="0.5"><u></u><s style="width:400px"></s><s style="width:160px;margin-left:auto"></s></div>
+  <div class="gris etoile" style="left:460px;top:1010px;width:1000px;height:120px" data-in="haut" data-t="0.7" data-pulse="@mieux,@trouve"><u>★</u><s style="width:440px"></s><s style="width:160px;margin-left:auto"></s></div>
+</section>
+
+<!-- PLAN 11 : l'inverse -->
+<section class="creme" data-scene="p11" data-sfx="relance" data-st="@inverse">
+  <div class="gris" style="left:120px;top:100px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:300px"></s></div>
+  <div class="gris" style="left:120px;top:220px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:260px"></s></div>
+  <div class="gris" style="left:120px;top:340px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:340px"></s></div>
+  <div class="gris" style="left:120px;top:460px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:240px"></s></div>
+  <div class="gris" style="left:120px;top:580px;width:760px;height:100px" data-fn="descend"><u></u><s style="width:300px"></s></div>
+  <div class="gris etoile" style="left:120px;top:100px;width:760px;height:100px" data-fn="grimpe"><u>★</u><s style="width:330px"></s></div>
+  <div class="piece" style="left:1000px;top:150px;font-size:32px" data-barre="0.35" data-out="chute" data-o="@inverse-0.35" data-sens="-1" data-sfx="rature" data-st="0.35">Contacts payants</div>
+  <div class="piece" style="left:1310px;top:150px;font-size:32px" data-barre="0.6" data-out="chute" data-o="@inverse-0.25">Abonnements</div>
+  <div class="piece" style="left:1570px;top:150px;font-size:32px" data-barre="0.85" data-out="chute" data-o="@inverse-0.15" data-sens="-1">Logiciels</div>
+  <div class="ligne" style="left:1000px;top:330px;font-size:88px" data-in="haut" data-t="@visible" data-sfx="tic"><span class="coche">✓</span>Visible</div>
+  <div class="ligne" style="left:1000px;top:480px;font-size:88px" data-in="haut" data-t="@équipé" data-sfx="tic"><span class="coche">✓</span>Équipé</div>
+  <div class="ligne" style="left:1000px;top:630px;font-size:72px" data-in="haut" data-t="@paie" data-sfx="tic"><span class="coche">✓</span>0 € pour commencer</div>
+</section>
+
+<!-- ACTE 4 — PLAN 12 : idée reçue n° 1 -->
+<section class="nuit" data-scene="p12">
+  <div class="centre sur" style="top:330px;font-size:40px" data-in="haut" data-t="0.15">Idée reçue n° 1</div>
+  <div class="centre" style="top:440px"><span class="gros orange" data-barre="fin-1.0" data-sfx="rature" data-st="fin-1.0"><span data-mots="@les-0.15">« Les plateformes, on paie pour rien. »</span></span></div>
+</section>
+
+<!-- PLAN 13 : fiche gratuite, demandes gratuites, jusqu'à dix -->
+<section class="creme" data-scene="p13">
+  <div style="left:150px;top:120px;width:1120px;transform:perspective(2400px) rotateY(4deg)">
+    <div class="nav" data-in="pop" data-t="0.1" data-out="coupe" data-o="@demandes-0.15"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c8-bureau" data-de="0.2" data-vitesse="0.9" /></div>
+  </div>
+  <div class="etq" style="left:1310px;top:330px" data-in="pop" data-t="@fiche" data-flotte data-out="coupe" data-o="@demandes-0.15" data-sfx="tic"><span class="sur">Inclus</span><span>Fiche gratuite</span></div>
+  <div style="left:150px;top:120px;width:1120px;transform:perspective(2400px) rotateY(4deg)">
+    <div class="nav" data-in="fondu" data-t="@demandes-0.15" data-out="coupe" data-o="@jusqu-0.25"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c2-bureau" data-de="1.6" data-vitesse="1.2" data-ct="@demandes-0.15" /></div>
+  </div>
+  <div class="badge" style="left:1380px;top:290px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.2" data-pulse="@gratuites" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
+  <div class="badge" style="left:1470px;top:440px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.4" data-pulse="@gratuites+0.1" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
+  <div class="badge" style="left:1380px;top:590px;font-size:64px;padding:18px 40px" data-in="pop" data-t="@demandes+0.6" data-pulse="@gratuites+0.2" data-out="coupe" data-o="@jusqu-0.25">0 €</div>
+  <div class="centre sur" style="top:150px;font-size:46px" data-in="haut" data-t="@jusqu-0.2">Jusqu'à</div>
+  <div class="centre chiffre" style="top:215px;color:var(--accent)" data-in="fondu" data-t="@jusqu-0.2" data-compte="0,10" data-sfx="impact" data-st="@dix">0</div>
+  <div class="centre moyen" style="top:540px" data-in="haut" data-t="@jusqu">demandes gratuites par mois</div>
+  <div class="centre txt" style="top:640px;font-size:50px;color:var(--doux)" data-in="haut" data-t="@jusqu+0.1">selon votre secteur et votre métier</div>
+</section>
+
+<!-- PLAN 14 -->
+<section class="creme" data-scene="p14">
+  <div class="chiffre" style="left:0;top:250px;width:960px;text-align:center" data-in="pop" data-t="@zéro" data-sfx="impact">0 €</div>
+  <div class="moyen" style="left:0;top:580px;width:960px;text-align:center;color:var(--doux)" data-in="haut" data-t="@inscription-0.2">à l'inscription</div>
+  <div class="filet" style="left:959px;top:240px;height:470px" data-in="fondu" data-t="0.1"></div>
+  <div class="chiffre" style="left:960px;top:250px;width:960px;text-align:center" data-in="pop" data-t="@2:zéro" data-sfx="impact">0 %</div>
+  <div class="moyen" style="left:960px;top:580px;width:960px;text-align:center;color:var(--doux)" data-in="haut" data-t="@commission-0.2">de commission</div>
+</section>
+
+<!-- ACTE 5 — PLAN 15 : idée reçue n° 2 -->
+<section class="nuit" data-scene="p15">
+  <div class="centre sur" style="top:290px;font-size:40px" data-in="haut" data-t="0.15">Idée reçue n° 2</div>
+  <div class="centre" style="top:400px"><span class="gros orange" style="font-size:82px" data-barre="fin-1.0" data-sfx="rature" data-st="fin-1.0"><span data-mots="@je-0.15">« Je n'ai pas le temps,</span></span></div>
+  <div class="centre" style="top:510px"><span class="gros orange" style="font-size:82px" data-barre="fin-0.85"><span data-mots="@et-0.1">et l'informatique, ce n'est pas mon truc. »</span></span></div>
+</section>
+
+<!-- PLAN 16 : cinq champs, deux minutes -->
+<section class="creme" data-scene="p16">
+  <div style="left:100px;top:120px;width:1080px;transform:perspective(2400px) rotateY(4deg)">
+    <div class="nav" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c1-bureau" data-de="0.4" data-vitesse="2.3" data-sfx="clavier" data-st="0.3" /></div>
+  </div>
+  <svg style="left:1260px;top:110px" width="250" height="250" viewBox="0 0 250 250" fill="none" stroke-linecap="round"><circle cx="125" cy="125" r="104" stroke="#ffe0cd" stroke-width="20"/><g transform="rotate(-90 125 125)"><circle cx="125" cy="125" r="104" stroke="#e05a10" stroke-width="20" stroke-dasharray="654" data-fn="arc"/></g></svg>
+  <div class="gros" style="left:1540px;top:160px;font-size:112px;color:var(--accent)" data-in="pop" data-t="@minutes-0.15" data-sfx="ding">2 min</div>
+  <div class="ligne" style="left:1280px;top:410px" data-in="pop" data-t="@remplissez+0.2"><span class="coche">✓</span>Nom</div>
+  <div class="ligne" style="left:1280px;top:478px" data-in="pop" data-t="@remplissez+0.5"><span class="coche">✓</span>Email</div>
+  <div class="ligne" style="left:1280px;top:546px" data-in="pop" data-t="@remplissez+0.8"><span class="coche">✓</span>Téléphone</div>
+  <div class="ligne" style="left:1280px;top:614px" data-in="pop" data-t="@remplissez+1.1"><span class="coche">✓</span>Code postal</div>
+  <div class="ligne" style="left:1280px;top:682px" data-in="pop" data-t="@remplissez+1.4"><span class="coche">✓</span>Métier</div>
+  <div class="etq" style="left:1280px;top:790px" data-in="pop" data-t="@ligne" data-flotte><span class="sur">2 minutes</span><span>Votre espace est prêt</span></div>
+</section>
+
+<!-- ACTE 6 — PLAN 17 : idée reçue n° 3 -->
+<section class="nuit" data-scene="p17">
+  <div class="centre sur" style="top:290px;font-size:40px" data-in="haut" data-t="0.15">Idée reçue n° 3</div>
+  <div class="centre" style="top:400px"><span class="gros orange" style="font-size:74px" data-barre="fin-1.0" data-sfx="rature" data-st="fin-1.0"><span data-mots="@les-0.15">« Les demandes sont revendues à tout le monde,</span></span></div>
+  <div class="centre" style="top:505px"><span class="gros orange" style="font-size:74px" data-barre="fin-0.85"><span data-mots="@et-0.1">et jamais dans mon coin. »</span></span></div>
+</section>
+
+<!-- PLAN 19 : rayon et métiers -->
+<section class="creme" data-scene="p19">
+  <div style="left:80px;top:130px;width:1040px;transform:perspective(2400px) rotateY(4deg)">
+    <div class="nav" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c4-bureau" data-de="2.6" data-vitesse="1.75" /></div>
+  </div>
+  <div class="abs" style="left:1210px;top:120px;width:620px;height:620px;border-radius:30px;background:#e3ecdf;overflow:hidden;box-shadow:0 16px 40px rgba(45,43,43,.18)" data-in="pop" data-t="0.3">
+    <svg width="620" height="620" viewBox="0 0 620 620" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"><path d="M-20 420C120 360 220 380 310 310S520 180 660 150M80 -20c40 160 120 240 230 330s150 200 170 330M-20 180c160 30 250 60 330 130"/><path d="M-10 60c60 80 60 220 20 330S20 560 60 640" stroke="#b9d3e6" stroke-width="46"/></svg>
+    <div class="abs" style="left:310px;top:310px;width:0;height:0" data-fn="cercle"></div>
+    <div class="pin abs" style="left:240px;top:360px"></div><div class="pin abs" style="left:372px;top:250px"></div><div class="pin abs" style="left:330px;top:390px"></div>
+    <div class="pin abs" style="left:150px;top:210px"></div><div class="pin abs" style="left:440px;top:400px"></div>
+    <div class="pin abs" style="left:520px;top:90px" data-out="pop" data-o="@reste"></div><div class="pin abs" style="left:60px;top:540px" data-out="pop" data-o="@reste+0.1"></div><div class="pin abs" style="left:560px;top:560px" data-out="pop" data-o="@reste+0.2"></div>
+    <div class="abs" style="left:297px;top:297px;width:26px;height:26px;border-radius:50%;background:var(--nuit);border:5px solid #fff"></div>
+    <div class="abs" style="left:334px;top:292px;font-weight:700;font-size:28px;color:var(--nuit)">Bordeaux</div>
+  </div>
+  <div class="etq" style="left:1230px;top:770px" data-in="pop" data-t="@rayon" data-flotte data-out="coupe" data-o="@choisissez-0.1" data-sfx="glisse"><span class="sur">Inclus</span><span>Rayon réglable de 10 à 100 km</span></div>
+  <div class="etq" style="left:1230px;top:770px" data-in="pop" data-t="@choisissez-0.1" data-flotte data-sfx="tic"><span class="sur">Inclus</span><span>Plusieurs métiers sur une même fiche</span></div>
+</section>
+
+<!-- PLAN 20 -->
+<section class="creme" data-scene="p20">
+  <svg style="left:840px;top:170px" width="240" height="280" viewBox="0 0 120 140" fill="none" stroke="#e05a10" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" data-sfx="note" data-st="0.2"><path d="M60 8 14 26v38c0 30 20 54 46 66 26-12 46-36 46-66V26z" stroke-dasharray="380" data-fn="trace"/><path d="M40 68l15 15 27-30" data-in="pop" data-t="1.0" style="transform-origin:60px 68px"/></svg>
+  <div class="centre moyen" style="top:500px;padding:0 280px" data-mots="@réservé">SIREN et attestation décennale vérifiés pour chaque fiche</div>
+</section>
+
+<!-- ACTE 7 — PLAN 21 -->
+<section class="nuit" data-scene="p21" data-sfx="montee" data-st="0.4">
+  <div class="outil" style="left:120px;top:250px" data-in="pop" data-t="0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de travaux</div>
+  <div class="outil" style="left:670px;top:250px" data-in="pop" data-t="0.33"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span>Fiche sur le portail</div>
+  <div class="outil" style="left:120px;top:430px" data-in="pop" data-t="0.46"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>Site internet</div>
+  <div class="outil" style="left:670px;top:430px" data-in="pop" data-t="0.59"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"/></svg></span>Avis clients</div>
+  <div class="outil" style="left:120px;top:610px" data-in="pop" data-t="0.72"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>Devis et factures</div>
+  <div class="outil" style="left:670px;top:610px" data-in="pop" data-t="0.85"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg></span>Suivi clients</div>
+  <div class="colonne" style="left:1300px;top:230px;width:520px;height:560px" data-in="fondu" data-t="0.6"><span class="sur">Votre espace</span></div>
+</section>
+
+<!-- ACTE 8 — PLAN 22 : l'offre empilée -->
+<section class="nuit" data-scene="p22a p22b p22c p22d p22e p22f p22g">
+  <div class="outil" style="left:120px;top:250px" data-fn="outil" data-seg="p22a" data-out="fondu" data-o="@p22g" data-sfx="n1" data-st="@p22a-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 3V6z"/></svg></span>Demandes de travaux</div>
+  <div class="outil" style="left:670px;top:250px" data-fn="outil" data-seg="p22b" data-out="fondu" data-o="@p22g" data-sfx="n2" data-st="@p22b-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span>Fiche sur le portail</div>
+  <div class="outil" style="left:120px;top:430px" data-fn="outil" data-seg="p22c" data-out="fondu" data-o="@p22g" data-sfx="n3" data-st="@p22c-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>Site internet</div>
+  <div class="outil" style="left:670px;top:430px" data-fn="outil" data-seg="p22d" data-out="fondu" data-o="@p22g" data-sfx="n4" data-st="@p22d-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4zM8 10h8M8 13h5"/></svg></span>Avis clients</div>
+  <div class="outil" style="left:120px;top:610px" data-fn="outil" data-seg="p22e" data-out="fondu" data-o="@p22g" data-sfx="n5" data-st="@p22e-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>Devis et factures</div>
+  <div class="outil" style="left:670px;top:610px" data-fn="outil" data-seg="p22f" data-out="fondu" data-o="@p22g" data-sfx="n6" data-st="@p22f-0.2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg></span>Suivi clients</div>
+
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22a" data-in="pop" data-t="@p22a+0.35" data-out="pop" data-o="@p22a$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c3-bureau" data-de="0.6" data-ct="@p22a+0.35" /></div>
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22b" data-in="pop" data-t="@p22b+0.35" data-out="pop" data-o="@p22b$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c8-bureau" data-de="0.3" data-ct="@p22b+0.35" /></div>
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22c" data-in="pop" data-t="@p22c+0.3" data-out="pop" data-o="@p22c$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c6-bureau" data-de="0.2" data-vitesse="0.6" data-jusqua="1.9" data-ct="@p22c+0.3" /></div>
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22d" data-in="pop" data-t="@p22d+0.35" data-out="pop" data-o="@p22d$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-avis-bureau" data-de="0.2" data-ct="@p22d+0.35" /></div>
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22e" data-in="pop" data-t="@p22e+0.35" data-out="pop" data-o="@p22e$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c5-bureau" data-de="5.2" data-vitesse="1.6" data-ct="@p22e+0.35" /></div>
+  <div class="nav" style="left:300px;top:300px;width:720px" data-vis="p22f" data-in="pop" data-t="@p22f+0.35" data-out="pop" data-o="@p22f$-0.3"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c7-suivi-bureau" data-de="0.8" data-ct="@p22f+0.35" /></div>
+
+  <div class="colonne" style="left:1300px;top:230px;width:520px;height:560px;transform-origin:50% 50%" data-fn="centre">
+    <span class="sur">Votre espace</span>
+    <div class="ligne abs" style="left:40px;top:96px" data-in="bas" data-t="@p22a$-0.9"><span class="coche">✓</span>Demandes de travaux</div>
+    <div class="ligne abs" style="left:40px;top:170px" data-in="bas" data-t="@p22b$-0.9"><span class="coche">✓</span>Fiche sur le portail</div>
+    <div class="ligne abs" style="left:40px;top:244px" data-in="bas" data-t="@p22c$-0.9"><span class="coche">✓</span>Site internet</div>
+    <div class="ligne abs" style="left:40px;top:318px" data-in="bas" data-t="@p22d$-0.9"><span class="coche">✓</span>Avis clients</div>
+    <div class="ligne abs" style="left:40px;top:392px" data-in="bas" data-t="@p22e$-0.9"><span class="coche">✓</span>Devis et factures</div>
+    <div class="ligne abs" style="left:40px;top:466px" data-in="bas" data-t="@p22f$-0.9"><span class="coche">✓</span>Suivi clients</div>
+  </div>
+  <div class="centre" style="top:440px"><span class="tampon" data-r="-6" data-in="tampon" data-t="@gratuitement" data-sfx="impact">GRATUITEMENT</span></div>
+</section>
+
+<!-- ACTE 9 — PLAN 23 -->
+<section class="creme" data-scene="p23">
+  <div class="centre titre" style="top:270px;font-size:150px" data-mots="@c'est-0.1">C'est gratuit…</div>
+  <div class="centre" style="top:470px"><span class="titre" style="font-size:150px" data-mots="@où-0.1">où est le</span> <span class="ital" style="font-size:176px;line-height:1.05" data-in="masque" data-t="@piège-0.1">piège</span> <span class="titre" style="font-size:150px" data-in="fondu" data-t="@piège+0.25">?</span></div>
+</section>
+
+<!-- PLAN 24 : comment on gagne notre vie -->
+<section class="creme" data-scene="p24">
+  <div style="left:190px;top:150px;width:720px;height:640px;transform-origin:0 50%" data-fn="grandit">
+    <div class="sur abs" style="left:0;top:0;font-size:40px">Gratuit</div>
+    <div class="ligne abs" style="left:0;top:90px" data-in="haut" data-t="0.2"><span class="coche">✓</span>Demandes de travaux</div>
+    <div class="ligne abs" style="left:0;top:170px" data-in="haut" data-t="0.3"><span class="coche">✓</span>Fiche sur le portail</div>
+    <div class="ligne abs" style="left:0;top:250px" data-in="haut" data-t="0.4"><span class="coche">✓</span>Site internet</div>
+    <div class="ligne abs" style="left:0;top:330px" data-in="haut" data-t="0.5"><span class="coche">✓</span>Avis clients</div>
+    <div class="ligne abs" style="left:0;top:410px" data-in="haut" data-t="0.6"><span class="coche">✓</span>Devis et factures</div>
+    <div class="ligne abs" style="left:0;top:490px" data-in="haut" data-t="0.7"><span class="coche">✓</span>Suivi clients</div>
+  </div>
+  <div class="filet" style="left:1000px;top:150px;height:560px" data-in="fondu" data-t="@certains"></div>
+  <div style="left:1090px;top:150px;width:760px;height:640px" data-fn="efface">
+    <div class="sur abs" style="left:0;top:0;font-size:40px;color:var(--doux)" data-in="fondu" data-t="@certains">En option</div>
+    <div class="opt abs" style="left:0;top:90px" data-in="haut" data-t="@nom">Nom de domaine personnalisé</div>
+    <div class="opt abs" style="left:0;top:170px" data-in="haut" data-t="@mise">Mise en avant</div>
+    <div class="opt abs" style="left:0;top:250px" data-in="haut" data-t="@demandes">Demandes supplémentaires</div>
+  </div>
+</section>
+
+<!-- ACTE 10 — PLAN 25 -->
+<section class="creme" data-scene="p25">
+  <div class="ligne" style="left:520px;top:270px;font-size:84px" data-in="haut" data-t="0.25" data-sfx="tic"><span class="coche">✓</span>0 € à l'inscription</div>
+  <div class="ligne" style="left:520px;top:420px;font-size:84px" data-in="haut" data-t="@pas" data-sfx="tic"><span class="coche">✓</span>Sans engagement</div>
+  <div class="ligne" style="left:520px;top:570px;font-size:84px" data-in="haut" data-t="@2:pas" data-sfx="tic"><span class="coche">✓</span>0 % de commission</div>
+</section>
+
+<!-- PLAN 26 : les demandes partent chez d'autres -->
+<section class="nuit" data-scene="p26" data-sfx="sourd,sourd,sourd,sourd,sourd,sourd" data-st="0.5,1.5,2.5,3.5,4.5,5.5">
+  <div class="carte" style="left:0;top:180px" data-fn="vol" data-n="0"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Mérignac (33700)</div></span><span class="badge">0 €</span></div>
+  <div class="carte" style="left:0;top:470px" data-fn="vol" data-n="1"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 10h8M8 14h5"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Isolation des combles</div><div class="meta">Pessac (33600)</div></span><span class="badge">0 €</span></div>
+  <div class="carte" style="left:0;top:300px" data-fn="vol" data-n="2"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Réfection toiture</div><div class="meta">Talence (33400)</div></span><span class="badge">0 €</span></div>
+  <div class="carte" style="left:0;top:560px" data-fn="vol" data-n="3"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Salle de bain</div><div class="meta">Bordeaux (33000)</div></span><span class="badge">0 €</span></div>
+  <div class="carte" style="left:0;top:220px" data-fn="vol" data-n="4"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 10h8M8 14h5"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Isolation des combles</div><div class="meta">Pessac (33600)</div></span><span class="badge">0 €</span></div>
+  <div class="carte" style="left:0;top:420px" data-fn="vol" data-n="5"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18"/></svg></span><span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Réfection toiture</div><div class="meta">Talence (33400)</div></span><span class="badge">0 €</span></div>
+</section>
+
+<!-- PLAN 27 -->
+<section class="nuit" data-scene="p27">
+  <svg class="picto" style="left:300px;top:330px" width="200" height="346" viewBox="0 0 150 260" stroke="#fff" data-fn="vibre" data-t="@sonne" data-boucle="1"><rect x="10" y="10" width="130" height="240" rx="24"/><path d="M58 30h34" stroke="#ff9857"/><circle cx="75" cy="222" r="7" stroke="#ff9857"/></svg>
+  <div class="carte" style="left:640px;top:430px;width:960px" data-in="droite" data-t="0.3" data-flotte data-sfx="ding" data-st="0.35">
+    <span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></svg></span>
+    <span class="corps"><span class="sur">Nouvelle demande</span><div class="nom">Votre métier</div><div class="meta">à 10 km · à l'instant</div></span>
+    <span class="badge" data-in="pop" data-t="0.45">0 €</span>
+  </div>
+</section>
+
+<!-- ACTE 11 — PLAN 28 -->
+<section class="creme" data-scene="p28" data-sfx="accord" data-st="fin-3.6">
+  <div class="centre" style="top:110px" data-in="fondu" data-t="0.1"><span class="logo"><svg width="64" height="64" viewBox="0 0 40 40" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5 20 7l15 12.5" stroke="#e05a10"/><path d="M9 21.5V33h22V21.5" stroke="#201e1d"/><rect x="17" y="25" width="6" height="8" rx="1" fill="#e05a10"/></svg>PORTAIL TRAVAUX<b>PRO</b></span></div>
+  <div class="centre titre" style="top:250px;font-size:116px" data-mots="0.3">Créez votre espace gratuit</div>
+  <div class="centre" style="top:460px"><span class="btn" style="position:relative" data-in="pop" data-t="@regardez-0.2" data-fn="bouton">Voir les demandes près de chez moi<i data-fn="reflet"></i></span></div>
+  <svg style="left:910px;top:640px" width="100" height="130" viewBox="0 0 50 65" fill="none" stroke="#e05a10" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" data-in="pop" data-t="@juste-0.1" data-fn="rebondit" data-sfx="tic"><path d="M25 6v50M6 38l19 19 19-19"/></svg>
+  <div class="centre txt" style="top:800px;font-size:40px" data-in="haut" data-t="@deux-0.2"><span class="coche">✓</span>0 € à l'inscription &nbsp;·&nbsp; <span class="coche">✓</span>Sans engagement &nbsp;·&nbsp; <span class="coche">✓</span>0 % de commission</div>
+</section>
+
+<div id="st"></div>
+</div>
+<script src="moteur.js"></script>
+<script src="plans.js"></script>
+</body>
+</html>
