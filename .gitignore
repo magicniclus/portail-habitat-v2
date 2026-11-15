@@ -18,6 +18,9 @@ test-results/
 *.tsbuildinfo
 next-env.d.ts
 
+# Rushes et rendus intermédiaires de la VSL (scripts/vsl)
+.vsl/
+
 # Journaux des émulateurs Firebase
 *-debug.log
 firebase-debug.log
