@@ -132,9 +132,11 @@
   FN.efface = (_el, lt, sc) => ({ o: 1 - 0.5 * doux((lt - sc.rep('@personne')) / 0.5) });
   // Plan 26 : les cartes traversent l'écran sans s'arrêter.
   FN.vol = (el, lt) => {
+    // Les six cartes repassent en boucle (une par seconde) tant que le plan dure.
     const k = lt - Number(el.dataset.n) - 0.1;
-    return { x: 1920 - k * 1500, o: k < 0 ? 0 : 1, s: 0.86 };
+    return { x: 1920 - (((k % 6) + 6) % 6) * 1500, o: k < 0 ? 0 : 1, s: 0.6 };
   };
+  FN.aiguille = (el, lt) => ({ r: lt * 360 * Number(el.dataset.v) });
   // Plan 28 : bouton qui pulse (100 → 104 % toutes les 24 images), reflet toutes les 2 s, flèche.
   FN.bouton = (el, lt, sc) => {
     const k = lt - sc.rep(el.dataset.t);

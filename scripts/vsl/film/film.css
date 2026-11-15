@@ -245,9 +245,11 @@ section > *,
   box-shadow: 0 16px 40px rgba(45, 43, 43, 0.22);
   white-space: nowrap;
 }
-.etq .sur {
+.etq .sur,
+.nuit .etq .sur {
   font-size: 21px;
   display: block;
+  color: var(--bouton);
 }
 .etq span {
   font-weight: 700;

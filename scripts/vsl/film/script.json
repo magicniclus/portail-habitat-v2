@@ -169,7 +169,7 @@
     {
       "id": "p26",
       "acte": 10,
-      "texte": "La seule chose qui coûte, c'est d'attendre : pendant ce temps, les demandes de votre secteur partent chez d'autres."
+      "texte": "La seule chose qui coûte, c'est le temps qui passe sans être inscrit. Sur Portail Travaux, il arrive en moyenne dix demandes par heure. Dans votre secteur, jusqu'à une demande toutes les trois heures."
     },
     {
       "id": "p27",
@@ -179,7 +179,7 @@
     {
       "id": "p28",
       "acte": 11,
-      "texte": "Créez votre espace gratuit, et regardez les demandes près de chez vous. Le bouton est juste là. Deux minutes, et vous êtes en ligne. Créez votre espace gratuit."
+      "texte": "Créez votre espace gratuit, et regardez les demandes près de chez vous. Inscrivez-vous via le formulaire, et recevez vos premières demandes gratuites. Deux minutes, et vous êtes en ligne."
     }
   ]
 }
