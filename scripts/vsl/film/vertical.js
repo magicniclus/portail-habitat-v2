@@ -183,6 +183,11 @@
   // Film « site internet » : l'écran d'ordinateur en haut (pleine largeur), la colonne de texte dessous.
   Object.assign(PLANS, {
     's01 s02': { centre: [0, 330, 0.9], reste: [-420, 300, 1] },
+    s02b: {
+      styles: [[':scope > .abs.chiffre', 'left:1140px;top:800px']],
+      centre: [0, 130, 1],
+      reste: [-180, 200, 0.75],
+    },
     s03: { centre: [0, 420, 0.8], reste: [-228, 420, 0.8] },
     's04 s05': PLANS['p05a p05b p05c'],
     's06 s07': {
@@ -208,6 +213,13 @@
       reste: PLEIN,
     },
     s10: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+      ],
+      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1306.5, 700, 1.05] }],
+      reste: PLEIN,
+    },
+    s09b: {
       styles: [
         [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
       ],
