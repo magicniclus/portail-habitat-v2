@@ -180,6 +180,45 @@
       reste: PLEIN,
     },
   };
+  // Film « site internet » : l'écran d'ordinateur en haut (pleine largeur), la colonne de texte dessous.
+  Object.assign(PLANS, {
+    's01 s02': { styles: [[':scope > svg.picto', 'left:900px;top:780px']], reste: [-420, 300, 1] },
+    s03: { centre: [0, 420, 0.8], reste: [-228, 420, 0.8] },
+    's04 s05': PLANS['p05a p05b p05c'],
+    's06 s07': {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+      ],
+      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1306.5, 700, 1.05] }],
+      reste: PLEIN,
+    },
+    s08: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+      ],
+      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1306.5, 700, 1.05] }],
+      reste: PLEIN,
+    },
+    s09: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+        [':scope > .pose', 'left:150px;top:560px'],
+        [':scope > .nav.tel', 'left:350px;top:930px;width:380px;height:580px'],
+      ],
+      reste: PLEIN,
+    },
+    s10: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+      ],
+      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1306.5, 700, 1.05] }],
+      reste: PLEIN,
+    },
+    s11: PLANS.p23,
+    s12: PLANS.p24,
+    s13: { reste: [-390, 420, 1] },
+    s14: PLANS.p28,
+  });
   /** Les six cartes d'outils sur deux colonnes. */
   function grille() {
     return [0, 1, 2, 3, 4, 5].map(
@@ -245,8 +284,8 @@
   style.textContent = `
     #scene { width: 1080px; height: 1920px; }
     .zone > * { position: absolute; }
-    .nav, .nuit .nav { border: 10px solid #201e1d; border-radius: 48px; background: #fff; }
-    .nav .barre { display: none; }
+    .nav:not(.ordi), .nuit .nav:not(.ordi) { border: 10px solid #201e1d; border-radius: 48px; background: #fff; }
+    .nav:not(.ordi) .barre { display: none; }
     #st { font-size: 56px; }
   `;
   document.head.appendChild(style);

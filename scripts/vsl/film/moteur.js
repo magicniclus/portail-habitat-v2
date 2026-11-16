@@ -301,7 +301,7 @@
       ),
     );
     st.classList.toggle('clair', stage.dataset.fond === 'clair');
-    st.style.bottom = `${VERTICAL ? 330 : (stage.dataset.st ?? 64)}px`;
+    st.style.bottom = `${VERTICAL ? 300 : (stage.dataset.st ?? 64)}px`;
   }
 
   /** Affiche l'image `n` (30 images/s) ; la promesse se résout quand les captures sont chargées. */

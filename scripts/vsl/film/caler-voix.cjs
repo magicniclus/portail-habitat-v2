@@ -2,7 +2,7 @@
 // (mots reconnus) sur les mots du script, coupe la voix dans les silences entre segments et écrit
 // un dossier de voix au format attendu par rendre.ts et son.ts (un mp3 par segment + mots.json).
 //
-// Usage : node scripts/vsl/film/caler-voix.cjs <audio> <transcription.json> <dossier de sortie>
+// Usage : node scripts/vsl/film/caler-voix.cjs <audio> <transcription.json> <dossier de sortie> [script.json] [dossier de la voix d'essai]
 //   transcription.json : { chunks: [{ text, timestamp: [début, fin] }] } (Whisper, minutage par mot)
 //   Les mots de référence (découpage identique aux repères du film) viennent de .vsl/voix/mots.json.
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -10,10 +10,16 @@ const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
 const { spawnSync } = require('node:child_process');
 const { join } = require('node:path');
 
-const [audio, transcription, sortie] = process.argv.slice(2);
+const [
+  audio,
+  transcription,
+  sortie,
+  cheminScript = 'scripts/vsl/film/script.json',
+  voixEssai = '.vsl/voix',
+] = process.argv.slice(2);
 const FFMPEG = process.env.FFMPEG ?? 'ffmpeg';
-const script = JSON.parse(readFileSync('scripts/vsl/film/script.json', 'utf8'));
-const reference = JSON.parse(readFileSync('.vsl/voix/mots.json', 'utf8'));
+const script = JSON.parse(readFileSync(cheminScript, 'utf8'));
+const reference = JSON.parse(readFileSync(join(voixEssai, 'mots.json'), 'utf8'));
 const norme = (s) =>
   s
     .toLowerCase()

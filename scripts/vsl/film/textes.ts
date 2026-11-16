@@ -1,12 +1,15 @@
 // Textes livrés avec la VSL : `sous-titres.srt` et `voix-off.txt` minutés, à partir de la chronologie
 // du dernier rendu (`.vsl/film/chronologie.json` et `sous-titres.json`).
-// Usage : tsx scripts/vsl/film/textes.ts   → .vsl/livrables/
+// Usage : tsx scripts/vsl/film/textes.ts [--suffixe -site]   → .vsl/livrables/
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const film = resolve(__dirname, '../../../.vsl/film');
 const sortie = resolve(__dirname, '../../../.vsl/livrables');
 const lire = <T>(f: string) => JSON.parse(readFileSync(join(film, f), 'utf8')) as T;
+
+const i = process.argv.indexOf('--suffixe');
+const suffixe = i < 0 ? '' : process.argv[i + 1]!;
 
 const deux = (n: number) => String(Math.floor(n)).padStart(2, '0');
 const srt = (t: number) =>
@@ -16,7 +19,7 @@ const minSec = (t: number) => `${Math.floor(t / 60)}:${deux(t % 60)}`;
 mkdirSync(sortie, { recursive: true });
 const lignes = lire<{ debut: number; fin: number; texte: string }[]>('sous-titres.json');
 writeFileSync(
-  join(sortie, 'sous-titres.srt'),
+  join(sortie, `sous-titres${suffixe}.srt`),
   lignes
     .map(
       (l, i) =>
@@ -30,7 +33,7 @@ const chrono = lire<{
 }>('chronologie.json');
 let acte = 0;
 writeFileSync(
-  join(sortie, 'voix-off.txt'),
+  join(sortie, `voix-off${suffixe}.txt`),
   `VSL longue Portail Travaux Pro — voix off minutée (durée ${minSec(chrono.duree)})\n` +
     chrono.segments
       .map(
