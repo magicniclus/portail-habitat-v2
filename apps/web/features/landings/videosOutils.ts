@@ -24,8 +24,8 @@ export const VSL_CHANTIERS: VideoVsl = {
   accroche: 'C’est gratuit… où est le piège ?',
   vertical: true,
   versions: [
-    { libelle: '1 minute', base: '/landing/videos/vsl/chantiers-60s', duree: 58 },
-    { libelle: '30 secondes', base: '/landing/videos/vsl/chantiers-30s', duree: 30 },
+    { libelle: '1 min', base: '/landing/videos/vsl/chantiers-60s', duree: 58 },
+    { libelle: '30 s', base: '/landing/videos/vsl/chantiers-30s', duree: 30 },
   ],
 };
 

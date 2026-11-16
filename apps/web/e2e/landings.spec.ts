@@ -214,7 +214,8 @@ test.describe('Landings par outil', () => {
   });
   test('LAND-09 : démo du site en 4 vidéos, l’étape suit le défilement dans les deux sens', async ({
     page,
-  }) => {
+  }, info) => {
+    test.skip(info.project.name !== 'ordinateur', 'Version empilée sur téléphone');
     await page.goto('/pro/site-internet-artisan');
     const z = page.locator('[data-demo-site]');
     await z.waitFor();
@@ -264,6 +265,25 @@ test.describe('Landings par outil', () => {
         ),
       )
       .toBeLessThan(200);
+  });
+  test('téléphone : démos au défilement remplacées par une version empilée, sans débordement', async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name === 'ordinateur', 'Téléphone uniquement');
+    for (const [url, zone, n] of [
+      ['/pro/site-internet-artisan', '[data-demo-site]', 4],
+      [URL_LANDING, '[data-histoire-fiche]', 3],
+    ] as const) {
+      await page.goto(url);
+      const z = page.locator(zone);
+      await expect(z.locator(':scope > li')).toHaveCount(n);
+      expect(await z.evaluate((e) => (e as HTMLElement).offsetHeight)).toBeLessThan(
+        await page.evaluate((k) => innerHeight * k * 1.6, n),
+      );
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
   });
   test('LAND-11 : chantiers, de la fiche à la demande, l’étape suit le défilement', async ({
     page,

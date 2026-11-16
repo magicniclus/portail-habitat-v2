@@ -3,13 +3,15 @@
 import { cn } from '@ph/ui';
 import { useEffect, useRef, useState } from 'react';
 import { BASE, Ecran, ETAPES, TexteEtape } from './DemoSiteParties';
+import { DemoSiteEmpilee } from './DemoSiteEmpilee';
+import { useVersionEmpilee } from './useVersionEmpilee';
 
 const N = ETAPES.length;
 
 /**
  * Création du site en 4 vidéos (LANDINGS §3.3) : panneau collant, l'étape change au fur et à
  * mesure du défilement, dans les deux sens ; la vidéo de l'étape se lance (muette, en boucle).
- * Avec `prefers-reduced-motion` : les 4 étapes empilées, vidéos lancées à la demande.
+ * Téléphone, écran bas ou mouvement réduit : version empilée (`DemoSiteEmpilee`).
  */
 export function DemoSiteVideos() {
   const zone = useRef<HTMLDivElement>(null);
@@ -17,15 +19,7 @@ export function DemoSiteVideos() {
   const [etape, setEtape] = useState(0);
   const [avance, setAvance] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [calme, setCalme] = useState(false);
-
-  useEffect(() => {
-    const m = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const suivre = () => setCalme(m.matches);
-    suivre();
-    m.addEventListener('change', suivre);
-    return () => m.removeEventListener('change', suivre);
-  }, []);
+  const calme = useVersionEmpilee();
 
   useEffect(() => {
     if (calme) return;
@@ -74,28 +68,7 @@ export function DemoSiteVideos() {
     scrollTo({ top: haut + pas * i + pas * 0.05, behavior: 'smooth' });
   };
 
-  if (calme)
-    return (
-      <ol className="m-0 grid list-none gap-10 p-0 text-left">
-        {ETAPES.map((e, i) => (
-          <li key={e.id} className="grid gap-4">
-            <TexteEtape i={i} titre={e.titre} texte={e.texte} />
-            <Ecran url={e.url}>
-              <video
-                className="block size-full object-cover"
-                src={`${BASE}/${e.id}.mp4`}
-                poster={`${BASE}/${e.id}.webp`}
-                controls
-                muted
-                playsInline
-                preload="none"
-                aria-label={`${e.titre} : démonstration filmée dans Portail Travaux`}
-              />
-            </Ecran>
-          </li>
-        ))}
-      </ol>
-    );
+  if (calme) return <DemoSiteEmpilee />;
 
   const e = ETAPES[etape]!;
   return (

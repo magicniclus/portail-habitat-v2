@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { EXEMPLES_DEMANDES } from './contenu';
 import { conteneurPro } from './Sections';
 import { TelephoneDemandes } from './TelephoneDemandes';
+import { useVersionEmpilee } from '@/features/landings/useVersionEmpilee';
 
 const NB = EXEMPLES_DEMANDES.length;
 /** Une étape par demande qui arrive, puis l'étape finale (le client est rappelé). */
@@ -19,15 +20,7 @@ const ETAPES = NB + 1;
 export function FilDemandes() {
   const zone = useRef<HTMLDivElement>(null);
   const [etape, setEtape] = useState(0);
-  const [calme, setCalme] = useState(false);
-
-  useEffect(() => {
-    const m = matchMedia('(prefers-reduced-motion: reduce)');
-    const suivre = () => setCalme(m.matches);
-    suivre();
-    m.addEventListener('change', suivre);
-    return () => m.removeEventListener('change', suivre);
-  }, []);
+  const calme = useVersionEmpilee();
 
   useEffect(() => {
     if (calme) return;
@@ -100,7 +93,7 @@ export function FilDemandes() {
           Exemples de demandes, à titre d’illustration.
         </p>
       </div>
-      <TelephoneDemandes n={n} final={final}>
+      <TelephoneDemandes n={n} final={final} empile={calme}>
         {/* Téléphone : le message final se pose sur l'écran (pas de place à côté). */}
         <p
           className={cn(

@@ -4,6 +4,7 @@ import { cn } from '@ph/ui';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Ecran, Encarts, HISTOIRE } from './HistoireParties';
 import { conteneur, pastille, titreFort } from './styles';
+import { useVersionEmpilee } from './useVersionEmpilee';
 
 const N = HISTOIRE.length;
 
@@ -11,21 +12,13 @@ const N = HISTOIRE.length;
  * Landing Chantiers (LANDINGS §3, à la place de « Comment ça marche ») : de la fiche complète à la
  * première demande, en 3 temps, sur de vraies captures. Panneau collant : l'étape, l'écran et ses
  * encarts changent au fil du défilement, dans les deux sens ; la 2e étape passe de l'annuaire à la
- * fiche publique. Avec `prefers-reduced-motion` : les 3 étapes empilées.
+ * fiche publique. Téléphone, écran bas ou mouvement réduit : les 3 étapes empilées, avec leurs encarts.
  */
 export function HistoireFiche() {
   const zone = useRef<HTMLDivElement>(null);
   const [etape, setEtape] = useState(0);
   const [avance, setAvance] = useState(0);
-  const [calme, setCalme] = useState(false);
-
-  useEffect(() => {
-    const m = matchMedia('(prefers-reduced-motion: reduce)');
-    const suivre = () => setCalme(m.matches);
-    suivre();
-    m.addEventListener('change', suivre);
-    return () => m.removeEventListener('change', suivre);
-  }, []);
+  const calme = useVersionEmpilee();
 
   useEffect(() => {
     if (calme) return;
@@ -75,14 +68,17 @@ export function HistoireFiche() {
       <section className="bg-accent-100 py-[clamp(56px,7vw,104px)]">
         <div className={cn(conteneur, 'grid gap-10')}>
           {entete}
-          {HISTOIRE.map((e, i) => (
-            <div key={e.titre} className="grid gap-4">
-              <Etape i={i} titre={e.titre} texte={e.texte} actif />
-              <Cadre url={e.url}>
-                <Ecran nom={e.ecrans[0]} visible />
-              </Cadre>
-            </div>
-          ))}
+          <ol data-histoire-fiche className="m-0 grid list-none gap-10 p-0">
+            {HISTOIRE.map((e, i) => (
+              <li key={e.titre} className="grid gap-4">
+                <Etape i={i} titre={e.titre} texte={e.texte} actif />
+                <Cadre url={e.url}>
+                  <Ecran nom={e.ecrans[e.ecrans.length - 1]!} visible />
+                  <Encarts etape={i} />
+                </Cadre>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
     );

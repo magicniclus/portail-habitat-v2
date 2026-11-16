@@ -16,16 +16,26 @@ const ORDRE = EXEMPLES_DEMANDES.map((d, i) => ({ d, i })).reverse();
 export function TelephoneDemandes({
   n,
   final,
+  empile = false,
   children,
 }: {
   n: number;
   final: boolean;
+  /** Version empilée (téléphone) : largeur fixe, sans tenir dans la hauteur de l'écran. */
+  empile?: boolean;
   /** Posé en bas de l'écran (message final sur mobile). */
   children?: ReactNode;
 }) {
   const derniere = EXEMPLES_DEMANDES[n - 1]!;
   return (
-    <div className="relative mx-auto aspect-[9/19] h-[min(620px,calc(100svh-215px))] md:h-[min(640px,calc(100svh-120px))]">
+    <div
+      className={cn(
+        'relative mx-auto aspect-[9/19]',
+        empile
+          ? 'w-[min(310px,86vw)]'
+          : 'h-[min(620px,calc(100svh-215px))] md:h-[min(640px,calc(100svh-120px))]',
+      )}
+    >
       {/* Boutons latéraux. */}
       <span
         aria-hidden="true"
