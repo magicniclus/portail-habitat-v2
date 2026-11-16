@@ -17,12 +17,15 @@ export function TelephoneDemandes({
   n,
   final,
   empile = false,
+  apparitions = 0,
   children,
 }: {
   n: number;
   final: boolean;
   /** Version empilée (téléphone) : largeur fixe, sans tenir dans la hauteur de l'écran. */
   empile?: boolean;
+  /** Version empilée : nombre d'entrées du téléphone à l'écran (rejoue la notification). */
+  apparitions?: number;
   /** Posé en bas de l'écran (message final sur mobile). */
   children?: ReactNode;
 }) {
@@ -104,11 +107,11 @@ export function TelephoneDemandes({
             ))}
           </ul>
           {/* Notification du système : rejouée à chaque nouvelle demande. Décorative (elle répète la
-              demande déjà lue dans la liste), donc masquée aux lecteurs d'écran ; absente de la version
-              empilée, où rien n'arrive au défilement. */}
-          {empile ? null : (
+              demande déjà lue dans la liste), donc masquée aux lecteurs d'écran. Version empilée : jouée
+              quand le téléphone entre à l'écran (jamais au chargement, où elle serait à demi opaque). */}
+          {empile && !apparitions ? null : (
             <div
-              key={n}
+              key={empile ? `a${apparitions}` : n}
               aria-hidden="true"
               className="absolute inset-x-[3.5%] top-[7.5%] z-[3] flex animate-[notif_3.2s_ease-out_forwards] items-center gap-2.5 rounded-[18px] bg-blanc/90 px-3 py-2.5 shadow-lg ring-1 ring-black/5 backdrop-blur-md motion-reduce:hidden"
             >

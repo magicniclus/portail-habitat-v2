@@ -19,8 +19,23 @@ const ETAPES = NB + 1;
  */
 export function FilDemandes() {
   const zone = useRef<HTMLDivElement>(null);
+  const telephone = useRef<HTMLDivElement>(null);
   const [etape, setEtape] = useState(0);
+  /** Version empilée : la notification s'affiche chaque fois que le téléphone entre à l'écran. */
+  const [apparitions, setApparitions] = useState(0);
   const calme = useVersionEmpilee();
+
+  useEffect(() => {
+    if (!calme || !telephone.current) return;
+    const io = new IntersectionObserver(
+      ([x]) => {
+        if (x?.isIntersecting) setApparitions((v) => v + 1);
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(telephone.current);
+    return () => io.disconnect();
+  }, [calme]);
 
   useEffect(() => {
     if (calme) return;
@@ -93,18 +108,20 @@ export function FilDemandes() {
           Exemples de demandes, à titre d’illustration.
         </p>
       </div>
-      <TelephoneDemandes n={n} final={final} empile={calme}>
-        {/* Téléphone : le message final se pose sur l'écran (pas de place à côté). */}
-        <p
-          className={cn(
-            'absolute inset-x-3 bottom-3 z-[3] m-0 rounded-[14px] bg-accent-700 px-4 py-3 text-[13.5px] leading-5 font-semibold text-blanc shadow-lg transition-[opacity,transform] duration-500 md:hidden',
-            final ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
-          )}
-        >
-          Sans fiche, ces clients appellent un autre artisan. Ce serait dommage de les laisser
-          passer.
-        </p>
-      </TelephoneDemandes>
+      <div ref={telephone}>
+        <TelephoneDemandes n={n} final={final} empile={calme} apparitions={apparitions}>
+          {/* Téléphone : le message final se pose sur l'écran (pas de place à côté). */}
+          <p
+            className={cn(
+              'absolute inset-x-3 bottom-3 z-[3] m-0 rounded-[14px] bg-accent-700 px-4 py-3 text-[13.5px] leading-5 font-semibold text-blanc shadow-lg transition-[opacity,transform] duration-500 md:hidden',
+              final ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+            )}
+          >
+            Sans fiche, ces clients appellent un autre artisan. Ce serait dommage de les laisser
+            passer.
+          </p>
+        </TelephoneDemandes>
+      </div>
     </div>
   );
 
