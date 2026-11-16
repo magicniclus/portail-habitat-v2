@@ -5,6 +5,7 @@ import {
   formuleMigree,
   FORMULES,
   inclut,
+  formulesAllerPlusLoin,
   offreProposee,
   PRIX_FORMULES_HT,
   remiseAppelOffres,
@@ -124,5 +125,24 @@ describe('prix et offres', () => {
     expect(siegesInclus('tout_inclus')).toBe(3);
     expect(siegesInclus('pack_fiche_site')).toBe(1);
     expect(siegesInclus('gratuit')).toBe(1);
+  });
+});
+
+describe('formulesAllerPlusLoin (Mon abonnement, décision du 15/11/2026)', () => {
+  it('Site Pro en premier ; chaque formule ajoute quelque chose, sans doublon', () => {
+    expect(formulesAllerPlusLoin('gratuit')).toEqual([
+      'site_pro',
+      'fiche_pro',
+      'pack_fiche_site',
+      'tout_inclus',
+    ]);
+  });
+  it('jamais une formule déjà incluse : Fiche Pro + Site Pro = Fiche + Site', () => {
+    expect(formulesAllerPlusLoin('site_pro')).toEqual(['pack_fiche_site', 'tout_inclus']);
+    expect(formulesAllerPlusLoin('fiche_pro')).toEqual(['pack_fiche_site', 'tout_inclus']);
+    expect(formulesAllerPlusLoin('pack_fiche_site')).toEqual(['tout_inclus']);
+  });
+  it('rien pour un abonné Tout inclus', () => {
+    expect(formulesAllerPlusLoin('tout_inclus')).toEqual([]);
   });
 });

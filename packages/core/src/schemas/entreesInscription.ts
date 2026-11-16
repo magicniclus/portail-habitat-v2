@@ -1,3 +1,4 @@
+import { estSiretValide, normaliserSiren } from '../format/siren';
 import { z } from '../zod';
 import { codePostal, email, geo, id, telephoneFr } from './commun';
 import { entreeAcquisition, rayonKm } from './artisans';
@@ -38,8 +39,30 @@ export const entreeInscriptionEtape2 = z.strictObject({
 /** Reprise par le lien reçu par email (ONB-04). */
 export const entreeRepriseInscription = z.strictObject({ jeton: z.string().min(20).max(200) });
 
-/** Étape 3 : entreprise choisie par son SIREN ; tout le reste vient du brouillon, relu côté serveur. */
-export const entreeFinaliserInscription = z.strictObject({
+/** Étape 3, entreprise trouvée au répertoire : son SIREN ; tout le reste est relu côté serveur. */
+const finaliserParSiren = z.strictObject({
   cleIdempotence: z.string().min(8).max(64),
   siren: z.string().regex(/^\d{9}$/, 'SIREN à 9 chiffres'),
 });
+
+/**
+ * Étape 3, « Je ne trouve pas mon entreprise » (décision du 15/11/2026) : SIRET, nom et adresse du
+ * siège saisis à la main. La fiche reste hors ligne jusqu'à la vérification d'un modérateur.
+ */
+const finaliserSaisieManuelle = z.strictObject({
+  cleIdempotence: z.string().min(8).max(64),
+  manuelle: z.strictObject({
+    siret: z
+      .string()
+      .transform(normaliserSiren)
+      .refine(estSiretValide, 'Numéro SIRET invalide : 14 chiffres, sur votre Kbis'),
+    raisonSociale: z.string().trim().min(2, 'Indiquez le nom de votre entreprise').max(200),
+    adresse: z.strictObject({
+      ligne1: z.string().trim().min(3, 'Indiquez l’adresse du siège').max(200),
+      codePostal,
+      ville: z.string().trim().min(2).max(80),
+    }),
+  }),
+});
+
+export const entreeFinaliserInscription = z.union([finaliserParSiren, finaliserSaisieManuelle]);

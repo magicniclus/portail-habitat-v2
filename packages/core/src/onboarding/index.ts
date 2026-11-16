@@ -42,18 +42,23 @@ export function statutZone(z: { ville?: string; rayonKm?: number }) {
   return { complete, statut: complete ? `${z.ville} · ${z.rayonKm} km` : 'Choisissez votre ville' };
 }
 
+/**
+ * Étape 3 (décision du 15/11/2026) : entreprise, puis Google ou mot de passe confirmé ; les
+ * conditions générales sont acceptées une seule fois, à l'étape 1.
+ */
 export function statutCompte(c: {
+  methode: 'google' | 'motDePasse';
   entrepriseChoisie: boolean;
   motDePasse: string;
   confirmation: string;
-  cgv: boolean;
 }) {
   if (!c.entrepriseChoisie) return { complete: false, statut: 'Indiquez votre entreprise (SIREN)' };
-  if (forceMotDePasse(c.motDePasse) < 3)
-    return { complete: false, statut: 'Choisissez un mot de passe d’au moins 10 caractères' };
-  if (c.motDePasse !== c.confirmation)
-    return { complete: false, statut: 'Les deux mots de passe sont différents' };
-  if (!c.cgv) return { complete: false, statut: 'Acceptez les conditions d’utilisation' };
+  if (c.methode === 'motDePasse') {
+    if (forceMotDePasse(c.motDePasse) < 3)
+      return { complete: false, statut: 'Choisissez un mot de passe d’au moins 10 caractères' };
+    if (c.motDePasse !== c.confirmation)
+      return { complete: false, statut: 'Les deux mots de passe sont différents' };
+  }
   return { complete: true, statut: 'Tout est prêt' };
 }
 
@@ -63,4 +68,28 @@ export function forceMotDePasse(m: string): number {
   const variete = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(m)).length;
   return Math.min(4, 2 + Math.floor(variete / 2));
 }
+/** Rayon d'intervention réglé au curseur (décision du 15/11/2026, schéma `rayonKm` : 10 à 100). */
+export const RAYON_ZONE = { min: 10, max: 100, pas: 5, defaut: 30 } as const;
+
+/**
+ * Demandes récentes affichées aux étapes 2 et 3 : un engagement du propriétaire (15/11/2026), pas
+ * un calcul. Ne pas remplacer par une estimation.
+ */
+export const DEMANDES_RECENTES_MIN = 3;
+
+export function phraseDemandesRecentes(z: { ville: string; rayonKm: number }) {
+  return {
+    phrase: `Au moins ${DEMANDES_RECENTES_MIN} demandes de travaux déposées ces dernières 48 h autour de ${z.ville}, dans un rayon de ${z.rayonKm} km.`,
+    precision:
+      'Certaines ont peut-être déjà été confiées à un artisan : vous verrez dans votre espace celles qui sont encore ouvertes.',
+  };
+}
+
+/** Nom saisi à l'inscription (ou du compte Google) → prénom (premier mot) et nom (le reste). */
+export function decouperNom(complet: string): { prenom?: string; nom?: string } {
+  const [prenom, ...reste] = complet.trim().split(/\s+/).filter(Boolean);
+  if (!prenom) return {};
+  return reste.length ? { prenom, nom: reste.join(' ') } : { prenom };
+}
+
 export * from './carte';

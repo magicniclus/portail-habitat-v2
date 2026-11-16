@@ -11,18 +11,40 @@ export function derniersStatutsDocuments(
   return Object.fromEntries(Object.entries(r).map(([t, d]) => [t, d!.statut]));
 }
 
-/**
- * Mise en ligne automatique de la fiche (décision du propriétaire, 01/11/2026) : dès que le
- * minimum est fait (logo, description, bannière : complétude 100 %), sauf si l'artisan l'a
- * mise hors ligne lui-même (interrupteur « En ligne ») ; jamais une entreprise suspendue.
- */
-export function doitPasserEnLigne(a: {
-  enLigne: boolean;
+/** Statuts de la vérification de l'entreprise (`artisans/{id}.verification.statut`). */
+export type StatutVerification = 'a_faire' | 'en_cours' | 'verifie' | 'refuse' | 'expire';
+
+interface EtatMiseEnLigne {
+  /** SIREN trouvé au répertoire à l'inscription, ou vérifié par un modérateur (`sirenReconnu`). */
+  sirenReconnu: boolean;
+  verification: StatutVerification;
   statut: string;
-  completude: number;
   horsLigneVolontaire: boolean;
-}): boolean {
-  return !a.enLigne && a.statut === 'actif' && a.completude >= 100 && !a.horsLigneVolontaire;
+}
+
+/** Ce que l'artisan ne peut pas lever lui-même : SIREN reconnu, ni refusé ni expiré, entreprise active. */
+function sirenEnRegle(a: EtatMiseEnLigne): boolean {
+  return (
+    a.sirenReconnu &&
+    a.verification !== 'refuse' &&
+    a.verification !== 'expire' &&
+    a.statut === 'actif'
+  );
+}
+
+/**
+ * Fiche en ligne (décision du propriétaire, 15/11/2026) : dès que le SIREN est reconnu, sans
+ * attendre ni téléphone vérifié, ni attestation décennale, ni complétude ; jamais si le SIREN
+ * n'est pas contrôlé, refusé ou expiré, si l'entreprise est suspendue, ou si l'artisan l'a mise
+ * hors ligne lui-même (interrupteur « Fiche en ligne »).
+ */
+export function ficheDoitEtreEnLigne(a: EtatMiseEnLigne): boolean {
+  return sirenEnRegle(a) && !a.horsLigneVolontaire;
+}
+
+/** Interrupteur « Fiche en ligne » : se rallume dès que le SIREN est en règle, fiche complète ou non. */
+export function peutRallumer(a: EtatMiseEnLigne): boolean {
+  return sirenEnRegle(a);
 }
 
 /** Libellés des pièces (TYPES_DOCUMENT) et de leur vérification, pour Ma fiche. */

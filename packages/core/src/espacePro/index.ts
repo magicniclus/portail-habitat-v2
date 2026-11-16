@@ -117,8 +117,6 @@ export const accueilPro = (membre: Membre | null | undefined): PagePro =>
   menuPro(membre)[0]?.liens[0]?.cle ??
   (ongletsCompte(membre).some((o) => o.cle === 'facturation') ? 'facturation' : 'compte');
 
-/** Complétude minimale pour être mis en ligne (EMAILS `bienvenue-pro`, `fiche-incomplete`). */
-export const SEUIL_FICHE_EN_LIGNE = 60;
 const DESCRIPTION_MIN = 20;
 
 /** Ce qui rend la fiche « complète » (décision du propriétaire, 01/11/2026). */
@@ -160,29 +158,24 @@ export const contenuFiche = (a: {
 
 export type EtatDecennale = 'absente' | 'envoyee' | 'validee' | 'refusee';
 
-/** « 3 étapes pour être en ligne » (ONB-06, email `bienvenue-pro`). */
-export function etapesMiseEnLigne(e: {
-  telephoneVerifie: boolean;
-  decennale: EtatDecennale;
-  completude: number;
-}) {
-  const etapes = [
-    { cle: 'telephone', libelle: 'Vérifier votre téléphone', fait: e.telephoneVerifie },
-    {
-      cle: 'decennale',
-      libelle:
-        e.decennale === 'refusee'
-          ? 'Renvoyer votre attestation décennale'
-          : 'Envoyer votre attestation décennale',
-      fait: e.decennale === 'envoyee' || e.decennale === 'validee',
-    },
-    {
-      cle: 'fiche',
-      libelle: `Compléter votre fiche à ${SEUIL_FICHE_EN_LIGNE} %`,
-      fait: e.completude >= SEUIL_FICHE_EN_LIGNE,
-    },
-  ] as const;
-  return { etapes, restantes: etapes.filter((x) => !x.fait).length };
+/**
+ * Assurance affichée à l'artisan (« Assurance non vérifiée » tant que la décennale n'est pas
+ * validée, comme sur la fiche publique et dans l'annuaire).
+ */
+export function etatAssurance(
+  d: EtatDecennale,
+): 'verifiee' | 'en_verification' | 'a_envoyer' | 'a_renvoyer' {
+  if (d === 'validee') return 'verifiee';
+  if (d === 'envoyee') return 'en_verification';
+  return d === 'refusee' ? 'a_renvoyer' : 'a_envoyer';
+}
+
+/**
+ * Espace tout neuf (décision du propriétaire, 15/11/2026) : ni présentation, ni demande, ni avis.
+ * Le premier écran remplace alors les indicateurs à zéro par l'accueil « votre espace est prêt ».
+ */
+export function espaceNeuf(e: { description: string; nbDemandes: number; nbAvis: number }) {
+  return e.description.trim() === '' && e.nbDemandes === 0 && e.nbAvis === 0;
 }
 
 const PRIORITE_ONGLETS: readonly PagePro[] = [

@@ -155,6 +155,13 @@ export const artisan = z
     delaiDispoJours: z.number().int().nonnegative().optional(),
     droits: droitsArtisan,
     acquisition: acquisitionArtisan.optional(),
+    /**
+     * SIREN reconnu (décision du 15/11/2026) : trouvé au répertoire à l'inscription, ou vérifié par
+     * un modérateur. Condition de la mise en ligne ; écrit uniquement par le serveur.
+     */
+    sirenReconnu: z
+      .object({ par: z.enum(['repertoire', 'moderateur']), le: horodatage })
+      .optional(),
     verification: z.object({
       statut: z.enum(['a_faire', 'en_cours', 'verifie', 'refuse', 'expire']),
       verifieLe: horodatage.optional(),

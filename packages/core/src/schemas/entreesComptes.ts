@@ -36,8 +36,16 @@ export const entreeFinaliserOnboarding = z
     intentions: z.array(id).max(200),
     zone: z.object({ centre: geo, rayonKm }),
     budgetMin: centimesPositifs.optional(),
-    /** Version des CGV Pro acceptées (case obligatoire de l'étape 3). */
+    /** Version des CGV Pro acceptées (case obligatoire de l'étape 1, une seule fois). */
     cgvVersion: z.string().min(1).max(20),
+    /** Entreprise trouvée au répertoire (fiche en ligne) ; saisie à la main : hors ligne, à vérifier. */
+    sirenReconnu: z.boolean().default(true),
+    /** Prénom et nom saisis à l'étape 1 (ou du compte Google), écrits dans le profil. */
+    profil: z
+      .object({ prenom: z.string().max(80).optional(), nom: z.string().max(80).optional() })
+      .optional(),
+    /** Email de l'étape 1 quand le compte Google en a un autre : email de contact de la fiche. */
+    emailContact: z.string().email().optional(),
     /** Landing d'origine relue dans le brouillon (LANDINGS §1) ; `pro` par défaut. */
     acquisition: entreeAcquisition.extend({ landingAt: z.number().int().nonnegative() }).optional(),
   })

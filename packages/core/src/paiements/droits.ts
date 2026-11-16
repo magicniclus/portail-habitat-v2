@@ -115,6 +115,28 @@ export function offreProposee(actuelle: Formule, voulue: FormulePayante): Formul
   return fiche && site ? 'pack_fiche_site' : voulue;
 }
 
+/** Ordre du bloc « Aller plus loin » (PAIEMENTS §4) : Site Pro d'abord. */
+const ORDRE_ALLER_PLUS_LOIN: readonly FormulePayante[] = [
+  'site_pro',
+  'fiche_pro',
+  'pack_fiche_site',
+  'tout_inclus',
+];
+
+/**
+ * « Aller plus loin » sous « Votre formule » (décision du 15/11/2026) : les formules qui ajoutent
+ * quelque chose à `actuelle`, Site Pro en premier, sans doublon ni formule déjà incluse ; rien
+ * pour Tout inclus. Chaque choix passe par `offreProposee` (Fiche Pro + Site Pro = Fiche + Site).
+ */
+export function formulesAllerPlusLoin(actuelle: Formule): FormulePayante[] {
+  const r: FormulePayante[] = [];
+  for (const f of ORDRE_ALLER_PLUS_LOIN) {
+    const o = offreProposee(actuelle, f);
+    if (o && o !== actuelle && !r.includes(o)) r.push(o);
+  }
+  return r;
+}
+
 /** Abonnés des anciennes formules (D60) : Visibilité → Fiche Pro, Premium → Tout inclus. */
 export function formuleMigree(ancien: { plan: string; optionVisibilite: boolean }): Formule {
   if (ancien.plan === 'premium') return 'tout_inclus';

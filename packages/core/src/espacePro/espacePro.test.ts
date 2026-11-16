@@ -3,7 +3,8 @@ import {
   accueilPro,
   completudeFiche,
   contenuFiche,
-  etapesMiseEnLigne,
+  espaceNeuf,
+  etatAssurance,
   menuPro,
   ongletsCompte,
   ongletsMobiles,
@@ -116,28 +117,27 @@ describe('completudeFiche (logo, description, bannière)', () => {
   });
 });
 
-describe('etapesMiseEnLigne (EMAILS bienvenue-pro, ONB-06)', () => {
-  it('3 étapes : téléphone, décennale, fiche à 60 %', () => {
-    const e = etapesMiseEnLigne({ telephoneVerifie: false, decennale: 'absente', completude: 20 });
-    expect(e.etapes.map((x) => x.cle)).toEqual(['telephone', 'decennale', 'fiche']);
-    expect(e.etapes.every((x) => !x.fait)).toBe(true);
-    expect(e.restantes).toBe(3);
+describe('espaceNeuf (premier écran, décision du 15/11/2026)', () => {
+  const neuf = { description: '', nbDemandes: 0, nbAvis: 0 };
+  it('ni présentation, ni demande, ni avis : accueil de bienvenue', () => {
+    expect(espaceNeuf(neuf)).toBe(true);
+    expect(espaceNeuf({ ...neuf, description: '   ' })).toBe(true);
   });
-
-  it('décennale envoyée (en attente de vérification) : étape faite', () => {
-    const e = etapesMiseEnLigne({ telephoneVerifie: true, decennale: 'envoyee', completude: 60 });
-    expect(e.restantes).toBe(0);
-  });
-
-  it('décennale refusée : à renvoyer', () => {
-    const e = etapesMiseEnLigne({ telephoneVerifie: true, decennale: 'refusee', completude: 80 });
-    expect(e.etapes.find((x) => x.cle === 'decennale')).toMatchObject({
-      fait: false,
-      libelle: 'Renvoyer votre attestation décennale',
-    });
+  it('présentation enregistrée, première demande ou premier avis : tableau de bord habituel', () => {
+    expect(espaceNeuf({ ...neuf, description: 'Plombier à Bordeaux depuis 2010.' })).toBe(false);
+    expect(espaceNeuf({ ...neuf, nbDemandes: 1 })).toBe(false);
+    expect(espaceNeuf({ ...neuf, nbAvis: 1 })).toBe(false);
   });
 });
 
+describe('etatAssurance (« Assurance non vérifiée » sur le tableau de bord)', () => {
+  it('vérifiée seulement si l’attestation décennale est validée', () => {
+    expect(etatAssurance('validee')).toBe('verifiee');
+    expect(etatAssurance('envoyee')).toBe('en_verification');
+    expect(etatAssurance('absente')).toBe('a_envoyer');
+    expect(etatAssurance('refusee')).toBe('a_renvoyer');
+  });
+});
 describe('ongletsMobiles (MOBILE §6)', () => {
   const avecCompte = (m: ReturnType<typeof menuPro>) => [
     ...m,
