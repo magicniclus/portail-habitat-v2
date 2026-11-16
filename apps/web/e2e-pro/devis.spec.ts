@@ -58,6 +58,16 @@ async function remplir(page: Page, o: { email?: string; pro?: string } = {}) {
   }
 }
 
+/**
+ * Retour à la liste : la page du devis se rafraîchit d'elle-même après un envoi ou une émission,
+ * ce qui peut interrompre la navigation ; on la relance jusqu'à ce qu'elle aboutisse.
+ */
+async function allerALaListe(page: Page) {
+  await expect(async () => {
+    await page.goto('/pro/devis');
+  }).toPass({ timeout: 15_000 });
+}
+
 test.describe('Devis & factures', () => {
   test.describe.configure({ mode: 'serial' });
 
@@ -172,14 +182,14 @@ test.describe('Devis & factures', () => {
     );
     await page.getByRole('button', { name: 'Envoyer au client' }).click();
     await expect(page.getByText('Devis envoyé au client par email.')).toBeVisible();
-    await page.goto('/pro/devis');
+    await allerALaListe(page);
     await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
     await page.getByRole('button', { name: 'Transformer en facture' }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+\/modifier$/, { timeout: 20_000 });
     await page.getByRole('button', { name: 'Émettre la facture' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Émettre la facture' }).click();
     await expect(page).toHaveURL(/\/pro\/devis\/factures\/[^/]+$/, { timeout: 20_000 });
-    await page.goto('/pro/devis');
+    await allerALaListe(page);
     await page.getByRole('button', { name: `Actions du devis ${numero}` }).click();
     await expect(page.getByRole('link', { name: 'Voir la facture' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Transformer en facture' })).toHaveCount(0);
