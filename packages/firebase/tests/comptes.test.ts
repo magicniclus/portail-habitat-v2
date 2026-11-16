@@ -125,7 +125,9 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
       droits: { ...droitsInitiaux('gratuit', new Date(0)), majLe: expect.anything() },
       siegesMax: 1,
       nbMembres: 1,
-      enLigne: false,
+      // Décision du 15/11/2026 : SIREN trouvé au répertoire → fiche en ligne dès la création.
+      enLigne: true,
+      sirenReconnu: { par: 'repertoire', le: expect.anything() },
       proprietaireUid: uid,
       verification: { statut: 'en_cours' },
       metierPrincipal: 'plombier',
@@ -152,6 +154,36 @@ describe('finaliserOnboarding (COMPTES §3.3)', () => {
     expect(await claims(uid)).toEqual({ roles: ['artisan'], ent: { [artisanId]: 'p' } });
     expect(envois.map((e) => e.modele)).toEqual(['bienvenue-pro']);
     expect(a.acquisition).toEqual({ source: 'pro', landingAt: expect.anything() });
+  });
+
+  it('prénom et nom de l’étape 1 dans le profil ; email de contact gardé', async () => {
+    const uid = await compte('proprio@test.local');
+    const { artisanId } = await finaliserOnboarding(s, uid, {
+      ...onboarding(),
+      profil: { prenom: 'Julien', nom: 'Bertrand' },
+      emailContact: 'contact@bertrand.fr',
+    });
+    expect((await db.doc(chemins.user(uid)).get()).data()).toMatchObject({
+      prenom: 'Julien',
+      nom: 'Bertrand',
+      nomAffiche: 'Julien Bertrand',
+    });
+    expect((await db.doc(chemins.artisan(artisanId)).get()).get('emailContact')).toBe(
+      'contact@bertrand.fr',
+    );
+  });
+
+  it('« Je ne trouve pas mon entreprise » : fiche hors ligne, SIREN à vérifier, tâche prioritaire', async () => {
+    const uid = await compte('proprio@test.local');
+    const { artisanId } = await finaliserOnboarding(s, uid, {
+      ...onboarding(),
+      sirenReconnu: false,
+    });
+    const a = (await db.doc(chemins.artisan(artisanId)).get()).data()!;
+    expect(a).toMatchObject({ enLigne: false, verification: { statut: 'a_faire' } });
+    expect(a.sirenReconnu).toBeUndefined();
+    const tache = (await db.collection(collections.filesModeration).get()).docs[0]!.data();
+    expect(tache).toMatchObject({ type: 'artisan_nouveau', priorite: 1 });
   });
 
   it('LAND-01 : la source de la landing est écrite sur le compte créé', async () => {
@@ -687,6 +719,24 @@ describe('rechercherEntreprise (COMPTES §3.1)', () => {
     const r = await rechercherEntreprise({ ...s, fetch: f }, 'bertrand');
     expect(appels).toHaveLength(2);
     expect(r[0]!.analyse.refusee).toBe(true);
+  });
+
+  it('recherche par nom : le département de l’artisan d’abord, toute la France si rien', async () => {
+    const appels: string[] = [];
+    const f = (async (url: string) => {
+      appels.push(url);
+      return {
+        ok: true,
+        json: async () => ({ results: url.includes('departement=') ? [] : [resultat] }),
+      } as Response;
+    }) as unknown as typeof fetch;
+    const r = await rechercherEntreprise({ ...s, fetch: f }, 'bertrand', { codePostal: '33600' });
+    expect(appels[0]).toContain('departement=33');
+    expect(appels[1]).not.toContain('departement=');
+    expect(r).toHaveLength(1);
+    // Un SIREN n'a pas besoin du département.
+    await rechercherEntreprise({ ...s, fetch: f }, '732829320', { codePostal: '33600' });
+    expect(appels.at(-1)).not.toContain('departement=');
   });
 
   it('API indisponible ou réponse inattendue : INDISPONIBLE', async () => {

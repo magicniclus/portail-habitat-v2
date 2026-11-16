@@ -129,7 +129,7 @@ export const modelesFacturation = {
       ),
       recap([
         ['Fin de l’abonnement', d.finPeriode, true],
-        ['Ensuite', 'fiche gratuite, sans mise en avant ni demandes garanties'],
+        ['Ensuite', 'fiche gratuite, toujours en ligne, sans mise en avant'],
       ]),
       bouton('Annuler la résiliation', d.lien),
     ],

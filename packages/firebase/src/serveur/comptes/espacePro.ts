@@ -3,12 +3,13 @@ import { ErreurMetier } from '@ph/core/erreurs';
 import {
   completudeFiche,
   contenuFiche,
-  etapesMiseEnLigne,
+  espaceNeuf,
+  etatAssurance,
   type EtatDecennale,
 } from '@ph/core/espace-pro';
 import type { Membre } from '@ph/core/equipe';
 import type { Firestore } from 'firebase-admin/firestore';
-import { chemins } from '../../chemins';
+import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
 
 export interface ResumeArtisan {
   nomCommercial: string;
@@ -87,32 +88,42 @@ const ETATS: Record<string, EtatDecennale> = {
   refuse: 'refusee',
 };
 
-/** Tableau de bord (maquette Espace Artisan Dashboard) : indicateurs, complétude, mise en ligne. */
-export async function tableauDeBordPro(db: Firestore, artisanId: string, uid: string) {
-  const [artisan, user, decennales] = await Promise.all([
+/**
+ * Tableau de bord (maquette Espace Artisan Dashboard) : indicateurs, complétude, assurance et, pour
+ * un espace tout neuf (ni présentation, ni demande, ni avis), l'accueil de bienvenue (15/11/2026).
+ */
+export async function tableauDeBordPro(db: Firestore, artisanId: string) {
+  const [artisan, decennales, demandes] = await Promise.all([
     db.doc(chemins.artisan(artisanId)).get(),
-    db.doc(chemins.user(uid)).get(),
     db.collection(chemins.documents(artisanId)).where('type', '==', 'decennale').get(),
+    db
+      .collectionGroup(GROUPE_ATTRIBUTIONS)
+      .where('artisanId', '==', artisanId)
+      .orderBy('proposeeLe')
+      .limit(1)
+      .get(),
   ]);
   const a = artisan.data() ?? {};
   const derniere = decennales.docs
     .map((d) => d.data())
     .sort((x, y) => y.createdAt.toMillis() - x.createdAt.toMillis())[0];
-  const telephoneVerifie = user.get('telephoneVerifie') === true;
-  const completude = completudeFiche(contenuFiche(a));
+  const nbAvis = (a.nbAvis as number | undefined) ?? 0;
   return {
     enLigne: a.enLigne === true,
     indicateurs: {
       demandesMois: (a.demandesRecuesMois as number | undefined) ?? 0,
       noteMoyenne: (a.noteMoyenne as number | undefined) ?? 0,
-      nbAvis: (a.nbAvis as number | undefined) ?? 0,
+      nbAvis,
       ...(typeof a.tauxReponse === 'number' ? { tauxReponse: a.tauxReponse } : {}),
     },
-    completude,
-    miseEnLigne: etapesMiseEnLigne({
-      telephoneVerifie,
-      decennale: derniere ? (ETATS[derniere.statut as string] ?? 'absente') : 'absente',
-      completude: completude.pourcent,
+    completude: completudeFiche(contenuFiche(a)),
+    assurance: etatAssurance(
+      derniere ? (ETATS[derniere.statut as string] ?? 'absente') : 'absente',
+    ),
+    neuf: espaceNeuf({
+      description: (a.description as string | undefined) ?? '',
+      nbDemandes: demandes.size,
+      nbAvis,
     }),
   };
 }

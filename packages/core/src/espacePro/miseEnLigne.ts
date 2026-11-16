@@ -47,6 +47,36 @@ export function peutRallumer(a: EtatMiseEnLigne): boolean {
   return sirenEnRegle(a);
 }
 
+/**
+ * Rattrapage des fiches créées avant le 15/11/2026 (migration 002) : SIREN reconnu déduit de
+ * l'historique (inscription : SIREN relu au répertoire ; sinon vérification d'un modérateur), puis
+ * remise en ligne si la règle le veut. Ne met jamais une fiche hors ligne ; `null` : rien à faire.
+ */
+export function rattrapageMiseEnLigne(d: {
+  origine?: string;
+  statut?: string;
+  enLigne?: boolean;
+  horsLigneVolontaire?: boolean;
+  sirenReconnu?: unknown;
+  verification?: { statut?: string };
+}): { sirenReconnu: 'repertoire' | 'moderateur'; enLigne?: true } | null {
+  if (d.sirenReconnu) return null;
+  const verification = (d.verification?.statut ?? 'a_faire') as StatutVerification;
+  if (verification === 'refuse' || verification === 'expire') return null;
+  const par =
+    verification === 'verifie' ? 'moderateur' : d.origine === 'onboarding' ? 'repertoire' : null;
+  if (!par) return null;
+  const enLigne =
+    d.enLigne !== true &&
+    ficheDoitEtreEnLigne({
+      sirenReconnu: true,
+      verification,
+      statut: d.statut ?? '',
+      horsLigneVolontaire: d.horsLigneVolontaire === true,
+    });
+  return { sirenReconnu: par, ...(enLigne ? { enLigne: true as const } : {}) };
+}
+
 /** Libellés des pièces (TYPES_DOCUMENT) et de leur vérification, pour Ma fiche. */
 export const LIBELLES_TYPE_DOCUMENT: Record<string, string> = {
   kbis: 'Extrait Kbis',

@@ -176,6 +176,16 @@ const CAS: Cas[] = [
     autorises: [],
   },
   {
+    nom: 'se déclarer SIREN reconnu (serveur et modérateurs uniquement, décision du 15/11/2026)',
+    op: { maj: 'artisans/a1', donnees: { sirenReconnu: { par: 'moderateur', le: 1 } } },
+    autorises: [],
+  },
+  {
+    nom: 'se mettre en ligne soi-même (interrupteur côté serveur uniquement)',
+    op: { maj: 'artisans/a1', donnees: { enLigne: true } },
+    autorises: [],
+  },
+  {
     nom: 'changer son nombre de sièges (webhook Stripe uniquement)',
     op: { maj: 'artisans/a1', donnees: { siegesMax: 10 } },
     autorises: [],

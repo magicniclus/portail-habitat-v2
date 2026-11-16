@@ -1,6 +1,12 @@
 import { bannieresMax, type CadrageBanniere } from '@ph/core/annuaire';
 import { ErreurMetier } from '@ph/core/erreurs';
-import { completudeFiche, contenuFiche, doitPasserEnLigne } from '@ph/core/espace-pro';
+import {
+  completudeFiche,
+  contenuFiche,
+  ficheDoitEtreEnLigne,
+  peutRallumer,
+  type StatutVerification,
+} from '@ph/core/espace-pro';
 import { peut, type Membre } from '@ph/core/equipe';
 import { normaliserTel } from '@ph/core/format';
 import { encoderGeohash } from '@ph/core/geo';
@@ -12,21 +18,24 @@ import { chemins } from '../../chemins';
 /** Complétude d'après le document de l'entreprise : logo, description, bannière. */
 const completudeDepuisBase = (a: DocumentData) => completudeFiche(contenuFiche(a));
 
+/** État de mise en ligne lu sur le document de l'entreprise (règle du core, 15/11/2026). */
+export const etatMiseEnLigne = (a: DocumentData) => ({
+  sirenReconnu: Boolean(a.sirenReconnu),
+  verification: (a.verification?.statut ?? 'a_faire') as StatutVerification,
+  statut: String(a.statut ?? ''),
+  horsLigneVolontaire: a.horsLigneVolontaire === true,
+});
+
 /**
- * Champs à écrire après un changement de la fiche : complétude recalculée et, dès que le minimum
- * est fait (100 %), mise en ligne automatique, sauf fiche mise hors ligne par l'artisan.
+ * Champs à écrire après un changement de la fiche : complétude recalculée et, si le SIREN est
+ * reconnu et que l'artisan ne l'a pas éteinte, remise en ligne (la complétude n'y entre plus).
  */
 export function completudeEtMiseEnLigne(a: DocumentData): {
   completude: number;
   enLigne?: true;
 } {
   const { pourcent } = completudeDepuisBase(a);
-  const auto = doitPasserEnLigne({
-    enLigne: a.enLigne === true,
-    statut: String(a.statut ?? ''),
-    completude: pourcent,
-    horsLigneVolontaire: a.horsLigneVolontaire === true,
-  });
+  const auto = a.enLigne !== true && ficheDoitEtreEnLigne(etatMiseEnLigne(a));
   return { completude: pourcent, ...(auto ? { enLigne: true as const } : {}) };
 }
 
@@ -189,9 +198,9 @@ export async function modifierFiche(
 }
 
 /**
- * Interrupteur « En ligne » de Ma fiche (droit `fiche.modifier`). Allumer exige une fiche complète
- * (logo, description, bannière) et une entreprise active ; éteindre arrête aussi la mise en ligne
- * automatique jusqu'à ce que l'artisan rallume.
+ * Interrupteur « Fiche en ligne » de Ma fiche (droit `fiche.modifier`). Allumer exige seulement un
+ * SIREN reconnu (ni refusé ni expiré) et une entreprise active, fiche complète ou non ; éteindre
+ * arrête la remise en ligne automatique jusqu'à ce que l'artisan rallume.
  */
 export async function changerMiseEnLigne(
   s: { db: Firestore; horloge: () => number },
@@ -212,20 +221,20 @@ export async function changerMiseEnLigne(
       t.update(ref, { enLigne: false, horsLigneVolontaire: true, updatedAt: maintenant });
       return { enLigne: false };
     }
-    if (a.get('statut') !== 'actif') throw new ErreurMetier('PRECONDITION');
-    const c = completudeDepuisBase(a.data()!);
-    if (c.pourcent < 100)
+    const etat = etatMiseEnLigne(a.data()!);
+    if (!peutRallumer(etat))
       throw new ErreurMetier(
         'PRECONDITION',
-        `Pour mettre la fiche en ligne, il manque : ${c.criteres
-          .filter((x) => !x.fait)
-          .map((x) => x.libelle.toLowerCase())
-          .join(', ')}.`,
+        etat.statut !== 'actif'
+          ? 'Votre entreprise est suspendue : la fiche ne peut pas être mise en ligne.'
+          : etat.verification === 'refuse' || etat.verification === 'expire'
+            ? 'La vérification du SIREN de votre entreprise n’est plus valable : contactez le support.'
+            : 'Votre fiche sera en ligne dès que le SIREN de votre entreprise aura été vérifié.',
       );
     t.update(ref, {
       enLigne: true,
       horsLigneVolontaire: false,
-      completude: c.pourcent,
+      completude: completudeDepuisBase(a.data()!).pourcent,
       updatedAt: maintenant,
     });
     return { enLigne: true };

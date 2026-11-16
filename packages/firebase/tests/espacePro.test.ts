@@ -101,22 +101,28 @@ describe('choisirEntrepriseActive (COMPTES §4.5)', () => {
 });
 
 describe('tableauDeBordPro', () => {
-  it('fiche neuve : 0 %, 3 étapes restantes', async () => {
-    const t = await tableauDeBordPro(db, 'a1', 'u1');
+  it('espace tout neuf : accueil de bienvenue, assurance à envoyer', async () => {
+    const t = await tableauDeBordPro(db, 'a1');
     expect(t.completude.pourcent).toBe(0);
-    expect(t.miseEnLigne.restantes).toBe(3);
+    expect(t.neuf).toBe(true);
+    expect(t.assurance).toBe('a_envoyer');
   });
 
-  it('décennale envoyée, téléphone vérifié ; logo et bannière comptés dans la complétude', async () => {
-    await db.doc(chemins.user('u1')).update({ telephoneVerifie: true });
+  it('présentation enregistrée, premier avis ou première demande : tableau de bord habituel', async () => {
     await db
-      .collection(chemins.documents('a1'))
-      .add({ type: 'decennale', statut: 'en_attente', createdAt: T });
-    await db.doc(chemins.artisan('a1')).update({ logoUrl: 'l', bannieres: ['b'] });
-    const t = await tableauDeBordPro(db, 'a1', 'u1');
-    expect(t.miseEnLigne.etapes.map((e) => e.fait)).toEqual([true, true, true]);
-    expect(t.completude.criteres.find((c) => c.cle === 'banniere')?.fait).toBe(true);
-    expect(t.completude.pourcent).toBe(65);
+      .doc(chemins.artisan('a1'))
+      .update({ description: 'Couvreur zingueur à Bordeaux depuis 2010.' });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({ description: '', nbAvis: 1 });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({ nbAvis: 0 });
+    await db
+      .collection('demandes')
+      .doc('d1')
+      .collection('attributions')
+      .doc('a1')
+      .set({ artisanId: 'a1', proposeeLe: T });
+    expect((await tableauDeBordPro(db, 'a1')).neuf).toBe(false);
   });
 
   it('la décennale la plus récente fait foi (refusée puis renvoyée)', async () => {
@@ -125,15 +131,12 @@ describe('tableauDeBordPro', () => {
       statut: 'refuse',
       createdAt: T,
     });
-    expect((await tableauDeBordPro(db, 'a1', 'u1')).miseEnLigne.etapes[1]).toMatchObject({
-      fait: false,
-      libelle: 'Renvoyer votre attestation décennale',
-    });
+    expect((await tableauDeBordPro(db, 'a1')).assurance).toBe('a_renvoyer');
     await db.collection(chemins.documents('a1')).add({
       type: 'decennale',
       statut: 'en_attente',
       createdAt: Timestamp.fromMillis(T.toMillis() + 1000),
     });
-    expect((await tableauDeBordPro(db, 'a1', 'u1')).miseEnLigne.etapes[1]?.fait).toBe(true);
+    expect((await tableauDeBordPro(db, 'a1')).assurance).toBe('en_verification');
   });
 });

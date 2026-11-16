@@ -1,10 +1,12 @@
 import { FORMULES_PAYANTES } from '@ph/core/paiements';
 import { masquerEmail } from '@ph/core/equipe';
+import { ficheDoitEtreEnLigne } from '@ph/core/espace-pro';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { masquerTel } from '@ph/core/format';
 import { Timestamp, type DocumentData, type Firestore, type Query } from 'firebase-admin/firestore';
 import { chemins, collections } from '../../chemins';
 import { lireDocumentsPro, type DocumentPro } from '../pro/documents';
+import { etatMiseEnLigne } from '../pro/fiche';
 import { auditerAdmin } from './audit';
 
 /** Back-office › Artisans (ADMIN §2.3, maquette « Admin Artisans »). */
@@ -160,9 +162,17 @@ export async function verifierArtisanAdmin(
     const a = await t.get(ref);
     if (!a.exists) throw new ErreurMetier('INTROUVABLE');
     const avant = a.get('verification.statut') as string | undefined;
+    const apres = {
+      ...a.data(),
+      verification: { statut: 'verifie' },
+      sirenReconnu: { par: 'moderateur', le: t0 },
+    };
     t.update(ref, {
       'verification.statut': 'verifie',
       'verification.verifieLe': t0,
+      // Décision du 15/11/2026 : SIREN vérifié par un modérateur → reconnu, fiche en ligne.
+      ...(a.get('sirenReconnu') ? {} : { sirenReconnu: { par: 'moderateur', le: t0 } }),
+      ...(ficheDoitEtreEnLigne(etatMiseEnLigne(apres)) ? { enLigne: true } : {}),
       updatedAt: t0,
     });
     auditerAdmin(
@@ -219,7 +229,9 @@ export async function sanctionnerArtisanAdmin(
         t.update(x.ref, { leveeLe: t0, fin: t0, updatedAt: t0 });
     }
     const apres = e.action === 'suspendre' ? 'suspendu' : 'actif';
-    t.update(ref, { statut: apres, updatedAt: t0 });
+    // Suspendue : hors ligne ; levée : de nouveau en ligne si le SIREN est reconnu (15/11/2026).
+    const enLigne = ficheDoitEtreEnLigne(etatMiseEnLigne({ ...a.data(), statut: apres }));
+    t.update(ref, { statut: apres, enLigne, updatedAt: t0 });
     auditerAdmin(
       s.db,
       {

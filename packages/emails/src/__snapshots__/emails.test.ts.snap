@@ -87,7 +87,7 @@ Bonjour Julien, Tout inclus reste actif pour Bertrand Rénovation jusqu’au 1 o
 
 Fin de l’abonnement : 1 octobre 2027
 
-Ensuite : fiche gratuite, sans mise en avant ni demandes garanties
+Ensuite : fiche gratuite, toujours en ligne, sans mise en avant
 
 Annuler la résiliation https://portailtravaux.fr/pro/facturation
 
@@ -146,34 +146,34 @@ Portail Travaux · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > bienvenue-pro : version texte 1`] = `
 "Bienvenue sur Portail Travaux Pro, Julien
-3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.
+Votre fiche est en ligne : complétez-la pour recevoir plus de demandes.
 
 PORTAIL TRAVAUX PRO
 
 
 BIENVENUE, BERTRAND RÉNOVATION
 
-Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.
+Votre compte est créé et votre fiche est déjà en ligne : les particuliers de votre zone peuvent vous trouver et vous écrire.
 
 ✓
 
 Créer votre compte
 
-2
+✓
 
-Vérifier votre numéro de mobile
+Mettre votre fiche en ligne
 
 3
 
-Déposer votre attestation décennale
+Présenter votre entreprise (l’IA peut la rédiger pour vous)
 
 4
 
-Compléter votre fiche à 60 % (logo, photos, description)
+Envoyer votre attestation d’assurance décennale
 
 Accéder à mon espace https://portailtravaux.fr/pro
 
-Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.
+Tant que l’attestation n’est pas vérifiée, votre fiche affiche « Assurance non vérifiée ». Une question ? Répondez simplement à cet email.
 
 L’équipe Portail Travaux Pro
 
@@ -684,7 +684,7 @@ Portail Travaux · Raison sociale · Adresse postale"
 
 exports[`modèles rédigés (§4.1 à 4.3, 4.6, 4.7 et reprise du simulateur) > fiche-incomplete : version texte 1`] = `
 "Votre fiche est complète à 40 %
-À partir de 60 %, votre fiche apparaît dans l’annuaire.
+Une fiche complète inspire confiance et reçoit plus de demandes.
 
 PORTAIL TRAVAUX PRO
 

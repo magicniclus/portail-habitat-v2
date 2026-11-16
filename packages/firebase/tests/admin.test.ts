@@ -232,7 +232,10 @@ describe('artisans dans l’admin (ADMIN §2.3)', () => {
       action: 'suspendre',
       motif: 'SIREN radié',
     });
-    expect((await db.doc(chemins.artisan('a1')).get()).get('statut')).toBe('suspendu');
+    expect((await db.doc(chemins.artisan('a1')).get()).data()).toMatchObject({
+      statut: 'suspendu',
+      enLigne: false,
+    });
     await expect(
       sanctionnerArtisanAdmin(s(), {
         acteurUid: 'adm',
@@ -285,7 +288,24 @@ describe('artisans dans l’admin (ADMIN §2.3)', () => {
       artisanId: 'a1',
       motif: 'Kbis et décennale vus',
     });
-    expect((await db.doc(chemins.artisan('a1')).get()).get('verification.statut')).toBe('verifie');
+    const a = (await db.doc(chemins.artisan('a1')).get()).data()!;
+    expect(a.verification.statut).toBe('verifie');
+    // Décision du 15/11/2026 : SIREN vérifié par un modérateur → reconnu, fiche en ligne.
+    expect(a).toMatchObject({ sirenReconnu: { par: 'moderateur' }, enLigne: true });
+  });
+
+  it('levée de suspension : la fiche revient en ligne seulement si le SIREN est reconnu', async () => {
+    const lire = async () => (await db.doc(chemins.artisan('a1')).get()).data()!;
+    const sanction = (action: 'suspendre' | 'lever') =>
+      sanctionnerArtisanAdmin(s(), { acteurUid: 'adm', artisanId: 'a1', action, motif: 'm' });
+    await sanction('suspendre');
+    await sanction('lever');
+    expect((await lire()).enLigne).toBe(false);
+    await verifierArtisanAdmin(s(), { acteurUid: 'adm', artisanId: 'a1', motif: 'Kbis vu' });
+    await sanction('suspendre');
+    expect((await lire()).enLigne).toBe(false);
+    await sanction('lever');
+    expect((await lire()).enLigne).toBe(true);
   });
 });
 

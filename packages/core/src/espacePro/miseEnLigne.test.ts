@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { derniersStatutsDocuments, ficheDoitEtreEnLigne, peutRallumer } from './miseEnLigne';
+import {
+  derniersStatutsDocuments,
+  ficheDoitEtreEnLigne,
+  peutRallumer,
+  rattrapageMiseEnLigne,
+} from './miseEnLigne';
 
 const base = {
   sirenReconnu: true,
@@ -33,6 +38,39 @@ describe('peutRallumer (interrupteur « Fiche en ligne »)', () => {
     expect(peutRallumer({ ...base, horsLigneVolontaire: true })).toBe(true);
     expect(peutRallumer({ ...base, sirenReconnu: false })).toBe(false);
     expect(peutRallumer({ ...base, statut: 'suspendu' })).toBe(false);
+  });
+});
+
+describe('rattrapageMiseEnLigne (migration 002, fiches existantes)', () => {
+  const fiche = {
+    origine: 'onboarding',
+    statut: 'actif',
+    enLigne: false,
+    verification: { statut: 'en_cours' },
+  };
+  it('inscrite par le répertoire : SIREN reconnu et remise en ligne', () => {
+    expect(rattrapageMiseEnLigne(fiche)).toEqual({ sirenReconnu: 'repertoire', enLigne: true });
+  });
+  it('vérifiée par un modérateur (import, revendication…) : reconnue par le modérateur', () => {
+    expect(
+      rattrapageMiseEnLigne({ ...fiche, origine: 'import', verification: { statut: 'verifie' } }),
+    ).toEqual({ sirenReconnu: 'moderateur', enLigne: true });
+  });
+  it('déjà en ligne : SIREN marqué seulement ; éteinte par l’artisan ou suspendue : pas en ligne', () => {
+    expect(rattrapageMiseEnLigne({ ...fiche, enLigne: true })).toEqual({
+      sirenReconnu: 'repertoire',
+    });
+    expect(rattrapageMiseEnLigne({ ...fiche, horsLigneVolontaire: true })).toEqual({
+      sirenReconnu: 'repertoire',
+    });
+    expect(rattrapageMiseEnLigne({ ...fiche, statut: 'suspendu' })).toEqual({
+      sirenReconnu: 'repertoire',
+    });
+  });
+  it('rien à faire : SIREN déjà marqué, ou jamais contrôlé (import non vérifié), ou refusé', () => {
+    expect(rattrapageMiseEnLigne({ ...fiche, sirenReconnu: { par: 'repertoire' } })).toBeNull();
+    expect(rattrapageMiseEnLigne({ ...fiche, origine: 'import' })).toBeNull();
+    expect(rattrapageMiseEnLigne({ ...fiche, verification: { statut: 'refuse' } })).toBeNull();
   });
 });
 

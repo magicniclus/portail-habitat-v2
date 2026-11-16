@@ -247,6 +247,10 @@ export function genererEntreprises(c: ContexteSeed): EntrepriseSeed[] {
         formuleMigree({ plan, optionVisibilite: plan !== 'gratuit' }),
         c.maintenant,
       ),
+      // SIREN reconnu (décision du 15/11/2026) : celui des entreprises vérifiées.
+      ...(verification === 'verifie'
+        ? { sirenReconnu: { par: 'moderateur' as const, le: c.maintenant } }
+        : {}),
       verification: {
         statut: verification,
         ...(verification === 'verifie'

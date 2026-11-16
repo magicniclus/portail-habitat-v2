@@ -109,23 +109,29 @@ export const modelesOnboarding = {
     ],
     exemple: EX_RELANCE,
   }),
-  'bienvenue-pro': modele<Base>({
+  // Décision du 15/11/2026 : fiche en ligne dès le SIREN reconnu ; saisie à la main : à vérifier.
+  'bienvenue-pro': modele<Base & { enLigne?: 'oui' | 'non' }>({
     sujet: (d) => `Bienvenue sur Portail Travaux Pro${d.prenom ? `, ${d.prenom}` : ''}`,
-    preheader: () => '3 étapes pour que votre fiche soit en ligne et que les demandes arrivent.',
+    preheader: (d) =>
+      d.enLigne === 'non'
+        ? 'Nous vérifions votre entreprise : votre fiche sera en ligne juste après.'
+        : 'Votre fiche est en ligne : complétez-la pour recevoir plus de demandes.',
     blocs: (d) => [
       titre(`Bienvenue, ${d.nomCommercial}`),
       para(
-        'Votre compte est créé. Pour apparaître dans l’annuaire et recevoir des demandes, il reste 3 étapes rapides.',
+        d.enLigne === 'non'
+          ? 'Votre compte est créé. Nous vérifions le SIREN de votre entreprise : votre fiche sera en ligne dès que c’est fait, sous 48 h ouvrées.'
+          : 'Votre compte est créé et votre fiche est déjà en ligne : les particuliers de votre zone peuvent vous trouver et vous écrire.',
       ),
       etapes([
         ['Créer votre compte', true],
-        ['Vérifier votre numéro de mobile', false],
-        ['Déposer votre attestation décennale', false],
-        ['Compléter votre fiche à 60 % (logo, photos, description)', false],
+        ['Mettre votre fiche en ligne', d.enLigne !== 'non'],
+        ['Présenter votre entreprise (l’IA peut la rédiger pour vous)', false],
+        ['Envoyer votre attestation d’assurance décennale', false],
       ]),
       bouton('Accéder à mon espace', d.lien),
       note(
-        'Une question ? Répondez simplement à cet email, notre équipe vous répond sous 24 h ouvrées.',
+        'Tant que l’attestation n’est pas vérifiée, votre fiche affiche « Assurance non vérifiée ». Une question ? Répondez simplement à cet email.',
       ),
     ],
     exemple: { ...EX, lien: 'https://portailtravaux.fr/pro' },
@@ -146,7 +152,7 @@ export const modelesOnboarding = {
   }),
   'fiche-incomplete': modele<Base & { completude: number; manques: string[] }>({
     sujet: (d) => `Votre fiche est complète à ${d.completude} %`,
-    preheader: () => 'À partir de 60 %, votre fiche apparaît dans l’annuaire.',
+    preheader: () => 'Une fiche complète inspire confiance et reçoit plus de demandes.',
     blocs: (d) => [
       titre('Complétez votre fiche'),
       { type: 'progression', libelle: 'Fiche', pourcent: d.completude },

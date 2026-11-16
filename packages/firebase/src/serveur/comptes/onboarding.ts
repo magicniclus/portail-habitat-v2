@@ -40,6 +40,11 @@ export async function finaliserOnboarding(
   const refIndex = s.db.collection(collections.sirenIndex).doc(e.entreprise.siren);
   const refUser = s.db.doc(chemins.user(uid));
   const base = slugifier(e.entreprise.nomCommercial, e.entreprise.adresseSiege.ville);
+  // Décision du 15/11/2026 : SIREN trouvé au répertoire → fiche en ligne dès la création ;
+  // saisi à la main (« Je ne trouve pas mon entreprise ») → hors ligne jusqu'à la vérification.
+  const reconnu = e.sirenReconnu;
+  const profil = e.profil ?? {};
+  const nomAffiche = [profil.prenom, profil.nom].filter(Boolean).join(' ');
 
   const slug = await s.db.runTransaction(async (tx) => {
     if ((await tx.get(refIndex)).exists)
@@ -79,16 +84,17 @@ export async function finaliserOnboarding(
         : { source: 'pro', landingAt: maintenant },
       demandeOfferteUtilisee: false,
       ...(e.budgetMin !== undefined ? { budgetMin: e.budgetMin } : {}),
+      ...(e.emailContact ? { emailContact: e.emailContact } : {}),
+      ...(reconnu ? { sirenReconnu: { par: 'repertoire' as const, le: maintenant } } : {}),
       droits: droitsInitiaux('gratuit', maintenant),
-      verification: { statut: 'en_cours' },
+      verification: { statut: reconnu ? 'en_cours' : 'a_faire' },
       noteMoyenne: 0,
       nbAvis: 0,
       notesCriteres: {},
       quotaDemandesMois: 0,
       demandesRecuesMois: 0,
       completude: 0,
-      // En ligne automatiquement dès le minimum fait (logo, description, bannière).
-      enLigne: false,
+      enLigne: reconnu,
       avertissements: 0,
       statut: 'actif',
       onboarding: { etape: 3, termineLe: maintenant },
@@ -117,10 +123,12 @@ export async function finaliserOnboarding(
         roles: FieldValue.arrayUnion('artisan'),
         entreprises: FieldValue.arrayUnion(artisanId),
         entrepriseActive: artisanId,
+        // Nom de l'étape 1 seulement si le profil n'en a pas encore.
+        ...(nomAffiche && !user.get('nomAffiche') ? { ...profil, nomAffiche } : {}),
         updatedAt: maintenant,
       });
     } else {
-      const profil = nouvelUtilisateur({
+      const nouveau = nouvelUtilisateur({
         email: compte.email!,
         roles: ['artisan'],
         origine: 'onboarding_pro',
@@ -132,7 +140,13 @@ export async function finaliserOnboarding(
       });
       tx.set(
         refUser,
-        utilisateur.parse({ ...profil, entreprises: [artisanId], entrepriseActive: artisanId }),
+        utilisateur.parse({
+          ...nouveau,
+          ...profil,
+          ...(nomAffiche ? { nomAffiche } : {}),
+          entreprises: [artisanId],
+          entrepriseActive: artisanId,
+        }),
       );
     }
     tx.set(
@@ -153,7 +167,8 @@ export async function finaliserOnboarding(
         createdAt: maintenant,
         type: 'artisan_nouveau',
         refs: { artisanId },
-        priorite: 1,
+        // SIREN saisi à la main : à vérifier en premier, la fiche attend hors ligne.
+        priorite: reconnu ? 2 : 1,
         statut: 'a_traiter',
         permissionRequise: 'artisans.verifier',
       }),
@@ -170,7 +185,12 @@ export async function finaliserOnboarding(
     refObjet: `artisans/${artisanId}`,
     donnees: {
       nomCommercial: e.entreprise.nomCommercial,
-      ...(compte.displayName ? { prenom: compte.displayName.split(' ')[0] } : {}),
+      ...(profil.prenom
+        ? { prenom: profil.prenom }
+        : compte.displayName
+          ? { prenom: compte.displayName.split(' ')[0] }
+          : {}),
+      enLigne: reconnu ? 'oui' : 'non',
       lien: '/pro',
     },
   });
