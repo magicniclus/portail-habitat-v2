@@ -103,25 +103,30 @@ export function TelephoneDemandes({
               </li>
             ))}
           </ul>
-          {/* Notification du système : rejouée à chaque nouvelle demande. */}
-          <div
-            key={n}
-            className="absolute inset-x-[3.5%] top-[7.5%] z-[3] flex animate-[notif_3.2s_ease-out_forwards] items-center gap-2.5 rounded-[18px] bg-blanc/90 px-3 py-2.5 shadow-lg ring-1 ring-black/5 backdrop-blur-md motion-reduce:hidden"
-          >
-            <span className="flex size-9 flex-none items-center justify-center rounded-[9px] bg-accent-700 text-blanc">
-              <HouseLineIcon size={20} weight="fill" />
-            </span>
-            <span className="grid min-w-0 text-[12.5px] leading-tight">
-              <span className="flex justify-between gap-2 text-[11px] text-neutre-700">
-                <span>PORTAIL TRAVAUX</span>
-                <span>maintenant</span>
+          {/* Notification du système : rejouée à chaque nouvelle demande. Décorative (elle répète la
+              demande déjà lue dans la liste), donc masquée aux lecteurs d'écran ; absente de la version
+              empilée, où rien n'arrive au défilement. */}
+          {empile ? null : (
+            <div
+              key={n}
+              aria-hidden="true"
+              className="absolute inset-x-[3.5%] top-[7.5%] z-[3] flex animate-[notif_3.2s_ease-out_forwards] items-center gap-2.5 rounded-[18px] bg-blanc/90 px-3 py-2.5 shadow-lg ring-1 ring-black/5 backdrop-blur-md motion-reduce:hidden"
+            >
+              <span className="flex size-9 flex-none items-center justify-center rounded-[9px] bg-accent-700 text-blanc">
+                <HouseLineIcon size={20} weight="fill" />
               </span>
-              <b className="truncate">Nouvelle demande · {derniere.client}</b>
-              <span className="truncate text-neutre-800">
-                {derniere.titre} · {derniere.ville}
+              <span className="grid min-w-0 text-[12.5px] leading-tight">
+                <span className="flex justify-between gap-2 text-[11px] text-neutre-700">
+                  <span>PORTAIL TRAVAUX</span>
+                  <span>maintenant</span>
+                </span>
+                <b className="truncate">Nouvelle demande · {derniere.client}</b>
+                <span className="truncate text-neutre-800">
+                  {derniere.titre} · {derniere.ville}
+                </span>
               </span>
-            </span>
-          </div>
+            </div>
+          )}
           <span className="absolute bottom-[1.2%] left-1/2 z-[2] h-[5px] w-[36%] -translate-x-1/2 rounded-full bg-black/80" />
         </div>
         {children}
