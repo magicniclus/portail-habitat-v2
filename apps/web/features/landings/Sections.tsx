@@ -18,16 +18,17 @@ export function EnTeteLanding({ bandeau }: { bandeau: string }) {
         </span>
       </p>
       <header className="border-b border-trait bg-fond">
-        <div className={cn(conteneur, 'flex min-h-14 items-center justify-between py-2')}>
+        <div className={cn(conteneur, 'flex min-h-14 items-center justify-between gap-2 py-2')}>
           <Link href={routes.pro} className="flex min-h-11 items-center text-texte no-underline">
             <Logo variant="pro" taille={32} />
           </Link>
           <Link
             href={routes.connexionPro}
-            className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-accent-300 bg-accent-100 px-4 text-[15px] font-semibold text-accent-800 no-underline transition-colors hover:border-accent hover:bg-accent-100/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-pill border border-accent-300 bg-accent-100 px-4 text-[15px] font-semibold max-[359px]:min-w-11 max-[359px]:justify-center max-[359px]:px-0 text-accent-800 no-underline transition-colors hover:border-accent hover:bg-accent-100/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <UserCircleIcon size={20} weight="bold" aria-hidden="true" />
-            Espace pro
+            {/* Très petits écrans (iPhone SE) : l'icône seule, le libellé reste lu. */}
+            <span className="max-[359px]:sr-only">Espace pro</span>
           </Link>
         </div>
       </header>
