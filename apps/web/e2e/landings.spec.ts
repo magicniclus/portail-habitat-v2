@@ -285,6 +285,21 @@ test.describe('Landings par outil', () => {
       );
     }
   });
+  test('fenêtre rétrécie (ordinateur → téléphone) : les 3 étapes de la section défilante restent visibles', async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'ordinateur', 'Redimensionnement depuis l’ordinateur');
+    await page.goto(URL_LANDING);
+    await page.locator('[data-scrolly]').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(800);
+    await page.setViewportSize({ width: 370, height: 642 });
+    for (const i of [0, 1, 2]) {
+      const panneau = page.locator(`#etape-panneau-${i}`);
+      await panneau.scrollIntoViewIfNeeded();
+      await expect(panneau).toBeVisible();
+      await expect(panneau).toHaveCSS('opacity', '1');
+    }
+  });
   test('LAND-11 : chantiers, de la fiche à la demande, l’étape suit le défilement', async ({
     page,
   }, info) => {

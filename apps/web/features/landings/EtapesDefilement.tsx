@@ -101,6 +101,12 @@ export function EtapesDefilement({
         ctx.revert();
         z.style.height = '';
         p.style.top = '';
+        // Retour à la liste (fenêtre rétrécie) : GSAP remet en place les styles qu'il avait trouvés,
+        // dont « masqué » sur les étapes 2 et 3 ; la liste les veut toutes visibles.
+        s.querySelectorAll<HTMLElement>('[id^="etape-panneau-"]').forEach((t) => {
+          t.style.removeProperty('opacity');
+          t.style.removeProperty('visibility');
+        });
       };
     });
     return () => {
