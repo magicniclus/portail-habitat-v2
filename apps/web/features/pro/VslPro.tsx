@@ -11,7 +11,7 @@ const GENERALE: VideoVsl = {
   piste: true,
 };
 
-/** Une durée du même film (version complète, 1 minute, 30 secondes). */
+/** Une durée du même film (complète, 1 min, 30 s). */
 interface VersionVsl {
   libelle: string;
   /** Chemin sans extension (`.mp4`, et `-vertical.mp4` si la vidéo a un format vertical). */
@@ -61,7 +61,7 @@ export function VslPro({
   const [choix, setChoix] = useState(0);
   const versions: VersionVsl[] = [
     {
-      libelle: `Version complète · ${dureeLisible(video.duree)}`,
+      libelle: dureeLisible(video.duree),
       base: video.base,
       duree: video.duree,
     },
@@ -153,22 +153,27 @@ export function VslPro({
         )}
       </figure>
       {versions.length > 1 ? (
-        <div
-          role="group"
-          aria-label="Durée de la vidéo"
-          className="mt-3 flex flex-wrap justify-center gap-2 min-[761px]:justify-start"
-        >
-          {versions.map((v, n) => (
-            <button
-              key={v.base}
-              type="button"
-              aria-pressed={n === choix}
-              onClick={() => (lancee ? lire(n) : setChoix(n))}
-              className="min-h-11 cursor-pointer rounded-pill border border-accent-200 bg-blanc px-[15px] text-sm font-semibold text-accent-700 hover:border-accent hover:bg-accent-200 aria-pressed:border-accent aria-pressed:bg-accent-200"
-            >
-              {v.libelle}
-            </button>
-          ))}
+        <div className="mt-3 flex items-center justify-center gap-3 min-[761px]:justify-start">
+          <span id="duree-vsl" className="text-sm font-semibold text-neutre-800">
+            Durée
+          </span>
+          <div
+            role="group"
+            aria-labelledby="duree-vsl"
+            className="inline-flex rounded-pill bg-neutre-200 p-1"
+          >
+            {versions.map((v, n) => (
+              <button
+                key={v.base}
+                type="button"
+                aria-pressed={n === choix}
+                onClick={() => (lancee ? lire(n) : setChoix(n))}
+                className="min-h-11 cursor-pointer rounded-pill border-0 bg-transparent px-4 text-sm font-semibold whitespace-nowrap text-neutre-800 tabular-nums transition-colors hover:text-neutre-900 aria-pressed:bg-blanc aria-pressed:text-neutre-900 aria-pressed:shadow-sm"
+              >
+                {v.libelle}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>
