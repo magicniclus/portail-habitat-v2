@@ -2,12 +2,13 @@
 // prises précédentes du formulaire du site (visiteur fictif « Claire Martin », émulateurs seulement).
 // Usage : tsx scripts/vsl/site-menage.ts
 import { appAdmin, estEmulateur } from '@ph/firebase/admin';
+import { chemins } from '@ph/firebase/chemins';
 import { getFirestore } from 'firebase-admin/firestore';
 
 async function main() {
   if (!estEmulateur()) throw new Error('Ménage réservé aux émulateurs.');
   const db = getFirestore(appAdmin());
-  const lot = await db.collection('demandes').get();
+  const lot = await db.doc(chemins.demande('_')).parent.get();
   let n = 0;
   for (const d of lot.docs) {
     const brut = JSON.stringify(d.data());
