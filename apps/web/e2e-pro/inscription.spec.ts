@@ -187,8 +187,9 @@ test.describe('Inscription pro', () => {
     );
     // Prénom et nom de l'étape 1 dans le profil.
     const { db } = await admin();
-    const artisanId = (await db.collection('artisans').where('siren', '==', SIRENS.libre).get())
-      .docs[0]!;
+    const artisanId = (
+      await db.doc(chemins.artisan('_')).parent.where('siren', '==', SIRENS.libre).get()
+    ).docs[0]!;
     expect(artisanId.get('sirenReconnu')).toMatchObject({ par: 'repertoire' });
     const profil = await db.doc(chemins.user(artisanId.get('proprietaireUid') as string)).get();
     expect(profil.data()).toMatchObject({ prenom: 'Julien', nom: 'Bertrand' });
