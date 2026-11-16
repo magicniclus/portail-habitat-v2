@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: 'Votre zone', robots: { index: false 
 export default async function PageZone() {
   const b = await brouillonCourant();
   if (!b) redirect('/pro#inscription');
-  const proposee = b.zone ? null : (await chercherCommunes(b.identite.codePostal))[0];
+  const proposee = b.zone ? null : (await chercherCommunes(b.identite.codePostal, 1500))[0];
   const zoneInitiale =
     b.zone ??
     (proposee

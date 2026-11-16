@@ -34,7 +34,7 @@ async function etape1(page: Page, email: string) {
   await page.getByLabel(/^Métier principal/).selectOption('couvreur');
   await page.getByRole('checkbox', { name: /conditions générales/ }).check();
   await page.getByRole('button', { name: 'Voir les demandes de ma zone' }).click();
-  await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=pro$/);
+  await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=pro$/, { timeout: 15_000 });
 }
 
 const liensReprise = () => liensEnvoyes('/pro/inscription?reprise=');
@@ -71,7 +71,9 @@ test.describe('Inscription pro', () => {
     await page.getByLabel(/^Métier principal/).selectOption('couvreur');
     await page.getByRole('checkbox', { name: /conditions générales/ }).check();
     await page.getByRole('button', { name: 'Voir les demandes près de chez moi' }).click();
-    await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=trouver-chantier$/);
+    await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=trouver-chantier$/, {
+      timeout: 15_000,
+    });
     const { db } = await admin();
     const brouillons = await db
       .doc(chemins.brouillonOnboarding('_'))
