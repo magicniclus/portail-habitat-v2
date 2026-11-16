@@ -9,7 +9,7 @@ import { piedPro } from '@/features/pro/navigation';
 import { ApplicationPro } from '@/features/pro/SectionApplication';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { VslPro, type VideoVsl } from '@/features/pro/VslPro';
-import { cheminVideoOutil, VIDEOS_OUTILS } from './videosOutils';
+import { cheminVideoOutil, VIDEOS_OUTILS, VSL_CHANTIERS } from './videosOutils';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
 import { preuvesMarketingActives } from '@/server/flags';
@@ -140,9 +140,12 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
   );
 }
 
-/** Site et devis : le film de l'outil (sous-titres incrustés) ; chantiers : la vidéo générale. */
+/**
+ * Chantiers : le film de vente (voix, sous-titres incrustés), horizontal sur ordinateur et vertical
+ * sur téléphone, en trois durées. Site et devis : le film de l'outil.
+ */
 function videoHero(outil: OutilLanding): VideoVsl | undefined {
-  if (outil === 'chantiers') return undefined;
+  if (outil === 'chantiers') return VSL_CHANTIERS;
   return {
     base: cheminVideoOutil(outil),
     duree: VIDEOS_OUTILS[outil]?.duree ?? 0,
