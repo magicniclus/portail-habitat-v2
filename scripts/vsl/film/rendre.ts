@@ -145,7 +145,9 @@ async function main() {
       [...html.matchAll(/data-cap="([^"]+)"/g)]
         .map((m) => m[1]!)
         // Format vertical : les prises mobiles remplacent celles du bureau.
-        .flatMap((nom) => (vertical ? [nom, nom.replace('-bureau', '-mobile')] : [nom])),
+        .flatMap((nom) => (vertical ? [nom, nom.replace('-bureau', '-mobile')] : [nom]))
+        // Les prises de l'éditeur n'existent qu'au format bureau.
+        .filter((nom) => existsSync(join(racine, '.vsl/video', `${nom}.mp4`))),
     ),
   ]);
 

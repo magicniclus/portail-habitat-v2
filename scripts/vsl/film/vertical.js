@@ -278,8 +278,9 @@
   }
 
   // Captures : prises mobiles, dans un cadre de téléphone.
+  // (un écran d'ordinateur, `.nav.ordi`, garde sa prise de bureau).
   for (const img of document.querySelectorAll('img[data-cap]'))
-    img.dataset.cap = img.dataset.cap.replace('-bureau', '-mobile');
+    if (!img.closest('.ordi')) img.dataset.cap = img.dataset.cap.replace('-bureau', '-mobile');
   const style = document.createElement('style');
   style.textContent = `
     #scene { width: 1080px; height: 1920px; }
