@@ -182,7 +182,7 @@
   };
   // Film « site internet » : l'écran d'ordinateur en haut (pleine largeur), la colonne de texte dessous.
   Object.assign(PLANS, {
-    's01 s02': { styles: [[':scope > svg.picto', 'left:900px;top:780px']], reste: [-420, 300, 1] },
+    's01 s02': { centre: [0, 330, 0.9], reste: [-420, 300, 1] },
     s03: { centre: [0, 420, 0.8], reste: [-228, 420, 0.8] },
     's04 s05': PLANS['p05a p05b p05c'],
     's06 s07': {

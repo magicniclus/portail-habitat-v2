@@ -9,16 +9,21 @@
 <body>
 <div id="scene">
 
-<!-- ACTE 1 — PLANS 1 et 2 : on vous cherche sur Google, on appelle celui qui a un site -->
+<!-- ACTE 1 — PLANS 1 et 2 : on vous cherche sur Google ; sans site, quatre fois moins de chances -->
 <section class="nuit" data-scene="s01 s02">
-  <div class="recherche" style="left:460px;top:150px" data-in="pop" data-t="0.3" data-sfx="ding" data-st="0.35">
+  <div class="recherche" style="left:460px;top:150px" data-in="pop" data-t="0.3" data-out="fondu" data-o="@s02-0.1" data-sfx="ding" data-st="0.35">
     <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#e05a10" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
     <span data-mots="0.7">plombier Bordeaux</span>
   </div>
-  <div class="gris" style="left:460px;top:330px;width:1000px;height:120px" data-in="haut" data-t="@cherchent-0.2" data-pulse="@celui" data-sfx="tic"><u></u><s style="width:380px"></s><em data-in="pop" data-t="@s02+0.1">Site internet</em></div>
-  <div class="gris" style="left:460px;top:475px;width:1000px;height:120px" data-in="haut" data-t="@cherchent-0.05"><u></u><s style="width:320px"></s><em data-in="pop" data-t="@s02+0.25">Site internet</em></div>
-  <div class="gris" style="left:460px;top:620px;width:1000px;height:120px" data-in="haut" data-t="@cherchent+0.1" data-fn="pale" data-pale="@appellent+0.2"><u></u><b>Votre entreprise</b><em class="sans" data-in="pop" data-t="@sans" data-sfx="sourd">Pas de site</em></div>
-  <svg class="picto" style="left:1500px;top:286px" width="120" height="208" viewBox="0 0 150 260" stroke="#fff" stroke-width="12" data-in="pop" data-t="@appellent" data-fn="sonne" data-sfx="ding"><rect x="10" y="10" width="130" height="240" rx="24" fill="#173a55"/><path d="M58 30h34" stroke="#ff9857"/><circle cx="75" cy="222" r="7" stroke="#ff9857"/></svg>
+  <div class="gris" style="left:460px;top:330px;width:1000px;height:120px" data-in="haut" data-t="@cherchent-0.2" data-out="fondu" data-o="@s02-0.1" data-sfx="tic"><u></u><s style="width:380px"></s></div>
+  <div class="gris" style="left:460px;top:475px;width:1000px;height:120px" data-in="haut" data-t="@cherchent-0.05" data-out="fondu" data-o="@s02-0.1"><u></u><s style="width:320px"></s></div>
+  <div class="gris" style="left:460px;top:620px;width:1000px;height:120px" data-in="haut" data-t="@cherchent+0.1" data-out="fondu" data-o="@s02-0.1"><u></u><s style="width:420px"></s></div>
+
+  <div class="centre sur" style="top:170px;font-size:46px" data-in="haut" data-t="@sans">Sans site internet</div>
+  <div class="centre chiffre" style="top:250px;font-size:330px;color:var(--clair)" data-in="pop" data-t="@divisez+0.1" data-sfx="impact" data-st="@quatre">÷ 4</div>
+  <div class="centre moyen" style="top:620px" data-in="haut" data-t="@chances-0.2">vos chances d'obtenir un client</div>
+  <div class="abs" style="left:510px;top:740px;width:900px;height:34px;border-radius:99px;background:rgba(255,255,255,.16)" data-in="fondu" data-t="@sans"></div>
+  <div class="abs" style="left:510px;top:740px;width:900px;height:34px;border-radius:99px;background:var(--clair)" data-in="fondu" data-t="@sans" data-fn="jauge" data-jauge="@divisez+0.1"></div>
 </section>
 
 <!-- PLAN 3 -->

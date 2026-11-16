@@ -144,6 +144,10 @@
   };
   // Élément qui passe au second plan à l'instant `data-pale`.
   FN.pale = (el, lt, sc) => ({ o: 1 - 0.6 * doux((lt - sc.rep(el.dataset.pale)) / 0.4) });
+  // Jauge qui tombe au quart de sa largeur à l'instant `data-jauge` (film « site internet »).
+  FN.jauge = (el, lt, sc) => {
+    el.style.width = `${900 * (1 - 0.75 * doux((lt - sc.rep(el.dataset.jauge)) / 0.7))}px`;
+  };
   FN.aiguille = (el, lt) => ({ r: lt * 360 * Number(el.dataset.v) });
   // Plan 28 : bouton qui pulse (100 → 104 % toutes les 24 images), reflet toutes les 2 s, flèche.
   FN.bouton = (el, lt, sc) => {
