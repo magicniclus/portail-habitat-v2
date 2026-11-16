@@ -58,10 +58,18 @@ const APRES: Record<string, number> = {
 };
 
 /** Chronologie : chaque segment dure sa voix, arrondie au temps de la musique (120 bpm = 0,5 s). */
-export function chronologie(dossierVoix: string): { duree: number; segments: Segment[] } {
-  const { segments } = JSON.parse(readFileSync(join(__dirname, 'script.json'), 'utf8')) as {
+export function chronologie(
+  dossierVoix: string,
+  script = join(__dirname, 'script.json'),
+): { duree: number; segments: Segment[] } {
+  // Une version courte apporte son propre script (segments gardés, silences, pas de la grille).
+  const { segments, avant, apres, pas } = JSON.parse(readFileSync(script, 'utf8')) as {
     segments: { id: string; texte: string }[];
+    avant?: Record<string, number>;
+    apres?: Record<string, number>;
+    pas?: number;
   };
+  const [AV, AP, PAS] = [{ ...AVANT, ...avant }, { ...APRES, ...apres }, pas ?? 0.5];
   const mots = JSON.parse(readFileSync(join(dossierVoix, 'mots.json'), 'utf8')) as Record<
     string,
     Mot[]
@@ -70,9 +78,9 @@ export function chronologie(dossierVoix: string): { duree: number; segments: Seg
   const liste = segments.map((s) => {
     const m = mots[s.id];
     if (!m?.length) throw new Error(`Voix sans minutage pour ${s.id}`);
-    const voix = AVANT[s.id] ?? 0.3;
+    const voix = AV[s.id] ?? 0.3;
     const fin = m.at(-1)!.t + m.at(-1)!.d;
-    const duree = Math.ceil((voix + fin + (APRES[s.id] ?? 0.45)) / 0.5) * 0.5;
+    const duree = Math.ceil((voix + fin + (AP[s.id] ?? 0.45)) / PAS - 1e-6) * PAS;
     const seg = {
       ...s,
       debut: t,
@@ -115,11 +123,20 @@ const TYPES: Record<string, string> = {
 
 async function main() {
   mkdirSync(sortie, { recursive: true });
-  const chrono = chronologie(resolve(racine, arg('--voix') ?? '.vsl/voix'));
+  const dossierVoix = resolve(racine, arg('--voix') ?? '.vsl/voix');
+  const scriptVersion = join(dossierVoix, 'script.json');
+  const chrono = chronologie(dossierVoix, existsSync(scriptVersion) ? scriptVersion : undefined);
+  const vertical = arg('--format') === 'vertical';
+  const [largeur, hauteur] = vertical ? [1080, 1920] : [1920, 1080];
   writeFileSync(join(sortie, 'chronologie.json'), JSON.stringify(chrono, null, 1));
   const html = readFileSync(join(__dirname, 'film.html'), 'utf8');
   const images = captures([
-    ...new Set([...html.matchAll(/data-cap="([^"]+)"/g)].map((m) => m[1]!)),
+    ...new Set(
+      [...html.matchAll(/data-cap="([^"]+)"/g)]
+        .map((m) => m[1]!)
+        // Format vertical : les prises mobiles remplacent celles du bureau.
+        .flatMap((nom) => (vertical ? [nom, nom.replace('-bureau', '-mobile')] : [nom])),
+    ),
   ]);
 
   // Petit serveur local : polices du site, page du film et images des captures.
@@ -133,14 +150,26 @@ async function main() {
   const port = (serveur.address() as { port: number }).port;
 
   const navigateur = await chromium.launch({
-    args: ['--window-size=1920,1080', '--force-device-scale-factor=1'],
+    args: [`--window-size=${largeur},${hauteur}`, '--force-device-scale-factor=1'],
   });
   const page = await (await navigateur.newContext({ viewport: null })).newPage();
   page.on('pageerror', (e) => console.error('[page]', e.message));
   await page.addInitScript(
-    ([c, cap, sansSt]) =>
-      Object.assign(window, { __CHRONO: c, __CAPTURES: cap, __SANS_ST: sansSt }),
-    [chrono, { base: '/.vsl/film/cap', images }, drapeau('--sans-st')] as const,
+    ([c, cap, sansSt, format, souple]) =>
+      Object.assign(window, {
+        __CHRONO: c,
+        __CAPTURES: cap,
+        __SANS_ST: sansSt,
+        __FORMAT: format,
+        __SOUPLE: souple,
+      }),
+    [
+      chrono,
+      { base: '/.vsl/film/cap', images },
+      drapeau('--sans-st'),
+      vertical ? 'vertical' : 'paysage',
+      existsSync(scriptVersion),
+    ] as const,
   );
   await page.goto(`http://127.0.0.1:${port}/scripts/vsl/film/film.html`);
   // Les polices ne se chargent qu'à leur premier emploi : on les demande avant la première image.

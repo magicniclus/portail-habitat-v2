@@ -34,15 +34,19 @@ async function main() {
     const noms = readdirSync(dossier)
       .filter((n) => n.startsWith('r-'))
       .sort();
-    for (let i = 0; i < noms.length; i += 4)
+    // Format vertical : six images de 400 × 711 par planche, sur une ligne.
+    const [parPlanche, col, l, h] = args.includes('--vertical')
+      ? [6, 6, 400, 711]
+      : [4, 2, 960, 540];
+    for (let i = 0; i < noms.length; i += parPlanche)
       await grille(
-        `revue-${String(i / 4 + 1).padStart(2, '0')}.jpg`,
-        2,
-        noms.slice(i, i + 4),
-        960,
-        540,
+        `revue-${String(i / parPlanche + 1).padStart(2, '0')}.jpg`,
+        col,
+        noms.slice(i, i + parPlanche),
+        l,
+        h,
       );
-    console.log(`✓ ${Math.ceil(noms.length / 4)} planches de revue`);
+    console.log(`✓ ${Math.ceil(noms.length / parPlanche)} planches de revue`);
     return;
   }
   const [sortie, colonnes, ...noms] = args;

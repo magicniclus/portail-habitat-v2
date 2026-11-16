@@ -6,6 +6,7 @@
   const { borne, doux, seg } = window.outils;
   const FN = window.FN;
   const PI = Math.PI;
+  const VERTICAL = window.__FORMAT === 'vertical';
 
   // Plan 1 : ondes derrière la carte, après le « ding ».
   FN.anneau = (el, lt) => {
@@ -61,9 +62,13 @@
   // Plan 6 : les trois « oui » se rejoignent, la flèche part vers la droite.
   FN.converge = (el, lt) => {
     const p = doux((lt - 0.1) / 0.55);
+    // En vertical, les trois « oui » partent de leur place du plan précédent (sous la question).
+    const depart = VERTICAL
+      ? [122, 419, 716].map((x) => x - 430)
+      : [150, 420, 690].map((x) => x - 850);
     return {
-      x: ([150, 420, 690][Number(el.dataset.n)] - 850) * (1 - p),
-      y: 310 * (1 - p),
+      x: depart[Number(el.dataset.n)] * (1 - p),
+      y: (VERTICAL ? 430 : 310) * (1 - p),
       o: 1 - borne((lt - 0.7) / 0.15),
     };
   };
@@ -118,8 +123,8 @@
     const p = doux((lt - sc.rep('@p22g')) / 0.6);
     return {
       s: k > 0 && k < 0.4 ? 1 + 0.08 * Math.sin((k / 0.4) * PI) : 1,
-      x: 620 * p,
-      y: -120 * p,
+      x: VERTICAL ? 0 : 620 * p,
+      y: VERTICAL ? 330 * p : -120 * p,
     };
   };
   FN.centre = (el, lt, sc) => {
@@ -134,7 +139,8 @@
   FN.vol = (el, lt) => {
     // Les six cartes repassent en boucle (une par seconde) tant que le plan dure.
     const k = lt - Number(el.dataset.n) - 0.1;
-    return { x: 1920 - (((k % 6) + 6) % 6) * 1500, o: k < 0 ? 0 : 1, s: 0.6 };
+    const [largeur, vitesse] = VERTICAL ? [1080, 1100] : [1920, 1500];
+    return { x: largeur - (((k % 6) + 6) % 6) * vitesse, o: k < 0 ? 0 : 1, s: 0.6 };
   };
   FN.aiguille = (el, lt) => ({ r: lt * 360 * Number(el.dataset.v) });
   // Plan 28 : bouton qui pulse (100 → 104 % toutes les 24 images), reflet toutes les 2 s, flèche.

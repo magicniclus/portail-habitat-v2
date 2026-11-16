@@ -66,8 +66,10 @@
             ),
           );
           const w = trouves[rang - 1];
-          if (!w) throw new Error(`Repère introuvable : ${expr} (scène ${this.el.dataset.scene})`);
-          v = w.t - this.debut;
+          // Version courte : la phrase du repère a pu être coupée, l'élément arrive alors en fin de plan.
+          if (!w && !window.__SOUPLE)
+            throw new Error(`Repère introuvable : ${expr} (scène ${this.el.dataset.scene})`);
+          v = w ? w.t - this.debut : this.duree - 1.6;
         }
       } else v = Number(base);
       v += decal ? Number(decal) : 0;
@@ -77,7 +79,12 @@
   }
 
   const FN = (window.FN = {});
-  const scenes = [...document.querySelectorAll('section[data-scene]')].map((el) => new Scene(el));
+  // Une version courte ne garde que certains segments : les scènes incomplètes sont laissées de côté.
+  const scenes = [...document.querySelectorAll('section[data-scene]')]
+    .filter((el) => el.dataset.scene.split(' ').every(seg))
+    .map((el) => new Scene(el));
+  const VERTICAL = window.__FORMAT === 'vertical';
+  const MOTS_PAR_LIGNE = VERTICAL ? 3 : 4;
   const stage = document.getElementById('scene');
 
   // Préparation : mots découpés (A2), traits de rature (A5), soulignement de l'italique (A3).
@@ -259,8 +266,8 @@
       const reste = jetons.length - i - 1;
       if (
         (/[,.?!:…]$/.test(j) && ligne.length >= 2 && reste !== 1) ||
-        ligne.length === 4 ||
-        (ligne.length === 3 && reste === 2)
+        ligne.length === MOTS_PAR_LIGNE ||
+        (ligne.length === MOTS_PAR_LIGNE - 1 && reste === 2)
       )
         fermer();
     });
@@ -294,7 +301,7 @@
       ),
     );
     st.classList.toggle('clair', stage.dataset.fond === 'clair');
-    st.style.bottom = `${stage.dataset.st ?? 64}px`;
+    st.style.bottom = `${VERTICAL ? 330 : (stage.dataset.st ?? 64)}px`;
   }
 
   /** Affiche l'image `n` (30 images/s) ; la promesse se résout quand les captures sont chargées. */

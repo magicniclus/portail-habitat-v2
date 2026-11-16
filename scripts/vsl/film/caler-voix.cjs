@@ -5,6 +5,7 @@
 // Usage : node scripts/vsl/film/caler-voix.cjs <audio> <transcription.json> <dossier de sortie>
 //   transcription.json : { chunks: [{ text, timestamp: [début, fin] }] } (Whisper, minutage par mot)
 //   Les mots de référence (découpage identique aux repères du film) viennent de .vsl/voix/mots.json.
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
 const { spawnSync } = require('node:child_process');
 const { join } = require('node:path');
