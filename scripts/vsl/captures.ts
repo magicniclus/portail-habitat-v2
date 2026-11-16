@@ -261,6 +261,111 @@ const SCENES: Record<string, Scene> = {
       console.log(await p.coupez());
     },
   },
+
+  // Film « site internet » (après decor-site.ts et site-modele.ts) : l'éditeur, puis le site publié.
+  // S1 — Le site créé, parcouru dans l'éditeur.
+  's-editeur': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/site/editeur');
+      await p.vers(1500, 950, 300);
+      await p.action('s-editeur');
+      await p.attendre(700);
+      // La molette ne traverse pas le cadre de l'aperçu : on fait défiler ce qui défile vraiment
+      // (le document du cadre, sinon son conteneur), pas à pas, sur l'horloge.
+      const cadre = page.frames().find((x) => x.url() === 'about:srcdoc')!;
+      const dansCadre = await cadre.evaluate(
+        () => document.documentElement.scrollHeight > window.innerHeight + 50,
+      );
+      const total = 5200 * p.tempo;
+      const debut = Date.now();
+      for (let k = 0; k < 1;) {
+        k = Math.min(1, (Date.now() - debut) / total);
+        const y = Math.round(3200 * (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2));
+        if (dansCadre) await cadre.evaluate((v) => window.scrollTo(0, v), y);
+        else
+          await page
+            .locator('iframe')
+            .first()
+            .evaluate((el, v) => {
+              let c: HTMLElement | null = el.parentElement;
+              while (c && c.scrollHeight <= c.clientHeight + 50) c = c.parentElement;
+              c?.scrollTo(0, v);
+            }, y * 0.45);
+        await page.waitForTimeout(12);
+      }
+      await p.attendre(500);
+      await p.photo('s-editeur');
+      console.log(await p.coupez());
+    },
+  },
+  // S2 — Modifier un titre en cliquant dessus, puis voir le rendu téléphone ; le site est enregistré.
+  's-modifier': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/site/editeur');
+      const site = page.frameLocator('iframe').first();
+      await p.action('s-modifier');
+      await p.cliquer(site.getByText('plombier à Bordeaux').first(), 900);
+      await p.attendre(500);
+      const champ = page.locator('[contenteditable=true]').first();
+      await p.cliquer(champ, 700);
+      await page.keyboard.press('Control+A');
+      await champ.pressSequentially('Votre salle de bain à Bordeaux, clés en main', {
+        delay: 45 * p.tempo,
+      });
+      await p.attendre(900);
+      await p.cliquer(page.getByRole('button', { name: 'Mobile', exact: true }), 800);
+      await p.attendre(1300);
+      await p.photo('s-modifier');
+      console.log(await p.coupez());
+      await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
+      await page.waitForTimeout(2000);
+    },
+  },
+  // S3 — Publier : le message « Site publié » apparaît.
+  's-publier': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/site/editeur');
+      await p.action('s-publier');
+      await p.attendre(400);
+      await p.cliquer(page.getByRole('button', { name: 'Publier', exact: true }), 900);
+      await p.attendre(1800);
+      await p.photo('s-publier');
+      console.log(await p.coupez());
+    },
+  },
+  // S4 — Un visiteur remplit le formulaire de devis du site publié.
+  's-formulaire': {
+    pro: false,
+    jouer: async (p, page) => {
+      await ouvrir(page, `http://${SLUG_SITE}.localhost:${PORT}/`);
+      await p.action('s-formulaire');
+      await p.attendre(500);
+      await p.saisir(page.getByLabel(/^Nom et prénom/).first(), 'Claire Martin', 50);
+      await p.saisir(page.getByLabel(/^Téléphone/).first(), '06 12 34 56 78', 40);
+      await p.saisir(page.getByLabel(/^Email/).first(), 'claire.martin@exemple.fr', 35);
+      await p.saisir(page.getByLabel(/^Code postal/).first(), '33000', 60);
+      await p.cliquer(page.getByRole('button', { name: /Envoyer ma demande/ }).first(), 700);
+      await p.attendre(1600);
+      await p.photo('s-formulaire');
+      console.log(await p.coupez());
+    },
+  },
+  // S5 — La demande arrive dans « Mes demandes ».
+  's-demandes': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/demandes');
+      await p.action('s-demandes');
+      await p.attendre(600);
+      await p.survoler(page.getByText('Claire Martin').first(), 1100);
+      await p.attendre(1500);
+      await p.photo('s-demandes');
+      console.log(await p.coupez());
+    },
+  },
 };
 
 async function main() {

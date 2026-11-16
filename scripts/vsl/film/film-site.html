@@ -56,10 +56,13 @@
 <!-- ACTE 3 — PLANS 6 et 7 : quelques questions, puis l'IA écrit le site (prise réelle de l'éditeur) -->
 <section class="creme" data-scene="s06 s07" data-sfx="relance">
   <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
-    <div class="nav ordi" data-vis="s06" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="site-ia" data-de="0.2" data-vitesse="1.7" data-jusqua="7.6" /></div>
+    <div class="nav ordi" data-vis="s06" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img style="aspect-ratio:16/9;object-fit:cover;object-position:top" data-cap="site-ia" data-de="0.2" data-vitesse="1.7" data-jusqua="7.6" /></div>
   </div>
   <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
-    <div class="nav ordi" data-vis="s07"><div class="barre"><u></u><u></u><u></u></div><img data-cap="site-ia" data-de="8.2" data-vitesse="1.55" data-ct="@s07-0.3" /></div>
+    <div class="nav ordi" data-vis="s07" data-out="coupe" data-o="@zone-0.2"><div class="barre"><u></u><u></u><u></u></div><img style="aspect-ratio:16/9;object-fit:cover;object-position:top" data-cap="site-ia" data-de="8.2" data-vitesse="1.4" data-jusqua="14.2" data-ct="@s07-0.3" /></div>
+  </div>
+  <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
+    <div class="nav ordi" data-vis="s07" data-in="fondu" data-t="@zone-0.2"><div class="barre"><u></u><u></u><u></u></div><img data-cap="s-editeur-bureau" data-de="0.2" data-vitesse="1.15" data-ct="@zone-0.2" /></div>
   </div>
   <div class="sur" style="left:1330px;top:200px;font-size:34px" data-vis="s06" data-in="haut" data-t="0.3">Quelques questions</div>
   <div class="ligne" style="left:1330px;top:280px;font-size:50px" data-vis="s06" data-in="pop" data-t="@répondez" data-sfx="tic"><span class="coche">✓</span>Vos travaux</div>
@@ -77,7 +80,7 @@
 <!-- ACTE 8 — PLAN 8 : modifier en cliquant -->
 <section class="creme" data-scene="s08">
   <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
-    <div class="nav ordi" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="site-modifier" data-de="0.3" data-vitesse="0.95" data-sfx="clavier" data-st="@cliquez" /></div>
+    <div class="nav ordi" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="s-modifier-bureau" data-de="0.6" data-vitesse="1.2" data-sfx="clavier" data-st="@cliquez" /></div>
   </div>
   <div class="gros" style="left:1330px;top:250px;font-size:84px" data-in="haut" data-t="@cliquez" data-sfx="tic">Vous cliquez.</div>
   <div class="gros" style="left:1330px;top:360px;font-size:84px;color:var(--accent)" data-in="haut" data-t="@changez-0.2" data-sfx="tic">Vous changez.</div>
@@ -87,7 +90,10 @@
 <!-- PLAN 9 : publier, en ligne sur ordinateur et sur téléphone -->
 <section class="nuit" data-scene="s09">
   <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
-    <div class="nav ordi" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="site-en-ligne" data-de="0.3" data-vitesse="1.5" /></div>
+    <div class="nav ordi" data-in="pop" data-t="0.1" data-out="coupe" data-o="@ligne+0.5"><div class="barre"><u></u><u></u><u></u></div><img data-cap="s-publier-bureau" data-de="0.5" data-vitesse="1.25" /></div>
+  </div>
+  <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
+    <div class="nav ordi" data-in="fondu" data-t="@ligne+0.5"><div class="barre"><u></u><u></u><u></u></div><img data-cap="c6-bureau" data-de="0.1" data-vitesse="1" data-ct="@ligne+0.5" /></div>
   </div>
   <div class="pose" style="left:300px;top:730px"><span class="tampon" style="font-size:92px;display:inline-block" data-r="-5" data-in="tampon" data-t="@ligne" data-sfx="impact">EN LIGNE</span></div>
   <div class="nav tel" style="left:1420px;top:130px;width:370px;height:780px" data-in="pop" data-t="@téléphone-0.5" data-sfx="ding"><img data-cap="c6-mobile" data-de="0.2" data-vitesse="0.8" data-ct="@téléphone-0.5" /></div>
@@ -96,7 +102,10 @@
 <!-- PLAN 10 : les demandes arrivent dans l'espace -->
 <section class="creme" data-scene="s10">
   <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
-    <div class="nav ordi" data-in="pop" data-t="0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="site-clients" data-de="5.0" data-vitesse="1.15" /></div>
+    <div class="nav ordi" data-in="pop" data-t="0.1" data-out="coupe" data-o="@arrive-0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="s-formulaire-bureau" data-de="3.2" data-vitesse="2.1" /></div>
+  </div>
+  <div style="left:80px;top:110px;width:1180px;transform:perspective(2400px) rotateY(3deg)">
+    <div class="nav ordi" data-in="fondu" data-t="@arrive-0.1"><div class="barre"><u></u><u></u><u></u></div><img data-cap="s-demandes-bureau" data-de="0.2" data-vitesse="0.7" data-ct="@arrive-0.1" /></div>
   </div>
   <div class="pose" style="left:1320px;top:220px;transform:scale(.6);transform-origin:0 0">
     <div class="carte" data-in="droite" data-t="@demande" data-sfx="ding">
