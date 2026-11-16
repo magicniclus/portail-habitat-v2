@@ -3,7 +3,7 @@
 // Usage : tsx scripts/vsl/film/rendre.ts            film muet complet → .vsl/film/image.mp4
 //         tsx scripts/vsl/film/rendre.ts --planche  une image par plan → .vsl/film/planches/
 //         tsx scripts/vsl/film/rendre.ts --de 10 --a 20   extrait
-//         options : --sans-st (sans sous-titres incrustés), --voix <dossier> (défaut .vsl/voix)
+//         options : --film site (film-site.html et script-site.json), --sans-st (sans sous-titres incrustés), --voix <dossier> (défaut .vsl/voix)
 // ffmpeg : variable FFMPEG ou PATH.
 import { chromium } from '@playwright/test';
 import { spawn, spawnSync } from 'node:child_process';
@@ -125,17 +125,29 @@ async function main() {
   mkdirSync(sortie, { recursive: true });
   const dossierVoix = resolve(racine, arg('--voix') ?? '.vsl/voix');
   const scriptVersion = join(dossierVoix, 'script.json');
-  const chrono = chronologie(dossierVoix, existsSync(scriptVersion) ? scriptVersion : undefined);
+  // Autre film que celui des chantiers : sa page et son script portent son nom (`--film site`).
+  const film = arg('--film');
+  const pageFilm = film ? `film-${film}.html` : 'film.html';
+  const chrono = chronologie(
+    dossierVoix,
+    existsSync(scriptVersion)
+      ? scriptVersion
+      : film
+        ? join(__dirname, `script-${film}.json`)
+        : undefined,
+  );
   const vertical = arg('--format') === 'vertical';
   const [largeur, hauteur] = vertical ? [1080, 1920] : [1920, 1080];
   writeFileSync(join(sortie, 'chronologie.json'), JSON.stringify(chrono, null, 1));
-  const html = readFileSync(join(__dirname, 'film.html'), 'utf8');
+  const html = readFileSync(join(__dirname, pageFilm), 'utf8');
   const images = captures([
     ...new Set(
       [...html.matchAll(/data-cap="([^"]+)"/g)]
         .map((m) => m[1]!)
         // Format vertical : les prises mobiles remplacent celles du bureau.
-        .flatMap((nom) => (vertical ? [nom, nom.replace('-bureau', '-mobile')] : [nom])),
+        .flatMap((nom) => (vertical ? [nom, nom.replace('-bureau', '-mobile')] : [nom]))
+        // Les prises de l'éditeur n'existent qu'au format bureau.
+        .filter((nom) => existsSync(join(racine, '.vsl/video', `${nom}.mp4`))),
     ),
   ]);
 
@@ -171,7 +183,7 @@ async function main() {
       existsSync(scriptVersion),
     ] as const,
   );
-  await page.goto(`http://127.0.0.1:${port}/scripts/vsl/film/film.html`);
+  await page.goto(`http://127.0.0.1:${port}/scripts/vsl/film/${pageFilm}`);
   // Les polices ne se chargent qu'à leur premier emploi : on les demande avant la première image.
   await page.evaluate(() =>
     Promise.all([

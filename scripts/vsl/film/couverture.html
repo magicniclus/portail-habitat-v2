@@ -69,6 +69,17 @@
       body.affiche .lecture {
         display: none;
       }
+      /* Titre selon le film (`?site` : film « site internet »). */
+      .t-site,
+      body.site .t-chantiers {
+        display: none;
+      }
+      body.site .t-site {
+        display: block;
+      }
+      body.site.vertical h1 {
+        font-size: 112px;
+      }
     </style>
   </head>
   <body>
@@ -88,8 +99,11 @@
           <rect x="17" y="25" width="6" height="8" rx="1" fill="#ff9857" /></svg
         >PORTAIL TRAVAUX<b>PRO</b></span
       >
-      <h1>
+      <h1 class="t-chantiers">
         C'est gratuit…<br />où est le <span class="ital">piège<i class="trait"></i></span>&nbsp;?
+      </h1>
+      <h1 class="t-site">
+        Votre site d'artisan,<br /><span class="ital">gratuitement<i class="trait"></i></span>
       </h1>
       <div class="lecture">
         <svg width="96" height="110" viewBox="0 0 96 110">

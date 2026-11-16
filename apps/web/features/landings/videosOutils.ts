@@ -29,6 +29,14 @@ export const VSL_CHANTIERS: VideoVsl = {
   ],
 };
 
+/** Film de vente de la landing site internet (`scripts/vsl`, film « site ») : 16:9 et 9:16. */
+export const VSL_SITE: VideoVsl = {
+  base: '/landing/videos/vsl/site',
+  duree: 114,
+  accroche: 'Votre site internet d’artisan, gratuit',
+  vertical: true,
+};
+
 export const cheminVideoOutil = (id: string) => `/landing/videos/outils/${id}`;
 
 /**

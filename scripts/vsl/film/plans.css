@@ -1,0 +1,341 @@
+/* Styles propres aux plans des films de la VSL (cartes, tickets, dessins, listes) : partagés par
+   film.html (chantiers) et film-site.html (site internet). */
+.rang {
+  width: 900px;
+  display: flex;
+  align-items: baseline;
+  gap: 28px;
+  padding: 16px 30px 16px 40px;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--texte);
+  font-size: 42px;
+  font-weight: 700;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+.rang .sur,
+.rang b {
+  position: relative;
+  z-index: 1;
+}
+.rang .sur {
+  width: 190px;
+  font-size: 24px;
+  color: var(--bouton);
+}
+.rang i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #ffe0cd, #fff2ea);
+  border-left: 12px solid var(--accent);
+}
+svg {
+  overflow: visible;
+}
+.dessin {
+  width: 540px;
+  height: 440px;
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 18px 46px rgba(45, 43, 43, 0.14);
+}
+.dessin.carte-plan {
+  background: #e3ecdf;
+  overflow: hidden;
+}
+.piece-euro {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(224, 90, 16, 0.35);
+}
+.distance {
+  background: var(--nuit);
+  color: #fff;
+  font-weight: 800;
+  font-size: 36px;
+  padding: 6px 22px 8px;
+  border-radius: 99px;
+  box-shadow: 0 6px 16px rgba(23, 58, 85, 0.3);
+  white-space: nowrap;
+}
+.oui {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 99px;
+  padding: 12px 34px 14px 20px;
+  font-weight: 700;
+  font-size: 50px;
+  box-shadow: 0 8px 22px rgba(45, 43, 43, 0.14);
+  white-space: nowrap;
+}
+.outil.v {
+  width: 480px;
+  height: 104px;
+  font-size: 30px;
+  gap: 20px;
+  padding: 0 24px;
+  white-space: nowrap;
+}
+.outil.v .ico {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+}
+.outil.v .ico svg {
+  width: 32px;
+  height: 32px;
+}
+.apercu {
+  width: 760px;
+  height: 472px;
+  border-radius: 22px;
+  border: 2px dashed rgba(255, 255, 255, 0.22);
+}
+.nav.cadre {
+  height: 690px;
+}
+.opt {
+  font-size: 46px;
+}
+.centre > span.logo {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.logo svg {
+  flex: none;
+}
+.logo b {
+  margin-left: -6px;
+}
+.badge.budget {
+  font-size: 34px;
+  padding: 10px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
+  border-radius: 22px;
+}
+.badge.budget small {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.ticket {
+  background: #fff;
+  color: var(--texte);
+  border-radius: 30px;
+  padding: 46px 54px 40px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+.rang-prix,
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 50px;
+  padding: 26px 0;
+  border-bottom: 3px dashed #d7d3d3;
+}
+.rang-prix b {
+  color: var(--bouton);
+  font-weight: 800;
+}
+.total {
+  border-bottom: 0;
+  font-size: 46px;
+  padding-top: 34px;
+}
+.total b {
+  font-size: 92px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.total i {
+  font-style: normal;
+  display: inline-block;
+}
+.note {
+  font-size: 26px;
+  color: var(--doux);
+  margin-top: 10px;
+}
+.gratuit {
+  border-radius: 30px;
+  border: 3px solid var(--clair);
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.plus {
+  margin-top: 36px;
+  background: var(--vert);
+  color: #fff;
+  font-weight: 800;
+  font-size: 46px;
+  padding: 12px 40px 16px;
+  border-radius: 99px;
+}
+.gris em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 99px;
+  padding: 6px 22px;
+}
+.centre > span {
+  display: inline-block;
+}
+.gris {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 6px 18px rgba(45, 43, 43, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 0 30px;
+}
+.gris u {
+  flex: none;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #d7d3d3;
+}
+.gris s {
+  height: 20px;
+  border-radius: 10px;
+  background: #d7d3d3;
+}
+.gris.etoile {
+  border: 4px solid var(--accent);
+}
+.gris.etoile u {
+  background: var(--accent);
+  color: #fff;
+  font-size: 38px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gris.etoile s {
+  background: #ffc19c;
+}
+.picto {
+  stroke-width: 9;
+}
+.pin {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 5px solid #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+.opt {
+  font-weight: 700;
+  font-size: 40px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+.opt::before {
+  content: '+';
+  display: inline-flex;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 0.45em;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid #9b9797;
+  color: #7d7979;
+  font-size: 0.8em;
+}
+/* Film « site internet » : barre de recherche, cadre de téléphone, écran d'ordinateur. */
+.recherche {
+  width: 1000px;
+  height: 116px;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 0 40px;
+  border-radius: 99px;
+  background: #fff;
+  color: var(--texte);
+  font-weight: 700;
+  font-size: 50px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.3);
+}
+.recherche svg {
+  flex: none;
+}
+.gris b {
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--texte);
+}
+.gris em.sans {
+  background: #8b8787;
+}
+.nav.tel {
+  border: 10px solid #201e1d;
+  border-radius: 46px;
+  background: #fff;
+}
+.nav.tel .barre {
+  display: none;
+}
+.apercu-google {
+  width: 520px;
+  background: #fff;
+  color: var(--texte);
+  border-radius: 20px;
+  padding: 22px 26px 24px;
+  box-shadow: 0 16px 40px rgba(45, 43, 43, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.apercu-google .sur {
+  font-size: 20px;
+  color: var(--bouton);
+}
+.apercu-google b {
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.2;
+  color: #1a0dab;
+}
+.apercu-google i {
+  font-style: normal;
+  font-size: 22px;
+  color: #0d7a5f;
+}
+.apercu-google p {
+  font-size: 23px;
+  line-height: 1.35;
+  color: var(--doux);
+}
