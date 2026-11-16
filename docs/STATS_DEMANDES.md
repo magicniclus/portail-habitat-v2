@@ -1,6 +1,6 @@
 # Nombre de demandes affiché aux artisans
 
-Chiffre affiché sur la page d'acquisition (« N demandes estimées pour un couvreur à 30 km autour du 33000 ») et à l'étape 2 de l'inscription (carte et rayon). Il doit être **crédible, cohérent d'une page à l'autre et honnête** sur sa source.
+Chiffre affiché sur la page d'acquisition (« N demandes estimées pour un couvreur à 30 km autour du 33000 »). **Depuis le 15/11/2026, plus d'estimation aux étapes 2 et 3 de l'inscription** : une phrase fixe à la place (« Au moins 3 demandes de travaux déposées ces dernières 48 h autour de {ville}, dans un rayon de {rayon} km. », suivie de « Certaines ont peut-être déjà été confiées à un artisan… »), engagement du propriétaire et non calcul (`DEMANDES_RECENTES_MIN` dans `packages/core/src/onboarding`). Il doit être **crédible, cohérent d'une page à l'autre et honnête** sur sa source.
 
 Maquette de référence : `designs/estimation-demandes.js` (`PH_DEMANDES.estimer`).
 
@@ -32,4 +32,4 @@ Document `stats/modeleDemandes` (Admin SDK, écran admin Finances → Prévision
 ## 5. Tests
 - Même entrée → même résultat ; somme des parts de famille = 1 ; minimum respecté
 - Bascule vers le réel dès 3 mois d'historique, avec le libellé « déposées »
-- Cohérence : le chiffre de la page d'acquisition et celui de l'étape 2 sont identiques pour le même code postal, métier et rayon
+- Cohérence : un seul chiffre, celui de la page d'acquisition (les étapes 2 et 3 n'en affichent plus)

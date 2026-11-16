@@ -3,9 +3,9 @@ import { expect, test } from '@playwright/test';
 import { FieldValue } from 'firebase-admin/firestore';
 import { admin, connecter, entrepriseDe, proprietaireAvecPlan } from './outils';
 
-// Fiche complète = logo, description, bannière : en ligne d'elle-même ; interrupteur en haut à
-// droite (décision du propriétaire, 01/11/2026).
-test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche en ligne »', async ({
+// Fiche en ligne dès que le SIREN est reconnu, complète ou non (décision du 15/11/2026) ;
+// interrupteur en haut à droite de Ma fiche.
+test('Ma fiche : ce qui manque, interrupteur « Fiche en ligne » même fiche incomplète', async ({
   page,
 }) => {
   const email = await proprietaireAvecPlan('gratuit');
@@ -18,6 +18,9 @@ test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche
     description: '',
     logoUrl: 'https://exemple.fr/l.png',
     bannieres: ['https://exemple.fr/b.png'],
+    statut: 'actif',
+    sirenReconnu: { par: 'moderateur', le: new Date() },
+    'verification.statut': 'verifie',
   });
   try {
     await connecter(page, email, '/pro/fiche');
@@ -27,23 +30,27 @@ test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche
       'aria-valuenow',
       '65',
     );
-    await expect(page.getByText(/Pour mettre votre fiche en ligne : Présenter/)).toBeVisible();
+    await expect(page.getByText(/Pour compléter votre fiche : Présenter/)).toBeVisible();
 
-    // La description complète la fiche : en ligne automatiquement, fiche publique écrite.
+    // SIREN reconnu : l'interrupteur rallume la fiche, même incomplète.
+    await interrupteur.click();
+    await expect(interrupteur).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 });
+    expect((await db.doc(chemins.artisanPublic((await artisan.get()).id)).get()).exists).toBe(true);
+
+    // Éteinte par l'artisan : retirée de l'annuaire, et le reste après une modification.
+    await interrupteur.click();
+    await expect(interrupteur).toHaveAttribute('aria-checked', 'false', { timeout: 15_000 });
+    expect((await artisan.get()).get('horsLigneVolontaire')).toBe(true);
     await page.getByRole('button', { name: 'Modifier : À propos' }).click();
     const fenetre = page.getByRole('dialog', { name: 'À propos' });
     await fenetre
       .getByLabel(/^À propos/)
       .fill('Couvreur zingueur à Bordeaux depuis 1998, devis gratuit sous 48 h.');
     await fenetre.getByRole('button', { name: 'Enregistrer' }).click();
-    await expect(interrupteur).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 });
-    await expect(page.getByRole('progressbar', { name: 'Fiche complétée' })).toHaveCount(0);
-    expect((await db.doc(chemins.artisanPublic((await artisan.get()).id)).get()).exists).toBe(true);
-
-    // Éteinte par l'artisan : retirée de l'annuaire.
-    await interrupteur.click();
-    await expect(interrupteur).toHaveAttribute('aria-checked', 'false', { timeout: 15_000 });
-    expect((await artisan.get()).get('horsLigneVolontaire')).toBe(true);
+    await expect(page.getByRole('progressbar', { name: 'Fiche complétée' })).toHaveCount(0, {
+      timeout: 15_000,
+    });
+    await expect(interrupteur).toHaveAttribute('aria-checked', 'false');
     await interrupteur.click();
     await expect(interrupteur).toHaveAttribute('aria-checked', 'true', { timeout: 15_000 });
 
@@ -67,6 +74,9 @@ test('Ma fiche : ce qui manque, mise en ligne automatique, interrupteur « Fiche
       description: avant.description ?? '',
       logoUrl: avant.logoUrl ?? FieldValue.delete(),
       bannieres: avant.bannieres ?? [],
+      statut: avant.statut,
+      sirenReconnu: avant.sirenReconnu ?? FieldValue.delete(),
+      'verification.statut': avant.verification?.statut ?? 'a_faire',
     });
   }
 });

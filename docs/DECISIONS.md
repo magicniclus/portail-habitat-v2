@@ -154,3 +154,14 @@ Quand vous tranchez une question : changez le statut en ✅, corrigez la proposi
 Outils ajoutés : API YouTube Data v3 (clé gratuite), faster-whisper (dans l'image du robot), Claude Opus 5.5 pour les scripts et le montage. Aucune nouvelle dépendance npm : les calques sont dessinés dans le Chromium de Playwright, déjà présent.
 
 **06/11/2026 (propriétaire)** : les statistiques de la fiche (vues, appels, demandes de devis) sont accessibles à tous les artisans, même sans abonnement. Elles ne sont plus un argument de vente de Fiche Pro ni de Fiche + Site (`statsDetaillees` toujours vrai). Les barres de conversion (qui dépassaient 100 %) sont remplacées par des graphiques sur la période choisie.
+
+**15/11/2026 (propriétaire)** : parcours d'inscription des artisans.
+- **Mise en ligne** : la fiche est en ligne dès que le SIREN est reconnu (répertoire à l'inscription, ou modérateur), sans téléphone vérifié, sans décennale, sans complétude ; jamais si le SIREN n'est pas contrôlé, refusé ou expiré, si l'entreprise est suspendue ou si l'artisan l'a éteinte. « Assurance non vérifiée » affichée tant que la décennale n'est pas validée (fiche, annuaire, tableau de bord). Nouveau champ `artisans.sirenReconnu` (serveur uniquement, test de règle) et migration `002-siren-reconnu` (essai d'abord, production avec le « go » du propriétaire).
+- **Étape 2** : ville proposée d'après le code postal de l'étape 1, curseur de 10 à 100 km, plus d'estimation chiffrée ; phrase fixe « Au moins 3 demandes… » (3 = engagement du propriétaire, constante `DEMANDES_RECENTES_MIN`). `/api/lieux` attend 5 s au lieu de 2.
+- **Étape 3** : « Créez votre compte » ; Google ou email + mot de passe (pas de lien magique) ; conditions acceptées une seule fois à l'étape 1 ; recherche par département puis toute la France ; un seul résultat → sélectionné d'office.
+- **« Je ne trouve pas mon entreprise »** (laissé au choix de Claude, « au plus sérieux ») : SIRET, nom et adresse du siège saisis à la main ; si le SIREN est finalement au répertoire, il est reconnu ; sinon fiche hors ligne, tâche de modération prioritaire, en ligne dès la vérification.
+- **Google** : l'email Google devient l'identifiant ; l'email de l'étape 1, s'il est différent, devient l'email de contact de la fiche.
+- **Premier écran** : espace neuf (ni présentation, ni demande, ni avis) → « Bienvenue {prénom}, votre espace est prêt » et un seul bouton « Rédiger ma fiche avec l'IA » ; prénom et nom de l'étape 1 (ou de Google) écrits dans le profil.
+- **Mon abonnement** : bloc « Aller plus loin » (Site Pro d'abord) ; packs de crédits seulement si `appelsOffresPayants` est ouvert.
+- **Emails** : `bienvenue-pro` annonce la fiche en ligne (ou la vérification en cours) au lieu des « 3 étapes » ; `fiche-incomplete` ne parle plus d'un seuil de 60 % ; l'email de résiliation ne parle plus de « demandes garanties ».
+

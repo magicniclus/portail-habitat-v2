@@ -4,7 +4,14 @@ import {
   defileHorizontalement,
 } from '@ph/config/playwright/mesures';
 import { expect, test } from '@playwright/test';
-import { connecter, entrepriseDe, proprietaireAvecPlan, webhookStripe } from './outils';
+import {
+  connecter,
+  entrepriseDe,
+  flagGlobal,
+  proprietaireAvecPlan,
+  soldeCredits,
+  webhookStripe,
+} from './outils';
 
 // PAY-02, PAY-05, PAY-10 (maquettes Mon Abonnement et Fenetre Offre). Sans clé Stripe sur le
 // serveur e2e, la redirection vers Checkout se vérifie en recette ; le webhook, lui, est appelé
@@ -31,6 +38,44 @@ test.describe('Paiement', () => {
     await expect(
       fenetre.getByText('Les paiements en ligne ne sont pas encore ouverts.'),
     ).toBeVisible();
+  });
+
+  test('« Aller plus loin » : formules qui ajoutent quelque chose, Site Pro d’abord ; crédits selon le flag', async ({
+    page,
+  }) => {
+    const email = await proprietaireAvecPlan('gratuit');
+    const artisanId = await entrepriseDe(email);
+    const solde = await soldeCredits(artisanId);
+    const remettre = await flagGlobal('appelsOffresPayants', false);
+    try {
+      await soldeCredits(artisanId, 0);
+      await connecter(page, email, '/pro/abonnement');
+      const bloc = page.getByRole('region', { name: 'Aller plus loin' });
+      await expect(bloc.getByRole('listitem').locator('strong')).toHaveText([
+        'Site Pro',
+        'Fiche Pro',
+        'Fiche + Site',
+        'Tout inclus',
+      ]);
+      await expect(bloc).toContainText('9,90 € HT / mois');
+      // Déblocage des appels d'offres fermé, solde nul : pas de section crédits.
+      await expect
+        .poll(async () => {
+          await page.reload();
+          return page.getByRole('heading', { name: "Crédits appels d'offres" }).count();
+        })
+        .toBe(0);
+      // Fermé avec un solde : le solde seul, sans achat.
+      await soldeCredits(artisanId, 12);
+      await page.reload();
+      await expect(page.getByText('Solde : 12 crédits')).toBeVisible();
+      await expect(page.getByRole('button', { name: /Acheter/ })).toHaveCount(0);
+      await bloc.getByRole('link', { name: 'Choisir Site Pro' }).click();
+      await expect(page.getByRole('dialog', { name: 'Passer à Site Pro' })).toBeVisible();
+    } finally {
+      await remettre();
+      await soldeCredits(artisanId, solde);
+    }
   });
 
   test('ancienne page de paiement : redirigée vers la formule qui la remplace (D60)', async ({

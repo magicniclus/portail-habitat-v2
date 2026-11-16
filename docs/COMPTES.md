@@ -76,7 +76,7 @@ Function `rechercherEntreprise(q)` (nom ou SIREN) : appel à l'**API Recherche d
 | SIREN inconnu | message « Nous ne trouvons pas ce SIREN », saisie manuelle possible → `verification.statut = 'a_faire'`, contrôle manuel du Kbis |
 | Entreprise **fermée** (`etatAdministratif = 'C'`) | refus, message clair |
 | Code NAF hors bâtiment (hors section F et 71.20B pour les diagnostiqueurs) | accepté mais marqué `fraude_suspectee` dans `filesModeration` |
-| Entreprise < 3 mois | acceptée, label « Nouvelle entreprise », décennale exigée avant la mise en ligne |
+| Entreprise < 3 mois | acceptée, label « Nouvelle entreprise » ; décennale demandée, « Assurance non vérifiée » affiché d'ici là (15/11/2026) |
 | SIREN **déjà inscrit et revendiqué** | pas de doublon : écran « Cette entreprise a déjà un compte » avec 2 choix → **demander à rejoindre** (§4.4) ou **signaler une usurpation** (contact support) |
 | SIREN présent mais **non revendiqué** (fiche créée par l'admin ou importée) | flux de **revendication** (§3.4) |
 
@@ -102,7 +102,7 @@ Métiers et chantiers acceptés (§3.1 bis), adresse du siège préremplie depui
 En **une transaction** :
 1. Crée ou récupère l'utilisateur (email + mot de passe, ou Google), ajoute `artisan` à `roles`
 2. Vérifie à nouveau l'unicité du SIREN (`sirenIndex/{siren}` créé dans la transaction : **garde-fou contre les doubles clics et les inscriptions concurrentes**)
-3. Crée `artisans/{id}` (`statut: 'actif'`, `enLigne: false`, `verification.statut: 'en_cours'`, `plan: 'gratuit'`, `siegesMax: 1`, `proprietaireUid`, `onboarding.etape: 3`)
+3. Crée `artisans/{id}` (`statut: 'actif'`, `enLigne: true` et `sirenReconnu: { par: 'repertoire' }` si l'entreprise a été trouvée au répertoire, sinon `enLigne: false` et `verification.statut: 'a_faire'` ; `verification.statut: 'en_cours'` dans le premier cas, `plan: 'gratuit'`, `siegesMax: 1`, `proprietaireUid`, `onboarding.etape: 3`)
 4. Crée `membres/{uid}` avec `role: 'proprietaire'`
 5. Crée `portefeuilles/{id}` (solde 0), `prive/facturation` vide
 6. Met à jour `users/{uid}.entreprises` et `entrepriseActive`, puis les custom claims
@@ -110,7 +110,14 @@ En **une transaction** :
 
 Le téléphone est vérifié par SMS (Firebase Phone Auth) **avant** la première réponse à une demande, pas à l'inscription (réduction de la friction).
 
-**Mise en ligne dans l'annuaire** (`enLigne = true`) : **automatique dès la première connexion** si le Kbis (ou SIREN vérifié) et l'attestation décennale ont été **envoyés**. La vérification par un modérateur a lieu **ensuite**, sous 48 h ouvrées ; un document refusé retire la fiche (email `document-refuse`) jusqu'au nouvel envoi. Le téléphone est vérifié avant la première réponse à une demande.
+**Mise en ligne dans l'annuaire** (`enLigne = true`, décision du propriétaire du 15/11/2026, règle `ficheDoitEtreEnLigne` du core) : la fiche est en ligne **dès que le SIREN est reconnu** (`sirenReconnu`) :
+- trouvé au répertoire à l'inscription (`par: 'repertoire'`), ou vérifié par un modérateur (`adminVerifierArtisan`, `par: 'moderateur'`) ;
+- jamais si le SIREN n'est pas contrôlé (« Je ne trouve pas mon entreprise » : SIRET, nom et adresse saisis à la main, fiche hors ligne et tâche de modération prioritaire), refusé ou expiré (`verification.statut`), si l'entreprise est suspendue, ou si l'artisan l'a mise hors ligne lui-même (`horsLigneVolontaire`) ;
+- ni la vérification du téléphone par SMS, ni l'attestation décennale, ni la complétude ne sont exigées. Tant que l'assurance n'est pas vérifiée, la fiche publique, l'annuaire et le tableau de bord affichent « Assurance non vérifiée » (lien pour envoyer l'attestation).
+- L'interrupteur « Fiche en ligne » de Ma fiche se rallume dès que le SIREN est reconnu, fiche complète ou non ; une levée de suspension remet la fiche en ligne selon la même règle.
+- Fiches créées avant cette règle : migration `002-siren-reconnu` (`pnpm migrer 002-siren-reconnu --dry-run`, puis `--executer` avec le « go » du propriétaire).
+
+**Étape 3 (15/11/2026)** : « Créez votre compte » ; « Continuer avec Google » (l'email Google devient l'identifiant, celui de l'étape 1 devient l'email de contact de la fiche s'il est différent) ou email + mot de passe ; conditions générales acceptées une seule fois, à l'étape 1. Recherche d'entreprise par nom : département du code postal de l'étape 1 d'abord, puis toute la France ; un seul résultat possible → sélectionné d'office. Le prénom et le nom de l'étape 1 sont écrits dans le profil (« Bonjour {prénom} »). Le téléphone est vérifié avant la première réponse à une demande.
 
 ### 3.4 Revendication d'une fiche existante (`revendications/{id}`)
 Pour les fiches créées par l'admin (prospection) ou importées.

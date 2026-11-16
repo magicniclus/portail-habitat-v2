@@ -39,6 +39,25 @@ async function etape1(page: Page, email: string) {
 
 const liensReprise = () => liensEnvoyes('/pro/inscription?reprise=');
 
+/** Clé de Luhn : complète un numéro pour qu'il soit valide (SIREN 9 ou SIRET 14 chiffres). */
+function avecCle(debut: string): string {
+  for (let c = 0; c <= 9; c++) {
+    const n = debut + c;
+    let somme = 0;
+    for (let i = 0; i < n.length; i++) {
+      let x = Number(n[n.length - 1 - i]);
+      if (i % 2 === 1) x = x * 2 > 9 ? x * 2 - 9 : x * 2;
+      somme += x;
+    }
+    if (somme % 10 === 0) return n;
+  }
+  throw new Error('clé introuvable');
+}
+/** SIREN valide, au hasard (préfixe 9 : jamais dans le jeu de test). */
+const sirenLibreAleatoire = () =>
+  avecCle(`9${String(Math.floor(Math.random() * 1e7)).padStart(7, '0')}`);
+const siretValide = (siretSansCle: string) => avecCle(siretSansCle.slice(0, 13));
+
 test.describe('Inscription pro', () => {
   test('LAND-01 : la source de la landing est gardée jusqu’au compte (brouillon d’inscription)', async ({
     page,
@@ -73,16 +92,36 @@ test.describe('Inscription pro', () => {
     await simulerLieux(page);
     await etape1(page, emailUnique('onb'));
 
+    // Ville proposée d'office d'après le code postal de l'étape 1 (33700), modifiable.
     const suivante = page.getByRole('button', { name: 'Étape suivante' });
+    const ville = page.getByRole('combobox', { name: 'Votre ville' });
+    await ville.fill('Mérig');
     await expect(suivante).toBeDisabled();
-    await page.getByRole('combobox', { name: 'Votre ville' }).fill('Mérig');
     await page.getByRole('option', { name: /Mérignac/ }).click();
-    await page.locator('label').filter({ hasText: '50 km' }).click();
-    await expect(page.getByText(/dans un rayon de 50 km/)).toBeVisible();
+    // Rayon au curseur (10 à 100 km, pas de 5) : 30 → 50 km.
+    const rayon = page.getByLabel(/Rayon d.intervention/);
+    await rayon.focus();
+    for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowRight');
+    await expect(rayon).toHaveValue('50');
+    // Phrase fixe, visible sans défiler sur téléphone ; plus d'estimation chiffrée.
+    const phrase = page
+      .getByText(
+        'Au moins 3 demandes de travaux déposées ces dernières 48 h autour de Mérignac, dans un rayon de 50 km.',
+      )
+      .first();
+    await expect(phrase).toBeInViewport();
+    await expect(page.getByText(/demandes estimées|demandes déposées ce mois/)).toHaveCount(0);
     await expect(suivante).toBeEnabled();
     await suivante.click();
     await expect(page).toHaveURL(/\/pro\/inscription\/compte$/);
 
+    // Étape 3 : « Créez votre compte », plus de case des conditions (acceptées à l'étape 1).
+    await expect(page.getByRole('heading', { level: 1, name: 'Créez votre compte' })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: /conditions générales/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Continuer avec Google' })).toBeVisible();
+    await expect(
+      page.getByText(/autour de Mérignac, dans un rayon de 50 km/).first(),
+    ).toBeVisible();
     const activer = page.getByRole('button', { name: 'Activer mon espace' });
     await expect(activer).toBeDisabled();
     const recherche = page.getByLabel(/^Nom ou numéro SIREN/);
@@ -92,26 +131,36 @@ test.describe('Inscription pro', () => {
     await page.getByRole('button', { name: 'Rechercher' }).click();
     await expect(page.getByText('Cette entreprise est fermée')).toBeVisible();
     await expect(entreprises).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Je ne trouve pas mon entreprise' }),
+    ).toBeVisible();
 
     await recherche.fill(SIRENS.inscrite);
     await page.getByRole('button', { name: 'Rechercher' }).click();
     await expect(entreprises).toContainText('Cette entreprise a déjà un compte.');
     await expect(entreprises.getByRole('link', { name: 'Demander à rejoindre' })).toBeVisible();
 
+    // Un seul résultat possible : sélectionné d'office.
     await recherche.fill(SIRENS.libre);
     await page.getByRole('button', { name: 'Rechercher' }).click();
     await expect(entreprises).toContainText('SIREN 552 100 554');
-    await entreprises.getByRole('radio').check();
+    await expect(entreprises.getByRole('radio')).toBeChecked();
     await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
     await expect(activer).toBeDisabled();
     await page.getByLabel(/^Confirmer le mot de passe/).fill(MOT_DE_PASSE);
-    await page.getByRole('checkbox', { name: /conditions générales de vente/ }).check();
     await expect(activer).toBeEnabled();
     await activer.click();
     await expect(page).toHaveURL(/\/pro\/tableau-de-bord/, { timeout: 15_000 });
-    // ONB-06 : propriétaire ; la fiche se met en ligne d'elle-même dès le minimum fait (logo,
-    // description, bannière ; décision du 01/11/2026), décennale facultative.
-    await expect(page.getByText('Votre espace est créé')).toBeVisible();
+    // ONB-06 (15/11/2026) : espace neuf → accueil avec le prénom, un seul bouton ; fiche en ligne
+    // dès la fin de l'inscription (SIREN reconnu), assurance non vérifiée signalée.
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Bienvenue Julien, votre espace est prêt' }),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Rédiger ma fiche avec l’IA' })).toBeVisible();
+    await expect(page.getByText(/Votre fiche est en ligne/)).toBeVisible();
+    await expect(page.getByText(/Assurance non vérifiée/)).toBeVisible();
+    await expect(page.getByText('Demandes ce mois')).toHaveCount(0);
+    await expect(page.getByText('3 étapes pour être en ligne')).toHaveCount(0);
     // Propriétaire : Mon compte (abonnement, équipe, aide) figure dans « Plus » (onglets mobiles).
     await page
       .getByRole('navigation', { name: 'Espace pro' })
@@ -121,14 +170,13 @@ test.describe('Inscription pro', () => {
       page.getByRole('dialog', { name: 'Plus' }).getByRole('link', { name: 'Mon compte' }),
     ).toBeVisible();
 
-    // ONB-06b : hors ligne tant que le minimum manque (interrupteur éteint) ; l'attestation
-    // envoyée passe en vérification.
+    // Ma fiche : en ligne, fiche incomplète ; l'attestation envoyée passe en vérification.
     await page.goto('/pro/fiche');
     await expect(page.getByRole('switch', { name: 'Fiche en ligne' })).toHaveAttribute(
       'aria-checked',
-      'false',
+      'true',
     );
-    await expect(page.getByText(/Ajouter votre logo · Ajouter une bannière/)).toBeVisible();
+    await expect(page.getByText(/Pour compléter votre fiche : /)).toBeVisible();
     await expect(page.getByText(/Assurance non vérifiée/).first()).toBeVisible();
     await page.getByLabel('Type de document').selectOption('decennale');
     await page.getByLabel(/^Fichier/).setInputFiles(PDF);
@@ -136,6 +184,46 @@ test.describe('Inscription pro', () => {
     await expect(page.getByRole('list', { name: 'Documents envoyés' })).toContainText(
       'En cours de vérification',
       { timeout: 15_000 },
+    );
+    // Prénom et nom de l'étape 1 dans le profil.
+    const { db } = await admin();
+    const artisanId = (await db.collection('artisans').where('siren', '==', SIRENS.libre).get())
+      .docs[0]!;
+    expect(artisanId.get('sirenReconnu')).toMatchObject({ par: 'repertoire' });
+    const profil = await db.doc(chemins.user(artisanId.get('proprietaireUid') as string)).get();
+    expect(profil.data()).toMatchObject({ prenom: 'Julien', nom: 'Bertrand' });
+  });
+
+  test('« Je ne trouve pas mon entreprise » : saisie à la main, fiche hors ligne jusqu’à la vérification', async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'ordinateur', 'un compte par passage suffit');
+    await simulerLieux(page);
+    await etape1(page, emailUnique('manuelle'));
+    await page.getByRole('combobox', { name: 'Votre ville' }).fill('Mérig');
+    await page.getByRole('option', { name: /Mérignac/ }).click();
+    await page.getByRole('button', { name: 'Étape suivante' }).click();
+    await expect(page).toHaveURL(/\/pro\/inscription\/compte$/);
+    await page.getByLabel(/^Nom ou numéro SIREN/).fill('Entreprise introuvable zzz');
+    // Répertoire simulé : aucun résultat.
+    await page.route('**/api/pro/entreprise', (r) => r.fulfill({ json: { ok: true, data: [] } }));
+    await page.getByRole('button', { name: 'Rechercher' }).click();
+    await page.getByRole('button', { name: 'Je ne trouve pas mon entreprise' }).click();
+    const siret = sirenLibreAleatoire() + '00012';
+    await page.getByLabel(/^Numéro SIRET/).fill(siretValide(siret));
+    await page.getByLabel(/^Nom de l’entreprise/).fill('Toitures Martin');
+    await page.getByLabel(/^Adresse du siège/).fill('3 rue des Lilas');
+    await page.getByLabel(/^Code postal/).fill('33700');
+    await page.getByLabel(/^Ville/).fill('Mérignac');
+    await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
+    await page.getByLabel(/^Confirmer le mot de passe/).fill(MOT_DE_PASSE);
+    await page.getByRole('button', { name: 'Activer mon espace' }).click();
+    await expect(page).toHaveURL(/\/pro\/tableau-de-bord/, { timeout: 20_000 });
+    await expect(page.getByText(/Votre fiche est hors ligne/)).toBeVisible();
+    await page.goto('/pro/fiche');
+    await expect(page.getByRole('switch', { name: 'Fiche en ligne' })).toHaveAttribute(
+      'aria-checked',
+      'false',
     );
   });
 

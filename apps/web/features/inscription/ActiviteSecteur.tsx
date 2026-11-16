@@ -56,7 +56,8 @@ export function DemandesRecentes({
 export function ActiviteSecteur({ zone }: { zone: { ville: string; rayonKm: number } | null }) {
   return (
     <>
-      <div>
+      {/* Téléphone : la phrase est déjà en haut de l'écran (version compacte). */}
+      <div className="max-md:hidden">
         <p className="m-0 mb-2.5 text-xs font-bold tracking-[0.08em] text-accent-700 uppercase">
           L&apos;activité de votre secteur
         </p>

@@ -30,7 +30,7 @@ Tant que l'artisan n'a pas de compte, **aucun prix, aucune formule payante, aucu
 - Contestation d'un appel d'offres acceptée → remboursement **en crédits** (ou sur la carte si payé par carte, au choix de l'admin).
 
 ## 4. Parcours
-- **Pas de page catalogue des formules.** `/pro/abonnement` montre seulement **la formule de l'artisan**, ses crédits, son pack IA, sa carte et ses factures. Les offres sont **distillées dans les outils**, au moment où elles servent, par un encart discret (une phrase + un lien `?offre=`), jamais plus d'un par écran :
+- **Pas de page catalogue des formules.** `/pro/abonnement` montre **la formule de l'artisan**, ses crédits, son pack IA, sa carte et ses factures. Sous « Votre formule », un bloc **« Aller plus loin »** (15/11/2026, `formulesAllerPlusLoin`) : les formules qui ajoutent quelque chose à la sienne, **Site Pro en premier**, avec nom, promesse courte, prix HT par mois et un bouton qui ouvre la fenêtre de paiement (`?offre=`) ; jamais de doublon ni de formule déjà incluse (Fiche Pro + Site Pro = Fiche + Site), rien pour Tout inclus. Les **packs de crédits** ne sont proposés que si le déblocage des appels d'offres est ouvert (flag `appelsOffresPayants`) ; fermé, la section n'apparaît que s'il reste un solde, sans bouton d'achat. Les offres sont **distillées dans les outils**, au moment où elles servent, par un encart discret (une phrase + un lien `?offre=`), jamais plus d'un par écran :
 
 | Où | Déclencheur | Offre proposée |
 |---|---|---|

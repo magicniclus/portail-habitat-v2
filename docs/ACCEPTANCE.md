@@ -78,13 +78,14 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **ONB-03** : SIREN déjà revendiqué : écran « déjà inscrite » avec « Demander à rejoindre »
 - **ONB-04** : fermer le navigateur à l'étape 2 puis rouvrir le lien reçu par email reprend à l'étape 2
 - **ONB-05** : deux finalisations simultanées du même SIREN : une seule entreprise créée
-- **ONB-06b** : Kbis et décennale envoyés → fiche en ligne à la première connexion ; document refusé ensuite → fiche retirée et email envoyé
-- **ACQ-01** : `?metier=couvreur` préremplit le métier et affiche le bandeau « Couvreur » ; le nombre de demandes suit STATS_DEMANDES.md et est identique à celui de l'étape 2 pour les mêmes paramètres
+- **ONB-06b** (15/11/2026) : entreprise saisie à la main (« Je ne trouve pas mon entreprise ») → fiche hors ligne jusqu'à la vérification du SIREN par un modérateur ; SIREN refusé, expiré ou entreprise suspendue → fiche hors ligne
+- **ACQ-01** : `?metier=couvreur` préremplit le métier et affiche le bandeau « Couvreur » ; le nombre de demandes de la page `/pro` suit STATS_DEMANDES.md (plus d'estimation aux étapes 2 et 3 depuis le 15/11/2026)
+- **ONB-08** (15/11/2026) : étape 2 : ville proposée d'après le code postal de l'étape 1, rayon au curseur de 10 à 100 km, phrase « Au moins 3 demandes de travaux déposées ces dernières 48 h autour de {ville}, dans un rayon de {rayon} km. » visible sans défiler sur téléphone ; étape 3 : « Créez votre compte », « Continuer avec Google », aucune case des conditions, un seul résultat possible sélectionné d'office
 - **ACQ-03** : sélecteur Annuel/Mensuel : Visibilité 79,90 € HT/an / 12,90 € HT/mois, Premium 79,90 / 99,90 € HT ; le bouton transmet `?facturation=` et la page de paiement s'ouvre sur la bonne formule ; en annuel, le total dû = 12 mois TTC
 - **ACQ-04** : sous 760 px, le menu burger ouvre le panneau latéral ; Échap, le voile et chaque lien le ferment
 - **ONB-07** : étapes 2 et 3 : bouton « Étape suivante » / « Activer mon espace » de la barre fixe désactivé tant que l'étape est incomplète, statut explicite
 - **ACQ-02** : le lien « Espace pro » de l'en-tête mène à la connexion ; aucun texte ne contient le mot « lead »
-- **ONB-06** : à la fin, je suis propriétaire, la fiche est hors ligne et la liste « 3 étapes pour être en ligne » s'affiche
+- **ONB-06** (15/11/2026) : à la fin, je suis propriétaire, la fiche est **en ligne** (SIREN trouvé au répertoire) ; le premier écran affiche « Bienvenue {prénom}, votre espace est prêt », un seul bouton « Rédiger ma fiche avec l'IA », l'état de la fiche et « Assurance non vérifiée » ; Ma fiche dit « Pour compléter votre fiche : … »
 
 ### Connexion `/pro/connexion`
 - **CON-01** : identifiants faux : message générique (sans dire si l'email existe)
