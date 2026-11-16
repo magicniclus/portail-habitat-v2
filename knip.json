@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["docs/**", "apps/web/features/landings/OutilsGratuits.tsx"],
+  "ignore": ["docs/**", "apps/web/features/landings/OutilsGratuits.tsx", "scripts/vsl/**"],
   "ignoreBinaries": ["stripe"],
   "workspaces": {
     "apps/web": {
