@@ -313,7 +313,9 @@
       sc.el.classList.toggle('on', actif);
       if (!actif) continue;
       const lt = t - sc.debut;
-      stage.dataset.st = sc.el.dataset.st ?? 64;
+      // `data-st` d'une section : hauteur des sous-titres, sauf si la section porte un bruitage
+      // (c'est alors l'instant du bruitage).
+      stage.dataset.st = sc.el.dataset.sfx ? 64 : (sc.el.dataset.st ?? 64);
       stage.dataset.fond = sc.el.classList.contains('nuit') ? 'nuit' : 'clair';
       for (const el of sc.el.querySelectorAll(
         '[data-in],[data-out],[data-mots],[data-barre],[data-compte],[data-cap],[data-fn],[data-flotte],[data-pulse],[data-vis]',

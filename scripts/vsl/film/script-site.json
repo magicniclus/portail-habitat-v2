@@ -10,7 +10,8 @@
     "s10": 0.8,
     "s11": 0.7,
     "s12": 0.8,
-    "s14": 3.2
+    "s14": 3.2,
+    "s13b": 0.9
   },
   "segments": [
     {
@@ -87,6 +88,11 @@
       "id": "s13",
       "acte": 10,
       "texte": "Pas de carte bancaire. Pas d'engagement."
+    },
+    {
+      "id": "s13b",
+      "acte": 10,
+      "texte": "Et ce n'est pas tout. Avec votre espace, vous avez aussi les demandes de chantier, votre fiche sur le portail, vos avis clients, vos devis et factures, et le suivi de vos clients. Tout est offert."
     },
     {
       "id": "s14",

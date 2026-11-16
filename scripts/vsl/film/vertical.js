@@ -216,7 +216,7 @@
       styles: [
         [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
       ],
-      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1306.5, 700, 1.05] }],
+      zones: [{ rect: [1300, 0, 620, 1080], vers: [-1240, 705, 1] }],
       reste: PLEIN,
     },
     s09b: {
@@ -229,7 +229,25 @@
     s11: PLANS.p23,
     s12: PLANS.p24,
     s13: { reste: [-390, 420, 1] },
-    s14: PLANS.p28,
+    s13b: {
+      styles: [
+        [
+          ':scope > .outil',
+          [0, 1, 2, 3, 4, 5].map(
+            (n) =>
+              `left:${n % 2 ? 548 : 12}px;top:${470 + Math.floor(n / 2) * 170}px;font-size:30px;padding:0 20px;gap:16px`,
+          ),
+        ],
+        [':scope > .centre', ['top:330px', 'top:1040px']],
+        ['.tampon', 'font-size:78px'],
+      ],
+      centre: PLEIN,
+      reste: PLEIN,
+    },
+    s14: {
+      ...PLANS.p28,
+      styles: [...PLANS.p28.styles, [':scope > .titre', 'font-size:96px']],
+    },
   });
   /** Les six cartes d'outils sur deux colonnes. */
   function grille() {
