@@ -210,14 +210,24 @@ test.describe('Inscription pro', () => {
     await page.route('**/api/pro/entreprise', (r) => r.fulfill({ json: { ok: true, data: [] } }));
     await page.getByRole('button', { name: 'Rechercher' }).click();
     await page.getByRole('button', { name: 'Je ne trouve pas mon entreprise' }).click();
-    const siret = sirenLibreAleatoire() + '00012';
-    await page.getByLabel(/^Numéro SIRET/).fill(siretValide(siret));
     await page.getByLabel(/^Nom de l’entreprise/).fill('Toitures Martin');
     await page.getByLabel(/^Adresse du siège/).fill('3 rue des Lilas');
     await page.getByLabel(/^Code postal/).fill('33700');
     await page.getByLabel(/^Ville/).fill('Mérignac');
     await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
     await page.getByLabel(/^Confirmer le mot de passe/).fill(MOT_DE_PASSE);
+    // Le répertoire est réel : on tire un SIREN au hasard jusqu'à en trouver un qu'il ne connaît pas.
+    let siren = '';
+    for (let essai = 0; essai < 10 && !siren; essai++) {
+      const candidat = sirenLibreAleatoire();
+      const r = await page.request.post('/api/pro/entreprise', {
+        data: { q: candidat },
+        headers: { origin: new URL(page.url()).origin },
+      });
+      if (((await r.json()) as { data?: unknown[] }).data?.length === 0) siren = candidat;
+    }
+    expect(siren).not.toBe('');
+    await page.getByLabel(/^Numéro SIRET/).fill(siretValide(siren + '00012'));
     await page.getByRole('button', { name: 'Activer mon espace' }).click();
     await expect(page).toHaveURL(/\/pro\/tableau-de-bord/, { timeout: 20_000 });
     await expect(page.getByText(/Votre fiche est hors ligne/)).toBeVisible();
