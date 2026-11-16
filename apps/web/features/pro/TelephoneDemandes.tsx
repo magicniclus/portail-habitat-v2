@@ -94,13 +94,13 @@ export function TelephoneDemandes({
               <li
                 key={d.titre}
                 className={cn(
-                  'grid transition-[grid-template-rows,opacity,translate] duration-700 ease-[cubic-bezier(.22,1,.36,1)]',
+                  'grid grid-cols-[minmax(0,1fr)] transition-[grid-template-rows,opacity,translate] duration-700 ease-[cubic-bezier(.22,1,.36,1)]',
                   i < n
                     ? 'grid-rows-[1fr] opacity-100'
                     : '-translate-y-3 grid-rows-[0fr] opacity-0',
                 )}
               >
-                <div className="min-h-0 overflow-hidden">
+                <div className="min-h-0 min-w-0 overflow-hidden">
                   <Carte d={d} nouvelle={i === n - 1} accepter={final && i === n - 1} />
                 </div>
               </li>
@@ -142,7 +142,7 @@ function Carte({ d, nouvelle, accepter }: { d: Demande; nouvelle: boolean; accep
   return (
     <div
       className={cn(
-        'mb-2.5 grid gap-1.5 rounded-[14px] border bg-blanc p-3 text-[13px] shadow-sm transition-colors duration-500',
+        'mb-2.5 grid min-w-0 gap-1.5 rounded-[14px] border bg-blanc p-3 text-[13px] shadow-sm transition-colors duration-500',
         nouvelle ? 'border-accent-300' : 'border-trait',
       )}
     >
@@ -172,7 +172,8 @@ function Carte({ d, nouvelle, accepter }: { d: Demande; nouvelle: boolean; accep
           <CalendarBlankIcon size={14} /> {d.delai}
         </span>
       </span>
-      <span className="flex items-center justify-between gap-2">
+      {/* Téléphone étroit (écran bas) : le bouton passe sous le budget plutôt que d’être coupé. */}
+      <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
         <b className="text-[14px] whitespace-nowrap">
           {formatFourchette(d.budget[0], d.budget[1])}
         </b>

@@ -77,7 +77,7 @@ export function FilDemandes() {
         <h2 className="m-0 text-[clamp(25px,3.6vw,46px)] leading-[1.08] tracking-[-0.02em]">
           Les demandes arrivent. Vous choisissez.
         </h2>
-        <p className="m-0 max-w-[46ch] text-[17px] leading-[27px] text-neutre-800 max-md:hidden">
+        <p className="m-0 max-w-[46ch] text-[17px] leading-[27px] text-neutre-800 max-md:hidden [@media(max-height:760px)]:hidden">
           Chaque demande vous dit tout : le chantier, la ville, le budget annoncé et le délai. Vous
           rappelez celles qui vous vont, vous laissez les autres. Celles qui viennent de votre fiche
           sont pour vous seul, et gratuites.
@@ -104,7 +104,7 @@ export function FilDemandes() {
         <a href="#inscription" className={bouton({ className: 'min-h-12 max-md:hidden' })}>
           Recevoir les demandes de ma zone
         </a>
-        <p className="m-0 text-[13px] text-neutre-700 max-md:hidden">
+        <p className="m-0 text-[13px] text-neutre-700 max-md:hidden [@media(max-height:760px)]:hidden">
           Exemples de demandes, à titre d’illustration.
         </p>
       </div>
