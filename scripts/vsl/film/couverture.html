@@ -16,6 +16,8 @@
   .duree { font-weight: 700; font-size: 40px; color: rgba(255, 255, 255, 0.82); margin-top: -8px; }
   body.vertical h1 { font-size: 132px; }
   body.vertical #scene { gap: 90px; }
+  /* Affiche du lecteur de la landing : le lecteur pose son propre bouton. */
+  body.affiche .lecture { display: none; }
 </style>
 </head>
 <body>
@@ -25,7 +27,7 @@
   <div class="lecture"><svg width="96" height="110" viewBox="0 0 96 110"><path d="M10 8v94a6 6 0 0 0 9 5l72-47a6 6 0 0 0 0-10L19 3a6 6 0 0 0-9 5z" fill="#fff"/></svg></div>
 </div>
 <script>
-  if (new URLSearchParams(location.search).has('vertical')) document.body.classList.add('vertical');
+  for (const cle of new URLSearchParams(location.search).keys()) document.body.classList.add(cle);
 </script>
 </body>
 </html>

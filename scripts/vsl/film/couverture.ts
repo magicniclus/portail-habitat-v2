@@ -1,5 +1,6 @@
 // Image de couverture de la VSL (16:9 et 9:16), photographiée depuis `couverture.html`.
-// Usage : tsx scripts/vsl/film/couverture.ts   → .vsl/livrables/couverture-16x9.png et -9x16.png
+// Usage : tsx scripts/vsl/film/couverture.ts   → .vsl/livrables/couverture-16x9.png et -9x16.png,
+//         plus les affiches du lecteur de la landing (sans bouton) : affiche-16x9.png et -9x16.png
 import { chromium } from '@playwright/test';
 import { createReadStream, existsSync, mkdirSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -27,6 +28,8 @@ async function main() {
   for (const [nom, largeur, hauteur, requete] of [
     ['couverture-16x9.png', 1920, 1080, ''],
     ['couverture-9x16.png', 1080, 1920, '?vertical'],
+    ['affiche-16x9.png', 1920, 1080, '?affiche'],
+    ['affiche-9x16.png', 1080, 1920, '?vertical&affiche'],
   ] as const) {
     const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur } });
     await page.goto(`http://127.0.0.1:${port}/scripts/vsl/film/couverture.html${requete}`);
