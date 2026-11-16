@@ -3,7 +3,7 @@
 import type { EntrepriseProposee } from '@ph/firebase/comptes';
 import { Banner, Button, Field, Input, bouton } from '@ph/ui';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { routes } from '@/lib/routes';
 
@@ -14,9 +14,12 @@ import { routes } from '@/lib/routes';
 export function ChoixEntreprise({
   choisie,
   onChoix,
+  introuvable,
 }: {
   choisie: EntrepriseProposee | null;
   onChoix: (e: EntrepriseProposee | null) => void;
+  /** Lien « Je ne trouve pas mon entreprise » (saisie à la main), sous les résultats. */
+  introuvable: ReactNode;
 }) {
   const [q, setQ] = useState('');
   const [resultats, setResultats] = useState<EntrepriseProposee[] | null>(null);
@@ -33,8 +36,11 @@ export function ChoixEntreprise({
     if (!r.ok) return setErreur(r.message);
     // Entreprises fermées jamais proposées (ONB-02 : un message seulement si rien d'autre n'est trouvé).
     setFermees(r.data.some((x) => x.analyse.refusee));
-    setResultats(r.data.filter((x) => !x.analyse.refusee));
-    onChoix(null);
+    const ouvertes = r.data.filter((x) => !x.analyse.refusee);
+    setResultats(ouvertes);
+    // Un seul résultat possible (entreprise libre) : sélectionné d'office (15/11/2026).
+    const libres = ouvertes.filter((x) => x.analyse.inscription === 'libre');
+    onChoix(libres.length === 1 ? libres[0]! : null);
   };
 
   return (
@@ -74,7 +80,7 @@ export function ChoixEntreprise({
         <Banner tone="attention">
           {fermees
             ? 'Cette entreprise est fermée : l’inscription est impossible.'
-            : 'Nous ne trouvons pas cette entreprise. Vérifiez le SIREN (9 chiffres).'}
+            : 'Nous ne trouvons pas cette entreprise. Vérifiez le nom ou le SIREN (9 chiffres).'}
         </Banner>
       ) : null}
       {resultats?.length ? (
@@ -127,8 +133,8 @@ export function ChoixEntreprise({
                   </p>
                 ) : r.analyse.recente ? (
                   <p className="m-0 text-sm text-neutre-800">
-                    Entreprise de moins de 3 mois : l&apos;attestation décennale sera demandée avant
-                    la mise en ligne.
+                    Entreprise de moins de 3 mois : envoyez votre attestation décennale dès que
+                    possible, votre fiche affiche « Assurance non vérifiée » d&apos;ici là.
                   </p>
                 ) : null}
               </li>
@@ -136,6 +142,7 @@ export function ChoixEntreprise({
           })}
         </ul>
       ) : null}
+      {resultats !== null ? introuvable : null}
     </section>
   );
 }

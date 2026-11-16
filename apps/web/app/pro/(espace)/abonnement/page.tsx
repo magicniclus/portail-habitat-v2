@@ -9,6 +9,7 @@ import { Banner, bouton } from '@ph/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { AllerPlusLoin } from '@/features/abonnement/AllerPlusLoin';
 import { CreditsPacks } from '@/features/abonnement/CreditsPacks';
 import { FenetreOptionBlog } from '@/features/abonnement/FenetreOptionBlog';
 import { FenetrePaiement } from '@/features/abonnement/FenetrePaiement';
@@ -18,6 +19,7 @@ import { VotreFormule } from '@/features/abonnement/VotreFormule';
 import { ListeFactures } from '@/features/facturation/Facturation';
 import { routes } from '@/lib/routes';
 import { facturationBloquee, lireMonAbonnement, remiseConversion } from '@/server/facturation';
+import { flagActif } from '@/server/flags';
 import { sessionPro } from '@/server/sessionPro';
 
 export const metadata: Metadata = { title: 'Abonnement et paiements', robots: { index: false } };
@@ -66,7 +68,10 @@ export default async function PageAbonnement({
     );
   const gerer = peut(active.membre, 'abonnement.gerer');
   const formule = active.artisan.formule;
-  const m = await lireMonAbonnement(active.artisanId);
+  const [m, appelsOffresPayants] = await Promise.all([
+    lireMonAbonnement(active.artisanId),
+    flagActif('appelsOffresPayants'),
+  ]);
   // `?offre=blog` (D71) : fenêtre de l'option si la formule la permet ; sans site, Site Pro d'abord.
   const optionBlog = gerer && q.offre === 'blog' && optionBlogPossible(formule) && !m.optionBlog;
   const voulue = !gerer
@@ -84,8 +89,13 @@ export default async function PageAbonnement({
         <Banner tone="attention">Ce code n’est plus valable. Le tarif normal s’applique.</Banner>
       ) : null}
       <VotreFormule formule={formule} abonnement={m.abonnements[0]} gerer={gerer} />
+      {gerer ? <AllerPlusLoin formule={formule} /> : null}
       {m.optionBlog ? <OptionBlog gerer={gerer} /> : null}
-      <CreditsPacks solde={m.soldeCredits} peutAcheter={gerer} />
+      {/* Packs de crédits seulement si le déblocage des appels d'offres est ouvert ; fermé : le
+          solde restant, sans achat (décision du 15/11/2026). */}
+      {appelsOffresPayants || m.soldeCredits > 0 ? (
+        <CreditsPacks solde={m.soldeCredits} peutAcheter={gerer && appelsOffresPayants} />
+      ) : null}
       <MoyenPaiement carte={m.carte} email={m.emailFacturation} gerer={gerer && !!m.carte} />
       <ListeFactures factures={m.factures} />
       {voulue && voulue !== formule ? (

@@ -41,40 +41,79 @@ function ListeCochee({
   );
 }
 
-const LIENS_ETAPES: Record<string, Route> = {
-  telephone: `${routes.proCompte}#telephone` as Route,
-  decennale: `${routes.proFiche}#documents` as Route,
-  fiche: routes.proFiche,
-};
+const LIEN_DOCUMENTS = `${routes.proFiche}#documents` as Route;
 
-/** ONB-06 : fiche hors ligne → « 3 étapes pour être en ligne » (email `bienvenue-pro`). */
-export function EtapesEnLigne({ m }: { m: Donnees['miseEnLigne'] }) {
+/**
+ * État de la fiche sous l'accueil et en haut du tableau de bord : en ligne (ou en vérification) et
+ * « Assurance non vérifiée » tant que la décennale n'est pas validée, avec le lien pour l'envoyer.
+ */
+export function EtatFiche({
+  enLigne,
+  assurance,
+}: {
+  enLigne: boolean;
+  assurance: Donnees['assurance'];
+}) {
+  const items = [
+    {
+      cle: 'en-ligne',
+      fait: enLigne,
+      libelle: enLigne ? (
+        'Votre fiche est en ligne : les particuliers de votre zone peuvent vous écrire.'
+      ) : (
+        <Link href={routes.proFiche} className="font-semibold">
+          Votre fiche est hors ligne
+        </Link>
+      ),
+    },
+    {
+      cle: 'assurance',
+      fait: assurance === 'verifiee',
+      libelle:
+        assurance === 'verifiee' ? (
+          'Assurance vérifiée'
+        ) : assurance === 'en_verification' ? (
+          'Assurance non vérifiée : votre attestation est en cours de vérification.'
+        ) : (
+          <>
+            Assurance non vérifiée ·{' '}
+            <Link href={LIEN_DOCUMENTS} className="font-semibold">
+              {assurance === 'a_renvoyer'
+                ? 'Renvoyer mon attestation'
+                : 'Envoyer mon attestation d’assurance'}
+            </Link>
+          </>
+        ),
+    },
+  ];
+  return (
+    <section aria-label="État de votre fiche" className={cadre}>
+      <ListeCochee items={items} />
+    </section>
+  );
+}
+
+/**
+ * Espace tout neuf (ni présentation, ni demande, ni avis) : un accueil et un seul bouton, à la
+ * place des indicateurs et graphiques à zéro (décision du 15/11/2026).
+ */
+export function AccueilNeuf({ prenom, action }: { prenom: string; action: ReactNode }) {
   return (
     <section
-      aria-labelledby="titre-en-ligne"
-      className={`${cadre} border-accent-300 bg-accent-100`}
+      aria-labelledby="titre-accueil"
+      className="grid justify-items-start gap-4 rounded-2xl border border-accent-300 bg-accent-100 p-[clamp(20px,4vw,36px)]"
     >
-      <div>
-        <h2 id="titre-en-ligne" className="m-0 text-xl">
-          3 étapes pour être en ligne
-        </h2>
-        <p className="m-0 mt-1 text-sm text-neutre-800">
-          Votre fiche est hors ligne : les particuliers ne la voient pas encore.{' '}
-          {m.restantes ? `Plus que ${m.restantes} étape${m.restantes > 1 ? 's' : ''}.` : ''}
-        </p>
-      </div>
-      <ListeCochee
-        items={m.etapes.map((e) => ({
-          ...e,
-          libelle: e.fait ? (
-            e.libelle
-          ) : (
-            <Link href={LIENS_ETAPES[e.cle]!} className="font-semibold">
-              {e.libelle}
-            </Link>
-          ),
-        }))}
-      />
+      <h1
+        id="titre-accueil"
+        className="m-0 text-[clamp(26px,3.4vw,38px)] leading-[1.1] tracking-[-0.01em]"
+      >
+        Bienvenue{prenom ? ` ${prenom}` : ''}, votre espace est prêt
+      </h1>
+      <p className="m-0 max-w-[56ch] text-[17px] leading-[27px] text-neutre-800">
+        Présentez votre entreprise en deux minutes : l’IA rédige votre accroche et votre
+        présentation à partir de vos métiers et de votre ville. Vous relisez, vous enregistrez.
+      </p>
+      {action}
     </section>
   );
 }

@@ -115,21 +115,41 @@ export async function creerOuConnecter(e: {
   return c;
 }
 
+/** Entreprise de l'étape 3 : trouvée au répertoire (SIREN) ou saisie à la main (à vérifier). */
+export type EntrepriseInscription =
+  | { siren: string }
+  | {
+      manuelle: {
+        siret: string;
+        raisonSociale: string;
+        adresse: { ligne1: string; codePostal: string; ville: string };
+      };
+    };
+
+/** Connexion avec Google (fenêtre) : le compte Google devient l'identifiant (15/11/2026). */
+async function connecterGoogle(): Promise<UserCredential> {
+  const auth = await authClient();
+  const m = await import('firebase/auth');
+  const c = await m.signInWithPopup(auth, new m.GoogleAuthProvider());
+  await ouvrirSessionPro(c);
+  return c;
+}
+
 /**
- * Étape 3 de l'inscription : compte email + mot de passe (ou connexion si l'adresse a déjà un compte
- * avec ce mot de passe), session, création de l'entreprise, puis session renouvelée avec les
- * nouveaux droits (rôle propriétaire, COMPTES §5).
+ * Étape 3 de l'inscription : compte Google, ou email + mot de passe (connexion si l'adresse a déjà
+ * un compte avec ce mot de passe), session, création de l'entreprise, puis session renouvelée avec
+ * les nouveaux droits (rôle propriétaire, COMPTES §5).
  */
-export async function activerEspace(e: {
-  email: string;
-  motDePasse: string;
-  nom: string;
-  siren: string;
-}): Promise<{ artisanId: string }> {
-  const c = await creerOuConnecter(e);
+export async function activerEspace(
+  acces:
+    | { methode: 'google' }
+    | { methode: 'motDePasse'; email: string; motDePasse: string; nom: string },
+  entreprise: EntrepriseInscription,
+): Promise<{ artisanId: string }> {
+  const c = acces.methode === 'google' ? await connecterGoogle() : await creerOuConnecter(acces);
   const r = await posterJson<{ artisanId: string }>('/api/pro/inscription/finaliser', {
     cleIdempotence: crypto.randomUUID(),
-    siren: e.siren,
+    ...entreprise,
   });
   if (!r.ok) throw Object.assign(new Error(r.message), { code: 'finaliser', message: r.message });
   await c.user.getIdToken(true);

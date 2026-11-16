@@ -1,8 +1,12 @@
-import { diametreRayonPx, tuilesCarte, zoomCarte, type Point } from '@ph/core/onboarding';
-import { cn } from '@ph/ui';
+import {
+  diametreRayonPx,
+  RAYON_ZONE,
+  tuilesCarte,
+  zoomCarte,
+  type Point,
+} from '@ph/core/onboarding';
 import type { ReactNode } from 'react';
 
-const RAYONS = [30, 50, 100] as const;
 /** Calque de tuiles plus grand que la carte, centré : la carte reste pleine quelle que soit sa largeur. */
 const LARGEUR = 1000;
 const HAUTEUR = 760;
@@ -10,7 +14,7 @@ const FRANCE: Point = { latitude: 46.6, longitude: 2.4 };
 
 /**
  * Carte de l'étape 2 (maquette Onboarding Etape 2) : fond OpenStreetMap, recherche de la ville en
- * haut, cercle du rayon et choix 30/50/100 km en bas une fois la ville choisie.
+ * haut, cercle du rayon et curseur de 10 à 100 km en bas une fois la ville choisie.
  */
 export function CarteZone({
   centre,
@@ -77,35 +81,26 @@ export function CarteZone({
       ) : null}
       <div className="absolute inset-x-3.5 top-3.5">{recherche}</div>
       {centre ? (
-        <fieldset className="absolute inset-x-3.5 bottom-3.5 m-0 flex flex-wrap items-center gap-3 rounded-[12px] border-0 bg-blanc px-3.5 py-3 shadow-lg">
-          <legend className="float-left p-0 text-sm font-semibold">
+        <div className="absolute inset-x-3.5 bottom-3.5 grid gap-1 rounded-[12px] bg-blanc px-3.5 pt-2.5 pb-1 shadow-lg">
+          <label
+            htmlFor="rayon-zone"
+            className="flex items-center justify-between text-sm font-semibold"
+          >
             Rayon d&apos;intervention
-          </legend>
-          <div className="ml-auto flex gap-2">
-            {RAYONS.map((r) => (
-              <label
-                key={r}
-                className={cn(
-                  'inline-flex min-h-11 cursor-pointer items-center rounded-pill border px-3.5 text-[13px] font-semibold whitespace-nowrap',
-                  'has-focus-visible:outline-2 has-focus-visible:outline-accent',
-                  rayon === r
-                    ? 'border-accent bg-accent-action text-blanc'
-                    : 'border-trait bg-blanc text-neutre-800',
-                )}
-              >
-                <input
-                  type="radio"
-                  name="rayon"
-                  value={r}
-                  checked={rayon === r}
-                  onChange={() => onRayon(r)}
-                  className="sr-only"
-                />
-                {r} km
-              </label>
-            ))}
-          </div>
-        </fieldset>
+            <span className="text-accent-700 tabular-nums">{rayon} km</span>
+          </label>
+          <input
+            id="rayon-zone"
+            type="range"
+            min={RAYON_ZONE.min}
+            max={RAYON_ZONE.max}
+            step={RAYON_ZONE.pas}
+            value={rayon}
+            onChange={(e) => onRayon(Number(e.target.value))}
+            aria-valuetext={`${rayon} kilomètres`}
+            className="min-h-11 w-full cursor-pointer accent-accent"
+          />
+        </div>
       ) : null}
     </div>
   );

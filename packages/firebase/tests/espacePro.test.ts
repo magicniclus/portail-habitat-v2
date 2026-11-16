@@ -70,6 +70,13 @@ describe('lireEspacePro', () => {
       membre: { role: 'proprietaire', statut: 'actif' },
       artisan: { nomCommercial: 'Bertrand Toiture', ville: 'Mérignac', rayonKm: 30 },
     });
+    // SIREN pas encore reconnu : l'interrupteur ne peut pas rallumer la fiche.
+    expect(e.active?.artisan.peutEtreEnLigne).toBe(false);
+    await db.doc(chemins.artisan('a1')).update({
+      statut: 'actif',
+      sirenReconnu: { par: 'repertoire', le: T },
+    });
+    expect((await lireEspacePro(db, 'u1')).active?.artisan.peutEtreEnLigne).toBe(true);
     expect(e.entreprises.map((x) => x.nomCommercial)).toEqual([
       'Bertrand Toiture',
       'Bertrand Zinc',

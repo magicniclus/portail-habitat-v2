@@ -1,40 +1,74 @@
 'use client';
 
-import { forceMotDePasse, statutCompte } from '@ph/core/onboarding';
 import { messageErreurConnexion } from '@ph/core/connexion';
+import { statutCompte } from '@ph/core/onboarding';
+import { entreeFinaliserInscription } from '@ph/core/schemas';
 import type { EntrepriseProposee } from '@ph/firebase/comptes';
-import { Eye, EyeSlash } from '@phosphor-icons/react';
-import { Banner, Checkbox, Field, Input } from '@ph/ui';
+import { GoogleLogoIcon } from '@phosphor-icons/react';
+import { Banner, Button } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
-import { activerEspace } from '@/features/connexion/sessionPro';
+import { activerEspace, type EntrepriseInscription } from '@/features/connexion/sessionPro';
 import { routes } from '@/lib/routes';
+import { DemandesRecentes } from './ActiviteSecteur';
 import { BarreEtape } from './BarreEtape';
 import { ChoixEntreprise } from './ChoixEntreprise';
+import { MotDePasseCompte } from './MotDePasseCompte';
+import { SAISIE_VIDE, SaisieEntreprise, type EntrepriseSaisie } from './SaisieEntreprise';
 
-const NIVEAUX = ['à définir', 'faible', 'correcte', 'bonne', 'excellente'];
+type Methode = 'google' | 'motDePasse';
 
-/** Étape 3 (maquette Onboarding Etape 3) : entreprise, mot de passe, conditions, activation. */
-export function EtapeCompte({ email, nom }: { email: string; nom: string }) {
+/**
+ * Étape 3 (maquette Onboarding Etape 3, décisions du 15/11/2026) : l'entreprise (trouvée, ou saisie
+ * à la main), puis « Continuer avec Google » ou email + mot de passe. Les conditions générales ont
+ * été acceptées à l'étape 1.
+ */
+export function EtapeCompte({
+  email,
+  nom,
+  zone,
+}: {
+  email: string;
+  nom: string;
+  zone: { ville: string; rayonKm: number };
+}) {
   const router = useRouter();
   const [entreprise, setEntreprise] = useState<EntrepriseProposee | null>(null);
+  const [manuelle, setManuelle] = useState<EntrepriseSaisie | null>(null);
   const [motDePasse, setMotDePasse] = useState('');
   const [confirmation, setConfirmation] = useState('');
-  const [cgv, setCgv] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [enCours, setEnCours] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const s = statutCompte({ entrepriseChoisie: entreprise !== null, motDePasse, confirmation, cgv });
-  const force = forceMotDePasse(motDePasse);
+  const [enCours, setEnCours] = useState<Methode | null>(null);
 
-  const activer = async (ev: FormEvent) => {
-    ev.preventDefault();
-    if (!s.complete || !entreprise) return;
-    setEnCours(true);
+  const choisie: EntrepriseInscription | null = manuelle
+    ? entreeFinaliserInscription.safeParse({ cleIdempotence: 'verification', manuelle }).success
+      ? { manuelle }
+      : null
+    : entreprise
+      ? { siren: entreprise.entreprise.siren }
+      : null;
+  const s = statutCompte({
+    methode: 'motDePasse',
+    entrepriseChoisie: choisie !== null,
+    motDePasse,
+    confirmation,
+  });
+
+  const activer = async (methode: Methode) => {
+    if (!choisie)
+      return setErreur(
+        manuelle
+          ? 'Complétez le SIRET (14 chiffres), le nom et l’adresse de votre entreprise.'
+          : 'Indiquez d’abord votre entreprise.',
+      );
+    setEnCours(methode);
     setErreur(null);
     try {
-      await activerEspace({ email, motDePasse, nom, siren: entreprise.entreprise.siren });
+      await activerEspace(
+        methode === 'google' ? { methode } : { methode, email, motDePasse, nom },
+        choisie,
+      );
       router.replace('/pro/tableau-de-bord?bienvenue=1' as Parameters<typeof router.replace>[0]);
     } catch (e) {
       const code = (e as { code?: string }).code ?? '';
@@ -43,92 +77,101 @@ export function EtapeCompte({ email, nom }: { email: string; nom: string }) {
           ? (e as Error).message
           : code === 'auth/invalid-credential' || code === 'auth/wrong-password'
             ? 'Un compte existe déjà avec cet email : saisissez son mot de passe, ou connectez-vous.'
-            : messageErreurConnexion(code),
+            : code === 'auth/popup-closed-by-user'
+              ? 'Fenêtre Google fermée avant la fin : réessayez.'
+              : messageErreurConnexion(code),
       );
-      setEnCours(false);
+      setEnCours(null);
     }
   };
 
+  const envoyer = (ev: FormEvent) => {
+    ev.preventDefault();
+    if (s.complete) void activer('motDePasse');
+  };
+
   return (
-    <form id="form-compte" onSubmit={activer} className="grid gap-5">
+    <form id="form-compte" onSubmit={envoyer} className="grid gap-5">
       <div>
         <h1 className="m-0 mb-2 text-[clamp(26px,3vw,34px)] leading-[1.12]">
-          Créez votre <span className="accent-editorial">mot de passe</span>
+          Créez votre <span className="accent-editorial">compte</span>
         </h1>
         <p className="m-0 text-[15px] leading-[23px] text-neutre-800">
-          Dernière étape avant de recevoir vos demandes. Identifiant : <strong>{email}</strong>
+          Dernière étape avant de recevoir vos demandes.
         </p>
+      </div>
+      <div className="md:hidden">
+        <DemandesRecentes zone={zone} compact />
       </div>
       {erreur ? (
         <Banner tone="danger">
           {erreur} <Link href={routes.connexionPro}>Se connecter</Link>
         </Banner>
       ) : null}
-      <ChoixEntreprise choisie={entreprise} onChoix={setEntreprise} />
-      <Field label="Mot de passe" requis>
-        <span className="relative flex">
-          <Input
-            champ="motDePasseNouveau"
-            type={visible ? 'text' : 'password'}
-            placeholder="10 caractères minimum"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            className="pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setVisible(!visible)}
-            aria-pressed={visible}
-            className="absolute inset-y-0 right-0 grid min-h-11 w-11 cursor-pointer place-items-center border-0 bg-transparent text-neutre-700"
-          >
-            {visible ? (
-              <EyeSlash size={20} aria-hidden="true" />
-            ) : (
-              <Eye size={20} aria-hidden="true" />
-            )}
-            <span className="sr-only">
-              {visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-            </span>
+      {manuelle ? (
+        <div className="grid gap-2">
+          <SaisieEntreprise valeur={manuelle} onChange={setManuelle} />
+          <button type="button" onClick={() => setManuelle(null)} className={lien}>
+            Revenir à la recherche
           </button>
-        </span>
-      </Field>
-      <div aria-live="polite" className="-mt-2 grid gap-2">
-        <span aria-hidden="true" className="h-1.5 overflow-hidden rounded-pill bg-neutre-300">
-          <span
-            className="block h-full bg-accent motion-safe:transition-[width]"
-            style={{ width: `${force * 25}%` }}
-          />
-        </span>
-        <span className="text-[13px] text-neutre-800">
-          Sécurité : <strong>{NIVEAUX[force]}</strong> · 10 caractères, une majuscule ou un chiffre
-        </span>
-      </div>
-      <Field label="Confirmer le mot de passe" requis>
-        <Input
-          champ="motDePasseNouveau"
-          type={visible ? 'text' : 'password'}
-          placeholder="Retapez votre mot de passe"
-          value={confirmation}
-          onChange={(e) => setConfirmation(e.target.value)}
+        </div>
+      ) : (
+        <ChoixEntreprise
+          choisie={entreprise}
+          onChoix={setEntreprise}
+          introuvable={
+            <button
+              type="button"
+              onClick={() => {
+                setEntreprise(null);
+                setManuelle(SAISIE_VIDE);
+              }}
+              className={lien}
+            >
+              Je ne trouve pas mon entreprise
+            </button>
+          }
         />
-      </Field>
-      <Checkbox
-        checked={cgv}
-        onChange={(e) => setCgv(e.currentTarget.checked)}
-        className="text-sm leading-[21px] text-neutre-800"
-      >
-        J&apos;accepte les{' '}
-        <Link href={routes.legal('pro', 'cgv')}>conditions générales de vente</Link> et je souhaite
-        être visible auprès des particuliers de ma zone.
-      </Checkbox>
+      )}
+      <section aria-labelledby="titre-acces" className="grid gap-3">
+        <h2 id="titre-acces" className="m-0 text-lg">
+          Votre accès
+        </h2>
+        <Button
+          type="button"
+          variant="secondaire"
+          className="min-h-12 w-full"
+          chargement={enCours === 'google'}
+          disabled={enCours !== null}
+          onClick={() => void activer('google')}
+        >
+          <GoogleLogoIcon size={20} weight="bold" aria-hidden="true" />
+          Continuer avec Google
+        </Button>
+        <p className="m-0 flex items-center gap-3 text-[13px] text-neutre-700 before:h-px before:flex-1 before:bg-trait after:h-px after:flex-1 after:bg-trait">
+          ou avec votre email
+        </p>
+        <p className="m-0 text-sm text-neutre-800">
+          Identifiant : <strong>{email}</strong>
+        </p>
+        <MotDePasseCompte
+          motDePasse={motDePasse}
+          confirmation={confirmation}
+          onMotDePasse={setMotDePasse}
+          onConfirmation={setConfirmation}
+        />
+      </section>
       <BarreEtape
         etape="Étape 3 sur 3 · Votre compte"
         statut={s.statut}
         complete={s.complete}
         libelle="Activer mon espace"
         formulaire="form-compte"
-        enCours={enCours}
+        enCours={enCours === 'motDePasse'}
       />
     </form>
   );
 }
+
+const lien =
+  'min-h-11 cursor-pointer justify-self-start border-0 bg-transparent p-0 text-left text-[15px] font-semibold text-accent-700 underline underline-offset-2';

@@ -9,9 +9,8 @@ import { routes } from '@/lib/routes';
 
 /**
  * Interrupteur « En ligne » de l'en-tête de Ma fiche (ville · rayon quand la fiche est en ligne). La fiche
- * passe en ligne d'elle-même dès que logo, description et bannière sont faits ; l'éteindre la
- * retire de l'annuaire jusqu'à ce que l'artisan la rallume. Sans droit `fiche.modifier` :
- * simple pastille d'état.
+ * est en ligne dès que le SIREN est reconnu, complète ou non (15/11/2026) ; l'éteindre la retire de
+ * l'annuaire jusqu'à ce que l'artisan la rallume. Sans droit `fiche.modifier` : simple pastille.
  */
 export function EtatFiche({
   artisan,
@@ -27,7 +26,8 @@ export function EtatFiche({
     .filter(Boolean)
     .join(' · ');
   const allumee = artisan.enLigne;
-  const incomplete = !allumee && !artisan.complete;
+  // SIREN pas encore reconnu (saisi à la main) : on mène à Ma fiche, qui l'explique.
+  const enAttente = !allumee && !artisan.peutEtreEnLigne;
   const libelle = allumee ? 'Fiche en ligne' : 'Fiche hors ligne';
   const pastille = cn(
     'inline-flex min-h-11 items-center gap-2 truncate rounded-pill border px-3 text-[13px] font-semibold whitespace-nowrap',
@@ -47,8 +47,7 @@ export function EtatFiche({
     );
 
   const basculer = async () => {
-    // Fiche incomplète : on mène à Ma fiche, où la barre dit ce qui manque.
-    if (incomplete) return router.push(routes.proFiche);
+    if (enAttente) return router.push(routes.proFiche);
     setEnCours(true);
     setErreur(null);
     const r = await posterJson('/api/pro/fiche/en-ligne', { enLigne: !allumee });
@@ -64,8 +63,8 @@ export function EtatFiche({
         aria-checked={allumee}
         aria-label="Fiche en ligne"
         title={
-          incomplete
-            ? 'Ajoutez votre logo, une description et une bannière pour mettre la fiche en ligne.'
+          enAttente
+            ? 'Votre fiche sera en ligne dès que le SIREN de votre entreprise aura été vérifié.'
             : allumee
               ? 'Retirer la fiche de l’annuaire'
               : 'Mettre la fiche en ligne'

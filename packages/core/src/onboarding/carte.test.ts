@@ -5,9 +5,16 @@ import { diametreRayonPx, intensiteZone, tuilesCarte, zoomCarte } from './carte'
 describe('carte de la zone', () => {
   it('zoom : France entière sans ville, puis selon le rayon', () => {
     expect(zoomCarte(null)).toBe(5);
-    expect(zoomCarte(30)).toBe(9);
-    expect(zoomCarte(50)).toBe(8);
-    expect(zoomCarte(100)).toBe(7);
+    // Curseur de 10 à 100 km : le cercle reste dans la carte quel que soit le rayon.
+    expect(zoomCarte(10)).toBe(9);
+    expect(zoomCarte(20)).toBe(9);
+    expect(zoomCarte(30)).toBe(8);
+    expect(zoomCarte(45)).toBe(8);
+    expect(zoomCarte(50)).toBe(7);
+    expect(zoomCarte(90)).toBe(7);
+    expect(zoomCarte(100)).toBe(6);
+    for (let r = 10; r <= 100; r += 5)
+      expect(diametreRayonPx(44.8, zoomCarte(r), r)).toBeLessThanOrEqual(260);
   });
 
   it('tuiles qui couvrent la vue, centrées sur le point', () => {

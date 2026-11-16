@@ -1,28 +1,23 @@
 'use client';
 
-import { statutZone } from '@ph/core/onboarding';
+import { RAYON_ZONE, statutZone } from '@ph/core/onboarding';
 import { Banner, Combobox, type OptionCombobox } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
-import { useDemandesEstimees } from '@/features/pro/useDemandesEstimees';
 import { posterJson } from '@/lib/posterJson';
-import { ActiviteSecteur } from './ActiviteSecteur';
+import { ActiviteSecteur, DemandesRecentes } from './ActiviteSecteur';
 import { BarreEtape } from './BarreEtape';
 import { CadreInscription } from './CadreInscription';
 import { CarteZone } from './CarteZone';
 import { useLieux, type Lieu } from './useLieux';
 
-/** Étape 2 (maquette Onboarding Etape 2) : ville sur la carte, rayon, estimation des demandes du secteur. */
+/**
+ * Étape 2 (maquette Onboarding Etape 2) : ville proposée d'office d'après le code postal de l'étape 1
+ * (modifiable), rayon au curseur de 10 à 100 km, demandes récentes de la zone (phrase fixe).
+ */
 export function EtapeZone({
-  metiers,
-  nomMetier,
   zoneInitiale,
-  codePostalSecours,
 }: {
-  metiers: string[];
-  nomMetier: string;
-  /** Code postal de l'étape 1, si la ville reprise du brouillon n'a pas le sien (même calcul qu'à l'étape 3). */
-  codePostalSecours: string;
   zoneInitiale?: { ville: string; codePostal?: string; centre: Lieu['centre']; rayonKm: number };
 }) {
   const router = useRouter();
@@ -36,17 +31,11 @@ export function EtapeZone({
         }
       : null,
   );
-  const [rayon, setRayon] = useState<number>(zoneInitiale?.rayonKm ?? 30);
+  const [rayon, setRayon] = useState<number>(zoneInitiale?.rayonKm ?? RAYON_ZONE.defaut);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const estimation = useDemandesEstimees(
-    lieu ? lieu.codePostal || codePostalSecours : '',
-    metiers,
-    rayon,
-  );
   const s = statutZone({ ville: lieu?.nom, rayonKm: rayon });
   const options = useLieux(saisie, lieu?.nom);
-  const total = lieu ? (estimation?.total ?? null) : null;
 
   const envoyer = async (ev: FormEvent) => {
     ev.preventDefault();
@@ -73,14 +62,7 @@ export function EtapeZone({
   return (
     <CadreInscription
       etape={2}
-      aside={
-        <ActiviteSecteur
-          zone={lieu ? { ville: lieu.nom, rayonKm: rayon } : null}
-          total={total}
-          source={estimation?.source ?? null}
-          nomMetier={nomMetier}
-        />
-      }
+      aside={<ActiviteSecteur zone={lieu ? { ville: lieu.nom, rayonKm: rayon } : null} />}
     >
       <form id="form-zone" onSubmit={envoyer} className="grid gap-5">
         <div>
@@ -88,9 +70,12 @@ export function EtapeZone({
             Où voulez-vous recevoir vos <span className="accent-editorial">chantiers</span> ?
           </h1>
           <p className="m-0 text-[15px] leading-[23px] text-neutre-800">
-            Indiquez votre ville et votre rayon d&apos;intervention : une estimation des demandes de
-            ce secteur s&apos;affiche tout de suite.
+            Vérifiez votre ville et réglez votre rayon d&apos;intervention.
           </p>
+        </div>
+        {/* Téléphone : la phrase des demandes récentes avant la carte, visible sans défiler. */}
+        <div className="md:hidden">
+          <DemandesRecentes zone={lieu ? { ville: lieu.nom, rayonKm: rayon } : null} compact />
         </div>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
         <CarteZone

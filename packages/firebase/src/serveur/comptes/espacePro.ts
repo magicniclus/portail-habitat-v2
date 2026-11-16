@@ -5,18 +5,20 @@ import {
   contenuFiche,
   espaceNeuf,
   etatAssurance,
+  peutRallumer,
   type EtatDecennale,
 } from '@ph/core/espace-pro';
 import type { Membre } from '@ph/core/equipe';
 import type { Firestore } from 'firebase-admin/firestore';
 import { chemins, GROUPE_ATTRIBUTIONS } from '../../chemins';
+import { etatMiseEnLigne } from '../pro/fiche';
 
 export interface ResumeArtisan {
   nomCommercial: string;
   /** Adresse de la fiche publique (lien de demande d'avis). */
   slug: string;
-  /** Logo, description et bannière faits : la fiche peut être mise en ligne. */
-  complete: boolean;
+  /** SIREN reconnu, ni refusé ni expiré, entreprise active : l'interrupteur peut rallumer la fiche. */
+  peutEtreEnLigne: boolean;
   logoUrl?: string;
   enLigne: boolean;
   /** Formule active (`droits.formule`, PAIEMENTS §5) : affichage seulement. */
@@ -36,7 +38,7 @@ export interface EspacePro {
 const resume = (d: FirebaseFirestore.DocumentData): ResumeArtisan => ({
   nomCommercial: d.nomCommercial ?? '',
   slug: d.slug ?? '',
-  complete: completudeFiche(contenuFiche(d)).pourcent >= 100,
+  peutEtreEnLigne: peutRallumer(etatMiseEnLigne(d)),
   ...(d.logoUrl ? { logoUrl: d.logoUrl as string } : {}),
   enLigne: d.enLigne === true,
   formule: (d.droits?.formule as Formule | undefined) ?? 'gratuit',

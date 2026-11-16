@@ -36,7 +36,7 @@ export function ProgressionFiche({
       </div>
       {manquants.length ? (
         <p className="m-0 w-full text-[13px] text-neutre-700">
-          Pour mettre votre fiche en ligne : {manquants.join(' · ')}
+          Pour compléter votre fiche : {manquants.join(' · ')}
         </p>
       ) : null}
     </div>

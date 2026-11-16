@@ -13,7 +13,7 @@ export interface Point {
 /** France entière sans ville ; ensuite assez proche pour que le cercle du rayon tienne. */
 export function zoomCarte(rayonKm: number | null): number {
   if (rayonKm === null) return 5;
-  return rayonKm >= 100 ? 7 : rayonKm >= 50 ? 8 : 9;
+  return rayonKm > 90 ? 6 : rayonKm > 45 ? 7 : rayonKm > 20 ? 8 : 9;
 }
 
 function pixelMonde(p: Point, zoom: number) {

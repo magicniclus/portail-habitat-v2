@@ -16,7 +16,17 @@ type Ton = (typeof TONS_REDACTION)[number];
  * l'IA propose l'accroche et la présentation. Rien n'est enregistré sans « Enregistrer sur ma
  * fiche » ; tout reste modifiable. Même quota que l'assistant de rédaction (20 aides par jour).
  */
-export function RemplirFicheIa({ vide }: { vide: boolean }) {
+export function RemplirFicheIa({
+  vide,
+  libelle,
+  grand = false,
+}: {
+  vide: boolean;
+  /** Libellé du bouton (« Rédiger ma fiche avec l'IA » sur le premier écran de l'espace). */
+  libelle?: string;
+  /** Bouton principal en grand (accueil de l'espace tout neuf). */
+  grand?: boolean;
+}) {
   const router = useRouter();
   const [ouverte, setOuverte] = useState(false);
   const [specialites, setSpecialites] = useState('');
@@ -74,10 +84,13 @@ export function RemplirFicheIa({ vide }: { vide: boolean }) {
       declencheur={
         <button
           type="button"
-          className={bouton({ variant: vide ? 'primaire' : 'secondaire', taille: 'sm' })}
+          className={bouton({
+            variant: vide ? 'primaire' : 'secondaire',
+            taille: grand ? 'lg' : 'sm',
+          })}
         >
-          <SparkleIcon size={16} weight="fill" aria-hidden="true" />
-          {vide ? 'Remplir ma fiche avec l’IA' : 'Réécrire ma fiche avec l’IA'}
+          <SparkleIcon size={grand ? 20 : 16} weight="fill" aria-hidden="true" />
+          {libelle ?? (vide ? 'Remplir ma fiche avec l’IA' : 'Réécrire ma fiche avec l’IA')}
         </button>
       }
       titre="Remplir ma fiche avec l’IA"
