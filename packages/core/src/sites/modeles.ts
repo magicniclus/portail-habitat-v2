@@ -260,7 +260,9 @@ export function appliquerModeleSite<
 >(site: S, m: ModeleSite, palette: Theme['palette'], tout: boolean, fiche?: FicheSite): S {
   const theme: Theme = { palette, polices: m.polices, rayonBoutons: m.rayonBoutons, ton: m.ton };
   if (!tout) return { ...site, theme };
-  const depart = fiche ? Object.values(siteParDefaut(fiche, palette).pages) : [];
+  // Modèle appliqué à tout le site : les dessins du thème, pas les photos de l'artisan (demande du
+  // propriétaire du 17/11/2026) ; « Couleurs et polices seulement » garde tout.
+  const depart = fiche ? Object.values(siteParDefaut({ ...fiche, photos: [] }, palette).pages) : [];
   const pages = Object.fromEntries(
     Object.entries(site.pages).map(([id, p]) => {
       const refaite = depart.find((d) => d.type === p.type && REFAITES.includes(p.type));

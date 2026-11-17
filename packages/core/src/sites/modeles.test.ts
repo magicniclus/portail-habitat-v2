@@ -217,6 +217,9 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     expect(acc.seo.title).toBe('Mon titre SEO');
     expect(acc.sections[0]!.p).toMatchObject({ nom: 'Bandeau', fond: 'sombre' });
     expect(JSON.stringify(acc)).toContain('Bertrand Rénovation, plombier à Bordeaux');
+    // Les dessins du thème, pas les photos de la fiche (17/11/2026).
+    expect(acc.sections[0]!.p.fondImage).toMatch(/^ill:/);
+    expect(JSON.stringify(acc)).not.toContain('lib:r1/');
     expect(r.pages.contact!.sections.map((x) => x.p.nom)).toEqual(
       siteParDefaut(FICHE, AUTRE).pages.contact!.sections.map((x) => x.p.nom),
     );
