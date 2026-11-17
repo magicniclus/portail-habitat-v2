@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { pousserEvenement } from '@/lib/dataLayer';
 
 /** Vidéo générale (clients + outils gratuits), avec son et sous-titres en piste. */
@@ -32,8 +32,11 @@ export interface VideoVsl {
   versions?: VersionVsl[];
 }
 
-/** Sous ce seuil (largeur d'écran), la vidéo est servie en vertical. */
-const TELEPHONE = '(max-width: 760px)';
+/**
+ * Sous ce seuil (largeur de la fenêtre), la vidéo est servie en vertical : c'est celui où les
+ * landings passent sur une colonne (`min-[900px]`).
+ */
+const TELEPHONE = '(max-width: 899px)';
 
 /** 38 → « 38 s » ; 223 → « 3 min 43 ». */
 const dureeLisible = (s: number) =>
@@ -42,7 +45,8 @@ const dureeLisible = (s: number) =>
 /**
  * Vidéo de présentation (VSL) du hero `/pro` et des landings : affiche légère, rien n'est
  * téléchargé avant le clic, lecture avec le son. Sur téléphone, la vidéo passe au format vertical
- * quand il existe ; les autres durées du film se choisissent sous le lecteur. Démonstration
+ * quand il existe, y compris en cours de lecture si la fenêtre est rétrécie ou le téléphone
+ * tourné ; les autres durées du film se choisissent sous le lecteur. Démonstration
  * seulement : la vidéo cite des chiffres à prouver avant la production (LANDINGS §7).
  */
 export function VslPro({
@@ -68,11 +72,43 @@ export function VslPro({
     ...(video.versions ?? []),
   ];
   const version = versions[choix] ?? versions[0]!;
+  const base = version.base;
+  const aVertical = Boolean(video.vertical);
+
+  // La fenêtre change de largeur pendant la lecture : la vidéo reprend au même instant dans
+  // l'autre format (les deux montages ont le même minutage).
+  useEffect(() => {
+    if (!lancee || !aVertical) return;
+    const requete = window.matchMedia(TELEPHONE);
+    const basculer = () => {
+      const el = lecteur.current;
+      if (!el) return;
+      const src = `${base}${requete.matches ? '-vertical' : ''}.mp4`;
+      if (el.getAttribute('src') === src) return;
+      const [instant, enLecture] = [el.currentTime, !el.paused && !el.ended];
+      el.src = src;
+      el.addEventListener('loadedmetadata', () => (el.currentTime = instant), { once: true });
+      if (enLecture) void el.play();
+    };
+    // Trois signaux pour un même contrôle (qui ne fait rien si le format est déjà le bon) : la
+    // requête média, le redimensionnement de la fenêtre, et la taille du lecteur lui-même, qui
+    // suit la mise en page même quand les deux premiers ne sont pas émis.
+    requete.addEventListener('change', basculer);
+    window.addEventListener('resize', basculer);
+    const el = lecteur.current;
+    const taille = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(basculer);
+    if (el) taille?.observe(el);
+    return () => {
+      requete.removeEventListener('change', basculer);
+      window.removeEventListener('resize', basculer);
+      taille?.disconnect();
+    };
+  }, [lancee, aVertical, base]);
 
   /** Charge la version demandée au bon format (vertical sur téléphone) et la lance. */
   const lire = (n: number) => {
     const v = versions[n] ?? versions[0]!;
-    const vertical = Boolean(video.vertical) && window.matchMedia(TELEPHONE).matches;
+    const vertical = aVertical && window.matchMedia(TELEPHONE).matches;
     setChoix(n);
     setLancee(true);
     pousserEvenement({
@@ -93,7 +129,7 @@ export function VslPro({
         data-vsl
         className={`relative m-0 aspect-video w-full overflow-hidden rounded-[16px] bg-neutre-900 shadow-lg ${
           video.vertical
-            ? 'max-[760px]:mx-auto max-[760px]:aspect-[9/16] max-[760px]:w-[min(100%,calc(82svh*9/16))]'
+            ? 'max-[899px]:mx-auto max-[899px]:aspect-[9/16] max-[899px]:w-[min(100%,calc(82svh*9/16))]'
             : ''
         }`}
       >
@@ -153,7 +189,7 @@ export function VslPro({
         )}
       </figure>
       {versions.length > 1 ? (
-        <div className="mt-3 flex items-center justify-center gap-3 min-[761px]:justify-start">
+        <div className="mt-3 flex items-center justify-center gap-3 min-[900px]:justify-start">
           <span id="duree-vsl" className="text-sm font-semibold text-neutre-800">
             Durée
           </span>
