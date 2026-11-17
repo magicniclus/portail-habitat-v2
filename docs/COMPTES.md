@@ -69,6 +69,8 @@ Nouvelle adresse vérifiée par lien (`verifyBeforeUpdateEmail`), alerte envoyé
 Maquettes : `Acquisition Artisans v2` → `Onboarding Etape 2` (zone) → `Onboarding Etape 3` (compte) → `Espace Artisan Dashboard on boarding`.
 
 ### 3.1 Étape SIREN (formulaire de la page d'acquisition)
+**Premier formulaire (décision du 17/11/2026, formulaire court)** : métier principal, code postal, email ; chantiers du métier tous acceptés (repliés derrière « Modifier mes chantiers »). Ni nom, ni téléphone, ni case : la phrase « En continuant, vous acceptez… » vaut acceptation, et le serveur enregistre la version des conditions (`cgv: {version, le}`) dans le brouillon. Le nom vient du compte Google, ou d'un champ « Nom et prénom » à l'étape compte (email et mot de passe seulement). Le téléphone est demandé dans l'espace pro, dans la fenêtre « Votre numéro », avant la première demande acceptée s'il manque (ONB-01d) ; il est écrit sur la fiche comme depuis Ma fiche. Anciens brouillons : nom et téléphone de l'étape 1 encore lus s'ils existent.
+
 Function `rechercherEntreprise(q)` (nom ou SIREN) : appel à l'**API Recherche d'entreprises** (`recherche-entreprises.api.gouv.fr`, sans clé) puis à l'**API Sirene INSEE** pour le détail. Résultat mis en cache 24 h (`cacheSirene/{siren}`).
 
 | Cas | Comportement |

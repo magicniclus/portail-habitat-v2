@@ -73,7 +73,8 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 ### Inscription `/pro` → `/pro/inscription/*`
 - **ONB-01** : saisir un SIREN valide préremplit la raison sociale et l'adresse
 - **ONB-01b** : le métier principal se choisit dans une liste déroulante groupée par famille (60 métiers) ; sans choix, l'envoi est bloqué avec un message
-- **ONB-01c** : dans le premier formulaire, les chantiers du métier principal apparaissent cochés ; ajouter « Zingueur » via la seconde liste ajoute ses chantiers ; décocher un chantier l'exclut du matching ; l'étape 2 ne montre que la zone
+- **ONB-01c** (17/11/2026) : dans le premier formulaire, tous les chantiers du métier principal sont acceptés et repliés derrière « Modifier mes chantiers » ; choisir le métier ne change pas la hauteur du formulaire ; décocher un chantier l'exclut du matching ; les autres métiers s'ajoutent dans Ma fiche ; l'étape 2 ne montre que la zone
+- **ONB-01d** (17/11/2026) : sans numéro sur la fiche, « Accepter la demande » ouvre d'abord « Votre numéro » ; fermer n'accepte rien ; un numéro invalide est refusé ; une fois enregistré (sur la fiche, comme dans Ma fiche), l'acceptation reprend d'elle-même
 - **ONB-02** : SIREN d'une entreprise fermée : refus avec message
 - **ONB-03** : SIREN déjà revendiqué : écran « déjà inscrite » avec « Demander à rejoindre »
 - **ONB-04** : fermer le navigateur à l'étape 2 puis rouvrir le lien reçu par email reprend à l'étape 2
@@ -85,6 +86,10 @@ Critères communs à **tous** les écrans (préfixe `ALL`) :
 - **ACQ-04** : sous 760 px, le menu burger ouvre le panneau latéral ; Échap, le voile et chaque lien le ferment
 - **ONB-07** : étapes 2 et 3 : bouton « Étape suivante » / « Activer mon espace » de la barre fixe désactivé tant que l'étape est incomplète, statut explicite
 - **ACQ-02** : le lien « Espace pro » de l'en-tête mène à la connexion ; aucun texte ne contient le mot « lead »
+- **ACQ-05** (17/11/2026) : erreurs sous le champ sans perdre la saisie ; code postal au clavier numérique (`postal-code`), email au clavier email (`email`)
+- **ACQ-06** (17/11/2026) : sur les 4 pages d'entrée (/pro et les 3 landings), à 375 × 667 et 390 × 844, premier visiteur (bandeau cookies affiché) : premier champ et bouton d'envoi visibles sans défiler, au-dessus du bandeau ; titre, une phrase, puis le formulaire ; ordinateur inchangé ; bandeau cookies compact, « Tout refuser » aussi grand que « Tout accepter »
+- **ACQ-07** (17/11/2026) : formulaire court sur les 4 pages : métier principal, code postal, email ; ni nom, ni téléphone, ni case à cocher ; « Gratuit · sans carte bancaire · 2 minutes » et « En continuant, vous acceptez les conditions générales, la charte et la politique de confidentialité » sous le bouton (version enregistrée côté serveur) ; `?metier=` préremplit aussi sur les landings ; aucune donnée saisie dans l'adresse de l'étape suivante
+- **ACQ-08** (17/11/2026) : sur téléphone, barre « Voir les demandes près de chez moi » (libellé propre à chaque page) : cachée tant que le formulaire est à l'écran ou que le clavier est ouvert, visible ensuite ; elle ramène au formulaire avec le curseur dans le premier champ vide ; cible ≥ 44 px, marge de sécurité en bas ; jamais sur ordinateur
 - **ONB-06** (15/11/2026) : à la fin, je suis propriétaire, la fiche est **en ligne** (SIREN trouvé au répertoire) ; le premier écran affiche « Bienvenue {prénom}, votre espace est prêt », un seul bouton « Rédiger ma fiche avec l'IA », l'état de la fiche et « Assurance non vérifiée » ; Ma fiche dit « Pour compléter votre fiche : … »
 
 ### Connexion `/pro/connexion`
