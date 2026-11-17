@@ -16,13 +16,19 @@ export const VIDEOS_OUTILS: Record<string, { duree: number }> = {
 
 /**
  * Film de vente de la landing chantiers (`scripts/vsl`) : chaque durée existe en 16:9 (`.mp4`) et
- * en 9:16 (`-vertical.mp4`), affiches `chantiers.webp` et `chantiers-vertical.webp`.
+ * en 9:16 (`-vertical.mp4`), affiches `chantiers.webp` et `chantiers-vertical.webp`. Sur la landing
+ * chantiers, la version complète seule (sans choix de durée, décision du 17/11/2026).
  */
-export const VSL_CHANTIERS: VideoVsl = {
+export const VSL_CHANTIERS_COMPLET: VideoVsl = {
   base: '/landing/videos/vsl/chantiers',
   duree: 223,
   accroche: 'C’est gratuit… où est le piège ?',
   vertical: true,
+};
+
+/** Le même film avec ses versions courtes au choix sous le lecteur (page /pro). */
+export const VSL_CHANTIERS: VideoVsl = {
+  ...VSL_CHANTIERS_COMPLET,
   versions: [
     { libelle: '1 min', base: '/landing/videos/vsl/chantiers-60s', duree: 58 },
     { libelle: '30 s', base: '/landing/videos/vsl/chantiers-30s', duree: 30 },
