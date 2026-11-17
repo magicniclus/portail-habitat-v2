@@ -69,7 +69,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
           </div>
           <div
             data-formulaire-landing
-            className="min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1"
+            className="min-[900px]:sticky min-[900px]:top-24 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1"
           >
             <FormulaireInscription
               groupes={groupesMetiers()}
