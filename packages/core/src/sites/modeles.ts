@@ -27,7 +27,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'classique',
     nom: 'Essentiel',
-    description: 'Bleu marine, clair et structuré, photo à droite',
+    description: 'Ardoise et cuivre, clair et structuré',
     palette: 0,
     polices: 'archivo',
     rayonBoutons: 8,
@@ -37,7 +37,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'premium',
     nom: 'Premium photo',
-    description: 'Anthracite, grandes photos assombries',
+    description: 'Bleu nuit et ocre, grandes photos',
     palette: 3,
     polices: 'archivo',
     rayonBoutons: 2,
@@ -47,7 +47,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'urgence',
     nom: 'Dépannage 24/7',
-    description: 'Noir et orange, boutons très visibles',
+    description: 'Graphite et orange chantier, boutons très visibles',
     palette: 1,
     polices: 'barlow',
     rayonBoutons: 8,
@@ -57,7 +57,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'minimal',
     nom: 'Minimal',
-    description: 'Beaucoup de blanc, une touche d’orange',
+    description: 'Beaucoup de blanc, bleu pétrole et orange doux',
     palette: 4,
     polices: 'archivo',
     rayonBoutons: 2,
@@ -67,7 +67,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'chaleureux',
     nom: 'Nature',
-    description: 'Vert, rassurant, photo à droite',
+    description: 'Vert sapin et ambre, rassurant',
     palette: 2,
     polices: 'archivo',
     rayonBoutons: 8,
@@ -76,8 +76,8 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   },
   {
     id: 'franc',
-    nom: 'Bleu franc',
-    description: 'Bleu et orange, photo plein écran',
+    nom: 'Signature',
+    description: 'Indigo et safran, photo plein écran',
     palette: 5,
     polices: 'archivo',
     rayonBoutons: 999,
