@@ -107,11 +107,13 @@ test.describe('Inscription pro', () => {
         ).match(/Au moins (\d+)/)![1],
       );
     const a30 = await nombre();
-    await rayon.focus();
-    for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowRight');
-    await expect(rayon).toHaveValue('50');
-    await expect.poll(nombre).toBeGreaterThan(a30);
     expect(a30).toBeGreaterThanOrEqual(3);
+    await rayon.focus();
+    await page.keyboard.press('End');
+    await expect(rayon).toHaveValue('100');
+    await expect.poll(nombre).toBeGreaterThan(a30);
+    for (let i = 0; i < 10; i++) await page.keyboard.press('ArrowLeft');
+    await expect(rayon).toHaveValue('50');
     // Phrase visible sans défiler sur téléphone ; pas d'« estimation » affichée.
     const phrase = page
       .getByText(

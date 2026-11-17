@@ -94,7 +94,7 @@ function couvertureRayon(couverture: Readonly<Record<string, number>>, rayonKm: 
 
 /**
  * Demandes des dernières 48 h dans la zone (décision du 17/11/2026 : le nombre suit le rayon).
- * `mensuel30` : demandes du mois, tous métiers, à 30 km (STATS_DEMANDES : réel ou modèle), mis à
+ * `mensuel30` : demandes du mois des métiers de l'artisan à 30 km (STATS_DEMANDES : réel ou modèle), mis à
  * l'échelle du rayon par la couverture du modèle, ramené à 48 h, moins 10 %, jamais sous 3.
  */
 export function demandesRecentes(e: {

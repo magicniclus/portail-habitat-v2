@@ -32,12 +32,16 @@ export function demandesEstimees(e: {
   );
 }
 
-/** Base des demandes récentes des étapes 2 et 3 : demandes du mois, tous métiers, à 30 km. */
-export function baseDemandesRecentes(codePostal: string | undefined) {
+/**
+ * Base des demandes récentes des étapes 2 et 3 : demandes du mois à 30 km pour les métiers de
+ * l'artisan (17/11/2026 : tous métiers donnait des nombres bien trop gros).
+ */
+export function baseDemandesRecentes(codePostal: string | undefined, metiers: string[]) {
   const total = codePostal
-    ? demandesEstimees({ codePostal, metiers: [], rayonKm: 30 }).total
+    ? demandesEstimees({ codePostal, metiers: metiers.slice(0, 5), rayonKm: 30 }).total
     : null;
   return {
+    metiers: metiers.slice(0, 5),
     mensuel30: total,
     couverture: (stats.modele as unknown as ModeleDemandes).couverture,
   };

@@ -27,6 +27,6 @@ export default async function PageZone() {
           rayonKm: RAYON_ZONE.defaut,
         }
       : undefined);
-  const base = baseDemandesRecentes(zoneInitiale?.codePostal ?? b.identite.codePostal);
+  const base = baseDemandesRecentes(zoneInitiale?.codePostal ?? b.identite.codePostal, b.metiers);
   return <EtapeZone base={base} {...(zoneInitiale ? { zoneInitiale } : {})} />;
 }

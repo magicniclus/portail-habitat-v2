@@ -18,7 +18,7 @@ export default async function PageCompte() {
   const b = await brouillonCourant();
   if (!b) redirect('/pro#inscription');
   if (!b.zone) redirect('/pro/inscription/zone');
-  const base = baseDemandesRecentes(b.zone.codePostal ?? b.identite.codePostal);
+  const base = baseDemandesRecentes(b.zone.codePostal ?? b.identite.codePostal, b.metiers);
   const zone = { ...b.zone, nombre: demandesRecentes({ ...base, rayonKm: b.zone.rayonKm }) };
   return (
     <CadreInscription etape={3} largeur="max-w-[420px]" aside={<ActiviteSecteur zone={zone} />}>

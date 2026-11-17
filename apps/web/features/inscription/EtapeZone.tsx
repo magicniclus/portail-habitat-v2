@@ -19,8 +19,12 @@ export function EtapeZone({
   zoneInitiale,
   base,
 }: {
-  /** Demandes du mois à 30 km (tous métiers) et couverture du modèle, pour le nombre affiché. */
-  base: { mensuel30: number | null; couverture: Readonly<Record<string, number>> };
+  /** Demandes du mois à 30 km (métiers de l'artisan) et couverture du modèle, pour le nombre affiché. */
+  base: {
+    metiers: string[];
+    mensuel30: number | null;
+    couverture: Readonly<Record<string, number>>;
+  };
   zoneInitiale?: { ville: string; codePostal?: string; centre: Lieu['centre']; rayonKm: number };
 }) {
   const router = useRouter();
@@ -44,14 +48,14 @@ export function EtapeZone({
   useEffect(() => {
     if (!cp || cp === zoneInitiale?.codePostal) return;
     let actif = true;
-    void fetch(`/api/stats/demandes?cp=${cp}&rayon=30`)
+    void fetch(`/api/stats/demandes?cp=${cp}&metiers=${base.metiers.join(',')}&rayon=30`)
       .then((r) => r.json() as Promise<{ total: number | null }>)
       .then((d) => actif && setMensuel30(d.total))
       .catch(() => undefined);
     return () => {
       actif = false;
     };
-  }, [cp, zoneInitiale?.codePostal]);
+  }, [cp, zoneInitiale?.codePostal, base.metiers]);
   const zoneAffichee = lieu
     ? {
         ville: lieu.nom,

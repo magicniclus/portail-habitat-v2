@@ -138,8 +138,9 @@ export function EtapeCompte({
         />
       )}
       <section aria-labelledby="titre-acces" className="grid gap-3">
-        <h2 id="titre-acces" className="m-0 text-lg">
-          Votre accès
+        {/* Pas de titre visible (« Votre accès » jugé inutile, 17/11/2026) : le bouton Google suffit. */}
+        <h2 id="titre-acces" className="sr-only">
+          Connexion
         </h2>
         <BoutonGoogle
           chargement={enCours === 'google'}
