@@ -293,16 +293,16 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     const i = illustrationDe(src);
     return i ? `Illustration : ${SUJETS[i]}` : photo;
   };
-  if (f.photos[0]) bandeau.p.fondImage = f.photos[0] as typeof bandeau.p.fondImage;
-  else
-    bandeau.p = {
-      ...bandeau.p,
-      fond: 'sombre',
-      fondType: 'image',
-      fondImage: ill.bandeau,
-      voile: 'sombre',
-      voileOpacite: 64,
-    };
+  // Photo de la fiche (ou dessin) visible derrière le formulaire, sous un voile sombre.
+  const premiere = f.photos[0] as typeof bandeau.p.fondImage | undefined;
+  bandeau.p = {
+    ...bandeau.p,
+    fond: 'sombre',
+    fondType: 'image',
+    fondImage: premiere ?? ill.bandeau,
+    voile: 'sombre',
+    voileOpacite: premiere ? 62 : 64,
+  };
   const vrais = (f.avis ?? []).slice(0, AVIS_ACCUEIL);
   const cartesAvis = [
     ...vrais.map((a) => el.avis(a.nom, a.note, a.texte)),

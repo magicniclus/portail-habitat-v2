@@ -98,12 +98,14 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       expect(e.p.couleur).toBe(e.p.variante === 'plein' ? 'accent' : 'primaire');
   });
 
-  it('minimal : fonds blancs (avis et appel à l’action en clair), cartes à plat, bandeau aéré', () => {
+  it('minimal : fonds blancs sauf le bandeau photo (avis et appel à l’action en clair), cartes à plat, bandeau aéré', () => {
     const r = appliquerModeleSite(site(), modeleSite('minimal')!, AUTRE, true);
     const acc = r.pages.accueil!.sections;
     expect(acc[0]!.p.padY).toEqual({ desktop: 110, tablet: 80, mobile: 52 });
     const clairs = ['Avis clients', 'Appel à l’action'];
-    for (const x of acc)
+    // Le bandeau garde la photo de la fiche derrière le formulaire (voile sombre, 17/11/2026).
+    expect(acc[0]!.p).toMatchObject({ fond: 'sombre', fondType: 'image' });
+    for (const x of acc.slice(1))
       expect(x.p.fond).toBe(
         x.p.nom === 'Pied de page' ? 'sombre' : clairs.includes(x.p.nom) ? 'clair' : 'blanc',
       );
@@ -239,7 +241,7 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       AUTRE,
       true,
     );
-    // Sans photo : le dessin du métier, assombri (photo plein écran) ou très éclairci (classique).
+    // Sans photo : le dessin du métier, sous un voile sombre, dans tous les modèles.
     expect(bandeau(sans).p).toMatchObject({
       fondType: 'image',
       fondImage: expect.stringMatching(/^ill:/),
@@ -251,7 +253,13 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       AUTRE,
       true,
     );
-    expect(bandeau(clair).p).toMatchObject({ fond: 'clair', fondType: 'image', voile: 'clair' });
+    expect(bandeau(clair).p).toMatchObject({ fond: 'sombre', fondType: 'image', voile: 'sombre' });
+    // Minimal aussi : la photo de la fiche reste visible derrière le formulaire.
+    for (const id of ['minimal', 'classique'])
+      expect(bandeau(appliquerModeleSite(site(), modeleSite(id)!, AUTRE, true)).p).toMatchObject({
+        fondType: 'image',
+        fondImage: 'lib:r1/0',
+      });
     // L'ordre des zones ne change jamais.
     const ordre = (x: ReturnType<typeof site>) => x.pages.accueil!.sections.map((z) => z.p.nom);
     for (const m of MODELES_SITE)

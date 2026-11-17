@@ -196,14 +196,16 @@ function varianter(s: Section, i: number, hero: Hero): Section {
       // Sans photo, le modèle photo garde son grand bandeau, sur la couleur principale.
       x.p.fond = { split: 'clair', photo: 'primaire', sombre: 'sombre', minimal: 'blanc' }[hero];
       x.p.padY = hero === 'photo' ? PAD_PHOTO : hero === 'minimal' ? PAD_MINIMAL : PAD_BANDEAU;
-      // Dessin du métier derrière le formulaire : très éclairci (clair) ou assombri (sombre).
-      if (formulaire && photo && estIllustration(photo) && hero !== 'minimal')
+      // Photo de la fiche ou dessin du métier derrière le formulaire, dans tous les modèles
+      // (demande du propriétaire du 17/11/2026 : l'image doit se voir) : voile sombre, texte clair.
+      if (formulaire && photo)
         x.p = {
           ...x.p,
+          fond: 'sombre',
           fondType: 'image',
           fondImage: photo,
-          voile: hero === 'split' ? 'clair' : 'sombre',
-          voileOpacite: hero === 'split' ? 86 : 78,
+          voile: 'sombre',
+          voileOpacite: estIllustration(photo) ? 64 : 62,
         };
     }
     for (const e of elements(x)) {
