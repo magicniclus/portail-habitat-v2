@@ -39,20 +39,18 @@ beforeEach(async () => {
   horloge = T;
 });
 
+// Formulaire court (17/11/2026) : ni nom, ni téléphone, ni case à cocher.
 const etape1 = entreeInscriptionEtape1.parse({
-  nom: 'Julien Bertrand',
-  telephone: '06 12 34 56 78',
   email: 'julien@test.local',
   codePostal: '33700',
   metierPrincipal: 'couvreur',
   metiers: ['couvreur', 'zingueur'],
   intentions: ['velux'],
-  cgv: true,
 });
 
 describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
   it('ONB-04 : étape 1 → brouillon + lien par email ; le lien reprend à l’étape 2', async () => {
-    const { brouillonId } = await enregistrerEtape1(s(), etape1);
+    const { brouillonId } = await enregistrerEtape1(s(), etape1, undefined, '2026-11');
     expect(envois).toHaveLength(1);
     expect(envois[0]).toMatchObject({
       modele: 'reprise-onboarding',
@@ -66,28 +64,36 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
     );
     expect(brut).not.toContain('jeton-de-reprise');
     expect(await reprendreInscription(s(), 'jeton-de-reprise-0123456789abcdef')).toBe(brouillonId);
-    expect(await lireBrouillonInscription(s(), brouillonId)).toMatchObject({
+    const b = await lireBrouillonInscription(s(), brouillonId);
+    expect(b).toMatchObject({
       etape: 2,
       metiers: ['couvreur', 'zingueur'],
-      identite: { email: 'julien@test.local' },
+      identite: { email: 'julien@test.local', codePostal: '33700' },
     });
+    expect(b?.identite.nom).toBeUndefined();
+    expect(b?.identite.telephone).toBeUndefined();
+    // Conditions acceptées par l'envoi : version et date gardées dans le brouillon.
+    const doc = (await db.collection('brouillonsOnboarding').doc(brouillonId).get()).data()!;
+    expect(doc.donnees.cgv).toEqual({ version: '2026-11', le: expect.anything() });
+    // Courriel de reprise sans prénom inventé.
+    expect(envois[0]!.donnees).toMatchObject({ prenom: '' });
   });
 
   it('un prospect qui commence son inscription sort de la séquence S1', async () => {
     const ref = db.collection('prospects').doc(empreinteEmail('julien@test.local'));
     await ref.set({ etape: 'prospect' });
-    await enregistrerEtape1(s(), etape1);
+    await enregistrerEtape1(s(), etape1, undefined, '2026-11');
     expect((await ref.get()).get('etape')).toBe('inscription_commencee');
   });
 
   it('étape 2 : zone enregistrée, étape 3 ensuite ; même email → pas de second envoi', async () => {
-    const { brouillonId } = await enregistrerEtape1(s(), etape1);
+    const { brouillonId } = await enregistrerEtape1(s(), etape1, undefined, '2026-11');
     await enregistrerZone(s(), brouillonId, {
       ville: 'Mérignac',
       centre: { latitude: 44.84, longitude: -0.64 },
       rayonKm: 30,
     });
-    await enregistrerEtape1(s(), etape1, brouillonId);
+    await enregistrerEtape1(s(), etape1, brouillonId, '2026-11');
     expect(envois).toHaveLength(1);
     expect(await lireBrouillonInscription(s(), brouillonId)).toMatchObject({
       etape: 2,
@@ -100,12 +106,13 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
       ...etape1,
       acquisition: { source: 'site-internet-artisan', utm_source: 'google', utm_campaign: 'site' },
     });
-    const { brouillonId } = await enregistrerEtape1(s(), avecSource);
+    const { brouillonId } = await enregistrerEtape1(s(), avecSource, undefined, '2026-11');
     horloge = T + 60_000;
     await enregistrerEtape1(
       s(),
       { ...avecSource, acquisition: { source: 'logiciel-devis-facture' } },
       brouillonId,
+      '2026-11',
     );
     expect((await lireBrouillonInscription(s(), brouillonId))?.acquisition).toEqual({
       source: 'site-internet-artisan',
@@ -116,7 +123,7 @@ describe('inscription en plusieurs étapes (COMPTES §3.2)', () => {
   });
 
   it('après 30 jours : brouillon et lien expirés', async () => {
-    const { brouillonId } = await enregistrerEtape1(s(), etape1);
+    const { brouillonId } = await enregistrerEtape1(s(), etape1, undefined, '2026-11');
     horloge = T + 31 * 86_400_000;
     expect(await lireBrouillonInscription(s(), brouillonId)).toBeNull();
     expect(await reprendreInscription(s(), 'jeton-de-reprise-0123456789abcdef')).toBeNull();

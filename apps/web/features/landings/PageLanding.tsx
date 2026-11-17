@@ -47,19 +47,41 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
       <Traceur page={`landing-${outil}`} />
       <EnTeteLanding bandeau={c.bandeau} />
       <main style={styleSerifTitres}>
+        {/* Téléphone : titre, une phrase, puis le formulaire (premier champ et bouton visibles sans
+            défiler, décision du 17/11/2026) ; le sous-titre, les points et la vidéo suivent.
+            Dès 900 px : texte à gauche, formulaire à droite, comme avant. */}
         <section
           className={cn(
             conteneur,
-            'grid items-start gap-x-[clamp(28px,4vw,60px)] gap-y-8 py-[clamp(24px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]',
+            'grid items-start gap-x-[clamp(28px,4vw,60px)] gap-y-3 pt-3 pb-[clamp(24px,4vw,56px)] min-[900px]:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] min-[900px]:grid-rows-[auto_1fr] min-[900px]:gap-y-0 min-[900px]:pt-[clamp(24px,4vw,56px)]',
           )}
         >
           <div>
-            <p className="m-0 mb-3 text-[14px] font-bold uppercase tracking-wide text-accent-700">
+            <p className="m-0 mb-3 text-[14px] font-bold uppercase tracking-wide text-accent-700 max-md:hidden">
               {c.surtitre}
             </p>
-            <h1 className="m-0 mb-[18px] text-[clamp(34px,4.6vw,56px)] leading-[1.08]">
+            <h1 className="m-0 text-[clamp(27px,4.6vw,56px)] leading-[1.08] md:mb-[18px]">
               {c.h1a} <span className="accent-editorial">{c.h1b}</span>
             </h1>
+            <p className="m-0 mt-2 text-[16px] leading-[23px] text-neutre-800 md:hidden">
+              {c.phraseMobile}
+            </p>
+          </div>
+          <div
+            data-formulaire-landing
+            className="min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1"
+          >
+            <FormulaireInscription
+              groupes={groupesMetiers()}
+              chantiers={chantiersParMetier()}
+              demandesMois={chiffres?.demandes ?? null}
+              titre={c.titreFormulaire}
+              cta={c.cta}
+              source={LANDINGS[outil].source}
+              landing={outil}
+            />
+          </div>
+          <div className="min-[900px]:col-start-1 min-[900px]:row-start-2">
             <SousTitre texte={c.sousTitre} />
             {c.points.length ? (
               <ul className="m-0 mb-5 flex list-none flex-col flex-wrap gap-x-[22px] gap-y-2.5 p-0 text-base leading-[22px] font-semibold min-[761px]:flex-row">
@@ -81,17 +103,6 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
                 video={VSL[outil]}
               />
             ) : null}
-          </div>
-          <div data-formulaire-landing>
-            <FormulaireInscription
-              groupes={groupesMetiers()}
-              chantiers={chantiersParMetier()}
-              demandesMois={chiffres?.demandes ?? null}
-              titre={c.titreFormulaire}
-              cta={c.cta}
-              source={LANDINGS[outil].source}
-              landing={outil}
-            />
           </div>
         </section>
         <ChiffresReseau chiffres={c.chiffres} />

@@ -1,6 +1,7 @@
 import { entreeInscriptionEtape1 } from '@ph/core/schemas';
 import { enregistrerEtape1 } from '@ph/firebase/comptes';
 import { cookies } from 'next/headers';
+import { VERSION_LEGALE } from '@/features/legal/documents';
 import { action } from '@/server/action';
 import { servicesComptes } from '@/server/espace';
 import { COOKIE_INSCRIPTION, poserBrouillon } from '@/server/inscription';
@@ -18,7 +19,7 @@ const etape1 = action(
   async (e) => {
     if (e.site) return null;
     const existant = (await cookies()).get(COOKIE_INSCRIPTION)?.value;
-    const { brouillonId } = await enregistrerEtape1(servicesComptes(), e, existant);
+    const { brouillonId } = await enregistrerEtape1(servicesComptes(), e, existant, VERSION_LEGALE);
     await poserBrouillon(brouillonId);
     return null;
   },

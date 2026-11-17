@@ -1,16 +1,28 @@
 'use client';
 
 import { evenementLanding, type OutilLanding } from '@ph/core/landings';
-import { bouton, cn } from '@ph/ui';
-import { useEffect, useState } from 'react';
+import { bouton } from '@ph/ui';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { pousserEvenement } from '@/lib/dataLayer';
 
+/** Un champ de saisie a le focus : sur téléphone, le clavier est ouvert. */
+const saisieEnCours = () => {
+  const a = document.activeElement;
+  return (
+    a instanceof HTMLInputElement ||
+    a instanceof HTMLSelectElement ||
+    a instanceof HTMLTextAreaElement
+  );
+};
+
 /**
- * Barre fixe des téléphones (≤ 768 px, LANDINGS §3) : masquée dès qu'un formulaire est visible
- * (LAND-05) ; elle ramène au formulaire du hero.
+ * Barre fixe des téléphones (< 768 px, LANDINGS §3, décision du 17/11/2026) sur les 4 pages d'entrée :
+ * elle apparaît quand le formulaire sort de l'écran, disparaît quand il est visible ou que le
+ * clavier est ouvert, et ramène au formulaire avec le curseur dans le premier champ vide.
  */
-export function BarreMobile({ outil, libelle }: { outil: OutilLanding; libelle: string }) {
+export function BarreMobile({ outil, libelle }: { outil?: OutilLanding; libelle: string }) {
   const [formulaireVisible, setFormulaireVisible] = useState(true);
+  const [clavier, setClavier] = useState(false);
   useEffect(() => {
     const cibles = document.querySelectorAll('[data-formulaire-landing]');
     if (!cibles.length || typeof IntersectionObserver === 'undefined') return;
@@ -26,20 +38,46 @@ export function BarreMobile({ outil, libelle }: { outil: OutilLanding; libelle: 
       { threshold: 0.15 },
     );
     cibles.forEach((c) => io.observe(c));
-    return () => io.disconnect();
+    const suivreClavier = () => setClavier(saisieEnCours());
+    // Au départ du focus, l'élément actif n'est connu qu'au tour suivant.
+    const apresSortie = () => setTimeout(suivreClavier, 0);
+    document.addEventListener('focusin', suivreClavier);
+    document.addEventListener('focusout', apresSortie);
+    return () => {
+      io.disconnect();
+      document.removeEventListener('focusin', suivreClavier);
+      document.removeEventListener('focusout', apresSortie);
+    };
   }, []);
+
+  const allerAuFormulaire = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (outil) pousserEvenement(evenementLanding('sticky_cta_clicked', outil));
+    const f = document.querySelector<HTMLFormElement>('[data-formulaire-inscription]');
+    if (!f) return;
+    e.preventDefault();
+    const champs = [
+      ...f.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+        'select, input:not([type=hidden]):not([hidden])',
+      ),
+    ];
+    const vide = champs.find((c) => !c.value) ?? champs[0];
+    // L'ancre reste dans l'adresse, comme un lien ordinaire (retour arrière, partage).
+    history.replaceState(history.state, '', '#inscription');
+    document.getElementById('inscription')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    // Sans défilement supplémentaire : le formulaire vient d'être amené à l'écran.
+    vide?.focus({ preventScroll: true });
+  };
+
   return (
     <div
       data-barre-mobile
-      hidden={formulaireVisible}
-      className={cn(
-        'fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-blanc px-4 pt-3 pb-sure shadow-lg md:hidden',
-      )}
+      hidden={formulaireVisible || clavier}
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-trait bg-blanc px-4 pt-3 pb-sure shadow-lg md:hidden"
     >
       <a
         href="#inscription"
-        onClick={() => pousserEvenement(evenementLanding('sticky_cta_clicked', outil))}
-        className={bouton({ pleineLargeur: true, taille: 'lg' })}
+        onClick={allerAuFormulaire}
+        className={bouton({ pleineLargeur: true, taille: 'lg', className: 'min-h-12' })}
       >
         {libelle}
       </a>

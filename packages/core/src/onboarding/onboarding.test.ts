@@ -87,16 +87,30 @@ describe('barre fixe (ONB-07)', () => {
 });
 
 describe('entrées de l’inscription', () => {
+  // Formulaire court (décision du 17/11/2026) : métier, code postal, email ; ni nom, ni téléphone,
+  // ni case à cocher (les conditions sont acceptées par l'envoi, version enregistrée côté serveur).
   const etape1 = {
-    nom: 'Julien Bertrand',
-    telephone: '06 12 34 56 78',
     email: 'j@b.fr',
     codePostal: '33000',
     metierPrincipal: 'couvreur',
     metiers: ['couvreur'],
     intentions: ['velux'],
-    cgv: true,
   };
+  it('formulaire court : métier, code postal et email suffisent', () => {
+    expect(entreeInscriptionEtape1.safeParse(etape1).success).toBe(true);
+    for (const champ of ['email', 'codePostal', 'metierPrincipal'] as const) {
+      const sans: Record<string, unknown> = { ...etape1 };
+      delete sans[champ];
+      expect(entreeInscriptionEtape1.safeParse(sans).success).toBe(false);
+    }
+    // Anciens champs refusés : plus de nom, de téléphone ni de case dans le premier formulaire.
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, nom: 'Julien' }).success).toBe(false);
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, telephone: '0612345678' }).success).toBe(
+      false,
+    );
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, cgv: true }).success).toBe(false);
+    expect(entreeInscriptionEtape1.safeParse({ ...etape1, codePostal: '330' }).success).toBe(false);
+  });
   it('ONB-01b : sans métier principal parmi les métiers, refus', () => {
     expect(entreeInscriptionEtape1.safeParse(etape1).success).toBe(true);
     expect(entreeInscriptionEtape1.safeParse({ ...etape1, metiers: ['plombier'] }).success).toBe(

@@ -26,13 +26,11 @@ async function simulerLieux(page: Page) {
 }
 
 async function etape1(page: Page, email: string) {
+  // Formulaire court (17/11/2026) : métier, code postal, email ; ni nom, ni téléphone, ni case.
   await page.goto('/pro');
-  await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
-  await page.getByLabel(/^Email/).fill(email);
-  await page.getByLabel(/^Téléphone/).fill('0612345678');
-  await page.getByLabel(/^Code postal/).fill('33700');
   await page.getByLabel(/^Métier principal/).selectOption('couvreur');
-  await page.getByRole('checkbox', { name: /conditions générales/ }).check();
+  await page.getByLabel(/^Code postal/).fill('33700');
+  await page.getByLabel(/^Email/).fill(email);
   await page.getByRole('button', { name: 'Voir les demandes de ma zone' }).click();
   await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=pro$/, { timeout: 15_000 });
 }
@@ -64,12 +62,9 @@ test.describe('Inscription pro', () => {
   }) => {
     const email = emailUnique('landing');
     await page.goto('/pro/trouver-des-chantiers?utm_source=google&utm_medium=cpc');
-    await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
-    await page.getByLabel(/^Email/).fill(email);
-    await page.getByLabel(/^Téléphone/).fill('0612345678');
-    await page.getByLabel(/^Code postal/).fill('33700');
     await page.getByLabel(/^Métier principal/).selectOption('couvreur');
-    await page.getByRole('checkbox', { name: /conditions générales/ }).check();
+    await page.getByLabel(/^Code postal/).fill('33700');
+    await page.getByLabel(/^Email/).fill(email);
     await page.getByRole('button', { name: 'Voir les demandes près de chez moi' }).click();
     await expect(page).toHaveURL(/\/pro\/inscription\/zone\?source=trouver-chantier$/, {
       timeout: 15_000,
@@ -147,6 +142,8 @@ test.describe('Inscription pro', () => {
     await page.getByRole('button', { name: 'Rechercher' }).click();
     await expect(entreprises).toContainText('SIREN 552 100 554');
     await expect(entreprises.getByRole('radio')).toBeChecked();
+    // Email et mot de passe : le nom se demande ici (plus à l'étape 1).
+    await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
     await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
     await expect(activer).toBeDisabled();
     await page.getByLabel(/^Confirmer le mot de passe/).fill(MOT_DE_PASSE);
@@ -187,7 +184,7 @@ test.describe('Inscription pro', () => {
       'En cours de vérification',
       { timeout: 15_000 },
     );
-    // Prénom et nom de l'étape 1 dans le profil.
+    // Prénom et nom saisis à l'étape compte dans le profil ; aucun téléphone demandé.
     const { db } = await admin();
     const artisanId = (
       await db.doc(chemins.artisan('_')).parent.where('siren', '==', SIRENS.libre).get()
@@ -216,6 +213,7 @@ test.describe('Inscription pro', () => {
     await page.getByLabel(/^Adresse du siège/).fill('3 rue des Lilas');
     await page.getByLabel(/^Code postal/).fill('33700');
     await page.getByLabel(/^Ville/).fill('Mérignac');
+    await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
     await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
     await page.getByLabel(/^Confirmer le mot de passe/).fill(MOT_DE_PASSE);
     // Le répertoire est réel : on tire un SIREN au hasard jusqu'à en trouver un qu'il ne connaît pas.

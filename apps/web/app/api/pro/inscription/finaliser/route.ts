@@ -26,7 +26,8 @@ const finaliser = action(
         'Votre inscription a expiré : recommencez depuis la page Pro.',
       );
     const s = servicesComptes();
-    const tel = normaliserTel(b.identite.telephone);
+    // Téléphone : plus demandé à l'étape 1 (formulaire court) ; gardé s'il vient d'un ancien brouillon.
+    const tel = b.identite.telephone ? normaliserTel(b.identite.telephone) : null;
     const m = 'manuelle' in e ? e.manuelle : null;
     // Saisie à la main : si le SIREN est finalement au répertoire, il est reconnu (fermée ou déjà
     // inscrite : refus) ; introuvable ou répertoire indisponible : saisie gardée, à vérifier.
@@ -39,7 +40,8 @@ const finaliser = action(
       : await entrepriseDuRepertoire(s, (e as { siren: string }).siren);
     // Identifiant du compte (Google ou email saisi) : si l'email de l'étape 1 est différent, il
     // devient l'email de contact de la fiche (décision du 15/11/2026).
-    const emailCompte = (await s.auth.getUser(ctx.uid!)).email?.toLowerCase();
+    const compte = await s.auth.getUser(ctx.uid!);
+    const emailCompte = compte.email?.toLowerCase();
     const emailEtape1 = b.identite.email.toLowerCase();
     const entree = entreeFinaliserOnboarding.parse({
       cleIdempotence: e.cleIdempotence,
@@ -60,7 +62,8 @@ const finaliser = action(
       zone: { centre: b.zone.centre, rayonKm: b.zone.rayonKm },
       cgvVersion: VERSION_LEGALE,
       sirenReconnu: entreprise !== null,
-      profil: decouperNom(b.identite.nom),
+      // Nom du compte (Google, ou saisi à l'étape compte) ; ancien brouillon : celui de l'étape 1.
+      profil: decouperNom(compte.displayName ?? b.identite.nom ?? ''),
       ...(emailCompte && emailCompte !== emailEtape1 ? { emailContact: emailEtape1 } : {}),
       ...(b.acquisition ? { acquisition: b.acquisition } : {}),
     });

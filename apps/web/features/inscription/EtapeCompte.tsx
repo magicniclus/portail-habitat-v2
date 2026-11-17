@@ -5,7 +5,7 @@ import { statutCompte } from '@ph/core/onboarding';
 import { entreeFinaliserInscription } from '@ph/core/schemas';
 import type { EntrepriseProposee } from '@ph/firebase/comptes';
 import { GoogleLogoIcon } from '@phosphor-icons/react';
-import { Banner, Button } from '@ph/ui';
+import { Banner, Button, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -30,12 +30,14 @@ export function EtapeCompte({
   zone,
 }: {
   email: string;
-  nom: string;
+  /** Nom d'un ancien brouillon ; absent depuis le formulaire court (17/11/2026). */
+  nom?: string;
   zone: { ville: string; rayonKm: number };
 }) {
   const router = useRouter();
   const [entreprise, setEntreprise] = useState<EntrepriseProposee | null>(null);
   const [manuelle, setManuelle] = useState<EntrepriseSaisie | null>(null);
+  const [nomSaisi, setNomSaisi] = useState(nom ?? '');
   const [motDePasse, setMotDePasse] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [erreur, setErreur] = useState<string | null>(null);
@@ -62,11 +64,14 @@ export function EtapeCompte({
           ? 'Complétez le SIRET (14 chiffres), le nom et l’adresse de votre entreprise.'
           : 'Indiquez d’abord votre entreprise.',
       );
+    // Email et mot de passe : le nom se demande ici (avec Google, il vient du compte).
+    if (methode === 'motDePasse' && nomSaisi.trim().length < 2)
+      return setErreur('Indiquez votre nom et prénom.');
     setEnCours(methode);
     setErreur(null);
     try {
       await activerEspace(
-        methode === 'google' ? { methode } : { methode, email, motDePasse, nom },
+        methode === 'google' ? { methode } : { methode, email, motDePasse, nom: nomSaisi.trim() },
         choisie,
       );
       router.replace('/pro/tableau-de-bord?bienvenue=1' as Parameters<typeof router.replace>[0]);
@@ -154,6 +159,16 @@ export function EtapeCompte({
         <p className="m-0 text-sm text-neutre-800">
           Identifiant : <strong>{email}</strong>
         </p>
+        <Field label="Nom et prénom" requis>
+          <Input
+            name="nom"
+            autoComplete="name"
+            autoCapitalize="words"
+            placeholder="Julien Bertrand"
+            value={nomSaisi}
+            onChange={(ev) => setNomSaisi(ev.target.value)}
+          />
+        </Field>
         <MotDePasseCompte
           motDePasse={motDePasse}
           confirmation={confirmation}

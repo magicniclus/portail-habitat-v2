@@ -43,12 +43,9 @@ const SCENES: Record<string, Scene> = {
       const f = page.locator('#inscription');
       if (p.format === 'mobile') await f.scrollIntoViewIfNeeded();
       await p.action('c1');
-      await p.saisir(f.getByLabel(/^Nom et prénom/), 'Julien Bertrand');
-      await p.saisir(f.getByLabel(/^Email/), 'contact@bertrand-renovation.fr', 40);
-      await p.saisir(f.getByLabel(/^Téléphone/), '06 12 34 56 78', 45);
-      await p.saisir(f.getByLabel(/^Code postal/), '33000', 70);
       await choisir(p, f.getByLabel(/^Métier principal/), { label: 'Plombier' });
-      await p.cliquer(f.getByRole('checkbox', { name: /J.accepte/ }), 600);
+      await p.saisir(f.getByLabel(/^Code postal/), '33000', 70);
+      await p.saisir(f.getByLabel(/^Email/), 'contact@bertrand-renovation.fr', 40);
       await p.attendre(300);
       await p.photo('c1');
       await p.cliquer(f.getByRole('button', { name: 'Voir les demandes près de chez moi' }), 700);

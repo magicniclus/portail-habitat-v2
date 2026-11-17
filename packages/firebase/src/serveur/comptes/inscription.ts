@@ -11,7 +11,10 @@ const DUREE_MS = 30 * JOUR_MS;
 export interface BrouillonInscription {
   brouillonId: string;
   etape: 2 | 3;
-  identite: { nom: string; telephone: string; email: string; codePostal: string };
+  /** Nom et téléphone : absents depuis le formulaire court (17/11/2026), gardés pour les anciens brouillons. */
+  identite: { nom?: string; telephone?: string; email: string; codePostal: string };
+  /** Conditions acceptées à l'étape 1 (version, date). */
+  cgv?: { version: string; le: unknown };
   metierPrincipal: string;
   metiers: string[];
   intentions: string[];
@@ -40,7 +43,9 @@ const ref = (s: ServicesComptes, id: string) =>
 export async function enregistrerEtape1(
   s: Services,
   e: z.output<typeof entreeInscriptionEtape1>,
-  brouillonId?: string,
+  brouillonId: string | undefined,
+  /** Version des conditions acceptées par l'envoi du formulaire (phrase sous le bouton). */
+  cgvVersion: string,
 ): Promise<{ brouillonId: string }> {
   const maintenant = s.horloge();
   const existant = brouillonId ? await ref(s, brouillonId).get() : null;
@@ -48,7 +53,8 @@ export async function enregistrerEtape1(
     ? existant.ref
     : s.db.collection(collections.brouillonsOnboarding).doc();
   const donnees = {
-    identite: { nom: e.nom, telephone: e.telephone, email: e.email, codePostal: e.codePostal },
+    identite: { email: e.email, codePostal: e.codePostal },
+    cgv: { version: cgvVersion, le: Timestamp.fromMillis(maintenant) },
     metierPrincipal: e.metierPrincipal,
     metiers: e.metiers,
     intentions: e.intentions,
@@ -84,7 +90,7 @@ export async function enregistrerEtape1(
       modele: 'reprise-onboarding',
       destinataire: { email: e.email },
       refObjet: `${collections.brouillonsOnboarding}/${doc.id}`,
-      donnees: { prenom: e.nom.split(' ')[0], nomCommercial: e.nom },
+      donnees: { prenom: '', nomCommercial: 'votre entreprise' },
       secrets: { lien: `${s.urlSite}/pro/inscription?reprise=${encodeURIComponent(jeton)}` },
     });
   return { brouillonId: doc.id };

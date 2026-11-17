@@ -41,6 +41,8 @@ export interface ContenuLanding {
   h1b: string;
   /** Gras entre `**…**` (voir `decouperGras`). */
   sousTitre: string;
+  /** Téléphone : une seule phrase sous le titre, le formulaire suit (décision du 17/11/2026). */
+  phraseMobile: string;
   points: string[];
   badges: string[];
   titreFormulaire: string;
@@ -133,6 +135,8 @@ const CONTENU: Record<OutilLanding, Brut> = {
     h1b: 'gratuitement',
     sousTitre:
       'Des **particuliers de votre secteur** décrivent leur projet : chantier, ville, budget et délai. Ces demandes sont **réservées exclusivement aux membres du réseau Portail Travaux** : rejoignez-le **gratuitement** et répondez à celles qui vous intéressent.',
+    phraseMobile:
+      'Des particuliers de votre secteur vous envoient leur projet. Gratuit, sans commission.',
     points: [],
     badges: BADGES,
     titreFormulaire: 'Créer mon espace gratuit',
@@ -256,6 +260,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     h1b: 'gratuitement',
     sousTitre:
       'Vos clients vous cherchent sur Google avant d’appeler. Sans site, ils appellent celui qui en a un. Ici, l’IA vous écrit un **vrai site pro**, et il ne vous coûte rien. Pas aujourd’hui, pas dans un an.',
+    phraseMobile: 'L’IA écrit votre site pro et le met en ligne. Gratuit, pour toujours.',
     points: [
       'Gratuit pour toujours, pas un essai',
       'Aucune carte bancaire demandée',
@@ -411,6 +416,7 @@ const CONTENU: Record<OutilLanding, Brut> = {
     h1b: 'gratuit pour artisans',
     sousTitre:
       'Des devis et des factures avec vos **mentions obligatoires vérifiées**, un PDF à votre logo, la signature en ligne et les relances. Depuis l’ordinateur ou le téléphone.',
+    phraseMobile: 'Mentions obligatoires vérifiées, PDF à votre logo, signature en ligne. Gratuit.',
     points: [],
     badges: BADGES,
     titreFormulaire: 'Créer mon espace gratuit',

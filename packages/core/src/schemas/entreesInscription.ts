@@ -1,19 +1,21 @@
 import { estSiretValide, normaliserSiren } from '../format/siren';
 import { z } from '../zod';
-import { codePostal, email, geo, id, telephoneFr } from './commun';
+import { codePostal, email, geo, id } from './commun';
 import { entreeAcquisition, rayonKm } from './artisans';
 
-/** Étape 1 (formulaire de la page d'acquisition, COMPTES §3.1 bis) : identité, métiers, chantiers. */
+/**
+ * Étape 1 (formulaire court des pages d'entrée, COMPTES §3.1 bis, décision du 17/11/2026) : métier,
+ * code postal, email. Le nom vient de Google ou de l'étape compte ; le téléphone se demande dans
+ * l'espace. Les conditions sont acceptées par l'envoi (phrase sous le bouton) : le serveur
+ * enregistre leur version, il n'y a plus de case à cocher.
+ */
 export const entreeInscriptionEtape1 = z
   .strictObject({
-    nom: z.string().trim().min(2, 'Indiquez votre nom et prénom').max(80),
-    telephone: telephoneFr,
     email,
     codePostal,
     metierPrincipal: id,
     metiers: z.array(id).min(1).max(5),
     intentions: z.array(id).max(200),
-    cgv: z.literal(true, 'Acceptez les conditions pour continuer'),
     /** Landing d'origine (LANDINGS §1), gardée dans le brouillon puis écrite sur le compte. */
     acquisition: entreeAcquisition.optional(),
     /** Piège à robots. */

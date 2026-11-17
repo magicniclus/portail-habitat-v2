@@ -24,12 +24,9 @@ const evenements = (page: Page) =>
   );
 
 async function remplir(page: Page) {
-  await page.getByLabel(/^Nom et prénom/).fill('Julien Bertrand');
-  await page.getByLabel(/^Email/).fill('julien@example.fr');
-  await page.getByLabel(/^Téléphone/).fill('0612345678');
-  await page.getByLabel(/^Code postal/).fill('33000');
   await page.getByLabel(/^Métier principal/).selectOption('couvreur');
-  await page.getByRole('checkbox', { name: /conditions générales/ }).check();
+  await page.getByLabel(/^Code postal/).fill('33000');
+  await page.getByLabel(/^Email/).fill('julien@example.fr');
 }
 
 test.describe('Landings par outil', () => {
@@ -242,12 +239,12 @@ test.describe('Landings par outil', () => {
     await lire.scrollIntoViewIfNeeded();
     await lire.click();
     const fenetre = page.getByRole('dialog');
-    await expect(fenetre.locator('video')).toHaveAttribute('src', /outils\/site\.mp4$/);
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/site\.mp4$/);
     await expect
       .poll(() => evenements(page).then((l) => l.find((e) => e.event === 'outil_video_played')))
       .toMatchObject({ outil: 'site', landing: 'site' });
     await fenetre.getByRole('button', { name: /^Voir : / }).click();
-    await expect(fenetre.locator('video')).toHaveAttribute('src', /outils\/avis\.mp4$/);
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/avis\.mp4$/);
   });
 
   test('ancres : un bouton vers une ancre fait défiler jusqu’à elle (défilement doux)', async ({

@@ -54,14 +54,21 @@ export function BandeauCookies({ politique }: { politique: Route }) {
         <section
           data-bandeau-cookies
           aria-labelledby="cookies-titre"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-lg [[data-cookies-choisis]_&]:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-3 pb-sure shadow-lg md:pt-4 [[data-cookies-choisis]_&]:hidden"
         >
-          <div className="mx-auto flex max-w-contenu flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="mx-auto flex max-w-contenu flex-wrap items-center gap-x-6 gap-y-2 md:gap-y-3">
             <div className="min-w-0 flex-[1_1_420px]">
-              <h2 id="cookies-titre" className="m-0 mb-1 text-base">
+              <h2 id="cookies-titre" className="m-0 mb-1 text-base max-md:sr-only">
                 Vos choix sur les cookies
               </h2>
-              <p className="m-0 text-sm leading-[21px] text-neutre-800">
+              {/* Téléphone : deux lignes au plus, la page reste lisible (décision du 17/11/2026). */}
+              <p className="m-0 text-[13px] leading-[18px] text-neutre-800 md:hidden">
+                Cookies indispensables, et mesure d’audience seulement avec votre accord.{' '}
+                <Link href={politique} prefetch={false}>
+                  En savoir plus
+                </Link>
+              </p>
+              <p className="m-0 text-sm leading-[21px] text-neutre-800 max-md:hidden">
                 Nous utilisons des cookies indispensables au fonctionnement du site. Avec votre
                 accord, nous mesurons aussi la façon dont les pages sont utilisées pour les
                 améliorer.{' '}
@@ -70,14 +77,35 @@ export function BandeauCookies({ politique }: { politique: Route }) {
                 </Link>
               </p>
             </div>
-            <div className="flex flex-[1_1_320px] flex-wrap gap-2 sm:flex-none">
-              <button type="button" className={classeBouton} onClick={() => choisir(false)}>
+            {/* Refuser aussi simple qu'accepter : même bouton, même taille, sur la même ligne ;
+                sur téléphone « Personnaliser » passe en lien entre les deux (une seule rangée). */}
+            <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5 sm:flex sm:w-auto sm:flex-none sm:gap-2">
+              <button
+                type="button"
+                className={`${classeBouton} max-sm:px-2.5 max-sm:text-[14px]`}
+                onClick={() => choisir(false)}
+              >
                 Tout refuser
               </button>
-              <button type="button" className={classeBouton} onClick={() => setDetails(true)}>
+              <button
+                type="button"
+                className="min-h-11 cursor-pointer border-0 bg-transparent px-1 text-[13px] text-neutre-800 underline sm:hidden"
+                onClick={() => setDetails(true)}
+              >
                 Personnaliser
               </button>
-              <button type="button" className={classeBouton} onClick={() => choisir(true)}>
+              <button
+                type="button"
+                className={`${classeBouton} max-sm:hidden`}
+                onClick={() => setDetails(true)}
+              >
+                Personnaliser
+              </button>
+              <button
+                type="button"
+                className={`${classeBouton} max-sm:px-2.5 max-sm:text-[14px]`}
+                onClick={() => choisir(true)}
+              >
                 Tout accepter
               </button>
             </div>

@@ -16,21 +16,31 @@ const PASTILLES = ['JB', 'SM', 'MD'];
 /** Photo du hero (maquette Acquisition Artisans v2, emplacement `v2-hero`), README des photos. */
 const PHOTO_HERO = '/landing/photos/hero-acquisition.webp';
 
-/** Colonne gauche du hero ; le formulaire est à droite (dessous sur mobile, juste après le texte). */
-export function AccrochePro({
-  preuve,
-  bandeau,
-}: {
-  preuve: ReturnType<typeof preuveHeroPro>;
-  bandeau: ReactNode;
-}) {
+/**
+ * Haut du hero : titre et, sur téléphone, une seule phrase ; le formulaire suit juste après
+ * (décision du 17/11/2026 : premier champ et bouton visibles sans défiler). Sur ordinateur, le
+ * formulaire est à droite et le détail (`DetailsPro`) reste sous le titre.
+ */
+export function AccrochePro({ bandeau }: { bandeau: ReactNode }) {
   return (
     <div>
       {bandeau}
-      <h1 className="m-0 mb-5 text-[clamp(34px,4.6vw,56px)] leading-[1.08] tracking-[-0.02em]">
-        Des <span className="accent-editorial">clients</span> près de chez vous vous contactent.{' '}
+      <h1 className="m-0 text-[clamp(26px,4.6vw,56px)] leading-[1.08] tracking-[-0.02em] md:mb-5">
+        Des <span className="accent-editorial">clients</span> près de chez vous
+        <span className="max-md:hidden"> vous contactent</span>.{' '}
         <span className="accent-editorial">Gratuitement</span>.
       </h1>
+      <p className="m-0 mt-1.5 text-[16px] leading-[22px] text-neutre-800 md:hidden">
+        Jusqu&apos;à 10 demandes gratuites par mois, sans commission ni engagement.
+      </p>
+    </div>
+  );
+}
+
+/** Paragraphe, pastilles et avis : sous le titre sur ordinateur, sous le formulaire sur téléphone. */
+export function DetailsPro({ preuve }: { preuve: ReturnType<typeof preuveHeroPro> }) {
+  return (
+    <div>
       <p className="m-0 mb-6 max-w-[56ch] text-lg leading-[29px] text-texte">
         Créez votre fiche en 3 minutes : les particuliers de votre secteur vous envoient leur
         projet, jusqu&apos;à 10 demandes gratuites et exclusives par mois. Vous rappelez ceux qui
