@@ -68,7 +68,8 @@ test.describe('Recherche de projet', () => {
     await taper(page, 'xyzabc');
     await expect(liste(page)).toContainText("Nous n'avons pas trouvé « xyzabc »");
     await expect.poll(() => evenements.some((e) => e.includes('"nature":"zero"'))).toBe(true);
-    expect(evenements.join()).not.toMatch(/@|\d{5}/);
+    // Identifiant de session aléatoire retiré : il peut contenir 5 chiffres d'affilée.
+    expect(evenements.join().replace(/"session":"[a-z0-9]+"/g, '')).not.toMatch(/@|\d{5}/);
     // Mobile : la recherche est en plein écran, on valide avec la touche Entrée (« Rechercher ») du clavier.
     if (isMobile) await champ(page).press('Enter');
     else await page.getByRole('button', { name: 'Lancer mon estimation gratuite' }).click();

@@ -239,12 +239,12 @@ test.describe('Landings par outil', () => {
     await lire.scrollIntoViewIfNeeded();
     await lire.click();
     const fenetre = page.getByRole('dialog');
-    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/site\.mp4$/);
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/site(-vertical)?\.mp4$/);
     await expect
       .poll(() => evenements(page).then((l) => l.find((e) => e.event === 'outil_video_played')))
       .toMatchObject({ outil: 'site', landing: 'site' });
     await fenetre.getByRole('button', { name: /^Voir : / }).click();
-    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/avis\.mp4$/);
+    await expect(fenetre.locator('video')).toHaveAttribute('src', /vsl\/avis(-vertical)?\.mp4$/);
   });
 
   test('ancres : un bouton vers une ancre fait défiler jusqu’à elle (défilement doux)', async ({
