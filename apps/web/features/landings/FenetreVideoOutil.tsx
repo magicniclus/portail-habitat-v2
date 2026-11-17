@@ -9,9 +9,9 @@ type Outil = (typeof OUTILS_INCLUS)[number];
 
 /**
  * Fenêtre de la vidéo d'un outil : lecture automatique, puis l'appel à créer son espace ou à voir
- * l'outil suivant. Feuille du bas sur téléphone (MOB-05). Un outil qui a son film de vente
- * (`VSL_OUTILS`) le joue avec le son, au format vertical sur téléphone ; les autres gardent leur
- * film muet aux sous-titres incrustés.
+ * l'outil suivant. Feuille du bas sur téléphone (MOB-05). Chaque outil a son film de vente
+ * (`VSL_OUTILS`), joué avec le son et au format vertical sur téléphone ; à défaut, le film muet
+ * de l'outil, aux sous-titres incrustés.
  */
 export function FenetreVideoOutil({
   outil,
@@ -32,6 +32,7 @@ export function FenetreVideoOutil({
     : outil
       ? cheminVideoOutil(outil.id)
       : '';
+  const affiche = vsl?.affiche ? `${vsl.affiche}${vertical ? '-vertical' : ''}` : base;
   return (
     <Modal
       open={outil !== null}
@@ -72,7 +73,7 @@ export function FenetreVideoOutil({
               : 'aspect-video max-w-[calc((92dvh-16rem)*16/9)]',
           )}
           src={`${base}.mp4`}
-          poster={`${base}.webp`}
+          poster={`${affiche}.webp`}
           autoPlay
           muted={!vsl}
           playsInline

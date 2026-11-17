@@ -57,12 +57,20 @@ export const VSL_DEVIS: VideoVsl = {
 };
 
 /**
- * Films de vente courts (30 s, voix, sous-titres incrustés) des outils sans landing, ouverts depuis
- * les tuiles : `vsl/{id}.mp4` (16:9), `vsl/{id}-vertical.mp4` (9:16) et leurs affiches `.webp`.
+ * Film de vente (voix, sous-titres incrustés) ouvert depuis chaque tuile d'outil : `{base}.mp4`
+ * (16:9) et `{base}-vertical.mp4` (9:16), affiches `{affiche}.webp` et `{affiche}-vertical.webp`.
+ * Chantiers : la version de 30 s ; site et devis : le film de leur landing ; fiche, avis et suivi :
+ * leur film court (30 s environ).
  */
-export const VSL_OUTILS: Record<string, { base: string } | undefined> = {
+export const VSL_OUTILS: Record<string, { base: string; affiche?: string } | undefined> = {
+  chantiers: {
+    base: '/landing/videos/vsl/chantiers-30s',
+    affiche: '/landing/videos/vsl/chantiers',
+  },
   fiche: { base: '/landing/videos/vsl/fiche' },
+  site: { base: '/landing/videos/vsl/site' },
   avis: { base: '/landing/videos/vsl/avis' },
+  devis: { base: '/landing/videos/vsl/devis' },
   suivi: { base: '/landing/videos/vsl/suivi' },
 };
 
