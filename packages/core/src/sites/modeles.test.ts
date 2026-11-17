@@ -59,12 +59,12 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
 
   it('« Couleurs et polices seulement » : thème changé, pages identiques', () => {
     const s = site();
-    const r = appliquerModeleSite(s, modeleSite('premium')!, AUTRE, false);
+    const r = appliquerModeleSite(s, modeleSite('urgence')!, AUTRE, false);
     expect(r.theme).toEqual({
       palette: AUTRE,
-      polices: 'dmserif',
-      rayonBoutons: 2,
-      ton: 'chaleureux',
+      polices: 'barlow',
+      rayonBoutons: 8,
+      ton: 'direct',
     });
     expect(r.pages).toBe(s.pages);
     expect(r.navigation).toBe(s.navigation);

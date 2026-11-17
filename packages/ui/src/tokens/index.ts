@@ -211,48 +211,50 @@ export const couleursEmail = {
 
 /**
  * Palettes proposées aux sites des artisans (maquette Éditeur de Site) : couleurs du site de
- * l'artisan, pas de Portail Travaux. La première sert au site de départ.
+ * l'artisan, pas de Portail Travaux. La première sert au site de départ. Décision du 17/11/2026 :
+ * familles bleu, vert, orange et noir seulement (ni bordeaux ni beige), fonds clairs gris froid ou
+ * teintés de la couleur ; texte blanc lisible (AA) sur la couleur principale.
  */
 export const palettesSites = [
   {
-    nom: 'Extraite du logo',
-    primaire: '#1d4f73',
-    accent: '#c97a2b',
-    clair: '#f2ede4',
-    sombre: '#14222e',
+    nom: 'Bleu marine',
+    primaire: '#12355b',
+    accent: '#2b7fd4',
+    clair: '#eef3f8',
+    sombre: '#0b1c2e',
   },
   {
-    nom: 'Plus contrastée',
-    primaire: '#16324f',
-    accent: '#e0681c',
-    clair: '#eef2f6',
-    sombre: '#0d1b2a',
+    nom: 'Noir et orange',
+    primaire: '#141414',
+    accent: '#e8650f',
+    clair: '#f4f4f5',
+    sombre: '#0a0a0a',
   },
   {
-    nom: 'Plus chaleureuse',
-    primaire: '#2f5d50',
-    accent: '#b9853f',
-    clair: '#f4efe6',
-    sombre: '#1c2b26',
+    nom: 'Vert nature',
+    primaire: '#1d6b44',
+    accent: '#2e9a5b',
+    clair: '#eef6f1',
+    sombre: '#0f2a1d',
   },
   {
-    nom: 'Ardoise et jaune',
-    primaire: '#2b3a42',
-    accent: '#d99a1e',
-    clair: '#f1efe9',
-    sombre: '#161e22',
+    nom: 'Anthracite et bleu',
+    primaire: '#1f2933',
+    accent: '#2563eb',
+    clair: '#f2f4f7',
+    sombre: '#111827',
   },
   {
-    nom: 'Bordeaux et crème',
-    primaire: '#6e1f2f',
-    accent: '#b88536',
-    clair: '#f6f0e6',
-    sombre: '#2a1015',
+    nom: 'Orange énergie',
+    primaire: '#c2410c',
+    accent: '#ea580c',
+    clair: '#f5f5f4',
+    sombre: '#18181b',
   },
   {
     nom: 'Bleu franc',
     primaire: '#1957a6',
-    accent: '#e8801f',
+    accent: '#e2711d',
     clair: '#eef3f9',
     sombre: '#0d2340',
   },

@@ -7,7 +7,7 @@ import { palettesSites } from '@ph/ui/tokens';
 const STYLES: { nom: string; polices: Theme['polices']; rayonBoutons: Theme['rayonBoutons'] }[] = [
   { nom: 'Moderne', polices: 'archivo', rayonBoutons: 8 },
   { nom: 'Chantier', polices: 'barlow', rayonBoutons: 2 },
-  { nom: 'Élégant', polices: 'dmserif', rayonBoutons: 999 },
+  { nom: 'Arrondi', polices: 'archivo', rayonBoutons: 999 },
 ];
 
 /**

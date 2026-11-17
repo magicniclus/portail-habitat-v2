@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { genererAmbianceCss, genererThemeTailwind, genererThemesCss } from './css';
-import { THEMES, actions, couleurs, neutres, rampes } from './index';
+import { THEMES, actions, couleurs, neutres, palettesSites, rampes } from './index';
 
 const lire = (f: string) => readFileSync(resolve(__dirname, '../styles', f), 'utf8');
 
@@ -44,6 +44,42 @@ describe('tokens', () => {
       expect(contraste(rampes[t][700], couleurs.fond)).toBeGreaterThanOrEqual(4.5);
     expect(contraste(neutres[700], couleurs.fond)).toBeGreaterThanOrEqual(4.5);
     expect(contraste(couleurs.texte, couleurs.fond)).toBeGreaterThanOrEqual(7);
+  });
+
+  it('palettes des sites artisans : texte blanc lisible sur la principale, accent visible, fonds clairs', () => {
+    for (const p of palettesSites) {
+      expect(contraste(couleurs.blanc, p.primaire)).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(couleurs.blanc, p.sombre)).toBeGreaterThanOrEqual(7);
+      expect(contraste(p.accent, couleurs.blanc)).toBeGreaterThanOrEqual(2.7);
+      expect(contraste(p.accent, p.sombre)).toBeGreaterThanOrEqual(3);
+      expect(luminance(p.clair)).toBeGreaterThan(0.85);
+    }
+  });
+
+  it('palettes des sites : bleu, vert, orange ou noir, jamais rouge ni beige (décision du 17/11/2026)', () => {
+    /** Teinte (0-360) et saturation d'une couleur. */
+    const teinte = (hex: string) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [
+        number,
+        number,
+        number,
+      ];
+      const max = Math.max(r, g, b);
+      const d = max - Math.min(r, g, b);
+      const sat = max === 0 ? 0 : d / max;
+      if (d === 0) return { h: 0, sat };
+      const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      return { h: (h * 60 + 360) % 360, sat };
+    };
+    const familles = (h: number) =>
+      (h >= 15 && h <= 45) || (h >= 90 && h <= 170) || (h >= 190 && h <= 240);
+    for (const p of palettesSites)
+      for (const c of [p.primaire, p.accent, p.clair, p.sombre]) {
+        const { h, sat } = teinte(c);
+        // Neutre (noir, gris) ou dans une famille autorisée ; un fond clair chaud est du beige.
+        if (sat > 0.12) expect(familles(h), `${p.nom} ${c}`).toBe(true);
+        if (c === p.clair && sat > 0.04) expect(h > 45, `${p.nom} fond clair ${c}`).toBe(true);
+      }
   });
 
   it('contraste AA : badges de statut (texte sur fond teinté)', () => {

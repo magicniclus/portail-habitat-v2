@@ -223,7 +223,7 @@ const page = (
 });
 
 /**
- * Site de départ, sans IA, à partir de la fiche (modèle « Artisan classique ») : accueil, contact
+ * Site de départ, sans IA, à partir de la fiche (modèle « Essentiel ») : accueil, contact
  * et mentions légales. La palette vient des tokens (`palettesSites` de `@ph/ui/tokens`). Aucun chiffre
  * ni avis inventé : les cartes d'avis sans avis réel sont « [à compléter] » (publication bloquée).
  */

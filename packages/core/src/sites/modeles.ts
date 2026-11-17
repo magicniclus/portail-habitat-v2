@@ -17,12 +17,16 @@ export interface ModeleSite {
   hero: Hero;
 }
 
-/** Les 6 modèles fournis (SITE_INTERNET §4.7, maquette « Editeur de Site », D47). */
+/**
+ * Les 6 modèles fournis (SITE_INTERNET §4.7, maquette « Editeur de Site », D47), revus le
+ * 17/11/2026 : une typographie simple (Archivo + Source Sans ; Barlow pour le dépannage) et des
+ * couleurs bleu, vert, orange ou noir.
+ */
 export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'classique',
-    nom: 'Artisan classique',
-    description: 'Clair, photo à droite, très lisible',
+    nom: 'Essentiel',
+    description: 'Bleu marine, clair et structuré, photo à droite',
     palette: 0,
     polices: 'archivo',
     rayonBoutons: 8,
@@ -32,39 +36,39 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'premium',
     nom: 'Premium photo',
-    description: 'Grandes photos assombries, élégant',
-    palette: 4,
-    polices: 'dmserif',
+    description: 'Anthracite, grandes photos assombries',
+    palette: 3,
+    polices: 'archivo',
     rayonBoutons: 2,
-    ton: 'chaleureux',
+    ton: 'pro',
     hero: 'photo',
   },
   {
     id: 'urgence',
     nom: 'Dépannage 24/7',
-    description: 'Fond sombre, boutons très visibles',
+    description: 'Noir et orange, boutons très visibles',
     palette: 1,
     polices: 'barlow',
-    rayonBoutons: 999,
+    rayonBoutons: 8,
     ton: 'direct',
     hero: 'sombre',
   },
   {
     id: 'minimal',
     nom: 'Minimal',
-    description: 'Beaucoup de blanc, typographie fine',
-    palette: 3,
-    polices: 'dmserif',
+    description: 'Beaucoup de blanc, une touche d’orange',
+    palette: 4,
+    polices: 'archivo',
     rayonBoutons: 2,
     ton: 'pro',
     hero: 'minimal',
   },
   {
     id: 'chaleureux',
-    nom: 'Chaleureux',
-    description: 'Tons sable et vert, rassurant',
+    nom: 'Nature',
+    description: 'Vert, rassurant, photo à droite',
     palette: 2,
-    polices: 'dmserif',
+    polices: 'archivo',
     rayonBoutons: 8,
     ton: 'chaleureux',
     hero: 'split',
@@ -72,7 +76,7 @@ export const MODELES_SITE: readonly ModeleSite[] = [
   {
     id: 'franc',
     nom: 'Bleu franc',
-    description: 'Moderne, photo plein écran',
+    description: 'Bleu et orange, photo plein écran',
     palette: 5,
     polices: 'archivo',
     rayonBoutons: 999,
