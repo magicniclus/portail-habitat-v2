@@ -269,10 +269,7 @@
     d06: ECRAN,
     d07: ECRAN,
     d08: {
-      styles: [
-        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
-        ['.nav', 'height:560px'],
-      ],
+      styles: [...ECRAN.styles, [':scope > .etat', 'left:150px;top:720px;font-size:52px']],
       zones: ECRAN.zones,
       reste: PLEIN,
     },
