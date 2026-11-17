@@ -45,6 +45,8 @@ export function ReglagesFond({
             medias={c.medias}
             artisanId={c.artisanId}
             onMedia={c.onMedia}
+            utilises={c.mediasUtilises}
+            onRetirerMedia={c.onRetirerMedia}
             onChoisir={(fondImage) => c.maj({ fondImage })}
           />
           <Segments

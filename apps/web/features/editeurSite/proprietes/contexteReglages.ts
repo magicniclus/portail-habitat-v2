@@ -4,6 +4,12 @@ import type { useMediatheque } from '../useApercuCliquable';
 import type { useBrouillonSite } from '../useBrouillonSite';
 import type { ContexteReglages } from './contexte';
 
+/** Images importées (`up:`) citées quelque part dans le site en cours d'édition. */
+function mediasCites(site: unknown, medias: Record<string, string>): ReadonlySet<string> {
+  const json = JSON.stringify(site);
+  return new Set(Object.keys(medias).filter((k) => json.includes(`"${k}"`)));
+}
+
 /** Contexte des réglages de droite, assemblé depuis l'état de l'éditeur. */
 export function contexteReglages(e: {
   s: ReturnType<typeof useBrouillonSite>;
@@ -27,6 +33,8 @@ export function contexteReglages(e: {
     medias: m.medias,
     artisanId: e.props.artisanId,
     onMedia: m.onMedia,
+    mediasUtilises: mediasCites(s.b, m.medias),
+    onRetirerMedia: m.onRetirerMedia,
     fichiers: m.fichiers,
     onFichier: m.onFichier,
     ancrerZone: s.ancrerZone,

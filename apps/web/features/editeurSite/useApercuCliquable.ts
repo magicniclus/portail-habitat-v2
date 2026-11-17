@@ -51,6 +51,8 @@ export function useMediatheque(
     fichiers,
     apercu,
     onMedia: (cle: string, url: string) => setMedias((m) => ({ ...m, [cle]: url })),
+    onRetirerMedia: (cle: string) =>
+      setMedias((m) => Object.fromEntries(Object.entries(m).filter(([k]) => k !== cle))),
     onFichier: (cle: string, nom: string, url: string) =>
       setFichiers((f) => ({ ...f, [cle]: { nom, url } })),
   };

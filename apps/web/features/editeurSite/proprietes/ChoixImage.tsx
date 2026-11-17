@@ -1,8 +1,9 @@
 'use client';
 
 import { cn, Chargeur } from '@ph/ui';
-import { ImageSquareIcon } from '@phosphor-icons/react';
+import { ImageSquareIcon, TrashIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { posterJson } from '@/lib/posterJson';
 import { useImportMedia } from '../ImportImage';
 import { Libelle } from './controles';
 import { urlCss } from '@/features/siteArtisan/html';
@@ -18,6 +19,8 @@ export function ChoixImage({
   artisanId,
   onMedia,
   onChoisir,
+  utilises,
+  onRetirerMedia,
 }: {
   libelle: string;
   src: string;
@@ -25,7 +28,20 @@ export function ChoixImage({
   artisanId: string;
   onMedia: (cle: string, url: string) => void;
   onChoisir: (src: string) => void;
+  /** Images importées citées par le site : pas de poubelle sur elles. */
+  utilises: ReadonlySet<string>;
+  onRetirerMedia: (cle: string) => void;
 }) {
+  const [suppression, setSuppression] = useState<string | null>(null);
+  const [erreurSuppression, setErreurSuppression] = useState<string | null>(null);
+  const supprimer = async (cle: string) => {
+    setSuppression(cle);
+    setErreurSuppression(null);
+    const r = await posterJson<null>('/api/pro/site/medias', { cle }, 'DELETE');
+    setSuppression(null);
+    if (!r.ok) return setErreurSuppression(r.message);
+    onRetirerMedia(cle);
+  };
   const url = src ? medias[src] : undefined;
   const [survol, setSurvol] = useState(false);
   const imp = useImportMedia(artisanId, 'image', (cle, u) => {
@@ -115,22 +131,47 @@ export function ChoixImage({
         <>
           <span className="text-xs text-neutre-700">Médiathèque · vos réalisations et imports</span>
           <div role="radiogroup" aria-label="Médiathèque" className="grid grid-cols-4 gap-1.5">
-            {Object.entries(medias).map(([cle, u], i) => (
-              <button
-                key={cle}
-                type="button"
-                role="radio"
-                aria-checked={src === cle}
-                aria-label={cle.startsWith('up:') ? `Image importée ${i + 1}` : `Photo ${i + 1}`}
-                onClick={() => onChoisir(cle)}
-                className={cn(
-                  'aspect-square min-h-11 rounded-[6px] bg-cover bg-center',
-                  src === cle ? 'ring-2 ring-accent' : 'ring-1 ring-trait',
-                )}
-                style={{ backgroundImage: urlCss(u) }}
-              />
-            ))}
+            {Object.entries(medias).map(([cle, u], i) => {
+              const nom = cle.startsWith('up:') ? `Image importée ${i + 1}` : `Photo ${i + 1}`;
+              // Seules les images importées, utilisées nulle part sur le site, se suppriment.
+              const supprimable = cle.startsWith('up:') && !utilises.has(cle) && src !== cle;
+              return (
+                <div key={cle} className="group/media relative">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={src === cle}
+                    aria-label={nom}
+                    onClick={() => onChoisir(cle)}
+                    className={cn(
+                      'block aspect-square min-h-11 w-full rounded-[6px] bg-cover bg-center',
+                      src === cle ? 'ring-2 ring-accent' : 'ring-1 ring-trait',
+                    )}
+                    style={{ backgroundImage: urlCss(u) }}
+                  />
+                  {supprimable ? (
+                    <button
+                      type="button"
+                      aria-label={`Supprimer : ${nom}`}
+                      title="Supprimer cette image (utilisée nulle part)"
+                      disabled={suppression !== null}
+                      onClick={() => void supprimer(cle)}
+                      className="absolute top-1 right-1 grid size-7 cursor-pointer place-items-center rounded-full bg-blanc/95 text-danger opacity-0 shadow-sm ring-1 ring-trait transition-opacity group-hover/media:opacity-100 group-focus-within/media:opacity-100 hover:bg-blanc focus-visible:opacity-100 motion-reduce:transition-none [@media(hover:none)]:opacity-100"
+                    >
+                      {suppression === cle ? (
+                        <Chargeur taille="sm" decoratif />
+                      ) : (
+                        <TrashIcon size={15} weight="bold" aria-hidden="true" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
+          {erreurSuppression ? (
+            <span className="text-sm text-danger">{erreurSuppression}</span>
+          ) : null}
         </>
       ) : null}
     </div>

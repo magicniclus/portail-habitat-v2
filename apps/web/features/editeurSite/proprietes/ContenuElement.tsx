@@ -68,6 +68,8 @@ export function ContenuElement({ el, c }: { el: Element; c: ContexteReglages }) 
             medias={c.medias}
             artisanId={c.artisanId}
             onMedia={c.onMedia}
+            utilises={c.mediasUtilises}
+            onRetirerMedia={c.onRetirerMedia}
             onChoisir={(src) => maj({ src })}
           />
           <Champ

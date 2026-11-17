@@ -16,6 +16,7 @@ import {
   enregistrerSuivi,
   fichiersCitables,
   lireMediasSite,
+  supprimerMediaSite,
   gererSectionsEnregistrees,
   lireSitePublie,
   publierSite,
@@ -384,6 +385,27 @@ describe('médiathèque du site', () => {
     expect(await lireMediasSite(db, 'a1')).toEqual([
       expect.objectContaining({ cle: r.cle, nom: 'chantier.png', url: r.url, usage: 'image' }),
     ]);
+  });
+
+  it('suppression : refusée tant que le site cite l’image, puis image et fichier retirés', async () => {
+    const PNG = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    const fichier = bucketFichiers().file('sites/a1/medias/vieux.png');
+    await fichier.save(PNG, { contentType: 'image/png', resumable: false });
+    const sv = { ...s(), bucket: bucketFichiers() };
+    const { cle } = await enregistrerMediaSite(sv, proprio, { nomFichier: 'vieux.png' });
+    const page = db.doc(chemins.pageSite('a1', 'essai-media'));
+    await page.set({ image: cle });
+    expect((await erreur(supprimerMediaSite(sv, proprio, { cle }))).code).toBe('PRECONDITION');
+    await page.delete();
+    await supprimerMediaSite(sv, proprio, { cle });
+    expect(await lireMediasSite(db, 'a1')).toEqual([]);
+    expect((await fichier.exists())[0]).toBe(false);
+    expect(
+      (await erreur(supprimerMediaSite(sv, { artisanId: 'a1', uid: 'inconnu' }, { cle }))).code,
+    ).toBe('PERMISSION_REFUSEE');
   });
 
   it('fichier à télécharger : PDF seulement, nom affiché gardé ; une image n’est pas un fichier', async () => {

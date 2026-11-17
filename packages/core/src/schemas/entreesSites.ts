@@ -56,6 +56,11 @@ export const entreeMediaSite = z.strictObject({
   nom: z.string().trim().min(1).max(120).optional(),
 });
 
+/** Image importée retirée de la médiathèque (seulement si le site ne l'utilise nulle part). */
+export const entreeSupprimerMediaSite = z.strictObject({
+  cle: z.string().regex(/^up:[A-Za-z0-9]{1,40}$/, 'Image inconnue'),
+});
+
 /** « Mes sections » (SITE_INTERNET §4.7) : enregistrer une section, la supprimer, ou les lire. */
 export const entreeSectionEnregistree = z.discriminatedUnion('action', [
   z.strictObject({ action: z.literal('lire') }),

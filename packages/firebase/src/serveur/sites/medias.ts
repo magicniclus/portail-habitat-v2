@@ -1,5 +1,5 @@
 import { ErreurMetier } from '@ph/core/erreurs';
-import type { entreeMediaSite } from '@ph/core/schemas';
+import type { entreeMediaSite, entreeSupprimerMediaSite } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { urlPubliqueAvecJeton, urlPubliqueFichier, type bucketFichiers } from '../../admin';
@@ -50,6 +50,51 @@ export async function enregistrerMediaSite(
     });
   });
   return { cle: `up:${ref.id}`, url };
+}
+
+/**
+ * Image importée retirée de la médiathèque : refusée si le site (brouillon ou version en ligne) la
+ * cite encore ; le fichier Storage est supprimé ensuite.
+ */
+export async function supprimerMediaSite(
+  s: ServicesSites & { bucket: ReturnType<typeof bucketFichiers> },
+  ctx: ContexteSite,
+  e: z.output<typeof entreeSupprimerMediaSite>,
+): Promise<null> {
+  const ref = s.db.collection(chemins.mediasSite(ctx.artisanId)).doc(e.cle.slice(3));
+  const chemin = await s.db.runTransaction(async (t) => {
+    await exigerSite(s, t, ctx);
+    const id = ctx.artisanId;
+    const [media, site, pages, nav] = await Promise.all([
+      t.get(ref),
+      t.get(s.db.doc(chemins.site(id))),
+      t.get(s.db.collection(chemins.pagesSite(id))),
+      t.get(s.db.doc(chemins.navigationSite(id))),
+    ]);
+    if (!media.exists) throw new ErreurMetier('INTROUVABLE', 'Image déjà retirée.');
+    // Version en ligne : elle sert encore aux visiteurs tant qu'une nouvelle n'est pas publiée.
+    const publiee = Number(site.get('versionPubliee') ?? 0);
+    const enLigne = publiee ? await t.get(s.db.doc(chemins.versionSite(id, publiee))) : null;
+    const tout = JSON.stringify([
+      site.data(),
+      pages.docs.map((d) => d.data()),
+      nav.data(),
+      enLigne?.data(),
+    ]);
+    if (tout.includes(`"${e.cle}"`))
+      throw new ErreurMetier(
+        'PRECONDITION',
+        'Cette image est utilisée sur votre site : retirez-la de la page, enregistrez, puis supprimez-la.',
+      );
+    t.delete(ref);
+    return media.get('storagePath') as string | undefined;
+  });
+  if (chemin)
+    await s.bucket
+      .file(chemin)
+      .delete({ ignoreNotFound: true })
+      .catch(() => undefined);
+  return null;
 }
 
 /** Médias importés du site (images et fichiers) : clé `up:{id}` → URL publique. */

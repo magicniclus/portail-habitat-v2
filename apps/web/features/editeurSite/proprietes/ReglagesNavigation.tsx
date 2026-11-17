@@ -87,6 +87,8 @@ export function ReglagesNavigation(p: {
           medias={c.medias}
           artisanId={c.artisanId}
           onMedia={c.onMedia}
+          utilises={c.mediasUtilises}
+          onRetirerMedia={c.onRetirerMedia}
           onChoisir={(image) => maj({ logo: { ...n.logo, image: image as typeof n.logo.image } })}
         />
         <Info>

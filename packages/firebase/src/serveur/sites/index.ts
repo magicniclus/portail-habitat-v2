@@ -49,7 +49,12 @@ export {
 export { changerEtatLigneSite, lireVersion, publierSite, retablirVersion } from './publication';
 export { compterDemandeSite, compterVueSite, lireStatsSite, periodesParis } from './stats';
 export { gererSectionsEnregistrees, type SectionEnregistree } from './sectionsEnregistrees';
-export { enregistrerMediaSite, fichiersCitables, lireMediasSite } from './medias';
+export {
+  enregistrerMediaSite,
+  fichiersCitables,
+  lireMediasSite,
+  supprimerMediaSite,
+} from './medias';
 export { enregistrerSuivi } from './suivi';
 export {
   avancerDomaine,

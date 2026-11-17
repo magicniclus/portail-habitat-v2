@@ -16,6 +16,9 @@ export interface ContexteReglages {
   medias: Record<string, string>;
   artisanId: string;
   onMedia: (cle: string, url: string) => void;
+  /** Images importées citées par le site (non supprimables), et leur retrait de la médiathèque. */
+  mediasUtilises: ReadonlySet<string>;
+  onRetirerMedia: (cle: string) => void;
   /** Fichiers PDF à télécharger du site (`up:{id}` → nom et URL). */
   fichiers: Record<string, { nom: string; url: string }>;
   onFichier: (cle: string, nom: string, url: string) => void;
