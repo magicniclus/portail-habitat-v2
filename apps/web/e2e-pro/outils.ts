@@ -337,7 +337,13 @@ export async function entrepriseSansCompteFixe(rang = 0): Promise<{ id: string; 
     .get();
   const libres = r.docs.filter((d) => {
     const uid = (d.get('proprietaireUid') as string | undefined) ?? '';
-    return uid && !Object.values(COMPTES).some((e) => uid.includes(e.split('@')[0]!));
+    // Entreprises du jeu de test seulement (avec numéro) : celles créées par les tests
+    // d'inscription n'ont pas de téléphone depuis le formulaire court (17/11/2026).
+    return (
+      uid &&
+      d.get('telephonePublic') &&
+      !Object.values(COMPTES).some((e) => uid.includes(e.split('@')[0]!))
+    );
   });
   const d = libres[rang]!;
   return { id: d.id, nom: d.get('nomCommercial') as string };
