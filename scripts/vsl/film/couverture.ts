@@ -34,6 +34,10 @@ async function main() {
     ['couverture-site-9x16.png', 1080, 1920, '?site&vertical'],
     ['affiche-site-16x9.png', 1920, 1080, '?site&affiche'],
     ['affiche-site-9x16.png', 1080, 1920, '?site&vertical&affiche'],
+    ['couverture-devis-16x9.png', 1920, 1080, '?devis'],
+    ['couverture-devis-9x16.png', 1080, 1920, '?devis&vertical'],
+    ['affiche-devis-16x9.png', 1920, 1080, '?devis&affiche'],
+    ['affiche-devis-9x16.png', 1080, 1920, '?devis&vertical&affiche'],
   ] as const) {
     const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur } });
     await page.goto(`http://127.0.0.1:${port}/scripts/vsl/film/couverture.html${requete}`);

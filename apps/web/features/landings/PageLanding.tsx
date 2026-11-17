@@ -9,7 +9,7 @@ import { piedPro } from '@/features/pro/navigation';
 import { ApplicationPro } from '@/features/pro/SectionApplication';
 import { JsonLd } from '@/features/vitrine/JsonLd';
 import { VslPro, type VideoVsl } from '@/features/pro/VslPro';
-import { cheminVideoOutil, VIDEOS_OUTILS, VSL_CHANTIERS_COMPLET, VSL_SITE } from './videosOutils';
+import { VSL_CHANTIERS_COMPLET, VSL_DEVIS, VSL_SITE } from './videosOutils';
 import { PiedPublic } from '@/features/vitrine/PiedPublic';
 import { faqPage } from '@/features/vitrine/seo';
 import { preuvesMarketingActives } from '@/server/flags';
@@ -78,7 +78,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
               <VslPro
                 className="mt-[clamp(24px,3vw,36px)]"
                 page={`landing-${outil}`}
-                video={videoHero(outil)}
+                video={VSL[outil]}
               />
             ) : null}
           </div>
@@ -141,16 +141,11 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
 }
 
 /**
- * Chantiers : le film de vente (voix, sous-titres incrustés), horizontal sur ordinateur et vertical
- * sur téléphone, version complète seule. Site : son film de vente, dans les deux formats. Devis : le film
- * de l'outil.
+ * Film de vente de la landing (voix, sous-titres incrustés) : horizontal sur ordinateur, vertical
+ * sur téléphone. Chantiers : version complète seule (le choix de durée reste sur /pro).
  */
-function videoHero(outil: OutilLanding): VideoVsl | undefined {
-  if (outil === 'chantiers') return VSL_CHANTIERS_COMPLET;
-  if (outil === 'site') return VSL_SITE;
-  return {
-    base: cheminVideoOutil(outil),
-    duree: VIDEOS_OUTILS[outil]?.duree ?? 0,
-    accroche: 'Vos devis et factures, gratuits',
-  };
-}
+const VSL: Record<OutilLanding, VideoVsl> = {
+  chantiers: VSL_CHANTIERS_COMPLET,
+  site: VSL_SITE,
+  devis: VSL_DEVIS,
+};
