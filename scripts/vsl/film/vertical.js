@@ -305,6 +305,36 @@
       ],
     },
   });
+  // Films courts des outils (fiche, avis, suivi) : l'écran en haut, la colonne de texte dessous.
+  const TEXTE = { centre: [0, 380, 0.68], reste: [-112.8, 380, 0.68] };
+  const FIN_COURT = {
+    ...PLANS.p28,
+    styles: [
+      ...PLANS.p28.styles,
+      [':scope > .titre', 'font-size:88px'],
+      ['.btn', 'font-size:40px;padding:30px 40px'],
+    ],
+  };
+  Object.assign(PLANS, {
+    f01: PLANS.s08,
+    f02: TEXTE,
+    f03: PLANS.s08,
+    f04: PLANS.s08,
+    f05: FIN_COURT,
+    a01: TEXTE,
+    a02: TEXTE,
+    a03: PLANS.s08,
+    a04: {
+      ...PLANS.s08,
+      styles: [...PLANS.s08.styles, [':scope > .pose', 'left:150px;top:560px']],
+    },
+    a05: FIN_COURT,
+    u01: { reste: [-70, 420, 0.72] },
+    u02: TEXTE,
+    u03: PLANS.s08,
+    u04: PLANS.s08,
+    u05: FIN_COURT,
+  });
   /** Les six cartes d'outils sur deux colonnes. */
   function grille() {
     return [0, 1, 2, 3, 4, 5].map(

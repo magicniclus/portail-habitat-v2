@@ -426,6 +426,114 @@ const SCENES: Record<string, Scene> = {
       console.log(await p.coupez());
     },
   },
+
+  // Films courts des outils. F1 — Un particulier cherche un plombier à Bordeaux dans l'annuaire.
+  'f-recherche': {
+    pro: false,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/artisans');
+      await p.action('f-recherche');
+      await p.attendre(400);
+      await p.saisir(page.getByPlaceholder(/^Métier, entreprise/), 'Plombier', 70);
+      await p.saisir(page.getByPlaceholder(/^Ville ou code postal/), 'Bordeaux', 70);
+      await p.cliquer(page.getByRole('button', { name: 'Rechercher' }), 700);
+      await page.waitForLoadState('load');
+      await p.attendre(1200);
+      await masquer(page);
+      await p.photo('f-recherche');
+      await p.defiler(p.format === 'mobile' ? 1300 : 620, 2600);
+      await p.attendre(700);
+      console.log(await p.coupez());
+    },
+  },
+  // F2 — La fiche publique de l'artisan (après decor-fiche.ts) : le haut, puis les réalisations.
+  // La page est mise en cache une heure sur le site construit : pour voir le décor tout de suite,
+  // filmer sur le serveur de développement (`VSL_URL=http://localhost:3300`), badge Next masqué.
+  'f-fiche': {
+    pro: false,
+    jouer: async (p, page) => {
+      await ouvrir(page, `/artisans/${SLUG_FICHE}`, ['nextjs-portal']);
+      await p.attendre(1200);
+      await p.action('f-fiche');
+      await p.attendre(1500);
+      await p.photo('f-fiche');
+      await p.defiler(p.format === 'mobile' ? 1500 : 760, 3600);
+      await p.attendre(800);
+      console.log(await p.coupez());
+    },
+  },
+  // A1 — « Demander un avis » : le lien du formulaire d'avis, copié en un clic.
+  'a-demander': {
+    pro: true,
+    jouer: async (p, page) => {
+      await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+      await ouvrir(page, '/pro/avis');
+      // Les avis du jeu de test (noms et textes fictifs) restent hors champ : seule l'interface.
+      await page
+        .locator('main')
+        .getByRole('list')
+        .last()
+        .evaluate((el) => (el.style.visibility = 'hidden'));
+      await p.action('a-demander');
+      await p.attendre(700);
+      await p.cliquer(page.getByRole('button', { name: 'Demander un avis' }), 1000);
+      const feuille = page.getByRole('dialog');
+      await feuille.waitFor();
+      // L'adresse de la copie locale n'a rien à faire à l'image : celle du site en ligne.
+      await feuille
+        .getByText(/localhost/)
+        .evaluate(
+          (el) =>
+            (el.textContent = (el.textContent ?? '').replace(
+              /^https?:\/\/[^/]+/,
+              'https://www.portailtravaux.fr',
+            )),
+        );
+      await p.attendre(1300);
+      await p.cliquer(feuille.getByRole('button', { name: 'Copier' }), 900);
+      await p.attendre(1100);
+      await p.photo('a-demander');
+      await p.survoler(feuille.getByRole('link', { name: 'Envoyer par email' }), 900);
+      await p.attendre(1200);
+      console.log(await p.coupez());
+    },
+  },
+  // U1 — Suivi d'une demande : l'étape passe à « Gagné », une note et une date de relance.
+  // Chaque format a sa demande (la prise modifie le jeu de test).
+  'u-suivi': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/demandes');
+      const carte = page
+        .getByRole('listitem')
+        .filter({ hasText: p.format === 'mobile' ? 'Léa Fontaine' : 'Manon Moreau' });
+      await carte.evaluate((el) => {
+        const haut = el.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo(0, haut - (window.innerWidth < 600 ? 80 : 150));
+      });
+      await p.attendre(600);
+      await p.action('u-suivi');
+      await p.attendre(500);
+      await choisir(p, carte.getByLabel('Étape du suivi'), { label: 'Gagné' });
+      await p.attendre(1300);
+      await p.photo('u-suivi-etape');
+      await p.cliquer(
+        carte.getByRole('button', { name: /une note ou une relance|la note et la relance/ }),
+        900,
+      );
+      await p.saisir(
+        carte.getByLabel('Note privée'),
+        'Rappeler jeudi pour caler le démarrage.',
+        30,
+      );
+      await carte.getByLabel('Date de relance').fill('2026-11-26');
+      await p.attendre(500);
+      await p.cliquer(carte.getByRole('button', { name: 'Enregistrer le suivi' }), 800);
+      await p.attendre(1600);
+      await p.photo('u-suivi');
+      console.log(await p.coupez());
+    },
+  },
 };
 
 async function main() {

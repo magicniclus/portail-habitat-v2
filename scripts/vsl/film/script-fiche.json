@@ -1,0 +1,37 @@
+{
+  "note": "Film court (30 s) de l’outil « Visibilité sur le portail ». Images : vraies prises de l’annuaire et de la fiche publique sur le jeu de test. Aucun chiffre cité.",
+  "avant": {
+    "f01": 0.6
+  },
+  "apres": {
+    "f02": 0.5,
+    "f05": 3
+  },
+  "segments": [
+    {
+      "id": "f01",
+      "acte": 1,
+      "texte": "Quand un particulier cherche un artisan, il regarde d'abord sur internet."
+    },
+    {
+      "id": "f02",
+      "acte": 1,
+      "texte": "Si vous n'y êtes pas, il ne vous trouve pas."
+    },
+    {
+      "id": "f03",
+      "acte": 3,
+      "texte": "Avec Portail Travaux, votre fiche apparaît quand un client cherche votre métier, près de chez lui."
+    },
+    {
+      "id": "f04",
+      "acte": 3,
+      "texte": "Vos métiers, votre zone, vos photos, vos avis. Et il vous demande un devis directement."
+    },
+    {
+      "id": "f05",
+      "acte": 11,
+      "texte": "Votre fiche est gratuite. Créez votre espace : inscrivez-vous via le formulaire."
+    }
+  ]
+}
