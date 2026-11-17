@@ -25,7 +25,9 @@ export function HistoireFiche() {
     let rq = 0;
     const lire = () => {
       rq = 0;
-      const r = zone.current!.getBoundingClientRect();
+      // Page quittée (navigation) entre la demande d'image et sa lecture : plus rien à mesurer.
+      if (!zone.current) return;
+      const r = zone.current.getBoundingClientRect();
       const p = Math.min(0.9999, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
       setEtape(Math.floor(p * N));
       setAvance(p * N - Math.floor(p * N));
