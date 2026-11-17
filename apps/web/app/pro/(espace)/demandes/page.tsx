@@ -1,4 +1,5 @@
 import { peut } from '@ph/core/equipe';
+import { chemins } from '@ph/firebase/chemins';
 import { lireDemandesPro, marquerDemandesVues } from '@ph/firebase/pro';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -17,7 +18,14 @@ export default async function PageMesDemandes() {
   if (!active || !peut(active.membre, 'demandes.repondre')) redirect(routes.proTableauDeBord);
   // Ouvrir Mes demandes = les propositions sont vues (demande partenaire : délai normal, pas 2 h).
   if (!s.impersonation) await marquerDemandesVues(servicesDemandesPro(), active.artisanId);
-  const demandes = await lireDemandesPro(servicesDemandesPro(), active.artisanId);
+  const services = servicesDemandesPro();
+  const [demandes, artisan] = await Promise.all([
+    lireDemandesPro(services, active.artisanId),
+    services.db.doc(chemins.artisan(active.artisanId)).get(),
+  ]);
+  // Téléphone plus demandé à l'inscription : demandé avant la première acceptation s'il manque.
+  const telephoneManquant =
+    !artisan.get('telephonePublic') && peut(active.membre, 'fiche.modifier');
   return (
     <main className="grid gap-5 px-[clamp(16px,3vw,32px)] pt-[clamp(20px,3vw,32px)] pb-12">
       <ConfigFirebase />
@@ -33,6 +41,7 @@ export default async function PageMesDemandes() {
         artisanId={active.artisanId}
         uid={s.uid}
         peutDevis={peut(active.membre, 'devis.gerer')}
+        telephoneManquant={telephoneManquant}
       />
     </main>
   );

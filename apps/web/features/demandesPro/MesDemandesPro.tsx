@@ -15,6 +15,7 @@ import { Banner, cn, EmptyState, Field, Input } from '@ph/ui';
 import { useState, useSyncExternalStore } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { CarteDemandePro, type ActionCarte } from './CarteDemandePro';
+import { FeuilleTelephone } from './FeuilleTelephone';
 import { useDemandesPro } from './useDemandesPro';
 
 const CARTES: { cle: 'total' | EtatPro; libelle: string; note: string }[] = [
@@ -34,12 +35,15 @@ export function MesDemandesPro({
   artisanId,
   uid,
   peutDevis,
+  telephoneManquant = false,
 }: {
   initiales: DemandePro[];
   artisanId: string;
   uid: string;
   /** « Créer un devis » sur une demande acceptée (`devis.gerer`). */
   peutDevis: boolean;
+  /** Aucun numéro sur la fiche (et droit de la modifier) : demandé avant la première acceptation. */
+  telephoneManquant?: boolean;
 }) {
   const { liste, recharger } = useDemandesPro(initiales, artisanId);
   const [q, setQ] = useState('');
@@ -60,7 +64,13 @@ export function MesDemandesPro({
     ...ETAPES_SUIVI.map((e) => ({ cle: e, libelle: LIBELLES_ETAPE[e], n: etapes[e] })),
   ];
 
-  const agir = async (d: DemandePro, action: ActionCarte) => {
+  const [sansTelephone, setSansTelephone] = useState(telephoneManquant);
+  const [enAttente, setEnAttente] = useState<{ d: DemandePro; action: ActionCarte } | null>(null);
+
+  const agir = async (d: DemandePro, action: ActionCarte, numeroEnregistre = false) => {
+    // Accepter ou prendre une demande : le particulier doit pouvoir rappeler (décision du 17/11/2026).
+    if (sansTelephone && !numeroEnregistre && action !== 'refuser')
+      return setEnAttente({ d, action });
     setEnCours(d.demandeId);
     setErreur(null);
     const r =
@@ -77,6 +87,16 @@ export function MesDemandesPro({
 
   return (
     <div className="grid gap-5">
+      <FeuilleTelephone
+        ouvert={enAttente !== null}
+        fermer={() => setEnAttente(null)}
+        enregistre={() => {
+          const suite = enAttente;
+          setSansTelephone(false);
+          setEnAttente(null);
+          if (suite) void agir(suite.d, suite.action, true);
+        }}
+      />
       <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-4">
         {CARTES.map((c) => (
           <li

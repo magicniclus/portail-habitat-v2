@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { COMPTES, connecter, entrepriseDe, proposerDemande } from './outils';
+import { chemins } from '@ph/firebase/chemins';
+import { admin, COMPTES, connecter, entrepriseDe, proposerDemande } from './outils';
 
 // docs/ACCEPTANCE.md PRO-01 à PRO-03 (maquette Mes Demandes), sur émulateurs.
 test.describe('Mes demandes', () => {
@@ -95,5 +96,44 @@ test.describe('Mes demandes', () => {
     await connecter(page, COMPTES.compta, '/pro/abonnement');
     await page.goto('/pro/demandes');
     await expect(page).not.toHaveURL(/\/pro\/demandes$/);
+  });
+
+  test('ONB-01d : sans numéro sur la fiche, « Votre numéro » avant la première acceptation', async ({
+    page,
+  }) => {
+    const { db } = await admin();
+    const artisanId = await entrepriseDe(COMPTES.proprio);
+    const ref = db.doc(chemins.artisan(artisanId));
+    const avant = (await ref.get()).get('telephonePublic') as string | undefined;
+    const { FieldValue } = await import('firebase-admin/firestore');
+    await ref.update({ telephonePublic: FieldValue.delete() });
+    try {
+      const { reference } = await proposerDemande(artisanId);
+      await connecter(page, COMPTES.proprio, '/pro/demandes');
+      const carte = page.getByRole('listitem').filter({ hasText: reference });
+      await carte.getByRole('button', { name: 'Accepter la demande' }).click();
+      const feuille = page.getByRole('dialog', { name: 'Votre numéro' });
+      await expect(feuille).toBeVisible();
+      // Fermer sans numéro : la demande n'est pas acceptée.
+      await page.keyboard.press('Escape');
+      await expect(carte.getByRole('link', { name: /06 12 34 56 78/ })).toHaveCount(0);
+      await carte.getByRole('button', { name: 'Accepter la demande' }).click();
+      await feuille.getByLabel(/^Téléphone/).fill('12');
+      await feuille.getByRole('button', { name: 'Enregistrer et continuer' }).click();
+      await expect(
+        feuille
+          .getByRole('alert')
+          .or(feuille.getByText(/invalide/i))
+          .first(),
+      ).toBeVisible();
+      await feuille.getByLabel(/^Téléphone/).fill('06 98 76 54 32');
+      await feuille.getByRole('button', { name: 'Enregistrer et continuer' }).click();
+      await expect(feuille).toBeHidden();
+      // L'acceptation reprend d'elle-même : coordonnées du particulier visibles.
+      await expect(carte.getByRole('link', { name: /06 12 34 56 78/ })).toBeVisible();
+      await expect.poll(async () => (await ref.get()).get('telephonePublic')).toBe('+33698765432');
+    } finally {
+      await ref.update({ telephonePublic: avant ?? FieldValue.delete() });
+    }
   });
 });
