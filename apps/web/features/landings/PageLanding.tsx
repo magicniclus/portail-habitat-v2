@@ -63,7 +63,7 @@ export async function PageLanding({ outil }: { outil: OutilLanding }) {
             <h1 className="m-0 text-[clamp(27px,4.6vw,56px)] leading-[1.08] md:mb-[18px]">
               {c.h1a} <span className="accent-editorial">{c.h1b}</span>
             </h1>
-            <p className="m-0 mt-2 text-[16px] leading-[23px] text-neutre-800 md:hidden">
+            <p className="m-0 mt-1 text-[16px] leading-[23px] text-neutre-800 md:hidden">
               {c.phraseMobile}
             </p>
           </div>

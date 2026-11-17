@@ -54,9 +54,9 @@ export function BandeauCookies({ politique }: { politique: Route }) {
         <section
           data-bandeau-cookies
           aria-labelledby="cookies-titre"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-3 pb-sure shadow-lg md:pt-4 [[data-cookies-choisis]_&]:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-trait bg-fond px-page pt-2 pb-sure shadow-lg md:pt-4 [[data-cookies-choisis]_&]:hidden"
         >
-          <div className="mx-auto flex max-w-contenu flex-wrap items-center gap-x-6 gap-y-2 md:gap-y-3">
+          <div className="mx-auto flex max-w-contenu flex-wrap items-center gap-x-6 gap-y-1.5 md:gap-y-3">
             <div className="min-w-0 flex-[1_1_420px]">
               <h2 id="cookies-titre" className="m-0 mb-1 text-base max-md:sr-only">
                 Vos choix sur les cookies
