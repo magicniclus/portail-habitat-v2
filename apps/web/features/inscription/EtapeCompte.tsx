@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { activerEspace, type EntrepriseInscription } from '@/features/connexion/sessionPro';
 import { routes } from '@/lib/routes';
-import { DemandesRecentes } from './ActiviteSecteur';
+import { DemandesRecentes, type ZoneDemandes } from './ActiviteSecteur';
 import { BarreEtape } from './BarreEtape';
 import { ChoixEntreprise } from './ChoixEntreprise';
 import { MotDePasseCompte } from './MotDePasseCompte';
@@ -31,7 +31,7 @@ export function EtapeCompte({
   email: string;
   /** Nom d'un ancien brouillon ; absent depuis le formulaire court (17/11/2026). */
   nom?: string;
-  zone: { ville: string; rayonKm: number };
+  zone: ZoneDemandes;
 }) {
   const router = useRouter();
   const [entreprise, setEntreprise] = useState<EntrepriseProposee | null>(null);

@@ -71,15 +71,49 @@ export function forceMotDePasse(m: string): number {
 /** Rayon d'intervention réglé au curseur (décision du 15/11/2026, schéma `rayonKm` : 10 à 100). */
 export const RAYON_ZONE = { min: 10, max: 100, pas: 5, defaut: 30 } as const;
 
-/**
- * Demandes récentes affichées aux étapes 2 et 3 : un engagement du propriétaire (15/11/2026), pas
- * un calcul. Ne pas remplacer par une estimation.
- */
+/** Plancher des demandes récentes affichées aux étapes 2 et 3 (engagement du propriétaire, 15/11/2026). */
 export const DEMANDES_RECENTES_MIN = 3;
+/** Part conservée de l'estimation : 10 % en dessous, la phrase dit « au moins » (17/11/2026). */
+const MARGE_DEMANDES_RECENTES = 0.9;
 
-export function phraseDemandesRecentes(z: { ville: string; rayonKm: number }) {
+/** Couverture du modèle pour un rayon quelconque : interpolée entre 0 km et les points connus. */
+function couvertureRayon(couverture: Readonly<Record<string, number>>, rayonKm: number) {
+  const points = [
+    [0, 0],
+    ...Object.entries(couverture)
+      .map(([k, v]) => [Number(k), v] as const)
+      .sort((a, b) => a[0] - b[0]),
+  ] as const;
+  const dernier = points[points.length - 1]!;
+  if (rayonKm >= dernier[0]) return dernier[1];
+  const i = points.findIndex(([r]) => r >= rayonKm);
+  const [r0, c0] = points[i - 1]!;
+  const [r1, c1] = points[i]!;
+  return c0 + ((c1 - c0) * (rayonKm - r0)) / (r1 - r0);
+}
+
+/**
+ * Demandes des dernières 48 h dans la zone (décision du 17/11/2026 : le nombre suit le rayon).
+ * `mensuel30` : demandes du mois, tous métiers, à 30 km (STATS_DEMANDES : réel ou modèle), mis à
+ * l'échelle du rayon par la couverture du modèle, ramené à 48 h, moins 10 %, jamais sous 3.
+ */
+export function demandesRecentes(e: {
+  mensuel30: number | null;
+  rayonKm: number;
+  couverture: Readonly<Record<string, number>>;
+}): number {
+  const ref = e.couverture['30'];
+  if (!e.mensuel30 || !ref) return DEMANDES_RECENTES_MIN;
+  const n = (e.mensuel30 * couvertureRayon(e.couverture, e.rayonKm)) / ref;
+  return Math.max(DEMANDES_RECENTES_MIN, Math.floor(((n * 2) / 30) * MARGE_DEMANDES_RECENTES));
+}
+
+export function phraseDemandesRecentes(
+  z: { ville: string; rayonKm: number },
+  nombre: number = DEMANDES_RECENTES_MIN,
+) {
   return {
-    phrase: `Au moins ${DEMANDES_RECENTES_MIN} demandes de travaux déposées ces dernières 48 h autour de ${z.ville}, dans un rayon de ${z.rayonKm} km.`,
+    phrase: `Au moins ${nombre} demandes de travaux déposées ces dernières 48 h autour de ${z.ville}, dans un rayon de ${z.rayonKm} km.`,
     precision:
       'Certaines ont peut-être déjà été confiées à un artisan : vous verrez dans votre espace celles qui sont encore ouvertes.',
   };

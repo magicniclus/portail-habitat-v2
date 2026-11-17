@@ -1,3 +1,4 @@
+import { demandesRecentes } from '@ph/core/onboarding';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { ConfigFirebase } from '@/features/firebase/ConfigFirebase';
@@ -5,6 +6,7 @@ import { CadreInscription } from '@/features/inscription/CadreInscription';
 import { ActiviteSecteur } from '@/features/inscription/ActiviteSecteur';
 import { EtapeCompte } from '@/features/inscription/EtapeCompte';
 import { brouillonCourant } from '@/server/inscription';
+import { baseDemandesRecentes } from '@/server/statsDemandes';
 
 export const metadata: Metadata = { title: 'Votre compte', robots: { index: false } };
 
@@ -16,10 +18,12 @@ export default async function PageCompte() {
   const b = await brouillonCourant();
   if (!b) redirect('/pro#inscription');
   if (!b.zone) redirect('/pro/inscription/zone');
+  const base = baseDemandesRecentes(b.zone.codePostal ?? b.identite.codePostal);
+  const zone = { ...b.zone, nombre: demandesRecentes({ ...base, rayonKm: b.zone.rayonKm }) };
   return (
-    <CadreInscription etape={3} largeur="max-w-[420px]" aside={<ActiviteSecteur zone={b.zone} />}>
+    <CadreInscription etape={3} largeur="max-w-[420px]" aside={<ActiviteSecteur zone={zone} />}>
       <ConfigFirebase />
-      <EtapeCompte email={b.identite.email} nom={b.identite.nom} zone={b.zone} />
+      <EtapeCompte email={b.identite.email} nom={b.identite.nom} zone={zone} />
     </CadreInscription>
   );
 }

@@ -31,3 +31,14 @@ export function demandesEstimees(e: {
     referentiel,
   );
 }
+
+/** Base des demandes récentes des étapes 2 et 3 : demandes du mois, tous métiers, à 30 km. */
+export function baseDemandesRecentes(codePostal: string | undefined) {
+  const total = codePostal
+    ? demandesEstimees({ codePostal, metiers: [], rayonKm: 30 }).total
+    : null;
+  return {
+    mensuel30: total,
+    couverture: (stats.modele as unknown as ModeleDemandes).couverture,
+  };
+}

@@ -36,10 +36,10 @@ export function CadreInscription({
   largeur?: string;
 }) {
   return (
-    // Ordinateur : la page fait la hauteur de l'écran ; seule la colonne de gauche a sa propre barre
-    // de défilement, la droite reste fixe (indépendant du défilement de la page).
+    // Ordinateur : la page fait la hauteur de l'écran ; la colonne de gauche défile seule si besoin
+    // (barre de défilement masquée : elle coupait l'écran en deux, 17/11/2026), la droite reste fixe.
     <div className="grid min-h-dvh bg-blanc pb-[84px] text-texte md:h-dvh md:grid-cols-2 md:overflow-hidden md:pb-0">
-      <div className="flex min-w-0 flex-col px-[clamp(20px,4vw,56px)] pt-[clamp(20px,3vw,32px)] pb-10 md:h-dvh md:overflow-y-auto md:overscroll-contain md:pb-[124px]">
+      <div className="flex min-w-0 flex-col px-[clamp(20px,4vw,56px)] pt-[clamp(20px,3vw,32px)] pb-10 md:h-dvh md:overflow-y-auto md:overscroll-contain md:pb-[104px] md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden">
         <div className="flex flex-wrap items-center gap-5">
           <Link href={routes.pro} className="flex min-h-11 items-center text-texte no-underline">
             <Logo variant="pro" taille={36} empile />
@@ -64,7 +64,7 @@ export function CadreInscription({
           </div>
         </div>
         <main
-          className={`mx-auto my-10 flex w-full flex-1 flex-col justify-center gap-5 ${largeur}`}
+          className={`mx-auto my-6 flex w-full flex-1 flex-col justify-center gap-5 ${largeur}`}
         >
           {children}
         </main>

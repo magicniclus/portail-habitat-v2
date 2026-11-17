@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { EtapeZone } from '@/features/inscription/EtapeZone';
 import { brouillonCourant } from '@/server/inscription';
 import { chercherCommunes } from '@/server/lieux';
+import { baseDemandesRecentes } from '@/server/statsDemandes';
 
 export const metadata: Metadata = { title: 'Votre zone', robots: { index: false } };
 
@@ -26,5 +27,6 @@ export default async function PageZone() {
           rayonKm: RAYON_ZONE.defaut,
         }
       : undefined);
-  return <EtapeZone {...(zoneInitiale ? { zoneInitiale } : {})} />;
+  const base = baseDemandesRecentes(zoneInitiale?.codePostal ?? b.identite.codePostal);
+  return <EtapeZone base={base} {...(zoneInitiale ? { zoneInitiale } : {})} />;
 }

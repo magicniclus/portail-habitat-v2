@@ -1,9 +1,9 @@
 'use client';
 
-import { RAYON_ZONE, statutZone } from '@ph/core/onboarding';
+import { demandesRecentes, RAYON_ZONE, statutZone } from '@ph/core/onboarding';
 import { Banner, Combobox, type OptionCombobox } from '@ph/ui';
 import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { posterJson } from '@/lib/posterJson';
 import { ActiviteSecteur, DemandesRecentes } from './ActiviteSecteur';
 import { BarreEtape } from './BarreEtape';
@@ -17,7 +17,10 @@ import { useLieux, type Lieu } from './useLieux';
  */
 export function EtapeZone({
   zoneInitiale,
+  base,
 }: {
+  /** Demandes du mois à 30 km (tous métiers) et couverture du modèle, pour le nombre affiché. */
+  base: { mensuel30: number | null; couverture: Readonly<Record<string, number>> };
   zoneInitiale?: { ville: string; codePostal?: string; centre: Lieu['centre']; rayonKm: number };
 }) {
   const router = useRouter();
@@ -35,6 +38,27 @@ export function EtapeZone({
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const s = statutZone({ ville: lieu?.nom, rayonKm: rayon });
+  // Autre ville choisie : base relue pour son département (même calcul que /pro, cache 6 h).
+  const [mensuel30, setMensuel30] = useState(base.mensuel30);
+  const cp = lieu?.codePostal;
+  useEffect(() => {
+    if (!cp || cp === zoneInitiale?.codePostal) return;
+    let actif = true;
+    void fetch(`/api/stats/demandes?cp=${cp}&rayon=30`)
+      .then((r) => r.json() as Promise<{ total: number | null }>)
+      .then((d) => actif && setMensuel30(d.total))
+      .catch(() => undefined);
+    return () => {
+      actif = false;
+    };
+  }, [cp, zoneInitiale?.codePostal]);
+  const zoneAffichee = lieu
+    ? {
+        ville: lieu.nom,
+        rayonKm: rayon,
+        nombre: demandesRecentes({ mensuel30, rayonKm: rayon, couverture: base.couverture }),
+      }
+    : null;
   const options = useLieux(saisie, lieu?.nom);
 
   const envoyer = async (ev: FormEvent) => {
@@ -60,10 +84,7 @@ export function EtapeZone({
   };
 
   return (
-    <CadreInscription
-      etape={2}
-      aside={<ActiviteSecteur zone={lieu ? { ville: lieu.nom, rayonKm: rayon } : null} />}
-    >
+    <CadreInscription etape={2} aside={<ActiviteSecteur zone={zoneAffichee} />}>
       <form id="form-zone" onSubmit={envoyer} className="grid gap-5">
         <div>
           <h1 className="m-0 mb-2 text-[clamp(26px,3vw,34px)] leading-[1.12]">
@@ -75,7 +96,7 @@ export function EtapeZone({
         </div>
         {/* Téléphone : la phrase des demandes récentes avant la carte, visible sans défiler. */}
         <div className="md:hidden">
-          <DemandesRecentes zone={lieu ? { ville: lieu.nom, rayonKm: rayon } : null} compact />
+          <DemandesRecentes zone={zoneAffichee} compact />
         </div>
         {erreur ? <Banner tone="danger">{erreur}</Banner> : null}
         <CarteZone

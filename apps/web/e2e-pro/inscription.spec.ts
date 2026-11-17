@@ -95,15 +95,27 @@ test.describe('Inscription pro', () => {
     await ville.fill('Mérig');
     await expect(suivante).toBeDisabled();
     await page.getByRole('option', { name: /Mérignac/ }).click();
-    // Rayon au curseur (10 à 100 km, pas de 5) : 30 → 50 km.
+    // Rayon au curseur (10 à 100 km, pas de 5) : 30 → 50 km ; le nombre de demandes suit le rayon.
     const rayon = page.getByLabel(/Rayon d.intervention/);
+    const nombre = async () =>
+      Number(
+        (
+          await page
+            .getByText(/^Au moins \d+ demandes de travaux déposées ces dernières 48 h/)
+            .first()
+            .innerText()
+        ).match(/Au moins (\d+)/)![1],
+      );
+    const a30 = await nombre();
     await rayon.focus();
     for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowRight');
     await expect(rayon).toHaveValue('50');
-    // Phrase fixe, visible sans défiler sur téléphone ; plus d'estimation chiffrée.
+    await expect.poll(nombre).toBeGreaterThan(a30);
+    expect(a30).toBeGreaterThanOrEqual(3);
+    // Phrase visible sans défiler sur téléphone ; pas d'« estimation » affichée.
     const phrase = page
       .getByText(
-        'Au moins 3 demandes de travaux déposées ces dernières 48 h autour de Mérignac, dans un rayon de 50 km.',
+        /^Au moins \d+ demandes de travaux déposées ces dernières 48 h autour de Mérignac, dans un rayon de 50 km\.$/,
       )
       .first();
     await expect(phrase).toBeInViewport();

@@ -1,16 +1,23 @@
 import { phraseDemandesRecentes } from '@ph/core/onboarding';
 import { cn } from '@ph/ui';
 
+/** Zone affichée, avec le nombre de demandes récentes calculé (plancher sinon). */
+export interface ZoneDemandes {
+  ville: string;
+  rayonKm: number;
+  nombre?: number;
+}
+
 /**
- * Demandes récentes de la zone, identiques aux étapes 2 et 3 (décision du 15/11/2026) : une phrase
- * fixe, engagement du propriétaire (`DEMANDES_RECENTES_MIN`), sans estimation chiffrée.
+ * Demandes récentes de la zone, identiques aux étapes 2 et 3 : le nombre suit le rayon (décision du
+ * 17/11/2026, `demandesRecentes`), jamais sous `DEMANDES_RECENTES_MIN`.
  * `compact` : version posée en haut de l'écran sur téléphone, visible sans défiler.
  */
 export function DemandesRecentes({
   zone,
   compact = false,
 }: {
-  zone: { ville: string; rayonKm: number } | null;
+  zone: ZoneDemandes | null;
   compact?: boolean;
 }) {
   if (!zone)
@@ -24,7 +31,7 @@ export function DemandesRecentes({
         </p>
       </div>
     );
-  const p = phraseDemandesRecentes(zone);
+  const p = phraseDemandesRecentes(zone, zone.nombre);
   return (
     <div
       aria-live="polite"
@@ -53,7 +60,7 @@ export function DemandesRecentes({
 }
 
 /** Colonne « L'activité de votre secteur » des étapes 2 et 3 (maquettes Onboarding). */
-export function ActiviteSecteur({ zone }: { zone: { ville: string; rayonKm: number } | null }) {
+export function ActiviteSecteur({ zone }: { zone: ZoneDemandes | null }) {
   return (
     <>
       {/* Téléphone : la phrase est déjà en haut de l'écran (version compacte). */}

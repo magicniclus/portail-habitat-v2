@@ -4,6 +4,7 @@ import {
   chantiersDesMetiers,
   decouperNom,
   DEMANDES_RECENTES_MIN,
+  demandesRecentes,
   forceMotDePasse,
   intentionsApresChangement,
   phraseDemandesRecentes,
@@ -130,12 +131,36 @@ describe('entrées de l’inscription', () => {
 describe('demandes récentes (étapes 2 et 3, décision du 15/11/2026)', () => {
   it('engagement fixe du propriétaire : au moins 3 demandes en 48 h, sans calcul', () => {
     expect(DEMANDES_RECENTES_MIN).toBe(3);
+    // Sans base connue (département inconnu) : le plancher de 3.
     expect(phraseDemandesRecentes({ ville: 'Mérignac', rayonKm: 40 })).toEqual({
       phrase:
         'Au moins 3 demandes de travaux déposées ces dernières 48 h autour de Mérignac, dans un rayon de 40 km.',
       precision:
         'Certaines ont peut-être déjà été confiées à un artisan : vous verrez dans votre espace celles qui sont encore ouvertes.',
     });
+  });
+});
+
+describe('demandesRecentes (17/11/2026 : le nombre suit le rayon)', () => {
+  // Base : demandes du mois, tous métiers, à 30 km (modèle de STATS_DEMANDES ou réel).
+  const COUV = { '30': 0.45, '50': 0.8, '100': 1.6 };
+  it('48 h = 2/30 du mois, 10 % de marge en dessous (« au moins »), à 30 km', () => {
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 30, couverture: COUV })).toBe(54);
+  });
+  it('augmente avec le rayon, interpolé entre les points du modèle, jamais sous 3', () => {
+    const n = [10, 20, 30, 40, 50, 70, 100].map((r) =>
+      demandesRecentes({ mensuel30: 900, rayonKm: r, couverture: COUV }),
+    );
+    for (let i = 1; i < n.length; i++) expect(n[i]!).toBeGreaterThan(n[i - 1]!);
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 50, couverture: COUV })).toBe(96);
+    expect(demandesRecentes({ mensuel30: 900, rayonKm: 100, couverture: COUV })).toBe(192);
+    expect(demandesRecentes({ mensuel30: 20, rayonKm: 10, couverture: COUV })).toBe(3);
+    expect(demandesRecentes({ mensuel30: null, rayonKm: 70, couverture: COUV })).toBe(3);
+  });
+  it('la phrase reprend le nombre', () => {
+    expect(phraseDemandesRecentes({ ville: 'Bordeaux', rayonKm: 70 }, 120).phrase).toBe(
+      'Au moins 120 demandes de travaux déposées ces dernières 48 h autour de Bordeaux, dans un rayon de 70 km.',
+    );
   });
 });
 
