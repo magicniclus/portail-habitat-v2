@@ -1,14 +1,17 @@
 'use client';
 
 import type { OUTILS_INCLUS } from '@ph/core/landings';
-import { Modal } from '@ph/ui';
-import { cheminVideoOutil } from './videosOutils';
+import { cn, Modal } from '@ph/ui';
+import { useMediaQuery } from '@/lib/useMediaQuery';
+import { cheminVideoOutil, VSL_OUTILS } from './videosOutils';
 
 type Outil = (typeof OUTILS_INCLUS)[number];
 
 /**
- * Fenêtre de la vidéo d'un outil : lecture automatique (film muet, sous-titres incrustés), puis
- * l'appel à créer son espace ou à voir l'outil suivant. Feuille du bas sur téléphone (MOB-05).
+ * Fenêtre de la vidéo d'un outil : lecture automatique, puis l'appel à créer son espace ou à voir
+ * l'outil suivant. Feuille du bas sur téléphone (MOB-05). Un outil qui a son film de vente
+ * (`VSL_OUTILS`) le joue avec le son, au format vertical sur téléphone ; les autres gardent leur
+ * film muet aux sous-titres incrustés.
  */
 export function FenetreVideoOutil({
   outil,
@@ -21,6 +24,14 @@ export function FenetreVideoOutil({
   onFermer: () => void;
   onSuivant: () => void;
 }) {
+  const telephone = useMediaQuery('(max-width: 639px)', false);
+  const vsl = outil ? VSL_OUTILS[outil.id] : undefined;
+  const vertical = Boolean(vsl) && telephone;
+  const base = vsl
+    ? `${vsl.base}${vertical ? '-vertical' : ''}`
+    : outil
+      ? cheminVideoOutil(outil.id)
+      : '';
   return (
     <Modal
       open={outil !== null}
@@ -53,16 +64,21 @@ export function FenetreVideoOutil({
     >
       {outil ? (
         <video
-          key={outil.id}
-          className="mx-auto block aspect-video max-h-[calc(92dvh-16rem)] w-full max-w-[calc((92dvh-16rem)*16/9)] rounded-[12px] bg-neutre-900"
-          src={`${cheminVideoOutil(outil.id)}.mp4`}
-          poster={`${cheminVideoOutil(outil.id)}.webp`}
+          key={base}
+          className={cn(
+            'mx-auto block max-h-[calc(92dvh-16rem)] w-full rounded-[12px] bg-neutre-900',
+            vertical
+              ? 'aspect-[9/16] max-w-[calc((92dvh-16rem)*9/16)]'
+              : 'aspect-video max-w-[calc((92dvh-16rem)*16/9)]',
+          )}
+          src={`${base}.mp4`}
+          poster={`${base}.webp`}
           autoPlay
-          muted
+          muted={!vsl}
           playsInline
           controls
           preload="auto"
-          aria-label={`Présentation de l’outil ${outil.titre}, sans son, avec sous-titres`}
+          aria-label={`Présentation de l’outil ${outil.titre}, ${vsl ? 'avec la voix' : 'sans son'}, avec sous-titres`}
         />
       ) : null}
     </Modal>

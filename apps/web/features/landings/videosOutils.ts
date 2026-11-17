@@ -56,6 +56,16 @@ export const VSL_DEVIS: VideoVsl = {
   vertical: true,
 };
 
+/**
+ * Films de vente courts (30 s, voix, sous-titres incrustés) des outils sans landing, ouverts depuis
+ * les tuiles : `vsl/{id}.mp4` (16:9), `vsl/{id}-vertical.mp4` (9:16) et leurs affiches `.webp`.
+ */
+export const VSL_OUTILS: Record<string, { base: string } | undefined> = {
+  fiche: { base: '/landing/videos/vsl/fiche' },
+  avis: { base: '/landing/videos/vsl/avis' },
+  suivi: { base: '/landing/videos/vsl/suivi' },
+};
+
 export const cheminVideoOutil = (id: string) => `/landing/videos/outils/${id}`;
 
 /**
