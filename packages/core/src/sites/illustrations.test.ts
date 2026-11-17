@@ -9,6 +9,7 @@ import {
 import { media } from './schemas';
 
 const PALETTE = { primaire: '#12355b', accent: '#2b7fd4', clair: '#eef3f8', sombre: '#0b1c2e' };
+const TEINTES = { peau: '#efc3a0', cheveux: '#3a2a21' };
 
 describe('illustrations des sites', () => {
   it('le métier choisit le dessin du bandeau et trois dessins voisins', () => {
@@ -28,12 +29,13 @@ describe('illustrations des sites', () => {
     expect(illustrationsDuMetier('Multiservices').bandeau).toBe('ill:renovation');
   });
 
-  it('chaque dessin est un SVG aux seules couleurs de la palette (plus le blanc)', () => {
+  it('chaque dessin est un SVG aux seules couleurs de la palette et des personnages (plus le blanc)', () => {
     for (const i of ILLUSTRATIONS) {
-      const svg = svgIllustration(i, PALETTE);
+      const svg = svgIllustration(i, PALETTE, TEINTES);
       expect(svg).toMatch(/^<svg [^>]*viewBox="0 0 1200 800"/);
       const couleurs = new Set(svg.match(/#[0-9a-f]{6}/gi));
-      for (const c of couleurs) expect(Object.values(PALETTE)).toContain(c);
+      for (const c of couleurs)
+        expect([...Object.values(PALETTE), ...Object.values(TEINTES)]).toContain(c);
       expect(svg).not.toMatch(/<script|on\w+=/i);
     }
   });
@@ -44,7 +46,7 @@ describe('illustrations des sites', () => {
     expect(illustrationDe('ill:cuisine')).toBe('cuisine');
     expect(illustrationDe('ill:inconnue')).toBeNull();
     expect(illustrationDe('lib:a/1')).toBeNull();
-    expect(urlIllustration('cuisine', PALETTE)).toMatch(
+    expect(urlIllustration('cuisine', PALETTE, TEINTES)).toMatch(
       /^data:image\/svg\+xml;charset=utf-8,%3Csvg/,
     );
   });

@@ -6,6 +6,7 @@ import {
   type Section,
   type Theme,
 } from '@ph/core/sites';
+import { teintesIllustrations } from '@ph/ui/tokens';
 import { SCRIPT_APERCU } from './apercu';
 import { STYLE_BLOG } from './blog';
 import { SCRIPT_EDITION, STYLE_EDITION } from './edition';
@@ -62,7 +63,7 @@ export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string
   // Dessins d'illustration (`ill:`) : tracés aux couleurs actuelles du site, ils suivent la palette.
   const media = (src: string) => {
     const i = illustrationDe(src);
-    return i ? urlIllustration(i, d.theme.palette) : contexte.media(src);
+    return i ? urlIllustration(i, d.theme.palette, teintesIllustrations) : contexte.media(src);
   };
   const ctx: ContexteRendu = { ...contexte, media, theme: d.theme, navigation: d.navigation };
   const canonique = `https://${d.hote}/${d.page.slug}`;

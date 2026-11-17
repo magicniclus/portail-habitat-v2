@@ -261,6 +261,12 @@ export const palettesSites = [
 ] as const;
 
 /**
+ * Teintes des personnages des illustrations des sites (peau, cheveux) : seules couleurs des dessins
+ * qui ne viennent pas de la palette du site.
+ */
+export const teintesIllustrations = { peau: '#efc3a0', cheveux: '#3a2a21' } as const;
+
+/**
  * Couleurs des niveaux de l'éditeur de site (maquette Editeur de Site) : puces de la structure,
  * cadres et badges de la sélection dans l'aperçu.
  */
