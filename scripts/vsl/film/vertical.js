@@ -249,6 +249,65 @@
       styles: [...PLANS.p28.styles, [':scope > .titre', 'font-size:96px']],
     },
   });
+  // Film « devis et factures » : mêmes dispositions que le film du site.
+  const ECRAN = PLANS.s08;
+  Object.assign(PLANS, {
+    d01: { centre: [0, 200, 0.9], reste: [-420, 330, 1] },
+    d02: {
+      styles: [[':scope > .oui', ['left:560px;top:760px', 'left:1250px;top:760px']]],
+      reste: [-180, 420, 0.75],
+    },
+    d03: { centre: [0, 420, 0.8], reste: [-228, 420, 0.8] },
+    'd04 d05': {
+      ...PLANS['p05a p05b p05c'],
+      // Les deux pastilles l'une sous l'autre (elles sont trop larges pour tenir côte à côte).
+      styles: [
+        ...PLANS['p05a p05b p05c'].styles,
+        [':scope > .oui', ['left:150px;top:760px', 'left:150px;top:870px']],
+      ],
+    },
+    d06: ECRAN,
+    d07: ECRAN,
+    d08: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+        ['.nav', 'height:560px'],
+      ],
+      zones: ECRAN.zones,
+      reste: PLEIN,
+    },
+    d09: {
+      styles: [...ECRAN.styles, [':scope > .pose', 'left:150px;top:640px']],
+      zones: ECRAN.zones,
+      reste: PLEIN,
+    },
+    d10: ECRAN,
+    d10b: {
+      styles: [
+        [':scope > div[style*="perspective"]', 'left:40px;top:200px;width:1000px;transform:none'],
+        [':scope > .nav.tel', 'left:350px;top:900px;width:380px;height:610px'],
+      ],
+      reste: PLEIN,
+    },
+    d11: PLANS.p23,
+    d12: {
+      styles: [
+        [':scope > div', ['left:110px;top:230px', '', 'left:110px;top:1000px']],
+        [':scope > .filet', 'display:none'],
+      ],
+      reste: PLEIN,
+    },
+    d13: { reste: [-390, 420, 1] },
+    d13b: PLANS.s13b,
+    d14: {
+      ...PLANS.p28,
+      styles: [
+        ...PLANS.p28.styles,
+        [':scope > .titre', 'font-size:82px'],
+        ['.btn', 'font-size:40px;padding:30px 40px'],
+      ],
+    },
+  });
   /** Les six cartes d'outils sur deux colonnes. */
   function grille() {
     return [0, 1, 2, 3, 4, 5].map(
