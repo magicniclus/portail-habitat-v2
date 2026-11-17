@@ -264,6 +264,14 @@ export const palettesSites = [
  * Teintes des personnages des illustrations des sites (peau, cheveux) : seules couleurs des dessins
  * qui ne viennent pas de la palette du site.
  */
+/** Couleurs officielles du logo « G » de Google (bouton « Continuer avec Google »). */
+export const couleursGoogle = {
+  bleu: '#4285f4',
+  vert: '#34a853',
+  jaune: '#fbbc05',
+  rouge: '#ea4335',
+} as const;
+
 export const teintesIllustrations = { peau: '#efc3a0', cheveux: '#3a2a21' } as const;
 
 /**

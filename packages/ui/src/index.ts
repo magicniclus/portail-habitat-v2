@@ -1,6 +1,7 @@
 export { cn } from './cn';
 export { Logo, type LogoProps } from './primitives/Logo';
 export { Button, type ButtonProps } from './primitives/Button';
+export { BoutonGoogle, LogoGoogle } from './primitives/BoutonGoogle';
 export { bouton } from './primitives/bouton';
 export { IconButton, type IconButtonProps } from './primitives/IconButton';
 export {

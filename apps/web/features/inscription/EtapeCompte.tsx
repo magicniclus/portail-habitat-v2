@@ -4,8 +4,7 @@ import { messageErreurConnexion } from '@ph/core/connexion';
 import { statutCompte } from '@ph/core/onboarding';
 import { entreeFinaliserInscription } from '@ph/core/schemas';
 import type { EntrepriseProposee } from '@ph/firebase/comptes';
-import { GoogleLogoIcon } from '@phosphor-icons/react';
-import { Banner, Button, Field, Input } from '@ph/ui';
+import { Banner, BoutonGoogle, Field, Input } from '@ph/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -142,22 +141,16 @@ export function EtapeCompte({
         <h2 id="titre-acces" className="m-0 text-lg">
           Votre accès
         </h2>
-        <Button
-          type="button"
-          variant="secondaire"
-          className="min-h-12 w-full"
+        <BoutonGoogle
           chargement={enCours === 'google'}
           disabled={enCours !== null}
           onClick={() => void activer('google')}
-        >
-          <GoogleLogoIcon size={20} weight="bold" aria-hidden="true" />
-          Continuer avec Google
-        </Button>
+        />
         <p className="m-0 flex items-center gap-3 text-[13px] text-neutre-700 before:h-px before:flex-1 before:bg-trait after:h-px after:flex-1 after:bg-trait">
-          ou avec votre email
+          ou
         </p>
-        <p className="m-0 text-sm text-neutre-800">
-          Identifiant : <strong>{email}</strong>
+        <p className="m-0 text-[15px] text-neutre-800">
+          Créez un mot de passe pour <strong className="text-texte">{email}</strong>
         </p>
         <Field label="Nom et prénom" requis>
           <Input
