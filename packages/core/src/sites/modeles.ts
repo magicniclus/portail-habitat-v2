@@ -1,5 +1,6 @@
 import { DEFAUTS_COLONNE, elementDuCatalogue } from './catalogue';
 import { siteParDefaut, type FicheSite } from './defaut';
+import { estIllustration } from './illustrations';
 import type { Navigation, PageSite, Section, Theme } from './schemas';
 
 /** Mise en page du bandeau d'accueil propre à chaque modèle. */
@@ -195,6 +196,15 @@ function varianter(s: Section, i: number, hero: Hero): Section {
       // Sans photo, le modèle photo garde son grand bandeau, sur la couleur principale.
       x.p.fond = { split: 'clair', photo: 'primaire', sombre: 'sombre', minimal: 'blanc' }[hero];
       x.p.padY = hero === 'photo' ? PAD_PHOTO : hero === 'minimal' ? PAD_MINIMAL : PAD_BANDEAU;
+      // Dessin du métier derrière le formulaire : très éclairci (clair) ou assombri (sombre).
+      if (formulaire && photo && estIllustration(photo) && hero !== 'minimal')
+        x.p = {
+          ...x.p,
+          fondType: 'image',
+          fondImage: photo,
+          voile: hero === 'split' ? 'clair' : 'sombre',
+          voileOpacite: hero === 'split' ? 86 : 78,
+        };
     }
     for (const e of elements(x)) {
       if ('align' in e.p && e.type !== 'image') e.p.align = centre ? 'center' : 'left';

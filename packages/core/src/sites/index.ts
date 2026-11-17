@@ -29,3 +29,4 @@ export * from './marges';
 export * from './globales';
 export * from './video';
 export * from './tailles';
+export * from './illustrations';

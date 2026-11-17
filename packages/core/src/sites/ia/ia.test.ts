@@ -59,7 +59,7 @@ describe('opérations de l’IA (IA_SITE §2)', () => {
       brouillon,
       [
         { op: 'texte', cible: titre.id, champ: 'texte', valeur: 'Votre plombier à Pessac' },
-        { op: 'props', cible: section.id, patch: { fond: 'sombre' } },
+        { op: 'props', cible: section.id, patch: { fond: 'primaire' } },
         {
           op: 'insererSection',
           page: 'accueil',
@@ -81,11 +81,11 @@ describe('opérations de l’IA (IA_SITE §2)', () => {
     expect(elementsDe(accueil).find((e) => e.el.id === titre.id)?.el.p).toMatchObject({
       texte: 'Votre plombier à Pessac',
     });
-    expect(accueil.sections[0]!.p.fond).toBe('sombre');
+    expect(accueil.sections[0]!.p.fond).toBe('primaire');
     expect(accueil.sections[1]!.p.nom).toBe('FAQ');
     expect(accueil.sections[1]!.id).toMatch(/^n\d+$/);
     // Le brouillon d'origine n'est pas modifié (Ctrl Z restaure l'état exact, SITE-IA-06).
-    expect(brouillon.pages.accueil!.sections[0]!.p.fond).not.toBe('sombre');
+    expect(brouillon.pages.accueil!.sections[0]!.p.fond).not.toBe('primaire');
   });
 
   it('SITE-IA-04 : id inexistant, page protégée ou réglage invalide → tout est refusé', () => {

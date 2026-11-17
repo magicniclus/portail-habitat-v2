@@ -31,11 +31,15 @@ export const couleur = z.union([
 ]);
 export type Couleur = z.output<typeof couleur>;
 
-/** `lib:{realisationId}/{photoIndex}` (photos de la fiche), `up:{mediaId}` (import) ou vide. */
+/**
+ * `lib:{realisationId}/{photoIndex}` (photos de la fiche), `up:{mediaId}` (import),
+ * `ill:{illustration}` (dessin aux couleurs du site, `illustrations.ts`) ou vide.
+ */
 export const media = z.union([
   z.literal(''),
   z.string().regex(/^lib:[\w-]{1,128}\/\d{1,3}$/),
   z.string().regex(/^up:[\w-]{1,128}$/),
+  z.string().regex(/^ill:[a-z-]{2,40}$/),
 ]);
 
 export const TYPES_ACTION = [

@@ -4,6 +4,7 @@ import type { VideoVsl } from '@/features/pro/VslPro';
  * Vidéos de présentation des outils, façon VSL (sans voix) : accroche, problème, solution, vraies
  * captures de l'espace animées, preuves chiffrées, appel à l'action, sous-titres mot à mot :
  * `public/landing/videos/outils/{id}.mp4` et son affiche `{id}.webp`. Durées en secondes.
+ * @public Utilisé par la section des outils gratuits, gardée en réserve (hors landings).
  */
 export const VIDEOS_OUTILS: Record<string, { duree: number }> = {
   chantiers: { duree: 40 },

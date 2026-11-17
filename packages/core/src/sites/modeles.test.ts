@@ -224,7 +224,7 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
     expect(sansFiche.pages.accueil!.sections[0]!.p.nom).toBe('Ma zone');
   });
 
-  it('bandeau avec formulaire : deux colonnes gardées, photo de la fiche en fond ou couleur principale', () => {
+  it('bandeau avec formulaire : deux colonnes gardées, photo de la fiche ou dessin du métier en fond', () => {
     const r = appliquerModeleSite(site(), modeleSite('premium')!, AUTRE, true);
     const b = bandeau(r);
     expect(b.p).toMatchObject({ fondType: 'image', fondImage: 'lib:r1/0', voileOpacite: 62 });
@@ -239,7 +239,19 @@ describe('modèles de site (SITE_INTERNET §4.7)', () => {
       AUTRE,
       true,
     );
-    expect(bandeau(sans).p).toMatchObject({ fondType: 'couleur', fond: 'primaire' });
+    // Sans photo : le dessin du métier, assombri (photo plein écran) ou très éclairci (classique).
+    expect(bandeau(sans).p).toMatchObject({
+      fondType: 'image',
+      fondImage: expect.stringMatching(/^ill:/),
+      voile: 'sombre',
+    });
+    const clair = appliquerModeleSite(
+      siteParDefaut({ ...FICHE, photos: [] }, PALETTE),
+      modeleSite('classique')!,
+      AUTRE,
+      true,
+    );
+    expect(bandeau(clair).p).toMatchObject({ fond: 'clair', fondType: 'image', voile: 'clair' });
     // L'ordre des zones ne change jamais.
     const ordre = (x: ReturnType<typeof site>) => x.pages.accueil!.sections.map((z) => z.p.nom);
     for (const m of MODELES_SITE)

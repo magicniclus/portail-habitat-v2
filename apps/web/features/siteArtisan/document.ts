@@ -1,4 +1,11 @@
-import type { Navigation, PageSite, Section, Theme } from '@ph/core/sites';
+import {
+  illustrationDe,
+  urlIllustration,
+  type Navigation,
+  type PageSite,
+  type Section,
+  type Theme,
+} from '@ph/core/sites';
 import { SCRIPT_APERCU } from './apercu';
 import { STYLE_BLOG } from './blog';
 import { SCRIPT_EDITION, STYLE_EDITION } from './edition';
@@ -52,7 +59,12 @@ const PAGE_VIERGE =
   '<div class="ed-vierge"><button type="button" class="plus" data-ed-op="zone" aria-label="Ajouter une zone">+</button><strong>Commencez votre page</strong><p>Choisissez une zone prête à remplir, une section de colonnes ou un simple contenu.</p><div class="ed-choix"><button type="button" data-ed-op="zone">Zone prête<small>Bandeau, avis, contact…</small></button><button type="button" data-ed-op="section">Section<small>1 à 6 colonnes vides</small></button><button type="button" data-ed-op="contenu">Contenu<small>Titre, texte, image…</small></button></div></div>';
 
 export function rendreDocument(d: DocumentSite, contexte: ContexteRendu): string {
-  const ctx: ContexteRendu = { ...contexte, theme: d.theme, navigation: d.navigation };
+  // Dessins d'illustration (`ill:`) : tracés aux couleurs actuelles du site, ils suivent la palette.
+  const media = (src: string) => {
+    const i = illustrationDe(src);
+    return i ? urlIllustration(i, d.theme.palette) : contexte.media(src);
+  };
+  const ctx: ContexteRendu = { ...contexte, media, theme: d.theme, navigation: d.navigation };
   const canonique = `https://${d.hote}/${d.page.slug}`;
   // Zones en fenêtre pop-up : hors de la page (sauf dans l'éditeur, pour les modifier).
   const enFenetre = (s: Section) => Boolean(s.p.popup && s.p.ancre && !ctx.edition);

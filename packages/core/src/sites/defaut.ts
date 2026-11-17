@@ -1,3 +1,4 @@
+import { illustrationDe, illustrationsDuMetier, SUJETS } from './illustrations';
 import type { Action, Element, Navigation, PageSite, Section, Theme } from './schemas';
 
 /** Données de la fiche utilisées pour le site de départ (aucune invention : ce qui manque reste vide). */
@@ -284,8 +285,24 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     'devis',
     v3(80, 60, 40),
   );
-  // Photo gardée pour les modèles « photo plein écran » (fond activé par le modèle).
-  bandeau.p.fondImage = (f.photos[0] ?? '') as typeof bandeau.p.fondImage;
+  // Sans photo : un dessin du métier aux couleurs du site, assombri, plutôt qu'un aplat
+  // (décision du 17/11/2026). Avec photo : gardée pour les modèles « photo plein écran ».
+  const ill = illustrationsDuMetier(f.metier);
+  /** Texte alternatif : la photo de la fiche, ou ce que montre le dessin. */
+  const alt = (src: string, photo: string) => {
+    const i = illustrationDe(src);
+    return i ? `Illustration : ${SUJETS[i]}` : photo;
+  };
+  if (f.photos[0]) bandeau.p.fondImage = f.photos[0] as typeof bandeau.p.fondImage;
+  else
+    bandeau.p = {
+      ...bandeau.p,
+      fond: 'sombre',
+      fondType: 'image',
+      fondImage: ill.bandeau,
+      voile: 'sombre',
+      voileOpacite: 64,
+    };
   const vrais = (f.avis ?? []).slice(0, AVIS_ACCUEIL);
   const cartesAvis = [
     ...vrais.map((a) => el.avis(a.nom, a.note, a.texte)),
@@ -309,7 +326,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     ],
     'clair',
   );
-  const photoPresentation = f.photos[1] ?? f.photos[0];
+  const photoPresentation = f.photos[1] ?? f.photos[0] ?? ill.galerie[0]!;
   const presentation = section('Présentation', [
     ligne(
       [
@@ -330,7 +347,17 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
           { valign: 'center' },
         ),
         ...(photoPresentation
-          ? [col([el.image(photoPresentation, `L’équipe de ${f.nomCommercial} au travail`)], 6)]
+          ? [
+              col(
+                [
+                  el.image(
+                    photoPresentation,
+                    alt(photoPresentation, `L’équipe de ${f.nomCommercial} au travail`),
+                  ),
+                ],
+                6,
+              ),
+            ]
           : []),
       ],
       48,
@@ -361,16 +388,19 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     ],
     'clair',
   );
-  const realisations = f.photos.length
+  // Sans photo de chantier : trois dessins, publiés avec la mention « Photo d'illustration »
+  // (choix du propriétaire du 17/11/2026), jamais présentés comme des chantiers de l'artisan.
+  const images = f.photos.length ? f.photos.slice(0, 6) : ill.galerie;
+  const realisations = images.length
     ? [
         section(
           'Réalisations',
           [
             ligne([col([el.titre('Nos réalisations')], 12)], 0),
             ligne(
-              f.photos
-                .slice(0, 6)
-                .map((p, i) => col([el.image(p, `Réalisation ${i + 1} de ${f.nomCommercial}`)], 4)),
+              images.map((p, i) =>
+                col([el.image(p, alt(p, `Réalisation ${i + 1} de ${f.nomCommercial}`))], 4),
+              ),
               20,
             ),
           ],
@@ -397,7 +427,7 @@ export function siteParDefaut(f: FicheSite, palette: Theme['palette']): SiteInit
     '',
     v3(72, 56, 44),
   );
-  appel.p.fondImage = (f.photos[1] ?? f.photos[0] ?? '') as typeof appel.p.fondImage;
+  appel.p.fondImage = (f.photos[1] ?? f.photos[0] ?? ill.bandeau) as typeof appel.p.fondImage;
   const contact = () =>
     section(
       'Contact et devis',

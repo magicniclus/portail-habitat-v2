@@ -1,4 +1,5 @@
 import {
+  estIllustration,
   idYoutube,
   LIBELLES_ELEMENT,
   resoudreCouleur,
@@ -160,7 +161,10 @@ function rendreBrut(e: Element, ctx: ContexteRendu, fonce: boolean): string {
       const img = url
         ? `<img src="${esc(url)}" alt="${esc(e.p.legende)}" loading="lazy" decoding="async">`
         : `<span class="vide" role="img" aria-label="${esc(e.p.legende)}"></span>`;
-      return `<figure${id} class="${base} image" style="${esc(style)}">${balise(e.p.action, ctx, 'img', img)}</figure>`;
+      // Dessin d'exemple : toujours signalé comme tel (jamais présenté comme un chantier).
+      const mention =
+        url && estIllustration(e.p.src) ? '<span class="ill">Photo d’illustration</span>' : '';
+      return `<figure${id} class="${base} image" style="${esc(style)}">${balise(e.p.action, ctx, 'img', img)}${mention}</figure>`;
     }
     case 'liste':
       return `<ul${id} class="${base} liste ${COTE[e.p.align]}" style="${esc(`${mb}${couleur(e.p.couleur)}`)}">${e.p.items.map((x) => `<li><span class="puce" aria-hidden="true">${esc(e.p.icone)}</span><span>${esc(x)}</span></li>`).join('')}</ul>`;

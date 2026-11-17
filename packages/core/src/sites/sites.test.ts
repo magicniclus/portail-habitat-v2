@@ -98,11 +98,25 @@ describe('site de départ depuis la fiche (sans IA)', () => {
     expect(textesACompleter(complet.pages)).toEqual([]);
   });
 
-  it('rien d’inventé : sans photos, pas de bloc réalisations ni d’image vide', () => {
+  it('sans photos : dessins du métier (bandeau assombri, présentation, réalisations), aucune note inventée', () => {
     const vide = siteParDefaut({ ...fiche, nbAvis: 0, noteMoyenne: 0, photos: [] }, PALETTE);
     const accueil = vide.pages.accueil!;
-    expect(accueil.sections.map((x) => x.p.nom)).not.toContain('Réalisations');
-    expect(JSON.stringify(accueil)).not.toContain('"type":"image"');
+    const zone = (nom: string) => accueil.sections.find((x) => x.p.nom === nom)!;
+    expect(zone('Bandeau').p).toMatchObject({
+      fond: 'sombre',
+      fondType: 'image',
+      fondImage: expect.stringMatching(/^ill:/),
+      voile: 'sombre',
+    });
+    const images = (nom: string) =>
+      zone(nom).rows.flatMap((r) => r.cols.flatMap((c) => c.els.filter((e) => e.type === 'image')));
+    expect(images('Réalisations')).toHaveLength(3);
+    for (const e of [...images('Réalisations'), ...images('Présentation')])
+      expect(e.p).toMatchObject({
+        src: expect.stringMatching(/^ill:/),
+        legende: expect.stringMatching(/^Illustration : /),
+      });
+    expect(JSON.stringify(accueil)).not.toContain('"src":""');
     expect(JSON.stringify(accueil)).not.toContain('/5 ·');
   });
 });
