@@ -11,7 +11,7 @@ import { BandeauMetier } from '@/features/pro/BandeauMetier';
 import { chantiersParMetier, groupesMetiers } from '@/features/pro/metiers';
 import { enTetePro, piedPro } from '@/features/pro/navigation';
 import { AccrochePro, PhotoHeroPro } from '@/features/pro/HeroPro';
-import { VSL_CHANTIERS } from '@/features/landings/videosOutils';
+import { VSL_CHANTIERS_COMPLET } from '@/features/landings/videosOutils';
 import { VslPro } from '@/features/pro/VslPro';
 import { ApplicationPro } from '@/features/pro/SectionApplication';
 import { conteneurPro, EspaceArtisan, FaqPro } from '@/features/pro/Sections';
@@ -73,7 +73,7 @@ export default async function AcquisitionArtisans() {
           {preuves ? (
             <VslPro
               className="min-[900px]:col-start-1 min-[900px]:row-start-2"
-              video={VSL_CHANTIERS}
+              video={VSL_CHANTIERS_COMPLET}
             />
           ) : (
             <PhotoHeroPro className="min-[900px]:col-start-1 min-[900px]:row-start-2" />

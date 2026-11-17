@@ -27,7 +27,11 @@ export const VSL_CHANTIERS_COMPLET: VideoVsl = {
   vertical: true,
 };
 
-/** Le même film avec ses versions courtes au choix sous le lecteur (page /pro). */
+/**
+ * Le même film avec ses versions courtes au choix sous le lecteur. Retiré de /pro le 17/11/2026
+ * (demande du propriétaire : version complète seule partout).
+ * @public Gardé en réserve avec ses fichiers 1 min et 30 s.
+ */
 export const VSL_CHANTIERS: VideoVsl = {
   ...VSL_CHANTIERS_COMPLET,
   versions: [
