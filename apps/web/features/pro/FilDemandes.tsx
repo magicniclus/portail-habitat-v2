@@ -96,50 +96,76 @@ export function FilDemandes() {
         'grid w-full items-center gap-x-[clamp(32px,5vw,88px)] gap-y-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
       )}
     >
-      <div className="grid content-center justify-items-start gap-3 md:gap-5 [@media(max-height:800px)]:md:gap-3">
-        <p className="m-0 text-[13px] font-bold tracking-[0.08em] text-accent-700 uppercase max-md:hidden [@media(max-height:800px)]:hidden">
-          Votre téléphone, une fois inscrit
-        </p>
-        <h2 className="m-0 text-[clamp(26px,min(3.4vw,5.6vh),44px)] leading-[1.08] tracking-[-0.02em]">
-          Les demandes arrivent. Vous choisissez.
-        </h2>
-        <p className="m-0 flex items-center gap-3" aria-live="polite">
-          <b className="text-[clamp(34px,min(4.6vw,7vh),60px)] leading-none text-accent-700 tabular-nums">
-            {n}
-          </b>
-          <span className="text-[14px] leading-tight font-semibold text-neutre-800 md:text-[15px]">
-            demande{n > 1 ? 's' : ''} gratuite{n > 1 ? 's' : ''}
-            <br />
-            reçue{n > 1 ? 's' : ''} cette semaine
-          </span>
-        </p>
-        <ul className="m-0 grid list-none gap-2.5 p-0 max-md:hidden">
-          {POINTS.map(({ icone: Icone, titre, texte }) => (
-            <li
-              key={titre}
-              className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-3 rounded-[14px] border border-trait bg-blanc/80 px-3.5 py-2.5 shadow-sm [@media(max-height:800px)]:py-1.5"
-            >
-              <span className="flex size-10 items-center justify-center rounded-[10px] bg-accent-100 text-accent-700">
-                <Icone size={22} weight="bold" aria-hidden="true" />
-              </span>
-              <span className="grid text-[14.5px] leading-snug">
-                <b>{titre}</b>
-                <span className="text-neutre-800 [@media(max-height:800px)]:hidden">{texte}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-        {/* Message final : se déplie à la fin (aucun blanc réservé avant). */}
-        <div
-          className={cn(
-            'grid transition-[grid-template-rows,opacity] duration-500 max-md:hidden',
-            final ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
-          )}
-        >
-          <p className="m-0 min-h-0 max-w-[44ch] overflow-hidden rounded-[14px] border-l-4 border-accent bg-accent-100 px-4 py-3 text-[15px] leading-[22px] [@media(max-height:800px)]:py-2 [@media(max-height:800px)]:text-[14px] [@media(max-height:800px)]:leading-5 font-semibold text-accent-800">
-            Sans fiche sur Portail Travaux, ces clients appellent un autre artisan. L’inscription
-            est gratuite : ce serait dommage de les laisser passer.
+      <div className="grid content-center justify-items-start gap-4 md:gap-6 [@media(max-height:800px)]:md:gap-4">
+        <div className="grid gap-2">
+          <p className="m-0 text-[13px] font-bold tracking-[0.08em] text-accent-700 uppercase max-md:hidden [@media(max-height:800px)]:hidden">
+            Votre téléphone, une fois inscrit
           </p>
+          <h2 className="m-0 text-[clamp(26px,min(3.4vw,5.6vh),44px)] leading-[1.08] tracking-[-0.02em]">
+            Les demandes arrivent. Vous choisissez.
+          </h2>
+        </div>
+        {/* Compteur du mois : jauge sur les 10 demandes gratuites, points clés, message final. */}
+        <div className="w-full max-w-[480px] overflow-hidden rounded-[22px] bg-blanc shadow-[0_18px_40px_-18px_rgb(0_0_0/0.25)] ring-1 ring-trait">
+          <div className="grid gap-3 px-5 pt-5 pb-4 md:px-6" aria-live="polite">
+            <div className="flex items-end justify-between gap-3">
+              <p className="m-0 flex items-baseline gap-1.5">
+                <b className="text-[clamp(40px,min(4.6vw,7vh),60px)] leading-none text-accent-700 tabular-nums">
+                  {n}
+                </b>
+                <span className="text-lg font-bold text-neutre-700">/ 10</span>
+              </p>
+              <span className="rounded-pill bg-succes/10 px-3 py-1 text-[13px] font-bold text-succes">
+                Gratuites
+              </span>
+            </div>
+            <p className="m-0 text-[15px] font-semibold text-neutre-800">
+              demande{n > 1 ? 's' : ''} reçue{n > 1 ? 's' : ''} ce mois-ci, sans rien payer
+            </p>
+            <div className="grid grid-cols-10 gap-1" aria-hidden="true">
+              {Array.from({ length: 10 }, (_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    'h-2 rounded-pill transition-colors duration-500',
+                    i < n ? 'bg-accent' : 'bg-neutre-200',
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+          <ul className="m-0 grid list-none border-t border-trait p-0 max-md:hidden">
+            {POINTS.map(({ icone: Icone, titre, texte }) => (
+              <li
+                key={titre}
+                className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3 border-b border-trait px-5 py-3 last:border-b-0 md:px-6 [@media(max-height:800px)]:py-2"
+              >
+                <span className="flex size-9 items-center justify-center rounded-full bg-accent-100 text-accent-700">
+                  <Icone size={19} weight="bold" aria-hidden="true" />
+                </span>
+                <span className="grid text-[14.5px] leading-snug">
+                  <b>{titre}</b>
+                  <span className="text-[13.5px] text-neutre-700 [@media(max-height:800px)]:hidden">
+                    {texte}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          {/* Fin du défilement : le message se déplie en bas de la carte (aucun blanc réservé). */}
+          <div
+            className={cn(
+              'grid transition-[grid-template-rows] duration-500 max-md:hidden',
+              final ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+            )}
+          >
+            <p className="m-0 min-h-0 overflow-hidden bg-accent-700 text-[14.5px] leading-[21px] font-semibold text-blanc">
+              <span className="block px-5 py-3.5 md:px-6">
+                Sans fiche sur Portail Travaux, ces clients appellent un autre artisan. Ce serait
+                dommage de les laisser passer.
+              </span>
+            </p>
+          </div>
         </div>
         <span className="flex flex-wrap items-center gap-x-4 gap-y-2 max-md:hidden">
           <a href="#inscription" className={bouton({ className: 'min-h-12' })}>
