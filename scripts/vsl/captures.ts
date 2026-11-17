@@ -366,6 +366,66 @@ const SCENES: Record<string, Scene> = {
       console.log(await p.coupez());
     },
   },
+
+  // Film « devis et factures ». D1 — Le devis est validé : la page du devis, le PDF, l'envoi.
+  'd-valider': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/devis?onglet=modeles');
+      await page.getByRole('link', { name: 'Utiliser ce modèle' }).first().click();
+      await page.waitForURL(/devis\/nouveau/);
+      await page.waitForLoadState('load');
+      await masquer(page);
+      await page.getByLabel('Nom du client').fill('Claire Martin');
+      await page.getByLabel('Email du client').fill('claire@exemple.fr');
+      await page.getByLabel('Adresse du client').fill('3 rue des Lilas, 33700 Mérignac');
+      await page.waitForTimeout(900);
+      const valider = page.getByRole('button', { name: 'Valider', exact: true });
+      await valider.scrollIntoViewIfNeeded();
+      await p.action('d-valider');
+      await p.attendre(500);
+      await p.cliquer(valider, 900);
+      await page.waitForURL(/\/pro\/devis\/[^/?]+$/, { timeout: 20_000 });
+      await page.waitForLoadState('load');
+      await masquer(page);
+      await p.attendre(900);
+      await p.survoler(
+        page
+          .getByRole('link', { name: /Télécharger le PDF/ })
+          .or(page.getByRole('button', { name: /Télécharger le PDF/ }))
+          .first(),
+        900,
+      );
+      await p.attendre(900);
+      await p.survoler(page.getByRole('button', { name: 'Envoyer au client' }), 900);
+      await p.attendre(1100);
+      await p.photo('d-valider');
+      console.log(await p.coupez());
+    },
+  },
+  // D2 — Le client a accepté : le devis devient une facture en un clic.
+  'd-facture': {
+    pro: true,
+    jouer: async (p, page) => {
+      await ouvrir(page, '/pro/devis');
+      await page.getByRole('row').nth(1).locator('a').first().click();
+      await page.waitForURL(/\/pro\/devis\/[^/?]+$/);
+      await page.waitForLoadState('load');
+      await masquer(page);
+      await page.waitForTimeout(900);
+      await p.action('d-facture');
+      await p.attendre(400);
+      await p.cliquer(page.getByRole('button', { name: 'Le client a accepté' }), 900);
+      await p.attendre(1300);
+      await p.photo('d-facture-accepte');
+      await p.cliquer(page.getByRole('button', { name: 'Transformer en facture' }), 900);
+      await p.attendre(2200);
+      await masquer(page);
+      await p.attendre(900);
+      await p.photo('d-facture');
+      console.log(await p.coupez());
+    },
+  },
 };
 
 async function main() {

@@ -43,6 +43,14 @@ export const VSL_SITE: VideoVsl = {
   vertical: true,
 };
 
+/** Film de vente de la landing devis et factures (film « devis ») : 16:9 et 9:16. */
+export const VSL_DEVIS: VideoVsl = {
+  base: '/landing/videos/vsl/devis',
+  duree: 100,
+  accroche: 'Vos devis et factures, gratuits',
+  vertical: true,
+};
+
 export const cheminVideoOutil = (id: string) => `/landing/videos/outils/${id}`;
 
 /**
