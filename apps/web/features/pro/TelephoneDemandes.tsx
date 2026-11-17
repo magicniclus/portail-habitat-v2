@@ -36,7 +36,7 @@ export function TelephoneDemandes({
         'relative mx-auto aspect-[9/19]',
         empile
           ? 'w-[min(310px,86vw)]'
-          : 'h-[min(620px,calc(100svh-215px))] md:h-[min(640px,calc(100svh-120px))]',
+          : 'h-[min(600px,calc(100svh-150px))] md:h-[min(620px,calc(100svh-140px))]',
       )}
     >
       {/* Boutons latéraux. */}
