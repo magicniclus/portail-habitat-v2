@@ -25,6 +25,17 @@ export type Outil =
 type GenreSelection = 'mur' | 'piece' | 'ouverture' | 'escalier' | 'objet' | 'zone';
 type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
+export type Vue = 'plan' | '3d' | 'visite' | 'photo';
+
+interface ReglagesRendu {
+  /** Heure du soleil (6 à 20). */
+  heure: number;
+  /** Murs avant abaissés selon l'angle de vue. */
+  poupee: boolean;
+  /** Seulement le niveau courant (sinon la maison jusqu'à ce niveau). */
+  niveauSeul: boolean;
+}
+
 export type Menu = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu' | 'aide';
 
 export interface EtatEditeur {
@@ -48,6 +59,8 @@ export interface EtatEditeur {
   /** Incrémenté pour demander au plan de s'ajuster à l'écran (à l'ouverture, bouton). */
   ajustement: number;
   aimant: boolean;
+  vue: Vue;
+  rendu: ReglagesRendu;
   /** Guides du placement automatique pendant un glisser. */
   guides: Guide[];
   calques: { cotes: boolean; surfaces: boolean };
@@ -113,6 +126,8 @@ export type Action =
   | { type: 'zoom'; zoom: number }
   | { type: 'ajuster' }
   | { type: 'aimant' }
+  | { type: 'vue'; vue: Vue }
+  | { type: 'rendu'; reglages: Partial<ReglagesRendu> }
   | { type: 'calque'; cle: keyof EtatEditeur['calques'] }
   /** Ouvre un menu, ou le replie s'il est déjà ouvert ; `null` replie. */
   | { type: 'menu'; menu: Menu | null; basculer?: boolean }
@@ -145,6 +160,8 @@ export function etatInitial(scene: Scene): EtatEditeur {
     zoom: ZOOM_DEFAUT,
     ajustement: 1,
     aimant: true,
+    vue: 'plan',
+    rendu: { heure: 15, poupee: true, niveauSeul: false },
     guides: [],
     calques: { cotes: true, surfaces: true },
     menu: 'structure',

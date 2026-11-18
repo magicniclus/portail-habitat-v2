@@ -77,6 +77,10 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...e, zoom: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(a.zoom))) };
     case 'aimant':
       return { ...e, aimant: !e.aimant };
+    case 'vue':
+      return { ...e, vue: a.vue, trace: null, outil: 'selection' };
+    case 'rendu':
+      return { ...e, rendu: { ...e.rendu, ...a.reglages } };
     case 'calque':
       return { ...e, calques: { ...e.calques, [a.cle]: !e.calques[a.cle] } };
     case 'menu': {

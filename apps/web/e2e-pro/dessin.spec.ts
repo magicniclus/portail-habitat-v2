@@ -263,4 +263,51 @@ test.describe('Plans (espace pro)', () => {
       page.getByTestId('plan-2d').getByRole('button', { name: 'Zone décorative' }),
     ).toBeVisible();
   });
+
+  test('voir le plan en 3D : murs, meubles, soleil, maison de poupée, retour au plan', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    // Un lit pour avoir un meuble en 3D.
+    await menu('Équiper');
+    await page
+      .getByRole('button', { name: /^Chambre\b/ })
+      .first()
+      .click();
+    await page.getByRole('button', { name: /^Lit 160 × 200/ }).click();
+    const svg = plan.locator('svg');
+    const boite = (await svg.boundingBox())!;
+    await page.mouse.click(boite.x + boite.width / 2, boite.y + boite.height / 2);
+    await expect(plan.getByRole('button', { name: 'Lit 160 × 200' })).toBeVisible();
+
+    // DES-33 : vue 3D depuis le menu Rendu (aussi sur téléphone), chargée à la demande.
+    await menu('Rendu');
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    const vue = page.getByTestId('vue-3d');
+    await expect(vue.locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await expect(plan).toHaveCount(0);
+    await page.waitForTimeout(1500);
+    // Sur téléphone, le menu s'est replié pour montrer la 3D : on le rouvre.
+    await menu('Rendu');
+    await page.getByLabel(/^Soleil/).fill('9');
+    await expect(page.getByText('Soleil · 9 h')).toBeVisible();
+    await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
+    await page.getByRole('button', { name: 'Plan 2D' }).click();
+    await expect(page.getByTestId('plan-2d')).toBeVisible();
+  });
 });

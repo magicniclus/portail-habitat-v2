@@ -61,6 +61,22 @@ describe('placement automatique (DES-22)', () => {
     expect(loin.objets[1]!.position).toEqual({ x: 5000 + TABLE + 400, y: 4050 });
   });
 
+  it('voisin à gauche ; meuble trop de biais près d’un mur : laissé tel quel', () => {
+    const t = poser(poser(n, 'table-6', 5000, 4000), 'table-6', 5000 - TABLE - 80, 4000);
+    const [t1, t2] = t.objets as [Objet, Objet];
+    expect(Math.max(...xs(t2))).toBe(Math.min(...xs(t1)));
+    const table = t1;
+    const biais: Objet = { ...table, position: { x: 5000, y: 900 }, rotation: 300 };
+    expect(placerIdealement(biais, n).objet.rotation).toBe(300);
+    // Pose sans aimant : au point cliqué, même près d'un mur.
+    const libre = ok(
+      poserObjet(n, { catalogueId: 'buffet', position: { x: 3000, y: 700 } }, ctx, {
+        aimant: false,
+      }),
+    ).objets[0]!;
+    expect(libre.position).toEqual({ x: 3000, y: 700 });
+  });
+
   it('sans aimant : posé exactement où on le lâche', () => {
     const m = poser(n, 'buffet', 3000, 700);
     const id = m.objets[0]!.id;
@@ -81,6 +97,9 @@ describe('rotation libre sur 3 axes', () => {
     expect(
       ok(orienterObjet({ ...m, objets: [o] }, id, { x: 0, y: 0 })).objets[0]!.inclinaison,
     ).toBeUndefined();
+    // Un seul axe donné : les autres sont gardés.
+    const garde = ok(orienterObjet({ ...m, objets: [o] }, id, { y: 900 })).objets[0]!;
+    expect(garde).toMatchObject({ rotation: 3450, inclinaison: { x: 100, y: 900 } });
     expect(orienterObjet(m, 'obj_x', { rotation: 0 })).toMatchObject({ code: 'INTROUVABLE' });
   });
 });

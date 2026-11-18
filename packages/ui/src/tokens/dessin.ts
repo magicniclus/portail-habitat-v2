@@ -219,3 +219,22 @@ export const COULEURS_OBJETS: readonly TeinteDessin[] = [
   { id: 'terracotta', libelle: 'Terracotta', couleur: '#c8775a' },
   { id: 'anthracite', libelle: 'Anthracite', couleur: '#3e4247' },
 ];
+
+/** Rendu 3D (lot 15g) : teintes des volumes de meubles, murs, terrain, ciel et lumières. */
+export const COULEURS_3D = {
+  principal: '#e8e2d8',
+  clair: '#fbfaf7',
+  sombre: '#4a4f55',
+  verre: '#bcd3dc',
+  metal: '#a8adb2',
+  textile: '#b9b1a4',
+  mur: '#f4f1ec',
+  tranche: '#d9d4cc',
+  sol: '#ece8e1',
+  terrain: '#dfe6d6',
+  ciel: '#eef2f5',
+  soleil: '#fff4e0',
+  selection: '#e05a10',
+  /** Teinte neutre d'un matériau texturé (la texture porte la couleur). */
+  blanc: '#ffffff',
+} as const;

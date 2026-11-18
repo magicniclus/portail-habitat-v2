@@ -21,3 +21,6 @@ export * from './ouvertures';
 export * from './pieces';
 export * from './revetements';
 export * from './validations';
+export * from './volumes';
+export * from './formes3d';
+export * from './soleil';

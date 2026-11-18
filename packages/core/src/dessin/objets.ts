@@ -1,10 +1,5 @@
 import { echec, succes, type Resultat } from '../resultat';
-import {
-  objet as schemaObjet,
-  type Niveau,
-  type Objet,
-  type Point,
-} from '../schemas/dessinScene';
+import { objet as schemaObjet, type Niveau, type Objet, type Point } from '../schemas/dessinScene';
 import { objetDuCatalogue, plagesDe } from './catalogue';
 import { contourObjet } from './emprise';
 import type { Contexte } from './commandes';

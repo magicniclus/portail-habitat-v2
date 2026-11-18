@@ -52,8 +52,8 @@ function faces(n: Niveau): Face[] {
   return n.murs
     .filter((m) => m.type !== 'separation' && m.type !== 'poutre')
     .flatMap((m) => {
+      // Longueur non nulle : garantie par le schéma du mur.
       const longueur = longueurMur(m);
-      if (longueur === 0) return [];
       const u = { x: (m.b.x - m.a.x) / longueur, y: (m.b.y - m.a.y) / longueur };
       return [1, -1].map((s) => {
         const normale = { x: -u.y * s, y: u.x * s };

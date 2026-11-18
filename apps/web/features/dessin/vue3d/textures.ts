@@ -1,0 +1,87 @@
+'use client';
+
+import type { Revetement } from '@ph/core/dessin';
+import { COULEURS_3D, MATERIAUX_DESSIN } from '@ph/ui/tokens';
+import { CanvasTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three';
+
+/**
+ * Matériaux 3D des revêtements (DES-26 en 3D) : couleur du matériau, et pour les carrelages et
+ * parquets une texture dessinée à l'échelle réelle (un motif = un carreau ou deux rangs de lames,
+ * répété au mètre près). Les UV des géométries sont en mètres.
+ */
+const CARREAUX = new Set(['carrelage', 'faience', 'pierre', 'dalle', 'parement']);
+const LAMES = new Set(['parquet', 'stratifie', 'vinyle', 'bois', 'composite', 'bardage']);
+
+const materiau = (r: Revetement) => MATERIAUX_DESSIN.find((m) => m.id === r.materiauId);
+const couleurRevetement = (r: Revetement, defaut: string = COULEURS_3D.mur) =>
+  r.famille === 'aucun' ? defaut : (r.couleur ?? materiau(r)?.couleur ?? defaut);
+
+const cache = new Map<string, MeshStandardMaterial>();
+
+function texture(r: Revetement, couleur: string): CanvasTexture | null {
+  const lames = LAMES.has(r.famille);
+  if (!lames && !CARREAUX.has(r.famille)) return null;
+  const f = r.format ?? materiau(r)?.format ?? (lames ? { l: 1200, p: 180 } : { l: 600, p: 600 });
+  const decale = (r.pose ?? (lames ? 'decalee' : 'droite')) !== 'droite';
+  const joint = r.joint?.couleur ?? materiau(r)?.joint ?? COULEURS_3D.tranche;
+  const canvas = document.createElement('canvas');
+  // 256 px pour la largeur d'un élément : net sans peser lourd.
+  const rangs = decale ? 2 : 1;
+  const h = Math.min(512, Math.max(16, Math.round((256 * f.p) / f.l)));
+  canvas.width = 256;
+  canvas.height = h * rangs;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.fillStyle = couleur;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = joint;
+  ctx.lineWidth = Math.max(2, ((r.joint?.largeur ?? 3) / f.l) * canvas.width);
+  for (let i = 0; i < rangs; i++) {
+    ctx.strokeRect(i % 2 ? -canvas.width / 2 : 0, i * h, canvas.width, h);
+    if (i % 2) ctx.strokeRect(canvas.width / 2, i * h, canvas.width, h);
+  }
+  const t = new CanvasTexture(canvas);
+  t.wrapS = RepeatWrapping;
+  t.wrapT = RepeatWrapping;
+  t.colorSpace = SRGBColorSpace;
+  t.repeat.set(1000 / f.l, 1000 / (f.p * rangs));
+  if (
+    r.pose === 'diagonale' ||
+    r.pose === 'chevron' ||
+    r.pose === 'point_de_hongrie' ||
+    r.pose === 'baton_rompu'
+  )
+    t.rotation = Math.PI / 4;
+  return t;
+}
+
+/** Matériau partagé pour un revêtement (mis en cache : mêmes revêtements → même matériau). */
+export function materiauRevetement(r: Revetement, defaut?: string): MeshStandardMaterial {
+  const couleur = couleurRevetement(r, defaut);
+  const cle = JSON.stringify([r.famille, couleur, r.format, r.pose, r.joint, r.materiauId]);
+  let m = cache.get(cle);
+  if (!m) {
+    const map = texture(r, couleur);
+    m = new MeshStandardMaterial({
+      color: map ? COULEURS_3D.blanc : couleur,
+      map,
+      roughness: r.famille === 'peinture' ? 0.95 : 0.75,
+    });
+    cache.set(cle, m);
+  }
+  return m;
+}
+
+export function materiauUni(couleur: string, options: { transparent?: boolean } = {}) {
+  const cle = `uni-${couleur}-${options.transparent ? 't' : ''}`;
+  let m = cache.get(cle);
+  if (!m) {
+    m = new MeshStandardMaterial({
+      color: couleur,
+      roughness: 0.8,
+      ...(options.transparent ? { transparent: true, opacity: 0.45 } : {}),
+    });
+    cache.set(cle, m);
+  }
+  return m;
+}

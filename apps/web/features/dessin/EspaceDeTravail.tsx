@@ -3,6 +3,7 @@
 import type { Scene } from '@ph/core/dessin';
 import { Banner, Button } from '@ph/ui';
 import type { Route } from 'next';
+import dynamic from 'next/dynamic';
 import { useEffect, useReducer } from 'react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
@@ -12,8 +13,19 @@ import { etatInitial, reduire, sceneDe } from './etat';
 import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
 import { Plan2D } from './Plan2D';
+
+/** three.js n'est chargé qu'au passage en 3D (DESSIN.md §5 bis, budget EXPLOITATION §1). */
+const Vue3D = dynamic(() => import('./vue3d/Vue3D'), {
+  ssr: false,
+  loading: () => (
+    <p role="status" className="grid h-full place-items-center text-sm text-neutre-800">
+      Préparation de la 3D…
+    </p>
+  ),
+});
 import { RailMenus, RailOutils } from './Rails';
 import { useFond } from './useFond';
+import { usePanneauxTelephone } from './usePanneauxTelephone';
 import { useSauvegarde } from './useSauvegarde';
 
 /** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
@@ -72,25 +84,7 @@ export function EspaceDeTravail(p: {
     document.addEventListener('keydown', ecouter);
     return () => document.removeEventListener('keydown', ecouter);
   }, []);
-  // Sur téléphone, les panneaux passent par-dessus le plan : on démarre replié.
-  useEffect(() => {
-    if (!telephone) return;
-    dispatch({ type: 'menu', menu: null });
-    dispatch({ type: 'proprietes', ouvert: false });
-  }, [telephone]);
-
-  // Téléphone : choisir un outil à placer replie le menu pour libérer le plan.
-  useEffect(() => {
-    if (telephone && etat.outil !== 'selection') dispatch({ type: 'menu', menu: null });
-  }, [telephone, etat.outil]);
-  // Téléphone : un seul panneau à la fois, le dernier ouvert l'emporte.
-  useEffect(() => {
-    if (telephone && etat.menu) dispatch({ type: 'proprietes', ouvert: false });
-  }, [telephone, etat.menu]);
-  useEffect(() => {
-    if (telephone && etat.proprietes) dispatch({ type: 'menu', menu: null });
-  }, [telephone, etat.proprietes]);
-  // Les panneaux changent la place du plan : on le recadre.
+  usePanneauxTelephone(telephone, etat, dispatch);
   useEffect(() => {
     dispatch({ type: 'ajuster' });
   }, [etat.menu, etat.proprietes]);
@@ -131,7 +125,11 @@ export function EspaceDeTravail(p: {
           </Panneau>
         ) : null}
         <main className="relative min-w-0 flex-1">
-          <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
+          {etat.vue === 'plan' ? (
+            <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
+          ) : (
+            <Vue3D etat={etat} dispatch={dispatch} />
+          )}
           <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
             {s.etat === 'conflit' ? (
               <Banner tone="danger" titre="Ce plan a été modifié ailleurs">
