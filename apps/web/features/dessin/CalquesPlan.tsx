@@ -12,6 +12,7 @@ import {
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { remplissage } from './Motifs';
 import { activer, points } from './svg';
 
 interface Props {
@@ -34,7 +35,7 @@ export function PiecesSvg({ niveau, etat, dispatch }: Props) {
         aria-label={`Pièce ${p.nom}`}
         aria-pressed={choisie}
         points={points(p.contour)}
-        fill={p.sol.couleur ?? COULEURS_PLAN.pieceVide}
+        fill={remplissage(p.sol)}
         className={choisie ? 'stroke-accent' : 'stroke-transparent'}
         strokeWidth={3}
         strokeDasharray="8 6"

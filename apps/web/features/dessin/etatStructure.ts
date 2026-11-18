@@ -15,12 +15,15 @@ import {
   supprimerEscalier,
   supprimerMur,
   supprimerNiveau,
+  supprimerObjet,
   supprimerOuverture,
+  supprimerZone,
   toleranceEnMm,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
+import { poserAmenagement } from './etatAmenagement';
 import {
   contexteNavigateur as ctx,
   sceneDe,
@@ -33,6 +36,8 @@ import {
 /** Clic sur le plan selon l'outil : mur, pièce, porte ou fenêtre, escalier, mesure d'échelle. */
 function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
   if (e.outil === 'selection') return e;
+  const amenagement = poserAmenagement(e, point);
+  if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
     if (!cible) return { ...e, erreur: 'Cliquez sur un mur pour y poser la porte ou la fenêtre.' };
@@ -98,12 +103,14 @@ const niveauCourant = (e: EtatEditeur) =>
 function supprimerSelection(e: EtatEditeur): EtatEditeur {
   const s = e.selection;
   if (!s || s.genre === 'piece') return e;
-  const commande =
-    s.genre === 'mur'
-      ? (n: Niveau) => supprimerMur(n, s.id, ctx)
-      : s.genre === 'ouverture'
-        ? (n: Niveau) => supprimerOuverture(n, s.id)
-        : (n: Niveau) => supprimerEscalier(n, s.id);
+  const commandes: Record<Exclude<typeof s.genre, 'piece'>, (n: Niveau) => Resultat<Niveau>> = {
+    mur: (n) => supprimerMur(n, s.id, ctx),
+    ouverture: (n) => supprimerOuverture(n, s.id),
+    escalier: (n) => supprimerEscalier(n, s.id),
+    objet: (n) => supprimerObjet(n, s.id),
+    zone: (n) => supprimerZone(n, s.id),
+  };
+  const commande = commandes[s.genre];
   return { ...surNiveau(e, commande), selection: null };
 }
 

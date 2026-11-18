@@ -16,6 +16,7 @@ import {
   type Action,
   type EtatEditeur,
 } from './etatBase';
+import { reduireAmenagement } from './etatAmenagement';
 import { reduireStructure } from './etatStructure';
 
 export * from './etatBase';
@@ -30,6 +31,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
         typeMur: a.typeMur ?? e.typeMur,
         typeOuverture: a.typeOuverture ?? e.typeOuverture,
         typeEscalier: a.typeEscalier ?? e.typeEscalier,
+        catalogueId: a.catalogueId ?? e.catalogueId,
         trace: null,
         echelle: null,
         erreur: null,
@@ -48,6 +50,15 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'deplacerMur':
       return surNiveau(e, (n) => deplacerMur(n, a.murId, a.delta, ctx), a.geste ?? null);
     case 'deplacerClavier':
+      if (e.selection?.genre === 'objet')
+        return (
+          reduireAmenagement(e, {
+            type: 'deplacerObjetDe',
+            id: e.selection.id,
+            delta: a.delta,
+            geste: 'clavier',
+          }) ?? e
+        );
       if (e.selection?.genre !== 'mur') return e;
       return surNiveau(e, (n) => deplacerMur(n, e.selection!.id, a.delta, ctx));
     case 'finGeste':
@@ -89,6 +100,6 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'effacerErreur':
       return { ...e, erreur: null };
     default:
-      return reduireStructure(e, a) ?? e;
+      return reduireStructure(e, a) ?? reduireAmenagement(e, a) ?? e;
   }
 }

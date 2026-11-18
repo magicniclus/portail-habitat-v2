@@ -3,6 +3,7 @@
 import {
   formatLongueur,
   formatSurface,
+  LIBELLES_EQUIPEMENT,
   LIBELLES_POSTE,
   metreNiveau,
   type LigneMetre,
@@ -34,9 +35,14 @@ export function Chiffrage({ etat }: { etat: EtatEditeur }) {
           </caption>
           <tbody>
             {lignes.map((l) => (
-              <tr key={`${l.poste}-${l.famille ?? ''}`} className="border-t border-trait">
+              <tr
+                key={`${l.poste}-${l.famille ?? ''}-${l.prestationId ?? ''}`}
+                className="border-t border-trait"
+              >
                 <th scope="row" className="py-2 text-left font-normal text-neutre-800">
-                  {LIBELLES_POSTE[l.poste]}
+                  {l.poste === 'equipements' && l.prestationId
+                    ? (LIBELLES_EQUIPEMENT[l.prestationId] ?? LIBELLES_POSTE[l.poste])
+                    : LIBELLES_POSTE[l.poste]}
                 </th>
                 <td className="py-2 text-right font-bold whitespace-nowrap">{quantite(l)}</td>
               </tr>

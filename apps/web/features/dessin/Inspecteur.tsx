@@ -13,6 +13,7 @@ import { Button, Field, Input } from '@ph/ui';
 import { PEINTURES_DESSIN, SOLS_DESSIN, type TeinteDessin } from '@ph/ui/tokens';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { inspecteurAmenagement } from './InspecteurAmenagement';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { Nuancier } from './Nuancier';
 
@@ -184,11 +185,13 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
         dispatch={dispatch}
       />
     );
+  const amenagement = inspecteurAmenagement(etat, dispatch);
+  if (amenagement) return amenagement;
   return (
     <div className="grid gap-2 px-2 py-6 text-center text-neutre-800">
       <p className="m-0 font-bold text-texte">Rien de sélectionné</p>
       <p className="m-0 text-sm leading-5">
-        Cliquez sur une pièce, un mur, une porte ou un escalier du plan pour modifier ses
+        Cliquez sur une pièce, un mur, une porte, un meuble ou une zone du plan pour modifier ses
         propriétés.
       </p>
     </div>

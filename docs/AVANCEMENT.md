@@ -856,7 +856,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15c Données : Firestore, règles et tests, serveur, purge, RGPD (18/11/2026, voir « Lot 15c fait » ci-dessous)
 - [x] 15d Coque de l'éditeur et 2D (18/11/2026, voir « Lot 15d fait » ci-dessous)
 - [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
-- [ ] 15f Aménager et décorer (catalogue, cuisine, salle de bain, revêtements, zones décoratives)
+- [x] 15f Aménager et décorer (18/11/2026, voir « Lot 15f fait » ci-dessous)
 - [ ] 15g 3D, visite, photo
 - [ ] 15h Toiture, extérieur, piscine, implantation, façades et coupes
 - [ ] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel), « Créer un devis depuis ce plan »
@@ -904,7 +904,31 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - **Éditeur** : menu Structure avec sous-menus (Murs & cloisons, Portes & fenêtres, Escaliers, Pièce rectangulaire, Niveaux, Importer un plan) ; symboles normalisés sur le plan (vantail et arc ouverts côté pièce, double trait des fenêtres, coulissants) ; escaliers avec marches ; niveau du dessous en transparence et trémies en pointillés ; sélecteur de niveau dans la barre ; inspecteur des ouvertures (largeur, hauteur, allège, position, sens, côté) et des escaliers (type, largeur, hauteur, marches, giron, alertes, pivoter) ; sur téléphone, choisir un outil à placer replie le menu. État de l'éditeur découpé (`etatBase`, `etatStructure`, `etat`), 6 tests de plus.
 - **Playwright** : nouveau parcours (porte d'entrée, escalier droit de 15 marches, étage avec ses murs, plan importé affiché, rechargement) vert sur iPhone 13 et ordinateur, avec le parcours du 15d.
 - **Import de PDF** (accord du propriétaire) : dépendance `pdfjs-dist` 6.4.299 ajoutée à `apps/web`, chargée seulement au choix d'un PDF ; la première page est rendue en JPEG dans le navigateur puis suit le même circuit que les images (vérification serveur). Testé de bout en bout avec un vrai PDF. Le fichier de verrouillage ne change que pour cet ajout (une montée de version indirecte a été annulée).
-- **Reste** : déplacer et faire pivoter l'image importée (lot 15f).
+- **Reste** : déplacer et faire pivoter l'image importée (reporté au lot 15g).
+
+### Lot 15f fait (18/11/2026)
+- **Cœur** (`packages/core/src/dessin/`, nouveaux fichiers) :
+  - `catalogue` : environ 60 éléments en 11 univers (cuisine, salle de bain, chambre, dressing, enfant, bureau, séjour, luminaires et déco, électricité, plomberie et chauffage, extérieur), avec dimensions, plages autorisées, symbole 2D et prestation du catalogue (`prestationId` existant). Recherche sans accents.
+  - `objets` : pose (collée dos au mur à moins de 70 cm), déplacement, rotation, dimensions dans les plages, duplication, suppression, collisions (SAT).
+  - `cuisine` : plan de travail continu au-dessus des meubles bas (débord de 3 cm), triangle d'activité (3,60 à 7,90 m).
+  - `revetements` : familles par support, libellés, poses, murs d'une pièce en un clic, zones décoratives au sol.
+  - Schéma : `format` et `pose` facultatifs sur un revêtement (rétrocompatible, aucune migration).
+  - Métré : postes « plan de travail » et « équipements » (une ligne par prestation).
+  - 8 tests.
+- **Tokens** (`@ph/ui/tokens`) : `MATERIAUX_DESSIN` (environ 28 matériaux avec couleur, joint et format), `COULEURS_OBJETS`.
+- **Éditeur** :
+  - Menu **Équiper** : recherche, univers, clic sur un élément puis sur le plan ; conseil du triangle d'activité en cuisine.
+  - Menu **Finitions** : surface visée (sol, murs de la pièce, plafond ; un côté ou les deux d'un mur ; zone), famille, pose, joint, matériaux, copier/coller le style, tracer une zone au sol.
+  - Motifs SVG de carrelage et de parquet (droite, décalée, diagonale…), symboles 2D des meubles, plan de travail.
+  - Inspecteur d'objet : dimensions, rotation ±15°/±90°, couleur, dupliquer, supprimer, alerte de chevauchement. Inspecteur de zone.
+  - Glisser les objets à la souris ; flèches pour les déplacer ; touche R pour un quart de tour.
+  - Sur téléphone, un seul panneau ouvert à la fois (le dernier ouvert l'emporte).
+  - 4 tests d'état de plus.
+- **Playwright** : nouveau parcours (lit posé puis tourné, parquet sur la pièce, zone au sol, rechargement) **vert sur iPhone 13 et ordinateur** avec les 3 parcours précédents.
+- **Aucune dépendance ajoutée, aucune règle de sécurité modifiée.**
+- **Reste** :
+  - modèles 3D des objets (lot 15g, catalogue CC0 puis maison, D88) ;
+  - déplacer ou faire pivoter l'image importée (15g).
 
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
@@ -965,3 +989,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 18/11/2026 — Lot 15d fait (écrans Mes plans / Dessin, éditeur 2D, sauvegarde automatique et hors ligne, mobile), e2e vert iPhone et ordinateur : §31.
 - 18/11/2026 — Retours du propriétaire sur le 15d : outil renommé « Plans », éditeur plein écran, rails verticaux et panneaux repliables : §31.
 - 18/11/2026 — Lot 15e fait (portes et fenêtres, escaliers, niveaux et trémies, plan importé en calque), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Lot 15f fait (équiper, finitions, motifs, zones au sol, métré des équipements), e2e vert iPhone et ordinateur : §31.

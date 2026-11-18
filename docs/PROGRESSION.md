@@ -38,6 +38,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 18/11/2026 — Lot 15f fait : meubles et équipements, revêtements et motifs, zones au sol (AVANCEMENT §31).
 - 18/11/2026 — Lot 15e fait : portes, fenêtres, escaliers, niveaux, plan importé (AVANCEMENT §31).
 - 18/11/2026 — Lot 15d fait : éditeur 2D Dessin derrière le flag `dessin` (AVANCEMENT §31).
 - 18/11/2026 — Lots 15b et 15c faits (cœur, données, règles, serveur de Dessin) — AVANCEMENT §31, DATABASE §8 quater.

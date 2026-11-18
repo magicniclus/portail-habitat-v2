@@ -35,6 +35,7 @@ function raccourci(
   if (mod && k === 'z') dispatch({ type: ev.shiftKey ? 'retablir' : 'annuler' });
   else if (mod && k === 'y') dispatch({ type: 'retablir' });
   else if (k === 'escape') dispatch({ type: 'terminerTrace' });
+  else if (k === 'r' && !mod) dispatch({ type: 'tournerSelection' });
   else if (k === 'delete' || k === 'backspace') dispatch({ type: 'supprimerSelection' });
   else if (fleches[k]) {
     dispatch({ type: 'deplacerClavier', delta: fleches[k] });
@@ -82,6 +83,13 @@ export function EspaceDeTravail(p: {
   useEffect(() => {
     if (telephone && etat.outil !== 'selection') dispatch({ type: 'menu', menu: null });
   }, [telephone, etat.outil]);
+  // Téléphone : un seul panneau à la fois, le dernier ouvert l'emporte.
+  useEffect(() => {
+    if (telephone && etat.menu) dispatch({ type: 'proprietes', ouvert: false });
+  }, [telephone, etat.menu]);
+  useEffect(() => {
+    if (telephone && etat.proprietes) dispatch({ type: 'menu', menu: null });
+  }, [telephone, etat.proprietes]);
   // Les panneaux changent la place du plan : on le recadre.
   useEffect(() => {
     dispatch({ type: 'ajuster' });

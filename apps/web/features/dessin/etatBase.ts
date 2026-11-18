@@ -5,6 +5,7 @@ import {
   type Contexte,
   type HistoriqueDessin,
   type ModificationEscalier,
+  type ModificationObjet,
   type ModificationOuverture,
   type Niveau,
   type Point,
@@ -18,8 +19,9 @@ import {
 import type { Resultat } from '@ph/core/resultat';
 
 /** État de l'éditeur Dessin (DESSIN.md §7) : scène + historique, outil, sélection, affichage. */
-export type Outil = 'selection' | 'mur' | 'piece' | 'ouverture' | 'escalier' | 'echelle';
-type GenreSelection = 'mur' | 'piece' | 'ouverture' | 'escalier';
+export type Outil =
+  'selection' | 'mur' | 'piece' | 'ouverture' | 'escalier' | 'echelle' | 'objet' | 'zone';
+type GenreSelection = 'mur' | 'piece' | 'ouverture' | 'escalier' | 'objet' | 'zone';
 type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
 export type Menu = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu' | 'aide';
@@ -31,6 +33,10 @@ export interface EtatEditeur {
   typeMur: TypeMur;
   typeOuverture: TypeOuverture;
   typeEscalier: TypeEscalier;
+  /** Objet du catalogue à poser avec l'outil « objet ». */
+  catalogueId: string;
+  /** Style copié (DES-28), collé sur une autre pièce, un mur ou une zone. */
+  pressePapier: Revetement | null;
   /** Premier point du segment, de la pièce ou de la mesure d'échelle en cours. */
   trace: Point | null;
   /** Deux points de la mise à l'échelle, en attente de la distance réelle. */
@@ -58,6 +64,7 @@ export type Action =
       typeMur?: TypeMur;
       typeOuverture?: TypeOuverture;
       typeEscalier?: TypeEscalier;
+      catalogueId?: string;
     }
   | { type: 'poserPoint'; point: Point }
   | { type: 'terminerTrace' }
@@ -72,6 +79,16 @@ export type Action =
   | { type: 'revetement'; cible: CibleRevetement; revetement: Revetement }
   | { type: 'modifierOuverture'; id: string; modif: ModificationOuverture }
   | { type: 'modifierEscalier'; id: string; modif: ModificationEscalier }
+  | { type: 'deplacerObjetDe'; id: string; delta: Point; geste?: string }
+  | { type: 'tournerObjet'; id: string; angle: number }
+  /** Touche R : quart de tour de l'objet choisi. */
+  | { type: 'tournerSelection' }
+  | { type: 'modifierObjet'; id: string; modif: ModificationObjet }
+  | { type: 'dupliquerObjet'; id: string }
+  | { type: 'revetirMurs'; pieceId: string; revetement: Revetement }
+  | { type: 'revetirZone'; id: string; revetement: Revetement }
+  | { type: 'copierStyle'; revetement: Revetement }
+  | { type: 'collerStyle' }
   | { type: 'changerNiveau'; niveauId: string }
   | { type: 'ajouterNiveau'; niveau: TypeNiveau; copierMurs: boolean }
   | { type: 'renommerNiveau'; niveauId: string; nom: string }
@@ -109,6 +126,8 @@ export function etatInitial(scene: Scene): EtatEditeur {
     typeMur: 'mur',
     typeOuverture: 'porte',
     typeEscalier: 'droit',
+    catalogueId: 'canape-3',
+    pressePapier: null,
     trace: null,
     echelle: null,
     selection: null,

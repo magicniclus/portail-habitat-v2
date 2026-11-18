@@ -192,4 +192,71 @@ test.describe('Plans (espace pro)', () => {
       page.getByTestId('plan-2d').getByRole('button', { name: 'Porte d’entrée de 90 cm' }),
     ).toBeVisible();
   });
+  test('meubler une chambre, poser du parquet, tracer une zone, retrouver le tout', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const svg = plan.locator('svg');
+    const cliquer = async (xMm: number, yMm: number) => {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      await page.mouse.click(boite.x + (xMm - vx!) * k, boite.y + (yMm - vy!) * k);
+    };
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+
+    // Équiper (DES-21, DES-22) : un lit posé d'un clic, tourné avec la touche R.
+    await menu('Équiper');
+    await page
+      .getByRole('button', { name: /^Chambre\b/ })
+      .first()
+      .click();
+    await page.getByRole('button', { name: /^Lit 160 × 200/ }).click();
+    await cliquer(5000, 4000);
+    const lit = plan.getByRole('button', { name: 'Lit 160 × 200' });
+    await expect(lit).toBeVisible();
+    await expect(page.getByText('Rotation · 0°')).toBeVisible();
+    await page.keyboard.press('r');
+    await expect(page.getByText('Rotation · 90°')).toBeVisible();
+
+    // Finitions (DES-26) : parquet chêne clair sur le sol de la pièce. Sur téléphone, le
+    // panneau des propriétés recouvre le plan : on le replie avant de cliquer.
+    if (page.viewportSize()!.width < 900)
+      await page.getByRole('button', { name: 'Replier propriétés' }).click();
+    await cliquer(9000, 1500);
+    await menu('Finitions');
+    await page.getByRole('button', { name: 'Chêne clair', exact: true }).click();
+    await expect(svg.locator('pattern')).not.toHaveCount(0);
+
+    // Zone au sol (DES-27) : deux coins dans la pièce, carrelage par défaut.
+    await page.getByRole('button', { name: 'Tracer une zone au sol' }).click();
+    await cliquer(1000, 1000);
+    await cliquer(3000, 2500);
+    await expect(plan.getByRole('button', { name: 'Zone décorative' })).toBeVisible();
+
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page.reload();
+    await expect(
+      page.getByTestId('plan-2d').getByRole('button', { name: 'Lit 160 × 200' }),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId('plan-2d').getByRole('button', { name: 'Zone décorative' }),
+    ).toBeVisible();
+  });
 });
