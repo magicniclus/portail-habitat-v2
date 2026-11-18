@@ -103,3 +103,15 @@ export const entreeFondPlan = z.object({
     .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Image illisible'),
 });
 export const entreeLireFond = z.object({ planId: idPlan, storagePath: z.string().min(1).max(300) });
+/** Photo HD de la galerie (DES-37), en JPEG. */
+export const entreePhotoPlan = z.object({
+  planId: idPlan,
+  base64: z
+    .string()
+    .max(4 * 1024 * 1024)
+    .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Image illisible'),
+});
+export const entreeSupprimerPhoto = z.object({
+  planId: idPlan,
+  storagePath: z.string().min(1).max(300),
+});

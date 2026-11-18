@@ -235,6 +235,10 @@ export const COULEURS_3D = {
   ciel: '#eef2f5',
   soleil: '#fff4e0',
   selection: '#e05a10',
+  /** Ambiance « soirée » de la vue photo : ciel, soleil couchant, lampes. */
+  soiree: '#3b4357',
+  couchant: '#ffb36b',
+  lampe: '#ffd9a0',
   /** Teinte neutre d'un matériau texturé (la texture porte la couleur). */
   blanc: '#ffffff',
 } as const;

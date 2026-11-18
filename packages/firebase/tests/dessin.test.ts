@@ -22,6 +22,9 @@ import {
   revoquerPartage,
   supprimerTousLesPlans,
   enregistrerFond,
+  enregistrerPhoto,
+  listerPhotos,
+  supprimerPhoto,
   lireFond,
 } from '../src/serveur/dessin';
 
@@ -319,5 +322,48 @@ describe('plan importé (D91)', () => {
     await expect(
       enregistrerFond(s(), ctxPart, { planId, type: 'image/webp', base64: webp }),
     ).resolves.toMatchObject({ storagePath: expect.stringMatching(/\.webp$/) });
+  });
+});
+
+describe('galerie « Mes photos » (DES-37)', () => {
+  const JPEG = Buffer.from('ffd8ffe000104a464946', 'hex').toString('base64');
+
+  it('ajoute une photo vérifiée, la liste (récente d’abord), la relit et la supprime', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const a = await enregistrerPhoto(s(), ctxPart, { planId, base64: JPEG });
+    maintenant += 1_000;
+    const b = await enregistrerPhoto(s(), ctxPart, { planId, base64: JPEG });
+    expect(a.storagePath).toMatch(
+      new RegExp(`^${fichiers.dossierPlan(PART, planId)}photos/photo-\\d+-[0-9a-f]{12}\\.jpg$`),
+    );
+    const { photos } = await listerPhotos(s(), ctxPart, { planId });
+    expect(photos.map((p) => p.storagePath)).toEqual([b.storagePath, a.storagePath]);
+    expect(photos[0]!.creeLe).toBe(maintenant);
+    const { url } = await lireFond(s(), ctxPart, { planId, storagePath: a.storagePath });
+    expect(url).toBe(`data:image/jpeg;base64,${JPEG}`);
+    await supprimerPhoto(s(), ctxPart, { planId, storagePath: a.storagePath });
+    expect((await listerPhotos(s(), ctxPart, { planId })).photos).toHaveLength(1);
+    // Seulement une photo de CE plan.
+    await expect(
+      supprimerPhoto(s(), ctxPart, {
+        planId,
+        storagePath: `${fichiers.dossierPlan(PART, planId)}r1.json.gz`,
+      }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    await expect(
+      listerPhotos(s(), { proprietaire: PART, uid: 'autre' }, { planId }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+  });
+
+  it('refuse ce qui n’est pas un JPEG, et au-delà de 30 photos', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const png = Buffer.from('89504e470d0a1a0a', 'hex').toString('base64');
+    await expect(enregistrerPhoto(s(), ctxPart, { planId, base64: png })).rejects.toMatchObject({
+      code: 'ENTREE_INVALIDE',
+    });
+    for (let i = 0; i < 30; i++) await enregistrerPhoto(s(), ctxPart, { planId, base64: JPEG });
+    await expect(enregistrerPhoto(s(), ctxPart, { planId, base64: JPEG })).rejects.toMatchObject({
+      code: 'PRECONDITION',
+    });
   });
 });

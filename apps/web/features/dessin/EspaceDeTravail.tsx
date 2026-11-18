@@ -22,6 +22,7 @@ const chargement3D = () => (
 );
 const Vue3D = dynamic(() => import('./vue3d/Vue3D'), { ssr: false, loading: chargement3D });
 const Visite = dynamic(() => import('./vue3d/Visite'), { ssr: false, loading: chargement3D });
+const Photo = dynamic(() => import('./vue3d/Photo'), { ssr: false, loading: chargement3D });
 import { RailMenus, RailOutils } from './Rails';
 import { useFond } from './useFond';
 import { usePanneauxTelephone } from './usePanneauxTelephone';
@@ -128,6 +129,8 @@ export function EspaceDeTravail(p: {
             <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
           ) : etat.vue === 'visite' ? (
             <Visite etat={etat} />
+          ) : etat.vue === 'photo' ? (
+            <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
           ) : (
             <Vue3D etat={etat} dispatch={dispatch} />
           )}

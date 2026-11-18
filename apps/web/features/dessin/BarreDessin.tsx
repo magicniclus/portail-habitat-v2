@@ -4,6 +4,7 @@ import {
   ArrowClockwiseIcon,
   ArrowCounterClockwiseIcon,
   ArrowLeftIcon,
+  CameraIcon,
   CubeIcon,
   EyeIcon,
   FloppyDiskIcon,
@@ -35,10 +36,11 @@ const PASTILLE: Record<EtatSauvegarde, string> = {
   erreur: 'bg-danger',
 };
 
-const VUES: { vue: Vue; libelle: string; Icone: Icon; prete: boolean }[] = [
-  { vue: 'plan', libelle: 'Plan', Icone: SquareIcon, prete: true },
-  { vue: '3d', libelle: '3D', Icone: CubeIcon, prete: true },
-  { vue: 'visite', libelle: 'Visite', Icone: EyeIcon, prete: true },
+const VUES: { vue: Vue; libelle: string; Icone: Icon }[] = [
+  { vue: 'plan', libelle: 'Plan', Icone: SquareIcon },
+  { vue: '3d', libelle: '3D', Icone: CubeIcon },
+  { vue: 'visite', libelle: 'Visite', Icone: EyeIcon },
+  { vue: 'photo', libelle: 'Photo', Icone: CameraIcon },
 ];
 
 /** Barre de l'éditeur plein écran : retour, projet, enregistrement, annuler, vues. Une ligne. */
@@ -127,16 +129,14 @@ export function BarreDessin({
         aria-label="Vue"
         className="flex flex-none rounded-[10px] bg-neutre-100 p-1 max-[899px]:hidden"
       >
-        {VUES.map(({ vue, libelle, Icone, prete }) => (
+        {VUES.map(({ vue, libelle, Icone }) => (
           <button
             key={libelle}
             type="button"
             role="radio"
             aria-checked={etat.vue === vue}
-            disabled={!prete}
-            title={prete ? undefined : 'Disponible prochainement'}
             onClick={() => dispatch({ type: 'vue', vue })}
-            className={`flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 px-3 text-sm font-bold ${etat.vue === vue ? 'bg-blanc text-texte shadow-sm' : prete ? 'bg-transparent text-neutre-800' : 'cursor-not-allowed bg-transparent text-neutre-500'}`}
+            className={`flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border-0 px-3 text-sm font-bold ${etat.vue === vue ? 'bg-blanc text-texte shadow-sm' : 'bg-transparent text-neutre-800'}`}
           >
             <Icone aria-hidden="true" /> {libelle}
           </button>

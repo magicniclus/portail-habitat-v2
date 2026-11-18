@@ -87,6 +87,8 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       };
     case 'rendu':
       return { ...e, rendu: { ...e.rendu, ...a.reglages } };
+    case 'photoAjoutee':
+      return { ...e, revisionPhotos: e.revisionPhotos + 1 };
     case 'calque':
       return { ...e, calques: { ...e.calques, [a.cle]: !e.calques[a.cle] } };
     case 'menu': {

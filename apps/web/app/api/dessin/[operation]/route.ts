@@ -4,9 +4,11 @@ import {
   entreeFondPlan,
   entreeLireFond,
   entreePartagerPlan,
+  entreePhotoPlan,
   entreePlan,
   entreeRenommerPlan,
   entreeRestaurerVersion,
+  entreeSupprimerPhoto,
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 import { z } from '@ph/core/zod';
@@ -14,9 +16,11 @@ import {
   creerPlan,
   dupliquerPlan,
   enregistrerFond,
+  enregistrerPhoto,
   enregistrerPlan,
   lireFond,
   lirePlan,
+  listerPhotos,
   listerPlans,
   listerVersions,
   mettreALaCorbeille,
@@ -24,6 +28,7 @@ import {
   renommerPlan,
   restaurerDeLaCorbeille,
   restaurerVersion,
+  supprimerPhoto,
 } from '@ph/firebase/dessin';
 import { action } from '@/server/action';
 import { contexteDessin, servicesDessin } from '@/server/dessin';
@@ -116,6 +121,24 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     },
     async (e, ctx) => lireFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
+  photo: action(
+    { schema: entreePhotoPlan.extend(espace), nom: 'dessin.photo', rateLimit: debit },
+    async (e, ctx) =>
+      enregistrerPhoto(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
+  photos: action(
+    {
+      schema: entreePlan.extend(espace),
+      nom: 'dessin.photos',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e, ctx) => listerPhotos(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
+  'supprimer-photo': action(
+    { schema: entreeSupprimerPhoto.extend(espace), nom: 'dessin.supprimerPhoto', rateLimit: debit },
+    async (e, ctx) => supprimerPhoto(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
   partager: action(
     { schema: entreePartagerPlan.extend(espace), nom: 'dessin.partager', rateLimit: debit },
     async (e, ctx) =>
@@ -134,6 +157,6 @@ export async function POST(
   const { operation } = await params;
   const executer = Object.hasOwn(OPERATIONS, operation) ? OPERATIONS[operation] : undefined;
   if (!executer) return new Response(null, { status: 404 });
-  const avecScene = operation === 'enregistrer' || operation === 'creer' || operation === 'fond';
+  const avecScene = ['enregistrer', 'creer', 'fond', 'photo'].includes(operation);
   return routeJson(requete, executer, avecScene ? TAILLE_SCENE : undefined);
 }

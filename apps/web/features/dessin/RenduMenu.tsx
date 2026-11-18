@@ -2,23 +2,36 @@
 
 import { Button } from '@ph/ui';
 import type { Dispatch } from 'react';
+import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur, Vue } from './etat';
+import { GaleriePhotos } from './GaleriePhotos';
 
 const VUES: { vue: Vue; libelle: string }[] = [
   { vue: 'plan', libelle: 'Plan 2D' },
   { vue: '3d', libelle: 'Vue 3D' },
   { vue: 'visite', libelle: 'Visite' },
+  { vue: 'photo', libelle: 'Photo' },
 ];
 
 const interrupteur = 'flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm';
 
 /** Menu Rendu (DES-33) : vue, heure du soleil, maison de poupée, niveau isolé. */
-export function RenduMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
+export function RenduMenu({
+  etat,
+  dispatch,
+  espace,
+  planId,
+}: {
+  etat: EtatEditeur;
+  dispatch: Dispatch<Action>;
+  espace: EspaceDessin;
+  planId: string;
+}) {
   const r = etat.rendu;
   const regler = (reglages: Partial<EtatEditeur['rendu']>) => dispatch({ type: 'rendu', reglages });
   return (
     <div className="grid gap-4">
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {VUES.map((v) => (
           <Button
             key={v.vue}
@@ -65,9 +78,7 @@ export function RenduMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
         sur un meuble pour le déplacer ou le faire pivoter avec ses anneaux (Maj : sans crans). En
         visite : ZQSD ou flèches pour marcher, glisser pour regarder, joystick sur mobile.
       </p>
-      <p className="m-0 px-1 text-xs font-bold tracking-wide text-neutre-700 uppercase">
-        Bientôt : photo HD
-      </p>
+      <GaleriePhotos espace={espace} planId={planId} revision={etat.revisionPhotos} />
     </div>
   );
 }

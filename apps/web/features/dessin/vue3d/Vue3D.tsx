@@ -5,10 +5,9 @@ import { COULEURS_3D } from '@ph/ui/tokens';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas, type ThreeEvent } from '@react-three/fiber';
 import { useMemo, useRef, useState, type Dispatch } from 'react';
-import { Vector3 } from 'three';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
-import { Cadrage } from './Cadrage';
+import { Cadrage, useCadreMaison } from './Cadrage';
 import { Objets3D } from './Objets3D';
 
 /**
@@ -30,18 +29,7 @@ export default function Vue3D({
     return etat.rendu.niveauSeul ? [courant] : tries.filter((n) => n.altitude <= courant.altitude);
   }, [scene, courant, etat.rendu.niveauSeul]);
 
-  // Boîte englobante du niveau courant : centre de la maison et cadrage de la caméra.
-  const { centre, rayon } = useMemo(() => {
-    const pts = courant.murs.flatMap((m) => [m.a, m.b]);
-    if (!pts.length) return { centre: new Vector3(0, 0, 0), rayon: 8 };
-    const xs = pts.map((p) => p.x);
-    const ys = pts.map((p) => p.y);
-    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-    return {
-      centre: new Vector3(M((x0 + x1) / 2), M(courant.altitude), M((y0 + y1) / 2)),
-      rayon: Math.max(4, M(Math.hypot(x1 - x0, y1 - y0)) / 2),
-    };
-  }, [courant]);
+  const { centre, rayon } = useCadreMaison(courant);
   const soleil = directionSoleil(etat.rendu.heure, scene.orientationNord);
   const posSoleil: [number, number, number] = [
     centre.x + soleil.x * rayon * 3,

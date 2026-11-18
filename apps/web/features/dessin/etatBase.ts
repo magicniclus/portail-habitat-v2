@@ -27,13 +27,17 @@ type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
 export type Vue = 'plan' | '3d' | 'visite' | 'photo';
 
-interface ReglagesRendu {
+export interface ReglagesRendu {
   /** Heure du soleil (6 à 20). */
   heure: number;
   /** Murs avant abaissés selon l'angle de vue. */
   poupee: boolean;
   /** Seulement le niveau courant (sinon la maison jusqu'à ce niveau). */
   niveauSeul: boolean;
+  /** Vue photo (DES-37). */
+  cadrage: 'paysage' | 'carre' | 'portrait';
+  ambiance: 'jour' | 'soiree';
+  format: 'image/jpeg' | 'image/png';
 }
 
 export type Menu = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu' | 'aide';
@@ -61,6 +65,8 @@ export interface EtatEditeur {
   aimant: boolean;
   vue: Vue;
   rendu: ReglagesRendu;
+  /** Incrémenté à chaque photo ajoutée : la galerie se recharge. */
+  revisionPhotos: number;
   /** Guides du placement automatique pendant un glisser. */
   guides: Guide[];
   calques: { cotes: boolean; surfaces: boolean };
@@ -128,6 +134,7 @@ export type Action =
   | { type: 'aimant' }
   | { type: 'vue'; vue: Vue }
   | { type: 'rendu'; reglages: Partial<ReglagesRendu> }
+  | { type: 'photoAjoutee' }
   | { type: 'calque'; cle: keyof EtatEditeur['calques'] }
   /** Ouvre un menu, ou le replie s'il est déjà ouvert ; `null` replie. */
   | { type: 'menu'; menu: Menu | null; basculer?: boolean }
@@ -161,7 +168,15 @@ export function etatInitial(scene: Scene): EtatEditeur {
     ajustement: 1,
     aimant: true,
     vue: 'plan',
-    rendu: { heure: 15, poupee: true, niveauSeul: false },
+    rendu: {
+      heure: 15,
+      poupee: true,
+      niveauSeul: false,
+      cadrage: 'paysage',
+      ambiance: 'jour',
+      format: 'image/jpeg',
+    },
+    revisionPhotos: 0,
     guides: [],
     calques: { cotes: true, surfaces: true },
     menu: 'structure',

@@ -322,7 +322,22 @@ test.describe('Plans (espace pro)', () => {
     await page.keyboard.up('z');
     await expect(repere).not.toHaveAttribute('points', avant!);
 
+    // DES-37 : vue photo, ambiance soirée, photo HD téléchargée et ajoutée à la galerie.
     await menu('Rendu');
+    await page.getByRole('button', { name: 'Photo', exact: true }).click();
+    await expect(page.getByTestId('photo').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await page.getByLabel('Ambiance').selectOption('soiree');
+    await page.waitForTimeout(1000);
+    const telechargement = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Prendre la photo' }).click();
+    expect((await telechargement).suggestedFilename()).toMatch(/^plan-photo-\d{12}\.jpg$/);
+    await expect(page.getByText('Photo prête')).toBeVisible({ timeout: 20_000 });
+    await menu('Rendu');
+    await expect(page.getByRole('heading', { name: 'Mes photos (1)' })).toBeVisible();
+    await expect(page.getByRole('img', { name: /^Photo du / })).toBeVisible();
+    await page.getByRole('button', { name: /^Supprimer la photo/ }).click();
+    await expect(page.getByRole('heading', { name: 'Mes photos (0)' })).toBeVisible();
+
     await page.getByRole('button', { name: 'Plan 2D' }).click();
     await expect(page.getByTestId('plan-2d')).toBeVisible();
   });

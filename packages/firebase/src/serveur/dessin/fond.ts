@@ -32,7 +32,10 @@ export async function enregistrerFond(
   return { storagePath };
 }
 
-/** Image du plan, renvoyée en data URL : seulement un fichier du dossier de CE plan. */
+/**
+ * Image du plan (calque importé ou photo de la galerie), renvoyée en data URL : seulement
+ * un de ces fichiers, dans le dossier de CE plan.
+ */
 export async function lireFond(
   s: ServicesDessin,
   ctx: ContexteDessin,
@@ -40,8 +43,8 @@ export async function lireFond(
 ): Promise<{ url: string }> {
   await lirePlan(s, ctx, e.planId);
   const dossier = fichiers.dossierPlan(ctx.proprietaire, e.planId);
-  if (!e.storagePath.startsWith(`${dossier}fond-`) || e.storagePath.includes('..'))
-    throw new ErreurMetier('INTROUVABLE');
+  const autorise = ['fond-', 'photos/photo-'].some((p) => e.storagePath.startsWith(dossier + p));
+  if (!autorise || e.storagePath.includes('..')) throw new ErreurMetier('INTROUVABLE');
   const fichier = s.bucket.file(e.storagePath);
   const [existe] = await fichier.exists();
   if (!existe) throw new ErreurMetier('INTROUVABLE');

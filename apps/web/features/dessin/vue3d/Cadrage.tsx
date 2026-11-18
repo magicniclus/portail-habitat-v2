@@ -1,7 +1,8 @@
 'use client';
 
+import type { Niveau } from '@ph/core/dessin';
 import { useThree } from '@react-three/fiber';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MathUtils, Vector3, type PerspectiveCamera } from 'three';
 
 /** Direction de la caméra à l'ouverture : de trois quarts, au-dessus de la maison. */
@@ -34,4 +35,19 @@ export function Cadrage({ centre, rayon, cle }: { centre: Vector3; rayon: number
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cle, controlesPrets, aspect]);
   return null;
+}
+
+/** Centre (mètres) et rayon de la maison au niveau courant : cadrage et ombres. */
+export function useCadreMaison(courant: Niveau) {
+  return useMemo(() => {
+    const pts = courant.murs.flatMap((m) => [m.a, m.b]);
+    if (!pts.length) return { centre: new Vector3(0, 0, 0), rayon: 8 };
+    const xs = pts.map((p) => p.x);
+    const ys = pts.map((p) => p.y);
+    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+    return {
+      centre: new Vector3((x0 + x1) / 2000, courant.altitude / 1000, (y0 + y1) / 2000),
+      rayon: Math.max(4, Math.hypot(x1 - x0, y1 - y0) / 2000),
+    };
+  }, [courant]);
 }

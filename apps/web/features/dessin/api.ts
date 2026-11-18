@@ -46,3 +46,13 @@ export const enregistrerFond = (
 
 export const lireFond = (espace: EspaceDessin, planId: string, storagePath: string) =>
   appel<{ url: string }>('lire-fond', espace, { planId, storagePath });
+
+/** Galerie « Mes photos » du plan (DES-37). */
+export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
+  appel<{ storagePath: string }>('photo', espace, { planId, base64 });
+
+export const listerPhotos = (espace: EspaceDessin, planId: string) =>
+  appel<{ photos: { storagePath: string; creeLe: number }[] }>('photos', espace, { planId });
+
+export const supprimerPhoto = (espace: EspaceDessin, planId: string, storagePath: string) =>
+  appel<{ ok: true }>('supprimer-photo', espace, { planId, storagePath });
