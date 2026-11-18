@@ -37,7 +37,7 @@ export function ChoixImage({
   const supprimer = async (cle: string) => {
     setSuppression(cle);
     setErreurSuppression(null);
-    const r = await posterJson<null>('/api/pro/site/medias', { cle }, 'DELETE');
+    const r = await posterJson<null>('/api/pro/site/medias/supprimer', { cle });
     setSuppression(null);
     if (!r.ok) return setErreurSuppression(r.message);
     onRetirerMedia(cle);

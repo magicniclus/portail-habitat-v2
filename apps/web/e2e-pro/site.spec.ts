@@ -613,6 +613,15 @@ test.describe('Site internet artisan', () => {
       .dispatchEvent('drop', { dataTransfer: transfert });
     await expect(importee).toHaveCount(2);
     await expect(importee.nth(1)).toHaveAttribute('aria-checked', 'true');
+
+    // Poubelle au survol : seulement sur l'image importée inutilisée ; elle disparaît.
+    const poubelles = page.getByRole('button', { name: /^Supprimer : Image importée/ });
+    await expect(poubelles).toHaveCount(1);
+    await importee.first().hover();
+    await poubelles.first().click();
+    await expect(importee).toHaveCount(1);
+    await expect(importee.first()).toHaveAttribute('aria-checked', 'true');
+    await expect(page.getByText(/indisponible/)).toHaveCount(0);
   });
 
   test('modèles de site : appliquer « Dépannage 24/7 » à tout le site, puis revenir', async ({
