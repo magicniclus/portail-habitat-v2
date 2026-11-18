@@ -885,7 +885,7 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - `packages/core/src/schemas/dessinScene.ts` (scène complète : murs, ouvertures, pièces, objets, escaliers, cotes, textes, zones décoratives, toiture, terrasses, piscines, clôtures, végétation, terrain ; mm et dixièmes de degré entiers ; identifiants uniques, ouvertures rattachées à un mur existant) et `schemas/dessinPlan.ts` (plan, version, partage).
 - `packages/core/src/dessin/` : `geometrie`, `murs` (contours, jonctions L/T/X, surface nette des faces), `pieces` (détection automatique, conservation des noms, Carrez), `aimantation`, `historique` (300 étapes, un glisser = une étape), `commandes` (ajouter, déplacer une extrémité, déplacer un mur, modifier une cote, scinder, fusionner, supprimer, renommer, revêtements), `formes` (rectangle, L, U, T), `metre`, `validations` (Blondel, échappée, garde-corps), `migrations`, `format`.
 - Tests : 47 nouveaux, 4 200 au total, tous verts ; couverture de `dessin/` 99,4 % lignes ; `typecheck` et `lint` verts.
-- **`pnpm knip` échoue sur 28 exports de Dessin** : le module n'est encore importé par aucune application. Corrigé dès que l'export `@ph/core/dessin` est ajouté à `packages/core/package.json` (ligne existante, en attente de l'accord du propriétaire).
+- Export `@ph/core/dessin` ajouté à `packages/core/package.json` avec l'accord du propriétaire (seule ligne existante modifiée), point d'entrée `dessin/index.ts`. `pnpm lint`, `pnpm typecheck` (8 paquets), `pnpm knip` et les 4 200 tests du cœur sont verts.
 - Constats : le catalogue n'a pas de prestation « peinture intérieure » ni « carrelage » (`prestationId: null` dans le métré pour ces postes) ; les modèles de départ (studio, T2…) sont reportés au lot 15d, avec l'écran de création.
 
 ### Plan initial du lot 15b
@@ -930,4 +930,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
 - 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
-- 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Knip en attente de l'export `@ph/core/dessin` : §31.
+- 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Export `@ph/core/dessin` ajouté, toutes les vérifications vertes : §31.
