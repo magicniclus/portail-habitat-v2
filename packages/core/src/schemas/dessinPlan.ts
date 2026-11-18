@@ -85,8 +85,12 @@ export const entreeRestaurerVersion = z.object({
 });
 export const entreePartagerPlan = z.object({
   planId: idPlan,
-  /** Durée du lien en jours ; absent = sans expiration. */
-  joursValidite: z.number().int().min(1).max(365).optional(),
+  /** Durée du lien en jours : toujours une date de fin (1 an au plus). */
+  joursValidite: z.number().int().min(1).max(365).default(30),
+});
+/** Révocation d'un lien, désigné par l'empreinte de son jeton (jamais par le jeton). */
+export const entreeRevoquerPartage = z.object({
+  partageId: z.string().regex(/^[0-9a-f]{64}$/, 'Lien inconnu'),
 });
 export const entreeJetonPartage = z.object({
   jeton: z.string().regex(/^[A-Za-z0-9_-]{32}$/, 'Lien invalide'),

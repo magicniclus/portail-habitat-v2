@@ -4,13 +4,13 @@ import {
   entreeEnregistrerPlan,
   entreeFondPlan,
   entreeLireFond,
-  entreeJetonPartage,
   entreeParcelle,
   entreePdfPlan,
   entreePartagerPlan,
   entreePhotoPlan,
   entreePlan,
   entreeRenommerPlan,
+  entreeRevoquerPartage,
   entreeRestaurerVersion,
   entreeSupprimerPhoto,
   migrerScene,
@@ -208,9 +208,17 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     }),
   ),
   'revoquer-partage': action(
-    { schema: entreeJetonPartage.extend(espace), nom: 'dessin.revoquerPartage', rateLimit: debit },
+    {
+      schema: entreeRevoquerPartage.extend(espace),
+      nom: 'dessin.revoquerPartage',
+      rateLimit: debit,
+    },
     async (e, ctx) => {
-      await revoquerPartage(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e.jeton);
+      await revoquerPartage(
+        servicesDessin(),
+        await contexteDessin(ctx.uid!, e.espace),
+        e.partageId,
+      );
       return { ok: true };
     },
   ),
@@ -219,7 +227,7 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     async (e, ctx) =>
       partagerPlan(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), {
         planId: e.planId,
-        ...(e.joursValidite ? { joursValidite: e.joursValidite } : {}),
+        joursValidite: e.joursValidite,
       }),
   ),
 };

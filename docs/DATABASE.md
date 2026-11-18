@@ -241,7 +241,7 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 | `estimation` | `{ minCentimes, maxCentimes, coefRegion, coefAcces, aidesCentimes, postes: [{ label, min, max }], versionReferentiel }` | **figée au moment de l'envoi** |
 | `miseEnRelation` | bool | case « jusqu'à 3 artisans » |
 | `contactSouhaite` | `'telephone' \| 'ecrit_uniquement'`, facultatif | D90 : « Recevoir des devis par écrit, sans être appelé » ; le téléphone n'est jamais renvoyé aux artisans (liste des demandes, préremplissage du devis) |
-| `planJoint` | `{ planId, jeton }`, facultatif | DES-44 : plan du particulier **connecté**, joint à l'envoi ; `jeton` = lien de partage en lecture seule (`partagesPlans`, 1 an) créé dans la même transaction ; montré aux artisans après acceptation |
+| `planJoint` | `{ planId, proprietaireId }`, facultatif | DES-44 : plan du particulier **connecté** (vérifié dans la transaction de création). **Aucun jeton** : l'artisan qui a accepté la demande le lit par `/pro/demandes/{id}/plan` (accès revérifié à chaque lecture, `lirePlanJoint`) ; si le client met le plan à la corbeille ou le supprime, l'artisan ne voit plus rien (décision du 18/11/2026) |
 | `artisanCibleId` | string? | si la demande part d'une fiche |
 | `statut` | `'nouvelle' \| 'en_attribution' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
 | `nbAttributions` | number (≤ 3) | |
@@ -475,14 +475,14 @@ Métadonnées (`planDessin`, `@ph/core/dessin`) : `titre`, `versionCourante` (r�
 ### `…/plans/{planId}/historique/{numero}`
 Versions gardées (`versionPlan`) : automatique toutes les 10 minutes d'édition, manuelle nommée, restauration. Le fichier est partagé avec la scène courante quand elle est gardée (aucune copie). Au-delà de 50 versions, celles de plus de 30 jours sont supprimées. Nommée `historique` et non `versions` : le groupe de collections `versions` sert déjà aux sites.
 
-### `partagesPlans/{jeton}`
-Lien de partage en lecture seule : jeton aléatoire de 32 caractères, `proprietaire`, `planId`, `expireLe`, `revoque`. Aucune donnée personnelle. Lu et écrit par le serveur uniquement (aucune règle : refus par défaut).
+### `partagesPlans/{empreinte}`
+Lien de partage en lecture seule. Le jeton (32 caractères aléatoires, 192 bits) **n'est jamais stocké** : l'identifiant du document est son SHA-256, le lien n'est montré qu'une fois, à sa création. Champs : `proprietaire`, `planId`, `versionId`, `expireLe` (**toujours** une date de fin : 7, 30, 90 jours ou 1 an), `revoque`, `creeLe`. Aucun identifiant d'utilisateur ni donnée personnelle. Lu et écrit par le serveur uniquement (aucune règle : refus par défaut). Supprimé avec le plan (purge de la corbeille, suppression de compte). La scène servie retire Lambert-93, photo aérienne, référence cadastrale, commune et image importée ; les jetons sont retirés des URL envoyées à Sentry.
 
 ### Storage `dessin/{particulier|entreprise}/{id}/{planId}/…`
 Scènes compressées (`r{revision}-….json.gz`), plan importé (`fond-….{jpg|png|webp}`) et galerie photo (`photos/photo-{horodatage}-….jpg`, 30 au plus, JPEG vérifié, lot 15g). Tout le dossier part avec le plan (purge de la corbeille, suppression de compte). Couvert par la règle finale de `storage.rules` (refus total) : lecture et écriture par le serveur uniquement, aucune modification des règles Storage.
 
 ### Purge et RGPD
-`purgeDessinNuit` (3 h 40) supprime les plans à la corbeille depuis plus de 30 jours, versions et fichiers compris (index de groupe de collections `plans.supprimeLe`). L'export « Mes données » inclut les plans et leurs scènes ; la suppression de compte efface tous les plans personnels et leurs fichiers.
+`purgeDessinNuit` (3 h 40) supprime les plans à la corbeille depuis plus de 30 jours, versions et fichiers compris (index de groupe de collections `plans.supprimeLe`). L'export « Mes données » inclut les plans et leurs scènes ; la suppression de compte efface tous les plans personnels, leurs fichiers et leurs liens de partage. **Fermeture d'une entreprise** (décision du 18/11/2026) : ses plans passent à la corbeille et sont supprimés 30 jours plus tard par la même purge.
 
 ## 9. Référentiels et contenu
 

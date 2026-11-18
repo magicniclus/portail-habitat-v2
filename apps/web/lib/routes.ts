@@ -71,6 +71,8 @@ export const routes = {
   monEspaceCompte: r('/mon-espace/compte'),
   monEspacePlans: r('/mon-espace/plans'),
   /** Éditeur de plan plein écran du particulier. */
+  /** Plan joint par le client à une demande (DES-44), lu par l'artisan qui l'a acceptée. */
+  proPlanDemande: (demandeId: string) => r(`/pro/demandes/${encodeURIComponent(demandeId)}/plan`),
   planPartage: (jeton: string) => r(`/plan/${encodeURIComponent(jeton)}`),
   editeurPlan: (id: string) => r(`/mes-plans/${encodeURIComponent(id)}`),
   simulateur: r('/simulateur'),

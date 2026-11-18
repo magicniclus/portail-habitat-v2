@@ -834,9 +834,12 @@ test.describe('Plans (espace pro)', () => {
     await page.getByRole('button', { name: 'Créer un lien de partage' }).click();
     const lien = page.getByTestId('lien-partage');
     await expect(lien).toHaveCount(1);
-    await expect(lien).toContainText('Jusqu’au');
-    const href = (await lien.getAttribute('href'))!;
+    await expect(lien).toContainText('jusqu’au');
+    // Le lien n'est affiché qu'une fois, à sa création (seule son empreinte est gardée).
+    const adresse = await page.getByTestId('lien-nouveau').inputValue();
+    const href = new URL(adresse).pathname;
     expect(href).toMatch(/^\/plan\/[A-Za-z0-9_-]{32}$/);
+    await expect(lien).not.toContainText(href.slice(6));
 
     // DES-42 : sans compte, en lecture seule, non indexé.
     const invite = await browser.newContext();

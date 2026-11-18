@@ -69,25 +69,22 @@ export const exporterPdf = (
   },
 ) => appel<{ base64: string }>('pdf', espace, e);
 
-/** Liens de partage en lecture seule (DES-42). */
-export const partagerPlan = (espace: EspaceDessin, planId: string, joursValidite?: number) =>
-  appel<{ jeton: string }>(
-    'partager',
-    espace,
-    joursValidite ? { planId, joursValidite } : { planId },
-  );
+/** Liens de partage en lecture seule (DES-42) : le jeton n'est rendu qu'à la création. */
+export const partagerPlan = (espace: EspaceDessin, planId: string, joursValidite: number) =>
+  appel<{ jeton: string; partageId: string; expireLe: number }>('partager', espace, {
+    planId,
+    joursValidite,
+  });
 
 export const listerPartages = (espace: EspaceDessin, planId: string) =>
-  appel<{ liens: { jeton: string; creeLe: number; expireLe: number | null }[] }>(
+  appel<{ liens: { partageId: string; creeLe: number; expireLe: number | null }[] }>(
     'partages',
     espace,
-    {
-      planId,
-    },
+    { planId },
   );
 
-export const revoquerPartage = (espace: EspaceDessin, jeton: string) =>
-  appel<{ ok: true }>('revoquer-partage', espace, { jeton });
+export const revoquerPartage = (espace: EspaceDessin, partageId: string) =>
+  appel<{ ok: true }>('revoquer-partage', espace, { partageId });
 
 /** Galerie « Mes photos » du plan (DES-37). */
 export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>

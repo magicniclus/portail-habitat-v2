@@ -1,11 +1,11 @@
 import { randomBytes } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
-import { migrerScene, nouvelleScene, sceneSansLocalisation, type Scene } from '@ph/core/dessin';
+import { migrerScene, nouvelleScene, type Scene } from '@ph/core/dessin';
 import { peut, type Membre } from '@ph/core/equipe';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
 import type { bucketFichiers } from '../../admin';
-import { chemins, collections, fichiers, type ProprietairePlan } from '../../chemins';
+import { chemins, fichiers, type ProprietairePlan } from '../../chemins';
 
 /**
  * Plans Dessin (DESSIN.md §4) : métadonnées dans Firestore, scène compressée dans Storage.
@@ -44,7 +44,7 @@ export interface PlanLu {
 }
 
 /** Particulier : lui-même. Entreprise : membre actif avec `dessin.gerer`, relu en base. */
-async function exigerAcces(s: ServicesDessin, ctx: ContexteDessin, t?: Transaction) {
+export async function exigerAcces(s: ServicesDessin, ctx: ContexteDessin, t?: Transaction) {
   const p = ctx.proprietaire;
   if (p.type === 'particulier') {
     if (p.id !== ctx.uid) throw new ErreurMetier('PERMISSION_REFUSEE');
@@ -132,7 +132,12 @@ export async function creerPlan(
   return { planId: ref.id };
 }
 
-async function lireMeta(s: ServicesDessin, ctx: ContexteDessin, planId: string, t?: Transaction) {
+export async function lireMeta(
+  s: ServicesDessin,
+  ctx: ContexteDessin,
+  planId: string,
+  t?: Transaction,
+) {
   const ref = s.db.doc(chemins.plan(ctx.proprietaire, planId));
   const doc = t ? await t.get(ref) : await ref.get();
   if (!doc.exists) throw new ErreurMetier('INTROUVABLE');
@@ -154,7 +159,7 @@ export async function lirePlan(
   };
 }
 
-async function lireScene(s: ServicesDessin, chemin: string): Promise<Scene> {
+export async function lireScene(s: ServicesDessin, chemin: string): Promise<Scene> {
   const [brut] = await s.bucket.file(chemin).download();
   // Selon l'émulateur ou le SDK, le contenu peut arriver déjà décompressé.
   const texte = brut[0] === 0x1f && brut[1] === 0x8b ? gunzipSync(brut) : brut;
@@ -331,83 +336,4 @@ export async function restaurerDeLaCorbeille(
     await verifierQuota(s, ctx, t);
     t.update(doc.ref, { supprimeLe: null });
   });
-}
-
-/** Lien de partage en lecture seule (DES-42) : jeton opaque, sans donnée personnelle. */
-export async function partagerPlan(
-  s: ServicesDessin,
-  ctx: ContexteDessin,
-  e: { planId: string; joursValidite?: number },
-): Promise<{ jeton: string }> {
-  await exigerAcces(s, ctx);
-  await lireMeta(s, ctx, e.planId);
-  const jeton = randomBytes(24).toString('base64url');
-  await s.db.doc(chemins.partagePlan(jeton)).create({
-    proprietaire: ctx.proprietaire,
-    planId: e.planId,
-    versionId: 'courante',
-    expireLe: e.joursValidite ? Timestamp.fromMillis(s.horloge() + e.joursValidite * JOUR) : null,
-    revoque: false,
-    creeLe: Timestamp.fromMillis(s.horloge()),
-    creePar: ctx.uid,
-  });
-  return { jeton };
-}
-
-export async function revoquerPartage(s: ServicesDessin, ctx: ContexteDessin, jeton: string) {
-  await exigerAcces(s, ctx);
-  const ref = s.db.doc(chemins.partagePlan(jeton));
-  const doc = await ref.get();
-  const p = doc.get('proprietaire') as ProprietairePlan | undefined;
-  if (!doc.exists || p?.type !== ctx.proprietaire.type || p.id !== ctx.proprietaire.id)
-    throw new ErreurMetier('INTROUVABLE');
-  await ref.update({ revoque: true });
-}
-
-/** Liens encore valides d'un plan (DES-42), du plus récent au plus ancien. */
-export async function listerPartages(
-  s: ServicesDessin,
-  ctx: ContexteDessin,
-  planId: string,
-): Promise<{ jeton: string; creeLe: number; expireLe: number | null }[]> {
-  await exigerAcces(s, ctx);
-  await lireMeta(s, ctx, planId);
-  const q = await s.db.collection(collections.partagesPlans).where('planId', '==', planId).get();
-  const maintenant = s.horloge();
-  return q.docs
-    .filter((d) => {
-      const p = d.get('proprietaire') as ProprietairePlan;
-      const fin = (d.get('expireLe') as Timestamp | null)?.toMillis() ?? null;
-      return (
-        p.type === ctx.proprietaire.type &&
-        p.id === ctx.proprietaire.id &&
-        d.get('revoque') !== true &&
-        (fin === null || fin > maintenant)
-      );
-    })
-    .map((d) => ({
-      jeton: d.id,
-      creeLe: (d.get('creeLe') as Timestamp).toMillis(),
-      expireLe: (d.get('expireLe') as Timestamp | null)?.toMillis() ?? null,
-    }))
-    .sort((a, b) => b.creeLe - a.creeLe);
-}
-
-/** Lecture d'un plan partagé, sans compte : titre et scène seulement. */
-export async function lirePlanPartage(
-  s: ServicesDessin,
-  jeton: string,
-): Promise<{ titre: string; scene: Scene }> {
-  const partage = await s.db.doc(chemins.partagePlan(jeton)).get();
-  const expire = (partage.get('expireLe') as Timestamp | null)?.toMillis();
-  if (!partage.exists || partage.get('revoque') === true || (expire && expire < s.horloge()))
-    throw new ErreurMetier('INTROUVABLE', 'Ce lien n’est plus valide.');
-  const p = partage.get('proprietaire') as ProprietairePlan;
-  const doc = await s.db.doc(chemins.plan(p, partage.get('planId') as string)).get();
-  if (!doc.exists || doc.get('supprimeLe'))
-    throw new ErreurMetier('INTROUVABLE', 'Ce lien n’est plus valide.');
-  return {
-    titre: doc.get('titre') as string,
-    scene: sceneSansLocalisation(await lireScene(s, doc.get('storagePath') as string)),
-  };
 }

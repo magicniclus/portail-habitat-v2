@@ -101,9 +101,9 @@ export function CarteDemandePro({
             <a href={`mailto:${d.contact.email}`} className={bouton({ variant: 'secondaire' })}>
               <EnvelopeSimpleIcon aria-hidden="true" /> Écrire
             </a>
-            {d.planJeton ? (
+            {d.planJoint ? (
               <a
-                href={routes.planPartage(d.planJeton)}
+                href={routes.proPlanDemande(d.demandeId)}
                 target="_blank"
                 rel="noreferrer"
                 className={bouton({ variant: 'secondaire' })}

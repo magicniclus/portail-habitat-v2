@@ -231,12 +231,9 @@ describe('creerDemande', () => {
     const d = (await db.doc(chemins.demande(r.demandeId)).get()).data()!;
     expect(d.contactSouhaite).toBe('ecrit_uniquement');
     expect(d.planJoint.planId).toBe('P'.repeat(20));
-    const partage = (await db.doc(chemins.partagePlan(d.planJoint.jeton)).get()).data()!;
-    expect(partage).toMatchObject({
-      proprietaire: proprio,
-      planId: 'P'.repeat(20),
-      revoque: false,
-    });
+    // Aucun lien de partage : l'artisan lira le plan par une page authentifiée.
+    expect(d.planJoint).toEqual({ planId: 'P'.repeat(20), proprietaireId: proprio.id });
+    expect((await db.collection(collections.partagesPlans).get()).size).toBe(0);
     // Sans session, ou plan d'un autre : refus, rien d'écrit.
     await expect(creerDemande(s, entree({ planId: 'P'.repeat(20) }))).rejects.toMatchObject({
       code: 'PERMISSION_REFUSEE',

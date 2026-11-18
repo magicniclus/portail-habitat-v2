@@ -27,6 +27,9 @@ import {
   supprimerPhoto,
   lireFond,
   chargerParcelle,
+  lirePlanJoint,
+  PLAN_RETIRE,
+  corbeillePlansEntreprise,
   listerPartages,
   chercherAdresses,
 } from '../src/serveur/dessin';
@@ -223,23 +226,33 @@ describe('corbeille et purge', () => {
 });
 
 describe('partage en lecture seule', () => {
-  it('lisible sans compte, révocable, expirable, propre au propriétaire', async () => {
+  it('lisible sans compte, révocable, expirable, propre au propriétaire ; jeton jamais stocké', async () => {
     const { planId } = await creerPlan(s(), ctxPart, { titre: 'Maison', scene: scene('Séjour') });
-    const { jeton } = await partagerPlan(s(), ctxPart, { planId });
+    const { jeton, partageId, expireLe } = await partagerPlan(s(), ctxPart, {
+      planId,
+      joursValidite: 30,
+    });
     expect(jeton).toMatch(/^[A-Za-z0-9_-]{32}$/);
+    expect(partageId).toMatch(/^[0-9a-f]{64}$/);
+    expect(expireLe).toBe(maintenant + 30 * JOUR);
     expect(await lirePlanPartage(s(), jeton)).toMatchObject({
       titre: 'Maison',
       scene: { niveaux: [expect.objectContaining({ nom: 'Séjour' })] },
     });
-    const partage = (await db.doc(chemins.partagePlan(jeton)).get()).data()!;
-    expect(JSON.stringify(partage)).not.toMatch(/@|\+33/);
+    // Le document porte l'empreinte du jeton, jamais le jeton (ni l'uid de l'auteur).
+    expect((await db.doc(chemins.partagePlan(jeton)).get()).exists).toBe(false);
+    const partage = (await db.doc(chemins.partagePlan(partageId)).get()).data()!;
+    expect(JSON.stringify(partage)).not.toContain(jeton);
+    expect(JSON.stringify(partage)).not.toMatch(/@|\+33|creePar/);
 
-    await expect(revoquerPartage(s(), ctxEnt('p1'), jeton)).rejects.toMatchObject({
+    await expect(revoquerPartage(s(), ctxEnt('p1'), partageId)).rejects.toMatchObject({
       code: 'INTROUVABLE',
     });
-    expect((await listerPartages(s(), ctxPart, planId)).map((p) => p.jeton)).toEqual([jeton]);
+    const liste = await listerPartages(s(), ctxPart, planId);
+    expect(liste.map((p) => p.partageId)).toEqual([partageId]);
+    expect(JSON.stringify(liste)).not.toContain(jeton);
     await expect(listerPartages(s(), ctxEnt('p1'), planId)).rejects.toBeTruthy();
-    await revoquerPartage(s(), ctxPart, jeton);
+    await revoquerPartage(s(), ctxPart, partageId);
     expect(await listerPartages(s(), ctxPart, planId)).toEqual([]);
     await expect(lirePlanPartage(s(), jeton)).rejects.toMatchObject({ code: 'INTROUVABLE' });
 
@@ -247,7 +260,7 @@ describe('partage en lecture seule', () => {
     maintenant += 2 * JOUR;
     await expect(lirePlanPartage(s(), court.jeton)).rejects.toMatchObject({ code: 'INTROUVABLE' });
 
-    const suivant = await partagerPlan(s(), ctxPart, { planId });
+    const suivant = await partagerPlan(s(), ctxPart, { planId, joursValidite: 7 });
     await mettreALaCorbeille(s(), ctxPart, planId);
     await expect(lirePlanPartage(s(), suivant.jeton)).rejects.toMatchObject({
       code: 'INTROUVABLE',
@@ -255,6 +268,45 @@ describe('partage en lecture seule', () => {
     await expect(lirePlanPartage(s(), 'x'.repeat(32))).rejects.toMatchObject({
       code: 'INTROUVABLE',
     });
+  });
+
+  it('liens supprimés avec le plan (purge) et avec le compte ; fermeture d’entreprise : corbeille', async () => {
+    const a = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const b = await creerPlan(s(), ctxPart, { titre: 'B' });
+    const la = await partagerPlan(s(), ctxPart, { planId: a.planId, joursValidite: 7 });
+    const lb = await partagerPlan(s(), ctxPart, { planId: b.planId, joursValidite: 7 });
+    await mettreALaCorbeille(s(), ctxPart, a.planId);
+    maintenant += 31 * JOUR;
+    await purgerCorbeilleDessin(s());
+    expect((await db.doc(chemins.partagePlan(la.partageId)).get()).exists).toBe(false);
+    await supprimerTousLesPlans(s(), PART);
+    expect((await db.doc(chemins.partagePlan(lb.partageId)).get()).exists).toBe(false);
+
+    const e = await creerPlan(s(), ctxEnt('p1'), { titre: 'E' });
+    expect(await corbeillePlansEntreprise(s(), 'a1')).toBe(1);
+    expect(
+      (await listerPlans(s(), ctxEnt('p1'))).find((p) => p.planId === e.planId)?.supprimeLe,
+    ).toBeTruthy();
+  });
+});
+
+describe('plan joint à une demande (DES-44)', () => {
+  it('lisible par l’artisan qui a accepté, jamais avant ; plus rien si le client le retire', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'Maison', scene: scene('Séjour') });
+    await db.doc(chemins.demande('dJ')).set({ planJoint: { planId, proprietaireId: 'part1' } });
+    await db.doc(chemins.attribution('dJ', 'a1')).set({ artisanId: 'a1', statut: 'proposee' });
+    await expect(lirePlanJoint(s(), 'a1', 'dJ')).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await expect(lirePlanJoint(s(), 'a2', 'dJ')).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await db.doc(chemins.attribution('dJ', 'a1')).update({ statut: 'acceptee' });
+    expect(await lirePlanJoint(s(), 'a1', 'dJ')).toMatchObject({ titre: 'Maison' });
+    await mettreALaCorbeille(s(), ctxPart, planId);
+    await expect(lirePlanJoint(s(), 'a1', 'dJ')).rejects.toMatchObject({ message: PLAN_RETIRE });
+    await db.doc(chemins.demande('dJ')).update({ planJoint: null });
+    await expect(lirePlanJoint(s(), 'a1', 'dJ')).rejects.toMatchObject({ code: 'INTROUVABLE' });
   });
 });
 
