@@ -16,10 +16,12 @@ export function usePanneauxTelephone(
     dispatch({ type: 'proprietes', ouvert: false });
   }, [telephone, dispatch]);
 
-  // Téléphone : choisir un outil à placer replie le menu pour libérer le plan.
+  // Téléphone : choisir un outil ou un modèle à placer replie le menu pour libérer le plan
+  // (aussi quand l'outil était déjà actif et qu'on change seulement de modèle).
+  const modele = [etat.typeMur, etat.typeOuverture, etat.typeEscalier, etat.catalogueId].join();
   useEffect(() => {
     if (telephone && etat.outil !== 'selection') dispatch({ type: 'menu', menu: null });
-  }, [telephone, etat.outil, dispatch]);
+  }, [telephone, etat.outil, modele, dispatch]);
   // Téléphone : choisir une vue replie le menu pour la montrer en entier.
   useEffect(() => {
     if (telephone) dispatch({ type: 'menu', menu: null });

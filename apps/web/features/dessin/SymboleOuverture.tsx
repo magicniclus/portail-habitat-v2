@@ -3,6 +3,7 @@
 import {
   CATALOGUE_OUVERTURES,
   longueurMur,
+  zonesCoulissement,
   type Mur,
   type Ouverture,
   type Point,
@@ -21,6 +22,7 @@ export const trait = {
 const COULISSANTES: readonly Ouverture['type'][] = [
   'porte_coulissante',
   'porte_galandage',
+  'porte_galandage_double',
   'baie_coulissante',
 ];
 
@@ -42,6 +44,56 @@ export function Symbole({
   const debut = add(m.a, u, o.position);
   const fin = add(m.a, u, o.position + o.largeur);
   const famille = CATALOGUE_OUVERTURES[o.type].famille;
+  const zones = zonesCoulissement(o);
+  if (o.type === 'porte_coulissante') {
+    // En applique : vantail et rail devant le mur, du côté choisi, sur la baie et sa place.
+    const cote = (o.cote === 'interieur' ? versInterieur : -versInterieur) * (m.epaisseur / 2 + 40);
+    const [z0, z1] = zones[0]!;
+    const de = Math.min(o.position, z0);
+    const a = Math.max(o.position + o.largeur, z1);
+    return (
+      <g>
+        <line
+          {...trait}
+          strokeDasharray="5 4"
+          x1={add(add(m.a, u, de), nv, cote).x}
+          y1={add(add(m.a, u, de), nv, cote).y}
+          x2={add(add(m.a, u, a), nv, cote).x}
+          y2={add(add(m.a, u, a), nv, cote).y}
+        />
+        <line
+          {...trait}
+          strokeWidth={3}
+          x1={add(debut, nv, cote).x}
+          y1={add(debut, nv, cote).y}
+          x2={add(fin, nv, cote).x}
+          y2={add(fin, nv, cote).y}
+        />
+      </g>
+    );
+  }
+  if (zones.length) {
+    // À galandage : vantail dans l'axe du mur, poche en pointillés dans la cloison.
+    const e = m.epaisseur / 3;
+    return (
+      <g>
+        <line {...trait} strokeWidth={3} x1={debut.x} y1={debut.y} x2={fin.x} y2={fin.y} />
+        {zones.map(([z0, z1]) => (
+          <polygon
+            key={z0}
+            {...trait}
+            strokeDasharray="4 3"
+            points={points([
+              add(add(m.a, u, z0), nv, e),
+              add(add(m.a, u, z1), nv, e),
+              add(add(m.a, u, z1), nv, -e),
+              add(add(m.a, u, z0), nv, -e),
+            ])}
+          />
+        ))}
+      </g>
+    );
+  }
   if (COULISSANTES.includes(o.type))
     return (
       <g>

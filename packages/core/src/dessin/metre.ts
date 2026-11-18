@@ -104,6 +104,7 @@ const PORTES_INTERIEURES: readonly Ouverture['type'][] = [
   'porte_double',
   'porte_coulissante',
   'porte_galandage',
+  'porte_galandage_double',
   'porte_pivot',
   'ouverture_libre',
   'arche',

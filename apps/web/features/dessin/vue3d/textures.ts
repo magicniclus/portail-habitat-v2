@@ -79,7 +79,10 @@ export function materiauUni(couleur: string, options: { transparent?: boolean } 
     m = new MeshStandardMaterial({
       color: couleur,
       roughness: 0.8,
-      ...(options.transparent ? { transparent: true, opacity: 0.45 } : {}),
+      // Verre clair : on voit au travers, sans masquer ce qui est derrière.
+      ...(options.transparent
+        ? { transparent: true, opacity: 0.22, depthWrite: false, roughness: 0.05 }
+        : {}),
     });
     cache.set(cle, m);
   }

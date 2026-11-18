@@ -6,10 +6,8 @@ import {
   emprise,
   longueurMur,
   longueurVolee,
-  pointDansPolygone,
+  versInterieur,
   type Escalier,
-  type Mur,
-  type Ouverture,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
@@ -18,15 +16,6 @@ import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
 import { activer, points } from './svg';
 import { add, Symbole, trait } from './SymboleOuverture';
-
-/** Côté pièce d'une ouverture : on teste un point juste devant le milieu de l'ouverture. */
-function versInterieur(niveau: Niveau, m: Mur, o: Ouverture): 1 | -1 {
-  const l = longueurMur(m);
-  const u = { x: (m.b.x - m.a.x) / l, y: (m.b.y - m.a.y) / l };
-  const nv = { x: -u.y, y: u.x };
-  const devant = add(add(m.a, u, o.position + o.largeur / 2), nv, m.epaisseur / 2 + 100);
-  return niveau.pieces.some((p) => pointDansPolygone(devant, p.contour)) ? 1 : -1;
-}
 
 /** Ouvertures : trou dans le mur + symbole ; sélectionnables (DES-13). */
 export function OuverturesSvg({

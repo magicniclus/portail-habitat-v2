@@ -25,3 +25,6 @@ export * from './volumes';
 export * from './formes3d';
 export * from './soleil';
 export * from './visite';
+export * from './menuiseries';
+export * from './menuiseries3d';
+export * from './listeMenuiseries';

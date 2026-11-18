@@ -99,7 +99,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
         </mesh>
         {scene.niveaux.map((niv) => (
           <group key={niv.id}>
-            <Niveau3D n={niv} centre={new Vector3()} poupee={false} plafonds />
+            <Niveau3D n={niv} centre={new Vector3()} poupee={false} plafonds portesOuvertes />
             <group position={[0, M(niv.altitude), 0]}>
               <Objets3D
                 objets={niv.objets}

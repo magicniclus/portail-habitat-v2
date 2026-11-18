@@ -341,4 +341,94 @@ test.describe('Plans (espace pro)', () => {
     await page.getByRole('button', { name: 'Plan 2D' }).click();
     await expect(page.getByTestId('plan-2d')).toBeVisible();
   });
+
+  test('menuiseries : galandage vitré à petits bois, fenêtre à volets, liste et rendu 3D', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const svg = plan.locator('svg');
+    const ecran = async (xMm: number, yMm: number) => {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      return { x: boite.x + (xMm - vx!) * k, y: boite.y + (yMm - vy!) * k };
+    };
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    const ouverture = async (element: string) => {
+      await menu('Structure');
+      const retour = page
+        .getByRole('region', { name: 'Structure' })
+        .getByRole('button', { name: 'Structure', exact: true });
+      if (await retour.isVisible()) await retour.click();
+      await page.getByRole('button', { name: /^Portes & fenêtres/ }).click();
+      await page.getByRole('button', { name: new RegExp(`^${element}`) }).click();
+      // Le menu se replie sur téléphone : le plan se recadre avant qu'on clique dessus.
+      await page.waitForTimeout(400);
+    };
+    const proprietes = async () => {
+      if (!(await page.getByRole('region', { name: 'Propriétés' }).isVisible()))
+        await page
+          .getByRole('toolbar', { name: 'Outils du plan' })
+          .getByRole('button', { name: 'Propriétés' })
+          .click();
+    };
+    const replier = async () => {
+      if (page.viewportSize()!.width < 900)
+        await page.getByRole('button', { name: 'Replier propriétés' }).click();
+    };
+
+    // Porte à galandage dans le mur du haut : vitrée, 4 carreaux, gris anthracite.
+    await ouverture('Porte à galandage(?! double)');
+    let p = await ecran(4000, 100);
+    await page.mouse.click(p.x, p.y);
+    await expect(plan.getByRole('button', { name: /^Porte à galandage de/ })).toBeVisible();
+    await proprietes();
+    await page.getByLabel('Remplissage').selectOption('vitre');
+    await page.getByLabel('Petits bois').selectOption('4');
+    await page.getByRole('button', { name: 'Gris anthracite' }).click();
+    await expect(page.getByLabel('Rangement de la porte')).toBeVisible();
+    await replier();
+
+    // Fenêtre 2 vantaux sur le mur du bas, avec volets battants.
+    await ouverture('Fenêtre 2 vantaux');
+    p = await ecran(6000, 8500);
+    await page.mouse.click(p.x, p.y);
+    await proprietes();
+    await page.getByLabel('Volets').selectOption('battant');
+    await replier();
+
+    await menu('Chiffrer');
+    await expect(
+      page.getByText(/^Porte à galandage 83 × 204 cm, vitré, 4 carreaux, PVC/),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/^Fenêtre 2 vantaux 120 × 125 cm, vitré, PVC, volet battant/),
+    ).toBeVisible();
+
+    await menu('Rendu');
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page.reload();
+    await expect(
+      page.getByTestId('plan-2d').getByRole('button', { name: /^Fenêtre 2 vantaux/ }),
+    ).toBeVisible();
+  });
 });

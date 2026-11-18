@@ -116,6 +116,7 @@ export const TYPES_OUVERTURE = [
   'porte_double',
   'porte_coulissante',
   'porte_galandage',
+  'porte_galandage_double',
   'porte_pivot',
   'porte_entree',
   'porte_garage',
@@ -143,6 +144,20 @@ export const ouverture = z.object({
   sens: z.enum(['gauche', 'droite']).default('gauche'),
   cote: z.enum(['interieur', 'exterieur']).default('interieur'),
   volet: z.enum(['roulant', 'battant']).nullable().default(null),
+  /** Menuiserie (lot 15h) : remplissage des vantaux, petits bois, matériau, couleur, imposte. */
+  remplissage: z.enum(['plein', 'vitre', 'semi_vitre', 'cassettes']).optional(),
+  petitsBois: z
+    .object({
+      colonnes: z.number().int().min(1).max(8),
+      rangees: z.number().int().min(1).max(8),
+    })
+    .optional(),
+  materiau: z.enum(['pvc', 'bois', 'alu']).optional(),
+  couleur: z
+    .string()
+    .regex(/^#[0-9a-f]{6}$/i, 'Couleur invalide')
+    .optional(),
+  imposte: z.enum(['fixe', 'ouvrante']).optional(),
 });
 
 export const TYPES_PIECE = [

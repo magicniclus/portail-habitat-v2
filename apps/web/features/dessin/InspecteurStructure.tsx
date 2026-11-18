@@ -4,7 +4,9 @@ import {
   alertesEscaliers,
   CATALOGUE_OUVERTURES,
   LIBELLES_ESCALIER,
+  zonesCoulissement,
   type Escalier,
+  type ModificationOuverture,
   type Ouverture,
   type TypeEscalier,
 } from '@ph/core/dessin';
@@ -12,6 +14,7 @@ import { ArrowArcLeftIcon, ArrowArcRightIcon } from '@phosphor-icons/react';
 import { Banner, Button, Field, Input, Select } from '@ph/ui';
 import { useState, type Dispatch } from 'react';
 import type { Action } from './etat';
+import { InspecteurMenuiserie } from './InspecteurMenuiserie';
 
 const enCm = (mm: number) => String(Math.round(mm / 10));
 const versMm = (cm: string) => {
@@ -63,11 +66,8 @@ const Titre = ({ sur, titre }: { sur: string; titre: string }) => (
 /** Porte ou fenêtre sélectionnée (DES-14) : dimensions, position, sens, côté. */
 export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: Dispatch<Action> }) {
   const c = CATALOGUE_OUVERTURES[o.type];
-  const modifier = (
-    modif: Partial<
-      Pick<Ouverture, 'largeur' | 'hauteur' | 'allege' | 'position' | 'sens' | 'cote'>
-    >,
-  ) => dispatch({ type: 'modifierOuverture', id: o.id, modif });
+  const modifier = (modif: ModificationOuverture) =>
+    dispatch({ type: 'modifierOuverture', id: o.id, modif });
   return (
     <div className="grid gap-3.5">
       <Titre sur="Sélection" titre={c.libelle} />
@@ -93,7 +93,7 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
           appliquer={(position) => modifier({ position })}
         />
       </div>
-      {c.famille === 'porte' ? (
+      {c.famille === 'porte' && !zonesCoulissement(o).length ? (
         <div className="flex flex-wrap gap-2">
           <Button
             taille="sm"
@@ -111,6 +111,7 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
           </Button>
         </div>
       ) : null}
+      <InspecteurMenuiserie o={o} modifier={modifier} />
       <Button variant="secondaire" onClick={() => dispatch({ type: 'supprimerSelection' })}>
         Supprimer
       </Button>

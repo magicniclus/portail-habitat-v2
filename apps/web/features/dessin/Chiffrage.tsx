@@ -5,6 +5,7 @@ import {
   formatSurface,
   LIBELLES_EQUIPEMENT,
   LIBELLES_POSTE,
+  listeMenuiseries,
   metreNiveau,
   type LigneMetre,
 } from '@ph/core/dessin';
@@ -21,6 +22,7 @@ const quantite = (l: LigneMetre) =>
 /** Onglet « Chiffrer » (DES-43) : métré calculé depuis le plan. Demande de devis : lot 15i. */
 export function Chiffrage({ etat }: { etat: EtatEditeur }) {
   const lignes = metreNiveau(niveauDe(etat));
+  const menuiseries = listeMenuiseries(niveauDe(etat));
   return (
     <div className="grid gap-3.5 px-1">
       <p className="m-0 text-sm leading-5 text-neutre-800">
@@ -50,6 +52,23 @@ export function Chiffrage({ etat }: { etat: EtatEditeur }) {
           </tbody>
         </table>
       )}
+      {menuiseries.length ? (
+        <table className="w-full border-collapse text-sm">
+          <caption className="pb-1.5 text-left text-xs font-bold tracking-wide text-neutre-700 uppercase">
+            Menuiseries
+          </caption>
+          <tbody>
+            {menuiseries.map((m) => (
+              <tr key={m.libelle} className="border-t border-trait">
+                <th scope="row" className="py-2 text-left font-normal text-neutre-800">
+                  {m.libelle}
+                </th>
+                <td className="py-2 pl-2 text-right font-bold whitespace-nowrap">× {m.nombre}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
     </div>
   );
 }

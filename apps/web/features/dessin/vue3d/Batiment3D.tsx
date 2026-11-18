@@ -12,13 +12,16 @@ import {
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import { DoubleSide, Shape, Vector3, type Mesh } from 'three';
+import type { Vector3 } from 'three';
+import { DoubleSide, Shape, type Mesh } from 'three';
+import { Menuiseries3D } from './Menuiseries3D';
+import { devantLaCamera, HAUTEUR_POUPEE } from './poupee';
+import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
 
-/** Millimètres du plan → mètres de la 3D. Plan (x, y) → 3D (x, z), hauteur → y. */
-export const M = (mm: number) => mm / 1000;
+export { M };
 /** Hauteur des murs abaissés en « maison de poupée ». */
-const POUPEE = 900;
+const POUPEE = HAUTEUR_POUPEE;
 
 function PaveMesh({ p, materiaux }: { p: Pave; materiaux: Mesh['material'] }) {
   return (
@@ -56,16 +59,11 @@ function MorceauMur3D({ m, centre, poupee }: { m: MorceauMur; centre: Vector3; p
     const mesh = ref.current;
     if (!mesh) return;
     let h = m.taille.h;
-    if (poupee) {
-      const vers = new Vector3(
-        camera.position.x - centre.x,
-        0,
-        camera.position.z - centre.z,
-      ).normalize();
-      const decale = new Vector3(M(m.centre.x) - centre.x, 0, M(m.centre.y) - centre.z);
-      // Mur entre la caméra et le centre de la maison : on l'abaisse.
-      if (decale.dot(vers) > 0.5 && bas < POUPEE) h = Math.min(m.taille.h, POUPEE - bas);
-    }
+    // Mur entre la caméra et le centre de la maison : on l'abaisse ; un linteau au-dessus
+    // de la hauteur abaissée disparaît.
+    const devant = poupee && devantLaCamera(camera, centre, m.centre.x, m.centre.y);
+    mesh.visible = !(devant && bas >= POUPEE);
+    if (devant && bas < POUPEE) h = Math.min(m.taille.h, POUPEE - bas);
     mesh.scale.y = h / m.taille.h;
     mesh.position.y = M(bas + h / 2);
   });
@@ -113,11 +111,14 @@ export function Niveau3D({
   centre,
   poupee,
   plafonds,
+  portesOuvertes = false,
 }: {
   n: Niveau;
   centre: Vector3;
   poupee: boolean;
   plafonds: boolean;
+  /** Visite : vantaux des portes ouverts pour passer. */
+  portesOuvertes?: boolean;
 }) {
   const morceaux = useMemo(() => n.murs.flatMap((m) => morceauxDeMur(m, n)), [n]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
@@ -134,6 +135,7 @@ export function Niveau3D({
       {plafonds
         ? dalles.plafonds.map((d) => <Dalle3D key={`pl-${d.pieceId}`} d={d} dessous />)
         : null}
+      <Menuiseries3D n={n} portesOuvertes={portesOuvertes} poupee={poupee} centre={centre} />
       {marches.map((p, i) => (
         <PaveMesh key={i} p={p} materiaux={bois} />
       ))}

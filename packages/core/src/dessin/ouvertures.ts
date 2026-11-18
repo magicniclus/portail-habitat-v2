@@ -8,6 +8,7 @@ import {
 } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
 import { distance, projeter } from './geometrie';
+import { dansUnCoulissement, placeCoulissant } from './menuiseries';
 import { longueurMur } from './murs';
 
 /** Portes, fenêtres et ouvertures (DES-13, DES-14). Dimensions par défaut en mm. */
@@ -37,6 +38,13 @@ export const CATALOGUE_OUVERTURES: Record<
     libelle: 'Porte à galandage',
     famille: 'porte',
     largeur: 830,
+    hauteur: 2040,
+    allege: 0,
+  },
+  porte_galandage_double: {
+    libelle: 'Porte à galandage double',
+    famille: 'porte',
+    largeur: 1460,
     hauteur: 2040,
     allege: 0,
   },
@@ -148,6 +156,12 @@ function verifier(n: Niveau, o: Ouverture): Resultat<Ouverture> {
     return echec('PRECONDITION', { message: 'L’ouverture dépasse la hauteur du mur.' });
   if (n.ouvertures.some((x) => x.id !== o.id && x.murId === o.murId && chevauche(x, o)))
     return echec('PRECONDITION', { message: 'Elle chevaucherait une autre porte ou fenêtre.' });
+  if (dansUnCoulissement(n, o))
+    return echec('PRECONDITION', {
+      message: 'Elle serait dans la place d’une porte coulissante (poche ou rail).',
+    });
+  const coulissant = placeCoulissant(n, o, mur);
+  if (coulissant) return echec('PRECONDITION', { message: coulissant });
   return succes(o);
 }
 
@@ -175,12 +189,33 @@ export function poserOuverture(
     allege: d.allege,
     type: e.type,
   });
-  const r = verifier(n, brut);
+  // Porte coulissante sans place à gauche : on essaie de la ranger à droite.
+  let r = verifier(n, brut);
+  if (
+    !r.ok &&
+    placeCoulissant(n, brut, mur) &&
+    !placeCoulissant(n, { ...brut, sens: 'droite' }, mur)
+  )
+    r = verifier(n, { ...brut, sens: 'droite' });
   return r.ok ? succes({ ...n, ouvertures: [...n.ouvertures, r.data] }) : r;
 }
 
 export type ModificationOuverture = Partial<
-  Pick<Ouverture, 'position' | 'largeur' | 'hauteur' | 'allege' | 'sens' | 'cote' | 'volet'>
+  Pick<
+    Ouverture,
+    | 'position'
+    | 'largeur'
+    | 'hauteur'
+    | 'allege'
+    | 'sens'
+    | 'cote'
+    | 'volet'
+    | 'remplissage'
+    | 'petitsBois'
+    | 'materiau'
+    | 'couleur'
+    | 'imposte'
+  >
 >;
 
 export function modifierOuverture(

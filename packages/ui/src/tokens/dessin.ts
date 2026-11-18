@@ -239,6 +239,22 @@ export const COULEURS_3D = {
   soiree: '#3b4357',
   couchant: '#ffb36b',
   lampe: '#ffd9a0',
+  /** Menuiseries (lot 15h) : quincaillerie, seuil. */
+  quincaillerie: '#b8bcc0',
+  seuil: '#9a958e',
   /** Teinte neutre d'un matériau texturé (la texture porte la couleur). */
   blanc: '#ffffff',
 } as const;
+
+/** Couleurs de menuiserie (nuancier de l'inspecteur) ; la première est celle par défaut. */
+export const COULEURS_MENUISERIE: readonly TeinteDessin[] = [
+  { id: 'blanc', libelle: 'Blanc', couleur: '#f5f5f2' },
+  { id: 'gris-7016', libelle: 'Gris anthracite', couleur: '#3b4045' },
+  { id: 'noir', libelle: 'Noir', couleur: '#1f2124' },
+  { id: 'chene-dore', libelle: 'Chêne doré', couleur: '#a8743f' },
+  { id: 'bois-naturel', libelle: 'Bois naturel', couleur: '#c9a273' },
+  { id: 'vert-sauge', libelle: 'Vert sauge', couleur: '#8f9f8a' },
+];
+
+/** Teinte par défaut d'une menuiserie selon son matériau. */
+export const TEINTE_MENUISERIE = { pvc: '#f5f5f2', alu: '#3b4045', bois: '#c9a273' } as const;
