@@ -1,5 +1,7 @@
 # Dessin — éditeur de plans 2D / 3D de Portail Travaux
 
+> **Règle absolue : Dessin s'ajoute à côté de l'existant, sans modifier aucun fichier de code existant.** Le code existant se lit et s'importe, il ne se réécrit pas. Les branchements nécessaires sont listés au §11 et attendent l'accord explicite du propriétaire.
+>
 > Spécification complète et prompts de développement du **lot 15**. Ce document fait foi pour Dessin ; en cas de conflit, `CLAUDE.md`, `ARCHITECTURE.md`, `DATABASE.md`, `MOBILE.md`, `PAIEMENTS.md` et `COUTS.md` priment, et le conflit est signalé.
 > Maquette de référence : `docs/designs/Dessin.dc.html` (interactive : barre d'application, bibliothèque à onglets, palette d'outils verticale, inspecteur à droite, guide « Bien démarrer », zoom en colonne).
 
@@ -272,13 +274,14 @@ Puis : D86 pile technique (§5 bis) · D89 pas de temps réel en v1 · D90 tél�
 
 ## 10. Prompts Claude Code (un lot par session, plan d'abord)
 
+> **Avant chaque sous-lot : aucun fichier de code existant n'est modifié ; seuls de nouveaux fichiers sont créés. Si un branchement du §11 est nécessaire, demander d'abord.**
 > Branche : `lot-15-dessin`, ou `lot-15x-…` pour chaque sous-lot fusionné dans `lot-15-dessin`. Commits atomiques en français (`feat(dessin): …`). À la fin de chaque sous-lot : `pnpm typecheck && pnpm lint && pnpm test`, puis mise à jour de `docs/AVANCEMENT.md` et `docs/PROGRESSION.md`.
 
 ### Lot 15a — Cadrage
 ```
 Lot 15a : cadrage de Dessin. Lis CLAUDE.md, docs/DESSIN.md en entier, docs/designs/Dessin.dc.html, docs/ARCHITECTURE.md §1-5,
 docs/DATABASE.md §2, §3, §12, docs/MOBILE.md, docs/PAIEMENTS.md, docs/COUTS.md, docs/REPRISE_PARCOURS.md et
-apps/web/features/editeurSite (historique, brouillon, barre d'édition : à réutiliser plutôt que réécrire).
+apps/web/features/editeurSite (lecture seule, pour s'en inspirer : ne rien y modifier).
 Ne code rien. Produis dans docs/AVANCEMENT.md une section « Lot 15 — Dessin » avec : le découpage 15b à 15k ci-dessous
 (cases à cocher), les dépendances à ajouter et leur poids, les incohérences entre DESSIN.md et les autres documents
 (avec ta proposition), les décisions D84 à D91 qui bloquent les premiers sous-lots, et la liste des DES-xx à ajouter à
@@ -377,3 +380,23 @@ Reprise du lot 15. Lis CLAUDE.md, la section « Lot 15 — Dessin » de docs/AVA
 `git log --oneline -20`. Dis-moi où on en est, ce qui reste dans le sous-lot en cours, et propose la suite. N'écris rien
 avant ma validation.
 ```
+
+---
+
+## 11. Branchements sur l'existant (chacun soumis à l'accord du propriétaire)
+
+Tout le reste de Dessin vit dans de nouveaux fichiers (`packages/core/src/dessin/`, `packages/firebase/src/…/dessin`, `apps/web/features/dessin/`, `apps/web/app/…/dessin`, `apps/functions/src/dessin`). Les seuls points qui toucheraient un fichier existant :
+
+| Branchement | Fichier existant concerné | Sous-lot |
+|---|---|---|
+| Export du sous-chemin `@ph/core/dessin` | `packages/core/package.json` | 15b |
+| Collections et chemins Storage des plans | `firestore.rules`, `storage.rules`, `firestore.indexes.json`, `packages/firebase/src/chemins.ts` | 15c |
+| Permission d'équipe pour Dessin | `packages/core/src/equipe/permissions.ts` | 15c |
+| Flags `dessin` et `dessinPublic` | `packages/core/src/flags.ts` | 15d |
+| Lien « Dessin » dans la barre latérale pro | `packages/core/src/espacePro`, `apps/web/features/espacePro/adresses.ts` | 15d |
+| Onglet « Mes plans » de l'espace particulier | `apps/web/features/espace/Onglets.tsx` | 15d |
+| Nouvelles dépendances | `apps/web/package.json` | 15d, 15g, 15h |
+| Plan joint et « devis par écrit sans appel » | schéma et création des demandes, affichage côté artisan | 15i |
+| Export RGPD et suppression de compte incluant les plans | fonctions RGPD existantes | 15c |
+
+Proposition par défaut : ne rien brancher tant que le propriétaire n'a pas dit oui pour la ligne concernée ; Dessin reste alors accessible par son adresse directe derrière une vérification de session dans ses propres fichiers.

@@ -84,7 +84,6 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - Ne déploie jamais en production sans le « go » explicite du propriétaire.
 
 - **Landings par outil** : `docs/LANDINGS.md` (gabarit `Landing Outil`, source enregistrée sur le compte, onboarding selon la source ; jamais d'avis fictif ni de chiffre non sourcé en production)
-- **Dessin (éditeur de plans 2D / 3D, lot 15)** : `docs/DESSIN.md` (spécification, modèle de scène en millimètres entiers, prompts 15a à 15k) + maquette `docs/designs/Dessin.dc.html`
 - **Domaines / DNS / HTTPS** : `docs/DOMAINES.md` (sous-domaine gratuit, achat OVH au nom de l'artisan, connexion domaine existant, vérification, valeurs DNS lues depuis l'API Vercel)
 
 ## Règles locales (conservées de l'ancien CLAUDE.md, priment en cas de conflit)

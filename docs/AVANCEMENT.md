@@ -876,29 +876,19 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 
 `packages/core` n'importe aujourd'hui que Zod (ARCHITECTURE §3) : `clipper2-ts` est pure (aucun accès réseau ni DOM) ; à accepter explicitement, sinon les opérations booléennes seront écrites à la main (plus long, plus risqué).
 
-### Incohérences relevées et propositions
-1. **Historique** : DESSIN §5 parle de patchs immer et d'un historique « illimité » ; l'éditeur de site a déjà un `Historique<T>` à instantanés limité à 80 états (`core/sites/edition.ts`). **Proposition** : extraire cet historique générique dans `packages/core/src/edition/historique.ts` (paramètre `max`, regroupement des gestes), l'utiliser pour le site et pour Dessin (`max = 300`). Les instantanés partagent leur structure (objets immuables) : coût mémoire faible, pas besoin de patchs. `immer` sert seulement à écrire les commandes lisiblement.
-2. **Emplacement des schémas** : DESSIN §5 les met dans `core/dessin/schemas` ; la règle locale impose `packages/core/src/schemas`. **Proposition** : `schemas/dessin.ts` (métadonnées, versions, partages) et `schemas/dessinScene.ts` (scène) ; la logique reste dans `core/src/dessin/`.
-3. **Permissions** : DESSIN parle de `dessin.lire` / `dessin.ecrire` ; les permissions existantes sont en `.gerer`. **Proposition** : une seule action `dessin.gerer`, accordée au propriétaire, au gérant et au collaborateur, pas au comptable. Mise à jour de COMPTES §4.1 au lot 15c.
-4. **Budget JS** : DESSIN citait « D46 », qui est désormais la ligne Turnstile. Le budget est celui d'EXPLOITATION §1 (seuil CI provisoire 160 Ko, pages publiques). Corrigé dans DESSIN. L'éditeur est derrière connexion : seuls la landing `/dessin` et l'essai comptent ; la 3D n'est jamais dans le bundle initial.
-5. **Landing particulier** : le gabarit `Landing Outil` (LANDINGS.md) vise les artisans. **Proposition** : le réutiliser avec le thème particulier, sans chiffre ni avis non sourcé (LANDINGS §7).
-6. **Devis par écrit sans appel** (D90) : `demandes.contact.telephone` est obligatoire aujourd'hui. **Proposition** : le garder obligatoire (vérification anti-abus, SMS de confirmation) et ajouter `demandes.contactSouhaite: 'telephone' | 'ecrit_uniquement'` (défaut `telephone`) ; si `ecrit_uniquement`, le téléphone est retiré de tout ce que voit l'artisan (attributions, appels d'offres, emails, SMS, export). Changement du modèle de données à faire au lot 15i, avec tests des règles et du matching.
-7. **Navigation** : ajouter `dessin` à `PAGES_PRO` / `ADRESSES_PRO` (barre latérale, outil) et l'onglet « Mes plans » à l'espace particulier (`features/espace/Onglets.tsx`).
-8. **Flags** : ajouter `dessin` et `dessinPublic` à `FLAGS` (défaut `false`), au lot 15d.
-9. **Données personnelles** : les chemins Storage contiennent un uid ou un identifiant d'entreprise ; ils ne sont jamais exposés (URL signées de courte durée). Le jeton de partage est opaque et ne contient rien de personnel.
+### Règle du lot 15 : aucun code existant modifié
+Le projet a avancé au fur et à mesure : **Dessin est entièrement ajouté à côté, sans modifier un seul fichier de code existant** (pas de refactorisation, pas d'extraction, pas de changement de schéma, de règle, de permission ou de composant existant). Le code existant peut être **lu** et **importé** tel quel, jamais réécrit.
+Les quelques branchements qui exigeraient de toucher un fichier existant (lien « Dessin » dans la barre latérale pro, onglet « Mes plans » de l'espace particulier, plan joint et « devis par écrit sans appel » dans les demandes, permission d'équipe, flags, règles Firestore et Storage) sont **listés dans DESSIN.md §11 et ne seront faits qu'avec l'accord explicite du propriétaire**, au moment du sous-lot concerné, un par un.
 
 ### Plan du lot 15b (à valider avant de coder)
-Tout dans `packages/core`, **tests Vitest écrits avant le code**, aucun React / Firebase / Next.
-1. `edition/historique.ts` : extraction de l'historique générique (paramètre `max`, `regrouper(cle)` pour qu'un glisser = une étape) ; `sites/edition.ts` le réutilise sans changement de comportement (ses tests existants doivent passer).
-2. `schemas/dessinScene.ts` : `Point`, `Mur`, `Ouverture`, `Piece`, `Objet`, `Escalier`, `Toiture`, `Terrasse`, `Piscine`, `Terrain`, `Revetement`, `ZoneDeco`, `Niveau`, `Scene` (millimètres et dixièmes de degré entiers, bornes réalistes, identifiants préfixés) ; `schemas/dessin.ts` : métadonnées de plan, version, partage.
-3. `dessin/migrations.ts` : `migrerScene()` (version 1, mécanique prête pour la suite).
-4. `dessin/geometrie/` : vecteurs entiers, segments, intersections, distance point-segment, polygones (aire, périmètre, orientation, point dans polygone), contours épais des murs, **jonctions L / T / X**, **détection des pièces** (graphe planaire, faces minimales), surfaces nettes des murs (ouvertures déduites), surface Carrez.
-5. `dessin/aimantation.ts` : grille, extrémités, milieux, prolongements, perpendiculaires, pas de 15°, avec tolérance en pixels convertie en mm selon le zoom.
-6. `dessin/commandes/` : `ajouterMur`, `deplacerExtremite`, `deplacerMur`, `scinderMur`, `fusionnerMurs`, `supprimer`, `modifierCote` (une cote saisie déplace le bon mur), `renommerPiece`, `appliquerRevetement` ; chaque commande est pure et validée.
-7. `dessin/formes.ts` : création depuis une forme (rectangle, L, U, T) et modèles de départ (studio, T2, T3, plain-pied, étage).
-8. `dessin/metre.ts` : quantités par poste (sols, murs, plafonds, plinthes, cloisons, ouvertures) rattachées aux identifiants de `docs/data/prestations-catalogue.json`.
-9. `format/` : `formatLongueur(mm, 'cm'|'m')`, `formatSurface(mm²)`, `formatAngle()`.
-Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couverture ≥ 90 % sur `dessin/`, `pnpm knip` propre. Rien d'autre n'est touché.
+Uniquement de **nouveaux fichiers** dans `packages/core/src/dessin/`, tests Vitest écrits avant le code, aucun React / Firebase / Next.
+1. `dessin/historique.ts` : historique propre à Dessin (300 étapes, un glisser = une étape). L'historique de l'éditeur de site n'est pas touché.
+2. `dessin/schemas/scene.ts` et `dessin/schemas/plan.ts` : scène, métadonnées, versions, partages (millimètres et dixièmes de degré entiers, `z` importé de `@ph/core/zod`).
+3. `dessin/migrations.ts` : `migrerScene()`.
+4. `dessin/geometrie/` : segments, intersections, polygones, contours des murs, jonctions L / T / X, détection des pièces, surfaces nettes, Carrez (opérations booléennes écrites dans `dessin/`, sans nouvelle dépendance si possible ; sinon `clipper2-ts`, à accepter d'abord).
+5. `dessin/aimantation.ts`, 6. `dessin/commandes/`, 7. `dessin/formes.ts`, 8. `dessin/metre.ts`, 9. `dessin/format.ts` (longueurs, surfaces, angles).
+Seul ajout hors de `dessin/` : l'entrée d'export du sous-chemin `@ph/core/dessin` dans `packages/core/package.json`, **à valider**.
+Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couverture ≥ 90 % sur `dessin/`.
 
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
