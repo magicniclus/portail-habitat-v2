@@ -3,6 +3,7 @@ import { niveauSuperieur, niveauxTries } from './niveaux';
 import { toit3D } from './toits3d';
 import type { Point3 } from './toitures';
 import { morceauxDeMur } from './volumes';
+import { radians } from './geometrie';
 
 /**
  * Façades et coupes (DES-36) : projection orthogonale de la maison sur un plan vertical.
@@ -37,7 +38,7 @@ const scal = (p: Vecteur, v: Vecteur) => p.x * v.x + p.y * v.y;
 
 /** Façade « sud » : vue depuis le sud, regard vers le nord (nord tourné de `orientationNord`). */
 export function regardFacade(cote: CoteVue, orientationNord: number): Regard {
-  const n = (orientationNord / 10) * (Math.PI / 180);
+  const n = radians(orientationNord);
   const nord = { x: Math.sin(n), y: -Math.cos(n) };
   const est = { x: Math.cos(n), y: Math.sin(n) };
   const d = {

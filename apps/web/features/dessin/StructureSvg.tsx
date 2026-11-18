@@ -6,8 +6,8 @@ import {
   emprise,
   longueurMur,
   longueurVolee,
+  marchesDroites,
   versInterieur,
-  type Escalier,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
@@ -63,20 +63,6 @@ export function OuverturesSvg({
   });
 }
 
-/** Marches d'un escalier droit (ou d'une échelle), dans le repère de l'escalier. */
-function marches(e: Escalier): [Point, Point][] {
-  if (e.type !== 'droit' && e.type !== 'meunier') return [];
-  const a = (e.rotation / 10) * (Math.PI / 180);
-  const place = (p: Point) => ({
-    x: e.position.x + p.x * Math.cos(a) - p.y * Math.sin(a),
-    y: e.position.y + p.x * Math.sin(a) + p.y * Math.cos(a),
-  });
-  return Array.from({ length: e.nbMarches - 2 }, (_, i) => {
-    const y = (i + 1) * e.giron;
-    return [place({ x: 0, y }), place({ x: e.largeur, y })];
-  });
-}
-
 /** Escaliers : emprise, marches, sens de montée (DES-15). */
 export function EscaliersSvg({
   niveau,
@@ -113,7 +99,7 @@ export function EscaliersSvg({
           fill={COULEURS_PLAN.etiquette}
           strokeWidth={choisi ? 3 : 1.5}
         />
-        {marches(e).map(([p, q], i) => (
+        {marchesDroites(e).map(([p, q], i) => (
           <line key={i} x1={p.x} y1={p.y} x2={q.x} y2={q.y} {...trait} strokeWidth={1} />
         ))}
         <title>{`Escalier, ${Math.round(longueurVolee(e) / 10)} cm de volée`}</title>

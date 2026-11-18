@@ -1,6 +1,7 @@
 import type { Mur, Niveau, Point, Revetement } from '../schemas/dessinScene';
 import { longueurVolee, type Escalier } from './escaliers';
 import { longueurMur } from './murs';
+import { radians } from './geometrie';
 
 /**
  * Géométrie 3D tirée de la scène (DES-33), sans dépendance au moteur de rendu : pavés et
@@ -146,7 +147,7 @@ export function marchesEscalier(e: Escalier, altitude: number): Pave[] {
   const total = longueurs.reduce((s, x) => s + x, 0);
   const pas = total / e.nbMarches;
   const hMarche = e.hauteurAMonter / e.nbMarches;
-  const rot = (e.rotation / 10) * (Math.PI / 180);
+  const rot = radians(e.rotation);
   const [c, s] = [Math.cos(rot), Math.sin(rot)];
   const largeur = e.type === 'helicoidal' ? Math.max(2 * e.largeur, 1400) / 2 - 100 : e.largeur;
   return Array.from({ length: e.nbMarches }, (_, i) => {

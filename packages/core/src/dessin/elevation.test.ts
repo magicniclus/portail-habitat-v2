@@ -1,16 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { Resultat } from '../resultat';
 import type { Scene } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { definirToiture } from './commandesToit';
 import { elevation, regardCoupe, regardFacade } from './elevation';
 import { nouvelleScene } from './migrations';
 import { poserOuverture } from './ouvertures';
-
-const ok = <T>(r: Resultat<T>): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 /** Maison de la maquette (10,60 × 8,60 m), une fenêtre au nord, toit deux pans. */
 function maison(toit = true): Scene {

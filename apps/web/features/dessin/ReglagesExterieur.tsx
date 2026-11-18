@@ -2,6 +2,7 @@
 
 import {
   alertesTerrasses,
+  formatVolume,
   aire,
   contourPiscine,
   distanceAuxLimites,
@@ -14,7 +15,6 @@ import {
   type Point,
   type Terrasse,
 } from '@ph/core/dessin';
-import { formatNombre } from '@ph/core/format';
 import { Banner, Field, Select } from '@ph/ui';
 import { ChampMesure } from './ChampMesure';
 
@@ -162,7 +162,7 @@ export function ReglagesPiscine({
         />
       </label>
       <dl className="m-0 grid grid-cols-2 gap-2">
-        <Info libelle="Volume d’eau" valeur={`${formatNombre(volumeEau(p) / 1000, 1)} m³`} />
+        <Info libelle="Volume d’eau" valeur={formatVolume(volumeEau(p))} />
         <Info libelle="Plan d’eau" valeur={formatSurface(aire(contourPiscine(p)))} />
         {parcelle ? (
           <Info

@@ -120,6 +120,6 @@ describe('formats', () => {
     expect(espaces(formatSurface(80_000_000))).toBe('80,0 m²');
     expect(formatAngle(30)).toBe('3°');
     expect(formatAngle(125)).toBe('12,5°');
-    expect(espaces(formatVolume(45_000))).toBe('45 000 L');
+    expect(espaces(formatVolume(45_000))).toBe('45,0 m³');
   });
 });

@@ -1,15 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Niveau, Ouverture } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { listeMenuiseries } from './listeMenuiseries';
 import { menuiserie3D } from './menuiseries3d';
 import { materiauDe, remplissageDe, versInterieur, zonesCoulissement } from './menuiseries';
 import { modifierOuverture, poserOuverture } from './ouvertures';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 // Maquette : murs de 30 cm, mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150.
 const n = niveauMaquette(ctx);

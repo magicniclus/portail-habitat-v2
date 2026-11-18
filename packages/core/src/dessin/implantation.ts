@@ -1,6 +1,6 @@
 import { LIMITE_MM, type Point, type Scene } from '../schemas/dessinScene';
 import { echec, succes, type Resultat } from '../resultat';
-import { distance, projeter } from './geometrie';
+import { distance, projeter, radians } from './geometrie';
 import { contourMur } from './murs';
 
 /**
@@ -39,7 +39,7 @@ export function versLambert93(lon: number, lat: number): PointL93 {
  * horaire) par rapport au haut du plan, dont l'axe y descend. La matrice est sa propre inverse.
  */
 const matrice = (orientation: number) => {
-  const t = (orientation / 10) * (Math.PI / 180);
+  const t = radians(orientation);
   const [c, s] = [Math.cos(t), Math.sin(t)];
   return (v: Point): Point => ({ x: v.x * c + v.y * s, y: v.x * s - v.y * c });
 };

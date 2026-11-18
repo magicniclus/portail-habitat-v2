@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { scene as schemaScene, type Scene } from '../schemas/dessinScene';
-import type { Resultat } from '../resultat';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { definirParcelle } from './exterieur';
 import {
   ajusterImplantation,
@@ -16,11 +15,6 @@ import {
   type ParcelleCadastre,
 } from './implantation';
 import { nouvelleScene } from './migrations';
-
-const ok = <T>(r: Resultat<T>): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 const maison = (): Scene => ({ ...nouvelleScene(ctx.nouvelId), niveaux: [niveauMaquette(ctx)] });
 /** Parcelle de 30 × 20 m autour du point Lambert-93 (700 000 m ; 6 600 000 m). */

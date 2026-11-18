@@ -1,6 +1,7 @@
 import { echec, succes, type Resultat } from '../resultat';
 import { escalier as schemaEscalier, type Niveau, type Point } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
+import { arrondir, versRepere } from './geometrie';
 
 /** Escaliers (DES-15) : calcul des marches, emprise au sol, trémie de l'étage. */
 export type Escalier = Niveau['escaliers'][number];
@@ -84,13 +85,17 @@ export function empriseLocale(
 
 /** Emprise placée sur le plan : rotation (dixièmes de degré) autour de `position`. */
 export function emprise(e: Escalier): Point[] {
-  const a = (e.rotation / 10) * (Math.PI / 180);
-  const c = Math.cos(a);
-  const s = Math.sin(a);
-  return empriseLocale(e).map((p) => ({
-    x: Math.round(e.position.x + p.x * c - p.y * s),
-    y: Math.round(e.position.y + p.x * s + p.y * c),
-  }));
+  return empriseLocale(e).map((p) => arrondir(versRepere(e.position, e.rotation)(p)));
+}
+
+/** Marches d'un escalier droit (ou d'une échelle) vues de dessus, sur le plan (DES-15). */
+export function marchesDroites(e: Escalier): [Point, Point][] {
+  if (e.type !== 'droit' && e.type !== 'meunier') return [];
+  const place = versRepere(e.position, e.rotation);
+  return Array.from({ length: e.nbMarches - 2 }, (_, i) => {
+    const y = (i + 1) * e.giron;
+    return [place({ x: 0, y }), place({ x: e.largeur, y })];
+  });
 }
 
 export function poserEscalier(

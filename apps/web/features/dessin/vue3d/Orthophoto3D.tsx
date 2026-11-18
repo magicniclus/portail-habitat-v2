@@ -1,6 +1,6 @@
 'use client';
 
-import { coinsOrthophoto, type Scene } from '@ph/core/dessin';
+import { coinsOrthophoto, radians, type Scene } from '@ph/core/dessin';
 import { useEffect, useMemo } from 'react';
 import { SRGBColorSpace, TextureLoader } from 'three';
 import { M } from './unites';
@@ -22,7 +22,7 @@ export function Orthophoto3D({ scene, url }: { scene: Scene; url: string | null 
   const cx = (coins.hg.x + coins.bd.x) / 2;
   const cy = (coins.hg.y + coins.bd.y) / 2;
   // Rotation horaire du plan (y vers le bas) = rotation négative autour de l'axe vertical.
-  const angle = -((scene.orientationNord / 10) * Math.PI) / 180;
+  const angle = -radians(scene.orientationNord);
   return (
     <group position={[M(cx), -0.004, M(cy)]} rotation={[0, angle, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>

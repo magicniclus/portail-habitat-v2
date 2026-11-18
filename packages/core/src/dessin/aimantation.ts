@@ -1,5 +1,5 @@
 import type { Point } from '../schemas/dessinScene';
-import { arrondir, distance, milieu, projeter } from './geometrie';
+import { arrondir, distance, milieu, projeter, radians } from './geometrie';
 
 /** Aimantation pendant le tracé et le déplacement (DES-08). */
 export type TypeAimant = 'extremite' | 'milieu' | 'segment' | 'angle' | 'grille' | 'libre';
@@ -45,7 +45,7 @@ export function aimanter(
 
   if (options.origine) {
     const o = options.origine;
-    const pas = ((options.pasAngle ?? 150) / 10) * (Math.PI / 180);
+    const pas = radians(options.pasAngle ?? 150);
     const l = distance(o, p);
     const a = Math.round(Math.atan2(p.y - o.y, p.x - o.x) / pas) * pas;
     const q = { x: o.x + l * Math.cos(a), y: o.y + l * Math.sin(a) };

@@ -4,6 +4,13 @@ import { mursDepuisForme } from './formes';
 import { detecterPieces, synchroniserPieces } from './pieces';
 
 /** Aides des tests de Dessin (non exportées par le paquet). */
+
+/** Résultat attendu en succès : sa donnée, sinon le test échoue avec le message. */
+export function ok<T>(r: { ok: true; data: T } | { ok: false; message: string }): T {
+  if (!r.ok) throw new Error(r.message);
+  return r.data;
+}
+
 export function contexteTest(): Contexte {
   let n = 0;
   return { nouvelId: (prefixe) => `${prefixe}_t${String(n++).padStart(4, '0')}` };

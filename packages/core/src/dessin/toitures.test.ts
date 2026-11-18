@@ -4,7 +4,7 @@ import {
   toiture as schemaToiture,
   type Niveau,
 } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import {
   ajouterElementToit,
   definirToiture,
@@ -21,7 +21,7 @@ import { toit3D } from './toits3d';
 import {
   aire3D,
   altitudeToit,
-  empriseToit,
+  emprisesToit,
   hauteurLocale,
   type Toiture,
   type TypeToiture,
@@ -39,14 +39,14 @@ const toit = (type: TypeToiture, degres = 45, extra: Partial<Toiture> = {}): Niv
 
 describe('toiture (DES-16, DES-17)', () => {
   it('aile unique : dimensions aux murs, débords sur les côtés extérieurs, faîtage tournable', () => {
-    const e = empriseToit(toit('deux_pans', 45, { debord: 500 }))!;
+    const e = emprisesToit(toit('deux_pans', 45, { debord: 500 }))[0]!;
     expect(e).toMatchObject({ L0: 10_600, P0: 8_600, base: 2_500, hMurs: 2_500 });
     expect([e.aMin, e.aMax, e.bMin, e.bMax]).toEqual([-5_800, 5_800, -4_800, 4_800]);
-    expect(empriseToit(toit('deux_pans', 45, { faitageAngle: 900 }))).toMatchObject({
+    expect(emprisesToit(toit('deux_pans', 45, { faitageAngle: 900 }))[0]).toMatchObject({
       L0: 8_600,
       P0: 10_600,
     });
-    expect(empriseToit({ ...toit('plate'), murs: [] })).toBeNull();
+    expect(emprisesToit({ ...toit('plate'), murs: [] })[0]).toBeUndefined();
   });
 
   it('deux pans à 45° : faîtage à 4,30 m au-dessus des murs, 2 pans, 2 pignons, 2 gouttières', () => {
@@ -221,10 +221,6 @@ describe('toits en L, T, U et sur une partie sans étage', () => {
 
 describe('commandes de toiture et métré', () => {
   const ctx = contexteTest();
-  const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-    if (!r.ok) throw new Error(r.message);
-    return r.data;
-  };
 
   it('créer, régler, poser et retirer des éléments, supprimer', () => {
     let m = ok(definirToiture(n, 'deux_pans'));
@@ -279,10 +275,6 @@ describe('commandes de toiture et métré', () => {
 
 describe('toiture facile : automatique et par hauteurs', () => {
   const ctx = contexteTest();
-  const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-    if (!r.ok) throw new Error(r.message);
-    return r.data;
-  };
 
   it('un clic : toit sur l’étage et appentis sur la partie basse ; sous-sol jamais couvert', () => {
     const rdc = { ...niveauMaquette(ctx), id: 'n_rdc0' };

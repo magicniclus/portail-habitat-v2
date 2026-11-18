@@ -1,6 +1,6 @@
 'use client';
 
-import { formeObjet3D, objetDuCatalogue, type Objet, type Teinte } from '@ph/core/dessin';
+import { formeObjet3D, objetDuCatalogue, radians, type Objet, type Teinte } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Edges, TransformControls } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
@@ -11,7 +11,6 @@ import { M } from './Batiment3D';
 import { materiauUni } from './textures';
 
 const dixiemes = (rad: number) => Math.round((rad * 1800) / Math.PI);
-const radians = (d: number) => (d * Math.PI) / 1800;
 
 function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
   const c = objetDuCatalogue(o.catalogueId);

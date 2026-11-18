@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Resultat } from '../resultat';
 import type { Niveau } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { descriptionSelection, type GenreAnnonce } from './annonces';
 import { CATALOGUE_OBJETS } from './catalogue';
 import { poserEscalier } from './escaliers';
@@ -9,11 +8,6 @@ import { ajouterPiscine, ajouterTerrasse, ajouterVegetal, tracerCloture } from '
 import { poserObjet } from './objets';
 import { poserOuverture } from './ouvertures';
 import { ajouterZoneSol } from './revetements';
-
-const ok = <T>(r: Resultat<T>): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 
 describe('annonce de l’élément choisi (DES-47)', () => {

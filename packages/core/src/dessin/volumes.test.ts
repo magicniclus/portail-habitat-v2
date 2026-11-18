@@ -1,16 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { CATALOGUE_OBJETS } from './catalogue';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { formeObjet3D } from './formes3d';
 import { poserEscalier } from './escaliers';
 import { poserOuverture } from './ouvertures';
 import { directionSoleil } from './soleil';
 import { dallesDuNiveau, marchesEscalier, morceauxDeMur } from './volumes';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 const n = niveauMaquette(ctx);
 

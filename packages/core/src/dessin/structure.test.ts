@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { modifierLongueurMur } from './commandes';
 import {
   calculerMarches,
@@ -41,11 +41,6 @@ import {
   supprimerOuverture,
 } from './ouvertures';
 import { alertesEscaliers } from './validations';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 
 describe('portes et fenêtres (DES-13, DES-14)', () => {
   const ctx = contexteTest();

@@ -1,5 +1,6 @@
 'use client';
 
+import { formatAngle } from '@ph/core/dessin';
 import {
   ArrowArcLeftIcon,
   ArrowArcRightIcon,
@@ -74,8 +75,7 @@ export function RecalageParcelle({
         </div>
       </div>
       <p className="m-0 px-1 text-[13px] text-neutre-800">
-        Nord à {(orientationNord / 10).toLocaleString('fr-FR')}° du haut du plan. Flèches : 50 cm
-        par clic.
+        Nord à {formatAngle(orientationNord)} du haut du plan. Flèches : 50 cm par clic.
       </p>
     </div>
   );

@@ -96,7 +96,6 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
 }
 
 /** Aile unique (ancienne API, tests) : première aile du niveau. */
-export const empriseToit = (n: Niveau): Emprise | null => emprisesToit(n)[0] ?? null;
 
 const tan = (deg: number) => Math.tan((deg * Math.PI) / 180);
 const penteDe = (t: Toiture) => t.pentes[0]! / 10;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Niveau } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { poserEscalier } from './escaliers';
 import { nouvelleScene } from './migrations';
 import { pointDansPolygone } from './geometrie';
@@ -15,11 +15,6 @@ import {
   RAYON_VISITEUR,
   solSousLesPieds,
 } from './visite';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 // Pièce de la maquette : intérieur de 300 à 10 300 (x) et de 300 à 8 300 (y), mur du haut à y = 150.
 const ctx = contexteTest();
 const n = niveauMaquette(ctx);

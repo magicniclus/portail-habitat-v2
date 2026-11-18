@@ -273,26 +273,3 @@ export function metreNiveau(n: Niveau, dessus: Niveau | null = null): LigneMetre
   }
   return lignes;
 }
-
-/**
- * Volume d'eau en litres pour les formes définies par leurs seules dimensions ;
- * `null` pour les formes libres (haricot, L), calculées depuis leur contour au lot 15h.
- */
-export function volumePiscine(p: {
-  forme: string;
-  longueur: number;
-  largeur: number;
-  profondeurMin: number;
-  profondeurMax: number;
-}): number | null {
-  const profondeur = (p.profondeurMin + p.profondeurMax) / 2;
-  const surface =
-    p.forme === 'rectangle' || p.forme === 'couloir' || p.forme === 'hors_sol'
-      ? p.longueur * p.largeur
-      : p.forme === 'ronde'
-        ? Math.PI * (p.largeur / 2) ** 2
-        : p.forme === 'ovale'
-          ? Math.PI * (p.longueur / 2) * (p.largeur / 2)
-          : null;
-  return surface === null ? null : Math.round((surface * profondeur) / 1_000_000);
-}

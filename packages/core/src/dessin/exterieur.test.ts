@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import {
   ajouterAllee,
   ajouterPiscine,
@@ -22,11 +22,6 @@ import { aire } from './geometrie';
 import { metreNiveau } from './metre';
 import { nouvelleScene } from './migrations';
 import { accrocherALaLimite, cotesContreLaMaison } from './placementExterieur';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 const ctx = contexteTest();
 const n = niveauMaquette(ctx);
 

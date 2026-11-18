@@ -1,13 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { contourObjet, deplacerObjet, orienterObjet, poserObjet } from './objets';
 import { placerIdealement } from './placement';
 import type { Niveau, Objet } from '../schemas/dessinScene';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 // Pièce de la maquette : intérieur de 300 à 10 300 (x) et de 300 à 8 300 (y).
 const ctx = contexteTest();
 const TABLE = 1800;

@@ -3,7 +3,7 @@ import { exterieur, niveau as schemaNiveau, type Niveau } from '../schemas/dessi
 import { contexteTest, niveauMaquette } from './aidesTest';
 import { ajouterMur } from './commandes';
 import { mursDepuisForme } from './formes';
-import { LIBELLES_POSTE, metreNiveau, POSTES_METRE, volumePiscine } from './metre';
+import { LIBELLES_POSTE, metreNiveau, POSTES_METRE } from './metre';
 import { detecterPieces } from './pieces';
 import { alertesEscaliers, alertesTerrasses } from './validations';
 
@@ -216,19 +216,5 @@ describe('metreNiveau', () => {
 
   it('libellés de tous les postes', () => {
     expect(POSTES_METRE.every((p) => LIBELLES_POSTE[p].length > 0)).toBe(true);
-  });
-});
-
-describe('volumePiscine', () => {
-  const base = { longueur: 8000, largeur: 4000, profondeurMin: 1200, profondeurMax: 1800 };
-  it('volumes en litres selon la forme', () => {
-    expect(volumePiscine({ ...base, forme: 'rectangle' })).toBe(48_000);
-    expect(volumePiscine({ ...base, forme: 'ronde' })).toBe(
-      Math.round((Math.PI * 2000 ** 2 * 1500) / 1e6),
-    );
-    expect(volumePiscine({ ...base, forme: 'ovale' })).toBe(
-      Math.round((Math.PI * 4000 * 2000 * 1500) / 1e6),
-    );
-    expect(volumePiscine({ ...base, forme: 'haricot' })).toBeNull();
   });
 });

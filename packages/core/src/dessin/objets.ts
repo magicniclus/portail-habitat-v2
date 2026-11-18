@@ -3,15 +3,13 @@ import { objet as schemaObjet, type Niveau, type Objet, type Point } from '../sc
 import { objetDuCatalogue, plagesDe } from './catalogue';
 import { contourObjet } from './emprise';
 import type { Contexte } from './commandes';
-import { arrondir } from './geometrie';
+import { arrondir, radians } from './geometrie';
 import { contourMur } from './murs';
 import { placerIdealement, type Guide } from './placement';
 
 export { contourObjet };
 
 /** Objets posés sur le plan (DES-22) : position = centre, rotation en dixièmes de degré. */
-
-const rad = (dixiemes: number) => (dixiemes / 10) * (Math.PI / 180);
 
 export function poserObjet(
   n: Niveau,
@@ -114,7 +112,7 @@ export function dupliquerObjet(
   const o = trouver(n, id);
   if (!o) return echec('INTROUVABLE');
   // Décalée d'une largeur, dans l'axe de l'objet : utile pour aligner des meubles.
-  const a = rad(o.rotation);
+  const a = radians(o.rotation);
   const copie: Objet = {
     ...o,
     id: ctx.nouvelId('obj'),

@@ -2,6 +2,16 @@ import type { Point } from '../schemas/dessinScene';
 
 /** Géométrie plane de Dessin. Calculs en flottants, résultats stockés arrondis au millimètre. */
 
+/** Dixièmes de degré (rotations du plan) → radians. */
+export const radians = (dixiemes: number) => (dixiemes / 10) * (Math.PI / 180);
+
+/** Point d'un repère tourné de `dixiemes` autour de `origine` → plan (y vers le bas). */
+export function versRepere(origine: Point, dixiemes: number): (p: Point) => Point {
+  const a = radians(dixiemes);
+  const [c, s] = [Math.cos(a), Math.sin(a)];
+  return (p) => ({ x: origine.x + p.x * c - p.y * s, y: origine.y + p.x * s + p.y * c });
+}
+
 export const arrondir = (p: Point): Point => ({ x: Math.round(p.x), y: Math.round(p.y) });
 export const distance = (a: Point, b: Point): number => Math.hypot(b.x - a.x, b.y - a.y);
 export const memePoint = (a: Point, b: Point, tolerance = 0): boolean =>

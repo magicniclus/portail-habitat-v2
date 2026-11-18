@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Ouverture } from '../schemas/dessinScene';
-import { contexteTest, niveauMaquette } from './aidesTest';
+import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import {
   ajouterMur,
   appliquerRevetement,
@@ -14,11 +14,6 @@ import {
 } from './commandes';
 import { aire } from './geometrie';
 import { contourMur, jonction, longueurMur, surfaceFaceNette } from './murs';
-
-const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
-  if (!r.ok) throw new Error(r.message);
-  return r.data;
-};
 
 const porte = (murId: string, position: number, largeur = 830): Ouverture => ({
   id: `o_${murId.slice(2)}x${position}`,

@@ -14,8 +14,8 @@ export const formatSurface = (mm2: number): string => `${formatNombre(mm2 / 1_00
 export const formatAngle = (dixiemes: number): string =>
   `${formatNombre(dixiemes / 10, dixiemes % 10 === 0 ? 0 : 1)}°`;
 
-/** « 45 000 L » (entrée en litres). */
-export const formatVolume = (litres: number): string => `${formatNombre(litres)} L`;
+/** « 45,0 m³ » (entrée en litres). */
+export const formatVolume = (litres: number): string => `${formatNombre(litres / 1000, 1)} m³`;
 
 /**
  * Saisie d'une mesure (« 12,5 » cm ou « 2,75 » m) → millimètres entiers ; `null` si le champ
