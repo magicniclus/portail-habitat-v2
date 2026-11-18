@@ -4,10 +4,18 @@ import type { Scene } from '@ph/core/dessin';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { enregistrerPlan, type EspaceDessin } from './api';
 import { ecrireBrouillon, effacerBrouillon } from './brouillons';
+import { CLE_ESSAI } from './essai';
 
 /** Enregistrement automatique (DES-39) : 2 s après la dernière modification. */
 export type EtatSauvegarde =
-  'enregistre' | 'modifie' | 'enregistrement' | 'hors_ligne' | 'conflit' | 'erreur';
+  | 'enregistre'
+  | 'modifie'
+  | 'enregistrement'
+  | 'hors_ligne'
+  | 'conflit'
+  | 'erreur'
+  /** Essai sans compte (DES-03) : gardé sur cet appareil seulement. */
+  | 'local';
 
 const DELAI = 2000;
 
@@ -16,6 +24,8 @@ export function useSauvegarde(e: {
   planId: string;
   scene: Scene;
   revisionInitiale: number;
+  /** Essai sans compte : la scène va dans IndexedDB, jamais au serveur. */
+  essai?: boolean;
 }) {
   const [etat, setEtat] = useState<EtatSauvegarde>('enregistre');
   const [message, setMessage] = useState<string | null>(null);
@@ -31,6 +41,12 @@ export function useSauvegarde(e: {
     async (nomVersion?: string) => {
       const scene = derniere.current;
       if (enCours.current || (scene === enregistree.current && !nomVersion)) return;
+      if (e.essai) {
+        enregistree.current = scene;
+        await ecrireBrouillon(CLE_ESSAI, { scene, revision: 0, le: Date.now() });
+        setEtat('local');
+        return;
+      }
       enCours.current = true;
       setEtat('enregistrement');
       const r = await enregistrerPlan(e.espace, {
@@ -56,7 +72,7 @@ export function useSauvegarde(e: {
         void ecrireBrouillon(e.planId, { scene, revision: revision.current, le: Date.now() });
       } else setEtat('erreur');
     },
-    [e.espace, e.planId],
+    [e.espace, e.planId, e.essai],
   );
 
   useEffect(() => {

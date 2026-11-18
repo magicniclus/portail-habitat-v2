@@ -10,6 +10,7 @@ import { Banner, Button, Select } from '@ph/ui';
 import { FilePdfIcon, ImageIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { exporterPdf, type EspaceDessin } from './api';
+import { CompteRequis, useEssai } from './essai';
 import { niveauDe, sceneDe, type EtatEditeur } from './etat';
 import { horodatage, svgEnPng, telechargerFichier } from './telecharger';
 
@@ -24,6 +25,7 @@ export function ExportPlan({
   planId: string;
 }) {
   const n = niveauDe(etat);
+  const essai = useEssai();
   const cadre = cadreImpression(n);
   const conseil = (cadre && echelleConseillee(cadre)) ?? { echelle: 100, format: 'A3' };
   const [echelle, setEchelle] = useState<Echelle>(conseil.echelle);
@@ -76,9 +78,13 @@ export function ExportPlan({
         </label>
       </div>
       {erreur ? <Banner tone="attention">{erreur}</Banner> : null}
-      <Button onClick={() => void pdf()} disabled={attente}>
-        <FilePdfIcon aria-hidden="true" /> {attente ? 'Préparation…' : 'PDF à l’échelle'}
-      </Button>
+      {essai ? (
+        <CompteRequis pour="télécharger le PDF à l’échelle" />
+      ) : (
+        <Button onClick={() => void pdf()} disabled={attente}>
+          <FilePdfIcon aria-hidden="true" /> {attente ? 'Préparation…' : 'PDF à l’échelle'}
+        </Button>
+      )}
       <Button variant="secondaire" onClick={() => void png()}>
         <ImageIcon aria-hidden="true" /> Image PNG du plan
       </Button>

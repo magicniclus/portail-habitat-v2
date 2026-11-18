@@ -1,9 +1,9 @@
 'use client';
 
 import type { Scene } from '@ph/core/dessin';
-import { Banner, Button } from '@ph/ui';
 import type { Route } from 'next';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useEffect, useReducer } from 'react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
@@ -12,6 +12,8 @@ import { ContenuMenu, TITRES_MENU } from './ContenuMenu';
 import { etatInitial, reduire, sceneDe } from './etat';
 import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
+import { Bandeaux } from './Bandeaux';
+import { connexionEssai, FournisseurEssai } from './essai';
 import { Facades } from './Facades';
 import { Plan2D } from './Plan2D';
 
@@ -68,6 +70,8 @@ export function EspaceDeTravail(p: {
   scene: Scene;
   revision: number;
   retour: Route;
+  /** Essai sans compte (DES-03) : rien n'est envoyé au serveur. */
+  essai?: boolean;
 }) {
   const [etat, dispatch] = useReducer(reduire, p.scene, etatInitial);
   const s = useSauvegarde({
@@ -75,7 +79,9 @@ export function EspaceDeTravail(p: {
     planId: p.planId,
     scene: sceneDe(etat),
     revisionInitiale: p.revision,
+    ...(p.essai ? { essai: true } : {}),
   });
+  const router = useRouter();
   const fond = useFond(p.espace, p.planId, sceneDe(etat).fondImage?.storagePath ?? null);
   const ortho = useFond(p.espace, p.planId, sceneDe(etat).terrain?.orthophoto?.storagePath ?? null);
   const telephone = useMediaQuery('(max-width: 899px)', false);
@@ -99,98 +105,70 @@ export function EspaceDeTravail(p: {
   };
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-blanc">
-      <BarreDessin
-        titre={p.titre}
-        renommer={(t) => void renommerPlan(p.espace, p.planId, t)}
-        retour={p.retour}
-        etat={etat}
-        dispatch={dispatch}
-        sauvegarde={s.etat}
-        enregistrer={() => void s.enregistrerMaintenant('Enregistrement manuel')}
-      />
-      <div className="relative flex min-h-0 flex-1">
-        <RailMenus etat={etat} dispatch={dispatch} />
-        {etat.menu ? (
-          <Panneau
-            cote="gauche"
-            titre={TITRES_MENU[etat.menu]}
-            replier={() => dispatch({ type: 'menu', menu: null })}
-          >
-            <ContenuMenu
-              menu={etat.menu}
+    <FournisseurEssai value={Boolean(p.essai)}>
+      <div className="flex h-dvh flex-col overflow-hidden bg-blanc">
+        <BarreDessin
+          titre={p.titre}
+          renommer={(t) => (p.essai ? undefined : void renommerPlan(p.espace, p.planId, t))}
+          retour={p.retour}
+          etat={etat}
+          dispatch={dispatch}
+          sauvegarde={s.etat}
+          enregistrer={() =>
+            p.essai
+              ? void s.enregistrerMaintenant().then(() => router.push(connexionEssai()))
+              : void s.enregistrerMaintenant('Enregistrement manuel')
+          }
+        />
+        <div className="relative flex min-h-0 flex-1">
+          <RailMenus etat={etat} dispatch={dispatch} />
+          {etat.menu ? (
+            <Panneau
+              cote="gauche"
+              titre={TITRES_MENU[etat.menu]}
+              replier={() => dispatch({ type: 'menu', menu: null })}
+            >
+              <ContenuMenu
+                menu={etat.menu}
+                etat={etat}
+                dispatch={dispatch}
+                espace={p.espace}
+                planId={p.planId}
+              />
+            </Panneau>
+          ) : null}
+          <main className="relative min-w-0 flex-1">
+            {etat.vue === 'plan' ? (
+              <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
+            ) : etat.vue === 'visite' ? (
+              <Visite etat={etat} />
+            ) : etat.vue === 'facades' ? (
+              <Facades etat={etat} dispatch={dispatch} />
+            ) : etat.vue === 'photo' ? (
+              <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
+            ) : (
+              <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
+            )}
+            <Bandeaux
               etat={etat}
               dispatch={dispatch}
-              espace={p.espace}
-              planId={p.planId}
+              sauvegarde={s}
+              essai={Boolean(p.essai)}
+              resoudreConflit={(garder) => void resoudreConflit(garder)}
             />
-          </Panneau>
-        ) : null}
-        <main className="relative min-w-0 flex-1">
-          {etat.vue === 'plan' ? (
-            <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
-          ) : etat.vue === 'visite' ? (
-            <Visite etat={etat} />
-          ) : etat.vue === 'facades' ? (
-            <Facades etat={etat} dispatch={dispatch} />
-          ) : etat.vue === 'photo' ? (
-            <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
-          ) : (
-            <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
-          )}
-          <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
-            {s.etat === 'conflit' ? (
-              <Banner tone="danger" titre="Ce plan a été modifié ailleurs">
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Button taille="sm" onClick={() => void resoudreConflit(false)}>
-                    Prendre la version enregistrée
-                  </Button>
-                  <Button
-                    taille="sm"
-                    variant="secondaire"
-                    onClick={() => void resoudreConflit(true)}
-                  >
-                    Garder la mienne
-                  </Button>
-                </div>
-              </Banner>
-            ) : null}
-            {s.etat === 'erreur' && s.message ? <Banner tone="danger">{s.message}</Banner> : null}
-            {etat.outil === 'coupe' && etat.vue === 'plan' ? (
-              <Banner tone="info">
-                Coupe : cliquez deux points de part et d’autre de la maison. On regarde vers la
-                gauche du trait.
-              </Banner>
-            ) : null}
-            {etat.erreur ? (
-              <Banner
-                tone="attention"
-                action={
-                  <Button
-                    taille="sm"
-                    variant="secondaire"
-                    onClick={() => dispatch({ type: 'effacerErreur' })}
-                  >
-                    OK
-                  </Button>
-                }
-              >
-                {etat.erreur}
-              </Banner>
-            ) : null}
-          </div>
-        </main>
-        {etat.proprietes ? (
-          <Panneau
-            cote="droite"
-            titre="Propriétés"
-            replier={() => dispatch({ type: 'proprietes', ouvert: false })}
-          >
-            <Inspecteur etat={etat} dispatch={dispatch} />
-          </Panneau>
-        ) : null}
-        <RailOutils etat={etat} dispatch={dispatch} />
+          </main>
+          {etat.proprietes ? (
+            <Panneau
+              cote="droite"
+              titre="Propriétés"
+              replier={() => dispatch({ type: 'proprietes', ouvert: false })}
+            >
+              <Inspecteur etat={etat} dispatch={dispatch} />
+            </Panneau>
+          ) : null}
+          <RailOutils etat={etat} dispatch={dispatch} />
+        </div>
       </div>
-    </div>
+    </FournisseurEssai>
   );
 }

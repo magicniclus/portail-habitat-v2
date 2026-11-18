@@ -11,6 +11,7 @@ import { CaretLeftIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur } from './etat';
+import { CompteRequis, useEssai } from './essai';
 import { ExterieurMenu } from './ExterieurMenu';
 import { FondMenu } from './FondMenu';
 import { ImplantationMenu } from './ImplantationMenu';
@@ -66,6 +67,7 @@ export function StructureMenu({
   planId: string;
 }) {
   const [sous, setSous] = useState<Sous | null>(null);
+  const essai = useEssai();
   if (!sous)
     return (
       <div className="grid gap-4">
@@ -184,6 +186,12 @@ export function StructureMenu({
         <ToitureMenu etat={etat} dispatch={dispatch} />
       ) : sous === 'exterieur' ? (
         <ExterieurMenu etat={etat} dispatch={dispatch} />
+      ) : essai && (sous === 'implantation' || sous === 'fond') ? (
+        <CompteRequis
+          pour={
+            sous === 'fond' ? 'importer un plan' : 'chercher votre parcelle et sa photo aérienne'
+          }
+        />
       ) : sous === 'implantation' ? (
         <ImplantationMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />
       ) : (

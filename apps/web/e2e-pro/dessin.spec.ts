@@ -31,6 +31,9 @@ const PHOTO_TEST =
 let retablirFlag: () => Promise<void>;
 test.beforeAll(async () => {
   retablirFlag = await flagGlobal('dessin', true);
+  // Page publique et essai (DES-03) : laissé allumé sur l'émulateur. Le remettre à zéro à la fin
+  // d'un appareil le couperait pendant que l'autre appareil teste encore (projets en parallèle).
+  await flagGlobal('dessinPublic', true);
 });
 test.afterAll(async () => {
   await retablirFlag();
@@ -849,5 +852,50 @@ test.describe('Plans (espace pro)', () => {
     const apres = await vue.goto(href);
     expect(apres!.status()).toBe(404);
     await invite.close();
+  });
+  test('DES-03 : page publique, essai sans compte gardé sur l’appareil, repris après connexion', async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+    // Serveur à froid : la toute première lecture des flags peut dépasser 2,5 s (repli « éteint »).
+    await expect(async () => {
+      await page.goto('/dessin');
+      await expect(page.getByRole('heading', { level: 1 })).toContainText('Dessinez le plan', {
+        timeout: 2_000,
+      });
+    }).toPass({ timeout: 20_000 });
+    await page.getByRole('link', { name: 'Essayer gratuitement' }).first().click();
+    await expect(page.getByText('Essai sans compte')).toBeVisible();
+    // Une pièce rectangulaire de deux clics (sur téléphone, le menu est replié au départ).
+    const structure = page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Structure' });
+    if ((await structure.getAttribute('aria-pressed')) !== 'true') await structure.click();
+    await page.getByRole('button', { name: /^Pièce rectangulaire/ }).click();
+    const svg = page.getByTestId('plan-2d').locator('svg');
+    const boite = (await svg.boundingBox())!;
+    await page.mouse.click(boite.x + boite.width * 0.3, boite.y + boite.height * 0.3);
+    await page.mouse.click(boite.x + boite.width * 0.7, boite.y + boite.height * 0.7);
+    await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
+    await expect(
+      page.getByRole('status').filter({ hasText: 'Gardé sur cet appareil' }),
+    ).toBeAttached({
+      timeout: 10_000,
+    });
+    // Rechargé : l'essai est toujours là ; les fonctions serveur invitent au compte.
+    await page.reload();
+    await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
+    await page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Chiffrer' })
+      .click();
+    await expect(
+      page.getByText(/Créez votre compte gratuit pour télécharger le PDF/),
+    ).toBeVisible();
+    // Connexion : l'essai devient un plan du compte, ouvert dans l'éditeur.
+    await connecter(page, COMPTES.proprio, '/mon-espace/plans?essai=1');
+    await expect(page).toHaveURL(/\/mes-plans\/[A-Za-z0-9]{20}$/, { timeout: 15_000 });
+    await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
+    await expect(page.getByText('Essai sans compte')).toHaveCount(0);
   });
 });

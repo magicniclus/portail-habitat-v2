@@ -4,6 +4,7 @@ import { Button } from '@ph/ui';
 import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur, Vue } from './etat';
+import { CompteRequis, useEssai } from './essai';
 import { GaleriePhotos } from './GaleriePhotos';
 import { PartageMenu } from './PartageMenu';
 
@@ -30,6 +31,7 @@ export function RenduMenu({
   planId: string;
 }) {
   const r = etat.rendu;
+  const essai = useEssai();
   const regler = (reglages: Partial<EtatEditeur['rendu']>) => dispatch({ type: 'rendu', reglages });
   return (
     <div className="grid gap-4">
@@ -89,8 +91,14 @@ export function RenduMenu({
         sur un meuble pour le déplacer ou le faire pivoter avec ses anneaux (Maj : sans crans). En
         visite : ZQSD ou flèches pour marcher, glisser pour regarder, joystick sur mobile.
       </p>
-      <GaleriePhotos espace={espace} planId={planId} revision={etat.revisionPhotos} />
-      <PartageMenu espace={espace} planId={planId} />
+      {essai ? (
+        <CompteRequis pour="garder vos photos et partager votre plan" />
+      ) : (
+        <>
+          <GaleriePhotos espace={espace} planId={planId} revision={etat.revisionPhotos} />
+          <PartageMenu espace={espace} planId={planId} />
+        </>
+      )}
     </div>
   );
 }

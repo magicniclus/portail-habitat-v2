@@ -15,6 +15,7 @@ import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
 import { routes } from '@/lib/routes';
+import { CompteRequis, useEssai } from './essai';
 import { ExportPlan } from './ExportPlan';
 import { horodatage, telechargerFichier } from './telecharger';
 
@@ -37,6 +38,7 @@ export function Chiffrage({
   planId: string;
 }) {
   const scene = sceneDe(etat);
+  const essai = useEssai();
   const lignes = metreScene(scene);
   const menuiseries = menuiseriesScene(scene);
   const coche = (cle: string) => !etat.metreExclus.includes(cle);
@@ -107,7 +109,9 @@ export function Chiffrage({
           <DownloadSimpleIcon aria-hidden="true" /> Métré en CSV (Excel)
         </Button>
       ) : null}
-      {espace === 'particulier' && lignes.length ? (
+      {essai && lignes.length ? (
+        <CompteRequis pour="demander des devis avec votre plan" />
+      ) : espace === 'particulier' && lignes.length ? (
         <section className="grid gap-2 border-t border-trait pt-3.5">
           <h3 className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
             Passer aux travaux

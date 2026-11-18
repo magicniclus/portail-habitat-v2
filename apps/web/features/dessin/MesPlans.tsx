@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
 import { actionPlan, creerPlan, listerPlans, type EspaceDessin, type PlanListe } from './api';
 import { NouveauPlan } from './NouveauPlan';
+import { useRepriseEssai } from './useRepriseEssai';
 
 type Etat =
   | { etat: 'chargement' }
@@ -21,6 +22,7 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
   const [e, setE] = useState<Etat>({ etat: 'chargement' });
   const [nouveau, setNouveau] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const reprise = useRepriseEssai(espace === 'particulier');
   const lien = (id: string) =>
     espace === 'particulier' ? routes.editeurPlan(id) : routes.proEditeurPlan(id);
 
@@ -32,7 +34,7 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
       if (!actif) return;
       if (r.ok) setE({ etat: 'pret', plans: r.data });
       else if (r.code === 'NON_AUTHENTIFIE')
-        router.replace(routes.connexionSuite(window.location.pathname));
+        router.replace(routes.connexionSuite(window.location.pathname + window.location.search));
       else setE({ etat: 'erreur', message: r.message });
     });
     return () => {
@@ -72,6 +74,7 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
           <PlusIcon aria-hidden="true" /> Nouveau plan
         </Button>
       </div>
+      {reprise ? <Banner tone="attention">{reprise}</Banner> : null}
       {message ? <Banner tone="attention">{message}</Banner> : null}
       {actifs.length === 0 ? (
         <EmptyState

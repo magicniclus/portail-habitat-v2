@@ -74,6 +74,9 @@ export const routes = {
   planPartage: (jeton: string) => r(`/plan/${encodeURIComponent(jeton)}`),
   editeurPlan: (id: string) => r(`/mes-plans/${encodeURIComponent(id)}`),
   simulateur: r('/simulateur'),
+  /** Plans (DES-03) : page publique et essai sans compte. */
+  dessin: r('/dessin'),
+  dessinEssai: r('/dessin/essai'),
   simulateurPlan: (planId: string) => r(`/simulateur?plan=${encodeURIComponent(planId)}`),
   /** « Demander un devis » depuis une fiche : la demande cible cet artisan (`source: fiche_artisan`). */
   simulateurArtisan: (artisanId: string) =>

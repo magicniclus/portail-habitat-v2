@@ -27,6 +27,7 @@ const LIBELLES_SAUVEGARDE: Record<EtatSauvegarde, string> = {
   hors_ligne: 'Hors ligne : gardé sur cet appareil',
   conflit: 'Modifié ailleurs',
   erreur: 'Non enregistré',
+  local: 'Gardé sur cet appareil',
 };
 const PASTILLE: Record<EtatSauvegarde, string> = {
   enregistre: 'bg-succes',
@@ -35,6 +36,7 @@ const PASTILLE: Record<EtatSauvegarde, string> = {
   hors_ligne: 'bg-attention-vif',
   conflit: 'bg-danger',
   erreur: 'bg-danger',
+  local: 'bg-attention-vif',
 };
 
 const VUES: { vue: Vue; libelle: string; Icone: Icon }[] = [

@@ -5,6 +5,7 @@ import { CameraIcon } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import { enregistrerPhoto, type EspaceDessin } from '../api';
 import type { Action, EtatEditeur, ReglagesRendu } from '../etat';
+import { useEssai } from '../essai';
 import { horodatage, telechargerFichier } from '../telecharger';
 import { ScenePhoto, type Capturer } from './ScenePhoto';
 
@@ -60,6 +61,7 @@ export default function Photo(p: {
   const capturer = useRef<Capturer | null>(null);
   const [taille, setTaille] = useState({ l: 0, h: 0 });
   const [etape, setEtape] = useState<'pret' | 'rendu' | 'fait' | 'erreur'>('pret');
+  const essai = useEssai();
   const [message, setMessage] = useState('');
 
   // Le cadre garde la proportion choisie et tient dans la zone disponible.
@@ -101,6 +103,12 @@ export default function Photo(p: {
       `plan-photo-${horodatage()}.${format === 'image/png' ? 'png' : 'jpg'}`,
       image,
     );
+    // Essai sans compte : téléchargée seulement, la galerie demande un compte.
+    if (essai) {
+      setEtape('fait');
+      setMessage('Photo téléchargée. Créez votre compte pour la garder dans « Mes photos ».');
+      return;
+    }
     const r = await enregistrerPhoto(p.espace, p.planId, await enBase64(jpeg));
     if (r.ok) p.dispatch({ type: 'photoAjoutee' });
     setEtape(r.ok ? 'fait' : 'erreur');
