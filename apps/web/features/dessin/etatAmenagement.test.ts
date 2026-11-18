@@ -108,6 +108,47 @@ describe('décoration dans l’éditeur (DES-25 à DES-28)', () => {
   });
 });
 
+describe('placement automatique et rotation libre', () => {
+  it('glisser près d’un mur : collé, guides affichés puis effacés ; Alt ou aimant coupé : libre', () => {
+    let e = jouer([
+      { type: 'outil', outil: 'objet', catalogueId: 'buffet' },
+      { type: 'poserPoint', point: { x: 5000, y: 4000 } },
+    ]);
+    const id = niveauDe(e).objets[0]!.id;
+    // Intérieur du mur du haut à y = 200 : buffet de 45 cm, centre à 425.
+    e = reduire(e, { type: 'deplacerObjetVers', id, vers: { x: 3000, y: 600 }, geste: 'g' });
+    expect(niveauDe(e).objets[0]!.position).toEqual({ x: 3000, y: 425 });
+    expect(e.guides.length).toBeGreaterThan(0);
+    const libre = reduire(e, {
+      type: 'deplacerObjetVers',
+      id,
+      vers: { x: 3000, y: 600 },
+      libre: true,
+    });
+    expect(niveauDe(libre).objets[0]!.position).toEqual({ x: 3000, y: 600 });
+    e = reduire(e, { type: 'finGeste' });
+    expect(e.guides).toEqual([]);
+    e = reduire(e, { type: 'aimant' });
+    e = reduire(e, { type: 'deplacerObjetVers', id, vers: { x: 3000, y: 650 } });
+    expect(niveauDe(e).objets[0]!.position).toEqual({ x: 3000, y: 650 });
+    expect(reduire(e, { type: 'deplacerObjetVers', id: 'obj_x', vers: { x: 0, y: 0 } })).toBe(e);
+  });
+
+  it('curseur de rotation : un seul pas d’historique par geste', () => {
+    let e = jouer([
+      { type: 'outil', outil: 'objet', catalogueId: 'table-6' },
+      { type: 'poserPoint', point: { x: 5000, y: 4000 } },
+    ]);
+    const id = niveauDe(e).objets[0]!.id;
+    const avant = e.historique.passe.length;
+    for (const x of [100, 200, 300])
+      e = reduire(e, { type: 'orienterObjet', id, angles: { x }, geste: 'o' });
+    e = reduire(e, { type: 'finGeste' });
+    expect(niveauDe(e).objets[0]!.inclinaison).toEqual({ x: 300, y: 0 });
+    expect(e.historique.passe).toHaveLength(avant + 1);
+  });
+});
+
 describe('clavier et cibles des finitions', () => {
   it('R tourne l’objet choisi, les flèches le déplacent', () => {
     let e = jouer([

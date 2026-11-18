@@ -3,7 +3,6 @@
 import {
   aimanter,
   arrondir,
-  distance,
   niveauInferieur,
   toleranceEnMm,
   tremies,
@@ -17,7 +16,9 @@ import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { FondSvg } from './FondSvg';
+import { GuidesSvg } from './GuidesSvg';
 import { DefsMotifs } from './Motifs';
+import { useGlisser } from './useGlisser';
 import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
 
 /** Plan 2D (DES-06, DES-32) : SVG en millimètres, net à tout zoom, exportable. */
@@ -36,12 +37,6 @@ export function Plan2D({
   const fondVisible = scene.fondImage?.niveauId === n.id ? scene.fondImage : null;
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Point | null>(null);
-  const glisser = useRef<{
-    genre: 'mur' | 'objet';
-    id: string;
-    dernier: Point;
-    geste: string;
-  } | null>(null);
   const cadre = useMemo(() => cadreDe(n), [n]);
   const conteneur = useRef<HTMLDivElement>(null);
   const cadreCourant = useRef(cadre);
@@ -85,13 +80,7 @@ export function Plan2D({
       : arrondir(p);
 
   const trace = etat.outil !== 'selection';
-  /** Glisser un mur (parallèlement) ou un objet : un seul pas d'historique par geste. */
-  const demarrerGlisser = (genre: 'mur' | 'objet', id: string, ev: PointerEvent) => {
-    const p = versMm(ev);
-    if (!p || trace) return;
-    (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
-    glisser.current = { genre, id, dernier: arrondir(p), geste: `glisser-${id}-${Date.now()}` };
-  };
+  const glisser = useGlisser(n, dispatch, versMm, trace);
 
   return (
     <div
@@ -118,18 +107,7 @@ export function Plan2D({
           onPointerMove={(ev) => {
             const p = versMm(ev);
             if (!p) return;
-            const g = glisser.current;
-            if (g) {
-              const vers = arrondir(p);
-              const delta = { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y };
-              if (distance(vers, g.dernier) >= 10) {
-                if (g.genre === 'mur')
-                  dispatch({ type: 'deplacerMur', murId: g.id, delta, geste: g.geste });
-                else dispatch({ type: 'deplacerObjetDe', id: g.id, delta, geste: g.geste });
-                g.dernier = vers;
-              }
-              return;
-            }
+            if (glisser.bouger(p, ev.altKey)) return;
             if (trace) setCurseur(aimante(p));
           }}
           onPointerDown={(ev) => {
@@ -139,11 +117,7 @@ export function Plan2D({
             if (trace) dispatch({ type: 'poserPoint', point: aimante(p) });
             else dispatch({ type: 'selectionner', selection: null });
           }}
-          onPointerUp={() => {
-            if (!glisser.current) return;
-            glisser.current = null;
-            dispatch({ type: 'finGeste' });
-          }}
+          onPointerUp={glisser.finir}
           onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
         >
           {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
@@ -160,15 +134,16 @@ export function Plan2D({
             niveau={n}
             etat={etat}
             dispatch={dispatch}
-            demarrerGlisser={(id, ev) => demarrerGlisser('objet', id, ev)}
+            demarrerGlisser={(id, ev) => glisser.demarrer('objet', id, ev)}
           />
           <MursSvg
             niveau={n}
             etat={etat}
             dispatch={dispatch}
-            demarrerGlisser={(id, ev) => demarrerGlisser('mur', id, ev)}
+            demarrerGlisser={(id, ev) => glisser.demarrer('mur', id, ev)}
           />
           <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
+          <GuidesSvg guides={etat.guides} />
           {etat.calques.cotes ? (
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
           ) : null}

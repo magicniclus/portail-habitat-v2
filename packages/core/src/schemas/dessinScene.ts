@@ -185,6 +185,8 @@ export const objet = z.object({
   materiaux: z.record(z.string().max(32), z.string().max(64)).default({}),
   accrocheMurId: identifiant('m').optional(),
   altitude: mmPositif.default(0),
+  /** Rotation libre (lot 15g) : bascule autour des axes x et y locaux, en dixièmes de degré. */
+  inclinaison: z.object({ x: angle, y: angle }).optional(),
 });
 
 export const escalier = z.object({

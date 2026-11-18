@@ -2,6 +2,7 @@ import {
   creerHistorique,
   enregistrer,
   type CibleRevetement,
+  type Guide,
   type Contexte,
   type HistoriqueDessin,
   type ModificationEscalier,
@@ -47,6 +48,8 @@ export interface EtatEditeur {
   /** Incrémenté pour demander au plan de s'ajuster à l'écran (à l'ouverture, bouton). */
   ajustement: number;
   aimant: boolean;
+  /** Guides du placement automatique pendant un glisser. */
+  guides: Guide[];
   calques: { cotes: boolean; surfaces: boolean };
   /** Panneau ouvert à gauche, `null` = replié. */
   menu: Menu | null;
@@ -80,6 +83,14 @@ export type Action =
   | { type: 'modifierOuverture'; id: string; modif: ModificationOuverture }
   | { type: 'modifierEscalier'; id: string; modif: ModificationEscalier }
   | { type: 'deplacerObjetDe'; id: string; delta: Point; geste?: string }
+  /** Glisser à la souris : centre voulu, placé automatiquement sauf aimant coupé ou Alt. */
+  | { type: 'deplacerObjetVers'; id: string; vers: Point; geste?: string; libre?: boolean }
+  | {
+      type: 'orienterObjet';
+      id: string;
+      angles: { rotation?: number; x?: number; y?: number };
+      geste?: string;
+    }
   | { type: 'tournerObjet'; id: string; angle: number }
   /** Touche R : quart de tour de l'objet choisi. */
   | { type: 'tournerSelection' }
@@ -134,6 +145,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     zoom: ZOOM_DEFAUT,
     ajustement: 1,
     aimant: true,
+    guides: [],
     calques: { cotes: true, surfaces: true },
     menu: 'structure',
     proprietes: true,

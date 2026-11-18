@@ -13,6 +13,7 @@ import { COULEURS_OBJETS } from '@ph/ui/tokens';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { Nuancier } from './Nuancier';
+import { RotationObjet } from './RotationObjet';
 
 const titre = 'm-0 text-xs font-bold tracking-wide text-neutre-700 uppercase';
 
@@ -69,7 +70,6 @@ function InspecteurObjet({
       id: o.id,
       modif: { dimensions: { ...o.dimensions, [cle]: v } },
     });
-  const tourner = (angle: number) => dispatch({ type: 'tournerObjet', id: o.id, angle });
   return (
     <div className="grid gap-4">
       <div>
@@ -86,41 +86,7 @@ function InspecteurObjet({
         <Cote label="Profondeur" mm={o.dimensions.p} plage={plages.p} appliquer={dims('p')} />
         <Cote label="Hauteur" mm={o.dimensions.h} plage={plages.h} appliquer={dims('h')} />
       </div>
-      <fieldset className="m-0 grid gap-2 border-0 p-0">
-        <legend className="mb-2 text-[13px] font-semibold">
-          Rotation · {Math.round(o.rotation / 10)}°
-        </legend>
-        <div className="grid grid-cols-4 gap-2">
-          <Button
-            variant="secondaire"
-            aria-label="Tourner de 90° à gauche"
-            onClick={() => tourner(-900)}
-          >
-            −90°
-          </Button>
-          <Button
-            variant="secondaire"
-            aria-label="Tourner de 15° à gauche"
-            onClick={() => tourner(-150)}
-          >
-            −15°
-          </Button>
-          <Button
-            variant="secondaire"
-            aria-label="Tourner de 15° à droite"
-            onClick={() => tourner(150)}
-          >
-            +15°
-          </Button>
-          <Button
-            variant="secondaire"
-            aria-label="Tourner de 90° à droite"
-            onClick={() => tourner(900)}
-          >
-            +90°
-          </Button>
-        </div>
-      </fieldset>
+      <RotationObjet o={o} dispatch={dispatch} />
       <Nuancier
         legende="Couleur"
         teintes={COULEURS_OBJETS}

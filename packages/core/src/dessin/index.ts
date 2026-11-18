@@ -16,6 +16,7 @@ export * from './migrations';
 export * from './murs';
 export * from './niveaux';
 export * from './objets';
+export * from './placement';
 export * from './ouvertures';
 export * from './pieces';
 export * from './revetements';

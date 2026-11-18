@@ -229,9 +229,13 @@ test.describe('Plans (espace pro)', () => {
     await cliquer(5000, 4000);
     const lit = plan.getByRole('button', { name: 'Lit 160 × 200' });
     await expect(lit).toBeVisible();
-    await expect(page.getByText('Rotation · 0°')).toBeVisible();
+    await expect(page.getByText('Pivoter · 0°')).toBeVisible();
     await page.keyboard.press('r');
-    await expect(page.getByText('Rotation · 90°')).toBeVisible();
+    await expect(page.getByText('Pivoter · 90°')).toBeVisible();
+    // Rotation libre sur les autres axes, au degré près.
+    await page.getByLabel('Basculer sur le côté, en degrés').fill('30');
+    await page.getByLabel('Basculer sur le côté, en degrés').press('Enter');
+    await expect(page.getByText('Basculer sur le côté · 30°')).toBeVisible();
 
     // Finitions (DES-26) : parquet chêne clair sur le sol de la pièce. Sur téléphone, le
     // panneau des propriétés recouvre le plan : on le replie avant de cliquer.

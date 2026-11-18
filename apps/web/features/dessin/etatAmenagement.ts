@@ -4,11 +4,13 @@ import {
   dupliquerObjet,
   deplacerObjet,
   modifierObjet,
+  orienterObjet,
   poserObjet,
   pointDansPolygone,
   revetirMursDeLaPiece,
   revetirZone,
   tournerObjet,
+  type Guide,
   type Niveau,
   type Point,
   type Revetement,
@@ -29,7 +31,7 @@ const ZONE_DEFAUT: Revetement = { famille: 'carrelage', format: { l: 600, p: 600
 export function poserAmenagement(e: EtatEditeur, point: Point): EtatEditeur | null {
   if (e.outil === 'objet') {
     const suite = surNiveau(e, (n) =>
-      poserObjet(n, { catalogueId: e.catalogueId, position: point }, ctx),
+      poserObjet(n, { catalogueId: e.catalogueId, position: point }, ctx, { aimant: e.aimant }),
     );
     const pose = niveauDe(suite).objets.at(-1);
     return suite.erreur || !pose
@@ -83,15 +85,37 @@ function coller(e: EtatEditeur): EtatEditeur {
   return surNiveau(e, commande);
 }
 
+function glisser(e: EtatEditeur, id: string, vers: Point, aimant: boolean, geste?: string) {
+  let guides: Guide[] = [];
+  const suite = surNiveau(
+    e,
+    (n) => {
+      const r = deplacerObjet(n, id, vers, { aimant });
+      if (!r.ok) return r;
+      const { guides: g, ...niveau } = r.data;
+      guides = g;
+      return { ok: true, data: niveau };
+    },
+    geste ?? null,
+  );
+  return { ...suite, guides };
+}
+
 /** Actions d'aménagement et de décoration (lot 15f) ; `null` si l'action n'en fait pas partie. */
 export function reduireAmenagement(e: EtatEditeur, a: Action): EtatEditeur | null {
   switch (a.type) {
     case 'deplacerObjetDe': {
       const o = niveauDe(e).objets.find((x) => x.id === a.id);
       if (!o) return e;
+      // Clavier : déplacement précis, sans placement automatique.
       const vers = { x: o.position.x + a.delta.x, y: o.position.y + a.delta.y };
-      return surNiveau(e, (n) => deplacerObjet(n, a.id, vers), a.geste ?? null);
+      return glisser(e, a.id, vers, false, a.geste);
     }
+    case 'deplacerObjetVers':
+      if (!niveauDe(e).objets.some((x) => x.id === a.id)) return e;
+      return glisser(e, a.id, a.vers, e.aimant && !a.libre, a.geste);
+    case 'orienterObjet':
+      return surNiveau(e, (n) => orienterObjet(n, a.id, a.angles), a.geste ?? null);
     case 'tournerObjet':
       return surNiveau(e, (n) => tournerObjet(n, a.id, a.angle));
     case 'tournerSelection':

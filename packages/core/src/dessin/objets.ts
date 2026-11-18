@@ -1,82 +1,40 @@
 import { echec, succes, type Resultat } from '../resultat';
 import {
   objet as schemaObjet,
-  type Mur,
   type Niveau,
   type Objet,
   type Point,
 } from '../schemas/dessinScene';
 import { objetDuCatalogue, plagesDe } from './catalogue';
+import { contourObjet } from './emprise';
 import type { Contexte } from './commandes';
-import { arrondir, distance, projeter } from './geometrie';
-import { contourMur, longueurMur } from './murs';
+import { arrondir } from './geometrie';
+import { contourMur } from './murs';
+import { placerIdealement, type Guide } from './placement';
+
+export { contourObjet };
 
 /** Objets posés sur le plan (DES-22) : position = centre, rotation en dixièmes de degré. */
 
 const rad = (dixiemes: number) => (dixiemes / 10) * (Math.PI / 180);
 
-/** Les 4 coins de l'objet vu de dessus. Le « dos » est le côté y = -p/2 (contre le mur). */
-export function contourObjet(o: Pick<Objet, 'position' | 'rotation' | 'dimensions'>): Point[] {
-  const a = rad(o.rotation);
-  const c = Math.cos(a);
-  const s = Math.sin(a);
-  const { l, p } = o.dimensions;
-  return [
-    { x: -l / 2, y: -p / 2 },
-    { x: l / 2, y: -p / 2 },
-    { x: l / 2, y: p / 2 },
-    { x: -l / 2, y: p / 2 },
-  ].map((q) => ({ x: o.position.x + q.x * c - q.y * s, y: o.position.y + q.x * s + q.y * c }));
-}
-
-/** Distance maximale pour coller un objet « contre mur » au mur le plus proche. */
-const ATTRACTION_MUR = 700;
-
-/**
- * Objet contre un mur (DES-22) : dos parallèle au mur, plaqué contre la face du côté du clic.
- * Renvoie l'objet tel quel si aucun mur n'est assez proche.
- */
-export function plaquerContreMur(o: Objet, murs: readonly Mur[]): Objet {
-  let meilleur: { m: Mur; d: number; t: number } | null = null;
-  for (const m of murs) {
-    if (m.type === 'separation') continue;
-    const { point, t } = projeter(o.position, m.a, m.b);
-    const d = distance(o.position, point);
-    if (d <= ATTRACTION_MUR + m.epaisseur / 2 && (!meilleur || d < meilleur.d))
-      meilleur = { m, d, t };
-  }
-  if (!meilleur) return o;
-  const { m, t } = meilleur;
-  const l = longueurMur(m);
-  const u = { x: (m.b.x - m.a.x) / l, y: (m.b.y - m.a.y) / l };
-  const n = { x: -u.y, y: u.x };
-  const surAxe = { x: m.a.x + u.x * t * l, y: m.a.y + u.y * t * l };
-  // Côté du mur où l'objet a été posé : +1 du côté de la normale gauche.
-  const cote = (o.position.x - surAxe.x) * n.x + (o.position.y - surAxe.y) * n.y >= 0 ? 1 : -1;
-  const ecart = m.epaisseur / 2 + o.dimensions.p / 2;
-  const position = arrondir({ x: surAxe.x + n.x * cote * ecart, y: surAxe.y + n.y * cote * ecart });
-  // Le dos (y local négatif) regarde le mur : l'axe y local pointe dans le sens de n·côté.
-  const angle = Math.atan2(n.y * cote, n.x * cote) - Math.PI / 2;
-  const rotation = (((Math.round((angle * 180) / Math.PI) * 10) % 3600) + 3600) % 3600;
-  return { ...o, position, rotation, accrocheMurId: m.id };
-}
-
 export function poserObjet(
   n: Niveau,
   e: { catalogueId: string; position: Point },
   ctx: Contexte,
+  options: { aimant?: boolean } = {},
 ): Resultat<Niveau> {
   const c = objetDuCatalogue(e.catalogueId);
   if (!c) return echec('INTROUVABLE');
-  let o: Objet = schemaObjet.parse({
+  const o: Objet = schemaObjet.parse({
     id: ctx.nouvelId('obj'),
     catalogueId: c.id,
     position: arrondir(e.position),
     dimensions: c.dimensions,
     altitude: c.altitude ?? 0,
   });
-  if (c.contreMur) o = plaquerContreMur(o, n.murs);
-  return succes({ ...n, objets: [...n.objets, o] });
+  const place = options.aimant === false ? o : placerIdealement(o, n).objet;
+  return succes({ ...n, objets: [...n.objets, place] });
 }
 
 const trouver = (n: Niveau, id: string) => n.objets.find((o) => o.id === id);
@@ -85,14 +43,18 @@ const remplacer = (n: Niveau, o: Objet): Niveau => ({
   objets: n.objets.map((x) => (x.id === o.id ? o : x)),
 });
 
-/** Glisser un objet ; un objet « contre mur » se recolle au mur le plus proche. */
-export function deplacerObjet(n: Niveau, id: string, vers: Point): Resultat<Niveau> {
+/** Glisser un objet : placement automatique (mur, angle, voisin), sauf aimant coupé. */
+export function deplacerObjet(
+  n: Niveau,
+  id: string,
+  vers: Point,
+  options: { aimant?: boolean } = {},
+): Resultat<Niveau & { guides: Guide[] }> {
   const o = trouver(n, id);
   if (!o) return echec('INTROUVABLE');
-  const deplace: Objet = { ...o, position: arrondir(vers) };
-  const { accrocheMurId: _ancien, ...libre } = deplace;
-  const c = objetDuCatalogue(o.catalogueId);
-  return succes(remplacer(n, c?.contreMur ? plaquerContreMur(libre, n.murs) : libre));
+  const { accrocheMurId: _ancien, ...libre } = { ...o, position: arrondir(vers) };
+  const r = options.aimant === false ? { objet: libre, guides: [] } : placerIdealement(libre, n);
+  return succes({ ...remplacer(n, r.objet), guides: r.guides });
 }
 
 /** Pivoter (pas de 15° ou 90°), sans décrocher l'objet de sa position. */
@@ -100,6 +62,29 @@ export function tournerObjet(n: Niveau, id: string, dixiemes: number): Resultat<
   const o = trouver(n, id);
   if (!o) return echec('INTROUVABLE');
   return succes(remplacer(n, { ...o, rotation: (((o.rotation + dixiemes) % 3600) + 3600) % 3600 }));
+}
+
+/**
+ * Rotation libre sur 3 axes (angles absolus, dixièmes de degré) : `rotation` autour de la
+ * verticale, `x` bascule avant/arrière, `y` bascule de côté. À plat, l'inclinaison disparaît.
+ */
+export function orienterObjet(
+  n: Niveau,
+  id: string,
+  angles: { rotation?: number; x?: number; y?: number },
+): Resultat<Niveau> {
+  const o = trouver(n, id);
+  if (!o) return echec('INTROUVABLE');
+  const norm = (d: number) => ((Math.round(d) % 3600) + 3600) % 3600;
+  const x = norm(angles.x ?? o.inclinaison?.x ?? 0);
+  const y = norm(angles.y ?? o.inclinaison?.y ?? 0);
+  const { inclinaison: _i, ...sans } = o;
+  const suite: Objet = {
+    ...sans,
+    rotation: norm(angles.rotation ?? o.rotation),
+    ...(x || y ? { inclinaison: { x, y } } : {}),
+  };
+  return succes(remplacer(n, suite));
 }
 
 export type ModificationObjet = Partial<Pick<Objet, 'dimensions' | 'altitude' | 'materiaux'>>;

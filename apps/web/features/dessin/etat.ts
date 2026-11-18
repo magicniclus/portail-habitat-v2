@@ -62,7 +62,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       if (e.selection?.genre !== 'mur') return e;
       return surNiveau(e, (n) => deplacerMur(n, e.selection!.id, a.delta, ctx));
     case 'finGeste':
-      return { ...e, historique: terminerGeste(e.historique) };
+      return { ...e, historique: terminerGeste(e.historique), guides: [] };
     case 'renommerPiece':
       return surNiveau(e, (n) => renommerPiece(n, a.pieceId, a.nom));
     case 'revetement':
