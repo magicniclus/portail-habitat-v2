@@ -149,7 +149,7 @@ apps/functions/src/dessin            enregistrer, restaurer, partager, purger, v
 | Application | **Next.js 16 + React 19 + TypeScript** (déjà en place) | une seule application, mêmes comptes, mêmes thèmes | application séparée |
 | Plan 2D | **SVG rendu par React** | net à tout zoom, accessible (focus, `aria`), export PDF direct, suffisant jusqu'à ~2 000 éléments | Canvas/Konva (à garder en réserve si un plan dépasse ce volume) |
 | 3D, visite, photo | **three.js + @react-three/fiber + @react-three/drei** (+ `@react-three/postprocessing` pour la vue photo) | standard du web 3D, écosystème React, chargé **seulement** au passage en 3D | Babylon.js (plus lourd, moins « React ») |
-| État de l'éditeur, annuler / rétablir | **zustand + immer** (patchs inverses = historique) | léger (~3 ko), sélecteurs fins, historique sans copier la scène | Redux (lourd), état React seul (re-rendus) |
+| État de l'éditeur, annuler / rétablir | **zustand + immer** (patchs inverses = historique) ; *15d : `useReducer` + instantanés immuables du cœur suffisent, aucune dépendance ajoutée* | léger (~3 ko), sélecteurs fins, historique sans copier la scène | Redux (lourd), état React seul (re-rendus) |
 | Géométrie | **code maison dans `packages/core/dessin`** + `clipper2-ts` (opérations booléennes, offsets) ; triangulation `earcut` (déjà dans three) | logique pure testée, millimètres entiers | — |
 | Calculs lourds | **Web Worker + comlink** (détection des pièces, métré) | l'interface ne gèle jamais | — |
 | Hors ligne | **IndexedDB via idb-keyval** | brouillon et essai sans compte | localStorage (5 Mo, synchrone) |

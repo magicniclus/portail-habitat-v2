@@ -230,3 +230,4 @@ export const palettesSites = [
     sombre: '#0d2340',
   },
 ] as const;
+export * from './dessin';

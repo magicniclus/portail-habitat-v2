@@ -12,6 +12,7 @@ import {
   scinderMur,
   supprimerMur,
 } from './commandes';
+import { aire } from './geometrie';
 import { contourMur, jonction, longueurMur, surfaceFaceNette } from './murs';
 
 const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
@@ -110,6 +111,20 @@ describe('commandes', () => {
     expect(depuisB.murs[0]!.a.x).toBe(2_150);
     expect(modifierLongueurMur(n, haut.id, 0, ctx)).toMatchObject({ ok: false });
     expect(modifierLongueurMur(n, 'm_absent', 1000, ctx)).toMatchObject({ code: 'INTROUVABLE' });
+  });
+
+  it('tirer sur une cote garde la pièce d’équerre (le mur voisin suit parallèlement)', () => {
+    const ctx = contexteTest();
+    const n = niveauMaquette(ctx);
+    const r = ok(modifierLongueurMur(n, n.murs[0]!.id, 8_300, ctx));
+    expect(r.murs[1]!.a.x).toBe(8_450);
+    expect(r.murs[1]!.b.x).toBe(8_450);
+    expect(aire(r.pieces[0]!.contour)).toBe(8_000 * 8_000);
+    // Mur prolongé par un mur aligné (après une coupe) : seule l'extrémité bouge.
+    const coupe = ok(scinderMur(n, n.murs[0]!.id, 5_000, ctx));
+    const r2 = ok(modifierLongueurMur(coupe, n.murs[0]!.id, 4_000, ctx));
+    expect(r2.murs[0]!.b).toEqual({ x: 4_150, y: 150 });
+    expect(r2.murs[1]!.a).toEqual({ x: 4_150, y: 150 });
   });
 
   it('déplacer un mur parallèlement', () => {

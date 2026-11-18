@@ -854,7 +854,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15a Cadrage (ce paragraphe)
 - [x] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (18/11/2026, voir « Lot 15b fait » ci-dessous)
 - [x] 15c Données : Firestore, règles et tests, serveur, purge, RGPD (18/11/2026, voir « Lot 15c fait » ci-dessous)
-- [ ] 15d Coque de l'éditeur et 2D (routes, barre, bibliothèque, palette, inspecteur, murs, pièces, cotes, sauvegarde)
+- [x] 15d Coque de l'éditeur et 2D (18/11/2026, voir « Lot 15d fait » ci-dessous)
 - [ ] 15e Ouvertures, escaliers, niveaux, plan importé
 - [ ] 15f Aménager et décorer (catalogue, cuisine, salle de bain, revêtements, zones décoratives)
 - [ ] 15g 3D, visite, photo
@@ -887,6 +887,16 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - Tests : 47 nouveaux, 4 200 au total, tous verts ; couverture de `dessin/` 99,4 % lignes ; `typecheck` et `lint` verts.
 - Export `@ph/core/dessin` ajouté à `packages/core/package.json` avec l'accord du propriétaire (seule ligne existante modifiée), point d'entrée `dessin/index.ts`. `pnpm lint`, `pnpm typecheck` (8 paquets), `pnpm knip` et les 4 200 tests du cœur sont verts.
 - Constats : le catalogue n'a pas de prestation « peinture intérieure » ni « carrelage » (`prestationId: null` dans le métré pour ces postes) ; les modèles de départ (studio, T2…) sont reportés au lot 15d, avec l'écran de création.
+
+### Lot 15d fait (18/11/2026)
+- **Écrans** : « Mes plans » (`/mon-espace/plans`, onglet de l'espace particulier) et « Dessin » (`/pro/dessin`, barre latérale, permission `dessin.gerer`) : liste, création depuis une forme (rectangle, L, U, T, ou plan vide), copie, corbeille et restauration. Éditeur plein écran (`…/[planId]`) fidèle à la maquette : barre d'application (projet renommable, état d'enregistrement, niveau, annuler/rétablir, vues), bibliothèque à onglets (Structure : murs et cloisons, pièce rectangulaire ; Chiffrer : métré en direct), palette d'outils (sélection, mur, pièce, magnétisme), plan 2D en SVG (murs à l'épaisseur réelle, pièces colorées selon le sol, cotes cliquables, nom et surface des pièces, tracé avec aimantation), inspecteur (longueur saisie, peinture des faces, sol, plafond, nom, surface, périmètre, suppression), zoom et « ajuster à l'écran », calques Cotes et Surfaces, guide « Bien démarrer ».
+- **Sauvegarde** : automatique 2 s après la dernière modification, bouton Enregistrer (version nommée), conflit entre onglets proposé à l'utilisateur, brouillon hors ligne dans IndexedDB repris à l'ouverture.
+- **Clavier et mobile** : Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, Échap, Suppr, flèches (1 cm, Maj = 10 cm) ; sur téléphone, bibliothèque et propriétés en feuilles du bas, palette en bas, hauteur calculée sous l'en-tête et au-dessus de la navigation pro.
+- **Correction du cœur** : tirer sur une cote déplace le mur voisin parallèlement (la pièce reste d'équerre) au lieu de le mettre de biais.
+- **Aucune dépendance ajoutée** : `useReducer` et les instantanés immuables du cœur suffisent (zustand, immer, idb-keyval, comlink non nécessaires à ce stade).
+- **Touché dans l'existant (accord du propriétaire)** : flags `dessin` et `dessinPublic` (défaut `false`), page `dessin` du menu pro en option de `menuPro` (comportement inchangé sans l'option, tests existants intacts), adresse et icône, onglet « Mes plans » (prop `avecPlans`, absente = inchangé) et ses 4 pages, routes, export des tokens de couleur de Dessin (`@ph/ui/tokens`).
+- **Tests** : 12 unitaires (état de l'éditeur, scènes de départ), 2 sur le menu pro, Playwright `e2e-pro/dessin.spec.ts` (créer un plan, tracer une cloison, annuler, modifier une cote, rechargement, refus du comptable) **vert sur iPhone 13 et ordinateur**. `typecheck`, `lint`, `knip`, `prettier`, 4 203 tests du cœur verts.
+- **Reste pour les lots suivants** : modèles de départ (studio, T2…) et données de démonstration du seed, plusieurs niveaux (15e), 3D et visite (15g).
 
 ### Lot 15c fait (18/11/2026)
 Avec l'accord du propriétaire (« oui à tout »), ajouts seulement dans les fichiers existants : `firestore.rules` (2 blocs de lecture), `firestore.indexes.json` (index de purge), `chemins.ts` (chemins des plans), `permissions.ts` (`dessin.gerer` : propriétaire, gérant, collaborateur), `packages/firebase/package.json` (export `@ph/firebase/dessin`), `apps/functions/src/index.ts` (`purgeDessinNuit`), suppression de compte et export RGPD (plans inclus). **`storage.rules` n'a pas eu besoin d'être modifié** (refus total par défaut, accès serveur uniquement).
@@ -938,3 +948,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
 - 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Export `@ph/core/dessin` ajouté, toutes les vérifications vertes : §31.
 - 18/11/2026 — Lot 15c fait (données, règles et tests, serveur, purge, RGPD de Dessin). 16 échecs préexistants de storage.test.ts signalés : §31.
+- 18/11/2026 — Lot 15d fait (écrans Mes plans / Dessin, éditeur 2D, sauvegarde automatique et hors ligne, mobile), e2e vert iPhone et ordinateur : §31.

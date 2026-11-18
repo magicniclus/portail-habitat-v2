@@ -11,6 +11,7 @@ export const PAGES_PRO = [
   'appelsOffres',
   'avis',
   'statistiques',
+  'dessin',
   'equipe',
   'facturation',
   'compte',
@@ -50,6 +51,8 @@ const SECTIONS: { titre: string; liens: { cle: PagePro; libelle: string; visible
         { cle: 'avis', libelle: 'Mes avis', visible: pas('comptable') },
         { cle: 'site', libelle: 'Mon site internet', visible: droit('site.gerer') },
         { cle: 'statistiques', libelle: 'Statistiques', visible: droit('statistiques.voir') },
+        // Affiché seulement quand le flag `dessin` est actif (option de menuPro).
+        { cle: 'dessin', libelle: 'Dessin', visible: droit('dessin.gerer') },
       ],
     },
   ];
@@ -70,11 +73,13 @@ export function menuPro(
   membre: Membre | null | undefined,
   badges: Partial<Record<PagePro, number>> = {},
   alertes: Partial<Record<PagePro, string>> = {},
+  options: { dessin?: boolean } = {},
 ): { titre: string; liens: LienPro[] }[] {
   const actif = membre?.statut === 'actif' ? membre : null;
   return SECTIONS.map((s) => ({
     titre: s.titre,
     liens: s.liens
+      .filter((l) => l.cle !== 'dessin' || options.dessin === true)
       .filter((l) => (l.visible ? actif !== null && l.visible(actif) : true))
       .map((l) => ({
         cle: l.cle,

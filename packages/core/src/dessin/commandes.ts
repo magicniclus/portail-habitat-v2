@@ -115,7 +115,20 @@ export function modifierLongueurMur(
     x: o.x + ((bout.x - o.x) / l) * longueur,
     y: o.y + ((bout.y - o.y) / l) * longueur,
   };
+  // Un seul mur joint à l'extrémité qui bouge, non aligné : il se déplace parallèlement
+  // (la pièce reste d'équerre), comme quand on tire sur une cote. Sinon, l'extrémité seule.
+  const joints = extremitesEn(n.murs, bout, ctx.tolerance ?? 1).filter((j) => j.murId !== murId);
+  const voisin = joints.length === 1 ? trouverMur(n, joints[0]!.murId) : undefined;
+  if (voisin && !alignes(m, voisin))
+    return deplacerMur(n, voisin.id, { x: vers.x - bout.x, y: vers.y - bout.y }, ctx);
   return deplacerExtremite(n, murId, fixe === 'a' ? 'b' : 'a', vers, ctx);
+}
+
+/** Deux murs de même direction (au sens près). */
+function alignes(m1: Mur, m2: Mur): boolean {
+  const v1 = { x: m1.b.x - m1.a.x, y: m1.b.y - m1.a.y };
+  const v2 = { x: m2.b.x - m2.a.x, y: m2.b.y - m2.a.y };
+  return Math.abs(v1.x * v2.y - v1.y * v2.x) / (longueurMur(m1) * longueurMur(m2)) < 1e-3;
 }
 
 function deplacerPoints(

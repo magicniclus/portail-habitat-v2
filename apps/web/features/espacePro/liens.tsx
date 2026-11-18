@@ -4,6 +4,7 @@ import type { PagePro } from '@ph/core/espace-pro';
 import {
   ChartBarIcon,
   ChatCircleTextIcon,
+  CompassToolIcon,
   FileTextIcon,
   GlobeIcon,
   HouseIcon,
@@ -28,6 +29,7 @@ const ICONES: Record<PagePro, Icon> = {
   appelsOffres: MegaphoneIcon,
   avis: StarIcon,
   statistiques: ChartBarIcon,
+  dessin: CompassToolIcon,
   equipe: UsersThreeIcon,
   facturation: ReceiptIcon,
   compte: UserCircleIcon,

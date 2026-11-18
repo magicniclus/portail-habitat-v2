@@ -56,6 +56,8 @@ export const routes = {
   proFactureNouvelle: r('/pro/devis/factures/nouvelle'),
   proFactureClient: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}`),
   proStatistiques: r('/pro/statistiques'),
+  proDessin: r('/pro/dessin'),
+  proUnPlan: (id: string) => r(`/pro/dessin/${encodeURIComponent(id)}`),
   proEquipe: r('/pro/equipe'),
   proResiliation: r('/pro/abonnement/resilier'),
   /** Mon abonnement (PAIEMENTS §4) ; `?offre=` ouvre directement le paiement de la formule. */
@@ -66,6 +68,8 @@ export const routes = {
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),
   monEspaceCompte: r('/mon-espace/compte'),
+  monEspacePlans: r('/mon-espace/plans'),
+  monEspaceUnPlan: (id: string) => r(`/mon-espace/plans/${encodeURIComponent(id)}`),
   simulateur: r('/simulateur'),
   /** « Demander un devis » depuis une fiche : la demande cible cet artisan (`source: fiche_artisan`). */
   simulateurArtisan: (artisanId: string) =>
