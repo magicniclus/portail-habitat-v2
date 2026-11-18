@@ -116,7 +116,7 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
           {visibles.length === 0 ? (
             <p className="m-0 text-neutre-800">Aucun plan ne correspond à « {recherche} ».</p>
           ) : null}
-          <ul className="m-0 grid list-none gap-3 p-0 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-3">
+          <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] gap-3 p-0 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-3">
             {visibles.map((p) => (
               <CartePlan
                 key={p.planId}
