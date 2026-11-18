@@ -227,7 +227,7 @@ Poids visé : éditeur 2D ≤ 250 ko gzip ; 3D ≈ 200 ko gzip supplémentaires,
 - DES-37 **Vue photo** : cadrage (paysage, carré, portrait), ambiance (jour, soirée), rendu amélioré côté client et export PNG/JPEG haute définition ; galerie « Mes photos » du plan. Pas de rendu serveur (D85 ✅, coût nul) : tout le rendu se fait dans le navigateur.
 
 ### 6.13 Historique et sauvegarde
-- DES-38 Annuler / rétablir **illimités dans la session** (Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, boutons, menu mobile) ; un glisser = une seule étape ; l'historique couvre aussi les revêtements et les réglages de vue utiles (pas le zoom).
+- DES-38 Annuler / rétablir **300 étapes dans la session** (décision du 18/11/2026 : des heures de travail, sans risque pour la mémoire d'un téléphone) (Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, boutons, menu mobile) ; un glisser = une seule étape ; l'historique couvre aussi les revêtements et les réglages de vue utiles (pas le zoom).
 - DES-39 Enregistrement automatique 2 s après la dernière modification + indicateur (« Enregistré », « Enregistrement… », « Hors ligne, enregistré sur cet appareil ») ; hors ligne : IndexedDB puis renvoi au retour du réseau.
 - DES-40 Historique des versions (automatiques et nommées), aperçu, restauration ; conflit entre onglets ou membres détecté et résolu (§4).
 

@@ -17,13 +17,28 @@ export interface PlanListe {
 const appel = <R>(operation: string, espace: EspaceDessin, corps: object = {}) =>
   posterJson<R>(`/api/dessin/${operation}`, { espace, ...corps });
 
+/**
+ * Création (plan, copie, fichier) rejouée par erreur (réseau, double envoi) : même contenu dans
+ * la même fenêtre de 10 s = même clé, le serveur rend le premier résultat sans recréer.
+ */
+async function cleIdempotence(operation: string, corps: object): Promise<string> {
+  const texte = `${operation}:${Math.floor(Date.now() / 10_000)}:${JSON.stringify(corps)}`;
+  const octets = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texte));
+  return [...new Uint8Array(octets)]
+    .map((o) => o.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 48);
+}
+const appelUnique = async <R>(operation: string, espace: EspaceDessin, corps: object) =>
+  appel<R>(operation, espace, { ...corps, cleIdempotence: await cleIdempotence(operation, corps) });
+
 export const listerPlans = (espace: EspaceDessin) => appel<PlanListe[]>('lister', espace);
 
 export const lirePlan = (espace: EspaceDessin, planId: string) =>
   appel<{ titre: string; versionCourante: number; scene: Scene }>('lire', espace, { planId });
 
 export const creerPlan = (espace: EspaceDessin, titre: string, scene?: Scene) =>
-  appel<{ planId: string }>('creer', espace, scene ? { titre, scene } : { titre });
+  appelUnique<{ planId: string }>('creer', espace, scene ? { titre, scene } : { titre });
 
 export const enregistrerPlan = (
   espace: EspaceDessin,
@@ -37,12 +52,15 @@ export const actionPlan = (
   espace: EspaceDessin,
   operation: 'dupliquer' | 'corbeille' | 'restaurer',
   planId: string,
-): Promise<Resultat<unknown>> => appel(operation, espace, { planId });
+): Promise<Resultat<unknown>> =>
+  operation === 'dupliquer'
+    ? appelUnique(operation, espace, { planId })
+    : appel(operation, espace, { planId });
 
 export const enregistrerFond = (
   espace: EspaceDessin,
   e: { planId: string; type: 'image/jpeg'; base64: string },
-) => appel<{ storagePath: string }>('fond', espace, e);
+) => appelUnique<{ storagePath: string }>('fond', espace, e);
 
 export const lireFond = (espace: EspaceDessin, planId: string, storagePath: string) =>
   appel<{ url: string }>('lire-fond', espace, { planId, storagePath });
@@ -88,7 +106,7 @@ export const revoquerPartage = (espace: EspaceDessin, partageId: string) =>
 
 /** Galerie « Mes photos » du plan (DES-37). */
 export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
-  appel<{ storagePath: string }>('photo', espace, { planId, base64 });
+  appelUnique<{ storagePath: string }>('photo', espace, { planId, base64 });
 
 export const listerPhotos = (espace: EspaceDessin, planId: string) =>
   appel<{ photos: { storagePath: string; creeLe: number }[] }>('photos', espace, { planId });

@@ -1,5 +1,6 @@
 'use client';
 
+import { oublierDonneesLocales } from '@/lib/donneesLocales';
 import { Banner, Button, ConfirmDialog } from '@ph/ui';
 import { useState } from 'react';
 import { LigneReglage } from '@/features/espace/LigneReglage';
@@ -24,9 +25,11 @@ export function Appareils({ appareil }: { appareil: string }) {
           () => ({ ok: false as const, message: 'Réseau indisponible. Réessayez.' }),
         );
     if (!r.ok) return setErreur(r.message);
-    await Promise.all([authClient().then((a) => a.signOut()), oublierPagesHorsLigne()]).catch(
-      () => undefined,
-    );
+    await Promise.all([
+      authClient().then((a) => a.signOut()),
+      oublierPagesHorsLigne(),
+      oublierDonneesLocales(),
+    ]).catch(() => undefined);
     window.location.assign(routes.connexionPro);
   };
   return (

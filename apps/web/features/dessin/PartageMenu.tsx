@@ -36,8 +36,12 @@ export function PartageMenu({ espace, planId }: { espace: EspaceDessin; planId: 
     await navigator.clipboard?.writeText(adresse).catch(() => undefined);
     setMessage('Lien copié.');
   };
+  const [enCours, setEnCours] = useState(false);
   const creer = async () => {
+    if (enCours) return;
+    setEnCours(true);
     const r = await partagerPlan(espace, planId, Number(jours));
+    setEnCours(false);
     if (!r.ok) return setMessage(r.message);
     const adresse = `${window.location.origin}${routes.planPartage(r.data.jeton)}`;
     setNouveau(adresse);
@@ -65,7 +69,7 @@ export function PartageMenu({ espace, planId }: { espace: EspaceDessin; planId: 
           <option value="365">1 an</option>
         </Select>
       </label>
-      <Button onClick={() => void creer()}>
+      <Button onClick={() => void creer()} disabled={enCours}>
         <LinkIcon aria-hidden="true" /> Créer un lien de partage
       </Button>
       {nouveau ? (

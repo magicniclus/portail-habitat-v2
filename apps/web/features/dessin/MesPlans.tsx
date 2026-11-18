@@ -42,8 +42,13 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
     };
   }, [espace, router, version]);
 
+  // Une action à la fois : un double clic ne crée pas deux copies.
+  const [enCours, setEnCours] = useState(false);
   const agir = async (operation: 'dupliquer' | 'corbeille' | 'restaurer', planId: string) => {
+    if (enCours) return;
+    setEnCours(true);
     const r = await actionPlan(espace, operation, planId);
+    setEnCours(false);
     setMessage(r.ok ? null : r.message);
     recharger();
   };

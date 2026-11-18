@@ -1,4 +1,5 @@
 import type { Scene } from '@ph/core/dessin';
+import { BASE_BROUILLONS_PLANS } from '@/lib/donneesLocales';
 
 /**
  * Brouillons hors ligne (DES-39) : la dernière scène non enregistrée de chaque plan, dans
@@ -11,12 +12,11 @@ export interface Brouillon {
   le: number;
 }
 
-const BASE = 'portail-dessin';
 const TABLE = 'brouillons';
 
 function ouvrir(): Promise<IDBDatabase> {
   return new Promise((ok, ko) => {
-    const r = indexedDB.open(BASE, 1);
+    const r = indexedDB.open(BASE_BROUILLONS_PLANS, 1);
     r.onupgradeneeded = () => r.result.createObjectStore(TABLE);
     r.onsuccess = () => ok(r.result);
     r.onerror = () => ko(r.error);

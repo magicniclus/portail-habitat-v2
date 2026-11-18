@@ -48,6 +48,8 @@ import { routeJson } from '@/server/json';
 export const dynamic = 'force-dynamic';
 
 const espace = { espace: z.enum(['particulier', 'entreprise']) };
+/** Créations rejouables (réseau, double envoi) : premier résultat rendu, rien recréé. */
+const unique = { cleIdempotence: z.string().min(8).max(64) };
 const debit = { cle: 'dessin', max: 600, fenetre: '1h' } as const;
 /** Opérations coûteuses (COUTS) : limites propres, en plus de la limite générale. */
 const debitPdf = { cle: 'dessin-pdf', max: 30, fenetre: '1h' } as const;
@@ -78,7 +80,12 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       listerVersions(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e.planId),
   ),
   creer: action(
-    { schema: entreeCreerPlan.extend(espace), nom: 'dessin.creer', rateLimit: debit },
+    {
+      schema: entreeCreerPlan.extend({ ...espace, ...unique }),
+      nom: 'dessin.creer',
+      idempotence: true,
+      rateLimit: debit,
+    },
     async (e, ctx) =>
       creerPlan(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), {
         titre: e.titre,
@@ -100,7 +107,12 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     async (e, ctx) => renommerPlan(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   dupliquer: action(
-    { schema: entreePlan.extend(espace), nom: 'dessin.dupliquer', rateLimit: debit },
+    {
+      schema: entreePlan.extend({ ...espace, ...unique }),
+      nom: 'dessin.dupliquer',
+      idempotence: true,
+      rateLimit: debit,
+    },
     async (e, ctx) =>
       dupliquerPlan(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e.planId),
   ),
@@ -124,7 +136,12 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       restaurerVersion(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   fond: action(
-    { schema: entreeFondPlan.extend(espace), nom: 'dessin.fond', rateLimit: debitFichiers },
+    {
+      schema: entreeFondPlan.extend({ ...espace, ...unique }),
+      nom: 'dessin.fond',
+      idempotence: true,
+      rateLimit: debitFichiers,
+    },
     async (e, ctx) =>
       enregistrerFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
@@ -138,7 +155,12 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     async (e, ctx) => lireFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   photo: action(
-    { schema: entreePhotoPlan.extend(espace), nom: 'dessin.photo', rateLimit: debitFichiers },
+    {
+      schema: entreePhotoPlan.extend({ ...espace, ...unique }),
+      nom: 'dessin.photo',
+      idempotence: true,
+      rateLimit: debitFichiers,
+    },
     async (e, ctx) =>
       enregistrerPhoto(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),

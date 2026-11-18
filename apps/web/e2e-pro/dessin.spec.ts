@@ -1061,7 +1061,12 @@ test.describe('Plans (espace pro)', () => {
         });
         return (await r.json()) as { ok: boolean; data?: { planId: string }; message?: string };
       },
-      { espace: 'entreprise', titre: 'Plan de charge', scene },
+      {
+        espace: 'entreprise',
+        titre: 'Plan de charge',
+        scene,
+        cleIdempotence: `charge-${Date.now()}`,
+      },
     );
     expect(cree.ok, cree.message).toBe(true);
     // PDF d'une grande scène : le corps (bien plus de 16 Ko) est accepté ; 100 m de long ne

@@ -1,3 +1,4 @@
+import { oublierDonneesLocales } from '@/lib/donneesLocales';
 import type { DemandeEspace, DetailDemande } from '@ph/firebase/espace';
 import { posterJson } from '@/lib/posterJson';
 
@@ -25,4 +26,7 @@ export const exporterDonnees = () =>
 export const supprimerCompte = () =>
   posterJson<null>('/api/mon-espace/suppression', { confirmation: 'SUPPRIMER' });
 
-export const seDeconnecter = () => fetch('/api/session', { method: 'DELETE' }).catch(() => null);
+export const seDeconnecter = async () => {
+  await oublierDonneesLocales();
+  return fetch('/api/session', { method: 'DELETE' }).catch(() => null);
+};
