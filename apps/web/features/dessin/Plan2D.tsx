@@ -86,69 +86,76 @@ export function Plan2D({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispat
     <div
       ref={conteneur}
       className="h-full w-full overflow-auto"
-      style={{ background: COULEURS_PLAN.fond }}
+      // Papier pointillé du plan (maquette) : un point tous les 24 px.
+      style={{
+        backgroundColor: COULEURS_PLAN.fond,
+        backgroundImage: `radial-gradient(${COULEURS_PLAN.grille} 1px, transparent 1.2px)`,
+        backgroundSize: '24px 24px',
+      }}
       data-testid="plan-2d"
     >
-      <svg
-        ref={svg}
-        role="img"
-        aria-label={`Plan 2D du niveau ${n.nom}`}
-        width={Math.round(cadre.l / mmParPx)}
-        height={Math.round(cadre.h / mmParPx)}
-        viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
-        className={trace ? 'cursor-crosshair touch-none' : 'touch-none'}
-        style={{ background: COULEURS_PLAN.fond }}
-        onPointerMove={(ev) => {
-          const p = versMm(ev);
-          if (!p) return;
-          const g = glisser.current;
-          if (g) {
-            const vers = arrondir(p);
-            const delta = { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y };
-            if (distance(vers, g.dernier) >= 10) {
-              dispatch({ type: 'deplacerMur', murId: g.murId, delta, geste: g.geste });
-              g.dernier = vers;
-            }
-            return;
-          }
-          if (trace) setCurseur(aimante(p));
-        }}
-        onPointerDown={(ev) => {
-          if (ev.target !== ev.currentTarget && !trace) return;
-          const p = versMm(ev);
-          if (!p) return;
-          if (trace) dispatch({ type: 'poserPoint', point: aimante(p) });
-          else dispatch({ type: 'selectionner', selection: null });
-        }}
-        onPointerUp={() => {
-          if (!glisser.current) return;
-          glisser.current = null;
-          dispatch({ type: 'finGeste' });
-        }}
-        onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
-      >
-        <PiecesSvg niveau={n} etat={etat} dispatch={dispatch} />
-        <MursSvg
-          niveau={n}
-          etat={etat}
-          dispatch={dispatch}
-          demarrerGlisser={(murId, ev) => {
+      {/* Centré quand il est plus petit que la zone, défilable quand il est plus grand. */}
+      <div className="grid min-h-full min-w-full place-items-center w-max">
+        <svg
+          ref={svg}
+          role="img"
+          aria-label={`Plan 2D du niveau ${n.nom}`}
+          width={Math.round(cadre.l / mmParPx)}
+          height={Math.round(cadre.h / mmParPx)}
+          viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
+          className={trace ? 'cursor-crosshair touch-none' : 'touch-none'}
+          onPointerMove={(ev) => {
             const p = versMm(ev);
-            if (!p || trace) return;
-            (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
-            glisser.current = {
-              murId,
-              dernier: arrondir(p),
-              geste: `glisser-${murId}-${Date.now()}`,
-            };
+            if (!p) return;
+            const g = glisser.current;
+            if (g) {
+              const vers = arrondir(p);
+              const delta = { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y };
+              if (distance(vers, g.dernier) >= 10) {
+                dispatch({ type: 'deplacerMur', murId: g.murId, delta, geste: g.geste });
+                g.dernier = vers;
+              }
+              return;
+            }
+            if (trace) setCurseur(aimante(p));
           }}
-        />
-        {etat.calques.cotes ? (
-          <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
-        ) : null}
-        <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
-        {trace ? <TraceEnCours etat={etat} curseur={curseur} mmParPx={mmParPx} /> : null}
-      </svg>
+          onPointerDown={(ev) => {
+            if (ev.target !== ev.currentTarget && !trace) return;
+            const p = versMm(ev);
+            if (!p) return;
+            if (trace) dispatch({ type: 'poserPoint', point: aimante(p) });
+            else dispatch({ type: 'selectionner', selection: null });
+          }}
+          onPointerUp={() => {
+            if (!glisser.current) return;
+            glisser.current = null;
+            dispatch({ type: 'finGeste' });
+          }}
+          onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
+        >
+          <PiecesSvg niveau={n} etat={etat} dispatch={dispatch} />
+          <MursSvg
+            niveau={n}
+            etat={etat}
+            dispatch={dispatch}
+            demarrerGlisser={(murId, ev) => {
+              const p = versMm(ev);
+              if (!p || trace) return;
+              (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
+              glisser.current = {
+                murId,
+                dernier: arrondir(p),
+                geste: `glisser-${murId}-${Date.now()}`,
+              };
+            }}
+          />
+          {etat.calques.cotes ? (
+            <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
+          ) : null}
+          <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
+          {trace ? <TraceEnCours etat={etat} curseur={curseur} mmParPx={mmParPx} /> : null}
+        </svg>
+      </div>
     </div>
   );
 }

@@ -24,7 +24,8 @@ import type { Resultat } from '@ph/core/resultat';
 /** État de l'éditeur Dessin (DESSIN.md §7) : scène + historique, outil, sélection, affichage. */
 export type Outil = 'selection' | 'mur' | 'piece';
 type Selection = { genre: 'mur' | 'piece'; id: string } | null;
-export type OngletBibliotheque = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu';
+/** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
+export type Menu = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu' | 'aide';
 
 export interface EtatEditeur {
   historique: HistoriqueDessin<Scene>;
@@ -40,7 +41,12 @@ export interface EtatEditeur {
   ajustement: number;
   aimant: boolean;
   calques: { cotes: boolean; surfaces: boolean };
-  onglet: OngletBibliotheque;
+  /** Panneau ouvert à gauche, `null` = replié. */
+  menu: Menu | null;
+  /** Panneau des propriétés (droite) déplié. */
+  proprietes: boolean;
+  /** Le métré a été consulté (guide « Bien démarrer »). */
+  metreVu: boolean;
   erreur: string | null;
 }
 
@@ -63,7 +69,9 @@ export type Action =
   | { type: 'ajuster' }
   | { type: 'aimant' }
   | { type: 'calque'; cle: keyof EtatEditeur['calques'] }
-  | { type: 'onglet'; onglet: OngletBibliotheque }
+  /** Ouvre un menu, ou le replie s'il est déjà ouvert ; `null` replie. */
+  | { type: 'menu'; menu: Menu | null; basculer?: boolean }
+  | { type: 'proprietes'; ouvert?: boolean }
   | { type: 'remplacerScene'; scene: Scene }
   | { type: 'effacerErreur' };
 
@@ -88,7 +96,9 @@ export function etatInitial(scene: Scene): EtatEditeur {
     ajustement: 1,
     aimant: true,
     calques: { cotes: true, surfaces: true },
-    onglet: 'structure',
+    menu: 'structure',
+    proprietes: true,
+    metreVu: false,
     erreur: null,
   };
 }
@@ -152,7 +162,12 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'terminerTrace':
       return { ...e, trace: null };
     case 'selectionner':
-      return { ...e, selection: a.selection, trace: null };
+      return {
+        ...e,
+        selection: a.selection,
+        trace: null,
+        proprietes: e.proprietes || a.selection !== null,
+      };
     case 'modifierLongueur':
       return surNiveau(e, (n) => modifierLongueurMur(n, a.murId, a.longueur, ctx));
     case 'deplacerMur':
@@ -181,10 +196,21 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...e, aimant: !e.aimant };
     case 'calque':
       return { ...e, calques: { ...e.calques, [a.cle]: !e.calques[a.cle] } };
-    case 'onglet':
-      return { ...e, onglet: a.onglet };
+    case 'menu': {
+      const menu = a.basculer !== false && a.menu === e.menu ? null : a.menu;
+      return { ...e, menu, metreVu: e.metreVu || menu === 'chiffrer' };
+    }
+    case 'proprietes':
+      return { ...e, proprietes: a.ouvert ?? !e.proprietes };
     case 'remplacerScene':
-      return { ...etatInitial(a.scene), zoom: e.zoom, onglet: e.onglet, ajustement: e.ajustement };
+      return {
+        ...etatInitial(a.scene),
+        zoom: e.zoom,
+        menu: e.menu,
+        proprietes: e.proprietes,
+        metreVu: e.metreVu,
+        ajustement: e.ajustement,
+      };
     case 'effacerErreur':
       return { ...e, erreur: null };
   }

@@ -130,21 +130,35 @@ describe('éditeur Dessin : modifications', () => {
 });
 
 describe('éditeur Dessin : affichage', () => {
-  it('zoom borné, aimant, calques, onglet, nouvelle scène', () => {
+  it('menus repliables et propriétés', () => {
+    let e = etatInitial(vide());
+    expect(e.menu).toBe('structure');
+    e = reduire(e, { type: 'menu', menu: 'structure' });
+    expect(e.menu).toBeNull();
+    e = reduire(e, { type: 'menu', menu: 'chiffrer' });
+    expect(e).toMatchObject({ menu: 'chiffrer', metreVu: true });
+    e = reduire(e, { type: 'proprietes' });
+    expect(e.proprietes).toBe(false);
+    e = reduire(e, { type: 'selectionner', selection: { genre: 'piece', id: 'p_x' } });
+    expect(e.proprietes).toBe(true);
+    expect(reduire(e, { type: 'proprietes', ouvert: false }).proprietes).toBe(false);
+  });
+
+  it('zoom borné, aimant, calques, menu, nouvelle scène', () => {
     let e = jouer(vide(), [
       { type: 'zoom', zoom: 9999 },
       { type: 'aimant' },
       { type: 'calque', cle: 'cotes' },
-      { type: 'onglet', onglet: 'chiffrer' },
+      { type: 'menu', menu: 'chiffrer' },
       { type: 'ajuster' },
     ]);
     expect(e.ajustement).toBe(2);
-    expect(e).toMatchObject({ zoom: ZOOM_MAX, aimant: false, onglet: 'chiffrer' });
+    expect(e).toMatchObject({ zoom: ZOOM_MAX, aimant: false, menu: 'chiffrer' });
     expect(e.calques.cotes).toBe(false);
     const autre = vide();
     e = reduire(e, { type: 'remplacerScene', scene: autre });
     expect(sceneDe(e)).toBe(autre);
     expect(e.historique.passe).toHaveLength(0);
-    expect(e.onglet).toBe('chiffrer');
+    expect(e.menu).toBe('chiffrer');
   });
 });

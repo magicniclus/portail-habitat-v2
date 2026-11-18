@@ -898,6 +898,12 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - **Tests** : 12 unitaires (état de l'éditeur, scènes de départ), 2 sur le menu pro, Playwright `e2e-pro/dessin.spec.ts` (créer un plan, tracer une cloison, annuler, modifier une cote, rechargement, refus du comptable) **vert sur iPhone 13 et ordinateur**. `typecheck`, `lint`, `knip`, `prettier`, 4 203 tests du cœur verts.
 - **Reste pour les lots suivants** : modèles de départ (studio, T2…) et données de démonstration du seed, plusieurs niveaux (15e), 3D et visite (15g).
 
+### Lot 15d, retours du propriétaire (18/11/2026)
+- **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
+- **Éditeur en pleine page**, comme l'éditeur du site : hors du cadre de l'espace pro (`/pro/plans/editeur/{id}`) et de l'en-tête particulier (`/mes-plans/{id}`). Listes : `/pro/plans` et `/mon-espace/plans`.
+- **Mise en page refaite** : barre d'une ligne en haut ; **rail vertical des menus à gauche** (Structure, Équiper, Finitions, Chiffrer, Rendu, Aide) et **rail vertical des outils à droite** (sélection, mur, pièce, magnétisme, cotes, surfaces, zoom, propriétés), chacun avec son **panneau repliable** ; plus aucun bouton horizontal posé sur le plan. Plan centré sur papier pointillé, recadré quand un panneau s'ouvre ou se replie. Sur téléphone, les rails restent et les panneaux passent par-dessus le plan.
+- Playwright vert sur iPhone 13 et ordinateur ; lint, types, `knip`, tests verts.
+
 ### Lot 15c fait (18/11/2026)
 Avec l'accord du propriétaire (« oui à tout »), ajouts seulement dans les fichiers existants : `firestore.rules` (2 blocs de lecture), `firestore.indexes.json` (index de purge), `chemins.ts` (chemins des plans), `permissions.ts` (`dessin.gerer` : propriétaire, gérant, collaborateur), `packages/firebase/package.json` (export `@ph/firebase/dessin`), `apps/functions/src/index.ts` (`purgeDessinNuit`), suppression de compte et export RGPD (plans inclus). **`storage.rules` n'a pas eu besoin d'être modifié** (refus total par défaut, accès serveur uniquement).
 - Nouveaux : `packages/firebase/src/serveur/dessin/` (créer, lire, lister, enregistrer avec conflit, versions, restaurer, renommer, dupliquer, corbeille, partager, révoquer, lire un partage, purge, RGPD), `apps/functions/src/dessin/planifiees.ts`, `DATABASE.md` §8 quater.
@@ -949,3 +955,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Export `@ph/core/dessin` ajouté, toutes les vérifications vertes : §31.
 - 18/11/2026 — Lot 15c fait (données, règles et tests, serveur, purge, RGPD de Dessin). 16 échecs préexistants de storage.test.ts signalés : §31.
 - 18/11/2026 — Lot 15d fait (écrans Mes plans / Dessin, éditeur 2D, sauvegarde automatique et hors ligne, mobile), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Retours du propriétaire sur le 15d : outil renommé « Plans », éditeur plein écran, rails verticaux et panneaux repliables : §31.

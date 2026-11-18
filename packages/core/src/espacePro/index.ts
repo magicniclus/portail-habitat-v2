@@ -51,8 +51,8 @@ const SECTIONS: { titre: string; liens: { cle: PagePro; libelle: string; visible
         { cle: 'avis', libelle: 'Mes avis', visible: pas('comptable') },
         { cle: 'site', libelle: 'Mon site internet', visible: droit('site.gerer') },
         { cle: 'statistiques', libelle: 'Statistiques', visible: droit('statistiques.voir') },
-        // Affiché seulement quand le flag `dessin` est actif (option de menuPro).
-        { cle: 'dessin', libelle: 'Dessin', visible: droit('dessin.gerer') },
+        // Plans (outil Dessin) : affiché seulement quand le flag `dessin` est actif (option de menuPro).
+        { cle: 'dessin', libelle: 'Plans', visible: droit('dessin.gerer') },
       ],
     },
   ];

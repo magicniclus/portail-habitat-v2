@@ -22,7 +22,7 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
   const [nouveau, setNouveau] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const lien = (id: string) =>
-    espace === 'particulier' ? routes.monEspaceUnPlan(id) : routes.proUnPlan(id);
+    espace === 'particulier' ? routes.editeurPlan(id) : routes.proEditeurPlan(id);
 
   const [version, setVersion] = useState(0);
   const recharger = () => setVersion((v) => v + 1);

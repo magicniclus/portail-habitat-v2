@@ -28,7 +28,7 @@ export function Editeur({ espace, planId }: { espace: EspaceDessin; planId: stri
   const router = useRouter();
   const [c, setC] = useState<Chargement>({ etat: 'chargement' });
   const [cle, setCle] = useState(0);
-  const retour = espace === 'particulier' ? routes.monEspacePlans : routes.proDessin;
+  const retour = espace === 'particulier' ? routes.monEspacePlans : routes.proPlans;
 
   useEffect(() => {
     let actif = true;

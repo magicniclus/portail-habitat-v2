@@ -23,8 +23,8 @@ Dessin permet à un **particulier** (avec compte) et à un **artisan** (dans son
 | Public | Accès | Routes |
 |---|---|---|
 | Visiteur | Page de présentation publique + **essai sans compte** (brouillon local, rien sur le serveur) | `/dessin` (landing SEO, gabarit `LANDINGS.md`), `/dessin/essai` |
-| Particulier | Compte requis pour **enregistrer**. Au premier « Enregistrer » d'un essai : création de compte puis reprise du brouillon (mécanique de `REPRISE_PARCOURS.md`) | `/mon-espace/plans` (liste), `/mon-espace/plans/[planId]` (éditeur plein écran), onglet « Mes plans » dans `Onglets.tsx` |
-| Artisan | Entrée **« Dessin »** dans `SidebarPro` (outil, pas dans « Mon compte ») ; plans de l'**entreprise**, visibles par les membres selon leur rôle (`peut()`) | `/pro/dessin` (liste, filtres client / chantier), `/pro/dessin/[planId]` |
+| Particulier | Compte requis pour **enregistrer**. Au premier « Enregistrer » d'un essai : création de compte puis reprise du brouillon (mécanique de `REPRISE_PARCOURS.md`) | `/mon-espace/plans` (liste, onglet « Mes plans »), `/mes-plans/[planId]` (éditeur plein écran, hors de l'en-tête de l'espace) |
+| Artisan | Entrée **« Plans »** dans `SidebarPro` (outil, pas dans « Mon compte ») ; plans de l'**entreprise**, visibles par les membres selon leur rôle (`peut()`) | `/pro/plans` (liste), `/pro/plans/editeur/[planId]` (éditeur plein écran, hors du cadre de l'espace, comme l'éditeur du site) |
 | Lien partagé | Lecture seule (2D, 3D, visite, métré), sans compte, jeton révocable | `/plan/[jeton]` (`noindex`) |
 
 - L'éditeur est plein écran (pas de pied de page), dans le **thème de l'espace** (`data-theme`) : vert côté particulier, thème pro côté artisan. Aucun hex en dur.
@@ -245,13 +245,14 @@ Poids visé : éditeur 2D ≤ 250 ko gzip ; 3D ≈ 200 ko gzip supplémentaires,
 
 ---
 
-## 7. Interface (suivre `docs/designs/Dessin.dc.html`)
+## 7. Interface (décidée avec le propriétaire le 18/11/2026 ; la maquette reste la référence des couleurs et des composants)
 
-- **Barre d'application** : logo, titre du projet modifiable, état d'enregistrement, niveaux en onglets (+ ajouter), annuler / rétablir, vues Plan · 3D · Visite (+ menu : Implantation, Façades, Coupe, Photo), guide, Partager, Enregistrer, compte.
-- **Bibliothèque (gauche)** : recherche, onglets **Structure · Équiper · Finitions · Chiffrer · Rendu**, listes avec fil d'Ariane ; modes Toiture, Extérieur (terrasse, terrain, piscine) et Cuisine accessibles depuis Structure / Équiper et par la palette.
-- **Palette d'outils (verticale, sur le plan)** : sélection, mur, pièce, ouverture, cote, texte, pipette, aimantation, verrou.
-- **Inspecteur (droite)** : propriétés de la sélection (pièce, mur pendant le tracé, ouverture, objet, toiture…), vide = aide contextuelle.
-- **Sur le plan** : calques en pastilles en haut à droite, zoom en colonne en bas à droite, échelle, guide « Bien démarrer » (4 étapes avec progression, masquable, mémorisé).
+- **Pleine page**, sans le cadre de l'espace (comme l'éditeur du site et les devis).
+- **Barre d'une ligne** : « ← Mes plans », nom du projet modifiable, pastille d'enregistrement, annuler / rétablir, vues Plan · 3D · Visite, Enregistrer.
+- **Rail vertical à gauche** (icône + libellé) : Structure, Équiper, Finitions, Chiffrer, Rendu, et Aide en bas. Un clic ouvre le **panneau repliable** du menu, un second clic (ou « « ») le replie.
+- **Rail vertical à droite** (icônes) : sélectionner, tracer un mur, dessiner une pièce · magnétisme, cotes, surfaces · zoom avant, pourcentage, zoom arrière, ajuster à l'écran · Propriétés en bas, qui ouvre ou replie l'**inspecteur**.
+- **Aucun bouton horizontal posé sur le plan** : le plan occupe tout l'espace entre les panneaux, centré sur un papier pointillé et recadré à chaque ouverture ou fermeture de panneau. Seuls les messages (erreur, conflit) s'affichent au-dessus.
+- **Téléphone** : mêmes rails, panneaux par-dessus le plan, repliés au départ.
 - Écrans vides, erreurs, chargement (squelettes), hors ligne : tous dessinés.
 
 ---

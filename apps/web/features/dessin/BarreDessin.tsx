@@ -7,8 +7,8 @@ import {
   CubeIcon,
   EyeIcon,
   FloppyDiskIcon,
-  QuestionIcon,
   SquareIcon,
+  type Icon,
 } from '@phosphor-icons/react';
 import { peutAnnuler, peutRetablir } from '@ph/core/dessin';
 import { Button, IconButton } from '@ph/ui';
@@ -35,7 +35,13 @@ const PASTILLE: Record<EtatSauvegarde, string> = {
   erreur: 'bg-danger',
 };
 
-/** Barre d'application de l'éditeur (maquette) : projet, niveau, annuler, vues, enregistrer. */
+const VUES: { libelle: string; Icone: Icon; active: boolean }[] = [
+  { libelle: 'Plan', Icone: SquareIcon, active: true },
+  { libelle: '3D', Icone: CubeIcon, active: false },
+  { libelle: 'Visite', Icone: EyeIcon, active: false },
+];
+
+/** Barre de l'éditeur plein écran : retour, projet, enregistrement, annuler, vues. Une ligne. */
 export function BarreDessin({
   titre,
   renommer,
@@ -44,7 +50,6 @@ export function BarreDessin({
   dispatch,
   sauvegarde,
   enregistrer,
-  basculerGuide,
 }: {
   titre: string;
   renommer: (titre: string) => void;
@@ -53,24 +58,20 @@ export function BarreDessin({
   dispatch: Dispatch<Action>;
   sauvegarde: EtatSauvegarde;
   enregistrer: () => void;
-  basculerGuide: () => void;
 }) {
-  const niveaux = etat.historique.present.niveaux;
   return (
-    <header className="flex flex-none flex-wrap items-center gap-x-4 gap-y-2 border-b border-trait bg-blanc px-3 py-2">
+    <header className="flex h-16 flex-none items-center gap-3 border-b border-trait bg-blanc px-3">
       <Link
         href={retour}
-        aria-label="Retour à mes plans"
-        className="inline-flex size-11 items-center justify-center rounded-control text-texte hover:bg-neutre-100"
+        className="inline-flex min-h-11 flex-none items-center gap-2 rounded-control px-2.5 text-[15px] font-semibold text-texte no-underline hover:bg-neutre-100"
       >
-        <ArrowLeftIcon size={22} aria-hidden="true" />
+        <ArrowLeftIcon size={20} aria-hidden="true" />
+        <span className="max-[699px]:sr-only">Mes plans</span>
       </Link>
-      <div className="flex min-w-0 flex-col">
-        <label
-          htmlFor="dessin-titre"
-          className="text-[11px] font-bold tracking-wide text-neutre-700 uppercase"
-        >
-          Projet
+      <span aria-hidden="true" className="h-8 w-px flex-none bg-trait" />
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <label htmlFor="dessin-titre" className="sr-only">
+          Nom du projet
         </label>
         <input
           id="dessin-titre"
@@ -80,31 +81,18 @@ export function BarreDessin({
             const t = ev.target.value.trim();
             if (t && t !== titre) renommer(t);
           }}
-          className="w-[200px] max-w-[40vw] border-0 bg-transparent p-0 text-base font-semibold text-texte"
+          className="min-w-0 flex-1 truncate rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-[17px] font-bold text-texte hover:border-neutre-300 focus:border-accent min-[900px]:max-w-[320px]"
         />
+        <span
+          role="status"
+          className="flex flex-none items-center gap-1.5 text-[13px] whitespace-nowrap text-neutre-800"
+        >
+          <span aria-hidden="true" className={`size-2 rounded-full ${PASTILLE[sauvegarde]}`} />
+          <span className="max-[1099px]:sr-only">{LIBELLES_SAUVEGARDE[sauvegarde]}</span>
+        </span>
       </div>
-      <span
-        role="status"
-        className="flex items-center gap-1.5 text-[13px] whitespace-nowrap text-neutre-800"
-      >
-        <span aria-hidden="true" className={`size-2 rounded-full ${PASTILLE[sauvegarde]}`} />
-        <span className="max-[599px]:sr-only">{LIBELLES_SAUVEGARDE[sauvegarde]}</span>
-      </span>
 
-      {/* Plusieurs niveaux : lot 15e. */}
-      <p className="m-0 ml-auto flex gap-1 rounded-[10px] bg-neutre-100 p-1 max-[899px]:hidden">
-        {niveaux.map((n) => (
-          <span
-            key={n.id}
-            aria-current={n.id === etat.niveauId ? 'true' : undefined}
-            className="inline-flex min-h-9 items-center rounded-lg bg-blanc px-3 text-sm font-bold shadow-sm"
-          >
-            {n.nom}
-          </span>
-        ))}
-      </p>
-
-      <div className="flex max-[899px]:ml-auto">
+      <div className="flex flex-none">
         <IconButton
           aria-label="Annuler"
           icone={<ArrowCounterClockwiseIcon />}
@@ -122,47 +110,32 @@ export function BarreDessin({
       <div
         role="radiogroup"
         aria-label="Vue"
-        className="flex overflow-hidden rounded-[10px] border border-neutre-300 max-[899px]:hidden"
+        className="flex flex-none rounded-[10px] bg-neutre-100 p-1 max-[899px]:hidden"
       >
-        <button
-          type="button"
-          role="radio"
-          aria-checked="true"
-          className="flex min-h-10 items-center gap-1.5 border-0 bg-accent-100 px-3 text-sm font-bold text-accent-700"
-        >
-          <SquareIcon aria-hidden="true" /> Plan
-        </button>
-        {[
-          { libelle: '3D', Icone: CubeIcon },
-          { libelle: 'Visite', Icone: EyeIcon },
-        ].map(({ libelle, Icone }) => (
+        {VUES.map(({ libelle, Icone, active }) => (
           <button
             key={libelle}
             type="button"
             role="radio"
-            aria-checked="false"
-            disabled
-            title="Disponible prochainement"
-            className="flex min-h-10 cursor-not-allowed items-center gap-1.5 border-0 border-l border-neutre-300 bg-blanc px-3 text-sm font-bold text-neutre-500"
+            aria-checked={active}
+            disabled={!active}
+            title={active ? undefined : 'Disponible prochainement'}
+            className={`flex min-h-9 items-center gap-1.5 rounded-lg border-0 px-3 text-sm font-bold ${active ? 'bg-blanc text-texte shadow-sm' : 'cursor-not-allowed bg-transparent text-neutre-500'}`}
           >
             <Icone aria-hidden="true" /> {libelle}
           </button>
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
-        <IconButton
-          variant="secondaire"
-          aria-label="Guide de démarrage"
-          icone={<QuestionIcon />}
-          onClick={basculerGuide}
-          className="max-[899px]:hidden"
-        />
-        <Button taille="sm" onClick={enregistrer} aria-label="Enregistrer">
-          <FloppyDiskIcon aria-hidden="true" className="min-[600px]:hidden" />
-          <span className="max-[599px]:hidden">Enregistrer</span>
-        </Button>
-      </div>
+      <Button
+        taille="sm"
+        className="flex-none"
+        onClick={enregistrer}
+        aria-label="Enregistrer une version"
+      >
+        <FloppyDiskIcon aria-hidden="true" />
+        <span className="max-[599px]:hidden">Enregistrer</span>
+      </Button>
     </header>
   );
 }

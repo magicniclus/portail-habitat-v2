@@ -1,22 +1,19 @@
 'use client';
 
 import type { Scene } from '@ph/core/dessin';
-import { Banner, Button, Feuille } from '@ph/ui';
+import { Banner, Button } from '@ph/ui';
 import type { Route } from 'next';
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
 import { BarreDessin } from './BarreDessin';
-import { Bibliotheque } from './Bibliotheque';
-import { CommandesPlan } from './CommandesPlan';
+import { ContenuMenu, TITRES_MENU } from './ContenuMenu';
 import { etatInitial, reduire, sceneDe } from './etat';
-import { GuideDemarrage } from './GuideDemarrage';
 import { Inspecteur } from './Inspecteur';
-import { PaletteOutils } from './PaletteOutils';
+import { Panneau } from './Panneau';
 import { Plan2D } from './Plan2D';
+import { RailMenus, RailOutils } from './Rails';
 import { useSauvegarde } from './useSauvegarde';
-
-const CLE_GUIDE = 'dessin-guide-masque';
 
 /** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
 function raccourci(
@@ -45,6 +42,10 @@ function raccourci(
   ev.preventDefault();
 }
 
+/**
+ * Éditeur plein écran (DESSIN.md §7) : barre en haut, rail des menus à gauche et rail des
+ * outils à droite, chacun avec son panneau repliable ; le plan occupe tout le reste.
+ */
 export function EspaceDeTravail(p: {
   espace: EspaceDessin;
   planId: string;
@@ -60,42 +61,25 @@ export function EspaceDeTravail(p: {
     scene: sceneDe(etat),
     revisionInitiale: p.revision,
   });
+  const telephone = useMediaQuery('(max-width: 899px)', false);
+
   // Raccourcis actifs tant que l'éditeur est ouvert, où que soit le focus (hors champs).
   useEffect(() => {
     const ecouter = (ev: globalThis.KeyboardEvent) => raccourci(ev, dispatch);
     document.addEventListener('keydown', ecouter);
     return () => document.removeEventListener('keydown', ecouter);
   }, []);
-  const racine = useRef<HTMLDivElement>(null);
-  const [haut, setHaut] = useState(64);
+  // Sur téléphone, les panneaux passent par-dessus le plan : on démarre replié.
   useEffect(() => {
-    const el = racine.current;
-    if (!el) return;
-    const mesurer = () => setHaut(Math.max(0, el.getBoundingClientRect().top + window.scrollY));
-    const o = new ResizeObserver(mesurer);
-    o.observe(document.body);
-    return () => o.disconnect();
-  }, []);
-  const telephone = useMediaQuery('(max-width: 899px)', false);
-  const [feuille, setFeuille] = useState<'bibliotheque' | 'inspecteur' | null>(null);
-  // Monté après le chargement du plan, côté navigateur uniquement : lecture directe.
-  const [guide, setGuide] = useState(() => {
-    try {
-      return localStorage.getItem(CLE_GUIDE) !== '1';
-    } catch {
-      return true;
-    }
-  });
-  const basculerGuide = () => {
-    setGuide((g) => {
-      try {
-        localStorage.setItem(CLE_GUIDE, g ? '1' : '0');
-      } catch {
-        // Stockage indisponible : le choix vaut pour cette visite.
-      }
-      return !g;
-    });
-  };
+    if (!telephone) return;
+    dispatch({ type: 'menu', menu: null });
+    dispatch({ type: 'proprietes', ouvert: false });
+  }, [telephone]);
+
+  // Les panneaux changent la place du plan : on le recadre.
+  useEffect(() => {
+    dispatch({ type: 'ajuster' });
+  }, [etat.menu, etat.proprietes]);
 
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
@@ -105,12 +89,7 @@ export function EspaceDeTravail(p: {
   };
 
   return (
-    <div
-      ref={racine}
-      // Hauteur disponible sous l'en-tête ; l'espace pro réserve la navigation du bas (téléphone).
-      style={{ height: `calc(100dvh - ${haut}px - var(--marge-bas-dessin, 0px))` }}
-      className="flex min-h-[480px] flex-col bg-blanc"
-    >
+    <div className="flex h-dvh flex-col overflow-hidden bg-blanc">
       <BarreDessin
         titre={p.titre}
         renommer={(t) => void renommerPlan(p.espace, p.planId, t)}
@@ -119,27 +98,21 @@ export function EspaceDeTravail(p: {
         dispatch={dispatch}
         sauvegarde={s.etat}
         enregistrer={() => void s.enregistrerMaintenant('Enregistrement manuel')}
-        basculerGuide={basculerGuide}
       />
-      <div className="flex min-h-0 flex-1">
-        {telephone ? null : (
-          <aside
-            aria-label="Bibliothèque"
-            className="flex w-[300px] flex-none flex-col border-r border-trait"
+      <div className="relative flex min-h-0 flex-1">
+        <RailMenus etat={etat} dispatch={dispatch} />
+        {etat.menu ? (
+          <Panneau
+            cote="gauche"
+            titre={TITRES_MENU[etat.menu]}
+            replier={() => dispatch({ type: 'menu', menu: null })}
           >
-            <div className="min-h-0 flex-1">
-              <Bibliotheque etat={etat} dispatch={dispatch} />
-            </div>
-            {guide ? (
-              <div className="border-t border-trait p-2.5">
-                <GuideDemarrage etat={etat} fermer={basculerGuide} />
-              </div>
-            ) : null}
-          </aside>
-        )}
+            <ContenuMenu menu={etat.menu} etat={etat} dispatch={dispatch} />
+          </Panneau>
+        ) : null}
         <main className="relative min-w-0 flex-1">
           <Plan2D etat={etat} dispatch={dispatch} />
-          <div className="absolute top-3 left-3 right-3 grid gap-2">
+          <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
             {s.etat === 'conflit' ? (
               <Banner tone="danger" titre="Ce plan a été modifié ailleurs">
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -174,41 +147,18 @@ export function EspaceDeTravail(p: {
               </Banner>
             ) : null}
           </div>
-          <div className="absolute max-[899px]:bottom-3 max-[899px]:left-1/2 max-[899px]:-translate-x-1/2 min-[900px]:top-1/2 min-[900px]:left-4 min-[900px]:-translate-y-1/2">
-            <PaletteOutils etat={etat} dispatch={dispatch} />
-          </div>
-          <CommandesPlan
-            etat={etat}
-            dispatch={dispatch}
-            telephone={telephone}
-            ouvrir={setFeuille}
-          />
         </main>
-        {telephone ? null : (
-          <aside
-            aria-label="Propriétés"
-            className="w-[290px] flex-none overflow-y-auto border-l border-trait p-4"
+        {etat.proprietes ? (
+          <Panneau
+            cote="droite"
+            titre="Propriétés"
+            replier={() => dispatch({ type: 'proprietes', ouvert: false })}
           >
             <Inspecteur etat={etat} dispatch={dispatch} />
-          </aside>
-        )}
+          </Panneau>
+        ) : null}
+        <RailOutils etat={etat} dispatch={dispatch} />
       </div>
-      {telephone ? (
-        <Feuille
-          mode="bas"
-          open={feuille !== null}
-          onOpenChange={(o) => !o && setFeuille(null)}
-          titre={feuille === 'bibliotheque' ? 'Bibliothèque' : 'Propriétés'}
-        >
-          {feuille === 'bibliotheque' ? (
-            <div className="h-[60dvh]">
-              <Bibliotheque etat={etat} dispatch={dispatch} />
-            </div>
-          ) : (
-            <Inspecteur etat={etat} dispatch={dispatch} />
-          )}
-        </Feuille>
-      ) : null}
     </div>
   );
 }

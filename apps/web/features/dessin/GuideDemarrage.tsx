@@ -1,17 +1,15 @@
 'use client';
 
-import { XIcon } from '@phosphor-icons/react';
-import { IconButton } from '@ph/ui';
 import { niveauDe, type EtatEditeur } from './etat';
 
 /** « Bien démarrer » (maquette) : 4 étapes cochées d'après le plan lui-même. */
-export function GuideDemarrage({ etat, fermer }: { etat: EtatEditeur; fermer: () => void }) {
+export function GuideDemarrage({ etat }: { etat: EtatEditeur }) {
   const n = niveauDe(etat);
   const etapes = [
     { libelle: 'Tracer ou ajuster les murs', fait: n.murs.length > 0 },
     { libelle: 'Obtenir une pièce fermée', fait: n.pieces.length > 0 },
     { libelle: 'Choisir sols et peintures', fait: n.pieces.some((p) => p.sol.famille !== 'aucun') },
-    { libelle: 'Consulter le métré', fait: etat.onglet === 'chiffrer' },
+    { libelle: 'Consulter le métré', fait: etat.metreVu },
   ];
   const faites = etapes.filter((e) => e.fait).length;
   return (
@@ -26,7 +24,6 @@ export function GuideDemarrage({ etat, fermer }: { etat: EtatEditeur; fermer: ()
             {faites} étape{faites > 1 ? 's' : ''} sur {etapes.length}
           </p>
         </div>
-        <IconButton aria-label="Masquer le guide" icone={<XIcon />} onClick={fermer} />
       </div>
       <div className="h-1.5 overflow-hidden rounded bg-neutre-200">
         <div

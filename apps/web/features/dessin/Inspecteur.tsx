@@ -145,7 +145,10 @@ function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch
           })
         }
       />
-      <Button variant="secondaire" onClick={() => dispatch({ type: 'onglet', onglet: 'chiffrer' })}>
+      <Button
+        variant="secondaire"
+        onClick={() => dispatch({ type: 'menu', menu: 'chiffrer', basculer: false })}
+      >
         Voir le métré
       </Button>
     </div>

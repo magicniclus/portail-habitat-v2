@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { COMPTES, connecter, flagGlobal } from './outils';
 
 // docs/DESSIN.md §6 : DES-01, DES-06, DES-10, DES-11, DES-38, DES-39 (éditeur 2D, lot 15d).
@@ -10,18 +10,12 @@ test.afterAll(async () => {
   await retablirFlag();
 });
 
-/** Panneaux : sur ordinateur à côté du plan, sur téléphone dans une feuille du bas. */
-async function panneau(page: Page, nom: 'Bibliothèque' | 'Propriétés') {
-  const bouton = page.getByRole('button', { name: nom, exact: true });
-  if (await bouton.isVisible()) await bouton.click();
-}
-
-test.describe('Dessin (espace pro)', () => {
+test.describe('Plans (espace pro)', () => {
   test('créer un plan rectangulaire, tracer une cloison, annuler, modifier une cote, retrouver le plan', async ({
     page,
   }) => {
-    await connecter(page, COMPTES.proprio, '/pro/dessin');
-    await expect(page.getByRole('heading', { name: 'Dessin', level: 1 })).toBeVisible();
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await expect(page.getByRole('heading', { name: 'Mes plans', level: 1 })).toBeVisible();
 
     await page
       .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
@@ -33,7 +27,9 @@ test.describe('Dessin (espace pro)', () => {
     await page.getByLabel('Profondeur hors tout (cm)').fill('860');
     await page.getByRole('button', { name: 'Créer le plan' }).click();
 
-    await expect(page).toHaveURL(/\/pro\/dessin\/[A-Za-z0-9]{20}$/);
+    // Éditeur plein écran, hors du cadre de l'espace pro.
+    await expect(page).toHaveURL(/\/pro\/plans\/editeur\/[A-Za-z0-9]{20}$/);
+    await expect(page.getByRole('navigation', { name: 'Menus du plan' })).toBeVisible();
     const plan = page.getByTestId('plan-2d');
     // 10,60 × 8,60 m hors tout, murs de 20 cm : 10,20 × 8,20 m = 83,6 m².
     await expect(plan.getByText('83,6 m²')).toBeVisible();
@@ -63,17 +59,14 @@ test.describe('Dessin (espace pro)', () => {
     await expect(pieces).toHaveCount(1);
 
     // Cote modifiée dans l'inspecteur (DES-10) : la pièce se met à jour.
-    await page.getByRole('button', { name: 'Sélection' }).click();
+    await page.getByRole('button', { name: 'Sélectionner' }).click();
     await plan
       .getByRole('button', { name: /^Mur de 10,40 m/ })
       .first()
       .click();
-    await panneau(page, 'Propriétés');
     const longueur = page.getByLabel('Longueur (cm)');
     await longueur.fill('840');
     await longueur.press('Enter');
-    // Téléphone : la feuille des propriétés se referme comme l'utilisateur le ferait.
-    if (await page.getByRole('dialog').isVisible()) await page.keyboard.press('Escape');
     await expect(plan.getByText('67,2 m²')).toBeVisible();
 
     // Enregistré automatiquement (DES-39) : retrouvé après rechargement.
@@ -82,13 +75,14 @@ test.describe('Dessin (espace pro)', () => {
     });
     await page.reload();
     await expect(page.getByTestId('plan-2d').getByText('67,2 m²')).toBeVisible();
-    await page.goto('/pro/dessin');
+    await page.getByRole('link', { name: 'Mes plans' }).click();
+    await expect(page).toHaveURL(/\/pro\/plans$/);
     await expect(page.getByRole('link', { name: new RegExp(titre) })).toBeVisible();
   });
 
-  test('le comptable n’a pas accès à Dessin', async ({ page }) => {
+  test('le comptable n’a pas accès aux plans', async ({ page }) => {
     await connecter(page, COMPTES.compta, '/pro/compte');
-    await page.goto('/pro/dessin');
-    await expect(page).not.toHaveURL(/\/pro\/dessin$/);
+    await page.goto('/pro/plans');
+    await expect(page).not.toHaveURL(/\/pro\/plans$/);
   });
 });
