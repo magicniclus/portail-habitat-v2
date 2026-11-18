@@ -4,7 +4,10 @@ import {
   aimanter,
   arrondir,
   distance,
+  niveauInferieur,
+  tailleFond,
   toleranceEnMm,
+  tremies,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
@@ -12,7 +15,8 @@ import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type PointerEvent } from 'react';
 import { EtiquettesPieces, MursSvg, PiecesSvg } from './CalquesPlan';
 import { Cotes, TraceEnCours } from './Mesures';
-import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
+import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
 
 /** Cadre du dessin en mm : tout le niveau, avec une marge, et au moins 12 × 10 m. */
 function cadreDe(n: Niveau): { x: number; y: number; l: number; h: number } {
@@ -33,8 +37,19 @@ function cadreDe(n: Niveau): { x: number; y: number; l: number; h: number } {
 }
 
 /** Plan 2D (DES-06, DES-32) : SVG en millimètres, net à tout zoom, exportable. */
-export function Plan2D({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
+export function Plan2D({
+  etat,
+  dispatch,
+  fond,
+}: {
+  etat: EtatEditeur;
+  dispatch: Dispatch<Action>;
+  /** Image du plan importé, chargée par l'espace de travail. */
+  fond: { url: string; largeurPx: number; hauteurPx: number } | null;
+}) {
   const n = niveauDe(etat);
+  const scene = sceneDe(etat);
+  const fondVisible = scene.fondImage?.niveauId === n.id ? scene.fondImage : null;
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Point | null>(null);
   const glisser = useRef<{ murId: string; dernier: Point; geste: string } | null>(null);
@@ -133,7 +148,21 @@ export function Plan2D({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispat
           }}
           onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
         >
+          {fondVisible && fond ? (
+            <image
+              href={fond.url}
+              x={fondVisible.position.x}
+              y={fondVisible.position.y}
+              width={tailleFond(fondVisible, fond.largeurPx, fond.hauteurPx).l}
+              height={tailleFond(fondVisible, fond.largeurPx, fond.hauteurPx).h}
+              opacity={fondVisible.opacite / 100}
+              preserveAspectRatio="none"
+              pointerEvents="none"
+            />
+          ) : null}
+
           <PiecesSvg niveau={n} etat={etat} dispatch={dispatch} />
+          <ReperesNiveauSvg dessous={niveauInferieur(scene, n.id)} tremies={tremies(scene, n.id)} />
           <MursSvg
             niveau={n}
             etat={etat}
@@ -149,11 +178,20 @@ export function Plan2D({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispat
               };
             }}
           />
+          <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
+          <EscaliersSvg niveau={n} etat={etat} dispatch={dispatch} />
           {etat.calques.cotes ? (
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
           ) : null}
           <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
           {trace ? <TraceEnCours etat={etat} curseur={curseur} mmParPx={mmParPx} /> : null}
+          {etat.echelle ? (
+            <TraceEnCours
+              etat={{ ...etat, outil: 'echelle', trace: etat.echelle.a }}
+              curseur={etat.echelle.b}
+              mmParPx={mmParPx}
+            />
+          ) : null}
         </svg>
       </div>
     </div>

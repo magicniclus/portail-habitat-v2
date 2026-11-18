@@ -10,7 +10,7 @@ import {
   SquareIcon,
   type Icon,
 } from '@phosphor-icons/react';
-import { peutAnnuler, peutRetablir } from '@ph/core/dessin';
+import { niveauxTries, peutAnnuler, peutRetablir } from '@ph/core/dessin';
 import { Button, IconButton } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -91,6 +91,21 @@ export function BarreDessin({
           <span className="max-[1099px]:sr-only">{LIBELLES_SAUVEGARDE[sauvegarde]}</span>
         </span>
       </div>
+
+      <label className="flex flex-none items-center gap-2 text-sm font-semibold max-[699px]:sr-only">
+        <span className="max-[1099px]:sr-only">Niveau</span>
+        <select
+          value={etat.niveauId}
+          onChange={(ev) => dispatch({ type: 'changerNiveau', niveauId: ev.target.value })}
+          className="min-h-11 rounded-control border border-neutre-300 bg-blanc px-2.5 text-[15px] font-semibold"
+        >
+          {[...niveauxTries(etat.historique.present)].reverse().map((n) => (
+            <option key={n.id} value={n.id}>
+              {n.nom}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className="flex flex-none">
         <IconButton

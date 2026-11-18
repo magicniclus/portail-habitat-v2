@@ -855,7 +855,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (18/11/2026, voir « Lot 15b fait » ci-dessous)
 - [x] 15c Données : Firestore, règles et tests, serveur, purge, RGPD (18/11/2026, voir « Lot 15c fait » ci-dessous)
 - [x] 15d Coque de l'éditeur et 2D (18/11/2026, voir « Lot 15d fait » ci-dessous)
-- [ ] 15e Ouvertures, escaliers, niveaux, plan importé
+- [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
 - [ ] 15f Aménager et décorer (catalogue, cuisine, salle de bain, revêtements, zones décoratives)
 - [ ] 15g 3D, visite, photo
 - [ ] 15h Toiture, extérieur, piscine, implantation, façades et coupes
@@ -897,6 +897,13 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - **Touché dans l'existant (accord du propriétaire)** : flags `dessin` et `dessinPublic` (défaut `false`), page `dessin` du menu pro en option de `menuPro` (comportement inchangé sans l'option, tests existants intacts), adresse et icône, onglet « Mes plans » (prop `avecPlans`, absente = inchangé) et ses 4 pages, routes, export des tokens de couleur de Dessin (`@ph/ui/tokens`).
 - **Tests** : 12 unitaires (état de l'éditeur, scènes de départ), 2 sur le menu pro, Playwright `e2e-pro/dessin.spec.ts` (créer un plan, tracer une cloison, annuler, modifier une cote, rechargement, refus du comptable) **vert sur iPhone 13 et ordinateur**. `typecheck`, `lint`, `knip`, `prettier`, 4 203 tests du cœur verts.
 - **Reste pour les lots suivants** : modèles de départ (studio, T2…) et données de démonstration du seed, plusieurs niveaux (15e), 3D et visite (15g).
+
+### Lot 15e fait (18/11/2026)
+- **Cœur** (`packages/core/src/dessin/`, nouveaux fichiers) : `ouvertures` (16 types avec dimensions par défaut, pose sur le mur cliqué recalée dans le mur, refus des chevauchements et des dépassements, modification, suppression), `escaliers` (6 types, marches et giron selon Blondel, emprise au sol tournée, modification avec recalcul), `niveaux` (étage, combles, sous-sol, murs extérieurs repris, renommer, supprimer sauf le dernier, 10 au plus, trémies issues des escaliers du dessous), `fond` (plan importé : pose, opacité, mise à l'échelle par deux points et une longueur réelle). 14 tests, 100 % des lignes.
+- **Serveur** : `enregistrerFond` / `lireFond` (image vérifiée par sa signature JPEG/PNG/WebP, 3 Mo au plus, lue seulement dans le dossier du plan), opérations `fond` et `lire-fond` de `/api/dessin`. 2 tests sur émulateurs. Storage inchangé côté règles (accès serveur uniquement).
+- **Éditeur** : menu Structure avec sous-menus (Murs & cloisons, Portes & fenêtres, Escaliers, Pièce rectangulaire, Niveaux, Importer un plan) ; symboles normalisés sur le plan (vantail et arc ouverts côté pièce, double trait des fenêtres, coulissants) ; escaliers avec marches ; niveau du dessous en transparence et trémies en pointillés ; sélecteur de niveau dans la barre ; inspecteur des ouvertures (largeur, hauteur, allège, position, sens, côté) et des escaliers (type, largeur, hauteur, marches, giron, alertes, pivoter) ; sur téléphone, choisir un outil à placer replie le menu. État de l'éditeur découpé (`etatBase`, `etatStructure`, `etat`), 6 tests de plus.
+- **Playwright** : nouveau parcours (porte d'entrée, escalier droit de 15 marches, étage avec ses murs, plan importé affiché, rechargement) vert sur iPhone 13 et ordinateur, avec le parcours du 15d.
+- **Reste** : import de **PDF** : seules les images sont acceptées ; un PDF demanderait `pdfjs-dist` (dépendance à valider), en attendant une capture d'écran du PDF suffit. Déplacer l'image importée et la faire pivoter : avec le lot 15f.
 
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
@@ -956,3 +963,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 18/11/2026 — Lot 15c fait (données, règles et tests, serveur, purge, RGPD de Dessin). 16 échecs préexistants de storage.test.ts signalés : §31.
 - 18/11/2026 — Lot 15d fait (écrans Mes plans / Dessin, éditeur 2D, sauvegarde automatique et hors ligne, mobile), e2e vert iPhone et ordinateur : §31.
 - 18/11/2026 — Retours du propriétaire sur le 15d : outil renommé « Plans », éditeur plein écran, rails verticaux et panneaux repliables : §31.
+- 18/11/2026 — Lot 15e fait (portes et fenêtres, escaliers, niveaux et trémies, plan importé en calque), e2e vert iPhone et ordinateur : §31.

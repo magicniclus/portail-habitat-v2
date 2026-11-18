@@ -38,3 +38,11 @@ export const actionPlan = (
   operation: 'dupliquer' | 'corbeille' | 'restaurer',
   planId: string,
 ): Promise<Resultat<unknown>> => appel(operation, espace, { planId });
+
+export const enregistrerFond = (
+  espace: EspaceDessin,
+  e: { planId: string; type: 'image/jpeg'; base64: string },
+) => appel<{ storagePath: string }>('fond', espace, e);
+
+export const lireFond = (espace: EspaceDessin, planId: string, storagePath: string) =>
+  appel<{ url: string }>('lire-fond', espace, { planId, storagePath });

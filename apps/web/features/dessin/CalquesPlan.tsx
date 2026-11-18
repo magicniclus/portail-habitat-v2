@@ -8,19 +8,11 @@ import {
   longueurMur,
   surfaceCarrez,
   type Niveau,
-  type Point,
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
-import type { Dispatch, KeyboardEvent, PointerEvent } from 'react';
+import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
-
-const points = (poly: readonly Point[]) => poly.map((p) => `${p.x},${p.y}`).join(' ');
-const activer = (faire: () => void) => (ev: KeyboardEvent) => {
-  if (ev.key === 'Enter' || ev.key === ' ') {
-    ev.preventDefault();
-    faire();
-  }
-};
+import { activer, points } from './svg';
 
 interface Props {
   niveau: Niveau;

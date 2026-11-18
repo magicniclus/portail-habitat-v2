@@ -21,6 +21,8 @@ import {
   restaurerVersion,
   revoquerPartage,
   supprimerTousLesPlans,
+  enregistrerFond,
+  lireFond,
 } from '../src/serveur/dessin';
 
 let db: Firestore;
@@ -262,5 +264,60 @@ describe('RGPD', () => {
     expect(await fichiersDe(PART)).toHaveLength(0);
     expect((await db.collection(chemins.plans(PART)).get()).size).toBe(0);
     expect((await db.collection(chemins.versionsPlan(PART, planId)).get()).size).toBe(0);
+  });
+});
+
+describe('plan importé (D91)', () => {
+  const PNG = Buffer.from(
+    '89504e470d0a1a0a0000000d4948445200000001000000010806000000',
+    'hex',
+  ).toString('base64');
+
+  it('enregistre une image vérifiée et la relit, seulement dans le dossier du plan', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const { storagePath } = await enregistrerFond(s(), ctxPart, {
+      planId,
+      type: 'image/png',
+      base64: PNG,
+    });
+    expect(storagePath).toMatch(
+      new RegExp(`^${fichiers.dossierPlan(PART, planId)}fond-[0-9a-f]{12}\\.png$`),
+    );
+    const { url } = await lireFond(s(), ctxPart, { planId, storagePath });
+    expect(url).toBe(`data:image/png;base64,${PNG}`);
+
+    await expect(
+      lireFond(s(), ctxPart, {
+        planId,
+        storagePath: `${fichiers.dossierPlan(PART, planId)}r1.json.gz`,
+      }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    await expect(
+      lireFond(s(), ctxPart, {
+        planId,
+        storagePath: `${fichiers.dossierPlan(PART, planId)}fond-absent.png`,
+      }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+    await expect(
+      lireFond(s(), { proprietaire: PART, uid: 'autre' }, { planId, storagePath }),
+    ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
+  });
+
+  it('refuse un fichier qui n’est pas une image, ou trop lourd', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const texte = Buffer.from('<script>alert(1)</script>').toString('base64');
+    await expect(
+      enregistrerFond(s(), ctxPart, { planId, type: 'image/jpeg', base64: texte }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    const lourd = Buffer.alloc(3 * 1024 * 1024 + 1, 0xff).toString('base64');
+    await expect(
+      enregistrerFond(s(), ctxPart, { planId, type: 'image/jpeg', base64: lourd }),
+    ).rejects.toMatchObject({ code: 'ENTREE_INVALIDE' });
+    const webp = Buffer.concat([Buffer.from('RIFF0000WEBP', 'latin1'), Buffer.alloc(8)]).toString(
+      'base64',
+    );
+    await expect(
+      enregistrerFond(s(), ctxPart, { planId, type: 'image/webp', base64: webp }),
+    ).resolves.toMatchObject({ storagePath: expect.stringMatching(/\.webp$/) });
   });
 });

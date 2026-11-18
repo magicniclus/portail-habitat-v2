@@ -13,6 +13,7 @@ import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
 import { Plan2D } from './Plan2D';
 import { RailMenus, RailOutils } from './Rails';
+import { useFond } from './useFond';
 import { useSauvegarde } from './useSauvegarde';
 
 /** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
@@ -61,6 +62,7 @@ export function EspaceDeTravail(p: {
     scene: sceneDe(etat),
     revisionInitiale: p.revision,
   });
+  const fond = useFond(p.espace, p.planId, sceneDe(etat).fondImage?.storagePath ?? null);
   const telephone = useMediaQuery('(max-width: 899px)', false);
 
   // Raccourcis actifs tant que l'éditeur est ouvert, où que soit le focus (hors champs).
@@ -76,6 +78,10 @@ export function EspaceDeTravail(p: {
     dispatch({ type: 'proprietes', ouvert: false });
   }, [telephone]);
 
+  // Téléphone : choisir un outil à placer replie le menu pour libérer le plan.
+  useEffect(() => {
+    if (telephone && etat.outil !== 'selection') dispatch({ type: 'menu', menu: null });
+  }, [telephone, etat.outil]);
   // Les panneaux changent la place du plan : on le recadre.
   useEffect(() => {
     dispatch({ type: 'ajuster' });
@@ -107,11 +113,17 @@ export function EspaceDeTravail(p: {
             titre={TITRES_MENU[etat.menu]}
             replier={() => dispatch({ type: 'menu', menu: null })}
           >
-            <ContenuMenu menu={etat.menu} etat={etat} dispatch={dispatch} />
+            <ContenuMenu
+              menu={etat.menu}
+              etat={etat}
+              dispatch={dispatch}
+              espace={p.espace}
+              planId={p.planId}
+            />
           </Panneau>
         ) : null}
         <main className="relative min-w-0 flex-1">
-          <Plan2D etat={etat} dispatch={dispatch} />
+          <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
           <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
             {s.etat === 'conflit' ? (
               <Banner tone="danger" titre="Ce plan a été modifié ailleurs">

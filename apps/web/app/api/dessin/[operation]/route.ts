@@ -1,6 +1,8 @@
 import {
   entreeCreerPlan,
   entreeEnregistrerPlan,
+  entreeFondPlan,
+  entreeLireFond,
   entreePartagerPlan,
   entreePlan,
   entreeRenommerPlan,
@@ -11,7 +13,9 @@ import { z } from '@ph/core/zod';
 import {
   creerPlan,
   dupliquerPlan,
+  enregistrerFond,
   enregistrerPlan,
+  lireFond,
   lirePlan,
   listerPlans,
   listerVersions,
@@ -98,6 +102,20 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     async (e, ctx) =>
       restaurerVersion(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
+  fond: action(
+    { schema: entreeFondPlan.extend(espace), nom: 'dessin.fond', rateLimit: debit },
+    async (e, ctx) =>
+      enregistrerFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
+  'lire-fond': action(
+    {
+      schema: entreeLireFond.extend(espace),
+      nom: 'dessin.lireFond',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e, ctx) => lireFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
   partager: action(
     { schema: entreePartagerPlan.extend(espace), nom: 'dessin.partager', rateLimit: debit },
     async (e, ctx) =>
@@ -116,6 +134,6 @@ export async function POST(
   const { operation } = await params;
   const executer = Object.hasOwn(OPERATIONS, operation) ? OPERATIONS[operation] : undefined;
   if (!executer) return new Response(null, { status: 404 });
-  const avecScene = operation === 'enregistrer' || operation === 'creer';
+  const avecScene = operation === 'enregistrer' || operation === 'creer' || operation === 'fond';
   return routeJson(requete, executer, avecScene ? TAILLE_SCENE : undefined);
 }

@@ -91,3 +91,15 @@ export const entreePartagerPlan = z.object({
 export const entreeJetonPartage = z.object({
   jeton: z.string().regex(/^[A-Za-z0-9_-]{32}$/, 'Lien invalide'),
 });
+
+/** Plan importé (D91) : image réduite dans le navigateur, envoyée en base64 (3 Mo au plus). */
+export const TYPES_IMAGE_FOND = ['image/jpeg', 'image/png', 'image/webp'] as const;
+export const entreeFondPlan = z.object({
+  planId: idPlan,
+  type: z.enum(TYPES_IMAGE_FOND),
+  base64: z
+    .string()
+    .max(4 * 1024 * 1024)
+    .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Image illisible'),
+});
+export const entreeLireFond = z.object({ planId: idPlan, storagePath: z.string().min(1).max(300) });

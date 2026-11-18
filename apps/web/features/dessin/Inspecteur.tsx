@@ -13,6 +13,7 @@ import { Button, Field, Input } from '@ph/ui';
 import { PEINTURES_DESSIN, SOLS_DESSIN, type TeinteDessin } from '@ph/ui/tokens';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { Nuancier } from './Nuancier';
 
 const LIBELLES_MUR: Record<Mur['type'], string> = {
@@ -164,12 +165,31 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
   if (mur)
     return <InspecteurMur key={`${mur.id}-${longueurMur(mur)}`} mur={mur} dispatch={dispatch} />;
   if (piece) return <InspecteurPiece key={piece.id} piece={piece} dispatch={dispatch} />;
+  const o = s?.genre === 'ouverture' ? n.ouvertures.find((x) => x.id === s.id) : undefined;
+  // Clé avec les dimensions : les champs se remettent à jour après une modification refusée.
+  if (o)
+    return (
+      <InspecteurOuverture
+        key={`${o.id}-${o.largeur}-${o.hauteur}-${o.allege}-${o.position}`}
+        o={o}
+        dispatch={dispatch}
+      />
+    );
+  const esc = s?.genre === 'escalier' ? n.escaliers.find((x) => x.id === s.id) : undefined;
+  if (esc)
+    return (
+      <InspecteurEscalier
+        key={`${esc.id}-${esc.largeur}-${esc.hauteurAMonter}`}
+        e={esc}
+        dispatch={dispatch}
+      />
+    );
   return (
     <div className="grid gap-2 px-2 py-6 text-center text-neutre-800">
       <p className="m-0 font-bold text-texte">Rien de sélectionné</p>
       <p className="m-0 text-sm leading-5">
-        Cliquez sur une pièce ou un mur du plan pour modifier ses propriétés. Tracez un mur avec la
-        palette d’outils ou la bibliothèque.
+        Cliquez sur une pièce, un mur, une porte ou un escalier du plan pour modifier ses
+        propriétés.
       </p>
     </div>
   );

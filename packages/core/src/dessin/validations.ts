@@ -12,7 +12,10 @@ export interface Alerte {
 /** Hauteur d'échappée minimale sous plafond au-dessus d'un escalier, en mm. */
 const ECHAPPEE_MIN = 1_900;
 
-export function alertesEscaliers(n: Niveau, hauteurNiveauSuperieur?: number): Alerte[] {
+export function alertesEscaliers(
+  n: Pick<Niveau, 'escaliers'>,
+  hauteurNiveauSuperieur?: number,
+): Alerte[] {
   return n.escaliers.flatMap((e) => {
     const h = e.hauteurAMonter / e.nbMarches;
     const blondel = 2 * h + e.giron;

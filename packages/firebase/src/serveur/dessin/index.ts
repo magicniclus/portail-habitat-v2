@@ -20,3 +20,4 @@ export {
   type ServicesDessin,
 } from './plans';
 export { exporterPlans, purgerCorbeilleDessin, supprimerTousLesPlans } from './purge';
+export { enregistrerFond, lireFond, TAILLE_MAX_FOND } from './fond';

@@ -85,4 +85,80 @@ test.describe('Plans (espace pro)', () => {
     await page.goto('/pro/plans');
     await expect(page).not.toHaveURL(/\/pro\/plans$/);
   });
+
+  test('poser une porte et un escalier, ajouter un étage avec ses murs, retrouver le tout', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+
+    const svg = plan.locator('svg');
+    const ecran = async (xMm: number, yMm: number) => {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      return { x: boite.x + (xMm - vx!) * k, y: boite.y + (yMm - vy!) * k };
+    };
+    const structure = async (sous: string, element: string) => {
+      const menu = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: 'Structure' });
+      if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
+      const retour = page
+        .getByRole('region', { name: 'Structure' })
+        .getByRole('button', { name: 'Structure', exact: true });
+      if (await retour.isVisible()) await retour.click();
+      await page.getByRole('button', { name: new RegExp(`^${sous}`) }).click();
+      if (element) await page.getByRole('button', { name: new RegExp(`^${element}`) }).click();
+    };
+
+    // Porte d'entrée sur le mur du bas (DES-13).
+    await structure('Portes & fenêtres', 'Porte d’entrée');
+    let p = await ecran(5000, 8500);
+    await page.mouse.click(p.x, p.y);
+    await expect(plan.getByRole('button', { name: 'Porte d’entrée de 90 cm' })).toBeVisible();
+
+    // Escalier droit dans la pièce (DES-15) : 15 marches pour 2,70 m.
+    await structure('Escaliers', 'Escalier droit');
+    p = await ecran(1000, 1000);
+    await page.mouse.click(p.x, p.y);
+    await expect(plan.getByRole('button', { name: 'Escalier de 15 marches' })).toBeVisible();
+
+    // Étage avec les murs extérieurs repris (DES-04, DES-05).
+    await structure('Niveaux', '');
+    await page.getByRole('button', { name: '+ Étage' }).click();
+    await expect(page.getByLabel('Nom du niveau Étage 1')).toBeVisible();
+    await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(1);
+    await expect(plan.getByRole('button', { name: /^Escalier/ })).toHaveCount(0);
+
+    // Plan importé en calque (D91) : image envoyée, affichée sous le dessin.
+    await structure('Importer un plan', '');
+    await page.getByLabel('Image du plan').setInputFiles({
+      name: 'plan.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+        'base64',
+      ),
+    });
+    await expect(svg.locator('image')).toHaveCount(1);
+    await expect(page.getByText(/^Opacité/)).toBeVisible();
+
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page.reload();
+    await expect(page.getByRole('combobox', { name: 'Niveau' }).locator('option')).toHaveCount(2);
+    await expect(
+      page.getByTestId('plan-2d').getByRole('button', { name: 'Porte d’entrée de 90 cm' }),
+    ).toBeVisible();
+  });
 });
