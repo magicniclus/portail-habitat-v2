@@ -4,10 +4,11 @@ import { Banner, Button, Field, Input } from '@ph/ui';
 import { useState, type Dispatch } from 'react';
 import { enregistrerFond, type EspaceDessin } from './api';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
+import { pdfEnImage } from './pdfEnImage';
 import { reduireImage } from './useFond';
 
 /**
- * Importer un plan (D91) : une image (photo, scan, capture) posée en calque sous le dessin,
+ * Importer un plan (D91) : un PDF ou une image (photo, scan, capture) posé en calque sous le dessin,
  * opacité réglable, mise à l'échelle en cliquant deux points d'une cote connue.
  */
 export function FondMenu({
@@ -29,14 +30,19 @@ export function FondMenu({
   const importer = async (fichier: File | undefined) => {
     if (!fichier) return;
     setErreur(null);
-    if (!/^image\/(jpeg|png|webp)$/.test(fichier.type))
-      return setErreur('Choisissez une image JPEG, PNG ou WebP (export PDF : faites une capture).');
+    const pdf = fichier.type === 'application/pdf';
+    if (!pdf && !/^image\/(jpeg|png|webp)$/.test(fichier.type))
+      return setErreur('Choisissez un PDF ou une image JPEG, PNG ou WebP.');
     setEnvoi(true);
-    const r = await enregistrerFond(espace, {
-      planId,
-      type: 'image/jpeg',
-      base64: await reduireImage(fichier),
-    });
+    let base64: string;
+    try {
+      // Un PDF : sa première page devient une image, envoyée comme les autres.
+      base64 = pdf ? await pdfEnImage(fichier) : await reduireImage(fichier);
+    } catch {
+      setEnvoi(false);
+      return setErreur('Ce fichier n’a pas pu être lu. Essayez une autre version ou une capture.');
+    }
+    const r = await enregistrerFond(espace, { planId, type: 'image/jpeg', base64 });
     setEnvoi(false);
     if (r.ok) dispatch({ type: 'poserFond', storagePath: r.data.storagePath });
     else setErreur(r.message);
@@ -45,19 +51,19 @@ export function FondMenu({
   return (
     <div className="grid gap-4">
       <Field
-        label={fond ? 'Remplacer l’image' : 'Image du plan'}
-        aide="JPEG, PNG ou WebP ; réduite à 3 000 px avant l’envoi."
+        label={fond ? 'Remplacer le plan' : 'Plan à importer'}
+        aide="PDF (première page) ou image JPEG, PNG, WebP ; réduit à 3 000 px avant l’envoi."
       >
         <Input
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="application/pdf,image/jpeg,image/png,image/webp"
           disabled={envoi}
           onChange={(ev) => void importer(ev.target.files?.[0])}
         />
       </Field>
       {envoi ? (
         <p role="status" className="m-0 text-sm">
-          Envoi de l’image…
+          Préparation et envoi du plan…
         </p>
       ) : null}
       {erreur ? <Banner tone="danger">{erreur}</Banner> : null}

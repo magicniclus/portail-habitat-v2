@@ -2,6 +2,28 @@ import { expect, test } from '@playwright/test';
 import { COMPTES, connecter, flagGlobal } from './outils';
 
 // docs/DESSIN.md §6 : DES-01, DES-06, DES-10, DES-11, DES-38, DES-39 (éditeur 2D, lot 15d).
+/** PDF d'une page (un rectangle tracé), construit avec ses décalages exacts. */
+function pdfMinimal(): Buffer {
+  const flux = '20 20 500 300 re S';
+  const objets = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 540 340] /Contents 4 0 R >>',
+    `<< /Length ${flux.length} >>\nstream\n${flux}\nendstream`,
+  ];
+  let corps = '%PDF-1.4\n';
+  const decalages = objets.map((o, i) => {
+    const d = corps.length;
+    corps += `${i + 1} 0 obj\n${o}\nendobj\n`;
+    return d;
+  });
+  const xref = corps.length;
+  corps += `xref\n0 ${objets.length + 1}\n0000000000 65535 f \n`;
+  for (const d of decalages) corps += `${String(d).padStart(10, '0')} 00000 n \n`;
+  corps += `trailer\n<< /Size ${objets.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(corps, 'latin1');
+}
+
 let retablirFlag: () => Promise<void>;
 test.beforeAll(async () => {
   retablirFlag = await flagGlobal('dessin', true);
@@ -141,7 +163,7 @@ test.describe('Plans (espace pro)', () => {
 
     // Plan importé en calque (D91) : image envoyée, affichée sous le dessin.
     await structure('Importer un plan', '');
-    await page.getByLabel('Image du plan').setInputFiles({
+    await page.getByLabel('Plan à importer').setInputFiles({
       name: 'plan.png',
       mimeType: 'image/png',
       buffer: Buffer.from(
@@ -151,6 +173,15 @@ test.describe('Plans (espace pro)', () => {
     });
     await expect(svg.locator('image')).toHaveCount(1);
     await expect(page.getByText(/^Opacité/)).toBeVisible();
+    // Un PDF remplace l'image : sa première page est convertie dans le navigateur.
+    const avant = await svg.locator('image').getAttribute('href');
+    await page.getByLabel('Remplacer le plan').setInputFiles({
+      name: 'plan.pdf',
+      mimeType: 'application/pdf',
+      buffer: pdfMinimal(),
+    });
+    await expect(svg.locator('image')).not.toHaveAttribute('href', avant!, { timeout: 15_000 });
+    await expect(page.getByText(/n’a pas pu être lu|n’est pas une image/)).toHaveCount(0);
 
     await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
       timeout: 10_000,
