@@ -1,5 +1,6 @@
 'use client';
 
+import { pointDansPolygone } from '@ph/core/dessin';
 import { Button, Field, Select } from '@ph/ui';
 import type { Dispatch, ReactNode } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
@@ -28,7 +29,19 @@ export function inspecteurExterieur(etat: EtatEditeur, dispatch: Dispatch<Action
     if (!p) return null;
     nom = 'Piscine';
     const parcelle = sceneDe(etat).terrain?.parcelle;
-    corps = <ReglagesPiscine p={p} parcelle={parcelle} modifier={modifier} />;
+    const encastree = ext.terrasses.some((t) => pointDansPolygone(p.position, t.contour));
+    corps = (
+      <>
+        <ReglagesPiscine p={p} parcelle={parcelle} modifier={modifier} />
+        <Button
+          variant="secondaire"
+          disabled={encastree}
+          onClick={() => dispatch({ type: 'terrasseAutour', piscineId: p.id })}
+        >
+          {encastree ? 'Piscine dans une terrasse' : 'Terrasse autour, jusqu’à la maison'}
+        </Button>
+      </>
+    );
   } else if (genre === 'cloture') {
     const c = ext.clotures.find((x) => x.id === s.id);
     if (!c) return null;

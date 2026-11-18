@@ -46,17 +46,21 @@ function facadeLaPlusProche(n: Niveau, p: Point): { point: Point; d: number } | 
   return mieux;
 }
 
-/** Arbre, arbuste ou haie : hors du bâti ; recule pour que la ramure touche juste la façade. */
+/**
+ * Arbre, arbuste ou haie : hors du bâti ; recule pour garder `degagement` mm entre sa ramure
+ * et la façade (un arbre ne se plante pas contre la maison).
+ */
 export function placerVegetal(
   n: Niveau,
   p: Point,
   diametre: number,
   aimant = true,
+  degagement = 0,
 ): Point | string {
   const occupe = dans(p, obstacles(n));
   if (occupe) return `Plantez-le hors de ${occupe.nom}.`;
   const f = facadeLaPlusProche(n, p);
-  const r = diametre / 2;
+  const r = diametre / 2 + degagement;
   if (!aimant || !f || f.d >= r || f.d === 0) return { x: Math.round(p.x), y: Math.round(p.y) };
   const k = r / f.d;
   return {
@@ -136,4 +140,44 @@ export function clotureTraverse(n: Niveau, a: Point, b: Point): string | null {
       return `La clôture traverserait ${x.nom}.`;
   }
   return null;
+}
+
+/**
+ * Terrasse autour d'une piscine (plage de `largeur` mm), prolongée jusqu'à la façade la plus
+ * proche si elle est à moins de 6 m : la piscine se retrouve encastrée dans la terrasse.
+ */
+export function rectanglePlage(
+  n: Niveau,
+  contour: readonly Point[],
+  largeur = 1_200,
+): [Point, Point] {
+  const xs = contour.map((p) => p.x);
+  const ys = contour.map((p) => p.y);
+  let [x0, x1, y0, y1] = [
+    Math.min(...xs) - largeur,
+    Math.max(...xs) + largeur,
+    Math.min(...ys) - largeur,
+    Math.max(...ys) + largeur,
+  ];
+  const pts = maison(n).flat();
+  if (pts.length) {
+    const [mx0, mx1] = [Math.min(...pts.map((p) => p.x)), Math.max(...pts.map((p) => p.x))];
+    const [my0, my1] = [Math.min(...pts.map((p) => p.y)), Math.max(...pts.map((p) => p.y))];
+    // Écart entre la piscine et chaque façade, si elle est en face : la plage va jusqu'au mur
+    // (même quand la piscine est à moins de 1,20 m, elle s'arrête à la façade).
+    const [px0, px1, py0, py1] = [x0 + largeur, x1 - largeur, y0 + largeur, y1 - largeur];
+    const enX = Math.min(px1, mx1) > Math.max(px0, mx0);
+    const enY = Math.min(py1, my1) > Math.max(py0, my0);
+    const ecarts: [number, () => void][] = [];
+    if (enX && py0 >= my1) ecarts.push([py0 - my1, () => (y0 = my1)]);
+    if (enX && py1 <= my0) ecarts.push([my0 - py1, () => (y1 = my0)]);
+    if (enY && px0 >= mx1) ecarts.push([px0 - mx1, () => (x0 = mx1)]);
+    if (enY && px1 <= mx0) ecarts.push([mx0 - px1, () => (x1 = mx0)]);
+    const proche = ecarts.sort((a, b) => a[0] - b[0])[0];
+    if (proche && proche[0] <= 6_000) proche[1]();
+  }
+  return [
+    { x: Math.round(x0), y: Math.round(y0) },
+    { x: Math.round(x1), y: Math.round(y1) },
+  ];
 }

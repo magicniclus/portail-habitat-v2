@@ -571,10 +571,10 @@ test.describe('Plans (espace pro)', () => {
     await exterieur('');
     await page.getByRole('button', { name: 'Parcelle autour de la maison' }).click();
 
-    // DES-18 : terrasse en deux coins, surélevée de 60 cm avec garde-corps.
+    // DES-18 : terrasse à l'ouest (collée à la façade), surélevée de 60 cm avec garde-corps.
     await exterieur('Terrasse');
-    await cliquer(1_000, 9_200);
-    await cliquer(6_000, 11_200);
+    await cliquer(-2_500, 1_000);
+    await cliquer(-400, 4_000);
     await expect(plan.getByRole('button', { name: 'Terrasse' })).toBeVisible();
     await page.getByLabel('Hauteur au-dessus du sol (cm)').fill('60');
     await page.getByLabel('Hauteur au-dessus du sol (cm)').press('Enter');
@@ -583,21 +583,24 @@ test.describe('Plans (espace pro)', () => {
 
     // DES-20 : piscine d'un clic, volume d'eau calculé.
     await exterieur('Piscine');
-    await cliquer(9_000, 13_300);
+    await cliquer(6_000, 11_000);
     await expect(page.getByText('Volume d’eau')).toBeVisible();
     await expect(page.getByText('46,4 m³')).toBeVisible();
     await expect(page.getByText('Aux limites (indicatif)')).toBeVisible();
+    // Terrasse autour de la piscine, jusqu'à la maison : la piscine y est encastrée.
+    await page.getByRole('button', { name: 'Terrasse autour, jusqu’à la maison' }).click();
+    await expect(plan.getByRole('button', { name: 'Terrasse' })).toHaveCount(2);
     await replier();
 
     // Arbre et clôture (deux points, Échap pour finir).
     await exterieur('Arbre');
-    await cliquer(-2_000, 4_000);
+    await cliquer(-2_000, -2_000);
     await replier();
     // Le dessin a grandi : on l'ajuste à l'écran avant de tracer la clôture.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
     await exterieur('Clôture');
-    await cliquer(-2_500, 17_000);
-    await cliquer(12_500, 17_000);
+    await cliquer(-2_500, 16_000);
+    await cliquer(12_500, 16_000);
     await page.keyboard.press('Escape');
     // Une clôture droite a une hauteur nulle à l'écran : on vérifie sa présence.
     await expect(plan.getByRole('button', { name: 'Clôture' })).toHaveCount(1);

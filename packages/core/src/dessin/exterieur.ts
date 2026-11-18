@@ -15,6 +15,7 @@ import {
   piscineSurLaMaison,
   placerTerrasse,
   placerVegetal,
+  rectanglePlage,
 } from './placementExterieur';
 import { aire, distance, projeter } from './geometrie';
 
@@ -56,6 +57,12 @@ export const DIAMETRE_VEGETAL: Record<Vegetal['type'], number> = {
   arbre: 6_000,
   arbuste: 1_500,
   haie: 800,
+};
+/** Espace laissé entre la ramure et la façade (mm) : un arbre ne touche pas la maison. */
+export const DEGAGEMENT_VEGETAL: Record<Vegetal['type'], number> = {
+  arbre: 1_500,
+  arbuste: 300,
+  haie: 0,
 };
 export const HAUTEUR_CLOTURE: Record<Cloture['type'], number> = {
   grillage: 1_500,
@@ -210,7 +217,13 @@ export function ajouterVegetal(
   ctx: Contexte,
   options: { aimant?: boolean } = {},
 ): Resultat<Niveau & { elementId: string }> {
-  const place = placerVegetal(n, position, DIAMETRE_VEGETAL[type], options.aimant ?? true);
+  const place = placerVegetal(
+    n,
+    position,
+    DIAMETRE_VEGETAL[type],
+    options.aimant ?? true,
+    DEGAGEMENT_VEGETAL[type],
+  );
   if (typeof place === 'string') return echec('PRECONDITION', { message: place });
   const v = schemaVegetal.safeParse({
     id: ctx.nouvelId('v'),
@@ -289,4 +302,16 @@ export function parcelleAutour(s: Scene, marge = 8_000): Resultat<Scene> {
     { x: Math.min(...xs) - marge, y: Math.min(...ys) - marge },
     { x: Math.max(...xs) + marge, y: Math.max(...ys) + marge },
   );
+}
+
+/** Terrasse autour de la piscine, jusqu'à la maison (DES-18, DES-20) : la piscine y est encastrée. */
+export function terrasseAutourDePiscine(
+  n: Niveau,
+  piscineId: string,
+  ctx: Contexte,
+): Resultat<Niveau & { elementId: string }> {
+  const p = n.exterieur.piscines.find((x) => x.id === piscineId);
+  if (!p) return echec('INTROUVABLE');
+  const [a, b] = rectanglePlage(n, contourPiscine(p));
+  return ajouterTerrasse(n, a, b, ctx, { aimant: false });
 }

@@ -8,6 +8,7 @@ import {
   modifierExterieur,
   parcelleAutour,
   supprimerExterieur,
+  terrasseAutourDePiscine,
   tracerCloture,
   type Niveau,
   type Point,
@@ -81,6 +82,8 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
       return surNiveau(e, (n) => modifierExterieur(n, a.genre, a.id, a.modif));
     case 'supprimerExterieur':
       return surNiveau(e, (n) => supprimerExterieur(n, a.genre, a.id));
+    case 'terrasseAutour':
+      return creer(e, (n) => terrasseAutourDePiscine(n, a.piscineId, ctx), 'terrasse');
     case 'parcelleAutour':
       return surScene(e, (s) => parcelleAutour(s));
     default:

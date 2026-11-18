@@ -9,6 +9,7 @@ import type {
 import { objetDuCatalogue } from './catalogue';
 import { quantitesToiture } from './commandesToit';
 import { planDeTravail } from './cuisine';
+import { contourPiscine } from './formePiscine';
 import { aire, perimetre, pointDansPolygone } from './geometrie';
 import { longueurMur, surfaceFaceNette } from './murs';
 
@@ -221,7 +222,17 @@ export function metreNiveau(n: Niveau, dessus: Niveau | null = null): LigneMetre
   fixe('fenetres', compter(FENETRES), 'u');
   fixe(
     'terrasse',
-    Math.round(n.exterieur.terrasses.reduce((s, t) => s + aire(t.contour), 0)),
+    // Une piscine encastrée dans une terrasse n'en fait pas partie.
+    Math.round(
+      n.exterieur.terrasses.reduce((s, t) => s + aire(t.contour), 0) -
+        n.exterieur.piscines
+          .filter((p) =>
+            n.exterieur.terrasses.some((t) =>
+              contourPiscine(p).every((q) => pointDansPolygone(q, t.contour)),
+            ),
+          )
+          .reduce((s, p) => s + aire(contourPiscine(p)), 0),
+    ),
     'm2',
   );
   fixe('piscine', n.exterieur.piscines.length, 'u');

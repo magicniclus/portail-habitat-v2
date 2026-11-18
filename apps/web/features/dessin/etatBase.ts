@@ -144,6 +144,7 @@ export type Action =
     }
   | { type: 'supprimerExterieur'; genre: GenreExterieur; id: string }
   | { type: 'parcelleAutour' }
+  | { type: 'terrasseAutour'; piscineId: string }
   | { type: 'terminerTrace' }
   | { type: 'selectionner'; selection: Selection }
   | { type: 'modifierLongueur'; murId: string; longueur: number }

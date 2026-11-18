@@ -1,6 +1,12 @@
 'use client';
 
-import { centroide, contourPiscine, type Niveau, type Point } from '@ph/core/dessin';
+import {
+  centroide,
+  contourPiscine,
+  pointDansPolygone,
+  type Niveau,
+  type Point,
+} from '@ph/core/dessin';
 import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import { cotes, Dalle, Segment } from './FormesExterieur3D';
 import { Terrasse3D } from './Terrasse3D';
@@ -29,7 +35,10 @@ export function Exterieur3D({ n, parcelle }: { n: Niveau; parcelle: Point[] | nu
       {e.piscines.map((p) => {
         const contour = contourPiscine(p);
         const horsSol = p.forme === 'hors_sol';
-        const eau = horsSol ? p.profondeurMin - 50 : 10;
+        // Piscine encastrée dans une terrasse : eau et margelles au niveau du plancher.
+        const terrasse = e.terrasses.find((t) => pointDansPolygone(p.position, t.contour));
+        const sol = terrasse ? Math.max(terrasse.hauteur, 40) : 0;
+        const eau = sol + (horsSol ? p.profondeurMin - 50 : 10);
         return (
           <group key={p.id}>
             <Dalle pts={contour} z={eau} couleur={C.eau} opacite={0.85} />
@@ -40,6 +49,7 @@ export function Exterieur3D({ n, parcelle }: { n: Niveau; parcelle: Point[] | nu
                 b={b}
                 e={horsSol ? 80 : 300}
                 h={horsSol ? p.profondeurMin : 50}
+                z0={sol}
                 couleur={horsSol ? C.tronc : C.margelle}
               />
             ))}

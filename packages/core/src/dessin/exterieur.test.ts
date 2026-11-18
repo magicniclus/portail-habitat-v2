@@ -13,6 +13,7 @@ import {
   modifierExterieur,
   parcelleAutour,
   supprimerExterieur,
+  terrasseAutourDePiscine,
   tracerCloture,
   volumeEau,
   type FormePiscine,
@@ -234,14 +235,17 @@ describe('extérieur : limites et réglages', () => {
 
 describe('placement de l’extérieur', () => {
   // Maison : de 0 à 10 600 (x) et de 0 à 8 600 (y), murs de 30 cm.
-  it('arbre : jamais dans la maison ; recule jusqu’à ce que sa ramure touche la façade', () => {
+  it('arbre : jamais dans la maison ; recule pour laisser 1,50 m entre sa ramure et la façade', () => {
     expect(ajouterVegetal(n, { x: 5_000, y: 4_000 }, 'arbre', ctx)).toMatchObject({
       code: 'PRECONDITION',
       message: 'Plantez-le hors de la maison.',
     });
-    // Arbre de 6 m à 1 m de la façade ouest (x = 0) : recule à 3 m.
+    // Arbre de 6 m à 1 m de la façade ouest (x = 0) : tronc à 3 m + 1,50 m de dégagement.
     const a = ok(ajouterVegetal(n, { x: -1_000, y: 4_000 }, 'arbre', ctx)).exterieur.vegetation[0]!;
-    expect(a.position).toEqual({ x: -3_000, y: 4_000 });
+    expect(a.position).toEqual({ x: -4_500, y: 4_000 });
+    // Une haie peut longer le mur : ramure contre la façade, sans dégagement.
+    const h = ok(ajouterVegetal(n, { x: -100, y: 4_000 }, 'haie', ctx)).exterieur.vegetation[0]!;
+    expect(h.position).toEqual({ x: -400, y: 4_000 });
     // Sans aimant : posé où l'on clique (hors maison).
     const libre = ok(ajouterVegetal(n, { x: -1_000, y: 4_000 }, 'arbre', ctx, { aimant: false }));
     expect(libre.exterieur.vegetation[0]!.position).toEqual({ x: -1_000, y: 4_000 });
@@ -337,5 +341,32 @@ describe('placement de l’extérieur : autres façades et cas sans maison', () 
       ok(ajouterTerrasse(vide, { x: 0, y: 0 }, { x: 2_000, y: 2_000 }, ctx)).exterieur.terrasses,
     ).toHaveLength(1);
     expect(accrocherALaLimite(nouvelleScene(ctx.nouvelId), { x: 1, y: 2 })).toEqual({ x: 1, y: 2 });
+  });
+});
+
+describe('terrasse autour de la piscine', () => {
+  it('plage de 1,20 m autour, prolongée jusqu’à la façade ; la piscine sort du métré de la terrasse', () => {
+    // Piscine 8 × 4 m centrée à (5 300, 14 000) : de 1 300 à 9 300 (x), de 12 000 à 16 000 (y).
+    const avec = ok(ajouterPiscine(n, { x: 5_300, y: 14_000 }, 'rectangle', ctx));
+    const plage = ok(terrasseAutourDePiscine(avec, avec.elementId, ctx));
+    const t = plage.exterieur.terrasses[0]!;
+    // Jusqu'à la façade sud (y = 8 600), 1,20 m autour ailleurs.
+    expect(t.contour[0]).toEqual({ x: 100, y: 8_600 });
+    expect(t.contour[2]).toEqual({ x: 10_500, y: 17_200 });
+    const terrasse = metreNiveau(plage).find((l) => l.poste === 'terrasse')!;
+    expect(terrasse.quantite).toBe(10_400 * 8_600 - 8_000 * 4_000);
+    // Trop loin de la maison (plus de 6 m) : seulement la plage autour.
+    const loin = ok(ajouterPiscine(n, { x: 5_300, y: 30_000 }, 'rectangle', ctx));
+    const seule = ok(terrasseAutourDePiscine(loin, loin.elementId, ctx)).exterieur.terrasses[0]!;
+    expect(seule.contour[0]).toEqual({ x: 100, y: 26_800 });
+    expect(terrasseAutourDePiscine(n, 'pi_absent', ctx)).toMatchObject({ code: 'INTROUVABLE' });
+    // Piscine à 40 cm de la façade : la plage s'arrête au mur, sans recouvrir la maison.
+    const pres = ok(ajouterPiscine(n, { x: 5_300, y: 11_000 }, 'rectangle', ctx));
+    const p2 = ok(terrasseAutourDePiscine(pres, pres.elementId, ctx)).exterieur.terrasses[0]!;
+    expect(p2.contour[0]).toEqual({ x: 100, y: 8_600 });
+    // À l'ouest de la maison : la plage rejoint la façade ouest (x = 0).
+    const ouest = ok(ajouterPiscine(n, { x: -5_000, y: 4_300 }, 'ronde', ctx));
+    const p3 = ok(terrasseAutourDePiscine(ouest, ouest.elementId, ctx)).exterieur.terrasses[0]!;
+    expect(p3.contour[1]!.x).toBe(0);
   });
 });
