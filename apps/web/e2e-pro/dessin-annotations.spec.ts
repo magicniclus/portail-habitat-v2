@@ -1,30 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
-import { activerPlans } from './dessinOutils';
-import { COMPTES, connecter } from './outils';
+import { expect, test } from '@playwright/test';
+import { activerPlans, nouveauPlan } from './dessinOutils';
 
 test.beforeAll(activerPlans);
-
-/** Nouveau plan rectangulaire de 10,60 × 8,60 m ; renvoie le plan et la conversion mm → écran. */
-async function nouveauPlan(page: Page) {
-  await connecter(page, COMPTES.proprio, '/pro/plans');
-  await page
-    .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
-    .first()
-    .click();
-  await page.getByLabel('Largeur hors tout (cm)').fill('1060');
-  await page.getByLabel('Profondeur hors tout (cm)').fill('860');
-  await page.getByRole('button', { name: 'Créer le plan' }).click();
-  const plan = page.getByTestId('plan-2d');
-  await expect(plan.getByText('83,6 m²')).toBeVisible();
-  const svg = plan.locator('svg');
-  const ecran = async (x: number, y: number) => {
-    const b = (await svg.boundingBox())!;
-    const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
-    const k = b.width / vl!;
-    return { x: b.x + (x - vx!) * k, y: b.y + (y - vy!) * k };
-  };
-  return { plan, ecran };
-}
 
 test.describe('Plans — annotations et calques (DES-30, DES-31)', () => {
   test('DES-30, DES-31 : coter, écrire sur le plan, masquer le calque des annotations', async ({

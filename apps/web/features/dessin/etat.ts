@@ -22,6 +22,7 @@ import {
   type EtatEditeur,
 } from './etatBase';
 import { reduireAmenagement } from './etatAmenagement';
+import { reduireNiveaux } from './etatNiveaux';
 import { reduireStructure } from './etatStructure';
 import { reduireExterieur } from './etatExterieur';
 import { reduireAnnotations } from './etatAnnotations';
@@ -142,6 +143,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     default:
       return (
         reduireStructure(e, a) ??
+        reduireNiveaux(e, a) ??
         reduireAmenagement(e, a) ??
         reduireToiture(e, a) ??
         reduireExterieur(e, a) ??

@@ -22,7 +22,8 @@ const NOMS: Record<TypeNiveau, string> = {
 const hauteurTotale = (n: Niveau) => n.hauteurSousPlafond + n.epaisseurPlancher;
 
 /** Niveaux du plus bas au plus haut. */
-export const niveauxTries = (s: Scene) => [...s.niveaux].sort((a, b) => a.altitude - b.altitude);
+export const niveauxTries = (s: Pick<Scene, 'niveaux'>) =>
+  [...s.niveaux].sort((a, b) => a.altitude - b.altitude);
 
 export function niveauInferieur(s: Scene, niveauId: string): Niveau | null {
   const tries = niveauxTries(s);
@@ -101,7 +102,68 @@ export function supprimerNiveau(s: Scene, niveauId: string): Resultat<Scene> {
   if (!s.niveaux.some((n) => n.id === niveauId)) return echec('INTROUVABLE');
   if (s.niveaux.length === 1)
     return echec('PRECONDITION', { message: 'Un plan garde au moins un niveau.' });
-  return succes({ ...s, niveaux: s.niveaux.filter((n) => n.id !== niveauId) });
+  return succes(
+    empiler(
+      s.niveaux.filter((n) => n.id !== niveauId),
+      s,
+    ),
+  );
+}
+
+/**
+ * Recalcule les altitudes dans l'ordre donné (du plus bas au plus haut) : le rez-de-chaussée
+ * (sinon le plus bas) garde la sienne, chaque niveau se pose sur celui du dessous.
+ */
+function empiler(ordre: readonly Niveau[], s: Scene): Scene {
+  const i0 = Math.max(
+    0,
+    ordre.findIndex((n) => n.type === 'rdc'),
+  );
+  const alt: number[] = [];
+  alt[i0] = ordre[i0]!.altitude;
+  for (let i = i0 + 1; i < ordre.length; i++) alt[i] = alt[i - 1]! + hauteurTotale(ordre[i - 1]!);
+  for (let i = i0 - 1; i >= 0; i--) alt[i] = alt[i + 1]! - hauteurTotale(ordre[i]!);
+  const parId = new Map(ordre.map((n, i) => [n.id, { ...n, altitude: alt[i]! }]));
+  return { ...s, niveaux: s.niveaux.filter((n) => parId.has(n.id)).map((n) => parId.get(n.id)!) };
+}
+
+/** Monte (`1`) ou descend (`-1`) un niveau d'un cran ; les altitudes suivent (DES-04). */
+export function deplacerNiveau(s: Scene, niveauId: string, sens: 1 | -1): Resultat<Scene> {
+  const ordre = niveauxTries(s);
+  const i = ordre.findIndex((n) => n.id === niveauId);
+  if (i < 0) return echec('INTROUVABLE');
+  const j = i + sens;
+  if (j < 0 || j >= ordre.length)
+    return echec('PRECONDITION', { message: 'Ce niveau est déjà tout en haut ou tout en bas.' });
+  [ordre[i], ordre[j]] = [ordre[j]!, ordre[i]!];
+  return succes(empiler(ordre, s));
+}
+
+/**
+ * Hauteur sous plafond et épaisseur du plancher d'un niveau (DES-04) : les murs à pleine
+ * hauteur suivent, les niveaux du dessus montent ou descendent d'autant.
+ */
+export function reglerNiveau(
+  s: Scene,
+  niveauId: string,
+  r: { hauteurSousPlafond?: number; epaisseurPlancher?: number },
+): Resultat<Scene> {
+  const n = s.niveaux.find((x) => x.id === niveauId);
+  if (!n) return echec('INTROUVABLE');
+  const hsp = r.hauteurSousPlafond ?? n.hauteurSousPlafond;
+  const ep = r.epaisseurPlancher ?? n.epaisseurPlancher;
+  if (!Number.isInteger(hsp) || hsp < 1_800 || hsp > 10_000)
+    return echec('ENTREE_INVALIDE', { message: 'Hauteur sous plafond : de 1,80 m à 10 m.' });
+  if (!Number.isInteger(ep) || ep < 0 || ep > 1_000)
+    return echec('ENTREE_INVALIDE', { message: 'Plancher : de 0 à 100 cm.' });
+  const regle: Niveau = {
+    ...n,
+    hauteurSousPlafond: hsp,
+    epaisseurPlancher: ep,
+    murs: n.murs.map((m) => (m.hauteur === n.hauteurSousPlafond ? { ...m, hauteur: hsp } : m)),
+  };
+  const suite = { ...s, niveaux: s.niveaux.map((x) => (x.id === niveauId ? regle : x)) };
+  return succes(empiler(niveauxTries(suite), suite));
 }
 
 /** Trémies d'un niveau (DES-05) : emprise des escaliers du niveau du dessous. */

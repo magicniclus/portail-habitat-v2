@@ -12,6 +12,8 @@ export interface PlanListe {
   majLe: string;
   supprimeLe: string | null;
   taille: number;
+  /** Chemin SVG des murs, dans un carré de 100 (DES-02). */
+  apercu: string;
 }
 
 const appel = <R>(operation: string, espace: EspaceDessin, corps: object = {}) =>

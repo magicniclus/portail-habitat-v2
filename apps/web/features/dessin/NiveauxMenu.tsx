@@ -1,10 +1,11 @@
 'use client';
 
 import { formatLongueur, niveauxTries, type TypeNiveau } from '@ph/core/dessin';
-import { TrashIcon } from '@phosphor-icons/react';
+import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, Checkbox, IconButton } from '@ph/ui';
 import { useState, type Dispatch } from 'react';
-import { sceneDe, type Action, type EtatEditeur } from './etat';
+import { ChampMesure } from './ChampMesure';
+import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 
 const AJOUTS: { type: TypeNiveau; libelle: string }[] = [
   { type: 'etage', libelle: 'Étage' },
@@ -12,14 +13,20 @@ const AJOUTS: { type: TypeNiveau; libelle: string }[] = [
   { type: 'sous_sol', libelle: 'Sous-sol' },
 ];
 
-/** Niveaux (DES-04, DES-05) : choisir, renommer, supprimer, ajouter (murs extérieurs repris). */
+/**
+ * Niveaux (DES-04, DES-05) : choisir, renommer, monter ou descendre, régler les hauteurs,
+ * supprimer, ajouter (murs extérieurs repris).
+ */
 export function NiveauxMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
   const [copier, setCopier] = useState(true);
   const niveaux = [...niveauxTries(sceneDe(etat))].reverse();
+  const actuel = niveauDe(etat);
+  const regler = (reglages: { hauteurSousPlafond?: number; epaisseurPlancher?: number }) =>
+    dispatch({ type: 'reglerNiveau', niveauId: actuel.id, reglages });
   return (
     <div className="grid gap-4">
       <ul className="m-0 grid list-none gap-1.5 p-0">
-        {niveaux.map((n) => {
+        {niveaux.map((n, i) => {
           const courant = n.id === etat.niveauId;
           return (
             <li
@@ -45,6 +52,18 @@ export function NiveauxMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
                 </span>
               </div>
               <div className="flex items-center">
+                <IconButton
+                  aria-label={`Monter le niveau ${n.nom}`}
+                  icone={<ArrowUpIcon />}
+                  disabled={i === 0}
+                  onClick={() => dispatch({ type: 'deplacerNiveau', niveauId: n.id, sens: 1 })}
+                />
+                <IconButton
+                  aria-label={`Descendre le niveau ${n.nom}`}
+                  icone={<ArrowDownIcon />}
+                  disabled={i === niveaux.length - 1}
+                  onClick={() => dispatch({ type: 'deplacerNiveau', niveauId: n.id, sens: -1 })}
+                />
                 {courant ? null : (
                   <Button
                     taille="sm"
@@ -68,6 +87,19 @@ export function NiveauxMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           );
         })}
       </ul>
+      <div className="grid grid-cols-2 gap-2">
+        <ChampMesure
+          label="Hauteur sous plafond (cm)"
+          mm={actuel.hauteurSousPlafond}
+          min={1_800}
+          appliquer={(mm) => regler({ hauteurSousPlafond: mm })}
+        />
+        <ChampMesure
+          label="Plancher (cm)"
+          mm={actuel.epaisseurPlancher}
+          appliquer={(mm) => regler({ epaisseurPlancher: mm })}
+        />
+      </div>
       <div className="grid gap-2.5 rounded-[10px] bg-neutre-100 p-3">
         <p className="m-0 text-sm font-bold">Ajouter un niveau</p>
         <Checkbox checked={copier} onChange={(ev) => setCopier(ev.target.checked)}>

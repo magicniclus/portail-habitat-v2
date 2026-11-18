@@ -6,6 +6,8 @@ export const planDessin = z.object({
   schemaVersion,
   titre: z.string().trim().min(1).max(120),
   vignettePath: z.string().max(300).optional(),
+  /** Aperçu de « Mes plans » : chemin SVG des murs (`apercuPlan`), calculé par le serveur. */
+  apercu: z.string().max(4_000).optional(),
   /** Révision de la scène courante : +1 à chaque enregistrement (contrôle des conflits). */
   versionCourante: z.number().int().min(0),
   /** Scène courante (gzip) dans Storage ; lue et écrite par le serveur uniquement. */

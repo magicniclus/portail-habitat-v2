@@ -92,7 +92,7 @@ Référentiels (lecture publique, écriture admin) :
 
 | Chemin | Contenu | Lecture | Écriture |
 |---|---|---|---|
-| `users/{uid}/plans/{planId}` | métadonnées : titre, vignette, `versionCourante`, `taille`, `majLe`, `creeLe`, `supprimeLe?`, `demandeId?` | propriétaire | propriétaire via `action()` (jamais le contenu de scène) |
+| `users/{uid}/plans/{planId}` | métadonnées : titre, `apercu` (chemin SVG des murs, remplace la vignette image : rien à générer ni à stocker), `versionCourante`, `taille`, `majLe`, `creeLe`, `supprimeLe?`, `demandeId?` | propriétaire | propriétaire via `action()` (jamais le contenu de scène) |
 | `artisans/{id}/plans/{planId}` | idem + `clientNom?`, `devisIds[]`, `auteurUid` | membres (`peut('dessin.lire')`) | membres (`peut('dessin.ecrire')`) via `action()` |
 | `…/plans/{planId}/versions/{versionId}` | `numero`, `storagePath`, `auteurUid`, `type: 'auto'|'manuelle'|'restauration'`, `nom?`, `taille`, `creeLe` (ajout seul) | comme le plan | serveur uniquement |
 | `partagesPlans/{jeton}` | `proprietaire {type, id}`, `planId`, `versionId` figée ou `courante`, `expireLe`, `revoque` | serveur uniquement (la page `/plan/[jeton]` lit côté serveur) | serveur |

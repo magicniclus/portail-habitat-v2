@@ -40,3 +40,4 @@ export * from './export';
 export * from './annonces';
 export * from './commandesMurs';
 export * from './annotations';
+export * from './apercu';

@@ -2,7 +2,6 @@ import { poserAnnotation } from './etatAnnotations';
 import { poserCoupe } from './etatFacades';
 import {
   ajouterMur,
-  ajouterNiveau,
   hauteurVersLeHaut,
   mettreFondAEchelle,
   modifierEscalier,
@@ -12,12 +11,10 @@ import {
   poserFond,
   poserOuverture,
   reglerFond,
-  renommerNiveau,
   retirerFond,
   supprimerAnnotation,
   supprimerEscalier,
   supprimerMur,
-  supprimerNiveau,
   supprimerObjet,
   supprimerOuverture,
   supprimerExterieur,
@@ -166,29 +163,6 @@ export function reduireStructure(e: EtatEditeur, a: Action): EtatEditeur | null 
       return surNiveau(e, (n) => modifierOuverture(n, a.id, a.modif));
     case 'modifierEscalier':
       return surNiveau(e, (n) => modifierEscalier(n, a.id, a.modif));
-    case 'changerNiveau':
-      return {
-        ...e,
-        niveauId: a.niveauId,
-        selection: null,
-        trace: null,
-        ajustement: e.ajustement + 1,
-      };
-    case 'ajouterNiveau': {
-      const r = ajouterNiveau(sceneDe(e), { type: a.niveau, copierMurs: a.copierMurs }, ctx);
-      if (!r.ok) return { ...e, erreur: r.message };
-      const { niveauId, ...scene } = r.data;
-      return { ...surScene(e, () => ({ ok: true, data: scene })), niveauId, selection: null };
-    }
-    case 'renommerNiveau':
-      return surScene(e, (s) => renommerNiveau(s, a.niveauId, a.nom));
-    case 'supprimerNiveau': {
-      const suite = surScene(e, (s) => supprimerNiveau(s, a.niveauId));
-      if (suite.erreur) return suite;
-      const reste = sceneDe(suite).niveaux;
-      const niveauId = reste.some((n) => n.id === e.niveauId) ? e.niveauId : reste[0]!.id;
-      return { ...suite, niveauId, selection: null };
-    }
     case 'poserFond':
       return surScene(e, (s) => ({
         ok: true,

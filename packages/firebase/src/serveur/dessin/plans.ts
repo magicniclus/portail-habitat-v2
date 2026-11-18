@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
-import { migrerScene, nouvelleScene, type Scene } from '@ph/core/dessin';
+import { apercuPlan, migrerScene, nouvelleScene, type Scene } from '@ph/core/dessin';
 import { peut, type Membre } from '@ph/core/equipe';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
@@ -41,6 +41,8 @@ export interface PlanLu {
   majLe: Date;
   supprimeLe: Date | null;
   taille: number;
+  /** Chemin SVG des murs du rez-de-chaussée (DES-02), vide sans mur. */
+  apercu: string;
 }
 
 /** Particulier : lui-même. Entreprise : membre actif avec `dessin.gerer`, relu en base. */
@@ -104,7 +106,9 @@ export async function creerPlan(
 ): Promise<{ planId: string }> {
   await exigerAcces(s, ctx);
   const ref = s.db.collection(chemins.plans(ctx.proprietaire)).doc();
-  const { donnees } = compresser(e.scene ?? nouvelleScene((prefixe) => `${prefixe}_${suffixe()}`));
+  const { donnees, scene } = compresser(
+    e.scene ?? nouvelleScene((prefixe) => `${prefixe}_${suffixe()}`),
+  );
   const chemin = fichierScene(ctx.proprietaire, ref.id, 1);
   await ecrire(s, chemin, donnees);
   try {
@@ -119,6 +123,7 @@ export async function creerPlan(
         derniereVersionLe: null,
         courantDansHistorique: false,
         taille: donnees.length,
+        apercu: apercuPlan(scene),
         creeLe: maintenant,
         majLe: maintenant,
         supprimeLe: null,
@@ -178,7 +183,7 @@ export async function enregistrerPlan(
   e: { planId: string; versionAttendue: number; scene: unknown; nomVersion?: string },
 ): Promise<{ versionCourante: number }> {
   await exigerAcces(s, ctx);
-  const { donnees } = compresser(e.scene);
+  const { donnees, scene } = compresser(e.scene);
   const chemin = fichierScene(ctx.proprietaire, e.planId, e.versionAttendue + 1);
   await ecrire(s, chemin, donnees);
   // Fichier précédent à effacer après coup, sauf s'il est gardé dans l'historique.
@@ -206,6 +211,7 @@ export async function enregistrerPlan(
         storagePath: chemin,
         courantDansHistorique: garder,
         taille: donnees.length,
+        apercu: apercuPlan(scene),
         majLe: Timestamp.fromMillis(maintenant),
         ...(garder ? { derniereVersionLe: Timestamp.fromMillis(maintenant) } : {}),
       });
@@ -305,6 +311,7 @@ export async function listerPlans(s: ServicesDessin, ctx: ContexteDessin): Promi
     majLe: (d.get('majLe') as Timestamp).toDate(),
     supprimeLe: (d.get('supprimeLe') as Timestamp | null)?.toDate() ?? null,
     taille: d.get('taille') as number,
+    apercu: (d.get('apercu') as string | undefined) ?? '',
   }));
 }
 

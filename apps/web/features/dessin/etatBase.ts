@@ -205,6 +205,12 @@ export type Action =
   | { type: 'ajouterNiveau'; niveau: TypeNiveau; copierMurs: boolean }
   | { type: 'renommerNiveau'; niveauId: string; nom: string }
   | { type: 'supprimerNiveau'; niveauId: string }
+  | {
+      type: 'reglerNiveau';
+      niveauId: string;
+      reglages: { hauteurSousPlafond?: number; epaisseurPlancher?: number };
+    }
+  | { type: 'deplacerNiveau'; niveauId: string; sens: 1 | -1 }
   | { type: 'poserFond'; storagePath: string }
   | { type: 'reglerFond'; opacite: number }
   | { type: 'retirerFond' }

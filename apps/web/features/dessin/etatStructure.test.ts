@@ -130,3 +130,27 @@ describe('cotes libres, textes et calques (DES-30, DES-31)', () => {
     expect(sceneDe(e).calques.mobilier).toBe(false);
   });
 });
+
+describe('niveaux dans l’éditeur (DES-04)', () => {
+  it('régler la hauteur, monter un niveau, supprimer : les altitudes suivent', () => {
+    let e = jouer([
+      { type: 'ajouterNiveau', niveau: 'etage', copierMurs: true },
+      { type: 'ajouterNiveau', niveau: 'combles', copierMurs: false },
+    ]);
+    const [rdc, etage, combles] = [...sceneDe(e).niveaux].sort((a, b) => a.altitude - b.altitude);
+    e = reduire(e, {
+      type: 'reglerNiveau',
+      niveauId: rdc!.id,
+      reglages: { hauteurSousPlafond: 2_800 },
+    });
+    const alt = (id: string) => sceneDe(e).niveaux.find((n) => n.id === id)!.altitude;
+    expect(alt(etage!.id)).toBe(3_000);
+    e = reduire(e, { type: 'deplacerNiveau', niveauId: combles!.id, sens: -1 });
+    expect(alt(combles!.id)).toBe(3_000);
+    e = reduire(e, { type: 'supprimerNiveau', niveauId: combles!.id });
+    expect(alt(etage!.id)).toBe(3_000);
+    expect(reduire(e, { type: 'deplacerNiveau', niveauId: etage!.id, sens: 1 }).erreur).toMatch(
+      /haut/,
+    );
+  });
+});

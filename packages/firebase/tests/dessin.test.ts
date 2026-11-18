@@ -81,7 +81,7 @@ describe('créer, lire, lister', () => {
     expect(plan).toMatchObject({ titre: 'Maison', versionCourante: 1 });
     expect(plan.scene.version).toBe(SCENE_VERSION);
     expect(await listerPlans(s(), ctxPart)).toEqual([
-      expect.objectContaining({ planId, titre: 'Maison', supprimeLe: null }),
+      expect.objectContaining({ planId, titre: 'Maison', supprimeLe: null, apercu: '' }),
     ]);
     expect(await fichiersDe(PART)).toHaveLength(1);
   });

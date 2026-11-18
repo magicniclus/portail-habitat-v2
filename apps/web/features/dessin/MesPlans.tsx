@@ -1,22 +1,24 @@
 'use client';
 
-import { formatDate } from '@ph/core/format';
-import { CopyIcon, PlusIcon, TrashIcon, ArrowUUpLeftIcon } from '@phosphor-icons/react';
-import { Banner, Button, EmptyState, IconButton, Skeleton } from '@ph/ui';
-import Link from 'next/link';
+import { ArrowUUpLeftIcon, PlusIcon } from '@phosphor-icons/react';
+import { Banner, Button, EmptyState, Field, Input, Select, Skeleton } from '@ph/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
 import { actionPlan, creerPlan, listerPlans, type EspaceDessin, type PlanListe } from './api';
+import { CartePlan } from './CartePlan';
 import { NouveauPlan } from './NouveauPlan';
 import { useRepriseEssai } from './useRepriseEssai';
+
+/** Recherche sans accents ni majuscules. */
+const normaliser = (t: string) => t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
 
 type Etat =
   | { etat: 'chargement' }
   | { etat: 'erreur'; message: string }
   | { etat: 'pret'; plans: PlanListe[] };
 
-/** Mes plans (DES-02) : liste, création depuis une forme, copie, corbeille de 30 jours. */
+/** Mes plans (DES-02) : aperçus, recherche, tri, création, copie, corbeille de 30 jours. */
 export function MesPlans({ espace }: { espace: EspaceDessin }) {
   const router = useRouter();
   const [e, setE] = useState<Etat>({ etat: 'chargement' });
@@ -26,6 +28,8 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
   const lien = (id: string) =>
     espace === 'particulier' ? routes.editeurPlan(id) : routes.proEditeurPlan(id);
 
+  const [recherche, setRecherche] = useState('');
+  const [tri, setTri] = useState<'date' | 'titre'>('date');
   const [version, setVersion] = useState(0);
   const recharger = () => setVersion((v) => v + 1);
   useEffect(() => {
@@ -69,6 +73,10 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
 
   const actifs = e.plans.filter((p) => !p.supprimeLe);
   const corbeille = e.plans.filter((p) => p.supprimeLe);
+  const cle = normaliser(recherche);
+  const visibles = actifs
+    .filter((p) => !cle || normaliser(p.titre).includes(cle))
+    .sort((a, b) => (tri === 'titre' ? a.titre.localeCompare(b.titre, 'fr') : 0));
   return (
     <div className="grid gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -89,31 +97,36 @@ export function MesPlans({ espace }: { espace: EspaceDessin }) {
           Partez d’un rectangle ou d’une forme en L, U ou T, puis ajustez les murs.
         </EmptyState>
       ) : (
-        <ul className="m-0 grid list-none gap-3 p-0 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-3">
-          {actifs.map((p) => (
-            <li
-              key={p.planId}
-              className="flex items-center gap-2 rounded-card border border-trait bg-blanc p-4"
-            >
-              <Link href={lien(p.planId)} className="min-w-0 flex-1 text-texte no-underline">
-                <span className="block truncate text-[17px] font-bold">{p.titre}</span>
-                <span className="text-sm text-neutre-700">
-                  Modifié le {formatDate(new Date(p.majLe))}
-                </span>
-              </Link>
-              <IconButton
-                aria-label={`Dupliquer ${p.titre}`}
-                icone={<CopyIcon />}
-                onClick={() => void agir('dupliquer', p.planId)}
+        <>
+          <div className="flex flex-wrap gap-2">
+            <Field label="Rechercher un plan" className="min-w-0 flex-1">
+              <Input
+                type="search"
+                value={recherche}
+                onChange={(ev) => setRecherche(ev.target.value)}
               />
-              <IconButton
-                aria-label={`Mettre ${p.titre} à la corbeille`}
-                icone={<TrashIcon />}
-                onClick={() => void agir('corbeille', p.planId)}
+            </Field>
+            <Field label="Trier par">
+              <Select value={tri} onChange={(ev) => setTri(ev.target.value as 'date' | 'titre')}>
+                <option value="date">Modifiés récemment</option>
+                <option value="titre">Titre (A à Z)</option>
+              </Select>
+            </Field>
+          </div>
+          {visibles.length === 0 ? (
+            <p className="m-0 text-neutre-800">Aucun plan ne correspond à « {recherche} ».</p>
+          ) : null}
+          <ul className="m-0 grid list-none gap-3 p-0 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-3">
+            {visibles.map((p) => (
+              <CartePlan
+                key={p.planId}
+                plan={p}
+                lien={lien(p.planId)}
+                agir={(op, id) => void agir(op, id)}
               />
-            </li>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        </>
       )}
       {corbeille.length > 0 ? (
         <details className="rounded-card border border-trait p-4">
