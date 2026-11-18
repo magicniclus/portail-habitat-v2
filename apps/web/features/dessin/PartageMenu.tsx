@@ -3,7 +3,7 @@
 import { formatDate } from '@ph/core/format';
 import { Banner, Button, Select } from '@ph/ui';
 import { CopyIcon, LinkIcon, TrashIcon } from '@phosphor-icons/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
 import { listerPartages, partagerPlan, revoquerPartage, type EspaceDessin } from './api';
 
@@ -19,13 +19,17 @@ export function PartageMenu({ espace, planId }: { espace: EspaceDessin; planId: 
   const [liens, setLiens] = useState<Lien[]>([]);
   const [jours, setJours] = useState('30');
   const [message, setMessage] = useState<string | null>(null);
-  const charger = useCallback(async () => {
-    const r = await listerPartages(espace, planId);
-    if (r.ok) setLiens(r.data.liens);
-  }, [espace, planId]);
+  const [revision, setRevision] = useState(0);
+  const charger = () => setRevision((r) => r + 1);
   useEffect(() => {
-    void charger();
-  }, [charger]);
+    let actif = true;
+    void listerPartages(espace, planId).then((r) => {
+      if (actif && r.ok) setLiens(r.data.liens);
+    });
+    return () => {
+      actif = false;
+    };
+  }, [espace, planId, revision]);
   const adresse = (jeton: string) => `${window.location.origin}${routes.planPartage(jeton)}`;
   const copier = async (jeton: string) => {
     await navigator.clipboard?.writeText(adresse(jeton)).catch(() => undefined);
@@ -34,7 +38,7 @@ export function PartageMenu({ espace, planId }: { espace: EspaceDessin; planId: 
   const creer = async () => {
     const r = await partagerPlan(espace, planId, jours === '0' ? undefined : Number(jours));
     if (!r.ok) return setMessage(r.message);
-    await charger();
+    charger();
     await copier(r.data.jeton);
   };
   return (
