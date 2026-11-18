@@ -198,3 +198,6 @@ Critères LAND-01 à LAND-07 : voir `LANDINGS.md` §8.
 
 ## Domaines
 Critères DOM-01 à DOM-08 : voir `DOMAINES.md` §8.
+
+## Dessin
+Critères DES-01 à DES-48 : voir `DESSIN.md` §6.

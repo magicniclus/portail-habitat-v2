@@ -138,7 +138,7 @@ apps/web/features/dessin/
 apps/functions/src/dessin            enregistrer, restaurer, partager, purger, vignette (si non générée côté client)
 ```
 
-**Nouvelles dépendances à signaler dans le plan (CLAUDE.md)** : `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` (3D, chargés à la demande uniquement), `zustand` + `immer` (store et patchs d'historique) ou équivalent justifié, `comlink` (worker), `idb-keyval` (brouillon hors ligne), `polygon-clipping` ou `clipper2` (opérations booléennes). Budget JS (D46) : l'éditeur 2D ≤ 250 ko gzip hors 3D ; la 3D n'est jamais dans le bundle initial.
+**Nouvelles dépendances à signaler dans le plan (CLAUDE.md)** : `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` (3D, chargés à la demande uniquement), `zustand` + `immer` (store et patchs d'historique) ou équivalent justifié, `comlink` (worker), `idb-keyval` (brouillon hors ligne), `polygon-clipping` ou `clipper2` (opérations booléennes). Budget JS (EXPLOITATION §1, seuil CI provisoire de 160 Ko sur les pages publiques) : l'éditeur 2D ≤ 250 ko gzip hors 3D ; la 3D n'est jamais dans le bundle initial.
 
 ## 5 bis. Pile technique (D86)
 
@@ -266,7 +266,7 @@ Poids visé : éditeur 2D ≤ 250 ko gzip ; 3D ≈ 200 ko gzip supplémentaires,
 ## 9. Décisions à trancher (reportées dans `DECISIONS.md`)
 
 Tranchées le 18/11/2026 : D84 gratuit · D85 aucun rendu serveur · D87 données publiques IGN / cadastre · D88 CC0 puis catalogue maison · D90 plan joint et « devis par écrit sans appel » au choix du client.
-À confirmer : D86 pile technique (§5 bis) · D89 collaboration en temps réel (proposition : non en v1) · D90 détail (téléphone masqué aux artisans) · D91 import de plans (image et PDF en v1).
+Puis : D86 pile technique (§5 bis) · D89 pas de temps réel en v1 · D90 téléphone jamais montré aux artisans si « par écrit » · D91 import image et PDF en v1. **Plus aucune ligne ⏳ pour Dessin.**
 
 ---
 
@@ -333,7 +333,7 @@ parquet, papier peint, pipette de style. Symboles 2D de chaque objet. Tests DES-
 ### Lot 15g — 3D, visite, photo
 ```
 Lot 15g. docs/DESSIN.md §5 (rendu3d, visite, photo), §6.12 DES-33, DES-34, DES-37, §6.15 DES-48. Ajoute three,
-@react-three/fiber, @react-three/drei, @react-three/postprocessing en import dynamique uniquement (vérifie le budget D46).
+@react-three/fiber, @react-three/drei, @react-three/postprocessing en import dynamique uniquement (vérifie le budget d'EXPLOITATION §1).
 Génère la géométrie 3D depuis la scène (murs avec découpes d'ouvertures, sols, plafonds, escaliers, objets glb instanciés,
 textures ktx2 à l'échelle réelle), vue maison de poupée, niveau isolé, ombres selon l'heure et le nord ; visite avec collisions,
 clavier, souris et joystick tactile ; vue photo (cadrage, ambiance, export HD, galerie). Tests de rendu par capture et

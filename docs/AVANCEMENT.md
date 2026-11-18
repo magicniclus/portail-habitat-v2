@@ -846,6 +846,60 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - **Modèle de données (signalé)** : `sites/{id}/reglagesBlog/pilote` (serveur seulement, aucune règle client), `articles.pilote {jetonHash, publierLe, valideLe}` ; index `reglagesBlog (actif, prochaineLe)` ; nouveau modèle d'email `blog-a-valider`.
 - Tests : 10 cœur, 5 sur émulateur (BLOG-10 à 13), 1 e2e. Reste : la rédaction réelle attend `ANTHROPIC_API_KEY` ; les volumes et tendances de mots-clés attendent DataForSEO (D68).
 
+## 31. Lot 15 — Dessin, éditeur de plans 2D / 3D (cadrage 15a le 18/11/2026)
+
+Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Branche : `lot-15-dessin`. Décisions D84 à D91 toutes tranchées le 18/11/2026 (plus aucun ⏳ bloquant).
+
+### Découpage
+- [x] 15a Cadrage (ce paragraphe)
+- [ ] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (tests d'abord)
+- [ ] 15c Données : Firestore, Storage, règles et tests, repositories, actions, Functions, seed
+- [ ] 15d Coque de l'éditeur et 2D (routes, barre, bibliothèque, palette, inspecteur, murs, pièces, cotes, sauvegarde)
+- [ ] 15e Ouvertures, escaliers, niveaux, plan importé
+- [ ] 15f Aménager et décorer (catalogue, cuisine, salle de bain, revêtements, zones décoratives)
+- [ ] 15g 3D, visite, photo
+- [ ] 15h Toiture, extérieur, piscine, implantation, façades et coupes
+- [ ] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel), « Créer un devis depuis ce plan »
+- [ ] 15j Landing publique, essai sans compte, mobile, accessibilité, performance
+- [ ] 15k Recette et fin
+
+### Dépendances à ajouter (signalées, D86)
+| Paquet | Où | Poids gzip (ordre de grandeur) | Sous-lot |
+|---|---|---|---|
+| `clipper2-ts` | `packages/core` (seule dépendance runtime ajoutée au cœur, pure) | ~30 Ko | 15b |
+| `zustand`, `immer` | `apps/web` | ~1 Ko + ~5 Ko | 15d |
+| `comlink` | `apps/web` | ~1 Ko | 15d |
+| `idb-keyval` | `apps/web` | < 1 Ko | 15d |
+| `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` | `apps/web`, import dynamique uniquement | ~150 + 40 + 20 à 60 + 30 Ko | 15g |
+| `maplibre-gl` | `apps/web`, import dynamique (vue d'implantation) | ~220 Ko | 15h |
+| `@gltf-transform/cli` | `scripts/` (développement seulement) | — | 15f |
+
+`packages/core` n'importe aujourd'hui que Zod (ARCHITECTURE §3) : `clipper2-ts` est pure (aucun accès réseau ni DOM) ; à accepter explicitement, sinon les opérations booléennes seront écrites à la main (plus long, plus risqué).
+
+### Incohérences relevées et propositions
+1. **Historique** : DESSIN §5 parle de patchs immer et d'un historique « illimité » ; l'éditeur de site a déjà un `Historique<T>` à instantanés limité à 80 états (`core/sites/edition.ts`). **Proposition** : extraire cet historique générique dans `packages/core/src/edition/historique.ts` (paramètre `max`, regroupement des gestes), l'utiliser pour le site et pour Dessin (`max = 300`). Les instantanés partagent leur structure (objets immuables) : coût mémoire faible, pas besoin de patchs. `immer` sert seulement à écrire les commandes lisiblement.
+2. **Emplacement des schémas** : DESSIN §5 les met dans `core/dessin/schemas` ; la règle locale impose `packages/core/src/schemas`. **Proposition** : `schemas/dessin.ts` (métadonnées, versions, partages) et `schemas/dessinScene.ts` (scène) ; la logique reste dans `core/src/dessin/`.
+3. **Permissions** : DESSIN parle de `dessin.lire` / `dessin.ecrire` ; les permissions existantes sont en `.gerer`. **Proposition** : une seule action `dessin.gerer`, accordée au propriétaire, au gérant et au collaborateur, pas au comptable. Mise à jour de COMPTES §4.1 au lot 15c.
+4. **Budget JS** : DESSIN citait « D46 », qui est désormais la ligne Turnstile. Le budget est celui d'EXPLOITATION §1 (seuil CI provisoire 160 Ko, pages publiques). Corrigé dans DESSIN. L'éditeur est derrière connexion : seuls la landing `/dessin` et l'essai comptent ; la 3D n'est jamais dans le bundle initial.
+5. **Landing particulier** : le gabarit `Landing Outil` (LANDINGS.md) vise les artisans. **Proposition** : le réutiliser avec le thème particulier, sans chiffre ni avis non sourcé (LANDINGS §7).
+6. **Devis par écrit sans appel** (D90) : `demandes.contact.telephone` est obligatoire aujourd'hui. **Proposition** : le garder obligatoire (vérification anti-abus, SMS de confirmation) et ajouter `demandes.contactSouhaite: 'telephone' | 'ecrit_uniquement'` (défaut `telephone`) ; si `ecrit_uniquement`, le téléphone est retiré de tout ce que voit l'artisan (attributions, appels d'offres, emails, SMS, export). Changement du modèle de données à faire au lot 15i, avec tests des règles et du matching.
+7. **Navigation** : ajouter `dessin` à `PAGES_PRO` / `ADRESSES_PRO` (barre latérale, outil) et l'onglet « Mes plans » à l'espace particulier (`features/espace/Onglets.tsx`).
+8. **Flags** : ajouter `dessin` et `dessinPublic` à `FLAGS` (défaut `false`), au lot 15d.
+9. **Données personnelles** : les chemins Storage contiennent un uid ou un identifiant d'entreprise ; ils ne sont jamais exposés (URL signées de courte durée). Le jeton de partage est opaque et ne contient rien de personnel.
+
+### Plan du lot 15b (à valider avant de coder)
+Tout dans `packages/core`, **tests Vitest écrits avant le code**, aucun React / Firebase / Next.
+1. `edition/historique.ts` : extraction de l'historique générique (paramètre `max`, `regrouper(cle)` pour qu'un glisser = une étape) ; `sites/edition.ts` le réutilise sans changement de comportement (ses tests existants doivent passer).
+2. `schemas/dessinScene.ts` : `Point`, `Mur`, `Ouverture`, `Piece`, `Objet`, `Escalier`, `Toiture`, `Terrasse`, `Piscine`, `Terrain`, `Revetement`, `ZoneDeco`, `Niveau`, `Scene` (millimètres et dixièmes de degré entiers, bornes réalistes, identifiants préfixés) ; `schemas/dessin.ts` : métadonnées de plan, version, partage.
+3. `dessin/migrations.ts` : `migrerScene()` (version 1, mécanique prête pour la suite).
+4. `dessin/geometrie/` : vecteurs entiers, segments, intersections, distance point-segment, polygones (aire, périmètre, orientation, point dans polygone), contours épais des murs, **jonctions L / T / X**, **détection des pièces** (graphe planaire, faces minimales), surfaces nettes des murs (ouvertures déduites), surface Carrez.
+5. `dessin/aimantation.ts` : grille, extrémités, milieux, prolongements, perpendiculaires, pas de 15°, avec tolérance en pixels convertie en mm selon le zoom.
+6. `dessin/commandes/` : `ajouterMur`, `deplacerExtremite`, `deplacerMur`, `scinderMur`, `fusionnerMurs`, `supprimer`, `modifierCote` (une cote saisie déplace le bon mur), `renommerPiece`, `appliquerRevetement` ; chaque commande est pure et validée.
+7. `dessin/formes.ts` : création depuis une forme (rectangle, L, U, T) et modèles de départ (studio, T2, T3, plain-pied, étage).
+8. `dessin/metre.ts` : quantités par poste (sols, murs, plafonds, plinthes, cloisons, ouvertures) rattachées aux identifiants de `docs/data/prestations-catalogue.json`.
+9. `format/` : `formatLongueur(mm, 'cm'|'m')`, `formatSurface(mm²)`, `formatAngle()`.
+Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couverture ≥ 90 % sur `dessin/`, `pnpm knip` propre. Rien d'autre n'est touché.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -877,3 +931,4 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - 16/10/2026 — Lot 10b : statistiques sans cookie et contrôle quotidien des domaines. Lot 10c en cours : IA du site (opérations validées, garde-fou des faits, crédits, panneau de l'éditeur). Détail : §27, §28.
 - 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
+- 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
