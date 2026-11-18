@@ -6,6 +6,8 @@ import type {
   Piece,
   Point,
 } from '../schemas/dessinScene';
+import { objetDuCatalogue } from './catalogue';
+import { planDeTravail } from './cuisine';
 import { aire, perimetre, pointDansPolygone } from './geometrie';
 import { longueurMur, surfaceFaceNette } from './murs';
 
@@ -27,6 +29,8 @@ export const POSTES_METRE = [
   'terrasse',
   'piscine',
   'escalier',
+  'plan_de_travail',
+  'equipements',
 ] as const;
 export type PosteMetre = (typeof POSTES_METRE)[number];
 
@@ -43,6 +47,23 @@ export const LIBELLES_POSTE: Record<PosteMetre, string> = {
   terrasse: 'Terrasse',
   piscine: 'Piscine',
   escalier: 'Escalier',
+  plan_de_travail: 'Plan de travail',
+  equipements: 'Équipements',
+};
+
+/** Libellé des équipements posés, par prestation du catalogue. */
+export const LIBELLES_EQUIPEMENT: Record<string, string> = {
+  'cuisine-pose': 'Meubles de cuisine',
+  'sdb-douche': 'Douche',
+  wc: 'WC',
+  dressing: 'Dressing',
+  'prises-eclairage': 'Prises, interrupteurs et points lumineux',
+  'tableau-electrique': 'Tableau électrique',
+  'chauffage-electrique': 'Radiateurs',
+  chaudiere: 'Chaudière',
+  'chauffe-eau': 'Ballon d’eau chaude',
+  poele: 'Poêle',
+  'abri-jardin': 'Abri de jardin',
 };
 
 /** mm² pour `m2`, mm pour `ml`, nombre pour `u`. */
@@ -116,7 +137,9 @@ export function metreNiveau(n: Niveau): LigneMetre[] {
   const lignes: LigneMetre[] = [];
   const ajouter = (l: LigneMetre) => {
     if (l.quantite <= 0) return;
-    const meme = lignes.find((x) => x.poste === l.poste && x.famille === l.famille);
+    const meme = lignes.find(
+      (x) => x.poste === l.poste && x.famille === l.famille && x.prestationId === l.prestationId,
+    );
     if (meme) meme.quantite += l.quantite;
     else lignes.push({ ...l });
   };
@@ -176,6 +199,18 @@ export function metreNiveau(n: Niveau): LigneMetre[] {
   );
   fixe('piscine', n.exterieur.piscines.length, 'u');
   fixe('escalier', n.escaliers.length, 'u');
+
+  // Cuisine et équipements posés (DES-23, DES-43) : rattachés à leur prestation.
+  ajouter({
+    poste: 'plan_de_travail',
+    quantite: planDeTravail(n).longueur,
+    unite: 'ml',
+    prestationId: 'cuisine-plan',
+  });
+  for (const o of n.objets) {
+    const prestationId = objetDuCatalogue(o.catalogueId)?.prestationId;
+    if (prestationId) ajouter({ poste: 'equipements', quantite: 1, unite: 'u', prestationId });
+  }
   return lignes;
 }
 

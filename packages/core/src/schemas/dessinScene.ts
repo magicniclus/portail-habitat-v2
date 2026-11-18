@@ -49,6 +49,16 @@ export const FAMILLES_REVETEMENT = [
   'pierre',
 ] as const;
 
+/** Poses de carrelage et de parquet (DES-26). */
+export const POSES = [
+  'droite',
+  'decalee',
+  'diagonale',
+  'chevron',
+  'point_de_hongrie',
+  'baton_rompu',
+] as const;
+
 export const revetement = z.object({
   famille: z.enum(FAMILLES_REVETEMENT),
   /** Référence dans `referentiel/materiaux` (lot 15f). */
@@ -67,6 +77,9 @@ export const revetement = z.object({
         .optional(),
     })
     .optional(),
+  /** Carrelage, dalles : format d'un élément ; parquet : largeur et longueur de lame (mm). */
+  format: z.object({ l: mmPositif.min(10).max(3_000), p: mmPositif.min(10).max(3_000) }).optional(),
+  pose: z.enum(POSES).optional(),
 });
 const REVETEMENT_VIDE = { famille: 'aucun' } as const;
 
@@ -424,6 +437,9 @@ export const scene = z
 export type Point = z.infer<typeof point>;
 export type Revetement = z.infer<typeof revetement>;
 export type FamilleRevetement = (typeof FAMILLES_REVETEMENT)[number];
+export type Pose = (typeof POSES)[number];
+export type Objet = z.infer<typeof objet>;
+export type ZoneDeco = z.infer<typeof zoneDeco>;
 export type Mur = z.infer<typeof mur>;
 export type TypeMur = (typeof TYPES_MUR)[number];
 export type Ouverture = z.infer<typeof ouverture>;
