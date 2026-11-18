@@ -30,6 +30,7 @@ export interface DonneesPdfPlan {
   menuiseries: readonly { libelle: string; nombre: number }[];
 }
 
+type Doc = PDFKit.PDFDocument;
 const MENTION = 'Plan indicatif réalisé avec Portail Travaux : cotes à vérifier sur place.';
 
 /**
@@ -58,11 +59,21 @@ export function genererPdfPlan(d: DonneesPdfPlan): Promise<Buffer> {
   const [L, H] = [papier.l * PT, papier.h * PT];
   const M = MARGE_PAPIER * PT;
 
+  dessinerNord(doc, L, M, d.scene.orientationNord);
+  dessinerEchelle(doc, H, M, k);
+  dessinerCartouche(doc, { L, H, M }, d, n);
+  if (d.metre.length || d.menuiseries.length) dessinerAnnexe(doc, d);
+  doc.end();
+  return fin;
+}
+
+/** Flèche du nord, en haut à droite, tournée comme le plan. */
+function dessinerNord(doc: Doc, L: number, M: number, orientationNord: number) {
   // Flèche du nord (en haut à droite), tournée comme le plan.
   doc
     .save()
     .translate(L - M - 18, M + 22)
-    .rotate(d.scene.orientationNord / 10);
+    .rotate(orientationNord / 10);
   doc
     .moveTo(0, -14)
     .lineTo(6, 8)
@@ -73,7 +84,10 @@ export function genererPdfPlan(d: DonneesPdfPlan): Promise<Buffer> {
     .fill();
   doc.restore().font('Helvetica-Bold').fontSize(8).fillColor(COULEURS_PLAN.mur);
   doc.text('N', L - M - 24, M, { width: 12, align: 'center' });
+}
 
+/** Échelle graphique de 5 m. */
+function dessinerEchelle(doc: Doc, H: number, M: number, k: number) {
   // Échelle graphique : 5 m en tranches de 1 m.
   const yBarre = H - M - HAUTEUR_CARTOUCHE * PT - 14;
   for (let i = 0; i < 5; i++) {
@@ -86,7 +100,15 @@ export function genererPdfPlan(d: DonneesPdfPlan): Promise<Buffer> {
   }
   doc.font('Helvetica').fontSize(6).fillColor(COULEURS_PLAN.cote);
   doc.text('0', M - 2, yBarre + 5).text('5 m', M + 5000 * k * PT - 6, yBarre + 5);
+}
 
+/** Cartouche (titre, niveau, échelle, date, surface) et légende. */
+function dessinerCartouche(
+  doc: Doc,
+  { L, H, M }: { L: number; H: number; M: number },
+  d: DonneesPdfPlan,
+  n: Scene['niveaux'][number],
+) {
   // Cartouche : titre, niveau, échelle, date, surface ; légende à droite.
   const yC = H - M - HAUTEUR_CARTOUCHE * PT;
   doc
@@ -125,28 +147,27 @@ export function genererPdfPlan(d: DonneesPdfPlan): Promise<Buffer> {
   doc
     .fontSize(8)
     .text('Porte : vantail et débattement en tirets · Fenêtre : double trait', xL, yC + 30);
+}
 
+/** Annexe : métré des postes cochés, page A4. */
+function dessinerAnnexe(doc: Doc, d: DonneesPdfPlan) {
   // Annexe : métré des postes cochés.
-  if (d.metre.length || d.menuiseries.length) {
-    doc.addPage({ size: 'A4', margin: 40 });
-    doc.font('Helvetica-Bold').fontSize(14).fillColor(COULEURS_PLAN.mur).text('Métré');
-    doc.font('Helvetica').fontSize(9).fillColor(COULEURS_PLAN.cote);
-    doc.text(net('Quantités calculées depuis le plan, tous niveaux. Indicatif.')).moveDown();
-    const ligne = (a: string, b: string) => {
-      const y = doc.y;
-      doc.fillColor(COULEURS_PLAN.mur).text(net(a), 40, y, { width: 380 });
-      doc.text(net(b), 420, y, { width: 135, align: 'right' });
-      doc
-        .moveTo(40, doc.y + 2)
-        .lineTo(555, doc.y + 2)
-        .lineWidth(0.3)
-        .strokeColor(COULEURS_PLAN.etiquetteTrait)
-        .stroke();
-      doc.moveDown(0.5);
-    };
-    for (const l of d.metre) ligne(libelleLigneMetre(l), quantiteMetre(l));
-    for (const m of d.menuiseries) ligne(`Menuiserie : ${m.libelle}`, `× ${m.nombre}`);
-  }
-  doc.end();
-  return fin;
+  doc.addPage({ size: 'A4', margin: 40 });
+  doc.font('Helvetica-Bold').fontSize(14).fillColor(COULEURS_PLAN.mur).text('Métré');
+  doc.font('Helvetica').fontSize(9).fillColor(COULEURS_PLAN.cote);
+  doc.text(net('Quantités calculées depuis le plan, tous niveaux. Indicatif.')).moveDown();
+  const ligne = (a: string, b: string) => {
+    const y = doc.y;
+    doc.fillColor(COULEURS_PLAN.mur).text(net(a), 40, y, { width: 380 });
+    doc.text(net(b), 420, y, { width: 135, align: 'right' });
+    doc
+      .moveTo(40, doc.y + 2)
+      .lineTo(555, doc.y + 2)
+      .lineWidth(0.3)
+      .strokeColor(COULEURS_PLAN.etiquetteTrait)
+      .stroke();
+    doc.moveDown(0.5);
+  };
+  for (const l of d.metre) ligne(libelleLigneMetre(l), quantiteMetre(l));
+  for (const m of d.menuiseries) ligne(`Menuiserie : ${m.libelle}`, `× ${m.nombre}`);
 }

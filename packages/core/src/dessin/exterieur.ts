@@ -53,18 +53,18 @@ const PISCINE_DEFAUT: Record<FormePiscine, { longueur: number; largeur: number }
   hors_sol: { longueur: 5_000, largeur: 3_000 },
 };
 /** Diamètre adulte par défaut d'un végétal (mm) ; hauteur d'une clôture (mm). */
-export const DIAMETRE_VEGETAL: Record<Vegetal['type'], number> = {
+const DIAMETRE_VEGETAL: Record<Vegetal['type'], number> = {
   arbre: 6_000,
   arbuste: 1_500,
   haie: 800,
 };
 /** Espace laissé entre la ramure et la façade (mm) : un arbre ne touche pas la maison. */
-export const DEGAGEMENT_VEGETAL: Record<Vegetal['type'], number> = {
+const DEGAGEMENT_VEGETAL: Record<Vegetal['type'], number> = {
   arbre: 1_500,
   arbuste: 300,
   haie: 0,
 };
-export const HAUTEUR_CLOTURE: Record<Cloture['type'], number> = {
+const HAUTEUR_CLOTURE: Record<Cloture['type'], number> = {
   grillage: 1_500,
   bois: 1_800,
   muret: 800,

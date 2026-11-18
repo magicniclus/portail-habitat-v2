@@ -7,6 +7,7 @@ import type { Dispatch } from 'react';
 import type { Action } from './etat';
 import { Nuancier } from './Nuancier';
 import { ChampMesure } from './ChampMesure';
+import { Info, TitreSelection } from './blocs';
 
 /** Mur sélectionné (DES-07, DES-10, DES-25) : longueur, peinture des faces, suppression. */
 export function InspecteurMur({ mur, dispatch }: { mur: Mur; dispatch: Dispatch<Action> }) {
@@ -18,10 +19,7 @@ export function InspecteurMur({ mur, dispatch }: { mur: Mur; dispatch: Dispatch<
     });
   return (
     <div className="grid gap-4">
-      <div>
-        <p className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">Sélection</p>
-        <h2 className="m-0 text-xl font-bold">{LIBELLES_MUR[mur.type]}</h2>
-      </div>
+      <TitreSelection titre={LIBELLES_MUR[mur.type]} />
       <ChampMesure
         label="Longueur (cm)"
         aide="Entrée pour appliquer ; les murs reliés suivent."
@@ -30,14 +28,8 @@ export function InspecteurMur({ mur, dispatch }: { mur: Mur; dispatch: Dispatch<
         appliquer={(longueur) => dispatch({ type: 'modifierLongueur', murId: mur.id, longueur })}
       />
       <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Épaisseur</dt>
-          <dd className="m-0 font-bold">{formatLongueur(mur.epaisseur, 'cm')}</dd>
-        </div>
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Hauteur</dt>
-          <dd className="m-0 font-bold">{formatLongueur(mur.hauteur)}</dd>
-        </div>
+        <Info libelle="Épaisseur" valeur={formatLongueur(mur.epaisseur, 'cm')} />
+        <Info libelle="Hauteur" valeur={formatLongueur(mur.hauteur)} />
       </dl>
       <Nuancier
         legende="Peinture côté gauche"

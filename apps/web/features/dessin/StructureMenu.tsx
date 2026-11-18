@@ -1,13 +1,5 @@
 'use client';
 
-import {
-  CATALOGUE_OUVERTURES,
-  LIBELLES_MUR,
-  LIBELLES_ESCALIER,
-  type TypeEscalier,
-  type TypeMur,
-  type TypeOuverture,
-} from '@ph/core/dessin';
 import { CaretLeftIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import type { EspaceDessin } from './api';
@@ -17,16 +9,9 @@ import { ExterieurMenu } from './ExterieurMenu';
 import { FondMenu } from './FondMenu';
 import { ImplantationMenu } from './ImplantationMenu';
 import { Ligne } from './LigneMenu';
+import { ListeOutilsStructure, tracer } from './ListeOutilsStructure';
 import { NiveauxMenu } from './NiveauxMenu';
 import { ToitureMenu } from './ToitureMenu';
-
-const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
-  { type: 'mur', libelle: LIBELLES_MUR.mur, detail: 'Épaisseur 20 cm' },
-  { type: 'cloison', libelle: LIBELLES_MUR.cloison, detail: 'Épaisseur 7,2 cm' },
-  { type: 'demi_mur', libelle: LIBELLES_MUR.demi_mur, detail: 'Hauteur 1,10 m' },
-  { type: 'muret', libelle: LIBELLES_MUR.muret, detail: 'Hauteur 60 cm' },
-  { type: 'separation', libelle: LIBELLES_MUR.separation, detail: 'Sépare deux pièces sans mur' },
-];
 
 type Sous =
   | 'murs'
@@ -53,7 +38,6 @@ const AIDES: Partial<Record<Sous, string>> = {
   escaliers:
     'Choisissez un type puis cliquez sur le plan. Il monte vers le niveau du dessus ; la trémie y apparaît.',
 };
-const tracer = <span className="text-xs font-bold text-accent-700">Placer</span>;
 
 /** Menu Structure (DES-06 à DES-15) : murs, ouvertures, escaliers, niveaux, plan importé. */
 export function StructureMenu({
@@ -135,52 +119,8 @@ export function StructureMenu({
       {AIDES[sous] ? (
         <p className="m-0 px-1 text-[13px] leading-5 text-neutre-800">{AIDES[sous]}</p>
       ) : null}
-      {sous === 'murs' ? (
-        <ul className="m-0 grid list-none gap-0.5 p-0">
-          {MURS.map((m) => (
-            <Ligne
-              key={m.type}
-              titre={m.libelle}
-              detail={m.detail}
-              action={tracer}
-              pressee={etat.outil === 'mur' && etat.typeMur === m.type}
-              onClick={() => dispatch({ type: 'outil', outil: 'mur', typeMur: m.type })}
-            />
-          ))}
-        </ul>
-      ) : sous === 'ouvertures' ? (
-        <ul className="m-0 grid list-none gap-0.5 p-0">
-          {(Object.keys(CATALOGUE_OUVERTURES) as TypeOuverture[]).map((t) => {
-            const c = CATALOGUE_OUVERTURES[t];
-            return (
-              <Ligne
-                key={t}
-                titre={c.libelle}
-                detail={`${c.largeur / 10} × ${c.hauteur / 10} cm`}
-                action={tracer}
-                pressee={etat.outil === 'ouverture' && etat.typeOuverture === t}
-                onClick={() => dispatch({ type: 'outil', outil: 'ouverture', typeOuverture: t })}
-              />
-            );
-          })}
-        </ul>
-      ) : sous === 'escaliers' ? (
-        <ul className="m-0 grid list-none gap-0.5 p-0">
-          {(Object.keys(LIBELLES_ESCALIER) as TypeEscalier[]).map((t) => (
-            <Ligne
-              key={t}
-              titre={LIBELLES_ESCALIER[t]}
-              detail={
-                t === 'meunier'
-                  ? 'Pente raide, peu de place'
-                  : 'Marches calculées pour monter d’un niveau'
-              }
-              action={tracer}
-              pressee={etat.outil === 'escalier' && etat.typeEscalier === t}
-              onClick={() => dispatch({ type: 'outil', outil: 'escalier', typeEscalier: t })}
-            />
-          ))}
-        </ul>
+      {sous === 'murs' || sous === 'ouvertures' || sous === 'escaliers' ? (
+        <ListeOutilsStructure sous={sous} etat={etat} dispatch={dispatch} />
       ) : sous === 'niveaux' ? (
         <NiveauxMenu etat={etat} dispatch={dispatch} />
       ) : sous === 'toiture' ? (

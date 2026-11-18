@@ -9,7 +9,7 @@ export const SCENE_VERSION = 1;
 /** ± 1 km : largement au-delà d'une parcelle, en deçà de toute erreur d'arrondi. */
 export const LIMITE_MM = 1_000_000;
 export const mm = z.number().int().min(-LIMITE_MM).max(LIMITE_MM);
-export const mmPositif = z.number().int().min(0).max(LIMITE_MM);
+const mmPositif = z.number().int().min(0).max(LIMITE_MM);
 /** Dixièmes de degré, de -360° à 360°. */
 export const angle = z.number().int().min(-3600).max(3600);
 
@@ -50,7 +50,7 @@ export const FAMILLES_REVETEMENT = [
 ] as const;
 
 /** Poses de carrelage et de parquet (DES-26). */
-export const POSES = [
+const POSES = [
   'droite',
   'decalee',
   'diagonale',
@@ -83,7 +83,7 @@ export const revetement = z.object({
 });
 const REVETEMENT_VIDE = { famille: 'aucun' } as const;
 
-export const TYPES_MUR = [
+const TYPES_MUR = [
   'mur',
   'cloison',
   'demi_mur',
@@ -111,7 +111,7 @@ export const mur = z
   })
   .refine((m) => m.a.x !== m.b.x || m.a.y !== m.b.y, 'Un mur doit avoir une longueur');
 
-export const TYPES_OUVERTURE = [
+const TYPES_OUVERTURE = [
   'porte',
   'porte_double',
   'porte_coulissante',

@@ -7,6 +7,7 @@ import {
   empriseLocale,
   LIBELLES_ESCALIER,
   longueurVolee,
+  marchesDroites,
   modifierEscalier,
   poserEscalier,
   supprimerEscalier,
@@ -138,6 +139,26 @@ describe('escaliers (DES-15)', () => {
     expect(
       poserEscalier(n, { type: 'droit', position: { x: 0, y: 0 }, hauteurAMonter: 50 }, ctx),
     ).toMatchObject({ ok: false });
+  });
+
+  it('marches d’un escalier droit vues de dessus, tournées avec lui ; autres types : aucune', () => {
+    const e = ok(
+      poserEscalier(
+        n,
+        { type: 'droit', position: { x: 1000, y: 1000 }, hauteurAMonter: 2_700 },
+        ctx,
+      ),
+    ).escaliers[0]!;
+    const m = marchesDroites(e);
+    expect(m).toHaveLength(e.nbMarches - 2);
+    expect(m[0]).toEqual([
+      { x: 1000, y: 1000 + e.giron },
+      { x: 1000 + e.largeur, y: 1000 + e.giron },
+    ]);
+    const [a] = marchesDroites({ ...e, rotation: 900 })[0]!;
+    expect(Math.round(a.x)).toBe(1000 - e.giron);
+    expect(marchesDroites({ ...e, type: 'meunier' })).toHaveLength(e.nbMarches - 2);
+    expect(marchesDroites({ ...e, type: 'helicoidal' })).toEqual([]);
   });
 
   it('emprise de chaque type', () => {

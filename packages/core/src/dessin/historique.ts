@@ -3,7 +3,7 @@
  * le coût mémoire reste faible). Un geste continu (glisser) porte une `cle` : tant que la clé
  * ne change pas, il ne crée qu'une seule étape.
  */
-export const MAX_ETATS_DESSIN = 300;
+const MAX_ETATS_DESSIN = 300;
 
 export interface HistoriqueDessin<T> {
   passe: T[];

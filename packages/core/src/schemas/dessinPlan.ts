@@ -29,7 +29,7 @@ export const planDessin = z.object({
   auteurUid: z.string().max(128).optional(),
 });
 
-export const TYPES_VERSION_PLAN = ['auto', 'manuelle', 'restauration'] as const;
+const TYPES_VERSION_PLAN = ['auto', 'manuelle', 'restauration'] as const;
 
 /** `…/plans/{id}/versions/{id}` : ajout seul, écrit par le serveur. */
 export const versionPlan = z.object({
@@ -97,7 +97,7 @@ export const entreeJetonPartage = z.object({
 });
 
 /** Plan importé (D91) : image réduite dans le navigateur, envoyée en base64 (3 Mo au plus). */
-export const TYPES_IMAGE_FOND = ['image/jpeg', 'image/png', 'image/webp'] as const;
+const TYPES_IMAGE_FOND = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const entreeFondPlan = z.object({
   planId: idPlan,
   type: z.enum(TYPES_IMAGE_FOND),

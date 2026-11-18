@@ -57,7 +57,7 @@ export interface Emprise {
 }
 
 /** Hauteur des murs extérieurs du niveau (égout du toit). */
-export const hauteurMurs = (n: Pick<Niveau, 'murs'>) =>
+const hauteurMurs = (n: Pick<Niveau, 'murs'>) =>
   Math.max(0, ...n.murs.filter((m) => m.type === 'mur').map((m) => m.hauteur));
 
 /** Ailes du toit d'un niveau (L, T, U, H ; partie sous l'étage exclue, appentis contre lui). */

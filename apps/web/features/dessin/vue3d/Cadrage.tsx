@@ -5,6 +5,7 @@ import { cadreDe } from '../cadre';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import { MathUtils, Vector3, type PerspectiveCamera } from 'three';
+import { M } from './unites';
 
 /** Direction de la caméra à l'ouverture : de trois quarts, au-dessus de la maison. */
 const DIRECTION = new Vector3(-0.45, 0.75, 0.85).normalize();
@@ -48,7 +49,7 @@ export function useCadreMaison(courant: Niveau) {
     const t = toit3D(courant);
     const hauteur = t ? Math.max(...t.pans.flat().map((p) => p.z)) - courant.altitude : 2_500;
     return {
-      centre: new Vector3((c.x + c.l / 2) / 1000, courant.altitude / 1000, (c.y + c.h / 2) / 1000),
+      centre: new Vector3(M(c.x + c.l / 2), M(courant.altitude), M(c.y + c.h / 2)),
       rayon: Math.max(4, Math.hypot(l, h, hauteur) / 2000),
     };
   }, [courant]);

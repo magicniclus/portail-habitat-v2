@@ -17,13 +17,12 @@ import { inspecteurExterieur } from './InspecteurExterieur';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { InspecteurMur } from './InspecteurMur';
 import { Nuancier } from './Nuancier';
+import { Info, surtitre } from './blocs';
 
 function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch<Action> }) {
   return (
     <div className="grid gap-4">
-      <p className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
-        Pièce sélectionnée
-      </p>
+      <p className={surtitre}>Pièce sélectionnée</p>
       <Field label="Nom de la pièce">
         <Input
           defaultValue={piece.nom}
@@ -35,14 +34,8 @@ function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch
         />
       </Field>
       <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Surface</dt>
-          <dd className="m-0 text-[17px] font-bold">{formatSurface(surfaceCarrez(piece))}</dd>
-        </div>
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Périmètre</dt>
-          <dd className="m-0 text-[17px] font-bold">{formatLongueur(perimetre(piece.contour))}</dd>
-        </div>
+        <Info libelle="Surface" valeur={formatSurface(surfaceCarrez(piece))} grande />
+        <Info libelle="Périmètre" valeur={formatLongueur(perimetre(piece.contour))} grande />
       </dl>
       <Nuancier
         legende="Sol"

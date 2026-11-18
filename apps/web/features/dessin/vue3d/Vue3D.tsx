@@ -17,6 +17,7 @@ import { M, Niveau3D } from './Batiment3D';
 import { Cadrage, useCadreMaison } from './Cadrage';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
+import { versMm } from './unites';
 
 /**
  * Vue 3D (DES-33) : orbite, zoom, panoramique ; maison entière ou niveau isolé, maison de
@@ -64,7 +65,7 @@ export default function Vue3D({
     const p = ev.point;
     glisse.current = {
       id: o.id,
-      decalage: { x: o.position.x - p.x * 1000, y: o.position.y - p.z * 1000 },
+      decalage: { x: o.position.x - versMm(p.x), y: o.position.y - versMm(p.z) },
       geste: `glisser3d-${o.id}-${Date.now()}`,
     };
     setOrbite(false);
@@ -77,8 +78,8 @@ export default function Vue3D({
       type: 'deplacerObjetVers',
       id: g.id,
       vers: {
-        x: Math.round(ev.point.x * 1000 + g.decalage.x),
-        y: Math.round(ev.point.z * 1000 + g.decalage.y),
+        x: versMm(ev.point.x) + g.decalage.x,
+        y: versMm(ev.point.z) + g.decalage.y,
       },
       geste: g.geste,
       libre: ev.nativeEvent.altKey,

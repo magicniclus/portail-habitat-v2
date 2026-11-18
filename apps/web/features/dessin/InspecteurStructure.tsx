@@ -17,13 +17,7 @@ import type { Dispatch } from 'react';
 import type { Action } from './etat';
 import { InspecteurMenuiserie } from './InspecteurMenuiserie';
 import { ChampMesure } from './ChampMesure';
-
-const Titre = ({ sur, titre }: { sur: string; titre: string }) => (
-  <div>
-    <p className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">{sur}</p>
-    <h2 className="m-0 text-xl font-bold">{titre}</h2>
-  </div>
-);
+import { Info, TitreSelection } from './blocs';
 
 /** Porte ou fenêtre sélectionnée (DES-14) : dimensions, position, sens, côté. */
 export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: Dispatch<Action> }) {
@@ -32,7 +26,7 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
     dispatch({ type: 'modifierOuverture', id: o.id, modif });
   return (
     <div className="grid gap-3.5">
-      <Titre sur="Sélection" titre={c.libelle} />
+      <TitreSelection titre={c.libelle} />
       <div className="grid grid-cols-2 gap-2.5">
         <ChampMesure
           label="Largeur (cm)"
@@ -98,7 +92,7 @@ export function InspecteurEscalier({
   const alertes = alertesEscaliers({ escaliers: [e] }, hauteurDessus);
   return (
     <div className="grid gap-3.5">
-      <Titre sur="Sélection" titre="Escalier" />
+      <TitreSelection titre="Escalier" />
       <Field label="Type">
         <Select
           value={e.type}
@@ -124,14 +118,8 @@ export function InspecteurEscalier({
         />
       </div>
       <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Marches</dt>
-          <dd className="m-0 font-bold">{e.nbMarches}</dd>
-        </div>
-        <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-          <dt className="text-neutre-700">Giron</dt>
-          <dd className="m-0 font-bold">{formatLongueur(e.giron, 'cm')}</dd>
-        </div>
+        <Info libelle="Marches" valeur={e.nbMarches} />
+        <Info libelle="Giron" valeur={formatLongueur(e.giron, 'cm')} />
       </dl>
       {alertes.map((a) => (
         <Banner key={a.code} tone="attention">

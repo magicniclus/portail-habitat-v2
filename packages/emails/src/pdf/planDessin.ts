@@ -18,7 +18,15 @@ export const net = (s: string) => s.replace(/[\u202f\u2009\u00a0]/gu, ' ');
 type Doc = PDFKit.PDFDocument;
 type Cadre = { x: number; y: number };
 
-/** Dessin d'un niveau à l'échelle (DES-41) : pièces, murs, baies, cotes extérieures. */
+/** Fonctions de dessin d'un niveau : point du plan → point PDF, polygone. */
+interface Trace {
+  doc: Doc;
+  v: (p: Point) => [number, number];
+  poly: (pts: readonly Point[]) => void;
+  k: number;
+}
+
+/** Dessin d'un niveau à l'échelle (DES-41) : pièces, murs, baies, noms, surfaces et cotes. */
 export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage) {
   const v = (p: Point): [number, number] => [
     (m.origine.x + (p.x - cadre.x) * m.k) * PT,
@@ -30,12 +38,24 @@ export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage)
     for (const p of pts.slice(1)) doc.lineTo(...v(p));
     doc.closePath();
   };
+  const t: Trace = { doc, v, poly, k: m.k };
+  dessinerPieces(t, n);
+  dessinerMurs(t, n);
+  dessinerBaies(t, n);
+  dessinerTextes(t, n);
+}
 
+/** Pièces : fond blanc. */
+function dessinerPieces({ doc, poly }: Trace, n: Niveau) {
   // Pièces : fond blanc, nom et surface au centre.
   for (const p of n.pieces) {
     poly(p.contour);
     doc.fillColor(COULEURS_PLAN.pieceVide).fill();
   }
+}
+
+/** Murs pleins, cloisons plus claires ; séparations invisibles en tirets. */
+function dessinerMurs({ doc, v, poly }: Trace, n: Niveau) {
   // Murs pleins, cloisons plus claires ; séparations invisibles en tirets.
   for (const mur of n.murs) {
     if (mur.type === 'poutre') continue;
@@ -64,6 +84,10 @@ export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage)
     );
     doc.fillColor(mur.type === 'mur' ? COULEURS_PLAN.mur : COULEURS_PLAN.cote).fill();
   }
+}
+
+/** Baies : percement blanc, vantail et débattement d'une porte, double trait d'une fenêtre. */
+function dessinerBaies({ doc, v, poly, k }: Trace, n: Niveau) {
   // Baies : percement blanc, vantail et arc pour une porte, double trait pour une fenêtre.
   for (const o of n.ouvertures) {
     const mur = n.murs.find((x) => x.id === o.murId);
@@ -92,7 +116,7 @@ export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage)
         .lineTo(...v(bout))
         .stroke();
       const [cx, cy] = v(charniere);
-      const r = o.largeur * m.k * PT;
+      const r = o.largeur * k * PT;
       const a0 = Math.atan2(no.y, no.x);
       const a1 = Math.atan2(u.y, u.x);
       const pas = 12;
@@ -109,6 +133,10 @@ export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage)
           .lineTo(...v(at(t1, d)))
           .stroke();
   }
+}
+
+/** Noms et surfaces des pièces, cotes extérieures des murs. */
+function dessinerTextes({ doc, v }: Trace, n: Niveau) {
   // Noms et surfaces des pièces, cotes des murs.
   doc.font('Helvetica').fontSize(7).fillColor(COULEURS_PLAN.cote);
   for (const p of n.pieces) {

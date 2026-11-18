@@ -1,16 +1,4 @@
-/** Téléchargement d'un fichier produit dans le navigateur (photo, PNG, PDF, CSV). */
-export function telechargerFichier(nom: string, contenu: Blob) {
-  const url = URL.createObjectURL(contenu);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = nom;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
-}
-
-/** « 202611181530 » : horodatage des noms de fichiers. */
-export const horodatage = () => new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
-
+/** Exports d'image du plan : PNG du SVG 2D. */
 /**
  * PNG du plan 2D : le SVG est copié avec ses couleurs calculées (classes Tailwind), puis
  * dessiné sur une toile blanche, 4 000 px au plus de côté.

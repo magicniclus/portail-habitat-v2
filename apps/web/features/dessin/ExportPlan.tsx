@@ -12,7 +12,9 @@ import { useState } from 'react';
 import { exporterPdf, type EspaceDessin } from './api';
 import { CompteRequis, useEssai } from './essai';
 import { niveauDe, sceneDe, type EtatEditeur } from './etat';
-import { horodatage, svgEnPng, telechargerFichier } from './telecharger';
+import { horodatageFichier, telechargerFichier } from '@/lib/telecharger';
+import { svgEnPng } from './telecharger';
+import { surtitre } from './blocs';
 
 /** Exporter (DES-41) : PDF à l'échelle du niveau courant (fait par le serveur), PNG du plan. */
 export function ExportPlan({
@@ -48,17 +50,20 @@ export function ExportPlan({
     setAttente(false);
     if (!r.ok) return setErreur(r.message);
     const octets = Uint8Array.from(atob(r.data.base64), (c) => c.charCodeAt(0));
-    telechargerFichier(`plan-${horodatage()}.pdf`, new Blob([octets], { type: 'application/pdf' }));
+    telechargerFichier(
+      `plan-${horodatageFichier()}.pdf`,
+      new Blob([octets], { type: 'application/pdf' }),
+    );
   };
   const png = async () => {
     const svg = document.querySelector<SVGSVGElement>('[data-testid="plan-2d"] svg');
     if (!svg) return setErreur('Passez en vue Plan pour exporter l’image.');
     setErreur(null);
-    telechargerFichier(`plan-${horodatage()}.png`, await svgEnPng(svg));
+    telechargerFichier(`plan-${horodatageFichier()}.png`, await svgEnPng(svg));
   };
   return (
     <section className="grid gap-2.5 border-t border-trait pt-3.5" aria-labelledby="exporter">
-      <h3 id="exporter" className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
+      <h3 id="exporter" className={surtitre}>
         Exporter le niveau « {n.nom} »
       </h3>
       <div className="grid grid-cols-2 gap-2.5">

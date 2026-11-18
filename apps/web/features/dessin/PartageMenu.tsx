@@ -6,6 +6,7 @@ import { CopyIcon, LinkIcon, TrashIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { routes } from '@/lib/routes';
 import { listerPartages, partagerPlan, revoquerPartage, type EspaceDessin } from './api';
+import { surtitre } from './blocs';
 
 type Lien = { partageId: string; creeLe: number; expireLe: number | null };
 const icone =
@@ -50,7 +51,7 @@ export function PartageMenu({ espace, planId }: { espace: EspaceDessin; planId: 
   };
   return (
     <section className="grid gap-2.5 border-t border-trait pt-3.5" aria-labelledby="partager">
-      <h3 id="partager" className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
+      <h3 id="partager" className={surtitre}>
         Partager le plan
       </h3>
       <p className="m-0 text-[13px] leading-5 text-neutre-800">

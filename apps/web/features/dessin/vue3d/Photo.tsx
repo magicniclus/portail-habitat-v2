@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import { enregistrerPhoto, type EspaceDessin } from '../api';
 import type { Action, EtatEditeur, ReglagesRendu } from '../etat';
 import { useEssai } from '../essai';
-import { horodatage, telechargerFichier } from '../telecharger';
+import { horodatageFichier, telechargerFichier } from '@/lib/telecharger';
 import { ScenePhoto, type Capturer } from './ScenePhoto';
 
 const RATIOS: Record<ReglagesRendu['cadrage'], number> = {
@@ -100,7 +100,7 @@ export default function Photo(p: {
       return;
     }
     telechargerFichier(
-      `plan-photo-${horodatage()}.${format === 'image/png' ? 'png' : 'jpg'}`,
+      `plan-photo-${horodatageFichier()}.${format === 'image/png' ? 'png' : 'jpg'}`,
       image,
     );
     // Essai sans compte : téléchargée seulement, la galerie demande un compte.

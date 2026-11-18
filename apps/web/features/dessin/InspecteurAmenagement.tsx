@@ -15,11 +15,12 @@ import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { Nuancier } from './Nuancier';
 import { RotationObjet } from './RotationObjet';
 import { ChampMesure } from './ChampMesure';
+import { surtitre } from './blocs';
 
 /** « 40–240 cm » : plage réglable d'un objet du catalogue. */
 const aidePlage = (p: readonly [number, number]) =>
   `${Math.max(1, Math.round(p[0] / 10))}–${Math.round(p[1] / 10)} cm`;
-const titre = 'm-0 text-xs font-bold tracking-wide text-neutre-700 uppercase';
+const titre = surtitre;
 
 /** Objet choisi (DES-22) : dimensions, couleur, rotation, copie, collisions. */
 function InspecteurObjet({

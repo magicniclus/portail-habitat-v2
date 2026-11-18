@@ -6,9 +6,10 @@ import type { Dispatch, ReactNode } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ReglagesPiscine, ReglagesTerrasse } from './ReglagesExterieur';
 import { ChampMesure } from './ChampMesure';
+import { surtitre } from './blocs';
 
 type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal';
-const titre = 'm-0 text-xs font-bold tracking-wide text-neutre-700 uppercase';
+const titre = surtitre;
 
 /** Inspecteur de l'extérieur (DES-18 à DES-20) : terrasse, piscine, clôture, végétal. */
 export function inspecteurExterieur(etat: EtatEditeur, dispatch: Dispatch<Action>): ReactNode {

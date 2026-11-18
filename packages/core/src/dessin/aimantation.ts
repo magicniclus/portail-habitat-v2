@@ -2,14 +2,14 @@ import type { Point } from '../schemas/dessinScene';
 import { arrondir, distance, milieu, projeter, radians } from './geometrie';
 
 /** Aimantation pendant le tracé et le déplacement (DES-08). */
-export type TypeAimant = 'extremite' | 'milieu' | 'segment' | 'angle' | 'grille' | 'libre';
+type TypeAimant = 'extremite' | 'milieu' | 'segment' | 'angle' | 'grille' | 'libre';
 
-export interface CiblesAimant {
+interface CiblesAimant {
   points: readonly Point[];
   segments: readonly (readonly [Point, Point])[];
 }
 
-export interface OptionsAimant {
+interface OptionsAimant {
   /** Rayon d'attraction en mm (l'interface le déduit du zoom : ~10 px à l'écran). */
   tolerance: number;
   /** Pas de la grille en mm ; absent = pas de grille. */

@@ -11,13 +11,14 @@ import {
 import { Button, bouton } from '@ph/ui';
 import Link from 'next/link';
 import { DownloadSimpleIcon } from '@phosphor-icons/react';
-import type { Dispatch } from 'react';
+import { useMemo, type Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
 import { routes } from '@/lib/routes';
 import { CompteRequis, useEssai } from './essai';
 import { ExportPlan } from './ExportPlan';
-import { horodatage, telechargerFichier } from './telecharger';
+import { horodatageFichier, telechargerFichier } from '@/lib/telecharger';
+import { surtitre } from './blocs';
 
 const ligne =
   'flex min-h-11 cursor-pointer items-center gap-2.5 border-t border-trait py-1.5 text-sm';
@@ -39,13 +40,14 @@ export function Chiffrage({
 }) {
   const scene = sceneDe(etat);
   const essai = useEssai();
-  const lignes = metreScene(scene);
-  const menuiseries = menuiseriesScene(scene);
+  // Recalculé seulement quand la scène change (pas au zoom ni à la sélection).
+  const lignes = useMemo(() => metreScene(scene), [scene]);
+  const menuiseries = useMemo(() => menuiseriesScene(scene), [scene]);
   const coche = (cle: string) => !etat.metreExclus.includes(cle);
   const basculer = (cle: string) => dispatch({ type: 'basculerPoste', cle });
   const csv = () =>
     telechargerFichier(
-      `metre-${horodatage()}.csv`,
+      `metre-${horodatageFichier()}.csv`,
       new Blob(
         [
           metreCsv(
@@ -113,9 +115,7 @@ export function Chiffrage({
         <CompteRequis pour="demander des devis avec votre plan" />
       ) : espace === 'particulier' && lignes.length ? (
         <section className="grid gap-2 border-t border-trait pt-3.5">
-          <h3 className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
-            Passer aux travaux
-          </h3>
+          <h3 className={surtitre}>Passer aux travaux</h3>
           <p className="m-0 text-[13px] leading-5 text-neutre-800">
             Décrivez votre projet en quelques questions : l’estimation est calculée par Portail
             Travaux et vous pouvez joindre ce plan pour les artisans.

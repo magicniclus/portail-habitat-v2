@@ -15,6 +15,7 @@ import { TrashIcon } from '@phosphor-icons/react';
 import type { Dispatch } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { HauteursToit } from './HauteursToit';
+import { Info } from './blocs';
 
 const COUVERTURES = [
   ['tuile', 'Tuiles'],
@@ -174,19 +175,14 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
       ) : null}
       {q ? (
         <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
-          <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-            <dt className="text-neutre-700">Couverture</dt>
-            <dd className="m-0 font-bold">{formatSurface(q.couverture)}</dd>
-          </div>
-          <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
-            <dt className="text-neutre-700">Gouttières</dt>
-            <dd className="m-0 font-bold">{formatLongueur(q.gouttieres)}</dd>
-          </div>
+          <Info libelle="Couverture" valeur={formatSurface(q.couverture)} />
+          <Info libelle="Gouttières" valeur={formatLongueur(q.gouttieres)} />
           {q.carrez !== null ? (
-            <div className="col-span-2 rounded-lg bg-neutre-100 px-2.5 py-2">
-              <dt className="text-neutre-700">Combles à 1,80 m et plus (Carrez)</dt>
-              <dd className="m-0 font-bold">{formatSurface(q.carrez)}</dd>
-            </div>
+            <Info
+              libelle="Combles à 1,80 m et plus (Carrez)"
+              valeur={formatSurface(q.carrez)}
+              large
+            />
           ) : null}
         </dl>
       ) : null}

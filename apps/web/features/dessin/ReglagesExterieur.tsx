@@ -17,16 +17,10 @@ import {
 } from '@ph/core/dessin';
 import { Banner, Field, Select } from '@ph/ui';
 import { ChampMesure } from './ChampMesure';
+import { Info } from './blocs';
 
 type Modifier = (modif: Record<string, unknown>) => void;
 const coche = 'flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm';
-
-const Info = ({ libelle, valeur }: { libelle: string; valeur: string }) => (
-  <div className="rounded-lg bg-neutre-100 px-2.5 py-2 text-sm">
-    <dt className="text-neutre-700">{libelle}</dt>
-    <dd className="m-0 font-bold">{valeur}</dd>
-  </div>
-);
 
 /** Terrasse (DES-18) : matériau, sens de pose, hauteur, garde-corps, pergola. */
 export function ReglagesTerrasse({ t, modifier }: { t: Terrasse; modifier: Modifier }) {
