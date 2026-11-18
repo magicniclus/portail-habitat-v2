@@ -142,11 +142,11 @@ Quand vous tranchez une question : changez le statut en ✅, corrigez la proposi
 ## 7. Dessin — éditeur de plans 2D / 3D (lot 15, voir `docs/DESSIN.md`)
 | # | Question | Proposition | Statut |
 |---|---|---|---|
-| D84 | Gratuité et quotas de Dessin | Gratuit pour tous ; particulier 5 plans actifs, artisan illimité ; scène ≤ 5 Mo. Fonctions payantes éventuelles (rendu photo serveur, export DXF) via la fenêtre d'offre | ⏳ |
-| D85 | Rendu photoréaliste côté serveur | Pas en v1 : rendu amélioré côté client uniquement (coût nul). À rouvrir avec un devis fournisseur | ⏳ |
-| D86 | Bibliothèques de l'éditeur | 2D en SVG React ; 3D `three` + `@react-three/fiber` + `drei` chargés à la demande ; store `zustand` + `immer` | ⏳ |
-| D87 | Fond de la vue d'implantation | Données publiques IGN (Géoplateforme : cadastre, orthophotos) et API Adresse ; aucune clé payante | ⏳ |
-| D88 | Catalogue 3D et textures | Démarrer avec des modèles et textures CC0 (Poly Haven, ambientCG, Kenney), puis commander un catalogue sur mesure ; aucun fichier issu d'un éditeur concurrent | ⏳ |
+| D84 | Gratuité et quotas de Dessin | **Gratuit** pour tous (validé le 18/11/2026) ; garde-fous techniques : particulier 5 plans actifs, artisan illimité, scène ≤ 5 Mo | ✅ |
+| D85 | Rendu photoréaliste côté serveur | **Non** : option la moins chère, rendu amélioré côté client uniquement, coût nul (validé le 18/11/2026) | ✅ |
+| D86 | Pile technique de l'éditeur | 2D en SVG React ; 3D `three` + `@react-three/fiber` + `drei` à la demande ; store `zustand` + `immer` ; voir DESSIN.md §5 bis | ⏳ |
+| D87 | Fond de la vue d'implantation | **Données publiques gratuites** : IGN Géoplateforme (orthophotos, plan IGN), API Carto cadastre, API Adresse ; affichage MapLibre GL (validé le 18/11/2026) | ✅ |
+| D88 | Catalogue 3D et textures | **CC0 au démarrage** (Poly Haven, ambientCG, Kenney), **catalogue réalisé en interne ensuite** ; aucun fichier issu d'un éditeur concurrent (validé le 18/11/2026) | ✅ |
 | D89 | Collaboration en temps réel | Non en v1 : verrou optimiste par version, résolution de conflit proposée à l'utilisateur | ⏳ |
-| D90 | Plan joint à une demande de devis | Visible en lecture seule par les artisans qui ont reçu la demande, jamais avant attribution | ⏳ |
+| D90 | Plan joint à une demande de devis | **Au choix du client** : il décide de joindre son plan et peut demander à **recevoir des devis par écrit sans être appelé** (`contactSouhaite: 'ecrit_uniquement'`). Proposition à confirmer : dans ce cas, le téléphone n'est pas montré aux artisans, qui répondent par la messagerie ou par devis (validé le 18/11/2026, détail ⏳) | ✅ |
 | D91 | Import de plans existants | v1 : image et PDF en calque mis à l'échelle ; DXF/DWG plus tard | ⏳ |

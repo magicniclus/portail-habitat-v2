@@ -26,7 +26,7 @@ Dessin permet à un **particulier** (avec compte) et à un **artisan** (dans son
 | Lien partagé | Lecture seule (2D, 3D, visite, métré), sans compte, jeton révocable | `/plan/[jeton]` (`noindex`) |
 
 - L'éditeur est plein écran (pas de pied de page), dans le **thème de l'espace** (`data-theme`) : vert côté particulier, thème pro côté artisan. Aucun hex en dur.
-- Formule gratuite / payante : **D84 ⏳**. En attendant, tout est gratuit avec quotas (§10). Toute fonction marquée payante ouvre la fenêtre d'offre (`PAIEMENTS.md` §4), jamais d'activation directe.
+- **Dessin est gratuit** pour les particuliers et les artisans (D84 ✅). Les quotas du §8 sont des garde-fous techniques, pas une offre payante.
 - Flag : `FLAGS.dessin` (désactivé en production tant que le lot n'est pas recetté), `FLAGS.dessinPublic` pour la landing et l'essai.
 
 ---
@@ -140,6 +140,25 @@ apps/functions/src/dessin            enregistrer, restaurer, partager, purger, v
 
 **Nouvelles dépendances à signaler dans le plan (CLAUDE.md)** : `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` (3D, chargés à la demande uniquement), `zustand` + `immer` (store et patchs d'historique) ou équivalent justifié, `comlink` (worker), `idb-keyval` (brouillon hors ligne), `polygon-clipping` ou `clipper2` (opérations booléennes). Budget JS (D46) : l'éditeur 2D ≤ 250 ko gzip hors 3D ; la 3D n'est jamais dans le bundle initial.
 
+## 5 bis. Pile technique (D86)
+
+| Besoin | Choix | Pourquoi | Alternative écartée |
+|---|---|---|---|
+| Application | **Next.js 16 + React 19 + TypeScript** (déjà en place) | une seule application, mêmes comptes, mêmes thèmes | application séparée |
+| Plan 2D | **SVG rendu par React** | net à tout zoom, accessible (focus, `aria`), export PDF direct, suffisant jusqu'à ~2 000 éléments | Canvas/Konva (à garder en réserve si un plan dépasse ce volume) |
+| 3D, visite, photo | **three.js + @react-three/fiber + @react-three/drei** (+ `@react-three/postprocessing` pour la vue photo) | standard du web 3D, écosystème React, chargé **seulement** au passage en 3D | Babylon.js (plus lourd, moins « React ») |
+| État de l'éditeur, annuler / rétablir | **zustand + immer** (patchs inverses = historique) | léger (~3 ko), sélecteurs fins, historique sans copier la scène | Redux (lourd), état React seul (re-rendus) |
+| Géométrie | **code maison dans `packages/core/dessin`** + `clipper2-ts` (opérations booléennes, offsets) ; triangulation `earcut` (déjà dans three) | logique pure testée, millimètres entiers | — |
+| Calculs lourds | **Web Worker + comlink** (détection des pièces, métré) | l'interface ne gèle jamais | — |
+| Hors ligne | **IndexedDB via idb-keyval** | brouillon et essai sans compte | localStorage (5 Mo, synchrone) |
+| Modèles 3D | **glTF/GLB** optimisés par `@gltf-transform` (Meshopt, textures **KTX2**) | fichiers 5 à 10 fois plus légers, chargement rapide sur mobile | OBJ/FBX |
+| Implantation | **MapLibre GL** + tuiles IGN Géoplateforme + API Carto cadastre + API Adresse | gratuit, sans clé (D87) | Google Maps, Mapbox (payants) |
+| Export PDF | **pdfkit** (déjà utilisé pour les devis), plan dessiné depuis la scène côté serveur | aucune nouvelle dépendance, même rendu que les devis | génération dans le navigateur |
+| Données | **Firestore** (métadonnées, versions) + **Storage** (scène gzip, vignettes, photos) + **Functions v2** | 1 Mio max par document Firestore | scène entière dans Firestore |
+| Tests | **Vitest** (géométrie, commandes, métré), **Playwright** (DES-xx, iPhone/Pixel), captures pour la 3D | déjà dans le dépôt | — |
+
+Poids visé : éditeur 2D ≤ 250 ko gzip ; 3D ≈ 200 ko gzip supplémentaires, chargés à la demande.
+
 ---
 
 ## 6. Fonctions (exhaustif ; chaque ligne = un identifiant `DES-xx` dans `ACCEPTANCE.md`)
@@ -203,7 +222,7 @@ apps/functions/src/dessin            enregistrer, restaurer, partager, purger, v
 - DES-34 **Visite** : première personne à 1,60 m, collisions avec les murs, franchissement des portes, escaliers praticables ; clavier (flèches / ZQSD), souris, **joystick tactile** sur mobile ; mini-plan avec position.
 - DES-35 **Vue d'implantation** (plan de masse) : maison posée sur la parcelle, orientation, distances aux limites, fond cadastral et photo aérienne (sources publiques IGN / cadastre Etalab, D87) ; recherche de la parcelle par adresse.
 - DES-36 **Façades et coupes** : élévations nord / sud / est / ouest générées, coupe verticale sur une ligne tracée.
-- DES-37 **Vue photo** : cadrage (paysage, carré, portrait), ambiance (jour, soirée), rendu amélioré côté client et export PNG/JPEG haute définition ; galerie « Mes photos » du plan. Rendu photoréaliste serveur : **D85 ⏳** (payant ou non, coût, fournisseur).
+- DES-37 **Vue photo** : cadrage (paysage, carré, portrait), ambiance (jour, soirée), rendu amélioré côté client et export PNG/JPEG haute définition ; galerie « Mes photos » du plan. Pas de rendu serveur (D85 ✅, coût nul) : tout le rendu se fait dans le navigateur.
 
 ### 6.13 Historique et sauvegarde
 - DES-38 Annuler / rétablir **illimités dans la session** (Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, boutons, menu mobile) ; un glisser = une seule étape ; l'historique couvre aussi les revêtements et les réglages de vue utiles (pas le zoom).
@@ -214,7 +233,7 @@ apps/functions/src/dessin            enregistrer, restaurer, partager, purger, v
 - DES-41 Export **PDF à l'échelle** (1/50, 1/100, A4 / A3, cartouche, légende, métré en annexe), PNG du plan, photos.
 - DES-42 Lien de partage en lecture seule (2D, 3D, visite), révocable, expiration ; partage à un membre de l'équipe (artisan).
 - DES-43 **Métré** (onglet « Chiffrer ») : quantités par poste, cases à cocher, téléchargement PDF / CSV.
-- DES-44 Particulier : **« Demander des devis »** crée une demande par le parcours existant (simulateur / `demandes`), plan joint en lecture seule pour les artisans qui la reçoivent ; estimation affichée seulement si elle sort du simulateur (prix **recalculés serveur**, centimes, jamais inventés).
+- DES-44 Particulier : **« Demander des devis »** crée une demande par le parcours existant (simulateur / `demandes`). Le client **choisit** de joindre son plan (lecture seule pour les artisans qui reçoivent la demande) et peut cocher **« Recevoir des devis par écrit, sans être appelé »** (`demandes.contactSouhaite = 'ecrit_uniquement'`, champ nouveau à ajouter au schéma, à la Function de création et à l'affichage côté artisan : téléphone masqué, réponse par messagerie ou devis — détail D90) ; estimation affichée seulement si elle sort du simulateur (prix **recalculés serveur**, centimes, jamais inventés).
 - DES-45 Artisan : **« Créer un devis depuis ce plan »** préremplit les lignes d'un devis (`DATABASE.md` §8 bis) depuis le métré et la bibliothèque de prestations ; partage du plan au client (lien) ; plan attaché à la fiche de la demande.
 
 ### 6.15 Mobile, accessibilité, performance
@@ -246,7 +265,8 @@ apps/functions/src/dessin            enregistrer, restaurer, partager, purger, v
 
 ## 9. Décisions à trancher (reportées dans `DECISIONS.md`)
 
-D84 gratuité et quotas · D85 rendu photo serveur · D86 bibliothèques 3D (React Three Fiber) et store · D87 sources du cadastre et des photos aériennes · D88 origine du catalogue 3D et des textures · D89 collaboration en temps réel (proposition : non en v1, verrou optimiste) · D90 plans de particuliers visibles par les artisans d'une demande · D91 import de plans (PDF, DXF, photo) en v1.
+Tranchées le 18/11/2026 : D84 gratuit · D85 aucun rendu serveur · D87 données publiques IGN / cadastre · D88 CC0 puis catalogue maison · D90 plan joint et « devis par écrit sans appel » au choix du client.
+À confirmer : D86 pile technique (§5 bis) · D89 collaboration en temps réel (proposition : non en v1) · D90 détail (téléphone masqué aux artisans) · D91 import de plans (image et PDF en v1).
 
 ---
 
