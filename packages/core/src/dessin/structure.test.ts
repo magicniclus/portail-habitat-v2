@@ -26,6 +26,7 @@ import {
   ajouterNiveau,
   hauteurVersLeHaut,
   niveauInferieur,
+  niveauSuperieur,
   niveauxTries,
   renommerNiveau,
   supprimerNiveau,
@@ -178,6 +179,8 @@ describe('niveaux (DES-04, DES-05)', () => {
     ).toBe('Sous-sol 2');
     expect(niveauInferieur(ss, 'n_rdc0')!.nom).toBe('Sous-sol');
     expect(niveauInferieur(ss, ss.niveauId)).toBeNull();
+    expect(niveauSuperieur(ss, ss.niveauId)!.id).toBe('n_rdc0');
+    expect(niveauSuperieur(ss, 'n_absent')).toBeNull();
   });
 
   it('au plus 10 niveaux', () => {

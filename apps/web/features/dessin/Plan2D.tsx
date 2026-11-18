@@ -4,6 +4,7 @@ import {
   aimanter,
   arrondir,
   niveauInferieur,
+  niveauSuperieur,
   toleranceEnMm,
   tremies,
   type Point,
@@ -144,7 +145,7 @@ export function Plan2D({
             demarrerGlisser={(id, ev) => glisser.demarrer('mur', id, ev)}
           />
           <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
-          <ToitSvg niveau={n} />
+          <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
           <GuidesSvg guides={etat.guides} />
           {etat.calques.cotes ? (
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />

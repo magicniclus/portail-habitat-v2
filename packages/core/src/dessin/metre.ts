@@ -151,7 +151,8 @@ function devantLaFace(m: Mur, face: 'a' | 'b'): Point {
 const faceDansUnePiece = (m: Mur, face: 'a' | 'b', pieces: readonly Piece[]) =>
   pieces.some((p) => pointDansPolygone(devantLaFace(m, face), p.contour));
 
-export function metreNiveau(n: Niveau): LigneMetre[] {
+/** `dessus` : niveau au-dessus, pour ne compter que la toiture des parties sans étage. */
+export function metreNiveau(n: Niveau, dessus: Niveau | null = null): LigneMetre[] {
   const lignes: LigneMetre[] = [];
   const ajouter = (l: LigneMetre) => {
     if (l.quantite <= 0) return;
@@ -231,7 +232,7 @@ export function metreNiveau(n: Niveau): LigneMetre[] {
   }
 
   // Toiture (DES-17) : un toit plat se chiffre en étanchéité.
-  const q = quantitesToiture(n);
+  const q = quantitesToiture(n, dessus);
   if (q) {
     ajouter({
       poste: 'couverture',

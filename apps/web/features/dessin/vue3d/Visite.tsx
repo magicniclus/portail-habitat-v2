@@ -1,6 +1,6 @@
 'use client';
 
-import { departVisite, directionSoleil, niveauALaHauteur } from '@ph/core/dessin';
+import { departVisite, directionSoleil, niveauALaHauteur, niveauSuperieur } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
@@ -99,7 +99,15 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
         </mesh>
         {scene.niveaux.map((niv) => (
           <group key={niv.id}>
-            <Niveau3D n={niv} centre={new Vector3()} poupee={false} plafonds portesOuvertes toit />
+            <Niveau3D
+              n={niv}
+              dessus={niveauSuperieur(scene, niv.id)}
+              centre={new Vector3()}
+              poupee={false}
+              plafonds
+              portesOuvertes
+              toit
+            />
             <group position={[0, M(niv.altitude), 0]}>
               <Objets3D
                 objets={niv.objets}

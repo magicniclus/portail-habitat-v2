@@ -11,8 +11,8 @@ const auSol = (poly: readonly Point3[]) => points(poly.map((p) => ({ x: p.x, y: 
  * Toiture vue de dessus (DES-16) : débords en pointillés, arêtes des pans, fenêtres de toit,
  * cheminées et lucarnes. Indicatif, ne capte pas les clics (le plan reste éditable dessous).
  */
-export function ToitSvg({ niveau }: { niveau: Niveau }) {
-  const t = useMemo(() => toit3D(niveau), [niveau]);
+export function ToitSvg({ niveau, dessus }: { niveau: Niveau; dessus: Niveau | null }) {
+  const t = useMemo(() => toit3D(niveau, dessus), [niveau, dessus]);
   if (!t) return null;
   return (
     <g pointerEvents="none" className="stroke-accent-700" aria-hidden="true">

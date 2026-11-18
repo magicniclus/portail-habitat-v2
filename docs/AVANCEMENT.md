@@ -989,13 +989,19 @@ Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'exté
   - pignons, gouttières, fenêtres de toit inclinées comme le pan, cheminées, lucarnes ;
   - surface de couverture, gouttières et combles Carrez (≥ 1,80 m) au métré ; un toit plat se chiffre en étanchéité ;
   - en 2D, contour en pointillés ; en 3D, toit affichable (masqué en maison de poupée), cadrage qui inclut le faîtage.
-- **Tests** : 15 unitaires de plus (menuiseries, toiture) ; Playwright « menuiseries » et « toiture » verts sur iPhone 13 et ordinateur, 14 parcours au total.
+- **Toiture « nickel et facile » (demande du propriétaire)**, toujours sans changement de modèle ni dépendance :
+  - **maisons en L, T, U, H** : l'emprise est découpée en ailes rectangulaires (grille tirée des murs et des pièces, plus grands rectangles, recouvrement minimal) ; l'aile la plus large porte le faîtage le plus haut, les autres s'y raccordent en noue ; croupes et débords seulement aux bouts et côtés libres ; gouttières comptées seulement à l'air libre ;
+  - **étage ou pas** : le toit d'un niveau ne couvre que la partie sans étage au-dessus ; une partie basse collée à l'étage reçoit un appentis (monopente) qui s'y adosse ;
+  - **hauteurs** : « au plus bas » (égout, depuis le sol) règle la hauteur des murs du niveau ; « au plus haut » (faîtage, depuis le sol) calcule la pente ; le curseur de pente reste ;
+  - **un clic** : choisir la forme pose le toit sur toute la maison, à chaque niveau concerné (jamais au sous-sol) ;
+  - surface de couverture mesurée sur les ailes réunies, pente comprise ; combles Carrez idem.
+- **Tests** : 26 unitaires de plus (menuiseries, toiture, ailes en L/T/U, étage partiel, hauteurs) ; Playwright « menuiseries », « toiture » et « maison en L » verts sur iPhone 13 et ordinateur, 16 parcours au total.
 - **Reste** :
   - terrasse et terrain ;
   - piscine ;
   - implantation (cadastre et photo aérienne IGN : hôtes réseau à autoriser) ;
   - façades et coupes ;
-  - toits sur des formes en L (pour l'instant, le rectangle englobant).
+  - murs obliques : le découpage en ailes suit le mur le plus long (formes à angles droits).
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
 - **Éditeur en pleine page**, comme l'éditeur du site : hors du cadre de l'espace pro (`/pro/plans/editeur/{id}`) et de l'en-tête particulier (`/mes-plans/{id}`). Listes : `/pro/plans` et `/mon-espace/plans`.

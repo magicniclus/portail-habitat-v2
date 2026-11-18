@@ -1,6 +1,12 @@
 'use client';
 
-import { directionSoleil, niveauxTries, type Objet, type Point } from '@ph/core/dessin';
+import {
+  directionSoleil,
+  niveauxTries,
+  type Objet,
+  type Point,
+  niveauSuperieur,
+} from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas, type ThreeEvent } from '@react-three/fiber';
@@ -115,6 +121,7 @@ export default function Vue3D({
         <Niveau3D
           key={n.id}
           n={n}
+          dessus={niveauSuperieur(scene, n.id)}
           centre={centre}
           poupee={etat.rendu.poupee && n.id === courant.id}
           plafonds={false}

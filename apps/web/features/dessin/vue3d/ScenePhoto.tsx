@@ -1,6 +1,6 @@
 'use client';
 
-import { directionSoleil, niveauxTries } from '@ph/core/dessin';
+import { directionSoleil, niveauxTries, niveauSuperieur } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
@@ -101,6 +101,7 @@ export function ScenePhoto({
         <group key={n.id}>
           <Niveau3D
             n={n}
+            dessus={niveauSuperieur(scene, n.id)}
             centre={centre}
             poupee={etat.rendu.poupee && n.id === courant.id}
             plafonds={false}

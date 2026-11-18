@@ -7,10 +7,11 @@ import {
   LIBELLES_POSTE,
   listeMenuiseries,
   metreNiveau,
+  niveauSuperieur,
   type LigneMetre,
 } from '@ph/core/dessin';
 import { formatNombre } from '@ph/core/format';
-import { niveauDe, type EtatEditeur } from './etat';
+import { niveauDe, sceneDe, type EtatEditeur } from './etat';
 
 const quantite = (l: LigneMetre) =>
   l.unite === 'm2'
@@ -21,7 +22,7 @@ const quantite = (l: LigneMetre) =>
 
 /** Onglet « Chiffrer » (DES-43) : métré calculé depuis le plan. Demande de devis : lot 15i. */
 export function Chiffrage({ etat }: { etat: EtatEditeur }) {
-  const lignes = metreNiveau(niveauDe(etat));
+  const lignes = metreNiveau(niveauDe(etat), niveauSuperieur(sceneDe(etat), niveauDe(etat).id));
   const menuiseries = listeMenuiseries(niveauDe(etat));
   return (
     <div className="grid gap-3.5 px-1">

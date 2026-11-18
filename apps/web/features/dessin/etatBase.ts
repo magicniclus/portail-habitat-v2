@@ -98,6 +98,9 @@ export type Action =
     }
   | { type: 'poserPoint'; point: Point }
   | { type: 'toiture'; toiture: TypeToiture | null }
+  /** Toit sur toute la maison : chaque niveau, sur la partie sans étage au-dessus. */
+  | { type: 'toitureAuto'; toiture: TypeToiture }
+  | { type: 'hauteursToit'; egout?: number; faitage?: number }
   | { type: 'modifierToiture'; modif: ModificationToiture }
   | { type: 'retirerElementToit'; id: string }
   | { type: 'terminerTrace' }

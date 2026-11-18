@@ -31,3 +31,4 @@ export * from './listeMenuiseries';
 export * from './toitures';
 export * from './toits3d';
 export * from './commandesToit';
+export * from './ailesToit';

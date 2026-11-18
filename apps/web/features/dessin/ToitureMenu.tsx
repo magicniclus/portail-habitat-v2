@@ -4,6 +4,7 @@ import {
   formatLongueur,
   formatSurface,
   LIBELLES_TOITURE,
+  niveauSuperieur,
   quantitesToiture,
   type ElementToit,
   type ModificationToiture,
@@ -12,7 +13,8 @@ import {
 import { Button, Field, Select } from '@ph/ui';
 import { TrashIcon } from '@phosphor-icons/react';
 import type { Dispatch } from 'react';
-import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
+import { HauteursToit } from './HauteursToit';
 
 const COUVERTURES = [
   ['tuile', 'Tuiles'],
@@ -35,11 +37,14 @@ const bouton =
 export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
   const n = niveauDe(etat);
   const t = n.toiture;
+  const dessus = niveauSuperieur(sceneDe(etat), n.id);
   if (!t)
     return (
       <div className="grid gap-3">
         <p className="m-0 px-1 text-sm leading-5 text-neutre-800">
-          Le toit se génère sur les murs du niveau affiché ({n.nom}). Choisissez sa forme :
+          Choisissez la forme : le toit se pose sur toute la maison, quelle que soit sa forme (L, T,
+          U, H), sur chaque partie qui n’a pas d’étage au-dessus ; une partie basse collée à l’étage
+          reçoit un appentis.
         </p>
         <div className="grid grid-cols-2 gap-2">
           {(Object.keys(LIBELLES_TOITURE) as TypeToiture[]).map((type) => (
@@ -47,7 +52,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
               key={type}
               type="button"
               className={`${bouton} border-neutre-300 bg-blanc text-texte hover:bg-neutre-100`}
-              onClick={() => dispatch({ type: 'toiture', toiture: type })}
+              onClick={() => dispatch({ type: 'toitureAuto', toiture: type })}
             >
               {LIBELLES_TOITURE[type]}
             </button>
@@ -55,7 +60,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         </div>
       </div>
     );
-  const q = quantitesToiture(n);
+  const q = quantitesToiture(n, dessus);
   const pente = t.pentes[0]! / 10;
   const modifier = (modif: ModificationToiture) => dispatch({ type: 'modifierToiture', modif });
   const elements = [
@@ -77,8 +82,16 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           ))}
         </Select>
       </Field>
+      {q ? (
+        <HauteursToit
+          egout={q.egout}
+          faitage={q.faitage}
+          plat={t.type === 'plate'}
+          dispatch={dispatch}
+        />
+      ) : null}
       <label className="grid gap-1 px-1 text-[13px] font-semibold">
-        Pente · {pente}°
+        Pente · {Math.round(pente)}°
         <input
           type="range"
           min={t.type === 'plate' ? 0 : 5}
@@ -119,7 +132,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         variant="secondaire"
         onClick={() => modifier({ faitageAngle: t.faitageAngle === 0 ? 900 : 0 })}
       >
-        Tourner le faîtage
+        Tourner les faîtages
       </Button>
       <fieldset className="m-0 grid gap-2 border-0 p-0">
         <legend className="mb-2 px-1 text-[13px] font-semibold">
@@ -178,7 +191,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         </dl>
       ) : null}
       <Button variant="secondaire" onClick={() => dispatch({ type: 'toiture', toiture: null })}>
-        Supprimer la toiture
+        Retirer le toit de ce niveau
       </Button>
     </div>
   );

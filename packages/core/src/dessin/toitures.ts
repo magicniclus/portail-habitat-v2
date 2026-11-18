@@ -1,4 +1,5 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
+import { ailesDuNiveau, monde, repereMaison } from './ailesToit';
 
 /**
  * Toiture générée depuis le contour des murs (DES-16, DES-17) : emprise rectangulaire dans
@@ -30,52 +31,72 @@ export const PENTE_DEFAUT: Record<TypeToiture, number> = {
 const BRISIS = { pente: 70, part: 0.18 };
 const ACROTERE = 400;
 
+export type Cote = 'exterieur' | 'interieur' | 'etage';
+
+/** Une aile du toit dans son repère local : a le long du faîtage, b en travers. */
 export interface Emprise {
   centre: Point;
-  /** Direction du faîtage (unitaire) et perpendiculaire. */
   u: Point;
   v: Point;
-  /** Dimensions aux murs (L0 le long du faîtage, P0 en travers) et avec débords (L, P). */
+  /** Dimensions aux murs. */
   L0: number;
   P0: number;
-  L: number;
-  P: number;
-  /** Altitude du haut des murs (base du toit). */
+  /** Limites avec débords (débord seulement sur les côtés extérieurs). */
+  aMin: number;
+  aMax: number;
+  bMin: number;
+  bMax: number;
+  /** Côtés locaux : a-, a+, b-, b+. */
+  cotes: { a0: Cote; a1: Cote; b0: Cote; b1: Cote };
+  /** Forme de cette aile (appentis contre l'étage : monopente) et sens de montée (b+ ou b-). */
+  type: TypeToiture;
+  sens: 1 | -1;
+  /** Altitude du haut des murs (base du toit) et hauteur des murs au-dessus du sol du niveau. */
   base: number;
-  /** Hauteur des murs au-dessus du sol du niveau. */
   hMurs: number;
 }
 
-/** Emprise du toit : rectangle englobant les murs dans le sens du faîtage, plus les débords. */
-export function empriseToit(n: Niveau, t: Toiture): Emprise | null {
-  const pts = n.murs.flatMap((m) => [m.a, m.b]);
-  if (pts.length < 3) return null;
-  const f = ((t.faitageAngle / 10) * Math.PI) / 180;
-  const u = { x: Math.cos(f), y: Math.sin(f) };
-  const v = { x: -u.y, y: u.x };
-  const as = pts.map((p) => p.x * u.x + p.y * u.y);
-  const bs = pts.map((p) => p.x * v.x + p.y * v.y);
-  const ep = Math.max(...n.murs.map((m) => m.epaisseur)) / 2;
-  const [a0, a1, b0, b1] = [
-    Math.min(...as) - ep,
-    Math.max(...as) + ep,
-    Math.min(...bs) - ep,
-    Math.max(...bs) + ep,
-  ];
-  const [ac, bc] = [(a0 + a1) / 2, (b0 + b1) / 2];
-  const hMurs = Math.max(...n.murs.map((m) => m.hauteur));
-  return {
-    centre: { x: u.x * ac + v.x * bc, y: u.y * ac + v.y * bc },
-    u,
-    v,
-    L0: a1 - a0,
-    P0: b1 - b0,
-    L: a1 - a0 + 2 * t.debord,
-    P: b1 - b0 + 2 * t.debord,
-    base: n.altitude + hMurs,
-    hMurs,
-  };
+/** Hauteur des murs extérieurs du niveau (égout du toit). */
+export const hauteurMurs = (n: Pick<Niveau, 'murs'>) =>
+  Math.max(0, ...n.murs.filter((m) => m.type === 'mur').map((m) => m.hauteur));
+
+/** Ailes du toit d'un niveau (L, T, U, H ; partie sous l'étage exclue, appentis contre lui). */
+export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[] {
+  const t = n.toiture;
+  if (!t || n.murs.length < 3) return [];
+  const r = repereMaison(n);
+  const hMurs = hauteurMurs(n) || Math.max(...n.murs.map((m) => m.hauteur));
+  return ailesDuNiveau(n, dessus, r).map((w) => {
+    const selonA = t.faitageAngle === 900 ? !w.selonA : w.selonA;
+    const centre = monde(r, (w.a0 + w.a1) / 2, (w.b0 + w.b1) / 2);
+    const [u, v] = selonA ? [r.u, r.v] : [r.v, { x: -r.u.x, y: -r.u.y }];
+    const cotes = selonA
+      ? { a0: w.cotes.a0, a1: w.cotes.a1, b0: w.cotes.b0, b1: w.cotes.b1 }
+      : { a0: w.cotes.b0, a1: w.cotes.b1, b0: w.cotes.a1, b1: w.cotes.a0 };
+    const [L0, P0] = selonA ? [w.a1 - w.a0, w.b1 - w.b0] : [w.b1 - w.b0, w.a1 - w.a0];
+    const deb = (c: Cote) => (c === 'exterieur' ? t.debord : 0);
+    const appentis = t.type !== 'plate' && (cotes.b0 === 'etage' || cotes.b1 === 'etage');
+    return {
+      centre,
+      u,
+      v,
+      L0,
+      P0,
+      aMin: -L0 / 2 - deb(cotes.a0),
+      aMax: L0 / 2 + deb(cotes.a1),
+      bMin: -P0 / 2 - deb(cotes.b0),
+      bMax: P0 / 2 + deb(cotes.b1),
+      cotes,
+      type: appentis ? 'monopente' : t.type,
+      sens: appentis && cotes.b0 === 'etage' ? -1 : 1,
+      base: n.altitude + hMurs,
+      hMurs,
+    };
+  });
 }
+
+/** Aile unique (ancienne API, tests) : première aile du niveau. */
+export const empriseToit = (n: Niveau): Emprise | null => emprisesToit(n)[0] ?? null;
 
 const tan = (deg: number) => Math.tan((deg * Math.PI) / 180);
 const penteDe = (t: Toiture) => t.pentes[0]! / 10;
@@ -86,14 +107,23 @@ const penteDe = (t: Toiture) => t.pentes[0]! / 10;
  */
 export function hauteurLocale(
   t: Toiture,
-  e: Pick<Emprise, 'L0' | 'P0'>,
+  e: Pick<Emprise, 'L0' | 'P0'> & Partial<Pick<Emprise, 'cotes' | 'type' | 'sens'>>,
   a: number,
   b: number,
 ): number {
   const k = tan(penteDe(t));
   const versB = e.P0 / 2 - Math.abs(b);
-  const versA = e.L0 / 2 - Math.abs(a);
-  switch (t.type) {
+  // Croupe ou quatre pans : la pente de bout n'existe qu'aux bouts libres (pas contre une aile).
+  const libre = (c: Cote | undefined) => c === undefined || c === 'exterieur';
+  const versA =
+    a < 0
+      ? libre(e.cotes?.a0)
+        ? e.L0 / 2 + a
+        : Infinity
+      : libre(e.cotes?.a1)
+        ? e.L0 / 2 - a
+        : Infinity;
+  switch (e.type ?? t.type) {
     case 'deux_pans':
       return versB * k;
     case 'quatre_pans':
@@ -101,7 +131,7 @@ export function hauteurLocale(
     case 'croupe':
       return Math.min(versB * k, versA * k * 2);
     case 'monopente':
-      return (b + e.P0 / 2) * k;
+      return ((e.sens ?? 1) * b + e.P0 / 2) * k;
     case 'plate':
       return 0;
     case 'mansarde': {
@@ -138,13 +168,54 @@ export function aire3D(poly: readonly Point3[]): number {
   return Math.hypot(nx, ny, nz) / 2;
 }
 
-/** Combles : surface où la hauteur sous toiture atteint 1,80 m (loi Carrez), en mm². */
-export function surfaceCarrezCombles(t: Toiture, e: Emprise, pas = 100): number {
-  let cellules = 0;
-  for (let a = -e.L0 / 2 + pas / 2; a < e.L0 / 2; a += pas)
-    for (let b = -e.P0 / 2 + pas / 2; b < e.P0 / 2; b += pas)
-      if (e.hMurs + hauteurLocale(t, e, a, b) >= 1_800) cellules++;
-  return cellules * pas * pas;
+/** Altitude du toit au point du plan : la plus haute des ailes qui le couvrent, sinon `null`. */
+export function altitudeToit(
+  t: Toiture,
+  ailes: readonly Emprise[],
+  p: Point,
+): { z: number; aile: Emprise } | null {
+  let mieux: { z: number; aile: Emprise } | null = null;
+  for (const e of ailes) {
+    const { a, b } = versLocal(e, p);
+    if (a < e.aMin || a > e.aMax || b < e.bMin || b > e.bMax) continue;
+    const z = e.base + hauteurLocale(t, e, a, b);
+    if (!mieux || z > mieux.z) mieux = { z, aile: e };
+  }
+  return mieux;
+}
+
+/**
+ * Parcourt l'emprise du toit sur une grille (pas en mm) : surface de couverture réelle (pente
+ * comprise, ailes réunies) et combles où l'on tient à 1,80 m (Carrez), en mm².
+ */
+export function mesurerToit(t: Toiture, ailes: readonly Emprise[], altitudeSol: number, pas = 100) {
+  let couverture = 0;
+  let carrez = 0;
+  const coins = ailes.flatMap((e) =>
+    [
+      [e.aMin, e.bMin],
+      [e.aMax, e.bMax],
+      [e.aMin, e.bMax],
+      [e.aMax, e.bMin],
+    ].map(([a, b]) => versMonde(e, a!, b!, 0)),
+  );
+  if (!coins.length) return { couverture: 0, carrez: 0 };
+  const [x0, x1] = [Math.min(...coins.map((c) => c.x)), Math.max(...coins.map((c) => c.x))];
+  const [y0, y1] = [Math.min(...coins.map((c) => c.y)), Math.max(...coins.map((c) => c.y))];
+  for (let x = x0 + pas / 2; x < x1; x += pas)
+    for (let y = y0 + pas / 2; y < y1; y += pas) {
+      const ici = altitudeToit(t, ailes, { x, y });
+      if (!ici) continue;
+      const e = ici.aile;
+      const { a, b } = versLocal(e, { x, y });
+      const d = 5;
+      const ga = (hauteurLocale(t, e, a + d, b) - hauteurLocale(t, e, a - d, b)) / (2 * d);
+      const gb = (hauteurLocale(t, e, a, b + d) - hauteurLocale(t, e, a, b - d)) / (2 * d);
+      couverture += pas * pas * Math.sqrt(1 + ga * ga + gb * gb);
+      const dansLesMurs = Math.abs(a) <= e.L0 / 2 && Math.abs(b) <= e.P0 / 2;
+      if (dansLesMurs && ici.z - altitudeSol >= 1_800) carrez += pas * pas;
+    }
+  return { couverture: Math.round(couverture), carrez };
 }
 
 export { ACROTERE, BRISIS };

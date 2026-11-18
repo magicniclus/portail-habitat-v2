@@ -487,4 +487,44 @@ test.describe('Plans (espace pro)', () => {
       timeout: 10_000,
     });
   });
+
+  test('maison en L : toit automatique en deux ailes, hauteurs au plus bas et au plus haut', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByRole('radio', { name: /En L/ }).check();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByLabel('Découpe : largeur (cm)').fill('400');
+    await page.getByLabel('Découpe : profondeur (cm)').fill('300');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    await expect(page.getByTestId('plan-2d')).toBeVisible();
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    await menu('Structure');
+    await page.getByRole('button', { name: /^Toiture & combles/ }).click();
+    await page.getByRole('button', { name: 'Deux pans' }).click();
+    // Égout à 3 m, faîtage à 7 m depuis le sol : la pente se calcule seule.
+    await page.getByLabel('Au plus bas (m)').fill('3');
+    await page.getByLabel('Au plus bas (m)').press('Enter');
+    await expect(page.getByLabel('Au plus bas (m)')).toHaveValue('3,00');
+    await page.getByLabel('Au plus haut (m)').fill('7');
+    await page.getByLabel('Au plus haut (m)').press('Enter');
+    await expect(page.getByLabel('Au plus haut (m)')).toHaveValue(/^(6,99|7,00|7,01)$/);
+    await expect(page.getByText(/^Pente · (4[0-9]|5[0-9])°$/)).toBeVisible();
+
+    await menu('Rendu');
+    await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+  });
 });

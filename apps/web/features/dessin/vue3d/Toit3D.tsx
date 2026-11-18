@@ -23,8 +23,8 @@ function geometrie(polys: readonly Point3[][]): BufferGeometry {
  * Toiture en 3D (DES-16, DES-17) : pans à la couleur de la couverture, pignons en façade,
  * gouttières, fenêtres de toit inclinées, cheminées, lucarnes.
  */
-export function Toit3D({ n }: { n: Niveau }) {
-  const t = useMemo(() => toit3D(n), [n]);
+export function Toit3D({ n, dessus }: { n: Niveau; dessus: Niveau | null }) {
+  const t = useMemo(() => toit3D(n, dessus), [n, dessus]);
   const pans = useMemo(() => (t ? geometrie(t.pans) : null), [t]);
   const murs = useMemo(() => (t ? geometrie(t.murs) : null), [t]);
   const couverture = useMemo(() => {

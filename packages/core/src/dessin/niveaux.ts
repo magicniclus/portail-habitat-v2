@@ -30,6 +30,13 @@ export function niveauInferieur(s: Scene, niveauId: string): Niveau | null {
   return i > 0 ? tries[i - 1]! : null;
 }
 
+/** Niveau juste au-dessus (pour la toiture des parties sans étage), sinon `null`. */
+export function niveauSuperieur(s: Scene, niveauId: string): Niveau | null {
+  const tries = niveauxTries(s);
+  const i = tries.findIndex((n) => n.id === niveauId);
+  return i >= 0 ? (tries[i + 1] ?? null) : null;
+}
+
 /**
  * Nouveau niveau au-dessus (étage, combles) ou au-dessous (sous-sol) des autres. Avec
  * `copierMurs`, les murs (type « mur ») du niveau voisin sont repris, les pièces recalculées.
