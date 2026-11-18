@@ -25,6 +25,8 @@ const config: NextConfig = {
         has: [{ type: 'query', key: 'apercu' }],
         headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
       },
+      // Plans partagés (DES-42) : jamais indexés ni suivis, même si un lien est publié.
+      { source: '/plan/:jeton', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
     ];
   },
 };

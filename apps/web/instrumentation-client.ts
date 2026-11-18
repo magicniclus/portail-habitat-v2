@@ -1,3 +1,5 @@
+import { filtrerEvenement } from '@/lib/sentryFiltre';
+
 // Sentry côté navigateur : chargé à la demande pour ne pas peser sur le JavaScript initial
 // (budget EXPLOITATION §1). Sans DSN, rien n'est téléchargé.
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
@@ -8,6 +10,9 @@ if (dsn) {
       dsn,
       environment: process.env.NEXT_PUBLIC_VERCEL_ENV ?? 'local',
       tracesSampleRate: 0,
+      // Jetons de partage retirés des URL (lien /plan/{jeton}).
+      beforeSend: filtrerEvenement,
+      beforeBreadcrumb: (b) => filtrerEvenement({ breadcrumbs: [b] }).breadcrumbs![0]!,
     }),
   );
 }

@@ -30,6 +30,9 @@ export async function pdfDuPlan(
       menuiseries: exclus.has('menuiseries') ? [] : menuiseriesScene(plan.scene),
     });
   } catch (err) {
-    throw new ErreurMetier('PRECONDITION', err instanceof Error ? err.message : undefined);
+    // Messages prévus (plan trop grand, niveau vide) : rendus tels quels ; le reste, générique.
+    const message = err instanceof Error ? err.message : '';
+    if (/ne tient pas|Dessinez/.test(message)) throw new ErreurMetier('PRECONDITION', message);
+    throw err;
   }
 }

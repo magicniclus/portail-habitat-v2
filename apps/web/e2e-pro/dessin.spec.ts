@@ -1061,6 +1061,32 @@ test.describe('Plans (espace pro)', () => {
       { espace: 'entreprise', titre: 'Plan de charge', scene },
     );
     expect(cree.ok, cree.message).toBe(true);
+    // PDF d'une grande scène : le corps (bien plus de 16 Ko) est accepté ; 100 m de long ne
+    // tiennent pas en A3 au 1/100, refus clair (et non 413).
+    const pdf = await page.evaluate(
+      async (corps) => {
+        const r = await fetch('/api/dessin/pdf', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(corps),
+        });
+        return {
+          statut: r.status,
+          corps: (await r.json().catch(() => null)) as { message?: string } | null,
+        };
+      },
+      {
+        espace: 'entreprise',
+        planId: cree.data!.planId,
+        niveauId: base.niveaux[0]!.id,
+        echelle: 100,
+        format: 'A3',
+        exclus: [],
+        scene,
+      },
+    );
+    expect(pdf.statut).not.toBe(413);
+    expect(pdf.corps?.message).toMatch(/ne tient pas en A3/);
 
     // Ouverture d'un plan (hors 3D) : moins de 2 s jusqu'aux 500 murs dessinés.
     const t0 = Date.now();

@@ -27,7 +27,11 @@ export async function enregistrerFond(
     throw new ErreurMetier('ENTREE_INVALIDE', 'Image trop lourde (3 Mo au plus).');
   if (!SIGNATURES[e.type](donnees))
     throw new ErreurMetier('ENTREE_INVALIDE', 'Ce fichier n’est pas une image JPEG, PNG ou WebP.');
-  const storagePath = `${fichiers.dossierPlan(ctx.proprietaire, e.planId)}fond-${randomBytes(6).toString('hex')}.${EXTENSIONS[e.type]}`;
+  const dossier = fichiers.dossierPlan(ctx.proprietaire, e.planId);
+  // Un seul plan importé par plan (COUTS) : l'ancien fichier est supprimé.
+  const [anciens] = await s.bucket.getFiles({ prefix: `${dossier}fond-` });
+  await Promise.all(anciens.map((f) => f.delete({ ignoreNotFound: true })));
+  const storagePath = `${dossier}fond-${randomBytes(6).toString('hex')}.${EXTENSIONS[e.type]}`;
   await s.bucket.file(storagePath).save(donnees, { contentType: e.type, resumable: false });
   return { storagePath };
 }

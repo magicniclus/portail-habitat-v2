@@ -312,6 +312,17 @@ describe('plan importé (D91)', () => {
     ).rejects.toMatchObject({ code: 'PERMISSION_REFUSEE' });
   });
 
+  it('un seul plan importé par plan : le précédent fichier est supprimé (COUTS)', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const PNG1 = Buffer.from(
+      '89504e470d0a1a0a0000000d4948445200000001000000010806000000',
+      'hex',
+    ).toString('base64');
+    await enregistrerFond(s(), ctxPart, { planId, type: 'image/png', base64: PNG1 });
+    await enregistrerFond(s(), ctxPart, { planId, type: 'image/png', base64: PNG1 });
+    expect((await fichiersDe(PART)).filter((f) => f.includes('/fond-'))).toHaveLength(1);
+  });
+
   it('refuse un fichier qui n’est pas une image, ou trop lourd', async () => {
     const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
     const texte = Buffer.from('<script>alert(1)</script>').toString('base64');

@@ -49,6 +49,11 @@ export const dynamic = 'force-dynamic';
 
 const espace = { espace: z.enum(['particulier', 'entreprise']) };
 const debit = { cle: 'dessin', max: 600, fenetre: '1h' } as const;
+/** Opérations coûteuses (COUTS) : limites propres, en plus de la limite générale. */
+const debitPdf = { cle: 'dessin-pdf', max: 30, fenetre: '1h' } as const;
+const debitParcelle = { cle: 'dessin-parcelle', max: 20, fenetre: '1h' } as const;
+const debitAdresses = { cle: 'dessin-adresses', max: 120, fenetre: '1h' } as const;
+const debitFichiers = { cle: 'dessin-fichiers', max: 30, fenetre: '1h' } as const;
 /** Une scène tient en 4 Mo de JSON (limite des requêtes de l'hébergeur : 4,5 Mo). */
 const TAILLE_SCENE = 4 * 1024 * 1024;
 
@@ -119,7 +124,7 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       restaurerVersion(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   fond: action(
-    { schema: entreeFondPlan.extend(espace), nom: 'dessin.fond', rateLimit: debit },
+    { schema: entreeFondPlan.extend(espace), nom: 'dessin.fond', rateLimit: debitFichiers },
     async (e, ctx) =>
       enregistrerFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
@@ -133,7 +138,7 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     async (e, ctx) => lireFond(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   photo: action(
-    { schema: entreePhotoPlan.extend(espace), nom: 'dessin.photo', rateLimit: debit },
+    { schema: entreePhotoPlan.extend(espace), nom: 'dessin.photo', rateLimit: debitFichiers },
     async (e, ctx) =>
       enregistrerPhoto(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
@@ -155,12 +160,16 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       schema: entreeAdresse.extend(espace),
       nom: 'dessin.adresses',
       lectureSeule: true,
-      rateLimit: debit,
+      rateLimit: debitAdresses,
     },
-    async (e) => ({ adresses: await chercherAdresses(e.texte) }),
+    async (e, ctx) => {
+      // Flag et permission vérifiés : pas de relais de géocodage pour qui n'a pas accès aux plans.
+      await contexteDessin(ctx.uid!, e.espace);
+      return { adresses: await chercherAdresses(e.texte) };
+    },
   ),
   parcelle: action(
-    { schema: entreeParcelle.extend(espace), nom: 'dessin.parcelle', rateLimit: debit },
+    { schema: entreeParcelle.extend(espace), nom: 'dessin.parcelle', rateLimit: debitParcelle },
     async (e, ctx) =>
       chargerParcelle(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
@@ -169,7 +178,7 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       schema: entreePdfPlan.extend(espace),
       nom: 'dessin.pdf',
       lectureSeule: true,
-      rateLimit: debit,
+      rateLimit: debitPdf,
     },
     async (e, ctx) => {
       // Accès au plan vérifié ; le PDF suit la scène affichée, validée comme à l'enregistrement.
@@ -223,6 +232,7 @@ export async function POST(
   const { operation } = await params;
   const executer = Object.hasOwn(OPERATIONS, operation) ? OPERATIONS[operation] : undefined;
   if (!executer) return new Response(null, { status: 404 });
-  const avecScene = ['enregistrer', 'creer', 'fond', 'photo'].includes(operation);
+  // Corps volumineux : scène (enregistrer, créer, PDF de la scène affichée) ou image en base64.
+  const avecScene = ['enregistrer', 'creer', 'fond', 'photo', 'pdf'].includes(operation);
   return routeJson(requete, executer, avecScene ? TAILLE_SCENE : undefined);
 }
