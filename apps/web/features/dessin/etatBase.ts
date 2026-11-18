@@ -14,6 +14,7 @@ import {
   type ModificationObjet,
   type ModificationOuverture,
   type Niveau,
+  type CoteVue,
   type ParcelleCadastre,
   type Point,
   type Revetement,
@@ -37,7 +38,8 @@ export type Outil =
   | 'objet'
   | 'zone'
   | 'toit'
-  | 'exterieur';
+  | 'exterieur'
+  | 'coupe';
 type GenreSelection =
   | 'mur'
   | 'piece'
@@ -54,7 +56,9 @@ export type ElementExterieur =
   'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
 type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
-export type Vue = 'plan' | '3d' | 'visite' | 'photo';
+export type Vue = 'plan' | '3d' | 'visite' | 'photo' | 'facades';
+/** Façade affichée (DES-36), ou la coupe tracée sur le plan. */
+export type Facade = CoteVue | 'coupe';
 
 export interface ReglagesRendu {
   /** Heure du soleil (6 à 20). */
@@ -102,6 +106,9 @@ export interface EtatEditeur {
   ajustement: number;
   aimant: boolean;
   vue: Vue;
+  facade: Facade;
+  /** Trait de coupe tracé sur le plan (non enregistré). */
+  coupe: { a: Point; b: Point } | null;
   rendu: ReglagesRendu;
   /** Incrémenté à chaque photo ajoutée : la galerie se recharge. */
   revisionPhotos: number;
@@ -199,6 +206,7 @@ export type Action =
   | { type: 'menu'; menu: Menu | null; basculer?: boolean }
   | { type: 'proprietes'; ouvert?: boolean }
   | { type: 'remplacerScene'; scene: Scene }
+  | { type: 'facade'; facade: Facade }
   | { type: 'effacerErreur' };
 
 /** Assez bas pour voir une maison et tout son jardin sur un téléphone (≈ 40 m de large). */
@@ -233,6 +241,8 @@ export function etatInitial(scene: Scene): EtatEditeur {
     ajustement: 1,
     aimant: true,
     vue: 'plan',
+    facade: 'sud',
+    coupe: null,
     rendu: {
       heure: 15,
       poupee: true,

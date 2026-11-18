@@ -12,6 +12,7 @@ import { ContenuMenu, TITRES_MENU } from './ContenuMenu';
 import { etatInitial, reduire, sceneDe } from './etat';
 import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
+import { Facades } from './Facades';
 import { Plan2D } from './Plan2D';
 
 /** three.js n'est chargé qu'au passage en 3D (DESSIN.md §5 bis, budget EXPLOITATION §1). */
@@ -130,6 +131,8 @@ export function EspaceDeTravail(p: {
             <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
           ) : etat.vue === 'visite' ? (
             <Visite etat={etat} />
+          ) : etat.vue === 'facades' ? (
+            <Facades etat={etat} dispatch={dispatch} />
           ) : etat.vue === 'photo' ? (
             <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
           ) : (
@@ -153,6 +156,12 @@ export function EspaceDeTravail(p: {
               </Banner>
             ) : null}
             {s.etat === 'erreur' && s.message ? <Banner tone="danger">{s.message}</Banner> : null}
+            {etat.outil === 'coupe' && etat.vue === 'plan' ? (
+              <Banner tone="info">
+                Coupe : cliquez deux points de part et d’autre de la maison. On regarde vers la
+                gauche du trait.
+              </Banner>
+            ) : null}
             {etat.erreur ? (
               <Banner
                 tone="attention"

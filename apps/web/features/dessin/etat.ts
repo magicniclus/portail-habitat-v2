@@ -19,6 +19,7 @@ import {
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireStructure } from './etatStructure';
 import { reduireExterieur } from './etatExterieur';
+import { reduireFacades } from './etatFacades';
 import { reduireToiture } from './etatToiture';
 
 export * from './etatBase';
@@ -124,6 +125,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
         reduireAmenagement(e, a) ??
         reduireToiture(e, a) ??
         reduireExterieur(e, a) ??
+        reduireFacades(e, a) ??
         e
       );
   }

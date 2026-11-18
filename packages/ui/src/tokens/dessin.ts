@@ -288,6 +288,19 @@ export const COULEURS_EXTERIEUR = {
   nord: '#1f2a37',
 } as const;
 
+/** Façades et coupes (DES-36) : enduit, vitrage, menuiserie, matière coupée, sol. */
+export const COULEURS_ELEVATION = {
+  enduit: '#ece6dc',
+  trait: '#3f4a57',
+  vitre: '#bcd3dc',
+  porte: '#8a6a4a',
+  coupe: '#3f4a57',
+  plancher: '#8a857f',
+  sol: '#6b5a45',
+  gazon: '#cfe0bf',
+  repere: '#57534f',
+} as const;
+
 /** Teinte par défaut d'une terrasse selon son matériau (sans référence de matériau). */
 export const COULEURS_TERRASSE: Record<string, string> = {
   bois: '#a87b4f',

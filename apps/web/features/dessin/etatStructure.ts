@@ -1,3 +1,4 @@
+import { poserCoupe } from './etatFacades';
 import {
   ajouterMur,
   ajouterNiveau,
@@ -39,7 +40,11 @@ import {
 /** Clic sur le plan selon l'outil : mur, pièce, porte ou fenêtre, escalier, mesure d'échelle. */
 function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
   if (e.outil === 'selection') return e;
-  const amenagement = poserAmenagement(e, point) ?? poserToit(e, point) ?? poserExterieur(e, point);
+  const amenagement =
+    poserAmenagement(e, point) ??
+    poserToit(e, point) ??
+    poserExterieur(e, point) ??
+    poserCoupe(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));

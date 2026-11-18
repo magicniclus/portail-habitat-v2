@@ -8,6 +8,7 @@ import {
   CubeIcon,
   EyeIcon,
   FloppyDiskIcon,
+  HouseLineIcon,
   SquareIcon,
   type Icon,
 } from '@phosphor-icons/react';
@@ -41,6 +42,7 @@ const VUES: { vue: Vue; libelle: string; Icone: Icon }[] = [
   { vue: '3d', libelle: '3D', Icone: CubeIcon },
   { vue: 'visite', libelle: 'Visite', Icone: EyeIcon },
   { vue: 'photo', libelle: 'Photo', Icone: CameraIcon },
+  { vue: 'facades', libelle: 'Façades', Icone: HouseLineIcon },
 ];
 
 /** Barre de l'éditeur plein écran : retour, projet, enregistrement, annuler, vues. Une ligne. */

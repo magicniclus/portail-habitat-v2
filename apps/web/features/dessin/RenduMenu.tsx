@@ -11,6 +11,7 @@ const VUES: { vue: Vue; libelle: string }[] = [
   { vue: '3d', libelle: 'Vue 3D' },
   { vue: 'visite', libelle: 'Visite' },
   { vue: 'photo', libelle: 'Photo' },
+  { vue: 'facades', libelle: 'Façades et coupes' },
 ];
 
 const interrupteur = 'flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm';

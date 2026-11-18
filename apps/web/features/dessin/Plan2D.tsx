@@ -17,6 +17,7 @@ import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
+import { CoupeSvg } from './CoupeSvg';
 import { FondSvg } from './FondSvg';
 import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
 import type { FondCharge } from './useFond';
@@ -165,6 +166,7 @@ export function Plan2D({
           <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
           <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
           <GuidesSvg guides={etat.guides} />
+          <CoupeSvg coupe={etat.coupe} mmParPx={mmParPx} />
           {etat.calques.cotes ? (
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
           ) : null}

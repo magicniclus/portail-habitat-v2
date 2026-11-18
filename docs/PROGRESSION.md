@@ -38,7 +38,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
-- 18/11/2026 — Lot 15h en cours : menuiseries complètes (galandage, applique, vitrages, petits bois, volets) et toiture faites (L, T, U, H, étage partiel et appentis, hauteurs égout et faîtage, toit en un clic), terrasse, terrain et piscine (AVANCEMENT §31).
+- 18/11/2026 — Lot 15h fait : menuiseries complètes, toiture (L, T, U, H, étage partiel, hauteurs), terrasse, terrain, piscine, implantation sur le cadastre avec photo aérienne IGN (champs `terrain.georef` et `terrain.orthophoto`, sans MapLibre, validé), façades et coupes (AVANCEMENT §31). Services IGN à vérifier en préproduction.
 - 18/11/2026 — Lot 15g fait : 3D, visite, photo et galerie, placement automatique des meubles, rotation libre sur 3 axes (AVANCEMENT §31).
 - 18/11/2026 — Lot 15f fait : meubles et équipements, revêtements et motifs, zones au sol (AVANCEMENT §31).
 - 18/11/2026 — Lot 15e fait : portes, fenêtres, escaliers, niveaux, plan importé (AVANCEMENT §31).

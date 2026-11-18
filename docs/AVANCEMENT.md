@@ -972,7 +972,7 @@ Demandes du propriétaire ajoutées au lot : **placement automatique** des meubl
   - emprise 2D des meubles inclinés ;
   - cartes d'ombre plus fines sur les grands terrains.
 
-### Lot 15h en cours (18/11/2026)
+### Lot 15h fait (18/11/2026)
 Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'extérieur. Vitrage clair seulement (choix du propriétaire).
 - **Menuiseries (fait)** :
   - **Modèle (validé)** : `remplissage` (plein, vitré, semi-vitré, cassettes), `petitsBois`, `materiau` (PVC, bois, alu), `couleur`, `imposte` (fixe, ouvrante), tous facultatifs, plus le type `porte_galandage_double` ;
@@ -1009,9 +1009,20 @@ Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'exté
   - **garde-corps refait (retour du propriétaire, capture)** : poteaux métalliques tous les 1,50 m au plus, main courante à 1 m, remplissage en verre clair ; seulement sur les côtés libres (rien contre la façade, ouvert au droit des marches) ; poteaux de pergola carrés ;
   - **plage de piscine (retour du propriétaire)** : bouton « Terrasse autour, jusqu'à la maison » (1,20 m autour, prolongée jusqu'à la façade la plus proche à moins de 6 m, sans jamais la recouvrir) ; la piscine est encastrée dans la terrasse en 3D et sa surface est déduite de la terrasse au métré ; un arbre garde 1,50 m entre sa ramure et la façade (arbuste 30 cm, haie contre le mur) ;
   - **réglage changé (signalé)** : zoom minimal du plan 6 px/m (au lieu de 15) pour voir une maison et son jardin sur un téléphone.
+- **Implantation (fait, DES-35)** — plan validé par le propriétaire (« tout par notre serveur ») :
+  - menu Structure → « Implantation » : adresse saisie → adresses proposées (Géoplateforme IGN) → parcelle sous le point (API Carto cadastre), posée centrée sur la maison ; recalage par flèches (50 cm) et rotation (5° ou 0,5°) : **le nord tourne avec la parcelle** (soleil compris) ;
+  - photo aérienne + limites cadastrales (WMS Géoplateforme, Lambert-93) téléchargée **une fois par le serveur** et enregistrée dans le dossier du plan (l'ancienne remplacée), relue par `lire-fond` ; sans photo si le service d'images ne répond pas ;
+  - plan de masse : photo sous le dessin, cotes de la maison aux limites (les 4 plus courtes), flèche du nord ; photo posée au sol en 3D ; le cadre du plan inclut la parcelle ;
+  - France métropolitaine seulement (Lambert-93) ; distances indicatives, pas un avis d'urbanisme ;
+  - **modèle (validé)** : `terrain.georef` (Lambert-93 en mm du point 0,0 du plan) et `terrain.orthophoto` (chemin, emprise), facultatifs ; **aucune règle de sécurité ni politique CSP modifiée** (appels sortants côté serveur) ; **aucune dépendance** : écart avec D87, qui citait MapLibre GL (validé par le propriétaire) ;
+  - opérations `/api/dessin/adresses` et `/api/dessin/parcelle` (schémas `entreeAdresse`, `entreeParcelle`) ; aucune adresse enregistrée ni journalisée ;
+  - **non vérifié contre les vrais services IGN** (accès réseau sortant indisponible dans la session) : formats tirés de la documentation publique, testés avec des réponses simulées. À vérifier en préproduction avant la mise en ligne ; **à surveiller au lot 15i** : le lien de partage ne doit montrer ni `georef` ni la photo aérienne (localisation du bien).
+- **Façades et coupes (fait, DES-36)**, sans changement de modèle (état de l'éditeur seulement) :
+  - vue « Façades » (barre du haut, et menu Rendu sur téléphone) : façades sud, nord, est, ouest selon le nord du plan, coupe le long d'un trait tracé en deux clics ;
+  - projection orthogonale (`elevation.ts`) : murs découpés autour des baies, baies et portes, pans et pignons de toiture, ordre de dessin du lointain au proche ; en coupe, ce qui est devant le trait est ôté, murs, toit et planchers tranchés en noir ; repères d'altitude (sol des niveaux, égout, faîtage) ;
+  - trait de coupe affiché sur le plan, flèches dans le sens du regard ; il n'est pas enregistré.
+- **Tests du lot** : cœur 4 293 (couverture des branches 95,09 %) dont `implantation` et `elevation` ; serveur 3 tests d'implantation sur émulateur (services IGN simulés) ; éditeur 11 tests d'état ; Playwright **22 parcours verts** (iPhone 13 et ordinateur), dont « implantation » et « façades et coupe ».
 - **Reste** :
-  - implantation (cadastre et photo aérienne IGN : hôtes réseau à autoriser) ;
-  - façades et coupes ;
   - murs obliques : le découpage en ailes suit le mur le plus long (formes à angles droits).
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).

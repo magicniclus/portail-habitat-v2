@@ -162,3 +162,19 @@ describe('éditeur Dessin : affichage', () => {
     expect(e.menu).toBe('chiffrer');
   });
 });
+
+describe('éditeur Dessin : façades et coupe (DES-36)', () => {
+  it('coupe : deux clics, puis la vue façades s’ouvre sur la coupe ; trop courte, refusée', () => {
+    const e = jouer(vide(), [
+      { type: 'facade', facade: 'coupe' }, // pas encore de coupe : on la trace sur le plan
+      { type: 'poserPoint', point: { x: 0, y: 0 } },
+      { type: 'poserPoint', point: { x: 100, y: 0 } },
+    ]);
+    expect(e.outil).toBe('coupe');
+    expect(e.erreur).toBeTruthy();
+    const f = [{ type: 'poserPoint', point: { x: 6_000, y: 0 } } as const].reduce(reduire, e);
+    expect(f).toMatchObject({ vue: 'facades', facade: 'coupe', outil: 'selection', erreur: null });
+    expect(f.coupe).toEqual({ a: { x: 0, y: 0 }, b: { x: 6_000, y: 0 } });
+    expect(reduire(f, { type: 'facade', facade: 'est' }).facade).toBe('est');
+  });
+});

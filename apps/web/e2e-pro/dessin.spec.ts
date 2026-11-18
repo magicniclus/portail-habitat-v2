@@ -710,4 +710,56 @@ test.describe('Plans (espace pro)', () => {
     await expect(page.getByTestId('plan-2d').getByTestId('cote-limite')).toHaveCount(4);
     await expect(page.getByTestId('plan-2d').getByTestId('fleche-nord')).toHaveCount(1);
   });
+  test('façades et coupe : élévations générées, toit, pignon, coupe tracée sur le plan', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    await menu('Structure');
+    await page.getByRole('button', { name: /^Toiture & combles/ }).click();
+    await page.getByRole('button', { name: 'Deux pans' }).click();
+
+    // DES-36 : façades nord / sud / est / ouest générées.
+    await menu('Rendu');
+    await page.getByRole('button', { name: 'Façades et coupes' }).click();
+    const facades = page.getByTestId('facades');
+    await expect(facades.getByRole('img', { name: 'Façade sud' })).toBeVisible();
+    await expect(facades.locator('[data-genre="toit"]').first()).toBeAttached();
+    await expect(facades.getByTestId('repere-altitude')).toHaveCount(3);
+    await facades.getByRole('radio', { name: 'Est', exact: true }).click();
+    await expect(facades.getByRole('img', { name: 'Façade est' })).toBeVisible();
+    await expect(facades.locator('[data-genre="pignon"]').first()).toBeAttached();
+
+    // Coupe : deux clics de part et d'autre de la maison, la coupe s'affiche.
+    await facades.getByRole('button', { name: 'Tracer une coupe' }).click();
+    await expect(page.getByText(/Coupe : cliquez deux points/)).toBeVisible();
+    const svg = plan.locator('svg');
+    const cliquer = async (xMm: number, yMm: number) => {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      await page.mouse.click(boite.x + (xMm - vx!) * k, boite.y + (yMm - vy!) * k);
+    };
+    await cliquer(-1_500, 4_300);
+    await cliquer(12_000, 4_300);
+    await expect(facades.getByRole('img', { name: 'Coupe' })).toBeVisible();
+    expect(await facades.locator('[data-genre="coupe"]').count()).toBeGreaterThanOrEqual(3);
+    await menu('Rendu');
+    await page.getByRole('button', { name: 'Plan 2D' }).click();
+    await expect(plan.getByTestId('trait-coupe')).toBeAttached();
+  });
 });
