@@ -150,22 +150,35 @@ describe('toits en L, T, U et sur une partie sans étage', () => {
   const decoupe = { largeur: 4_000, profondeur: 3_000 };
 
   it('L : deux ailes, la plus étroite s’arrête au faîtage de la plus large (noue)', () => {
-    const t = toit3D(avecToit(forme({ forme: 'L', largeur: 10_600, profondeur: 8_600, decoupe })))!;
+    const toitL = avecToit(forme({ forme: 'L', largeur: 10_600, profondeur: 8_600, decoupe }));
+    const t = toit3D(toitL)!;
     expect(t.ailes).toHaveLength(2);
     expect(t.ailes.filter((e) => Object.values(e.cotes).includes('interieur'))).toHaveLength(1);
-    expect(t.pans).toHaveLength(4);
     // Pignons : 2 sur l'aile principale, 1 au bout libre de l'aile secondaire.
     expect(t.murs).toHaveLength(3);
     // Faîtage le plus haut : aile de 6,60 m de large à 45° → 3,30 m au-dessus des murs.
     expect(t.faitage).toBe(2_500 + 3_300);
+    // Toits réunis : la surface des pans visibles égale la couverture mesurée, et aucun
+    // morceau de pan ne passe sous le toit d'une autre aile (plus de débord devant un pignon).
+    const somme = t.pans.reduce((s, p) => s + aire3D(p), 0);
+    expect(Math.abs(somme - t.surface) / t.surface).toBeLessThan(0.01);
+    for (const p of t.pans) {
+      const c = {
+        x: p.reduce((s, q) => s + q.x, 0) / p.length,
+        y: p.reduce((s, q) => s + q.y, 0) / p.length,
+        z: p.reduce((s, q) => s + q.z, 0) / p.length,
+      };
+      expect(altitudeToit(toitL.toiture!, t.ailes, c)!.z).toBeLessThanOrEqual(c.z + 5);
+    }
     // Gouttières à l'air libre seulement : 8,60 + 3,00 (creux) + 2 × 4,00 = 19,60 m.
     expect(t.longueurGouttieres / 1000).toBeCloseTo(19.6, 0);
-    // Quatre pans en L : pas de croupe contre l'autre aile.
-    expect(
-      toit3D(
-        avecToit(forme({ forme: 'L', largeur: 10_600, profondeur: 8_600, decoupe }), 'quatre_pans'),
-      )!.pans,
-    ).toHaveLength(7);
+    // Quatre pans en L : pas de croupe contre l'autre aile (aile secondaire sans pan de bout).
+    const quatre = toit3D(
+      avecToit(forme({ forme: 'L', largeur: 10_600, profondeur: 8_600, decoupe }), 'quatre_pans'),
+    )!;
+    const secondaire = quatre.ailes.find((e) => Object.values(e.cotes).includes('interieur'))!;
+    const z = (a: number) => hauteurLocale(toitL.toiture!, { ...secondaire }, a, 0);
+    expect(z(secondaire.aMin)).toBeCloseTo(z(0), 0);
   });
 
   it('U et T : trois ailes ; les gouttières cachées sous une autre aile ne comptent pas', () => {

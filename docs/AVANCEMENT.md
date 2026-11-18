@@ -994,7 +994,8 @@ Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'exté
   - **étage ou pas** : le toit d'un niveau ne couvre que la partie sans étage au-dessus ; une partie basse collée à l'étage reçoit un appentis (monopente) qui s'y adosse ;
   - **hauteurs** : « au plus bas » (égout, depuis le sol) règle la hauteur des murs du niveau ; « au plus haut » (faîtage, depuis le sol) calcule la pente ; le curseur de pente reste ;
   - **un clic** : choisir la forme pose le toit sur toute la maison, à chaque niveau concerné (jamais au sous-sol) ;
-  - surface de couverture mesurée sur les ailes réunies, pente comprise ; combles Carrez idem.
+  - surface de couverture mesurée sur les ailes réunies, pente comprise ; combles Carrez idem ;
+  - **toits réunis (retour du propriétaire, capture)** : chaque pan perd exactement les parties qui passent sous le toit d'une autre aile (`decoupeToit.ts`, calcul en plan, sans maillage approché). Plus de débord qui dépasse devant un pignon ; les noues sont nettes et la surface des pans visibles égale la couverture mesurée (testé).
 - **Tests** : 26 unitaires de plus (menuiseries, toiture, ailes en L/T/U, étage partiel, hauteurs) ; Playwright « menuiseries », « toiture » et « maison en L » verts sur iPhone 13 et ordinateur, 16 parcours au total.
 - **Reste** :
   - terrasse et terrain ;

@@ -1,4 +1,5 @@
 import type { Niveau, Point } from '../schemas/dessinScene';
+import { pansVisibles } from './decoupeToit';
 import { egoutsLocaux, mursLocaux, pansLocaux } from './pansToit';
 import {
   altitudeToit,
@@ -84,12 +85,12 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
   if (!t) return null;
   const ailes = emprisesToit(n, dessus);
   if (!ailes.length) return null;
-  const pans: Point3[][] = [];
+  const parAile: Point3[][][] = [];
   const murs: Point3[][] = [];
   const gouttieres: [Point3, Point3][] = [];
   for (const e of ailes) {
     const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
-    pans.push(...pansLocaux(t, e).map((poly) => poly.map(([a, b]) => versMonde(e, a, b, z(a, b)))));
+    parAile.push(pansLocaux(t, e).map((poly) => poly.map(([a, b]) => versMonde(e, a, b, z(a, b)))));
     murs.push(...mursLocaux(t, e));
     for (const [p, q] of egoutsLocaux(e))
       gouttieres.push(
@@ -99,6 +100,8 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
         ]),
       );
   }
+  // Toits des ailes réunis : rien ne dépasse sous le toit d'une autre aile.
+  const pans = pansVisibles(parAile);
   const faitage = Math.max(...pans.flat().map((p) => p.z));
   const surLeToit = (p: Point) => altitudeToit(t, ailes, p);
   const mesures = mesurerToit(t, ailes, n.altitude);
