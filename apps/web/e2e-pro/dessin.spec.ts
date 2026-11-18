@@ -806,4 +806,48 @@ test.describe('Plans (espace pro)', () => {
     ]);
     expect(png.suggestedFilename()).toMatch(/\.png$/);
   });
+  test('partage : lien en lecture seule ouvert sans compte, sans localisation, puis révoqué', async ({
+    page,
+    browser,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    await expect(page.getByTestId('plan-2d').getByText('83,6 m²')).toBeVisible();
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Rendu' })
+      .click();
+    await page.getByLabel('Validité du lien').selectOption('7');
+    await page.getByRole('button', { name: 'Créer un lien de partage' }).click();
+    const lien = page.getByTestId('lien-partage');
+    await expect(lien).toHaveCount(1);
+    await expect(lien).toContainText('Jusqu’au');
+    const href = (await lien.getAttribute('href'))!;
+    expect(href).toMatch(/^\/plan\/[A-Za-z0-9_-]{32}$/);
+
+    // DES-42 : sans compte, en lecture seule, non indexé.
+    const invite = await browser.newContext();
+    const vue = await invite.newPage();
+    await vue.goto(href);
+    await expect(vue.getByText('Lecture seule')).toBeVisible();
+    await expect(vue.getByTestId('plan-2d').getByText('83,6 m²')).toBeVisible();
+    await expect(vue.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await vue.getByRole('radio', { name: 'Façades' }).click();
+    await expect(vue.getByRole('img', { name: 'Façade sud' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Révoquer le lien' }).click();
+    await expect(lien).toHaveCount(0);
+    const apres = await vue.goto(href);
+    expect(apres!.status()).toBe(404);
+    await invite.close();
+  });
 });

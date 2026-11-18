@@ -5,6 +5,7 @@ import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur, Vue } from './etat';
 import { GaleriePhotos } from './GaleriePhotos';
+import { PartageMenu } from './PartageMenu';
 
 const VUES: { vue: Vue; libelle: string }[] = [
   { vue: 'plan', libelle: 'Plan 2D' },
@@ -89,6 +90,7 @@ export function RenduMenu({
         visite : ZQSD ou flèches pour marcher, glisser pour regarder, joystick sur mobile.
       </p>
       <GaleriePhotos espace={espace} planId={planId} revision={etat.revisionPhotos} />
+      <PartageMenu espace={espace} planId={planId} />
     </div>
   );
 }

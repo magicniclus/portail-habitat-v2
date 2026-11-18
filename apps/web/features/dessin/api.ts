@@ -69,6 +69,26 @@ export const exporterPdf = (
   },
 ) => appel<{ base64: string }>('pdf', espace, e);
 
+/** Liens de partage en lecture seule (DES-42). */
+export const partagerPlan = (espace: EspaceDessin, planId: string, joursValidite?: number) =>
+  appel<{ jeton: string }>(
+    'partager',
+    espace,
+    joursValidite ? { planId, joursValidite } : { planId },
+  );
+
+export const listerPartages = (espace: EspaceDessin, planId: string) =>
+  appel<{ liens: { jeton: string; creeLe: number; expireLe: number | null }[] }>(
+    'partages',
+    espace,
+    {
+      planId,
+    },
+  );
+
+export const revoquerPartage = (espace: EspaceDessin, jeton: string) =>
+  appel<{ ok: true }>('revoquer-partage', espace, { jeton });
+
 /** Galerie « Mes photos » du plan (DES-37). */
 export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
   appel<{ storagePath: string }>('photo', espace, { planId, base64 });

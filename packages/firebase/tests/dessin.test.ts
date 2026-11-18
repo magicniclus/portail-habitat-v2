@@ -27,6 +27,7 @@ import {
   supprimerPhoto,
   lireFond,
   chargerParcelle,
+  listerPartages,
   chercherAdresses,
 } from '../src/serveur/dessin';
 
@@ -236,7 +237,10 @@ describe('partage en lecture seule', () => {
     await expect(revoquerPartage(s(), ctxEnt('p1'), jeton)).rejects.toMatchObject({
       code: 'INTROUVABLE',
     });
+    expect((await listerPartages(s(), ctxPart, planId)).map((p) => p.jeton)).toEqual([jeton]);
+    await expect(listerPartages(s(), ctxEnt('p1'), planId)).rejects.toBeTruthy();
     await revoquerPartage(s(), ctxPart, jeton);
+    expect(await listerPartages(s(), ctxPart, planId)).toEqual([]);
     await expect(lirePlanPartage(s(), jeton)).rejects.toMatchObject({ code: 'INTROUVABLE' });
 
     const court = await partagerPlan(s(), ctxPart, { planId, joursValidite: 1 });

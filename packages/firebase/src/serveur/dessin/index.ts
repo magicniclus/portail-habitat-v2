@@ -5,6 +5,7 @@ export {
   JOURS_CORBEILLE,
   lirePlan,
   lirePlanPartage,
+  listerPartages,
   listerPlans,
   listerVersions,
   mettreALaCorbeille,

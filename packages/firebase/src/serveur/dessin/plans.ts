@@ -1,11 +1,11 @@
 import { randomBytes } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
-import { migrerScene, nouvelleScene, type Scene } from '@ph/core/dessin';
+import { migrerScene, nouvelleScene, sceneSansLocalisation, type Scene } from '@ph/core/dessin';
 import { peut, type Membre } from '@ph/core/equipe';
 import { ErreurMetier } from '@ph/core/erreurs';
 import { Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
 import type { bucketFichiers } from '../../admin';
-import { chemins, fichiers, type ProprietairePlan } from '../../chemins';
+import { chemins, collections, fichiers, type ProprietairePlan } from '../../chemins';
 
 /**
  * Plans Dessin (DESSIN.md §4) : métadonnées dans Firestore, scène compressée dans Storage.
@@ -364,6 +364,35 @@ export async function revoquerPartage(s: ServicesDessin, ctx: ContexteDessin, je
   await ref.update({ revoque: true });
 }
 
+/** Liens encore valides d'un plan (DES-42), du plus récent au plus ancien. */
+export async function listerPartages(
+  s: ServicesDessin,
+  ctx: ContexteDessin,
+  planId: string,
+): Promise<{ jeton: string; creeLe: number; expireLe: number | null }[]> {
+  await exigerAcces(s, ctx);
+  await lireMeta(s, ctx, planId);
+  const q = await s.db.collection(collections.partagesPlans).where('planId', '==', planId).get();
+  const maintenant = s.horloge();
+  return q.docs
+    .filter((d) => {
+      const p = d.get('proprietaire') as ProprietairePlan;
+      const fin = (d.get('expireLe') as Timestamp | null)?.toMillis() ?? null;
+      return (
+        p.type === ctx.proprietaire.type &&
+        p.id === ctx.proprietaire.id &&
+        d.get('revoque') !== true &&
+        (fin === null || fin > maintenant)
+      );
+    })
+    .map((d) => ({
+      jeton: d.id,
+      creeLe: (d.get('creeLe') as Timestamp).toMillis(),
+      expireLe: (d.get('expireLe') as Timestamp | null)?.toMillis() ?? null,
+    }))
+    .sort((a, b) => b.creeLe - a.creeLe);
+}
+
 /** Lecture d'un plan partagé, sans compte : titre et scène seulement. */
 export async function lirePlanPartage(
   s: ServicesDessin,
@@ -379,6 +408,6 @@ export async function lirePlanPartage(
     throw new ErreurMetier('INTROUVABLE', 'Ce lien n’est plus valide.');
   return {
     titre: doc.get('titre') as string,
-    scene: await lireScene(s, doc.get('storagePath') as string),
+    scene: sceneSansLocalisation(await lireScene(s, doc.get('storagePath') as string)),
   };
 }

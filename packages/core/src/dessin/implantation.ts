@@ -182,3 +182,16 @@ export function distancesAuxLimites(s: Scene, max = 4): CoteLimite[] {
     .sort((x, y) => x.d - y.d)
     .slice(0, max);
 }
+
+/**
+ * Scène montrée par un lien de partage (DES-42) : sans ce qui situe le bien (Lambert-93,
+ * photo aérienne, référence cadastrale, commune) ni l'image importée (fichier privé).
+ */
+export function sceneSansLocalisation(s: Scene): Scene {
+  const t = s.terrain;
+  return {
+    ...s,
+    fondImage: null,
+    terrain: t ? { parcelle: t.parcelle, implantation: t.implantation } : null,
+  };
+}

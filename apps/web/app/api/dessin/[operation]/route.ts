@@ -4,6 +4,7 @@ import {
   entreeEnregistrerPlan,
   entreeFondPlan,
   entreeLireFond,
+  entreeJetonPartage,
   entreeParcelle,
   entreePdfPlan,
   entreePartagerPlan,
@@ -27,6 +28,7 @@ import {
   enregistrerPlan,
   lireFond,
   lirePlan,
+  listerPartages,
   listerPhotos,
   listerPlans,
   listerVersions,
@@ -35,6 +37,7 @@ import {
   renommerPlan,
   restaurerDeLaCorbeille,
   restaurerVersion,
+  revoquerPartage,
   supprimerPhoto,
 } from '@ph/firebase/dessin';
 import { action } from '@/server/action';
@@ -178,6 +181,28 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
       const scene = migrerScene(e.scene);
       if (!scene.ok) throw new ErreurMetier(scene.code, scene.message);
       return { base64: (await pdfDuPlan({ titre, scene: scene.data }, e)).toString('base64') };
+    },
+  ),
+  partages: action(
+    {
+      schema: entreePlan.extend(espace),
+      nom: 'dessin.partages',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e, ctx) => ({
+      liens: await listerPartages(
+        servicesDessin(),
+        await contexteDessin(ctx.uid!, e.espace),
+        e.planId,
+      ),
+    }),
+  ),
+  'revoquer-partage': action(
+    { schema: entreeJetonPartage.extend(espace), nom: 'dessin.revoquerPartage', rateLimit: debit },
+    async (e, ctx) => {
+      await revoquerPartage(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e.jeton);
+      return { ok: true };
     },
   ),
   partager: action(

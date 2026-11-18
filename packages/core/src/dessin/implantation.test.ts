@@ -9,6 +9,7 @@ import {
   coinsOrthophoto,
   distancesAuxLimites,
   implanterParcelle,
+  sceneSansLocalisation,
   l93VersPlan,
   planVersL93,
   versLambert93,
@@ -133,5 +134,27 @@ describe('implantation sur la parcelle (DES-35)', () => {
         ok(definirParcelle(nouvelleScene(ctx.nouvelId), { x: 0, y: 0 }, { x: 9_000, y: 9_000 })),
       ),
     ).toEqual([]);
+  });
+
+  it('lien de partage : ni position, ni photo, ni référence cadastrale, ni image importée', () => {
+    const s = ok(implanterParcelle(maison(), PARCELLE));
+    const p = sceneSansLocalisation({
+      ...s,
+      fondImage: {
+        storagePath: 'x',
+        mmPour1000Px: 1000,
+        position: { x: 0, y: 0 },
+        rotation: 0,
+        opacite: 50,
+        niveauId: s.niveaux[0]!.id,
+      },
+    });
+    expect(p.terrain).toEqual({
+      parcelle: s.terrain!.parcelle,
+      implantation: s.terrain!.implantation,
+    });
+    expect(p.fondImage).toBeNull();
+    expect(JSON.stringify(p)).not.toMatch(/01001|ortho|georef/);
+    expect(sceneSansLocalisation(maison()).terrain).toBeNull();
   });
 });
