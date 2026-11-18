@@ -104,6 +104,7 @@ export function ScenePhoto({
             centre={centre}
             poupee={etat.rendu.poupee && n.id === courant.id}
             plafonds={false}
+            toit={etat.rendu.toit && !etat.rendu.poupee}
           />
           <group position={[0, M(n.altitude), 0]}>
             <Objets3D objets={n.objets} selectionId={null} dispatch={() => {}} glisser={() => {}} />

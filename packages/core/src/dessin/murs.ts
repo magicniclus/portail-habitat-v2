@@ -4,7 +4,7 @@ import { distance, distancePointSegment, intersectionSegments, memePoint } from 
 /** Épaisseurs et hauteurs par défaut à la création (DESSIN.md DES-07), en mm. */
 export const EPAISSEUR_DEFAUT: Record<TypeMur, number> = {
   mur: 200,
-  cloison: 70,
+  cloison: 72,
   demi_mur: 100,
   muret: 150,
   separation: 0,

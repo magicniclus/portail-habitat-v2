@@ -15,6 +15,7 @@ import { useMemo, useRef } from 'react';
 import type { Vector3 } from 'three';
 import { DoubleSide, Shape, type Mesh } from 'three';
 import { Menuiseries3D } from './Menuiseries3D';
+import { Toit3D } from './Toit3D';
 import { devantLaCamera, HAUTEUR_POUPEE } from './poupee';
 import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
@@ -112,6 +113,7 @@ export function Niveau3D({
   poupee,
   plafonds,
   portesOuvertes = false,
+  toit = false,
 }: {
   n: Niveau;
   centre: Vector3;
@@ -119,6 +121,8 @@ export function Niveau3D({
   plafonds: boolean;
   /** Visite : vantaux des portes ouverts pour passer. */
   portesOuvertes?: boolean;
+  /** Toiture du niveau affichée. */
+  toit?: boolean;
 }) {
   const morceaux = useMemo(() => n.murs.flatMap((m) => morceauxDeMur(m, n)), [n]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
@@ -136,6 +140,7 @@ export function Niveau3D({
         ? dalles.plafonds.map((d) => <Dalle3D key={`pl-${d.pieceId}`} d={d} dessous />)
         : null}
       <Menuiseries3D n={n} portesOuvertes={portesOuvertes} poupee={poupee} centre={centre} />
+      {toit ? <Toit3D n={n} /> : null}
       {marches.map((p, i) => (
         <PaveMesh key={i} p={p} materiaux={bois} />
       ))}

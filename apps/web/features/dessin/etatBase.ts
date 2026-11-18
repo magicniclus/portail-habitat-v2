@@ -2,6 +2,9 @@ import {
   creerHistorique,
   enregistrer,
   type CibleRevetement,
+  type ElementToit,
+  type ModificationToiture,
+  type TypeToiture,
   type Guide,
   type Contexte,
   type HistoriqueDessin,
@@ -21,7 +24,7 @@ import type { Resultat } from '@ph/core/resultat';
 
 /** État de l'éditeur Dessin (DESSIN.md §7) : scène + historique, outil, sélection, affichage. */
 export type Outil =
-  'selection' | 'mur' | 'piece' | 'ouverture' | 'escalier' | 'echelle' | 'objet' | 'zone';
+  'selection' | 'mur' | 'piece' | 'ouverture' | 'escalier' | 'echelle' | 'objet' | 'zone' | 'toit';
 type GenreSelection = 'mur' | 'piece' | 'ouverture' | 'escalier' | 'objet' | 'zone';
 type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
@@ -34,6 +37,8 @@ export interface ReglagesRendu {
   poupee: boolean;
   /** Seulement le niveau courant (sinon la maison jusqu'à ce niveau). */
   niveauSeul: boolean;
+  /** Toit affiché en 3D (masqué en maison de poupée). */
+  toit: boolean;
   /** Vue photo (DES-37). */
   cadrage: 'paysage' | 'carre' | 'portrait';
   ambiance: 'jour' | 'soiree';
@@ -51,6 +56,8 @@ export interface EtatEditeur {
   typeEscalier: TypeEscalier;
   /** Objet du catalogue à poser avec l'outil « objet ». */
   catalogueId: string;
+  /** Élément posé sur le toit avec l'outil « toit ». */
+  elementToit: ElementToit;
   /** Style copié (DES-28), collé sur une autre pièce, un mur ou une zone. */
   pressePapier: Revetement | null;
   /** Premier point du segment, de la pièce ou de la mesure d'échelle en cours. */
@@ -87,8 +94,12 @@ export type Action =
       typeOuverture?: TypeOuverture;
       typeEscalier?: TypeEscalier;
       catalogueId?: string;
+      elementToit?: ElementToit;
     }
   | { type: 'poserPoint'; point: Point }
+  | { type: 'toiture'; toiture: TypeToiture | null }
+  | { type: 'modifierToiture'; modif: ModificationToiture }
+  | { type: 'retirerElementToit'; id: string }
   | { type: 'terminerTrace' }
   | { type: 'selectionner'; selection: Selection }
   | { type: 'modifierLongueur'; murId: string; longueur: number }
@@ -160,6 +171,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     typeOuverture: 'porte',
     typeEscalier: 'droit',
     catalogueId: 'canape-3',
+    elementToit: 'fenetre',
     pressePapier: null,
     trace: null,
     echelle: null,
@@ -172,6 +184,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
       heure: 15,
       poupee: true,
       niveauSeul: false,
+      toit: true,
       cadrage: 'paysage',
       ambiance: 'jour',
       format: 'image/jpeg',

@@ -7,62 +7,30 @@ import {
   type TypeMur,
   type TypeOuverture,
 } from '@ph/core/dessin';
-import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
-import { useState, type Dispatch, type ReactNode } from 'react';
+import { CaretLeftIcon } from '@phosphor-icons/react';
+import { useState, type Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur } from './etat';
 import { FondMenu } from './FondMenu';
+import { Ligne } from './LigneMenu';
 import { NiveauxMenu } from './NiveauxMenu';
+import { ToitureMenu } from './ToitureMenu';
 
 const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'mur', libelle: 'Mur', detail: 'Épaisseur 20 cm' },
-  { type: 'cloison', libelle: 'Cloison', detail: 'Épaisseur 7 cm' },
+  { type: 'cloison', libelle: 'Cloison', detail: 'Épaisseur 7,2 cm' },
   { type: 'demi_mur', libelle: 'Demi-mur', detail: 'Hauteur 1,10 m' },
   { type: 'muret', libelle: 'Muret', detail: 'Hauteur 60 cm' },
   { type: 'separation', libelle: 'Séparation invisible', detail: 'Sépare deux pièces sans mur' },
 ];
 
-const ligne =
-  'flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-[10px] border border-transparent bg-blanc px-2.5 py-2 text-left font-[inherit] text-texte hover:bg-neutre-100';
-const actif = (oui: boolean) => (oui ? 'border-accent-300 bg-accent-100' : '');
-
-function Ligne({
-  titre,
-  detail,
-  action,
-  pressee,
-  onClick,
-}: {
-  titre: string;
-  detail: string;
-  action?: ReactNode;
-  pressee?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <li>
-      <button
-        type="button"
-        aria-pressed={pressee}
-        className={`${ligne} ${actif(Boolean(pressee))}`}
-        onClick={onClick}
-      >
-        <span className="flex-1">
-          <span className="block font-semibold">{titre}</span>
-          <span className="text-[13px] text-neutre-700">{detail}</span>
-        </span>
-        {action ?? <CaretRightIcon aria-hidden="true" />}
-      </button>
-    </li>
-  );
-}
-
-type Sous = 'murs' | 'ouvertures' | 'escaliers' | 'niveaux' | 'fond';
+type Sous = 'murs' | 'ouvertures' | 'escaliers' | 'niveaux' | 'toiture' | 'fond';
 const TITRES: Record<Sous, string> = {
   murs: 'Murs & cloisons',
   ouvertures: 'Portes & fenêtres',
   escaliers: 'Escaliers',
   niveaux: 'Niveaux',
+  toiture: 'Toiture & combles',
   fond: 'Importer un plan',
 };
 const AIDES: Partial<Record<Sous, string>> = {
@@ -117,6 +85,11 @@ export function StructureMenu({
             onClick={() => setSous('niveaux')}
           />
           <Ligne
+            titre="Toiture & combles"
+            detail="Pans, pente, fenêtres de toit"
+            onClick={() => setSous('toiture')}
+          />
+          <Ligne
             titre="Importer un plan"
             detail="Une image à décalquer, mise à l’échelle"
             onClick={() => setSous('fond')}
@@ -125,7 +98,6 @@ export function StructureMenu({
         <div className="grid gap-1.5 px-1">
           <p className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">Bientôt</p>
           <ul className="m-0 grid list-none gap-1 p-0 text-sm text-neutre-800">
-            <li>Toiture & combles</li>
             <li>Terrasse, terrain, piscine</li>
           </ul>
         </div>
@@ -192,6 +164,8 @@ export function StructureMenu({
         </ul>
       ) : sous === 'niveaux' ? (
         <NiveauxMenu etat={etat} dispatch={dispatch} />
+      ) : sous === 'toiture' ? (
+        <ToitureMenu etat={etat} dispatch={dispatch} />
       ) : (
         <FondMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />
       )}

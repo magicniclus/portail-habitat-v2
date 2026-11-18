@@ -431,4 +431,60 @@ test.describe('Plans (espace pro)', () => {
       page.getByTestId('plan-2d').getByRole('button', { name: /^Fenêtre 2 vantaux/ }),
     ).toBeVisible();
   });
+
+  test('toiture deux pans : pente, fenêtre de toit, couverture au métré, toit en 3D', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+
+    // DES-16 : toit deux pans généré sur les murs, pente à 45°.
+    await menu('Structure');
+    await page.getByRole('button', { name: /^Toiture & combles/ }).click();
+    await page.getByRole('button', { name: 'Deux pans' }).click();
+    await expect(page.getByRole('term').filter({ hasText: 'Couverture' })).toBeVisible();
+    await page.getByLabel(/^Pente/).fill('45');
+    await expect(page.getByText('Pente · 45°')).toBeVisible();
+
+    // DES-17 : fenêtre de toit posée d'un clic sur le plan.
+    await page.getByRole('button', { name: 'Fenêtre de toit' }).click();
+    await page.waitForTimeout(400);
+    const svg = plan.locator('svg');
+    const boite = (await svg.boundingBox())!;
+    const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+    const k = boite.width / vl!;
+    await page.mouse.click(boite.x + (3000 - vx!) * k, boite.y + (3000 - vy!) * k);
+    await menu('Structure');
+    // Sur téléphone, le menu s'est replié pour la pose : on revient au sous-menu.
+    const sousMenu = page.getByRole('button', { name: /^Toiture & combles/ });
+    if (await sousMenu.isVisible()) await sousMenu.click();
+    await expect(page.getByRole('button', { name: 'Retirer : Fenêtre de toit' })).toBeVisible();
+
+    await menu('Chiffrer');
+    await expect(page.getByText('Couverture de toiture')).toBeVisible();
+    await expect(page.getByText('Fenêtres de toit')).toBeVisible();
+
+    await menu('Rendu');
+    await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+  });
 });

@@ -118,6 +118,7 @@ export default function Vue3D({
           centre={centre}
           poupee={etat.rendu.poupee && n.id === courant.id}
           plafonds={false}
+          toit={etat.rendu.toit && !etat.rendu.poupee}
         />
       ))}
       {niveaux.map((n) => (

@@ -65,6 +65,15 @@ export function RenduMenu({
         />
       </label>
       <label className={interrupteur}>
+        Afficher le toit (hors maison de poupée)
+        <input
+          type="checkbox"
+          className="size-5 accent-accent"
+          checked={r.toit}
+          onChange={(ev) => regler({ toit: ev.target.checked })}
+        />
+      </label>
+      <label className={interrupteur}>
         Afficher seulement ce niveau
         <input
           type="checkbox"

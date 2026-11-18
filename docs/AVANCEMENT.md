@@ -858,7 +858,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
 - [x] 15f Aménager et décorer (18/11/2026, voir « Lot 15f fait » ci-dessous)
 - [x] 15g 3D, visite, photo, placement automatique, rotation libre (18/11/2026, voir « Lot 15g fait » ci-dessous)
-- [ ] 15h Toiture, extérieur, piscine, implantation, façades et coupes
+- [ ] 15h (en cours : menuiseries et toiture faites) Toiture, extérieur, piscine, implantation, façades et coupes
 - [ ] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel), « Créer un devis depuis ce plan »
 - [ ] 15j Landing publique, essai sans compte, mobile, accessibilité, performance
 - [ ] 15k Recette et fin
@@ -971,6 +971,31 @@ Demandes du propriétaire ajoutées au lot : **placement automatique** des meubl
   - déplacer ou faire pivoter l'image importée (reporté une seconde fois) ;
   - emprise 2D des meubles inclinés ;
   - cartes d'ombre plus fines sur les grands terrains.
+
+### Lot 15h en cours (18/11/2026)
+Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'extérieur. Vitrage clair seulement (choix du propriétaire).
+- **Menuiseries (fait)** :
+  - **Modèle (validé)** : `remplissage` (plein, vitré, semi-vitré, cassettes), `petitsBois`, `materiau` (PVC, bois, alu), `couleur`, `imposte` (fixe, ouvrante), tous facultatifs, plus le type `porte_galandage_double` ;
+  - portes coulissantes : galandage dans la cloison (poche en pointillés en 2D, vantail rangé dans le mur en 3D) et applique (rail devant le mur, du côté choisi) ;
+  - **règles validées** : cloison de 7,2 cm au moins pour un galandage ; place libre sur le mur au moins égale à la largeur de la porte ; aucune autre baie dans une poche ou un rail ; pose du côté libre si la place manque à gauche ;
+  - 3D : dormant, vantaux, verre clair, petits bois, poignée, imposte, volets roulants et battants, seuil ; portes ouvertes en visite ; menuiseries et linteaux masqués avec les murs avant en maison de poupée ;
+  - inspecteur : remplissage, petits bois, matériau, volets, imposte, couleur, côté de rangement ;
+  - Chiffrer : liste des menuiseries par modèle identique ;
+  - **valeur par défaut changée (signalée)** : cloison de 7,2 cm (standard 72/48) au lieu de 7 cm, sinon aucun galandage n'était possible dans une cloison par défaut ;
+  - **correction téléphone** : changer de modèle à placer replie aussi le menu (il cachait le plan).
+- **Toiture (fait)**, sans changement de modèle (`niveau.toiture` existait) :
+  - deux pans, quatre pans, croupe, monopente, toit plat (acrotère), mansarde (brisis à 70°) sur le rectangle des murs, dans le sens du faîtage ;
+  - réglages : pente, débord, faîtage tournant, couverture ;
+  - pignons, gouttières, fenêtres de toit inclinées comme le pan, cheminées, lucarnes ;
+  - surface de couverture, gouttières et combles Carrez (≥ 1,80 m) au métré ; un toit plat se chiffre en étanchéité ;
+  - en 2D, contour en pointillés ; en 3D, toit affichable (masqué en maison de poupée), cadrage qui inclut le faîtage.
+- **Tests** : 15 unitaires de plus (menuiseries, toiture) ; Playwright « menuiseries » et « toiture » verts sur iPhone 13 et ordinateur, 14 parcours au total.
+- **Reste** :
+  - terrasse et terrain ;
+  - piscine ;
+  - implantation (cadastre et photo aérienne IGN : hôtes réseau à autoriser) ;
+  - façades et coupes ;
+  - toits sur des formes en L (pour l'instant, le rectangle englobant).
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
 - **Éditeur en pleine page**, comme l'éditeur du site : hors du cadre de l'espace pro (`/pro/plans/editeur/{id}`) et de l'en-tête particulier (`/mes-plans/{id}`). Listes : `/pro/plans` et `/mon-espace/plans`.

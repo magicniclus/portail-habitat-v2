@@ -79,7 +79,7 @@ describe('commandes', () => {
         ctx,
       ),
     );
-    expect(r.murs.at(-1)).toMatchObject({ epaisseur: 70, hauteur: 2500 });
+    expect(r.murs.at(-1)).toMatchObject({ epaisseur: 72, hauteur: 2500 });
     expect(r.pieces).toHaveLength(2);
     const muret = ok(
       ajouterMur(r, { a: { x: 1000, y: 1000 }, b: { x: 2000, y: 1000 }, type: 'muret' }, ctx),

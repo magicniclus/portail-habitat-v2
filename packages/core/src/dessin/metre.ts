@@ -7,6 +7,7 @@ import type {
   Point,
 } from '../schemas/dessinScene';
 import { objetDuCatalogue } from './catalogue';
+import { quantitesToiture } from './commandesToit';
 import { planDeTravail } from './cuisine';
 import { aire, perimetre, pointDansPolygone } from './geometrie';
 import { longueurMur, surfaceFaceNette } from './murs';
@@ -31,6 +32,12 @@ export const POSTES_METRE = [
   'escalier',
   'plan_de_travail',
   'equipements',
+  'couverture',
+  'gouttieres',
+  'fenetres_toit',
+  'cheminees',
+  'lucarnes',
+  'combles',
 ] as const;
 export type PosteMetre = (typeof POSTES_METRE)[number];
 
@@ -49,6 +56,12 @@ export const LIBELLES_POSTE: Record<PosteMetre, string> = {
   escalier: 'Escalier',
   plan_de_travail: 'Plan de travail',
   equipements: 'Équipements',
+  couverture: 'Couverture de toiture',
+  gouttieres: 'Gouttières',
+  fenetres_toit: 'Fenêtres de toit',
+  cheminees: 'Cheminées',
+  lucarnes: 'Lucarnes',
+  combles: 'Combles (surface Carrez)',
 };
 
 /** Libellé des équipements posés, par prestation du catalogue. */
@@ -97,6 +110,10 @@ const PRESTATION_FIXE: Partial<Record<PosteMetre, string>> = {
   terrasse: 'terrasse',
   piscine: 'piscine',
   escalier: 'escalier',
+  gouttieres: 'gouttieres',
+  fenetres_toit: 'fenetre-toit',
+  cheminees: 'cheminee',
+  combles: 'combles-amenagement',
 };
 
 const PORTES_INTERIEURES: readonly Ouverture['type'][] = [
@@ -211,6 +228,22 @@ export function metreNiveau(n: Niveau): LigneMetre[] {
   for (const o of n.objets) {
     const prestationId = objetDuCatalogue(o.catalogueId)?.prestationId;
     if (prestationId) ajouter({ poste: 'equipements', quantite: 1, unite: 'u', prestationId });
+  }
+
+  // Toiture (DES-17) : un toit plat se chiffre en étanchéité.
+  const q = quantitesToiture(n);
+  if (q) {
+    ajouter({
+      poste: 'couverture',
+      quantite: q.couverture,
+      unite: 'm2',
+      prestationId: n.toiture?.type === 'plate' ? 'etancheite' : null,
+    });
+    fixe('gouttieres', q.gouttieres, 'ml');
+    fixe('fenetres_toit', q.fenetresToit, 'u');
+    fixe('cheminees', q.cheminees, 'u');
+    fixe('lucarnes', q.lucarnes, 'u');
+    if (q.carrez !== null) fixe('combles', q.carrez, 'm2');
   }
   return lignes;
 }

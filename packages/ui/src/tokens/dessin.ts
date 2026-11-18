@@ -258,3 +258,14 @@ export const COULEURS_MENUISERIE: readonly TeinteDessin[] = [
 
 /** Teinte par défaut d'une menuiserie selon son matériau. */
 export const TEINTE_MENUISERIE = { pvc: '#f5f5f2', alu: '#3b4045', bois: '#c9a273' } as const;
+
+/** Couvertures de toiture en 3D (lot 15h), par famille de revêtement. */
+export const COULEURS_COUVERTURE = {
+  tuile: '#b5583a',
+  ardoise: '#4b5560',
+  zinc: '#9aa3a8',
+  bac_acier: '#6d7479',
+  vegetalise: '#6f8f4e',
+  facade: '#ece6dc',
+  brique: '#9c4a35',
+} as const;

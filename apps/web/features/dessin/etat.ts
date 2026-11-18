@@ -18,6 +18,7 @@ import {
 } from './etatBase';
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireStructure } from './etatStructure';
+import { reduireToiture } from './etatToiture';
 
 export * from './etatBase';
 
@@ -32,6 +33,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
         typeOuverture: a.typeOuverture ?? e.typeOuverture,
         typeEscalier: a.typeEscalier ?? e.typeEscalier,
         catalogueId: a.catalogueId ?? e.catalogueId,
+        elementToit: a.elementToit ?? e.elementToit,
         trace: null,
         echelle: null,
         erreur: null,
@@ -112,6 +114,6 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'effacerErreur':
       return { ...e, erreur: null };
     default:
-      return reduireStructure(e, a) ?? reduireAmenagement(e, a) ?? e;
+      return reduireStructure(e, a) ?? reduireAmenagement(e, a) ?? reduireToiture(e, a) ?? e;
   }
 }

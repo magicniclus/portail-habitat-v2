@@ -24,6 +24,7 @@ import {
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 import { poserAmenagement } from './etatAmenagement';
+import { poserToit } from './etatToiture';
 import {
   contexteNavigateur as ctx,
   sceneDe,
@@ -36,7 +37,7 @@ import {
 /** Clic sur le plan selon l'outil : mur, pièce, porte ou fenêtre, escalier, mesure d'échelle. */
 function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
   if (e.outil === 'selection') return e;
-  const amenagement = poserAmenagement(e, point);
+  const amenagement = poserAmenagement(e, point) ?? poserToit(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));

@@ -17,6 +17,7 @@ import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { FondSvg } from './FondSvg';
 import { GuidesSvg } from './GuidesSvg';
+import { ToitSvg } from './ToitSvg';
 import { DefsMotifs } from './Motifs';
 import { useGlisser } from './useGlisser';
 import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
@@ -143,6 +144,7 @@ export function Plan2D({
             demarrerGlisser={(id, ev) => glisser.demarrer('mur', id, ev)}
           />
           <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
+          <ToitSvg niveau={n} />
           <GuidesSvg guides={etat.guides} />
           {etat.calques.cotes ? (
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />

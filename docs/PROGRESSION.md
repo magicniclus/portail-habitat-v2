@@ -38,6 +38,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 18/11/2026 — Lot 15h en cours : menuiseries complètes (galandage, applique, vitrages, petits bois, volets) et toiture faites (AVANCEMENT §31).
 - 18/11/2026 — Lot 15g fait : 3D, visite, photo et galerie, placement automatique des meubles, rotation libre sur 3 axes (AVANCEMENT §31).
 - 18/11/2026 — Lot 15f fait : meubles et équipements, revêtements et motifs, zones au sol (AVANCEMENT §31).
 - 18/11/2026 — Lot 15e fait : portes, fenêtres, escaliers, niveaux, plan importé (AVANCEMENT §31).

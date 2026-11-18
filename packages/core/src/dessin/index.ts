@@ -28,3 +28,6 @@ export * from './visite';
 export * from './menuiseries';
 export * from './menuiseries3d';
 export * from './listeMenuiseries';
+export * from './toitures';
+export * from './toits3d';
+export * from './commandesToit';
