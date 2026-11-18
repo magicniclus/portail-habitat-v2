@@ -6,6 +6,7 @@ export {
   lirePlan,
   listerPlans,
   listerVersions,
+  lireVersion,
   mettreALaCorbeille,
   QUOTA_PLANS_PARTICULIER,
   renommerPlan,

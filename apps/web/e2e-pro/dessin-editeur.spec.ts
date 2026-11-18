@@ -240,4 +240,51 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
       page.getByTestId('plan-2d').getByRole('button', { name: 'Zone décorative' }),
     ).toBeVisible();
   });
+  test('DES-40 : nommer une version, la prévisualiser, la restaurer sans rien écraser', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const enregistre = page.getByRole('status').filter({ hasText: 'Enregistré' });
+    await expect(enregistre).toBeAttached({ timeout: 10_000 });
+
+    // Version nommée « Avant », puis le plan change (pièce renommée).
+    await page.getByRole('button', { name: 'Historique des versions' }).click();
+    const fenetre = page.getByRole('dialog', { name: 'Historique des versions' });
+    await fenetre.getByLabel('Nommer la version actuelle').fill('Avant');
+    await fenetre.getByRole('button', { name: 'Enregistrer cette version' }).click();
+    await expect(fenetre.getByText('Avant', { exact: true })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await plan
+      .getByRole('button', { name: /^Pièce / })
+      .first()
+      .click({ force: true });
+    await page.getByLabel('Nom de la pièce').fill('Séjour');
+    await page.getByLabel('Nom de la pièce').press('Tab');
+    await expect(plan.getByText('Séjour')).toBeVisible();
+    await expect(enregistre).toBeAttached({ timeout: 10_000 });
+
+    // Aperçu en lecture seule, puis restauration : le nom d'avant revient.
+    await page.getByRole('button', { name: 'Historique des versions' }).click();
+    await fenetre
+      .getByRole('listitem')
+      .filter({ hasText: 'Avant' })
+      .getByRole('button', { name: 'Aperçu' })
+      .click();
+    const apercu = page.getByTestId('apercu-version');
+    await expect(apercu.getByText('Lecture seule')).toBeVisible();
+    await expect(apercu.getByText('Séjour')).toHaveCount(0);
+    await apercu.getByRole('button', { name: 'Restaurer cette version' }).click();
+    await expect(apercu).toHaveCount(0);
+    await expect(plan.getByText('Séjour')).toHaveCount(0);
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+  });
 });

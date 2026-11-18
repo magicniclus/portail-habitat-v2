@@ -260,6 +260,19 @@ export async function listerVersions(s: ServicesDessin, ctx: ContexteDessin, pla
   }));
 }
 
+/** Aperçu d'une version (DES-40) : sa scène, sans rien changer au plan. */
+export async function lireVersion(
+  s: ServicesDessin,
+  ctx: ContexteDessin,
+  e: { planId: string; numero: number },
+): Promise<{ scene: Scene }> {
+  await exigerAcces(s, ctx);
+  await lireMeta(s, ctx, e.planId);
+  const v = await s.db.doc(chemins.versionPlan(ctx.proprietaire, e.planId, e.numero)).get();
+  if (!v.exists) throw new ErreurMetier('INTROUVABLE');
+  return { scene: await lireScene(s, v.get('storagePath') as string) };
+}
+
 /** Restaurer une version (DES-40) : la scène redevient courante, rien n'est écrasé. */
 export async function restaurerVersion(
   s: ServicesDessin,

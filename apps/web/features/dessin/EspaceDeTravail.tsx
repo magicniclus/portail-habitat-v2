@@ -4,7 +4,7 @@ import type { Scene } from '@ph/core/dessin';
 import type { Route } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
 import { BarreDessin } from './BarreDessin';
@@ -17,6 +17,7 @@ import { AnnonceSelection } from './AnnonceSelection';
 import { Bandeaux } from './Bandeaux';
 import { connexionEssai, FournisseurEssai } from './essai';
 import { Facades } from './Facades';
+import { HistoriqueVersions } from './HistoriqueVersions';
 import { Plan2D } from './Plan2D';
 
 /** three.js n'est chargé qu'au passage en 3D (DESSIN.md §5 bis, budget EXPLOITATION §1). */
@@ -99,6 +100,7 @@ export function EspaceDeTravail(p: {
     dispatch({ type: 'ajuster' });
   }, [etat.menu, etat.proprietes]);
 
+  const [versions, setVersions] = useState(false);
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
     if (!r.ok) return;
@@ -121,6 +123,7 @@ export function EspaceDeTravail(p: {
               ? void s.enregistrerMaintenant().then(() => router.push(connexionEssai()))
               : void s.enregistrerMaintenant('Enregistrement manuel')
           }
+          {...(p.essai ? {} : { versions: () => setVersions(true) })}
         />
         <div className="relative flex min-h-0 flex-1">
           <RailMenus etat={etat} dispatch={dispatch} />
@@ -173,6 +176,20 @@ export function EspaceDeTravail(p: {
           <AideRaccourcis />
         </div>
       </div>
+      {p.essai ? null : (
+        <HistoriqueVersions
+          ouvert={versions}
+          fermer={() => setVersions(false)}
+          espace={p.espace}
+          planId={p.planId}
+          revision={() => s.revision.current}
+          nommer={(nom) => s.enregistrerMaintenant(nom)}
+          restauree={(plan) => {
+            s.resoudre(plan, false);
+            dispatch({ type: 'remplacerScene', scene: plan.scene });
+          }}
+        />
+      )}
     </FournisseurEssai>
   );
 }

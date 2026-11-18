@@ -5,6 +5,7 @@ import {
   ArrowCounterClockwiseIcon,
   ArrowLeftIcon,
   CameraIcon,
+  ClockCounterClockwiseIcon,
   CubeIcon,
   EyeIcon,
   FloppyDiskIcon,
@@ -56,6 +57,7 @@ export function BarreDessin({
   dispatch,
   sauvegarde,
   enregistrer,
+  versions,
 }: {
   titre: string;
   renommer: (titre: string) => void;
@@ -64,6 +66,8 @@ export function BarreDessin({
   dispatch: Dispatch<Action>;
   sauvegarde: EtatSauvegarde;
   enregistrer: () => void;
+  /** Historique des versions (DES-40) ; absent pendant l'essai sans compte. */
+  versions?: () => void;
 }) {
   return (
     <header className="flex h-16 flex-none items-center gap-3 border-b border-trait bg-blanc px-3">
@@ -147,6 +151,13 @@ export function BarreDessin({
         ))}
       </div>
 
+      {versions ? (
+        <IconButton
+          aria-label="Historique des versions"
+          icone={<ClockCounterClockwiseIcon />}
+          onClick={versions}
+        />
+      ) : null}
       <Button
         taille="sm"
         className="flex-none"

@@ -3,7 +3,7 @@
 import type { Scene } from '@ph/core/dessin';
 import { Select } from '@ph/ui';
 import dynamic from 'next/dynamic';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, type ReactNode } from 'react';
 import {
   etatInitial,
   niveauDe,
@@ -41,7 +41,16 @@ function reduireLecture(e: EtatEditeur, a: Action): EtatEditeur {
  * Plan partagé (DES-42) : plan, 3D, visite et façades en lecture seule, sans compte. Le serveur
  * a déjà retiré ce qui situe le bien.
  */
-export function Visionneuse({ titre, scene }: { titre: string; scene: Scene }) {
+export function Visionneuse({
+  titre,
+  scene,
+  actions,
+}: {
+  titre: string;
+  scene: Scene;
+  /** Boutons ajoutés à l'en-tête (aperçu d'une version : restaurer, fermer). */
+  actions?: ReactNode;
+}) {
   const [etat, dispatch] = useReducer(reduireLecture, scene, (s) => ({
     ...etatInitial(s),
     menu: null,
@@ -62,6 +71,7 @@ export function Visionneuse({ titre, scene }: { titre: string; scene: Scene }) {
           <span className="flex-none rounded-full bg-neutre-100 px-2.5 py-1 text-xs font-semibold text-neutre-800">
             Lecture seule
           </span>
+          {actions}
         </div>
         {s.niveaux.length > 1 ? (
           <Select

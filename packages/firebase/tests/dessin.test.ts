@@ -12,6 +12,7 @@ import {
   lirePlanPartage,
   listerPlans,
   listerVersions,
+  lireVersion,
   mettreALaCorbeille,
   partagerPlan,
   purgerCorbeilleDessin,
@@ -188,6 +189,33 @@ describe('enregistrer, conflits, versions', () => {
       titre: 'Copie de Maison',
       scene: { niveaux: [expect.objectContaining({ nom: 'Garage' })] },
     });
+  });
+});
+
+describe('aperçu d’une version (DES-40)', () => {
+  it('lit la scène d’une version sans changer le plan ; propriétaire seulement', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const v1 = await enregistrerPlan(s(), ctxPart, {
+      planId,
+      versionAttendue: 1,
+      scene: scene('Avant'),
+      nomVersion: 'Première',
+    });
+    await enregistrerPlan(s(), ctxPart, {
+      planId,
+      versionAttendue: v1.versionCourante,
+      scene: scene('Après'),
+      nomVersion: 'Deuxième',
+    });
+    const versions = await listerVersions(s(), ctxPart, planId);
+    const premiere = versions.find((x) => x.nom === 'Première')!;
+    const v = await lireVersion(s(), ctxPart, { planId, numero: premiere.numero });
+    expect(v.scene.niveaux[0]!.nom).toBe('Avant');
+    expect((await lirePlan(s(), ctxPart, planId)).scene.niveaux[0]!.nom).toBe('Après');
+    await expect(lireVersion(s(), ctxPart, { planId, numero: 999 })).rejects.toMatchObject({
+      code: 'INTROUVABLE',
+    });
+    await expect(lireVersion(s(), ctxEnt('p1'), { planId, numero: 1 })).rejects.toBeTruthy();
   });
 });
 

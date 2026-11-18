@@ -78,6 +78,8 @@ export const entreeEnregistrerPlan = z.object({
 });
 export const entreePlan = z.object({ planId: idPlan });
 export const entreeRenommerPlan = z.object({ planId: idPlan, titre: titrePlan });
+/** Aperçu d'une version (DES-40). */
+export const entreeVersionPlan = z.object({ planId: idPlan, numero: z.number().int().min(1) });
 export const entreeRestaurerVersion = z.object({
   planId: idPlan,
   numero: z.number().int().min(1),

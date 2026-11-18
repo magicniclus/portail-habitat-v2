@@ -13,6 +13,7 @@ import {
   entreeRevoquerPartage,
   entreeRestaurerVersion,
   entreeSupprimerPhoto,
+  entreeVersionPlan,
   migrerScene,
 } from '@ph/core/dessin';
 import { ErreurMetier } from '@ph/core/erreurs';
@@ -32,6 +33,7 @@ import {
   listerPhotos,
   listerPlans,
   listerVersions,
+  lireVersion,
   mettreALaCorbeille,
   partagerPlan,
   renommerPlan,
@@ -125,6 +127,15 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     { schema: entreePlan.extend(espace), nom: 'dessin.restaurer', rateLimit: debit },
     async (e, ctx) =>
       restaurerDeLaCorbeille(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e.planId),
+  ),
+  version: action(
+    {
+      schema: entreeVersionPlan.extend(espace),
+      nom: 'dessin.version',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e, ctx) => lireVersion(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   'restaurer-version': action(
     {

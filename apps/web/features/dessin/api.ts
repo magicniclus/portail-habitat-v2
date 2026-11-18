@@ -87,6 +87,31 @@ export const exporterPdf = (
   },
 ) => appel<{ base64: string }>('pdf', espace, e);
 
+/** Historique des versions (DES-40) : liste, aperçu, restauration (sans rien écraser). */
+export interface VersionListe {
+  numero: number;
+  type: 'auto' | 'manuelle' | 'restauration';
+  nom: string | null;
+  creeLe: string;
+}
+export const listerVersions = (espace: EspaceDessin, planId: string) =>
+  appel<VersionListe[]>('versions', espace, { planId });
+
+export const lireVersion = (espace: EspaceDessin, planId: string, numero: number) =>
+  appel<{ scene: Scene }>('version', espace, { planId, numero });
+
+export const restaurerVersion = (
+  espace: EspaceDessin,
+  planId: string,
+  numero: number,
+  versionAttendue: number,
+) =>
+  appel<{ versionCourante: number }>('restaurer-version', espace, {
+    planId,
+    numero,
+    versionAttendue,
+  });
+
 /** Liens de partage en lecture seule (DES-42) : le jeton n'est rendu qu'à la création. */
 export const partagerPlan = (espace: EspaceDessin, planId: string, joursValidite: number) =>
   appel<{ jeton: string; partageId: string; expireLe: number }>('partager', espace, {
