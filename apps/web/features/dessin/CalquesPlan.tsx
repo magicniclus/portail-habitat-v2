@@ -6,6 +6,7 @@ import {
   contourMur,
   formatLongueur,
   formatSurface,
+  LIBELLES_MUR,
   longueurMur,
   surfaceCarrez,
   type Niveau,
@@ -16,14 +17,14 @@ import type { Action, EtatEditeur } from './etat';
 import { remplissage } from './Motifs';
 import { activer, points } from './svg';
 
-interface Props {
-  niveau: Niveau;
-  etat: EtatEditeur;
-  dispatch: Dispatch<Action>;
-}
-
 /** Pièces : sol coloré selon le revêtement ; sélectionnables au clic ou au clavier. */
-function PiecesSvgBrut({ niveau, etat, dispatch }: Props) {
+type Calque<KN extends keyof Niveau> = {
+  niveau: Pick<Niveau, KN>;
+  etat: Pick<EtatEditeur, 'selection' | 'outil'>;
+  dispatch: Dispatch<Action>;
+};
+
+function PiecesSvgBrut({ niveau, etat, dispatch }: Calque<'pieces'>) {
   return niveau.pieces.map((p) => {
     const choisie = etat.selection?.genre === 'piece' && etat.selection.id === p.id;
     const choisir = () =>
@@ -58,7 +59,7 @@ function MursSvgBrut({
   etat,
   dispatch,
   demarrerGlisser,
-}: Props & { demarrerGlisser: (murId: string, ev: PointerEvent) => void }) {
+}: Calque<'murs'> & { demarrerGlisser: (murId: string, ev: PointerEvent) => void }) {
   return niveau.murs.map((m) => {
     const choisi = etat.selection?.genre === 'mur' && etat.selection.id === m.id;
     const choisir = () => dispatch({ type: 'selectionner', selection: { genre: 'mur', id: m.id } });
@@ -76,7 +77,7 @@ function MursSvgBrut({
           vectorEffect="non-scaling-stroke"
           role="button"
           tabIndex={0}
-          aria-label="Séparation invisible"
+          aria-label={LIBELLES_MUR.separation}
           onPointerDown={(ev) => {
             if (etat.outil !== 'selection') return;
             ev.stopPropagation();
@@ -90,7 +91,7 @@ function MursSvgBrut({
         key={m.id}
         role="button"
         tabIndex={0}
-        aria-label={`${m.type === 'cloison' ? 'Cloison' : 'Mur'} de ${formatLongueur(longueurMur(m))}`}
+        aria-label={`${LIBELLES_MUR[m.type]} de ${formatLongueur(longueurMur(m))}`}
         aria-pressed={choisi}
         points={points(contourMur(m))}
         fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}

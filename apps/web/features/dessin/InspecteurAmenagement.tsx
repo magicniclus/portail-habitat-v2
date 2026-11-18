@@ -8,46 +8,18 @@ import {
   type Objet,
   type ZoneDeco,
 } from '@ph/core/dessin';
-import { Banner, Button, Field, Input } from '@ph/ui';
+import { Banner, Button } from '@ph/ui';
 import { COULEURS_OBJETS } from '@ph/ui/tokens';
-import { useState, type Dispatch } from 'react';
+import type { Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { Nuancier } from './Nuancier';
 import { RotationObjet } from './RotationObjet';
+import { ChampMesure } from './ChampMesure';
 
+/** « 40–240 cm » : plage réglable d'un objet du catalogue. */
+const aidePlage = (p: readonly [number, number]) =>
+  `${Math.max(1, Math.round(p[0] / 10))}–${Math.round(p[1] / 10)} cm`;
 const titre = 'm-0 text-xs font-bold tracking-wide text-neutre-700 uppercase';
-
-function Cote({
-  label,
-  mm,
-  plage,
-  appliquer,
-}: {
-  label: string;
-  mm: number;
-  plage: readonly [number, number];
-  appliquer: (mm: number) => void;
-}) {
-  const [saisie, setSaisie] = useState(String(Math.round(mm / 10)));
-  const valider = () => {
-    const cm = Number(saisie.replace(',', '.'));
-    if (Number.isFinite(cm) && Math.round(cm * 10) !== mm) appliquer(Math.round(cm * 10));
-  };
-  return (
-    <Field
-      label={label}
-      aide={`${Math.max(1, Math.round(plage[0] / 10))}–${Math.round(plage[1] / 10)} cm`}
-    >
-      <Input
-        inputMode="decimal"
-        value={saisie}
-        onChange={(ev) => setSaisie(ev.target.value)}
-        onBlur={valider}
-        onKeyDown={(ev) => ev.key === 'Enter' && valider()}
-      />
-    </Field>
-  );
-}
 
 /** Objet choisi (DES-22) : dimensions, couleur, rotation, copie, collisions. */
 function InspecteurObjet({
@@ -82,9 +54,27 @@ function InspecteurObjet({
         </Banner>
       ) : null}
       <div className="grid grid-cols-3 gap-3 [&_label]:break-words">
-        <Cote label="Largeur" mm={o.dimensions.l} plage={plages.l} appliquer={dims('l')} />
-        <Cote label="Profondeur" mm={o.dimensions.p} plage={plages.p} appliquer={dims('p')} />
-        <Cote label="Hauteur" mm={o.dimensions.h} plage={plages.h} appliquer={dims('h')} />
+        <ChampMesure
+          label="Largeur"
+          aide={aidePlage(plages.l)}
+          mm={o.dimensions.l}
+          min={10}
+          appliquer={dims('l')}
+        />
+        <ChampMesure
+          label="Profondeur"
+          aide={aidePlage(plages.p)}
+          mm={o.dimensions.p}
+          min={10}
+          appliquer={dims('p')}
+        />
+        <ChampMesure
+          label="Hauteur"
+          aide={aidePlage(plages.h)}
+          mm={o.dimensions.h}
+          min={10}
+          appliquer={dims('h')}
+        />
       </div>
       <RotationObjet o={o} dispatch={dispatch} />
       <Nuancier
@@ -145,15 +135,7 @@ export function inspecteurAmenagement(etat: EtatEditeur, dispatch: Dispatch<Acti
   const n = niveauDe(etat);
   const s = etat.selection;
   const o = s?.genre === 'objet' ? n.objets.find((x) => x.id === s.id) : undefined;
-  if (o)
-    return (
-      <InspecteurObjet
-        key={`${o.id}-${o.dimensions.l}-${o.dimensions.p}-${o.dimensions.h}`}
-        o={o}
-        etat={etat}
-        dispatch={dispatch}
-      />
-    );
+  if (o) return <InspecteurObjet key={o.id} o={o} etat={etat} dispatch={dispatch} />;
   const z = s?.genre === 'zone' ? n.zonesDeco.find((x) => x.id === s.id) : undefined;
   return z ? <InspecteurZone z={z} dispatch={dispatch} /> : null;
 }

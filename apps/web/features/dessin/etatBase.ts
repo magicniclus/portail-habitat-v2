@@ -164,7 +164,8 @@ export type Action =
   | { type: 'finGeste' }
   /** Flèches du clavier : déplace le mur sélectionné (DES-47). */
   | { type: 'deplacerClavier'; delta: Point }
-  | { type: 'supprimerSelection' }
+  /** `confirme` : suppression d'un mur porteur acceptée après avertissement. */
+  | { type: 'supprimerSelection'; confirme?: boolean }
   | { type: 'renommerPiece'; pieceId: string; nom: string }
   | { type: 'revetement'; cible: CibleRevetement; revetement: Revetement }
   | { type: 'modifierOuverture'; id: string; modif: ModificationOuverture }

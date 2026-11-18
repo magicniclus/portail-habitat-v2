@@ -12,7 +12,7 @@ import {
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type PointerEvent } from 'react';
 import { EtiquettesPieces, MursSvg, PiecesSvg } from './CalquesPlan';
-import { Cotes, TraceEnCours } from './Mesures';
+import { Cotes, TraceEnCours, traceRectangle } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
@@ -165,11 +165,19 @@ export function Plan2D({
               coin={{ x: cadre.x + cadre.l, y: cadre.y }}
             />
           ) : null}
-          {trace ? <TraceEnCours etat={etat} curseur={curseur} mmParPx={mmParPx} /> : null}
+          {trace ? (
+            <TraceEnCours
+              a={etat.trace}
+              curseur={curseur}
+              rectangle={traceRectangle(etat)}
+              mmParPx={mmParPx}
+            />
+          ) : null}
           {etat.echelle ? (
             <TraceEnCours
-              etat={{ ...etat, outil: 'echelle', trace: etat.echelle.a }}
+              a={etat.echelle.a}
               curseur={etat.echelle.b}
+              rectangle={false}
               mmParPx={mmParPx}
             />
           ) : null}

@@ -2,6 +2,7 @@
 
 import {
   CATALOGUE_OUVERTURES,
+  LIBELLES_MUR,
   LIBELLES_ESCALIER,
   type TypeEscalier,
   type TypeMur,
@@ -20,11 +21,11 @@ import { NiveauxMenu } from './NiveauxMenu';
 import { ToitureMenu } from './ToitureMenu';
 
 const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
-  { type: 'mur', libelle: 'Mur', detail: 'Épaisseur 20 cm' },
-  { type: 'cloison', libelle: 'Cloison', detail: 'Épaisseur 7,2 cm' },
-  { type: 'demi_mur', libelle: 'Demi-mur', detail: 'Hauteur 1,10 m' },
-  { type: 'muret', libelle: 'Muret', detail: 'Hauteur 60 cm' },
-  { type: 'separation', libelle: 'Séparation invisible', detail: 'Sépare deux pièces sans mur' },
+  { type: 'mur', libelle: LIBELLES_MUR.mur, detail: 'Épaisseur 20 cm' },
+  { type: 'cloison', libelle: LIBELLES_MUR.cloison, detail: 'Épaisseur 7,2 cm' },
+  { type: 'demi_mur', libelle: LIBELLES_MUR.demi_mur, detail: 'Hauteur 1,10 m' },
+  { type: 'muret', libelle: LIBELLES_MUR.muret, detail: 'Hauteur 60 cm' },
+  { type: 'separation', libelle: LIBELLES_MUR.separation, detail: 'Sépare deux pièces sans mur' },
 ];
 
 type Sous =

@@ -256,6 +256,8 @@ test.describe('Plans (espace pro)', () => {
 
     // Zone au sol (DES-27) : deux coins dans la pièce, carrelage par défaut.
     await page.getByRole('button', { name: 'Tracer une zone au sol' }).click();
+    // Sur téléphone, la feuille se replie et le plan se recadre : on attend la fin du recadrage.
+    await page.waitForTimeout(400);
     await cliquer(1000, 1000);
     await cliquer(3000, 2500);
     await expect(plan.getByRole('button', { name: 'Zone décorative' })).toBeVisible();

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  alertesTerrasses,
   aire,
   contourPiscine,
   distanceAuxLimites,
@@ -14,40 +15,11 @@ import {
   type Terrasse,
 } from '@ph/core/dessin';
 import { formatNombre } from '@ph/core/format';
-import { Field, Input, Select } from '@ph/ui';
-import { useState } from 'react';
+import { Banner, Field, Select } from '@ph/ui';
+import { ChampMesure } from './ChampMesure';
 
 type Modifier = (modif: Record<string, unknown>) => void;
 const coche = 'flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm';
-
-export function ChampCm({
-  label,
-  mm,
-  appliquer,
-}: {
-  label: string;
-  mm: number;
-  appliquer: (mm: number) => void;
-}) {
-  const [saisie, setSaisie] = useState<string | null>(null);
-  const valider = () => {
-    const cm = Number((saisie ?? '').replace(',', '.'));
-    if (saisie !== null && Number.isFinite(cm) && Math.round(cm * 10) !== mm)
-      appliquer(Math.round(cm * 10));
-    setSaisie(null);
-  };
-  return (
-    <Field label={label}>
-      <Input
-        inputMode="decimal"
-        value={saisie ?? String(Math.round(mm / 10))}
-        onChange={(ev) => setSaisie(ev.target.value)}
-        onBlur={valider}
-        onKeyDown={(ev) => ev.key === 'Enter' && valider()}
-      />
-    </Field>
-  );
-}
 
 const Info = ({ libelle, valeur }: { libelle: string; valeur: string }) => (
   <div className="rounded-lg bg-neutre-100 px-2.5 py-2 text-sm">
@@ -87,8 +59,7 @@ export function ReglagesTerrasse({ t, modifier }: { t: Terrasse; modifier: Modif
           <option value={900}>En travers</option>
         </Select>
       </Field>
-      <ChampCm
-        key={`h${t.hauteur}`}
+      <ChampMesure
         label="Hauteur au-dessus du sol (cm)"
         mm={t.hauteur}
         appliquer={(hauteur) => modifier({ hauteur })}
@@ -102,6 +73,11 @@ export function ReglagesTerrasse({ t, modifier }: { t: Terrasse; modifier: Modif
           onChange={(ev) => modifier({ gardeCorps: ev.target.checked })}
         />
       </label>
+      {alertesTerrasses({ exterieur: { terrasses: [t] } }).map((a) => (
+        <Banner key={a.code} tone="attention">
+          {a.message}
+        </Banner>
+      ))}
       <label className={coche}>
         Pergola
         <input
@@ -142,22 +118,22 @@ export function ReglagesPiscine({
         className="grid grid-cols-2 gap-2.5"
         key={`${p.longueur}-${p.largeur}-${p.profondeurMin}-${p.profondeurMax}`}
       >
-        <ChampCm
+        <ChampMesure
           label="Longueur (cm)"
           mm={p.longueur}
           appliquer={(longueur) => modifier({ longueur })}
         />
-        <ChampCm
+        <ChampMesure
           label="Largeur (cm)"
           mm={p.largeur}
           appliquer={(largeur) => modifier({ largeur })}
         />
-        <ChampCm
+        <ChampMesure
           label="Prof. min (cm)"
           mm={p.profondeurMin}
           appliquer={(profondeurMin) => modifier({ profondeurMin })}
         />
-        <ChampCm
+        <ChampMesure
           label="Prof. max (cm)"
           mm={p.profondeurMax}
           appliquer={(profondeurMax) => modifier({ profondeurMax })}

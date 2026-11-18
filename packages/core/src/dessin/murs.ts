@@ -16,6 +16,17 @@ export const HAUTEUR_FIXE: Partial<Record<TypeMur, number>> = { demi_mur: 1_100,
 /** Types qui ferment une pièce (les murets, demi-murs, poteaux et poutres ne la ferment pas). */
 export const TYPES_FERMANTS: readonly TypeMur[] = ['mur', 'cloison', 'separation'];
 
+/** Libellés des types de mur, partout dans l'interface (menu, inspecteur, plan accessible). */
+export const LIBELLES_MUR: Record<Mur['type'], string> = {
+  mur: 'Mur',
+  cloison: 'Cloison',
+  demi_mur: 'Demi-mur',
+  muret: 'Muret',
+  separation: 'Séparation invisible',
+  poteau: 'Poteau',
+  poutre: 'Poutre',
+};
+
 export const longueurMur = (m: Pick<Mur, 'a' | 'b'>): number => distance(m.a, m.b);
 
 /** Les 4 coins du mur vu de dessus, selon son alignement sur l'axe tracé. */

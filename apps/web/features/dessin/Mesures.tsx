@@ -69,25 +69,27 @@ export function Cotes({
     });
 }
 
-/** Segment ou rectangle en cours, avec sa longueur. */
+/**
+ * Segment ou rectangle en cours. Un rectangle (pièce, zone, terrasse, allée, parcelle) affiche
+ * « largeur × profondeur » ; un segment (mur, clôture, coupe, mesure) sa longueur.
+ */
 export function TraceEnCours({
-  etat,
+  a,
   curseur,
+  rectangle,
   mmParPx,
 }: {
-  etat: EtatEditeur;
+  a: Point | null;
   curseur: Point | null;
+  rectangle: boolean;
   mmParPx: number;
 }) {
-  if (!etat.trace || !curseur) return null;
-  const a = etat.trace;
+  if (!a || !curseur) return null;
   const taille = 12 * mmParPx;
   const c = milieu(a, curseur);
   return (
     <g pointerEvents="none">
-      {etat.outil === 'piece' ||
-      etat.outil === 'zone' ||
-      (etat.outil === 'exterieur' && etat.elementExterieur !== 'cloture') ? (
+      {rectangle ? (
         <rect
           x={Math.min(a.x, curseur.x)}
           y={Math.min(a.y, curseur.y)}
@@ -116,10 +118,16 @@ export function TraceEnCours({
         textAnchor="middle"
         className="fill-texte font-bold"
       >
-        {etat.outil === 'piece'
+        {rectangle
           ? `${formatLongueur(Math.abs(curseur.x - a.x))} × ${formatLongueur(Math.abs(curseur.y - a.y))}`
           : formatLongueur(distance(a, curseur))}
       </text>
     </g>
   );
 }
+
+/** Le tracé en cours de cet état est-il un rectangle (deux coins opposés) ? */
+export const traceRectangle = (e: Pick<EtatEditeur, 'outil' | 'elementExterieur'>) =>
+  e.outil === 'piece' ||
+  e.outil === 'zone' ||
+  (e.outil === 'exterieur' && e.elementExterieur !== 'cloture');

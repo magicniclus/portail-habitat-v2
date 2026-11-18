@@ -3,6 +3,7 @@
 import {
   alertesEscaliers,
   CATALOGUE_OUVERTURES,
+  formatLongueur,
   LIBELLES_ESCALIER,
   zonesCoulissement,
   type Escalier,
@@ -11,50 +12,11 @@ import {
   type TypeEscalier,
 } from '@ph/core/dessin';
 import { ArrowArcLeftIcon, ArrowArcRightIcon } from '@phosphor-icons/react';
-import { Banner, Button, Field, Input, Select } from '@ph/ui';
-import { useState, type Dispatch } from 'react';
+import { Banner, Button, Field, Select } from '@ph/ui';
+import type { Dispatch } from 'react';
 import type { Action } from './etat';
 import { InspecteurMenuiserie } from './InspecteurMenuiserie';
-
-const enCm = (mm: number) => String(Math.round(mm / 10));
-const versMm = (cm: string) => {
-  const v = Number(cm.replace(',', '.'));
-  return Number.isFinite(v) && v >= 0 ? Math.round(v * 10) : null;
-};
-
-/** Champ en centimètres, appliqué à la sortie du champ ou avec Entrée. */
-function ChampCm({
-  label,
-  valeur,
-  appliquer,
-}: {
-  label: string;
-  valeur: number;
-  appliquer: (mm: number) => void;
-}) {
-  const [saisie, setSaisie] = useState(enCm(valeur));
-  const valider = () => {
-    const mm = versMm(saisie);
-    if (mm !== null && mm !== valeur) appliquer(mm);
-  };
-  return (
-    <form
-      onSubmit={(ev) => {
-        ev.preventDefault();
-        valider();
-      }}
-    >
-      <Field label={label}>
-        <Input
-          inputMode="decimal"
-          value={saisie}
-          onChange={(ev) => setSaisie(ev.target.value)}
-          onBlur={valider}
-        />
-      </Field>
-    </form>
-  );
-}
+import { ChampMesure } from './ChampMesure';
 
 const Titre = ({ sur, titre }: { sur: string; titre: string }) => (
   <div>
@@ -72,24 +34,24 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
     <div className="grid gap-3.5">
       <Titre sur="Sélection" titre={c.libelle} />
       <div className="grid grid-cols-2 gap-2.5">
-        <ChampCm
+        <ChampMesure
           label="Largeur (cm)"
-          valeur={o.largeur}
+          mm={o.largeur}
           appliquer={(largeur) => modifier({ largeur })}
         />
-        <ChampCm
+        <ChampMesure
           label="Hauteur (cm)"
-          valeur={o.hauteur}
+          mm={o.hauteur}
           appliquer={(hauteur) => modifier({ hauteur })}
         />
-        <ChampCm
+        <ChampMesure
           label="Allège (cm)"
-          valeur={o.allege}
+          mm={o.allege}
           appliquer={(allege) => modifier({ allege })}
         />
-        <ChampCm
+        <ChampMesure
           label="Depuis le coin (cm)"
-          valeur={o.position}
+          mm={o.position}
           appliquer={(position) => modifier({ position })}
         />
       </div>
@@ -120,11 +82,20 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
 }
 
 /** Escalier sélectionné (DES-15) : type, dimensions, rotation, alertes de confort. */
-export function InspecteurEscalier({ e, dispatch }: { e: Escalier; dispatch: Dispatch<Action> }) {
+export function InspecteurEscalier({
+  e,
+  hauteurDessus,
+  dispatch,
+}: {
+  e: Escalier;
+  /** Hauteur sous plafond du niveau où l'escalier arrive : échappée (DES-15). */
+  hauteurDessus: number | undefined;
+  dispatch: Dispatch<Action>;
+}) {
   const modifier = (
     modif: Partial<Pick<Escalier, 'type' | 'largeur' | 'hauteurAMonter' | 'rotation'>>,
   ) => dispatch({ type: 'modifierEscalier', id: e.id, modif });
-  const alertes = alertesEscaliers({ escaliers: [e] });
+  const alertes = alertesEscaliers({ escaliers: [e] }, hauteurDessus);
   return (
     <div className="grid gap-3.5">
       <Titre sur="Sélection" titre="Escalier" />
@@ -141,14 +112,14 @@ export function InspecteurEscalier({ e, dispatch }: { e: Escalier; dispatch: Dis
         </Select>
       </Field>
       <div className="grid grid-cols-2 gap-2.5">
-        <ChampCm
+        <ChampMesure
           label="Largeur (cm)"
-          valeur={e.largeur}
+          mm={e.largeur}
           appliquer={(largeur) => modifier({ largeur })}
         />
-        <ChampCm
+        <ChampMesure
           label="Hauteur à monter (cm)"
-          valeur={e.hauteurAMonter}
+          mm={e.hauteurAMonter}
           appliquer={(hauteurAMonter) => modifier({ hauteurAMonter })}
         />
       </div>
@@ -159,7 +130,7 @@ export function InspecteurEscalier({ e, dispatch }: { e: Escalier; dispatch: Dis
         </div>
         <div className="rounded-lg bg-neutre-100 px-2.5 py-2">
           <dt className="text-neutre-700">Giron</dt>
-          <dd className="m-0 font-bold">{enCm(e.giron)} cm</dd>
+          <dd className="m-0 font-bold">{formatLongueur(e.giron, 'cm')}</dd>
         </div>
       </dl>
       {alertes.map((a) => (

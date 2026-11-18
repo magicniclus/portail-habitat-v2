@@ -16,3 +16,15 @@ export const formatAngle = (dixiemes: number): string =>
 
 /** « 45 000 L » (entrée en litres). */
 export const formatVolume = (litres: number): string => `${formatNombre(litres)} L`;
+
+/**
+ * Saisie d'une mesure (« 12,5 » cm ou « 2,75 » m) → millimètres entiers ; `null` si le champ
+ * est vide, illisible ou négatif (rien n'est alors appliqué, jamais 0 par erreur).
+ */
+export function lireMesure(saisie: string, unite: 'cm' | 'm'): number | null {
+  const texte = saisie.trim().replace(/\s/g, '').replace(',', '.');
+  if (!texte) return null;
+  const v = Number(texte);
+  if (!Number.isFinite(v) || v < 0) return null;
+  return unite === 'cm' ? Math.round(v * 10) : Math.round(v * 100) * 10;
+}

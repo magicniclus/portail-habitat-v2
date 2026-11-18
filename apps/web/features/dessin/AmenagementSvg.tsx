@@ -57,8 +57,8 @@ function ObjetsSvgBrut({
   dispatch,
   demarrerGlisser,
 }: {
-  niveau: Niveau;
-  etat: EtatEditeur;
+  niveau: Pick<Niveau, 'objets'>;
+  etat: Pick<EtatEditeur, 'selection' | 'outil'>;
   dispatch: Dispatch<Action>;
   demarrerGlisser: (id: string, ev: PointerEvent) => void;
 }) {
@@ -123,4 +123,4 @@ function ObjetsSvgBrut({
   );
 }
 
-export const ObjetsSvg = memoCalque(ObjetsSvgBrut, ['objets', 'murs'], ['selection', 'outil']);
+export const ObjetsSvg = memoCalque(ObjetsSvgBrut, ['objets'], ['selection', 'outil']);

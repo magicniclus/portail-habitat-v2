@@ -108,9 +108,18 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
 const niveauCourant = (e: EtatEditeur) =>
   sceneDe(e).niveaux.find((n) => n.id === e.niveauId) ?? sceneDe(e).niveaux[0]!;
 
-function supprimerSelection(e: EtatEditeur): EtatEditeur {
+function supprimerSelection(e: EtatEditeur, confirme: boolean): EtatEditeur {
   const s = e.selection;
   if (!s || s.genre === 'piece') return e;
+  // Mur porteur (DES-07) : jamais supprimé d'un geste, l'avertissement est confirmé d'abord.
+  const mur = s.genre === 'mur' ? niveauCourant(e).murs.find((m) => m.id === s.id) : undefined;
+  if (mur?.porteur && !confirme)
+    return {
+      ...e,
+      erreur:
+        'Mur porteur : il soutient la maison. Supprimez-le depuis ses propriétés, après confirmation, et demandez l’avis d’un professionnel.',
+      proprietes: true,
+    };
   if (
     s.genre === 'terrasse' ||
     s.genre === 'piscine' ||
@@ -141,7 +150,7 @@ export function reduireStructure(e: EtatEditeur, a: Action): EtatEditeur | null 
     case 'poserPoint':
       return poserPoint(e, a.point);
     case 'supprimerSelection':
-      return supprimerSelection(e);
+      return supprimerSelection(e, a.confirme === true);
     case 'modifierOuverture':
       return surNiveau(e, (n) => modifierOuverture(n, a.id, a.modif));
     case 'modifierEscalier':

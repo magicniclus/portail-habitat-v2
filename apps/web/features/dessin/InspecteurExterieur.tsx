@@ -4,7 +4,8 @@ import { pointDansPolygone } from '@ph/core/dessin';
 import { Button, Field, Select } from '@ph/ui';
 import type { Dispatch, ReactNode } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
-import { ChampCm, ReglagesPiscine, ReglagesTerrasse } from './ReglagesExterieur';
+import { ReglagesPiscine, ReglagesTerrasse } from './ReglagesExterieur';
+import { ChampMesure } from './ChampMesure';
 
 type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal';
 const titre = 'm-0 text-xs font-bold tracking-wide text-neutre-700 uppercase';
@@ -57,8 +58,7 @@ export function inspecteurExterieur(etat: EtatEditeur, dispatch: Dispatch<Action
             <option value="portail">Portail</option>
           </Select>
         </Field>
-        <ChampCm
-          key={`h${c.hauteur}`}
+        <ChampMesure
           label="Hauteur (cm)"
           mm={c.hauteur}
           appliquer={(hauteur) => modifier({ hauteur })}
@@ -70,8 +70,7 @@ export function inspecteurExterieur(etat: EtatEditeur, dispatch: Dispatch<Action
     if (!v) return null;
     nom = v.type === 'arbre' ? 'Arbre' : v.type === 'arbuste' ? 'Arbuste' : 'Haie';
     corps = (
-      <ChampCm
-        key={`d${v.diametre}`}
+      <ChampMesure
         label="Diamètre adulte (cm)"
         mm={v.diametre}
         appliquer={(diametre) => modifier({ diametre })}

@@ -110,10 +110,16 @@ describe('éditeur Dessin : modifications', () => {
     const murId = s.niveaux[0]!.murs[0]!.id;
     let e = jouer(s, [{ type: 'supprimerSelection' }]);
     expect(niveauDe(e).murs).toHaveLength(4);
+    // Mur porteur (murs extérieurs) : pas supprimé d'un geste, l'avertissement s'affiche.
     e = jouer(s, [
       { type: 'selectionner', selection: { genre: 'mur', id: murId } },
       { type: 'supprimerSelection' },
     ]);
+    expect(niveauDe(e).murs).toHaveLength(4);
+    expect(e.erreur).toMatch(/Mur porteur/);
+    expect(e.proprietes).toBe(true);
+    // Confirmé dans ses propriétés : supprimé.
+    e = reduire(e, { type: 'supprimerSelection', confirme: true });
     expect(niveauDe(e).murs).toHaveLength(3);
     expect(e.selection).toBeNull();
 

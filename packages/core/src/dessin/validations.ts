@@ -53,7 +53,9 @@ export function alertesEscaliers(
 }
 
 /** Une terrasse à plus d'un mètre du sol sans garde-corps est signalée. */
-export const alertesTerrasses = (n: Niveau): Alerte[] =>
+export const alertesTerrasses = (n: {
+  exterieur: Pick<Niveau['exterieur'], 'terrasses'>;
+}): Alerte[] =>
   n.exterieur.terrasses
     .filter((t) => t.hauteur > 1_000 && !t.gardeCorps)
     .map((t) => ({
