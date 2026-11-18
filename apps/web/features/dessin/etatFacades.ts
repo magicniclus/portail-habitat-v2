@@ -17,8 +17,15 @@ export function poserCoupe(e: EtatEditeur, point: Point): EtatEditeur | null {
   };
 }
 
-/** Choix de la façade ; `null` si l'action n'en fait pas partie. */
+/** Choix de la façade, postes cochés du métré ; `null` si l'action n'en fait pas partie. */
 export function reduireFacades(e: EtatEditeur, a: Action): EtatEditeur | null {
+  if (a.type === 'basculerPoste')
+    return {
+      ...e,
+      metreExclus: e.metreExclus.includes(a.cle)
+        ? e.metreExclus.filter((c) => c !== a.cle)
+        : [...e.metreExclus, a.cle],
+    };
   if (a.type !== 'facade') return null;
   if (a.facade === 'coupe' && !e.coupe)
     return { ...e, vue: 'plan', outil: 'coupe', trace: null, erreur: null };

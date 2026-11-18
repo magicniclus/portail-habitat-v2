@@ -35,7 +35,8 @@ export function ContenuMenu({
 }) {
   if (menu === 'structure')
     return <StructureMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />;
-  if (menu === 'chiffrer') return <Chiffrage etat={etat} />;
+  if (menu === 'chiffrer')
+    return <Chiffrage etat={etat} dispatch={dispatch} espace={espace} planId={planId} />;
   if (menu === 'equiper') return <EquiperMenu etat={etat} dispatch={dispatch} />;
   if (menu === 'rendu')
     return <RenduMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />;

@@ -5,13 +5,16 @@ import {
   entreeFondPlan,
   entreeLireFond,
   entreeParcelle,
+  entreePdfPlan,
   entreePartagerPlan,
   entreePhotoPlan,
   entreePlan,
   entreeRenommerPlan,
   entreeRestaurerVersion,
   entreeSupprimerPhoto,
+  migrerScene,
 } from '@ph/core/dessin';
+import { ErreurMetier } from '@ph/core/erreurs';
 import type { Resultat } from '@ph/core/resultat';
 import { z } from '@ph/core/zod';
 import {
@@ -35,6 +38,7 @@ import {
   supprimerPhoto,
 } from '@ph/firebase/dessin';
 import { action } from '@/server/action';
+import { pdfDuPlan } from '@/server/pdfPlan';
 import { contexteDessin, servicesDessin } from '@/server/dessin';
 import { routeJson } from '@/server/json';
 
@@ -156,6 +160,25 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
     { schema: entreeParcelle.extend(espace), nom: 'dessin.parcelle', rateLimit: debit },
     async (e, ctx) =>
       chargerParcelle(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
+  pdf: action(
+    {
+      schema: entreePdfPlan.extend(espace),
+      nom: 'dessin.pdf',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e, ctx) => {
+      // Accès au plan vérifié ; le PDF suit la scène affichée, validée comme à l'enregistrement.
+      const { titre } = await lirePlan(
+        servicesDessin(),
+        await contexteDessin(ctx.uid!, e.espace),
+        e.planId,
+      );
+      const scene = migrerScene(e.scene);
+      if (!scene.ok) throw new ErreurMetier(scene.code, scene.message);
+      return { base64: (await pdfDuPlan({ titre, scene: scene.data }, e)).toString('base64') };
+    },
   ),
   partager: action(
     { schema: entreePartagerPlan.extend(espace), nom: 'dessin.partager', rateLimit: debit },

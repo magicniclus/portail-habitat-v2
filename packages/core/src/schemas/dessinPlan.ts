@@ -111,6 +111,16 @@ export const entreePhotoPlan = z.object({
     .max(4 * 1024 * 1024)
     .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Image illisible'),
 });
+/** PDF à l'échelle (DES-41) : niveau, échelle, format, postes du métré décochés. */
+export const entreePdfPlan = z.object({
+  planId: idPlan,
+  niveauId: z.string().min(1).max(40),
+  echelle: z.union([z.literal(50), z.literal(100)]),
+  format: z.enum(['A4', 'A3']),
+  exclus: z.array(z.string().max(120)).max(100).default([]),
+  /** Scène affichée (pas encore enregistrée peut-être) ; validée par `migrerScene`. */
+  scene: z.unknown(),
+});
 const HORS_METROPOLE = 'L’implantation couvre la France métropolitaine.';
 /** Implantation (DES-35) : adresse saisie, puis parcelle sous le point choisi (métropole). */
 export const entreeAdresse = z.object({ texte: z.string().trim().min(3).max(200) });

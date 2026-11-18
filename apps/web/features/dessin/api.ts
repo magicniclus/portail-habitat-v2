@@ -56,6 +56,19 @@ export const chercherAdresses = (espace: EspaceDessin, texte: string) =>
 export const chargerParcelle = (espace: EspaceDessin, planId: string, lon: number, lat: number) =>
   appel<ParcelleCadastre>('parcelle', espace, { planId, lon, lat });
 
+/** PDF à l'échelle (DES-41), produit par le serveur depuis le plan enregistré. */
+export const exporterPdf = (
+  espace: EspaceDessin,
+  e: {
+    planId: string;
+    niveauId: string;
+    echelle: 50 | 100;
+    format: 'A4' | 'A3';
+    exclus: string[];
+    scene: Scene;
+  },
+) => appel<{ base64: string }>('pdf', espace, e);
+
 /** Galerie « Mes photos » du plan (DES-37). */
 export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
   appel<{ storagePath: string }>('photo', espace, { planId, base64 });

@@ -36,3 +36,4 @@ export * from './exterieur';
 export * from './placementExterieur';
 export * from './implantation';
 export * from './elevation';
+export * from './export';

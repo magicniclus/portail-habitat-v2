@@ -5,6 +5,7 @@ import { CameraIcon } from '@phosphor-icons/react';
 import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import { enregistrerPhoto, type EspaceDessin } from '../api';
 import type { Action, EtatEditeur, ReglagesRendu } from '../etat';
+import { horodatage, telechargerFichier } from '../telecharger';
 import { ScenePhoto, type Capturer } from './ScenePhoto';
 
 const RATIOS: Record<ReglagesRendu['cadrage'], number> = {
@@ -43,16 +44,6 @@ const enBase64 = (b: Blob) =>
     r.onerror = () => ko(r.error);
     r.readAsDataURL(b);
   });
-
-function telecharger(b: Blob, type: string) {
-  const url = URL.createObjectURL(b);
-  const a = document.createElement('a');
-  const date = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
-  a.href = url;
-  a.download = `plan-photo-${date}.${type === 'image/png' ? 'png' : 'jpg'}`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
-}
 
 /**
  * Vue photo (DES-37) : cadrage, ambiance, rendu amélioré, export HD téléchargé et ajouté à la
@@ -106,7 +97,10 @@ export default function Photo(p: {
       setMessage('La photo n’a pas pu être rendue sur cet appareil.');
       return;
     }
-    telecharger(image, format);
+    telechargerFichier(
+      `plan-photo-${horodatage()}.${format === 'image/png' ? 'png' : 'jpg'}`,
+      image,
+    );
     const r = await enregistrerPhoto(p.espace, p.planId, await enBase64(jpeg));
     if (r.ok) p.dispatch({ type: 'photoAjoutee' });
     setEtape(r.ok ? 'fait' : 'erreur');

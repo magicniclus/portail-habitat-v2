@@ -762,4 +762,48 @@ test.describe('Plans (espace pro)', () => {
     await page.getByRole('button', { name: 'Plan 2D' }).click();
     await expect(plan.getByTestId('trait-coupe')).toBeAttached();
   });
+  test('exports : métré à cocher, CSV, PDF à l’échelle avec annexe, image PNG', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    await expect(page.getByTestId('plan-2d').getByText('83,6 m²')).toBeVisible();
+    await page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Chiffrer' })
+      .click();
+    // DES-43 : décocher les plafonds les retire du CSV.
+    await page.getByRole('checkbox', { name: /Plafonds/ }).uncheck();
+    const [csv] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'Métré en CSV (Excel)' }).click(),
+    ]);
+    const texte = (await import('node:fs')).readFileSync((await csv.path())!, 'utf8');
+    expect(texte).toContain('Revêtement de sol;83,64;m²');
+    expect(texte).not.toContain('Plafonds');
+    // DES-41 : échelle et format conseillés (1/50, A3) ; A4 au 1/50 refusé avec un message clair.
+    await expect(page.getByLabel('Format')).toHaveValue('A3');
+    await page.getByLabel('Format').selectOption('A4');
+    await page.getByRole('button', { name: 'PDF à l’échelle' }).click();
+    await expect(page.getByText(/ne tient pas en A4 au 1\/50/)).toBeVisible();
+    await page.getByLabel('Format').selectOption('A3');
+    const [pdf] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'PDF à l’échelle' }).click(),
+    ]);
+    expect(pdf.suggestedFilename()).toMatch(/^plan-\d{12}\.pdf$/);
+    const octets = (await import('node:fs')).readFileSync((await pdf.path())!);
+    expect(octets.subarray(0, 5).toString('latin1')).toBe('%PDF-');
+    const [png] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'Image PNG du plan' }).click(),
+    ]);
+    expect(png.suggestedFilename()).toMatch(/\.png$/);
+  });
 });

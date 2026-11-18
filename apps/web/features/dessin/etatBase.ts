@@ -121,6 +121,8 @@ export interface EtatEditeur {
   proprietes: boolean;
   /** Le métré a été consulté (guide « Bien démarrer »). */
   metreVu: boolean;
+  /** Postes du métré décochés (clés), exclus des exports et du devis. */
+  metreExclus: string[];
   erreur: string | null;
 }
 
@@ -207,6 +209,7 @@ export type Action =
   | { type: 'proprietes'; ouvert?: boolean }
   | { type: 'remplacerScene'; scene: Scene }
   | { type: 'facade'; facade: Facade }
+  | { type: 'basculerPoste'; cle: string }
   | { type: 'effacerErreur' };
 
 /** Assez bas pour voir une maison et tout son jardin sur un téléphone (≈ 40 m de large). */
@@ -258,6 +261,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     menu: 'structure',
     proprietes: true,
     metreVu: false,
+    metreExclus: [],
     erreur: null,
   };
 }
