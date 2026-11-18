@@ -44,6 +44,13 @@ export const entreeDemande = z.strictObject({
   }),
   precisions: z.string().trim().max(2000).optional(),
   miseEnRelation: z.boolean(),
+  /** Plan joint (DES-44, D90) : un plan du particulier connecté, lu par les artisans en lecture seule. */
+  planId: z
+    .string()
+    .regex(/^[A-Za-z0-9]{20}$/, 'Plan inconnu')
+    .optional(),
+  /** D90 : « Recevoir des devis par écrit, sans être appelé » ; le téléphone est masqué aux artisans. */
+  contactSouhaite: z.enum(['telephone', 'ecrit_uniquement']).optional(),
   /** Brouillon serveur du lien de reprise, supprimé avec l'envoi (REPRISE_PARCOURS §4). */
   brouillonId: id.optional(),
   accepteConfidentialite: z.literal(true, 'Acceptez la politique de confidentialité'),

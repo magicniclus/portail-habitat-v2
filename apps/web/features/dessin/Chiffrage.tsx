@@ -8,11 +8,13 @@ import {
   metreScene,
   quantiteMetre,
 } from '@ph/core/dessin';
-import { Button } from '@ph/ui';
+import { Button, bouton } from '@ph/ui';
+import Link from 'next/link';
 import { DownloadSimpleIcon } from '@phosphor-icons/react';
 import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
+import { routes } from '@/lib/routes';
 import { ExportPlan } from './ExportPlan';
 import { horodatage, telechargerFichier } from './telecharger';
 
@@ -96,6 +98,20 @@ export function Chiffrage({
         <Button variant="secondaire" onClick={csv}>
           <DownloadSimpleIcon aria-hidden="true" /> Métré en CSV (Excel)
         </Button>
+      ) : null}
+      {espace === 'particulier' && lignes.length ? (
+        <section className="grid gap-2 border-t border-trait pt-3.5">
+          <h3 className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">
+            Passer aux travaux
+          </h3>
+          <p className="m-0 text-[13px] leading-5 text-neutre-800">
+            Décrivez votre projet en quelques questions : l’estimation est calculée par Portail
+            Travaux et vous pouvez joindre ce plan pour les artisans.
+          </p>
+          <Link href={routes.simulateurPlan(planId)} className={bouton()}>
+            Demander des devis
+          </Link>
+        </section>
       ) : null}
       <ExportPlan etat={etat} espace={espace} planId={planId} />
     </div>

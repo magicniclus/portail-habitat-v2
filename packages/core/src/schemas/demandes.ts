@@ -106,6 +106,10 @@ export const demande = z
       versionReferentiel: z.string(),
     }),
     miseEnRelation: z.boolean(),
+    /** D90 : réponses par écrit seulement, téléphone jamais montré aux artisans. */
+    contactSouhaite: z.enum(['telephone', 'ecrit_uniquement']).optional(),
+    /** Plan joint par le client (DES-44) : lien de partage en lecture seule créé à l'envoi. */
+    planJoint: z.object({ planId: z.string(), jeton: z.string() }).optional(),
     artisanCibleId: id.optional(),
     statut: z.enum(STATUTS_DEMANDE),
     nbAttributions: z.number().int().min(0).max(3),

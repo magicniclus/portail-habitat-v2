@@ -85,6 +85,23 @@ describe('lireDemandesPro', () => {
   });
 });
 
+describe('D90 et DES-44 côté artisan', () => {
+  it('réponses écrites : téléphone jamais montré ; plan joint visible après acceptation', async () => {
+    await demande('d9', 5);
+    await db.doc(chemins.demande('d9')).update({
+      contactSouhaite: 'ecrit_uniquement',
+      planJoint: { planId: 'P'.repeat(20), jeton: 'J'.repeat(32) },
+    });
+    const avant = (await lireDemandesPro(s(), 'a1')).find((d) => d.demandeId === 'd9')!;
+    expect(avant.ecritUniquement).toBe(true);
+    expect(avant.planJeton).toBeUndefined();
+    await db.doc(chemins.attribution('d9', 'a1')).update({ statut: 'acceptee' });
+    const apres = (await lireDemandesPro(s(), 'a1')).find((d) => d.demandeId === 'd9')!;
+    expect(apres.contact).toEqual({ email: 'helene@test.local' });
+    expect(apres.planJeton).toBe('J'.repeat(32));
+  });
+});
+
 describe('repondreDemande', () => {
   it('accepter débloque les coordonnées', async () => {
     await demande('d1', 1);

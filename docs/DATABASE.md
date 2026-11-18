@@ -240,6 +240,8 @@ Projection dénormalisée, recalculée à chaque changement de `artisans/{id}` p
 | `photos` | `[{ storagePath }]` | |
 | `estimation` | `{ minCentimes, maxCentimes, coefRegion, coefAcces, aidesCentimes, postes: [{ label, min, max }], versionReferentiel }` | **figée au moment de l'envoi** |
 | `miseEnRelation` | bool | case « jusqu'à 3 artisans » |
+| `contactSouhaite` | `'telephone' \| 'ecrit_uniquement'`, facultatif | D90 : « Recevoir des devis par écrit, sans être appelé » ; le téléphone n'est jamais renvoyé aux artisans (liste des demandes, préremplissage du devis) |
+| `planJoint` | `{ planId, jeton }`, facultatif | DES-44 : plan du particulier **connecté**, joint à l'envoi ; `jeton` = lien de partage en lecture seule (`partagesPlans`, 1 an) créé dans la même transaction ; montré aux artisans après acceptation |
 | `artisanCibleId` | string? | si la demande part d'une fiche |
 | `statut` | `'nouvelle' \| 'en_attribution' \| 'attribuee' \| 'devis_recus' \| 'signee' \| 'close' \| 'annulee' \| 'spam'` | |
 | `nbAttributions` | number (≤ 3) | |
