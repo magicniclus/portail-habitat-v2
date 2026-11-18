@@ -1,7 +1,7 @@
 'use client';
 
 import { arrondir, distance, type Niveau, type Point } from '@ph/core/dessin';
-import { useRef, type Dispatch, type PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, type Dispatch, type PointerEvent } from 'react';
 import type { Action } from './etat';
 
 /**
@@ -66,5 +66,23 @@ export function useGlisser(
       geste.current = null;
       dispatch({ type: 'finGeste' });
     },
+  };
+}
+
+/** Rappels stables pour les calques mémorisés (DES-48) : ils lisent toujours le dernier glisser. */
+export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
+  const courant = useRef(glisser);
+  useEffect(() => {
+    courant.current = glisser;
+  });
+  return {
+    demarrerMur: useCallback(
+      (id: string, ev: PointerEvent) => courant.current.demarrer('mur', id, ev),
+      [],
+    ),
+    demarrerObjet: useCallback(
+      (id: string, ev: PointerEvent) => courant.current.demarrer('objet', id, ev),
+      [],
+    ),
   };
 }

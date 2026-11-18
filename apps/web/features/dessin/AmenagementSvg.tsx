@@ -1,5 +1,6 @@
 'use client';
 
+import { memoCalque } from './memoCalque';
 import { objetDuCatalogue, planDeTravail, type Niveau } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
@@ -50,7 +51,7 @@ export function ZonesSvg({
 }
 
 /** Mobilier et équipements (DES-22) : symboles, plan de travail, sélection et glisser. */
-export function ObjetsSvg({
+function ObjetsSvgBrut({
   niveau,
   etat,
   dispatch,
@@ -121,3 +122,5 @@ export function ObjetsSvg({
     </g>
   );
 }
+
+export const ObjetsSvg = memoCalque(ObjetsSvgBrut, ['objets', 'murs'], ['selection', 'outil']);

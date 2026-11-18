@@ -1,5 +1,6 @@
 'use client';
 
+import { memoCalque } from './memoCalque';
 import {
   centroide,
   contourMur,
@@ -22,7 +23,7 @@ interface Props {
 }
 
 /** Pièces : sol coloré selon le revêtement ; sélectionnables au clic ou au clavier. */
-export function PiecesSvg({ niveau, etat, dispatch }: Props) {
+function PiecesSvgBrut({ niveau, etat, dispatch }: Props) {
   return niveau.pieces.map((p) => {
     const choisie = etat.selection?.genre === 'piece' && etat.selection.id === p.id;
     const choisir = () =>
@@ -52,7 +53,7 @@ export function PiecesSvg({ niveau, etat, dispatch }: Props) {
 }
 
 /** Murs : leur emprise réelle (épaisseur), sélection et glisser parallèle (DES-09). */
-export function MursSvg({
+function MursSvgBrut({
   niveau,
   etat,
   dispatch,
@@ -145,3 +146,7 @@ export function EtiquettesPieces({
     );
   });
 }
+
+export const MursSvg = memoCalque(MursSvgBrut, ['murs'], ['selection', 'outil']);
+
+export const PiecesSvg = memoCalque(PiecesSvgBrut, ['pieces'], ['selection', 'outil']);

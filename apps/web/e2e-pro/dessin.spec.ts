@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { CATALOGUE_OBJETS, nouvelleScene } from '@ph/core/dessin';
 import { COMPTES, connecter, flagGlobal } from './outils';
 
 // docs/DESSIN.md §6 : DES-01, DES-06, DES-10, DES-11, DES-38, DES-39 (éditeur 2D, lot 15d).
@@ -953,21 +954,23 @@ test.describe('Plans (espace pro)', () => {
 
     // Appui long sur la pièce : elle est choisie et ses propriétés s'ouvrent.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
-    const piece = plan.getByText('83,6 m²');
-    const p = (await piece.boundingBox())!;
-    const pt = { x: p.x + p.width / 2, y: p.y + 40 };
-    await page.evaluate((c) => {
-      const cible = document.elementFromPoint(c.x, c.y)!;
-      cible.dispatchEvent(
-        new PointerEvent('pointerdown', {
-          pointerId: 7,
-          pointerType: 'touch',
-          clientX: c.x,
-          clientY: c.y,
-          bubbles: true,
-        }),
-      );
-    }, pt);
+    // La pièce elle-même (son polygone), quel que soit le cadrage.
+    await plan
+      .getByRole('button', { name: /^Pièce / })
+      .first()
+      .evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        el.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            pointerId: 7,
+            pointerType: 'touch',
+            clientX: r.x + r.width / 2,
+            clientY: r.y + r.height / 2,
+            bubbles: true,
+          }),
+        );
+      });
+    await expect(page.getByTestId('annonce-selection')).toHaveText(/^Pièce choisie/);
     await page.waitForTimeout(800);
     await plan.evaluate((el) =>
       el.dispatchEvent(
@@ -1005,5 +1008,104 @@ test.describe('Plans (espace pro)', () => {
       /^(Pièce choisie : .+, 83,6 m²|Mur choisi : [\d,]+ m, épaisseur \d+ cm, hauteur 2,50 m)\.$/,
     );
     await expect(page.getByTestId('annonce-selection')).toHaveAttribute('aria-live', 'polite');
+  });
+  test('DES-48 performance : 500 murs et 1 000 objets, ouverture < 2 s, zoom fluide', async ({
+    page,
+  }) => {
+    test.skip(page.viewportSize()!.width < 900, 'mesuré sur ordinateur');
+    test.setTimeout(90_000);
+    // Scène de charge : 125 pièces de 4 × 4 m (500 murs), 8 meubles par pièce (1 000 objets).
+    let k = 0;
+    const id = (p: string) => `${p}_charge${String(k++).padStart(6, '0')}`;
+    const base = nouvelleScene(id);
+    const murs: object[] = [];
+    const objets: object[] = [];
+    for (let c = 0; c < 25; c++)
+      for (let r = 0; r < 5; r++) {
+        const [x, y] = [c * 4_000, r * 4_000];
+        const coins = [
+          { x, y },
+          { x: x + 4_000, y },
+          { x: x + 4_000, y: y + 4_000 },
+          { x, y: y + 4_000 },
+        ];
+        coins.forEach((a, i) =>
+          murs.push({
+            id: id('m'),
+            a,
+            b: coins[(i + 1) % 4],
+            epaisseur: 200,
+            hauteur: 2_500,
+            type: 'mur',
+          }),
+        );
+        for (let i = 0; i < 8; i++)
+          objets.push({
+            id: id('obj'),
+            catalogueId: CATALOGUE_OBJETS[0]!.id,
+            position: { x: x + 800 + (i % 4) * 800, y: y + 1_000 + Math.floor(i / 4) * 2_000 },
+            dimensions: { l: 400, p: 400, h: 800 },
+          });
+      }
+    const scene = { ...base, niveaux: [{ ...base.niveaux[0]!, murs, objets }] };
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    const cree = await page.evaluate(
+      async (corps) => {
+        const r = await fetch('/api/dessin/creer', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(corps),
+        });
+        return (await r.json()) as { ok: boolean; data?: { planId: string }; message?: string };
+      },
+      { espace: 'entreprise', titre: 'Plan de charge', scene },
+    );
+    expect(cree.ok, cree.message).toBe(true);
+
+    // Ouverture d'un plan (hors 3D) : moins de 2 s jusqu'aux 500 murs dessinés.
+    const t0 = Date.now();
+    await page.goto(`/pro/plans/editeur/${cree.data!.planId}`);
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByRole('button', { name: /^Mur de / })).toHaveCount(500, {
+      timeout: 10_000,
+    });
+    const ouverture = Date.now() - t0;
+    console.log(`DES-48 ouverture : ${ouverture} ms`);
+    expect(ouverture).toBeLessThan(2_000);
+
+    // Zoom : chaque nouveau rendu du plan tient dans quelques images.
+    const zoomer = page.getByRole('button', { name: 'Zoomer', exact: true });
+    const t1 = Date.now();
+    for (let i = 0; i < 5; i++) {
+      await zoomer.click();
+      await page.evaluate(
+        () => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))),
+      );
+    }
+    const parZoom = (Date.now() - t1) / 5;
+    console.log(`DES-48 zoom : ${Math.round(parZoom)} ms par rendu`);
+    expect(parZoom).toBeLessThan(250);
+
+    // Glisser un meuble : le geste le plus exigeant (un rendu du plan par mouvement).
+    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    const svg = plan.locator('svg');
+    const ecran = async (x: number, y: number) => {
+      const b = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = b.width / vl!;
+      return { x: b.x + (x - vx!) * k, y: b.y + (y - vy!) * k };
+    };
+    const depart = await ecran(800, 1_000);
+    await page.mouse.click(depart.x, depart.y);
+    await page.mouse.down();
+    const t2 = Date.now();
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(depart.x + i * 2, depart.y);
+      await page.evaluate(() => new Promise((ok) => requestAnimationFrame(ok)));
+    }
+    await page.mouse.up();
+    const parMouvement = (Date.now() - t2) / 10;
+    console.log(`DES-48 glisser : ${Math.round(parMouvement)} ms par mouvement`);
+    expect(parMouvement).toBeLessThan(80);
   });
 });

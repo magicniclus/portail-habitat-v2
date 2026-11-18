@@ -972,6 +972,15 @@ Demandes du propriétaire ajoutées au lot : **placement automatique** des meubl
   - emprise 2D des meubles inclinés ;
   - cartes d'ombre plus fines sur les grands terrains.
 
+### Lot 15j fait (18/11/2026)
+Plan validé par le propriétaire (4 étapes ; aucun changement de modèle ni de règle, aucune dépendance ; Lighthouse non ajouté, mesures avec Playwright).
+- **Public et essai (DES-03)** : `/dessin` pour les particuliers (flag `dessinPublic`, éteint en production) : héros avec plan illustré en SVG, fonctions, étapes, FAQ (JSON-LD), « Essayer gratuitement » ; aucun avis ni chiffre non sourcé ; dans le sitemap seulement si Plans et sa page publique sont ouverts. `/dessin/essai` : éditeur complet, scène gardée dans IndexedDB, bandeau « Essai sans compte » ; import, implantation, PDF, galerie, partage et demande de devis invitent à créer un compte ; « Enregistrer » mène à la connexion, puis « Mes plans » (`?essai=1`) crée le plan depuis l'essai, intact, et l'ouvre. **À faire à l'ouverture** : passer `/dessin` en `revalidate = 3600` (rendue dynamique tant qu'elle est fermée, pour suivre le flag sans délai).
+- **Téléphone (DES-46)** : panneaux en feuilles du bas entre les deux rails, plan cadré au-dessus de la feuille ; pincer pour zoomer ; appui long = propriétés de l'élément ; cotes au clavier numérique (déjà).
+- **Accessibilité (DES-47)** : touche « ? » = fenêtre des raccourcis (même liste dans le menu Aide) ; élément choisi et ses mesures annoncés (`aria-live`, `descriptionSelection` testé dans le cœur) ; « réduire les animations » coupe l'inertie de la caméra 3D ; flèches 1 cm / Maj 10 cm (déjà).
+- **Performance (DES-48)** : scène de 500 murs et 1 000 objets ; cœur : métré ≈ 1,5 ms, glisser d'un meuble avec placement ≈ 5 ms ; navigateur (Playwright, ordinateur) : ouverture du plan 345 à 490 ms (< 2 s), rendu après zoom ≈ 90 ms et glisser ≈ 32 ms par mouvement, temps de pilotage de Playwright compris. Calques murs, pièces et meubles mémorisés (ne se redessinent que si leurs données changent) avec des rappels de glisser stables.
+- **Tests** : Playwright Plans 32 parcours verts (iPhone 13 et ordinateur), dont DES-03, DES-46, DES-47, DES-48. Cœur 4 299 tests.
+- **Reste** : vrais modèles 3D `glb`/`ktx2` (D88) ; tests sur Pixel (seul l'iPhone 13 est émulé dans la configuration pro).
+
 ### Lot 15i fait (18/11/2026)
 Plan validé par le propriétaire (4 étapes, 2 champs facultatifs sur la demande, pdfkit réutilisé, aucune règle Firestore modifiée).
 - **Exports (fait, DES-41, DES-43)** : PDF à l'échelle produit par le serveur (1/50 ou 1/100, A4 ou A3 paysage ; murs, baies, débattements, pièces, cotes, nord, échelle graphique, cartouche, légende ; métré en annexe ; refus clair si le plan ne tient pas, échelle et format conseillés) ; PNG du plan ; onglet Chiffrer : métré de toute la maison, postes à cocher, CSV pour Excel.

@@ -26,7 +26,7 @@ import { ToitSvg } from './ToitSvg';
 import { DefsMotifs } from './Motifs';
 import { useAjustement } from './useAjustement';
 import { useGestesTactiles } from './useGestesTactiles';
-import { useGlisser } from './useGlisser';
+import { useGlisser, useRappelsGlisser } from './useGlisser';
 import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
 
 /** Plan 2D (DES-06, DES-32) : SVG en millimètres, net à tout zoom, exportable. */
@@ -80,6 +80,7 @@ export function Plan2D({
 
   const trace = etat.outil !== 'selection';
   const glisser = useGlisser(n, dispatch, versMm, trace);
+  const { demarrerMur, demarrerObjet } = useRappelsGlisser(glisser);
   const selectionne = useRef(false);
   useEffect(() => {
     selectionne.current = etat.selection !== null;
@@ -147,18 +148,8 @@ export function Plan2D({
           <ZonesSvg niveau={n} etat={etat} dispatch={dispatch} />
           <ReperesNiveauSvg dessous={niveauInferieur(scene, n.id)} tremies={tremies(scene, n.id)} />
           <EscaliersSvg niveau={n} etat={etat} dispatch={dispatch} />
-          <ObjetsSvg
-            niveau={n}
-            etat={etat}
-            dispatch={dispatch}
-            demarrerGlisser={(id, ev) => glisser.demarrer('objet', id, ev)}
-          />
-          <MursSvg
-            niveau={n}
-            etat={etat}
-            dispatch={dispatch}
-            demarrerGlisser={(id, ev) => glisser.demarrer('mur', id, ev)}
-          />
+          <ObjetsSvg niveau={n} etat={etat} dispatch={dispatch} demarrerGlisser={demarrerObjet} />
+          <MursSvg niveau={n} etat={etat} dispatch={dispatch} demarrerGlisser={demarrerMur} />
           <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
           <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
           <GuidesSvg guides={etat.guides} />

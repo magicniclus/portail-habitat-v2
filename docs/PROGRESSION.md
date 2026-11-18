@@ -38,6 +38,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 18/11/2026 — Lot 15j fait : page publique /dessin et essai sans compte repris après connexion, éditeur au téléphone (feuilles du bas, pincer, appui long), accessibilité (« ? », annonces, animations réduites), budget de performance 500 murs / 1 000 objets mesuré (AVANCEMENT §31).
 - 18/11/2026 — Lot 15i fait : exports (PDF à l'échelle, PNG, CSV), lien de partage en lecture seule, « Demander des devis » avec plan joint et réponses écrites (D90) faits ; « Créer un devis depuis ce plan » retiré à la demande du propriétaire (AVANCEMENT §31).
 - 18/11/2026 — Lot 15h fait : menuiseries complètes, toiture (L, T, U, H, étage partiel, hauteurs), terrasse, terrain, piscine, implantation sur le cadastre avec photo aérienne IGN (champs `terrain.georef` et `terrain.orthophoto`, sans MapLibre, validé), façades et coupes (AVANCEMENT §31). Services IGN à vérifier en préproduction.
 - 18/11/2026 — Lot 15g fait : 3D, visite, photo et galerie, placement automatique des meubles, rotation libre sur 3 axes (AVANCEMENT §31).
