@@ -96,3 +96,37 @@ describe('plan importé dans l’éditeur', () => {
     expect(sceneDe(e).fondImage).toBeNull();
   });
 });
+
+describe('cotes libres, textes et calques (DES-30, DES-31)', () => {
+  it('coter en deux clics, poser un texte, le modifier, le supprimer, masquer un calque', () => {
+    let e = jouer([
+      { type: 'outil', outil: 'cote' },
+      { type: 'poserPoint', point: { x: 0, y: -1000 } },
+    ]);
+    expect(e.trace).not.toBeNull();
+    e = reduire(e, { type: 'poserPoint', point: { x: 10, y: -1000 } });
+    expect(e.erreur).toMatch(/courte/);
+    e = reduire(e, { type: 'poserPoint', point: { x: 4000, y: -1000 } });
+    expect(niveauDe(e).cotes).toHaveLength(1);
+    expect(e.trace).toBeNull();
+    e = reduire(reduire(e, { type: 'outil', outil: 'texte' }), {
+      type: 'poserPoint',
+      point: { x: 2000, y: 2000 },
+    });
+    const t = niveauDe(e).textes[0]!;
+    expect(e.selection).toEqual({ genre: 'texte', id: t.id });
+    expect(e.outil).toBe('selection');
+    e = reduire(e, { type: 'modifierTexte', id: t.id, modif: { contenu: 'Cellier' } });
+    expect(niveauDe(e).textes[0]!.contenu).toBe('Cellier');
+    e = reduire(e, { type: 'supprimerSelection' });
+    expect(niveauDe(e).textes).toHaveLength(0);
+    e = reduire(e, {
+      type: 'selectionner',
+      selection: { genre: 'cote', id: niveauDe(e).cotes[0]!.id },
+    });
+    e = reduire(e, { type: 'supprimerSelection' });
+    expect(niveauDe(e).cotes).toHaveLength(0);
+    e = reduire(e, { type: 'calqueScene', cle: 'mobilier' });
+    expect(sceneDe(e).calques.mobilier).toBe(false);
+  });
+});

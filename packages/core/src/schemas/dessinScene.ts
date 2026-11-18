@@ -398,8 +398,8 @@ const CALQUES_DEFAUT = {
   cotes: true,
   surfaces: true,
   mobilier: true,
-  electricite: false,
-  plomberie: false,
+  electricite: true,
+  plomberie: true,
   annotations: true,
   fondImage: true,
 };

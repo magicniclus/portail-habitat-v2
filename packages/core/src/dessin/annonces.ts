@@ -4,7 +4,7 @@ import { LIBELLES_ESCALIER } from './escaliers';
 import { LIBELLES_FORME_PISCINE } from './exterieur';
 import { formatLongueur, formatSurface } from './format';
 import { contourPiscine } from './formePiscine';
-import { aire } from './geometrie';
+import { aire, distance } from './geometrie';
 import { longueurMur } from './murs';
 import { CATALOGUE_OUVERTURES } from './ouvertures';
 
@@ -18,7 +18,9 @@ export type GenreAnnonce =
   | 'terrasse'
   | 'piscine'
   | 'cloture'
-  | 'vegetal';
+  | 'vegetal'
+  | 'cote'
+  | 'texte';
 
 const cm = (mm: number) => `${Math.round(mm / 10)}`;
 const VEGETAUX = { arbre: 'Arbre', arbuste: 'Arbuste', haie: 'Haie' } as const;
@@ -85,6 +87,14 @@ export function descriptionSelection(
     case 'vegetal': {
       const v = e.vegetation.find((x) => x.id === s.id);
       return v ? `${VEGETAUX[v.type]} choisi : ${formatLongueur(v.diametre)} de diamètre.` : '';
+    }
+    case 'cote': {
+      const c = n.cotes.find((x) => x.id === s.id);
+      return c ? `Cote choisie : ${formatLongueur(Math.round(distance(c.a, c.b)))}.` : '';
+    }
+    case 'texte': {
+      const t = n.textes.find((x) => x.id === s.id);
+      return t ? `Texte choisi : ${t.contenu}.` : '';
     }
   }
 }

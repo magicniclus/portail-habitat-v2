@@ -1,9 +1,10 @@
 'use client';
 
+import { LIBELLES_CALQUE, type CalqueScene } from '@ph/core/dessin';
 import { Button } from '@ph/ui';
 import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
-import type { Action, EtatEditeur, Vue } from './etat';
+import { sceneDe, type Action, type EtatEditeur, type Vue } from './etat';
 import { CompteRequis, useEssai } from './essai';
 import { GaleriePhotos } from './GaleriePhotos';
 import { PartageMenu } from './PartageMenu';
@@ -86,6 +87,20 @@ export function RenduMenu({
           onChange={(ev) => regler({ niveauSeul: ev.target.checked })}
         />
       </label>
+      <fieldset className="m-0 grid gap-0 border-0 p-0">
+        <legend className="mb-1 px-1 text-[13px] font-bold">Calques du plan</legend>
+        {(Object.keys(LIBELLES_CALQUE) as CalqueScene[]).map((cle) => (
+          <label key={cle} className={interrupteur}>
+            {LIBELLES_CALQUE[cle]}
+            <input
+              type="checkbox"
+              className="size-5 accent-accent"
+              checked={sceneDe(etat).calques[cle]}
+              onChange={() => dispatch({ type: 'calqueScene', cle })}
+            />
+          </label>
+        ))}
+      </fieldset>
       <p className="m-0 px-1 text-[13px] leading-5 text-neutre-800">
         En 3D : faites tourner la vue en glissant, zoomez avec la molette ou deux doigts. Cliquez
         sur un meuble pour le déplacer ou le faire pivoter avec ses anneaux (Maj : sans crans). En

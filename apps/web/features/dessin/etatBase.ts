@@ -1,6 +1,7 @@
 import {
   creerHistorique,
   enregistrer,
+  type CalqueScene,
   type CibleRevetement,
   type ElementToit,
   type FormePiscine,
@@ -41,7 +42,9 @@ export type Outil =
   | 'zone'
   | 'toit'
   | 'exterieur'
-  | 'coupe';
+  | 'coupe'
+  | 'cote'
+  | 'texte';
 type GenreSelection =
   | 'mur'
   | 'piece'
@@ -52,7 +55,9 @@ type GenreSelection =
   | 'terrasse'
   | 'piscine'
   | 'cloture'
-  | 'vegetal';
+  | 'vegetal'
+  | 'cote'
+  | 'texte';
 /** Éléments posés avec l'outil « extérieur » (DES-18 à DES-20). */
 export type ElementExterieur =
   'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
@@ -219,6 +224,9 @@ export type Action =
   | { type: 'remplacerScene'; scene: Scene }
   | { type: 'facade'; facade: Facade }
   | { type: 'basculerPoste'; cle: string }
+  /** Cotes libres et textes (DES-31), calques du plan enregistrés (DES-30). */
+  | { type: 'modifierTexte'; id: string; modif: { contenu?: string; taille?: number } }
+  | { type: 'calqueScene'; cle: CalqueScene }
   | { type: 'effacerErreur' };
 
 /** Assez bas pour voir une maison et tout son jardin sur un téléphone (≈ 40 m de large). */

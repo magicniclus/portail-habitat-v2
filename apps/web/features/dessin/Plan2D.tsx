@@ -1,10 +1,17 @@
 'use client';
 
-import { niveauInferieur, niveauSuperieur, tremies, type Point } from '@ph/core/dessin';
+import {
+  niveauInferieur,
+  niveauSuperieur,
+  objetsVisibles,
+  tremies,
+  type Point,
+} from '@ph/core/dessin';
+import { AnnotationsSvg } from './AnnotationsSvg';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type PointerEvent } from 'react';
 import { EtiquettesPieces, MursSvg, PiecesSvg } from './CalquesPlan';
-import { Cotes, TraceEnCours, traceRectangle } from './Mesures';
+import { Cotes, TracesEnCours } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
@@ -39,7 +46,14 @@ export function Plan2D({
 }) {
   const n = niveauDe(etat);
   const scene = sceneDe(etat);
-  const fondVisible = scene.fondImage?.niveauId === n.id ? scene.fondImage : null;
+  const calques = scene.calques;
+  const fondVisible =
+    calques.fondImage && scene.fondImage?.niveauId === n.id ? scene.fondImage : null;
+  // Calques du plan (DES-30) : mobilier, électricité, plomberie affichés ou masqués.
+  const objets = useMemo(
+    () => ({ objets: objetsVisibles(n.objets, calques) }),
+    [n.objets, calques],
+  );
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Point | null>(null);
   const parcelle = scene.terrain?.parcelle;
@@ -131,7 +145,12 @@ export function Plan2D({
               tremies={tremies(scene, n.id)}
             />
             <EscaliersSvg niveau={n} etat={etat} dispatch={dispatch} />
-            <ObjetsSvg niveau={n} etat={etat} dispatch={dispatch} demarrerGlisser={demarrerObjet} />
+            <ObjetsSvg
+              niveau={objets}
+              etat={etat}
+              dispatch={dispatch}
+              demarrerGlisser={demarrerObjet}
+            />
             <MursSvg
               niveau={n}
               etat={etat}
@@ -147,6 +166,9 @@ export function Plan2D({
               <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
             ) : null}
             <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
+            {calques.annotations ? (
+              <AnnotationsSvg niveau={n} etat={etat} dispatch={dispatch} mmParPx={mmParPx} />
+            ) : null}
             {scene.terrain || scene.orientationNord ? (
               <LimitesSvg
                 scene={scene}
@@ -154,22 +176,7 @@ export function Plan2D({
                 coin={{ x: cadre.x + cadre.l, y: cadre.y }}
               />
             ) : null}
-            {trace ? (
-              <TraceEnCours
-                a={etat.trace}
-                curseur={curseur}
-                rectangle={traceRectangle(etat)}
-                mmParPx={mmParPx}
-              />
-            ) : null}
-            {etat.echelle ? (
-              <TraceEnCours
-                a={etat.echelle.a}
-                curseur={etat.echelle.b}
-                rectangle={false}
-                mmParPx={mmParPx}
-              />
-            ) : null}
+            <TracesEnCours etat={etat} curseur={trace ? curseur : null} mmParPx={mmParPx} />
           </svg>
         </div>
       </div>

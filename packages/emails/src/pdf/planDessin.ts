@@ -43,6 +43,7 @@ export function dessinerNiveau(doc: Doc, n: Niveau, cadre: Cadre, m: MiseEnPage)
   dessinerMurs(t, n);
   dessinerBaies(t, n);
   dessinerTextes(t, n);
+  dessinerAnnotations(t, n);
 }
 
 /** Pièces : fond blanc. */
@@ -160,5 +161,26 @@ function dessinerTextes({ doc, v }: Trace, n: Niveau) {
     const c = { x: mi.x + no.x * d, y: mi.y + no.y * d };
     const [x, y] = v(c);
     doc.text(net(formatLongueur(l)), x - 25, y - 3, { width: 50, align: 'center' });
+  }
+}
+
+/** Cotes libres (trait et longueur) et textes posés sur le plan (DES-31). */
+function dessinerAnnotations({ doc, v }: Trace, n: Niveau) {
+  doc.font('Helvetica').fontSize(6).fillColor(COULEURS_PLAN.cote);
+  for (const c of n.cotes) {
+    const [[xa, ya], [xb, yb]] = [v(c.a), v(c.b)];
+    doc.moveTo(xa, ya).lineTo(xb, yb).lineWidth(0.4).strokeColor(COULEURS_PLAN.cote).stroke();
+    const l = Math.round(Math.hypot(c.b.x - c.a.x, c.b.y - c.a.y));
+    doc.text(net(formatLongueur(l)), (xa + xb) / 2 - 25, (ya + yb) / 2 - 7, {
+      width: 50,
+      align: 'center',
+    });
+  }
+  for (const t of n.textes) {
+    const [x, y] = v(t.position);
+    doc.fontSize(Math.max(5, t.taille / 2)).text(net(t.contenu), x - 80, y - t.taille / 2, {
+      width: 160,
+      align: 'center',
+    });
   }
 }

@@ -7,6 +7,7 @@ import {
   CouchIcon,
   CursorIcon,
   HouseLineIcon,
+  LineSegmentIcon,
   MagnetIcon,
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
@@ -16,6 +17,7 @@ import {
   SlidersHorizontalIcon,
   SquareIcon,
   TextAaIcon,
+  TextTIcon,
   WallIcon,
   type Icon,
 } from '@phosphor-icons/react';
@@ -99,6 +101,8 @@ const OUTILS: { outil: Outil; libelle: string; Icone: Icon }[] = [
   { outil: 'selection', libelle: 'Sélectionner', Icone: CursorIcon },
   { outil: 'mur', libelle: 'Tracer un mur', Icone: WallIcon },
   { outil: 'piece', libelle: 'Dessiner une pièce', Icone: SquareIcon },
+  { outil: 'cote', libelle: 'Coter (deux clics)', Icone: LineSegmentIcon },
+  { outil: 'texte', libelle: 'Ajouter un texte', Icone: TextTIcon },
 ];
 
 /** Rail de droite : outils, affichage, zoom et panneau des propriétés. */

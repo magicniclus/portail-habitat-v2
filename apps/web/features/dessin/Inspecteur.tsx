@@ -1,5 +1,6 @@
 'use client';
 
+import { inspecteurAnnotation } from './InspecteurAnnotation';
 import {
   formatLongueur,
   formatSurface,
@@ -121,7 +122,10 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
         dispatch={dispatch}
       />
     );
-  const amenagement = inspecteurAmenagement(etat, dispatch) ?? inspecteurExterieur(etat, dispatch);
+  const amenagement =
+    inspecteurAmenagement(etat, dispatch) ??
+    inspecteurExterieur(etat, dispatch) ??
+    inspecteurAnnotation(etat, dispatch);
   if (amenagement) return amenagement;
   return (
     <div className="grid gap-2 px-2 py-6 text-center text-neutre-800">

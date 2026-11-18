@@ -53,7 +53,7 @@ Scene {
   orientationNord: angle
   terrain?: Terrain
   niveaux: Niveau[]                // ordonnés, altitude croissante
-  calques: { cotes, surfaces, mobilier, electricite, plomberie, annotations, fondImage }: boolean
+  calques: { cotes, surfaces, mobilier, electricite, plomberie, annotations, fondImage }: boolean  // tous affichés par défaut
   fondImage?: { storagePath, echelle (mm/px), position, rotation, opacite, niveauId }
 }
 

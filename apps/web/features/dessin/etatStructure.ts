@@ -1,3 +1,4 @@
+import { poserAnnotation } from './etatAnnotations';
 import { poserCoupe } from './etatFacades';
 import {
   ajouterMur,
@@ -13,6 +14,7 @@ import {
   reglerFond,
   renommerNiveau,
   retirerFond,
+  supprimerAnnotation,
   supprimerEscalier,
   supprimerMur,
   supprimerNiveau,
@@ -44,7 +46,8 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
     poserAmenagement(e, point) ??
     poserToit(e, point) ??
     poserExterieur(e, point) ??
-    poserCoupe(e, point);
+    poserCoupe(e, point) ??
+    poserAnnotation(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
@@ -120,6 +123,11 @@ function supprimerSelection(e: EtatEditeur, confirme: boolean): EtatEditeur {
         'Mur porteur : il soutient la maison. Supprimez-le depuis ses propriétés, après confirmation, et demandez l’avis d’un professionnel.',
       proprietes: true,
     };
+  if (s.genre === 'cote' || s.genre === 'texte')
+    return {
+      ...surNiveau(e, (n) => supprimerAnnotation(n, s.genre as 'cote', s.id)),
+      selection: null,
+    };
   if (
     s.genre === 'terrasse' ||
     s.genre === 'piscine' ||
@@ -131,7 +139,10 @@ function supprimerSelection(e: EtatEditeur, confirme: boolean): EtatEditeur {
       selection: null,
     };
   const commandes: Record<
-    Exclude<typeof s.genre, 'piece' | 'terrasse' | 'piscine' | 'cloture' | 'vegetal'>,
+    Exclude<
+      typeof s.genre,
+      'piece' | 'terrasse' | 'piscine' | 'cloture' | 'vegetal' | 'cote' | 'texte'
+    >,
     (n: Niveau) => Resultat<Niveau>
   > = {
     mur: (n) => supprimerMur(n, s.id, ctx),
