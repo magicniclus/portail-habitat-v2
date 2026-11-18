@@ -852,7 +852,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 
 ### Découpage
 - [x] 15a Cadrage (ce paragraphe)
-- [ ] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (tests d'abord)
+- [x] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (18/11/2026, voir « Lot 15b fait » ci-dessous)
 - [ ] 15c Données : Firestore, Storage, règles et tests, repositories, actions, Functions, seed
 - [ ] 15d Coque de l'éditeur et 2D (routes, barre, bibliothèque, palette, inspecteur, murs, pièces, cotes, sauvegarde)
 - [ ] 15e Ouvertures, escaliers, niveaux, plan importé
@@ -880,7 +880,15 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 Le projet a avancé au fur et à mesure : **Dessin est entièrement ajouté à côté, sans modifier un seul fichier de code existant** (pas de refactorisation, pas d'extraction, pas de changement de schéma, de règle, de permission ou de composant existant). Le code existant peut être **lu** et **importé** tel quel, jamais réécrit.
 Les quelques branchements qui exigeraient de toucher un fichier existant (lien « Dessin » dans la barre latérale pro, onglet « Mes plans » de l'espace particulier, plan joint et « devis par écrit sans appel » dans les demandes, permission d'équipe, flags, règles Firestore et Storage) sont **listés dans DESSIN.md §11 et ne seront faits qu'avec l'accord explicite du propriétaire**, au moment du sous-lot concerné, un par un.
 
-### Plan du lot 15b (à valider avant de coder)
+### Lot 15b fait (18/11/2026)
+Nouveaux fichiers uniquement, aucun fichier existant modifié :
+- `packages/core/src/schemas/dessinScene.ts` (scène complète : murs, ouvertures, pièces, objets, escaliers, cotes, textes, zones décoratives, toiture, terrasses, piscines, clôtures, végétation, terrain ; mm et dixièmes de degré entiers ; identifiants uniques, ouvertures rattachées à un mur existant) et `schemas/dessinPlan.ts` (plan, version, partage).
+- `packages/core/src/dessin/` : `geometrie`, `murs` (contours, jonctions L/T/X, surface nette des faces), `pieces` (détection automatique, conservation des noms, Carrez), `aimantation`, `historique` (300 étapes, un glisser = une étape), `commandes` (ajouter, déplacer une extrémité, déplacer un mur, modifier une cote, scinder, fusionner, supprimer, renommer, revêtements), `formes` (rectangle, L, U, T), `metre`, `validations` (Blondel, échappée, garde-corps), `migrations`, `format`.
+- Tests : 47 nouveaux, 4 200 au total, tous verts ; couverture de `dessin/` 99,4 % lignes ; `typecheck` et `lint` verts.
+- **`pnpm knip` échoue sur 28 exports de Dessin** : le module n'est encore importé par aucune application. Corrigé dès que l'export `@ph/core/dessin` est ajouté à `packages/core/package.json` (ligne existante, en attente de l'accord du propriétaire).
+- Constats : le catalogue n'a pas de prestation « peinture intérieure » ni « carrelage » (`prestationId: null` dans le métré pour ces postes) ; les modèles de départ (studio, T2…) sont reportés au lot 15d, avec l'écran de création.
+
+### Plan initial du lot 15b
 Uniquement de **nouveaux fichiers** dans `packages/core/src/dessin/`, tests Vitest écrits avant le code, aucun React / Firebase / Next.
 1. `dessin/historique.ts` : historique propre à Dessin (300 étapes, un glisser = une étape). L'historique de l'éditeur de site n'est pas touché.
 2. `dessin/schemas/scene.ts` et `dessin/schemas/plan.ts` : scène, métadonnées, versions, partages (millimètres et dixièmes de degré entiers, `z` importé de `@ph/core/zod`).
@@ -922,3 +930,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 16/10/2026 — Lot 10d : blog codé (cœur, serveur, écrans, affichage sur le site, IA) hors décisions ⏳ D67 à D71. Détail : §29.
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
 - 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
+- 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Knip en attente de l'export `@ph/core/dessin` : §31.
