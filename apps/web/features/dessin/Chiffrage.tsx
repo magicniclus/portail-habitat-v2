@@ -87,10 +87,18 @@ export function Chiffrage({
                 checked={coche('menuiseries')}
                 onChange={() => basculer('menuiseries')}
               />
-              <span className="flex-1 text-neutre-800">
-                Menuiseries : {menuiseries.map((m) => `${m.libelle} × ${m.nombre}`).join(', ')}
-              </span>
+              <span className="flex-1 font-semibold text-neutre-800">Menuiseries</span>
             </label>
+          ) : null}
+          {menuiseries.length ? (
+            <ul className="m-0 grid list-none gap-1 pb-1 pl-[30px]">
+              {menuiseries.map((m) => (
+                <li key={m.libelle} className="flex gap-2 text-sm">
+                  <span className="flex-1 text-neutre-800">{m.libelle}</span>
+                  <span className="font-bold whitespace-nowrap">× {m.nombre}</span>
+                </li>
+              ))}
+            </ul>
           ) : null}
         </fieldset>
       )}

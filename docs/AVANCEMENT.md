@@ -972,13 +972,15 @@ Demandes du propriétaire ajoutées au lot : **placement automatique** des meubl
   - emprise 2D des meubles inclinés ;
   - cartes d'ombre plus fines sur les grands terrains.
 
-### Lot 15i en cours (18/11/2026)
+### Lot 15i fait (18/11/2026)
 Plan validé par le propriétaire (4 étapes, 2 champs facultatifs sur la demande, pdfkit réutilisé, aucune règle Firestore modifiée).
 - **Exports (fait, DES-41, DES-43)** : PDF à l'échelle produit par le serveur (1/50 ou 1/100, A4 ou A3 paysage ; murs, baies, débattements, pièces, cotes, nord, échelle graphique, cartouche, légende ; métré en annexe ; refus clair si le plan ne tient pas, échelle et format conseillés) ; PNG du plan ; onglet Chiffrer : métré de toute la maison, postes à cocher, CSV pour Excel.
 - **Partage (fait, DES-42)** : `/plan/[jeton]` sans compte, non indexé, lecture seule (plan, 3D, visite, façades) ; le serveur retire Lambert-93, photo aérienne, référence cadastrale, commune et image importée ; validité 7 jours, 30 jours ou sans fin, liens actifs, révocation. Équipe : les plans de l'entreprise sont déjà visibles par les membres autorisés.
 - **Demander des devis (fait, DES-44, D90)** : bouton dans Chiffrer (particulier) → simulateur existant ; « Joindre mon plan » et « Recevoir des devis par écrit, sans être appelé » ; champs `contactSouhaite` et `planJoint` (DATABASE §4) ; plan vérifié comme appartenant au particulier connecté, lien d'un an créé dans la même transaction ; téléphone jamais renvoyé aux artisans dans ce cas ; « Voir le plan du client » après acceptation.
 - **« Créer un devis depuis ce plan » (DES-45) : retiré à la demande du propriétaire** (« j'aime pas cette fonctionnalité »), jamais poussé ; la page « Nouveau devis » et la bibliothèque sont inchangées.
-- **Tests** : cœur (exports, partage sans localisation), emails (PDF du plan), serveur sur émulateur (partages, plan joint, téléphone masqué), simulateur 44 parcours, Playwright Plans « exports » et « partage » verts sur iPhone 13 et ordinateur. La suite complète des parcours Plans n'a pas été relancée après le retrait de DES-45 (interrompue).
+- **Tests** : cœur (exports, partage sans localisation), emails (PDF du plan), serveur sur émulateur (partages, plan joint, téléphone masqué), simulateur 44 parcours, Playwright Plans « exports » et « partage » verts sur iPhone 13 et ordinateur. Suite complète Plans + demandes pro + devis : **51 parcours verts** (iPhone 13 et ordinateur) après le retrait de DES-45. Correction en clôture : les menuiseries de l'onglet Chiffrer, regroupées sur une ligne à l'étape 1, sont de nouveau une par ligne sous une seule case à cocher.
+- **Côté artisan** (choix « fais le mieux » du propriétaire) : pas de remplacement du devis prérempli ; l'artisan dispose du lien de partage et du plan joint par le client.
+- **Reste** : vérifier les services IGN en préproduction (15h) ; murs obliques pour la toiture.
 
 ### Lot 15h fait (18/11/2026)
 Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'extérieur. Vitrage clair seulement (choix du propriétaire).
