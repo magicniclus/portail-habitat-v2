@@ -33,3 +33,4 @@ export * from './toits3d';
 export * from './commandesToit';
 export * from './ailesToit';
 export * from './exterieur';
+export * from './placementExterieur';

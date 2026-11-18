@@ -190,6 +190,8 @@ describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
       { type: 'poserPoint', point: { x: 6_000, y: 11_200 } },
     ]);
     expect(niveauDe(e).exterieur.terrasses).toHaveLength(1);
+    // À 60 cm de la façade sud (y = 8 600) : la terrasse s'y colle.
+    expect(niveauDe(e).exterieur.terrasses[0]!.contour[0]).toEqual({ x: 1_000, y: 8_600 });
     expect(e.selection?.genre).toBe('terrasse');
     e = jouer(
       [
@@ -202,14 +204,24 @@ describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
     e = jouer(
       [
         { type: 'outil', outil: 'exterieur', elementExterieur: 'cloture', typeCloture: 'grillage' },
-        { type: 'poserPoint', point: { x: -2_500, y: 9_500 } },
-        { type: 'poserPoint', point: { x: 12_500, y: 9_500 } },
-        { type: 'poserPoint', point: { x: 12_500, y: 15_000 } },
+        { type: 'poserPoint', point: { x: -2_500, y: 17_000 } },
+        { type: 'poserPoint', point: { x: 12_500, y: 17_000 } },
+        { type: 'poserPoint', point: { x: 12_500, y: 22_000 } },
         { type: 'terminerTrace' },
       ],
       e,
     );
     expect(niveauDe(e).exterieur.clotures).toHaveLength(1);
+    // Une clôture qui traverserait la terrasse est refusée, avec un message.
+    const refus = jouer(
+      [
+        { type: 'outil', outil: 'exterieur', elementExterieur: 'cloture' },
+        { type: 'poserPoint', point: { x: -2_500, y: 9_500 } },
+        { type: 'poserPoint', point: { x: 12_500, y: 9_500 } },
+      ],
+      e,
+    );
+    expect(refus.erreur).toBe('La clôture traverserait la terrasse.');
     expect(niveauDe(e).exterieur.clotures[0]!.points).toHaveLength(3);
     expect(e.clotureEnCours).toBeNull();
     e = jouer(

@@ -3,6 +3,7 @@ import {
   ajouterPiscine,
   ajouterTerrasse,
   ajouterVegetal,
+  accrocherALaLimite,
   definirParcelle,
   modifierExterieur,
   parcelleAutour,
@@ -14,6 +15,7 @@ import {
 import type { Resultat } from '@ph/core/resultat';
 import {
   contexteNavigateur as ctx,
+  sceneDe,
   surNiveau,
   surScene,
   type Action,
@@ -50,7 +52,9 @@ export function poserExterieur(e: EtatEditeur, point: Point): EtatEditeur | null
   if (el === 'piscine')
     return creer(e, (n) => ajouterPiscine(n, point, e.formePiscine, ctx), 'piscine');
   if (el === 'arbre' || el === 'arbuste' || el === 'haie')
-    return creer(e, (n) => ajouterVegetal(n, point, el, ctx), 'vegetal');
+    return creer(e, (n) => ajouterVegetal(n, point, el, ctx, { aimant: e.aimant }), 'vegetal');
+  // Clôture : chaque point s'aligne sur la limite de parcelle toute proche.
+  if (el === 'cloture') point = accrocherALaLimite(sceneDe(e), point, e.aimant);
   if (!e.trace) return { ...e, trace: point, selection: null };
   const a = e.trace;
   if (el === 'cloture') {
@@ -64,7 +68,8 @@ export function poserExterieur(e: EtatEditeur, point: Point): EtatEditeur | null
     });
     return suite.erreur ? suite : { ...suite, trace: point, clotureEnCours: id ?? null };
   }
-  if (el === 'terrasse') return creer(e, (n) => ajouterTerrasse(n, a, point, ctx), 'terrasse');
+  if (el === 'terrasse')
+    return creer(e, (n) => ajouterTerrasse(n, a, point, ctx, { aimant: e.aimant }), 'terrasse');
   if (el === 'allee') return { ...surNiveau(e, (n) => ajouterAllee(n, a, point)), trace: null };
   return { ...surScene(e, (s) => definirParcelle(s, a, point)), trace: null, outil: 'selection' };
 }

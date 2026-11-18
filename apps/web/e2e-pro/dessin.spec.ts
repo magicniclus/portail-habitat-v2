@@ -596,8 +596,8 @@ test.describe('Plans (espace pro)', () => {
     // Le dessin a grandi : on l'ajuste à l'écran avant de tracer la clôture.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
     await exterieur('Clôture');
-    await cliquer(-2_500, 9_500);
-    await cliquer(12_500, 9_500);
+    await cliquer(-2_500, 17_000);
+    await cliquer(12_500, 17_000);
     await page.keyboard.press('Escape');
     // Une clôture droite a une hauteur nulle à l'écran : on vérifie sa présence.
     await expect(plan.getByRole('button', { name: 'Clôture' })).toHaveCount(1);

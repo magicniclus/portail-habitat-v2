@@ -9,7 +9,16 @@ import {
   type Scene,
 } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
+import { contourPiscine } from './formePiscine';
+import {
+  clotureTraverse,
+  piscineSurLaMaison,
+  placerTerrasse,
+  placerVegetal,
+} from './placementExterieur';
 import { aire, distance, projeter } from './geometrie';
+
+export { contourPiscine };
 
 /**
  * Extérieur (DES-18 à DES-20) : terrasses (surélevées avec marches), allées, clôtures,
@@ -57,56 +66,6 @@ export const HAUTEUR_CLOTURE: Record<Cloture['type'], number> = {
 };
 /** Hauteur d'une marche de terrasse (mm) et largeur de l'escalier. */
 const MARCHE = { hauteur: 170, giron: 300, largeur: 1_200 };
-
-const cercle = (cx: number, cy: number, rx: number, ry: number, n = 32): Point[] =>
-  Array.from({ length: n }, (_, i) => {
-    const a = (i / n) * 2 * Math.PI;
-    return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
-  });
-
-/** Contour de la piscine dans le plan (bassin intérieur), placé et tourné. */
-export function contourPiscine(p: Omit<Piscine, 'id'>): Point[] {
-  const [L, l] = [p.longueur / 2, p.largeur / 2];
-  let local: Point[];
-  switch (p.forme) {
-    case 'ronde':
-    case 'ovale':
-      local = cercle(0, 0, L, p.forme === 'ronde' ? L : l);
-      break;
-    case 'haricot':
-      // Ovale creusé d'un côté (forme de rein).
-      local = Array.from({ length: 40 }, (_, i) => {
-        const a = (i / 40) * 2 * Math.PI;
-        const creux = Math.sin(a) > 0 ? 1 - 0.45 * Math.sin(a) ** 2 * Math.cos(a / 2) ** 8 : 1;
-        return { x: L * Math.cos(a), y: l * Math.sin(a) * creux };
-      });
-      break;
-    case 'L':
-      // Bassin principal sur toute la longueur, retour sur la moitié de la longueur.
-      local = [
-        { x: -L, y: -l },
-        { x: L, y: -l },
-        { x: L, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: l },
-        { x: -L, y: l },
-      ];
-      break;
-    default:
-      local = [
-        { x: -L, y: -l },
-        { x: L, y: -l },
-        { x: L, y: l },
-        { x: -L, y: l },
-      ];
-  }
-  const r = (p.rotation / 1800) * Math.PI;
-  const [c, s] = [Math.cos(r), Math.sin(r)];
-  return local.map((q) => ({
-    x: Math.round(p.position.x + q.x * c - q.y * s),
-    y: Math.round(p.position.y + q.x * s + q.y * c),
-  }));
-}
 
 /** Volume d'eau (litres) : surface du bassin × profondeur moyenne (fond en pente). */
 export const volumeEau = (p: Omit<Piscine, 'id'>) =>
@@ -176,12 +135,15 @@ export function ajouterTerrasse(
   a: Point,
   b: Point,
   ctx: Contexte,
+  options: { aimant?: boolean } = {},
 ): Resultat<Niveau & { elementId: string }> {
   if (tropPetit(a, b))
     return echec('PRECONDITION', {
       message: 'Terrasse trop petite (30 cm au moins de chaque côté).',
     });
-  const t = schemaTerrasse.parse({ id: ctx.nouvelId('te'), contour: rectangle(a, b) });
+  const place = placerTerrasse(n, a, b, options.aimant ?? true);
+  if (typeof place === 'string') return echec('PRECONDITION', { message: place });
+  const t = schemaTerrasse.parse({ id: ctx.nouvelId('te'), contour: rectangle(...place) });
   return succes({ ...avec(n, { terrasses: [...n.exterieur.terrasses, t] }), elementId: t.id });
 }
 
@@ -210,6 +172,8 @@ export function ajouterPiscine(
     profondeurMax: forme === 'hors_sol' ? 1_200 : 1_800,
     escalier: forme === 'hors_sol' || forme === 'ronde' ? null : 'roman',
   });
+  if (piscineSurLaMaison(n, contourPiscine(p)))
+    return echec('PRECONDITION', { message: 'La piscine empiéterait sur la maison.' });
   return succes({ ...avec(n, { piscines: [...n.exterieur.piscines, p] }), elementId: p.id });
 }
 
@@ -220,6 +184,8 @@ export function tracerCloture(
   ctx: Contexte,
 ): Resultat<Niveau & { elementId: string }> {
   if (distance(e.a, e.b) < 100) return echec('PRECONDITION', { message: 'Tronçon trop court.' });
+  const traverse = clotureTraverse(n, e.a, e.b);
+  if (traverse) return echec('PRECONDITION', { message: traverse });
   const existante = e.id ? n.exterieur.clotures.find((c) => c.id === e.id) : undefined;
   const c = existante
     ? schemaCloture.safeParse({ ...existante, points: [...existante.points, e.b] })
@@ -242,11 +208,14 @@ export function ajouterVegetal(
   position: Point,
   type: Vegetal['type'],
   ctx: Contexte,
+  options: { aimant?: boolean } = {},
 ): Resultat<Niveau & { elementId: string }> {
+  const place = placerVegetal(n, position, DIAMETRE_VEGETAL[type], options.aimant ?? true);
+  if (typeof place === 'string') return echec('PRECONDITION', { message: place });
   const v = schemaVegetal.safeParse({
     id: ctx.nouvelId('v'),
     type,
-    position,
+    position: place,
     diametre: DIAMETRE_VEGETAL[type],
   });
   if (!v.success || n.exterieur.vegetation.length >= 500)
@@ -282,6 +251,8 @@ export function modifierExterieur(
   if (!x) return echec('INTROUVABLE');
   const r = SCHEMAS[genre].safeParse({ ...x, ...modif });
   if (!r.success) return echec('ENTREE_INVALIDE', { message: r.error.issues[0]!.message });
+  if (genre === 'piscine' && piscineSurLaMaison(n, contourPiscine(r.data as Piscine)))
+    return echec('PRECONDITION', { message: 'La piscine empiéterait sur la maison.' });
   return succes(avec(n, { [LISTES[genre]]: liste.map((e) => (e.id === id ? r.data : e)) }));
 }
 

@@ -1005,6 +1005,7 @@ Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'exté
   - 3D : terrasse texturée, marches, garde-corps, pergola, eau et margelles (ou bassin hors-sol), allées, clôtures, arbres et haies, limites de parcelle ; cadrage sur la maison et son jardin ;
   - métré : terrasse (m²), clôtures (ml, prestation « cloture »), allées (m²), piscines ;
   - **correction (bug trouvé par le typecheck)** : l'identifiant de l'élément créé est rendu dans `elementId` ; renvoyé dans `id`, il écrasait celui du niveau ;
+  - **placement de l'extérieur (retour du propriétaire, capture)** (`placementExterieur.ts`) : rien ne se pose dans la maison ; un arbre ou un arbuste recule jusqu'à ce que sa ramure touche juste la façade ; une terrasse à moins de 60 cm d'une façade s'y colle et ne peut pas recouvrir la maison ; une clôture ne traverse ni maison, ni terrasse, ni piscine, et chaque point s'aligne sur la limite de parcelle à moins d'1 m ; une piscine n'empiète jamais sur la maison, même agrandie ; aimant coupé : pose libre (sauf les refus) ;
   - **réglage changé (signalé)** : zoom minimal du plan 6 px/m (au lieu de 15) pour voir une maison et son jardin sur un téléphone.
 - **Reste** :
   - implantation (cadastre et photo aérienne IGN : hôtes réseau à autoriser) ;
