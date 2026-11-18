@@ -15,7 +15,8 @@ export function useGlisser(
   trace: boolean,
 ) {
   const geste = useRef<{
-    genre: 'mur' | 'objet';
+    genre: 'mur' | 'objet' | 'extremite';
+    /** Extrémité : « {murId}:a » ou « {murId}:b ». */
     id: string;
     dernier: Point;
     cle: string;
@@ -24,7 +25,7 @@ export function useGlisser(
   } | null>(null);
 
   return {
-    demarrer(genre: 'mur' | 'objet', id: string, ev: PointerEvent) {
+    demarrer(genre: 'mur' | 'objet' | 'extremite', id: string, ev: PointerEvent) {
       const p = versMm(ev);
       if (!p || trace) return;
       (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
@@ -43,7 +44,10 @@ export function useGlisser(
       if (!g) return false;
       const vers = arrondir(p);
       if (distance(vers, g.dernier) < 10) return true;
-      if (g.genre === 'mur')
+      if (g.genre === 'extremite') {
+        const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
+        dispatch({ type: 'deplacerExtremite', murId, extremite: bout, vers, geste: g.cle });
+      } else if (g.genre === 'mur')
         dispatch({
           type: 'deplacerMur',
           murId: g.id,
@@ -83,6 +87,11 @@ export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
     ),
     demarrerObjet: useCallback(
       (id: string, ev: PointerEvent) => courant.current.demarrer('objet', id, ev),
+      [],
+    ),
+    demarrerExtremite: useCallback(
+      (murId: string, bout: 'a' | 'b', ev: PointerEvent) =>
+        courant.current.demarrer('extremite', `${murId}:${bout}`, ev),
       [],
     ),
   };

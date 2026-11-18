@@ -59,7 +59,12 @@ function MursSvgBrut({
   etat,
   dispatch,
   demarrerGlisser,
-}: Calque<'murs'> & { demarrerGlisser: (murId: string, ev: PointerEvent) => void }) {
+  demarrerExtremite,
+}: Calque<'murs'> & {
+  demarrerGlisser: (murId: string, ev: PointerEvent) => void;
+  /** Poignée d'une extrémité du mur choisi : la déplacer (DES-09). */
+  demarrerExtremite: (murId: string, bout: 'a' | 'b', ev: PointerEvent) => void;
+}) {
   return niveau.murs.map((m) => {
     const choisi = etat.selection?.genre === 'mur' && etat.selection.id === m.id;
     const choisir = () => dispatch({ type: 'selectionner', selection: { genre: 'mur', id: m.id } });
@@ -87,23 +92,44 @@ function MursSvgBrut({
         />
       );
     return (
-      <polygon
-        key={m.id}
-        role="button"
-        tabIndex={0}
-        aria-label={`${LIBELLES_MUR[m.type]} de ${formatLongueur(longueurMur(m))}`}
-        aria-pressed={choisi}
-        points={points(contourMur(m))}
-        fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
-        className={etat.outil === 'selection' ? 'cursor-move' : undefined}
-        onPointerDown={(ev) => {
-          if (etat.outil !== 'selection') return;
-          ev.stopPropagation();
-          choisir();
-          demarrerGlisser(m.id, ev);
-        }}
-        onKeyDown={activer(choisir)}
-      />
+      <g key={m.id}>
+        <polygon
+          role="button"
+          tabIndex={0}
+          aria-label={`${LIBELLES_MUR[m.type]} de ${formatLongueur(longueurMur(m))}`}
+          aria-pressed={choisi}
+          points={points(contourMur(m))}
+          fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
+          className={etat.outil === 'selection' ? 'cursor-move' : undefined}
+          onPointerDown={(ev) => {
+            if (etat.outil !== 'selection') return;
+            ev.stopPropagation();
+            choisir();
+            demarrerGlisser(m.id, ev);
+          }}
+          onKeyDown={activer(choisir)}
+        />
+        {choisi && etat.outil === 'selection'
+          ? (['a', 'b'] as const).map((bout) => (
+              <circle
+                key={bout}
+                cx={m[bout].x}
+                cy={m[bout].y}
+                r={m.epaisseur / 2 + 80}
+                fill="white"
+                className="cursor-grab stroke-accent"
+                strokeWidth={2}
+                vectorEffect="non-scaling-stroke"
+                aria-label={`Extrémité ${bout === 'a' ? 'de départ' : 'de fin'} du mur`}
+                data-testid={`extremite-${bout}`}
+                onPointerDown={(ev) => {
+                  ev.stopPropagation();
+                  demarrerExtremite(m.id, bout, ev);
+                }}
+              />
+            ))
+          : null}
+      </g>
     );
   });
 }

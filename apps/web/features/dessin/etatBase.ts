@@ -15,7 +15,9 @@ import {
   type ModificationOuverture,
   type Niveau,
   type CoteVue,
+  type ModificationMur,
   type ParcelleCadastre,
+  type Piece,
   type Point,
   type Revetement,
   type Scene,
@@ -160,6 +162,11 @@ export type Action =
   | { type: 'terminerTrace' }
   | { type: 'selectionner'; selection: Selection }
   | { type: 'modifierLongueur'; murId: string; longueur: number }
+  /** Réglages d'un mur (DES-07) ; couper au milieu, fusionner avec le voisin (DES-09). */
+  | { type: 'modifierMur'; murId: string; modif: ModificationMur }
+  | { type: 'couperMur'; murId: string }
+  | { type: 'deplacerExtremite'; murId: string; extremite: 'a' | 'b'; vers: Point; geste?: string }
+  | { type: 'fusionnerMur'; murId: string; avec: string }
   | { type: 'deplacerMur'; murId: string; delta: Point; geste?: string }
   | { type: 'finGeste' }
   /** Flèches du clavier : déplace le mur sélectionné (DES-47). */
@@ -167,6 +174,7 @@ export type Action =
   /** `confirme` : suppression d'un mur porteur acceptée après avertissement. */
   | { type: 'supprimerSelection'; confirme?: boolean }
   | { type: 'renommerPiece'; pieceId: string; nom: string }
+  | { type: 'typerPiece'; pieceId: string; typePiece: Piece['type'] }
   | { type: 'revetement'; cible: CibleRevetement; revetement: Revetement }
   | { type: 'modifierOuverture'; id: string; modif: ModificationOuverture }
   | { type: 'modifierEscalier'; id: string; modif: ModificationEscalier }

@@ -28,7 +28,8 @@ export interface Contexte {
   tolerance?: number;
 }
 
-const avecPieces = (n: Niveau, ctx: Contexte): Niveau => ({
+/** Pièces redétectées après un changement de murs (noms et revêtements gardés). */
+export const avecPieces = (n: Niveau, ctx: Contexte): Niveau => ({
   ...n,
   pieces: synchroniserPieces(n.pieces, detecterPieces(n.murs), () => ctx.nouvelId('p')),
 });

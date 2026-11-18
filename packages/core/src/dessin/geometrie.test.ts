@@ -8,7 +8,9 @@ import {
   decalerVersInterieur,
   distancePointSegment,
   intersectionSegments,
+  orthogonal,
   perimetre,
+  pointALongueur,
   pointDansPolygone,
   projeter,
 } from './geometrie';
@@ -121,5 +123,18 @@ describe('formats', () => {
     expect(formatAngle(30)).toBe('3°');
     expect(formatAngle(125)).toBe('12,5°');
     expect(espaces(formatVolume(45_000))).toBe('45,0 m³');
+  });
+});
+
+describe('tracé au clavier (DES-06)', () => {
+  it('Maj : horizontal ou vertical selon le plus grand écart', () => {
+    expect(orthogonal({ x: 0, y: 0 }, { x: 4000, y: 300 })).toEqual({ x: 4000, y: 0 });
+    expect(orthogonal({ x: 0, y: 0 }, { x: 200, y: -3000 })).toEqual({ x: 0, y: -3000 });
+  });
+  it('longueur tapée dans la direction du curseur', () => {
+    expect(pointALongueur({ x: 0, y: 0 }, { x: 10, y: 0 }, 4200)).toEqual({ x: 4200, y: 0 });
+    expect(pointALongueur({ x: 0, y: 0 }, { x: 3, y: 4 }, 500)).toEqual({ x: 300, y: 400 });
+    expect(pointALongueur({ x: 0, y: 0 }, { x: 0, y: 0 }, 500)).toBeNull();
+    expect(pointALongueur({ x: 0, y: 0 }, { x: 1, y: 0 }, 0)).toBeNull();
   });
 });

@@ -1,9 +1,14 @@
 import {
   annuler,
   appliquerRevetement,
+  couperMurAuMilieu,
+  deplacerExtremite,
   deplacerMur,
+  fusionnerMurs,
+  modifierMur,
   modifierLongueurMur,
   renommerPiece,
+  typerPiece,
   retablir,
   terminerGeste,
 } from '@ph/core/dessin';
@@ -55,6 +60,18 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       };
     case 'modifierLongueur':
       return surNiveau(e, (n) => modifierLongueurMur(n, a.murId, a.longueur, ctx));
+    case 'modifierMur':
+      return surNiveau(e, (n) => modifierMur(n, a.murId, a.modif, ctx));
+    case 'deplacerExtremite':
+      return surNiveau(
+        e,
+        (n) => deplacerExtremite(n, a.murId, a.extremite, a.vers, ctx),
+        a.geste ?? null,
+      );
+    case 'couperMur':
+      return surNiveau(e, (n) => couperMurAuMilieu(n, a.murId, ctx));
+    case 'fusionnerMur':
+      return { ...surNiveau(e, (n) => fusionnerMurs(n, a.murId, a.avec, ctx)), selection: null };
     case 'deplacerMur':
       return surNiveau(e, (n) => deplacerMur(n, a.murId, a.delta, ctx), a.geste ?? null);
     case 'deplacerClavier':
@@ -73,6 +90,8 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...e, historique: terminerGeste(e.historique), guides: [] };
     case 'renommerPiece':
       return surNiveau(e, (n) => renommerPiece(n, a.pieceId, a.nom));
+    case 'typerPiece':
+      return surNiveau(e, (n) => typerPiece(n, a.pieceId, a.typePiece));
     case 'revetement':
       return surNiveau(e, (n) => appliquerRevetement(n, a.cible, a.revetement));
     case 'annuler':

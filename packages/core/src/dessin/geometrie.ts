@@ -112,3 +112,20 @@ export function decalerVersInterieur(
     return { x: l1.p.x + t * l1.dir.x, y: l1.p.y + t * l1.dir.y };
   });
 }
+
+/** Maj pendant un tracé (DES-06) : le point s'aligne à l'horizontale ou à la verticale. */
+export function orthogonal(origine: Point, p: Point): Point {
+  return Math.abs(p.x - origine.x) >= Math.abs(p.y - origine.y)
+    ? { x: Math.round(p.x), y: origine.y }
+    : { x: origine.x, y: Math.round(p.y) };
+}
+
+/** Point à `longueur` mm de `origine`, dans la direction de `vers` (longueur tapée, DES-06). */
+export function pointALongueur(origine: Point, vers: Point, longueur: number): Point | null {
+  const d = distance(origine, vers);
+  if (d === 0 || longueur <= 0) return null;
+  return arrondir({
+    x: origine.x + ((vers.x - origine.x) / d) * longueur,
+    y: origine.y + ((vers.y - origine.y) / d) * longueur,
+  });
+}

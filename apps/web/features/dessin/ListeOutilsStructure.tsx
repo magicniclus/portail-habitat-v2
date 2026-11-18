@@ -18,6 +18,8 @@ const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'demi_mur', libelle: LIBELLES_MUR.demi_mur, detail: 'Hauteur 1,10 m' },
   { type: 'muret', libelle: LIBELLES_MUR.muret, detail: 'Hauteur 60 cm' },
   { type: 'separation', libelle: LIBELLES_MUR.separation, detail: 'Sépare deux pièces sans mur' },
+  { type: 'poteau', libelle: LIBELLES_MUR.poteau, detail: 'Section 20 cm, deux clics' },
+  { type: 'poutre', libelle: LIBELLES_MUR.poutre, detail: 'Sous le plafond, deux clics' },
 ];
 /** Étiquette « Placer » des outils qui se posent sur le plan. */
 export const tracer = <span className="text-xs font-bold text-accent-700">Placer</span>;

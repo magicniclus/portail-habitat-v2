@@ -3,15 +3,17 @@
 import {
   formatLongueur,
   formatSurface,
+  LIBELLES_PIECE,
   niveauSuperieur,
+  voisinFusionnable,
   perimetre,
   surfaceCarrez,
   type Piece,
 } from '@ph/core/dessin';
-import { Button, Field, Input } from '@ph/ui';
+import { Button, Field, Input, Select } from '@ph/ui';
 import { PEINTURES_DESSIN, SOLS_DESSIN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
-import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
+import { contexteNavigateur, niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { inspecteurAmenagement } from './InspecteurAmenagement';
 import { inspecteurExterieur } from './InspecteurExterieur';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
@@ -23,8 +25,27 @@ function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch
   return (
     <div className="grid gap-4">
       <p className={surtitre}>Pièce sélectionnée</p>
+      <Field label="Type de pièce">
+        <Select
+          value={piece.type}
+          onChange={(ev) =>
+            dispatch({
+              type: 'typerPiece',
+              pieceId: piece.id,
+              typePiece: ev.target.value as Piece['type'],
+            })
+          }
+        >
+          {(Object.keys(LIBELLES_PIECE) as Piece['type'][]).map((t) => (
+            <option key={t} value={t}>
+              {LIBELLES_PIECE[t]}
+            </option>
+          ))}
+        </Select>
+      </Field>
       <Field label="Nom de la pièce">
         <Input
+          key={piece.nom}
           defaultValue={piece.nom}
           maxLength={60}
           onBlur={(ev) => {
@@ -78,7 +99,15 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
   const s = etat.selection;
   const mur = s?.genre === 'mur' ? n.murs.find((m) => m.id === s.id) : undefined;
   const piece = s?.genre === 'piece' ? n.pieces.find((p) => p.id === s.id) : undefined;
-  if (mur) return <InspecteurMur key={mur.id} mur={mur} dispatch={dispatch} />;
+  if (mur)
+    return (
+      <InspecteurMur
+        key={mur.id}
+        mur={mur}
+        fusionnable={voisinFusionnable(n, mur.id, contexteNavigateur)}
+        dispatch={dispatch}
+      />
+    );
   if (piece) return <InspecteurPiece key={piece.id} piece={piece} dispatch={dispatch} />;
   const o = s?.genre === 'ouverture' ? n.ouvertures.find((x) => x.id === s.id) : undefined;
   if (o) return <InspecteurOuverture key={o.id} o={o} dispatch={dispatch} />;

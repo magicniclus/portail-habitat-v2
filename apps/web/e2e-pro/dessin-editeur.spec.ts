@@ -287,4 +287,73 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await expect(plan.getByText('Séjour')).toHaveCount(0);
     await expect(plan.getByText('83,6 m²')).toBeVisible();
   });
+  test('DES-06, DES-07, DES-09, DES-11 : longueur au clavier, Maj, réglages et découpe du mur, type de pièce', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const svg = plan.locator('svg');
+    const ecran = async (x: number, y: number) => {
+      const b = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = b.width / vl!;
+      return { x: b.x + (x - vx!) * k, y: b.y + (y - vy!) * k };
+    };
+    const menu = page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Structure' });
+    if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
+    await page.getByRole('button', { name: /^Murs & cloisons/ }).click();
+    await page.getByRole('button', { name: /^Cloison/ }).click();
+    await page.waitForTimeout(400);
+
+    // DES-06 : premier point, puis Maj (tracé droit) et longueur tapée au clavier.
+    let p = await ecran(2000, 2000);
+    await page.mouse.click(p.x, p.y);
+    p = await ecran(5000, 2300);
+    await page.keyboard.down('Shift');
+    await page.mouse.move(p.x, p.y);
+    await page.keyboard.up('Shift');
+    await page.keyboard.press('3');
+    await page.getByLabel('Longueur (cm)').fill('300');
+    await page.getByLabel('Longueur (cm)').press('Enter');
+    await page.keyboard.press('Escape');
+    const cloison = plan.getByRole('button', { name: 'Cloison de 3,00 m' });
+    await expect(cloison).toHaveCount(1);
+
+    // DES-07 et DES-09 : épaisseur, découpe en deux, fusion (outil Sélection).
+    await page
+      .getByRole('toolbar', { name: 'Outils du plan' })
+      .getByRole('button', { name: 'Sélectionner' })
+      .click();
+    await cloison.click({ force: true });
+    if (page.viewportSize()!.width < 900)
+      await page
+        .getByRole('button', { name: 'Propriétés' })
+        .click()
+        .catch(() => undefined);
+    await page.getByLabel('Épaisseur (cm)').fill('10');
+    await page.getByLabel('Épaisseur (cm)').press('Enter');
+    await page.getByRole('button', { name: 'Couper en deux' }).click();
+    await expect(plan.getByRole('button', { name: 'Cloison de 1,50 m' })).toHaveCount(2);
+    await plan.getByRole('button', { name: 'Cloison de 1,50 m' }).first().click({ force: true });
+    await page.getByRole('button', { name: 'Fusionner avec le voisin' }).click();
+    await expect(plan.getByRole('button', { name: 'Cloison de 3,00 m' })).toHaveCount(1);
+
+    // DES-11 : type de pièce ; une pièce sans nom choisi prend le nom de son type.
+    await plan
+      .getByRole('button', { name: /^Pièce / })
+      .first()
+      .click({ force: true });
+    await page.getByLabel('Type de pièce').selectOption('cuisine');
+    await expect(plan.getByText('Cuisine', { exact: true })).toBeVisible();
+  });
 });

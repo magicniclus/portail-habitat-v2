@@ -1,4 +1,5 @@
-import type { Mur, Piece, Point } from '../schemas/dessinScene';
+import { echec, succes, type Resultat } from '../resultat';
+import type { Mur, Niveau, Piece, Point } from '../schemas/dessinScene';
 import {
   aire,
   aireSignee,
@@ -177,4 +178,43 @@ export function synchroniserPieces(
 export function surfaceCarrez(p: Pick<Piece, 'contour' | 'zonesBasses'>): number {
   const basse = p.zonesBasses.reduce((s, z) => s + aire(z), 0);
   return Math.max(0, Math.round(aire(p.contour) - basse));
+}
+
+/** Types de pièce (DES-11), dans l'ordre du menu. */
+export const LIBELLES_PIECE: Record<Piece['type'], string> = {
+  sejour: 'Séjour',
+  cuisine: 'Cuisine',
+  chambre: 'Chambre',
+  salle_de_bain: 'Salle de bains',
+  salle_d_eau: 'Salle d’eau',
+  wc: 'WC',
+  entree: 'Entrée',
+  couloir: 'Couloir',
+  bureau: 'Bureau',
+  buanderie: 'Buanderie',
+  dressing: 'Dressing',
+  cellier: 'Cellier',
+  garage: 'Garage',
+  combles: 'Combles',
+  autre: 'Autre',
+};
+
+/**
+ * Type d'une pièce (DES-11). Une pièce encore nommée « Pièce N » prend le nom de son type ;
+ * un nom choisi par l'utilisateur est gardé.
+ */
+export function typerPiece(n: Niveau, pieceId: string, type: Piece['type']): Resultat<Niveau> {
+  if (!n.pieces.some((p) => p.id === pieceId)) return echec('INTROUVABLE');
+  return succes({
+    ...n,
+    pieces: n.pieces.map((p) =>
+      p.id === pieceId
+        ? {
+            ...p,
+            type,
+            nom: /^Pièce \d+$/.test(p.nom) && type !== 'autre' ? LIBELLES_PIECE[type] : p.nom,
+          }
+        : p,
+    ),
+  });
 }

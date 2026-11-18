@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { mur as schemaMur, type Mur, type Piece } from '../schemas/dessinScene';
 import { aire } from './geometrie';
-import { detecterPieces, surfaceCarrez, synchroniserPieces } from './pieces';
+import { contexteTest, niveauMaquette } from './aidesTest';
+import {
+  detecterPieces,
+  LIBELLES_PIECE,
+  surfaceCarrez,
+  synchroniserPieces,
+  typerPiece,
+} from './pieces';
 
 let n = 0;
 const m = (
@@ -116,5 +123,21 @@ describe('surfaceCarrez', () => {
     ];
     expect(surfaceCarrez({ contour, zonesBasses: [basse] })).toBe(aire(contour) - 2_000_000);
     expect(surfaceCarrez({ contour, zonesBasses: [contour, contour] })).toBe(0);
+  });
+});
+
+describe('type de pièce (DES-11)', () => {
+  it('donne le nom du type à une pièce sans nom choisi, garde un nom choisi', () => {
+    const n = niveauMaquette(contexteTest());
+    const id = n.pieces[0]!.id;
+    const r = typerPiece(n, id, 'cuisine');
+    expect(r.ok && r.data.pieces[0]).toMatchObject({ type: 'cuisine', nom: 'Cuisine' });
+    const nommee = { ...n, pieces: [{ ...n.pieces[0]!, nom: 'Labo photo' }] };
+    const r2 = typerPiece(nommee, id, 'bureau');
+    expect(r2.ok && r2.data.pieces[0]).toMatchObject({ type: 'bureau', nom: 'Labo photo' });
+    const r3 = typerPiece(n, id, 'autre');
+    expect(r3.ok && r3.data.pieces[0]!.nom).toBe(n.pieces[0]!.nom);
+    expect(typerPiece(n, 'p_absent', 'wc')).toMatchObject({ code: 'INTROUVABLE' });
+    expect(Object.keys(LIBELLES_PIECE)).toHaveLength(15);
   });
 });
