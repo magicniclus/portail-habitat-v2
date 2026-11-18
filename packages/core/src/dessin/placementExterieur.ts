@@ -181,3 +181,18 @@ export function rectanglePlage(
     { x: Math.round(x1), y: Math.round(y1) },
   ];
 }
+
+/** Côtés d'un contour (terrasse) collés à la maison : pas de garde-corps contre un mur. */
+export function cotesContreLaMaison(n: Niveau, contour: readonly Point[]): boolean[] {
+  const bati = maison(n);
+  const cx = contour.reduce((s, p) => s + p.x, 0) / contour.length;
+  const cy = contour.reduce((s, p) => s + p.y, 0) / contour.length;
+  return aretes(contour).map(([a, b]) => {
+    const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    const l = Math.hypot(b.y - a.y, b.x - a.x) || 1;
+    let [nx, ny] = [-(b.y - a.y) / l, (b.x - a.x) / l];
+    if ((m.x - cx) * nx + (m.y - cy) * ny < 0) [nx, ny] = [-nx, -ny];
+    const dehors = { x: m.x + nx * 150, y: m.y + ny * 150 };
+    return bati.some((poly) => pointDansPolygone(dehors, poly));
+  });
+}

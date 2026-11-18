@@ -3,6 +3,7 @@
 import {
   centroide,
   contourPiscine,
+  cotesContreLaMaison,
   pointDansPolygone,
   type Niveau,
   type Point,
@@ -30,7 +31,12 @@ export function Exterieur3D({ n, parcelle }: { n: Niveau; parcelle: Point[] | nu
         <Dalle key={`al${i}`} pts={a} z={8} couleur={C.allee} />
       ))}
       {e.terrasses.map((t) => (
-        <Terrasse3D key={t.id} t={t} maison={maison} />
+        <Terrasse3D
+          key={t.id}
+          t={t}
+          maison={maison}
+          contreMaison={cotesContreLaMaison(n, t.contour)}
+        />
       ))}
       {e.piscines.map((p) => {
         const contour = contourPiscine(p);

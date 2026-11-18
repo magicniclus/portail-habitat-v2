@@ -21,7 +21,7 @@ import {
 import { aire } from './geometrie';
 import { metreNiveau } from './metre';
 import { nouvelleScene } from './migrations';
-import { accrocherALaLimite } from './placementExterieur';
+import { accrocherALaLimite, cotesContreLaMaison } from './placementExterieur';
 
 const ok = <T>(r: { ok: true; data: T } | { ok: false; message: string }): T => {
   if (!r.ok) throw new Error(r.message);
@@ -260,6 +260,8 @@ describe('placement de l’extérieur', () => {
     const t = ok(ajouterTerrasse(n, { x: 1_000, y: 9_100 }, { x: 6_000, y: 12_100 }, ctx)).exterieur
       .terrasses[0]!;
     expect(t.contour[0]).toEqual({ x: 1_000, y: 8_600 });
+    // Seul le côté haut touche la façade : pas de garde-corps de ce côté.
+    expect(cotesContreLaMaison(n, t.contour)).toEqual([true, false, false, false]);
     expect(t.contour[2]).toEqual({ x: 6_000, y: 11_600 });
     expect(ajouterTerrasse(n, { x: 1_000, y: 7_000 }, { x: 6_000, y: 12_000 }, ctx)).toMatchObject({
       message: 'La terrasse ne peut pas recouvrir la maison.',

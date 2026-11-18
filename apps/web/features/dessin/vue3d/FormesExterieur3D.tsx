@@ -20,6 +20,7 @@ export function Segment({
   h,
   z0 = 0,
   couleur,
+  transparent = false,
 }: {
   a: Point;
   b: Point;
@@ -27,14 +28,15 @@ export function Segment({
   h: number;
   z0?: number;
   couleur: string;
+  transparent?: boolean;
 }) {
   const l = Math.hypot(b.x - a.x, b.y - a.y);
   return (
     <mesh
       position={[M((a.x + b.x) / 2), M(z0 + h / 2), M((a.y + b.y) / 2)]}
       rotation={[0, -Math.atan2(b.y - a.y, b.x - a.x), 0]}
-      material={materiauUni(couleur)}
-      castShadow
+      material={materiauUni(couleur, { transparent })}
+      castShadow={!transparent}
       receiveShadow
     >
       <boxGeometry args={[M(l), M(h), M(e)]} />
@@ -71,5 +73,26 @@ export function Dalle({
       position={[0, M(z), 0]}
       receiveShadow
     />
+  );
+}
+
+/** Poteau carré (côté `c` mm) de hauteur h, posé à z0 (mm). */
+export function Poteau({
+  p,
+  c,
+  h,
+  z0 = 0,
+  couleur,
+}: {
+  p: Point;
+  c: number;
+  h: number;
+  z0?: number;
+  couleur: string;
+}) {
+  return (
+    <mesh position={[M(p.x), M(z0 + h / 2), M(p.y)]} material={materiauUni(couleur)} castShadow>
+      <boxGeometry args={[M(c), M(h), M(c)]} />
+    </mesh>
   );
 }

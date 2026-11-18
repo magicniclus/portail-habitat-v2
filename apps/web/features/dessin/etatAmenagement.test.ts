@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { etatInitial, niveauDe, reduire, sceneDe, type Action } from './etat';
+import { cotesContreLaMaison, marchesTerrasse } from '@ph/core/dessin';
 import { ciblesDe } from './cibleFinition';
 import { sceneDepuisChoix } from './scenesDepart';
 
@@ -237,5 +238,20 @@ describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
     );
     expect(niveauDe(e).exterieur.piscines).toHaveLength(0);
     expect(sceneDe(e).terrain?.parcelle).toHaveLength(4);
+  });
+});
+
+describe('terrasse à l’ouest de la maison', () => {
+  it('collée à la façade ouest : ce côté n’a pas de garde-corps, les marches partent à l’ouest', () => {
+    const e = jouer([
+      { type: 'outil', outil: 'exterieur', elementExterieur: 'terrasse' },
+      { type: 'poserPoint', point: { x: -2_500, y: 1_000 } },
+      { type: 'poserPoint', point: { x: -400, y: 4_000 } },
+    ]);
+    const t = niveauDe(e).exterieur.terrasses[0]!;
+    expect(t.contour[1]!.x).toBe(0);
+    expect(cotesContreLaMaison(niveauDe(e), t.contour)).toEqual([false, true, false, false]);
+    const m = marchesTerrasse({ ...t, hauteur: 600 }, { x: 5_300, y: 4_300 })!;
+    expect(m.cote).toBe(3);
   });
 });
