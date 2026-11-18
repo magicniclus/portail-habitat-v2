@@ -7,6 +7,7 @@ import type { Action, EtatEditeur, Vue } from './etat';
 const VUES: { vue: Vue; libelle: string }[] = [
   { vue: 'plan', libelle: 'Plan 2D' },
   { vue: '3d', libelle: 'Vue 3D' },
+  { vue: 'visite', libelle: 'Visite' },
 ];
 
 const interrupteur = 'flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm';
@@ -17,7 +18,7 @@ export function RenduMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
   const regler = (reglages: Partial<EtatEditeur['rendu']>) => dispatch({ type: 'rendu', reglages });
   return (
     <div className="grid gap-4">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {VUES.map((v) => (
           <Button
             key={v.vue}
@@ -61,10 +62,11 @@ export function RenduMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
       </label>
       <p className="m-0 px-1 text-[13px] leading-5 text-neutre-800">
         En 3D : faites tourner la vue en glissant, zoomez avec la molette ou deux doigts. Cliquez
-        sur un meuble pour le déplacer ou le faire pivoter avec ses anneaux (Maj : sans crans).
+        sur un meuble pour le déplacer ou le faire pivoter avec ses anneaux (Maj : sans crans). En
+        visite : ZQSD ou flèches pour marcher, glisser pour regarder, joystick sur mobile.
       </p>
       <p className="m-0 px-1 text-xs font-bold tracking-wide text-neutre-700 uppercase">
-        Bientôt : visite, photo HD
+        Bientôt : photo HD
       </p>
     </div>
   );

@@ -24,3 +24,4 @@ export * from './validations';
 export * from './volumes';
 export * from './formes3d';
 export * from './soleil';
+export * from './visite';

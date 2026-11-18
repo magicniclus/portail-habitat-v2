@@ -78,7 +78,13 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'aimant':
       return { ...e, aimant: !e.aimant };
     case 'vue':
-      return { ...e, vue: a.vue, trace: null, outil: 'selection' };
+      return {
+        ...e,
+        vue: a.vue,
+        trace: null,
+        outil: 'selection',
+        selection: a.vue === 'visite' ? null : e.selection,
+      };
     case 'rendu':
       return { ...e, rendu: { ...e.rendu, ...a.reglages } };
     case 'calque':

@@ -307,6 +307,22 @@ test.describe('Plans (espace pro)', () => {
     await page.getByLabel(/^Soleil/).fill('9');
     await expect(page.getByText('Soleil · 9 h')).toBeVisible();
     await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
+    await menu('Rendu');
+
+    // DES-34 : visite à la première personne, on avance et le mini-plan suit.
+    await page.getByRole('button', { name: 'Visite', exact: true }).first().click();
+    const visite = page.getByTestId('visite');
+    await expect(visite.locator('canvas')).toBeVisible({ timeout: 20_000 });
+    const repere = page.getByRole('img', { name: 'Mini-plan : votre position' }).locator('polygon');
+    await expect(page.getByRole('application', { name: /Joystick/ })).toBeVisible();
+    const avant = await repere.getAttribute('points');
+    await visite.click({ position: { x: 20, y: 20 } });
+    await page.keyboard.down('z');
+    await page.waitForTimeout(800);
+    await page.keyboard.up('z');
+    await expect(repere).not.toHaveAttribute('points', avant!);
+
+    await menu('Rendu');
     await page.getByRole('button', { name: 'Plan 2D' }).click();
     await expect(page.getByTestId('plan-2d')).toBeVisible();
   });

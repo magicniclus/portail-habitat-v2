@@ -15,14 +15,13 @@ import { Panneau } from './Panneau';
 import { Plan2D } from './Plan2D';
 
 /** three.js n'est chargé qu'au passage en 3D (DESSIN.md §5 bis, budget EXPLOITATION §1). */
-const Vue3D = dynamic(() => import('./vue3d/Vue3D'), {
-  ssr: false,
-  loading: () => (
-    <p role="status" className="grid h-full place-items-center text-sm text-neutre-800">
-      Préparation de la 3D…
-    </p>
-  ),
-});
+const chargement3D = () => (
+  <p role="status" className="grid h-full place-items-center text-sm text-neutre-800">
+    Préparation de la 3D…
+  </p>
+);
+const Vue3D = dynamic(() => import('./vue3d/Vue3D'), { ssr: false, loading: chargement3D });
+const Visite = dynamic(() => import('./vue3d/Visite'), { ssr: false, loading: chargement3D });
 import { RailMenus, RailOutils } from './Rails';
 import { useFond } from './useFond';
 import { usePanneauxTelephone } from './usePanneauxTelephone';
@@ -127,6 +126,8 @@ export function EspaceDeTravail(p: {
         <main className="relative min-w-0 flex-1">
           {etat.vue === 'plan' ? (
             <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
+          ) : etat.vue === 'visite' ? (
+            <Visite etat={etat} />
           ) : (
             <Vue3D etat={etat} dispatch={dispatch} />
           )}

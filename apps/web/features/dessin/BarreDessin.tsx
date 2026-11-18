@@ -38,7 +38,7 @@ const PASTILLE: Record<EtatSauvegarde, string> = {
 const VUES: { vue: Vue; libelle: string; Icone: Icon; prete: boolean }[] = [
   { vue: 'plan', libelle: 'Plan', Icone: SquareIcon, prete: true },
   { vue: '3d', libelle: '3D', Icone: CubeIcon, prete: true },
-  { vue: 'visite', libelle: 'Visite', Icone: EyeIcon, prete: false },
+  { vue: 'visite', libelle: 'Visite', Icone: EyeIcon, prete: true },
 ];
 
 /** Barre de l'éditeur plein écran : retour, projet, enregistrement, annuler, vues. Une ligne. */
