@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Portail Travaux — Dessin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+a{color:#a33f05}a:hover{color:#e05a10}
+.pt-b:focus-visible{outline:2px solid #ff9857;outline-offset:2px}
+.pt-h:hover{background:#f4f2ef !important}
+.pt-row:hover{background:#faf9f7 !important}
+</style>
+</helmet>
+
+<div style="--acc: {{accent}}; width:100%; height:900px; overflow:hidden; display:flex; flex-direction:column; font-family:'Source Sans 3',system-ui,sans-serif; color:#201e1d; background:#fff">
+
+  <!-- Barre d'application -->
+  <header style="min-height:60px; flex:none; display:flex; align-items:center; flex-wrap:wrap; gap:12px 16px; padding:8px 16px; border-bottom:1px solid #e7e5e1; background:#fff">
+    <a href="#" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:#201e1d">
+      <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--acc)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="#201e1d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--acc)"></rect>
+      </svg>
+      <span style="font-size:16px; font-weight:700; white-space:nowrap">Portail Travaux <span style="color:#a33f05">Dessin</span></span>
+    </a>
+    <span style="width:1px; height:28px; background:#e7e5e1"></span>
+    <div style="display:flex; flex-direction:column; min-width:0">
+      <label for="pt-nom" style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6b6763">Projet</label>
+      <input id="pt-nom" type="text" value="Rénovation maison" style="font:inherit; font-size:15px; font-weight:600; color:#201e1d; border:0; padding:0; background:transparent; width:190px">
+    </div>
+    <span style="font-size:13px; color:#6b6763; white-space:nowrap; display:flex; align-items:center; gap:6px"><span style="{{saveDot}}"></span>{{saveLabel}}</span>
+
+    <div role="tablist" aria-label="Niveaux" style="margin-left:auto; display:flex; align-items:center; gap:4px; background:#f4f2ef; border-radius:10px; padding:4px">
+      <sc-for list="{{levels}}" as="l" hint-placeholder-count="2">
+        <button type="button" role="tab" class="pt-b" aria-selected="{{l.on}}" onClick="{{l.pick}}" style="{{l.style}}">{{l.label}}</button>
+      </sc-for>
+      <button type="button" class="pt-b pt-h" aria-label="Ajouter un niveau" style="width:36px; height:36px; border:0; border-radius:8px; background:transparent; color:#3f4a57; cursor:pointer; font-size:18px">+</button>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:2px">
+      <button type="button" class="pt-b pt-h" onClick="{{undo}}" aria-label="Annuler" style="{{undoStyle}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>
+      </button>
+      <button type="button" class="pt-b pt-h" onClick="{{redo}}" aria-label="Rétablir" style="{{redoStyle}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13"></path></svg>
+      </button>
+    </div>
+
+    <div role="radiogroup" aria-label="Vue" style="display:flex; border:1px solid #d9d6d1; border-radius:10px; overflow:hidden">
+      <sc-for list="{{views}}" as="v" hint-placeholder-count="3">
+        <button type="button" role="radio" class="pt-b" aria-checked="{{v.on}}" onClick="{{v.pick}}" style="{{v.style}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{v.d}}"></path></svg>
+          {{v.label}}
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:8px">
+      <button type="button" class="pt-b pt-h" onClick="{{toggleGuide}}" aria-label="Guide de démarrage" aria-pressed="{{guideOpen}}" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:1px solid #d9d6d1; border-radius:8px; background:#fff; color:#3f4a57; cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"></path></svg>
+      </button>
+      <button type="button" class="pt-b pt-h" style="min-height:40px; padding:0 14px; border:1px solid #d9d6d1; border-radius:8px; background:#fff; font:inherit; font-size:14px; font-weight:600; color:#201e1d; cursor:pointer">Partager</button>
+      <button type="button" class="pt-b" onClick="{{save}}" style="min-height:40px; padding:0 16px; border:0; border-radius:8px; background:var(--acc); font:inherit; font-size:14px; font-weight:700; color:#fff; cursor:pointer">Enregistrer</button>
+      <a href="#" aria-label="Se connecter" style="width:40px; height:40px; border-radius:50%; background:#fff2ea; color:#a33f05; display:flex; align-items:center; justify-content:center; text-decoration:none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21a8 8 0 0 1 16 0"></path></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Corps -->
+  <div style="flex:1; min-height:0; display:flex">
+
+    <!-- Bibliothèque -->
+    <aside aria-label="Bibliothèque" style="width:300px; flex:none; border-right:1px solid #e7e5e1; display:flex; flex-direction:column; background:#fff; min-height:0">
+      <div style="padding:14px 14px 10px; position:relative">
+        <label for="pt-search" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)">Rechercher dans la bibliothèque</label>
+        <input id="pt-search" type="search" placeholder="Rechercher : porte, douche, parquet…" style="width:100%; box-sizing:border-box; min-height:42px; font:inherit; font-size:14px; padding:0 12px 0 38px; border:1px solid #d9d6d1; border-radius:8px; background:#faf9f7">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b6763" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position:absolute; left:27px; top:27px"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"></path></svg>
+      </div>
+      <div role="tablist" aria-label="Catégories" style="display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); border-bottom:1px solid #e7e5e1; padding:0 6px">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+          <button type="button" role="tab" class="pt-b" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+            <span style="font-size:11.5px; font-weight:700">{{t.label}}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="flex:1; overflow-y:auto; padding:12px 10px 16px">
+
+        <sc-if value="{{hasSub}}" hint-placeholder-val="{{ false }}">
+          <nav aria-label="Fil d'Ariane" style="display:flex; align-items:center; gap:6px; padding:0 6px 10px; font-size:13px">
+            <button type="button" class="pt-b" onClick="{{backSub}}" style="border:0; background:transparent; padding:4px 0; font:inherit; font-size:13px; font-weight:600; color:#a33f05; cursor:pointer">{{tabTitle}}</button>
+            <span style="color:#6b6763">›</span>
+            <span style="font-weight:700">{{subTitle}}</span>
+          </nav>
+          <p style="margin:0 6px 12px; font-size:13px; line-height:19px; color:#57534f">{{subHint}}</p>
+        </sc-if>
+
+        <sc-if value="{{showFinitionsZone}}" hint-placeholder-val="{{ false }}">
+          <div style="margin:0 4px 12px; border:1px dashed #ffc19c; background:#fffaf6; border-radius:10px; padding:12px; display:grid; gap:8px">
+            <p style="margin:0; font-size:14px; font-weight:700">Appliquer à une zone</p>
+            <p style="margin:0; font-size:13px; line-height:19px; color:#57534f">Délimitez une partie de mur ou de sol pour lui donner sa propre finition.</p>
+            <button type="button" class="pt-b" style="justify-self:start; min-height:36px; padding:0 12px; border:1px solid #ffc19c; border-radius:8px; background:#fff; font:inherit; font-size:13px; font-weight:700; color:#a33f05; cursor:pointer">Tracer une zone</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{showList}}" hint-placeholder-val="{{ true }}">
+          <ul style="list-style:none; margin:0; padding:0; display:grid; gap:2px">
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+              <li>
+                <button type="button" class="pt-b pt-row" onClick="{{r.pick}}" aria-pressed="{{r.on}}" style="{{r.style}}">
+                  <span style="width:40px; height:40px; flex:none; border-radius:8px; background:#f4f2ef; display:flex; align-items:center; justify-content:center; color:#3f4a57">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.d}}"></path></svg>
+                  </span>
+                  <span style="display:flex; flex-direction:column; min-width:0; flex:1; text-align:left">
+                    <span style="font-size:15px; font-weight:600; color:#201e1d">{{r.label}}</span>
+                    <span style="font-size:12.5px; color:#6b6763">{{r.meta}}</span>
+                  </span>
+                  <span style="font-size:12px; font-weight:700; color:#a33f05; white-space:nowrap">{{r.action}}</span>
+                </button>
+              </li>
+            </sc-for>
+          </ul>
+        </sc-if>
+
+        <!-- Chiffrer -->
+        <sc-if value="{{isChiffrer}}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; gap:14px; padding:0 4px">
+            <p style="margin:0; font-size:14px; line-height:20px; color:#57534f">Les quantités sont calculées depuis votre plan. Faites chiffrer chaque poste par des artisans proches de chez vous.</p>
+            <table style="width:100%; border-collapse:collapse; font-size:14px">
+              <caption style="text-align:left; font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#6b6763; padding-bottom:6px">Métré</caption>
+              <tbody>
+                <sc-for list="{{metrics}}" as="m" hint-placeholder-count="4">
+                  <tr style="border-top:1px solid #ecebe7">
+                    <th scope="row" style="text-align:left; font-weight:400; color:#57534f; padding:9px 0">{{m.label}}</th>
+                    <td style="text-align:right; font-weight:700; padding:9px 0">{{m.value}}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div style="display:grid; gap:8px">
+              <p style="margin:0; font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#6b6763">Postes à chiffrer</p>
+              <sc-for list="{{postes}}" as="p" hint-placeholder-count="3">
+                <label style="display:flex; align-items:center; gap:10px; min-height:44px; padding:0 12px; border:1px solid #e7e5e1; border-radius:8px; font-size:14px; cursor:pointer">
+                  <input type="checkbox" checked="checked" style="width:18px; height:18px; accent-color:#e05a10">
+                  <span style="flex:1; font-weight:600">{{p.label}}</span>
+                  <span style="color:#57534f">{{p.qty}}</span>
+                </label>
+              </sc-for>
+            </div>
+            <a href="#" class="pt-b" style="min-height:46px; display:flex; align-items:center; justify-content:center; background:var(--acc); color:#fff; border-radius:8px; font-weight:700; font-size:15px; text-decoration:none">Demander des devis</a>
+            <button type="button" class="pt-b pt-h" style="min-height:42px; border:1px solid #d9d6d1; background:#fff; border-radius:8px; font:inherit; font-size:14px; font-weight:600; color:#201e1d; cursor:pointer">Télécharger le métré (PDF)</button>
+          </div>
+        </sc-if>
+
+        <!-- Rendu -->
+        <sc-if value="{{isRendu}}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; gap:14px; padding:0 4px">
+            <p style="margin:0; font-size:14px; line-height:20px; color:#57534f">Créez une image réaliste de la pièce, prête à partager avec votre artisan.</p>
+            <fieldset style="border:0; margin:0; padding:0">
+              <legend style="font-size:14px; font-weight:700; margin-bottom:8px">Cadrage</legend>
+              <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px">
+                <sc-for list="{{formats}}" as="f" hint-placeholder-count="3">
+                  <button type="button" class="pt-b" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}}</button>
+                </sc-for>
+              </div>
+            </fieldset>
+            <fieldset style="border:0; margin:0; padding:0">
+              <legend style="font-size:14px; font-weight:700; margin-bottom:8px">Lumière</legend>
+              <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px">
+                <sc-for list="{{ambiances}}" as="a" hint-placeholder-count="2">
+                  <button type="button" class="pt-b" onClick="{{a.pick}}" aria-pressed="{{a.on}}" style="{{a.style}}">{{a.label}}</button>
+                </sc-for>
+              </div>
+            </fieldset>
+            <button type="button" class="pt-b" onClick="{{generate}}" style="min-height:46px; border:0; background:var(--acc); color:#fff; border-radius:8px; font:inherit; font-size:15px; font-weight:700; cursor:pointer">Lancer le rendu</button>
+            <sc-if value="{{generated}}" hint-placeholder-val="{{ false }}">
+              <p role="status" style="margin:0; font-size:14px; line-height:20px; background:#eef7f3; color:#085340; border-radius:8px; padding:10px 12px">Rendu en préparation. Il apparaîtra dans « Mes rendus » dès qu'il sera prêt.</p>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </aside>
+
+    <!-- Plan de travail -->
+    <main style="position:relative; flex:1; min-width:0; background-color:#f6f5f3; background-image:radial-gradient(#cfcbc5 1px, transparent 1.2px); background-size:24px 24px">
+
+      <!-- Palette d'outils -->
+      <div role="toolbar" aria-label="Outils de dessin" aria-orientation="vertical" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:4px; background:#201e1d; border-radius:12px; padding:6px; z-index:20">
+        <sc-for list="{{tools}}" as="t" hint-placeholder-count="8">
+          <button type="button" class="pt-b" onClick="{{t.pick}}" aria-label="{{t.label}}" title="{{t.label}}" aria-pressed="{{t.on}}" style="{{t.style}}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+
+      <!-- Affichage -->
+      <div style="position:absolute; right:16px; top:16px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; z-index:20">
+        <sc-for list="{{layers}}" as="ly" hint-placeholder-count="3">
+          <button type="button" class="pt-b" onClick="{{ly.pick}}" aria-pressed="{{ly.on}}" style="{{ly.style}}">{{ly.label}}</button>
+        </sc-for>
+        <button type="button" class="pt-b pt-h" aria-label="Imprimer le plan" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:1px solid #d9d6d1; border-radius:999px; background:#fff; color:#3f4a57; cursor:pointer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-8h16v8h-3M7 14h10v7H7z"></path></svg>
+        </button>
+      </div>
+
+      <!-- Bandeau de tracé -->
+      <sc-if value="{{drawing}}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="position:absolute; top:60px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:10px; background:#201e1d; color:#fff; border-radius:12px; padding:6px 6px 6px 14px; z-index:22; white-space:nowrap">
+          <span style="font-size:14px; font-weight:600">Tracé : {{drawType}} · cliquez pour poser le point suivant</span>
+          <kbd style="font:inherit; font-size:12px; border:1px solid #8a857f; border-radius:4px; padding:1px 6px; color:#e7e5e1">Échap</kbd>
+          <button type="button" class="pt-b" onClick="{{cancelDraw}}" style="min-height:36px; padding:0 12px; border:0; background:#3f4a57; border-radius:8px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; color:#fff">Annuler</button>
+          <button type="button" class="pt-b" onClick="{{validateDraw}}" style="min-height:36px; padding:0 12px; border:0; background:var(--acc); border-radius:8px; font:inherit; font-size:14px; font-weight:700; cursor:pointer; color:#fff">Terminer</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isVisite}}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; left:50%; top:60px; transform:translateX(-50%); background:#201e1d; color:#fff; font-size:14px; font-weight:600; border-radius:12px; padding:9px 14px; z-index:12; white-space:nowrap">Visite : flèches pour avancer, souris pour regarder autour</div>
+      </sc-if>
+
+      <!-- Plan -->
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:64px 80px 80px">
+        <div style="{{planWrapStyle}}">
+          <sc-if value="{{is2D}}" hint-placeholder-val="{{ true }}">
+            <svg width="640" height="540" viewBox="0 0 640 540" role="img" aria-label="Plan 2D : pièce de 10,60 m sur 8,60 m" style="display:block; overflow:visible">
+              <rect x="55" y="55" width="530" height="430" fill="#3f4a57"></rect>
+              <rect x="70" y="70" width="500" height="400" fill="{{floorFill}}"></rect>
+              <sc-if value="{{roomSelected}}" hint-placeholder-val="{{ true }}">
+                <rect x="74" y="74" width="492" height="392" fill="none" stroke="var(--acc)" stroke-width="2" stroke-dasharray="6 5"></rect>
+              </sc-if>
+
+              <sc-if value="{{showDims}}" hint-placeholder-val="{{ true }}">
+                <g font-family="Source Sans 3, sans-serif" font-size="12" font-weight="600" fill="#3f4a57">
+                  <path d="M55 30h530M55 25v10M585 25v10" stroke="#8a857f" fill="none"></path>
+                  <rect x="291" y="21" width="58" height="18" rx="9" fill="#fff" stroke="#d9d6d1"></rect>
+                  <text x="320" y="34" text-anchor="middle">10,60 m</text>
+                  <path d="M30 55v430M25 55h10M25 485h10" stroke="#8a857f" fill="none"></path>
+                  <rect x="21" y="241" width="18" height="58" rx="9" fill="#fff" stroke="#d9d6d1"></rect>
+                  <text x="0" y="0" text-anchor="middle" transform="translate(34 270) rotate(-90)">8,60 m</text>
+                  <path d="M70 455h500" stroke="#8a857f" stroke-dasharray="3 3" fill="none"></path>
+                  <text x="320" y="450" text-anchor="middle" fill="#57534f">int. 10,00 m</text>
+                  <path d="M555 70v400" stroke="#8a857f" stroke-dasharray="3 3" fill="none"></path>
+                  <text x="0" y="0" text-anchor="middle" fill="#57534f" transform="translate(550 270) rotate(-90)">int. 8,00 m</text>
+                </g>
+              </sc-if>
+
+              <sc-if value="{{wallAdded}}" hint-placeholder-val="{{ false }}">
+                <line x1="70" y1="193.5" x2="409" y2="175" stroke="#3f4a57" stroke-width="8"></line>
+              </sc-if>
+
+              <sc-if value="{{drawing}}" hint-placeholder-val="{{ false }}">
+                <g font-family="Source Sans 3, sans-serif" font-size="12" font-weight="700">
+                  <path d="M58 70v123.5M58 193.5v276.5M52 193.5h18" stroke="var(--acc)" stroke-width="1" fill="none"></path>
+                  <rect x="40" y="110" width="18" height="48" rx="4" fill="#fff" stroke="var(--acc)"></rect>
+                  <text x="0" y="0" fill="#a33f05" text-anchor="middle" transform="translate(53 134) rotate(-90)">2,47 m</text>
+                  <rect x="40" y="308" width="18" height="48" rx="4" fill="#fff" stroke="var(--acc)"></rect>
+                  <text x="0" y="0" fill="#a33f05" text-anchor="middle" transform="translate(53 332) rotate(-90)">5,46 m</text>
+                  <line x1="70" y1="193.5" x2="409" y2="175" stroke="var(--acc)" stroke-width="6" stroke-linecap="round"></line>
+                  <rect x="207" y="155" width="64" height="22" rx="11" fill="#201e1d"></rect>
+                  <text x="239" y="170" fill="#fff" text-anchor="middle">6,78 m</text>
+                  <rect x="64" y="187.5" width="12" height="12" fill="#fff" stroke="var(--acc)" stroke-width="2.5"></rect>
+                  <circle cx="409" cy="175" r="10" fill="none" stroke="var(--acc)" stroke-width="1.5" stroke-dasharray="3 3"></circle>
+                  <circle cx="409" cy="175" r="4" fill="var(--acc)"></circle>
+                </g>
+              </sc-if>
+
+              <g font-family="Source Sans 3, sans-serif" text-anchor="middle">
+                <rect x="250" y="252" width="140" height="44" rx="10" fill="#fff" stroke="#d9d6d1"></rect>
+                <text x="320" y="271" font-size="15" font-weight="700" fill="#201e1d">{{roomName}}</text>
+                <text x="320" y="288" font-size="13" font-weight="600" fill="#a33f05">{{surfaceLabel}}</text>
+              </g>
+            </svg>
+          </sc-if>
+
+          <sc-if value="{{is3D}}" hint-placeholder-val="{{ false }}">
+            <svg width="690" height="420" viewBox="0 0 690 420" role="img" aria-label="Vue 3D de la pièce" style="display:block; overflow:visible">
+              <polygon points="320,100 577,248 368.5,369 111.5,220.4" fill="{{floorFill}}" stroke="#3f4a57" stroke-width="1"></polygon>
+              <polygon points="320,100 577,248 577,178 320,30" fill="{{wallFill}}" stroke="#3f4a57" stroke-width="1"></polygon>
+              <polygon points="320,100 111.5,220.4 111.5,150.4 320,30" fill="{{wallFill}}" stroke="#3f4a57" stroke-width="1"></polygon>
+              <polygon points="320,100 111.5,220.4 111.5,150.4 320,30" fill="#201e1d" fill-opacity="0.08"></polygon>
+              <polygon points="577,248 368.5,369 368.5,356 577,235" fill="#8a857f" stroke="#3f4a57" stroke-width="1"></polygon>
+              <polygon points="368.5,369 111.5,220.4 111.5,207.4 368.5,356" fill="#6b6763" stroke="#3f4a57" stroke-width="1"></polygon>
+              <sc-if value="{{wallAdded}}" hint-placeholder-val="{{ false }}">
+                <polygon points="215.8,160.2 380.5,255.2 380.5,185.2 215.8,90.2" fill="{{wallFill}}" stroke="#3f4a57" stroke-width="1"></polygon>
+              </sc-if>
+              <rect x="265" y="230" width="160" height="28" rx="14" fill="#fff" stroke="#d9d6d1"></rect>
+              <text x="345" y="249" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="700" fill="#201e1d" text-anchor="middle">{{roomName}} · {{surfaceLabel}}</text>
+            </svg>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- Guide de démarrage -->
+      <sc-if value="{{guideOpen}}" hint-placeholder-val="{{ true }}">
+        <section aria-label="Guide de démarrage" style="position:absolute; left:84px; bottom:16px; width:300px; max-width:calc(100% - 100px); background:#fff; border:1px solid #e7e5e1; border-radius:14px; box-shadow:0 8px 24px rgba(32,30,29,0.1); padding:16px; z-index:21; display:grid; gap:12px">
+          <div style="display:flex; align-items:flex-start; gap:8px">
+            <div style="flex:1">
+              <h2 style="margin:0; font-size:16px; font-weight:700">Bien démarrer</h2>
+              <p style="margin:2px 0 0; font-size:13px; color:#6b6763">{{guideProgress}}</p>
+            </div>
+            <button type="button" class="pt-b pt-h" onClick="{{toggleGuide}}" aria-label="Masquer le guide" style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; border:0; border-radius:8px; background:transparent; color:#57534f; cursor:pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+            </button>
+          </div>
+          <div style="height:6px; border-radius:3px; background:#ecebe7; overflow:hidden"><div style="{{guideBar}}"></div></div>
+          <ol style="list-style:none; margin:0; padding:0; display:grid; gap:8px">
+            <sc-for list="{{steps}}" as="st" hint-placeholder-count="4">
+              <li style="display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:19px">
+                <span style="{{st.dot}}">{{st.mark}}</span>
+                <span style="{{st.text}}">{{st.label}}</span>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+      </sc-if>
+
+      <!-- Zoom -->
+      <div style="position:absolute; right:16px; bottom:16px; display:flex; flex-direction:column; align-items:center; background:#fff; border:1px solid #e7e5e1; border-radius:12px; box-shadow:0 2px 8px rgba(32,30,29,0.08); z-index:20; overflow:hidden">
+        <button type="button" class="pt-b pt-h" onClick="{{zoomIn}}" aria-label="Zoomer" style="width:44px; height:40px; border:0; background:#fff; font-size:20px; color:#3f4a57; cursor:pointer">+</button>
+        <span style="font-size:12px; font-weight:700; color:#57534f; padding:2px 0">{{zoom}} %</span>
+        <button type="button" class="pt-b pt-h" onClick="{{zoomOut}}" aria-label="Dézoomer" style="width:44px; height:40px; border:0; background:#fff; font-size:20px; color:#3f4a57; cursor:pointer">−</button>
+        <button type="button" class="pt-b pt-h" onClick="{{fit}}" aria-label="Ajuster à l'écran" style="width:44px; height:40px; border:0; border-top:1px solid #ecebe7; background:#fff; color:#3f4a57; cursor:pointer; display:flex; align-items:center; justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
+        </button>
+        <button type="button" class="pt-b pt-h" aria-label="Exporter une image" style="width:44px; height:40px; border:0; border-top:1px solid #ecebe7; background:#fff; color:#a33f05; cursor:pointer; display:flex; align-items:center; justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM4 15l5-5 4 4 3-3 4 4M15.5 8.5h.01"></path></svg>
+        </button>
+      </div>
+
+      <div aria-hidden="true" style="position:absolute; right:76px; bottom:20px; font-size:12px; color:#57534f; display:flex; align-items:center; gap:6px; z-index:10">
+        <span style="display:block; width:50px; height:5px; border:1.5px solid #57534f; border-top:0"></span>1 m
+      </div>
+    </main>
+
+    <!-- Inspecteur -->
+    <aside aria-label="Propriétés" style="width:290px; flex:none; border-left:1px solid #e7e5e1; background:#fff; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:16px">
+      <sc-if value="{{drawing}}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; gap:14px">
+          <div>
+            <p style="margin:0; font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#6b6763">En cours de tracé</p>
+            <h2 style="margin:2px 0 0; font-size:20px; font-weight:700">{{drawTypeTitle}}</h2>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px">
+            <label style="display:grid; gap:4px; font-size:13px; font-weight:600">Longueur
+              <input type="text" value="678 cm" style="font:inherit; font-size:15px; min-height:40px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px; min-width:0">
+            </label>
+            <label style="display:grid; gap:4px; font-size:13px; font-weight:600">Épaisseur
+              <input type="text" value="{{drawThickness}}" style="font:inherit; font-size:15px; min-height:40px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px; min-width:0">
+            </label>
+            <label style="display:grid; gap:4px; font-size:13px; font-weight:600">Hauteur
+              <input type="text" value="250 cm" style="font:inherit; font-size:15px; min-height:40px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px; min-width:0">
+            </label>
+            <label style="display:grid; gap:4px; font-size:13px; font-weight:600">Angle
+              <input type="text" value="3°" style="font:inherit; font-size:15px; min-height:40px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px; min-width:0">
+            </label>
+          </div>
+          <p style="margin:0; font-size:13px; line-height:19px; color:#57534f">Saisissez une longueur exacte puis appuyez sur Entrée pour poser le point.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showRoomPanel}}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; gap:16px">
+          <div>
+            <p style="margin:0; font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#6b6763">Pièce sélectionnée</p>
+            <label for="pt-room" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)">Nom de la pièce</label>
+            <input id="pt-room" type="text" value="{{roomName}}" onChange="{{onRoomName}}" style="margin-top:4px; width:100%; box-sizing:border-box; font:inherit; font-size:20px; font-weight:700; min-height:42px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px">
+          </div>
+          <dl style="margin:0; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px">
+            <div style="background:#faf9f7; border-radius:8px; padding:8px 10px"><dt style="font-size:12px; color:#6b6763">Surface</dt><dd style="margin:0; font-size:17px; font-weight:700">80,0 m²</dd></div>
+            <div style="background:#faf9f7; border-radius:8px; padding:8px 10px"><dt style="font-size:12px; color:#6b6763">Périmètre</dt><dd style="margin:0; font-size:17px; font-weight:700">36,0 m</dd></div>
+          </dl>
+          <label style="display:grid; gap:4px; font-size:13px; font-weight:600">Hauteur sous plafond
+            <input type="text" value="250 cm" style="font:inherit; font-size:15px; min-height:40px; padding:0 10px; border:1px solid #d9d6d1; border-radius:8px">
+          </label>
+          <fieldset style="border:0; margin:0; padding:0">
+            <legend style="font-size:13px; font-weight:600; margin-bottom:8px">Sol · {{floorName}}</legend>
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+              <sc-for list="{{floors}}" as="fl" hint-placeholder-count="4">
+                <button type="button" class="pt-b" onClick="{{fl.pick}}" aria-label="{{fl.label}}" aria-pressed="{{fl.on}}" title="{{fl.label}}" style="{{fl.style}}"></button>
+              </sc-for>
+            </div>
+          </fieldset>
+          <fieldset style="border:0; margin:0; padding:0">
+            <legend style="font-size:13px; font-weight:600; margin-bottom:8px">Murs · {{wallName}}</legend>
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+              <sc-for list="{{walls}}" as="w" hint-placeholder-count="4">
+                <button type="button" class="pt-b" onClick="{{w.pick}}" aria-label="{{w.label}}" aria-pressed="{{w.on}}" title="{{w.label}}" style="{{w.style}}"></button>
+              </sc-for>
+            </div>
+          </fieldset>
+          <button type="button" class="pt-b" onClick="{{openChiffrer}}" style="min-height:44px; border:1.5px solid var(--acc); background:#fff; border-radius:8px; font:inherit; font-size:14px; font-weight:700; color:#a33f05; cursor:pointer">Chiffrer cette pièce</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{showEmpty}}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; gap:8px; text-align:center; padding:24px 8px; color:#57534f">
+          <p style="margin:0; font-size:15px; font-weight:700; color:#201e1d">Rien de sélectionné</p>
+          <p style="margin:0; font-size:14px; line-height:20px">Cliquez sur une pièce, un mur ou un objet du plan pour modifier ses propriétés.</p>
+          <button type="button" class="pt-b pt-h" onClick="{{selectRoom}}" style="justify-self:center; margin-top:6px; min-height:40px; padding:0 14px; border:1px solid #d9d6d1; border-radius:8px; background:#fff; font:inherit; font-size:14px; font-weight:600; cursor:pointer; color:#201e1d">Sélectionner la pièce</button>
+        </div>
+      </sc-if>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#e05a10","options":["#e05a10","#0d7a5f","#3f4a57"]},"ongletInitial":{"editor":"enum","default":"structure","options":["structure","equiper","finitions","chiffrer","rendu"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: (props && props.ongletInitial) || 'structure',
+      sub: null,
+      pick: null,
+      guideOpen: true,
+      view: '2d',
+      zoom: 100,
+      level: 'rdc',
+      layers: { cotes: true, surfaces: true, mobilier: true },
+      tool: 'select',
+      magnet: true,
+      locked: false,
+      roomSelected: true,
+      roomName: 'Séjour',
+      floor: 'chene',
+      wall: 'blanc',
+      wallAdded: false,
+      canRedo: false,
+      drawing: false,
+      drawType: 'Mur',
+      drawThickness: '20 cm',
+      format: 'Paysage',
+      ambiance: 'jour',
+      generated: false,
+      saved: false
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const set = (o) => this.setState(o);
+    const accent = this.props.accent ?? '#e05a10';
+
+    const tabDef = [
+      ['structure', 'Structure', 'M3 11 12 4l9 7M5 10v10h14V10M10 20v-5h4v5'],
+      ['equiper', 'Équiper', 'M5 10V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2M3 12a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3zM6 17v2M18 17v2'],
+      ['finitions', 'Finitions', 'M4 4h13v5H4zM17 6.5h3V12h-8v3M11 15h2v6h-2z'],
+      ['chiffrer', 'Chiffrer', 'M6 3h12v18H6zM9 7h6M9 11h1M12 11h1M9 14h1M12 14h1M9 17h1M12 17h1M15 11v6'],
+      ['rendu', 'Rendu', 'M4 8h3l2-3h6l2 3h3v11H4zM12 10a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z']
+    ];
+    const tabs = tabDef.map(([id, label, d]) => {
+      const on = s.tab === id;
+      return {
+        label, d, on,
+        pick: () => set({ tab: id, sub: null, pick: null }),
+        style: 'min-height:58px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; border:0; background:transparent; cursor:pointer; font:inherit; margin-bottom:-1px; ' +
+          (on ? 'color:#a33f05; border-bottom:2.5px solid ' + accent + ';' : 'color:#57534f; border-bottom:2.5px solid transparent;')
+      };
+    });
+
+    const lists = {
+      structure: [
+        ['Murs & cloisons', '6 types · tracé point par point', 'M4 5h7v15H4zM13 5h7v15h-7zM4 10h7M4 15h7M13 10h7M13 15h7', 'murs'],
+        ['Portes & fenêtres', '6 types d’ouvertures', 'M4 21V4h7v17M8.5 12.5h.5M14 4h6v8h-6zM17 4v8M14 8h6', 'ouvertures'],
+        ['Escaliers', 'Droit, quart tournant, hélicoïdal', 'M4 20h4v-4h4v-4h4V8h4V4', null],
+        ['Poutres & poteaux', 'Éléments porteurs', 'M4 20V8h4v12M10 20V4h4v16M16 20v-9h4v9M3 20h18', null],
+        ['Toiture & combles', 'Pentes, lucarnes, trémies', 'M2 13 12 5l10 8M5 11v9h14v-9', null],
+        ['Terrain & jardin', 'Limites, terrasse, clôture', 'M3 20h18M5 20v-6h6v6M5 14l3-3 3 3M14 20v-3M17 20v-4M20 20v-3', null],
+        ['Piscine', 'Bassins et margelles', 'M7 4v12M15 4v12M7 7h8M7 11h8M3 18c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0', null],
+        ['Réseaux', 'Eau, électricité, chauffage', 'M12 3c-3 4-5 6.5-5 9a5 5 0 0 0 10 0c0-2.5-2-5-5-9zM13 9l-2 4h3l-2 4', null]
+      ],
+      equiper: [
+        ['Cuisine', 'Meubles, électroménager, plans', 'M4 10h16v10H4zM4 14h16M10 10v10M6 4h5v4H6zM16 4v4', null],
+        ['Salle de bain', 'Douche, baignoire, vasque', 'M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 4 0', null],
+        ['Chambre', 'Lits, chevets, rangements', 'M3 19V7M3 13h18v6M21 13v-1a3 3 0 0 0-3-3h-8v4', null],
+        ['Dressing', 'Penderies et modules', 'M5 3h14v18H5zM12 3v18M10 11v2M14 11v2', null],
+        ['Chambre d’enfant', 'Lits, jeux, rangements', 'M12 4l2.4 4.8 5.3.8-3.8 3.7.9 5.3L12 16.1l-4.8 2.5.9-5.3-3.8-3.7 5.3-.8z', null],
+        ['Bureau', 'Postes de travail, étagères', 'M3 10h18M5 10v10M19 10v10M14 10v6h5M9 4h6v6H9z', null],
+        ['Mobilier', 'Canapés, tables, buffets', 'M5 4h14v16H5zM5 10h14M5 15h14M11 7h2M11 12.5h2', null],
+        ['Luminaires & déco', 'Suspensions, miroirs, plantes', 'M12 3v4M8 11a4 4 0 0 1 8 0zM10 11v1a2 2 0 0 0 4 0v-1M6 21h12', null],
+        ['Extérieur', 'Salons de jardin, abris', 'M12 21v-9M7 12l5-8 5 8zM4 21h16', null]
+      ],
+      finitions: [
+        ['Peinture', 'Murs et plafonds', 'M4 4h13v5H4zM17 6.5h3V12h-8v3M11 15h2v6h-2z', null],
+        ['Papier peint', 'Motifs et unis', 'M5 4h12v16H5zM5 9l5-5M5 14l10-10M7 20 17 10M12 20l5-5', null],
+        ['Carrelage', 'Sols et murs', 'M4 4h16v16H4zM4 9.3h16M4 14.6h16M9.3 4v5.3M14.6 4v5.3M6.6 9.3v5.3M12 9.3v5.3M17.3 9.3v5.3', null],
+        ['Parquet & stratifié', 'Essences et poses', 'M4 4h16v16H4zM4 12l8-8M4 20 20 4M12 20l8-8', null],
+        ['Parement', 'Brique, pierre, bois', 'M3 5h18v14H3zM3 9.7h18M3 14.3h18M9 5v4.7M15 5v4.7M6 9.7v4.6M12 9.7v4.6M18 9.7v4.6', null],
+        ['Façade', 'Enduits et bardages', 'M4 21V5h16v16M8 9h3v3H8zM13 9h3v3h-3zM10 21v-5h4v5', null],
+        ['Sols extérieurs', 'Dalles, lames, gravier', 'M3 20 7 8h10l4 12zM5.5 14h13M12 8v12', null],
+        ['Revêtements muraux', 'Lambris, panneaux', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', null]
+      ]
+    };
+    const subs = {
+      murs: { title: 'Murs & cloisons', hint: 'Choisissez un type puis tracez-le sur le plan.', draws: true, items: [
+        ['Mur', 'Épaisseur 20 cm', 'M3 9h18v6H3z', '20 cm'],
+        ['Cloison', 'Épaisseur 7 cm', 'M3 10.5h18v3H3z', '7 cm'],
+        ['Demi-mur', 'Hauteur 110 cm', 'M3 13h18v6H3z', '10 cm'],
+        ['Muret', 'Hauteur 60 cm', 'M3 15h18v4H3z', '15 cm'],
+        ['Séparation invisible', 'Sépare deux pièces sans mur', 'M3 12h3M9 12h3M15 12h3', '0 cm'],
+        ['Poteau', '20 × 20 cm', 'M9 4h6v16H9z', '20 cm']
+      ] },
+      ouvertures: { title: 'Portes & fenêtres', hint: 'Glissez une ouverture sur un mur pour la poser.', draws: false, items: [
+        ['Porte', '83 × 204 cm', 'M6 21V3h12v18M14.5 12h.5'],
+        ['Porte-fenêtre', '2 vantaux', 'M4 21V3h16v18M12 3v18M4 12h16'],
+        ['Fenêtre', '1 vantail', 'M6 5h12v12H6zM12 5v12M6 11h12'],
+        ['Baie vitrée', 'Coulissante', 'M2 6h20v12H2zM12 6v12'],
+        ['Fenêtre de toit', 'Pour combles', 'M4 18 12 6l8 12zM9 15h6'],
+        ['Ouverture libre', 'Sans menuiserie', 'M4 20V6h16v14M8 20V10h8v10']
+      ] }
+    };
+
+    const rowStyle = (on) => 'width:100%; min-height:58px; display:flex; align-items:center; gap:12px; padding:8px; border-radius:10px; cursor:pointer; font:inherit; ' +
+      (on ? 'background:#fff2ea; border:1px solid #ffc19c;' : 'background:#fff; border:1px solid transparent;');
+
+    const sub = s.sub ? subs[s.sub] : null;
+    let rows = [];
+    if (sub) {
+      rows = sub.items.map(([label, meta, d, thick]) => {
+        const on = s.pick === label;
+        return {
+          label, meta, d, on, style: rowStyle(on),
+          action: sub.draws ? 'Tracer' : 'Glisser',
+          pick: () => sub.draws ? set({ drawing: true, drawType: label, drawThickness: thick, view: '2d', tool: 'mur', pick: label }) : set({ pick: on ? null : label })
+        };
+      });
+    } else if (lists[s.tab]) {
+      rows = lists[s.tab].map(([label, meta, d, subId]) => {
+        const on = s.pick === label;
+        return {
+          label, meta, d, on, style: rowStyle(on),
+          action: subId ? '›' : '',
+          pick: () => subId ? set({ sub: subId, pick: null }) : set({ pick: on ? null : label })
+        };
+      });
+    }
+
+    const tabTitles = { structure: 'Structure', equiper: 'Équiper', finitions: 'Finitions', chiffrer: 'Chiffrer', rendu: 'Rendu' };
+
+    const toolDef = [
+      ['select', 'Sélection', 'M5 3l14 8-6 1.5L10 19z'],
+      ['mur', 'Tracer un mur', 'M3 9h18v6H3z'],
+      ['piece', 'Dessiner une pièce', 'M4 4h16v16H4zM4 4l4 4M20 4l-4 4M4 20l4-4M20 20l-4-4'],
+      ['cote', 'Ajouter une cote', 'M3 12h18M3 8v8M21 8v8'],
+      ['texte', 'Ajouter un texte', 'M5 5h14M12 5v14M9 19h6'],
+      ['pipette', 'Copier un style', 'M14 4l6 6-2 2-6-6zM12 6l-8 8v4h4l8-8'],
+      ['aimant', 'Magnétisme', 'M6 4h4v8a2 2 0 0 0 4 0V4h4v8a6 6 0 0 1-12 0zM6 8h4M14 8h4'],
+      ['verrou', 'Verrouiller le plan', 'M6 11h12v10H6zM8.5 11V7.5a3.5 3.5 0 0 1 7 0V11']
+    ];
+    const tools = toolDef.map(([id, label, d]) => {
+      const on = id === 'aimant' ? s.magnet : id === 'verrou' ? s.locked : s.tool === id;
+      return {
+        label, d, on,
+        style: 'width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:0; border-radius:8px; cursor:pointer; ' +
+          (on ? 'background:' + accent + '; color:#fff;' : 'background:transparent; color:#e7e5e1;') +
+          (id === 'aimant' ? ' margin-top:8px;' : ''),
+        pick: () => {
+          if (id === 'aimant') return set({ magnet: !s.magnet });
+          if (id === 'verrou') return set({ locked: !s.locked });
+          if (id === 'mur') return set({ tool: 'mur', drawing: true, drawType: 'Mur', drawThickness: '20 cm', view: '2d' });
+          set({ tool: id, drawing: false });
+        }
+      };
+    });
+
+    const layerDef = [['cotes', 'Cotes'], ['surfaces', 'Surfaces'], ['mobilier', 'Mobilier']];
+    const layers = layerDef.map(([id, label]) => {
+      const on = !!s.layers[id];
+      return {
+        label, on,
+        pick: () => { const l = Object.assign({}, s.layers); l[id] = !l[id]; set({ layers: l }); },
+        style: 'min-height:34px; padding:0 12px; border-radius:999px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; ' +
+          (on ? 'background:#201e1d; color:#fff; border:1px solid #201e1d' : 'background:#fff; color:#57534f; border:1px solid #d9d6d1')
+      };
+    });
+
+    const levels = [['rdc', 'RDC'], ['e1', 'Étage 1']].map(([id, label]) => ({
+      label, on: s.level === id,
+      pick: () => set({ level: id }),
+      style: 'min-height:36px; padding:0 12px; border:0; border-radius:8px; font:inherit; font-size:14px; cursor:pointer; ' +
+        (s.level === id ? 'background:#fff; color:#201e1d; font-weight:700; box-shadow:0 1px 3px rgba(32,30,29,0.12)' : 'background:transparent; color:#57534f; font-weight:600')
+    }));
+
+    const viewDef = [['2d', 'Plan', 'M4 4h16v16H4zM4 12h9M13 4v16'], ['3d', '3D', 'M12 3 20 7.5v9L12 21l-8-4.5v-9zM12 12v9M12 12l8-4.5M12 12 4 7.5'], ['visite', 'Visite', 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z']];
+    const views = viewDef.map(([id, label, d], i) => {
+      const on = s.view === id;
+      return {
+        label, d, on,
+        pick: () => set({ view: id, drawing: false }),
+        style: 'min-height:40px; display:flex; align-items:center; gap:6px; padding:0 12px; border:0; cursor:pointer; font:inherit; font-size:14px; font-weight:700; ' +
+          (i > 0 ? 'border-left:1px solid #d9d6d1; ' : '') +
+          (on ? 'background:#fff2ea; color:#a33f05' : 'background:#fff; color:#3f4a57')
+      };
+    });
+
+    const floorDef = [['chene', 'Chêne clair', '#d9b98c'], ['beton', 'Béton ciré', '#b9b4ad'], ['carreau', 'Carrelage blanc', '#f1efea'], ['ardoise', 'Carrelage ardoise', '#5f6670']];
+    const wallDef = [['blanc', 'Blanc', '#fafaf8'], ['lin', 'Lin', '#e9e0cf'], ['sauge', 'Sauge', '#b7c4b1'], ['terracotta', 'Terracotta', '#c8775a']];
+    const sw = (on, c) => 'width:40px; height:40px; border-radius:10px; cursor:pointer; background:' + c + '; ' +
+      (on ? 'border:2px solid #fff; box-shadow:0 0 0 2.5px ' + accent : 'border:1px solid #d9d6d1');
+    const floors = floorDef.map(([id, label, c]) => ({ label, on: s.floor === id, style: sw(s.floor === id, c), pick: () => set({ floor: id }) }));
+    const walls = wallDef.map(([id, label, c]) => ({ label, on: s.wall === id, style: sw(s.wall === id, c), pick: () => set({ wall: id }) }));
+    const floorC = floorDef.find((f) => f[0] === s.floor) || floorDef[0];
+    const wallC = wallDef.find((w) => w[0] === s.wall) || wallDef[0];
+
+    const pill = (on) => 'min-height:42px; border-radius:8px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; ' +
+      (on ? 'background:#fff2ea; border:1.5px solid ' + accent + '; color:#a33f05' : 'background:#fff; border:1px solid #d9d6d1; color:#201e1d');
+    const formats = ['Paysage', 'Carré', 'Portrait'].map((f) => ({ label: f, on: s.format === f, style: pill(s.format === f), pick: () => set({ format: f, generated: false }) }));
+    const ambiances = [['jour', 'Jour'], ['soir', 'Soirée']].map(([id, label]) => ({ label, on: s.ambiance === id, style: pill(s.ambiance === id), pick: () => set({ ambiance: id, generated: false }) }));
+
+    const done = [true, s.wallAdded, s.floor !== 'chene' || s.wall !== 'blanc', s.tab === 'chiffrer'];
+    const stepLabels = ['Ajuster les dimensions de la pièce', 'Tracer vos murs et cloisons', 'Choisir sols et peintures', 'Chiffrer avec des artisans'];
+    const steps = stepLabels.map((label, i) => ({
+      label,
+      mark: done[i] ? '✓' : String(i + 1),
+      dot: 'width:22px; height:22px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; ' +
+        (done[i] ? 'background:#0d7a5f; color:#fff' : 'background:#fff; color:#57534f; border:1.5px solid #d9d6d1'),
+      text: done[i] ? 'color:#6b6763; text-decoration:line-through' : 'color:#201e1d; font-weight:600'
+    }));
+    const nDone = done.filter(Boolean).length;
+
+    return {
+      accent, tabs, rows, tools, layers, levels, views, floors, walls, formats, ambiances, steps,
+      tabTitle: tabTitles[s.tab],
+      hasSub: !!sub,
+      subTitle: sub ? sub.title : '',
+      subHint: sub ? sub.hint : '',
+      backSub: () => set({ sub: null, pick: null }),
+      showList: rows.length > 0,
+      showFinitionsZone: s.tab === 'finitions',
+      isChiffrer: s.tab === 'chiffrer',
+      isRendu: s.tab === 'rendu',
+      generate: () => set({ generated: true }),
+      generated: s.generated,
+      metrics: [
+        { label: 'Surface au sol', value: '80,0 m²' },
+        { label: 'Surface des murs', value: '90,0 m²' },
+        { label: 'Périmètre', value: '36,0 m' },
+        { label: 'Hauteur sous plafond', value: '2,50 m' }
+      ],
+      postes: [
+        { label: 'Peinture murs', qty: '90,0 m²' },
+        { label: 'Revêtement de sol', qty: '80,0 m²' },
+        { label: 'Cloisons', qty: s.wallAdded ? '6,78 m' : '0 m' }
+      ],
+      save: () => set({ saved: true }),
+      saveLabel: s.saved ? 'Enregistré' : 'Non enregistré',
+      saveDot: 'width:8px; height:8px; border-radius:50%; display:block; background:' + (s.saved ? '#0d7a5f' : '#e8a33d'),
+      undo: () => { if (s.drawing) return set({ drawing: false, tool: 'select' }); if (s.wallAdded) set({ wallAdded: false, canRedo: true }); },
+      redo: () => { if (s.canRedo) set({ wallAdded: true, canRedo: false }); },
+      undoStyle: 'width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:0; border-radius:8px; background:transparent; cursor:pointer; color:' + ((s.wallAdded || s.drawing) ? '#3f4a57' : '#b7b2ac'),
+      redoStyle: 'width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:0; border-radius:8px; background:transparent; cursor:pointer; color:' + (s.canRedo ? '#3f4a57' : '#b7b2ac'),
+      guideOpen: s.guideOpen,
+      toggleGuide: () => set({ guideOpen: !s.guideOpen }),
+      guideProgress: nDone + ' étape' + (nDone > 1 ? 's' : '') + ' sur 4',
+      guideBar: 'height:100%; background:' + accent + '; width:' + (nDone * 25) + '%',
+      drawing: s.drawing,
+      drawType: s.drawType.toLowerCase(),
+      drawTypeTitle: s.drawType,
+      drawThickness: s.drawThickness,
+      cancelDraw: () => set({ drawing: false, tool: 'select', pick: null }),
+      validateDraw: () => set({ drawing: false, wallAdded: true, canRedo: false, tool: 'select', pick: null }),
+      wallAdded: s.wallAdded,
+      is2D: s.view === '2d',
+      is3D: s.view !== '2d',
+      isVisite: s.view === 'visite',
+      showDims: !!s.layers.cotes,
+      surfaceLabel: s.layers.surfaces ? '80,0 m²' : '',
+      roomName: s.roomName,
+      onRoomName: (e) => set({ roomName: e.target.value }),
+      roomSelected: s.roomSelected && !s.drawing,
+      showRoomPanel: s.roomSelected && !s.drawing,
+      showEmpty: !s.roomSelected && !s.drawing,
+      selectRoom: () => set({ roomSelected: true }),
+      openChiffrer: () => set({ tab: 'chiffrer', sub: null }),
+      floorFill: floorC[2],
+      floorName: floorC[1],
+      wallName: wallC[1],
+      wallFill: wallC[2],
+      zoom: s.zoom,
+      zoomIn: () => set({ zoom: Math.min(160, s.zoom + 10) }),
+      zoomOut: () => set({ zoom: Math.max(50, s.zoom - 10) }),
+      fit: () => set({ zoom: 100 }),
+      planWrapStyle: 'transform:scale(' + (s.zoom / 100) + '); transform-origin:center center; transition:transform 0.15s ease'
+    };
+  }
+}
+</script>
+</body>
+</html>

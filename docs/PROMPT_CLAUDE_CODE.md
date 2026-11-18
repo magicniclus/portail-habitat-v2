@@ -271,3 +271,8 @@ Voici des requêtes sans résultat ou mal classées : [liste]. Pour chacune, pro
 ```
 Relis la branche actuelle comme un relecteur exigeant : sécurité (règles, permissions, données personnelles, prix jamais exposés au client), argent (centimes, transactions, idempotence), respect de CLAUDE.md et de la checklist ARCHITECTURE.md §14. Liste les problèmes par gravité, sans corriger.
 ```
+
+---
+
+## Lot 15 — Dessin (éditeur de plans 2D / 3D)
+Spécification et prompts des sous-lots 15a à 15k : **`docs/DESSIN.md` §10**. Commencer par le prompt « Lot 15a — Cadrage ».

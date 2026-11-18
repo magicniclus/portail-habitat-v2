@@ -1,0 +1,359 @@
+# Dessin — éditeur de plans 2D / 3D de Portail Travaux
+
+> Spécification complète et prompts de développement du **lot 15**. Ce document fait foi pour Dessin ; en cas de conflit, `CLAUDE.md`, `ARCHITECTURE.md`, `DATABASE.md`, `MOBILE.md`, `PAIEMENTS.md` et `COUTS.md` priment, et le conflit est signalé.
+> Maquette de référence : `docs/designs/Dessin.dc.html` (interactive : barre d'application, bibliothèque à onglets, palette d'outils verticale, inspecteur à droite, guide « Bien démarrer », zoom en colonne).
+
+---
+
+## 0. Objectif et règle de non-copie
+
+Dessin permet à un **particulier** (avec compte) et à un **artisan** (dans son espace pro) de dessiner un logement en 2D, de le voir en 3D, de le visiter, de l'aménager et de le décorer, puis d'en tirer **un métré et une demande de devis** (particulier) ou **un devis prérempli** (artisan). C'est le pont entre « j'imagine mon projet » et « je trouve un artisan » : c'est ce qui le distingue des outils grand public.
+
+**Référence fonctionnelle : Kozikaza** (éditeur de Leroy Merlin). On vise la **parité de fonctions** (et au-delà), jamais la ressemblance :
+- ne rien reprendre de Kozikaza : ni nom, ni textes, ni icônes, ni pictogrammes, ni disposition d'écran, ni couleurs, ni modèles 3D, ni textures, ni catalogue produit, ni code ;
+- l'interface suit **notre maquette** et nos tokens (`packages/ui`) ;
+- les modèles 3D et textures viennent de sources dont la licence autorise l'usage commercial (CC0 : Poly Haven, ambientCG, Kenney…) ou sont créés pour nous (voir D88). La licence de chaque fichier est notée dans `docs/data/dessin-licences.json`.
+
+---
+
+## 1. Publics, accès et routes
+
+| Public | Accès | Routes |
+|---|---|---|
+| Visiteur | Page de présentation publique + **essai sans compte** (brouillon local, rien sur le serveur) | `/dessin` (landing SEO, gabarit `LANDINGS.md`), `/dessin/essai` |
+| Particulier | Compte requis pour **enregistrer**. Au premier « Enregistrer » d'un essai : création de compte puis reprise du brouillon (mécanique de `REPRISE_PARCOURS.md`) | `/mon-espace/plans` (liste), `/mon-espace/plans/[planId]` (éditeur plein écran), onglet « Mes plans » dans `Onglets.tsx` |
+| Artisan | Entrée **« Dessin »** dans `SidebarPro` (outil, pas dans « Mon compte ») ; plans de l'**entreprise**, visibles par les membres selon leur rôle (`peut()`) | `/pro/dessin` (liste, filtres client / chantier), `/pro/dessin/[planId]` |
+| Lien partagé | Lecture seule (2D, 3D, visite, métré), sans compte, jeton révocable | `/plan/[jeton]` (`noindex`) |
+
+- L'éditeur est plein écran (pas de pied de page), dans le **thème de l'espace** (`data-theme`) : vert côté particulier, thème pro côté artisan. Aucun hex en dur.
+- Formule gratuite / payante : **D84 ⏳**. En attendant, tout est gratuit avec quotas (§10). Toute fonction marquée payante ouvre la fenêtre d'offre (`PAIEMENTS.md` §4), jamais d'activation directe.
+- Flag : `FLAGS.dessin` (désactivé en production tant que le lot n'est pas recetté), `FLAGS.dessinPublic` pour la landing et l'essai.
+
+---
+
+## 2. Unités, coordonnées, conventions
+
+- **Longueurs en millimètres entiers** (comme les centimes pour l'argent) : aucun `float` stocké. Affichage en cm ou m selon le réglage (`formatLongueur()`, `formatSurface()` dans `@ph/core/format`). Surfaces calculées en mm² (`bigint` si nécessaire) puis affichées en m² à 1 décimale.
+- Angles en **dixièmes de degré** entiers.
+- Repère : x vers l'est, y vers le sud (comme l'écran), z vers le haut ; origine = coin haut gauche du premier mur. Le nord du projet est un angle stocké (`orientationNord`).
+- Identifiants d'éléments : `nanoid` court préfixé (`m_`, `o_`, `p_`, `obj_`…), stables dans le temps (l'historique et le partage s'appuient dessus).
+
+---
+
+## 3. Modèle de scène (schémas Zod dans `packages/core/src/dessin/schemas`)
+
+Un plan = **métadonnées Firestore** + **scène JSON versionnée** dans Storage (un document Firestore est limité à 1 Mio).
+
+```
+Scene {
+  version: number                  // version du schéma, migrations dans core/dessin/migrations
+  unites: { affichage: 'cm' | 'm' }
+  orientationNord: angle
+  terrain?: Terrain
+  niveaux: Niveau[]                // ordonnés, altitude croissante
+  calques: { cotes, surfaces, mobilier, electricite, plomberie, annotations, fondImage }: boolean
+  fondImage?: { storagePath, echelle (mm/px), position, rotation, opacite, niveauId }
+}
+
+Niveau { id, nom, type: 'sous_sol'|'rdc'|'etage'|'combles', altitude, hauteurSousPlafond, epaisseurPlancher,
+         murs: Mur[], ouvertures: Ouverture[], pieces: Piece[], objets: Objet[], escaliers: Escalier[],
+         tremies: Polygone[], cotes: Cote[], textes: Texte[], zonesDeco: ZoneDeco[], toiture?: Toiture,
+         exterieur: { terrasses: Terrasse[], piscines: Piscine[], allees: Polygone[], clotures: Cloture[], vegetation: Vegetal[] } }
+
+Mur { id, a: Point, b: Point, epaisseur, hauteur, hauteurB?, type: 'mur'|'cloison'|'demi_mur'|'muret'|'separation'|'poteau'|'poutre',
+      porteur: boolean, alignement: 'axe'|'gauche'|'droite', faceA: Revetement, faceB: Revetement, plinthe?: Plinthe, verrouille }
+Ouverture { id, murId, position (distance depuis a), largeur, hauteur, allege, type, modeleId,
+            sens: 'gauche'|'droite', cote: 'interieur'|'exterieur', volet?: 'roulant'|'battant'|null, finition }
+Piece { id, contour: Point[] (déduit des murs ou dessiné), nom, type (référentiel), sol: Revetement, plafond: Revetement,
+        hauteurSousPlafond?, carrez: boolean }
+Objet { id, catalogueId, position, rotation, dimensions {l, p, h}, variante, materiaux: Record<slot, MateriauId>, accrocheMurId?, altitude }
+Escalier { id, type: 'droit'|'quart_bas'|'quart_haut'|'deux_quarts'|'helicoidal'|'meunier', position, rotation,
+           largeur, hauteurAMonter, nbMarches, giron, sens, garde-corps, materiau }
+Toiture { type: 'deux_pans'|'quatre_pans'|'monopente'|'plate'|'mansarde'|'croupe', pentes: angle[], debords, faitageAngle,
+          couverture: MateriauId, lucarnes: Lucarne[], fenetresToit: Ouverture[], cheminees: Cheminee[], gouttieres }
+Terrasse { id, contour, materiau, pose, hauteur, plots, gardeCorps?, escalierId?, pergola? }
+Piscine { id, forme: 'rectangle'|'ronde'|'ovale'|'haricot'|'L'|'couloir'|'hors_sol', dimensions, profondeurs {min, max},
+          escalier: 'roman'|'droit'|'angle'|null, margelle: MateriauId, plage: Polygone + MateriauId, liner: MateriauId,
+          debordement: boolean, abri?: …, localTechnique?: … }
+Terrain { parcelle: Polygone, referenceCadastrale?, codeInsee?, altitude, implantation: { x, y, rotation } }
+Revetement { materiauId, couleur?, orientation?, decalage?, joint?: { largeur, couleur } }
+ZoneDeco { id, support: { murId, face } | { pieceId, surface: 'sol'|'plafond' }, contour, revetement }
+```
+
+Référentiels (lecture publique, écriture admin) :
+- `referentiel/dessinCatalogue/items/{id}` : objets 3D (catégorie, sous-catégorie, dimensions par défaut, plages réglables, slots de matériaux, fichier `glb` + vignette, licence, mots-clés de recherche, lien éventuel vers une prestation du catalogue).
+- `referentiel/materiaux/items/{id}` : couleurs, papiers peints, carrelages, parquets, parements, façades, couvertures, sols extérieurs (type, textures `ktx2` albedo/normal/roughness, taille réelle de la texture en mm, poses possibles, licence).
+
+---
+
+## 4. Données Firestore et Storage (à ajouter à `DATABASE.md` et testées)
+
+| Chemin | Contenu | Lecture | Écriture |
+|---|---|---|---|
+| `users/{uid}/plans/{planId}` | métadonnées : titre, vignette, `versionCourante`, `taille`, `majLe`, `creeLe`, `supprimeLe?`, `demandeId?` | propriétaire | propriétaire via `action()` (jamais le contenu de scène) |
+| `artisans/{id}/plans/{planId}` | idem + `clientNom?`, `devisIds[]`, `auteurUid` | membres (`peut('dessin.lire')`) | membres (`peut('dessin.ecrire')`) via `action()` |
+| `…/plans/{planId}/versions/{versionId}` | `numero`, `storagePath`, `auteurUid`, `type: 'auto'|'manuelle'|'restauration'`, `nom?`, `taille`, `creeLe` (ajout seul) | comme le plan | serveur uniquement |
+| `partagesPlans/{jeton}` | `proprietaire {type, id}`, `planId`, `versionId` figée ou `courante`, `expireLe`, `revoque` | serveur uniquement (la page `/plan/[jeton]` lit côté serveur) | serveur |
+| Storage `dessin/{type}/{proprietaireId}/{planId}/v{n}.json.gz` | scène compressée | règles Storage alignées sur Firestore, **taille max 5 Mo** | serveur (URL signée d'envoi) |
+| Storage `dessin/…/{planId}/vignette.webp`, `photos/{id}.webp`, `fonds/{id}` | vignette, photos de rendu, plan importé | idem | idem, 10 Mo max, types image uniquement |
+
+- **Enregistrement** : le client envoie la scène (Zod `Scene` validée côté client **et** serveur, `migrerScene()` appliquée), le serveur l'écrit dans Storage, crée la version et met à jour `versionCourante` **en transaction avec contrôle de version** (`siVersion`) pour détecter un autre onglet ou un autre membre : en cas de conflit, proposer « garder la mienne / prendre la leur / dupliquer ».
+- **Versions** : automatique toutes les 10 minutes d'édition active, manuelle nommée à la demande, conservées 30 jours (les 50 dernières au-delà), une Function de nuit purge. Restaurer = nouvelle version de type `restauration` (rien n'est écrasé).
+- **Corbeille** : suppression douce 30 jours, puis purge (Firestore + Storage). Export RGPD (`telechargerDonnees.ts`) et suppression de compte incluent les plans.
+- Index composites et règles : **un test par règle**, refus par défaut. Aucun nom de collection hors `packages/firebase` (`chemins.ts`).
+
+---
+
+## 5. Architecture du code
+
+```
+packages/core/src/dessin/            PUR, testé d'abord (Vitest), aucune dépendance runtime hors zod
+  schemas/        Scene, Niveau, Mur… + types (z.infer)
+  migrations/     migrerScene(v → v+1), tests par version
+  geometrie/      vecteurs, segments, intersections, polygones (aire, périmètre, point dans polygone),
+                  offset de murs, jonctions en L/T/X, détection des pièces (graphe planaire, faces minimales),
+                  surfaces Carrez (< 1,80 m exclu), surfaces murales nettes (déduction des ouvertures)
+  aimantation/    grille, extrémités, milieux, prolongements, perpendiculaires, angles par pas de 15°, objets contre mur
+  commandes/      Commande { appliquer(scene) → { scene, inverse } } : ajouterMur, deplacerExtremite, scinderMur,
+                  poserOuverture, deplacerObjet, appliquerRevetement… ; regroupement des gestes ; historique borné
+  validations/    ouverture dans le mur, chevauchements, escalier (Blondel 60–64 cm, hauteur d'échappée 1,90 m),
+                  garde-corps obligatoire > 1 m de chute, piscine (indications de recul à la limite, non juridiques)
+  toiture/        génération des pans depuis le contour (squelette droit pour 4 pans / croupe), surfaces de couverture
+  cuisine/        plan de travail continu, fileurs, alignement des modules, triangle d'activité (indicatif)
+  metre/          quantités par poste : sols, murs, plafonds, plinthes, cloisons, ouvertures, couverture, terrasse,
+                  piscine (volume d'eau) → lignes rattachées aux prestations de docs/data/prestations-catalogue.json
+  export/         cotes automatiques, cartouche, échelle d'impression
+packages/firebase/src/…/dessin       chemins, convertisseurs, repositories (plans, versions, partages)
+packages/ui                          seulement des primitives génériques réutilisables (ex. ColorSwatch, Slider, Toolbar,
+                                     SegmentedControl) — rien de spécifique à Dessin
+apps/web/features/dessin/
+  Editeur.tsx (assemblage), BarreApplication, Bibliotheque (onglets, recherche, listes), PaletteOutils, Inspecteur,
+  GuideDemarrage, CommandesZoom, Calques, FeuilleMobile…
+  etat/           store de l'éditeur (scène, sélection, outil, vue, historique) — sélecteurs fins, aucune logique métier
+  rendu2d/        SVG React (net à toute échelle, accessible, exportable) ; poignées, cotes, symboles d'ouvertures
+  rendu3d/        three + @react-three/fiber + @react-three/drei, chargé en import dynamique au premier passage en 3D
+  visite/         contrôles première personne (clavier, souris verrouillée, joystick tactile), collisions murs
+  photo/          capture haute définition côté client (post-traitement ombres, occlusion ambiante, ambiance jour/soir)
+  workers/        détection des pièces et métré dans un Web Worker (comlink) au-delà de 200 murs
+apps/functions/src/dessin            enregistrer, restaurer, partager, purger, vignette (si non générée côté client)
+```
+
+**Nouvelles dépendances à signaler dans le plan (CLAUDE.md)** : `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` (3D, chargés à la demande uniquement), `zustand` + `immer` (store et patchs d'historique) ou équivalent justifié, `comlink` (worker), `idb-keyval` (brouillon hors ligne), `polygon-clipping` ou `clipper2` (opérations booléennes). Budget JS (D46) : l'éditeur 2D ≤ 250 ko gzip hors 3D ; la 3D n'est jamais dans le bundle initial.
+
+---
+
+## 6. Fonctions (exhaustif ; chaque ligne = un identifiant `DES-xx` dans `ACCEPTANCE.md`)
+
+### 6.1 Projets et fichiers
+- DES-01 Créer un plan : **depuis une forme** (rectangle, L, U, T, saisie des cotes), **pièce par pièce**, **mur par mur**, **depuis un modèle** (studio, T2, T3, maison plain-pied, maison à étage), **depuis un plan importé** (image ou PDF en calque, mise à l'échelle en cliquant deux points et en saisissant leur distance, opacité réglable).
+- DES-02 Mes plans : vignettes, titre modifiable, date, filtre et recherche, dupliquer, renommer, déplacer vers la corbeille, restaurer. Côté artisan : filtre par client, par membre, rattachement à une demande ou un devis.
+- DES-03 Essai sans compte : brouillon dans IndexedDB, bandeau « Créez votre compte pour enregistrer », reprise intacte après inscription.
+
+### 6.2 Niveaux
+- DES-04 Ajouter, renommer, supprimer, réordonner ; types sous-sol / RDC / étage / combles ; altitude et hauteur sous plafond.
+- DES-05 « Copier les murs extérieurs du niveau inférieur » ; niveau inférieur affiché en transparence ; trémie créée automatiquement par l'escalier.
+
+### 6.3 Murs, cloisons et structure
+- DES-06 Tracé point par point (clic ou toucher), double-clic / « Terminer » pour finir, Échap pour annuler le segment ; **saisie de la longueur et de l'angle au clavier** pendant le tracé ; Maj = orthogonal.
+- DES-07 Types : mur (20 cm), cloison (7 cm), demi-mur, muret, séparation invisible (délimite une pièce sans mur), poteau, poutre ; épaisseur, hauteur, hauteur différente aux deux extrémités (mur rampant), mur porteur (indication visuelle et alerte avant suppression).
+- DES-08 Aimantation (grille, extrémités, milieux, prolongements, perpendiculaires, angles) activable ; guides d'alignement affichés.
+- DES-09 Jonctions automatiques en L, T et X ; scinder un mur ; fusionner deux murs alignés ; déplacer une extrémité ; déplacer un mur parallèlement (les murs reliés suivent, les ouvertures restent sur le mur).
+- DES-10 **Modifier une dimension en cliquant sur sa cote** (intérieure ou extérieure) : la saisie déplace le mur concerné.
+
+### 6.4 Pièces
+- DES-11 Détection automatique des pièces fermées ; nom et type (séjour, cuisine, chambre, salle d'eau…) ; surface, périmètre, surface murale nette ; surface **Carrez** sous combles ; sol, plafond, plinthes.
+- DES-12 Dessiner une pièce rectangulaire ou polygonale d'un geste (crée ses murs).
+
+### 6.5 Ouvertures
+- DES-13 Portes : battante simple et double, coulissante, à galandage, pivot, porte d'entrée, porte de garage (sectionnelle, basculante) ; fenêtres 1 et 2 vantaux, oscillo-battante, fixe, œil-de-bœuf ; porte-fenêtre ; baie coulissante ; fenêtre de toit ; ouverture libre et arche.
+- DES-14 Glisser sur un mur (aimantée au mur, cotes jusqu'aux angles affichées), largeur, hauteur, allège, sens et côté d'ouverture inversables, volets, couleur de menuiserie ; refus si elle dépasse du mur.
+
+### 6.6 Escaliers
+- DES-15 Droit, quart tournant bas / haut, deux quarts, hélicoïdal, échelle de meunier ; calcul automatique du nombre de marches et du giron ; alerte Blondel et hauteur d'échappée ; trémie au niveau supérieur ; garde-corps.
+
+### 6.7 Mode toiture et combles
+- DES-16 Générer la toiture depuis le contour des murs : deux pans, quatre pans, croupe, monopente, toit plat, mansarde ; pente par pan, débords, orientation du faîtage, pignons.
+- DES-17 Lucarnes (jacobine, capucine, chien-assis), fenêtres de toit, cheminées, gouttières ; matériaux de couverture (tuiles, ardoise, zinc, bac acier, toiture végétalisée) ; surface de couverture au métré ; combles aménageables avec surface Carrez.
+
+### 6.8 Mode extérieur : terrasse, terrain, piscine
+- DES-18 Terrasse : contour libre, bois / composite / dalles / carrelage / béton, sens de pose, surélevée sur plots avec marches, garde-corps, pergola.
+- DES-19 Terrain : parcelle dessinée ou importée (§6.12), orientation nord, allées, gazon, clôtures, portails, haies, arbres (taille adulte).
+- DES-20 Piscine : rectangle, ronde, ovale, haricot, en L, couloir de nage, hors-sol, à débordement ; profondeurs (fond plat ou pente), escalier roman / droit / d'angle, margelles, plage, liner, abri, local technique ; **volume d'eau** calculé ; distance aux limites affichée (indicatif, pas un avis juridique).
+
+### 6.9 Aménager
+- DES-21 Bibliothèque par univers : cuisine, salle de bain, chambre, dressing, chambre d'enfant, bureau, séjour, mobilier, luminaires et déco, électricité (prises, interrupteurs, points lumineux), plomberie et chauffage (radiateurs, chaudière, ballon), extérieur ; recherche plein texte et filtres de dimensions.
+- DES-22 Poser par glisser-déposer, rotation (poignée et pas de 15° / 90°), dimensions réglables dans les plages du modèle, variantes et matériaux par slot, plaquer contre un mur, hauteur de pose pour les éléments muraux, collisions signalées.
+- DES-23 **Mode cuisine** : modules bas, hauts, colonnes, angles, îlot ; plan de travail continu et crédence générés, fileurs ; électroménager (évier, plaque, four, hotte, réfrigérateur, lave-vaisselle) ; façades et poignées ; liste des modules ; triangle d'activité indicatif.
+- DES-24 Salle de bain : douche à l'italienne avec paroi, baignoire, vasque simple / double, WC suspendu ou posé, sèche-serviettes ; zones de sécurité électrique affichées en option (indicatif).
+
+### 6.10 Décorer
+- DES-25 Peinture : nuancier, saisie libre, finitions mat / satin / brillant ; par face de mur, plafond, menuiserie.
+- DES-26 Papier peint (motif, sens, raccord), carrelage (format, joint largeur et couleur, pose droite / décalée / diagonale / chevron / point de Hongrie), parquet et stratifié (essence, largeur de lame, pose à l'anglaise / bâton rompu / point de Hongrie / chevron), parement, façade (enduit, bardage), sols extérieurs, couvertures.
+- DES-27 **Zones décoratives** : polygone sur une face de mur ou un sol (soubassement, crédence, tapis de carrelage) avec son propre revêtement.
+- DES-28 Pipette de style (copier les revêtements d'un élément vers un autre) ; appliquer à toute la pièce / tous les murs de la pièce.
+
+### 6.11 Outils transverses
+- DES-29 Sélection simple, multiple (rectangle, Maj), copier / coller / dupliquer, supprimer, grouper, aligner et répartir, verrouiller un élément, **verrouiller le plan**.
+- DES-30 Calques affichables : cotes, surfaces, mobilier, électricité, plomberie, annotations, plan importé.
+- DES-31 Cote libre, outil mesure, texte, flèche, rose des vents, cartouche.
+
+### 6.12 Vues
+- DES-32 **Plan 2D** : style couleur ou noir et blanc imprimable, symboles normalisés (portes avec arc d'ouverture), cotes automatiques intérieures et extérieures.
+- DES-33 **3D** : orbite, zoom, panoramique ; vue maison entière, niveau isolé, coupe « maison de poupée » (murs avant abaissés), toit masquable ; ombres selon l'heure et l'orientation.
+- DES-34 **Visite** : première personne à 1,60 m, collisions avec les murs, franchissement des portes, escaliers praticables ; clavier (flèches / ZQSD), souris, **joystick tactile** sur mobile ; mini-plan avec position.
+- DES-35 **Vue d'implantation** (plan de masse) : maison posée sur la parcelle, orientation, distances aux limites, fond cadastral et photo aérienne (sources publiques IGN / cadastre Etalab, D87) ; recherche de la parcelle par adresse.
+- DES-36 **Façades et coupes** : élévations nord / sud / est / ouest générées, coupe verticale sur une ligne tracée.
+- DES-37 **Vue photo** : cadrage (paysage, carré, portrait), ambiance (jour, soirée), rendu amélioré côté client et export PNG/JPEG haute définition ; galerie « Mes photos » du plan. Rendu photoréaliste serveur : **D85 ⏳** (payant ou non, coût, fournisseur).
+
+### 6.13 Historique et sauvegarde
+- DES-38 Annuler / rétablir **illimités dans la session** (Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, boutons, menu mobile) ; un glisser = une seule étape ; l'historique couvre aussi les revêtements et les réglages de vue utiles (pas le zoom).
+- DES-39 Enregistrement automatique 2 s après la dernière modification + indicateur (« Enregistré », « Enregistrement… », « Hors ligne, enregistré sur cet appareil ») ; hors ligne : IndexedDB puis renvoi au retour du réseau.
+- DES-40 Historique des versions (automatiques et nommées), aperçu, restauration ; conflit entre onglets ou membres détecté et résolu (§4).
+
+### 6.14 Export, partage, lien avec Portail Travaux
+- DES-41 Export **PDF à l'échelle** (1/50, 1/100, A4 / A3, cartouche, légende, métré en annexe), PNG du plan, photos.
+- DES-42 Lien de partage en lecture seule (2D, 3D, visite), révocable, expiration ; partage à un membre de l'équipe (artisan).
+- DES-43 **Métré** (onglet « Chiffrer ») : quantités par poste, cases à cocher, téléchargement PDF / CSV.
+- DES-44 Particulier : **« Demander des devis »** crée une demande par le parcours existant (simulateur / `demandes`), plan joint en lecture seule pour les artisans qui la reçoivent ; estimation affichée seulement si elle sort du simulateur (prix **recalculés serveur**, centimes, jamais inventés).
+- DES-45 Artisan : **« Créer un devis depuis ce plan »** préremplit les lignes d'un devis (`DATABASE.md` §8 bis) depuis le métré et la bibliothèque de prestations ; partage du plan au client (lien) ; plan attaché à la fiche de la demande.
+
+### 6.15 Mobile, accessibilité, performance
+- DES-46 `MOBILE.md` : conçu à 390 px. Téléphone : bibliothèque et inspecteur en **feuilles du bas**, palette d'outils en barre basse, pincer pour zoomer, appui long = menu contextuel, cibles 44 px, saisie des cotes avec clavier numérique. Tablette : édition complète. 3D et visite au doigt.
+- DES-47 Accessibilité : tous les boutons avec libellé, focus visible, **raccourcis listés** (touche « ? »), élément sélectionné annoncé (`aria-live`, mesures lues), déplacement d'un élément sélectionné aux flèches (pas de 1 cm, Maj = 10 cm), contraste AA, `prefers-reduced-motion` (pas d'animation de caméra).
+- DES-48 Performance : 60 i/s en 2D jusqu'à 500 murs et 1 000 objets sur un portable moyen ; 3D en instanciation, niveaux de détail, textures `ktx2`, modèles `glb` compressés (Draco / Meshopt) ; ouverture d'un plan < 2 s (hors 3D).
+
+---
+
+## 7. Interface (suivre `docs/designs/Dessin.dc.html`)
+
+- **Barre d'application** : logo, titre du projet modifiable, état d'enregistrement, niveaux en onglets (+ ajouter), annuler / rétablir, vues Plan · 3D · Visite (+ menu : Implantation, Façades, Coupe, Photo), guide, Partager, Enregistrer, compte.
+- **Bibliothèque (gauche)** : recherche, onglets **Structure · Équiper · Finitions · Chiffrer · Rendu**, listes avec fil d'Ariane ; modes Toiture, Extérieur (terrasse, terrain, piscine) et Cuisine accessibles depuis Structure / Équiper et par la palette.
+- **Palette d'outils (verticale, sur le plan)** : sélection, mur, pièce, ouverture, cote, texte, pipette, aimantation, verrou.
+- **Inspecteur (droite)** : propriétés de la sélection (pièce, mur pendant le tracé, ouverture, objet, toiture…), vide = aide contextuelle.
+- **Sur le plan** : calques en pastilles en haut à droite, zoom en colonne en bas à droite, échelle, guide « Bien démarrer » (4 étapes avec progression, masquable, mémorisé).
+- Écrans vides, erreurs, chargement (squelettes), hors ligne : tous dessinés.
+
+---
+
+## 8. Sécurité, coûts, RGPD
+
+- Toutes les écritures via `action()` / `callable()` : schéma, `peut()`, limite de débit (ex. 60 enregistrements / min / plan), idempotence.
+- Le contenu des plans est privé ; les liens partagés ne révèlent ni nom ni adresse du propriétaire ; aucune donnée personnelle dans les chemins Storage lisibles publiquement ni dans les URL (le jeton est opaque).
+- `COUTS.md` : pas de rendu serveur ni d'appel payant sans décision ; vignettes générées côté client ; versions purgées ; textures servies depuis le CDN avec cache long.
+- Quotas proposés (D84) : particulier 5 plans actifs, artisan illimité selon formule ; taille de scène 5 Mo.
+
+---
+
+## 9. Décisions à trancher (reportées dans `DECISIONS.md`)
+
+D84 gratuité et quotas · D85 rendu photo serveur · D86 bibliothèques 3D (React Three Fiber) et store · D87 sources du cadastre et des photos aériennes · D88 origine du catalogue 3D et des textures · D89 collaboration en temps réel (proposition : non en v1, verrou optimiste) · D90 plans de particuliers visibles par les artisans d'une demande · D91 import de plans (PDF, DXF, photo) en v1.
+
+---
+
+## 10. Prompts Claude Code (un lot par session, plan d'abord)
+
+> Branche : `lot-15-dessin`, ou `lot-15x-…` pour chaque sous-lot fusionné dans `lot-15-dessin`. Commits atomiques en français (`feat(dessin): …`). À la fin de chaque sous-lot : `pnpm typecheck && pnpm lint && pnpm test`, puis mise à jour de `docs/AVANCEMENT.md` et `docs/PROGRESSION.md`.
+
+### Lot 15a — Cadrage
+```
+Lot 15a : cadrage de Dessin. Lis CLAUDE.md, docs/DESSIN.md en entier, docs/designs/Dessin.dc.html, docs/ARCHITECTURE.md §1-5,
+docs/DATABASE.md §2, §3, §12, docs/MOBILE.md, docs/PAIEMENTS.md, docs/COUTS.md, docs/REPRISE_PARCOURS.md et
+apps/web/features/editeurSite (historique, brouillon, barre d'édition : à réutiliser plutôt que réécrire).
+Ne code rien. Produis dans docs/AVANCEMENT.md une section « Lot 15 — Dessin » avec : le découpage 15b à 15k ci-dessous
+(cases à cocher), les dépendances à ajouter et leur poids, les incohérences entre DESSIN.md et les autres documents
+(avec ta proposition), les décisions D84 à D91 qui bloquent les premiers sous-lots, et la liste des DES-xx à ajouter à
+docs/ACCEPTANCE.md. Puis attends mes réponses.
+```
+
+### Lot 15b — Cœur pur : schémas, géométrie, commandes
+```
+Lot 15b. Lis docs/DESSIN.md §2, §3, §5 et §6.3-6.4. Tests d'abord (Vitest), puis implémentation dans packages/core/src/dessin :
+schémas Zod de la scène (z depuis @ph/core/zod), migrations versionnées, géométrie (intersections, polygones, offsets de murs,
+jonctions L/T/X, détection des pièces par faces minimales, surfaces nettes et Carrez), aimantation, commandes réversibles avec
+regroupement des gestes et historique borné, validations (ouvertures, escaliers Blondel, garde-corps), métré par poste rattaché
+aux prestations de docs/data/prestations-catalogue.json, formats de longueur et de surface dans @ph/core/format.
+Millimètres entiers partout. Aucune dépendance à React, Firebase ou Next. Couverture ≥ 90 % sur dessin/.
+```
+
+### Lot 15c — Données, règles, Functions
+```
+Lot 15c. Lis docs/DESSIN.md §4 et §8, docs/DATABASE.md §12. Mets à jour DATABASE.md (plans, versions, partagesPlans,
+référentiels dessinCatalogue et materiaux), firestore.rules, storage.rules, firestore.indexes.json, chemins et repositories
+dans packages/firebase, actions et callables (enregistrer avec contrôle de version, restaurer, dupliquer, corbeille, partager,
+révoquer, purge de nuit, export RGPD et suppression de compte). Un test par règle sur émulateur. Seed : 2 plans de particulier,
+2 plans d'entreprise, catalogue et matériaux de démonstration (licences CC0 notées dans docs/data/dessin-licences.json).
+```
+
+### Lot 15d — Coque de l'éditeur et 2D
+```
+Lot 15d. Lis docs/DESSIN.md §1, §6.1-6.4, §6.11, §6.13, §7 et docs/designs/Dessin.dc.html. Routes /mon-espace/plans,
+/mon-espace/plans/[planId], /pro/dessin, /pro/dessin/[planId] derrière FLAGS.dessin, entrée « Dessin » dans SidebarPro et
+« Mes plans » dans l'espace particulier. Assemble features/dessin : barre d'application, bibliothèque, palette, inspecteur,
+guide, zoom, calques ; store (sélecteurs fins) ; rendu 2D SVG ; outils sélection, mur, pièce, cote, texte ; édition des cotes
+au clic ; création depuis une forme ou un modèle ; annuler/rétablir ; enregistrement automatique, hors ligne, versions,
+conflits. Fidélité à la maquette (/maquette), thèmes via tokens, aucun hex. Tests Playwright DES-01 à DES-12, DES-29 à DES-32,
+DES-38 à DES-40.
+```
+
+### Lot 15e — Ouvertures, escaliers, niveaux, plan importé
+```
+Lot 15e. docs/DESSIN.md §6.2, §6.5, §6.6 et DES-01 (plan importé). Ouvertures aimantées aux murs avec symboles normalisés,
+escaliers avec calculs et trémies, niveaux complets (copie des murs, transparence du niveau inférieur), import d'image ou PDF
+en calque et mise à l'échelle par deux points. Tests unitaires et Playwright DES-04, DES-05, DES-13 à DES-15.
+```
+
+### Lot 15f — Aménager et décorer
+```
+Lot 15f. docs/DESSIN.md §6.9, §6.10. Bibliothèque d'objets (recherche, filtres, glisser-déposer, rotation, dimensions,
+variantes, slots de matériaux, collisions, contre mur), mode cuisine (modules, plan de travail continu, électroménager),
+salle de bain, électricité et plomberie ; décoration par face, par pièce et par zone décorative, poses de carrelage et de
+parquet, papier peint, pipette de style. Symboles 2D de chaque objet. Tests DES-21 à DES-28.
+```
+
+### Lot 15g — 3D, visite, photo
+```
+Lot 15g. docs/DESSIN.md §5 (rendu3d, visite, photo), §6.12 DES-33, DES-34, DES-37, §6.15 DES-48. Ajoute three,
+@react-three/fiber, @react-three/drei, @react-three/postprocessing en import dynamique uniquement (vérifie le budget D46).
+Génère la géométrie 3D depuis la scène (murs avec découpes d'ouvertures, sols, plafonds, escaliers, objets glb instanciés,
+textures ktx2 à l'échelle réelle), vue maison de poupée, niveau isolé, ombres selon l'heure et le nord ; visite avec collisions,
+clavier, souris et joystick tactile ; vue photo (cadrage, ambiance, export HD, galerie). Tests de rendu par capture et
+Playwright DES-33, DES-34, DES-37.
+```
+
+### Lot 15h — Toiture, extérieur, piscine, implantation, façades
+```
+Lot 15h. docs/DESSIN.md §6.7, §6.8, DES-35, DES-36. Mode toiture (génération depuis le contour, types, pentes, débords,
+lucarnes, fenêtres de toit, cheminées, couvertures, combles Carrez), mode extérieur (terrasse, terrain, clôtures, végétation),
+piscine (formes, profondeurs, escaliers, margelles, plage, volume d'eau), vue d'implantation sur parcelle (source selon D87,
+recherche par adresse via la géolocalisation existante), façades et coupes générées. Tests DES-16 à DES-20, DES-35, DES-36.
+```
+
+### Lot 15i — Export, partage, lien avec les demandes et les devis
+```
+Lot 15i. docs/DESSIN.md §6.14. PDF à l'échelle avec cartouche et métré, PNG, lien de partage /plan/[jeton] (noindex, lecture
+seule 2D/3D/visite), partage dans l'équipe, onglet Chiffrer (métré, cases, PDF/CSV), « Demander des devis » via le parcours
+existant avec plan joint (prix recalculés serveur, centimes), « Créer un devis depuis ce plan » côté artisan (lignes préremplies,
+verifierMentions inchangé). Tests DES-41 à DES-45.
+```
+
+### Lot 15j — Public, mobile, accessibilité, performance
+```
+Lot 15j. docs/DESSIN.md §1 (landing /dessin et essai sans compte), §6.15, docs/LANDINGS.md, docs/MOBILE.md. Landing SEO
+derrière FLAGS.dessinPublic, essai en brouillon local avec reprise après inscription, éditeur mobile (feuilles du bas, barre
+d'outils basse, gestes), raccourcis clavier et aide « ? », annonces aria-live, déplacement aux flèches, mesures de performance
+(Lighthouse sur la landing, profil 2D à 500 murs). Tests sur iPhone et Pixel (Playwright), DES-03, DES-46 à DES-48.
+```
+
+### Lot 15k — Recette et fin
+```
+Lot 15k. /relecture puis /duplication sur la branche lot-15-dessin. Vérifie chaque DES-xx d'ACCEPTANCE.md, la fidélité à la
+maquette, les règles et leurs tests, les coûts (COUTS.md), l'export RGPD. Mets à jour AVANCEMENT.md, PROGRESSION.md et les
+décisions. Ne déploie pas sans mon « go ».
+```
+
+### Reprise
+```
+Reprise du lot 15. Lis CLAUDE.md, la section « Lot 15 — Dessin » de docs/AVANCEMENT.md et docs/PROGRESSION.md, puis
+`git log --oneline -20`. Dis-moi où on en est, ce qui reste dans le sous-lot en cours, et propose la suite. N'écris rien
+avant ma validation.
+```

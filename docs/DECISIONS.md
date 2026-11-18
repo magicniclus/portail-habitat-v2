@@ -138,3 +138,15 @@ Quand vous tranchez une question : changez le statut en ✅, corrigez la proposi
 **25/10/2026 (propriétaire)** : Ma fiche — plus de liste « ce qu'il reste à compléter », seulement une barre de progression fixée en haut tant que la fiche n'est pas à 100 % ; bloc « Derniers avis · 0 avis » quand il n'y a aucun avis ; logo et bannière en glisser-déposer. **Bannières : jusqu'à 5 avec la visibilité payante** (Fiche Pro, Fiche + Site, Tout inclus), 1 sinon (remplacée à chaque envoi, « Plus de bannières » ouvre la fenêtre d'offre). Modèle de données : `artisans.banniereUrl` devient `bannieres: string[]` (≤ 5), projeté dans `artisansPublic` limité au nombre permis (après une résiliation, seules les premières restent visibles) ; carrousel sans défilement automatique sur la fiche publique.
 
 **25/10/2026 (propriétaire)** : Devis et factures en « feuille A4 » (captures du propriétaire, à nos couleurs) : la feuille se saisit directement, panneau Options à droite (feuille du bas sur mobile). Langue : français seulement. Type de document : Rapide (désignation, TVA, montant) ou Complet ; « Format électronique » (Factur-X) affiché grisé « Bientôt » tant que la plateforme agréée n'est pas branchée (D62). Mention de TVA lue dans Paramètres (jamais choisie devis par devis). Lignes de texte (hors totaux), nature prestation/fourniture, « Enregistrer comme ligne type » depuis l'éditeur. « Nouvelle facture » sans devis : même écran, émise d'un coup après confirmation (numéro sans trou, figée).
+
+## 7. Dessin — éditeur de plans 2D / 3D (lot 15, voir `docs/DESSIN.md`)
+| # | Question | Proposition | Statut |
+|---|---|---|---|
+| D84 | Gratuité et quotas de Dessin | Gratuit pour tous ; particulier 5 plans actifs, artisan illimité ; scène ≤ 5 Mo. Fonctions payantes éventuelles (rendu photo serveur, export DXF) via la fenêtre d'offre | ⏳ |
+| D85 | Rendu photoréaliste côté serveur | Pas en v1 : rendu amélioré côté client uniquement (coût nul). À rouvrir avec un devis fournisseur | ⏳ |
+| D86 | Bibliothèques de l'éditeur | 2D en SVG React ; 3D `three` + `@react-three/fiber` + `drei` chargés à la demande ; store `zustand` + `immer` | ⏳ |
+| D87 | Fond de la vue d'implantation | Données publiques IGN (Géoplateforme : cadastre, orthophotos) et API Adresse ; aucune clé payante | ⏳ |
+| D88 | Catalogue 3D et textures | Démarrer avec des modèles et textures CC0 (Poly Haven, ambientCG, Kenney), puis commander un catalogue sur mesure ; aucun fichier issu d'un éditeur concurrent | ⏳ |
+| D89 | Collaboration en temps réel | Non en v1 : verrou optimiste par version, résolution de conflit proposée à l'utilisateur | ⏳ |
+| D90 | Plan joint à une demande de devis | Visible en lecture seule par les artisans qui ont reçu la demande, jamais avant attribution | ⏳ |
+| D91 | Import de plans existants | v1 : image et PDF en calque mis à l'échelle ; DXF/DWG plus tard | ⏳ |
