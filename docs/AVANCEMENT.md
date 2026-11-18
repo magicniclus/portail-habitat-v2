@@ -853,7 +853,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 ### Découpage
 - [x] 15a Cadrage (ce paragraphe)
 - [x] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (18/11/2026, voir « Lot 15b fait » ci-dessous)
-- [ ] 15c Données : Firestore, Storage, règles et tests, repositories, actions, Functions, seed
+- [x] 15c Données : Firestore, règles et tests, serveur, purge, RGPD (18/11/2026, voir « Lot 15c fait » ci-dessous)
 - [ ] 15d Coque de l'éditeur et 2D (routes, barre, bibliothèque, palette, inspecteur, murs, pièces, cotes, sauvegarde)
 - [ ] 15e Ouvertures, escaliers, niveaux, plan importé
 - [ ] 15f Aménager et décorer (catalogue, cuisine, salle de bain, revêtements, zones décoratives)
@@ -887,6 +887,12 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
 - Tests : 47 nouveaux, 4 200 au total, tous verts ; couverture de `dessin/` 99,4 % lignes ; `typecheck` et `lint` verts.
 - Export `@ph/core/dessin` ajouté à `packages/core/package.json` avec l'accord du propriétaire (seule ligne existante modifiée), point d'entrée `dessin/index.ts`. `pnpm lint`, `pnpm typecheck` (8 paquets), `pnpm knip` et les 4 200 tests du cœur sont verts.
 - Constats : le catalogue n'a pas de prestation « peinture intérieure » ni « carrelage » (`prestationId: null` dans le métré pour ces postes) ; les modèles de départ (studio, T2…) sont reportés au lot 15d, avec l'écran de création.
+
+### Lot 15c fait (18/11/2026)
+Avec l'accord du propriétaire (« oui à tout »), ajouts seulement dans les fichiers existants : `firestore.rules` (2 blocs de lecture), `firestore.indexes.json` (index de purge), `chemins.ts` (chemins des plans), `permissions.ts` (`dessin.gerer` : propriétaire, gérant, collaborateur), `packages/firebase/package.json` (export `@ph/firebase/dessin`), `apps/functions/src/index.ts` (`purgeDessinNuit`), suppression de compte et export RGPD (plans inclus). **`storage.rules` n'a pas eu besoin d'être modifié** (refus total par défaut, accès serveur uniquement).
+- Nouveaux : `packages/firebase/src/serveur/dessin/` (créer, lire, lister, enregistrer avec conflit, versions, restaurer, renommer, dupliquer, corbeille, partager, révoquer, lire un partage, purge, RGPD), `apps/functions/src/dessin/planifiees.ts`, `DATABASE.md` §8 quater.
+- Tests : 150 cas de règles (`tests/regles/dessin.test.ts`), 13 tests serveur (`tests/dessin.test.ts`). Suite `@ph/firebase` sur émulateurs : 3 279 réussis ; **16 échecs dans `tests/regles/storage.test.ts`, déjà présents avant le lot** (même résultat sur la branche de départ, sans aucune modification). `typecheck`, `lint`, `knip`, `prettier` et les tests du cœur et des Functions sont verts.
+- Non fait : données de démonstration (seed) des plans, reportées au lot 15d avec l'écran de liste.
 
 ### Plan initial du lot 15b
 Uniquement de **nouveaux fichiers** dans `packages/core/src/dessin/`, tests Vitest écrits avant le code, aucun React / Firebase / Next.
@@ -931,3 +937,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 16/10/2026 — Lot 10c : création assistée (questionnaire, pages une à une, aperçu gratuit avec filigrane, reprise après paiement, Mes modèles). Détail : §28.
 - 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
 - 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Export `@ph/core/dessin` ajouté, toutes les vérifications vertes : §31.
+- 18/11/2026 — Lot 15c fait (données, règles et tests, serveur, purge, RGPD de Dessin). 16 échecs préexistants de storage.test.ts signalés : §31.

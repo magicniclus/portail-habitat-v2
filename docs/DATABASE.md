@@ -465,6 +465,23 @@ Modèles (`titre`, `lignes`, `usage`) ; bibliothèque = lignes types (`type?` ch
 - **PDF** : généré **côté serveur** (Function `genererPdfDevis`, gabarit HTML → PDF via Chromium headless), stocké `Storage artisans/{id}/devis/{num}.pdf`, empreinte SHA-256 enregistrée à l'envoi et à la signature. Jamais affiché en aperçu dans l'éditeur : bouton **Télécharger le PDF** uniquement.
 - **Facturation électronique** : réception obligatoire pour toutes les entreprises depuis le 1er septembre 2026 ; **émission obligatoire pour les TPE/PME au 1er septembre 2027** (B2B, via une plateforme agréée, format Factur-X/UBL/CII) + e-reporting des opérations B2C. Prévoir l'export **Factur-X** dès le lancement et le raccordement à une plateforme agréée avant septembre 2027 (⏳ D62).
 
+## 8 quater. Dessin : plans 2D / 3D (lot 15c, DESSIN.md §4)
+
+### `users/{uid}/plans/{planId}` · `artisans/{aid}/plans/{planId}`
+Métadonnées (`planDessin`, `@ph/core/dessin`) : `titre`, `versionCourante` (révision, contrôle des conflits), `storagePath` (scène courante gzip), `derniereVersionLe`, `courantDansHistorique`, `taille` (≤ 5 Mo), `creeLe`, `majLe`, `supprimeLe` (corbeille 30 jours), `auteurUid` (entreprise). Lecture : le particulier lui-même ; côté entreprise l'équipe opérationnelle (claims p, g, c), jamais le staff. **Aucune écriture client** : tout passe par `@ph/firebase/dessin` (scène validée et migrée, quota de 5 plans actifs pour un particulier, permission `dessin.gerer` relue en base).
+
+### `…/plans/{planId}/historique/{numero}`
+Versions gardées (`versionPlan`) : automatique toutes les 10 minutes d'édition, manuelle nommée, restauration. Le fichier est partagé avec la scène courante quand elle est gardée (aucune copie). Au-delà de 50 versions, celles de plus de 30 jours sont supprimées. Nommée `historique` et non `versions` : le groupe de collections `versions` sert déjà aux sites.
+
+### `partagesPlans/{jeton}`
+Lien de partage en lecture seule : jeton aléatoire de 32 caractères, `proprietaire`, `planId`, `expireLe`, `revoque`. Aucune donnée personnelle. Lu et écrit par le serveur uniquement (aucune règle : refus par défaut).
+
+### Storage `dessin/{particulier|entreprise}/{id}/{planId}/…`
+Scènes compressées. Couvert par la règle finale de `storage.rules` (refus total) : lecture et écriture par le serveur uniquement, aucune modification des règles Storage.
+
+### Purge et RGPD
+`purgeDessinNuit` (3 h 40) supprime les plans à la corbeille depuis plus de 30 jours, versions et fichiers compris (index de groupe de collections `plans.supprimeLe`). L'export « Mes données » inclut les plans et leurs scènes ; la suppression de compte efface tous les plans personnels et leurs fichiers.
+
 ## 9. Référentiels et contenu
 
 ### `referentiel/prestations/items/{id}`

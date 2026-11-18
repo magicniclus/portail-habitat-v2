@@ -25,6 +25,8 @@ export const ACTIONS_EQUIPE = [
   'devis.gerer',
   /** Site internet de l'entreprise (SITE_INTERNET.md) : éditer, publier, domaine. */
   'site.gerer',
+  /** Plans Dessin de l'entreprise (DESSIN.md §1) : créer, modifier, partager. */
+  'dessin.gerer',
   'factures.emettre',
   'membres.gerer',
   'propriete.transferer',
@@ -38,6 +40,7 @@ export const PERMISSIONS_PAR_ROLE: Record<RoleMembre, readonly ActionEquipe[]> =
   collaborateur: [
     'demandes.repondre',
     'devis.gerer',
+    'dessin.gerer',
     'realisations.modifier',
     'documents.televerser',
     'statistiques.voir',

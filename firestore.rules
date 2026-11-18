@@ -62,6 +62,13 @@ service cloud.firestore {
         allow update: if signedIn() && uid() == u && noImp() && onlyChanged(['lu']) && request.resource.data.lu is bool;
         allow create, delete: if false;
       }
+      // Plans Dessin (DESSIN.md §4) : métadonnées lues par leur auteur ; scène dans Storage et
+      // écritures par le serveur uniquement (validation de la scène, quotas, conflits).
+      match /plans/{p} {
+        allow read: if signedIn() && uid() == u;
+        allow write: if false;
+        match /historique/{v} { allow read: if signedIn() && uid() == u; allow write: if false; }
+      }
     }
 
     // ---------- artisans ----------
@@ -110,6 +117,13 @@ service cloud.firestore {
       match /prestationsBiblio/{b}     { allow read: if isOperationnel(aid); allow write: if false; }
       match /parametresFacturation/{x} { allow read: if isMembre(aid); allow write: if false; }
       match /compteurs/{c}             { allow read, write: if false; }
+      // Plans Dessin de l'entreprise (DESSIN.md §4) : comme les devis, l'équipe opérationnelle lit,
+      // le serveur écrit ; données des clients de l'artisan, jamais lues par le staff.
+      match /plans/{p} {
+        allow read: if isOperationnel(aid);
+        allow write: if false;
+        match /historique/{v} { allow read: if isOperationnel(aid); allow write: if false; }
+      }
     }
     // Sites des artisans (siteId = artisanId) : écrits par le serveur seulement (SITE_INTERNET.md).
     match /sites/{aid} {

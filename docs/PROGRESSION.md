@@ -38,6 +38,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 18/11/2026 — Lots 15b et 15c faits (cœur, données, règles, serveur de Dessin) — AVANCEMENT §31, DATABASE §8 quater.
 - 18/11/2026 — Lot 15 Dessin : D84 à D91 tranchées (gratuit, aucun rendu serveur, IGN, CC0 puis catalogue maison, devis par écrit sans appel, pile technique, pas de temps réel, import image/PDF) — DECISIONS, DESSIN, AVANCEMENT §31 (15a fait, plan 15b à valider).
 - 25/10/2026 — devis et factures façon « feuille A4 » (captures du propriétaire) : français seulement, Factur-X visible « bientôt » (D62), mention de TVA lue dans Paramètres. Données : lignes `type` (chiffrée/texte) et `nature` (prestation/fourniture), options facultatives, « Nouvelle facture » sans devis. Documents : DATABASE.md §8 bis, DECISIONS.md.
 - 17/10/2026 — faits : 6 modèles de site (D47), option Blog 9,90 € +20 articles (D71, 5 + 20). D71 option Blog 9,90 € ; D61 pas en v1 ; D47 6 modèles à coder ; D70 toujours validé ; D68 DataForSEO ; D62 Factur-X + plateforme agréée dès maintenant (plateforme à choisir) ; autres ⏳ validées en bloc (D29 remplacé par D59). Documents : DECISIONS.md, A_FOURNIR.md.
