@@ -76,6 +76,7 @@ export function EspaceDeTravail(p: {
     revisionInitiale: p.revision,
   });
   const fond = useFond(p.espace, p.planId, sceneDe(etat).fondImage?.storagePath ?? null);
+  const ortho = useFond(p.espace, p.planId, sceneDe(etat).terrain?.orthophoto?.storagePath ?? null);
   const telephone = useMediaQuery('(max-width: 899px)', false);
 
   // Raccourcis actifs tant que l'éditeur est ouvert, où que soit le focus (hors champs).
@@ -126,13 +127,13 @@ export function EspaceDeTravail(p: {
         ) : null}
         <main className="relative min-w-0 flex-1">
           {etat.vue === 'plan' ? (
-            <Plan2D etat={etat} dispatch={dispatch} fond={fond} />
+            <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
           ) : etat.vue === 'visite' ? (
             <Visite etat={etat} />
           ) : etat.vue === 'photo' ? (
             <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
           ) : (
-            <Vue3D etat={etat} dispatch={dispatch} />
+            <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
           )}
           <div className="pointer-events-none absolute inset-x-3 top-3 grid gap-2 [&>*]:pointer-events-auto">
             {s.etat === 'conflit' ? (

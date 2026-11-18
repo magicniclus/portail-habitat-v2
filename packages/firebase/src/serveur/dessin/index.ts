@@ -22,3 +22,4 @@ export {
 export { exporterPlans, purgerCorbeilleDessin, supprimerTousLesPlans } from './purge';
 export { enregistrerFond, lireFond, TAILLE_MAX_FOND } from './fond';
 export { enregistrerPhoto, listerPhotos, PHOTOS_MAX, supprimerPhoto } from './photos';
+export { chargerParcelle, chercherAdresses, type Adresse } from './implantation';

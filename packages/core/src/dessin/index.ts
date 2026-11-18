@@ -34,3 +34,4 @@ export * from './commandesToit';
 export * from './ailesToit';
 export * from './exterieur';
 export * from './placementExterieur';
+export * from './implantation';

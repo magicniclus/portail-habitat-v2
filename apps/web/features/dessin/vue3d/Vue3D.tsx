@@ -15,6 +15,7 @@ import { niveauDe, sceneDe, type Action, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
 import { Cadrage, useCadreMaison } from './Cadrage';
 import { Objets3D } from './Objets3D';
+import { Orthophoto3D } from './Orthophoto3D';
 
 /**
  * Vue 3D (DES-33) : orbite, zoom, panoramique ; maison entière ou niveau isolé, maison de
@@ -24,9 +25,12 @@ import { Objets3D } from './Objets3D';
 export default function Vue3D({
   etat,
   dispatch,
+  ortho = null,
 }: {
   etat: EtatEditeur;
   dispatch: Dispatch<Action>;
+  /** Photo aérienne de l'implantation (DES-35), en data URL. */
+  ortho?: string | null;
 }) {
   const scene = sceneDe(etat);
   const courant = niveauDe(etat);
@@ -109,6 +113,7 @@ export default function Vue3D({
         <planeGeometry args={[rayon * 12, rayon * 12]} />
         <meshStandardMaterial color={COULEURS_3D.terrain} roughness={1} />
       </mesh>
+      <Orthophoto3D scene={scene} url={ortho} />
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centre.x, centre.y, centre.z]}

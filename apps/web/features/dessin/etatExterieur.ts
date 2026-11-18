@@ -4,6 +4,8 @@ import {
   ajouterTerrasse,
   ajouterVegetal,
   accrocherALaLimite,
+  ajusterImplantation,
+  implanterParcelle,
   definirParcelle,
   modifierExterieur,
   parcelleAutour,
@@ -86,6 +88,15 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
       return creer(e, (n) => terrasseAutourDePiscine(n, a.piscineId, ctx), 'terrasse');
     case 'parcelleAutour':
       return surScene(e, (s) => parcelleAutour(s));
+    case 'implanter':
+      return surScene(e, (s) => implanterParcelle(s, a.parcelle));
+    case 'ajusterImplantation':
+      return surScene(e, (s) =>
+        ajusterImplantation(s, {
+          ...(a.decalage ? { decalage: a.decalage } : {}),
+          ...(a.rotation ? { rotation: a.rotation } : {}),
+        }),
+      );
     default:
       return null;
   }

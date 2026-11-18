@@ -13,6 +13,7 @@ import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur } from './etat';
 import { ExterieurMenu } from './ExterieurMenu';
 import { FondMenu } from './FondMenu';
+import { ImplantationMenu } from './ImplantationMenu';
 import { Ligne } from './LigneMenu';
 import { NiveauxMenu } from './NiveauxMenu';
 import { ToitureMenu } from './ToitureMenu';
@@ -25,7 +26,15 @@ const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'separation', libelle: 'Séparation invisible', detail: 'Sépare deux pièces sans mur' },
 ];
 
-type Sous = 'murs' | 'ouvertures' | 'escaliers' | 'niveaux' | 'toiture' | 'exterieur' | 'fond';
+type Sous =
+  | 'murs'
+  | 'ouvertures'
+  | 'escaliers'
+  | 'niveaux'
+  | 'toiture'
+  | 'exterieur'
+  | 'implantation'
+  | 'fond';
 const TITRES: Record<Sous, string> = {
   murs: 'Murs & cloisons',
   ouvertures: 'Portes & fenêtres',
@@ -33,6 +42,7 @@ const TITRES: Record<Sous, string> = {
   niveaux: 'Niveaux',
   toiture: 'Toiture & combles',
   exterieur: 'Terrasse, terrain, piscine',
+  implantation: 'Implantation sur la parcelle',
   fond: 'Importer un plan',
 };
 const AIDES: Partial<Record<Sous, string>> = {
@@ -95,6 +105,11 @@ export function StructureMenu({
             titre="Terrasse, terrain, piscine"
             detail="Extérieur, clôtures, végétaux"
             onClick={() => setSous('exterieur')}
+          />
+          <Ligne
+            titre="Implantation"
+            detail="Parcelle du cadastre, photo aérienne"
+            onClick={() => setSous('implantation')}
           />
           <Ligne
             titre="Importer un plan"
@@ -169,6 +184,8 @@ export function StructureMenu({
         <ToitureMenu etat={etat} dispatch={dispatch} />
       ) : sous === 'exterieur' ? (
         <ExterieurMenu etat={etat} dispatch={dispatch} />
+      ) : sous === 'implantation' ? (
+        <ImplantationMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />
       ) : (
         <FondMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />
       )}

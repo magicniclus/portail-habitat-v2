@@ -283,6 +283,9 @@ export const COULEURS_EXTERIEUR = {
   grillage: '#7f8c86',
   parcelle: '#a0703a',
   gazon: '#cfe0bf',
+  /** Cotes aux limites et flèche du nord (implantation). */
+  limite: '#b0412e',
+  nord: '#1f2a37',
 } as const;
 
 /** Teinte par défaut d'une terrasse selon son matériau (sans référence de matériau). */

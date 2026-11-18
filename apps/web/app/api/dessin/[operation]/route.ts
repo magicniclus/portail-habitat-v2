@@ -1,8 +1,10 @@
 import {
+  entreeAdresse,
   entreeCreerPlan,
   entreeEnregistrerPlan,
   entreeFondPlan,
   entreeLireFond,
+  entreeParcelle,
   entreePartagerPlan,
   entreePhotoPlan,
   entreePlan,
@@ -13,6 +15,8 @@ import {
 import type { Resultat } from '@ph/core/resultat';
 import { z } from '@ph/core/zod';
 import {
+  chargerParcelle,
+  chercherAdresses,
   creerPlan,
   dupliquerPlan,
   enregistrerFond,
@@ -138,6 +142,20 @@ const OPERATIONS: Record<string, (brut: unknown) => Promise<Resultat<unknown>>> 
   'supprimer-photo': action(
     { schema: entreeSupprimerPhoto.extend(espace), nom: 'dessin.supprimerPhoto', rateLimit: debit },
     async (e, ctx) => supprimerPhoto(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
+  ),
+  adresses: action(
+    {
+      schema: entreeAdresse.extend(espace),
+      nom: 'dessin.adresses',
+      lectureSeule: true,
+      rateLimit: debit,
+    },
+    async (e) => ({ adresses: await chercherAdresses(e.texte) }),
+  ),
+  parcelle: action(
+    { schema: entreeParcelle.extend(espace), nom: 'dessin.parcelle', rateLimit: debit },
+    async (e, ctx) =>
+      chargerParcelle(servicesDessin(), await contexteDessin(ctx.uid!, e.espace), e),
   ),
   partager: action(
     { schema: entreePartagerPlan.extend(espace), nom: 'dessin.partager', rateLimit: debit },

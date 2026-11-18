@@ -1,11 +1,15 @@
-import { contourPiscine, type Niveau } from '@ph/core/dessin';
+import { contourPiscine, type Niveau, type Point } from '@ph/core/dessin';
 
 /** Cadre du dessin en mm : tout le niveau, avec une marge, et au moins 12 × 10 m. */
-export function cadreDe(n: Niveau): { x: number; y: number; l: number; h: number } {
+export function cadreDe(
+  n: Niveau,
+  parcelle: readonly Point[] = [],
+): { x: number; y: number; l: number; h: number } {
   // La maison et son extérieur (terrasses, piscines, allées, clôtures, végétaux).
   const e = n.exterieur;
   const points = [
     ...n.murs.flatMap((m) => [m.a, m.b]),
+    ...parcelle,
     ...e.terrasses.flatMap((t) => t.contour),
     ...e.allees.flat(),
     ...e.clotures.flatMap((c) => c.points),

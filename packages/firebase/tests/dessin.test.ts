@@ -26,6 +26,8 @@ import {
   listerPhotos,
   supprimerPhoto,
   lireFond,
+  chargerParcelle,
+  chercherAdresses,
 } from '../src/serveur/dessin';
 
 let db: Firestore;
@@ -365,5 +367,90 @@ describe('galerie « Mes photos » (DES-37)', () => {
     await expect(enregistrerPhoto(s(), ctxPart, { planId, base64: JPEG })).rejects.toMatchObject({
       code: 'PRECONDITION',
     });
+  });
+});
+
+describe('implantation : adresse, parcelle, photo aérienne (DES-35)', () => {
+  const JPEG_IGN = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
+  const carre = [
+    [3, 46.5],
+    [3.0004, 46.5],
+    [3.0004, 46.5003],
+    [3, 46.5003],
+    [3, 46.5],
+  ];
+  /** Faux services IGN : réponses selon l'URL appelée ; `wms` : ce que renvoie la photo. */
+  const faux = (wms: 'jpeg' | 'erreur' | 'xml' = 'jpeg', parcelles = 1): typeof fetch =>
+    (async (url: string) => {
+      const u = String(url);
+      if (u.includes('geocodage'))
+        return Response.json({
+          features: [
+            {
+              geometry: { coordinates: [3, 46.5] },
+              properties: { label: '1 Rue Test 03000 Ville' },
+            },
+          ],
+        });
+      if (u.includes('cadastre'))
+        return Response.json({
+          features: Array.from({ length: parcelles }, () => ({
+            geometry: { type: 'MultiPolygon', coordinates: [[carre]] },
+            properties: { idu: '03190000AB0012', code_insee: '03190' },
+          })),
+        });
+      if (wms === 'erreur') return new Response('', { status: 503 });
+      if (wms === 'xml')
+        return new Response('<ServiceException/>', { headers: { 'content-type': 'text/xml' } });
+      return new Response(JPEG_IGN, { headers: { 'content-type': 'image/jpeg' } });
+    }) as typeof fetch;
+
+  it('adresses proposées ; service en panne : INDISPONIBLE', async () => {
+    expect(await chercherAdresses('1 rue test', faux())).toEqual([
+      { libelle: '1 Rue Test 03000 Ville', lon: 3, lat: 46.5 },
+    ]);
+    const panne = (async () => new Response('', { status: 500 })) as unknown as typeof fetch;
+    await expect(chercherAdresses('1 rue test', panne)).rejects.toMatchObject({
+      code: 'INDISPONIBLE',
+    });
+    const illisible = (async () => Response.json({ rien: 1 })) as unknown as typeof fetch;
+    await expect(chercherAdresses('1 rue test', illisible)).rejects.toMatchObject({
+      code: 'INDISPONIBLE',
+    });
+  });
+
+  it('parcelle en Lambert-93 et photo aérienne enregistrée une fois dans le dossier du plan', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const e = { planId, lon: 3.0002, lat: 46.5001 };
+    const p = await chargerParcelle(s(), ctxPart, e, faux());
+    expect(p.reference).toBe('03190000AB0012');
+    expect(p.codeInsee).toBe('03190');
+    expect(p.contour).toHaveLength(4);
+    expect(Math.abs(p.contour[0]!.x - 700_000_000)).toBeLessThan(500);
+    const em = p.orthophoto!.emprise;
+    expect(em.x1 - em.x0).toBe(em.y1 - em.y0); // photo carrée : parcelle + 25 m de marge
+    expect(em.x1 - em.x0).toBeGreaterThan(80_000);
+    expect(p.orthophoto!.storagePath).toMatch(/ortho-[0-9a-f]{12}\.jpg$/);
+    const { url } = await lireFond(s(), ctxPart, {
+      planId,
+      storagePath: p.orthophoto!.storagePath,
+    });
+    expect(url).toBe(`data:image/jpeg;base64,${JPEG_IGN.toString('base64')}`);
+    // Une nouvelle parcelle remplace l'ancienne photo.
+    await chargerParcelle(s(), ctxPart, e, faux());
+    expect((await fichiersDe(PART)).filter((f) => f.includes('ortho-'))).toHaveLength(1);
+  });
+
+  it('sans photo si le service d’images échoue ; aucune parcelle : INTROUVABLE', async () => {
+    const { planId } = await creerPlan(s(), ctxPart, { titre: 'A' });
+    const e = { planId, lon: 3.0002, lat: 46.5001 };
+    expect((await chargerParcelle(s(), ctxPart, e, faux('erreur'))).orthophoto).toBeUndefined();
+    expect((await chargerParcelle(s(), ctxPart, e, faux('xml'))).orthophoto).toBeUndefined();
+    await expect(chargerParcelle(s(), ctxPart, e, faux('jpeg', 0))).rejects.toMatchObject({
+      code: 'INTROUVABLE',
+    });
+    await expect(
+      chargerParcelle(s(), { proprietaire: PART, uid: 'autre' }, e, faux()),
+    ).rejects.toBeTruthy();
   });
 });

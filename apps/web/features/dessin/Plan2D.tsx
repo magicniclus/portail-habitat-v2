@@ -18,6 +18,8 @@ import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
 import { FondSvg } from './FondSvg';
+import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
+import type { FondCharge } from './useFond';
 import { GuidesSvg } from './GuidesSvg';
 import { ToitSvg } from './ToitSvg';
 import { DefsMotifs } from './Motifs';
@@ -29,18 +31,22 @@ export function Plan2D({
   etat,
   dispatch,
   fond,
+  ortho,
 }: {
   etat: EtatEditeur;
   dispatch: Dispatch<Action>;
   /** Image du plan importé, chargée par l'espace de travail. */
-  fond: { url: string; largeurPx: number; hauteurPx: number } | null;
+  fond: FondCharge | null;
+  /** Photo aérienne de l'implantation (DES-35). */
+  ortho: FondCharge | null;
 }) {
   const n = niveauDe(etat);
   const scene = sceneDe(etat);
   const fondVisible = scene.fondImage?.niveauId === n.id ? scene.fondImage : null;
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Point | null>(null);
-  const cadre = useMemo(() => cadreDe(n), [n]);
+  const parcelle = scene.terrain?.parcelle;
+  const cadre = useMemo(() => cadreDe(n, parcelle), [n, parcelle]);
   const conteneur = useRef<HTMLDivElement>(null);
   const cadreCourant = useRef(cadre);
   useEffect(() => {
@@ -123,6 +129,7 @@ export function Plan2D({
           onPointerUp={glisser.finir}
           onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
         >
+          <OrthophotoSvg scene={scene} image={ortho} />
           {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
           <DefsMotifs
@@ -162,6 +169,13 @@ export function Plan2D({
             <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
           ) : null}
           <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
+          {scene.terrain || scene.orientationNord ? (
+            <LimitesSvg
+              scene={scene}
+              mmParPx={mmParPx}
+              coin={{ x: cadre.x + cadre.l, y: cadre.y }}
+            />
+          ) : null}
           {trace ? <TraceEnCours etat={etat} curseur={curseur} mmParPx={mmParPx} /> : null}
           {etat.echelle ? (
             <TraceEnCours

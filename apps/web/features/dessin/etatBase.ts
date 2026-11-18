@@ -14,6 +14,7 @@ import {
   type ModificationObjet,
   type ModificationOuverture,
   type Niveau,
+  type ParcelleCadastre,
   type Point,
   type Revetement,
   type Scene,
@@ -144,6 +145,8 @@ export type Action =
     }
   | { type: 'supprimerExterieur'; genre: GenreExterieur; id: string }
   | { type: 'parcelleAutour' }
+  | { type: 'implanter'; parcelle: ParcelleCadastre }
+  | { type: 'ajusterImplantation'; decalage?: Point; rotation?: number }
   | { type: 'terrasseAutour'; piscineId: string }
   | { type: 'terminerTrace' }
   | { type: 'selectionner'; selection: Selection }

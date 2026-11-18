@@ -111,6 +111,14 @@ export const entreePhotoPlan = z.object({
     .max(4 * 1024 * 1024)
     .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Image illisible'),
 });
+const HORS_METROPOLE = 'L’implantation couvre la France métropolitaine.';
+/** Implantation (DES-35) : adresse saisie, puis parcelle sous le point choisi (métropole). */
+export const entreeAdresse = z.object({ texte: z.string().trim().min(3).max(200) });
+export const entreeParcelle = z.object({
+  planId: idPlan,
+  lon: z.number().min(-5.5, HORS_METROPOLE).max(10, HORS_METROPOLE),
+  lat: z.number().min(41, HORS_METROPOLE).max(51.5, HORS_METROPOLE),
+});
 export const entreeSupprimerPhoto = z.object({
   planId: idPlan,
   storagePath: z.string().min(1).max(300),

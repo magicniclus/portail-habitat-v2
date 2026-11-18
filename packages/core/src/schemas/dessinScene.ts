@@ -7,7 +7,7 @@ import { z } from '../zod';
 export const SCENE_VERSION = 1;
 
 /** ± 1 km : largement au-delà d'une parcelle, en deçà de toute erreur d'arrondi. */
-const LIMITE_MM = 1_000_000;
+export const LIMITE_MM = 1_000_000;
 export const mm = z.number().int().min(-LIMITE_MM).max(LIMITE_MM);
 export const mmPositif = z.number().int().min(0).max(LIMITE_MM);
 /** Dixièmes de degré, de -360° à 360°. */
@@ -373,6 +373,25 @@ export const terrain = z.object({
     .regex(/^\d[0-9AB]\d{3}$/, 'Code INSEE invalide')
     .optional(),
   implantation: z.object({ x: mm, y: mm, rotation: angle }),
+  /** Lambert-93 (mm) du point 0,0 du plan (DES-35), quand la parcelle vient du cadastre. */
+  georef: z
+    .object({
+      x: z.number().int().min(0).max(2_000_000_000),
+      y: z.number().int().min(5_000_000_000).max(8_000_000_000),
+    })
+    .optional(),
+  /** Photo aérienne IGN enregistrée dans le dossier du plan, emprise en Lambert-93 (mm). */
+  orthophoto: z
+    .object({
+      storagePath: z.string().min(1).max(300),
+      emprise: z.object({
+        x0: z.number().int(),
+        y0: z.number().int(),
+        x1: z.number().int(),
+        y1: z.number().int(),
+      }),
+    })
+    .optional(),
 });
 
 const CALQUES_DEFAUT = {

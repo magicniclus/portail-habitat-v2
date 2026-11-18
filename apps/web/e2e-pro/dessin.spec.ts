@@ -24,6 +24,10 @@ function pdfMinimal(): Buffer {
   return Buffer.from(corps, 'latin1');
 }
 
+/** PNG 2 × 2 (vert / gris) qui tient lieu de photo aérienne. */
+const PHOTO_TEST =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAE0lEQVR4nGOI6nFbsGAaAxADWQAqZgYFdPEiigAAAABJRU5ErkJggg==';
+
 let retablirFlag: () => Promise<void>;
 test.beforeAll(async () => {
   retablirFlag = await flagGlobal('dessin', true);
@@ -570,6 +574,8 @@ test.describe('Plans (espace pro)', () => {
     // DES-19 : parcelle autour de la maison.
     await exterieur('');
     await page.getByRole('button', { name: 'Parcelle autour de la maison' }).click();
+    // Le cadre englobe maintenant la parcelle : on l'ajuste à l'écran.
+    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
 
     // DES-18 : terrasse à l'ouest (collée à la façade), surélevée de 60 cm avec garde-corps.
     await exterieur('Terrasse');
@@ -622,5 +628,86 @@ test.describe('Plans (espace pro)', () => {
       page.getByTestId('plan-2d').getByRole('button', { name: 'Piscine' }),
     ).toBeVisible();
     await expect(page.getByTestId('plan-2d').getByRole('button', { name: 'Arbre' })).toBeVisible();
+  });
+  test('implantation : adresse, parcelle du cadastre, recalage, nord, distances aux limites', async ({
+    page,
+  }) => {
+    // Services IGN simulés : on teste l'écran, pas les serveurs publics.
+    await page.route('**/api/dessin/adresses', (r) =>
+      r.fulfill({
+        json: {
+          ok: true,
+          data: { adresses: [{ libelle: '1 Rue du Test 01000 Ville', lon: 3, lat: 46.5 }] },
+        },
+      }),
+    );
+    const L = (x: number, y: number) => ({ x: 700_000_000 + x, y: 6_600_000_000 + y });
+    await page.route('**/api/dessin/parcelle', (r) =>
+      r.fulfill({
+        json: {
+          ok: true,
+          data: {
+            reference: '01001000AB0012',
+            codeInsee: '01001',
+            contour: [L(0, 0), L(30_000, 0), L(30_000, 40_000), L(0, 40_000)],
+            orthophoto: {
+              storagePath: 'dessin/ortho-test.jpg',
+              emprise: {
+                x0: L(-25_000, 0).x,
+                y0: L(0, -20_000).y,
+                x1: L(55_000, 0).x,
+                y1: L(0, 60_000).y,
+              },
+            },
+          },
+        },
+      }),
+    );
+    // Photo aérienne simulée : une image de 2 × 2 px (lue par la route du plan).
+    await page.route('**/api/dessin/lire-fond', (r) =>
+      r.fulfill({ json: { ok: true, data: { url: PHOTO_TEST } } }),
+    );
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    await menu('Structure');
+    await page.getByRole('button', { name: /^Implantation/ }).click();
+    await page.getByLabel('Adresse du terrain').fill('1 rue du test');
+    await page.getByRole('button', { name: 'Chercher la parcelle' }).click();
+    await page.getByRole('button', { name: '1 Rue du Test 01000 Ville' }).click();
+    await expect(page.getByText('01001000AB0012')).toBeVisible();
+    await expect(plan.getByTestId('photo-aerienne')).toHaveCount(1);
+    // Maison centrée sur une parcelle de 30 × 40 m : (30 − 10,6) / 2 = 9,70 m de chaque côté.
+    const distances = page.getByTestId('distances-limites');
+    await expect(distances).toContainText('9,70 m · 9,70 m');
+    await expect(plan.getByTestId('cote-limite')).toHaveCount(4);
+    await page.getByRole('button', { name: 'Parcelle vers la droite' }).click();
+    await expect(distances).toContainText('9,20 m');
+    await page.getByRole('button', { name: 'Pivoter de 5° à droite' }).click();
+    await expect(page.getByText(/Nord à 5° du haut du plan/)).toBeVisible();
+    await expect(plan.getByTestId('fleche-nord')).toHaveCount(1);
+
+    await menu('Rendu');
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page.reload();
+    await expect(page.getByTestId('plan-2d').getByTestId('cote-limite')).toHaveCount(4);
+    await expect(page.getByTestId('plan-2d').getByTestId('fleche-nord')).toHaveCount(1);
   });
 });

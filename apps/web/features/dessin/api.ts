@@ -1,4 +1,4 @@
-import type { Scene } from '@ph/core/dessin';
+import type { ParcelleCadastre, Scene } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 import { posterJson } from '@/lib/posterJson';
 
@@ -46,6 +46,15 @@ export const enregistrerFond = (
 
 export const lireFond = (espace: EspaceDessin, planId: string, storagePath: string) =>
   appel<{ url: string }>('lire-fond', espace, { planId, storagePath });
+
+/** Implantation (DES-35) : adresses proposées, puis parcelle et photo aérienne IGN. */
+export const chercherAdresses = (espace: EspaceDessin, texte: string) =>
+  appel<{ adresses: { libelle: string; lon: number; lat: number }[] }>('adresses', espace, {
+    texte,
+  });
+
+export const chargerParcelle = (espace: EspaceDessin, planId: string, lon: number, lat: number) =>
+  appel<ParcelleCadastre>('parcelle', espace, { planId, lon, lat });
 
 /** Galerie « Mes photos » du plan (DES-37). */
 export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
