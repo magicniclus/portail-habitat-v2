@@ -37,3 +37,4 @@ export * from './placementExterieur';
 export * from './implantation';
 export * from './elevation';
 export * from './export';
+export * from './annonces';

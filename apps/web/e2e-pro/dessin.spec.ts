@@ -976,4 +976,34 @@ test.describe('Plans (espace pro)', () => {
     );
     await expect(page.getByRole('region', { name: 'Propriétés' })).toBeVisible();
   });
+  test('DES-47 accessibilité : raccourcis sur « ? », élément choisi annoncé, animations réduites', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    await page.keyboard.press('?');
+    const fenetre = page.getByRole('dialog', { name: 'Raccourcis clavier' });
+    await expect(fenetre).toBeVisible();
+    await expect(fenetre.getByText('Déplacer l’élément choisi de 1 cm')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(fenetre).toHaveCount(0);
+    // Choisir la pièce : son nom et sa surface sont annoncés.
+    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    const p = (await plan.getByText('83,6 m²').boundingBox())!;
+    await page.mouse.click(p.x + p.width / 2, p.y + 40);
+    await expect(page.getByTestId('annonce-selection')).toHaveText(
+      // Sur un petit écran, le clic peut tomber sur le mur : nature et mesures annoncées aussi.
+      /^(Pièce choisie : .+, 83,6 m²|Mur choisi : [\d,]+ m, épaisseur \d+ cm, hauteur 2,50 m)\.$/,
+    );
+    await expect(page.getByTestId('annonce-selection')).toHaveAttribute('aria-live', 'polite');
+  });
 });

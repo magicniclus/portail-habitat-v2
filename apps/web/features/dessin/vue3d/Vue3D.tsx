@@ -1,5 +1,6 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/useMediaQuery';
 import {
   directionSoleil,
   niveauxTries,
@@ -33,6 +34,7 @@ export default function Vue3D({
   ortho?: string | null;
 }) {
   const scene = sceneDe(etat);
+  const mouvementReduit = useMediaQuery('(prefers-reduced-motion: reduce)', false);
   const courant = niveauDe(etat);
   const niveaux = useMemo(() => {
     const tries = niveauxTries(scene);
@@ -149,6 +151,8 @@ export default function Vue3D({
       <Cadrage centre={centre} rayon={rayon} cle={`${courant.id}-${etat.ajustement}`} />
       <OrbitControls
         makeDefault
+        // Réduire les animations (DES-47) : pas d'inertie de la caméra.
+        enableDamping={!mouvementReduit}
         enabled={orbite}
         maxPolarAngle={Math.PI / 2 - 0.05}
         minDistance={1}

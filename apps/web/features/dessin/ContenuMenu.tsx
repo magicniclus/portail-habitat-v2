@@ -6,6 +6,7 @@ import { Chiffrage } from './Chiffrage';
 import { EquiperMenu } from './EquiperMenu';
 import type { Action, EtatEditeur, Menu } from './etat';
 import { FinitionsMenu } from './FinitionsMenu';
+import { ListeRaccourcis } from './AideRaccourcis';
 import { GuideDemarrage } from './GuideDemarrage';
 import { RenduMenu } from './RenduMenu';
 import { StructureMenu } from './StructureMenu';
@@ -44,12 +45,9 @@ export function ContenuMenu({
   return (
     <div className="grid gap-4">
       <GuideDemarrage etat={etat} />
-      <div className="grid gap-1.5 px-1 text-sm leading-5 text-neutre-800">
-        <p className="m-0 font-bold text-texte">Raccourcis</p>
-        <p className="m-0">Ctrl + Z : annuler · Ctrl + Maj + Z : rétablir</p>
-        <p className="m-0">Échap : finir le tracé · Suppr : supprimer l’élément choisi</p>
-        <p className="m-0">Flèches : déplacer le mur ou l’objet choisi (Maj : par 10 cm)</p>
-        <p className="m-0">R : tourner l’objet choisi d’un quart de tour</p>
+      <div className="grid gap-2 px-1">
+        <p className="m-0 text-sm font-bold text-texte">Raccourcis (touche « ? »)</p>
+        <ListeRaccourcis />
       </div>
     </div>
   );

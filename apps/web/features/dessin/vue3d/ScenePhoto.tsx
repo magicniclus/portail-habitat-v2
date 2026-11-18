@@ -1,5 +1,6 @@
 'use client';
 
+import { useMediaQuery } from '@/lib/useMediaQuery';
 import { directionSoleil, niveauxTries, niveauSuperieur } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { OrbitControls } from '@react-three/drei';
@@ -45,6 +46,7 @@ export function ScenePhoto({
   exposer: (c: Capturer) => void;
 }) {
   const scene = sceneDe(etat);
+  const mouvementReduit = useMediaQuery('(prefers-reduced-motion: reduce)', false);
   const courant = niveauDe(etat);
   const { centre, rayon } = useCadreMaison(courant);
   const soiree = etat.rendu.ambiance === 'soiree';
@@ -120,6 +122,8 @@ export function ScenePhoto({
       />
       <OrbitControls
         makeDefault
+        // Réduire les animations (DES-47) : pas d'inertie de la caméra.
+        enableDamping={!mouvementReduit}
         maxPolarAngle={Math.PI / 2 - 0.05}
         minDistance={1}
         maxDistance={rayon * 6}

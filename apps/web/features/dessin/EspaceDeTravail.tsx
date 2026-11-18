@@ -12,6 +12,8 @@ import { ContenuMenu, TITRES_MENU } from './ContenuMenu';
 import { etatInitial, reduire, sceneDe } from './etat';
 import { Inspecteur } from './Inspecteur';
 import { Panneau } from './Panneau';
+import { AideRaccourcis } from './AideRaccourcis';
+import { AnnonceSelection } from './AnnonceSelection';
 import { Bandeaux } from './Bandeaux';
 import { connexionEssai, FournisseurEssai } from './essai';
 import { Facades } from './Facades';
@@ -167,6 +169,8 @@ export function EspaceDeTravail(p: {
             </Panneau>
           ) : null}
           <RailOutils etat={etat} dispatch={dispatch} />
+          <AnnonceSelection etat={etat} />
+          <AideRaccourcis />
         </div>
       </div>
     </FournisseurEssai>
