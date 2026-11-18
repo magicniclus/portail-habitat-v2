@@ -24,6 +24,8 @@ import type { FondCharge } from './useFond';
 import { GuidesSvg } from './GuidesSvg';
 import { ToitSvg } from './ToitSvg';
 import { DefsMotifs } from './Motifs';
+import { useAjustement } from './useAjustement';
+import { useGestesTactiles } from './useGestesTactiles';
 import { useGlisser } from './useGlisser';
 import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
 
@@ -49,20 +51,7 @@ export function Plan2D({
   const parcelle = scene.terrain?.parcelle;
   const cadre = useMemo(() => cadreDe(n, parcelle), [n, parcelle]);
   const conteneur = useRef<HTMLDivElement>(null);
-  const cadreCourant = useRef(cadre);
-  useEffect(() => {
-    cadreCourant.current = cadre;
-  }, [cadre]);
-
-  // Ajuster à l'écran : à l'ouverture et à la demande (bouton du zoom).
-  useEffect(() => {
-    const el = conteneur.current;
-    if (!el) return;
-    const { width, height } = el.getBoundingClientRect();
-    const c = cadreCourant.current;
-    if (width > 0 && height > 0)
-      dispatch({ type: 'zoom', zoom: Math.min((width / c.l) * 1000, (height / c.h) * 1000) });
-  }, [etat.ajustement, dispatch]);
+  useAjustement(conteneur, cadre, etat.ajustement, dispatch);
   const mmParPx = 1000 / etat.zoom;
 
   const cibles = useMemo(
@@ -91,11 +80,17 @@ export function Plan2D({
 
   const trace = etat.outil !== 'selection';
   const glisser = useGlisser(n, dispatch, versMm, trace);
+  const selectionne = useRef(false);
+  useEffect(() => {
+    selectionne.current = etat.selection !== null;
+  }, [etat.selection]);
+  const gestes = useGestesTactiles(etat.zoom, dispatch, selectionne);
 
   return (
     <div
       ref={conteneur}
-      className="h-full w-full overflow-auto"
+      // Téléphone, panneau ouvert : la feuille du bas couvre le bas, le plan se cadre au-dessus.
+      className={`h-full w-full overflow-auto ${etat.menu || etat.proprietes ? 'max-[899px]:pb-[60dvh]' : ''}`}
       // Papier pointillé du plan (maquette) : un point tous les 24 px.
       style={{
         backgroundColor: COULEURS_PLAN.fond,
@@ -103,6 +98,7 @@ export function Plan2D({
         backgroundSize: '24px 24px',
       }}
       data-testid="plan-2d"
+      {...gestes}
     >
       {/* Centré quand il est plus petit que la zone, défilable quand il est plus grand. */}
       <div className="grid min-h-full min-w-full place-items-center w-max">

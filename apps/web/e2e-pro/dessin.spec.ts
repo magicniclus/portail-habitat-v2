@@ -898,4 +898,82 @@ test.describe('Plans (espace pro)', () => {
     await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
     await expect(page.getByText('Essai sans compte')).toHaveCount(0);
   });
+  test('DES-46 téléphone : feuille du bas, pincer pour zoomer, appui long = propriétés', async ({
+    page,
+  }) => {
+    test.skip(page.viewportSize()!.width >= 900, 'gestes du téléphone');
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    // Feuille du bas : collée au bas de l'écran, le haut du plan reste visible.
+    await page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Chiffrer' })
+      .click();
+    const feuille = page.getByRole('region', { name: 'Chiffrer' });
+    const b = (await feuille.boundingBox())!;
+    const hauteur = page.viewportSize()!.height;
+    expect(Math.round(b.y + b.height)).toBeGreaterThanOrEqual(hauteur - 2);
+    expect(b.y).toBeGreaterThan(hauteur * 0.3);
+    await page.getByRole('button', { name: 'Replier chiffrer' }).click();
+
+    // Pincer : deux doigts qui s'écartent agrandissent le plan.
+    const zoom = page.getByRole('toolbar', { name: 'Outils du plan' }).locator('[aria-live]');
+    const avant = Number.parseInt((await zoom.textContent())!, 10);
+    await plan.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const [cx, cy] = [r.x + r.width / 2, r.y + r.height / 2];
+      const ev = (type: string, id: number, x: number) =>
+        el.dispatchEvent(
+          new PointerEvent(type, {
+            pointerId: id,
+            pointerType: 'touch',
+            clientX: x,
+            clientY: cy,
+            bubbles: true,
+          }),
+        );
+      ev('pointerdown', 1, cx - 40);
+      ev('pointerdown', 2, cx + 40);
+      ev('pointermove', 1, cx - 80);
+      ev('pointermove', 2, cx + 80);
+      ev('pointerup', 1, cx - 80);
+      ev('pointerup', 2, cx + 80);
+    });
+    await expect
+      .poll(async () => Number.parseInt((await zoom.textContent())!, 10))
+      .toBeGreaterThan(avant * 1.5);
+
+    // Appui long sur la pièce : elle est choisie et ses propriétés s'ouvrent.
+    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    const piece = plan.getByText('83,6 m²');
+    const p = (await piece.boundingBox())!;
+    const pt = { x: p.x + p.width / 2, y: p.y + 40 };
+    await page.evaluate((c) => {
+      const cible = document.elementFromPoint(c.x, c.y)!;
+      cible.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          pointerId: 7,
+          pointerType: 'touch',
+          clientX: c.x,
+          clientY: c.y,
+          bubbles: true,
+        }),
+      );
+    }, pt);
+    await page.waitForTimeout(800);
+    await plan.evaluate((el) =>
+      el.dispatchEvent(
+        new PointerEvent('pointerup', { pointerId: 7, pointerType: 'touch', bubbles: true }),
+      ),
+    );
+    await expect(page.getByRole('region', { name: 'Propriétés' })).toBeVisible();
+  });
 });
