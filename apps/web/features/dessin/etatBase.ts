@@ -3,6 +3,8 @@ import {
   enregistrer,
   type CibleRevetement,
   type ElementToit,
+  type FormePiscine,
+  type GenreExterieur,
   type ModificationToiture,
   type TypeToiture,
   type Guide,
@@ -19,13 +21,36 @@ import {
   type TypeMur,
   type TypeNiveau,
   type TypeOuverture,
+  type TypeCloture,
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 
 /** État de l'éditeur Dessin (DESSIN.md §7) : scène + historique, outil, sélection, affichage. */
 export type Outil =
-  'selection' | 'mur' | 'piece' | 'ouverture' | 'escalier' | 'echelle' | 'objet' | 'zone' | 'toit';
-type GenreSelection = 'mur' | 'piece' | 'ouverture' | 'escalier' | 'objet' | 'zone';
+  | 'selection'
+  | 'mur'
+  | 'piece'
+  | 'ouverture'
+  | 'escalier'
+  | 'echelle'
+  | 'objet'
+  | 'zone'
+  | 'toit'
+  | 'exterieur';
+type GenreSelection =
+  | 'mur'
+  | 'piece'
+  | 'ouverture'
+  | 'escalier'
+  | 'objet'
+  | 'zone'
+  | 'terrasse'
+  | 'piscine'
+  | 'cloture'
+  | 'vegetal';
+/** Éléments posés avec l'outil « extérieur » (DES-18 à DES-20). */
+export type ElementExterieur =
+  'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
 type Selection = { genre: GenreSelection; id: string } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
 export type Vue = 'plan' | '3d' | 'visite' | 'photo';
@@ -58,6 +83,11 @@ export interface EtatEditeur {
   catalogueId: string;
   /** Élément posé sur le toit avec l'outil « toit ». */
   elementToit: ElementToit;
+  elementExterieur: ElementExterieur;
+  formePiscine: FormePiscine;
+  typeCloture: TypeCloture;
+  /** Clôture en cours de tracé : les clics suivants y ajoutent un point. */
+  clotureEnCours: string | null;
   /** Style copié (DES-28), collé sur une autre pièce, un mur ou une zone. */
   pressePapier: Revetement | null;
   /** Premier point du segment, de la pièce ou de la mesure d'échelle en cours. */
@@ -95,6 +125,9 @@ export type Action =
       typeEscalier?: TypeEscalier;
       catalogueId?: string;
       elementToit?: ElementToit;
+      elementExterieur?: ElementExterieur;
+      formePiscine?: FormePiscine;
+      typeCloture?: TypeCloture;
     }
   | { type: 'poserPoint'; point: Point }
   | { type: 'toiture'; toiture: TypeToiture | null }
@@ -103,6 +136,14 @@ export type Action =
   | { type: 'hauteursToit'; egout?: number; faitage?: number }
   | { type: 'modifierToiture'; modif: ModificationToiture }
   | { type: 'retirerElementToit'; id: string }
+  | {
+      type: 'modifierExterieur';
+      genre: 'terrasse' | 'piscine' | 'cloture' | 'vegetal';
+      id: string;
+      modif: Record<string, unknown>;
+    }
+  | { type: 'supprimerExterieur'; genre: GenreExterieur; id: string }
+  | { type: 'parcelleAutour' }
   | { type: 'terminerTrace' }
   | { type: 'selectionner'; selection: Selection }
   | { type: 'modifierLongueur'; murId: string; longueur: number }
@@ -156,7 +197,8 @@ export type Action =
   | { type: 'remplacerScene'; scene: Scene }
   | { type: 'effacerErreur' };
 
-export const ZOOM_MIN = 15;
+/** Assez bas pour voir une maison et tout son jardin sur un téléphone (≈ 40 m de large). */
+export const ZOOM_MIN = 6;
 export const ZOOM_MAX = 200;
 export const ZOOM_DEFAUT = 50;
 
@@ -175,6 +217,10 @@ export function etatInitial(scene: Scene): EtatEditeur {
     typeEscalier: 'droit',
     catalogueId: 'canape-3',
     elementToit: 'fenetre',
+    elementExterieur: 'terrasse',
+    formePiscine: 'rectangle',
+    typeCloture: 'bois',
+    clotureEnCours: null,
     pressePapier: null,
     trace: null,
     echelle: null,

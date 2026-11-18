@@ -14,6 +14,7 @@ import { PEINTURES_DESSIN, SOLS_DESSIN, type TeinteDessin } from '@ph/ui/tokens'
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { inspecteurAmenagement } from './InspecteurAmenagement';
+import { inspecteurExterieur } from './InspecteurExterieur';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { Nuancier } from './Nuancier';
 
@@ -185,7 +186,7 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
         dispatch={dispatch}
       />
     );
-  const amenagement = inspecteurAmenagement(etat, dispatch);
+  const amenagement = inspecteurAmenagement(etat, dispatch) ?? inspecteurExterieur(etat, dispatch);
   if (amenagement) return amenagement;
   return (
     <div className="grid gap-2 px-2 py-6 text-center text-neutre-800">

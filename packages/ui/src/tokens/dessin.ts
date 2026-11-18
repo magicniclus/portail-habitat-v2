@@ -269,3 +269,28 @@ export const COULEURS_COUVERTURE = {
   facade: '#ece6dc',
   brique: '#9c4a35',
 } as const;
+
+/** Extérieur (lot 15h) : eau, margelles, végétaux, allées, clôtures, parcelle, gazon. */
+export const COULEURS_EXTERIEUR = {
+  eau: '#8cc7dd',
+  eauFonce: '#3f8fb0',
+  margelle: '#e6e0d4',
+  vegetal: '#8fb47a',
+  vegetalFonce: '#5f8a4e',
+  tronc: '#7a5a3a',
+  allee: '#d8d2c6',
+  cloture: '#6b5a45',
+  grillage: '#7f8c86',
+  parcelle: '#a0703a',
+  gazon: '#cfe0bf',
+} as const;
+
+/** Teinte par défaut d'une terrasse selon son matériau (sans référence de matériau). */
+export const COULEURS_TERRASSE: Record<string, string> = {
+  bois: '#a87b4f',
+  composite: '#7d6b5d',
+  dalle: '#cfc8bc',
+  carrelage: '#e3ddd3',
+  pierre: '#bdb5a6',
+  beton_cire: '#b9b4ad',
+};

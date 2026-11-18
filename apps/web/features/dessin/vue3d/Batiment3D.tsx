@@ -8,12 +8,14 @@ import {
   type MorceauMur,
   type Niveau,
   type Pave,
+  type Point,
 } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import type { Vector3 } from 'three';
 import { DoubleSide, Shape, type Mesh } from 'three';
+import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
 import { Toit3D } from './Toit3D';
 import { devantLaCamera, HAUTEUR_POUPEE } from './poupee';
@@ -115,6 +117,7 @@ export function Niveau3D({
   portesOuvertes = false,
   toit = false,
   dessus = null,
+  parcelle = null,
 }: {
   n: Niveau;
   centre: Vector3;
@@ -125,6 +128,8 @@ export function Niveau3D({
   /** Toiture du niveau affichée, et niveau du dessus (parties sans étage seulement). */
   toit?: boolean;
   dessus?: Niveau | null;
+  /** Parcelle de la scène (affichée avec l'extérieur du niveau). */
+  parcelle?: Point[] | null;
 }) {
   const morceaux = useMemo(() => n.murs.flatMap((m) => morceauxDeMur(m, n)), [n]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
@@ -143,6 +148,7 @@ export function Niveau3D({
         : null}
       <Menuiseries3D n={n} portesOuvertes={portesOuvertes} poupee={poupee} centre={centre} />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
+      <Exterieur3D n={n} parcelle={parcelle} />
       {marches.map((p, i) => (
         <PaveMesh key={i} p={p} materiaux={bois} />
       ))}

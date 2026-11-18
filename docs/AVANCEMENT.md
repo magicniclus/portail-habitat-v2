@@ -996,10 +996,17 @@ Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'exté
   - **un clic** : choisir la forme pose le toit sur toute la maison, à chaque niveau concerné (jamais au sous-sol) ;
   - surface de couverture mesurée sur les ailes réunies, pente comprise ; combles Carrez idem ;
   - **toits réunis (retour du propriétaire, capture)** : chaque pan perd exactement les parties qui passent sous le toit d'une autre aile (`decoupeToit.ts`, calcul en plan, sans maillage approché). Plus de débord qui dépasse devant un pignon ; les noues sont nettes et la surface des pans visibles égale la couverture mesurée (testé).
-- **Tests** : 26 unitaires de plus (menuiseries, toiture, ailes en L/T/U, étage partiel, hauteurs) ; Playwright « menuiseries », « toiture » et « maison en L » verts sur iPhone 13 et ordinateur, 16 parcours au total.
+- **Tests** : 26 unitaires de plus (menuiseries, toiture, ailes en L/T/U, étage partiel, hauteurs) ; Playwright « menuiseries », « toiture », « maison en L » et « extérieur » verts sur iPhone 13 et ordinateur, 18 parcours au total.
+- **Terrasse, terrain, piscine (fait)**, sans changement de modèle (`niveau.exterieur` et `scene.terrain` existaient) :
+  - menu Structure → « Terrasse, terrain, piscine » : terrasse et allée en deux coins, piscine d'un clic (7 formes), clôture point par point (bois, grillage, muret, haie, portail ; Échap pour finir), arbre, arbuste, haie, parcelle tracée ou « autour de la maison » ;
+  - terrasse : matériau, sens de pose, hauteur (marches générées côté jardin, à l'opposé de la maison), garde-corps (ouvert aux marches), pergola ;
+  - piscine : forme, dimensions, profondeurs (fond en pente), escalier, débordement, **volume d'eau**, plan d'eau, **distance aux limites de la parcelle (indicative)** ;
+  - 2D : tout est dessiné sous la maison et sélectionnable ; le cadre du plan inclut l'extérieur ;
+  - 3D : terrasse texturée, marches, garde-corps, pergola, eau et margelles (ou bassin hors-sol), allées, clôtures, arbres et haies, limites de parcelle ; cadrage sur la maison et son jardin ;
+  - métré : terrasse (m²), clôtures (ml, prestation « cloture »), allées (m²), piscines ;
+  - **correction (bug trouvé par le typecheck)** : l'identifiant de l'élément créé est rendu dans `elementId` ; renvoyé dans `id`, il écrasait celui du niveau ;
+  - **réglage changé (signalé)** : zoom minimal du plan 6 px/m (au lieu de 15) pour voir une maison et son jardin sur un téléphone.
 - **Reste** :
-  - terrasse et terrain ;
-  - piscine ;
   - implantation (cadastre et photo aérienne IGN : hôtes réseau à autoriser) ;
   - façades et coupes ;
   - murs obliques : le découpage en ailes suit le mur le plus long (formes à angles droits).

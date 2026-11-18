@@ -85,7 +85,9 @@ export function TraceEnCours({
   const c = milieu(a, curseur);
   return (
     <g pointerEvents="none">
-      {etat.outil === 'piece' ? (
+      {etat.outil === 'piece' ||
+      etat.outil === 'zone' ||
+      (etat.outil === 'exterieur' && etat.elementExterieur !== 'cloture') ? (
         <rect
           x={Math.min(a.x, curseur.x)}
           y={Math.min(a.y, curseur.y)}

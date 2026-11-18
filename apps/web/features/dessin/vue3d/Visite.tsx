@@ -102,6 +102,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
             <Niveau3D
               n={niv}
               dessus={niveauSuperieur(scene, niv.id)}
+              parcelle={scene.terrain?.parcelle ?? null}
               centre={new Vector3()}
               poupee={false}
               plafonds

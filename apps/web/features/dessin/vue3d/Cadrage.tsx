@@ -1,6 +1,7 @@
 'use client';
 
 import { toit3D, type Niveau } from '@ph/core/dessin';
+import { cadreDe } from '../cadre';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import { MathUtils, Vector3, type PerspectiveCamera } from 'three';
@@ -37,20 +38,18 @@ export function Cadrage({ centre, rayon, cle }: { centre: Vector3; rayon: number
   return null;
 }
 
-/** Centre (mètres) et rayon de la maison au niveau courant : cadrage et ombres. */
+/** Centre (mètres) et rayon de la maison et de son extérieur : cadrage et ombres. */
 export function useCadreMaison(courant: Niveau) {
   return useMemo(() => {
-    const pts = courant.murs.flatMap((m) => [m.a, m.b]);
-    if (!pts.length) return { centre: new Vector3(0, 0, 0), rayon: 8 };
-    const xs = pts.map((p) => p.x);
-    const ys = pts.map((p) => p.y);
-    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+    // Cadre du plan (maison, terrasses, piscines, végétaux), sans sa marge de 3 m.
+    const c = cadreDe(courant);
+    const [l, h] = [c.l - 6_000, c.h - 6_000];
     // Avec un toit, la maison est plus haute : on cadre aussi le faîtage.
     const t = toit3D(courant);
     const hauteur = t ? Math.max(...t.pans.flat().map((p) => p.z)) - courant.altitude : 2_500;
     return {
-      centre: new Vector3((x0 + x1) / 2000, courant.altitude / 1000, (y0 + y1) / 2000),
-      rayon: Math.max(4, Math.hypot(x1 - x0, y1 - y0, hauteur) / 2000),
+      centre: new Vector3((c.x + c.l / 2) / 1000, courant.altitude / 1000, (c.y + c.h / 2) / 1000),
+      rayon: Math.max(4, Math.hypot(l, h, hauteur) / 2000),
     };
   }, [courant]);
 }

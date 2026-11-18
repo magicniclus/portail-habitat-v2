@@ -527,4 +527,97 @@ test.describe('Plans (espace pro)', () => {
     await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
     await page.waitForTimeout(1500);
   });
+
+  test('extérieur : parcelle, terrasse surélevée, piscine, arbre, clôture, métré et 3D', async ({
+    page,
+  }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByText('83,6 m²')).toBeVisible();
+    const svg = plan.locator('svg');
+    const cliquer = async (xMm: number, yMm: number) => {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      await page.mouse.click(boite.x + (xMm - vx!) * k, boite.y + (yMm - vy!) * k);
+    };
+    const menu = async (nom: string) => {
+      const b = page
+        .getByRole('navigation', { name: 'Menus du plan' })
+        .getByRole('button', { name: nom });
+      if ((await b.getAttribute('aria-pressed')) !== 'true') await b.click();
+    };
+    const exterieur = async (outil: string) => {
+      await menu('Structure');
+      const sous = page.getByRole('button', { name: /^Terrasse, terrain, piscine/ });
+      if (await sous.isVisible()) await sous.click();
+      if (outil) await page.getByRole('button', { name: new RegExp(`^${outil}`) }).click();
+      await page.waitForTimeout(400);
+    };
+    const replier = async () => {
+      if (page.viewportSize()!.width < 900)
+        await page.getByRole('button', { name: 'Replier propriétés' }).click();
+      await page.waitForTimeout(300);
+    };
+
+    // DES-19 : parcelle autour de la maison.
+    await exterieur('');
+    await page.getByRole('button', { name: 'Parcelle autour de la maison' }).click();
+
+    // DES-18 : terrasse en deux coins, surélevée de 60 cm avec garde-corps.
+    await exterieur('Terrasse');
+    await cliquer(1_000, 9_200);
+    await cliquer(6_000, 11_200);
+    await expect(plan.getByRole('button', { name: 'Terrasse' })).toBeVisible();
+    await page.getByLabel('Hauteur au-dessus du sol (cm)').fill('60');
+    await page.getByLabel('Hauteur au-dessus du sol (cm)').press('Enter');
+    await page.getByLabel('Garde-corps').check();
+    await replier();
+
+    // DES-20 : piscine d'un clic, volume d'eau calculé.
+    await exterieur('Piscine');
+    await cliquer(9_000, 13_300);
+    await expect(page.getByText('Volume d’eau')).toBeVisible();
+    await expect(page.getByText('46,4 m³')).toBeVisible();
+    await expect(page.getByText('Aux limites (indicatif)')).toBeVisible();
+    await replier();
+
+    // Arbre et clôture (deux points, Échap pour finir).
+    await exterieur('Arbre');
+    await cliquer(-2_000, 4_000);
+    await replier();
+    // Le dessin a grandi : on l'ajuste à l'écran avant de tracer la clôture.
+    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    await exterieur('Clôture');
+    await cliquer(-2_500, 9_500);
+    await cliquer(12_500, 9_500);
+    await page.keyboard.press('Escape');
+    // Une clôture droite a une hauteur nulle à l'écran : on vérifie sa présence.
+    await expect(plan.getByRole('button', { name: 'Clôture' })).toHaveCount(1);
+
+    await menu('Chiffrer');
+    await expect(page.getByText('Terrasse', { exact: true })).toBeVisible();
+    await expect(page.getByText('Clôtures', { exact: true })).toBeVisible();
+
+    await menu('Rendu');
+    await page.getByLabel('Maison de poupée (murs avant abaissés)').uncheck();
+    await page.getByRole('button', { name: 'Vue 3D' }).click();
+    await expect(page.getByTestId('vue-3d').locator('canvas')).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    await expect(page.getByRole('status').filter({ hasText: 'Enregistré' })).toBeAttached({
+      timeout: 10_000,
+    });
+    await page.reload();
+    await expect(
+      page.getByTestId('plan-2d').getByRole('button', { name: 'Piscine' }),
+    ).toBeVisible();
+    await expect(page.getByTestId('plan-2d').getByRole('button', { name: 'Arbre' })).toBeVisible();
+  });
 });

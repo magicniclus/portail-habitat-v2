@@ -18,6 +18,7 @@ import {
 } from './etatBase';
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireStructure } from './etatStructure';
+import { reduireExterieur } from './etatExterieur';
 import { reduireToiture } from './etatToiture';
 
 export * from './etatBase';
@@ -34,12 +35,16 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
         typeEscalier: a.typeEscalier ?? e.typeEscalier,
         catalogueId: a.catalogueId ?? e.catalogueId,
         elementToit: a.elementToit ?? e.elementToit,
+        elementExterieur: a.elementExterieur ?? e.elementExterieur,
+        formePiscine: a.formePiscine ?? e.formePiscine,
+        typeCloture: a.typeCloture ?? e.typeCloture,
+        clotureEnCours: null,
         trace: null,
         echelle: null,
         erreur: null,
       };
     case 'terminerTrace':
-      return { ...e, trace: null, echelle: null };
+      return { ...e, trace: null, echelle: null, clotureEnCours: null };
     case 'selectionner':
       return {
         ...e,
@@ -114,6 +119,12 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'effacerErreur':
       return { ...e, erreur: null };
     default:
-      return reduireStructure(e, a) ?? reduireAmenagement(e, a) ?? reduireToiture(e, a) ?? e;
+      return (
+        reduireStructure(e, a) ??
+        reduireAmenagement(e, a) ??
+        reduireToiture(e, a) ??
+        reduireExterieur(e, a) ??
+        e
+      );
   }
 }

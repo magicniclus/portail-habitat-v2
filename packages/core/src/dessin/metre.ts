@@ -38,6 +38,8 @@ export const POSTES_METRE = [
   'cheminees',
   'lucarnes',
   'combles',
+  'clotures',
+  'allees',
 ] as const;
 export type PosteMetre = (typeof POSTES_METRE)[number];
 
@@ -62,6 +64,8 @@ export const LIBELLES_POSTE: Record<PosteMetre, string> = {
   cheminees: 'Cheminées',
   lucarnes: 'Lucarnes',
   combles: 'Combles (surface Carrez)',
+  clotures: 'Clôtures',
+  allees: 'Allées',
 };
 
 /** Libellé des équipements posés, par prestation du catalogue. */
@@ -114,6 +118,7 @@ const PRESTATION_FIXE: Partial<Record<PosteMetre, string>> = {
   fenetres_toit: 'fenetre-toit',
   cheminees: 'cheminee',
   combles: 'combles-amenagement',
+  clotures: 'cloture',
 };
 
 const PORTES_INTERIEURES: readonly Ouverture['type'][] = [
@@ -136,6 +141,9 @@ const FENETRES: readonly Ouverture['type'][] = [
   'baie_coulissante',
 ];
 const MURS_REVETUS: readonly Mur['type'][] = ['mur', 'cloison', 'demi_mur'];
+
+const perimetreOuvert = (pts: readonly Point[]) =>
+  pts.slice(1).reduce((s, p, i) => s + Math.hypot(p.x - pts[i]!.x, p.y - pts[i]!.y), 0);
 
 /** Point situé juste devant une face du mur (a : à gauche en allant de a vers b). */
 function devantLaFace(m: Mur, face: 'a' | 'b'): Point {
@@ -217,6 +225,12 @@ export function metreNiveau(n: Niveau, dessus: Niveau | null = null): LigneMetre
     'm2',
   );
   fixe('piscine', n.exterieur.piscines.length, 'u');
+  fixe(
+    'clotures',
+    Math.round(n.exterieur.clotures.reduce((s, c) => s + perimetreOuvert(c.points), 0)),
+    'ml',
+  );
+  fixe('allees', Math.round(n.exterieur.allees.reduce((s, a) => s + aire(a), 0)), 'm2');
   fixe('escalier', n.escaliers.length, 'u');
 
   // Cuisine et équipements posés (DES-23, DES-43) : rattachés à leur prestation.

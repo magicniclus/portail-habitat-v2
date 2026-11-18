@@ -17,6 +17,7 @@ import {
   supprimerNiveau,
   supprimerObjet,
   supprimerOuverture,
+  supprimerExterieur,
   supprimerZone,
   toleranceEnMm,
   type Niveau,
@@ -24,6 +25,7 @@ import {
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 import { poserAmenagement } from './etatAmenagement';
+import { poserExterieur } from './etatExterieur';
 import { poserToit } from './etatToiture';
 import {
   contexteNavigateur as ctx,
@@ -37,7 +39,7 @@ import {
 /** Clic sur le plan selon l'outil : mur, pièce, porte ou fenêtre, escalier, mesure d'échelle. */
 function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
   if (e.outil === 'selection') return e;
-  const amenagement = poserAmenagement(e, point) ?? poserToit(e, point);
+  const amenagement = poserAmenagement(e, point) ?? poserToit(e, point) ?? poserExterieur(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
@@ -104,7 +106,20 @@ const niveauCourant = (e: EtatEditeur) =>
 function supprimerSelection(e: EtatEditeur): EtatEditeur {
   const s = e.selection;
   if (!s || s.genre === 'piece') return e;
-  const commandes: Record<Exclude<typeof s.genre, 'piece'>, (n: Niveau) => Resultat<Niveau>> = {
+  if (
+    s.genre === 'terrasse' ||
+    s.genre === 'piscine' ||
+    s.genre === 'cloture' ||
+    s.genre === 'vegetal'
+  )
+    return {
+      ...surNiveau(e, (n) => supprimerExterieur(n, s.genre as 'terrasse', s.id)),
+      selection: null,
+    };
+  const commandes: Record<
+    Exclude<typeof s.genre, 'piece' | 'terrasse' | 'piscine' | 'cloture' | 'vegetal'>,
+    (n: Niveau) => Resultat<Niveau>
+  > = {
     mur: (n) => supprimerMur(n, s.id, ctx),
     ouverture: (n) => supprimerOuverture(n, s.id),
     escalier: (n) => supprimerEscalier(n, s.id),

@@ -11,6 +11,7 @@ import { CaretLeftIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import type { Action, EtatEditeur } from './etat';
+import { ExterieurMenu } from './ExterieurMenu';
 import { FondMenu } from './FondMenu';
 import { Ligne } from './LigneMenu';
 import { NiveauxMenu } from './NiveauxMenu';
@@ -24,13 +25,14 @@ const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'separation', libelle: 'Séparation invisible', detail: 'Sépare deux pièces sans mur' },
 ];
 
-type Sous = 'murs' | 'ouvertures' | 'escaliers' | 'niveaux' | 'toiture' | 'fond';
+type Sous = 'murs' | 'ouvertures' | 'escaliers' | 'niveaux' | 'toiture' | 'exterieur' | 'fond';
 const TITRES: Record<Sous, string> = {
   murs: 'Murs & cloisons',
   ouvertures: 'Portes & fenêtres',
   escaliers: 'Escaliers',
   niveaux: 'Niveaux',
   toiture: 'Toiture & combles',
+  exterieur: 'Terrasse, terrain, piscine',
   fond: 'Importer un plan',
 };
 const AIDES: Partial<Record<Sous, string>> = {
@@ -90,17 +92,16 @@ export function StructureMenu({
             onClick={() => setSous('toiture')}
           />
           <Ligne
+            titre="Terrasse, terrain, piscine"
+            detail="Extérieur, clôtures, végétaux"
+            onClick={() => setSous('exterieur')}
+          />
+          <Ligne
             titre="Importer un plan"
             detail="Une image à décalquer, mise à l’échelle"
             onClick={() => setSous('fond')}
           />
         </ul>
-        <div className="grid gap-1.5 px-1">
-          <p className="m-0 text-xs font-bold tracking-wide text-neutre-700 uppercase">Bientôt</p>
-          <ul className="m-0 grid list-none gap-1 p-0 text-sm text-neutre-800">
-            <li>Terrasse, terrain, piscine</li>
-          </ul>
-        </div>
       </div>
     );
   return (
@@ -166,6 +167,8 @@ export function StructureMenu({
         <NiveauxMenu etat={etat} dispatch={dispatch} />
       ) : sous === 'toiture' ? (
         <ToitureMenu etat={etat} dispatch={dispatch} />
+      ) : sous === 'exterieur' ? (
+        <ExterieurMenu etat={etat} dispatch={dispatch} />
       ) : (
         <FondMenu etat={etat} dispatch={dispatch} espace={espace} planId={planId} />
       )}

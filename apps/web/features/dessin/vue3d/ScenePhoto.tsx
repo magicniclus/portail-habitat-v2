@@ -102,6 +102,7 @@ export function ScenePhoto({
           <Niveau3D
             n={n}
             dessus={niveauSuperieur(scene, n.id)}
+            parcelle={scene.terrain?.parcelle ?? null}
             centre={centre}
             poupee={etat.rendu.poupee && n.id === courant.id}
             plafonds={false}

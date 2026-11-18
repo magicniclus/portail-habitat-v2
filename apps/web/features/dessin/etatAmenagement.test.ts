@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { etatInitial, niveauDe, reduire, type Action } from './etat';
+import { etatInitial, niveauDe, reduire, sceneDe, type Action } from './etat';
 import { ciblesDe } from './cibleFinition';
 import { sceneDepuisChoix } from './scenesDepart';
 
@@ -179,5 +179,51 @@ describe('clavier et cibles des finitions', () => {
       faceA: { couleur: '#b7c4b1' },
       faceB: { couleur: '#b7c4b1' },
     });
+  });
+});
+
+describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
+  it('terrasse en deux coins, piscine d’un clic, clôture point par point, suppression', () => {
+    let e = jouer([
+      { type: 'outil', outil: 'exterieur', elementExterieur: 'terrasse' },
+      { type: 'poserPoint', point: { x: 1_000, y: 9_200 } },
+      { type: 'poserPoint', point: { x: 6_000, y: 11_200 } },
+    ]);
+    expect(niveauDe(e).exterieur.terrasses).toHaveLength(1);
+    expect(e.selection?.genre).toBe('terrasse');
+    e = jouer(
+      [
+        { type: 'outil', outil: 'exterieur', elementExterieur: 'piscine', formePiscine: 'ovale' },
+        { type: 'poserPoint', point: { x: 9_000, y: 13_300 } },
+      ],
+      e,
+    );
+    expect(niveauDe(e).exterieur.piscines[0]!.forme).toBe('ovale');
+    e = jouer(
+      [
+        { type: 'outil', outil: 'exterieur', elementExterieur: 'cloture', typeCloture: 'grillage' },
+        { type: 'poserPoint', point: { x: -2_500, y: 9_500 } },
+        { type: 'poserPoint', point: { x: 12_500, y: 9_500 } },
+        { type: 'poserPoint', point: { x: 12_500, y: 15_000 } },
+        { type: 'terminerTrace' },
+      ],
+      e,
+    );
+    expect(niveauDe(e).exterieur.clotures).toHaveLength(1);
+    expect(niveauDe(e).exterieur.clotures[0]!.points).toHaveLength(3);
+    expect(e.clotureEnCours).toBeNull();
+    e = jouer(
+      [
+        { type: 'parcelleAutour' },
+        {
+          type: 'selectionner',
+          selection: { genre: 'piscine', id: niveauDe(e).exterieur.piscines[0]!.id },
+        },
+        { type: 'supprimerSelection' },
+      ],
+      e,
+    );
+    expect(niveauDe(e).exterieur.piscines).toHaveLength(0);
+    expect(sceneDe(e).terrain?.parcelle).toHaveLength(4);
   });
 });

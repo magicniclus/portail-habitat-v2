@@ -16,6 +16,7 @@ import { Cotes, TraceEnCours } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
+import { ExterieurSvg } from './ExterieurSvg';
 import { FondSvg } from './FondSvg';
 import { GuidesSvg } from './GuidesSvg';
 import { ToitSvg } from './ToitSvg';
@@ -125,8 +126,18 @@ export function Plan2D({
           {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
           <DefsMotifs
-            revetements={[...n.pieces.map((x) => x.sol), ...n.zonesDeco.map((z) => z.revetement)]}
+            revetements={[
+              ...n.pieces.map((x) => x.sol),
+              ...n.zonesDeco.map((z) => z.revetement),
+              ...n.exterieur.terrasses.map((t) => t.revetement),
+            ]}
             mmParPx={mmParPx}
+          />
+          <ExterieurSvg
+            niveau={n}
+            parcelle={scene.terrain?.parcelle ?? null}
+            etat={etat}
+            dispatch={dispatch}
           />
           <PiecesSvg niveau={n} etat={etat} dispatch={dispatch} />
           <ZonesSvg niveau={n} etat={etat} dispatch={dispatch} />
