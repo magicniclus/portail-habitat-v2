@@ -477,7 +477,7 @@ Versions gardées (`versionPlan`) : automatique toutes les 10 minutes d'édition
 Lien de partage en lecture seule : jeton aléatoire de 32 caractères, `proprietaire`, `planId`, `expireLe`, `revoque`. Aucune donnée personnelle. Lu et écrit par le serveur uniquement (aucune règle : refus par défaut).
 
 ### Storage `dessin/{particulier|entreprise}/{id}/{planId}/…`
-Scènes compressées. Couvert par la règle finale de `storage.rules` (refus total) : lecture et écriture par le serveur uniquement, aucune modification des règles Storage.
+Scènes compressées (`r{revision}-….json.gz`), plan importé (`fond-….{jpg|png|webp}`) et galerie photo (`photos/photo-{horodatage}-….jpg`, 30 au plus, JPEG vérifié, lot 15g). Tout le dossier part avec le plan (purge de la corbeille, suppression de compte). Couvert par la règle finale de `storage.rules` (refus total) : lecture et écriture par le serveur uniquement, aucune modification des règles Storage.
 
 ### Purge et RGPD
 `purgeDessinNuit` (3 h 40) supprime les plans à la corbeille depuis plus de 30 jours, versions et fichiers compris (index de groupe de collections `plans.supprimeLe`). L'export « Mes données » inclut les plans et leurs scènes ; la suppression de compte efface tous les plans personnels et leurs fichiers.

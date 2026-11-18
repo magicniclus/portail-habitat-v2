@@ -857,7 +857,7 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15d Coque de l'éditeur et 2D (18/11/2026, voir « Lot 15d fait » ci-dessous)
 - [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
 - [x] 15f Aménager et décorer (18/11/2026, voir « Lot 15f fait » ci-dessous)
-- [ ] 15g 3D, visite, photo
+- [x] 15g 3D, visite, photo, placement automatique, rotation libre (18/11/2026, voir « Lot 15g fait » ci-dessous)
 - [ ] 15h Toiture, extérieur, piscine, implantation, façades et coupes
 - [ ] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel), « Créer un devis depuis ce plan »
 - [ ] 15j Landing publique, essai sans compte, mobile, accessibilité, performance
@@ -930,6 +930,47 @@ Nouveaux fichiers uniquement, aucun fichier existant modifié :
   - modèles 3D des objets (lot 15g, catalogue CC0 puis maison, D88) ;
   - déplacer ou faire pivoter l'image importée (15g).
 
+
+### Lot 15g fait (18/11/2026)
+Demandes du propriétaire ajoutées au lot : **placement automatique** des meubles et **rotation libre sur 3 axes**. Trois points validés par lui : inclinaison facultative dans le modèle, volumes simples en attendant les modèles 3D, emprise 2D calculée sur le meuble droit.
+- **Placement automatique** (`packages/core/src/dessin/placement.ts`, à la pose et au glisser, en 2D comme en 3D) :
+  - meuble « contre mur » : dos collé au mur le plus proche (dos à moins de 40 cm), tourné face à la pièce ;
+  - autre meuble : redressé parallèle au mur s'il est à moins de 10° près, bord collé à moins de 15 cm ;
+  - calé dans l'angle ;
+  - bord à bord avec un voisin de même orientation et de hauteur commune, aligné ;
+  - guides orange pendant le glisser ;
+  - aimant coupé ou touche Alt : pose libre ; le clavier déplace sans aimanter.
+  - Le glisser part désormais de la position du pointeur (et non par petits pas), sinon un meuble aimanté ne pouvait plus se décoller du mur.
+- **Rotation libre** :
+  - **Modèle (signalé, validé)** : `objet.inclinaison { x, y }` facultative, en dixièmes de degré ; à plat elle disparaît. Rétrocompatible, sans migration.
+  - Inspecteur : 3 curseurs au degré près avec saisie, ±90°, « À plat » ; un seul pas d'historique par geste.
+  - En 3D : poignée à 3 anneaux, crans de 15° (Maj : libre).
+- **Vue 3D** (DES-33, `features/dessin/vue3d/`, import dynamique) :
+  - murs découpés autour des portes et fenêtres (`volumes.ts`), sols et matériaux texturés à l'échelle réelle, escaliers en marches pleines sur la ligne de foulée, meubles en volumes simples reconnaissables (`formes3d.ts`) ;
+  - ombres selon l'heure et le nord (`soleil.ts`), maison de poupée (murs avant abaissés selon l'angle de vue), niveau isolé ;
+  - cadrage automatique adapté à la forme de l'écran ;
+  - meubles cliquables, déplaçables au sol avec le même placement automatique.
+- **Visite** (DES-34) :
+  - première personne à 1,60 m, collisions avec murs et meubles (pas les tapis), passage des portes mais pas des fenêtres, escaliers praticables jusqu'à l'étage (`visite.ts`) ;
+  - ZQSD ou flèches, glisser pour regarder, joystick tactile, mini-plan ;
+  - départ sur une place libre.
+- **Photo** (DES-37) :
+  - cadrage (paysage, carré, portrait), ambiance jour ou soirée, rendu amélioré (occlusion ambiante, vignette, tonalité) ;
+  - export HD dans le navigateur (2 400 px de large en paysage), en JPEG ou PNG ;
+  - galerie « Mes photos » dans le menu Rendu : JPEG vérifié côté serveur, 30 au plus par plan, téléchargement, suppression. Opérations `photo`, `photos` et `supprimer-photo` de `/api/dessin` ; `lire-fond` relit aussi les photos.
+- **Menu Rendu** : vue (Plan 2D, Vue 3D, Visite, Photo), soleil, maison de poupée, niveau isolé, galerie ; utilisable sur téléphone, où le sélecteur de vue de la barre est masqué.
+- **Dépendances ajoutées (D86, signalées dans le plan)** : `three` 0.187.0, `@react-three/fiber` 9.8.2, `@react-three/drei` 10.7.9, `@react-three/postprocessing` 3.2.2, `postprocessing` 6.39.6 (`@types/three` en développement). Toutes sont chargées seulement au passage en 3D, visite ou photo. Dans le fichier de verrouillage, une montée indirecte sans rapport (`legacy-javascript`) a été annulée.
+- **Aucune règle de sécurité modifiée** ; Storage reste fermé aux clients (accès par le serveur seulement).
+- **Tests** :
+  - cœur : `placement`, `volumes`, `visite`, plus les tests existants mis à jour ; 4 239 tests, couverture des branches 95,19 % ;
+  - serveur : 2 tests de galerie sur émulateur ;
+  - éditeur : 4 tests d'état ;
+  - Playwright : parcours « 3D, visite, photo » (et rotation libre dans le parcours 15f), **vert sur iPhone 13 et ordinateur**, 10 parcours au total.
+- **Reste** :
+  - vrais modèles 3D des meubles (D88 : CC0 puis catalogue maison, `glb` et `ktx2`) ;
+  - déplacer ou faire pivoter l'image importée (reporté une seconde fois) ;
+  - emprise 2D des meubles inclinés ;
+  - cartes d'ombre plus fines sur les grands terrains.
 ### Lot 15d, retours du propriétaire (18/11/2026)
 - **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
 - **Éditeur en pleine page**, comme l'éditeur du site : hors du cadre de l'espace pro (`/pro/plans/editeur/{id}`) et de l'en-tête particulier (`/mes-plans/{id}`). Listes : `/pro/plans` et `/mon-espace/plans`.
@@ -990,3 +1031,4 @@ Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couvert
 - 18/11/2026 — Retours du propriétaire sur le 15d : outil renommé « Plans », éditeur plein écran, rails verticaux et panneaux repliables : §31.
 - 18/11/2026 — Lot 15e fait (portes et fenêtres, escaliers, niveaux et trémies, plan importé en calque), e2e vert iPhone et ordinateur : §31.
 - 18/11/2026 — Lot 15f fait (équiper, finitions, motifs, zones au sol, métré des équipements), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Lot 15g fait (3D, visite, photo et galerie, placement automatique, rotation libre sur 3 axes ; `objet.inclinaison` ajoutée ; 5 dépendances D86) : §31, DATABASE §8 quater.
