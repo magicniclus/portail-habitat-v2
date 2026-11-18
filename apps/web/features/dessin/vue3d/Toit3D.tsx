@@ -4,19 +4,46 @@ import { toit3D, type Niveau, type Point3 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_COUVERTURE } from '@ph/ui/tokens';
 import { useMemo } from 'react';
 import { BufferGeometry, DoubleSide, Float32BufferAttribute } from 'three';
-import { materiauUni } from './textures';
+import { materiauRevetement, materiauUni } from './textures';
 import { M } from './unites';
 
-/** Polygone plan convexe → triangles en éventail (mètres, y vers le haut). */
-function geometrie(polys: readonly Point3[][]): BufferGeometry {
+/**
+ * Épaisseur de la couverture (mm) : le toit est posé au-dessus du haut des murs. Sans elle,
+ * les deux surfaces se confondent et l'affichage dessine de fins traits blancs (z-fighting).
+ */
+const EPAISSEUR = 30;
+
+/** Polygone plan convexe → triangles en éventail (mètres, y vers le haut), relevé de `dz`. */
+function geometrie(polys: readonly Point3[][], dz = 0): BufferGeometry {
   const pos: number[] = [];
   for (const p of polys)
     for (let i = 1; i < p.length - 1; i++)
-      for (const q of [p[0]!, p[i]!, p[i + 1]!]) pos.push(M(q.x), M(q.z), M(q.y));
+      for (const q of [p[0]!, p[i]!, p[i + 1]!]) pos.push(M(q.x), M(q.z + dz), M(q.y));
   const g = new BufferGeometry();
   g.setAttribute('position', new Float32BufferAttribute(pos, 3));
   g.computeVertexNormals();
   return g;
+}
+
+/**
+ * Pignon tourné vers l'extérieur de la maison : sa face éclairée est la même que celle du mur
+ * en dessous (sinon la lumière le rend plus sombre ou plus clair que le mur).
+ */
+function versLExterieur(poly: Point3[], pans: readonly Point3[][]): Point3[] {
+  const tous = pans.flat();
+  const cx = tous.reduce((s, p) => s + p.x, 0) / tous.length;
+  const cy = tous.reduce((s, p) => s + p.y, 0) / tous.length;
+  // Normale horizontale (Newell) du polygone vertical, comparée à la direction centre → pignon.
+  let [nx, ny] = [0, 0];
+  poly.forEach((p, i) => {
+    const q = poly[(i + 1) % poly.length]!;
+    nx += (p.y - q.y) * (p.z + q.z);
+    ny += (p.z - q.z) * (p.x + q.x);
+  });
+  const mx = poly.reduce((s, p) => s + p.x, 0) / poly.length - cx;
+  const my = poly.reduce((s, p) => s + p.y, 0) / poly.length - cy;
+  // Repère 3D (x, z vers le haut, y du plan → z) : l'ordre des sommets s'inverse.
+  return nx * mx + ny * my > 0 ? [...poly].reverse() : poly;
 }
 
 /**
@@ -25,8 +52,11 @@ function geometrie(polys: readonly Point3[][]): BufferGeometry {
  */
 export function Toit3D({ n, dessus }: { n: Niveau; dessus: Niveau | null }) {
   const t = useMemo(() => toit3D(n, dessus), [n, dessus]);
-  const pans = useMemo(() => (t ? geometrie(t.pans) : null), [t]);
-  const murs = useMemo(() => (t ? geometrie(t.murs) : null), [t]);
+  const pans = useMemo(() => (t ? geometrie(t.pans, EPAISSEUR) : null), [t]);
+  const murs = useMemo(
+    () => (t ? geometrie(t.murs.map((m) => versLExterieur(m, t.pans))) : null),
+    [t],
+  );
   const couverture = useMemo(() => {
     const famille = n.toiture?.couverture.famille ?? 'tuile';
     const m = materiauUni(
@@ -35,11 +65,8 @@ export function Toit3D({ n, dessus }: { n: Niveau; dessus: Niveau | null }) {
     m.side = DoubleSide;
     return m;
   }, [n.toiture?.couverture.famille]);
-  const facade = useMemo(() => {
-    const m = materiauUni(COULEURS_COUVERTURE.facade).clone();
-    m.side = DoubleSide;
-    return m;
-  }, []);
+  // Pignons du même matériau que la face extérieure des murs : aucune différence de teinte.
+  const facade = useMemo(() => materiauRevetement({ famille: 'aucun' }), []);
   if (!t || !pans || !murs) return null;
   return (
     <group>
