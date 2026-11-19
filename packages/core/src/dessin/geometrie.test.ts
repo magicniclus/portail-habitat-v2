@@ -110,6 +110,29 @@ describe('aimantation', () => {
     });
   });
 
+  it('alignement : même horizontale ou verticale qu’une extrémité, avec ses guides', () => {
+    // Mur existant de (0, 0) à (4000, 0) ; on trace en parallèle depuis (0, 3000).
+    const mur = {
+      points: [
+        { x: 0, y: 0 },
+        { x: 4000, y: 0 },
+      ],
+      segments: [],
+    };
+    const r = aimanter({ x: 3980, y: 3030 }, mur, { tolerance: 50, origine: { x: 0, y: 3000 } });
+    expect(r).toMatchObject({ point: { x: 4000, y: 3000 }, type: 'alignement' });
+    expect(r.guides).toEqual([
+      { a: { x: 4000, y: 0 }, b: { x: 4000, y: 3000 } },
+      { a: { x: 0, y: 3000 }, b: { x: 4000, y: 3000 } },
+    ]);
+    // Un seul axe aligné : l'autre coordonnée suit la grille.
+    const v = aimanter({ x: 4020, y: 1234 }, mur, { tolerance: 50, grille: 50 });
+    expect(v).toMatchObject({ point: { x: 4000, y: 1250 }, type: 'alignement' });
+    expect(v.guides).toHaveLength(1);
+    // Une extrémité proche reste prioritaire.
+    expect(aimanter({ x: 4010, y: 10 }, mur, { tolerance: 50 }).type).toBe('extremite');
+  });
+
   it('tolérance en mm selon le zoom', () => {
     expect(toleranceEnMm(10, 50)).toBe(200);
   });

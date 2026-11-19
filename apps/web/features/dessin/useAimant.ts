@@ -5,6 +5,7 @@ import {
   arrondir,
   orthogonal,
   toleranceEnMm,
+  type Aimantage,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
@@ -13,7 +14,8 @@ import type { EtatEditeur } from './etat';
 
 /**
  * Point du pointeur pendant un tracé (DES-06, DES-08) : Maj = horizontal ou vertical depuis le
- * point précédent ; sinon aimanté aux extrémités et aux murs (si l'aimant est actif), au mm.
+ * point précédent ; sinon aimanté aux extrémités, aux murs et aux alignements (si l'aimant est
+ * actif), au mm. Le résultat porte aussi la nature de l'accroche et les guides à afficher.
  */
 export function useAimant(n: Niveau, etat: Pick<EtatEditeur, 'aimant' | 'trace' | 'zoom'>) {
   const cibles = useMemo(
@@ -23,14 +25,14 @@ export function useAimant(n: Niveau, etat: Pick<EtatEditeur, 'aimant' | 'trace' 
     }),
     [n.murs],
   );
-  return (p: Point, droit = false): Point =>
+  return (p: Point, droit = false): Aimantage =>
     droit && etat.trace
-      ? orthogonal(etat.trace, p)
+      ? { point: orthogonal(etat.trace, p), type: 'libre' }
       : etat.aimant
         ? aimanter(p, cibles, {
             tolerance: toleranceEnMm(12, etat.zoom),
             grille: 50,
             ...(etat.trace ? { origine: etat.trace } : {}),
-          }).point
-        : arrondir(p);
+          })
+        : { point: arrondir(p), type: 'libre' };
 }

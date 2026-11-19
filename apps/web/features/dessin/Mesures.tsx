@@ -5,12 +5,14 @@ import {
   formatLongueur,
   longueurMur,
   milieu,
+  type Aimantage,
   type Niveau,
   type Point,
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { RepereAccroche } from './GuidesSvg';
 import { points } from './svg';
 
 /** Cotes des murs : longueur sur l'axe, cliquable pour la modifier (DES-10). */
@@ -140,16 +142,17 @@ export function TracesEnCours({
   mmParPx,
 }: {
   etat: EtatEditeur;
-  /** `null` hors d'un outil de tracé. */
-  curseur: Point | null;
+  /** Point aimanté sous le pointeur ; `null` hors d'un outil de tracé. */
+  curseur: Aimantage | null;
   mmParPx: number;
 }) {
   return (
     <>
+      {curseur && etat.aimant ? <RepereAccroche aimant={curseur} mmParPx={mmParPx} /> : null}
       {etat.outil !== 'selection' ? (
         <TraceEnCours
           a={etat.trace}
-          curseur={curseur}
+          curseur={curseur?.point ?? null}
           rectangle={traceRectangle(etat)}
           mmParPx={mmParPx}
         />

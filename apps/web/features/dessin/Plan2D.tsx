@@ -5,6 +5,7 @@ import {
   niveauSuperieur,
   objetsVisibles,
   tremies,
+  type Aimantage,
   type Point,
 } from '@ph/core/dessin';
 import { AnnotationsSvg } from './AnnotationsSvg';
@@ -56,7 +57,7 @@ export function Plan2D({
     [n.objets, calques],
   );
   const svg = useRef<SVGSVGElement>(null);
-  const [curseur, setCurseur] = useState<Point | null>(null);
+  const [curseur, setCurseur] = useState<Aimantage | null>(null);
   const parcelle = scene.terrain?.parcelle;
   const cadre = useMemo(() => cadreDe(n, parcelle), [n, parcelle]);
   const conteneur = useRef<HTMLDivElement>(null);
@@ -119,7 +120,7 @@ export function Plan2D({
               if (ev.target !== ev.currentTarget && !trace) return;
               const p = versMm(ev);
               if (!p) return;
-              if (trace) dispatch({ type: 'poserPoint', point: aimante(p, ev.shiftKey) });
+              if (trace) dispatch({ type: 'poserPoint', point: aimante(p, ev.shiftKey).point });
               else if (!multi.demarrer(ev, p)) dispatch({ type: 'selectionner', selection: null });
             }}
             onPointerUp={() => {
@@ -191,7 +192,7 @@ export function Plan2D({
         </div>
       </div>
       {etat.outil === 'mur' && etat.trace ? (
-        <SaisieLongueur trace={etat.trace} curseur={curseur} dispatch={dispatch} />
+        <SaisieLongueur trace={etat.trace} curseur={curseur?.point ?? null} dispatch={dispatch} />
       ) : null}
     </div>
   );
