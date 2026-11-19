@@ -31,6 +31,18 @@ function application() {
   return app;
 }
 
+/**
+ * Déconnexion côté Firebase, sans jamais bloquer la sortie : sur une page sans configuration
+ * (`<ConfigFirebase />` absent, ex. tableau de bord), le SDK n'a jamais été ouvert, il n'y a rien à
+ * fermer (le cookie de session serveur suffit).
+ */
+export async function fermerSessionFirebase(): Promise<void> {
+  if (!document.getElementById('config-firebase')) return;
+  await authClient()
+    .then((a) => a.signOut())
+    .catch(() => undefined);
+}
+
 export function authClient(): Promise<Auth> {
   authP ??= Promise.all([application(), import('firebase/auth')]).then(([a, m]) => {
     const auth = m.getAuth(a);

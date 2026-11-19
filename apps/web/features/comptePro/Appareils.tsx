@@ -4,7 +4,7 @@ import { oublierDonneesLocales } from '@/lib/donneesLocales';
 import { Banner, BoutonAction, Button, ConfirmDialog } from '@ph/ui';
 import { useState } from 'react';
 import { LigneReglage } from '@/features/espace/LigneReglage';
-import { authClient } from '@/lib/firebaseClient';
+import { fermerSessionFirebase } from '@/lib/firebaseClient';
 import { oublierPagesHorsLigne } from '@/features/pwa/horsLigne';
 import { desactiverPush } from '@/features/pwa/push';
 import { posterJson } from '@/lib/posterJson';
@@ -26,7 +26,7 @@ export function Appareils({ appareil }: { appareil: string }) {
         );
     if (!r.ok) return setErreur(r.message);
     await Promise.all([
-      authClient().then((a) => a.signOut()),
+      fermerSessionFirebase(),
       oublierPagesHorsLigne(),
       oublierDonneesLocales(),
     ]).catch(() => undefined);

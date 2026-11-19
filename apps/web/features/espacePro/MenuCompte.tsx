@@ -47,8 +47,8 @@ export function MenuCompte(p: {
     setSortie(true);
     await fetch('/api/session', { method: 'DELETE' }).catch(() => undefined);
     // Firebase n'est chargé qu'à la déconnexion : jamais sur chaque page de l'espace pro.
-    const { authClient } = await import('@/lib/firebaseClient');
-    await (await authClient()).signOut().catch(() => undefined);
+    const { fermerSessionFirebase } = await import('@/lib/firebaseClient');
+    await fermerSessionFirebase();
     window.location.assign(routes.connexionPro);
   };
   return (

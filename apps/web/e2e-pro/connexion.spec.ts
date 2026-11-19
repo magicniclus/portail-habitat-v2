@@ -66,4 +66,21 @@ test.describe('Connexion pro', () => {
     await page.goto('/pro/demandes');
     await expect(page).toHaveURL(/\/connexion\?espace=pro/);
   });
+
+  test('« Se déconnecter » depuis une page sans Firebase (tableau de bord) : aucune erreur', async ({
+    page,
+    context,
+  }) => {
+    const erreurs: string[] = [];
+    page.on('pageerror', (e) => erreurs.push(e.message));
+    await connecter(page, COMPTES.proprio, '/pro/tableau-de-bord');
+    await page.getByRole('button', { name: 'Mon compte', exact: true }).click();
+    await page
+      .getByRole('group', { name: 'Mon compte' })
+      .getByRole('button', { name: 'Se déconnecter' })
+      .click();
+    await expect(page).toHaveURL(/\/connexion\?espace=pro/);
+    expect((await context.cookies()).some((c) => c.name === '__session')).toBe(false);
+    expect(erreurs.filter((m) => /Configuration Firebase/.test(m))).toEqual([]);
+  });
 });
