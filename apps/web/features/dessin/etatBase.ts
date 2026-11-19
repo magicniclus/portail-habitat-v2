@@ -80,6 +80,8 @@ export interface ReglagesRendu {
   niveauSeul: boolean;
   /** Toit affiché en 3D (masqué en maison de poupée). */
   toit: boolean;
+  /** Murs translucides à contour net : on voit au travers (affichage seulement). */
+  mursTransparents: boolean;
   /** Vue photo (DES-37). */
   cadrage: 'paysage' | 'carre' | 'portrait';
   ambiance: 'jour' | 'soiree';
@@ -296,6 +298,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
       poupee: true,
       niveauSeul: false,
       toit: true,
+      mursTransparents: false,
       cadrage: 'paysage',
       ambiance: 'jour',
       format: 'image/jpeg',

@@ -51,6 +51,11 @@ test.describe('Plans — vrais modèles 3D (D88)', () => {
     await page.getByRole('button', { name: 'Vue 3D' }).click();
     expect((await modele).status()).toBe(200);
     expect((await texture).status()).toBe(200);
+    // Murs transparents : on voit au travers, réglage du menu Rendu.
+    const murs = page.getByRole('checkbox', { name: /Murs transparents/ });
+    if (!(await murs.isVisible())) await rendu.click();
+    await murs.check();
+    await expect(murs).toBeChecked();
     await page.waitForTimeout(2_000);
     expect(erreurs.filter((e) => /blob:|GLTF|texture|\.glb/i.test(e))).toEqual([]);
   });

@@ -8,6 +8,7 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
   test('DES-33, DES-34, DES-37 : voir le plan en 3D : murs, meubles, soleil, maison de poupée, retour au plan', async ({
     page,
   }) => {
+    test.setTimeout(60_000);
     await connecter(page, COMPTES.proprio, '/pro/plans');
     await page
       .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })

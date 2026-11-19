@@ -70,6 +70,15 @@ export function RenduMenu({
         />
       </label>
       <label className={interrupteur}>
+        Murs transparents (voir au travers)
+        <input
+          type="checkbox"
+          className="size-5 accent-accent"
+          checked={r.mursTransparents}
+          onChange={(ev) => regler({ mursTransparents: ev.target.checked })}
+        />
+      </label>
+      <label className={interrupteur}>
         Afficher le toit (hors maison de poupée)
         <input
           type="checkbox"

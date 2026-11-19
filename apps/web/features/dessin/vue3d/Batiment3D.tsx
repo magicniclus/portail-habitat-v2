@@ -10,11 +10,12 @@ import {
   type Pave,
   type Point,
 } from '@ph/core/dessin';
-import { COULEURS_3D } from '@ph/ui/tokens';
+import { COULEURS_3D, COULEURS_PLAN } from '@ph/ui/tokens';
+import { Edges } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { Vector3 } from 'three';
-import { DoubleSide, Shape, type Mesh } from 'three';
+import { DoubleSide, Shape, type Material, type Mesh } from 'three';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
 import { Toit3D } from './Toit3D';
@@ -40,15 +41,38 @@ function PaveMesh({ p, materiaux }: { p: Pave; materiaux: Mesh['material'] }) {
   );
 }
 
+/** Opacité des murs en mode transparent : on voit au travers, la matière reste lisible. */
+const OPACITE_MUR = 0.22;
+
+/** Copie translucide d'un matériau (sans écriture de profondeur : rien n'est masqué derrière). */
+const translucide = (m: Material) => {
+  const c = m.clone();
+  c.transparent = true;
+  c.opacity = OPACITE_MUR;
+  c.depthWrite = false;
+  return c;
+};
+
 /**
  * Morceau de mur : face A (+z local) et face B (-z) avec leur revêtement, tranches neutres.
- * En maison de poupée, un mur tourné vers la caméra descend à 90 cm (DES-33).
+ * En maison de poupée, un mur tourné vers la caméra descend à 90 cm (DES-33). Murs
+ * transparents : translucides, avec un contour net pour les distinguer.
  */
-function MorceauMur3D({ m, centre, poupee }: { m: MorceauMur; centre: Vector3; poupee: boolean }) {
+function MorceauMur3D({
+  m,
+  centre,
+  poupee,
+  transparent,
+}: {
+  m: MorceauMur;
+  centre: Vector3;
+  poupee: boolean;
+  transparent: boolean;
+}) {
   const ref = useRef<Mesh>(null);
   const materiaux = useMemo(() => {
     const tranche = materiauUni(COULEURS_3D.tranche);
-    return [
+    const faces = [
       tranche,
       tranche,
       tranche,
@@ -56,7 +80,15 @@ function MorceauMur3D({ m, centre, poupee }: { m: MorceauMur; centre: Vector3; p
       materiauRevetement(m.faceA),
       materiauRevetement(m.faceB),
     ];
-  }, [m.faceA, m.faceB]);
+    return transparent ? faces.map(translucide) : faces;
+  }, [m.faceA, m.faceB, transparent]);
+  // Les copies translucides sont propres à ce mur : libérées quand le mode change.
+  useEffect(
+    () => () => {
+      if (transparent) materiaux.forEach((x) => x.dispose());
+    },
+    [materiaux, transparent],
+  );
   const bas = m.centre.z - m.taille.h / 2;
   useFrame(({ camera }) => {
     const mesh = ref.current;
@@ -75,11 +107,13 @@ function MorceauMur3D({ m, centre, poupee }: { m: MorceauMur; centre: Vector3; p
       ref={ref}
       position={[M(m.centre.x), M(m.centre.z), M(m.centre.y)]}
       rotation={[0, -m.angle, 0]}
-      castShadow
+      castShadow={!transparent}
       receiveShadow
       material={materiaux}
+      renderOrder={transparent ? 1 : 0}
     >
       <boxGeometry args={[M(m.taille.l), M(m.taille.h), M(m.taille.p)]} />
+      {transparent ? <Edges color={COULEURS_PLAN.mur} lineWidth={1.5} /> : null}
     </mesh>
   );
 }
@@ -113,6 +147,7 @@ export function Niveau3D({
   n,
   centre,
   poupee,
+  transparent = false,
   plafonds,
   portesOuvertes = false,
   toit = false,
@@ -122,6 +157,8 @@ export function Niveau3D({
   n: Niveau;
   centre: Vector3;
   poupee: boolean;
+  /** Murs translucides à contour net (menu Rendu). */
+  transparent?: boolean;
   plafonds: boolean;
   /** Visite : vantaux des portes ouverts pour passer. */
   portesOuvertes?: boolean;
@@ -138,7 +175,13 @@ export function Niveau3D({
   return (
     <group>
       {morceaux.map((m, i) => (
-        <MorceauMur3D key={`${m.murId}-${i}`} m={m} centre={centre} poupee={poupee} />
+        <MorceauMur3D
+          key={`${m.murId}-${i}`}
+          m={m}
+          centre={centre}
+          poupee={poupee}
+          transparent={transparent}
+        />
       ))}
       {dalles.sols.map((d) => (
         <Dalle3D key={d.pieceId} d={d} />

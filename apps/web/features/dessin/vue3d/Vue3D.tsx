@@ -133,6 +133,7 @@ export default function Vue3D({
           parcelle={scene.terrain?.parcelle ?? null}
           centre={centre}
           poupee={etat.rendu.poupee && n.id === courant.id}
+          transparent={etat.rendu.mursTransparents}
           plafonds={false}
           toit={etat.rendu.toit && !etat.rendu.poupee}
         />
