@@ -212,7 +212,17 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
       .first()
       .click();
     await page.getByRole('button', { name: /^Lit 160 × 200/ }).click();
+    // Avant le clic, le lit suit le pointeur en transparence.
+    await page.waitForTimeout(400);
+    {
+      const boite = (await svg.boundingBox())!;
+      const [vx, vy, vl] = (await svg.getAttribute('viewBox'))!.split(' ').map(Number);
+      const k = boite.width / vl!;
+      await page.mouse.move(boite.x + (5000 - vx!) * k, boite.y + (4000 - vy!) * k);
+    }
+    await expect(plan.getByTestId('pose-objet')).toBeAttached();
     await cliquer(5000, 4000);
+    await expect(plan.getByTestId('pose-objet')).toHaveCount(0);
     const lit = plan.getByRole('button', { name: 'Lit 160 × 200' });
     await expect(lit).toBeVisible();
     await expect(page.getByText('Pivoter · 0°')).toBeVisible();

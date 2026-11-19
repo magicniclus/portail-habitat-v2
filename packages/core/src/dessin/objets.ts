@@ -11,23 +11,37 @@ export { contourObjet };
 
 /** Objets posés sur le plan (DES-22) : position = centre, rotation en dixièmes de degré. */
 
+/**
+ * Objet tel qu'il serait posé à `position` (DES-22) : placement automatique (contre un mur,
+ * dans un angle, aligné), sauf aimant coupé. Sert à l'aperçu sous le pointeur et à la pose.
+ */
+export function objetAPoser(
+  n: Niveau,
+  catalogueId: string,
+  position: Point,
+  options: { aimant?: boolean; id?: string } = {},
+): { objet: Objet; guides: Guide[] } | null {
+  const c = objetDuCatalogue(catalogueId);
+  if (!c) return null;
+  const o: Objet = schemaObjet.parse({
+    id: options.id ?? 'obj_apercu',
+    catalogueId: c.id,
+    position: arrondir(position),
+    dimensions: c.dimensions,
+    altitude: c.altitude ?? 0,
+  });
+  return options.aimant === false ? { objet: o, guides: [] } : placerIdealement(o, n);
+}
+
 export function poserObjet(
   n: Niveau,
   e: { catalogueId: string; position: Point },
   ctx: Contexte,
   options: { aimant?: boolean } = {},
 ): Resultat<Niveau> {
-  const c = objetDuCatalogue(e.catalogueId);
-  if (!c) return echec('INTROUVABLE');
-  const o: Objet = schemaObjet.parse({
-    id: ctx.nouvelId('obj'),
-    catalogueId: c.id,
-    position: arrondir(e.position),
-    dimensions: c.dimensions,
-    altitude: c.altitude ?? 0,
-  });
-  const place = options.aimant === false ? o : placerIdealement(o, n).objet;
-  return succes({ ...n, objets: [...n.objets, place] });
+  if (!objetDuCatalogue(e.catalogueId)) return echec('INTROUVABLE');
+  const r = objetAPoser(n, e.catalogueId, e.position, { ...options, id: ctx.nouvelId('obj') })!;
+  return succes({ ...n, objets: [...n.objets, r.objet] });
 }
 
 const trouver = (n: Niveau, id: string) => n.objets.find((o) => o.id === id);

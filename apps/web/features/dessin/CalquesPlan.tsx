@@ -102,6 +102,10 @@ function MursSvgBrut({
           aria-pressed={choisi}
           points={points(contours.get(m.id)!)}
           fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
+          // Liseré de la même couleur : aucun fil clair entre deux murs raccordés en onglet.
+          stroke={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
           className={etat.outil === 'selection' ? 'cursor-move' : undefined}
           onPointerDown={(ev) => {
             if (etat.outil !== 'selection') return;

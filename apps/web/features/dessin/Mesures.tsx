@@ -11,8 +11,8 @@ import {
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
-import { niveauDe, type Action, type EtatEditeur } from './etat';
-import { PoseOuvertureSvg } from './PoseOuvertureSvg';
+import type { Action, EtatEditeur } from './etat';
+import { ApercuPose } from './PoseObjetSvg';
 import { RepereAccroche } from './GuidesSvg';
 import { points } from './svg';
 
@@ -150,16 +150,8 @@ export function TracesEnCours({
   return (
     <>
       {curseur && etat.aimant ? <RepereAccroche aimant={curseur} mmParPx={mmParPx} /> : null}
-      {etat.outil === 'ouverture' ? (
-        etat.trace && curseur ? (
-          <PoseOuvertureSvg
-            niveau={niveauDe(etat)}
-            type={etat.typeOuverture}
-            premier={etat.trace}
-            pointeur={curseur.point}
-            mmParPx={mmParPx}
-          />
-        ) : null
+      {etat.outil === 'objet' || etat.outil === 'ouverture' ? (
+        <ApercuPose etat={etat} pointeur={curseur?.point ?? null} mmParPx={mmParPx} />
       ) : etat.outil !== 'selection' ? (
         <TraceEnCours
           a={etat.trace}

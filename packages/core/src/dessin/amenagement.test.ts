@@ -19,6 +19,7 @@ import {
   deplacerObjet,
   dupliquerObjet,
   modifierObjet,
+  objetAPoser,
   poserObjet,
   supprimerObjet,
   tournerObjet,
@@ -92,6 +93,16 @@ describe('objets (DES-22)', () => {
     expect(poserObjet(n, { catalogueId: 'inconnu', position: { x: 0, y: 0 } }, ctx)).toMatchObject({
       code: 'INTROUVABLE',
     });
+  });
+
+  it('aperçu sous le pointeur : même placement que la pose, guides compris', () => {
+    const apercu = objetAPoser(n, 'buffet', { x: 3000, y: 700 })!;
+    expect(apercu.objet).toMatchObject({ id: 'obj_apercu', position: { x: 3000, y: 525 } });
+    expect(apercu.guides.length).toBeGreaterThan(0);
+    expect(
+      objetAPoser(n, 'buffet', { x: 3000, y: 700 }, { aimant: false })!.objet.position,
+    ).toEqual({ x: 3000, y: 700 });
+    expect(objetAPoser(n, 'inconnu', { x: 0, y: 0 })).toBeNull();
   });
 
   it('déplacer (recollé au mur), tourner, redimensionner dans les plages, dupliquer, supprimer', () => {
