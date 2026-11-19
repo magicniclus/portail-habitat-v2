@@ -202,6 +202,8 @@ export const objet = z.object({
   altitude: mmPositif.default(0),
   /** Rotation libre (lot 15g) : bascule autour des axes x et y locaux, en dixièmes de degré. */
   inclinaison: z.object({ x: angle, y: angle }).optional(),
+  /** Verrouillé (DES-29) : ni déplacé, ni modifié, ni supprimé. */
+  verrouille: z.boolean().optional(),
 });
 
 export const escalier = z.object({
@@ -409,6 +411,8 @@ export const scene = z
     version: z.literal(SCENE_VERSION),
     unites: z.object({ affichage: z.enum(['cm', 'm']) }).default({ affichage: 'm' }),
     orientationNord: angle.default(0),
+    /** Plan verrouillé (DES-29) : consultable, plus modifiable avant déverrouillage. */
+    verrouille: z.boolean().optional(),
     terrain: terrain.nullable().default(null),
     niveaux: z.array(niveau).min(1).max(10),
     calques: z
@@ -479,6 +483,8 @@ export type ZoneDeco = z.infer<typeof zoneDeco>;
 export type Mur = z.infer<typeof mur>;
 export type TypeMur = (typeof TYPES_MUR)[number];
 export type Ouverture = z.infer<typeof ouverture>;
+export type CoteLibre = z.infer<typeof cote>;
+export type TexteLibre = z.infer<typeof texte>;
 export type Piece = z.infer<typeof piece>;
 export type Niveau = z.infer<typeof niveau>;
 export type Scene = z.infer<typeof scene>;

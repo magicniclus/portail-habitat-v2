@@ -7,7 +7,7 @@ import type { Dispatch } from 'react';
 import type { Action } from './etat';
 import { Nuancier } from './Nuancier';
 import { ChampMesure } from './ChampMesure';
-import { TitreSelection } from './blocs';
+import { CaseVerrou, TitreSelection } from './blocs';
 
 /** Mur sélectionné (DES-07, DES-10, DES-25) : longueur, peinture des faces, suppression. */
 export function InspecteurMur({
@@ -73,6 +73,10 @@ export function InspecteurMur({
           onChange={(ev) => modifier({ porteur: ev.target.checked })}
         />
       </label>
+      <CaseVerrou
+        verrouille={mur.verrouille}
+        basculer={(valeur) => dispatch({ type: 'verrouillerSelection', valeur })}
+      />
       <div className="flex flex-wrap gap-2">
         <Button variant="secondaire" onClick={() => dispatch({ type: 'couperMur', murId: mur.id })}>
           Couper en deux

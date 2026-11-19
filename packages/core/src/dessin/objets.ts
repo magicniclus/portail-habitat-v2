@@ -31,6 +31,13 @@ export function poserObjet(
 }
 
 const trouver = (n: Niveau, id: string) => n.objets.find((o) => o.id === id);
+/** Objet à modifier : introuvable, ou verrouillé (DES-29) et donc intouchable. */
+function modifiable(n: Niveau, id: string): Resultat<Objet> {
+  const o = trouver(n, id);
+  if (!o) return echec('INTROUVABLE');
+  if (o.verrouille) return echec('PRECONDITION', { message: 'Cet élément est verrouillé.' });
+  return succes(o);
+}
 const remplacer = (n: Niveau, o: Objet): Niveau => ({
   ...n,
   objets: n.objets.map((x) => (x.id === o.id ? o : x)),
@@ -43,8 +50,9 @@ export function deplacerObjet(
   vers: Point,
   options: { aimant?: boolean } = {},
 ): Resultat<Niveau & { guides: Guide[] }> {
-  const o = trouver(n, id);
-  if (!o) return echec('INTROUVABLE');
+  const cible = modifiable(n, id);
+  if (!cible.ok) return cible;
+  const o = cible.data;
   const { accrocheMurId: _ancien, ...libre } = { ...o, position: arrondir(vers) };
   const r = options.aimant === false ? { objet: libre, guides: [] } : placerIdealement(libre, n);
   return succes({ ...remplacer(n, r.objet), guides: r.guides });
@@ -52,8 +60,9 @@ export function deplacerObjet(
 
 /** Pivoter (pas de 15° ou 90°), sans décrocher l'objet de sa position. */
 export function tournerObjet(n: Niveau, id: string, dixiemes: number): Resultat<Niveau> {
-  const o = trouver(n, id);
-  if (!o) return echec('INTROUVABLE');
+  const cible = modifiable(n, id);
+  if (!cible.ok) return cible;
+  const o = cible.data;
   return succes(remplacer(n, { ...o, rotation: (((o.rotation + dixiemes) % 3600) + 3600) % 3600 }));
 }
 
@@ -66,8 +75,9 @@ export function orienterObjet(
   id: string,
   angles: { rotation?: number; x?: number; y?: number },
 ): Resultat<Niveau> {
-  const o = trouver(n, id);
-  if (!o) return echec('INTROUVABLE');
+  const cible = modifiable(n, id);
+  if (!cible.ok) return cible;
+  const o = cible.data;
   const norm = (d: number) => ((Math.round(d) % 3600) + 3600) % 3600;
   const x = norm(angles.x ?? o.inclinaison?.x ?? 0);
   const y = norm(angles.y ?? o.inclinaison?.y ?? 0);
@@ -84,8 +94,9 @@ export type ModificationObjet = Partial<Pick<Objet, 'dimensions' | 'altitude' | 
 
 /** Dimensions dans les plages du modèle, hauteur de pose, couleurs (DES-22). */
 export function modifierObjet(n: Niveau, id: string, modif: ModificationObjet): Resultat<Niveau> {
-  const o = trouver(n, id);
-  if (!o) return echec('INTROUVABLE');
+  const cible = modifiable(n, id);
+  if (!cible.ok) return cible;
+  const o = cible.data;
   const c = objetDuCatalogue(o.catalogueId);
   const suite = { ...o, ...modif };
   if (c && modif.dimensions) {
@@ -125,7 +136,8 @@ export function dupliquerObjet(
 }
 
 export function supprimerObjet(n: Niveau, id: string): Resultat<Niveau> {
-  if (!trouver(n, id)) return echec('INTROUVABLE');
+  const cible = modifiable(n, id);
+  if (!cible.ok) return cible;
   return succes({ ...n, objets: n.objets.filter((o) => o.id !== id) });
 }
 

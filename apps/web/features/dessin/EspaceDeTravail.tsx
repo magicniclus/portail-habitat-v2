@@ -33,34 +33,7 @@ import { RailMenus, RailOutils } from './Rails';
 import { useFond } from './useFond';
 import { usePanneauxTelephone } from './usePanneauxTelephone';
 import { useSauvegarde } from './useSauvegarde';
-
-/** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
-function raccourci(
-  ev: globalThis.KeyboardEvent,
-  dispatch: (a: Parameters<typeof reduire>[1]) => void,
-) {
-  const cible = ev.target as HTMLElement;
-  if (cible.closest('input, textarea, select, [contenteditable="true"]')) return;
-  const mod = ev.metaKey || ev.ctrlKey;
-  const k = ev.key.toLowerCase();
-  const pas = ev.shiftKey ? 100 : 10;
-  const fleches: Record<string, { x: number; y: number }> = {
-    arrowleft: { x: -pas, y: 0 },
-    arrowright: { x: pas, y: 0 },
-    arrowup: { x: 0, y: -pas },
-    arrowdown: { x: 0, y: pas },
-  };
-  if (mod && k === 'z') dispatch({ type: ev.shiftKey ? 'retablir' : 'annuler' });
-  else if (mod && k === 'y') dispatch({ type: 'retablir' });
-  else if (k === 'escape') dispatch({ type: 'terminerTrace' });
-  else if (k === 'r' && !mod) dispatch({ type: 'tournerSelection' });
-  else if (k === 'delete' || k === 'backspace') dispatch({ type: 'supprimerSelection' });
-  else if (fleches[k]) {
-    dispatch({ type: 'deplacerClavier', delta: fleches[k] });
-    dispatch({ type: 'finGeste' });
-  } else return;
-  ev.preventDefault();
-}
+import { raccourci } from './raccourcis';
 
 /**
  * Éditeur plein écran (DESSIN.md §7) : barre en haut, rail des menus à gauche et rail des

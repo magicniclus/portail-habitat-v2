@@ -1,4 +1,5 @@
 import { poserAnnotation } from './etatAnnotations';
+import { supprimerMulti } from './etatSelection';
 import { poserCoupe } from './etatFacades';
 import {
   ajouterMur,
@@ -109,6 +110,8 @@ const niveauCourant = (e: EtatEditeur) =>
   sceneDe(e).niveaux.find((n) => n.id === e.niveauId) ?? sceneDe(e).niveaux[0]!;
 
 function supprimerSelection(e: EtatEditeur, confirme: boolean): EtatEditeur {
+  const multi = supprimerMulti(e, confirme);
+  if (multi) return multi;
   const s = e.selection;
   if (!s || s.genre === 'piece') return e;
   // Mur porteur (DES-07) : jamais supprimé d'un geste, l'avertissement est confirmé d'abord.

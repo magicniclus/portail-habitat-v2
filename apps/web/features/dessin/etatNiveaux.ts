@@ -21,6 +21,7 @@ export function reduireNiveaux(e: EtatEditeur, a: Action): EtatEditeur | null {
         ...e,
         niveauId: a.niveauId,
         selection: null,
+        multi: [],
         trace: null,
         ajustement: e.ajustement + 1,
       };

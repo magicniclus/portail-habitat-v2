@@ -15,7 +15,7 @@ import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { Nuancier } from './Nuancier';
 import { RotationObjet } from './RotationObjet';
 import { ChampMesure } from './ChampMesure';
-import { surtitre } from './blocs';
+import { CaseVerrou, surtitre } from './blocs';
 
 /** « 40–240 cm » : plage réglable d'un objet du catalogue. */
 const aidePlage = (p: readonly [number, number]) =>
@@ -89,6 +89,10 @@ function InspecteurObjet({
             modif: { materiaux: { ...o.materiaux, facade: t.couleur } },
           })
         }
+      />
+      <CaseVerrou
+        verrouille={o.verrouille === true}
+        basculer={(valeur) => dispatch({ type: 'verrouillerSelection', valeur })}
       />
       <div className="grid grid-cols-2 gap-2">
         <Button variant="secondaire" onClick={() => dispatch({ type: 'dupliquerObjet', id: o.id })}>

@@ -41,3 +41,6 @@ export * from './annonces';
 export * from './commandesMurs';
 export * from './annotations';
 export * from './apercu';
+export * from './selection';
+export * from './pressePapier';
+export * from './alignement';

@@ -36,3 +36,24 @@ export function TitreSelection({ sur = 'Sélection', titre }: { sur?: string; ti
     </div>
   );
 }
+
+/** Case « Verrouiller » d'un mur ou d'un meuble choisi (DES-29). */
+export function CaseVerrou({
+  verrouille,
+  basculer,
+}: {
+  verrouille: boolean;
+  basculer: (valeur: boolean) => void;
+}) {
+  return (
+    <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-1 text-sm">
+      Verrouiller (ni déplacé, ni modifié, ni supprimé)
+      <input
+        type="checkbox"
+        className="size-5 accent-accent"
+        checked={verrouille}
+        onChange={(ev) => basculer(ev.target.checked)}
+      />
+    </label>
+  );
+}

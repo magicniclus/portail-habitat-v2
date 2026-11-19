@@ -51,6 +51,7 @@ Scene {
   version: number                  // version du schéma, migrations dans core/dessin/migrations
   unites: { affichage: 'cm' | 'm' }
   orientationNord: angle
+  verrouille?: boolean             // plan verrouillé (DES-29) : plus modifiable avant déverrouillage
   terrain?: Terrain
   niveaux: Niveau[]                // ordonnés, altitude croissante
   calques: { cotes, surfaces, mobilier, electricite, plomberie, annotations, fondImage }: boolean  // tous affichés par défaut
@@ -68,7 +69,7 @@ Ouverture { id, murId, position (distance depuis a), largeur, hauteur, allege, t
             sens: 'gauche'|'droite', cote: 'interieur'|'exterieur', volet?: 'roulant'|'battant'|null, finition }
 Piece { id, contour: Point[] (déduit des murs ou dessiné), nom, type (référentiel), sol: Revetement, plafond: Revetement,
         hauteurSousPlafond?, carrez: boolean }
-Objet { id, catalogueId, position, rotation, dimensions {l, p, h}, variante, materiaux: Record<slot, MateriauId>, accrocheMurId?, altitude }
+Objet { id, catalogueId, position, rotation, dimensions {l, p, h}, variante, materiaux: Record<slot, MateriauId>, accrocheMurId?, altitude, verrouille? }
 Escalier { id, type: 'droit'|'quart_bas'|'quart_haut'|'deux_quarts'|'helicoidal'|'meunier', position, rotation,
            largeur, hauteurAMonter, nbMarches, giron, sens, garde-corps, materiau }
 Toiture { type: 'deux_pans'|'quatre_pans'|'monopente'|'plate'|'mansarde'|'croupe', pentes: angle[], debords, faitageAngle,

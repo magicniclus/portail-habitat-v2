@@ -10,6 +10,8 @@ import {
   EyeIcon,
   FloppyDiskIcon,
   HouseLineIcon,
+  LockSimpleIcon,
+  LockSimpleOpenIcon,
   SquareIcon,
   type Icon,
 } from '@phosphor-icons/react';
@@ -69,6 +71,7 @@ export function BarreDessin({
   /** Historique des versions (DES-40) ; absent pendant l'essai sans compte. */
   versions?: () => void;
 }) {
+  const verrouille = etat.historique.present.verrouille === true;
   return (
     <header className="flex h-16 flex-none items-center gap-3 border-b border-trait bg-blanc px-3">
       <Link
@@ -151,6 +154,12 @@ export function BarreDessin({
         ))}
       </div>
 
+      <IconButton
+        aria-label={verrouille ? 'Déverrouiller le plan' : 'Verrouiller le plan'}
+        aria-pressed={verrouille}
+        icone={verrouille ? <LockSimpleIcon weight="fill" /> : <LockSimpleOpenIcon />}
+        onClick={() => dispatch({ type: 'verrouillerPlan', valeur: !verrouille })}
+      />
       {versions ? (
         <IconButton
           aria-label="Historique des versions"

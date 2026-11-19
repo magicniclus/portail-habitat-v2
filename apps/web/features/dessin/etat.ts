@@ -26,13 +26,19 @@ import { reduireNiveaux } from './etatNiveaux';
 import { reduireStructure } from './etatStructure';
 import { reduireExterieur } from './etatExterieur';
 import { reduireAnnotations } from './etatAnnotations';
+import { deplacerMulti, gardeVerrou, reduireSelection, selectionner } from './etatSelection';
 import { reduireFacades } from './etatFacades';
 import { reduireToiture } from './etatToiture';
 
 export * from './etatBase';
 
-/** Réducteur de l'éditeur : actions de base ici, structure (ouvertures, niveaux…) à part. */
+/** Réducteur de l'éditeur ; un plan verrouillé refuse toute modification (DES-29). */
 export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
+  return gardeVerrou(e, a, reduireBrut(e, a));
+}
+
+/** Actions de base ici, structure (ouvertures, niveaux…) et le reste à part. */
+function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
   switch (a.type) {
     case 'outil':
       return {
@@ -54,12 +60,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'terminerTrace':
       return { ...e, trace: null, echelle: null, clotureEnCours: null };
     case 'selectionner':
-      return {
-        ...e,
-        selection: a.selection,
-        trace: null,
-        proprietes: e.proprietes || a.selection !== null,
-      };
+      return selectionner(e, a);
     case 'modifierLongueur':
       return surNiveau(e, (n) => modifierLongueurMur(n, a.murId, a.longueur, ctx));
     case 'modifierMur':
@@ -77,6 +78,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'deplacerMur':
       return surNiveau(e, (n) => deplacerMur(n, a.murId, a.delta, ctx), a.geste ?? null);
     case 'deplacerClavier':
+      if (e.multi.length) return deplacerMulti(e, a.delta) ?? e;
       if (e.selection?.genre === 'objet')
         return (
           reduireAmenagement(e, {
@@ -97,9 +99,9 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
     case 'revetement':
       return surNiveau(e, (n) => appliquerRevetement(n, a.cible, a.revetement));
     case 'annuler':
-      return { ...e, historique: annuler(e.historique), trace: null, selection: null };
+      return { ...e, historique: annuler(e.historique), trace: null, selection: null, multi: [] };
     case 'retablir':
-      return { ...e, historique: retablir(e.historique), trace: null, selection: null };
+      return { ...e, historique: retablir(e.historique), trace: null, selection: null, multi: [] };
     case 'ajuster':
       return { ...e, ajustement: e.ajustement + 1 };
     case 'zoom':
@@ -149,6 +151,7 @@ export function reduire(e: EtatEditeur, a: Action): EtatEditeur {
         reduireExterieur(e, a) ??
         reduireFacades(e, a) ??
         reduireAnnotations(e, a) ??
+        reduireSelection(e, a) ??
         e
       );
   }

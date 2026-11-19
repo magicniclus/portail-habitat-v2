@@ -1,6 +1,7 @@
 'use client';
 
 import { inspecteurAnnotation } from './InspecteurAnnotation';
+import { InspecteurMulti } from './InspecteurMulti';
 import {
   formatLongueur,
   formatSurface,
@@ -96,6 +97,7 @@ function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch
 
 /** Inspecteur (DESSIN.md §7) : propriétés de la sélection, aide quand rien n'est choisi. */
 export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dispatch<Action> }) {
+  if (etat.multi.length > 1) return <InspecteurMulti etat={etat} dispatch={dispatch} />;
   const n = niveauDe(etat);
   const s = etat.selection;
   const mur = s?.genre === 'mur' ? n.murs.find((m) => m.id === s.id) : undefined;

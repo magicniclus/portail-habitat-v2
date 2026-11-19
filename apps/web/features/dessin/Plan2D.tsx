@@ -24,6 +24,7 @@ import { GuidesSvg } from './GuidesSvg';
 import { ToitSvg } from './ToitSvg';
 import { DefsMotifs } from './Motifs';
 import { SaisieLongueur } from './SaisieLongueur';
+import { MultiSelectionSvg, useSelectionMultiple, ZoneSelectionSvg } from './SelectionMultiple';
 import { useAimant } from './useAimant';
 import { useAjustement } from './useAjustement';
 import { useGestesTactiles } from './useGestesTactiles';
@@ -79,6 +80,8 @@ export function Plan2D({
     selectionne.current = etat.selection !== null;
   }, [etat.selection]);
   const gestes = useGestesTactiles(etat.zoom, dispatch, selectionne);
+  const multi = useSelectionMultiple(dispatch);
+  const d = multi.dispatchPlan;
 
   return (
     <div className="relative h-full w-full">
@@ -105,10 +108,11 @@ export function Plan2D({
             height={Math.round(cadre.h / mmParPx)}
             viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
             className={trace ? 'cursor-crosshair touch-none' : 'touch-none'}
+            onPointerDownCapture={multi.capter}
             onPointerMove={(ev) => {
               const p = versMm(ev);
               if (!p) return;
-              if (glisser.bouger(p, ev.altKey)) return;
+              if (glisser.bouger(p, ev.altKey) || multi.bouger(p)) return;
               if (trace) setCurseur(aimante(p, ev.shiftKey));
             }}
             onPointerDown={(ev) => {
@@ -116,9 +120,12 @@ export function Plan2D({
               const p = versMm(ev);
               if (!p) return;
               if (trace) dispatch({ type: 'poserPoint', point: aimante(p, ev.shiftKey) });
-              else dispatch({ type: 'selectionner', selection: null });
+              else if (!multi.demarrer(ev, p)) dispatch({ type: 'selectionner', selection: null });
             }}
-            onPointerUp={glisser.finir}
+            onPointerUp={() => {
+              glisser.finir();
+              multi.finir(mmParPx);
+            }}
             onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
           >
             <OrthophotoSvg scene={scene} image={ortho} />
@@ -136,38 +143,33 @@ export function Plan2D({
               niveau={n}
               parcelle={scene.terrain?.parcelle ?? null}
               etat={etat}
-              dispatch={dispatch}
+              dispatch={d}
             />
-            <PiecesSvg niveau={n} etat={etat} dispatch={dispatch} />
-            <ZonesSvg niveau={n} etat={etat} dispatch={dispatch} />
+            <PiecesSvg niveau={n} etat={etat} dispatch={d} />
+            <ZonesSvg niveau={n} etat={etat} dispatch={d} />
             <ReperesNiveauSvg
               dessous={niveauInferieur(scene, n.id)}
               tremies={tremies(scene, n.id)}
             />
-            <EscaliersSvg niveau={n} etat={etat} dispatch={dispatch} />
-            <ObjetsSvg
-              niveau={objets}
-              etat={etat}
-              dispatch={dispatch}
-              demarrerGlisser={demarrerObjet}
-            />
+            <EscaliersSvg niveau={n} etat={etat} dispatch={d} />
+            <ObjetsSvg niveau={objets} etat={etat} dispatch={d} demarrerGlisser={demarrerObjet} />
             <MursSvg
               niveau={n}
               etat={etat}
-              dispatch={dispatch}
+              dispatch={d}
               demarrerGlisser={demarrerMur}
               demarrerExtremite={demarrerExtremite}
             />
-            <OuverturesSvg niveau={n} etat={etat} dispatch={dispatch} />
+            <OuverturesSvg niveau={n} etat={etat} dispatch={d} />
             <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
             <GuidesSvg guides={etat.guides} />
             <CoupeSvg coupe={etat.coupe} mmParPx={mmParPx} />
             {etat.calques.cotes ? (
-              <Cotes niveau={n} mmParPx={mmParPx} dispatch={dispatch} cliquables={!trace} />
+              <Cotes niveau={n} mmParPx={mmParPx} dispatch={d} cliquables={!trace} />
             ) : null}
             <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
             {calques.annotations ? (
-              <AnnotationsSvg niveau={n} etat={etat} dispatch={dispatch} mmParPx={mmParPx} />
+              <AnnotationsSvg niveau={n} etat={etat} dispatch={d} mmParPx={mmParPx} />
             ) : null}
             {scene.terrain || scene.orientationNord ? (
               <LimitesSvg
@@ -176,6 +178,8 @@ export function Plan2D({
                 coin={{ x: cadre.x + cadre.l, y: cadre.y }}
               />
             ) : null}
+            <MultiSelectionSvg niveau={n} multi={etat.multi} />
+            <ZoneSelectionSvg zone={multi.zone} />
             <TracesEnCours etat={etat} curseur={trace ? curseur : null} mmParPx={mmParPx} />
           </svg>
         </div>

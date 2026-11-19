@@ -7,7 +7,9 @@ import { niveauDe, type EtatEditeur } from './etat';
 export function AnnonceSelection({ etat }: { etat: EtatEditeur }) {
   return (
     <p className="sr-only" aria-live="polite" data-testid="annonce-selection">
-      {descriptionSelection(niveauDe(etat), etat.selection)}
+      {etat.multi.length > 1
+        ? `${etat.multi.length} éléments choisis.`
+        : descriptionSelection(niveauDe(etat), etat.selection)}
     </p>
   );
 }

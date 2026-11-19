@@ -1,7 +1,10 @@
 import {
   creerHistorique,
   enregistrer,
+  type Alignement,
   type CalqueScene,
+  type Copie,
+  type Element,
   type CibleRevetement,
   type ElementToit,
   type FormePiscine,
@@ -122,6 +125,10 @@ export interface EtatEditeur {
   /** Guides du placement automatique pendant un glisser. */
   guides: Guide[];
   calques: { cotes: boolean; surfaces: boolean };
+  /** Sélection multiple (DES-29), deux éléments ou plus ; vide sinon. */
+  multi: Element[];
+  /** Éléments copiés (Ctrl + C), collables sur n'importe quel niveau. */
+  copie: Copie | null;
   /** Panneau ouvert à gauche, `null` = replié. */
   menu: Menu | null;
   /** Panneau des propriétés (droite) déplié. */
@@ -165,7 +172,17 @@ export type Action =
   | { type: 'ajusterImplantation'; decalage?: Point; rotation?: number }
   | { type: 'terrasseAutour'; piscineId: string }
   | { type: 'terminerTrace' }
-  | { type: 'selectionner'; selection: Selection }
+  /** `ajouter` (Maj + clic) : ajoute l'élément à la sélection, ou l'en retire (DES-29). */
+  | { type: 'selectionner'; selection: Selection; ajouter?: boolean }
+  | { type: 'selectionnerZone'; a: Point; b: Point }
+  | { type: 'toutSelectionner' }
+  | { type: 'copier' }
+  | { type: 'coller' }
+  | { type: 'dupliquerSelection' }
+  | { type: 'alignerSelection'; bord: Alignement }
+  | { type: 'repartirSelection'; axe: 'x' | 'y' }
+  | { type: 'verrouillerSelection'; valeur: boolean }
+  | { type: 'verrouillerPlan'; valeur: boolean }
   | { type: 'modifierLongueur'; murId: string; longueur: number }
   /** Réglages d'un mur (DES-07) ; couper au milieu, fusionner avec le voisin (DES-09). */
   | { type: 'modifierMur'; murId: string; modif: ModificationMur }
@@ -281,6 +298,8 @@ export function etatInitial(scene: Scene): EtatEditeur {
     revisionPhotos: 0,
     guides: [],
     calques: { cotes: true, surfaces: true },
+    multi: [],
+    copie: null,
     menu: 'structure',
     proprietes: true,
     metreVu: false,

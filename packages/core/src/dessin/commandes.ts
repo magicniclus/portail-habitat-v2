@@ -132,7 +132,7 @@ function alignes(m1: Mur, m2: Mur): boolean {
   return Math.abs(v1.x * v2.y - v1.y * v2.x) / (longueurMur(m1) * longueurMur(m2)) < 1e-3;
 }
 
-function deplacerPoints(
+export function deplacerPoints(
   n: Niveau,
   origines: readonly Point[],
   // Reçoit le point d'origine correspondant ; renvoie sa nouvelle position.
