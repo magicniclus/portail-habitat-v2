@@ -163,7 +163,7 @@ Transaction :
 +10 budget cohérent avec l'estimation
 −30 IP / téléphone déjà vus ≥ 3 fois en 7 j    −40 email jetable    −20 hors zone couverte
 ```
-Une demande dont le score est inférieur à 30 est placé dans la file de modération (`fraude_suspectee`) **avant** tout matching.
+Une demande dont le score est inférieur à 30 est placée dans la file de modération (`fraude_suspectee`) **avant** tout matching.
 
 ### [10] Scores de nuit `artisanScores/{artisanId}` (planifié chaque nuit à 3 h)
 | Champ | Calcul (fenêtre glissante de 90 jours) |
