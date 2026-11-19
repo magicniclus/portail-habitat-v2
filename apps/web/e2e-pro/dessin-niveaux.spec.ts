@@ -5,6 +5,23 @@ import { COMPTES, connecter } from './outils';
 test.beforeAll(activerPlans);
 
 test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
+  test('DES-01 : maison en L meublée de démonstration, avec extérieur', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByRole('radio', { name: /Maison en L meublée/ }).check();
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(6);
+    for (const nom of ['Séjour', 'Cuisine', 'Salle de bains', 'WC'])
+      await expect(plan.getByText(nom, { exact: true })).toBeVisible();
+    await expect(plan.getByRole('button', { name: 'Canapé 3 places' })).toBeVisible();
+    await expect(plan.getByRole('button', { name: 'Meuble évier' })).toBeVisible();
+    await expect(plan.getByRole('button', { name: /^Piscine/ })).toHaveCount(1);
+  });
+
   test('DES-01 : créer un plan depuis un modèle (T3), pièces déjà nommées', async ({ page }) => {
     await connecter(page, COMPTES.proprio, '/pro/plans');
     await page

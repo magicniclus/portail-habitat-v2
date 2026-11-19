@@ -2,6 +2,7 @@ import {
   detecterPieces,
   mursDepuisForme,
   nouvelleScene,
+  sceneDemo,
   sceneModele,
   synchroniserPieces,
   type MODELES,
@@ -11,7 +12,8 @@ import {
 import { contexteNavigateur } from './etat';
 
 /** Forme de départ d'un nouveau plan, modèle (DES-01), ou plan vide. */
-export type ChoixDepart = 'vide' | Forme['forme'] | `modele:${(typeof MODELES)[number]['id']}`;
+export type ChoixDepart =
+  'vide' | 'demo' | Forme['forme'] | `modele:${(typeof MODELES)[number]['id']}`;
 
 /** Scène de départ (DES-01) : forme hors tout en cm, murs de 20 cm, pièce détectée. */
 export function sceneDepuisChoix(
@@ -20,6 +22,10 @@ export function sceneDepuisChoix(
 ): { ok: true; scene: Scene } | { ok: false; message: string } {
   const scene = nouvelleScene(contexteNavigateur.nouvelId);
   if (choix === 'vide') return { ok: true, scene };
+  if (choix === 'demo') {
+    const d = sceneDemo(contexteNavigateur);
+    return d.ok ? { ok: true, scene: d.data } : { ok: false, message: d.message };
+  }
   if (choix.startsWith('modele:')) {
     const id = choix.slice('modele:'.length) as (typeof MODELES)[number]['id'];
     const m = sceneModele(id, contexteNavigateur);

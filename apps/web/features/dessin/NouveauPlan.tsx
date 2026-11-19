@@ -101,8 +101,16 @@ export function NouveauPlan({
               description={m.detail}
             />
           ))}
+          <RadioCard
+            name="forme"
+            value="demo"
+            checked={choix === 'demo'}
+            onChange={() => setChoix('demo')}
+            titre="Maison en L meublée (démo)"
+            description="13 × 11 m : deux chambres, cuisine, salle de bains, WC, séjour, terrasse, piscine, jardin"
+          />
         </RadioCardGroup>
-        {choix === 'vide' || choix.startsWith('modele:') ? null : (
+        {choix === 'vide' || choix === 'demo' || choix.startsWith('modele:') ? null : (
           <div className="grid grid-cols-2 gap-3">
             {champ('largeur', 'Largeur hors tout (cm)')}
             {champ('profondeur', 'Profondeur hors tout (cm)')}

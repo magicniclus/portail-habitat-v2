@@ -47,3 +47,4 @@ export * from './alignement';
 export * from './modeles';
 export * from './piecesDessinees';
 export * from './modeles3d';
+export * from './demo';
