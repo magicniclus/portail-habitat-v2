@@ -15,6 +15,7 @@ import { Button } from '@ph/ui';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { useCibleFinition, type Cible } from './cibleFinition';
+import { ReglagesPeinture } from './ReglagesPeinture';
 
 const choix =
   'min-h-11 cursor-pointer rounded-full border px-3 text-sm font-semibold font-[inherit]';
@@ -42,6 +43,7 @@ export function FinitionsMenu({
   const aPose = FAMILLES_A_POSE.includes(f);
   const poser = (m: MateriauDessin) => {
     const r: Revetement = { famille: f, materiauId: m.id, couleur: m.couleur };
+    if (f === 'peinture' && actuel?.finition) r.finition = actuel.finition;
     if (aPose)
       Object.assign(r, {
         pose,
@@ -129,6 +131,7 @@ export function FinitionsMenu({
           </label>
         </div>
       ) : null}
+      {f === 'peinture' ? <ReglagesPeinture actuel={actuel} appliquer={appliquer} /> : null}
       <fieldset className="m-0 border-0 p-0">
         <legend className="mb-2 px-1 text-[13px] font-semibold">Matériaux</legend>
         <div className="grid grid-cols-2 gap-2">

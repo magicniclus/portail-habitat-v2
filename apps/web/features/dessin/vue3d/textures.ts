@@ -55,17 +55,28 @@ function texture(r: Revetement, couleur: string): CanvasTexture | null {
   return t;
 }
 
+/** Peinture (DES-25) : plus la finition est brillante, plus la lumière s'y reflète. */
+const RUGOSITE_PEINTURE = { mat: 0.95, satin: 0.55, brillant: 0.2 } as const;
+
 /** Matériau partagé pour un revêtement (mis en cache : mêmes revêtements → même matériau). */
 export function materiauRevetement(r: Revetement, defaut?: string): MeshStandardMaterial {
   const couleur = couleurRevetement(r, defaut);
-  const cle = JSON.stringify([r.famille, couleur, r.format, r.pose, r.joint, r.materiauId]);
+  const cle = JSON.stringify([
+    r.famille,
+    couleur,
+    r.format,
+    r.pose,
+    r.joint,
+    r.materiauId,
+    r.finition,
+  ]);
   let m = cache.get(cle);
   if (!m) {
     const map = texture(r, couleur);
     m = new MeshStandardMaterial({
       color: map ? COULEURS_3D.blanc : couleur,
       map,
-      roughness: r.famille === 'peinture' ? 0.95 : 0.75,
+      roughness: r.famille === 'peinture' ? RUGOSITE_PEINTURE[r.finition ?? 'mat'] : 0.75,
     });
     cache.set(cle, m);
   }

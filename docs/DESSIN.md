@@ -79,7 +79,7 @@ Piscine { id, forme: 'rectangle'|'ronde'|'ovale'|'haricot'|'L'|'couloir'|'hors_s
           escalier: 'roman'|'droit'|'angle'|null, margelle: MateriauId, plage: Polygone + MateriauId, liner: MateriauId,
           debordement: boolean, abri?: …, localTechnique?: … }
 Terrain { parcelle: Polygone, referenceCadastrale?, codeInsee?, altitude, implantation: { x, y, rotation } }
-Revetement { materiauId, couleur?, orientation?, decalage?, joint?: { largeur, couleur } }
+Revetement { materiauId, couleur?, orientation?, decalage?, joint?: { largeur, couleur }, finition?: 'mat'|'satin'|'brillant' }
 ZoneDeco { id, support: { murId, face } | { pieceId, surface: 'sol'|'plafond' }, contour, revetement }
 ```
 

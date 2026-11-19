@@ -59,6 +59,9 @@ const POSES = [
   'baton_rompu',
 ] as const;
 
+/** Finitions d'une peinture (DES-25). */
+export const FINITIONS_PEINTURE = ['mat', 'satin', 'brillant'] as const;
+
 export const revetement = z.object({
   famille: z.enum(FAMILLES_REVETEMENT),
   /** Référence dans `referentiel/materiaux` (lot 15f). */
@@ -80,6 +83,8 @@ export const revetement = z.object({
   /** Carrelage, dalles : format d'un élément ; parquet : largeur et longueur de lame (mm). */
   format: z.object({ l: mmPositif.min(10).max(3_000), p: mmPositif.min(10).max(3_000) }).optional(),
   pose: z.enum(POSES).optional(),
+  /** Peinture (DES-25) : mat, satin ou brillant ; mat si absent. */
+  finition: z.enum(FINITIONS_PEINTURE).optional(),
 });
 const REVETEMENT_VIDE = { famille: 'aucun' } as const;
 

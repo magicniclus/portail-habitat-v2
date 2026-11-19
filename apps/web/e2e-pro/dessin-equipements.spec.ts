@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { activerPlans, nouveauPlan } from './dessinOutils';
 
 test.beforeAll(activerPlans);
@@ -7,6 +8,7 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
   test('DES-08, DES-23, DES-24, DES-25, DES-32 : équiper, peindre un mur, plan en noir et blanc', async ({
     page,
   }) => {
+    test.setTimeout(60_000);
     const { plan, ecran } = await nouveauPlan(page);
     const svg = plan.locator('svg').first();
     const menu = async (nom: string) => {
@@ -20,11 +22,8 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
       await page.mouse.click(p.x, p.y);
     };
     const replier = async () => {
-      if (page.viewportSize()!.width < 900)
-        await page
-          .getByRole('button', { name: 'Replier propriétés' })
-          .click()
-          .catch(() => undefined);
+      const bouton = page.getByRole('button', { name: 'Replier propriétés' });
+      if (page.viewportSize()!.width < 900 && (await bouton.isVisible())) await bouton.click();
     };
 
     // DES-08 : magnétisme activé par défaut, coupé d'un clic.
@@ -86,6 +85,14 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
       .getByRole('button', { name: 'Sauge' });
     await sauge.click();
     await expect(sauge).toHaveAttribute('aria-pressed', 'true');
+    // Couleur libre et finition satinée, depuis le menu Finitions.
+    await replier();
+    await menu('Finitions');
+    await page.getByLabel('Famille').selectOption('peinture');
+    await page.getByLabel('Couleur libre').fill(COULEURS_PLAN.murSelection);
+    await page.getByLabel('Finition', { exact: true }).selectOption('satin');
+    await expect(page.getByLabel('Finition', { exact: true })).toHaveValue('satin');
+    await expect(page.getByLabel('Couleur libre')).toHaveValue(COULEURS_PLAN.murSelection);
 
     // DES-32 : style noir et blanc imprimable.
     await replier();

@@ -983,11 +983,12 @@ Relecture complète de la branche puis « oui corrige tout » du propriétaire ;
   - sélection multiple (Maj + clic, rectangle à la souris, Ctrl + A), copier-coller vers un autre niveau, dupliquer, aligner, répartir, verrouiller un mur ou un meuble, **verrouiller le plan** (DES-29) ; **champs `verrouille?` ajoutés aux objets et à la scène** ;
   - modèles de départ studio, T2, T3, plain-pied, maison à étage (DES-01) ;
   - pièce libre polygonale (DES-12) ;
-  - style « noir et blanc » du plan 2D pour l'imprimer, dans le menu Rendu (DES-32, affichage seulement).
+  - style « noir et blanc » du plan 2D pour l'imprimer, dans le menu Rendu (DES-32, affichage seulement) ;
+  - peinture : couleur libre et finition mat, satin ou brillant, visible en 3D (DES-25) ; **champ `finition?` ajouté aux revêtements**.
 - **Bugs trouvés pendant la recette (corrigés)** : « Mes plans » débordait en largeur sur téléphone avec un titre long (bouton « Créer le plan » inaccessible) ; le statut « Hors ligne » n'apparaissait jamais (écrasé par « Modifications en attente », nouvel envoi toutes les 2 s) : il reste affiché, chaque modification est gardée sur l'appareil, nouvel essai toutes les 30 s et au retour du réseau (DES-39).
 - **Architecture (fait)** : longues fonctions découpées (`menuiserie3D`, `metreNiveau`, `detecterPieces`), peintures sans doublon, `'use client'` inutiles retirés. **Non fait, volontairement** : libellés des matériaux laissés dans `@ph/ui` (pur affichage, aucun calcul ne les lit) ; couleurs du plan non reliées aux thèmes (le plan imprimé et le PDF gardent des couleurs fixes, lisibles sur papier).
 - **Tests** : cœur 4 325 (branches ≥ 95 %), web 146, serveur Plans 24 sur émulateur ; Playwright Plans : un parcours pour chaque DES de DES-01 à DES-48 (DES-44 dans le parcours particulier du simulateur, DES-45 retiré), iPhone 13 et ordinateur.
-- **Reste** : tests sur Pixel (non émulé dans la configuration pro) ; vrais modèles 3D (D88) ; services IGN à vérifier en préproduction ; `/dessin` en `revalidate = 3600` à l'ouverture.
+- **Reste** : tests sur Pixel (non émulé dans la configuration pro) ; vrais modèles 3D et textures photo (D88) : téléchargements refusés par les permissions de la session, en attente d'une règle d'autorisation validée par le propriétaire ; services IGN à vérifier en préproduction ; `/dessin` en `revalidate = 3600` à l'ouverture.
 
 ### Lot 15j fait (18/11/2026)
 Plan validé par le propriétaire (4 étapes ; aucun changement de modèle ni de règle, aucune dépendance ; Lighthouse non ajouté, mesures avec Playwright).

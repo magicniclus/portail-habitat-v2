@@ -1,6 +1,7 @@
 import { echec, succes, type Resultat } from '../resultat';
 import {
   zoneDeco as schemaZone,
+  type FINITIONS_PEINTURE,
   type FamilleRevetement,
   type Niveau,
   type Point,
@@ -57,6 +58,33 @@ export const LIBELLES_POSE: Record<Pose, string> = {
 };
 
 /** Familles posées en éléments (carreaux, lames) : pose et joint réglables. */
+export type FinitionPeinture = (typeof FINITIONS_PEINTURE)[number];
+export const LIBELLES_FINITION: Record<FinitionPeinture, string> = {
+  mat: 'Mat',
+  satin: 'Satin',
+  brillant: 'Brillant',
+};
+
+/**
+ * Peinture choisie librement (DES-25) : couleur hexadécimale à six chiffres et finition. Repart de la peinture
+ * déjà posée (sa couleur ou sa finition est gardée si l'autre seule change) ; `null` si la
+ * couleur est illisible.
+ */
+export function peinture(
+  actuel: Revetement | null,
+  modif: { couleur?: string; finition?: FinitionPeinture },
+  /** Couleur de départ quand rien n'est peint (fournie par les jetons de l'interface). */
+  blanc: string,
+): Revetement | null {
+  const avant = actuel?.famille === 'peinture' ? actuel : null;
+  const couleur = (modif.couleur ?? avant?.couleur ?? blanc).toLowerCase();
+  if (!/^#[0-9a-f]{6}$/.test(couleur)) return null;
+  const finition = modif.finition ?? avant?.finition ?? 'mat';
+  // Couleur saisie : ce n'est plus un matériau du catalogue.
+  const materiauId = modif.couleur === undefined ? avant?.materiauId : undefined;
+  return { famille: 'peinture', couleur, finition, ...(materiauId ? { materiauId } : {}) };
+}
+
 export const FAMILLES_A_POSE: readonly FamilleRevetement[] = [
   'parquet',
   'stratifie',
