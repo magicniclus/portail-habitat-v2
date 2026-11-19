@@ -29,3 +29,44 @@ export const modele3D = (catalogueId: string): string | null =>
 
 /** Objets du catalogue qui ont un vrai modèle 3D. */
 export const OBJETS_AVEC_MODELE: readonly string[] = Object.keys(MODELES);
+
+/**
+ * Textures photo des revêtements (D88, CC0 Poly Haven) : couleur, relief et rugosité, en WebP.
+ * `taille` : côté réel couvert par une image, en mm (la texture se répète à cette échelle).
+ */
+const TEXTURES: Readonly<Record<string, { fichier: string; taille: number }>> = {
+  'pa-chene-clair': { fichier: 'laminate_floor_02', taille: 1700 },
+  'pa-chene-naturel': { fichier: 'wood_floor', taille: 1700 },
+  'pa-noyer': { fichier: 'dark_wooden_planks', taille: 2000 },
+  'ca-gris-60': { fichier: 'concrete_tiles_02', taille: 1825 },
+  'ca-terre-cuite': { fichier: 'terracotta_floor_tiles', taille: 2080 },
+  'fa-metro': { fichier: 'long_white_tiles', taille: 1270 },
+  'bc-gris': { fichier: 'plastered_wall_04', taille: 3200 },
+  'pi-travertin': { fichier: 'marble_01', taille: 1500 },
+  'pr-brique': { fichier: 'red_brick', taille: 1400 },
+  'pr-pierre': { fichier: 'stacked_stone_wall', taille: 2000 },
+  'en-chaux': { fichier: 'white_stucco', taille: 1998 },
+};
+
+export interface TexturePhoto {
+  couleur: string;
+  relief: string;
+  rugosite: string;
+  taille: number;
+}
+
+/** Textures photo d'un matériau du catalogue, sinon `null` (motif dessiné). */
+export function texturePhoto(materiauId: string | undefined): TexturePhoto | null {
+  const t = materiauId ? TEXTURES[materiauId] : undefined;
+  if (!t) return null;
+  const url = (carte: string) => `/dessin/textures/${t.fichier}-${carte}.webp`;
+  return {
+    couleur: url('couleur'),
+    relief: url('relief'),
+    rugosite: url('rugosite'),
+    taille: t.taille,
+  };
+}
+
+/** Matériaux qui ont une texture photo. */
+export const MATERIAUX_AVEC_TEXTURE: readonly string[] = Object.keys(TEXTURES);

@@ -1,8 +1,16 @@
 'use client';
 
-import type { Revetement } from '@ph/core/dessin';
+import { texturePhoto, type Revetement } from '@ph/core/dessin';
 import { COULEURS_3D, MATERIAUX_DESSIN } from '@ph/ui/tokens';
-import { CanvasTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three';
+import {
+  CanvasTexture,
+  MeshStandardMaterial,
+  RepeatWrapping,
+  SRGBColorSpace,
+  TextureLoader,
+  Vector2,
+  type Texture,
+} from 'three';
 
 /**
  * Matériaux 3D des revêtements (DES-26 en 3D) : couleur du matériau, et pour les carrelages et
@@ -58,6 +66,42 @@ function texture(r: Revetement, couleur: string): CanvasTexture | null {
 /** Peinture (DES-25) : plus la finition est brillante, plus la lumière s'y reflète. */
 const RUGOSITE_PEINTURE = { mat: 0.95, satin: 0.55, brillant: 0.2 } as const;
 
+const chargeur = new TextureLoader();
+const images = new Map<string, Texture>();
+const DIAGONALES = new Set(['diagonale', 'chevron', 'point_de_hongrie', 'baton_rompu']);
+
+/** Image d'une texture photo, chargée une fois, répétée à sa taille réelle (UV en mètres). */
+function image(url: string, tailleMm: number, couleur: boolean, pose?: string): Texture {
+  const cle = `${url}|${pose ?? ''}`;
+  let t = images.get(cle);
+  if (!t) {
+    t = chargeur.load(url);
+    t.wrapS = RepeatWrapping;
+    t.wrapT = RepeatWrapping;
+    if (couleur) t.colorSpace = SRGBColorSpace;
+    t.repeat.set(1000 / tailleMm, 1000 / tailleMm);
+    if (pose && DIAGONALES.has(pose)) t.rotation = Math.PI / 4;
+    images.set(cle, t);
+  }
+  return t;
+}
+
+/**
+ * Revêtement avec texture photo (D88) : couleur, relief et rugosité réels ; sinon `null`
+ * et le motif dessiné prend le relais.
+ */
+function materiauPhoto(r: Revetement): MeshStandardMaterial | null {
+  const p = texturePhoto(r.materiauId);
+  if (!p) return null;
+  return new MeshStandardMaterial({
+    color: COULEURS_3D.blanc,
+    map: image(p.couleur, p.taille, true, r.pose),
+    normalMap: image(p.relief, p.taille, false, r.pose),
+    normalScale: new Vector2(1, 1),
+    roughnessMap: image(p.rugosite, p.taille, false, r.pose),
+  });
+}
+
 /** Matériau partagé pour un revêtement (mis en cache : mêmes revêtements → même matériau). */
 export function materiauRevetement(r: Revetement, defaut?: string): MeshStandardMaterial {
   const couleur = couleurRevetement(r, defaut);
@@ -72,6 +116,11 @@ export function materiauRevetement(r: Revetement, defaut?: string): MeshStandard
   ]);
   let m = cache.get(cle);
   if (!m) {
+    const photo = materiauPhoto(r);
+    if (photo) {
+      cache.set(cle, photo);
+      return photo;
+    }
     const map = texture(r, couleur);
     m = new MeshStandardMaterial({
       color: map ? COULEURS_3D.blanc : couleur,

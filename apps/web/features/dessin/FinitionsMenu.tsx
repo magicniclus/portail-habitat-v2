@@ -6,6 +6,7 @@ import {
   FAMILLES_SOL,
   LIBELLES_FAMILLE,
   LIBELLES_POSE,
+  texturePhoto,
   type FamilleRevetement,
   type Pose,
   type Revetement,
@@ -148,7 +149,11 @@ export function FinitionsMenu({
                 <span
                   aria-hidden="true"
                   className="size-10 shrink-0 rounded-lg border border-neutre-300"
-                  style={{ background: m.couleur }}
+                  style={{
+                    background: texturePhoto(m.id)
+                      ? `center / cover url(${texturePhoto(m.id)!.couleur})`
+                      : m.couleur,
+                  }}
                 />
                 {m.libelle}
               </button>
