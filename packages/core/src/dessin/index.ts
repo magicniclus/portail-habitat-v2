@@ -19,6 +19,7 @@ export * from './niveaux';
 export * from './objets';
 export * from './placement';
 export * from './ouvertures';
+export * from './poseOuverture';
 export * from './pieces';
 export * from './revetements';
 export * from './validations';

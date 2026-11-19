@@ -11,7 +11,8 @@ import {
   pieceRectangle,
   poserEscalier,
   poserFond,
-  poserOuverture,
+  poserOuvertureTiree,
+  pointSurMur,
   reglerFond,
   retirerFond,
   supprimerAnnotation,
@@ -50,14 +51,17 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
     poserPolygone(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
-    const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
-    if (!cible) return { ...e, erreur: 'Cliquez sur un mur pour y poser la porte ou la fenêtre.' };
-    const suite = surNiveau(e, (n) =>
-      poserOuverture(
-        n,
-        { murId: cible.mur.id, type: e.typeOuverture, centre: cible.distanceDepuisA },
-        ctx,
-      ),
+    // DES-14 : premier clic = un bord (et la charnière), second clic = l'autre bord ; le côté
+    // du mur où l'on clique donne le sens de l'ouvrant. Deux clics au même endroit : taille type.
+    if (!e.trace) {
+      const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
+      if (!cible)
+        return { ...e, erreur: 'Cliquez sur un mur pour y poser la porte ou la fenêtre.' };
+      return { ...e, trace: pointSurMur(cible.mur, cible.distanceDepuisA), erreur: null };
+    }
+    const premier = e.trace;
+    const suite = surNiveau({ ...e, trace: null }, (n) =>
+      poserOuvertureTiree(n, e.typeOuverture, premier, point, ctx),
     );
     const posee = niveauCourant(suite).ouvertures.at(-1);
     return suite.erreur || !posee

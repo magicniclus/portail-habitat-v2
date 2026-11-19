@@ -136,7 +136,8 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     // Porte à galandage dans le mur du haut : vitrée, 4 carreaux, gris anthracite.
     await ouverture('Porte à galandage(?! double)');
     let p = await ecran(4000, 100);
-    await page.mouse.click(p.x, p.y);
+    // Deux clics au même endroit : taille du catalogue, centrée (DES-14).
+    await page.mouse.dblclick(p.x, p.y);
     await expect(plan.getByRole('button', { name: /^Porte à galandage de/ })).toBeVisible();
     await proprietes();
     await page.getByLabel('Remplissage').selectOption('vitre');
@@ -148,7 +149,7 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     // Fenêtre 2 vantaux sur le mur du bas, avec volets battants.
     await ouverture('Fenêtre 2 vantaux');
     p = await ecran(6000, 8500);
-    await page.mouse.click(p.x, p.y);
+    await page.mouse.dblclick(p.x, p.y);
     await proprietes();
     await page.getByLabel('Volets').selectOption('battant');
     await replier();

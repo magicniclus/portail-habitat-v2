@@ -15,20 +15,33 @@ const maison = () => {
 const jouer = (actions: Action[]) => actions.reduce(reduire, etatInitial(maison()));
 
 describe('portes et fenêtres dans l’éditeur', () => {
-  it('cliquer sur un mur pose l’ouverture et la sélectionne ; hors mur : message', () => {
-    const e = jouer([
+  it('deux clics au même endroit : taille type, sélectionnée ; hors mur : message', () => {
+    const debut = jouer([
       { type: 'outil', outil: 'ouverture', typeOuverture: 'porte_entree' },
       { type: 'poserPoint', point: { x: 3000, y: 100 } },
     ]);
+    expect(niveauDe(debut).ouvertures).toHaveLength(0);
+    expect(debut.trace).toEqual({ x: 3000, y: 100 });
+    const e = reduire(debut, { type: 'poserPoint', point: { x: 3000, y: 100 } });
     const o = niveauDe(e).ouvertures[0]!;
     expect(o).toMatchObject({ type: 'porte_entree', largeur: 900 });
-    expect(e.selection).toEqual({ genre: 'ouverture', id: o.id });
+    expect(e).toMatchObject({ trace: null, selection: { genre: 'ouverture', id: o.id } });
     expect(reduire(e, { type: 'poserPoint', point: { x: 5000, y: 4000 } }).erreur).toMatch(/mur/);
+  });
+
+  it('deux clics écartés : largeur tirée, ouvrant du côté du second clic (DES-14)', () => {
+    const e = jouer([
+      { type: 'outil', outil: 'ouverture', typeOuverture: 'porte' },
+      { type: 'poserPoint', point: { x: 3000, y: 100 } },
+      { type: 'poserPoint', point: { x: 3800, y: 900 } },
+    ]);
+    expect(niveauDe(e).ouvertures[0]).toMatchObject({ largeur: 800, cote: 'interieur' });
   });
 
   it('modifier puis supprimer l’ouverture sélectionnée', () => {
     let e = jouer([
       { type: 'outil', outil: 'ouverture', typeOuverture: 'fenetre' },
+      { type: 'poserPoint', point: { x: 3000, y: 100 } },
       { type: 'poserPoint', point: { x: 3000, y: 100 } },
     ]);
     const id = niveauDe(e).ouvertures[0]!.id;

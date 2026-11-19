@@ -171,23 +171,34 @@ function verifier(n: Niveau, o: Ouverture): Resultat<Ouverture> {
  */
 export function poserOuverture(
   n: Niveau,
-  e: { murId: string; type: TypeOuverture; centre: number },
+  e: {
+    murId: string;
+    type: TypeOuverture;
+    centre: number;
+    /** Largeur tirée sur le plan (deux clics) ; sinon celle du catalogue. */
+    largeur?: number;
+    sens?: Ouverture['sens'];
+    cote?: Ouverture['cote'];
+  },
   ctx: Contexte,
 ): Resultat<Niveau> {
   const mur = n.murs.find((m) => m.id === e.murId);
   if (!mur) return echec('INTROUVABLE');
   const d = CATALOGUE_OUVERTURES[e.type];
+  const largeur = e.largeur ?? d.largeur;
   const l = Math.round(longueurMur(mur));
   // Recalée dans le mur ; un mur trop court est refusé ensuite par `verifier`.
-  const position = Math.max(0, Math.round(Math.min(e.centre - d.largeur / 2, l - d.largeur)));
+  const position = Math.max(0, Math.round(Math.min(e.centre - largeur / 2, l - largeur)));
   const brut = schemaOuverture.parse({
     id: ctx.nouvelId('o'),
     murId: mur.id,
     position,
-    largeur: d.largeur,
+    largeur,
     hauteur: d.hauteur,
     allege: d.allege,
     type: e.type,
+    ...(e.sens ? { sens: e.sens } : {}),
+    ...(e.cote ? { cote: e.cote } : {}),
   });
   // Porte coulissante sans place à gauche : on essaie de la ranger à droite.
   let r = verifier(n, brut);

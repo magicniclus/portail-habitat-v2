@@ -135,7 +135,9 @@ describe('couleur de toutes les menuiseries', () => {
     let e = jouer([
       { type: 'outil', outil: 'ouverture', typeOuverture: 'porte' },
       { type: 'poserPoint', point: { x: 3000, y: 100 } },
+      { type: 'poserPoint', point: { x: 3000, y: 100 } },
       { type: 'outil', outil: 'ouverture', typeOuverture: 'fenetre' },
+      { type: 'poserPoint', point: { x: 7000, y: 100 } },
       { type: 'poserPoint', point: { x: 7000, y: 100 } },
     ]);
     e = reduire(e, { type: 'couleurMenuiseries', couleur: '#5b3a24' });

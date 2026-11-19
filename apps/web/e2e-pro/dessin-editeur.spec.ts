@@ -119,8 +119,18 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     // Porte d'entrée sur le mur du bas (DES-13).
     await structure('Portes & fenêtres', 'Porte d’entrée');
     let p = await ecran(5000, 8500);
-    await page.mouse.click(p.x, p.y);
+    await page.mouse.dblclick(p.x, p.y);
     await expect(plan.getByRole('button', { name: 'Porte d’entrée de 90 cm' })).toBeVisible();
+
+    // DES-14 : porte tirée en deux clics, d'un bord à l'autre ; aperçu entre les deux clics.
+    await structure('Portes & fenêtres', 'Porte 83');
+    p = await ecran(1500, 8500);
+    await page.mouse.click(p.x, p.y);
+    p = await ecran(2300, 7900);
+    await page.mouse.move(p.x, p.y);
+    await expect(plan.getByTestId('pose-ouverture')).toBeAttached();
+    await page.mouse.click(p.x, p.y);
+    await expect(plan.getByRole('button', { name: 'Porte de 80 cm' })).toBeVisible();
 
     // Escalier droit dans la pièce (DES-15) : 15 marches pour 2,70 m.
     await structure('Escaliers', 'Escalier droit');

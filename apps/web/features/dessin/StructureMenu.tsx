@@ -34,7 +34,8 @@ const TITRES: Record<Sous, string> = {
 };
 const AIDES: Partial<Record<Sous, string>> = {
   murs: 'Choisissez un type puis cliquez sur le plan pour poser chaque point. Double-clic ou Échap pour finir.',
-  ouvertures: 'Choisissez un modèle puis cliquez sur un mur : elle s’y place, centrée sur le clic.',
+  ouvertures:
+    'Cliquez sur un mur à un bord, puis à l’autre bord : la largeur suit. Le côté du mur où vous cliquez donne le sens d’ouverture. Double-clic : taille standard.',
   escaliers:
     'Choisissez un type puis cliquez sur le plan. Il monte vers le niveau du dessus ; la trémie y apparaît.',
 };
