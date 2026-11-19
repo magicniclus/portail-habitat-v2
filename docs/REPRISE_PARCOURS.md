@@ -2,7 +2,13 @@
 
 Objectif : quelqu'un qui quitte le simulateur en cours de route retrouve, à son retour, **le choix entre reprendre où il en était et recommencer**, sur le même appareil **et**, s'il le souhaite, sur un autre.
 
-Le même mécanisme sert à tous les parcours en plusieurs étapes : simulateur, parcours diagnostic, dépôt d'avis, onboarding artisan. Il est implémenté une seule fois dans le hook `useParcours` (ARCHITECTURE.md §8).
+Le même mécanisme devait servir à tous les parcours en plusieurs étapes : simulateur, parcours diagnostic, dépôt d'avis, onboarding artisan. Il est implémenté une seule fois dans le hook `useParcours` (ARCHITECTURE.md §8).
+
+> **État au 19/11/2026** :
+> - **Simulateur** : fait (niveaux 1, 2 et 3 ; SIM-06a à j, lot 8).
+> - **Diagnostic et avis** : **pas encore faits** ; ils partagent seulement le gabarit `PageParcours` (en-tête sobre). Le schéma accepte déjà `parcours: 'diagnostic' | 'avis'`.
+> - **Inscription des artisans** : mécanisme propre, `brouillonsOnboarding/{id}` (identifiant en cookie httpOnly, 3 étapes, lien de reprise par email `reprise-onboarding` avec empreinte du jeton, TTL 30 jours ; COMPTES §3.2), et non `useParcours`.
+> - **Plans (Dessin, lot 15)** : mécanisme propre, hors de ce document : la dernière scène non enregistrée de chaque plan est gardée dans **IndexedDB** (base `portail-dessin`, DES-39, essai sans compte DES-03 repris en vrai plan après connexion) ; elle est **effacée à la déconnexion** (appareil partagé). Rien n'est envoyé au serveur avant la connexion.
 
 ---
 
@@ -21,7 +27,7 @@ Pourquoi pas seulement `localStorage` : il est perdu en navigation privée, en c
 ## 2. Ce qui est enregistré
 
 ```ts
-// packages/core/parcours/brouillon.ts
+// packages/core/src/parcours/brouillon.ts (schéma `brouillonParcours`, objet strict)
 type Brouillon = {
   v: 1;                         // version du format du brouillon
   parcours: 'simulateur' | 'diagnostic' | 'avis' | 'onboarding';
@@ -35,7 +41,8 @@ type Brouillon = {
   id: string;                   // identifiant aléatoire, pour les onglets et la synchro serveur
 };
 ```
-- Clé `localStorage` : `ph:parcours:simulateur` (un seul brouillon par parcours : le plus récent l'emporte)
+- Clé `localStorage` : `ph:parcours:simulateur` (`cleBrouillon(parcours)` ; un seul brouillon par parcours : le plus récent l'emporte)
+- Bornes du schéma : `etape` 1 à 20, 60 réponses au plus, textes de 60 caractères, `chantier.codePostal` seulement (aucune adresse) ; une clé inconnue (un email, un nom…) rend le brouillon invalide, donc supprimé
 - Validé par un schéma Zod à la lecture : un brouillon illisible ou d'un format inconnu est **supprimé sans erreur visible**
 - **Jamais de coordonnées dans `localStorage`** : ni nom, ni email, ni téléphone, ni adresse précise (seulement le code postal). Ces champs restent en mémoire et sont redemandés au retour. C'est ce qui permet de se passer du consentement cookies : la CNIL exempte le stockage strictement nécessaire à un service demandé par l'utilisateur, et ce stockage ne contient pas de données personnelles
 - Écriture **à chaque changement de réponse**, regroupée (délai de 400 ms) pour ne pas écrire à chaque cran d'un slider
@@ -96,8 +103,8 @@ Suppression du brouillon local **et** du brouillon serveur éventuel, retour à 
 ## 5. Synchronisation serveur (niveaux 2 et 3)
 
 ### Collection `brouillons/{id}`
-`parcours`, `uid?`, `emailHash?`, `donnees` (le même objet `Brouillon`, sans coordonnées), `jetonHash?` (lien de reprise), `majLe`, `expireLe` (**TTL 30 jours**), `createdAt`.
-Règles : lecture et écriture **refusées** côté client ; tout passe par la Server Action `sauverBrouillon` (rate limit : 30 écritures / 10 min / session).
+`parcours`, `uid?`, `emailHash?`, `donnees` (le même objet `Brouillon`, sans coordonnées), `jetonHash?` (lien de reprise), `majLe`, `expireLe` (**TTL 30 jours**), `createdAt` (schéma `brouillon`, `packages/core/src/schemas/parcours.ts`).
+Règles : lecture et écriture **refusées** côté client ; tout passe par le serveur : routes `POST /api/parcours/compte` (niveau 2, personne connectée), `/api/parcours/lien` (demande du lien de reprise) et `/api/parcours/reprise` (ouverture du lien), logique dans `@ph/firebase/parcours` (au lieu de la Server Action `sauverBrouillon` prévue).
 
 ### Personne connectée
 - Écriture serveur à chaque **changement d'étape** (pas à chaque réponse), ou à la fermeture de la page (`visibilitychange` → `navigator.sendBeacon`)
@@ -127,12 +134,12 @@ const p = useParcours({
 // p.brouillonTrouve, p.reprendre(), p.recommencer(), p.annulerRecommencer(),
 // p.etape, p.allerA(n), p.reponses, p.maj(champ, valeur), p.envoye()
 ```
-- Stockage abstrait derrière une interface `StockageBrouillon` avec 2 implémentations (`local`, `serveur`) et un orchestrateur qui choisit le plus récent : testable sans navigateur
-- `migrer` et `resume` sont des **fonctions pures** dans `packages/core/simulateur`, testées
-- Composant d'interface unique `<RepriseParcours />` dans `packages/ui/patterns`, réutilisé par le simulateur, le diagnostic, l'avis et l'onboarding
+- Fait ainsi : lecture et choix du plus récent dans `@ph/core/parcours` (`lireBrouillon`, `reprise.ts`, fonctions pures testées) ; niveau local dans `useParcours`, niveau compte dans `useBrouillonCompte` (`apps/web/features/parcours/`), branchés pour le simulateur par `features/simulateur/reprise.ts` et `AffichageReprise.tsx` ; stockage local du simulateur dans `@ph/core/simulateur` (`stockage.ts`)
+- `migrer` et `resume` sont des **fonctions pures** dans `packages/core/src/simulateur`, testées
+- Composant d'interface unique `<RepriseParcours />` dans `packages/ui/src/patterns`, utilisé aujourd'hui par le simulateur seulement
 
 ### Mesure
-Événements (sans données personnelles) : `parcours_brouillon_trouve`, `parcours_repris` (avec l'étape), `parcours_recommence`, `parcours_lien_reprise_demande`, `parcours_lien_reprise_utilise`, `parcours_envoye`. Indicateur à suivre dans l'admin : **taux de reprise** et **taux d'envoi après reprise**.
+Événements (sans données personnelles) : `parcours_brouillon_trouve`, `parcours_repris` (avec l'étape), `parcours_recommence`, `parcours_lien_reprise_demande`, `parcours_lien_reprise_utilise`, `parcours_envoye`. Indicateur à suivre dans l'admin : **taux de reprise** et **taux d'envoi après reprise**. **Pas encore fait** : aucun de ces événements n'est envoyé par le code au 19/11/2026, et l'indicateur n'existe pas dans l'admin.
 
 ---
 

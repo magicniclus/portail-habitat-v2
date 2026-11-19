@@ -39,27 +39,19 @@ Maquette : `designs/Admin IA.dc.html`.
 ## 3. Architecture
 
 ```
-Admin (onglet IA) ──callable iaAnalyser({ mode: 'rapide'|'audit', perimetres: string[] (ou ['tout']), question?, approfondie? })──► Function (europe-west1)
-   1. assertPermission('ia.utiliser') · quota par membre (30 analyses / jour) · journal
-   2. construireContexte(perimetre) : lectures Firestore + BigQuery (agrégats), anonymisation, découpage < 60 k tokens
-   3. Appel API Claude (Anthropic) : system prompt versionné + outils en lecture seule
-   4. Validation Zod de la sortie JSON (schéma §4), rejet ou nouvelle tentative si invalide
+Admin (onglet IA) ──action serveur adminAnalyseIa({ mode: 'rapide'|'audit', perimetres, question?, approfondie? })──► site (Vercel)
+   1. actionAdmin : permission 'ia.utiliser', double authentification, audit · quota par membre (30 analyses / jour) · budget du mois
+   2. lireContextesIa(perimetres) : documents iaContexte/{perimetre} pré-calculés la nuit (agrégats Firestore, aucune donnée personnelle)
+   3. Appel API Claude (Anthropic, @anthropic-ai/sdk dans @ph/firebase) : prompt système versionné + contexte, mis en cache
+   4. Validation Zod de la sortie JSON (schéma §4) + contrôle que chaque valeur citée existe dans le contexte ; une nouvelle tentative, sinon échec
    5. écrit iaAnalyses/{id} + iaRecommandations/{id} ; renvoie le résultat
 ```
-- **Modèle** : **Claude Haiku par défaut** (analyses et questions). **Sonnet uniquement** quand l'utilisateur coche « Analyse approfondie » et pour la synthèse du lundi. Configurable dans `config/ia`.
-- **Contexte pré-calculé** : chaque nuit, les Functions d'agrégation écrivent `iaContexte/{perimetre}`, un JSON compact (≤ 6 000 tokens) déjà résumé. Une analyse = **un seul appel** sans boucle d'outils ; les outils ne servent qu'en mode approfondi.
-- **Mise en cache** : prompt caching Anthropic sur le prompt système + contexte (les questions de suivi coûtent ~10 % du prix) ; même périmètre + même question dans les 24 h → résultat stocké renvoyé sans appel, sauf « Relancer ».
-- **Outils exposés au modèle** (lecture seule, exécutés par la Function) :
-  - `lireAgregatsPage(page, periode)` ;
-  - `lireSequence(id)` ;
-  - `lireStatsEmails(modele)` ;
-  - `comparerVariantes(test)` ;
-  - `lireEntonnoir(periode)` ;
-  - `lireContenuPage(page)` ;
-  - `lireAlertes()`.
-
-  Le modèle va chercher ce dont il a besoin au lieu de recevoir tout d'un coup.
-- **Clé API** dans Secret Manager (`ANTHROPIC_API_KEY`), jamais côté client. Région : appel sortant depuis `europe-west1`. Mention dans la politique de confidentialité (sous-traitant, données agrégées uniquement).
+> **Fait autrement que prévu (lot 13c, 05/10/2026)** : l'analyse est une **action serveur du site** et non une Function appelable (comme toutes les écritures du back-office) ; la synthèse du lundi (`iaSyntheseHebdo`) et le contexte de nuit (`iaContexteNuit`) sont des Functions. La clé doit donc être posée côté site **et** côté Functions. **Pas de BigQuery** (COMPORTEMENT §3) et **pas d'outils** donnés au modèle : une analyse = un seul appel avec le contexte pré-calculé.
+- **Modèles** (`packages/core/src/ia/couts.ts`) : **Claude Haiku 4.5 par défaut** (`claude-haiku-4-5`), **Claude Sonnet 5.5** (`claude-sonnet-5-5`) pour « Analyse approfondie » et la synthèse du lundi, avec repli serveur si le modèle décline. Configurable dans `config/ia` (`modeleDefaut`, `modeleApprofondi`).
+- **Contexte pré-calculé** : chaque nuit (3 h 30, après l'agrégation du comportement), `iaContexteNuit` écrit `iaContexte/{perimetre}` (landings, parcours, emails, offres, fiches), un JSON compact (≤ 6 000 tokens) déjà résumé ; seuls les périmètres choisis sont envoyés.
+- **Mise en cache** : prompt caching Anthropic sur le prompt système + contexte (les questions de suivi coûtent ~10 % du prix) ; même périmètre + même question dans les 24 h → résultat stocké renvoyé sans appel (`cleCache`), sauf « Relancer ».
+- **Outils exposés au modèle** (`lireAgregatsPage`, `lireSequence`, `lireStatsEmails`, `comparerVariantes`, `lireEntonnoir`, `lireContenuPage`, `lireAlertes`) : **pas faits** (raison non consignée ; l'analyse se contente du contexte pré-calculé).
+- **Clé API** (`ANTHROPIC_API_KEY`) côté serveur seulement, jamais côté client ; sans clé, l'écran l'indique et le bouton est désactivé. Mention dans la politique de confidentialité (sous-traitant, données agrégées uniquement).
 - **Analyse planifiée** : lundi 7 h, **audit complet** sur toutes les données, envoyé aux superadmins (email `ia-synthese-hebdo`) et visible dans l'admin, avec l'évolution des notes d'étape par rapport à la semaine précédente.
 
 ---
@@ -101,9 +93,9 @@ Prompt système (versionné dans `config/ia.promptVersion`) :
 |---|---|
 | Créer une tâche | `filesModeration` de type `recommandation_ia`, assignable |
 | Préparer un test A/B | brouillon `abTests/{id}` prérempli (page, hypothèse, variante décrite), à compléter par un humain |
-| Utiliser ce texte | ouvre l'éditeur concerné (séquence, modèle d'email) avec la proposition, **sans enregistrer** |
+| Utiliser ce texte | **copie la proposition** ; l'ouverture directe d'un éditeur n'est pas faite (il n'existe pas d'éditeur des textes d'emails ou de pages dans l'admin : les modèles d'email sont dans le code) |
 | Ignorer | statut `ignoree` avec motif : alimente les consignes (« ne plus proposer X ») stockées dans `config/ia.consignes` |
-| Marquer faite | statut `faite` ; 30 jours plus tard, l'assistant mesure l'effet et l'indique sur la carte |
+| Marquer faite | statut `faite` ; 30 jours plus tard, `iaContexteNuit` mesure l'effet (au plus 10 par nuit, Haiku compare les preuves d'origine au contexte du jour, sinon « Effet non mesurable ») et l'indique sur la carte |
 
 ---
 
@@ -115,15 +107,17 @@ iaAnalyses/{id}          mode, perimetres[], etapes[] (audit), gainTotal,
                          coutCentimes, dureeMs, sources[], resume, statut ('ok'|'erreur'), createdAt
 iaRecommandations/{id}   analyseId, titre, perimetre, etape, gainEstime, priorite, impact, effort, confiance, constat, preuves[],
                          action{}, propositionTexte?, statut ('nouvelle'|'en_cours'|'faite'|'ignoree'),
-                         motifIgnore?, effetMesure?, createdAt, updatedAt
-config/ia                actif, modeleAnalyse, modeleQuestion, promptVersion, quotaJour, budgetMensuelCentimes,
-                         consignes[], analyseHebdo: bool
+                         motifIgnore?, faiteLe?, effet? (mesure à 30 jours), createdAt, updatedAt
+                         (iaAnalyses porte aussi cleCache et suivis[] : questions de suivi, 10 au plus)
+config/ia                actif, modeleDefaut, modeleApprofondi, promptVersion, quotaJour (30), budgetMensuelCentimes (1000),
+                         consignes[], analyseHebdo: bool   (réglables à l'écran, audit adminReglagesIa)
 ```
 Permissions : `ia.utiliser` (lancer, questionner, créer une tâche), `ia.configurer` (modèle, budget, consignes, planification). Toute action issue d'une recommandation passe ensuite par la permission de la section concernée.
 
 ## 7. Garde-fous
 - Budget mensuel plafonné (`config/ia.budgetMensuelCentimes`, **10 € par défaut**) : alerte à 80 %, coupure à 100 %, message clair dans l'admin. Coût estimé : voir COUTS.md
 - Sortie non conforme au schéma → nouvelle tentative (1 fois), puis erreur affichée : aucune recommandation « inventée » n'est enregistrée
+- Conversion dollars → euros à 0,95 pour le budget (choix du lot 13c)
 - Aucune écriture automatique : l'assistant n'a que des outils de **lecture**
 - Tests : jeux de contextes figés → la sortie respecte le schéma, cite des preuves présentes dans le contexte (vérification automatique que chaque valeur citée existe dans les sources)
 
@@ -140,9 +134,9 @@ Maquette : `designs/Ma Fiche.dc.html`. Le crayon de la présentation « À propo
 
 - **Même objectif que l'audit** : que les particuliers contactent l'artisan. **Interdiction d'inventer** un fait absent du texte ou des informations vérifiées de la fiche (années, chiffres, certifications, marques, garanties, prix) : vérification automatique côté serveur que les certifications citées existent dans `artisans/{id}.labels`, sinon la proposition est refusée.
 - La proposition s'affiche **à côté** du texte : « Remplacer mon texte » ou « Garder le mien ». Rien n'est enregistré ni publié sans validation.
-- Callable `iaRediger({ artisanId, type: 'apropos'|'projet'|'reponse_avis'|'message', action: 'relire'|'reecrire'|'generer', ton?, texte, infos })` : permission `fiche.modifier` sur l'entreprise, **Claude Haiku**, 900 tokens max, sortie JSON validée par Zod (`{ texte, changements[] }`).
+- Route `POST /api/pro/redaction` (et `/api/pro/redaction/acceptee` pour le taux d'acceptation), au lieu de la callable `iaRediger` prévue : types `apropos`, `projet` et `accroche`, actions `relire`, `reecrire` (4 tons) et `generer` (chantier) ; permission `fiche.modifier` sur l'entreprise, **Claude Haiku 4.5**, 900 tokens max, sortie JSON validée par Zod (`{ texte, changements[] }`).
 - **Quota** : 20 utilisations par jour et par entreprise (toutes formules), compteur dans `iaQuotas/{artisanId_jour}` (TTL 2 jours). Plus de quota : message clair, l'édition manuelle reste possible.
 - **Limites de longueur** : présentation 1 200 caractères, chantier 400 ; contrôlées aussi côté serveur.
 - **Journal minimal** : `iaRedactions/{id}` (`artisanId`, `type`, `action`, `ton`, `accepte`, `tokens`, `coutCentimes`, `createdAt`), **sans le texte** ; TTL 90 jours. Sert à mesurer l'usage et le taux d'acceptation dans Admin › Audit IA.
-- Photos des chantiers : 3 maximum par projet, compressées côté client (WebP, 1 600 px), EXIF supprimées (Function `onDocumentUpload`), case « J'ai l'accord du propriétaire » obligatoire (CGV §9).
-- Extensions prévues avec la même fonction : réponses aux avis (`reponse_avis`) et premiers messages aux particuliers (`message`).
+- Photos des chantiers : 3 maximum par projet, compressées côté client (WebP, 1 600 px), case « J'ai l'accord du propriétaire » obligatoire (CGV §9). La suppression des EXIF par une Function `onDocumentUpload` n'est **pas encore faite** (DATABASE §13).
+- Extensions prévues avec la même fonction, **pas encore faites** : réponses aux avis (`reponse_avis`) et premiers messages aux particuliers (`message`). D'autres usages de Claude existent ailleurs (IA du site, blog, Studio : IA_SITE.md, BLOG.md, STUDIO.md).

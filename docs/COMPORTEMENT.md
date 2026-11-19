@@ -27,7 +27,7 @@ Chaque session porte : `page`, `variante` (tests A/B), `appareil` (`ordinateur`,
 
 ---
 
-## 2. Traceur côté navigateur (`packages/tracker`, < 6 Ko compressé)
+## 2. Traceur côté navigateur (`packages/tracker`, `@ph/tracker`, 3,7 Ko compressé, test de poids < 6 Ko)
 
 ```ts
 initTracker({ page: 'acquisition-artisans', variante: 'B', endpoint: '/api/t', echantillon: 1.0 })
@@ -36,6 +36,7 @@ initTracker({ page: 'acquisition-artisans', variante: 'B', endpoint: '/api/t', e
 - Coordonnées enregistrées **relatives au document** (`x` en % de la largeur de la mise en page, `y` en px depuis le haut) avec la largeur de fenêtre. Ainsi les cartes restent justes quelle que soit la taille d'écran. On agrège par gabarit : `≥ 1200`, `768–1199`, `< 768`.
 - **Agrégation dans le navigateur** (clé des économies) : le traceur ne transmet pas un flux d'événements. Il tient en mémoire un **résumé de la page vue** (cellules de clics et d'attention, profondeur max, temps par section, éléments survolés/cliqués, clics morts/rage, sortie) et l'envoie **une seule fois** à `pagehide` (`navigator.sendBeacon`, ~1 à 2 Ko compressé), plus un envoi de secours après 60 s si la page reste ouverte (le serveur garde le dernier).
 - **Trajets du curseur** : enregistrés seulement pour une fraction des sessions ordinateur (`echantillonTrajets`, 10 % par défaut), simplifiés (Ramer-Douglas-Peucker, 40 points max).
+- **Pages suivies** (fait) : liste fixe dans le code, `PAGES_SUIVIES` (`@ph/core/comportement`) : `accueil`, `annuaire`, `simulateur`, `acquisition-artisans` (`/pro`), `landing-chantiers`, `landing-site`, `landing-devis`, `diagnostic`. Les espaces connectés ne sont pas suivis ; Dessin (`/dessin`) n'est pas suivi. Conversions signalées : inscription commencée sur `/pro`, demande envoyée par le simulateur.
 - **Masquage** : aucun texte saisi, aucune valeur de champ, aucun contenu de la page n'est envoyé. Les éléments `data-ph-masque` sont exclus.
 - Stabilité des cibles : les éléments importants portent `data-ph="cta-hero"`, `data-ph="prix-visibilite"`… (convention à appliquer dans toutes les pages publiques). À défaut, un sélecteur CSS court est calculé.
 - Échantillonnage réglable par page (`config/comportement.echantillon`) pour maîtriser le volume.
@@ -53,15 +54,16 @@ Navigateur (résumé en mémoire) ──1 envoi par page vue──► /api/t (Ro
 Chaque nuit 3 h ──► Function comportementAgreger
       lit les sessions de la veille (requête par page) → comportementAgregats/{page}_{jour}_{app}
       puis recalcule les cumuls prêts à afficher : comportementAgregats/{page}_{7j|30j|90j}_{app}
-      puis comportementDetecter → comportementAlertes ; puis iaContexte (IA_ADMIN.md §3)
+      puis détection → comportementAlertes (+ tâche friction_page si gravité ≥ 4) ; résultat des tests A/B en cours
+3 h 30 ──► Function iaContexteNuit → iaContexte (IA_ADMIN.md §3)
 ```
 - **Pas de BigQuery ni de Pub/Sub au lancement** : un résumé par page vue suffit, Firestore l'absorbe pour quelques centimes.
-- **Cartes creuses** : grilles de **40 × 40 px** stockées en objet clé → valeur (`"12:40": 7`) avec seulement les cellules non vides.
+- **Cartes creuses** : grilles de **20 × 20 px** (choix du lot 13c : ce paragraphe disait 40 px, le §4 20 px) stockées en objet clé → valeur (`"12:40": 7`) avec seulement les cellules non vides.
 - **Admin économe** : l'écran lit **un seul document** pré-cumulé par combinaison page × période × appareil (1 lecture par affichage). Aucune écoute temps réel sur ces données.
 - **Replays** : 5 % des sessions, plus toutes celles avec clic de rage ou abandon de formulaire, **plafond de 300 par jour**, stockés compressés dans Cloud Storage (pas dans Firestore).
 - **Seuil de bascule** : au-delà de ~300 000 pages vues par mois, activer l'extension « Stream Firestore to BigQuery » sur `comportementSessions` et déplacer l'agrégation dans BigQuery. Le traceur et l'admin ne changent pas.
 
-## 4. Algorithmes (dans `functions/src/comportement/`, testés unitairement)
+## 4. Algorithmes (fonctions pures dans `packages/core/src/comportement/` : `agregation.ts`, `detection.ts`, `abPages.ts`, testées unitairement ; la Function `apps/functions/src/comportement/planifiees.ts` ne fait que les appeler)
 
 ### Cartes de chaleur (clics, mouvements, attention)
 - Grille de **20 × 20 px** sur la mise en page de référence (1280 px pour l'ordinateur, 390 px pour le mobile), comptage par cellule.
@@ -87,30 +89,34 @@ Pour chaque section : taux de conversion des sessions qui y ont passé plus de 3
 Une alerte est créée dans ces cas :
 - une friction nouvelle apparaît ;
 - la conversion d'une page varie de plus de 20 % sur 7 jours par rapport aux 28 jours précédents ;
-- la vitesse de défilement est anormale (lecture en diagonale) ;
-- un élément important est vu par moins de 30 % des visiteurs.
+- la vitesse de défilement est anormale (lecture en diagonale) — **pas encore fait** ;
+- un élément important est vu par moins de 30 % des visiteurs — **pas fait** : le traceur sait quelles sections ont été vues, pas quels éléments.
+
+Types d'alertes réellement calculés : `clic_mort` (> 2 %), `rage` (> 0,5 %), `hesitation` (> 10 % des sessions, seuil choisi au lot 13c), `sortie` (taux de sortie > 1,5 × la moyenne des sections avec au moins 30 sorties), `baisse_conversion` (> 20 % sur 7 jours contre les 28 précédents). Aucune alerte sous 200 sessions. Alertes dédoublonnées (une par page, type et élément ; une alerte ignorée le reste ; une alerte traitée qui revient est rouverte).
 
 Chaque alerte → `comportementAlertes` + tâche `filesModeration` de type `friction_page` si la gravité est élevée.
 
 ### Tests A/B
-Répartition déterministe par `hash(sessionId) % 100`, variante mémorisée dans le stockage de session. Résultat : test bayésien (bêta-binomial), probabilité d'être meilleur et gain attendu. La bascule est proposée à partir de 95 %, **jamais automatique**.
+Répartition déterministe par `hash(sessionId) % 100`, variante mémorisée dans le stockage de session. Résultat : test bayésien (bêta-binomial), probabilité d'être meilleur et gain attendu, 100 sessions minimum par variante. La bascule est proposée à partir de 95 %, **jamais automatique**.
+> **État** : le calcul est prêt, mais **aucune page n'affiche encore de variante B** (pages et textes à choisir avec le propriétaire, reste du lot 13c).
 
 ---
 
 ## 5. Données Firestore (écriture par Functions uniquement)
 
 ```
-pagesSuivies/{page}                 url, nom, gabarits, sections[{ id, nom }], elements[{ dataPh, nom, type }],
+pagesSuivies/{page}                 (schéma et règle de lecture prêts ; la liste réelle des pages est PAGES_SUIVIES dans le code) url, nom, gabarits, sections[{ id, nom }], elements[{ dataPh, nom, type }],
                                     objectif ('inscription'|'demande'|'paiement'), actif, echantillon, captureUrl
-comportementSessions/{id}           page, variante, app, largeur, source, nouvelle, duree, profondeur, cellulesClics{}, cellulesAttention{},
+comportementSessions/{vueId}        (une écriture par envoi, le dernier l'emporte ; + sessionId, appareil, hauteur, champs, abandon, jour)
+                                    page, variante, app, largeur, source, nouvelle, duree, profondeur, cellulesClics{}, cellulesAttention{},
                                     sections{ id: ms }, elements{ dataPh: { survolMs, clics } }, morts[], rages[], sortie{ section, type },
-                                    conversion?, trajet? (10 %), replayPath?, expireLe (TTL 35 j)
+                                    conversion? ('inscription'|'demande'|'paiement'), trajet? (10 %), replayPath?, aReplay, expireLe (TTL 35 j)
 comportementAgregats/{page_jour_app} sessions, conversions, dureeMediane, profondeurMediane,
                                     grilleClics (tuiles encodées), grilleAttention, grilleMouvements,
                                     scroll[20], sections{ id: { vues, tempsMoyen, sorties, convSiLue } },
                                     elements{ dataPh: { vues, clics, morts, rages, hesitations, survolMoyenMs } },
                                     sorties[{ section, part }], sources{}, variantes{}
-comportementAlertes/{id}            page, type ('clic_mort'|'rage'|'hesitation'|'sortie'|'baisse_conversion'|'element_invisible'),
+comportementAlertes/{id}            page, type ('clic_mort'|'rage'|'hesitation'|'sortie'|'baisse_conversion' ; 'element_invisible' pas calculé),
                                     element?, gravite (1-5), valeur, reference, statut ('ouverte'|'traitee'|'ignoree'), createdAt
 abTests/{id}                        page, nom, variantes[{ id, poids, description }], objectif, statut, debut, fin?, resultat?
 config/comportement                 actif, echantillon, echantillonReplay, seuils de détection
@@ -121,9 +127,9 @@ Replays : Cloud Storage `replays/` (gzip, cycle de vie 30 j). BigQuery uniquemen
 
 ## 6. Admin (section « Comportement »)
 - Choix de la page, de la période, de l'appareil et de la variante
-- Page réelle en arrière-plan (capture ou iframe de la version en ligne), avec les calques **Clics**, **Mouvements**, **Attention**, **Défilement**, **Clics morts et rage**, **Sorties**, réglables en opacité
+- Page réelle en arrière-plan (iframe de la page, même origine : d'où `frame-ancestors 'self'` dans la CSP), avec les calques **Clics**, **Mouvements**, **Attention**, **Défilement**, **Clics morts et rage**, **Sorties**, réglables en opacité
 - Panneau latéral : indicateurs (sessions, conversion, temps médian, profondeur médiane), liste des éléments (clics, clics morts, hésitation), liste des sections (temps, sorties) ; survol d'une ligne = mise en évidence sur la page
-- **Replays** : liste filtrable (converti, abandon, rage, appareil), lecteur avec curseur, clics et défilement
+- **Replays** : 30 dernières sessions avec leur issue, lecteur avec curseur, trace, clics et défilement (×1, ×2, ×4) ; chaque lecture journalisée (`adminLectureReplay`)
 - **Alertes** : frictions détectées, avec le bouton « Demander à l'IA » (préremplit l'assistant avec le contexte)
 - Permissions : `comportement.lire` (cartes et alertes), `comportement.replays` (lecture des replays, journalisée), `comportement.configurer` (pages suivies, échantillonnage, tests A/B)
 
@@ -137,10 +143,10 @@ Replays : Cloud Storage `replays/` (gzip, cycle de vie 30 j). BigQuery uniquemen
 
 ## 8. Variables et coûts
 ```
-TRACKER_ENDPOINT=/api/t
-REPLAYS_BUCKET=portailtravaux-replays      # cycle de vie 30 j
-COMPORTEMENT_SALT_SECRET=                  # Secret Manager, rotation quotidienne
+REPLAYS_BUCKET=portailtravaux-replays      # cycle de vie 30 j (bucket UE à créer)
+COMPORTEMENT_SALT_SECRET=                  # secret du site (lu par /api/t) ; sel du jour dérivé, rotation quotidienne
 ```
+L'adresse d'envoi est fixe (`/api/t`) : `TRACKER_ENDPOINT` prévu n'existe pas. Réglages : `config/comportement` (actif, échantillonnage, relu toutes les 5 min).
 Coût estimé : voir **COUTS.md** (moins de 1 € par mois à 30 000 pages vues par mois).
 
 ## 9. Tests

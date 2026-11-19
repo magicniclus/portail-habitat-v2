@@ -71,31 +71,34 @@ Nom affiché, alias de recherche (« couvreur zingueur », « frigoriste »…),
 
 ## 4. Production
 
+> **État (lot 7, 28/09/2026)** : le moteur local (`@ph/core/recherche`, `moteur.ts`) sert **toujours** ; Typesense (D4 ✅) n'est utilisé que s'il est configuré (`TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE`), et même alors le surlignage, la correction, l'urgence, les métiers et les projets associés viennent du moteur local. Aucun cluster Typesense n'est créé à ce jour.
+
 - **Typesense** (voir DECISIONS.md D4), collection `intentions` : champs `libelle`, `motsCles`, `metier`, `popularite`
   - `query_by: libelle,motsCles`, `query_by_weights: 3,2`, `prefix: true`, `num_typos: 2`, `typo_tokens_threshold: 1`, `drop_tokens_threshold: 1`, `sort_by: _text_match:desc,popularite:desc`
-  - synonymes Typesense générés depuis `referentiel/recherche/synonymes` (script de synchronisation déclenché à chaque modification)
+  - synonymes Typesense générés depuis `referentiel/recherche/synonymes` : Functions `syncIntentionTypesense` et `syncSynonymesTypesense` déclenchées à chaque modification, inactives sans configuration
   - **mots vides** configurés côté Typesense (`stopwords` FR + la liste ci-dessus)
-- **Repli sans réseau / avant le chargement** : `packages/core/recherche` (portage TypeScript de `recherche-projets.js`) embarqué dans la page, avec un index compact (~40 Ko gzip) chargé au premier focus du champ. Même résultat qu'en ligne à 95 % ; c'est lui qui sert pour les tests de pertinence
-- Appel : Route Handler `/api/recherche?q=` en Edge, cache CDN 1 h par requête normalisée, limite 30 requêtes / min / IP
+- **Moteur local** : `packages/core/src/recherche` (portage TypeScript de `recherche-projets.js`) ; c'est lui qui sert pour les tests de pertinence
+- Appel : Route Handler `/api/recherche?q=` (runtime Node, pas Edge), cache CDN 1 h (`s-maxage=3600`, navigateur 5 min), limite 30 requêtes / min / IP (par instance, au mieux)
 - La même recherche alimente l'annuaire (`/artisans?q=`) : l'intention reconnue devient le filtre métier + les tags
 
 ---
 
 ## 5. Amélioration continue (admin)
 
-- Journal `evenements` : `recherche_saisie` (requête normalisée, **sans données personnelles**), `recherche_choix` (intention, rang), `recherche_zero` (aucun résultat), `recherche_abandon`
-- Écran admin **Configuration → Recherche** :
+- Journal `evenements` (route `POST /api/recherche/evenement`, même origine, 120 par heure, sans App Check) : `recherche_saisie` (requête normalisée, **sans données personnelles**), `recherche_choix` (intention, rang), `recherche_zero` (aucun résultat), `recherche_abandon`
+- Écran admin **Configuration → Recherche** — **pas encore fait** (prévu au lot 13, non livré ; les métiers et intentions changent par le dépôt, `docs/data/recherche-intentions.json` puis `pnpm referentiel:importer`) :
   - top des requêtes sans résultat de la semaine, avec bouton « Ajouter comme mot-clé de… » (choix de l'intention)
   - requêtes où l'utilisateur choisit souvent la 3e suggestion ou plus bas → pertinence à revoir
   - édition des intentions, mots-clés, synonymes ; publication versionnée et auditée (comme les prix)
   - **banc d'essai** : saisir une requête, voir le classement et le détail du score
-- Popularité recalculée chaque mois à partir des demandes envoyées
+- Popularité recalculée chaque mois à partir des demandes envoyées : Function `intentionsPopularite` (1er du mois, 4 h ; 90 jours de demandes, rien sous 200 demandes)
+- Les recherches sans artisan dans un secteur alimentent aussi `recherchesSecteur` (signal du moteur de conversion, CONVERSION.md)
 
 ---
 
 ## 6. Tests de pertinence
 
-Fichier `packages/core/recherche/__tests__/pertinence.cases.json` : au moins **200 requêtes** avec l'intention attendue en **1re position** (ou dans le top 3 pour les requêtes vagues). Exemples obligatoires :
+Fichier `packages/core/src/recherche/__tests__/pertinence.cases.json` (avec `recherche.cases.json`), joué par `pertinence.test.ts` : au moins **200 requêtes** avec l'intention attendue en **1re position** (ou dans le top 3 pour les requêtes vagues). Exemples obligatoires :
 
 | Requête | Attendu en 1er |
 |---|---|
@@ -117,7 +120,7 @@ Fichier `packages/core/recherche/__tests__/pertinence.cases.json` : au moins **2
 | `fosse septique` | `assainissement` |
 | `xyzabc` | aucun résultat |
 
-Règle en CI : **≥ 95 %** des cas au 1er rang, **100 %** dans le top 3. Toute modification des données ou de l'algorithme rejoue le fichier.
+Règle en CI : **≥ 95 %** des cas au 1er rang, **100 %** dans le top 3. Toute modification des données ou de l'algorithme rejoue le fichier. Mesure au lot 7 : 96,4 % au 1er rang.
 
 ## 7. Critères d'acceptation
 - **RCH-01** : taper `sdb ita` affiche « Douche à l'italienne » en 1er avec « ita » en gras
