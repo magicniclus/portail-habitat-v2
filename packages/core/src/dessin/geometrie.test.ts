@@ -133,6 +133,46 @@ describe('aimantation', () => {
     expect(aimanter({ x: 4010, y: 10 }, mur, { tolerance: 50 }).type).toBe('extremite');
   });
 
+  it('arrivée sur un mur : la direction calée depuis l’origine est gardée', () => {
+    // Mur vertical x = 0 ; cloison partie de (3000, 2500) vers la gauche, curseur un peu haut.
+    const mur = {
+      points: [],
+      segments: [
+        [
+          { x: 0, y: 0 },
+          { x: 0, y: 6000 },
+        ],
+      ] as const,
+    };
+    const o = { tolerance: 50, origine: { x: 3000, y: 2500 } };
+    expect(aimanter({ x: 20, y: 2470 }, mur, o)).toEqual({
+      point: { x: 0, y: 2500 },
+      type: 'segment',
+    });
+    // Trois tolérances au-dessus de l'horizontale : l'équerre l'emporte encore.
+    expect(aimanter({ x: 20, y: 2360 }, mur, o).point).toEqual({ x: 0, y: 2500 });
+    // Direction franchement oblique : pas de 15° (ici 45°).
+    expect(
+      aimanter(
+        { x: 20, y: -500 },
+        {
+          segments: [
+            [
+              { x: 0, y: -2000 },
+              { x: 0, y: 6000 },
+            ],
+          ],
+          points: [],
+        },
+        o,
+      ).point,
+    ).toEqual({ x: 0, y: -500 });
+    // Curseur loin de toute direction calée : simple projection sur le mur.
+    expect(aimanter({ x: 20, y: 1300 }, mur, o).point).toEqual({ x: 0, y: 1300 });
+    // Sans origine (premier point) : projection.
+    expect(aimanter({ x: 20, y: 2470 }, mur, { tolerance: 50 }).point).toEqual({ x: 0, y: 2470 });
+  });
+
   it('tolérance en mm selon le zoom', () => {
     expect(toleranceEnMm(10, 50)).toBe(200);
   });

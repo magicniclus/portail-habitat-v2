@@ -314,9 +314,12 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.getByRole('button', { name: /^Murs & cloisons/ }).click();
     const outil = page.getByRole('button', { name: /^Cloison/ });
     await outil.click();
-    // Outil sélectionné : bouton enfoncé, coché, sans libellé « Placer ».
-    await expect(outil).toHaveAttribute('aria-pressed', 'true');
-    await expect(outil).toContainText('Sélectionné');
+    // Outil sélectionné : bouton enfoncé, coché, sans libellé « Placer » (sur téléphone, la
+    // feuille du menu se referme dès le choix).
+    if (page.viewportSize()!.width >= 900) {
+      await expect(outil).toHaveAttribute('aria-pressed', 'true');
+      await expect(outil).toContainText('Sélectionné');
+    }
     await page.waitForTimeout(400);
 
     // DES-06 : premier point, puis Maj (tracé droit) et longueur tapée au clavier.
