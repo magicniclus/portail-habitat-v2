@@ -43,3 +43,18 @@ test('référentiels : nouvelle version des prix d’une prestation ; bascule d�
   await expect(ligne).toContainText('Désactivé');
   expect(await audits('adminChangerFlag', 'config/flags')).toBeGreaterThanOrEqual(2);
 });
+
+test('ERR-03 : activer la maintenance ouvre une fenêtre qui explique la coupure ; annuler ne change rien', async ({
+  page,
+}) => {
+  await connecter(page, 'admin@test.local', '/admin/referentiels', 'admin');
+  await page.getByRole('link', { name: 'Configuration' }).click();
+  const ligne = page.getByRole('listitem').filter({ hasText: 'Page de maintenance' });
+  await ligne.getByRole('button', { name: 'Activer' }).click();
+  const d = page.getByRole('dialog', { name: /^Activer : Page de maintenance/ });
+  await expect(d.getByText('Tout le site sera en maintenance')).toBeVisible();
+  await expect(d.getByRole('button', { name: 'Confirmer' })).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await expect(d).toBeHidden();
+  await expect(ligne).toContainText('Désactivé');
+});

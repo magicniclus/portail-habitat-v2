@@ -1,9 +1,34 @@
 'use client';
 
 import type { NomFlag } from '@ph/core/flags';
-import { Badge } from '@ph/ui';
+import { Badge, Banner } from '@ph/ui';
 import { ConfirmationAdmin } from '@/features/admin/ConfirmationAdmin';
 import { changerFlag } from './actions';
+
+const ACTIVER_MAINTENANCE =
+  'Toutes les pages du site seront remplacées par «\u00a0Maintenance en cours\u00a0». Seul l’admin reste accessible.';
+
+/**
+ * Activer la maintenance coupe tout le site (ERR-03) : la fenêtre de confirmation l'explique en
+ * détail, pour ne jamais la déclencher par erreur (par exemple en cherchant une autre fonction).
+ */
+function AlerteMaintenance() {
+  return (
+    <Banner tone="danger" titre="Tout le site sera en maintenance">
+      Particuliers, espace artisan et sites des artisans afficheront{' '}
+      {'«\u00a0Maintenance en cours\u00a0»\u00a0:'} plus de demandes, de devis, de connexion ni de
+      paiement. À n’utiliser qu’en cas d’incident grave ou d’intervention planifiée, jamais pour
+      activer une autre fonctionnalité. Pensez à la désactiver ensuite.
+    </Banner>
+  );
+}
+
+const description = (nom: NomFlag, active: boolean) =>
+  nom !== 'maintenance'
+    ? 'Le changement s’applique à tout le site dans la minute.'
+    : active
+      ? 'Le site redevient accessible à tous dans la minute.'
+      : ACTIVER_MAINTENANCE;
 
 /** Fonctionnalités activables (EXPLOITATION §4) : chaque bascule est motivée et journalisée. */
 export function FlagsAdmin({
@@ -31,11 +56,13 @@ export function FlagsAdmin({
             <ConfirmationAdmin
               libelle={f.valeur ? 'Désactiver' : 'Activer'}
               titre={`${f.valeur ? 'Désactiver' : 'Activer'} : ${f.description}`}
-              description="Le changement s’applique à tout le site dans la minute."
+              description={description(f.nom, f.valeur)}
               danger={f.nom === 'maintenance' && !f.valeur}
               desactive={peut ? undefined : 'Permission requise : referentiels.modifier'}
               onConfirmer={(motif) => changerFlag({ nom: f.nom, valeur: !f.valeur, motif })}
-            />
+            >
+              {f.nom === 'maintenance' && !f.valeur ? <AlerteMaintenance /> : null}
+            </ConfirmationAdmin>
           </span>
         </li>
       ))}
