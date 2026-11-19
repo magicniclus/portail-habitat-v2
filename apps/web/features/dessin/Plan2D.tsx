@@ -6,18 +6,16 @@ import {
   objetsVisibles,
   tremies,
   type Aimantage,
-  type Point,
 } from '@ph/core/dessin';
 import { AnnotationsSvg } from './AnnotationsSvg';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
-import { useEffect, useMemo, useRef, useState, type Dispatch, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type Dispatch } from 'react';
 import { EtiquettesPieces, MursSvg, PiecesSvg } from './CalquesPlan';
 import { Cotes, TracesEnCours } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
-import { CoupeSvg } from './CoupeSvg';
 import { FondSvg } from './FondSvg';
 import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
 import type { FondCharge } from './useFond';
@@ -28,6 +26,8 @@ import { SaisieLongueur } from './SaisieLongueur';
 import { MultiSelectionSvg, useSelectionMultiple, ZoneSelectionSvg } from './SelectionMultiple';
 import { useAimant } from './useAimant';
 import { useAjustement } from './useAjustement';
+import { useDefilementAuto } from './useDefilementAuto';
+import { versMmDuPlan } from './svg';
 import { useGestesTactiles } from './useGestesTactiles';
 import { useGlisser, useRappelsGlisser } from './useGlisser';
 import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
@@ -64,13 +64,7 @@ export function Plan2D({
   useAjustement(conteneur, cadre, etat.ajustement, dispatch);
   const mmParPx = 1000 / etat.zoom;
 
-  const versMm = (ev: PointerEvent): Point | null => {
-    const el = svg.current;
-    const matrice = el?.getScreenCTM();
-    if (!el || !matrice) return null;
-    const p = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(matrice.inverse());
-    return { x: p.x, y: p.y };
-  };
+  const versMm = (ev: { clientX: number; clientY: number }) => versMmDuPlan(svg.current, ev);
   const aimante = useAimant(n, etat);
 
   const trace = etat.outil !== 'selection';
@@ -83,6 +77,15 @@ export function Plan2D({
   const gestes = useGestesTactiles(etat.zoom, dispatch, selectionne);
   const multi = useSelectionMultiple(dispatch);
   const d = multi.dispatchPlan;
+  /** Mouvement du pointeur ; `true` si un geste ou un tracé est en cours (défilement au bord). */
+  const bouger = (ev: { clientX: number; clientY: number; altKey: boolean; shiftKey: boolean }) => {
+    const p = versMm(ev);
+    if (!p) return false;
+    if (glisser.bouger(p, ev.altKey) || multi.bouger(p)) return true;
+    if (trace) setCurseur(aimante(p, ev.shiftKey));
+    return trace && etat.trace !== null;
+  };
+  const defil = useDefilementAuto(conteneur, bouger, cadre, mmParPx);
 
   return (
     <div className="relative h-full w-full">
@@ -110,12 +113,7 @@ export function Plan2D({
             viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
             className={trace ? 'cursor-crosshair touch-none' : 'touch-none'}
             onPointerDownCapture={multi.capter}
-            onPointerMove={(ev) => {
-              const p = versMm(ev);
-              if (!p) return;
-              if (glisser.bouger(p, ev.altKey) || multi.bouger(p)) return;
-              if (trace) setCurseur(aimante(p, ev.shiftKey));
-            }}
+            onPointerMove={(ev) => defil.suivre(ev, bouger(ev))}
             onPointerDown={(ev) => {
               if (ev.target !== ev.currentTarget && !trace) return;
               const p = versMm(ev);
@@ -124,6 +122,7 @@ export function Plan2D({
               else if (!multi.demarrer(ev, p)) dispatch({ type: 'selectionner', selection: null });
             }}
             onPointerUp={() => {
+              defil.arreter();
               glisser.finir();
               multi.finir(mmParPx);
             }}
@@ -169,7 +168,6 @@ export function Plan2D({
               <OuverturesSvg niveau={n} etat={etat} dispatch={d} />
               <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
               <GuidesSvg guides={etat.guides} />
-              <CoupeSvg coupe={etat.coupe} mmParPx={mmParPx} />
               {etat.calques.cotes ? (
                 <Cotes niveau={n} mmParPx={mmParPx} dispatch={d} cliquables={!trace} />
               ) : null}
