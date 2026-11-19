@@ -3,7 +3,7 @@
 import { memoCalque } from './memoCalque';
 import {
   centroide,
-  contourMur,
+  contoursRaccordes,
   formatLongueur,
   formatSurface,
   LIBELLES_MUR,
@@ -65,6 +65,8 @@ function MursSvgBrut({
   /** Poignée d'une extrémité du mur choisi : la déplacer (DES-09). */
   demarrerExtremite: (murId: string, bout: 'a' | 'b', ev: PointerEvent) => void;
 }) {
+  // Angles fermés en onglet : les faces des murs se rejoignent exactement (DES-09).
+  const contours = contoursRaccordes(niveau.murs);
   return niveau.murs.map((m) => {
     const choisi = etat.selection?.genre === 'mur' && etat.selection.id === m.id;
     const choisir = () => dispatch({ type: 'selectionner', selection: { genre: 'mur', id: m.id } });
@@ -98,7 +100,7 @@ function MursSvgBrut({
           tabIndex={0}
           aria-label={`${LIBELLES_MUR[m.type]} de ${formatLongueur(longueurMur(m))}`}
           aria-pressed={choisi}
-          points={points(contourMur(m))}
+          points={points(contours.get(m.id)!)}
           fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
           className={etat.outil === 'selection' ? 'cursor-move' : undefined}
           onPointerDown={(ev) => {

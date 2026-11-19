@@ -3,6 +3,7 @@
 import {
   CATALOGUE_OUVERTURES,
   contourMur,
+  contoursRaccordes,
   emprise,
   longueurMur,
   longueurVolee,
@@ -116,12 +117,13 @@ export function ReperesNiveauSvg({
   dessous: Niveau | null;
   tremies: Point[][];
 }) {
+  const contours = contoursRaccordes(dessous?.murs ?? []);
   return (
     <g pointerEvents="none">
       {dessous?.murs.map((m) => (
         <polygon
           key={m.id}
-          points={points(contourMur(m))}
+          points={points(contours.get(m.id)!)}
           fill={COULEURS_PLAN.mur}
           opacity={0.15}
         />
