@@ -10,13 +10,15 @@ Portail Travaux est une **plateforme de mise en relation** entre particuliers et
 | **Portail Travaux Pro** (artisans) | Artisans | Orange `#e05a10` | Acquisition, onboarding, tableau de bord, demandes, appels d'offres, fiche, avis, statistiques, abonnements |
 | **Portail Travaux Diag** | Vendeurs et bailleurs | Bleu `#14508a` | Landing SEO diagnostic immobilier, parcours d'estimation, sous-landings par commune |
 
-Le modèle économique repose sur les artisans : **abonnement Premium** (79,90 € HT/mois payé à l'année ou 99,90 € HT/mois sans engagement), **option Visibilité** (79,90 € HT/an payé en une fois ou 12,90 € HT/mois sans engagement), et **déblocage payant des appels d'offres** à un prix fixé par l'admin (barème automatique ou prix manuel), payable par carte ou en crédits (Premium inclut des crédits mensuels, packs de crédits en vente). Le service est gratuit pour les particuliers.
+Le modèle économique repose sur les artisans (**PAIEMENTS.md fait foi**, D54) : Gratuit (fiche, avis, devis et factures, statistiques, Plans), **Fiche Pro 29 €**, **Site Pro 9,90 €**, **Fiche + Site 34,90 €**, **Tout inclus 49 €** (HT/mois, sans engagement), option Blog 9,90 € HT/mois, et **déblocage payant des appels d'offres** à un prix fixé par l'admin (barème automatique ou prix manuel), payable par carte ou en crédits (packs de crédits). Aucun prix n'est montré avant l'inscription (D55). Premium et Visibilité n'existent plus depuis le 13/10/2026 (migrés vers Tout inclus et Fiche Pro, D60). Le service est gratuit pour les particuliers.
+
+> **État au 19/11/2026** : routes réelles dans `apps/web/app` ; liste à jour dans PLAN_DEV §4. Aucune mise en production.
 
 ## À propos des fichiers de design
 
 Les fichiers `.dc.html` de `designs/` sont des **références de design en HTML** : des prototypes qui montrent l'apparence et le comportement attendus. **Ce n'est pas du code de production à copier.** Il faut **recréer ces écrans en Next.js** (App Router, TypeScript) avec des composants React propres, en reprenant fidèlement la mise en page, les couleurs, la typographie, les textes et la logique.
 
-Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et `</x-dc>`) et d'une classe JS `Component` avec `renderVals()`, qui contient **toute la logique métier** : calculs, règles, filtres et tri. Cette logique est du JavaScript pur. Il faut l'**extraire telle quelle dans des modules `lib/`** et la couvrir de tests unitaires.
+Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et `</x-dc>`) et d'une classe JS `Component` avec `renderVals()`, qui contient **toute la logique métier** : calculs, règles, filtres et tri. Cette logique est du JavaScript pur. Il faut l'**extraire telle quelle dans `packages/core/`** (et non `lib/`, D75) et la couvrir de tests unitaires.
 
 ## Fidélité
 
@@ -34,13 +36,21 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `ADMIN.md` | **Back-office** : rôles, permissions, écrans, Functions admin, prix des appels d'offres |
 | `EMAILS.md` | **Emails, SMS, notifications** : architecture d'envoi, préférences, catalogue complet des modèles, parcours d'inscription, anti-abus, tests |
 | `CONVERSION.md` | **Conversion et montée en gamme** : cycle de vie artisan, séquences d'emails, score et offre cible, remises, rétention, mesure |
-| `COMPORTEMENT.md` | **Analyse comportementale** : traceur (curseur, arrêts, clics, clics morts, rage, défilement, sorties), chaîne BigQuery, algorithmes des cartes et de détection, tests A/B, RGPD |
+| `COMPORTEMENT.md` | **Analyse comportementale** : traceur (curseur, arrêts, clics, clics morts, rage, défilement, sorties), agrégats Firestore (pas de BigQuery au lancement), algorithmes des cartes et de détection, tests A/B, RGPD |
 | `IA_ADMIN.md` | **Assistant IA de l'admin** : périmètres, architecture (Function + API Claude + outils en lecture), contrat JSON, actions, garde-fous |
 | `COUTS.md` | **Coûts** : estimation mensuelle et règles d'économie (agrégation navigateur, échantillonnage, TTL, IA Haiku + cache, alertes budget) |
 | `MOBILE.md` | **Règles mobile** : mobile d'abord, points de rupture, cibles tactiles, formulaires (inputmode, autocomplete), navigation, motifs par écran, PWA et notifications, tests sur appareils |
 | `STATS_DEMANDES.md` | **Nombre de demandes affiché aux artisans** : modèle (population, rayon, saison, part du métier), bascule vers le réel |
 | `MISE_EN_PROD.md` | **Mise en production pas à pas** : comptes, clés, domaine, déploiement, lancement, retour arrière |
-| `PROGRESSION.md` | **Suivi des lots** : ce qui est fait, ce qui reste, comment reprendre après une interruption |
+| `DEPLOIEMENT.md` · `RUNBOOK.md` | Environnements, variables, ordre de déploiement · incidents, maintenance, retour arrière, sauvegardes |
+| `CLES.md` · `A_FOURNIR.md` | Clés et comptes externes · contenus à fournir par le propriétaire |
+| `PROGRESSION.md` | **Résumé du suivi** : statut des lots, lot en cours, décisions récentes |
+| `AVANCEMENT.md` | **Suivi détaillé** : ce qui est fait, choix signalés, restes, journal daté |
+| `PAIEMENTS.md` | **Offres, prix, droits, paiements** (fait foi) |
+| `SITE_INTERNET.md` · `IA_SITE.md` · `DOMAINES.md` | Sites des artisans, IA du site, domaines |
+| `BLOG.md` · `LANDINGS.md` | Blog des artisans · landings par outil |
+| `STUDIO.md` | **Studio vidéo** de l'admin |
+| `DESSIN.md` | **Plans** (éditeur 2D / 3D, nom interne Dessin), lot 15 |
 | `IMPORT_LEADS.md` | **Contrat d'envoi des demandes partenaires** (à transmettre au partenaire) |
 | `RECHERCHE.md` | **Recherche de projet** : intentions, synonymes, fautes, score, suggestions, Typesense, amélioration continue, tests de pertinence |
 | `REPRISE_PARCOURS.md` | **Reprise d'un parcours interrompu** (simulateur, diagnostic, avis, onboarding) : local, compte, lien par email, écran « Reprendre / Recommencer », cas limites, critères |
@@ -51,22 +61,26 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `EXPLOITATION.md` | Budget de performance, migrations de données, supervision et alertes, feature flags, environnements |
 | `data/` | Données extraites des maquettes en JSON (prestations, diagnostics, communes, démo) |
 | `claude/` | Configuration Claude Code à copier en `.claude/` : réglages, commandes, sous-agents |
-| `CLAUDE.md` | Règles du projet pour Claude Code, **à copier à la racine du dépôt** |
-| `PROMPT_CLAUDE_CODE.md` | Les 13 prompts à coller dans l'ordre (un par session), plus les prompts de reprise, de correction et de relecture |
+| `CLAUDE.md` | Règles du projet pour Claude Code ; la version qui fait foi est le `CLAUDE.md` à la racine du dépôt (section « Règles locales ») |
+| `PROMPT_CLAUDE_CODE.md` | Les prompts des lots 0 à 14 (dont 12b, 13b, 13c), un par session, plus les prompts de reprise, de correction et de relecture ; lot 15 : DESSIN.md §10 |
+| `PROMPT_INTEGRATION.md` · `REPRISE_CLAUDE_CODE.md` | Prompts du handoff du 13/10/2026, déjà exécutés (gardés pour mémoire) |
 | `designs/` | Toutes les maquettes `.dc.html` |
 
 ---
 
-## Stack cible
+## Stack (réelle au 19/11/2026, D77)
 
-- **Next.js 15** (App Router, Server Components, Server Actions, Route Handlers), TypeScript strict
-- **Firebase** : Auth (email/mot de passe, lien magique, téléphone pour les artisans), Firestore, Storage, Cloud Functions (v2), App Check
+- **Next.js 16** (App Router, Server Components, Server Actions, Route Handlers, `proxy.ts`), React 19, **TypeScript 6** strict ; monorepo pnpm + Turborepo, Node 22
+- **Firebase** : Auth (email/mot de passe, lien magique, Google, téléphone pour les artisans), Firestore `eur3`, Storage, Cloud Functions v2 `europe-west1`, App Check
 - **Stripe** : Billing (abonnements), Checkout, Customer Portal, Stripe Tax (TVA FR 20 %), codes promo
-- **Emails** : Resend et React Email (ou Brevo). Modèles en React, envoi depuis les Cloud Functions ou les Route Handlers
-- **Validation** : Zod, avec des schémas partagés entre client et serveur
-- **Formulaires** : React Hook Form
-- **Hébergement** : Vercel (front) et Firebase (backend), région `europe-west1` / `eur3` obligatoire (RGPD)
+- **Emails** : Resend et React Email ; SMS Brevo ; tout envoi passe par `notifier()`
+- **Validation** : Zod 4 (`z` importé de `@ph/core/zod`, messages en français), schémas dans `packages/core/src/schemas`, partagés entre client et serveur
+- **Formulaires** : composants maison de `@ph/ui` (React Hook Form prévu par le handoff, non installé)
+- **Style** : Tailwind 4 configuré en CSS (`@theme` généré depuis les tokens), `cva`, Radix, `@phosphor-icons/react`
+- **Plans (3D)** : `three` et `@react-three/*` chargés à la demande ; PDF serveur `pdfkit`, import PDF `pdfjs-dist`
+- **Hébergement** : Vercel (front) et Firebase (backend), région `europe-west1` / `eur3` obligatoire (RGPD) ; robot du Studio sur Cloud Run
 - **Analytics** : outil sans cookie ou soumis au consentement (voir la politique cookies)
+- **Tests** : Vitest 5, Playwright (`e2e/` public, `e2e-pro/` espace pro et admin sur émulateurs)
 
 ---
 
@@ -79,8 +93,14 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/artisans` | `Annuaire Artisans.dc.html` | SSR (filtres en query string) |
 | `/artisans/[slug]` | `Ma Fiche.dc.html` (vue publique) | ISR |
 | `/simulateur` | `Simulateur de Devis.dc.html` | Client, étapes en state + `?etape=` |
-| `/avis` | `Laisser un Avis.dc.html` | Client |
-| `/mon-espace` | `Mon Espace Particulier.dc.html` (projets, devis, messages, avis, compte ; tweak `etatVide`) | Auth particulier |
+| `/avis` (`?jeton=`) | `Laisser un Avis.dc.html` | Client |
+| `/mon-espace` (+ `/demandes/[id]`, `/avis`, `/compte`, `/plans`) | `Mon Espace Particulier.dc.html` (projets, devis, messages, avis, compte ; tweak `etatVide`) ; onglet « Mes plans » | Auth particulier |
+| `/metiers`, `/metiers/[metier]`, `/metiers/[metier]/[ville]`, `/travaux/[prestation]/[ville]` | — (pages de référencement local, 01/11/2026) | rendu serveur puis cache |
+| `/dessin` · `/dessin/essai` | `Dessin.dc.html` (page publique de Plans, essai sans compte) | flag `dessinPublic` (éteint par défaut) |
+| `/mes-plans/[planId]` | `Dessin.dc.html` (éditeur plein écran) | Auth particulier, flag `dessin` |
+| `/plan/[jeton]` | `Dessin.dc.html` (lecture seule) | Public, non indexé, jeton daté |
+| `/devis-client/[lien]` | — (signature en ligne d'un devis par le client) | Lien personnel |
+| `/connexion` | `Connexion.dc.html` | connexion unique (D73) |
 
 ### Diagnostic (bleu)
 | Route | Maquette | Rendu |
@@ -96,7 +116,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/pro/trouver-des-chantiers` · `/pro/site-internet-artisan` · `/pro/logiciel-devis-factures` | `Landing Outil.dc.html` (outil = chantiers · site · devis) | SSG · LANDINGS.md |
 | `/pro/inscription/zone` | `Onboarding Etape 2.dc.html` | Client |
 | `/pro/inscription/compte` | `Onboarding Etape 3.dc.html` | Client |
-| `/pro/connexion` | `Connexion.dc.html` | Client |
+| `/pro/connexion` | `Connexion.dc.html` | redirige vers `/connexion` (D73) |
 | `/pro/tableau-de-bord` | `Espace Artisan Dashboard.dc.html` (+ variante `… on boarding`) | Auth artisan |
 | `/pro/demandes` | `Mes Demandes.dc.html` | Auth artisan |
 | `/pro/appels-d-offres` | `Appels d Offres.dc.html` | Auth artisan |
@@ -105,11 +125,15 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 | `/pro/equipe` | `Equipe.dc.html` (membres, sièges, invitations, demandes d'accès, matrice des droits, sélecteur d'entreprise ; tweaks `siegesMax`, `roleApercu`) | Auth artisan |
 | `/pro/invitation`, `/pro/rejoindre` | `Invitation.dc.html` (états : valide, autre email, expirée, demander à rejoindre) | Public |
 | `/pro/compte` | `Mon Compte.dc.html` (profil, 2FA, appareils, notifications, données) | Auth artisan |
-| `/pro/statistiques` | `Statistiques.dc.html` | Auth artisan ; détail réservé à Fiche Pro, Fiche + Site, Tout inclus |
-| `/pro/abonnement` | `Mon Abonnement.dc.html` (formules, crédits, pack IA, carte, factures) | Auth artisan · PAIEMENTS.md |
-| `/pro/site?onglet=blog` | `Site Internet Artisan.dc.html` (onglet Blog : articles, pilote automatique, catégories, stats) | Site Pro, Fiche + Site, Tout inclus · BLOG.md |
-| `/pro/site/blog/{id}` | `Editeur de Blog.dc.html` (rédaction, mode autonome, mots-clés, SEO, diffusion) | idem · `?auto=1` |
-| `/pro/devis` | `Devis et Factures.dc.html` | Auth artisan · gratuit · mentions obligatoires, PDF téléchargeable |
+| `/pro/statistiques` | `Statistiques.dc.html` | Auth artisan ; ouverte à tous les artisans depuis le 06/11/2026 (PRO-07) |
+| `/pro/abonnement` (`?offre=` `fiche`, `site`, `pack`, `tout`, `blog`) | `Mon Abonnement.dc.html` + `Fenetre Offre.dc.html` (formule, « Aller plus loin », crédits, pack IA, carte, factures) | Auth artisan · PAIEMENTS.md ; `/pro/abonnement/[produit]`, `/confirme`, `/resilier` ; `/pro/facturation` redirige |
+| `/pro/site` (`?onglet=` `pages`, `blog`, `domaine`, `stats`, `formulaire`) | `Site Internet Artisan.dc.html` (onglet Blog : articles, pilote automatique, catégories, stats) | Auth artisan · SITE_INTERNET.md, BLOG.md |
+| `/pro/site/editeur` | `Editeur de Site.dc.html` | Auth artisan, plein écran (`?creation=1`, `?ia=reprendre`) |
+| `/pro/site/blog/nouveau`, `/pro/site/blog/[id]` | `Editeur de Blog.dc.html` (rédaction, mode autonome, mots-clés, SEO, diffusion) | Site Pro, Fiche + Site, Tout inclus · `?auto=1` ; `/pro/blog-valider/[lien]` (validation du pilote) |
+| `/pro/devis` (+ `nouveau`, `[id]`, `[id]/modifier`, `factures/nouvelle`, `factures/[id]`, `parametres`) | `Devis et Factures.dc.html` | Auth artisan · gratuit · mentions obligatoires, PDF téléchargeable |
+| `/pro/plans` · `/pro/plans/editeur/[planId]` | `Dessin.dc.html` (liste, éditeur plein écran) | Auth artisan, permission `dessin.gerer`, flag `dessin` |
+| `/pro/demandes/[demandeId]/plan` | `Dessin.dc.html` (plan joint par le client, lecture seule) | Auth artisan, après acceptation (D93) |
+| `/pro/hors-ligne`, `/pro/manifest.webmanifest`, `/pro/sw.js` | — (PWA de l'espace pro) | — |
 | `/pro/compte` › onglets | `Mon Compte` · `Equipe` · `Mon Abonnement` · `Aide et Contact` | « Mon compte » épinglé en bas de la barre latérale |
 
 ### Communes
@@ -117,8 +141,11 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 |---|---|
 | `/aide` | `Aide et Contact.dc.html` |
 | `/legal/[public]/[doc]` | `Pages Legales.dc.html`. `public` ∈ `particuliers`, `pro`. `doc` ∈ `cgu`, `cgv`, `avis`, `charte`, `mentions`, `confidentialite`, `cookies`, `securite`, `securite-pro` |
-| `/admin/*` | `Admin Portail Travaux.dc.html` + `ADMIN.md` |
-| `not-found`, `error`, maintenance | `Pages Erreur.dc.html` (404, 500, maintenance × 3 chartes) |
+| `/admin/*` | `Admin Portail Travaux.dc.html` + `Admin *.dc.html` + `ADMIN.md` |
+| `/admin/studio`, `/admin/studio/[id]/…` | — (Studio vidéo, STUDIO.md) |
+| `not-found`, `error`, `/maintenance` | `Pages Erreur.dc.html` (404, 500, maintenance × 3 chartes) |
+| `/preferences`, `/confirmer-telephone`, `/connexion/lien` | — (préférences d'emails, confirmation du téléphone, lien de connexion) |
+| sites publiés `{slug}.portailtravaux.fr` et domaines | — (réécrits par `proxy.ts` vers `/s/[hote]/…`, SITE_INTERNET.md) |
 | — | `Modeles Emails.dc.html` : maquette de tous les emails (voir EMAILS.md) |
 
 > Les formulaires de paiement par carte des maquettes (`Paiement …`) ne servent que de **référence visuelle pour le récapitulatif**. En production, la saisie de carte passe **uniquement par Stripe Checkout** (ou Stripe Elements). Aucun numéro de carte ne transite par nos serveurs.
@@ -134,7 +161,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - Sections dans l'ordre : Métiers (grille auto-fit 210px + carte CTA simulateur), Comment ça marche (3 étapes), Simulateur (mock d'estimation), Artisans vérifiés (3 cartes), Avis (4,8/5 + 3 témoignages + CTA « Laisser un avis »), Inspirations, App mobile (fond foncé, mock téléphone), Villes, bandeau « Vous êtes artisan ? » en orange, FAQ, CTA final, footer
 - Tweaks (props) : `nbDemandesMois`, `nbArtisans`, `nbVilles`, `bandeauArtisan`. En production, ces chiffres viennent du document `stats/public`
 
-### Simulateur de devis (`/simulateur`), à extraire dans `lib/simulateur/`
+### Simulateur de devis (`/simulateur`), extrait dans `packages/core/src/simulateur/`
 - 5 étapes : Prestation → Projet → Options → Chantier → Estimation, puis confirmation
 - **9 prestations** (peinture, salle de bain, cuisine, électricité, plomberie, carrelage, isolation, toiture, menuiseries). Chacune a ses champs et sa formule `calculer(p, v)` ; voir la constante `PRESTATIONS` et la fonction `calculer` dans la maquette
 - Types de champs : `slider` (min/max/pas), `stepper` (+/−), `options` (choix unique), `chips` (choix multiple)
@@ -146,7 +173,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - **Les grilles de prix doivent être stockées dans Firestore** (`referentiel/prestations/items`) et non codées en dur, pour être ajustables depuis l'admin
 - À l'envoi : création d'un document `demandes` (voir DATABASE.md), email au client, notification aux artisans ciblés
 
-### Parcours diagnostic (`/diagnostic-immobilier/estimation`), à extraire dans `lib/diagnostic/`
+### Parcours diagnostic (`/diagnostic-immobilier/estimation`), extrait dans `packages/core/src/diagnostic/`
 - 3 étapes puis confirmation : **Le bien** (adresse, commune, motif, type, période, surface) → **Existants** (gaz, électricité, assainissement, classe DPE, diagnostics déjà faits avec leur année) → **Dossier** (liste statuée + formulaire de contact)
 - Moteur de règles `DIAGS[].req(ctx)` avec les statuts `à réaliser`, `à refaire`, `déjà valide`, `conseillé`
 - Validités : DPE 10 ans mais invalide si antérieur à 2021 ; amiante illimité mais invalide si antérieur à 2013 ; termites 6 mois ; ERP 6 mois ; gaz et électricité 3 ans ; plomb 1 an ; assainissement 3 ans ; audit 5 ans
@@ -161,6 +188,7 @@ Chaque fichier se compose d'un template HTML à styles inline (entre `<x-dc>` et
 - Recherche plein texte sur nom, métiers, pitch et `tags`. En production : **Typesense Cloud** (DECISIONS D4), Firestore ne gérant pas le plein texte
 - Filtres : métiers (multi), rayon 5–60 km (**géo-requête** avec `geohash` et geofire-common), note minimum, labels (tous requis), disponibilité (≤ 7 j, ≤ 15 j), budget. Chips des filtres actifs retirables, « Tout effacer »
 - Tri : pertinence (`note×12 + avis×0,4 − km×0,6`), note, proximité, disponibilité, nombre d'avis
+- *(Depuis D54 : « Premium » = artisans avec une formule qui inclut la mise en avant, affichés « Artisan recommandé » ; mention L111-7 reformulée, AVANCEMENT §24.)*
 - **Premium toujours en tête** dans le bloc « Artisans à la une » : bordure or `#b8862b`, fond de bandeau `#fdf6e7`, logo 76 px, 3 boutons (profil, devis, téléphone). Cartes standard compactes avec logo 104 px et 2 boutons
 - Sidebar collante : `max-height: calc(100vh - 36px)`, zone de filtres **scrollable en interne**, encart orange « Déposer mon projet » fixé sous la carte
 - Mention obligatoire (art. L111-7 C. conso) : « Les profils Premium apparaissent en tête de liste, signalés comme tels… »

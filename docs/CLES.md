@@ -20,13 +20,13 @@
 | Nom | Où la trouver | Où la mettre |
 |---|---|---|
 | `STRIPE_SECRET_KEY` (`sk_test_…`) | Dashboard Stripe, mode Test → *Développeurs* → *Clés API* → « Clé secrète » (de préférence une **clé restreinte** : Checkout, Customer Portal, Customers, Subscriptions, Invoices, Products, Prices en écriture) | Vercel |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (`pk_test_…`) | même page, « Clé publiable » | Vercel |
+| ~~`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`~~ | **plus utilisée** : aucune saisie de carte chez nous (Checkout et portail Stripe) | — |
 | `STRIPE_WEBHOOK_SECRET` (`whsec_…`) | *Développeurs* → *Webhooks* → « Ajouter un endpoint » : URL `https://<site>/api/stripe/webhook`, événements listés ci-dessous → « Clé de signature » | Vercel |
-| Produits et prix (Premium, Visibilité, siège, packs) | **rien à copier** : lancer une fois `STRIPE_SECRET_KEY=sk_test_… pnpm stripe:produits` depuis le dépôt ; le site retrouve les prix par leur clé (`ph_premium_annuel`…). Relançable sans créer de doublon | — |
+| Produits et prix (4 formules, siège, option Blog, packs de crédits, pack IA) | **rien à copier** : lancer une fois `pnpm stripe:produits` avec la clé de test dans l'environnement ; le site retrouve les prix par leur clé de recherche (`ph_fiche_pro`, `ph_tout_inclus`, `ph_credits_50`…). Relançable sans créer de doublon ; une clé live est refusée sans `--live` | — |
 | **Stripe Tax** (pas une clé) | *Paramètres* → *Taxes* → activer, adresse de l'entreprise, enregistrement TVA France | — |
 | **Customer Portal** (pas une clé) | *Paramètres* → *Facturation* → *Portail client* → activer (changement de carte, factures, résiliation en fin de période) | — |
 
-Événements du webhook : `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`, `invoice.upcoming`, `charge.refunded`, `charge.dispute.created`.
+Événements du webhook traités par le code : `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`. (`invoice.upcoming`, `charge.refunded`, `charge.dispute.created` étaient prévus ; ils ne sont pas encore traités, inutile de les cocher.)
 
 ## 3. Emails et SMS
 
@@ -36,6 +36,9 @@
 | `RESEND_WEBHOOK_SECRET` | resend.com → *Webhooks* → endpoint `https://<site>/api/resend/webhook` → « Signing secret » | Vercel |
 | `NOTIF_SIGNING_SECRET` | à inventer : 32 caractères aléatoires (ex. `openssl rand -base64 32`) | Vercel **et** secret Functions (même valeur) |
 | `EMAIL_FROM`, `EMAIL_FROM_PRO`, `EMAIL_REPLY_TO` | adresses d'envoi (valeurs par défaut prévues) | secret Functions (facultatif) |
+| `EDITEUR_MENTION` | pied des emails : raison sociale et adresse de l'éditeur (D18 🔒) | secret Functions |
+| `RESEND_INBOUND_SECRET` | réponses reçues (`/api/resend/inbound`) | Vercel |
+| `SMS_SENDER` | expéditeur des SMS (`PortailTrav` par défaut) | secret Functions |
 | `BREVO_API_KEY` | brevo.com → *SMTP & API* → *Clés API* (SMS : plus tard, D2) | secret Functions |
 
 ## 4. Plus tard (options coupées tant que la clé manque)
@@ -44,10 +47,10 @@
 |---|---|---|---|
 | `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | notifications push de l'application pro | Console Firebase → ⚙️ → *Cloud Messaging* → *Certificats Web push* → « Générer » | Vercel, puis flag `notificationsPush` à vrai |
 | SMS de la double authentification | code par SMS | Identity Platform → *Authentification multifacteur* → activer SMS (facturé) | flag `deuxFacteursSms` à vrai |
-| `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE`, `TYPESENSE_ADMIN_KEY` | recherche de l'annuaire (D4) | cloud.typesense.org → cluster → *API Keys* | Vercel (+ secret Functions pour la clé admin) |
+| `TYPESENSE_HOTE`, `TYPESENSE_CLE_RECHERCHE`, `TYPESENSE_CLE_ADMIN` | recherche de l'annuaire et des projets (D4) | cloud.typesense.org → cluster → *API Keys* | Vercel (+ secret Functions pour la clé admin) |
 | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` | suivi des erreurs | sentry.io → projet → *Client Keys (DSN)* ; *Auth Tokens* | Vercel (le jeton aussi dans GitHub → *Settings* → *Secrets* → *Actions*) |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | App Check (anti-robots) | Console Firebase → *App Check* → reCAPTCHA Enterprise | Vercel |
-| `INSEE_API_KEY` | vérification SIREN renforcée | portail-api.insee.fr | Vercel |
+| ~~`INSEE_API_KEY`~~ | **pas utilisée** : le SIREN est lu dans l'API publique Recherche d'entreprises, sans clé | — | — |
 | `ANTHROPIC_API_KEY` | assistant IA du back-office (lot 13c), Studio vidéo | console.anthropic.com | secret Functions, robot Studio |
 | `OVH_APP_KEY`, `OVH_APP_SECRET`, `OVH_CONSUMER_KEY` | achat de domaine par l'artisan (D42, prioritaire) | eu.api.ovh.com/createToken (droits GET/POST/PUT/DELETE sur `/order/*`, `/me/*`, `/domain/*`) | Vercel + secret Functions |
 | `GANDI_TOKEN` | achat de domaine par l'artisan (D42) ; `GANDI_BAC_A_SABLE=1` pour la recette | admin.gandi.net › Organisation › Partage › Créer un jeton (droits domaines + LiveDNS) | Vercel + secret Functions |
@@ -59,8 +62,14 @@
 | `TIKTOK_CLIENT_KEY` / `_SECRET` | Studio : TikTok (publier, vues) | developers.tiktok.com → application | Vercel + Functions |
 | `INSTAGRAM_TENDANCES_JETON` / `_COMPTE` | Studio : Reels par hashtag (facultatif) | application Meta avec connexion Facebook + « Instagram Public Content Access » | Vercel |
 | `STUDIO_RENDU_URL` / `STUDIO_RENDU_CLE` | Studio : robot de rendu (STUDIO.md §6) | `scripts/deployerStudio.sh` / chaîne aléatoire | Vercel + Secret Manager |
-| `PARTENAIRE_API_KEYS` | import de demandes partenaires (lot 12b) | à générer par source | secret Functions |
-| `COMPORTEMENT_SALT_SECRET` | anonymisation du suivi des visites (lot 13c) | à inventer (32 caractères aléatoires) | secret Functions |
+| Clé d'un partenaire | import de demandes partenaires (lot 12b) | générée par `pnpm partenaire:source` : seule son empreinte est gardée dans `sourcesDemandes` (la variable `PARTENAIRE_API_KEYS` prévue n'est pas utilisée) | à transmettre au partenaire, jamais dans le dépôt |
+| `COMPORTEMENT_SALT_SECRET` | anonymisation du suivi des visites (lot 13c) | à inventer (32 caractères aléatoires) | Vercel (lu par `/api/t`) |
+| `REPLAYS_BUCKET` | replays du suivi des visites | nom d'un bucket UE avec cycle de vie de 30 jours | Vercel |
+| `IBAN_CLE_CHIFFREMENT` | chiffrement de l'IBAN des artisans (devis et factures) | 32 octets aléatoires en base64 | Vercel |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` | anti-spam des formulaires des sites artisans (D46) | Cloudflare → Turnstile | Vercel |
+| `VERCEL_API_TOKEN`, `VERCEL_EQUIPE`, `VERCEL_PROJET_SITES` | domaines personnels des sites artisans | Vercel → *Account Settings* → *Tokens* ; identifiants de l'équipe et du projet | Vercel + secret Functions |
+
+**Aucune clé** pour Dessin (Plans) : les services IGN (Géoplateforme, API Carto) sont publics et appelés par le serveur ; Plans s'ouvre avec les flags `dessin` et `dessinPublic` dans l'admin.
 
 ## 5. Ne jamais faire
 - Mettre une clé dans le code, dans un ticket ou dans une conversation.

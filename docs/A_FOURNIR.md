@@ -1,6 +1,6 @@
 # Ce que le propriétaire doit fournir ou décider
 
-Liste préparée le 17/10/2026. Les **valeurs** des clés vont dans les secrets Vercel (site) et Google Secret Manager (Functions), jamais dans le dépôt ni dans le chat. Détail des variables : `DEPLOIEMENT.md` §2.
+Liste préparée le 17/10/2026, relue le 19/11/2026 (rien n'est encore déployé). Les **valeurs** des clés vont dans les secrets Vercel (site) et Google Secret Manager (Functions), jamais dans le dépôt ni dans le chat. Détail des variables : `DEPLOIEMENT.md` §2.
 
 ## 1. Comptes à créer, dans l'ordre
 
@@ -26,15 +26,17 @@ Commencer par l'environnement de **recette** (staging) : clés de test partout, 
 | 15 | **Plateforme agréée** (D62) | Choisir la plateforme, signer le contrat « éditeur » | clés API de la plateforme | factures électroniques |
 | 16 | **Google Search Console** | Propriété du domaine | accès API (je branche ensuite) | statistiques SEO des sites et du blog |
 
-**Secrets que je peux générer moi-même** (vous n'avez qu'à les poser) : `NOTIF_SIGNING_SECRET`, `COMPORTEMENT_SALT_SECRET`, `IBAN_CLE_CHIFFREMENT` (32 octets en base64), `REPLAYS_BUCKET` (bucket UE créé dans le projet).
+**Secrets que je peux générer moi-même** (vous n'avez qu'à les poser) : `NOTIF_SIGNING_SECRET`, `COMPORTEMENT_SALT_SECRET`, `IBAN_CLE_CHIFFREMENT` (32 octets en base64), `REPLAYS_BUCKET` (bucket UE créé dans le projet), `STUDIO_CHIFFREMENT_CLE`.
 
-**Aucune clé nécessaire** : répertoire des entreprises (`recherche-entreprises.api.gouv.fr`) et communes (`geo.api.gouv.fr`), API publiques.
+**Facultatif, Studio vidéo** (outil interne) : clé YouTube Data, applications OAuth Google, Instagram et TikTok, ElevenLabs, robot de rendu (`STUDIO_RENDU_URL`, `STUDIO_RENDU_CLE`) : détail dans CLES.md §4.
+
+**Aucune clé nécessaire** : répertoire des entreprises (`recherche-entreprises.api.gouv.fr`, d'où l'abandon de la clé INSEE), communes (`geo.api.gouv.fr`), et pour Dessin (Plans) IGN Géoplateforme (`data.geopf.fr`) et API Carto cadastre (`apicarto.ign.fr`), appelés par le serveur. Plans ne demande ni compte ni clé : il s'ouvre par les flags `dessin` et `dessinPublic` (éteints) après votre « go ».
 
 ## 2. Informations légales (bloquantes avant la production)
 
 | # | À fournir | Où ça sert |
 |---|---|---|
-| D18 🔒 | Raison sociale, forme, SIREN, adresse du siège, capital, directeur de la publication | mentions légales, CGU, CGV, pied des emails |
+| D18 🔒 | Raison sociale, forme, SIREN, adresse du siège, capital, directeur de la publication | mentions légales, CGU, CGV, pied des emails (`EDITEUR_MENTION`) |
 | D20 🔒 | Médiateur de la consommation choisi (ex. CM2C, Medicys) et son adresse | CGV, pages légales |
 | D22 🔒 | Relecture par un avocat des CGU, CGV et politique d'avis | avant la mise en ligne |
 | D23 | Adresse email du contact RGPD | politique de confidentialité |

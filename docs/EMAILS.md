@@ -7,14 +7,16 @@ Document de référence pour **tout ce qui part vers un utilisateur** : emails, 
 ## 1. Architecture
 
 ```
-Événement (Function, Server Action, webhook Stripe, tâche planifiée)
-   └─ notifier(evenement, destinataires, donnees)          lib/notifications/notifier.ts
-        ├─ résout les canaux (email / SMS / in-app) selon le modèle + préférences
+Événement (Function, route /api, webhook Stripe, tâche planifiée)
+   └─ notifier(envoi)                 packages/firebase/src/serveur/notifications/notifier.ts (@ph/firebase/notifications)
+        ├─ résout les canaux (email / SMS / in-app / push) selon le catalogue + préférences
         ├─ écrit emails/{id} (statut 'en_file') avec cleIdempotence unique
-        └─ Cloud Task "envoyerEmail" (file dédiée, 10 envois/s)
-               └─ rend le modèle React Email → Resend → statut 'envoye'
-Webhook Resend (/api/resend/webhook) → 'delivre' | 'ouvert' | 'clic' | 'rebond' | 'plainte'
+        └─ Cloud Task → Function "envoyerEnvoi" (apps/functions/src/notifications/tache.ts, 10 envois/s, 5 tentatives)
+               └─ rend le modèle (@ph/emails) → Resend (email) ou Brevo (SMS) → statut 'envoye'
+Webhook Resend (/api/resend/webhook, signature Svix) → 'delivre' | 'ouvert' | 'clic' | 'rebond' | 'plainte'
+Réponses reçues : /api/resend/inbound
 ```
+Catalogue des modèles (catégorie, charte, SMS, in-app, différé, groupé) : `packages/core/src/notifications/catalogue.ts` (`MODELES`), seule liste lue par `notifier()`, les modèles, la page de préférences et l'admin. Un modèle sans `complet: true` est un **squelette** (texte + bouton) en attendant sa rédaction.
 
 - **Une seule porte d'entrée** : `notifier()`. Aucun appel direct à Resend ailleurs dans le code
 - **Idempotence** : `cleIdempotence` = `modele:refObjet:destinataire[:variante]` (ex. `demande-confirmee:demandes/abc:uid123`). Un deuxième appel avec la même clé ne renvoie rien
@@ -26,12 +28,14 @@ Webhook Resend (/api/resend/webhook) → 'delivre' | 'ouvert' | 'clic' | 'rebond
 | Canal | Fournisseur | Notes |
 |---|---|---|
 | Email | **Resend** (région UE) + **React Email** | domaine `notifications.portailtravaux.fr`, SPF, DKIM, DMARC `p=quarantine` |
-| SMS | **Brevo SMS** ou Twilio (expéditeur alphanumérique `PortailTrav`) | uniquement : codes, nouvelle demande (si activé), assurance expirée |
+| SMS | **Brevo SMS** (D2 ; Twilio écarté), expéditeur alphanumérique `PortailTrav` | uniquement : codes, confirmation du téléphone, nouvelle demande (flag `smsNouvelleDemande`), assurance expirée |
 | In-app | `users/{uid}/notifications` | cloche dans les espaces particulier et pro |
+| Push | FCM, jetons dans `users/{uid}/appareilsPush` | application pro ; flag `notificationsPush` éteint par défaut, clé `NEXT_PUBLIC_FIREBASE_VAPID_KEY` requise |
+| Capture | Mailpit (`EMAIL_CAPTURE=mailpit`, ou émulateur des Functions) | local et recette : aucun envoi réel ; SMS capturés aussi |
 | Codes d'authentification | Firebase Auth (SMS 2FA) | les emails Auth sont **personnalisés** (§4) : Firebase ne les envoie pas lui-même |
 
 ### Collection `emails/{id}`
-`modele`, `canal` (`email`, `sms`), `destinataire` (email ou téléphone), `uid?`, `artisanId?`, `refObjet`, `cleIdempotence` (unique), `donnees` (sans secret ni lien magique en clair), `envoyerLe`, `statut` (`en_file`, `envoye`, `delivre`, `ouvert`, `clic`, `rebond`, `plainte`, `echec`, `annule`, `bloque_preferences`), `fournisseurId`, `tentatives`, `erreur?`, `createdAt`. TTL 13 mois.
+`modele`, `canal` (`email`, `sms`), `destinataire` (email ou téléphone), `uid?`, `artisanId?`, `categorie`, `variante?` (test A/B), `sequenceId?`, `refObjet?`, `cleIdempotence` (unique), `donnees` (sans secret ni lien magique en clair), `envoyerLe`, `statut` (`en_file`, `envoye`, `delivre`, `ouvert`, `clic`, `rebond`, `plainte`, `echec`, `annule`, `bloque_preferences`), `fournisseurId`, `ouvertLe?`, `cliqueLe?`, `tentatives`, `erreur?`, `createdAt`, `expireLe` (TTL 13 mois). Schéma `envoi`, `packages/core/src/schemas/support.ts`.
 
 ### Liste de blocage `suppressions/{emailHash}`
 Alimentée par les rebonds définitifs et les plaintes. Plus aucun envoi vers cette adresse, sauf les emails de sécurité (§4), qui passent quand même une fois. Un bandeau dans l'espace de l'utilisateur lui demande de corriger son adresse.
@@ -50,6 +54,9 @@ Chaque modèle appartient à une catégorie :
 | `relance` | Oui | onboarding incomplet, fiche incomplète, demander un avis |
 | `offres_pro` | Oui, **activé par défaut** pour les pros (prospection B2B, opposition en un clic) | séquences de conversion et de montée en gamme (CONVERSION.md) |
 | `marketing` | Oui, **désactivé par défaut** (consentement explicite) | actualités, newsletters, particuliers |
+| `interne` | **Non** | emails à l'équipe interne (§4.8) ; catégorie ajoutée dans le code |
+
+> D32d ⏳ : `offres_pro` activée par défaut pour les pros attend une validation juridique (non tranché ici).
 
 - `users/{uid}.preferences.notifs = { activite: { email, sms, inapp }, relance: {…}, offres_pro: {…}, marketing: {…} }` ; pour un pro, surcharge par entreprise dans `membres/{uid}.notifs`
 - Lien **« Se désabonner »** en un clic (en-tête `List-Unsubscribe` + `List-Unsubscribe-Post`, obligatoire pour Gmail et Yahoo), qui désactive **la catégorie**, pas tout
@@ -62,22 +69,24 @@ Chaque modèle appartient à une catégorie :
 
 > **Maquette de référence : `designs/Modeles Emails.dc.html`** : 34 modèles représentatifs dans les 4 chartes, en version ordinateur et mobile, avec les SMS associés. Les autres modèles du catalogue reprennent les mêmes blocs.
 
-Blocs réutilisables (un composant React Email chacun, dans `packages/emails/blocs/`) : `Surtitre`, `Titre`, `Paragraphe`, `Citation`, `Bouton`, `Recap` (lignes clé / valeur), `Alerte` (`info`, `ok`, `warn`, `danger`), `Etapes` (fait / à faire), `Progression`, `Stats`, `CarteArtisan`, `Etoiles`, `ListeStatuts`, `Note`. Un modèle n'est qu'un **assemblage de blocs** : aucun style dans les modèles eux-mêmes.
+Blocs réutilisables (types déclarés dans `packages/emails/src/blocs.ts`, rendus par `rendu/Blocs.tsx` avec React Email) : `surtitre`, `titre`, `paragraphe`, `citation`, `bouton`, `lien`, `code`, `recap` (lignes clé / valeur), `alerte` (`info`, `ok`, `warn`, `danger`), `etapes` (fait / à faire), `progression`, `stats`, `carteArtisan`, `etoiles`, `statuts`, `note`. Un modèle n'est qu'un **assemblage de blocs** (données, pas de JSX) : aucun style dans les modèles eux-mêmes.
 
-
-- Dossier `emails/` (React Email), un fichier par modèle, `emails/_layout/{Particulier,Pro,Diag,Admin}.tsx` : logo, couleur de l'espace (vert, orange, bleu, ardoise), pied de page (adresse postale de l'éditeur, lien vers les préférences, mention « Vous recevez cet email parce que… »)
-- Chaque modèle exporte : `sujet(donnees)`, `preheader(donnees)`, le composant, `categorie`, `canaux`, `exemple` (données fictives pour l'aperçu et les tests)
+- Fait ainsi : `packages/emails/src/modeles/*.ts`, un fichier **par famille** (securite, onboarding, equipes, particuliers, facturation, devis, blog, sites, conversion, conversionOutils, conversionPremium, squelettes) ; gabarit unique `rendu/Email.tsx` avec la charte de l'espace (`chartes.ts` : vert, orange, bleu, ardoise) et un pied de page (mention de l'éditeur `EDITEUR_MENTION`, lien vers les préférences, « Vous recevez cet email parce que… »)
+- Chaque modèle (`Modele`, `modele.ts`) fournit : `sujet(donnees)`, `sujetB?` (variante B d'un test A/B), `preheader(donnees)`, `blocs(donnees)`, `sms?`, `exemple` (données fictives pour l'aperçu et les tests). La catégorie et les canaux sont dans le catalogue de `@ph/core/notifications`
+- Le même paquet produit les **PDF** (pdfkit) : devis et factures (`@ph/emails/pdf`), plans Dessin à l'échelle (`@ph/emails/pdf-plan`)
 - **Version texte** générée automatiquement pour chaque email
 - Largeur 600 px, un seul bouton principal, cible de 44 px, texte alternatif sur toutes les images, lisible sans images, mode sombre testé
 - Tous les liens passent par `lien(route, { utm_campaign: modele })`. Les liens d'action (connexion, invitation, préférences) contiennent un **jeton signé à usage unique**, jamais l'email en clair
 - Tutoiement interdit ; ton : clair, direct, « vous »
-- Aperçu local : `pnpm email:dev` (serveur React Email) ; en local et en staging, **tous les envois sont capturés par Mailpit** et jamais envoyés en vrai (sauf liste blanche en staging)
+- Aperçu local : `pnpm email:dev` (serveur React Email) et `pnpm mailpit` (Docker) ; en local et en staging, **tous les envois sont capturés par Mailpit** et jamais envoyés en vrai (sauf liste blanche en staging). Sur émulateurs, les envois sont aussi copiés dans `capturesEmulateur` pour les tests de bout en bout
 
 ---
 
 ## 4. Catalogue complet
 
 Légende : **G** = groupé · **D** = différé · **S** = aussi par SMS · **A** = aussi in-app
+
+> Le catalogue du code (`MODELES`, `@ph/core/notifications`) fait foi. Modèles **ajoutés** pendant les lots : `confirmer-telephone` **S** (lien de confirmation du téléphone d'une demande, particulier), `avis-preuve-demandee` (la modération demande une preuve), `litige-message` et `litige-decision` **A**, `invitation-equipe-admin` (invitation dans l'équipe interne). Modèles du tableau ci-dessous **pas encore faits** (absents du catalogue) : `suspension` (§4.5 : la suspension passe par `avertissement-charte` / `levee-sanction`), `blog-publie` (§4.5). Les modèles sans `complet: true` dans le catalogue sont encore des squelettes (texte + bouton) : c'est le cas d'une partie des §4.4, §4.5 et §4.8 (dont `ia-synthese-hebdo`) ; voir le catalogue pour la liste exacte. Aucun email propre à Dessin (Plans) : « Demander des devis » depuis un plan crée une demande ordinaire (`demande-confirmee`).
 
 ### 4.1 Authentification et sécurité (tous les publics, catégorie `securite`)
 | Modèle | Déclencheur | Contenu |
@@ -103,12 +112,12 @@ Légende : **G** = groupé · **D** = différé · **S** = aussi par SMS · **A*
 | `relance-onboarding-1` **D** | J+1 si l'onboarding n'est pas terminé | « Il vous reste 2 minutes » + étape manquante |
 | `relance-onboarding-2` **D** | J+3 | bénéfices chiffrés de la zone (nombre de demandes du mois dans son métier) |
 | `relance-onboarding-3` **D** | J+10, dernière relance | puis plus rien ; brouillon purgé à J+30 |
-| `bienvenue-pro` | `finaliserOnboarding` | les 3 étapes pour être en ligne : téléphone, décennale, fiche à 60 % |
+| `bienvenue-pro` | `finaliserOnboarding` | depuis le 16/11/2026 (parcours d'inscription, décision du 15/11/2026) : fiche **déjà en ligne** si le SIREN est reconnu, sinon « nous vérifions le SIREN, en ligne sous 48 h ouvrées » ; étapes : compte, fiche en ligne, présentation (l'IA peut la rédiger), attestation décennale ; rappel « Assurance non vérifiée » |
 | `verifier-telephone` **S** | avant la première réponse | code à 6 chiffres (Firebase Auth) |
 | `fiche-incomplete` **D** | J+2 et J+7 si `completude < 60` | ce qui manque, avec des liens directs |
 | `document-recu` | téléversement d'un document | « Vérification sous 48 h ouvrées » |
 | `document-valide` / `document-refuse` | décision du modérateur | motif du refus et marche à suivre |
-| `fiche-en-ligne` **A** | `enLigne` passe à `true` | lien vers la fiche publique, conseils |
+| `fiche-en-ligne` **A** | `enLigne` passe à `true` (**pas encore branché** : le modèle existe, aucun code ne l'envoie) | lien vers la fiche publique, conseils |
 | `revendication-code` | revendication par email ou courrier | code ou lien |
 | `revendication-resultat` | décision | |
 | `entreprise-existe-deja` | tentative d'inscription sur un SIREN déjà revendiqué | envoyé au **propriétaire** : « Quelqu'un a tenté d'inscrire votre entreprise » |
@@ -167,10 +176,10 @@ Légende : **G** = groupé · **D** = différé · **S** = aussi par SMS · **A*
 | `assurance-expire` **S** | J-30, J-7, J0 avant la fin de la décennale ; suspension automatique à J0 |
 | `rapport-hebdo` | lundi 8 h (Premium) : vues, clics, demandes, comparaison avec la semaine précédente |
 | `rapport-mensuel` | 1er du mois (tous) : résumé et encart vers l'offre cible (CONVERSION.md §4), catégorie `offres_pro` |
-| `avertissement-charte` / `suspension` / `levee-sanction` | décision admin |
+| `avertissement-charte` / `suspension` (**pas encore fait**) / `levee-sanction` | décision admin |
 
 | `blog-a-valider` | pilote automatique, mode « Je valide d'abord » : 48 h avant la date prévue | titre, extrait, bouton **Valider et publier** (lien signé, 1 clic), « Modifier », « Passer cet article » ; sans réponse, rien n'est publié |
-| `blog-publie` | article publié par le pilote ou le mode autonome | lien vers l'article, textes réseaux à copier, rappel « Désactiver le pilote » |
+| `blog-publie` (**pas encore fait**) | article publié par le pilote ou le mode autonome | lien vers l'article, textes réseaux à copier, rappel « Désactiver le pilote » |
 | `blog-quota-atteint` **D** | dernier article du quota mensuel utilisé | date de remise à zéro ; Site Pro : lien vers l'offre Tout inclus |
 
 | `site-domaine-actif` · `site-domaine-attente` · `site-domaine-echec` · `site-domaine-casse` · `site-domaine-renouvele` · `site-domaine-transfert` | cycle de vie du domaine (DOMAINES.md §7) | domaine, état, prochaine action, tableau DNS si besoin |
@@ -223,11 +232,11 @@ Inscription par lien magique
 ```
 Étape SIREN (email saisi)    → reprise-onboarding
   pas terminé                → relance-onboarding-1 (J+1) → -2 (J+3) → -3 (J+10)
-Étape Compte validée         → bienvenue-pro   (les relances sont annulées)
+Étape Compte validée         → bienvenue-pro   (les relances sont annulées ; fiche en ligne dès le SIREN reconnu)
   téléphone                  → verifier-telephone (SMS)
   documents                  → document-recu → document-valide / document-refuse
   fiche < 60 %               → fiche-incomplete (J+2, J+7)
-Conditions remplies          → fiche-en-ligne
+Mise en ligne plus tard      → fiche-en-ligne (modèle prêt, **aucun envoi branché** dans le code au 19/11/2026)
 Première demande             → nouvelle-demande (+ SMS si activé)
 ```
 
@@ -254,7 +263,7 @@ invitation-membre → (J+3) invitation-relance → [accepte] invitation-acceptee
 ## 7. Délivrabilité et suivi
 - Réchauffement du domaine : montée progressive les 4 premières semaines
 - Webhook Resend → `emails.statut` ; rebond définitif → `suppressions` ; plainte → `suppressions` + désactivation du marketing
-- Tableau de bord admin (Finances ou Configuration) : envois, taux de délivrance, ouverture, rebonds et plaintes par modèle ; alerte si les rebonds dépassent 2 % ou les plaintes 0,1 %
+- Tableau de bord admin (Finances ou Configuration) : envois, taux de délivrance, ouverture, rebonds et plaintes par modèle ; alerte si les rebonds dépassent 2 % ou les plaintes 0,1 % — non vérifié dans le code à cette relecture (les statistiques par modèle existent pour les séquences de conversion, Admin › Conversion)
 - Aucune donnée personnelle sensible (coordonnées du particulier) dans le **sujet** ni dans le **preheader**
 
 ---
@@ -265,17 +274,20 @@ invitation-membre → (J+3) invitation-relance → [accepte] invitation-acceptee
 - Playwright + Mailpit : parcours complets (inscription particulier, onboarding artisan avec relance simulée, invitation d'un collaborateur, mot de passe oublié) en lisant la boîte Mailpit et en cliquant sur les vrais liens
 
 ## 9. Variables d'environnement
+Lues par `apps/functions/src/notifications/configuration.ts` (noms seulement, valeurs dans Secret Manager) :
 ```
 RESEND_API_KEY=
-RESEND_WEBHOOK_SECRET=
-EMAIL_FROM="Portail Travaux <notifications@portailtravaux.fr>"
-EMAIL_FROM_PRO="Portail Travaux Pro <pro@notifications.portailtravaux.fr>"
-EMAIL_FROM_HUMAIN="Julie de Portail Travaux Pro <julie@notifications.portailtravaux.fr>"
-EMAIL_REPLY_TO_COMMERCIAL=julie@portailtravaux.fr
-EMAIL_REPLY_TO=support@portailtravaux.fr
-SMS_API_KEY=
+BREVO_API_KEY=                   # SMS (remplace SMS_API_KEY prévu)
 SMS_SENDER=PortailTrav
+EMAIL_FROM="Portail Travaux <notifications@portailtravaux.fr>"           # valeur par défaut
+EMAIL_FROM_PRO="Portail Travaux Pro <pro@notifications.portailtravaux.fr>" # valeur par défaut
+EMAIL_REPLY_TO=
+EDITEUR_MENTION=                 # pied des emails (raison sociale, adresse : D18 🔒)
 EMAIL_CAPTURE=mailpit            # local et staging : aucun envoi réel
+MAILPIT_URL=                     # facultatif (http://127.0.0.1:8025 par défaut)
 EMAIL_WHITELIST=@portailtravaux.fr
-NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action
+NOTIF_SIGNING_SECRET=            # jetons des liens de préférences et d'action (même valeur sur le site)
+NEXT_PUBLIC_SITE_URL=
 ```
+Côté site : `RESEND_WEBHOOK_SECRET`, `RESEND_INBOUND_SECRET`, `NOTIF_SIGNING_SECRET`.
+Prévues et **non utilisées** par le code : `EMAIL_FROM_HUMAIN`, `EMAIL_REPLY_TO_COMMERCIAL` (la signature « Julie » des emails de conversion est écrite dans le moteur de conversion).

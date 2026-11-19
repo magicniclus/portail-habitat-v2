@@ -1,5 +1,7 @@
 # Mise en production, pas à pas
 
+> **État au 19/11/2026** : rien n'est déployé, ni en production ni en recette. Liste détaillée des comptes et clés : A_FOURNIR.md ; ordre technique : DEPLOIEMENT.md.
+
 Pour le propriétaire du projet. Ce que Claude Code ne peut pas faire seul (créer des comptes, payer, signer, valider juridiquement) est marqué **👤 vous**. Le reste, Claude Code le fait ou le vérifie (prompt « Mise en production » dans PROMPT_CLAUDE_CODE.md).
 
 ---
@@ -15,24 +17,26 @@ Pour le propriétaire du projet. Ce que Claude Code ne peut pas faire seul (cré
 | **Resend** | emails | clé API ; domaine `notifications.portailtravaux.fr` vérifié (DNS) | gratuit jusqu'à 3 000 / mois |
 | **Brevo** | SMS | clé API ; expéditeur `PortailTrav` validé | ~0,05 € / SMS |
 | **Typesense Cloud** (région UE) | recherche | hôte, clé admin, clé recherche | ~7 $ / mois |
-| **INSEE (API Sirene)** | vérif. SIRET | clé API | gratuit |
+| ~~**INSEE (API Sirene)**~~ | vérif. SIRET | **plus nécessaire** : l'API publique Recherche d'entreprises (sans clé) est utilisée | gratuit |
 | **Sentry** (région UE) | erreurs | DSN | gratuit au départ |
-| **Anthropic** | assistant IA admin | clé API | à l'usage (voir COUTS.md) |
+| **Anthropic** | assistant IA admin, IA du site et du blog, aide à la rédaction, Studio | clé API (site **et** Functions) | à l'usage (voir COUTS.md) |
+| **Cloudflare** | Turnstile (formulaires des sites artisans) | clé de site et secret | gratuit |
+| **OVHcloud** (ou Gandi en secours) | achat de domaine par l'artisan (D42) | clés API | prix des domaines |
 | **Registrar du domaine** | `portailtravaux.fr` | accès DNS | ~10 € / an |
 
 Donnez les clés à Claude Code **uniquement via les fichiers `.env.local` (dev) et les secrets Vercel / Firebase** — jamais dans le chat, jamais commitées.
 
 ## Étape 2 — Environnements
-- **dev** : votre machine, émulateurs Firebase, emails capturés (Mailpit), Stripe test.
+- **dev** : votre machine, émulateurs Firebase (projet `demo-portail-travaux`), emails capturés (Mailpit), Stripe test.
 - **staging** : `staging.portailtravaux.fr`, Firebase `-staging`, Stripe test, emails limités à `@portailtravaux.fr`. Chaque PR fusionnée y part automatiquement.
 - **prod** : `www.portailtravaux.fr`, Firebase `-prod`, Stripe live. Déploiement **uniquement** sur tag `v*` après votre « go ».
 
-Liste complète des variables : INTEGRATIONS.md §Variables et EMAILS.md §9. Claude Code crée `.env.example` au lot 1.
+Liste complète des variables : DEPLOIEMENT.md §2, CLES.md et EMAILS.md §9 ; modèle local : `.env.example` (sans valeurs).
 
 ## Étape 3 — Avant le lancement · 👤 vous
 - [ ] CGU, CGV Pro, mentions légales, politique de confidentialité et cookies relues par un juriste (textes dans `designs/Pages Legales.dc.html`)
 - [ ] Contrat partenaire signé ; texte de consentement et sa version validés ; IMPORT_LEADS.md envoyé au partenaire, IP et clé échangées
-- [ ] Compte Stripe live activé ; produits créés (Visibilité 79,90 €/an et 12,90 €/mois, Premium 958,80 €/an et 99,90 €/mois, packs) ; essai Premium 1 mois **avec carte demandée**
+- [ ] Compte Stripe live activé ; produits créés par `pnpm stripe:produits --live` après le « go » (formules Fiche Pro, Site Pro, Fiche + Site, Tout inclus, siège, option Blog, packs de crédits, pack IA : PAIEMENTS.md fait foi). *Ancienne liste abandonnée* : Visibilité et Premium (remplacés par les 4 formules)
 - [ ] Domaine : DNS vers Vercel, SPF / DKIM / DMARC pour Resend
 - [ ] Google Search Console + sitemap
 - [ ] Au moins deux superadmins avec double authentification
@@ -41,7 +45,7 @@ Liste complète des variables : INTEGRATIONS.md §Variables et EMAILS.md §9. Cl
 
 ## Étape 4 — Vérifications techniques · Claude Code
 - [ ] Tous les tests d'ACCEPTANCE.md verts en staging
-- [ ] Règles Firestore et Storage déployées en prod, tests de règles verts
+- [ ] Règles Firestore et Storage déployées en prod, tests de règles verts (dont `regles/dessin.test.ts`)
 - [ ] Index Firestore et TTL déployés
 - [ ] Référentiel réel importé : `pnpm referentiel:importer <id-du-projet>` (prestations, prix, recherche, communes ; sans compte de test ; rien n'est remplacé sans `--ecraser`). Sans lui, le simulateur répond « L'élément demandé est introuvable ».
 - [ ] Sauvegarde quotidienne Firestore activée (export planifié vers un bucket `europe-west1`)
@@ -49,7 +53,9 @@ Liste complète des variables : INTEGRATIONS.md §Variables et EMAILS.md §9. Cl
 - [ ] Budget Google Cloud avec alertes à 50 / 80 / 100 %
 - [ ] Lighthouse mobile ≥ 90 sur accueil, simulateur, annuaire, landing pro
 - [ ] En-têtes de sécurité (CSP, HSTS), App Check, reCAPTCHA
-- [ ] Parcours complet testé à la main en prod avec une vraie carte : inscription artisan → paiement Premium → réception d'une demande → remboursement
+- [ ] Les Functions de `apps/functions/src/index.ts` déployées, tâches planifiées visibles dans Cloud Scheduler (liste : DEPLOIEMENT §5), file Cloud Tasks d'`envoyerEnvoi` créée
+- [ ] Flags vérifiés dans l'admin (`config/flags`) ; **Plans (Dessin) reste éteint** (`dessin`, `dessinPublic`) sans « go » explicite : lot 15k en recette au 19/11/2026
+- [ ] Parcours complet testé à la main en prod avec une vraie carte : inscription artisan → paiement d'une formule → réception d'une demande → remboursement
 
 ## Étape 5 — Jour du lancement
 1. Tag `v1.0.0` → déploiement prod (votre « go »)

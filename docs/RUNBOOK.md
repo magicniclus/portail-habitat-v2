@@ -5,12 +5,13 @@
 ## 0. Réflexes
 
 1. Regarder **Sentry** (site et Functions) : l'identifiant d'incident affiché sur la page 500 est le même que dans Sentry.
-2. Regarder la sonde `/api/health` (version déployée, réponse en moins de 2 s).
+2. Regarder la sonde `/api/health` (version déployée ; elle ne vérifie pas encore Firestore, Stripe ni Resend).
 3. Si les utilisateurs sont touchés et que la cause n'est pas évidente en 15 minutes : **maintenance** (§1) ou **retour arrière** (§2), puis enquête au calme.
 
 ## 1. Mettre le site en maintenance
 
-- Variable `MAINTENANCE=1` sur Vercel (production), puis redéploiement ; toutes les pages publiques répondent `/maintenance` en 503 (`Retry-After: 600`).
+- Le plus rapide : interrupteur **`maintenance`** dans Admin › Référentiels (flags, `config/flags`), suivi par `proxy.ts` en 30 s environ, sans redéployer.
+- Recours si l'admin ou Firestore ne répond pas : variable `MAINTENANCE=1` sur Vercel (production), puis redéploiement ; toutes les pages publiques répondent `/maintenance` en 503 (`Retry-After: 600`).
 - L'admin, les API (webhooks Stripe, partenaires) et les fichiers statiques restent servis : les paiements et imports continuent d'arriver.
 - Retirer la variable et redéployer pour rouvrir.
 
@@ -30,7 +31,7 @@
 | Webhook en 400 « signature » | `STRIPE_WEBHOOK_SECRET` correspond à l'endpoint de **ce** environnement | Mettre le bon secret sur Vercel, redéployer, renvoyer les événements |
 | Stripe indisponible | status.stripe.com | Rien à faire côté site : Checkout et le portail client sont hébergés par Stripe ; prévenir les artisans si la panne dure |
 
-Ne jamais modifier `plan`, `optionVisibilite` ou `siegesMax` à la main : seul le webhook les écrit.
+Ne jamais modifier `droits` (qui remplace `plan` et `optionVisibilite`) ou `siegesMax` à la main : seul le webhook les écrit.
 
 ## 4. Emails (Resend) et SMS (Brevo)
 
@@ -50,16 +51,19 @@ Les envois passent par une file (`envoyerEnvoi`) : une panne courte se rattrape 
 | Erreur « index requis » | message Sentry avec le lien de création de l'index | Ajouter l'index dans `firestore.indexes.json`, puis `firebase deploy --only firestore:indexes` |
 | `APP_CHECK_INVALIDE` en série | clé reCAPTCHA (`NEXT_PUBLIC_RECAPTCHA_SITE_KEY`), domaine autorisé dans reCAPTCHA Enterprise | Corriger la clé ou le domaine ; en dernier recours, désactiver l'application stricte d'App Check dans la console Firebase (jamais `APP_CHECK_MODE=desactive` en production : refusé par le code) |
 | Une tâche planifiée échoue | Cloud Scheduler → journaux de la fonction | Relancer à la main depuis Cloud Scheduler une fois la cause corrigée : les emails sont dédoublonnés (clé modèle + objet + destinataire), un second passage ne renvoie rien |
+| `purgeDessinNuit` en erreur « index requis » | index de champ `plans.supprimeLe` (groupe de collections) | Déployer `firestore.indexes.json` ; la purge reprend la nuit suivante (200 plans par passage) |
 
 ## 6. Demandes et matching
 
 - **Demandes sans artisan après 1 h** (alerte à partir de 3 par jour) : Admin › Demandes, filtre « sans attribution » ; vérifier les quotas mensuels (remis à zéro le 1er à 0 h 05 par `compteursMois`) et les zones.
-- **Webhook partenaire en échec** : Admin › Sources partenaires (journal des imports, motif du rejet) ; couper la source si elle envoie des données invalides en série.
+- **Webhook partenaire en échec** : Admin › Demandes › Sources (`/admin/demandes/sources` : journal des imports, motif du rejet) ; couper la source si elle envoie des données invalides en série.
 
 ## 7. Sécurité
 
 - **Suspicion de fuite** : couper l'accès concerné (désactiver le membre dans Admin › Équipe, révoquer la clé partenaire), conserver les journaux (`auditLog`), notifier la CNIL sous 72 h si des données personnelles sont touchées, prévenir les personnes concernées.
 - **Clé exposée** (Stripe, Resend, Anthropic…) : la révoquer chez le fournisseur, en créer une nouvelle, la poser dans les secrets Vercel ou Firebase, redéployer.
+- **Lien de partage d'un plan diffusé par erreur** (Dessin) : le propriétaire le révoque dans l'éditeur (Partager › liens actifs) ; le jeton n'est jamais stocké en clair (seule son empreinte), donc rien à purger côté base. En dernier recours, mettre le plan à la corbeille coupe aussi le lien.
+- **Dessin (Plans) en cause** : couper le flag `dessin` (et `dessinPublic`) dans l'admin : pages en 404, API « introuvable », les plans restent en base.
 - **CSP qui bloque un script légitime** : l'erreur apparaît dans la console du navigateur (« Refused to load… ») ; ajouter la source dans `apps/web/lib/securite.ts` (avec son test), jamais `unsafe-eval` en production.
 
 ## 8. Sauvegardes et restauration
@@ -71,5 +75,5 @@ Les envois passent par une file (`envoyerEnvoi`) : une panne courte se rattrape 
 
 ## 9. Assistant IA
 
-- Coupé sans `ANTHROPIC_API_KEY` ; budget mensuel bloquant à 100 % (Admin › IA › Réglages).
+- Coupé sans `ANTHROPIC_API_KEY` (à poser côté site **et** Functions : l'analyse est une action du site, la synthèse du lundi une Function) ; budget mensuel bloquant à 100 % (Admin › IA › Réglages).
 - Réponses refusées en série (« valeur absente du contexte ») : le contexte de nuit `iaContexte` est peut-être vide ; vérifier `iaContexteNuit` dans les journaux.
