@@ -156,14 +156,14 @@ Transaction :
 4. Écrire `achatsLeads`, `appelsOffres/{id}/deblocages/{artisanId}`, puis `nbDeblocages += 1` ; passer le statut à `complet` si le maximum est atteint
 5. Créer l'attribution `acceptee` dans la demande, avec `coordonneesDebloquees = true`
 
-### [9] Score de qualité du lead `qualiteLead` (0–100)
+### [9] Score de qualité de la demande `qualiteLead` (0–100)
 ```
 +25 email vérifié          +20 téléphone vérifié (SMS)     +15 réponses complètes (≥ 80 % champs)
 +10 photos jointes         +10 précisions ≥ 60 caractères   +10 délai ≤ 3 mois
 +10 budget cohérent avec l'estimation
 −30 IP / téléphone déjà vus ≥ 3 fois en 7 j    −40 email jetable    −20 hors zone couverte
 ```
-Un lead dont le score est inférieur à 30 est placé dans la file de modération (`fraude_suspectee`) **avant** tout matching.
+Une demande dont le score est inférieur à 30 est placé dans la file de modération (`fraude_suspectee`) **avant** tout matching.
 
 ### [10] Scores de nuit `artisanScores/{artisanId}` (planifié chaque nuit à 3 h)
 | Champ | Calcul (fenêtre glissante de 90 jours) |
