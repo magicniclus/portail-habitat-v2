@@ -189,6 +189,8 @@ export type Action =
   | { type: 'repartirSelection'; axe: 'x' | 'y' }
   | { type: 'verrouillerSelection'; valeur: boolean }
   | { type: 'verrouillerPlan'; valeur: boolean }
+  /** Même couleur pour toutes les portes et fenêtres du niveau. */
+  | { type: 'couleurMenuiseries'; couleur: string }
   | { type: 'modifierLongueur'; murId: string; longueur: number }
   /** Réglages d'un mur (DES-07) ; couper au milieu, fusionner avec le voisin (DES-09). */
   | { type: 'modifierMur'; murId: string; modif: ModificationMur }

@@ -1,6 +1,7 @@
 import {
   alignerObjets,
   collerElements,
+  colorerMenuiseries,
   copierElements,
   deplacerElements,
   elementsDansRectangle,
@@ -118,6 +119,8 @@ export function reduireSelection(e: EtatEditeur, a: Action): EtatEditeur | null 
       return surNiveau(e, (n) => repartirObjets(n, elementsChoisis(e), a.axe));
     case 'verrouillerSelection':
       return surNiveau(e, (n) => verrouillerElements(n, elementsChoisis(e), a.valeur));
+    case 'couleurMenuiseries':
+      return surNiveau(e, (n) => colorerMenuiseries(n, a.couleur));
     case 'verrouillerPlan':
       return surScene(e, (s) => succes({ ...s, verrouille: a.valeur }));
     default:

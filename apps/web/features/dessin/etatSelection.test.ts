@@ -129,3 +129,16 @@ describe('sélection multiple dans l’éditeur (DES-29)', () => {
     expect(recus).toEqual(['copier', 'coller', 'dupliquerSelection', 'toutSelectionner']);
   });
 });
+
+describe('couleur de toutes les menuiseries', () => {
+  it('une porte et une fenêtre prennent la même couleur en une action', () => {
+    let e = jouer([
+      { type: 'outil', outil: 'ouverture', typeOuverture: 'porte' },
+      { type: 'poserPoint', point: { x: 3000, y: 100 } },
+      { type: 'outil', outil: 'ouverture', typeOuverture: 'fenetre' },
+      { type: 'poserPoint', point: { x: 7000, y: 100 } },
+    ]);
+    e = reduire(e, { type: 'couleurMenuiseries', couleur: '#5b3a24' });
+    expect(niveauDe(e).ouvertures.map((o) => o.couleur)).toEqual(['#5b3a24', '#5b3a24']);
+  });
+});

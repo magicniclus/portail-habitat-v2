@@ -243,8 +243,10 @@ export const COULEURS_MENUISERIE: readonly TeinteDessin[] = [
   { id: 'blanc', libelle: 'Blanc', couleur: '#f5f5f2' },
   { id: 'gris-7016', libelle: 'Gris anthracite', couleur: '#3b4045' },
   { id: 'noir', libelle: 'Noir', couleur: '#1f2124' },
-  { id: 'chene-dore', libelle: 'Chêne doré', couleur: '#a8743f' },
+  { id: 'bois-clair', libelle: 'Bois clair', couleur: '#d8b98a' },
   { id: 'bois-naturel', libelle: 'Bois naturel', couleur: '#c9a273' },
+  { id: 'chene-dore', libelle: 'Chêne doré', couleur: '#a8743f' },
+  { id: 'bois-fonce', libelle: 'Bois foncé', couleur: '#5b3a24' },
   { id: 'vert-sauge', libelle: 'Vert sauge', couleur: '#8f9f8a' },
 ];
 

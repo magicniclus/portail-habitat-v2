@@ -67,7 +67,11 @@ export function InspecteurOuverture({ o, dispatch }: { o: Ouverture; dispatch: D
           </Button>
         </div>
       ) : null}
-      <InspecteurMenuiserie o={o} modifier={modifier} />
+      <InspecteurMenuiserie
+        o={o}
+        modifier={modifier}
+        toutes={(couleur) => dispatch({ type: 'couleurMenuiseries', couleur })}
+      />
       <Button variant="secondaire" onClick={() => dispatch({ type: 'supprimerSelection' })}>
         Supprimer
       </Button>

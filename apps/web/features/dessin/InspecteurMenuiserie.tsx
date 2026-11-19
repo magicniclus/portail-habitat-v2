@@ -12,7 +12,7 @@ import {
   type Ouverture,
   type Remplissage,
 } from '@ph/core/dessin';
-import { Field, Select } from '@ph/ui';
+import { Button, Field, Select } from '@ph/ui';
 import { COULEURS_MENUISERIE, TEINTE_MENUISERIE } from '@ph/ui/tokens';
 import { Nuancier } from './Nuancier';
 
@@ -35,9 +35,12 @@ const cleCarreaux = (o: Ouverture) =>
 export function InspecteurMenuiserie({
   o,
   modifier,
+  toutes,
 }: {
   o: Ouverture;
   modifier: (m: ModificationOuverture) => void;
+  /** Même couleur pour toutes les portes et fenêtres du niveau. */
+  toutes?: (couleur: string) => void;
 }) {
   const famille = CATALOGUE_OUVERTURES[o.type].famille;
   if (famille === 'libre') return null;
@@ -138,7 +141,17 @@ export function InspecteurMenuiserie({
         teintes={COULEURS_MENUISERIE}
         active={o.couleur ?? TEINTE_MENUISERIE[materiauDe(o)]}
         choisir={(t) => modifier({ couleur: t.couleur })}
+        libre={(couleur) => modifier({ couleur })}
       />
+      {toutes ? (
+        <Button
+          variant="secondaire"
+          className="h-auto min-w-0 py-2 whitespace-normal"
+          onClick={() => toutes(o.couleur ?? TEINTE_MENUISERIE[materiauDe(o)])}
+        >
+          Appliquer à toutes les menuiseries
+        </Button>
+      ) : null}
     </div>
   );
 }

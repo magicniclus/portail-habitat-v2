@@ -1,3 +1,4 @@
+import { echec, succes, type Resultat } from '../resultat';
 import type { Mur, Niveau, Ouverture, Point } from '../schemas/dessinScene';
 import { pointDansPolygone } from './geometrie';
 import { longueurMur } from './murs';
@@ -92,4 +93,20 @@ export function versInterieur(n: Pick<Niveau, 'pieces'>, m: Mur, o: Ouverture): 
   const d = m.epaisseur / 2 + 100;
   const devant: Point = { x: m.a.x + u.x * s - u.y * d, y: m.a.y + u.y * s + u.x * d };
   return n.pieces.some((p) => pointDansPolygone(devant, p.contour)) ? 1 : -1;
+}
+
+/**
+ * Même couleur pour toutes les menuiseries du niveau (portes, fenêtres, baies) ; les simples
+ * ouvertures et les arches, sans menuiserie, ne changent pas. Couleur hexadécimale à six chiffres.
+ */
+export function colorerMenuiseries(n: Niveau, couleur: string): Resultat<Niveau> {
+  const c = couleur.toLowerCase();
+  if (!/^#[0-9a-f]{6}$/.test(c)) return echec('ENTREE_INVALIDE', { message: 'Couleur invalide.' });
+  const sans = new Set<Ouverture['type']>(['ouverture_libre', 'arche']);
+  if (!n.ouvertures.some((o) => !sans.has(o.type)))
+    return echec('PRECONDITION', { message: 'Aucune porte ni fenêtre sur ce niveau.' });
+  return succes({
+    ...n,
+    ouvertures: n.ouvertures.map((o) => (sans.has(o.type) ? o : { ...o, couleur: c })),
+  });
 }

@@ -3,7 +3,13 @@ import type { Niveau, Ouverture } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
 import { listeMenuiseries } from './listeMenuiseries';
 import { menuiserie3D } from './menuiseries3d';
-import { materiauDe, remplissageDe, versInterieur, zonesCoulissement } from './menuiseries';
+import {
+  colorerMenuiseries,
+  materiauDe,
+  remplissageDe,
+  versInterieur,
+  zonesCoulissement,
+} from './menuiseries';
 import { modifierOuverture, poserOuverture } from './ouvertures';
 const ctx = contexteTest();
 // Maquette : murs de 30 cm, mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150.
@@ -152,5 +158,17 @@ describe('menuiseries en 3D', () => {
     const applique = pieces('porte_coulissante');
     expect(de(applique, 'rail')).toHaveLength(1);
     expect(Math.abs(vantail(applique).centre.y - 150)).toBeGreaterThan(150);
+  });
+});
+
+describe('couleur de toutes les menuiseries', () => {
+  it('portes et fenêtres colorées, ouverture libre inchangée ; couleur illisible refusée', () => {
+    let niv = ok(poser(n, 'porte', 2_000));
+    niv = ok(poser(niv, 'fenetre', 5_000));
+    niv = ok(poser(niv, 'ouverture_libre', 8_000));
+    const c = ok(colorerMenuiseries(niv, '#5B3A24'));
+    expect(c.ouvertures.map((o) => o.couleur)).toEqual(['#5b3a24', '#5b3a24', undefined]);
+    expect(colorerMenuiseries(niv, 'marron')).toMatchObject({ code: 'ENTREE_INVALIDE' });
+    expect(colorerMenuiseries(n, '#ffffff')).toMatchObject({ code: 'PRECONDITION' });
   });
 });
