@@ -128,59 +128,65 @@ export function Plan2D({
             }}
             onDoubleClick={() => dispatch({ type: 'terminerTrace' })}
           >
-            <OrthophotoSvg scene={scene} image={ortho} />
-            {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
+            {/* Style noir et blanc imprimable (DES-32) : tout le dessin désaturé, export compris. */}
+            <filter id="plan-noir-et-blanc">
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <g filter={etat.calques.noirEtBlanc ? 'url(#plan-noir-et-blanc)' : undefined}>
+              <OrthophotoSvg scene={scene} image={ortho} />
+              {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
-            <DefsMotifs
-              revetements={[
-                ...n.pieces.map((x) => x.sol),
-                ...n.zonesDeco.map((z) => z.revetement),
-                ...n.exterieur.terrasses.map((t) => t.revetement),
-              ]}
-              mmParPx={mmParPx}
-            />
-            <ExterieurSvg
-              niveau={n}
-              parcelle={scene.terrain?.parcelle ?? null}
-              etat={etat}
-              dispatch={d}
-            />
-            <PiecesSvg niveau={n} etat={etat} dispatch={d} />
-            <ZonesSvg niveau={n} etat={etat} dispatch={d} />
-            <ReperesNiveauSvg
-              dessous={niveauInferieur(scene, n.id)}
-              tremies={tremies(scene, n.id)}
-            />
-            <EscaliersSvg niveau={n} etat={etat} dispatch={d} />
-            <ObjetsSvg niveau={objets} etat={etat} dispatch={d} demarrerGlisser={demarrerObjet} />
-            <MursSvg
-              niveau={n}
-              etat={etat}
-              dispatch={d}
-              demarrerGlisser={demarrerMur}
-              demarrerExtremite={demarrerExtremite}
-            />
-            <OuverturesSvg niveau={n} etat={etat} dispatch={d} />
-            <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
-            <GuidesSvg guides={etat.guides} />
-            <CoupeSvg coupe={etat.coupe} mmParPx={mmParPx} />
-            {etat.calques.cotes ? (
-              <Cotes niveau={n} mmParPx={mmParPx} dispatch={d} cliquables={!trace} />
-            ) : null}
-            <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
-            {calques.annotations ? (
-              <AnnotationsSvg niveau={n} etat={etat} dispatch={d} mmParPx={mmParPx} />
-            ) : null}
-            {scene.terrain || scene.orientationNord ? (
-              <LimitesSvg
-                scene={scene}
+              <DefsMotifs
+                revetements={[
+                  ...n.pieces.map((x) => x.sol),
+                  ...n.zonesDeco.map((z) => z.revetement),
+                  ...n.exterieur.terrasses.map((t) => t.revetement),
+                ]}
                 mmParPx={mmParPx}
-                coin={{ x: cadre.x + cadre.l, y: cadre.y }}
               />
-            ) : null}
-            <MultiSelectionSvg niveau={n} multi={etat.multi} />
-            <ZoneSelectionSvg zone={multi.zone} />
-            <TracesEnCours etat={etat} curseur={trace ? curseur : null} mmParPx={mmParPx} />
+              <ExterieurSvg
+                niveau={n}
+                parcelle={scene.terrain?.parcelle ?? null}
+                etat={etat}
+                dispatch={d}
+              />
+              <PiecesSvg niveau={n} etat={etat} dispatch={d} />
+              <ZonesSvg niveau={n} etat={etat} dispatch={d} />
+              <ReperesNiveauSvg
+                dessous={niveauInferieur(scene, n.id)}
+                tremies={tremies(scene, n.id)}
+              />
+              <EscaliersSvg niveau={n} etat={etat} dispatch={d} />
+              <ObjetsSvg niveau={objets} etat={etat} dispatch={d} demarrerGlisser={demarrerObjet} />
+              <MursSvg
+                niveau={n}
+                etat={etat}
+                dispatch={d}
+                demarrerGlisser={demarrerMur}
+                demarrerExtremite={demarrerExtremite}
+              />
+              <OuverturesSvg niveau={n} etat={etat} dispatch={d} />
+              <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
+              <GuidesSvg guides={etat.guides} />
+              <CoupeSvg coupe={etat.coupe} mmParPx={mmParPx} />
+              {etat.calques.cotes ? (
+                <Cotes niveau={n} mmParPx={mmParPx} dispatch={d} cliquables={!trace} />
+              ) : null}
+              <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
+              {calques.annotations ? (
+                <AnnotationsSvg niveau={n} etat={etat} dispatch={d} mmParPx={mmParPx} />
+              ) : null}
+              {scene.terrain || scene.orientationNord ? (
+                <LimitesSvg
+                  scene={scene}
+                  mmParPx={mmParPx}
+                  coin={{ x: cadre.x + cadre.l, y: cadre.y }}
+                />
+              ) : null}
+              <MultiSelectionSvg niveau={n} multi={etat.multi} />
+              <ZoneSelectionSvg zone={multi.zone} />
+              <TracesEnCours etat={etat} curseur={trace ? curseur : null} mmParPx={mmParPx} />
+            </g>
           </svg>
         </div>
       </div>

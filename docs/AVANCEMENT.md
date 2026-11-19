@@ -858,10 +858,10 @@ Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Bra
 - [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
 - [x] 15f Aménager et décorer (18/11/2026, voir « Lot 15f fait » ci-dessous)
 - [x] 15g 3D, visite, photo, placement automatique, rotation libre (18/11/2026, voir « Lot 15g fait » ci-dessous)
-- [ ] 15h (en cours : menuiseries et toiture faites) Toiture, extérieur, piscine, implantation, façades et coupes
-- [ ] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel), « Créer un devis depuis ce plan »
-- [ ] 15j Landing publique, essai sans compte, mobile, accessibilité, performance
-- [ ] 15k Recette et fin
+- [x] 15h Toiture, extérieur, piscine, implantation, façades et coupes (18/11/2026)
+- [x] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel) ; « Créer un devis depuis ce plan » retiré (18/11/2026)
+- [x] 15j Landing publique, essai sans compte, mobile, accessibilité, performance (18/11/2026)
+- [ ] 15k Recette et fin (en cours le 19/11/2026, voir « Lot 15k » ci-dessous ; pas de mise en production sans le go du propriétaire)
 
 ### Dépendances à ajouter (signalées, D86)
 | Paquet | Où | Poids gzip (ordre de grandeur) | Sous-lot |
@@ -971,6 +971,23 @@ Demandes du propriétaire ajoutées au lot : **placement automatique** des meubl
   - déplacer ou faire pivoter l'image importée (reporté une seconde fois) ;
   - emprise 2D des meubles inclinés ;
   - cartes d'ombre plus fines sur les grands terrains.
+
+### Lot 15k — recette (en cours, 19/11/2026)
+Relecture complète de la branche puis « oui corrige tout » du propriétaire ; aucune mise en production (le propriétaire teste d'abord, éventuellement sur une autre branche de dev).
+- **Sécurité et RGPD (fait)** : PDF jusqu'à 4 Mo, débits propres par opération, jetons de partage stockés en empreinte SHA-256 avec date de fin obligatoire, plan joint lu par une route authentifiée, idempotence des créations, purge des partages, plans d'une entreprise fermée supprimés après 30 jours (D92), plan joint retiré = plus rien pour l'artisan (D93), jetons masqués dans Sentry.
+- **Bugs de l'éditeur (fait)** : réglages et découpe des murs (DES-07, DES-09), mur porteur supprimé seulement après confirmation, type de pièce (DES-11), saisie de la longueur au clavier (DES-06), historique des versions (DES-40, 300 étapes : D94).
+- **Fonctions manquantes (fait)** :
+  - cotes libres et textes (DES-31), calques du plan enregistrés avec la scène (DES-30) ; électricité et plomberie affichées par défaut (aucun plan en production) ;
+  - niveaux montés ou descendus, hauteur sous plafond et plancher réglables, altitudes recalculées (DES-04) ;
+  - « Mes plans » : aperçu des murs, recherche, tri (DES-02) ; **champ `apercu` ajouté aux métadonnées du plan** (chemin SVG calculé par le serveur, remplace la vignette image) ;
+  - sélection multiple (Maj + clic, rectangle à la souris, Ctrl + A), copier-coller vers un autre niveau, dupliquer, aligner, répartir, verrouiller un mur ou un meuble, **verrouiller le plan** (DES-29) ; **champs `verrouille?` ajoutés aux objets et à la scène** ;
+  - modèles de départ studio, T2, T3, plain-pied, maison à étage (DES-01) ;
+  - pièce libre polygonale (DES-12) ;
+  - style « noir et blanc » du plan 2D pour l'imprimer, dans le menu Rendu (DES-32, affichage seulement).
+- **Bugs trouvés pendant la recette (corrigés)** : « Mes plans » débordait en largeur sur téléphone avec un titre long (bouton « Créer le plan » inaccessible) ; le statut « Hors ligne » n'apparaissait jamais (écrasé par « Modifications en attente », nouvel envoi toutes les 2 s) : il reste affiché, chaque modification est gardée sur l'appareil, nouvel essai toutes les 30 s et au retour du réseau (DES-39).
+- **Architecture (fait)** : longues fonctions découpées (`menuiserie3D`, `metreNiveau`, `detecterPieces`), peintures sans doublon, `'use client'` inutiles retirés. **Non fait, volontairement** : libellés des matériaux laissés dans `@ph/ui` (pur affichage, aucun calcul ne les lit) ; couleurs du plan non reliées aux thèmes (le plan imprimé et le PDF gardent des couleurs fixes, lisibles sur papier).
+- **Tests** : cœur 4 325 (branches ≥ 95 %), web 146, serveur Plans 24 sur émulateur ; Playwright Plans : un parcours pour chaque DES de DES-01 à DES-48 (DES-44 dans le parcours particulier du simulateur, DES-45 retiré), iPhone 13 et ordinateur.
+- **Reste** : tests sur Pixel (non émulé dans la configuration pro) ; vrais modèles 3D (D88) ; services IGN à vérifier en préproduction ; `/dessin` en `revalidate = 3600` à l'ouverture.
 
 ### Lot 15j fait (18/11/2026)
 Plan validé par le propriétaire (4 étapes ; aucun changement de modèle ni de règle, aucune dépendance ; Lighthouse non ajouté, mesures avec Playwright).

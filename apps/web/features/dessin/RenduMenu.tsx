@@ -87,6 +87,15 @@ export function RenduMenu({
           onChange={(ev) => regler({ niveauSeul: ev.target.checked })}
         />
       </label>
+      <label className={interrupteur}>
+        Plan en noir et blanc (pour l’imprimer)
+        <input
+          type="checkbox"
+          className="size-5 accent-accent"
+          checked={etat.calques.noirEtBlanc}
+          onChange={() => dispatch({ type: 'calque', cle: 'noirEtBlanc' })}
+        />
+      </label>
       <fieldset className="m-0 grid gap-0 border-0 p-0">
         <legend className="mb-1 px-1 text-[13px] font-bold">Calques du plan</legend>
         {(Object.keys(LIBELLES_CALQUE) as CalqueScene[]).map((cle) => (

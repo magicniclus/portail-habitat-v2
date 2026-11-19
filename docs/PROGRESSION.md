@@ -29,6 +29,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 | 13b | Conversion, séquences | ✅ | avant le 13/10/2026 | CONV | |
 | 13c | Comportement, IA | ✅ | avant le 13/10/2026 | CMP, IA, RED | |
 | 14 | Qualité, mise en production | ✅ | avant le 13/10/2026 | ERR, MISE_EN_PROD | |
+| 15 | Plans (Dessin) | 🟡 | 19/11/2026 | DES-01 à DES-48 (sauf 45, retiré) ✅ | 15a à 15j faits ; 15k recette en cours ; pas de mise en production sans le go du propriétaire (AVANCEMENT §31) |
 
 ## Lot en cours
 - Lot : intégration du handoff (blog, domaines, landings) — détail des lots 0 à 14 dans AVANCEMENT.md
@@ -38,6 +39,7 @@ Statuts : ⬜ à faire · 🟡 en cours · ✅ terminé (critères d'ACCEPTANCE 
 
 ## Décisions prises en cours de route
 (Toute décision qui modifie un document de docs/ : date, décision, document mis à jour.)
+- 19/11/2026 — Lot 15k (recette Plans) : fonctions manquantes faites (DES-01 modèles, DES-02 aperçu et recherche, DES-04 niveaux, DES-12 pièce libre, DES-29 sélection multiple et verrous, DES-30 calques, DES-31 cotes libres et textes) ; champs ajoutés au modèle : `apercu` (métadonnées du plan), `verrouille?` (objets et scène) ; calques électricité et plomberie affichés par défaut ; statut « Hors ligne » corrigé (DES-39). Documents : DATABASE §8 quater, DESSIN §3–4, AVANCEMENT §31.
 - 18/11/2026 — Lot 15j fait : page publique /dessin et essai sans compte repris après connexion, éditeur au téléphone (feuilles du bas, pincer, appui long), accessibilité (« ? », annonces, animations réduites), budget de performance 500 murs / 1 000 objets mesuré (AVANCEMENT §31).
 - 18/11/2026 — Lot 15i fait : exports (PDF à l'échelle, PNG, CSV), lien de partage en lecture seule, « Demander des devis » avec plan joint et réponses écrites (D90) faits ; « Créer un devis depuis ce plan » retiré à la demande du propriétaire (AVANCEMENT §31).
 - 18/11/2026 — Lot 15h fait : menuiseries complètes, toiture (L, T, U, H, étage partiel, hauteurs), terrasse, terrain, piscine, implantation sur le cadastre avec photo aérienne IGN (champs `terrain.georef` et `terrain.orthophoto`, sans MapLibre, validé), façades et coupes (AVANCEMENT §31). Services IGN à vérifier en préproduction.

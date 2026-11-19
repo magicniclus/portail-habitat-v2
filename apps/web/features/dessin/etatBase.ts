@@ -127,7 +127,8 @@ export interface EtatEditeur {
   revisionPhotos: number;
   /** Guides du placement automatique pendant un glisser. */
   guides: Guide[];
-  calques: { cotes: boolean; surfaces: boolean };
+  /** Affichage du plan 2D ; `noirEtBlanc` : style imprimable (DES-32), non enregistré. */
+  calques: { cotes: boolean; surfaces: boolean; noirEtBlanc: boolean };
   /** Sélection multiple (DES-29), deux éléments ou plus ; vide sinon. */
   multi: Element[];
   /** Éléments copiés (Ctrl + C), collables sur n'importe quel niveau. */
@@ -301,7 +302,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     },
     revisionPhotos: 0,
     guides: [],
-    calques: { cotes: true, surfaces: true },
+    calques: { cotes: true, surfaces: true, noirEtBlanc: false },
     multi: [],
     copie: null,
     menu: 'structure',
