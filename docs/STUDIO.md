@@ -2,6 +2,8 @@
 
 Le Studio sert à **produire des vidéos courtes qui font des vues** sur TikTok, Reels et Shorts, pour faire venir des artisans. L'auteur (le propriétaire) enregistre son écran et sa voix ; Claude choisit le sujet, écrit le script, monte la vidéo et y ajoute des captures de Portail Travaux et des animations 2D. Objectif : jusqu'à 30 vidéos par jour.
 
+**État au 19/11/2026** (AVANCEMENT, journal du 05/11 au 10/11/2026) : tout ce document est codé et testé sur émulateurs (rendu réel ffmpeg + Chromium essayé). Restent, du côté du propriétaire : déployer le robot (`scripts/deployerStudio.sh`) et le redéployer après les dernières retouches (écrans plein cadre, gestes calmes) ; créer les clés `YOUTUBE_API_KEY`, `STUDIO_RENDU_CLE`, `STUDIO_CHIFFREMENT_CLE` et les applications Google, Meta et TikTok ; déployer les Functions et l'index avec son « go » ; faire valider TikTok (sinon vidéos privées) et « Instagram Public Content Access » ; régler le CORS du bucket (filtres son de l'aperçu). faster-whisper n'a pas pu être essayé dans l'environnement de développement : il sera vérifié au premier passage dans l'image Docker. Les réseaux sont testés avec de faux serveurs seulement.
+
 Route : `/admin/studio`. Permission : `studio.utiliser` (section `std`). Le propriétaire décide qui y a accès dans Admin › Équipe (rôle, permissions en plus ou en moins). Superadmin et admin l'ont par défaut. Après l'ajout de la permission, lancer une fois `pnpm admin:permissions`, puis se reconnecter.
 
 ## 1. Sujet et script
@@ -151,6 +153,8 @@ Le robot extrait aussi 4 images de la caméra, envoyées à Claude pour juger le
 - `studioProjets/{id}` : auteur, titre, statut, format, caméra, sujets, sujet, prise, mots, plan, version, captures, rendu, erreur, coût en centimes. Sous-collection `versions/{n}`.
   - Règles : lecture par la section Studio, écriture par le serveur uniquement.
 - `studioTendances/{recherche}` : cache YouTube de 24 h. Admin SDK uniquement.
+- Autres collections du Studio (toutes écrites par le serveur) : `studioIdees` (idées gardées), `studioReglages/{uid}` (thèmes, « Ma façon de parler », exemples ; Admin SDK seul), `studioComptes/{reseau}` (jetons chiffrés), `studioPublications`, `studioSeries`. Champ `studioProjets.preparation` (captures préparées).
+- Vidéos et médias du Studio servis par le serveur (`/api/studio/fichier`), plus par l'adresse publique de Storage.
 - **Prises brutes** supprimées après **30 jours** par la purge de nuit (`purgerPrisesStudio`). Les vidéos finies restent.
 
 ## 8. Variables
@@ -215,6 +219,7 @@ Leviers si besoin :
 
 - Claude propose 2 autres accroches avec leur miniature. Le robot rend une vidéo par variante (`studioRendus/{projet}/v{n}-{variante}/`). On publie chaque version (un réseau chacune, ou des jours différents) ; le tableau « Test des accroches » marque la gagnante (★) dès que toutes ont des résultats.
 - Séries (`studioSeries`) : un nom et une promesse. « Épisode N » crée la vidéo ; Claude reçoit les épisodes déjà faits, ajoute « Série · épisode N » au début et « Épisode N+1 bientôt : abonne-toi » à la fin.
+- **Contradiction à trancher (propriétaire)** : depuis le 09/11/2026, `REGLES_SCRIPT` interdit « série » et « épisode » dans la voix, les textes à l'écran et les titres, mais la consigne de montage d'une série (`prompts.ts`) demande toujours d'afficher « {série} · épisode N » et « Épisode N+1 bientôt : abonne-toi ». Les deux règles sont dans le code ; à départager.
 
 ## 14. Idées tirées des commentaires et tendances Instagram
 

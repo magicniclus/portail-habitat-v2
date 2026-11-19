@@ -1,6 +1,8 @@
-# Envoi des leads à Portail Travaux — format attendu
+# Envoi des demandes à Portail Travaux — format attendu
 
-Pour le site partenaire (simulateur d'aides) qui envoie ses demandes. Chaque lead est envoyé **un par un, en temps réel**, à un webhook HTTPS. Le webhook (Cloud Function `importerDemandePartenaire`, `europe-west1`) valide, déduplique, qualifie puis écrit dans Firestore. **Vous n'écrivez jamais directement dans Firestore.**
+Pour le site partenaire (simulateur d'aides) qui envoie ses demandes. Chaque demande est envoyée **une par une, en temps réel**, à un webhook HTTPS.
+
+**État au 19/11/2026** : le webhook est codé et testé (lot 12b, AVANCEMENT §19 ; IMP-01 à IMP-06, test de charge IMP-04 sur 200 demandes) ; sources et clés créées par script (`pnpm partenaire:source <fichier.json>`, exemple `docs/data/source-partenaire.exemple.json`, clé affichée une seule fois) ; écran admin Sources partenaires (imports des 7 derniers jours, journal des rejets, couper ou rouvrir une source). **Pas encore en service** : il manque les éléments du §5 et la clé Brevo pour l'envoi réel des SMS de confirmation. Le webhook (Cloud Function `importerDemandePartenaire`, `europe-west1`) valide, déduplique, qualifie puis écrit dans Firestore. **Vous n'écrivez jamais directement dans Firestore.**
 
 Références internes : DATABASE.md §4 bis, MATCHING.md « Demandes partenaires », ACCEPTANCE.md IMP-01 à IMP-06.
 
@@ -18,6 +20,7 @@ X-Source-Id: <identifiant de votre source, ex. simulateur-aides>
 - Appel depuis une **IP déclarée** (liste `ipAutorisees` de votre source). Toute autre IP → `403`.
 - Un environnement `staging` avec sa propre clé est fourni pour les tests.
 - Quota journalier par source (`quotaJour`) ; au-delà → `429`.
+- Corps de plus de 32 Ko → `413`.
 
 ---
 
@@ -82,7 +85,7 @@ X-Source-Id: <identifiant de votre source, ex. simulateur-aides>
 | `contact.prenom`, `contact.nom` | string | ✅ | |
 | `contact.email` | string | ✅ | Format email valide |
 | `contact.telephone` | string E.164 | ✅ | `+33…` ; mobile ou fixe français. Invalide → rejet |
-| `contact.telephoneVerifie` | bool | ✅ | `true` seulement si vérifié par code SMS chez vous. Sinon nous envoyons le code |
+| `contact.telephoneVerifie` | bool | ✅ | `true` seulement si vérifié par code SMS chez vous. Sinon nous envoyons un SMS avec un lien de confirmation (`/confirmer-telephone`, confirmé par un clic ; niveau relevé de B à A) |
 | `chantier.codePostal` | string 5 chiffres | ✅ | Hors zone couverte → rejet |
 | `chantier.ville` | string | ✅ | |
 | `chantier.typeTravaux` | string | ✅ | **Votre vocabulaire** ; converti en `prestationId` via la table de correspondance convenue (`mappingPrestations`). Type inconnu → rejet `schema_invalide` |
@@ -110,7 +113,7 @@ Règles générales : UTF-8, montants **toujours en centimes**, dates **ISO 8601
 
 | HTTP | `statut` | Signification | Facturé |
 |---|---|---|---|
-| `201` | `creee` | Demande créée, matching lancé | Oui (7 € HT) |
+| `201` | `creee` | Demande créée, matching lancé | Oui (coût de la source, `cout` ; 7 € HT convenus, D31b) |
 | `200` | `deja_recue` | Même `idExterne` déjà reçu : on renvoie la même réponse | Non (pas de 2ᵉ facturation) |
 | `200` | `doublon` | Même téléphone + même prestation reçu dans les 30 derniers jours | Non |
 | `422` | `rejetee` | Voir `motifRejet` ci-dessous | Non |
@@ -139,7 +142,7 @@ En cas de timeout ou de `5xx`, renvoyez **le même corps avec le même `idExtern
 
 ---
 
-## 4. Ce que devient le lead (pour information)
+## 4. Ce que devient la demande (pour information)
 
 | Collection Firestore | Contenu |
 |---|---|
@@ -147,7 +150,9 @@ En cas de timeout ou de `5xx`, renvoyez **le même corps avec le même `idExtern
 | `preuvesConsentement/{id}` | Votre bloc `consentement` (ip et user-agent hachés), jamais modifié, 5 ans |
 | `demandes/{id}` | `source: 'partenaire'`, `partenaire: { sourceId, idExterne, recueLe, coutAchatCentimes: 700 }`, `contact`, `prestationId`, `adresseChantier`, `aides`, `qualification` (score 0-100, niveau A/B/C), `rgeRequis` |
 
-Puis : proposition au premier artisan en **moins de 5 minutes**, dans son rayon (10 à 100 km). Niveau A/B/C calculé chez nous à partir de `telephoneVerifie`, `statutOccupation`, `horizon` et `aides` — vous n'avez pas à l'envoyer.
+Puis : matching en **moins de 5 minutes**, dans le rayon des artisans (10 à 100 km). Niveau A/B/C calculé chez nous à partir de `telephoneVerifie`, `statutOccupation`, `horizon` et `aides` — vous n'avez pas à l'envoyer. Pas de compte particulier créé (pas d'email au particulier, seulement le SMS de confirmation si besoin).
+
+**À signaler (interne)** : depuis la fin des demandes garanties Premium (D54, MATCHING), une demande partenaire n'a pas d'artisan ciblé ; elle part donc en **appel d'offres** (3 réponses au plus, prix × niveau × éligibilité), et non plus en proposition exclusive à un premier artisan. Tant que le déblocage payant est fermé (flag `appelsOffresPayants`), aucun artisan ne peut l'acheter. Les invendues sont marquées à 24 h et archivées à 72 h (D31e). À prendre en compte avant de brancher un partenaire payé à l'unité.
 
 ---
 

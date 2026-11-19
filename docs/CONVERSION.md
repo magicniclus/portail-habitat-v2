@@ -3,6 +3,12 @@
 Objectif : **maximiser le chiffre d'affaires par artisan**. Il faut transformer les prospects en inscrits, les inscrits en fiches en ligne, les fiches gratuites en Visibilité ou en Premium, faire monter la Visibilité en Premium et le mensuel en annuel, puis limiter les résiliations.
 Complète EMAILS.md (architecture d'envoi, préférences, limites). Maquettes des emails : `designs/Modeles Emails.dc.html`, groupes « Conversion » et « Fidélisation ».
 
+> **À lire d'abord : état au 19/11/2026.** Ce document a été écrit avec les anciennes formules **Visibilité** et **Premium**, remplacées par la grille de PAIEMENTS.md (D54, D60). Le moteur (lot 13b, AVANCEMENT §21) est codé et garde ces noms d'étapes, avec cette correspondance (`niveauConversion`, `FORMULE_ETAPE`, `packages/core/src/paiements/droits.ts`) :
+> - étape `visibilite` = abonné **Fiche Pro, Site Pro ou Fiche + Site** ; une offre « Visibilité » vend **Fiche Pro** (29 € HT/mois) ;
+> - étape `premium` = abonné **Tout inclus** ; une offre « Premium » vend **Tout inclus** (49 € HT/mois).
+>
+> Les emails affichent les vrais noms et prix (`PRIX_FORMULES_HT`), jamais « Visibilité » ni « Premium ». Ce qui n'existe plus et n'est **plus envoyé** : formules annuelles (`passage-annuel`, `prem-renouvellement`), demandes exclusives garanties et crédits inclus (`garantie-tenue` ; `prem-demandes-manquees` et `prem-credits` restent dans les séquences mais ne promettent plus de garantie ni de crédits inclus). Les prix cités plus bas (6,67 €, 55,93 €, 79,90 €, 240 €, 74,90 €) sont ceux de l'ancienne grille et ne sont plus utilisés. Le parcours de résiliation et les remises restent liés à D32c (✅) ; la catégorie `offres_pro` activée par défaut attend une validation juridique (D32d ⏳).
+
 ---
 
 ## 1. Principes (non négociables)
@@ -49,13 +55,15 @@ Légende : **T** = déclenché par un signal · **C** = calendrier (filet) · **
 
 Sortie : brouillon d'onboarding créé → passage en S2 (les relances d'inscription existantes prennent le relais).
 
+**État** : S1 est codée (`cycleProspects`, 7 h 05 ; route `/api/pro/prospect`), mais **n'a plus de point d'entrée** : le bloc « Pas encore prêt ? Recevez cette estimation par email » a été retiré de `/pro` le 25/10/2026 (décision du propriétaire). Les prospects ne viennent plus que du lien du groupe Facebook (§3 ter) ou d'un import.
+
 ### S2 · Inscription commencée → terminée (existant)
-`reprise-onboarding` immédiat, `relance-onboarding-1` J+1, `-2` J+3 (chiffres de la zone), `-3` J+10 (dernière). **Ajout** : un SMS unique à J+2 entre 10 h et 18 h si un mobile a été saisi (« Votre inscription est enregistrée à 66 %, terminez-la en 2 minutes »), catégorie `relance`.
+`reprise-onboarding` immédiat, `relance-onboarding-1` J+1, `-2` J+3 (chiffres de la zone), `-3` J+10 (dernière). Depuis le formulaire court du 17/11/2026, le téléphone n'est plus demandé à l'inscription : le SMS ci-dessous ne peut donc plus partir pendant l'inscription. **Ajout prévu** : un SMS unique à J+2 entre 10 h et 18 h si un mobile a été saisi (« Votre inscription est enregistrée à 66 %, terminez-la en 2 minutes »), catégorie `relance`.
 
 ### S3 · Compte créé → fiche en ligne (existant)
-`bienvenue-pro`, `fiche-incomplete` J+2 et J+7. **Ajout** : à J+10 sans mise en ligne, **tâche d'appel** dans l'admin (`filesModeration`, type `appel_activation`) si score ≥ 40. Une fiche en ligne qui reçoit une demande dans les 7 jours convertit 3 à 5 fois mieux : l'activation est le premier levier de vente.
+`bienvenue-pro`, `fiche-incomplete` J+2 et J+7. Depuis le 15/11/2026, la fiche est en ligne dès que le SIREN est reconnu (COMPTES §3.3) : l'étape `hors_ligne` ne concerne plus que les entreprises saisies à la main en attente de vérification, ou mises hors ligne par l'artisan ; `bienvenue-pro` annonce la fiche en ligne (ou la vérification en cours) et `fiche-incomplete` ne parle plus d'un seuil de 60 %. **Ajout** (fait) : à J+10 sans mise en ligne, **tâche d'appel** dans l'admin (`filesModeration`, type `appel_activation`) si score ≥ 40. Une fiche en ligne qui reçoit une demande dans les 7 jours convertit 3 à 5 fois mieux : l'activation est le premier levier de vente.
 
-Le moment déclic est la **première demande reçue**. Il faut donc donner la priorité aux nouveaux inscrits dans l'attribution des appels d'offres pendant leurs 14 premiers jours (réglage `bonusNouveaux` dans l'algorithme d'attribution).
+Le moment déclic est la **première demande reçue**. Il faut donc donner la priorité aux nouveaux inscrits dans l'attribution des appels d'offres pendant leurs 14 premiers jours (réglage `bonusNouveaux` dans l'algorithme d'attribution) — **pas encore fait** (aucun réglage `bonusNouveaux` dans le code).
 
 ### S4 · Gratuit → Visibilité (offre cible Visibilité)
 Départ : `fiche-en-ligne`.
@@ -68,10 +76,12 @@ Départ : `fiche-en-ligne`.
 | **C** J+17, 8 h | `vis-offre-rappel` | « expire ce soir » : **uniquement si** l'email J+14 a été ouvert ou cliqué |
 | 1er du mois | `rapport-mensuel` | existant, avec encart Visibilité |
 
-Sans conversion à J+30 : plus aucun email calendrier. Seuls restent les emails **T** (au maximum 2 par mois) et le rapport mensuel. Une nouvelle offre €, `vis-offre-relance`, part à J+90.
+Sans conversion à J+30 : plus aucun email calendrier. Seuls restent les emails **T** (au maximum 2 par mois) et le rapport mensuel. Une nouvelle offre €, `vis-offre-relance`, part à J+104 (validé le 05/10/2026).
+
+Aujourd'hui S4 vend **Fiche Pro** (29 € HT/mois, sans engagement) ; la remise porte sur ce prix mensuel (plus d'année). Les statistiques de la fiche sont ouvertes à tous depuis le 06/11/2026 : elles ne sont plus un argument de vente.
 
 ### S5 · Gratuit → Premium direct (offre cible Premium, score ≥ 50)
-Même rythme que S4, avec des messages Premium : `vis-position` (variante Premium), `prem-demandes-manquees` (T), `prem-credits` (T). **Pas de remise** : l'argument est la **garantie** (4 demandes exclusives par mois, sinon le 2e mois est offert). Score ≥ 70 : **tâche d'appel commercial** à J+7.
+Même rythme que S4, avec des messages Premium : `vis-position` (variante Premium), `prem-demandes-manquees` (T), `prem-credits` (T). **Pas de remise**. ~~L'argument est la garantie (4 demandes exclusives par mois, sinon le 2e mois est offert)~~ : **abandonné** avec la fin des demandes garanties (D54, PAIEMENTS §2) ; S5 vend aujourd'hui Tout inclus (−15 % et 12 h d'avance sur les appels d'offres, site, quotas IA doublés). Score ≥ 70 : **tâche d'appel commercial** à J+7.
 
 ### S6 · Visibilité → Premium
 | Quand | Modèle | Contenu |
@@ -80,9 +90,11 @@ Même rythme que S4, avec des messages Premium : `vis-position` (variante Premiu
 | **T** lundi 8 h | `prem-demandes-manquees` | ≥ 2 demandes de son métier et de son secteur confiées en exclusivité à un Premium la semaine passée : liste anonymisée avec les budgets. **Le plus fort levier** |
 | **T** | `prem-credits` | crédits achetés sur 30 jours > 40 € HT : « Premium inclut 5 crédits (50 €) par mois » |
 | **T** | `prem-appel-offres-complet` | un appel d'offres de son métier était complet (3 réponses) avant son résumé de 7 h : les Premium le voient en premier |
-| **C** J-30 avant le renouvellement annuel | `prem-renouvellement` | « Renouvelez directement en Premium » : le meilleur moment pour monter en gamme |
+| **C** J-30 avant le renouvellement annuel | `prem-renouvellement` | « Renouvelez directement en Premium » : le meilleur moment pour monter en gamme — **ne part plus** (aucune formule annuelle) |
 
 ### S7 · Mensuel → annuel, fidélité
+
+> **Abandonné** : plus de formule annuelle ni de demande garantie (D54, PAIEMENTS §2). `passage-annuel` et `garantie-tenue` restent dans le code pour l'historique des envois, mais ne partent plus.
 | Quand | Modèle | Contenu |
 |---|---|---|
 | **C** après la 3e échéance payée | `passage-annuel` | économie chiffrée : 240 € HT (Premium) ou 74,90 € HT (Visibilité), mois en cours déduit |
@@ -96,6 +108,7 @@ Même rythme que S4, avec des messages Premium : `vis-position` (variante Premiu
   - saison creuse, trop de travail → suspendre 2 mois ;
   - autre → appel.
 - `resiliation-alternative` : envoyé si la résiliation est confirmée, rappelle les 3 options avant la date de fin. **Une seule offre de rétention par 12 mois.**
+- Fait le 05/10/2026 : `/pro/abonnement/resilier` (raison obligatoire, alternative calculée côté serveur, coupon `ph_retention_50_2m`, suspension 2 mois, résiliation en fin de période). « Descendre à Visibilité » correspond aujourd'hui à une formule moins chère de la nouvelle grille. **À régler dans Stripe** : désactiver la résiliation directe dans le portail client.
 - Signaux de risque (aucune connexion depuis 14 jours, 3 demandes expirées sans réponse, note en baisse) : **tâche d'appel** « risque de résiliation », pas d'email commercial.
 
 ### S9 · Reconquête (ancien client)
@@ -116,6 +129,7 @@ Les demandes achetées (~7 € l'unité) qui ne trouvent pas preneur servent d'*
 | Attribution | les **3 premiers** qui activent la reçoivent (même limite que les appels d'offres) ; les suivants reçoivent la prochaine |
 | Limite | **1 demande offerte par entreprise**, une seule fois (pas de contournement par résiliation) |
 
+- Fait (CONV-07). « Activer Visibilité » = souscrire **Fiche Pro** aujourd'hui (le prix 6,67 € HT/mois de l'ancienne Visibilité annuelle n'existe plus). Ce levier dépend du déblocage payant des appels d'offres (flag `appelsOffresPayants`, coupé par défaut). **Écart dans le code** : le lien de cet email pointe encore vers `/pro/abonnement/visibilite?facturation=annuel` (`packages/firebase/src/serveur/cycle/offertes.ts`), ancienne adresse qui redirige vers `/pro/abonnement` ; à remplacer par `?offre=fiche`.
 - Modèle **`vis-demande-offerte`** (catégorie `offres_pro`, notification in-app en plus) : travaux, budget, distance, « cette demande est à vous si vous activez Visibilité aujourd'hui (6,67 € HT/mois) ». Il **prime** sur les emails calendrier S4 et compte dans la pression hebdomadaire.
 - Pour les prospects : variante de `prospect-demande-zone` avec « inscrivez-vous et activez Visibilité : cette demande vous est offerte ».
 - Function `cycleDemandesInvendues` (toutes les heures) ; traces `demande_offerte`, `demande_offerte_convertie` ; suivi dans `cycleStats` : demandes offertes, conversions, revenu généré, coût d'achat récupéré.
@@ -126,6 +140,7 @@ Les demandes achetées (~7 € l'unité) qui ne trouvent pas preneur servent d'*
 Premier canal d'acquisition d'artisans, gratuit et déjà qualifié.
 
 - **Publication quotidienne** (8 h) générée par l'admin (Appels d'offres › Publication Facebook) : 5 à 8 demandes du jour **anonymisées** (métier, commune, budget, délai), avec un lien unique `/pro?utm_source=facebook&utm_medium=groupe&utm_campaign=trouver-chantier&m=<metier>`. Copier-coller manuel : l'API Facebook ne permet plus de publier dans les groupes.
+- Fait (CONV-08) : onglet « Facebook et invendues » de l'admin des appels d'offres (texte du jour, copier, « marquer comme publiée », résultats 30 jours). **Pas encore fait** : la page d'arrivée dédiée ci-dessous ; le lien mène à `/pro`.
 - **Page d'arrivée dédiée** (variante de la landing pro) : bandeau « Vous venez du groupe Trouver chantier », métier prérempli, **première demande offerte** à l'activation de Visibilité (même mécanique que §3 bis).
 - Les inscrits venant du groupe sont marqués `prospects.source = 'facebook'` / `artisans.source` : conversion et revenu suivis séparément dans Conversion › Vue d'ensemble.
 - Aucune donnée personnelle de particulier dans les publications (commune seulement, jamais d'adresse ni de nom).
@@ -176,7 +191,7 @@ cycleEtat/{artisanId} {      ← document séparé d'artisans/{id} : ne redécle
   emailsNonOuvertsConsecutifs, enVeille, pause? { par, depuis, motif }, exclu }
 codesPromo/{code}     (collection existante, DATABASE.md §8) + source 'conversion', artisanId, modele
 ```
-- Les codes sont créés côté Stripe (`promotion_codes` : `max_redemptions: 1`, `expires_at`, `customer`) et appliqués **automatiquement** via le lien du bouton (`/pro/paiement?code=…`). L'artisan n'a rien à saisir.
+- Les codes sont créés côté Stripe au premier clic (`promotion_codes` : `max_redemptions: 1`, `expires_at`, `customer`) et appliqués **automatiquement** via le lien du bouton (`/pro/abonnement?offre=…&code=…` ; l'ancienne adresse `/pro/paiement` n'existe pas). L'artisan n'a rien à saisir. Avec un code, la fenêtre de paiement ne propose pas Tout inclus à côté.
 - Montée en gamme en cours de période : `proration_behavior: 'create_prorations'` (Visibilité restante déduite).
 - La position est calculée à partir du classement réel de l'annuaire sur la requête « métier + commune du siège ».
 
@@ -208,7 +223,7 @@ Cibles de départ, à recaler après 8 semaines :
 
 ## 9. Implémentation Firebase (automatisme complet)
 
-Aucune action manuelle n'est nécessaire : tout est piloté par des Functions v2 (`europe-west1`), dans `functions/src/cycle/`.
+Aucune action manuelle n'est nécessaire : tout est piloté par des Functions v2 (`europe-west1`) dans `apps/functions`, la logique dans `packages/core/src/conversion` et `packages/firebase/src/serveur/cycle`. Fonctions réellement en place (AVANCEMENT §21) : `cycleCalculer`, `cyclePlanifier`, `cycleHebdo`, `cycleCodesExpires`, `cycleDemandesInvendues`, `cycleProspects`, `cycleAgreger` (1 h 30), `cycleTestsAB` (lundi 6 h). Les noms de déclencheurs du tableau ci-dessous sont ceux de la conception d'origine et ne correspondent pas tous à une Function du même nom.
 
 ### Déclencheurs
 | Function | Type | Rôle |

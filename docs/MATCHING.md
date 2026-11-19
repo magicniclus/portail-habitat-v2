@@ -1,12 +1,20 @@
 # Algorithme de mise en relation (matching)
 
-> **Deux canaux** : (1) les **demandes garanties** de l'offre Premium (4 par mois) sont attribuées à **un seul artisan**, exclusif (un projet multi-métiers peut avoir un artisan par métier) ; (2) les **appels d'offres**, ouverts à toutes les formules, acceptent **3 réponses maximum**, avec 24 h d'avance pour Premium. Ceci remplace toute mention de « 3 artisans par demande » ailleurs dans ce document.
+> **État au 19/11/2026 (code, lots 12 et 12b, puis D54).** Le moteur est codé dans `packages/core/src/matching` (logique pure, testée) et `packages/firebase/src/serveur/matching` (Function `attribuerNouvelleDemande`, relances, déblocage). Ce qui a changé depuis la rédaction :
+> - **Plus de demandes garanties Premium** (D31 modifiée, D54) : l'offre Premium n'existe plus, le quota mensuel de demandes n'est plus appliqué (`quotaDemandesMois` neutralisé à l'attribution).
+> - **Demande laissée sur la fiche d'un artisan** : depuis le 01/11/2026, le formulaire « Demander un devis » de la fiche publique (et celui du site de l'artisan) crée une demande **attribuée directement** à cet artisan, **hors matching**, gratuite, coordonnées visibles (`creerDemandeDirecte`, `source: 'fiche_artisan'` ou site). Le §5 point 3 (« artisan ciblé en rang 1 ») ne s'applique plus à ces demandes.
+> - **Autres demandes** (simulateur, recherche, partenaires) : `aiguiller` donne la demande **à l'artisan ciblé seul** s'il y en a un et qu'il est éligible (canal interne `garantie`, gratuit, quelle que soit sa formule) ; sinon **appel d'offres** (3 réponses maximum).
+> - **Avance sur les appels d'offres** : **12 h** pour **Tout inclus** (`avanceAppelsOffresH`, PAIEMENTS §2, D57), et non plus 24 h ni 60 min. **Contradiction à signaler** : D83 (✅, 30/09/2026) fixe 60 minutes pour Premium ; le code applique 12 h (720 min) pour Tout inclus, conformément à PAIEMENTS (qui fait foi sur les offres).
+> - Avantages du score : `bonusPremium` = Tout inclus, `bonusVisibilite` = toute formule avec Fiche Pro (Fiche Pro, Fiche + Site, Tout inclus) (D60).
+> - **Déblocage payant fermé** : flag `appelsOffresPayants` coupé par défaut ; les appels d'offres se consultent sans pouvoir être achetés.
+>
+> Ancien texte : **Deux canaux** : (1) les **demandes garanties** de l'offre Premium (4 par mois) sont attribuées à **un seul artisan**, exclusif (un projet multi-métiers peut avoir un artisan par métier) ; (2) les **appels d'offres**, ouverts à toutes les formules, acceptent **3 réponses maximum**, avec 24 h d'avance pour Premium. Ceci remplace toute mention de « 3 artisans par demande » ailleurs dans ce document.
 >
 > **Filtre métier** : la demande porte `intention` et `prestation` (référentiel `referentiel/recherche`). Un artisan est éligible si `artisans.intentions` contient l'intention de la demande ; sinon, repli sur `artisans.metiers` contenant le métier de l'intention. Voir COMPTES.md §3.1 bis.
 
 Objectif : pour chaque projet (demande de travaux ou dossier de diagnostic), proposer **les bons artisans**, c'est-à-dire compétents, disponibles, proches, fiables et réactifs. Il faut aussi **avantager le Premium sans exclure les autres** et **ne pas saturer** un même artisan.
 
-Code : `functions/src/matching/` (TypeScript pur, **testé unitairement**, déterministe à configuration et données égales). Paramètres : `matchingConfig/actif`, modifiable dans l'admin et versionné.
+Code : `packages/core/src/matching/` (TypeScript pur, **testé unitairement**, déterministe à configuration et données égales) et `packages/firebase/src/serveur/matching/` ; Functions dans `apps/functions`. Paramètres : `matchingConfig/actif`, modifiable dans l'admin (Algorithme : poids, seuils, options, bac à sable) et versionné. Valeurs par défaut : `CONFIG_MATCHING_DEFAUT` (`packages/core/src/matching/config.ts`). Compléments décidés : D80 (barème) et D81 (points non précisés).
 
 ---
 
@@ -73,14 +81,16 @@ Déclencheurs :
 | Règle | Raison |
 |---|---|
 | `verification.statut != 'verifie'` | `non_verifie` |
-| Décennale expirée ou expirant avant le démarrage | `assurance` |
+| Décennale absente (D81), expirée ou expirant avant le démarrage | `assurance` |
 | Exigence non couverte (`rge`, `certif_diag`…) | `exigence:<x>` |
 | Sanction active | `sanction` |
-| `demandesRecuesMois ≥ quotaDemandesMois` | `quota` |
+| `demandesRecuesMois ≥ quotaDemandesMois` | `quota` (règle encore dans le cœur, **neutralisée** à l'attribution depuis la fin des demandes garanties) |
 | Déjà attribué ou déjà refusé pour cette demande | `deja_vu` |
 | Membre lié au particulier (même email, téléphone ou SIREN) | `conflit` |
 | Paramètre « pause » activé par l'artisan | `pause` |
 | `budgetMax` de la demande < `artisan.budgetMin × 0,5` | `budget` |
+
+> **À signaler** : depuis le 01/11/2026 (assurance facultative) et le 15/11/2026 (fiche en ligne dès le SIREN reconnu, `verification.statut: 'en_cours'`), une fiche peut être en ligne sans être `verifie` ni avoir de décennale. Ces deux filtres l'écartent alors de tous les appels d'offres et des demandes ciblées du matching (pas des demandes laissées sur sa fiche ou son site, attribuées hors matching). Comportement voulu ou non : à confirmer par le propriétaire.
 
 ### [4] Score de pertinence (0–100)
 Chaque sous-score est normalisé entre 0 et 1, puis pondéré par `poids` (somme = 1) et multiplié par 100.
@@ -96,7 +106,7 @@ Chaque sous-score est normalisé entre 0 et 1, puis pondéré par `poids` (somme
 | `completude` | `artisan.completude / 100` |
 
 Ajustements additifs (en points) :
-- **+ `bonusPremium`** si `plan == 'premium'` ; **+ `bonusVisibilite`** si l'option est active
+- **+ `bonusPremium`** si la formule est Tout inclus ; **+ `bonusVisibilite`** si la formule contient Fiche Pro (Fiche Pro, Fiche + Site, Tout inclus)
 - **− `penaliteSaturation`** si plus de `seuilDemandes7j` attributions sur 7 jours
 - **− `penaliteRefus`** si le taux de refus sur 30 jours dépasse `tauxSeuil`
 - **+ `nouvelArtisanBoost`** pendant les 30 premiers jours (cold start), si l'artisan est vérifié
@@ -108,7 +118,7 @@ Ajustements additifs (en points) :
    - au plus `quotaPremiumMax` Premium parmi eux (le Premium est avantagé sans capter tous les projets)
    - si `garantirUnNonPremium`, au moins un artisan gratuit lorsqu'il en existe un éligible
    - diversité : pas deux artisans de la même entreprise (même SIREN)
-3. `artisanCibleId` (demande venant d'une fiche) : cet artisan est placé **en position 1** d'office, s'il passe les filtres durs
+3. `artisanCibleId` : **remplacé**. Un artisan ciblé éligible reçoit la demande seul (`aiguiller`, voir l'encadré en tête) ; et les demandes laissées sur une fiche ne passent plus par le matching (attribution directe, 01/11/2026)
 
 ### [6] Écritures Firestore (une seule transaction)
 | Document | Champs écrits |
@@ -120,7 +130,11 @@ Ajustements additifs (en points) :
 | `matching/{demandeId}` | `version`, `candidats: [{ artisanId, distance, sousScores, ajustements, score, rang, retenu, raisonExclusion }]`, `nbCandidats`, `nbExclus`, `dureeMs`, `resultat` (`ok`, `sous_servi`, `aucun`) |
 | `users/{uid}/notifications` (artisans) | nouvelle demande |
 
-Puis les notifications : email `nouvelle-demande` (+ SMS si urgente), et push si l'application mobile est installée.
+Puis les notifications : email `nouvelle-demande` (+ SMS si urgente), et push si l'application mobile est installée (push et SMS prêts mais coupés par leurs flags).
+
+**Devis par écrit sans appel (D90, 18/11/2026)** : le particulier peut demander à recevoir des devis par écrit seulement (`contactSouhaite: 'ecrit_uniquement'`, case du simulateur) et joindre son plan (`planJoint`). Dans ce cas, son téléphone n'est **jamais** montré aux artisans, même après acceptation ou déblocage ; ils répondent par la messagerie ou par devis.
+
+**Mise en œuvre réelle (AVANCEMENT §18)** : pas de vagues de propositions à plusieurs artisans. Une demande ciblée non acceptée dans le délai (24 h, 4 h si urgente) ou refusée passe **directement** en appel d'offres, sans réinviter l'artisan. Sinon la demande part tout de suite en appel d'offres anonymisé au prix du barème, 3 places, invitations notifiées (Tout inclus tout de suite, les autres 12 h plus tard).
 
 ### [7] Suivi et réattribution (`matchingRelance`, toutes les 15 min)
 - Attribution `proposee` avec `expireLe` dépassé → `statut = 'expiree'`, `artisanScores.expirations30j += 1`
@@ -134,9 +148,9 @@ Puis les notifications : email `nouvelle-demande` (+ SMS si urgente), et push si
 ### [8] Déblocage d'un appel d'offres (Function `debloquerAppelOffres`)
 Transaction :
 1. Vérifier que `statut == 'ouvert'`, que `nbDeblocages < nbDeblocagesMax`, que l'accès est autorisé (fenêtre Premium), que l'artisan passe les filtres durs et qu'il n'a pas déjà débloqué
-2. Déterminer le prix : Premium → `prixPremiumCentimes`, sinon `prixBaseCentimes` (promo appliquée)
-3. Moyen de paiement :
-   - `inclus_premium` si `portefeuilles.creditsInclusRestants ≥ prixCredits`
+2. Déterminer le prix, **recalculé côté serveur** : prix de l'admin (grille ou prix manuel), −15 % pour Tout inclus (`remiseAppelOffres`), promo appliquée
+3. Moyen de paiement (flag `appelsOffresPayants` ouvert seulement) :
+   - ~~`inclus_premium` si `portefeuilles.creditsInclusRestants ≥ prixCredits`~~ : crédits inclus Premium **supprimés** (D54)
    - `credits` si `soldeCredits ≥ prixCredits` → mouvement `debit_lead`
    - `carte` → création d'un PaymentIntent Stripe (Checkout `mode: 'payment'`) ; le déblocage est finalisé par le webhook `payment_intent.succeeded`
 4. Écrire `achatsLeads`, `appelsOffres/{id}/deblocages/{artisanId}`, puis `nbDeblocages += 1` ; passer le statut à `complet` si le maximum est atteint
@@ -157,9 +171,9 @@ Un lead dont le score est inférieur à 30 est placé dans la file de modératio
 | `tauxReponse` | attributions ayant eu une réponse / proposées |
 | `tempsReponseMoyenMin` | médiane de `reponduLe − proposeeLe` |
 | `tauxAcceptation`, `tauxRefus`, `expirations30j` | |
-| `tauxDevis` | devis envoyés / acceptées |
-| `tauxConversion` | devis acceptés / devis envoyés |
-| `tauxRemboursementLeads` | remboursements acceptés / leads achetés |
+| `tauxDevis` | devis envoyés / acceptées — **pas encore calculé** |
+| `tauxConversion` | devis acceptés / devis envoyés — **pas encore calculé** |
+| `tauxRemboursementLeads` | remboursements acceptés / demandes achetées — **pas encore calculé** |
 | `noteBayesienne` | voir §4 |
 | `capaciteHebdo` | estimation de charge (attributions actives) |
 | `scoreGlobal` | synthèse 0–100 pour l'admin |
@@ -171,14 +185,14 @@ Ces scores sont ensuite recopiés dans `artisans/{id}` (`tauxReponse`, `tempsRep
 ## 4. Classement de l'annuaire (même moteur, sans demande)
 `artisansPublic.scoreClassement` est recalculé à chaque écriture de l'artisan et chaque nuit :
 `0,35 × qualite + 0,25 × reactivite + 0,15 × completude + 0,15 × disponibilite + 0,10 × anciennete (plafonnée à 10 ans)`, sur 100.
-Tri « Pertinence » à l'affichage : `scoreClassement − 0,6 × distanceKm` (+ correspondance du texte si Typesense renvoie un score). Les Premium sont affichés à part dans « Artisans à la une » (mention légale obligatoire, voir README).
+Tri « Pertinence » à l'affichage : `scoreClassement − 0,6 × distanceKm` (+ correspondance du texte si Typesense renvoie un score ; Typesense prêt mais inactif, clés à fournir). Les fiches mises en avant (formules avec Fiche Pro, label « Premium Portail Travaux ») sont affichées à part dans « Artisans à la une » (mention légale obligatoire, voir README), les **partenaires** (Tout inclus) en tête (01/11/2026). Sans artisan dans le secteur, l'annuaire montre « Les artisans les plus proches » (jusqu'à 150 puis 500 km).
 
 ---
 
 ## 5. Tests obligatoires
 - Chaque filtre dur exclut bien et consigne sa raison
 - Quota Premium respecté ; au moins un non-Premium quand il existe
-- `artisanCibleId` toujours en rang 1 s'il est éligible
+- `artisanCibleId` éligible : la demande lui revient seul (ancien critère « toujours en rang 1 »)
 - Réattribution : aucun artisan n'est sollicité deux fois
 - Déblocage concurrent : **deux artisans ne peuvent jamais dépasser `nbDeblocagesMax`** (test de transaction en parallèle)
 - Prix : les formules du barème reproduisent un jeu de 20 cas attendus
@@ -196,7 +210,7 @@ Tri « Pertinence » à l'affichage : `scoreClassement − 0,6 × distanceKm` (+
   - B : un critère manquant ;
   - C : « je me renseigne » ou locataire.
 
-  A et B peuvent être des demandes exclusives Premium ; **C ne l'est jamais** (appel d'offres à prix réduit uniquement).
+  A et B peuvent être des demandes exclusives (attribuées à un seul artisan) ; **C ne l'est jamais** (appel d'offres à prix réduit uniquement).
 - **Prix de l'appel d'offres** = grille × coefficient de niveau (A 1,0 · B 0,7 · C 0,4) × coefficient d'éligibilité (éligible 1,2 · non éligible 0,9).
 - **Rayon** : `distance ≤ artisan.rayonKm` (10 à 100 km, CGV Pro §1 bis).
 - **Vitesse** : la proposition au premier artisan part dans les 5 minutes suivant l'import ; les attributions exclusives non vues après 2 h sont réattribuées (au lieu de 72 h pour les demandes classiques).

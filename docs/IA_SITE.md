@@ -4,6 +4,8 @@ Maquette : `designs/Editeur de Site.dc.html` (panneau **IA** de la barre de gauc
 
 Objectif : en **un clic** (après quelques questions simples), l'artisan obtient un site complet, prêt à publier. Ensuite l'IA sert à **améliorer** : un texte, un composant, une page ou tout le site. Fonction payante : **incluse dans Site Pro (9,90 € HT/mois) dans Fiche + Site et dans Tout inclus**.
 
+**État au 19/11/2026** (lot 10c, AVANCEMENT §28) : tout le périmètre est codé, avec des écarts de mise en œuvre signalés ci-dessous. La génération réelle reste à vérifier avec la clé `ANTHROPIC_API_KEY` (sans elle, l'IA répond « pas encore disponible » et ne consomme rien). Réglages dans `packages/core/src/sites/ia/reglages.ts`. **À signaler** : les commentaires de ce fichier qualifient encore D48, D50 et D51 de ⏳, alors que DECISIONS les donne ✅ (validées en bloc le 17/10/2026) ; les valeurs codées sont bien celles des décisions.
+
 ---
 
 ## 1. Ce que l'IA sait faire
@@ -15,18 +17,22 @@ Objectif : en **un clic** (après quelques questions simples), l'artisan obtient
 | **Modifier un composant** | section ou élément sélectionné | « mets une photo en fond », « ajoute un bouton WhatsApp », « passe en 3 colonnes » | Haiku |
 | **Créer un composant** | page (position choisie) | « ajoute une FAQ sur les aides », « une section avant/après », « un bloc urgence 24/7 » | Haiku |
 | **Créer ou refaire une page** | page | « crée une page Pompe à chaleur », « refais la page Contact » | Sonnet |
-| **Thème** | site | « plus moderne », « couleurs de mon logo » (palette extraite du logo) | Haiku |
+| **Thème** | site | « plus moderne », « couleurs de mon logo » (palette extraite du logo : **pas encore faite**, la palette par défaut des tokens est utilisée) | Haiku |
 | **SEO** | page ou site | titres, méta-descriptions, textes alternatifs, pages locales | Haiku |
 
-L'artisan écrit en langage courant dans **une seule zone** (« Demandez à l'IA… ») ; un **routeur** (Haiku, sortie courte) classe la demande dans un mode et une portée. S'il manque une information, l'IA **pose une question** au lieu de deviner (§3).
+Dans le code, les modes sont `textes`, `composant`, `page`, `seo`, `theme` (`MODES_IA_SITE`) ; la création complète passe page par page avec le modèle des pages (Sonnet).
+
+L'artisan écrit en langage courant dans **une seule zone** (« Demandez à l'IA… ») ; avec Site Pro, l'action « Automatique (l'IA choisit) » est proposée par défaut et un **routeur** (Haiku, 200 jetons, sans crédit) classe la demande dans un mode et une portée (sortie illisible → textes). Sans Site Pro, pas de routeur : textes seulement, sur les essais. S'il manque une information, l'IA **pose une question** au lieu de deviner (§3). Le panneau propose aussi des suggestions en un clic et « Réécrire les textes de la zone avec l'IA ».
 
 ---
 
 ## 2. Principe technique : l'IA ne produit jamais de HTML
 
-L'IA ne renvoie que des **opérations** sur l'arbre du site (Section → Ligne → Colonne → Élément, DATABASE §15 bis), validées par Zod, avec uniquement les **15 éléments et 12 sections du catalogue**. Résultat : rien de cassé, tout reste éditable à la main, compatible mobile/tablette, et les règles de publication (liens valides, H1 unique…) s'appliquent.
+L'IA ne renvoie que des **opérations** sur l'arbre du site (Section → Ligne → Colonne → Élément, DATABASE §15 bis), validées par Zod, avec uniquement les éléments et sections du **catalogue** (`packages/core/src/sites/catalogue.ts` ; l'éditeur compte aujourd'hui 16 éléments et 13 zones prêtes, SITE_INTERNET §4.1). Résultat : rien de cassé, tout reste éditable à la main, compatible mobile/tablette, et les règles de publication (liens valides, H1 unique…) s'appliquent.
 
-### 2.1 Opérations (`packages/core/sites/ia/operations.ts`)
+Mise en œuvre : sortie structurée `{resume, question, operations}`, où `operations` est un texte JSON validé par Zod (les sorties structurées n'acceptent ni objets libres ni schémas récursifs). Une seule erreur et rien n'est appliqué (SITE-IA-04).
+
+### 2.1 Opérations (`packages/core/src/sites/ia/operations.ts`)
 ```ts
 type OperationIA =
   | { op: 'texte',        cible: ElementId, champ: 'texte'|'texteMobile'|'titre'|'alt', valeur: string }   // texte riche : <b> <i> <u> [mot](#L1)
@@ -54,8 +60,8 @@ type OperationIA =
 6. Lexique : jamais « lead » ; vouvoiement ; français.
 
 ### 2.3 Application
-- L'éditeur affiche une **proposition** : liste lisible des changements (« Bandeau d'accueil : titre réécrit », « + Section FAQ (5 questions) ») et aperçu en direct dans le canevas, surligné.
-- Boutons **Appliquer** / **Annuler** ; pour les textes : **Remplacer** / **Garder le mien** / **Autre version**.
+- L'éditeur affiche une **proposition** : liste lisible des changements (« Bandeau d'accueil : titre réécrit », « + Section FAQ (5 questions) ») et aperçu en direct sur une copie (sections nouvelles et éléments modifiés entourés ; rien n'est surligné sur le site publié).
+- Boutons **Appliquer** / **Annuler** et **Autre version**.
 - Appliquer = **une seule étape d'historique** (Ctrl Z annule toute la proposition).
 - **Rien n'est publié par l'IA.** La publication reste un clic de l'artisan (points à revoir signalés, SITE-09).
 - Création complète : l'ancien site est sauvegardé en modèle automatique « Avant IA – {date} » (récupérable dans Modèles › Mes modèles).
@@ -77,12 +83,16 @@ Règles : **phrases courtes, vocabulaire de chantier, une question à la fois, r
 | Q6 | Le ton du site ? | Professionnel · Chaleureux · Direct (avec un exemple de phrase pour chacun) | toujours |
 | + | Pages locales : « Je crée aussi une page pour ces communes ? » | puces pré-cochées (communes du rayon les plus recherchées) | rayon > 10 km |
 
-Le choix des modèles/couleurs n'est **pas** une question : l'IA prend le logo (palette extraite), sinon le métier, et propose 3 variantes visuelles côte à côte après génération.
+Le choix des modèles/couleurs n'est **pas** une question. Fait : à la fin de la création, **trois variantes visuelles** (Moderne, Chantier, Élégant : palette, polices, boutons) à choisir, sans appel à l'IA, appliquées en direct (Ctrl Z pour revenir). **Pas encore fait** : la palette extraite du logo (traitement d'image côté serveur). L'artisan peut aussi appliquer ensuite l'un des 6 modèles (SITE_INTERNET §4.7).
+
+La réponse « Autre » du questionnaire passe par le filtre de modération (§5).
 
 ### 3.2 Questions de précision (toutes les autres demandes)
 L'IA appelle l'outil `poserQuestion` quand la demande est ambiguë ou qu'un fait manque (« Quel délai pour un devis : 24 h, 48 h, une semaine ? »). **Maximum 2 questions** par demande ; au-delà elle propose avec `[à compléter]`.
 
 ### 3.3 Outils exposés au modèle (exécutés par la Function)
+
+> **Pas fait ainsi** : le modèle n'a pas d'outils. Le serveur lui envoie en une fois les sources de la fiche, un résumé de l'arbre et le catalogue, et il renvoie la sortie structurée de §2 (la question éventuelle est le champ `question`). Les outils ci-dessous restent la conception d'origine.
 - `poserQuestion({ texte, type: 'choix'|'multi'|'ouiNon'|'texteCourt'|'photos', options?, raison })`
 - `lireNoeud(id)` / `lirePage(pageId)` : détail complet d'une partie du site (le contexte initial n'est qu'un **résumé** de l'arbre).
 - `listerMedias(filtre)` : photos utilisables (alt, tags de chantier).
@@ -101,20 +111,22 @@ L'IA appelle l'outil `poserQuestion` quand la demande est ambiguë ou qu'un fait
 | Créer / modifier des composants et pages | — | 60 / mois | 120 / mois |
 | Améliorer les textes, SEO | 3 essais à vie | 300 / mois | 600 / mois |
 
-- **Point de bascule** : à la fin de l'aperçu gratuit, l'écran montre le site généré + « Activer Site Pro pour obtenir les 7 pages et publier » → `/pro/paiement?offre=site_pro&retour=/pro/site/editeur?ia=reprendre`. Les réponses au questionnaire sont gardées : après paiement, la génération complète **reprend sans rien redemander**.
+- **Point de bascule** : à la fin de l'aperçu gratuit, l'écran montre l'accueil généré sur une copie avec le filigrane « Aperçu » (Publier désactivé, le site n'est pas modifié) + « Activer Site Pro » qui ouvre la fenêtre d'offre → `/pro/abonnement?offre=site` (comme partout ; pas de paramètre `retour`). Après paiement, la page de confirmation propose « Terminer la création de mon site » (`/pro/site/editeur?ia=reprendre`) : l'éditeur reprend l'accueil de l'aperçu puis génère les autres pages avec les mêmes réponses, **sans rien redemander**. Données : `sites/{id}/iaCreation/courante`.
 - Chaque bouton IA visible par un compte gratuit porte un cadenas et ouvre la même fenêtre d'offre (pas de bouton caché : l'artisan voit ce qu'il gagne).
-- Droit calculé côté serveur : `sites/{id}.droits.ia` (`aucun`, `essai`, `complet`) écrit par le webhook Stripe (`customer.subscription.*` sur `site_pro`, `pack_fiche_site` ou `tout_inclus`). **Jamais lu depuis le client pour autoriser** : la Function revérifie.
+- Droit calculé côté serveur : `droits.iaSite` (`essai`, `complet`) et `iaMultiplicateur` de l'entreprise, recopiés dans `sites/{id}.droits.ia`, écrits par le webhook Stripe (`customer.subscription.*` sur `site_pro`, `pack_fiche_site` ou `tout_inclus`). **Jamais lu depuis le client pour autoriser** : la Function revérifie.
 - Résiliation : l'IA repasse en `essai` épuisé ; tout ce qui a été généré reste (c'est le site de l'artisan).
-- Quotas affichés dans le panneau (« 52 modifications restantes ce mois-ci »), remis à zéro le 1er du mois. Quota épuisé : message clair, l'édition manuelle reste complète. Pack « +100 modifications » 2,90 € HT (⏳ D52).
+- Quotas affichés dans le panneau (« 52 modifications restantes ce mois-ci »), remis à zéro le 1er du mois. Quota épuisé : message clair, l'édition manuelle reste complète. Pack « +100 modifications » 2,90 € HT (D52 ✅) : prix Stripe créé, **achat pas encore branché** (aucun écran ne le propose, PAIEMENTS §3). Compteurs : `sites/{id}/ia/{mois|essai}`.
 
 ---
 
 ### 4 bis. Blog
-Quota **distinct** : 5 articles rédigés/mois (Site Pro, Fiche + Site), 15 (Tout inclus). Retouches (titres, méta, alt, tags, idées, liens internes, textes réseaux) illimitées. **Mode autonome** et **pilote automatique** : même pipeline, une seule Function `iaBlogAuto` (mot-clé → SERP → plan → rédaction → méta → image/alt → tags/liens → contrôle SEO avec jusqu'à 2 boucles de correction → réseaux), 1 crédit par article. Coût estimé ≈ 0,05 à 0,10 € par article (Sonnet), + données mots-clés/SERP en cache. Détail : `BLOG.md` §2. Rédaction : Sonnet (≈ 0,03 € par article de 900 mots) ; retouches : Haiku.
+Quota **distinct** : 5 articles rédigés/mois (Site Pro, Fiche + Site), 15 (Tout inclus), +20 avec l'option Blog (D71). Retouches (titres, méta, alt, tags, idées, liens internes, textes réseaux) illimitées. **Article en un clic** et **pilote automatique** (faits le 17/10/2026, Function `piloteBlog`), 1 crédit par article. Les étapes SERP et données de mots-clés attendent DataForSEO (D68, clés à fournir) ; les corrections SEO sont automatiques mais sans boucle de rédaction supplémentaire. Détail à jour : `BLOG.md`. Coût estimé ≈ 0,05 à 0,10 € par article (Sonnet), + données mots-clés/SERP en cache. Détail : `BLOG.md` §2. Rédaction : Sonnet (≈ 0,03 € par article de 900 mots) ; retouches : Haiku.
 
 ---
 
 ## 5. Pipeline serveur
+
+> **Mise en œuvre réelle** : service `demanderIaSite` (`packages/firebase/src/serveur/sites/ia.ts`) appelé par une route de l'application (pas une Cloud Function `iaSite`), permission `site.gerer` ; droits revérifiés (aucun appel au modèle sans droit), crédit réservé avant l'appel et rendu en cas d'échec, une seule relance avec l'erreur, session `sites/{id}/iaSessions` (version du prompt `site.v2`, coût). Pas de boucle d'outils ni de document `iaContexteFiche` : les sources de la fiche sont lues à chaque demande. La création complète génère page par page (pas de streaming à l'intérieur d'une page), avec barre de progression et « Réessayer ». Le schéma ci-dessous est la conception d'origine.
 
 ```
 Éditeur ── callable iaSite({ siteId, mode?, portee, cibles[], demande, sessionId? }) ──▶ Function (europe-west1)
@@ -131,12 +143,12 @@ Quota **distinct** : 5 articles rédigés/mois (Site Pro, Fiche + Site), 15 (Tou
 - **Création complète** : génération **par page en streaming** (une page = un appel, accueil en premier) ; l'éditeur remplit les sections au fil de l'eau (maquette : barre de progression du panneau IA). SITE-01 : < 90 s pour 7 pages.
 - Prompt système versionné : `packages/core/sites/ia/prompts/{mode}.v{n}.md` ; version stockée dans chaque session.
 - Clé `ANTHROPIC_API_KEY` dans Secret Manager ; mêmes règles qu'IA_ADMIN (pas d'appel client, journalisation, pas de données de particuliers dans le contexte).
-- Modération : la demande de l'artisan passe par un filtre (contenu illicite, dénigrement de concurrents nommés) avant l'appel.
+- Modération (fait) : la demande de l'artisan passe par un filtre avant tout appel et tout crédit (propos injurieux, pratiques interdites comme « sans facture » ou « au noir », informations trompeuses comme faux avis ou certification inventée, critique d'un concurrent nommé) ; même règle dans le prompt.
 
 ---
 
 ## 6. Coûts (COUTS.md, à revérifier)
-Création complète (Sonnet, ≈ 20 k entrée + 15 k sortie) ≈ 0,25 € · composant/page (Haiku) ≈ 0,02 € · texte ≈ 0,002 €. Plafond théorique par abonné Site Pro : 5 × 0,25 + 60 × 0,02 + 300 × 0,002 ≈ **3 €/mois** pour 9,90 € HT ; usage médian attendu < 0,50 €. Aperçu gratuit ≈ 0,04 € par compte (accueil seule, Haiku). Prompt caching sur le système + catalogue.
+Création complète (Sonnet, ≈ 20 k entrée + 15 k sortie) ≈ 0,25 € · composant/page (Haiku) ≈ 0,02 € · texte ≈ 0,002 €. Plafond théorique par abonné Site Pro : 5 × 0,25 + 60 × 0,02 + 300 × 0,002 ≈ **3 €/mois** pour 9,90 € HT ; usage médian attendu < 0,50 €. Aperçu gratuit ≈ 0,04 € par compte (accueil seule, Haiku dans l'estimation ; le code génère l'accueil avec le modèle des pages, Sonnet : coût réel à remesurer). Prompt caching sur le système + catalogue.
 
 ---
 
