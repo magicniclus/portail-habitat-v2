@@ -865,6 +865,248 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
 - **Modèle de données (signalé)** : `sites/{id}/reglagesBlog/pilote` (serveur seulement, aucune règle client), `articles.pilote {jetonHash, publierLe, valideLe}` ; index `reglagesBlog (actif, prochaineLe)` ; nouveau modèle d'email `blog-a-valider`.
 - Tests : 10 cœur, 5 sur émulateur (BLOG-10 à 13), 1 e2e. Reste : la rédaction réelle attend `ANTHROPIC_API_KEY` ; les volumes et tendances de mots-clés attendent DataForSEO (D68).
 
+## 31. Lot 15 — Dessin, éditeur de plans 2D / 3D (cadrage 15a le 18/11/2026)
+
+Spécification : `docs/DESSIN.md`. Maquette : `docs/designs/Dessin.dc.html`. Branche : `lot-15-dessin`. Décisions D84 à D91 toutes tranchées le 18/11/2026 (plus aucun ⏳ bloquant).
+
+### Découpage
+- [x] 15a Cadrage (ce paragraphe)
+- [x] 15b Cœur pur : schémas, géométrie, commandes, historique, métré (18/11/2026, voir « Lot 15b fait » ci-dessous)
+- [x] 15c Données : Firestore, règles et tests, serveur, purge, RGPD (18/11/2026, voir « Lot 15c fait » ci-dessous)
+- [x] 15d Coque de l'éditeur et 2D (18/11/2026, voir « Lot 15d fait » ci-dessous)
+- [x] 15e Ouvertures, escaliers, niveaux, plan importé (18/11/2026, voir « Lot 15e fait » ci-dessous)
+- [x] 15f Aménager et décorer (18/11/2026, voir « Lot 15f fait » ci-dessous)
+- [x] 15g 3D, visite, photo, placement automatique, rotation libre (18/11/2026, voir « Lot 15g fait » ci-dessous)
+- [x] 15h Toiture, extérieur, piscine, implantation, façades et coupes (18/11/2026)
+- [x] 15i Export PDF, partage, métré, « Demander des devis » (plan joint, devis par écrit sans appel) ; « Créer un devis depuis ce plan » retiré (18/11/2026)
+- [x] 15j Landing publique, essai sans compte, mobile, accessibilité, performance (18/11/2026)
+- [ ] 15k Recette et fin (en cours le 19/11/2026, voir « Lot 15k » ci-dessous ; pas de mise en production sans le go du propriétaire)
+
+### Dépendances à ajouter (signalées, D86)
+| Paquet | Où | Poids gzip (ordre de grandeur) | Sous-lot |
+|---|---|---|---|
+| `clipper2-ts` | `packages/core` (seule dépendance runtime ajoutée au cœur, pure) | ~30 Ko | 15b |
+| `zustand`, `immer` | `apps/web` | ~1 Ko + ~5 Ko | 15d |
+| `comlink` | `apps/web` | ~1 Ko | 15d |
+| `idb-keyval` | `apps/web` | < 1 Ko | 15d |
+| `three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` | `apps/web`, import dynamique uniquement | ~150 + 40 + 20 à 60 + 30 Ko | 15g |
+| `maplibre-gl` | `apps/web`, import dynamique (vue d'implantation) | ~220 Ko | 15h |
+| `@gltf-transform/cli` | `scripts/` (développement seulement) | — | 15f |
+
+`packages/core` n'importe aujourd'hui que Zod (ARCHITECTURE §3) : `clipper2-ts` est pure (aucun accès réseau ni DOM) ; à accepter explicitement, sinon les opérations booléennes seront écrites à la main (plus long, plus risqué).
+
+### Règle du lot 15 : aucun code existant modifié
+Le projet a avancé au fur et à mesure : **Dessin est entièrement ajouté à côté, sans modifier un seul fichier de code existant** (pas de refactorisation, pas d'extraction, pas de changement de schéma, de règle, de permission ou de composant existant). Le code existant peut être **lu** et **importé** tel quel, jamais réécrit.
+Les quelques branchements qui exigeraient de toucher un fichier existant (lien « Dessin » dans la barre latérale pro, onglet « Mes plans » de l'espace particulier, plan joint et « devis par écrit sans appel » dans les demandes, permission d'équipe, flags, règles Firestore et Storage) sont **listés dans DESSIN.md §11 et ne seront faits qu'avec l'accord explicite du propriétaire**, au moment du sous-lot concerné, un par un.
+
+### Lot 15b fait (18/11/2026)
+Nouveaux fichiers uniquement, aucun fichier existant modifié :
+- `packages/core/src/schemas/dessinScene.ts` (scène complète : murs, ouvertures, pièces, objets, escaliers, cotes, textes, zones décoratives, toiture, terrasses, piscines, clôtures, végétation, terrain ; mm et dixièmes de degré entiers ; identifiants uniques, ouvertures rattachées à un mur existant) et `schemas/dessinPlan.ts` (plan, version, partage).
+- `packages/core/src/dessin/` : `geometrie`, `murs` (contours, jonctions L/T/X, surface nette des faces), `pieces` (détection automatique, conservation des noms, Carrez), `aimantation`, `historique` (300 étapes, un glisser = une étape), `commandes` (ajouter, déplacer une extrémité, déplacer un mur, modifier une cote, scinder, fusionner, supprimer, renommer, revêtements), `formes` (rectangle, L, U, T), `metre`, `validations` (Blondel, échappée, garde-corps), `migrations`, `format`.
+- Tests : 47 nouveaux, 4 200 au total, tous verts ; couverture de `dessin/` 99,4 % lignes ; `typecheck` et `lint` verts.
+- Export `@ph/core/dessin` ajouté à `packages/core/package.json` avec l'accord du propriétaire (seule ligne existante modifiée), point d'entrée `dessin/index.ts`. `pnpm lint`, `pnpm typecheck` (8 paquets), `pnpm knip` et les 4 200 tests du cœur sont verts.
+- Constats : le catalogue n'a pas de prestation « peinture intérieure » ni « carrelage » (`prestationId: null` dans le métré pour ces postes) ; les modèles de départ (studio, T2…) sont reportés au lot 15d, avec l'écran de création.
+
+### Lot 15d fait (18/11/2026)
+- **Écrans** : « Mes plans » (`/mon-espace/plans`, onglet de l'espace particulier) et « Dessin » (`/pro/dessin`, barre latérale, permission `dessin.gerer`) : liste, création depuis une forme (rectangle, L, U, T, ou plan vide), copie, corbeille et restauration. Éditeur plein écran (`…/[planId]`) fidèle à la maquette : barre d'application (projet renommable, état d'enregistrement, niveau, annuler/rétablir, vues), bibliothèque à onglets (Structure : murs et cloisons, pièce rectangulaire ; Chiffrer : métré en direct), palette d'outils (sélection, mur, pièce, magnétisme), plan 2D en SVG (murs à l'épaisseur réelle, pièces colorées selon le sol, cotes cliquables, nom et surface des pièces, tracé avec aimantation), inspecteur (longueur saisie, peinture des faces, sol, plafond, nom, surface, périmètre, suppression), zoom et « ajuster à l'écran », calques Cotes et Surfaces, guide « Bien démarrer ».
+- **Sauvegarde** : automatique 2 s après la dernière modification, bouton Enregistrer (version nommée), conflit entre onglets proposé à l'utilisateur, brouillon hors ligne dans IndexedDB repris à l'ouverture.
+- **Clavier et mobile** : Ctrl/Cmd+Z, Ctrl/Cmd+Maj+Z, Échap, Suppr, flèches (1 cm, Maj = 10 cm) ; sur téléphone, bibliothèque et propriétés en feuilles du bas, palette en bas, hauteur calculée sous l'en-tête et au-dessus de la navigation pro.
+- **Correction du cœur** : tirer sur une cote déplace le mur voisin parallèlement (la pièce reste d'équerre) au lieu de le mettre de biais.
+- **Aucune dépendance ajoutée** : `useReducer` et les instantanés immuables du cœur suffisent (zustand, immer, idb-keyval, comlink non nécessaires à ce stade).
+- **Touché dans l'existant (accord du propriétaire)** : flags `dessin` et `dessinPublic` (défaut `false`), page `dessin` du menu pro en option de `menuPro` (comportement inchangé sans l'option, tests existants intacts), adresse et icône, onglet « Mes plans » (prop `avecPlans`, absente = inchangé) et ses 4 pages, routes, export des tokens de couleur de Dessin (`@ph/ui/tokens`).
+- **Tests** : 12 unitaires (état de l'éditeur, scènes de départ), 2 sur le menu pro, Playwright `e2e-pro/dessin.spec.ts` (créer un plan, tracer une cloison, annuler, modifier une cote, rechargement, refus du comptable) **vert sur iPhone 13 et ordinateur**. `typecheck`, `lint`, `knip`, `prettier`, 4 203 tests du cœur verts.
+- **Reste pour les lots suivants** : modèles de départ (studio, T2…) et données de démonstration du seed, plusieurs niveaux (15e), 3D et visite (15g).
+
+### Lot 15e fait (18/11/2026)
+- **Cœur** (`packages/core/src/dessin/`, nouveaux fichiers) : `ouvertures` (16 types avec dimensions par défaut, pose sur le mur cliqué recalée dans le mur, refus des chevauchements et des dépassements, modification, suppression), `escaliers` (6 types, marches et giron selon Blondel, emprise au sol tournée, modification avec recalcul), `niveaux` (étage, combles, sous-sol, murs extérieurs repris, renommer, supprimer sauf le dernier, 10 au plus, trémies issues des escaliers du dessous), `fond` (plan importé : pose, opacité, mise à l'échelle par deux points et une longueur réelle). 14 tests, 100 % des lignes.
+- **Serveur** : `enregistrerFond` / `lireFond` (image vérifiée par sa signature JPEG/PNG/WebP, 3 Mo au plus, lue seulement dans le dossier du plan), opérations `fond` et `lire-fond` de `/api/dessin`. 2 tests sur émulateurs. Storage inchangé côté règles (accès serveur uniquement).
+- **Éditeur** : menu Structure avec sous-menus (Murs & cloisons, Portes & fenêtres, Escaliers, Pièce rectangulaire, Niveaux, Importer un plan) ; symboles normalisés sur le plan (vantail et arc ouverts côté pièce, double trait des fenêtres, coulissants) ; escaliers avec marches ; niveau du dessous en transparence et trémies en pointillés ; sélecteur de niveau dans la barre ; inspecteur des ouvertures (largeur, hauteur, allège, position, sens, côté) et des escaliers (type, largeur, hauteur, marches, giron, alertes, pivoter) ; sur téléphone, choisir un outil à placer replie le menu. État de l'éditeur découpé (`etatBase`, `etatStructure`, `etat`), 6 tests de plus.
+- **Playwright** : nouveau parcours (porte d'entrée, escalier droit de 15 marches, étage avec ses murs, plan importé affiché, rechargement) vert sur iPhone 13 et ordinateur, avec le parcours du 15d.
+- **Import de PDF** (accord du propriétaire) : dépendance `pdfjs-dist` 6.4.299 ajoutée à `apps/web`, chargée seulement au choix d'un PDF ; la première page est rendue en JPEG dans le navigateur puis suit le même circuit que les images (vérification serveur). Testé de bout en bout avec un vrai PDF. Le fichier de verrouillage ne change que pour cet ajout (une montée de version indirecte a été annulée).
+- **Reste** : déplacer et faire pivoter l'image importée (reporté au lot 15g).
+
+### Lot 15f fait (18/11/2026)
+- **Cœur** (`packages/core/src/dessin/`, nouveaux fichiers) :
+  - `catalogue` : environ 60 éléments en 11 univers (cuisine, salle de bain, chambre, dressing, enfant, bureau, séjour, luminaires et déco, électricité, plomberie et chauffage, extérieur), avec dimensions, plages autorisées, symbole 2D et prestation du catalogue (`prestationId` existant). Recherche sans accents.
+  - `objets` : pose (collée dos au mur à moins de 70 cm), déplacement, rotation, dimensions dans les plages, duplication, suppression, collisions (SAT).
+  - `cuisine` : plan de travail continu au-dessus des meubles bas (débord de 3 cm), triangle d'activité (3,60 à 7,90 m).
+  - `revetements` : familles par support, libellés, poses, murs d'une pièce en un clic, zones décoratives au sol.
+  - Schéma : `format` et `pose` facultatifs sur un revêtement (rétrocompatible, aucune migration).
+  - Métré : postes « plan de travail » et « équipements » (une ligne par prestation).
+  - 8 tests.
+- **Tokens** (`@ph/ui/tokens`) : `MATERIAUX_DESSIN` (environ 28 matériaux avec couleur, joint et format), `COULEURS_OBJETS`.
+- **Éditeur** :
+  - Menu **Équiper** : recherche, univers, clic sur un élément puis sur le plan ; conseil du triangle d'activité en cuisine.
+  - Menu **Finitions** : surface visée (sol, murs de la pièce, plafond ; un côté ou les deux d'un mur ; zone), famille, pose, joint, matériaux, copier/coller le style, tracer une zone au sol.
+  - Motifs SVG de carrelage et de parquet (droite, décalée, diagonale…), symboles 2D des meubles, plan de travail.
+  - Inspecteur d'objet : dimensions, rotation ±15°/±90°, couleur, dupliquer, supprimer, alerte de chevauchement. Inspecteur de zone.
+  - Glisser les objets à la souris ; flèches pour les déplacer ; touche R pour un quart de tour.
+  - Sur téléphone, un seul panneau ouvert à la fois (le dernier ouvert l'emporte).
+  - 4 tests d'état de plus.
+- **Playwright** : nouveau parcours (lit posé puis tourné, parquet sur la pièce, zone au sol, rechargement) **vert sur iPhone 13 et ordinateur** avec les 3 parcours précédents.
+- **Aucune dépendance ajoutée, aucune règle de sécurité modifiée.**
+- **Reste** :
+  - modèles 3D des objets (lot 15g, catalogue CC0 puis maison, D88) ;
+  - déplacer ou faire pivoter l'image importée (15g).
+
+
+### Lot 15g fait (18/11/2026)
+Demandes du propriétaire ajoutées au lot : **placement automatique** des meubles et **rotation libre sur 3 axes**. Trois points validés par lui : inclinaison facultative dans le modèle, volumes simples en attendant les modèles 3D, emprise 2D calculée sur le meuble droit.
+- **Placement automatique** (`packages/core/src/dessin/placement.ts`, à la pose et au glisser, en 2D comme en 3D) :
+  - meuble « contre mur » : dos collé au mur le plus proche (dos à moins de 40 cm), tourné face à la pièce ;
+  - autre meuble : redressé parallèle au mur s'il est à moins de 10° près, bord collé à moins de 15 cm ;
+  - calé dans l'angle ;
+  - bord à bord avec un voisin de même orientation et de hauteur commune, aligné ;
+  - guides orange pendant le glisser ;
+  - aimant coupé ou touche Alt : pose libre ; le clavier déplace sans aimanter.
+  - Le glisser part désormais de la position du pointeur (et non par petits pas), sinon un meuble aimanté ne pouvait plus se décoller du mur.
+- **Rotation libre** :
+  - **Modèle (signalé, validé)** : `objet.inclinaison { x, y }` facultative, en dixièmes de degré ; à plat elle disparaît. Rétrocompatible, sans migration.
+  - Inspecteur : 3 curseurs au degré près avec saisie, ±90°, « À plat » ; un seul pas d'historique par geste.
+  - En 3D : poignée à 3 anneaux, crans de 15° (Maj : libre).
+- **Vue 3D** (DES-33, `features/dessin/vue3d/`, import dynamique) :
+  - murs découpés autour des portes et fenêtres (`volumes.ts`), sols et matériaux texturés à l'échelle réelle, escaliers en marches pleines sur la ligne de foulée, meubles en volumes simples reconnaissables (`formes3d.ts`) ;
+  - ombres selon l'heure et le nord (`soleil.ts`), maison de poupée (murs avant abaissés selon l'angle de vue), niveau isolé ;
+  - cadrage automatique adapté à la forme de l'écran ;
+  - meubles cliquables, déplaçables au sol avec le même placement automatique.
+- **Visite** (DES-34) :
+  - première personne à 1,60 m, collisions avec murs et meubles (pas les tapis), passage des portes mais pas des fenêtres, escaliers praticables jusqu'à l'étage (`visite.ts`) ;
+  - ZQSD ou flèches, glisser pour regarder, joystick tactile, mini-plan ;
+  - départ sur une place libre.
+- **Photo** (DES-37) :
+  - cadrage (paysage, carré, portrait), ambiance jour ou soirée, rendu amélioré (occlusion ambiante, vignette, tonalité) ;
+  - export HD dans le navigateur (2 400 px de large en paysage), en JPEG ou PNG ;
+  - galerie « Mes photos » dans le menu Rendu : JPEG vérifié côté serveur, 30 au plus par plan, téléchargement, suppression. Opérations `photo`, `photos` et `supprimer-photo` de `/api/dessin` ; `lire-fond` relit aussi les photos.
+- **Menu Rendu** : vue (Plan 2D, Vue 3D, Visite, Photo), soleil, maison de poupée, niveau isolé, galerie ; utilisable sur téléphone, où le sélecteur de vue de la barre est masqué.
+- **Dépendances ajoutées (D86, signalées dans le plan)** : `three` 0.187.0, `@react-three/fiber` 9.8.2, `@react-three/drei` 10.7.9, `@react-three/postprocessing` 3.2.2, `postprocessing` 6.39.6 (`@types/three` en développement). Toutes sont chargées seulement au passage en 3D, visite ou photo. Dans le fichier de verrouillage, une montée indirecte sans rapport (`legacy-javascript`) a été annulée.
+- **Aucune règle de sécurité modifiée** ; Storage reste fermé aux clients (accès par le serveur seulement).
+- **Tests** :
+  - cœur : `placement`, `volumes`, `visite`, plus les tests existants mis à jour ; 4 239 tests, couverture des branches 95,19 % ;
+  - serveur : 2 tests de galerie sur émulateur ;
+  - éditeur : 4 tests d'état ;
+  - Playwright : parcours « 3D, visite, photo » (et rotation libre dans le parcours 15f), **vert sur iPhone 13 et ordinateur**, 10 parcours au total.
+- **Reste** :
+  - vrais modèles 3D des meubles (D88 : CC0 puis catalogue maison, `glb` et `ktx2`) ;
+  - déplacer ou faire pivoter l'image importée (reporté une seconde fois) ;
+  - emprise 2D des meubles inclinés ;
+  - cartes d'ombre plus fines sur les grands terrains.
+
+### Lot 15k — recette (en cours, 19/11/2026)
+Relecture complète de la branche puis « oui corrige tout » du propriétaire ; aucune mise en production (le propriétaire teste d'abord, éventuellement sur une autre branche de dev).
+- **Sécurité et RGPD (fait)** : PDF jusqu'à 4 Mo, débits propres par opération, jetons de partage stockés en empreinte SHA-256 avec date de fin obligatoire, plan joint lu par une route authentifiée, idempotence des créations, purge des partages, plans d'une entreprise fermée supprimés après 30 jours (D92), plan joint retiré = plus rien pour l'artisan (D93), jetons masqués dans Sentry.
+- **Bugs de l'éditeur (fait)** : réglages et découpe des murs (DES-07, DES-09), mur porteur supprimé seulement après confirmation, type de pièce (DES-11), saisie de la longueur au clavier (DES-06), historique des versions (DES-40, 300 étapes : D94).
+- **Fonctions manquantes (fait)** :
+  - cotes libres et textes (DES-31), calques du plan enregistrés avec la scène (DES-30) ; électricité et plomberie affichées par défaut (aucun plan en production) ;
+  - niveaux montés ou descendus, hauteur sous plafond et plancher réglables, altitudes recalculées (DES-04) ;
+  - « Mes plans » : aperçu des murs, recherche, tri (DES-02) ; **champ `apercu` ajouté aux métadonnées du plan** (chemin SVG calculé par le serveur, remplace la vignette image) ;
+  - sélection multiple (Maj + clic, rectangle à la souris, Ctrl + A), copier-coller vers un autre niveau, dupliquer, aligner, répartir, verrouiller un mur ou un meuble, **verrouiller le plan** (DES-29) ; **champs `verrouille?` ajoutés aux objets et à la scène** ;
+  - modèles de départ studio, T2, T3, plain-pied, maison à étage (DES-01) ;
+  - pièce libre polygonale (DES-12) ;
+  - style « noir et blanc » du plan 2D pour l'imprimer, dans le menu Rendu (DES-32, affichage seulement) ;
+  - peinture : couleur libre et finition mat, satin ou brillant, visible en 3D (DES-25) ; **champ `finition?` ajouté aux revêtements**.
+- **Bugs trouvés pendant la recette (corrigés)** : « Mes plans » débordait en largeur sur téléphone avec un titre long (bouton « Créer le plan » inaccessible) ; le statut « Hors ligne » n'apparaissait jamais (écrasé par « Modifications en attente », nouvel envoi toutes les 2 s) : il reste affiché, chaque modification est gardée sur l'appareil, nouvel essai toutes les 30 s et au retour du réseau (DES-39).
+- **Architecture (fait)** : longues fonctions découpées (`menuiserie3D`, `metreNiveau`, `detecterPieces`), peintures sans doublon, `'use client'` inutiles retirés. **Non fait, volontairement** : libellés des matériaux laissés dans `@ph/ui` (pur affichage, aucun calcul ne les lit) ; couleurs du plan non reliées aux thèmes (le plan imprimé et le PDF gardent des couleurs fixes, lisibles sur papier).
+- **Tests** : cœur 4 325 (branches ≥ 95 %), web 146, serveur Plans 24 sur émulateur ; Playwright Plans : un parcours pour chaque DES de DES-01 à DES-48 (DES-44 dans le parcours particulier du simulateur, DES-45 retiré), iPhone 13 et ordinateur.
+- **Vrais meubles 3D (D88, fait le 19/11/2026)** : 17 modèles CC0 de Poly Haven (canapé, fauteuil, tables, chaises, buffet, chevet, commode, armoire, bibliothèque, bureau, lit 90, suspension, plante, miroir, salon de jardin), compressés (meshopt, textures WebP 512 px) : 27 Mo bruts → 2,4 Mo, servis depuis `apps/web/public/dessin/modeles/` et chargés seulement quand l'objet est en 3D ; ajustés aux dimensions de l'inspecteur ; forme simple pendant le chargement ou si le fichier manque. Licences : `docs/data/dessin-licences.json`. **Signalés** : dépendance de développement `@gltf-transform/cli` (script `pnpm dessin:modele`) ; **CSP : `blob:` ajouté à `connect-src`** (textures décodées depuis le fichier déjà chargé) ; `.claude/settings.json` : interdiction de `curl`/`wget` remplacée, à la demande du propriétaire, par l'autorisation des seuls téléchargements Poly Haven et ambientCG. La couleur de façade choisie dans l'inspecteur ne s'applique pas aux vrais modèles.
+- **Textures photo (D88, fait le 19/11/2026)** : 11 matériaux en vraie matière en 3D (chêne clair, chêne naturel, noyer, carrelage gris, tomette, faïence métro, béton ciré, travertin, brique, pierre de parement, enduit à la chaux) : couleur, relief et rugosité CC0 Poly Haven, WebP 512 px (544 Ko pour les 33 images), répétés à leur taille réelle ; vignettes photo dans le menu Finitions ; les autres matériaux gardent leur motif dessiné. Choix vérifiés sur une planche et des captures (trois textures écartées car trompeuses).
+- **Murs transparents (19/11/2026, demande du propriétaire)** : réglage du menu Rendu ; murs translucides (opacité 22 %) avec un contour net, meubles et pièces visibles au travers ; affichage seulement, rien d'enregistré.
+- **Maison de démonstration (19/11/2026, demande du propriétaire)** : modèle « Maison en L meublée (démo) » dans « Nouveau plan », sur deux niveaux (escalier droit, trémie ; étage : trois chambres dont une suite, salle d'eau, bureau, palier ; toit deux pans sur l'étage). Rez-de-chaussée : L de 13 × 11 m, deux chambres, salle de bains (faïence métro), WC, cuisine équipée, séjour avec salle à manger, 12 portes et fenêtres, 34 meubles, sols (parquets, carrelage), terrasse et patio, piscine, allée, arbres, grillage, toit deux pans (`sceneDemo`, données dans `demoDonnees.ts`).
+- **Couleur des menuiseries (19/11/2026, demande du propriétaire)** : nuancier blanc, gris anthracite, noir, bois clair, bois naturel, chêne doré, bois foncé, vert sauge, plus une couleur libre (nuancier du navigateur, sans limite) ; « Appliquer à toutes les menuiseries » du niveau (`colorerMenuiseries`).
+- **Reste** : tests sur Pixel (non émulé dans la configuration pro) ; papiers peints, stratifié gris, ardoise, carrelage blanc 60 × 60 sans texture libre convenable ; meubles sans modèle libre (cuisine, salle de bains, lits doubles…) ; services IGN à vérifier en préproduction ; `/dessin` en `revalidate = 3600` à l'ouverture.
+
+### Lot 15j fait (18/11/2026)
+Plan validé par le propriétaire (4 étapes ; aucun changement de modèle ni de règle, aucune dépendance ; Lighthouse non ajouté, mesures avec Playwright).
+- **Public et essai (DES-03)** : `/dessin` pour les particuliers (flag `dessinPublic`, éteint en production) : héros avec plan illustré en SVG, fonctions, étapes, FAQ (JSON-LD), « Essayer gratuitement » ; aucun avis ni chiffre non sourcé ; dans le sitemap seulement si Plans et sa page publique sont ouverts. `/dessin/essai` : éditeur complet, scène gardée dans IndexedDB, bandeau « Essai sans compte » ; import, implantation, PDF, galerie, partage et demande de devis invitent à créer un compte ; « Enregistrer » mène à la connexion, puis « Mes plans » (`?essai=1`) crée le plan depuis l'essai, intact, et l'ouvre. **À faire à l'ouverture** : passer `/dessin` en `revalidate = 3600` (rendue dynamique tant qu'elle est fermée, pour suivre le flag sans délai).
+- **Téléphone (DES-46)** : panneaux en feuilles du bas entre les deux rails, plan cadré au-dessus de la feuille ; pincer pour zoomer ; appui long = propriétés de l'élément ; cotes au clavier numérique (déjà).
+- **Accessibilité (DES-47)** : touche « ? » = fenêtre des raccourcis (même liste dans le menu Aide) ; élément choisi et ses mesures annoncés (`aria-live`, `descriptionSelection` testé dans le cœur) ; « réduire les animations » coupe l'inertie de la caméra 3D ; flèches 1 cm / Maj 10 cm (déjà).
+- **Performance (DES-48)** : scène de 500 murs et 1 000 objets ; cœur : métré ≈ 1,5 ms, glisser d'un meuble avec placement ≈ 5 ms ; navigateur (Playwright, ordinateur) : ouverture du plan 345 à 490 ms (< 2 s), rendu après zoom ≈ 90 ms et glisser ≈ 32 ms par mouvement, temps de pilotage de Playwright compris. Calques murs, pièces et meubles mémorisés (ne se redessinent que si leurs données changent) avec des rappels de glisser stables.
+- **Tests** : Playwright Plans 32 parcours verts (iPhone 13 et ordinateur), dont DES-03, DES-46, DES-47, DES-48. Cœur 4 299 tests.
+- **Reste** : vrais modèles 3D `glb`/`ktx2` (D88) ; tests sur Pixel (seul l'iPhone 13 est émulé dans la configuration pro).
+
+### Lot 15i fait (18/11/2026)
+Plan validé par le propriétaire (4 étapes, 2 champs facultatifs sur la demande, pdfkit réutilisé, aucune règle Firestore modifiée).
+- **Exports (fait, DES-41, DES-43)** : PDF à l'échelle produit par le serveur (1/50 ou 1/100, A4 ou A3 paysage ; murs, baies, débattements, pièces, cotes, nord, échelle graphique, cartouche, légende ; métré en annexe ; refus clair si le plan ne tient pas, échelle et format conseillés) ; PNG du plan ; onglet Chiffrer : métré de toute la maison, postes à cocher, CSV pour Excel.
+- **Partage (fait, DES-42)** : `/plan/[jeton]` sans compte, non indexé, lecture seule (plan, 3D, visite, façades) ; le serveur retire Lambert-93, photo aérienne, référence cadastrale, commune et image importée ; validité 7 jours, 30 jours ou sans fin, liens actifs, révocation. Équipe : les plans de l'entreprise sont déjà visibles par les membres autorisés.
+- **Demander des devis (fait, DES-44, D90)** : bouton dans Chiffrer (particulier) → simulateur existant ; « Joindre mon plan » et « Recevoir des devis par écrit, sans être appelé » ; champs `contactSouhaite` et `planJoint` (DATABASE §4) ; plan vérifié comme appartenant au particulier connecté, lien d'un an créé dans la même transaction ; téléphone jamais renvoyé aux artisans dans ce cas ; « Voir le plan du client » après acceptation.
+- **« Créer un devis depuis ce plan » (DES-45) : retiré à la demande du propriétaire** (« j'aime pas cette fonctionnalité »), jamais poussé ; la page « Nouveau devis » et la bibliothèque sont inchangées.
+- **Tests** : cœur (exports, partage sans localisation), emails (PDF du plan), serveur sur émulateur (partages, plan joint, téléphone masqué), simulateur 44 parcours, Playwright Plans « exports » et « partage » verts sur iPhone 13 et ordinateur. Suite complète Plans + demandes pro + devis : **51 parcours verts** (iPhone 13 et ordinateur) après le retrait de DES-45. Correction en clôture : les menuiseries de l'onglet Chiffrer, regroupées sur une ligne à l'étape 1, sont de nouveau une par ligne sous une seule case à cocher.
+- **Côté artisan** (choix « fais le mieux » du propriétaire) : pas de remplacement du devis prérempli ; l'artisan dispose du lien de partage et du plan joint par le client.
+- **Reste** : vérifier les services IGN en préproduction (15h) ; murs obliques pour la toiture.
+
+### Lot 15h fait (18/11/2026)
+Plan validé par le propriétaire : menuiseries complètes d'abord, puis l'extérieur. Vitrage clair seulement (choix du propriétaire).
+- **Menuiseries (fait)** :
+  - **Modèle (validé)** : `remplissage` (plein, vitré, semi-vitré, cassettes), `petitsBois`, `materiau` (PVC, bois, alu), `couleur`, `imposte` (fixe, ouvrante), tous facultatifs, plus le type `porte_galandage_double` ;
+  - portes coulissantes : galandage dans la cloison (poche en pointillés en 2D, vantail rangé dans le mur en 3D) et applique (rail devant le mur, du côté choisi) ;
+  - **règles validées** : cloison de 7,2 cm au moins pour un galandage ; place libre sur le mur au moins égale à la largeur de la porte ; aucune autre baie dans une poche ou un rail ; pose du côté libre si la place manque à gauche ;
+  - 3D : dormant, vantaux, verre clair, petits bois, poignée, imposte, volets roulants et battants, seuil ; portes ouvertes en visite ; menuiseries et linteaux masqués avec les murs avant en maison de poupée ;
+  - inspecteur : remplissage, petits bois, matériau, volets, imposte, couleur, côté de rangement ;
+  - Chiffrer : liste des menuiseries par modèle identique ;
+  - **valeur par défaut changée (signalée)** : cloison de 7,2 cm (standard 72/48) au lieu de 7 cm, sinon aucun galandage n'était possible dans une cloison par défaut ;
+  - **correction téléphone** : changer de modèle à placer replie aussi le menu (il cachait le plan).
+- **Toiture (fait)**, sans changement de modèle (`niveau.toiture` existait) :
+  - deux pans, quatre pans, croupe, monopente, toit plat (acrotère), mansarde (brisis à 70°) sur le rectangle des murs, dans le sens du faîtage ;
+  - réglages : pente, débord, faîtage tournant, couverture ;
+  - pignons, gouttières, fenêtres de toit inclinées comme le pan, cheminées, lucarnes ;
+  - surface de couverture, gouttières et combles Carrez (≥ 1,80 m) au métré ; un toit plat se chiffre en étanchéité ;
+  - en 2D, contour en pointillés ; en 3D, toit affichable (masqué en maison de poupée), cadrage qui inclut le faîtage.
+- **Toiture « nickel et facile » (demande du propriétaire)**, toujours sans changement de modèle ni dépendance :
+  - **maisons en L, T, U, H** : l'emprise est découpée en ailes rectangulaires (grille tirée des murs et des pièces, plus grands rectangles, recouvrement minimal) ; l'aile la plus large porte le faîtage le plus haut, les autres s'y raccordent en noue ; croupes et débords seulement aux bouts et côtés libres ; gouttières comptées seulement à l'air libre ;
+  - **étage ou pas** : le toit d'un niveau ne couvre que la partie sans étage au-dessus ; une partie basse collée à l'étage reçoit un appentis (monopente) qui s'y adosse ;
+  - **hauteurs** : « au plus bas » (égout, depuis le sol) règle la hauteur des murs du niveau ; « au plus haut » (faîtage, depuis le sol) calcule la pente ; le curseur de pente reste ;
+  - **un clic** : choisir la forme pose le toit sur toute la maison, à chaque niveau concerné (jamais au sous-sol) ;
+  - surface de couverture mesurée sur les ailes réunies, pente comprise ; combles Carrez idem ;
+  - **toits réunis (retour du propriétaire, capture)** : chaque pan perd exactement les parties qui passent sous le toit d'une autre aile (`decoupeToit.ts`, calcul en plan, sans maillage approché). Plus de débord qui dépasse devant un pignon ; les noues sont nettes et la surface des pans visibles égale la couverture mesurée (testé).
+- **Tests** : 26 unitaires de plus (menuiseries, toiture, ailes en L/T/U, étage partiel, hauteurs) ; Playwright « menuiseries », « toiture », « maison en L » et « extérieur » verts sur iPhone 13 et ordinateur, 18 parcours au total.
+- **Terrasse, terrain, piscine (fait)**, sans changement de modèle (`niveau.exterieur` et `scene.terrain` existaient) :
+  - menu Structure → « Terrasse, terrain, piscine » : terrasse et allée en deux coins, piscine d'un clic (7 formes), clôture point par point (bois, grillage, muret, haie, portail ; Échap pour finir), arbre, arbuste, haie, parcelle tracée ou « autour de la maison » ;
+  - terrasse : matériau, sens de pose, hauteur (marches générées côté jardin, à l'opposé de la maison), garde-corps (ouvert aux marches), pergola ;
+  - piscine : forme, dimensions, profondeurs (fond en pente), escalier, débordement, **volume d'eau**, plan d'eau, **distance aux limites de la parcelle (indicative)** ;
+  - 2D : tout est dessiné sous la maison et sélectionnable ; le cadre du plan inclut l'extérieur ;
+  - 3D : terrasse texturée, marches, garde-corps, pergola, eau et margelles (ou bassin hors-sol), allées, clôtures, arbres et haies, limites de parcelle ; cadrage sur la maison et son jardin ;
+  - métré : terrasse (m²), clôtures (ml, prestation « cloture »), allées (m²), piscines ;
+  - **correction (bug trouvé par le typecheck)** : l'identifiant de l'élément créé est rendu dans `elementId` ; renvoyé dans `id`, il écrasait celui du niveau ;
+  - **placement de l'extérieur (retour du propriétaire, capture)** (`placementExterieur.ts`) : rien ne se pose dans la maison ; un arbre ou un arbuste recule jusqu'à ce que sa ramure touche juste la façade ; une terrasse à moins de 60 cm d'une façade s'y colle et ne peut pas recouvrir la maison ; une clôture ne traverse ni maison, ni terrasse, ni piscine, et chaque point s'aligne sur la limite de parcelle à moins d'1 m ; une piscine n'empiète jamais sur la maison, même agrandie ; aimant coupé : pose libre (sauf les refus) ;
+  - **garde-corps refait (retour du propriétaire, capture)** : poteaux métalliques tous les 1,50 m au plus, main courante à 1 m, remplissage en verre clair ; seulement sur les côtés libres (rien contre la façade, ouvert au droit des marches) ; poteaux de pergola carrés ;
+  - **plage de piscine (retour du propriétaire)** : bouton « Terrasse autour, jusqu'à la maison » (1,20 m autour, prolongée jusqu'à la façade la plus proche à moins de 6 m, sans jamais la recouvrir) ; la piscine est encastrée dans la terrasse en 3D et sa surface est déduite de la terrasse au métré ; un arbre garde 1,50 m entre sa ramure et la façade (arbuste 30 cm, haie contre le mur) ;
+  - **réglage changé (signalé)** : zoom minimal du plan 6 px/m (au lieu de 15) pour voir une maison et son jardin sur un téléphone.
+- **Implantation (fait, DES-35)** — plan validé par le propriétaire (« tout par notre serveur ») :
+  - menu Structure → « Implantation » : adresse saisie → adresses proposées (Géoplateforme IGN) → parcelle sous le point (API Carto cadastre), posée centrée sur la maison ; recalage par flèches (50 cm) et rotation (5° ou 0,5°) : **le nord tourne avec la parcelle** (soleil compris) ;
+  - photo aérienne + limites cadastrales (WMS Géoplateforme, Lambert-93) téléchargée **une fois par le serveur** et enregistrée dans le dossier du plan (l'ancienne remplacée), relue par `lire-fond` ; sans photo si le service d'images ne répond pas ;
+  - plan de masse : photo sous le dessin, cotes de la maison aux limites (les 4 plus courtes), flèche du nord ; photo posée au sol en 3D ; le cadre du plan inclut la parcelle ;
+  - France métropolitaine seulement (Lambert-93) ; distances indicatives, pas un avis d'urbanisme ;
+  - **modèle (validé)** : `terrain.georef` (Lambert-93 en mm du point 0,0 du plan) et `terrain.orthophoto` (chemin, emprise), facultatifs ; **aucune règle de sécurité ni politique CSP modifiée** (appels sortants côté serveur) ; **aucune dépendance** : écart avec D87, qui citait MapLibre GL (validé par le propriétaire) ;
+  - opérations `/api/dessin/adresses` et `/api/dessin/parcelle` (schémas `entreeAdresse`, `entreeParcelle`) ; aucune adresse enregistrée ni journalisée ;
+  - **non vérifié contre les vrais services IGN** (accès réseau sortant indisponible dans la session) : formats tirés de la documentation publique, testés avec des réponses simulées. À vérifier en préproduction avant la mise en ligne ; **à surveiller au lot 15i** : le lien de partage ne doit montrer ni `georef` ni la photo aérienne (localisation du bien).
+- **Façades et coupes (fait, DES-36)**, sans changement de modèle (état de l'éditeur seulement) :
+  - vue « Façades » (barre du haut, et menu Rendu sur téléphone) : façades sud, nord, est, ouest selon le nord du plan, coupe le long d'un trait tracé en deux clics ;
+  - projection orthogonale (`elevation.ts`) : murs découpés autour des baies, baies et portes, pans et pignons de toiture, ordre de dessin du lointain au proche ; en coupe, ce qui est devant le trait est ôté, murs, toit et planchers tranchés en noir ; repères d'altitude (sol des niveaux, égout, faîtage) ;
+  - trait de coupe affiché sur le plan, flèches dans le sens du regard ; il n'est pas enregistré.
+- **Tests du lot** : cœur 4 293 (couverture des branches 95,09 %) dont `implantation` et `elevation` ; serveur 3 tests d'implantation sur émulateur (services IGN simulés) ; éditeur 11 tests d'état ; Playwright **22 parcours verts** (iPhone 13 et ordinateur), dont « implantation » et « façades et coupe ».
+- **Reste** :
+  - murs obliques : le découpage en ailes suit le mur le plus long (formes à angles droits).
+### Lot 15d, retours du propriétaire (18/11/2026)
+- **Nom** : l'outil s'appelle « Plans » (menu pro « Plans », page « Mes plans ») ; « Dessin » reste le nom interne (flag `dessin`, `features/dessin`).
+- **Éditeur en pleine page**, comme l'éditeur du site : hors du cadre de l'espace pro (`/pro/plans/editeur/{id}`) et de l'en-tête particulier (`/mes-plans/{id}`). Listes : `/pro/plans` et `/mon-espace/plans`.
+- **Mise en page refaite** : barre d'une ligne en haut ; **rail vertical des menus à gauche** (Structure, Équiper, Finitions, Chiffrer, Rendu, Aide) et **rail vertical des outils à droite** (sélection, mur, pièce, magnétisme, cotes, surfaces, zoom, propriétés), chacun avec son **panneau repliable** ; plus aucun bouton horizontal posé sur le plan. Plan centré sur papier pointillé, recadré quand un panneau s'ouvre ou se replie. Sur téléphone, les rails restent et les panneaux passent par-dessus le plan.
+- Playwright vert sur iPhone 13 et ordinateur ; lint, types, `knip`, tests verts.
+
+### Lot 15c fait (18/11/2026)
+Avec l'accord du propriétaire (« oui à tout »), ajouts seulement dans les fichiers existants : `firestore.rules` (2 blocs de lecture), `firestore.indexes.json` (index de purge), `chemins.ts` (chemins des plans), `permissions.ts` (`dessin.gerer` : propriétaire, gérant, collaborateur), `packages/firebase/package.json` (export `@ph/firebase/dessin`), `apps/functions/src/index.ts` (`purgeDessinNuit`), suppression de compte et export RGPD (plans inclus). **`storage.rules` n'a pas eu besoin d'être modifié** (refus total par défaut, accès serveur uniquement).
+- Nouveaux : `packages/firebase/src/serveur/dessin/` (créer, lire, lister, enregistrer avec conflit, versions, restaurer, renommer, dupliquer, corbeille, partager, révoquer, lire un partage, purge, RGPD), `apps/functions/src/dessin/planifiees.ts`, `DATABASE.md` §8 quater.
+- Tests : 150 cas de règles (`tests/regles/dessin.test.ts`), 13 tests serveur (`tests/dessin.test.ts`). Suite `@ph/firebase` sur émulateurs : 3 279 réussis ; **16 échecs dans `tests/regles/storage.test.ts`, déjà présents avant le lot** (même résultat sur la branche de départ, sans aucune modification). `typecheck`, `lint`, `knip`, `prettier` et les tests du cœur et des Functions sont verts.
+- Non fait : données de démonstration (seed) des plans, reportées au lot 15d avec l'écran de liste.
+
+### Plan initial du lot 15b
+Uniquement de **nouveaux fichiers** dans `packages/core/src/dessin/`, tests Vitest écrits avant le code, aucun React / Firebase / Next.
+1. `dessin/historique.ts` : historique propre à Dessin (300 étapes, un glisser = une étape). L'historique de l'éditeur de site n'est pas touché.
+2. `dessin/schemas/scene.ts` et `dessin/schemas/plan.ts` : scène, métadonnées, versions, partages (millimètres et dixièmes de degré entiers, `z` importé de `@ph/core/zod`).
+3. `dessin/migrations.ts` : `migrerScene()`.
+4. `dessin/geometrie/` : segments, intersections, polygones, contours des murs, jonctions L / T / X, détection des pièces, surfaces nettes, Carrez (opérations booléennes écrites dans `dessin/`, sans nouvelle dépendance si possible ; sinon `clipper2-ts`, à accepter d'abord).
+5. `dessin/aimantation.ts`, 6. `dessin/commandes/`, 7. `dessin/formes.ts`, 8. `dessin/metre.ts`, 9. `dessin/format.ts` (longueurs, surfaces, angles).
+Seul ajout hors de `dessin/` : l'entrée d'export du sous-chemin `@ph/core/dessin` dans `packages/core/package.json`, **à valider**.
+Critère de fin : `pnpm typecheck && pnpm lint && pnpm test:unit` verts, couverture ≥ 90 % sur `dessin/`.
+
 ## Décisions prises en cours de route
 (date, décision, document mis à jour)
 - 05/10/2026 — Relance `vis-offre-relance` à J+104 ; formulaire de capture des prospects sur /pro (validés) — CONVERSION §3 S4, AVANCEMENT §21.
@@ -1199,3 +1441,11 @@ Lot 10d : tout ce qui ne dépend pas d'une décision ⏳ est codé. Restent, à 
   - **17/11/2026 (conversion des pages d'entrée)** : objectif du propriétaire « doubler le taux visite → premier formulaire envoyé », mobile d'abord. Sur les 4 pages d'entrée (/pro et les 3 landings) : formulaire court (métier principal, code postal, email ; nom et téléphone retirés, case des conditions remplacée par la phrase « En continuant, vous acceptez… », version enregistrée côté serveur dans le brouillon) ; chantiers tous acceptés et repliés derrière « Modifier mes chantiers » (le formulaire ne s'allonge plus) ; « Gratuit · sans carte bancaire · 2 minutes » sous le bouton ; sur téléphone, titre de 2 lignes au plus, une phrase, puis le formulaire (premier champ et bouton visibles sans défiler à 375 × 667 et 390 × 844, bandeau cookies affiché) ; barre « Voir les demandes près de chez moi » (cachée quand le formulaire est à l'écran ou le clavier ouvert, ramène au premier champ vide) ; bandeau cookies compact, « Tout refuser » aussi grand que « Tout accepter ». Décisions du propriétaire (propositions retenues) : nom demandé à l'étape compte pour l'inscription par email seulement ; téléphone demandé dans « Votre numéro » avant la première demande acceptée. Tests : schéma (core), brouillon (émulateur), e2e ACQ-05 à ACQ-08, ONB-01c, ONB-01d, parcours complet jusqu'à l'espace sans nom ni téléphone à l'étape 1. Test A/B abandonné (décision du propriétaire du 17/11/2026 : le nouveau formulaire seul, pour tout le monde).
   - **17/11/2026 (nuit)** : éditeur de site : poubelle au survol des images importées de la médiathèque, seulement si le site ne les utilise nulle part (vérifié aussi côté serveur, brouillon et version en ligne ; fichier Storage supprimé) ; « Appliquer à tout le site » met les dessins du thème, plus les photos de l'artisan.
   - **17/11/2026 (soir)** : modèles de site (demande du propriétaire : « des couleurs plus travaillées, liées au bâtiment, pas le noir le plus basique ») : palettes Ardoise et cuivre (Essentiel), Graphite et orange chantier (Dépannage 24/7), Sapin et ambre (Nature), Bleu nuit et ocre (Premium photo), Pétrole et orange doux (Minimal), Indigo et safran (« Signature », ex-Bleu franc). Plus de noir pur ni de bleu marine standard ; contrastes AA vérifiés par les tests. Bandeau avec formulaire : photo de la fiche ou dessin du métier visible dans tous les modèles (voile sombre), y compris le site de départ.
+- 18/11/2026 — Lot 15a : cadrage de Dessin (éditeur de plans 2D/3D). Décisions D84 à D91 tranchées. Plan du lot 15b en attente de validation : §31.
+- 18/11/2026 — Lot 15b fait (cœur de Dessin, nouveaux fichiers uniquement, 47 tests). Export `@ph/core/dessin` ajouté, toutes les vérifications vertes : §31.
+- 18/11/2026 — Lot 15c fait (données, règles et tests, serveur, purge, RGPD de Dessin). 16 échecs préexistants de storage.test.ts signalés : §31.
+- 18/11/2026 — Lot 15d fait (écrans Mes plans / Dessin, éditeur 2D, sauvegarde automatique et hors ligne, mobile), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Retours du propriétaire sur le 15d : outil renommé « Plans », éditeur plein écran, rails verticaux et panneaux repliables : §31.
+- 18/11/2026 — Lot 15e fait (portes et fenêtres, escaliers, niveaux et trémies, plan importé en calque), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Lot 15f fait (équiper, finitions, motifs, zones au sol, métré des équipements), e2e vert iPhone et ordinateur : §31.
+- 18/11/2026 — Lot 15g fait (3D, visite, photo et galerie, placement automatique, rotation libre sur 3 axes ; `objet.inclinaison` ajoutée ; 5 dépendances D86) : §31, DATABASE §8 quater.

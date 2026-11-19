@@ -12,6 +12,7 @@ export const ADRESSES_PRO: Record<PagePro, Route> = {
   appelsOffres: routes.proAppelsOffres,
   avis: routes.proAvis,
   statistiques: routes.proStatistiques,
+  dessin: routes.proPlans,
   equipe: routes.proEquipe,
   facturation: routes.proFacturation,
   compte: routes.proCompte,

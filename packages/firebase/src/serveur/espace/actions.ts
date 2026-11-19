@@ -7,9 +7,11 @@ import {
 import type { entreeMessageParticulier } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { bucketFichiers } from '../../admin';
 import { chemins, collections } from '../../chemins';
 import { supprimerMonCompte } from '../comptes/suppression';
 import type { ServicesComptes } from '../comptes/services';
+import { exporterPlans } from '../dessin/purge';
 
 type StatutAttribution = keyof typeof LIBELLES_ATTRIBUTION_PARTICULIER;
 
@@ -66,13 +68,14 @@ const enClair = (v: unknown): unknown =>
 
 /**
  * Export RGPD (ESP-04, droit d'accès et de portabilité) : profil, demandes et leurs messages,
- * dossiers de diagnostics. Les données internes (empreintes d'IP, scores) sont retirées.
+ * dossiers de diagnostics, plans Dessin. Les données internes (empreintes d'IP, scores) sont retirées.
  */
 export async function exporterMesDonnees(db: Firestore, uid: string) {
-  const [profil, demandes, dossiers] = await Promise.all([
+  const [profil, demandes, dossiers, plans] = await Promise.all([
     db.doc(chemins.user(uid)).get(),
     db.collection(collections.demandes).where('particulierUid', '==', uid).get(),
     db.collection(collections.dossiersDiag).where('particulierUid', '==', uid).get(),
+    exporterPlans({ db, bucket: bucketFichiers(), horloge: Date.now }, uid),
   ]);
   const sansInterne = (d: Record<string, unknown>) =>
     Object.fromEntries(Object.entries(d).filter(([k]) => !INTERNES.has(k)));
@@ -89,6 +92,7 @@ export async function exporterMesDonnees(db: Firestore, uid: string) {
       })),
     ),
     dossiersDiagnostics: dossiers.docs.map((d) => ({ id: d.id, ...sansInterne(d.data()) })),
+    plansDessin: plans,
   }) as Record<string, unknown>;
 }
 

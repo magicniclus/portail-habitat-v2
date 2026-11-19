@@ -1463,6 +1463,15 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "plans",
+      "fieldPath": "supprimeLe",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
       "collectionGroup": "brouillons",
       "fieldPath": "expireLe",
       "ttl": true,

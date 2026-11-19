@@ -58,6 +58,7 @@ export function reglesRobots(production: boolean): MetadataRoute.Robots {
           '/preferences',
           '/connexion',
           '/maintenance',
+          '/mes-plans',
         ],
       },
     ],

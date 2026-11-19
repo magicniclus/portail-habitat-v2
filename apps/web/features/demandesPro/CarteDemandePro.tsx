@@ -6,7 +6,7 @@ import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Badge, bouton, BoutonAction, type Tone } from '@ph/ui';
 import Link from 'next/link';
-import { EnvelopeSimpleIcon, PhoneIcon } from '@phosphor-icons/react';
+import { EnvelopeSimpleIcon, HouseLineIcon, PhoneIcon } from '@phosphor-icons/react';
 import { routes } from '@/lib/routes';
 import { ContesterAppelOffres } from './ContesterAppelOffres';
 import { EtapeDemande, NoteRelance } from './SuiviDemande';
@@ -93,6 +93,12 @@ export function CarteDemandePro({
           {d.precisions ? (
             <p className="m-0 text-[15px] leading-6 text-neutre-800">{d.precisions}</p>
           ) : null}
+          {d.ecritUniquement ? (
+            <p className="m-0 rounded-md bg-info-fond px-3 py-2 text-sm text-info">
+              Le client souhaite recevoir des devis par écrit, sans être appelé : répondez par email
+              ou par devis.
+            </p>
+          ) : null}
           {d.details.length ? (
             <dl aria-label="Détails du projet" className="m-0 grid gap-2.5">
               {d.details.map((x) => (
@@ -128,12 +134,24 @@ export function CarteDemandePro({
         ) : null}
         {d.contact ? (
           <>
-            <a href={`tel:${d.contact.telephone}`} className={bouton({ variant: 'secondaire' })}>
-              <PhoneIcon aria-hidden="true" /> {formatTel(d.contact.telephone)}
-            </a>
+            {d.contact.telephone ? (
+              <a href={`tel:${d.contact.telephone}`} className={bouton({ variant: 'secondaire' })}>
+                <PhoneIcon aria-hidden="true" /> {formatTel(d.contact.telephone)}
+              </a>
+            ) : null}
             <a href={`mailto:${d.contact.email}`} className={bouton({ variant: 'secondaire' })}>
               <EnvelopeSimpleIcon aria-hidden="true" /> Écrire
             </a>
+            {d.planJoint ? (
+              <a
+                href={routes.proPlanDemande(d.demandeId)}
+                target="_blank"
+                rel="noreferrer"
+                className={bouton({ variant: 'secondaire' })}
+              >
+                <HouseLineIcon aria-hidden="true" /> Voir le plan du client
+              </a>
+            ) : null}
             {peutDevis && d.statut !== 'devis_accepte' ? (
               <Link
                 href={

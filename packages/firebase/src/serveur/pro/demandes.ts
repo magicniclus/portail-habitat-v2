@@ -45,7 +45,11 @@ export interface DemandePro {
   etat: EtatPro;
   /** « Prénom N. » avant acceptation, nom complet ensuite. */
   particulier: string;
-  contact?: { email: string; telephone: string };
+  /** Téléphone absent si le client veut des réponses écrites seulement (D90). */
+  contact?: { email: string; telephone?: string };
+  ecritUniquement?: true;
+  /** Plan joint par le client (DES-44) : lisible après acceptation (page authentifiée). */
+  planJoint?: true;
   assigneA?: { uid: string; nom: string };
   /** Demande d'un site partenaire : niveau de qualification et aides estimées (IMP-06). */
   niveau?: NiveauPartenaire;
@@ -97,6 +101,8 @@ export async function lireDemandesPro(
     const particulier = accepte
       ? `${c.prenom} ${c.nom}`.trim()
       : `${c.prenom}${c.nom ? ` ${c.nom[0]}.` : ''}`;
+    const ecrit = d.get('contactSouhaite') === 'ecrit_uniquement';
+    const plan = d.get('planJoint') as object | undefined;
     const brut = (d.get('precisions') as string | undefined) ?? '';
     const precisions = accepte ? brut : masquerCoordonnees(brut).texte;
     const source = d.get('source') as string | undefined;
@@ -144,7 +150,11 @@ export async function lireDemandesPro(
         statut,
         etat: etatPro(statut),
         particulier,
-        ...(accepte ? { contact: { email: c.email, telephone: c.telephone } } : {}),
+        ...(accepte
+          ? { contact: ecrit ? { email: c.email } : { email: c.email, telephone: c.telephone } }
+          : {}),
+        ...(ecrit ? { ecritUniquement: true as const } : {}),
+        ...(accepte && plan ? { planJoint: true as const } : {}),
         ...(assigne ? { assigneA: { uid: assigne, nom: noms.get(assigne) ?? 'Un membre' } } : {}),
         ...(niveau ? { niveau } : {}),
         ...(texte ? { aides: texte } : {}),

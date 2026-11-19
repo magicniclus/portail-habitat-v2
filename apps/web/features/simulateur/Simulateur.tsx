@@ -68,6 +68,10 @@ export function Simulateur({ catalogue }: { catalogue: CatalogueSimulateur }) {
     prestationId: params.get('prestation') ?? undefined,
     codePostal: params.get('cp') ?? undefined,
     jeton: params.get('reprise') ?? undefined,
+    // `?plan=<id>` : « Demander des devis » depuis l'éditeur de plan (DES-44).
+    planId: /^[A-Za-z0-9]{20}$/.test(params.get('plan') ?? '')
+      ? (params.get('plan') ?? undefined)
+      : undefined,
   }));
   const [intention, setIntention] = useState(arrivee.intention);
   const [reponses, setReponses] = useState<Record<string, Reponses>>({});

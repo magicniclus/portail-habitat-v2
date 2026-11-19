@@ -336,3 +336,4 @@ export const demoStudio = {
     ['#dfe6e0', '#c5d3c8'],
   ],
 } as const;
+export * from './dessin';

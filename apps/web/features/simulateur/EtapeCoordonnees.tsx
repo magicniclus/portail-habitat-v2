@@ -22,6 +22,21 @@ type Champ = 'prenom' | 'nom' | 'email' | 'telephone' | 'precisions' | 'accepteC
 /** « contact.email » (Zod ou serveur) → « email ». */
 const cleChamp = (chemin: string) => chemin.replace(/^contact\./, '') as Champ;
 
+/** Depuis un plan (DES-44, D90) : joindre le plan, et des réponses écrites seulement. */
+function OptionsPlan() {
+  return (
+    <>
+      <Checkbox name="joindrePlan" defaultChecked className="text-sm leading-[22px]">
+        Joindre mon plan à la demande (les artisans le voient en lecture seule, sans l’adresse)
+      </Checkbox>
+      <Checkbox name="ecritUniquement" className="text-sm leading-[22px]">
+        Recevoir des devis par écrit, sans être appelé (votre téléphone n’est pas montré aux
+        artisans)
+      </Checkbox>
+    </>
+  );
+}
+
 /** Étape 5 : coordonnées, puis envoi à `creerDemande` (COMPTES §2). Toujours aucun montant ici. */
 export function EtapeCoordonnees({
   prestation: p,
@@ -42,6 +57,8 @@ export function EtapeCoordonnees({
     intention?: string;
     delai?: string;
     artisanCibleId?: string;
+    /** Arrivée depuis l'éditeur de plan (DES-44) : plan à joindre, au choix. */
+    planId?: string;
   };
   onEnvoye: (d: DemandeCreee, contact: Contact, miseEnRelation: boolean) => void;
   /** Lien de reprise par email (consentement explicite) : message d'erreur, ou `null` si envoyé. */
@@ -109,6 +126,8 @@ export function EtapeCoordonnees({
       },
       ...(texte('precisions') ? { precisions: texte('precisions') } : {}),
       miseEnRelation: f.get('miseEnRelation') === 'on',
+      ...(contexte.planId && f.get('joindrePlan') === 'on' ? { planId: contexte.planId } : {}),
+      ...(f.get('ecritUniquement') === 'on' ? { contactSouhaite: 'ecrit_uniquement' } : {}),
       ...(brouillonId ? { brouillonId } : {}),
       accepteConfidentialite: f.get('accepteConfidentialite') === 'on',
     };
@@ -231,6 +250,7 @@ export function EtapeCoordonnees({
             Je souhaite être mis en relation avec jusqu&apos;à 3 artisans vérifiés de mon secteur.
             Sans cette case, vous recevez uniquement l&apos;estimation par email.
           </Checkbox>
+          {contexte.planId ? <OptionsPlan /> : null}
           <div>
             <Checkbox
               name="lienReprise"

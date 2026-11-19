@@ -75,7 +75,8 @@ export function politiqueContenu(o: OptionsCsp): string {
       ],
     ],
     ['font-src', ["'self'"]],
-    ['connect-src', ["'self'", ...CONNEXIONS, ...emulateurs]],
+    // blob: : textures des modèles 3D de Plans, décodées depuis le fichier glb déjà chargé (D88).
+    ['connect-src', ["'self'", 'blob:', ...CONNEXIONS, ...emulateurs]],
     // Vidéos de présentation des fiches (lecteur YouTube sans cookie).
     [
       'frame-src',

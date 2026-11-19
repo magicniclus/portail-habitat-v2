@@ -53,6 +53,8 @@ const config: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
+      // Plans partagés (DES-42) : jamais indexés ni suivis, même si un lien est publié.
+      { source: '/plan/:jeton', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
     ];
   },
 };

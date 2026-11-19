@@ -20,7 +20,15 @@ type Etat =
  * Maquette Mon Espace Particulier : les données viennent des routes `/api/mon-espace/*`, qui
  * vérifient la session à chaque appel ; une session expirée renvoie vers la connexion.
  */
-export function EspaceParticulier({ onglet, demandeId }: { onglet: Onglet; demandeId?: string }) {
+export function EspaceParticulier({
+  onglet,
+  demandeId,
+  avecPlans = false,
+}: {
+  onglet: Onglet;
+  demandeId?: string;
+  avecPlans?: boolean;
+}) {
   const router = useRouter();
   const [e, setE] = useState<Etat>({ etat: 'chargement' });
 
@@ -50,7 +58,7 @@ export function EspaceParticulier({ onglet, demandeId }: { onglet: Onglet; deman
             Suivez vos projets, comparez les devis et échangez avec les artisans.
           </p>
         </div>
-        <Onglets actif={onglet} />
+        <Onglets actif={onglet} avecPlans={avecPlans} />
       </div>
       {e.etat === 'chargement' ? (
         <div aria-busy="true" aria-label="Chargement de votre espace" className="grid gap-3">

@@ -53,6 +53,17 @@ export const FLAGS = {
     description: 'Page de maintenance partout sauf /admin (ERR-03)',
     retraitPrevu: '2099-12',
   },
+  dessin: {
+    defaut: false,
+    description:
+      'Dessin, éditeur de plans : Mes plans (particuliers) et Dessin (espace pro), lot 15',
+    retraitPrevu: '2027-12',
+  },
+  dessinPublic: {
+    defaut: false,
+    description: 'Dessin : landing /dessin et essai sans compte (lot 15j)',
+    retraitPrevu: '2027-12',
+  },
 } as const satisfies Record<string, { defaut: boolean; description: string; retraitPrevu: string }>;
 
 export type NomFlag = keyof typeof FLAGS;

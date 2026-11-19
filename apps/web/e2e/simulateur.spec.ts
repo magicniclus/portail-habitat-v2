@@ -29,8 +29,8 @@ const REPONSE = {
 
 const montantEuros = new RegExp('\\d[\\d\\s\\u202f\\u00a0]*€');
 
-async function jusquAuxCoordonnees(page: Page, cp = '75011') {
-  await ouvrirSimulateur(page, '/simulateur?prestation=peinture');
+async function jusquAuxCoordonnees(page: Page, cp = '75011', avant = '') {
+  await ouvrirSimulateur(page, `/simulateur?${avant}prestation=peinture`);
   await expect(page).toHaveURL(/etape=2|prestation=peinture$/);
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(page).toHaveURL(/etape=3/);
@@ -77,6 +77,28 @@ test.describe('Simulateur de devis', () => {
       'href',
       '/mon-espace/demandes/demande-e2e',
     );
+  });
+
+  test('DES-44 : depuis un plan, plan joint au choix et devis par écrit sans être appelé', async ({
+    page,
+  }) => {
+    let corps: Record<string, unknown> = {};
+    await page.route('**/api/demandes', (r: Route) => {
+      corps = r.request().postDataJSON() as Record<string, unknown>;
+      return r.fulfill({ status: 201, json: REPONSE });
+    });
+    await jusquAuxCoordonnees(page, '75011', `plan=${'A'.repeat(20)}&`);
+    await remplirCoordonnees(page);
+    await expect(page.getByRole('checkbox', { name: /Joindre mon plan/ })).toBeChecked();
+    await page.getByText('Recevoir des devis par écrit, sans être appelé').click();
+    await page.getByRole('button', { name: 'Voir mon estimation' }).click();
+    await expect(page.locator('[data-test="reference"]')).toBeVisible();
+    expect(corps).toMatchObject({ planId: 'A'.repeat(20), contactSouhaite: 'ecrit_uniquement' });
+  });
+
+  test('sans plan : les options du plan n’apparaissent pas', async ({ page }) => {
+    await jusquAuxCoordonnees(page);
+    await expect(page.getByRole('checkbox', { name: /Joindre mon plan/ })).toHaveCount(0);
   });
 
   test('SIM-01b : aucun montant en euros avant l’envoi (page et réseau)', async ({ page }) => {

@@ -220,6 +220,29 @@ describe('creerDemande', () => {
     );
   });
 
+  it('DES-44, D90 : plan joint (du particulier connecté) et réponses écrites seulement', async () => {
+    const proprio = { type: 'particulier' as const, id: 'part-plan1' };
+    await db.doc(chemins.plan(proprio, 'P'.repeat(20))).set({ titre: 'Maison', supprimeLe: null });
+    const r = await creerDemande(
+      s,
+      entree({ planId: 'P'.repeat(20), contactSouhaite: 'ecrit_uniquement' }),
+      { uid: 'part-plan1' },
+    );
+    const d = (await db.doc(chemins.demande(r.demandeId)).get()).data()!;
+    expect(d.contactSouhaite).toBe('ecrit_uniquement');
+    expect(d.planJoint.planId).toBe('P'.repeat(20));
+    // Aucun lien de partage : l'artisan lira le plan par une page authentifiée.
+    expect(d.planJoint).toEqual({ planId: 'P'.repeat(20), proprietaireId: proprio.id });
+    expect((await db.collection(collections.partagesPlans).get()).size).toBe(0);
+    // Sans session, ou plan d'un autre : refus, rien d'écrit.
+    await expect(creerDemande(s, entree({ planId: 'P'.repeat(20) }))).rejects.toMatchObject({
+      code: 'PERMISSION_REFUSEE',
+    });
+    await expect(
+      creerDemande(s, entree({ planId: 'P'.repeat(20) }), { uid: 'quelqu-un-d-autre' }),
+    ).rejects.toMatchObject({ code: 'INTROUVABLE' });
+  });
+
   it('référence déjà prise : nouvel essai', async () => {
     const suite = [...Array(6).fill(0), ...Array(6).fill(0), ...Array(6).fill(0.5)];
     let i = 0;

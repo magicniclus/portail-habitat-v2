@@ -3,7 +3,9 @@ import { peutQuitter, type Membre } from '@ph/core/equipe';
 import type { entreeFermerEntreprise } from '@ph/core/schemas';
 import type { z } from '@ph/core/zod';
 import { FieldValue } from 'firebase-admin/firestore';
+import { bucketFichiers } from '../../admin';
 import { chemins } from '../../chemins';
+import { corbeillePlansEntreprise, supprimerTousLesPlans } from '../dessin/purge';
 import { exigerPermission } from './acces';
 import { synchroniserClaims } from './claims';
 import type { ServicesComptes } from './services';
@@ -47,6 +49,11 @@ export async function supprimerMonCompte(s: ServicesComptes, uid: string): Promi
       tx.update(s.db.doc(chemins.artisan(artisanId)), { nbMembres: FieldValue.increment(-1) });
     });
   }
+  // Plans Dessin personnels et leurs fichiers (DESSIN.md §4) : rien n'est conservé.
+  await supprimerTousLesPlans(
+    { db: s.db, bucket: bucketFichiers(), horloge: s.horloge },
+    { type: 'particulier', id: uid },
+  );
   await refUser.set(
     {
       schemaVersion: 1,
@@ -99,6 +106,8 @@ export async function fermerEntreprise(
     docs.docs.forEach((d) => tx.delete(d.ref));
     return { membres: docs.docs.map((d) => d.id), nomCommercial: a.nomCommercial as string };
   });
+  // Plans de l'entreprise : à la corbeille, supprimés par la purge de nuit 30 jours plus tard.
+  await corbeillePlansEntreprise(s, e.artisanId);
   for (const m of membres) {
     await s.auth.revokeRefreshTokens(m).catch(() => undefined);
     await synchroniserClaims(s, m, e.artisanId);

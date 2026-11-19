@@ -5,14 +5,15 @@ const champ =
 
 /**
  * « Aperçu côté particulier » (maquette Ma fiche) : le formulaire de demande tel que les
- * particuliers le voient sur la fiche, inactif ici. `encart` : offre du numéro masqué, s'il y a lieu.
+ * particuliers le voient sur la fiche, inactif ici. Collé sous l'en-tête (et la barre de
+ * progression, `--barre-fiche`) au défilement. `encart` : offre du numéro masqué, s'il y a lieu.
  */
 export function ApercuParticulier({ encart }: { encart: ReactNode }) {
   return (
     <aside
       id="apercu"
       aria-label="Aperçu côté particulier"
-      className="grid content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5 lg:sticky lg:top-[88px]"
+      className="grid content-start gap-3 rounded-[16px] border border-trait bg-blanc p-5 lg:sticky lg:top-[calc(var(--entete-pro,65px)+var(--barre-fiche,0px)+20px)]"
     >
       <p className="m-0 text-xs font-bold tracking-[0.08em] text-accent-700 uppercase">
         Aperçu côté particulier

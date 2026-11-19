@@ -76,6 +76,8 @@ export const collections = {
   brouillonsOnboarding: 'brouillonsOnboarding',
   simulations: 'simulations',
   cacheSirene: 'cacheSirene',
+  /** Liens de partage des plans Dessin (lecture seule, serveur uniquement). */
+  partagesPlans: 'partagesPlans',
   /** Émulateur uniquement : envois capturés pour les tests de bout en bout (secrets compris). */
   capturesEmulateur: 'capturesEmulateur',
 } as const;
@@ -190,7 +192,29 @@ export const chemins = {
   serieStudio: (id: string) => `studioSeries/${id}`,
   reglagesStudio: (uid: string) => `studioReglages/${uid}`,
   versionsSequence: (id: string) => `sequences/${id}/versions`,
+  /** Plans Dessin (DESSIN.md §4) : ceux d'un particulier ou d'une entreprise. */
+  plans: (p: ProprietairePlan) => `${racinePlans(p)}/plans`,
+  plan: (p: ProprietairePlan, planId: string) => `${racinePlans(p)}/plans/${planId}`,
+  /** `historique` et non `versions` : le groupe de collections `versions` sert déjà aux sites. */
+  versionsPlan: (p: ProprietairePlan, planId: string) =>
+    `${racinePlans(p)}/plans/${planId}/historique`,
+  versionPlan: (p: ProprietairePlan, planId: string, n: number) =>
+    `${racinePlans(p)}/plans/${planId}/historique/${n}`,
+  partagePlan: (jeton: string) => `partagesPlans/${jeton}`,
 } as const;
+
+/** Propriétaire d'un plan Dessin : un particulier (uid) ou une entreprise (artisanId). */
+export interface ProprietairePlan {
+  type: 'particulier' | 'entreprise';
+  id: string;
+}
+
+function racinePlans(p: ProprietairePlan): string {
+  return p.type === 'particulier' ? `users/${p.id}` : `artisans/${p.id}`;
+}
+
+/** Groupe de collections des plans (purge de la corbeille). */
+export const GROUPE_PLANS = 'plans';
 
 /** Collection group des attributions (demandes et diagnostics) : filtrer par `artisanId`. */
 export const GROUPE_ATTRIBUTIONS = 'attributions';
@@ -208,6 +232,10 @@ export const fichiers = {
   mediaSite: (aid: string, nom: string) => `sites/${aid}/medias/${nom}`,
   realisation: (aid: string, rid: string, nom: string) =>
     `artisans/${aid}/realisations/${rid}/${nom}`,
+  /** Dessin : tout le dossier d'un propriétaire (suppression de compte). */
+  dossierDessin: (p: ProprietairePlan) => `dessin/${p.type}/${p.id}/`,
+  /** Dessin : dossier d'un plan (scène courante, versions, vignette). Serveur uniquement. */
+  dossierPlan: (p: ProprietairePlan, planId: string) => `dessin/${p.type}/${p.id}/${planId}/`,
   /** Replay compressé (bucket des replays, jamais lisible par un client). */
   replay: (page: string, jour: string, vueId: string) => `replays/${page}/${jour}/${vueId}.json.gz`,
 } as const;

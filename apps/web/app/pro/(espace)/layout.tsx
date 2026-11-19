@@ -6,6 +6,7 @@ import { BandeauImpersonation } from '@/features/admin/BandeauImpersonation';
 import { BandeauAnnonces } from '@/features/annonces/BandeauAnnonces';
 import { CadrePro } from '@/features/espacePro/CadrePro';
 import { EtatFiche } from '@/features/espacePro/EtatFiche';
+import { flagActif } from '@/server/flags';
 import { lireSessionPro } from '@/server/sessionPro';
 
 /**
@@ -20,7 +21,9 @@ export default async function LayoutEspacePro({ children }: { children: ReactNod
   return (
     <CadrePro
       // Pastille incitative tant que la fiche n'est pas en ligne (logo, description, bannière).
-      menu={menuPro(membre, {}, active && !active.artisan.enLigne ? { fiche: 'À compléter' } : {})}
+      menu={menuPro(membre, {}, active && !active.artisan.enLigne ? { fiche: 'À compléter' } : {}, {
+        dessin: await flagActif('dessin'),
+      })}
       ongletsCompte={ongletsCompte(membre)}
       entreprises={s.espace.entreprises}
       activeId={active?.artisanId ?? null}

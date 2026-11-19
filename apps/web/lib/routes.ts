@@ -68,6 +68,9 @@ export const routes = {
   proFactureClient: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}`),
   proModifierFacture: (id: string) => r(`/pro/devis/factures/${encodeURIComponent(id)}/modifier`),
   proStatistiques: r('/pro/statistiques'),
+  proPlans: r('/pro/plans'),
+  /** Éditeur de plan plein écran, hors du cadre de l'espace pro (comme l'éditeur du site). */
+  proEditeurPlan: (id: string) => r(`/pro/plans/editeur/${encodeURIComponent(id)}`),
   proEquipe: r('/pro/equipe'),
   proResiliation: r('/pro/abonnement/resilier'),
   /** Mon abonnement (PAIEMENTS §4) ; `?offre=` ouvre directement le paiement de la formule. */
@@ -78,7 +81,17 @@ export const routes = {
   demandeParticulier: (id: string) => r(`/mon-espace/demandes/${id}`),
   monEspaceAvis: r('/mon-espace/avis'),
   monEspaceCompte: r('/mon-espace/compte'),
+  monEspacePlans: r('/mon-espace/plans'),
+  /** Éditeur de plan plein écran du particulier. */
+  /** Plan joint par le client à une demande (DES-44), lu par l'artisan qui l'a acceptée. */
+  proPlanDemande: (demandeId: string) => r(`/pro/demandes/${encodeURIComponent(demandeId)}/plan`),
+  planPartage: (jeton: string) => r(`/plan/${encodeURIComponent(jeton)}`),
+  editeurPlan: (id: string) => r(`/mes-plans/${encodeURIComponent(id)}`),
   simulateur: r('/simulateur'),
+  /** Plans (DES-03) : page publique et essai sans compte. */
+  dessin: r('/dessin'),
+  dessinEssai: r('/dessin/essai'),
+  simulateurPlan: (planId: string) => r(`/simulateur?plan=${encodeURIComponent(planId)}`),
   /** « Demander un devis » depuis une fiche : la demande cible cet artisan (`source: fiche_artisan`). */
   simulateurArtisan: (artisanId: string) =>
     r(`/simulateur?artisan=${encodeURIComponent(artisanId)}`),

@@ -282,6 +282,7 @@ export async function lireParametresFacturation(
 /** Client et objet d'un devis créé depuis une demande acceptée (« Créer un devis »). */
 export interface DevisDepuisDemande {
   demandeId: string;
+  /** `tel` vide si le client veut des réponses écrites seulement (D90). */
   client: { nom: string; email: string; tel: string; adresse: string };
   objet: string;
   precisions: string;
@@ -307,7 +308,7 @@ export async function lireDevisDepuisDemande(
     client: {
       nom: `${c.prenom} ${c.nom}`.trim(),
       email: c.email,
-      tel: c.telephone,
+      tel: d.get('contactSouhaite') === 'ecrit_uniquement' ? '' : c.telephone,
       adresse: `${lieu.codePostal} ${lieu.ville}`,
     },
     objet: nomPrestation(d.get('prestationId') as string),

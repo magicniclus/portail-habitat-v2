@@ -1,3 +1,4 @@
+import { verifierPlanJoint } from './planJoint';
 import {
   champDepuisDocument,
   expirationDemande,
@@ -95,6 +96,7 @@ export async function creerDemande(
 
   let reference = '';
   await s.db.runTransaction(async (t) => {
+    const planJoint = e.planId ? await verifierPlanJoint(s.db, t, ctx.uid, e.planId) : null;
     reference = await referenceUnique(t, s.db.collection(collections.demandes), () =>
       referenceDemande(alea),
     );
@@ -147,6 +149,8 @@ export async function creerDemande(
         versionReferentiel: estimation.versionReferentiel,
       },
       miseEnRelation: e.miseEnRelation,
+      ...(e.contactSouhaite ? { contactSouhaite: e.contactSouhaite } : {}),
+      ...(planJoint ? { planJoint } : {}),
       ...(e.artisanCibleId ? { artisanCibleId: e.artisanCibleId } : {}),
       statut: 'nouvelle',
       nbAttributions: 0,

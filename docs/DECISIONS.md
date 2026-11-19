@@ -165,3 +165,18 @@ Outils ajoutés : API YouTube Data v3 (clé gratuite), faster-whisper (dans l'im
 - **Mon abonnement** : bloc « Aller plus loin » (Site Pro d'abord) ; packs de crédits seulement si `appelsOffresPayants` est ouvert.
 - **Emails** : `bienvenue-pro` annonce la fiche en ligne (ou la vérification en cours) au lieu des « 3 étapes » ; `fiche-incomplete` ne parle plus d'un seuil de 60 % ; l'email de résiliation ne parle plus de « demandes garanties ».
 
+
+## 7. Dessin — éditeur de plans 2D / 3D (lot 15, voir `docs/DESSIN.md`)
+| # | Question | Proposition | Statut |
+|---|---|---|---|
+| D84 | Gratuité et quotas de Dessin | **Gratuit** pour tous (validé le 18/11/2026) ; garde-fous techniques : particulier 5 plans actifs, artisan illimité, scène ≤ 5 Mo | ✅ |
+| D85 | Rendu photoréaliste côté serveur | **Non** : option la moins chère, rendu amélioré côté client uniquement, coût nul (validé le 18/11/2026) | ✅ |
+| D86 | Pile technique de l'éditeur | 2D en SVG React ; 3D `three` + `@react-three/fiber` + `drei` chargés à la demande ; store `zustand` + `immer` ; worker `comlink` ; `idb-keyval` ; `clipper2-ts` ; MapLibre GL pour l'implantation ; PDF avec `pdfkit` (DESSIN.md §5 bis) (validé le 18/11/2026) | ✅ |
+| D87 | Fond de la vue d'implantation | **Données publiques gratuites** : IGN Géoplateforme (orthophotos, plan IGN), API Carto cadastre, API Adresse ; affichage MapLibre GL (validé le 18/11/2026). **Modifié le 18/11/2026 (propriétaire)** : pas de MapLibre ; services appelés par le serveur, photo aérienne enregistrée dans le dossier du plan, CSP inchangée | ✅ |
+| D88 | Catalogue 3D et textures | **CC0 au démarrage** (Poly Haven, ambientCG, Kenney), **catalogue réalisé en interne ensuite** ; aucun fichier issu d'un éditeur concurrent (validé le 18/11/2026) | ✅ |
+| D89 | Collaboration en temps réel | **Non en v1** : verrou optimiste par version, résolution de conflit proposée à l'utilisateur (validé le 18/11/2026) | ✅ |
+| D90 | Plan joint à une demande de devis | **Au choix du client** : il décide de joindre son plan et peut demander à **recevoir des devis par écrit sans être appelé** (`contactSouhaite: 'ecrit_uniquement'`) ; dans ce cas **le téléphone n'est jamais montré aux artisans**, qui répondent par la messagerie ou par devis (validé le 18/11/2026) | ✅ |
+| D91 | Import de plans existants | **v1 : PDF (première page, converti en image dans le navigateur par `pdfjs-dist` 6.4.299, chargé à la demande) et images** en calque mis à l'échelle ; DXF/DWG plus tard (validé le 18/11/2026, PDF ajouté le 18/11/2026) | ✅ |
+| D92 | Plans d'une entreprise fermée | À la fermeture, les plans passent à la corbeille et sont **supprimés 30 jours plus tard** (fichiers et liens de partage compris) par la purge de nuit (validé le 18/11/2026) | ✅ |
+| D93 | Plan joint retiré par le client | Le plan reste au client : s'il le met à la corbeille ou le supprime, l'artisan voit « Le client a retiré son plan » ; **aucune copie** gardée avec la demande. L'artisan lit le plan joint par une page authentifiée, sans jeton (validé le 18/11/2026) | ✅ |
+| D94 | Historique d'annulation de l'éditeur | **300 étapes** par session (et non illimité), pour la mémoire des téléphones ; DES-38 mis à jour (validé le 18/11/2026) | ✅ |

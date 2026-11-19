@@ -8,18 +8,9 @@ import { useMemo, useState } from 'react';
 import { routes } from '@/lib/routes';
 import type { OngletBlogDonnees } from '@/server/blog';
 import { useAppelBlog } from './appelBlog';
+import { telechargerFichier } from '@/lib/telecharger';
 
 type Article = OngletBlogDonnees['articles'][number];
-
-/** Fichier CSV téléchargé dans le navigateur (Excel : « ; » et BOM UTF-8, BLOG-08). */
-function telecharger(nom: string, contenu: string) {
-  const url = URL.createObjectURL(new Blob([contenu], { type: 'text/csv;charset=utf-8' }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = nom;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 /**
  * Liste des articles (BLOG §5) : recherche (titre, tag, catégorie), sélection, actions groupées,
@@ -73,7 +64,11 @@ export function ListeArticles({
       })),
       d.hote,
     );
-    telecharger('articles-blog.csv', versCsv(entetes, lignes));
+    // CSV pour Excel : « ; » et BOM UTF-8 (BLOG-08).
+    telechargerFichier(
+      'articles-blog.csv',
+      new Blob([versCsv(entetes, lignes)], { type: 'text/csv;charset=utf-8' }),
+    );
   };
 
   const agir = async (action: (typeof actions)[number][0]) => {
