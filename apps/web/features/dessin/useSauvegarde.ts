@@ -18,6 +18,8 @@ export type EtatSauvegarde =
   | 'local';
 
 const DELAI = 2000;
+/** Hors ligne : nouvel essai toutes les 30 s (et dès que le navigateur retrouve le réseau). */
+const REESSAI_HORS_LIGNE = 30_000;
 
 export function useSauvegarde(e: {
   espace: EspaceDessin;
@@ -76,11 +78,29 @@ export function useSauvegarde(e: {
   );
 
   useEffect(() => {
-    if (e.scene === enregistree.current || etat === 'conflit') return;
-    setEtat((x) => (x === 'enregistrement' ? x : 'modifie'));
+    if (e.scene === enregistree.current || etat === 'conflit' || etat === 'hors_ligne') return;
+    // Un échec peut arriver avant que cet effet ne s'exécute : « hors ligne » et « modifié
+    // ailleurs » ne sont jamais écrasés par « en attente ».
+    setEtat((x) =>
+      x === 'enregistrement' || x === 'hors_ligne' || x === 'conflit' ? x : 'modifie',
+    );
     const t = setTimeout(() => void envoyer(), DELAI);
     return () => clearTimeout(t);
   }, [e.scene, envoyer, etat]);
+
+  // Hors ligne : le statut reste affiché, chaque modification est gardée sur l'appareil, et
+  // un nouvel essai part toutes les 30 s (en plus du retour du réseau, ci-dessous).
+  useEffect(() => {
+    if (etat !== 'hors_ligne' || e.scene === enregistree.current) return;
+    if (!e.essai)
+      void ecrireBrouillon(e.planId, {
+        scene: e.scene,
+        revision: revision.current,
+        le: Date.now(),
+      });
+    const t = setTimeout(() => void envoyer(), REESSAI_HORS_LIGNE);
+    return () => clearTimeout(t);
+  }, [e.scene, envoyer, etat, e.essai, e.planId]);
 
   // Retour du réseau : nouvel essai.
   useEffect(() => {
