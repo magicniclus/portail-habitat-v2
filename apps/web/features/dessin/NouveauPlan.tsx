@@ -1,6 +1,6 @@
 'use client';
 
-import type { Scene } from '@ph/core/dessin';
+import { MODELES, type Scene } from '@ph/core/dessin';
 import { Button, Feuille, Field, Input, RadioCard, RadioCardGroup } from '@ph/ui';
 import { useState } from 'react';
 import { sceneDepuisChoix, type ChoixDepart } from './scenesDepart';
@@ -65,7 +65,7 @@ export function NouveauPlan({
       open={ouvert}
       onOpenChange={(o) => !o && fermer()}
       titre="Nouveau plan"
-      description="Choisissez une forme de départ : vous pourrez tout modifier ensuite."
+      description="Choisissez une forme ou un modèle de départ : vous pourrez tout modifier ensuite."
       actions={
         <Button onClick={() => void valider()} disabled={envoi}>
           Créer le plan
@@ -89,7 +89,20 @@ export function NouveauPlan({
             />
           ))}
         </RadioCardGroup>
-        {choix === 'vide' ? null : (
+        <RadioCardGroup legende="Ou partir d’un modèle">
+          {MODELES.map((m) => (
+            <RadioCard
+              key={m.id}
+              name="forme"
+              value={`modele:${m.id}`}
+              checked={choix === `modele:${m.id}`}
+              onChange={() => setChoix(`modele:${m.id}`)}
+              titre={m.libelle}
+              description={m.detail}
+            />
+          ))}
+        </RadioCardGroup>
+        {choix === 'vide' || choix.startsWith('modele:') ? null : (
           <div className="grid grid-cols-2 gap-3">
             {champ('largeur', 'Largeur hors tout (cm)')}
             {champ('profondeur', 'Profondeur hors tout (cm)')}

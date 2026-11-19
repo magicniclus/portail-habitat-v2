@@ -1,9 +1,26 @@
 import { expect, test } from '@playwright/test';
 import { activerPlans, nouveauPlan } from './dessinOutils';
+import { COMPTES, connecter } from './outils';
 
 test.beforeAll(activerPlans);
 
-test.describe('Plans — Mes plans et niveaux (DES-02, DES-04)', () => {
+test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
+  test('DES-01 : créer un plan depuis un modèle (T3), pièces déjà nommées', async ({ page }) => {
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByRole('radio', { name: /^T3/ }).check();
+    await expect(page.getByLabel('Largeur hors tout (cm)')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    const plan = page.getByTestId('plan-2d');
+    await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(4);
+    for (const nom of ['Séjour', 'Salle de bains'])
+      await expect(plan.getByText(nom, { exact: true })).toBeVisible();
+    await expect(plan.getByText('Chambre', { exact: true })).toHaveCount(2);
+  });
+
   test('DES-02, DES-04 : régler et réordonner les niveaux, retrouver le plan par la recherche', async ({
     page,
   }, info) => {

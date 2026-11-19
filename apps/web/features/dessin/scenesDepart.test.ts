@@ -29,3 +29,27 @@ describe('scène de départ d’un nouveau plan (DES-01)', () => {
     });
   });
 });
+
+describe('modèles de départ (DES-01)', () => {
+  it('un modèle donne ses pièces ; la maison à étage a deux niveaux', () => {
+    const t3 = sceneDepuisChoix('modele:t3', {
+      largeur: 0,
+      profondeur: 0,
+      decoupeL: 0,
+      decoupeP: 0,
+    });
+    expect(t3.ok && t3.scene.niveaux[0]!.pieces.map((p) => p.nom).sort()).toEqual([
+      'Chambre',
+      'Chambre',
+      'Salle de bains',
+      'Séjour',
+    ]);
+    const etage = sceneDepuisChoix('modele:etage', {
+      largeur: 0,
+      profondeur: 0,
+      decoupeL: 0,
+      decoupeP: 0,
+    });
+    expect(etage.ok && etage.scene.niveaux).toHaveLength(2);
+  });
+});
