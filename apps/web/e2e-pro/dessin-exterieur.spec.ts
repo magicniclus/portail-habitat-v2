@@ -235,6 +235,8 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     expect(await facades.locator('[data-genre="coupe"]').count()).toBeGreaterThanOrEqual(3);
     await menu('Rendu');
     await page.getByRole('button', { name: 'Plan 2D' }).click();
-    await expect(plan.getByTestId('trait-coupe')).toBeAttached();
+    // Le trait de coupe ne reste pas sur le plan : la coupe se retrouve dans Façades.
+    await expect(plan.locator('svg')).toBeVisible();
+    await expect(plan.getByTestId('trait-coupe')).toHaveCount(0);
   });
 });
