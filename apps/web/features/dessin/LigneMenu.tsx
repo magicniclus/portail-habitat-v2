@@ -28,12 +28,15 @@ export function Ligne({
   titre,
   detail,
   action,
+  apercu,
   pressee,
   onClick,
 }: {
   titre: string;
   detail: string;
   action?: ReactNode;
+  /** Vignette dessinée à gauche : ce que l'outil pose sur le plan. */
+  apercu?: ReactNode;
   pressee?: boolean;
   onClick: () => void;
 }) {
@@ -46,7 +49,8 @@ export function Ligne({
         className={etatLigne(Boolean(pressee))}
         onClick={onClick}
       >
-        <span className="flex-1">
+        {apercu}
+        <span className="min-w-0 flex-1">
           <span className="block font-semibold">{titre}</span>
           <span className="text-[13px] text-neutre-700">
             {pressee ? 'Sélectionné · cliquez sur le plan' : detail}

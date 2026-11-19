@@ -10,6 +10,7 @@ import {
 } from '@ph/core/dessin';
 import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { ApercuMur, ApercuOuverture } from './Apercus';
 import { Ligne } from './LigneMenu';
 
 const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
@@ -40,6 +41,7 @@ export function ListeOutilsStructure({
             key={m.type}
             titre={m.libelle}
             detail={m.detail}
+            apercu={<ApercuMur type={m.type} />}
             pressee={etat.outil === 'mur' && etat.typeMur === m.type}
             onClick={() => dispatch({ type: 'outil', outil: 'mur', typeMur: m.type })}
           />
@@ -56,6 +58,7 @@ export function ListeOutilsStructure({
               key={t}
               titre={c.libelle}
               detail={`${c.largeur / 10} × ${c.hauteur / 10} cm`}
+              apercu={<ApercuOuverture type={t} />}
               pressee={etat.outil === 'ouverture' && etat.typeOuverture === t}
               onClick={() => dispatch({ type: 'outil', outil: 'ouverture', typeOuverture: t })}
             />

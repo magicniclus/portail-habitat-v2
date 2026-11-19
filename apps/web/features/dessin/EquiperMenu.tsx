@@ -13,6 +13,7 @@ import {
 import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { ApercuObjet } from './Apercus';
 import { Ligne, ligne } from './LigneMenu';
 
 const cm = (mm: number) => Math.round(mm / 10);
@@ -41,6 +42,7 @@ function Objets({
             key={o.id}
             titre={o.libelle}
             detail={`${cm(o.dimensions.l)} × ${cm(o.dimensions.p)} cm${o.contreMur ? ' · contre un mur' : ''}`}
+            apercu={<ApercuObjet o={o} />}
             pressee={actif}
             onClick={() => dispatch({ type: 'outil', outil: 'objet', catalogueId: o.id })}
           />
