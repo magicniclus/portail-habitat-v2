@@ -35,6 +35,11 @@ test.describe('Plans — couleur des menuiseries (DES-14)', () => {
     await choisir(/^Porte d’entrée/);
     await proprietes();
     await nuancier.getByRole('button', { name: 'Bois foncé' }).click();
+    // Le panneau des propriétés ne déborde jamais en largeur (contenu coupé à gauche).
+    for (const corps of await page.getByTestId('corps-panneau').all()) {
+      const [large, visible] = await corps.evaluate((el) => [el.scrollWidth, el.clientWidth]);
+      expect(large).toBeLessThanOrEqual(visible);
+    }
     await page.getByRole('button', { name: 'Appliquer à toutes les menuiseries' }).click();
 
     await choisir(/^Porte-fenêtre/);
