@@ -1,16 +1,17 @@
 # Portail Travaux — règles du projet
 
-> À copier à la racine du dépôt. Claude Code relit ce fichier à chaque session : il doit rester court.
+> Claude Code relit ce fichier à chaque session : il doit rester court. Il décrit le projet tel qu'il est fait (état au 19/11/2026).
 
 ## Stack
-Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · React Hook Form · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
+Next.js 16 (App Router, `proxy.ts`, TypeScript 6 strict) · monorepo pnpm + turbo · Firebase (Auth, Firestore `eur3`, Storage et Functions v2 `europe-west1`, App Check) · Stripe Billing + Checkout · Resend + React Email · Zod · Tailwind · `@phosphor-icons/react` · Vitest · Playwright · pnpm.
 
 ## Commandes
 - `pnpm dev` : Next.js + émulateurs Firebase
 - `pnpm test` : Vitest (logique + règles Firestore sur émulateur)
 - `pnpm typecheck`, `pnpm lint`
 - `pnpm seed` : jeu de données de test (refuse de tourner hors émulateur ou staging)
-- `pnpm e2e` : Playwright
+- `pnpm test:unit` : tests sans émulateur ; `pnpm knip` (code mort) et `pnpm format` font partie des vérifications
+- `pnpm e2e` : Playwright (particuliers) ; `pnpm e2e:pro` : Playwright de l'espace pro (avec jeu de test)
 
 ## Où trouver quoi (lire seulement la section utile)
 - **Point d'entrée : `docs/PLAN_DEV.md`** (carte des documents, ordre des lots, maquettes → routes, liste de contrôle avant production)
@@ -29,7 +30,7 @@ Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, 
 - Recherche « Quel est votre projet ? » : `docs/RECHERCHE.md` + `docs/data/recherche-intentions.json`
 - Parcours en plusieurs étapes et reprise : `docs/REPRISE_PARCOURS.md`
 - Emails, SMS, notifications : `docs/EMAILS.md` (tout envoi passe par `notifier()`)
-- **Devis et factures** (gratuit) : `docs/DATABASE.md` §8 bis-ter — mentions obligatoires vérifiées par `verifierMentions()` côté client ET serveur ; PDF uniquement téléchargeable ; facturation électronique 2027
+- **Devis et factures** (gratuit) : `docs/DATABASE.md` §8 bis-ter — mentions obligatoires vérifiées par `verifierMentions()` côté client ET serveur ; PDF uniquement téléchargeable ; facturation électronique (Factur-X) : D62 ⏳
 - **Navigation espace artisan** : outils dans la barre latérale, « Mon compte » épinglé en bas (onglets Profil · Équipe · Abonnement · Aide)
 - **Offres, prix, droits, paiements : `docs/PAIEMENTS.md` (fait foi ; aucun prix avant l'inscription)**
 - Stripe, Functions, SEO, RGPD : `docs/INTEGRATIONS.md`
@@ -39,8 +40,8 @@ Next.js 15 (App Router, TypeScript strict) · Firebase (Auth, Firestore `eur3`, 
 - **Blog artisan** : `docs/BLOG.md` (un blog par artisan, quotas IA 5/15, mode autonome en un clic, pilote automatique, mentions légales lues depuis les paramètres de devis)
 - **Fonction payante cliquée** : toujours la fenêtre d'offre (PAIEMENTS §4), puis Stripe Checkout directement (CGV acceptées chez Stripe) ; jamais d'activation sans paiement
 - **Coûts** : `docs/COUTS.md` (règles d'économie à respecter dans tout le code)
-- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `lib/`)
-- Avancement et décisions : `docs/AVANCEMENT.md` (à mettre à jour à la fin de chaque lot)
+- Maquettes : `docs/designs/*.dc.html` (références visuelles ; la logique de `renderVals()` et les constantes s'extraient dans `packages/core/`)
+- Avancement et décisions : `docs/AVANCEMENT.md` (journal détaillé, à mettre à jour à la fin de chaque lot) et `docs/PROGRESSION.md` (résumé par lot)
 
 ## Architecture (détail : `docs/ARCHITECTURE.md`, à suivre strictement)
 ```
@@ -60,9 +61,9 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 
 ## Règles non négociables
 1. Montants en **centimes entiers**. Jamais de `float` pour de l'argent.
-2. Toute entrée passe par un **schéma Zod** de `lib/schemas`, côté client **et** côté serveur.
-3. Les prix (simulateur, leads, diagnostic) sont **recalculés côté serveur** ; la valeur du client est ignorée.
-4. `plan`, `optionVisibilite`, `siegesMax` : écrits **uniquement** par le webhook Stripe.
+2. Toute entrée passe par un **schéma Zod** de `packages/core/src/schemas`, côté client **et** côté serveur.
+3. Les prix (simulateur, demandes, diagnostic) sont **recalculés côté serveur** ; la valeur du client est ignorée.
+4. `droits` (offre, options) et `siegesMax` : écrits **uniquement** par le webhook Stripe.
 5. Écritures sensibles (demandes, avis, crédits, membres, prix) : **Function ou Server Action uniquement**, en transaction, avec vérification `peut()` et `auditLog` si admin.
 6. Règles Firestore : tout est refusé par défaut, **chaque règle a son test**.
 7. Aucune saisie de carte dans notre UI : Stripe Checkout et Customer Portal.
@@ -75,7 +76,7 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - Logique métier : **tests d'abord**, puis implémentation.
 - Ne pas ajouter de dépendance, changer le modèle de données ou une règle de sécurité **sans le signaler** dans le plan.
 - Un lot = une branche `lot-XX-nom` = des commits atomiques en français (`feat(simulateur): …`).
-- Un lot est terminé quand `pnpm typecheck && pnpm lint && pnpm test` passent et que les écrans correspondent aux maquettes.
+- Un lot est terminé quand `pnpm typecheck && pnpm lint && pnpm knip && pnpm test` passent et que les écrans correspondent aux maquettes.
 - En cas de doute sur une règle métier : **demander**, ne pas inventer.
 
 ## Suivi et reprise
@@ -93,4 +94,4 @@ packages/config     tsconfig, eslint, tailwind, vitest partagés
 - Schémas Zod dans `packages/core/src/schemas` (et non `lib/schemas`) ; `z` s'importe de `@ph/core/zod` (messages en français), jamais de `zod`.
 - La logique de `renderVals()` et les constantes des maquettes s'extraient dans `packages/core/` (et non `lib/`).
 - Branche : en session web, la branche imposée par la session.
-- Suivi : `docs/AVANCEMENT.md` reste le seul fichier de suivi détaillé (lots 0 à 14 déjà faits) ; `docs/PROGRESSION.md` est tenu à jour en résumé.
+- Suivi : `docs/AVANCEMENT.md` reste le seul fichier de suivi détaillé (lots 0 à 15 ; le lot 15 « Plans » est en recette, rien en production) ; `docs/PROGRESSION.md` est tenu à jour en résumé.
