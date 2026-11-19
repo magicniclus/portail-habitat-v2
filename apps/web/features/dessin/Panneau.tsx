@@ -13,18 +13,26 @@ export function Panneau({
   cote,
   titre,
   replier,
+  sortie = false,
   children,
 }: {
   cote: 'gauche' | 'droite';
   titre: string;
   replier: () => void;
+  /** Animation de fermeture en cours : le panneau glisse et s'efface. */
+  sortie?: boolean;
   children: ReactNode;
 }) {
   const gauche = cote === 'gauche';
+  // Ordinateur : glissé latéral et fondu ; téléphone : la feuille monte ou descend.
+  const animation = sortie
+    ? `pointer-events-none ${gauche ? 'animate-[panneau-gauche-sortie_.18s_ease-in_forwards]' : 'animate-[panneau-droite-sortie_.18s_ease-in_forwards]'} max-[899px]:animate-[descendre_.18s_ease-in_forwards]`
+    : `${gauche ? 'animate-[panneau-gauche_.2s_ease-out]' : 'animate-[panneau-droite_.2s_ease-out]'} max-[899px]:animate-[monter_.24s_ease-out]`;
   return (
     <section
       aria-label={titre}
-      className={`flex w-[300px] flex-none flex-col bg-blanc max-[899px]:absolute max-[899px]:right-[60px] max-[899px]:bottom-0 max-[899px]:left-[76px] max-[899px]:z-20 max-[899px]:max-h-[60dvh] max-[899px]:w-auto max-[899px]:rounded-t-2xl max-[899px]:border-t max-[899px]:border-trait max-[899px]:shadow-[0_-8px_24px_rgb(0_0_0/0.12)] ${gauche ? 'border-r border-trait' : 'border-l border-trait'}`}
+      aria-hidden={sortie || undefined}
+      className={`${animation} flex w-[300px] flex-none flex-col bg-blanc max-[899px]:absolute max-[899px]:right-[60px] max-[899px]:bottom-0 max-[899px]:left-[76px] max-[899px]:z-20 max-[899px]:max-h-[60dvh] max-[899px]:w-auto max-[899px]:rounded-t-2xl max-[899px]:border-t max-[899px]:border-trait max-[899px]:shadow-[0_-8px_24px_rgb(0_0_0/0.12)] ${gauche ? 'border-r border-trait' : 'border-l border-trait'}`}
     >
       {/* Poignée de la feuille du bas (téléphone). */}
       <span
@@ -40,7 +48,8 @@ export function Panneau({
         />
       </header>
       <div
-        className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-3"
+        key={titre}
+        className="min-h-0 flex-1 animate-[fondu_.2s_ease-out] overflow-x-hidden overflow-y-auto p-3"
         data-testid="corps-panneau"
       >
         {children}

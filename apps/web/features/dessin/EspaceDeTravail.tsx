@@ -5,6 +5,7 @@ import type { Route } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useReducer, useState } from 'react';
+import { usePresence } from './usePresence';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
 import { BarreDessin } from './BarreDessin';
@@ -74,6 +75,9 @@ export function EspaceDeTravail(p: {
   }, [etat.menu, etat.proprietes]);
 
   const [versions, setVersions] = useState(false);
+  // Panneaux animés : gardés le temps de leur sortie.
+  const menu = usePresence(etat.menu);
+  const proprietes = usePresence(etat.proprietes || null);
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
     if (!r.ok) return;
@@ -100,14 +104,15 @@ export function EspaceDeTravail(p: {
         />
         <div className="relative flex min-h-0 flex-1">
           <RailMenus etat={etat} dispatch={dispatch} />
-          {etat.menu ? (
+          {menu.rendu ? (
             <Panneau
               cote="gauche"
-              titre={TITRES_MENU[etat.menu]}
+              titre={TITRES_MENU[menu.rendu]}
               replier={() => dispatch({ type: 'menu', menu: null })}
+              sortie={menu.sortie}
             >
               <ContenuMenu
-                menu={etat.menu}
+                menu={menu.rendu}
                 etat={etat}
                 dispatch={dispatch}
                 espace={p.espace}
@@ -135,11 +140,12 @@ export function EspaceDeTravail(p: {
               resoudreConflit={(garder) => void resoudreConflit(garder)}
             />
           </main>
-          {etat.proprietes ? (
+          {proprietes.rendu ? (
             <Panneau
               cote="droite"
               titre="Propriétés"
               replier={() => dispatch({ type: 'proprietes', ouvert: false })}
+              sortie={proprietes.sortie}
             >
               <Inspecteur etat={etat} dispatch={dispatch} />
             </Panneau>

@@ -140,3 +140,38 @@
     visibility: hidden;
   }
 }
+
+/* Panneaux de l'éditeur de plans : léger glissé et fondu à l'ouverture et à la fermeture. */
+@keyframes panneau-gauche {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes panneau-droite {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes panneau-gauche-sortie {
+  to {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes panneau-droite-sortie {
+  to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes descendre {
+  to {
+    transform: translateY(100%);
+  }
+}
