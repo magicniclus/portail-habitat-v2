@@ -104,7 +104,7 @@ test.describe('Plans — téléphone, accessibilité, performance (DES-46 à DES
     await page.keyboard.press('?');
     const fenetre = page.getByRole('dialog', { name: 'Raccourcis clavier' });
     await expect(fenetre).toBeVisible();
-    await expect(fenetre.getByText('Déplacer l’élément choisi de 1 cm')).toBeVisible();
+    await expect(fenetre.getByText('Déplacer la sélection de 1 cm')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(fenetre).toHaveCount(0);
     // Choisir la pièce : son nom et sa surface sont annoncés.

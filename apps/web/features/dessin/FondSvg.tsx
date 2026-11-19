@@ -1,5 +1,3 @@
-'use client';
-
 import { tailleFond, type FondImage } from '@ph/core/dessin';
 import type { FondCharge } from './useFond';
 

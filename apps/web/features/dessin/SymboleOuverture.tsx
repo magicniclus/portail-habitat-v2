@@ -1,5 +1,3 @@
-'use client';
-
 import {
   CATALOGUE_OUVERTURES,
   longueurMur,

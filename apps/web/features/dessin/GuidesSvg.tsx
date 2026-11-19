@@ -1,5 +1,3 @@
-'use client';
-
 import type { Guide } from '@ph/core/dessin';
 
 /** Guides du placement automatique (DES-22) : où l'objet s'est accroché pendant le glisser. */

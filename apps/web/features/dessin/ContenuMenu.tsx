@@ -1,5 +1,3 @@
-'use client';
-
 import type { Dispatch } from 'react';
 import type { EspaceDessin } from './api';
 import { Chiffrage } from './Chiffrage';

@@ -1,5 +1,3 @@
-'use client';
-
 import { contourPiscine, type Niveau, type Point } from '@ph/core/dessin';
 import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';

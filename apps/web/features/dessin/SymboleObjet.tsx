@@ -1,5 +1,3 @@
-'use client';
-
 import type { SymboleObjet } from '@ph/core/dessin';
 import { Canape, Lit } from './SymbolesMobilier';
 

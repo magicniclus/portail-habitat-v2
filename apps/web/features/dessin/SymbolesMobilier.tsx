@@ -1,5 +1,3 @@
-'use client';
-
 /** Lit et canapé vus de dessus (dos du côté y = -p/2). */
 const t = { vectorEffect: 'non-scaling-stroke' as const, strokeWidth: 1.2 };
 interface Props {

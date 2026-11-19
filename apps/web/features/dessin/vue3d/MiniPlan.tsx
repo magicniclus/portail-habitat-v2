@@ -1,5 +1,3 @@
-'use client';
-
 import type { Niveau, Point } from '@ph/core/dessin';
 import { cadreDe } from '../cadre';
 

@@ -1,5 +1,3 @@
-'use client';
-
 import { descriptionSelection } from '@ph/core/dessin';
 import { niveauDe, type EtatEditeur } from './etat';
 

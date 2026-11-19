@@ -1,5 +1,3 @@
-'use client';
-
 import { regardCoupe } from '@ph/core/dessin';
 import { COULEURS_ELEVATION as C } from '@ph/ui/tokens';
 import type { EtatEditeur } from './etat';

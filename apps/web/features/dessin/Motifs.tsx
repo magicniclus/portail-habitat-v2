@@ -1,5 +1,3 @@
-'use client';
-
 import type { Revetement } from '@ph/core/dessin';
 import { COULEURS_PLAN, MATERIAUX_DESSIN } from '@ph/ui/tokens';
 

@@ -30,14 +30,6 @@ export const SOLS_DESSIN: readonly (TeinteDessin & {
   { id: 'ardoise', libelle: 'Carrelage ardoise', couleur: '#5f6670', famille: 'carrelage' },
 ];
 
-/** Peintures proposées dans l'inspecteur. */
-export const PEINTURES_DESSIN: readonly TeinteDessin[] = [
-  { id: 'blanc', libelle: 'Blanc', couleur: '#fafaf8' },
-  { id: 'lin', libelle: 'Lin', couleur: '#e9e0cf' },
-  { id: 'sauge', libelle: 'Sauge', couleur: '#b7c4b1' },
-  { id: 'terracotta', libelle: 'Terracotta', couleur: '#c8775a' },
-];
-
 /**
  * Matériaux de départ (D88 : catalogue maison à venir). `famille` suit `FAMILLES_REVETEMENT`
  * de @ph/core/dessin ; `format` en mm (carreau, lame) ; `joint` : couleur du joint ou du motif.
@@ -310,3 +302,8 @@ export const COULEURS_TERRASSE: Record<string, string> = {
   pierre: '#bdb5a6',
   beton_cire: '#b9b4ad',
 };
+
+/** Peintures proposées dans l'inspecteur : celles du catalogue des matériaux, sans doublon. */
+export const PEINTURES_DESSIN: readonly TeinteDessin[] = MATERIAUX_DESSIN.filter(
+  (m) => m.famille === 'peinture',
+).map(({ id, libelle, couleur }) => ({ id, libelle, couleur }));

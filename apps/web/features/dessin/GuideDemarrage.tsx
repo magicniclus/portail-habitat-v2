@@ -1,5 +1,3 @@
-'use client';
-
 import { niveauDe, type EtatEditeur } from './etat';
 
 /** « Bien démarrer » (maquette) : 4 étapes cochées d'après le plan lui-même. */

@@ -38,76 +38,38 @@ const AVEC_SEUIL: readonly Ouverture['type'][] = [
   'baie_coulissante',
 ];
 
-export function menuiserie3D(
-  o: Ouverture,
-  m: Mur,
-  n: Pick<Niveau, 'pieces' | 'altitude'>,
-  ouvert = 0,
-): PieceMenuiserie[] {
-  const famille = CATALOGUE_OUVERTURES[o.type].famille;
-  if (famille === 'libre') return [];
-  const out: Local[] = [];
-  const pousser = (x: Omit<Local, 'ang'> & { ang?: number }) => out.push({ ang: 0, ...x });
-  const ep = m.epaisseur;
-  const prof = Math.min(70, ep);
-  const vi = versInterieur(n, m, o);
-  const [p0, p1] = [o.position, o.position + o.largeur];
-  const [bas, haut] = [o.allege, o.allege + o.hauteur];
-  const fenetre = famille === 'fenetre' && o.type !== 'baie_coulissante';
-  const applique = o.type === 'porte_coulissante';
+/** Mesures d'une baie dans son mur, partagées par le dormant et les vantaux. */
+interface Baie {
+  o: Ouverture;
+  ep: number;
+  prof: number;
+  /** Côté intérieur du mur (+1 ou −1). */
+  vi: number;
+  p0: number;
+  p1: number;
+  bas: number;
+  haut: number;
+  fenetre: boolean;
+  /** Porte coulissante en applique : ni dormant ni imposte, un rail au-dessus. */
+  applique: boolean;
+}
+type Pousser = (x: Omit<Local, 'ang'> & { ang?: number }) => void;
 
-  // Dormant (pas de traverse basse sous une porte) et imposte.
-  if (!applique) {
-    pousser({
-      s: p0 + DORMANT / 2,
-      t: 0,
-      z: (bas + haut) / 2,
-      l: DORMANT,
-      e: prof,
-      h: o.hauteur,
-      matiere: 'cadre',
-    });
-    pousser({
-      s: p1 - DORMANT / 2,
-      t: 0,
-      z: (bas + haut) / 2,
-      l: DORMANT,
-      e: prof,
-      h: o.hauteur,
-      matiere: 'cadre',
-    });
-    pousser({
-      s: (p0 + p1) / 2,
-      t: 0,
-      z: haut - DORMANT / 2,
-      l: o.largeur,
-      e: prof,
-      h: DORMANT,
-      matiere: 'cadre',
-    });
-    if (fenetre)
-      pousser({
-        s: (p0 + p1) / 2,
-        t: 0,
-        z: bas + DORMANT / 2,
-        l: o.largeur,
-        e: prof,
-        h: DORMANT,
-        matiere: 'cadre',
-      });
+/** Dormant (pas de traverse basse sous une porte), imposte vitrée, seuil ; renvoie [z0, z1]. */
+function dormant(b: Baie, pousser: Pousser): [number, number] {
+  const { o, prof, p0, p1, bas, haut } = b;
+  const cadre = (s: number, z: number, l: number, h: number) =>
+    pousser({ s, t: 0, z, l, e: prof, h, matiere: 'cadre' });
+  if (!b.applique) {
+    cadre(p0 + DORMANT / 2, (bas + haut) / 2, DORMANT, o.hauteur);
+    cadre(p1 - DORMANT / 2, (bas + haut) / 2, DORMANT, o.hauteur);
+    cadre((p0 + p1) / 2, haut - DORMANT / 2, o.largeur, DORMANT);
+    if (b.fenetre) cadre((p0 + p1) / 2, bas + DORMANT / 2, o.largeur, DORMANT);
   }
   let z1 = haut - DORMANT;
-  if (o.imposte && !applique) {
+  if (o.imposte && !b.applique) {
     z1 -= IMPOSTE;
-    pousser({
-      s: (p0 + p1) / 2,
-      t: 0,
-      z: z1 + DORMANT / 2,
-      l: o.largeur - 2 * DORMANT,
-      e: prof,
-      h: DORMANT,
-      matiere: 'cadre',
-    });
+    cadre((p0 + p1) / 2, z1 + DORMANT / 2, o.largeur - 2 * DORMANT, DORMANT);
     pousser({
       s: (p0 + p1) / 2,
       t: 0,
@@ -118,17 +80,34 @@ export function menuiserie3D(
       matiere: 'verre',
     });
   }
-  const z0 = fenetre ? bas + DORMANT : bas;
   if (AVEC_SEUIL.includes(o.type))
-    pousser({ s: (p0 + p1) / 2, t: 0, z: bas + 10, l: o.largeur, e: ep, h: 20, matiere: 'seuil' });
+    pousser({
+      s: (p0 + p1) / 2,
+      t: 0,
+      z: bas + 10,
+      l: o.largeur,
+      e: b.ep,
+      h: 20,
+      matiere: 'seuil',
+    });
+  return [b.fenetre ? bas + DORMANT : bas, z1];
+}
 
-  // Vantaux : charnière, sens d'ouverture ou de coulissement.
+/** Vantaux : charnière, sens d'ouverture ou de coulissement, poignée sur le dernier ; rail. */
+function vantaux(
+  b: Baie,
+  [z0, z1]: [number, number],
+  ouvert: number,
+  out: Local[],
+  pousser: Pousser,
+) {
+  const { o, ep, p0, p1, bas, haut, applique } = b;
   const nb = DEUX_VANTAUX.includes(o.type) ? 2 : 1;
   const coulissant = COULISSANTS.includes(o.type);
   const [i0, i1] = applique ? [p0 - 40, p1 + 40] : [p0 + DORMANT, p1 - DORMANT];
   const w = o.type === 'baie_coulissante' ? (i1 - i0) / 2 + 30 : (i1 - i0) / nb;
-  const zPoignee = fenetre ? (z0 + z1) / 2 : bas + 1_050;
-  const cote = o.cote === 'interieur' ? vi : -vi;
+  const zPoignee = b.fenetre ? (z0 + z1) / 2 : bas + 1_050;
+  const cote = o.cote === 'interieur' ? b.vi : -b.vi;
   const tApplique = applique ? cote * (ep / 2 + 30) : 0;
   const zHaut = applique ? haut + 40 : z1;
   for (let i = 0; i < nb; i++) {
@@ -172,7 +151,32 @@ export function menuiserie3D(
       h: 40,
       matiere: 'rail',
     });
+}
 
-  out.push(...volets(o, ep, vi));
+export function menuiserie3D(
+  o: Ouverture,
+  m: Mur,
+  n: Pick<Niveau, 'pieces' | 'altitude'>,
+  ouvert = 0,
+): PieceMenuiserie[] {
+  const famille = CATALOGUE_OUVERTURES[o.type].famille;
+  if (famille === 'libre') return [];
+  const out: Local[] = [];
+  const pousser: Pousser = (x) => out.push({ ang: 0, ...x });
+  const vi = versInterieur(n, m, o);
+  const b: Baie = {
+    o,
+    ep: m.epaisseur,
+    prof: Math.min(70, m.epaisseur),
+    vi,
+    p0: o.position,
+    p1: o.position + o.largeur,
+    bas: o.allege,
+    haut: o.allege + o.hauteur,
+    fenetre: famille === 'fenetre' && o.type !== 'baie_coulissante',
+    applique: o.type === 'porte_coulissante',
+  };
+  vantaux(b, dormant(b, pousser), ouvert, out, pousser);
+  out.push(...volets(o, m.epaisseur, vi));
   return versLePlan(out, m, n.altitude);
 }
