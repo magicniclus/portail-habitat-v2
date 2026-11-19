@@ -13,9 +13,8 @@ import {
 import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { Ligne, ligne } from './LigneMenu';
 
-const ligne =
-  'flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-[10px] border border-transparent bg-blanc px-2.5 py-2 text-left font-[inherit] text-texte hover:bg-neutre-100';
 const cm = (mm: number) => Math.round(mm / 10);
 
 const CONSEILS = {
@@ -38,23 +37,13 @@ function Objets({
       {objets.map((o) => {
         const actif = etat.outil === 'objet' && etat.catalogueId === o.id;
         return (
-          <li key={o.id}>
-            <button
-              type="button"
-              aria-pressed={actif}
-              className={`${ligne} ${actif ? 'border-accent-300 bg-accent-100' : ''}`}
-              onClick={() => dispatch({ type: 'outil', outil: 'objet', catalogueId: o.id })}
-            >
-              <span className="flex-1">
-                <span className="block font-semibold">{o.libelle}</span>
-                <span className="text-[13px] text-neutre-700">
-                  {cm(o.dimensions.l)} × {cm(o.dimensions.p)} cm
-                  {o.contreMur ? ' · contre un mur' : ''}
-                </span>
-              </span>
-              <span className="text-xs font-bold text-accent-700">Placer</span>
-            </button>
-          </li>
+          <Ligne
+            key={o.id}
+            titre={o.libelle}
+            detail={`${cm(o.dimensions.l)} × ${cm(o.dimensions.p)} cm${o.contreMur ? ' · contre un mur' : ''}`}
+            pressee={actif}
+            onClick={() => dispatch({ type: 'outil', outil: 'objet', catalogueId: o.id })}
+          />
         );
       })}
     </ul>

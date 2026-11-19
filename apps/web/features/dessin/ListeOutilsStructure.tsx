@@ -21,8 +21,6 @@ const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'poteau', libelle: LIBELLES_MUR.poteau, detail: 'Section 20 cm, deux clics' },
   { type: 'poutre', libelle: LIBELLES_MUR.poutre, detail: 'Sous le plafond, deux clics' },
 ];
-/** Étiquette « Placer » des outils qui se posent sur le plan. */
-export const tracer = <span className="text-xs font-bold text-accent-700">Placer</span>;
 
 /** Outils à placer du menu Structure : murs, portes et fenêtres, escaliers (DES-06 à DES-15). */
 export function ListeOutilsStructure({
@@ -42,7 +40,6 @@ export function ListeOutilsStructure({
             key={m.type}
             titre={m.libelle}
             detail={m.detail}
-            action={tracer}
             pressee={etat.outil === 'mur' && etat.typeMur === m.type}
             onClick={() => dispatch({ type: 'outil', outil: 'mur', typeMur: m.type })}
           />
@@ -59,7 +56,6 @@ export function ListeOutilsStructure({
               key={t}
               titre={c.libelle}
               detail={`${c.largeur / 10} × ${c.hauteur / 10} cm`}
-              action={tracer}
               pressee={etat.outil === 'ouverture' && etat.typeOuverture === t}
               onClick={() => dispatch({ type: 'outil', outil: 'ouverture', typeOuverture: t })}
             />
@@ -78,7 +74,6 @@ export function ListeOutilsStructure({
               ? 'Pente raide, peu de place'
               : 'Marches calculées pour monter d’un niveau'
           }
-          action={tracer}
           pressee={etat.outil === 'escalier' && etat.typeEscalier === t}
           onClick={() => dispatch({ type: 'outil', outil: 'escalier', typeEscalier: t })}
         />

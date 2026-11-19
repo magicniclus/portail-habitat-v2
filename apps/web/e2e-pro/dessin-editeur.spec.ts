@@ -312,7 +312,11 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
       .getByRole('button', { name: 'Structure' });
     if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
     await page.getByRole('button', { name: /^Murs & cloisons/ }).click();
-    await page.getByRole('button', { name: /^Cloison/ }).click();
+    const outil = page.getByRole('button', { name: /^Cloison/ });
+    await outil.click();
+    // Outil sélectionné : bouton enfoncé, coché, sans libellé « Placer ».
+    await expect(outil).toHaveAttribute('aria-pressed', 'true');
+    await expect(outil).toContainText('Sélectionné');
     await page.waitForTimeout(400);
 
     // DES-06 : premier point, puis Maj (tracé droit) et longueur tapée au clavier.
@@ -328,6 +332,10 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.keyboard.press('Escape');
     const cloison = plan.getByRole('button', { name: 'Cloison de 3,00 m' });
     await expect(cloison).toHaveCount(1);
+    // DES-08 : à l'aplomb de l'extrémité de la cloison, le point s'aligne, guide affiché.
+    p = await ecran(5020, 3500);
+    await page.mouse.move(p.x, p.y);
+    await expect(plan.getByTestId('accroche-alignement')).toBeAttached();
 
     // DES-07 et DES-09 : épaisseur, découpe en deux, fusion (outil Sélection).
     await page

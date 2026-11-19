@@ -9,7 +9,7 @@ import { ExterieurMenu } from './ExterieurMenu';
 import { FondMenu } from './FondMenu';
 import { ImplantationMenu } from './ImplantationMenu';
 import { Ligne } from './LigneMenu';
-import { ListeOutilsStructure, tracer } from './ListeOutilsStructure';
+import { ListeOutilsStructure } from './ListeOutilsStructure';
 import { NiveauxMenu } from './NiveauxMenu';
 import { ToitureMenu } from './ToitureMenu';
 
@@ -75,14 +75,12 @@ export function StructureMenu({
             titre="Pièce rectangulaire"
             detail="Deux coins opposés, quatre murs"
             pressee={etat.outil === 'piece'}
-            action={tracer}
             onClick={() => dispatch({ type: 'outil', outil: 'piece' })}
           />
           <Ligne
             titre="Pièce libre"
             detail="Un clic par angle, clic sur le premier point pour fermer"
             pressee={etat.outil === 'pieceLibre'}
-            action={tracer}
             onClick={() => dispatch({ type: 'outil', outil: 'pieceLibre' })}
           />
           <Ligne
