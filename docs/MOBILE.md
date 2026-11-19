@@ -81,6 +81,8 @@ Ce document s'applique à **tous les lots** qui produisent de l'interface. Il co
 | Messagerie | plein écran, champ de saisie collé en bas, `safe-area-inset-bottom` |
 | Équipe, admin | tableaux → cartes ; matrice des droits en tableau défilant avec 1re colonne figée |
 | Modales | deviennent des **feuilles du bas** (bottom sheet) sous 640 px, poignée + balayage vers le bas pour fermer |
+| Plans (éditeur, `DESSIN.md` DES-46) — **fait** | plein écran en `100dvh` ; sous 900 px, les deux rails verticaux restent (menus à gauche, outils à droite) et les panneaux s'ouvrent en **feuilles du bas** entre les rails (60 % de la hauteur au plus), repliés au départ, un seul ouvert à la fois ; choisir un outil ou une vue replie le menu ; plan cadré au-dessus de la feuille ; **pincer pour zoomer**, **appui long** (0,5 s) = propriétés de l'élément ; cotes saisies au clavier décimal ; 3D et visite au doigt avec **joystick tactile** ; sélecteur de vue de la barre masqué (vues dans le menu Rendu). Écart avec la spec : pas de palette d'outils en barre basse (remplacée par le rail de droite, choix du propriétaire) |
+| Mes plans | un titre long ne fait plus déborder la page (bouton « Créer le plan » accessible, bug corrigé en recette) |
 | Emails | déjà mobiles (600 px, blocs empilés) : tester sur Gmail iOS / Android et Apple Mail |
 
 ## 8. Intégration iOS et Android
@@ -103,12 +105,14 @@ Ce document s'applique à **tous les lots** qui produisent de l'interface. Il co
 Budget d'EXPLOITATION.md §1, mesuré en **4G lente simulée sur un Moto G Power** (profil Lighthouse mobile).
 - Images `next/image` avec `sizes` exacts, AVIF/WebP, `priority` uniquement sur l'image du haut
 - Aucune bibliothèque de carte chargée tant que la carte n'est pas visible (`IntersectionObserver`)
+- Plans : la 3D (`three` et ses compagnons) n'est chargée qu'au passage en 3D, visite ou photo ; `pdfjs-dist` qu'au choix d'un PDF ; chaque meuble 3D (glb) seulement quand il est vu en 3D. L'implantation n'utilise pas de bibliothèque de carte (photo aérienne en image)
 - Polices : 2 graisses maximum, `display: swap`, préchargées
 - Animations : `transform` et `opacity` uniquement, désactivées avec `prefers-reduced-motion`
 - INP < 200 ms : pas de calcul lourd au clavier (recherche avec délai de 120 ms, calculs du simulateur hors du rendu)
 
 ## 11. Tests
-- **Playwright**, projets `iPhone 13` (390 × 844, WebKit), `Pixel 7` (Chromium) et `iPhone SE` (320 px de large utile), en plus de l'ordinateur
+- **Playwright**, projets `iPhone 13` (390 × 844, WebKit), `Pixel 7` (Chromium) et `iPhone SE` (320 px de large utile), en plus de l'ordinateur (`apps/web/playwright.config.ts`)
+- La configuration de l'espace pro (`apps/web/playwright.pro.config.ts`, dont les parcours Plans `e2e-pro/dessin-*.spec.ts`) n'a que `iPhone 13` et l'ordinateur : **Pixel 7 et iPhone SE pas encore testés** pour ces écrans
 - Tests automatiques sur chaque page : aucun défilement horizontal à 320 px, cibles ≥ 44 px (script qui mesure les éléments interactifs), champs ≥ 16 px, `autocomplete` et `inputmode` présents sur les champs du §5
 - Captures comparées aux maquettes à 390 px (commande `/maquette`)
 - **Tests manuels avant chaque lot d'écrans** : un vrai iPhone (Safari) et un vrai Android (Chrome), en 4G, clavier ouvert, mode sombre système, texte agrandi à 130 %
