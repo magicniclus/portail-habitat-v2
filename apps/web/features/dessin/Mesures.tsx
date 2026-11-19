@@ -11,6 +11,7 @@ import {
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { points } from './svg';
 
 /** Cotes des murs : longueur sur l'axe, cliquable pour la modifier (DES-10). */
 export function Cotes({
@@ -151,6 +152,16 @@ export function TracesEnCours({
           curseur={curseur}
           rectangle={traceRectangle(etat)}
           mmParPx={mmParPx}
+        />
+      ) : null}
+      {etat.polygone.length > 1 ? (
+        <polyline
+          points={points(etat.polygone)}
+          fill="none"
+          className="stroke-accent"
+          strokeWidth={2}
+          vectorEffect="non-scaling-stroke"
+          pointerEvents="none"
         />
       ) : null}
       {etat.echelle ? (

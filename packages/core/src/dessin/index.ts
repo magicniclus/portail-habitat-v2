@@ -45,3 +45,4 @@ export * from './selection';
 export * from './pressePapier';
 export * from './alignement';
 export * from './modeles';
+export * from './piecesDessinees';

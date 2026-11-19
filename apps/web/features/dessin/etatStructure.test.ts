@@ -154,3 +154,38 @@ describe('niveaux dans l’éditeur (DES-04)', () => {
     );
   });
 });
+
+describe('pièce libre (DES-12)', () => {
+  it('points successifs, fermeture sur le premier point ; Échap ferme aussi ; deux points : abandon', () => {
+    const depart = sceneDepuisChoix('vide', {
+      largeur: 0,
+      profondeur: 0,
+      decoupeL: 0,
+      decoupeP: 0,
+    });
+    if (!depart.ok) throw new Error(depart.message);
+    const vide = etatInitial(depart.scene);
+    const points = [
+      { x: 0, y: 0 },
+      { x: 6_000, y: 0 },
+      { x: 6_000, y: 3_000 },
+      { x: 3_000, y: 5_000 },
+      { x: 0, y: 5_000 },
+    ];
+    const poser = (e: typeof vide, pts: typeof points) =>
+      pts.reduce(
+        (x, point) => reduire(x, { type: 'poserPoint', point }),
+        reduire(e, { type: 'outil', outil: 'pieceLibre' }),
+      );
+    let e = poser(vide, points);
+    expect(e.polygone).toHaveLength(5);
+    e = reduire(e, { type: 'poserPoint', point: { x: 20, y: 10 } });
+    expect([niveauDe(e).murs.length, niveauDe(e).pieces.length, e.polygone.length]).toEqual([
+      5, 1, 0,
+    ]);
+    const echap = reduire(poser(vide, points.slice(0, 3)), { type: 'terminerTrace' });
+    expect(niveauDe(echap).pieces).toHaveLength(1);
+    const abandon = reduire(poser(vide, points.slice(0, 2)), { type: 'terminerTrace' });
+    expect([niveauDe(abandon).murs.length, abandon.polygone.length]).toEqual([0, 0]);
+  });
+});

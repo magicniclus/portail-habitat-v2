@@ -79,6 +79,13 @@ export function StructureMenu({
             onClick={() => dispatch({ type: 'outil', outil: 'piece' })}
           />
           <Ligne
+            titre="Pièce libre"
+            detail="Un clic par angle, clic sur le premier point pour fermer"
+            pressee={etat.outil === 'pieceLibre'}
+            action={tracer}
+            onClick={() => dispatch({ type: 'outil', outil: 'pieceLibre' })}
+          />
+          <Ligne
             titre="Niveaux"
             detail="Étages, sous-sol, combles"
             onClick={() => setSous('niveaux')}

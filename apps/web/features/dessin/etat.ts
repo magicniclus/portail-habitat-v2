@@ -25,7 +25,7 @@ import { reduireAmenagement } from './etatAmenagement';
 import { reduireNiveaux } from './etatNiveaux';
 import { reduireStructure } from './etatStructure';
 import { reduireExterieur } from './etatExterieur';
-import { reduireAnnotations } from './etatAnnotations';
+import { fermerPolygone, reduireAnnotations } from './etatAnnotations';
 import { deplacerMulti, gardeVerrou, reduireSelection, selectionner } from './etatSelection';
 import { reduireFacades } from './etatFacades';
 import { reduireToiture } from './etatToiture';
@@ -53,11 +53,13 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
         formePiscine: a.formePiscine ?? e.formePiscine,
         typeCloture: a.typeCloture ?? e.typeCloture,
         clotureEnCours: null,
+        polygone: [],
         trace: null,
         echelle: null,
         erreur: null,
       };
     case 'terminerTrace':
+      if (e.polygone.length) return fermerPolygone(e);
       return { ...e, trace: null, echelle: null, clotureEnCours: null };
     case 'selectionner':
       return selectionner(e, a);

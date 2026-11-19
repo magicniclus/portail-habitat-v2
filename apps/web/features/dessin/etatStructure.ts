@@ -1,4 +1,4 @@
-import { poserAnnotation } from './etatAnnotations';
+import { poserAnnotation, poserPolygone } from './etatAnnotations';
 import { supprimerMulti } from './etatSelection';
 import { poserCoupe } from './etatFacades';
 import {
@@ -8,6 +8,7 @@ import {
   modifierEscalier,
   modifierOuverture,
   murSousLePoint,
+  pieceRectangle,
   poserEscalier,
   poserFond,
   poserOuverture,
@@ -45,7 +46,8 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
     poserToit(e, point) ??
     poserExterieur(e, point) ??
     poserCoupe(e, point) ??
-    poserAnnotation(e, point);
+    poserAnnotation(e, point) ??
+    poserPolygone(e, point);
   if (amenagement) return amenagement;
   if (e.outil === 'ouverture') {
     const cible = murSousLePoint(niveauCourant(e).murs, point, toleranceEnMm(16, e.zoom));
@@ -89,21 +91,8 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
     return suite.erreur ? { ...suite, trace: e.trace } : { ...suite, trace: point };
   }
   // Pièce rectangulaire d'un geste (DES-12) : deux coins opposés, quatre murs.
-  const a = e.trace;
-  const coins = [a, { x: point.x, y: a.y }, point, { x: a.x, y: point.y }];
-  if (a.x === point.x || a.y === point.y)
-    return { ...e, erreur: 'Tracez un rectangle : les deux coins doivent être opposés.' };
-  const suite = surNiveau(e, (n) => {
-    let courant: Resultat<Niveau> = { ok: true, data: n };
-    for (let i = 0; i < 4 && courant.ok; i++)
-      courant = ajouterMur(
-        courant.data,
-        { a: coins[i]!, b: coins[(i + 1) % 4]!, type: 'mur' },
-        ctx,
-      );
-    return courant;
-  });
-  return { ...suite, trace: null };
+  const suite = surNiveau(e, (n) => pieceRectangle(n, e.trace!, point, ctx));
+  return suite.erreur ? suite : { ...suite, trace: null };
 }
 
 const niveauCourant = (e: EtatEditeur) =>

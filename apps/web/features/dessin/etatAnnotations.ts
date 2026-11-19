@@ -2,7 +2,10 @@ import {
   ajouterCote,
   ajouterTexte,
   basculerCalque,
+  distance,
   modifierTexte,
+  pieceDepuisContour,
+  toleranceEnMm,
   type Point,
 } from '@ph/core/dessin';
 import { succes } from '@ph/core/resultat';
@@ -32,6 +35,25 @@ export function poserAnnotation(e: EtatEditeur, point: Point): EtatEditeur | nul
   if (!e.trace) return { ...e, trace: point, erreur: null };
   const suite = surNiveau(e, (n) => ajouterCote(n, e.trace!, point, ctx));
   return { ...suite, trace: suite.erreur ? e.trace : null };
+}
+
+/**
+ * Pièce libre (DES-12) : chaque clic ajoute un point ; un clic sur le premier point, un double
+ * clic ou Échap ferment le contour et créent les murs.
+ */
+export function poserPolygone(e: EtatEditeur, point: Point): EtatEditeur | null {
+  if (e.outil !== 'pieceLibre') return null;
+  const premier = e.polygone[0];
+  if (premier && e.polygone.length >= 3 && distance(point, premier) <= toleranceEnMm(16, e.zoom))
+    return fermerPolygone(e);
+  return { ...e, polygone: [...e.polygone, point], trace: point, erreur: null };
+}
+
+/** Ferme le contour en cours (au moins trois points), sinon l'abandonne. */
+export function fermerPolygone(e: EtatEditeur): EtatEditeur {
+  if (e.polygone.length < 3) return { ...e, polygone: [], trace: null };
+  const suite = surNiveau(e, (n) => pieceDepuisContour(n, e.polygone, ctx));
+  return suite.erreur ? suite : { ...suite, polygone: [], trace: null };
 }
 
 /** Texte modifié, calque affiché ou masqué ; `null` si l'action n'en fait pas partie. */

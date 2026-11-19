@@ -62,3 +62,30 @@ test.describe('Plans — sélection multiple et verrous (DES-29)', () => {
     await expect(murs).toHaveCount(4);
   });
 });
+
+test.describe('Plans — pièce libre (DES-12)', () => {
+  test('DES-12 : pièce polygonale tracée point par point, fermée sur le premier point', async ({
+    page,
+  }) => {
+    const { plan, ecran } = await nouveauPlan(page);
+    const menu = page
+      .getByRole('navigation', { name: 'Menus du plan' })
+      .getByRole('button', { name: 'Structure' });
+    if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
+    await page.getByRole('button', { name: /^Pièce libre/ }).click();
+    await page.waitForTimeout(400);
+    // Pentagone accolé à droite de la maison (10,60 m de large), dans la marge du plan.
+    for (const [x, y] of [
+      [10_500, 0],
+      [13_300, 0],
+      [13_300, 3_000],
+      [12_000, 5_000],
+      [10_500, 5_000],
+      [10_500, 0],
+    ] as const) {
+      const p = await ecran(x, y);
+      await page.mouse.click(p.x, p.y);
+    }
+    await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(2);
+  });
+});

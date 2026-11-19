@@ -47,7 +47,8 @@ export type Outil =
   | 'exterieur'
   | 'coupe'
   | 'cote'
-  | 'texte';
+  | 'texte'
+  | 'pieceLibre';
 type GenreSelection =
   | 'mur'
   | 'piece'
@@ -105,6 +106,8 @@ export interface EtatEditeur {
   clotureEnCours: string | null;
   /** Style copié (DES-28), collé sur une autre pièce, un mur ou une zone. */
   pressePapier: Revetement | null;
+  /** Points de la pièce libre en cours de tracé (DES-12). */
+  polygone: Point[];
   /** Premier point du segment, de la pièce ou de la mesure d'échelle en cours. */
   trace: Point | null;
   /** Deux points de la mise à l'échelle, en attente de la distance réelle. */
@@ -277,6 +280,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     typeCloture: 'bois',
     clotureEnCours: null,
     pressePapier: null,
+    polygone: [],
     trace: null,
     echelle: null,
     selection: null,
