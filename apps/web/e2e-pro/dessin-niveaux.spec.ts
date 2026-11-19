@@ -5,7 +5,9 @@ import { COMPTES, connecter } from './outils';
 test.beforeAll(activerPlans);
 
 test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
-  test('DES-01 : maison en L meublée de démonstration, avec extérieur', async ({ page }) => {
+  test('DES-01 : maison en L meublée de démonstration, deux niveaux, toit et extérieur', async ({
+    page,
+  }) => {
     await connecter(page, COMPTES.proprio, '/pro/plans');
     await page
       .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
@@ -20,6 +22,11 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
     await expect(plan.getByRole('button', { name: 'Canapé 3 places' })).toBeVisible();
     await expect(plan.getByRole('button', { name: 'Meuble évier' })).toBeVisible();
     await expect(plan.getByRole('button', { name: /^Piscine/ })).toHaveCount(1);
+    await expect(plan.getByRole('button', { name: /^Escalier / })).toHaveCount(1);
+    // Étage meublé au-dessus.
+    await page.locator('header select').first().selectOption({ index: 0 });
+    await expect(plan.getByText('Salle d’eau', { exact: true })).toBeVisible();
+    await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(6);
   });
 
   test('DES-01 : créer un plan depuis un modèle (T3), pièces déjà nommées', async ({ page }) => {

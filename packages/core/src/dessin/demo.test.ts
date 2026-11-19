@@ -8,7 +8,22 @@ describe('maison de démonstration en L', () => {
   it('pièces, ouvertures, meubles, revêtements, extérieur et toit : scène valide', () => {
     const s = ok(sceneDemo(contexteTest()));
     expect(schemaScene.safeParse(s).success).toBe(true);
-    const n = s.niveaux[0]!;
+    expect(s.niveaux).toHaveLength(2);
+    const [n, etage] = [...s.niveaux].sort((a, b) => a.altitude - b.altitude) as [
+      (typeof s.niveaux)[number],
+      (typeof s.niveaux)[number],
+    ];
+    expect(n.escaliers).toHaveLength(1);
+    expect(etage.pieces.map((x) => x.type).sort()).toEqual([
+      'bureau',
+      'chambre',
+      'chambre',
+      'chambre',
+      'couloir',
+      'salle_d_eau',
+    ]);
+    expect(etage.objets.length).toBeGreaterThanOrEqual(15);
+    expect(etage.toiture?.type).toBe('deux_pans');
     expect(n.pieces.map((x) => x.type).sort()).toEqual([
       'chambre',
       'chambre',
@@ -25,7 +40,6 @@ describe('maison de démonstration en L', () => {
     expect(n.exterieur.vegetation).toHaveLength(4);
     expect(n.exterieur.clotures).toHaveLength(1);
     expect(n.exterieur.clotures[0]!.points).toHaveLength(6);
-    expect(n.toiture?.type).toBe('deux_pans');
     expect(s.terrain?.parcelle).toHaveLength(4);
     const postes = metreNiveau(n).map((l) => l.poste);
     expect(postes).toEqual(

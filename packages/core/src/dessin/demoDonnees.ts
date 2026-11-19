@@ -58,7 +58,7 @@ export const OBJETS: [string, Point, number?][] = [
   ['meuble-tv', p(5_600, 5_300)],
   ['canape-3', p(5_600, 7_700), 1_800],
   ['table-basse', p(5_600, 6_600)],
-  ['fauteuil', p(3_900, 6_600)],
+  ['fauteuil', p(7_300, 6_800)],
   ['table-6', p(9_000, 9_300)],
   ['chaise', p(8_400, 8_500)],
   ['chaise', p(9_600, 8_500)],
@@ -66,7 +66,7 @@ export const OBJETS: [string, Point, number?][] = [
   ['chaise', p(9_600, 10_100), 1_800],
   ['suspension', p(9_000, 9_300)],
   ['buffet', p(11_500, 10_500)],
-  ['bibliotheque', p(3_700, 10_500)],
+  ['bibliotheque', p(4_700, 10_500)],
   ['plante', p(7_500, 10_400)],
   ['plante', p(12_500, 8_400)],
   ['salon-jardin', p(6_500, 12_700)],
@@ -87,4 +87,78 @@ export const SOLS: Partial<Record<Piece['type'], Revetement>> = {
   cuisine: sol('carrelage', 'ca-gris-60', 'droite'),
   salle_de_bain: sol('carrelage', 'ca-gris-60', 'droite'),
   wc: sol('carrelage', 'ca-gris-60', 'droite'),
+  salle_d_eau: sol('carrelage', 'ca-gris-60', 'droite'),
+  bureau: sol('parquet', 'pa-noyer', 'decalee'),
+  couloir: sol('parquet', 'pa-chene-clair', 'decalee'),
+};
+
+/** Escalier droit du séjour, contre la salle de bains : monte à l'étage (trémie automatique). */
+export const ESCALIER = { position: p(3_200, 5_200) };
+
+/** Aménagement d'un niveau : cloisons, pièces typées, ouvertures, objets. */
+export interface PlanNiveau {
+  cloisons: [Point, Point][];
+  pieces: [Point, Piece['type']][];
+  ouvertures: [Point, TypeOuverture][];
+  objets: [string, Point, number?][];
+}
+
+export const RDC: PlanNiveau = {
+  cloisons: CLOISONS,
+  pieces: PIECES,
+  ouvertures: OUVERTURES,
+  objets: OBJETS,
+};
+
+/** Étage sur toute l'emprise : deux chambres, suite parentale, salle d'eau, bureau, palier. */
+export const ETAGE: PlanNiveau = {
+  cloisons: [
+    [p(4_000, 100), p(4_000, 5_000)],
+    [p(100, 5_000), p(7_900, 5_000)],
+    [p(3_000, 5_000), p(3_000, 10_900)],
+    [p(100, 8_000), p(3_000, 8_000)],
+    [p(6_000, 5_000), p(6_000, 10_900)],
+  ],
+  pieces: [
+    [p(2_000, 2_500), 'chambre'],
+    [p(6_000, 2_500), 'chambre'],
+    [p(1_500, 6_500), 'salle_d_eau'],
+    [p(1_500, 9_500), 'bureau'],
+    [p(4_500, 9_800), 'couloir'],
+    [p(9_500, 8_000), 'chambre'],
+  ],
+  ouvertures: [
+    [p(3_500, 5_000), 'porte'],
+    [p(5_000, 5_000), 'porte'],
+    [p(3_000, 6_500), 'porte'],
+    [p(3_000, 9_000), 'porte'],
+    [p(6_000, 9_800), 'porte'],
+    [p(2_000, 100), 'fenetre_double'],
+    [p(6_000, 100), 'fenetre_double'],
+    [p(100, 6_500), 'fenetre'],
+    [p(100, 9_500), 'fenetre'],
+    [p(4_500, 10_900), 'fenetre'],
+    [p(12_900, 8_000), 'fenetre_double'],
+    [p(9_500, 10_900), 'fenetre_double'],
+    [p(10_500, 5_100), 'fenetre'],
+  ],
+  objets: [
+    ['lit-140', p(2_000, 1_400)],
+    ['chevet', p(700, 400)],
+    ['commode', p(3_300, 4_600)],
+    ['lit-90', p(5_200, 1_200)],
+    ['bureau-enfant', p(7_300, 2_500)],
+    ['douche-italienne', p(1_500, 5_500)],
+    ['vasque', p(400, 7_300)],
+    ['wc-suspendu', p(2_700, 7_600)],
+    ['bureau', p(1_500, 10_500)],
+    ['chaise-bureau', p(1_500, 9_800)],
+    ['bibliotheque', p(400, 9_000)],
+    ['lit-160', p(10_500, 5_600)],
+    ['chevet', p(9_300, 5_400)],
+    ['chevet', p(11_700, 5_400)],
+    ['armoire', p(7_000, 8_000)],
+    ['fauteuil', p(12_300, 10_300)],
+    ['plante', p(5_600, 10_500)],
+  ],
 };
