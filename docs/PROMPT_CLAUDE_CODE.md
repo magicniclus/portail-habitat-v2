@@ -2,9 +2,11 @@
 
 Ordre pensé pour que **chaque lot s'appuie sur des fondations déjà testées** : socle → données et sécurité → logique métier pure → identité → envois → écrans publics → recherche → parcours → annuaire → espace pro → paiement → matching → admin → mise en production. Ne sautez pas de lot : les suivants supposent les précédents terminés.
 
+> **État au 19/11/2026** : les prompts des lots 0 à 14 ci-dessous ont tous été exécutés (27/09 au 09/10/2026) ; ils sont gardés pour mémoire et ne sont plus à relancer. Plusieurs points ont changé depuis : stack réelle Next.js 16 et TypeScript 6 (D77), code dans `packages/*` et non `lib/` (D75), Tailwind 4 sans preset JS, `notifier()` dans `packages/firebase/src/serveur/notifications/`, formules de PAIEMENTS.md à la place de Premium et Visibilité (lot 11 refait le 14/10/2026). Les lots 10b, 10c, 10d, 10e, 11 (2026) et 11b ont été lancés depuis `PROMPT_INTEGRATION.md` et `REPRISE_CLAUDE_CODE.md` (handoff du 13/10/2026) ; le Studio vidéo à la demande du propriétaire (STUDIO.md) ; le lot 15 « Plans » depuis `DESSIN.md` §10. Statut à jour : `PROGRESSION.md` et `AVANCEMENT.md`.
+
 ## Mise en place (une seule fois)
 1. Créez un dépôt Git vide et copiez-y ce dossier sous le nom **`docs/`**.
-2. Copiez **`docs/CLAUDE.md` à la racine** du dépôt, et **`docs/claude/` à la racine sous le nom `.claude/`** (réglages, commandes, sous-agents).
+2. Copiez **`docs/CLAUDE.md` à la racine** du dépôt, et **`docs/claude/` à la racine sous le nom `.claude/`** (réglages, commandes, sous-agents). *(Déjà fait : le `CLAUDE.md` racine fait foi, avec sa section « Règles locales ».)*
 3. Relisez **`docs/DECISIONS.md`** et tranchez ce que vous pouvez (au minimum les 🔒 et D1 à D6).
 4. Créez les comptes nécessaires : Firebase (projets `-dev`, `-staging`, `-prod`), Stripe (mode test), Resend, Typesense Cloud, clé API Sirene INSEE, Sentry, GitHub.
 5. Ouvrez Claude Code dans le dépôt. **Un lot par session** : tapez `/nouveau-lot N` (la commande lit le prompt ci-dessous), validez le plan, laissez-le coder, puis `/fin-lot`. Relisez la PR, fusionnez, `/clear`.
@@ -14,7 +16,7 @@ Ordre pensé pour que **chaque lot s'appuie sur des fondations déjà testées**
 > Tous les 2 ou 3 lots : `/duplication`. Avant chaque fusion : `/relecture`.
 
 > **Interruption (crédits, coupure, session fermée)** : rien n'est perdu si vous avez commité. Ouvrez une nouvelle session et collez le prompt « Reprise » en bas de ce fichier.
-> **Après chaque lot** : Claude Code met à jour `docs/PROGRESSION.md` et commite. C'est ce fichier qui permet de reprendre.
+> **Après chaque lot** : Claude Code met à jour `docs/AVANCEMENT.md` (détail) et `docs/PROGRESSION.md` (résumé), puis commite. Ce sont ces fichiers qui permettent de reprendre.
 
 ---
 
@@ -144,6 +146,7 @@ Nav mobile en panneau latéral (DECISIONS D26d), barre fixe d'étape (D26e). Cri
 ```
 
 ## Lot 11 — Stripe
+> **Remplacé** : ce prompt (Premium, Visibilité, annuel) décrit la première version du 30/09/2026. Le lot 11 a été refait le 14/10/2026 selon `PAIEMENTS.md` (4 formules mensuelles, `droits` par webhook, fenêtre d'offre, ACQ-03 retiré) : voir AVANCEMENT §24.
 ```
 Lot 11 : paiements. Lis docs/INTEGRATIONS.md (Stripe) et COMPTES.md §4.3.
 Produits et prix (Premium 79,90 annuel payé en une fois / 99,90 mensuel, Visibilité 79,90/an payé en une fois / 12,90 mensuel, sièges, packs de crédits) créés par un script idempotent en mode test, montants de DECISIONS.md §4.
@@ -221,9 +224,9 @@ Ne déploie rien en production : prépare seulement. Mets à jour AVANCEMENT.md.
 
 **Reprise après une interruption**
 ```
-Reprise. Lis CLAUDE.md, docs/PROGRESSION.md et `git log --oneline -20`, puis `git status`.
+Reprise. Lis CLAUDE.md, docs/PROGRESSION.md (puis la section du lot dans docs/AVANCEMENT.md) et `git log --oneline -20`, puis `git status`.
 1. Dis-moi quel lot était en cours, ce qui est commité, et ce qui est modifié mais pas commité.
-2. Lance les tests (pnpm test, pnpm test:rules, pnpm e2e --grep du lot) et dis-moi ce qui passe.
+2. Lance les vérifications (pnpm typecheck, pnpm lint, pnpm knip, pnpm test:unit, puis pnpm test sur émulateurs et pnpm e2e ou pnpm e2e:pro --grep du lot) et dis-moi ce qui passe.
 3. Propose un plan pour terminer le lot en cours, sans refaire ce qui est déjà fait.
 Attends ma validation avant de coder.
 ```
@@ -274,5 +277,9 @@ Relis la branche actuelle comme un relecteur exigeant : sécurité (règles, per
 
 ---
 
-## Lot 15 — Dessin (éditeur de plans 2D / 3D)
-Spécification et prompts des sous-lots 15a à 15k : **`docs/DESSIN.md` §10**. Commencer par le prompt « Lot 15a — Cadrage ».
+## Lots ajoutés après le handoff du 13/10/2026
+- **10b, 10c, 10d, 10e, 11 (2026), 11b** : lancés depuis `PROMPT_INTEGRATION.md` puis `REPRISE_CLAUDE_CODE.md` ; documents : SITE_INTERNET, IA_SITE, DOMAINES, BLOG, LANDINGS, PAIEMENTS, DATABASE §8 bis-ter. Pour reprendre l'un d'eux : `/nouveau-lot 10b` (etc.) puis la section correspondante d'AVANCEMENT (§24 à §30).
+- **Studio vidéo** (05/11/2026) : STUDIO.md, DECISIONS §6 bis.
+
+## Lot 15 — Dessin (éditeur de plans 2D / 3D, « Plans » pour l'utilisateur)
+Spécification et prompts des sous-lots 15a à 15k : **`docs/DESSIN.md` §10**. 15a à 15j faits ; **15k (recette) en cours** au 19/11/2026 (AVANCEMENT §31).

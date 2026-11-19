@@ -1,5 +1,7 @@
 # Prompt : intégrer le dossier de handoff dans le dépôt
 
+> **Déjà exécuté (13 et 14/10/2026)** : gardé pour mémoire, ne pas relancer. Ce qui a changé depuis : la section « Règles locales » du `CLAUDE.md` racine prime (Next.js 16, TypeScript 6, pnpm et non npm : `pnpm add`, `pnpm captures`) ; D67 à D71 ont été tranchées le 17/10/2026, seule D72 reste ⏳ ; `@gsap/react` a été retiré le 02/11/2026 (GSAP chargé seulement sur ordinateur) ; le registrar est OVH avec un compte client ordinaire, Gandi en secours (D42). État à jour : `PROGRESSION.md`, `AVANCEMENT.md` §24 à §31.
+
 À coller tel quel dans Claude Code, ouvert à la racine du dépôt, après avoir déposé le dossier `design_handoff_portail_travaux/` à la racine.
 
 ---

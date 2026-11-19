@@ -1,5 +1,7 @@
 # Reprise du développement avec les ajouts récents
 
+> **Déjà exécuté (14/10/2026)** : gardé pour mémoire, ne pas relancer. Depuis : D67 à D71 tranchées le 17/10/2026 (seule D72 reste ⏳ parmi celles citées ici) ; achat de domaine par OVH avec un compte client ordinaire et Gandi en secours (D42) ; lots 10b, 10c, 10d, 11, 11b encore ouverts, 10e fait ; lot 15 « Plans » et Studio vidéo ajoutés. Pour reprendre aujourd'hui : commande `/reprise` ou prompt « Reprise » de `PROMPT_CLAUDE_CODE.md`, avec `PROGRESSION.md` et `AVANCEMENT.md`.
+
 Message à coller dans Claude Code (à la racine du dépôt, après avoir remplacé le dossier `docs/` par ce dossier `design_handoff_portail_travaux/`) :
 
 ---
@@ -25,4 +27,4 @@ Commence par l'étape 2 (liste des écarts) et attends ma validation.
 ---
 
 ## Rappel : lots du plan
-0 cadrage · 1 socle · 2 données · 3 logique métier · 4 comptes · 5 emails · 6 pages publiques · 7 recherche · 8 particuliers · 9 annuaire · 10 espace artisan · **10b site · 10c IA site · 10d blog · 10e landings** · 11 paiements · 11b devis/factures · 12 matching · 12b import · 13 back-office · 13b conversion · 13c comportement/IA · 14 mise en production.
+0 cadrage · 1 socle · 2 données · 3 logique métier · 4 comptes · 5 emails · 6 pages publiques · 7 recherche · 8 particuliers · 9 annuaire · 10 espace artisan · **10b site · 10c IA site · 10d blog · 10e landings** · 11 paiements · 11b devis/factures · 12 matching · 12b import · 13 back-office · 13b conversion · 13c comportement/IA · 14 mise en production · Studio vidéo (05/11/2026) · **15 Plans (Dessin)** (18/11/2026, DESSIN.md).
