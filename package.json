@@ -26,10 +26,12 @@
     "partenaire:source": "tsx scripts/sourcePartenaire.ts",
     "admin:creer": "tsx scripts/creerAdmin.ts",
     "migrer": "tsx scripts/migrer.ts",
-    "captures": "tsx scripts/captures.ts"
+    "captures": "tsx scripts/captures.ts",
+    "dessin:modele": "gltf-transform optimize --compress meshopt --texture-compress webp --texture-size 512 --simplify true --simplify-ratio 0.5 --simplify-error 0.001"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
+    "@gltf-transform/cli": "^4.5.1",
     "@ph/firebase": "workspace:*",
     "@playwright/test": "1.56.1",
     "@types/node": "^22.19.0",

@@ -46,3 +46,4 @@ export * from './pressePapier';
 export * from './alignement';
 export * from './modeles';
 export * from './piecesDessinees';
+export * from './modeles3d';

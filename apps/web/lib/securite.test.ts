@@ -33,6 +33,8 @@ describe('en-têtes de sécurité (INTEGRATIONS §5)', () => {
     const csp = politiqueContenu({ production: false, emulateurs: ['127.0.0.1:8080'] });
     expect(directive(csp, 'connect-src')).toContain('http://127.0.0.1:8080');
     expect(directive(csp, 'connect-src')).toContain('ws://127.0.0.1:8080');
+    // Textures des modèles 3D de Plans (glb) : lues depuis des blob: créés par la page.
+    expect(directive(csp, 'connect-src')).toContain('blob:');
     expect(csp).not.toContain('upgrade-insecure-requests');
     expect(politiqueContenu({ production: true, emulateurs: ['127.0.0.1:8080'] })).not.toContain(
       '127.0.0.1',

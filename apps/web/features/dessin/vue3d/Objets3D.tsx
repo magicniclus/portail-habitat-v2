@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, type Dispatch } from 'react';
 import type { Group } from 'three';
 import type { Action } from '../etat';
 import { M } from './Batiment3D';
+import { Modele3D } from './Modele3D';
 import { materiauUni } from './textures';
 
 const dixiemes = (rad: number) => Math.round((rad * 1800) / Math.PI);
@@ -85,7 +86,11 @@ export function Objets3D({
             glisser(o, ev);
           }}
         >
-          <Volume o={o} choisi={o.id === selectionId} />
+          <Modele3D
+            o={o}
+            choisi={o.id === selectionId}
+            secours={<Volume o={o} choisi={o.id === selectionId} />}
+          />
         </group>
       ))}
       {choisi && groupe ? (
