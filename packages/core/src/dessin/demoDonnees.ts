@@ -4,7 +4,7 @@ import type { TypeOuverture } from './ouvertures';
 /** Données de la maison de démonstration en L (demo.ts) : axes des murs, en millimètres. */
 const p = (x: number, y: number): Point => ({ x, y });
 
-export const CLOISONS: [Point, Point][] = [
+const CLOISONS: [Point, Point][] = [
   [p(4_000, 100), p(4_000, 5_000)],
   [p(100, 5_000), p(7_900, 5_000)],
   [p(3_000, 5_000), p(3_000, 9_500)],
@@ -13,7 +13,7 @@ export const CLOISONS: [Point, Point][] = [
   [p(10_000, 5_100), p(10_000, 8_000)],
   [p(10_000, 8_000), p(12_900, 8_000)],
 ];
-export const PIECES: [Point, Piece['type']][] = [
+const PIECES: [Point, Piece['type']][] = [
   [p(2_000, 2_500), 'chambre'],
   [p(6_000, 2_500), 'chambre'],
   [p(1_500, 6_500), 'salle_de_bain'],
@@ -21,7 +21,7 @@ export const PIECES: [Point, Piece['type']][] = [
   [p(11_400, 6_500), 'cuisine'],
   [p(6_000, 8_500), 'sejour'],
 ];
-export const OUVERTURES: [Point, TypeOuverture][] = [
+const OUVERTURES: [Point, TypeOuverture][] = [
   [p(3_300, 5_000), 'porte'],
   [p(7_300, 5_000), 'porte'],
   [p(3_000, 6_500), 'porte'],
@@ -36,7 +36,7 @@ export const OUVERTURES: [Point, TypeOuverture][] = [
   [p(100, 6_500), 'fenetre'],
 ];
 /** Objets du catalogue : position voulue (placés contre le mur le plus proche), demi-tours. */
-export const OBJETS: [string, Point, number?][] = [
+const OBJETS: [string, Point, number?][] = [
   ['lit-160', p(2_000, 1_400)],
   ['chevet', p(700, 400)],
   ['chevet', p(3_300, 400)],
