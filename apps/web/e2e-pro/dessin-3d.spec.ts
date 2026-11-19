@@ -175,6 +175,33 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     ).toBeVisible();
   });
 
+  test('DES-33 édition en 3D : un clic sur le sol sélectionne la pièce, Finitions s’ouvre', async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'ordinateur', 'Clic précis dans la scène 3D : ordinateur.');
+    await connecter(page, COMPTES.proprio, '/pro/plans');
+    await page
+      .getByRole('button', { name: /Nouveau plan|Créer mon premier plan/ })
+      .first()
+      .click();
+    await page.getByLabel('Largeur hors tout (cm)').fill('1060');
+    await page.getByLabel('Profondeur hors tout (cm)').fill('860');
+    await page.getByRole('button', { name: 'Créer le plan' }).click();
+    await expect(page.getByTestId('plan-2d').getByText('83,6 m²')).toBeVisible();
+    await page.getByRole('radio', { name: '3D' }).click();
+    const canvas = page.getByTestId('vue-3d').locator('canvas');
+    await expect(canvas).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(2500);
+    const b = (await canvas.boundingBox())!;
+    await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
+    const finitions = page.getByRole('region', { name: 'Finitions' });
+    await expect(finitions).toBeVisible();
+    await expect(finitions.getByRole('button', { name: 'Sol', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
   test('DES-16, DES-17 : toiture deux pans : pente, fenêtre de toit, couverture au métré, toit en 3D', async ({
     page,
   }) => {

@@ -65,7 +65,8 @@ type GenreSelection =
 /** Éléments posés avec l'outil « extérieur » (DES-18 à DES-20). */
 export type ElementExterieur =
   'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
-type Selection = { genre: GenreSelection; id: string } | null;
+/** `face` : côté d'un mur cliqué en 3D, proposé en premier dans Finitions. */
+type Selection = { genre: GenreSelection; id: string; face?: 'a' | 'b' } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
 export type Vue = 'plan' | '3d' | 'visite' | 'photo' | 'facades';
 /** Façade affichée (DES-36), ou la coupe tracée sur le plan. */

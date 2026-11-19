@@ -18,6 +18,7 @@ import { Cadrage, useCadreMaison } from './Cadrage';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
 import { versMm } from './unites';
+import { clic3D } from './clic3d';
 
 /**
  * Vue 3D (DES-33) : orbite, zoom, panoramique ; maison entière ou niveau isolé, maison de
@@ -44,6 +45,8 @@ export default function Vue3D({
     return etat.rendu.niveauSeul ? [courant] : tries.filter((n) => n.altitude <= courant.altitude);
   }, [scene, courant, etat.rendu.niveauSeul, etat.vueExterieure]);
   const poupee = etat.rendu.poupee && !etat.vueExterieure;
+  // Édition en 3D : sélection des murs, sols et menuiseries ; pose d'une menuiserie ou d'un objet.
+  const clic = clic3D(etat, dispatch);
 
   const { centre, rayon } = useCadreMaison(courant);
   const soleil = directionSoleil(etat.rendu.heure, scene.orientationNord);
@@ -124,6 +127,7 @@ export default function Vue3D({
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centre.x, centre.y, centre.z]}
         onPointerMove={deplacer}
+        onClick={(ev) => clic.cliquer({ genre: 'terrain' }, ev)}
       >
         <planeGeometry args={[rayon * 12, rayon * 12]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -139,6 +143,7 @@ export default function Vue3D({
           transparent={etat.rendu.mursTransparents}
           plafonds={false}
           toit={etat.vueExterieure || (etat.rendu.toit && !poupee)}
+          clic={n.id === courant.id ? clic : undefined}
         />
       ))}
       {niveaux.map((n) => (

@@ -43,7 +43,7 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
       cible: { genre: 'mur', murId, face: f },
       revetement: r,
     });
-    return [
+    const cotes: Cible[] = [
       {
         cle: 'a',
         libelle: 'Côté gauche',
@@ -66,6 +66,8 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
         appliquer: (r) => [face('a', r), face('b', r)],
       },
     ];
+    // Côté cliqué en 3D proposé en premier.
+    return s.face === 'b' ? [cotes[1]!, cotes[0]!, cotes[2]!] : cotes;
   }
   const z = s?.genre === 'zone' ? n.zonesDeco.find((x) => x.id === s.id) : undefined;
   if (z)
@@ -83,12 +85,17 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
 
 export function useCibleFinition(etat: EtatEditeur, dispatch: Dispatch<Action>) {
   const cibles = ciblesDe(etat);
-  const [cle, setCible] = useState<string | null>(null);
+  // Le choix de surface vaut pour la sélection où il a été fait : une autre sélection repart
+  // de sa première surface (le côté cliqué en 3D, par exemple).
+  const s = etat.selection;
+  const pour = s ? `${s.genre}:${s.id}:${s.face ?? ''}` : '';
+  const [choix, setChoix] = useState<{ cle: string; pour: string } | null>(null);
+  const cle = choix?.pour === pour ? choix.cle : null;
   const cible = cibles.find((c) => c.cle === cle) ?? cibles[0] ?? null;
   return {
     cibles,
     cible,
-    setCible,
+    setCible: (c: string) => setChoix({ cle: c, pour }),
     actuel: cible?.actuel ?? null,
     appliquer: (r: Revetement) => cible?.appliquer(r).forEach(dispatch),
   };
