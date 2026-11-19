@@ -5,8 +5,11 @@ import {
   CATALOGUE_OUVERTURES,
   formatLongueur,
   LIBELLES_ESCALIER,
+  LIBELLES_MATERIAU_ESCALIER,
+  LIBELLES_STRUCTURE_ESCALIER,
   zonesCoulissement,
   type Escalier,
+  type ModificationEscalier,
   type ModificationOuverture,
   type Ouverture,
   type TypeEscalier,
@@ -90,9 +93,8 @@ export function InspecteurEscalier({
   hauteurDessus: number | undefined;
   dispatch: Dispatch<Action>;
 }) {
-  const modifier = (
-    modif: Partial<Pick<Escalier, 'type' | 'largeur' | 'hauteurAMonter' | 'rotation'>>,
-  ) => dispatch({ type: 'modifierEscalier', id: e.id, modif });
+  const modifier = (modif: ModificationEscalier) =>
+    dispatch({ type: 'modifierEscalier', id: e.id, modif });
   const alertes = alertesEscaliers({ escaliers: [e] }, hauteurDessus);
   return (
     <div className="grid gap-3.5">
@@ -120,6 +122,32 @@ export function InspecteurEscalier({
           mm={e.hauteurAMonter}
           appliquer={(hauteurAMonter) => modifier({ hauteurAMonter })}
         />
+      </div>
+      <div className="grid grid-cols-2 gap-2.5">
+        <Field label="Dessous">
+          <Select
+            value={e.structure}
+            onChange={(ev) => modifier({ structure: ev.target.value as Escalier['structure'] })}
+          >
+            {(Object.keys(LIBELLES_STRUCTURE_ESCALIER) as Escalier['structure'][]).map((k) => (
+              <option key={k} value={k}>
+                {LIBELLES_STRUCTURE_ESCALIER[k]}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Matériau">
+          <Select
+            value={e.materiau}
+            onChange={(ev) => modifier({ materiau: ev.target.value as Escalier['materiau'] })}
+          >
+            {(Object.keys(LIBELLES_MATERIAU_ESCALIER) as Escalier['materiau'][]).map((k) => (
+              <option key={k} value={k}>
+                {LIBELLES_MATERIAU_ESCALIER[k]}
+              </option>
+            ))}
+          </Select>
+        </Field>
       </div>
       <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
         <Info libelle="Marches" valeur={e.nbMarches} />

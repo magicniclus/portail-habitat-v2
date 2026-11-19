@@ -6,10 +6,10 @@ import type { Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from '../etat';
 import { versMm } from './unites';
 
-/** Ce qu'on clique en 3D : un mur (et son côté), le sol d'une pièce, une menuiserie, le terrain. */
+/** Ce qu'on clique en 3D : mur (et son côté), sol d'une pièce, menuiserie, escalier, terrain. */
 type Cible3D =
   | { genre: 'mur'; id: string; face: 'a' | 'b' }
-  | { genre: 'piece' | 'ouverture'; id: string }
+  | { genre: 'piece' | 'ouverture' | 'escalier'; id: string }
   | { genre: 'terrain' };
 
 export interface Clic3D {
@@ -49,7 +49,7 @@ export function clic3D(etat: EtatEditeur, dispatch: Dispatch<Action>): Clic3D {
         selection: { genre: c.genre, id: c.id, ...(c.genre === 'mur' ? { face: c.face } : {}) },
       });
       // Mur ou sol : les couleurs et matériaux sont dans Finitions, ouvert pour la suite.
-      if (c.genre !== 'ouverture' && etat.menu !== 'finitions')
+      if ((c.genre === 'mur' || c.genre === 'piece') && etat.menu !== 'finitions')
         dispatch({ type: 'menu', menu: 'finitions' });
     },
   };

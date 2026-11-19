@@ -238,6 +238,13 @@ export const COULEURS_3D = {
   blanc: '#ffffff',
 } as const;
 
+/** Escaliers (DES-15) : teinte selon le matériau. */
+export const COULEURS_ESCALIER = {
+  bois: '#b98b5e',
+  metal: '#3d4247',
+  beton: '#bdb9b2',
+} as const;
+
 /** Couleurs de menuiserie (nuancier de l'inspecteur) ; la première est celle par défaut. */
 export const COULEURS_MENUISERIE: readonly TeinteDessin[] = [
   { id: 'blanc', libelle: 'Blanc', couleur: '#f5f5f2' },

@@ -2,6 +2,7 @@
 
 import {
   dallesDuNiveau,
+  limonsEscalier,
   marchesEscalier,
   morceauxDeMur,
   type Dalle,
@@ -9,7 +10,7 @@ import {
   type Pave,
   type Point,
 } from '@ph/core/dessin';
-import { COULEURS_3D, COULEURS_PLAN } from '@ph/ui/tokens';
+import { COULEURS_3D, COULEURS_ESCALIER, COULEURS_PLAN } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useMemo } from 'react';
@@ -101,8 +102,15 @@ export function Niveau3D({
 }) {
   const morceaux = useMemo(() => n.murs.flatMap((m) => morceauxDeMur(m, n)), [n]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
-  const marches = useMemo(() => n.escaliers.flatMap((e) => marchesEscalier(e, n.altitude)), [n]);
-  const bois = materiauUni(COULEURS_3D.principal);
+  const escaliers = useMemo(
+    () =>
+      n.escaliers.map((e) => ({
+        e,
+        marches: marchesEscalier(e, n.altitude),
+        limons: limonsEscalier(e, n.altitude),
+      })),
+    [n],
+  );
   return (
     <group>
       {morceaux.map((m, i) => (
@@ -130,9 +138,36 @@ export function Niveau3D({
       />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
       <Exterieur3D n={n} parcelle={parcelle} />
-      {marches.map((p, i) => (
-        <PaveMesh key={i} p={p} materiaux={bois} />
-      ))}
+      {escaliers.map(({ e, marches, limons }) => {
+        const matiere = materiauUni(COULEURS_ESCALIER[e.materiau]);
+        return (
+          <group
+            key={e.id}
+            onClick={
+              clic
+                ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer({ genre: 'escalier', id: e.id }, ev)
+                : undefined
+            }
+          >
+            {marches.map((p, i) => (
+              <PaveMesh key={i} p={p} materiaux={matiere} />
+            ))}
+            {/* Limon central incliné (dessous ouvert) : lacet puis pente le long de la poutre. */}
+            {limons.map((p, i) => (
+              <mesh
+                key={`l${i}`}
+                position={[M(p.centre.x), M(p.centre.z), M(p.centre.y)]}
+                rotation={[0, -p.angle, p.pente, 'YZX']}
+                castShadow
+                receiveShadow
+                material={matiere}
+              >
+                <boxGeometry args={[M(p.taille.l), M(p.taille.h), M(p.taille.p)]} />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
     </group>
   );
 }

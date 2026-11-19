@@ -192,6 +192,8 @@ describe('metreNiveau', () => {
           giron: 250,
           sens: 'droite',
           gardeCorps: true,
+          structure: 'pleine',
+          materiau: 'bois',
         },
       ],
     };

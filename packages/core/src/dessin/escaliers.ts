@@ -16,6 +16,17 @@ export const LIBELLES_ESCALIER: Record<TypeEscalier, string> = {
   meunier: 'Échelle de meunier',
 };
 
+/** Dessous de l'escalier (DES-15) : plein jusqu'au sol, ou ouvert sur un limon central. */
+export const LIBELLES_STRUCTURE_ESCALIER: Record<Escalier['structure'], string> = {
+  pleine: 'Plein',
+  ouverte: 'Ouvert',
+};
+export const LIBELLES_MATERIAU_ESCALIER: Record<Escalier['materiau'], string> = {
+  bois: 'Bois',
+  metal: 'Métal',
+  beton: 'Béton',
+};
+
 /** Hauteur de marche visée (17,5 cm) et loi de Blondel (2 h + g = 63 cm). */
 const HAUTEUR_IDEALE = 175;
 const BLONDEL = 630;
@@ -118,7 +129,15 @@ export function poserEscalier(
 export type ModificationEscalier = Partial<
   Pick<
     Escalier,
-    'type' | 'largeur' | 'hauteurAMonter' | 'rotation' | 'position' | 'sens' | 'gardeCorps'
+    | 'type'
+    | 'largeur'
+    | 'hauteurAMonter'
+    | 'rotation'
+    | 'position'
+    | 'sens'
+    | 'gardeCorps'
+    | 'structure'
+    | 'materiau'
   >
 >;
 

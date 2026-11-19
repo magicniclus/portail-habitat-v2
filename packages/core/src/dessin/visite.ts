@@ -3,7 +3,8 @@ import { objetDuCatalogue } from './catalogue';
 import { contourObjet } from './emprise';
 import { aire, centroide, distance, pointDansPolygone, projeter } from './geometrie';
 import { niveauxTries } from './niveaux';
-import { marchesEscalier, morceauxDeMur, type Pave } from './volumes';
+import { marchesEscalier } from './escaliers3d';
+import { morceauxDeMur, type Pave } from './volumes';
 
 /**
  * Visite à la première personne (DES-34) : obstacles au niveau du corps, déplacement qui

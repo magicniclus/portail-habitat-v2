@@ -222,6 +222,9 @@ export const escalier = z.object({
   giron: mmPositif.min(100).max(400),
   sens: z.enum(['gauche', 'droite']).default('droite'),
   gardeCorps: z.boolean().default(true),
+  /** Dessous plein (marches jusqu'au sol) ou ouvert (marches seules sur un limon central). */
+  structure: z.enum(['pleine', 'ouverte']).default('pleine'),
+  materiau: z.enum(['bois', 'metal', 'beton']).default('bois'),
 });
 
 export const cote = z.object({
