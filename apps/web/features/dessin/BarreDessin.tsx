@@ -23,6 +23,9 @@ import type { Dispatch } from 'react';
 import type { Action, EtatEditeur, Vue } from './etat';
 import type { EtatSauvegarde } from './useSauvegarde';
 
+/** Valeur du sélecteur de niveau pour la vue extérieure (aucun identifiant de niveau ne s'y confond). */
+const EXTERIEUR = '__exterieur';
+
 const LIBELLES_SAUVEGARDE: Record<EtatSauvegarde, string> = {
   enregistre: 'Enregistré',
   modifie: 'Modifications en attente',
@@ -108,8 +111,14 @@ export function BarreDessin({
       <label className="flex flex-none items-center gap-2 text-sm font-semibold max-[699px]:sr-only">
         <span className="max-[1099px]:sr-only">Niveau</span>
         <select
-          value={etat.niveauId}
-          onChange={(ev) => dispatch({ type: 'changerNiveau', niveauId: ev.target.value })}
+          value={etat.vueExterieure ? EXTERIEUR : etat.niveauId}
+          onChange={(ev) =>
+            dispatch(
+              ev.target.value === EXTERIEUR
+                ? { type: 'vueExterieure' }
+                : { type: 'changerNiveau', niveauId: ev.target.value },
+            )
+          }
           className="min-h-11 rounded-control border border-neutre-300 bg-blanc px-2.5 text-[15px] font-semibold"
         >
           {[...niveauxTries(etat.historique.present)].reverse().map((n) => (
@@ -117,6 +126,7 @@ export function BarreDessin({
               {n.nom}
             </option>
           ))}
+          <option value={EXTERIEUR}>Extérieur · tout fermé</option>
         </select>
       </label>
 

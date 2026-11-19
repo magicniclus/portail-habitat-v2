@@ -203,6 +203,14 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await page.getByLabel(/^Pente/).fill('45');
     await expect(page.getByText('Pente · 45°')).toBeVisible();
 
+    // Vue « Extérieur · tout fermé » : toiture vue de dessus, puis retour au plan.
+    if (page.viewportSize()!.width >= 700) {
+      await page.getByRole('combobox', { name: 'Niveau' }).selectOption('Extérieur · tout fermé');
+      await expect(page.getByRole('img', { name: 'Maison fermée vue de dessus' })).toBeVisible();
+      await page.getByRole('button', { name: 'Modifier le plan' }).click();
+      await expect(plan).toBeVisible();
+    }
+
     // DES-17 : fenêtre de toit posée d'un clic sur le plan.
     await page.getByRole('button', { name: 'Fenêtre de toit' }).click();
     await page.waitForTimeout(400);

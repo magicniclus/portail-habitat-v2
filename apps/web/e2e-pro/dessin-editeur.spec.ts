@@ -171,7 +171,8 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
       timeout: 10_000,
     });
     await page.reload();
-    await expect(page.getByRole('combobox', { name: 'Niveau' }).locator('option')).toHaveCount(2);
+    // Deux niveaux, plus la vue « Extérieur · tout fermé ».
+    await expect(page.getByRole('combobox', { name: 'Niveau' }).locator('option')).toHaveCount(3);
     await expect(
       page.getByTestId('plan-2d').getByRole('button', { name: 'Porte d’entrée de 90 cm' }),
     ).toBeVisible();

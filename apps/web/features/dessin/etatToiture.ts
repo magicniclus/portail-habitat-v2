@@ -29,8 +29,11 @@ export function reduireToiture(e: EtatEditeur, a: Action): EtatEditeur | null {
   switch (a.type) {
     case 'toiture':
       return surNiveau(e, (n) => definirToiture(n, a.toiture));
-    case 'toitureAuto':
-      return surScene(e, (s) => toitureAutomatique(s, a.toiture));
+    case 'toitureAuto': {
+      // Le toit posé se voit en 3D : la maison de poupée (qui le masque) est désactivée.
+      const suite = surScene(e, (s) => toitureAutomatique(s, a.toiture));
+      return suite.erreur ? suite : { ...suite, rendu: { ...suite.rendu, poupee: false } };
+    }
     case 'hauteursToit': {
       const dessus = niveauSuperieur(sceneDe(e), niveauDe(e).id);
       const h = {

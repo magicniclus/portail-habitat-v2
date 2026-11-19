@@ -39,8 +39,11 @@ export default function Vue3D({
   const courant = niveauDe(etat);
   const niveaux = useMemo(() => {
     const tries = niveauxTries(scene);
+    // Vue extérieure : toute la maison, fermée, toit compris.
+    if (etat.vueExterieure) return tries;
     return etat.rendu.niveauSeul ? [courant] : tries.filter((n) => n.altitude <= courant.altitude);
-  }, [scene, courant, etat.rendu.niveauSeul]);
+  }, [scene, courant, etat.rendu.niveauSeul, etat.vueExterieure]);
+  const poupee = etat.rendu.poupee && !etat.vueExterieure;
 
   const { centre, rayon } = useCadreMaison(courant);
   const soleil = directionSoleil(etat.rendu.heure, scene.orientationNord);
@@ -132,10 +135,10 @@ export default function Vue3D({
           dessus={niveauSuperieur(scene, n.id)}
           parcelle={scene.terrain?.parcelle ?? null}
           centre={centre}
-          poupee={etat.rendu.poupee && n.id === courant.id}
+          poupee={poupee && n.id === courant.id}
           transparent={etat.rendu.mursTransparents}
           plafonds={false}
-          toit={etat.rendu.toit && !etat.rendu.poupee}
+          toit={etat.vueExterieure || (etat.rendu.toit && !poupee)}
         />
       ))}
       {niveaux.map((n) => (

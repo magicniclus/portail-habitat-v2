@@ -3,7 +3,6 @@
 import {
   formatLongueur,
   formatSurface,
-  LIBELLES_TOITURE,
   niveauSuperieur,
   quantitesToiture,
   type ElementToit,
@@ -16,14 +15,8 @@ import type { Dispatch } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { HauteursToit } from './HauteursToit';
 import { Info } from './blocs';
+import { CouverturesToit, FormesToit, type Couverture } from './FormesToit';
 
-const COUVERTURES = [
-  ['tuile', 'Tuiles'],
-  ['ardoise', 'Ardoise'],
-  ['zinc', 'Zinc'],
-  ['bac_acier', 'Bac acier'],
-  ['vegetalise', 'Toiture végétalisée'],
-] as const;
 const ELEMENTS: [ElementToit, string][] = [
   ['fenetre', 'Fenêtre de toit'],
   ['cheminee', 'Cheminée'],
@@ -39,26 +32,17 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
   const n = niveauDe(etat);
   const t = n.toiture;
   const dessus = niveauSuperieur(sceneDe(etat), n.id);
+  const poser = (type: TypeToiture) =>
+    t
+      ? dispatch({ type: 'modifierToiture', modif: { type } })
+      : dispatch({ type: 'toitureAuto', toiture: type });
   if (!t)
     return (
       <div className="grid gap-3">
         <p className="m-0 px-1 text-sm leading-5 text-neutre-800">
-          Choisissez la forme : le toit se pose sur toute la maison, quelle que soit sa forme (L, T,
-          U, H), sur chaque partie qui n’a pas d’étage au-dessus ; une partie basse collée à l’étage
-          reçoit un appentis.
+          Choisissez une forme : le toit se pose seul sur toute la maison, quelle que soit sa forme.
         </p>
-        <div className="grid grid-cols-2 gap-2">
-          {(Object.keys(LIBELLES_TOITURE) as TypeToiture[]).map((type) => (
-            <button
-              key={type}
-              type="button"
-              className={`${bouton} border-neutre-300 bg-blanc text-texte hover:bg-neutre-100`}
-              onClick={() => dispatch({ type: 'toitureAuto', toiture: type })}
-            >
-              {LIBELLES_TOITURE[type]}
-            </button>
-          ))}
-        </div>
+        <FormesToit actif={null} choisir={poser} />
       </div>
     );
   const q = quantitesToiture(n, dessus);
@@ -71,18 +55,16 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
   ];
   return (
     <div className="grid gap-4">
-      <Field label="Forme">
-        <Select
-          value={t.type}
-          onChange={(ev) => modifier({ type: ev.target.value as TypeToiture })}
-        >
-          {(Object.keys(LIBELLES_TOITURE) as TypeToiture[]).map((k) => (
-            <option key={k} value={k}>
-              {LIBELLES_TOITURE[k]}
-            </option>
-          ))}
-        </Select>
-      </Field>
+      <FormesToit actif={t.type} choisir={poser} />
+      <Button
+        variant="secondaire"
+        onClick={() => {
+          dispatch({ type: 'vueExterieure' });
+          dispatch({ type: 'vue', vue: '3d' });
+        }}
+      >
+        Voir la maison fermée en 3D
+      </Button>
       {q ? (
         <HauteursToit
           egout={q.egout}
@@ -102,39 +84,35 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           className="h-11 cursor-pointer accent-accent"
         />
       </label>
-      <div className="grid grid-cols-2 gap-2.5">
-        <Field label="Débord">
-          <Select value={t.debord} onChange={(ev) => modifier({ debord: Number(ev.target.value) })}>
-            {[0, 200, 400, 600, 800].map((d) => (
-              <option key={d} value={d}>
-                {d / 10} cm
-              </option>
-            ))}
-          </Select>
-        </Field>
-        <Field label="Couverture">
-          <Select
-            value={t.couverture.famille}
-            onChange={(ev) =>
-              modifier({
-                couverture: { famille: ev.target.value as (typeof COUVERTURES)[number][0] },
-              })
-            }
+      <CouverturesToit
+        actif={t.couverture.famille as Couverture}
+        choisir={(famille) => modifier({ couverture: { famille } })}
+      />
+      <details className="rounded-[10px] border border-neutre-200 px-3 py-2">
+        <summary className="min-h-11 cursor-pointer content-center text-sm font-semibold">
+          Plus de réglages
+        </summary>
+        <div className="grid gap-3 pt-2 pb-1">
+          <Field label="Débord">
+            <Select
+              value={t.debord}
+              onChange={(ev) => modifier({ debord: Number(ev.target.value) })}
+            >
+              {[0, 200, 400, 600, 800].map((d) => (
+                <option key={d} value={d}>
+                  {d / 10} cm
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Button
+            variant="secondaire"
+            onClick={() => modifier({ faitageAngle: t.faitageAngle === 0 ? 900 : 0 })}
           >
-            {COUVERTURES.map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </Select>
-        </Field>
-      </div>
-      <Button
-        variant="secondaire"
-        onClick={() => modifier({ faitageAngle: t.faitageAngle === 0 ? 900 : 0 })}
-      >
-        Tourner les faîtages
-      </Button>
+            Tourner les faîtages
+          </Button>
+        </div>
+      </details>
       <fieldset className="m-0 grid gap-2 border-0 p-0">
         <legend className="mb-2 px-1 text-[13px] font-semibold">
           Ajouter sur le toit (puis cliquez sur le plan)

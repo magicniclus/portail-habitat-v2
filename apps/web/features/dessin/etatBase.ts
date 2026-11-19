@@ -93,6 +93,8 @@ export type Menu = 'structure' | 'equiper' | 'finitions' | 'chiffrer' | 'rendu' 
 export interface EtatEditeur {
   historique: HistoriqueDessin<Scene>;
   niveauId: string;
+  /** « Extérieur · tout fermé » : toiture vue de dessus en 2D, maison entière fermée en 3D. */
+  vueExterieure: boolean;
   outil: Outil;
   typeMur: TypeMur;
   typeOuverture: TypeOuverture;
@@ -227,6 +229,7 @@ export type Action =
   | { type: 'copierStyle'; revetement: Revetement }
   | { type: 'collerStyle' }
   | { type: 'changerNiveau'; niveauId: string }
+  | { type: 'vueExterieure' }
   | { type: 'ajouterNiveau'; niveau: TypeNiveau; copierMurs: boolean }
   | { type: 'renommerNiveau'; niveauId: string; nom: string }
   | { type: 'supprimerNiveau'; niveauId: string }
@@ -274,6 +277,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
   return {
     historique: creerHistorique(scene),
     niveauId: scene.niveaux[0]!.id,
+    vueExterieure: false,
     outil: 'selection',
     typeMur: 'mur',
     typeOuverture: 'porte',

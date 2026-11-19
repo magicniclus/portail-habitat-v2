@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useReducer, useState } from 'react';
 import { usePresence } from './usePresence';
+import { VueDessus } from './VueDessus';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { lirePlan, renommerPlan, type EspaceDessin } from './api';
 import { BarreDessin } from './BarreDessin';
@@ -121,7 +122,9 @@ export function EspaceDeTravail(p: {
             </Panneau>
           ) : null}
           <main className="relative min-w-0 flex-1">
-            {etat.vue === 'plan' ? (
+            {etat.vue === 'plan' && etat.vueExterieure ? (
+              <VueDessus etat={etat} dispatch={dispatch} />
+            ) : etat.vue === 'plan' ? (
               <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
             ) : etat.vue === 'visite' ? (
               <Visite etat={etat} />

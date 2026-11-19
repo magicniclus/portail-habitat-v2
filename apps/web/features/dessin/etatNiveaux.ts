@@ -16,9 +16,19 @@ import {
 /** Niveaux (DES-04, DES-05) : choisir, ajouter, renommer, régler, réordonner, supprimer. */
 export function reduireNiveaux(e: EtatEditeur, a: Action): EtatEditeur | null {
   switch (a.type) {
+    case 'vueExterieure':
+      return {
+        ...e,
+        vueExterieure: true,
+        selection: null,
+        multi: [],
+        trace: null,
+        ajustement: e.ajustement + 1,
+      };
     case 'changerNiveau':
       return {
         ...e,
+        vueExterieure: false,
         niveauId: a.niveauId,
         selection: null,
         multi: [],
