@@ -35,6 +35,8 @@ export type Cote = 'exterieur' | 'interieur' | 'etage';
 
 /** Une aile du toit dans son repère local : a le long du faîtage, b en travers. */
 export interface Emprise {
+  /** Repère stable de la partie (limites en cm) : ses réglages propres (`toiture.parties`). */
+  cle: string;
   centre: Point;
   u: Point;
   v: Point;
@@ -67,7 +69,11 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
   const r = repereMaison(n);
   const hMurs = hauteurMurs(n) || Math.max(...n.murs.map((m) => m.hauteur));
   return ailesDuNiveau(n, dessus, r).map((w) => {
-    const selonA = t.faitageAngle === 900 ? !w.selonA : w.selonA;
+    const cle = [w.a0, w.a1, w.b0, w.b1].map((x) => Math.round(x / 10)).join(':');
+    const partie = t.parties.find((p) => p.cle === cle);
+    // Faîtage tourné pour tout le toit, puis éventuellement pour cette partie seule.
+    const tourne = (t.faitageAngle === 900) !== Boolean(partie?.tourner);
+    const selonA = tourne ? !w.selonA : w.selonA;
     const centre = monde(r, (w.a0 + w.a1) / 2, (w.b0 + w.b1) / 2);
     const [u, v] = selonA ? [r.u, r.v] : [r.v, { x: -r.u.x, y: -r.u.y }];
     const cotes = selonA
@@ -77,6 +83,7 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
     const deb = (c: Cote) => (c === 'exterieur' ? t.debord : 0);
     const appentis = t.type !== 'plate' && (cotes.b0 === 'etage' || cotes.b1 === 'etage');
     return {
+      cle,
       centre,
       u,
       v,
@@ -87,7 +94,7 @@ export function emprisesToit(n: Niveau, dessus: Niveau | null = null): Emprise[]
       bMin: -P0 / 2 - deb(cotes.b0),
       bMax: P0 / 2 + deb(cotes.b1),
       cotes,
-      type: appentis ? 'monopente' : t.type,
+      type: appentis ? 'monopente' : (partie?.type ?? t.type),
       sens: appentis && cotes.b0 === 'etage' ? -1 : 1,
       base: n.altitude + hMurs,
       hMurs,

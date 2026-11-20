@@ -1,8 +1,9 @@
 'use client';
 
-import { texturePhoto, type Revetement } from '@ph/core/dessin';
+import { TEXTURE_COUVERTURE, texturePhoto, type Revetement } from '@ph/core/dessin';
 import { COULEURS_3D, MATERIAUX_DESSIN } from '@ph/ui/tokens';
 import {
+  DoubleSide,
   CanvasTexture,
   MeshStandardMaterial,
   RepeatWrapping,
@@ -144,6 +145,25 @@ export function materiauUni(couleur: string, options: { transparent?: boolean } 
         ? { transparent: true, opacity: 0.22, depthWrite: false, roughness: 0.05 }
         : {}),
     });
+    cache.set(cle, m);
+  }
+  return m;
+}
+
+/**
+ * Couverture de toit (DES-16) : tuiles, ardoises ou bac acier en texture photo (rangs dans le
+ * sens de la pente), sinon couleur unie (zinc, toit végétalisé). Visible des deux côtés.
+ */
+export function materiauCouverture(famille: string, couleur: string): MeshStandardMaterial {
+  const cle = `couverture-${famille}-${couleur}`;
+  let m = cache.get(cle);
+  if (!m) {
+    const id = TEXTURE_COUVERTURE[famille];
+    m = (
+      (id && materiauPhoto({ famille: 'aucun', materiauId: id })) ||
+      materiauUni(couleur)
+    ).clone();
+    m.side = DoubleSide;
     cache.set(cle, m);
   }
   return m;

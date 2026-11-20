@@ -2,9 +2,10 @@
 
 import { toit3D, type Niveau, type Point3 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_COUVERTURE } from '@ph/ui/tokens';
-import { useMemo } from 'react';
-import { BufferGeometry, DoubleSide, Float32BufferAttribute } from 'three';
-import { materiauRevetement, materiauUni } from './textures';
+import { useEffect, useMemo } from 'react';
+import { BufferGeometry, Float32BufferAttribute } from 'three';
+import { aretesHautes, geometrieCouverture } from './couverture3d';
+import { materiauCouverture, materiauRevetement, materiauUni } from './textures';
 import { M } from './unites';
 
 /**
@@ -12,6 +13,8 @@ import { M } from './unites';
  * les deux surfaces se confondent et l'affichage dessine de fins traits blancs (z-fighting).
  */
 const EPAISSEUR = 30;
+/** Épaisseur visible de la couverture (rive), en mm : chevrons, liteaux et tuiles. */
+const RIVE = 160;
 
 /** Polygone plan convexe → triangles en éventail (mètres, y vers le haut), relevé de `dz`. */
 function geometrie(polys: readonly Point3[][], dz = 0): BufferGeometry {
@@ -47,41 +50,73 @@ function versLExterieur(poly: Point3[], pans: readonly Point3[][]): Point3[] {
 }
 
 /**
- * Toiture en 3D (DES-16, DES-17) : pans à la couleur de la couverture, pignons en façade,
- * gouttières, fenêtres de toit inclinées, cheminées, lucarnes.
+ * Toiture en 3D (DES-16, DES-17) : couverture texturée en volume (rives, sous-face),
+ * faîtières, pignons en façade, gouttières demi-rondes, fenêtres de toit, cheminées, lucarnes.
  */
 export function Toit3D({ n, dessus }: { n: Niveau; dessus: Niveau | null }) {
   const t = useMemo(() => toit3D(n, dessus), [n, dessus]);
-  const pans = useMemo(() => (t ? geometrie(t.pans, EPAISSEUR) : null), [t]);
+  const couverture = useMemo(() => (t ? geometrieCouverture(t.pans, EPAISSEUR, RIVE) : null), [t]);
+  const faitieres = useMemo(() => (t ? aretesHautes(t.pans) : []), [t]);
+  useEffect(
+    () => () => {
+      couverture?.dessus.dispose();
+      couverture?.rives.dispose();
+    },
+    [couverture],
+  );
   const murs = useMemo(
     () => (t ? geometrie(t.murs.map((m) => versLExterieur(m, t.pans))) : null),
     [t],
   );
-  const couverture = useMemo(() => {
-    const famille = n.toiture?.couverture.famille ?? 'tuile';
-    const m = materiauUni(
-      COULEURS_COUVERTURE[famille as keyof typeof COULEURS_COUVERTURE] ?? COULEURS_COUVERTURE.tuile,
-    ).clone();
-    m.side = DoubleSide;
-    return m;
-  }, [n.toiture?.couverture.famille]);
+  const famille = n.toiture?.couverture.famille ?? 'tuile';
+  const teinte =
+    COULEURS_COUVERTURE[famille as keyof typeof COULEURS_COUVERTURE] ?? COULEURS_COUVERTURE.tuile;
+  const materiau = useMemo(() => materiauCouverture(famille, teinte), [famille, teinte]);
   // Pignons du même matériau que la face extérieure des murs : aucune différence de teinte.
   const facade = useMemo(() => materiauRevetement({ famille: 'aucun' }), []);
-  if (!t || !pans || !murs) return null;
+  if (!t || !couverture || !murs) return null;
   return (
     <group>
-      <mesh geometry={pans} material={couverture} castShadow receiveShadow />
+      <mesh geometry={couverture.dessus} material={materiau} castShadow receiveShadow />
+      {/* Rives et sous-face : planches de rive claires, épaisseur réelle de la couverture. */}
+      <mesh geometry={couverture.rives} material={materiauUni(COULEURS_3D.clair)} castShadow />
       <mesh geometry={murs} material={facade} castShadow receiveShadow />
+      {faitieres.map(([a, b], i) => {
+        const l = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+        const auSol = Math.hypot(b.x - a.x, b.y - a.y);
+        return (
+          <mesh
+            key={`f${i}`}
+            position={[
+              M((a.x + b.x) / 2),
+              M((a.z + b.z) / 2 + EPAISSEUR) + 0.02,
+              M((a.y + b.y) / 2),
+            ]}
+            rotation={[
+              0,
+              -Math.atan2(b.y - a.y, b.x - a.x),
+              Math.atan2(b.z - a.z, auSol) + Math.PI / 2,
+              'YZX',
+            ]}
+            material={materiauUni(teinte)}
+            castShadow
+          >
+            {/* Faîtière : rond à moitié noyé le long du faîtage ou de l'arêtier. */}
+            <cylinderGeometry args={[0.08, 0.08, M(l), 12]} />
+          </mesh>
+        );
+      })}
       {t.gouttieres.map(([a, b], i) => {
         const l = Math.hypot(b.x - a.x, b.y - a.y);
         return (
           <mesh
             key={`g${i}`}
-            position={[M((a.x + b.x) / 2), M((a.z + b.z) / 2) - 0.05, M((a.y + b.y) / 2)]}
+            position={[M((a.x + b.x) / 2), M((a.z + b.z) / 2 - RIVE) - 0.03, M((a.y + b.y) / 2)]}
             rotation={[0, -Math.atan2(b.y - a.y, b.x - a.x), Math.PI / 2]}
             material={materiauUni(COULEURS_3D.quincaillerie)}
           >
-            <cylinderGeometry args={[0.06, 0.06, M(l), 10]} />
+            {/* Gouttière discrète, sous la rive. */}
+            <cylinderGeometry args={[0.04, 0.04, M(l), 12]} />
           </mesh>
         );
       })}

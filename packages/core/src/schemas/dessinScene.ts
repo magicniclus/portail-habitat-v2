@@ -261,6 +261,22 @@ export const toiture = z.object({
   pentes: z.array(angle.min(0).max(900)).min(1).max(8),
   debord: mmPositif.max(2_000).default(400),
   faitageAngle: angle.default(0),
+  /**
+   * Réglages par partie du toit (aile rectangulaire de la maison, repérée par ses limites en
+   * cm) : forme propre et faîtage tourné. Sans réglage, la partie suit le toit entier.
+   */
+  parties: z
+    .array(
+      z.object({
+        cle: z.string().regex(/^-?\d{1,6}(:-?\d{1,6}){3}$/),
+        type: z
+          .enum(['deux_pans', 'quatre_pans', 'croupe', 'monopente', 'plate', 'mansarde'])
+          .optional(),
+        tourner: z.boolean().optional(),
+      }),
+    )
+    .max(20)
+    .default([]),
   couverture: revetement.default({ famille: 'tuile' }),
   lucarnes: z
     .array(

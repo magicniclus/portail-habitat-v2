@@ -4,6 +4,7 @@ import {
   modifierToiture,
   niveauSuperieur,
   reglerHauteursToit,
+  reglerPartieToit,
   toitureAutomatique,
   retirerElementToit,
   type Point,
@@ -44,6 +45,13 @@ export function reduireToiture(e: EtatEditeur, a: Action): EtatEditeur | null {
     }
     case 'modifierToiture':
       return surNiveau(e, (n) => modifierToiture(n, a.modif));
+    case 'partieToit':
+      return surNiveau(e, (n) =>
+        reglerPartieToit(n, a.cle, {
+          ...(a.forme !== undefined ? { type: a.forme } : {}),
+          ...(a.tourner !== undefined ? { tourner: a.tourner } : {}),
+        }),
+      );
     case 'retirerElementToit':
       return surNiveau(e, (n) => retirerElementToit(n, a.id));
     default:

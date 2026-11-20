@@ -32,7 +32,7 @@ export function definirToiture(n: Niveau, type: TypeToiture | null): Resultat<Ni
 }
 
 export type ModificationToiture = Partial<
-  Pick<Toiture, 'type' | 'pentes' | 'debord' | 'faitageAngle' | 'couverture'>
+  Pick<Toiture, 'type' | 'pentes' | 'debord' | 'faitageAngle' | 'couverture' | 'parties'>
 >;
 
 export function modifierToiture(n: Niveau, modif: ModificationToiture): Resultat<Niveau> {
@@ -40,6 +40,26 @@ export function modifierToiture(n: Niveau, modif: ModificationToiture): Resultat
   const r = schemaToiture.safeParse({ ...n.toiture, ...modif });
   if (!r.success) return echec('ENTREE_INVALIDE', { message: r.error.issues[0]!.message });
   return succes({ ...n, toiture: r.data });
+}
+
+/**
+ * Réglage d'une partie du toit (DES-16) : forme propre (`null` = comme le reste du toit) et
+ * faîtage tourné. Une partie revenue au réglage commun n'est plus enregistrée.
+ */
+export function reglerPartieToit(
+  n: Niveau,
+  cle: string,
+  reglage: { type?: TypeToiture | null; tourner?: boolean },
+): Resultat<Niveau> {
+  if (!n.toiture) return echec('INTROUVABLE');
+  const avant = n.toiture.parties.find((p) => p.cle === cle) ?? { cle };
+  const type = reglage.type === undefined ? avant.type : (reglage.type ?? undefined);
+  const tourner = reglage.tourner ?? avant.tourner;
+  const partie = { cle, ...(type ? { type } : {}), ...(tourner ? { tourner } : {}) };
+  const autres = n.toiture.parties.filter((p) => p.cle !== cle);
+  return modifierToiture(n, {
+    parties: partie.type || partie.tourner ? [...autres, partie] : autres,
+  });
 }
 
 export type ElementToit = 'fenetre' | 'cheminee' | 'jacobine' | 'capucine' | 'chien_assis';

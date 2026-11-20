@@ -190,9 +190,9 @@ export function mursLocaux(t: Toiture, e: Emprise): Point3[][] {
     versMonde(e, a, -P0, 0),
     ...bs.map((b) => versMonde(e, a, b, z(a, b))),
   ];
-  const murs: Point3[][] = [];
-  if (ext('a0')) murs.push(coupe(-L0));
-  if (ext('a1')) murs.push(coupe(L0));
+  // Pignons aux deux bouts, même contre une autre partie de la maison : si celle-ci est plus
+  // basse, le pignon la domine et ferme le toit (jamais de trou) ; sinon il reste caché dessous.
+  const murs: Point3[][] = [coupe(-L0), coupe(L0)];
   // Mur haut d'une monopente, sauf contre l'étage (l'appentis s'y adosse).
   const haut = e.sens === 1 ? P0 : -P0;
   if (e.type === 'monopente' && ext(e.sens === 1 ? 'b1' : 'b0'))

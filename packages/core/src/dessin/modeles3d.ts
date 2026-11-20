@@ -46,6 +46,17 @@ const TEXTURES: Readonly<Record<string, { fichier: string; taille: number }>> = 
   'pr-brique': { fichier: 'red_brick', taille: 1400 },
   'pr-pierre': { fichier: 'stacked_stone_wall', taille: 2000 },
   'en-chaux': { fichier: 'white_stucco', taille: 1998 },
+  // Couvertures de toit (DES-16) : rangs parallèles à l'égout, dans le sens de la pente.
+  'toit-tuile': { fichier: 'clay_roof_tiles_02', taille: 2500 },
+  'toit-ardoise': { fichier: 'roof_slates_03', taille: 3000 },
+  'toit-bac-acier': { fichier: 'box_profile_metal_sheet', taille: 2000 },
+};
+
+/** Texture photo de chaque couverture de toit ; zinc et toit végétalisé restent unis. */
+export const TEXTURE_COUVERTURE: Readonly<Record<string, string>> = {
+  tuile: 'toit-tuile',
+  ardoise: 'toit-ardoise',
+  bac_acier: 'toit-bac-acier',
 };
 
 export interface TexturePhoto {

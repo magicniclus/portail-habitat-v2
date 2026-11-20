@@ -91,7 +91,11 @@ export function toit3D(n: Niveau, dessus: Niveau | null = null): Toit3D | null {
   for (const e of ailes) {
     const z = (a: number, b: number) => hauteurLocale(t, e, a, b);
     parAile.push(pansLocaux(t, e).map((poly) => poly.map(([a, b]) => versMonde(e, a, b, z(a, b)))));
-    murs.push(...mursLocaux(t, e));
+    // Pignon caché sous le toit d'une autre partie : inutile ; sinon il ferme le toit.
+    const autres = ailes.filter((o) => o !== e);
+    const visible = (poly: Point3[]) =>
+      poly.some((p) => p.z > e.base + 10 && (altitudeToit(t, autres, p)?.z ?? -Infinity) < p.z - 5);
+    murs.push(...mursLocaux(t, e).filter(visible));
     for (const [p, q] of egoutsLocaux(e))
       gouttieres.push(
         ...aLAirLibre(t, ailes, e, [

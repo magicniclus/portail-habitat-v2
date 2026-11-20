@@ -606,6 +606,114 @@
       ],
       "licence": "CC0 1.0",
       "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-couleur.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-relief.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-rugosite.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-couleur.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-relief.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-rugosite.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-couleur.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-relief.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-rugosite.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
     }
   ]
 }

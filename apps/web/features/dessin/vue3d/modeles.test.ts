@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   MATERIAUX_AVEC_TEXTURE,
+  TEXTURE_COUVERTURE,
   modele3D,
   OBJETS_AVEC_MODELE,
   texturePhoto,
@@ -29,8 +30,9 @@ describe('fichiers des modèles 3D (D88)', () => {
 
   it('chaque texture photo existe, a sa licence, et vise un matériau du catalogue', () => {
     for (const id of MATERIAUX_AVEC_TEXTURE) {
+      // Matériau du catalogue, ou couverture de toit.
       expect(
-        MATERIAUX_DESSIN.some((m) => m.id === id),
+        MATERIAUX_DESSIN.some((m) => m.id === id) || Object.values(TEXTURE_COUVERTURE).includes(id),
         id,
       ).toBe(true);
       const t = texturePhoto(id)!;

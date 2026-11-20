@@ -14,6 +14,7 @@ import { TrashIcon } from '@phosphor-icons/react';
 import type { Dispatch } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { HauteursToit } from './HauteursToit';
+import { PartiesToit } from './PartiesToit';
 import { Info } from './blocs';
 import { CouverturesToit, FormesToit, type Couverture } from './FormesToit';
 
@@ -73,6 +74,7 @@ export function ToitureMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
           dispatch={dispatch}
         />
       ) : null}
+      <PartiesToit niveau={n} dessus={dessus} dispatch={dispatch} />
       <label className="grid gap-1 px-1 text-[13px] font-semibold">
         Pente · {Math.round(pente)}°
         <input

@@ -11,6 +11,7 @@ import {
   modifierToiture,
   quantitesToiture,
   reglerHauteursToit,
+  reglerPartieToit,
   retirerElementToit,
   toitureAutomatique,
 } from './commandesToit';
@@ -21,8 +22,10 @@ import { toit3D } from './toits3d';
 import {
   aire3D,
   altitudeToit,
+  versMonde,
   emprisesToit,
   hauteurLocale,
+  type Emprise,
   type Toiture,
   type TypeToiture,
 } from './toitures';
@@ -179,6 +182,45 @@ describe('toits en L, T, U et sur une partie sans étage', () => {
     const secondaire = quatre.ailes.find((e) => Object.values(e.cotes).includes('interieur'))!;
     const z = (a: number) => hauteurLocale(toitL.toiture!, { ...secondaire }, a, 0);
     expect(z(secondaire.aMin)).toBeCloseTo(z(0), 0);
+  });
+
+  it('toit toujours fermé : au bout de chaque faîtage, un pignon ou le toit d’une autre aile', () => {
+    for (const f of ['L', 'U', 'T'] as const)
+      for (const faitageAngle of [0, 900])
+        for (const d of [decoupe, { largeur: 2_000, profondeur: 5_000 }]) {
+          const niv = avecToit(forme({ forme: f, largeur: 10_600, profondeur: 8_600, decoupe: d }));
+          niv.toiture = { ...niv.toiture!, faitageAngle };
+          const t = toit3D(niv)!;
+          for (const e of t.ailes) {
+            if (e.type !== 'deux_pans') continue;
+            for (const a of [-e.L0 / 2, e.L0 / 2]) {
+              const p = versMonde(e, a, 0, hauteurLocale(niv.toiture!, e, a, 0));
+              const autres = t.ailes.filter((o) => o !== e);
+              const couvert = (altitudeToit(niv.toiture!, autres, p)?.z ?? -Infinity) >= p.z - 5;
+              const pignon = t.murs.some((m) =>
+                m.some((q) => Math.hypot(q.x - p.x, q.y - p.y, q.z - p.z) < 5),
+              );
+              expect(couvert || pignon, `${f} ${faitageAngle} ${d.largeur}`).toBe(true);
+            }
+          }
+        }
+  });
+
+  it('réglage par partie : forme propre et faîtage tourné pour une seule aile', () => {
+    const niv = avecToit(forme({ forme: 'L', largeur: 10_600, profondeur: 8_600, decoupe }));
+    const [e1, e2] = toit3D(niv)!.ailes as [Emprise, Emprise];
+    let m = ok(reglerPartieToit(niv, e2.cle, { type: 'quatre_pans' }));
+    let ailes = toit3D(m)!.ailes;
+    expect(ailes.find((e) => e.cle === e2.cle)!.type).toBe('quatre_pans');
+    expect(ailes.find((e) => e.cle === e1.cle)!.type).toBe('deux_pans');
+    m = ok(reglerPartieToit(m, e1.cle, { tourner: true }));
+    ailes = toit3D(m)!.ailes;
+    const tournee = ailes.find((e) => e.cle === e1.cle)!;
+    expect([tournee.L0, tournee.P0]).toEqual([e1.P0, e1.L0]);
+    // Retour au réglage commun : plus rien d'enregistré pour cette partie.
+    m = ok(reglerPartieToit(m, e2.cle, { type: null }));
+    expect(m.toiture!.parties).toEqual([{ cle: e1.cle, tourner: true }]);
+    expect(reglerPartieToit({ ...m, toiture: null }, e1.cle, {}).ok).toBe(false);
   });
 
   it('U et T : trois ailes ; les gouttières cachées sous une autre aile ne comptent pas', () => {

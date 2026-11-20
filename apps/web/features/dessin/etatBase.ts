@@ -168,6 +168,7 @@ export type Action =
   | { type: 'toitureAuto'; toiture: TypeToiture }
   | { type: 'hauteursToit'; egout?: number; faitage?: number }
   | { type: 'modifierToiture'; modif: ModificationToiture }
+  | { type: 'partieToit'; cle: string; forme?: TypeToiture | null; tourner?: boolean }
   | { type: 'retirerElementToit'; id: string }
   | {
       type: 'modifierExterieur';
