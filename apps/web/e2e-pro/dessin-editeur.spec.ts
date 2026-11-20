@@ -146,7 +146,7 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
 
     // Étage avec les murs extérieurs repris (DES-04, DES-05).
     await structure('Niveaux', '');
-    await page.getByRole('button', { name: '+ Étage' }).click();
+    await page.getByRole('button', { name: 'Ajouter un étage' }).click();
     await expect(page.getByLabel('Nom du niveau Étage 1')).toBeVisible();
     await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(1);
     await expect(plan.getByRole('button', { name: /^Escalier/ })).toHaveCount(0);

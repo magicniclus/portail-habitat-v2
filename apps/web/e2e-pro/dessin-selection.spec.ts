@@ -26,7 +26,7 @@ test.describe('Plans — sélection multiple et verrous (DES-29)', () => {
     if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
     await page.getByRole('button', { name: /^Niveaux/ }).click();
     await page.getByRole('checkbox', { name: 'Reprendre les murs extérieurs' }).uncheck();
-    await page.getByRole('button', { name: '+ Étage' }).click();
+    await page.getByRole('button', { name: 'Ajouter un étage' }).click();
     await expect(murs).toHaveCount(0);
     await page
       .locator('body')

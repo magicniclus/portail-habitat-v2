@@ -59,9 +59,12 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
       .getByRole('button', { name: 'Structure' });
     if ((await menu.getAttribute('aria-pressed')) !== 'true') await menu.click();
     await page.getByRole('button', { name: /^Niveaux/ }).click();
-    await page.getByRole('button', { name: '+ Étage' }).click();
-    await page.getByRole('button', { name: '+ Combles' }).click();
-    await page.getByRole('button', { name: 'Voir' }).last().click();
+    await page.getByRole('button', { name: 'Ajouter un étage' }).click();
+    await page.getByRole('button', { name: 'Ajouter des combles' }).click();
+    await page
+      .getByRole('button', { name: /^Afficher le niveau / })
+      .last()
+      .click();
     await page.getByLabel('Hauteur sous plafond (cm)').fill('280');
     await page.getByLabel('Hauteur sous plafond (cm)').press('Enter');
     await page.getByRole('button', { name: 'Descendre le niveau Combles' }).click();
@@ -69,7 +72,7 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
     await expect(niveaux).toHaveCount(3);
     await expect(niveaux.nth(0)).toHaveValue('Étage 1');
     await expect(niveaux.nth(1)).toHaveValue('Combles');
-    await expect(page.getByText('Plancher à 3,00 m')).toBeVisible();
+    await expect(page.getByText('+3,00 m')).toBeVisible();
 
     // DES-02 : la liste montre l'aperçu ; la recherche ignore accents et majuscules.
     await page.getByRole('button', { name: 'Enregistrer une version' }).click();
