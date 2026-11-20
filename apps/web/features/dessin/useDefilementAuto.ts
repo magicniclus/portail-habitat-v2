@@ -27,6 +27,11 @@ export function useDefilementAuto(
   mmParPx: number,
 ) {
   const dernier = useRef<Pointeur | null>(null);
+  /**
+   * Pointeur prolongé au-delà du bord (px) : quand le plan tient dans l'écran, rien ne défile ;
+   * le geste continue alors comme si le pointeur sortait de la zone, et le dessin grandit.
+   */
+  const auDela = useRef({ x: 0, y: 0 });
   const image = useRef<number | null>(null);
   const rappel = useRef(rejouer);
   useLayoutEffect(() => {
@@ -41,6 +46,12 @@ export function useDefilementAuto(
     if (avant.mmParPx !== mmParPx) return;
     conteneur.current?.scrollBy((avant.x - x) / mmParPx, (avant.y - y) / mmParPx);
   }, [conteneur, x, y, mmParPx]);
+
+  const prolonge = (p: Pointeur): Pointeur => ({
+    ...p,
+    clientX: p.clientX + auDela.current.x,
+    clientY: p.clientY + auDela.current.y,
+  });
 
   const arreter = useCallback(() => {
     if (image.current !== null) cancelAnimationFrame(image.current);
@@ -59,24 +70,38 @@ export function useDefilementAuto(
       const dx = vitesse(p.clientX, r.left, r.right);
       const dy = vitesse(p.clientY, r.top, r.bottom);
       if (!dx && !dy) return arreter();
+      const [l, t] = [el.scrollLeft, el.scrollTop];
       el.scrollBy(dx, dy);
-      rappel.current(p);
+      auDela.current.x += dx - (el.scrollLeft - l);
+      auDela.current.y += dy - (el.scrollTop - t);
+      rappel.current(prolonge(p));
       image.current = requestAnimationFrame(() => pas.current());
     };
   });
 
   return {
-    /** À chaque mouvement : `actif` quand un geste ou un tracé est en cours. */
-    suivre(p: Pointeur, actif: boolean) {
-      dernier.current = {
-        clientX: p.clientX,
-        clientY: p.clientY,
-        altKey: p.altKey,
-        shiftKey: p.shiftKey,
+    /**
+     * À chaque mouvement : `bouger` applique le geste (pointeur prolongé si l'on est resté au
+     * bord) et dit si un geste ou un tracé est en cours.
+     */
+    suivre(ev: Pointeur, bouger: (p: Pointeur) => boolean) {
+      const p = {
+        clientX: ev.clientX,
+        clientY: ev.clientY,
+        altKey: ev.altKey,
+        shiftKey: ev.shiftKey,
       };
-      if (!actif) return arreter();
+      dernier.current = p;
+      // Revenu dans la zone : le pointeur réel reprend la main.
+      const r = conteneur.current?.getBoundingClientRect();
+      if (r && !vitesse(p.clientX, r.left, r.right) && !vitesse(p.clientY, r.top, r.bottom))
+        auDela.current = { x: 0, y: 0 };
+      if (!bouger(prolonge(p))) return arreter();
       if (image.current === null) image.current = requestAnimationFrame(() => pas.current());
     },
-    arreter,
+    arreter() {
+      arreter();
+      auDela.current = { x: 0, y: 0 };
+    },
   };
 }

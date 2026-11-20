@@ -113,7 +113,7 @@ export function Plan2D({
             viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
             className={trace ? 'cursor-crosshair touch-none' : 'touch-none'}
             onPointerDownCapture={multi.capter}
-            onPointerMove={(ev) => defil.suivre(ev, bouger(ev))}
+            onPointerMove={(ev) => defil.suivre(ev, bouger)}
             onPointerDown={(ev) => {
               if (ev.target !== ev.currentTarget && !trace) return;
               const p = versMm(ev);
