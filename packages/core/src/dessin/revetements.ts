@@ -144,6 +144,23 @@ export function revetementDe(n: Niveau, cible: CibleRevetement): Revetement | nu
 }
 
 /** Zone décorative au sol (tapis de carrelage, DES-27) : un polygone dans une pièce. */
+/**
+ * Second coin d'une zone au sol tracée depuis `a` : ramené dans la pièce de départ (son
+ * rectangle englobant), pour que la zone reste dedans pendant le tracé ; `p` si `a` n'est dans
+ * aucune pièce.
+ */
+export function coinZone(n: Pick<Niveau, 'pieces'>, a: Point, p: Point): Point {
+  const piece = n.pieces.find((x) => pointDansPolygone(a, x.contour));
+  if (!piece) return p;
+  const xs = piece.contour.map((q) => q.x);
+  const ys = piece.contour.map((q) => q.y);
+  const borne = (v: number, min: number, max: number) => Math.min(max - 1, Math.max(min + 1, v));
+  return {
+    x: Math.round(borne(p.x, Math.min(...xs), Math.max(...xs))),
+    y: Math.round(borne(p.y, Math.min(...ys), Math.max(...ys))),
+  };
+}
+
 export function ajouterZoneSol(
   n: Niveau,
   e: { pieceId: string; contour: Point[]; revetement: Revetement },

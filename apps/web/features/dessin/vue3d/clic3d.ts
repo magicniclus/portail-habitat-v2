@@ -8,8 +8,8 @@ import { versMm } from './unites';
 
 /** Ce qu'on clique en 3D : mur (et son côté), sol d'une pièce, menuiserie, escalier, terrain. */
 type Cible3D =
-  | { genre: 'mur'; id: string; face: 'a' | 'b' }
-  | { genre: 'piece' | 'ouverture' | 'escalier'; id: string }
+  | { genre: 'mur'; id: string; face: 'a' | 'b' | undefined }
+  | { genre: 'piece' | 'zone' | 'ouverture' | 'escalier'; id: string }
   | { genre: 'terrain' };
 
 export interface Clic3D {
@@ -46,10 +46,17 @@ export function clic3D(etat: EtatEditeur, dispatch: Dispatch<Action>): Clic3D {
       if (c.genre === 'terrain') return dispatch({ type: 'selectionner', selection: null });
       dispatch({
         type: 'selectionner',
-        selection: { genre: c.genre, id: c.id, ...(c.genre === 'mur' ? { face: c.face } : {}) },
+        selection: {
+          genre: c.genre,
+          id: c.id,
+          ...(c.genre === 'mur' && c.face ? { face: c.face } : {}),
+        },
       });
       // Mur ou sol : les couleurs et matériaux sont dans Finitions, ouvert pour la suite.
-      if ((c.genre === 'mur' || c.genre === 'piece') && etat.menu !== 'finitions')
+      if (
+        (c.genre === 'mur' || c.genre === 'piece' || c.genre === 'zone') &&
+        etat.menu !== 'finitions'
+      )
         dispatch({ type: 'menu', menu: 'finitions' });
     },
   };

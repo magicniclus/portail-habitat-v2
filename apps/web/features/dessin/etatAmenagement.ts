@@ -1,5 +1,6 @@
 import {
   ajouterZoneSol,
+  coinZone,
   appliquerRevetement,
   dupliquerObjet,
   deplacerObjet,
@@ -48,13 +49,15 @@ export function poserAmenagement(e: EtatEditeur, point: Point): EtatEditeur | nu
   const a = e.trace;
   const piece = niveauDe(e).pieces.find((p) => pointDansPolygone(a, p.contour));
   if (!piece) return { ...e, trace: null, erreur: 'Commencez la zone à l’intérieur d’une pièce.' };
+  // Le second coin reste dans la pièce, comme l'aperçu pendant le tracé.
+  const b = coinZone(niveauDe(e), a, point);
   let zoneId = '';
   const suite = surNiveau(e, (n) => {
     const r = ajouterZoneSol(
       n,
       {
         pieceId: piece.id,
-        contour: [a, { x: point.x, y: a.y }, point, { x: a.x, y: point.y }],
+        contour: [a, { x: b.x, y: a.y }, b, { x: a.x, y: b.y }],
         revetement: e.pressePapier ?? ZONE_DEFAUT,
       },
       ctx,

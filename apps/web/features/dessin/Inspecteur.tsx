@@ -13,17 +13,24 @@ import {
   type Piece,
 } from '@ph/core/dessin';
 import { Button, Field, Input, Select } from '@ph/ui';
-import { PEINTURES_DESSIN, SOLS_DESSIN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
 import { contexteNavigateur, niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { inspecteurAmenagement } from './InspecteurAmenagement';
 import { inspecteurExterieur } from './InspecteurExterieur';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { InspecteurMur } from './InspecteurMur';
-import { Nuancier } from './Nuancier';
+import { ResumeFinitions } from './ResumeFinitions';
 import { Info, surtitre } from './blocs';
 
-function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch<Action> }) {
+function InspecteurPiece({
+  piece,
+  finitionsOuvert,
+  dispatch,
+}: {
+  piece: Piece;
+  finitionsOuvert: boolean;
+  dispatch: Dispatch<Action>;
+}) {
   return (
     <div className="grid gap-4">
       <p className={surtitre}>Pièce sélectionnée</p>
@@ -60,30 +67,13 @@ function InspecteurPiece({ piece, dispatch }: { piece: Piece; dispatch: Dispatch
         <Info libelle="Surface" valeur={formatSurface(surfaceCarrez(piece))} grande />
         <Info libelle="Périmètre" valeur={formatLongueur(perimetre(piece.contour))} grande />
       </dl>
-      <Nuancier
-        legende="Sol"
-        teintes={SOLS_DESSIN}
-        active={piece.sol.couleur}
-        choisir={(t) => {
-          const sol = SOLS_DESSIN.find((s) => s.id === t.id)!;
-          dispatch({
-            type: 'revetement',
-            cible: { genre: 'piece', pieceId: piece.id, surface: 'sol' },
-            revetement: { famille: sol.famille, couleur: sol.couleur },
-          });
-        }}
-      />
-      <Nuancier
-        legende="Plafond"
-        teintes={PEINTURES_DESSIN}
-        active={piece.plafond.couleur}
-        choisir={(t) =>
-          dispatch({
-            type: 'revetement',
-            cible: { genre: 'piece', pieceId: piece.id, surface: 'plafond' },
-            revetement: { famille: 'peinture', couleur: t.couleur },
-          })
-        }
+      <ResumeFinitions
+        surfaces={[
+          { libelle: 'Sol', revetement: piece.sol },
+          { libelle: 'Plafond', revetement: piece.plafond },
+        ]}
+        finitionsOuvert={finitionsOuvert}
+        dispatch={dispatch}
       />
       <Button
         variant="secondaire"
@@ -108,10 +98,19 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
         key={mur.id}
         mur={mur}
         fusionnable={voisinFusionnable(n, mur.id, contexteNavigateur)}
+        finitionsOuvert={etat.menu === 'finitions'}
         dispatch={dispatch}
       />
     );
-  if (piece) return <InspecteurPiece key={piece.id} piece={piece} dispatch={dispatch} />;
+  if (piece)
+    return (
+      <InspecteurPiece
+        key={piece.id}
+        piece={piece}
+        finitionsOuvert={etat.menu === 'finitions'}
+        dispatch={dispatch}
+      />
+    );
   const o = s?.genre === 'ouverture' ? n.ouvertures.find((x) => x.id === s.id) : undefined;
   if (o) return <InspecteurOuverture key={o.id} o={o} dispatch={dispatch} />;
   const esc = s?.genre === 'escalier' ? n.escaliers.find((x) => x.id === s.id) : undefined;

@@ -42,7 +42,10 @@ function PaveMesh({ p, materiaux }: { p: Pave; materiaux: Mesh['material'] }) {
 }
 
 function Dalle3D({ d, dessous, clic }: { d: Dalle; dessous?: boolean; clic?: Clic3D }) {
-  const choisi = clic?.selection?.genre === 'piece' && clic.selection.id === d.pieceId;
+  const cible = d.zoneId
+    ? ({ genre: 'zone', id: d.zoneId } as const)
+    : ({ genre: 'piece', id: d.pieceId } as const);
+  const choisi = clic?.selection?.genre === cible.genre && clic.selection.id === cible.id;
   const forme = useMemo(() => {
     // Forme dans le plan XY en mètres, couchée ensuite à l'horizontale (y du plan → z 3D).
     const s = new Shape();
@@ -60,11 +63,7 @@ function Dalle3D({ d, dessous, clic }: { d: Dalle; dessous?: boolean; clic?: Cli
       position={[0, M(d.z) + (dessous ? -0.002 : 0.002), 0]}
       receiveShadow
       material={materiau}
-      onClick={
-        clic
-          ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer({ genre: 'piece', id: d.pieceId }, ev)
-          : undefined
-      }
+      onClick={clic ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer(cible, ev) : undefined}
     >
       <shapeGeometry args={[forme]} />
       {choisi ? <Edges color={COULEURS_PLAN.murSelection} lineWidth={3} /> : null}
@@ -128,7 +127,7 @@ export function Niveau3D({
         />
       ))}
       {dalles.sols.map((d) => (
-        <Dalle3D key={d.pieceId} d={d} {...(clic ? { clic } : {})} />
+        <Dalle3D key={d.zoneId ?? d.pieceId} d={d} {...(clic ? { clic } : {})} />
       ))}
       {plafonds
         ? dalles.plafonds.map((d) => <Dalle3D key={`pl-${d.pieceId}`} d={d} dessous />)

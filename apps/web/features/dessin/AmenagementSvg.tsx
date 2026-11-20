@@ -36,9 +36,9 @@ export function ZonesSvg({
           aria-pressed={choisie}
           points={points(z.contour)}
           fill={remplissage(z.revetement)}
-          className={choisie ? 'stroke-accent' : 'stroke-neutre-500'}
+          className={choisie ? 'stroke-accent' : 'stroke-neutre-400'}
           {...trait}
-          strokeDasharray="6 4"
+          strokeWidth={choisie ? 2.5 : 1}
           onPointerDown={(ev) => {
             if (etat.outil !== 'selection') return;
             ev.stopPropagation();

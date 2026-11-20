@@ -27,6 +27,8 @@ export interface MorceauMur extends Pave {
 
 export interface Dalle {
   pieceId: string;
+  /** Zone décorative au sol (DES-27) posée sur la pièce, un centimètre au-dessus. */
+  zoneId?: string;
   contour: Point[];
   /** Altitude du dessus (sol) ou du dessous (plafond). */
   z: number;
@@ -109,12 +111,28 @@ export function morceauxDeMur(
 /** Sols (dessus à l'altitude du niveau) et plafonds (sous la hauteur sous plafond). */
 export function dallesDuNiveau(n: Niveau): { sols: Dalle[]; plafonds: Dalle[] } {
   return {
-    sols: n.pieces.map((p) => ({
-      pieceId: p.id,
-      contour: p.contour,
-      z: n.altitude,
-      revetement: p.sol,
-    })),
+    sols: [
+      ...n.pieces.map((p) => ({
+        pieceId: p.id,
+        contour: p.contour,
+        z: n.altitude,
+        revetement: p.sol,
+      })),
+      // Zones au sol : un tapis de revêtement 1 cm au-dessus du sol (aucun scintillement).
+      ...n.zonesDeco.flatMap((z) =>
+        z.support.genre === 'piece' && z.support.surface === 'sol'
+          ? [
+              {
+                pieceId: z.support.pieceId,
+                zoneId: z.id,
+                contour: z.contour,
+                z: n.altitude + 10,
+                revetement: z.revetement,
+              },
+            ]
+          : [],
+      ),
+    ],
     plafonds: n.pieces.map((p) => ({
       pieceId: p.id,
       contour: p.contour,

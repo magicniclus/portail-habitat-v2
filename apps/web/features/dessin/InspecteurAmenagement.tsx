@@ -1,7 +1,9 @@
 'use client';
 
 import {
+  aire,
   collisions,
+  formatSurface,
   LIBELLES_FAMILLE,
   objetDuCatalogue,
   plagesDe,
@@ -106,31 +108,44 @@ function InspecteurObjet({
   );
 }
 
-/** Zone décorative au sol (DES-27) : revêtement modifiable depuis Finitions. */
-function InspecteurZone({ z, dispatch }: { z: ZoneDeco; dispatch: Dispatch<Action> }) {
+/**
+ * Zone décorative au sol (DES-27) : son identité et sa surface. Le matériau se choisit dans
+ * Finitions (un seul endroit pour les revêtements, pas de doublon ici).
+ */
+function InspecteurZone({
+  z,
+  finitions,
+  dispatch,
+}: {
+  z: ZoneDeco;
+  finitions: boolean;
+  dispatch: Dispatch<Action>;
+}) {
   return (
     <div className="grid gap-4">
       <div>
         <p className={titre}>Sélection</p>
         <h2 className="m-0 text-xl font-bold">Zone au sol</h2>
         <p className="m-0 text-sm text-neutre-800">
-          {LIBELLES_FAMILLE[z.revetement.famille] ?? 'Revêtement'}
+          {LIBELLES_FAMILLE[z.revetement.famille] ?? 'Revêtement'} ·{' '}
+          {formatSurface(aire(z.contour))}
         </p>
       </div>
-      <Button onClick={() => dispatch({ type: 'menu', menu: 'finitions', basculer: false })}>
-        Changer le revêtement
-      </Button>
-      <div className="grid grid-cols-2 gap-2">
+      {finitions ? (
+        <p className="m-0 text-sm leading-5 text-neutre-800">
+          Choisissez son matériau dans Finitions, à gauche.
+        </p>
+      ) : (
         <Button
           variant="secondaire"
-          onClick={() => dispatch({ type: 'copierStyle', revetement: z.revetement })}
+          onClick={() => dispatch({ type: 'menu', menu: 'finitions', basculer: false })}
         >
-          Copier le style
+          Choisir le matériau
         </Button>
-        <Button variant="secondaire" onClick={() => dispatch({ type: 'supprimerSelection' })}>
-          Supprimer
-        </Button>
-      </div>
+      )}
+      <Button variant="secondaire" onClick={() => dispatch({ type: 'supprimerSelection' })}>
+        Supprimer la zone
+      </Button>
     </div>
   );
 }
@@ -142,5 +157,7 @@ export function inspecteurAmenagement(etat: EtatEditeur, dispatch: Dispatch<Acti
   const o = s?.genre === 'objet' ? n.objets.find((x) => x.id === s.id) : undefined;
   if (o) return <InspecteurObjet key={o.id} o={o} etat={etat} dispatch={dispatch} />;
   const z = s?.genre === 'zone' ? n.zonesDeco.find((x) => x.id === s.id) : undefined;
-  return z ? <InspecteurZone z={z} dispatch={dispatch} /> : null;
+  return z ? (
+    <InspecteurZone z={z} finitions={etat.menu === 'finitions'} dispatch={dispatch} />
+  ) : null;
 }

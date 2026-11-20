@@ -11,6 +11,7 @@ import {
 } from './catalogue';
 import { planDeTravail, triangleActivite } from './cuisine';
 import { aire } from './geometrie';
+import { dallesDuNiveau } from './volumes';
 import { LIBELLES_EQUIPEMENT, metreNiveau } from './metre';
 import {
   chevauchent,
@@ -26,6 +27,7 @@ import {
 } from './objets';
 import {
   ajouterZoneSol,
+  coinZone,
   facesDeLaPiece,
   FAMILLES_MUR,
   FAMILLES_SOL,
@@ -253,6 +255,26 @@ describe('revêtements (DES-25 à DES-28)', () => {
     expect(
       ok(revetirZone(r, r.zoneId, { famille: 'parquet' })).zonesDeco[0]!.revetement.famille,
     ).toBe('parquet');
+    // En 3D : un tapis de revêtement 1 cm au-dessus du sol de la pièce.
+    const tapis = dallesDuNiveau(r).sols.find((d) => d.zoneId === r.zoneId)!;
+    expect(tapis).toMatchObject({ pieceId: piece.id, z: r.altitude + 10, revetement: carreaux });
+    // Tracé : le second coin reste dans la pièce, même si le pointeur sort.
+    const coin = coinZone(r, { x: 1000, y: 1000 }, { x: 99_999, y: -5_000 });
+    expect(r.pieces[0]!.contour.length).toBeGreaterThan(2);
+    expect(coinZone(r, { x: -9_000, y: 0 }, { x: 5, y: 5 })).toEqual({ x: 5, y: 5 });
+    expect(
+      ok(
+        ajouterZoneSol(
+          r,
+          {
+            pieceId: piece.id,
+            contour: [{ x: 1000, y: 1000 }, { x: coin.x, y: 1000 }, coin, { x: 1000, y: coin.y }],
+            revetement: carreaux,
+          },
+          ctx,
+        ),
+      ).zonesDeco,
+    ).toHaveLength(2);
     expect(ok(supprimerZone(r, r.zoneId)).zonesDeco).toHaveLength(0);
     expect(revetirZone(r, 'z_absent', carreaux)).toMatchObject({ ok: false });
     expect(supprimerZone(r, 'z_absent')).toMatchObject({ ok: false });

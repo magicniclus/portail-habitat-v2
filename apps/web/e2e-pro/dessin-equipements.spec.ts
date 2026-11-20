@@ -75,20 +75,16 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
       .getByRole('button', { name: /^Mur de 10,40 m/ })
       .first()
       .click({ force: true });
-    if (page.viewportSize()!.width < 900)
-      await page
-        .getByRole('button', { name: 'Propriétés' })
-        .click()
-        .catch(() => undefined);
-    const sauge = page
-      .getByRole('group', { name: /^Peinture côté gauche/ })
-      .getByRole('button', { name: 'Sauge' });
-    await sauge.click();
-    await expect(sauge).toHaveAttribute('aria-pressed', 'true');
-    // Couleur libre et finition satinée, depuis le menu Finitions.
+    // Couleurs et matériaux : un seul endroit, le menu Finitions (Propriétés les résume).
     await replier();
     await menu('Finitions');
     await page.getByLabel('Famille').selectOption('peinture');
+    const sauge = page
+      .getByRole('region', { name: 'Finitions' })
+      .getByRole('button', { name: 'Sauge' });
+    await sauge.click();
+    await expect(sauge).toHaveAttribute('aria-pressed', 'true');
+    // Couleur libre et finition satinée.
     await page.getByLabel('Couleur libre').fill(COULEURS_PLAN.murSelection);
     await page.getByLabel('Finition', { exact: true }).selectOption('satin');
     await expect(page.getByLabel('Finition', { exact: true })).toHaveValue('satin');

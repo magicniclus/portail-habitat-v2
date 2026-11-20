@@ -2,10 +2,9 @@
 
 import { LIBELLES_MUR, longueurMur, type ModificationMur, type Mur } from '@ph/core/dessin';
 import { Button, ConfirmDialog, Field, Select } from '@ph/ui';
-import { PEINTURES_DESSIN, type TeinteDessin } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
 import type { Action } from './etat';
-import { Nuancier } from './Nuancier';
+import { ResumeFinitions } from './ResumeFinitions';
 import { ChampMesure } from './ChampMesure';
 import { CaseVerrou, TitreSelection } from './blocs';
 
@@ -13,21 +12,18 @@ import { CaseVerrou, TitreSelection } from './blocs';
 export function InspecteurMur({
   mur,
   fusionnable,
+  finitionsOuvert,
   dispatch,
 }: {
   mur: Mur;
   /** Mur voisin aligné et identique : on peut les fusionner (DES-09). */
   fusionnable: string | null;
+  /** Menu Finitions ouvert : on y choisit les matériaux. */
+  finitionsOuvert: boolean;
   dispatch: Dispatch<Action>;
 }) {
   const modifier = (modif: ModificationMur) =>
     dispatch({ type: 'modifierMur', murId: mur.id, modif });
-  const peindre = (face: 'a' | 'b') => (t: TeinteDessin) =>
-    dispatch({
-      type: 'revetement',
-      cible: { genre: 'mur', murId: mur.id, face },
-      revetement: { famille: 'peinture', couleur: t.couleur },
-    });
   return (
     <div className="grid gap-4">
       <TitreSelection titre={LIBELLES_MUR[mur.type]} />
@@ -90,17 +86,13 @@ export function InspecteurMur({
           </Button>
         ) : null}
       </div>
-      <Nuancier
-        legende="Peinture côté gauche"
-        teintes={PEINTURES_DESSIN}
-        active={mur.faceA.couleur}
-        choisir={peindre('a')}
-      />
-      <Nuancier
-        legende="Peinture côté droit"
-        teintes={PEINTURES_DESSIN}
-        active={mur.faceB.couleur}
-        choisir={peindre('b')}
+      <ResumeFinitions
+        surfaces={[
+          { libelle: 'Côté gauche', revetement: mur.faceA },
+          { libelle: 'Côté droit', revetement: mur.faceB },
+        ]}
+        finitionsOuvert={finitionsOuvert}
+        dispatch={dispatch}
       />
       {mur.porteur ? (
         <p className="m-0 text-sm text-attention">

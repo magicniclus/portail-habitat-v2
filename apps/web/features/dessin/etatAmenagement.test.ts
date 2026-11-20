@@ -104,8 +104,12 @@ describe('décoration dans l’éditeur (DES-25 à DES-28)', () => {
       { type: 'poserPoint', point: { x: 1000, y: 1000 } },
       { type: 'poserPoint', point: { x: 30_000, y: 2000 } },
     ]);
-    expect(debordante.erreur).toMatch(/rester dans la pièce/);
+    // Le second coin est ramené dans la pièce : la zone s'arrête au mur, sans erreur.
+    expect(debordante.erreur).toBeNull();
     expect(debordante.trace).toBeNull();
+    const bord = Math.max(...niveauDe(debordante).pieces[0]!.contour.map((p) => p.x));
+    const bornee = niveauDe(debordante).zonesDeco.at(-1)!;
+    expect(Math.max(...bornee.contour.map((p) => p.x))).toBeLessThan(bord);
   });
 });
 
