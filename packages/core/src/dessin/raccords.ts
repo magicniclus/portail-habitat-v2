@@ -34,16 +34,44 @@ interface Bout {
   sortie: Vecteur;
 }
 
-function bouts(murs: readonly Mur[], p: Point): Bout[] {
-  return murs.flatMap((mur) =>
-    (['a', 'b'] as const)
-      .filter((bout) => memePoint(mur[bout], p, 1))
-      .map((bout) => ({
-        mur,
-        bout,
-        sortie: unitaire(sous(mur[bout === 'a' ? 'b' : 'a'], mur[bout])),
-      })),
-  );
+/** Taille des cases (mm) de l'index des murs : on ne compare que des murs voisins. */
+const CASE = 1000;
+
+/**
+ * Index des murs (DES-48) : extrémités par coordonnées arrondies, murs par cases du plan. Les
+ * jonctions se trouvent sans comparer chaque mur à tous les autres (500 murs : quelques ms).
+ */
+function indexer(murs: readonly Mur[]) {
+  const extremites = new Map<string, Bout[]>();
+  const cases = new Map<string, Mur[]>();
+  const cle = (x: number, y: number) => `${x}|${y}`;
+  for (const mur of murs) {
+    for (const bout of ['a', 'b'] as const) {
+      const p = mur[bout];
+      const k = cle(Math.round(p.x), Math.round(p.y));
+      const b = { mur, bout, sortie: unitaire(sous(mur[bout === 'a' ? 'b' : 'a'], p)) };
+      extremites.set(k, [...(extremites.get(k) ?? []), b]);
+    }
+    const [x0, x1] = [Math.min(mur.a.x, mur.b.x) - 1, Math.max(mur.a.x, mur.b.x) + 1];
+    const [y0, y1] = [Math.min(mur.a.y, mur.b.y) - 1, Math.max(mur.a.y, mur.b.y) + 1];
+    for (let i = Math.floor(x0 / CASE); i <= Math.floor(x1 / CASE); i++)
+      for (let j = Math.floor(y0 / CASE); j <= Math.floor(y1 / CASE); j++)
+        cases.set(cle(i, j), [...(cases.get(cle(i, j)) ?? []), mur]);
+  }
+  return {
+    /** Extrémités de murs confondues avec `p` (à 1 mm près). */
+    bouts(p: Point): Bout[] {
+      const [x, y] = [Math.round(p.x), Math.round(p.y)];
+      const trouves: Bout[] = [];
+      for (let dx = -1; dx <= 1; dx++)
+        for (let dy = -1; dy <= 1; dy++)
+          for (const b of extremites.get(cle(x + dx, y + dy)) ?? [])
+            if (memePoint(b.mur[b.bout], p, 1)) trouves.push(b);
+      return trouves;
+    },
+    /** Murs dont l'emprise touche la case de `p`. */
+    voisins: (p: Point) => cases.get(cle(Math.floor(p.x / CASE), Math.floor(p.y / CASE))) ?? [],
+  };
 }
 
 /** Raccorde en onglet l'extrémité `x` avec l'autre mur `y` ; contours modifiés en place. */
@@ -75,9 +103,10 @@ export function contoursRaccordes(murs: readonly Mur[]): Map<string, Point[]> {
   const pleins = murs.filter((m) => !SANS_RACCORD.has(m.type));
   const contours = new Map(murs.map((m) => [m.id, contourMur(m)]));
   const faits = new Set<string>();
+  const index = indexer(pleins);
   for (const m of pleins)
     for (const bout of ['a', 'b'] as const) {
-      const ici = bouts(pleins, m[bout]);
+      const ici = index.bouts(m[bout]);
       const cle = ici
         .map((b) => `${b.mur.id}:${b.bout}`)
         .sort()
@@ -88,7 +117,7 @@ export function contoursRaccordes(murs: readonly Mur[]): Map<string, Point[]> {
       if (Math.abs(vect(x.sortie, y.sortie)) < SINUS_MIN) continue;
       onglet(x, y, contours);
     }
-  for (const m of pleins) for (const bout of ['a', 'b'] as const) enT(m, bout, pleins, contours);
+  for (const m of pleins) for (const bout of ['a', 'b'] as const) enT(m, bout, index, contours);
   return contours;
 }
 
@@ -96,16 +125,23 @@ export function contoursRaccordes(murs: readonly Mur[]): Map<string, Point[]> {
  * Jonction en T : l'extrémité libre d'un mur posée sur le milieu d'un autre s'arrête sur la face
  * de ce mur hôte (coupée en sifflet si elle arrive en biais) au lieu de le traverser.
  */
-function enT(m: Mur, bout: 'a' | 'b', pleins: readonly Mur[], contours: Map<string, Point[]>) {
+function enT(
+  m: Mur,
+  bout: 'a' | 'b',
+  index: ReturnType<typeof indexer>,
+  contours: Map<string, Point[]>,
+) {
   const p = m[bout];
-  if (bouts(pleins, p).length !== 1) return;
-  const hote = pleins.find(
-    (w) =>
-      w.id !== m.id &&
-      distancePointSegment(p, w.a, w.b) <= 1 &&
-      !memePoint(p, w.a, 1) &&
-      !memePoint(p, w.b, 1),
-  );
+  if (index.bouts(p).length !== 1) return;
+  const hote = index
+    .voisins(p)
+    .find(
+      (w) =>
+        w.id !== m.id &&
+        distancePointSegment(p, w.a, w.b) <= 1 &&
+        !memePoint(p, w.a, 1) &&
+        !memePoint(p, w.b, 1),
+    );
   if (!hote) return;
   const sortie = unitaire(sous(m[bout === 'a' ? 'b' : 'a'], p));
   const uw = unitaire(sous(hote.b, hote.a));

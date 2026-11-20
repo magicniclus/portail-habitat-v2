@@ -34,12 +34,14 @@ export async function connecter(
   email: string,
   suite = '/pro/tableau-de-bord',
   espace: 'pro' | 'admin' = 'pro',
+  /** Adresse attendue après connexion, si la page de suite redirige aussitôt ailleurs. */
+  arrivee: RegExp = new RegExp(suite.replace(/[/?]/g, '\\$&')),
 ) {
   await page.goto(`/connexion?espace=${espace}&suite=${encodeURIComponent(suite)}`);
   await page.getByLabel(/^Email/).fill(email);
   await page.getByLabel(/^Mot de passe/).fill(MOT_DE_PASSE);
   await page.getByRole('button', { name: 'Me connecter' }).click();
-  await expect(page).toHaveURL(new RegExp(suite.replace(/[/?]/g, '\\$&')));
+  await expect(page).toHaveURL(arrivee, { timeout: 15_000 });
 }
 
 /** Admin SDK sur l'émulateur (variables héritées de `firebase emulators:exec`). */

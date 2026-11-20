@@ -91,13 +91,23 @@ export function useDefilementAuto(
         altKey: ev.altKey,
         shiftKey: ev.shiftKey,
       };
+      const avant = dernier.current;
       dernier.current = p;
       // Revenu dans la zone : le pointeur réel reprend la main.
       const r = conteneur.current?.getBoundingClientRect();
-      if (r && !vitesse(p.clientX, r.left, r.right) && !vitesse(p.clientY, r.top, r.bottom))
-        auDela.current = { x: 0, y: 0 };
+      const [vx, vy] = r
+        ? [vitesse(p.clientX, r.left, r.right), vitesse(p.clientY, r.top, r.bottom)]
+        : [0, 0];
+      if (!vx && !vy) auDela.current = { x: 0, y: 0 };
       if (!bouger(prolonge(p))) return arreter();
-      if (image.current === null) image.current = requestAnimationFrame(() => pas.current());
+      // Le défilement ne part que si l'on va vers le bord : un geste commencé près du bord et
+      // qui s'en éloigne ne fait pas défiler.
+      const versLeBord =
+        !avant ||
+        (vx !== 0 && Math.sign(vx) === Math.sign(p.clientX - avant.clientX)) ||
+        (vy !== 0 && Math.sign(vy) === Math.sign(p.clientY - avant.clientY));
+      if (image.current === null && versLeBord)
+        image.current = requestAnimationFrame(() => pas.current());
     },
     arreter() {
       arreter();

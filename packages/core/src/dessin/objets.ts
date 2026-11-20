@@ -185,14 +185,27 @@ export function collisions(n: Niveau): Collision[] {
   const auSol = n.objets.filter(
     (o) => o.altitude === 0 && objetDuCatalogue(o.catalogueId)?.symbole !== 'tapis',
   );
-  const contours = new Map(auSol.map((o) => [o.id, contourObjet(o)]));
+  // Contours et boîtes englobantes calculés une fois : seules les paires dont les boîtes se
+  // touchent passent au test exact (500 murs et 1 000 objets : quelques millisecondes).
+  type Forme = { id: string; contour: Point[]; x0: number; y0: number; x1: number; y1: number };
+  const forme = (id: string, contour: Point[]): Forme => ({
+    id,
+    contour,
+    x0: Math.min(...contour.map((p) => p.x)),
+    y0: Math.min(...contour.map((p) => p.y)),
+    x1: Math.max(...contour.map((p) => p.x)),
+    y1: Math.max(...contour.map((p) => p.y)),
+  });
+  const touche = (a: Forme, b: Forme) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+  const objets = auSol.map((o) => forme(o.id, contourObjet(o)));
+  const murs = n.murs.filter((m) => m.type !== 'separation').map((m) => forme(m.id, contourMur(m)));
   const resultat: Collision[] = [];
-  auSol.forEach((o, i) => {
-    for (const autre of auSol.slice(i + 1))
-      if (chevauchent(contours.get(o.id)!, contours.get(autre.id)!))
+  objets.forEach((o, i) => {
+    for (const autre of objets.slice(i + 1))
+      if (touche(o, autre) && chevauchent(o.contour, autre.contour))
         resultat.push({ objetId: o.id, avec: { genre: 'objet', id: autre.id } });
-    for (const m of n.murs)
-      if (m.type !== 'separation' && chevauchent(contours.get(o.id)!, contourMur(m)))
+    for (const m of murs)
+      if (touche(o, m) && chevauchent(o.contour, m.contour))
         resultat.push({ objetId: o.id, avec: { genre: 'mur', id: m.id } });
   });
   return resultat;

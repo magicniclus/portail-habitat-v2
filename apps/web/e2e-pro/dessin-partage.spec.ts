@@ -138,8 +138,14 @@ test.describe('Plans — exports, partage, essai (DES-03, DES-41 à DES-43)', ()
       page.getByText(/Créez votre compte gratuit pour télécharger le PDF/),
     ).toBeVisible();
     // Connexion : l'essai devient un plan du compte, ouvert dans l'éditeur.
-    await connecter(page, COMPTES.proprio, '/mon-espace/plans?essai=1');
-    await expect(page).toHaveURL(/\/mes-plans\/[A-Za-z0-9]{20}$/, { timeout: 15_000 });
+    // La page de suite reprend l'essai puis ouvre aussitôt le plan : on attend l'éditeur.
+    await connecter(
+      page,
+      COMPTES.proprio,
+      '/mon-espace/plans?essai=1',
+      'pro',
+      /\/mes-plans\/[A-Za-z0-9]{20}$/,
+    );
     await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
     await expect(page.getByText('Essai sans compte')).toHaveCount(0);
   });
