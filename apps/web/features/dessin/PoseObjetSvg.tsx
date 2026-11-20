@@ -1,6 +1,20 @@
-import { objetAPoser, objetDuCatalogue, type Niveau, type Point } from '@ph/core/dessin';
+import {
+  emprise,
+  hauteurVersLeHaut,
+  marchesDroites,
+  murSousLePoint,
+  objetAPoser,
+  objetDuCatalogue,
+  pointSurMur,
+  poserEscalier,
+  toleranceEnMm,
+  type Niveau,
+  type Point,
+  type TypeEscalier,
+} from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
-import { niveauDe, type EtatEditeur } from './etat';
+import { niveauDe, sceneDe, type EtatEditeur } from './etat';
+import { points } from './svg';
 import { PoseOuvertureSvg } from './PoseOuvertureSvg';
 import { GuidesSvg } from './GuidesSvg';
 import { SymboleObjetSvg } from './SymboleObjet';
@@ -43,9 +57,46 @@ function PoseObjetSvg({
   );
 }
 
+const traitApercu = { vectorEffect: 'non-scaling-stroke' as const, fill: 'none' };
+
+/** Escalier en cours de pose (DES-15) : emprise et marches sous le pointeur, en transparence. */
+function PoseEscalierSvg({
+  niveau,
+  type,
+  pointeur,
+  hauteur,
+}: {
+  niveau: Niveau;
+  type: TypeEscalier;
+  pointeur: Point;
+  hauteur: number;
+}) {
+  const r = poserEscalier(
+    niveau,
+    { type, position: pointeur, hauteurAMonter: hauteur },
+    { nouvelId: (p) => `${p}_apercu` },
+  );
+  const e = r.ok ? r.data.escaliers.at(-1) : undefined;
+  if (!e) return null;
+  return (
+    <g pointerEvents="none" className="stroke-accent" opacity={0.65} data-testid="pose-escalier">
+      <polygon
+        points={points(emprise(e))}
+        {...traitApercu}
+        fill={COULEURS_PLAN.etiquette}
+        strokeWidth={1.5}
+      />
+      {marchesDroites(e).map(([p, q], i) => (
+        <line key={i} x1={p.x} y1={p.y} x2={q.x} y2={q.y} {...traitApercu} strokeWidth={1} />
+      ))}
+    </g>
+  );
+}
+
 /**
- * Aperçu en transparence sous le pointeur, avant le clic : l'objet du catalogue choisi, ou la
- * porte ou fenêtre (dès qu'on survole un mur, puis tirée entre les deux clics).
+ * Aperçu en transparence sous le pointeur, avant le clic : l'objet du catalogue choisi,
+ * l'escalier, ou la porte ou fenêtre (collée au mur le plus proche dès qu'on s'en approche, puis
+ * tirée entre les deux clics).
  */
 export function ApercuPose({
   etat,
@@ -58,6 +109,20 @@ export function ApercuPose({
 }) {
   if (!pointeur) return null;
   const n = niveauDe(etat);
+  if (etat.outil === 'escalier')
+    return (
+      <PoseEscalierSvg
+        niveau={n}
+        type={etat.typeEscalier}
+        pointeur={pointeur}
+        hauteur={hauteurVersLeHaut(sceneDe(etat), etat.niveauId)}
+      />
+    );
+  // Avant le premier clic : la menuiserie se colle au mur le plus proche (même tolérance que le
+  // clic), pour qu'on la voie avant d'être pile sur le mur.
+  const proche = etat.trace ? null : murSousLePoint(n.murs, pointeur, toleranceEnMm(16, etat.zoom));
+  const premier =
+    etat.trace ?? (proche ? pointSurMur(proche.mur, proche.distanceDepuisA) : pointeur);
   return etat.outil === 'objet' ? (
     <PoseObjetSvg
       niveau={n}
@@ -69,7 +134,7 @@ export function ApercuPose({
     <PoseOuvertureSvg
       niveau={n}
       type={etat.typeOuverture}
-      premier={etat.trace ?? pointeur}
+      premier={premier}
       pointeur={pointeur}
       mmParPx={mmParPx}
     />

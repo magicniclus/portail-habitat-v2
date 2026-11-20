@@ -90,7 +90,7 @@ export function TracesEnCours({
   return (
     <>
       {curseur && etat.aimant ? <RepereAccroche aimant={curseur} mmParPx={mmParPx} /> : null}
-      {etat.outil === 'objet' || etat.outil === 'ouverture' ? (
+      {etat.outil === 'objet' || etat.outil === 'ouverture' || etat.outil === 'escalier' ? (
         <ApercuPose etat={etat} pointeur={curseur?.point ?? null} mmParPx={mmParPx} />
       ) : etat.outil !== 'selection' ? (
         <TraceEnCours

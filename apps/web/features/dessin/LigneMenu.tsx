@@ -61,3 +61,31 @@ export function Ligne({
     </li>
   );
 }
+
+/**
+ * Sous-section repliable d'un menu (Portes intérieures, Fenêtres…) : titre, nombre d'éléments,
+ * ouverte par défaut. Garde les longues listes lisibles.
+ */
+export function SousSection({
+  titre,
+  nombre,
+  children,
+}: {
+  titre: string;
+  nombre: number;
+  children: ReactNode;
+}) {
+  return (
+    <details open className="group grid">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg px-1 text-[13px] font-bold tracking-wide text-neutre-700 uppercase hover:bg-neutre-100 [&::-webkit-details-marker]:hidden">
+        <CaretRightIcon
+          aria-hidden="true"
+          className="transition-transform duration-150 group-open:rotate-90"
+        />
+        <span className="flex-1">{titre}</span>
+        <span className="text-xs font-semibold text-neutre-600 tabular-nums">{nombre}</span>
+      </summary>
+      <ul className="m-0 grid list-none gap-0.5 p-0 pb-2">{children}</ul>
+    </details>
+  );
+}

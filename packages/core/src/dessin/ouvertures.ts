@@ -122,6 +122,28 @@ export const CATALOGUE_OUVERTURES: Record<
   arche: { libelle: 'Arche', famille: 'libre', largeur: 1000, hauteur: 2200, allege: 0 },
 };
 
+/** Sous-sections du menu Portes & fenêtres : chaque type y figure une fois. */
+export const GROUPES_OUVERTURES: readonly { libelle: string; types: readonly TypeOuverture[] }[] = [
+  {
+    libelle: 'Portes intérieures',
+    types: [
+      'porte',
+      'porte_double',
+      'porte_coulissante',
+      'porte_galandage',
+      'porte_galandage_double',
+      'porte_pivot',
+    ],
+  },
+  { libelle: 'Portes extérieures', types: ['porte_entree', 'porte_garage'] },
+  {
+    libelle: 'Fenêtres',
+    types: ['fenetre', 'fenetre_double', 'fenetre_oscillo', 'fenetre_fixe', 'oeil_de_boeuf'],
+  },
+  { libelle: 'Baies et portes-fenêtres', types: ['porte_fenetre', 'baie_coulissante'] },
+  { libelle: 'Passages', types: ['ouverture_libre', 'arche'] },
+];
+
 /** Mur le plus proche d'un point (à `tolerance` mm près) et position le long de ce mur. */
 export function murSousLePoint(
   murs: readonly Mur[],

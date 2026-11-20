@@ -10,7 +10,12 @@ import {
   versInterieur,
   zonesCoulissement,
 } from './menuiseries';
-import { modifierOuverture, poserOuverture } from './ouvertures';
+import {
+  CATALOGUE_OUVERTURES,
+  GROUPES_OUVERTURES,
+  modifierOuverture,
+  poserOuverture,
+} from './ouvertures';
 const ctx = contexteTest();
 // Maquette : murs de 30 cm, mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150.
 const n = niveauMaquette(ctx);
@@ -170,5 +175,12 @@ describe('couleur de toutes les menuiseries', () => {
     expect(c.ouvertures.map((o) => o.couleur)).toEqual(['#5b3a24', '#5b3a24', undefined]);
     expect(colorerMenuiseries(niv, 'marron')).toMatchObject({ code: 'ENTREE_INVALIDE' });
     expect(colorerMenuiseries(n, '#ffffff')).toMatchObject({ code: 'PRECONDITION' });
+  });
+});
+
+describe('menu Portes & fenêtres', () => {
+  it('sous-sections : chaque type du catalogue figure une fois et une seule', () => {
+    const tous = GROUPES_OUVERTURES.flatMap((g) => g.types);
+    expect([...tous].sort()).toEqual(Object.keys(CATALOGUE_OUVERTURES).sort());
   });
 });
