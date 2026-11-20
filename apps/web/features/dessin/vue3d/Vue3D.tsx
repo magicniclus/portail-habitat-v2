@@ -115,6 +115,7 @@ export default function Vue3D({
         shadow-camera-bottom={-rayon * 1.5}
         shadow-camera-far={rayon * 8}
         shadow-bias={-0.0005}
+        shadow-normalBias={0.03}
         target-position={[centre.x, centre.y, centre.z]}
       />
       {/* Terrain et plan de glisser des meubles, à l'altitude du niveau courant. */}

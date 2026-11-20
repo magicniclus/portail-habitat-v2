@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  contoursRaccordes,
   dallesDuNiveau,
   limonsEscalier,
   marchesEscalier,
@@ -100,7 +101,10 @@ export function Niveau3D({
   /** Vue 3D éditable (niveau courant) : clics de sélection et de pose. */
   clic?: Clic3D | undefined;
 }) {
-  const morceaux = useMemo(() => n.murs.flatMap((m) => morceauxDeMur(m, n)), [n]);
+  const morceaux = useMemo(() => {
+    const contours = contoursRaccordes(n.murs);
+    return n.murs.flatMap((m) => morceauxDeMur(m, n, contours.get(m.id)));
+  }, [n]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
   const escaliers = useMemo(
     () =>

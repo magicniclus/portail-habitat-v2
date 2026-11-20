@@ -1,5 +1,5 @@
 import type { Mur, Point } from '../schemas/dessinScene';
-import { memePoint } from './geometrie';
+import { distancePointSegment, memePoint } from './geometrie';
 import { contourMur } from './murs';
 
 /** Types qui ne se raccordent pas : une séparation est un trait, une poutre passe au-dessus. */
@@ -88,5 +88,31 @@ export function contoursRaccordes(murs: readonly Mur[]): Map<string, Point[]> {
       if (Math.abs(vect(x.sortie, y.sortie)) < SINUS_MIN) continue;
       onglet(x, y, contours);
     }
+  for (const m of pleins) for (const bout of ['a', 'b'] as const) enT(m, bout, pleins, contours);
   return contours;
+}
+
+/**
+ * Jonction en T : l'extrémité libre d'un mur posée sur le milieu d'un autre s'arrête sur la face
+ * de ce mur hôte (coupée en sifflet si elle arrive en biais) au lieu de le traverser.
+ */
+function enT(m: Mur, bout: 'a' | 'b', pleins: readonly Mur[], contours: Map<string, Point[]>) {
+  const p = m[bout];
+  if (bouts(pleins, p).length !== 1) return;
+  const hote = pleins.find(
+    (w) =>
+      w.id !== m.id &&
+      distancePointSegment(p, w.a, w.b) <= 1 &&
+      !memePoint(p, w.a, 1) &&
+      !memePoint(p, w.b, 1),
+  );
+  if (!hote) return;
+  const sortie = unitaire(sous(m[bout === 'a' ? 'b' : 'a'], p));
+  const uw = unitaire(sous(hote.b, hote.a));
+  if (Math.abs(vect(sortie, uw)) < SINUS_MIN) return;
+  // Face de l'hôte tournée vers le mur : côté de sa normale gauche (points 0-1) ou droite (3-2).
+  const ch = contourMur(hote);
+  const face = scal({ x: -uw.y, y: uw.x }, sortie) > 0 ? ch[0]! : ch[3]!;
+  const c = contours.get(m.id)!;
+  for (const i of INDICES[bout]) c[i] = croiser(c[i]!, sortie, face, uw);
 }

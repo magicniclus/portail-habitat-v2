@@ -60,6 +60,31 @@ describe('jonctions des murs en onglet', () => {
     expect(contoursRaccordes(pointe).get('a')).toEqual(contourMur(pointe[0]!));
   });
 
+  it('jonction en T : le mur s’arrête sur la face du mur qu’il rejoint, sans le traverser', () => {
+    const h = mur('h', [0, 0], [4000, 0]);
+    const v = mur('v', [2000, 3000], [2000, 0], 100);
+    const c = contoursRaccordes([h, v]);
+    expect(c.get('h')).toEqual(contourMur(h));
+    const bout = arrondi(c.get('v')!).filter((p) => p.y < 3000);
+    expect(bout).toEqual(
+      expect.arrayContaining([
+        { x: 2050, y: 100 },
+        { x: 1950, y: 100 },
+      ]),
+    );
+    // Mur en biais (45°) : coupé suivant la face, en sifflet.
+    const biais = mur('d', [3000, 1000], [2000, 0], 100);
+    const ys =
+      c &&
+      contoursRaccordes([h, biais])
+        .get('d')!
+        .map((p) => Math.round(p.y));
+    expect(ys.filter((y) => y < 500)).toEqual([100, 100]);
+    // Posé dans l'axe de l'hôte : rien à couper.
+    const axe = mur('x', [1000, 0], [-500, 0]);
+    expect(contoursRaccordes([h, axe]).get('x')).toEqual(contourMur(axe));
+  });
+
   it('séparations et poutres ne se raccordent pas', () => {
     const s = { ...mur('s', [4000, 0], [4000, 3000]), type: 'separation' } as Mur;
     const h = mur('h', [0, 0], [4000, 0]);

@@ -16,6 +16,11 @@ export interface Pave {
 
 export interface MorceauMur extends Pave {
   murId: string;
+  /**
+   * Emprise au sol exacte [gauche début, gauche fin, droite fin, droite début] : aux extrémités
+   * du mur, les angles taillés en onglet ou arrêtés sur un mur en T (aucun recouvrement).
+   */
+  empreinte: Point[];
   faceA: Revetement;
   faceB: Revetement;
 }
@@ -39,6 +44,8 @@ type Trou = { de: number; a: number; bas: number; haut: number };
 export function morceauxDeMur(
   m: Mur,
   n: Pick<Niveau, 'ouvertures' | 'altitude' | 'hauteurSousPlafond'>,
+  /** Contour raccordé du mur (`contoursRaccordes`) ; sinon rectangle débordant aux bouts. */
+  contour?: readonly Point[],
 ): MorceauMur[] {
   const L = longueurMur(m);
   if (L === 0 || m.type === 'separation') return [];
@@ -57,10 +64,29 @@ export function morceauxDeMur(
     .sort((x, y) => x.de - y.de);
   // Une poutre est suspendue sous le plafond : sa « hauteur » est sa retombée.
   const z0 = n.altitude + (m.type === 'poutre' ? n.hauteurSousPlafond - m.hauteur : 0);
+  // Lignes des deux faces (même décalage que `contourMur`).
+  const [gauche, droite] =
+    m.alignement === 'gauche'
+      ? [m.epaisseur, 0]
+      : m.alignement === 'droite'
+        ? [0, m.epaisseur]
+        : [m.epaisseur / 2, m.epaisseur / 2];
+  const sur = (s: number, d: number) => ({
+    x: m.a.x + u.x * s - u.y * d,
+    y: m.a.y + u.y * s + u.x * d,
+  });
+  const empreinte = (de: number, a: number): Point[] => {
+    const debut =
+      contour && de <= -deb ? [contour[0]!, contour[3]!] : [sur(de, gauche), sur(de, -droite)];
+    const fin =
+      contour && a >= L + deb ? [contour[1]!, contour[2]!] : [sur(a, gauche), sur(a, -droite)];
+    return [debut[0]!, fin[0]!, fin[1]!, debut[1]!];
+  };
   const pave = (de: number, a: number, bas: number, haut: number): MorceauMur => {
     const milieu = (de + a) / 2;
     return {
       murId: m.id,
+      empreinte: empreinte(de, a),
       faceA: m.faceA,
       faceB: m.faceB,
       angle,

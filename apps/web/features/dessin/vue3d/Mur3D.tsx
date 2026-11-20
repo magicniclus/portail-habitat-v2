@@ -9,6 +9,7 @@ import type { Material, Mesh, Vector3 } from 'three';
 import type { Clic3D } from './clic3d';
 import { devantLaCamera, HAUTEUR_POUPEE as POUPEE } from './poupee';
 import { materiauRevetement, materiauUni } from './textures';
+import { geometrieMur } from './geometrieMur';
 import { M } from './unites';
 
 /** Opacité des murs en mode transparent : on voit au travers, la matière reste lisible. */
@@ -24,7 +25,8 @@ const translucide = (m: Material) => {
 };
 
 /**
- * Morceau de mur : face A (+z local) et face B (-z) avec leur revêtement, tranches neutres.
+ * Morceau de mur : face A (côté de la normale gauche) et face B avec leur revêtement, tranches
+ * neutres.
  * En maison de poupée, un mur tourné vers la caméra descend à 90 cm (DES-33). Murs
  * transparents : translucides, avec un contour net pour les distinguer.
  */
@@ -44,6 +46,12 @@ export function MorceauMur3D({
 }) {
   const choisi = clic?.selection?.genre === 'mur' && clic.selection.id === m.murId;
   const ref = useRef<Mesh>(null);
+  // Prisme exact (angles en onglet, T arrêtés sur la face) : aucune face confondue qui scintille.
+  const geometrie = useMemo(
+    () => geometrieMur(m.empreinte, m.centre, m.taille.h),
+    [m.empreinte, m.centre, m.taille.h],
+  );
+  useEffect(() => () => geometrie.dispose(), [geometrie]);
   const materiaux = useMemo(() => {
     const tranche = materiauUni(COULEURS_3D.tranche);
     const faces = [
@@ -80,7 +88,7 @@ export function MorceauMur3D({
     <mesh
       ref={ref}
       position={[M(m.centre.x), M(m.centre.z), M(m.centre.y)]}
-      rotation={[0, -m.angle, 0]}
+      geometry={geometrie}
       castShadow={!transparent}
       receiveShadow
       material={materiaux}
@@ -95,7 +103,6 @@ export function MorceauMur3D({
           : undefined
       }
     >
-      <boxGeometry args={[M(m.taille.l), M(m.taille.h), M(m.taille.p)]} />
       {choisi ? (
         <Edges color={COULEURS_PLAN.murSelection} lineWidth={3} />
       ) : transparent ? (

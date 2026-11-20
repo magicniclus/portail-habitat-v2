@@ -6,6 +6,7 @@ import { poserEscalier } from './escaliers';
 import { poserOuverture } from './ouvertures';
 import { directionSoleil } from './soleil';
 import { limonsEscalier, marchesEscalier } from './escaliers3d';
+import { contoursRaccordes } from './raccords';
 import { dallesDuNiveau, morceauxDeMur } from './volumes';
 const ctx = contexteTest();
 const n = niveauMaquette(ctx);
@@ -94,6 +95,21 @@ describe('géométrie 3D (DES-33)', () => {
     expect(dernier.centre.z + dernier.taille.h / 2).toBeLessThan(2_700);
     // Béton : marches plus épaisses.
     expect(marchesEscalier({ ...ouvert, materiau: 'beton' }, 0)[3]!.taille.h).toBe(80);
+  });
+
+  it('emprise exacte : angles en onglet aux extrémités, coupes droites autour des baies', () => {
+    const contours = contoursRaccordes(n.murs);
+    const m = n.murs[0]!;
+    const avec = ok(poserOuverture(n, { murId: m.id, type: 'fenetre', centre: 3000 }, ctx));
+    const morceaux = morceauxDeMur(m, avec, contours.get(m.id));
+    const c = contours.get(m.id)!;
+    expect(morceaux[0]!.empreinte[0]).toEqual(c[0]);
+    expect(morceaux[0]!.empreinte[3]).toEqual(c[3]);
+    expect(morceaux.at(-1)!.empreinte[1]).toEqual(c[1]);
+    // Sans contour : rectangle débordant d'une demi-épaisseur (comportement d'origine).
+    const brut = morceauxDeMur(m, n);
+    expect(brut).toHaveLength(1);
+    expect(brut[0]!.empreinte).toHaveLength(4);
   });
 
   it('chaque meuble du catalogue a un volume dans ses dimensions', () => {
