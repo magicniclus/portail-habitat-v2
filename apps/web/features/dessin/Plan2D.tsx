@@ -11,7 +11,8 @@ import { AnnotationsSvg } from './AnnotationsSvg';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { useEffect, useMemo, useRef, useState, type Dispatch } from 'react';
 import { EtiquettesPieces, MursSvg, PiecesSvg } from './CalquesPlan';
-import { Cotes, TracesEnCours } from './Mesures';
+import { Cotes } from './CotesSvg';
+import { TracesEnCours } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
@@ -169,7 +170,7 @@ export function Plan2D({
               <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
               <GuidesSvg guides={etat.guides} />
               {etat.calques.cotes ? (
-                <Cotes niveau={n} mmParPx={mmParPx} dispatch={d} cliquables={!trace} />
+                <Cotes niveau={n} etat={etat} mmParPx={mmParPx} dispatch={d} />
               ) : null}
               <EtiquettesPieces niveau={n} etat={etat} mmParPx={mmParPx} />
               {calques.annotations ? (

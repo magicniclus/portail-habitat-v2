@@ -1,77 +1,17 @@
 'use client';
 
 import {
+  coinZone,
   distance,
   formatLongueur,
-  longueurMur,
   milieu,
   type Aimantage,
-  type Niveau,
   type Point,
 } from '@ph/core/dessin';
-import { COULEURS_PLAN } from '@ph/ui/tokens';
-import type { Dispatch } from 'react';
-import type { Action, EtatEditeur } from './etat';
+import { niveauDe, type EtatEditeur } from './etat';
 import { ApercuPose } from './PoseObjetSvg';
 import { RepereAccroche } from './GuidesSvg';
 import { points } from './svg';
-
-/** Cotes des murs : longueur sur l'axe, cliquable pour la modifier (DES-10). */
-export function Cotes({
-  niveau,
-  mmParPx,
-  dispatch,
-  cliquables,
-}: {
-  niveau: Niveau;
-  mmParPx: number;
-  dispatch: Dispatch<Action>;
-  /** Hors de l'outil Sélection, les étiquettes laissent passer les clics du tracé. */
-  cliquables: boolean;
-}) {
-  const taille = 12 * mmParPx;
-  return niveau.murs
-    .filter((m) => m.type !== 'separation' && m.type !== 'poteau')
-    .map((m) => {
-      const l = longueurMur(m);
-      const c = milieu(m.a, m.b);
-      const d = m.epaisseur / 2 + 16 * mmParPx;
-      const p = { x: c.x + (-(m.b.y - m.a.y) / l) * d, y: c.y + ((m.b.x - m.a.x) / l) * d };
-      const texte = formatLongueur(l);
-      return (
-        <g
-          key={m.id}
-          pointerEvents={cliquables ? undefined : 'none'}
-          className="cursor-pointer"
-          onPointerDown={(ev) => {
-            ev.stopPropagation();
-            dispatch({ type: 'selectionner', selection: { genre: 'mur', id: m.id } });
-          }}
-        >
-          <rect
-            x={p.x - texte.length * taille * 0.3}
-            y={p.y - taille * 0.75}
-            width={texte.length * taille * 0.6}
-            height={taille * 1.5}
-            rx={taille * 0.75}
-            fill={COULEURS_PLAN.etiquette}
-            stroke={COULEURS_PLAN.etiquetteTrait}
-            vectorEffect="non-scaling-stroke"
-          />
-          <text
-            x={p.x}
-            y={p.y + taille * 0.35}
-            fontSize={taille}
-            textAnchor="middle"
-            fill={COULEURS_PLAN.cote}
-            className="font-semibold select-none"
-          >
-            {texte}
-          </text>
-        </g>
-      );
-    });
-}
 
 /**
  * Segment ou rectangle en cours. Un rectangle (pièce, zone, terrasse, allée, parcelle) affiche
@@ -99,8 +39,8 @@ function TraceEnCours({
           y={Math.min(a.y, curseur.y)}
           width={Math.abs(curseur.x - a.x)}
           height={Math.abs(curseur.y - a.y)}
-          fill="none"
-          className="stroke-accent"
+          className="fill-accent-100 stroke-accent"
+          fillOpacity={0.6}
           strokeWidth={3}
           vectorEffect="non-scaling-stroke"
         />
@@ -155,7 +95,11 @@ export function TracesEnCours({
       ) : etat.outil !== 'selection' ? (
         <TraceEnCours
           a={etat.trace}
-          curseur={curseur?.point ?? null}
+          curseur={
+            etat.outil === 'zone' && etat.trace && curseur
+              ? coinZone(niveauDe(etat), etat.trace, curseur.point)
+              : (curseur?.point ?? null)
+          }
           rectangle={traceRectangle(etat)}
           mmParPx={mmParPx}
         />
