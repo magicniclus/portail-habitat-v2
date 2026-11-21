@@ -59,3 +59,18 @@
     transform: translateX(0);
   }
 }
+
+/* Curseurs du plan 2D (Plans) — spécificité nulle (:where) : les classes d'un élément gagnent.
+   Sélection : la main sur tout ce qu'on peut choisir. Outil de tracé : la croix partout, même
+   au-dessus d'un élément. Geste en cours (glisser, tirer une poignée) : la main fermée. */
+:where(.plan-selection) :where([role='button']) {
+  cursor: pointer;
+}
+:where(.plan-trace),
+:where(.plan-trace) :where(*) {
+  cursor: crosshair;
+}
+.plan-geste,
+.plan-geste * {
+  cursor: grabbing !important;
+}

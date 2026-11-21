@@ -32,7 +32,7 @@ export function Panneau({
     <section
       aria-label={titre}
       aria-hidden={sortie || undefined}
-      className={`${animation} flex w-[300px] flex-none flex-col bg-blanc max-[899px]:absolute max-[899px]:right-[60px] max-[899px]:bottom-0 max-[899px]:left-[76px] max-[899px]:z-20 max-[899px]:max-h-[60dvh] max-[899px]:w-auto max-[899px]:rounded-t-2xl max-[899px]:border-t max-[899px]:border-trait max-[899px]:shadow-[0_-8px_24px_rgb(0_0_0/0.12)] ${gauche ? 'border-r border-trait' : 'border-l border-trait'}`}
+      className={`${animation} flex w-[300px] flex-none flex-col bg-blanc max-[899px]:absolute max-[899px]:right-[60px] max-[899px]:bottom-0 max-[899px]:left-[76px] max-[899px]:z-20 max-[899px]:h-[60dvh] max-[899px]:w-auto max-[899px]:rounded-t-2xl max-[899px]:border-t max-[899px]:border-trait max-[899px]:shadow-[0_-8px_24px_rgb(0_0_0/0.12)] ${gauche ? 'border-r border-trait' : 'border-l border-trait'}`}
     >
       {/* Poignée de la feuille du bas (téléphone). */}
       <span

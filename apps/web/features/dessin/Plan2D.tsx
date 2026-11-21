@@ -16,6 +16,7 @@ import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
+import { ParcelleSvg } from './ParcelleSvg';
 import { FondSvg } from './FondSvg';
 import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
 import type { FondCharge } from './useFond';
@@ -107,7 +108,7 @@ export function Plan2D({
           height={camera.taille.h}
           viewBox={`${vue.x} ${vue.y} ${vue.l} ${vue.h}`}
           data-cadre={Object.values(cadreDe(n, parcelle)).join(' ')}
-          className={`absolute inset-0 select-none ${trace ? 'cursor-crosshair' : ''}`}
+          className={`absolute inset-0 select-none ${trace ? 'plan-trace' : 'plan-selection'} ${glisser.actif ? 'plan-geste' : ''}`}
           onPointerDownCapture={multi.capter}
           onPointerMove={(ev) => defil.suivre(ev, bouger)}
           onPointerDown={(ev) => {
@@ -134,11 +135,13 @@ export function Plan2D({
             {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
             <DefsMotifs niveau={n} mmParPx={mmParPx} />
-            <ExterieurSvg
-              niveau={n}
-              parcelle={scene.terrain?.parcelle ?? null}
+            <ExterieurSvg niveau={n} etat={etat} dispatch={d} />
+            <ParcelleSvg
+              parcelle={parcelle ?? null}
               etat={etat}
               dispatch={d}
+              mmParPx={mmParPx}
+              {...g}
             />
             <PiecesSvg niveau={n} etat={etat} dispatch={d} />
             <ZonesSvg niveau={n} etat={etat} dispatch={d} />

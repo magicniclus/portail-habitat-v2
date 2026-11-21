@@ -10,11 +10,11 @@ import {
   type CategorieObjet,
   type ObjetCatalogue,
 } from '@ph/core/dessin';
-import { CaretLeftIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { CaretLeftIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 import { ApercuObjet } from './Apercus';
-import { Ligne, ligne } from './LigneMenu';
+import { Ligne } from './LigneMenu';
 
 const cm = (mm: number) => Math.round(mm / 10);
 
@@ -107,17 +107,18 @@ export function EquiperMenu({ etat, dispatch }: { etat: EtatEditeur; dispatch: D
         </div>
       ) : (
         <ul className="m-0 grid list-none gap-0.5 p-0">
-          {CATEGORIES_OBJETS.map((c) => (
-            <li key={c}>
-              <button type="button" className={ligne} onClick={() => setCategorie(c)}>
-                <span className="flex-1 font-semibold">{LIBELLES_CATEGORIE[c]}</span>
-                <span className="text-[13px] text-neutre-700">
-                  {CATALOGUE_OBJETS.filter((o) => o.categorie === c).length}
-                </span>
-                <CaretRightIcon aria-hidden="true" />
-              </button>
-            </li>
-          ))}
+          {CATEGORIES_OBJETS.map((c) => {
+            const objets = CATALOGUE_OBJETS.filter((o) => o.categorie === c);
+            return (
+              <Ligne
+                key={c}
+                titre={LIBELLES_CATEGORIE[c]}
+                detail={`${objets.length} élément${objets.length > 1 ? 's' : ''}`}
+                apercu={objets[0] ? <ApercuObjet o={objets[0]} /> : undefined}
+                onClick={() => setCategorie(c)}
+              />
+            );
+          })}
         </ul>
       )}
     </div>

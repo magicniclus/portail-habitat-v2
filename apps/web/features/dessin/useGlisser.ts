@@ -1,10 +1,18 @@
 'use client';
 
 import { arrondir, distance, type Niveau, type Point } from '@ph/core/dessin';
-import { useCallback, useLayoutEffect, useRef, type Dispatch, type PointerEvent } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type PointerEvent,
+} from 'react';
 import type { Action } from './etat';
 
-type Genre = 'mur' | 'objet' | 'extremite' | 'ouverture' | 'bordOuverture';
+type Genre =
+  'mur' | 'objet' | 'extremite' | 'ouverture' | 'bordOuverture' | 'parcelle' | 'sommetParcelle';
 
 /**
  * Glisser un mur (parallèlement, par pas), une porte ou fenêtre (le long de son mur) ou un objet (vers la position du pointeur, placé
@@ -26,10 +34,14 @@ export function useGlisser(
     decalage: Point;
   } | null>(null);
 
+  /** Un geste est en cours : le plan montre la main fermée jusqu'au relâcher. */
+  const [actif, setActif] = useState(false);
   return {
+    actif,
     demarrer(genre: Genre, id: string, ev: PointerEvent) {
       const p = versMm(ev);
       if (!p || (trace && genre !== 'ouverture' && genre !== 'bordOuverture')) return;
+      setActif(true);
       (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
       const o = genre === 'objet' ? n.objets.find((x) => x.id === id) : undefined;
       geste.current = {
@@ -51,7 +63,15 @@ export function useGlisser(
       else if (g.genre === 'bordOuverture') {
         const [id, bord] = g.id.split(':') as [string, 'debut' | 'fin'];
         dispatch({ type: 'glisserOuverture', id, bord, vers, geste: g.cle });
-      } else if (g.genre === 'extremite') {
+      } else if (g.genre === 'sommetParcelle')
+        dispatch({ type: 'sommetParcelle', i: Number(g.id), vers, geste: g.cle });
+      else if (g.genre === 'parcelle')
+        dispatch({
+          type: 'deplacerParcelle',
+          delta: { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y },
+          geste: g.cle,
+        });
+      else if (g.genre === 'extremite') {
         const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
         dispatch({ type: 'deplacerExtremite', murId, extremite: bout, vers, geste: g.cle });
       } else if (g.genre === 'mur')
@@ -75,6 +95,7 @@ export function useGlisser(
     finir() {
       if (!geste.current) return;
       geste.current = null;
+      setActif(false);
       dispatch({ type: 'finGeste' });
     },
   };
@@ -103,6 +124,14 @@ export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
     demarrerBordOuverture: useCallback(
       (id: string, bord: 'debut' | 'fin', ev: PointerEvent) =>
         courant.current.demarrer('bordOuverture', `${id}:${bord}`, ev),
+      [],
+    ),
+    demarrerParcelle: useCallback(
+      (ev: PointerEvent) => courant.current.demarrer('parcelle', 'parcelle', ev),
+      [],
+    ),
+    demarrerSommetParcelle: useCallback(
+      (i: number, ev: PointerEvent) => courant.current.demarrer('sommetParcelle', String(i), ev),
       [],
     ),
     demarrerExtremite: useCallback(

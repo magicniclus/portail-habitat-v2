@@ -61,7 +61,9 @@ type GenreSelection =
   | 'cloture'
   | 'vegetal'
   | 'cote'
-  | 'texte';
+  | 'texte'
+  | 'parcelle'
+  | 'allee';
 /** Éléments posés avec l'outil « extérieur » (DES-18 à DES-20). */
 export type ElementExterieur =
   'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
@@ -181,6 +183,10 @@ export type Action =
     }
   | { type: 'supprimerExterieur'; genre: GenreExterieur; id: string }
   | { type: 'parcelleAutour' }
+  /** Parcelle retouchée (DES-19) : un coin tiré, toute la parcelle déplacée, un angle ajouté. */
+  | { type: 'sommetParcelle'; i: number; vers: Point; geste?: string }
+  | { type: 'deplacerParcelle'; delta: Point; geste?: string }
+  | { type: 'ajouterSommetParcelle'; apres: number; point: Point }
   | { type: 'implanter'; parcelle: ParcelleCadastre }
   | { type: 'ajusterImplantation'; decalage?: Point; rotation?: number }
   | { type: 'terrasseAutour'; piscineId: string }

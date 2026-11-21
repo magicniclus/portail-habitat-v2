@@ -53,14 +53,25 @@ export function usePanoramique(conteneur: RefObject<HTMLDivElement | null>, mote
       setEnCours(false);
     };
     const espaceTenu = { current: false };
+    // La barre d'espace ne vaut « main » qu'avec le pointeur sur le plan, et jamais quand un
+    // bouton ou un champ ailleurs a le focus (elle doit alors l'activer ou taper une espace).
+    const survol = { current: false };
+    const entre = () => void (survol.current = true);
+    const sort = () => void (survol.current = false);
     const touche = (ev: KeyboardEvent) => {
       if (ev.key !== ' ' || dansUnChamp(ev.target)) return;
       const tenu = ev.type === 'keydown';
+      const ailleurs =
+        ev.target instanceof Element && ev.target !== document.body && !el.contains(ev.target);
+      if (tenu && (!survol.current || ailleurs)) return;
+      if (!tenu && !espaceTenu.current) return;
       if (tenu) ev.preventDefault();
       espaceTenu.current = tenu;
       setEspace(tenu);
     };
     el.addEventListener('pointerdown', bas, { capture: true });
+    el.addEventListener('pointerenter', entre);
+    el.addEventListener('pointerleave', sort);
     window.addEventListener('pointermove', bouge);
     window.addEventListener('pointerup', haut);
     window.addEventListener('pointercancel', haut);
@@ -68,6 +79,8 @@ export function usePanoramique(conteneur: RefObject<HTMLDivElement | null>, mote
     window.addEventListener('keyup', touche);
     return () => {
       el.removeEventListener('pointerdown', bas, { capture: true });
+      el.removeEventListener('pointerenter', entre);
+      el.removeEventListener('pointerleave', sort);
       window.removeEventListener('pointermove', bouge);
       window.removeEventListener('pointerup', haut);
       window.removeEventListener('pointercancel', haut);

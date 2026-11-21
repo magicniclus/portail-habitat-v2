@@ -1,4 +1,4 @@
-import { contourPiscine, type Niveau, type Point } from '@ph/core/dessin';
+import { contourPiscine, type Niveau } from '@ph/core/dessin';
 import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
@@ -6,17 +6,15 @@ import { remplissage } from './Motifs';
 import { activer, points } from './svg';
 
 const trait = { vectorEffect: 'non-scaling-stroke' as const, strokeWidth: 1.5 };
-type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal';
+type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal' | 'allee';
 
 /** Extérieur vu de dessus (DES-18 à DES-20) : sous la maison, sélectionnable. */
 export function ExterieurSvg({
   niveau,
-  parcelle,
   etat,
   dispatch,
 }: {
   niveau: Niveau;
-  parcelle: Point[] | null;
   etat: EtatEditeur;
   dispatch: Dispatch<Action>;
 }) {
@@ -41,23 +39,14 @@ export function ExterieurSvg({
   };
   return (
     <g>
-      {parcelle ? (
-        <polygon
-          points={points(parcelle)}
-          fill="none"
-          stroke={C.parcelle}
-          strokeDasharray="12 6"
-          pointerEvents="none"
-          {...trait}
-        />
-      ) : null}
       {ext.allees.map((a, i) => (
         <polygon
           key={`a${i}`}
           points={points(a)}
           fill={C.allee}
-          stroke="none"
-          pointerEvents="none"
+          stroke={choisi('allee', String(i)) ? undefined : 'none'}
+          {...trait}
+          {...cliquable('allee', String(i), 'Allée')}
         />
       ))}
       {ext.terrasses.map((t) => (

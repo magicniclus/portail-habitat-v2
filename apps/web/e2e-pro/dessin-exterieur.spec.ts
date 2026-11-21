@@ -49,6 +49,27 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     await page.getByRole('button', { name: 'Parcelle autour de la maison' }).click();
     // Le cadre englobe maintenant la parcelle : on l'ajuste à l'écran.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    // La parcelle se retouche après la pose : on la choisit par sa limite, on tire un coin.
+    if (page.viewportSize()!.width >= 900) {
+      await page
+        .getByRole('toolbar', { name: 'Outils du plan' })
+        .getByRole('button', { name: 'Sélectionner' })
+        .click();
+      await page.waitForTimeout(400);
+      const limite = (await plan
+        .getByRole('button', { name: 'Parcelle', exact: true })
+        .boundingBox())!;
+      await page.mouse.click(limite.x + 2, limite.y + limite.height / 2);
+      const surface = page.getByRole('region', { name: 'Propriétés' }).getByText(/m²$/).first();
+      await expect(surface).toBeVisible();
+      const avant = await surface.textContent();
+      const coin = (await plan.getByTestId('coin-parcelle-0').boundingBox())!;
+      await page.mouse.move(coin.x + coin.width / 2, coin.y + coin.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(coin.x - 30, coin.y - 30, { steps: 6 });
+      await page.mouse.up();
+      await expect(surface).not.toHaveText(avant!);
+    }
 
     // DES-18 : terrasse à l'ouest (collée à la façade), surélevée de 60 cm avec garde-corps.
     await exterieur('Terrasse');

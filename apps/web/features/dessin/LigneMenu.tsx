@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 const base =
   'flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-[10px] border-2 px-2.5 py-2 text-left font-[inherit] text-texte transition-colors duration-150';
 const repos = 'border-transparent bg-blanc hover:bg-neutre-100';
-export const ligne = `${base} ${repos}`;
+
 const etatLigne = (oui: boolean) => `${base} ${oui ? 'border-accent bg-accent-100' : repos}`;
 
 /** Pastille d'un outil : vide, ou pleine avec une coche quand l'outil est sélectionné. */

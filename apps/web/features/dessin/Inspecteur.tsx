@@ -17,6 +17,7 @@ import type { Dispatch } from 'react';
 import { contexteNavigateur, niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { inspecteurAmenagement } from './InspecteurAmenagement';
 import { inspecteurExterieur } from './InspecteurExterieur';
+import { inspecteurParcelle } from './InspecteurParcelle';
 import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
 import { InspecteurMur } from './InspecteurMur';
 import { ResumeFinitions } from './ResumeFinitions';
@@ -127,6 +128,7 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
   const amenagement =
     inspecteurAmenagement(etat, dispatch) ??
     inspecteurExterieur(etat, dispatch) ??
+    inspecteurParcelle(etat, dispatch) ??
     inspecteurAnnotation(etat, dispatch);
   if (amenagement) return amenagement;
   return (

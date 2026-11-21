@@ -13,7 +13,7 @@ import { SymboleObjetSvg } from './SymboleObjet';
 import { Symbole } from './SymboleOuverture';
 
 /** Vignette carrée devant une ligne de menu : ce qu'on va poser, vu comme sur le plan. */
-function Vignette({ vue, children }: { vue: string; children: ReactNode }) {
+export function Vignette({ vue, children }: { vue: string; children: ReactNode }) {
   return (
     <svg
       viewBox={vue}

@@ -11,7 +11,18 @@ import {
 import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
 import { ApercuMur, ApercuOuverture } from './Apercus';
+import { ApercuEscalier } from './ApercusEscalier';
 import { Ligne, SousSection } from './LigneMenu';
+
+/** Ce qui distingue chaque escalier (les marches se calculent toujours pour monter d'un niveau). */
+const DETAILS_ESCALIER: Record<TypeEscalier, string> = {
+  droit: 'Une volée, le plus simple',
+  quart_bas: 'Tourne d’un quart au départ',
+  quart_haut: 'Tourne d’un quart à l’arrivée',
+  deux_quarts: 'Demi-tour : gagne de la place',
+  helicoidal: 'En colimaçon, le plus compact',
+  meunier: 'Pente raide, très peu de place',
+};
 
 const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'mur', libelle: LIBELLES_MUR.mur, detail: 'Épaisseur 20 cm' },
@@ -86,11 +97,8 @@ export function ListeOutilsStructure({
         <Ligne
           key={t}
           titre={LIBELLES_ESCALIER[t]}
-          detail={
-            t === 'meunier'
-              ? 'Pente raide, peu de place'
-              : 'Marches calculées pour monter d’un niveau'
-          }
+          detail={DETAILS_ESCALIER[t]}
+          apercu={<ApercuEscalier type={t} />}
           pressee={etat.outil === 'escalier' && etat.typeEscalier === t}
           onClick={() => dispatch({ type: 'outil', outil: 'escalier', typeEscalier: t })}
         />

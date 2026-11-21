@@ -1,27 +1,32 @@
 'use client';
 
-import { pointDansPolygone } from '@ph/core/dessin';
+import { aire, formatSurface, pointDansPolygone } from '@ph/core/dessin';
 import { Button, Field, Select } from '@ph/ui';
 import type { Dispatch, ReactNode } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ReglagesPiscine, ReglagesTerrasse } from './ReglagesExterieur';
 import { ChampMesure } from './ChampMesure';
-import { surtitre } from './blocs';
+import { Info, surtitre } from './blocs';
 
-type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal';
+type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal' | 'allee';
 const titre = surtitre;
 
 /** Inspecteur de l'extérieur (DES-18 à DES-20) : terrasse, piscine, clôture, végétal. */
 export function inspecteurExterieur(etat: EtatEditeur, dispatch: Dispatch<Action>): ReactNode {
   const s = etat.selection;
-  if (!s || !['terrasse', 'piscine', 'cloture', 'vegetal'].includes(s.genre)) return null;
+  if (!s || !['terrasse', 'piscine', 'cloture', 'vegetal', 'allee'].includes(s.genre)) return null;
   const genre = s.genre as Genre;
   const ext = niveauDe(etat).exterieur;
   const modifier = (modif: Record<string, unknown>) =>
-    dispatch({ type: 'modifierExterieur', genre, id: s.id, modif });
+    genre !== 'allee' && dispatch({ type: 'modifierExterieur', genre, id: s.id, modif });
   let corps: ReactNode = null;
   let nom = '';
-  if (genre === 'terrasse') {
+  if (genre === 'allee') {
+    const a = ext.allees[Number(s.id)];
+    if (!a) return null;
+    nom = 'Allée';
+    corps = <Info libelle="Surface" valeur={formatSurface(Math.round(aire(a)))} />;
+  } else if (genre === 'terrasse') {
     const t = ext.terrasses.find((x) => x.id === s.id);
     if (!t) return null;
     nom = 'Terrasse';

@@ -37,7 +37,7 @@ const AIDES: Partial<Record<Sous, string>> = {
   ouvertures:
     'Cliquez sur un mur à un bord, puis à l’autre bord : la largeur suit. Le côté du mur où vous cliquez donne le sens d’ouverture. Double-clic : taille standard.',
   escaliers:
-    'Choisissez un type puis cliquez sur le plan. Il monte vers le niveau du dessus ; la trémie y apparaît.',
+    'Choisissez un type puis cliquez sur le plan. Les marches sont calculées pour monter au niveau du dessus, où la trémie apparaît.',
 };
 
 /** Menu Structure (DES-06 à DES-15) : murs, ouvertures, escaliers, niveaux, plan importé. */

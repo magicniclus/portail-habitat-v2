@@ -23,6 +23,7 @@ import {
   supprimerObjet,
   supprimerOuverture,
   supprimerExterieur,
+  supprimerParcelle,
   supprimerZone,
   toleranceEnMm,
   type Niveau,
@@ -123,7 +124,9 @@ function supprimerSelection(e: EtatEditeur, confirme: boolean): EtatEditeur {
       ...surNiveau(e, (n) => supprimerAnnotation(n, s.genre as 'cote', s.id)),
       selection: null,
     };
+  if (s.genre === 'parcelle') return { ...surScene(e, supprimerParcelle), selection: null };
   if (
+    s.genre === 'allee' ||
     s.genre === 'terrasse' ||
     s.genre === 'piscine' ||
     s.genre === 'cloture' ||
