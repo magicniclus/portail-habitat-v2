@@ -4,7 +4,7 @@ import { CaretRightIcon, CheckIcon } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 
 const base =
-  'flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-[10px] border-2 px-2.5 py-2 text-left font-[inherit] text-texte';
+  'flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-[10px] border-2 px-2.5 py-2 text-left font-[inherit] text-texte transition-colors duration-150';
 const repos = 'border-transparent bg-blanc hover:bg-neutre-100';
 export const ligne = `${base} ${repos}`;
 const etatLigne = (oui: boolean) => `${base} ${oui ? 'border-accent bg-accent-100' : repos}`;
@@ -85,7 +85,9 @@ export function SousSection({
         <span className="flex-1">{titre}</span>
         <span className="text-xs font-semibold text-neutre-600 tabular-nums">{nombre}</span>
       </summary>
-      <ul className="m-0 grid list-none gap-0.5 p-0 pb-2">{children}</ul>
+      <ul className="m-0 grid list-none gap-0.5 p-0 pb-2 group-open:animate-[fondu_.2s_ease-out]">
+        {children}
+      </ul>
     </details>
   );
 }

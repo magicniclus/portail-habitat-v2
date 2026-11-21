@@ -53,9 +53,23 @@ export function ZoomCamera({ zoom }: { zoom: number }) {
     const etat = lire();
     const controles = etat.controls as unknown as { target: Vector3; update: () => void } | null;
     if (!controles) return;
-    const vers = etat.camera.position.clone().sub(controles.target).divideScalar(rapport);
-    etat.camera.position.copy(controles.target).add(vers);
-    controles.update();
+    // La caméra glisse vers sa nouvelle distance (≈ 0,3 s) au lieu d'y sauter.
+    const depart = etat.camera.position.clone();
+    const arrivee = controles.target
+      .clone()
+      .add(depart.clone().sub(controles.target).divideScalar(rapport));
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const debut = performance.now();
+    let image = 0;
+    const pas = (t: number) => {
+      const k = reduit ? 1 : Math.min(1, (t - debut) / 300);
+      const doux = 1 - (1 - k) ** 3;
+      etat.camera.position.lerpVectors(depart, arrivee, doux);
+      controles.update();
+      if (k < 1) image = requestAnimationFrame(pas);
+    };
+    image = requestAnimationFrame(pas);
+    return () => cancelAnimationFrame(image);
   }, [zoom, lire]);
   return null;
 }

@@ -14,7 +14,13 @@ export default defineConfig({
   // Les tests partagent les données du seed : pas de parallélisme entre fichiers qui écrivent.
   fullyParallel: false,
   workers: 1,
-  use: { ...base.use, baseURL: `http://localhost:${port}` },
+  // Animations réduites : les tests cliquent à des positions précises, sans attendre la fin des
+  // transitions (zoom, recentrage). Les animations elles-mêmes ne sont pas testées ici.
+  use: {
+    ...base.use,
+    baseURL: `http://localhost:${port}`,
+    contextOptions: { reducedMotion: 'reduce' },
+  },
   projects: [
     { name: 'iphone-13', use: { ...devices['iPhone 13'], ...moteur } },
     {

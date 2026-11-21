@@ -71,14 +71,15 @@ export function EspaceDeTravail(p: {
     return () => document.removeEventListener('keydown', ecouter);
   }, []);
   usePanneauxTelephone(telephone, etat, dispatch);
-  useEffect(() => {
-    dispatch({ type: 'ajuster' });
-  }, [etat.menu, etat.proprietes]);
-
   const [versions, setVersions] = useState(false);
   // Panneaux animés : gardés le temps de leur sortie.
   const menu = usePresence(etat.menu);
   const proprietes = usePresence(etat.proprietes || null);
+  // Recadrer quand un panneau s'ouvre ou a fini de se fermer (sa place est libérée).
+  const ouverts = `${Boolean(menu.rendu)}-${Boolean(proprietes.rendu)}`;
+  useEffect(() => {
+    dispatch({ type: 'ajuster' });
+  }, [ouverts]);
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
     if (!r.ok) return;
@@ -122,19 +123,25 @@ export function EspaceDeTravail(p: {
             </Panneau>
           ) : null}
           <main className="relative min-w-0 flex-1">
-            {etat.vue === 'plan' && etat.vueExterieure ? (
-              <VueDessus etat={etat} dispatch={dispatch} />
-            ) : etat.vue === 'plan' ? (
-              <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
-            ) : etat.vue === 'visite' ? (
-              <Visite etat={etat} />
-            ) : etat.vue === 'facades' ? (
-              <Facades etat={etat} dispatch={dispatch} />
-            ) : etat.vue === 'photo' ? (
-              <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
-            ) : (
-              <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
-            )}
+            {/* Changement de vue : fondu léger plutôt qu'un saut. */}
+            <div
+              key={`${etat.vue}-${etat.vueExterieure}`}
+              className="h-full animate-[fondu_.25s_ease-out]"
+            >
+              {etat.vue === 'plan' && etat.vueExterieure ? (
+                <VueDessus etat={etat} dispatch={dispatch} />
+              ) : etat.vue === 'plan' ? (
+                <Plan2D etat={etat} dispatch={dispatch} fond={fond} ortho={ortho} />
+              ) : etat.vue === 'visite' ? (
+                <Visite etat={etat} />
+              ) : etat.vue === 'facades' ? (
+                <Facades etat={etat} dispatch={dispatch} />
+              ) : etat.vue === 'photo' ? (
+                <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
+              ) : (
+                <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
+              )}
+            </div>
             <Bandeaux
               etat={etat}
               dispatch={dispatch}
@@ -150,7 +157,12 @@ export function EspaceDeTravail(p: {
               replier={() => dispatch({ type: 'proprietes', ouvert: false })}
               sortie={proprietes.sortie}
             >
-              <Inspecteur etat={etat} dispatch={dispatch} />
+              <div
+                key={`${etat.selection?.genre}-${etat.selection?.id}`}
+                className="animate-[fondu_.2s_ease-out]"
+              >
+                <Inspecteur etat={etat} dispatch={dispatch} />
+              </div>
             </Panneau>
           ) : null}
           <RailOutils etat={etat} dispatch={dispatch} />
