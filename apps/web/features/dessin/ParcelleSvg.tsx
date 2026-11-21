@@ -40,6 +40,7 @@ export function ParcelleSvg({
         strokeDasharray="12 6"
         vectorEffect="non-scaling-stroke"
         pointerEvents="none"
+        data-testid="limite-parcelle"
       />
       {/* Zone de prise le long de la limite : 16 px, plus facile à attraper qu'un trait fin. */}
       <polygon

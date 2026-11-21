@@ -56,9 +56,7 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
         .getByRole('button', { name: 'Sélectionner' })
         .click();
       await page.waitForTimeout(400);
-      const limite = (await plan
-        .getByRole('button', { name: 'Parcelle', exact: true })
-        .boundingBox())!;
+      const limite = (await plan.getByTestId('limite-parcelle').boundingBox())!;
       await page.mouse.click(limite.x + 2, limite.y + limite.height / 2);
       const surface = page.getByRole('region', { name: 'Propriétés' }).getByText(/m²$/).first();
       await expect(surface).toBeVisible();
