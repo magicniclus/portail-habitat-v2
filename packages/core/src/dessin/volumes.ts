@@ -23,6 +23,11 @@ export interface MorceauMur extends Pave {
   empreinte: Point[];
   faceA: Revetement;
   faceB: Revetement;
+  /**
+   * Côtés de début et de fin réellement à l'air (bout du mur, tableau d'une baie). Un côté
+   * collé au morceau voisin n'est pas dessiné : il marquerait la façade d'un trait d'ombre.
+   */
+  visibles?: { debut: boolean; fin: boolean };
 }
 
 export interface Dalle {
@@ -39,8 +44,10 @@ export interface Dalle {
 type Trou = { de: number; a: number; bas: number; haut: number };
 
 /**
- * Un mur découpé en pavés autour de ses portes et fenêtres : trumeaux pleine hauteur,
- * allège sous chaque baie et linteau au-dessus. Chaque extrémité déborde d'une demi-épaisseur
+ * Un mur découpé en pavés autour de ses portes et fenêtres, sur une grille commune (arêtes des
+ * baies prolongées) : deux pavés voisins partagent toujours une arête entière, jamais un sommet
+ * posé au milieu d'une arête (« jonction en T »), qui laisserait une fissure claire ou sombre au
+ * rendu autour des menuiseries. Chaque extrémité déborde d'une demi-épaisseur
  * pour que les angles se referment. `rehausse` : un niveau au-dessus, les murs qui montent
  * jusqu'au plafond traversent l'épaisseur du plancher (façade continue, sans ressaut).
  */
@@ -88,9 +95,16 @@ export function morceauxDeMur(
       contour && a >= L + deb ? [contour[1]!, contour[2]!] : [sur(a, gauche), sur(a, -droite)];
     return [debut[0]!, fin[0]!, fin[1]!, debut[1]!];
   };
-  const pave = (de: number, a: number, bas: number, haut: number): MorceauMur => {
+  const pave = (
+    de: number,
+    a: number,
+    bas: number,
+    haut: number,
+    visibles = { debut: true, fin: true },
+  ): MorceauMur => {
     const milieu = (de + a) / 2;
     return {
+      visibles,
       murId: m.id,
       empreinte: empreinte(de, a),
       faceA: m.faceA,
@@ -100,15 +114,27 @@ export function morceauxDeMur(
       taille: { l: a - de, p: m.epaisseur, h: haut - bas },
     };
   };
+  const uniques = (v: number[]) => [...new Set(v)].sort((x, y) => x - y);
+  const ss = uniques([-deb, L + deb, ...trous.flatMap((t) => [t.de, t.a])]).filter(
+    (s) => s >= -deb && s <= L + deb,
+  );
+  const zs = uniques([0, H, ...trous.flatMap((t) => [t.bas, t.haut])]).filter(
+    (z) => z >= 0 && z <= H,
+  );
+  const vide = (s0: number, s1: number, z0: number, z1: number) =>
+    trous.some((t) => t.de <= s0 && s1 <= t.a && t.bas <= z0 && z1 <= t.haut);
   const morceaux: MorceauMur[] = [];
-  let curseur = -deb;
-  for (const t of trous) {
-    if (t.de > curseur) morceaux.push(pave(curseur, t.de, 0, H));
-    if (t.bas > 0) morceaux.push(pave(t.de, t.a, 0, t.bas));
-    if (t.haut < H) morceaux.push(pave(t.de, t.a, t.haut, H));
-    curseur = Math.max(curseur, t.a);
-  }
-  if (L + deb > curseur) morceaux.push(pave(curseur, L + deb, 0, H));
+  for (let i = 0; i + 1 < ss.length; i++)
+    for (let j = 0; j + 1 < zs.length; j++) {
+      const [s0, s1, b, h] = [ss[i]!, ss[i + 1]!, zs[j]!, zs[j + 1]!];
+      if (vide(s0, s1, b, h)) continue;
+      // Côté visible : au bout du mur, ou contre une baie ; sinon collé au pavé voisin.
+      const visibles = {
+        debut: i === 0 || vide(ss[i - 1]!, s0, b, h),
+        fin: i + 2 === ss.length || vide(s1, ss[i + 2]!, b, h),
+      };
+      morceaux.push(pave(s0, s1, b, h, visibles));
+    }
   return morceaux.filter((p) => p.taille.l > 0 && p.taille.h > 0);
 }
 

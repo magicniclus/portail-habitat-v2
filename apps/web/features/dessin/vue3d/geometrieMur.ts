@@ -15,6 +15,8 @@ export function geometrieMur(
   empreinte: readonly Point[],
   centre: Point,
   h: number,
+  /** Côtés de début et de fin à dessiner (un côté collé au morceau voisin ne l'est pas). */
+  visibles: { debut: boolean; fin: boolean } = { debut: true, fin: true },
 ): BufferGeometry {
   type P2 = [number, number];
   const local = (p: Point): P2 => [M(p.x - centre.x), M(p.y - centre.y)];
@@ -75,8 +77,8 @@ export function geometrieMur(
     );
   cote(gd, gf, FACE_A);
   cote(dd, df, FACE_B);
-  cote(gd, dd, TRANCHE);
-  cote(gf, df, TRANCHE);
+  if (visibles.debut) cote(gd, dd, TRANCHE);
+  if (visibles.fin) cote(gf, df, TRANCHE);
   dessus(y);
   dessus(-y);
   geo.setAttribute('position', new Float32BufferAttribute(positions, 3));

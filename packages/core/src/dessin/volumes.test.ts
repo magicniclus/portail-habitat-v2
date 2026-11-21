@@ -26,19 +26,34 @@ describe('géométrie 3D (DES-33)', () => {
     expect(p!.centre.z).toBe(1_350);
   });
 
-  it('fenêtre : trumeaux, allège et linteau ; aucun volume dans la baie', () => {
+  it('fenêtre : pavés sur une grille autour de la baie ; aucun volume dans la baie', () => {
     const m = n.murs[0]!;
     const avec = ok(poserOuverture(n, { murId: m.id, type: 'fenetre', centre: 5000 }, ctx));
     const o = avec.ouvertures[0]!;
     const morceaux = morceauxDeMur(m, avec);
-    expect(morceaux).toHaveLength(4);
+    // 3 colonnes × 3 rangées, moins la baie.
+    expect(morceaux).toHaveLength(8);
     const surface = morceaux.reduce((s, x) => s + x.taille.l * x.taille.h, 0);
     expect(surface).toBe((10_300 + 300) * 2_500 - o.largeur * o.hauteur);
-    const allege = morceaux.find((x) => x.centre.z < o.allege)!;
+    const allege = morceaux.find((x) => x.centre.z < o.allege && x.taille.l === o.largeur)!;
     expect(allege.taille).toMatchObject({ l: o.largeur, h: o.allege });
+    // Aucune jonction en T : chaque sommet d'un pavé est sur la grille commune.
+    const xs = new Set(
+      morceaux.flatMap((p) => [p.centre.x - p.taille.l / 2, p.centre.x + p.taille.l / 2]),
+    );
+    expect(xs.size).toBe(4);
+    // Côtés collés à un voisin : non dessinés ; tableaux de la baie : dessinés.
+    expect(allege.visibles).toEqual({ debut: false, fin: false });
+    const tableaux = morceaux.filter(
+      (p) => p.centre.z > o.allege && p.centre.z < o.allege + o.hauteur,
+    );
+    expect(tableaux.map((p) => p.visibles)).toEqual([
+      { debut: true, fin: true },
+      { debut: true, fin: true },
+    ]);
     // Porte : pas d'allège.
     const porte = ok(poserOuverture(n, { murId: m.id, type: 'porte', centre: 2000 }, ctx));
-    expect(morceauxDeMur(m, porte)).toHaveLength(3);
+    expect(morceauxDeMur(m, porte)).toHaveLength(5);
     expect(morceauxDeMur({ ...m, type: 'separation' }, n)).toEqual([]);
   });
 
@@ -46,7 +61,7 @@ describe('géométrie 3D (DES-33)', () => {
     const m = n.murs[0]!;
     let avec = ok(poserOuverture(n, { murId: m.id, type: 'fenetre', centre: 7000 }, ctx));
     avec = ok(poserOuverture(avec, { murId: m.id, type: 'fenetre', centre: 2000 }, ctx));
-    expect(morceauxDeMur(m, avec)).toHaveLength(7);
+    expect(morceauxDeMur(m, avec)).toHaveLength(13);
     const [poteau] = morceauxDeMur({ ...m, type: 'poteau' }, n);
     expect(poteau!.taille.l).toBe(10_300);
     const [poutre] = morceauxDeMur({ ...m, type: 'poutre', hauteur: 300 }, n);

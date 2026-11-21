@@ -12,6 +12,8 @@ import { materiauRevetement, materiauUni } from './textures';
 import { geometrieMur } from './geometrieMur';
 import { M } from './unites';
 
+const ORIGINE = { x: 0, y: 0 };
+
 /** Opacité des murs en mode transparent : on voit au travers, la matière reste lisible. */
 const OPACITE_MUR = 0.22;
 
@@ -49,9 +51,11 @@ export function MorceauMur3D({
   const faceChoisie = choisi ? (selection?.face ?? null) : null;
   const ref = useRef<Mesh>(null);
   // Prisme exact (angles en onglet, T arrêtés sur la face) : aucune face confondue qui scintille.
+  // Sommets dans les coordonnées du plan (et non autour du centre du morceau) : deux morceaux
+  // voisins calculent exactement les mêmes arêtes, sans fissure au rendu.
   const geometrie = useMemo(
-    () => geometrieMur(m.empreinte, m.centre, m.taille.h),
-    [m.empreinte, m.centre, m.taille.h],
+    () => geometrieMur(m.empreinte, ORIGINE, m.taille.h, m.visibles),
+    [m.empreinte, m.taille.h, m.visibles],
   );
   useEffect(() => () => geometrie.dispose(), [geometrie]);
   const materiaux = useMemo(() => {
@@ -89,7 +93,7 @@ export function MorceauMur3D({
   return (
     <mesh
       ref={ref}
-      position={[M(m.centre.x), M(m.centre.z), M(m.centre.y)]}
+      position={[0, M(m.centre.z), 0]}
       geometry={geometrie}
       castShadow={!transparent}
       receiveShadow
