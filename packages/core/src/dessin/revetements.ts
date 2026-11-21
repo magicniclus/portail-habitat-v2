@@ -46,6 +46,10 @@ export const LIBELLES_FAMILLE: Partial<Record<FamilleRevetement, string>> = {
   carrelage: 'Carrelage',
   beton_cire: 'Béton ciré',
   pierre: 'Pierre',
+  gazon: 'Gazon',
+  gravier: 'Gravier',
+  dalle: 'Dalles et pavés',
+  bois: 'Bois (lames)',
 };
 
 export const LIBELLES_POSE: Record<Pose, string> = {
@@ -93,6 +97,8 @@ export const FAMILLES_A_POSE: readonly FamilleRevetement[] = [
   'faience',
   'pierre',
   'parement',
+  'dalle',
+  'bois',
 ];
 
 /** Point juste devant une face de mur (a : à gauche en allant de a vers b). */

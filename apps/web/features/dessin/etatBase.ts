@@ -185,6 +185,8 @@ export type Action =
     }
   | { type: 'supprimerExterieur'; genre: GenreExterieur; id: string }
   | { type: 'parcelleAutour' }
+  /** Sol du terrain délimité par la parcelle (gazon, gravier, pavés…). */
+  | { type: 'revetirTerrain'; revetement: Revetement }
   /** Parcelle retouchée (DES-19) : un coin tiré, toute la parcelle déplacée, un angle ajouté. */
   | { type: 'sommetParcelle'; i: number; vers: Point; geste?: string }
   | { type: 'deplacerParcelle'; delta: Point; geste?: string }

@@ -12,6 +12,7 @@ import {
   definirParcelle,
   modifierExterieur,
   parcelleAutour,
+  revetirTerrain,
   supprimerExterieur,
   terrasseAutourDePiscine,
   tracerCloture,
@@ -96,6 +97,8 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
         ? suite
         : { ...suite, ajustement: e.ajustement + 1, ajusterParcelle: true };
     }
+    case 'revetirTerrain':
+      return surScene(e, (s) => revetirTerrain(s, a.revetement));
     case 'sommetParcelle': {
       // Pendant le geste, une parcelle qui serait écrasée est simplement ignorée.
       const suite = surScene(e, (s) => deplacerSommetParcelle(s, a.i, a.vers), a.geste ?? null);

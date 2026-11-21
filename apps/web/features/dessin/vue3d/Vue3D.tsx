@@ -10,7 +10,7 @@ import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
 import { useReserveTelephone } from '../papier';
 import { Cadrage, DecalageBas, useCadreMaison, ZoomCamera } from './Cadrage';
-import { materiauGazon } from './gazon';
+import { Terrain3D } from './Terrain3D';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
 
@@ -74,15 +74,7 @@ export default function Vue3D({
         shadow-normalBias={0.03}
         target-position={[centre.x, centre.y, centre.z]}
       />
-      {/* Terrain en pelouse ; terrasses, allées et piscine se posent dessus. */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[centre.x, -0.01, centre.z]}
-        receiveShadow
-        material={materiauGazon(rayon * 12)}
-      >
-        <planeGeometry args={[rayon * 12, rayon * 12]} />
-      </mesh>
+      <Terrain3D scene={scene} centre={centre} cote={rayon * 12} />
       <Orthophoto3D scene={scene} url={ortho} />
       {niveaux.map((n) => (
         <Niveau3D

@@ -1,13 +1,19 @@
 'use client';
 
-import { longueurMur, panDeMur, revetementDe, type Revetement } from '@ph/core/dessin';
+import {
+  longueurMur,
+  panDeMur,
+  revetementDe,
+  revetementDuTerrain,
+  type Revetement,
+} from '@ph/core/dessin';
 import { useState, type Dispatch } from 'react';
-import { niveauDe, type Action, type EtatEditeur } from './etat';
+import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 
 export interface Cible {
   cle: string;
   libelle: string;
-  surface: 'sol' | 'mur' | 'plafond';
+  surface: 'sol' | 'mur' | 'plafond' | 'terrain';
   actuel: Revetement | null;
   appliquer: (r: Revetement) => Action[];
 }
@@ -23,6 +29,17 @@ function memeRevetement(n: ReturnType<typeof niveauDe>, murId: string): Reveteme
 export function ciblesDe(etat: EtatEditeur): Cible[] {
   const n = niveauDe(etat);
   const s = etat.selection;
+  // Parcelle choisie : son sol (gazon par défaut), revêtu comme le sol d'une pièce.
+  if (s?.genre === 'parcelle' && sceneDe(etat).terrain)
+    return [
+      {
+        cle: 'terrain',
+        libelle: 'Sol du terrain',
+        surface: 'terrain',
+        actuel: revetementDuTerrain(sceneDe(etat)),
+        appliquer: (r) => [{ type: 'revetirTerrain', revetement: r }],
+      },
+    ];
   if (s?.genre === 'piece' && n.pieces.some((p) => p.id === s.id)) {
     const pieceId = s.id;
     const sur = (surface: 'sol' | 'plafond') => ({

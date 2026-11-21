@@ -72,15 +72,19 @@ function Motif({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
 export function DefsMotifs({
   niveau: n,
   mmParPx,
+  autres = [],
 }: {
   niveau: Pick<Niveau, 'pieces' | 'zonesDeco' | 'exterieur'>;
   mmParPx: number;
+  /** Autres sols à motif (le terrain). */
+  autres?: readonly Revetement[];
 }) {
   // Sols des pièces, zones au sol et terrasses : un motif par revêtement distinct.
   const revetements: Revetement[] = [
     ...n.pieces.map((x) => x.sol),
     ...n.zonesDeco.map((z) => z.revetement),
     ...n.exterieur.terrasses.map((t) => t.revetement),
+    ...autres,
   ];
   const uniques = new Map(revetements.filter(motifPossible).map((r) => [idMotif(r), r]));
   return (

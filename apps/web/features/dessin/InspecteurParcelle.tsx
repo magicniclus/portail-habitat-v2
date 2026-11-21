@@ -1,10 +1,17 @@
 'use client';
 
-import { aire, formatSurface, perimetre, formatLongueur } from '@ph/core/dessin';
+import {
+  aire,
+  formatLongueur,
+  formatSurface,
+  perimetre,
+  revetementDuTerrain,
+} from '@ph/core/dessin';
 import { Button } from '@ph/ui';
 import type { Dispatch, ReactNode } from 'react';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
 import { Info, TitreSelection } from './blocs';
+import { ResumeFinitions } from './ResumeFinitions';
 
 /** Parcelle choisie (DES-19) : surface, périmètre, et comment la retoucher sur le plan. */
 export function inspecteurParcelle(etat: EtatEditeur, dispatch: Dispatch<Action>): ReactNode {
@@ -21,6 +28,11 @@ export function inspecteurParcelle(etat: EtatEditeur, dispatch: Dispatch<Action>
         Sur le plan : faites glisser la limite pour déplacer la parcelle, tirez un rond pour
         déplacer un coin, ou un « + » pour ajouter un angle.
       </p>
+      <ResumeFinitions
+        surfaces={[{ libelle: 'Sol du terrain', revetement: revetementDuTerrain(sceneDe(etat))! }]}
+        finitionsOuvert={etat.menu === 'finitions'}
+        dispatch={dispatch}
+      />
       <Button variant="secondaire" onClick={() => dispatch({ type: 'parcelleAutour' })}>
         Recaler autour de la maison
       </Button>

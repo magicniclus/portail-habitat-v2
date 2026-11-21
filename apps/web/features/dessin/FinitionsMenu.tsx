@@ -4,6 +4,7 @@ import {
   FAMILLES_A_POSE,
   FAMILLES_MUR,
   FAMILLES_SOL,
+  FAMILLES_TERRAIN,
   LIBELLES_FAMILLE,
   LIBELLES_POSE,
   texturePhoto,
@@ -36,7 +37,9 @@ export function FinitionsMenu({
       ? FAMILLES_MUR
       : cible?.surface === 'plafond'
         ? (['peinture', 'enduit'] as const)
-        : FAMILLES_SOL;
+        : cible?.surface === 'terrain'
+          ? FAMILLES_TERRAIN
+          : FAMILLES_SOL;
   const [famille, setFamille] = useState<FamilleRevetement>(familles[0]!);
   const [pose, setPose] = useState<Pose>('droite');
   const [joint, setJoint] = useState(3);

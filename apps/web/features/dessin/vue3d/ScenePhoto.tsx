@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
 import { Cadrage, useCadreMaison } from './Cadrage';
-import { materiauGazon } from './gazon';
+import { Terrain3D } from './Terrain3D';
 import { Objets3D } from './Objets3D';
 
 export type Capturer = (largeurPx: number, type: string) => Promise<Blob | null>;
@@ -96,14 +96,7 @@ export function ScenePhoto({
           distance={rayon * 2}
         />
       ) : null}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[centre.x, -0.01, centre.z]}
-        receiveShadow
-        material={materiauGazon(rayon * 12)}
-      >
-        <planeGeometry args={[rayon * 12, rayon * 12]} />
-      </mesh>
+      <Terrain3D scene={scene} centre={centre} cote={rayon * 12} />
       {niveaux.map((n) => (
         <group key={n.id}>
           <Niveau3D

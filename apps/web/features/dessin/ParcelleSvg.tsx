@@ -1,7 +1,8 @@
-import type { Point } from '@ph/core/dessin';
+import type { Point, Revetement } from '@ph/core/dessin';
 import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { remplissage } from './Motifs';
 import { activer, points } from './svg';
 
 /**
@@ -118,17 +119,28 @@ export function ParcelleSvg({
   );
 }
 
-/** Pelouse de la parcelle (DES-19) : un fond vert sous le jardin, la maison et la terrasse. */
-export function PelouseSvg({ parcelle }: { parcelle: Point[] | null }) {
-  if (!parcelle) return null;
+/**
+ * Sol du terrain (DES-19) : la surface de la parcelle, en gazon par défaut ou dans le revêtement
+ * choisi (gravier, pavés, dalles…), sous le jardin, la maison et la terrasse.
+ */
+export function SolTerrainSvg({
+  parcelle,
+  revetement,
+}: {
+  parcelle: Point[] | null;
+  revetement: Revetement | null;
+}) {
+  if (!parcelle || !revetement) return null;
+  // Gazon jamais choisi : vert pelouse léger du plan.
+  const parDefaut = revetement.famille === 'gazon' && !revetement.materiauId && !revetement.couleur;
   return (
     <polygon
       points={points(parcelle)}
-      fill={C.gazon}
-      fillOpacity={0.55}
+      fill={parDefaut ? C.gazon : remplissage(revetement)}
+      fillOpacity={parDefaut ? 0.55 : 0.9}
       stroke="none"
       pointerEvents="none"
-      data-testid="pelouse"
+      data-testid="sol-terrain"
     />
   );
 }

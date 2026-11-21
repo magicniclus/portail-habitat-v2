@@ -67,6 +67,16 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
       await page.mouse.move(coin.x - 30, coin.y - 30, { steps: 6 });
       await page.mouse.up();
       await expect(surface).not.toHaveText(avant!);
+      // Le sol du terrain se revêt comme celui d'une pièce : gazon par défaut, puis pavés.
+      await expect(plan.getByTestId('sol-terrain')).toBeAttached();
+      await menu('Finitions');
+      await page.getByLabel('Famille').selectOption('dalle');
+      await page
+        .getByRole('region', { name: 'Finitions' })
+        .getByRole('button', { name: 'Pavés gris' })
+        .click();
+      await expect(plan.getByTestId('sol-terrain')).toHaveAttribute('fill', /^url\(#motif-/);
+      await menu('Structure');
     }
 
     // DES-18 : terrasse à l'ouest (collée à la façade), surélevée de 60 cm avec garde-corps.

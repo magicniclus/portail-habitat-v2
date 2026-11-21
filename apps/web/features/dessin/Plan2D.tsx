@@ -4,6 +4,7 @@ import {
   niveauInferieur,
   niveauSuperieur,
   objetsVisibles,
+  revetementDuTerrain,
   tremies,
   type Aimantage,
 } from '@ph/core/dessin';
@@ -16,7 +17,7 @@ import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
 import { cadreDe } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
-import { ParcelleSvg, PelouseSvg } from './ParcelleSvg';
+import { ParcelleSvg, SolTerrainSvg } from './ParcelleSvg';
 import { FondSvg } from './FondSvg';
 import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
 import type { FondCharge } from './useFond';
@@ -61,6 +62,7 @@ export function Plan2D({
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Aimantage | null>(null);
   const parcelle = scene.terrain?.parcelle;
+  const terrainRevetu = scene.terrain?.revetement ? [scene.terrain.revetement] : undefined;
   const conteneur = useRef<HTMLDivElement>(null);
   // Téléphone, panneau ouvert : la feuille du bas couvre le bas, le plan se cadre au-dessus.
   const reserve = useReserveTelephone(Boolean(etat.menu || etat.proprietes));
@@ -142,8 +144,10 @@ export function Plan2D({
             <OrthophotoSvg scene={scene} image={ortho} />
             {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
-            <DefsMotifs niveau={n} mmParPx={mmParPx} />
-            {n.altitude === 0 ? <PelouseSvg parcelle={parcelle ?? null} /> : null}
+            <DefsMotifs niveau={n} mmParPx={mmParPx} autres={terrainRevetu} />
+            {n.altitude === 0 ? (
+              <SolTerrainSvg parcelle={parcelle ?? null} revetement={revetementDuTerrain(scene)} />
+            ) : null}
             <ExterieurSvg niveau={n} etat={etat} dispatch={d} />
             <ParcelleSvg
               parcelle={parcelle ?? null}

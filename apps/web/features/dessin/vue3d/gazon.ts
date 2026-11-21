@@ -1,12 +1,19 @@
 'use client';
 
 import { COULEURS_EXTERIEUR } from '@ph/ui/tokens';
-import { CanvasTexture, Color, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three';
+import {
+  CanvasTexture,
+  Color,
+  DoubleSide,
+  MeshStandardMaterial,
+  RepeatWrapping,
+  SRGBColorSpace,
+} from 'three';
 
 /** Côté réel couvert par une image de gazon (m) : la texture se répète à cette échelle. */
 const COTE = 2;
 let image: HTMLCanvasElement | null = null;
-const parTaille = new Map<number, MeshStandardMaterial>();
+let partage: MeshStandardMaterial | null = null;
 
 /** Hasard reproductible : la pelouse est la même à chaque ouverture. */
 function hasard(graine: number) {
@@ -19,7 +26,7 @@ function hasard(graine: number) {
 
 /**
  * Pelouse en 3D : brins dessinés en plusieurs verts (tons du végétal du plan), sur un fond
- * nuancé, répétés tous les 2 m. Une seule image en mémoire ; un matériau par taille de terrain.
+ * nuancé, répétés tous les 2 m. Une seule image et un seul matériau en mémoire.
  */
 function dessin(): HTMLCanvasElement {
   if (!image) {
@@ -48,17 +55,15 @@ function dessin(): HTMLCanvasElement {
   return image;
 }
 
-export function materiauGazon(tailleTerrain: number): MeshStandardMaterial {
-  const cle = Math.round(tailleTerrain);
-  let m = parTaille.get(cle);
-  if (!m) {
+/** Gazon pour une géométrie dont les coordonnées de texture sont en mètres. */
+export function materiauGazon(): MeshStandardMaterial {
+  if (!partage) {
     const t = new CanvasTexture(dessin());
     t.wrapS = t.wrapT = RepeatWrapping;
     t.colorSpace = SRGBColorSpace;
     t.anisotropy = 4;
-    t.repeat.set(cle / COTE, cle / COTE);
-    m = new MeshStandardMaterial({ map: t, roughness: 1 });
-    parTaille.set(cle, m);
+    t.repeat.set(1 / COTE, 1 / COTE);
+    partage = new MeshStandardMaterial({ map: t, roughness: 1, side: DoubleSide });
   }
-  return m;
+  return partage;
 }

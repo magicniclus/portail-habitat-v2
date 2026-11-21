@@ -393,6 +393,8 @@ export const niveau = z.object({
 
 export const terrain = z.object({
   parcelle: polygone,
+  /** Sol de la parcelle (gazon si absent) : gravier, dalles, pavés… (DES-19). */
+  revetement: revetement.optional(),
   referenceCadastrale: z.string().max(40).optional(),
   codeInsee: z
     .string()

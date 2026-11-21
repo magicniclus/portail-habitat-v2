@@ -94,7 +94,7 @@ Piscine { id, forme: 'rectangle'|'ronde'|'ovale'|'haricot'|'L'|'couloir'|'hors_s
           profondeurMin, profondeurMax, escalier: 'roman'|'droit'|'angle'|null, margelle: Revetement, debordement }
 Cloture { id, points, type: 'grillage'|'bois'|'muret'|'haie'|'portail', hauteur }
 Vegetal { id, type: 'arbre'|'arbuste'|'haie', position, diametre }
-Terrain { parcelle, referenceCadastrale?, codeInsee?, implantation: { x, y, rotation },
+Terrain { parcelle, revetement? (sol de la parcelle, gazon si absent), referenceCadastrale?, codeInsee?, implantation: { x, y, rotation },
           georef?: { x, y } (Lambert-93 en mm du point 0,0 du plan, DES-35),
           orthophoto?: { storagePath, emprise { x0, y0, x1, y1 } } (photo aérienne IGN enregistrée dans le dossier du plan) }
 Revetement { famille (25 familles), materiauId?, couleur?, orientation?, joint?: { largeur, couleur? },

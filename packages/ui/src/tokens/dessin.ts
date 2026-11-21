@@ -200,6 +200,43 @@ export const MATERIAUX_DESSIN: readonly MateriauDessin[] = [
     joint: '#7d603f',
     format: { l: 3000, p: 150 },
   },
+  // Extérieur : sol du terrain (DES-19).
+  { id: 'ga-pelouse', famille: 'gazon', libelle: 'Pelouse', couleur: '#7fa765' },
+  { id: 'ga-rustique', famille: 'gazon', libelle: 'Gazon rustique', couleur: '#8a9a5b' },
+  { id: 'gr-clair', famille: 'gravier', libelle: 'Gravier clair', couleur: '#d8d2c4' },
+  { id: 'gr-gris', famille: 'gravier', libelle: 'Gravier gris', couleur: '#a9a7a2' },
+  {
+    id: 'da-paves-gris',
+    famille: 'dalle',
+    libelle: 'Pavés gris',
+    couleur: '#9a9894',
+    joint: '#cfcac0',
+    format: { l: 200, p: 100 },
+  },
+  {
+    id: 'da-paves-terre',
+    famille: 'dalle',
+    libelle: 'Pavés terre cuite',
+    couleur: '#b56a4a',
+    joint: '#d9c8b4',
+    format: { l: 220, p: 110 },
+  },
+  {
+    id: 'da-pierre',
+    famille: 'dalle',
+    libelle: 'Dalles pierre',
+    couleur: '#cfc6b4',
+    joint: '#b9b0a0',
+    format: { l: 600, p: 400 },
+  },
+  {
+    id: 'bo-terrasse',
+    famille: 'bois',
+    libelle: 'Lames bois',
+    couleur: '#a57852',
+    joint: '#6e4f35',
+    format: { l: 1200, p: 145 },
+  },
 ];
 
 /** Couleurs des façades et des objets (nuancier de l'inspecteur). */
