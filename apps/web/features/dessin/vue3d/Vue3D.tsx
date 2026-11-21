@@ -87,7 +87,8 @@ export default function Vue3D({
           parcelle={scene.terrain?.parcelle ?? null}
           centre={centre}
           poupee={poupee && n.id === courant.id}
-          transparent={etat.rendu.mursTransparents}
+          // « Extérieur · tout fermé » : la maison fermée, murs toujours opaques.
+          transparent={etat.rendu.mursTransparents && !etat.vueExterieure}
           plafonds={false}
           toit={etat.vueExterieure || (etat.rendu.toit && !poupee)}
           selection={n.id === courant.id ? etat.selection : undefined}

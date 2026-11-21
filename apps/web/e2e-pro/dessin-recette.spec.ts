@@ -163,7 +163,7 @@ test.describe('Plans — recette sur une maison complète', () => {
       expect(await couleursDe3D(page)).toBeGreaterThan(25);
       await capture(page, `${p}-05-3d-${nom}`);
     }
-    // Maison entière fermée, toit compris.
+    // Maison entière fermée, toit compris : murs opaques même si « transparents » est coché.
     await page.locator('header select').first().selectOption('Extérieur · tout fermé');
     await page.waitForTimeout(1500);
     expect(await couleursDe3D(page)).toBeGreaterThan(25);
