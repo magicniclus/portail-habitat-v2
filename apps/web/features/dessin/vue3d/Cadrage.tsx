@@ -3,7 +3,7 @@
 import { toit3D, type Niveau } from '@ph/core/dessin';
 import { cadreDe } from '../cadre';
 import { useThree } from '@react-three/fiber';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { MathUtils, Vector3, type PerspectiveCamera } from 'three';
 import { M } from './unites';
 
@@ -36,6 +36,27 @@ export function Cadrage({ centre, rayon, cle }: { centre: Vector3; rayon: number
     // Recadrer seulement sur demande, pas à chaque mouvement de la maison.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cle, controlesPrets, aspect]);
+  return null;
+}
+
+/**
+ * Boutons Zoomer et Dézoomer du rail en 3D : la caméra se rapproche ou s'éloigne de ce qu'elle
+ * regarde, dans le même rapport que le zoom du plan.
+ */
+export function ZoomCamera({ zoom }: { zoom: number }) {
+  const lire = useThree((s) => s.get);
+  const precedent = useRef(zoom);
+  useEffect(() => {
+    const rapport = zoom / precedent.current;
+    precedent.current = zoom;
+    if (rapport === 1) return;
+    const etat = lire();
+    const controles = etat.controls as unknown as { target: Vector3; update: () => void } | null;
+    if (!controles) return;
+    const vers = etat.camera.position.clone().sub(controles.target).divideScalar(rapport);
+    etat.camera.position.copy(controles.target).add(vers);
+    controles.update();
+  }, [zoom, lire]);
   return null;
 }
 

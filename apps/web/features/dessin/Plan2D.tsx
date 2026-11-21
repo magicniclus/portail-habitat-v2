@@ -27,6 +27,7 @@ import { SaisieLongueur } from './SaisieLongueur';
 import { MultiSelectionSvg, useSelectionMultiple, ZoneSelectionSvg } from './SelectionMultiple';
 import { useAimant } from './useAimant';
 import { useAjustement } from './useAjustement';
+import { useVue2D } from './useVue2D';
 import { useDefilementAuto } from './useDefilementAuto';
 import { versMmDuPlan } from './svg';
 import { useGestesTactiles } from './useGestesTactiles';
@@ -63,6 +64,7 @@ export function Plan2D({
   const cadre = useCadre(n, parcelle, [etat.trace, curseur?.point, ...etat.polygone]);
   const conteneur = useRef<HTMLDivElement>(null);
   useAjustement(conteneur, cadre, etat.ajustement, dispatch);
+  useVue2D(conteneur, svg, etat.zoom, cadre, dispatch, etat.trace !== null);
   const mmParPx = 1000 / etat.zoom;
 
   const versMm = (ev: { clientX: number; clientY: number }) => versMmDuPlan(svg.current, ev);

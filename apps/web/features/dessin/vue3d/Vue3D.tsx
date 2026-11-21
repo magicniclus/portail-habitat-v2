@@ -14,7 +14,7 @@ import { Canvas, type ThreeEvent } from '@react-three/fiber';
 import { useMemo, useRef, useState, type Dispatch } from 'react';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
-import { Cadrage, useCadreMaison } from './Cadrage';
+import { Cadrage, useCadreMaison, ZoomCamera } from './Cadrage';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
 import { versMm } from './unites';
@@ -160,6 +160,7 @@ export default function Vue3D({
         </group>
       ))}
       <Cadrage centre={centre} rayon={rayon} cle={`${courant.id}-${etat.ajustement}`} />
+      <ZoomCamera zoom={etat.zoom} />
       <OrbitControls
         makeDefault
         // Réduire les animations (DES-47) : pas d'inertie de la caméra.

@@ -120,6 +120,15 @@ test.describe('Plans — téléphone, accessibilité, performance (DES-46 à DES
       'aria-pressed',
       'true',
     );
+    // Molette : zoom autour du pointeur (le pourcentage du rail change).
+    if (page.viewportSize()!.width >= 900) {
+      const pourcent = outils.getByText(/^\d+ %$/);
+      const avant = await pourcent.textContent();
+      const b = (await plan.boundingBox())!;
+      await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+      await page.mouse.wheel(0, -300);
+      await expect(pourcent).not.toHaveText(avant!);
+    }
     await outils.getByRole('button', { name: 'Raccourcis clavier' }).click();
     await expect(fenetre.getByText('Tracer un mur')).toBeVisible();
     await page.keyboard.press('Escape');
