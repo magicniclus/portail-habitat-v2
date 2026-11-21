@@ -3,7 +3,7 @@
 import { TAILLE_APERCU } from '@ph/core/dessin';
 import { formatDate } from '@ph/core/format';
 import { CopyIcon, TrashIcon } from '@phosphor-icons/react';
-import { IconButton } from '@ph/ui';
+import { ConfirmDialog, IconButton } from '@ph/ui';
 import type { Route } from 'next';
 import Link from 'next/link';
 import type { PlanListe } from './api';
@@ -37,11 +37,18 @@ export function CartePlan({
         icone={<CopyIcon />}
         onClick={() => agir('dupliquer', p.planId)}
       />
-      <IconButton
-        aria-label={`Mettre ${p.titre} à la corbeille`}
-        icone={<TrashIcon />}
-        onClick={() => agir('corbeille', p.planId)}
-      />
+      <ConfirmDialog
+        titre={`Supprimer « ${p.titre} » ?`}
+        libelleConfirmer="Mettre à la corbeille"
+        danger
+        declencheur={
+          <IconButton aria-label={`Mettre ${p.titre} à la corbeille`} icone={<TrashIcon />} />
+        }
+        onConfirmer={() => agir('corbeille', p.planId)}
+      >
+        Le plan part dans la corbeille : vous pouvez le restaurer pendant 30 jours, puis il est
+        supprimé définitivement.
+      </ConfirmDialog>
     </li>
   );
 }

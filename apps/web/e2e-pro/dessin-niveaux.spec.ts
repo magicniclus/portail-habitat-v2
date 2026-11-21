@@ -82,6 +82,15 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
     const carte = page.getByRole('listitem').filter({ hasText: titre });
     await expect(carte).toHaveCount(1);
     await expect(carte.getByTestId('apercu-plan').locator('path')).toHaveCount(1);
+    // Mise à la corbeille : une fenêtre demande confirmation ; « Annuler » ne touche à rien.
+    await carte.getByRole('button', { name: /à la corbeille$/ }).click();
+    const confirmation = page.getByRole('dialog', { name: /^Supprimer « / });
+    await expect(confirmation).toBeVisible();
+    await confirmation.getByRole('button', { name: 'Annuler' }).click();
+    await expect(carte).toHaveCount(1);
+    await carte.getByRole('button', { name: /à la corbeille$/ }).click();
+    await confirmation.getByRole('button', { name: 'Mettre à la corbeille' }).click();
+    await expect(page.getByText(/^Corbeille \(/)).toBeVisible();
     await page.getByLabel('Rechercher un plan').fill('zzz introuvable');
     await expect(page.getByText(/Aucun plan ne correspond/)).toBeVisible();
   });
