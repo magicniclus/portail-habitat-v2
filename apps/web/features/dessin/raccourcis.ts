@@ -15,9 +15,8 @@ export const RACCOURCIS: readonly [touches: string, action: string][] = [
   ['K', 'Coter (deux clics)'],
   ['T', 'Ajouter un texte'],
   ['A', 'Magnétisme activé ou coupé'],
-  ['1, 2, 3', 'Plan, 3D, visite'],
   ['+ et −', 'Zoomer, dézoomer'],
-  ['0', 'Ajuster le plan à l’écran'],
+  ['Chiffres pendant un tracé', 'Taper la longueur du mur'],
   ['Ctrl + Z', 'Annuler'],
   ['Ctrl + Maj + Z ou Ctrl + Y', 'Rétablir'],
   ['Échap', 'Finir le tracé en cours'],
@@ -33,7 +32,7 @@ export const RACCOURCIS: readonly [touches: string, action: string][] = [
   ['?', 'Afficher cette liste'],
 ];
 
-/** Touches simples (sans Ctrl) : outils, vues, zoom. */
+/** Touches simples (sans Ctrl) : outils et zoom. Les chiffres restent à la saisie des longueurs. */
 const SIMPLES: Record<string, Action> = {
   v: { type: 'outil', outil: 'selection' },
   m: { type: 'outil', outil: 'mur', typeMur: 'mur' },
@@ -45,13 +44,9 @@ const SIMPLES: Record<string, Action> = {
   k: { type: 'outil', outil: 'cote' },
   t: { type: 'outil', outil: 'texte' },
   a: { type: 'aimant' },
-  '1': { type: 'vue', vue: 'plan' },
-  '2': { type: 'vue', vue: '3d' },
-  '3': { type: 'vue', vue: 'visite' },
   '+': { type: 'zoomer', facteur: 1.25 },
   '=': { type: 'zoomer', facteur: 1.25 },
   '-': { type: 'zoomer', facteur: 0.8 },
-  '0': { type: 'ajuster' },
 };
 
 /** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
