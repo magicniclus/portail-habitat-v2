@@ -11,6 +11,7 @@ export * from './format';
 export * from './formes';
 export * from './etiquette';
 export * from './geometrie';
+export * from './parcelle';
 export * from './historique';
 export * from './metre';
 export * from './migrations';

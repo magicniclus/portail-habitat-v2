@@ -1,5 +1,8 @@
 import {
   ajouterAllee,
+  ajouterSommetParcelle,
+  deplacerParcelle,
+  deplacerSommetParcelle,
   ajouterPiscine,
   ajouterTerrasse,
   ajouterVegetal,
@@ -88,6 +91,15 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
       return creer(e, (n) => terrasseAutourDePiscine(n, a.piscineId, ctx), 'terrasse');
     case 'parcelleAutour':
       return surScene(e, (s) => parcelleAutour(s));
+    case 'sommetParcelle': {
+      // Pendant le geste, une parcelle qui serait écrasée est simplement ignorée.
+      const suite = surScene(e, (s) => deplacerSommetParcelle(s, a.i, a.vers), a.geste ?? null);
+      return suite.erreur ? e : suite;
+    }
+    case 'deplacerParcelle':
+      return surScene(e, (s) => deplacerParcelle(s, a.delta), a.geste ?? null);
+    case 'ajouterSommetParcelle':
+      return surScene(e, (s) => ajouterSommetParcelle(s, a.apres, a.point));
     case 'implanter':
       return surScene(e, (s) => implanterParcelle(s, a.parcelle));
     case 'ajusterImplantation':

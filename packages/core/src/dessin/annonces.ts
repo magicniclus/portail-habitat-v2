@@ -20,7 +20,9 @@ export type GenreAnnonce =
   | 'cloture'
   | 'vegetal'
   | 'cote'
-  | 'texte';
+  | 'texte'
+  | 'parcelle'
+  | 'allee';
 
 const cm = (mm: number) => `${Math.round(mm / 10)}`;
 const VEGETAUX = { arbre: 'Arbre', arbuste: 'Arbuste', haie: 'Haie' } as const;
@@ -36,6 +38,12 @@ export function descriptionSelection(
   if (!s) return '';
   const e = n.exterieur;
   switch (s.genre) {
+    case 'allee': {
+      const a = e.allees[Number(s.id)];
+      return a ? `Allée choisie : ${formatSurface(Math.round(aire(a)))}.` : '';
+    }
+    case 'parcelle':
+      return 'Parcelle choisie : faites glisser sa limite ou tirez un coin.';
     case 'mur': {
       const m = n.murs.find((x) => x.id === s.id);
       return m

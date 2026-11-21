@@ -67,6 +67,8 @@ describe('annonce de l’élément choisi (DES-47)', () => {
     expect(d('objet', n.objets[0]!.id)).toMatch(/choisi : \d+ × \d+ cm, rotation \d+°\.$/);
     expect(d('escalier', n.escaliers[0]!.id)).toMatch(/^Escalier choisi : /);
     expect(d('zone', z.zoneId)).toBe('Zone choisie : 4,0 m².');
+    expect(d('parcelle', 'parcelle')).toMatch(/^Parcelle choisie/);
+    expect(d('allee', '0')).toBe('');
     expect(d('terrasse', t.elementId)).toBe('Terrasse choisie : 16,0 m².');
     expect(d('piscine', p.elementId)).toMatch(/^Piscine choisie : .+, [\d,]+ m²\.$/);
     expect(d('cloture', c.elementId)).toBe('Clôture choisie : 20,00 m.');
