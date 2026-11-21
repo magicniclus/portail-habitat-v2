@@ -13,7 +13,7 @@ import {
   type Point,
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
-import type { Dispatch } from 'react';
+import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
 import { activer, points } from './svg';
 import { add, Symbole, trait } from './SymboleOuverture';
@@ -23,10 +23,13 @@ export function OuverturesSvg({
   niveau,
   etat,
   dispatch,
+  demarrerGlisser,
 }: {
   niveau: Niveau;
   etat: EtatEditeur;
   dispatch: Dispatch<Action>;
+  /** Glisser la porte ou fenêtre choisie le long de son mur (DES-14). */
+  demarrerGlisser?: (id: string, ev: PointerEvent) => void;
 }) {
   return niveau.ouvertures.map((o) => {
     const m = niveau.murs.find((x) => x.id === o.murId);
@@ -40,6 +43,9 @@ export function OuverturesSvg({
       epaisseur: m.epaisseur + 4,
     });
     const choisie = etat.selection?.genre === 'ouverture' && etat.selection.id === o.id;
+    // Une menuiserie posée se fait glisser le long de son mur, aussi juste après sa pose.
+    const mobile =
+      etat.outil === 'selection' || (etat.outil === 'ouverture' && etat.trace === null);
     const choisir = () =>
       dispatch({ type: 'selectionner', selection: { genre: 'ouverture', id: o.id } });
     return (
@@ -49,11 +55,12 @@ export function OuverturesSvg({
         tabIndex={0}
         aria-label={`${CATALOGUE_OUVERTURES[o.type].libelle} de ${Math.round(o.largeur / 10)} cm`}
         aria-pressed={choisie}
-        className={choisie ? 'stroke-accent' : 'stroke-texte'}
+        className={`${choisie ? 'stroke-accent' : 'stroke-texte'} ${mobile ? 'cursor-ew-resize' : ''}`}
         onPointerDown={(ev) => {
-          if (etat.outil !== 'selection') return;
+          if (!mobile) return;
           ev.stopPropagation();
           choisir();
+          demarrerGlisser?.(o.id, ev);
         }}
         onKeyDown={activer(choisir)}
       >
@@ -76,6 +83,9 @@ export function EscaliersSvg({
 }) {
   return niveau.escaliers.map((e) => {
     const choisi = etat.selection?.genre === 'escalier' && etat.selection.id === e.id;
+    // Une menuiserie posée se fait glisser le long de son mur, aussi juste après sa pose.
+    const mobile =
+      etat.outil === 'selection' || (etat.outil === 'ouverture' && etat.trace === null);
     const choisir = () =>
       dispatch({ type: 'selectionner', selection: { genre: 'escalier', id: e.id } });
     const contour = emprise(e);
@@ -88,7 +98,7 @@ export function EscaliersSvg({
         aria-pressed={choisi}
         className={choisi ? 'stroke-accent' : 'stroke-texte'}
         onPointerDown={(ev) => {
-          if (etat.outil !== 'selection') return;
+          if (!mobile) return;
           ev.stopPropagation();
           choisir();
         }}

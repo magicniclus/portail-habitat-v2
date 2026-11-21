@@ -1,4 +1,4 @@
-import type { Revetement } from '@ph/core/dessin';
+import type { Niveau, Revetement } from '@ph/core/dessin';
 import { COULEURS_PLAN, MATERIAUX_DESSIN } from '@ph/ui/tokens';
 
 /**
@@ -70,12 +70,18 @@ function Motif({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
 
 /** Définitions des motifs utilisés par les sols et les zones du niveau. */
 export function DefsMotifs({
-  revetements,
+  niveau: n,
   mmParPx,
 }: {
-  revetements: Revetement[];
+  niveau: Pick<Niveau, 'pieces' | 'zonesDeco' | 'exterieur'>;
   mmParPx: number;
 }) {
+  // Sols des pièces, zones au sol et terrasses : un motif par revêtement distinct.
+  const revetements: Revetement[] = [
+    ...n.pieces.map((x) => x.sol),
+    ...n.zonesDeco.map((z) => z.revetement),
+    ...n.exterieur.terrasses.map((t) => t.revetement),
+  ];
   const uniques = new Map(revetements.filter(motifPossible).map((r) => [idMotif(r), r]));
   return (
     <defs>

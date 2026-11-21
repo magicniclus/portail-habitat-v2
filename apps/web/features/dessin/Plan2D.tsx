@@ -72,7 +72,8 @@ export function Plan2D({
 
   const trace = etat.outil !== 'selection';
   const glisser = useGlisser(n, dispatch, versMm, trace);
-  const { demarrerMur, demarrerObjet, demarrerExtremite } = useRappelsGlisser(glisser);
+  const { demarrerMur, demarrerObjet, demarrerExtremite, demarrerOuverture } =
+    useRappelsGlisser(glisser);
   const selectionne = useRef(false);
   useEffect(() => {
     selectionne.current = etat.selection !== null;
@@ -139,14 +140,7 @@ export function Plan2D({
               <OrthophotoSvg scene={scene} image={ortho} />
               {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
 
-              <DefsMotifs
-                revetements={[
-                  ...n.pieces.map((x) => x.sol),
-                  ...n.zonesDeco.map((z) => z.revetement),
-                  ...n.exterieur.terrasses.map((t) => t.revetement),
-                ]}
-                mmParPx={mmParPx}
-              />
+              <DefsMotifs niveau={n} mmParPx={mmParPx} />
               <ExterieurSvg
                 niveau={n}
                 parcelle={scene.terrain?.parcelle ?? null}
@@ -168,7 +162,12 @@ export function Plan2D({
                 demarrerGlisser={demarrerMur}
                 demarrerExtremite={demarrerExtremite}
               />
-              <OuverturesSvg niveau={n} etat={etat} dispatch={d} />
+              <OuverturesSvg
+                niveau={n}
+                etat={etat}
+                dispatch={d}
+                demarrerGlisser={demarrerOuverture}
+              />
               <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
               <GuidesSvg guides={etat.guides} />
               {etat.calques.cotes ? (

@@ -6,6 +6,7 @@ import { versInterieur } from './menuiseries';
 import { longueurMur } from './murs';
 import {
   CATALOGUE_OUVERTURES,
+  modifierOuverture,
   murSousLePoint,
   poserOuverture,
   type TypeOuverture,
@@ -62,4 +63,19 @@ export function poserOuvertureTiree(
   const o = ouvertureTiree(n, type, premier, pointeur);
   if (!o) return echec('PRECONDITION', { message: 'Cliquez sur un mur.' });
   return poserOuverture(n, { ...o, type, centre: o.position + o.largeur / 2 }, ctx);
+}
+
+/**
+ * Fait glisser une menuiserie posée le long de son mur (DES-14) : son milieu suit la projection
+ * du pointeur sur le mur, bornée aux extrémités. Refusé (sans rien changer) si elle chevauchait
+ * une autre ouverture.
+ */
+export function glisserOuverture(n: Niveau, id: string, vers: Point): Resultat<Niveau> {
+  const o = n.ouvertures.find((x) => x.id === id);
+  const m = o && n.murs.find((x) => x.id === o.murId);
+  if (!o || !m) return echec('INTROUVABLE');
+  const l = Math.round(longueurMur(m));
+  const milieu = projeter(vers, m.a, m.b).t * l;
+  const position = Math.round(Math.max(0, Math.min(l - o.largeur, milieu - o.largeur / 2)));
+  return modifierOuverture(n, id, { position });
 }

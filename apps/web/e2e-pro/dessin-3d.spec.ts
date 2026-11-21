@@ -152,7 +152,18 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await page.mouse.dblclick(p.x, p.y);
     await proprietes();
     await page.getByLabel('Volets').selectOption('battant');
+    await expect(page.getByLabel('Depuis le coin (cm)')).toHaveValue('390');
     await replier();
+    // Une menuiserie posée glisse le long de son mur (DES-14), sans changer d'outil (souris).
+    if (page.viewportSize()!.width >= 900) {
+      const de = await ecran(6000, 8500);
+      const vers = await ecran(3000, 8500);
+      await page.mouse.move(de.x, de.y);
+      await page.mouse.down();
+      await page.mouse.move(vers.x, vers.y, { steps: 8 });
+      await page.mouse.up();
+      await expect(page.getByLabel('Depuis le coin (cm)')).not.toHaveValue('390');
+    }
 
     await menu('Chiffrer');
     await expect(

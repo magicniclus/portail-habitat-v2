@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { ouvertureTiree, poserOuvertureTiree } from './poseOuverture';
+import { glisserOuverture, ouvertureTiree, poserOuvertureTiree } from './poseOuverture';
 
 const ctx = contexteTest();
 // Maquette : mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150.
@@ -50,5 +50,24 @@ describe('menuiserie tirée en deux clics (DES-14)', () => {
       cote: 'exterieur',
     });
     expect(poserOuvertureTiree(n, 'porte', { x: 5000, y: 5000 }, premier, ctx).ok).toBe(false);
+  });
+});
+
+describe('déplacer une menuiserie posée (DES-14)', () => {
+  it('glisse le long de son mur, bornée aux extrémités, sans chevaucher une autre', () => {
+    let r = ok(poserOuvertureTiree(n, 'porte', premier, { x: 1150, y: 300 }, ctx));
+    const id = r.ouvertures.at(-1)!.id;
+    r = ok(glisserOuverture(r, id, { x: 5150, y: 400 }));
+    expect(r.ouvertures.at(-1)!.position).toBe(5000 - 415);
+    // Au-delà du bout du mur : arrêtée contre l'extrémité.
+    r = ok(glisserOuverture(r, id, { x: 99_000, y: 150 }));
+    const o = r.ouvertures.at(-1)!;
+    expect(o.position + o.largeur).toBe(10_300);
+    // Sur une autre ouverture : refusé.
+    const deux = ok(
+      poserOuvertureTiree(r, 'fenetre', { x: 3150, y: 150 }, { x: 3150, y: 300 }, ctx),
+    );
+    expect(glisserOuverture(deux, id, { x: 3150, y: 150 }).ok).toBe(false);
+    expect(glisserOuverture(deux, 'o_absente', { x: 0, y: 0 }).ok).toBe(false);
   });
 });

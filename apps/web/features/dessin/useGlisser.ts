@@ -5,7 +5,7 @@ import { useCallback, useLayoutEffect, useRef, type Dispatch, type PointerEvent 
 import type { Action } from './etat';
 
 /**
- * Glisser un mur (parallèlement, par pas) ou un objet (vers la position du pointeur, placé
+ * Glisser un mur (parallèlement, par pas), une porte ou fenêtre (le long de son mur) ou un objet (vers la position du pointeur, placé
  * automatiquement ; Alt pour poser librement). Un seul pas d'historique par geste.
  */
 export function useGlisser(
@@ -15,7 +15,7 @@ export function useGlisser(
   trace: boolean,
 ) {
   const geste = useRef<{
-    genre: 'mur' | 'objet' | 'extremite';
+    genre: 'mur' | 'objet' | 'extremite' | 'ouverture';
     /** Extrémité : « {murId}:a » ou « {murId}:b ». */
     id: string;
     dernier: Point;
@@ -25,9 +25,9 @@ export function useGlisser(
   } | null>(null);
 
   return {
-    demarrer(genre: 'mur' | 'objet' | 'extremite', id: string, ev: PointerEvent) {
+    demarrer(genre: 'mur' | 'objet' | 'extremite' | 'ouverture', id: string, ev: PointerEvent) {
       const p = versMm(ev);
-      if (!p || trace) return;
+      if (!p || (trace && genre !== 'ouverture')) return;
       (ev.currentTarget as Element).setPointerCapture?.(ev.pointerId);
       const o = genre === 'objet' ? n.objets.find((x) => x.id === id) : undefined;
       geste.current = {
@@ -44,7 +44,9 @@ export function useGlisser(
       if (!g) return false;
       const vers = arrondir(p);
       if (distance(vers, g.dernier) < 10) return true;
-      if (g.genre === 'extremite') {
+      if (g.genre === 'ouverture')
+        dispatch({ type: 'glisserOuverture', id: g.id, vers, geste: g.cle });
+      else if (g.genre === 'extremite') {
         const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
         dispatch({ type: 'deplacerExtremite', murId, extremite: bout, vers, geste: g.cle });
       } else if (g.genre === 'mur')
@@ -87,6 +89,10 @@ export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
     ),
     demarrerObjet: useCallback(
       (id: string, ev: PointerEvent) => courant.current.demarrer('objet', id, ev),
+      [],
+    ),
+    demarrerOuverture: useCallback(
+      (id: string, ev: PointerEvent) => courant.current.demarrer('ouverture', id, ev),
       [],
     ),
     demarrerExtremite: useCallback(

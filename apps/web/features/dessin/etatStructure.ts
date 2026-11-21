@@ -6,6 +6,7 @@ import {
   hauteurVersLeHaut,
   mettreFondAEchelle,
   modifierEscalier,
+  glisserOuverture,
   modifierOuverture,
   murSousLePoint,
   pieceRectangle,
@@ -157,6 +158,11 @@ export function reduireStructure(e: EtatEditeur, a: Action): EtatEditeur | null 
       return supprimerSelection(e, a.confirme === true);
     case 'modifierOuverture':
       return surNiveau(e, (n) => modifierOuverture(n, a.id, a.modif));
+    case 'glisserOuverture': {
+      // Pendant le glisser, une position refusée (chevauchement) est simplement ignorée.
+      const suite = surNiveau(e, (n) => glisserOuverture(n, a.id, a.vers), a.geste ?? null);
+      return suite.erreur ? e : suite;
+    }
     case 'modifierEscalier':
       return surNiveau(e, (n) => modifierEscalier(n, a.id, a.modif));
     case 'poserFond':
