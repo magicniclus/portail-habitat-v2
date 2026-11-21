@@ -19,6 +19,13 @@ describe('géométrie 3D (DES-33)', () => {
     expect(p!.centre.z).toBe(1_250);
   });
 
+  it('niveau au-dessus : le mur traverse le plancher, la façade ne fait pas de ressaut', () => {
+    const m = n.murs[0]!;
+    const [p] = morceauxDeMur(m, n, undefined, 200);
+    expect(p!.taille.h).toBe(2_700);
+    expect(p!.centre.z).toBe(1_350);
+  });
+
   it('fenêtre : trumeaux, allège et linteau ; aucun volume dans la baie', () => {
     const m = n.murs[0]!;
     const avec = ok(poserOuverture(n, { murId: m.id, type: 'fenetre', centre: 5000 }, ctx));

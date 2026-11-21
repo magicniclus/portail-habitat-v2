@@ -41,19 +41,23 @@ type Trou = { de: number; a: number; bas: number; haut: number };
 /**
  * Un mur découpé en pavés autour de ses portes et fenêtres : trumeaux pleine hauteur,
  * allège sous chaque baie et linteau au-dessus. Chaque extrémité déborde d'une demi-épaisseur
- * pour que les angles se referment.
+ * pour que les angles se referment. `rehausse` : un niveau au-dessus, les murs qui montent
+ * jusqu'au plafond traversent l'épaisseur du plancher (façade continue, sans ressaut).
  */
 export function morceauxDeMur(
   m: Mur,
   n: Pick<Niveau, 'ouvertures' | 'altitude' | 'hauteurSousPlafond'>,
   /** Contour raccordé du mur (`contoursRaccordes`) ; sinon rectangle débordant aux bouts. */
   contour?: readonly Point[],
+  rehausse = 0,
 ): MorceauMur[] {
   const L = longueurMur(m);
   if (L === 0 || m.type === 'separation') return [];
   const angle = Math.atan2(m.b.y - m.a.y, m.b.x - m.a.x);
   const u = { x: Math.cos(angle), y: Math.sin(angle) };
-  const H = Math.max(m.hauteur, m.hauteurB ?? 0);
+  const hMur = Math.max(m.hauteur, m.hauteurB ?? 0);
+  const H =
+    m.type !== 'poutre' && hMur >= n.hauteurSousPlafond ? hMur + Math.max(0, rehausse) : hMur;
   const deb = m.type === 'poteau' ? 0 : m.epaisseur / 2;
   const trous: Trou[] = n.ouvertures
     .filter((o) => o.murId === m.id)

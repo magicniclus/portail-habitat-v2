@@ -94,8 +94,10 @@ export function Niveau3D({
 }) {
   const morceaux = useMemo(() => {
     const contours = contoursRaccordes(n.murs);
-    return n.murs.flatMap((m) => morceauxDeMur(m, n, contours.get(m.id)));
-  }, [n]);
+    // Un niveau au-dessus : les murs montent jusqu'à son plancher (façade continue).
+    const rehausse = dessus ? dessus.altitude - n.altitude - n.hauteurSousPlafond : 0;
+    return n.murs.flatMap((m) => morceauxDeMur(m, n, contours.get(m.id), rehausse));
+  }, [n, dessus]);
   const dalles = useMemo(() => dallesDuNiveau(n), [n]);
   const escaliers = useMemo(
     () =>
