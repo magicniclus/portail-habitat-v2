@@ -1,0 +1,960 @@
+{
+  "_source": "Extrait de docs/designs/Pages Legales.dc.html (DOCS, ORDRE_PART, ORDRE_PRO). Textes juridiques à faire relire avant la mise en production.",
+  "version": "2026-11-17",
+  "ordre": {
+    "particuliers": [
+      "cgu",
+      "avis",
+      "mentions",
+      "confidentialite",
+      "cookies",
+      "securite"
+    ],
+    "pro": [
+      "cgv",
+      "charte",
+      "mentions",
+      "confidentialite",
+      "securitePro",
+      "cookies"
+    ]
+  },
+  "documents": {
+    "mentions": {
+      "titre": "Mentions légales",
+      "icone": "M6 3.5h9l4 4v13H6zM9.5 12h6M9.5 16h4",
+      "chapeau": "Informations relatives à l'éditeur du site Portail Travaux, à son hébergement et aux conditions de publication, conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), aux articles L. 111-1 et suivants du code de la consommation et au règlement (UE) 2022/2065 sur les services numériques.",
+      "encadre": [
+        "Éléments restant à renseigner.",
+        "L'adresse postale de l'établissement, le numéro de téléphone et le médiateur de la consommation sont indiqués entre crochets : ils doivent être complétés avant la mise en ligne."
+      ],
+      "sections": [
+        {
+          "titre": "1. Éditeur du site",
+          "paragraphes": [
+            "Le site Portail Travaux, accessible notamment aux adresses portailtravaux.fr et www.portailtravaux.fr, ainsi que ses sous-domaines et ses applications, est édité par Monsieur Nicolas Castera, entrepreneur individuel (EI), exerçant sous le nom commercial « Portail Travaux ».",
+            "Numéro SIREN : 832 414 650, immatriculé au Registre national des entreprises (RNE). Activité principale : édition de logiciels applicatifs (code APE 58.29C). Entreprise créée le 3 octobre 2017.",
+            "Adresse de l'établissement : [numéro et rue], 33360 Carignan-de-Bordeaux, France.",
+            "Numéro de TVA intracommunautaire : FR11 832 414 650.",
+            "Contact : contact@portailtravaux.fr — téléphone : [téléphone]. Le formulaire de contact et l'adresse électronique permettent d'entrer en contact rapidement et de communiquer directement avec l'éditeur, conformément à l'article 6 III de la LCEN.",
+            "Directeur de la publication : Monsieur Nicolas Castera."
+          ]
+        },
+        {
+          "titre": "2. Hébergement",
+          "paragraphes": [
+            "Application et pages du site : Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis — vercel.com. Les fonctions serveur sont exécutées en région Paris (France).",
+            "Base de données, authentification, stockage des fichiers et fonctions de traitement : Google Cloud EMEA Limited (services Google Cloud et Firebase), 70 Sir John Rogerson's Quay, Dublin 2, Irlande — cloud.google.com. Les données sont hébergées dans l'Union européenne.",
+            "Les sites internet créés par les professionnels avec l'outil Portail Travaux sont servis par les mêmes hébergeurs."
+          ]
+        },
+        {
+          "titre": "3. Nature du service",
+          "paragraphes": [
+            "Portail Travaux est une plateforme en ligne de mise en relation entre des particuliers porteurs de projets de travaux, de rénovation ou de diagnostics immobiliers et des professionnels indépendants du bâtiment. Elle met également à la disposition des professionnels des outils de gestion (fiche de présentation, site internet, devis et factures, suivi des clients, avis).",
+            "L'éditeur n'est ni entrepreneur, ni maître d'œuvre, ni architecte, ni bureau d'études, ni diagnostiqueur, ni courtier en travaux, ni intermédiaire en opérations de banque ou en assurance. Il n'exécute aucune prestation de travaux, ne la dirige pas, ne la contrôle pas et n'est pas partie aux contrats conclus entre les particuliers et les professionnels.",
+            "L'éditeur n'encaisse aucun paiement pour le compte des professionnels et n'intervient pas dans le règlement des travaux. Il ne perçoit aucune commission sur les travaux conclus.",
+            "Conformément à l'article L. 111-7 du code de la consommation, les critères de référencement et de classement des professionnels, ainsi que l'existence d'une rémunération influençant ce classement, sont décrits dans les conditions générales d'utilisation et dans les conditions générales de vente professionnels."
+          ]
+        },
+        {
+          "titre": "4. Propriété intellectuelle",
+          "paragraphes": [
+            "La structure du site, son arborescence, ses interfaces, ses textes, ses illustrations, ses vidéos, sa charte graphique, ses logos, la dénomination « Portail Travaux », ses logiciels, ses simulateurs, ses grilles d'estimation et ses bases de données sont la propriété exclusive de l'éditeur ou font l'objet d'une licence à son profit. Ils sont protégés par le code de la propriété intellectuelle, notamment au titre du droit d'auteur et du droit sui generis du producteur de bases de données (articles L. 341-1 et suivants).",
+            "Toute reproduction, représentation, adaptation, traduction, extraction ou réutilisation, totale ou partielle, par quelque procédé que ce soit, sans autorisation écrite et préalable de l'éditeur, est interdite et constitue une contrefaçon sanctionnée par les articles L. 335-2 et suivants du code de la propriété intellectuelle.",
+            "Sont expressément interdits : l'extraction automatisée de données (aspiration, moissonnage, robots, scripts), la constitution de fichiers à partir des fiches des professionnels ou des demandes, l'utilisation des contenus du site pour entraîner, alimenter ou évaluer un modèle d'intelligence artificielle, et toute exploration de textes et de données : l'éditeur s'y oppose au sens de l'article L. 122-5-3 du code de la propriété intellectuelle.",
+            "Les marques, logos et contenus des professionnels référencés restent leur propriété ; ils sont affichés sous leur seule responsabilité."
+          ]
+        },
+        {
+          "titre": "5. Contenus publiés par les utilisateurs et signalement",
+          "paragraphes": [
+            "Pour les avis, fiches, photographies, textes de sites et autres contenus publiés par les utilisateurs et les professionnels, l'éditeur agit en qualité d'hébergeur au sens de l'article 6 de la LCEN et de fournisseur de services d'hébergement au sens du règlement (UE) 2022/2065. Il n'exerce pas de contrôle général préalable sur ces contenus.",
+            "Tout contenu illicite peut être signalé à contact@portailtravaux.fr ou par le lien de signalement présent sur la page concernée. Le signalement doit comporter : la date, l'identité du notifiant, la description et l'adresse précise du contenu, les motifs pour lesquels il doit être retiré (avec, le cas échéant, les dispositions légales concernées) et la copie de la démarche effectuée auprès de l'auteur, lorsque cela est possible.",
+            "L'éditeur retire ou rend inaccessible promptement tout contenu manifestement illicite dont il a connaissance, informe l'auteur de la décision et de ses motifs, et lui indique les voies de recours. Un signalement abusif, présentant un contenu comme illicite en sachant cette information inexacte, est puni par l'article 6 I 4 de la LCEN.",
+            "Point de contact unique pour les autorités et les utilisateurs (articles 11 et 12 du règlement 2022/2065) : contact@portailtravaux.fr, en français."
+          ]
+        },
+        {
+          "titre": "6. Accessibilité, crédits et liens",
+          "paragraphes": [
+            "Le site est conçu pour respecter les principales règles d'accessibilité (contrastes, navigation au clavier, alternatives textuelles). Toute difficulté d'accès peut être signalée à contact@portailtravaux.fr.",
+            "Les illustrations des sites artisans marquées « Photo d'illustration » sont des dessins créés pour Portail Travaux et ne représentent pas des chantiers réels.",
+            "Les liens vers des sites tiers sont fournis à titre d'information ; l'éditeur n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu. La création d'un lien vers le site est libre, à l'exclusion de toute pratique de cadrage (framing) ou de présentation laissant croire à une affiliation."
+          ]
+        },
+        {
+          "titre": "7. Médiation et droit applicable",
+          "paragraphes": [
+            "Conformément aux articles L. 611-1 et suivants du code de la consommation, le consommateur peut recourir gratuitement au médiateur de la consommation suivant, après une réclamation écrite préalable auprès de l'éditeur restée sans réponse satisfaisante dans un délai de deux mois : [nom, adresse et site internet du médiateur de la consommation].",
+            "Le présent site, ses conditions d'utilisation et ses conditions de vente sont soumis au droit français. Sous réserve des règles impératives de compétence applicables aux consommateurs, les litiges relèvent des juridictions françaises."
+          ]
+        }
+      ]
+    },
+    "confidentialite": {
+      "titre": "Politique de confidentialité",
+      "icone": "M6.5 10.5h11v9h-11zM9 10.5V8a3 3 0 0 1 6 0v2.5M12 14v2.5",
+      "chapeau": "Comment Portail Travaux traite les données personnelles des particuliers, des professionnels et des visiteurs, conformément au règlement (UE) 2016/679 (RGPD) et à la loi n° 78-17 du 6 janvier 1978 modifiée.",
+      "sections": [
+        {
+          "titre": "1. Responsable de traitement",
+          "paragraphes": [
+            "Le responsable des traitements décrits ci-dessous est Monsieur Nicolas Castera, entrepreneur individuel exerçant sous le nom Portail Travaux, SIREN 832 414 650, [numéro et rue], 33360 Carignan-de-Bordeaux, France. Contact pour toute question relative à vos données : contact@portailtravaux.fr.",
+            "L'éditeur n'est pas tenu de désigner un délégué à la protection des données ; les demandes sont traitées directement par le responsable.",
+            "Lorsqu'un professionnel utilise nos outils pour gérer ses propres clients (devis, factures, suivi, formulaire de son site), il est responsable de ces traitements et Portail Travaux agit comme sous-traitant (voir les conditions générales de vente professionnels)."
+          ]
+        },
+        {
+          "titre": "2. Données collectées",
+          "paragraphes": [
+            "Nous collectons uniquement les données nécessaires aux finalités poursuivies (principe de minimisation) :"
+          ],
+          "liste": [
+            "Identification et contact : nom, prénom, adresse email, numéro de téléphone, adresse ou commune du chantier ou du bien.",
+            "Projet : nature des travaux, surfaces, équipements, année de construction, diagnostics existants, budget envisagé, délais, photographies et documents que vous transmettez volontairement.",
+            "Professionnels : dénomination, SIREN/SIRET, adresse de l'établissement, métiers, zone d'intervention, qualifications, attestations d'assurance, identité des membres de l'équipe, historique des formules et des factures. Les données de carte bancaire sont collectées et conservées par Stripe, jamais par Portail Travaux.",
+            "Avis : note, texte, date, éléments de preuve de la prestation.",
+            "Données techniques : journaux de connexion, adresse IP, identifiants d'appareil, type de navigateur, pages consultées et, avec votre accord, mesure d'audience détaillée (parcours, clics, zones vues).",
+            "Échanges : messages adressés au support, réclamations, signalements."
+          ]
+        },
+        {
+          "titre": "3. Finalités, bases légales et durées de conservation",
+          "paragraphes": [
+            "Chaque traitement repose sur une base légale déterminée et une durée de conservation limitée :"
+          ],
+          "tableau": {
+            "entetes": [
+              "Finalité",
+              "Base légale",
+              "Conservation"
+            ],
+            "lignes": [
+              [
+                "Estimation, dépôt et transmission des demandes, mise en relation",
+                "Exécution des conditions d’utilisation (mesures précontractuelles)",
+                "3 ans à compter du dernier contact, puis anonymisation"
+              ],
+              [
+                "Création et gestion du compte (particulier ou professionnel)",
+                "Exécution du contrat",
+                "Durée du compte, puis 3 ans pour la gestion des réclamations"
+              ],
+              [
+                "Formules, achats, facturation et comptabilité",
+                "Exécution du contrat et obligation légale",
+                "10 ans (article L. 123-22 du code de commerce)"
+              ],
+              [
+                "Vérification des entreprises (répertoire officiel, assurances)",
+                "Intérêt légitime (fiabilité de l’annuaire) et obligation légale",
+                "Durée du référencement + 5 ans"
+              ],
+              [
+                "Collecte, modération et publication des avis",
+                "Obligation légale (article L. 111-7-2 du code de la consommation) et intérêt légitime",
+                "Affichage 3 ans, preuves 5 ans"
+              ],
+              [
+                "Prévention de la fraude, sécurité, journaux de connexion",
+                "Intérêt légitime et obligation légale (LCEN)",
+                "1 an pour les journaux, 5 ans pour les dossiers de fraude"
+              ],
+              [
+                "Emails de suivi de l’inscription et du compte",
+                "Exécution du contrat",
+                "Durée du compte"
+              ],
+              [
+                "Prospection par email des professionnels",
+                "Intérêt légitime (service analogue), opposition à tout moment",
+                "3 ans après le dernier contact"
+              ],
+              [
+                "Prospection par email des particuliers",
+                "Consentement",
+                "3 ans après le dernier contact"
+              ],
+              [
+                "Mesure d’audience et amélioration des pages",
+                "Consentement (sauf statistiques exemptées)",
+                "13 mois pour les traceurs, 25 mois pour les données"
+              ],
+              [
+                "Fonctions d’intelligence artificielle",
+                "Exécution du contrat",
+                "Le temps du traitement chez le prestataire ; résultat conservé dans le compte"
+              ],
+              [
+                "Réponse aux demandes d’exercice des droits",
+                "Obligation légale",
+                "5 ans"
+              ],
+              [
+                "Contentieux",
+                "Intérêt légitime (défense des droits)",
+                "Jusqu’à la fin de la procédure et des voies de recours"
+              ]
+            ]
+          }
+        },
+        {
+          "titre": "4. Destinataires",
+          "paragraphes": [
+            "Vos données de projet et vos coordonnées sont transmises aux seuls professionnels concernés par votre demande : celui que vous contactez directement, ou un nombre limité de professionnels correspondant à votre projet et à votre secteur. Elles ne sont jamais vendues, louées ou cédées à des fins publicitaires.",
+            "Ont également accès aux données, dans la limite de leurs missions : l'éditeur et les personnes qu'il autorise, soumises à confidentialité ; nos sous-traitants techniques ; les autorités administratives ou judiciaires sur réquisition légale.",
+            "Les données publiques des fiches professionnelles (dénomination, métiers, commune, avis, photos publiées) sont visibles de tous et peuvent être indexées par les moteurs de recherche ; aucune donnée personnelle de particulier n'y figure."
+          ]
+        },
+        {
+          "titre": "5. Sous-traitants",
+          "paragraphes": [
+            "Nos sous-traitants agissent sur instruction documentée, dans le cadre de contrats conformes à l'article 28 du RGPD :"
+          ],
+          "tableau": {
+            "entetes": [
+              "Prestataire",
+              "Rôle",
+              "Localisation et garanties"
+            ],
+            "lignes": [
+              [
+                "Google Cloud EMEA Ltd (Firebase, Google Cloud)",
+                "Hébergement des données, authentification, stockage, fonctions",
+                "Union européenne"
+              ],
+              [
+                "Vercel Inc.",
+                "Hébergement et diffusion du site",
+                "Union européenne et États-Unis (Data Privacy Framework, clauses types)"
+              ],
+              [
+                "Stripe Payments Europe Ltd",
+                "Paiement des formules et achats des professionnels",
+                "Union européenne (Irlande) et États-Unis (clauses types)"
+              ],
+              [
+                "Resend Inc.",
+                "Envoi des emails transactionnels",
+                "États-Unis (clauses types)"
+              ],
+              [
+                "Brevo (Sendinblue SAS)",
+                "Envoi des emails et SMS de suivi",
+                "France, Union européenne"
+              ],
+              [
+                "Anthropic PBC",
+                "Fonctions d'intelligence artificielle (rédaction, recherche guidée)",
+                "États-Unis (clauses types), sans coordonnées des particuliers"
+              ],
+              [
+                "Typesense",
+                "Moteur de recherche de l'annuaire (données publiques des fiches)",
+                "Selon la région d'hébergement choisie, clauses types le cas échéant"
+              ],
+              [
+                "Functional Software Inc. (Sentry)",
+                "Détection des erreurs techniques",
+                "États-Unis (clauses types), données minimisées"
+              ],
+              [
+                "Gandi SAS",
+                "Enregistrement des noms de domaine des professionnels",
+                "France, Union européenne"
+              ]
+            ]
+          }
+        },
+        {
+          "titre": "6. Transferts hors de l'Union européenne",
+          "paragraphes": [
+            "Les données de la plateforme sont hébergées dans l'Union européenne. Certains prestataires sont établis aux États-Unis : les transferts reposent sur la décision d'adéquation du cadre de protection des données UE–États-Unis lorsque le prestataire y est certifié, ou sur les clauses contractuelles types de la Commission européenne, complétées des mesures nécessaires (chiffrement, minimisation). Une copie des garanties peut être obtenue sur demande."
+          ]
+        },
+        {
+          "titre": "7. Vos droits",
+          "paragraphes": [
+            "Vous disposez des droits d'accès, de rectification, d'effacement, de limitation, d'opposition (y compris, sans motif, à la prospection), de portabilité, du droit de retirer votre consentement à tout moment sans remettre en cause les traitements passés, et du droit de définir des directives sur le sort de vos données après votre décès.",
+            "Vous pouvez les exercer depuis votre espace (« Mes données » : export et suppression du compte) ou à contact@portailtravaux.fr. Une pièce d'identité peut être demandée en cas de doute raisonnable sur votre identité. Nous répondons dans un délai d'un mois, prorogeable de deux mois en cas de demande complexe, en vous en informant.",
+            "Vous pouvez introduire une réclamation auprès de la Commission nationale de l'informatique et des libertés (CNIL), 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, cnil.fr. Vous pouvez aussi vous inscrire gratuitement sur la liste d'opposition au démarchage téléphonique Bloctel."
+          ]
+        },
+        {
+          "titre": "8. Décisions automatisées",
+          "paragraphes": [
+            "La répartition des demandes entre professionnels et le classement de l'annuaire reposent sur des critères automatiques décrits dans les conditions générales. Ils ne produisent aucun effet juridique à votre égard au sens de l'article 22 du RGPD. Les estimations de prix sont des calculs indicatifs, sans décision vous concernant."
+          ]
+        },
+        {
+          "titre": "9. Sécurité",
+          "paragraphes": [
+            "Les mesures techniques et organisationnelles mises en œuvre (chiffrement des échanges, contrôle d'accès, journalisation, sauvegardes, cloisonnement des données) sont décrites dans la rubrique « Sécurité ». En cas de violation de données susceptible d'engendrer un risque, la CNIL est notifiée dans les 72 heures et, si le risque est élevé, vous êtes informé dans les meilleurs délais."
+          ]
+        },
+        {
+          "titre": "10. Mineurs",
+          "paragraphes": [
+            "Le service ne s'adresse pas aux mineurs. Nous ne collectons pas sciemment de données concernant des personnes de moins de dix-huit ans ; si c'était le cas, elles seraient supprimées dès que nous en aurions connaissance."
+          ]
+        },
+        {
+          "titre": "11. Modification de la politique",
+          "paragraphes": [
+            "Cette politique peut évoluer, notamment en cas de nouveau traitement ou de nouveau sous-traitant. La date de version figure en bas de page. Toute modification importante vous est signalée par email ou dans votre espace."
+          ]
+        }
+      ]
+    },
+    "cookies": {
+      "titre": "Politique de cookies",
+      "icone": "M12 3.5a8.5 8.5 0 1 0 8.5 8.5A4 4 0 0 1 16 8a3.5 3.5 0 0 1-4-4.5ZM9 10v.01M13.5 13v.01M9.5 15v.01",
+      "chapeau": "Information sur les traceurs (cookies et technologies similaires) utilisés lors de votre navigation, conformément à l'article 82 de la loi du 6 janvier 1978 modifiée et aux lignes directrices et recommandations de la CNIL du 17 septembre 2020.",
+      "sections": [
+        {
+          "titre": "1. Ce qu'est un traceur",
+          "paragraphes": [
+            "Un traceur est une information déposée ou lue sur votre appareil (cookie, stockage local, identifiant) lors de la consultation d'un site. Certains sont indispensables au fonctionnement du site ; les autres ne sont déposés qu'avec votre accord."
+          ]
+        },
+        {
+          "titre": "2. Traceurs strictement nécessaires (sans consentement)",
+          "paragraphes": [
+            "Ils permettent le fonctionnement et la sécurité du site et ne peuvent pas être désactivés sans le dégrader :"
+          ],
+          "tableau": {
+            "entetes": [
+              "Traceur",
+              "Finalité",
+              "Durée"
+            ],
+            "lignes": [
+              [
+                "Session de connexion (espace particulier, espace pro, administration)",
+                "Vous garder connecté, sécuriser l’authentification",
+                "Durée de la session, 14 jours au plus"
+              ],
+              [
+                "ph_consentement",
+                "Mémoriser votre choix en matière de cookies",
+                "6 mois"
+              ],
+              [
+                "Brouillon d’inscription ou de demande",
+                "Reprendre un parcours commencé",
+                "30 jours"
+              ],
+              [
+                "Protection contre les robots et les abus (App Check, limitation de débit)",
+                "Sécurité du service",
+                "Session"
+              ],
+              [
+                "Préférences d’affichage (stockage local)",
+                "Mémoriser un onglet, un filtre, une saisie non envoyée",
+                "Jusqu’à suppression"
+              ]
+            ]
+          }
+        },
+        {
+          "titre": "3. Mesure d'audience",
+          "paragraphes": [
+            "Les statistiques de fréquentation agrégées, sans suivi d'un visiteur sur d'autres sites ni recoupement, peuvent être exemptées de consentement dans les conditions fixées par la CNIL. La « mesure d'audience détaillée » (parcours, clics, zones vues, enregistrements anonymisés de navigation, servant à améliorer les pages) n'est activée qu'avec votre accord ; aucune saisie de formulaire n'y est enregistrée."
+          ]
+        },
+        {
+          "titre": "4. Traceurs publicitaires et réseaux sociaux",
+          "paragraphes": [
+            "Les traceurs permettant de mesurer l'efficacité de nos campagnes (par exemple Google Ads ou Meta) ou de partager du contenu sur les réseaux sociaux ne sont déposés qu'après votre consentement explicite. Les vidéos intégrées depuis des plateformes tierces ne déposent leurs traceurs qu'au lancement de la lecture, lorsque vous les y autorisez."
+          ]
+        },
+        {
+          "titre": "5. Votre choix",
+          "paragraphes": [
+            "Lors de votre première visite, un bandeau vous permet d'accepter, de refuser ou de personnaliser votre choix par catégorie. Refuser est aussi simple qu'accepter et n'empêche pas l'accès au site. Sans choix de votre part, aucun traceur soumis à consentement n'est déposé.",
+            "Votre choix est conservé six mois, puis redemandé. Vous pouvez le modifier à tout moment par le lien « Gérer mes cookies » en pied de page. Vous pouvez aussi paramétrer votre navigateur pour bloquer ou supprimer les cookies ; certaines fonctions pourraient alors ne plus fonctionner."
+          ]
+        },
+        {
+          "titre": "6. Durées",
+          "paragraphes": [
+            "Les traceurs soumis à consentement ont une durée de vie de treize mois au plus ; les données qu'ils permettent de collecter sont conservées vingt-cinq mois au plus."
+          ]
+        }
+      ]
+    },
+    "securite": {
+      "titre": "Sécurité de la plateforme",
+      "icone": "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
+      "chapeau": "Mesures techniques et organisationnelles destinées à protéger les comptes, les documents et les données échangées sur Portail Travaux, et engagements attendus des utilisateurs.",
+      "sections": [
+        {
+          "titre": "1. Protection des échanges et des données",
+          "paragraphes": [
+            "L'ensemble des échanges entre votre navigateur et nos serveurs est chiffré en transit (TLS 1.2 minimum, HSTS activé). Les données sensibles sont chiffrées au repos et les mots de passe ne sont jamais stockés en clair : ils sont dérivés au moyen d'une fonction de hachage lente et salée.",
+            "Les documents que vous déposez (devis, attestations d'assurance, rapports de diagnostic, photos de chantier) sont stockés sur un espace à accès restreint et servis par des liens temporaires signés."
+          ]
+        },
+        {
+          "titre": "2. Contrôle d'accès",
+          "paragraphes": [
+            "L'accès aux données est cloisonné selon le principe du moindre privilège : un professionnel n'accède qu'aux demandes qui lui sont attribuées, un particulier qu'à son propre dossier. Les accès des équipes internes sont nominatifs, journalisés et soumis à une authentification renforcée.",
+            "La double authentification est disponible sur tous les comptes et fortement recommandée pour les comptes professionnels disposant d'un moyen de paiement enregistré."
+          ]
+        },
+        {
+          "titre": "3. Paiements",
+          "paragraphes": [
+            "Les paiements d'abonnement sont traités par un prestataire de services de paiement agréé, conforme à la norme PCI-DSS. Nous ne collectons, ne voyons ni ne conservons vos numéros de carte : seuls un identifiant de transaction et les quatre derniers chiffres sont enregistrés à des fins de preuve."
+          ]
+        },
+        {
+          "titre": "4. Sauvegardes, journalisation et continuité",
+          "paragraphes": [
+            "Les données sont sauvegardées de manière chiffrée et redondée, avec test de restauration périodique. Les événements de sécurité sont journalisés et conservés pour permettre la détection d'anomalies et l'investigation d'incidents."
+          ]
+        },
+        {
+          "titre": "5. Gestion des incidents",
+          "paragraphes": [
+            "Nous maintenons une procédure de gestion des violations de données : qualification, confinement, notification à la CNIL sous 72 heures lorsque les critères sont réunis, et information des personnes concernées en cas de risque élevé. Les vulnérabilités peuvent être signalées de bonne foi à [email sécurité] ; nous nous engageons à ne pas poursuivre les chercheurs qui respectent ce cadre et n'exfiltrent aucune donnée."
+          ]
+        },
+        {
+          "titre": "6. Vos obligations",
+          "paragraphes": [
+            "La sécurité est partagée. Vous vous engagez à :"
+          ],
+          "liste": [
+            "Utiliser un mot de passe unique et robuste, et activer la double authentification.",
+            "Ne pas partager vos identifiants, ni laisser un tiers utiliser votre compte.",
+            "Nous signaler sans délai toute utilisation non autorisée de votre compte.",
+            "Ne pas tenter d'accéder à des données qui ne vous sont pas destinées, ni de contourner les mesures de sécurité, ni d'extraire massivement le contenu de la plateforme."
+          ]
+        },
+        {
+          "titre": "7. Vigilance contre la fraude",
+          "paragraphes": [
+            "Nous ne vous demanderons jamais votre mot de passe par téléphone ou par email, ni un virement vers un compte personnel. Toute demande de paiement en dehors des canaux officiels doit être signalée. Les coordonnées bancaires d'un professionnel figurant sur un devis relèvent de sa seule responsabilité : vérifiez-les auprès de lui par un canal que vous avez vous-même initié."
+          ]
+        }
+      ]
+    },
+    "cgu": {
+      "titre": "Conditions générales d'utilisation",
+      "icone": "M6 3.5h9l4 4v13H6zM9.5 12h6M9.5 16h4",
+      "chapeau": "Règles d'accès et d'usage des services destinés aux particuliers : recherche de professionnels, estimations, dépôt de projets, mise en relation, diagnostics, suivi et avis. Leur acceptation est un préalable à l'utilisation de la plateforme.",
+      "encadre": [
+        "Portail Travaux n'exécute aucuns travaux.",
+        "La plateforme met en relation ; le contrat de travaux ou de diagnostic est conclu directement entre vous et le professionnel, qui en assume seul l'exécution, le prix, les garanties légales et les assurances."
+      ],
+      "sections": [
+        {
+          "titre": "1. Définitions",
+          "paragraphes": [
+            "Dans les présentes conditions : « l'éditeur » désigne Monsieur Nicolas Castera, entrepreneur individuel, éditeur du site Portail Travaux (voir les mentions légales) ; « la plateforme » désigne le site, ses sous-domaines et ses applications ; « vous » ou « l'utilisateur » désigne toute personne physique utilisant la plateforme à des fins non professionnelles ; « le professionnel » désigne une entreprise du bâtiment ou un diagnostiqueur référencé ; « la demande » désigne la description d'un projet transmise par l'utilisateur en vue d'être contacté."
+          ]
+        },
+        {
+          "titre": "2. Objet et acceptation",
+          "paragraphes": [
+            "Les présentes conditions régissent l'accès à la plateforme et l'utilisation, par les particuliers, des services suivants : annuaire et fiches des professionnels, simulateurs d'estimation, dépôt de demandes de devis, formulaires de contact, dossier de diagnostics, recherche guidée, espace personnel, suivi des projets et dépôt d'avis.",
+            "La consultation du site, la création d'un compte ou l'envoi d'une demande vaut acceptation sans réserve des présentes conditions, dans leur version en vigueur au jour de l'utilisation, consultable à tout moment en pied de page. La version acceptée lors d'un envoi est enregistrée."
+          ]
+        },
+        {
+          "titre": "3. Accès au service et gratuité",
+          "paragraphes": [
+            "Le service est réservé aux personnes physiques majeures et juridiquement capables, agissant pour leurs besoins personnels. Il est gratuit pour les particuliers : aucune somme ne vous est demandée par l'éditeur, ni pour l'estimation, ni pour la mise en relation. Seuls les frais de connexion et d'équipement restent à votre charge.",
+            "L'éditeur s'efforce d'assurer l'accès au service en continu, sans obligation de résultat. L'accès peut être interrompu pour maintenance, mise à jour, incident ou cas de force majeure, sans indemnité."
+          ]
+        },
+        {
+          "titre": "4. Compte et identifiants",
+          "paragraphes": [
+            "Certains services nécessitent un compte, ouvert avec une adresse électronique ou un compte Google. Vous êtes responsable de la confidentialité de vos identifiants et de toute utilisation faite de votre compte. Toute utilisation frauduleuse doit être signalée sans délai à contact@portailtravaux.fr.",
+            "Vous vous engagez à fournir des informations exactes, sincères et à jour. L'éditeur peut demander la vérification d'une adresse électronique ou d'un numéro de téléphone avant transmission d'une demande."
+          ]
+        },
+        {
+          "titre": "5. Nature et portée des estimations",
+          "paragraphes": [
+            "Les fourchettes de prix, durées, aides et économies affichées par les simulateurs sont des ordres de grandeur indicatifs, calculés automatiquement à partir de moyennes de marché et des seules informations que vous déclarez, sans visite du bien. Elles ne constituent ni un devis, ni une offre, ni un engagement de prix de l'éditeur ou d'un professionnel, ni une promesse d'aide financière.",
+            "Seul le devis écrit et signé avec un professionnel, après visite sur place le cas échéant, a valeur contractuelle. L'éditeur ne garantit aucun écart maximal entre l'estimation et le prix final et ne saurait être tenu responsable d'une décision prise sur la seule base d'une estimation."
+          ]
+        },
+        {
+          "titre": "6. Informations réglementaires et contenus pédagogiques",
+          "paragraphes": [
+            "Les informations relatives aux obligations légales (diagnostics obligatoires, durées de validité, seuils, aides publiques, normes) sont fournies à titre d'information générale et sont à jour à la date indiquée sur la page. Elles ne constituent pas un conseil juridique, fiscal ou technique personnalisé et ne dispensent pas de vérifier votre situation auprès d'un professionnel qualifié ou de l'administration compétente (notamment France Rénov' et l'Agence nationale de l'habitat pour les aides)."
+          ]
+        },
+        {
+          "titre": "7. Mise en relation",
+          "paragraphes": [
+            "En envoyant une demande, vous autorisez la transmission des informations de votre projet et de vos coordonnées à un nombre limité de professionnels correspondant à votre projet et à votre secteur, ou au professionnel que vous avez choisi lorsque vous le contactez depuis sa fiche ou son site, afin qu'ils vous recontactent par téléphone, par message ou par courrier électronique au sujet de ce seul projet.",
+            "Vous restez libre de ne donner suite à aucun contact et de refuser tout devis, sans frais ni justification. Aucun nombre minimal de réponses n'est garanti. Si vous ne souhaitez plus être contacté, signalez-le au professionnel et à l'éditeur, qui en tiendra compte pour les transmissions futures.",
+            "Lors du référencement, l'éditeur vérifie l'existence de l'entreprise au répertoire officiel et peut demander une attestation d'assurance. Ces vérifications sont documentaires et ponctuelles : elles ne constituent ni une garantie de compétence ou de solvabilité, ni une caution, ni une recommandation. Il vous appartient de vérifier avant signature l'attestation d'assurance décennale en cours de validité, les qualifications (notamment RGE si vous sollicitez des aides) et les mentions du devis."
+          ]
+        },
+        {
+          "titre": "8. Référencement et classement des professionnels",
+          "paragraphes": [
+            "Les professionnels apparaissent dans l'annuaire en fonction de critères principaux rendus publics conformément à l'article L. 111-7 du code de la consommation : correspondance avec le métier et le lieu recherchés, distance, complétude de la fiche, avis vérifiés, réactivité aux demandes et, le cas échéant, souscription d'une formule payante de mise en avant. Les emplacements issus d'une formule payante sont identifiés comme tels.",
+            "L'éditeur est rémunéré par les professionnels pour des formules et des services optionnels ; il ne perçoit aucune commission sur les travaux. Aucune rémunération n'influence le contenu des avis."
+          ]
+        },
+        {
+          "titre": "9. Avis",
+          "paragraphes": [
+            "Les avis sont collectés, contrôlés et publiés selon la politique d'avis, qui fait partie intégrante des présentes conditions. Vous vous engagez à ne déposer un avis que sur une prestation réellement réalisée pour vous, de manière sincère et mesurée."
+          ]
+        },
+        {
+          "titre": "10. Vos obligations",
+          "paragraphes": [
+            "Vous vous engagez à utiliser le service de bonne foi et conformément à sa destination. Il est notamment interdit :"
+          ],
+          "liste": [
+            "de déposer une demande fictive, pour un tiers sans son accord, ou dans un but de prospection, de concurrence ou d'enquête ;",
+            "d'usurper l'identité d'une personne ou d'utiliser les coordonnées d'un tiers ;",
+            "de publier un contenu illicite, injurieux, diffamatoire, discriminatoire, contraire à l'ordre public ou portant atteinte à la vie privée, à l'image ou aux droits d'un tiers ;",
+            "d'extraire, de copier ou de réutiliser les données des professionnels ou de la plateforme, par quelque moyen que ce soit ;",
+            "de contourner les mesures de sécurité, de perturber le fonctionnement du service ou d'y introduire un programme malveillant ;",
+            "de solliciter un professionnel dans un but autre que la réalisation de votre projet."
+          ]
+        },
+        {
+          "titre": "11. Responsabilité de l'éditeur",
+          "paragraphes": [
+            "L'éditeur est tenu à une obligation de moyens quant à la mise à disposition de la plateforme. Dans la limite permise par la loi, il ne peut être tenu responsable :"
+          ],
+          "liste": [
+            "de l'exécution, des retards, des malfaçons, des dommages, du prix ou de l'abandon d'un chantier, imputables à un professionnel, qui est seul tenu des garanties légales (parfait achèvement, biennale, décennale) ;",
+            "des informations, devis, factures et contenus établis ou publiés par les professionnels et les utilisateurs, qui en sont seuls responsables ;",
+            "de l'écart entre une estimation automatique et le prix réellement pratiqué, ou du refus d'une aide financière ;",
+            "des interruptions, lenteurs ou erreurs liées à la maintenance, à un incident technique, à un tiers ou à un cas de force majeure ;",
+            "de l'usage fait par un professionnel de vos coordonnées en violation de ses engagements, sous réserve des mesures que l'éditeur prend dès qu'il en a connaissance."
+          ]
+        },
+        {
+          "titre": "12. Propriété intellectuelle et licence sur vos contenus",
+          "paragraphes": [
+            "Les contenus de la plateforme sont protégés (voir les mentions légales). En publiant un avis, une photographie ou un texte, vous concédez à l'éditeur, à titre gratuit et non exclusif, pour le monde entier et pour la durée de leur publication, le droit de les reproduire, de les représenter et de les adapter aux formats de la plateforme et de ses supports de communication, aux seules fins du service. Vous garantissez disposer des droits nécessaires."
+          ]
+        },
+        {
+          "titre": "13. Données personnelles",
+          "paragraphes": [
+            "Vos données sont traitées conformément à la politique de confidentialité. Les professionnels qui reçoivent vos coordonnées les traitent en qualité de responsables de traitement distincts, pour le seul besoin de votre projet."
+          ]
+        },
+        {
+          "titre": "14. Suspension et résiliation",
+          "paragraphes": [
+            "Vous pouvez supprimer votre compte à tout moment depuis votre espace (« Mes données ») ou sur simple demande. L'éditeur peut suspendre ou fermer un compte, retirer une demande ou un contenu, après information préalable motivée sauf urgence, fraude ou manquement grave, en cas de violation des présentes conditions ou d'usage abusif du service."
+          ]
+        },
+        {
+          "titre": "15. Droit de rétractation",
+          "paragraphes": [
+            "Le service étant fourni gratuitement aux particuliers, aucun droit de rétractation ne s'y applique. Les contrats conclus avec les professionnels obéissent à leurs propres règles, notamment au droit de rétractation de quatorze jours prévu pour les contrats conclus à distance ou hors établissement (articles L. 221-18 et suivants du code de la consommation), qu'il appartient au professionnel de vous rappeler."
+          ]
+        },
+        {
+          "titre": "16. Modification des conditions",
+          "paragraphes": [
+            "Les présentes conditions peuvent être modifiées pour tenir compte d'évolutions légales, réglementaires, techniques ou de l'offre de services. La version applicable est celle en vigueur au jour de votre utilisation. Toute modification substantielle vous est notifiée par courrier électronique ou dans votre espace au moins quinze jours avant son entrée en vigueur ; vous pouvez alors supprimer votre compte."
+          ]
+        },
+        {
+          "titre": "17. Réclamations, médiation et droit applicable",
+          "paragraphes": [
+            "Toute réclamation peut être adressée à contact@portailtravaux.fr. À défaut de solution amiable dans un délai de deux mois, vous pouvez saisir gratuitement le médiateur de la consommation indiqué dans les mentions légales, ainsi que la plateforme européenne de règlement en ligne des litiges lorsqu'elle est accessible.",
+            "Les présentes conditions sont soumises au droit français. Si une stipulation était déclarée nulle, les autres resteraient applicables. Le consommateur peut saisir, à son choix, la juridiction du lieu où il demeurait au moment de la conclusion du contrat ou de la survenance du fait dommageable, ou toute juridiction compétente selon le code de procédure civile."
+          ]
+        }
+      ]
+    },
+    "avis": {
+      "titre": "Politique d'avis",
+      "icone": "m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 17l-5.3 2.7 1.1-5.9L3.5 9.7l5.9-.8L12 3.5Z",
+      "chapeau": "Modalités de collecte, de modération et de publication des avis, conformément aux articles L. 111-7-2 et D. 111-16 et suivants du code de la consommation.",
+      "sections": [
+        {
+          "titre": "1. Qui peut déposer un avis",
+          "paragraphes": [
+            "Seule une personne ayant fait réaliser une prestation par le professionnel concerné peut déposer un avis. Le déposant certifie l'absence de lien personnel, familial, capitalistique ou concurrentiel avec ce professionnel. Aucune contrepartie n'est offerte en échange d'un avis."
+          ]
+        },
+        {
+          "titre": "2. Contrôle avant publication",
+          "paragraphes": [
+            "Chaque avis est relu sous 48 heures ouvrées. Un avis peut être refusé s'il est injurieux, discriminatoire, hors sujet, s'il contient des données personnelles de tiers, s'il relate un litige en cours de procédure judiciaire, ou si les éléments de preuve de la prestation ne peuvent être établis. Le motif du refus est communiqué à l'auteur.",
+            "L'éditeur peut demander un justificatif de prestation (devis, facture) et conserve les avis refusés pendant la durée nécessaire au traitement des réclamations."
+          ]
+        },
+        {
+          "titre": "3. Publication, tri et réponse",
+          "paragraphes": [
+            "Les avis sont publiés avec leur date de dépôt et, le cas échéant, la date de la prestation. Le critère de tri par défaut est la date, du plus récent au plus ancien ; les autres critères disponibles sont indiqués à l'utilisateur.",
+            "Le professionnel dispose d'un droit de réponse public. Il ne peut ni modifier, ni supprimer, ni conditionner un avis, ni obtenir son retrait par l'achat d'un service. Aucune option payante ne permet de masquer un avis négatif."
+          ]
+        },
+        {
+          "titre": "4. Modification, retrait et conservation",
+          "paragraphes": [
+            "L'auteur peut modifier ou demander le retrait de son avis à tout moment depuis son espace. Les avis sont conservés et affichés pendant trois ans maximum, puis archivés. Les avis antérieurs à cette durée ne sont plus pris en compte dans la note moyenne."
+          ]
+        },
+        {
+          "titre": "5. Signalement",
+          "paragraphes": [
+            "Tout avis peut être signalé, par le professionnel comme par un tiers, à contact@portailtravaux.fr. Le signalement est traité sous cinq jours ouvrés ; l'avis peut être suspendu pendant l'examen s'il présente un caractère manifestement illicite."
+          ]
+        }
+      ]
+    },
+    "cgv": {
+      "titre": "Conditions générales de vente professionnels",
+      "icone": "M12 4v16M6 8h12M8.5 8 6 14h5L8.5 8ZM15.5 8 13 14h5l-2.5-6ZM8 20h8",
+      "chapeau": "Conditions applicables à tout professionnel qui crée un compte sur Portail Travaux, qu'il utilise les services gratuits ou qu'il souscrive une formule payante, un achat à l'unité ou une option. Elles valent conditions générales d'utilisation et de vente pour les professionnels, au sens du règlement (UE) 2019/1150 promouvant l'équité et la transparence pour les entreprises utilisatrices de services d'intermédiation en ligne.",
+      "encadre": [
+        "Contrat entre professionnels.",
+        "Vous agissez pour les besoins de votre activité professionnelle : les règles du code de la consommation propres aux consommateurs, notamment le droit de rétractation, ne s'appliquent pas, sauf disposition légale impérative contraire (article L. 221-3 du code de la consommation)."
+      ],
+      "sections": [
+        {
+          "titre": "1. Parties et définitions",
+          "paragraphes": [
+            "Les présentes conditions sont conclues entre Monsieur Nicolas Castera, entrepreneur individuel, SIREN 832 414 650, éditeur de Portail Travaux (« l'éditeur »), et toute entreprise, quelle que soit sa forme, qui ouvre un compte professionnel (« le professionnel »).",
+            "Termes utilisés : « l'espace pro » désigne l'espace connecté du professionnel ; « la fiche » sa page publique dans l'annuaire ; « le site » le site internet créé avec l'outil de l'éditeur ; « la demande » un projet de particulier transmis au professionnel ; « l'appel d'offres » une demande proposée à l'unité contre paiement ; « la formule » l'abonnement souscrit (Gratuit, Fiche Pro, Site Pro, Fiche + Site, Tout inclus ou toute formule ultérieure) ; « les crédits » les unités prépayées utilisables sur la plateforme."
+          ]
+        },
+        {
+          "titre": "2. Acceptation et opposabilité",
+          "paragraphes": [
+            "Les présentes conditions sont acceptées lors de la création du compte, par la poursuite de l'inscription après lecture de la mention « En continuant, vous acceptez les conditions générales, la charte et la politique de confidentialité », puis lors de chaque souscription payante sur la page de paiement. La version acceptée et sa date sont enregistrées et font foi.",
+            "Elles prévalent sur toutes conditions d'achat du professionnel. La charte de bonne conduite, la politique d'avis, la politique de confidentialité et la page « Sécurité du compte professionnel » en font partie intégrante. En cas de contradiction, les présentes conditions prévalent, puis la charte."
+          ]
+        },
+        {
+          "titre": "3. Objet",
+          "paragraphes": [
+            "L'éditeur fournit au professionnel, selon la formule choisie : une fiche publique dans l'annuaire ; la réception de demandes de particuliers depuis sa fiche et son site ; l'accès à des appels d'offres à l'unité ; un outil de création et d'hébergement de site internet, avec sous-domaine ou nom de domaine ; des fonctions d'intelligence artificielle d'aide à la rédaction ; un blog ; un outil de devis et de factures ; un outil de suivi des clients ; la collecte d'avis ; des statistiques.",
+            "L'éditeur n'est ni mandataire, ni agent commercial, ni courtier, ni apporteur d'affaires exclusif du professionnel. Il ne garantit aucun volume de demandes, aucun nombre de contacts, aucun taux de transformation, aucun chiffre d'affaires, aucun positionnement dans les moteurs de recherche. Aucune commission n'est prélevée sur les travaux conclus."
+          ]
+        },
+        {
+          "titre": "4. Création du compte et conditions de référencement",
+          "paragraphes": [
+            "Le compte est ouvert au nom d'une entreprise identifiée par son numéro SIREN, vérifié auprès du répertoire officiel des entreprises. La personne qui l'ouvre déclare avoir le pouvoir d'engager l'entreprise. Une entreprise fermée est refusée ; une entreprise non trouvée au répertoire reste hors ligne jusqu'à vérification.",
+            "Le professionnel garantit disposer, pendant toute la durée du contrat :"
+          ],
+          "liste": [
+            "d'une immatriculation en cours de validité et, le cas échéant, d'une inscription au répertoire des métiers ;",
+            "d'une assurance de responsabilité civile professionnelle et, pour les travaux relevant des articles 1792 et suivants du code civil, d'une assurance de responsabilité décennale couvrant toutes les activités qu'il déclare ;",
+            "des qualifications, certifications et habilitations exigées pour les prestations proposées (notamment RGE pour les travaux ouvrant droit à des aides, certification pour les diagnostics immobiliers, habilitations électriques et gaz) ;",
+            "d'une situation régulière au regard de ses obligations sociales, fiscales et de lutte contre le travail dissimulé (articles L. 8221-1 et suivants du code du travail)."
+          ]
+        },
+        {
+          "titre": "5. Déclarations, justificatifs et vérifications",
+          "paragraphes": [
+            "Le professionnel s'engage à transmettre les justificatifs à première demande et à signaler sans délai toute modification (perte ou suspension d'assurance, radiation, retrait de certification, procédure collective, changement de dirigeant). Toute déclaration inexacte, incomplète ou périmée constitue un manquement grave.",
+            "Les vérifications opérées par l'éditeur sont documentaires, ponctuelles et non exhaustives. Elles ne transfèrent à l'éditeur aucune responsabilité : le professionnel demeure seul responsable de sa conformité réglementaire et des informations qu'il publie. L'affichage « Assurance non vérifiée » ou « Nouvelle entreprise » est une information des particuliers, pas une sanction."
+          ]
+        },
+        {
+          "titre": "6. Fiche, mise en ligne et classement",
+          "paragraphes": [
+            "La fiche est mise en ligne lorsque l'entreprise est reconnue au répertoire officiel ; le professionnel peut la retirer à tout moment par l'interrupteur de son espace. Il est seul responsable des textes, prix indicatifs, photographies, labels et coordonnées qu'il y publie.",
+            "Conformément à l'article L. 111-7 du code de la consommation et à l'article 5 du règlement (UE) 2019/1150, les principaux paramètres de classement sont : la correspondance avec le métier et le lieu recherchés, la distance, la complétude de la fiche, les avis vérifiés, la réactivité aux demandes, et la souscription d'une formule payante de mise en avant (Fiche Pro, Tout inclus), qui donne une priorité d'affichage dans le secteur et un badge. Les emplacements payants sont identifiés. Aucune formule ne permet d'influencer les avis."
+          ]
+        },
+        {
+          "titre": "7. Zone et demandes transmises",
+          "paragraphes": [
+            "Le professionnel choisit dans son espace une zone d'intervention autour de son établissement, par un rayon compris entre 10 et 100 kilomètres. Les demandes et appels d'offres qui lui sont transmis ou proposés peuvent concerner tout chantier situé dans cette zone, mesurée à vol d'oiseau. En la choisissant, il reconnaît pouvoir intervenir sur toute la zone ; il peut la réduire à tout moment, pour les transmissions futures.",
+            "Une demande est l'expression d'un projet par un particulier qui a accepté d'être mis en relation. C'est une opportunité commerciale, pas une commande : l'éditeur ne garantit ni la réponse du particulier, ni la conclusion d'un contrat, ni le montant des travaux. Certaines demandes proviennent de sites partenaires où le particulier a consenti à la transmission de ses coordonnées ; la preuve de ce consentement est conservée par l'éditeur ou son partenaire.",
+            "Avant d'accepter sa première demande, le professionnel renseigne un numéro de téléphone joignable, affiché sur sa fiche. Il s'engage à répondre aux demandes acceptées dans un délai raisonnable ou à les décliner."
+          ]
+        },
+        {
+          "titre": "8. Appels d'offres et crédits",
+          "paragraphes": [
+            "Les appels d'offres sont proposés à l'unité, au prix affiché au moment de l'achat, payable par carte ou en crédits. Une fois débloqué, l'appel d'offres donne accès aux coordonnées du particulier ; il n'est ni repris, ni échangé.",
+            "Une contestation peut être formée depuis l'espace pro dans les sept jours suivant le déblocage, pour l'un des seuls motifs suivants : coordonnées erronées ou injoignables après plusieurs tentatives à des jours différents, projet inexistant ou fictif, doublon d'un appel d'offres déjà acheté, chantier situé hors de la zone choisie. Le professionnel fournit les éléments utiles. Une contestation acceptée donne lieu à un remboursement en crédits ou, au choix de l'éditeur, sur le moyen de paiement utilisé. Aucun autre motif (absence de réponse après un premier échange, prix jugé trop bas, refus du devis) n'ouvre droit à remboursement.",
+            "Les crédits sont achetés par packs, au prix affiché. Un crédit vaut un euro hors taxes d'achat sur la plateforme. Les crédits sont valables vingt-quatre mois à compter de leur achat, sont nominatifs, non cessibles, non convertibles en monnaie et non remboursables, y compris en cas de résiliation, sauf faute de l'éditeur. Ils ne constituent pas de la monnaie électronique."
+          ]
+        },
+        {
+          "titre": "9. Formules, prix et facturation",
+          "paragraphes": [
+            "Les services gratuits (fiche, demandes reçues depuis la fiche, avis, devis et factures, site sur sous-domaine) le restent tant qu'ils figurent dans la formule Gratuit. Le contenu et le prix des formules payantes, des achats à l'unité et des options sont ceux affichés dans l'espace pro au jour de la souscription. Les prix sont exprimés en euros hors taxes ; la TVA au taux en vigueur s'y ajoute.",
+            "Le paiement est effectué par carte bancaire via le prestataire de paiement Stripe ; aucune donnée de carte n'est saisie ni conservée par l'éditeur. Les formules sont payables d'avance, mensuellement, par prélèvement automatique sur la carte enregistrée. Les factures sont mises à disposition dans l'espace pro, sous format électronique, ce que le professionnel accepte expressément.",
+            "Une seule formule est active par entreprise. Le passage à une formule supérieure est immédiat et facturé au prorata de la période restante ; le passage à une formule inférieure prend effet à l'échéance suivante. L'éditeur peut modifier ses prix pour l'avenir, en informant le professionnel au moins trente jours avant l'échéance concernée ; le professionnel peut alors résilier sans frais avant cette échéance."
+          ]
+        },
+        {
+          "titre": "10. Durée, résiliation par le professionnel",
+          "paragraphes": [
+            "Le compte est ouvert pour une durée indéterminée. Les formules payantes sont sans engagement de durée : elles se renouvellent chaque mois jusqu'à résiliation depuis l'espace pro (page Abonnement). La résiliation prend effet à la fin de la période en cours, déjà payée, sans remboursement au prorata ; le compte revient alors à la formule Gratuit.",
+            "Le professionnel peut supprimer son compte à tout moment. Les obligations de conservation légale (factures, journaux de preuve) et les sommes dues restent applicables."
+          ]
+        },
+        {
+          "titre": "11. Incident de paiement",
+          "paragraphes": [
+            "En cas d'échec de paiement, le professionnel en est informé et dispose d'un délai de grâce de sept jours pour régulariser. À défaut, la formule payante prend fin et le compte revient à la formule Gratuit ; le site reste accessible sur son sous-domaine.",
+            "Toute somme impayée à l'échéance porte de plein droit, sans mise en demeure, intérêt au taux appliqué par la Banque centrale européenne à son opération de refinancement la plus récente majoré de dix points, ainsi qu'une indemnité forfaitaire de quarante euros pour frais de recouvrement (articles L. 441-10 et D. 441-5 du code de commerce), sans préjudice d'une indemnisation complémentaire sur justificatifs. Aucun escompte n'est accordé pour paiement anticipé."
+          ]
+        },
+        {
+          "titre": "12. Site internet",
+          "paragraphes": [
+            "L'outil permet au professionnel de créer, modifier et publier un site sur un sous-domaine de portailtravaux.fr ou sur un nom de domaine. Le professionnel est l'éditeur de son site au sens de la LCEN : il est seul responsable de ses contenus, de leur exactitude, de leur licéité, de ses propres mentions légales, de sa politique de confidentialité et du traitement des demandes reçues par son formulaire. Les mentions légales générées à partir de ses paramètres ne dispensent pas de les vérifier.",
+            "L'éditeur héberge le site en qualité d'hébergeur et peut, sans préavis en cas d'urgence, suspendre un site ou un contenu manifestement illicite, trompeur, portant atteinte aux droits d'un tiers ou à la sécurité. Les modèles, illustrations et éléments graphiques fournis restent la propriété de l'éditeur et sont concédés pour la durée d'utilisation de l'outil. Les illustrations portent la mention « Photo d'illustration » et ne doivent pas être présentées comme des réalisations du professionnel.",
+            "À la fin d'une formule incluant le site sans mention, la mention « Site créé avec Portail Travaux » peut réapparaître et les fonctions réservées sont désactivées. À la suppression du compte, le site est retiré ; le professionnel peut auparavant récupérer ses textes et images."
+          ]
+        },
+        {
+          "titre": "13. Noms de domaine",
+          "paragraphes": [
+            "Lorsqu'un nom de domaine est commandé par l'intermédiaire de la plateforme, il est enregistré au nom de l'entreprise du professionnel, qui en est le titulaire, auprès d'un bureau d'enregistrement accrédité, et soumis aux règles de l'office d'enregistrement concerné (notamment l'AFNIC pour le .fr et l'ICANN pour les extensions génériques). Le professionnel garantit que le nom choisi ne porte atteinte à aucun droit de tiers (marque, dénomination, nom commercial, nom patronymique) et en assume seul les conséquences.",
+            "Le domaine est renouvelé tant que la formule qui l'inclut est active. Le professionnel peut demander le code de transfert de son domaine à tout moment. À défaut de renouvellement par le professionnel après la fin de la formule, le domaine peut expirer et devenir disponible pour un tiers ; l'éditeur en informe le professionnel avant l'échéance mais n'est pas responsable de sa perte.",
+            "Pour un domaine déjà détenu par le professionnel, celui-ci effectue les réglages DNS indiqués et reste responsable de son domaine auprès de son propre bureau d'enregistrement."
+          ]
+        },
+        {
+          "titre": "14. Intelligence artificielle",
+          "paragraphes": [
+            "Certaines fonctions (rédaction de la fiche, du site, d'articles de blog, suggestions) s'appuient sur des modèles d'intelligence artificielle fournis par des prestataires spécialisés. Les contenus proposés sont des suggestions générées automatiquement : ils peuvent être inexacts, incomplets ou inadaptés. Le professionnel les relit, les corrige et décide seul de leur publication ; une fois publiés, ils sont réputés être ses propres contenus et engagent sa seule responsabilité.",
+            "Le professionnel s'interdit de demander la génération de contenus illicites, trompeurs (faux avis, faux labels, fausses réalisations, prix d'appel) ou portant atteinte aux droits de tiers. Les quotas mensuels d'utilisation sont ceux de sa formule ; les quotas non consommés ne sont pas reportés.",
+            "Les données transmises aux prestataires d'intelligence artificielle sont limitées à ce qui est nécessaire à la génération demandée, ne comprennent pas les coordonnées des particuliers et ne sont pas utilisées par ces prestataires pour entraîner leurs modèles, selon leurs engagements contractuels."
+          ]
+        },
+        {
+          "titre": "15. Devis, factures et suivi des clients",
+          "paragraphes": [
+            "L'outil de devis et de factures aide le professionnel à établir ses documents et contrôle la présence des principales mentions obligatoires. Ce contrôle est une aide automatique et non une garantie : le professionnel reste seul responsable du contenu de ses devis et factures, de leurs mentions légales, de leur numérotation, des taux de TVA appliqués, de leur conformité fiscale, de leur conservation légale (dix ans) et, à compter des échéances légales applicables, de ses obligations de facturation électronique.",
+            "La signature en ligne d'un devis par le client constitue une signature électronique simple au sens du règlement (UE) n° 910/2014 ; il appartient au professionnel d'en apprécier la suffisance. L'éditeur n'est pas partie aux contrats et n'encaisse aucun paiement entre le professionnel et ses clients.",
+            "Pour les données de ses propres clients saisies dans ces outils, le professionnel est responsable de traitement et l'éditeur agit en qualité de sous-traitant, dans les conditions de l'article 21."
+          ]
+        },
+        {
+          "titre": "16. Avis et réputation",
+          "paragraphes": [
+            "Le professionnel accepte la publication d'avis de clients selon la politique d'avis. Il dispose d'un droit de réponse public et d'un droit de signalement. Il s'interdit d'obtenir, de rédiger, d'acheter ou de faire rédiger des avis de complaisance, d'offrir une contrepartie contre un avis, de déposer un avis sur un concurrent, et de faire pression sur un client pour obtenir le retrait d'un avis : ces pratiques sont des pratiques commerciales trompeuses (article L. 121-4 du code de la consommation) et entraînent la suspension immédiate du compte."
+          ]
+        },
+        {
+          "titre": "17. Contenus du professionnel et licence",
+          "paragraphes": [
+            "Le professionnel garantit être titulaire des droits sur les textes, logos, marques, photographies et vidéos qu'il publie, et avoir obtenu les autorisations nécessaires, notamment des propriétaires des biens photographiés et des personnes identifiables. Il concède à l'éditeur une licence non exclusive, gratuite, pour le monde entier et pour la durée du contrat augmentée de six mois, de reproduire, représenter et adapter ces contenus aux seules fins d'affichage de sa fiche, de son site, et de promotion de la plateforme mentionnant le professionnel.",
+            "Il garantit l'éditeur contre toute réclamation, action ou condamnation d'un tiers relative à ses contenus, à ses prestations ou à ses manquements, et l'indemnise de l'ensemble des frais qui en résultent, y compris les frais d'avocat raisonnables."
+          ]
+        },
+        {
+          "titre": "18. Obligations du professionnel et usage interdit",
+          "paragraphes": [
+            "Le professionnel s'engage à respecter la charte de bonne conduite et la réglementation applicable à son activité, notamment en matière de devis préalable, d'information précontractuelle, de droit de rétractation des consommateurs, de démarchage et de lutte contre les pratiques commerciales trompeuses. Il s'interdit notamment :"
+          ],
+          "liste": [
+            "de partager ses identifiants ou de permettre l'accès à son compte à une personne non autorisée ;",
+            "de contourner la plateforme pour revendre, céder ou transmettre des demandes ou des coordonnées de particuliers ;",
+            "d'extraire, de copier ou d'aspirer des données de la plateforme ;",
+            "de publier des informations fausses ou trompeuses sur son entreprise, ses qualifications, ses prix ou ses réalisations ;",
+            "de démarcher par téléphone un particulier inscrit sur la liste d'opposition Bloctel hors des cas autorisés, ou de le solliciter pour un autre objet que sa demande."
+          ]
+        },
+        {
+          "titre": "19. Données des particuliers reçues par le professionnel",
+          "paragraphes": [
+            "Les coordonnées et informations de projet transmises au professionnel ne peuvent être utilisées que pour répondre à la demande concernée et à l'exécution du contrat éventuellement conclu. Toute réutilisation à d'autres fins, toute cession, location, revente ou constitution de fichier de prospection est interdite et constitue un manquement grave.",
+            "Pour ces données, le professionnel agit en qualité de responsable de traitement distinct et assume les obligations correspondantes (information, sécurité, durée de conservation, exercice des droits). Il répond seul des conséquences d'un usage non conforme, y compris des sanctions prononcées par la CNIL."
+          ]
+        },
+        {
+          "titre": "20. Équipe et accès",
+          "paragraphes": [
+            "Le titulaire du compte peut inviter des membres de son équipe et leur attribuer des droits. Il est responsable des actes accomplis par ses membres depuis le compte et s'assure qu'ils respectent les présentes conditions. Il retire sans délai l'accès d'un membre qui quitte l'entreprise."
+          ]
+        },
+        {
+          "titre": "21. Données personnelles traitées pour le compte du professionnel",
+          "paragraphes": [
+            "Lorsque le professionnel enregistre dans les outils (devis, factures, suivi des clients, formulaires de son site, blog) des données personnelles de ses propres clients ou prospects, l'éditeur agit en qualité de sous-traitant au sens de l'article 28 du RGPD. À ce titre, l'éditeur :"
+          ],
+          "liste": [
+            "ne traite ces données que sur instruction documentée du professionnel, constituée par l'utilisation des fonctions de l'outil, et pour la seule fourniture du service ;",
+            "veille à ce que les personnes autorisées à les traiter soient soumises à une obligation de confidentialité ;",
+            "met en œuvre les mesures de sécurité décrites dans la page « Sécurité du compte professionnel » ;",
+            "recourt à des sous-traitants ultérieurs (hébergement, envoi d'emails, signature, stockage) liés par des obligations équivalentes ; la liste figure dans la politique de confidentialité et le professionnel est informé de tout changement, pouvant s'y opposer en résiliant ;",
+            "aide le professionnel, dans la mesure du possible, à répondre aux demandes d'exercice des droits et à remplir ses obligations de sécurité, de notification des violations et d'analyse d'impact ;",
+            "notifie au professionnel toute violation de données le concernant dans les meilleurs délais après en avoir pris connaissance ;",
+            "supprime ces données, au choix du professionnel, à la fin du service, après lui avoir permis de les exporter, sauf obligation légale de conservation ;",
+            "met à disposition les informations nécessaires pour démontrer le respect de ces obligations, dans des conditions raisonnables et confidentielles."
+          ]
+        },
+        {
+          "titre": "22. Disponibilité, maintenance et évolutions",
+          "paragraphes": [
+            "L'éditeur met en œuvre les moyens raisonnables pour assurer la disponibilité du service, sans garantie de disponibilité continue ni de délai de rétablissement. Il peut suspendre temporairement le service pour maintenance, sécurité ou mise à jour, en informant les professionnels dans la mesure du possible.",
+            "L'éditeur peut faire évoluer, ajouter ou retirer des fonctions. Si une fonction essentielle d'une formule payante est retirée, le professionnel en est informé au moins trente jours à l'avance et peut résilier sans frais ; le prix de la période en cours n'est pas remboursé, sauf retrait sans solution équivalente."
+          ]
+        },
+        {
+          "titre": "23. Suspension, restriction et résiliation par l'éditeur",
+          "paragraphes": [
+            "En cas de manquement aux présentes conditions ou à la charte, l'éditeur peut, après notification motivée sur un support durable, restreindre, suspendre ou résilier le compte. Conformément à l'article 4 du règlement (UE) 2019/1150, la résiliation de l'ensemble des services est notifiée au moins trente jours à l'avance, sauf obligation légale, manquements répétés ou motifs impérieux (fraude, défaut d'assurance obligatoire, mise en danger, revente de données, manipulation d'avis, atteinte à la sécurité), auxquels cas elle peut être immédiate.",
+            "Le professionnel peut contester la décision par l'outil de réclamation décrit à l'article 26. La suspension ou la résiliation pour manquement n'ouvre droit à aucune indemnité ni à aucun remboursement des sommes versées, des crédits ou de la période en cours."
+          ]
+        },
+        {
+          "titre": "24. Limitation de responsabilité",
+          "paragraphes": [
+            "L'éditeur est tenu à une obligation de moyens. Sa responsabilité, toutes causes et tous dommages confondus, est limitée au montant des sommes effectivement payées par le professionnel au cours des douze mois précédant le fait générateur, et, pour un professionnel n'utilisant que des services gratuits, à cent euros.",
+            "Sont exclus, dans la limite permise par la loi, les dommages indirects : perte de chiffre d'affaires, de bénéfice, de clientèle, de chance, de données, atteinte à l'image, ainsi que les conséquences d'un contenu généré par l'intelligence artificielle publié par le professionnel, d'un défaut de mention sur un devis ou une facture, de la perte d'un nom de domaine non renouvelé, ou du comportement d'un particulier.",
+            "Ces limitations ne s'appliquent pas en cas de faute lourde ou dolosive, ni aux dommages corporels. Toute action contre l'éditeur doit être engagée dans un délai d'un an à compter du fait générateur, dans la limite prévue par l'article 2254 du code civil."
+          ]
+        },
+        {
+          "titre": "25. Propriété intellectuelle de l'éditeur",
+          "paragraphes": [
+            "La plateforme, ses logiciels, ses modèles de sites, ses illustrations, ses textes, ses bases de données et ses marques restent la propriété exclusive de l'éditeur. Le professionnel bénéficie d'un droit d'utilisation personnel, non exclusif et non cessible, pour la durée du contrat et pour les seuls besoins de son activité. Toute reproduction, décompilation, extraction ou réutilisation en dehors de ce cadre est interdite."
+          ]
+        },
+        {
+          "titre": "26. Réclamations internes et médiation",
+          "paragraphes": [
+            "Le professionnel peut adresser toute réclamation, notamment sur une contestation, une suspension, un classement ou une facturation, à contact@portailtravaux.fr ou depuis son espace. L'éditeur en accuse réception, l'examine et répond de manière motivée dans un délai raisonnable, en principe sous quinze jours.",
+            "Les parties s'efforcent de résoudre tout différend à l'amiable. Le recours à une médiation peut être proposé d'un commun accord ; il ne prive aucune partie de son droit d'agir en justice."
+          ]
+        },
+        {
+          "titre": "27. Force majeure, sous-traitance et cession",
+          "paragraphes": [
+            "Aucune partie n'est responsable d'un manquement causé par un cas de force majeure au sens de l'article 1218 du code civil, y compris la défaillance d'un hébergeur, d'un prestataire de paiement, d'un bureau d'enregistrement ou d'un réseau de télécommunication indépendante de sa volonté.",
+            "L'éditeur peut recourir à des sous-traitants. Il peut céder le contrat à toute entité qui reprendrait tout ou partie de son activité, y compris à une société qu'il constituerait, le professionnel en étant informé et pouvant résilier sans frais s'il s'y oppose. Le professionnel ne peut céder le contrat sans accord écrit de l'éditeur."
+          ]
+        },
+        {
+          "titre": "28. Modification des conditions",
+          "paragraphes": [
+            "L'éditeur peut modifier les présentes conditions. Conformément à l'article 3 du règlement (UE) 2019/1150, toute modification est notifiée au professionnel sur un support durable au moins quinze jours avant son entrée en vigueur, délai porté à trente jours lorsqu'elle impose des adaptations techniques ou commerciales importantes. Le professionnel peut résilier avant l'entrée en vigueur ; à défaut, la modification lui est opposable. Ces délais ne s'appliquent pas aux modifications imposées par la loi ou nécessaires pour faire face à un danger imprévu."
+          ]
+        },
+        {
+          "titre": "29. Preuve, confidentialité et stipulations diverses",
+          "paragraphes": [
+            "Les enregistrements informatiques de la plateforme (journaux de connexion, horodatages, versions acceptées, historiques de paiement transmis par Stripe) sont conservés dans des conditions raisonnables de sécurité et font foi entre les parties, sauf preuve contraire.",
+            "Chaque partie préserve la confidentialité des informations non publiques reçues de l'autre pendant le contrat et deux ans après. Le fait de ne pas se prévaloir d'un manquement ne vaut pas renonciation. La nullité d'une stipulation n'affecte pas les autres. Les présentes conditions et les documents auxquels elles renvoient expriment l'intégralité de l'accord des parties. Elles sont rédigées en français, qui seule fait foi."
+          ]
+        },
+        {
+          "titre": "30. Droit applicable et juridiction",
+          "paragraphes": [
+            "Le contrat est soumis au droit français. À défaut d'accord amiable dans un délai de trente jours suivant la réclamation, tout litige relatif à sa formation, son exécution ou sa cessation relève de la compétence exclusive des juridictions du ressort de la cour d'appel de Bordeaux (tribunal de commerce ou tribunal des activités économiques compétent), y compris en cas de référé, de pluralité de défendeurs ou d'appel en garantie."
+          ]
+        }
+      ]
+    },
+    "charte": {
+      "titre": "Charte de bonne conduite des professionnels",
+      "icone": "M12 3.2 19.5 6v6c0 4.6-3.1 7.6-7.5 8.9C7.6 19.6 4.5 16.6 4.5 12V6L12 3.2ZM9 12l2 2 4-4",
+      "chapeau": "Engagements de qualité et de loyauté attendus des professionnels référencés. Leur non-respect peut entraîner un avertissement, une suspension ou un déréférencement.",
+      "sections": [
+        {
+          "titre": "1. Transparence",
+          "paragraphes": [
+            "Décrire son activité et ses qualifications sans exagération, n'afficher que des labels réellement détenus et des réalisations dont on est l'auteur, remettre un devis écrit détaillé, daté, mentionnant les assurances, les délais et les conditions de paiement avant tout commencement d'exécution."
+          ]
+        },
+        {
+          "titre": "2. Réactivité",
+          "paragraphes": [
+            "Répondre aux demandes reçues dans le délai annoncé, ou les décliner explicitement afin que le particulier puisse se tourner vers un autre professionnel. Ne pas accepter une demande que l'on n'a ni l'intention ni la capacité de traiter."
+          ]
+        },
+        {
+          "titre": "3. Loyauté des prix",
+          "paragraphes": [
+            "Ne pas pratiquer de prix d'appel, annoncer toute révision avant exécution, ne réclamer aucun acompte disproportionné, ne demander aucun paiement en espèces sans facture ni virement vers un compte personnel non identifié."
+          ]
+        },
+        {
+          "titre": "4. Respect des personnes et des lieux",
+          "paragraphes": [
+            "Respecter les horaires convenus, la propreté du chantier, la sécurité des occupants et la tranquillité du voisinage. Aucune sollicitation commerciale abusive, aucune pression pour signer, aucune démarche discriminatoire."
+          ]
+        },
+        {
+          "titre": "5. Intégrité des avis",
+          "paragraphes": [
+            "S'interdire tout avis de complaisance, toute contrepartie contre avis positif et toute pression pour obtenir la suppression d'un avis. Répondre publiquement et sereinement, y compris à un avis défavorable."
+          ]
+        },
+        {
+          "titre": "6. Conformité et assurances",
+          "paragraphes": [
+            "Disposer en permanence des assurances obligatoires couvrant les travaux proposés, les mentionner sur chaque devis et facture, respecter les règles de l'art, les normes et la réglementation (notamment environnementale et de sécurité), et ne sous-traiter qu'à des entreprises elles-mêmes assurées et qualifiées, en en informant le client."
+          ]
+        },
+        {
+          "titre": "7. Respect des données des particuliers",
+          "paragraphes": [
+            "N'utiliser les coordonnées reçues que pour la demande concernée, ne jamais les céder, ne pas relancer un particulier qui a refusé, et supprimer ses données lorsqu'elles ne sont plus nécessaires."
+          ]
+        },
+        {
+          "titre": "8. Sanctions graduées",
+          "paragraphes": [
+            "Un premier manquement donne lieu à un rappel écrit. La réitération ou un manquement grave (défaut d'assurance, fraude, mise en danger, manipulation d'avis, revente de données) entraîne la suspension immédiate du référencement, puis le déréférencement, sans remboursement de l'abonnement en cours."
+          ]
+        }
+      ]
+    },
+    "securitePro": {
+      "titre": "Sécurité du compte professionnel",
+      "icone": "M4 5h16v5H4zM4 14h16v5H4zM7.5 7.5v.01M7.5 16.5v.01",
+      "chapeau": "Mesures spécifiques aux comptes professionnels : accès aux demandes, documents d'entreprise, moyens de paiement et prévention de la fraude.",
+      "sections": [
+        {
+          "titre": "1. Accès et authentification",
+          "paragraphes": [
+            "Chaque collaborateur doit disposer de son propre identifiant ; les comptes partagés sont interdits. La double authentification est obligatoire pour toute action sensible : modification des coordonnées bancaires, changement d'adresse email, export de données.",
+            "Les sessions inactives expirent automatiquement et les connexions depuis un nouvel appareil déclenchent une notification."
+          ]
+        },
+        {
+          "titre": "2. Documents d'entreprise",
+          "paragraphes": [
+            "Les attestations d'assurance, certifications et pièces d'identité transmises lors de la vérification sont stockées chiffrées, dans un espace distinct, accessibles uniquement aux personnes habilitées à la vérification, et supprimées à l'expiration de leur durée de conservation."
+          ]
+        },
+        {
+          "titre": "3. Moyens de paiement",
+          "paragraphes": [
+            "Les coordonnées bancaires sont collectées et conservées par un prestataire de paiement agréé conforme PCI-DSS. Aucun salarié de l'éditeur n'y a accès. Toute demande de modification est confirmée par un second canal."
+          ]
+        },
+        {
+          "titre": "4. Prévention de la fraude et de l'usurpation",
+          "paragraphes": [
+            "L'éditeur surveille les comportements anormaux : volume inhabituel de consultations de demandes, tentatives d'extraction de coordonnées, création de fiches multiples pour une même entreprise. Ces pratiques entraînent le blocage du compte.",
+            "L'éditeur ne demande jamais de mot de passe ni de virement par téléphone ou email. Toute sollicitation de ce type doit être signalée à [email sécurité]."
+          ]
+        },
+        {
+          "titre": "5. Obligations du professionnel",
+          "paragraphes": [
+            "Le professionnel est responsable de la confidentialité de ses identifiants et des actes accomplis depuis son compte. Il s'engage à retirer sans délai les accès des collaborateurs quittant l'entreprise, à protéger les données des particuliers reçues et à notifier l'éditeur de tout incident de sécurité affectant ces données dans les 24 heures."
+          ]
+        }
+      ]
+    }
+  }
+}

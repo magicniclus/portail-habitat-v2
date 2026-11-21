@@ -1,0 +1,719 @@
+{
+  "regle": "D88 : sources CC0 seulement ; un fichier par ligne, licence vérifiée sur la page source.",
+  "fichiers": [
+    {
+      "fichier": "apps/web/public/dessin/modeles/sofa_02.glb",
+      "catalogueId": "canape-3",
+      "source": "Poly Haven",
+      "titre": "Sofa 02",
+      "page": "https://polyhaven.com/a/sofa_02",
+      "auteurs": [
+        "Kirill Sannikov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/modern_arm_chair_01.glb",
+      "catalogueId": "fauteuil",
+      "source": "Poly Haven",
+      "titre": "Modern Arm Chair 01",
+      "page": "https://polyhaven.com/a/modern_arm_chair_01",
+      "auteurs": [
+        "Vibrant Nordic"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/modern_coffee_table_01.glb",
+      "catalogueId": "table-basse",
+      "source": "Poly Haven",
+      "titre": "Modern Coffee Table 01",
+      "page": "https://polyhaven.com/a/modern_coffee_table_01",
+      "auteurs": [
+        "Amin"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/dining_table.glb",
+      "catalogueId": "table-6",
+      "source": "Poly Haven",
+      "titre": "Dining Table",
+      "page": "https://polyhaven.com/a/dining_table",
+      "auteurs": [
+        "Aron Łyczek"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/round_wooden_table_02.glb",
+      "catalogueId": "table-ronde",
+      "source": "Poly Haven",
+      "titre": "Round Wooden Table 02",
+      "page": "https://polyhaven.com/a/round_wooden_table_02",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/dining_chair_02.glb",
+      "catalogueId": "chaise",
+      "source": "Poly Haven",
+      "titre": "Dining Chair 02",
+      "page": "https://polyhaven.com/a/dining_chair_02",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/modern_wooden_cabinet.glb",
+      "catalogueId": "buffet",
+      "source": "Poly Haven",
+      "titre": "Modern Wooden Cabinet",
+      "page": "https://polyhaven.com/a/modern_wooden_cabinet",
+      "auteurs": [
+        "Patrik Pangerl"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/side_table_01.glb",
+      "catalogueId": "chevet",
+      "source": "Poly Haven",
+      "titre": "Side Table 01",
+      "page": "https://polyhaven.com/a/side_table_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/painted_wooden_cabinet.glb",
+      "catalogueId": "commode",
+      "source": "Poly Haven",
+      "titre": "Painted Wooden Cabinet",
+      "page": "https://polyhaven.com/a/painted_wooden_cabinet",
+      "auteurs": [
+        "Kirill Sannikov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/painted_wooden_cabinet_02.glb",
+      "catalogueId": "armoire",
+      "source": "Poly Haven",
+      "titre": "Painted Wooden Cabinet 02",
+      "page": "https://polyhaven.com/a/painted_wooden_cabinet_02",
+      "auteurs": [
+        "Kirill Sannikov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/wooden_display_shelves_01.glb",
+      "catalogueId": "bibliotheque",
+      "source": "Poly Haven",
+      "titre": "Wooden Display Shelves 01",
+      "page": "https://polyhaven.com/a/wooden_display_shelves_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/metal_office_desk.glb",
+      "catalogueId": "bureau",
+      "source": "Poly Haven",
+      "titre": "Metal Office Desk",
+      "page": "https://polyhaven.com/a/metal_office_desk",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/old_bed_frame.glb",
+      "catalogueId": "lit-90",
+      "source": "Poly Haven",
+      "titre": "Old Bed Frame",
+      "page": "https://polyhaven.com/a/old_bed_frame",
+      "auteurs": [
+        "Luca B"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/modern_ceiling_lamp_01.glb",
+      "catalogueId": "suspension",
+      "source": "Poly Haven",
+      "titre": "Modern Ceiling Lamp 01",
+      "page": "https://polyhaven.com/a/modern_ceiling_lamp_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/potted_plant_02.glb",
+      "catalogueId": "plante",
+      "source": "Poly Haven",
+      "titre": "Potted Plant 02",
+      "page": "https://polyhaven.com/a/potted_plant_02",
+      "auteurs": [
+        "Rico Cilliers"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/ornate_mirror_01.glb",
+      "catalogueId": "miroir",
+      "source": "Poly Haven",
+      "titre": "Ornate Mirror 01",
+      "page": "https://polyhaven.com/a/ornate_mirror_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/outdoor_table_chair_set_01.glb",
+      "catalogueId": "salon-jardin",
+      "source": "Poly Haven",
+      "titre": "Outdoor Table Chair Set 01",
+      "page": "https://polyhaven.com/a/outdoor_table_chair_set_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/laminate_floor_02-couleur.webp",
+      "materiauId": "pa-chene-clair",
+      "source": "Poly Haven",
+      "titre": "Laminate Floor 02",
+      "page": "https://polyhaven.com/a/laminate_floor_02",
+      "auteurs": [
+        "Dario Barresi",
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/laminate_floor_02-relief.webp",
+      "materiauId": "pa-chene-clair",
+      "source": "Poly Haven",
+      "titre": "Laminate Floor 02",
+      "page": "https://polyhaven.com/a/laminate_floor_02",
+      "auteurs": [
+        "Dario Barresi",
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/laminate_floor_02-rugosite.webp",
+      "materiauId": "pa-chene-clair",
+      "source": "Poly Haven",
+      "titre": "Laminate Floor 02",
+      "page": "https://polyhaven.com/a/laminate_floor_02",
+      "auteurs": [
+        "Dario Barresi",
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/wood_floor-couleur.webp",
+      "materiauId": "pa-chene-naturel",
+      "source": "Poly Haven",
+      "titre": "Wood Floor",
+      "page": "https://polyhaven.com/a/wood_floor",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/wood_floor-relief.webp",
+      "materiauId": "pa-chene-naturel",
+      "source": "Poly Haven",
+      "titre": "Wood Floor",
+      "page": "https://polyhaven.com/a/wood_floor",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/wood_floor-rugosite.webp",
+      "materiauId": "pa-chene-naturel",
+      "source": "Poly Haven",
+      "titre": "Wood Floor",
+      "page": "https://polyhaven.com/a/wood_floor",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/dark_wooden_planks-couleur.webp",
+      "materiauId": "pa-noyer",
+      "source": "Poly Haven",
+      "titre": "Dark Wooden Planks",
+      "page": "https://polyhaven.com/a/dark_wooden_planks",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/dark_wooden_planks-relief.webp",
+      "materiauId": "pa-noyer",
+      "source": "Poly Haven",
+      "titre": "Dark Wooden Planks",
+      "page": "https://polyhaven.com/a/dark_wooden_planks",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/dark_wooden_planks-rugosite.webp",
+      "materiauId": "pa-noyer",
+      "source": "Poly Haven",
+      "titre": "Dark Wooden Planks",
+      "page": "https://polyhaven.com/a/dark_wooden_planks",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/concrete_tiles_02-couleur.webp",
+      "materiauId": "ca-gris-60",
+      "source": "Poly Haven",
+      "titre": "Concrete Tiles 02",
+      "page": "https://polyhaven.com/a/concrete_tiles_02",
+      "auteurs": [
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/concrete_tiles_02-relief.webp",
+      "materiauId": "ca-gris-60",
+      "source": "Poly Haven",
+      "titre": "Concrete Tiles 02",
+      "page": "https://polyhaven.com/a/concrete_tiles_02",
+      "auteurs": [
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/concrete_tiles_02-rugosite.webp",
+      "materiauId": "ca-gris-60",
+      "source": "Poly Haven",
+      "titre": "Concrete Tiles 02",
+      "page": "https://polyhaven.com/a/concrete_tiles_02",
+      "auteurs": [
+        "Charlotte Baglioni"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/terracotta_floor_tiles-couleur.webp",
+      "materiauId": "ca-terre-cuite",
+      "source": "Poly Haven",
+      "titre": "Terracotta Floor Tiles",
+      "page": "https://polyhaven.com/a/terracotta_floor_tiles",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/terracotta_floor_tiles-relief.webp",
+      "materiauId": "ca-terre-cuite",
+      "source": "Poly Haven",
+      "titre": "Terracotta Floor Tiles",
+      "page": "https://polyhaven.com/a/terracotta_floor_tiles",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/terracotta_floor_tiles-rugosite.webp",
+      "materiauId": "ca-terre-cuite",
+      "source": "Poly Haven",
+      "titre": "Terracotta Floor Tiles",
+      "page": "https://polyhaven.com/a/terracotta_floor_tiles",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/long_white_tiles-couleur.webp",
+      "materiauId": "fa-metro",
+      "source": "Poly Haven",
+      "titre": "Long White Tiles",
+      "page": "https://polyhaven.com/a/long_white_tiles",
+      "auteurs": [
+        "Jenelle van Heerden",
+        "Sergej Majboroda"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/long_white_tiles-relief.webp",
+      "materiauId": "fa-metro",
+      "source": "Poly Haven",
+      "titre": "Long White Tiles",
+      "page": "https://polyhaven.com/a/long_white_tiles",
+      "auteurs": [
+        "Jenelle van Heerden",
+        "Sergej Majboroda"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/long_white_tiles-rugosite.webp",
+      "materiauId": "fa-metro",
+      "source": "Poly Haven",
+      "titre": "Long White Tiles",
+      "page": "https://polyhaven.com/a/long_white_tiles",
+      "auteurs": [
+        "Jenelle van Heerden",
+        "Sergej Majboroda"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/plastered_wall_04-couleur.webp",
+      "materiauId": "bc-gris",
+      "source": "Poly Haven",
+      "titre": "Plastered Wall 04",
+      "page": "https://polyhaven.com/a/plastered_wall_04",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/plastered_wall_04-relief.webp",
+      "materiauId": "bc-gris",
+      "source": "Poly Haven",
+      "titre": "Plastered Wall 04",
+      "page": "https://polyhaven.com/a/plastered_wall_04",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/plastered_wall_04-rugosite.webp",
+      "materiauId": "bc-gris",
+      "source": "Poly Haven",
+      "titre": "Plastered Wall 04",
+      "page": "https://polyhaven.com/a/plastered_wall_04",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/marble_01-couleur.webp",
+      "materiauId": "pi-travertin",
+      "source": "Poly Haven",
+      "titre": "Marble 01",
+      "page": "https://polyhaven.com/a/marble_01",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/marble_01-relief.webp",
+      "materiauId": "pi-travertin",
+      "source": "Poly Haven",
+      "titre": "Marble 01",
+      "page": "https://polyhaven.com/a/marble_01",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/marble_01-rugosite.webp",
+      "materiauId": "pi-travertin",
+      "source": "Poly Haven",
+      "titre": "Marble 01",
+      "page": "https://polyhaven.com/a/marble_01",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/red_brick-couleur.webp",
+      "materiauId": "pr-brique",
+      "source": "Poly Haven",
+      "titre": "Red Brick",
+      "page": "https://polyhaven.com/a/red_brick",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/red_brick-relief.webp",
+      "materiauId": "pr-brique",
+      "source": "Poly Haven",
+      "titre": "Red Brick",
+      "page": "https://polyhaven.com/a/red_brick",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/red_brick-rugosite.webp",
+      "materiauId": "pr-brique",
+      "source": "Poly Haven",
+      "titre": "Red Brick",
+      "page": "https://polyhaven.com/a/red_brick",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/stacked_stone_wall-couleur.webp",
+      "materiauId": "pr-pierre",
+      "source": "Poly Haven",
+      "titre": "Stacked Stone Wall",
+      "page": "https://polyhaven.com/a/stacked_stone_wall",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/stacked_stone_wall-relief.webp",
+      "materiauId": "pr-pierre",
+      "source": "Poly Haven",
+      "titre": "Stacked Stone Wall",
+      "page": "https://polyhaven.com/a/stacked_stone_wall",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/stacked_stone_wall-rugosite.webp",
+      "materiauId": "pr-pierre",
+      "source": "Poly Haven",
+      "titre": "Stacked Stone Wall",
+      "page": "https://polyhaven.com/a/stacked_stone_wall",
+      "auteurs": [
+        "Dimitrios Savva"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/white_stucco-couleur.webp",
+      "materiauId": "en-chaux",
+      "source": "Poly Haven",
+      "titre": "White Stucco",
+      "page": "https://polyhaven.com/a/white_stucco",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/white_stucco-relief.webp",
+      "materiauId": "en-chaux",
+      "source": "Poly Haven",
+      "titre": "White Stucco",
+      "page": "https://polyhaven.com/a/white_stucco",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/white_stucco-rugosite.webp",
+      "materiauId": "en-chaux",
+      "source": "Poly Haven",
+      "titre": "White Stucco",
+      "page": "https://polyhaven.com/a/white_stucco",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-couleur.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-relief.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/clay_roof_tiles_02-rugosite.webp",
+      "materiauId": "toit-tuile",
+      "source": "Poly Haven",
+      "titre": "Clay Roof Tiles 02",
+      "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-couleur.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-relief.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/roof_slates_03-rugosite.webp",
+      "materiauId": "toit-ardoise",
+      "source": "Poly Haven",
+      "titre": "Roof Slates 03",
+      "page": "https://polyhaven.com/a/roof_slates_03",
+      "auteurs": [
+        "Rob Tuytel"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-couleur.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-relief.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/textures/box_profile_metal_sheet-rugosite.webp",
+      "materiauId": "toit-bac-acier",
+      "source": "Poly Haven",
+      "titre": "Box Profile Metal Sheet",
+      "page": "https://polyhaven.com/a/box_profile_metal_sheet",
+      "auteurs": [
+        "Amal Kumar"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    }
+  ]
+}

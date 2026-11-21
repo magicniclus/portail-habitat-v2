@@ -1,0 +1,3125 @@
+{
+  "_source": "designs/estimation-demandes.js (PH_DEMANDES.estimer)",
+  "cas": [
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 804,
+        "parMetier": {
+          "tous": 804
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["plombier"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 104,
+        "parMetier": {
+          "plombier": 104
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["couvreur"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 28,
+        "parMetier": {
+          "couvreur": 28
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["plombier"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 5,
+        "parMetier": {
+          "plombier": 5
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "99000",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 8
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": "99"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 194,
+        "parMetier": {
+          "tous": 194
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["charpentier", "serrurier"],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 8,
+        "parMetier": {
+          "charpentier": 5,
+          "serrurier": 3
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 319,
+        "parMetier": {
+          "tous": 319
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["platrier", "diag", "facadier"],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "platrier": 3,
+          "diag": 3,
+          "facadier": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["tapissier"],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "tapissier": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["moe", "renovation", "multiservice"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "moe": 3,
+          "renovation": 3,
+          "multiservice": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["ebeniste"],
+        "rayonKm": 50,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "ebeniste": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["inconnu"],
+        "rayonKm": 100,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 3714,
+        "parMetier": {
+          "inconnu": 3714
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 439,
+        "parMetier": {
+          "tous": 439
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 894,
+        "parMetier": {
+          "tous": 894
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["vitrier", "renovation", "facadier"],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "vitrier": 3,
+          "renovation": 3,
+          "facadier": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["constructeur", "multiservice", "veranda"],
+        "rayonKm": 50,
+        "mois": 9
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["ferronnier"],
+        "rayonKm": 75,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 41,
+        "parMetier": {
+          "ferronnier": 41
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["decorateur", "ferronnier"],
+        "rayonKm": 50,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "decorateur": 3,
+          "ferronnier": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["poelier"],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 20,
+        "parMetier": {
+          "poelier": 20
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["nettoyage"],
+        "rayonKm": 100,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "nettoyage": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 1550,
+        "parMetier": {
+          "tous": 1550
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["extension-bois"],
+        "rayonKm": 100,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 8,
+        "parMetier": {
+          "extension-bois": 8
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["humidite", "clim"],
+        "rayonKm": 75,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "humidite": 3,
+          "clim": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["humidite", "inconnu"],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 138,
+        "parMetier": {
+          "humidite": 3,
+          "inconnu": 135
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": ["plaquiste"],
+        "rayonKm": 20,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 8,
+        "parMetier": {
+          "plaquiste": 8
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 4693,
+        "parMetier": {
+          "tous": 4693
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 116,
+        "parMetier": {
+          "tous": 116
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["demolition", "sdb"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "demolition": 3,
+          "sdb": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["plaquiste"],
+        "rayonKm": 75,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "plaquiste": 3
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 1286,
+        "parMetier": {
+          "tous": 1286
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["plombier"],
+        "rayonKm": 75,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 335,
+        "parMetier": {
+          "plombier": 335
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["paysagiste", "nettoyage"],
+        "rayonKm": 100,
+        "mois": 6
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 1036,
+        "parMetier": {
+          "tous": 1036
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 93,
+        "parMetier": {
+          "tous": 93
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["inconnu", "sdb"],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 77,
+        "parMetier": {
+          "inconnu": 73,
+          "sdb": 4
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["foreur", "ferronnier", "electricien"],
+        "rayonKm": 75,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 23,
+        "parMetier": {
+          "foreur": 3,
+          "ferronnier": 3,
+          "electricien": 17
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["portail", "tapissier"],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 39,
+        "parMetier": {
+          "portail": 14,
+          "tapissier": 25
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["isolation", "carreleur"],
+        "rayonKm": 75,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 76,
+        "parMetier": {
+          "isolation": 59,
+          "carreleur": 17
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["thermicien", "foreur", "platrier"],
+        "rayonKm": 100,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "thermicien": 3,
+          "foreur": 3,
+          "platrier": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["veranda", "thermicien"],
+        "rayonKm": 100,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "veranda": 3,
+          "thermicien": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["staffeur", "poelier"],
+        "rayonKm": 20,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 53,
+        "parMetier": {
+          "staffeur": 6,
+          "poelier": 47
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["assainissement"],
+        "rayonKm": 50,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 4,
+        "parMetier": {
+          "assainissement": 4
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 151,
+        "parMetier": {
+          "tous": 151
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["moe", "amiante"],
+        "rayonKm": 50,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "moe": 3,
+          "amiante": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 1754,
+        "parMetier": {
+          "tous": 1754
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["cuisiniste", "inconnu"],
+        "rayonKm": 50,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 3044,
+        "parMetier": {
+          "cuisiniste": 99,
+          "inconnu": 2945
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 919,
+        "parMetier": {
+          "tous": 919
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["menuisier"],
+        "rayonKm": 100,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 191,
+        "parMetier": {
+          "menuisier": 191
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 392,
+        "parMetier": {
+          "tous": 392
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["multiservice"],
+        "rayonKm": 50,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 35,
+        "parMetier": {
+          "multiservice": 35
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 4224,
+        "parMetier": {
+          "tous": 4224
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["moe", "ramoneur"],
+        "rayonKm": 30,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "moe": 3,
+          "ramoneur": 9
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["chauffagiste"],
+        "rayonKm": 100,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 28,
+        "parMetier": {
+          "chauffagiste": 28
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 780,
+        "parMetier": {
+          "tous": 780
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["assainissement"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 10,
+        "parMetier": {
+          "assainissement": 10
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["decorateur"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 7,
+        "parMetier": {
+          "decorateur": 7
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 347,
+        "parMetier": {
+          "tous": 347
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["humidite", "inconnu"],
+        "rayonKm": 20,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 81,
+        "parMetier": {
+          "humidite": 3,
+          "inconnu": 78
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["decorateur"],
+        "rayonKm": 50,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 5,
+        "parMetier": {
+          "decorateur": 5
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["clim"],
+        "rayonKm": 75,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 126,
+        "parMetier": {
+          "clim": 126
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["veranda", "terrassier", "enr"],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 54,
+        "parMetier": {
+          "veranda": 5,
+          "terrassier": 14,
+          "enr": 35
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 81,
+        "parMetier": {
+          "tous": 81
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["menuisier"],
+        "rayonKm": 50,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 107,
+        "parMetier": {
+          "menuisier": 107
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": ["renovation"],
+        "rayonKm": 100,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 90,
+        "parMetier": {
+          "renovation": 90
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["chauffagiste", "inconnu", "irve"],
+        "rayonKm": 100,
+        "mois": 1
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["staffeur"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 4,
+        "parMetier": {
+          "staffeur": 4
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["diag", "tapissier", "solier"],
+        "rayonKm": 75,
+        "mois": 7
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["electricien"],
+        "rayonKm": 50,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 102,
+        "parMetier": {
+          "electricien": 102
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 35,
+        "parMetier": {
+          "tous": 35
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["macon"],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "macon": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "99000",
+        "metiers": ["nuisibles", "couvreur"],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": "99"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["poelier", "plaquiste", "constructeur"],
+        "rayonKm": 50,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 63,
+        "parMetier": {
+          "poelier": 40,
+          "plaquiste": 18,
+          "constructeur": 5
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 659,
+        "parMetier": {
+          "tous": 659
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["fermeture", "poelier", "constructeur"],
+        "rayonKm": 100,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 24,
+        "parMetier": {
+          "fermeture": 10,
+          "poelier": 11,
+          "constructeur": 3
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["elagueur"],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "elagueur": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 3042,
+        "parMetier": {
+          "tous": 3042
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["cuisiniste"],
+        "rayonKm": 75,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 118,
+        "parMetier": {
+          "cuisiniste": 118
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": ["piscinier"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "piscinier": 3
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 1581,
+        "parMetier": {
+          "tous": 1581
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 2628,
+        "parMetier": {
+          "tous": 2628
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": ["facadier", "antenne", "cuisiniste"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "facadier": 3,
+          "antenne": 3,
+          "cuisiniste": 6
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["isolation", "ebeniste"],
+        "rayonKm": 75,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 8,
+        "parMetier": {
+          "isolation": 5,
+          "ebeniste": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 894,
+        "parMetier": {
+          "tous": 894
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 2004,
+        "parMetier": {
+          "tous": 2004
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["fermeture", "menuisier", "ebeniste"],
+        "rayonKm": 20,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 10,
+        "parMetier": {
+          "fermeture": 3,
+          "menuisier": 4,
+          "ebeniste": 3
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 731,
+        "parMetier": {
+          "tous": 731
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 2945,
+        "parMetier": {
+          "tous": 2945
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 2534,
+        "parMetier": {
+          "tous": 2534
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["solier"],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "solier": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["securite"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["etudes"],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "etudes": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 723,
+        "parMetier": {
+          "tous": 723
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 3038,
+        "parMetier": {
+          "tous": 3038
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 11
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 187,
+        "parMetier": {
+          "tous": 187
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["cuisiniste"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 43,
+        "parMetier": {
+          "cuisiniste": 43
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["electricien"],
+        "rayonKm": 100,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 247,
+        "parMetier": {
+          "electricien": 247
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["clim"],
+        "rayonKm": 100,
+        "mois": 3
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 1151,
+        "parMetier": {
+          "tous": 1151
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["serrurier", "veranda", "nuisibles"],
+        "rayonKm": 50,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "serrurier": 3,
+          "veranda": 3,
+          "nuisibles": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["diag"],
+        "rayonKm": 50,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 17,
+        "parMetier": {
+          "diag": 17
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": ["paysagiste", "inconnu", "poseur"],
+        "rayonKm": 100,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 2634,
+        "parMetier": {
+          "paysagiste": 23,
+          "inconnu": 2572,
+          "poseur": 39
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["foreur", "menuisier", "inconnu"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 640,
+        "parMetier": {
+          "foreur": 3,
+          "menuisier": 25,
+          "inconnu": 612
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "99000",
+        "metiers": ["cordiste"],
+        "rayonKm": 50,
+        "mois": 12
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": "99"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 953,
+        "parMetier": {
+          "tous": 953
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["amiante"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "amiante": 3
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["foreur", "ferronnier", "nuisibles"],
+        "rayonKm": 30,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "foreur": 3,
+          "ferronnier": 6,
+          "nuisibles": 3
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["plombier", "irve", "constructeur"],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 290,
+        "parMetier": {
+          "plombier": 265,
+          "irve": 19,
+          "constructeur": 6
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["isolation", "etudes", "inconnu"],
+        "rayonKm": 100,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 1479,
+        "parMetier": {
+          "isolation": 82,
+          "etudes": 3,
+          "inconnu": 1394
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": ["macon", "ramoneur", "carreleur"],
+        "rayonKm": 30,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 11,
+        "parMetier": {
+          "macon": 4,
+          "ramoneur": 3,
+          "carreleur": 4
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["amiante", "ascenseur", "portail"],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "amiante": 3,
+          "ascenseur": 3,
+          "portail": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["platrier"],
+        "rayonKm": 50,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "platrier": 3
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["peintre"],
+        "rayonKm": 20,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 55,
+        "parMetier": {
+          "peintre": 55
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["solier", "geometre", "etudes"],
+        "rayonKm": 30,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "solier": 3,
+          "geometre": 3,
+          "etudes": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["carreleur"],
+        "rayonKm": 30,
+        "mois": 6
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["carreleur", "paysagiste"],
+        "rayonKm": 50,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 89,
+        "parMetier": {
+          "carreleur": 59,
+          "paysagiste": 30
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["chauffagiste", "diag", "cuisiniste"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 173,
+        "parMetier": {
+          "chauffagiste": 99,
+          "diag": 17,
+          "cuisiniste": 57
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": ["macon"],
+        "rayonKm": 100,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 69,
+        "parMetier": {
+          "macon": 69
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["tailleur-pierre", "solier", "paysagiste"],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 44,
+        "parMetier": {
+          "tailleur-pierre": 3,
+          "solier": 27,
+          "paysagiste": 14
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 52,
+        "parMetier": {
+          "tous": 52
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["carreleur"],
+        "rayonKm": 20,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 48,
+        "parMetier": {
+          "carreleur": 48
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["menuisier"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 17,
+        "parMetier": {
+          "menuisier": 17
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": ["constructeur", "plombier"],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 87,
+        "parMetier": {
+          "constructeur": 3,
+          "plombier": 84
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 3084,
+        "parMetier": {
+          "tous": 3084
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": ["fermeture", "serrurier"],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 31,
+        "parMetier": {
+          "fermeture": 22,
+          "serrurier": 9
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 61,
+        "parMetier": {
+          "tous": 61
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["inconnu", "poelier"],
+        "rayonKm": 50,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 128,
+        "parMetier": {
+          "inconnu": 125,
+          "poelier": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 372,
+        "parMetier": {
+          "tous": 372
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["poelier"],
+        "rayonKm": 75,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 5,
+        "parMetier": {
+          "poelier": 5
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["veranda"],
+        "rayonKm": 30,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "veranda": 3
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["diag", "tailleur-pierre"],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 6,
+        "parMetier": {
+          "diag": 3,
+          "tailleur-pierre": 3
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["solier", "isolation"],
+        "rayonKm": 75,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 54,
+        "parMetier": {
+          "solier": 12,
+          "isolation": 42
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 4
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["etudes"],
+        "rayonKm": 75,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "etudes": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 12
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["ebeniste", "piscinier", "portail"],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["serrurier"],
+        "rayonKm": 20,
+        "mois": 7
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 640,
+        "parMetier": {
+          "tous": 640
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": ["paysagiste", "peintre", "moe"],
+        "rayonKm": 50,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 10,
+        "parMetier": {
+          "paysagiste": 3,
+          "peintre": 4,
+          "moe": 3
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["irve"],
+        "rayonKm": 30,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "irve": 12
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["charpentier", "electricien"],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 96,
+        "parMetier": {
+          "charpentier": 15,
+          "electricien": 81
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 907,
+        "parMetier": {
+          "tous": 907
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": ["serrurier"],
+        "rayonKm": 20,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "serrurier": 9
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["nettoyage"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "nettoyage": 9
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["amiante", "menuisier"],
+        "rayonKm": 30,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 85,
+        "parMetier": {
+          "amiante": 3,
+          "menuisier": 82
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 135,
+        "parMetier": {
+          "tous": 135
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97100",
+        "metiers": ["terrassier", "couvreur", "facadier"],
+        "rayonKm": 20,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "terrassier": 3,
+          "couvreur": 6,
+          "facadier": 3
+        },
+        "departement": "971"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 1316,
+        "parMetier": {
+          "tous": 1316
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["carreleur"],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 17,
+        "parMetier": {
+          "carreleur": 17
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": [],
+        "rayonKm": 50,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 1504,
+        "parMetier": {
+          "tous": 1504
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 4224,
+        "parMetier": {
+          "tous": 4224
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 81,
+        "parMetier": {
+          "tous": 81
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["assainissement"],
+        "rayonKm": 50,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "assainissement": 9
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 81,
+        "parMetier": {
+          "tous": 81
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "69003",
+        "metiers": ["ferronnier", "enr"],
+        "rayonKm": 30,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 31,
+        "parMetier": {
+          "ferronnier": 11,
+          "enr": 20
+        },
+        "departement": "69"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["cuisiniste"],
+        "rayonKm": 75,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 11,
+        "parMetier": {
+          "cuisiniste": 11
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["cuisiniste", "cordiste", "terrassier"],
+        "rayonKm": 100,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 220,
+        "parMetier": {
+          "cuisiniste": 158,
+          "cordiste": 20,
+          "terrassier": 42
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["domotique"],
+        "rayonKm": 100,
+        "mois": 12
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 3459,
+        "parMetier": {
+          "tous": 3459
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "31000",
+        "metiers": ["decorateur", "paysagiste", "piscinier"],
+        "rayonKm": 75,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "decorateur": 4,
+          "paysagiste": 5,
+          "piscinier": 3
+        },
+        "departement": "31"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "59000",
+        "metiers": ["demolition", "securite", "menuisier"],
+        "rayonKm": 50,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 106,
+        "parMetier": {
+          "demolition": 7,
+          "securite": 7,
+          "menuisier": 92
+        },
+        "departement": "59"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["geometre"],
+        "rayonKm": 30,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 5,
+        "parMetier": {
+          "geometre": 5
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["ramoneur"],
+        "rayonKm": 50,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 48,
+        "parMetier": {
+          "ramoneur": 48
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["amiante"],
+        "rayonKm": 100,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "amiante": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["couvreur", "poseur", "diag"],
+        "rayonKm": 20,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 38,
+        "parMetier": {
+          "couvreur": 22,
+          "poseur": 10,
+          "diag": 6
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "48000",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 35,
+        "parMetier": {
+          "tous": 35
+        },
+        "departement": "48"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 75,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 3472,
+        "parMetier": {
+          "tous": 3472
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 1736,
+        "parMetier": {
+          "tous": 1736
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["paysagiste"],
+        "rayonKm": 75,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 23,
+        "parMetier": {
+          "paysagiste": 23
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["etudes", "foreur", "inconnu"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 89,
+        "parMetier": {
+          "etudes": 3,
+          "foreur": 3,
+          "inconnu": 83
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["humidite", "amiante", "moe"],
+        "rayonKm": 30,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 9,
+        "parMetier": {
+          "humidite": 3,
+          "amiante": 3,
+          "moe": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": [],
+        "rayonKm": 20,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 331,
+        "parMetier": {
+          "tous": 331
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": [],
+        "rayonKm": 100,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 4009,
+        "parMetier": {
+          "tous": 4009
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20000",
+        "metiers": ["veranda"],
+        "rayonKm": 75,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "veranda": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["demolition", "serrurier"],
+        "rayonKm": 50,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 41,
+        "parMetier": {
+          "demolition": 10,
+          "serrurier": 31
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["renovation"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 63,
+        "parMetier": {
+          "renovation": 63
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": ["inconnu", "nettoyage"],
+        "rayonKm": 100,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 5093,
+        "parMetier": {
+          "inconnu": 5068,
+          "nettoyage": 25
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["fermeture"],
+        "rayonKm": 20,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "fermeture": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "13008",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 1036,
+        "parMetier": {
+          "tous": 1036
+        },
+        "departement": "13"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["fermeture", "piscinier", "electricien"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 123,
+        "parMetier": {
+          "fermeture": 28,
+          "piscinier": 6,
+          "electricien": 89
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["chauffagiste", "clim"],
+        "rayonKm": 50,
+        "mois": 10
+      },
+      "attendu": {
+        "total": 23,
+        "parMetier": {
+          "chauffagiste": 16,
+          "clim": 7
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "976",
+        "metiers": ["ferronnier", "antenne", "cuisiniste"],
+        "rayonKm": 50,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 14,
+        "parMetier": {
+          "ferronnier": 3,
+          "antenne": 3,
+          "cuisiniste": 8
+        },
+        "departement": "976"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "3",
+        "metiers": ["ramoneur", "inconnu"],
+        "rayonKm": 75,
+        "mois": 12
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["thermicien", "nettoyage"],
+        "rayonKm": 50,
+        "mois": 11
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["vitrier", "renovation"],
+        "rayonKm": 75,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 123,
+        "parMetier": {
+          "vitrier": 23,
+          "renovation": 100
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["foreur"],
+        "rayonKm": 30,
+        "mois": 12
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "foreur": 3
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["ferronnier", "amiante", "fermeture"],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 56,
+        "parMetier": {
+          "ferronnier": 20,
+          "amiante": 3,
+          "fermeture": 33
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["sdb", "decorateur", "etancheur"],
+        "rayonKm": 50,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 240,
+        "parMetier": {
+          "sdb": 191,
+          "decorateur": 27,
+          "etancheur": 22
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "75011",
+        "metiers": [],
+        "rayonKm": 30,
+        "mois": 1
+      },
+      "attendu": {
+        "total": 1994,
+        "parMetier": {
+          "tous": 1994
+        },
+        "departement": "75"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "2A004",
+        "metiers": ["paysagiste"],
+        "rayonKm": 20,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 3,
+        "parMetier": {
+          "paysagiste": 3
+        },
+        "departement": "2A"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "33000",
+        "metiers": ["decorateur", "extension-bois", "ascenseur"],
+        "rayonKm": 20,
+        "mois": 11
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "decorateur": 6,
+          "extension-bois": 3,
+          "ascenseur": 3
+        },
+        "departement": "33"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "94000",
+        "metiers": ["humidite", "inconnu"],
+        "rayonKm": 30,
+        "mois": 4
+      },
+      "attendu": {
+        "total": 1833,
+        "parMetier": {
+          "humidite": 4,
+          "inconnu": 1829
+        },
+        "departement": "94"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["humidite", "diag", "ebeniste"],
+        "rayonKm": 20,
+        "mois": 2
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["electricien"],
+        "rayonKm": 20,
+        "mois": 2
+      },
+      "attendu": {
+        "total": 26,
+        "parMetier": {
+          "electricien": 26
+        },
+        "departement": "974"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "20200",
+        "metiers": ["etudes", "inconnu", "tailleur-pierre"],
+        "rayonKm": 20,
+        "mois": 6
+      },
+      "attendu": {
+        "total": 90,
+        "parMetier": {
+          "etudes": 3,
+          "inconnu": 84,
+          "tailleur-pierre": 3
+        },
+        "departement": "2B"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "",
+        "metiers": ["amiante", "nuisibles", "etancheur"],
+        "rayonKm": 20,
+        "mois": 2
+      },
+      "attendu": {
+        "total": null,
+        "parMetier": {},
+        "departement": null
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["demolition", "platrier", "irve"],
+        "rayonKm": 50,
+        "mois": 5
+      },
+      "attendu": {
+        "total": 61,
+        "parMetier": {
+          "demolition": 12,
+          "platrier": 12,
+          "irve": 37
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "01000",
+        "metiers": ["electricien", "solier"],
+        "rayonKm": 30,
+        "mois": 8
+      },
+      "attendu": {
+        "total": 19,
+        "parMetier": {
+          "electricien": 15,
+          "solier": 4
+        },
+        "departement": "01"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "93200",
+        "metiers": ["geometre", "inconnu"],
+        "rayonKm": 30,
+        "mois": 9
+      },
+      "attendu": {
+        "total": 1970,
+        "parMetier": {
+          "geometre": 4,
+          "inconnu": 1966
+        },
+        "departement": "93"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "92100",
+        "metiers": ["antenne", "couvreur"],
+        "rayonKm": 100,
+        "mois": 7
+      },
+      "attendu": {
+        "total": 120,
+        "parMetier": {
+          "antenne": 14,
+          "couvreur": 106
+        },
+        "departement": "92"
+      }
+    },
+    {
+      "entree": {
+        "codePostal": "97400",
+        "metiers": ["decorateur"],
+        "rayonKm": 100,
+        "mois": 3
+      },
+      "attendu": {
+        "total": 12,
+        "parMetier": {
+          "decorateur": 12
+        },
+        "departement": "974"
+      }
+    }
+  ]
+}

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-158321e5-ae38-4de9-bd95-ae149a3cad1b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;family=Source+Serif+4:ital,wght@1,600&amp;display=swap">
+<style>
+:root {
+  --color-accent: #e05a10; --color-accent-100: #fff2ea; --color-accent-200: #ffe0cd; --color-accent-300: #ffc19c; --color-accent-400: #ff9857;
+  --color-accent-500: #f2701f; --color-accent-600: #c94f0a; --color-accent-700: #a33f05; --color-accent-800: #7a2f04; --color-accent-900: #2a1a12;
+  --font-heading: "Source Sans 3", system-ui, sans-serif; --font-body: "Source Sans 3", system-ui, sans-serif;
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --color-bg: #ffffff;
+}
+body, h1, h2, h3, h4 { font-family: "Source Sans 3", system-ui, sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.015em; }
+.btn { border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.btn-primary, .btn-primary:hover, .btn-primary:active { color: #fff; }
+.input, select.input, textarea.input { border-radius: 8px; background: #fff; border: 1px solid var(--color-neutral-400); font-family: inherit; }
+.input:focus, select.input:focus, textarea.input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent-300); outline-offset: 1px; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent); }
+body { margin: 0; background: #fff; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);background:#fff;color:var(--color-text)">
+
+  <aside style="{{ styleAside }}">
+    <a href="Acquisition Artisans v2.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-text);padding:4px 2px 18px">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" style="flex:none">
+        <path d="M5 19.5 20 7l15 12.5" fill="none" stroke="var(--color-accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M9 21.5V33h22V21.5" fill="none" stroke="var(--color-text)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <rect x="17" y="25" width="6" height="8" rx="1" fill="var(--color-accent)"></rect>
+      </svg>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}">
+        <span style="white-space:nowrap">
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Portail</span>
+          <span style="display:block;font-size:14px;line-height:1.15;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">Habitat <span style="color:var(--color-accent-700)">Pro</span></span>
+        </span>
+      </sc-if>
+    </a>
+    <sc-for list="{{ menu }}" as="item" hint-placeholder-count="10">
+      <a href="{{ item.href }}" title="{{ item.label }}" style="{{ item.style }}">
+        <sc-if value="{{ item.estTitre }}" hint-placeholder-val="{{ false }}"><span>{{ item.label }}</span></sc-if>
+        <sc-if value="{{ item.estLien }}" hint-placeholder-val="{{ true }}">
+          <span style="display:flex;align-items:center;gap:12px;width:100%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="{{ item.d }}"></path></svg>
+            <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="white-space:nowrap">{{ item.label }}</span></sc-if>
+            <sc-if value="{{ item.badgeVisible }}" hint-placeholder-val="{{ false }}">
+              <span style="margin-left:auto;background:var(--color-accent);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px">{{ item.badge }}</span>
+            </sc-if>
+          </span>
+        </sc-if>
+      </a>
+    </sc-for>
+    <a href="Mon Compte.dc.html" title="Mon compte" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:var(--color-text);border:1px solid var(--color-divider);background:#fff" style-hover="border-color:var(--color-accent-300)">
+      <span style="width:34px;height:34px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">JB</span>
+      <sc-if value="{{ menuOuvert }}" hint-placeholder-val="{{ true }}"><span style="display:grid;line-height:1.25;min-width:0"><span style="font-size:14.5px;font-weight:700;white-space:nowrap">Mon compte</span><span style="font-size:12.5px;font-weight:500;color:var(--color-neutral-700);white-space:nowrap">Équipe · Abonnement · Aide</span></span></sc-if>
+    </a>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--color-divider);padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px">
+      <button type="button" onClick="{{ basculerMenu }}" aria-label="Replier le menu" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--color-divider);background:#fff;border-radius:8px;cursor:pointer;color:var(--color-neutral-800);flex:none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16"></path><path d="m14 9 3 3-3 3"></path></svg>
+      </button>
+      <p style="margin:0;font-size:17px;font-weight:700">Devis &amp; factures</p>
+      <span style="margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">JB</span>
+    </header>
+
+    <sc-if value="{{ vueListe }}" hint-placeholder-val="{{ true }}">
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:22px;align-content:start">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:clamp(26px,3vw,34px);line-height:1.1;margin:0 0 6px">Devis &amp; factures</h1>
+          <p style="margin:0;font-size:16px;line-height:24px;color:var(--color-neutral-800)">Créez vos devis, faites-les signer en ligne et suivez vos paiements.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-secondary" onClick="{{ depuisDemande }}" style="min-height:44px;font-size:15px">Depuis une demande</button>
+          <button type="button" class="btn btn-primary" onClick="{{ nouveauDevis }}" style="min-height:44px;font-size:15px">+ Nouveau devis</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+        <sc-for list="{{ cartes }}" as="c" hint-placeholder-count="3">
+          <div style="{{ c.style }}">
+            <span style="font-size:14px;font-weight:700">{{ c.label }}</span>
+            <p style="margin:0;font-size:30px;line-height:1;font-weight:700">{{ c.valeur }}</p>
+            <p style="margin:0;font-size:13px;color:var(--color-neutral-700)">{{ c.note }}</p>
+          </div>
+        </sc-for>
+      </div>
+
+      <div role="tablist" style="display:flex;gap:6px;border:1px solid var(--color-divider);border-radius:12px;padding:6px;flex-wrap:wrap">
+        <sc-for list="{{ onglets }}" as="o" hint-placeholder-count="4">
+          <button type="button" role="tab" onClick="{{ o.choisir }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ ongletDevis }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;gap:14px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input class="input" type="search" placeholder="Client, objet ou numéro…" value="{{ recherche }}" onInput="{{ majRecherche }}" style="flex:1 1 260px;padding:11px 13px"/>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ filtresDevis }}" as="f" hint-placeholder-count="6">
+                <button type="button" onClick="{{ f.choisir }}" style="{{ f.style }}">{{ f.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ selectionActive }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--color-accent-100);border:1px solid var(--color-accent-300);border-radius:10px;padding:10px 14px">
+              <strong style="font-size:14px;color:var(--color-accent-800)">{{ nbSelection }} sélectionné(s)</strong>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-left:auto">
+                <button type="button" class="btn btn-secondary" onClick="{{ envoyerLot }}" style="font-size:14px">Envoyer</button>
+                <button type="button" class="btn btn-secondary" onClick="{{ expirerLot }}" style="font-size:14px">Marquer expirés</button>
+                <button type="button" class="btn btn-secondary" onClick="{{ archiverLot }}" style="font-size:14px">Archiver</button>
+                <button type="button" class="btn btn-secondary" style="font-size:14px">Exporter CSV</button>
+                <button type="button" class="btn btn-ghost" onClick="{{ supprimerLot }}" style="font-size:14px;color:#a3260b">Supprimer les brouillons</button>
+              </div>
+            </div>
+          </sc-if>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:14.5px;min-width:820px">
+              <thead>
+                <tr style="background:var(--color-neutral-100);text-align:left">
+                  <th style="padding:12px 14px;width:36px"><input type="checkbox" checked="{{ toutCoche }}" onChange="{{ toutCocher }}" aria-label="Tout sélectionner"/></th>
+                  <th style="padding:12px 8px;font-weight:600">Numéro</th>
+                  <th style="padding:12px 8px;font-weight:600">Client &amp; objet</th>
+                  <th style="padding:12px 8px;font-weight:600">Émis le</th>
+                  <th style="padding:12px 8px;font-weight:600">Valable jusqu'au</th>
+                  <th style="padding:12px 8px;font-weight:600;text-align:right">Total TTC</th>
+                  <th style="padding:12px 8px;font-weight:600">Statut</th>
+                  <th style="padding:12px 14px;font-weight:600;text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ devis }}" as="d" hint-placeholder-count="6">
+                  <tr style="border-top:1px solid var(--color-divider)">
+                    <td style="padding:12px 14px"><input type="checkbox" checked="{{ d.coche }}" onChange="{{ d.cocher }}" aria-label="Sélectionner"/></td>
+                    <td style="padding:12px 8px;font-weight:600;white-space:nowrap"><a href="#" onClick="{{ d.ouvrir }}">{{ d.num }}</a></td>
+                    <td style="padding:12px 8px"><strong style="display:block">{{ d.client }}</strong><span style="color:var(--color-neutral-700);font-size:13.5px">{{ d.objet }} · {{ d.ville }}</span></td>
+                    <td style="padding:12px 8px;white-space:nowrap">{{ d.date }}</td>
+                    <td style="padding:12px 8px;white-space:nowrap">{{ d.validite }}</td>
+                    <td style="padding:12px 8px;text-align:right;font-weight:600;white-space:nowrap">{{ d.ttc }}</td>
+                    <td style="padding:12px 8px"><span style="{{ d.styleStatut }}">{{ d.statut }}</span></td>
+                    <td style="padding:12px 14px">
+                      <div style="display:flex;gap:6px;justify-content:flex-end">
+                        <button type="button" class="btn btn-ghost" onClick="{{ d.ouvrir }}" style="font-size:13.5px;padding:6px 10px">Ouvrir</button>
+                        <button type="button" class="btn btn-ghost" onClick="{{ d.dupliquer }}" style="font-size:13.5px;padding:6px 10px">Dupliquer</button>
+                        <sc-if value="{{ d.convertible }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" class="btn btn-secondary" onClick="{{ d.convertir }}" style="font-size:13.5px;padding:6px 10px">→ Facture</button>
+                        </sc-if>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <sc-if value="{{ aucunDevis }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;padding:28px;text-align:center;color:var(--color-neutral-700)">Aucun devis ne correspond à ces filtres.</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ongletFactures }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:14px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <sc-for list="{{ filtresFactures }}" as="f" hint-placeholder-count="6">
+              <button type="button" onClick="{{ f.choisir }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:14.5px;min-width:860px">
+              <thead>
+                <tr style="background:var(--color-neutral-100);text-align:left">
+                  <th style="padding:12px 14px;font-weight:600">Numéro</th>
+                  <th style="padding:12px 8px;font-weight:600">Client · devis</th>
+                  <th style="padding:12px 8px;font-weight:600">Échéance</th>
+                  <th style="padding:12px 8px;font-weight:600;min-width:170px">Payé / total TTC</th>
+                  <th style="padding:12px 8px;font-weight:600">Moyen</th>
+                  <th style="padding:12px 8px;font-weight:600">Statut</th>
+                  <th style="padding:12px 14px;font-weight:600;text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ factures }}" as="f" hint-placeholder-count="5">
+                  <tr style="border-top:1px solid var(--color-divider)">
+                    <td style="padding:12px 14px;font-weight:600;white-space:nowrap">{{ f.num }}</td>
+                    <td style="padding:12px 8px"><strong style="display:block">{{ f.client }}</strong><span style="color:var(--color-neutral-700);font-size:13.5px">{{ f.devis }}</span></td>
+                    <td style="padding:12px 8px;white-space:nowrap"><span style="display:block">{{ f.echeance }}</span><span style="{{ f.styleRetard }}">{{ f.retard }}</span></td>
+                    <td style="padding:12px 8px">
+                      <span style="display:block;font-weight:600;white-space:nowrap">{{ f.paye }} / {{ f.ttc }}</span>
+                      <span style="display:block;height:6px;border-radius:999px;background:var(--color-neutral-200);margin-top:6px;overflow:hidden"><span style="{{ f.styleBarre }}"></span></span>
+                    </td>
+                    <td style="padding:12px 8px;white-space:nowrap">{{ f.moyen }}</td>
+                    <td style="padding:12px 8px"><span style="{{ f.styleStatut }}">{{ f.statut }}</span></td>
+                    <td style="padding:12px 14px">
+                      <div style="display:flex;gap:6px;justify-content:flex-end">
+                        <sc-if value="{{ f.aEncaisser }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" class="btn btn-secondary" onClick="{{ f.encaisser }}" style="font-size:13.5px;padding:6px 10px">Enregistrer un paiement</button>
+                          <button type="button" class="btn btn-ghost" onClick="{{ f.relancer }}" style="font-size:13.5px;padding:6px 10px">Relancer</button>
+                        </sc-if>
+                        <button type="button" class="btn btn-ghost" onClick="{{ f.pdf }}" style="font-size:13.5px;padding:6px 10px">PDF</button>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin:0;font-size:14px;color:var(--color-neutral-700)">Relances automatiques à J−3, J+1 et J+15. Pénalités calculées selon vos <a href="#" onClick="{{ allerParametres }}">paramètres</a>.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ongletModeles }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:28px">
+          <div style="display:grid;gap:12px">
+            <h2 style="font-size:19px;margin:0">Modèles de devis</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px">
+              <sc-for list="{{ modeles }}" as="m" hint-placeholder-count="4">
+                <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:grid;gap:8px;align-content:start">
+                  <strong style="font-size:16px">{{ m.titre }}</strong>
+                  <span style="font-size:14px;color:var(--color-neutral-700)">{{ m.nbLignes }} lignes · à partir de {{ m.ht }} HT</span>
+                  <span style="font-size:13.5px;color:var(--color-neutral-700)">Utilisé {{ m.usage }} fois</span>
+                  <button type="button" class="btn btn-secondary" onClick="{{ m.utiliser }}" style="justify-self:start;margin-top:6px;font-size:14px">Utiliser ce modèle</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:grid;gap:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <h2 style="font-size:19px;margin:0">Bibliothèque de prestations</h2>
+              <button type="button" class="btn btn-secondary" style="font-size:14px">+ Ajouter une prestation</button>
+            </div>
+            <div style="border:1px solid var(--color-divider);border-radius:14px;overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:14.5px;min-width:600px">
+                <thead><tr style="background:var(--color-neutral-100);text-align:left"><th style="padding:12px 14px;font-weight:600">Prestation</th><th style="padding:12px 8px;font-weight:600">Unité</th><th style="padding:12px 8px;font-weight:600;text-align:right">Prix HT</th><th style="padding:12px 8px;font-weight:600;text-align:right">TVA</th><th style="padding:12px 14px;font-weight:600;text-align:right">Coût estimé</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ prestations }}" as="p" hint-placeholder-count="6">
+                    <tr style="border-top:1px solid var(--color-divider)"><td style="padding:11px 14px">{{ p.d }}</td><td style="padding:11px 8px">{{ p.u }}</td><td style="padding:11px 8px;text-align:right">{{ p.pu }}</td><td style="padding:11px 8px;text-align:right">{{ p.tva }}</td><td style="padding:11px 14px;text-align:right;color:var(--color-neutral-700)">{{ p.cout }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ongletParametres }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;gap:28px;max-width:860px">
+          <section style="display:grid;gap:12px">
+            <h2 style="font-size:19px;margin:0">Logo</h2>
+            <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+              <div style="width:200px;height:96px;border:1.5px dashed var(--color-neutral-400);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:10px;background:#fff">
+                <sc-if value="{{ aLogo }}" hint-placeholder-val="{{ false }}"><span role="img" aria-label="Logo" style="{{ styleLogo }}"></span></sc-if>
+                <sc-if value="{{ sansLogo }}" hint-placeholder-val="{{ true }}"><span style="font-size:13.5px;color:var(--color-neutral-700)">Aucun logo</span></sc-if>
+              </div>
+              <div style="display:grid;gap:8px">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <label class="btn btn-secondary" style="cursor:pointer;font-size:14px">{{ libelleLogo }}<input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange="{{ choisirLogo }}" style="display:none"/></label>
+                  <sc-if value="{{ aLogo }}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn-ghost" onClick="{{ retirerLogo }}" style="font-size:14px">Retirer</button></sc-if>
+                </div>
+                <span style="font-size:13.5px;color:var(--color-neutral-700)">PNG, JPG, SVG ou WebP · 2 Mo max. Affiché en haut de tous vos devis et factures.</span>
+                <sc-if value="{{ erreurLogoVisible }}" hint-placeholder-val="{{ false }}"><span style="font-size:13.5px;font-weight:600;color:#8f1f12">{{ erreurLogo }}</span></sc-if>
+              </div>
+            </div>
+          </section>
+          <sc-for list="{{ parametres }}" as="g" hint-placeholder-count="4">
+            <section style="display:grid;gap:12px">
+              <h2 style="font-size:19px;margin:0">{{ g.titre }}</h2>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+                <sc-for list="{{ g.champs }}" as="c" hint-placeholder-count="4">
+                  <label style="display:grid;gap:6px;font-size:14px;font-weight:600">{{ c.label }}<input class="input" value="{{ c.v }}" style="padding:10px 12px;font-weight:400;font-size:15px"/></label>
+                </sc-for>
+              </div>
+            </section>
+          </sc-for>
+          <button type="button" class="btn btn-primary" style="justify-self:start;min-height:44px">Enregistrer les paramètres</button>
+        </div>
+      </sc-if>
+    </main>
+    </sc-if>
+
+    <sc-if value="{{ vueEditeur }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 56px;display:grid;gap:20px;align-content:start">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="display:grid;gap:4px">
+          <a href="#" onClick="{{ retourListe }}" style="font-size:14px;font-weight:600">← Tous les devis</a>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <h1 style="font-size:clamp(24px,2.6vw,30px);line-height:1.1;margin:0">Devis {{ ed.num }}</h1>
+            <span style="{{ styleStatutEd }}">{{ ed.statut }}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" onClick="{{ enregistrer }}" style="min-height:44px">Enregistrer le brouillon</button>
+          <button type="button" class="btn btn-secondary" onClick="{{ convertirEd }}" style="min-height:44px">Convertir en facture</button>
+          <button type="button" class="btn btn-primary" onClick="{{ ouvrirEnvoi }}" style="min-height:44px">Envoyer au client</button>
+        </div>
+      </div>
+      <sc-if value="{{ messageVisible }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0;padding:12px 16px;border-radius:10px;background:#e8f5ec;color:#1d5a32;font-weight:600;font-size:15px">{{ message }}</p>
+      </sc-if>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:24px;align-items:start">
+        <div style="display:grid;gap:22px;min-width:0">
+          <section style="display:grid;gap:10px">
+            <h2 style="font-size:17px;margin:0">Client</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Nom<input class="input" value="{{ ed.client }}" onInput="{{ majClient }}" style="padding:10px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Email<input class="input" value="{{ ed.email }}" onInput="{{ majEmail }}" style="padding:10px 12px;font-weight:400"/></label>
+            </div>
+            <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Adresse du chantier<input class="input" value="{{ ed.adresse }}" onInput="{{ majAdresse }}" style="padding:10px 12px;font-weight:400"/></label>
+            <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:15px">
+              <div style="display:flex;border:1px solid var(--color-divider);border-radius:8px;overflow:hidden">
+                <sc-for list="{{ typesClient }}" as="tc" hint-placeholder-count="2"><button type="button" onClick="{{ tc.choisir }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for>
+              </div>
+              <sc-if value="{{ clientParticulier }}" hint-placeholder-val="{{ true }}">
+                <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked="{{ ed.horsEtablissement }}" onChange="{{ basculerHors }}"/>Devis signé au domicile du client</label>
+              </sc-if>
+              <sc-if value="{{ clientPro }}" hint-placeholder-val="{{ false }}">
+                <label style="display:flex;gap:8px;align-items:center;font-weight:600;font-size:14px">SIREN du client<input class="input" value="{{ ed.sirenClient }}" onInput="{{ majSiren }}" placeholder="9 chiffres" style="padding:8px 10px;font-weight:400;width:140px"/></label>
+              </sc-if>
+            </div>
+          </section>
+
+          <section style="display:grid;gap:10px">
+            <h2 style="font-size:17px;margin:0">Travaux</h2>
+            <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Objet<input class="input" value="{{ ed.objet }}" onInput="{{ majObjet }}" style="padding:10px 12px;font-weight:400"/></label>
+            <div style="display:grid;gap:5px">
+              <span style="font-size:14px;font-weight:600">Description</span>
+              <div style="border:1px solid var(--color-neutral-400);border-radius:8px;overflow:hidden">
+                <div style="display:flex;gap:2px;padding:6px;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+                  <sc-for list="{{ outils }}" as="o" hint-placeholder-count="5">
+                    <button type="button" title="{{ o.titre }}" onMouseDown="{{ o.action }}" style="min-width:34px;height:32px;border:0;border-radius:6px;background:transparent;cursor:pointer;font:inherit;font-size:14px;color:var(--color-neutral-800)" style-hover="background:var(--color-neutral-200)">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+                <div ref="{{ refDescription }}" contenteditable="true" onInput="{{ majDescription }}" style="min-height:96px;padding:10px 12px;font-size:15px;line-height:1.55;outline:none"></div>
+              </div>
+            </div>
+          </section>
+
+          <section style="display:grid;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+              <h2 style="font-size:17px;margin:0">Lignes</h2>
+              <select class="input" value="" onChange="{{ ajouterPrestation }}" style="padding:8px 10px;font-size:14px;max-width:100%">
+                <option value="">+ Depuis la bibliothèque…</option>
+                <sc-for list="{{ prestations }}" as="p" hint-placeholder-count="6"><option value="{{ p.i }}">{{ p.d }}</option></sc-for>
+              </select>
+            </div>
+            <div style="display:grid;gap:8px">
+              <div style="display:grid;grid-template-columns:minmax(0,3fr) 64px 92px 74px 28px;gap:6px;font-size:12.5px;font-weight:600;color:var(--color-neutral-700);padding:0 2px">
+                <span>Désignation</span><span>Qté</span><span>PU HT</span><span>TVA</span><span></span>
+              </div>
+              <sc-for list="{{ lignes }}" as="l" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:minmax(0,3fr) 64px 92px 74px 28px;gap:6px;align-items:center">
+                  <input class="input" value="{{ l.d }}" onInput="{{ l.setD }}" style="padding:8px 10px;font-size:14px;min-width:0"/>
+                  <input class="input" type="number" value="{{ l.q }}" onInput="{{ l.setQ }}" style="padding:8px;font-size:14px;min-width:0"/>
+                  <input class="input" type="number" value="{{ l.pu }}" onInput="{{ l.setPu }}" style="padding:8px;font-size:14px;min-width:0"/>
+                  <select class="input" value="{{ l.tva }}" onChange="{{ l.setTva }}" style="padding:8px 4px;font-size:14px;min-width:0"><option value="5.5">5,5 %</option><option value="10">10 %</option><option value="20">20 %</option></select>
+                  <button type="button" onClick="{{ l.suppr }}" aria-label="Supprimer la ligne" style="border:0;background:transparent;cursor:pointer;font-size:18px;color:var(--color-neutral-600)">×</button>
+                </div>
+              </sc-for>
+              <button type="button" class="btn btn-ghost" onClick="{{ ajouterLigne }}" style="justify-self:start;font-size:14px">+ Ligne vide</button>
+            </div>
+          </section>
+
+          <section style="display:grid;gap:10px">
+            <h2 style="font-size:17px;margin:0">Conditions</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Remise (%)<input class="input" type="number" value="{{ ed.remise }}" onInput="{{ majRemise }}" style="padding:10px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Acompte (%)<input class="input" type="number" value="{{ ed.acompte }}" onInput="{{ majAcompte }}" style="padding:10px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Valable jusqu'au<input class="input" type="date" value="{{ ed.validite }}" onInput="{{ majValidite }}" style="padding:9px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Début des travaux<input class="input" type="date" value="{{ ed.debut }}" onInput="{{ majDebut }}" style="padding:9px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Durée estimée<input class="input" value="{{ ed.duree }}" onInput="{{ majDuree }}" placeholder="ex. 5 jours ouvrés" style="padding:10px 12px;font-weight:400"/></label>
+              <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Frais de déplacement<input class="input" value="{{ ed.deplacement }}" onInput="{{ majDeplacement }}" placeholder="Inclus, ou montant" style="padding:10px 12px;font-weight:400"/></label>
+            </div>
+            <label style="display:flex;gap:8px;align-items:center;font-size:15px"><input type="checkbox" checked="{{ ed.devisGratuit }}" onChange="{{ basculerGratuit }}"/>Devis gratuit (sinon, indiquer son prix dans les lignes)</label>
+            <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Notes au client<textarea class="input" rows="2" value="{{ ed.notes }}" onInput="{{ majNotes }}" style="padding:10px 12px;font-weight:400;resize:vertical"></textarea></label>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:15px">
+              <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked="{{ ed.signature }}" onChange="{{ basculerSignature }}"/>Signature électronique du client</label>
+              <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked="{{ ed.tampon }}" onChange="{{ basculerTampon }}"/>Apposer mon tampon</label>
+            </div>
+          </section>
+
+          <section style="display:grid;gap:8px;background:var(--color-neutral-100);border-radius:14px;padding:16px 18px">
+            <h2 style="font-size:17px;margin:0 0 4px">Calcul</h2>
+            <sc-for list="{{ calcul }}" as="r" hint-placeholder-count="5">
+              <div style="{{ r.style }}"><span>{{ r.label }}</span><span>{{ r.v }}</span></div>
+            </sc-for>
+            <p style="margin:6px 0 0;font-size:13px;color:var(--color-neutral-700)">Marge calculée sur les coûts de la bibliothèque. Visible par vous seul.</p>
+          </section>
+        </div>
+
+        <div style="position:sticky;top:80px;min-width:0;display:grid;gap:16px;align-content:start">
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:grid;gap:10px">
+            <strong style="font-size:16px">Document PDF</strong>
+            <span style="font-size:14px;line-height:20px;color:var(--color-neutral-700)">Devis {{ ed.num }} · {{ totalTtc }} TTC · logo, mentions légales et zone de signature inclus.</span>
+            <button type="button" class="btn btn-secondary" onClick="{{ telechargerPdf }}" style="min-height:44px;font-size:15px">Télécharger le PDF</button>
+            <span style="font-size:12.5px;color:var(--color-neutral-700)">C'est ce document qui est joint à l'email envoyé au client.</span>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:14px;padding:18px;display:grid;gap:9px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><strong style="font-size:16px">Mentions obligatoires</strong><span style="{{ styleCompteMentions }}">{{ compteMentions }}</span></div>
+            <sc-for list="{{ mentions }}" as="m" hint-placeholder-count="10">
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:19px"><span style="{{ m.styleIcone }}">{{ m.icone }}</span><span style="display:grid;gap:1px"><span style="font-weight:600">{{ m.label }}</span><span style="color:var(--color-neutral-700)">{{ m.detail }}</span></span></div>
+            </sc-for>
+            <sc-if value="{{ mentionsManquantes }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:600;color:#8f1f12">Complétez les éléments en rouge avant l'envoi : le devis n'est pas valable sans eux.</span></sc-if>
+          </div>
+        </div>
+      </div>
+    </main>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ envoiOuvert }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px">
+      <div role="dialog" aria-modal="true" style="background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);width:min(520px,100%);padding:24px;display:grid;gap:14px">
+        <h2 style="font-size:20px;margin:0">Envoyer le devis {{ ed.num }} ?</h2>
+        <p style="margin:0;font-size:15px;line-height:1.5">À <strong>{{ ed.client }}</strong> ({{ ed.email }}), avec le PDF en pièce jointe et le lien de signature. Montant : <strong>{{ totalTtc }} TTC</strong>.</p>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.45"><input type="checkbox" checked="{{ confirmeEnvoi }}" onChange="{{ basculerConfirme }}" style="margin-top:4px"/>J'ai relu le devis : client, montants et TVA sont corrects.</label>
+        <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" onClick="{{ fermerEnvoi }}">Annuler</button>
+          <button type="button" class="btn btn-primary" disabled="{{ envoiBloque }}" onClick="{{ envoyer }}">Envoyer maintenant</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ paiementOuvert }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;background:rgba(32,30,29,.45);display:flex;align-items:center;justify-content:center;padding:16px">
+      <div role="dialog" aria-modal="true" style="background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);width:min(480px,100%);padding:24px;display:grid;gap:14px">
+        <h2 style="font-size:20px;margin:0">Paiement · {{ fac.num }}</h2>
+        <p style="margin:0;font-size:15px">Reste à payer : <strong>{{ fac.reste }}</strong></p>
+        <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Montant reçu (€)<input class="input" type="number" value="{{ montantPaiement }}" onInput="{{ majMontant }}" style="padding:10px 12px;font-weight:400"/></label>
+        <label style="display:grid;gap:5px;font-size:14px;font-weight:600">Moyen<select class="input" value="{{ moyenPaiement }}" onChange="{{ majMoyen }}" style="padding:10px 12px;font-weight:400"><option>Virement</option><option>Chèque</option><option>Espèces</option><option>Carte (Stripe)</option></select></label>
+        <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" onClick="{{ fermerPaiement }}">Annuler</button>
+          <button type="button" class="btn btn-primary" onClick="{{ validerPaiement }}">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+<dc-import name="Fenetre Offre" hint-size="0px,0px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ICONES = {
+  dashboard: "M3 11 12 4l9 7M6 12.5V20h12v-7.5", fiche: "M4 5h16v14H4zM8 9h8M8 13h5", demandes: "M4 6h16v10H9l-5 3V6z",
+  devis: "M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5",
+  zone: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11zM12 10h.01",
+  avis: "m12 3.8 2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4-3.9 5.6-.8z",
+  site: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z",
+  stats: "M5 20V10M12 20V4M19 20v-7",
+  support: "M4 18V8a8 8 0 0 1 16 0v10a3 3 0 0 1-3 3h-4M4 13h3v5H5a1 1 0 0 1-1-1zM20 13h-3v5h2a1 1 0 0 0 1-1z",
+};
+const ENT = { forme: "SARL", capital: "10 000 €", rne: "812 345 678", assureur: "MAAF Assurances", contrat: "0045821", zone: "France métropolitaine", rcpro: "MAAF Pro RC n° 0045822", mediateur: "CM2C, 14 rue Saint-Jean, 75017 Paris · www.cm2c.net", nom: "Bertrand Rénovation", adresse: "14 rue des Faures, 33800 Bordeaux", siret: "812 345 678 00021", tva: "FR42812345678", tel: "05 56 12 34 56", email: "contact@bertrand-renovation.fr",
+  paiement: "Paiement à 30 jours par virement · IBAN FR76 3000 4000 0312 3456 7890 143", penalites: "Pénalités de retard : 3 × taux légal · indemnité forfaitaire de recouvrement 40 €" };
+const PRESTA = [
+  { d: "Dépose baignoire et évacuation", u: "forfait", pu: 380, tva: 10, cout: 140 },
+  { d: "Pose receveur extra-plat 90×140", u: "u", pu: 690, tva: 10, cout: 360 },
+  { d: "Faïence murale, fourniture et pose", u: "m²", pu: 78, tva: 10, cout: 41 },
+  { d: "Remplacement chauffe-eau 200 L", u: "u", pu: 1350, tva: 10, cout: 820 },
+  { d: "Recherche de fuite, intervention d'urgence", u: "forfait", pu: 160, tva: 20, cout: 40 },
+  { d: "Isolation combles soufflée", u: "m²", pu: 28, tva: 5.5, cout: 13 },
+];
+const MODELES = [
+  { titre: "Rénovation salle de bain", lignes: [0, 1, 2], usage: 14 },
+  { titre: "Plomberie d'urgence", lignes: [4], usage: 31 },
+  { titre: "Remplacement chauffe-eau", lignes: [3, 4], usage: 9 },
+  { titre: "Isolation des combles", lignes: [5], usage: 6 },
+];
+const DEVIS = [
+  { id: 1, num: "D-2026-0152", client: "Hélène Marty", ville: "Floirac", objet: "Rénovation de toiture", date: "08/10/2026", validite: "07/11/2026", ttc: 14820, statut: "Brouillon" },
+  { id: 2, num: "D-2026-0151", client: "Claire Martin", ville: "Mérignac", objet: "Rénovation salle de bain", date: "06/10/2026", validite: "05/11/2026", ttc: 8932.4, statut: "Envoyé" },
+  { id: 3, num: "D-2026-0149", client: "Pauline Roussel", ville: "Bordeaux", objet: "Pose de carrelage, 45 m²", date: "02/10/2026", validite: "01/11/2026", ttc: 4158, statut: "Accepté" },
+  { id: 4, num: "D-2026-0147", client: "Karim Belhadj", ville: "Mérignac", objet: "Isolation combles, 120 m²", date: "29/09/2026", validite: "29/10/2026", ttc: 3544.8, statut: "Envoyé" },
+  { id: 5, num: "D-2026-0144", client: "Sophie Vidal", ville: "Bordeaux", objet: "Bardage bois façade", date: "18/09/2026", validite: "18/10/2026", ttc: 6210, statut: "Refusé" },
+  { id: 6, num: "D-2026-0139", client: "Marc Lefèvre", ville: "Pessac", objet: "Remplacement chauffe-eau", date: "28/08/2026", validite: "27/09/2026", ttc: 1661, statut: "Expiré" },
+  { id: 7, num: "D-2026-0137", client: "Laïdy Mercier", ville: "Bordeaux", objet: "Pose de cuisine complète", date: "22/08/2026", validite: "21/09/2026", ttc: 5390, statut: "Accepté" },
+];
+const FACTURES = [
+  { id: 1, num: "F-2026-0088", client: "Pauline Roussel", devis: "D-2026-0149", echeance: "02/11/2026", ttc: 4158, paye: 1247.4, moyen: "Virement", retardJ: 0, statut: "Partiellement payée" },
+  { id: 2, num: "F-2026-0087", client: "Laïdy Mercier", devis: "D-2026-0137", echeance: "13/10/2026", ttc: 5390, paye: 0, moyen: "Lien Stripe", retardJ: -3, statut: "Émise" },
+  { id: 3, num: "F-2026-0085", client: "Bernard Dupuy", devis: "D-2026-0131", echeance: "20/09/2026", ttc: 2480, paye: 0, moyen: "Chèque", retardJ: 20, statut: "Impayée" },
+  { id: 4, num: "F-2026-0084", client: "Anne Rigal", devis: "D-2026-0128", echeance: "15/09/2026", ttc: 7320, paye: 7320, moyen: "Virement", retardJ: 0, statut: "Payée" },
+  { id: 5, num: "F-2026-0089", client: "Claire Martin", devis: "D-2026-0151 (acompte)", echeance: "—", ttc: 2679.72, paye: 0, moyen: "—", retardJ: 0, statut: "Brouillon" },
+];
+const eur = (n) => (Math.round(n * 100) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+const pct = (n) => String(n).replace(".", ",") + " %";
+const frDate = (iso) => { const [y, m, d] = (iso || "").split("-"); return d ? d + "/" + m + "/" + y : ""; };
+const TONS = {
+  Brouillon: "neutre", Envoyé: "tint", Accepté: "ok", Refusé: "ko", Expiré: "neutre", Archivé: "neutre",
+  Émise: "tint", Payée: "ok", "Partiellement payée": "plein", Impayée: "ko",
+};
+const puce = (statut) => {
+  const t = TONS[statut] || "neutre";
+  const c = { neutre: ["var(--color-neutral-200)", "var(--color-neutral-800)", "var(--color-neutral-400)"], tint: ["var(--color-accent-100)", "var(--color-accent-800)", "var(--color-accent-300)"],
+    plein: ["var(--color-accent)", "#fff", "var(--color-accent)"], ok: ["#e8f5ec", "#1d5a32", "#a9d8b8"], ko: ["#fdecea", "#8f1f12", "#f2b8b0"] }[t];
+  return { fontSize: "12px", fontWeight: 700, borderRadius: "999px", padding: "3px 10px", whiteSpace: "nowrap", background: c[0], color: c[1], border: "1px solid " + c[2], display: "inline-block" };
+};
+const nouvelEd = (num, lignes, extra) => Object.assign({ num, statut: "Brouillon", client: "", email: "", adresse: "", objet: "", description: "", remise: 0, acompte: 30, validite: "2026-11-09", notes: "", signature: true, tampon: true, typeClient: "particulier", sirenClient: "", horsEtablissement: false, debut: "2026-11-16", duree: "5 jours ouvrés", deplacement: "Inclus", devisGratuit: true, lignes }, extra || {});
+const calculer = (ed) => { let ht = 0, tv = {}; ed.lignes.forEach((l) => { const x = (+l.q || 0) * (+l.pu || 0); ht += x; tv[l.tva] = (tv[l.tva] || 0) + x; }); const r = 1 - (+ed.remise || 0) / 100;
+  const tvas = Object.keys(tv).sort((a, b) => a - b).map((k) => ({ k, v: tv[k] * r * (+k) / 100 })); const htNet = ht * r, tva = tvas.reduce((a, x) => a + x.v, 0); return { ht, htNet, tvas, ttc: htNet + tva }; };
+const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function docHtml(o) {
+  const E = ENT, pro = o.typeClient === "pro", c = calculer(o), reduit = o.lignes.some((l) => +l.tva < 20);
+  const lignes = o.lignes.map((l) => "<tr><td>" + esc(l.d) + "</td><td class=n>" + esc(l.q) + "</td><td class=n>" + eur(+l.pu || 0) + "</td><td class=n>" + pct(l.tva) + "</td><td class=n>" + eur((+l.q || 0) * (+l.pu || 0)) + "</td></tr>").join("");
+  const tot = ["<tr><td>Total HT</td><td class=n>" + eur(c.ht) + "</td></tr>", +o.remise ? "<tr><td>Remise " + pct(o.remise) + "</td><td class=n>− " + eur(c.ht - c.htNet) + "</td></tr>" : "", c.tvas.map((x) => "<tr><td>TVA " + pct(x.k) + "</td><td class=n>" + eur(x.v) + "</td></tr>").join(""), "<tr class=t><td>Total TTC</td><td class=n>" + eur(c.ttc) + "</td></tr>"].join("");
+  const facture = o.type === "facture";
+  const conds = facture ? ["Date d'échéance : " + esc(o.echeance) + " · " + esc(E.paiement), "Pas d'escompte pour paiement anticipé.", "En cas de retard : pénalités au taux de 3 fois le taux d'intérêt légal" + (pro ? ", et indemnité forfaitaire pour frais de recouvrement de 40 € (art. L441-10 du Code de commerce)." : "."), o.devis ? "Facture établie selon le devis " + esc(o.devis) + "." : "", "Nature de l'opération : prestation de services. Lieu d'exécution : " + esc(o.adresse) + ".", E.tvaDebits ? "Option pour le paiement de la TVA d'après les débits." : ""]
+    : ["Devis " + (o.devisGratuit ? "gratuit" : "payant (montant indiqué dans les lignes)") + ", valable jusqu'au " + esc(frDate(o.validite)) + ".", "Début des travaux : " + esc(frDate(o.debut) || "à convenir") + " · durée estimée : " + esc(o.duree || "à préciser") + " · déplacement : " + esc(o.deplacement || "inclus") + ".",
+      "Acompte à la signature : " + pct(+o.acompte || 0) + " (" + eur(c.ttc * (+o.acompte || 0) / 100) + "), solde à réception de facture. " + esc(E.paiement) + ".", "Pénalités de retard : 3 fois le taux d'intérêt légal" + (pro ? " ; indemnité forfaitaire de recouvrement de 40 €." : ".")];
+  if (!pro) conds.push("Médiateur de la consommation : " + esc(E.mediateur) + ".");
+  if (!pro && o.horsEtablissement && !facture) conds.push("Droit de rétractation de 14 jours à compter de la signature (art. L221-18 du Code de la consommation) : formulaire de rétractation joint en annexe. Aucun paiement ne peut être exigé avant 7 jours.");
+  if (reduit) conds.push("TVA à taux réduit : applicable sous réserve de l'attestation simplifiée signée par le client (jointe), logement achevé depuis plus de 2 ans.");
+  conds.push("Garanties : parfait achèvement (1 an), bon fonctionnement (2 ans), décennale (10 ans).");
+  const logo = o.logo ? "<img src='" + o.logo + "' style='max-height:60px;max-width:200px;object-fit:contain;display:block;margin-bottom:8px'>" : "";
+  return "<!doctype html><html lang=fr><head><meta charset=utf-8><title>" + (facture ? "Facture " : "Devis ") + esc(o.num) + "</title><style>@page{size:A4;margin:16mm}body{font:11px/1.45 'Source Sans 3',Arial,sans-serif;color:#201e1d;margin:0}h1{font-size:22px;margin:0;color:#e05a10;letter-spacing:.03em}table{width:100%;border-collapse:collapse}th,td{padding:5px 6px;text-align:left;vertical-align:top}th{background:#fff2ea}tbody tr td{border-bottom:1px solid #e4e0dc}.n{text-align:right;white-space:nowrap}.g{display:flex;justify-content:space-between;gap:24px}.box{border:1px solid #d8d4d0;border-radius:4px;padding:8px 10px}.tot{width:46%;margin-left:auto}.tot td{border:0;padding:3px 6px}.t td{font-weight:700;background:#fff2ea}.f{font-size:9.5px;color:#55504c;border-top:1px solid #d8d4d0;padding-top:6px;margin-top:18px}ul{margin:4px 0 0;padding-left:16px}</style></head><body>"
+    + "<div class=g><div>" + logo + "<strong style='font-size:14px'>" + esc(E.nom) + "</strong><br>" + esc(E.forme) + " au capital de " + esc(E.capital) + "<br>" + esc(E.adresse) + "<br>SIRET " + esc(E.siret) + " · RNE " + esc(E.rne) + "<br>TVA " + esc(E.tva) + "<br>" + esc(E.tel) + " · " + esc(E.email) + "</div>"
+    + "<div style='text-align:right'><h1>" + (facture ? "FACTURE" : "DEVIS") + "</h1>N° " + esc(o.num) + "<br>Date : " + esc(o.date) + (facture ? "<br>Date de la prestation : " + esc(o.datePrestation || o.date) : "<br>Valable jusqu'au " + esc(frDate(o.validite))) + "</div></div>"
+    + "<div class=g style='margin:18px 0'><div class=box style='flex:1'><strong>Adresse du chantier</strong><br>" + esc(o.adresse) + "</div><div class=box style='flex:1'><strong>Client</strong><br>" + esc(o.client) + "<br>" + esc(o.adresse) + (o.email ? "<br>" + esc(o.email) : "") + (pro && o.sirenClient ? "<br>SIREN " + esc(o.sirenClient) : "") + "</div></div>"
+    + "<strong style='font-size:13px'>" + esc(o.objet) + "</strong><div>" + (o.description || "") + "</div>"
+    + "<table style='margin-top:10px'><thead><tr><th>Désignation</th><th class=n>Qté</th><th class=n>PU HT</th><th class=n>TVA</th><th class=n>Total HT</th></tr></thead><tbody>" + lignes + "</tbody></table>"
+    + "<table class=tot style='margin-top:8px'>" + tot + "</table>"
+    + "<div style='margin-top:14px'><strong>Conditions</strong><ul>" + conds.filter(Boolean).map((x) => "<li>" + x + "</li>").join("") + "</ul>" + (o.notes ? "<p>" + esc(o.notes) + "</p>" : "") + "</div>"
+    + (facture ? "" : "<div class=g style='margin-top:16px'><div style='flex:1'></div><div class=box style='flex:1;min-height:80px'><strong>Devis reçu avant l'exécution des travaux.</strong><br>Date, signature et mention « Bon pour accord » :" + (o.signature ? "<br><em>Signature électronique possible via le lien reçu par email.</em>" : "") + "</div></div>")
+    + "<div class=f>Assurance décennale : " + esc(E.assureur) + ", contrat n° " + esc(E.contrat) + ", couverture : " + esc(E.zone) + ". " + esc(E.rcpro) + ". " + (facture ? "Facture émise au format électronique (Factur-X)." : "") + "</div>"
+    + "<script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>";
+}
+function ouvrirDoc(html, nom) {
+  const blob = new Blob([html], { type: "text/html" }), url = URL.createObjectURL(blob);
+  const w = window.open(url, "_blank");
+  if (!w) { const a = document.createElement("a"); a.href = url; a.download = nom + ".html"; document.body.appendChild(a); a.click(); a.remove(); }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+class Component extends DCLogic {
+  state = { ouvert: true, vue: "liste", onglet: "devis", recherche: "", filtre: "Tous", filtreF: "Toutes", sel: {}, devis: DEVIS, factures: FACTURES, ed: null, envoi: false, confirme: false, paiement: null, montant: "", moyen: "Virement", message: "", seq: 153 };
+  componentDidMount() { try { const l = localStorage.getItem("ph-devis-logo"); if (l) this.setState({ logo: l }); } catch (e) {} }
+  choisirLogo(e) {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) { this.setState({ erreurLogo: "Fichier trop lourd (2 Mo maximum)." }); return; }
+    const r = new FileReader();
+    r.onload = () => { try { localStorage.setItem("ph-devis-logo", r.result); } catch (err) {} this.setState({ logo: r.result, erreurLogo: "" }); };
+    r.readAsDataURL(f);
+  }
+  refDescription = React.createRef();
+  refApercu = React.createRef();
+
+  componentDidUpdate() {
+    const ed = this.state.ed, el = this.refDescription.current, ap = this.refApercu.current;
+    if (ed && el && el.dataset.num !== ed.num) { el.innerHTML = ed.description; el.dataset.num = ed.num; }
+    if (ed && ap && ap.innerHTML !== ed.description) ap.innerHTML = ed.description;
+  }
+
+  ouvrirEd(ed) { this.setState({ vue: "editeur", ed, message: "" }); try { window.scrollTo(0, 0); } catch (e) {} }
+  majEd(patch) { this.setState((s) => ({ ed: Object.assign({}, s.ed, patch) })); }
+  majLigne(i, patch) { this.setState((s) => ({ ed: Object.assign({}, s.ed, { lignes: s.ed.lignes.map((l, j) => (j === i ? Object.assign({}, l, patch) : l)) }) })); }
+  numSuivant() { const n = this.state.seq; this.setState({ seq: n + 1 }); return "D-2026-0" + n; }
+  depuisModele(m) {
+    return nouvelEd(this.numSuivant(), m.lignes.map((i) => ({ d: PRESTA[i].d, q: PRESTA[i].u === "m²" ? 12 : 1, pu: PRESTA[i].pu, tva: PRESTA[i].tva, cout: PRESTA[i].cout })), { objet: m.titre });
+  }
+  convertir(num, client, ttc) {
+    this.setState((s) => {
+      const n = "F-2026-00" + (90 + s.factures.length - 5);
+      return { factures: [{ id: Date.now(), num: n, client, devis: num, echeance: "09/11/2026", ttc, paye: 0, moyen: "Virement", retardJ: 0, statut: "Émise" }].concat(s.factures), onglet: "factures", vue: "liste", message: "" };
+    });
+  }
+
+  renderVals() {
+    const s = this.state, ouvert = s.ouvert;
+    const lienStyle = (actif) => ({ display: "flex", alignItems: "center", padding: ouvert ? "10px 12px" : "10px", borderRadius: "10px", textDecoration: "none", fontSize: "15px", fontWeight: actif ? 700 : 500,
+      color: actif ? "var(--color-accent-800)" : "var(--color-neutral-800)", background: actif ? "var(--color-accent-100)" : "transparent", border: actif ? "1px solid var(--color-accent-300)" : "1px solid transparent" });
+    const titreMenu = (label) => ({ key: label, label, estTitre: true, estLien: false, href: "#", d: "",
+      style: { display: ouvert ? "block" : "none", padding: "18px 12px 6px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-600)", textDecoration: "none", fontWeight: 600 } });
+    const lien = (label, d, actif, badge, href) => ({ key: label, label, d, estTitre: false, estLien: true, href, style: lienStyle(actif), badge: badge || "", badgeVisible: !!badge && ouvert });
+    const chip = (actif) => ({ font: "inherit", fontSize: "14px", fontWeight: 600, cursor: "pointer", padding: "8px 13px", borderRadius: "999px",
+      border: "1px solid " + (actif ? "var(--color-accent)" : "var(--color-divider)"), background: actif ? "var(--color-accent)" : "#fff", color: actif ? "#fff" : "var(--color-neutral-800)" });
+    const ongletStyle = (actif) => ({ font: "inherit", fontSize: "14.5px", fontWeight: 600, cursor: "pointer", flex: 1, minWidth: "140px", padding: "11px 14px", borderRadius: "9px", border: 0,
+      background: actif ? "var(--color-accent)" : "transparent", color: actif ? "#fff" : "var(--color-neutral-800)" });
+
+    const visibles = s.devis.filter((d) => d.statut !== "Archivé");
+    const q = s.recherche.trim().toLowerCase();
+    const liste = visibles.filter((d) => (s.filtre === "Tous" || d.statut === s.filtre) && (!q || (d.num + " " + d.client + " " + d.objet + " " + d.ville).toLowerCase().includes(q)));
+    const selIds = Object.keys(s.sel).filter((k) => s.sel[k]).map(Number);
+    const lot = (fn) => () => this.setState((st) => ({ devis: fn(st.devis, selIds), sel: {} }));
+
+    const listeF = s.factures.filter((f) => s.filtreF === "Toutes" || f.statut === s.filtreF);
+    const aSigner = s.devis.filter((d) => d.statut === "Envoyé");
+    const echues = s.factures.filter((f) => f.statut !== "Payée" && f.statut !== "Brouillon");
+
+    const ed = s.ed;
+    let calc = { ht: 0, cout: 0, tvas: {} };
+    if (ed) ed.lignes.forEach((l) => { const t = (+l.q || 0) * (+l.pu || 0); calc.ht += t; calc.cout += (+l.q || 0) * (+l.cout || 0); calc.tvas[l.tva] = (calc.tvas[l.tva] || 0) + t; });
+    const r = ed ? 1 - (+ed.remise || 0) / 100 : 1;
+    const htNet = calc.ht * r;
+    const tvaLignes = Object.keys(calc.tvas).sort((a, b) => a - b).map((k) => ({ k, v: calc.tvas[k] * r * (+k) / 100 }));
+    const tvaTot = tvaLignes.reduce((a, t) => a + t.v, 0), ttc = htNet + tvaTot;
+    const marge = htNet ? Math.round(((htNet - calc.cout) / htNet) * 100) : 0;
+    const ligneTot = (label, v, fort) => ({ key: label, label, v, style: { display: "flex", justifyContent: "space-between", gap: "12px", fontSize: fort ? "16px" : "15px", fontWeight: fort ? 700 : 400, paddingTop: fort ? "6px" : 0, borderTop: fort ? "1px solid var(--color-divider)" : 0 } });
+    const lignePdf = (label, v, fort) => ({ key: label, label, v, style: { display: "flex", justifyContent: "space-between", gap: "12px", fontWeight: fort ? 700 : 400, background: fort ? "var(--color-accent-100)" : "transparent", padding: "3px 6px" } });
+    const fac = s.paiement ? s.factures.find((f) => f.id === s.paiement) : null;
+    const exec = (cmd, val) => (e) => { e.preventDefault(); if (cmd === "createLink") val = prompt("Adresse du lien", "https://"); if (cmd === "createLink" && !val) return; document.execCommand(cmd, false, val); const el = this.refDescription.current; if (el) this.majEd({ description: el.innerHTML }); };
+
+    return {
+      menuOuvert: ouvert, basculerMenu: () => this.setState((st) => ({ ouvert: !st.ouvert })),
+      styleAside: { width: ouvert ? "252px" : "76px", transition: "width .18s ease", borderRight: "1px solid var(--color-divider)", padding: "18px 14px", display: "flex", flexDirection: "column", gap: "2px", position: "sticky", top: 0, height: "100vh", overflowY: "auto", background: "#fff" },
+      menu: [
+        titreMenu("Vue d'ensemble"),
+        lien("Tableau de bord", ICONES.dashboard, false, "", "Espace Artisan Dashboard.dc.html"),
+        lien("Ma fiche", ICONES.fiche, false, "", "Ma Fiche.dc.html"),
+        lien("Mes demandes", ICONES.demandes, false, "3", "Mes Demandes.dc.html"),
+        lien("Devis & factures", ICONES.devis, true, String(aSigner.length), "Devis et Factures.dc.html"),
+        titreMenu("Gestion"),
+        lien("Appels d'offres", ICONES.zone, false, "12", "Appels d Offres.dc.html"),
+        lien("Mes avis", ICONES.avis, false, "", "Mes Avis.dc.html"),
+        lien("Mon site internet", ICONES.site, false, "", "Site Internet Artisan.dc.html"),
+        lien("Statistiques", ICONES.stats, false, "", "Statistiques.dc.html"),
+      ],
+      vueListe: s.vue === "liste", vueEditeur: s.vue === "editeur",
+      nouveauDevis: () => this.ouvrirEd(nouvelEd(this.numSuivant(), [{ d: "", q: 1, pu: 0, tva: 10, cout: 0 }])),
+      depuisDemande: () => this.ouvrirEd(nouvelEd(this.numSuivant(), [{ d: "", q: 1, pu: 0, tva: 10, cout: 0 }], { client: "Hélène Marty", email: "h.marty@email.fr", adresse: "Floirac (33270)", objet: "Rénovation de toiture", description: "<p>Toiture de 90 m² à reprendre entièrement, charpente saine.</p>" })),
+      cartes: [
+        { key: 1, label: "En attente de signature", valeur: aSigner.length, note: eur(aSigner.reduce((a, d) => a + d.ttc, 0)) + " TTC", style: { border: "1px solid var(--color-accent-300)", background: "var(--color-accent-100)", borderRadius: "14px", padding: "18px 20px", display: "grid", gap: "8px" } },
+        { key: 2, label: "Reste à encaisser", valeur: eur(echues.reduce((a, f) => a + f.ttc - f.paye, 0)), note: echues.length + " factures ouvertes", style: { border: "1px solid var(--color-divider)", borderRadius: "14px", padding: "18px 20px", display: "grid", gap: "8px" } },
+        { key: 3, label: "En retard", valeur: s.factures.filter((f) => f.statut === "Impayée").length, note: "Relance automatique active", style: { border: "1px solid var(--color-divider)", borderRadius: "14px", padding: "18px 20px", display: "grid", gap: "8px" } },
+      ],
+      onglets: [["devis", "Devis (" + visibles.length + ")"], ["factures", "Factures (" + s.factures.length + ")"], ["modeles", "Modèles"], ["parametres", "Paramètres"]].map(([k, label]) => ({ key: k, label, style: ongletStyle(s.onglet === k), choisir: () => this.setState({ onglet: k }) })),
+      ongletDevis: s.onglet === "devis", ongletFactures: s.onglet === "factures", ongletModeles: s.onglet === "modeles", ongletParametres: s.onglet === "parametres",
+      allerParametres: (e) => { e.preventDefault(); this.setState({ onglet: "parametres" }); },
+      recherche: s.recherche, majRecherche: (e) => this.setState({ recherche: e.target.value }),
+      filtresDevis: ["Tous", "Brouillon", "Envoyé", "Accepté", "Refusé", "Expiré"].map((f) => ({ key: f, label: f, style: chip(s.filtre === f), choisir: () => this.setState({ filtre: f }) })),
+      selectionActive: selIds.length > 0, nbSelection: selIds.length,
+      toutCoche: liste.length > 0 && liste.every((d) => s.sel[d.id]),
+      toutCocher: (e) => { const v = e.target.checked, sel = {}; liste.forEach((d) => (sel[d.id] = v)); this.setState({ sel }); },
+      envoyerLot: lot((ds, ids) => ds.map((d) => (ids.includes(d.id) && d.statut === "Brouillon" ? Object.assign({}, d, { statut: "Envoyé" }) : d))),
+      expirerLot: lot((ds, ids) => ds.map((d) => (ids.includes(d.id) && d.statut === "Envoyé" ? Object.assign({}, d, { statut: "Expiré" }) : d))),
+      archiverLot: lot((ds, ids) => ds.map((d) => (ids.includes(d.id) ? Object.assign({}, d, { statut: "Archivé" }) : d))),
+      supprimerLot: lot((ds, ids) => ds.filter((d) => !(ids.includes(d.id) && d.statut === "Brouillon"))),
+      aucunDevis: liste.length === 0,
+      devis: liste.map((d) => ({
+        key: d.id, num: d.num, client: d.client, objet: d.objet, ville: d.ville, date: d.date, validite: d.validite, ttc: eur(d.ttc), statut: d.statut, styleStatut: puce(d.statut),
+        coche: !!s.sel[d.id], cocher: (e) => { const v = e.target.checked; this.setState((st) => ({ sel: Object.assign({}, st.sel, { [d.id]: v }) })); },
+        convertible: d.statut === "Accepté",
+        convertir: () => this.convertir(d.num, d.client, d.ttc),
+        dupliquer: () => this.setState((st) => ({ devis: [Object.assign({}, d, { id: Date.now(), num: "D-2026-0" + st.seq, statut: "Brouillon", date: "10/10/2026", validite: "09/11/2026" })].concat(st.devis), seq: st.seq + 1 })),
+        ouvrir: (e) => { if (e) e.preventDefault(); this.ouvrirEd(Object.assign(this.depuisModele(MODELES[0]), { num: d.num, statut: d.statut, client: d.client, email: d.client.toLowerCase().replace(/\s+/g, ".").normalize("NFD").replace(/[\u0300-\u036f]/g, "") + "@email.fr", adresse: d.ville, objet: d.objet, description: "<p>Travaux selon visite du " + d.date + ". <strong>Délai d'intervention : 3 semaines</strong> après acceptation.</p>" })); },
+      })),
+      filtresFactures: ["Toutes", "Brouillon", "Émise", "Partiellement payée", "Impayée", "Payée"].map((f) => ({ key: f, label: f, style: chip(s.filtreF === f), choisir: () => this.setState({ filtreF: f }) })),
+      factures: listeF.map((f) => ({
+        key: f.id, num: f.num, client: f.client, devis: f.devis, echeance: f.echeance, ttc: eur(f.ttc), paye: eur(f.paye), moyen: f.moyen, statut: f.statut, styleStatut: puce(f.statut),
+        retard: f.statut === "Impayée" ? "En retard de " + f.retardJ + " j · pénalités " + eur(f.ttc * 0.0369 * 3 * f.retardJ / 365 + 40) : f.retardJ < 0 ? "Échéance dans " + -f.retardJ + " j" : "",
+        styleRetard: { display: "block", fontSize: "12.5px", fontWeight: 600, color: f.statut === "Impayée" ? "#8f1f12" : "var(--color-accent-700)" },
+        styleBarre: { display: "block", height: "100%", width: Math.round((f.paye / f.ttc) * 100) + "%", background: f.paye >= f.ttc ? "#2f8a4f" : "var(--color-accent)" },
+        aEncaisser: f.statut !== "Payée" && f.statut !== "Brouillon",
+        encaisser: () => this.setState({ paiement: f.id, montant: String(Math.round((f.ttc - f.paye) * 100) / 100), moyen: "Virement" }),
+        relancer: () => this.setState({ filtreF: s.filtreF }),
+        pdf: () => ouvrirDoc(docHtml({ type: "facture", num: f.num, date: "10/10/2026", echeance: f.echeance, devis: f.devis, client: f.client, adresse: "Bordeaux (33)", objet: "Travaux selon devis " + f.devis, description: "", typeClient: "particulier", remise: 0, logo: s.logo, lignes: [{ d: "Travaux selon devis " + f.devis, q: 1, pu: Math.round((f.ttc / 1.1) * 100) / 100, tva: 10 }] }), f.num),
+      })),
+      modeles: MODELES.map((m, i) => ({ key: i, titre: m.titre, usage: m.usage, nbLignes: m.lignes.length, ht: eur(m.lignes.reduce((a, j) => a + PRESTA[j].pu, 0)), utiliser: () => this.ouvrirEd(this.depuisModele(m)) })),
+      prestations: PRESTA.map((p, i) => ({ key: i, i: String(i), d: p.d, u: p.u, pu: eur(p.pu), tva: pct(p.tva), cout: eur(p.cout) })),
+      parametres: [
+        { key: 1, titre: "Entreprise", champs: [["Raison sociale", ENT.nom], ["Forme juridique", ENT.forme], ["Capital social", ENT.capital], ["Adresse du siège", ENT.adresse], ["SIRET", ENT.siret], ["Immatriculation RNE", ENT.rne], ["N° TVA intracommunautaire", ENT.tva]] },
+        { key: 5, titre: "Assurances (obligatoires sur devis et factures)", champs: [["Assureur décennale", ENT.assureur], ["N° de contrat", ENT.contrat], ["Zone géographique couverte", ENT.zone], ["Responsabilité civile pro", ENT.rcpro]] },
+        { key: 6, titre: "Médiateur de la consommation (clients particuliers)", champs: [["Médiateur et site", ENT.mediateur]] },
+        { key: 2, titre: "Numérotation", champs: [["Préfixe devis", "D-2026-"], ["Préfixe factures", "F-2026-"], ["Prochain n° de facture", "0090"], ["Validité des devis (jours)", "30"]] },
+        { key: 3, titre: "Paiement", champs: [["Délai de paiement", "30 jours"], ["IBAN", "FR76 3000 4000 0312 3456 7890 143"], ["Acompte par défaut", "30 %"], ["Paiement en ligne", "Stripe connecté"]] },
+        { key: 4, titre: "Retards et TVA", champs: [["Taux des pénalités", "3 × taux d'intérêt légal"], ["Indemnité forfaitaire", "40 €"], ["TVA par défaut", "10 % (rénovation)"], ["Mention TVA", "Attestation simplifiée fournie au client"]] },
+      ].map((g) => Object.assign({}, g, { champs: g.champs.map(([label, v]) => ({ key: label, label, v })) })),
+
+      logo: s.logo || "", aLogo: !!s.logo, styleLogo: { display: "block", width: "100%", height: "100%", minHeight: "56px", backgroundImage: s.logo ? "url(" + s.logo + ")" : "none", backgroundRepeat: "no-repeat", backgroundPosition: "center", backgroundSize: "contain" }, sansLogo: !s.logo, libelleLogo: s.logo ? "Changer le logo" : "Importer mon logo",
+      choisirLogo: (e) => this.choisirLogo(e),
+      retirerLogo: () => { try { localStorage.removeItem("ph-devis-logo"); } catch (e) {} this.setState({ logo: "" }); },
+      erreurLogo: s.erreurLogo || "", erreurLogoVisible: !!s.erreurLogo,
+      ed: ed || {}, ent: ENT, dateJour: "10/10/2026", validiteFr: ed ? frDate(ed.validite) : "",
+      styleStatutEd: puce(ed ? ed.statut : "Brouillon"),
+      retourListe: (e) => { e.preventDefault(); this.setState({ vue: "liste" }); },
+      majClient: (e) => this.majEd({ client: e.target.value }), majEmail: (e) => this.majEd({ email: e.target.value }), majAdresse: (e) => this.majEd({ adresse: e.target.value }),
+      majObjet: (e) => this.majEd({ objet: e.target.value }), majRemise: (e) => this.majEd({ remise: e.target.value }), majAcompte: (e) => this.majEd({ acompte: e.target.value }),
+      majValidite: (e) => this.majEd({ validite: e.target.value }), majNotes: (e) => this.majEd({ notes: e.target.value }),
+      majDescription: (e) => this.majEd({ description: e.currentTarget.innerHTML }),
+      majDebut: (e) => this.majEd({ debut: e.target.value }), majDuree: (e) => this.majEd({ duree: e.target.value }), majDeplacement: (e) => this.majEd({ deplacement: e.target.value }),
+      majSiren: (e) => this.majEd({ sirenClient: e.target.value }), basculerHors: () => this.majEd({ horsEtablissement: !ed.horsEtablissement }), basculerGratuit: () => this.majEd({ devisGratuit: !ed.devisGratuit }),
+      clientParticulier: !ed || ed.typeClient !== "pro", clientPro: !!ed && ed.typeClient === "pro",
+      typesClient: [["particulier", "Particulier"], ["pro", "Professionnel"]].map(([k, label]) => ({ key: k, label, choisir: () => this.majEd({ typeClient: k }), style: { font: "inherit", fontSize: "14px", fontWeight: 600, padding: "8px 14px", border: 0, cursor: "pointer", background: ed && ed.typeClient === k ? "var(--color-accent)" : "#fff", color: ed && ed.typeClient === k ? "#fff" : "var(--color-neutral-800)" } })),
+      telechargerPdf: () => ouvrirDoc(docHtml(Object.assign({}, ed, { type: "devis", date: "10/10/2026", logo: s.logo })), ed.num),
+      ...(() => { if (!ed) return { mentions: [], compteMentions: "", mentionsManquantes: false, styleCompteMentions: {} };
+        const pro = ed.typeClient === "pro", reduit = ed.lignes.some((l) => +l.tva < 20);
+        const M = [
+          ["Identité de l'entreprise", "Raison sociale, forme, capital, siège, SIRET, RNE, TVA", !!(ENT.forme && ENT.capital && ENT.siret && ENT.rne)],
+          ["Assurance décennale", ENT.assureur + " · n° " + ENT.contrat + " · " + ENT.zone, !!(ENT.assureur && ENT.contrat && ENT.zone)],
+          ["Date et durée de validité", "Valable jusqu'au " + (frDate(ed.validite) || "?"), !!ed.validite],
+          ["Client et adresse du chantier", ed.client ? ed.client + (ed.adresse ? " · " + ed.adresse : " · adresse manquante") : "Nom du client manquant", !!(ed.client && ed.adresse)],
+          pro ? ["SIREN du client", ed.sirenClient || "Obligatoire pour un professionnel", /^\d{9}$/.test((ed.sirenClient || "").replace(/\s/g, ""))] : null,
+          ["Détail des prestations", "Désignation, quantité, prix unitaire HT, taux de TVA", ed.lignes.length > 0 && ed.lignes.every((l) => l.d && +l.pu > 0)],
+          ["Totaux HT, TVA et TTC", "Calculés automatiquement", true],
+          ["Début et durée des travaux", (frDate(ed.debut) || "?") + " · " + (ed.duree || "?"), !!(ed.debut && ed.duree)],
+          ["Frais de déplacement", ed.deplacement || "À préciser (ou « Inclus »)", !!ed.deplacement],
+          ["Conditions de paiement et pénalités", "Acompte, délai, pénalités" + (pro ? ", indemnité 40 €" : ""), true],
+          ["Devis gratuit ou payant", ed.devisGratuit ? "Gratuit" : "Payant", true],
+          !pro ? ["Médiateur de la consommation", ENT.mediateur, !!ENT.mediateur] : null,
+          !pro && ed.horsEtablissement ? ["Droit de rétractation 14 jours", "Formulaire joint automatiquement", true] : null,
+          reduit ? ["Attestation TVA réduite", "Jointe au PDF pour signature du client", true] : null,
+          ["« Devis reçu avant l'exécution des travaux »", "Mention et zone « Bon pour accord »", true],
+        ].filter(Boolean);
+        const ok = M.filter((m) => m[2]).length;
+        return { mentions: M.map(([label, detail, v], i) => ({ key: i, label, detail, icone: v ? "✓" : "!", styleIcone: { width: "20px", height: "20px", flex: "none", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, background: v ? "#e8f5ec" : "#fdecea", color: v ? "#1d5a32" : "#8f1f12" } })),
+          compteMentions: ok + " / " + M.length, mentionsManquantes: ok < M.length, styleCompteMentions: { fontSize: "13px", fontWeight: 700, color: ok < M.length ? "#8f1f12" : "#1d5a32" } }; })(),
+      basculerSignature: () => this.majEd({ signature: !ed.signature }), basculerTampon: () => this.majEd({ tampon: !ed.tampon }),
+      refDescription: this.refDescription, refApercu: this.refApercu,
+      outils: [["B", "Gras", "bold"], ["I", "Italique", "italic"], ["• Liste", "Liste à puces", "insertUnorderedList"], ["1. Liste", "Liste numérotée", "insertOrderedList"], ["Lien", "Lien", "createLink"]].map(([label, titre, cmd]) => ({ key: cmd, label, titre, action: exec(cmd) })),
+      lignes: ed ? ed.lignes.map((l, i) => ({
+        key: i, d: l.d, q: l.q, pu: l.pu, tva: String(l.tva), puFr: eur(+l.pu || 0), tvaFr: pct(l.tva), totalFr: eur((+l.q || 0) * (+l.pu || 0)),
+        setD: (e) => this.majLigne(i, { d: e.target.value }), setQ: (e) => this.majLigne(i, { q: e.target.value }), setPu: (e) => this.majLigne(i, { pu: e.target.value }), setTva: (e) => this.majLigne(i, { tva: +e.target.value }),
+        suppr: () => this.majEd({ lignes: ed.lignes.filter((_, j) => j !== i) }),
+      })) : [],
+      ajouterLigne: () => this.majEd({ lignes: ed.lignes.concat([{ d: "", q: 1, pu: 0, tva: 10, cout: 0 }]) }),
+      ajouterPrestation: (e) => { const p = PRESTA[+e.target.value]; if (!e.target.value || !p) return; this.majEd({ lignes: ed.lignes.concat([{ d: p.d, q: 1, pu: p.pu, tva: p.tva, cout: p.cout }]) }); e.target.value = ""; },
+      calcul: [ligneTot("Total HT", eur(calc.ht)), ligneTot("Remise " + pct(+(ed && ed.remise) || 0), "− " + eur(calc.ht - htNet))].concat(tvaLignes.map((t) => ligneTot("TVA " + pct(t.k), eur(t.v))), [ligneTot("Total TTC", eur(ttc), true), ligneTot("Acompte à la signature", eur(ttc * (+(ed && ed.acompte) || 0) / 100)), ligneTot("Marge estimée", eur(htNet - calc.cout) + " · " + marge + " %")]),
+      totauxPdf: [lignePdf("Total HT net", eur(htNet))].concat(tvaLignes.map((t) => lignePdf("TVA " + pct(t.k), eur(t.v))), [lignePdf("Total TTC", eur(ttc), true), lignePdf("Acompte " + pct(+(ed && ed.acompte) || 0), eur(ttc * (+(ed && ed.acompte) || 0) / 100))]),
+      totalTtc: eur(ttc),
+      messageVisible: !!s.message, message: s.message,
+      enregistrer: () => this.setState({ message: "Brouillon enregistré à " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) + "." }),
+      convertirEd: () => this.convertir(ed.num, ed.client || "Client", ttc),
+      ouvrirEnvoi: () => { const c = ed && ed.client && ed.adresse && ed.debut && ed.duree && ed.deplacement && ed.lignes.every((l) => l.d && +l.pu > 0) && (ed.typeClient !== "pro" || /^\d{9}$/.test((ed.sirenClient || "").replace(/\s/g, "")));
+        if (!c) return this.setState({ message: "Il manque des mentions obligatoires (en rouge à droite) : complétez-les avant l'envoi." }); this.setState({ envoi: true, confirme: false }); },
+      envoiOuvert: s.envoi, confirmeEnvoi: s.confirme, envoiBloque: !s.confirme,
+      basculerConfirme: () => this.setState({ confirme: !s.confirme }), fermerEnvoi: () => this.setState({ envoi: false }),
+      envoyer: () => this.setState((st) => {
+        const existe = st.devis.some((d) => d.num === ed.num);
+        const ligne = { id: Date.now(), num: ed.num, client: ed.client || "Client", ville: ed.adresse, objet: ed.objet, date: "10/10/2026", validite: frDate(ed.validite), ttc, statut: "Envoyé" };
+        return { envoi: false, ed: Object.assign({}, ed, { statut: "Envoyé" }), message: "Devis envoyé à " + (ed.email || "votre client") + " le 10/10/2026. Vous serez notifié à la signature.",
+          devis: existe ? st.devis.map((d) => (d.num === ed.num ? Object.assign({}, d, { statut: "Envoyé", ttc }) : d)) : [ligne].concat(st.devis) };
+      }),
+      paiementOuvert: !!fac, fac: fac ? { num: fac.num, reste: eur(fac.ttc - fac.paye) } : {},
+      montantPaiement: s.montant, majMontant: (e) => this.setState({ montant: e.target.value }),
+      moyenPaiement: s.moyen, majMoyen: (e) => this.setState({ moyen: e.target.value }),
+      fermerPaiement: () => this.setState({ paiement: null }),
+      validerPaiement: () => this.setState((st) => ({ paiement: null, factures: st.factures.map((f) => {
+        if (f.id !== st.paiement) return f;
+        const paye = Math.min(f.ttc, f.paye + (+st.montant || 0));
+        return Object.assign({}, f, { paye, moyen: st.moyen, statut: paye >= f.ttc ? "Payée" : "Partiellement payée" });
+      }) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

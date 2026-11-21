@@ -1,0 +1,64 @@
+/* Fichier généré par `pnpm --filter @ph/ui tokens` depuis src/tokens/index.ts : ne pas modifier. */
+
+:root {
+  --pro: #e05a10;
+  --pro-100: #fff2ea;
+  --pro-700: #a33f05;
+}
+
+:root,
+[data-theme='particulier'] {
+  --accent: #0d7a5f;
+  --accent-action: #0d7a5f;
+  --accent-100: #eef7f3;
+  --accent-200: #d2ebe1;
+  --accent-300: #a5d7c4;
+  --accent-400: #5cbb9c;
+  --accent-500: #12997a;
+  --accent-600: #0a6650;
+  --accent-700: #085340;
+  --accent-800: #06402f;
+  --accent-900: #0a2a21;
+}
+
+[data-theme='pro'] {
+  --accent: #e05a10;
+  --accent-action: #c94f0a;
+  --accent-100: #fff2ea;
+  --accent-200: #ffe0cd;
+  --accent-300: #ffc19c;
+  --accent-400: #ff9857;
+  --accent-500: #f2701f;
+  --accent-600: #c94f0a;
+  --accent-700: #a33f05;
+  --accent-800: #7a2f04;
+  --accent-900: #2a1a12;
+}
+
+[data-theme='diag'] {
+  --accent: #14508a;
+  --accent-action: #14508a;
+  --accent-100: #eef4fa;
+  --accent-200: #d2e2f1;
+  --accent-300: #a4c5e3;
+  --accent-400: #5b96cc;
+  --accent-500: #1b64ad;
+  --accent-600: #10467a;
+  --accent-700: #0d3a65;
+  --accent-800: #0a2e50;
+  --accent-900: #081f37;
+}
+
+[data-theme='admin'] {
+  --accent: #3f4a57;
+  --accent-action: #3f4a57;
+  --accent-100: #eef0f3;
+  --accent-200: #e6e9ed;
+  --accent-300: #c3c9d1;
+  --accent-400: #aab3be;
+  --accent-500: #4a5561;
+  --accent-600: #343e49;
+  --accent-700: #2a323c;
+  --accent-800: #1f262e;
+  --accent-900: #161b21;
+}

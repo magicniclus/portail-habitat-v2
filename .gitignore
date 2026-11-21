@@ -1,0 +1,32 @@
+node_modules/
+.turbo/
+.next/
+out/
+apps/functions/lib/
+coverage/
+dist/
+storybook-static/
+playwright-report/
+test-results/
+.emulateurs/
+*.log
+.env
+.env.local
+.env.*.local
+!.env.example
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Rushes et rendus intermédiaires de la VSL (scripts/vsl)
+.vsl/
+
+# Journaux des émulateurs Firebase
+*-debug.log
+firebase-debug.log
+storybook-static/
+.lighthouseci/
+
+# Clés de compte de service Firebase / Google : jamais dans le dépôt
+*-firebase-adminsdk-*.json
+serviceAccount*.json

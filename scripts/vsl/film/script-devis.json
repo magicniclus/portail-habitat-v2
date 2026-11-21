@@ -1,0 +1,87 @@
+{
+  "note": "Film de vente de la landing « devis et factures » (/pro/logiciel-devis-factures). Images : vraies prises du module sur le jeu de test (modèle, lignes, contrôle des mentions, devis validé, facture). Aucun prix ni chiffre cité. Le film ne parle ni de signature en ligne ni de relances automatiques (annoncées sur la landing, non constatées à l'écran lors du tournage) ni de facture électronique (« en cours de mise en conformité »).",
+  "avant": { "d01": 0.9 },
+  "apres": {
+    "d03": 0.7,
+    "d05": 0.7,
+    "d10b": 0.8,
+    "d11": 0.7,
+    "d12": 0.8,
+    "d13b": 0.9,
+    "d14": 3.2
+  },
+  "segments": [
+    {
+      "id": "d01",
+      "acte": 1,
+      "texte": "Le soir, après le chantier, il vous reste encore les devis à faire."
+    },
+    {
+      "id": "d02",
+      "acte": 1,
+      "texte": "Sur un tableur, c'est long. Et une mention obligatoire oubliée peut vous coûter cher."
+    },
+    {
+      "id": "d03",
+      "acte": 1,
+      "texte": "Avec Portail Travaux, faites vos devis et vos factures. Gratuitement."
+    },
+    {
+      "id": "d04",
+      "acte": 2,
+      "texte": "Un logiciel de devis ? C'est un abonnement de plus, tous les mois."
+    },
+    {
+      "id": "d05",
+      "acte": 2,
+      "texte": "Tout faire à la main ? Des calculs, des oublis, et des soirées perdues."
+    },
+    { "id": "d06", "acte": 3, "texte": "Ici, vous partez d'un modèle prêt pour votre métier." },
+    {
+      "id": "d07",
+      "acte": 3,
+      "texte": "Vous ajoutez vos lignes. Le total hors taxes, la TVA et le TTC se calculent tout seuls."
+    },
+    {
+      "id": "d08",
+      "acte": 8,
+      "texte": "Vos mentions obligatoires sont vérifiées avant l'envoi : SIRET, assurance décennale, TVA. S'il en manque une, vous le savez tout de suite."
+    },
+    {
+      "id": "d09",
+      "acte": 8,
+      "texte": "Vous validez : votre devis est prêt, en PDF, avec votre logo. Vous l'envoyez à votre client."
+    },
+    {
+      "id": "d10",
+      "acte": 8,
+      "texte": "Le client accepte ? Vous transformez le devis en facture, en un clic. Sans rien ressaisir."
+    },
+    {
+      "id": "d10b",
+      "acte": 8,
+      "texte": "Sur ordinateur comme sur téléphone, même chez le client."
+    },
+    {
+      "id": "d11",
+      "acte": 9,
+      "texte": "Et là, vous vous dites : « C'est gratuit… où est le piège ? »"
+    },
+    {
+      "id": "d12",
+      "acte": 9,
+      "texte": "Il n'y en a pas. Vos devis et vos factures sont gratuits, sans limite de nombre. Et vos documents restent à vous : vous les téléchargez quand vous voulez."
+    },
+    { "id": "d13", "acte": 10, "texte": "Pas de carte bancaire. Pas d'engagement." },
+    {
+      "id": "d13b",
+      "acte": 10,
+      "texte": "Et ce n'est pas tout. Avec votre espace, vous avez aussi les demandes de chantier, votre fiche sur le portail, votre site internet, vos avis clients, et le suivi de vos clients. Tout est offert."
+    },
+    {
+      "id": "d14",
+      "acte": 11,
+      "texte": "Créez votre espace gratuit, et faites votre premier devis aujourd'hui. Inscrivez-vous via le formulaire."
+    }
+  ]
+}

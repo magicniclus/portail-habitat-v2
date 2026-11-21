@@ -1,0 +1,142 @@
+import type { ParcelleCadastre, Scene } from '@ph/core/dessin';
+import type { Resultat } from '@ph/core/resultat';
+import { posterJson } from '@/lib/posterJson';
+
+/** Appels de l'éditeur vers `/api/dessin/*` (session vérifiée côté serveur à chaque appel). */
+export type EspaceDessin = 'particulier' | 'entreprise';
+
+export interface PlanListe {
+  planId: string;
+  titre: string;
+  versionCourante: number;
+  majLe: string;
+  supprimeLe: string | null;
+  taille: number;
+  /** Chemin SVG des murs, dans un carré de 100 (DES-02). */
+  apercu: string;
+}
+
+const appel = <R>(operation: string, espace: EspaceDessin, corps: object = {}) =>
+  posterJson<R>(`/api/dessin/${operation}`, { espace, ...corps });
+
+/**
+ * Création (plan, copie, fichier) rejouée par erreur (réseau, double envoi) : même contenu dans
+ * la même fenêtre de 10 s = même clé, le serveur rend le premier résultat sans recréer.
+ */
+async function cleIdempotence(operation: string, corps: object): Promise<string> {
+  const texte = `${operation}:${Math.floor(Date.now() / 10_000)}:${JSON.stringify(corps)}`;
+  const octets = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texte));
+  return [...new Uint8Array(octets)]
+    .map((o) => o.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 48);
+}
+const appelUnique = async <R>(operation: string, espace: EspaceDessin, corps: object) =>
+  appel<R>(operation, espace, { ...corps, cleIdempotence: await cleIdempotence(operation, corps) });
+
+export const listerPlans = (espace: EspaceDessin) => appel<PlanListe[]>('lister', espace);
+
+export const lirePlan = (espace: EspaceDessin, planId: string) =>
+  appel<{ titre: string; versionCourante: number; scene: Scene }>('lire', espace, { planId });
+
+export const creerPlan = (espace: EspaceDessin, titre: string, scene?: Scene) =>
+  appelUnique<{ planId: string }>('creer', espace, scene ? { titre, scene } : { titre });
+
+export const enregistrerPlan = (
+  espace: EspaceDessin,
+  e: { planId: string; versionAttendue: number; scene: Scene; nomVersion?: string },
+) => appel<{ versionCourante: number }>('enregistrer', espace, e);
+
+export const renommerPlan = (espace: EspaceDessin, planId: string, titre: string) =>
+  appel<void>('renommer', espace, { planId, titre });
+
+export const actionPlan = (
+  espace: EspaceDessin,
+  operation: 'dupliquer' | 'corbeille' | 'restaurer',
+  planId: string,
+): Promise<Resultat<unknown>> =>
+  operation === 'dupliquer'
+    ? appelUnique(operation, espace, { planId })
+    : appel(operation, espace, { planId });
+
+export const enregistrerFond = (
+  espace: EspaceDessin,
+  e: { planId: string; type: 'image/jpeg'; base64: string },
+) => appelUnique<{ storagePath: string }>('fond', espace, e);
+
+export const lireFond = (espace: EspaceDessin, planId: string, storagePath: string) =>
+  appel<{ url: string }>('lire-fond', espace, { planId, storagePath });
+
+/** Implantation (DES-35) : adresses proposées, puis parcelle et photo aérienne IGN. */
+export const chercherAdresses = (espace: EspaceDessin, texte: string) =>
+  appel<{ adresses: { libelle: string; lon: number; lat: number }[] }>('adresses', espace, {
+    texte,
+  });
+
+export const chargerParcelle = (espace: EspaceDessin, planId: string, lon: number, lat: number) =>
+  appel<ParcelleCadastre>('parcelle', espace, { planId, lon, lat });
+
+/** PDF à l'échelle (DES-41), produit par le serveur depuis le plan enregistré. */
+export const exporterPdf = (
+  espace: EspaceDessin,
+  e: {
+    planId: string;
+    niveauId: string;
+    echelle: 50 | 100;
+    format: 'A4' | 'A3';
+    exclus: string[];
+    scene: Scene;
+  },
+) => appel<{ base64: string }>('pdf', espace, e);
+
+/** Historique des versions (DES-40) : liste, aperçu, restauration (sans rien écraser). */
+export interface VersionListe {
+  numero: number;
+  type: 'auto' | 'manuelle' | 'restauration';
+  nom: string | null;
+  creeLe: string;
+}
+export const listerVersions = (espace: EspaceDessin, planId: string) =>
+  appel<VersionListe[]>('versions', espace, { planId });
+
+export const lireVersion = (espace: EspaceDessin, planId: string, numero: number) =>
+  appel<{ scene: Scene }>('version', espace, { planId, numero });
+
+export const restaurerVersion = (
+  espace: EspaceDessin,
+  planId: string,
+  numero: number,
+  versionAttendue: number,
+) =>
+  appel<{ versionCourante: number }>('restaurer-version', espace, {
+    planId,
+    numero,
+    versionAttendue,
+  });
+
+/** Liens de partage en lecture seule (DES-42) : le jeton n'est rendu qu'à la création. */
+export const partagerPlan = (espace: EspaceDessin, planId: string, joursValidite: number) =>
+  appel<{ jeton: string; partageId: string; expireLe: number }>('partager', espace, {
+    planId,
+    joursValidite,
+  });
+
+export const listerPartages = (espace: EspaceDessin, planId: string) =>
+  appel<{ liens: { partageId: string; creeLe: number; expireLe: number | null }[] }>(
+    'partages',
+    espace,
+    { planId },
+  );
+
+export const revoquerPartage = (espace: EspaceDessin, partageId: string) =>
+  appel<{ ok: true }>('revoquer-partage', espace, { partageId });
+
+/** Galerie « Mes photos » du plan (DES-37). */
+export const enregistrerPhoto = (espace: EspaceDessin, planId: string, base64: string) =>
+  appelUnique<{ storagePath: string }>('photo', espace, { planId, base64 });
+
+export const listerPhotos = (espace: EspaceDessin, planId: string) =>
+  appel<{ photos: { storagePath: string; creeLe: number }[] }>('photos', espace, { planId });
+
+export const supprimerPhoto = (espace: EspaceDessin, planId: string, storagePath: string) =>
+  appel<{ ok: true }>('supprimer-photo', espace, { planId, storagePath });

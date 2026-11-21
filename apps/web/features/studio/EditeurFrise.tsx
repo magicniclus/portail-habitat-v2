@@ -1,0 +1,238 @@
+'use client';
+
+import { lignesFrise, verifierFrise, type Frise, type MotTranscrit } from '@ph/core/studio';
+import { useMemo, useRef, useState, type CSSProperties } from 'react';
+import { ApercuFrise } from './ApercuFrise';
+import { AssistantIA, type ProjetIA } from './AssistantIA';
+import { BarreHautMontage } from './BarreHautMontage';
+import { BandeauOccupe, OCCUPE } from './BandeauOccupe';
+import { BibliothequeFrise } from './BibliothequeFrise';
+import { CommandesLecture } from './CommandesLecture';
+import { EcransPortail } from './EcransPortail';
+import { InspecteurFrise } from './InspecteurFrise';
+import { ManipulationApercu } from './ManipulationApercu';
+import { MenuProjets } from './MenuProjets';
+import type { FichiersProjet } from './sourcesFrise';
+import { useActionsFrise } from './useActionsFrise';
+import { useEnregistrementFrise } from './useEnregistrementFrise';
+import { useHauteurFrise } from './useHauteurFrise';
+import { useHistorique } from './useHistorique';
+import { useImportMedias } from './useImportMedias';
+import { SeparateurPanneau } from './SeparateurPanneau';
+import { useLargeursPanneaux } from './useLargeursPanneaux';
+import { useLectureFrise } from './useLectureFrise';
+import { useRaccourcisMontage } from './useRaccourcisMontage';
+import { ZoneFrise } from './ZoneFrise';
+
+/**
+ * Éditeur libre multipistes, plein écran, organisé comme les logiciels de montage : on importe
+ * ses vidéos, sons et images, on les glisse sur autant de pistes qu'il faut, on règle volumes,
+ * muet / solo, fondus, filtres et automations ; l'aperçu mixe le son en direct. Tout se fait sur
+ * un brouillon (annuler, rétablir), vérifié en direct et revérifié côté serveur.
+ */
+export function EditeurFrise(p: {
+  projetId: string;
+  frise: Frise;
+  fichiers: FichiersProjet;
+  /** Mots de la voix enregistrée (sous-titres). */
+  mots: MotTranscrit[];
+  etat: string | null;
+  /** Idée, tournage et fabrication par Claude (panneau IA). */
+  projet: ProjetIA;
+  /** Le robot filme les écrans. */
+  filmage: boolean;
+  /** Autres projets à ouvrir (menu « Projets »). */
+  projets: readonly { id: string; titre: string }[];
+  onFermer: () => void;
+}) {
+  // Claude ou le robot travaillent : outils grisés et inutilisables jusqu'à la fin.
+  const occupe = OCCUPE.has(p.projet.statut);
+  const h = useHistorique(p.frise, occupe);
+  const { brouillon, changer } = h;
+  const [selection, setSelection] = useState<string | null>(null);
+  const [miniature, setMiniature] = useState(false);
+  const hauteur = useHauteurFrise(320);
+  const largeurs = useLargeursPanneaux();
+  const e = useEnregistrementFrise(p.projetId, p.frise);
+  const { message, setMessage, enCours } = e;
+  const apercu = useRef<HTMLDivElement>(null);
+  const lecture = useLectureFrise(brouillon);
+  const tete = lecture.affiche;
+  const erreurs = verifierFrise(brouillon).filter((x) => !x.startsWith('La frise est vide'));
+  const imports = useImportMedias(p.projetId, brouillon, changer, (texte) =>
+    setMessage({ ton: 'danger', texte }),
+  );
+
+  const pistesVides = brouillon.pistes.every((x) => !x.clips.length);
+  const lignes = useMemo(() => lignesFrise(brouillon, p.mots), [brouillon, p.mots]);
+  const a = useActionsFrise({
+    frise: brouillon,
+    changer,
+    tete,
+    selection,
+    setSelection,
+    erreur: (texte) => setMessage({ ton: 'danger', texte }),
+    filmes: p.fichiers.captures,
+  });
+  useRaccourcisMontage({
+    lecture,
+    onScinder: occupe ? () => undefined : a.scinder,
+    onSupprimer: occupe ? undefined : a.supprimer,
+  });
+  const grise = occupe ? 'pointer-events-none opacity-40 grayscale select-none' : '';
+
+  return (
+    <div
+      data-ambiance="sombre"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Éditeur de montage : ${brouillon.titre}`}
+      className="fixed inset-0 z-50 grid text-montage-texte"
+      style={{ gridTemplateRows: `52px minmax(0,1fr) 6px ${hauteur.hauteur}px` }}
+    >
+      <BarreHautMontage
+        titre={brouillon.titre}
+        etat={p.etat}
+        message={message}
+        erreurs={erreurs}
+        rythme={[]}
+        modifie={brouillon !== e.enregistre}
+        onFermer={p.onFermer}
+        onAnnuler={occupe ? undefined : h.annuler}
+        onRetablir={occupe ? undefined : h.retablir}
+        enregistrable={erreurs.length === 0 && !enCours && !occupe}
+        enCours={enCours}
+        onEnregistrer={() => e.fabriquer(brouillon)}
+        secondaire={
+          occupe ? undefined : { libelle: 'Enregistrer', onClick: () => e.enregistrer(brouillon) }
+        }
+        menu={
+          <MenuProjets
+            projets={p.projets}
+            actuel={p.projetId}
+            modifie={brouillon !== e.enregistre}
+          />
+        }
+      />
+      <div
+        className="grid min-h-0 grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,2fr)_minmax(0,3fr)] bg-montage-fond lg:grid-cols-[var(--gauche)_6px_minmax(0,1fr)_6px_var(--droite)] lg:grid-rows-1"
+        style={
+          {
+            '--gauche': `${largeurs.gauche}px`,
+            '--droite': `${largeurs.droite}px`,
+          } as CSSProperties
+        }
+      >
+        {/* Petit écran : aperçu en haut, bibliothèque (et panneau IA) dessous. */}
+        <aside
+          aria-label="Bibliothèque"
+          className="order-last min-h-0 border-t border-montage-trait bg-montage-panneau lg:order-none lg:border-t-0"
+        >
+          <BibliothequeFrise
+            verrou={occupe}
+            frise={brouillon}
+            ongletInitial={pistesVides || p.projet.statut !== 'enregistrement' ? 'ia' : 'medias'}
+            envois={imports.envois}
+            onPoser={(c) => a.poser(c)}
+            onRetouche={(r) => a.retoucher(r)}
+            onFichiers={(f) => void imports.importer(f)}
+            ecrans={
+              <EcransPortail
+                frise={brouillon}
+                captures={p.fichiers.captures}
+                filmage={p.filmage}
+                enCours={enCours}
+                onEcran={a.ecran}
+                onFilmer={(refaire) => e.filmer(brouillon, refaire)}
+                changer={changer}
+              />
+            }
+            ia={
+              <AssistantIA
+                projetId={p.projetId}
+                projet={p.projet}
+                pistesRemplies={!pistesVides}
+                enCours={enCours}
+                onRetouche={e.retoucher}
+                onPrise={a.poserPrise}
+              />
+            }
+          />
+        </aside>
+        <SeparateurPanneau cote="gauche" largeurs={largeurs} />
+        <section aria-label="Aperçu" className="grid min-h-0 grid-rows-[minmax(0,1fr)_56px]">
+          <div ref={apercu} className="min-h-0 p-3">
+            <ApercuFrise
+              frise={brouillon}
+              fichiers={p.fichiers}
+              lignes={brouillon.sousTitres ? lignes : []}
+              lecture={lecture}
+              miniature={miniature}
+            >
+              {occupe ? null : (
+                <ManipulationApercu
+                  frise={brouillon}
+                  t={tete === 0 && !lecture.lecture ? 300 : tete}
+                  lignes={brouillon.sousTitres ? lignes : []}
+                  selection={selection}
+                  onSelection={setSelection}
+                  onDebut={h.memoriser}
+                  onChange={h.remplacer}
+                />
+              )}
+            </ApercuFrise>
+          </div>
+          <CommandesLecture
+            lecture={lecture}
+            miniature={miniature}
+            onMiniature={setMiniature}
+            avecMiniature={Boolean(brouillon.miniature)}
+            onPleinEcran={() => void apercu.current?.requestFullscreen?.()}
+          />
+        </section>
+        <SeparateurPanneau cote="droite" largeurs={largeurs} />
+        <aside
+          aria-label="Réglages"
+          inert={occupe}
+          className={`hidden min-h-0 overflow-y-auto bg-montage-panneau p-3 lg:block ${grise}`}
+        >
+          <InspecteurFrise
+            frise={brouillon}
+            mots={p.mots}
+            selection={selection}
+            tete={tete}
+            changer={changer}
+            onSelection={setSelection}
+          />
+        </aside>
+      </div>
+      <div
+        role="separator"
+        aria-orientation="horizontal"
+        aria-label="Hauteur de la frise"
+        onPointerDown={hauteur.tirer}
+        className="cursor-row-resize bg-montage-trait hover:bg-montage-selection"
+      />
+      <div className="relative grid min-h-0">
+        <div inert={occupe} className={`grid min-h-0 ${grise}`}>
+          <ZoneFrise
+            frise={brouillon}
+            tete={tete}
+            selection={selection}
+            onSelection={setSelection}
+            onTete={lecture.aller}
+            onDebut={h.memoriser}
+            onChange={h.remplacer}
+            changer={changer}
+            lignes={lignes}
+            onDepot={(c, pisteId, debut) => a.poser(c, pisteId, debut)}
+            onRetouche={(r, clipId) => a.retoucher(r, clipId)}
+            onFichiers={(f, pisteId, debut) => void imports.importer(f, { pisteId, debut })}
+            onScinder={a.scinder}
+          />
+        </div>
+        {occupe ? <BandeauOccupe statut={p.projet.statut} /> : null}
+      </div>
+    </div>
+  );
+}

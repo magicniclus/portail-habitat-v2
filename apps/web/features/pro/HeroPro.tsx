@@ -1,0 +1,104 @@
+import type { preuveHeroPro } from '@ph/core/landings';
+import type { ReactNode } from 'react';
+import { Etoiles } from '@/features/vitrine/Etoiles';
+
+const ARGUMENTS = [
+  "0 € à l'inscription",
+  'Jusqu’à 10 demandes gratuites par mois',
+  '0 % de commission',
+  'Sans engagement',
+  'Visible en 3 minutes',
+];
+
+/** Pastilles décoratives de la maquette, gardées telles quelles à la demande du propriétaire (D72). */
+const PASTILLES = ['JB', 'SM', 'MD'];
+
+/** Photo du hero (maquette Acquisition Artisans v2, emplacement `v2-hero`), README des photos. */
+const PHOTO_HERO = '/landing/photos/hero-acquisition.webp';
+
+/**
+ * Haut du hero : titre et, sur téléphone, une seule phrase ; le formulaire suit juste après
+ * (décision du 17/11/2026 : premier champ et bouton visibles sans défiler). Sur ordinateur, le
+ * formulaire est à droite et le détail (`DetailsPro`) reste sous le titre.
+ */
+export function AccrochePro({ bandeau }: { bandeau: ReactNode }) {
+  return (
+    <div>
+      {bandeau}
+      <h1 className="m-0 text-[clamp(26px,4.6vw,56px)] leading-[1.08] tracking-[-0.02em] md:mb-5">
+        Des <span className="accent-editorial">clients</span> près de chez vous
+        <span className="max-md:hidden"> vous contactent</span>.{' '}
+        <span className="accent-editorial">Gratuitement</span>.
+      </h1>
+      <p className="m-0 mt-1.5 text-[16px] leading-[22px] text-neutre-800 md:hidden">
+        Jusqu&apos;à 10 demandes gratuites par mois, sans commission ni engagement.
+      </p>
+    </div>
+  );
+}
+
+/** Paragraphe, pastilles et avis : sous le titre sur ordinateur, sous le formulaire sur téléphone. */
+export function DetailsPro({ preuve }: { preuve: ReturnType<typeof preuveHeroPro> }) {
+  return (
+    <div>
+      <p className="m-0 mb-6 max-w-[56ch] text-lg leading-[29px] text-texte">
+        Créez votre fiche en 3 minutes : les particuliers de votre secteur vous envoient leur
+        projet, jusqu&apos;à 10 demandes gratuites et exclusives par mois. Vous rappelez ceux qui
+        vous intéressent et vous signez. Pas de commission, pas d&apos;engagement, et tous les
+        outils pour gérer vos chantiers sont offerts.
+      </p>
+      <ul className="m-0 mb-6 flex list-none flex-wrap gap-x-3 gap-y-2.5 p-0">
+        {ARGUMENTS.map((a) => (
+          <li
+            key={a}
+            className="rounded-pill border border-accent-300 bg-accent-100 px-3 py-1.5 text-[13px] font-semibold text-accent-800"
+          >
+            {a}
+          </li>
+        ))}
+      </ul>
+      {preuve.note || preuve.artisans ? (
+        <div className="flex flex-wrap items-center gap-4">
+          <span aria-hidden="true" className="flex">
+            {PASTILLES.map((p, i) => (
+              <span
+                key={p}
+                className={`flex size-11 flex-none items-center justify-center rounded-full border-2 border-fond bg-accent-200 text-sm font-bold text-accent-800 ${i ? '-ml-2.5' : ''}`}
+              >
+                {p}
+              </span>
+            ))}
+          </span>
+          <p className="m-0 flex flex-col gap-0.5 text-[15px] leading-[22px] text-neutre-800">
+            {preuve.note ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <Etoiles />
+                <strong className="text-texte">{preuve.note}/5</strong>
+                <span className="text-neutre-700">sur {preuve.avis} avis</span>
+              </span>
+            ) : null}
+            {preuve.artisans ? (
+              <span>
+                <strong className="text-texte">{preuve.artisans} artisans</strong> développent déjà
+                leur activité avec nous
+              </span>
+            ) : null}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** Photo 21:9 aux coins arrondis, sous l'accroche (sous le formulaire sur mobile). */
+export function PhotoHeroPro({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`aspect-[21/9] w-full rounded-[16px] bg-cover bg-center ${className ?? ''}`}
+      style={{
+        backgroundImage: `url(${PHOTO_HERO}), linear-gradient(135deg, var(--accent-100), var(--accent-200))`,
+      }}
+    />
+  );
+}

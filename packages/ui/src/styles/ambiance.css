@@ -1,0 +1,33 @@
+/* Fichier généré par `pnpm --filter @ph/ui tokens` depuis src/tokens/index.ts : ne pas modifier. */
+
+[data-ambiance='sombre'] {
+  color-scheme: dark; background-color: #0f0f11; color: #ededf0;
+}
+
+[data-ambiance='sombre'] :is(.bg-blanc, .bg-fond, .bg-surface) {
+  background-color: #1a1a1d;
+}
+
+[data-ambiance='sombre'] :is(.bg-neutre-100, .hover\:bg-neutre-100:hover) {
+  background-color: #242428;
+}
+
+[data-ambiance='sombre'] :is(.bg-neutre-200, .hover\:bg-neutre-200:hover) {
+  background-color: #2f2f34;
+}
+
+[data-ambiance='sombre'] :is(.text-texte, .text-neutre-900, .text-neutre-800) {
+  color: #ededf0;
+}
+
+[data-ambiance='sombre'] :is(.text-neutre-700, .text-neutre-600) {
+  color: #a7a7b0;
+}
+
+[data-ambiance='sombre'] :is(.border-trait, .border-neutre-200, .border-neutre-300) {
+  border-color: #35353b;
+}
+
+[data-ambiance='sombre'] :is(input:not([type='range'], [type='checkbox'], [type='radio']), select, textarea) {
+  background-color: #242428; color: #ededf0; border-color: #35353b;
+}

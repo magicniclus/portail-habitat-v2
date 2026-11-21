@@ -1,0 +1,37 @@
+{
+  "note": "Film court (30 s) de l’outil « Suivi clients ». Images : vraies prises de « Mes demandes » sur le jeu de test (étape, note, date de relance). Aucun chiffre cité ; la relance est une date notée, pas un envoi automatique.",
+  "avant": {
+    "u01": 0.6
+  },
+  "apres": {
+    "u02": 0.5,
+    "u05": 3
+  },
+  "segments": [
+    {
+      "id": "u01",
+      "acte": 1,
+      "texte": "Un client à rappeler, un devis à relancer, un chantier à démarrer…"
+    },
+    {
+      "id": "u02",
+      "acte": 1,
+      "texte": "Sur un carnet ou dans votre tête, on finit par en oublier."
+    },
+    {
+      "id": "u03",
+      "acte": 3,
+      "texte": "Avec Portail Travaux, chaque client et chaque chantier sont au même endroit."
+    },
+    {
+      "id": "u04",
+      "acte": 8,
+      "texte": "Vous notez où vous en êtes : à appeler, devis envoyé, gagné. Vous ajoutez une note, une date de relance."
+    },
+    {
+      "id": "u05",
+      "acte": 11,
+      "texte": "Du premier appel à la facture, tout est suivi. C'est gratuit. Créez votre espace : inscrivez-vous via le formulaire."
+    }
+  ]
+}

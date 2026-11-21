@@ -1,0 +1,1649 @@
+{
+  "_note": "Requêtes étiquetées : libellé et deux premiers mots-clés de chaque intention → intention attendue au 1er rang (95 % exigés) et dans le top 3 (100 %). Ajouter ici les requêtes réelles sans résultat ou mal classées (admin).",
+  "cas": [
+    {
+      "q": "Rénovation de salle de bain",
+      "attendu": "sdb-renovation"
+    },
+    {
+      "q": "renovation salle de bain",
+      "attendu": "sdb-renovation"
+    },
+    {
+      "q": "refaire salle de bain",
+      "attendu": "sdb-renovation"
+    },
+    {
+      "q": "Remplacer une baignoire par une douche",
+      "attendu": "sdb-baignoire-douche"
+    },
+    {
+      "q": "baignoire en douche",
+      "attendu": "sdb-baignoire-douche"
+    },
+    {
+      "q": "remplacer baignoire",
+      "attendu": "sdb-baignoire-douche"
+    },
+    {
+      "q": "Douche à l'italienne",
+      "attendu": "sdb-italienne"
+    },
+    {
+      "q": "douche italienne",
+      "attendu": "sdb-italienne"
+    },
+    {
+      "q": "douche a l'italienne",
+      "attendu": "sdb-italienne"
+    },
+    {
+      "q": "Salle de bain PMR / seniors",
+      "attendu": "sdb-pmr"
+    },
+    {
+      "q": "salle de bain pmr",
+      "attendu": "sdb-pmr"
+    },
+    {
+      "q": "salle de bain senior",
+      "attendu": "sdb-pmr"
+    },
+    {
+      "q": "Pose de meuble vasque",
+      "attendu": "sdb-meuble"
+    },
+    {
+      "q": "meuble vasque",
+      "attendu": "sdb-meuble"
+    },
+    {
+      "q": "meuble salle de bain",
+      "attendu": "sdb-meuble"
+    },
+    {
+      "q": "Pose ou remplacement de baignoire",
+      "attendu": "sdb-baignoire"
+    },
+    {
+      "q": "baignoire",
+      "attendu": "sdb-baignoire"
+    },
+    {
+      "q": "baignoire ilot",
+      "attendu": "sdb-baignoire"
+    },
+    {
+      "q": "Toilettes et WC suspendu",
+      "attendu": "sdb-wc"
+    },
+    {
+      "q": "wc",
+      "attendu": "sdb-wc"
+    },
+    {
+      "q": "toilettes",
+      "attendu": "sdb-wc"
+    },
+    {
+      "q": "Rénovation de cuisine",
+      "attendu": "cuisine-renovation"
+    },
+    {
+      "q": "renovation cuisine",
+      "attendu": "cuisine-renovation"
+    },
+    {
+      "q": "refaire cuisine",
+      "attendu": "cuisine-renovation"
+    },
+    {
+      "q": "Montage et pose de cuisine en kit",
+      "attendu": "cuisine-pose"
+    },
+    {
+      "q": "montage cuisine",
+      "attendu": "cuisine-pose"
+    },
+    {
+      "q": "pose cuisine ikea",
+      "attendu": "cuisine-pose"
+    },
+    {
+      "q": "Plan de travail et crédence",
+      "attendu": "cuisine-plan"
+    },
+    {
+      "q": "plan de travail",
+      "attendu": "cuisine-plan"
+    },
+    {
+      "q": "credence",
+      "attendu": "cuisine-plan"
+    },
+    {
+      "q": "Îlot central de cuisine",
+      "attendu": "cuisine-ilot"
+    },
+    {
+      "q": "ilot central",
+      "attendu": "cuisine-ilot"
+    },
+    {
+      "q": "ilot de cuisine",
+      "attendu": "cuisine-ilot"
+    },
+    {
+      "q": "Relooking de cuisine (façades, peinture)",
+      "attendu": "cuisine-relooking"
+    },
+    {
+      "q": "repeindre cuisine",
+      "attendu": "cuisine-relooking"
+    },
+    {
+      "q": "peindre meubles cuisine",
+      "attendu": "cuisine-relooking"
+    },
+    {
+      "q": "Branchement électroménager et hotte",
+      "attendu": "cuisine-electromenager"
+    },
+    {
+      "q": "hotte",
+      "attendu": "cuisine-electromenager"
+    },
+    {
+      "q": "hotte aspirante",
+      "attendu": "cuisine-electromenager"
+    },
+    {
+      "q": "Peinture intérieure",
+      "attendu": "peinture-interieure"
+    },
+    {
+      "q": "peinture",
+      "attendu": "peinture-interieure"
+    },
+    {
+      "q": "peindre",
+      "attendu": "peinture-interieure"
+    },
+    {
+      "q": "Peinture des portes et boiseries",
+      "attendu": "peinture-boiseries"
+    },
+    {
+      "q": "peinture porte",
+      "attendu": "peinture-boiseries"
+    },
+    {
+      "q": "peindre portes",
+      "attendu": "peinture-boiseries"
+    },
+    {
+      "q": "Pose de papier peint",
+      "attendu": "papier-peint"
+    },
+    {
+      "q": "papier peint",
+      "attendu": "papier-peint"
+    },
+    {
+      "q": "tapisserie",
+      "attendu": "papier-peint"
+    },
+    {
+      "q": "Enduit et préparation des murs",
+      "attendu": "enduit"
+    },
+    {
+      "q": "enduit",
+      "attendu": "enduit"
+    },
+    {
+      "q": "ratisser",
+      "attendu": "enduit"
+    },
+    {
+      "q": "Peinture extérieure et volets",
+      "attendu": "peinture-exterieure"
+    },
+    {
+      "q": "peinture exterieure",
+      "attendu": "peinture-exterieure"
+    },
+    {
+      "q": "peindre volets",
+      "attendu": "peinture-exterieure"
+    },
+    {
+      "q": "Ravalement de façade",
+      "attendu": "facade-ravalement"
+    },
+    {
+      "q": "ravalement",
+      "attendu": "facade-ravalement"
+    },
+    {
+      "q": "ravalement facade",
+      "attendu": "facade-ravalement"
+    },
+    {
+      "q": "Isolation thermique par l'extérieur (ITE)",
+      "attendu": "facade-ite"
+    },
+    {
+      "q": "ite",
+      "attendu": "facade-ite"
+    },
+    {
+      "q": "isolation exterieure",
+      "attendu": "facade-ite"
+    },
+    {
+      "q": "Pose de carrelage au sol",
+      "attendu": "carrelage-sol"
+    },
+    {
+      "q": "carrelage",
+      "attendu": "carrelage-sol"
+    },
+    {
+      "q": "carreler",
+      "attendu": "carrelage-sol"
+    },
+    {
+      "q": "Faïence et carrelage mural",
+      "attendu": "carrelage-mural"
+    },
+    {
+      "q": "faience",
+      "attendu": "carrelage-mural"
+    },
+    {
+      "q": "carrelage mural",
+      "attendu": "carrelage-mural"
+    },
+    {
+      "q": "Pose de parquet",
+      "attendu": "parquet"
+    },
+    {
+      "q": "parquet",
+      "attendu": "parquet"
+    },
+    {
+      "q": "pose parquet",
+      "attendu": "parquet"
+    },
+    {
+      "q": "Rénovation et vitrification de parquet",
+      "attendu": "parquet-renovation"
+    },
+    {
+      "q": "poncer parquet",
+      "attendu": "parquet-renovation"
+    },
+    {
+      "q": "poncage parquet",
+      "attendu": "parquet-renovation"
+    },
+    {
+      "q": "Sol vinyle, stratifié ou moquette",
+      "attendu": "sol-souple"
+    },
+    {
+      "q": "stratifie",
+      "attendu": "sol-souple"
+    },
+    {
+      "q": "sol stratifie",
+      "attendu": "sol-souple"
+    },
+    {
+      "q": "Chape et ragréage",
+      "attendu": "chape"
+    },
+    {
+      "q": "chape",
+      "attendu": "chape"
+    },
+    {
+      "q": "ragreage",
+      "attendu": "chape"
+    },
+    {
+      "q": "Béton ciré et résine de sol",
+      "attendu": "beton-cire"
+    },
+    {
+      "q": "beton cire",
+      "attendu": "beton-cire"
+    },
+    {
+      "q": "resine sol",
+      "attendu": "beton-cire"
+    },
+    {
+      "q": "Création ou suppression de cloison",
+      "attendu": "cloison"
+    },
+    {
+      "q": "cloison",
+      "attendu": "cloison"
+    },
+    {
+      "q": "monter une cloison",
+      "attendu": "cloison"
+    },
+    {
+      "q": "Pose de verrière d'intérieur",
+      "attendu": "verriere"
+    },
+    {
+      "q": "verriere",
+      "attendu": "verriere"
+    },
+    {
+      "q": "verriere atelier",
+      "attendu": "verriere"
+    },
+    {
+      "q": "Faux plafond et plafond suspendu",
+      "attendu": "faux-plafond"
+    },
+    {
+      "q": "faux plafond",
+      "attendu": "faux-plafond"
+    },
+    {
+      "q": "plafond suspendu",
+      "attendu": "faux-plafond"
+    },
+    {
+      "q": "Ouverture de mur porteur",
+      "attendu": "mur-porteur"
+    },
+    {
+      "q": "mur porteur",
+      "attendu": "mur-porteur"
+    },
+    {
+      "q": "ouvrir mur porteur",
+      "attendu": "mur-porteur"
+    },
+    {
+      "q": "Dressing et placards sur mesure",
+      "attendu": "dressing"
+    },
+    {
+      "q": "dressing",
+      "attendu": "dressing"
+    },
+    {
+      "q": "placard",
+      "attendu": "dressing"
+    },
+    {
+      "q": "Escalier : création ou rénovation",
+      "attendu": "escalier"
+    },
+    {
+      "q": "escalier",
+      "attendu": "escalier"
+    },
+    {
+      "q": "escalier bois",
+      "attendu": "escalier"
+    },
+    {
+      "q": "Aménagement des combles",
+      "attendu": "combles-amenagement"
+    },
+    {
+      "q": "amenagement combles",
+      "attendu": "combles-amenagement"
+    },
+    {
+      "q": "amenager combles",
+      "attendu": "combles-amenagement"
+    },
+    {
+      "q": "Transformer un garage en pièce",
+      "attendu": "garage-transformation"
+    },
+    {
+      "q": "transformer garage",
+      "attendu": "garage-transformation"
+    },
+    {
+      "q": "garage en chambre",
+      "attendu": "garage-transformation"
+    },
+    {
+      "q": "Rénovation complète maison ou appartement",
+      "attendu": "renovation-complete"
+    },
+    {
+      "q": "renovation complete",
+      "attendu": "renovation-complete"
+    },
+    {
+      "q": "renovation totale",
+      "attendu": "renovation-complete"
+    },
+    {
+      "q": "Extension de maison",
+      "attendu": "extension"
+    },
+    {
+      "q": "extension",
+      "attendu": "extension"
+    },
+    {
+      "q": "agrandissement",
+      "attendu": "extension"
+    },
+    {
+      "q": "Véranda et pergola",
+      "attendu": "veranda"
+    },
+    {
+      "q": "veranda",
+      "attendu": "veranda"
+    },
+    {
+      "q": "pergola",
+      "attendu": "veranda"
+    },
+    {
+      "q": "Construction de maison",
+      "attendu": "maison-neuve"
+    },
+    {
+      "q": "construction maison",
+      "attendu": "maison-neuve"
+    },
+    {
+      "q": "construire maison",
+      "attendu": "maison-neuve"
+    },
+    {
+      "q": "Architecte ou maître d'œuvre",
+      "attendu": "architecte"
+    },
+    {
+      "q": "architecte",
+      "attendu": "architecte"
+    },
+    {
+      "q": "architecte d'interieur",
+      "attendu": "architecte"
+    },
+    {
+      "q": "Recherche et réparation de fuite",
+      "attendu": "plomberie-fuite"
+    },
+    {
+      "q": "fuite",
+      "attendu": "plomberie-fuite"
+    },
+    {
+      "q": "fuite d'eau",
+      "attendu": "plomberie-fuite"
+    },
+    {
+      "q": "Débouchage de canalisation",
+      "attendu": "plomberie-debouchage"
+    },
+    {
+      "q": "deboucher",
+      "attendu": "plomberie-debouchage"
+    },
+    {
+      "q": "debouchage",
+      "attendu": "plomberie-debouchage"
+    },
+    {
+      "q": "Réfection de la plomberie",
+      "attendu": "plomberie-refection"
+    },
+    {
+      "q": "refaire plomberie",
+      "attendu": "plomberie-refection"
+    },
+    {
+      "q": "plomberie complete",
+      "attendu": "plomberie-refection"
+    },
+    {
+      "q": "Chauffe-eau et ballon d'eau chaude",
+      "attendu": "chauffe-eau"
+    },
+    {
+      "q": "chauffe eau",
+      "attendu": "chauffe-eau"
+    },
+    {
+      "q": "chauffe-eau",
+      "attendu": "chauffe-eau"
+    },
+    {
+      "q": "Chauffe-eau thermodynamique ou solaire",
+      "attendu": "chauffe-eau-thermo"
+    },
+    {
+      "q": "chauffe eau thermodynamique",
+      "attendu": "chauffe-eau-thermo"
+    },
+    {
+      "q": "ballon thermodynamique",
+      "attendu": "chauffe-eau-thermo"
+    },
+    {
+      "q": "Adoucisseur et traitement de l'eau",
+      "attendu": "adoucisseur"
+    },
+    {
+      "q": "adoucisseur",
+      "attendu": "adoucisseur"
+    },
+    {
+      "q": "calcaire",
+      "attendu": "adoucisseur"
+    },
+    {
+      "q": "Robinetterie et mitigeur",
+      "attendu": "robinetterie"
+    },
+    {
+      "q": "robinet",
+      "attendu": "robinetterie"
+    },
+    {
+      "q": "mitigeur",
+      "attendu": "robinetterie"
+    },
+    {
+      "q": "Récupération d'eau de pluie",
+      "attendu": "recuperation-eau"
+    },
+    {
+      "q": "recuperateur eau de pluie",
+      "attendu": "recuperation-eau"
+    },
+    {
+      "q": "cuve eau de pluie",
+      "attendu": "recuperation-eau"
+    },
+    {
+      "q": "Pompe à chaleur air-eau",
+      "attendu": "pac-air-eau"
+    },
+    {
+      "q": "pompe a chaleur",
+      "attendu": "pac-air-eau"
+    },
+    {
+      "q": "pac",
+      "attendu": "pac-air-eau"
+    },
+    {
+      "q": "Pompe à chaleur air-air (réversible)",
+      "attendu": "pac-air-air"
+    },
+    {
+      "q": "pac air air",
+      "attendu": "pac-air-air"
+    },
+    {
+      "q": "pompe a chaleur air air",
+      "attendu": "pac-air-air"
+    },
+    {
+      "q": "Chaudière : installation ou remplacement",
+      "attendu": "chaudiere"
+    },
+    {
+      "q": "chaudiere",
+      "attendu": "chaudiere"
+    },
+    {
+      "q": "remplacer chaudiere",
+      "attendu": "chaudiere"
+    },
+    {
+      "q": "Entretien de chaudière",
+      "attendu": "chaudiere-entretien"
+    },
+    {
+      "q": "entretien chaudiere",
+      "attendu": "chaudiere-entretien"
+    },
+    {
+      "q": "entretien annuel",
+      "attendu": "chaudiere-entretien"
+    },
+    {
+      "q": "Poêle à bois ou à granulés",
+      "attendu": "poele"
+    },
+    {
+      "q": "poele",
+      "attendu": "poele"
+    },
+    {
+      "q": "poele a bois",
+      "attendu": "poele"
+    },
+    {
+      "q": "Cheminée et insert",
+      "attendu": "cheminee"
+    },
+    {
+      "q": "cheminee",
+      "attendu": "cheminee"
+    },
+    {
+      "q": "insert",
+      "attendu": "cheminee"
+    },
+    {
+      "q": "Ramonage",
+      "attendu": "ramonage"
+    },
+    {
+      "q": "ramonage",
+      "attendu": "ramonage"
+    },
+    {
+      "q": "ramoner",
+      "attendu": "ramonage"
+    },
+    {
+      "q": "Radiateurs et chauffage électrique",
+      "attendu": "radiateurs"
+    },
+    {
+      "q": "radiateur",
+      "attendu": "radiateurs"
+    },
+    {
+      "q": "radiateurs",
+      "attendu": "radiateurs"
+    },
+    {
+      "q": "Plancher chauffant",
+      "attendu": "plancher-chauffant"
+    },
+    {
+      "q": "plancher chauffant",
+      "attendu": "plancher-chauffant"
+    },
+    {
+      "q": "sol chauffant",
+      "attendu": "plancher-chauffant"
+    },
+    {
+      "q": "Chauffage central et désembouage",
+      "attendu": "chauffage-central"
+    },
+    {
+      "q": "chauffage central",
+      "attendu": "chauffage-central"
+    },
+    {
+      "q": "radiateurs eau",
+      "attendu": "chauffage-central"
+    },
+    {
+      "q": "Géothermie",
+      "attendu": "geothermie"
+    },
+    {
+      "q": "geothermie",
+      "attendu": "geothermie"
+    },
+    {
+      "q": "pac geothermique",
+      "attendu": "geothermie"
+    },
+    {
+      "q": "Climatisation",
+      "attendu": "climatisation"
+    },
+    {
+      "q": "climatisation",
+      "attendu": "climatisation"
+    },
+    {
+      "q": "clim",
+      "attendu": "climatisation"
+    },
+    {
+      "q": "VMC et ventilation",
+      "attendu": "vmc"
+    },
+    {
+      "q": "vmc",
+      "attendu": "vmc"
+    },
+    {
+      "q": "ventilation",
+      "attendu": "vmc"
+    },
+    {
+      "q": "Qualité de l'air et déshumidification",
+      "attendu": "purificateur"
+    },
+    {
+      "q": "deshumidificateur",
+      "attendu": "purificateur"
+    },
+    {
+      "q": "qualite air",
+      "attendu": "purificateur"
+    },
+    {
+      "q": "Rénovation électrique",
+      "attendu": "elec-renovation"
+    },
+    {
+      "q": "electricite",
+      "attendu": "elec-renovation"
+    },
+    {
+      "q": "electricien",
+      "attendu": "elec-renovation"
+    },
+    {
+      "q": "Tableau électrique",
+      "attendu": "tableau-electrique"
+    },
+    {
+      "q": "tableau electrique",
+      "attendu": "tableau-electrique"
+    },
+    {
+      "q": "remplacer tableau",
+      "attendu": "tableau-electrique"
+    },
+    {
+      "q": "Ajout de prises et points lumineux",
+      "attendu": "elec-prises"
+    },
+    {
+      "q": "prise",
+      "attendu": "elec-prises"
+    },
+    {
+      "q": "prises",
+      "attendu": "elec-prises"
+    },
+    {
+      "q": "Dépannage électrique",
+      "attendu": "elec-panne"
+    },
+    {
+      "q": "panne electrique",
+      "attendu": "elec-panne"
+    },
+    {
+      "q": "plus de courant",
+      "attendu": "elec-panne"
+    },
+    {
+      "q": "Borne de recharge voiture électrique",
+      "attendu": "borne-recharge"
+    },
+    {
+      "q": "borne de recharge",
+      "attendu": "borne-recharge"
+    },
+    {
+      "q": "wallbox",
+      "attendu": "borne-recharge"
+    },
+    {
+      "q": "Panneaux solaires photovoltaïques",
+      "attendu": "panneaux-solaires"
+    },
+    {
+      "q": "panneaux solaires",
+      "attendu": "panneaux-solaires"
+    },
+    {
+      "q": "panneau solaire",
+      "attendu": "panneaux-solaires"
+    },
+    {
+      "q": "Domotique et maison connectée",
+      "attendu": "domotique"
+    },
+    {
+      "q": "domotique",
+      "attendu": "domotique"
+    },
+    {
+      "q": "maison connectee",
+      "attendu": "domotique"
+    },
+    {
+      "q": "Éclairage extérieur",
+      "attendu": "eclairage-exterieur"
+    },
+    {
+      "q": "eclairage exterieur",
+      "attendu": "eclairage-exterieur"
+    },
+    {
+      "q": "eclairage jardin",
+      "attendu": "eclairage-exterieur"
+    },
+    {
+      "q": "Antenne TV et parabole",
+      "attendu": "antenne"
+    },
+    {
+      "q": "antenne",
+      "attendu": "antenne"
+    },
+    {
+      "q": "antenne tv",
+      "attendu": "antenne"
+    },
+    {
+      "q": "Isolation des combles",
+      "attendu": "isolation-combles"
+    },
+    {
+      "q": "isolation combles",
+      "attendu": "isolation-combles"
+    },
+    {
+      "q": "isoler combles",
+      "attendu": "isolation-combles"
+    },
+    {
+      "q": "Isolation des murs par l'intérieur",
+      "attendu": "isolation-murs"
+    },
+    {
+      "q": "isolation murs",
+      "attendu": "isolation-murs"
+    },
+    {
+      "q": "isoler murs",
+      "attendu": "isolation-murs"
+    },
+    {
+      "q": "Isolation du sol et du vide sanitaire",
+      "attendu": "isolation-sol"
+    },
+    {
+      "q": "isolation sol",
+      "attendu": "isolation-sol"
+    },
+    {
+      "q": "isolation plancher bas",
+      "attendu": "isolation-sol"
+    },
+    {
+      "q": "Rénovation énergétique globale",
+      "attendu": "renovation-energetique"
+    },
+    {
+      "q": "renovation energetique",
+      "attendu": "renovation-energetique"
+    },
+    {
+      "q": "maprimerenov",
+      "attendu": "renovation-energetique"
+    },
+    {
+      "q": "Audit énergétique",
+      "attendu": "audit-energetique"
+    },
+    {
+      "q": "audit energetique",
+      "attendu": "audit-energetique"
+    },
+    {
+      "q": "audit energie",
+      "attendu": "audit-energetique"
+    },
+    {
+      "q": "Remplacement de fenêtres",
+      "attendu": "fenetres"
+    },
+    {
+      "q": "fenetre",
+      "attendu": "fenetres"
+    },
+    {
+      "q": "fenetres",
+      "attendu": "fenetres"
+    },
+    {
+      "q": "Baie vitrée et coulissant",
+      "attendu": "baie-vitree"
+    },
+    {
+      "q": "baie vitree",
+      "attendu": "baie-vitree"
+    },
+    {
+      "q": "coulissant",
+      "attendu": "baie-vitree"
+    },
+    {
+      "q": "Porte d'entrée",
+      "attendu": "porte-entree"
+    },
+    {
+      "q": "porte d'entree",
+      "attendu": "porte-entree"
+    },
+    {
+      "q": "porte entree",
+      "attendu": "porte-entree"
+    },
+    {
+      "q": "Portes intérieures",
+      "attendu": "portes-interieures"
+    },
+    {
+      "q": "porte interieure",
+      "attendu": "portes-interieures"
+    },
+    {
+      "q": "portes interieures",
+      "attendu": "portes-interieures"
+    },
+    {
+      "q": "Volets roulants et battants",
+      "attendu": "volets"
+    },
+    {
+      "q": "volet",
+      "attendu": "volets"
+    },
+    {
+      "q": "volets",
+      "attendu": "volets"
+    },
+    {
+      "q": "Store banne et protection solaire",
+      "attendu": "store"
+    },
+    {
+      "q": "store",
+      "attendu": "store"
+    },
+    {
+      "q": "store banne",
+      "attendu": "store"
+    },
+    {
+      "q": "Fenêtre de toit (Velux)",
+      "attendu": "velux"
+    },
+    {
+      "q": "velux",
+      "attendu": "velux"
+    },
+    {
+      "q": "fenetre de toit",
+      "attendu": "velux"
+    },
+    {
+      "q": "Vitrerie et remplacement de vitre",
+      "attendu": "vitrerie"
+    },
+    {
+      "q": "vitre cassee",
+      "attendu": "vitrerie"
+    },
+    {
+      "q": "vitrier",
+      "attendu": "vitrerie"
+    },
+    {
+      "q": "Serrurerie et ouverture de porte",
+      "attendu": "serrurerie"
+    },
+    {
+      "q": "serrurier",
+      "attendu": "serrurerie"
+    },
+    {
+      "q": "serrure",
+      "attendu": "serrurerie"
+    },
+    {
+      "q": "Garde-corps et rampe",
+      "attendu": "garde-corps"
+    },
+    {
+      "q": "garde corps",
+      "attendu": "garde-corps"
+    },
+    {
+      "q": "garde-corps",
+      "attendu": "garde-corps"
+    },
+    {
+      "q": "Rénovation de toiture",
+      "attendu": "toiture-renovation"
+    },
+    {
+      "q": "toiture",
+      "attendu": "toiture-renovation"
+    },
+    {
+      "q": "toit",
+      "attendu": "toiture-renovation"
+    },
+    {
+      "q": "Fuite de toiture et réparation",
+      "attendu": "toiture-fuite"
+    },
+    {
+      "q": "fuite toiture",
+      "attendu": "toiture-fuite"
+    },
+    {
+      "q": "fuite toit",
+      "attendu": "toiture-fuite"
+    },
+    {
+      "q": "Démoussage et traitement de toiture",
+      "attendu": "toiture-demoussage"
+    },
+    {
+      "q": "demoussage",
+      "attendu": "toiture-demoussage"
+    },
+    {
+      "q": "demousser",
+      "attendu": "toiture-demoussage"
+    },
+    {
+      "q": "Gouttières et descentes",
+      "attendu": "gouttieres"
+    },
+    {
+      "q": "gouttiere",
+      "attendu": "gouttieres"
+    },
+    {
+      "q": "gouttieres",
+      "attendu": "gouttieres"
+    },
+    {
+      "q": "Charpente : réparation ou création",
+      "attendu": "charpente"
+    },
+    {
+      "q": "charpente",
+      "attendu": "charpente"
+    },
+    {
+      "q": "charpentier",
+      "attendu": "charpente"
+    },
+    {
+      "q": "Étanchéité de toit-terrasse",
+      "attendu": "toit-terrasse"
+    },
+    {
+      "q": "toit terrasse",
+      "attendu": "toit-terrasse"
+    },
+    {
+      "q": "toiture terrasse",
+      "attendu": "toit-terrasse"
+    },
+    {
+      "q": "Travaux de maçonnerie",
+      "attendu": "maconnerie"
+    },
+    {
+      "q": "maconnerie",
+      "attendu": "maconnerie"
+    },
+    {
+      "q": "macon",
+      "attendu": "maconnerie"
+    },
+    {
+      "q": "Fissures et désordres structurels",
+      "attendu": "fissures"
+    },
+    {
+      "q": "fissure",
+      "attendu": "fissures"
+    },
+    {
+      "q": "fissures",
+      "attendu": "fissures"
+    },
+    {
+      "q": "Démolition et évacuation",
+      "attendu": "demolition"
+    },
+    {
+      "q": "demolition",
+      "attendu": "demolition"
+    },
+    {
+      "q": "demolir",
+      "attendu": "demolition"
+    },
+    {
+      "q": "Désamiantage",
+      "attendu": "desamiantage"
+    },
+    {
+      "q": "amiante",
+      "attendu": "desamiantage"
+    },
+    {
+      "q": "desamiantage",
+      "attendu": "desamiantage"
+    },
+    {
+      "q": "Humidité, remontées capillaires, salpêtre",
+      "attendu": "humidite"
+    },
+    {
+      "q": "humidite",
+      "attendu": "humidite"
+    },
+    {
+      "q": "mur humide",
+      "attendu": "humidite"
+    },
+    {
+      "q": "Drainage et cuvelage",
+      "attendu": "drainage"
+    },
+    {
+      "q": "drainage",
+      "attendu": "drainage"
+    },
+    {
+      "q": "drain",
+      "attendu": "drainage"
+    },
+    {
+      "q": "Assainissement et fosse septique",
+      "attendu": "assainissement"
+    },
+    {
+      "q": "fosse septique",
+      "attendu": "assainissement"
+    },
+    {
+      "q": "assainissement",
+      "attendu": "assainissement"
+    },
+    {
+      "q": "Terrasse en bois ou composite",
+      "attendu": "terrasse-bois"
+    },
+    {
+      "q": "terrasse",
+      "attendu": "terrasse-bois"
+    },
+    {
+      "q": "terrasse bois",
+      "attendu": "terrasse-bois"
+    },
+    {
+      "q": "Terrasse en dalles ou carrelage",
+      "attendu": "terrasse-dalle"
+    },
+    {
+      "q": "terrasse carrelage",
+      "attendu": "terrasse-dalle"
+    },
+    {
+      "q": "dalle terrasse",
+      "attendu": "terrasse-dalle"
+    },
+    {
+      "q": "Allée, cour et pavage",
+      "attendu": "allee"
+    },
+    {
+      "q": "allee",
+      "attendu": "allee"
+    },
+    {
+      "q": "allee garage",
+      "attendu": "allee"
+    },
+    {
+      "q": "Clôture et portillon",
+      "attendu": "cloture"
+    },
+    {
+      "q": "cloture",
+      "attendu": "cloture"
+    },
+    {
+      "q": "clotures",
+      "attendu": "cloture"
+    },
+    {
+      "q": "Portail et motorisation",
+      "attendu": "portail"
+    },
+    {
+      "q": "portail",
+      "attendu": "portail"
+    },
+    {
+      "q": "portail coulissant",
+      "attendu": "portail"
+    },
+    {
+      "q": "Porte de garage",
+      "attendu": "porte-garage"
+    },
+    {
+      "q": "porte de garage",
+      "attendu": "porte-garage"
+    },
+    {
+      "q": "porte garage sectionnelle",
+      "attendu": "porte-garage"
+    },
+    {
+      "q": "Aménagement de jardin et paysagisme",
+      "attendu": "jardin"
+    },
+    {
+      "q": "jardin",
+      "attendu": "jardin"
+    },
+    {
+      "q": "paysagiste",
+      "attendu": "jardin"
+    },
+    {
+      "q": "Élagage et abattage d'arbres",
+      "attendu": "elagage"
+    },
+    {
+      "q": "elagage",
+      "attendu": "elagage"
+    },
+    {
+      "q": "elaguer",
+      "attendu": "elagage"
+    },
+    {
+      "q": "Piscine : construction ou rénovation",
+      "attendu": "piscine"
+    },
+    {
+      "q": "piscine",
+      "attendu": "piscine"
+    },
+    {
+      "q": "construire piscine",
+      "attendu": "piscine"
+    },
+    {
+      "q": "Terrassement et viabilisation",
+      "attendu": "terrassement"
+    },
+    {
+      "q": "terrassement",
+      "attendu": "terrassement"
+    },
+    {
+      "q": "terrasser",
+      "attendu": "terrassement"
+    },
+    {
+      "q": "Abri de jardin, carport, garage",
+      "attendu": "abri-jardin"
+    },
+    {
+      "q": "abri de jardin",
+      "attendu": "abri-jardin"
+    },
+    {
+      "q": "cabane",
+      "attendu": "abri-jardin"
+    },
+    {
+      "q": "Alarme et vidéosurveillance",
+      "attendu": "alarme"
+    },
+    {
+      "q": "alarme",
+      "attendu": "alarme"
+    },
+    {
+      "q": "alarme maison",
+      "attendu": "alarme"
+    },
+    {
+      "q": "Monte-escalier et accessibilité",
+      "attendu": "monte-escalier"
+    },
+    {
+      "q": "monte escalier",
+      "attendu": "monte-escalier"
+    },
+    {
+      "q": "monte-escalier",
+      "attendu": "monte-escalier"
+    },
+    {
+      "q": "Détecteurs de fumée et CO",
+      "attendu": "detecteur-fumee"
+    },
+    {
+      "q": "detecteur de fumee",
+      "attendu": "detecteur-fumee"
+    },
+    {
+      "q": "daaf",
+      "attendu": "detecteur-fumee"
+    },
+    {
+      "q": "Traitement termites et insectes du bois",
+      "attendu": "termites"
+    },
+    {
+      "q": "termites",
+      "attendu": "termites"
+    },
+    {
+      "q": "traitement termites",
+      "attendu": "termites"
+    },
+    {
+      "q": "Nuisibles : rats, frelons, punaises",
+      "attendu": "nuisibles"
+    },
+    {
+      "q": "rats",
+      "attendu": "nuisibles"
+    },
+    {
+      "q": "souris",
+      "attendu": "nuisibles"
+    },
+    {
+      "q": "Diagnostics immobiliers pour une vente",
+      "attendu": "diagnostics-vente"
+    },
+    {
+      "q": "diagnostic immobilier",
+      "attendu": "diagnostics-vente"
+    },
+    {
+      "q": "diagnostics vente",
+      "attendu": "diagnostics-vente"
+    },
+    {
+      "q": "DPE (diagnostic de performance énergétique)",
+      "attendu": "dpe"
+    },
+    {
+      "q": "dpe",
+      "attendu": "dpe"
+    },
+    {
+      "q": "diagnostic de performance energetique",
+      "attendu": "dpe"
+    },
+    {
+      "q": "Diagnostics pour une location",
+      "attendu": "diagnostics-location"
+    },
+    {
+      "q": "diagnostics location",
+      "attendu": "diagnostics-location"
+    },
+    {
+      "q": "diagnostic location",
+      "attendu": "diagnostics-location"
+    },
+    {
+      "q": "Diagnostic amiante",
+      "attendu": "diag-amiante"
+    },
+    {
+      "q": "diagnostic amiante",
+      "attendu": "diag-amiante"
+    },
+    {
+      "q": "reperage amiante",
+      "attendu": "diag-amiante"
+    },
+    {
+      "q": "Diagnostic plomb (CREP)",
+      "attendu": "diag-plomb"
+    },
+    {
+      "q": "diagnostic plomb",
+      "attendu": "diag-plomb"
+    },
+    {
+      "q": "crep",
+      "attendu": "diag-plomb"
+    },
+    {
+      "q": "Mesurage loi Carrez",
+      "attendu": "diag-carrez"
+    },
+    {
+      "q": "loi carrez",
+      "attendu": "diag-carrez"
+    },
+    {
+      "q": "carrez",
+      "attendu": "diag-carrez"
+    },
+    {
+      "q": "Diagnostic électricité et gaz",
+      "attendu": "diag-elec-gaz"
+    },
+    {
+      "q": "diagnostic electricite",
+      "attendu": "diag-elec-gaz"
+    },
+    {
+      "q": "diagnostic electrique",
+      "attendu": "diag-elec-gaz"
+    },
+    {
+      "q": "Diagnostic termites",
+      "attendu": "diag-termites"
+    },
+    {
+      "q": "diagnostic termites",
+      "attendu": "diag-termites"
+    },
+    {
+      "q": "etat parasitaire",
+      "attendu": "diag-termites"
+    },
+    {
+      "q": "Contrôle d'assainissement",
+      "attendu": "diag-assainissement"
+    },
+    {
+      "q": "controle assainissement",
+      "attendu": "diag-assainissement"
+    },
+    {
+      "q": "diagnostic assainissement",
+      "attendu": "diag-assainissement"
+    },
+    {
+      "q": "Petits travaux et bricolage",
+      "attendu": "petits-travaux"
+    },
+    {
+      "q": "petits travaux",
+      "attendu": "petits-travaux"
+    },
+    {
+      "q": "bricolage",
+      "attendu": "petits-travaux"
+    },
+    {
+      "q": "Nettoyage de fin de chantier",
+      "attendu": "nettoyage-fin-chantier"
+    },
+    {
+      "q": "nettoyage fin de chantier",
+      "attendu": "nettoyage-fin-chantier"
+    },
+    {
+      "q": "nettoyage apres travaux",
+      "attendu": "nettoyage-fin-chantier"
+    },
+    {
+      "q": "Remise en état après sinistre",
+      "attendu": "sinistre"
+    },
+    {
+      "q": "sinistre",
+      "attendu": "sinistre"
+    },
+    {
+      "q": "degat des eaux reparation",
+      "attendu": "sinistre"
+    },
+    {
+      "q": "Pierre de taille, marbre et granit",
+      "attendu": "pierre-marbre"
+    },
+    {
+      "q": "pierre de taille",
+      "attendu": "pierre-marbre"
+    },
+    {
+      "q": "restauration pierre",
+      "attendu": "pierre-marbre"
+    },
+    {
+      "q": "Moulures, corniches et staff",
+      "attendu": "staff"
+    },
+    {
+      "q": "moulures",
+      "attendu": "staff"
+    },
+    {
+      "q": "corniche",
+      "attendu": "staff"
+    },
+    {
+      "q": "Plâtrerie et enduit plâtre traditionnel",
+      "attendu": "platrerie"
+    },
+    {
+      "q": "platre",
+      "attendu": "platrerie"
+    },
+    {
+      "q": "enduit platre",
+      "attendu": "platrerie"
+    },
+    {
+      "q": "Bornage et relevé de géomètre",
+      "attendu": "bornage"
+    },
+    {
+      "q": "bornage",
+      "attendu": "bornage"
+    },
+    {
+      "q": "geometre",
+      "attendu": "bornage"
+    },
+    {
+      "q": "Étude de structure et étude de sol",
+      "attendu": "etude-structure"
+    },
+    {
+      "q": "etude structure",
+      "attendu": "etude-structure"
+    },
+    {
+      "q": "note de calcul",
+      "attendu": "etude-structure"
+    },
+    {
+      "q": "Travaux en hauteur et accès difficile",
+      "attendu": "travaux-hauteur"
+    },
+    {
+      "q": "travaux en hauteur",
+      "attendu": "travaux-hauteur"
+    },
+    {
+      "q": "cordiste",
+      "attendu": "travaux-hauteur"
+    },
+    {
+      "q": "Forage et puits",
+      "attendu": "forage"
+    },
+    {
+      "q": "forage",
+      "attendu": "forage"
+    },
+    {
+      "q": "puits",
+      "attendu": "forage"
+    },
+    {
+      "q": "Zinguerie et habillages zinc",
+      "attendu": "zinguerie"
+    },
+    {
+      "q": "zinguerie",
+      "attendu": "zinguerie"
+    },
+    {
+      "q": "zinc",
+      "attendu": "zinguerie"
+    },
+    {
+      "q": "Décoration et home staging",
+      "attendu": "home-staging"
+    },
+    {
+      "q": "home staging",
+      "attendu": "home-staging"
+    },
+    {
+      "q": "decoration interieure",
+      "attendu": "home-staging"
+    },
+    {
+      "q": "Maison ou extension en ossature bois",
+      "attendu": "constructeur-bois"
+    },
+    {
+      "q": "ossature bois",
+      "attendu": "constructeur-bois"
+    },
+    {
+      "q": "maison bois",
+      "attendu": "constructeur-bois"
+    }
+  ]
+}

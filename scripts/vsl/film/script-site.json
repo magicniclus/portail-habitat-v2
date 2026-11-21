@@ -1,0 +1,103 @@
+{
+  "note": "Film de vente de la landing « site internet » (/pro/site-internet). Images : vraies prises de l'éditeur (public/landing/videos/site) et du site publié du jeu de test. Le questionnaire filmé compte 6 questions : la voix dit « quelques questions », sans chiffre. Aucun prix cité (PAIEMENTS : pas de prix avant l'inscription). À valider par le propriétaire : la création du site par l'IA est annoncée ici comme sur la landing, alors que DECISIONS D48 la réserve à Site Pro (gratuit = aperçu de l'accueil). Plan 2 : « chances divisées par quatre » est un chiffre donné par le propriétaire le 16/11/2026, sans source : à sourcer avant la production (LANDINGS §7). Plan 2 bis : « neuf fois sur dix » (90 %) est aussi un chiffre du propriétaire (16/11/2026), sans source.",
+  "avant": {
+    "s01": 0.9
+  },
+  "apres": {
+    "s03": 0.7,
+    "s05": 0.7,
+    "s07": 0.6,
+    "s10": 0.8,
+    "s11": 0.7,
+    "s12": 0.8,
+    "s14": 3.2,
+    "s13b": 0.9
+  },
+  "segments": [
+    {
+      "id": "s01",
+      "acte": 1,
+      "texte": "Avant de vous appeler, vos clients vous cherchent sur Google."
+    },
+    {
+      "id": "s02",
+      "acte": 1,
+      "texte": "Sans site internet, vous divisez par quatre vos chances d'obtenir un client."
+    },
+    {
+      "id": "s02b",
+      "acte": 1,
+      "texte": "Et entre un artisan qui a un site et un artisan qui n'en a pas, neuf fois sur dix, le client choisit celui qui a un site."
+    },
+    {
+      "id": "s03",
+      "acte": 1,
+      "texte": "Avec Portail Travaux, créez votre site d'artisan. Gratuitement."
+    },
+    {
+      "id": "s04",
+      "acte": 2,
+      "texte": "Passer par une agence ? C'est cher, et ça prend des semaines."
+    },
+    {
+      "id": "s05",
+      "acte": 2,
+      "texte": "Le faire vous-même ? Vous n'avez ni le temps, ni l'envie."
+    },
+    {
+      "id": "s06",
+      "acte": 3,
+      "texte": "Ici, vous répondez à quelques questions."
+    },
+    {
+      "id": "s07",
+      "acte": 3,
+      "texte": "Et l'intelligence artificielle écrit votre site. Vos métiers, votre zone, vos réalisations, vos avis : elle reprend votre fiche et rédige chaque page."
+    },
+    {
+      "id": "s08",
+      "acte": 8,
+      "texte": "Un texte ne vous plaît pas ? Vous cliquez dessus, et vous le changez. Si vous savez envoyer un SMS, vous savez modifier votre site."
+    },
+    {
+      "id": "s09",
+      "acte": 8,
+      "texte": "Vous cliquez sur Publier : votre site est en ligne. Sur ordinateur, comme sur téléphone."
+    },
+    {
+      "id": "s09b",
+      "acte": 8,
+      "texte": "Un design propre et professionnel, avec des pages pensées pour les recherches de vos clients."
+    },
+    {
+      "id": "s10",
+      "acte": 8,
+      "texte": "Et il travaille pendant que vous êtes sur le chantier. Chaque demande de devis arrive dans votre espace, avec le nom et le téléphone du client. Zéro commission."
+    },
+    {
+      "id": "s11",
+      "acte": 9,
+      "texte": "Et là, vous vous dites : « C'est gratuit… où est le piège ? »"
+    },
+    {
+      "id": "s12",
+      "acte": 9,
+      "texte": "Il n'y en a pas. Votre site reste en ligne gratuitement, sans limite de durée. Seules quelques options sont payantes, comme votre propre nom de domaine. Personne n'est obligé de les prendre."
+    },
+    {
+      "id": "s13",
+      "acte": 10,
+      "texte": "Pas de carte bancaire. Pas d'engagement."
+    },
+    {
+      "id": "s13b",
+      "acte": 10,
+      "texte": "Et ce n'est pas tout. Avec votre espace, vous avez aussi les demandes de chantier, votre fiche sur le portail, vos avis clients, vos devis et factures, et le suivi de vos clients. Tout est offert."
+    },
+    {
+      "id": "s14",
+      "acte": 11,
+      "texte": "Créez votre espace gratuit, et mettez votre site en ligne aujourd'hui. Inscrivez-vous via le formulaire."
+    }
+  ]
+}

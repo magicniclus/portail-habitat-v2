@@ -1,0 +1,37 @@
+{
+  "note": "Film court (30 s) de l’outil « Avis clients ». Images : vraies prises de « Mes avis » sur le jeu de test ; les avis eux-mêmes (fictifs) restent hors champ. Aucun chiffre cité.",
+  "avant": {
+    "a01": 0.6
+  },
+  "apres": {
+    "a02": 0.5,
+    "a05": 3
+  },
+  "segments": [
+    {
+      "id": "a01",
+      "acte": 1,
+      "texte": "Avant de vous appeler, un client lit vos avis."
+    },
+    {
+      "id": "a02",
+      "acte": 1,
+      "texte": "Sans avis, il hésite."
+    },
+    {
+      "id": "a03",
+      "acte": 3,
+      "texte": "Avec Portail Travaux, vous demandez un avis après chaque chantier : un lien à envoyer, c'est tout."
+    },
+    {
+      "id": "a04",
+      "acte": 8,
+      "texte": "Chaque avis est vérifié avant d'être publié sur votre fiche. Et vous y répondez depuis votre espace."
+    },
+    {
+      "id": "a05",
+      "acte": 11,
+      "texte": "C'est gratuit. Créez votre espace : inscrivez-vous via le formulaire."
+    }
+  ]
+}
