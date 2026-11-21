@@ -5,6 +5,7 @@ import {
   milieu,
   type Scene,
 } from '@ph/core/dessin';
+import { EtiquetteSvg } from './EtiquetteSvg';
 import { COULEURS_EXTERIEUR as C, COULEURS_PLAN } from '@ph/ui/tokens';
 import type { FondCharge } from './useFond';
 
@@ -63,26 +64,14 @@ export function LimitesSvg({
                   strokeWidth={1.5}
                   vectorEffect="non-scaling-stroke"
                 />
-                <rect
-                  x={m.x - texte.length * taille * 0.3}
-                  y={m.y - taille * 0.75}
-                  width={texte.length * taille * 0.6}
-                  height={taille * 1.5}
-                  rx={taille * 0.75}
-                  fill={COULEURS_PLAN.etiquette}
-                  stroke={C.limite}
-                  vectorEffect="non-scaling-stroke"
-                />
-                <text
+                <EtiquetteSvg
                   x={m.x}
-                  y={m.y + taille * 0.35}
-                  fontSize={taille}
-                  textAnchor="middle"
-                  fill={C.limite}
-                  className="font-semibold select-none"
-                >
-                  {texte}
-                </text>
+                  y={m.y}
+                  texte={texte}
+                  taille={taille}
+                  trait={C.limite}
+                  couleur={C.limite}
+                />
               </g>
             );
           })

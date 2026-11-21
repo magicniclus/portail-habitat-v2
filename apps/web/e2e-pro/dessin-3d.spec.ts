@@ -163,6 +163,16 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
       await page.mouse.move(vers.x, vers.y, { steps: 8 });
       await page.mouse.up();
       await expect(page.getByLabel('Depuis le coin (cm)')).not.toHaveValue('390');
+      // Poignée d'un bord : la fenêtre s'élargit, l'autre bord reste en place.
+      const bord = (await plan.getByTestId('bord-ouverture-fin').boundingBox())!;
+      const loin = await ecran(5000, 8500);
+      await page.mouse.move(bord.x + bord.width / 2, bord.y + bord.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(loin.x, bord.y + bord.height / 2, { steps: 8 });
+      await page.mouse.up();
+      await expect(page.getByLabel('Largeur (cm)')).not.toHaveValue('120');
+      await page.getByLabel('Largeur (cm)').fill('120');
+      await page.getByLabel('Largeur (cm)').press('Enter');
     }
 
     await menu('Chiffrer');
@@ -186,7 +196,7 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     ).toBeVisible();
   });
 
-  test('DES-33 édition en 3D : un clic sur le sol sélectionne la pièce, Finitions s’ouvre', async ({
+  test('DES-33 la 3D ne sert qu’à voir : un clic n’y modifie rien, la sélection 2D reste', async ({
     page,
   }, info) => {
     test.skip(info.project.name !== 'ordinateur', 'Clic précis dans la scène 3D : ordinateur.');
@@ -205,12 +215,8 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     await page.waitForTimeout(2500);
     const b = (await canvas.boundingBox())!;
     await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2);
-    const finitions = page.getByRole('region', { name: 'Finitions' });
-    await expect(finitions).toBeVisible();
-    await expect(finitions.getByRole('button', { name: 'Sol', exact: true })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    await page.waitForTimeout(300);
+    await expect(page.getByRole('region', { name: 'Finitions' })).toHaveCount(0);
   });
 
   test('DES-16, DES-17 : toiture deux pans : pente, fenêtre de toit, couverture au métré, toit en 3D', async ({

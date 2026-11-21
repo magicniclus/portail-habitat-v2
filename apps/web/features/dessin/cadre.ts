@@ -1,5 +1,4 @@
 import { contourPiscine, type Niveau, type Point } from '@ph/core/dessin';
-import { useMemo } from 'react';
 
 /**
  * Cadre du dessin en mm : tout le niveau et le trace en cours, avec une marge, et au moins
@@ -39,19 +38,4 @@ export function cadreDe(
     l: Math.max(Math.max(...xs) + MARGE - x, 12_000),
     h: Math.max(Math.max(...ys) + MARGE - y, 10_000),
   };
-}
-
-/**
- * Cadre du plan affiché : recalculé quand le niveau change, ou quand le trace en cours franchit
- * un demi-mètre (un mur tiré au-delà du cadre agrandit le plan pendant le geste).
- */
-export function useCadre(
-  n: Niveau,
-  parcelle: readonly Point[] | undefined,
-  trace: readonly (Point | null | undefined)[],
-) {
-  const enCours = trace.filter((p): p is Point => p != null);
-  const cle = enCours.map((p) => `${Math.round(p.x / 500)},${Math.round(p.y / 500)}`).join('|');
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `cle` résume `enCours`
-  return useMemo(() => cadreDe(n, parcelle, enCours), [n, parcelle, cle]);
 }

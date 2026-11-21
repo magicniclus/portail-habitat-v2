@@ -9,6 +9,7 @@ export * from './escaliers';
 export * from './fond';
 export * from './format';
 export * from './formes';
+export * from './etiquette';
 export * from './geometrie';
 export * from './historique';
 export * from './metre';

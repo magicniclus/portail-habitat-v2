@@ -13,7 +13,10 @@ export async function svgEnPng(svg: SVGSVGElement): Promise<Blob> {
     el.style.fontFamily = st.fontFamily;
     el.style.fontWeight = st.fontWeight;
   });
-  const [, , l, h] = (svg.getAttribute('viewBox') ?? '0 0 1 1').split(' ').map(Number);
+  // Tout le dessin (`data-cadre`), pas seulement la partie visible à l'écran.
+  const cadre = svg.dataset.cadre ?? svg.getAttribute('viewBox') ?? '0 0 1 1';
+  copie.setAttribute('viewBox', cadre);
+  const [, , l, h] = cadre.split(' ').map(Number);
   const k = Math.min(4_000 / Math.max(l!, h!), 0.08); // 80 px par mètre au plus
   const [W, H] = [Math.round(l! * k), Math.round(h! * k)];
   copie.setAttribute('width', String(W));

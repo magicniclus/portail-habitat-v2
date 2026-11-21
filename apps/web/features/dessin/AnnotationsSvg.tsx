@@ -1,5 +1,6 @@
 'use client';
 
+import { EtiquetteSvg } from './EtiquetteSvg';
 import { distance, formatLongueur, milieu, type Niveau } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
@@ -76,25 +77,7 @@ function AnnotationsSvgBrut({ niveau, etat, dispatch, mmParPx }: Props) {
               strokeWidth={1.5}
               vectorEffect="non-scaling-stroke"
             />
-            <rect
-              x={m.x - texte.length * taille * 0.3}
-              y={m.y - taille * 0.75}
-              width={texte.length * taille * 0.6}
-              height={taille * 1.5}
-              rx={taille * 0.75}
-              fill={COULEURS_PLAN.etiquette}
-              stroke={COULEURS_PLAN.etiquetteTrait}
-              vectorEffect="non-scaling-stroke"
-            />
-            <text
-              x={m.x}
-              y={m.y + taille * 0.35}
-              fontSize={taille}
-              textAnchor="middle"
-              className="fill-texte font-semibold select-none"
-            >
-              {texte}
-            </text>
+            <EtiquetteSvg x={m.x} y={m.y} texte={texte} taille={taille} />
           </g>
         );
       })}
@@ -112,6 +95,7 @@ function AnnotationsSvgBrut({ niveau, etat, dispatch, mmParPx }: Props) {
             y={t.position.y}
             fontSize={t.taille * mmParPx}
             textAnchor="middle"
+            dominantBaseline="central"
             className={`cursor-pointer font-semibold select-none ${choisie('texte', t.id) ? 'fill-accent-700' : 'fill-texte'}`}
             onPointerDown={(ev) => {
               ev.stopPropagation();

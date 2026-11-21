@@ -13,7 +13,9 @@ import { useMemo, useRef, type Dispatch } from 'react';
 import { cadreDe } from './cadre';
 import { sceneDe, type Action, type EtatEditeur } from './etat';
 import { points } from './svg';
-import { useAjustement } from './useAjustement';
+import { papier } from './papier';
+import { useCamera } from './useCamera';
+import { usePanoramique } from './usePanoramique';
 
 /** Ombrage d'un pan selon son orientation : lumière venant du haut à gauche. */
 function ombre(pan: readonly Point3[]): number {
@@ -45,8 +47,9 @@ export function VueDessus({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
     return { x, y, l, h };
   }, [niveaux, scene.terrain?.parcelle]);
   const conteneur = useRef<HTMLDivElement>(null);
-  useAjustement(conteneur, cadre, etat.ajustement, dispatch);
-  const mmParPx = 1000 / etat.zoom;
+  // Même navigation que le plan : molette, bouton du milieu ou espace, doigt sur le fond.
+  const { vue, taille, mmParPx, moteur } = useCamera(conteneur, etat, dispatch, () => cadre, 0);
+  const pan = usePanoramique(conteneur, moteur);
   const dessin = useMemo(
     () =>
       niveaux.map((n) => ({
@@ -61,51 +64,51 @@ export function VueDessus({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
     <div className="relative h-full w-full">
       <div
         ref={conteneur}
-        className="h-full w-full overflow-auto"
-        style={{ backgroundColor: COULEURS_PLAN.fond }}
+        className={`relative h-full w-full touch-none overflow-hidden ${pan.curseur ?? ''}`}
+        style={papier(vue, mmParPx)}
         data-testid="vue-dessus"
+        onPointerDown={(ev) => ev.pointerType === 'touch' && pan.demarrer(ev)}
       >
-        <div className="grid min-h-full min-w-full w-max place-items-center">
-          <svg
-            role="img"
-            aria-label="Maison fermée vue de dessus"
-            width={Math.round(cadre.l / mmParPx)}
-            height={Math.round(cadre.h / mmParPx)}
-            viewBox={`${cadre.x} ${cadre.y} ${cadre.l} ${cadre.h}`}
-          >
-            {dessin.map(({ n, murs, toit }) => (
-              <g key={n.id}>
-                {n.pieces.map((p) => (
-                  <polygon key={p.id} points={points(p.contour)} fill={COULEURS_PLAN.coteTrait} />
-                ))}
-                {murs.map((c, i) => (
-                  <polygon key={i} points={points(c)} fill={COULEURS_PLAN.mur} />
-                ))}
-                {toit?.pans.map((pan, i) => (
-                  <g key={i}>
-                    <polygon
-                      points={auSol(pan)}
-                      fill={
-                        COULEURS_COUVERTURE[
-                          (n.toiture?.couverture.famille ??
-                            'tuile') as keyof typeof COULEURS_COUVERTURE
-                        ] ?? COULEURS_COUVERTURE.tuile
-                      }
-                    />
-                    <polygon
-                      points={auSol(pan)}
-                      fill={COULEURS_PLAN.mur}
-                      fillOpacity={ombre(pan)}
-                      stroke={COULEURS_PLAN.mur}
-                      strokeWidth={1}
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </g>
-                ))}
-              </g>
-            ))}
-          </svg>
-        </div>
+        <svg
+          role="img"
+          aria-label="Maison fermée vue de dessus"
+          className="absolute inset-0"
+          width={taille.w}
+          height={taille.h}
+          viewBox={`${vue.x} ${vue.y} ${vue.l} ${vue.h}`}
+        >
+          {dessin.map(({ n, murs, toit }) => (
+            <g key={n.id}>
+              {n.pieces.map((p) => (
+                <polygon key={p.id} points={points(p.contour)} fill={COULEURS_PLAN.coteTrait} />
+              ))}
+              {murs.map((c, i) => (
+                <polygon key={i} points={points(c)} fill={COULEURS_PLAN.mur} />
+              ))}
+              {toit?.pans.map((pan, i) => (
+                <g key={i}>
+                  <polygon
+                    points={auSol(pan)}
+                    fill={
+                      COULEURS_COUVERTURE[
+                        (n.toiture?.couverture.famille ??
+                          'tuile') as keyof typeof COULEURS_COUVERTURE
+                      ] ?? COULEURS_COUVERTURE.tuile
+                    }
+                  />
+                  <polygon
+                    points={auSol(pan)}
+                    fill={COULEURS_PLAN.mur}
+                    fillOpacity={ombre(pan)}
+                    stroke={COULEURS_PLAN.mur}
+                    strokeWidth={1}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </g>
+              ))}
+            </g>
+          ))}
+        </svg>
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-4">
         <p className="pointer-events-auto m-0 flex items-center gap-3 rounded-xl bg-blanc px-4 py-2 text-sm shadow-md ring-1 ring-neutre-200">

@@ -51,6 +51,7 @@ export function PoseOuvertureSvg({
         y={(a.y + b.y) / 2 - m.epaisseur / 2 - taille}
         fontSize={taille}
         textAnchor="middle"
+        dominantBaseline="central"
         stroke="none"
         className="fill-accent-700 font-bold"
       >

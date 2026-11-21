@@ -60,6 +60,7 @@ function TraceEnCours({
         y={c.y - taille}
         fontSize={taille}
         textAnchor="middle"
+        dominantBaseline="central"
         className="fill-texte font-bold"
       >
         {rectangle

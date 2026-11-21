@@ -116,9 +116,11 @@ function CotesBrut({
             ) : null}
             <text
               transform={`translate(${c.centre.x} ${c.centre.y}) rotate(${c.angle})`}
-              y={c.exterieure ? -taille * 0.35 : taille * 0.35}
+              // Au-dessus de la ligne de cote (dehors) ou au-dessous (dedans), jamais dessus.
+              y={c.exterieure ? -taille * 0.7 : taille * 0.7}
               fontSize={taille}
               textAnchor="middle"
+              dominantBaseline="central"
               fill={COULEURS_PLAN.cote}
               className={`select-none ${c.murId === choisi ? 'font-bold' : 'font-semibold'}`}
             >
