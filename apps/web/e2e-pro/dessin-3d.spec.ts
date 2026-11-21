@@ -163,6 +163,8 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
       await page.mouse.move(vers.x, vers.y, { steps: 8 });
       await page.mouse.up();
       await expect(page.getByLabel('Depuis le coin (cm)')).not.toHaveValue('390');
+      // Le geste se termine (dernières images) avant de mesurer les poignées.
+      await page.waitForTimeout(300);
       // Poignée d'un bord : la fenêtre s'élargit, l'autre bord reste en place.
       const centre = async (bord: string) => {
         const b = (await plan.getByTestId(`bord-ouverture-${bord}`).boundingBox())!;
