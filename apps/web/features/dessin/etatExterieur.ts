@@ -89,8 +89,13 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
       return surNiveau(e, (n) => supprimerExterieur(n, a.genre, a.id));
     case 'terrasseAutour':
       return creer(e, (n) => terrasseAutourDePiscine(n, a.piscineId, ctx), 'terrasse');
-    case 'parcelleAutour':
-      return surScene(e, (s) => parcelleAutour(s));
+    case 'parcelleAutour': {
+      // La parcelle qu'on vient de poser se montre entière.
+      const suite = surScene(e, (s) => parcelleAutour(s));
+      return suite.erreur
+        ? suite
+        : { ...suite, ajustement: e.ajustement + 1, ajusterParcelle: true };
+    }
     case 'sommetParcelle': {
       // Pendant le geste, une parcelle qui serait écrasée est simplement ignorée.
       const suite = surScene(e, (s) => deplacerSommetParcelle(s, a.i, a.vers), a.geste ?? null);

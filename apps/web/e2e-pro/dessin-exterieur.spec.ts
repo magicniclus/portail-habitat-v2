@@ -47,8 +47,8 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     // DES-19 : parcelle autour de la maison.
     await exterieur('');
     await page.getByRole('button', { name: 'Parcelle autour de la maison' }).click();
-    // Le cadre englobe maintenant la parcelle : on l'ajuste à l'écran.
-    await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    // La parcelle posée se montre entière (recadrage automatique).
+    await page.waitForTimeout(400);
     // La parcelle se retouche après la pose : on la choisit par sa limite, on tire un coin.
     if (page.viewportSize()!.width >= 900) {
       await page
@@ -94,8 +94,10 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     await exterieur('Arbre');
     await cliquer(-2_000, -2_000);
     await replier();
-    // Le dessin a grandi : on l'ajuste à l'écran avant de tracer la clôture.
+    // Le dessin a grandi : on l'ajuste à l'écran, puis on dézoome pour voir jusqu'à la limite.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
+    await page.getByRole('button', { name: 'Dézoomer' }).click();
+    await page.waitForTimeout(400);
     await exterieur('Clôture');
     await cliquer(-2_500, 16_000);
     await cliquer(12_500, 16_000);
