@@ -15,7 +15,7 @@ import { Cotes } from './CotesSvg';
 import { TracesEnCours } from './Mesures';
 import { niveauDe, sceneDe, type Action, type EtatEditeur } from './etat';
 import { ObjetsSvg, ZonesSvg } from './AmenagementSvg';
-import { cadreDe } from './cadre';
+import { useCadre } from './cadre';
 import { ExterieurSvg } from './ExterieurSvg';
 import { FondSvg } from './FondSvg';
 import { LimitesSvg, OrthophotoSvg } from './ImplantationSvg';
@@ -60,7 +60,7 @@ export function Plan2D({
   const svg = useRef<SVGSVGElement>(null);
   const [curseur, setCurseur] = useState<Aimantage | null>(null);
   const parcelle = scene.terrain?.parcelle;
-  const cadre = useMemo(() => cadreDe(n, parcelle), [n, parcelle]);
+  const cadre = useCadre(n, parcelle, [etat.trace, curseur?.point, ...etat.polygone]);
   const conteneur = useRef<HTMLDivElement>(null);
   useAjustement(conteneur, cadre, etat.ajustement, dispatch);
   const mmParPx = 1000 / etat.zoom;

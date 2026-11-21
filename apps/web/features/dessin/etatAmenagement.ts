@@ -9,6 +9,8 @@ import {
   poserObjet,
   pointDansPolygone,
   revetirMursDeLaPiece,
+  panDeMur,
+  revetirPan,
   revetirZone,
   tournerObjet,
   type Guide,
@@ -137,6 +139,24 @@ export function reduireAmenagement(e: EtatEditeur, a: Action): EtatEditeur | nul
         return { ok: true, data: niveau };
       });
       return suite.erreur ? suite : { ...suite, selection: { genre: 'objet', id: copieId } };
+    }
+    case 'revetirPan': {
+      // Le mur est coupé aux cloisons : le pan peint reste sélectionné (sa position change).
+      const pan = panDeMur(niveauDe(e), a.murId, a.face, a.s);
+      let murId = a.murId;
+      const suite = surNiveau(e, (n) => {
+        const r = revetirPan(n, a, ctx);
+        if (!r.ok) return r;
+        const { murId: id, ...niveau } = r.data;
+        murId = id;
+        return { ok: true, data: niveau };
+      });
+      return suite.erreur || !pan
+        ? suite
+        : {
+            ...suite,
+            selection: { genre: 'mur', id: murId, face: a.face, s: a.s - pan.coupe[0] },
+          };
     }
     case 'revetirMurs':
       return surNiveau(e, (n) => revetirMursDeLaPiece(n, a.pieceId, a.revetement));

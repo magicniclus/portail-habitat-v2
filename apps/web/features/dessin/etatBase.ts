@@ -65,8 +65,11 @@ type GenreSelection =
 /** Éléments posés avec l'outil « extérieur » (DES-18 à DES-20). */
 export type ElementExterieur =
   'terrasse' | 'allee' | 'piscine' | 'cloture' | 'arbre' | 'arbuste' | 'haie' | 'parcelle';
-/** `face` : côté d'un mur cliqué en 3D, proposé en premier dans Finitions. */
-type Selection = { genre: GenreSelection; id: string; face?: 'a' | 'b' } | null;
+/**
+ * `face` : côté d'un mur cliqué en 3D ; `s` : position du clic le long du mur (mm depuis a),
+ * qui désigne le pan entre deux cloisons.
+ */
+type Selection = { genre: GenreSelection; id: string; face?: 'a' | 'b'; s?: number } | null;
 /** Menus du rail vertical de gauche ; chacun ouvre un panneau repliable. */
 export type Vue = 'plan' | '3d' | 'visite' | 'photo' | 'facades';
 /** Façade affichée (DES-36), ou la coupe tracée sur le plan. */
@@ -227,6 +230,7 @@ export type Action =
   | { type: 'modifierObjet'; id: string; modif: ModificationObjet }
   | { type: 'dupliquerObjet'; id: string }
   | { type: 'revetirMurs'; pieceId: string; revetement: Revetement }
+  | { type: 'revetirPan'; murId: string; face: 'a' | 'b'; s: number; revetement: Revetement }
   | { type: 'revetirZone'; id: string; revetement: Revetement }
   | { type: 'copierStyle'; revetement: Revetement }
   | { type: 'collerStyle' }
@@ -248,6 +252,8 @@ export type Action =
   | { type: 'annuler' }
   | { type: 'retablir' }
   | { type: 'zoom'; zoom: number }
+  /** Zoom relatif (raccourcis + et −). */
+  | { type: 'zoomer'; facteur: number }
   | { type: 'ajuster' }
   | { type: 'aimant' }
   | { type: 'vue'; vue: Vue }

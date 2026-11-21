@@ -5,7 +5,7 @@ import { COULEURS_3D, COULEURS_PLAN } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { Color, type Material, type Mesh, type MeshStandardMaterial, type Vector3 } from 'three';
+import type { Material, Mesh, Vector3 } from 'three';
 import type { Clic3D } from './clic3d';
 import { devantLaCamera, HAUTEUR_POUPEE as POUPEE } from './poupee';
 import { materiauRevetement, materiauUni } from './textures';
@@ -17,20 +17,6 @@ const OPACITE_MUR = 0.22;
 
 /** Face touchée par un clic, d'après son matériau (4 : face A, 5 : face B, sinon la tranche). */
 const FACE_CLIQUEE: Record<number, 'a' | 'b'> = { 4: 'a', 5: 'b' };
-
-/** Face sélectionnée : le revêtement reste lisible sous une teinte orange. */
-const surlignees = new Map<Material, Material>();
-const surlignee = (m: Material) => {
-  let c = surlignees.get(m);
-  if (!c) {
-    const copie = m.clone() as MeshStandardMaterial;
-    copie.emissive = new Color(COULEURS_PLAN.murSelection);
-    copie.emissiveIntensity = 0.55;
-    c = copie;
-    surlignees.set(m, c);
-  }
-  return c;
-};
 
 /** Copie translucide d'un matériau (sans écriture de profondeur : rien n'est masqué derrière). */
 const translucide = (m: Material) => {
@@ -62,7 +48,7 @@ export function MorceauMur3D({
   clic?: Clic3D | undefined;
 }) {
   const choisi = clic?.selection?.genre === 'mur' && clic.selection.id === m.murId;
-  // Côté cliqué en 3D : seule cette face se teinte en orange (sinon contour du mur entier).
+  // Pan cliqué en 3D : surligné à part (SurlignagePan) ; sinon contour du mur entier.
   const faceChoisie = choisi ? (clic?.selection?.face ?? null) : null;
   const ref = useRef<Mesh>(null);
   // Prisme exact (angles en onglet, T arrêtés sur la face) : aucune face confondue qui scintille.
@@ -78,11 +64,11 @@ export function MorceauMur3D({
       tranche,
       tranche,
       tranche,
-      faceChoisie === 'a' ? surlignee(materiauRevetement(m.faceA)) : materiauRevetement(m.faceA),
-      faceChoisie === 'b' ? surlignee(materiauRevetement(m.faceB)) : materiauRevetement(m.faceB),
+      materiauRevetement(m.faceA),
+      materiauRevetement(m.faceB),
     ];
     return transparent ? faces.map(translucide) : faces;
-  }, [m.faceA, m.faceB, transparent, faceChoisie]);
+  }, [m.faceA, m.faceB, transparent]);
   // Les copies translucides sont propres à ce mur : libérées quand le mode change.
   useEffect(
     () => () => {

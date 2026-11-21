@@ -16,6 +16,7 @@ export * from './migrations';
 export * from './murs';
 export * from './raccords';
 export * from './cotation';
+export * from './troncons';
 export * from './niveaux';
 export * from './objets';
 export * from './placement';

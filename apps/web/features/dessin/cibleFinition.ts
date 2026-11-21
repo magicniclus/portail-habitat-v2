@@ -1,6 +1,6 @@
 'use client';
 
-import { revetementDe, type Revetement } from '@ph/core/dessin';
+import { longueurMur, panDeMur, revetementDe, type Revetement } from '@ph/core/dessin';
 import { useState, type Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
 
@@ -66,8 +66,23 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
         appliquer: (r) => [face('a', r), face('b', r)],
       },
     ];
-    // Côté cliqué en 3D proposé en premier.
-    return s.face === 'b' ? [cotes[1]!, cotes[0]!, cotes[2]!] : cotes;
+    // Côté cliqué en 3D proposé en premier ; un pan cliqué (entre deux cloisons) avant tout.
+    const ordonnes = s.face === 'b' ? [cotes[1]!, cotes[0]!, cotes[2]!] : cotes;
+    const pan = s.face && s.s !== undefined ? panDeMur(n, murId, s.face, s.s) : null;
+    const m = n.murs.find((x) => x.id === murId)!;
+    const entier = pan && pan.coupe[0] === 0 && Math.abs(pan.coupe[1] - longueurMur(m)) < 1;
+    if (!pan || entier || !s.face || s.s === undefined) return ordonnes;
+    const [cote, position] = [s.face, s.s];
+    return [
+      {
+        cle: 'pan',
+        libelle: 'Ce pan de mur',
+        surface: 'mur',
+        actuel: revetementDe(n, { genre: 'mur', murId, face: cote }),
+        appliquer: (r) => [{ type: 'revetirPan', murId, face: cote, s: position, revetement: r }],
+      },
+      ...ordonnes,
+    ];
   }
   const z = s?.genre === 'zone' ? n.zonesDeco.find((x) => x.id === s.id) : undefined;
   if (z)

@@ -108,6 +108,11 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...e, ajustement: e.ajustement + 1 };
     case 'zoom':
       return { ...e, zoom: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(a.zoom))) };
+    case 'zoomer':
+      return {
+        ...e,
+        zoom: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(e.zoom * a.facteur))),
+      };
     case 'aimant':
       return { ...e, aimant: !e.aimant };
     case 'vue':

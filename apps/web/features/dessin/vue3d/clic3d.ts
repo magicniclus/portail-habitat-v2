@@ -30,6 +30,9 @@ export function clic3D(etat: EtatEditeur, dispatch: Dispatch<Action>): Clic3D {
     selection: etat.selection,
     cliquer(c, ev) {
       if (ev.delta > GLISSE_MAX) return;
+      // Seul l'élément au premier plan répond : un clic sur un lit ne doit pas aussi toucher le
+      // sol ou le terrain derrière lui (qui le désélectionneraient au relâcher).
+      if (ev.intersections[0] && ev.intersections[0].object !== ev.object) return;
       ev.stopPropagation();
       const p: Point = { x: versMm(ev.point.x), y: versMm(ev.point.z) };
       if (etat.outil === 'objet') return dispatch({ type: 'poserPoint', point: p });

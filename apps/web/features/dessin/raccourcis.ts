@@ -1,7 +1,23 @@
 import type { Action } from './etat';
 
+/** Événement qui ouvre la liste des raccourcis (bouton du rail de droite). */
+export const OUVRIR_RACCOURCIS = 'dessin:raccourcis';
+
 /** Raccourcis de l'éditeur (DES-47), listés par la touche « ? » et dans le menu Aide. */
 export const RACCOURCIS: readonly [touches: string, action: string][] = [
+  ['V', 'Sélectionner'],
+  ['M', 'Tracer un mur'],
+  ['C', 'Tracer une cloison'],
+  ['P', 'Dessiner une pièce rectangulaire'],
+  ['O', 'Poser une porte'],
+  ['F', 'Poser une fenêtre'],
+  ['E', 'Poser un escalier'],
+  ['K', 'Coter (deux clics)'],
+  ['T', 'Ajouter un texte'],
+  ['A', 'Magnétisme activé ou coupé'],
+  ['1, 2, 3', 'Plan, 3D, visite'],
+  ['+ et −', 'Zoomer, dézoomer'],
+  ['0', 'Ajuster le plan à l’écran'],
   ['Ctrl + Z', 'Annuler'],
   ['Ctrl + Maj + Z ou Ctrl + Y', 'Rétablir'],
   ['Échap', 'Finir le tracé en cours'],
@@ -16,6 +32,27 @@ export const RACCOURCIS: readonly [touches: string, action: string][] = [
   ['R', 'Tourner l’objet choisi d’un quart de tour'],
   ['?', 'Afficher cette liste'],
 ];
+
+/** Touches simples (sans Ctrl) : outils, vues, zoom. */
+const SIMPLES: Record<string, Action> = {
+  v: { type: 'outil', outil: 'selection' },
+  m: { type: 'outil', outil: 'mur', typeMur: 'mur' },
+  c: { type: 'outil', outil: 'mur', typeMur: 'cloison' },
+  p: { type: 'outil', outil: 'piece' },
+  o: { type: 'outil', outil: 'ouverture', typeOuverture: 'porte' },
+  f: { type: 'outil', outil: 'ouverture', typeOuverture: 'fenetre' },
+  e: { type: 'outil', outil: 'escalier', typeEscalier: 'droit' },
+  k: { type: 'outil', outil: 'cote' },
+  t: { type: 'outil', outil: 'texte' },
+  a: { type: 'aimant' },
+  '1': { type: 'vue', vue: 'plan' },
+  '2': { type: 'vue', vue: '3d' },
+  '3': { type: 'vue', vue: 'visite' },
+  '+': { type: 'zoomer', facteur: 1.25 },
+  '=': { type: 'zoomer', facteur: 1.25 },
+  '-': { type: 'zoomer', facteur: 0.8 },
+  '0': { type: 'ajuster' },
+};
 
 /** Raccourcis (DES-47) : ignorés pendant une saisie dans un champ. */
 export function raccourci(ev: globalThis.KeyboardEvent, dispatch: (a: Action) => void) {
@@ -37,6 +74,7 @@ export function raccourci(ev: globalThis.KeyboardEvent, dispatch: (a: Action) =>
   else if (mod && k === 'd') dispatch({ type: 'dupliquerSelection' });
   else if (mod && k === 'a') dispatch({ type: 'toutSelectionner' });
   else if (k === 'escape') dispatch({ type: 'terminerTrace' });
+  else if (!mod && !ev.altKey && SIMPLES[k]) dispatch(SIMPLES[k]);
   else if (k === 'r' && !mod) dispatch({ type: 'tournerSelection' });
   else if (k === 'delete' || k === 'backspace') dispatch({ type: 'supprimerSelection' });
   else if (fleches[k]) {

@@ -21,6 +21,7 @@ import type { Clic3D } from './clic3d';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
 import { MorceauMur3D } from './Mur3D';
+import { SurlignagePan } from './SurlignagePan';
 import { Toit3D } from './Toit3D';
 import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
@@ -132,6 +133,7 @@ export function Niveau3D({
       {plafonds
         ? dalles.plafonds.map((d) => <Dalle3D key={`pl-${d.pieceId}`} d={d} dessous />)
         : null}
+      <SurlignagePan n={n} clic={clic} />
       <Menuiseries3D
         n={n}
         portesOuvertes={portesOuvertes}

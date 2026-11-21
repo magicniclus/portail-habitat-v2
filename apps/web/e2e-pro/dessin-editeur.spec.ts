@@ -362,6 +362,17 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.keyboard.press('Escape');
     const cloison = plan.getByRole('button', { name: 'Cloison de 3,00 m' });
     await expect(cloison).toHaveCount(1);
+    // Mur tiré au-delà du cadre : le plan s'agrandit pendant le tracé (plus de limite à 8 m).
+    if (page.viewportSize()!.width >= 900) {
+      const avant = Number(await svg.getAttribute('height'));
+      p = await ecran(5000, 9000);
+      await page.mouse.move(p.x, p.y, { steps: 5 });
+      p = await ecran(5000, 16_000);
+      await page.mouse.move(p.x, p.y, { steps: 5 });
+      await expect
+        .poll(async () => Number(await svg.getAttribute('height')))
+        .toBeGreaterThan(avant);
+    }
     // DES-08 : à l'aplomb de l'extrémité de la cloison, le point s'aligne, guide affiché.
     p = await ecran(5020, 3500);
     await page.mouse.move(p.x, p.y);

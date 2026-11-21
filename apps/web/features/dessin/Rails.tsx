@@ -7,6 +7,7 @@ import {
   CouchIcon,
   CursorIcon,
   HouseLineIcon,
+  KeyboardIcon,
   LineSegmentIcon,
   MagnetIcon,
   MagnifyingGlassMinusIcon,
@@ -22,43 +23,11 @@ import {
   type Icon,
 } from '@phosphor-icons/react';
 import type { Dispatch, ReactNode } from 'react';
+import { BoutonRail } from './BoutonRail';
+import { OUVRIR_RACCOURCIS } from './raccourcis';
 import { ZOOM_DEFAUT, type Action, type EtatEditeur, type Menu, type Outil } from './etat';
 
 const rail = 'flex h-full flex-none flex-col gap-1 overflow-y-auto border-trait bg-blanc py-2';
-
-function BoutonRail({
-  libelle,
-  Icone,
-  actif,
-  onClick,
-  avecTexte,
-}: {
-  libelle: string;
-  Icone: Icon;
-  actif: boolean;
-  onClick: () => void;
-  avecTexte: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      title={libelle}
-      aria-label={avecTexte ? undefined : libelle}
-      aria-pressed={actif}
-      onClick={onClick}
-      className={`relative mx-1.5 flex min-h-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-0 px-1 py-1.5 text-[11px] leading-tight font-semibold ${actif ? 'bg-accent-100 text-accent-700' : 'bg-transparent text-neutre-800 hover:bg-neutre-100'}`}
-    >
-      {actif && avecTexte ? (
-        <span
-          aria-hidden="true"
-          className="absolute top-2 bottom-2 -left-1.5 w-[3px] rounded-r bg-accent"
-        />
-      ) : null}
-      <Icone size={22} weight={actif ? 'fill' : 'regular'} aria-hidden="true" />
-      {avecTexte ? libelle : null}
-    </button>
-  );
-}
 
 const Separateur = () => <span aria-hidden="true" className="mx-3 my-1 h-px bg-trait" />;
 
@@ -97,12 +66,12 @@ export function RailMenus({ etat, dispatch }: { etat: EtatEditeur; dispatch: Dis
   );
 }
 
-const OUTILS: { outil: Outil; libelle: string; Icone: Icon }[] = [
-  { outil: 'selection', libelle: 'Sélectionner', Icone: CursorIcon },
-  { outil: 'mur', libelle: 'Tracer un mur', Icone: WallIcon },
-  { outil: 'piece', libelle: 'Dessiner une pièce', Icone: SquareIcon },
-  { outil: 'cote', libelle: 'Coter (deux clics)', Icone: LineSegmentIcon },
-  { outil: 'texte', libelle: 'Ajouter un texte', Icone: TextTIcon },
+const OUTILS: { outil: Outil; libelle: string; Icone: Icon; touche: string }[] = [
+  { outil: 'selection', libelle: 'Sélectionner', Icone: CursorIcon, touche: 'V' },
+  { outil: 'mur', libelle: 'Tracer un mur', Icone: WallIcon, touche: 'M' },
+  { outil: 'piece', libelle: 'Dessiner une pièce', Icone: SquareIcon, touche: 'P' },
+  { outil: 'cote', libelle: 'Coter (deux clics)', Icone: LineSegmentIcon, touche: 'K' },
+  { outil: 'texte', libelle: 'Ajouter un texte', Icone: TextTIcon, touche: 'T' },
 ];
 
 /** Rail de droite : outils, affichage, zoom et panneau des propriétés. */
@@ -120,10 +89,11 @@ export function RailOutils({
       aria-label="Outils du plan"
       className={`${rail} w-[60px] border-l`}
     >
-      {OUTILS.map(({ outil, libelle, Icone }) => (
+      {OUTILS.map(({ outil, libelle, Icone, touche }) => (
         <BoutonRail
           key={outil}
           libelle={libelle}
+          touche={touche}
           Icone={Icone}
           actif={etat.outil === outil}
           onClick={() => dispatch({ type: 'outil', outil })}
@@ -133,6 +103,7 @@ export function RailOutils({
       <Separateur />
       <BoutonRail
         libelle="Magnétisme"
+        touche="A"
         Icone={MagnetIcon}
         actif={etat.aimant}
         onClick={() => dispatch({ type: 'aimant' })}
@@ -178,6 +149,14 @@ export function RailOutils({
         avecTexte={false}
       />
       <span className="flex-1" />
+      <BoutonRail
+        libelle="Raccourcis clavier"
+        touche="?"
+        Icone={KeyboardIcon}
+        actif={false}
+        onClick={() => window.dispatchEvent(new Event(OUVRIR_RACCOURCIS))}
+        avecTexte={false}
+      />
       <BoutonRail
         libelle="Propriétés"
         Icone={SlidersHorizontalIcon}

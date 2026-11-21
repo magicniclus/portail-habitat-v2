@@ -107,6 +107,22 @@ test.describe('Plans — téléphone, accessibilité, performance (DES-46 à DES
     await expect(fenetre.getByText('Déplacer la sélection de 1 cm')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(fenetre).toHaveCount(0);
+    // Raccourcis d'outils : M pour le mur, V pour revenir à la sélection ; la liste s'ouvre aussi
+    // depuis le bouton du rail de droite.
+    const outils = page.getByRole('toolbar', { name: 'Outils du plan' });
+    await page.keyboard.press('m');
+    await expect(outils.getByRole('button', { name: 'Tracer un mur' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.keyboard.press('v');
+    await expect(outils.getByRole('button', { name: 'Sélectionner' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await outils.getByRole('button', { name: 'Raccourcis clavier' }).click();
+    await expect(fenetre.getByText('Tracer un mur')).toBeVisible();
+    await page.keyboard.press('Escape');
     // Choisir la pièce : son nom et sa surface sont annoncés.
     await page.getByRole('button', { name: 'Ajuster à l’écran' }).click();
     const p = (await plan.getByText('83,6 m²').boundingBox())!;

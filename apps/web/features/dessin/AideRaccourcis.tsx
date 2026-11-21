@@ -2,9 +2,12 @@
 
 import { Modal } from '@ph/ui';
 import { useEffect, useState } from 'react';
-import { RACCOURCIS } from './raccourcis';
+import { OUVRIR_RACCOURCIS, RACCOURCIS } from './raccourcis';
 
-/** Fenêtre des raccourcis (DES-47) : touche « ? » partout dans l'éditeur, hors des champs. */
+/**
+ * Fenêtre des raccourcis (DES-47) : touche « ? » partout dans l'éditeur (hors des champs), ou
+ * bouton « Raccourcis clavier » du rail de droite.
+ */
 export function AideRaccourcis() {
   const [ouvert, setOuvert] = useState(false);
   useEffect(() => {
@@ -15,8 +18,13 @@ export function AideRaccourcis() {
       ev.preventDefault();
       setOuvert(true);
     };
+    const ouvrir = () => setOuvert(true);
     document.addEventListener('keydown', ecouter);
-    return () => document.removeEventListener('keydown', ecouter);
+    window.addEventListener(OUVRIR_RACCOURCIS, ouvrir);
+    return () => {
+      document.removeEventListener('keydown', ecouter);
+      window.removeEventListener(OUVRIR_RACCOURCIS, ouvrir);
+    };
   }, []);
   return (
     <Modal open={ouvert} onOpenChange={setOuvert} titre="Raccourcis clavier">
