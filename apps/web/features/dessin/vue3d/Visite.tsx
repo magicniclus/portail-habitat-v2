@@ -16,6 +16,7 @@ import { M, Niveau3D } from './Batiment3D';
 import { Joystick } from './Joystick';
 import { Marcheur, REGARD, TOUCHES, type Commandes, type Visiteur } from './Marcheur';
 import { MiniPlan } from './MiniPlan';
+import { materiauGazon } from './gazon';
 import { Objets3D } from './Objets3D';
 
 /**
@@ -101,9 +102,12 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
           intensity={1.6}
           color={COULEURS_3D.soleil}
         />
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -0.01, 0]}
+          material={materiauGazon(400)}
+        >
           <planeGeometry args={[400, 400]} />
-          <meshStandardMaterial color={COULEURS_3D.terrain} />
         </mesh>
         {scene.niveaux.map((niv) => (
           <group key={niv.id}>

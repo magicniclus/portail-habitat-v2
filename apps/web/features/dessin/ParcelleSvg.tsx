@@ -117,3 +117,18 @@ export function ParcelleSvg({
     </g>
   );
 }
+
+/** Pelouse de la parcelle (DES-19) : un fond vert sous le jardin, la maison et la terrasse. */
+export function PelouseSvg({ parcelle }: { parcelle: Point[] | null }) {
+  if (!parcelle) return null;
+  return (
+    <polygon
+      points={points(parcelle)}
+      fill={C.gazon}
+      fillOpacity={0.55}
+      stroke="none"
+      pointerEvents="none"
+      data-testid="pelouse"
+    />
+  );
+}
