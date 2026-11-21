@@ -243,6 +243,8 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     // Coupe : deux clics de part et d'autre de la maison, la coupe s'affiche.
     await facades.getByRole('button', { name: 'Tracer une coupe' }).click();
     await expect(page.getByText(/Coupe : cliquez deux points/)).toBeVisible();
+    // Le panneau s'est ouvert : le plan se recadre en douceur avant qu'on clique dessus.
+    await page.waitForTimeout(400);
     const svg = plan.locator('svg');
     const cliquer = async (xMm: number, yMm: number) => {
       const boite = (await svg.boundingBox())!;
