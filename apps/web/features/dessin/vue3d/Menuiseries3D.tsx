@@ -11,10 +11,10 @@ import {
 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_PLAN, TEINTE_MENUISERIE } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
-import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import type { Group, Vector3 } from 'three';
-import type { Clic3D } from './clic3d';
+import type { Selection3D } from './selection3d';
 import { devantLaCamera, HAUTEUR_POUPEE } from './poupee';
 import { materiauUni } from './textures';
 import { M } from './unites';
@@ -37,14 +37,14 @@ export function Menuiseries3D({
   portesOuvertes,
   poupee,
   centre,
-  clic,
+  selection,
 }: {
   n: Niveau;
   portesOuvertes: boolean;
   poupee: boolean;
   centre: Vector3;
-  /** Vue 3D éditable : un clic sélectionne la menuiserie (couleur, matériau…). */
-  clic?: Clic3D | undefined;
+  /** Sélection faite en 2D (la 3D ne sert qu'à voir). */
+  selection?: Selection3D;
 }) {
   const menuiseries = useMemo(
     () =>
@@ -74,15 +74,7 @@ export function Menuiseries3D({
   return (
     <group>
       {menuiseries.map(({ o, pieces }, j) => (
-        <group
-          key={o.id}
-          ref={(g) => void (groupes.current[j] = g)}
-          onClick={
-            clic
-              ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer({ genre: 'ouverture', id: o.id }, ev)
-              : undefined
-          }
-        >
+        <group key={o.id} ref={(g) => void (groupes.current[j] = g)}>
           {pieces.map((p, i) => (
             <mesh
               key={i}
@@ -95,7 +87,7 @@ export function Menuiseries3D({
               })}
             >
               <boxGeometry args={[M(p.taille.l), M(p.taille.h), M(p.taille.p)]} />
-              {clic?.selection?.genre === 'ouverture' && clic.selection.id === o.id ? (
+              {selection?.genre === 'ouverture' && selection.id === o.id ? (
                 <Edges color={COULEURS_PLAN.murSelection} lineWidth={2} />
               ) : null}
             </mesh>

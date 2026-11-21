@@ -13,11 +13,10 @@ import {
 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_ESCALIER, COULEURS_PLAN } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
-import type { ThreeEvent } from '@react-three/fiber';
 import { useMemo } from 'react';
 import type { Vector3 } from 'three';
 import { DoubleSide, Shape, type Mesh } from 'three';
-import type { Clic3D } from './clic3d';
+import type { Selection3D } from './selection3d';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
 import { MorceauMur3D } from './Mur3D';
@@ -42,11 +41,19 @@ function PaveMesh({ p, materiaux }: { p: Pave; materiaux: Mesh['material'] }) {
   );
 }
 
-function Dalle3D({ d, dessous, clic }: { d: Dalle; dessous?: boolean; clic?: Clic3D }) {
+function Dalle3D({
+  d,
+  dessous,
+  selection,
+}: {
+  d: Dalle;
+  dessous?: boolean;
+  selection?: Selection3D;
+}) {
   const cible = d.zoneId
     ? ({ genre: 'zone', id: d.zoneId } as const)
     : ({ genre: 'piece', id: d.pieceId } as const);
-  const choisi = clic?.selection?.genre === cible.genre && clic.selection.id === cible.id;
+  const choisi = selection?.genre === cible.genre && selection.id === cible.id;
   const forme = useMemo(() => {
     // Forme dans le plan XY en mètres, couchée ensuite à l'horizontale (y du plan → z 3D).
     const s = new Shape();
@@ -64,7 +71,6 @@ function Dalle3D({ d, dessous, clic }: { d: Dalle; dessous?: boolean; clic?: Cli
       position={[0, M(d.z) + (dessous ? -0.002 : 0.002), 0]}
       receiveShadow
       material={materiau}
-      onClick={clic ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer(cible, ev) : undefined}
     >
       <shapeGeometry args={[forme]} />
       {choisi ? <Edges color={COULEURS_PLAN.murSelection} lineWidth={3} /> : null}
@@ -83,7 +89,7 @@ export function Niveau3D({
   toit = false,
   dessus = null,
   parcelle = null,
-  clic,
+  selection,
 }: {
   n: Niveau;
   centre: Vector3;
@@ -98,8 +104,8 @@ export function Niveau3D({
   dessus?: Niveau | null;
   /** Parcelle de la scène (affichée avec l'extérieur du niveau). */
   parcelle?: Point[] | null;
-  /** Vue 3D éditable (niveau courant) : clics de sélection et de pose. */
-  clic?: Clic3D | undefined;
+  /** Sélection faite en 2D, montrée sur le niveau courant (la 3D ne sert qu'à voir). */
+  selection?: Selection3D;
 }) {
   const morceaux = useMemo(() => {
     const contours = contoursRaccordes(n.murs);
@@ -124,36 +130,29 @@ export function Niveau3D({
           centre={centre}
           poupee={poupee}
           transparent={transparent}
-          clic={clic}
+          selection={selection}
         />
       ))}
       {dalles.sols.map((d) => (
-        <Dalle3D key={d.zoneId ?? d.pieceId} d={d} {...(clic ? { clic } : {})} />
+        <Dalle3D key={d.zoneId ?? d.pieceId} d={d} selection={selection} />
       ))}
       {plafonds
         ? dalles.plafonds.map((d) => <Dalle3D key={`pl-${d.pieceId}`} d={d} dessous />)
         : null}
-      <SurlignagePan n={n} clic={clic} />
+      <SurlignagePan n={n} selection={selection} />
       <Menuiseries3D
         n={n}
         portesOuvertes={portesOuvertes}
         poupee={poupee}
         centre={centre}
-        clic={clic}
+        selection={selection}
       />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
       <Exterieur3D n={n} parcelle={parcelle} />
       {escaliers.map(({ e, marches, limons }) => {
         const matiere = materiauUni(COULEURS_ESCALIER[e.materiau]);
         return (
-          <group
-            key={e.id}
-            onClick={
-              clic
-                ? (ev: ThreeEvent<MouseEvent>) => clic.cliquer({ genre: 'escalier', id: e.id }, ev)
-                : undefined
-            }
-          >
+          <group key={e.id}>
             {marches.map((p, i) => (
               <PaveMesh key={i} p={p} materiaux={matiere} />
             ))}

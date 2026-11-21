@@ -3,10 +3,10 @@
 import type { MorceauMur } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_PLAN } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
-import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import type { Material, Mesh, Vector3 } from 'three';
-import type { Clic3D } from './clic3d';
+import type { Selection3D } from './selection3d';
 import { devantLaCamera, HAUTEUR_POUPEE as POUPEE } from './poupee';
 import { materiauRevetement, materiauUni } from './textures';
 import { geometrieMur } from './geometrieMur';
@@ -14,9 +14,6 @@ import { M } from './unites';
 
 /** Opacité des murs en mode transparent : on voit au travers, la matière reste lisible. */
 const OPACITE_MUR = 0.22;
-
-/** Face touchée par un clic, d'après son matériau (4 : face A, 5 : face B, sinon la tranche). */
-const FACE_CLIQUEE: Record<number, 'a' | 'b'> = { 4: 'a', 5: 'b' };
 
 /** Copie translucide d'un matériau (sans écriture de profondeur : rien n'est masqué derrière). */
 const translucide = (m: Material) => {
@@ -38,18 +35,18 @@ export function MorceauMur3D({
   centre,
   poupee,
   transparent,
-  clic,
+  selection,
 }: {
   m: MorceauMur;
   centre: Vector3;
   poupee: boolean;
   transparent: boolean;
-  /** Vue 3D éditable : clic = sélection du mur (côté cliqué) ou pose d'une menuiserie. */
-  clic?: Clic3D | undefined;
+  /** Sélection faite en 2D (la 3D ne sert qu'à voir). */
+  selection?: Selection3D;
 }) {
-  const choisi = clic?.selection?.genre === 'mur' && clic.selection.id === m.murId;
+  const choisi = selection?.genre === 'mur' && selection.id === m.murId;
   // Pan cliqué en 3D : surligné à part (SurlignagePan) ; sinon contour du mur entier.
-  const faceChoisie = choisi ? (clic?.selection?.face ?? null) : null;
+  const faceChoisie = choisi ? (selection?.face ?? null) : null;
   const ref = useRef<Mesh>(null);
   // Prisme exact (angles en onglet, T arrêtés sur la face) : aucune face confondue qui scintille.
   const geometrie = useMemo(
@@ -98,15 +95,6 @@ export function MorceauMur3D({
       receiveShadow
       material={materiaux}
       renderOrder={transparent ? 1 : 0}
-      onClick={
-        clic
-          ? (ev: ThreeEvent<MouseEvent>) =>
-              clic.cliquer(
-                { genre: 'mur', id: m.murId, face: FACE_CLIQUEE[ev.face?.materialIndex ?? -1] },
-                ev,
-              )
-          : undefined
-      }
     >
       {choisi && !faceChoisie ? (
         <Edges color={COULEURS_PLAN.murSelection} lineWidth={3} />

@@ -34,11 +34,12 @@ const coinsPave = (p: Pave): Point[] => {
 /**
  * Obstacles d'un niveau (polygones au sol) : morceaux de murs et meubles qui croisent la
  * hauteur du corps. Les baies de portes, les tapis et les meubles hauts ne bloquent pas.
+ * `traverserMurs` : seuls les meubles bloquent (la visite passe à travers les murs).
  */
-export function obstaclesVisite(n: Niveau): Point[][] {
+export function obstaclesVisite(n: Niveau, traverserMurs = false): Point[][] {
   const corps = (bas: number, haut: number) =>
     bas < n.altitude + HAUT_DU_CORPS && haut > n.altitude + BAS_DU_CORPS;
-  const murs = n.murs
+  const murs = (traverserMurs ? [] : n.murs)
     .flatMap((m) => morceauxDeMur(m, n))
     .filter((p) => corps(p.centre.z - p.taille.h / 2, p.centre.z + p.taille.h / 2))
     .map(coinsPave);

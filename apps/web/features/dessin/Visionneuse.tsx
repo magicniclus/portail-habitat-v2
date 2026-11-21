@@ -110,7 +110,7 @@ export function Visionneuse({
         ) : etat.vue === 'facades' ? (
           <Facades etat={etat} dispatch={dispatch} />
         ) : (
-          <Vue3D etat={etat} dispatch={dispatch} />
+          <Vue3D etat={etat} />
         )}
       </main>
       <p className="m-0 border-t border-neutre-200 px-3 py-2 text-center text-xs text-neutre-800">

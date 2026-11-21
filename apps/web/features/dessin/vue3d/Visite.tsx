@@ -13,7 +13,7 @@ import { MiniPlan } from './MiniPlan';
 import { Objets3D } from './Objets3D';
 
 /**
- * Visite (DES-34) : première personne à 1,60 m, collisions, portes, escaliers ; clavier
+ * Visite (DES-34) : première personne à 1,60 m, à travers les murs, escaliers ; clavier
  * (ZQSD, flèches), glisser pour regarder, joystick tactile, mini-plan. Chargée à la demande.
  */
 export default function Visite({ etat }: { etat: EtatEditeur }) {
@@ -110,12 +110,7 @@ export default function Visite({ etat }: { etat: EtatEditeur }) {
               toit
             />
             <group position={[0, M(niv.altitude), 0]}>
-              <Objets3D
-                objets={niv.objets}
-                selectionId={null}
-                dispatch={() => {}}
-                glisser={() => {}}
-              />
+              <Objets3D objets={niv.objets} selectionId={null} />
             </group>
           </group>
         ))}

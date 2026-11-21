@@ -40,7 +40,7 @@ export interface Visiteur {
   z: number;
 }
 
-/** Caméra à hauteur des yeux, déplacée chaque image avec collisions et marches. */
+/** Caméra à hauteur des yeux, déplacée chaque image : à travers les murs, arrêtée par les meubles, marches. */
 export function Marcheur({
   scene,
   commandes,
@@ -55,7 +55,7 @@ export function Marcheur({
   const visiteur = useRef<Visiteur>(depart);
   const lire = useThree((s) => s.get);
   const obstacles = useMemo(
-    () => new Map(scene.niveaux.map((n) => [n.id, obstaclesVisite(n)])),
+    () => new Map(scene.niveaux.map((n) => [n.id, obstaclesVisite(n, true)])),
     [scene],
   );
   useFrame((_, dt) => {

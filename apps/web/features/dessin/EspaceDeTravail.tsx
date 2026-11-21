@@ -75,11 +75,12 @@ export function EspaceDeTravail(p: {
   // Panneaux animés : gardés le temps de leur sortie.
   const menu = usePresence(etat.menu);
   const proprietes = usePresence(etat.proprietes || null);
-  // Recadrer quand un panneau s'ouvre ou a fini de se fermer (sa place est libérée).
+  // Téléphone : la feuille du bas couvre le plan ; on le recadre au-dessus d'elle quand elle
+  // s'ouvre ou se ferme. Sur ordinateur, la vue ne bouge pas : le dessin reste où il est.
   const ouverts = `${Boolean(menu.rendu)}-${Boolean(proprietes.rendu)}`;
   useEffect(() => {
-    dispatch({ type: 'ajuster' });
-  }, [ouverts]);
+    if (telephone) dispatch({ type: 'ajuster' });
+  }, [ouverts, telephone]);
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
     if (!r.ok) return;
@@ -139,7 +140,7 @@ export function EspaceDeTravail(p: {
               ) : etat.vue === 'photo' ? (
                 <Photo etat={etat} dispatch={dispatch} espace={p.espace} planId={p.planId} />
               ) : (
-                <Vue3D etat={etat} dispatch={dispatch} ortho={ortho?.url ?? null} />
+                <Vue3D etat={etat} ortho={ortho?.url ?? null} />
               )}
             </div>
             <Bandeaux

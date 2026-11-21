@@ -43,6 +43,9 @@ describe('visite (DES-34)', () => {
     // Traverser le mur du haut (axe y = 150) dans l'axe de la porte.
     expect(deplacerVisiteur({ x, y: 600 }, { x: 0, y: -900 }, obs).y).toBe(-300);
     expect(deplacerVisiteur({ x: 7000, y: 600 }, { x: 0, y: -900 }, obs).y).toBe(600);
+    // À travers les murs : la fenêtre ne retient plus.
+    const libre = obstaclesVisite(avec, true);
+    expect(deplacerVisiteur({ x: 7000, y: 600 }, { x: 0, y: -900 }, libre).y).toBe(-300);
     const meuble = (id: string) =>
       obstaclesVisite(ok(poserObjet(n, { catalogueId: id, position: { x: 5000, y: 4000 } }, ctx)));
     expect(meuble('lit-160').length).toBe(obstaclesVisite(n).length + 1);

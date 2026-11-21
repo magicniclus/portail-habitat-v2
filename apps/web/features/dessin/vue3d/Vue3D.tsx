@@ -1,37 +1,27 @@
 'use client';
 
 import { useMediaQuery } from '@/lib/useMediaQuery';
-import {
-  directionSoleil,
-  niveauxTries,
-  type Objet,
-  type Point,
-  niveauSuperieur,
-} from '@ph/core/dessin';
+import { directionSoleil, niveauxTries, niveauSuperieur } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { OrbitControls } from '@react-three/drei';
-import { Canvas, type ThreeEvent } from '@react-three/fiber';
-import { useMemo, useRef, useState, type Dispatch } from 'react';
-import { niveauDe, sceneDe, type Action, type EtatEditeur } from '../etat';
+import { Canvas } from '@react-three/fiber';
+import { useMemo } from 'react';
+import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
 import { Cadrage, useCadreMaison, ZoomCamera } from './Cadrage';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
-import { versMm } from './unites';
-import { clic3D } from './clic3d';
 
 /**
  * Vue 3D (DES-33) : orbite, zoom, panoramique ; maison entière ou niveau isolé, maison de
- * poupée, ombres selon l'heure et le nord. Meubles : clic, glisser, rotation libre.
+ * poupée, ombres selon l'heure et le nord. On n'y modifie rien : tout se fait en 2D.
  * Chargée à la demande (import dynamique) : three.js n'alourdit pas l'éditeur 2D.
  */
 export default function Vue3D({
   etat,
-  dispatch,
   ortho = null,
 }: {
   etat: EtatEditeur;
-  dispatch: Dispatch<Action>;
   /** Photo aérienne de l'implantation (DES-35), en data URL. */
   ortho?: string | null;
 }) {
@@ -45,8 +35,6 @@ export default function Vue3D({
     return etat.rendu.niveauSeul ? [courant] : tries.filter((n) => n.altitude <= courant.altitude);
   }, [scene, courant, etat.rendu.niveauSeul, etat.vueExterieure]);
   const poupee = etat.rendu.poupee && !etat.vueExterieure;
-  // Édition en 3D : sélection des murs, sols et menuiseries ; pose d'une menuiserie ou d'un objet.
-  const clic = clic3D(etat, dispatch);
 
   const { centre, rayon } = useCadreMaison(courant);
   const soleil = directionSoleil(etat.rendu.heure, scene.orientationNord);
@@ -56,48 +44,12 @@ export default function Vue3D({
     centre.z + soleil.y * rayon * 3,
   ];
 
-  // Glisser un meuble sur le sol du niveau courant (placement automatique, Alt : libre).
-  const glisse = useRef<{ id: string; decalage: Point; geste: string } | null>(null);
-  const [orbite, setOrbite] = useState(true);
-  const finir = () => {
-    if (!glisse.current) return;
-    glisse.current = null;
-    setOrbite(true);
-    dispatch({ type: 'finGeste' });
-  };
-
-  const glisser = (o: Objet, ev: ThreeEvent<PointerEvent>) => {
-    if (o.id !== etat.selection?.id) return;
-    const p = ev.point;
-    glisse.current = {
-      id: o.id,
-      decalage: { x: o.position.x - versMm(p.x), y: o.position.y - versMm(p.z) },
-      geste: `glisser3d-${o.id}-${Date.now()}`,
-    };
-    setOrbite(false);
-    window.addEventListener('pointerup', finir, { once: true });
-  };
-  const deplacer = (ev: ThreeEvent<PointerEvent>) => {
-    const g = glisse.current;
-    if (!g) return;
-    dispatch({
-      type: 'deplacerObjetVers',
-      id: g.id,
-      vers: {
-        x: versMm(ev.point.x) + g.decalage.x,
-        y: versMm(ev.point.z) + g.decalage.y,
-      },
-      geste: g.geste,
-      libre: ev.nativeEvent.altKey,
-    });
-  };
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
       gl={{ preserveDrawingBuffer: true, antialias: true }}
       camera={{ fov: 45, near: 0.05, far: 500 }}
-      onPointerMissed={() => dispatch({ type: 'selectionner', selection: null })}
       aria-label="Vue 3D du plan"
       data-testid="vue-3d"
       style={{ background: COULEURS_3D.ciel }}
@@ -118,21 +70,12 @@ export default function Vue3D({
         shadow-normalBias={0.03}
         target-position={[centre.x, centre.y, centre.z]}
       />
-      {/* Terrain et plan de glisser des meubles, à l'altitude du niveau courant. */}
+      {/* Terrain. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[centre.x, -0.01, centre.z]} receiveShadow>
         <planeGeometry args={[rayon * 12, rayon * 12]} />
         <meshStandardMaterial color={COULEURS_3D.terrain} roughness={1} />
       </mesh>
       <Orthophoto3D scene={scene} url={ortho} />
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[centre.x, centre.y, centre.z]}
-        onPointerMove={deplacer}
-        onClick={(ev) => clic.cliquer({ genre: 'terrain' }, ev)}
-      >
-        <planeGeometry args={[rayon * 12, rayon * 12]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
       {niveaux.map((n) => (
         <Niveau3D
           key={n.id}
@@ -144,7 +87,7 @@ export default function Vue3D({
           transparent={etat.rendu.mursTransparents}
           plafonds={false}
           toit={etat.vueExterieure || (etat.rendu.toit && !poupee)}
-          clic={n.id === courant.id ? clic : undefined}
+          selection={n.id === courant.id ? etat.selection : undefined}
         />
       ))}
       {niveaux.map((n) => (
@@ -154,8 +97,6 @@ export default function Vue3D({
             selectionId={
               n.id === courant.id && etat.selection?.genre === 'objet' ? etat.selection.id : null
             }
-            dispatch={dispatch}
-            glisser={glisser}
           />
         </group>
       ))}
@@ -165,7 +106,6 @@ export default function Vue3D({
         makeDefault
         // Réduire les animations (DES-47) : pas d'inertie de la caméra.
         enableDamping={!mouvementReduit}
-        enabled={orbite}
         maxPolarAngle={Math.PI / 2 - 0.05}
         minDistance={1}
         maxDistance={rayon * 6}
