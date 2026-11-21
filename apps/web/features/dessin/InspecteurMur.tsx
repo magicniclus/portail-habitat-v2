@@ -12,12 +12,15 @@ import { CaseVerrou, TitreSelection } from './blocs';
 export function InspecteurMur({
   mur,
   fusionnable,
+  face,
   finitionsOuvert,
   dispatch,
 }: {
   mur: Mur;
   /** Mur voisin aligné et identique : on peut les fusionner (DES-09). */
   fusionnable: string | null;
+  /** Côté choisi (sinon le mur entier). */
+  face?: 'a' | 'b' | undefined;
   /** Menu Finitions ouvert : on y choisit les matériaux. */
   finitionsOuvert: boolean;
   dispatch: Dispatch<Action>;
@@ -87,10 +90,16 @@ export function InspecteurMur({
         ) : null}
       </div>
       <ResumeFinitions
-        surfaces={[
-          { libelle: 'Côté gauche', revetement: mur.faceA },
-          { libelle: 'Côté droit', revetement: mur.faceB },
-        ]}
+        surfaces={(['a', 'b'] as const).map((f) => ({
+          libelle: f === 'a' ? 'Côté gauche' : 'Côté droit',
+          revetement: f === 'a' ? mur.faceA : mur.faceB,
+          choisie: face === f,
+          // Le côté choisi se voit sur le plan ; ses matériaux sont dans Finitions.
+          choisir: () => {
+            dispatch({ type: 'selectionner', selection: { genre: 'mur', id: mur.id, face: f } });
+            if (!finitionsOuvert) dispatch({ type: 'menu', menu: 'finitions', basculer: false });
+          },
+        }))}
         finitionsOuvert={finitionsOuvert}
         dispatch={dispatch}
       />

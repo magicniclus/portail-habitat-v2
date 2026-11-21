@@ -95,6 +95,7 @@ export function Inspecteur({ etat, dispatch }: { etat: EtatEditeur; dispatch: Di
   if (mur)
     return (
       <InspecteurMur
+        face={s?.face}
         key={mur.id}
         mur={mur}
         fusionnable={voisinFusionnable(n, mur.id, contexteNavigateur)}

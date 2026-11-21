@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Mur } from '../schemas/dessinScene';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { panDeMur, revetirPan } from './troncons';
+import { ligneDeFace, panDeMur, revetirPan } from './troncons';
 
 const ctx = contexteTest();
 // Maquette : mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150 (face a).
@@ -18,6 +18,26 @@ const n = { ...base, murs: [...base.murs, cloison] };
 const sauge = { famille: 'peinture' as const, couleur: '#b5c4b1' };
 
 describe('pans de mur (DES-25)', () => {
+  it('ligne d’une face : toute la face entre ses angles, ou le seul pan visé', () => {
+    const ep = fond.epaisseur / 2;
+    // Face intérieure (a), raccordée en onglet : d'angle intérieur à angle intérieur.
+    expect(ligneDeFace(n, fond.id, 'a')).toEqual([
+      { x: 150 + ep, y: 150 + ep },
+      { x: 10_450 - ep, y: 150 + ep },
+    ]);
+    // Face extérieure (b) : d'angle extérieur à angle extérieur.
+    expect(ligneDeFace(n, fond.id, 'b')).toEqual([
+      { x: 150 - ep, y: 150 - ep },
+      { x: 10_450 + ep, y: 150 - ep },
+    ]);
+    // Pan à droite de la cloison : de sa face jusqu'à l'angle.
+    expect(ligneDeFace(n, fond.id, 'a', 6000)).toEqual([
+      { x: 4200, y: 150 + ep },
+      { x: 10_450 - ep, y: 150 + ep },
+    ]);
+    expect(ligneDeFace(n, 'm_absent', 'a')).toBeNull();
+  });
+
   it('la cloison découpe la face intérieure du mur du fond, pas la face extérieure', () => {
     expect(panDeMur(n, fond.id, 'a', 1000)).toEqual({ coupe: [0, 4000], visible: [0, 3950] });
     expect(panDeMur(n, fond.id, 'a', 6000)).toEqual({

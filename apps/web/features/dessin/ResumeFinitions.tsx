@@ -21,28 +21,55 @@ export function ResumeFinitions({
   finitionsOuvert,
   dispatch,
 }: {
-  surfaces: { libelle: string; revetement: Revetement }[];
+  /** `choisir` : rend la surface cliquable (un côté de mur : la montrer et la revêtir). */
+  surfaces: {
+    libelle: string;
+    revetement: Revetement;
+    choisie?: boolean;
+    choisir?: () => void;
+  }[];
   finitionsOuvert: boolean;
   dispatch: Dispatch<Action>;
 }) {
   return (
     <section aria-label="Revêtements" className="grid gap-2">
-      <dl className="m-0 grid gap-1.5">
-        {surfaces.map((s) => (
-          <div key={s.libelle} className="flex items-center gap-2.5 text-sm">
-            <span
-              aria-hidden="true"
-              className="size-6 shrink-0 rounded-md ring-1 ring-neutre-300"
-              style={{ backgroundColor: s.revetement.couleur ?? 'transparent' }}
-            />
-            <dt className="text-neutre-700">{s.libelle}</dt>
-            <dd className="m-0 ml-auto font-semibold">{nom(s.revetement)}</dd>
-          </div>
-        ))}
-      </dl>
+      <ul className="m-0 grid list-none gap-1.5 p-0">
+        {surfaces.map((s) => {
+          const contenu = (
+            <>
+              {/* Pastille : la couleur posée, ou le gris du mur brut (non revêtu). */}
+              <span
+                aria-hidden="true"
+                className={`size-6 shrink-0 rounded-full ring-1 ring-neutre-300 ${s.revetement.couleur ? '' : 'bg-neutre-300'}`}
+                style={s.revetement.couleur ? { backgroundColor: s.revetement.couleur } : undefined}
+              />
+              <span className="text-neutre-700">{s.libelle}</span>
+              <span className="ml-auto font-semibold">{nom(s.revetement)}</span>
+            </>
+          );
+          return (
+            <li key={s.libelle}>
+              {s.choisir ? (
+                <button
+                  type="button"
+                  aria-pressed={s.choisie ?? false}
+                  onClick={s.choisir}
+                  className={`flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-lg border px-2.5 text-left text-sm font-[inherit] transition-colors ${s.choisie ? 'border-accent bg-accent-100' : 'border-neutre-200 bg-blanc hover:bg-neutre-100'}`}
+                >
+                  {contenu}
+                </button>
+              ) : (
+                <div className="flex items-center gap-2.5 text-sm">{contenu}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
       {finitionsOuvert ? (
         <p className="m-0 text-[13px] text-neutre-700">
-          Matériaux et couleurs : Finitions, à gauche.
+          {surfaces.some((x) => x.choisir)
+            ? 'Cliquez sur un côté pour le voir sur le plan, puis choisissez son matériau dans Finitions.'
+            : 'Matériaux et couleurs : Finitions, à gauche.'}
         </p>
       ) : (
         <Button

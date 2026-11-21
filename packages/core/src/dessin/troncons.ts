@@ -3,6 +3,7 @@ import type { Mur, Niveau, Point, Revetement } from '../schemas/dessinScene';
 import { appliquerRevetement, scinderMur, type Contexte } from './commandes';
 import { distancePointSegment, projeter } from './geometrie';
 import { longueurMur } from './murs';
+import { contoursRaccordes } from './raccords';
 
 /**
  * Pans de mur (DES-25) : la face d'un mur qui traverse plusieurs pièces est découpée par les
@@ -51,6 +52,37 @@ export function panDeMur(
     coupe: [avant?.s ?? 0, apres?.s ?? l],
     visible: [avant ? avant.s + avant.demi : 0, apres ? apres.s - apres.demi : l],
   };
+}
+
+/**
+ * Ligne d'une face de mur, sur le plan (DES-25) : toute la face entre ses angles raccordés, ou
+ * seulement le pan sous `s` s'il est donné. Sert à montrer la face choisie en 2D et en 3D.
+ */
+export function ligneDeFace(
+  n: Pick<Niveau, 'murs'>,
+  murId: string,
+  face: 'a' | 'b',
+  s?: number,
+): [Point, Point] | null {
+  const m = n.murs.find((x) => x.id === murId);
+  if (!m) return null;
+  const l = longueurMur(m);
+  const u = { x: (m.b.x - m.a.x) / l, y: (m.b.y - m.a.y) / l };
+  const cote = face === 'a' ? 1 : -1;
+  const d = (m.epaisseur / 2) * cote;
+  // Étendue de la face d'après le contour raccordé : ses sommets du côté de cette face.
+  const contour = contoursRaccordes(n.murs).get(murId) ?? [];
+  const ts = contour
+    .filter((q) => ((q.x - m.a.x) * -u.y + (q.y - m.a.y) * u.x) * cote > 0)
+    .map((q) => (q.x - m.a.x) * u.x + (q.y - m.a.y) * u.y);
+  let [t0, t1] = ts.length ? [Math.min(...ts), Math.max(...ts)] : [0, l];
+  const pan = s === undefined ? null : panDeMur(n, murId, face, s);
+  if (pan) [t0, t1] = [Math.max(t0, pan.visible[0]), Math.min(t1, pan.visible[1])];
+  const p = (t: number): Point => ({
+    x: Math.round(m.a.x + u.x * t - u.y * d),
+    y: Math.round(m.a.y + u.y * t + u.x * d),
+  });
+  return [p(t0), p(t1)];
 }
 
 /**

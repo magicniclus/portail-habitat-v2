@@ -12,6 +12,13 @@ export interface Cible {
   appliquer: (r: Revetement) => Action[];
 }
 
+/** Revêtement commun aux deux côtés d'un mur, s'ils sont identiques. */
+function memeRevetement(n: ReturnType<typeof niveauDe>, murId: string): Revetement | null {
+  const a = revetementDe(n, { genre: 'mur', murId, face: 'a' });
+  const b = revetementDe(n, { genre: 'mur', murId, face: 'b' });
+  return JSON.stringify(a) === JSON.stringify(b) ? a : null;
+}
+
 /** Surfaces qu'on peut revêtir pour la sélection courante (pièce, mur, zone). */
 export function ciblesDe(etat: EtatEditeur): Cible[] {
   const n = niveauDe(etat);
@@ -62,7 +69,8 @@ export function ciblesDe(etat: EtatEditeur): Cible[] {
         cle: 'ab',
         libelle: 'Les deux côtés',
         surface: 'mur',
-        actuel: null,
+        // Les deux côtés pareils : ce revêtement est le revêtement actuel.
+        actuel: memeRevetement(n, murId),
         appliquer: (r) => [face('a', r), face('b', r)],
       },
     ];
@@ -106,11 +114,20 @@ export function useCibleFinition(etat: EtatEditeur, dispatch: Dispatch<Action>) 
   const pour = s ? `${s.genre}:${s.id}:${s.face ?? ''}` : '';
   const [choix, setChoix] = useState<{ cle: string; pour: string } | null>(null);
   const cle = choix?.pour === pour ? choix.cle : null;
-  const cible = cibles.find((c) => c.cle === cle) ?? cibles[0] ?? null;
+  // Mur entier sélectionné (sans côté) : les deux côtés, comme ce que montre le plan.
+  const parDefaut = s?.genre === 'mur' && !s.face ? cibles.find((c) => c.cle === 'ab') : undefined;
+  const cible = cibles.find((c) => c.cle === cle) ?? parDefaut ?? cibles[0] ?? null;
   return {
     cibles,
     cible,
-    setCible: (c: string) => setChoix({ cle: c, pour }),
+    setCible: (c: string) => {
+      // Un côté de mur choisi devient la sélection : il se voit sur le plan et en 3D.
+      if (s?.genre === 'mur' && (c === 'a' || c === 'b' || c === 'ab')) {
+        const face = c === 'ab' ? undefined : c;
+        dispatch({ type: 'selectionner', selection: { genre: 'mur', id: s.id, face } });
+        setChoix({ cle: c, pour: `mur:${s.id}:${face ?? ''}` });
+      } else setChoix({ cle: c, pour });
+    },
     actuel: cible?.actuel ?? null,
     appliquer: (r: Revetement) => cible?.appliquer(r).forEach(dispatch),
   };

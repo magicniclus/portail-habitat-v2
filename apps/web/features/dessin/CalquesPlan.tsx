@@ -2,7 +2,7 @@
 
 import { memoCalque } from './memoCalque';
 import {
-  centroide,
+  centreEtiquette,
   contoursRaccordes,
   formatLongueur,
   formatSurface,
@@ -13,6 +13,7 @@ import {
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
+import { FaceChoisieSvg } from './FaceChoisieSvg';
 import type { Action, EtatEditeur } from './etat';
 import { remplissage } from './Motifs';
 import { activer, points } from './svg';
@@ -69,6 +70,8 @@ function MursSvgBrut({
   const contours = contoursRaccordes(niveau.murs);
   return niveau.murs.map((m) => {
     const choisi = etat.selection?.genre === 'mur' && etat.selection.id === m.id;
+    // Une face choisie se montre seule : le mur garde sa couleur, la face est soulignée.
+    const face = choisi ? etat.selection?.face : undefined;
     const choisir = () => dispatch({ type: 'selectionner', selection: { genre: 'mur', id: m.id } });
     if (m.type === 'separation')
       return (
@@ -101,9 +104,9 @@ function MursSvgBrut({
           aria-label={`${LIBELLES_MUR[m.type]} de ${formatLongueur(longueurMur(m))}`}
           aria-pressed={choisi}
           points={points(contours.get(m.id)!)}
-          fill={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
+          fill={choisi && !face ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
           // Liseré de la même couleur : aucun fil clair entre deux murs raccordés en onglet.
-          stroke={choisi ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
+          stroke={choisi && !face ? COULEURS_PLAN.murSelection : COULEURS_PLAN.mur}
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
           className={etat.outil === 'selection' ? 'cursor-move' : undefined}
@@ -115,6 +118,9 @@ function MursSvgBrut({
           }}
           onKeyDown={activer(choisir)}
         />
+        {face ? (
+          <FaceChoisieSvg niveau={niveau} murId={m.id} face={face} s={etat.selection?.s} />
+        ) : null}
         {choisi && etat.outil === 'selection'
           ? (['a', 'b'] as const).map((bout) => (
               <circle
@@ -151,15 +157,18 @@ export function EtiquettesPieces({
   mmParPx: number;
 }) {
   const taille = 14 * mmParPx;
+  // Deux lignes centrées ensemble sur le point le plus dégagé de la pièce.
+  const ecart = etat.calques.surfaces ? taille * 0.65 : 0;
   return niveau.pieces.map((p) => {
-    const c = centroide(p.contour);
+    const c = centreEtiquette(p.contour);
     return (
       <g key={p.id} pointerEvents="none" className="select-none">
         <text
           x={c.x}
-          y={c.y}
+          y={c.y - ecart}
           fontSize={taille}
           textAnchor="middle"
+          dominantBaseline="central"
           className="fill-texte font-bold"
         >
           {p.nom}
@@ -167,9 +176,10 @@ export function EtiquettesPieces({
         {etat.calques.surfaces ? (
           <text
             x={c.x}
-            y={c.y + taille * 1.3}
+            y={c.y + ecart}
             fontSize={taille * 0.9}
             textAnchor="middle"
+            dominantBaseline="central"
             className="fill-accent-700 font-semibold"
           >
             {formatSurface(surfaceCarrez(p))}
