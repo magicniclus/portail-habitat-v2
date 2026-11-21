@@ -75,12 +75,12 @@ export function EspaceDeTravail(p: {
   // Panneaux animés : gardés le temps de leur sortie.
   const menu = usePresence(etat.menu);
   const proprietes = usePresence(etat.proprietes || null);
-  // Téléphone : la feuille du bas couvre le plan ; on le recadre au-dessus d'elle quand elle
-  // s'ouvre ou se ferme. Sur ordinateur, la vue ne bouge pas : le dessin reste où il est.
+  // Un panneau s'ouvre ou se ferme : le dessin glisse doucement pour rester entier à l'écran
+  // (au-dessus de la feuille du bas sur téléphone).
   const ouverts = `${Boolean(menu.rendu)}-${Boolean(proprietes.rendu)}`;
   useEffect(() => {
-    if (telephone) dispatch({ type: 'ajuster' });
-  }, [ouverts, telephone]);
+    dispatch({ type: 'ajuster' });
+  }, [ouverts]);
   const resoudreConflit = async (garderLaMienne: boolean) => {
     const r = await lirePlan(p.espace, p.planId);
     if (!r.ok) return;

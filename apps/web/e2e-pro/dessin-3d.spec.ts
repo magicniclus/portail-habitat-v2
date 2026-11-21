@@ -164,11 +164,16 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
       await page.mouse.up();
       await expect(page.getByLabel('Depuis le coin (cm)')).not.toHaveValue('390');
       // Poignée d'un bord : la fenêtre s'élargit, l'autre bord reste en place.
-      const bord = (await plan.getByTestId('bord-ouverture-fin').boundingBox())!;
-      const loin = await ecran(5000, 8500);
-      await page.mouse.move(bord.x + bord.width / 2, bord.y + bord.height / 2);
+      const centre = async (bord: string) => {
+        const b = (await plan.getByTestId(`bord-ouverture-${bord}`).boundingBox())!;
+        return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+      };
+      const [debut, fin] = [await centre('debut'), await centre('fin')];
+      // Le bord de fin tiré vers l'extérieur, à l'opposé du bord de début.
+      const sens = Math.sign(fin.x - debut.x);
+      await page.mouse.move(fin.x, fin.y);
       await page.mouse.down();
-      await page.mouse.move(loin.x, bord.y + bord.height / 2, { steps: 8 });
+      await page.mouse.move(fin.x + sens * 40, fin.y, { steps: 8 });
       await page.mouse.up();
       await expect(page.getByLabel('Largeur (cm)')).not.toHaveValue('120');
       await page.getByLabel('Largeur (cm)').fill('120');

@@ -119,8 +119,10 @@ test.describe('Plans — exports, partage, essai (DES-03, DES-41 à DES-43)', ()
     await page.getByRole('button', { name: /^Pièce rectangulaire/ }).click();
     const svg = page.getByTestId('plan-2d').locator('svg');
     const boite = (await svg.boundingBox())!;
-    await page.mouse.click(boite.x + boite.width * 0.3, boite.y + boite.height * 0.3);
-    await page.mouse.click(boite.x + boite.width * 0.7, boite.y + boite.height * 0.7);
+    // Sous le bandeau de l'essai (plus haut sur téléphone, où le menu s'est replié).
+    const [y1, y2] = page.viewportSize()!.width < 900 ? [0.5, 0.75] : [0.35, 0.7];
+    await page.mouse.click(boite.x + boite.width * 0.3, boite.y + boite.height * y1);
+    await page.mouse.click(boite.x + boite.width * 0.7, boite.y + boite.height * y2);
     await expect(page.getByTestId('plan-2d').getByText(/m²$/).first()).toBeVisible();
     await expect(
       page.getByRole('status').filter({ hasText: 'Gardé sur cet appareil' }),
