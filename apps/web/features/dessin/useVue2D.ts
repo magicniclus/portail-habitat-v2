@@ -19,6 +19,12 @@ function zoomer(s: SVGSVGElement, rapport: number, ox: number, oy: number, duree
   s.style.transform = '';
 }
 
+/** Arrête net une animation de zoom ou de glissement en cours. */
+function arreterAnimation(s: SVGSVGElement) {
+  s.style.transition = 'none';
+  s.style.transform = '';
+}
+
 /** Le dessin part de son ancienne place (décalage dx, dy) et glisse jusqu'à la nouvelle. */
 function glisser(s: SVGSVGElement, dx: number, dy: number) {
   s.style.transition = 'none';
@@ -68,17 +74,33 @@ export function useVue2D(
   useEffect(() => {
     const el = conteneur.current;
     if (!el) return;
-    const molette = (ev: WheelEvent) => {
-      const s = svg.current?.getScreenCTM();
-      if (!s) return;
-      ev.preventDefault();
-      const facteur = Math.exp(-Math.max(-60, Math.min(60, ev.deltaY)) * 0.004);
+    // Les crans d'une même image s'additionnent : un seul rendu par image, sans à-coups.
+    let cumul = 0;
+    let dernier = { x: 0, y: 0 };
+    let image = 0;
+    const appliquer = () => {
+      image = 0;
+      const s = svg.current;
+      const m = s?.getScreenCTM();
+      if (!s || !m) return;
       ancre.current = {
-        mm: new DOMPoint(ev.clientX, ev.clientY).matrixTransform(s.inverse()),
-        ecran: { x: ev.clientX, y: ev.clientY },
+        mm: new DOMPoint(dernier.x, dernier.y).matrixTransform(m.inverse()),
+        ecran: dernier,
         molette: true,
       };
+      const facteur = Math.exp(-Math.max(-240, Math.min(240, cumul)) * 0.0025);
+      cumul = 0;
       dispatch({ type: 'zoom', zoom: zoomCourant.current * facteur });
+    };
+    const molette = (ev: WheelEvent) => {
+      const s = svg.current;
+      if (!s) return;
+      ev.preventDefault();
+      // Une animation de zoom en cours fausserait la mesure du point visé : on l'arrête.
+      arreterAnimation(s);
+      cumul += ev.deltaMode === 1 ? ev.deltaY * 16 : ev.deltaY;
+      dernier = { x: ev.clientX, y: ev.clientY };
+      if (!image) image = requestAnimationFrame(appliquer);
     };
     const bas = () => void (geste.current = true);
     const haut = () => void (geste.current = false);
@@ -86,6 +108,7 @@ export function useVue2D(
     el.addEventListener('pointerdown', bas);
     window.addEventListener('pointerup', haut);
     return () => {
+      cancelAnimationFrame(image);
       el.removeEventListener('wheel', molette);
       el.removeEventListener('pointerdown', bas);
       window.removeEventListener('pointerup', haut);
@@ -97,8 +120,11 @@ export function useVue2D(
   useLayoutEffect(() => {
     const el = conteneur.current;
     const s = svg.current;
-    const m = s?.getScreenCTM();
-    if (!el || !s || !m) return;
+    if (!el || !s) return;
+    // Mesures sans l'animation en cours : sinon elle passerait pour un changement de zoom.
+    arreterAnimation(s);
+    const m = s.getScreenCTM();
+    if (!m) return;
     const r = el.getBoundingClientRect();
     const milieu = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     // Boutons + et − : zoom autour du centre de la zone visible (pas après « Ajuster »).
@@ -110,25 +136,13 @@ export function useVue2D(
     if (!ajuste && !ancre.current && avant.current && avant.current.a !== m.a)
       ancre.current = { mm: avant.current.centre, ecran: milieu };
     const a = ancre.current;
+    const prec = avant.current;
     if (a) {
       ancre.current = null;
       const p = a.mm.matrixTransform(m);
       el.scrollBy(p.x - a.ecran.x, p.y - a.ecran.y);
-      // Le point fixe reste sous le pointeur ; le reste glisse vers sa nouvelle taille.
-      const prec = avant.current;
-      if (prec && prec.a !== m.a) {
-        const b = s.getBoundingClientRect();
-        zoomer(s, prec.a / m.a, a.ecran.x - b.left, a.ecran.y - b.top, a.molette ? 140 : 260);
-      }
-    } else {
-      const prec = avant.current;
-      if (prec && prec.a === m.a && !geste.current && !traceEnCours && !ajuste) {
-        const [dx, dy] = [prec.e - m.e, prec.f - m.f];
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-          glisser(s, dx, dy);
-        }
-      }
     }
+    // Position finale mesurée avant de lancer l'animation (qui déforme la mesure).
     const fin = s.getScreenCTM()!;
     avant.current = {
       e: fin.e,
@@ -137,5 +151,16 @@ export function useVue2D(
       centre: new DOMPoint(milieu.x, milieu.y).matrixTransform(fin.inverse()),
       ajustement,
     };
+    if (a) {
+      // Le point fixe reste sous le pointeur ; le reste glisse vers sa nouvelle taille.
+      // Molette : zoom direct, cran par cran (déjà progressif) ; boutons : zoom animé.
+      if (prec && prec.a !== m.a && !a.molette) {
+        const b = s.getBoundingClientRect();
+        zoomer(s, prec.a / m.a, a.ecran.x - b.left, a.ecran.y - b.top, 260);
+      }
+    } else if (prec && prec.a === m.a && !geste.current && !traceEnCours && !ajuste) {
+      const [dx, dy] = [prec.e - m.e, prec.f - m.f];
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) glisser(s, dx, dy);
+    }
   }, [conteneur, svg, zoom, cadre.x, cadre.y, cadre.l, cadre.h, traceEnCours, ajustement]);
 }

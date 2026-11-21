@@ -241,8 +241,11 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
 
     // Finitions (DES-26) : parquet chêne clair sur le sol de la pièce. Sur téléphone, le
     // panneau des propriétés recouvre le plan : on le replie avant de cliquer.
-    if (page.viewportSize()!.width < 900)
+    if (page.viewportSize()!.width < 900) {
       await page.getByRole('button', { name: 'Replier propriétés' }).click();
+      // La feuille se replie et le plan se recadre : on attend la fin du recadrage.
+      await page.waitForTimeout(400);
+    }
     await cliquer(9000, 1500);
     await menu('Finitions');
     await page.getByRole('button', { name: 'Chêne clair', exact: true }).click();
