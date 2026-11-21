@@ -50,6 +50,19 @@ export function geometrieCouverture(
     cible.push(...a, ...(ok ? b : c), ...(ok ? c : b));
     return ok;
   };
+  // Arêtes partagées par deux pans (faîtage, arêtier, noue) : pas de chant, sinon sa tranche
+  // claire dépasse entre les deux pans et marque le toit d'un pointillé.
+  const cle = (a: Point3, b: Point3) =>
+    [a, b]
+      .map((q) => `${Math.round(q.x)},${Math.round(q.y)},${Math.round(q.z)}`)
+      .sort()
+      .join('|');
+  const usages = new Map<string, number>();
+  for (const pan of pans)
+    pan.forEach((a, i) => {
+      const k = cle(a, pan[(i + 1) % pan.length]!);
+      usages.set(k, (usages.get(k) ?? 0) + 1);
+    });
   for (const pan of pans) {
     const p = pan.map((q) => en3D(q, dz));
     const n = normale(p);
@@ -70,6 +83,7 @@ export function geometrieCouverture(
       0, 0, 0,
     ] as V);
     p.forEach((a, i) => {
+      if ((usages.get(cle(pan[i]!, pan[(i + 1) % pan.length]!)) ?? 0) > 1) return;
       const b = p[(i + 1) % p.length]!;
       const [a2, b2] = [bas[i]!, bas[(i + 1) % p.length]!];
       const dehors: V = [(a[0] + b[0]) / 2 - centre[0], 0, (a[2] + b[2]) / 2 - centre[2]];
