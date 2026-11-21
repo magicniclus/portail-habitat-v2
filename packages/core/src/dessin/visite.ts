@@ -135,3 +135,29 @@ export function departVisite(n: Niveau): Point {
     }
   return brut;
 }
+
+/**
+ * Direction du premier regard (radians, sens du plan) : celle où la vue porte le plus loin
+ * avant un mur, pour ne pas commencer la visite le nez contre une cloison.
+ */
+export function regardVisite(n: Niveau, p: Point): number {
+  const obstacles = obstaclesVisite(n);
+  const portee = (a: number) => {
+    let d = 0;
+    while (
+      d < 8_000 &&
+      !obstacles.some((o) =>
+        pointDansPolygone({ x: p.x + Math.cos(a) * d, y: p.y + Math.sin(a) * d }, o),
+      )
+    )
+      d += 100;
+    return d;
+  };
+  let meilleur = { a: -Math.PI / 2, d: -1 };
+  for (let i = 0; i < 16; i++) {
+    const a = -Math.PI / 2 + (i / 16) * 2 * Math.PI;
+    const d = portee(a);
+    if (d > meilleur.d) meilleur = { a, d };
+  }
+  return meilleur.a;
+}

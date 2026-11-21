@@ -2,19 +2,17 @@
 
 import { memoCalque } from './memoCalque';
 import {
-  centreEtiquette,
   contoursRaccordes,
   formatLongueur,
-  formatSurface,
   LIBELLES_MUR,
   longueurMur,
-  surfaceCarrez,
   type Niveau,
 } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import { FaceChoisieSvg } from './FaceChoisieSvg';
 import type { Action, EtatEditeur } from './etat';
+import { etiquettesDesPieces } from './etiquettesPieces';
 import { remplissage } from './Motifs';
 import { activer, points } from './svg';
 
@@ -146,50 +144,45 @@ function MursSvgBrut({
   });
 }
 
-/** Nom et surface de chaque pièce, au centre. */
-export function EtiquettesPieces({
+/** Nom et surface de chaque pièce, à la taille qui tient dans la pièce (voir `etiquettesDesPieces`). */
+function EtiquettesPiecesBrut({
   niveau,
   etat,
   mmParPx,
 }: {
-  niveau: Niveau;
-  etat: EtatEditeur;
+  niveau: Pick<Niveau, 'pieces'>;
+  etat: Pick<EtatEditeur, 'calques'>;
   mmParPx: number;
 }) {
-  const taille = 14 * mmParPx;
-  // Deux lignes centrées ensemble sur le point le plus dégagé de la pièce.
-  const ecart = etat.calques.surfaces ? taille * 0.65 : 0;
-  return niveau.pieces.map((p) => {
-    const c = centreEtiquette(p.contour);
-    return (
-      <g key={p.id} pointerEvents="none" className="select-none">
+  return etiquettesDesPieces(niveau, mmParPx, etat.calques.surfaces).map((e) => (
+    <g key={e.id} pointerEvents="none" className="select-none">
+      <text
+        x={e.x}
+        y={e.nom.y}
+        fontSize={e.nom.taille}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="fill-texte font-bold"
+      >
+        {e.nom.texte}
+      </text>
+      {e.surface ? (
         <text
-          x={c.x}
-          y={c.y - ecart}
-          fontSize={taille}
+          x={e.x}
+          y={e.surface.y}
+          fontSize={e.surface.taille}
           textAnchor="middle"
           dominantBaseline="central"
-          className="fill-texte font-bold"
+          className="fill-accent-700 font-semibold"
         >
-          {p.nom}
+          {e.surface.texte}
         </text>
-        {etat.calques.surfaces ? (
-          <text
-            x={c.x}
-            y={c.y + ecart}
-            fontSize={taille * 0.9}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="fill-accent-700 font-semibold"
-          >
-            {formatSurface(surfaceCarrez(p))}
-          </text>
-        ) : null}
-      </g>
-    );
-  });
+      ) : null}
+    </g>
+  ));
 }
 
+export const EtiquettesPieces = memoCalque(EtiquettesPiecesBrut, ['pieces'], ['calques']);
 export const MursSvg = memoCalque(MursSvgBrut, ['murs'], ['selection', 'outil']);
 
 export const PiecesSvg = memoCalque(PiecesSvgBrut, ['pieces'], ['selection', 'outil']);

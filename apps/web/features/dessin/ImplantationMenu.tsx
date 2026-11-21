@@ -50,7 +50,7 @@ export function ImplantationMenu({
     if (!r.ok) return setErreur(r.message);
     setAdresses(null);
     dispatch({ type: 'implanter', parcelle: r.data });
-    dispatch({ type: 'ajuster' }); // la parcelle entière à l'écran
+    dispatch({ type: 'ajuster', parcelle: true }); // la parcelle entière à l'écran
   };
   const cotes = distancesAuxLimites(scene);
 

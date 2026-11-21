@@ -5,7 +5,7 @@ import { formeObjet3D } from './formes3d';
 import { poserEscalier } from './escaliers';
 import { poserOuverture } from './ouvertures';
 import { directionSoleil } from './soleil';
-import { limonsEscalier, marchesEscalier } from './escaliers3d';
+import { marchesEscalier } from './escaliers3d';
 import { contoursRaccordes } from './raccords';
 import { dallesDuNiveau, morceauxDeMur } from './volumes';
 const ctx = contexteTest();
@@ -67,7 +67,7 @@ describe('géométrie 3D (DES-33)', () => {
     }
   });
 
-  it('escalier ouvert : marches minces au même niveau, limon du sol à la dernière marche', () => {
+  it('escalier ouvert : marches minces au même niveau (sol de la visite)', () => {
     const avec = ok(
       poserEscalier(
         n,
@@ -76,7 +76,6 @@ describe('géométrie 3D (DES-33)', () => {
       ),
     );
     const plein = avec.escaliers[0]!;
-    expect(limonsEscalier(plein, 0)).toEqual([]);
     const ouvert = { ...plein, structure: 'ouverte' as const, materiau: 'metal' as const };
     const [pleines, minces] = [marchesEscalier(plein, 0), marchesEscalier(ouvert, 0)];
     minces.forEach((m, i) => {
@@ -86,13 +85,6 @@ describe('géométrie 3D (DES-33)', () => {
         pleines[i]!.centre.z + pleines[i]!.taille.h / 2,
       );
     });
-    const limons = limonsEscalier(ouvert, 0);
-    expect(limons).toHaveLength(plein.nbMarches);
-    expect(limons[0]!.pente).toBeGreaterThan(0);
-    expect(limons.every((l) => l.taille.l > 0 && l.taille.h === 160)).toBe(true);
-    // Le haut du dernier tronçon arrive sous la dernière marche.
-    const dernier = limons.at(-1)!;
-    expect(dernier.centre.z + dernier.taille.h / 2).toBeLessThan(2_700);
     // Béton : marches plus épaisses.
     expect(marchesEscalier({ ...ouvert, materiau: 'beton' }, 0)[3]!.taille.h).toBe(80);
   });

@@ -64,7 +64,15 @@ export function Plan2D({
   const conteneur = useRef<HTMLDivElement>(null);
   // Téléphone, panneau ouvert : la feuille du bas couvre le bas, le plan se cadre au-dessus.
   const reserve = useReserveTelephone(Boolean(etat.menu || etat.proprietes));
-  const camera = useCamera(conteneur, etat, dispatch, () => cadreDe(n, parcelle), reserve);
+  const camera = useCamera(
+    conteneur,
+    etat,
+    dispatch,
+    () =>
+      // « Ajuster » : la maison et son jardin ; toute la parcelle seulement à l'implantation.
+      cadreDe(n, etat.ajusterParcelle || !n.murs.length ? parcelle : undefined),
+    reserve,
+  );
   const { vue, mmParPx, moteur } = camera;
   const versMm = moteur.versMm;
   const pan = usePanoramique(conteneur, moteur);
@@ -168,7 +176,8 @@ export function Plan2D({
             {calques.annotations ? (
               <AnnotationsSvg niveau={n} etat={etat} dispatch={d} mmParPx={mmParPx} />
             ) : null}
-            {scene.terrain || scene.orientationNord ? (
+            {/* Distances aux limites : au rez-de-chaussée seulement (la parcelle est au sol). */}
+            {(scene.terrain || scene.orientationNord) && n.altitude === 0 ? (
               <LimitesSvg scene={scene} mmParPx={mmParPx} coin={{ x: vue.x + vue.l, y: vue.y }} />
             ) : null}
             <MultiSelectionSvg niveau={n} multi={etat.multi} />

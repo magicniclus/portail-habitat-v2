@@ -8,7 +8,8 @@ import { Canvas } from '@react-three/fiber';
 import { useMemo } from 'react';
 import { niveauDe, sceneDe, type EtatEditeur } from '../etat';
 import { M, Niveau3D } from './Batiment3D';
-import { Cadrage, useCadreMaison, ZoomCamera } from './Cadrage';
+import { useReserveTelephone } from '../papier';
+import { Cadrage, DecalageBas, useCadreMaison, ZoomCamera } from './Cadrage';
 import { Objets3D } from './Objets3D';
 import { Orthophoto3D } from './Orthophoto3D';
 
@@ -35,6 +36,8 @@ export default function Vue3D({
     return etat.rendu.niveauSeul ? [courant] : tries.filter((n) => n.altitude <= courant.altitude);
   }, [scene, courant, etat.rendu.niveauSeul, etat.vueExterieure]);
   const poupee = etat.rendu.poupee && !etat.vueExterieure;
+  // Téléphone, panneau ouvert : la maison se montre au-dessus de la feuille du bas.
+  const bas = useReserveTelephone(Boolean(etat.menu || etat.proprietes));
 
   const { centre, rayon } = useCadreMaison(courant);
   const soleil = directionSoleil(etat.rendu.heure, scene.orientationNord);
@@ -100,7 +103,8 @@ export default function Vue3D({
           />
         </group>
       ))}
-      <Cadrage centre={centre} rayon={rayon} cle={`${courant.id}-${etat.ajustement}`} />
+      <Cadrage centre={centre} rayon={rayon} cle={`${courant.id}-${etat.ajustement}`} bas={bas} />
+      <DecalageBas bas={bas} />
       <ZoomCamera zoom={etat.zoom} />
       <OrbitControls
         makeDefault

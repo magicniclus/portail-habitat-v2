@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centreEtiquette } from './etiquette';
+import { centreEtiquette, placeEtiquette } from './etiquette';
 
 describe('centre de l’étiquette d’une pièce', () => {
   it('rectangle : son centre', () => {
@@ -10,6 +10,7 @@ describe('centre de l’étiquette d’une pièce', () => {
       { x: 0, y: 3000 },
     ];
     expect(centreEtiquette(r)).toEqual({ x: 2000, y: 1500 });
+    expect(placeEtiquette(r).rayon).toBe(1500);
   });
 
   it('pièce en L : dans la pièce, au cœur de la grande aile, pas dans l’angle vide', () => {

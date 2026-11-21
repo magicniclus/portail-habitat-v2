@@ -3,19 +3,18 @@
 import {
   contoursRaccordes,
   dallesDuNiveau,
-  limonsEscalier,
-  marchesEscalier,
+  habillageEscalier,
+  type MatiereEscalier,
   morceauxDeMur,
   type Dalle,
   type Niveau,
-  type Pave,
   type Point,
 } from '@ph/core/dessin';
-import { COULEURS_3D, COULEURS_ESCALIER, COULEURS_PLAN } from '@ph/ui/tokens';
+import { COULEURS_3D, COULEURS_ELEVATION, COULEURS_ESCALIER, COULEURS_PLAN } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
 import { useMemo } from 'react';
 import type { Vector3 } from 'three';
-import { DoubleSide, Shape, type Mesh } from 'three';
+import { DoubleSide, Shape } from 'three';
 import type { Selection3D } from './selection3d';
 import { Exterieur3D } from './Exterieur3D';
 import { Menuiseries3D } from './Menuiseries3D';
@@ -26,20 +25,6 @@ import { M } from './unites';
 import { materiauRevetement, materiauUni } from './textures';
 
 export { M };
-
-function PaveMesh({ p, materiaux }: { p: Pave; materiaux: Mesh['material'] }) {
-  return (
-    <mesh
-      position={[M(p.centre.x), M(p.centre.z), M(p.centre.y)]}
-      rotation={[0, -p.angle, 0]}
-      castShadow
-      receiveShadow
-      material={materiaux}
-    >
-      <boxGeometry args={[M(p.taille.l), M(p.taille.h), M(p.taille.p)]} />
-    </mesh>
-  );
-}
 
 function Dalle3D({
   d,
@@ -116,8 +101,7 @@ export function Niveau3D({
     () =>
       n.escaliers.map((e) => ({
         e,
-        marches: marchesEscalier(e, n.altitude),
-        limons: limonsEscalier(e, n.altitude),
+        pieces: habillageEscalier(e, n.altitude),
       })),
     [n],
   );
@@ -149,22 +133,24 @@ export function Niveau3D({
       />
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
       <Exterieur3D n={n} parcelle={parcelle} />
-      {escaliers.map(({ e, marches, limons }) => {
-        const matiere = materiauUni(COULEURS_ESCALIER[e.materiau]);
+      {escaliers.map(({ e, pieces }) => {
+        // Marches et limons dans le matériau choisi, socle enduit, garde-corps métal ou bois.
+        const teinte: Record<MatiereEscalier, string> = {
+          marche: COULEURS_ESCALIER[e.materiau],
+          limon: COULEURS_ESCALIER[e.materiau],
+          socle: COULEURS_ELEVATION.enduit,
+          rampe: COULEURS_ESCALIER[e.materiau === 'bois' ? 'bois' : 'metal'],
+        };
         return (
           <group key={e.id}>
-            {marches.map((p, i) => (
-              <PaveMesh key={i} p={p} materiaux={matiere} />
-            ))}
-            {/* Limon central incliné (dessous ouvert) : lacet puis pente le long de la poutre. */}
-            {limons.map((p, i) => (
+            {pieces.map((p, i) => (
               <mesh
-                key={`l${i}`}
+                key={i}
                 position={[M(p.centre.x), M(p.centre.z), M(p.centre.y)]}
                 rotation={[0, -p.angle, p.pente, 'YZX']}
                 castShadow
                 receiveShadow
-                material={matiere}
+                material={materiauUni(teinte[p.matiere])}
               >
                 <boxGeometry args={[M(p.taille.l), M(p.taille.h), M(p.taille.p)]} />
               </mesh>

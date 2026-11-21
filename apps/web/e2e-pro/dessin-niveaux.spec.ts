@@ -18,14 +18,14 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
     const plan = page.getByTestId('plan-2d');
     await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(6);
     for (const nom of ['Séjour', 'Cuisine', 'Salle de bains', 'WC'])
-      await expect(plan.getByText(nom, { exact: true })).toBeVisible();
+      await expect(plan.getByRole('button', { name: `Pièce ${nom}` })).toBeAttached();
     await expect(plan.getByRole('button', { name: 'Canapé 3 places' })).toBeVisible();
     await expect(plan.getByRole('button', { name: 'Meuble évier' })).toBeVisible();
     await expect(plan.getByRole('button', { name: /^Piscine/ })).toHaveCount(1);
     await expect(plan.getByRole('button', { name: /^Escalier / })).toHaveCount(1);
     // Étage meublé au-dessus.
     await page.locator('header select').first().selectOption({ index: 0 });
-    await expect(plan.getByText('Salle d’eau', { exact: true })).toBeVisible();
+    await expect(plan.getByRole('button', { name: 'Pièce Salle d’eau' })).toBeAttached();
     await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(6);
   });
 
@@ -41,7 +41,7 @@ test.describe('Plans — Mes plans et niveaux (DES-01, DES-02, DES-04)', () => {
     const plan = page.getByTestId('plan-2d');
     await expect(plan.getByRole('button', { name: /^Pièce / })).toHaveCount(4);
     for (const nom of ['Séjour', 'Salle de bains'])
-      await expect(plan.getByText(nom, { exact: true })).toBeVisible();
+      await expect(plan.getByRole('button', { name: `Pièce ${nom}` })).toBeAttached();
     await expect(plan.getByText('Chambre', { exact: true })).toHaveCount(2);
   });
 

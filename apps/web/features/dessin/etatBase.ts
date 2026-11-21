@@ -127,6 +127,8 @@ export interface EtatEditeur {
   zoom: number;
   /** Incrémenté pour demander au plan de s'ajuster à l'écran (à l'ouverture, bouton). */
   ajustement: number;
+  /** Le dernier « Ajuster » montre toute la parcelle (implantation), pas seulement la maison. */
+  ajusterParcelle: boolean;
   aimant: boolean;
   vue: Vue;
   facade: Facade;
@@ -262,7 +264,7 @@ export type Action =
   | { type: 'zoom'; zoom: number }
   /** Zoom relatif (raccourcis + et −). */
   | { type: 'zoomer'; facteur: number }
-  | { type: 'ajuster' }
+  | { type: 'ajuster'; parcelle?: boolean }
   | { type: 'aimant' }
   | { type: 'vue'; vue: Vue }
   | { type: 'rendu'; reglages: Partial<ReglagesRendu> }
@@ -311,6 +313,7 @@ export function etatInitial(scene: Scene): EtatEditeur {
     selection: null,
     zoom: ZOOM_DEFAUT,
     ajustement: 1,
+    ajusterParcelle: false,
     aimant: true,
     vue: 'plan',
     facade: 'sud',

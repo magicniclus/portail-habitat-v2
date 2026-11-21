@@ -10,13 +10,6 @@ import type { Pave } from './volumes';
 
 /** Épaisseur d'une marche d'escalier ouvert, selon le matériau (mm). */
 const EPAISSEUR_MARCHE = { bois: 40, metal: 30, beton: 80 } as const;
-/** Section du limon central : largeur × hauteur (mm). */
-const LIMON = { bois: [80, 200], metal: [60, 160], beton: [200, 250] } as const;
-
-/** Tronçon de limon : pavé dont `pente` relève l'axe l au-dessus de l'horizontale (radians). */
-export interface TronconLimon extends Pave {
-  pente: number;
-}
 
 /** Ligne de foulée de l'escalier, dans son repère (même repère que `empriseLocale`). */
 function foulee(e: Escalier): Point[] {
@@ -54,7 +47,7 @@ function foulee(e: Escalier): Point[] {
 }
 
 /** Repère de l'escalier → plan : rotation puis position, altitude ajoutée. */
-function versPlan(e: Escalier, altitude: number) {
+export function versPlan(e: Escalier, altitude: number) {
   const rot = radians(e.rotation);
   const [c, s] = [Math.cos(rot), Math.sin(rot)];
   return (p: Point, z: number) => ({
@@ -65,7 +58,7 @@ function versPlan(e: Escalier, altitude: number) {
 }
 
 /** Centres des marches sur la ligne de foulée (repère de l'escalier) et leur direction. */
-function pasDeFoulee(e: Escalier) {
+export function pasDeFoulee(e: Escalier) {
   const chemin = foulee(e);
   const longueurs = chemin
     .slice(1)
@@ -107,36 +100,6 @@ export function marchesEscalier(e: Escalier, altitude: number): Pave[] {
       // La marche est en travers de la foulée : l = largeur, p = giron.
       taille: { l: largeur, p: pas, h },
       angle: sens + rot - Math.PI / 2,
-    };
-  });
-}
-
-/**
- * Limon central d'un escalier ouvert : une poutre inclinée sous les marches, du sol au départ
- * jusqu'à la dernière marche, en tronçons d'une marche à l'autre (suit aussi les tournants).
- * Vide pour un escalier plein.
- */
-export function limonsEscalier(e: Escalier, altitude: number): TronconLimon[] {
-  if (e.structure !== 'ouverte') return [];
-  const { depart, centres } = pasDeFoulee(e);
-  const hMarche = e.hauteurAMonter / e.nbMarches;
-  const m = e.materiau ?? 'bois';
-  const [l, h] = LIMON[m];
-  const plan = versPlan(e, altitude);
-  // Points d'appui sous les marches ; le premier au sol, au départ de la foulée.
-  const appuis = [
-    plan(depart, 0),
-    ...centres.map((c, i) => plan(c.local, (i + 1) * hMarche - EPAISSEUR_MARCHE[m])),
-  ];
-  return appuis.slice(1).map((b, i) => {
-    const a = appuis[i]!;
-    const auSol = Math.hypot(b.x - a.x, b.y - a.y);
-    const pente = Math.atan2(b.z - a.z, auSol);
-    return {
-      centre: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: (a.z + b.z) / 2 - h / 2 },
-      taille: { l: Math.hypot(auSol, b.z - a.z), p: l, h },
-      angle: Math.atan2(b.y - a.y, b.x - a.x),
-      pente,
     };
   });
 }

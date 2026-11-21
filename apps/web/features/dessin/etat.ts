@@ -105,7 +105,7 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
     case 'retablir':
       return { ...e, historique: retablir(e.historique), trace: null, selection: null, multi: [] };
     case 'ajuster':
-      return { ...e, ajustement: e.ajustement + 1 };
+      return { ...e, ajustement: e.ajustement + 1, ajusterParcelle: a.parcelle === true };
     case 'zoom':
       return { ...e, zoom: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(a.zoom))) };
     case 'zoomer':

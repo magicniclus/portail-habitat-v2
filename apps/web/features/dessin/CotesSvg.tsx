@@ -4,12 +4,12 @@ import { cotesMurs, formatLongueur, type CoteMur, type Niveau } from '@ph/core/d
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { useMemo, type Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { etiquettesDesPieces, recouvre, type Boite } from './etiquettesPieces';
 import { memoCalque } from './memoCalque';
 
 const trait = { stroke: COULEURS_PLAN.coteTrait, vectorEffect: 'non-scaling-stroke' as const };
 
 /** Boîte occupée par un texte orienté (mm) : sert à écarter les cotes qui se chevauchent. */
-type Boite = { x0: number; y0: number; x1: number; y1: number };
 function boite(c: CoteMur, largeur: number, hauteur: number): Boite {
   const r = (c.angle * Math.PI) / 180;
   const [dx, dy] = [
@@ -18,7 +18,6 @@ function boite(c: CoteMur, largeur: number, hauteur: number): Boite {
   ];
   return { x0: c.centre.x - dx, y0: c.centre.y - dy, x1: c.centre.x + dx, y1: c.centre.y + dy };
 }
-const recouvre = (a: Boite, b: Boite) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
 
 /**
  * Cotes des murs (DES-10), à la manière d'un plan d'architecte : façades cotées dehors avec
@@ -51,7 +50,8 @@ function CotesBrut({
         Number(y.exterieure) - Number(x.exterieure) ||
         y.longueur - x.longueur,
     );
-    const prises: Boite[] = [];
+    // Les noms des pièces passent avant les cotes : une cote qui les couvrirait s'efface.
+    const prises: Boite[] = etiquettesDesPieces(niveau, mmParPx, true).map((e) => e.boite);
     return triees.filter((c) => {
       const texte = formatLongueur(c.longueur);
       const largeur = texte.length * taille * 0.6;

@@ -1,7 +1,7 @@
 'use client';
 
 import { toit3D, type Niveau, type Point3 } from '@ph/core/dessin';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { points } from './svg';
 
 const trait = { vectorEffect: 'non-scaling-stroke' as const, strokeWidth: 1.2, fill: 'none' };
@@ -11,11 +11,11 @@ const auSol = (poly: readonly Point3[]) => points(poly.map((p) => ({ x: p.x, y: 
  * Toiture vue de dessus (DES-16) : débords en pointillés, arêtes des pans, fenêtres de toit,
  * cheminées et lucarnes. Indicatif, ne capte pas les clics (le plan reste éditable dessous).
  */
-export function ToitSvg({ niveau, dessus }: { niveau: Niveau; dessus: Niveau | null }) {
+function ToitSvgBrut({ niveau, dessus }: { niveau: Niveau; dessus: Niveau | null }) {
   const t = useMemo(() => toit3D(niveau, dessus), [niveau, dessus]);
   if (!t) return null;
   return (
-    <g pointerEvents="none" className="stroke-accent-700" aria-hidden="true">
+    <g pointerEvents="none" className="stroke-neutre-600" aria-hidden="true" opacity={0.7}>
       {t.pans.map((p, i) => (
         <polygon key={i} points={auSol(p)} {...trait} strokeDasharray="8 5" />
       ))}
@@ -46,3 +46,14 @@ export function ToitSvg({ niveau, dessus }: { niveau: Niveau; dessus: Niveau | n
     </g>
   );
 }
+
+/** Le toit ne dépend ni des meubles ni des annotations : les glisser ne le recalcule pas. */
+const SANS_EFFET: ReadonlySet<string> = new Set(['objets', 'annotations']);
+export const ToitSvg = memo(
+  ToitSvgBrut,
+  (a, b) =>
+    a.dessus === b.dessus &&
+    (Object.keys(a.niveau) as (keyof Niveau)[]).every(
+      (k) => SANS_EFFET.has(k) || a.niveau[k] === b.niveau[k],
+    ),
+);

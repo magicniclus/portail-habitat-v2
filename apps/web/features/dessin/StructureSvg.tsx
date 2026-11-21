@@ -15,19 +15,20 @@ import {
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
+import { memoCalque } from './memoCalque';
 import { activer, points } from './svg';
 import { add, Symbole, trait } from './SymboleOuverture';
 
 /** Ouvertures : trou dans le mur + symbole ; sélectionnables (DES-13). */
-export function OuverturesSvg({
+function OuverturesSvgBrut({
   niveau,
   etat,
   dispatch,
   demarrerOuverture: demarrerGlisser,
   demarrerBordOuverture: demarrerBord,
 }: {
-  niveau: Niveau;
-  etat: EtatEditeur;
+  niveau: Pick<Niveau, 'ouvertures' | 'murs' | 'pieces'>;
+  etat: Pick<EtatEditeur, 'selection' | 'outil' | 'trace'>;
   dispatch: Dispatch<Action>;
   /** Glisser la porte ou fenêtre choisie le long de son mur (DES-14). */
   demarrerOuverture?: (id: string, ev: PointerEvent) => void;
@@ -99,13 +100,13 @@ export function OuverturesSvg({
 }
 
 /** Escaliers : emprise, marches, sens de montée (DES-15). */
-export function EscaliersSvg({
+function EscaliersSvgBrut({
   niveau,
   etat,
   dispatch,
 }: {
-  niveau: Niveau;
-  etat: EtatEditeur;
+  niveau: Pick<Niveau, 'escaliers'>;
+  etat: Pick<EtatEditeur, 'selection' | 'outil'>;
   dispatch: Dispatch<Action>;
 }) {
   return niveau.escaliers.map((e) => {
@@ -142,6 +143,14 @@ export function EscaliersSvg({
     );
   });
 }
+
+/** Calques mémorisés : redessinés seulement si leurs données changent (glisser un meuble). */
+export const OuverturesSvg = memoCalque(
+  OuverturesSvgBrut,
+  ['ouvertures', 'murs', 'pieces'],
+  ['selection', 'outil', 'trace'],
+);
+export const EscaliersSvg = memoCalque(EscaliersSvgBrut, ['escaliers'], ['selection', 'outil']);
 
 /** Niveau du dessous en transparence et trémies du niveau courant (DES-05). */
 export function ReperesNiveauSvg({

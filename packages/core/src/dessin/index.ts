@@ -29,6 +29,7 @@ export * from './revetements';
 export * from './validations';
 export * from './volumes';
 export * from './escaliers3d';
+export * from './escaliersHabillage';
 export * from './formes3d';
 export * from './soleil';
 export * from './visite';

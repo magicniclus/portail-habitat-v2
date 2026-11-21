@@ -3,19 +3,20 @@ import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import type { Dispatch, PointerEvent } from 'react';
 import type { Action, EtatEditeur } from './etat';
 import { remplissage } from './Motifs';
+import { memoCalque } from './memoCalque';
 import { activer, points } from './svg';
 
 const trait = { vectorEffect: 'non-scaling-stroke' as const, strokeWidth: 1.5 };
 type Genre = 'terrasse' | 'piscine' | 'cloture' | 'vegetal' | 'allee';
 
 /** Extérieur vu de dessus (DES-18 à DES-20) : sous la maison, sélectionnable. */
-export function ExterieurSvg({
+function ExterieurSvgBrut({
   niveau,
   etat,
   dispatch,
 }: {
-  niveau: Niveau;
-  etat: EtatEditeur;
+  niveau: Pick<Niveau, 'exterieur'>;
+  etat: Pick<EtatEditeur, 'selection' | 'outil'>;
   dispatch: Dispatch<Action>;
 }) {
   const ext = niveau.exterieur;
@@ -104,3 +105,5 @@ export function ExterieurSvg({
     </g>
   );
 }
+
+export const ExterieurSvg = memoCalque(ExterieurSvgBrut, ['exterieur'], ['selection', 'outil']);

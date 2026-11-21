@@ -9,11 +9,11 @@ const distanceAuBord = (p: Point, poly: readonly Point[]) =>
  * Où écrire le nom d'une pièce : le point le plus éloigné des murs (au centre de la plus grande
  * partie de la pièce), et non le centre de gravité, qui sort d'une pièce en L. Le centre de
  * gravité est gardé s'il est presque aussi dégagé : l'étiquette ne saute pas d'un point à
- * l'autre pour quelques millimètres.
+ * l'autre pour quelques millimètres. `rayon` : place libre autour (distance aux murs, mm).
  */
-export function centreEtiquette(poly: readonly Point[]): Point {
+export function placeEtiquette(poly: readonly Point[]): { centre: Point; rayon: number } {
   const g = centroide(poly);
-  if (poly.length < 3) return g;
+  if (poly.length < 3) return { centre: g, rayon: 0 };
   const xs = poly.map((p) => p.x);
   const ys = poly.map((p) => p.y);
   let [x0, y0, x1, y1] = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
@@ -37,6 +37,12 @@ export function centreEtiquette(poly: readonly Point[]): Point {
       meilleur.p.y + pas,
     ];
   }
-  if (depart >= meilleur.d * 0.85) return g;
-  return { x: Math.round(meilleur.p.x), y: Math.round(meilleur.p.y) };
+  if (depart >= meilleur.d * 0.85) return { centre: g, rayon: depart };
+  return {
+    centre: { x: Math.round(meilleur.p.x), y: Math.round(meilleur.p.y) },
+    rayon: meilleur.d,
+  };
 }
+
+/** Point où écrire le nom d'une pièce (voir `placeEtiquette`). */
+export const centreEtiquette = (poly: readonly Point[]): Point => placeEtiquette(poly).centre;

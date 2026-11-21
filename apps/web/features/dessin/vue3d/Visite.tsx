@@ -1,6 +1,12 @@
 'use client';
 
-import { departVisite, directionSoleil, niveauALaHauteur, niveauSuperieur } from '@ph/core/dessin';
+import {
+  departVisite,
+  directionSoleil,
+  niveauALaHauteur,
+  niveauSuperieur,
+  regardVisite,
+} from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
@@ -19,18 +25,20 @@ import { Objets3D } from './Objets3D';
 export default function Visite({ etat }: { etat: EtatEditeur }) {
   const scene = sceneDe(etat);
   const courant = niveauDe(etat);
-  const commandes = useRef<Commandes>({
-    touches: new Set(),
-    joystick: { x: 0, y: 0 },
-    lacet: -Math.PI / 2,
-    tangage: 0,
-  });
   const [depart] = useState<Visiteur>(() => ({
     position: departVisite(courant),
     z: courant.altitude,
   }));
   const dernier = useRef<Visiteur>(depart);
-  const [suivi, setSuivi] = useState({ ...depart, lacet: -Math.PI / 2 });
+  // Premier regard vers le plus long dégagement, jamais le nez contre un mur.
+  const [premierRegard] = useState(() => regardVisite(courant, depart.position));
+  const commandes = useRef<Commandes>({
+    touches: new Set(),
+    joystick: { x: 0, y: 0 },
+    lacet: premierRegard,
+    tangage: 0,
+  });
+  const [suivi, setSuivi] = useState({ ...depart, lacet: premierRegard });
 
   useEffect(() => {
     const touches = commandes.current.touches;

@@ -10,6 +10,7 @@ import { poserOuverture } from './ouvertures';
 import {
   departVisite,
   deplacerVisiteur,
+  regardVisite,
   niveauALaHauteur,
   obstaclesVisite,
   RAYON_VISITEUR,
@@ -95,5 +96,11 @@ describe('visite (DES-34)', () => {
   it('départ sans pièce : au milieu des murs, ou à l’origine', () => {
     expect(departVisite({ ...n, pieces: [] })).toEqual({ x: 5300, y: 4300 });
     expect(departVisite({ ...n, pieces: [], murs: [] })).toEqual({ x: 0, y: 0 });
+  });
+
+  it('premier regard : vers le plus long dégagement, pas contre un mur', () => {
+    // Près du mur du haut (axe y = 150), le regard part vers le bas de la maison.
+    const a = regardVisite(n, { x: 5_000, y: 700 });
+    expect(Math.sin(a)).toBeGreaterThan(0.5);
   });
 });
