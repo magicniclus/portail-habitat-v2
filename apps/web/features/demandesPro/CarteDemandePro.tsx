@@ -1,7 +1,7 @@
 'use client';
 
 import { LIBELLES_ETAT_PRO, type EtatPro } from '@ph/core/espace-pro';
-import { formatFourchette, formatRelatif, formatTel, initiales } from '@ph/core/format';
+import { formatDate, formatFourchette, formatRelatif, formatTel, initiales } from '@ph/core/format';
 import { LIBELLES_NIVEAU } from '@ph/core/partenaires';
 import type { DemandePro } from '@ph/firebase/pro';
 import { Badge, bouton, BoutonAction, type Tone } from '@ph/ui';
@@ -28,8 +28,11 @@ export function CarteDemandePro({
   enCours,
   agir,
   recharger,
+  maintenant,
 }: {
   d: DemandePro;
+  /** Heure du navigateur ; 0 au rendu serveur et à l'hydratation (date fixe, pas « il y a … »). */
+  maintenant: number;
   uid: string;
   peutDevis: boolean;
   enCours: boolean;
@@ -62,7 +65,13 @@ export function CarteDemandePro({
                 ) : null}
               </p>
               <p className="m-0 text-[13px] text-neutre-700">
-                {[lieu, formatRelatif(d.proposeeLe), d.reference].filter(Boolean).join(' · ')}
+                {[
+                  lieu,
+                  maintenant ? formatRelatif(d.proposeeLe, maintenant) : formatDate(d.proposeeLe),
+                  d.reference,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               </p>
             </div>
           </div>
