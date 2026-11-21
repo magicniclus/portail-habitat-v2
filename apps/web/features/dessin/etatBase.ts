@@ -214,7 +214,8 @@ export type Action =
   | { type: 'typerPiece'; pieceId: string; typePiece: Piece['type'] }
   | { type: 'revetement'; cible: CibleRevetement; revetement: Revetement }
   | { type: 'modifierOuverture'; id: string; modif: ModificationOuverture }
-  | { type: 'glisserOuverture'; id: string; vers: Point; geste?: string }
+  /** Glisser une menuiserie le long de son mur, ou l'étirer par un bord (`bord`). */
+  | { type: 'glisserOuverture'; id: string; vers: Point; bord?: 'debut' | 'fin'; geste?: string }
   | { type: 'modifierEscalier'; id: string; modif: ModificationEscalier }
   | { type: 'deplacerObjetDe'; id: string; delta: Point; geste?: string }
   /** Glisser à la souris : centre voulu, placé automatiquement sauf aimant coupé ou Alt. */

@@ -79,3 +79,28 @@ export function glisserOuverture(n: Niveau, id: string, vers: Point): Resultat<N
   const position = Math.round(Math.max(0, Math.min(l - o.largeur, milieu - o.largeur / 2)));
   return modifierOuverture(n, id, { position });
 }
+
+/**
+ * Agrandit ou rétrécit une menuiserie posée par l'un de ses bords (DES-14) : le bord tiré suit
+ * la projection du pointeur (au cm), l'autre reste en place ; 30 cm au moins, dans le mur.
+ * Refusé (sans rien changer) si elle chevaucherait une autre ouverture.
+ */
+export function etirerOuverture(
+  n: Niveau,
+  id: string,
+  bord: 'debut' | 'fin',
+  vers: Point,
+): Resultat<Niveau> {
+  const o = n.ouvertures.find((x) => x.id === id);
+  const m = o && n.murs.find((x) => x.id === o.murId);
+  if (!o || !m) return echec('INTROUVABLE');
+  const l = Math.round(longueurMur(m));
+  const t = Math.round((projeter(vers, m.a, m.b).t * l) / 10) * 10;
+  const fin = o.position + o.largeur;
+  if (bord === 'fin')
+    return modifierOuverture(n, id, {
+      largeur: Math.max(LARGEUR_MIN, Math.min(l, t) - o.position),
+    });
+  const debut = Math.max(0, Math.min(t, fin - LARGEUR_MIN));
+  return modifierOuverture(n, id, { position: debut, largeur: fin - debut });
+}

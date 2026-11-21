@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { contexteTest, niveauMaquette, ok } from './aidesTest';
-import { glisserOuverture, ouvertureTiree, poserOuvertureTiree } from './poseOuverture';
+import {
+  etirerOuverture,
+  glisserOuverture,
+  ouvertureTiree,
+  poserOuvertureTiree,
+} from './poseOuverture';
 
 const ctx = contexteTest();
 // Maquette : mur du haut de (150, 150) à (10 450, 150), intérieur côté y > 150.
@@ -69,5 +74,23 @@ describe('déplacer une menuiserie posée (DES-14)', () => {
     );
     expect(glisserOuverture(deux, id, { x: 3150, y: 150 }).ok).toBe(false);
     expect(glisserOuverture(deux, 'o_absente', { x: 0, y: 0 }).ok).toBe(false);
+  });
+
+  it('s’agrandit ou rétrécit par un bord, l’autre bord restant en place', () => {
+    // Porte de 90 cm de 1 000 à 1 900 mm depuis le début du mur.
+    let r = ok(poserOuvertureTiree(n, 'porte', premier, { x: 2050, y: 400 }, ctx));
+    const id = r.ouvertures.at(-1)!.id;
+    r = ok(etirerOuverture(r, id, 'fin', { x: 2354, y: 300 }));
+    expect(r.ouvertures.at(-1)).toMatchObject({ position: 1000, largeur: 1200 });
+    r = ok(etirerOuverture(r, id, 'debut', { x: 1450, y: 0 }));
+    expect(r.ouvertures.at(-1)).toMatchObject({ position: 1300, largeur: 900 });
+    // Jamais moins de 30 cm, jamais au-delà du mur.
+    r = ok(etirerOuverture(r, id, 'debut', { x: 9000, y: 150 }));
+    expect(r.ouvertures.at(-1)).toMatchObject({ position: 1900, largeur: 300 });
+    r = ok(etirerOuverture(r, id, 'fin', { x: 99_000, y: 150 }));
+    expect(r.ouvertures.at(-1)).toMatchObject({ position: 1900, largeur: 10_300 - 1900 });
+    r = ok(etirerOuverture(r, id, 'debut', { x: -5000, y: 150 }));
+    expect(r.ouvertures.at(-1)).toMatchObject({ position: 0, largeur: 10_300 });
+    expect(etirerOuverture(r, 'o_absente', 'fin', { x: 0, y: 0 }).ok).toBe(false);
   });
 });
