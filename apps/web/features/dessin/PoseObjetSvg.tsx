@@ -11,7 +11,9 @@ import {
   type Niveau,
   type Point,
   type TypeEscalier,
+  MODELES_ESCALIER,
 } from '@ph/core/dessin';
+import { ApercuEscalierTrace } from './EscalierTraceSvg';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import { niveauDe, sceneDe, type EtatEditeur } from './etat';
 import { points } from './svg';
@@ -109,11 +111,14 @@ export function ApercuPose({
 }) {
   if (!pointeur) return null;
   const n = niveauDe(etat);
+  // Escalier à tracer : il se dessine jusqu'au pointeur (DES-15).
+  if (etat.outil === 'escalier' && MODELES_ESCALIER[etat.modeleEscalier].trace)
+    return <ApercuEscalierTrace etat={etat} pointeur={pointeur} mmParPx={mmParPx} />;
   if (etat.outil === 'escalier')
     return (
       <PoseEscalierSvg
         niveau={n}
-        type={etat.typeEscalier}
+        type={MODELES_ESCALIER[etat.modeleEscalier].type ?? etat.typeEscalier}
         pointeur={pointeur}
         hauteur={hauteurVersLeHaut(sceneDe(etat), etat.niveauId)}
       />

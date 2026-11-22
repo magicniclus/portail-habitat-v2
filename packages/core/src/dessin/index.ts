@@ -6,6 +6,8 @@ export * from './catalogue';
 export * from './commandes';
 export * from './cuisine';
 export * from './escaliers';
+export * from './escaliersChemin';
+export * from './modelesEscalier';
 export * from './fond';
 export * from './format';
 export * from './formes';

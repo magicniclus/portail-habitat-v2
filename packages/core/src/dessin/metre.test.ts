@@ -194,6 +194,7 @@ describe('metreNiveau', () => {
           gardeCorps: true,
           structure: 'pleine',
           materiau: 'bois',
+          virage: 'balance',
         },
       ],
     };

@@ -225,6 +225,15 @@ export const escalier = z.object({
   /** Dessous plein (marches jusqu'au sol) ou ouvert (marches seules sur un limon central). */
   structure: z.enum(['pleine', 'ouverte']).default('pleine'),
   materiau: z.enum(['bois', 'metal', 'beton']).default('bois'),
+  /**
+   * Escalier tracé (DES-15) : ligne de foulée posée clic par clic, dans le repère de l'escalier
+   * (origine en `position`, avant rotation), de 2 à 8 points. Sa longueur donne le giron.
+   */
+  chemin: z.array(point).min(2).max(8).optional(),
+  /** Aux changements de direction : marches balancées ou palier carré. */
+  virage: z.enum(['balance', 'palier']).default('balance'),
+  /** Limons : deux latéraux, un central, ou aucun (marches suspendues). Sinon selon le matériau. */
+  limon: z.enum(['lateraux', 'central', 'aucun']).optional(),
 });
 
 export const cote = z.object({

@@ -3,26 +3,16 @@
 import {
   CATALOGUE_OUVERTURES,
   GROUPES_OUVERTURES,
-  LIBELLES_ESCALIER,
   LIBELLES_MUR,
-  type TypeEscalier,
+  MODELES_ESCALIER,
+  type ModeleEscalier,
   type TypeMur,
 } from '@ph/core/dessin';
 import type { Dispatch } from 'react';
 import type { Action, EtatEditeur } from './etat';
 import { ApercuMur, ApercuOuverture } from './Apercus';
-import { ApercuEscalier } from './ApercusEscalier';
+import { ApercuModeleEscalier } from './ApercusEscalier';
 import { Ligne, SousSection } from './LigneMenu';
-
-/** Ce qui distingue chaque escalier (les marches se calculent toujours pour monter d'un niveau). */
-const DETAILS_ESCALIER: Record<TypeEscalier, string> = {
-  droit: 'Une volée, le plus simple',
-  quart_bas: 'Tourne d’un quart au départ',
-  quart_haut: 'Tourne d’un quart à l’arrivée',
-  deux_quarts: 'Demi-tour : gagne de la place',
-  helicoidal: 'En colimaçon, le plus compact',
-  meunier: 'Pente raide, très peu de place',
-};
 
 const MURS: { type: TypeMur; libelle: string; detail: string }[] = [
   { type: 'mur', libelle: LIBELLES_MUR.mur, detail: 'Épaisseur 20 cm' },
@@ -91,18 +81,36 @@ export function ListeOutilsStructure({
         ))}
       </div>
     );
+  // Escaliers : cartes des modèles ; les tracés se dessinent clic par clic, les autres d'un clic.
+  const carte = (id: ModeleEscalier) => {
+    const choisi = etat.outil === 'escalier' && etat.modeleEscalier === id;
+    return (
+      <button
+        key={id}
+        type="button"
+        aria-pressed={choisi}
+        aria-label={`${MODELES_ESCALIER[id].libelle} : ${MODELES_ESCALIER[id].detail}`}
+        onClick={() => dispatch({ type: 'outil', outil: 'escalier', modeleEscalier: id })}
+        className={`grid min-h-24 cursor-pointer content-start justify-items-center gap-1.5 rounded-xl border-2 p-2 text-[13px] leading-4 font-semibold font-[inherit] text-texte transition-colors ${choisi ? 'border-accent bg-accent-100' : 'border-neutre-200 bg-blanc hover:bg-neutre-100'}`}
+      >
+        <ApercuModeleEscalier modele={id} />
+        {MODELES_ESCALIER[id].libelle}
+      </button>
+    );
+  };
+  const ids = Object.keys(MODELES_ESCALIER) as ModeleEscalier[];
   return (
-    <ul className="m-0 grid list-none gap-0.5 p-0">
-      {(Object.keys(LIBELLES_ESCALIER) as TypeEscalier[]).map((t) => (
-        <Ligne
-          key={t}
-          titre={LIBELLES_ESCALIER[t]}
-          detail={DETAILS_ESCALIER[t]}
-          apercu={<ApercuEscalier type={t} />}
-          pressee={etat.outil === 'escalier' && etat.typeEscalier === t}
-          onClick={() => dispatch({ type: 'outil', outil: 'escalier', typeEscalier: t })}
-        />
-      ))}
-    </ul>
+    <div className="grid gap-1">
+      <SousSection titre="À tracer" nombre={ids.filter((id) => MODELES_ESCALIER[id].trace).length}>
+        <li className="grid grid-cols-3 gap-2 pb-1">
+          {ids.filter((id) => MODELES_ESCALIER[id].trace).map(carte)}
+        </li>
+      </SousSection>
+      <SousSection titre="Compacts" nombre={ids.filter((id) => !MODELES_ESCALIER[id].trace).length}>
+        <li className="grid grid-cols-3 gap-2 pb-1">
+          {ids.filter((id) => !MODELES_ESCALIER[id].trace).map(carte)}
+        </li>
+      </SousSection>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { poserCoupe } from './etatFacades';
 import {
   ajouterMur,
   hauteurVersLeHaut,
+  MODELES_ESCALIER,
   mettreFondAEchelle,
   modifierEscalier,
   etirerOuverture,
@@ -31,6 +32,7 @@ import {
 } from '@ph/core/dessin';
 import type { Resultat } from '@ph/core/resultat';
 import { poserAmenagement } from './etatAmenagement';
+import { poserPointEscalier } from './etatEscalier';
 import { poserExterieur } from './etatExterieur';
 import { poserToit } from './etatToiture';
 import {
@@ -72,11 +74,14 @@ function poserPoint(e: EtatEditeur, point: Point): EtatEditeur {
       : { ...suite, selection: { genre: 'ouverture', id: posee.id } };
   }
   if (e.outil === 'escalier') {
+    // Escalier tracé : départ, virages, arrivée ; sinon posé d'un clic à sa taille.
+    const trace = poserPointEscalier(e, point);
+    if (trace) return trace;
     const suite = surNiveau(e, (n) =>
       poserEscalier(
         n,
         {
-          type: e.typeEscalier,
+          type: MODELES_ESCALIER[e.modeleEscalier].type ?? e.typeEscalier,
           position: point,
           hauteurAMonter: hauteurVersLeHaut(sceneDe(e), e.niveauId),
         },

@@ -12,7 +12,15 @@ import {
 import type { Action } from './etat';
 
 type Genre =
-  'mur' | 'objet' | 'extremite' | 'ouverture' | 'bordOuverture' | 'parcelle' | 'sommetParcelle';
+  | 'mur'
+  | 'objet'
+  | 'extremite'
+  | 'ouverture'
+  | 'bordOuverture'
+  | 'parcelle'
+  | 'sommetParcelle'
+  | 'pointEscalier'
+  | 'escalier';
 
 /**
  * Glisser un mur (parallèlement, par pas), une porte ou fenêtre (le long de son mur) ou un objet (vers la position du pointeur, placé
@@ -63,6 +71,16 @@ export function useGlisser(
       else if (g.genre === 'bordOuverture') {
         const [id, bord] = g.id.split(':') as [string, 'debut' | 'fin'];
         dispatch({ type: 'glisserOuverture', id, bord, vers, geste: g.cle });
+      } else if (g.genre === 'escalier')
+        dispatch({
+          type: 'deplacerEscalier',
+          id: g.id,
+          delta: { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y },
+          geste: g.cle,
+        });
+      else if (g.genre === 'pointEscalier') {
+        const [id, i] = g.id.split(':') as [string, string];
+        dispatch({ type: 'pointEscalier', id, i: Number(i), vers, geste: g.cle });
       } else if (g.genre === 'sommetParcelle')
         dispatch({ type: 'sommetParcelle', i: Number(g.id), vers, geste: g.cle });
       else if (g.genre === 'parcelle')
@@ -124,6 +142,15 @@ export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
     demarrerBordOuverture: useCallback(
       (id: string, bord: 'debut' | 'fin', ev: PointerEvent) =>
         courant.current.demarrer('bordOuverture', `${id}:${bord}`, ev),
+      [],
+    ),
+    demarrerEscalier: useCallback(
+      (id: string, ev: PointerEvent) => courant.current.demarrer('escalier', id, ev),
+      [],
+    ),
+    demarrerPointEscalier: useCallback(
+      (id: string, i: number, ev: PointerEvent) =>
+        courant.current.demarrer('pointEscalier', `${id}:${i}`, ev),
       [],
     ),
     demarrerParcelle: useCallback(

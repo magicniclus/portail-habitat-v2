@@ -1,5 +1,6 @@
 import type { Point } from '../schemas/dessinScene';
 import { longueurVolee, type Escalier } from './escaliers';
+import { centresChemin } from './escaliersChemin';
 import { radians } from './geometrie';
 import type { Pave } from './volumes';
 
@@ -59,6 +60,8 @@ export function versPlan(e: Escalier, altitude: number) {
 
 /** Centres des marches sur la ligne de foulée (repère de l'escalier) et leur direction. */
 export function pasDeFoulee(e: Escalier) {
+  // Escalier tracé : marches balancées ou paliers le long du tracé (`centresChemin`).
+  if (e.chemin) return { depart: e.chemin[0]!, pas: e.giron, centres: centresChemin(e) };
   const chemin = foulee(e);
   const longueurs = chemin
     .slice(1)
@@ -74,6 +77,8 @@ export function pasDeFoulee(e: Escalier) {
     return {
       local: { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t },
       sens: Math.atan2(b.y - a.y, b.x - a.x),
+      profondeur: pas,
+      palier: false,
     };
   });
   return { depart: chemin[0]!, pas, centres };
@@ -85,20 +90,20 @@ export function pasDeFoulee(e: Escalier) {
  * ouvert. Placées sur le plan comme l'emprise.
  */
 export function marchesEscalier(e: Escalier, altitude: number): Pave[] {
-  const { pas, centres } = pasDeFoulee(e);
+  const { centres } = pasDeFoulee(e);
   const hMarche = e.hauteurAMonter / e.nbMarches;
   const plan = versPlan(e, altitude);
   const rot = radians(e.rotation);
   const largeur = e.type === 'helicoidal' ? Math.max(2 * e.largeur, 1400) / 2 - 100 : e.largeur;
   const ouvert = e.structure === 'ouverte';
   const ep = EPAISSEUR_MARCHE[e.materiau ?? 'bois'];
-  return centres.map(({ local, sens }, i) => {
+  return centres.map(({ local, sens, profondeur }, i) => {
     const dessus = (i + 1) * hMarche;
     const h = ouvert ? Math.min(ep, dessus) : dessus;
     return {
       centre: plan(local, dessus - h / 2),
       // La marche est en travers de la foulée : l = largeur, p = giron.
-      taille: { l: largeur, p: pas, h },
+      taille: { l: largeur, p: profondeur, h },
       angle: sens + rot - Math.PI / 2,
     };
   });

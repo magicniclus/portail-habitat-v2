@@ -72,7 +72,7 @@ export function ParcelleSvg({
                 <g
                   role="button"
                   aria-label={`Ajouter un angle au côté ${i + 1}`}
-                  className="cursor-copy"
+                  className="cursor-pointer"
                   onPointerDown={(ev) => {
                     ev.stopPropagation();
                     dispatch({ type: 'ajouterSommetParcelle', apres: i, point: m });

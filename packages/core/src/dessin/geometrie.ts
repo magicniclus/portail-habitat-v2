@@ -120,6 +120,24 @@ export function orthogonal(origine: Point, p: Point): Point {
     : { x: origine.x, y: Math.round(p.y) };
 }
 
+/**
+ * Aimant doux des angles courants (tous les 45° : droit, demi-droit…) : près d'un de ces angles
+ * (à `tolerance` degrés), le point s'y accroche à la même distance ; sinon il reste libre.
+ */
+export function aimanterAngle(origine: Point, p: Point, tolerance = 8): Point {
+  const [dx, dy] = [p.x - origine.x, p.y - origine.y];
+  const l = Math.hypot(dx, dy);
+  if (!l) return p;
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const proche = Math.round(angle / 45) * 45;
+  if (Math.abs(angle - proche) > tolerance) return { x: Math.round(p.x), y: Math.round(p.y) };
+  const r = (proche * Math.PI) / 180;
+  return {
+    x: Math.round(origine.x + Math.cos(r) * l) + 0,
+    y: Math.round(origine.y + Math.sin(r) * l) + 0,
+  };
+}
+
 /** Point à `longueur` mm de `origine`, dans la direction de `vers` (longueur tapée, DES-06). */
 export function pointALongueur(origine: Point, vers: Point, longueur: number): Point | null {
   const d = distance(origine, vers);

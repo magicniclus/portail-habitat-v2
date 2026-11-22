@@ -132,11 +132,36 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await page.mouse.click(p.x, p.y);
     await expect(plan.getByRole('button', { name: 'Porte de 80 cm' })).toBeVisible();
 
-    // Escalier droit dans la pièce (DES-15) : 15 marches pour 2,70 m.
-    await structure('Escaliers', 'Escalier droit');
-    p = await ecran(1000, 1000);
-    await page.mouse.click(p.x, p.y);
+    // Escalier tracé dans la pièce (DES-15) : départ, virage, arrivée ; 15 marches pour 2,70 m.
+    await structure('Escaliers', 'À palier');
+    for (const [x, y] of [
+      [1_000, 1_000],
+      [1_000, 3_500],
+      [3_500, 3_500],
+    ] as const) {
+      p = await ecran(x, y);
+      await page.mouse.click(p.x, p.y);
+    }
+    await page.keyboard.press('Escape');
     await expect(plan.getByRole('button', { name: 'Escalier de 15 marches' })).toBeVisible();
+    // Choisi : les poignées de son tracé apparaissent (une par point).
+    await expect(plan.getByTestId(/^point-escalier-/)).toHaveCount(3);
+    // Un clic sur l'escalier puis un glisser : il se déplace d'un bloc.
+    if (page.viewportSize()!.width >= 900) {
+      const esc = plan.getByRole('button', { name: 'Escalier de 15 marches' });
+      const depart = (await plan.getByTestId('point-escalier-0').boundingBox())!;
+      p = await ecran(1_000, 2_200);
+      await page.mouse.move(p.x, p.y);
+      await page.mouse.down();
+      await page.mouse.move(p.x + 40, p.y + 20, { steps: 6 });
+      await page.mouse.up();
+      await expect(esc).toBeVisible();
+      await expect
+        .poll(async () =>
+          Math.round((await plan.getByTestId('point-escalier-0').boundingBox())!.x - depart.x),
+        )
+        .toBeGreaterThan(30);
+    }
     // Dessous ouvert, en métal (DES-15) : réglé dans Propriétés.
     if (page.viewportSize()!.width >= 900) {
       const dessous = page.getByRole('radiogroup', { name: 'Dessous' });

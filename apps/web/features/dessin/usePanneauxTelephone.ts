@@ -18,7 +18,13 @@ export function usePanneauxTelephone(
 
   // Téléphone : choisir un outil ou un modèle à placer replie le menu pour libérer le plan
   // (aussi quand l'outil était déjà actif et qu'on change seulement de modèle).
-  const modele = [etat.typeMur, etat.typeOuverture, etat.typeEscalier, etat.catalogueId].join();
+  const modele = [
+    etat.typeMur,
+    etat.typeOuverture,
+    etat.typeEscalier,
+    etat.modeleEscalier,
+    etat.catalogueId,
+  ].join();
   useEffect(() => {
     if (telephone && etat.outil !== 'selection') dispatch({ type: 'menu', menu: null });
   }, [telephone, etat.outil, modele, dispatch]);

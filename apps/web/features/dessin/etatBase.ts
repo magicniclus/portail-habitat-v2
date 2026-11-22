@@ -25,6 +25,7 @@ import {
   type Point,
   type Revetement,
   type Scene,
+  type ModeleEscalier,
   type TypeEscalier,
   type TypeMur,
   type TypeNiveau,
@@ -105,6 +106,10 @@ export interface EtatEditeur {
   typeMur: TypeMur;
   typeOuverture: TypeOuverture;
   typeEscalier: TypeEscalier;
+  /** Modèle d'escalier du menu (tracé clic par clic, ou posé d'un clic). */
+  modeleEscalier: ModeleEscalier;
+  /** Escalier en cours de tracé : départ, virages (DES-15). */
+  cheminEscalier: Point[];
   /** Objet du catalogue à poser avec l'outil « objet ». */
   catalogueId: string;
   /** Élément posé sur le toit avec l'outil « toit ». */
@@ -163,6 +168,7 @@ export type Action =
       typeMur?: TypeMur;
       typeOuverture?: TypeOuverture;
       typeEscalier?: TypeEscalier;
+      modeleEscalier?: ModeleEscalier;
       catalogueId?: string;
       elementToit?: ElementToit;
       elementExterieur?: ElementExterieur;
@@ -170,6 +176,9 @@ export type Action =
       typeCloture?: TypeCloture;
     }
   | { type: 'poserPoint'; point: Point }
+  /** Point du tracé d'un escalier déplacé (poignée). */
+  | { type: 'pointEscalier'; id: string; i: number; vers: Point; geste?: string }
+  | { type: 'deplacerEscalier'; id: string; delta: Point; geste?: string }
   | { type: 'toiture'; toiture: TypeToiture | null }
   /** Toit sur toute la maison : chaque niveau, sur la partie sans étage au-dessus. */
   | { type: 'toitureAuto'; toiture: TypeToiture }
@@ -302,6 +311,8 @@ export function etatInitial(scene: Scene): EtatEditeur {
     typeMur: 'mur',
     typeOuverture: 'porte',
     typeEscalier: 'droit',
+    modeleEscalier: 'limons',
+    cheminEscalier: [],
     catalogueId: 'canape-3',
     elementToit: 'fenetre',
     elementExterieur: 'terrasse',

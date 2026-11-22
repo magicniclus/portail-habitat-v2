@@ -33,7 +33,8 @@ import { usePanoramique } from './usePanoramique';
 import { useDefilementAuto } from './useDefilementAuto';
 import { useGestesTactiles } from './useGestesTactiles';
 import { useGlisser, useRappelsGlisser } from './useGlisser';
-import { EscaliersSvg, OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
+import { EscaliersSvg } from './EscaliersSvg';
+import { OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
 
 /** Plan 2D (DES-06, DES-32) : SVG en millimètres, net à tout zoom, exportable. */
 export function Plan2D({
@@ -162,7 +163,7 @@ export function Plan2D({
               dessous={niveauInferieur(scene, n.id)}
               tremies={tremies(scene, n.id)}
             />
-            <EscaliersSvg niveau={n} etat={etat} dispatch={d} />
+            <EscaliersSvg niveau={n} etat={etat} dispatch={d} mmParPx={mmParPx} {...g} />
             <ObjetsSvg niveau={objets} etat={etat} dispatch={d} demarrerGlisser={g.demarrerObjet} />
             <MursSvg
               niveau={n}

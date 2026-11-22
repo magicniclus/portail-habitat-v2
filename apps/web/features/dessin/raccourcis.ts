@@ -43,7 +43,7 @@ const SIMPLES: Record<string, Action> = {
   p: { type: 'outil', outil: 'piece' },
   o: { type: 'outil', outil: 'ouverture', typeOuverture: 'porte' },
   f: { type: 'outil', outil: 'ouverture', typeOuverture: 'fenetre' },
-  e: { type: 'outil', outil: 'escalier', typeEscalier: 'droit' },
+  e: { type: 'outil', outil: 'escalier', modeleEscalier: 'limons' },
   k: { type: 'outil', outil: 'cote' },
   t: { type: 'outil', outil: 'texte' },
   a: { type: 'aimant' },
