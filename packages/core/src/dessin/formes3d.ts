@@ -1,61 +1,21 @@
 import type { SymboleObjet } from './catalogue';
+import { formeExterieur } from './formes3dExterieur';
+import { formeMobilier } from './formes3dMobilier';
+import { boite, cylindre, pieds, type Primitive } from './formes3dOutils';
 
 /**
  * Volumes simples et reconnaissables des meubles en 3D (DES-33, D88 en attendant les modèles) :
- * quelques boîtes et cylindres dans le repère de l'objet. x le long de la largeur l, y en
- * profondeur (dos à y = -p/2), z vers le haut depuis le dessous de l'objet.
+ * quelques boîtes, cylindres et prismes dans le repère de l'objet (formes3dOutils.ts).
  */
-export type Teinte = 'principal' | 'clair' | 'sombre' | 'verre' | 'metal' | 'textile';
-
-export interface Primitive {
-  forme: 'boite' | 'cylindre';
-  centre: { x: number; y: number; z: number };
-  /** Boîte : l × p × h ; cylindre : diamètre l (et p), hauteur h. */
-  taille: { l: number; p: number; h: number };
-  teinte: Teinte;
-}
-
-const boite = (
-  x: number,
-  y: number,
-  z: number,
-  l: number,
-  p: number,
-  h: number,
-  teinte: Teinte = 'principal',
-): Primitive => ({
-  forme: 'boite',
-  centre: { x, y, z: z + h / 2 },
-  taille: { l, p, h },
-  teinte,
-});
-const cylindre = (
-  x: number,
-  y: number,
-  z: number,
-  d: number,
-  h: number,
-  teinte: Teinte,
-): Primitive => ({
-  forme: 'cylindre',
-  centre: { x, y, z: z + h / 2 },
-  taille: { l: d, p: d, h },
-  teinte,
-});
-
-/** Quatre pieds aux coins, en retrait de `r`. */
-const pieds = (l: number, p: number, h: number, r = 40, d = 40) =>
-  [-1, 1].flatMap((i) =>
-    [-1, 1].map((j) =>
-      boite((i * (l - d)) / 2 - i * r, (j * (p - d)) / 2 - j * r, 0, d, d, h, 'sombre'),
-    ),
-  );
+export type { Primitive, Teinte } from './formes3dOutils';
 
 export function formeObjet3D(
   symbole: SymboleObjet,
   d: { l: number; p: number; h: number },
 ): Primitive[] {
   const { l, p, h } = d;
+  const simple = formeMobilier(symbole, d) ?? formeExterieur(symbole, d);
+  if (simple) return simple;
   switch (symbole) {
     case 'lit': {
       const matelas = Math.min(250, h * 0.5);
@@ -130,7 +90,7 @@ export function formeObjet3D(
       ];
     case 'rond':
     case 'plante':
-      return [cylindre(0, 0, 0, Math.min(l, p), h, symbole === 'plante' ? 'textile' : 'principal')];
+      return [cylindre(0, 0, 0, Math.min(l, p), h, symbole === 'plante' ? 'vegetal' : 'principal')];
     case 'point_lumineux':
       return [cylindre(0, 0, 0, Math.min(l, p), Math.max(h, 30), 'clair')];
     case 'tapis':

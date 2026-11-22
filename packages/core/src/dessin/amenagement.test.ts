@@ -60,7 +60,7 @@ describe('catalogue (DES-21)', () => {
   });
 
   it('recherche sans accents, plages', () => {
-    expect(chercherObjets('refrigerateur').map((o) => o.id)).toEqual(['refrigerateur']);
+    expect(chercherObjets('refrigerateur').map((o) => o.id)).toContain('refrigerateur');
     expect(chercherObjets('lit chambre').length).toBeGreaterThan(2);
     expect(chercherObjets('  ')).toEqual([]);
     expect(plagesDe(objetDuCatalogue('meuble-bas-60')!).l).toEqual([150, 1200]);

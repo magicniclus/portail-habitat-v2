@@ -3,9 +3,28 @@
 import { formeObjet3D, objetDuCatalogue, radians, type Objet, type Teinte } from '@ph/core/dessin';
 import { COULEURS_3D } from '@ph/ui/tokens';
 import { Edges } from '@react-three/drei';
+import { useEffect, useMemo } from 'react';
+import { ExtrudeGeometry, Shape } from 'three';
 import { M } from './Batiment3D';
 import { Modele3D } from './Modele3D';
 import { materiauUni } from './textures';
+
+/** Prisme triangulaire (toit à deux pans) : faîtage le long de x, base p, hauteur h (en m). */
+function GeometriePrisme({ l, p, h }: { l: number; p: number; h: number }) {
+  const g = useMemo(() => {
+    const s = new Shape();
+    s.moveTo(-p / 2, -h / 2);
+    s.lineTo(p / 2, -h / 2);
+    s.lineTo(0, h / 2);
+    s.closePath();
+    const e = new ExtrudeGeometry(s, { depth: l, bevelEnabled: false });
+    e.rotateY(Math.PI / 2);
+    e.translate(-l / 2, 0, 0);
+    return e;
+  }, [l, p, h]);
+  useEffect(() => () => g.dispose(), [g]);
+  return <primitive object={g} attach="geometry" />;
+}
 
 function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
   const c = objetDuCatalogue(o.catalogueId);
@@ -16,12 +35,15 @@ function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
       key={i}
       // Repère de l'objet : x largeur, y profondeur (→ z 3D), z hauteur (→ y 3D).
       position={[M(f.centre.x), M(f.centre.z), M(f.centre.y)]}
+      rotation={[-(f.pente ?? 0), 0, 0]}
       material={materiauUni(teinte(f.teinte), { transparent: f.teinte === 'verre' })}
       castShadow
       receiveShadow
     >
       {f.forme === 'boite' ? (
         <boxGeometry args={[M(f.taille.l), M(f.taille.h), M(f.taille.p)]} />
+      ) : f.forme === 'prisme' ? (
+        <GeometriePrisme l={M(f.taille.l)} p={M(f.taille.p)} h={M(f.taille.h)} />
       ) : (
         <cylinderGeometry args={[M(f.taille.l / 2), M(f.taille.l / 2), M(f.taille.h), 24]} />
       )}

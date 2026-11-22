@@ -257,6 +257,7 @@ export const COULEURS_3D = {
   verre: '#bcd3dc',
   metal: '#a8adb2',
   textile: '#b9b1a4',
+  vegetal: '#8fa77f',
   mur: '#f4f1ec',
   tranche: '#d9d4cc',
   sol: '#ece8e1',

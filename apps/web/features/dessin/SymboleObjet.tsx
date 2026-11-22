@@ -1,4 +1,5 @@
 import type { SymboleObjet } from '@ph/core/dessin';
+import { SymboleAmenagement } from './SymbolesAmenagement';
 import { Canape, Lit } from './SymbolesMobilier';
 
 /**
@@ -157,6 +158,7 @@ export function SymboleObjetSvg({
         </g>
       );
     default:
-      return cadre();
+      // Rectangle simple, ou symbole des meubles et aménagements au dessin simple.
+      return <SymboleAmenagement symbole={symbole} l={l} p={p} couleur={couleur} />;
   }
 }
