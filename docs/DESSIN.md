@@ -19,7 +19,7 @@ Dessin permet à un **particulier** (avec compte) et à un **artisan** (dans son
 - ne rien reprendre de Kozikaza : ni nom, ni textes, ni icônes, ni pictogrammes, ni disposition d'écran, ni couleurs, ni modèles 3D, ni textures, ni catalogue produit, ni code ;
 - l'interface suit **notre maquette** et nos tokens (`packages/ui`) ;
 - les modèles 3D et textures viennent de sources dont la licence autorise l'usage commercial (CC0 : Poly Haven, ambientCG, Kenney…) ou sont créés pour nous (voir D88). La licence de chaque fichier est notée dans `docs/data/dessin-licences.json`.
-- **Fait** : 17 meubles 3D et 11 textures photo, tous CC0 de Poly Haven (§5 bis). **Pas encore fait** : le catalogue maison (deuxième étape de D88).
+- **Fait** : 35 meubles 3D et 11 textures photo, tous CC0 de Poly Haven (§5 bis). **Pas encore fait** : le catalogue maison (deuxième étape de D88).
 
 ---
 
@@ -190,7 +190,7 @@ apps/web/features/dessin/
 apps/functions/src/dessin/planifiees.ts
                   purgeDessinNuit seulement ; toutes les autres opérations passent par la route Next ci-dessus
 apps/web/public/dessin/modeles, textures
-                  17 meubles glb et 33 images de textures (11 matériaux), CC0
+                  35 meubles glb et 33 images de textures (11 matériaux), CC0
 ```
 
 **Dépendances réellement ajoutées** (toutes signalées et acceptées) :
@@ -212,7 +212,7 @@ Budget JS (EXPLOITATION §1, seuil CI provisoire de 160 Ko sur les pages publiqu
 | Géométrie | code maison + `clipper2-ts` ; `earcut` (dans three) | **code maison seulement** dans `packages/core/src/dessin`, sans `clipper2-ts` |
 | Calculs lourds | Web Worker + comlink | **pas de worker** : calculs assez rapides (DES-48) |
 | Hors ligne | IndexedDB via idb-keyval | **IndexedDB directement** (API du navigateur), brouillon et essai sans compte |
-| Modèles 3D | glTF/GLB optimisés par `@gltf-transform` (Meshopt, textures KTX2) | **GLB Meshopt, textures WebP 512 px** (pas KTX2) ; 17 meubles CC0 Poly Haven, 27 Mo bruts → 2,4 Mo ; chargés seulement quand l'objet est vu en 3D ; forme simple pendant le chargement ou si le fichier manque. Fichiers dans `apps/web/public/dessin/modeles/`, **pas dans Storage** |
+| Modèles 3D | glTF/GLB optimisés par `@gltf-transform` (Meshopt, textures KTX2) | **GLB Meshopt, textures WebP 512 px** (pas KTX2) ; 35 meubles CC0 Poly Haven, 67 Mo bruts → 4,8 Mo ; chargés seulement quand l'objet est vu en 3D ; forme simple pendant le chargement ou si le fichier manque. Fichiers dans `apps/web/public/dessin/modeles/`, **pas dans Storage** |
 | Textures | (non prévu à part) | **11 matériaux en texture photo** (couleur, relief, rugosité ; WebP 512 px, 544 Ko pour 33 images) dans `apps/web/public/dessin/textures/` ; les autres matériaux gardent leur motif dessiné |
 | Implantation | MapLibre GL + tuiles IGN + API Carto + API Adresse | **pas de MapLibre** (D87 modifiée par le propriétaire) : géocodage Géoplateforme, API Carto cadastre et WMS Géoplateforme **appelés par le serveur** ; la photo aérienne est téléchargée une fois et enregistrée dans le dossier du plan ; CSP inchangée pour ces services |
 | Export PDF | **pdfkit** côté serveur | conforme (`apps/web/server/pdfPlan.ts`) |
@@ -285,7 +285,7 @@ Poids visé : éditeur 2D ≤ 250 ko gzip ; 3D ≈ 200 ko gzip supplémentaires,
   - **Pas encore fait** : filtres de dimensions.
 - DES-22 Poser (clic sur l'élément puis sur le plan) et glisser, rotation (±15°, ±90°, touche R, poignée en 3D), dimensions réglables dans les plages du modèle, plaquer contre un mur, collisions signalées.
   - **Fait en plus (demandes du propriétaire)** : **placement automatique** (dos au mur, calé dans l'angle, bord à bord avec un voisin, guides orange ; Alt ou aimant coupé = pose libre) ; **rotation libre sur 3 axes** (`inclinaison`, curseurs au degré, « À plat »).
-  - **Vrais modèles 3D** pour 17 meubles (canapé, fauteuil, tables, chaises, buffet, chevet, commode, armoire, bibliothèque, bureau, lit 90, suspension, plante, miroir, salon de jardin) ; les autres restent en volumes simples. La couleur de façade choisie dans l'inspecteur ne s'applique pas aux vrais modèles.
+  - **Vrais modèles 3D** pour 35 meubles (canapé, fauteuils dont lounge, tables dont table basse ronde et table 4, chaises, tabourets, pouf, buffet, chevet, commode, armoire, bibliothèque, étagères, bureaux, cuisinière, lit 90, suspension, ventilateur, plantes, miroir, salon de jardin, table de pique-nique, chaise de jardin, jardinière, potager surélevé, foyer) ; les autres restent en volumes simples. La couleur de façade choisie dans l'inspecteur ne s'applique pas aux vrais modèles.
   - **Pas encore fait** : variantes et matériaux par slot ; hauteur de pose réglable (la hauteur du catalogue est appliquée) ; emprise 2D exacte des meubles inclinés (calculée sur le meuble droit) ; modèles 3D libres pour la cuisine, la salle de bains, les lits doubles…
 - DES-23 **Mode cuisine** : modules bas, hauts, colonnes ; plan de travail continu au-dessus des meubles bas (débord 3 cm) ; électroménager ; triangle d'activité indicatif (3,60 à 7,90 m) ; postes « plan de travail » et « équipements » au métré.
   - **Pas encore fait** : crédence générée, fileurs, façades et poignées au choix, liste des modules à part.
@@ -373,7 +373,7 @@ Puis : D86 pile technique (§5 bis) · D89 pas de temps réel en v1 · D90 tél�
 Écarts entre ces décisions et le code (validés par le propriétaire, voir AVANCEMENT §31) :
 - D86 : `zustand`, `immer`, `comlink`, `idb-keyval`, `clipper2-ts` et `maplibre-gl` non ajoutés (§5 bis).
 - D87 : pas de MapLibre ; services IGN appelés par le serveur, photo aérienne enregistrée dans le dossier du plan.
-- D88 : réalisé en partie (17 meubles et 11 textures CC0) ; catalogue maison pas encore fait.
+- D88 : réalisé en partie (35 meubles et 11 textures CC0) ; catalogue maison pas encore fait.
 - D89 : pas de temps réel ; conflit proposé à l'utilisateur (conforme).
 
 ---

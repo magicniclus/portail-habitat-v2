@@ -714,6 +714,222 @@
       ],
       "licence": "CC0 1.0",
       "preparation": "1K JPG → WebP 512 px (qualité 80)"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/mid_century_lounge_chair.glb",
+      "catalogueId": "fauteuil-lounge",
+      "source": "Poly Haven",
+      "titre": "Mid Century Lounge Chair",
+      "page": "https://polyhaven.com/a/mid_century_lounge_chair",
+      "auteurs": [
+        "Kuutti Siitonen"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/coffee_table_round_01.glb",
+      "catalogueId": "table-basse-ronde",
+      "source": "Poly Haven",
+      "titre": "Coffee Table Round 01",
+      "page": "https://polyhaven.com/a/coffee_table_round_01",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/Ottoman_01.glb",
+      "catalogueId": "pouf",
+      "source": "Poly Haven",
+      "titre": "Ottoman 01",
+      "page": "https://polyhaven.com/a/Ottoman_01",
+      "auteurs": [
+        "Caspian Fortune"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/metal_stool_03.glb",
+      "catalogueId": "tabouret-bar",
+      "source": "Poly Haven",
+      "titre": "Metal Stool 03",
+      "page": "https://polyhaven.com/a/metal_stool_03",
+      "auteurs": [
+        "Flo Tasser"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/metal_stool_02.glb",
+      "catalogueId": "tabouret",
+      "source": "Poly Haven",
+      "titre": "Metal Stool 02",
+      "page": "https://polyhaven.com/a/metal_stool_02",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/electric_stove.glb",
+      "catalogueId": "cuisiniere",
+      "source": "Poly Haven",
+      "titre": "Electric Stove",
+      "page": "https://polyhaven.com/a/electric_stove",
+      "auteurs": [
+        "Kuutti Siitonen"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/drawer_cabinet.glb",
+      "catalogueId": "etagere-bureau",
+      "source": "Poly Haven",
+      "titre": "Drawer Cabinet",
+      "page": "https://polyhaven.com/a/drawer_cabinet",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/steel_frame_shelves_03.glb",
+      "catalogueId": "etagere-sejour",
+      "source": "Poly Haven",
+      "titre": "Steel Frame Shelves 03",
+      "page": "https://polyhaven.com/a/steel_frame_shelves_03",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/wooden_table_02.glb",
+      "catalogueId": "table-4",
+      "source": "Poly Haven",
+      "titre": "Wooden Table 02",
+      "page": "https://polyhaven.com/a/wooden_table_02",
+      "auteurs": [
+        "Serhii Khromov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/small_wooden_table_01.glb",
+      "catalogueId": "bureau-enfant",
+      "source": "Poly Haven",
+      "titre": "Small Wooden Table 01",
+      "page": "https://polyhaven.com/a/small_wooden_table_01",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/potted_plant_01.glb",
+      "catalogueId": "plante-pot",
+      "source": "Poly Haven",
+      "titre": "Potted Plant 01",
+      "page": "https://polyhaven.com/a/potted_plant_01",
+      "auteurs": [
+        "Rico Cilliers"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 90 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/potted_plant_04.glb",
+      "catalogueId": "succulente",
+      "source": "Poly Haven",
+      "titre": "Potted Plant 04",
+      "page": "https://polyhaven.com/a/potted_plant_04",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/ceiling_fan.glb",
+      "catalogueId": "ventilateur",
+      "source": "Poly Haven",
+      "titre": "Ceiling Fan",
+      "page": "https://polyhaven.com/a/ceiling_fan",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/planter_box_01.glb",
+      "catalogueId": "jardiniere",
+      "source": "Poly Haven",
+      "titre": "Planter Box 01",
+      "page": "https://polyhaven.com/a/planter_box_01",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/planter_box_03.glb",
+      "catalogueId": "potager-sureleve",
+      "source": "Poly Haven",
+      "titre": "Planter Box 03",
+      "page": "https://polyhaven.com/a/planter_box_03",
+      "auteurs": [
+        "James Ray Cock"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/wooden_picnic_table.glb",
+      "catalogueId": "table-pique-nique",
+      "source": "Poly Haven",
+      "titre": "Wooden Picnic Table",
+      "page": "https://polyhaven.com/a/wooden_picnic_table",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/plastic_monobloc_chair_01.glb",
+      "catalogueId": "chaise-jardin",
+      "source": "Poly Haven",
+      "titre": "Plastic Monobloc Chair 01",
+      "page": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+      "auteurs": [
+        "Kuutti Siitonen"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/stone_fire_pit.glb",
+      "catalogueId": "foyer",
+      "source": "Poly Haven",
+      "titre": "Stone Fire Pit",
+      "page": "https://polyhaven.com/a/stone_fire_pit",
+      "auteurs": [
+        "Sebastian Platen"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
     }
   ]
 }

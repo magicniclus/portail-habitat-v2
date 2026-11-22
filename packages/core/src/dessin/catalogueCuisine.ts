@@ -159,6 +159,16 @@ export const LIGNES_CUISINE: Partial<Record<CategorieObjet, Ligne[]>> = {
       1050,
       { plages: { l: [800, 2400], p: [500, 1000] } },
     ],
-    ['tabouret-bar', 'Tabouret de bar', 'tabouret', 400, 400, 750, { plages: { h: [450, 850] } }],
+    ['tabouret-bar', 'Tabouret de bar', 'tabouret', 460, 470, 1020, { plages: { h: [800, 1150] } }],
+    ['tabouret', 'Tabouret', 'tabouret', 450, 470, 460],
+    [
+      'cuisiniere',
+      'Cuisinière',
+      'plaque',
+      500,
+      650,
+      860,
+      { ...MUR, plages: { l: [500, 600] }, cuisine: 'plaque' },
+    ],
   ],
 };

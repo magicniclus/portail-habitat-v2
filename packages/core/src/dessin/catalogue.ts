@@ -1,4 +1,5 @@
 import { LIGNES_CUISINE } from './catalogueCuisine';
+import { LIGNES_EXTERIEUR } from './catalogueExterieur';
 import { LIGNES_MAISON } from './catalogueMaison';
 import { LIGNES_TECHNIQUE } from './catalogueTechnique';
 
@@ -115,6 +116,7 @@ const PAR_CATEGORIE = {
   ...LIGNES_CUISINE,
   ...LIGNES_MAISON,
   ...LIGNES_TECHNIQUE,
+  ...LIGNES_EXTERIEUR,
 } as Record<CategorieObjet, Ligne[]>;
 
 export const CATALOGUE_OBJETS: readonly ObjetCatalogue[] = Object.entries(PAR_CATEGORIE).flatMap(
