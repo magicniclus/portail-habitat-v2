@@ -1,6 +1,6 @@
 import type { Niveau, Revetement } from '@ph/core/dessin';
 import { COULEURS_PLAN, MATERIAUX_DESSIN } from '@ph/ui/tokens';
-import { LAME_TERRASSE, nuance, PLANCHER } from './nuance';
+import { ABOUTEMENTS, LAME_TERRASSE, nuance, PLANCHER } from './nuance';
 
 /**
  * Motifs des sols vus de dessus (DES-26) : carrelage avec joints, lames de parquet, poses
@@ -39,13 +39,37 @@ export const remplissage = (r: Revetement) =>
       ? `url(#${idMotif(r)})`
       : couleurDe(r);
 
+/** Lames de terrasse vues de dessus : longues lames, raccords croisés irréguliers (8 rangs). */
+function MotifPlancher({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
+  const [l, p] = [2 * LAME_TERRASSE.l, LAME_TERRASSE.p];
+  const rangs = ABOUTEMENTS.length;
+  const rotation = (r.orientation ?? 0) / 10;
+  return (
+    <pattern
+      id={idMotif(r)}
+      patternUnits="userSpaceOnUse"
+      width={l}
+      height={p * rangs}
+      patternTransform={rotation ? `rotate(${rotation})` : undefined}
+    >
+      <rect width={l} height={p * rangs} fill={couleurDe(r)} />
+      <g stroke={nuance(couleurDe(r), 0.5)} strokeWidth={Math.max(5, mmParPx)} fill="none">
+        {ABOUTEMENTS.map(([a, b], i) => (
+          <g key={i}>
+            <line x1={0} y1={i * p} x2={l} y2={i * p} />
+            <line x1={a * l} y1={i * p} x2={a * l} y2={(i + 1) * p} />
+            <line x1={b * l} y1={i * p} x2={b * l} y2={(i + 1) * p} />
+          </g>
+        ))}
+      </g>
+    </pattern>
+  );
+}
+
 function Motif({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
+  if (PLANCHER.has(r.famille) && !r.format) return <MotifPlancher r={r} mmParPx={mmParPx} />;
   const lames = LAMES.has(r.famille);
-  // Terrasse en lames : longues lames, interstice sombre (pas de joint clair de carrelage).
-  const plancher = PLANCHER.has(r.famille) && !r.format;
-  const f = plancher
-    ? LAME_TERRASSE
-    : (r.format ?? materiau(r)?.format ?? (lames ? { l: 1200, p: 180 } : { l: 600, p: 600 }));
+  const f = r.format ?? materiau(r)?.format ?? (lames ? { l: 1200, p: 180 } : { l: 600, p: 600 });
   const pose = r.pose ?? (lames ? 'decalee' : 'droite');
   // Joint lisible à tout zoom : au moins un pixel.
   const trait = Math.max(r.joint?.largeur ?? 3, mmParPx);
@@ -69,7 +93,7 @@ function Motif({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
       patternTransform={rotation ? `rotate(${rotation})` : undefined}
     >
       <rect width={f.l} height={h} fill={couleurDe(r)} />
-      <g stroke={plancher ? nuance(couleurDe(r), 0.5) : jointDe(r)} strokeWidth={trait} fill="none">
+      <g stroke={jointDe(r)} strokeWidth={trait} fill="none">
         <line x1={0} y1={0} x2={f.l} y2={0} />
         <line x1={0} y1={0} x2={0} y2={f.p} />
         {decale ? (

@@ -12,7 +12,7 @@ import {
   Vector2,
   type Texture,
 } from 'three';
-import { LAME_TERRASSE, nuance, PLANCHER } from '../nuance';
+import { ABOUTEMENTS, LAME_TERRASSE, nuance, PLANCHER } from '../nuance';
 
 /**
  * Matériaux 3D des revêtements (DES-26 en 3D) : couleur du matériau, et pour les carrelages et
@@ -34,37 +34,34 @@ const cache = new Map<string, MeshStandardMaterial>();
  */
 function texturePlancher(r: Revetement, couleur: string): CanvasTexture | null {
   const f = r.format ?? LAME_TERRASSE;
-  const rangs = 4;
+  // Motif répété : deux longueurs de lame sur 8 rangs, raccords croisés irréguliers.
+  const rangs = ABOUTEMENTS.length;
   const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  const h = Math.max(12, Math.round((canvas.width * f.p) / f.l));
+  canvas.width = 2048;
+  const h = Math.max(12, Math.round((canvas.width * f.p) / (2 * f.l)));
   canvas.height = h * rangs;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
-  const decalages = [0, 0.5, 0.25, 0.75];
-  const teintes = [1, 0.93, 1.05, 0.97, 1.02, 0.95];
-  for (let i = 0; i < rangs; i++) {
-    const x0 = decalages[i]! * canvas.width;
-    for (const [k, x] of [x0 - canvas.width, x0].entries()) {
-      ctx.fillStyle = nuance(couleur, teintes[(i * 2 + k) % teintes.length]!);
-      ctx.fillRect(x, i * h, canvas.width, h);
-      ctx.fillStyle = nuance(couleur, 0.45);
-      ctx.fillRect(x + canvas.width - 1, i * h, 2, h);
-    }
-    // Interstice de 5 mm entre deux lames, sombre.
+  const teintes = [1, 0.93, 1.05, 0.97, 1.02, 0.95, 0.99, 1.04];
+  const interstice = Math.max(2, Math.round((5 / f.p) * h));
+  ABOUTEMENTS.forEach(([j1, j2], i) => {
+    const [x1, x2] = [j1 * canvas.width, j2 * canvas.width];
+    // Trois morceaux : la lame qui traverse le bord du motif (avant x1 et après x2), et celle
+    // entre les deux raccords.
+    ctx.fillStyle = nuance(couleur, teintes[i]!);
+    ctx.fillRect(0, i * h, canvas.width, h);
+    ctx.fillStyle = nuance(couleur, teintes[(i + 3) % teintes.length]!);
+    ctx.fillRect(x1, i * h, x2 - x1, h);
+    ctx.fillStyle = nuance(couleur, 0.45);
+    for (const x of [x1, x2]) ctx.fillRect(x - 1, i * h, 2, h);
     ctx.fillStyle = nuance(couleur, 0.35);
-    ctx.fillRect(
-      0,
-      (i + 1) * h - Math.max(2, Math.round((5 / f.p) * h)),
-      canvas.width,
-      Math.max(2, Math.round((5 / f.p) * h)),
-    );
-  }
+    ctx.fillRect(0, (i + 1) * h - interstice, canvas.width, interstice);
+  });
   const t = new CanvasTexture(canvas);
   t.wrapS = RepeatWrapping;
   t.wrapT = RepeatWrapping;
   t.colorSpace = SRGBColorSpace;
-  t.repeat.set(1000 / f.l, 1000 / (f.p * rangs));
+  t.repeat.set(1000 / (2 * f.l), 1000 / (f.p * rangs));
   return t;
 }
 
