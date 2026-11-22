@@ -4,10 +4,7 @@ import {
   CATALOGUE_OUVERTURES,
   contourMur,
   contoursRaccordes,
-  emprise,
   longueurMur,
-  longueurVolee,
-  marchesDroites,
   versInterieur,
   type Niveau,
   type Point,
@@ -99,58 +96,12 @@ function OuverturesSvgBrut({
   });
 }
 
-/** Escaliers : emprise, marches, sens de montée (DES-15). */
-function EscaliersSvgBrut({
-  niveau,
-  etat,
-  dispatch,
-}: {
-  niveau: Pick<Niveau, 'escaliers'>;
-  etat: Pick<EtatEditeur, 'selection' | 'outil'>;
-  dispatch: Dispatch<Action>;
-}) {
-  return niveau.escaliers.map((e) => {
-    const choisi = etat.selection?.genre === 'escalier' && etat.selection.id === e.id;
-    const choisir = () =>
-      dispatch({ type: 'selectionner', selection: { genre: 'escalier', id: e.id } });
-    const contour = emprise(e);
-    return (
-      <g
-        key={e.id}
-        role="button"
-        tabIndex={0}
-        aria-label={`Escalier de ${e.nbMarches} marches`}
-        aria-pressed={choisi}
-        className={choisi ? 'stroke-accent' : 'stroke-texte'}
-        onPointerDown={(ev) => {
-          if (etat.outil !== 'selection') return;
-          ev.stopPropagation();
-          choisir();
-        }}
-        onKeyDown={activer(choisir)}
-      >
-        <polygon
-          points={points(contour)}
-          {...trait}
-          fill={COULEURS_PLAN.etiquette}
-          strokeWidth={choisi ? 3 : 1.5}
-        />
-        {marchesDroites(e).map(([p, q], i) => (
-          <line key={i} x1={p.x} y1={p.y} x2={q.x} y2={q.y} {...trait} strokeWidth={1} />
-        ))}
-        <title>{`Escalier, ${Math.round(longueurVolee(e) / 10)} cm de volée`}</title>
-      </g>
-    );
-  });
-}
-
 /** Calques mémorisés : redessinés seulement si leurs données changent (glisser un meuble). */
 export const OuverturesSvg = memoCalque(
   OuverturesSvgBrut,
   ['ouvertures', 'murs', 'pieces'],
   ['selection', 'outil', 'trace'],
 );
-export const EscaliersSvg = memoCalque(EscaliersSvgBrut, ['escaliers'], ['selection', 'outil']);
 
 /** Niveau du dessous en transparence et trémies du niveau courant (DES-05). */
 export function ReperesNiveauSvg({

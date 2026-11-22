@@ -8,16 +8,26 @@ import {
   LIBELLES_STRUCTURE_ESCALIER,
   type Escalier,
   type ModificationEscalier,
+  modeleDe,
+  MODELES_ESCALIER,
+  type ModeleEscalier,
   type TypeEscalier,
 } from '@ph/core/dessin';
 import { ArrowArcLeftIcon, ArrowArcRightIcon } from '@phosphor-icons/react';
 import { Banner, Button, IconButton } from '@ph/ui';
 import { COULEURS_ESCALIER } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
-import { ApercuEscalier } from './ApercusEscalier';
+import { ApercuEscalier, ApercuModeleEscalier } from './ApercusEscalier';
 import { ChampMesure } from './ChampMesure';
 import type { Action } from './etat';
 import { Section, Segmente, TitreSelection } from './blocs';
+
+const carte =
+  'grid cursor-pointer justify-items-center gap-1 rounded-[10px] border-2 p-1.5 text-xs font-semibold font-[inherit] text-texte transition-colors';
+/** Modèles d'escalier tracé (les autres se posent d'un clic). */
+const TRACES = (Object.keys(MODELES_ESCALIER) as ModeleEscalier[]).filter(
+  (id) => MODELES_ESCALIER[id].trace,
+);
 
 /** Noms courts des formes, sous leur vignette. */
 const COURTS: Record<TypeEscalier, string> = {
@@ -50,25 +60,51 @@ export function InspecteurEscalier({
   const angle = ((Math.round(e.rotation / 10) % 360) + 360) % 360;
   return (
     <div className="grid gap-5">
-      <TitreSelection titre={LIBELLES_ESCALIER[e.type]} />
+      <TitreSelection
+        titre={
+          e.chemin
+            ? `Escalier ${MODELES_ESCALIER[modeleDe(e)].libelle.toLowerCase()}`
+            : LIBELLES_ESCALIER[e.type]
+        }
+      />
 
       <Section titre="Forme">
-        <div role="radiogroup" aria-label="Type" className="grid grid-cols-3 gap-1.5">
-          {(Object.keys(LIBELLES_ESCALIER) as TypeEscalier[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              role="radio"
-              aria-checked={e.type === t}
-              aria-label={LIBELLES_ESCALIER[t]}
-              onClick={() => modifier({ type: t })}
-              className={`grid cursor-pointer justify-items-center gap-1 rounded-[10px] border-2 p-1.5 text-xs font-semibold font-[inherit] text-texte transition-colors ${e.type === t ? 'border-accent bg-accent-100' : 'border-transparent bg-blanc hover:bg-neutre-100'}`}
-            >
-              <ApercuEscalier type={t} />
-              {COURTS[t]}
-            </button>
-          ))}
-        </div>
+        {e.chemin ? (
+          // Escalier tracé : on change de modèle sans perdre son tracé.
+          <div role="radiogroup" aria-label="Modèle" className="grid grid-cols-3 gap-1.5">
+            {TRACES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={modeleDe(e) === id}
+                aria-label={MODELES_ESCALIER[id].libelle}
+                onClick={() => modifier({ ...MODELES_ESCALIER[id].trace! })}
+                className={`${carte} ${modeleDe(e) === id ? 'border-accent bg-accent-100' : 'border-transparent bg-blanc hover:bg-neutre-100'}`}
+              >
+                <ApercuModeleEscalier modele={id} />
+                {MODELES_ESCALIER[id].libelle}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div role="radiogroup" aria-label="Type" className="grid grid-cols-3 gap-1.5">
+            {(Object.keys(LIBELLES_ESCALIER) as TypeEscalier[]).map((t) => (
+              <button
+                key={t}
+                type="button"
+                role="radio"
+                aria-checked={e.type === t}
+                aria-label={LIBELLES_ESCALIER[t]}
+                onClick={() => modifier({ type: t })}
+                className={`${carte} ${e.type === t ? 'border-accent bg-accent-100' : 'border-transparent bg-blanc hover:bg-neutre-100'}`}
+              >
+                <ApercuEscalier type={t} />
+                {COURTS[t]}
+              </button>
+            ))}
+          </div>
+        )}
       </Section>
 
       <Section titre="Dimensions">

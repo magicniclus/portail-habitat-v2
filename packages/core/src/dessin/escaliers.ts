@@ -1,6 +1,7 @@
 import { echec, succes, type Resultat } from '../resultat';
 import { escalier as schemaEscalier, type Niveau, type Point } from '../schemas/dessinScene';
 import type { Contexte } from './commandes';
+import { empriseChemin, gironEscalierTrace, limitesMarchesChemin } from './escaliersChemin';
 import { arrondir, versRepere } from './geometrie';
 
 /** Escaliers (DES-15) : calcul des marches, emprise au sol, trémie de l'étage. */
@@ -96,13 +97,16 @@ export function empriseLocale(
 
 /** Emprise placée sur le plan : rotation (dixièmes de degré) autour de `position`. */
 export function emprise(e: Escalier): Point[] {
-  return empriseLocale(e).map((p) => arrondir(versRepere(e.position, e.rotation)(p)));
+  const local = e.chemin ? empriseChemin(e) : empriseLocale(e);
+  return local.map((p) => arrondir(versRepere(e.position, e.rotation)(p)));
 }
 
 /** Marches d'un escalier droit (ou d'une échelle) vues de dessus, sur le plan (DES-15). */
 export function marchesDroites(e: Escalier): [Point, Point][] {
-  if (e.type !== 'droit' && e.type !== 'meunier') return [];
   const place = versRepere(e.position, e.rotation);
+  if (e.chemin)
+    return limitesMarchesChemin(e).map(([a, b]) => [arrondir(place(a)), arrondir(place(b))]);
+  if (e.type !== 'droit' && e.type !== 'meunier') return [];
   return Array.from({ length: e.nbMarches - 2 }, (_, i) => {
     const y = (i + 1) * e.giron;
     return [place({ x: 0, y }), place({ x: e.largeur, y })];
@@ -138,6 +142,8 @@ export type ModificationEscalier = Partial<
     | 'gardeCorps'
     | 'structure'
     | 'materiau'
+    | 'virage'
+    | 'limon'
   >
 >;
 
@@ -150,10 +156,14 @@ export function modifierEscalier(
   const e = n.escaliers.find((x) => x.id === id);
   if (!e) return echec('INTROUVABLE');
   const suite = { ...e, ...modif };
-  const recalcul =
+  const marches =
     modif.type !== undefined || modif.hauteurAMonter !== undefined
       ? calculerMarches(suite.hauteurAMonter, suite.type)
-      : {};
+      : { nbMarches: suite.nbMarches, giron: suite.giron };
+  // Escalier tracé : le giron vient de la longueur du tracé (largeur, virage, marches).
+  const recalcul = suite.chemin
+    ? { ...marches, giron: gironEscalierTrace(suite, marches.nbMarches) }
+    : marches;
   const r = schemaEscalier.safeParse({
     ...suite,
     ...recalcul,

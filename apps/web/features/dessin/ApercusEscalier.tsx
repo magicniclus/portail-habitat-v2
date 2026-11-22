@@ -1,4 +1,4 @@
-import type { TypeEscalier } from '@ph/core/dessin';
+import type { ModeleEscalier, TypeEscalier } from '@ph/core/dessin';
 import { COULEURS_PLAN } from '@ph/ui/tokens';
 import type { ReactNode } from 'react';
 import { Vignette } from './Apercus';
@@ -85,4 +85,66 @@ const DESSINS: Record<TypeEscalier, ReactNode> = {
 /** Vignette d'un type d'escalier, en symbole de plan. */
 export function ApercuEscalier({ type }: { type: TypeEscalier }) {
   return <Vignette vue="0 0 40 40">{DESSINS[type]}</Vignette>;
+}
+
+const epais = { stroke: COULEURS_PLAN.mur, strokeWidth: 2.4, fill: 'none' } as const;
+const fleche = (d: string) => <path d={d} {...m} strokeWidth={1} fill="none" />;
+
+/** Vignettes des modèles du menu Escaliers : ce qui les distingue, vu de dessus. */
+const MODELES: Record<ModeleEscalier, ReactNode> = {
+  limons: (
+    <g>
+      {marches(14, 4, 12, 32, 8)}
+      <line x1={13} y1={4} x2={13} y2={36} {...epais} />
+      <line x1={27} y1={4} x2={27} y2={36} {...epais} />
+      {fleche('M20 33V8m-3 3l3-3 3 3')}
+    </g>
+  ),
+  balance: (
+    <g>
+      <path d="M6 36V12a6 6 0 0 1 6-6h22v13H19v17z" {...t} />
+      {marches(6, 22, 13, 14, 3)}
+      <line x1={19} y1={19} x2={6} y2={14} {...m} />
+      <line x1={19} y1={19} x2={10} y2={7} {...m} />
+      <line x1={19} y1={19} x2={17} y2={6} {...m} />
+      {[23, 27, 31].map((x) => (
+        <line key={x} x1={x} y1={6} x2={x} y2={19} {...m} />
+      ))}
+      {fleche('M12 33V14q0-1 1-1h18m-3-3 3 3-3 3')}
+    </g>
+  ),
+  palier: (
+    <g>
+      <path d="M6 36V6h28v13H19v17z" {...t} />
+      <rect x={6} y={6} width={13} height={13} {...t} />
+      {marches(6, 19, 13, 17, 4)}
+      {[23, 27, 31].map((x) => (
+        <line key={x} x1={x} y1={6} x2={x} y2={19} {...m} />
+      ))}
+      {fleche('M12 33V12h19m-3-3 3 3-3 3')}
+    </g>
+  ),
+  suspendu: (
+    <g>
+      <rect x={9} y={4} width={3} height={32} fill={COULEURS_PLAN.mur} />
+      {[6, 11, 16, 21, 26, 31].map((y) => (
+        <rect key={y} x={12} y={y} width={16} height={3} {...t} />
+      ))}
+      {fleche('M20 34V9m-3 3l3-3 3 3')}
+    </g>
+  ),
+  central: (
+    <g>
+      <rect x={13} y={4} width={14} height={32} {...t} />
+      {marches(13, 4, 14, 32, 8)}
+      <line x1={20} y1={4} x2={20} y2={36} {...epais} strokeWidth={3.2} />
+    </g>
+  ),
+  colimacon: DESSINS.helicoidal,
+  meunier: DESSINS.meunier,
+};
+
+/** Vignette d'un modèle d'escalier (menu, inspecteur). */
+export function ApercuModeleEscalier({ modele }: { modele: ModeleEscalier }) {
+  return <Vignette vue="0 0 40 40">{MODELES[modele]}</Vignette>;
 }

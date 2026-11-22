@@ -55,11 +55,11 @@ describe('portes et fenêtres dans l’éditeur', () => {
 describe('escaliers dans l’éditeur', () => {
   it('pose un escalier vers le haut, le sélectionne, revient à la sélection', () => {
     let e = jouer([
-      { type: 'outil', outil: 'escalier', typeEscalier: 'quart_bas' },
+      { type: 'outil', outil: 'escalier', modeleEscalier: 'meunier' },
       { type: 'poserPoint', point: { x: 1000, y: 1000 } },
     ]);
     const esc = niveauDe(e).escaliers[0]!;
-    expect(esc).toMatchObject({ type: 'quart_bas', hauteurAMonter: 2_700, nbMarches: 15 });
+    expect(esc).toMatchObject({ type: 'meunier', hauteurAMonter: 2_700 });
     expect(e).toMatchObject({ outil: 'selection', selection: { genre: 'escalier', id: esc.id } });
     e = reduire(e, { type: 'modifierEscalier', id: esc.id, modif: { rotation: 900 } });
     expect(niveauDe(e).escaliers[0]!.rotation).toBe(900);
@@ -200,5 +200,41 @@ describe('pièce libre (DES-12)', () => {
     expect(niveauDe(echap).pieces).toHaveLength(1);
     const abandon = reduire(poser(vide, points.slice(0, 2)), { type: 'terminerTrace' });
     expect([niveauDe(abandon).murs.length, abandon.polygone.length]).toEqual([0, 0]);
+  });
+});
+
+describe('escalier tracé (DES-15)', () => {
+  it('départ, virage, arrivée : l’escalier suit le tracé, d’équerre, puis est choisi', () => {
+    const e = jouer([
+      { type: 'outil', outil: 'escalier', modeleEscalier: 'palier' },
+      { type: 'poserPoint', point: { x: 1_000, y: 1_000 } },
+      { type: 'poserPoint', point: { x: 1_000, y: 3_500 } },
+      // Un peu de travers : redressé à l'horizontale depuis le virage.
+      { type: 'poserPoint', point: { x: 4_000, y: 3_620 } },
+      { type: 'terminerTrace' },
+    ]);
+    const esc = niveauDe(e).escaliers.at(-1)!;
+    expect(esc.chemin).toEqual([
+      { x: 0, y: 0 },
+      { x: 0, y: 2_500 },
+      { x: 3_000, y: 2_500 },
+    ]);
+    expect(esc.virage).toBe('palier');
+    expect(e).toMatchObject({ outil: 'selection', cheminEscalier: [], trace: null });
+    expect(e.selection).toEqual({ genre: 'escalier', id: esc.id });
+    // Poignée : le dernier point s'éloigne, le giron suit.
+    const tire = reduire(e, {
+      type: 'pointEscalier',
+      id: esc.id,
+      i: 2,
+      vers: { x: 5_000, y: 3_500 },
+    });
+    expect(niveauDe(tire).escaliers.at(-1)!.giron).toBeGreaterThan(esc.giron);
+    // Colimaçon : toujours posé d'un clic.
+    const c = jouer([
+      { type: 'outil', outil: 'escalier', modeleEscalier: 'colimacon' },
+      { type: 'poserPoint', point: { x: 3_000, y: 3_000 } },
+    ]);
+    expect(niveauDe(c).escaliers.at(-1)!.type).toBe('helicoidal');
   });
 });

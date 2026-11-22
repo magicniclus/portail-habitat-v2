@@ -23,6 +23,7 @@ import {
 } from './etatBase';
 import { reduireAmenagement } from './etatAmenagement';
 import { reduireNiveaux } from './etatNiveaux';
+import { finirEscalier, reduireEscalier } from './etatEscalier';
 import { reduireStructure } from './etatStructure';
 import { reduireExterieur } from './etatExterieur';
 import { fermerPolygone, reduireAnnotations } from './etatAnnotations';
@@ -47,6 +48,8 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
         typeMur: a.typeMur ?? e.typeMur,
         typeOuverture: a.typeOuverture ?? e.typeOuverture,
         typeEscalier: a.typeEscalier ?? e.typeEscalier,
+        modeleEscalier: a.modeleEscalier ?? e.modeleEscalier,
+        cheminEscalier: [],
         catalogueId: a.catalogueId ?? e.catalogueId,
         elementToit: a.elementToit ?? e.elementToit,
         elementExterieur: a.elementExterieur ?? e.elementExterieur,
@@ -60,6 +63,7 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       };
     case 'terminerTrace':
       if (e.polygone.length) return fermerPolygone(e);
+      if (e.cheminEscalier.length) return finirEscalier(e);
       return { ...e, trace: null, echelle: null, clotureEnCours: null };
     case 'selectionner':
       return selectionner(e, a);
@@ -151,6 +155,7 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       return { ...e, erreur: null };
     default:
       return (
+        reduireEscalier(e, a) ??
         reduireStructure(e, a) ??
         reduireNiveaux(e, a) ??
         reduireAmenagement(e, a) ??

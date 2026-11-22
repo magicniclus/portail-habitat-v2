@@ -84,7 +84,10 @@ Piece { id, contour, nom, type (15 types), sol: Revetement, plafond: Revetement,
 Objet { id, catalogueId, position, rotation, dimensions { l, p, h }, variante?, materiaux: Record<slot, id>,
         accrocheMurId?, altitude, inclinaison?: { x, y } (rotation libre, lot 15g), verrouille? }
 Escalier { id, type: 'droit'|'quart_bas'|'quart_haut'|'deux_quarts'|'helicoidal'|'meunier', position, rotation,
-           largeur, hauteurAMonter, nbMarches, giron, sens, gardeCorps: boolean }
+           largeur, hauteurAMonter, nbMarches, giron, sens, gardeCorps: boolean,
+           structure: 'pleine'|'ouverte', materiau: 'bois'|'metal'|'beton',
+           chemin?: Point[] (escalier tracé : ligne de foulée posée clic par clic, repère de l'escalier),
+           virage: 'balance'|'palier', limon?: 'lateraux'|'central'|'aucun' }
 Cote { id, a, b, decalage }        Texte { id, position, contenu, taille }       // DES-31
 Toiture { type: 'deux_pans'|'quatre_pans'|'croupe'|'monopente'|'plate'|'mansarde', pentes: angle[], debord, faitageAngle,
           couverture: Revetement, lucarnes: { type: 'jacobine'|'capucine'|'chien_assis', pan, position, largeur }[],

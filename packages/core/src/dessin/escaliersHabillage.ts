@@ -47,7 +47,7 @@ function troncons(
 }
 
 export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[] {
-  const { depart, pas, centres } = pasDeFoulee(e);
+  const { depart, centres } = pasDeFoulee(e);
   const hMarche = e.hauteurAMonter / e.nbMarches;
   const plan = versPlan(e, altitude);
   const rot = radians(e.rotation);
@@ -63,13 +63,14 @@ export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[
   });
   const out: PieceEscalier[] = [];
 
-  centres.forEach(({ local, sens }, i) => {
+  centres.forEach(({ local, sens, profondeur, palier }, i) => {
     const dessus = (i + 1) * hMarche;
     const angle = sens + rot - Math.PI / 2;
-    // Marche : le nez déborde vers le bas de l'escalier.
+    // Marche : le nez déborde vers le bas de l'escalier (un palier n'a pas de nez).
+    const nez = palier ? 0 : NEZ;
     out.push({
-      centre: plan(decale(local, sens, 0, -NEZ / 2), dessus - ep / 2),
-      taille: { l: largeur, p: pas + NEZ, h: ep },
+      centre: plan(decale(local, sens, 0, -nez / 2), dessus - ep / 2),
+      taille: { l: largeur, p: profondeur + nez, h: ep },
       angle,
       pente: 0,
       matiere: 'marche',
@@ -78,7 +79,7 @@ export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[
     if (!ouvert && dessus - ep > 1)
       out.push({
         centre: plan(local, (dessus - ep) / 2),
-        taille: { l: largeur, p: pas, h: dessus - ep },
+        taille: { l: largeur, p: profondeur, h: dessus - ep },
         angle,
         pente: 0,
         matiere: 'socle',
@@ -102,14 +103,15 @@ export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[
         plan(decale(c.local, c.sens, travers), (i + 1) * hMarche + auDessus),
       ),
     ];
-    if (m === 'metal') out.push(...troncons(appuis(0, -ep), 80, 160, 'limon'));
-    else {
-      // Deux limons latéraux qui enserrent les marches (bois), ou paillasse sous elles (béton).
-      const [p, h] = m === 'beton' ? [largeur, 180] : [50, 260];
-      const cotes = m === 'beton' ? [0] : [-(largeur + p) / 2, (largeur + p) / 2];
-      for (const t of cotes)
-        out.push(...troncons(appuis(t, m === 'beton' ? -ep : 60), p, h, 'limon'));
-    }
+    // Limons choisis (tracé), sinon selon le matériau : central en métal, paillasse en béton.
+    const style = e.limon ?? (m === 'metal' ? 'central' : m === 'beton' ? 'paillasse' : 'lateraux');
+    if (style === 'central') out.push(...troncons(appuis(0, -ep), 80, 160, 'limon'));
+    else if (style === 'paillasse') out.push(...troncons(appuis(0, -ep), largeur, 180, 'limon'));
+    else if (style === 'lateraux')
+      // Deux limons latéraux qui enserrent les marches.
+      for (const t of [-(largeur + 50) / 2, (largeur + 50) / 2])
+        out.push(...troncons(appuis(t, 60), 50, 260, 'limon'));
+    // « aucun » : marches suspendues, scellées dans le mur.
   }
 
   // Garde-corps du côté droit de la montée : un poteau toutes les deux marches, main courante.
