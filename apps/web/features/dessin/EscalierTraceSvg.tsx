@@ -92,8 +92,8 @@ export function ApercuEscalierTrace({
   const modele = MODELES_ESCALIER[etat.modeleEscalier].trace;
   const dernier = etat.cheminEscalier.at(-1);
   if (!modele) return null;
-  if (!dernier)
-    return <circle cx={pointeur.x} cy={pointeur.y} r={4 * mmParPx} className="fill-accent" />;
+  // Avant le premier clic : la croix de visée suffit.
+  if (!dernier) return null;
   const chemin = [...etat.cheminEscalier, orthogonal(dernier, pointeur)];
   const e = brouillonEscalier(chemin, hauteurVersLeHaut(sceneDe(etat), etat.niveauId), modele);
   return (

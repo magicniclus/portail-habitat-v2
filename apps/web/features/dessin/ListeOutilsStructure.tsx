@@ -91,7 +91,7 @@ export function ListeOutilsStructure({
         aria-pressed={choisi}
         aria-label={`${MODELES_ESCALIER[id].libelle} : ${MODELES_ESCALIER[id].detail}`}
         onClick={() => dispatch({ type: 'outil', outil: 'escalier', modeleEscalier: id })}
-        className={`grid min-h-24 cursor-pointer content-start justify-items-center gap-1.5 rounded-xl border-2 p-2 text-[13px] leading-4 font-semibold font-[inherit] text-texte transition-colors ${choisi ? 'border-accent bg-accent-100' : 'border-transparent bg-neutre-100 hover:bg-neutre-200'}`}
+        className={`grid min-h-24 cursor-pointer content-start justify-items-center gap-1.5 rounded-xl border-2 p-2 text-[13px] leading-4 font-semibold font-[inherit] text-texte transition-colors ${choisi ? 'border-accent bg-accent-100' : 'border-neutre-200 bg-blanc hover:bg-neutre-100'}`}
       >
         <ApercuModeleEscalier modele={id} />
         {MODELES_ESCALIER[id].libelle}

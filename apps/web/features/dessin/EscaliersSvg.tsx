@@ -14,6 +14,7 @@ function EscaliersSvgBrut({
   dispatch,
   mmParPx = 20,
   demarrerPointEscalier,
+  demarrerEscalier,
 }: {
   niveau: Pick<Niveau, 'escaliers'>;
   etat: Pick<EtatEditeur, 'selection' | 'outil'>;
@@ -21,6 +22,8 @@ function EscaliersSvgBrut({
   mmParPx?: number;
   /** Poignée d'un point du tracé de l'escalier choisi (DES-15). */
   demarrerPointEscalier?: (id: string, i: number, ev: PointerEvent) => void;
+  /** Glisser l'escalier pour le déplacer (au clic, il est aussi choisi). */
+  demarrerEscalier?: (id: string, ev: PointerEvent) => void;
 }) {
   const choisi = niveau.escaliers.find(
     (e) => etat.selection?.genre === 'escalier' && etat.selection.id === e.id,
@@ -37,11 +40,12 @@ function EscaliersSvgBrut({
         tabIndex={0}
         aria-label={`Escalier de ${e.nbMarches} marches`}
         aria-pressed={choisi}
-        className={choisi ? 'stroke-accent' : 'stroke-texte'}
+        className={`${choisi ? 'stroke-accent' : 'stroke-texte'} ${etat.outil === 'selection' ? 'cursor-move' : ''}`}
         onPointerDown={(ev) => {
           if (etat.outil !== 'selection') return;
           ev.stopPropagation();
           choisir();
+          demarrerEscalier?.(e.id, ev);
         }}
         onKeyDown={activer(choisir)}
       >

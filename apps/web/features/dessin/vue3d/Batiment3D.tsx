@@ -136,12 +136,11 @@ export function Niveau3D({
       {toit ? <Toit3D n={n} dessus={dessus} /> : null}
       <Exterieur3D n={n} parcelle={parcelle} />
       {escaliers.map(({ e, pieces }) => {
-        // Marches et limons dans le matériau choisi, socle enduit, garde-corps métal ou bois.
+        // Marches et limons dans le matériau choisi, socle enduit.
         const teinte: Record<MatiereEscalier, string> = {
           marche: COULEURS_ESCALIER[e.materiau],
           limon: COULEURS_ESCALIER[e.materiau],
           socle: COULEURS_ELEVATION.enduit,
-          rampe: COULEURS_ESCALIER[e.materiau === 'bois' ? 'bois' : 'metal'],
         };
         return (
           <group key={e.id}>

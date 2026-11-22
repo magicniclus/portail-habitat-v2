@@ -1,4 +1,5 @@
 import {
+  deplacerEscalier,
   deplacerPointEscalier,
   distance,
   hauteurVersLeHaut,
@@ -56,6 +57,8 @@ export function finirEscalier(e: EtatEditeur): EtatEditeur {
 
 /** Poignée d'un point du tracé : refusée (trop court) pendant le geste, simplement ignorée. */
 export function reduireEscalier(e: EtatEditeur, a: Action): EtatEditeur | null {
+  if (a.type === 'deplacerEscalier')
+    return surNiveau(e, (n) => deplacerEscalier(n, a.id, a.delta), a.geste ?? null);
   if (a.type !== 'pointEscalier') return null;
   const suite = surNiveau(e, (n) => deplacerPointEscalier(n, a.id, a.i, a.vers), a.geste ?? null);
   return suite.erreur ? e : suite;

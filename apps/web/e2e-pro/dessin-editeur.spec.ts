@@ -146,6 +146,22 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await expect(plan.getByRole('button', { name: 'Escalier de 15 marches' })).toBeVisible();
     // Choisi : les poignées de son tracé apparaissent (une par point).
     await expect(plan.getByTestId(/^point-escalier-/)).toHaveCount(3);
+    // Un clic sur l'escalier puis un glisser : il se déplace d'un bloc.
+    if (page.viewportSize()!.width >= 900) {
+      const esc = plan.getByRole('button', { name: 'Escalier de 15 marches' });
+      const depart = (await plan.getByTestId('point-escalier-0').boundingBox())!;
+      p = await ecran(1_000, 2_200);
+      await page.mouse.move(p.x, p.y);
+      await page.mouse.down();
+      await page.mouse.move(p.x + 40, p.y + 20, { steps: 6 });
+      await page.mouse.up();
+      await expect(esc).toBeVisible();
+      await expect
+        .poll(async () =>
+          Math.round((await plan.getByTestId('point-escalier-0').boundingBox())!.x - depart.x),
+        )
+        .toBeGreaterThan(30);
+    }
     // Dessous ouvert, en métal (DES-15) : réglé dans Propriétés.
     if (page.viewportSize()!.width >= 900) {
       const dessous = page.getByRole('radiogroup', { name: 'Dessous' });

@@ -8,7 +8,7 @@ import {
   poserEscalierTrace,
 } from './escaliersChemin';
 import { MODELES_ESCALIER, modeleDe } from './modelesEscalier';
-import { emprise, marchesDroites, modifierEscalier } from './escaliers';
+import { deplacerEscalier, emprise, marchesDroites, modifierEscalier } from './escaliers';
 import { habillageEscalier } from './escaliersHabillage';
 
 const ctx = contexteTest();
@@ -144,5 +144,16 @@ describe('escalier tracé (DES-15)', () => {
     expect(modeleDe({ ...e, chemin: undefined, type: 'helicoidal' })).toBe('colimacon');
     expect(modeleDe({ ...e, chemin: undefined, type: 'meunier' })).toBe('meunier');
     expect(modeleDe({ ...e, chemin: undefined, type: 'droit' })).toBe('limons');
+  });
+
+  it('se déplace d’un bloc, tracé compris', () => {
+    const e = poser([
+      { x: 1_000, y: 1_000 },
+      { x: 1_000, y: 4_000 },
+    ]);
+    const avec = { ...n, escaliers: [e] };
+    const r = ok(deplacerEscalier(avec, e.id, { x: 500, y: -250 }));
+    expect(r.escaliers[0]).toMatchObject({ position: { x: 1_500, y: 750 }, chemin: e.chemin });
+    expect(deplacerEscalier(avec, 'esc_absent', { x: 0, y: 0 }).ok).toBe(false);
   });
 });

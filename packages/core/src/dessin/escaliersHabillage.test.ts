@@ -11,7 +11,7 @@ const escalier = (type: TypeEscalier) =>
 const de = (p: ReturnType<typeof habillageEscalier>, m: string) => p.filter((x) => x.matiere === m);
 
 describe('escalier dessiné comme en menuiserie (DES-15)', () => {
-  it('plein : marches à nez posées sur un socle, garde-corps', () => {
+  it('plein : marches à nez posées sur un socle, sans garde-corps', () => {
     const e = escalier('droit');
     const p = habillageEscalier(e, 0);
     const marches = de(p, 'marche');
@@ -21,10 +21,8 @@ describe('escalier dessiné comme en menuiserie (DES-15)', () => {
     expect(marches.at(-1)!.centre.z + 20).toBeCloseTo(2_700, 0);
     expect(de(p, 'socle')).toHaveLength(e.nbMarches);
     expect(de(p, 'limon')).toHaveLength(0);
-    // Poteaux et main courante inclinée.
-    const rampe = de(p, 'rampe');
-    expect(rampe.some((r) => r.pente > 0.3)).toBe(true);
-    expect(rampe.filter((r) => r.pente === 0).length).toBeGreaterThan(3);
+    // Ni poteaux ni main courante.
+    expect(p.every((x) => ['marche', 'socle', 'limon'].includes(x.matiere))).toBe(true);
   });
 
   it('ouvert : limons latéraux (bois), limon central (métal), paillasse (béton) ; pas de socle', () => {

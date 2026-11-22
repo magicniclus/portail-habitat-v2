@@ -7,10 +7,10 @@ import type { Pave } from './volumes';
 /**
  * Escalier dessiné comme en menuiserie (DES-15, DES-33) : marches à nez débordant posées sur
  * leur support — socle enduit (dessous plein, contremarches visibles), limons latéraux (bois,
- * béton : paillasse) ou limon central (métal) pour un dessous ouvert —, garde-corps à poteaux
- * et main courante, fût central pour un colimaçon.
+ * béton : paillasse) ou limon central (métal) pour un dessous ouvert —, fût central pour un
+ * colimaçon. Pas de garde-corps ni de main courante.
  */
-export type MatiereEscalier = 'marche' | 'socle' | 'limon' | 'rampe';
+export type MatiereEscalier = 'marche' | 'socle' | 'limon';
 export interface PieceEscalier extends Pave {
   matiere: MatiereEscalier;
   /** Inclinaison de l'axe l au-dessus de l'horizontale (radians) ; 0 : à plat. */
@@ -20,13 +20,10 @@ export interface PieceEscalier extends Pave {
 /** Épaisseur de marche (mm), nez débordant (mm). */
 const EPAISSEUR = { bois: 40, metal: 30, beton: 60 } as const;
 const NEZ = 30;
-/** Hauteur du garde-corps au-dessus du nez de marche (mm) et section des poteaux. */
-const GARDE_CORPS = 900;
-const POTEAU = 40;
 
 type Appui = { x: number; y: number; z: number };
 
-/** Tronçons inclinés reliant des appuis successifs (limon, main courante). */
+/** Tronçons inclinés reliant des appuis successifs (limons). */
 function troncons(
   appuis: Appui[],
   p: number,
@@ -114,23 +111,5 @@ export function habillageEscalier(e: Escalier, altitude: number): PieceEscalier[
     // « aucun » : marches suspendues, scellées dans le mur.
   }
 
-  // Garde-corps du côté droit de la montée : un poteau toutes les deux marches, main courante.
-  const bord = largeur / 2 - POTEAU;
-  const poteaux = centres.filter((_, i) => i % 2 === 0 || i === centres.length - 1);
-  const tetes: Appui[] = [];
-  centres.forEach((c, i) => {
-    if (!poteaux.includes(c)) return;
-    const dessus = (i + 1) * hMarche;
-    const pied = plan(decale(c.local, c.sens, bord), dessus + GARDE_CORPS / 2);
-    out.push({
-      centre: pied,
-      taille: { l: POTEAU, p: POTEAU, h: GARDE_CORPS },
-      angle: c.sens + rot,
-      pente: 0,
-      matiere: 'rampe',
-    });
-    tetes.push({ ...pied, z: dessus + GARDE_CORPS + 20 });
-  });
-  out.push(...troncons(tetes, 50, 40, 'rampe'));
   return out;
 }

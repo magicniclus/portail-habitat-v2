@@ -173,6 +173,17 @@ export function modifierEscalier(
   return succes({ ...n, escaliers: n.escaliers.map((x) => (x.id === id ? r.data : x)) });
 }
 
+/** Fait glisser un escalier sur le plan (au mm), sa forme et son tracé inchangés. */
+export function deplacerEscalier(n: Niveau, id: string, delta: Point): Resultat<Niveau> {
+  const e = n.escaliers.find((x) => x.id === id);
+  if (!e) return echec('INTROUVABLE');
+  const position = { x: Math.round(e.position.x + delta.x), y: Math.round(e.position.y + delta.y) };
+  return succes({
+    ...n,
+    escaliers: n.escaliers.map((x) => (x.id === id ? { ...x, position } : x)),
+  });
+}
+
 export function supprimerEscalier(n: Niveau, id: string): Resultat<Niveau> {
   if (!n.escaliers.some((x) => x.id === id)) return echec('INTROUVABLE');
   return succes({ ...n, escaliers: n.escaliers.filter((x) => x.id !== id) });

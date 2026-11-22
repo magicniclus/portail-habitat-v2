@@ -178,6 +178,7 @@ export type Action =
   | { type: 'poserPoint'; point: Point }
   /** Point du tracé d'un escalier déplacé (poignée). */
   | { type: 'pointEscalier'; id: string; i: number; vers: Point; geste?: string }
+  | { type: 'deplacerEscalier'; id: string; delta: Point; geste?: string }
   | { type: 'toiture'; toiture: TypeToiture | null }
   /** Toit sur toute la maison : chaque niveau, sur la partie sans étage au-dessus. */
   | { type: 'toitureAuto'; toiture: TypeToiture }
