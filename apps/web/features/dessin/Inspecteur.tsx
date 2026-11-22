@@ -18,7 +18,8 @@ import { contexteNavigateur, niveauDe, sceneDe, type Action, type EtatEditeur } 
 import { inspecteurAmenagement } from './InspecteurAmenagement';
 import { inspecteurExterieur } from './InspecteurExterieur';
 import { inspecteurParcelle } from './InspecteurParcelle';
-import { InspecteurEscalier, InspecteurOuverture } from './InspecteurStructure';
+import { InspecteurEscalier } from './InspecteurEscalier';
+import { InspecteurOuverture } from './InspecteurStructure';
 import { InspecteurMur } from './InspecteurMur';
 import { ResumeFinitions } from './ResumeFinitions';
 import { Info, surtitre } from './blocs';

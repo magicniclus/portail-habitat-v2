@@ -139,9 +139,17 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
     await expect(plan.getByRole('button', { name: 'Escalier de 15 marches' })).toBeVisible();
     // Dessous ouvert, en métal (DES-15) : réglé dans Propriétés.
     if (page.viewportSize()!.width >= 900) {
-      await page.getByLabel('Dessous').selectOption('ouverte');
-      await page.getByLabel('Matériau').selectOption('metal');
-      await expect(page.getByLabel('Dessous')).toHaveValue('ouverte');
+      const dessous = page.getByRole('radiogroup', { name: 'Dessous' });
+      await dessous.getByRole('radio', { name: 'Ouvert' }).click();
+      await page
+        .getByRole('radiogroup', { name: 'Matériau' })
+        .getByRole('radio', { name: /Métal/ })
+        .click();
+      await expect(dessous.getByRole('radio', { name: 'Ouvert' })).toHaveAttribute(
+        'aria-checked',
+        'true',
+      );
+      await expect(page.getByText(/15 marches de 18 cm/)).toBeVisible();
     }
 
     // Étage avec les murs extérieurs repris (DES-04, DES-05).

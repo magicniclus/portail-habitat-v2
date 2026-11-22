@@ -57,3 +57,62 @@ export function CaseVerrou({
     </label>
   );
 }
+
+/** Section d'un inspecteur : petit titre en capitales, contenu dessous. */
+export function Section({ titre, children }: { titre: string; children: ReactNode }) {
+  return (
+    <section aria-label={titre} className="grid gap-2">
+      <h3 className={surtitre}>{titre}</h3>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Choix exclusif court (2 à 4 options) en boutons segmentés pleine largeur : tout se voit d'un
+ * coup d'œil, un clic suffit (au lieu d'une liste déroulante). Cibles de 44 px.
+ */
+export function Segmente<T extends string>({
+  libelle,
+  valeur,
+  options,
+  choisir,
+}: {
+  libelle: string;
+  valeur: T;
+  options: readonly { valeur: T; libelle: string; pastille?: string }[];
+  choisir: (v: T) => void;
+}) {
+  return (
+    <div role="radiogroup" aria-label={libelle} className="grid gap-1">
+      <span className="text-[13px] font-semibold text-neutre-800">{libelle}</span>
+      <div
+        className="grid gap-1 rounded-[10px] bg-neutre-100 p-1"
+        style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+      >
+        {options.map((o) => {
+          const oui = o.valeur === valeur;
+          return (
+            <button
+              key={o.valeur}
+              type="button"
+              role="radio"
+              aria-checked={oui}
+              onClick={() => choisir(o.valeur)}
+              className={`flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border-0 px-1 text-sm font-semibold font-[inherit] transition-colors ${oui ? 'bg-blanc text-texte shadow-sm' : 'bg-transparent text-neutre-700 hover:text-texte'}`}
+            >
+              {o.pastille ? (
+                <span
+                  aria-hidden="true"
+                  className="size-3 shrink-0 rounded-full ring-1 ring-neutre-300"
+                  style={{ backgroundColor: o.pastille }}
+                />
+              ) : null}
+              {o.libelle}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
