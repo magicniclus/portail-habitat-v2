@@ -5,6 +5,7 @@ import {
   dupliquerObjet,
   deplacerObjet,
   modifierObjet,
+  harmoniserCuisine,
   orienterObjet,
   poserObjet,
   pointDansPolygone,
@@ -129,6 +130,8 @@ export function reduireAmenagement(e: EtatEditeur, a: Action): EtatEditeur | nul
         : e;
     case 'modifierObjet':
       return surNiveau(e, (n) => modifierObjet(n, a.id, a.modif));
+    case 'harmoniserCuisine':
+      return surNiveau(e, (n) => harmoniserCuisine(n, a.depuis));
     case 'dupliquerObjet': {
       let copieId = '';
       const suite = surNiveau(e, (n) => {

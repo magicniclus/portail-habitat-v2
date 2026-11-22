@@ -28,18 +28,59 @@ const poteaux = (l: number, p: number, h: number, c: number, teinte: Primitive['
  * Aménagements extérieurs au dessin simple : pergola à lames, carport, serre vitrée, abri de
  * jardin, transat, parasol, jardinière.
  */
-export function formeExterieur(symbole: SymboleObjet, d: Dimensions): Primitive[] | null {
+/**
+ * Pergolas : à lames fixes (par défaut), bioclimatique (cadre épais, lames orientables
+ * serrées), à toile tendue, ou en bois à poutres croisées.
+ */
+function pergola(l: number, p: number, h: number, style?: string): Primitive[] {
+  if (style === 'bio') {
+    const lames = Math.max(6, Math.round(p / 180));
+    return [
+      ...poteaux(l, p, h - 220, 150, 'principal'),
+      boite(0, -(p - 150) / 2, h - 220, l, 150, 220),
+      boite(0, (p - 150) / 2, h - 220, l, 150, 220),
+      boite(-(l - 150) / 2, 0, h - 220, 150, p - 300, 220),
+      boite((l - 150) / 2, 0, h - 220, 150, p - 300, 220),
+      ...repartir(p - 300, lames, 80).map((y) => boite(0, y, h - 120, l - 300, 170, 25, 'metal')),
+    ];
+  }
+  if (style === 'toile')
+    return [
+      ...poteaux(l, p, h - 150, 100, 'principal'),
+      boite(0, -(p - 100) / 2, h - 150, l, 100, 150),
+      boite(0, (p - 100) / 2, h - 300, l, 100, 150),
+      pan(0, 0, h - 160, l - 40, Math.hypot(p, 150), 20, Math.atan2(-150, p), 'textile'),
+    ];
+  if (style === 'bois') {
+    const chevrons = Math.max(4, Math.round(l / 500));
+    return [
+      ...poteaux(l, p, h - 300, 150, 'principal'),
+      boite(0, -(p - 150) / 2, h - 300, l, 120, 220),
+      boite(0, (p - 150) / 2, h - 300, l, 120, 220),
+      ...repartir(l, chevrons, 60).map((x) => boite(x, 0, h - 160, 70, p, 160)),
+      ...repartir(p, Math.max(3, Math.round(p / 600)), 100).map((y) =>
+        boite(0, y, h - 60, l, 50, 60),
+      ),
+    ];
+  }
+  const lames = Math.max(4, Math.round(l / 160));
+  return [
+    ...poteaux(l, p, h - 120, 120, 'principal'),
+    boite(0, -(p - 80) / 2, h - 320, l, 80, 200),
+    boite(0, (p - 80) / 2, h - 320, l, 80, 200),
+    ...repartir(l, lames, 20).map((x) => boite(x, 0, h - 120, 40, p, 120)),
+  ];
+}
+
+export function formeExterieur(
+  symbole: SymboleObjet,
+  d: Dimensions,
+  style?: string,
+): Primitive[] | null {
   const { l, p, h } = d;
   switch (symbole) {
-    case 'pergola': {
-      const lames = Math.max(4, Math.round(l / 160));
-      return [
-        ...poteaux(l, p, h - 120, 120, 'principal'),
-        boite(0, -(p - 80) / 2, h - 320, l, 80, 200),
-        boite(0, (p - 80) / 2, h - 320, l, 80, 200),
-        ...repartir(l, lames, 20).map((x) => boite(x, 0, h - 120, 40, p, 120)),
-      ];
-    }
+    case 'pergola':
+      return pergola(l, p, h, style);
     case 'carport':
       return [
         ...poteaux(l, p, h - 180, 100, 'sombre'),

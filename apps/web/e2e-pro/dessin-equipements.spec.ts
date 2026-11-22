@@ -45,6 +45,20 @@ test.describe('Plans — aimant, cuisine, salle de bains, peinture, style (DES-0
     await page.waitForTimeout(400);
     await cliquer(3_000, 600);
     await expect(plan.getByRole('button', { name: 'Meuble évier' })).toBeVisible();
+    // Cuisine personnalisable : façades, plan de travail, poignées, puis toute la cuisine.
+    const couleurs = page.getByRole('region', { name: 'Couleurs de la cuisine' });
+    for (const [groupe, teinte] of [
+      [/^Façades/, 'Bleu nuit'],
+      [/^Plan de travail/, 'Chêne'],
+      [/^Poignées/, 'Laiton'],
+    ] as const) {
+      const bouton = couleurs
+        .getByRole('group', { name: groupe })
+        .getByRole('button', { name: teinte });
+      await bouton.click();
+      await expect(bouton).toHaveAttribute('aria-pressed', 'true');
+    }
+    await couleurs.getByRole('button', { name: 'Appliquer à toute la cuisine' }).click();
 
     // DES-24 : une douche à l'italienne.
     await replier();

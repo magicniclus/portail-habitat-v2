@@ -1,3 +1,4 @@
+import { LIGNES_BAIN } from './catalogueBain';
 import { LIGNES_CUISINE } from './catalogueCuisine';
 import { LIGNES_EXTERIEUR } from './catalogueExterieur';
 import { LIGNES_MAISON } from './catalogueMaison';
@@ -96,6 +97,8 @@ export interface ObjetCatalogue {
   /** Hauteur de pose (meubles hauts, prises, luminaires), en mm. */
   altitude?: number;
   cuisine?: ModuleCuisine;
+  /** Variante du volume 3D simple (formes3d*.ts) : tiroirs, gaz, îlot, angle, bio… */
+  style?: string;
   /** Prestation du catalogue Portail Travaux pour le métré (docs/data/prestations-catalogue.json). */
   prestationId?: string;
 }
@@ -108,12 +111,13 @@ export type Ligne = [
   p: number,
   h: number,
   options?: Partial<
-    Pick<ObjetCatalogue, 'plages' | 'contreMur' | 'altitude' | 'cuisine' | 'prestationId'>
+    Pick<ObjetCatalogue, 'plages' | 'contreMur' | 'altitude' | 'cuisine' | 'prestationId' | 'style'>
   >,
 ];
 
 const PAR_CATEGORIE = {
   ...LIGNES_CUISINE,
+  ...LIGNES_BAIN,
   ...LIGNES_MAISON,
   ...LIGNES_TECHNIQUE,
   ...LIGNES_EXTERIEUR,

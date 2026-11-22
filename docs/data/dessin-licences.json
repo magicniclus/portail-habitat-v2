@@ -930,6 +930,66 @@
       ],
       "licence": "CC0 1.0",
       "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/sofa_03.glb",
+      "catalogueId": "canape-chesterfield",
+      "source": "Poly Haven",
+      "titre": "Sofa 03",
+      "page": "https://polyhaven.com/a/sofa_03",
+      "auteurs": [
+        "Fran Calvente"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/Sofa_01.glb",
+      "catalogueId": "canape-classique",
+      "source": "Poly Haven",
+      "titre": "Sofa 01",
+      "page": "https://polyhaven.com/a/Sofa_01",
+      "auteurs": [
+        "Kirill Sannikov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/ArmChair_01.glb",
+      "catalogueId": "fauteuil-classique",
+      "source": "Poly Haven",
+      "titre": "Arm Chair 01",
+      "page": "https://polyhaven.com/a/ArmChair_01",
+      "auteurs": [
+        "Kirill Sannikov"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/modern_coffee_table_02.glb",
+      "catalogueId": "table-basse-design",
+      "source": "Poly Haven",
+      "titre": "Modern Coffee Table 02",
+      "page": "https://polyhaven.com/a/modern_coffee_table_02",
+      "auteurs": [
+        "Amin"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
+    },
+    {
+      "fichier": "apps/web/public/dessin/modeles/industrial_coffee_table.glb",
+      "catalogueId": "bout-de-canape",
+      "source": "Poly Haven",
+      "titre": "Industrial Coffee Table",
+      "page": "https://polyhaven.com/a/industrial_coffee_table",
+      "auteurs": [
+        "Ulan Cabanilla"
+      ],
+      "licence": "CC0 1.0",
+      "preparation": "gltf-transform 4.5 : meshopt, textures WebP 512 px, simplification 50 %"
     }
   ]
 }

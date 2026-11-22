@@ -3,7 +3,12 @@
  * repère de l'objet. x le long de la largeur l, y en profondeur (dos à y = -p/2), z vers le
  * haut depuis le dessous de l'objet.
  */
-export type Teinte = 'principal' | 'clair' | 'sombre' | 'verre' | 'metal' | 'textile' | 'vegetal';
+/**
+ * Teintes des volumes : `principal` suit la couleur de façade choisie, `plan` celle du plan de
+ * travail, `poignee` celle des poignées (cuisine personnalisable) ; les autres sont fixes.
+ */
+export type Teinte =
+  'principal' | 'clair' | 'sombre' | 'verre' | 'metal' | 'textile' | 'vegetal' | 'plan' | 'poignee';
 
 export interface Primitive {
   /** Prisme : toit à deux pans, faîtage le long de x, base p, hauteur h. */
@@ -107,7 +112,7 @@ export const facade = (
   const mains = bords
     .slice(1)
     .map((x, i) =>
-      boite((x + bords[i]!) / 2, p / 2 + 12, zp, Math.min(160, l / n - 80), 16, 16, 'metal'),
+      boite((x + bords[i]!) / 2, p / 2 + 12, zp, Math.min(160, l / n - 80), 16, 16, 'poignee'),
     );
   return [...joints, ...mains];
 };

@@ -71,7 +71,7 @@ export function raccourci(ev: globalThis.KeyboardEvent, dispatch: (a: Action) =>
   else if (mod && k === 'v') dispatch({ type: 'coller' });
   else if (mod && k === 'd') dispatch({ type: 'dupliquerSelection' });
   else if (mod && k === 'a') dispatch({ type: 'toutSelectionner' });
-  else if (k === 'escape') dispatch({ type: 'terminerTrace' });
+  else if (k === 'escape') dispatch({ type: 'echap' });
   else if (!mod && !ev.altKey && SIMPLES[k]) dispatch(SIMPLES[k]);
   else if (k === 'r' && !mod) dispatch({ type: 'tournerSelection' });
   else if (k === 'delete' || k === 'backspace') dispatch({ type: 'supprimerSelection' });

@@ -65,6 +65,15 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
       if (e.polygone.length) return fermerPolygone(e);
       if (e.cheminEscalier.length) return finirEscalier(e);
       return { ...e, trace: null, echelle: null, clotureEnCours: null };
+    case 'echap':
+      // Échap finit le tracé en cours ; s'il n'y en a pas, il désélectionne.
+      return e.polygone.length ||
+        e.cheminEscalier.length ||
+        e.trace ||
+        e.echelle ||
+        e.clotureEnCours
+        ? reduire(e, { type: 'terminerTrace' })
+        : { ...e, selection: null, multi: [] };
     case 'selectionner':
       return selectionner(e, a);
     case 'modifierLongueur':
@@ -125,7 +134,9 @@ function reduireBrut(e: EtatEditeur, a: Action): EtatEditeur {
         vue: a.vue,
         trace: null,
         outil: 'selection',
-        selection: a.vue === 'visite' ? null : e.selection,
+        // La 3D, la visite, la photo et les façades servent à voir : rien n'y reste choisi.
+        selection: a.vue === 'plan' ? e.selection : null,
+        multi: a.vue === 'plan' ? e.multi : [],
       };
     case 'rendu':
       return { ...e, rendu: { ...e.rendu, ...a.reglages } };

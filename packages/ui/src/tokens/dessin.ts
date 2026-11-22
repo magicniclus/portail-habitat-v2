@@ -247,6 +247,30 @@ export const COULEURS_OBJETS: readonly TeinteDessin[] = [
   { id: 'bleu', libelle: 'Bleu nuit', couleur: '#344a63' },
   { id: 'terracotta', libelle: 'Terracotta', couleur: '#c8775a' },
   { id: 'anthracite', libelle: 'Anthracite', couleur: '#3e4247' },
+  { id: 'gris-perle', libelle: 'Gris perle', couleur: '#c9c8c3' },
+  { id: 'vert-sapin', libelle: 'Vert sapin', couleur: '#3f5a4b' },
+  { id: 'noyer', libelle: 'Noyer', couleur: '#7a5638' },
+  { id: 'noir', libelle: 'Noir mat', couleur: '#232426' },
+];
+
+/** Plans de travail de cuisine et de salle de bain (nuancier de l'inspecteur). */
+export const COULEURS_PLAN_TRAVAIL: readonly TeinteDessin[] = [
+  { id: 'blanc', libelle: 'Blanc', couleur: '#f4f3ef' },
+  { id: 'marbre', libelle: 'Marbre clair', couleur: '#e6e3dc' },
+  { id: 'beton', libelle: 'Béton', couleur: '#a7a59f' },
+  { id: 'chene', libelle: 'Chêne', couleur: '#c9a36f' },
+  { id: 'noyer', libelle: 'Noyer', couleur: '#7a5638' },
+  { id: 'granit', libelle: 'Granit noir', couleur: '#2b2c2e' },
+  { id: 'inox', libelle: 'Inox', couleur: '#b9bdc0' },
+];
+
+/** Poignées des meubles (nuancier de l'inspecteur). */
+export const COULEURS_POIGNEES: readonly TeinteDessin[] = [
+  { id: 'inox', libelle: 'Inox', couleur: '#b4b8bb' },
+  { id: 'noir', libelle: 'Noir', couleur: '#1f2124' },
+  { id: 'laiton', libelle: 'Laiton', couleur: '#b8954a' },
+  { id: 'cuivre', libelle: 'Cuivre', couleur: '#b06d47' },
+  { id: 'blanc', libelle: 'Blanc', couleur: '#f2f1ed' },
 ];
 
 /** Rendu 3D (lot 15g) : teintes des volumes de meubles, murs, terrain, ciel et lumières. */
@@ -258,6 +282,9 @@ export const COULEURS_3D = {
   metal: '#a8adb2',
   textile: '#b9b1a4',
   vegetal: '#8fa77f',
+  /** Plan de travail et poignées par défaut (cuisine personnalisable). */
+  plan: '#f4f3ef',
+  poignee: '#b4b8bb',
   mur: '#f4f1ec',
   tranche: '#d9d4cc',
   sol: '#ece8e1',

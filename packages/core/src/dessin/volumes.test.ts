@@ -130,7 +130,7 @@ describe('géométrie 3D (DES-33)', () => {
 
   it('chaque meuble du catalogue a un volume dans ses dimensions', () => {
     for (const o of CATALOGUE_OBJETS) {
-      const formes = formeObjet3D(o.symbole, o.dimensions);
+      const formes = formeObjet3D(o.symbole, o.dimensions, o.style);
       expect(formes.length).toBeGreaterThan(0);
       for (const f of formes) {
         expect(Math.abs(f.centre.x) + f.taille.l / 2).toBeLessThanOrEqual(o.dimensions.l / 2 + 1);

@@ -51,7 +51,7 @@ async function principal() {
   for (const o of CATALOGUE_OBJETS) {
     const scene = {
       url: modele3D(o.id),
-      primitives: formeObjet3D(o.symbole, o.dimensions),
+      primitives: formeObjet3D(o.symbole, o.dimensions, o.style),
       dimensions: o.dimensions,
       couleurs: COULEURS_3D,
     };

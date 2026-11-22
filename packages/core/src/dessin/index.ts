@@ -24,6 +24,7 @@ export * from './cotation';
 export * from './troncons';
 export * from './niveaux';
 export * from './objets';
+export * from './cuisineCouleurs';
 export * from './placement';
 export * from './ouvertures';
 export * from './poseOuverture';

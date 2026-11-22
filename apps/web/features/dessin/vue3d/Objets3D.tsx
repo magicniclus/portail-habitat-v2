@@ -28,9 +28,14 @@ function GeometriePrisme({ l, p, h }: { l: number; p: number; h: number }) {
 
 function Volume({ o, choisi }: { o: Objet; choisi: boolean }) {
   const c = objetDuCatalogue(o.catalogueId);
-  const teinte = (t: Teinte) =>
-    t === 'principal' ? (o.materiaux.facade ?? COULEURS_3D.principal) : COULEURS_3D[t];
-  return formeObjet3D(c?.symbole ?? 'rectangle', o.dimensions).map((f, i) => (
+  // Couleurs choisies dans l'inspecteur : façades, plan de travail, poignées.
+  const choisies: Partial<Record<Teinte, string | undefined>> = {
+    principal: o.materiaux.facade,
+    plan: o.materiaux.plan,
+    poignee: o.materiaux.poignee,
+  };
+  const teinte = (t: Teinte) => choisies[t] ?? COULEURS_3D[t];
+  return formeObjet3D(c?.symbole ?? 'rectangle', o.dimensions, c?.style).map((f, i) => (
     <mesh
       key={i}
       // Repère de l'objet : x largeur, y profondeur (→ z 3D), z hauteur (→ y 3D).

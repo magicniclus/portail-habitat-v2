@@ -5,6 +5,51 @@ import { etatInitial, niveauDe, reduire, sceneDe, ZOOM_MAX, type Action } from '
 const vide = () => nouvelleScene((p) => `${p}_t${Math.random().toString(36).slice(2, 10)}`);
 const jouer = (scene: Scene, actions: Action[]) => actions.reduce(reduire, etatInitial(scene));
 
+describe('éditeur Dessin : désélection', () => {
+  const avecPiece = () =>
+    jouer(vide(), [
+      { type: 'outil', outil: 'piece' },
+      { type: 'poserPoint', point: { x: 0, y: 0 } },
+      { type: 'poserPoint', point: { x: 5000, y: 4000 } },
+      { type: 'outil', outil: 'selection' },
+    ]);
+  const choisi = () => {
+    const e = avecPiece();
+    return reduire(e, {
+      type: 'selectionner',
+      selection: { genre: 'mur', id: niveauDe(e).murs[0]!.id },
+    });
+  };
+
+  it('Échap désélectionne quand rien n’est en cours de tracé', () => {
+    const e = choisi();
+    expect(e.selection).not.toBeNull();
+    const apres = reduire(e, { type: 'echap' });
+    expect(apres.selection).toBeNull();
+    expect(apres.multi).toEqual([]);
+  });
+
+  it('Échap pendant un tracé arrête le tracé, sans rien perdre d’autre', () => {
+    const e = jouer(vide(), [
+      { type: 'outil', outil: 'mur' },
+      { type: 'poserPoint', point: { x: 0, y: 0 } },
+    ]);
+    expect(reduire(e, { type: 'echap' }).trace).toBeNull();
+  });
+
+  it('le double-clic qui finit un tracé ne désélectionne pas', () => {
+    expect(reduire(choisi(), { type: 'terminerTrace' }).selection).not.toBeNull();
+  });
+
+  it('passer en 3D, visite, photo ou façades désélectionne tout', () => {
+    for (const vue of ['3d', 'visite', 'photo', 'facades'] as const) {
+      const apres = reduire(choisi(), { type: 'vue', vue });
+      expect(apres.selection, vue).toBeNull();
+    }
+    expect(reduire(choisi(), { type: 'vue', vue: 'plan' }).selection).not.toBeNull();
+  });
+});
+
 describe('éditeur Dessin : tracé', () => {
   it('trace des murs à la suite, puis s’arrête', () => {
     const e = jouer(vide(), [

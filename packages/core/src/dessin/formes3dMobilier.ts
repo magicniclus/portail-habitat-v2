@@ -1,17 +1,9 @@
 import type { SymboleObjet } from './catalogue';
 import { boite, facade, cylindre, pieds, type Dimensions, type Primitive } from './formes3dOutils';
 
-/** Plinthe, caisson et plan de travail d'un meuble bas de cuisine (hauteur totale h). */
-const caissonCuisine = (l: number, p: number, h: number) => [
-  boite(0, 10, 0, l, p - 20, 100, 'sombre'),
-  boite(0, 0, 100, l, p, h - 140),
-  boite(0, 15, h - 40, l, p + 30, 40, 'clair'),
-];
-
 /**
  * Mobilier au dessin simple (cuisine, séjour, rangement) : volumes lisibles, sans détail
- * superflu, pour l'îlot, les tabourets, la table haute, les buffets, les étagères, le banc et
- * le four.
+ * superflu, pour l'îlot, les tabourets, la table haute, les buffets, les étagères, et le banc.
  */
 export function formeMobilier(symbole: SymboleObjet, d: Dimensions): Primitive[] | null {
   const { l, p, h } = d;
@@ -23,10 +15,11 @@ export function formeMobilier(symbole: SymboleObjet, d: Dimensions): Primitive[]
       return [
         boite(0, y + 10, 0, l - 20, caisson - 20, 100, 'sombre'),
         boite(0, y, 100, l, caisson, h - 140),
-        boite(0, 0, h - 40, l, p, 40, 'clair'),
-        ...facade(l, caisson, 100, h - 140, 600, 'aucune').map((b) => ({
+        boite(0, 0, h - 40, l, p, 40, 'plan'),
+        // Portes et poignées côté cuisine (y < 0).
+        ...facade(l, caisson, 100, h - 140, 600).map((b) => ({
           ...b,
-          centre: { ...b.centre, y: y - caisson / 2 - 2 },
+          centre: { ...b.centre, y: y - b.centre.y },
         })),
       ];
     }
@@ -70,13 +63,6 @@ export function formeMobilier(symbole: SymboleObjet, d: Dimensions): Primitive[]
         boite(0, 0, h - 50, l, p, 50),
         boite(-l / 2 + 100, 0, 0, 50, p - 40, h - 50, 'sombre'),
         boite(l / 2 - 100, 0, 0, 50, p - 40, h - 50, 'sombre'),
-      ];
-    case 'four':
-      return [
-        ...caissonCuisine(l, p, h),
-        boite(0, p / 2 + 5, 180, l - 60, 10, 520, 'sombre'),
-        boite(0, p / 2 + 10, 280, l - 200, 4, 300, 'verre'),
-        boite(0, p / 2 + 25, 640, l - 200, 20, 20, 'metal'),
       ];
     default:
       return null;

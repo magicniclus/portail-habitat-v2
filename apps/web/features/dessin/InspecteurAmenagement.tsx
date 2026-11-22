@@ -11,10 +11,9 @@ import {
   type ZoneDeco,
 } from '@ph/core/dessin';
 import { Banner, Button } from '@ph/ui';
-import { COULEURS_OBJETS } from '@ph/ui/tokens';
 import type { Dispatch } from 'react';
 import { niveauDe, type Action, type EtatEditeur } from './etat';
-import { Nuancier } from './Nuancier';
+import { CouleursObjet } from './CouleursObjet';
 import { RotationObjet } from './RotationObjet';
 import { ChampMesure } from './ChampMesure';
 import { CaseVerrou, surtitre } from './blocs';
@@ -80,18 +79,7 @@ function InspecteurObjet({
         />
       </div>
       <RotationObjet o={o} dispatch={dispatch} />
-      <Nuancier
-        legende="Couleur"
-        teintes={COULEURS_OBJETS}
-        active={o.materiaux.facade}
-        choisir={(t) =>
-          dispatch({
-            type: 'modifierObjet',
-            id: o.id,
-            modif: { materiaux: { ...o.materiaux, facade: t.couleur } },
-          })
-        }
-      />
+      <CouleursObjet o={o} cuisine={Boolean(c?.cuisine)} dispatch={dispatch} />
       <CaseVerrou
         verrouille={o.verrouille === true}
         basculer={(valeur) => dispatch({ type: 'verrouillerSelection', valeur })}

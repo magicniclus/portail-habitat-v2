@@ -203,7 +203,7 @@ test.describe('Plans — 3D, menuiseries, toiture (DES-13 à DES-17, DES-33, DES
     ).toBeVisible();
   });
 
-  test('DES-33 la 3D ne sert qu’à voir : un clic n’y modifie rien, la sélection 2D reste', async ({
+  test('DES-33 la 3D ne sert qu’à voir : un clic n’y modifie rien, rien n’y reste choisi', async ({
     page,
   }, info) => {
     test.skip(info.project.name !== 'ordinateur', 'Clic précis dans la scène 3D : ordinateur.');

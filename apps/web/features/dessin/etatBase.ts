@@ -204,6 +204,8 @@ export type Action =
   | { type: 'ajusterImplantation'; decalage?: Point; rotation?: number }
   | { type: 'terrasseAutour'; piscineId: string }
   | { type: 'terminerTrace' }
+  /** Touche Échap : finit le tracé en cours, sinon désélectionne. */
+  | { type: 'echap' }
   /** `ajouter` (Maj + clic) : ajoute l'élément à la sélection, ou l'en retire (DES-29). */
   | { type: 'selectionner'; selection: Selection; ajouter?: boolean }
   | { type: 'selectionnerZone'; a: Point; b: Point }
@@ -249,6 +251,8 @@ export type Action =
   /** Touche R : quart de tour de l'objet choisi. */
   | { type: 'tournerSelection' }
   | { type: 'modifierObjet'; id: string; modif: ModificationObjet }
+  /** Couleurs de façade, plan de travail et poignées d'un meuble sur toute la cuisine. */
+  | { type: 'harmoniserCuisine'; depuis: string }
   | { type: 'dupliquerObjet'; id: string }
   | { type: 'revetirMurs'; pieceId: string; revetement: Revetement }
   | { type: 'revetirPan'; murId: string; face: 'a' | 'b'; s: number; revetement: Revetement }

@@ -19,7 +19,7 @@ Dessin permet à un **particulier** (avec compte) et à un **artisan** (dans son
 - ne rien reprendre de Kozikaza : ni nom, ni textes, ni icônes, ni pictogrammes, ni disposition d'écran, ni couleurs, ni modèles 3D, ni textures, ni catalogue produit, ni code ;
 - l'interface suit **notre maquette** et nos tokens (`packages/ui`) ;
 - les modèles 3D et textures viennent de sources dont la licence autorise l'usage commercial (CC0 : Poly Haven, ambientCG, Kenney…) ou sont créés pour nous (voir D88). La licence de chaque fichier est notée dans `docs/data/dessin-licences.json`.
-- **Fait** : 35 meubles 3D et 11 textures photo, tous CC0 de Poly Haven (§5 bis). **Pas encore fait** : le catalogue maison (deuxième étape de D88).
+- **Fait** : 40 meubles 3D et 11 textures photo, tous CC0 de Poly Haven (§5 bis). **Pas encore fait** : le catalogue maison (deuxième étape de D88).
 
 ---
 
@@ -190,12 +190,15 @@ apps/web/features/dessin/
 apps/functions/src/dessin/planifiees.ts
                   purgeDessinNuit seulement ; toutes les autres opérations passent par la route Next ci-dessus
 apps/web/public/dessin/modeles, textures
-                  35 meubles glb et 33 images de textures (11 matériaux), CC0
+                  40 meubles glb et 33 images de textures (11 matériaux), CC0
 ```
 
 **Dépendances réellement ajoutées** (toutes signalées et acceptées) :
 - `apps/web` : `three` 0.187.0, `@react-three/fiber` 9.8.2, `@react-three/drei` 10.7.9, `@react-three/postprocessing` 3.2.2, `postprocessing` 6.39.6 (chargés seulement au passage en 3D, visite ou photo) ; `pdfjs-dist` 6.4.299 (chargé seulement au choix d'un PDF à importer). `pdfkit` était déjà là.
 - Racine (développement seulement) : `@gltf-transform/cli`, script `pnpm dessin:modele`.
+- Variantes du catalogue (`ObjetCatalogue.style`) : un même symbole donne plusieurs volumes simples (canapé droit, sur pieds, d'angle, méridienne ; plaques induction, gaz, domino ; hottes murale, îlot, intégrée ; réfrigérateurs combiné, américain, sous plan ; baignoires droite, îlot, d'angle, avec pare-bain ; douches italienne, grande, d'angle, en niche, cabine ; WC suspendu, au sol, avec lave-mains ; vasques encastrée, à poser, suspendue ; pergolas à lames, bioclimatique, à toile, en bois).
+- Cuisine personnalisable (DES-23) : chaque meuble de cuisine a trois couleurs dans `Objet.materiaux` (`facade`, `plan`, `poignee`, sans changement de schéma), rendues par les teintes `principal`, `plan` et `poignee` ; « Appliquer à toute la cuisine » (`harmoniserCuisine`) les copie sur tous les meubles de cuisine du niveau, sauf les verrouillés.
+- Sélection : Échap finit le tracé en cours, sinon désélectionne ; passer en 3D, visite, photo ou façades désélectionne tout.
 - Miniatures du menu Équiper : `pnpm dessin:miniatures` (scripts/miniaturesDessin.ts) rend chaque objet du catalogue en 3D, vu de trois quarts, avec le vrai modèle ou la forme simple, dans `apps/web/public/dessin/miniatures/{id}.webp` (112 px, environ 3 Ko). À relancer après tout ajout ou changement d'objet ; un test vérifie qu'aucune ne manque. Le menu montre les objets en cartes à deux colonnes ; sans image, le symbole vu de dessus.
 
 **Prévues mais non ajoutées** (inutiles à ce stade) : `zustand`, `immer`, `comlink`, `idb-keyval`, `clipper2-ts`, `polygon-clipping`, `maplibre-gl`. Il n'y a **pas de Web Worker** : à 500 murs et 1 000 objets, le métré prend environ 1,5 ms (DES-48).
@@ -213,7 +216,7 @@ Budget JS (EXPLOITATION §1, seuil CI provisoire de 160 Ko sur les pages publiqu
 | Géométrie | code maison + `clipper2-ts` ; `earcut` (dans three) | **code maison seulement** dans `packages/core/src/dessin`, sans `clipper2-ts` |
 | Calculs lourds | Web Worker + comlink | **pas de worker** : calculs assez rapides (DES-48) |
 | Hors ligne | IndexedDB via idb-keyval | **IndexedDB directement** (API du navigateur), brouillon et essai sans compte |
-| Modèles 3D | glTF/GLB optimisés par `@gltf-transform` (Meshopt, textures KTX2) | **GLB Meshopt, textures WebP 512 px** (pas KTX2) ; 35 meubles CC0 Poly Haven, 67 Mo bruts → 4,8 Mo ; chargés seulement quand l'objet est vu en 3D ; forme simple pendant le chargement ou si le fichier manque. Fichiers dans `apps/web/public/dessin/modeles/`, **pas dans Storage** |
+| Modèles 3D | glTF/GLB optimisés par `@gltf-transform` (Meshopt, textures KTX2) | **GLB Meshopt, textures WebP 512 px** (pas KTX2) ; 40 meubles CC0 Poly Haven, environ 5,7 Mo ; chargés seulement quand l'objet est vu en 3D ; forme simple pendant le chargement ou si le fichier manque. Fichiers dans `apps/web/public/dessin/modeles/`, **pas dans Storage** |
 | Textures | (non prévu à part) | **11 matériaux en texture photo** (couleur, relief, rugosité ; WebP 512 px, 544 Ko pour 33 images) dans `apps/web/public/dessin/textures/` ; les autres matériaux gardent leur motif dessiné |
 | Implantation | MapLibre GL + tuiles IGN + API Carto + API Adresse | **pas de MapLibre** (D87 modifiée par le propriétaire) : géocodage Géoplateforme, API Carto cadastre et WMS Géoplateforme **appelés par le serveur** ; la photo aérienne est téléchargée une fois et enregistrée dans le dossier du plan ; CSP inchangée pour ces services |
 | Export PDF | **pdfkit** côté serveur | conforme (`apps/web/server/pdfPlan.ts`) |
@@ -374,7 +377,7 @@ Puis : D86 pile technique (§5 bis) · D89 pas de temps réel en v1 · D90 tél�
 Écarts entre ces décisions et le code (validés par le propriétaire, voir AVANCEMENT §31) :
 - D86 : `zustand`, `immer`, `comlink`, `idb-keyval`, `clipper2-ts` et `maplibre-gl` non ajoutés (§5 bis).
 - D87 : pas de MapLibre ; services IGN appelés par le serveur, photo aérienne enregistrée dans le dossier du plan.
-- D88 : réalisé en partie (35 meubles et 11 textures CC0) ; catalogue maison pas encore fait.
+- D88 : réalisé en partie (40 meubles et 11 textures CC0) ; catalogue maison pas encore fait.
 - D89 : pas de temps réel ; conflit proposé à l'utilisateur (conforme).
 
 ---

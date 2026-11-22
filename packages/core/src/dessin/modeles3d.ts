@@ -39,6 +39,11 @@ const MODELES: Readonly<Record<string, string>> = {
   'table-pique-nique': 'wooden_picnic_table',
   'chaise-jardin': 'plastic_monobloc_chair_01',
   foyer: 'stone_fire_pit',
+  'canape-chesterfield': 'sofa_03',
+  'canape-classique': 'Sofa_01',
+  'fauteuil-classique': 'ArmChair_01',
+  'table-basse-design': 'modern_coffee_table_02',
+  'bout-de-canape': 'industrial_coffee_table',
 };
 
 /** Adresse du modèle 3D d'un objet du catalogue, sinon `null` (forme simple). */
