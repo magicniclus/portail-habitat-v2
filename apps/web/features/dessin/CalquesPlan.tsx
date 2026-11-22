@@ -66,7 +66,7 @@ function MursSvgBrut({
 }) {
   // Angles fermés en onglet : les faces des murs se rejoignent exactement (DES-09).
   const contours = contoursRaccordes(niveau.murs);
-  return niveau.murs.map((m) => {
+  const murs = niveau.murs.map((m) => {
     const choisi = etat.selection?.genre === 'mur' && etat.selection.id === m.id;
     // Une face choisie se montre seule : le mur garde sa couleur, la face est soulignée.
     const face = choisi ? etat.selection?.face : undefined;
@@ -116,32 +116,44 @@ function MursSvgBrut({
           }}
           onKeyDown={activer(choisir)}
         />
-        {face ? (
-          <FaceChoisieSvg niveau={niveau} murId={m.id} face={face} s={etat.selection?.s} />
-        ) : null}
-        {choisi && etat.outil === 'selection'
-          ? (['a', 'b'] as const).map((bout) => (
-              <circle
-                key={bout}
-                cx={m[bout].x}
-                cy={m[bout].y}
-                r={m.epaisseur / 2 + 80}
-                fill="white"
-                className="cursor-grab stroke-accent"
-                strokeWidth={2}
-                vectorEffect="non-scaling-stroke"
-                aria-label={`Extrémité ${bout === 'a' ? 'de départ' : 'de fin'} du mur`}
-                data-testid={`extremite-${bout}`}
-                onPointerDown={(ev) => {
-                  ev.stopPropagation();
-                  demarrerExtremite(m.id, bout, ev);
-                }}
-              />
-            ))
-          : null}
       </g>
     );
   });
+  // Face soulignée et poignées du mur choisi : par-dessus tous les murs, jamais cachées par un
+  // mur voisin dessiné après lui.
+  const m =
+    etat.selection?.genre === 'mur'
+      ? niveau.murs.find((x) => x.id === etat.selection?.id)
+      : undefined;
+  const face = m ? etat.selection?.face : undefined;
+  return (
+    <>
+      {murs}
+      {m && face ? (
+        <FaceChoisieSvg niveau={niveau} murId={m.id} face={face} s={etat.selection?.s} />
+      ) : null}
+      {m && m.type !== 'separation' && etat.outil === 'selection'
+        ? (['a', 'b'] as const).map((bout) => (
+            <circle
+              key={bout}
+              cx={m[bout].x}
+              cy={m[bout].y}
+              r={m.epaisseur / 2 + 80}
+              fill="white"
+              className="cursor-grab stroke-accent"
+              strokeWidth={2}
+              vectorEffect="non-scaling-stroke"
+              aria-label={`Extrémité ${bout === 'a' ? 'de départ' : 'de fin'} du mur`}
+              data-testid={`extremite-${bout}`}
+              onPointerDown={(ev) => {
+                ev.stopPropagation();
+                demarrerExtremite(m.id, bout, ev);
+              }}
+            />
+          ))
+        : null}
+    </>
+  );
 }
 
 /** Nom et surface de chaque pièce, à la taille qui tient dans la pièce (voir `etiquettesDesPieces`). */
