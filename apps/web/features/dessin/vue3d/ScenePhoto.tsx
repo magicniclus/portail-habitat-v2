@@ -104,7 +104,8 @@ export function ScenePhoto({
             centre={centre}
             poupee={etat.rendu.poupee && n.id === courant.id}
             plafonds={false}
-            toit={etat.rendu.toit && !etat.rendu.poupee}
+            // Le toit ne se montre qu'en « Extérieur · tout fermé ».
+            toit={etat.vueExterieure}
           />
           <group position={[0, M(n.altitude), 0]}>
             <Objets3D objets={n.objets} selectionId={null} />

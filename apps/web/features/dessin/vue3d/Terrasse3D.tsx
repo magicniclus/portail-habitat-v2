@@ -13,23 +13,17 @@ export function Terrasse3D({
   t,
   maison,
   contreMaison,
-  trous = [],
 }: {
   t: Terrasse;
-  /** Bassins des piscines posées dessus : découpés dans le plancher. */
-  trous?: readonly Point[][];
   maison: Point | undefined;
   /** Côtés collés à la façade (pas de garde-corps). */
   contreMaison: boolean[];
 }) {
   const h = Math.max(t.hauteur, 40);
-  // Clé stable : la géométrie n'est refaite que si un bassin bouge vraiment.
-  const cleTrous = JSON.stringify(trous);
-  const g = useMemo(() => {
-    const s = forme(t.contour);
-    for (const trou of JSON.parse(cleTrous) as Point[][]) s.holes.push(forme(trou));
-    return new ExtrudeGeometry(s, { depth: M(h), bevelEnabled: false });
-  }, [t.contour, h, cleTrous]);
+  const g = useMemo(
+    () => new ExtrudeGeometry(forme(t.contour), { depth: M(h), bevelEnabled: false }),
+    [t.contour, h],
+  );
   useEffect(() => () => g.dispose(), [g]);
   const marches = marchesTerrasse(t, maison);
   const c = centroide(t.contour);

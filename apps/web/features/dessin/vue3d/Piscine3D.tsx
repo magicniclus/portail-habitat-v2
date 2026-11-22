@@ -12,8 +12,8 @@ import { M } from './unites';
 const MARGELLE = 50;
 
 /**
- * Piscine en 3D (DES-20) : margelles d'un seul tenant (angles nets), bassin découpé dans la
- * terrasse, liner clair au bord, eau opaque (on ne voit plus la terrasse ou le gazon dessous).
+ * Piscine en 3D (DES-20) : margelles d'un seul tenant (angles nets), liner clair au bord, eau
+ * opaque juste au-dessus du plancher (on ne voit ni la terrasse ni le gazon dessous).
  * Hors-sol : parois en bois autour du bassin.
  */
 export function Piscine3D({ p, sol }: { p: Piscine; sol: number }) {
@@ -26,8 +26,8 @@ export function Piscine3D({ p, sol }: { p: Piscine; sol: number }) {
     return new ExtrudeGeometry(s, { depth: M(MARGELLE), bevelEnabled: false });
   }, [p, bassin, horsSol]);
   useEffect(() => () => margelles?.dispose(), [margelles]);
-  // Eau sous le bord : visible dans le trou de la terrasse ; au ras du gazon sinon.
-  const eau = horsSol ? sol + p.profondeurMin - 50 : Math.max(5, sol - 100);
+  // Eau juste au-dessus du plancher (terrasse ou gazon), sous les margelles : toujours visible.
+  const eau = horsSol ? sol + p.profondeurMin - 50 : sol + 8;
   return (
     <group>
       <Dalle pts={bassin} z={eau} couleur={C.eau} />
@@ -60,7 +60,3 @@ export function Piscine3D({ p, sol }: { p: Piscine; sol: number }) {
     </group>
   );
 }
-
-/** Contours de bassin à découper dans une terrasse (piscines posées dessus). */
-export const trousDePiscines = (piscines: readonly Piscine[]) =>
-  piscines.filter((p) => p.forme !== 'hors_sol').map((p) => contourPiscine(p));

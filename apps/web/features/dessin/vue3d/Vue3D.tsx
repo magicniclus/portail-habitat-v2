@@ -85,11 +85,8 @@ export default function Vue3D({
           // « Extérieur · tout fermé » : la maison fermée, murs toujours opaques.
           transparent={etat.rendu.mursTransparents && !etat.vueExterieure}
           plafonds={false}
-          // Un niveau affiché avec un étage au-dessus : pas de toit (on regarde ce niveau).
-          toit={
-            etat.vueExterieure ||
-            (etat.rendu.toit && !poupee && !niveauSuperieur(scene, courant.id))
-          }
+          // Le toit ne se montre qu'en « Extérieur · tout fermé » : sur un niveau, on regarde dedans.
+          toit={etat.vueExterieure}
           selection={n.id === courant.id ? etat.selection : undefined}
         />
       ))}

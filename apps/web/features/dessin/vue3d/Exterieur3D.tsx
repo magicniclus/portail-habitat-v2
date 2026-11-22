@@ -1,13 +1,8 @@
-import {
-  centroide,
-  cotesContreLaMaison,
-  pointDansPolygone,
-  type Niveau,
-  type Point,
-} from '@ph/core/dessin';
+import { centroide, cotesContreLaMaison, type Niveau, type Point } from '@ph/core/dessin';
 import { COULEURS_EXTERIEUR as C } from '@ph/ui/tokens';
 import { cotes, Dalle, Segment } from './FormesExterieur3D';
-import { Piscine3D, trousDePiscines } from './Piscine3D';
+import { Piscine3D } from './Piscine3D';
+import { solSousPiscine } from './piscineSol';
 import { Terrasse3D } from './Terrasse3D';
 import { materiauUni } from './textures';
 import { M } from './unites';
@@ -34,16 +29,11 @@ export function Exterieur3D({ n, parcelle }: { n: Niveau; parcelle: Point[] | nu
           t={t}
           maison={maison}
           contreMaison={cotesContreLaMaison(n, t.contour)}
-          trous={trousDePiscines(
-            e.piscines.filter((p) => pointDansPolygone(p.position, t.contour)),
-          )}
         />
       ))}
-      {e.piscines.map((p) => {
-        // Piscine encastrée dans une terrasse : margelles au niveau du plancher.
-        const terrasse = e.terrasses.find((t) => pointDansPolygone(p.position, t.contour));
-        return <Piscine3D key={p.id} p={p} sol={terrasse ? Math.max(terrasse.hauteur, 40) : 0} />;
-      })}
+      {e.piscines.map((p) => (
+        <Piscine3D key={p.id} p={p} sol={solSousPiscine(p, e.terrasses)} />
+      ))}
       {e.vegetation.map((v) => {
         const r = v.diametre / 2;
         const [x, z] = [M(v.position.x), M(v.position.y)];

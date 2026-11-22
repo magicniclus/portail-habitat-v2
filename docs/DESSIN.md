@@ -211,9 +211,9 @@ apps/web/public/dessin/modeles, textures
 - Toit 3D : faîtières seulement là où les deux pans descendent (jamais dans une noue) ; pignons tournés vers l'extérieur de leur propre bâtiment (annexe séparée comprise).
 - Appentis contre l'étage (partie sans étage) : pente limitée (`kMax`) pour que son haut reste à 80 cm au-dessus du plancher de l'étage, sous ses fenêtres (légère cassure de pente acceptée), 10° au moins. 30 situations testées (plain-pied, étage complet ou partiel, annexe séparée, L) × 6 formes de toit (`toitScenarios.test.ts`).
 - Murs d'un niveau sous un étage : seuls ceux qui portent l'étage (`murSousEtage`) montent jusqu'à son plancher ; ceux d'une partie sans étage gardent leur hauteur (rien ne dépasse du toit de l'appentis).
-- 3D d'un niveau qui a un étage au-dessus : aucun toit (toit visible en « Extérieur · tout fermé » et sur le dernier niveau).
+- 3D d'un niveau : jamais de toit ; il se montre seulement en « Extérieur · tout fermé » (l'option « Afficher le toit » a disparu).
 - Terrasse découpée autour de la maison : aucun morceau jeté (pas de bande de gazon), morceaux voisins réunis, angles de la maison pleins (murs prolongés). Lames de terrasse (bois, composite) : 3,60 m × 14,5 cm, interstice sombre, aboutements décalés.
-- Piscine 3D : margelles d'un seul tenant (`contourMargelles`), bassin découpé dans la terrasse, liner clair, eau opaque.
+- Piscine 3D : margelles d'un seul tenant (`contourMargelles`), liner clair, eau opaque juste au-dessus du plancher le plus haut sous la piscine (`solSousPiscine` : toutes les terrasses touchées, même à cheval).
 - Ajouter un niveau avec une pièce ou un mur choisi : seuls les murs de ce bâtiment (murs reliés entre eux, `batiments.ts`) sont repris.
 - Miniatures du menu Équiper : `pnpm dessin:miniatures` (scripts/miniaturesDessin.ts) rend chaque objet du catalogue en 3D, vu de trois quarts, avec le vrai modèle ou la forme simple, dans `apps/web/public/dessin/miniatures/{id}.webp` (112 px, environ 3 Ko). À relancer après tout ajout ou changement d'objet ; un test vérifie qu'aucune ne manque. Le menu montre les objets en cartes à deux colonnes ; sans image, le symbole vu de dessus.
 

@@ -84,7 +84,6 @@ export function RenduMenu({
         {coche('Murs transparents (voir au travers)', r.mursTransparents, (v) =>
           regler({ mursTransparents: v }),
         )}
-        {coche('Afficher le toit (hors maison de poupée)', r.toit, (v) => regler({ toit: v }))}
         {coche('Afficher seulement ce niveau', r.niveauSeul, (v) => regler({ niveauSeul: v }))}
         <li>
           <p className="m-0 px-1 pt-1 text-[13px] leading-5 text-neutre-700">
