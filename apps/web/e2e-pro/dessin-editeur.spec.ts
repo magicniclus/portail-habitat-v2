@@ -134,6 +134,10 @@ test.describe('Plans — éditeur 2D (DES-01 à DES-15, DES-21 à DES-28, DES-38
 
     // Escalier tracé dans la pièce (DES-15) : départ, virage, arrivée ; 15 marches pour 2,70 m.
     await structure('Escaliers', 'À palier');
+    // Avant le premier clic : l'escalier suit le pointeur en transparence, comme un meuble.
+    p = await ecran(1_000, 1_000);
+    await page.mouse.move(p.x, p.y, { steps: 3 });
+    await expect(plan.getByTestId('apercu-escalier')).toBeAttached();
     for (const [x, y] of [
       [1_000, 1_000],
       [1_000, 3_500],

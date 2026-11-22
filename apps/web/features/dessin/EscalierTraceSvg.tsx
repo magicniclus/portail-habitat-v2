@@ -1,6 +1,7 @@
 import {
   aimanterAngle,
   brouillonEscalier,
+  calculerMarches,
   emprise,
   formatLongueur,
   hauteurVersLeHaut,
@@ -76,6 +77,35 @@ export function PoigneesEscalier({
   });
 }
 
+/** Escalier pas encore posé : emprise, marches et ligne de foulée, dans la couleur du texte. */
+function Brouillon({ e, mmParPx }: { e: Escalier; mmParPx: number }) {
+  return (
+    <>
+      <polygon
+        points={points(emprise(e))}
+        {...trait}
+        fill={COULEURS_PLAN.etiquette}
+        fillOpacity={0.7}
+        stroke="currentColor"
+        strokeWidth={2}
+      />
+      {marchesDroites(e).map(([p, q], i) => (
+        <line
+          key={i}
+          x1={p.x}
+          y1={p.y}
+          x2={q.x}
+          y2={q.y}
+          {...trait}
+          stroke="currentColor"
+          strokeWidth={1}
+        />
+      ))}
+      <FouleeSvg e={e} mmParPx={mmParPx} />
+    </>
+  );
+}
+
 /**
  * Escalier en cours de tracé : l'escalier se dessine jusqu'au pointeur, marches comprises, avec
  * la longueur de chaque volée ; la dernière volée s'aimante aux angles courants.
@@ -92,36 +122,27 @@ export function ApercuEscalierTrace({
   const modele = MODELES_ESCALIER[etat.modeleEscalier].trace;
   const dernier = etat.cheminEscalier.at(-1);
   if (!modele) return null;
-  // Avant le premier clic : la croix de visée suffit.
-  if (!dernier) return null;
+  const hauteur = hauteurVersLeHaut(sceneDe(etat), etat.niveauId);
+  // Avant le premier clic : un escalier droit en transparence suit le pointeur, comme un meuble.
+  if (!dernier) {
+    const { nbMarches, giron } = calculerMarches(hauteur, 'droit');
+    const fantome = brouillonEscalier(
+      [pointeur, { x: pointeur.x, y: pointeur.y + nbMarches * giron }],
+      hauteur,
+      modele,
+    );
+    return fantome ? (
+      <g pointerEvents="none" className="text-accent" opacity={0.5} data-testid="apercu-escalier">
+        <Brouillon e={fantome} mmParPx={mmParPx} />
+      </g>
+    ) : null;
+  }
   const chemin = [...etat.cheminEscalier, aimanterAngle(dernier, pointeur)];
-  const e = brouillonEscalier(chemin, hauteurVersLeHaut(sceneDe(etat), etat.niveauId), modele);
+  const e = brouillonEscalier(chemin, hauteur, modele);
   return (
     <g pointerEvents="none" className="text-accent" opacity={0.85}>
       {e ? (
-        <>
-          <polygon
-            points={points(emprise(e))}
-            {...trait}
-            fill={COULEURS_PLAN.etiquette}
-            fillOpacity={0.7}
-            stroke="currentColor"
-            strokeWidth={2}
-          />
-          {marchesDroites(e).map(([p, q], i) => (
-            <line
-              key={i}
-              x1={p.x}
-              y1={p.y}
-              x2={q.x}
-              y2={q.y}
-              {...trait}
-              stroke="currentColor"
-              strokeWidth={1}
-            />
-          ))}
-          <FouleeSvg e={e} mmParPx={mmParPx} />
-        </>
+        <Brouillon e={e} mmParPx={mmParPx} />
       ) : (
         <polyline
           points={points(chemin)}
