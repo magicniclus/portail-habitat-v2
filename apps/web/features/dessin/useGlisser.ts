@@ -10,6 +10,7 @@ import {
   type PointerEvent,
 } from 'react';
 import type { Action } from './etat';
+import type { PoigneeExterieur } from './PoigneesExterieur';
 
 type Genre =
   | 'mur'
@@ -20,7 +21,8 @@ type Genre =
   | 'parcelle'
   | 'sommetParcelle'
   | 'pointEscalier'
-  | 'escalier';
+  | 'escalier'
+  | 'poigneeExterieur';
 
 /**
  * Glisser un mur (parallèlement, par pas), une porte ou fenêtre (le long de son mur) ou un objet (vers la position du pointeur, placé
@@ -89,7 +91,10 @@ export function useGlisser(
           delta: { x: vers.x - g.dernier.x, y: vers.y - g.dernier.y },
           geste: g.cle,
         });
-      else if (g.genre === 'extremite') {
+      else if (g.genre === 'poigneeExterieur') {
+        const [poignee, id, i] = g.id.split(':') as [PoigneeExterieur, string, string];
+        dispatch({ type: 'poigneeExterieur', poignee, id, i: Number(i), vers, geste: g.cle });
+      } else if (g.genre === 'extremite') {
         const [murId, bout] = g.id.split(':') as [string, 'a' | 'b'];
         dispatch({
           type: 'deplacerExtremite',
@@ -166,6 +171,11 @@ export function useRappelsGlisser(glisser: ReturnType<typeof useGlisser>) {
     ),
     demarrerSommetParcelle: useCallback(
       (i: number, ev: PointerEvent) => courant.current.demarrer('sommetParcelle', String(i), ev),
+      [],
+    ),
+    demarrerPoigneeExterieur: useCallback(
+      (p: PoigneeExterieur, id: string, i: number, ev: PointerEvent) =>
+        courant.current.demarrer('poigneeExterieur', `${p}:${id}:${i}`, ev),
       [],
     ),
     demarrerExtremite: useCallback(

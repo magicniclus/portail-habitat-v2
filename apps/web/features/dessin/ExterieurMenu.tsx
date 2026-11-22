@@ -23,7 +23,10 @@ const GROUPES: { titre: string; outils: Outil[] }[] = [
       { el: 'allee', libelle: 'Allée', aide: 'Deux coins opposés' },
     ],
   },
-  { titre: 'Piscine', outils: [{ el: 'piscine', libelle: 'Piscine', aide: 'Un clic au centre' }] },
+  {
+    titre: 'Piscine',
+    outils: [{ el: 'piscine', libelle: 'Piscine', aide: 'Deux coins opposés, comme un sol' }],
+  },
   {
     titre: 'Clôtures',
     outils: [{ el: 'cloture', libelle: 'Clôture', aide: 'Point par point, Échap pour finir' }],

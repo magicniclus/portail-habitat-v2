@@ -18,7 +18,15 @@ const motifPossible = (r: Revetement) => CARREAUX.has(r.famille) || LAMES.has(r.
 /** Identifiant stable d'un motif (même revêtement → même motif, partagé). */
 function idMotif(r: Revetement): string {
   const f = r.format ?? materiau(r)?.format;
-  const cle = [r.famille, couleurDe(r), jointDe(r), f?.l, f?.p, r.pose ?? 'droite'].join('-');
+  const cle = [
+    r.famille,
+    couleurDe(r),
+    jointDe(r),
+    f?.l,
+    f?.p,
+    r.pose ?? 'droite',
+    r.orientation ?? 0,
+  ].join('-');
   return `motif-${cle.replace(/[^a-z0-9-]/gi, '')}`;
 }
 
@@ -37,13 +45,15 @@ function Motif({ r, mmParPx }: { r: Revetement; mmParPx: number }) {
   // Joint lisible à tout zoom : au moins un pixel.
   const trait = Math.max(r.joint?.largeur ?? 3, mmParPx);
   const decale = pose !== 'droite';
+  // Sens de pose choisi (lames en travers…) en plus de la rotation propre à la pose.
   const rotation =
-    pose === 'diagonale' ||
+    (r.orientation ?? 0) / 10 +
+    (pose === 'diagonale' ||
     pose === 'chevron' ||
     pose === 'point_de_hongrie' ||
     pose === 'baton_rompu'
       ? 45
-      : 0;
+      : 0);
   const h = decale ? 2 * f.p : f.p;
   return (
     <pattern

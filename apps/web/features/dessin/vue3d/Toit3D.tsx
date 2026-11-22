@@ -3,7 +3,7 @@
 import { toit3D, type Niveau, type Point3 } from '@ph/core/dessin';
 import { COULEURS_3D, COULEURS_COUVERTURE } from '@ph/ui/tokens';
 import { useEffect, useMemo } from 'react';
-import { BufferGeometry, Float32BufferAttribute } from 'three';
+import { BufferGeometry, DoubleSide, Float32BufferAttribute } from 'three';
 import { aretesHautes, geometrieCouverture } from './couverture3d';
 import { materiauCouverture, materiauRevetement, materiauUni } from './textures';
 import { M } from './unites';
@@ -33,7 +33,12 @@ function geometrie(polys: readonly Point3[][], dz = 0): BufferGeometry {
  * en dessous (sinon la lumière le rend plus sombre ou plus clair que le mur).
  */
 function versLExterieur(poly: Point3[], pans: readonly Point3[][]): Point3[] {
-  const tous = pans.flat();
+  // Centre du toit de ce bâtiment-là : les pans qui touchent le pignon (un bâtiment séparé
+  // ne doit pas se retourner vers la maison voisine).
+  const touche = (pan: readonly Point3[]) =>
+    pan.some((p) => poly.some((q) => Math.hypot(p.x - q.x, p.y - q.y) < 5));
+  const voisins = pans.filter(touche);
+  const tous = (voisins.length ? voisins : pans).flat();
   const cx = tous.reduce((s, p) => s + p.x, 0) / tous.length;
   const cy = tous.reduce((s, p) => s + p.y, 0) / tous.length;
   // Normale horizontale (Newell) du polygone vertical, comparée à la direction centre → pignon.
@@ -73,7 +78,12 @@ export function Toit3D({ n, dessus }: { n: Niveau; dessus: Niveau | null }) {
     COULEURS_COUVERTURE[famille as keyof typeof COULEURS_COUVERTURE] ?? COULEURS_COUVERTURE.tuile;
   const materiau = useMemo(() => materiauCouverture(famille, teinte), [famille, teinte]);
   // Pignons du même matériau que la face extérieure des murs : aucune différence de teinte.
-  const facade = useMemo(() => materiauRevetement({ famille: 'aucun' }), []);
+  // Plein des deux côtés : vu du dehors comme de l'intérieur (combles, maison de poupée).
+  const facade = useMemo(() => {
+    const m = materiauRevetement({ famille: 'aucun' }).clone();
+    m.side = DoubleSide;
+    return m;
+  }, []);
   if (!t || !couverture || !murs) return null;
   return (
     <group>

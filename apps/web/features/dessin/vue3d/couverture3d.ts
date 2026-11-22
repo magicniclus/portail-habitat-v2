@@ -108,7 +108,26 @@ export function geometrieCouverture(
 export function aretesHautes(pans: readonly Point3[][]): [Point3, Point3][] {
   const proche = (a: Point3, b: Point3) =>
     Math.abs(a.x - b.x) < 2 && Math.abs(a.y - b.y) < 2 && Math.abs(a.z - b.z) < 2;
-  const moyenneZ = (pan: readonly Point3[]) => pan.reduce((s, q) => s + q.z, 0) / pan.length;
+  // Hauteur du plan d'un pan au point (x, y) : plan passant par trois de ses sommets.
+  const zSur = (pan: readonly Point3[], x: number, y: number) => {
+    const [p0, p1, p2] = [pan[0]!, pan[1]!, pan[2]!];
+    const u = { x: p1.x - p0.x, y: p1.y - p0.y, z: p1.z - p0.z };
+    const v = { x: p2.x - p0.x, y: p2.y - p0.y, z: p2.z - p0.z };
+    const n = { x: u.y * v.z - u.z * v.y, y: u.z * v.x - u.x * v.z, z: u.x * v.y - u.y * v.x };
+    return Math.abs(n.z) < 1e-9 ? p0.z : p0.z - (n.x * (x - p0.x) + n.y * (y - p0.y)) / n.z;
+  };
+  // Le pan descend-il en s'éloignant de l'arête (vers son propre centre, en plan) ?
+  const descend = (pan: readonly Point3[], a: Point3, b: Point3) => {
+    const c = {
+      x: pan.reduce((s, q) => s + q.x, 0) / pan.length,
+      y: pan.reduce((s, q) => s + q.y, 0) / pan.length,
+    };
+    const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: (a.z + b.z) / 2 };
+    const d = Math.hypot(c.x - m.x, c.y - m.y) || 1;
+    const pas = Math.min(200, d / 2);
+    const q = { x: m.x + ((c.x - m.x) / d) * pas, y: m.y + ((c.y - m.y) / d) * pas };
+    return zSur(pan, q.x, q.y) < m.z - 1;
+  };
   const aretes: [Point3, Point3][] = [];
   pans.forEach((p, i) =>
     p.forEach((a, k) => {
@@ -118,8 +137,7 @@ export function aretesHautes(pans: readonly Point3[][]): [Point3, Point3][] {
         (q, j) => j > i && q.some((x) => proche(x, a)) && q.some((x) => proche(x, b)),
       );
       if (autre < 0) return;
-      const milieu = (a.z + b.z) / 2;
-      if (moyenneZ(p) < milieu && moyenneZ(pans[autre]!) < milieu) aretes.push([a, b]);
+      if (descend(p, a, b) && descend(pans[autre]!, a, b)) aretes.push([a, b]);
     }),
   );
   return aretes;

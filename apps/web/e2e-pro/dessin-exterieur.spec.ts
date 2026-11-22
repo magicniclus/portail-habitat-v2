@@ -87,13 +87,26 @@ test.describe('Plans — extérieur, implantation, façades (DES-18 à DES-20, D
     await page.getByLabel('Hauteur au-dessus du sol (cm)').fill('60');
     await page.getByLabel('Hauteur au-dessus du sol (cm)').press('Enter');
     await page.getByLabel('Garde-corps').check();
+    // Retouchée après la pose : un coin tiré, la surface change ; lames en travers.
+    if (page.viewportSize()!.width >= 900) {
+      const surface = page.getByRole('region', { name: 'Propriétés' }).getByText(/m²$/).first();
+      const avant = await surface.textContent();
+      const coin = (await plan.getByTestId('coin-terrasse-0').boundingBox())!;
+      await page.mouse.move(coin.x + coin.width / 2, coin.y + coin.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(coin.x - 25, coin.y - 25, { steps: 6 });
+      await page.mouse.up();
+      await expect(surface).not.toHaveText(avant!);
+    }
+    await page.getByLabel('Sens de pose').selectOption('900');
     await replier();
 
-    // DES-20 : piscine d'un clic, volume d'eau calculé.
+    // DES-20 : piscine tracée comme un sol (deux coins), volume d'eau calculé.
     await exterieur('Piscine');
-    await cliquer(6_000, 11_000);
+    await cliquer(2_000, 9_500);
+    await cliquer(10_000, 13_500);
     await expect(page.getByText('Volume d’eau')).toBeVisible();
-    await expect(page.getByText('46,4 m³')).toBeVisible();
+    await expect(page.getByText(/^\d+,\d m³$/).first()).toBeVisible();
     await expect(page.getByText('Aux limites (indicatif)')).toBeVisible();
     // Terrasse autour de la piscine, jusqu'à la maison : la piscine y est encastrée.
     await page.getByRole('button', { name: 'Terrasse autour, jusqu’à la maison' }).click();

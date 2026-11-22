@@ -114,8 +114,23 @@ export function materiauRevetement(r: Revetement, defaut?: string): MeshStandard
     r.joint,
     r.materiauId,
     r.finition,
+    r.orientation,
   ]);
   let m = cache.get(cle);
+  // Sens de pose choisi (lames en travers…) : mêmes images, tournées.
+  if (!m && r.orientation) {
+    const base = materiauRevetement({ ...r, orientation: 0 }, defaut);
+    m = base.clone();
+    for (const cleMap of ['map', 'normalMap', 'roughnessMap'] as const) {
+      const t = base[cleMap];
+      if (!t) continue;
+      const tourne = t.clone();
+      tourne.rotation = t.rotation + ((r.orientation / 10) * Math.PI) / 180;
+      tourne.needsUpdate = true;
+      m[cleMap] = tourne;
+    }
+    cache.set(cle, m);
+  }
   if (!m) {
     const photo = materiauPhoto(r);
     if (photo) {

@@ -32,6 +32,7 @@ import { useCamera } from './useCamera';
 import { usePanoramique } from './usePanoramique';
 import { useDefilementAuto } from './useDefilementAuto';
 import { useGestesTactiles } from './useGestesTactiles';
+import { PoigneesExterieurSvg } from './PoigneesExterieur';
 import { useGlisser, useRappelsGlisser } from './useGlisser';
 import { EscaliersSvg } from './EscaliersSvg';
 import { OuverturesSvg, ReperesNiveauSvg } from './StructureSvg';
@@ -100,7 +101,6 @@ export function Plan2D({
     return trace && etat.trace !== null;
   };
   const defil = useDefilementAuto(conteneur, moteur.deplacer);
-
   return (
     <div className="relative h-full w-full">
       <div
@@ -144,7 +144,6 @@ export function Plan2D({
           <g filter={etat.calques.noirEtBlanc ? 'url(#plan-noir-et-blanc)' : undefined}>
             <OrthophotoSvg scene={scene} image={ortho} />
             {fondVisible && fond ? <FondSvg fond={fondVisible} image={fond} /> : null}
-
             <DefsMotifs niveau={n} mmParPx={mmParPx} autres={terrainRevetu} />
             {n.altitude === 0 ? (
               <SolTerrainSvg parcelle={parcelle ?? null} revetement={revetementDuTerrain(scene)} />
@@ -173,6 +172,7 @@ export function Plan2D({
               demarrerExtremite={g.demarrerExtremite}
             />
             <OuverturesSvg niveau={n} etat={etat} dispatch={d} {...g} />
+            <PoigneesExterieurSvg niveau={n} etat={etat} mmParPx={mmParPx} {...g} />
             <ToitSvg niveau={n} dessus={niveauSuperieur(scene, n.id)} />
             <GuidesSvg guides={etat.guides} />
             {etat.calques.cotes ? (

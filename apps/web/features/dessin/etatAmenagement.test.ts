@@ -201,7 +201,7 @@ describe('clavier et cibles des finitions', () => {
 });
 
 describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
-  it('terrasse en deux coins, piscine d’un clic, clôture point par point, suppression', () => {
+  it('terrasse et piscine en deux coins, clôture point par point, suppression', () => {
     let e = jouer([
       { type: 'outil', outil: 'exterieur', elementExterieur: 'terrasse' },
       { type: 'poserPoint', point: { x: 1_000, y: 9_200 } },
@@ -214,11 +214,25 @@ describe('extérieur dans l’éditeur (DES-18 à DES-20)', () => {
     e = jouer(
       [
         { type: 'outil', outil: 'exterieur', elementExterieur: 'piscine', formePiscine: 'ovale' },
-        { type: 'poserPoint', point: { x: 9_000, y: 13_300 } },
+        { type: 'poserPoint', point: { x: 6_000, y: 11_800 } },
+        { type: 'poserPoint', point: { x: 12_000, y: 14_800 } },
       ],
       e,
     );
-    expect(niveauDe(e).exterieur.piscines[0]!.forme).toBe('ovale');
+    expect(niveauDe(e).exterieur.piscines[0]).toMatchObject({
+      forme: 'ovale',
+      longueur: 6_000,
+      largeur: 3_000,
+    });
+    // Un coin tiré : la piscine s'étire comme un sol.
+    e = reduire(e, {
+      type: 'poigneeExterieur',
+      poignee: 'coinPiscine',
+      id: niveauDe(e).exterieur.piscines[0]!.id,
+      i: 2,
+      vers: { x: 13_000, y: 15_800 },
+    });
+    expect(niveauDe(e).exterieur.piscines[0]).toMatchObject({ longueur: 7_000, largeur: 4_000 });
     e = jouer(
       [
         { type: 'outil', outil: 'exterieur', elementExterieur: 'cloture', typeCloture: 'grillage' },

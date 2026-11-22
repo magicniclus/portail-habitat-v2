@@ -3,7 +3,10 @@ import {
   ajouterSommetParcelle,
   deplacerParcelle,
   deplacerSommetParcelle,
-  ajouterPiscine,
+  deplacerCoteTerrasse,
+  deplacerSommetTerrasse,
+  redimensionnerPiscine,
+  tracerPiscine,
   ajouterTerrasse,
   ajouterVegetal,
   accrocherALaLimite,
@@ -51,13 +54,11 @@ function creer(
 
 /**
  * Clic sur le plan avec l'outil « extérieur » (DES-18 à DES-20) : terrasse, allée et parcelle
- * en deux coins ; piscine et végétaux d'un clic ; clôture point par point (Échap pour finir).
+ * en deux coins, piscine aussi ; végétaux d'un clic ; clôture point par point (Échap pour finir).
  */
 export function poserExterieur(e: EtatEditeur, point: Point): EtatEditeur | null {
   if (e.outil !== 'exterieur') return null;
   const el = e.elementExterieur;
-  if (el === 'piscine')
-    return creer(e, (n) => ajouterPiscine(n, point, e.formePiscine, ctx), 'piscine');
   if (el === 'arbre' || el === 'arbuste' || el === 'haie')
     return creer(e, (n) => ajouterVegetal(n, point, el, ctx, { aimant: e.aimant }), 'vegetal');
   // Clôture : chaque point s'aligne sur la limite de parcelle toute proche.
@@ -77,6 +78,9 @@ export function poserExterieur(e: EtatEditeur, point: Point): EtatEditeur | null
   }
   if (el === 'terrasse')
     return creer(e, (n) => ajouterTerrasse(n, a, point, ctx, { aimant: e.aimant }), 'terrasse');
+  // Piscine tracée comme un sol (deux coins) ; deux clics au même endroit : taille par défaut.
+  if (el === 'piscine')
+    return creer(e, (n) => tracerPiscine(n, a, point, e.formePiscine, ctx), 'piscine');
   if (el === 'allee') return { ...surNiveau(e, (n) => ajouterAllee(n, a, point)), trace: null };
   return { ...surScene(e, (s) => definirParcelle(s, a, point)), trace: null, outil: 'selection' };
 }
@@ -102,6 +106,16 @@ export function reduireExterieur(e: EtatEditeur, a: Action): EtatEditeur | null 
     case 'sommetParcelle': {
       // Pendant le geste, une parcelle qui serait écrasée est simplement ignorée.
       const suite = surScene(e, (s) => deplacerSommetParcelle(s, a.i, a.vers), a.geste ?? null);
+      return suite.erreur ? e : suite;
+    }
+    case 'poigneeExterieur': {
+      const r = {
+        sommetTerrasse: deplacerSommetTerrasse,
+        coteTerrasse: deplacerCoteTerrasse,
+        coinPiscine: redimensionnerPiscine,
+      }[a.poignee];
+      // Pendant le geste, une forme impossible (trop petite, sur la maison) est ignorée.
+      const suite = surNiveau(e, (n) => r(n, a.id, a.i, a.vers), a.geste ?? null);
       return suite.erreur ? e : suite;
     }
     case 'deplacerParcelle':

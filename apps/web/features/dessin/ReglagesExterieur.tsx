@@ -51,6 +51,7 @@ export function ReglagesTerrasse({ t, modifier }: { t: Terrasse; modifier: Modif
         >
           <option value={0}>Dans la longueur</option>
           <option value={900}>En travers</option>
+          <option value={450}>En diagonale</option>
         </Select>
       </Field>
       <ChampMesure

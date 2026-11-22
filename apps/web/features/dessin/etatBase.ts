@@ -202,6 +202,15 @@ export type Action =
   | { type: 'revetirTerrain'; revetement: Revetement }
   /** Parcelle retouchée (DES-19) : un coin tiré, toute la parcelle déplacée, un angle ajouté. */
   | { type: 'sommetParcelle'; i: number; vers: Point; geste?: string }
+  /** Coin ou côté de terrasse, coin de piscine tiré à la souris. */
+  | {
+      type: 'poigneeExterieur';
+      poignee: 'sommetTerrasse' | 'coteTerrasse' | 'coinPiscine';
+      id: string;
+      i: number;
+      vers: Point;
+      geste?: string;
+    }
   | { type: 'deplacerParcelle'; delta: Point; geste?: string }
   | { type: 'ajouterSommetParcelle'; apres: number; point: Point }
   | { type: 'implanter'; parcelle: ParcelleCadastre }
