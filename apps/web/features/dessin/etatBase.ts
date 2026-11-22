@@ -1,6 +1,7 @@
 import {
   creerHistorique,
   enregistrer,
+  toituresSuivies,
   type Alignement,
   type CalqueScene,
   type CouleursCuisine,
@@ -386,7 +387,9 @@ export function surScene(
 ): EtatEditeur {
   const r = commande(sceneDe(e));
   if (!r.ok) return { ...e, erreur: r.message };
-  return { ...e, historique: enregistrer(e.historique, r.data, geste), erreur: null };
+  // Le toit suit les murs : une partie découverte reçoit le toit de la maison (même geste).
+  const suite = toituresSuivies(sceneDe(e), r.data);
+  return { ...e, historique: enregistrer(e.historique, suite, geste), erreur: null };
 }
 
 /** Applique une commande pure au niveau courant. */

@@ -16,7 +16,7 @@ const ACCROCHE_LIMITE = 1_000;
 type Bati = { nom: string; poly: Point[] };
 
 /** Polygones de la maison (pièces et murs). */
-const maison = (n: Niveau): Point[][] => [
+export const maison = (n: Niveau): Point[][] => [
   ...n.pieces.map((p) => p.contour),
   ...n.murs.filter((m) => m.type !== 'separation' && m.type !== 'poutre').map((m) => contourMur(m)),
 ];
@@ -69,13 +69,8 @@ export function placerVegetal(
   };
 }
 
-/** Terrasse (rectangle a–b) : ne recouvre pas la maison ; un bord proche d'une façade s'y colle. */
-export function placerTerrasse(
-  n: Niveau,
-  a: Point,
-  b: Point,
-  aimant = true,
-): [Point, Point] | string {
+/** Terrasse (rectangle a–b) : un bord proche d'une façade s'y colle (la maison est retirée ensuite). */
+export function placerTerrasse(n: Niveau, a: Point, b: Point, aimant = true): [Point, Point] {
   let [x0, x1, y0, y1] = [
     Math.min(a.x, b.x),
     Math.max(a.x, b.x),
@@ -94,11 +89,6 @@ export function placerTerrasse(
       if (enX && Math.abs(y0 - w.b1) <= ACCROCHE_TERRASSE) [y0, y1] = [w.b1, y1 + w.b1 - y0];
       else if (enX && Math.abs(y1 - w.b0) <= ACCROCHE_TERRASSE) [y0, y1] = [y0 + w.b0 - y1, w.b0];
     }
-  // Recouvrement : un point de la grille (tous les 25 cm, bords exclus) dans la maison.
-  const bati = maison(n).map((poly) => ({ nom: 'la maison', poly }));
-  for (let x = x0 + 125; x < x1; x += 250)
-    for (let y = y0 + 125; y < y1; y += 250)
-      if (dans({ x, y }, bati)) return 'La terrasse ne peut pas recouvrir la maison.';
   return [
     { x: Math.round(x0), y: Math.round(y0) },
     { x: Math.round(x1), y: Math.round(y1) },

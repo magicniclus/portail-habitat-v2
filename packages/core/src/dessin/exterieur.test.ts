@@ -258,7 +258,11 @@ describe('placement de l’extérieur', () => {
     // Seul le côté haut touche la façade : pas de garde-corps de ce côté.
     expect(cotesContreLaMaison(n, t.contour)).toEqual([true, false, false, false]);
     expect(t.contour[2]).toEqual({ x: 6_000, y: 11_600 });
-    expect(ajouterTerrasse(n, { x: 1_000, y: 7_000 }, { x: 6_000, y: 12_000 }, ctx)).toMatchObject({
+    // Tracée en partie sur la maison : seule la partie dehors reste.
+    const coupee = ok(ajouterTerrasse(n, { x: 1_000, y: 7_000 }, { x: 6_000, y: 12_000 }, ctx))
+      .exterieur.terrasses[0]!;
+    expect(Math.min(...coupee.contour.map((p) => p.y))).toBeGreaterThanOrEqual(8_600);
+    expect(ajouterTerrasse(n, { x: 1_000, y: 1_000 }, { x: 6_000, y: 6_000 }, ctx)).toMatchObject({
       message: 'La terrasse ne peut pas recouvrir la maison.',
     });
     const libre = ok(

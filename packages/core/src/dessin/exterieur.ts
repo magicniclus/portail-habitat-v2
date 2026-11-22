@@ -18,6 +18,7 @@ import {
   rectanglePlage,
 } from './placementExterieur';
 import { aire, distance, projeter } from './geometrie';
+import { rectanglesHorsMaison } from './terrassesForme';
 
 export { contourPiscine };
 
@@ -149,9 +150,19 @@ export function ajouterTerrasse(
       message: 'Terrasse trop petite (30 cm au moins de chaque côté).',
     });
   const place = placerTerrasse(n, a, b, options.aimant ?? true);
-  if (typeof place === 'string') return echec('PRECONDITION', { message: place });
-  const t = schemaTerrasse.parse({ id: ctx.nouvelId('te'), contour: rectangle(...place) });
-  return succes({ ...avec(n, { terrasses: [...n.exterieur.terrasses, t] }), elementId: t.id });
+  // Tracée par-dessus la maison : seule la partie dehors est gardée, en morceaux si besoin.
+  const morceaux = rectanglesHorsMaison(n, place);
+  if (!morceaux.length)
+    return echec('PRECONDITION', { message: 'La terrasse ne peut pas recouvrir la maison.' });
+  if (n.exterieur.terrasses.length + morceaux.length > 50)
+    return echec('PRECONDITION', { message: '50 terrasses au plus.' });
+  const neuves = morceaux.map((m) =>
+    schemaTerrasse.parse({ id: ctx.nouvelId('te'), contour: rectangle(...m) }),
+  );
+  return succes({
+    ...avec(n, { terrasses: [...n.exterieur.terrasses, ...neuves] }),
+    elementId: neuves[0]!.id,
+  });
 }
 
 export function ajouterAllee(n: Niveau, a: Point, b: Point): Resultat<Niveau> {
@@ -167,6 +178,8 @@ export function ajouterPiscine(
   position: Point,
   forme: FormePiscine,
   ctx: Contexte,
+  /** Taille et sens tracés (piscine dessinée comme un sol) ; sinon ceux par défaut. */
+  cadre: Partial<Pick<Piscine, 'longueur' | 'largeur' | 'rotation'>> = {},
 ): Resultat<Niveau & { elementId: string }> {
   if (n.exterieur.piscines.length >= 5)
     return echec('PRECONDITION', { message: '5 piscines au plus.' });
@@ -178,6 +191,7 @@ export function ajouterPiscine(
     profondeurMin: forme === 'hors_sol' ? 1_200 : 1_100,
     profondeurMax: forme === 'hors_sol' ? 1_200 : 1_800,
     escalier: forme === 'hors_sol' || forme === 'ronde' ? null : 'roman',
+    ...cadre,
   });
   if (piscineSurLaMaison(n, contourPiscine(p)))
     return echec('PRECONDITION', { message: 'La piscine empiéterait sur la maison.' });

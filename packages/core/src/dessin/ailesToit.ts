@@ -70,7 +70,13 @@ export function ailesDuNiveau(
 ): Aile[] {
   const polys = polygones(n);
   if (!polys.length) return [];
-  const haut = dessus ? polygones(dessus) : [];
+  // L'étage ne couvre que ce que portent ses murs : pièces, murs extérieurs et porteurs.
+  const haut = dessus
+    ? [
+        ...dessus.pieces.map((p) => p.contour),
+        ...dessus.murs.filter((m) => m.type === 'mur' || m.porteur).map(murPlein),
+      ]
+    : [];
   // Les coordonnées de l'étage découpent aussi la grille : sa limite tombe entre deux cases.
   const pts = [...polys, ...haut].flat().map((p) => loc(r, p));
   const uniques = (v: number[]) => [...new Set(v.map((x) => Math.round(x)))].sort((x, y) => x - y);
